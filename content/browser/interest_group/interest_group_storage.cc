@@ -578,12 +578,14 @@ bool DoLoadInterestGroup(sql::Database& db,
                          const url::Origin& owner,
                          const std::string& name,
                          blink::InterestGroup& group,
-                         url::Origin* joining_origin) {
+                         url::Origin* joining_origin,
+                         base::Time* last_updated) {
   // clang-format off
   sql::Statement load(
       db.GetCachedStatement(SQL_FROM_HERE,
         "SELECT expiration,"
           "joining_origin,"
+          "last_updated,"
           "priority,"
           "bidding_url,"
           "bidding_wasm_helper_url,"
@@ -612,17 +614,19 @@ bool DoLoadInterestGroup(sql::Database& db,
   group.name = name;
   if (joining_origin)
     *joining_origin = DeserializeOrigin(load.ColumnString(1));
-  group.priority = load.ColumnDouble(2);
-  group.bidding_url = DeserializeURL(load.ColumnString(3));
-  group.bidding_wasm_helper_url = DeserializeURL(load.ColumnString(4));
-  group.update_url = DeserializeURL(load.ColumnString(5));
-  group.trusted_bidding_signals_url = DeserializeURL(load.ColumnString(6));
+  if (last_updated)
+    *last_updated = load.ColumnTime(2);
+  group.priority = load.ColumnDouble(3);
+  group.bidding_url = DeserializeURL(load.ColumnString(4));
+  group.bidding_wasm_helper_url = DeserializeURL(load.ColumnString(5));
+  group.update_url = DeserializeURL(load.ColumnString(6));
+  group.trusted_bidding_signals_url = DeserializeURL(load.ColumnString(7));
   group.trusted_bidding_signals_keys =
-      DeserializeStringVector(load.ColumnString(7));
-  if (load.GetColumnType(8) != sql::ColumnType::kNull)
-    group.user_bidding_signals = load.ColumnString(8);
-  group.ads = DeserializeInterestGroupAdVector(load.ColumnString(9));
-  group.ad_components = DeserializeInterestGroupAdVector(load.ColumnString(10));
+      DeserializeStringVector(load.ColumnString(8));
+  if (load.GetColumnType(9) != sql::ColumnType::kNull)
+    group.user_bidding_signals = load.ColumnString(9);
+  group.ads = DeserializeInterestGroupAdVector(load.ColumnString(10));
+  group.ad_components = DeserializeInterestGroupAdVector(load.ColumnString(11));
 
   return true;
 }
@@ -686,7 +690,8 @@ bool DoUpdateInterestGroup(sql::Database& db,
 
   blink::InterestGroup stored_group;
   if (!DoLoadInterestGroup(db, update.owner, update.name, stored_group,
-                           nullptr)) {
+                           /*joining_origin=*/nullptr,
+                           /*last_updated=*/nullptr)) {
     return false;
   }
 
@@ -1155,7 +1160,8 @@ absl::optional<StorageInterestGroup> DoGetStoredInterestGroup(
     base::Time now) {
   StorageInterestGroup db_interest_group;
   if (!DoLoadInterestGroup(db, owner, name, db_interest_group.interest_group,
-                           &db_interest_group.joining_origin)) {
+                           &db_interest_group.joining_origin,
+                           &db_interest_group.last_updated)) {
     return absl::nullopt;
   }
 
