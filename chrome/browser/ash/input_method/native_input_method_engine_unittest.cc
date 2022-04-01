@@ -504,6 +504,57 @@ TEST_F(NativeInputMethodEngineTest, FocusCallsRightMojoFunctions) {
   InputMethodManager::Shutdown();
 }
 
+TEST_F(NativeInputMethodEngineTest,
+       DisablesAutocorrectAndLearningAtLockScreen) {
+  TestingProfile testing_profile;
+  SetInputMethodOptions(testing_profile, /*autocorrect_enabled=*/true,
+                        /*predictive_writing_enabled=*/false);
+
+  testing::StrictMock<MockInputMethod> mock_input_method;
+  InputMethodManager::Initialize(
+      new TestInputMethodManager(&mock_input_method));
+  InputMethodManager::Get()->GetActiveIMEState()->SetUIStyle(
+      InputMethodManager::UIStyle::kLock);
+  NativeInputMethodEngine engine;
+  engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
+                    /*extension_id=*/"", &testing_profile);
+
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(mock_input_method,
+                OnFocus(MojoEq(ime::mojom::InputFieldInfo(
+                            ime::mojom::InputFieldType::kText,
+                            ime::mojom::AutocorrectMode::kDisabled,
+                            ime::mojom::PersonalizationMode::kDisabled)),
+                        _, _))
+        .WillOnce(
+            ::testing::Invoke([](ime::mojom::InputFieldInfoPtr info,
+                                 ime::mojom::InputMethodSettingsPtr settings,
+                                 base::OnceCallback<void(bool)> callback) {
+              EXPECT_EQ(*settings,
+                        *ime::mojom::InputMethodSettings::NewLatinSettings(
+                            ime::mojom::LatinSettings::New(
+                                /*autocorrect=*/true,
+                                /*predictive_writing=*/false)));
+              std::move(callback).Run(true);
+            }));
+    EXPECT_CALL(mock_input_method, OnSurroundingTextChanged(_, _, _));
+  }
+
+  ui::IMEEngineHandlerInterface::InputContext input_context(
+      ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
+      ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
+      /*should_do_learning=*/true);
+  engine.Enable(kEngineIdUs);
+  engine.FlushForTesting();  // ensure input_method connected.
+  engine.FocusIn(input_context);
+  engine.FlushForTesting();
+
+  InputMethodManager::Get()->GetActiveIMEState()->SetUIStyle(
+      InputMethodManager::UIStyle::kNormal);
+  InputMethodManager::Shutdown();
+}
+
 TEST_F(NativeInputMethodEngineTest, FocusUpdatesXkbLayout) {
   TestingProfile testing_profile;
   SetPinyinLayoutPrefs(testing_profile, "Colemak");
