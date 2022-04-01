@@ -233,7 +233,8 @@ public class X509Util {
                 String action = KeyChain.ACTION_STORAGE_CHANGED;
                 filter.addAction(action);
             }
-            ContextUtils.getApplicationContext().registerReceiver(sTrustStorageListener, filter);
+            ContextUtils.registerNonExportedBroadcastReceiver(
+                    ContextUtils.getApplicationContext(), sTrustStorageListener, filter);
         }
     }
 
