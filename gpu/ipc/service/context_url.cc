@@ -13,6 +13,17 @@ namespace gpu {
 
 // static
 void ContextUrl::SetActiveUrl(const gpu::ContextUrl& active_url) {
+  bool is_skia_renderer = active_url.url() == "chrome://gpu/SkiaRenderer";
+
+  {
+    static crash_reporter::CrashKeyString<8> crash_key(
+        "gpu-context-is-skia-renderer");
+    crash_key.Set(is_skia_renderer ? "true" : "false");
+  }
+
+  if (is_skia_renderer)
+    return;
+
   // Skip setting crash key when URL hash hasn't changed.
   static size_t last_url_hash = 0;
   if (active_url.hash() == last_url_hash)
@@ -23,8 +34,10 @@ void ContextUrl::SetActiveUrl(const gpu::ContextUrl& active_url) {
   // Note that the url is intentionally excluded from WebView and WebLayer
   // crash dumps using an allowlist for privacy reasons. See
   // kWebViewCrashKeyAllowList and kWebLayerCrashKeyAllowList.
-  static crash_reporter::CrashKeyString<1024> crash_key("gpu-url-chunk");
-  crash_key.Set(active_url.url().possibly_invalid_spec());
+  {
+    static crash_reporter::CrashKeyString<1024> crash_key("gpu-url-chunk");
+    crash_key.Set(active_url.url().possibly_invalid_spec());
+  }
 }
 
 ContextUrl::ContextUrl(GURL url)
