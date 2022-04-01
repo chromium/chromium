@@ -319,10 +319,6 @@ bool IsDrDcEnabled() {
     return false;
   }
 
-  // Currently not supported for vulkan until crbug.com/1291298 is fixed.
-  if (IsUsingVulkan())
-    return false;
-
   // DrDc is supported on android MediaPlayer and MCVD path only when
   // AImageReader is enabled. Also DrDc requires AImageReader max size to be
   // at least 2 for each gpu thread. Hence DrDc is disabled on devices which has
