@@ -3330,7 +3330,6 @@ crbug.com/626703 virtual/prerender/external/wpt/speculation-rules/prerender/work
 crbug.com/626703 [ Win ] external/wpt/preload/avoid-delaying-onload-link-modulepreload.html [ Failure ]
 crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/prerender/restriction-presentation-request.https.html [ Failure ]
 crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/prerender/storage-foundation.https.html [ Failure ]
-crbug.com/626703 [ Win ] external/wpt/wasm/serialization/arraybuffer/transfer.window.html [ Failure ]
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
@@ -4131,6 +4130,9 @@ crbug.com/626703 [ Mac10.12 ] external/wpt/webhid/idlharness.https.window.html [
 crbug.com/626703 [ Mac10.12 ] virtual/plz-dedicated-worker/external/wpt/service-workers/idlharness.https.any.sharedworker.html [ Failure ]
 crbug.com/626703 [ Mac10.12 ] virtual/plz-dedicated-worker/external/wpt/service-workers/idlharness.https.any.worker.html [ Failure ]
 crbug.com/626703 [ Mac10.12 ] virtual/portals/external/wpt/portals/idlharness.window.html [ Failure ]
+
+# Update the serializing wasm memory case when crbug.com/v8/12703 is fixed.
+crbug.com/v8/12703 external/wpt/wasm/serialization/arraybuffer/transfer.window.html [ Failure Pass ]
 
 ### virtual/prerender/external/wpt/speculation-rules/prerender
 crbug.com/1126305 [ Mac10.15 ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Skip Timeout ]
