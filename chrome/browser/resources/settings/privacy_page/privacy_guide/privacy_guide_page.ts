@@ -343,10 +343,10 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
     }
 
     if (Object.values(PrivacyGuideStep).includes(step)) {
-      this.navigateToCard_(step, false, true);
+      this.navigateToCard_(step, false, true, true);
     } else {
       // If no step has been specified, then navigate to the welcome step.
-      this.navigateToCard_(PrivacyGuideStep.WELCOME, false, false);
+      this.navigateToCard_(PrivacyGuideStep.WELCOME, false, true, false);
     }
   }
 
@@ -361,7 +361,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       components.onForwardNavigation();
     }
     if (components.nextStep) {
-      this.navigateToCard_(components.nextStep, false, true);
+      this.navigateToCard_(components.nextStep, false, false, true);
     }
   }
 
@@ -376,13 +376,13 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       components.onBackwardNavigation();
     }
     if (components.previousStep) {
-      this.navigateToCard_(components.previousStep, true, true);
+      this.navigateToCard_(components.previousStep, true, false, true);
     }
   }
 
   private navigateToCard_(
       step: PrivacyGuideStep, isBackwardNavigation: boolean,
-      playAnimation: boolean) {
+      isFirstNavigation: boolean, playAnimation: boolean) {
     assert(step !== this.privacyGuideStep_);
     this.privacyGuideStep_ = step;
 
@@ -411,6 +411,19 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       }
       Router.getInstance().updateRouteParams(
           new URLSearchParams('step=' + step));
+
+      if (isFirstNavigation) {
+        return;
+      }
+
+      // On navigations within privacy guide, put the focus on the newly shown
+      // fragment. Every fragment has a [focus-element] element that is focused
+      // programmatically when the fragment is navigated to.
+      const elementToFocus =
+          assert(this.shadowRoot!.querySelector<HTMLElement>(
+                     '#' + this.privacyGuideStep_)!)
+              .shadowRoot!.querySelector<HTMLElement>('[focus-element]');
+      afterNextRender(this, () => elementToFocus!.focus());
     }
   }
 
@@ -479,16 +492,6 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
   private showAnySettingFragment_(): boolean {
     return this.privacyGuideStep_ !== PrivacyGuideStep.WELCOME &&
         this.privacyGuideStep_ !== PrivacyGuideStep.COMPLETION;
-  }
-
-  private onViewEnterStart_(event: Event) {
-    // The |view-enter-start| event was dispatched to the fragment that is now
-    // becoming visible. Every fragment has a [focus-element] element that is
-    // focused programmatically when the fragment becomes visible.
-    const elementToFocus =
-        assert((event.target! as HTMLElement)
-                   .shadowRoot!.querySelector<HTMLElement>('[focus-element]'));
-    afterNextRender(this, () => elementToFocus!.focus());
   }
 
   private onKeyDown_(event: KeyboardEvent) {
