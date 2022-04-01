@@ -1118,6 +1118,7 @@ public class UndoTabModelTest {
      */
     @Test
     @MediumTest
+    @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE) // See crbug.com/1312473
     public void testCloseAll() throws TimeoutException {
         TabModel model = sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
         ChromeTabCreator tabCreator = TestThreadUtils.runOnUiThreadBlockingNoException(
