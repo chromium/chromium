@@ -60,6 +60,7 @@ source_set("renderer_controller_proxy_factory") {
 
 source_set("demuxer") {
   deps = [
+    ":decoder_buffer_reader",
     "//base",
     "//components/cast_streaming/public/mojom",
     "//media",
@@ -71,6 +72,20 @@ source_set("demuxer") {
     "cast_streaming_demuxer.h",
     "cast_streaming_receiver.cc",
     "cast_streaming_receiver.h",
+  ]
+  visibility = [ ":*" ]
+}
+
+source_set("decoder_buffer_reader") {
+  deps = [
+    "//base",
+    "//media",
+    "//media/mojo/common",
+    "//mojo/public/cpp/bindings",
+  ]
+  sources = [
+    "decoder_buffer_reader.cc",
+    "decoder_buffer_reader.h",
   ]
   visibility = [ ":*" ]
 }
@@ -93,11 +108,13 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "decoder_buffer_reader_unittest.cc",
     "playback_command_forwarding_renderer_factory_unittest.cc",
     "playback_command_forwarding_renderer_unittest.cc",
   ]
 
   deps = [
+    ":decoder_buffer_reader",
     ":playback_command_forwarding_renderer",
     ":playback_command_forwarding_renderer_factory",
     ":renderer",

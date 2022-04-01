@@ -215,6 +215,9 @@ class MEDIA_EXPORT DecoderBuffer
   // including |data_| and |side_data_|.
   bool MatchesForTesting(const DecoderBuffer& buffer) const;
 
+  // As above, except that |data_| and |side_data_| are not compared.
+  bool MatchesMetadataForTesting(const DecoderBuffer& buffer) const;
+
   // Returns a human-readable string describing |*this|.
   std::string AsHumanReadableString(bool verbose = false) const;
 

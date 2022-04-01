@@ -142,7 +142,8 @@ scoped_refptr<DecoderBuffer> DecoderBuffer::CreateEOSBuffer() {
   return base::WrapRefCounted(new DecoderBuffer(NULL, 0, NULL, 0));
 }
 
-bool DecoderBuffer::MatchesForTesting(const DecoderBuffer& buffer) const {
+bool DecoderBuffer::MatchesMetadataForTesting(
+    const DecoderBuffer& buffer) const {
   if (end_of_stream() != buffer.end_of_stream())
     return false;
 
@@ -152,14 +153,7 @@ bool DecoderBuffer::MatchesForTesting(const DecoderBuffer& buffer) const {
 
   if (timestamp() != buffer.timestamp() || duration() != buffer.duration() ||
       is_key_frame() != buffer.is_key_frame() ||
-      discard_padding() != buffer.discard_padding() ||
-      data_size() != buffer.data_size() ||
-      side_data_size() != buffer.side_data_size()) {
-    return false;
-  }
-
-  if (memcmp(data(), buffer.data(), data_size()) != 0 ||
-      memcmp(side_data(), buffer.side_data(), side_data_size()) != 0) {
+      discard_padding() != buffer.discard_padding()) {
     return false;
   }
 
@@ -168,6 +162,21 @@ bool DecoderBuffer::MatchesForTesting(const DecoderBuffer& buffer) const {
 
   return decrypt_config() ? decrypt_config()->Matches(*buffer.decrypt_config())
                           : true;
+}
+
+bool DecoderBuffer::MatchesForTesting(const DecoderBuffer& buffer) const {
+  if (!MatchesMetadataForTesting(buffer))  // IN-TEST
+    return false;
+
+  // It is illegal to call any member function if eos is true.
+  if (end_of_stream())
+    return true;
+
+  DCHECK(!buffer.end_of_stream());
+  return data_size() == buffer.data_size() &&
+         side_data_size() == buffer.side_data_size() &&
+         memcmp(data(), buffer.data(), data_size()) == 0 &&
+         memcmp(side_data(), buffer.side_data(), side_data_size()) == 0;
 }
 
 std::string DecoderBuffer::AsHumanReadableString(bool verbose) const {
