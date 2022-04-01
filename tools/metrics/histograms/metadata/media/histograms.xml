@@ -980,6 +980,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.Audio.Render.SinkCache.InfoSinkReusedForOutput"
     enum="BooleanReused" expires_after="2022-04-05">
+  <obsolete>
+    Removed 04/2022.
+  </obsolete>
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
