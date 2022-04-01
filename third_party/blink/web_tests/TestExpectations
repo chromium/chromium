@@ -7718,3 +7718,11 @@ crbug.com/1311138 [ Mac10.14 ] virtual/document-transition/wpt_internal/document
 # These tests fail on SwiftShader FEMU due to a change in log/exp implementation.
 crbug.com/1311456 [ Fuchsia ] fast/css3-text/css3-text-decoration/text-decoration-style-inherit.html [ Skip ]
 crbug.com/1311456 [ Fuchsia ] tables/mozilla/core/bloomberg.html [ Skip ]
+
+# Sheriff 2022-04-01
+crbug.com/1312266 [ Mac10.13 ] external/wpt/preload/preload-time-to-fetch.https.html [ Failure ]
+crbug.com/1312266 [ Mac10.13 ] external/wpt/css/css-ui/compute-kind-widget-generated/kind-of-widget-fallback-meter-border-right-width-001.html [ Failure ]
+crbug.com/1312266 [ Mac10.13 ] external/wpt/css/css-ui/compute-kind-widget-generated/kind-of-widget-fallback-meter-background-clip-001.html [ Failure ]
+crbug.com/1312266 [ Mac10.13 ] external/wpt/scroll-to-text-fragment/scroll-to-text-fragment.html [ Failure ]
+crbug.com/1312266 [ Mac10.13 ] external/wpt/webrtc/RTCRtpSender-replaceTrack.https.html [ Failure ]
+crbug.com/1312266 [ Mac10.13 ] external/wpt/webxr/dom-overlay/ar_dom_overlay.https.html [ Failure ]
