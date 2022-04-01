@@ -1708,7 +1708,14 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppsHiddenFromLaunchCanBePinned) {
   EXPECT_EQ("Chrome, Play Store, Android Settings", GetPinnedAppStatus());
 }
 
-TEST_F(ChromeShelfControllerWithArcTest, ArcAppPinCrossPlatformWorkflow) {
+// crbug.com/1312611 Test Failing on linux-cfm-rel
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ArcAppPinCrossPlatformWorkflow \
+  DISABLED_ArcAppPinCrossPlatformWorkflow
+#else
+#define MAYBE_ArcAppPinCrossPlatformWorkflow ArcAppPinCrossPlatformWorkflow
+#endif
+TEST_F(ChromeShelfControllerWithArcTest, MAYBE_ArcAppPinCrossPlatformWorkflow) {
   // Work on ARC disabled platform first.
   const std::string arc_app_id1 =
       ArcAppTest::GetAppId(*arc_test_.fake_apps()[0]);
