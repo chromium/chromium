@@ -2496,20 +2496,6 @@ if (!is_android) {
       data_deps += [ "//chrome:packed_resources" ]
     }
 
-    if (is_fuchsia) {
-      # These files have tests parameterized based on base::Time and
-      # base::TimeDelta. These parameters are evaluated early within
-      # Google Test' RegisterTests() before Chromium code has had a chance
-      # to initialize. On Fuchsia, which uses ICU for exploding time, the
-      # locale gets initialized during this evaluation, causing some tests
-      # to fail to load the data needed for formatting.
-      # TODO(crbug.com/1300895): Restore this test after fixing the issue.
-      sources -= [
-        "../browser/browsing_data/browsing_data_remover_browsertest.cc",
-        "../browser/enterprise/connectors/analysis/content_analysis_dialog_browsertest.cc",
-      ]
-    }
-
     if (enable_soda) {
       sources +=
           [ "../browser/speech/speech_recognition_service_browsertest.cc" ]
