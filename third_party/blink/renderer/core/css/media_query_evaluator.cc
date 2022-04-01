@@ -309,6 +309,9 @@ static bool ColorMediaFeatureEval(const MediaQueryExpValue& value,
                                   const MediaValues& media_values) {
   float number;
   int bits_per_component = media_values.ColorBitsPerComponent();
+  MaybeRecordMediaFeatureValue(media_values,
+                               IdentifiableSurface::MediaFeatureName::kColor,
+                               bits_per_component);
   if (value.IsValid()) {
     return NumberValue(value, number) &&
            CompareValue(bits_per_component, static_cast<int>(number), op);
@@ -338,6 +341,9 @@ static bool MonochromeMediaFeatureEval(const MediaQueryExpValue& value,
                                        const MediaValues& media_values) {
   float number;
   int bits_per_component = media_values.MonochromeBitsPerComponent();
+  MaybeRecordMediaFeatureValue(
+      media_values, IdentifiableSurface::MediaFeatureName::kMonochrome,
+      bits_per_component);
   if (value.IsValid()) {
     return NumberValue(value, number) &&
            CompareValue(bits_per_component, static_cast<int>(number), op);
@@ -404,6 +410,9 @@ static bool OrientationMediaFeatureEval(const MediaQueryExpValue& value,
 static bool AspectRatioMediaFeatureEval(const MediaQueryExpValue& value,
                                         MediaQueryOperator op,
                                         const MediaValues& media_values) {
+  MaybeRecordMediaFeatureValue(
+      media_values, IdentifiableSurface::MediaFeatureName::kAspectRatio,
+      (*media_values.Width()) / (*media_values.Height()));
   if (value.IsValid()) {
     return CompareAspectRatioValue(value, *media_values.Width(),
                                    *media_values.Height(), op);
@@ -482,6 +491,10 @@ static bool EvalResolution(const MediaQueryExpValue& value,
     // we use 300px which is considered minimum for current printers.
     actual_resolution = 300 / kCssPixelsPerInch;
   }
+
+  MaybeRecordMediaFeatureValue(
+      media_values, IdentifiableSurface::MediaFeatureName::kResolution,
+      actual_resolution);
 
   if (!value.IsValid())
     return !!actual_resolution;
@@ -1187,6 +1200,12 @@ static bool HorizontalViewportSegmentsMediaFeatureEval(
     const MediaValues& media_values) {
   int horizontal_viewport_segments =
       media_values.GetHorizontalViewportSegments();
+
+  MaybeRecordMediaFeatureValue(
+      media_values,
+      IdentifiableSurface::MediaFeatureName::kHorizontalViewportSegments,
+      horizontal_viewport_segments);
+
   if (!value.IsValid())
     return true;
 
@@ -1201,6 +1220,12 @@ static bool VerticalViewportSegmentsMediaFeatureEval(
     MediaQueryOperator op,
     const MediaValues& media_values) {
   int vertical_viewport_segments = media_values.GetVerticalViewportSegments();
+
+  MaybeRecordMediaFeatureValue(
+      media_values,
+      IdentifiableSurface::MediaFeatureName::kVerticalViewportSegments,
+      vertical_viewport_segments);
+
   if (!value.IsValid())
     return true;
 

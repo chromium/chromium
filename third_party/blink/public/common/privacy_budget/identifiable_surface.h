@@ -298,11 +298,18 @@ class IdentifiableSurface {
     kTransform3d = 15,
     kScan = 16,
     kDevicePosture = 17,
+    kColor = 18,
+    kColorIndex = 19,
+    kMonochrome = 20,
+    kAspectRatio = 21,
+    kResolution = 22,
+    kHorizontalViewportSegments = 23,
+    kVerticalViewportSegments = 24,
     // We can use enum values up to and including 63, see static_assert below.
-    kMax = 63
+    kMax = kVerticalViewportSegments
   };
-  static_assert(static_cast<int>(MediaFeatureName::kMax) == 63,
-                "MediaFeatureName only allows values <= 63 since we use it in "
+  static_assert(static_cast<int>(MediaFeatureName::kMax) < 64,
+                "MediaFeatureName only allows values < 64 since we use it in "
                 "a uint64_t bitfield inside document.h to track if a media "
                 "feature has already been sampled");
 
