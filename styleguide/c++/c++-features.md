@@ -552,7 +552,7 @@ This feature forces omitting type names. Its use should follow
 See [discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/ExfSorNLNf4).
 ***
 
-### Inline variables
+### Inline variables <sup>[allowed]</sup>
 
 ```c++
 struct S {
@@ -821,6 +821,67 @@ std::chrono::round<std::chrono::seconds>(time_pt);
 Banned since `std::chrono` is banned.
 ***
 
+### std::variant <sup>[banned]</sup>
+
+```c++
+std::variant<int, double> v = 12;
+```
+
+**Description:** The class template `std::variant` represents a type-safe
+`union`. An instance of `std::variant` at any given time holds a value of one of
+its alternative types (it's also possible for it to be valueless).
+
+**Documentation:**
+[std::variant](https://en.cppreference.com/w/cpp/utility/variant)
+
+**Notes:**
+*** promo
+Banned for now because it does not provide safety guarantees in the case of
+misuse. The Chromium C++ team is investigating the possibility of hardening the
+C++ library so that the standard version can be used. In the meanwhile, use
+`absl::variant` instead.
+***
+
+### std::optional <sup>[banned]</sup>
+
+```c++
+std::optional<std::string> s;
+```
+
+**Description:** The class template `std::optional` manages an optional
+contained value, i.e. a value that may or may not be present. A common use case
+for optional is the return value of a function that may fail.
+
+**Documentation:**
+[std::optional](https://en.cppreference.com/w/cpp/utility/optional)
+
+**Notes:**
+*** promo
+Banned for now because it does not provide safety guarantees in the case of
+misuse. The Chromium C++ team is investigating the possibility of hardening the
+C++ library so that the standard version can be used. In the meanwhile, use
+`absl::optional` instead.
+***
+
+### std::clamp <sup>[banned]</sup>
+
+```c++
+int x = std::clamp(inp, 0, 100);
+```
+
+**Description:** Clamps a value between a minimum and a maximum.
+
+**Documentation:**
+[std::clamp](https://en.cppreference.com/w/cpp/algorithm/clamp)
+
+**Notes:**
+*** promo
+Banned for now because it does not provide safety guarantees in the case of
+misuse. The Chromium C++ team is investigating the possibility of hardening the
+C++ library so that the standard version can be used. In the meanwhile, use
+`base::clamp` instead.
+***
+
 ## C++17 TBD Language Features {#core-review-17}
 
 The following C++17 language features are not allowed in the Chromium codebase.
@@ -960,42 +1021,6 @@ None
 The following C++17 library features are not allowed in the Chromium codebase.
 See the top of this page on how to propose moving a feature from this list into
 the allowed or banned sections.
-
-### std::variant <sup>[tbd]</sup>
-
-```c++
-std::variant<int, double> v = 12;
-```
-
-**Description:** The class template `std::variant` represents a type-safe
-`union`. An instance of `std::variant` at any given time holds a value of one of
-its alternative types (it's also possible for it to be valueless).
-
-**Documentation:**
-[std::variant](https://en.cppreference.com/w/cpp/utility/variant)
-
-**Notes:**
-*** promo
-See also `absl::variant`.
-***
-
-### std::optional <sup>[tbd]</sup>
-
-```c++
-std::optional<std::string> s;
-```
-
-**Description:** The class template `std::optional` manages an optional
-contained value, i.e. a value that may or may not be present. A common use case
-for optional is the return value of a function that may fail.
-
-**Documentation:**
-[std::optional](https://en.cppreference.com/w/cpp/utility/optional)
-
-**Notes:**
-*** promo
-See also `absl::optional`.
-***
 
 ### std::string_view <sup>[tbd]</sup>
 
@@ -1319,22 +1344,6 @@ objects with the same value have the same object representation.
 **Notes:**
 *** promo
 None
-***
-
-### std::clamp <sup>[tbd]</sup>
-
-```c++
-int x = base::clamp(inp, 0, 100);
-```
-
-**Description:** Clamps a value between a minimum and a maximum.
-
-**Documentation:**
-[std::clamp](https://en.cppreference.com/w/cpp/algorithm/clamp)
-
-**Notes:**
-*** promo
-See also `base::clamp`.
 ***
 
 ### std::reduce <sup>[tbd]</sup>
