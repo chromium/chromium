@@ -94,7 +94,9 @@ class NavigateEvent final : public Event, public ExecutionContextClient {
 
   KURL url_;
   HeapVector<ScriptPromise> navigation_action_promises_list_;
-  bool did_restore_scroll_ = false;
+
+  enum class ManualRestoreState { kNotRestored, kRestored, kDone };
+  ManualRestoreState restore_state_ = ManualRestoreState::kNotRestored;
 };
 
 }  // namespace blink

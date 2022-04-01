@@ -12,16 +12,14 @@ promise_test(async t => {
   assert_equals(window.scrollY, 0);
   await navigation.navigate("#frag").finished;
   assert_not_equals(window.scrollY, 0);
-
-  let navigate_event;
-  navigation.onnavigate = e => {
-    navigate_event = e;
+  navigation.onnavigate = t.step_func(e => {
     e.transitionWhile(Promise.resolve(), { scrollRestoration: "manual" });
-  };
+    e.restoreScroll();
+    assert_equals(window.scrollY, 0);
+    assert_throws_dom("InvalidStateError", () => e.restoreScroll());
+  });
   await navigation.back().finished;
-  assert_not_equals(window.scrollY, 0);
-  assert_throws_dom("InvalidStateError", () => navigate_event.restoreScroll());
-  assert_not_equals(window.scrollY, 0);
-}, "scrollRestoration: restoreScroll() should throw after a navigation finished promise fulfills");
+  assert_equals(window.scrollY, 0);
+}, "scrollRestoration: restoreScroll() should throw if called a second time");
 </script>
 </body>

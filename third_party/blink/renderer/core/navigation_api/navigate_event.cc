@@ -148,18 +148,30 @@ void NavigateEvent::restoreScroll(ExceptionState& exception_state) {
         "mode");
     return;
   }
-  if (did_restore_scroll_)
-    return;
-  RestoreScrollInternal();
-  did_restore_scroll_ = true;
+
+  switch (restore_state_) {
+    case ManualRestoreState::kNotRestored:
+      RestoreScrollInternal();
+      restore_state_ = ManualRestoreState::kRestored;
+      return;
+    case ManualRestoreState::kRestored:
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "restoreScroll() already called");
+      return;
+    case ManualRestoreState::kDone:
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "restoreScroll() may not be called after the transition completes");
+      return;
+  }
+  NOTREACHED();
 }
 
 void NavigateEvent::RestoreScrollAfterTransitionIfNeeded() {
-  if (navigation_type_ == "traverse" && !InManualScrollRestorationMode()) {
-    DCHECK(!did_restore_scroll_);
+  if (InManualScrollRestorationMode())
+    restore_state_ = ManualRestoreState::kDone;
+  else if (navigation_type_ == "traverse")
     RestoreScrollInternal();
-  }
-  did_restore_scroll_ = true;
 }
 
 void NavigateEvent::SaveStateFromDestinationItem(HistoryItem* item) {
