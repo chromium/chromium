@@ -32,11 +32,11 @@ bool DeskTemplate::IsAppTypeSupported(aura::Window* window) {
   switch (app_type) {
     case AppType::NON_APP:
     case AppType::CROSTINI_APP:
-    case AppType::LACROS:
       return false;
     case AppType::ARC_APP:
     case AppType::BROWSER:
     case AppType::CHROME_APP:
+    case AppType::LACROS:
     case AppType::SYSTEM_APP:
       break;
   }
