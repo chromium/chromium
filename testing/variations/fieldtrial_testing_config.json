@@ -1398,6 +1398,34 @@
             ]
         }
     ],
+    "BatchSimpleURLLoader": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledUmaUkm",
+                    "params": {
+                        "batching_enabled_traffic_annotation_hashes": "727528,727478"
+                    },
+                    "enable_features": [
+                        "BatchSimpleURLLoader"
+                    ]
+                },
+                {
+                    "name": "EnabledOtherComponents",
+                    "params": {
+                        "batching_enabled_traffic_annotation_hashes": "57144960,54845618"
+                    },
+                    "enable_features": [
+                        "BatchSimpleURLLoader"
+                    ]
+                }
+            ]
+        }
+    ],
     "BiometricAuthPwdFillAndroid": [
         {
             "platforms": [
