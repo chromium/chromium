@@ -4,6 +4,8 @@
 
 #include "components/autofill_assistant/browser/web/element_finder.h"
 
+#include <utility>
+
 #include "base/barrier_callback.h"
 #include "base/time/time.h"
 #include "components/autofill_assistant/browser/devtools/devtools_client.h"
@@ -136,8 +138,7 @@ void ElementFinder::Start(const Result& start_element, Callback callback) {
 
   if (selector_.empty()) {
     SendResult(ClientStatus(INVALID_SELECTOR),
-               std::make_unique<Result>(Result::EmptyResult()),
-               ElementFinderInfoProto());
+               std::make_unique<Result>(Result::EmptyResult()));
     return;
   }
 
@@ -147,57 +148,91 @@ void ElementFinder::Start(const Result& start_element, Callback callback) {
   if (selector_.proto.has_semantic_information()) {
     if (!annotate_dom_model_service_) {
       SendResult(ClientStatus(PRECONDITION_FAILED),
-                 std::make_unique<Result>(Result::EmptyResult()),
-                 ElementFinderInfoProto());
+                 std::make_unique<Result>(Result::EmptyResult()));
       return;
     }
 
-    runner_ = std::make_unique<SemanticElementFinder>(
-        web_contents_, devtools_client_, annotate_dom_model_service_,
-        selector_);
-    runner_->Start(start_element,
-                   base::BindOnce(&ElementFinder::OnResult,
-                                  weak_ptr_factory_.GetWeakPtr()));
-    // TODO(b/224745206): Implement parallelism.
+    if (selector_.proto.semantic_information().check_matches_css_element()) {
+      // This will return the element being used.
+      AddAndStartRunner(start_element,
+                        std::make_unique<CssElementFinder>(
+                            web_contents_, devtools_client_, user_data_,
+                            result_type_, selector_));
+    }
+
+    AddAndStartRunner(start_element,
+                      std::make_unique<SemanticElementFinder>(
+                          web_contents_, devtools_client_,
+                          annotate_dom_model_service_, selector_));
     return;
   }
 
-  runner_ = std::make_unique<CssElementFinder>(
-      web_contents_, devtools_client_, user_data_, result_type_, selector_);
-  runner_->Start(start_element, base::BindOnce(&ElementFinder::OnResult,
-                                               weak_ptr_factory_.GetWeakPtr()));
+  AddAndStartRunner(start_element, std::make_unique<CssElementFinder>(
+                                       web_contents_, devtools_client_,
+                                       user_data_, result_type_, selector_));
 }
 
-void ElementFinder::UpdateLogInfo(
-    const ClientStatus& status,
-    const ElementFinderInfoProto& element_finder_info) {
+void ElementFinder::AddAndStartRunner(
+    const Result& start_element,
+    std::unique_ptr<ElementFinderBase> runner) {
+  auto* runner_ptr = runner.get();
+  runners_.emplace_back(std::move(runner));
+  results_.resize(runners_.size());
+  runner_ptr->Start(
+      start_element,
+      base::BindOnce(&ElementFinder::OnResult, weak_ptr_factory_.GetWeakPtr(),
+                     /* index= */ runners_.size() - 1));
+}
+
+void ElementFinder::UpdateLogInfo(const ClientStatus& status) {
   if (log_info_ == nullptr) {
     return;
   }
 
   auto* info = log_info_->add_element_finder_info();
-  *info = element_finder_info;
+  for (const auto& runner : runners_) {
+    info->MergeFrom(runner->GetLogInfo());
+  }
 
   info->set_status(status.proto_status());
   if (selector_.proto.has_tracking_id()) {
     info->set_tracking_id(selector_.proto.tracking_id());
   }
+
+  if (runners_.size() > 1u) {
+    // By convention the 0th result is used as the result being returned for
+    // usage. If there's more than one runner, use it to compare it to the
+    // semantic results.
+    int css_backend_node_id = runners_[0]->GetBackendNodeId();
+    for (auto& predicted_element : *info->mutable_semantic_inference_result()
+                                        ->mutable_predicted_elements()) {
+      predicted_element.set_matches_css_element(
+          predicted_element.backend_node_id() == css_backend_node_id);
+    }
+  }
 }
 
-void ElementFinder::SendResult(
-    const ClientStatus& status,
-    std::unique_ptr<Result> result,
-    const ElementFinderInfoProto& element_finder_info) {
-  UpdateLogInfo(status, element_finder_info);
+void ElementFinder::SendResult(const ClientStatus& status,
+                               std::unique_ptr<Result> result) {
+  UpdateLogInfo(status);
   DCHECK(callback_);
   std::move(callback_).Run(
       ClientStatus(status.proto_status(), status.details()), std::move(result));
 }
 
-void ElementFinder::OnResult(const ClientStatus& status,
+void ElementFinder::OnResult(size_t index,
+                             const ClientStatus& status,
                              std::unique_ptr<Result> result) {
-  DCHECK(runner_);
-  SendResult(status, std::move(result), runner_->GetLogInfo(status));
+  results_[index] = std::make_pair(status, std::move(result));
+  ++num_results_;
+
+  if (num_results_ < results_.size()) {
+    return;
+  }
+
+  DCHECK(!results_.empty());
+  DCHECK(!runners_.empty());
+  SendResult(results_[0].first, std::move(results_[0].second));
 }
 
 ElementFinder::ElementFinderBase::~ElementFinderBase() = default;
@@ -232,7 +267,6 @@ void ElementFinder::SemanticElementFinder::ResultFound(
     return;
   }
 
-  // Fill in result.
   Result result;
   result.SetRenderFrameHost(render_frame_host);
   result.SetObjectId(object_id);
@@ -258,8 +292,8 @@ void ElementFinder::SemanticElementFinder::Start(const Result& start_element,
   RunAnnotateDomModel(start_frame);
 }
 
-ElementFinderInfoProto ElementFinder::SemanticElementFinder::GetLogInfo(
-    const ClientStatus& status) const {
+ElementFinderInfoProto ElementFinder::SemanticElementFinder::GetLogInfo()
+    const {
   DCHECK(!callback_);  // Run after finish.
 
   ElementFinderInfoProto info;
@@ -281,6 +315,13 @@ ElementFinderInfoProto ElementFinder::SemanticElementFinder::GetLogInfo(
   }
 
   return info;
+}
+
+int ElementFinder::SemanticElementFinder::GetBackendNodeId() const {
+  if (semantic_node_results_.empty()) {
+    return 0;
+  }
+  return semantic_node_results_[0].backend_node_id();
 }
 
 void ElementFinder::SemanticElementFinder::RunAnnotateDomModel(
@@ -427,18 +468,21 @@ void ElementFinder::CssElementFinder::Start(const Result& start_element,
   }
 }
 
-ElementFinderInfoProto ElementFinder::CssElementFinder::GetLogInfo(
-    const ClientStatus& status) const {
+ElementFinderInfoProto ElementFinder::CssElementFinder::GetLogInfo() const {
   DCHECK(!callback_);  // Run after finish.
 
   ElementFinderInfoProto info;
-  if (!status.ok()) {
+  if (!client_status_.ok()) {
     info.set_failed_filter_index_range_start(current_filter_index_range_start_);
     info.set_failed_filter_index_range_end(next_filter_index_);
     info.set_get_document_failed(get_document_failed_);
   }
 
   return info;
+}
+
+int ElementFinder::CssElementFinder::GetBackendNodeId() const {
+  return backend_node_id_.value_or(0);
 }
 
 void ElementFinder::CssElementFinder::GiveUpWithError(
@@ -457,7 +501,30 @@ void ElementFinder::CssElementFinder::ResultFound(
     return;
   }
 
-  // Fill in result.
+  if (selector_.proto.has_semantic_information()) {
+    devtools_client_->GetDOM()->DescribeNode(
+        dom::DescribeNodeParams::Builder().SetObjectId(object_id).Build(),
+        current_frame_id_,
+        base::BindOnce(&CssElementFinder::OnDescribeNodeForId,
+                       weak_ptr_factory_.GetWeakPtr(), object_id));
+    return;
+  }
+
+  BuildAndSendResult(object_id);
+}
+
+void ElementFinder::CssElementFinder::OnDescribeNodeForId(
+    const std::string& object_id,
+    const DevtoolsClient::ReplyStatus& reply_status,
+    std::unique_ptr<dom::DescribeNodeResult> node_result) {
+  if (node_result && node_result->GetNode()) {
+    backend_node_id_ = node_result->GetNode()->GetBackendNodeId();
+  }
+  BuildAndSendResult(object_id);
+}
+
+void ElementFinder::CssElementFinder::BuildAndSendResult(
+    const std::string& object_id) {
   Result result;
   result.SetRenderFrameHost(current_frame_);
   result.SetObjectId(object_id);
@@ -469,6 +536,7 @@ void ElementFinder::CssElementFinder::ResultFound(
 
 void ElementFinder::CssElementFinder::SendResult(const ClientStatus& status,
                                                  const Result& result) {
+  client_status_ = status;
   DCHECK(callback_);
   std::move(callback_).Run(status, std::make_unique<Result>(result));
 }

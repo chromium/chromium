@@ -3592,4 +3592,39 @@ IN_PROC_BROWSER_TEST_F(
               result.predicted_elements(0).semantic_information().objective());
 }
 
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SemanticAndCssComparison) {
+  ClientStatus status;
+  int backend_node_id = GetBackendNodeId(Selector({"#button"}), &status);
+  EXPECT_TRUE(status.ok());
+
+  NodeData node_data;
+  node_data.backend_node_id = backend_node_id;
+  EXPECT_CALL(autofill_assistant_agent_,
+              GetSemanticNodes(1, 2, false, base::Milliseconds(5000), _))
+      .WillOnce(RunOnceCallback<4>(mojom::NodeDataStatus::kSuccess,
+                                   std::vector<NodeData>{node_data}))
+      // Capture any other frames.
+      .WillRepeatedly(RunOnceCallback<4>(
+          mojom::NodeDataStatus::kUnexpectedError, std::vector<NodeData>()));
+
+  // We pretend that the button is the correct element.
+  SelectorProto proto = ToSelectorProto("#button");
+  auto* semantic_information = proto.mutable_semantic_information();
+  semantic_information->set_semantic_role(1);
+  semantic_information->set_objective(2);
+  semantic_information->set_check_matches_css_element(true);
+  RunStrictElementCheck(Selector(proto), true);
+
+  ASSERT_EQ(log_info_.element_finder_info().size(), 1);
+  const auto& result =
+      log_info_.element_finder_info(0).semantic_inference_result();
+  ASSERT_EQ(1, result.predicted_elements().size());
+  EXPECT_EQ(backend_node_id, result.predicted_elements(0).backend_node_id());
+  EXPECT_THAT(
+      1, result.predicted_elements(0).semantic_information().semantic_role());
+  EXPECT_THAT(2,
+              result.predicted_elements(0).semantic_information().objective());
+  EXPECT_TRUE(result.predicted_elements(0).matches_css_element());
+}
+
 }  // namespace autofill_assistant

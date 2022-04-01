@@ -38,15 +38,31 @@ TEST(SelectorTest, FromProto) {
   EXPECT_EQ(Selector({"#test"}), Selector(proto));
 }
 
-TEST(SelectorTest, EmptySelector) {
+TEST(SelectorTest, EmptyCheckCssSelector) {
   EXPECT_TRUE(Selector().empty());
   EXPECT_FALSE(Selector({"#test"}).empty());
 }
 
-TEST(SelectorTest, EmptySelectorWithSemanticInformation) {
-  SelectorProto proto;
-  proto.mutable_semantic_information();
-  EXPECT_FALSE(Selector(proto).empty());
+TEST(SelectorTest, EmptyCheckSelectorWithSemanticInformation) {
+  SelectorProto semantic_only_proto;
+  semantic_only_proto.mutable_semantic_information();
+  EXPECT_FALSE(Selector(semantic_only_proto).empty());
+
+  Selector semantic_and_css({"#test"});
+  semantic_and_css.proto.mutable_semantic_information();
+  EXPECT_FALSE(semantic_and_css.empty());
+}
+
+TEST(SelectorTest, EmptyCheckCssAndSemanticComparison) {
+  SelectorProto semantic_only_proto;
+  semantic_only_proto.mutable_semantic_information()
+      ->set_check_matches_css_element(true);
+  EXPECT_TRUE(Selector(semantic_only_proto).empty());
+
+  Selector semantic_and_css({"#test"});
+  semantic_and_css.proto.mutable_semantic_information()
+      ->set_check_matches_css_element(true);
+  EXPECT_FALSE(semantic_and_css.empty());
 }
 
 TEST(SelectorTest, Comparison) {

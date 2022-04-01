@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -153,8 +154,10 @@ class ElementFinder : public WebControllerWorker {
 
     // Get the log information for the last run. Should only be run after the
     // run has completed (i.e. |callback_| has been called).
-    virtual ElementFinderInfoProto GetLogInfo(
-        const ClientStatus& status) const = 0;
+    virtual ElementFinderInfoProto GetLogInfo() const = 0;
+
+    // Returns the backend node id that was previously collected.
+    virtual int GetBackendNodeId() const = 0;
   };
 
   class SemanticElementFinder : public ElementFinderBase {
@@ -170,8 +173,10 @@ class ElementFinder : public WebControllerWorker {
 
     void Start(const Result& start_element, Callback callback) override;
 
-    ElementFinderInfoProto GetLogInfo(
-        const ClientStatus& status) const override;
+    ElementFinderInfoProto GetLogInfo() const override;
+
+    // Returns the backend node id of the first result (if any), or 0.
+    int GetBackendNodeId() const override;
 
    private:
     // Returns the given status and no element. This expects an error status.
@@ -184,9 +189,6 @@ class ElementFinder : public WebControllerWorker {
 
     // Call |callback_| with the |status| and |result|.
     void SendResult(const ClientStatus& status, const Result& result);
-
-    // Update the log info with details about the current run.
-    void UpdateLogInfo(const ElementFinderInfoProto& element_finder_info);
 
     // Run the model annotation on all frames for the current |start_frame|.
     void RunAnnotateDomModel(content::RenderFrameHost* start_frame);
@@ -238,22 +240,25 @@ class ElementFinder : public WebControllerWorker {
 
     void Start(const Result& start_element, Callback callback) override;
 
-    ElementFinderInfoProto GetLogInfo(
-        const ClientStatus& status) const override;
+    ElementFinderInfoProto GetLogInfo() const override;
+
+    // Returns the backend node id of the result if the proto contains
+    // |semantic_information|, or 0.
+    int GetBackendNodeId() const override;
 
    private:
     // Returns the given status and no element. This expects an error status.
     void GiveUpWithError(const ClientStatus& status);
 
+    // Found a valid result.
+    void ResultFound(const std::string& object_id);
+
     // Builds a result from the current state of the finder and returns it with
     // an ok status.
-    void ResultFound(const std::string& object_id);
+    void BuildAndSendResult(const std::string& object_id);
 
     // Call |callback_| with the |status| and |result|.
     void SendResult(const ClientStatus& status, const Result& result);
-
-    // Update the log info with details about the current run.
-    void UpdateLogInfo(const ClientStatus& status, const Result& result);
 
     // Figures out what to do next given the current state.
     //
@@ -391,6 +396,11 @@ class ElementFinder : public WebControllerWorker {
         const DevtoolsClient::ReplyStatus& reply_status,
         std::unique_ptr<runtime::CallFunctionOnResult> result);
 
+    void OnDescribeNodeForId(
+        const std::string& object_id,
+        const DevtoolsClient::ReplyStatus& reply_status,
+        std::unique_ptr<dom::DescribeNodeResult> node_result);
+
     const raw_ptr<content::WebContents> web_contents_;
     const raw_ptr<DevtoolsClient> devtools_client_;
     const raw_ptr<const UserData> user_data_;
@@ -437,6 +447,13 @@ class ElementFinder : public WebControllerWorker {
 
     std::vector<JsObjectIdentifier> frame_stack_;
 
+    // The backend node id of the result. Only gets assigned if required, when
+    // this will be used for a comparison with the result of a semantic run.
+    absl::optional<int> backend_node_id_;
+
+    // The client status of the last run.
+    ClientStatus client_status_;
+
     // Finder for the target of the current proximity filter.
     std::unique_ptr<ElementFinder> proximity_target_filter_;
 
@@ -444,14 +461,16 @@ class ElementFinder : public WebControllerWorker {
   };
 
   // Updates |log_info_| and calls |callback_| with the |status| and |result|.
-  void SendResult(const ClientStatus& status,
-                  std::unique_ptr<Result> result,
-                  const ElementFinderInfoProto& element_finder_info);
+  void SendResult(const ClientStatus& status, std::unique_ptr<Result> result);
 
-  void UpdateLogInfo(const ClientStatus& status,
-                     const ElementFinderInfoProto& element_finder_info);
+  void UpdateLogInfo(const ClientStatus& status);
 
-  void OnResult(const ClientStatus& status, std::unique_ptr<Result> result);
+  // Adds a runner to the list and starts it from the |start_element|.
+  void AddAndStartRunner(const Result& start_element,
+                         std::unique_ptr<ElementFinderBase> runner);
+  void OnResult(size_t index,
+                const ClientStatus& status,
+                std::unique_ptr<Result> result);
 
   const raw_ptr<content::WebContents> web_contents_;
   const raw_ptr<DevtoolsClient> devtools_client_;
@@ -462,7 +481,9 @@ class ElementFinder : public WebControllerWorker {
   const ResultType result_type_;
   Callback callback_;
 
-  std::unique_ptr<ElementFinderBase> runner_;
+  std::vector<std::unique_ptr<ElementFinderBase>> runners_;
+  std::vector<std::pair<ClientStatus, std::unique_ptr<Result>>> results_;
+  size_t num_results_ = 0;
 
   base::WeakPtrFactory<ElementFinder> weak_ptr_factory_{this};
 };

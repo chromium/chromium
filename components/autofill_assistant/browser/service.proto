@@ -1671,6 +1671,9 @@ message SelectorProto {
     // If true, ignore the objective and treat it as a wildcard '*' when
     // matching.
     optional bool ignore_objective = 4;
+    // If true, executes CSS alongside, comparing the results at the end. Uses
+    // the CSS result going forward.
+    optional bool check_matches_css_element = 5;
   }
   optional SemanticInformation semantic_information = 11;
 
