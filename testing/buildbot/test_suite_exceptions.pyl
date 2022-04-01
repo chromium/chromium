@@ -2026,6 +2026,11 @@
           'shards': 10,
         },
       },
+      'linux-chromeos-dbg': {
+        'swarming': {
+          'shards': 6,
+        },
+      },
       'linux-code-coverage': {
         'swarming': {
           'shards': 10,
