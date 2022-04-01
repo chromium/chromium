@@ -11,7 +11,6 @@
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -108,7 +107,7 @@ class CORE_EXPORT AttributionSrcLoader
                      const absl::optional<String>& request_id);
 
   const Member<LocalFrame> local_frame_;
-  HeapHashSet<Member<ResourceClient>> resource_clients_;
+  size_t num_resource_clients_ = 0;
 };
 
 }  // namespace blink
