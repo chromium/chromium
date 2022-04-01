@@ -30,6 +30,9 @@ void AppFetcherManager::GetApps(ResultType result_type,
       DCHECK(recommended_arc_app_fetcher_);
       recommended_arc_app_fetcher_->GetApps(std::move(callback));
       return;
+    case ResultType::kGameSearchCatalog:
+      NOTREACHED();
+      return;
   }
 }
 

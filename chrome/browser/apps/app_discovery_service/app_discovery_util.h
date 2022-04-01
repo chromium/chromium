@@ -15,11 +15,13 @@ namespace apps {
 enum class ResultType {
   kTestType,
   kRecommendedArcApps,
+  kGameSearchCatalog,
 };
 
 enum class AppSource {
   kTestSource,
   kPlay,
+  kGames,
 };
 
 enum class DiscoveryError {

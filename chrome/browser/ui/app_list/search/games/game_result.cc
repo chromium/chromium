@@ -45,7 +45,7 @@ GURL LaunchUrlFromId(const std::string& id) {
   return GURL(base::StrCat({kLaunchUrlPrefix, id}));
 }
 
-std::u16string GameSourceDisplayString(apps::GameExtras::Source source) {
+std::u16string DisplayStringForGameSource(apps::GameExtras::Source source) {
   // TODO(crbug.com/1305880): Replace with display string once finalized.
   return u"[game source]";
 }
@@ -91,7 +91,7 @@ void GameResult::UpdateText(const apps::Result& game,
                             const std::u16string& query) {
   const apps::GameExtras* extras = game.GetSourceExtras()->AsGameExtras();
 
-  SetTitle(extras->GetTitle());
+  SetTitle(game.GetAppTitle());
   SetTitleTags(CalculateTags(query, title()));
 
   std::vector<ash::SearchResultTextItem> details;
@@ -100,7 +100,7 @@ void GameResult::UpdateText(const apps::Result& game,
   accessible_name.push_back(title());
   accessible_name.push_back(kA11yDelimiter);
 
-  std::u16string source = GameSourceDisplayString(extras->GetSource());
+  std::u16string source = DisplayStringForGameSource(extras->GetSource());
   details.push_back(CreateStringTextItem(source).SetElidable(false));
   accessible_name.push_back(source);
 

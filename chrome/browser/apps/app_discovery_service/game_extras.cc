@@ -5,41 +5,22 @@
 #include "chrome/browser/apps/app_discovery_service/game_extras.h"
 
 namespace apps {
-namespace {
-
-using Source = GameExtras::Source;
-
-}  // namespace
 
 GameExtras::GameExtras(
-    const std::string& id,
-    const std::u16string& title,
-    Source source,
     const absl::optional<std::vector<std::u16string>>& platforms,
+    Source source,
     const GURL& icon_url)
-    : id_(id),
-      title_(title),
-      source_(source),
-      platforms_(platforms),
-      icon_url_(icon_url) {}
+    : platforms_(platforms), source_(source), icon_url_(icon_url) {}
 
 GameExtras::~GameExtras() = default;
-
-const std::string& GameExtras::GetId() const {
-  return id_;
-}
-
-const std::u16string& GameExtras::GetTitle() const {
-  return title_;
-}
-
-Source GameExtras::GetSource() const {
-  return source_;
-}
 
 const absl::optional<std::vector<std::u16string>>& GameExtras::GetPlatforms()
     const {
   return platforms_;
+}
+
+GameExtras::Source GameExtras::GetSource() const {
+  return source_;
 }
 
 const GURL& GameExtras::GetIconUrl() const {

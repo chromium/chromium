@@ -16,37 +16,29 @@ namespace apps {
 
 class GameExtras : public SourceExtras {
  public:
-  // Which cloud gaming source a result comes from. These values are persisted
-  // to logs. Entries should not be renumbered or reused.
   enum class Source {
-    // TODO(crbug.com/1305880): Replace with real source.
-    kTemporarySource = 1,
+    // TODO(crbug.com/1305880): Rename to real source once finalized.
+    kTestSource,
   };
 
-  GameExtras(const std::string& id,
-             const std::u16string& title,
+  GameExtras(const absl::optional<std::vector<std::u16string>>& platforms,
              Source source,
-             const absl::optional<std::vector<std::u16string>>& platforms,
              const GURL& icon_url);
   GameExtras(const GameExtras&) = delete;
   GameExtras& operator=(const GameExtras&) = delete;
   ~GameExtras() override;
 
-  const std::string& GetId() const;
-  const std::u16string& GetTitle() const;
-  Source GetSource() const;
   const absl::optional<std::vector<std::u16string>>& GetPlatforms() const;
+  Source GetSource() const;
   const GURL& GetIconUrl() const;
 
   // Result::SourceExtras:
   GameExtras* AsGameExtras() override;
 
  private:
-  std::string id_;
-  std::u16string title_;
-  Source source_;
-  absl::optional<std::vector<std::u16string>> platforms_;
-  GURL icon_url_;
+  const absl::optional<std::vector<std::u16string>> platforms_;
+  const Source source_;
+  const GURL icon_url_;
 };
 
 }  // namespace apps

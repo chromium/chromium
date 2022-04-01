@@ -55,13 +55,12 @@ std::vector<std::pair<const apps::Result*, double>> SearchGames(
     const std::u16string& query,
     const GameProvider::GameIndex* index) {
   DCHECK(index);
-  TokenizedString tokenized_query(query, TokenizedString::Mode::kCamelCase);
 
+  TokenizedString tokenized_query(query, TokenizedString::Mode::kCamelCase);
   std::vector<std::pair<const apps::Result*, double>> matches;
   for (const auto& game : *index) {
-    const std::u16string& title =
-        game.GetSourceExtras()->AsGameExtras()->GetTitle();
-    double relevance = CalculateTitleRelevance(tokenized_query, title);
+    double relevance =
+        CalculateTitleRelevance(tokenized_query, game.GetAppTitle());
     if (relevance > kRelevanceThreshold) {
       matches.push_back(std::make_pair(&game, relevance));
     }
@@ -94,7 +93,7 @@ ash::AppListSearchResultType GameProvider::ResultType() const {
 
 void GameProvider::UpdateIndex() {
   // TODO(crbug.com/1305880): Replace with kGames once added.
-  app_discovery_service_->GetApps(apps::ResultType::kTestType,
+  app_discovery_service_->GetApps(apps::ResultType::kGameSearchCatalog,
                                   base::BindOnce(&GameProvider::OnIndexUpdated,
                                                  weak_factory_.GetWeakPtr()));
 }

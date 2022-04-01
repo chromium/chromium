@@ -39,10 +39,10 @@ TEST_F(GameResultTest, Basic) {
       apps::AppDiscoveryServiceFactory::GetForProfile(profile_.get());
 
   apps::Result apps_result(
-      apps::AppSource::kTestSource, "12345", u"Title",
+      apps::AppSource::kGames, "12345", u"Title",
       std::make_unique<apps::GameExtras>(
-          "12345", u"Title", apps::GameExtras::Source::kTemporarySource,
           absl::make_optional(std::vector<std::u16string>({u"A", u"B", u"C"})),
+          apps::GameExtras::Source::kTestSource,
           GURL("https://icon-url.com/")));
 
   GameResult result(profile_.get(), &list_controller_, app_discovery_service,

@@ -31,10 +31,10 @@ MATCHER_P(Title, title, "") {
 
 apps::Result MakeAppsResult(const std::u16string& title) {
   return apps::Result(
-      apps::AppSource::kTestSource, "12345", title,
+      apps::AppSource::kGames, "12345", title,
       std::make_unique<apps::GameExtras>(
-          "12345", title, apps::GameExtras::Source::kTemporarySource,
           absl::make_optional(std::vector<std::u16string>({u"A", u"B", u"C"})),
+          apps::GameExtras::Source::kTestSource,
           GURL("https://icon-url.com/")));
 }
 
