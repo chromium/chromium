@@ -138,7 +138,7 @@ Color SelectionBackgroundColor(const Document& document,
                                Node* node,
                                Color text_color) {
   const Color color = HighlightPaintingUtils::HighlightBackgroundColor(
-      document, style, node, kPseudoIdSelection);
+      document, style, node, absl::nullopt, kPseudoIdSelection);
   if (!color.Alpha())
     return Color();
 
@@ -498,7 +498,7 @@ void NGHighlightPainter::Paint(Phase phase) {
         if (phase == kBackground) {
           Color background_color =
               HighlightPaintingUtils::HighlightBackgroundColor(
-                  document, style_, node_,
+                  document, style_, node_, absl::nullopt,
                   highlight_pseudo_marker.GetPseudoId(),
                   highlight_pseudo_marker.GetPseudoArgument());
 
@@ -600,6 +600,7 @@ void NGHighlightPainter::PaintHighlightOverlays(
 
   // For each overlay, paint its backgrounds and shadows over every highlighted
   // range in full.
+  TextPaintStyle previous_layer_text_style = originating_text_style;
   for (const HighlightLayer& layer : layers_) {
     if (layer.type == HighlightLayerType::kOriginating ||
         layer.type == HighlightLayerType::kSelection)
@@ -608,8 +609,9 @@ void NGHighlightPainter::PaintHighlightOverlays(
     const DocumentMarkerVector* markers =
         SelectMarkers(layer, custom_, grammar_, spelling_, target_);
     TextPaintStyle text_style = HighlightPaintingUtils::HighlightPaintingStyle(
-        document, style_, node_, layer.PseudoId(), originating_text_style,
+        document, style_, node_, layer.PseudoId(), previous_layer_text_style,
         paint_info_, layer.PseudoArgument());
+    previous_layer_text_style = text_style;
 
     for (const auto& marker : *markers) {
       if (layer.type == HighlightLayerType::kCustom) {
@@ -631,7 +633,8 @@ void NGHighlightPainter::PaintHighlightOverlays(
 
       const StringView text = cursor_.CurrentText();
       Color background_color = HighlightPaintingUtils::HighlightBackgroundColor(
-          document, style_, node_, layer.PseudoId(), layer.PseudoArgument());
+          document, style_, node_, text_style.fill_color, layer.PseudoId(),
+          layer.PseudoArgument());
 
       // TODO(dazabani@igalia.com) paint rects pixel-snapped in physical space,
       // not writing-mode space (SelectionPaintState::PaintSelectionBackground)
@@ -657,14 +660,16 @@ void NGHighlightPainter::PaintHighlightOverlays(
 
   // For each overlay, paint the text proper over every highlighted range,
   // except any parts for which we’re not the topmost active highlight.
+  previous_layer_text_style = originating_text_style;
   for (const HighlightLayer& layer : layers_) {
     if (layer.type == HighlightLayerType::kOriginating ||
         layer.type == HighlightLayerType::kSelection)
       continue;
 
     TextPaintStyle text_style = HighlightPaintingUtils::HighlightPaintingStyle(
-        document, style_, node_, layer.PseudoId(), originating_text_style,
+        document, style_, node_, layer.PseudoId(), previous_layer_text_style,
         paint_info_, layer.PseudoArgument());
+    previous_layer_text_style = text_style;
 
     for (const HighlightPart& part : Parts()) {
       if (part.layer != layer)

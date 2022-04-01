@@ -60,14 +60,14 @@ TEST_F(HighlightPaintingUtilsTest, CachedPseudoStylesWindowInactive) {
   EXPECT_FALSE(GetPage().IsActive());
   EXPECT_EQ(Color(255, 0, 0), HighlightPaintingUtils::HighlightForegroundColor(
                                   GetDocument(), text_style, text_node,
-                                  kPseudoIdSelection, flags));
+                                  Color::kBlack, kPseudoIdSelection, flags));
 
   // Focus the window.
   GetPage().SetActive(true);
   Compositor().BeginFrame();
   EXPECT_EQ(Color(0, 128, 0), HighlightPaintingUtils::HighlightForegroundColor(
                                   GetDocument(), text_style, text_node,
-                                  kPseudoIdSelection, flags));
+                                  Color::kBlack, kPseudoIdSelection, flags));
   const ComputedStyle* active_style =
       body_style.GetCachedPseudoElementStyle(kPseudoIdSelection);
   EXPECT_TRUE(active_style);
@@ -77,7 +77,7 @@ TEST_F(HighlightPaintingUtilsTest, CachedPseudoStylesWindowInactive) {
   Compositor().BeginFrame();
   EXPECT_EQ(Color(255, 0, 0), HighlightPaintingUtils::HighlightForegroundColor(
                                   GetDocument(), text_style, text_node,
-                                  kPseudoIdSelection, flags));
+                                  Color::kBlack, kPseudoIdSelection, flags));
   EXPECT_EQ(active_style,
             body_style.GetCachedPseudoElementStyle(kPseudoIdSelection));
 }
@@ -122,14 +122,14 @@ TEST_F(HighlightPaintingUtilsTest, CachedPseudoStylesNoWindowInactive) {
   EXPECT_FALSE(GetPage().IsActive());
   EXPECT_EQ(Color(0, 128, 0), HighlightPaintingUtils::HighlightForegroundColor(
                                   GetDocument(), text_style, text_node,
-                                  kPseudoIdSelection, flags));
+                                  Color::kBlack, kPseudoIdSelection, flags));
 
   // Focus the window.
   GetPage().SetActive(true);
   Compositor().BeginFrame();
   EXPECT_EQ(Color(0, 128, 0), HighlightPaintingUtils::HighlightForegroundColor(
                                   GetDocument(), text_style, text_node,
-                                  kPseudoIdSelection, flags));
+                                  Color::kBlack, kPseudoIdSelection, flags));
   EXPECT_EQ(active_style,
             body_style.GetCachedPseudoElementStyle(kPseudoIdSelection));
 
@@ -138,7 +138,7 @@ TEST_F(HighlightPaintingUtilsTest, CachedPseudoStylesNoWindowInactive) {
   Compositor().BeginFrame();
   EXPECT_EQ(Color(0, 128, 0), HighlightPaintingUtils::HighlightForegroundColor(
                                   GetDocument(), text_style, text_node,
-                                  kPseudoIdSelection, flags));
+                                  Color::kBlack, kPseudoIdSelection, flags));
   EXPECT_EQ(active_style,
             body_style.GetCachedPseudoElementStyle(kPseudoIdSelection));
 }

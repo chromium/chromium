@@ -844,7 +844,7 @@ PhysicalRect InlineTextBoxPainter::PaintSelection(
   auto layout_item = inline_text_box_.GetLineLayoutItem();
   Color c = HighlightPaintingUtils::HighlightBackgroundColor(
       layout_item.GetDocument(), layout_item.StyleRef(), layout_item.GetNode(),
-      kPseudoIdSelection);
+      absl::nullopt, kPseudoIdSelection);
   if (!c.Alpha())
     return PhysicalRect();
 
@@ -975,7 +975,8 @@ void InlineTextBoxPainter::PaintTextMarkerBackground(
     auto layout_item = inline_text_box_.GetLineLayoutItem();
     color = HighlightPaintingUtils::HighlightBackgroundColor(
         layout_item.GetDocument(), layout_item.StyleRef(),
-        layout_item.GetNode(), highlight_pseudo_marker.GetPseudoId(),
+        layout_item.GetNode(), absl::nullopt,
+        highlight_pseudo_marker.GetPseudoId(),
         highlight_pseudo_marker.GetPseudoArgument());
   }
   GraphicsContext& context = paint_info.context;

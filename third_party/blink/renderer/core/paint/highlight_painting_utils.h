@@ -33,12 +33,14 @@ class CORE_EXPORT HighlightPaintingUtils {
       const Document&,
       const ComputedStyle&,
       Node*,
+      absl::optional<Color> previous_layer_color,
       PseudoId,
       const AtomicString& pseudo_argument = g_null_atom);
   static Color HighlightForegroundColor(
       const Document&,
       const ComputedStyle&,
       Node*,
+      Color previous_layer_color,
       PseudoId,
       PaintFlags,
       const AtomicString& pseudo_argument = g_null_atom);
@@ -46,6 +48,7 @@ class CORE_EXPORT HighlightPaintingUtils {
       const Document&,
       const ComputedStyle&,
       Node*,
+      Color previous_layer_color,
       PseudoId,
       PaintFlags,
       const AtomicString& pseudo_argument = g_null_atom);

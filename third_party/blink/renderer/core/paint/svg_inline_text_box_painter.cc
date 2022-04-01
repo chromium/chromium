@@ -252,7 +252,7 @@ void SVGInlineTextBoxPainter::PaintSelectionBackground(
 
   Color background_color = HighlightPaintingUtils::HighlightBackgroundColor(
       layout_item.GetDocument(), layout_item.StyleRef(), layout_item.GetNode(),
-      kPseudoIdSelection);
+      absl::nullopt, kPseudoIdSelection);
   if (!background_color.Alpha())
     return;
 
