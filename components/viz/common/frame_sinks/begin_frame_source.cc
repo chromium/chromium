@@ -400,7 +400,12 @@ void DelayBasedBeginFrameSource::SetDynamicBeginFrameDeadlineOffsetSource(
 void DelayBasedBeginFrameSource::OnTimerTick() {
   if (RequestCallbackOnGpuAvailable())
     return;
-  last_begin_frame_args_ = CreateBeginFrameArgs(time_source_->LastTickTime());
+  // In case of gpu back pressure LastTickTime can fall behind, and in case of
+  // a change in vsync using (NextTickTime-interval) could be before
+  // LastTickTime, so should use the latest of the two.
+  last_begin_frame_args_ = CreateBeginFrameArgs(
+      std::max(time_source_->LastTickTime(),
+               time_source_->NextTickTime() - time_source_->Interval()));
   TRACE_EVENT2(
       "viz", "DelayBasedBeginFrameSource::OnTimerTick", "frame_time",
       last_begin_frame_args_.frame_time.since_origin().InMicroseconds(),

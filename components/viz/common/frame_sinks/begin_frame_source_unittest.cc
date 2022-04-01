@@ -567,6 +567,28 @@ TEST_F(DelayBasedBeginFrameSourceTest, VSyncChangeTimebaseBetweenTicks) {
   task_runner_->FastForwardTo(TicksFromMicroseconds(70000));
 }
 
+TEST_F(DelayBasedBeginFrameSourceTest, VSyncSkipped) {
+  EXPECT_BEGIN_FRAME_SOURCE_PAUSED(*obs_, false);
+  EXPECT_BEGIN_FRAME_USED_MISSED(*obs_, source_->source_id(), 1, 0, 10000,
+                                 10000);
+  source_->AddObserver(obs_.get());
+
+  EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 2, 10000, 20000, 10000);
+  EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 3, 20000, 30000, 10000);
+  EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 4, 30000, 40000, 10000);
+  task_runner_->FastForwardTo(TicksFromMicroseconds(30000));
+
+  // Advancing tick time without creating begin frames.
+  task_runner_->AdvanceMockTickClock(base::Microseconds(40000));
+  source_->OnUpdateVSyncParameters(TicksFromMicroseconds(40000),
+                                   base::Microseconds(11000));
+  // By advancing tick time to 40000, we would be skipping sequence_number 5 at
+  // 40000 and sequence_number 6 at 51000.
+  EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 7, 62000, 73000, 11000);
+  EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 8, 73000, 84000, 11000);
+  task_runner_->FastForwardTo(TicksFromMicroseconds(75000));
+}
+
 TEST_F(DelayBasedBeginFrameSourceTest, MultipleObservers) {
   NiceMock<MockBeginFrameObserver> obs1, obs2;
 
