@@ -52,11 +52,17 @@ class _Class:
 
 def _DisassembleApk(mapping, apk_path):
   r8_path = path_util.GetR8Path()
+  r8_output = None
   cmd = [
       'java', '-cp', r8_path, 'com.android.tools.r8.Disassemble', '--pg-map',
       mapping, apk_path
   ]
-  return subprocess.check_output(cmd, encoding='utf8')
+  try:
+    r8_output = subprocess.check_output(cmd, encoding='utf8')
+  except subprocess.CalledProcessError:
+    logging.debug('Running R8 failed on APK: %s', apk_path)
+
+  return r8_output
 
 
 def _ParseDisassembly(disassembly):
@@ -158,16 +164,19 @@ def _CaptureDisassemblyForSymbol(symbol, apk_to_disassembly, apk_dir,
   cache_key = (apk_file_path, split_name)
   disassembly = apk_to_disassembly.get(cache_key)
   if disassembly is None:
+    r8_output = None
     if split_name:
       logging.debug('Running R8 on APK: %s', split_name)
       with zip_util.UnzipToTemp(apk_file_path,
                                 f'splits/{split_name}.apk') as split_path:
         r8_output = _DisassembleApk(proguard_mapping_file_path, split_path)
-    else:
+    elif apk_file_path.endswith('.apk'):
       logging.debug('Running R8 on APK: %s', apk_file_name)
       r8_output = _DisassembleApk(proguard_mapping_file_path, apk_file_path)
     obfuscated_to_deobfuscated_class_names = deobfuscation_map.get(
         proguard_mapping_file_path)
+    if r8_output is None:
+      return None
     if obfuscated_to_deobfuscated_class_names is None:
       logging.debug('Parsing mapping file %s', proguard_mapping_file_path)
       with open(proguard_mapping_file_path, 'r') as fh:
