@@ -53,16 +53,11 @@ Visually such settings are typically grayed out to prevent confusing the user
 but nothing prevents C++ from setting a user pref that doesn't take effect.
 
 ## Deleting an old pref
-Deleted prefs should be left in a delete-self state for 1 year in an attempt to
+_Most_ deleted prefs should be left in a delete-self state for 1 year to help
 avoid leaving unused text in JSON files storing User Prefs. To avoid leaving a
 bunch of TODOs and pinging owners to cleanup, you will be asked to follow-up
 your CL with another CL that removes 1+ year old deletions; someone else will
-cleanup after you in 1 year.
-
-0. If the pref is also a policy, you will need to mark it deprecated as
-   described in
-   [add_new_policy.md](https://chromium.googlesource.com/chromium/src/+/main/docs/enterprise/add_new_policy.md#deprecating-a-policy).
-   Deleting the pref logic (steps below) will need to wait a few milestones.
+clean up after you in 1 year.
 
 1. Move the pref name declaration to the anonymous namespace of
    [chrome/browser/prefs/browser_prefs.cc](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/prefs/browser_prefs.cc)
@@ -76,6 +71,16 @@ cleanup after you in 1 year.
 1. Delete the old code.
 1. In a follow-up CL, delete any 1+ year old `ClearPref()` calls in
    browser_prefs.cc; someone else will clean up after you in 1 year.
+
+### Deleting an old pref exposed by a policy
+If the pref is exposed via policy, you will need to mark the policy as
+deprecated by following the steps in [add_new_policy.md](https://chromium.googlesource.com/chromium/src/+/main/docs/enterprise/add_new_policy.md#deprecating-a-policy).
+Deleting the pref logic (steps above) will then need to wait a few milestones.
+
+Note: If the pref was _only_ exposed as a policy in the Managed Prefs (with no
+UI to allow an end-user to adjust the pref) then there is no need to set the
+pref to a delete-self state using the steps above, because the pref will
+never have been written to User Prefs JSON.
 
 ## Migrating a pref
 Instead of merely deleting a pref you might want to run migration code from an
