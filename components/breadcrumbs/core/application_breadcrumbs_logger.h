@@ -14,7 +14,6 @@
 #include "base/metrics/user_metrics.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "components/breadcrumbs/core/breadcrumb_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeTicks;
@@ -28,17 +27,8 @@ class BreadcrumbPersistentStorageManager;
 // BreadcrumbManager passed in the constructor.
 class ApplicationBreadcrumbsLogger {
  public:
-  // Breadcrumbs will be stored in a file in |storage_dir|. If
-  // |old_breadcrumbs_file_path| and |old_breadcrumbs_temp_file_path| are
-  // provided, the files at those paths will be migrated to the new filenames
-  // for breadcrumb files (only needed on iOS, which previously used different
-  // filenames).
-  explicit ApplicationBreadcrumbsLogger(
-      const base::FilePath& storage_dir,
-      const absl::optional<base::FilePath>& old_breadcrumbs_file_path =
-          absl::nullopt,
-      const absl::optional<base::FilePath>& old_breadcrumbs_temp_file_path =
-          absl::nullopt);
+  // Breadcrumbs will be stored in a file in |storage_dir|.
+  explicit ApplicationBreadcrumbsLogger(const base::FilePath& storage_dir);
   ApplicationBreadcrumbsLogger(const ApplicationBreadcrumbsLogger&) = delete;
   ~ApplicationBreadcrumbsLogger();
 

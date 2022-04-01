@@ -33,17 +33,8 @@ constexpr size_t kPersistedFilesizeInBytes = kMaxDataLength * 2;
 // application sessions.
 class BreadcrumbPersistentStorageManager : public BreadcrumbManagerObserver {
  public:
-  // Breadcrumbs will be stored in a file in |directory|. If
-  // |old_breadcrumbs_file_path| and |old_breadcrumbs_temp_file_path| are
-  // provided, the files at those paths will be migrated to the new filenames
-  // for breadcrumb files (only needed on iOS, which previously used different
-  // filenames).
-  explicit BreadcrumbPersistentStorageManager(
-      const base::FilePath& directory,
-      const absl::optional<base::FilePath>& old_breadcrumbs_file_path =
-          absl::nullopt,
-      const absl::optional<base::FilePath>& old_breadcrumbs_temp_file_path =
-          absl::nullopt);
+  // Breadcrumbs will be stored in a file in |directory|.
+  explicit BreadcrumbPersistentStorageManager(const base::FilePath& directory);
   ~BreadcrumbPersistentStorageManager() override;
   BreadcrumbPersistentStorageManager(
       const BreadcrumbPersistentStorageManager&) = delete;

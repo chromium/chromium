@@ -118,25 +118,10 @@ size_t DoGetStoredEventsLength(const base::FilePath& file_path) {
   return strlen(persisted_events.c_str());
 }
 
-// Renames breadcrumb files with the old filenames "iOS Breadcrumbs.*" to the
-// new filenames "Breadcrumbs.*", if present.
-void MigrateOldBreadcrumbFiles(
-    const base::FilePath& old_breadcrumbs_file_path,
-    const base::FilePath& old_breadcrumbs_temp_file_path,
-    const base::FilePath& breadcrumbs_file_path,
-    const base::FilePath& breadcrumbs_temp_file_path) {
-  if (base::PathExists(old_breadcrumbs_file_path))
-    base::Move(old_breadcrumbs_file_path, breadcrumbs_file_path);
-  if (base::PathExists(old_breadcrumbs_temp_file_path))
-    base::Move(old_breadcrumbs_temp_file_path, breadcrumbs_temp_file_path);
-}
-
 }  // namespace
 
 BreadcrumbPersistentStorageManager::BreadcrumbPersistentStorageManager(
-    const base::FilePath& directory,
-    const absl::optional<base::FilePath>& old_breadcrumbs_file_path,
-    const absl::optional<base::FilePath>& old_breadcrumbs_temp_file_path)
+    const base::FilePath& directory)
     :  // Ensure first event will not be delayed by initializing with a time in
        // the past.
       last_written_time_(base::TimeTicks::Now() - kMinDelayBetweenWrites),
@@ -147,17 +132,6 @@ BreadcrumbPersistentStorageManager::BreadcrumbPersistentStorageManager(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       weak_ptr_factory_(this) {
-  // Rename breadcrumb files using the old filenames, if present. This must
-  // happen before the files are used, to ensure that old breadcrumbs are found.
-  // TODO(crbug.com/1187988): remove this and its unit test.
-  if (old_breadcrumbs_file_path && old_breadcrumbs_temp_file_path) {
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&MigrateOldBreadcrumbFiles,
-                       old_breadcrumbs_file_path.value(),
-                       old_breadcrumbs_temp_file_path.value(),
-                       breadcrumbs_file_path_, breadcrumbs_temp_file_path_));
-  }
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&DoGetStoredEventsLength, breadcrumbs_file_path_),

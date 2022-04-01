@@ -29,8 +29,6 @@ source_set("breadcrumbs") {
     "breadcrumb_manager_keyed_service_factory.h",
     "breadcrumb_manager_tab_helper.h",
     "breadcrumb_manager_tab_helper.mm",
-    "breadcrumb_persistent_storage_util.cc",
-    "breadcrumb_persistent_storage_util.h",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

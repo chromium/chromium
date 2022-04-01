@@ -15,9 +15,7 @@
 namespace breadcrumbs {
 
 ApplicationBreadcrumbsLogger::ApplicationBreadcrumbsLogger(
-    const base::FilePath& storage_dir,
-    const absl::optional<base::FilePath>& old_breadcrumbs_file_path,
-    const absl::optional<base::FilePath>& old_breadcrumbs_temp_file_path)
+    const base::FilePath& storage_dir)
     : user_action_callback_(
           base::BindRepeating(&ApplicationBreadcrumbsLogger::OnUserAction,
                               base::Unretained(this))),
@@ -26,10 +24,7 @@ ApplicationBreadcrumbsLogger::ApplicationBreadcrumbsLogger(
           base::BindRepeating(&ApplicationBreadcrumbsLogger::OnMemoryPressure,
                               base::Unretained(this)))),
       persistent_storage_manager_(
-          std::make_unique<BreadcrumbPersistentStorageManager>(
-              storage_dir,
-              old_breadcrumbs_file_path,
-              old_breadcrumbs_temp_file_path)) {
+          std::make_unique<BreadcrumbPersistentStorageManager>(storage_dir)) {
   base::AddActionCallback(user_action_callback_);
 
   // Start crash reporter listening for breadcrumbs logged to

@@ -61,13 +61,6 @@ bool ValidatePersistedEvents(const std::string& last_logged_event,
          static_cast<int>(persisted_events.size());
 }
 
-// Creates and returns a new file at `path`, overwriting any existing file.
-base::File CreateFile(const base::FilePath& path) {
-  constexpr int kFlags =
-      base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE;
-  return base::File(path, kFlags);
-}
-
 }  // namespace
 
 class BreadcrumbPersistentStorageManagerTest : public PlatformTest {
@@ -204,7 +197,8 @@ TEST_F(BreadcrumbPersistentStorageManagerTest,
        GetStoredEventsAfterFilesizeReduction) {
   const base::FilePath breadcrumbs_file_path =
       GetBreadcrumbPersistentStorageFilePath(scoped_temp_dir_.GetPath());
-  base::File file = CreateFile(breadcrumbs_file_path);
+  base::File file(breadcrumbs_file_path,
+                  base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
   ASSERT_TRUE(file.IsValid());
 
   // Simulate an old persisted file larger than the current one.
@@ -224,51 +218,6 @@ TEST_F(BreadcrumbPersistentStorageManagerTest,
   const auto events = GetPersistedEvents();
   EXPECT_GT(events.size(), 1ul);
   EXPECT_LT(events.size(), written_events);
-}
-
-using BreadcrumbPersistentStorageManagerFilenameTest = PlatformTest;
-
-TEST_F(BreadcrumbPersistentStorageManagerFilenameTest,
-       MigrateOldBreadcrumbFiles) {
-  base::test::TaskEnvironment task_env;
-  base::ScopedTempDir scoped_temp_dir;
-  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
-  const base::FilePath scoped_temp_dir_path = scoped_temp_dir.GetPath();
-
-  // Create breadcrumb file and temp file with old filenames.
-  const base::FilePath old_breadcrumb_file_path =
-      scoped_temp_dir_path.Append(FILE_PATH_LITERAL("old breadcrumb file"));
-  const base::FilePath old_temp_file_path =
-      scoped_temp_dir_path.Append(FILE_PATH_LITERAL("old temp file"));
-  base::File old_breadcrumb_file = CreateFile(old_breadcrumb_file_path);
-  base::File old_temp_file = CreateFile(old_temp_file_path);
-  ASSERT_TRUE(old_breadcrumb_file.IsValid());
-  ASSERT_TRUE(old_temp_file.IsValid());
-  old_temp_file.Close();
-
-  // Write some test data to the breadcrumb file.
-  const std::string test_data = "breadcrumb file test data";
-  ASSERT_NE(-1,
-            old_breadcrumb_file.Write(0, test_data.c_str(), test_data.size()));
-  old_breadcrumb_file.Close();
-
-  BreadcrumbPersistentStorageManager persistent_storage(
-      scoped_temp_dir_path, old_breadcrumb_file_path, old_temp_file_path);
-  task_env.RunUntilIdle();
-
-  // The old files should have been removed, and the new breadcrumb file
-  // should be present.
-  EXPECT_FALSE(base::PathExists(old_breadcrumb_file_path));
-  EXPECT_FALSE(base::PathExists(old_temp_file_path));
-  base::File new_file(
-      GetBreadcrumbPersistentStorageFilePath(scoped_temp_dir_path),
-      base::File::FLAG_OPEN | base::File::FLAG_READ);
-  EXPECT_TRUE(new_file.IsValid());
-  const size_t test_data_size = test_data.size();
-  char new_file_data[test_data_size];
-  EXPECT_EQ(static_cast<int>(test_data_size),
-            new_file.Read(0, new_file_data, test_data_size));
-  EXPECT_EQ(test_data, std::string(new_file_data, test_data_size));
 }
 
 }  // namespace breadcrumbs

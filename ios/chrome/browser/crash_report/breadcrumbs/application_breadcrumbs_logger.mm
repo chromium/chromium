@@ -7,7 +7,6 @@
 #include <string>
 
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_persistent_storage_util.h"
 #import "ios/chrome/browser/crash_report/crash_report_helper.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -18,12 +17,7 @@ const char kBreadcrumbOrientation[] = "Orientation";
 
 ApplicationBreadcrumbsLogger::ApplicationBreadcrumbsLogger(
     const base::FilePath& storage_dir)
-    : breadcrumbs::ApplicationBreadcrumbsLogger(
-          storage_dir,
-          breadcrumb_persistent_storage_util::
-              GetOldBreadcrumbPersistentStorageFilePath(storage_dir),
-          breadcrumb_persistent_storage_util::
-              GetOldBreadcrumbPersistentStorageTempFilePath(storage_dir)) {
+    : breadcrumbs::ApplicationBreadcrumbsLogger(storage_dir) {
   orientation_observer_ = [NSNotificationCenter.defaultCenter
       addObserverForName:UIDeviceOrientationDidChangeNotification
                   object:nil
