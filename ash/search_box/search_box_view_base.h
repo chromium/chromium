@@ -126,6 +126,9 @@ class SearchBoxViewBase : public views::View,
   // Called when the search box active state changes.
   virtual void OnSearchBoxActiveChanged(bool active);
 
+  // Updates the painting if the focus moves to or from the search box.
+  virtual void UpdateSearchBoxFocusPaint();
+
  protected:
   // Fires query change notification.
   void NotifyQueryChanged();
@@ -194,9 +197,6 @@ class SearchBoxViewBase : public views::View,
 
  private:
   void OnEnabledChanged();
-
-  // Gets the search box background. May return null.
-  views::Background* GetSearchBoxBackground();
 
   SearchBoxViewDelegate* const delegate_;
 

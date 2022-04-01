@@ -834,6 +834,10 @@ void AppListControllerImpl::OnSplitViewStateChanged(
 }
 
 void AppListControllerImpl::OnTabletModeStarted() {
+  // Reset the keyboard traversal mode to prevent using the value saved in
+  // clamshell mode.
+  SetKeyboardTraversalMode(false);
+
   const AppListView* app_list_view = fullscreen_presenter_->GetView();
   // In tablet mode shelf orientation is always "bottom". Dismiss app list if
   // switching to tablet mode from side shelf app list, to ensure the app list
@@ -871,6 +875,10 @@ void AppListControllerImpl::OnTabletModeStarted() {
 }
 
 void AppListControllerImpl::OnTabletModeEnded() {
+  // Reset the keyboard traversal mode to prevent using the value saved last
+  // time in tablet mode.
+  SetKeyboardTraversalMode(false);
+
   aura::Window* window = fullscreen_presenter_->GetWindow();
   base::AutoReset<bool> auto_reset(
       &should_dismiss_immediately_,
@@ -1129,7 +1137,9 @@ void AppListControllerImpl::SetKeyboardTraversalMode(bool engaged) {
   // As such, the |SearchBoxView| must be told to repaint directly.
   if (focused_view ==
       fullscreen_presenter_->GetView()->search_box_view()->search_box()) {
-    fullscreen_presenter_->GetView()->search_box_view()->SchedulePaint();
+    SearchBoxView* search_box_view =
+        fullscreen_presenter_->GetView()->search_box_view();
+    search_box_view->UpdateSearchBoxFocusPaint();
   } else {
     // Ensure that when an app list item's focus ring is triggered by key
     // events, the item is selected.

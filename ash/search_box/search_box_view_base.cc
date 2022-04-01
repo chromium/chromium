@@ -392,7 +392,7 @@ void SearchBoxViewBase::Init(const InitParams& params) {
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetMasksToBounds(true);
   if (params.create_background) {
-    content_container_->SetBackground(std::make_unique<SearchBoxBackground>(
+    SetBackground(std::make_unique<SearchBoxBackground>(
         kSearchBoxBorderCornerRadius,
         AppListColorProvider::Get()->GetSearchBoxBackgroundColor()));
   }
@@ -467,6 +467,7 @@ void SearchBoxViewBase::SetSearchBoxActive(bool active,
   NotifyActiveChanged();
 
   content_container_->Layout();
+  UpdateSearchBoxFocusPaint();
   SchedulePaint();
 }
 
@@ -514,6 +515,7 @@ void SearchBoxViewBase::NotifyGestureEvent() {
 void SearchBoxViewBase::OnSearchBoxFocusedChanged() {
   UpdateSearchBoxBorder();
   Layout();
+  UpdateSearchBoxFocusPaint();
   SchedulePaint();
 }
 
@@ -541,6 +543,8 @@ void SearchBoxViewBase::ClearSearch() {
 }
 
 void SearchBoxViewBase::OnSearchBoxActiveChanged(bool active) {}
+
+void SearchBoxViewBase::UpdateSearchBoxFocusPaint() {}
 
 void SearchBoxViewBase::NotifyQueryChanged() {
   DCHECK(delegate_);
@@ -634,10 +638,9 @@ bool SearchBoxViewBase::HandleGestureEvent(
 }
 
 void SearchBoxViewBase::SetSearchBoxBackgroundCornerRadius(int corner_radius) {
-  auto* background =
-      static_cast<SearchBoxBackground*>(GetSearchBoxBackground());
-  if (background)
-    background->SetCornerRadius(corner_radius);
+  auto* search_box_background = static_cast<SearchBoxBackground*>(background());
+  if (search_box_background)
+    search_box_background->SetCornerRadius(corner_radius);
 }
 
 void SearchBoxViewBase::SetSearchIconImage(gfx::ImageSkia image) {
@@ -673,13 +676,9 @@ void SearchBoxViewBase::HandleSearchBoxEvent(ui::LocatedEvent* located_event) {
 
 // TODO(crbug.com/755219): Unify this with SetBackgroundColor.
 void SearchBoxViewBase::UpdateBackgroundColor(SkColor color) {
-  auto* background = GetSearchBoxBackground();
-  if (background)
-    background->SetNativeControlColor(color);
-}
-
-views::Background* SearchBoxViewBase::GetSearchBoxBackground() {
-  return content_container_->background();
+  auto* search_box_background = background();
+  if (search_box_background)
+    search_box_background->SetNativeControlColor(color);
 }
 
 }  // namespace ash

@@ -725,6 +725,7 @@ void AppListView::InitChildWidget() {
   views::Widget* search_box_widget = new views::Widget;
   search_box_widget->Init(std::move(search_box_widget_params));
   search_box_widget->SetContentsView(search_box_view_);
+  search_box_view_->MaybeCreateFocusRing();
   DCHECK_EQ(search_box_widget, search_box_view_->GetWidget());
 
   // Assign an accessibility role to the native window of |search_box_widget|,
