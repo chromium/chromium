@@ -130,6 +130,7 @@ css_wrapper_files = [
 ]
 
 static_resource_files = [
+  "hub_icon_192.png",
   "icon_192.png",
 
   "common/ambient_mode_disabled.svg",

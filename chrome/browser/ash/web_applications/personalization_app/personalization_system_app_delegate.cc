@@ -36,10 +36,13 @@ PersonalizationSystemAppDelegate::GetWebAppInfo() const {
           ? l10n_util::GetStringUTF16(
                 IDS_PERSONALIZATION_APP_PERSONALIZATION_HUB_TITLE)
           : l10n_util::GetStringUTF16(IDS_PERSONALIZATION_APP_WALLPAPER_LABEL);
-  web_app::CreateIconInfoForSystemWebApp(
-      info->start_url,
-      {{"app_icon_192.png", 192, IDR_ASH_PERSONALIZATION_APP_ICON_192_PNG}},
-      *info);
+  std::initializer_list<web_app::IconResourceInfo> icons = {
+      {"app_icon_192.png", 192, IDR_ASH_PERSONALIZATION_APP_ICON_192_PNG}};
+  if (ash::features::IsPersonalizationHubEnabled()) {
+    icons = {{"app_hub_icon_192.png", 192,
+              IDR_ASH_PERSONALIZATION_APP_HUB_ICON_192_PNG}};
+  }
+  web_app::CreateIconInfoForSystemWebApp(info->start_url, icons, *info);
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
 

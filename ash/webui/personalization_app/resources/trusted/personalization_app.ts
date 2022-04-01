@@ -103,6 +103,10 @@ export {WallpaperPreview} from './wallpaper/wallpaper_preview_element.js';
 export {WallpaperSelected} from './wallpaper/wallpaper_selected_element.js';
 
 PersonalizationStore.getInstance().init(emptyState());
+const link = document.querySelector('link[rel=\'icon\']') as HTMLLinkElement;
+if (loadTimeData.getBoolean('isPersonalizationHubEnabled')) {
+  link!.href = '/hub_icon_192.png';
+}
 document.title = loadTimeData.getBoolean('isPersonalizationHubEnabled') ?
     loadTimeData.getString('personalizationTitle') :
     loadTimeData.getString('wallpaperLabel');
