@@ -132,10 +132,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android-cronet-kitkat-arm-rel",
-)
-
-try_.builder(
     name = "android-cronet-x86-dbg",
 )
 
@@ -171,6 +167,10 @@ try_.builder(
 
 try_.builder(
     name = "android-cronet-x86-dbg-pie-tests",
+)
+
+try_.builder(
+    name = "android-cronet-x86-rel-kitkat-tests",
 )
 
 try_.builder(
