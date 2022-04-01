@@ -29,6 +29,26 @@ if (is_ios) {
 }
 
 declare_args() {
+  # Set to true to use the android unwinder V2 implementation.
+  use_android_unwinder_v2 = false
+
+  # If this running on a GPU FYI bot.
+  # TODO(https://crbug.com/1233871): Remove this again.
+  is_gpu_fyi_bot = false
+}
+
+declare_args() {
+  # Set to true to use lld, the LLVM linker.
+  # In late bring-up on macOS (see docs/mac_lld.md).
+  # Tentatively used on iOS, except in cronet builds (cronet still supports
+  # 32-bit builds, which lld doesn't support) or when targeting "catalyst"
+  # (which lld doesn't support either).
+  # The default linker everywhere else.
+  use_lld = is_clang && !(is_mac && is_gpu_fyi_bot) && current_os != "zos" &&
+            !(is_ios && (is_cronet_build || target_environment == "catalyst"))
+}
+
+declare_args() {
   # Default to warnings as errors for default workflow, where we catch
   # warnings with known toolchains. Allow overriding this e.g. for Chromium
   # builds on Linux that could use a different version of the compiler.
@@ -201,26 +221,6 @@ can_unwind_with_cfi_table = is_android && !is_component_build &&
 # TODO(crbug.com/1090409): Replace can_unwind_with_cfi_table with this once
 # sampling profiler is enabled on android.
 enable_arm_cfi_table = is_android && !is_component_build && current_cpu == "arm"
-
-declare_args() {
-  # Set to true to use the android unwinder V2 implementation.
-  use_android_unwinder_v2 = false
-
-  # If this running on a GPU FYI bot.
-  # TODO(https://crbug.com/1233871): Remove this again.
-  is_gpu_fyi_bot = false
-}
-
-declare_args() {
-  # Set to true to use lld, the LLVM linker.
-  # In late bring-up on macOS (see docs/mac_lld.md).
-  # Tentatively used on iOS, except in cronet builds (cronet still supports
-  # 32-bit builds, which lld doesn't support) or when targeting "catalyst"
-  # (which lld doesn't support either).
-  # The default linker everywhere else.
-  use_lld = is_clang && !(is_mac && is_gpu_fyi_bot) && current_os != "zos" &&
-            !(is_ios && (is_cronet_build || target_environment == "catalyst"))
-}
 
 declare_args() {
   # Whether to use the gold linker from binutils instead of lld or bfd.
