@@ -30,12 +30,4 @@
         android:fragment="org.chromium.chrome.browser.privacy_sandbox.AdPersonalizationRemovedFragment"
         app:userAction="Settings.PrivacySandbox.RemovedInterests.Opened"/>
 
-    <PreferenceCategory
-        android:title="@string/privacy_sandbox_fledge_interests_category" />
-
-    <Preference
-        android:summary="@string/privacy_sandbox_fledge_under_development_notice"
-        android:selectable="false"
-        app:allowDividerBelow="false"/>
-
 </PreferenceScreen>
