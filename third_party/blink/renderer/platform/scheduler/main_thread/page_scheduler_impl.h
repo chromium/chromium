@@ -83,23 +83,11 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
       FrameScheduler::Delegate* delegate,
       BlameContext*,
       FrameScheduler::FrameType) override;
-  base::TimeTicks EnableVirtualTime(base::Time initial_time) override;
-  void DisableVirtualTimeForTesting() override;
-  bool VirtualTimeAllowedToAdvance() const override;
-  void SetVirtualTimePolicy(VirtualTimePolicy) override;
-  void GrantVirtualTimeBudget(
-      base::TimeDelta budget,
-      base::OnceClosure budget_exhausted_callback) override;
-  void SetMaxVirtualTimeTaskStarvationCount(
-      int max_task_starvation_count) override;
   void AudioStateChanged(bool is_audio_playing) override;
   bool IsAudioPlaying() const override;
   bool IsExemptFromBudgetBasedThrottling() const override;
   bool OptedOutFromAggressiveThrottlingForTest() const override;
   bool RequestBeginMainFrameNotExpected(bool new_state) override;
-  WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(
-      const WTF::String& name,
-      WebScopedVirtualTimePauser::VirtualTaskDuration) override;
 
   // Virtual for testing.
   virtual void ReportIntervention(const String& message);
@@ -119,6 +107,7 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
 
   MainThreadSchedulerImpl* GetMainThreadScheduler() const;
   AgentGroupSchedulerImpl& GetAgentGroupScheduler() override;
+  VirtualTimeController* GetVirtualTimeController() override;
 
   void Unregister(FrameSchedulerImpl*);
 

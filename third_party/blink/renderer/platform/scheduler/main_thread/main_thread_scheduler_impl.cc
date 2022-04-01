@@ -1954,6 +1954,13 @@ void MainThreadSchedulerImpl::SetMaxVirtualTimeTaskStarvationCount(
   ApplyVirtualTimePolicy();
 }
 
+WebScopedVirtualTimePauser
+MainThreadSchedulerImpl::CreateWebScopedVirtualTimePauser(
+    const WTF::String& name,
+    WebScopedVirtualTimePauser::VirtualTaskDuration duration) {
+  return WebScopedVirtualTimePauser(this, duration, name);
+}
+
 void MainThreadSchedulerImpl::CreateTraceEventObjectSnapshot() const {
   TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID(
       TRACE_DISABLED_BY_DEFAULT("renderer.scheduler.debug"),

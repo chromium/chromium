@@ -233,10 +233,13 @@ Page::Page(base::PassKey<Page>,
       agent_group_scheduler.AsAgentGroupScheduler().CreatePageScheduler(this);
   // The scheduler should be set before the main frame.
   DCHECK(!main_frame_);
-  history_navigation_virtual_time_pauser_ =
-      page_scheduler_->CreateWebScopedVirtualTimePauser(
-          "HistoryNavigation",
-          WebScopedVirtualTimePauser::VirtualTaskDuration::kInstant);
+  if (auto* virtual_time_controller =
+          page_scheduler_->GetVirtualTimeController()) {
+    history_navigation_virtual_time_pauser_ =
+        virtual_time_controller->CreateWebScopedVirtualTimePauser(
+            "HistoryNavigation",
+            WebScopedVirtualTimePauser::VirtualTaskDuration::kInstant);
+  }
 }
 
 Page::~Page() {

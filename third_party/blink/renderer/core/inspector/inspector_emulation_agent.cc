@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_cpu_throttler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/virtual_time_controller.h"
 
 namespace blink {
 using protocol::Maybe;
@@ -419,15 +420,17 @@ Response InspectorEmulationAgent::setVirtualTimePolicy(
     return response;
   DCHECK(web_local_frame_);
 
-  PageScheduler::VirtualTimePolicy scheduler_policy =
-      PageScheduler::VirtualTimePolicy::kPause;
+  VirtualTimeController::VirtualTimePolicy scheduler_policy =
+      VirtualTimeController::VirtualTimePolicy::kPause;
   if (protocol::Emulation::VirtualTimePolicyEnum::Advance == policy) {
-    scheduler_policy = PageScheduler::VirtualTimePolicy::kAdvance;
+    scheduler_policy = VirtualTimeController::VirtualTimePolicy::kAdvance;
   } else if (protocol::Emulation::VirtualTimePolicyEnum::
                  PauseIfNetworkFetchesPending == policy) {
-    scheduler_policy = PageScheduler::VirtualTimePolicy::kDeterministicLoading;
+    scheduler_policy =
+        VirtualTimeController::VirtualTimePolicy::kDeterministicLoading;
   } else {
-    DCHECK_EQ(scheduler_policy, PageScheduler::VirtualTimePolicy::kPause);
+    DCHECK_EQ(scheduler_policy,
+              VirtualTimeController::VirtualTimePolicy::kPause);
     if (virtual_time_budget_ms.isJust()) {
       return Response::InvalidParams(
           "Can only specify budget for non-Pause policy");
@@ -446,21 +449,23 @@ Response InspectorEmulationAgent::setVirtualTimePolicy(
 
   InnerEnable();
 
+  VirtualTimeController* virtual_time_controller =
+      web_local_frame_->View()->Scheduler()->GetVirtualTimeController();
   // This needs to happen before we apply virtual time.
   base::Time initial_time =
       initial_virtual_time.isJust()
           ? base::Time::FromDoubleT(initial_virtual_time.fromJust())
           : base::Time();
   virtual_time_base_ticks_ =
-      web_local_frame_->View()->Scheduler()->EnableVirtualTime(initial_time);
-  web_local_frame_->View()->Scheduler()->SetVirtualTimePolicy(scheduler_policy);
+      virtual_time_controller->EnableVirtualTime(initial_time);
+  virtual_time_controller->SetVirtualTimePolicy(scheduler_policy);
   if (virtual_time_budget_ms.fromMaybe(0) > 0) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("renderer.scheduler", "VirtualTimeBudget",
                                       TRACE_ID_LOCAL(this), "budget",
                                       virtual_time_budget_ms.fromJust());
     const base::TimeDelta budget_amount =
         base::Milliseconds(virtual_time_budget_ms.fromJust());
-    web_local_frame_->View()->Scheduler()->GrantVirtualTimeBudget(
+    virtual_time_controller->GrantVirtualTimeBudget(
         budget_amount,
         WTF::Bind(&InspectorEmulationAgent::VirtualTimeBudgetExpired,
                   WrapWeakPersistent(this)));
@@ -470,7 +475,7 @@ Response InspectorEmulationAgent::setVirtualTimePolicy(
   }
 
   if (max_virtual_time_task_starvation_count.fromMaybe(0)) {
-    web_local_frame_->View()->Scheduler()->SetMaxVirtualTimeTaskStarvationCount(
+    virtual_time_controller->SetMaxVirtualTimeTaskStarvationCount(
         max_virtual_time_task_starvation_count.fromJust());
   }
 
@@ -545,8 +550,8 @@ void InspectorEmulationAgent::VirtualTimeBudgetExpired() {
   if (!view)
     return;
 
-  view->Scheduler()->SetVirtualTimePolicy(
-      PageScheduler::VirtualTimePolicy::kPause);
+  view->Scheduler()->GetVirtualTimeController()->SetVirtualTimePolicy(
+      VirtualTimeController::VirtualTimePolicy::kPause);
   virtual_time_policy_.Set(protocol::Emulation::VirtualTimePolicyEnum::Pause);
   // We could have been detached while VT was still running.
   // TODO(caseq): should we rather force-pause the time upon Disable()?

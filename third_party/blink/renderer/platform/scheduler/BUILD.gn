@@ -132,6 +132,7 @@ blink_platform_sources("scheduler") {
     "public/thread_cpu_throttler.h",
     "public/thread_scheduler.h",
     "public/thread_type.h",
+    "public/virtual_time_controller.h",
     "public/web_scheduling_priority.h",
     "public/web_scheduling_task_queue.h",
     "public/worker_pool.h",

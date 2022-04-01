@@ -33,7 +33,7 @@ using base::sequence_manager::FakeTask;
 using base::sequence_manager::FakeTaskTiming;
 using base::sequence_manager::TaskQueue;
 using testing::ElementsAre;
-using VirtualTimePolicy = blink::PageScheduler::VirtualTimePolicy;
+using VirtualTimePolicy = blink::VirtualTimeController::VirtualTimePolicy;
 
 namespace blink {
 namespace scheduler {
@@ -441,7 +441,7 @@ TEST_F(PageSchedulerImplTest, VirtualTime_TimerFastForwarding) {
   Vector<base::TimeTicks> real_times;
   Vector<base::TimeTicks> virtual_times;
 
-  page_scheduler_->EnableVirtualTime(base::Time());
+  page_scheduler_->GetVirtualTimeController()->EnableVirtualTime(base::Time());
 
   base::TimeTicks initial_real_time = scheduler_->NowTicks();
   base::TimeTicks initial_virtual_time = scheduler_->NowTicks();
@@ -481,7 +481,7 @@ TEST_F(PageSchedulerImplTest, VirtualTime_LoadingTaskFastForwarding) {
   Vector<base::TimeTicks> real_times;
   Vector<base::TimeTicks> virtual_times;
 
-  page_scheduler_->EnableVirtualTime(base::Time());
+  page_scheduler_->GetVirtualTimeController()->EnableVirtualTime(base::Time());
 
   base::TimeTicks initial_real_time = scheduler_->NowTicks();
   base::TimeTicks initial_virtual_time = scheduler_->NowTicks();
@@ -519,7 +519,7 @@ TEST_F(PageSchedulerImplTest, VirtualTime_LoadingTaskFastForwarding) {
 
 TEST_F(PageSchedulerImplTest,
        RepeatingTimer_PageInBackground_MeansNothingForVirtualTime) {
-  page_scheduler_->EnableVirtualTime(base::Time());
+  page_scheduler_->GetVirtualTimeController()->EnableVirtualTime(base::Time());
   page_scheduler_->SetPageVisible(false);
   scheduler_->GetSchedulerHelperForTesting()->SetWorkBatchSizeForTesting(1);
   base::TimeTicks initial_real_time = scheduler_->NowTicks();
@@ -548,7 +548,7 @@ TEST_F(PageSchedulerImplTest, PageBackgrounded_EnableVirtualTime) {
   page_scheduler_->SetPageVisible(false);
   EXPECT_FALSE(page_scheduler_->IsFrozen());
 
-  page_scheduler_->EnableVirtualTime(base::Time());
+  page_scheduler_->GetVirtualTimeController()->EnableVirtualTime(base::Time());
   test_task_runner_->FastForwardUntilNoTasksRemain();
 
   // Page should not be frozen after a delay since virtual time
@@ -563,7 +563,7 @@ TEST_F(PageSchedulerImplTest, PageFrozen_EnableVirtualTime) {
   test_task_runner_->FastForwardUntilNoTasksRemain();
   EXPECT_TRUE(page_scheduler_->IsFrozen());
 
-  page_scheduler_->EnableVirtualTime(base::Time());
+  page_scheduler_->GetVirtualTimeController()->EnableVirtualTime(base::Time());
 
   // Page should not be frozen since virtual time was enabled.
   EXPECT_FALSE(page_scheduler_->IsFrozen());
@@ -589,8 +589,9 @@ void DelayedRunOrderTask(
 TEST_F(PageSchedulerImplTest, VirtualTime_NotAllowedToAdvance) {
   Vector<int> run_order;
 
-  page_scheduler_->EnableVirtualTime(base::Time());
-  page_scheduler_->SetVirtualTimePolicy(VirtualTimePolicy::kPause);
+  VirtualTimeController* vtc = page_scheduler_->GetVirtualTimeController();
+  vtc->EnableVirtualTime(base::Time());
+  vtc->SetVirtualTimePolicy(VirtualTimePolicy::kPause);
 
   ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE,
@@ -621,8 +622,9 @@ TEST_F(PageSchedulerImplTest, VirtualTime_NotAllowedToAdvance) {
 TEST_F(PageSchedulerImplTest, VirtualTime_AllowedToAdvance) {
   Vector<int> run_order;
 
-  page_scheduler_->EnableVirtualTime(base::Time());
-  page_scheduler_->SetVirtualTimePolicy(VirtualTimePolicy::kAdvance);
+  VirtualTimeController* vtc = page_scheduler_->GetVirtualTimeController();
+  vtc->EnableVirtualTime(base::Time());
+  vtc->SetVirtualTimePolicy(VirtualTimePolicy::kAdvance);
 
   ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE,
@@ -668,8 +670,9 @@ TEST_F(PageSchedulerImplTest, RepeatingTimer_PageInBackground) {
 TEST_F(PageSchedulerImplTest, VirtualTimeSettings_NewFrameScheduler) {
   Vector<int> run_order;
 
-  page_scheduler_->EnableVirtualTime(base::Time());
-  page_scheduler_->SetVirtualTimePolicy(VirtualTimePolicy::kPause);
+  VirtualTimeController* vtc = page_scheduler_->GetVirtualTimeController();
+  vtc->EnableVirtualTime(base::Time());
+  vtc->SetVirtualTimePolicy(VirtualTimePolicy::kPause);
 
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler =
       CreateFrameScheduler(page_scheduler_.get(), nullptr, nullptr,
@@ -685,7 +688,7 @@ TEST_F(PageSchedulerImplTest, VirtualTimeSettings_NewFrameScheduler) {
   test_task_runner_->FastForwardUntilNoTasksRemain();
   EXPECT_TRUE(run_order.IsEmpty());
 
-  page_scheduler_->SetVirtualTimePolicy(VirtualTimePolicy::kAdvance);
+  vtc->SetVirtualTimePolicy(VirtualTimePolicy::kAdvance);
   test_task_runner_->FastForwardUntilNoTasksRemain();
 
   EXPECT_THAT(run_order, ElementsAre(1));
@@ -747,9 +750,9 @@ TEST_F(PageSchedulerImplTest, DeleteThrottledQueue_InTask) {
 }
 
 TEST_F(PageSchedulerImplTest, VirtualTimePauseCount_DETERMINISTIC_LOADING) {
-  page_scheduler_->EnableVirtualTime(base::Time());
-  page_scheduler_->SetVirtualTimePolicy(
-      VirtualTimePolicy::kDeterministicLoading);
+  VirtualTimeController* vtc = page_scheduler_->GetVirtualTimeController();
+  vtc->EnableVirtualTime(base::Time());
+  vtc->SetVirtualTimePolicy(VirtualTimePolicy::kDeterministicLoading);
   EXPECT_TRUE(scheduler_->VirtualTimeAllowedToAdvance());
 
   scheduler_->IncrementVirtualTimePauseCount();
@@ -773,9 +776,9 @@ TEST_F(PageSchedulerImplTest, VirtualTimePauseCount_DETERMINISTIC_LOADING) {
 
 TEST_F(PageSchedulerImplTest,
        WebScopedVirtualTimePauser_DETERMINISTIC_LOADING) {
-  page_scheduler_->EnableVirtualTime(base::Time());
-  page_scheduler_->SetVirtualTimePolicy(
-      VirtualTimePolicy::kDeterministicLoading);
+  VirtualTimeController* vtc = page_scheduler_->GetVirtualTimeController();
+  vtc->EnableVirtualTime(base::Time());
+  vtc->SetVirtualTimePolicy(VirtualTimePolicy::kDeterministicLoading);
 
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler =
       CreateFrameScheduler(page_scheduler_.get(), nullptr, nullptr,
@@ -833,9 +836,9 @@ TEST_F(PageSchedulerImplTest,
   // after each task.
   scheduler_->GetSchedulerHelperForTesting()->SetWorkBatchSizeForTesting(1);
 
-  page_scheduler_->EnableVirtualTime(base::Time());
-  page_scheduler_->SetVirtualTimePolicy(
-      VirtualTimePolicy::kDeterministicLoading);
+  VirtualTimeController* vtc = page_scheduler_->GetVirtualTimeController();
+  vtc->EnableVirtualTime(base::Time());
+  vtc->SetVirtualTimePolicy(VirtualTimePolicy::kDeterministicLoading);
 
   base::TimeTicks initial_virtual_time = scheduler_->NowTicks();
 
@@ -873,9 +876,9 @@ TEST_F(PageSchedulerImplTest,
 
 TEST_F(PageSchedulerImplTest,
        MultipleWebScopedVirtualTimePausers_DETERMINISTIC_LOADING) {
-  page_scheduler_->EnableVirtualTime(base::Time());
-  page_scheduler_->SetVirtualTimePolicy(
-      VirtualTimePolicy::kDeterministicLoading);
+  VirtualTimeController* vtc = page_scheduler_->GetVirtualTimeController();
+  vtc->EnableVirtualTime(base::Time());
+  vtc->SetVirtualTimePolicy(VirtualTimePolicy::kDeterministicLoading);
 
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler =
       CreateFrameScheduler(page_scheduler_.get(), nullptr, nullptr,
@@ -902,9 +905,9 @@ TEST_F(PageSchedulerImplTest,
 }
 
 TEST_F(PageSchedulerImplTest, NestedMessageLoop_DETERMINISTIC_LOADING) {
-  page_scheduler_->EnableVirtualTime(base::Time());
-  page_scheduler_->SetVirtualTimePolicy(
-      VirtualTimePolicy::kDeterministicLoading);
+  VirtualTimeController* vtc = page_scheduler_->GetVirtualTimeController();
+  vtc->EnableVirtualTime(base::Time());
+  vtc->SetVirtualTimePolicy(VirtualTimePolicy::kDeterministicLoading);
   EXPECT_TRUE(scheduler_->VirtualTimeAllowedToAdvance());
 
   FakeTask fake_task;
@@ -928,8 +931,9 @@ TEST_F(PageSchedulerImplTest, PauseTimersWhileVirtualTimeIsPaused) {
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler =
       CreateFrameScheduler(page_scheduler_.get(), nullptr, nullptr,
                            FrameScheduler::FrameType::kSubframe);
-  page_scheduler_->EnableVirtualTime(base::Time());
-  page_scheduler_->SetVirtualTimePolicy(VirtualTimePolicy::kPause);
+  VirtualTimeController* vtc = page_scheduler_->GetVirtualTimeController();
+  vtc->EnableVirtualTime(base::Time());
+  vtc->SetVirtualTimePolicy(VirtualTimePolicy::kPause);
 
   ThrottleableTaskQueueForScheduler(frame_scheduler.get())
       ->GetTaskRunnerWithDefaultTaskType()
@@ -939,7 +943,7 @@ TEST_F(PageSchedulerImplTest, PauseTimersWhileVirtualTimeIsPaused) {
   test_task_runner_->FastForwardUntilNoTasksRemain();
   EXPECT_TRUE(run_order.IsEmpty());
 
-  page_scheduler_->SetVirtualTimePolicy(VirtualTimePolicy::kAdvance);
+  vtc->SetVirtualTimePolicy(VirtualTimePolicy::kAdvance);
   test_task_runner_->FastForwardUntilNoTasksRemain();
 
   EXPECT_THAT(run_order, ElementsAre(1));
@@ -949,7 +953,8 @@ TEST_F(PageSchedulerImplTest, VirtualTimeBudgetExhaustedCallback) {
   Vector<base::TimeTicks> real_times;
   Vector<base::TimeTicks> virtual_times;
 
-  page_scheduler_->EnableVirtualTime(base::Time());
+  VirtualTimeController* vtc = page_scheduler_->GetVirtualTimeController();
+  vtc->EnableVirtualTime(base::Time());
 
   base::TimeTicks initial_real_time = scheduler_->NowTicks();
   base::TimeTicks initial_virtual_time = scheduler_->NowTicks();
@@ -982,14 +987,10 @@ TEST_F(PageSchedulerImplTest, VirtualTimeBudgetExhaustedCallback) {
                                   &virtual_times),
       base::Milliseconds(7));
 
-  page_scheduler_->GrantVirtualTimeBudget(
+  vtc->GrantVirtualTimeBudget(
       base::Milliseconds(5),
-      base::BindOnce(
-          [](PageScheduler* scheduler) {
-            scheduler->SetVirtualTimePolicy(VirtualTimePolicy::kPause);
-          },
-          base::Unretained(page_scheduler_.get())));
-
+      base::BindOnce(&VirtualTimeController::SetVirtualTimePolicy,
+                     base::Unretained(vtc), VirtualTimePolicy::kPause));
   test_task_runner_->FastForwardUntilNoTasksRemain();
 
   // The timer that is scheduled for the exact point in time when virtual time
@@ -1021,9 +1022,11 @@ void DelayedTask(int* count_in, int* count_out) {
 }  // namespace
 
 TEST_F(PageSchedulerImplTest, MaxVirtualTimeTaskStarvationCountOneHundred) {
-  page_scheduler_->EnableVirtualTime(base::Time());
-  page_scheduler_->SetMaxVirtualTimeTaskStarvationCount(100);
-  page_scheduler_->SetVirtualTimePolicy(VirtualTimePolicy::kAdvance);
+  VirtualTimeController* vtc = page_scheduler_->GetVirtualTimeController();
+
+  vtc->EnableVirtualTime(base::Time());
+  vtc->SetMaxVirtualTimeTaskStarvationCount(100);
+  vtc->SetVirtualTimePolicy(VirtualTimePolicy::kAdvance);
 
   int count = 0;
   int delayed_task_run_at_count = 0;
@@ -1035,13 +1038,10 @@ TEST_F(PageSchedulerImplTest, MaxVirtualTimeTaskStarvationCountOneHundred) {
                      base::Unretained(&delayed_task_run_at_count)),
       base::Milliseconds(10));
 
-  page_scheduler_->GrantVirtualTimeBudget(
+  vtc->GrantVirtualTimeBudget(
       base::Milliseconds(1000),
-      base::BindOnce(
-          [](PageScheduler* scheduler) {
-            scheduler->SetVirtualTimePolicy(VirtualTimePolicy::kPause);
-          },
-          base::Unretained(page_scheduler_.get())));
+      base::BindOnce(&VirtualTimeController::SetVirtualTimePolicy,
+                     base::Unretained(vtc), VirtualTimePolicy::kPause));
 
   test_task_runner_->FastForwardUntilNoTasksRemain();
 
@@ -1052,9 +1052,10 @@ TEST_F(PageSchedulerImplTest, MaxVirtualTimeTaskStarvationCountOneHundred) {
 
 TEST_F(PageSchedulerImplTest,
        MaxVirtualTimeTaskStarvationCountOneHundredNestedMessageLoop) {
-  page_scheduler_->EnableVirtualTime(base::Time());
-  page_scheduler_->SetMaxVirtualTimeTaskStarvationCount(100);
-  page_scheduler_->SetVirtualTimePolicy(VirtualTimePolicy::kAdvance);
+  VirtualTimeController* vtc = page_scheduler_->GetVirtualTimeController();
+  vtc->EnableVirtualTime(base::Time());
+  vtc->SetMaxVirtualTimeTaskStarvationCount(100);
+  vtc->SetVirtualTimePolicy(VirtualTimePolicy::kAdvance);
 
   FakeTask fake_task;
   fake_task.set_enqueue_order(
@@ -1074,13 +1075,10 @@ TEST_F(PageSchedulerImplTest,
                      base::Unretained(&delayed_task_run_at_count)),
       base::Milliseconds(10));
 
-  page_scheduler_->GrantVirtualTimeBudget(
+  vtc->GrantVirtualTimeBudget(
       base::Milliseconds(1000),
-      base::BindOnce(
-          [](PageScheduler* scheduler) {
-            scheduler->SetVirtualTimePolicy(VirtualTimePolicy::kPause);
-          },
-          base::Unretained(page_scheduler_.get())));
+      base::BindOnce(&VirtualTimeController::SetVirtualTimePolicy,
+                     base::Unretained(vtc), VirtualTimePolicy::kPause));
 
   test_task_runner_->FastForwardUntilNoTasksRemain();
 
@@ -1089,9 +1087,10 @@ TEST_F(PageSchedulerImplTest,
 }
 
 TEST_F(PageSchedulerImplTest, MaxVirtualTimeTaskStarvationCountZero) {
-  page_scheduler_->EnableVirtualTime(base::Time());
-  page_scheduler_->SetMaxVirtualTimeTaskStarvationCount(0);
-  page_scheduler_->SetVirtualTimePolicy(VirtualTimePolicy::kAdvance);
+  VirtualTimeController* vtc = page_scheduler_->GetVirtualTimeController();
+  vtc->EnableVirtualTime(base::Time());
+  vtc->SetMaxVirtualTimeTaskStarvationCount(0);
+  vtc->SetVirtualTimePolicy(VirtualTimePolicy::kAdvance);
 
   int count = 0;
   int delayed_task_run_at_count = 0;
@@ -1103,13 +1102,10 @@ TEST_F(PageSchedulerImplTest, MaxVirtualTimeTaskStarvationCountZero) {
                      base::Unretained(&delayed_task_run_at_count)),
       base::Milliseconds(10));
 
-  page_scheduler_->GrantVirtualTimeBudget(
+  vtc->GrantVirtualTimeBudget(
       base::Milliseconds(1000),
-      base::BindOnce(
-          [](PageScheduler* scheduler) {
-            scheduler->SetVirtualTimePolicy(VirtualTimePolicy::kPause);
-          },
-          base::Unretained(page_scheduler_.get())));
+      base::BindOnce(&VirtualTimeController::SetVirtualTimePolicy,
+                     base::Unretained(vtc), VirtualTimePolicy::kPause));
 
   test_task_runner_->FastForwardUntilNoTasksRemain();
 

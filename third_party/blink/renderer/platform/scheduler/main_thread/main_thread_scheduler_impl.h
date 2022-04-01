@@ -80,6 +80,7 @@ class CPUTimeBudgetPool;
 
 class PLATFORM_EXPORT MainThreadSchedulerImpl
     : public ThreadSchedulerImpl,
+      public VirtualTimeController,
       public IdleHelper::Delegate,
       public MainThreadSchedulerHelper::Observer,
       public RenderWidgetSignals::Observer,
@@ -153,8 +154,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   static const char* UseCaseToString(UseCase use_case);
   static const char* RAILModeToString(RAILMode rail_mode);
-  static const char* VirtualTimePolicyToString(
-      PageScheduler::VirtualTimePolicy);
+  static const char* VirtualTimePolicyToString(VirtualTimePolicy);
 
   explicit MainThreadSchedulerImpl(
       std::unique_ptr<base::sequence_manager::SequenceManager>
@@ -295,22 +295,21 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   scoped_refptr<base::sequence_manager::TaskQueue> NewTaskQueueForTest();
 
-  using VirtualTimePolicy = PageScheduler::VirtualTimePolicy;
+  // VirtualTimeController implementation.
+  base::TimeTicks EnableVirtualTime(base::Time initial_time) override;
+  void DisableVirtualTimeForTesting() override;
+  bool VirtualTimeAllowedToAdvance() const override;
+  void GrantVirtualTimeBudget(
+      base::TimeDelta budget,
+      base::OnceClosure budget_exhausted_callback) override;
+  void SetVirtualTimePolicy(VirtualTimePolicy virtual_time_policy) override;
+  void SetMaxVirtualTimeTaskStarvationCount(
+      int max_task_starvation_count) override;
+  WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(
+      const WTF::String& name,
+      WebScopedVirtualTimePauser::VirtualTaskDuration) override;
 
-  // Tells the scheduler that all TaskQueues should use virtual time. Returns
-  // the base::TimeTicks that virtual time offsets will be relative to.
-  base::TimeTicks EnableVirtualTime(base::Time initial_time);
   bool IsVirtualTimeEnabled() const;
-
-  // Migrates all task queues to real time.
-  void DisableVirtualTimeForTesting();
-
-  // Returns true if virtual time is not paused.
-  bool VirtualTimeAllowedToAdvance() const;
-  void GrantVirtualTimeBudget(base::TimeDelta budget,
-                              base::OnceClosure budget_exhausted_callback);
-  void SetVirtualTimePolicy(VirtualTimePolicy virtual_time_policy);
-  void SetMaxVirtualTimeTaskStarvationCount(int max_task_starvation_count);
   base::TimeTicks IncrementVirtualTimePauseCount();
   void DecrementVirtualTimePauseCount();
   void MaybeAdvanceVirtualTime(base::TimeTicks new_virtual_time);

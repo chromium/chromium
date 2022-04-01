@@ -67,15 +67,6 @@ class FakePageScheduler final : public PageScheduler {
       FrameScheduler::FrameType frame_type) override {
     return nullptr;
   }
-  base::TimeTicks EnableVirtualTime(base::Time initial_time) override {
-    return base::TimeTicks();
-  }
-  void DisableVirtualTimeForTesting() override {}
-  bool VirtualTimeAllowedToAdvance() const override { return false; }
-  void SetVirtualTimePolicy(VirtualTimePolicy policy) override {}
-  void GrantVirtualTimeBudget(base::TimeDelta budget,
-                              base::OnceClosure callback) override {}
-  void SetMaxVirtualTimeTaskStarvationCount(int count) override {}
   void AudioStateChanged(bool is_audio_playing) override {}
   bool OptedOutFromAggressiveThrottlingForTest() const override {
     return false;
@@ -83,14 +74,10 @@ class FakePageScheduler final : public PageScheduler {
   bool RequestBeginMainFrameNotExpected(bool new_state) override {
     return false;
   }
-  WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(
-      const String& name,
-      WebScopedVirtualTimePauser::VirtualTaskDuration) override {
-    return WebScopedVirtualTimePauser();
-  }
   scheduler::WebAgentGroupScheduler& GetAgentGroupScheduler() override {
     return *agent_group_scheduler_;
   }
+  VirtualTimeController* GetVirtualTimeController() override { return nullptr; }
   bool IsInBackForwardCache() const override { return false; }
 
  private:

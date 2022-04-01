@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/cpu_time_budget_pool.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/wake_up_budget_pool.h"
-#include "third_party/blink/renderer/platform/scheduler/main_thread/auto_advancing_virtual_time_domain.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_task_queue.h"
@@ -408,29 +407,6 @@ void PageSchedulerImpl::Unregister(FrameSchedulerImpl* frame_scheduler) {
 
 void PageSchedulerImpl::ReportIntervention(const String& message) {
   delegate_->ReportIntervention(message);
-}
-
-base::TimeTicks PageSchedulerImpl::EnableVirtualTime(base::Time initial_time) {
-  return main_thread_scheduler_->EnableVirtualTime(initial_time);
-}
-
-void PageSchedulerImpl::DisableVirtualTimeForTesting() {
-  main_thread_scheduler_->DisableVirtualTimeForTesting();
-}
-
-void PageSchedulerImpl::SetVirtualTimePolicy(VirtualTimePolicy policy) {
-  main_thread_scheduler_->SetVirtualTimePolicy(policy);
-}
-
-bool PageSchedulerImpl::VirtualTimeAllowedToAdvance() const {
-  return main_thread_scheduler_->VirtualTimeAllowedToAdvance();
-}
-
-void PageSchedulerImpl::GrantVirtualTimeBudget(
-    base::TimeDelta budget,
-    base::OnceClosure budget_exhausted_callback) {
-  main_thread_scheduler_->GrantVirtualTimeBudget(
-      budget, std::move(budget_exhausted_callback));
 }
 
 void PageSchedulerImpl::AudioStateChanged(bool is_audio_playing) {
@@ -851,18 +827,16 @@ size_t PageSchedulerImpl::FrameCount() const {
   return frame_schedulers_.size();
 }
 
-void PageSchedulerImpl::SetMaxVirtualTimeTaskStarvationCount(
-    int max_task_starvation_count) {
-  main_thread_scheduler_->SetMaxVirtualTimeTaskStarvationCount(
-      max_task_starvation_count);
-}
-
 MainThreadSchedulerImpl* PageSchedulerImpl::GetMainThreadScheduler() const {
   return main_thread_scheduler_;
 }
 
 AgentGroupSchedulerImpl& PageSchedulerImpl::GetAgentGroupScheduler() {
   return agent_group_scheduler_;
+}
+
+VirtualTimeController* PageSchedulerImpl::GetVirtualTimeController() {
+  return main_thread_scheduler_;
 }
 
 bool PageSchedulerImpl::IsBackgrounded() const {
@@ -1018,12 +992,6 @@ FrameSchedulerImpl* PageSchedulerImpl::SelectFrameForUkmAttribution() {
       return frame_scheduler;
   }
   return nullptr;
-}
-
-WebScopedVirtualTimePauser PageSchedulerImpl::CreateWebScopedVirtualTimePauser(
-    const String& name,
-    WebScopedVirtualTimePauser::VirtualTaskDuration duration) {
-  return WebScopedVirtualTimePauser(main_thread_scheduler_, duration, name);
 }
 
 bool PageSchedulerImpl::HasWakeUpBudgetPools() const {
