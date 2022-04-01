@@ -7,6 +7,8 @@
         tsi_*;
         typeinfo*grpc::*;
         vtable*grpc::*;
+        non-virtual*thunk*to*grpc*;
+        absl_status_to_grpc_error*;
     };
   local:
     *;
