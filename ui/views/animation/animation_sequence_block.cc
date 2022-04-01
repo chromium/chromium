@@ -29,13 +29,17 @@ using PassKey = base::PassKey<AnimationSequenceBlock>;
 AnimationSequenceBlock::AnimationSequenceBlock(
     base::PassKey<AnimationBuilder> builder_key,
     AnimationBuilder* owner,
-    base::TimeDelta start)
-    : builder_key_(builder_key), owner_(owner), start_(start) {}
+    base::TimeDelta start,
+    bool repeating)
+    : builder_key_(builder_key),
+      owner_(owner),
+      start_(start),
+      repeating_(repeating) {}
 
 AnimationSequenceBlock::~AnimationSequenceBlock() {
   if (!finalized_) {
     TerminateBlock();
-    owner_->TerminateSequence(PassKey());
+    owner_->TerminateSequence(PassKey(), repeating_);
   }
 }
 
@@ -194,7 +198,7 @@ AnimationSequenceBlock& AnimationSequenceBlock::At(
   // this object until the function end.
   auto old_sequence = owner_->SwapCurrentSequence(
       PassKey(), std::make_unique<AnimationSequenceBlock>(
-                     builder_key_, owner_, since_sequence_start));
+                     builder_key_, owner_, since_sequence_start, repeating_));
 
   return owner_->GetCurrentSequence();
 }

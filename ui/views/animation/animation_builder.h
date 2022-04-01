@@ -138,7 +138,7 @@ class VIEWS_EXPORT AnimationBuilder {
 
   // Called when the sequence is ended. Converts `values_` to
   // `layer_animation_sequences_`.
-  void TerminateSequence(base::PassKey<AnimationSequenceBlock>);
+  void TerminateSequence(base::PassKey<AnimationSequenceBlock>, bool repeating);
 
   // Returns a left value reference to the object held by `current_sequence_`.
   // Assumes that `current_sequence_` is set.
@@ -157,7 +157,7 @@ class VIEWS_EXPORT AnimationBuilder {
 
   // Resets data for the current sequence as necessary, creates a new sequence
   // block and returns the new block's left value reference.
-  AnimationSequenceBlock& NewSequence();
+  AnimationSequenceBlock& NewSequence(bool repeating);
 
   // Returns a reference to the observer deleted callback used for testing.
   static base::RepeatingClosure& GetObserverDeletedCallback();
@@ -173,7 +173,6 @@ class VIEWS_EXPORT AnimationBuilder {
   absl::optional<ui::LayerAnimator::PreemptionStrategy> preemption_strategy_;
 
   // Data for the current sequence.
-  bool repeating_;
   base::TimeDelta end_;
   // Each vector is kept in sorted order.
   std::map<AnimationKey, std::vector<Value>> values_;

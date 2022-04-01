@@ -236,13 +236,11 @@ AnimationBuilder& AnimationBuilder::OnScheduled(base::OnceClosure callback) {
 }
 
 AnimationSequenceBlock& AnimationBuilder::Once() {
-  repeating_ = false;
-  return NewSequence();
+  return NewSequence(false);
 }
 
 AnimationSequenceBlock& AnimationBuilder::Repeatedly() {
-  repeating_ = true;
-  return NewSequence();
+  return NewSequence(true);
 }
 
 void AnimationBuilder::AddLayerAnimationElement(
@@ -270,11 +268,11 @@ void AnimationBuilder::BlockEndedAt(base::PassKey<AnimationSequenceBlock>,
   end_ = std::max(end_, end);
 }
 
-void AnimationBuilder::TerminateSequence(
-    base::PassKey<AnimationSequenceBlock>) {
+void AnimationBuilder::TerminateSequence(base::PassKey<AnimationSequenceBlock>,
+                                         bool repeating) {
   for (auto& pair : values_) {
     auto sequence = std::make_unique<ui::LayerAnimationSequence>();
-    sequence->set_is_repeating(repeating_);
+    sequence->set_is_repeating(repeating);
     if (animation_observer_)
       sequence->AddObserver(animation_observer_.get());
 
@@ -328,11 +326,8 @@ void AnimationBuilder::SetObserverDeletedCallbackForTesting(
   GetObserverDeletedCallback() = std::move(deleted_closure);
 }
 
-AnimationSequenceBlock& AnimationBuilder::NewSequence() {
+AnimationSequenceBlock& AnimationBuilder::NewSequence(bool repeating) {
   // Each sequence should have its own observer.
-
-  // `current_sequence_` is set only when `repeating_` is true.
-  DCHECK(!current_sequence_ || repeating_);
 
   // Ensure to terminate the current sequence block before touching the
   // animation sequence observer so that the sequence observer is attached to
@@ -352,7 +347,7 @@ AnimationSequenceBlock& AnimationBuilder::NewSequence() {
 
   end_ = base::TimeDelta();
   current_sequence_ = std::make_unique<AnimationSequenceBlock>(
-      base::PassKey<AnimationBuilder>(), this, base::TimeDelta());
+      base::PassKey<AnimationBuilder>(), this, base::TimeDelta(), repeating);
   return *current_sequence_;
 }
 
