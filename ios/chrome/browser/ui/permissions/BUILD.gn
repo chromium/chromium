@@ -81,6 +81,7 @@ source_set("eg2_tests") {
     ":constants",
     ":eg_test_support+eg2",
     "//base",
+    "//base/test:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/badges:public",
     "//ios/chrome/browser/ui/infobars/banners:public",
