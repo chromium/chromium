@@ -80,6 +80,8 @@ bool CommerceHeuristicsData::PopulateDataFromComponent(
       ConstructGlobalRegex(kPurchaseButtonTextPatternType);
   add_to_cart_request_pattern_ =
       ConstructGlobalRegex(kAddToCartRequestPatternType);
+  product_id_json_ = product_id_json_data;
+  cart_extraction_script_ = cart_extraction_script;
   domain_cart_url_pattern_mapping_.clear();
   domain_checkout_url_pattern_mapping_.clear();
   domain_purchase_url_pattern_mapping_.clear();
@@ -163,6 +165,14 @@ const re2::RE2* CommerceHeuristicsData::GetPurchasePageURLPatternForDomain(
     const std::string& domain) {
   return GetCommerceHintHeuristicsRegex(domain_purchase_url_pattern_mapping_,
                                         kMerchantPurchaseURLRegexType, domain);
+}
+
+std::string CommerceHeuristicsData::GetProductIDExtractionJSON() {
+  return product_id_json_;
+}
+
+std::string CommerceHeuristicsData::GetCartProductExtractionScript() {
+  return cart_extraction_script_;
 }
 
 absl::optional<std::string> CommerceHeuristicsData::GetCommerceHintHeuristics(

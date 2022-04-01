@@ -82,6 +82,12 @@ class CommerceHeuristicsData {
   // `domain`.
   const re2::RE2* GetPurchasePageURLPatternForDomain(const std::string& domain);
 
+  // Get the JSON data with product ID extraction heuristics.
+  std::string GetProductIDExtractionJSON();
+
+  // Get the cart extraction script.
+  std::string GetCartProductExtractionScript();
+
  private:
   friend class CommerceHeuristicsDataTest;
 
@@ -116,6 +122,8 @@ class CommerceHeuristicsData {
       domain_checkout_url_pattern_mapping_;
   std::map<std::string, std::unique_ptr<re2::RE2>>
       domain_purchase_url_pattern_mapping_;
+  std::string product_id_json_;
+  std::string cart_extraction_script_;
 };
 
 }  // namespace commerce_heuristics

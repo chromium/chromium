@@ -166,6 +166,14 @@ class CommerceHintObserverImpl
     std::move(callback).Run(should_skip, std::move(ptr));
   }
 
+  void OnCartExtraction(OnCartExtractionCallback callback) override {
+    std::move(callback).Run(
+        commerce_heuristics::CommerceHeuristicsData::GetInstance()
+            .GetProductIDExtractionJSON(),
+        commerce_heuristics::CommerceHeuristicsData::GetInstance()
+            .GetCartProductExtractionScript());
+  }
+
  private:
   GURL binding_url_;
   base::WeakPtr<CommerceHintService> service_;

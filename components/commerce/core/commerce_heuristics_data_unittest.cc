@@ -332,4 +332,30 @@ TEST_F(CommerceHeuristicsDataTest, TestGetGlobalHeuristicsJSON) {
   EXPECT_TRUE(global_heuristics_optional.has_value());
   EXPECT_EQ(*global_heuristics_optional, global_heuristics_string);
 }
+
+TEST_F(CommerceHeuristicsDataTest, TestGetProductIDExtractionJSON) {
+  auto& data = commerce_heuristics::CommerceHeuristicsData::GetInstance();
+
+  ASSERT_TRUE(data.PopulateDataFromComponent("{}", "{}", "", ""));
+  EXPECT_TRUE(commerce_heuristics::CommerceHeuristicsData::GetInstance()
+                  .GetProductIDExtractionJSON()
+                  .empty());
+
+  ASSERT_TRUE(data.PopulateDataFromComponent("{}", "{}", "foo", "bar"));
+  EXPECT_EQ("foo", commerce_heuristics::CommerceHeuristicsData::GetInstance()
+                       .GetProductIDExtractionJSON());
+}
+
+TEST_F(CommerceHeuristicsDataTest, TestGetCartProductExtractionScript) {
+  auto& data = commerce_heuristics::CommerceHeuristicsData::GetInstance();
+
+  ASSERT_TRUE(data.PopulateDataFromComponent("{}", "{}", "", ""));
+  EXPECT_TRUE(commerce_heuristics::CommerceHeuristicsData::GetInstance()
+                  .GetCartProductExtractionScript()
+                  .empty());
+
+  ASSERT_TRUE(data.PopulateDataFromComponent("{}", "{}", "foo", "bar"));
+  EXPECT_EQ("bar", commerce_heuristics::CommerceHeuristicsData::GetInstance()
+                       .GetCartProductExtractionScript());
+}
 }  // namespace commerce_heuristics
