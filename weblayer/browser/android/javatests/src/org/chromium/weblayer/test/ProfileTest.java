@@ -17,6 +17,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.Callback;
 import org.chromium.weblayer.CookieManager;
@@ -184,6 +185,7 @@ public class ProfileTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1312562")
     public void testReuseProfile() throws Exception {
         final String profileName = "ReusedProfile";
         final Uri uri = Uri.parse("https://foo.bar");
