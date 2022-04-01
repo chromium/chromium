@@ -20,6 +20,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "third_party/blink/public/common/features.h"
 
 // static
 optimization_guide::PageContentAnnotationsService*
@@ -48,10 +49,11 @@ PageContentAnnotationsServiceFactory::~PageContentAnnotationsServiceFactory() =
 
 KeyedService* PageContentAnnotationsServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  // Allow for the validation experiment to enable the PCAService without need
-  // to enable both features.
+  // Allow for the validation experiment and/or the Topics experiment to enable
+  // the PCAService without need to enable both features.
   if (!optimization_guide::features::IsPageContentAnnotationEnabled() &&
-      !optimization_guide::features::BatchAnnotationsValidationEnabled()) {
+      !optimization_guide::features::BatchAnnotationsValidationEnabled() &&
+      !base::FeatureList::IsEnabled(blink::features::kBrowsingTopics)) {
     return nullptr;
   }
 

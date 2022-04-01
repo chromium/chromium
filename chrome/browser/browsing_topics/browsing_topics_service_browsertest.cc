@@ -24,7 +24,6 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/content/browser/test_page_content_annotator.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
@@ -176,8 +175,7 @@ class BrowsingTopicsDisabledBrowserTest : public BrowsingTopicsBrowserTestBase {
  public:
   BrowsingTopicsDisabledBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{optimization_guide::features::
-                                  kPageContentAnnotations},
+        /*enabled_features=*/{},
         /*disabled_features=*/{blink::features::kBrowsingTopics});
   }
 
@@ -205,8 +203,7 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
   BrowsingTopicsBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {optimization_guide::features::kPageContentAnnotations,
-         blink::features::kBrowsingTopics,
+        {blink::features::kBrowsingTopics,
          blink::features::kBrowsingTopicsBypassIPIsPubliclyRoutableCheck,
          features::kPrivacySandboxAdsAPIsOverride},
         /*disabled_features=*/{});
