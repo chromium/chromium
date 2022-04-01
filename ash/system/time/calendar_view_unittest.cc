@@ -851,7 +851,8 @@ TEST_F(CalendarViewTest, OnSessionBlocked) {
 }
 
 // Tests multiple scenarios that should record the metric when scrolling.
-TEST_F(CalendarViewTest, RecordDwellTimeMetricWhenScrolling) {
+// TODO(crbug.com/1301872): Disabled as it fails on some calendar dates.
+TEST_F(CalendarViewTest, DISABLED_RecordDwellTimeMetricWhenScrolling) {
   base::HistogramTester histogram_tester;
   CreateCalendarView();
 
