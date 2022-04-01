@@ -35,7 +35,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/system_web_apps/test/system_web_app_browsertest_base.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -83,7 +82,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
-#endif  // defined(IS_CHROMEOS_ASH)
+#include "chrome/browser/web_applications/system_web_apps/test/system_web_app_browsertest_base.h"  // nogncheck
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using content::BrowserThread;
 using content::NavigationController;
@@ -137,16 +137,6 @@ void ToggleHelpBox(Browser* browser) {
                          command)
       .ExtractBool();
 }
-
-#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_ASH)
-// For ChromeOS, launches appropriate diagnostics app.
-void ClickDiagnosticsLink(Browser* browser) {
-  DCHECK(IsDisplayingDiagnosticsLink(browser));
-  EXPECT_TRUE(
-      content::ExecJs(browser->tab_strip_model()->GetActiveWebContents(),
-                      "document.getElementById('diagnose-link').click();"));
-}
-#endif
 
 // Checks that the error page is being displayed with the specified error
 // string.
@@ -1063,11 +1053,20 @@ IN_PROC_BROWSER_TEST_F(ErrorPageSniffTest,
   ExpectDisplayingErrorPage(browser(), net::ERR_INVALID_RESPONSE);
 }
 
-#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// For ChromeOS, launches appropriate diagnostics app.
+void ClickDiagnosticsLink(Browser* browser) {
+  DCHECK(IsDisplayingDiagnosticsLink(browser));
+  EXPECT_TRUE(
+      content::ExecJs(browser->tab_strip_model()->GetActiveWebContents(),
+                      "document.getElementById('diagnose-link').click();"));
+}
+
 // On ChromeOS "Running Connectivity Diagnostics" link on error page should
 // launch chrome://diagnostics/?connectivity app by default. Not running test on
 // LaCROS due to errors on Wayland initialization and to keep test to ChromeOS
 // devices.
+// TODO(crbug.com/1285441): Disabled due to test flakes.
 class ErrorPageOfflineAppLaunchTest
     : public web_app::SystemWebAppBrowserTestBase {
  public:
@@ -1092,6 +1091,6 @@ IN_PROC_BROWSER_TEST_F(ErrorPageOfflineAppLaunchTest,
   EXPECT_EQ(GURL("chrome://diagnostics/?connectivity"),
             contents->GetVisibleURL());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_ASH).
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace

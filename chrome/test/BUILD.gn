@@ -4370,6 +4370,10 @@ if (!is_android) {
       ]
 
       # TODO(crbug.com/1278123): Enable once PWAs are supported.
+      deps -= [
+        "//chrome/browser/web_applications:browser_tests",
+        "//chrome/browser/web_applications:browser_tests_base",
+      ]
       sources -= [
         "../../apps/app_restore_service_browsertest.cc",
         "../../apps/load_and_launch_browsertest.cc",
@@ -4386,6 +4390,7 @@ if (!is_android) {
         "../browser/apps/platform_apps/platform_app_navigation_redirector_browsertest.cc",
         "../browser/apps/platform_apps/service_worker_browsertest.cc",
         "../browser/ui/startup/startup_browser_creator_browsertest.cc",
+        "../browser/ui/views/frame/system_web_app_non_client_frame_view_browsertest.cc",
         "../browser/ui/views/web_apps/deprecated_apps_dialog_view_browsertest.cc",
         "../browser/ui/views/web_apps/force_installed_deprecated_apps_dialog_view_browsertest.cc",
         "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_browsertest.cc",
@@ -4396,6 +4401,27 @@ if (!is_android) {
         "../browser/ui/views/web_apps/web_app_integration_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_protocol_handler_intent_picker_dialog_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_tab_strip_browsertest.cc",
+        "../browser/ui/web_applications/app_browser_controller_browsertest.cc",
+        "../browser/ui/web_applications/create_shortcut_browsertest.cc",
+        "../browser/ui/web_applications/pwa_mixed_content_browsertest.cc",
+        "../browser/ui/web_applications/sub_apps_service_impl_browsertest.cc",
+        "../browser/ui/web_applications/web_app_badging_browsertest.cc",
+        "../browser/ui/web_applications/web_app_browsertest.cc",
+        "../browser/ui/web_applications/web_app_dark_mode_browsertest.cc",
+        "../browser/ui/web_applications/web_app_engagement_browsertest.cc",
+        "../browser/ui/web_applications/web_app_file_handling_browsertest.cc",
+        "../browser/ui/web_applications/web_app_handle_links_browsertest.cc",
+        "../browser/ui/web_applications/web_app_launch_handler_browsertest.cc",
+        "../browser/ui/web_applications/web_app_link_capturing_browsertest.cc",
+        "../browser/ui/web_applications/web_app_metrics_browsertest.cc",
+        "../browser/ui/web_applications/web_app_navigate_browsertest.cc",
+        "../browser/ui/web_applications/web_app_profile_deletion_browsertest.cc",
+        "../browser/ui/web_applications/web_app_protocol_handling_browsertest.cc",
+        "../browser/ui/web_applications/web_app_ui_manager_impl_browsertest.cc",
+        "../browser/ui/web_applications/web_app_uninstall_browsertest.cc",
+        "../browser/ui/web_applications/web_app_url_handling_browsertest.cc",
+        "../browser/ui/web_applications/web_app_window_controls_overlay_browsertest.cc",
+        "../browser/web_applications/alternative_error_page_override_info_browsertest.cc",
       ]
 
       # Exclude tests which depend on native messaging.
