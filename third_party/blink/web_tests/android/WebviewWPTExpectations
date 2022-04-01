@@ -3522,8 +3522,6 @@ crbug.com/1050754 external/wpt/mixed-content/tentative/autoupgrades/audio-upgrad
 crbug.com/1050754 external/wpt/mixed-content/tentative/autoupgrades/image-upgrade.https.sub.html [ Failure ]
 crbug.com/1050754 external/wpt/mixed-content/tentative/autoupgrades/video-upgrade.https.sub.html [ Failure ]
 crbug.com/1050754 external/wpt/mst-content-hint/idlharness.window.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/file-system-access/idlharness.https.any.html [ Failure ]
-crbug.com/1050754 external/wpt/file-system-access/idlharness.https.any.worker.html [ Failure ]
 crbug.com/1050754 external/wpt/file-system-access/opaque-origin.https.window.html [ Failure ]
 crbug.com/1050754 external/wpt/file-system-access/sandboxed_FileSystemBaseHandle-IndexedDB.https.any.html [ Failure ]
 crbug.com/1050754 external/wpt/file-system-access/sandboxed_FileSystemBaseHandle-IndexedDB.https.any.worker.html [ Failure ]

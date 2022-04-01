@@ -37,14 +37,32 @@ function selectSomeText() {
     .send();
 }
 
+function clickOnBackdrop() {
+  getSelection().removeAllRanges();
+
+  return new test_driver.Actions()
+    .pointerMove(10, 10)
+    .pointerDown()
+    .pointerUp()
+    .send();
+}
+
 promise_test(async function() {
   await selectSomeText();
   assert_equals(getSelection().toString(), "345678");
 }, "By default, text inside a modal dialog can be selected");
 
 promise_test(async function() {
+  await clickOnBackdrop();
+  assert_equals(getSelection().toString(), "");
+}, "Clicking on backdrop doesn't select text");
+
+promise_test(async function() {
   dialog.style.userSelect = "none";
+
   await selectSomeText();
   assert_equals(getSelection().toString(), "");
+
+  dialog.style.userSelect = "";
 }, "'user-select: none' prevents text from being selected");
 </script>
