@@ -150,6 +150,13 @@ void AssistantControllerImpl::RemoveObserver(
 void AssistantControllerImpl::OpenUrl(const GURL& url,
                                       bool in_background,
                                       bool from_server) {
+  // app_list search result will be opened by `OpenUrl()`. However, the
+  // `assistant_` may not be ready. Show a toast to indicate it.
+  if (!assistant_) {
+    assistant_ui_controller_.ShowUnboundErrorToast();
+    return;
+  }
+
   if (assistant::util::IsDeepLinkUrl(url)) {
     NotifyDeepLinkReceived(url);
     return;

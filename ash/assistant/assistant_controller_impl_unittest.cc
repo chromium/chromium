@@ -175,6 +175,19 @@ TEST_F(AssistantControllerImplTest, NotifiesOpeningUrlAndUrlOpened) {
                         /*from_server=*/true);
 }
 
+TEST_F(AssistantControllerImplTest, NotOpenUrlIfAssistantNotReady) {
+  testing::NiceMock<MockAssistantControllerObserver> controller_observer_mock;
+  base::ScopedObservation<AssistantController, AssistantControllerObserver>
+      scoped_controller_obs{&controller_observer_mock};
+  scoped_controller_obs.Observe(controller());
+
+  EXPECT_CALL(controller_observer_mock, OnOpeningUrl).Times(0);
+
+  controller()->SetAssistant(nullptr);
+  controller()->OpenUrl(GURL("https://g.co/"), /*in_background=*/true,
+                        /*from_server=*/true);
+}
+
 TEST_F(AssistantControllerImplTest, OpensFeedbackPageForFeedbackDeeplink) {
   testing::NiceMock<MockAssistantControllerObserver> controller_observer_mock;
   base::ScopedObservation<AssistantController, AssistantControllerObserver>

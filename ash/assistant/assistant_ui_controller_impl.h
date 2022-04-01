@@ -94,6 +94,8 @@ class ASH_EXPORT AssistantUiControllerImpl
   // OverviewObserver:
   void OnOverviewModeWillStart() override;
 
+  void ShowUnboundErrorToast();
+
  private:
   // Updates UI mode to |ui_mode| if specified. Otherwise UI mode is updated on
   // the basis of interaction/widget visibility state. If |due_to_interaction|
