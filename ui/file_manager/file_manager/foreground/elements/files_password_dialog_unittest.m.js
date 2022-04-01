@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import "chrome://resources/cr_elements/cr_button/cr_button.m.js";
-import "chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js";
-import "chrome://resources/cr_elements/cr_input/cr_input.m.js";
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {assertEquals, assertFalse, assertNotReached} from 'chrome://test/chai_assert.js';

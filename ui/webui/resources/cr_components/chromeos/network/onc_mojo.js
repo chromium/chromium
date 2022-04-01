@@ -1384,7 +1384,7 @@
       /*@type {Array<!chromeos.networkConfig.mojom.SubjectAltName>}*/[];
 
     for (const entry of entries) {
-      if (entry === "") {
+      if (entry === '') {
         continue;
       }
       let type;
@@ -1419,7 +1419,7 @@
  * The value of ApnProperties.attach must be equivalent to this value
  * in order for an Attach APN to occur.
  */
-OncMojo.USE_ATTACH_APN_NAME = "attach";
+OncMojo.USE_ATTACH_APN_NAME = 'attach';
 
 /** @typedef {chromeos.networkConfig.mojom.DeviceStateProperties} */
 OncMojo.DeviceStateProperties;

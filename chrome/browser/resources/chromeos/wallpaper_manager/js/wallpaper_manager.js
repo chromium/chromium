@@ -967,8 +967,8 @@ WallpaperManager.prototype.onPreviewModeStarted_ = function(
   if (this.isDuringPreview_())
     return;
 
-  addRippleOverlay("center-button");
-  addRippleOverlay("center-cropped-button");
+  addRippleOverlay('center-button');
+  addRippleOverlay('center-cropped-button');
 
   this.document_.body.classList.add('preview-animation');
   chrome.wallpaperPrivate.minimizeInactiveWindows();

@@ -134,7 +134,7 @@ export class AcceleratorEditDialogElement extends PolymerElement {
     // Flush the dom so that the AcceleratorEditView is ready to be focused.
     flush();
     const editView = this.$.editDialog.querySelector('#pendingAccelerator');
-    const accelItem = editView.shadowRoot.querySelector("#acceleratorItem");
+    const accelItem = editView.shadowRoot.querySelector('#acceleratorItem');
     accelItem.shadowRoot.querySelector('#container').focus();
   }
 

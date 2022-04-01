@@ -212,7 +212,7 @@ export class NavigationViewPanelElement extends PolymerElement {
     // Notify all available child pages of the event.
     Array.from(components).map((c) => {
       const functionCall = c[functionName];
-      if (typeof functionCall === "function") {
+      if (typeof functionCall === 'function') {
         if (functionName === navigationPageChanged) {
           const event = {isActive: this.selectedItem.id === c.id};
           functionCall.call(c, event);

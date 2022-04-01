@@ -672,7 +672,7 @@ AudioPlayer.TrackInfo = function(entry) {
   this.title = this.getDefaultTitle();
   this.artist = this.getDefaultArtist();
 
-  this.artworkUrl = "";
+  this.artworkUrl = '';
   this.active = false;
 };
 
@@ -710,7 +710,7 @@ AudioPlayer.TrackInfo.prototype.setMetadata = function(
   // TODO(yoshiki): Handle error in better way.
   this.title = metadata.mediaTitle || this.getDefaultTitle();
   this.artist = error || metadata.mediaArtist || this.getDefaultArtist();
-  this.artworkUrl = metadata.contentThumbnailUrl || "";
+  this.artworkUrl = metadata.contentThumbnailUrl || '';
 };
 
 AudioPlayer.load();

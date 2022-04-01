@@ -4,11 +4,12 @@
 
 'use strict';
 
+// eslint-disable-next-line no-var
 var dialogSettings = {};
 
 function mountFileSystem(onSuccess, onError) {
   chrome.fileSystemProvider.getAll(function(mounted) {
-    var index = mounted.length + 1;
+    const index = mounted.length + 1;
     chrome.fileSystemProvider.mount({
       fileSystemId: 'test-fs-' + index,
       displayName: 'Test (' + index + ')'
@@ -64,7 +65,7 @@ chrome.fileSystemProvider.onGetActionsRequested.addListener(
 
 // If the manifest for device or file source is used, then mount a fake file
 // system on install.
-if (chrome.runtime.getManifest().description === "Testing Provider device" ||
-    chrome.runtime.getManifest().description === "Testing Provider file") {
+if (chrome.runtime.getManifest().description === 'Testing Provider device' ||
+    chrome.runtime.getManifest().description === 'Testing Provider file') {
   chrome.runtime.onInstalled.addListener(mountFileSystem);
 }

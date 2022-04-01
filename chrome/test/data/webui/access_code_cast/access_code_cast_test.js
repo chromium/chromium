@@ -244,12 +244,12 @@ suite('AccessCodeCastAppTest', () => {
     };
 
     // Enter does nothing if the access code isn't the right length
-    document.dispatchEvent(new KeyboardEvent('keydown', {"key": "Enter"}));
+    document.dispatchEvent(new KeyboardEvent('keydown', {'key': 'Enter'}));
     await waitAfterNextRender();
     assertFalse(visited);
 
     app.setAccessCodeForTest('qwerty');
-    document.dispatchEvent(new KeyboardEvent('keydown', {"key": "Enter"}));
+    document.dispatchEvent(new KeyboardEvent('keydown', {'key': 'Enter'}));
     await waitAfterNextRender();
     assertTrue(visited);
   });

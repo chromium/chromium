@@ -369,7 +369,7 @@ export class AcceleratorViewElement extends PolymerElement {
     }
     // Shift key isn't registered as a modifier unless a non-modifer key is
     // pressed in conjunction with the keystroke.
-    if (e.key == "Shift" || e.shiftKey) {
+    if (e.key == 'Shift' || e.shiftKey) {
       output.modifiers = output.modifiers | Modifier.SHIFT;
     }
 

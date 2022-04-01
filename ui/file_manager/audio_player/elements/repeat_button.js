@@ -60,9 +60,9 @@ Polymer({
      * @private {Array<string>}
      */
     this.modeName_ = [
-      "no-repeat",
-      "repeat-all",
-      "repeat-one"
+      'no-repeat',
+      'repeat-all',
+      'repeat-one',
     ];
   },
 
@@ -91,6 +91,6 @@ Polymer({
    * @return {boolean} True if the mode is repeat.
    */
   isActive: function(mode) {
-    return mode === "repeat-all" || mode === "repeat-one";
+    return mode === 'repeat-all' || mode === 'repeat-one';
   },
 });

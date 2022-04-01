@@ -54,6 +54,7 @@ module.exports = {
     'no-trailing-spaces': 'error',
     'no-var': 'error',
     'prefer-const': 'error',
+    'quotes': ['error', 'single', {allowTemplateLiterals: true}],
     'semi': ['error', 'always'],
 
     // TODO(dpapad): Add more checks according to our styleguide.

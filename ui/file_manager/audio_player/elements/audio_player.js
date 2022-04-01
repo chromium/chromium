@@ -226,13 +226,13 @@ Polymer({
    */
   onAudioEnded: function() {
     this.playcount++;
-    if(this.repeatMode === "repeat-one") {
+    if (this.repeatMode === 'repeat-one') {
       this.playing = true;
       this.$.audio.currentTime = 0;
       this.time = 0;
       return;
     }
-    this.advance_(true /* forward */, this.repeatMode === "repeat-all");
+    this.advance_(true /* forward */, this.repeatMode === 'repeat-all');
   },
 
   /**
@@ -240,12 +240,12 @@ Polymer({
    * This handler is registered in this.ready().
    */
   onAudioError: function() {
-    if(this.repeatMode === "repeat-one") {
+    if (this.repeatMode === 'repeat-one') {
       this.playing = false;
       return;
     }
     this.scheduleAutoAdvance_(
-        true /* forward */, this.repeatMode === "repeat-all");
+        true /* forward */, this.repeatMode === 'repeat-all');
   },
 
   /**

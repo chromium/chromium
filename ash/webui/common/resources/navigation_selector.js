@@ -105,10 +105,10 @@ export class NavigationSelectorElement extends PolymerElement {
    * @protected
    */
   computeInitialClass_(item) {
-    let classList = "navigation-item";
+    let classList = 'navigation-item';
     if (!!this.selectedItem && item.name == this.selectedItem.name) {
       // Add the initial .selected class to the currently selected entry.
-      classList += " selected";
+      classList += ' selected';
     }
     return classList;
   }

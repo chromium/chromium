@@ -295,21 +295,19 @@ class ExportDelegate {
           processBatchData.batchQueryInputs, processBatchData.batchName);
     } else {
       const expected = {
-        batchMode: "combined",
-        batchName: "name for this batch of queries",
-        batchQueryInputs: [
-          {
-            inputText: "example input text",
-            cursorPosition: 18,
-            resetAutocompleteController: false,
-            cursorLock: false,
-            zeroSuggest: false,
-            preventInlineAutocomplete: false,
-            preferKeyword: false,
-            currentUrl: "",
-            pageClassification: "4"
-          }
-        ],
+        batchMode: 'combined',
+        batchName: 'name for this batch of queries',
+        batchQueryInputs: [{
+          inputText: 'example input text',
+          cursorPosition: 18,
+          resetAutocompleteController: false,
+          cursorLock: false,
+          zeroSuggest: false,
+          preventInlineAutocomplete: false,
+          preferKeyword: false,
+          currentUrl: '',
+          pageClassification: '4'
+        }],
       };
       console.error(`Invalid batch specifier data.  Expected format: \n${
           JSON.stringify(expected, null, 2)}`);

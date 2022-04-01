@@ -291,10 +291,10 @@ function modeToString(m) {
 function highlightFade(element) {
   element.style.transitionProperty = 'background-color';
   element.style.transitionDuration = '0ms';
-  element.style.backgroundColor = "var(--color-highlight)";
+  element.style.backgroundColor = 'var(--color-highlight)';
   setTimeout(function() {
     element.style.transitionDuration = '1s';
-    element.style.backgroundColor = "var(--color-background)";
+    element.style.backgroundColor = 'var(--color-background)';
   }, 0);
 }
 

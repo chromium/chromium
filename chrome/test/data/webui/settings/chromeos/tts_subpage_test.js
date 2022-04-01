@@ -36,9 +36,9 @@ suite('TtsSubpage', function() {
     };
 
     ttsSubpage.set('allVoices', [
-      {id: "A", displayLanguage: "Klingon", name: "Star Trek"},
-      {id: "B", displayLanguage: "Goa'uld", name: "Star Gate"},
-      {id: "C", displayLanguage: "Dothraki", name: "Game of Thrones"},
+      {id: 'A', displayLanguage: 'Klingon', name: 'Star Trek'},
+      {id: 'B', displayLanguage: 'Goa\'uld', name: 'Star Gate'},
+      {id: 'C', displayLanguage: 'Dothraki', name: 'Game of Thrones'},
     ]);
     Polymer.dom.flush();
 
@@ -49,6 +49,7 @@ suite('TtsSubpage', function() {
     // Check one of the language option details.
     const secondVoice = ttsSubpage.$$('option[value=B]');
     assertTrue(!!secondVoice);
-    assertEquals("Goa'uld - Star Gate", String(secondVoice.textContent).trim());
+    assertEquals(
+        'Goa\'uld - Star Gate', String(secondVoice.textContent).trim());
   });
 });

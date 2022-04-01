@@ -17,8 +17,8 @@ suite('NetworkPropertyListMojoTest', function() {
   setup(function() {
     propertyList = document.createElement('network-property-list-mojo');
     const ipv4 = {
-      ipAddress: "100.0.0.1",
-      type: "IPv4",
+      ipAddress: '100.0.0.1',
+      type: 'IPv4',
     };
     propertyList.propertyDict = {ipv4: ipv4};
     propertyList.fields = [
