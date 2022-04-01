@@ -190,6 +190,7 @@ public class StartupTabPreloaderTest {
     @Test
     @LargeTest
     @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
+    @DisabledTest(message = "https://crbug.com/1271158")
     public void testStartupTabPreloaderStartupLoadingMetricsRecordedWhenTabTaken()
             throws Exception {
         // Force the browser to regard itself as being in the foreground to work around the
