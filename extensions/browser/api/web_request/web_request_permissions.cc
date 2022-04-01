@@ -42,12 +42,10 @@ namespace {
 // ExtensionWebRequestEventRouter::RequestFiler, which specifies the schemes
 // allowed by web request event listeners. Consolidate the two.
 bool HasWebRequestScheme(const GURL& url) {
-  // TODO(https://crbug.com/1257045): Remove urn: scheme support.
   return (url.SchemeIs(url::kAboutScheme) || url.SchemeIs(url::kFileScheme) ||
           url.SchemeIs(url::kFileSystemScheme) ||
           url.SchemeIs(url::kFtpScheme) || url.SchemeIsHTTPOrHTTPS() ||
           url.SchemeIs(extensions::kExtensionScheme) || url.SchemeIsWSOrWSS() ||
-          url.SchemeIs(url::kUrnScheme) ||
           url.SchemeIs(url::kUuidInPackageScheme));
 }
 

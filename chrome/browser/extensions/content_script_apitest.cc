@@ -2038,15 +2038,8 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiIdentifiabilityTest,
       blink::IdentifiableSurface::Type::kExtensionContentScript));
 }
 
-class SubresourceWebBundlesContentScriptApiTest
-    : public ExtensionApiTest,
-      public ::testing::WithParamInterface<bool> {
+class SubresourceWebBundlesContentScriptApiTest : public ExtensionApiTest {
  public:
-  static std::string DescribeParams(
-      const testing::TestParamInfo<ParamType>& info) {
-    return info.param ? "UrnUuid" : "UuidInPackage";
-  }
-
   void SetUp() override {
     feature_list_.InitWithFeatures({features::kSubresourceWebBundles}, {});
     ExtensionApiTest::SetUp();
@@ -2081,30 +2074,26 @@ class SubresourceWebBundlesContentScriptApiTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesContentScriptApiTest,
+IN_PROC_BROWSER_TEST_F(SubresourceWebBundlesContentScriptApiTest,
                        SubresourceWebBundleIframe) {
-  const char* scheme = GetParam() ? "urn" : "uuid-in-package";
-  const char* uuid_url_prefix = GetParam() ? "urn:uuid:" : "uuid-in-package:";
-
-  // Create an extension that injects a content script in "urn" or
-  // "uuid-in-package" scheme urls.
+  // Create an extension that injects a content script in "uuid-in-package"
+  // scheme urls.
   TestExtensionDir test_dir;
-  test_dir.WriteManifest(base::StringPrintf(R"({
+  test_dir.WriteManifest(R"({
         "name": "Web Request Subresource Web Bundles Test",
         "manifest_version": 2,
         "version": "0.1",
-        "permissions": ["%s:*"],
+        "permissions": ["uuid-in-package:*"],
         "content_scripts": [{
           "matches":[
-            "%s:*"
+            "uuid-in-package:*"
           ],
           "all_frames": true,
           "js":[
             "content_script.js"
           ]
         }]
-      })",
-                                            scheme, scheme));
+      })");
 
   test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"),
                      R"(
@@ -2116,8 +2105,8 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesContentScriptApiTest,
 
   ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
 
-  const std::string uuid_html_url = base::StringPrintf(
-      "%s65c6f241-f6b5-4302-9f95-9a826c4dda1c", uuid_url_prefix);
+  const std::string uuid_html_url =
+      "uuid-in-package:65c6f241-f6b5-4302-9f95-9a826c4dda1c";
   web_package::WebBundleBuilder builder("", "");
   auto html_location =
       builder.AddResponse({{":status", "200"}, {"content-type", "text/html"}},
@@ -2132,12 +2121,11 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesContentScriptApiTest,
   RegisterRequestHandler("/test.wbn", "application/webbundle", web_bundle,
                          true /* nosniff */);
 
-  const std::string page_html =
-      base::StringPrintf(R"(
-        <link rel="webbundle" href="./test.wbn" scopes="%s">
+  const std::string page_html = base::StringPrintf(R"(
+        <link rel="webbundle" href="./test.wbn" scopes="uuid-in-package:">
         <iframe src="%s"></iframe>
       )",
-                         uuid_url_prefix, uuid_html_url.c_str());
+                                                   uuid_html_url.c_str());
   RegisterRequestHandler("/test.html", "text/html", page_html,
                          false /* nosniff */);
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -2149,11 +2137,5 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesContentScriptApiTest,
   ASSERT_TRUE(listener.WaitUntilSatisfied());
   EXPECT_EQ(uuid_html_url, listener.message());
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SubresourceWebBundlesContentScriptApiTest,
-    testing::Bool(),
-    SubresourceWebBundlesContentScriptApiTest::DescribeParams);
 
 }  // namespace extensions

@@ -27,24 +27,27 @@ namespace {
 
 // TODO(aa): What about more obscure schemes like javascript: ?
 // Note: keep this array in sync with kValidSchemeMasks.
-// TODO(https://crbug.com/1257045): Remove urn: scheme support.
 const char* const kValidSchemes[] = {
-    url::kHttpScheme,         url::kHttpsScheme,
-    url::kFileScheme,         url::kFtpScheme,
-    content::kChromeUIScheme, extensions::kExtensionScheme,
-    url::kFileSystemScheme,   url::kWsScheme,
-    url::kWssScheme,          url::kDataScheme,
-    url::kUrnScheme,          url::kUuidInPackageScheme,
+    url::kHttpScheme,          url::kHttpsScheme,
+    url::kFileScheme,          url::kFtpScheme,
+    content::kChromeUIScheme,  extensions::kExtensionScheme,
+    url::kFileSystemScheme,    url::kWsScheme,
+    url::kWssScheme,           url::kDataScheme,
+    url::kUuidInPackageScheme,
 };
 
-// TODO(https://crbug.com/1257045): Remove urn: scheme support.
 const int kValidSchemeMasks[] = {
-    URLPattern::SCHEME_HTTP,       URLPattern::SCHEME_HTTPS,
-    URLPattern::SCHEME_FILE,       URLPattern::SCHEME_FTP,
-    URLPattern::SCHEME_CHROMEUI,   URLPattern::SCHEME_EXTENSION,
-    URLPattern::SCHEME_FILESYSTEM, URLPattern::SCHEME_WS,
-    URLPattern::SCHEME_WSS,        URLPattern::SCHEME_DATA,
-    URLPattern::SCHEME_URN,        URLPattern::SCHEME_UUID_IN_PACKAGE,
+    URLPattern::SCHEME_HTTP,
+    URLPattern::SCHEME_HTTPS,
+    URLPattern::SCHEME_FILE,
+    URLPattern::SCHEME_FTP,
+    URLPattern::SCHEME_CHROMEUI,
+    URLPattern::SCHEME_EXTENSION,
+    URLPattern::SCHEME_FILESYSTEM,
+    URLPattern::SCHEME_WS,
+    URLPattern::SCHEME_WSS,
+    URLPattern::SCHEME_DATA,
+    URLPattern::SCHEME_UUID_IN_PACKAGE,
 };
 
 static_assert(std::size(kValidSchemes) == std::size(kValidSchemeMasks),

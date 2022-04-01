@@ -62,8 +62,7 @@ class URLPattern {
     SCHEME_WS = 1 << 7,
     SCHEME_WSS = 1 << 8,
     SCHEME_DATA = 1 << 9,
-    SCHEME_URN = 1 << 10,
-    SCHEME_UUID_IN_PACKAGE = 1 << 11,
+    SCHEME_UUID_IN_PACKAGE = 1 << 10,
 
     // IMPORTANT!
     // SCHEME_ALL will match every scheme, including chrome://, chrome-

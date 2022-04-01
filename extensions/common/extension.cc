@@ -216,12 +216,11 @@ const char Extension::kMimeType[] = "application/x-chrome-extension";
 const int Extension::kValidWebExtentSchemes =
     URLPattern::SCHEME_HTTP | URLPattern::SCHEME_HTTPS;
 
-// TODO(https://crbug.com/1257045): Remove urn: scheme support.
 const int Extension::kValidHostPermissionSchemes =
     URLPattern::SCHEME_CHROMEUI | URLPattern::SCHEME_HTTP |
     URLPattern::SCHEME_HTTPS | URLPattern::SCHEME_FILE |
     URLPattern::SCHEME_FTP | URLPattern::SCHEME_WS | URLPattern::SCHEME_WSS |
-    URLPattern::SCHEME_URN | URLPattern::SCHEME_UUID_IN_PACKAGE;
+    URLPattern::SCHEME_UUID_IN_PACKAGE;
 
 //
 // Extension
