@@ -63,6 +63,11 @@
       depends_on: ["SensorExtraClasses"],
     },
     {
+      name: "AttributionReporting",
+      permissions_policy_name: "attribution-reporting",
+      depends_on: ["AttributionReporting"],
+    },
+    {
       name: "Autoplay",
       permissions_policy_name: "autoplay",
     },
@@ -187,11 +192,6 @@
     {
       name: "ClipboardWrite",
       permissions_policy_name: "clipboard-write",
-    },
-    {
-      name: "AttributionReporting",
-      permissions_policy_name: "attribution-reporting",
-      depends_on: ["AttributionReporting"],
     },
     {
       name: "CrossOriginIsolated",

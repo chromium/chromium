@@ -19,7 +19,10 @@ const std::vector<PermissionType>& GetAllPermissionTypes() {
       kAllPermissionTypes([] {
         const int NUM_TYPES = static_cast<int>(PermissionType::NUM);
         std::vector<PermissionType> all_types;
-        all_types.reserve(NUM_TYPES - 4);
+        // Note: Update this if the set of removed entries changes.
+        // This is 6 because it skips 0 as well as the 5 numbers explicitly
+        // mentioned below.
+        all_types.reserve(NUM_TYPES - 6);
         for (int i = 1; i < NUM_TYPES; ++i) {
           // Skip removed entries.
           if (i == 2 || i == 11 || i == 14 || i == 15 || i == 32)
