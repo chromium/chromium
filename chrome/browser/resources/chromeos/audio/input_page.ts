@@ -11,9 +11,7 @@ export class InputPage extends Page {
   private animationRequestId?: number;
   private recordClicked: boolean;
   private audioContext: AudioContext|null;
-  // Type is set to any because TypeScript compiler
-  // does not recognize the MediaRecorder object.
-  private mediaRecorder: any;
+  private mediaRecorder: MediaRecorder|null;
   private intervalId: number|null;
 
   constructor() {
@@ -167,7 +165,7 @@ export class InputPage extends Page {
         this.testInputFeedback.set('audioUrl', audioURL);
       };
 
-      this.mediaRecorder.ondataavailable = (event: dataavailable) => {
+      this.mediaRecorder.ondataavailable = (event: BlobEvent) => {
         chunks.push(event.data);
       };
     }
@@ -237,5 +235,3 @@ export class InputPage extends Page {
 }
 
 let instance: InputPage|null = null;
-declare let MediaRecorder: any;
-type dataavailable = any;
