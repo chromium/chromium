@@ -170,6 +170,7 @@ MediaDevices::MediaDevices(Navigator& navigator)
     : Supplement<Navigator>(navigator),
       ExecutionContextLifecycleObserver(navigator.DomWindow()),
       stopped_(false),
+      dispatcher_host_(navigator.GetExecutionContext()),
       receiver_(this, navigator.DomWindow()) {}
 
 MediaDevices::~MediaDevices() = default;
@@ -188,7 +189,7 @@ ScriptPromise MediaDevices::enumerateDevices(ScriptState* script_state,
   requests_.insert(resolver);
 
   LocalFrame* frame = LocalDOMWindow::From(script_state)->GetFrame();
-  GetDispatcherHost(frame)->EnumerateDevices(
+  GetDispatcherHost(frame).EnumerateDevices(
       true /* audio input */, true /* video input */, true /* audio output */,
       true /* request_video_input_capabilities */,
       true /* request_audio_input_capabilities */,
@@ -387,7 +388,7 @@ void MediaDevices::setCaptureHandleConfig(ScriptState* script_state,
   }
 
   GetDispatcherHost(window->GetFrame())
-      ->SetCaptureHandleConfig(std::move(config_ptr));
+      .SetCaptureHandleConfig(std::move(config_ptr));
 }
 
 ScriptPromise MediaDevices::produceCropId(
@@ -452,8 +453,8 @@ ScriptPromise MediaDevices::produceCropId(
   crop_id_resolvers_.insert(element, resolver);
   const ScriptPromise promise = resolver->Promise();
   GetDispatcherHost(window->GetFrame())
-      ->ProduceCropId(WTF::Bind(&MediaDevices::ResolveProduceCropIdPromise,
-                                WrapPersistent(this), WrapPersistent(element)));
+      .ProduceCropId(WTF::Bind(&MediaDevices::ResolveProduceCropIdPromise,
+                               WrapPersistent(this), WrapPersistent(element)));
   RecordUma(ProduceCropTargetFunctionResult::kPromiseProduced);
   return promise;
 #endif
@@ -501,7 +502,6 @@ void MediaDevices::ContextDestroyed() {
 
   stopped_ = true;
   requests_.clear();
-  dispatcher_host_.reset();
 }
 
 void MediaDevices::OnDevicesChanged(
@@ -547,11 +547,11 @@ void MediaDevices::StartObserving() {
     return;
 
   GetDispatcherHost(window->GetFrame())
-      ->AddMediaDevicesListener(true /* audio input */, true /* video input */,
-                                true /* audio output */,
-                                receiver_.BindNewPipeAndPassRemote(
-                                    GetExecutionContext()->GetTaskRunner(
-                                        TaskType::kMediaElementEvent)));
+      .AddMediaDevicesListener(true /* audio input */, true /* video input */,
+                               true /* audio output */,
+                               receiver_.BindNewPipeAndPassRemote(
+                                   GetExecutionContext()->GetTaskRunner(
+                                       TaskType::kMediaElementEvent)));
 }
 
 void MediaDevices::StopObserving() {
@@ -681,29 +681,42 @@ void MediaDevices::OnDispatcherHostConnectionError() {
     std::move(connection_error_test_callback_).Run();
 }
 
-const mojo::Remote<mojom::blink::MediaDevicesDispatcherHost>&
-MediaDevices::GetDispatcherHost(LocalFrame* frame) {
-  if (!dispatcher_host_) {
+mojom::blink::MediaDevicesDispatcherHost& MediaDevices::GetDispatcherHost(
+    LocalFrame* frame) {
+  ExecutionContext* const execution_context = GetExecutionContext();
+  DCHECK(execution_context);
+
+  if (!dispatcher_host_.is_bound()) {
+    // Note: kInternalMediaRealTime is a better candidate for this job,
+    // but kMediaElementEvent is used for consistency.
     frame->GetBrowserInterfaceBroker().GetInterface(
-        dispatcher_host_.BindNewPipeAndPassReceiver());
+        dispatcher_host_.BindNewPipeAndPassReceiver(
+            execution_context->GetTaskRunner(TaskType::kMediaElementEvent)));
     dispatcher_host_.set_disconnect_handler(
         WTF::Bind(&MediaDevices::OnDispatcherHostConnectionError,
                   WrapWeakPersistent(this)));
   }
 
-  return dispatcher_host_;
+  DCHECK(dispatcher_host_.get());
+  return *dispatcher_host_.get();
 }
 
 void MediaDevices::SetDispatcherHostForTesting(
     mojo::PendingRemote<mojom::blink::MediaDevicesDispatcherHost>
         dispatcher_host) {
-  dispatcher_host_.Bind(std::move(dispatcher_host));
+  ExecutionContext* const execution_context = GetExecutionContext();
+  DCHECK(execution_context);
+
+  dispatcher_host_.Bind(
+      std::move(dispatcher_host),
+      execution_context->GetTaskRunner(TaskType::kMediaElementEvent));
   dispatcher_host_.set_disconnect_handler(
       WTF::Bind(&MediaDevices::OnDispatcherHostConnectionError,
                 WrapWeakPersistent(this)));
 }
 
 void MediaDevices::Trace(Visitor* visitor) const {
+  visitor->Trace(dispatcher_host_);
   visitor->Trace(receiver_);
   visitor->Trace(scheduled_events_);
   visitor->Trace(requests_);
@@ -743,7 +756,7 @@ void MediaDevices::CloseFocusWindowOfOpportunity(const String& id,
   // Inform the track that further calls to focus() should raise an exception.
   track->CloseFocusWindowOfOpportunity();
 
-  GetDispatcherHost(window->GetFrame())->CloseFocusWindowOfOpportunity(id);
+  GetDispatcherHost(window->GetFrame()).CloseFocusWindowOfOpportunity(id);
 }
 
 // An empty |crop_id| signals failure; anything else has to be a valid GUID

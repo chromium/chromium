@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "build/build_config.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmldivelement_htmliframeelement.h"
@@ -24,6 +23,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
@@ -136,8 +136,7 @@ class MODULES_EXPORT MediaDevices final
                          Vector<mojom::blink::VideoInputDeviceCapabilitiesPtr>,
                          Vector<mojom::blink::AudioInputDeviceCapabilitiesPtr>);
   void OnDispatcherHostConnectionError();
-  const mojo::Remote<mojom::blink::MediaDevicesDispatcherHost>&
-  GetDispatcherHost(LocalFrame*);
+  mojom::blink::MediaDevicesDispatcherHost& GetDispatcherHost(LocalFrame*);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Manage the window of opportunity that occurs immediately after
@@ -160,7 +159,7 @@ class MODULES_EXPORT MediaDevices final
   // No async work may be posted in this scenario.
   TaskHandle dispatch_scheduled_events_task_handle_;
   HeapVector<Member<Event>> scheduled_events_;
-  mojo::Remote<mojom::blink::MediaDevicesDispatcherHost> dispatcher_host_;
+  HeapMojoRemote<mojom::blink::MediaDevicesDispatcherHost> dispatcher_host_;
   HeapMojoReceiver<mojom::blink::MediaDevicesListener, MediaDevices> receiver_;
   HeapHashSet<Member<ScriptPromiseResolver>> requests_;
 
