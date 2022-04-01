@@ -2089,6 +2089,8 @@ static_library("test_support") {
     "socket/read_buffering_stream_socket.h",
     "socket/socket_test_util.cc",
     "socket/socket_test_util.h",
+    "socket/transport_client_socket_test_util.cc",
+    "socket/transport_client_socket_test_util.h",
     "spdy/spdy_test_util_common.cc",
     "spdy/spdy_test_util_common.h",
     "ssl/client_cert_identity_test_util.cc",

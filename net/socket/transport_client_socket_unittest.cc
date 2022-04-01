@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
+#include "net/socket/transport_client_socket_test_util.h"
+
 #include <string>
 
 #include "base/bind.h"
@@ -45,8 +46,7 @@ class TransportClientSocketTest : public ::testing::Test,
  public:
   TransportClientSocketTest()
       : listen_port_(0),
-        socket_factory_(ClientSocketFactory::GetDefaultFactory()),
-        close_server_socket_on_next_send_(false) {}
+        socket_factory_(ClientSocketFactory::GetDefaultFactory()) {}
 
   ~TransportClientSocketTest() override = default;
 
@@ -63,28 +63,8 @@ class TransportClientSocketTest : public ::testing::Test,
     connect_loop_.Quit();
   }
 
-  int DrainClientSocket(IOBuffer* buf,
-                        uint32_t buf_len,
-                        uint32_t bytes_to_read,
-                        TestCompletionCallback* callback);
-
   // Establishes a connection to the server.
   void EstablishConnection(TestCompletionCallback* callback);
-
-  // Sends a request from the client to the server socket. Makes the server read
-  // the request and send a response.
-  void SendRequestAndResponse();
-
-  // Makes |connected_sock_| to read |expected_bytes_read| bytes. Returns the
-  // the data read as a string.
-  std::string ReadServerData(int expected_bytes_read);
-
-  // Sends server response.
-  void SendServerResponse();
-
-  void set_close_server_socket_on_next_send(bool close) {
-    close_server_socket_on_next_send_ = close;
-  }
 
  protected:
   base::RunLoop connect_loop_;
@@ -96,7 +76,6 @@ class TransportClientSocketTest : public ::testing::Test,
 
  private:
   std::unique_ptr<TCPServerSocket> listen_sock_;
-  bool close_server_socket_on_next_send_;
 };
 
 void TransportClientSocketTest::SetUp() {
@@ -118,25 +97,6 @@ void TransportClientSocketTest::SetUp() {
       addr, nullptr, nullptr, NetLog::Get(), NetLogSource());
 }
 
-int TransportClientSocketTest::DrainClientSocket(
-    IOBuffer* buf,
-    uint32_t buf_len,
-    uint32_t bytes_to_read,
-    TestCompletionCallback* callback) {
-  int rv = OK;
-  uint32_t bytes_read = 0;
-
-  while (bytes_read < bytes_to_read) {
-    rv = sock_->Read(buf, buf_len, callback->callback());
-    EXPECT_TRUE(rv >= 0 || rv == ERR_IO_PENDING);
-    rv = callback->GetResult(rv);
-    EXPECT_GT(rv, 0);
-    bytes_read += rv;
-  }
-
-  return static_cast<int>(bytes_read);
-}
-
 void TransportClientSocketTest::EstablishConnection(
     TestCompletionCallback* callback) {
   int rv = sock_->Connect(callback->callback());
@@ -144,79 +104,6 @@ void TransportClientSocketTest::EstablishConnection(
   connect_loop_.Run();
   // Now wait for the client socket to accept the connection.
   EXPECT_THAT(callback->GetResult(rv), IsOk());
-}
-
-void TransportClientSocketTest::SendRequestAndResponse() {
-  // Send client request.
-  const char request_text[] = "GET / HTTP/1.0\r\n\r\n";
-  int request_len = strlen(request_text);
-  scoped_refptr<DrainableIOBuffer> request_buffer =
-      base::MakeRefCounted<DrainableIOBuffer>(
-          base::MakeRefCounted<IOBuffer>(request_len), request_len);
-  memcpy(request_buffer->data(), request_text, request_len);
-
-  int bytes_written = 0;
-  while (request_buffer->BytesRemaining() > 0) {
-    TestCompletionCallback write_callback;
-    int write_result =
-        sock_->Write(request_buffer.get(), request_buffer->BytesRemaining(),
-                     write_callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
-    write_result = write_callback.GetResult(write_result);
-    ASSERT_GT(write_result, 0);
-    ASSERT_LE(bytes_written + write_result, request_len);
-    request_buffer->DidConsume(write_result);
-    bytes_written += write_result;
-  }
-  ASSERT_EQ(request_len, bytes_written);
-
-  // Confirm that the server receives what client sent.
-  std::string data_received = ReadServerData(bytes_written);
-  ASSERT_TRUE(connected_sock_->IsConnectedAndIdle());
-  ASSERT_EQ(request_text, data_received);
-
-  // Write server response.
-  SendServerResponse();
-}
-
-void TransportClientSocketTest::SendServerResponse() {
-  // TODO(dkegel): this might not be long enough to tickle some bugs.
-  int reply_len = strlen(kServerReply);
-  scoped_refptr<DrainableIOBuffer> write_buffer =
-      base::MakeRefCounted<DrainableIOBuffer>(
-          base::MakeRefCounted<IOBuffer>(reply_len), reply_len);
-  memcpy(write_buffer->data(), kServerReply, reply_len);
-  int bytes_written = 0;
-  while (write_buffer->BytesRemaining() > 0) {
-    TestCompletionCallback write_callback;
-    int write_result = connected_sock_->Write(
-        write_buffer.get(), write_buffer->BytesRemaining(),
-        write_callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
-    write_result = write_callback.GetResult(write_result);
-    ASSERT_GE(write_result, 0);
-    ASSERT_LE(bytes_written + write_result, reply_len);
-    write_buffer->DidConsume(write_result);
-    bytes_written += write_result;
-  }
-  if (close_server_socket_on_next_send_)
-    CloseServerSocket();
-}
-
-std::string TransportClientSocketTest::ReadServerData(int expected_bytes_read) {
-  int bytes_read = 0;
-  scoped_refptr<IOBufferWithSize> read_buffer =
-      base::MakeRefCounted<IOBufferWithSize>(expected_bytes_read);
-  while (bytes_read < expected_bytes_read) {
-    TestCompletionCallback read_callback;
-    int rv = connected_sock_->Read(read_buffer.get(),
-                                   expected_bytes_read - bytes_read,
-                                   read_callback.callback());
-    EXPECT_TRUE(rv >= 0 || rv == ERR_IO_PENDING);
-    rv = read_callback.GetResult(rv);
-    EXPECT_GE(rv, 0);
-    bytes_read += rv;
-  }
-  EXPECT_EQ(expected_bytes_read, bytes_read);
-  return std::string(read_buffer->data(), bytes_read);
 }
 
 TEST_F(TransportClientSocketTest, Connect) {
@@ -262,10 +149,10 @@ TEST_F(TransportClientSocketTest, IsConnected) {
   EXPECT_TRUE(sock_->IsConnectedAndIdle());
 
   // Send the request and wait for the server to respond.
-  SendRequestAndResponse();
+  SendRequestAndResponse(sock_.get(), connected_sock_.get());
 
   // Drain a single byte so we know we've received some data.
-  bytes_read = DrainClientSocket(buf.get(), 1, 1, &callback);
+  bytes_read = DrainStreamSocket(sock_.get(), buf.get(), 1, 1, &callback);
   ASSERT_EQ(bytes_read, 1u);
 
   // Socket should be considered connected, but not idle, due to
@@ -273,8 +160,8 @@ TEST_F(TransportClientSocketTest, IsConnected) {
   EXPECT_TRUE(sock_->IsConnected());
   EXPECT_FALSE(sock_->IsConnectedAndIdle());
 
-  bytes_read =
-      DrainClientSocket(buf.get(), 4096, strlen(kServerReply) - 1, &callback);
+  bytes_read = DrainStreamSocket(sock_.get(), buf.get(), 4096,
+                                 strlen(kServerReply) - 1, &callback);
   ASSERT_EQ(bytes_read, strlen(kServerReply) - 1);
 
   // After draining the data, the socket should be back to connected
@@ -283,18 +170,18 @@ TEST_F(TransportClientSocketTest, IsConnected) {
   EXPECT_TRUE(sock_->IsConnectedAndIdle());
 
   // This time close the server socket immediately after the server response.
-  set_close_server_socket_on_next_send(true);
-  SendRequestAndResponse();
+  SendRequestAndResponse(sock_.get(), connected_sock_.get());
+  CloseServerSocket();
 
-  bytes_read = DrainClientSocket(buf.get(), 1, 1, &callback);
+  bytes_read = DrainStreamSocket(sock_.get(), buf.get(), 1, 1, &callback);
   ASSERT_EQ(bytes_read, 1u);
 
   // As above because of data.
   EXPECT_TRUE(sock_->IsConnected());
   EXPECT_FALSE(sock_->IsConnectedAndIdle());
 
-  bytes_read =
-      DrainClientSocket(buf.get(), 4096, strlen(kServerReply) - 1, &callback);
+  bytes_read = DrainStreamSocket(sock_.get(), buf.get(), 4096,
+                                 strlen(kServerReply) - 1, &callback);
   ASSERT_EQ(bytes_read, strlen(kServerReply) - 1);
 
   // Once the data is drained, the socket should now be seen as not
@@ -313,11 +200,11 @@ TEST_F(TransportClientSocketTest, Read) {
   TestCompletionCallback callback;
   EstablishConnection(&callback);
 
-  SendRequestAndResponse();
+  SendRequestAndResponse(sock_.get(), connected_sock_.get());
 
   scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(4096);
-  uint32_t bytes_read =
-      DrainClientSocket(buf.get(), 4096, strlen(kServerReply), &callback);
+  uint32_t bytes_read = DrainStreamSocket(sock_.get(), buf.get(), 4096,
+                                          strlen(kServerReply), &callback);
   ASSERT_EQ(bytes_read, strlen(kServerReply));
   ASSERT_EQ(std::string(kServerReply), std::string(buf->data(), bytes_read));
 
@@ -334,7 +221,7 @@ TEST_F(TransportClientSocketTest, Read_SmallChunks) {
   TestCompletionCallback callback;
   EstablishConnection(&callback);
 
-  SendRequestAndResponse();
+  SendRequestAndResponse(sock_.get(), connected_sock_.get());
 
   scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(1);
   uint32_t bytes_read = 0;
@@ -361,7 +248,7 @@ TEST_F(TransportClientSocketTest, Read_Interrupted) {
   TestCompletionCallback callback;
   EstablishConnection(&callback);
 
-  SendRequestAndResponse();
+  SendRequestAndResponse(sock_.get(), connected_sock_.get());
 
   // Do a partial read and then exit.  This test should not crash!
   scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(16);
@@ -396,8 +283,8 @@ TEST_F(TransportClientSocketTest, FullDuplex_ReadFirst) {
                       write_callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
     ASSERT_TRUE(rv >= 0 || rv == ERR_IO_PENDING);
     if (rv == ERR_IO_PENDING) {
-      ReadServerData(bytes_written);
-      SendServerResponse();
+      ReadDataOfExpectedLength(connected_sock_.get(), bytes_written);
+      SendServerResponse(connected_sock_.get());
       rv = write_callback.WaitForResult();
       break;
     }
@@ -451,8 +338,8 @@ TEST_F(TransportClientSocketTest, FullDuplex_WriteFirst) {
   // run the write and read callbacks to make sure they can handle full duplex
   // communications.
 
-  ReadServerData(bytes_written);
-  SendServerResponse();
+  ReadDataOfExpectedLength(connected_sock_.get(), bytes_written);
+  SendServerResponse(connected_sock_.get());
   int rv = write_callback.WaitForResult();
   EXPECT_GE(rv, 0);
 
