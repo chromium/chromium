@@ -232,6 +232,7 @@ void AppListBubbleView::InitContentsView(
   params.show_close_button_when_active = false;
   params.create_background = false;
   params.animate_changing_search_icon = false;
+  params.increase_child_view_padding = true;
   search_box_view_->Init(params);
 
   assistant_button_focus_skipper_ =

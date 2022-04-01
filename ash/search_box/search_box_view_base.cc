@@ -359,7 +359,6 @@ SearchBoxViewBase::SearchBoxViewBase(SearchBoxViewDelegate* delegate)
       content_container_->AddChildView(std::make_unique<SearchIconImageView>());
   search_icon_->SetPaintToLayer();
   search_icon_->layer()->SetFillsBoundsOpaquely(false);
-
   content_container_->AddChildView(search_box_);
   box_layout_->SetFlexForView(search_box_, 1);
 
@@ -397,6 +396,10 @@ void SearchBoxViewBase::Init(const InitParams& params) {
         kSearchBoxBorderCornerRadius,
         AppListColorProvider::Get()->GetSearchBoxBackgroundColor()));
   }
+  if (params.increase_child_view_padding) {
+    box_layout_->set_between_child_spacing(kInnerPadding);
+  }
+
   UpdateSearchBoxBorder();
   UpdatePlaceholderTextStyle();
   SetupAssistantButton();
