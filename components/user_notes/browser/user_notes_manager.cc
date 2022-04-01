@@ -23,13 +23,14 @@ UserNotesManager::UserNotesManager(content::Page& page,
 
 UserNotesManager::~UserNotesManager() {
   for (const auto& entry_it : instance_map_) {
-    service_->OnNoteInstanceRemovedFromPage(entry_it.second->model().guid(),
+    service_->OnNoteInstanceRemovedFromPage(entry_it.second->model().id(),
                                             this);
   }
 }
 
-UserNoteInstance* UserNotesManager::GetNoteInstance(const std::string& guid) {
-  const auto& entry_it = instance_map_.find(guid);
+UserNoteInstance* UserNotesManager::GetNoteInstance(
+    const base::UnguessableToken id) {
+  const auto& entry_it = instance_map_.find(id);
   if (entry_it == instance_map_.end()) {
     return nullptr;
   }
@@ -47,23 +48,23 @@ const std::vector<UserNoteInstance*> UserNotesManager::GetAllNoteInstances() {
   return notes;
 }
 
-void UserNotesManager::RemoveNote(const std::string& guid) {
-  const auto& entry_it = instance_map_.find(guid);
+void UserNotesManager::RemoveNote(const base::UnguessableToken id) {
+  const auto& entry_it = instance_map_.find(id);
   DCHECK(entry_it != instance_map_.end())
       << "Attempted to remove a note instance from a page where it didn't "
          "exist";
 
-  service_->OnNoteInstanceRemovedFromPage(guid, this);
+  service_->OnNoteInstanceRemovedFromPage(id, this);
   instance_map_.erase(entry_it);
 }
 
 void UserNotesManager::AddNoteInstance(std::unique_ptr<UserNoteInstance> note) {
-  DCHECK(instance_map_.find(note->model().guid()) == instance_map_.end())
+  DCHECK(instance_map_.find(note->model().id()) == instance_map_.end())
       << "Attempted to add a note instance for the same note to the same page "
          "more than once";
 
-  service_->OnNoteInstanceAddedToPage(note->model().guid(), this);
-  instance_map_.emplace(note->model().guid(), std::move(note));
+  service_->OnNoteInstanceAddedToPage(note->model().id(), this);
+  instance_map_.emplace(note->model().id(), std::move(note));
 }
 
 }  // namespace user_notes

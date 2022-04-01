@@ -9,6 +9,7 @@
 
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/unguessable_token.h"
 #include "components/user_notes/model/user_note_body.h"
 #include "components/user_notes/model/user_note_metadata.h"
 #include "components/user_notes/model/user_note_target.h"
@@ -18,7 +19,7 @@ namespace user_notes {
 // Model class for a note.
 class UserNote {
  public:
-  explicit UserNote(const std::string& guid,
+  explicit UserNote(const base::UnguessableToken& id,
                     std::unique_ptr<UserNoteMetadata> metadata,
                     std::unique_ptr<UserNoteBody> body,
                     std::unique_ptr<UserNoteTarget> target);
@@ -28,14 +29,14 @@ class UserNote {
 
   base::SafeRef<UserNote> GetSafeRef();
 
-  const std::string& guid() const { return guid_; }
+  const base::UnguessableToken& id() const { return id_; }
   const UserNoteMetadata& metadata() const { return *metadata_; }
   const UserNoteBody& body() const { return *body_; }
   const UserNoteTarget& target() const { return *target_; }
 
  private:
   // The unique (among the user's notes) ID for this note.
-  std::string guid_;
+  base::UnguessableToken id_;
 
   std::unique_ptr<UserNoteMetadata> metadata_;
   std::unique_ptr<UserNoteBody> body_;

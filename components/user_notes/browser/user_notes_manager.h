@@ -12,6 +12,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/safe_ref.h"
+#include "base/unguessable_token.h"
 #include "components/user_notes/browser/user_note_instance.h"
 #include "components/user_notes/browser/user_note_service.h"
 #include "content/public/browser/page_user_data.h"
@@ -39,15 +40,15 @@ class UserNotesManager : public content::PageUserData<UserNotesManager> {
   UserNotesManager(const UserNotesManager&) = delete;
   UserNotesManager& operator=(const UserNotesManager&) = delete;
 
-  // Returns the note instance for the given GUID, or nullptr if this page does
+  // Returns the note instance for the given ID, or nullptr if this page does
   // not have an instance of that note.
-  UserNoteInstance* GetNoteInstance(const std::string& guid);
+  UserNoteInstance* GetNoteInstance(const base::UnguessableToken id);
 
   // Returns all note instances for the |Page| this object is attached to.
   const std::vector<UserNoteInstance*> GetAllNoteInstances();
 
   // Destroys the note instance associated with the given GUID.
-  void RemoveNote(const std::string& guid);
+  void RemoveNote(const base::UnguessableToken id);
 
   // Stores the given note instance into this object's note instance container.
   void AddNoteInstance(std::unique_ptr<UserNoteInstance> note);
@@ -69,7 +70,9 @@ class UserNotesManager : public content::PageUserData<UserNotesManager> {
   base::SafeRef<UserNoteService> service_;
 
   // The list of note instances displayed in this page, mapped by their note ID.
-  std::unordered_map<std::string, std::unique_ptr<UserNoteInstance>>
+  std::unordered_map<base::UnguessableToken,
+                     std::unique_ptr<UserNoteInstance>,
+                     base::UnguessableTokenHash>
       instance_map_;
 };
 

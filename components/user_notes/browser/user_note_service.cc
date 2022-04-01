@@ -20,21 +20,23 @@ base::SafeRef<UserNoteService> UserNoteService::GetSafeRef() {
   return weak_ptr_factory_.GetSafeRef();
 }
 
-void UserNoteService::OnNoteInstanceAddedToPage(const std::string& guid,
-                                                UserNotesManager* manager) {
+void UserNoteService::OnNoteInstanceAddedToPage(
+    const base::UnguessableToken& id,
+    UserNotesManager* manager) {
   DCHECK(IsUserNotesEnabled());
-  const auto& entry_it = model_map_.find(guid);
+  const auto& entry_it = model_map_.find(id);
   DCHECK(entry_it != model_map_.end())
       << "A note instance without backing model was added to a page";
 
   entry_it->second.managers.insert(manager);
 }
 
-void UserNoteService::OnNoteInstanceRemovedFromPage(const std::string& guid,
-                                                    UserNotesManager* manager) {
+void UserNoteService::OnNoteInstanceRemovedFromPage(
+    const base::UnguessableToken& id,
+    UserNotesManager* manager) {
   DCHECK(IsUserNotesEnabled());
 
-  const auto& entry_it = model_map_.find(guid);
+  const auto& entry_it = model_map_.find(id);
   DCHECK(entry_it != model_map_.end())
       << "A note model was destroyed before all its instances";
 
@@ -44,22 +46,23 @@ void UserNoteService::OnNoteInstanceRemovedFromPage(const std::string& guid,
 
   // If there are no longer any pages displaying this model, destroy it.
   if (entry_it->second.managers.empty()) {
-    model_map_.erase(guid);
+    model_map_.erase(id);
   }
 }
 
-void UserNoteService::OnNoteFocused(const std::string& guid) {
+void UserNoteService::OnNoteFocused(const base::UnguessableToken& id) {
   DCHECK(IsUserNotesEnabled());
   NOTIMPLEMENTED();
 }
 
-void UserNoteService::OnNoteCreationDone(const std::string& guid,
+void UserNoteService::OnNoteCreationDone(const base::UnguessableToken& id,
                                          const std::string& note_content) {
   DCHECK(IsUserNotesEnabled());
   NOTIMPLEMENTED();
 }
 
-void UserNoteService::OnNoteCreationCancelled(const std::string& guid) {
+void UserNoteService::OnNoteCreationCancelled(
+    const base::UnguessableToken& id) {
   DCHECK(IsUserNotesEnabled());
   NOTIMPLEMENTED();
 }

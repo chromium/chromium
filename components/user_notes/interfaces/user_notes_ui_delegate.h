@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/unguessable_token.h"
+
 namespace user_notes {
 
 // Interface used by the UI layer (e.g. Side Panel on desktop) to delegate
@@ -19,14 +21,14 @@ class UserNotesUIDelegate {
   virtual ~UserNotesUIDelegate() = default;
 
   // Called when a note in the UI is focused.
-  virtual void OnNoteFocused(const std::string& guid) = 0;
+  virtual void OnNoteFocused(const base::UnguessableToken& id) = 0;
 
   // Called when the user successfully creates a new note in the UI.
-  virtual void OnNoteCreationDone(const std::string& guid,
+  virtual void OnNoteCreationDone(const base::UnguessableToken& id,
                                   const std::string& note_content) = 0;
 
   // Called when the user aborts the note creation process in the UI.
-  virtual void OnNoteCreationCancelled(const std::string& guid) = 0;
+  virtual void OnNoteCreationCancelled(const base::UnguessableToken& id) = 0;
 };
 
 }  // namespace user_notes

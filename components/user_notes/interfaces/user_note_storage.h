@@ -10,6 +10,7 @@
 #include <unordered_map>
 
 #include "base/callback.h"
+#include "base/unguessable_token.h"
 #include "components/user_notes/model/user_note.h"
 #include "components/user_notes/model/user_note_metadata.h"
 #include "url/gurl.h"
@@ -18,7 +19,9 @@ namespace user_notes {
 
 // Interface that callers can use to interact with the UserNotes in storage.
 class UserNoteStorage {
-  typedef std::unordered_map<std::string, std::unique_ptr<UserNoteMetadata>>
+  typedef std::unordered_map<base::UnguessableToken,
+                             std::unique_ptr<UserNoteMetadata>,
+                             base::UnguessableTokenHash>
       NoteMetadataIdMap;
 
  public:
