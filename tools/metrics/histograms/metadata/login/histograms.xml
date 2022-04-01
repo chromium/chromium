@@ -124,7 +124,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.InvalidCombinationsOfAllowedUsersPolicies"
-    enum="AllowedUsersPoliciesInvalidState" expires_after="2022-04-17">
+    enum="AllowedUsersPoliciesInvalidState" expires_after="2022-10-17">
   <owner>emaamari@google.com</owner>
   <owner>src/ash/components/policy/OWNERS</owner>
   <summary>
