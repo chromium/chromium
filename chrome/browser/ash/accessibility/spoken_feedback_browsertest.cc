@@ -780,15 +780,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OverviewMode) {
 }
 
 // TODO(crbug.com/1312004): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_EnableChromeVoxOnOverviewMode \
-  DISABLED_EnableChromeVoxOnOverviewMode
-#else
-#define MAYBE_EnableChromeVoxOnOverviewMode EnableChromeVoxOnOverviewMode
-#endif
 // Verify that enable chromeVox won't end overview.
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
-                       MAYBE_EnableChromeVoxOnOverviewMode) {
+                       DISABLED_EnableChromeVoxOnOverviewMode) {
   sm_.Call([this]() {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), GURL("data:text/html;charset=utf-8,<button "
@@ -894,8 +888,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ChromeVoxStickyMode) {
 // depends on more of the UI events stack and sticky mode invocation has a
 // timing element to it.
 // Consistently failing on ChromiumOS MSan and ASan. http://crbug.com/1182542
-#if BUILDFLAG(IS_CHROMEOS) && \
-    (defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER))
+#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER)
 #define MAYBE_ChromeVoxStickyModeRawKeys DISABLED_ChromeVoxStickyModeRawKeys
 #else
 #define MAYBE_ChromeVoxStickyModeRawKeys ChromeVoxStickyModeRawKeys

@@ -280,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(EulaTest, LearnMore) {
           1)));
 }
 
-#if BUILDFLAG(IS_CHROMEOS) && defined(NDEBUG)
+#if defined(NDEBUG)
 #define MAYBE_AdditionalToS DISABLED_AdditionalToS
 #else
 #define MAYBE_AdditionalToS AdditionalToS

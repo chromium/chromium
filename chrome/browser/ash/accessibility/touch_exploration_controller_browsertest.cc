@@ -11,7 +11,6 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -75,16 +74,11 @@ class TouchExplorationTest : public InProcessBrowserTest {
   std::unique_ptr<ui::test::TestEventHandler> event_handler_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// crbug.com/422943
-#define MAYBE_NoRewritingEventsWhenOff DISABLED_NoRewritingEventsWhenOff
-#else
-#define MAYBE_NoRewritingEventsWhenOff NoRewritingEventsWhenOff
-#endif
-
 // This test turns the touch exploration mode off and confirms that events
 // aren't modified.
-IN_PROC_BROWSER_TEST_F(TouchExplorationTest, MAYBE_NoRewritingEventsWhenOff) {
+// Disabled: crbug.com/422943
+IN_PROC_BROWSER_TEST_F(TouchExplorationTest,
+                       DISABLED_NoRewritingEventsWhenOff) {
   SwitchTouchExplorationMode(false);
   ui::test::EventGenerator generator(root_window_);
 

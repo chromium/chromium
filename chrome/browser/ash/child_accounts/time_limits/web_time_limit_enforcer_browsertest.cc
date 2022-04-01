@@ -430,15 +430,9 @@ IN_PROC_BROWSER_TEST_F(WebTimeLimitEnforcerThrottleTest, WebContentTitleSet) {
   EXPECT_EQ(web_contents->GetTitle(), title);
 }
 
-// TODO(crbug.com/1291093): Flaky on Linux.
 // TODO(crbug.com/1291093): Flaky on ChromeOS.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_EnsureQueryIsCleared DISABLED_EnsureQueryIsCleared
-#else
-#define MAYBE_EnsureQueryIsCleared EnsureQueryIsCleared
-#endif
 IN_PROC_BROWSER_TEST_F(WebTimeLimitEnforcerThrottleTest,
-                       MAYBE_EnsureQueryIsCleared) {
+                       DISABLED_EnsureQueryIsCleared) {
   AllowlistUrlRegx(kExampleHost);
   BlockWeb();
 

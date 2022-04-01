@@ -221,13 +221,7 @@ class TrayAccessibilityTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Fails on linux-chromeos-dbg see crbug/1027919.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ShowMenu DISABLED_ShowMenu
-#else
-#define MAYBE_ShowMenu ShowMenu
-#endif
-IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest, MAYBE_ShowMenu) {
+IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest, DISABLED_ShowMenu) {
   SetShowAccessibilityOptionsInSystemTrayMenu(false);
 
   // Confirms that the menu is hidden.
@@ -397,12 +391,8 @@ IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest, MAYBE_ShowMenu) {
 }
 
 // Fails on linux-chromeos-dbg see crbug/1027919.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ShowMenuWithShowMenuOption DISABLED_ShowMenuWithShowMenuOption
-#else
-#define MAYBE_ShowMenuWithShowMenuOption ShowMenuWithShowMenuOption
-#endif
-IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest, MAYBE_ShowMenuWithShowMenuOption) {
+IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest,
+                       DISABLED_ShowMenuWithShowMenuOption) {
   SetShowAccessibilityOptionsInSystemTrayMenu(true);
 
   // Confirms that the menu is visible.

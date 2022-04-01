@@ -575,12 +575,7 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test, PRE_MergeSession) {
 // that was generated in PRE_PRE_MergeSession test. This attempt should fail
 // since FakeGaia instance isn't configured to return relevant tokens/cookies.
 // TODO(crbug.com/1249863): Test is flaky on chromeos
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_MergeSession DISABLED_MergeSession
-#else
-#define MAYBE_MergeSession MergeSession
-#endif
-IN_PROC_BROWSER_TEST_F(OAuth2Test, MAYBE_MergeSession) {
+IN_PROC_BROWSER_TEST_F(OAuth2Test, DISABLED_MergeSession) {
   SimulateNetworkOnline();
 
   EXPECT_EQ(1, LoginScreenTestApi::GetUsersCount());

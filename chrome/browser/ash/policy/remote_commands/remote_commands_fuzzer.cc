@@ -27,10 +27,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/enterprise/remote_commands/clear_browsing_data_job.h"
-#endif
-
 namespace em = enterprise_management;
 
 namespace policy {
@@ -106,19 +102,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       &start_crd_session_job_delegate);
   DeviceCommandRunRoutineJob run_routine_job;
   DeviceCommandGetRoutineUpdateJob get_routine_update_job;
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
-  enterprise_commands::ClearBrowsingDataJob clear_browsing_data_job(
-      &env.profile_manager);
-#endif
   std::initializer_list<RemoteCommandJob* const> jobs = {
-    &screenshot_job,
-    &set_volume_job,
-    &start_crd_session_job,
-    &run_routine_job,
-    &get_routine_update_job,
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
-    &clear_browsing_data_job,
-#endif
+      &screenshot_job,  &set_volume_job,         &start_crd_session_job,
+      &run_routine_job, &get_routine_update_job,
   };
 
   // Select a random job.

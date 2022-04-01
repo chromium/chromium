@@ -1361,7 +1361,7 @@ class DictationUITest : public DictationExtensionTest {
 };
 
 // Consistently failing on Linux ChromiumOS MSan (https://crbug.com/1302688).
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_ShownWhenSpeechRecognitionStarts \
   DISABLED_ShownWhenSpeechRecognitionStarts
 #define MAYBE_DisplaysInterimSpeechResults DISABLED_DisplaysInterimSpeechResults
@@ -1495,12 +1495,7 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_StandbyHints) {
 // the Dictation UI.
 
 // TODO(crbug.com/1296810): DictationUITest.ChromeVoxAnnouncesHints is flaky.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ChromeVoxAnnouncesHints DISABLED_ChromeVoxAnnouncesHints
-#else
-#define MAYBE_ChromeVoxAnnouncesHints ChromeVoxAnnouncesHints
-#endif
-IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_ChromeVoxAnnouncesHints) {
+IN_PROC_BROWSER_TEST_P(DictationUITest, DISABLED_ChromeVoxAnnouncesHints) {
   // Setup ChromeVox first.
   test::SpeechMonitor sm;
   EXPECT_FALSE(GetManager()->IsSpokenFeedbackEnabled());

@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, DISABLED_SpeakStatusTray) {
 }
 
 // Flaky on ChromeOS MSAN bots: https://crbug.com/1227368
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_ActivatesWithTapOnSelectToSpeakTray DISABLED_ActivatesWithTapOnSelectToSpeakTray
 #else
 #define MAYBE_ActivatesWithTapOnSelectToSpeakTray ActivatesWithTapOnSelectToSpeakTray
@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, MAYBE_ActivatesWithTapOnSelectToSpeakT
 }
 
 // Flaky on ChromeOS MSAN bots: https://crbug.com/1227368
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_WorksWithTouchSelection DISABLED_WorksWithTouchSelection
 #else
 #define MAYBE_WorksWithTouchSelection WorksWithTouchSelection
@@ -327,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, SelectToSpeakTrayNotSpoken) {
 }
 
 // Flaky on ChromeOS MSAN bots: https://crbug.com/1227368
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_SmoothlyReadsAcrossInlineUrl DISABLED_SmoothlyReadsAcrossInlineUrl
 #else
 #define MAYBE_SmoothlyReadsAcrossInlineUrl SmoothlyReadsAcrossInlineUrl
@@ -345,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, MAYBE_SmoothlyReadsAcrossInlineUrl) {
 }
 
 // Flaky on ChromeOS MSAN bots: https://crbug.com/1227368
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_SmoothlyReadsAcrossMultipleLines DISABLED_SmoothlyReadsAcrossMultipleLines
 #else
 #define MAYBE_SmoothlyReadsAcrossMultipleLines SmoothlyReadsAcrossMultipleLines
@@ -365,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, MAYBE_SmoothlyReadsAcrossMultipleLines
 }
 
 // TODO(crbug.com/1225388): Flaky on ChromeOS MSAN bots
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_SmoothlyReadsAcrossFormattedText \
   DISABLED_SmoothlyReadsAcrossFormattedText
 #else
@@ -386,7 +386,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
 }
 
 // Flaky on ChromeOS MSAN bots: https://crbug.com/1227368
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_ReadsStaticTextWithoutInlineTextChildren \
   DISABLED_ReadsStaticTextWithoutInlineTextChildren
 #else
@@ -404,7 +404,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
 }
 
 // Flaky on ChromeOS MSAN bots: https://crbug.com/1227368
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_BreaksAtParagraphBounds DISABLED_BreaksAtParagraphBounds
 #else
 #define MAYBE_BreaksAtParagraphBounds BreaksAtParagraphBounds
@@ -455,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTestWithLanguageDetection,
 }
 
 // Flaky on ChromeOS MSAN bots: https://crbug.com/1227368
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_DoesNotCrashWithMousewheelEvent DISABLED_DoesNotCrashWithMousewheelEvent
 #else
 #define MAYBE_DoesNotCrashWithMousewheelEvent DoesNotCrashWithMousewheelEvent
@@ -583,7 +583,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, MAYBE_ContinuesReadingDuringResize) {
 }
 
 // Flaky on ChromeOS MSAN bots: https://crbug.com/1227368
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_WorksWithStickyKeys DISABLED_WorksWithStickyKeys
 #else
 #define MAYBE_WorksWithStickyKeys WorksWithStickyKeys

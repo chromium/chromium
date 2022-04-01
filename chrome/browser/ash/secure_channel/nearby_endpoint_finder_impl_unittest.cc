@@ -206,15 +206,8 @@ TEST_F(NearbyEndpointFinderImplTest, FailStartingDiscovery) {
   EXPECT_TRUE(has_failed_);
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 // Failing on CrOS ASAN: crbug.com/1290882
-#define MAYBE_FailInjectingEndpoint DISABLED_FailInjectingEndpoint
-#else
-#define MAYBE_FailInjectingEndpoint FailInjectingEndpoint
-#endif
-
-
-TEST_F(NearbyEndpointFinderImplTest, MAYBE_FailInjectingEndpoint) {
+TEST_F(NearbyEndpointFinderImplTest, DISABLED_FailInjectingEndpoint) {
   FindEndpoint();
   InvokeStartDiscoveryCallback(/*success=*/true);
   InvokeInjectEndpointCallback(/*success=*/false);
