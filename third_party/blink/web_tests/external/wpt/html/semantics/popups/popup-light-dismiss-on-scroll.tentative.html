@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <meta charset="utf-8" />
-<title>Popup light dismiss on scroll</title>
+<title>Popup should *not* light dismiss on scroll</title>
 <link rel="author" href="mailto:masonf@chromium.org">
 <link rel=help href="https://open-ui.org/components/popup.research.explainer">
+<link rel=help href="https://github.com/openui/open-ui/issues/240">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
@@ -15,8 +16,12 @@
   quis. Tortor dignissim convallis aenean et. Eu mi bibendum neque egestas congue quisque
 </div>
 
-<div popup=popup id=popup1>This is popup 1<div id=anchor></div></div>
-<div popup=popup id=popup2 anchor=anchor>This is popup 2</div>
+<div popup=popup id=popup1>
+  This is popup 1
+  <div popup=popup id=popup2 anchor=anchor>
+    This is popup 2
+  </div>
+</div>
 <button onclick='popup1.showPopup();popup2.showPopup();'>Open popups</button>
 
 <style>
@@ -31,17 +36,28 @@
 </style>
 
 <script>
+  const popups = document.querySelectorAll('[popup]');
+  function assertAll(showing) {
+    for(let popup of popups) {
+      assert_equals(popup.matches(':popup-open'),showing);
+    }
+  }
   async_test(t => {
-    popup1.addEventListener('hide',e => {
-      assert_false(popup2.matches(':popup-open'));
-      t.done();
-    })
-    assert_false(popup1.matches(':popup-open'));
-    assert_false(popup2.matches(':popup-open'));
-    popup1.showPopup();
-    popup2.showPopup();
-    assert_true(popup1.matches(':popup-open'));
-    assert_true(popup2.matches(':popup-open'));
+    for(let popup of popups) {
+      popup.addEventListener('hide',e => {
+        assert_unreached('Scrolling should not light-dismiss a popup');
+      });
+    }
+    assertAll(/*showing*/false);
+    popups[0].showPopup();
+    popups[1].showPopup();
+    assertAll(/*showing*/true);
     scroller.scrollTo(0, 100);
-  },'Scrolling light-dismisses all popups');
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        assertAll(/*showing*/true);
+        t.done();
+      });
+    });
+  },'Scrolling should not light-dismiss popups');
 </script>
