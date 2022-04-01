@@ -1182,7 +1182,13 @@ TEST_F(RelaunchNotificationControllerPlatformImplTest,
   ::testing::Mock::VerifyAndClearExpectations(&callback);
 }
 
-TEST_F(RelaunchNotificationControllerPlatformImplTest, DeferredDeadline) {
+//  Flaky on Mac: https://crbug.com/1312578
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DeferredDeadline DISABLED_DeferredDeadline
+#else
+#define MAYBE_DeferredDeadline DeferredDeadline
+#endif
+TEST_F(RelaunchNotificationControllerPlatformImplTest, MAYBE_DeferredDeadline) {
   ::testing::StrictMock<base::MockOnceCallback<base::Time()>> callback;
 
   base::Time deadline = base::Time::FromDeltaSinceWindowsEpoch(base::Hours(1));
