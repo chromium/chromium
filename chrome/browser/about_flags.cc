@@ -5107,16 +5107,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(reading_list::switches::kReadLater,
                                     kReadLaterVariations,
                                     "Collections")},
-#else
-    {flag_descriptions::kReadLaterFlagId, flag_descriptions::kReadLaterName,
-     flag_descriptions::kReadLaterDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(reading_list::switches::kReadLater)},
 #endif
-
-    {"read-later-new-badge-promo",
-     flag_descriptions::kReadLaterNewBadgePromoName,
-     flag_descriptions::kReadLaterNewBadgePromoDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kReadLaterNewBadgePromo)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"read-later-reminder-notification",
@@ -5155,10 +5146,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kScrollableTabStripButtonsName,
      flag_descriptions::kScrollableTabStripButtonsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kScrollableTabStripButtons)},
-
-    {flag_descriptions::kSidePanelFlagId, flag_descriptions::kSidePanelName,
-     flag_descriptions::kSidePanelDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kSidePanel)},
 
     {flag_descriptions::kSidePanelDragAndDropFlagId,
      flag_descriptions::kSidePanelDragAndDropName,

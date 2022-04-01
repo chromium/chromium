@@ -1229,9 +1229,6 @@ extern const char kReadLaterFlagId[];
 extern const char kReadLaterName[];
 extern const char kReadLaterDescription[];
 
-extern const char kReadLaterNewBadgePromoName[];
-extern const char kReadLaterNewBadgePromoDescription[];
-
 extern const char kRecordWebAppDebugInfoName[];
 extern const char kRecordWebAppDebugInfoDescription[];
 
@@ -1283,10 +1280,6 @@ extern const char kSendTabToSelfSigninPromoDescription[];
 
 extern const char kShoppingListName[];
 extern const char kShoppingListDescription[];
-
-extern const char kSidePanelFlagId[];
-extern const char kSidePanelName[];
-extern const char kSidePanelDescription[];
 
 extern const char kSidePanelDragAndDropFlagId[];
 extern const char kSidePanelDragAndDropName[];

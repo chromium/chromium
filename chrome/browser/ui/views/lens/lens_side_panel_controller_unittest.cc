@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "components/lens/lens_features.h"
-#include "components/reading_list/features/reading_list_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace lens {
@@ -30,10 +29,7 @@ class LensSidePanelControllerTest : public TestWithBrowserView {
   void SetUp() override {
     base::test::ScopedFeatureList features;
     features.InitWithFeaturesAndParameters(
-        {{features::kLensStandalone, {{"enable-side-panel", "true"}}},
-         {::features::kSidePanel, {}},
-         {reading_list::switches::kReadLater, {}}},
-        {});
+        {{features::kLensStandalone, {{"enable-side-panel", "true"}}}}, {});
     TestWithBrowserView::SetUp();
     // Create the lens side panel controller in BrowserView.
     browser_view()->CreateLensSidePanelController();

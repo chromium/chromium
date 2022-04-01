@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/browser_sync/browser_sync_switches.h"
-#include "components/reading_list/features/reading_list_switches.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_service_impl.h"
@@ -95,11 +94,12 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
   // TODO(crbug.com/1109640): Consider whether all of these types should really
   // be enabled in Local Sync mode.
   syncer::ModelTypeSet expected_active_data_types = syncer::ModelTypeSet(
-      syncer::BOOKMARKS, syncer::PREFERENCES, syncer::PASSWORDS,
-      syncer::AUTOFILL_PROFILE, syncer::AUTOFILL, syncer::AUTOFILL_WALLET_DATA,
-      syncer::AUTOFILL_WALLET_METADATA, syncer::THEMES, syncer::TYPED_URLS,
-      syncer::EXTENSIONS, syncer::SEARCH_ENGINES, syncer::SESSIONS,
-      syncer::APPS, syncer::APP_SETTINGS, syncer::EXTENSION_SETTINGS,
+      syncer::BOOKMARKS, syncer::READING_LIST, syncer::PREFERENCES,
+      syncer::PASSWORDS, syncer::AUTOFILL_PROFILE, syncer::AUTOFILL,
+      syncer::AUTOFILL_WALLET_DATA, syncer::AUTOFILL_WALLET_METADATA,
+      syncer::THEMES, syncer::TYPED_URLS, syncer::EXTENSIONS,
+      syncer::SEARCH_ENGINES, syncer::SESSIONS, syncer::APPS,
+      syncer::APP_SETTINGS, syncer::EXTENSION_SETTINGS,
       syncer::HISTORY_DELETE_DIRECTIVES, syncer::DEVICE_INFO,
       syncer::PRIORITY_PREFERENCES, syncer::WEB_APPS, syncer::PROXY_TABS,
       syncer::NIGORI);
@@ -113,10 +113,6 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
 #if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   expected_active_data_types.Put(syncer::DICTIONARY);
 #endif
-
-  if (base::FeatureList::IsEnabled(reading_list::switches::kReadLater)) {
-    expected_active_data_types.Put(syncer::READING_LIST);
-  }
 
   EXPECT_EQ(service->GetActiveDataTypes(), expected_active_data_types);
 

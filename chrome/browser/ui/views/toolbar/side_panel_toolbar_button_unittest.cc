@@ -19,7 +19,6 @@
 class SidePanelToolbarButtonTest : public TestWithBrowserView {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kSidePanel);
     TestWithBrowserView::SetUp();
 
     model_ = ReadingListModelFactory::GetForBrowserContext(profile());
@@ -42,7 +41,6 @@ class SidePanelToolbarButtonTest : public TestWithBrowserView {
   ReadingListModel* model() { return model_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<ReadingListModel> model_;
 };
 

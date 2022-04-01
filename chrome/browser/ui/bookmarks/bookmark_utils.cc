@@ -24,7 +24,6 @@
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/prefs/pref_service.h"
-#include "components/reading_list/features/reading_list_switches.h"
 #include "components/search/search.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
@@ -161,12 +160,6 @@ bool ShouldShowAppsShortcutInBookmarkBar(Profile* profile) {
   return IsAppsShortcutEnabled(profile) &&
          profile->GetPrefs()->GetBoolean(
              bookmarks::prefs::kShowAppsShortcutInBookmarkBar);
-}
-
-bool ShouldShowReadingListInBookmarkBar(Profile* profile) {
-  return base::FeatureList::IsEnabled(reading_list::switches::kReadLater) &&
-         profile->GetPrefs()->GetBoolean(
-             bookmarks::prefs::kShowReadingListInBookmarkBar);
 }
 
 int GetBookmarkDragOperation(content::BrowserContext* browser_context,

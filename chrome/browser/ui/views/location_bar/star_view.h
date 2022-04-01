@@ -12,19 +12,12 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/prefs/pref_member.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/models/simple_menu_model.h"
-
-namespace views {
-class MenuRunner;
-}
 
 class Browser;
 class CommandUpdater;
-class StarMenuModel;
 
 // The star icon to show a bookmark bubble.
-class StarView : public PageActionIconView,
-                 public ui::SimpleMenuModel::Delegate {
+class StarView : public PageActionIconView {
  public:
   METADATA_HEADER(StarView);
   StarView(CommandUpdater* command_updater,
@@ -38,9 +31,6 @@ class StarView : public PageActionIconView,
   // ui::PropertyHandler:
   void AfterPropertyChange(const void* key, int64_t old_value) override;
 
-  StarMenuModel* menu_model_for_test() { return menu_model_.get(); }
-  views::MenuRunner* menu_runner_for_test() { return menu_runner_.get(); }
-
  protected:
   // PageActionIconView:
   void UpdateImpl() override;
@@ -53,19 +43,9 @@ class StarView : public PageActionIconView,
  private:
   void EditBookmarksPrefUpdated();
 
-  // ui::SimpleMenuModel::Delegate:
-  void ExecuteCommand(int command_id, int event_flags) override;
-  void MenuClosed(ui::SimpleMenuModel* source) override;
-  bool IsCommandIdAlerted(int command_id) const override;
-
   const raw_ptr<Browser> browser_;
 
-  std::unique_ptr<views::MenuRunner> menu_runner_;
-  std::unique_ptr<StarMenuModel> menu_model_;
-
   BooleanPrefMember edit_bookmarks_enabled_;
-
-  FeaturePromoController::PromoHandle reading_list_entry_point_promo_handle_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_STAR_VIEW_H_

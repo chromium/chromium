@@ -1167,7 +1167,6 @@ bool MoveTabToReadLater(Browser* browser, content::WebContents* web_contents) {
   }
   model->AddEntry(url, base::UTF16ToUTF8(title),
                   reading_list::EntrySource::ADDED_VIA_CURRENT_APP);
-  MaybeShowBookmarkBarForReadLater(browser);
   browser->window()->MaybeShowFeaturePromo(
       feature_engagement::kIPHReadingListDiscoveryFeature);
   base::UmaHistogramEnumeration(
@@ -1201,26 +1200,6 @@ bool IsCurrentTabUnreadInReadLater(Browser* browser) {
     return false;
   const ReadingListEntry* entry = model->GetEntryByURL(url);
   return entry && !entry->IsRead();
-}
-
-void MaybeShowBookmarkBarForReadLater(Browser* browser) {
-#if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kSidePanel))
-    return;
-  PrefService* pref_service = browser->profile()->GetPrefs();
-  if (pref_service &&
-      !pref_service->GetBoolean(
-          reading_list::prefs::kReadingListDesktopFirstUseExperienceShown)) {
-    pref_service->SetBoolean(
-        reading_list::prefs::kReadingListDesktopFirstUseExperienceShown, true);
-    base::UmaHistogramEnumeration(
-        "ReadingList.BookmarkBarState.OnFirstAddToReadingList",
-        browser->bookmark_bar_state());
-
-    if (browser->bookmark_bar_state() == BookmarkBar::HIDDEN)
-      ToggleBookmarkBar(browser);
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ShowOffersAndRewardsForPage(Browser* browser) {

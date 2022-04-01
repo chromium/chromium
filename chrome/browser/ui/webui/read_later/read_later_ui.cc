@@ -63,21 +63,14 @@ ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
   for (const auto& str : kLocalizedStrings)
     webui::AddLocalizedString(source, str.name, str.id);
 
-  const bool show_side_panel =
-      base::FeatureList::IsEnabled(features::kSidePanel);
-
-  source->AddBoolean(
-      "currentPageActionButtonEnabled",
-      base::FeatureList::IsEnabled(features::kReadLaterAddFromDialog) ||
-          show_side_panel);
   source->AddBoolean("useRipples", views::PlatformStyle::kUseRipples);
 
   Profile* const profile = Profile::FromWebUI(web_ui);
   PrefService* prefs = profile->GetPrefs();
   source->AddBoolean(
       "bookmarksDragAndDropEnabled",
-      show_side_panel &&
-          base::FeatureList::IsEnabled(features::kSidePanelDragAndDrop) &&
+
+      base::FeatureList::IsEnabled(features::kSidePanelDragAndDrop) &&
           prefs->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled));
 
   ReadingListModel* const reading_list_model =
@@ -93,10 +86,10 @@ ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
-  const int resource = show_side_panel && !base::FeatureList::IsEnabled(
-                                              features::kUnifiedSidePanel)
-                           ? IDR_READ_LATER_SIDE_PANEL_SIDE_PANEL_HTML
-                           : IDR_READ_LATER_READ_LATER_HTML;
+  const int resource =
+      !base::FeatureList::IsEnabled(features::kUnifiedSidePanel)
+          ? IDR_READ_LATER_SIDE_PANEL_SIDE_PANEL_HTML
+          : IDR_READ_LATER_READ_LATER_HTML;
   webui::SetupWebUIDataSource(
       source, base::make_span(kReadLaterResources, kReadLaterResourcesSize),
       resource);

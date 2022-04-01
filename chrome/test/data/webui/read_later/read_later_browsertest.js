@@ -13,11 +13,6 @@ class ReadLaterBrowserTest extends PolymerTest {
   get browsePreload() {
     throw new Error('this is abstract and should be overriden by subclasses');
   }
-
-  /** @override */
-  get featureList() {
-    return {enabled: ['reading_list::switches::kReadLater']};
-  }
 }
 
 // eslint-disable-next-line no-var

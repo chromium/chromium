@@ -172,18 +172,11 @@ export class ReadLaterAppElement extends PolymerElement {
         item.displayTimeSinceUpdate}`;
   }
 
-  private shouldShowCurrentPageActionButton_(): boolean {
-    return loadTimeData.getBoolean('currentPageActionButtonEnabled');
-  }
-
   /**
    * @return The appropriate text for the empty state subheader
    */
   private getEmptyStateSubheaderText_(): string {
-    if (this.shouldShowCurrentPageActionButton_()) {
-      return loadTimeData.getString('emptyStateAddFromDialogSubheader');
-    }
-    return loadTimeData.getString('emptyStateSubheader');
+    return loadTimeData.getString('emptyStateAddFromDialogSubheader');
   }
 
   /**

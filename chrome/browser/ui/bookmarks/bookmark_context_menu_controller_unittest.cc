@@ -23,7 +23,6 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
-#include "components/reading_list/features/reading_list_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/test/browser_task_environment.h"
@@ -52,9 +51,7 @@ class TestingPageNavigator : public PageNavigator {
 
 class BookmarkContextMenuControllerTest : public testing::Test {
  public:
-  BookmarkContextMenuControllerTest() : model_(nullptr) {
-    feature_list_.InitAndEnableFeature(reading_list::switches::kReadLater);
-  }
+  BookmarkContextMenuControllerTest() : model_(nullptr) {}
 
   void SetUp() override {
     TestingProfile::Builder profile_builder;
@@ -104,7 +101,6 @@ class BookmarkContextMenuControllerTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<BookmarkModel> model_;
@@ -396,31 +392,4 @@ TEST_F(BookmarkContextMenuControllerTest,
                         std::make_unique<base::Value>(true));
   EXPECT_FALSE(
       controller.IsCommandIdEnabled(IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT));
-}
-
-TEST_F(BookmarkContextMenuControllerTest, ShowReadingListInBookmarksBar) {
-  BookmarkContextMenuController controller(
-      nullptr, nullptr, nullptr, profile_.get(), NullNavigatorGetter(),
-      BOOKMARK_LAUNCH_LOCATION_NONE, model_->bookmark_bar_node(),
-      std::vector<const BookmarkNode*>());
-
-  // By default, the command is enabled and checked.
-  sync_preferences::TestingPrefServiceSyncable* prefs =
-      profile_->GetTestingPrefService();
-  EXPECT_FALSE(prefs->IsManagedPreference(
-      bookmarks::prefs::kShowReadingListInBookmarkBar));
-  EXPECT_TRUE(
-      controller.IsCommandIdEnabled(IDC_BOOKMARK_BAR_SHOW_READING_LIST));
-  EXPECT_TRUE(
-      controller.IsCommandIdChecked(IDC_BOOKMARK_BAR_SHOW_READING_LIST));
-
-  // Execute the command and verify it is unchecked.
-  controller.ExecuteCommand(IDC_BOOKMARK_BAR_SHOW_READING_LIST, 0);
-  EXPECT_FALSE(
-      controller.IsCommandIdChecked(IDC_BOOKMARK_BAR_SHOW_READING_LIST));
-
-  // Execute the command and verify it is checked.
-  controller.ExecuteCommand(IDC_BOOKMARK_BAR_SHOW_READING_LIST, 0);
-  EXPECT_TRUE(
-      controller.IsCommandIdChecked(IDC_BOOKMARK_BAR_SHOW_READING_LIST));
 }

@@ -45,22 +45,18 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
   for (const auto& str : kLocalizedStrings)
     webui::AddLocalizedString(source, str.name, str.id);
 
-  const bool show_side_panel =
-      base::FeatureList::IsEnabled(features::kSidePanel);
-
   source->AddBoolean("useRipples", views::PlatformStyle::kUseRipples);
 
   Profile* const profile = Profile::FromWebUI(web_ui);
   PrefService* prefs = profile->GetPrefs();
   source->AddBoolean(
       "bookmarksDragAndDropEnabled",
-      show_side_panel &&
-          base::FeatureList::IsEnabled(features::kSidePanelDragAndDrop) &&
+
+      base::FeatureList::IsEnabled(features::kSidePanelDragAndDrop) &&
           prefs->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled));
 
   source->AddBoolean("unifiedSidePanel",
-                     show_side_panel && base::FeatureList::IsEnabled(
-                                            features::kUnifiedSidePanel));
+                     base::FeatureList::IsEnabled(features::kUnifiedSidePanel));
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(

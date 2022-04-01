@@ -18,8 +18,7 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
  public:
   void SetUp() override {
     base::test::ScopedFeatureList features;
-    features.InitWithFeatures(
-        {features::kSidePanel, features::kUnifiedSidePanel}, {});
+    features.InitWithFeatures({features::kUnifiedSidePanel}, {});
     TestWithBrowserView::SetUp();
 
     AddTab(browser_view()->browser(), GURL("http://foo1.com"));

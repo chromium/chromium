@@ -743,6 +743,7 @@ const char kStabilityLaunchCount[] =
 #endif
 const char kStabilityExtensionRendererLaunchCount[] =
     "user_experience_metrics.stability.extension_renderer_launch_count";
+const char kShowReadingListInBookmarkBar[] = "bookmark_bar.show_reading_list";
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -967,6 +968,8 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterIntegerPref(kPhoneHubCameraRollPendingStatePrefName, 0);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  registry->RegisterBooleanPref(kShowReadingListInBookmarkBar, true);
 }
 
 }  // namespace
@@ -1909,6 +1912,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // TODO(crbug.com/1298250): Remove after M107.
   crostini::RemoveDuplicateContainerEntries(profile_prefs);
 #endif
+
+  // Added 03/2022
+  profile_prefs->ClearPref(kShowReadingListInBookmarkBar);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

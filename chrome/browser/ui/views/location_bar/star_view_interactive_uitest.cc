@@ -9,13 +9,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/ui/read_later/read_later_test_utils.h"
-#include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/location_bar/star_menu_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
@@ -26,9 +23,6 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/prefs/pref_service.h"
-#include "components/reading_list/core/reading_list_model.h"
-#include "components/reading_list/core/reading_list_model_observer.h"
-#include "components/reading_list/features/reading_list_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -36,7 +30,6 @@
 #include "ui/events/event_utils.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/test/ink_drop_host_view_test_api.h"
-#include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/test/button_test_api.h"
 
 namespace {
@@ -59,19 +52,6 @@ class StarViewTest : public InProcessBrowserTest {
 
 // Verifies clicking the star bookmarks the page.
 IN_PROC_BROWSER_TEST_F(StarViewTest, BookmarksUrlOnPress) {
-  // The url is not bookmarked when the star is pressed when read later is
-  // enabled and read later add from dialog is disabled. This test is replaced
-  // by
-  // StarViewTestWithReadLaterEnabled.AddBookmarkFromStarViewMenuBookmarksUrl.
-  if (base::FeatureList::IsEnabled(reading_list::switches::kReadLater) &&
-      (!base::FeatureList::IsEnabled(features::kReadLaterAddFromDialog) ||
-       !base::FeatureList::IsEnabled(features::kSidePanel))) {
-    GTEST_SKIP() << "When read later is enabled and add from dialog disabled, "
-                    "the star view behaves differently on press. Testing in "
-                    "that case is covered by "
-                    "StarViewTestWithReadLaterEnabled."
-                    "AddBookmarkFromStarViewMenuBookmarksUrl";
-  }
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
   bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
@@ -101,16 +81,6 @@ IN_PROC_BROWSER_TEST_F(StarViewTest, BookmarksUrlOnPress) {
 // Verify that clicking the bookmark star a second time hides the bookmark
 // bubble.
 IN_PROC_BROWSER_TEST_F(StarViewTest, HideOnSecondClick) {
-  // The BookmarkBubbleView is not shown when the StarView is first pressed when
-  // the reading list is enabled.
-  if (base::FeatureList::IsEnabled(reading_list::switches::kReadLater) &&
-      (!base::FeatureList::IsEnabled(features::kReadLaterAddFromDialog) ||
-       !base::FeatureList::IsEnabled(features::kSidePanel))) {
-    GTEST_SKIP() << "The BookmarkBubbleView is not shown when the StarView is "
-                    "first pressed when the reading list is enabled and add "
-                    "from dialog is disabled";
-  }
-
   views::View* star_icon = GetStarIcon();
 
   ui::MouseEvent pressed_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
@@ -152,116 +122,6 @@ IN_PROC_BROWSER_TEST_F(StarViewTest, InkDropHighlighted) {
     EXPECT_EQ(ink_drop_test_api.GetInkDrop()->GetTargetInkDropState(),
               views::InkDropState::ACTIVATED);
   }
-}
-
-class StarViewTestWithReadLaterEnabled : public InProcessBrowserTest {
- public:
-  StarViewTestWithReadLaterEnabled() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{reading_list::switches::kReadLater},
-        /*disabled_features=*/{features::kReadLaterAddFromDialog,
-                               features::kSidePanel});
-  }
-  StarViewTestWithReadLaterEnabled(const StarViewTestWithReadLaterEnabled&) =
-      delete;
-  StarViewTestWithReadLaterEnabled& operator=(
-      const StarViewTestWithReadLaterEnabled&) = delete;
-  ~StarViewTestWithReadLaterEnabled() override = default;
-
-  StarView* GetStarIcon() {
-    return static_cast<StarView*>(
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->toolbar_button_provider()
-            ->GetPageActionIconView(PageActionIconType::kBookmarkStar));
-  }
-
-  void OpenStarViewMenu(StarView* star_icon) {
-    ui::MouseEvent pressed_event(
-        ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
-        ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
-    ui::MouseEvent released_event(ui::ET_MOUSE_RELEASED, gfx::Point(),
-                                  gfx::Point(), ui::EventTimeForNow(),
-                                  ui::EF_LEFT_MOUSE_BUTTON,
-                                  ui::EF_LEFT_MOUSE_BUTTON);
-
-    views::test::ButtonTestApi(star_icon).NotifyClick(pressed_event);
-    views::test::ButtonTestApi(star_icon).NotifyClick(released_event);
-    views::MenuRunner* menu_runner = star_icon->menu_runner_for_test();
-    EXPECT_TRUE(menu_runner->IsRunning());
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Verifies clicking the bookmark button in the StarView's menu bookmarks the
-// page.
-IN_PROC_BROWSER_TEST_F(StarViewTestWithReadLaterEnabled,
-                       AddBookmarkFromStarViewMenuBookmarksUrl) {
-  bookmarks::BookmarkModel* bookmark_model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
-  bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
-
-  StarView* star_icon = GetStarIcon();
-  const GURL current_url =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL();
-
-  // The page should not initially be bookmarked.
-  EXPECT_FALSE(bookmark_model->IsBookmarked(current_url));
-  EXPECT_FALSE(star_icon->GetActive());
-
-  OpenStarViewMenu(star_icon);
-
-  // The page should not be bookmarked when the menu is opened.
-  EXPECT_FALSE(bookmark_model->IsBookmarked(current_url));
-  EXPECT_FALSE(star_icon->GetActive());
-
-  StarMenuModel* menu_model = star_icon->menu_model_for_test();
-
-  // Activate "Add Bookmark" button in the menu and verify the bookmark is
-  // added.
-  const int bookmark_command_index =
-      menu_model->GetIndexOfCommandId(StarMenuModel::CommandBookmark);
-  menu_model->ActivatedAt(bookmark_command_index);
-
-  EXPECT_TRUE(bookmark_model->IsBookmarked(current_url));
-  EXPECT_TRUE(star_icon->GetActive());
-}
-
-// Verifies clicking the Read Later button in the StarView's menu saves the page
-// to the read later model.
-IN_PROC_BROWSER_TEST_F(StarViewTestWithReadLaterEnabled,
-                       AddToReadLaterFromStarViewMenuSavesUrlToReadLater) {
-  ReadingListModel* reading_list_model =
-      ReadingListModelFactory::GetForBrowserContext(browser()->profile());
-  test::ReadingListLoadObserver(reading_list_model).Wait();
-  GURL url("http://www.test.com/");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  StarView* star_icon = GetStarIcon();
-  const GURL current_url =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL();
-
-  // The page should not initially be in model.
-  EXPECT_EQ(reading_list_model->GetEntryByURL(current_url), nullptr);
-  EXPECT_FALSE(star_icon->GetActive());
-
-  OpenStarViewMenu(star_icon);
-
-  // The page should not be bookmarked when the menu is opened.
-  EXPECT_EQ(reading_list_model->GetEntryByURL(current_url), nullptr);
-  EXPECT_FALSE(star_icon->GetActive());
-
-  StarMenuModel* menu_model = star_icon->menu_model_for_test();
-
-  // // Activate "Add to Read later" button in the menu and verify the entry is
-  // added.
-  const int read_later_command_index =
-      menu_model->GetIndexOfCommandId(StarMenuModel::CommandMoveToReadLater);
-  menu_model->ActivatedAt(read_later_command_index);
-
-  EXPECT_NE(reading_list_model->GetEntryByURL(current_url), nullptr);
-  EXPECT_FALSE(star_icon->GetActive());
 }
 
 }  // namespace

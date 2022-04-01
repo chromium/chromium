@@ -8,17 +8,6 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 
-#if !BUILDFLAG(IS_IOS)
-// Feature flag used for enabling side panel on desktop.
-// TODO(crbug.com/1225279): Move this back to chrome/browser/ui/ui_features.h
-// after kReadLater is cleaned up (and IsReadingListEnabled() returns true on
-// Desktop). This is currently here so that kSidePanel (which doesn't work
-// without read later) can imply that the reading list should be enabled.
-namespace features {
-extern const base::Feature kSidePanel;
-}  // namespace features
-#endif  // !BUILDFLAG(IS_IOS)
-
 namespace reading_list {
 namespace switches {
 

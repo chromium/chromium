@@ -15,7 +15,6 @@ extern const char kEditBookmarksEnabled[];
 extern const char kManagedBookmarks[];
 extern const char kManagedBookmarksFolderName[];
 extern const char kShowAppsShortcutInBookmarkBar[];
-extern const char kShowReadingListInBookmarkBar[];
 extern const char kShowManagedBookmarksInBookmarkBar[];
 extern const char kShowBookmarkBar[];
 

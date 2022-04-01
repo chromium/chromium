@@ -36,7 +36,6 @@ class BookmarkContextMenu;
 class Browser;
 class BrowserView;
 class Profile;
-class ReadLaterButton;
 class SavedTabGroupModel;
 
 namespace bookmarks {
@@ -129,8 +128,6 @@ class BookmarkBarView : public views::AccessiblePaneView,
 
   // Returns the button used when not all the items on the bookmark bar fit.
   views::MenuButton* overflow_button() const { return overflow_button_; }
-
-  ReadLaterButton* read_later_button() const { return read_later_button_; }
 
   const gfx::Animation& size_animation() { return size_animation_; }
 
@@ -378,9 +375,6 @@ class BookmarkBarView : public views::AccessiblePaneView,
   // Updates the visibility of the apps shortcut based on the pref value.
   void OnAppsPageShortcutVisibilityPrefChanged();
 
-  // Updates the visibility of the reading list based on the pref value.
-  void OnReadingListVisibilityPrefChanged();
-
   void OnShowManagedBookmarksPrefChanged();
 
   void LayoutAndPaint() {
@@ -476,9 +470,6 @@ class BookmarkBarView : public views::AccessiblePaneView,
 
   raw_ptr<ButtonSeparatorView> bookmarks_separator_view_ = nullptr;
   raw_ptr<ButtonSeparatorView> tab_groups_separator_view_ = nullptr;
-
-  raw_ptr<ReadLaterButton> read_later_button_ = nullptr;
-  raw_ptr<ButtonSeparatorView> read_later_separator_view_ = nullptr;
 
   const raw_ptr<Browser> browser_;
   raw_ptr<BrowserView> browser_view_;

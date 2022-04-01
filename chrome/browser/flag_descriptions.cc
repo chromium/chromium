@@ -2176,11 +2176,6 @@ const char kSettingsAppNotificationSettingsDescription[] =
     "lacros-chrome browser's notification permission page "
     "and the ChromeOS settings app.";
 
-const char kReadLaterNewBadgePromoName[] = "Reading list 'New' badge promo";
-const char kReadLaterNewBadgePromoDescription[] =
-    "Causes a 'New' badge to appear on the entry point for adding to the "
-    "reading list in the tab context menu.";
-
 const char kRecordWebAppDebugInfoName[] = "Record web app debug info";
 const char kRecordWebAppDebugInfoDescription[] =
     "Enables recording additional web app related debugging data to be "
@@ -2273,12 +2268,6 @@ const char kSendTabToSelfSigninPromoDescription[] =
 
 const char kShoppingListName[] = "Shopping List";
 const char kShoppingListDescription[] = "Enable shopping list in bookmarks.";
-
-const char kSidePanelFlagId[] = "side-panel";
-const char kSidePanelName[] = "Side panel";
-const char kSidePanelDescription[] =
-    "Enables a browser-level side panel for a useful and persistent way to "
-    "access your Reading List and Bookmarks.";
 
 const char kSidePanelDragAndDropFlagId[] = "side-panel-drag-and-drop";
 const char kSidePanelDragAndDropName[] = "Side panel drag and drop";
@@ -3855,12 +3844,6 @@ const char kOmniboxShortBookmarkSuggestionsName[] =
 const char kOmniboxShortBookmarkSuggestionsDescription[] =
     "Match very short input words to beginning of words in bookmark "
     "suggestions.";
-
-const char kReadLaterFlagId[] = "read-later";
-const char kReadLaterName[] = "Reading List";
-const char kReadLaterDescription[] =
-    "Click on the Bookmark icon or right click on a tab to add tabs to a "
-    "reading list.";
 
 const char kScreenAIName[] = "Screen AI";
 const char kScreenAIDescription[] =

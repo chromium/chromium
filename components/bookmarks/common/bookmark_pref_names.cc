@@ -27,10 +27,6 @@ const char kManagedBookmarksFolderName[] =
 // bar.
 const char kShowAppsShortcutInBookmarkBar[] = "bookmark_bar.show_apps_shortcut";
 
-// Boolean which specifies whether the reading list is visible on the bookmark
-// bar.
-const char kShowReadingListInBookmarkBar[] = "bookmark_bar.show_reading_list";
-
 // Boolean which specifies whether the Managed Bookmarks folder is visible on
 // the bookmark bar.
 const char kShowManagedBookmarksInBookmarkBar[] =

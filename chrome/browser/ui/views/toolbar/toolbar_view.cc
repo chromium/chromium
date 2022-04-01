@@ -79,7 +79,6 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_service.h"
-#include "components/reading_list/features/reading_list_switches.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -303,8 +302,7 @@ void ToolbarView::Init() {
   }
 
   std::unique_ptr<SidePanelToolbarButton> side_panel_button;
-  if (browser_view_->right_aligned_side_panel() &&
-      reading_list::switches::IsReadingListEnabled()) {
+  if (browser_view_->right_aligned_side_panel()) {
     side_panel_button = std::make_unique<SidePanelToolbarButton>(browser_);
   }
 

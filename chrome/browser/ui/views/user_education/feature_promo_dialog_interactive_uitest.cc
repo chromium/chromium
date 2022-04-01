@@ -29,7 +29,6 @@
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/reading_list/features/reading_list_switches.h"
 #include "content/public/test/browser_test.h"
 #include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -208,38 +207,6 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_ProfileSwitch) {
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_ReopenTab) {
   set_baseline("2936082");
-  ShowAndVerifyUi();
-}
-
-// Need a separate fixture to override the feature flag.
-class FeaturePromoDialogReadLaterTest : public FeaturePromoDialogTest {
- public:
-  FeaturePromoDialogReadLaterTest() {
-    feature_list_.InitAndEnableFeature(reading_list::switches::kReadLater);
-  }
-
-  void SetUpOnMainThread() override {
-    FeaturePromoDialogTest::SetUpOnMainThread();
-    BookmarkBarView::DisableAnimationsForTesting(true);
-    browser()->profile()->GetPrefs()->SetBoolean(
-        bookmarks::prefs::kShowBookmarkBar, true);
-  }
-
-  ~FeaturePromoDialogReadLaterTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(FeaturePromoDialogReadLaterTest,
-                       InvokeUi_IPH_ReadingListDiscovery) {
-  set_baseline("2723691");
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(FeaturePromoDialogReadLaterTest,
-                       InvokeUi_IPH_ReadingListEntryPoint) {
-  set_baseline("2749474");
   ShowAndVerifyUi();
 }
 

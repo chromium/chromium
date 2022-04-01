@@ -53,10 +53,6 @@ extern const base::Feature kForceSignInReauth;
 
 extern const base::Feature kProminentDarkModeActiveTabTitle;
 
-extern const base::Feature kReadLaterNewBadgePromo;
-
-extern const base::Feature kReadLaterAddFromDialog;
-
 extern const base::Feature kQuickCommands;
 
 extern const base::Feature kScrollableTabStrip;
@@ -66,7 +62,6 @@ extern const base::Feature kScrollableTabStripButtons;
 
 // TODO(pbos): Once kReadLater is cleaned up on Desktop, move definition into
 // ui_features.cc. This is currently temporarily in reading_list_switches.h.
-extern const base::Feature kSidePanel;
 extern const base::Feature kSidePanelDragAndDrop;
 extern const base::Feature kSidePanelImprovedClobbering;
 

@@ -134,6 +134,9 @@ const char kTrialGroupPrefName[] = "location_permissions.trial_group";
 // Deprecated 10/2021
 const char kSigninBottomSheetShownCount[] =
     "ios.signin.bottom_sheet_shown_count";
+
+// Deprecated 03/2022
+const char kShowReadingListInBookmarkBar[] = "bookmark_bar.show_reading_list";
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -312,6 +315,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // Preference related to the browser sign-in policy that is being deprecated.
   registry->RegisterBooleanPref(kSigninAllowedByPolicy, true);
+
+  registry->RegisterBooleanPref(kShowReadingListInBookmarkBar, true);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -377,4 +382,7 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
 
   // Added 8/2021.
   prefs->ClearPref(kSigninAllowedByPolicy);
+
+  // Added 03/2022
+  prefs->ClearPref(kShowReadingListInBookmarkBar);
 }

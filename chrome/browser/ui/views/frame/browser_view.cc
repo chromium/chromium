@@ -890,7 +890,6 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   contents_container_ = AddChildView(std::move(contents_container));
   set_contents_view(contents_container_);
 
-  if (base::FeatureList::IsEnabled(features::kSidePanel)) {
     right_aligned_side_panel_ = AddChildView(std::make_unique<SidePanel>(this));
     right_aligned_side_panel_separator_ =
         AddChildView(std::make_unique<ContentsSeparator>());
@@ -899,7 +898,6 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
       side_panel_coordinator_ = std::make_unique<SidePanelCoordinator>(
           this, global_side_panel_registry_.get());
     }
-  }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (lens::features::IsLensSidePanelEnabled()) {
@@ -2194,8 +2192,7 @@ void BrowserView::MaybeShowReadingListInSidePanelIPH() {
   if (!feature_promo_controller_)
     return;
 
-  if (!base::FeatureList::IsEnabled(features::kSidePanel) ||
-      !(browser_->window()->IsActive() ||
+  if (!(browser_->window()->IsActive() ||
         BrowserFeaturePromoController::
             active_window_check_blocked_for_testing()))
     return;

@@ -752,7 +752,7 @@ class SideSearchDSEClobberingTest : public SideSearchBrowserControllerTest {
   // SideSearchBrowserControllerTest:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kSidePanel, features::kSidePanelImprovedClobbering}, {});
+        {features::kSidePanelImprovedClobbering}, {});
     SideSearchBrowserControllerTest::SetUp();
   }
   void TearDown() override {

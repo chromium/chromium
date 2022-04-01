@@ -25,14 +25,12 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 #include "chrome/browser/ui/views/chrome_view_class_properties.h"
-#include "chrome/browser/ui/views/location_bar/star_menu_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/omnibox/browser/vector_icons.h"
-#include "components/reading_list/features/reading_list_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/web_contents.h"
@@ -42,27 +40,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/view_class_properties.h"
-
-namespace {
-
-// Enumeration of all actions in the star menu.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class Action {
-  kAddBookmarkButton = 0,
-  kEditBookmarkButton = 1,
-  kAddToReadingListButton = 2,
-  kMarkAsReadButton = 3,
-  kMaxValue = kMarkAsReadButton,
-};
-
-void RecordClick(Action item) {
-  base::UmaHistogramEnumeration("Bookmarks.StarEntryPoint.ClickedAction", item);
-}
-
-}  // namespace
 
 StarView::StarView(CommandUpdater* command_updater,
                    Browser* browser,
@@ -123,28 +101,7 @@ void StarView::OnExecuting(PageActionIconView::ExecuteSource execute_source) {
 
 void StarView::ExecuteCommand(ExecuteSource source) {
   OnExecuting(source);
-  if (reading_list::switches::IsReadingListEnabled() &&
-      !base::FeatureList::IsEnabled(features::kReadLaterAddFromDialog) &&
-      !base::FeatureList::IsEnabled(features::kSidePanel)) {
-    reading_list_entry_point_promo_handle_ =
-        browser_->window()->CloseFeaturePromoAndContinue(
-            feature_engagement::kIPHReadingListEntryPointFeature);
-    menu_model_ = std::make_unique<StarMenuModel>(
-        this, GetActive(), chrome::CanMoveActiveTabToReadLater(browser_),
-        chrome::IsCurrentTabUnreadInReadLater(browser_));
-    menu_runner_ = std::make_unique<views::MenuRunner>(
-        menu_model_.get(),
-        views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::FIXED_ANCHOR);
-    menu_runner_->RunMenuAt(GetWidget(), nullptr, GetAnchorBoundsInScreen(),
-                            views::MenuAnchorPosition::kTopRight,
-                            ui::MENU_SOURCE_NONE);
-    feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForBrowserContext(
-            browser_->profile());
-    tracker->NotifyEvent(feature_engagement::events::kBookmarkStarMenuOpened);
-  } else {
-    chrome::BookmarkCurrentTab(browser_);
-  }
+  chrome::BookmarkCurrentTab(browser_);
 }
 
 views::BubbleDialogDelegate* StarView::GetBubble() const {
@@ -162,42 +119,6 @@ std::u16string StarView::GetTextForTooltipAndAccessibleName() const {
 
 void StarView::EditBookmarksPrefUpdated() {
   Update();
-}
-
-void StarView::ExecuteCommand(int command_id, int event_flags) {
-  switch (command_id) {
-    case StarMenuModel::CommandBookmark:
-      RecordClick(GetActive() ? Action::kEditBookmarkButton
-                              : Action::kAddBookmarkButton);
-      chrome::BookmarkCurrentTab(browser_);
-      break;
-    case StarMenuModel::CommandMoveToReadLater:
-      RecordClick(Action::kAddToReadingListButton);
-      base::RecordAction(base::UserMetricsAction(
-          "DesktopReadingList.AddItem.FromBookmarkIcon"));
-      chrome::MoveCurrentTabToReadLater(browser_);
-      break;
-    case StarMenuModel::CommandMarkAsRead:
-      RecordClick(Action::kMarkAsReadButton);
-      chrome::MarkCurrentTabAsReadInReadLater(browser_);
-      break;
-    default:
-      NOTREACHED();
-  }
-}
-
-void StarView::MenuClosed(ui::SimpleMenuModel* source) {
-  if (!GetBubble() || !GetBubble()->GetWidget() ||
-      !GetBubble()->GetWidget()->IsVisible()) {
-    SetHighlighted(false);
-  }
-  reading_list_entry_point_promo_handle_.Release();
-  menu_runner_.reset();
-}
-
-bool StarView::IsCommandIdAlerted(int command_id) const {
-  return command_id == StarMenuModel::CommandMoveToReadLater &&
-         reading_list_entry_point_promo_handle_;
 }
 
 BEGIN_METADATA(StarView, PageActionIconView)

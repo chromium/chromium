@@ -53,24 +53,6 @@ int64_t TimeToUS(const base::Time& time) {
   return (time - base::Time::UnixEpoch()).InMicroseconds();
 }
 
-bool IsActiveTabNTP(Browser* browser) {
-  content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
-  if (web_contents) {
-    const GURL site_origin =
-        web_contents->GetLastCommittedURL().DeprecatedGetOriginAsURL();
-    // These are also the NTP urls checked for showing the bookmark bar on the
-    // NTP.
-    if (site_origin ==
-            GURL(chrome::kChromeUINewTabURL).DeprecatedGetOriginAsURL() ||
-        site_origin ==
-            GURL(chrome::kChromeUINewTabPageURL).DeprecatedGetOriginAsURL()) {
-      return true;
-    }
-  }
-  return false;
-}
-
 class ReadLaterItemContextMenu : public ui::SimpleMenuModel,
                                  public ui::SimpleMenuModel::Delegate {
  public:
@@ -189,19 +171,11 @@ void ReadLaterPageHandler::OpenURL(
   if (!browser)
     return;
 
-  const bool side_panel_enabled =
-      base::FeatureList::IsEnabled(features::kSidePanel);
-
   // Open in active tab if the user is on the NTP.
-  WindowOpenDisposition open_location =
-      IsActiveTabNTP(browser) ? WindowOpenDisposition::CURRENT_TAB
-                              : WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  if (side_panel_enabled) {
-    open_location = ui::DispositionFromClick(
-        click_modifiers->middle_button, click_modifiers->alt_key,
-        click_modifiers->ctrl_key, click_modifiers->meta_key,
-        click_modifiers->shift_key);
-  }
+  WindowOpenDisposition open_location = ui::DispositionFromClick(
+      click_modifiers->middle_button, click_modifiers->alt_key,
+      click_modifiers->ctrl_key, click_modifiers->meta_key,
+      click_modifiers->shift_key);
 
   content::OpenURLParams params(url, content::Referrer(), open_location,
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
@@ -214,15 +188,10 @@ void ReadLaterPageHandler::OpenURL(
                         : "DesktopReadingList.Navigation.FromUnreadList"));
   }
 
-  if (mark_as_read && !side_panel_enabled)
-    reading_list_model_->SetReadStatus(url, true);
-
-  base::RecordAction(base::UserMetricsAction(
-      side_panel_enabled ? "SidePanel.ReadingList.Navigation"
-                         : "ReadingList.Dialog.Navigation"));
+  base::RecordAction(
+      base::UserMetricsAction("SidePanel.ReadingList.Navigation"));
   RecordBookmarkLaunch(
-      side_panel_enabled ? BOOKMARK_LAUNCH_LOCATION_SIDE_PANEL_READING_LIST
-                         : BOOKMARK_LAUNCH_LOCATION_READING_LIST_DIALOG,
+      BOOKMARK_LAUNCH_LOCATION_SIDE_PANEL_READING_LIST,
       profile_metrics::GetBrowserProfileType(Profile::FromWebUI(web_ui_)));
 }
 
@@ -242,9 +211,7 @@ void ReadLaterPageHandler::AddCurrentTab() {
   reading_list_model_->MarkAllSeen();
 
   base::RecordAction(
-      base::UserMetricsAction(base::FeatureList::IsEnabled(features::kSidePanel)
-                                  ? "SidePanel.ReadingList.AddCurrentPage"
-                                  : "ReadingList.Dialog.AddCurrentPage"));
+      base::UserMetricsAction("SidePanel.ReadingList.AddCurrentPage"));
 }
 
 void ReadLaterPageHandler::RemoveEntry(const GURL& url) {
@@ -271,8 +238,6 @@ void ReadLaterPageHandler::ShowUI() {
   auto embedder = read_later_ui_->embedder();
   if (embedder) {
     embedder->ShowUI();
-    if (!base::FeatureList::IsEnabled(features::kSidePanel))
-      UpdateCurrentPageActionButton();
   }
 }
 

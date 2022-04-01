@@ -85,14 +85,6 @@ const base::Feature kProminentDarkModeActiveTabTitle{
 const base::Feature kQuickCommands{"QuickCommands",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables a 'new' badge on the option to add to the reading list in the tab
-// context menu.
-const base::Feature kReadLaterNewBadgePromo{"ReadLaterNewBadgePromo",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kReadLaterAddFromDialog{"ReadLaterAddFromDialog",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
-
 #if BUILDFLAG(ENABLE_SIDE_SEARCH)
 // Enables the side search feature for Google Search. Presents recent Google
 // search results in a browser side panel (crbug.com/1242730).

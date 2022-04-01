@@ -884,20 +884,16 @@ void PopulateChromeWebUIFrameBinders(
         task_module::mojom::TaskModuleHandler, NewTabPageUI>(map);
   }
 
-  if (reading_list::switches::IsReadingListEnabled()) {
-    RegisterWebUIControllerInterfaceBinder<
-        read_later::mojom::PageHandlerFactory, ReadLaterUI>(map);
-  }
+  RegisterWebUIControllerInterfaceBinder<read_later::mojom::PageHandlerFactory,
+                                         ReadLaterUI>(map);
 
-  if (base::FeatureList::IsEnabled(features::kSidePanel)) {
-    if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
-      RegisterWebUIControllerInterfaceBinder<
-          side_panel::mojom::BookmarksPageHandlerFactory, BookmarksSidePanelUI>(
-          map);
-    } else {
-      RegisterWebUIControllerInterfaceBinder<
-          side_panel::mojom::BookmarksPageHandlerFactory, ReadLaterUI>(map);
-    }
+  if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
+    RegisterWebUIControllerInterfaceBinder<
+        side_panel::mojom::BookmarksPageHandlerFactory, BookmarksSidePanelUI>(
+        map);
+  } else {
+    RegisterWebUIControllerInterfaceBinder<
+        side_panel::mojom::BookmarksPageHandlerFactory, ReadLaterUI>(map);
   }
 
   if (features::IsReadAnythingEnabled()) {

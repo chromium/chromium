@@ -858,10 +858,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     if (url.host_piece() == chrome::kChromeUIFeedbackHost)
       return &NewWebUI<FeedbackUI>;
   }
-  if (reading_list::switches::IsReadingListEnabled()) {
     if (url.host_piece() == chrome::kChromeUIReadLaterHost)
       return &NewWebUI<ReadLaterUI>;
-  }
   if (url.host_piece() == chrome::kChromeUIBookmarksSidePanelHost)
     return &NewWebUI<BookmarksSidePanelUI>;
   if (features::IsReadAnythingEnabled()) {
