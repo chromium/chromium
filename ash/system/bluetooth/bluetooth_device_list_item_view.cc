@@ -76,6 +76,8 @@ int GetDeviceTypeA11yTextId(const DeviceType device_type) {
       return IDS_BLUETOOTH_A11Y_DEVICE_TYPE_GAME_CONTROLLER;
     case DeviceType::kKeyboard:
       return IDS_BLUETOOTH_A11Y_DEVICE_TYPE_KEYBOARD;
+    case DeviceType::kKeyboardMouseCombo:
+      return IDS_BLUETOOTH_A11Y_DEVICE_TYPE_KEYBOARD_MOUSE_COMBO;
     case DeviceType::kMouse:
       return IDS_BLUETOOTH_A11Y_DEVICE_TYPE_MOUSE;
     case DeviceType::kTablet:
@@ -147,6 +149,8 @@ const gfx::VectorIcon& GetDeviceIcon(const DeviceType device_type) {
     case DeviceType::kGameController:
       return ash::kSystemMenuGamepadIcon;
     case DeviceType::kKeyboard:
+      return ash::kSystemMenuKeyboardIcon;
+    case DeviceType::kKeyboardMouseCombo:
       return ash::kSystemMenuKeyboardIcon;
     case DeviceType::kMouse:
       return ash::kSystemMenuMouseIcon;

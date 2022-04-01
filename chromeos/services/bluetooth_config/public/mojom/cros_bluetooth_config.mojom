@@ -49,6 +49,7 @@ enum DeviceType {
   kVideoCamera,
   kGameController,
   kKeyboard,
+  kKeyboardMouseCombo,
   kMouse,
   kTablet
 };

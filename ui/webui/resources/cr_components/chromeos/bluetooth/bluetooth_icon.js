@@ -55,6 +55,7 @@ export class SettingsBluetoothIconElement extends PolymerElement {
       case deviceType.kGameController:
         return 'game-controller';
       case deviceType.kKeyboard:
+      case deviceType.kKeyboardMouseCombo:
         return 'keyboard';
       case deviceType.kMouse:
         return 'mouse';

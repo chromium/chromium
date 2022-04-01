@@ -2391,6 +2391,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_BLUETOOTH_A11Y_DEVICE_TYPE_KEYBOARD" desc="Accessibility text for the type of a device that is a keyboard.">
         Device is a keyboard.
       </message>
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_TYPE_KEYBOARD_MOUSE_COMBO" desc="Accessibility text for the type of a device that is a keyboard and mouse combo.">
+        Device is a keyboard and mouse combo.
+      </message>
       <message name="IDS_BLUETOOTH_A11Y_DEVICE_TYPE_MOUSE" desc="Accessibility text for the type of a device that is a mouse.">
         Device is a mouse.
       </message>

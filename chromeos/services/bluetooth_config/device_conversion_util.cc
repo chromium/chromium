@@ -52,9 +52,10 @@ mojom::DeviceType ComputeDeviceType(const device::BluetoothDevice* device) {
       return mojom::DeviceType::kGameController;
 
     case device::BluetoothDeviceType::KEYBOARD:
-      [[fallthrough]];
-    case device::BluetoothDeviceType::KEYBOARD_MOUSE_COMBO:
       return mojom::DeviceType::kKeyboard;
+
+    case device::BluetoothDeviceType::KEYBOARD_MOUSE_COMBO:
+      return mojom::DeviceType::kKeyboardMouseCombo;
 
     case device::BluetoothDeviceType::MOUSE:
       return mojom::DeviceType::kMouse;

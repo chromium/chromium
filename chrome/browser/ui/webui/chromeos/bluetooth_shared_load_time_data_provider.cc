@@ -60,6 +60,8 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
        IDS_BLUETOOTH_A11Y_DEVICE_TYPE_GAME_CONTROLLER},
       {"bluetoothA11yDeviceTypeKeyboard",
        IDS_BLUETOOTH_A11Y_DEVICE_TYPE_KEYBOARD},
+      {"bluetoothA11yDeviceTypeKeyboardMouseCombo",
+       IDS_BLUETOOTH_A11Y_DEVICE_TYPE_KEYBOARD_MOUSE_COMBO},
       {"bluetoothA11yDeviceTypeMouse", IDS_BLUETOOTH_A11Y_DEVICE_TYPE_MOUSE},
       {"bluetoothA11yDeviceTypeTablet", IDS_BLUETOOTH_A11Y_DEVICE_TYPE_TABLET},
       {"bluetoothA11yDeviceName", IDS_BLUETOOTH_A11Y_DEVICE_NAME},

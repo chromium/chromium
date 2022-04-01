@@ -349,6 +349,13 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         getChangeKeyboardSettings(),
         bluetoothDeviceDetailPage.shadowRoot.activeElement);
 
+    device1.deviceProperties.deviceType = mojom.DeviceType.kKeyboardMouseCombo;
+    bluetoothConfig.updatePairedDevice(device1);
+
+    await flushAsync();
+    assertTrue(!!getChangeMouseSettings());
+    assertTrue(!!getChangeKeyboardSettings());
+
     // This is needed or other tests will fail.
     // TODO(gordonseto): Figure out how to remove this.
     getChangeKeyboardSettings().click();

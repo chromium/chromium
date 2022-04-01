@@ -264,6 +264,8 @@ class SettingsPairedBluetoothListItemElement extends
         return 'bluetoothA11yDeviceTypeGameController';
       case deviceType.kKeyboard:
         return 'bluetoothA11yDeviceTypeKeyboard';
+      case deviceType.kKeyboardMouseCombo:
+        return 'bluetoothA11yDeviceTypeKeyboardMouseCombo';
       case deviceType.kMouse:
         return 'bluetoothA11yDeviceTypeMouse';
       case deviceType.kTablet:

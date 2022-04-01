@@ -435,7 +435,10 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     if (!this.device_ || !this.isDeviceConnected_) {
       return false;
     }
-    return this.device_.deviceProperties.deviceType === mojom.DeviceType.kMouse;
+    return this.device_.deviceProperties.deviceType ===
+        mojom.DeviceType.kMouse ||
+        this.device_.deviceProperties.deviceType ===
+        mojom.DeviceType.kKeyboardMouseCombo;
   }
 
   /**
@@ -447,7 +450,9 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
       return false;
     }
     return this.device_.deviceProperties.deviceType ===
-        mojom.DeviceType.kKeyboard;
+        mojom.DeviceType.kKeyboard ||
+        this.device_.deviceProperties.deviceType ===
+        mojom.DeviceType.kKeyboardMouseCombo;
   }
 
   /**
