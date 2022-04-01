@@ -121,6 +121,7 @@ DesksTemplatesItemView::DesksTemplatesItemView(
                           weak_ptr_factory_.GetWeakPtr());
 
   const std::u16string template_name = desk_template_->template_name();
+  DCHECK(!template_name.empty());
   auto* color_provider = AshColorProvider::Get();
   const bool is_admin_managed =
       desk_template_->source() == DeskTemplateSource::kPolicy;
@@ -309,6 +310,7 @@ void DesksTemplatesItemView::UpdateTemplate(
   icon_container_view_->SetVisible(true);
 
   auto new_name = desk_template_->template_name();
+  DCHECK(!new_name.empty());
   name_view_->SetText(new_name);
   name_view_->SetAccessibleName(new_name);
   SetAccessibleName(new_name);
@@ -660,6 +662,7 @@ void DesksTemplatesItemView::OnTemplateNameChanged(
   if (is_template_name_being_modified_)
     return;
 
+  DCHECK(!new_name.empty());
   name_view_->SetText(new_name);
   name_view_->SetAccessibleName(new_name);
   name_view_->ResetTemporaryName();

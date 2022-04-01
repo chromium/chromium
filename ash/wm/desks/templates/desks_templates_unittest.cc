@@ -1054,6 +1054,54 @@ TEST_F(DesksTemplatesTest, IconsOrder) {
   }
 }
 
+// Tests that both regular and lacros browsers have an icon for each unique tab.
+TEST_F(DesksTemplatesTest, NumIconsForBrowser) {
+  // Create fake restore data with one chrome and one lacros browser. Each
+  // browser has two unique tabs.
+  const std::string kAppId1 = app_constants::kChromeAppId;
+  constexpr int kWindowId1 = 1;
+  const std::vector<GURL> kTabs1{GURL("http://a.com"), GURL("http://b.com")};
+
+  const std::string kAppId2 = app_constants::kLacrosAppId;
+  constexpr int kWindowId2 = 2;
+  const std::vector<GURL> kTabs2{GURL("http://c.com"), GURL("http://d.com")};
+
+  auto restore_data = std::make_unique<app_restore::RestoreData>();
+
+  // Add app launch info for the chrome browser instance.
+  auto app_launch_info_1 =
+      std::make_unique<app_restore::AppLaunchInfo>(kAppId1, kWindowId1);
+  app_launch_info_1->active_tab_index = 1;
+  app_launch_info_1->urls = kTabs1;
+  restore_data->AddAppLaunchInfo(std::move(app_launch_info_1));
+
+  // Add app launch info for the lacros browser instance.
+  auto app_launch_info_2 =
+      std::make_unique<app_restore::AppLaunchInfo>(kAppId2, kWindowId2);
+  app_launch_info_2->active_tab_index = 1;
+  app_launch_info_2->urls = kTabs2;
+  restore_data->AddAppLaunchInfo(std::move(app_launch_info_2));
+
+  // A non empty activation index is assumed by the icon placing logic.
+  app_restore::WindowInfo window_info;
+  window_info.activation_index = 0;
+  restore_data->ModifyWindowInfo(kAppId1, kWindowId1, window_info);
+  restore_data->ModifyWindowInfo(kAppId2, kWindowId2, window_info);
+
+  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now(),
+           DeskTemplateSource::kUser, std::move(restore_data));
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  // Test that there is a total of 4 icons, one for each tab on each browser.
+  // There is also the overflow icon, which is created but hidden.
+  DesksTemplatesItemView* item_view = GetItemViewFromTemplatesGrid(
+      /*grid_item_index=*/0);
+  const std::vector<DesksTemplatesIconView*>& icon_views =
+      DesksTemplatesItemViewTestApi(item_view).GetIconViews();
+  EXPECT_EQ(5u, icon_views.size());
+}
+
 // Tests that icons are ordered such that active tabs and windows are ordered
 // before inactive tabs.
 TEST_F(DesksTemplatesTest, IconsOrderWithInactiveTabs) {
