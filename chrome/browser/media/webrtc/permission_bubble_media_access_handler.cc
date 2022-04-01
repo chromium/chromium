@@ -34,7 +34,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include <vector>
 
-#include "chrome/browser/media/webrtc/screen_capture_infobar_delegate_android.h"
+#include "chrome/browser/media/webrtc/screen_capture_permission_handler_android.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/common/content_features.h"
@@ -239,8 +239,10 @@ void PermissionBubbleMediaAccessHandler::ProcessQueuedAccessRequest(
   const content::MediaStreamRequest& request =
       it->second.begin()->second.request;
 #if BUILDFLAG(IS_ANDROID)
+  // TODO(https://crbug.com/1157166): This should be split into
+  // DisplayMediaAccessHandler and DesktopCaptureAccessHandler.
   if (blink::IsScreenCaptureMediaType(request.video_type)) {
-    ScreenCaptureInfoBarDelegateAndroid::Create(
+    screen_capture::GetScreenCapturePermissionAndroid(
         web_contents, request,
         base::BindOnce(
             &PermissionBubbleMediaAccessHandler::OnAccessRequestResponse,

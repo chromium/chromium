@@ -10975,11 +10975,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Press |<ph name="ACCELERATOR">$1<ex>Esc</ex></ph>| to show your cursor
       </message>
 
-      <!-- Media Capture messages -->
-      <message name="IDS_MEDIA_CAPTURE_SCREEN_INFOBAR_TEXT" desc="Text requesting permission for a site to access the device's screen.">
-        <ph name="HOST">$1<ex>html5rocks.com</ex></ph> wants to share your screen
-      </message>
-
       <!-- Sensor messages -->
       <message name="IDS_SENSORS_ALLOWED_TOOLTIP" desc="Location bar icon tooltip text when a page is allowed to use device's sensors.">
         This site is using motion or light sensors.
