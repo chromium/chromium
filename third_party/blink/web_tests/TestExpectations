@@ -101,7 +101,7 @@ crbug.com/1048761 external/wpt/websockets/interfaces/WebSocket/close/close-neste
 crbug.com/1048761 external/wpt/websockets/interfaces/WebSocket/readyState/003.html?wss [ Failure Pass ]
 crbug.com/1048761 external/wpt/websockets/unload-a-document/002.html?wss [ Failure Pass ]
 
-# oopr-canvas is disabled on Mac10.12. Skipping test to avoid having to 
+# oopr-canvas is disabled on Mac10.12. Skipping test to avoid having to
 # maintain useless baselines.
 crbug.com/1305679 [ Mac10.12 ] virtual/oopr-canvas2d/fast/canvas/* [ Skip ]
 
@@ -5122,9 +5122,6 @@ crbug.com/898378 [ Mac10.13 ] fast/scroll-behavior/smooth-scroll/keyboard-scroll
 
 # Sheriff 2018-10-29
 crbug.com/766357 [ Win ] virtual/threaded-prefer-compositing/fast/scrolling/wheel-and-touch-scroll-use-count.html [ Failure Pass ]
-
-# ecosystem-infra sheriff 2018-11-02, 2019-03-18
-crbug.com/901271 external/wpt/dom/events/Event-dispatch-on-disabled-elements.html [ Failure Pass Timeout ]
 
 # Test is flaky under load
 crbug.com/904389 http/tests/preload/delaying_onload_link_preload_after_discovery.html [ Failure Pass ]
