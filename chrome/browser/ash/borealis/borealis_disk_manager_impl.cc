@@ -630,10 +630,12 @@ void BorealisDiskManagerImpl::OnRequestSpaceDelta(
             std::move(disk_info_or_error.Error())));
     return;
   }
-  int64_t delta =
-      ExcludeBufferBytes(disk_info_or_error.Value()->second.available_space) -
-      ExcludeBufferBytes(disk_info_or_error.Value()->first.available_space);
+  int64_t delta = disk_info_or_error.Value()->second.disk_size -
+                  disk_info_or_error.Value()->first.disk_size;
   if (expanding) {
+    // Exclude the space that was required to regenerate the buffer.
+    delta -=
+        MissingBufferBytes(disk_info_or_error.Value()->first.available_space);
     if (delta < target_delta) {
       EmitResizeDiskMetric(expanding,
                            BorealisResizeDiskResult::kFailedToFulfillRequest);

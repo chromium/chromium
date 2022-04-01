@@ -852,7 +852,7 @@ TEST_F(BorealisDiskManagerTest, RequestSpaceFailsIfResizeTooSmall) {
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/21 * kGiB,
-                /*available_space=*/4 * kGiB);
+                /*available_space=*/5 * kGiB);
             FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(4 * kGiB);
           }));
@@ -944,7 +944,7 @@ TEST_F(BorealisDiskManagerTest, RequestSpaceSuccessful) {
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
             auto response = BuildValidListVmDisksResponse(
                 /*min_size=*/6 * kGiB, /*size=*/22 * kGiB,
-                /*available_space=*/5 * kGiB);
+                /*available_space=*/4 * kGiB);
             FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(3 * kGiB);
           }));
