@@ -478,10 +478,6 @@ void DeskMiniView::OnViewFocused(views::View* observed_view) {
   should_commit_name_changes_ = true;
   desk_name_view_->UpdateViewAppearance();
 
-  // Set the unelided desk name so that the full name shows up for the user to
-  // be able to change it.
-  desk_name_view_->SetText(desk_->name());
-
   // Set the Overview highlight to move focus with the DeskNameView.
   auto* highlight_controller = Shell::Get()
                                    ->overview_controller()
@@ -580,7 +576,6 @@ void DeskMiniView::OnDeskPreviewPressed() {
 }
 
 void DeskMiniView::LayoutDeskNameView(const gfx::Rect& preview_bounds) {
-  const int previous_width = desk_name_view_->width();
   const gfx::Size desk_name_view_size = desk_name_view_->GetPreferredSize();
   // Desk preview's width is supposed to be larger than kMinDeskNameViewWidth,
   // but it might be not the truth for tests with extreme abnormal size of
@@ -604,11 +599,6 @@ void DeskMiniView::LayoutDeskNameView(const gfx::Rect& preview_bounds) {
                                       kLabelPreviewSpacing,
                                   text_width, desk_name_view_size.height()};
   desk_name_view_->SetBoundsRect(desk_name_view_bounds);
-
-  // A change in the DeskNameView's width might mean the need
-  // to elide the text differently.
-  if (previous_width != desk_name_view_bounds.width())
-    OnDeskNameChanged(desk_->name());
 }
 
 }  // namespace ash
