@@ -24,12 +24,25 @@ constexpr int kMaxEntriesPerConfigDefault = 10;
 constexpr char kMaxDaysToKeepStatsParamName[] = "db_days_to_keep_stats";
 constexpr char kMaxEntriesPerConfigParamName[] = "db_max_entries_per_cpnfig";
 
-// Validates the codec profile enum in case it's been compromised. Returns
-// VIDEO_CODEC_PROFILE_UNKNOWN if `codec_profile` is outside the valid range.
-VideoCodecProfile ValidateVideoCodecProfile(VideoCodecProfile codec_profile) {
-  if (codec_profile > VIDEO_CODEC_PROFILE_MIN &&
-      codec_profile <= VIDEO_CODEC_PROFILE_MAX) {
-    return codec_profile;
+// Group similar codec profiles to the same entry. Returns
+// VIDEO_CODEC_PROFILE_UNKNOWN if `codec_profile` is outside the valid range or
+// not tracked. The reason to not track all codec profiles is to limit the
+// fingerprinting surface.
+VideoCodecProfile GetWebrtcCodecProfileBucket(VideoCodecProfile codec_profile) {
+  if (codec_profile >= H264PROFILE_MIN && codec_profile <= H264PROFILE_MAX) {
+    return H264PROFILE_MIN;
+  }
+  if (codec_profile >= VP8PROFILE_MIN && codec_profile <= VP8PROFILE_MAX) {
+    return VP8PROFILE_MIN;
+  }
+  if (codec_profile == VP9PROFILE_PROFILE0) {
+    return VP9PROFILE_PROFILE0;
+  }
+  if (codec_profile == VP9PROFILE_PROFILE2) {
+    return VP9PROFILE_PROFILE2;
+  }
+  if (codec_profile >= AV1PROFILE_MIN && codec_profile <= AV1PROFILE_MAX) {
+    return AV1PROFILE_MIN;
   }
   return VIDEO_CODEC_PROFILE_UNKNOWN;
 }
@@ -45,7 +58,8 @@ WebrtcVideoStatsDB::VideoDescKey::MakeBucketedKey(
     int pixels) {
   // Bucket pixel size to prevent an explosion of one-off values in the
   // database and add basic guards against fingerprinting.
-  return VideoDescKey(is_decode_stats, ValidateVideoCodecProfile(codec_profile),
+  return VideoDescKey(is_decode_stats,
+                      GetWebrtcCodecProfileBucket(codec_profile),
                       hardware_accelerated, GetWebrtcPixelsBucket(pixels));
 }
 

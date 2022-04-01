@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -257,10 +258,27 @@ void WebrtcVideoPerfHistory::GetPerfInfo(
     return;
   }
 
+  // Log the requested codec profile. Useful in determining if the number of
+  // tracked profiles should be changed.
+  UMA_HISTOGRAM_ENUMERATION(
+      "Media.WebrtcVideoPerfHistory.GetPerfInfoCodecProfile", features->profile,
+      media::VIDEO_CODEC_PROFILE_MAX + 1);
+
   WebrtcVideoStatsDB::VideoDescKey video_key =
       WebrtcVideoStatsDB::VideoDescKey::MakeBucketedKey(
           features->is_decode_stats, features->profile,
           features->hardware_accelerated, features->video_pixels);
+
+  if (video_key.codec_profile == VIDEO_CODEC_PROFILE_UNKNOWN) {
+    // This is a codec profile that is not tracked. Return smooth=true.
+    DVLOG(2) << __func__
+             << base::StringPrintf(
+                    " The specified codec profile (%s) is not tracked. "
+                    "Returning default value.",
+                    GetProfileName(features->profile).c_str());
+    std::move(got_info_cb).Run(true);
+    return;
+  }
 
   int frames_per_second_bucketed = MakeBucketedFramerate(frames_per_second);
 
@@ -422,10 +440,22 @@ void WebrtcVideoPerfHistory::SavePerfRecord(
     return;
   }
 
+  // Log the codec profile. Useful in determining if the number of tracked
+  // profiles should be changed.
+  UMA_HISTOGRAM_ENUMERATION(
+      "Media.WebrtcVideoPerfHistory.SavePerfRecordCodecProfile",
+      features.profile, media::VIDEO_CODEC_PROFILE_MAX + 1);
+
   WebrtcVideoStatsDB::VideoDescKey video_key =
       WebrtcVideoStatsDB::VideoDescKey::MakeBucketedKey(
           features.is_decode_stats, features.profile,
           features.hardware_accelerated, features.video_pixels);
+
+  if (video_key.codec_profile == VIDEO_CODEC_PROFILE_UNKNOWN) {
+    DVLOG(3) << __func__
+             << " codec profile is not tracked and won't be stored.";
+    return;
+  }
 
   WebrtcVideoStatsDB::VideoStats new_stats(video_stats.frames_processed,
                                            video_stats.key_frames_processed,

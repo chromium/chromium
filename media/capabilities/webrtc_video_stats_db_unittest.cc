@@ -95,6 +95,46 @@ TEST(WebrtcVideoStatsDBTest, PixelSizeBucketting) {
                           /*pixels=*/1e9));
 }
 
+TEST(WebrtcVideoStatsDBTest, CodecProfileBucketting) {
+  // All H264 profiles are mapped to the same key.
+  auto keyA = MakeKey(/*is_decode_stats=*/true, H264PROFILE_BASELINE,
+                      /*hardware_accelerated=*/true, 1280 * 720);
+  for (int i = H264PROFILE_MIN; i <= H264PROFILE_MAX; ++i) {
+    EXPECT_EQ(keyA, MakeKey(/*is_decode_stats=*/true,
+                            static_cast<VideoCodecProfile>(i),
+                            /*hardware_accelerated=*/true, 1280 * 720));
+  }
+  // VP9 is not mapped to the same key as H264.
+  EXPECT_NE(keyA, MakeKey(/*is_decode_stats=*/true, VP9PROFILE_PROFILE0,
+                          /*hardware_accelerated=*/true, 1280 * 720));
+
+  // All AV1 profiles are mapped to the same key.
+  auto keyB = MakeKey(/*is_decode_stats=*/true, AV1PROFILE_PROFILE_MAIN,
+                      /*hardware_accelerated=*/true, 1280 * 720);
+  for (int i = AV1PROFILE_MIN; i <= AV1PROFILE_MAX; ++i) {
+    EXPECT_EQ(keyB, MakeKey(/*is_decode_stats=*/true,
+                            static_cast<VideoCodecProfile>(i),
+                            /*hardware_accelerated=*/true, 1280 * 720));
+  }
+
+  // Verify that the standard profiles are correctly returned.
+  auto keyC = MakeKey(/*is_decode_stats=*/true, VP8PROFILE_MIN,
+                      /*hardware_accelerated=*/true, 1280 * 720);
+  EXPECT_EQ(keyC.codec_profile, VP8PROFILE_MIN);
+  auto keyD = MakeKey(/*is_decode_stats=*/true, VP9PROFILE_PROFILE0,
+                      /*hardware_accelerated=*/true, 1280 * 720);
+  EXPECT_EQ(keyD.codec_profile, VP9PROFILE_PROFILE0);
+  auto keyE = MakeKey(/*is_decode_stats=*/true, VP9PROFILE_PROFILE2,
+                      /*hardware_accelerated=*/true, 1280 * 720);
+  EXPECT_EQ(keyE.codec_profile, VP9PROFILE_PROFILE2);
+
+  // Dolby vision is currently not supported by WebRTC and therefore not
+  // tracked.
+  auto keyF = MakeKey(/*is_decode_stats=*/true, DOLBYVISION_PROFILE8,
+                      /*hardware_accelerated=*/true, 1280 * 720);
+  EXPECT_EQ(keyF.codec_profile, VIDEO_CODEC_PROFILE_UNKNOWN);
+}
+
 TEST(WebrtcVideoStatsDBTest, ParsePixelsFromKey) {
   // Valid formats on the form: "0|XX|1|YYY"
   // HD

@@ -662,6 +662,12 @@ TEST_P(WebrtcVideoPerfHistoryParamTest, OnlySaveValidKeysAndStats) {
                  VideoStats(kFramesProcessed, kKeyFramesProcessed,
                             kValidP99ProcessingTimeMs),
                  /*expect_callback=*/false);
+  // Untracked codec profile.
+  SavePerfRecord(
+      Features(kIsDecode, DOLBYVISION_PROFILE5, kPixelsHd, kSoftware),
+      VideoStats(kFramesProcessed, kKeyFramesProcessed,
+                 kValidP99ProcessingTimeMs),
+      /*expect_callback=*/false);
   // Invalid pixels.
   SavePerfRecord(
       Features(kIsDecode, kKnownProfile, /*video_pixels=*/100, kSoftware),
@@ -699,6 +705,54 @@ TEST_P(WebrtcVideoPerfHistoryParamTest, OnlySaveValidKeysAndStats) {
                  VideoStats(kFramesProcessed, kKeyFramesProcessed,
                             /*p99_processing_time_ms=*/60000.0f),
                  /*expect_callback=*/false);
+
+  // Complete successful deferred DB initialization (see comment at top of test)
+  if (params.defer_initialize) {
+    GetFakeDB()->CompleteInitialize(true);
+
+    // Allow initialize-deferred API calls to complete.
+    task_environment_.RunUntilIdle();
+  }
+}
+
+TEST_P(WebrtcVideoPerfHistoryParamTest, SmoothIsTrueForUntrackedCodecProfiles) {
+  // NOTE: When the DB initialization is deferred, All EXPECT_CALLs are then
+  // delayed until we db_->CompleteInitialize(). testing::InSequence enforces
+  // that EXPECT_CALLs arrive in top-to-bottom order.
+  WebrtcPerfHistoryTestParams params = GetParam();
+  testing::InSequence dummy;
+
+  // Complete initialization in advance of API calls when not asked to defer.
+  if (!params.defer_initialize)
+    PreInitializeDB(/*success=*/true);
+
+  // First add 2 records with untracked codec profiles to the history that are
+  // not smooth at 60Hz.
+  constexpr float kP99ProcessingTimeMsNotSmoothAt60Hz = 40.0f;
+  SavePerfRecord(
+      Features(kIsDecode, DOLBYVISION_PROFILE4, kPixelsHd, kSoftware),
+      VideoStats(kFramesProcessed, kKeyFramesProcessed,
+                 kP99ProcessingTimeMsNotSmoothAt60Hz),
+      /*expect_callback=*/false);
+  SavePerfRecord(
+      Features(kIsDecode, DOLBYVISION_PROFILE8, kPixelsHd, kSoftware),
+      VideoStats(kFramesProcessed, kKeyFramesProcessed,
+                 kP99ProcessingTimeMsNotSmoothAt60Hz),
+      /*expect_callback=*/false);
+
+  // Verify perf history returns is_smooth = true anyway.
+  EXPECT_CALL(*this, MockGetPerfInfoCB(kIsSmooth));
+  perf_history_->GetPerfInfo(
+      Features::New(kIsDecode, DOLBYVISION_PROFILE4, kPixelsHd, kSoftware),
+      /*frames_per_second=*/60,
+      base::BindOnce(&WebrtcVideoPerfHistoryParamTest::MockGetPerfInfoCB,
+                     base::Unretained(this)));
+  EXPECT_CALL(*this, MockGetPerfInfoCB(kIsSmooth));
+  perf_history_->GetPerfInfo(
+      Features::New(kIsDecode, DOLBYVISION_PROFILE8, kPixelsHd, kSoftware),
+      /*frames_per_second=*/60,
+      base::BindOnce(&WebrtcVideoPerfHistoryParamTest::MockGetPerfInfoCB,
+                     base::Unretained(this)));
 
   // Complete successful deferred DB initialization (see comment at top of test)
   if (params.defer_initialize) {

@@ -5185,6 +5185,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.WebrtcVideoPerfHistory.GetPerfInfoCodecProfile"
+    enum="VideoCodecProfile" expires_after="2023-04-01">
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    The video codec profile that was used when calling GetPerfInfo. Recorded for
+    each call to GetPerfInfo if certain sanity checks pass.
+  </summary>
+</histogram>
+
+<histogram name="Media.WebrtcVideoPerfHistory.SavePerfRecordCodecProfile"
+    enum="VideoCodecProfile" expires_after="2023-04-01">
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    The video codec profile that was provided to SavePerfRecord. Recorded for
+    each call to SavePerfRecord if certain sanity checks pass.
+  </summary>
+</histogram>
+
 <histogram name="Media.WebrtcVideoPerfHistory.SmoothPrediction.{Operation}"
     units="custom" expires_after="2023-02-01">
   <owner>kron@chromium.org</owner>
