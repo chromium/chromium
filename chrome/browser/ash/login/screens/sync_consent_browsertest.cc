@@ -501,7 +501,7 @@ class SyncConsentTestWithReviewParams
 };
 
 // TODO(crbug.com/1311979): Test failed on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
+#if !defined(NDEBUG)
 #define MAYBE_Accept DISABLED_Accept
 #else
 #define MAYBE_Accept Accept
@@ -543,8 +543,13 @@ class SyncConsentTestWithParams
 };
 
 // Disabled due to flakiness: crbug.com/1309452
+#if !defined(NDEBUG)
+#define MAYBE_SyncConsentTestWithLocale DISABLED_SyncConsentTestWithLocale
+#else
+#define MAYBE_SyncConsentTestWithLocale SyncConsentTestWithLocale
+#endif
 IN_PROC_BROWSER_TEST_P(SyncConsentTestWithParams,
-                       DISABLED_SyncConsentTestWithLocale) {
+                       MAYBE_SyncConsentTestWithLocale) {
   EXPECT_EQ(g_browser_process->GetApplicationLocale(), "en-US");
   SwitchLanguage(GetParam());
   LoginAndShowSyncConsentScreenWithCapability();
