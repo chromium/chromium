@@ -35,9 +35,9 @@ font_access_test(async t => {
 
   const iframeFonts = await iframe.contentWindow.navigator.fonts.query();
   assert_greater_than_equal(iframeFonts.length, 1, 'Need a least one font');
-  const iframeFontMetadata = iframeFonts[0];
+  const iframeFontData = iframeFonts[0];
   const frameDOMException = iframe.contentWindow.DOMException;
   iframe.remove();
 
-  iframeFontMetadata.blob();
-}, 'FontMetadata.blob() should not crash when called from a detached iframe.');
+  iframeFontData.blob();
+}, 'FontData.blob() should not crash when called from a detached iframe.');

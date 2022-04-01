@@ -240,13 +240,13 @@ blink::FontEnumerationTable FontEnumerationDataSourceWin::GetFonts(
       if (!style_name)
         continue;
 
-      blink::FontEnumerationTable_FontMetadata* metadata =
+      blink::FontEnumerationTable_FontData* data =
           font_enumeration_table.add_fonts();
-      metadata->set_postscript_name(std::move(postscript_name).value());
-      metadata->set_full_name(std::move(localized_full_name).value());
-      metadata->set_family(family_name.value());
-      metadata->set_style(style_name ? std::move(style_name.value())
-                                     : std::string());
+      data->set_postscript_name(std::move(postscript_name).value());
+      data->set_full_name(std::move(localized_full_name).value());
+      data->set_family(family_name.value());
+      data->set_style(style_name ? std::move(style_name.value())
+                                 : std::string());
     }
   }
 

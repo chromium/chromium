@@ -23,8 +23,8 @@ namespace blink {
 
 namespace {
 
-// Sets up internal FontUniqueLookup metadata that will allow matching
-// unique names, on platforms that apply.
+// Sets up internal FontUniqueLookup data that will allow matching unique names,
+// on platforms that apply.
 void SetUpFontUniqueLookupIfNecessary() {
   FontUniqueNameLookup* unique_name_lookup =
       FontGlobalContext::Get().GetFontUniqueNameLookup();
@@ -64,7 +64,6 @@ ScriptPromise FontMetadata::blob(ScriptState* script_state) {
 void FontMetadata::Trace(blink::Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
-
 
 // static
 void FontMetadata::BlobImpl(ScriptPromiseResolver* resolver,

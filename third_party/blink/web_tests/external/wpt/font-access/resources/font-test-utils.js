@@ -1,6 +1,6 @@
 'use strict';
 
-// Filters an array of FontMetadata by font names. Used to reduce down
+// Filters an array of FontData by font names. Used to reduce down
 // the size of test data.
 function filterFonts(fonts, filter) {
   const filteredFont = [];

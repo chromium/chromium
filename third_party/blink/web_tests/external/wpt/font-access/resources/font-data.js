@@ -48,7 +48,7 @@ const LINUX_FONTS = new Map([
 ]);
 
 // Returns a map of known system fonts, mapping a font's postscript name to
-// FontMetadata.
+// FontData.
 function getTestData() {
   let output = undefined;
   if (navigator.platform.indexOf("Win") !== -1) {

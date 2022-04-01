@@ -12,7 +12,7 @@ font_access_test(async t => {
   // Should the Postscript name contain characters that are multi-byte, this
   // test may erroneously fail.
   const fonts = await navigator.fonts.query();
-  const fontNames = fonts.map(fontMetadata => fontMetadata.postscriptName);
+  const fontNames = fonts.map(fontData => fontData.postscriptName);
   const expectedFontNames = [...fontNames].sort();
   assert_array_equals(fontNames, expectedFontNames);
 }, 'query(): fonts are sorted');

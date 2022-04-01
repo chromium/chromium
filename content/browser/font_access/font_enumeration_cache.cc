@@ -88,8 +88,8 @@ void FontEnumerationCache::BuildEnumerationCache(
   // https://docs.microsoft.com/en-us/typography/opentype/spec/name This is why
   // a "simple" byte-wise comparison is used.
   std::sort(table.mutable_fonts()->begin(), table.mutable_fonts()->end(),
-            [](const blink::FontEnumerationTable_FontMetadata& a,
-               const blink::FontEnumerationTable_FontMetadata& b) {
+            [](const blink::FontEnumerationTable_FontData& a,
+               const blink::FontEnumerationTable_FontData& b) {
               return a.postscript_name() < b.postscript_name();
             });
 

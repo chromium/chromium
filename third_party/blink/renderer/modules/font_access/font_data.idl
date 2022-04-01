@@ -7,8 +7,9 @@
 [
     Exposed=(Window,Worker),
     SecureContext,
-    RuntimeEnabled=FontAccess
-] interface FontMetadata {
+    RuntimeEnabled=FontAccess,
+    ImplementedAs=FontMetadata
+] interface FontData {
   readonly attribute USVString postscriptName;
   readonly attribute USVString fullName;
   readonly attribute USVString family;

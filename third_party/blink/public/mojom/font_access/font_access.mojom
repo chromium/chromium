@@ -23,7 +23,7 @@ enum FontEnumerationStatus {
 
 // Bag of data representing a font, used to pass structured data from
 // content to embedder and from browser to renderer.
-struct FontMetadata {
+struct FontData {
   string postscript_name;
   string full_name;
   string family;

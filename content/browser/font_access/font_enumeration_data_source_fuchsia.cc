@@ -48,21 +48,21 @@ blink::FontEnumerationTable FontEnumerationDataSourceFuchsia::GetFonts(
   blink::FontEnumerationTable font_enumeration_table;
 
   // Add material icons
-  blink::FontEnumerationTable_FontMetadata* material_metadata =
+  blink::FontEnumerationTable_FontData* material_data =
       font_enumeration_table.add_fonts();
-  material_metadata->set_postscript_name("Material Icons");
-  material_metadata->set_full_name("Material Icons");
-  material_metadata->set_family("Material Icons");
-  material_metadata->set_style("Normal");
+  material_data->set_postscript_name("Material Icons");
+  material_data->set_full_name("Material Icons");
+  material_data->set_family("Material Icons");
+  material_data->set_style("Normal");
 
   // Add Roboto
   for (const auto& roboto_info : kRobotoFontsInfo) {
-    blink::FontEnumerationTable_FontMetadata* roboto_metadata =
+    blink::FontEnumerationTable_FontData* roboto_data =
         font_enumeration_table.add_fonts();
-    roboto_metadata->set_postscript_name(roboto_info.name);
-    roboto_metadata->set_full_name(roboto_info.name);
-    roboto_metadata->set_family("sans-serif");
-    roboto_metadata->set_style("Normal");
+    roboto_data->set_postscript_name(roboto_info.name);
+    roboto_data->set_full_name(roboto_info.name);
+    roboto_data->set_family("sans-serif");
+    roboto_data->set_style("Normal");
   }
 
   return font_enumeration_table;

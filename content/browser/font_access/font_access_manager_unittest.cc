@@ -189,7 +189,7 @@ void ValidateFontEnumerationBasic(FontEnumerationStatus status,
   blink::FontEnumerationTable table;
   EXPECT_TRUE(table.ParseFromArray(mapping.memory(), mapping.size()));
 
-  blink::FontEnumerationTable_FontMetadata previous_font;
+  blink::FontEnumerationTable_FontData previous_font;
   for (const auto& font : table.fonts()) {
     EXPECT_GT(font.postscript_name().size(), 0ULL)
         << "postscript_name size is not zero.";

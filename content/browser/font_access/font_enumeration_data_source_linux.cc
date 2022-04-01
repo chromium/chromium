@@ -124,12 +124,12 @@ blink::FontEnumerationTable FontEnumerationDataSourceLinux::GetFonts(
       continue;
     }
 
-    blink::FontEnumerationTable_FontMetadata* metadata =
+    blink::FontEnumerationTable_FontData* data =
         font_enumeration_table.add_fonts();
-    metadata->set_postscript_name(postscript_name);
-    metadata->set_full_name(full_name);
-    metadata->set_family(family);
-    metadata->set_style(style);
+    data->set_postscript_name(postscript_name);
+    data->set_full_name(full_name);
+    data->set_family(family);
+    data->set_style(style);
   }
 
   return font_enumeration_table;

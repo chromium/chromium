@@ -86,12 +86,12 @@ blink::FontEnumerationTable FontEnumerationDataSourceMac::GetFonts(
         continue;
       }
 
-      blink::FontEnumerationTable_FontMetadata* metadata =
+      blink::FontEnumerationTable_FontData* data =
           font_enumeration_table.add_fonts();
-      metadata->set_postscript_name(std::move(postscript_name));
-      metadata->set_full_name(base::SysCFStringRefToUTF8(cf_full_name.get()));
-      metadata->set_family(base::SysCFStringRefToUTF8(cf_family.get()));
-      metadata->set_style(base::SysCFStringRefToUTF8(cf_style.get()));
+      data->set_postscript_name(std::move(postscript_name));
+      data->set_full_name(base::SysCFStringRefToUTF8(cf_full_name.get()));
+      data->set_family(base::SysCFStringRefToUTF8(cf_family.get()));
+      data->set_style(base::SysCFStringRefToUTF8(cf_style.get()));
     }
 
     return font_enumeration_table;

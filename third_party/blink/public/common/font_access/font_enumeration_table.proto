@@ -9,13 +9,13 @@ option optimize_for = LITE_RUNTIME;
 package blink;
 
 message FontEnumerationTable {
-  // Represents font metadata to be enumerated.
-  message FontMetadata {
+  // Represents font data to be enumerated.
+  message FontData {
     required string postscript_name = 10;
     required string full_name = 20;
     required string family = 30;
     required string style = 40;
   }
 
-  repeated FontMetadata fonts = 10;
+  repeated FontData fonts = 10;
 }
