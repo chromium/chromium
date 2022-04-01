@@ -50,10 +50,8 @@ WebUsbAllowDevicesForUrlsPolicyHandler::
 bool WebUsbAllowDevicesForUrlsPolicyHandler::CheckPolicySettings(
     const PolicyMap& policies,
     PolicyErrorMap* errors) {
-  const base::Value* value = policies.GetValueUnsafe(policy_name());
-  if (!value)
+  if (!policies.IsPolicySet(policy_name()))
     return true;
-
   bool result =
       SchemaValidatingPolicyHandler::CheckPolicySettings(policies, errors);
 
@@ -62,6 +60,9 @@ bool WebUsbAllowDevicesForUrlsPolicyHandler::CheckPolicySettings(
   if (!result)
     return result;
 
+  const base::Value* value =
+      policies.GetValue(policy_name(), base::Value::Type::LIST);
+  DCHECK(value);
   int item_index = 0;
   for (const auto& item : value->GetListDeprecated()) {
     // The vendor and product ID descriptors of a USB devices should be

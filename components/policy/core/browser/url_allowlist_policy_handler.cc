@@ -29,14 +29,14 @@ URLAllowlistPolicyHandler::~URLAllowlistPolicyHandler() = default;
 
 bool URLAllowlistPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
                                                     PolicyErrorMap* errors) {
-  const base::Value* url_allowlist = policies.GetValueUnsafe(policy_name());
-  if (!url_allowlist)
+  if (!policies.IsPolicySet(policy_name()))
     return true;
 
-  if (!url_allowlist->is_list()) {
+  const base::Value* url_allowlist =
+      policies.GetValue(policy_name(), base::Value::Type::LIST);
+  if (!url_allowlist) {
     errors->AddError(policy_name(), IDS_POLICY_TYPE_ERROR,
                      base::Value::GetTypeName(base::Value::Type::LIST));
-
     return true;
   }
 

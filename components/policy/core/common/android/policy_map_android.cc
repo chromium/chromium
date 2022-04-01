@@ -108,6 +108,7 @@ base::android::ScopedJavaLocalRef<jstring> PolicyMapAndroid::GetListOrDictValue(
 const base::Value* PolicyMapAndroid::GetValue(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& policy) const {
+  // It is safe to use `GetValueUnsafe()` as multiple policy types are handled.
   return policy_map_.GetValueUnsafe(
       base::android::ConvertJavaStringToUTF8(env, policy));
 }

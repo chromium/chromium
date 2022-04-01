@@ -41,13 +41,14 @@ WebHidDevicePolicyHandler::~WebHidDevicePolicyHandler() = default;
 
 bool WebHidDevicePolicyHandler::CheckPolicySettings(const PolicyMap& policies,
                                                     PolicyErrorMap* errors) {
-  const base::Value* value = policies.GetValueUnsafe(policy_name());
-  if (!value)
+  if (!policies.IsPolicySet(policy_name()))
     return true;
-
   if (!SchemaValidatingPolicyHandler::CheckPolicySettings(policies, errors))
     return false;
 
+  const base::Value* value =
+      policies.GetValue(policy_name(), base::Value::Type::LIST);
+  DCHECK(value);
   int item_index = 0;
   for (const auto& item : value->GetListDeprecated()) {
     int url_index = 0;

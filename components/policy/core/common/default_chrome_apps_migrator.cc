@@ -96,6 +96,8 @@ DefaultChromeAppsMigrator::RemoveChromeAppsFromExtensionForcelist(
 void DefaultChromeAppsMigrator::EnsurePolicyValueIsList(
     PolicyMap* policies,
     const std::string& policy_name) const {
+  // It is safe to use `GetValueUnsafe()` because type checking is performed
+  // before the value is used.
   const base::Value* policy_value = policies->GetValueUnsafe(policy_name);
   if (!policy_value || !policy_value->is_list()) {
     const PolicyMap::Entry* forcelist_entry =

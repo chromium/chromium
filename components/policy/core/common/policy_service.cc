@@ -31,6 +31,7 @@ void PolicyChangeRegistrar::OnPolicyUpdated(const PolicyNamespace& ns,
   if (ns != ns_)
     return;
   for (auto it : callback_map_) {
+    // It's safe to use `GetValueUnsafe()` as multiple policy types are handled.
     const base::Value* prev = previous.GetValueUnsafe(it.first);
     const base::Value* cur = current.GetValueUnsafe(it.first);
 

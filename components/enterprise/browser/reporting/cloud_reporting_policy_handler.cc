@@ -29,9 +29,7 @@ CloudReportingPolicyHandler::~CloudReportingPolicyHandler() = default;
 bool CloudReportingPolicyHandler::CheckPolicySettings(
     const policy::PolicyMap& policies,
     policy::PolicyErrorMap* errors) {
-  // |GetValueUnsafe(...)| is used in order to differentiate between the policy
-  // value being unset vs being set with an incorrect type.
-  if (!policies.GetValueUnsafe(policy_name()))
+  if (!policies.IsPolicySet(policy_name()))
     return true;
   if (!TypeCheckingPolicyHandler::CheckPolicySettings(policies, errors))
     return false;

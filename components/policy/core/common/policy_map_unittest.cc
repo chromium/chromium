@@ -78,7 +78,9 @@ class PolicyMapTest : public PolicyMapTestBase, public testing::Test {};
 
 TEST_F(PolicyMapTest, SetAndGet) {
   PolicyMap map;
+  EXPECT_FALSE(map.IsPolicySet(kTestPolicyName1));
   SetPolicy(&map, kTestPolicyName1, base::Value("aaa"));
+  EXPECT_TRUE(map.IsPolicySet(kTestPolicyName1));
   const base::Value kExpectedStringA("aaa");
   EXPECT_EQ(kExpectedStringA, *map.GetValueUnsafe(kTestPolicyName1));
   EXPECT_EQ(kExpectedStringA,
@@ -87,6 +89,7 @@ TEST_F(PolicyMapTest, SetAndGet) {
             map.GetValue(kTestPolicyName1, base::Value::Type::BOOLEAN));
 
   SetPolicy(&map, kTestPolicyName1, base::Value("bbb"));
+  EXPECT_TRUE(map.IsPolicySet(kTestPolicyName1));
   const base::Value kExpectedStringB("bbb");
   EXPECT_EQ(kExpectedStringB, *map.GetValueUnsafe(kTestPolicyName1));
   EXPECT_EQ(kExpectedStringB,
@@ -95,6 +98,7 @@ TEST_F(PolicyMapTest, SetAndGet) {
             map.GetValue(kTestPolicyName1, base::Value::Type::BOOLEAN));
 
   SetPolicy(&map, kTestPolicyName1, base::Value(true));
+  EXPECT_TRUE(map.IsPolicySet(kTestPolicyName1));
   const base::Value kExpectedBool(true);
   EXPECT_EQ(kExpectedBool, *map.GetValueUnsafe(kTestPolicyName1));
   EXPECT_EQ(nullptr, map.GetValue(kTestPolicyName1, base::Value::Type::STRING));
@@ -102,6 +106,7 @@ TEST_F(PolicyMapTest, SetAndGet) {
             *map.GetValue(kTestPolicyName1, base::Value::Type::BOOLEAN));
 
   SetPolicy(&map, kTestPolicyName1, CreateExternalDataFetcher("dummy"));
+  EXPECT_FALSE(map.IsPolicySet(kTestPolicyName1));
   map.AddMessage(kTestPolicyName1, PolicyMap::MessageType::kError,
                  IDS_POLICY_STORE_STATUS_VALIDATION_ERROR, {kTestError});
   EXPECT_EQ(nullptr, map.GetValueUnsafe(kTestPolicyName1));
@@ -121,6 +126,7 @@ TEST_F(PolicyMapTest, SetAndGet) {
                                   CreateExternalDataFetcher("dummy").get()));
   map.Set(kTestPolicyName1, POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_MACHINE,
           POLICY_SOURCE_ENTERPRISE_DEFAULT, absl::nullopt, nullptr);
+  EXPECT_FALSE(map.IsPolicySet(kTestPolicyName1));
   EXPECT_EQ(nullptr, map.GetValueUnsafe(kTestPolicyName1));
   entry = map.Get(kTestPolicyName1);
   ASSERT_NE(nullptr, entry);

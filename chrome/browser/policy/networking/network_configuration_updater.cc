@@ -175,11 +175,12 @@ void NetworkConfigurationUpdater::ParseCurrentPolicy(
     base::ListValue* certificates) {
   const PolicyMap& policies = policy_service_->GetPolicies(
       PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
-  const base::Value* policy_value = policies.GetValueUnsafe(policy_key_);
+  const base::Value* policy_value =
+      policies.GetValue(policy_key_, base::Value::Type::STRING);
 
-  if (!policy_value)
+  if (!policies.IsPolicySet(policy_key_))
     VLOG(2) << LogHeader() << " is not set.";
-  else if (!policy_value->is_string())
+  else if (!policy_value)
     LOG(ERROR) << LogHeader() << " is not a string value.";
 
   const std::string onc_blob = policy_value && policy_value->is_string()

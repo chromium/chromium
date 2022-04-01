@@ -21,6 +21,8 @@ JavascriptPolicyHandler::~JavascriptPolicyHandler() {}
 
 bool JavascriptPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
                                                   PolicyErrorMap* errors) {
+  // It is safe to use `GetValueUnsafe()` because type checking is performed
+  // before the value is used.
   const base::Value* javascript_enabled =
       policies.GetValueUnsafe(key::kJavascriptEnabled);
   const base::Value* default_setting =

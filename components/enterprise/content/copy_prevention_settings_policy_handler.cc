@@ -31,10 +31,7 @@ CopyPreventionSettingsPolicyHandler::~CopyPreventionSettingsPolicyHandler() =
 bool CopyPreventionSettingsPolicyHandler::CheckPolicySettings(
     const policy::PolicyMap& policies,
     policy::PolicyErrorMap* errors) {
-  // |GetValueUnsafe(...)| is used in order to differentiate between the policy
-  // value being unset vs being set with an incorrect type.
-  const base::Value* value = policies.GetValueUnsafe(policy_name());
-  if (!value)
+  if (!policies.IsPolicySet(policy_name()))
     return true;
 
   if (!SchemaValidatingPolicyHandler::CheckPolicySettings(policies, errors))
@@ -47,6 +44,8 @@ bool CopyPreventionSettingsPolicyHandler::CheckPolicySettings(
     return false;
   }
 
+  const base::Value* value =
+      policies.GetValue(policy_name(), base::Value::Type::DICT);
   const base::Value* enable = value->FindListKey(
       enterprise::content::kCopyPreventionSettingsEnableFieldName);
   const base::Value* disable = value->FindListKey(

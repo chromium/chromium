@@ -35,6 +35,7 @@ class StubPolicyHandler : public ConfigurationPolicyHandler {
 
   bool CheckPolicySettings(const PolicyMap& policies,
                            PolicyErrorMap* errors) override {
+    // It's safe to use `GetValueUnsafe()` as multiple policy types are handled.
     return policies.GetValueUnsafe(policy_name_);
   }
 

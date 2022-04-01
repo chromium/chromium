@@ -203,6 +203,9 @@ class POLICY_EXPORT PolicyMap {
   const base::Value* GetValueUnsafe(const std::string& policy) const;
   base::Value* GetMutableValueUnsafe(const std::string& policy);
 
+  // Returns true if the policy has a non-null value set.
+  bool IsPolicySet(const std::string& policy) const;
+
   // Overwrites any existing information stored in the map for the key |policy|.
   // Resets the error for that policy to the empty string.
   void Set(const std::string& policy,

@@ -32,6 +32,8 @@ URLBlocklistPolicyHandler::~URLBlocklistPolicyHandler() = default;
 bool URLBlocklistPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
                                                     PolicyErrorMap* errors) {
   size_t disabled_schemes_entries = 0;
+  // It is safe to use `GetValueUnsafe()` because type checking is performed
+  // before the value is used.
   // This policy is deprecated but still supported so check it first.
   const base::Value* disabled_schemes =
       policies.GetValueUnsafe(key::kDisabledSchemes);
@@ -44,11 +46,12 @@ bool URLBlocklistPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
     }
   }
 
-  const base::Value* url_blocklist = policies.GetValueUnsafe(policy_name());
-  if (!url_blocklist)
+  if (!policies.IsPolicySet(policy_name()))
     return true;
+  const base::Value* url_blocklist =
+      policies.GetValue(policy_name(), base::Value::Type::LIST);
 
-  if (!url_blocklist->is_list()) {
+  if (!url_blocklist) {
     errors->AddError(policy_name(), IDS_POLICY_TYPE_ERROR,
                      base::Value::GetTypeName(base::Value::Type::LIST));
 
@@ -94,15 +97,15 @@ bool URLBlocklistPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
 void URLBlocklistPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                     PrefValueMap* prefs) {
   const base::Value* url_blocklist_policy =
-      policies.GetValueUnsafe(policy_name());
+      policies.GetValue(policy_name(), base::Value::Type::LIST);
   const base::Value* disabled_schemes_policy =
-      policies.GetValueUnsafe(key::kDisabledSchemes);
+      policies.GetValue(key::kDisabledSchemes, base::Value::Type::LIST);
 
   absl::optional<std::vector<base::Value>> merged_url_blocklist;
 
   // We start with the DisabledSchemes because we have size limit when
   // handling URLBlocklists.
-  if (disabled_schemes_policy && disabled_schemes_policy->is_list()) {
+  if (disabled_schemes_policy) {
     merged_url_blocklist = std::vector<base::Value>();
     for (const auto& entry : disabled_schemes_policy->GetListDeprecated()) {
       if (entry.is_string()) {
@@ -112,7 +115,7 @@ void URLBlocklistPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
     }
   }
 
-  if (url_blocklist_policy && url_blocklist_policy->is_list()) {
+  if (url_blocklist_policy) {
     if (!merged_url_blocklist)
       merged_url_blocklist = std::vector<base::Value>();
 

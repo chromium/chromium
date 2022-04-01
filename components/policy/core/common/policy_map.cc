@@ -352,6 +352,10 @@ PolicyMap::Entry* PolicyMap::GetMutableUntrusted(const std::string& policy) {
   return entry != map_.end() ? &entry->second : nullptr;
 }
 
+bool PolicyMap::IsPolicySet(const std::string& policy) const {
+  return GetValueUnsafe(policy) != nullptr;
+}
+
 void PolicyMap::Set(
     const std::string& policy,
     PolicyLevel level,

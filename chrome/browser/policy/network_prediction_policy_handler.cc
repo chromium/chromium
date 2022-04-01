@@ -19,6 +19,8 @@ namespace policy {
 bool NetworkPredictionPolicyHandler::CheckPolicySettings(
     const PolicyMap& policies,
     PolicyErrorMap* errors) {
+  // It is safe to use `GetValueUnsafe()` because type checking is performed
+  // before the value is used.
   // Deprecated boolean preference.
   const base::Value* network_prediction_enabled =
       policies.GetValueUnsafe(key::kDnsPrefetchingEnabled);
