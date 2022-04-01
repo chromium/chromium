@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/logging.h"
@@ -106,11 +107,13 @@ Mediator::Mediator(
                    !has_at_least_one_discovery_session_);
   quick_pair_process::SetProcessManager(process_manager_.get());
 
-  // Asynchronously bind to CrosBluetoothConfig so that we don't want to attempt
-  // to bind to it before it has initialized.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&Mediator::BindToCrosBluetoothConfig,
-                                weak_ptr_factory_.GetWeakPtr()));
+  if (ash::features::IsBluetoothRevampEnabled()) {
+    // Asynchronously bind to CrosBluetoothConfig so that we don't attempt to
+    // bind to it before it has initialized.
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&Mediator::BindToCrosBluetoothConfig,
+                                  weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 Mediator::~Mediator() {
