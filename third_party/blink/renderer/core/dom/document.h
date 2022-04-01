@@ -1683,6 +1683,9 @@ class CORE_EXPORT Document : public ContainerNode,
   // Return true if any accessibility contexts have been enabled.
   bool IsAccessibilityEnabled() const { return !ax_contexts_.IsEmpty(); }
 
+  void DispatchHandleLoadStart();
+  void DispatchHandleLoadOrLayoutComplete();
+
   bool HaveRenderBlockingStylesheetsLoaded() const;
   bool HaveRenderBlockingResourcesLoaded() const;
 

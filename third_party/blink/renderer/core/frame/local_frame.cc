@@ -2583,6 +2583,10 @@ void LocalFrame::DidResume() {
   Loader().SetDefersLoading(LoaderFreezeMode::kNone);
 
   DomWindow()->SetIsInBackForwardCache(false);
+
+  // TODO(yuzus): Figure out where these calls should really belong.
+  GetDocument()->DispatchHandleLoadStart();
+  GetDocument()->DispatchHandleLoadOrLayoutComplete();
 }
 
 void LocalFrame::MaybeLogAdClickNavigation() {

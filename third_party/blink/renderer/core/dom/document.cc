@@ -3321,13 +3321,25 @@ DocumentParser* Document::ImplicitOpen(
       PageDismissalEventBeingDispatched() == kNoDismissal) {
     load_event_progress_ = kLoadEventNotRun;
   }
+  DispatchHandleLoadStart();
+  return parser_;
+}
+
+void Document::DispatchHandleLoadStart() {
   if (AXObjectCache* cache = ExistingAXObjectCache()) {
     // Don't fire load start for popup document.
     if (this == &AXObjectCacheOwner())
       cache->HandleLoadStart(this);
   }
+}
 
-  return parser_;
+void Document::DispatchHandleLoadOrLayoutComplete() {
+  if (AXObjectCache* cache = ExistingAXObjectCache()) {
+    if (this == &AXObjectCacheOwner())
+      cache->HandleLoadComplete(this);
+    else
+      cache->HandleLayoutComplete(this);
+  }
 }
 
 HTMLElement* Document::body() const {
@@ -3568,12 +3580,7 @@ void Document::ImplicitClose() {
   load_event_progress_ = kLoadEventCompleted;
 
   if (GetFrame() && GetLayoutView()) {
-    if (AXObjectCache* cache = ExistingAXObjectCache()) {
-      if (this == &AXObjectCacheOwner())
-        cache->HandleLoadComplete(this);
-      else
-        cache->HandleLayoutComplete(this);
-    }
+    DispatchHandleLoadOrLayoutComplete();
     FontFaceSetDocument::DidLayout(*this);
   }
 
