@@ -33,9 +33,10 @@ class JavaService : public Service {
   ~JavaService() override;
 
   // Get scripts for a given |url|, which should be a valid URL.
-  void GetScriptsForUrl(const GURL& url,
-                        const TriggerContext& trigger_context,
-                        ResponseCallback callback) override;
+  void GetScriptsForUrl(
+      const GURL& url,
+      const TriggerContext& trigger_context,
+      ServiceRequestSender::ResponseCallback callback) override;
 
   // Get actions.
   void GetActions(const std::string& script_path,
@@ -43,7 +44,7 @@ class JavaService : public Service {
                   const TriggerContext& trigger_context,
                   const std::string& global_payload,
                   const std::string& script_payload,
-                  ResponseCallback callback) override;
+                  ServiceRequestSender::ResponseCallback callback) override;
 
   // Get next sequence of actions according to server payloads in previous
   // response.
@@ -53,12 +54,12 @@ class JavaService : public Service {
       const std::string& previous_script_payload,
       const std::vector<ProcessedActionProto>& processed_actions,
       const RoundtripTimingStats& timing_stats,
-      ResponseCallback callback) override;
+      ServiceRequestSender::ResponseCallback callback) override;
 
   // Get user data.
   void GetUserData(const CollectUserDataOptions& options,
                    uint64_t run_id,
-                   ResponseCallback callback) override;
+                   ServiceRequestSender::ResponseCallback callback) override;
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_service_;

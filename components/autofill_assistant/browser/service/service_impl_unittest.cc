@@ -52,7 +52,8 @@ class ServiceImplTest : public testing::Test {
   ~ServiceImplTest() override = default;
 
  protected:
-  base::MockCallback<Service::ResponseCallback> mock_response_callback_;
+  base::MockCallback<ServiceRequestSender::ResponseCallback>
+      mock_response_callback_;
   NiceMock<MockClient> mock_client_;
   raw_ptr<NiceMock<MockClientContext>> mock_client_context_;
   raw_ptr<NiceMock<MockServiceRequestSender>> mock_request_sender_;
@@ -63,9 +64,10 @@ TEST_F(ServiceImplTest, GetScriptsForUrl) {
   EXPECT_CALL(*mock_client_context_, Update);
   EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kScriptServerUrl), _, _,
                                                    RpcType::SUPPORTS_SCRIPT))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string("response")));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string("response"),
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(mock_response_callback_,
-              Run(net::HTTP_OK, std::string("response")));
+              Run(net::HTTP_OK, std::string("response"), _));
 
   service_->GetScriptsForUrl(GURL("https://www.example.com"), TriggerContext(),
                              mock_response_callback_.Get());
@@ -75,9 +77,10 @@ TEST_F(ServiceImplTest, GetActions) {
   EXPECT_CALL(*mock_client_context_, Update);
   EXPECT_CALL(*mock_request_sender_,
               OnSendRequest(GURL(kActionServerUrl), _, _, RpcType::GET_ACTIONS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string("response")));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string("response"),
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(mock_response_callback_,
-              Run(net::HTTP_OK, std::string("response")));
+              Run(net::HTTP_OK, std::string("response"), _));
 
   service_->GetActions(
       std::string("fake_script_path"), GURL("https://www.example.com"),
@@ -127,9 +130,10 @@ TEST_F(ServiceImplTest, GetActionsWithoutClientToken) {
   EXPECT_CALL(*mock_client_context_, Update);
   EXPECT_CALL(*mock_request_sender_,
               OnSendRequest(GURL(kActionServerUrl), _, _, RpcType::GET_ACTIONS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string("response")));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string("response"),
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(mock_response_callback_,
-              Run(net::HTTP_OK, std::string("response")));
+              Run(net::HTTP_OK, std::string("response"), _));
 
   service_->GetActions(
       std::string("fake_script_path"), GURL("https://www.example.com"),
@@ -141,9 +145,10 @@ TEST_F(ServiceImplTest, GetNextActions) {
   EXPECT_CALL(*mock_client_context_, Update);
   EXPECT_CALL(*mock_request_sender_,
               OnSendRequest(GURL(kActionServerUrl), _, _, RpcType::GET_ACTIONS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string("response")));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string("response"),
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(mock_response_callback_,
-              Run(net::HTTP_OK, std::string("response")));
+              Run(net::HTTP_OK, std::string("response"), _));
 
   service_->GetNextActions(
       TriggerContext(), std::string("fake_previous_global_payload"),
@@ -157,9 +162,10 @@ TEST_F(ServiceImplTest, GetUserDataWithPayments) {
       .WillOnce(RunOnceCallback<0>("token"));
   EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kUserDataServerUrl), _,
                                                    _, RpcType::GET_USER_DATA))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string("response")));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string("response"),
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(mock_response_callback_,
-              Run(net::HTTP_OK, std::string("response")));
+              Run(net::HTTP_OK, std::string("response"), _));
 
   CollectUserDataOptions options;
   options.request_payment_method = true;
@@ -171,9 +177,10 @@ TEST_F(ServiceImplTest, GetUserDataWithoutPayments) {
   EXPECT_CALL(mock_client_, FetchPaymentsClientToken).Times(0);
   EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kUserDataServerUrl), _,
                                                    _, RpcType::GET_USER_DATA))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string("response")));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string("response"),
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(mock_response_callback_,
-              Run(net::HTTP_OK, std::string("response")));
+              Run(net::HTTP_OK, std::string("response"), _));
 
   CollectUserDataOptions options;
   service_->GetUserData(options, /* run_id= */ 1,

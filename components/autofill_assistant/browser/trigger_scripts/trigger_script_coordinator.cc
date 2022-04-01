@@ -85,7 +85,8 @@ void TriggerScriptCoordinator::Start(
 
 void TriggerScriptCoordinator::OnGetTriggerScripts(
     int http_status,
-    const std::string& response) {
+    const std::string& response,
+    const ServiceRequestSender::ResponseInfo& response_info) {
   if (http_status != net::HTTP_OK) {
     Stop(Metrics::TriggerScriptFinishedState::GET_ACTIONS_FAILED);
     return;

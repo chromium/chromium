@@ -675,7 +675,8 @@ TEST_F(StarterTest, RpcTriggerScriptSucceeds) {
             std::move(callback).Run(
                 net::HTTP_OK,
                 CreateTriggerScriptResponseForTest(
-                    TriggerScriptProto::SHOPPING_CART_FIRST_TIME_USER));
+                    TriggerScriptProto::SHOPPING_CART_FIRST_TIME_USER),
+                ServiceRequestSender::ResponseInfo{});
           }));
   GetTriggerScriptsResponseProto get_trigger_scripts_response;
   get_trigger_scripts_response.ParseFromString(
@@ -1094,7 +1095,8 @@ TEST_F(StarterTest, ImplicitStartupOnSupportedDomain) {
             std::move(callback).Run(
                 net::HTTP_OK,
                 CreateTriggerScriptResponseForTest(
-                    TriggerScriptProto::SHOPPING_CART_RETURNING_USER));
+                    TriggerScriptProto::SHOPPING_CART_RETURNING_USER),
+                ServiceRequestSender::ResponseInfo{});
           }));
   EXPECT_CALL(*mock_trigger_script_ui_delegate_, ShowTriggerScript)
       .WillOnce([&]() {
@@ -1192,7 +1194,8 @@ TEST_F(StarterTest, ImplicitStartupOnCurrentUrlAfterSettingEnabled) {
       OnSendRequest(GURL("https://automate-pa.googleapis.com/v1/triggers"), _,
                     _, RpcType::GET_TRIGGER_SCRIPTS))
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK,
-                                   CreateTriggerScriptResponseForTest()));
+                                   CreateTriggerScriptResponseForTest(),
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(*mock_trigger_script_ui_delegate_, ShowTriggerScript).Times(1);
 
   // Implicit startup by enabling proactive help while already on an
@@ -1431,7 +1434,8 @@ TEST_F(StarterTest, FailedTriggerScriptFetchesForImplicitStartupAreCached) {
       *mock_trigger_script_service_request_sender_,
       OnSendRequest(GURL("https://automate-pa.googleapis.com/v1/triggers"), _,
                     _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_FORBIDDEN, std::string()));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_FORBIDDEN, std::string(),
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(*mock_trigger_script_ui_delegate_, ShowTriggerScript).Times(0);
   EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
 
@@ -1490,7 +1494,8 @@ TEST_F(StarterTest,
       OnSendRequest(GURL("https://automate-pa.googleapis.com/v1/triggers"), _,
                     _, RpcType::GET_TRIGGER_SCRIPTS))
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK,
-                                   CreateTriggerScriptResponseForTest()));
+                                   CreateTriggerScriptResponseForTest(),
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(*mock_trigger_script_ui_delegate_, ShowTriggerScript)
       .WillOnce([&]() {
         ASSERT_TRUE(trigger_script_coordinator_ != nullptr);
@@ -1554,7 +1559,8 @@ TEST_F(StarterTest, EmptyTriggerScriptFetchesForImplicitStartupAreCached) {
       .WillOnce(
           WithArg<2>([&](ServiceRequestSender::ResponseCallback& callback) {
             // Empty response == no trigger scripts available.
-            std::move(callback).Run(net::HTTP_OK, std::string());
+            std::move(callback).Run(net::HTTP_OK, std::string(),
+                                    ServiceRequestSender::ResponseInfo{});
           }));
 
   // Implicit startup by navigating to an autofill-assistant-enabled site.
@@ -1618,7 +1624,8 @@ TEST_F(StarterTest, FailedExplicitTriggerFetchesAreCached) {
     // start requests like these will always attempt to talk to the backend, no
     // matter the cache contents.
     EXPECT_CALL(*mock_trigger_script_service_request_sender_, OnSendRequest)
-        .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string()));
+        .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string(),
+                                     ServiceRequestSender::ResponseInfo{}));
     script_parameters["ORIGINAL_DEEPLINK"] = url;
     starter_->Start(std::make_unique<TriggerContext>(
         std::make_unique<ScriptParameters>(script_parameters),
@@ -1647,7 +1654,8 @@ TEST_F(StarterTest, FailedImplicitTriggerFetchesAreCached) {
     PrepareTriggerScriptUiDelegate();
     // Send empty response == no trigger script available.
     EXPECT_CALL(*mock_trigger_script_service_request_sender_, OnSendRequest)
-        .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string()));
+        .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string(),
+                                     ServiceRequestSender::ResponseInfo{}));
     SimulateNavigateToUrl(GURL(url));
     task_environment()->RunUntilIdle();
   }
@@ -1683,7 +1691,8 @@ TEST_F(StarterTest, FailedTriggerFetchesCacheEntriesExpire) {
   task_environment()->RunUntilIdle();
 
   EXPECT_CALL(*mock_trigger_script_service_request_sender_, OnSendRequest)
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string()));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string(),
+                                   ServiceRequestSender::ResponseInfo{}));
   task_environment()->FastForwardBy(base::Hours(1));
   SimulateNavigateToUrl(GURL("https://www.example.com/cart"));
   task_environment()->RunUntilIdle();
@@ -1704,7 +1713,8 @@ TEST_F(StarterTest, UserDenylistedCacheUpdateAndExpire) {
 
   EXPECT_CALL(*mock_trigger_script_service_request_sender_, OnSendRequest)
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK,
-                                   CreateTriggerScriptResponseForTest()));
+                                   CreateTriggerScriptResponseForTest(),
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(*mock_trigger_script_ui_delegate_, ShowTriggerScript)
       .WillOnce([&]() {
         trigger_script_coordinator_->PerformTriggerScriptAction(
@@ -1726,7 +1736,8 @@ TEST_F(StarterTest, UserDenylistedCacheUpdateAndExpire) {
 
   EXPECT_CALL(*mock_trigger_script_service_request_sender_, OnSendRequest)
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK,
-                                   CreateTriggerScriptResponseForTest()));
+                                   CreateTriggerScriptResponseForTest(),
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(*mock_trigger_script_ui_delegate_, ShowTriggerScript)
       .WillOnce([&]() {
         trigger_script_coordinator_->PerformTriggerScriptAction(
@@ -1759,7 +1770,8 @@ TEST_F(StarterTest, RemoveEntryFromCacheOnSuccessForExplicitRequest) {
 
   EXPECT_CALL(*mock_trigger_script_service_request_sender_, OnSendRequest)
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK,
-                                   CreateTriggerScriptResponseForTest()));
+                                   CreateTriggerScriptResponseForTest(),
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(*mock_trigger_script_ui_delegate_, ShowTriggerScript)
       .WillOnce([&]() {
         trigger_script_coordinator_->PerformTriggerScriptAction(
@@ -1952,7 +1964,8 @@ TEST_F(StarterTest, StaleCacheEntriesAreRemovedOnInsertingNewEntries) {
   task_environment()->FastForwardBy(base::Minutes(30));
   base::TimeTicks t2 = task_environment()->GetMockTickClock()->NowTicks();
   EXPECT_CALL(*mock_trigger_script_service_request_sender_, OnSendRequest)
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string()));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string(),
+                                   ServiceRequestSender::ResponseInfo{}));
   SimulateNavigateToUrl(GURL("https://www.example.com/cart"));
   task_environment()->RunUntilIdle();
 
@@ -1970,7 +1983,8 @@ TEST_F(StarterTest, StaleCacheEntriesAreRemovedOnInsertingNewEntries) {
   PrepareTriggerScriptUiDelegate();
   EXPECT_CALL(*mock_trigger_script_service_request_sender_, OnSendRequest)
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK,
-                                   CreateTriggerScriptResponseForTest()));
+                                   CreateTriggerScriptResponseForTest(),
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(*mock_trigger_script_ui_delegate_, ShowTriggerScript)
       .WillOnce([&]() {
         ASSERT_TRUE(trigger_script_coordinator_ != nullptr);

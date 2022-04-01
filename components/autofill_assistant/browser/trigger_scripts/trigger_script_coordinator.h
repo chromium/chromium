@@ -137,7 +137,10 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   void OnDynamicTriggerConditionsEvaluated(
       bool is_out_of_schedule,
       absl::optional<base::TimeTicks> start_time);
-  void OnGetTriggerScripts(int http_status, const std::string& response);
+  void OnGetTriggerScripts(
+      int http_status,
+      const std::string& response,
+      const ServiceRequestSender::ResponseInfo& response_info);
   GURL GetCurrentURL() const;
   void OnEffectiveVisibilityChanged();
   void OnOnboardingFinished(bool onboardingShown, OnboardingResult result);

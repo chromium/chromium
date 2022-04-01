@@ -15,8 +15,17 @@ namespace autofill_assistant {
 
 class ServiceRequestSender {
  public:
+  // Contains information about the network response.
+  struct ResponseInfo {
+    // The number of bytes transmitted over the network, before decoding. Can be
+    // -1 in case of interrupted downloads.
+    size_t encoded_body_length = 0;
+  };
+
   using ResponseCallback =
-      base::OnceCallback<void(int http_status, const std::string& response)>;
+      base::OnceCallback<void(int http_status,
+                              const std::string& response,
+                              const ResponseInfo& response_info)>;
 
   enum class AuthMode {
     // Requires an OAuth token for the request.

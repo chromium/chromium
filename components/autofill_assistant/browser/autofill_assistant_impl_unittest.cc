@@ -56,7 +56,8 @@ TEST_F(AutofillAssistantImpTest, GetCapabilitiesByHashPrefixEmptyRespose) {
   EXPECT_CALL(*mock_request_sender_,
               OnSendRequest(GURL(kScriptServerUrl), _, _,
                             RpcType::GET_CAPABILITIES_BY_HASH_PREFIX))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, ""));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, "",
+                                   ServiceRequestSender::ResponseInfo{}));
 
   EXPECT_CALL(
       mock_response_callback_,
@@ -70,7 +71,8 @@ TEST_F(AutofillAssistantImpTest, BackendRequestFailed) {
   EXPECT_CALL(*mock_request_sender_,
               OnSendRequest(GURL(kScriptServerUrl), _, _,
                             RpcType::GET_CAPABILITIES_BY_HASH_PREFIX))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_FORBIDDEN, ""));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_FORBIDDEN, "",
+                                   ServiceRequestSender::ResponseInfo{}));
 
   EXPECT_CALL(mock_response_callback_,
               Run(net::HTTP_FORBIDDEN,
@@ -84,7 +86,8 @@ TEST_F(AutofillAssistantImpTest, ParsingError) {
   EXPECT_CALL(*mock_request_sender_,
               OnSendRequest(GURL(kScriptServerUrl), _, _,
                             RpcType::GET_CAPABILITIES_BY_HASH_PREFIX))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, "invalid"));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, "invalid",
+                                   ServiceRequestSender::ResponseInfo{}));
 
   EXPECT_CALL(
       mock_response_callback_,
@@ -114,7 +117,8 @@ TEST_F(AutofillAssistantImpTest, GetCapabilitiesByHashPrefix) {
   EXPECT_CALL(*mock_request_sender_,
               OnSendRequest(GURL(kScriptServerUrl), _, _,
                             RpcType::GET_CAPABILITIES_BY_HASH_PREFIX))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_proto));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_proto,
+                                   ServiceRequestSender::ResponseInfo{}));
 
   EXPECT_CALL(
       mock_response_callback_,

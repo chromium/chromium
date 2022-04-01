@@ -216,7 +216,8 @@ TEST_F(TriggerScriptCoordinatorTest, StopOnBackendRequestFailed) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_FORBIDDEN, ""));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_FORBIDDEN, "",
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(
       mock_callback_,
       Run(Metrics::TriggerScriptFinishedState::GET_ACTIONS_FAILED, _, _));
@@ -233,7 +234,8 @@ TEST_F(TriggerScriptCoordinatorTest, StopOnParsingError) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, "invalid"));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, "invalid",
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(
       mock_callback_,
       Run(Metrics::TriggerScriptFinishedState::GET_ACTIONS_PARSE_ERROR, _, _));
@@ -251,7 +253,8 @@ TEST_F(TriggerScriptCoordinatorTest, StopOnNoTriggerScriptsAvailable) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, ""));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, "",
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(
       mock_callback_,
       Run(Metrics::TriggerScriptFinishedState::NO_TRIGGER_SCRIPT_AVAILABLE, _,
@@ -280,7 +283,8 @@ TEST_F(TriggerScriptCoordinatorTest, StartChecksStaticAndDynamicConditions) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(*mock_dynamic_trigger_conditions_, ClearConditions).Times(1);
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
               AddConditionsFromTriggerScript(response.trigger_scripts(0)))
@@ -310,7 +314,8 @@ TEST_F(TriggerScriptCoordinatorTest, ShowAndHideTriggerScript) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
 
   ON_CALL(*mock_dynamic_trigger_conditions_,
           OnUpdate(mock_web_controller_.get(), _))
@@ -348,7 +353,8 @@ TEST_F(TriggerScriptCoordinatorTest, PauseAndResumeOnTabVisibilityChange) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
 
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
               OnUpdate(mock_web_controller_.get(), _))
@@ -372,7 +378,8 @@ TEST_F(TriggerScriptCoordinatorTest, PauseAndResumeOnTabVisibilityChange) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
               OnUpdate(mock_web_controller_.get(), _))
       .WillOnce(RunOnceCallback<1>());
@@ -393,7 +400,8 @@ TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionNotNow) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
   ON_CALL(*mock_dynamic_trigger_conditions_,
           OnUpdate(mock_web_controller_.get(), _))
       .WillByDefault(RunOnceCallback<1>());
@@ -435,7 +443,8 @@ TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionCancelSession) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
   ON_CALL(*mock_dynamic_trigger_conditions_,
           OnUpdate(mock_web_controller_.get(), _))
       .WillByDefault(RunOnceCallback<1>());
@@ -471,7 +480,8 @@ TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionCancelForever) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
   ON_CALL(*mock_dynamic_trigger_conditions_,
           OnUpdate(mock_web_controller_.get(), _))
       .WillByDefault(RunOnceCallback<1>());
@@ -508,7 +518,8 @@ TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionAccept) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
   ON_CALL(*mock_dynamic_trigger_conditions_,
           OnUpdate(mock_web_controller_.get(), _))
       .WillByDefault(RunOnceCallback<1>());
@@ -534,7 +545,8 @@ TEST_F(TriggerScriptCoordinatorTest, CancelOnNavigateAway) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
   ON_CALL(*mock_dynamic_trigger_conditions_,
           OnUpdate(mock_web_controller_.get(), _))
       .WillByDefault(RunOnceCallback<1>());
@@ -583,7 +595,8 @@ TEST_F(TriggerScriptCoordinatorTest, IgnoreNavigationEventsWhileNotStarted) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
               OnUpdate(mock_web_controller_.get(), _))
       .WillOnce(RunOnceCallback<1>());
@@ -607,7 +620,8 @@ TEST_F(TriggerScriptCoordinatorTest, IgnoreNavigationEventsWhileNotStarted) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, /* response = */ ""));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, /* response = */ "",
+                                   ServiceRequestSender::ResponseInfo{}));
   // However, when the tab becomes visible again, the trigger script is
   // restarted and thus fails if the tab is still on an unsupported domain.
   EXPECT_CALL(
@@ -634,7 +648,8 @@ TEST_F(TriggerScriptCoordinatorTest, BottomSheetClosedWithSwipe) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
   ON_CALL(*mock_dynamic_trigger_conditions_,
           OnUpdate(mock_web_controller_.get(), _))
       .WillByDefault(RunOnceCallback<1>());
@@ -675,7 +690,8 @@ TEST_F(TriggerScriptCoordinatorTest, TimeoutAfterInvisibleForTooLong) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
 
   // Note: expect 4 calls: 1 initial plus 3 until timeout.
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
@@ -717,7 +733,8 @@ TEST_F(TriggerScriptCoordinatorTest, TimeoutResetsAfterTriggerScriptShown) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
               OnUpdate(mock_web_controller_.get(), _))
       .WillRepeatedly(RunOnceCallback<1>());
@@ -765,7 +782,8 @@ TEST_F(TriggerScriptCoordinatorTest, NoTimeoutByDefault) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
               OnUpdate(mock_web_controller_.get(), _))
       .WillRepeatedly(RunOnceCallback<1>());
@@ -793,7 +811,8 @@ TEST_F(TriggerScriptCoordinatorTest, KeyboardEventTriggersOutOfScheduleCheck) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
               OnUpdate(mock_web_controller_.get(), _))
       .WillOnce(RunOnceCallback<1>());
@@ -845,7 +864,8 @@ TEST_F(TriggerScriptCoordinatorTest, UrlChangeOutOfScheduleCheckPathMatch) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
               OnUpdate(mock_web_controller_.get(), _))
       .WillOnce(RunOnceCallback<1>());
@@ -876,7 +896,8 @@ TEST_F(TriggerScriptCoordinatorTest, UrlChangeOutOfScheduleCheckDomainMatch) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
               OnUpdate(mock_web_controller_.get(), _))
       .WillOnce(RunOnceCallback<1>());
@@ -907,7 +928,8 @@ TEST_F(TriggerScriptCoordinatorTest,
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
               OnUpdate(mock_web_controller_.get(), _))
       .WillOnce(RunOnceCallback<1>());
@@ -937,7 +959,8 @@ TEST_F(TriggerScriptCoordinatorTest, OnTriggerScriptFailedToShow) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
               OnUpdate(mock_web_controller_.get(), _))
       .WillRepeatedly(RunOnceCallback<1>());
@@ -965,7 +988,8 @@ TEST_F(TriggerScriptCoordinatorTest, OnProactiveHelpSettingDisabled) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
               OnUpdate(mock_web_controller_.get(), _))
       .WillRepeatedly(RunOnceCallback<1>());
@@ -1000,7 +1024,8 @@ TEST_F(TriggerScriptCoordinatorTest, PauseAndResumeOnTabSwitch) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
               OnUpdate(mock_web_controller_.get(), _))
       .WillOnce(RunOnceCallback<1>());
@@ -1024,7 +1049,8 @@ TEST_F(TriggerScriptCoordinatorTest, PauseAndResumeOnTabSwitch) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
               OnUpdate(mock_web_controller_.get(), _))
       .WillOnce(RunOnceCallback<1>());
@@ -1045,7 +1071,8 @@ TEST_F(TriggerScriptCoordinatorTest, OnboardingShownAndAccepted) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
               OnUpdate(mock_web_controller_.get(), _))
       .WillRepeatedly(RunOnceCallback<1>());
@@ -1088,7 +1115,8 @@ TEST_F(TriggerScriptCoordinatorTest,
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
               OnUpdate(mock_web_controller_.get(), _))
       .WillRepeatedly(RunOnceCallback<1>());
@@ -1156,7 +1184,8 @@ TEST_F(TriggerScriptCoordinatorTest,
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
               OnUpdate(mock_web_controller_.get(), _))
       .WillRepeatedly(RunOnceCallback<1>());
@@ -1199,7 +1228,8 @@ TEST_F(TriggerScriptCoordinatorTest, OnboardingNotShown) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
               OnUpdate(mock_web_controller_.get(), _))
       .WillRepeatedly(RunOnceCallback<1>());
@@ -1239,7 +1269,8 @@ TEST_F(TriggerScriptCoordinatorTest, RecordUkmsForCurrentUrlIfPossible) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
   ON_CALL(*mock_dynamic_trigger_conditions_,
           OnUpdate(mock_web_controller_.get(), _))
       .WillByDefault(RunOnceCallback<1>());
@@ -1281,7 +1312,8 @@ TEST_F(TriggerScriptCoordinatorTest, BackendCanOverrideScriptParameters) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
 
   coordinator_->Start(
       GURL(kFakeDeepLink),
@@ -1308,7 +1340,8 @@ TEST_F(TriggerScriptCoordinatorTest, UiTimeoutWhileShown) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
 
   ON_CALL(*mock_dynamic_trigger_conditions_,
           OnUpdate(mock_web_controller_.get(), _))
@@ -1364,7 +1397,8 @@ TEST_F(TriggerScriptCoordinatorTest, UiTimeoutInterruptedByCancelPopup) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
 
   ON_CALL(*mock_dynamic_trigger_conditions_,
           OnUpdate(mock_web_controller_.get(), _))
@@ -1405,7 +1439,8 @@ TEST_F(TriggerScriptCoordinatorTest, UiTimeoutInterruptedByOnboarding) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
 
   ON_CALL(*mock_dynamic_trigger_conditions_,
           OnUpdate(mock_web_controller_.get(), _))
@@ -1433,7 +1468,8 @@ TEST_F(TriggerScriptCoordinatorTest, UiTimeoutInterruptedBySkipSession) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
 
   ON_CALL(*mock_dynamic_trigger_conditions_,
           OnUpdate(mock_web_controller_.get(), _))
@@ -1467,7 +1503,8 @@ TEST_F(TriggerScriptCoordinatorTest, UiTimeoutInterruptedByNotNow) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
 
   ON_CALL(*mock_dynamic_trigger_conditions_,
           OnUpdate(mock_web_controller_.get(), _))
@@ -1498,7 +1535,8 @@ TEST_F(TriggerScriptCoordinatorTest, StoppingTwiceDoesNotCrash) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_FORBIDDEN, ""));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_FORBIDDEN, "",
+                                   ServiceRequestSender::ResponseInfo{}));
   EXPECT_CALL(*mock_ui_delegate_, Detach).Times(2);
   EXPECT_CALL(*mock_ui_delegate_, HideTriggerScript).Times(0);
   coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>(),
@@ -1526,7 +1564,8 @@ TEST_F(TriggerScriptCoordinatorTest, RecordTriggerConditionEvaluationTime) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
 
   EXPECT_CALL(*mock_dynamic_trigger_conditions_, OnUpdate)
       .WillOnce(WithArg<1>([&](auto& callback) {
@@ -1563,7 +1602,8 @@ TEST_F(TriggerScriptCoordinatorTest, RecordIfPrimaryPageFailed) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
 
   coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>(),
                       mock_callback_.Get());
@@ -1610,7 +1650,8 @@ TEST_F(TriggerScriptCoordinatorPrerenderTest, DoNotRecordIfPrerenderingFailed) {
   EXPECT_CALL(
       *mock_request_sender_,
       OnSendRequest(GURL(kFakeServerUrl), _, _, RpcType::GET_TRIGGER_SCRIPTS))
-      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
+                                   ServiceRequestSender::ResponseInfo{}));
 
   EXPECT_CALL(mock_callback_, Run).Times(0);
   coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>(),

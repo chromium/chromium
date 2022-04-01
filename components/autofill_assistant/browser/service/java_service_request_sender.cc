@@ -49,7 +49,8 @@ void JavaServiceRequestSender::OnResponse(
   if (jresponse) {
     base::android::JavaByteArrayToString(env, jresponse, &response);
   }
-  std::move(callback_).Run(http_status, response);
+  // Note: it is currently not necessary to mock the response info in ITs.
+  std::move(callback_).Run(http_status, response, ResponseInfo{});
 }
 
 }  // namespace autofill_assistant

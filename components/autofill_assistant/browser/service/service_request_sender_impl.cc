@@ -56,12 +56,17 @@ void OnURLLoaderComplete(
   }
 
   int response_code = 0;
-  if (loader->ResponseInfo() && loader->ResponseInfo()->headers) {
-    response_code = loader->ResponseInfo()->headers->response_code();
+  autofill_assistant::ServiceRequestSender::ResponseInfo response_info;
+  if (loader->ResponseInfo()) {
+    response_info.encoded_body_length =
+        loader->ResponseInfo()->encoded_body_length;
+    if (loader->ResponseInfo()->headers) {
+      response_code = loader->ResponseInfo()->headers->response_code();
+    }
   }
   VLOG(3) << "Received response: status=" << response_code << ", "
           << response_str.length() << " bytes";
-  std::move(callback).Run(response_code, response_str);
+  std::move(callback).Run(response_code, response_str, response_info);
 }
 
 std::unique_ptr<::network::ResourceRequest> CreateResourceRequest(GURL url) {
@@ -113,7 +118,8 @@ void SendRequestNoAuth(
   }
   if (api_key.empty()) {
     LOG(ERROR) << "no api key provided";
-    std::move(callback).Run(net::HTTP_UNAUTHORIZED, std::string());
+    std::move(callback).Run(net::HTTP_UNAUTHORIZED, std::string(),
+                            /* response_info = */ {});
     return;
   }
 
@@ -137,34 +143,39 @@ void MaybeVerifyCupResponse(
     autofill_assistant::RpcType rpc_type,
     autofill_assistant::ServiceRequestSender::ResponseCallback callback,
     int http_status,
-    const std::string& response) {
+    const std::string& response,
+    const autofill_assistant::ServiceRequestSender::ResponseInfo&
+        response_info) {
   if (!autofill_assistant::cup::IsRpcTypeSupported(rpc_type)) {
-    return std::move(callback).Run(http_status, response);
+    return std::move(callback).Run(http_status, response, response_info);
   }
   if (http_status != net::HTTP_OK) {
     autofill_assistant::Metrics::RecordCupRpcVerificationEvent(
         autofill_assistant::Metrics::CupRpcVerificationEvent::HTTP_FAILED);
-    return std::move(callback).Run(http_status, std::string());
+    return std::move(callback).Run(http_status, std::string(),
+                                   /* response_info = */ {});
   }
   if (!autofill_assistant::cup::ShouldSignRequests(rpc_type)) {
     autofill_assistant::Metrics::RecordCupRpcVerificationEvent(
         autofill_assistant::Metrics::CupRpcVerificationEvent::SIGNING_DISABLED);
-    return std::move(callback).Run(http_status, response);
+    return std::move(callback).Run(http_status, response, response_info);
   }
   if (!autofill_assistant::cup::ShouldVerifyResponses(rpc_type)) {
     autofill_assistant::Metrics::RecordCupRpcVerificationEvent(
         autofill_assistant::Metrics::CupRpcVerificationEvent::
             VERIFICATION_DISABLED);
-    return std::move(callback).Run(http_status, response);
+    return std::move(callback).Run(http_status, response, response_info);
   }
 
   absl::optional<std::string> unpacked_response = cup->UnpackResponse(response);
   if (!unpacked_response) {
     LOG(ERROR) << "Failed to unpack or verify a response.";
-    return std::move(callback).Run(net::HTTP_UNAUTHORIZED, std::string());
+    return std::move(callback).Run(net::HTTP_UNAUTHORIZED, std::string(),
+                                   /* response_info = */ {});
   }
 
-  return std::move(callback).Run(http_status, *unpacked_response);
+  return std::move(callback).Run(http_status, *unpacked_response,
+                                 response_info);
 }
 
 }  // namespace
@@ -222,7 +233,8 @@ void ServiceRequestSenderImpl::InternalSendRequest(
     ResponseCallback callback) {
   if (OAuthEnabled(auth_mode) && access_token_fetcher_ == nullptr) {
     LOG(ERROR) << "auth requested, but no access token fetcher provided";
-    std::move(callback).Run(net::HTTP_UNAUTHORIZED, std::string());
+    std::move(callback).Run(net::HTTP_UNAUTHORIZED, std::string(),
+                            /* response_info = */ {});
     return;
   }
   if (OAuthEnabled(auth_mode)) {
@@ -257,7 +269,8 @@ void ServiceRequestSenderImpl::OnFetchAccessToken(
       return;
     }
     VLOG(1) << "No access token but authentication is required.";
-    std::move(callback).Run(net::HTTP_UNAUTHORIZED, std::string());
+    std::move(callback).Run(net::HTTP_UNAUTHORIZED, std::string(),
+                            /* response_info = */ {});
     return;
   }
 
@@ -303,7 +316,8 @@ void ServiceRequestSenderImpl::RetryIfUnauthorized(
     int max_retries,
     ResponseCallback callback,
     int http_status,
-    const std::string& response) {
+    const std::string& response,
+    const ResponseInfo& response_info) {
   // On first UNAUTHORIZED error, invalidate access token and try again.
   if (OAuthEnabled(auth_mode) && http_status == net::HTTP_UNAUTHORIZED) {
     VLOG(1) << "Request with access token returned with 401 UNAUTHORIZED, "
@@ -315,7 +329,7 @@ void ServiceRequestSenderImpl::RetryIfUnauthorized(
                         std::move(callback));
     return;
   }
-  std::move(callback).Run(http_status, response);
+  std::move(callback).Run(http_status, response, response_info);
 }
 
 bool ServiceRequestSenderImpl::OAuthEnabled(

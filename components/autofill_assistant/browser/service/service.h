@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/service/service_request_sender.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "url/gurl.h"
 
@@ -23,12 +24,11 @@ class Service {
  public:
   virtual ~Service() = default;
 
-  using ResponseCallback =
-      base::OnceCallback<void(int http_status, const std::string&)>;
   // Get scripts for a given |url|, which should be a valid URL.
-  virtual void GetScriptsForUrl(const GURL& url,
-                                const TriggerContext& trigger_context,
-                                ResponseCallback callback) = 0;
+  virtual void GetScriptsForUrl(
+      const GURL& url,
+      const TriggerContext& trigger_context,
+      ServiceRequestSender::ResponseCallback callback) = 0;
 
   // Get actions.
   virtual void GetActions(const std::string& script_path,
@@ -36,7 +36,7 @@ class Service {
                           const TriggerContext& trigger_context,
                           const std::string& global_payload,
                           const std::string& script_payload,
-                          ResponseCallback callback) = 0;
+                          ServiceRequestSender::ResponseCallback callback) = 0;
 
   // Get next sequence of actions according to server payloads in previous
   // response.
@@ -46,7 +46,7 @@ class Service {
       const std::string& previous_script_payload,
       const std::vector<ProcessedActionProto>& processed_actions,
       const RoundtripTimingStats& timing_stats,
-      ResponseCallback callback) = 0;
+      ServiceRequestSender::ResponseCallback callback) = 0;
 
   virtual void SetScriptStoreConfig(
       const ScriptStoreConfig& script_store_config) {}
@@ -54,7 +54,7 @@ class Service {
   // Get user data.
   virtual void GetUserData(const CollectUserDataOptions& options,
                            uint64_t run_id,
-                           ResponseCallback callback) = 0;
+                           ServiceRequestSender::ResponseCallback callback) = 0;
 
  protected:
   Service() = default;

@@ -34,6 +34,7 @@
 namespace autofill_assistant {
 
 using ::base::test::RunOnceCallback;
+using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
 
@@ -56,7 +57,8 @@ class ServiceRequestSenderImplTest : public testing::Test {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::MockCallback<base::OnceCallback<void(int, const std::string&)>>
+  base::MockCallback<base::OnceCallback<
+      void(int, const std::string&, const ServiceRequestSender::ResponseInfo&)>>
       mock_response_callback_;
   // Note: |task_environment_| must be created before |context_|, else creation
   // of |context_| will fail (see content/public/test/test_browser_context.cc).
@@ -114,7 +116,7 @@ TEST_F(ServiceRequestSenderImplTest, SendUnauthenticatedRequest) {
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
 
-  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response"));
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response", _));
   ServiceRequestSenderImpl request_sender{
       &context_,
       /* access_token_fetcher = */ nullptr, std::move(cup_factory),
@@ -153,7 +155,7 @@ TEST_F(ServiceRequestSenderImplTest, SendAuthenticatedRequest) {
       .WillOnce(RunOnceCallback<0>(true, "access_token"));
   EXPECT_CALL(mock_access_token_fetcher_, InvalidateAccessToken).Times(0);
 
-  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response"));
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response", _));
   ServiceRequestSenderImpl request_sender{
       &context_,
       /* access_token_fetcher = */ &mock_access_token_fetcher_,
@@ -197,7 +199,7 @@ TEST_F(ServiceRequestSenderImplTest, ForceAuthenticatedRequest) {
       .WillOnce(RunOnceCallback<0>(true, "access_token"));
   EXPECT_CALL(mock_access_token_fetcher_, InvalidateAccessToken).Times(0);
 
-  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response"));
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response", _));
   ServiceRequestSenderImpl request_sender{
       &context_,
       /* access_token_fetcher = */ &mock_access_token_fetcher_,
@@ -237,7 +239,7 @@ TEST_F(ServiceRequestSenderImplTest,
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
 
-  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response"));
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response", _));
   ServiceRequestSenderImpl request_sender{
       &context_,
       /* access_token_fetcher = */ &mock_access_token_fetcher_,
@@ -277,7 +279,7 @@ TEST_F(ServiceRequestSenderImplTest,
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
 
-  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response"));
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response", _));
   ServiceRequestSenderImpl request_sender{
       &context_,
       /* access_token_fetcher = */ &mock_access_token_fetcher_,
@@ -306,7 +308,7 @@ TEST_F(ServiceRequestSenderImplTest,
       .WillOnce(RunOnceCallback<0>(false, /*access_token = */ ""));
   EXPECT_CALL(mock_access_token_fetcher_, InvalidateAccessToken).Times(0);
 
-  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_UNAUTHORIZED, ""));
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_UNAUTHORIZED, "", _));
   ServiceRequestSenderImpl request_sender{
       &context_,
       /* access_token_fetcher = */ &mock_access_token_fetcher_,
@@ -343,7 +345,7 @@ TEST_F(ServiceRequestSenderImplTest, SignsGetActionsRequestWhenFeatureEnabled) {
       .WillOnce(RunOnceCallback<1>(std::make_unique<std::string>("response")));
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
-  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response"));
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response", _));
 
   EXPECT_CALL(*cup_factory,
               CreateInstance(autofill_assistant::RpcType::GET_ACTIONS))
@@ -387,7 +389,7 @@ TEST_F(ServiceRequestSenderImplTest, ValidatesGetActionsResponsesWhenEnabled) {
           RunOnceCallback<1>(std::make_unique<std::string>("packed_response")));
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
-  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response"));
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response", _));
 
   EXPECT_CALL(*cup_factory,
               CreateInstance(autofill_assistant::RpcType::GET_ACTIONS))
@@ -430,7 +432,7 @@ TEST_F(ServiceRequestSenderImplTest, RecordsCupSigningDisabledEvent) {
   EXPECT_CALL(mock_access_token_fetcher_, OnFetchAccessToken)
       .WillOnce(RunOnceCallback<0>(true, "access_token"));
 
-  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response"));
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response", _));
   ServiceRequestSenderImpl request_sender{
       &context_,
       /* access_token_fetcher = */ &mock_access_token_fetcher_,
@@ -464,7 +466,7 @@ TEST_F(ServiceRequestSenderImplTest, RecordsCupVerificationDisabledEvent) {
       .WillOnce(RunOnceCallback<1>(std::make_unique<std::string>("response")));
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
-  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response"));
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response", _));
 
   EXPECT_CALL(*cup_factory,
               CreateInstance(autofill_assistant::RpcType::GET_ACTIONS))
@@ -505,7 +507,7 @@ TEST_F(ServiceRequestSenderImplTest, RecordsHttpFailureEventWithCupEnabled) {
           RunOnceCallback<1>(std::make_unique<std::string>("packed_response")));
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
-  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_NOT_FOUND, ""));
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_NOT_FOUND, "", _));
   EXPECT_CALL(*cup_factory, CreateInstance).WillOnce([&]() {
     return std::move(cup);
   });
@@ -547,7 +549,7 @@ TEST_F(ServiceRequestSenderImplTest, RecordsHttpFailureEventWithCupDisabled) {
           RunOnceCallback<1>(std::make_unique<std::string>("packed_response")));
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
-  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_NOT_FOUND, ""));
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_NOT_FOUND, "", _));
   EXPECT_CALL(*cup_factory, CreateInstance).WillOnce([&]() {
     return std::move(cup);
   });
@@ -588,7 +590,7 @@ TEST_F(ServiceRequestSenderImplTest,
           RunOnceCallback<1>(std::make_unique<std::string>("packed_response")));
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
-  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response"));
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response", _));
   EXPECT_CALL(*cup_factory, CreateInstance).WillOnce([&]() {
     return std::move(cup);
   });
@@ -639,7 +641,7 @@ TEST_F(ServiceRequestSenderImplTest, DoesNotRecordCupEventForNonSupportedRpcs) {
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
 
-  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response"));
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response", _));
   ServiceRequestSenderImpl request_sender{
       &context_,
       /* access_token_fetcher = */ &mock_access_token_fetcher_,

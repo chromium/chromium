@@ -26,16 +26,17 @@ class JavaTestEndpointService : public Service {
   JavaTestEndpointService(const JavaTestEndpointService&) = delete;
   JavaTestEndpointService& operator=(const JavaTestEndpointService&) = delete;
 
-  void GetScriptsForUrl(const GURL& url,
-                        const TriggerContext& trigger_context,
-                        ResponseCallback callback) override;
+  void GetScriptsForUrl(
+      const GURL& url,
+      const TriggerContext& trigger_context,
+      ServiceRequestSender::ResponseCallback callback) override;
 
   void GetActions(const std::string& script_path,
                   const GURL& url,
                   const TriggerContext& trigger_context,
                   const std::string& global_payload,
                   const std::string& script_payload,
-                  ResponseCallback callback) override;
+                  ServiceRequestSender::ResponseCallback callback) override;
 
   void GetNextActions(
       const TriggerContext& trigger_context,
@@ -43,16 +44,18 @@ class JavaTestEndpointService : public Service {
       const std::string& previous_script_payload,
       const std::vector<ProcessedActionProto>& processed_actions,
       const RoundtripTimingStats& timing_stats,
-      ResponseCallback callback) override;
+      ServiceRequestSender::ResponseCallback callback) override;
 
   void GetUserData(const CollectUserDataOptions& options,
                    uint64_t run_id,
-                   ResponseCallback callback) override;
+                   ServiceRequestSender::ResponseCallback callback) override;
 
  private:
-  void OnGetScriptsForUrl(ResponseCallback callback,
-                          int http_status,
-                          const std::string& response);
+  void OnGetScriptsForUrl(
+      ServiceRequestSender::ResponseCallback callback,
+      int http_status,
+      const std::string& response,
+      const ServiceRequestSender::ResponseInfo& response_info);
 
   std::unique_ptr<Service> service_impl_;
   base::WeakPtrFactory<JavaTestEndpointService> weak_ptr_factory_{this};

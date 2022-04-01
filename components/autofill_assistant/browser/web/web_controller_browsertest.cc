@@ -939,18 +939,20 @@ document.getElementById("overlay_in_frame").style.visibility='hidden';
     std::string serialized_actions_response;
     actions_response.SerializeToString(&serialized_actions_response);
     EXPECT_CALL(mock_service, OnGetActions)
-        .WillOnce(RunOnceCallback<5>(200, serialized_actions_response));
+        .WillOnce(RunOnceCallback<5>(200, serialized_actions_response,
+                                     ServiceRequestSender::ResponseInfo{}));
 
     std::vector<ProcessedActionProto> captured_processed_actions;
     EXPECT_CALL(mock_service, OnGetNextActions)
         .WillOnce(WithArgs<3, 5>(
             [&captured_processed_actions](
                 const std::vector<ProcessedActionProto>& processed_actions,
-                Service::ResponseCallback& callback) {
+                ServiceRequestSender::ResponseCallback& callback) {
               captured_processed_actions = processed_actions;
 
               // Send empty response to stop the script executor.
-              std::move(callback).Run(200, std::string());
+              std::move(callback).Run(200, std::string(),
+                                      ServiceRequestSender::ResponseInfo{});
             }));
     ON_CALL(mock_script_executor_delegate, GetTriggerContext())
         .WillByDefault(Return(&trigger_context));

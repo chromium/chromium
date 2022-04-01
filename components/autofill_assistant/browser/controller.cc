@@ -465,9 +465,11 @@ void Controller::OnPeriodicScriptCheck() {
       settings_.periodic_script_check_interval);
 }
 
-void Controller::OnGetScripts(const GURL& url,
-                              int http_status,
-                              const std::string& response) {
+void Controller::OnGetScripts(
+    const GURL& url,
+    int http_status,
+    const std::string& response,
+    const ServiceRequestSender::ResponseInfo& response_info) {
   if (state_ == AutofillAssistantState::STOPPED)
     return;
 

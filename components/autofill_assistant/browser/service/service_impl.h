@@ -58,9 +58,10 @@ class ServiceImpl : public Service {
   ~ServiceImpl() override;
 
   // Get scripts for a given |url|, which should be a valid URL.
-  void GetScriptsForUrl(const GURL& url,
-                        const TriggerContext& trigger_context,
-                        ResponseCallback callback) override;
+  void GetScriptsForUrl(
+      const GURL& url,
+      const TriggerContext& trigger_context,
+      ServiceRequestSender::ResponseCallback callback) override;
 
   // Get actions.
   void GetActions(const std::string& script_path,
@@ -68,7 +69,7 @@ class ServiceImpl : public Service {
                   const TriggerContext& trigger_context,
                   const std::string& global_payload,
                   const std::string& script_payload,
-                  ResponseCallback callback) override;
+                  ServiceRequestSender::ResponseCallback callback) override;
 
   // Get next sequence of actions according to server payloads in previous
   // response.
@@ -78,14 +79,14 @@ class ServiceImpl : public Service {
       const std::string& previous_script_payload,
       const std::vector<ProcessedActionProto>& processed_actions,
       const RoundtripTimingStats& timing_stats,
-      ResponseCallback callback) override;
+      ServiceRequestSender::ResponseCallback callback) override;
 
   void SetScriptStoreConfig(
       const ScriptStoreConfig& script_store_config) override;
 
   void GetUserData(const CollectUserDataOptions& options,
                    uint64_t run_id,
-                   ResponseCallback callback) override;
+                   ServiceRequestSender::ResponseCallback callback) override;
 
  private:
   void SendUserDataRequest(
@@ -96,7 +97,7 @@ class ServiceImpl : public Service {
       bool request_shipping,
       bool request_payment_methods,
       const std::vector<std::string>& supported_card_networks,
-      ResponseCallback callback,
+      ServiceRequestSender::ResponseCallback callback,
       const std::string& client_token);
 
   Client* const client_;

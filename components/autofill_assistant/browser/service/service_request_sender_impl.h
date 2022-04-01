@@ -80,7 +80,8 @@ class ServiceRequestSenderImpl : public ServiceRequestSender {
                            int max_retries,
                            ResponseCallback callback,
                            int http_status,
-                           const std::string& response);
+                           const std::string& response,
+                           const ResponseInfo& response_info);
 
   void OnFetchAccessToken(GURL url,
                           std::string request_body,

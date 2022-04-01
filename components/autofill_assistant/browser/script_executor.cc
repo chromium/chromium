@@ -811,9 +811,11 @@ base::WeakPtr<ActionDelegate> ScriptExecutor::GetWeakPtr() const {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void ScriptExecutor::OnGetActions(base::TimeTicks start_time,
-                                  int http_status,
-                                  const std::string& response) {
+void ScriptExecutor::OnGetActions(
+    base::TimeTicks start_time,
+    int http_status,
+    const std::string& response,
+    const ServiceRequestSender::ResponseInfo& response_info) {
   VLOG(2) << __func__ << " http-status=" << http_status;
   batch_start_time_ = base::TimeTicks::Now();
   const base::TimeDelta& roundtrip_duration = batch_start_time_ - start_time;
@@ -1082,7 +1084,8 @@ void ScriptExecutor::RequestUserData(
 void ScriptExecutor::OnRequestUserData(
     base::OnceCallback<void(bool, const GetUserDataResponseProto&)> callback,
     int http_status,
-    const std::string& response) {
+    const std::string& response,
+    const ServiceRequestSender::ResponseInfo& response_info) {
   if (http_status != net::HTTP_OK) {
     std::move(callback).Run(false, GetUserDataResponseProto());
     return;

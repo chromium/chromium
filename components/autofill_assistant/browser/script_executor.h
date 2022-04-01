@@ -28,6 +28,7 @@
 #include "components/autofill_assistant/browser/script_executor_delegate.h"
 #include "components/autofill_assistant/browser/script_executor_ui_delegate.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/service/service_request_sender.h"
 #include "components/autofill_assistant/browser/top_padding.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/wait_for_dom_observer.h"
@@ -270,7 +271,8 @@ class ScriptExecutor : public ActionDelegate,
 
   void OnGetActions(base::TimeTicks start_time,
                     int http_status,
-                    const std::string& response);
+                    const std::string& response,
+                    const ServiceRequestSender::ResponseInfo& response_info);
   bool ProcessNextActionResponse(const std::string& response);
   void ReportPayloadsToListener();
   void ReportScriptsUpdateToListener(
@@ -329,7 +331,8 @@ class ScriptExecutor : public ActionDelegate,
   void OnRequestUserData(
       base::OnceCallback<void(bool, const GetUserDataResponseProto&)> callback,
       int http_status,
-      const std::string& response);
+      const std::string& response,
+      const ServiceRequestSender::ResponseInfo& response_info);
 
   // Maybe shows the message specified in a callout, depending on the current
   // state and client settings.

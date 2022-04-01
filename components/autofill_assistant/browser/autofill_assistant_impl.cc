@@ -28,7 +28,8 @@ const char kIntentScriptParameterKey[] = "INTENT";
 void OnCapabilitiesResponse(
     AutofillAssistant::GetCapabilitiesResponseCallback callback,
     int http_status,
-    const std::string& response_str) {
+    const std::string& response_str,
+    const ServiceRequestSender::ResponseInfo& response_info) {
   std::vector<AutofillAssistant::CapabilitiesInfo> infos;
   GetCapabilitiesByHashPrefixResponseProto resp;
 

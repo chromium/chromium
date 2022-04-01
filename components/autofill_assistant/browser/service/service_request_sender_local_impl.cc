@@ -19,7 +19,10 @@ void ServiceRequestSenderLocalImpl::SendRequest(
     ServiceRequestSender::AuthMode auth_mode,
     ResponseCallback callback,
     RpcType rpc_type) {
-  std::move(callback).Run(net::HTTP_OK, response_);
+  // Note: |encoded_body_length| is set to 0 since nothing was sent over the
+  // network.
+  std::move(callback).Run(net::HTTP_OK, response_,
+                          /* response_info = */ {});
 }
 
 }  // namespace autofill_assistant

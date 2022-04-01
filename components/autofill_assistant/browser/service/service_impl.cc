@@ -94,9 +94,10 @@ void ServiceImpl::SetScriptStoreConfig(
   script_store_config_ = script_store_config;
 }
 
-void ServiceImpl::GetScriptsForUrl(const GURL& url,
-                                   const TriggerContext& trigger_context,
-                                   ResponseCallback callback) {
+void ServiceImpl::GetScriptsForUrl(
+    const GURL& url,
+    const TriggerContext& trigger_context,
+    ServiceRequestSender::ResponseCallback callback) {
   DCHECK(url.is_valid());
   client_context_->Update(trigger_context);
   request_sender_->SendRequest(script_server_url_,
@@ -112,7 +113,7 @@ void ServiceImpl::GetActions(const std::string& script_path,
                              const TriggerContext& trigger_context,
                              const std::string& global_payload,
                              const std::string& script_payload,
-                             ResponseCallback callback) {
+                             ServiceRequestSender::ResponseCallback callback) {
   DCHECK(!script_path.empty());
   client_context_->Update(trigger_context);
   request_sender_->SendRequest(
@@ -130,7 +131,7 @@ void ServiceImpl::GetNextActions(
     const std::string& previous_script_payload,
     const std::vector<ProcessedActionProto>& processed_actions,
     const RoundtripTimingStats& timing_stats,
-    ResponseCallback callback) {
+    ServiceRequestSender::ResponseCallback callback) {
   client_context_->Update(trigger_context);
   request_sender_->SendRequest(
       script_action_server_url_,
@@ -142,7 +143,7 @@ void ServiceImpl::GetNextActions(
 
 void ServiceImpl::GetUserData(const CollectUserDataOptions& options,
                               uint64_t run_id,
-                              ResponseCallback callback) {
+                              ServiceRequestSender::ResponseCallback callback) {
   if (options.request_payment_method) {
     // We do not cache the payments client token. It could go stale (in practice
     // it currently doesn't). Getting the token is little overhead.
@@ -171,7 +172,7 @@ void ServiceImpl::SendUserDataRequest(
     bool request_shipping,
     bool request_payment_methods,
     const std::vector<std::string>& supported_card_networks,
-    ResponseCallback callback,
+    ServiceRequestSender::ResponseCallback callback,
     const std::string& client_token) {
   request_sender_->SendRequest(
       user_data_url_,

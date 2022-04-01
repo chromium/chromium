@@ -200,7 +200,8 @@ class Controller : public ScriptExecutorDelegate,
 
   void OnGetScripts(const GURL& url,
                     int http_status,
-                    const std::string& response);
+                    const std::string& response,
+                    const ServiceRequestSender::ResponseInfo& response_info);
 
   // Execute |script_path| and, if execution succeeds, enter |end_state| and
   // call |on_success|.

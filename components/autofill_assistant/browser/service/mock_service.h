@@ -20,9 +20,10 @@ class MockService : public ServiceImpl {
   MockService();
   ~MockService() override;
 
-  void GetScriptsForUrl(const GURL& url,
-                        const TriggerContext& trigger_context,
-                        ResponseCallback callback) override {
+  void GetScriptsForUrl(
+      const GURL& url,
+      const TriggerContext& trigger_context,
+      ServiceRequestSender::ResponseCallback callback) override {
     // Transforming callback into a references allows using RunOnceCallback on
     // the argument.
     OnGetScriptsForUrl(url, trigger_context, callback);
@@ -30,14 +31,14 @@ class MockService : public ServiceImpl {
   MOCK_METHOD3(OnGetScriptsForUrl,
                void(const GURL& url,
                     const TriggerContext& trigger_context,
-                    ResponseCallback& callback));
+                    ServiceRequestSender::ResponseCallback& callback));
 
   void GetActions(const std::string& script_path,
                   const GURL& url,
                   const TriggerContext& trigger_context,
                   const std::string& global_payload,
                   const std::string& script_payload,
-                  ResponseCallback callback) override {
+                  ServiceRequestSender::ResponseCallback callback) override {
     OnGetActions(script_path, url, trigger_context, global_payload,
                  script_payload, callback);
   }
@@ -47,7 +48,7 @@ class MockService : public ServiceImpl {
                     const TriggerContext& trigger_contexts,
                     const std::string& global_payload,
                     const std::string& script_payload,
-                    ResponseCallback& callback));
+                    ServiceRequestSender::ResponseCallback& callback));
 
   void GetNextActions(
       const TriggerContext& trigger_context,
@@ -55,7 +56,7 @@ class MockService : public ServiceImpl {
       const std::string& previous_script_payload,
       const std::vector<ProcessedActionProto>& processed_actions,
       const RoundtripTimingStats& timing_stats,
-      ResponseCallback callback) override {
+      ServiceRequestSender::ResponseCallback callback) override {
     OnGetNextActions(trigger_context, previous_global_payload,
                      previous_script_payload, processed_actions, timing_stats,
                      callback);
@@ -66,7 +67,7 @@ class MockService : public ServiceImpl {
                     const std::string& previous_script_payload,
                     const std::vector<ProcessedActionProto>& processed_actions,
                     const RoundtripTimingStats& timing_stats,
-                    ResponseCallback& callback));
+                    ServiceRequestSender::ResponseCallback& callback));
 
   MOCK_METHOD1(SetScriptStoreConfig,
                void(const ScriptStoreConfig& script_store_config));
