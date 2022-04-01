@@ -325,7 +325,8 @@ Frame* FrameTree::FindFrameForNavigationInternal(const AtomicString& name,
     if (other_page == page || other_page->IsClosing())
       continue;
     for (Frame* frame = other_page->MainFrame(); frame;
-         frame = frame->Tree().TraverseNext()) {
+         frame =
+             frame->Tree().TraverseNext(nullptr, FrameTreeBoundary::kFenced)) {
       if (frame->Tree().GetName() == name &&
           To<LocalFrame>(this_frame_.Get())->CanNavigate(*frame, url)) {
         return frame;
