@@ -410,7 +410,7 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
   if (self.imageView) {
     [constraints addObjectsFromArray:[self imageViewConstraints]];
   }
-  // Add constriants for snooze button.
+  // Add constraints for snooze button.
   if (self.showsSnoozeButton) {
     [constraints addObjectsFromArray:[self snoozeButtonConstraints]];
   }
