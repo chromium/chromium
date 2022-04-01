@@ -83,13 +83,18 @@ id<GREYMatcher> MicrophonePermissionsSwitch(BOOL isOn) {
     API_AVAILABLE(ios(15.0)) {
   NSDictionary<NSNumber*, NSNumber*>* actualStatesForPermissions =
       [PermissionsAppInterface statesForAllPermissions];
-  GREYAssertEqualObjects(expectedStatesForPermissions[@(web::PermissionCamera)],
-                         actualStatesForPermissions[@(web::PermissionCamera)],
-                         @"Camera state does not match expected.");
+  GREYAssertEqualObjects(
+      expectedStatesForPermissions[@(web::PermissionCamera)],
+      actualStatesForPermissions[@(web::PermissionCamera)],
+      @"Camera state: %@ does not match expected: %@.",
+      actualStatesForPermissions[@(web::PermissionCamera)],
+      expectedStatesForPermissions[@(web::PermissionCamera)]);
   GREYAssertEqualObjects(
       expectedStatesForPermissions[@(web::PermissionMicrophone)],
       actualStatesForPermissions[@(web::PermissionMicrophone)],
-      @"Microphone state does not match expected.");
+      @"Microphone state: %@ does not match expected: %@.",
+      actualStatesForPermissions[@(web::PermissionMicrophone)],
+      expectedStatesForPermissions[@(web::PermissionMicrophone)]);
 }
 
 // Tests that rotating the device will don't dismiss the page info view.
