@@ -349,7 +349,7 @@ void IndexedDBContextImpl::GetAllStorageKeysDetails(
 
   std::sort(storage_keys.begin(), storage_keys.end());
 
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   for (const auto& storage_key : storage_keys) {
     base::Value info(base::Value::Type::DICTIONARY);
     // TODO(https://crbug.com/1199077): Serialize storage key directly
