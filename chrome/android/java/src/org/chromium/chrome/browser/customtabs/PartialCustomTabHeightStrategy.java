@@ -10,11 +10,12 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.content.res.Resources;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -223,8 +224,8 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             OnResizedCallback onResizedCallback, ActivityLifecycleDispatcher lifecycleDispatcher) {
         mActivity = activity;
-        mNavbarHeight = getNavbarHeight();
         mMaxHeight = getMaximumPossibleHeight();
+        mNavbarHeight = getNavbarHeight(); // Needs mMaxHeight.
         mInitialHeight = MathUtils.clamp(
                 initialHeight, mMaxHeight, (int) (mMaxHeight * MINIMAL_HEIGHT_RATIO));
         mOnResizedCallback = onResizedCallback;
@@ -390,9 +391,15 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
                     .getInsets(WindowInsets.Type.navigationBars())
                     .bottom;
         }
-        Resources res = mActivity.getResources();
-        int resId = res.getIdentifier("navigation_bar_height", "dimen", "android");
-        return resId > 0 ? res.getDimensionPixelSize(resId) : 0;
+        assert mMaxHeight != 0 : "mMaxHeight should have been defined in advance.";
+        return mMaxHeight - getAppUsableScreenHeight();
+    }
+
+    private int getAppUsableScreenHeight() {
+        Display display = mActivity.getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        return size.y;
     }
 
     private @Px int getMaximumPossibleHeight() {

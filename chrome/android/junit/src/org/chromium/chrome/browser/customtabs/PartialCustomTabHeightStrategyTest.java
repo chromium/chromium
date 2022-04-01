@@ -16,6 +16,7 @@ import static org.robolectric.Shadows.shadowOf;
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Point;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.util.DisplayMetrics;
@@ -132,6 +133,15 @@ public class PartialCustomTabHeightStrategyTest {
         })
                 .when(mDisplay)
                 .getRealMetrics(any(DisplayMetrics.class));
+
+        doAnswer(invocation -> {
+            Point point = invocation.getArgument(0);
+            point.x = DEVICE_WIDTH;
+            point.y = DEVICE_HEIGHT;
+            return null;
+        })
+                .when(mDisplay)
+                .getSize(any(Point.class));
     }
 
     @Test
