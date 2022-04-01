@@ -76,6 +76,8 @@ class ASH_EXPORT UnifiedSystemTrayController
   void HandlePageSwitchAction(int page);
   // Show date and time settings. Called from the view.
   void HandleOpenDateTimeSettingsAction();
+  // Show power settings. Called from the view.
+  void HandleOpenPowerSettingsAction();
   // Show enterprise managed device info. Called from the view.
   void HandleEnterpriseInfoAction();
   // Toggle expanded state of UnifiedSystemTrayView. Called from the view.

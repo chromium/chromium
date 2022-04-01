@@ -168,9 +168,9 @@ void DateView::Refresh() {
 }
 
 // A view that shows battery status. It updates by observing PowerStatus.
-class BatteryView : public views::View, public PowerStatus::Observer {
+class BatteryView : public views::Button, public PowerStatus::Observer {
  public:
-  BatteryView();
+  explicit BatteryView(UnifiedSystemTrayController* controller);
 
   BatteryView(const BatteryView&) = delete;
   BatteryView& operator=(const BatteryView&) = delete;
@@ -192,12 +192,21 @@ class BatteryView : public views::View, public PowerStatus::Observer {
 
   void ConfigureLabel(views::Label* label);
 
+  // Callback called when this is pressed.
+  void OnButtonPressed(const ui::Event& event);
+
   views::Label* percentage_;
   views::Label* separator_;
   views::Label* status_;
+
+  // Unowned.
+  ash::UnifiedSystemTrayController* const controller_;
 };
 
-BatteryView::BatteryView() {
+BatteryView::BatteryView(UnifiedSystemTrayController* controller)
+    : Button(base::BindRepeating(&BatteryView::OnButtonPressed,
+                                 base::Unretained(this))),
+      controller_(controller) {
   PowerStatus::Get()->AddObserver(this);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
@@ -261,6 +270,10 @@ void BatteryView::ConfigureLabel(views::Label* label) {
   label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
       ContentLayerType::kTextColorSecondary));
   label->GetViewAccessibility().OverrideIsIgnored(true);
+}
+
+void BatteryView::OnButtonPressed(const ui::Event& event) {
+  controller_->HandleOpenPowerSettingsAction();
 }
 
 // A base class of the views showing device management state.
@@ -477,7 +490,7 @@ UnifiedSystemInfoView::UnifiedSystemInfoView(
   if (PowerStatus::Get()->IsBatteryPresent()) {
     separator_ = AddChildView(std::make_unique<views::Separator>());
     separator_->SetPreferredHeight(kUnifiedSystemInfoHeight);
-    AddChildView(std::make_unique<BatteryView>());
+    AddChildView(std::make_unique<BatteryView>(controller));
   }
 
   auto* spacing = AddChildView(std::make_unique<views::View>());

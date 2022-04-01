@@ -37,6 +37,7 @@ class ClockModel : public chromeos::SystemClockClient::Observer,
   bool IsSettingsAvailable() const;
 
   void ShowDateSettings();
+  void ShowPowerSettings();
   void ShowSetTimeDialog();
 
   // Force observers to refresh clock views e.g. system is resumed or timezone

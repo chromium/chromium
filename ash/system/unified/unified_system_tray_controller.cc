@@ -207,6 +207,14 @@ void UnifiedSystemTrayController::HandleOpenDateTimeSettingsAction() {
   }
 }
 
+void UnifiedSystemTrayController::HandleOpenPowerSettingsAction() {
+  ClockModel* model = Shell::Get()->system_tray_model()->clock();
+
+  if (Shell::Get()->session_controller()->ShouldEnableSettings()) {
+    model->ShowPowerSettings();
+  }
+}
+
 void UnifiedSystemTrayController::HandleEnterpriseInfoAction() {
   UMA_HISTOGRAM_ENUMERATION("ChromeOS.SystemTray.OpenHelpPageForManaged",
                             MANAGED_TYPE_ENTERPRISE, MANAGED_TYPE_COUNT);

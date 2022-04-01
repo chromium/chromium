@@ -55,6 +55,10 @@ void ClockModel::ShowDateSettings() {
   Shell::Get()->system_tray_model()->client()->ShowDateSettings();
 }
 
+void ClockModel::ShowPowerSettings() {
+  Shell::Get()->system_tray_model()->client()->ShowPowerSettings();
+}
+
 void ClockModel::ShowSetTimeDialog() {
   Shell::Get()->system_tray_model()->client()->ShowSetTimeDialog();
 }
