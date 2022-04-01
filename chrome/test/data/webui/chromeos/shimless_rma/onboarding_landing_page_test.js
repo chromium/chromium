@@ -86,21 +86,6 @@ export function onboardingLandingPageTest() {
     return flushTasks();
   }
 
-  test('OnBoardingPageValidationCompleteEnablesNextButton', async () => {
-    await initializeLandingPage();
-    let disableNextButtonEventFired = false;
-    let disableNextButton = true;
-    component.addEventListener('disable-next-button', (e) => {
-      disableNextButtonEventFired = true;
-      disableNextButton = e.detail;
-    });
-
-    service.triggerHardwareVerificationStatusObserver(true, '', 0);
-    await flushTasks();
-    assertTrue(disableNextButtonEventFired);
-    assertFalse(disableNextButton);
-  });
-
   test(
       'OnBoardingPageValidationCompleteOnNextCallsBeginFinalization',
       async () => {

@@ -59,7 +59,6 @@ export class WrapupRestockPage extends WrapupRestockPageBase {
   /** @override */
   ready() {
     super.ready();
-    enableNextButton(this);
   }
 
   /** @protected */

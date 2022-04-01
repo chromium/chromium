@@ -160,8 +160,6 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
       this.componentsList_ = errorMessage;
       this.setVerificationFailedMessage_();
     }
-
-    enableNextButton(this);
   }
 
   /** @private */

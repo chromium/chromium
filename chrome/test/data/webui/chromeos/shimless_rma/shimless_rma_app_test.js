@@ -135,7 +135,7 @@ export function shimlessRMAAppTest() {
     assertFalse(initialPage.hidden);
     assertFalse(initialPage.allButtonsDisabled);
     assertTrue(prevButton.hidden);
-    assertFalse(cancelButton.hidden);
+    assertTrue(cancelButton.hidden);
 
     // This enables the next button on the landing page.
     service.triggerHardwareVerificationStatusObserver(true, '', 0);
@@ -159,7 +159,7 @@ export function shimlessRMAAppTest() {
     assertTrue(selectNetworkPage.hidden);
     assertFalse(initialPage.hidden);
     assertTrue(prevButton.hidden);
-    assertFalse(cancelButton.hidden);
+    assertTrue(cancelButton.hidden);
   });
 
   test('ShimlessRMACancellation', async () => {
