@@ -6,7 +6,6 @@ package org.chromium.weblayer.test;
 
 import android.app.Activity;
 import android.content.res.Configuration;
-import android.os.Build.VERSION_CODES;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.test.filters.SmallTest;
@@ -19,7 +18,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
@@ -37,8 +36,7 @@ public class FullscreenSizeTest {
 
     @Test
     @SmallTest
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.N, sdk_is_less_than = VERSION_CODES.P,
-        message = "https://crbug.com/1239002")
+    @DisabledTest(message = "https://crbug.com/1239002")
     public void testOsk() {
         // For this test to function, it *cannot* use {@link TestFullscreenCallback}, as that
         // overrides the fullscreen handling in {@link InstrumentationActivity}.
