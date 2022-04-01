@@ -108,6 +108,7 @@ public class PageInfoTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1312569")
     public void testPageInfoConnectionSubPage() {
         Bundle extras = new Bundle();
         extras.putBoolean(InstrumentationActivity.EXTRA_URLBAR_TEXT_CLICKABLE, true);
