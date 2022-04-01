@@ -85,7 +85,6 @@ class GraphAnalysisUnittest(unittest.TestCase):
                 expected_filename += ".txt"
                 with open(expected_filename, "r",
                           encoding="utf-8") as expected_tests_file:
-                    print(expected_filename)
                     expected_tests_str = expected_tests_file.read()
                     actual_tests_str = "\n".join([
                         test.generate_browsertest(test_partition)

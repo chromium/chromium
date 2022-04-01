@@ -1,5 +1,4 @@
 #Enum Name	Values (* = default)				
-# These refer to sites that are hosted in the codebase.					
 Site	SiteA*	SiteB	SiteC	SiteAFoo	SiteABar
 InstallableSite	SiteA*	SiteB	SiteAFoo	SiteABar	
 Title	SiteA	SiteAUpdated			

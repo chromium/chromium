@@ -293,7 +293,7 @@ def read_actions_file(
             # Convert the `cpp_method` to Pascal-case
             cpp_method = ''.join(word.title()
                                  for word in action_base_name.split('_'))
-            cpp_method += "(" + joined_cpp_arguments + ")"
+            cpp_method += "(\"" + joined_cpp_arguments + "\")"
 
             # Resolve bash-replacement for any output actions. Resolving to
             # canonical names is not done here because the defaults map is not
