@@ -67,6 +67,11 @@ const char kAllowInsecureLocalhostDescription[] =
     "Allows requests to localhost over HTTPS even when an invalid certificate "
     "is presented.";
 
+const char kAndroidPWAsDefaultOfflinePageName[] =
+    "Android PWAs default offline page";
+const char kAndroidPWAsDefaultOfflinePageDescription[] =
+    "Shows customised default offline page when web app is offline.";
+
 const char kWindowsFollowCursorName[] =
     "Windows open on the display with the cursor";
 const char kWindowsFollowCursorDescription[] =

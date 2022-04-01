@@ -64,6 +64,9 @@ extern const char kAddPasswordsInSettingsDescription[];
 extern const char kAllowInsecureLocalhostName[];
 extern const char kAllowInsecureLocalhostDescription[];
 
+extern const char kAndroidPWAsDefaultOfflinePageName[];
+extern const char kAndroidPWAsDefaultOfflinePageDescription[];
+
 extern const char kAnimatedImageResumeName[];
 extern const char kAnimatedImageResumeDescription[];
 

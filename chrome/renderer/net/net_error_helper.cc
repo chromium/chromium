@@ -254,8 +254,13 @@ LocalizedError::PageState NetErrorHelper::GenerateLocalizedErrorPage(
   // If the user is viewing an offline web app then a default page is shown
   // rather than the dino.
   if (alternative_error_page_info) {
+#if BUILDFLAG(IS_ANDROID)
+    DCHECK(
+        base::FeatureList::IsEnabled(features::kAndroidPWAsDefaultOfflinePage));
+#else
     DCHECK(
         base::FeatureList::IsEnabled(features::kDesktopPWAsDefaultOfflinePage));
+#endif  // BUILDFLAG(IS_ANDROID)
     base::UmaHistogramSparse("Net.ErrorPageCounts.WebAppAlternativeErrorPage",
                              -error.reason());
     resource_id = alternative_error_page_info->resource_id;

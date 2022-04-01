@@ -1481,6 +1481,11 @@
     "expiry_milestone": 101
   },
   {
+    "name": "enable-android-pwas-default-offline-page",
+    "owners": [ "finnur@google.com", "beverloo@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-app-discovery-for-oobe",
     "owners": [ "melzhang", "tsergeant", "chromeos-apps-foundation-team" ],
     "expiry_milestone": 110

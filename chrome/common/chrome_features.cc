@@ -267,8 +267,13 @@ const base::Feature kDesktopPWAsCacheDuringDefaultInstall{
 
 // Generates customised default offline page that is shown when web app is
 // offline if no custom page is provided by developer.
+#if BUILDFLAG(IS_ANDROID)
+const base::Feature kAndroidPWAsDefaultOfflinePage{
+    "AndroidPWAsDefaultOfflinePage", base::FEATURE_DISABLED_BY_DEFAULT};
+#else
 const base::Feature kDesktopPWAsDefaultOfflinePage{
     "DesktopPWAsDefaultOfflinePage", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Moves the Extensions "puzzle piece" icon from the title bar into the app menu
 // for web app windows.

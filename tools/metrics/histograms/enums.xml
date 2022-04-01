@@ -54092,6 +54092,7 @@ from previous Chrome versions.
   <int value="-599005750" label="ScanningUI:disabled"/>
   <int value="-598191408" label="OmniboxKeywordSpaceTriggeringSetting:enabled"/>
   <int value="-598050737" label="disable-es3-apis"/>
+  <int value="-597519760" label="AndroidPWAsDefaultOfflinePage:enabled"/>
   <int value="-596822155" label="AppManagementIntentSettings:enabled"/>
   <int value="-596337171" label="disable-ash-sidebar"/>
   <int value="-595819071"
@@ -56068,6 +56069,7 @@ from previous Chrome versions.
   <int value="773563826" label="CrostiniUsbSupport:disabled"/>
   <int value="773743944" label="show-android-files-in-files-app"/>
   <int value="773919225" label="disable-office-editing-component-extension"/>
+  <int value="774866229" label="AndroidPWAsDefaultOfflinePage:disabled"/>
   <int value="775075949" label="ImeInputLogicHmm:enabled"/>
   <int value="775148009" label="OsSettingsDeepLinking:disabled"/>
   <int value="777667507" label="DesktopPWAsLinkCapturing:enabled"/>
