@@ -172,17 +172,6 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1310619
   "policy.AutoOpenAllowedForURLs.lacros",
 
-  # b/224969741
-  # "arc.Boot.vm", # Flaky, but also important.
-  "arc.ChromeCrash.vm_logged_in",
-  "arc.Drivefs.vm",
-  "arc.IMEBlockingVK.vm",
-  "arc.RemovableMedia.vm",
-  "arc.SettingsBridge.vm",
-  "arc.StartStop.vm",
-  "arc.TextToSpeech.vm",
-  "arc.VMPstoreDump",
-
   # https://crbug.com/1307671
   "policy.SafeBrowsingProtectionLevel",
 
