@@ -36,6 +36,7 @@ webrtc::DesktopCaptureOptions CreateDesktopCaptureOptions() {
   }
   options.set_enumerate_current_process_windows(
       ShouldEnumerateCurrentProcessWindows());
+
 #elif BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kIOSurfaceCapturer)) {
     options.set_allow_iosurface(true);
@@ -66,8 +67,11 @@ std::unique_ptr<webrtc::DesktopCapturer> CreateWindowCapturer() {
       DesktopCapturerLacros::CaptureType::kWindow,
       webrtc::DesktopCaptureOptions());
 #else
-  return webrtc::DesktopCapturer::CreateWindowCapturer(
-      CreateDesktopCaptureOptions());
+  auto options = desktop_capture::CreateDesktopCaptureOptions();
+#if defined(RTC_ENABLE_WIN_WGC)
+  options.set_allow_wgc_capturer_fallback(true);
+#endif
+  return webrtc::DesktopCapturer::CreateWindowCapturer(options);
 #endif
 }
 
