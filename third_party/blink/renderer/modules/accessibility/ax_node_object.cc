@@ -3418,6 +3418,10 @@ String AXNodeObject::TextFromDescendants(
   ax::mojom::blink::NameFrom last_used_name_from =
       ax::mojom::blink::NameFrom::kUninitialized;
 
+#if defined(AX_FAIL_FAST_BUILD)
+  base::AutoReset<bool> auto_reset(&is_computing_text_from_descendants_, true);
+#endif
+
   for (AXObject* child : ChildrenIncludingIgnored()) {
     constexpr size_t kMaxDescendantsForTextAlternativeComputation = 100;
     if (visited.size() > kMaxDescendantsForTextAlternativeComputation)
@@ -5352,7 +5356,7 @@ String AXNodeObject::Description(
       ids.push_back(member_element->GetIdAttribute());
 
     TokenVectorFromAttribute(element, ids, html_names::kAriaDescribedbyAttr);
-    AXObjectCache().UpdateReverseRelations(this, ids);
+    AXObjectCache().UpdateReverseTextRelations(this, ids);
 
     if (!description.IsNull()) {
       if (description_sources) {

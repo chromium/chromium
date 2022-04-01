@@ -66,8 +66,12 @@ class AXRelationCache {
   // If one or more ids aren't found, they're added to a lookup table so that if
   // an element with that id appears later, it can be added when you call
   // UpdateRelatedTree.
-  void UpdateReverseRelations(const AXObject* relation_source,
+  void UpdateReverseRelations(HashMap<String, HashSet<AXID>>& id_to_axid_map,
+                              const AXObject* relation_source,
                               const Vector<String>& target_ids);
+  // Update map of ids to related objects for aria-labelledby/aria-describedby.
+  void UpdateReverseTextRelations(const AXObject* relation_source,
+                                  const Vector<String>& target_ids);
 
   // Called when the "for" attribute of a label element changes and the
   // reverse mapping needs to be updated.
@@ -126,7 +130,9 @@ class AXRelationCache {
 
   void MapOwnedChildrenWithCleanLayout(const AXObject* owner,
                                        const Vector<AXID>&);
-  void GetReverseRelated(Node*, HeapVector<Member<AXObject>>& sources);
+  void GetReverseRelated(Node*,
+                         HashMap<String, HashSet<AXID>>& id_attr_to_axid_map,
+                         HeapVector<Member<AXObject>>& sources);
   void MaybeRestoreParentOfOwnedChild(AXObject* removed_child);
 
   // Updates |aria_owner_to_children_mapping_| after calling UpdateAriaOwns for
@@ -150,16 +156,17 @@ class AXRelationCache {
   // Map from the AXID of a child to the AXID of the parent that owns it.
   HashMap<AXID, AXID> aria_owned_child_to_owner_mapping_;
 
-  // Reverse relation map from an ID (the ID attribute of a DOM element) to the
+  // Reverse relation maps from an ID (the ID attribute of a DOM element) to the
   // set of elements that at some time pointed to that ID via aria-owns,
-  // aria-labelledby, aria-desribedby. This is *unvalidated*, it includes
+  // aria-labelledby or aria-desribedby. This is *unvalidated*, it includes
   // possible extras and duplicates.
   // This is used so that:
   // - When an element with an ID is added to the tree or changes its ID, we can
   //   quickly determine if it affects an aria-owns relationship.
   // - When text changes, we can recompute any label or description based on it
   //   and fire the appropriate change events.
-  HashMap<String, HashSet<AXID>> id_attr_to_related_mapping_;
+  HashMap<String, HashSet<AXID>> id_attr_to_owns_relation_mapping_;
+  HashMap<String, HashSet<AXID>> id_attr_to_text_relation_mapping_;
 
   // HTML id attributes that at one time havehad a <label for> pointing to it.
   // IDs are not necessarily removed from this set. It is not necessary to
