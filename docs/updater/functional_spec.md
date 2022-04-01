@@ -1,29 +1,132 @@
 # Chromium Updater Functional Specification
 
-This is the functional specification for [Chromium Updater](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/).
+This is the functional specification for
+[Chromium Updater](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/).
+It describes the externally observable behavior of the updater, including APIs
+and UI.
 
 
 [TOC]
 
-## Elevation on Windows when a system application installer is executed
+## Metainstaller
+The metainstaller (UpdaterSetup) is a thin executable that contains a compressed
+copy of the updater as a resource, extracts it, and triggers installation of the
+updater / an app. The metainstaller is downloaded by the user and can be run
+from any directory.
 
-`UpdaterSetup.exe`, also known as the metainstaller, is typically downloaded
-from the Internet and run by the user from a web browser. When this
-metainstaller is executed, the browser launches it at
-[medium integrity](https://docs.microsoft.com/en-us/windows/win32/secauthz/mandatory-integrity-control).
-In order to be able to install a system application (i.e., an application
-installed for all users on the system), this metainstaller needs to run with
-administrative privileges.
+TODO(crbug.com/1035895): Document tagging.
 
-To achieve this, the metainstaller detects this condition (running at medium but
-trying to install a system app) early on, and re-launches itself at high
-integrity. This will result in an
-[UAC prompt](https://docs.microsoft.com/en-us/windows/security/identity-protection/user-account-control/how-user-account-control-works)
-on Windows.
+### Elevation (Windows)
+The metainstaller parses its tag and re-launches itself at high integrity if
+installing an application with `needsadmin=true` or `needsadmin=prefers`.
 
-## Dynamic Install Parameters
+## Standalone Installer
+TODO(crbug.com/1035895): Document the standalone installer.
 
-### `installdataindex`
+TODO(crbug.com/1035895): Document bundled installers.
+
+TODO(crbug.com/1035895): Document bundling the updater on macOS.
+
+## Updater
+The updater is installed at:
+*   (Windows, User): `%LOCAL_APP_DATA%\{COMPANY}\{UPDATERNAME}\{VERSION}\updater.exe`
+*   (Windows, System): `%PROGRAM_FILES%\{COMPANY}\{UPDATERNAME}\{VERSION}\updater.exe`
+*   (macOS, User): `~/Library/{COMPANY}/{UPDATERNAME}/{VERSION}/{UPDATERNAME}.app`
+*   (macOS, System): `/Library/{COMPANY}/{UPDATERNAME}/{VERSION}/{UPDATERNAME}.app`
+
+The updater's functionality is split between several processes. The mode of a
+process is determined by command-line arguments:
+*   --install [--app-id=...]
+    *   Install and activate this version of the updater if there is no active
+        updater.
+    *   --app-id=...
+        *   Also install the given application.
+    *   --tag=...
+        *   Supplies the install metadata needed when installing an
+            application. Typically, a tagged metainstaller invokes the updater
+            with this command line argument.
+        *   If --tag is specified, --install is assumed.
+    *   --handoff=...
+        *   As --tag.
+    *   --install-from-out-dir
+        *   TODO(crbug.com/1035895): Document
+*   --uninstall
+    *   Uninstall all versions of the updater.
+*   --uninstall-self
+    *   Uninstall this version of the updater.
+*   --uninstall-if-unused
+    *   Uninstall all versions of the updater, only if there are no apps being
+        kept up to date by the updater.
+*   --wake
+    *   Trigger the updater's periodic background tasks. If this version of the
+        updater is inactive, it may qualify and activate, or uninstall itself.
+        If this version of the updater is active, it may check for updates for
+        applications, unregister uninstalled applications, and more.
+*   --crash-me
+    *   Record a backtrace in the log, crash the program, save a crash dump,
+        and report the crash.
+*   --crash-handler
+    *   Starts a crash handler for the parent process.
+*   --server
+    *   Launch the updater RPC server. The server will answer RPC messages on
+        the UpdateService interface only.
+    *   --service=update|update-internal
+        *   If `update`, the server will answer RPC messages on the
+            UpdateService interface only.
+        *   If `update-internal`, the server will answer RPC messages on the
+            UpdateServiceInternal interface only.
+*   --windows-service
+    *   This switch starts the Windows service. This switch is invoked by the
+        SCM either as a part of system startup (`SERVICE_AUTO_START`) or when
+        `CoCreate` is called on one of several CLSIDs that the server supports.
+    *   --console
+        *   Run in interactive mode.
+    *   -–com-service
+        *   If present, run in a mode analogous to --server --service=update.
+            This switch is passed to `ServiceMain` by the SCM when CoCreate is
+            called on one of several CLSIDs that the server supports. This is
+            used for:
+            *   The Server for the UI when installing Machine applications.
+            *   The On-Demand COM Server for Machine applications.
+            *   COM Server for launching processes at System Integrity, i.e.,
+                an Elevator.
+*   --update
+    *   Install this version of the updater as an inactive instance.
+*   --recover
+    *   Repair the installation of the updater.
+    *   --appguid=...
+        *   After recovery, register an application with this id.
+    *   --browser-version=...
+        *   Register an application with this version.
+        *   If --browser-version is specified, --recover can be omitted.
+    *  --sessionid=...
+        *   Specifies the sesionid associated with this recovery attempt.
+*   --test
+    *   Exit immediately with no error.
+*   --healthcheck
+    *   Exit immediately with no error.
+
+If none of the above arguments are set, the updater will exit with an error.
+
+Additionally, the mode may be modified by combining it with:
+*   --system
+    *   The updater operates in system scope if and only if this switch is
+        present.
+
+### Installation
+TODO(crbug.com/1035895): Document UI/UX
+
+TODO(crbug.com/1035895): Document installer APIs
+
+TODO(crbug.com/1035895): Document shim installation
+
+TODO(crbug.com/1035895): Document handoff
+
+TODO(crbug.com/1035895): Document relevant enterprise policies.
+
+#### Dynamic Install Parameters
+
+##### `installdataindex`
 
 `installdataindex` is one of the install parameters that can be specified for
 first installs on the command line or via the
@@ -167,10 +270,46 @@ The updater will not delete this file.
 * This installerdata is not persisted anywhere else, and it is not sent as a
 part of pings to the update server.
 
-## Telemetry
+## Updates
+TODO(crbug.com/1035895): Document server API (Omaha Protocol).
+
+TODO(crbug.com/1035895): Document supported update formats.
+
+TODO(crbug.com/1035895): Document differential updates.
+
+TODO(crbug.com/1035895): Document update timing.
+
+TODO(crbug.com/1035895): Document on-demand APIs.
+
+TODO(crbug.com/1035895): Document registration APIs.
+
+TODO(crbug.com/1035895): Document activity API.
+
+TODO(crbug.com/1035895): Document EULA signals.
+
+TODO(crbug.com/1035895): Document usage-stats opt-in signals.
+
+TODO(crbug.com/1035895): Document relevant enterprise policies.
+
+### Telemetry
 When the updater installs an application (an installer is run) it will send an
 event with `"eventtype": 2` indicating the outcome of installation. The updater
 does not send such a ping for its own installation.
 
 When the updater updates an application (including itself) it will send an
 event with `"eventtype": 3` indicating the outcome of update operation.
+
+## Services
+TODO(crbug.com/1035895): Document app commands.
+
+TODO(crbug.com/1035895): Document updater crash reporting.
+
+## Uninstallation
+TODO(crbug.com/1035895): Document uninstallation APIs.
+
+TODO(crbug.com/1035895): Document updater self-uninstallation.
+
+## Associated Tools
+TODO(crbug.com/1035895): Document external constant overrides (test build only).
+
+TODO(crbug.com/1035895): Document tagging tools.
