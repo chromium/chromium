@@ -6,12 +6,9 @@ import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/pol
 
 import {loadTimeData} from '../i18n_setup.js';
 
-// <if expr="chromeos_ash or chromeos_lacros">
-import {BlockingRequestManager} from './blocking_request_manager.js';
-// </if>
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PasswordListItemElement} from './password_list_item.js';
-import {PasswordManagerImpl} from './password_manager_proxy.js';
+import {PasswordRequestorMixin, PasswordRequestorMixinInterface} from './password_requestor_mixin.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 
@@ -24,9 +21,11 @@ export type PasswordShowPasswordClickedEvent = Event&{
  * It is used by <password-list-item>.
  */
 export const ShowPasswordMixin = dedupingMixin(
-    <T extends Constructor<PolymerElement>>(superClass: T): T&
+    <T extends Constructor<PolymerElement>>(superClass: T):
+        (T|PasswordRequestorMixinInterface)&
     Constructor<ShowPasswordMixinInterface> => {
-      class ShowPasswordMixin extends superClass {
+      class ShowPasswordMixin extends PasswordRequestorMixin
+      (superClass) {
         static get properties() {
           return {
             entry: Object,
@@ -42,20 +41,12 @@ export const ShowPasswordMixin = dedupingMixin(
                 return loadTimeData.getBoolean('enablePasswordNotes');
               }
             },
-
-            // <if expr="chromeos_ash or chromeos_lacros">
-            tokenRequestManager: Object
-            // </if>
           };
         }
 
         entry: MultiStorePasswordUiEntry;
 
         private isPasswordNotesEnabled_: boolean;
-
-        // <if expr="chromeos_ash or chromeos_lacros">
-        tokenRequestManager: BlockingRequestManager;
-        // </if>
 
         getPasswordInputType() {
           return this.entry.password || this.entry.federationText ? 'text' :
@@ -101,21 +92,13 @@ export const ShowPasswordMixin = dedupingMixin(
             this.hide();
             return;
           }
-          PasswordManagerImpl.getInstance()
-              .requestPlaintextPassword(
+
+          this.requestPlaintextPassword(
                   this.entry.getAnyId(),
                   chrome.passwordsPrivate.PlaintextReason.VIEW)
-              .then(
-                  password => {
-                    this.set('entry.password', password);
-                  },
-                  _error => {
-                    // <if expr="chromeos_ash or chromeos_lacros">
-                    // If no password was found, refresh auth token and retry.
-                    this.tokenRequestManager.request(
-                        () => this.onShowPasswordButtonClick());
-                    // </if>
-                  });
+              .then(password => {
+                this.set('entry.password', password);
+              });
         }
 
         hide() {

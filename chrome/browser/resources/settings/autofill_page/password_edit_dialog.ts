@@ -27,12 +27,10 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {loadTimeData} from '../i18n_setup.js';
 
-// <if expr="chromeos_ash or chromeos_lacros">
-import {BlockingRequestManager} from './blocking_request_manager.js';
-// </if>
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {getTemplate} from './password_edit_dialog.html.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
+import {PasswordRequestorMixin} from './password_requestor_mixin.js';
 
 export interface PasswordEditDialogElement {
   $: {
@@ -50,7 +48,8 @@ export interface PasswordEditDialogElement {
   };
 }
 
-const PasswordEditDialogElementBase = I18nMixin(PolymerElement);
+const PasswordEditDialogElementBase =
+    PasswordRequestorMixin(I18nMixin(PolymerElement));
 
 /**
  * When user enters more than or equal to 900 characters in the note field, a
@@ -136,13 +135,6 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
         type: Array,
         value: () => [],
       },
-
-      // <if expr="chromeos_ash or chromeos_lacros">
-      /**
-       * Used for authentication when switching from ADD to EDIT mode.
-       */
-      tokenRequestManager: {type: Object, value: null},
-      // </if>
 
       requestedDialogMode: {type: Object, value: null},
 
@@ -285,9 +277,6 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
   readonly storeOptionAccountValue: string;
   readonly storeOptionDeviceValue: string;
   savedPasswords: Array<MultiStorePasswordUiEntry>;
-  // <if expr="chromeos_ash or chromeos_lacros">
-  tokenRequestManager: BlockingRequestManager|null;
-  // </if>
   private usernamesByOrigin_: Map<string, Set<string>>|null = null;
   requestedDialogMode: PasswordDialogMode|null;
   dialogMode: PasswordDialogMode;
@@ -732,27 +721,13 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
       return entry.urls.origin === this.websiteUrls_!.origin &&
           entry.username === this.username_;
     })!;
-    this.requestPlaintextPasswordForEditing_(existingEntry.getAnyId())
+    this.requestPlaintextPassword(
+            existingEntry.getAnyId(),
+            chrome.passwordsPrivate.PlaintextReason.EDIT)
         .then(password => {
           existingEntry.password = password;
           this.switchToEditMode_(existingEntry);
         });
-  }
-
-  private requestPlaintextPasswordForEditing_(id: number): Promise<string> {
-    return new Promise(resolve => {
-      PasswordManagerImpl.getInstance()
-          .requestPlaintextPassword(
-              id, chrome.passwordsPrivate.PlaintextReason.EDIT)
-          .then(password => resolve(password), () => {
-            // <if expr="chromeos_ash or chromeos_lacros">
-            // If no password was found, refresh auth token and retry.
-            this.tokenRequestManager!.request(() => {
-              this.requestPlaintextPasswordForEditing_(id).then(resolve);
-            });
-            // </if>
-          });
-    });
   }
 
   private switchToEditMode_(existingEntry: MultiStorePasswordUiEntry) {

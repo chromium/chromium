@@ -21,12 +21,9 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {loadTimeData} from '../i18n_setup.js';
 import {OpenWindowProxyImpl} from '../open_window_proxy.js';
 
-// <if expr="chromeos_ash or chromeos_lacros">
-import {BlockingRequestManager} from './blocking_request_manager.js';
-// </if>
-
 import {getTemplate} from './password_check_list_item.html.js';
 import {PasswordCheckInteraction, PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
+import {PasswordRequestorMixin} from './password_requestor_mixin.js';
 
 export interface PasswordCheckListItemElement {
   $: {
@@ -37,7 +34,10 @@ export interface PasswordCheckListItemElement {
   };
 }
 
-export class PasswordCheckListItemElement extends PolymerElement {
+const PasswordCheckListItemElementBase = PasswordRequestorMixin(PolymerElement);
+
+export class PasswordCheckListItemElement extends
+    PasswordCheckListItemElementBase {
   static get is() {
     return 'password-check-list-item';
   }
@@ -48,10 +48,6 @@ export class PasswordCheckListItemElement extends PolymerElement {
 
   static get properties() {
     return {
-      // <if expr="chromeos_ash or chromeos_lacros">
-      tokenRequestManager: Object,
-      // </if>
-
       /**
        * The password that is being displayed.
        */
@@ -91,10 +87,6 @@ export class PasswordCheckListItemElement extends PolymerElement {
       }
     };
   }
-
-  // <if expr="chromeos_ash or chromeos_lacros">
-  tokenRequestManager: BlockingRequestManager;
-  // </if>
 
   item: chrome.passwordsPrivate.InsecureCredential;
   isPasswordVisible: boolean;
@@ -196,19 +188,9 @@ export class PasswordCheckListItemElement extends PolymerElement {
   showPassword() {
     this.passwordManager_.recordPasswordCheckInteraction(
         PasswordCheckInteraction.SHOW_PASSWORD);
-    this.passwordManager_
-        .getPlaintextInsecurePassword(
+    this.getPlaintextInsecurePassword(
             assert(this.item), chrome.passwordsPrivate.PlaintextReason.VIEW)
-        .then(
-            insecureCredential => {
-              this.set('item', insecureCredential);
-            },
-            _error => {
-              // <if expr="chromeos_ash or chromeos_lacros">
-              // If no password was found, refresh auth token and retry.
-              this.tokenRequestManager.request(() => this.showPassword());
-              // </if>
-            });
+        .then(insecureCredential => this.item = insecureCredential);
   }
 
   private onReadonlyInputTap_() {

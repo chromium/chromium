@@ -28,17 +28,14 @@ import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-
 import {StoredAccount, SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.js';
 
-// <if expr="chromeos_ash or chromeos_lacros">
-import {BlockingRequestManager} from './blocking_request_manager.js';
-// </if>
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PasswordDialogMode} from './password_edit_dialog.js';
 import {PasswordListItemElement, PasswordMoreActionsClickedEvent} from './password_list_item.js';
 import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 import {PasswordRemoveDialogPasswordsRemovedEvent} from './password_remove_dialog.js';
+import {PasswordRequestorMixin} from './password_requestor_mixin.js';
 import {getTemplate} from './passwords_list_handler.html.js';
 import {PasswordShowPasswordClickedEvent} from './show_password_mixin.js';
 
@@ -65,7 +62,7 @@ export interface PasswordsListHandlerElement {
 }
 
 const PasswordsListHandlerElementBase =
-    WebUIListenerMixin(I18nMixin(PolymerElement));
+    PasswordRequestorMixin(WebUIListenerMixin(I18nMixin(PolymerElement)));
 
 export class PasswordsListHandlerElement extends
     PasswordsListHandlerElementBase {
@@ -105,10 +102,6 @@ export class PasswordsListHandlerElement extends
         type: Boolean,
         value: false,
       },
-
-      // <if expr="chromeos_ash or chromeos_lacros">
-      tokenRequestManager: Object,
-      // </if>
 
       /**
        * The model for any active menus or dialogs. The value is reset to null
@@ -165,10 +158,6 @@ export class PasswordsListHandlerElement extends
   savedPasswords: Array<MultiStorePasswordUiEntry>;
   isAccountStoreUser: boolean;
   allowMoveToAccountOption: boolean;
-
-  // <if expr="chromeos_ash or chromeos_lacros">
-  tokenRequestManager: BlockingRequestManager;
-  // </if>
 
   private activePassword_: PasswordListItemElement|null;
   private requestedDialogMode_: PasswordDialogMode|null;
@@ -239,8 +228,10 @@ export class PasswordsListHandlerElement extends
                                              PasswordShowPasswordClickedEvent) {
     const target = event.target;
     this.activePassword_ = target;
-    this.requestActivePlaintextPassword_(
-        chrome.passwordsPrivate.PlaintextReason.VIEW, password => {
+    this.requestPlaintextPassword(
+            this.activePassword_!.entry.getAnyId(),
+            chrome.passwordsPrivate.PlaintextReason.VIEW)
+        .then(password => {
           this.set('activePassword_.entry.password', password);
           this.requestedDialogMode_ = PasswordDialogMode.PASSWORD_VIEW;
           this.activeDialogAnchor_ = target;
@@ -254,35 +245,16 @@ export class PasswordsListHandlerElement extends
         event.detail.removedFromAccount, event.detail.removedFromDevice);
   }
 
-  /**
-   * Requests the plaintext password for the current active password.
-   * @param reason The reason why the plaintext password is requested.
-   * @param callback The callback that gets invoked with the retrieved password.
-   */
-  private requestActivePlaintextPassword_(
-      reason: chrome.passwordsPrivate.PlaintextReason,
-      callback: (password: string) => void) {
-    this.passwordManager_
-        .requestPlaintextPassword(
-            this.activePassword_!.entry.getAnyId(), reason)
-        .then(callback, _error => {
-          // <if expr="chromeos_ash or chromeos_lacros">
-          // If no password was found, refresh auth token and retry.
-          this.tokenRequestManager.request(() => {
-            this.requestActivePlaintextPassword_(reason, callback);
-          });
-          // </if>
-        });
-  }
-
   private isPasswordEditable_() {
     return !this.activePassword_ || !this.activePassword_.entry.federationText;
   }
 
   private onMenuEditPasswordTap_() {
     if (this.isPasswordEditable_()) {
-      this.requestActivePlaintextPassword_(
-          chrome.passwordsPrivate.PlaintextReason.EDIT, password => {
+      this.requestPlaintextPassword(
+              this.activePassword_!.entry.getAnyId(),
+              chrome.passwordsPrivate.PlaintextReason.EDIT)
+          .then(password => {
             this.set('activePassword_.entry.password', password);
             this.requestedDialogMode_ = PasswordDialogMode.EDIT;
             this.showPasswordEditDialog_ = true;
@@ -326,8 +298,10 @@ export class PasswordsListHandlerElement extends
   private onMenuCopyPasswordButtonTap_() {
     // Copy to clipboard occurs inside C++ and we don't expect getting
     // result back to javascript.
-    this.requestActivePlaintextPassword_(
-        chrome.passwordsPrivate.PlaintextReason.COPY, _ => {
+    this.requestPlaintextPassword(
+            this.activePassword_!.entry.getAnyId(),
+            chrome.passwordsPrivate.PlaintextReason.COPY)
+        .then((_: string) => {
           this.activePassword_ = null;
           this.displayCopyNotification_();
         });

@@ -59,6 +59,7 @@ import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PasswordCheckMixin} from './password_check_mixin.js';
 import {AddCredentialFromSettingsUserInteractions, PasswordEditDialogElement} from './password_edit_dialog.js';
 import {PasswordCheckReferrer, PasswordExceptionListChangedListener, PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
+import {PasswordRequestorMixin} from './password_requestor_mixin.js';
 import {PasswordsListHandlerElement} from './passwords_list_handler.js';
 import {getTemplate} from './passwords_section.html.js';
 
@@ -108,8 +109,9 @@ export interface PasswordsSectionElement {
 }
 
 const PasswordsSectionElementBase = MergePasswordsStoreCopiesMixin(
-    PrefsMixin(GlobalScrollTargetMixin(MergeExceptionsStoreCopiesMixin(
-        WebUIListenerMixin(I18nMixin(PasswordCheckMixin(PolymerElement)))))));
+    PasswordRequestorMixin(PrefsMixin(GlobalScrollTargetMixin(
+        MergeExceptionsStoreCopiesMixin(WebUIListenerMixin(
+            I18nMixin(PasswordCheckMixin(PolymerElement))))))));
 
 export class PasswordsSectionElement extends PasswordsSectionElementBase {
   static get is() {
@@ -274,7 +276,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
       // <if expr="chromeos_ash or chromeos_lacros">
       showPasswordPromptDialog_: Boolean,
-      tokenRequestManager_: Object,
       // </if>
 
       showPasswordsExportDialog_: Boolean,
@@ -320,7 +321,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
   // <if expr="chromeos_ash or chromeos_lacros">
   private showPasswordPromptDialog_: boolean;
-  private tokenRequestManager_: BlockingRequestManager;
   // </if>
 
   private showPasswordsExportDialog_: boolean;
@@ -379,12 +379,12 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     // <if expr="chromeos_ash or chromeos_lacros">
     // If the user's account supports the password check, an auth token will be
     // required in order for them to view or export passwords. Otherwise there
-    // is no additional security so |tokenRequestManager_| will immediately
+    // is no additional security so |tokenRequestManager| will immediately
     // resolve requests.
     if (loadTimeData.getBoolean('userCannotManuallyEnterPassword')) {
-      this.tokenRequestManager_ = new BlockingRequestManager();
+      this.tokenRequestManager = new BlockingRequestManager();
     } else {
-      this.tokenRequestManager_ =
+      this.tokenRequestManager =
           new BlockingRequestManager(() => this.openPasswordPromptDialog_());
     }
     // </if>
@@ -552,10 +552,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   }
 
   // <if expr="chromeos_ash or chromeos_lacros">
-  getTokenRequestManagerForTest(): BlockingRequestManager {
-    return this.tokenRequestManager_;
-  }
-
   /**
    * When this event fired, it means that the password-prompt-dialog succeeded
    * in creating a fresh token in the quickUnlockPrivate API. Because new tokens
@@ -572,7 +568,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
    */
   private onTokenObtained_(e: CustomEvent<any>) {
     assert(e.detail);
-    this.tokenRequestManager_.resolve();
+    this.tokenRequestManager.resolve();
   }
 
   private onPasswordPromptClosed_() {

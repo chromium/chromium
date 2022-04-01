@@ -51,6 +51,7 @@ import {getTemplate} from './password_check.html.js';
 import {PasswordCheckListItemElement} from './password_check_list_item.js';
 import {PasswordCheckMixin, PasswordCheckMixinInterface} from './password_check_mixin.js';
 import {PasswordCheckInteraction, SavedPasswordListChangedListener} from './password_manager_proxy.js';
+import {PasswordRequestorMixin, PasswordRequestorMixinInterface} from './password_requestor_mixin.js';
 
 
 const CheckState = chrome.passwordsPrivate.PasswordCheckState;
@@ -77,11 +78,12 @@ export interface SettingsPasswordCheckElement {
 }
 
 const SettingsPasswordCheckElementBase =
-    RouteObserverMixin(WebUIListenerMixin(
-        I18nMixin(PrefsMixin(PasswordCheckMixin((PolymerElement)))))) as {
+    RouteObserverMixin(WebUIListenerMixin(I18nMixin(PrefsMixin(
+        PasswordRequestorMixin(PasswordCheckMixin((PolymerElement))))))) as {
       new (): PolymerElement & I18nMixinInterface &
           WebUIListenerMixinInterface & PrefsMixinInterface &
-          PasswordCheckMixinInterface & RouteObserverMixinInterface,
+          PasswordCheckMixinInterface & PasswordRequestorMixinInterface &
+          RouteObserverMixinInterface,
     };
 
 export class SettingsPasswordCheckElement extends
@@ -189,7 +191,6 @@ export class SettingsPasswordCheckElement extends
 
       // <if expr="chromeos_ash or chromeos_lacros">
       showPasswordPromptDialog_: Boolean,
-      tokenRequestManager_: Object,
       // </if>
     };
   }
@@ -218,7 +219,6 @@ export class SettingsPasswordCheckElement extends
 
   // <if expr="chromeos_ash or chromeos_lacros">
   private showPasswordPromptDialog_: boolean;
-  private tokenRequestManager_: BlockingRequestManager;
   // </if>
 
   private activeDialogAnchorStack_: Array<HTMLElement>|null;
@@ -259,7 +259,7 @@ export class SettingsPasswordCheckElement extends
     // required in order for them to view or export passwords. Otherwise there
     // is no additional security so |tokenRequestManager_| will immediately
     // resolve requests.
-    this.tokenRequestManager_ =
+    this.tokenRequestManager =
         loadTimeData.getBoolean('userCannotManuallyEnterPassword') ?
         new BlockingRequestManager() :
         new BlockingRequestManager(() => this.openPasswordPromptDialog_());
@@ -425,8 +425,7 @@ export class SettingsPasswordCheckElement extends
   }
 
   private onEditPasswordClick_() {
-    this.passwordManager!
-        .getPlaintextInsecurePassword(
+    this.getPlaintextInsecurePassword(
             assert(this.activePassword_!),
             chrome.passwordsPrivate.PlaintextReason.EDIT)
         .then(
@@ -435,11 +434,6 @@ export class SettingsPasswordCheckElement extends
               this.showPasswordEditDialog_ = true;
             },
             _error => {
-              // <if expr="chromeos_ash or chromeos_lacros">
-              // If no password was found, refresh auth token and retry.
-              this.tokenRequestManager_.request(
-                  () => this.onEditPasswordClick_());
-              // </if>
               // <if expr="not (chromeos_ash or chromeos_lacros)">
               this.activePassword_ = null;
               this.onPasswordEditDialogClosed_();
@@ -863,7 +857,7 @@ export class SettingsPasswordCheckElement extends
    */
   private onTokenObtained_(e: CustomEvent<any>) {
     assert(e.detail);
-    this.tokenRequestManager_.resolve();
+    this.tokenRequestManager.resolve();
   }
 
   private onPasswordPromptClosed_() {

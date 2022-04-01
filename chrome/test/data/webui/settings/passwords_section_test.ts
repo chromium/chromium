@@ -14,7 +14,7 @@ import {CrDialogElement, PasswordDialogMode, PasswordsSectionElement} from 'chro
 import {HatsBrowserProxyImpl, MultiStoreExceptionEntry, MultiStorePasswordUiEntry, PasswordCheckReferrer, PasswordManagerImpl, Router, routes, SettingsPluralStringProxyImpl,StatusAction, TrustedVaultBannerState, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {createExceptionEntry, createMultiStoreExceptionEntry, createMultiStorePasswordEntry, createPasswordEntry, makeCompromisedCredential, makePasswordCheckStatus, PasswordSectionElementFactory} from './passwords_and_autofill_fake_data.js';
 import {runCancelExportTest, runExportFlowErrorRetryTest, runExportFlowErrorTest, runExportFlowFastTest, runExportFlowSlowTest, runFireCloseEventAfterExportCompleteTest,runStartExportTest} from './passwords_export_test.js';
@@ -167,8 +167,8 @@ async function openPasswordEditDialogHelper(
       .querySelector<HTMLElement>('#showPasswordButton')!.click();
   flush();
   await passwordManager.whenCalled('requestPlaintextPassword');
+  await flushTasks();
   passwordManager.resetResolver('requestPlaintextPassword');
-  flush();
 
   assertEquals(
       'text',
@@ -187,8 +187,9 @@ async function openPasswordEditDialogHelper(
   flush();
 
   await passwordManager.whenCalled('requestPlaintextPassword');
+  await flushTasks();
   passwordManager.resetResolver('requestPlaintextPassword');
-  flush();
+
 
   assertEquals(
       'password',
@@ -417,13 +418,13 @@ suite('PasswordsSection', function() {
         .querySelector<HTMLElement>('#showPasswordButton')!.click();
     flush();
     await passwordManager.whenCalled('requestPlaintextPassword');
+    await flushTasks();
     passwordManager.resetResolver('requestPlaintextPassword');
-    flush();
 
     passwordListItems[1]!.shadowRoot!
         .querySelector<HTMLElement>('#showPasswordButton')!.click();
     await passwordManager.whenCalled('requestPlaintextPassword');
-    flush();
+    await flushTasks();
 
     assertEquals(
         'text',
@@ -449,7 +450,7 @@ suite('PasswordsSection', function() {
   });
 
   test('listItemEditDialogShowAndHideInterplay', async function() {
-    openPasswordEditDialogHelper(passwordManager, elementFactory);
+    await openPasswordEditDialogHelper(passwordManager, elementFactory);
   });
 
   // Test verifies that removing the account copy of a duplicated password will
@@ -1027,7 +1028,7 @@ suite('PasswordsSection', function() {
         .querySelector<HTMLElement>('#showPasswordButton')!.click();
     const {id, reason} =
         await passwordManager.whenCalled('requestPlaintextPassword');
-    flush();
+    await flushTasks();
     assertEquals(1, id);
     assertEquals('VIEW', reason);
 
@@ -1079,7 +1080,7 @@ suite('PasswordsSection', function() {
         .querySelector<HTMLElement>('#showPasswordButton')!.click();
     const {id, reason} =
         await passwordManager.whenCalled('requestPlaintextPassword');
-    flush();
+    await flushTasks();
 
     assertEquals(1, id);
     assertEquals(chrome.passwordsPrivate.PlaintextReason.VIEW, reason);
@@ -1127,7 +1128,7 @@ suite('PasswordsSection', function() {
 
     const {id, reason} =
         await passwordManager.whenCalled('requestPlaintextPassword');
-    flush();
+    await flushTasks();
     assertEquals(1, id);
     assertEquals('EDIT', reason);
 
@@ -1142,7 +1143,7 @@ suite('PasswordsSection', function() {
                 '#showPasswordButton')!.classList.contains('icon-visibility'));
   });
 
-  test('onShowSavedPasswordListItem', function() {
+  test('onShowSavedPasswordListItem', async function() {
     const expectedItem =
         createPasswordEntry({url: 'goo.gl', username: 'bart', id: 1});
     const passwordListItem =
@@ -1152,12 +1153,12 @@ suite('PasswordsSection', function() {
     passwordManager.setPlaintextPassword('password');
     passwordListItem.shadowRoot!
         .querySelector<HTMLElement>('#showPasswordButton')!.click();
-    return passwordManager.whenCalled('requestPlaintextPassword')
-        .then(({id, reason}) => {
-          assertEquals(1, id);
-          assertEquals('VIEW', reason);
-          assertEquals('password', passwordListItem.entry.password);
-        });
+    const {id, reason} =
+        await passwordManager.whenCalled('requestPlaintextPassword');
+    await flushTasks();
+    assertEquals(1, id);
+    assertEquals('VIEW', reason);
+    assertEquals('password', passwordListItem.entry.password);
   });
 
   test('onCopyPasswordListItem', function() {
@@ -1209,7 +1210,7 @@ suite('PasswordsSection', function() {
         flush();
 
         await passwordManager.whenCalled('requestPlaintextPassword');
-        flush();
+        await flushTasks();
 
         const passwordEditDialog =
             passwordsSection.$.passwordsListHandler.shadowRoot!.querySelector(

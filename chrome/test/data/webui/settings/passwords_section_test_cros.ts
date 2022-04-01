@@ -159,7 +159,7 @@ suite('PasswordsSection_Cros', function() {
         elementFactory.createPasswordsSection(passwordManager, [], []);
     assertTrue(!passwordsSection.shadowRoot!.querySelector(
         'settings-password-prompt-dialog'));
-    passwordsSection.getTokenRequestManagerForTest().request(fail);
+    passwordsSection.tokenRequestManager.request(fail);
     flush();
     assertTrue(!!passwordsSection.shadowRoot!.querySelector(
         'settings-password-prompt-dialog'));
@@ -175,7 +175,7 @@ suite('PasswordsSection_Cros', function() {
         flush();
         assertTrue(!passwordsSection.shadowRoot!.querySelector(
             'settings-password-prompt-dialog'));
-        passwordsSection.getTokenRequestManagerForTest().request(() => {
+        passwordsSection.tokenRequestManager.request(() => {
           flush();
           assertTrue(!passwordsSection.shadowRoot!.querySelector(
               'settings-password-prompt-dialog'));

@@ -18,6 +18,7 @@ import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://w
 // <if expr="chromeos_ash">
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 // </if>
+import {flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {makeCompromisedCredential, makeInsecureCredential, makePasswordCheckStatus} from './passwords_and_autofill_fake_data.js';
 import {getSyncAllPrefs, simulateSyncStatus} from './sync_test_util.js';
@@ -1844,7 +1845,7 @@ suite('PasswordsCheckSection', function() {
     // should fail.
     await passwordManager.whenCalled('getPlaintextInsecurePassword');
     // Verify that the edit dialog has not become visible.
-    flush();
+    await flushTasks();
     assertFalse(isElementVisible(checkPasswordSection.shadowRoot!.querySelector(
         'settings-password-check-edit-dialog')!));
 
@@ -1872,11 +1873,11 @@ suite('PasswordsCheckSection', function() {
     checkPasswordSection.$.menuEditPassword.click();
     const {credential, reason} =
         await passwordManager.whenCalled('getPlaintextInsecurePassword');
+    await flushTasks();
     assertEquals(passwordManager.data.leakedCredentials[0], credential);
     assertEquals(chrome.passwordsPrivate.PlaintextReason.EDIT, reason);
 
     // Verify that the edit dialog has become visible.
-    flush();
     assertTrue(isElementVisible(checkPasswordSection.shadowRoot!.querySelector(
         'settings-password-check-edit-dialog')!));
 
@@ -1964,6 +1965,7 @@ suite('PasswordsCheckSection', function() {
     assertEquals(PasswordCheckInteraction.SHOW_PASSWORD, interaction);
     const {reason} =
         await passwordManager.whenCalled('getPlaintextInsecurePassword');
+    await flushTasks();
     assertEquals(chrome.passwordsPrivate.PlaintextReason.VIEW, reason);
     assertEquals('text', node.$.insecurePassword.type);
     assertEquals('test4', node.$.insecurePassword.value);
@@ -1994,6 +1996,7 @@ suite('PasswordsCheckSection', function() {
     node.$.more.click();
     checkPasswordSection.$.menuShowPassword.click();
     await passwordManager.whenCalled('getPlaintextInsecurePassword');
+    await flushTasks();
     // Verify that password field didn't change
     assertEquals('password', node.$.insecurePassword.type);
     assertNotEquals('test4', node.$.insecurePassword.value);
@@ -2078,7 +2081,7 @@ suite('PasswordsCheckSection', function() {
     passwordManager.setPlaintextPassword('test4');
     node.tokenRequestManager.resolve();
     await passwordManager.whenCalled('getPlaintextInsecurePassword');
-
+    await flushTasks();
     assertEquals('text', node.$.insecurePassword.type);
     assertEquals('test4', node.$.insecurePassword.value);
   });
