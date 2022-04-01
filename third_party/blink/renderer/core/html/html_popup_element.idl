@@ -9,6 +9,4 @@ interface HTMLPopupElement : HTMLElement {
     [CEReactions, Reflect] attribute boolean initiallyOpen;
     [CEReactions, Measure] void show();
     [CEReactions, Measure] void hide();
-
-    readonly attribute Element anchor;
 };

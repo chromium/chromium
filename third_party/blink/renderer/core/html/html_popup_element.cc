@@ -24,7 +24,6 @@ HTMLPopupElement::HTMLPopupElement(Document& document)
     : HTMLElement(html_names::kPopupTag, document),
       open_(false),
       had_initiallyopen_when_parsed_(false),
-      invoker_(nullptr),
       needs_repositioning_for_select_menu_(false),
       owner_select_menu_element_(nullptr) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled());
@@ -48,7 +47,6 @@ void HTMLPopupElement::hide() {
   if (!open_)
     return;
   open_ = false;
-  invoker_ = nullptr;
   needs_repositioning_for_select_menu_ = false;
   DCHECK(isConnected());
   GetDocument().HideAllPopupsUntil(this);
@@ -62,12 +60,6 @@ void HTMLPopupElement::ScheduleHideEvent() {
   Event* event = Event::Create(event_type_names::kHide);
   event->SetTarget(this);
   GetDocument().EnqueueAnimationFrameEvent(event);
-}
-
-void HTMLPopupElement::Invoke(Element* invoker) {
-  DCHECK(invoker);
-  invoker_ = invoker;
-  show();
 }
 
 void HTMLPopupElement::show() {
@@ -221,21 +213,6 @@ void HTMLPopupElement::PopPopupElement(HTMLPopupElement* popup) {
   GetDocument().RemoveFromTopLayer(popup);
 }
 
-Element* HTMLPopupElement::anchor() const {
-  const AtomicString& anchor_id = FastGetAttribute(html_names::kAnchorAttr);
-  if (anchor_id.IsNull())
-    return nullptr;
-  if (!IsInTreeScope())
-    return nullptr;
-  if (Element* anchor = GetTreeScope().getElementById(anchor_id))
-    return anchor;
-  return nullptr;
-}
-
-Element* HTMLPopupElement::invoker() const {
-  return invoker_.Get();
-}
-
 // TODO(crbug.com/1197720): The popup position should be provided by the new
 // anchored positioning scheme.
 void HTMLPopupElement::SetNeedsRepositioningForSelectMenu(bool flag) {
@@ -329,7 +306,6 @@ void HTMLPopupElement::AdjustPopupPositionForSelectMenu(ComputedStyle& style) {
 }
 
 void HTMLPopupElement::Trace(Visitor* visitor) const {
-  visitor->Trace(invoker_);
   visitor->Trace(owner_select_menu_element_);
   HTMLElement::Trace(visitor);
 }

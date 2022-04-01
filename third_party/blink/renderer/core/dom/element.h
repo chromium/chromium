@@ -1273,6 +1273,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     kAttachLayoutTree,
   };
 
+  // Retrieves the element pointed to by this element's 'anchor' content
+  // attribute, if that element exists.
+  Element* anchorElement() const;
+
   void UpdateFirstLetterPseudoElement(StyleUpdatePhase,
                                       const StyleRecalcContext&);
 

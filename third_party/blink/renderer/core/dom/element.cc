@@ -2436,6 +2436,8 @@ void Element::hidePopup() {
 
 // static
 const Element* Element::NearestOpenAncestralPopup(Node* start_node) {
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled() ||
+         RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
   if (!start_node)
     return nullptr;
   // We need to walk up from the start node to see if there is a parent popup,
@@ -2445,22 +2447,13 @@ const Element* Element::NearestOpenAncestralPopup(Node* start_node) {
   // popup, but we will stop on any of them. Therefore, just store the popup
   // that is highest (last) on the popup stack for each anchor and/or invoker.
 
-  // TODO(masonf): getAnchor and getInvoker can be removed once the
-  // HTMLPopupElement is removed.
-  auto getAnchor = [](const Element* element) -> Element* {
-    if (auto* popup_element = DynamicTo<HTMLPopupElement>(element)) {
-      DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled());
-      return popup_element->anchor();
-    } else {
-      DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
-      // TODO(masonf): Implement the anchor attribute for general elements.
-      return nullptr;
-    }
-  };
+  // TODO(masonf): getInvoker can be removed once the HTMLPopupElement is
+  // removed.
   auto getInvoker = [](const Element* element) -> Element* {
     if (auto* popup_element = DynamicTo<HTMLPopupElement>(element)) {
       DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled());
-      return popup_element->invoker();
+      // The <popup> element `popup` attribute has been deprecated and removed.
+      return nullptr;
     } else {
       DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
       return element->GetPopupData()->invoker();
@@ -2471,7 +2464,7 @@ const Element* Element::NearestOpenAncestralPopup(Node* start_node) {
       anchors_and_invokers;
   Document& document = start_node->GetDocument();
   for (auto popup : document.PopupElementStack()) {
-    if (const auto* anchor = getAnchor(popup))
+    if (const auto* anchor = popup->anchorElement())
       anchors_and_invokers.Set(anchor, popup);
     if (const auto* invoker = getInvoker(popup))
       anchors_and_invokers.Set(invoker, popup);
@@ -2500,7 +2493,7 @@ const Element* Element::NearestOpenAncestralPopup(Node* start_node) {
     if (IsA<HTMLPopupElement>(start_element) ||
         start_element->HasValidPopupAttribute()) {
       if (auto* anchor_ancestor =
-              NearestOpenAncestralPopup(getAnchor(start_element))) {
+              NearestOpenAncestralPopup(start_element->anchorElement())) {
         return anchor_ancestor;
       }
       if (auto* invoker_ancestor =
@@ -2551,6 +2544,18 @@ void Element::InvokePopup(Element* invoker) {
   showPopup();
 }
 
+Element* Element::anchorElement() const {
+  if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled() &&
+      !RuntimeEnabledFeatures::HTMLPopupElementEnabled()) {
+    return nullptr;
+  }
+  const AtomicString& anchor_id = FastGetAttribute(html_names::kAnchorAttr);
+  if (anchor_id.IsNull())
+    return nullptr;
+  if (!IsInTreeScope())
+    return nullptr;
+  return GetTreeScope().getElementById(anchor_id);  // may be null
+}
 bool Element::HasLegalLinkAttribute(const QualifiedName&) const {
   return false;
 }

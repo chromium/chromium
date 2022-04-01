@@ -9,17 +9,17 @@
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 
-<button id=b1 onclick='p1.showPopup()'>Popup 1</button>
+<button id=b1 triggerpopup='p1'>Popup 1</button>
 <span id=outside>Outside all popups</span>
 <div popup=popup id=p1 anchor=b1>
   <span id=inside1>Inside popup 1</span>
-  <button id=b2 onclick='p2.showPopup()'>Popup 2</button>
+  <button id=b2 triggerpopup='p2'>Popup 2</button>
 </div>
 <div popup=popup id=p2 anchor=b2>
   <span id=inside2>Inside popup 2</span>
 </div>
 
-<button id=b3 popup=p3>Popup 3 - button 3
+<button id=b3 triggerpopup=p3>Popup 3 - button 3
   <div popup=popup id=p4>Inside popup 4</div>
 </button>
 <div popup=popup id=p3>Inside popup 3</div>
