@@ -117,6 +117,14 @@
 #include "ui/aura/window.h"
 #endif
 
+#if defined(USE_AURA)
+#include "ui/aura/window.h"
+#endif
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "ui/events/test/event_generator.h"
+#endif
+
 using content::WebContents;
 using extensions::MimeHandlerViewGuest;
 using extensions::TestMimeHandlerViewGuest;
@@ -1583,6 +1591,20 @@ class SearchByRegionBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUp();
   }
 
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    gfx::NativeWindow window = browser()->window()->GetNativeWindow();
+#if defined(USE_AURA)
+    // When using aura, we need to get the root window in order to send events
+    // properly.
+    window = window->GetRootWindow();
+#endif
+    event_generator_ = std::make_unique<ui::test::EventGenerator>(window);
+    // This is needed to send the mouse event to the correct window on Mac. A
+    // no-op on other platforms.
+    event_generator_->set_target(ui::test::EventGenerator::Target::APPLICATION);
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Tests in this suite make use of documents with no significant
     // rendered content, and such documents do not accept input for 500ms
@@ -1601,19 +1623,42 @@ class SearchByRegionBrowserTest : public InProcessBrowserTest {
 
   void AttemptLensRegionSearch() {
     // |menu_observer_| will cause the search lens for image menu item to be
-    // clicked.
+    // clicked. Sets a callback to simulate dragging a region on the screen once
+    // the region search UI has been set up.
+    menu_observer_ = std::make_unique<ContextMenuNotificationObserver>(
+        IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, ui::EF_MOUSE_BUTTON,
+        base::BindOnce(&SearchByRegionBrowserTest::SimulateDrag,
+                       base::Unretained(this)));
+    RightClickToOpenContextMenu();
+  }
+
+  void AttemptFullscreenLensRegionSearch() {
+    // |menu_observer_| will cause the search lens for image menu item to be
+    // clicked. Omit event flags to simulate entering through the keyboard.
     menu_observer_ = std::make_unique<ContextMenuNotificationObserver>(
         IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH);
     RightClickToOpenContextMenu();
   }
 
   // This attempts region search on the menu item designated for non-Google
-  // DSEs.
-  void AttemptNonGoogleRegionSearch() {
+  // DSEs as if entering the menu item via keyboard.
+  void AttemptFullscreenNonGoogleRegionSearch() {
     // |menu_observer_| will cause the search lens for image menu item to be
     // clicked.
     menu_observer_ = std::make_unique<ContextMenuNotificationObserver>(
         IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH);
+    RightClickToOpenContextMenu();
+  }
+
+  // This attempts region search on the menu item designated for non-Google
+  // DSEs with mouse button event flags.
+  void AttemptNonGoogleRegionSearch() {
+    // |menu_observer_| will cause the search lens for image menu item to be
+    // clicked.
+    menu_observer_ = std::make_unique<ContextMenuNotificationObserver>(
+        IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH, ui::EF_MOUSE_BUTTON,
+        base::BindOnce(&SearchByRegionBrowserTest::SimulateDrag,
+                       base::Unretained(this)));
     RightClickToOpenContextMenu();
   }
 
@@ -1632,6 +1677,16 @@ class SearchByRegionBrowserTest : public InProcessBrowserTest {
     content::WebContents* tab =
         browser()->tab_strip_model()->GetActiveWebContents();
     content::SimulateMouseClick(tab, 0, blink::WebMouseEvent::Button::kRight);
+  }
+
+  // Simulates a valid drag for Lens region search. Must be called after the UI
+  // is set up or else the event will not be properly received by the feature.
+  void SimulateDrag() {
+    content::WebContents* tab =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    gfx::Point center = tab->GetContainerBounds().CenterPoint();
+    event_generator_->MoveMouseTo(center);
+    event_generator_->DragMouseBy(100, 100);
   }
 
   // Sets up a custom test default search engine in order to test region search
@@ -1659,11 +1714,11 @@ class SearchByRegionBrowserTest : public InProcessBrowserTest {
     model->SetUserSelectedDefaultSearchProvider(template_url);
   }
 
- private:
   void TearDownInProcessBrowserTestFixture() override {
     menu_observer_.reset();
   }
 
+  std::unique_ptr<ui::test::EventGenerator> event_generator_;
   std::unique_ptr<ContextMenuNotificationObserver> menu_observer_;
 };
 
@@ -1672,8 +1727,28 @@ IN_PROC_BROWSER_TEST_F(SearchByRegionBrowserTest,
   SetupAndLoadPage("/empty.html");
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
 
-  // The browser should open a new tab for a region search.
+  // The browser should open a draggable UI for a region search.
   AttemptLensRegionSearch();
+  content::WebContents* new_tab = add_tab.Wait();
+  content::WaitForLoadStop(new_tab);
+
+  std::string expected_content = GetLensRegionSearchURL().GetContent();
+  std::string new_tab_content = new_tab->GetLastCommittedURL().GetContent();
+  // Match strings up to the query.
+  std::size_t query_start_pos = new_tab_content.find("?");
+  // Match the query parameters, without the value of start_time.
+  EXPECT_THAT(new_tab_content, testing::MatchesRegex(
+                                   expected_content.substr(0, query_start_pos) +
+                                   ".*ep=crs&s=&st=\\d+"));
+}
+
+IN_PROC_BROWSER_TEST_F(SearchByRegionBrowserTest,
+                       LensRegionSearchWithFullscreenRegionNewTab) {
+  SetupAndLoadPage("/empty.html");
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+
+  // The browser should open a new tab for a region search.
+  AttemptFullscreenLensRegionSearch();
   content::WebContents* new_tab = add_tab.Wait();
   content::WaitForLoadStop(new_tab);
 
@@ -1695,6 +1770,22 @@ IN_PROC_BROWSER_TEST_F(SearchByRegionBrowserTest,
 
   // The browser should open a new tab for a region search.
   AttemptNonGoogleRegionSearch();
+  content::WebContents* new_tab = add_tab.Wait();
+  content::WaitForLoadStop(new_tab);
+
+  std::string expected_content = GetNonGoogleRegionSearchURL().GetContent();
+  std::string new_tab_content = new_tab->GetLastCommittedURL().GetContent();
+  EXPECT_EQ(expected_content, new_tab_content);
+}
+
+IN_PROC_BROWSER_TEST_F(SearchByRegionBrowserTest,
+                       NonGoogleRegionSearchWithFullscreenRegionNewTab) {
+  SetupAndLoadPage("/empty.html");
+  SetupNonGoogleRegionSearchEngine();
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+
+  // The browser should open a new tab for a region search.
+  AttemptFullscreenNonGoogleRegionSearch();
   content::WebContents* new_tab = add_tab.Wait();
   content::WaitForLoadStop(new_tab);
 

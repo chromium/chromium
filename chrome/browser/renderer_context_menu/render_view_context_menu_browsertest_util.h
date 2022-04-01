@@ -14,8 +14,13 @@ class RenderViewContextMenu;
 
 class ContextMenuNotificationObserver {
  public:
-  // Wait for a context menu to be shown, and then execute |command_to_execute|.
-  explicit ContextMenuNotificationObserver(int command_to_execute);
+  // Wait for a context menu to be shown, and then execute |command_to_execute|
+  // with specified |event_flags|. Also executes |callback| after executing the
+  // command if provided.
+  explicit ContextMenuNotificationObserver(
+      int command_to_execute,
+      int event_flags = 0,
+      base::OnceClosure callback = base::NullCallback());
 
   ContextMenuNotificationObserver(const ContextMenuNotificationObserver&) =
       delete;
@@ -30,6 +35,8 @@ class ContextMenuNotificationObserver {
   void ExecuteCommand(RenderViewContextMenu* context_menu);
 
   int command_to_execute_;
+  int event_flags_;
+  base::OnceClosure callback_;
 };
 
 class ContextMenuWaiter {

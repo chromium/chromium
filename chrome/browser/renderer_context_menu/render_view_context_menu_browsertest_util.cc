@@ -5,6 +5,7 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -14,8 +15,12 @@
 #include "content/public/test/test_utils.h"
 
 ContextMenuNotificationObserver::ContextMenuNotificationObserver(
-    int command_to_execute)
-    : command_to_execute_(command_to_execute) {
+    int command_to_execute,
+    int event_flags,
+    base::OnceClosure callback)
+    : command_to_execute_(command_to_execute),
+      event_flags_(event_flags),
+      callback_(std::move(callback)) {
   RenderViewContextMenu::RegisterMenuShownCallbackForTesting(base::BindOnce(
       &ContextMenuNotificationObserver::MenuShown, base::Unretained(this)));
 }
@@ -33,8 +38,10 @@ void ContextMenuNotificationObserver::MenuShown(
 
 void ContextMenuNotificationObserver::ExecuteCommand(
     RenderViewContextMenu* context_menu) {
-  context_menu->ExecuteCommand(command_to_execute_, 0);
+  context_menu->ExecuteCommand(command_to_execute_, event_flags_);
   context_menu->Cancel();
+  if (!callback_.is_null())
+    std::move(callback_).Run();
 }
 
 ContextMenuWaiter::ContextMenuWaiter() {
