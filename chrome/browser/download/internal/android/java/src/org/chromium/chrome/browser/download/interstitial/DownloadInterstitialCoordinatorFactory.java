@@ -14,12 +14,13 @@ import org.chromium.ui.base.WindowAndroid;
 public class DownloadInterstitialCoordinatorFactory {
     /**
      * @param context The activity context.
+     * @param downloadUrl Url spec used for matching and binding the correct offline item.
      * @param windowAndroid The {@link WindowAndroid} associated with the activity.
      * @return A new {@link DownloadInterstitialCoordinatorImpl} instance.
      */
     public static DownloadInterstitialCoordinator create(
-            Context context, WindowAndroid windowAndroid) {
-        return new DownloadInterstitialCoordinatorImpl(context,
+            Context context, String downloadUrl, WindowAndroid windowAndroid) {
+        return new DownloadInterstitialCoordinatorImpl(context, downloadUrl,
                 OfflineContentAggregatorFactory.get(), SnackbarManagerProvider.from(windowAndroid));
     }
 

@@ -99,7 +99,7 @@ public class NewDownloadTab extends EmptyTabObserver implements UserData, TabVie
     private NewDownloadTab(Tab tab) {
         mTab = tab;
         mCoordinator = DownloadInterstitialCoordinatorFactory.create(
-                tab.getContext(), tab.getWindowAndroid());
+                tab.getContext(), tab.getOriginalUrl().getSpec(), tab.getWindowAndroid());
     }
 
     private boolean isViewAttached() {

@@ -56,6 +56,7 @@ class DownloadInterstitialMediator {
 
     private final Context mContext;
     private final PropertyModel mModel;
+    private final String mDownloadUrl;
     private final OfflineContentProvider mProvider;
     private final SnackbarManager mSnackbarManager;
     private final OfflineContentProvider.Observer mObserver;
@@ -73,11 +74,12 @@ class DownloadInterstitialMediator {
      * @param snackbarManager A {@link SnackbarManager} used to display snackbars within the
      *         download interstitial view.
      */
-    DownloadInterstitialMediator(Context context, PropertyModel model,
+    DownloadInterstitialMediator(Context context, PropertyModel model, String downloadUrl,
             OfflineContentProvider provider, SnackbarManager snackbarManager,
             SharedPreferencesManager sharedPrefs) {
         mContext = context;
         mModel = model;
+        mDownloadUrl = downloadUrl;
         mProvider = provider;
         mSnackbarManager = snackbarManager;
         mSharedPrefs = sharedPrefs;
@@ -243,8 +245,11 @@ class DownloadInterstitialMediator {
 
             @Override
             public void onItemUpdated(OfflineItem item, UpdateDelta updateDelta) {
-                if (mModel.get(DOWNLOAD_ITEM) != null
-                        && !item.id.equals(mModel.get(DOWNLOAD_ITEM).id)) {
+                if (mModel.get(DOWNLOAD_ITEM) == null) {
+                    if (!mDownloadUrl.equals(item.originalUrl)) {
+                        return;
+                    }
+                } else if (!item.id.equals(mModel.get(DOWNLOAD_ITEM).id)) {
                     return;
                 }
                 mModel.set(DOWNLOAD_ITEM, item);
