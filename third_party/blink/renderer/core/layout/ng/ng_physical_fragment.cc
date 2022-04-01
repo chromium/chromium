@@ -108,6 +108,10 @@ class FragmentTreeDumper {
 
     bool has_content = false;
     if (const auto* box = DynamicTo<NGPhysicalBoxFragment>(fragment)) {
+      if (box->IsLayoutObjectDestroyedOrMoved()) {
+        builder_->Append("DEAD LAYOUT OBJECT!\n");
+        return;
+      }
       const LayoutObject* layout_object = box->GetLayoutObject();
       if (flags_ & NGPhysicalFragment::DumpType) {
         builder_->Append("Box");
