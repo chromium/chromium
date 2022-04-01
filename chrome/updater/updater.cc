@@ -186,7 +186,6 @@ const char* GetUpdaterCommand(const base::CommandLine* command_line) {
   const char* commands[] = {
       kWindowsServiceSwitch,
       kCrashHandlerSwitch,
-      kHealthCheckSwitch,
       kInstallSwitch,
       kRecoverSwitch,
       kServerSwitch,
