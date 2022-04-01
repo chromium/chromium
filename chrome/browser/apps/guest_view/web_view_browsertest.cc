@@ -2820,11 +2820,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ContextMenusAPI_Basic) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, ContextMenusAPI_PreventDefault) {
-  // TODO(crbug.com/1267977): fix this test to work with site isolation for
-  // <webview>.
-  if (content::SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled())
-    return;
-
   LoadAppWithGuest("web_view/context_menus/basic");
 
   content::WebContents* guest_web_contents = GetGuestWebContents();
@@ -2857,11 +2852,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ContextMenusAPI_PreventDefault) {
 // Tests that a context menu is created when right-clicking in the webview. This
 // also tests that the 'contextmenu' event is handled correctly.
 IN_PROC_BROWSER_TEST_P(WebViewTest, TestContextMenu) {
-  // TODO(crbug.com/1267977): fix this test to work with site isolation for
-  // <webview>.
-  if (content::SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled())
-    return;
-
   LoadAppWithGuest("web_view/context_menus/basic");
   content::WebContents* guest_web_contents = GetGuestWebContents();
 
