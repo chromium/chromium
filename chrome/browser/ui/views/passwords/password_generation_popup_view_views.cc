@@ -11,8 +11,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_controller.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -24,6 +26,7 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
@@ -34,6 +37,9 @@ namespace {
 // The max width prevents the popup from growing too much when the password
 // field is too long.
 constexpr int kPasswordGenerationMaxWidth = 480;
+
+// The default icon size used in the password generation drop down.
+constexpr int kIconSize = 16;
 
 }  // namespace
 
@@ -85,6 +91,12 @@ void PasswordGenerationPopupViewViews::GeneratedPasswordBox::Init(
           DISTANCE_BETWEEN_PRIMARY_AND_SECONDARY_LABELS_HORIZONTAL)));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kUnifiedPasswordManagerDesktop)) {
+    AddChildView(
+        std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+            GooglePasswordManagerVectorIcon(), ui::kColorIcon, kIconSize)));
+  }
 
   suggestion_label_ = AddChildView(std::make_unique<views::Label>(
       controller_->SuggestedText(), views::style::CONTEXT_DIALOG_BODY_TEXT,
