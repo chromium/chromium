@@ -41,7 +41,7 @@
 namespace safe_browsing {
 namespace {
 
-const int kRepeatingCheckTailoredSecurityBitDelayInMinutes = 10;
+const int kRepeatingCheckTailoredSecurityBitDelayInMinutes = 5;
 
 constexpr char kAPIScope[] =
     "https://www.googleapis.com/auth/chrome-safe-browsing";
