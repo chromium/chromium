@@ -246,7 +246,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kBookmarksImprovedSaveFlow,
     &kBookmarksRefresh,
     &kProbabilisticCryptidRenderer,
-    &kQuickActionSearchWidgetAndroid,
     &kReachedCodeProfiler,
     &kImproveReaderModePrompt,
     &kReaderModeInCCT,
@@ -680,9 +679,6 @@ const base::Feature kBookmarksRefresh{"BookmarksRefresh",
 
 const base::Feature kProbabilisticCryptidRenderer{
     "ProbabilisticCryptidRenderer", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kQuickActionSearchWidgetAndroid{
-    "QuickActionSearchWidgetAndroid", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kReachedCodeProfiler{"ReachedCodeProfiler",
                                          base::FEATURE_DISABLED_BY_DEFAULT};

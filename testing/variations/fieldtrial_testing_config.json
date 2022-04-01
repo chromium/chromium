@@ -4711,8 +4711,6 @@
                         "OmniboxMaxURLMatches",
                         "OmniboxOnFocusSuggestionsContextualWebAllowSRP",
                         "OmniboxUIExperimentMaxAutocompleteMatches",
-                        "QuickActionSearchWidgetAndroid",
-                        "QuickActionSearchWidgetAndroidDinoVariant",
                         "ZeroSuggestPrefetching"
                     ]
                 }
