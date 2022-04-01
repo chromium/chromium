@@ -542,7 +542,9 @@ class SyncConsentTestWithParams
   ~SyncConsentTestWithParams() override = default;
 };
 
-IN_PROC_BROWSER_TEST_P(SyncConsentTestWithParams, SyncConsentTestWithLocale) {
+// Disabled due to flakiness: crbug.com/1309452
+IN_PROC_BROWSER_TEST_P(SyncConsentTestWithParams,
+                       DISABLED_SyncConsentTestWithLocale) {
   EXPECT_EQ(g_browser_process->GetApplicationLocale(), "en-US");
   SwitchLanguage(GetParam());
   LoginAndShowSyncConsentScreenWithCapability();
