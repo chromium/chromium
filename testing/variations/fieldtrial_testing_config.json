@@ -1361,6 +1361,25 @@
             ]
         }
     ],
+    "BackForwardCacheDedicatedWorker": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BackForwardCacheDedicatedWorker"
+                    ]
+                }
+            ]
+        }
+    ],
     "BackForwardCacheMemoryControls": [
         {
             "platforms": [
@@ -1374,25 +1393,6 @@
                     },
                     "enable_features": [
                         "BackForwardCacheMemoryControls"
-                    ]
-                }
-            ]
-        }
-    ],
-    "BackForwardDedicatedWorker": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BackForwardDedicatedWorker"
                     ]
                 }
             ]

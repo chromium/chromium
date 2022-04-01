@@ -32,6 +32,7 @@
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 
 using base::Bucket;
@@ -635,8 +636,12 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, DedicatedWorker) {
-  ukm::TestAutoSetUkmRecorder recorder;
+  // This test should only run if the feature is disabled.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kBackForwardCacheDedicatedWorker))
+    return;
 
+  ukm::TestAutoSetUkmRecorder recorder;
   const GURL url(embedded_test_server()->GetURL(
       "/back_forward_cache/page_with_dedicated_worker.html"));
 

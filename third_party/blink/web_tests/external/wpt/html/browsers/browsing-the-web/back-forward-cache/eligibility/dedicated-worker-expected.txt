@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-NOTRUN Eligibility: dedicated workers Should be BFCached but actually wasn't
-Harness: the test ran to completion.
-
