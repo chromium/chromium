@@ -5380,8 +5380,8 @@
   },
   {
     "name": "show-metered-toggle",
-    "owners": [ "stevenjb" ],
-    "expiry_milestone": 100
+    "owners": [ "stevenjb", "azeemarshad", "cros-connectivity@google.com" ],
+    "expiry_milestone": 106
   },
   {
     "name": "show-overdraw-feedback",
