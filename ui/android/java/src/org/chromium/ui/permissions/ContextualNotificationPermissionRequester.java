@@ -34,4 +34,14 @@ public abstract class ContextualNotificationPermissionRequester {
      * permission prompt for notifications.
      */
     public abstract void requestPermissionIfNeeded();
+
+    /**
+     * Called to determine whether or not we can request site notification permission from app level
+     * settings perspective. We shouldn't request site permission if
+     * (1) For Android versions < T, if app level notifications are disabled.
+     * (2) For Android versions >= T, if we don't have notification permission and have exhausted
+     * our permission request attempts.
+     * @return Whether or not we are allowed to request site notification.
+     */
+    public abstract boolean doesAppLevelSettingsAllowSiteNotifications();
 }

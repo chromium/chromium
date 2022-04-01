@@ -40,13 +40,27 @@ public class ContextualNotificationPermissionRequesterImpl
                         ChromeFeatureList.NOTIFICATION_PERMISSION_VARIANT,
                         FIELD_TRIAL_ENABLE_CONTEXTUAL_PERMISSION_REQUESTS, false);
         if (!isContextualPermissionRequestEnabled) return;
-        Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
-        if (!(activity instanceof ChromeTabbedActivity)) return;
-
-        ChromeTabbedActivity chromeTabbedActivity = (ChromeTabbedActivity) activity;
         NotificationPermissionController permissionController =
-                NotificationPermissionController.from(chromeTabbedActivity.getWindowAndroid());
+                getNotificationPermissionController();
         if (permissionController == null) return;
         permissionController.requestPermissionIfNeeded(true /* contextual */);
+    }
+
+    @Override
+    public boolean doesAppLevelSettingsAllowSiteNotifications() {
+        NotificationPermissionController permissionController =
+                getNotificationPermissionController();
+        if (permissionController == null) return true;
+        return permissionController.doesAppLevelSettingsAllowSiteNotifications();
+    }
+
+    private NotificationPermissionController getNotificationPermissionController() {
+        Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
+        if (!(activity instanceof ChromeTabbedActivity)) return null;
+
+        // TODO(shaktisahu): Maybe split out the contextual permission logic out of
+        // NotificationPermissionController entirely to serve non-chrome activities.
+        ChromeTabbedActivity chromeTabbedActivity = (ChromeTabbedActivity) activity;
+        return NotificationPermissionController.from(chromeTabbedActivity.getWindowAndroid());
     }
 }

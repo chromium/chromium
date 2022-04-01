@@ -182,11 +182,15 @@ void PermissionRequestManager::AddRequest(
 
 #if BUILDFLAG(IS_ANDROID)
   if (request->GetContentSettingsType() == ContentSettingsType::NOTIFICATIONS) {
-    bool enabled_app_level = AreAppLevelNotificationsEnabled();
+    bool app_level_settings_allow_site_notifications =
+        enabled_app_level_notification_permission_for_testing_.has_value()
+            ? enabled_app_level_notification_permission_for_testing_.value()
+            : DoesAppLevelSettingsAllowSiteNotifications();
     base::UmaHistogramBoolean(
-        "Permissions.Prompt.Notifications.EnabledAppLevel", enabled_app_level);
+        "Permissions.Prompt.Notifications.EnabledAppLevel",
+        app_level_settings_allow_site_notifications);
 
-    if (!enabled_app_level &&
+    if (!app_level_settings_allow_site_notifications &&
         base::FeatureList::IsEnabled(
             features::kBlockNotificationPromptsIfDisabledOnAppLevel)) {
       // Automatically cancel site Notification requests when Chrome is not able

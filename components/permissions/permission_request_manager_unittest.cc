@@ -69,6 +69,7 @@ class PermissionRequestManagerTest
 
     PermissionRequestManager::CreateForWebContents(web_contents());
     manager_ = PermissionRequestManager::FromWebContents(web_contents());
+    manager_->set_enabled_app_level_notification_permission_for_testing(true);
     prompt_factory_ = std::make_unique<MockPermissionPromptFactory>(manager_);
   }
 

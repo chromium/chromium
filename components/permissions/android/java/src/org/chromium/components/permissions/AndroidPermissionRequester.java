@@ -171,6 +171,12 @@ public class AndroidPermissionRequester {
                             deniedStringId = R.string.infobar_missing_camera_permission_text;
                         } else if (deniedContentSettings.contains(ContentSettingsType.AR)) {
                             deniedStringId = R.string.infobar_missing_ar_camera_permission_text;
+                        } else if (deniedContentSettings.contains(
+                                           ContentSettingsType.NOTIFICATIONS)) {
+                            // We don't want to request the notification prompt again, since user
+                            // declined it already.
+                            delegate.onAndroidPermissionCanceled();
+                            return;
                         }
                     }
 

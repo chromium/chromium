@@ -82,6 +82,7 @@ class ChromePermissionRequestManagerTest
     permissions::PermissionRequestManager::CreateForWebContents(web_contents());
     manager_ =
         permissions::PermissionRequestManager::FromWebContents(web_contents());
+    manager_->set_enabled_app_level_notification_permission_for_testing(true);
     prompt_factory_ =
         std::make_unique<permissions::MockPermissionPromptFactory>(manager_);
   }

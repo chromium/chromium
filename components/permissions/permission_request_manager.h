@@ -204,6 +204,10 @@ class PermissionRequestManager
     time_to_decision_for_test_ = time_to_decision;
   }
 
+  void set_enabled_app_level_notification_permission_for_testing(bool enabled) {
+    enabled_app_level_notification_permission_for_testing_ = enabled;
+  }
+
  private:
   friend class test::PermissionRequestManagerTestApi;
   friend class content::WebContentsUserData<PermissionRequestManager>;
@@ -405,6 +409,8 @@ class PermissionRequestManager
   bool did_click_learn_more_ = false;
 
   absl::optional<base::TimeDelta> time_to_decision_for_test_;
+
+  absl::optional<bool> enabled_app_level_notification_permission_for_testing_;
 
   base::WeakPtrFactory<PermissionRequestManager> weak_factory_{this};
   WEB_CONTENTS_USER_DATA_KEY_DECL();

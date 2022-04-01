@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.notifications.permissions;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationManagerCompat;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -191,6 +193,26 @@ public class NotificationPermissionController implements UnownedUserData {
         boolean shouldShowRationale = shouldAlwaysShowRationaleFirst() || meetsAndroidRationaleAPI;
         return shouldShowRationale ? PermissionRequestMode.REQUEST_PERMISSION_WITH_RATIONALE
                                    : PermissionRequestMode.REQUEST_ANDROID_PERMISSION;
+    }
+
+    /**
+     * See {@link
+     * ContextualNotificationPermissionRequester#doesAppLevelSettingsAllowSiteNotifications()} for
+     * more details.
+     * @return Whether or not the site should is allowed to request the notification permission.
+     * TODO(shaktisahu): Determine the rules for showing site notification permission.
+     */
+    public boolean doesAppLevelSettingsAllowSiteNotifications() {
+        NotificationManagerCompat manager =
+                NotificationManagerCompat.from(ContextUtils.getApplicationContext());
+        boolean notificationsEnabledAtAppLevel = manager.areNotificationsEnabled();
+        if (!BuildInfo.isAtLeastT()) return notificationsEnabledAtAppLevel;
+
+        boolean hasPermission = mAndroidPermissionDelegate.hasPermission(
+                PermissionConstants.NOTIFICATION_PERMISSION);
+        boolean canRequestPermission = mAndroidPermissionDelegate.canRequestPermission(
+                PermissionConstants.NOTIFICATION_PERMISSION);
+        return hasPermission || canRequestPermission;
     }
 
     /**

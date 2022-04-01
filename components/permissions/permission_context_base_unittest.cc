@@ -731,6 +731,7 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
     PermissionRequestManager::CreateForWebContents(web_contents());
     PermissionRequestManager* manager =
         PermissionRequestManager::FromWebContents(web_contents());
+    manager->set_enabled_app_level_notification_permission_for_testing(true);
     prompt_factory_ = std::make_unique<MockPermissionPromptFactory>(manager);
   }
 

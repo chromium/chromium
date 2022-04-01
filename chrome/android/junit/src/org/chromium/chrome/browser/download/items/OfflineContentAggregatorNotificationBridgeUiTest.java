@@ -89,6 +89,11 @@ public class OfflineContentAggregatorNotificationBridgeUiTest {
                 new ContextualNotificationPermissionRequester() {
                     @Override
                     public void requestPermissionIfNeeded() {}
+
+                    @Override
+                    public boolean doesAppLevelSettingsAllowSiteNotifications() {
+                        return false;
+                    }
                 });
     }
 

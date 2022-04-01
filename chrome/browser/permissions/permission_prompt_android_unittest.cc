@@ -37,6 +37,8 @@ class PermissionPromptAndroidTest : public ChromeRenderViewHostTestHarness {
     permissions::PermissionRequestManager::CreateForWebContents(web_contents());
     permission_request_manager_ =
         permissions::PermissionRequestManager::FromWebContents(web_contents());
+    permission_request_manager_
+        ->set_enabled_app_level_notification_permission_for_testing(true);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
