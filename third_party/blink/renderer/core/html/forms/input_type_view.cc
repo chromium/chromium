@@ -93,10 +93,6 @@ HTMLFormElement* InputTypeView::FormForSubmission() const {
   return GetElement().Form();
 }
 
-bool InputTypeView::TypeShouldForceLegacyLayout() const {
-  return false;
-}
-
 LayoutObject* InputTypeView::CreateLayoutObject(const ComputedStyle& style,
                                                 LegacyLayout legacy) const {
   return LayoutObject::CreateObject(&GetElement(), style, legacy);

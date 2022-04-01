@@ -408,7 +408,6 @@ class CORE_EXPORT HTMLInputElement
 
   void CloneNonAttributePropertiesFrom(const Element&, CloneChildrenFlag) final;
 
-  bool TypeShouldForceLegacyLayout() const final;
   void AttachLayoutTree(AttachContext&) final;
 
   void AppendToFormData(FormData&) final;

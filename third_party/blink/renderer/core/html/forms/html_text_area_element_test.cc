@@ -12,10 +12,10 @@
 namespace blink {
 
 class HTMLTextAreaElementTest : public testing::WithParamInterface<bool>,
-                                private ScopedLayoutNGTextControlForTest,
+                                private ScopedLayoutNGForTest,
                                 public RenderingTest {
  public:
-  HTMLTextAreaElementTest() : ScopedLayoutNGTextControlForTest(GetParam()) {}
+  HTMLTextAreaElementTest() : ScopedLayoutNGForTest(GetParam()) {}
 
  protected:
   HTMLTextAreaElement& TestElement() {

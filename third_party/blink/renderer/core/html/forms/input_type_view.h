@@ -106,7 +106,6 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
   void DispatchSimulatedClickIfActive(KeyboardEvent&) const;
 
   virtual void SubtreeHasChanged();
-  virtual bool TypeShouldForceLegacyLayout() const;
   virtual LayoutObject* CreateLayoutObject(const ComputedStyle&,
                                            LegacyLayout) const;
   virtual void CustomStyleForLayoutObject(ComputedStyle& style);

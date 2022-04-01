@@ -292,14 +292,6 @@ void TextFieldInputType::CustomStyleForLayoutObject(ComputedStyle& style) {
   style.SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
 }
 
-bool TextFieldInputType::TypeShouldForceLegacyLayout() const {
-  if (RuntimeEnabledFeatures::LayoutNGTextControlEnabled())
-    return false;
-  UseCounter::Count(GetElement().GetDocument(),
-                    WebFeature::kLegacyLayoutByTextControl);
-  return true;
-}
-
 LayoutObject* TextFieldInputType::CreateLayoutObject(
     const ComputedStyle& style,
     LegacyLayout legacy) const {

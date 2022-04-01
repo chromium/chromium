@@ -944,11 +944,6 @@ bool HTMLInputElement::LayoutObjectIsNeeded(const ComputedStyle& style) const {
          TextControlElement::LayoutObjectIsNeeded(style);
 }
 
-// TODO(crbug.com/1040826): Remove this override.
-bool HTMLInputElement::TypeShouldForceLegacyLayout() const {
-  return input_type_view_->TypeShouldForceLegacyLayout();
-}
-
 LayoutObject* HTMLInputElement::CreateLayoutObject(const ComputedStyle& style,
                                                    LegacyLayout legacy) {
   return input_type_view_->CreateLayoutObject(style, legacy);

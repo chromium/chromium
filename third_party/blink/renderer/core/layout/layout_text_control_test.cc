@@ -14,9 +14,10 @@ namespace blink {
 namespace {
 
 class LayoutTextControlTest : public testing::WithParamInterface<bool>,
-                              public RenderingTest {
+                              public RenderingTest,
+                              private ScopedLayoutNGForTest {
  public:
-  LayoutTextControlTest() : scoped_text_control_flag_(GetParam()) {}
+  LayoutTextControlTest() : ScopedLayoutNGForTest(GetParam()) {}
 
  protected:
   TextControlElement* GetTextControlElementById(const char* id) {
@@ -47,9 +48,6 @@ class LayoutTextControlTest : public testing::WithParamInterface<bool>,
     UpdateAllLifecyclePhasesForTest();
     EXPECT_FALSE(selected_text.ShouldInvalidateSelection());
   }
-
- private:
-  ScopedLayoutNGTextControlForTest scoped_text_control_flag_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All, LayoutTextControlTest, testing::Bool());

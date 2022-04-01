@@ -267,13 +267,6 @@ void HTMLTextAreaElement::ParseAttribute(
   }
 }
 
-bool HTMLTextAreaElement::TypeShouldForceLegacyLayout() const {
-  if (RuntimeEnabledFeatures::LayoutNGTextControlEnabled())
-    return false;
-  UseCounter::Count(GetDocument(), WebFeature::kLegacyLayoutByTextControl);
-  return true;
-}
-
 LayoutObject* HTMLTextAreaElement::CreateLayoutObject(
     const ComputedStyle& style,
     LegacyLayout legacy) {

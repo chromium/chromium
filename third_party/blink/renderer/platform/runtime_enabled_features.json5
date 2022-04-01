@@ -1401,11 +1401,6 @@
       status: "stable"
     },
     {
-      name: "LayoutNGTextControl",
-      depends_on: ["EditingNG"],
-      status: "stable",
-    },
-    {
       name: "LayoutNGView",
       implied_by: ["LayoutNGPrinting"],
     },

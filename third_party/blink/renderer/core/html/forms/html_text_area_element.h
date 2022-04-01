@@ -117,7 +117,6 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
       const QualifiedName&,
       const AtomicString&,
       MutableCSSPropertyValueSet*) override;
-  bool TypeShouldForceLegacyLayout() const override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
   void AppendToFormData(FormData&) override;
   void ResetImpl() override;
