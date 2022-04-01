@@ -225,8 +225,10 @@ sync_pb::PasswordWithLocalData PasswordWithLocalDataFromPassword(
 
   auto* local_data = password_with_local_data.mutable_local_data();
   local_data->set_opaque_metadata(SerializeOpaqueLocalData(password_form));
-  local_data->set_previously_associated_sync_account_email(
-      password_form.previously_associated_sync_account_email);
+  if (!password_form.previously_associated_sync_account_email.empty()) {
+    local_data->set_previously_associated_sync_account_email(
+        password_form.previously_associated_sync_account_email);
+  }
 
   return password_with_local_data;
 }
