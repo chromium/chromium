@@ -4177,6 +4177,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Manages a transient affordance for this frame or subframes to open a popup.
   TransientAllowPopup transient_allow_popup_;
 
+  // Used to avoid sending AXTreeData to the renderer if the renderer has not
+  // been told root ID yet. See UpdateAXTreeData() for more details.
+  bool needs_ax_root_id_ = true;
+
   // BrowserInterfaceBroker implementation through which this
   // RenderFrameHostImpl exposes document-scoped Mojo services to the currently
   // active document in the corresponding RenderFrame.

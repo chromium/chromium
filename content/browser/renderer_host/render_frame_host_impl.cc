@@ -7550,6 +7550,14 @@ void RenderFrameHostImpl::HandleAXEvents(
     }
   }
 
+  if (needs_ax_root_id_) {
+    // This is the first update after the tree id changed. AXTree must be sent
+    // a new root id, otherwise crashes are likely to result.
+    DCHECK(!details.updates.empty());
+    DCHECK_NE(ui::kInvalidAXNodeID, details.updates[0].root_id);
+    needs_ax_root_id_ = false;
+  }
+
   if (accessibility_mode.has_mode(ui::AXMode::kNativeAPIs))
     SendAccessibilityEventsToManager(details);
 
@@ -9223,6 +9231,13 @@ void RenderFrameHostImpl::UpdateAXTreeData() {
           DisallowActivationReasonId::kAXUpdateTree)) {
     return;
   }
+
+  // If `needs_ax_root_id_` is true, an AXTreeUpdate has not been sent to
+  // the renderer with a valid root id. This effectively means the renderer
+  // does not really know about the tree, and the renderer should not be
+  // updated. The renderer will be updated once the root id is known.
+  if (needs_ax_root_id_)
+    return;
 
   AXEventNotificationDetails detail;
   detail.ax_tree_id = GetAXTreeID();
@@ -13267,8 +13282,11 @@ void RenderFrameHostImpl::SetEmbeddingToken(
   // The AXTreeID of a frame is backed by its embedding token, so we need to
   // update its AXTreeID, as well as the associated mapping in
   // AXActionHandlerRegistry.
+  const ui::AXTreeID old_id = GetAXTreeID();
   ui::AXTreeID ax_tree_id = ui::AXTreeID::FromToken(embedding_token);
+  DCHECK_NE(old_id, ax_tree_id);
   SetAXTreeID(ax_tree_id);
+  needs_ax_root_id_ = true;
   ui::AXActionHandlerRegistry::GetInstance()->SetFrameIDForAXTreeID(
       ui::AXActionHandlerRegistry::FrameID(GetProcess()->GetID(), routing_id_),
       ax_tree_id);
