@@ -9,8 +9,6 @@ source_set("net") {
     "chrome_cookie_store_ios_client.mm",
     "connection_type_observer_bridge.h",
     "connection_type_observer_bridge.mm",
-    "cookie_util.h",
-    "cookie_util.mm",
     "http_server_properties_factory.cc",
     "http_server_properties_factory.h",
     "ios_chrome_http_user_agent_settings.h",
@@ -70,16 +68,11 @@ source_set("crurl") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [
-    "cookie_util_unittest.mm",
-    "retryable_url_fetcher_unittest.mm",
-  ]
+  sources = [ "retryable_url_fetcher_unittest.mm" ]
   deps = [
     ":net",
     "//base",
     "//base/test:test_support",
-    "//ios/net",
-    "//ios/net:test_support",
     "//ios/web/common",
     "//ios/web/public/test",
     "//services/network:test_support",

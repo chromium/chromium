@@ -1,0 +1,8 @@
+include_rules = [
+  "+ios/web/common",
+  "+net/cookies",
+  "+net/extras/sqlite",
+  "+net/log",
+  "+net/url_request",
+]
+

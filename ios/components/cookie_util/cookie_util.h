@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_NET_COOKIE_UTIL_H_
-#define IOS_CHROME_BROWSER_NET_COOKIE_UTIL_H_
+#ifndef IOS_COMPONENTS_COOKIE_UTIL_COOKIE_UTIL_H_
+#define IOS_COMPONENTS_COOKIE_UTIL_COOKIE_UTIL_H_
 
 #include <memory>
 
@@ -11,13 +11,15 @@
 #include "base/memory/ref_counted.h"
 #include "net/cookies/canonical_cookie.h"
 
-class ChromeBrowserState;
-
 namespace net {
 class CookieCryptoDelegate;
 class CookieStore;
 class SystemCookieStore;
 class NetLog;
+}  // namespace net
+
+namespace web {
+class BrowserState;
 }
 
 namespace cookie_util {
@@ -83,8 +85,8 @@ std::unique_ptr<net::CookieStore> CreateCookieStore(
 bool ShouldClearSessionCookies();
 
 // Clears the session cookies for |browser_state|.
-void ClearSessionCookies(ChromeBrowserState* browser_state);
+void ClearSessionCookies(web::BrowserState* browser_state);
 
 }  // namespace cookie_util
 
-#endif  // IOS_CHROME_BROWSER_NET_COOKIE_UTIL_H_
+#endif  // IOS_COMPONENTS_COOKIE_UTIL_COOKIE_UTIL_H_

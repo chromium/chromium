@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/net/cookie_util.h"
+#include "ios/components/cookie_util/cookie_util.h"
 
 #import <Foundation/Foundation.h>
 #include <stddef.h>
@@ -14,10 +14,10 @@
 #include "base/check.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/thread_pool.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/net/cookies/cookie_store_ios.h"
 #import "ios/net/cookies/system_cookie_store.h"
 #include "ios/web/common/features.h"
+#include "ios/web/public/browser_state.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "net/cookies/cookie_monster.h"
@@ -122,15 +122,15 @@ bool ShouldClearSessionCookies() {
 }
 
 // Clears the session cookies for |profile|.
-void ClearSessionCookies(ChromeBrowserState* browser_state) {
+void ClearSessionCookies(web::BrowserState* browser_state) {
   scoped_refptr<net::URLRequestContextGetter> getter =
       browser_state->GetRequestContext();
-  web::GetIOThreadTaskRunner({})
-      ->PostTask(FROM_HERE, base::BindOnce(^{
-                   getter->GetURLRequestContext()
-                       ->cookie_store()
-                       ->DeleteSessionCookiesAsync(base::DoNothing());
-                 }));
+  web::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        getter->GetURLRequestContext()
+            ->cookie_store()
+            ->DeleteSessionCookiesAsync(base::DoNothing());
+      }));
 }
 
 }  // namespace cookie_util

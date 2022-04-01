@@ -80,6 +80,7 @@ source_set("safe_browsing") {
     "//ios/chrome/browser/prerender",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
+    "//ios/components/cookie_util",
     "//ios/components/security_interstitials",
     "//ios/components/security_interstitials/safe_browsing",
     "//ios/components/security_interstitials/safe_browsing:util",

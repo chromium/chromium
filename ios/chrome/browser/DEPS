@@ -123,6 +123,7 @@ include_rules = [
   "+crypto",
   "+google_apis",
   "+ios/chrome/app",
+  "+ios/components/cookie_util",
   "+ios/components/io_thread",
   "+ios/components/security_interstitials",
   "+ios/components/ui_util",
