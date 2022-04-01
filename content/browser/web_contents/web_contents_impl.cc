@@ -8121,7 +8121,13 @@ bool WebContentsImpl::CreateRenderViewForRenderManager(
             .Clone());
   }
 
-  if (!proxy_host)
+  // If `render_view_host` is for an inner WebContents, ensure that its
+  // RenderWidgetHostView is properly reattached to the outer WebContents. Note
+  // that this should only be done when `render_view_host` is already the
+  // current RenderViewHost in this WebContents.  If it isn't, the reattachment
+  // will happen later when `render_view_host` becomes current as part of
+  // committing the speculative RenderFrameHost it's associated with.
+  if (!proxy_host && render_view_host == GetRenderViewHost())
     ReattachOuterDelegateIfNeeded();
 
   SetHistoryOffsetAndLengthForView(
