@@ -12792,6 +12792,12 @@ Called by update_protocol_commands_enum.py.-->
   <int value="2140268492" label="CSS.startRuleUsageTracking"/>
 </enum>
 
+<enum name="CellularConfigurationFailureType">
+  <int value="0" label="Failed to get shill properties"/>
+  <int value="1" label="Fetched shill properties with no type"/>
+  <int value="2" label="Failed to set shill properties"/>
+</enum>
+
 <enum name="CellularConnectResult">
   <obsolete>
     Deprecated as of 04/2021.

@@ -58,6 +58,16 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
       CellularConnectionHandler* cellular_connection_handler) override;
 
  private:
+  // Cellular configuration failure type. These values are persisted to logs.
+  // Entries should not be renumbered and numeric values should
+  // never be reused.
+  enum class CellularConfigurationFailureType {
+    kFailureGetShillProperties = 0,
+    kFailurePropertiesWithNoType = 1,
+    kFailureSetShillProperties = 2,
+    kMaxValue = kFailureSetShillProperties
+  };
+
   struct ConnectRequest {
     ConnectRequest(ConnectCallbackMode mode,
                    const std::string& service_path,
@@ -118,9 +128,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
   // Calls Shill.Manager.Connect asynchronously.
   void CallShillConnect(const std::string& service_path);
 
-  // Handles failure from ConfigurationHandler calls.
-  void HandleConfigurationFailure(const std::string& service_path,
+  // Called when setting shill properties fails.
+  void OnSetShillPropertiesFailed(const std::string& service_path,
                                   const std::string& error_name);
+
+  // Handles failure from ConfigurationHandler calls.
+  void HandleConfigurationFailure(
+      const std::string& service_path,
+      const std::string& error_name,
+      CellularConfigurationFailureType failure_type);
 
   // Handles success or failure from Shill.Service.Connect.
   void HandleShillConnectSuccess(const std::string& service_path);
@@ -152,6 +168,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
   // Handle success from Shill.Service.Disconnect.
   void HandleShillDisconnectSuccess(const std::string& service_path,
                                     base::OnceClosure success_callback);
+
+  // Logs the cellular configuration failure type to UMA.
+  void LogConfigurationFailureTypeIfCellular(
+      const std::string& service_path,
+      CellularConfigurationFailureType failure_type);
 
   // Local references to the associated handler instances.
   NetworkCertLoader* network_cert_loader_ = nullptr;

@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -51,6 +52,9 @@ constexpr base::TimeDelta kMaxCertLoadTimeSeconds = base::Seconds(15);
 
 // Timeout after which a pending cellular connect request is considered failed.
 constexpr base::TimeDelta kCellularConnectTimeout = base::Seconds(150);
+
+const char kCellularConfigurationFailureHistogramName[] =
+    "Network.Ash.Cellular.ConfigurationFailure.Type";
 
 bool IsAuthenticationError(const std::string& error) {
   return (error == shill::kErrorBadWEPKey ||
@@ -603,7 +607,9 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
     const std::string& service_path,
     absl::optional<base::Value> properties) {
   if (!properties) {
-    HandleConfigurationFailure(service_path, "GetShillProperties failed");
+    HandleConfigurationFailure(
+        service_path, "GetShillProperties failed",
+        CellularConfigurationFailureType::kFailureGetShillProperties);
     return;
   }
   NET_LOG(EVENT) << "VerifyConfiguredAndConnect: "
@@ -622,7 +628,9 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
 
   const std::string* type = properties->FindStringKey(shill::kTypeProperty);
   if (!type) {
-    HandleConfigurationFailure(service_path, "Properties with no type");
+    HandleConfigurationFailure(
+        service_path, "Properties with no type",
+        CellularConfigurationFailureType::kFailurePropertiesWithNoType);
     return;
   }
   bool connectable =
@@ -791,7 +799,7 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
         base::BindOnce(&NetworkConnectionHandlerImpl::CallShillConnect,
                        AsWeakPtr(), service_path),
         base::BindOnce(
-            &NetworkConnectionHandlerImpl::HandleConfigurationFailure,
+            &NetworkConnectionHandlerImpl::OnSetShillPropertiesFailed,
             AsWeakPtr(), service_path));
     return;
   }
@@ -897,9 +905,18 @@ void NetworkConnectionHandlerImpl::CallShillConnect(
                      AsWeakPtr(), service_path));
 }
 
-void NetworkConnectionHandlerImpl::HandleConfigurationFailure(
+void NetworkConnectionHandlerImpl::OnSetShillPropertiesFailed(
     const std::string& service_path,
     const std::string& error_name) {
+  HandleConfigurationFailure(
+      service_path, error_name,
+      CellularConfigurationFailureType::kFailureSetShillProperties);
+}
+
+void NetworkConnectionHandlerImpl::HandleConfigurationFailure(
+    const std::string& service_path,
+    const std::string& error_name,
+    CellularConfigurationFailureType failure_type) {
   NET_LOG(ERROR) << "Connect configuration failure: " << error_name
                  << " for: " << NetworkPathId(service_path);
   ConnectRequest* request = GetPendingRequest(service_path);
@@ -909,11 +926,31 @@ void NetworkConnectionHandlerImpl::HandleConfigurationFailure(
         << NetworkPathId(service_path);
     return;
   }
+
+  LogConfigurationFailureTypeIfCellular(service_path, failure_type);
+
   network_handler::ErrorCallback error_callback =
       std::move(request->error_callback);
   ClearPendingRequest(service_path);
   InvokeConnectErrorCallback(service_path, std::move(error_callback),
                              kErrorConfigureFailed);
+}
+
+void NetworkConnectionHandlerImpl::LogConfigurationFailureTypeIfCellular(
+    const std::string& service_path,
+    CellularConfigurationFailureType failure_type) {
+  if (!network_state_handler_)
+    return;
+
+  const NetworkState* network_state =
+      network_state_handler_->GetNetworkState(service_path);
+  if (!network_state || network_state->GetNetworkTechnologyType() !=
+                            NetworkState::NetworkTechnologyType::kCellular) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration(kCellularConfigurationFailureHistogramName,
+                                failure_type);
 }
 
 void NetworkConnectionHandlerImpl::HandleShillConnectSuccess(
