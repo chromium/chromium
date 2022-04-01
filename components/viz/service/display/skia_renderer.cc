@@ -1805,20 +1805,38 @@ void SkiaRenderer::DrawColoredQuad(SkColor color,
     }
   }
 
-  sk_sp<SkColorFilter> color_filter = GetContentColorFilter();
-  if (color_filter)
-    color = color_filter->filterColor(color);
+  sk_sp<SkColorFilter> content_color_filter = GetContentColorFilter();
+  SkColor4f color_f = SkColor4f::FromColor(color);
+  if (content_color_filter) {
+    SkColorSpace* color_space = current_canvas_->imageInfo().colorSpace();
+    color_f = content_color_filter->filterColor4f(
+        color_f, SkColorSpace::MakeSRGB().get(), color_space);
+    // DrawEdgeAAQuad lacks color filter support via SkPaint, so we apply the
+    // color filter to the quad color directly. When applying a color filter
+    // via drawRect or drawImage, Skia will first transform the src into the
+    // dst color space before applying the color filter. Thus, here we need to
+    // apply the color filter in the dst color space and then convert back to
+    // the src color space. More formally:
+    //    (C * Xfrm * CF * Xfrm_inv)[in Viz] * Xfrm[in Skia] = C * Xfrm * CF
+    if (color_space && !color_space->isSRGB()) {
+      SkPaint paint;
+      paint.setColor(color_f, color_space);
+      color_f = paint.getColor4f();
+    }
+  }
   // PrepareCanvasForRPDQ will have updated params->opacity and blend_mode to
-  // account for the layer applying those effects.
-  color = SkColorSetA(color, params->opacity * SkColorGetA(color));
+  // account for the layer applying those effects. We need to truncate to an
+  // integral value of [0, 255] to match the explicit floor workaround in
+  // blink::ConversionContext::StartEffect.
+  color_f.fA = floor(params->opacity * color_f.fA * 255.f) / 255.f;
 
   const SkPoint* draw_region =
       params->draw_region ? params->draw_region->points : nullptr;
 
   current_canvas_->experimental_DrawEdgeAAQuad(
       gfx::RectFToSkRect(params->visible_rect), draw_region,
-      static_cast<SkCanvas::QuadAAFlags>(params->aa_flags),
-      SkColor4f::FromColor(color), params->blend_mode);
+      static_cast<SkCanvas::QuadAAFlags>(params->aa_flags), color_f,
+      params->blend_mode);
 }
 
 void SkiaRenderer::DrawSingleImage(const SkImage* image,
