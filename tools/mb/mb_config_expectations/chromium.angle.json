@@ -14,7 +14,6 @@
   },
   "android-angle-chromium-arm64-builder": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "disable_android_lint": true,
       "ffmpeg_branding": "Chrome",
@@ -43,7 +42,6 @@
   },
   "ios-angle-builder": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "build_angle_deqp_tests": true,
       "dcheck_always_on": true,
       "enable_run_ios_unittests_with_xctest": true,
@@ -70,7 +68,6 @@
   },
   "linux-angle-chromium-builder": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -83,7 +80,6 @@
   },
   "mac-angle-chromium-builder": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -95,7 +91,6 @@
   },
   "win-angle-chromium-x64-builder": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -107,7 +102,6 @@
   },
   "win-angle-chromium-x86-builder": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,

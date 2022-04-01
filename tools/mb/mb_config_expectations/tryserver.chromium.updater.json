@@ -10,7 +10,6 @@
   },
   "mac-updater-try-builder-rel": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "enable_chromium_updater": true,
       "is_component_build": false,
@@ -30,7 +29,6 @@
   },
   "win-updater-try-builder-rel": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "enable_chromium_updater": true,
       "is_component_build": false,

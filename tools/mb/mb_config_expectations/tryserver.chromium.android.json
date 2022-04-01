@@ -1,7 +1,6 @@
 {
   "android-10-arm64-rel": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "disable_android_lint": true,
       "ffmpeg_branding": "Chrome",
@@ -19,7 +18,6 @@
   },
   "android-11-x86-rel": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "disable_android_lint": true,
       "ffmpeg_branding": "Chrome",
@@ -51,7 +49,6 @@
   },
   "android-12-x64-rel": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "disable_android_lint": true,
       "ffmpeg_branding": "Chrome",
@@ -70,7 +67,6 @@
   },
   "android-asan": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_asan": true,
@@ -86,7 +82,6 @@
   },
   "android-bfcache-rel": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -111,7 +106,6 @@
   },
   "android-chrome-pie-x86-wpt-fyi-rel": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "disable_android_lint": true,
       "ffmpeg_branding": "Chrome",
@@ -129,7 +123,6 @@
   },
   "android-clang-tidy-rel": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -287,7 +280,6 @@
   },
   "android-cronet-marshmallow-arm64-rel": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "clang_use_default_sample_profile": false,
       "dcheck_always_on": true,
       "default_min_sdk_version": 19,
@@ -516,7 +508,6 @@
   },
   "android-deterministic-rel": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
@@ -528,7 +519,6 @@
   },
   "android-inverse-fieldtrials-pie-x86-fyi-rel": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "disable_android_lint": true,
       "ffmpeg_branding": "Chrome",
@@ -547,7 +537,6 @@
   },
   "android-marshmallow-arm64-rel": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
       "dcheck_always_on": true,
       "disable_android_lint": true,
@@ -568,7 +557,6 @@
   },
   "android-marshmallow-x86-fyi-rel-reviver": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "disable_android_lint": true,
       "ffmpeg_branding": "Chrome",
@@ -586,7 +574,6 @@
   },
   "android-marshmallow-x86-rel": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
       "dcheck_always_on": true,
       "disable_android_lint": true,
@@ -606,7 +593,6 @@
   },
   "android-marshmallow-x86-rel-non-cq": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "disable_android_lint": true,
       "ffmpeg_branding": "Chrome",
@@ -624,7 +610,6 @@
   },
   "android-nougat-x86-rel": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "disable_android_lint": true,
       "ffmpeg_branding": "Chrome",
@@ -642,7 +627,6 @@
   },
   "android-opus-arm-rel": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -680,7 +664,6 @@
   },
   "android-pie-arm64-coverage-experimental-rel": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
       "dcheck_always_on": true,
       "fail_on_android_expectations": true,
@@ -699,7 +682,6 @@
   },
   "android-pie-arm64-coverage-rel": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
@@ -729,7 +711,6 @@
   },
   "android-pie-arm64-rel": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "disable_android_lint": true,
       "fail_on_android_expectations": true,
@@ -749,7 +730,6 @@
   },
   "android-pie-arm64-wpt-rel-non-cq": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -765,7 +745,6 @@
   },
   "android-pie-x86-rel": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "disable_android_lint": true,
       "ffmpeg_branding": "Chrome",
@@ -783,7 +762,6 @@
   },
   "android-weblayer-10-x86-rel-tests": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "chrome_public_manifest_package": "com.android.chrome",
       "dcheck_always_on": true,
       "disable_android_lint": true,
@@ -802,7 +780,6 @@
   },
   "android-weblayer-marshmallow-x86-rel-tests": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "chrome_public_manifest_package": "com.android.chrome",
       "dcheck_always_on": true,
       "disable_android_lint": true,
@@ -821,7 +798,6 @@
   },
   "android-weblayer-pie-x86-fyi-rel": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "disable_android_lint": true,
       "ffmpeg_branding": "Chrome",
@@ -839,7 +815,6 @@
   },
   "android-weblayer-pie-x86-rel-tests": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "disable_android_lint": true,
       "enable_proguard_obfuscation": false,
@@ -858,7 +833,6 @@
   },
   "android-weblayer-pie-x86-wpt-fyi-rel": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "disable_android_lint": true,
       "ffmpeg_branding": "Chrome",
@@ -876,7 +850,6 @@
   },
   "android-weblayer-pie-x86-wpt-smoketest": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "disable_android_lint": true,
       "ffmpeg_branding": "Chrome",
@@ -908,7 +881,6 @@
   },
   "android-webview-marshmallow-arm64-dbg": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -924,7 +896,6 @@
   },
   "android-webview-nougat-arm64-dbg": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -940,7 +911,6 @@
   },
   "android-webview-oreo-arm64-dbg": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -956,7 +926,6 @@
   },
   "android-webview-pie-arm64-dbg": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -972,7 +941,6 @@
   },
   "android-webview-pie-arm64-fyi-rel": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -1006,7 +974,6 @@
   },
   "android_archive_rel_ng": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -1034,7 +1001,6 @@
   },
   "android_blink_rel": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -1097,7 +1063,6 @@
   "android_cronet": {
     "gn_args": {
       "arm_use_neon": false,
-      "blink_enable_generated_code_formatting": false,
       "clang_use_default_sample_profile": false,
       "dcheck_always_on": true,
       "default_min_sdk_version": 19,
@@ -1125,7 +1090,6 @@
   },
   "android_mojo": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -1152,7 +1116,6 @@
   },
   "android_optional_gpu_tests_rel": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -1191,7 +1154,6 @@
   },
   "gpu-fyi-try-android-l-nexus-5-32": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -1205,7 +1167,6 @@
   },
   "gpu-fyi-try-android-m-nexus-5x-64": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -1220,7 +1181,6 @@
   },
   "gpu-fyi-try-android-nvidia-shield-tv": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -1234,7 +1194,6 @@
   },
   "gpu-fyi-try-android-p-pixel-2-32": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -1248,7 +1207,6 @@
   },
   "gpu-fyi-try-android-pixel-6-64": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -1263,7 +1221,6 @@
   },
   "gpu-fyi-try-android-r-pixel-4-32": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -1277,7 +1234,6 @@
   },
   "gpu-try-android-m-nexus-5x-64": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,

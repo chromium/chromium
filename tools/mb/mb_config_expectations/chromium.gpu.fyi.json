@@ -1,7 +1,6 @@
 {
   "ANGLE GPU Android Release (Nexus 5X)": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -17,7 +16,6 @@
   "ChromeOS FYI Release (amd64-generic)": {
     "args_file": "//build/args/chromeos/amd64-generic-vm.gni",
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_chromeos_device": true,
@@ -32,7 +30,6 @@
   "ChromeOS FYI Release (kevin)": {
     "args_file": "//build/args/chromeos/kevin.gni",
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_chromeos_device": true,
@@ -46,7 +43,6 @@
   },
   "GPU FYI Android arm Builder": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -61,7 +57,6 @@
   },
   "GPU FYI Android arm64 Builder": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -77,7 +72,6 @@
   },
   "GPU FYI Lacros x64 Builder": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -93,7 +87,6 @@
   },
   "GPU FYI Linux Builder": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "enable_nacl": false,
       "ffmpeg_branding": "Chrome",
@@ -123,7 +116,6 @@
   },
   "GPU FYI Mac Builder": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "enable_nacl": false,
       "ffmpeg_branding": "Chrome",
@@ -138,7 +130,6 @@
   },
   "GPU FYI Mac Builder (asan)": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "enable_nacl": false,
       "ffmpeg_branding": "Chrome",
@@ -167,7 +158,6 @@
   },
   "GPU FYI Mac arm64 Builder": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "enable_nacl": false,
       "ffmpeg_branding": "Chrome",
@@ -183,7 +173,6 @@
   },
   "GPU FYI Win Builder": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "enable_nacl": false,
       "ffmpeg_branding": "Chrome",
@@ -199,7 +188,6 @@
   },
   "GPU FYI Win x64 Builder": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "enable_nacl": false,
       "ffmpeg_branding": "Chrome",
@@ -243,7 +231,6 @@
   },
   "GPU FYI Win x64 Builder (reclient shadow)": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "enable_nacl": false,
       "ffmpeg_branding": "Chrome",
@@ -259,7 +246,6 @@
   },
   "GPU FYI Win x64 DX12 Vulkan Builder": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "enable_nacl": false,
       "enable_vulkan": true,
@@ -306,7 +292,6 @@
   },
   "GPU FYI Win x64 DX12 Vulkan Builder (reclient shadow)": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "enable_nacl": false,
       "enable_vulkan": true,
@@ -323,7 +308,6 @@
   },
   "GPU FYI XR Win x64 Builder": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "enable_nacl": false,
       "ffmpeg_branding": "Chrome",
@@ -339,7 +323,6 @@
   },
   "GPU FYI XR Win x64 Builder (reclient shadow)": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "enable_nacl": false,
       "ffmpeg_branding": "Chrome",
@@ -366,7 +349,6 @@
   },
   "Linux FYI GPU TSAN Release": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "enable_nacl": false,
       "ffmpeg_branding": "Chrome",
@@ -383,7 +365,6 @@
   },
   "Optional Android Release (Nexus 5X)": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -398,7 +379,6 @@
   },
   "Optional Android Release (Pixel 4)": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -413,7 +393,6 @@
   "gpu-fyi-chromeos-jacuzzi-exp": {
     "args_file": "//build/args/chromeos/jacuzzi.gni",
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_chromeos_device": true,
@@ -428,7 +407,6 @@
   "gpu-fyi-chromeos-octopus-exp": {
     "args_file": "//build/args/chromeos/octopus.gni",
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_chromeos_device": true,
@@ -443,7 +421,6 @@
   "gpu-fyi-chromeos-zork-exp": {
     "args_file": "//build/args/chromeos/zork.gni",
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_chromeos_device": true,

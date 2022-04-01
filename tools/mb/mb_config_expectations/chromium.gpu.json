@@ -1,7 +1,6 @@
 {
   "Android Release (Nexus 5X)": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "disable_android_lint": true,
       "ffmpeg_branding": "Chrome",
@@ -19,7 +18,6 @@
   },
   "GPU Linux Builder": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -43,7 +41,6 @@
   },
   "GPU Mac Builder": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -65,7 +62,6 @@
   },
   "GPU Win x64 Builder": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
       "enable_resource_allowlist_generation": true,
       "ffmpeg_branding": "Chrome",
@@ -89,7 +85,6 @@
   },
   "GPU Win x64 Builder Code Coverage": {
     "gn_args": {
-      "blink_enable_generated_code_formatting": false,
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
       "dcheck_always_on": true,
       "enable_resource_allowlist_generation": false,
