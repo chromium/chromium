@@ -6,7 +6,7 @@
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
 // #import {CrSettingsPrefs, Router, routes, setUserActionRecorderForTesting, setNearbyShareSettingsForTesting, setContactManagerForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {FakeUserActionRecorder} from './fake_user_action_recorder.m.js';
+// #import {FakeUserActionRecorder} from './fake_user_action_recorder.js';
 // #import {eventToPromise, waitBeforeNextRender} from '../../../test_util.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';

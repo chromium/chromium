@@ -8,7 +8,7 @@ import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
 
-import {TestSyncBrowserProxy} from './test_os_sync_browser_proxy.m.js';
+import {TestSyncBrowserProxy} from './test_os_sync_browser_proxy.js';
 
 // Prefs used by settings-multidevice-wifi-sync-item if
 // SyncSettingsCategorization is disabled.

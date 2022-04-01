@@ -8,7 +8,7 @@ import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_moj
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.m.js';
 
-import {FakeUserActionRecorder} from './fake_user_action_recorder.m.js';
+import {FakeUserActionRecorder} from './fake_user_action_recorder.js';
 
 suite('InternetConfig', function() {
   /** @type {!InternetConfig|undefined} */

@@ -10,7 +10,7 @@
 // #import {flush} from'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {OpenWindowProxyImpl, Router, Route, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {eventToPromise} from 'chrome://test/test_util.js';
-// #import {FakeUserActionRecorder} from './fake_user_action_recorder.m.js';
+// #import {FakeUserActionRecorder} from './fake_user_action_recorder.js';
 // #import {FakeSettingsSearchHandler} from './fake_settings_search_handler.m.js';
 // #import {setSearchHandlerForTesting, setUserActionRecorderForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {TestBrowserProxy} from '../../test_browser_proxy.js';

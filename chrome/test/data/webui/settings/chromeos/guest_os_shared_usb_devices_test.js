@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {flush} from'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
-// #import {GuestOsBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
-// #import {eventToPromise, flushTasks} from 'chrome://test/test_util.js';
-// clang-format on
+import {GuestOsBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flushTasks} from 'chrome://test/test_util.js';
 
-/** @implements {settings.GuestOsBrowserProxy} */
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
+
+/** @implements {GuestOsBrowserProxy} */
 class TestGuestOsBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
@@ -65,12 +63,12 @@ suite('SharedUsbDevices', function() {
         promptBeforeSharing: true
       },
     ];
-    settings.GuestOsBrowserProxyImpl.instance_ = guestOsBrowserProxy;
+    GuestOsBrowserProxyImpl.instance_ = guestOsBrowserProxy;
     PolymerTest.clearBody();
     page = document.createElement('settings-guest-os-shared-usb-devices');
     page.guestOsType = 'pluginVm';
     document.body.appendChild(page);
-    await test_util.flushTasks();
+    await flushTasks();
   });
 
   teardown(function() {
@@ -85,8 +83,8 @@ suite('SharedUsbDevices', function() {
     assertTrue(!!page.$$('.toggle'));
     page.$$('.toggle').click();
 
-    await test_util.flushTasks();
-    Polymer.dom.flush();
+    await flushTasks();
+    flush();
 
     const args =
         await guestOsBrowserProxy.whenCalled('setGuestOsUsbDeviceShared');
@@ -102,7 +100,7 @@ suite('SharedUsbDevices', function() {
         promptBeforeSharing: true
       },
     ]);
-    Polymer.dom.flush();
+    flush();
     assertEquals(1, page.shadowRoot.querySelectorAll('.toggle').length);
   });
 
@@ -113,31 +111,31 @@ suite('SharedUsbDevices', function() {
     // Clicking on item[2] should show dialog.
     assertFalse(!!page.$$('#reassignDialog'));
     items[2].click();
-    Polymer.dom.flush();
+    flush();
     assertTrue(page.$$('#reassignDialog').open);
 
     // Clicking cancel will close the dialog.
     page.$$('#cancel').click();
-    Polymer.dom.flush();
+    flush();
     assertFalse(!!page.$$('#reassignDialog'));
 
     // Pressing escape will close the dialog, but it's not possible to trigger
     // this with a fake keypress, so we instead send the 'cancel' event directly
     // to the native <dialog> element.
     items[2].click();
-    Polymer.dom.flush();
+    flush();
     assertTrue(page.$$('#reassignDialog').open);
     const e = new CustomEvent('cancel', {cancelable: true});
     page.$$('#reassignDialog').getNative().dispatchEvent(e);
-    Polymer.dom.flush();
+    flush();
     assertFalse(!!page.$$('#reassignDialog'));
 
     // Clicking continue will call the proxy and close the dialog.
     items[2].click();
-    Polymer.dom.flush();
+    flush();
     assertTrue(page.$$('#reassignDialog').open);
     page.$$('#continue').click();
-    Polymer.dom.flush();
+    flush();
     assertFalse(!!page.$$('#reassignDialog'));
     const args =
         await guestOsBrowserProxy.whenCalled('setGuestOsUsbDeviceShared');

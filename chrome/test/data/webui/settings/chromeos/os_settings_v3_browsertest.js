@@ -61,7 +61,7 @@ var OSSettingsPeoplePageAccountManagerV3Test =
     class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/people_page_account_manager_test.m.js';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/people_page_account_manager_test.js';
   }
 
   /** @override */
@@ -81,7 +81,7 @@ var OSSettingsPeoplePageAccountManagerWithArcAccountRestrictionsEnabledV3Test =
     class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/people_page_account_manager_test.m.js';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/people_page_account_manager_test.js';
   }
 
   /** @override */
@@ -344,7 +344,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
 
 [['AccessibilityPage', 'os_a11y_page_tests.m.js'],
  ['AboutPage', 'os_about_page_tests.m.js'],
- ['AccountsPage', 'add_users_tests.m.js'],
+ ['AccountsPage', 'add_users_tests.js'],
  ['AmbientModePage', 'ambient_mode_page_test.js'],
  ['AmbientModePhotosPage', 'ambient_mode_photos_page_test.js'],
  ['AppsPage', 'apps_page_test.js'],
@@ -400,8 +400,8 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['FilesPage', 'os_files_page_test.m.js'],
  ['FingerprintPage', 'fingerprint_browsertest_chromeos.m.js'],
  ['GoogleAssistantPage', 'google_assistant_page_test.js'],
- ['GuestOsSharedPaths', 'guest_os_shared_paths_test.m.js'],
- ['GuestOsSharedUsbDevices', 'guest_os_shared_usb_devices_test.m.js'],
+ ['GuestOsSharedPaths', 'guest_os_shared_paths_test.js'],
+ ['GuestOsSharedUsbDevices', 'guest_os_shared_usb_devices_test.js'],
  ['InputMethodOptionPage', 'input_method_options_page_test.js'],
  ['InputPage', 'input_page_test.js'],
  ['InternetConfig', 'internet_config_test.js'],
@@ -468,8 +468,8 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['OsSettingsSearchBox', 'os_settings_search_box_test.m.js'],
  ['OSSettingsMenu', 'os_settings_menu_test.m.js'],
  ['ParentalControlsPage', 'parental_controls_page_test.js'],
- ['PeoplePage', 'os_people_page_test.m.js'],
- ['PeoplePageChangePicture', 'people_page_change_picture_test.m.js'],
+ ['PeoplePage', 'os_people_page_test.js'],
+ ['PeoplePageChangePicture', 'people_page_change_picture_test.js'],
  [
    'PeoplePageQuickUnlock',
    'quick_unlock_authenticate_browsertest_chromeos.m.js'
@@ -495,7 +495,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['TimezoneSelector', 'timezone_selector_test.js'],
  ['TimezoneSubpage', 'timezone_subpage_test.js'],
  ['TtsSubpage', 'tts_subpage_test.m.js'],
- ['UserPage', 'user_page_tests.m.js'],
+ ['UserPage', 'user_page_tests.js'],
 ].forEach(test => registerTest(...test));
 
 function registerTest(testName, module, caseName) {

@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {flush} from'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
-// #import {GuestOsBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
-// clang-format on
+import {GuestOsBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @implements {settings.GuestOsBrowserProxy} */
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
+
+/** @implements {GuestOsBrowserProxy} */
 class TestGuestOsBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
@@ -51,13 +49,13 @@ suite('SharedPaths', function() {
     };
     return guestOsBrowserProxy.whenCalled('getGuestOsSharedPathsDisplayText')
         .then(() => {
-          Polymer.dom.flush();
+          flush();
         });
   }
 
   setup(function() {
     guestOsBrowserProxy = new TestGuestOsBrowserProxy();
-    settings.GuestOsBrowserProxyImpl.instance_ = guestOsBrowserProxy;
+    GuestOsBrowserProxyImpl.instance_ = guestOsBrowserProxy;
     PolymerTest.clearBody();
     page = document.createElement('settings-guest-os-shared-paths');
     page.guestOsType = 'pluginVm';
@@ -116,7 +114,7 @@ suite('SharedPaths', function() {
     page.$$('.list-item cr-icon-button').click();
 
     await guestOsBrowserProxy.whenCalled('removeGuestOsSharedPath');
-    Polymer.dom.flush();
+    flush();
     assertTrue(page.$$('#removeSharedPathFailedDialog').open);
 
     // Click retry and make sure 'removeGuestOsSharedPath' is called

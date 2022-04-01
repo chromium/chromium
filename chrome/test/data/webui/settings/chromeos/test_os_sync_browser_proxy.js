@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {PageStatus} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
-// #import {isChromeOS} from 'chrome://resources/js/cr.m.js';
-// clang-format on
+import {PageStatus} from 'chrome://os-settings/chromeos/os_settings.js';
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
-/** @implements {settings.SyncBrowserProxy} */
-/* #export */ class TestSyncBrowserProxy extends TestBrowserProxy {
+/** @implements {SyncBrowserProxy} */
+export class TestSyncBrowserProxy extends TestBrowserProxy {
   constructor() {
     const methodNames = [
       'didNavigateAwayFromSyncPage',
@@ -35,12 +32,12 @@
     this.impressionCount_ = 0;
 
     // Settable fake data.
-    /** @type {!settings.PageStatus} */
-    this.encryptionResponse = settings.PageStatus.CONFIGURE;
-    /** @type {!Array<!settings.StoredAccount>} */
+    /** @type {!PageStatus} */
+    this.encryptionResponse = PageStatus.CONFIGURE;
+    /** @type {!Array<!StoredAccount>} */
     this.storedAccounts = [];
-    /** @type {!settings.SyncStatus} */
-    this.syncStatus = /** @type {!settings.SyncStatus} */ (
+    /** @type {!SyncStatus} */
+    this.syncStatus = /** @type {!SyncStatus} */ (
         {signedIn: true, signedInUsername: 'fakeUsername'});
   }
 
@@ -115,7 +112,7 @@
   /** @override */
   setSyncDatatypes(syncPrefs) {
     this.methodCalled('setSyncDatatypes', syncPrefs);
-    return Promise.resolve(settings.PageStatus.CONFIGURE);
+    return Promise.resolve(PageStatus.CONFIGURE);
   }
 
   /** @override */

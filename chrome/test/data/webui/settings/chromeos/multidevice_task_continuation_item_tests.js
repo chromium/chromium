@@ -7,7 +7,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
 
-import {TestSyncBrowserProxy} from './test_os_sync_browser_proxy.m.js';
+import {TestSyncBrowserProxy} from './test_os_sync_browser_proxy.js';
 
 function getPrefs() {
   return {

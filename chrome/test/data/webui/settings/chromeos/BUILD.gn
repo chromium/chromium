@@ -32,7 +32,6 @@ js_library("fake_settings_search_handler") {
 
 js_modulizer("modulize") {
   input_files = [
-    "add_users_tests.js",
     "crostini_page_test.js",
     "crostini_extra_containers_subpage_test.js",
     "cups_printer_entry_tests.js",
@@ -45,11 +44,7 @@ js_modulizer("modulize") {
     "fake_receive_manager.js",
     "fake_settings_search_handler.js",
     "fake_system_display.js",
-    "fake_user_action_recorder.js",
-    "fake_users_private.js",
     "fingerprint_browsertest_chromeos.js",
-    "guest_os_shared_paths_test.js",
-    "guest_os_shared_usb_devices_test.js",
     "kerberos_accounts_test.js",
     "kerberos_page_test.js",
     "manage_accessibility_page_tests.js",
@@ -60,7 +55,6 @@ js_modulizer("modulize") {
     "os_files_page_test.js",
     "os_languages_page_v2_tests.js",
     "os_reset_page_test.js",
-    "os_people_page_test.js",
     "os_printing_page_tests.js",
     "os_privacy_page_test.js",
     "os_search_page_test.js",
@@ -71,8 +65,6 @@ js_modulizer("modulize") {
     "os_settings_ui_test.js",
     "os_settings_ui_test_2.js",
     "os_sync_controls_test.js",
-    "people_page_account_manager_test.js",
-    "people_page_change_picture_test.js",
     "quick_unlock_authenticate_browsertest_chromeos.js",
     "lock_screen_tests.js",
     "search_subpage_test.js",
@@ -89,19 +81,16 @@ js_modulizer("modulize") {
     "test_crostini_browser_proxy.js",
     "test_cups_printers_browser_proxy.js",
     "test_device_name_browser_proxy.js",
-    "test_guest_os_browser_proxy.js",
     "test_kerberos_accounts_browser_proxy.js",
     "test_os_languages_browser_proxy.js",
     "test_os_languages_metrics_proxy.js",
     "test_os_lifetime_browser_proxy.js",
     "test_os_reset_browser_proxy.js",
-    "test_os_sync_browser_proxy.js",
     "test_personalization_hub_browser_proxy.js",
     "test_wallpaper_browser_proxy.js",
     "tether_connection_dialog_test.js",
     "text_to_speech_subpage_tests.js",
     "tts_subpage_test.js",
-    "user_page_tests.js",
   ]
   namespace_rewrites =
       os_settings_namespace_rewrites + os_test_namespace_rewrites +

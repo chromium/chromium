@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
-// clang-format on
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
-/** @implements {settings.GuestOsBrowserProxy} */
-/* #export */ class TestGuestOsBrowserProxy extends TestBrowserProxy {
+/** @implements {GuestOsBrowserProxy} */
+export class TestGuestOsBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
       'getGuestOsSharedPathsDisplayText',

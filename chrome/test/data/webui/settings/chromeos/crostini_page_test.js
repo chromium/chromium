@@ -6,7 +6,7 @@
 // #import 'chrome://os-settings/chromeos/lazy_load.js';
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {TestGuestOsBrowserProxy} from './test_guest_os_browser_proxy.m.js';
+// #import {TestGuestOsBrowserProxy} from './test_guest_os_browser_proxy.js';
 // #import {TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.m.js';
 // #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // #import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';

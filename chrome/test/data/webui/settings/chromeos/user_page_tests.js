@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {waitAfterNextRender} from 'chrome://test/test_util.js';
 
-// #import {FakeUsersPrivate} from './fake_users_private.m.js';
-// #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {waitAfterNextRender} from 'chrome://test/test_util.js';
-// clang-format on
+import {FakeUsersPrivate} from './fake_users_private.js';
 
 let page = null;
 
@@ -60,7 +57,7 @@ function createUsersPage() {
   });
 
   document.body.appendChild(page);
-  Polymer.dom.flush();
+  flush();
 }
 
 function removeUsersPage() {
@@ -75,12 +72,12 @@ function removeUsersPage() {
 function removeManagedUsers(removeUserIcons, userList) {
   for (const icon of removeUserIcons) {
     icon.click();
-    Polymer.dom.flush();
+    flush();
     // Keep 'users_' array in 'settings-user-list' in sync with the users array
     // in our mocked usersPrivate API. With this, we refetch the users after
     // each removal which is consistent with how the page handles removals.
     userList.setUsers_(userList.usersPrivate_.users);
-    Polymer.dom.flush();
+    flush();
   }
 }
 
@@ -91,7 +88,7 @@ suite('UserPage', () => {
 
   teardown(function() {
     removeUsersPage();
-    settings.Router.getInstance().resetRouteForTesting();
+    Router.getInstance().resetRouteForTesting();
   });
 
   test('Focus add user button after all managed users are removed', () => {
@@ -99,10 +96,10 @@ suite('UserPage', () => {
     const addUserButton = page.$$('#add-user-button a');
 
     // Setup and initialize fake users API.
-    userList.usersPrivate_ = new settings.FakeUsersPrivate();
+    userList.usersPrivate_ = new FakeUsersPrivate();
     userList.usersPrivate_.users = users;
     userList.setUsers_(users);
-    Polymer.dom.flush();
+    flush();
     const removeUserIcons =
         userList.shadowRoot.querySelectorAll('cr-icon-button');
 
@@ -117,12 +114,12 @@ suite('UserPage', () => {
 
     const params = new URLSearchParams();
     params.append('settingId', settingId);
-    settings.Router.getInstance().navigateTo(settings.routes.ACCOUNTS, params);
+    Router.getInstance().navigateTo(routes.ACCOUNTS, params);
 
     const deepLinkElement =
         page.$$('#allowGuestBrowsing').shadowRoot.querySelector('cr-toggle');
     assertTrue(!!deepLinkElement);
-    await test_util.waitAfterNextRender(deepLinkElement);
+    await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Guest browsing toggle should be focused for settingId=' + settingId);
@@ -133,12 +130,12 @@ suite('UserPage', () => {
 
     const params = new URLSearchParams();
     params.append('settingId', settingId);
-    settings.Router.getInstance().navigateTo(settings.routes.ACCOUNTS, params);
+    Router.getInstance().navigateTo(routes.ACCOUNTS, params);
 
     const deepLinkElement =
         page.$$('#showUserNamesOnSignIn').shadowRoot.querySelector('cr-toggle');
     assertTrue(!!deepLinkElement);
-    await test_util.waitAfterNextRender(deepLinkElement);
+    await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Show Usernames And Photos toggle should be focused for settingId=' +
@@ -150,12 +147,12 @@ suite('UserPage', () => {
 
     const params = new URLSearchParams();
     params.append('settingId', settingId);
-    settings.Router.getInstance().navigateTo(settings.routes.ACCOUNTS, params);
+    Router.getInstance().navigateTo(routes.ACCOUNTS, params);
 
     const deepLinkElement =
         page.$$('#restrictSignIn').shadowRoot.querySelector('cr-toggle');
     assertTrue(!!deepLinkElement);
-    await test_util.waitAfterNextRender(deepLinkElement);
+    await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Restrict Signin toggle should be focused for settingId=' + settingId);
