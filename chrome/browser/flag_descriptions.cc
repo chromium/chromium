@@ -5168,11 +5168,6 @@ const char kForceShowContinueSectionDescription[] =
     "Forces the continue section of the app launcher to show. If there are no "
     "file suggestions available, the suggestions will be faked.";
 
-const char kReduceDisplayNotificationsName[] = "Reduce display notifications";
-const char kReduceDisplayNotificationsDescription[] =
-    "If enabled, notifications for display rotation, display removed, display "
-    "mirroring, and display extending will be suppressed.";
-
 const char kReleaseNotesNotificationAllChannelsName[] =
     "Release Notes Notification All Channels";
 const char kReleaseNotesNotificationAllChannelsDescription[] =

@@ -68,11 +68,7 @@ class ScreenLayoutObserverTest : public AshTestBase {
  private:
   const message_center::Notification* GetDisplayNotification() const;
 };
-
-ScreenLayoutObserverTest::ScreenLayoutObserverTest() {
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kReduceDisplayNotifications);
-}
+ScreenLayoutObserverTest::ScreenLayoutObserverTest() = default;
 
 ScreenLayoutObserverTest::~ScreenLayoutObserverTest() = default;
 
@@ -265,8 +261,6 @@ TEST_F(ScreenLayoutObserverTest, DISABLED_DisplayNotifications) {
 
 TEST_F(ScreenLayoutObserverTest, DisplayNotificationsDisabled) {
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kReduceDisplayNotifications);
 
   UpdateDisplay("500x400");
   display::Display::SetInternalDisplayId(display_manager()->first_display_id());

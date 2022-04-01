@@ -6069,11 +6069,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPcieBillboardNotificationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPcieBillboardNotification)},
 
-    {"reduce-display-notifications",
-     flag_descriptions::kReduceDisplayNotificationsName,
-     flag_descriptions::kReduceDisplayNotificationsDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kReduceDisplayNotifications)},
-
     {"use-search-click-for-right-click",
      flag_descriptions::kUseSearchClickForRightClickName,
      flag_descriptions::kUseSearchClickForRightClickDescription, kOsCrOS,

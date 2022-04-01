@@ -1163,10 +1163,6 @@ const base::Feature kQuickUnlockPinAutosubmitBackfill{
 const base::Feature kRedirectToDefaultIdP{"RedirectToDefaultIdP",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables suppression of Displays notifications other than resolution change.
-const base::Feature kReduceDisplayNotifications{
-    "ReduceDisplayNotifications", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables or disables Release Notes notifications on non-stable Chrome OS
 // channels. Used for testing.
 const base::Feature kReleaseNotesNotificationAllChannels{
@@ -1997,10 +1993,6 @@ bool IsQuickSettingsNetworkRevampEnabled() {
 
 bool IsRedirectToDefaultIdPEnabled() {
   return base::FeatureList::IsEnabled(kRedirectToDefaultIdP);
-}
-
-bool IsReduceDisplayNotificationsEnabled() {
-  return base::FeatureList::IsEnabled(kReduceDisplayNotifications);
 }
 
 bool IsReverseScrollGesturesEnabled() {

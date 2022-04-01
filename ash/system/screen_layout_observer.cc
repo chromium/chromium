@@ -178,18 +178,8 @@ std::u16string GetDisplayRemovedMessage(
 
 std::u16string GetDisplayAddedMessage(int64_t added_display_id,
                                       std::u16string* additional_message_out) {
-  if (features::IsReduceDisplayNotificationsEnabled()) {
-    DCHECK(!display::Display::IsInternalDisplayId(added_display_id));
-    return l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_ADDED,
-                                      GetExternalDisplayName(added_display_id));
-  }
-
-  if (!display::Display::HasInternalDisplay()) {
-    return l10n_util::GetStringUTF16(
-        IDS_ASH_STATUS_TRAY_DISPLAY_EXTENDED_NO_INTERNAL);
-  }
-
-  return l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_EXTENDED,
+  DCHECK(!display::Display::IsInternalDisplayId(added_display_id));
+  return l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_ADDED,
                                     GetExternalDisplayName(added_display_id));
 }
 
@@ -288,8 +278,7 @@ bool ScreenLayoutObserver::GetDisplayMessageForNotification(
         continue;
 
       // No notification if the internal display is connected.
-      if (features::IsReduceDisplayNotificationsEnabled() &&
-          display::Display::IsInternalDisplayId(iter.first)) {
+      if (display::Display::IsInternalDisplayId(iter.first)) {
         return false;
       }
 
@@ -424,8 +413,7 @@ void ScreenLayoutObserver::OnDisplayConfigurationChanged() {
   }
 
   // Alerting user unassociated display are allowed even when suppressed.
-  if (features::IsReduceDisplayNotificationsEnabled() &&
-      !should_notify_has_unassociated_display) {
+  if (!should_notify_has_unassociated_display) {
     return;
   }
 

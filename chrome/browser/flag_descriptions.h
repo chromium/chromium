@@ -2973,9 +2973,6 @@ extern const char kProjectorExcludeTranscriptDescription[];
 extern const char kForceShowContinueSectionName[];
 extern const char kForceShowContinueSectionDescription[];
 
-extern const char kReduceDisplayNotificationsName[];
-extern const char kReduceDisplayNotificationsDescription[];
-
 extern const char kReleaseNotesNotificationAllChannelsName[];
 extern const char kReleaseNotesNotificationAllChannelsDescription[];
 
