@@ -135,6 +135,7 @@ class DownloadStatusUpdaterTest : public testing::Test {
       download::DownloadItem::DownloadState state =
           i < in_progress_count ? download::DownloadItem::IN_PROGRESS
                                 : download::DownloadItem::CANCELLED;
+      EXPECT_CALL(*item, IsTransient()).WillRepeatedly(Return(false));
       EXPECT_CALL(*item, GetState()).WillRepeatedly(Return(state));
       manager_items_[manager_index].push_back(item.get());
       all_owned_items_.push_back(std::move(item));
@@ -443,4 +444,28 @@ TEST_F(DownloadStatusUpdaterTest, LogLastCompletionTimeInPrefs) {
   // Completed time is updated
   EXPECT_EQ(current_time + base::Hours(2),
             download_prefs->GetLastCompleteTime());
+}
+
+// Tests that transient download will not trigger any updates.
+TEST_F(DownloadStatusUpdaterTest, TransientDownload) {
+  SetupManagers(/*manager_count=*/1);
+  AddItems(/*manager_index=*/0, /*item_count=*/2, /*in_progress_count=*/0);
+  LinkManager(0);
+
+  std::unique_ptr<download::MockDownloadItem> item =
+      std::make_unique<StrictMock<download::MockDownloadItem>>();
+
+  EXPECT_CALL(*item, GetState())
+      .WillRepeatedly(Return(download::DownloadItem::IN_PROGRESS));
+  EXPECT_CALL(*item, IsTransient()).WillRepeatedly(Return(true));
+  manager_items_[0].push_back(item.get());
+  all_owned_items_.push_back(std::move(item));
+  manager_observers_[0]->OnDownloadCreated(
+      managers_[0].get(), manager_items_[0][manager_items_[0].size() - 1]);
+
+  float progress = -1;
+  int download_count = -1;
+  EXPECT_TRUE(updater_->GetProgress(&progress, &download_count));
+  EXPECT_FLOAT_EQ(0.0f, progress);
+  EXPECT_EQ(0, download_count);
 }

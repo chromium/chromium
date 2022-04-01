@@ -105,7 +105,8 @@ void DownloadStatusUpdater::OnDownloadCreated(content::DownloadManager* manager,
   // Ignore downloads loaded from history, which are in a terminal state.
   // TODO(benjhayden): Use the Observer interface to distinguish between
   // historical and started downloads.
-  if (item->GetState() == download::DownloadItem::IN_PROGRESS) {
+  if (item->GetState() == download::DownloadItem::IN_PROGRESS &&
+      !item->IsTransient()) {
     UpdateAppIconDownloadProgress(item);
     new WasInProgressData(item);
   }
@@ -116,7 +117,8 @@ void DownloadStatusUpdater::OnDownloadCreated(content::DownloadManager* manager,
 void DownloadStatusUpdater::OnDownloadUpdated(content::DownloadManager* manager,
                                               download::DownloadItem* item) {
   UpdatePrefsOnDownloadUpdated(manager, item);
-  if (item->GetState() == download::DownloadItem::IN_PROGRESS) {
+  if (item->GetState() == download::DownloadItem::IN_PROGRESS &&
+      !item->IsTransient()) {
     // If the item was interrupted/cancelled and then resumed/restarted, then
     // set WasInProgress so that UpdateAppIconDownloadProgress() will be called
     // when it completes.
