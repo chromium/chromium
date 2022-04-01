@@ -10,7 +10,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "chromeos/dbus/dbus_client.h"
+#include "chromeos/dbus/common/dbus_client.h"
 
 namespace chromeos {
 

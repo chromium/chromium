@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/pipe_reader.h"
+#include "chromeos/dbus/common/pipe_reader.h"
 
 #include <memory>
 #include <string>

@@ -8,8 +8,8 @@
 #include <memory>
 #include <vector>
 
-#include "chromeos/dbus/dbus_client.h"
-#include "chromeos/dbus/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_client.h"
+#include "chromeos/dbus/common/dbus_method_call_status.h"
 
 namespace chromeos {
 

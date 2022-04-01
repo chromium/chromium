@@ -7,7 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
-#include "chromeos/dbus/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_method_call_status.h"
 
 namespace dbus {
 class Bus;

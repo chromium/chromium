@@ -14,7 +14,7 @@ component("authpolicy") {
   deps = [
     ":authpolicy_proto",
     "//base",
-    "//chromeos/dbus:common",
+    "//chromeos/dbus/common",
     "//components/account_id",
     "//dbus",
 

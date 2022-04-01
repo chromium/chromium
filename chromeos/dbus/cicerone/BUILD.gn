@@ -9,7 +9,7 @@ component("cicerone") {
   deps = [
     "//base",
     "//chromeos/dbus:cicerone_proto",
-    "//chromeos/dbus:common",
+    "//chromeos/dbus/common",
     "//dbus",
   ]
 

@@ -12,9 +12,9 @@ component("attestation") {
   deps = [
     "//ash/components/cryptohome",
     "//base",
-    "//chromeos/dbus:common",
     "//chromeos/dbus/attestation",
     "//chromeos/dbus/attestation:attestation_proto",
+    "//chromeos/dbus/common",
     "//components/account_id",
     "//crypto",
   ]

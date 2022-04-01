@@ -9,9 +9,9 @@ component("concierge") {
   deps = [
     "//base",
     "//chromeos/dbus:cicerone_proto",
-    "//chromeos/dbus:common",
     "//chromeos/dbus:concierge_proto",
     "//chromeos/dbus/cicerone",
+    "//chromeos/dbus/common",
     "//dbus",
   ]
 

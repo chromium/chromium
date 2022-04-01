@@ -11,7 +11,7 @@ component("image_loader") {
   defines = [ "IS_CHROMEOS_DBUS_IMAGE_LOADER_IMPL" ]
   deps = [
     "//base",
-    "//chromeos/dbus:common",
+    "//chromeos/dbus/common",
     "//dbus",
   ]
   sources = [

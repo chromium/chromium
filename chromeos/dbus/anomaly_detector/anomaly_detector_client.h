@@ -10,7 +10,7 @@
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
 #include "chromeos/dbus/anomaly_detector/anomaly_detector.pb.h"
-#include "chromeos/dbus/dbus_client.h"
+#include "chromeos/dbus/common/dbus_client.h"
 
 namespace chromeos {
 

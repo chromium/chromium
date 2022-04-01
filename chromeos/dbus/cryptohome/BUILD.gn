@@ -16,7 +16,7 @@ component("cryptohome") {
     ":attestation_proto",
     ":cryptohome_proto",
     "//base",
-    "//chromeos/dbus:common",
+    "//chromeos/dbus/common",
     "//components/policy/proto",
     "//dbus",
   ]

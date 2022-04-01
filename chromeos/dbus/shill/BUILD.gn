@@ -10,7 +10,7 @@ component("shill") {
   deps = [
     "//ash/constants",
     "//base",
-    "//chromeos/dbus:common",
+    "//chromeos/dbus/common",
     "//chromeos/dbus/constants",
     "//components/device_event_log",
     "//dbus",
@@ -67,7 +67,7 @@ source_set("test_support") {
     "//ash/constants",
     "//base",
     "//base/test:test_support",
-    "//chromeos/dbus:common",
+    "//chromeos/dbus/common",
     "//dbus:test_support",
     "//testing/gmock",
     "//testing/gtest",

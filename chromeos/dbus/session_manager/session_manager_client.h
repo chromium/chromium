@@ -13,7 +13,7 @@
 #include "base/component_export.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/login_manager/dbus-constants.h"
 

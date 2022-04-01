@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_DBUS_CLIENT_IMPLEMENTATION_TYPE_H_
-#define CHROMEOS_DBUS_DBUS_CLIENT_IMPLEMENTATION_TYPE_H_
+#ifndef CHROMEOS_DBUS_COMMON_DBUS_CLIENT_IMPLEMENTATION_TYPE_H_
+#define CHROMEOS_DBUS_COMMON_DBUS_CLIENT_IMPLEMENTATION_TYPE_H_
 
 namespace chromeos {
 
@@ -15,4 +15,4 @@ enum DBusClientImplementationType {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_DBUS_DBUS_CLIENT_IMPLEMENTATION_TYPE_H_
+#endif  // CHROMEOS_DBUS_COMMON_DBUS_CLIENT_IMPLEMENTATION_TYPE_H_

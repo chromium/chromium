@@ -8,7 +8,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
-#include "chromeos/dbus/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "chromeos/dbus/media_perception/media_perception.pb.h"
 
 namespace dbus {

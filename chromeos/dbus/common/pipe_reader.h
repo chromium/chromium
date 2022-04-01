@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_PIPE_READER_H_
-#define CHROMEOS_DBUS_PIPE_READER_H_
+#ifndef CHROMEOS_DBUS_COMMON_PIPE_READER_H_
+#define CHROMEOS_DBUS_COMMON_PIPE_READER_H_
 
 #include <memory>
 #include <string>
@@ -22,7 +22,7 @@ class TaskRunner;
 namespace net {
 class FileStream;
 class IOBufferWithSize;
-}
+}  // namespace net
 
 namespace chromeos {
 
@@ -34,7 +34,7 @@ namespace chromeos {
 //     as appropriate to the subclass.
 //   - When the there is no more data to read, the PipeReader calls
 //     |callback|.
-class COMPONENT_EXPORT(CHROMEOS_DBUS) PipeReader {
+class COMPONENT_EXPORT(CHROMEOS_DBUS_COMMON) PipeReader {
  public:
   using CompletionCallback =
       base::OnceCallback<void(absl::optional<std::string> data)>;
@@ -75,4 +75,4 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) PipeReader {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_DBUS_PIPE_READER_H_
+#endif  // CHROMEOS_DBUS_COMMON_PIPE_READER_H_

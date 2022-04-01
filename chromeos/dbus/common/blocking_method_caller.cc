@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/blocking_method_caller.h"
+#include "chromeos/dbus/common/blocking_method_caller.h"
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"

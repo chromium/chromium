@@ -11,7 +11,7 @@ component("audio") {
 
   deps = [
     "//base",
-    "//chromeos/dbus:common",
+    "//chromeos/dbus/common",
     "//dbus",
   ]
 

@@ -11,7 +11,7 @@ component("cros_disks") {
   defines = [ "IS_CHROMEOS_DBUS_CROS_DISKS_IMPL" ]
   deps = [
     "//base",
-    "//chromeos/dbus:common",
+    "//chromeos/dbus/common",
     "//chromeos/dbus/constants",
     "//dbus",
     "//url",

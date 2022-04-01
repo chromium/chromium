@@ -12,9 +12,9 @@ component("dbus") {
   output_name = "chromeos_dbus"  # Avoid conflict with //dbus
   defines = [ "IS_CHROMEOS_DBUS_IMPL" ]
   public_deps = [
-    ":common",
     "//chromeos/dbus/arc",
     "//chromeos/dbus/cicerone",
+    "//chromeos/dbus/common",
     "//chromeos/dbus/concierge",
     "//chromeos/dbus/constants",
     "//chromeos/dbus/debug_daemon",
@@ -72,31 +72,6 @@ component("dbus") {
     "usb/usbguard_client.cc",
     "usb/usbguard_client.h",
     "usb/usbguard_observer.h",
-  ]
-}
-
-component("common") {
-  output_name = "chromeos_dbus_common"
-  defines = [ "IS_CHROMEOS_DBUS_IMPL" ]
-
-  all_dependent_configs =
-      [ "//chromeos/dbus/config:use_real_dbus_clients_config" ]
-  public_deps = [ "//chromeos/dbus/constants" ]
-
-  deps = [
-    "//base",
-    "//dbus",
-    "//net",
-  ]
-
-  sources = [
-    "blocking_method_caller.cc",
-    "blocking_method_caller.h",
-    "dbus_client.h",
-    "dbus_client_implementation_type.h",
-    "dbus_method_call_status.h",
-    "pipe_reader.cc",
-    "pipe_reader.h",
   ]
 }
 

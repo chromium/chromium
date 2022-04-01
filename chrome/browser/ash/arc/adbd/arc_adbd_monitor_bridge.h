@@ -9,7 +9,7 @@
 #include "ash/components/arc/session/connection_observer.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
-#include "chromeos/dbus/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

@@ -11,7 +11,7 @@ component("easy_unlock") {
   defines = [ "IS_CHROMEOS_DBUS_EASY_UNLOCK_IMPL" ]
   deps = [
     "//base",
-    "//chromeos/dbus:common",
+    "//chromeos/dbus/common",
     "//dbus",
   ]
   sources = [

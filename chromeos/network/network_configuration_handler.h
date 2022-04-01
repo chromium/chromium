@@ -16,7 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
-#include "chromeos/dbus/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "chromeos/network/network_configuration_observer.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_callbacks.h"

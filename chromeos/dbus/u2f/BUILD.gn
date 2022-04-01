@@ -12,7 +12,7 @@ component("u2f") {
   deps = [
     ":u2f_proto",
     "//base",
-    "//chromeos/dbus:common",
+    "//chromeos/dbus/common",
     "//chromeos/dbus/constants:constants",
     "//chromeos/dbus/tpm_manager",
     "//chromeos/dbus/tpm_manager:tpm_manager_proto",

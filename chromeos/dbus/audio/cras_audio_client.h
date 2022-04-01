@@ -16,7 +16,7 @@
 #include "base/containers/flat_map.h"
 #include "chromeos/dbus/audio/audio_node.h"
 #include "chromeos/dbus/audio/volume_state.h"
-#include "chromeos/dbus/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace dbus {

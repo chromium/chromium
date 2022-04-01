@@ -11,14 +11,14 @@ component("hiberman") {
 
   deps = [
     "//base",
-    "//chromeos/dbus:common",
+    "//chromeos/dbus/common",
     "//dbus",
   ]
 
   sources = [
-    "hiberman_client.cc",
-    "hiberman_client.h",
     "fake_hiberman_client.cc",
     "fake_hiberman_client.h",
+    "hiberman_client.cc",
+    "hiberman_client.h",
   ]
 }

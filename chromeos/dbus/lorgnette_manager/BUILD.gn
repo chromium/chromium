@@ -13,7 +13,7 @@ component("lorgnette_manager") {
 
   deps = [
     "//base",
-    "//chromeos/dbus:common",
+    "//chromeos/dbus/common",
     "//dbus",
   ]
 

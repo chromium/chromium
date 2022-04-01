@@ -13,7 +13,7 @@ source_set("hermes_clients") {
   defines = [ "IS_HERMES_CLIENT_IMPL" ]
   deps = [
     "//base",
-    "//chromeos/dbus:common",
+    "//chromeos/dbus/common",
     "//components/device_event_log",
     "//dbus",
   ]
@@ -61,7 +61,7 @@ source_set("test_support") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//chromeos/dbus:common",
+    "//chromeos/dbus/common",
     "//dbus:test_support",
     "//testing/gmock",
     "//testing/gtest",

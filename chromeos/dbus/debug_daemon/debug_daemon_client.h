@@ -20,8 +20,8 @@
 #include "base/observer_list_types.h"
 #include "base/task/task_runner.h"
 #include "base/trace_event/tracing_agent.h"
-#include "chromeos/dbus/dbus_client.h"
-#include "chromeos/dbus/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_client.h"
+#include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -328,6 +328,6 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
 namespace ash {
 using ::chromeos::DbusLibraryError;
 using ::chromeos::DebugDaemonClient;
-}
+}  // namespace ash
 
 #endif  // CHROMEOS_DBUS_DEBUG_DAEMON_DEBUG_DAEMON_CLIENT_H_

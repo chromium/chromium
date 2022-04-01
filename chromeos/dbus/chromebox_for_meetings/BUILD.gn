@@ -13,8 +13,8 @@ component("chromebox_for_meetings") {
   public_deps = [
     "//chromeos/components/chromebox_for_meetings/buildflags",
     "//chromeos/components/chromebox_for_meetings/features",
-    "//chromeos/dbus:common",
     "//chromeos/dbus:dbus",
+    "//chromeos/dbus/common",
   ]
   deps = [
     "//base",

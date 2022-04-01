@@ -13,7 +13,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
-#include "chromeos/dbus/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "chromeos/dbus/shill/shill_client_helper.h"
 #include "chromeos/dbus/shill/shill_property_changed_observer.h"
 #include "chromeos/dbus/shill/shill_third_party_vpn_observer.h"

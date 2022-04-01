@@ -11,7 +11,7 @@ component("gnubby") {
   defines = [ "IS_CHROMEOS_DBUS_GNUBBY_IMPL" ]
   deps = [
     "//base",
-    "//chromeos/dbus:common",
+    "//chromeos/dbus/common",
     "//dbus",
   ]
   sources = [

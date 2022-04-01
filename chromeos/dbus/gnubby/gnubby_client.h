@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "chromeos/dbus/dbus_client.h"
+#include "chromeos/dbus/common/dbus_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/u2f/dbus-constants.h"

@@ -16,7 +16,7 @@ component("network") {
     "//base:i18n",
     "//chromeos/components/feature_usage",
     "//chromeos/components/onc",
-    "//chromeos/dbus:common",
+    "//chromeos/dbus/common",
     "//chromeos/dbus/hermes",
     "//chromeos/dbus/permission_broker",
     "//chromeos/dbus/shill",

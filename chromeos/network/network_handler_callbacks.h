@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/values.h"
-#include "chromeos/dbus/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
@@ -64,6 +64,6 @@ void ShillErrorCallbackFunction(const std::string& error_name,
 namespace ash {
 // TODO(https://crbug.com/1164001): remove when moved to ash.
 namespace network_handler = ::chromeos::network_handler;
-}
+}  // namespace ash
 
 #endif  // CHROMEOS_NETWORK_NETWORK_HANDLER_CALLBACKS_H_

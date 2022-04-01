@@ -12,7 +12,7 @@ component("power") {
   deps = [
     ":power_manager_proto",
     "//base",
-    "//chromeos/dbus:common",
+    "//chromeos/dbus/common",
     "//components/device_event_log",
     "//dbus",
   ]

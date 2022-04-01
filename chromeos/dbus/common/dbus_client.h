@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_DBUS_CLIENT_H_
-#define CHROMEOS_DBUS_DBUS_CLIENT_H_
+#ifndef CHROMEOS_DBUS_COMMON_DBUS_CLIENT_H_
+#define CHROMEOS_DBUS_COMMON_DBUS_CLIENT_H_
 
 namespace dbus {
 class Bus;
@@ -37,4 +37,4 @@ namespace ash {
 using ::chromeos::DBusClient;
 }  // namespace ash
 
-#endif  // CHROMEOS_DBUS_DBUS_CLIENT_H_
+#endif  // CHROMEOS_DBUS_COMMON_DBUS_CLIENT_H_

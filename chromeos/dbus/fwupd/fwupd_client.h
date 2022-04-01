@@ -12,7 +12,7 @@
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/observer_list.h"
-#include "chromeos/dbus/dbus_client.h"
+#include "chromeos/dbus/common/dbus_client.h"
 #include "chromeos/dbus/fwupd/fwupd_device.h"
 #include "chromeos/dbus/fwupd/fwupd_properties.h"
 #include "chromeos/dbus/fwupd/fwupd_update.h"

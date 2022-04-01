@@ -11,7 +11,7 @@ component("cec_service") {
   defines = [ "IS_CHROMEOS_DBUS_CEC_SERVICE_IMPL" ]
   deps = [
     "//base",
-    "//chromeos/dbus:common",
+    "//chromeos/dbus/common",
     "//dbus",
   ]
   sources = [

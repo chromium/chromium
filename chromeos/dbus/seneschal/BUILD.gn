@@ -8,9 +8,9 @@ component("seneschal") {
   defines = [ "IS_CHROMEOS_DBUS_IMPL" ]
   deps = [
     "//base",
-    "//chromeos/dbus:common",
     "//chromeos/dbus:seneschal_proto",
     "//chromeos/dbus/cicerone",
+    "//chromeos/dbus/common",
     "//dbus",
   ]
 

@@ -12,7 +12,7 @@ component("patchpanel") {
   deps = [
     ":patchpanel_proto",
     "//base",
-    "//chromeos/dbus:common",
+    "//chromeos/dbus/common",
     "//dbus",
   ]
 

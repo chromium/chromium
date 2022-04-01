@@ -12,7 +12,7 @@ component("media_analytics") {
   deps = [
     ":media_perception_proto",
     "//base",
-    "//chromeos/dbus:common",
+    "//chromeos/dbus/common",
     "//dbus",
   ]
 

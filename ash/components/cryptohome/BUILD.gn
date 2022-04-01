@@ -12,7 +12,7 @@ component("cryptohome") {
   deps = [
     "//ash/components/login/auth:challenge_response_key",
     "//base",
-    "//chromeos/dbus:common",
+    "//chromeos/dbus/common",
     "//chromeos/dbus/cryptohome",
     "//chromeos/dbus/cryptohome:cryptohome_proto",
     "//chromeos/dbus/userdataauth:userdataauth",

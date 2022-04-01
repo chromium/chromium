@@ -16,7 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "chromeos/dbus/power_manager/peripheral_battery_status.pb.h"
 #include "chromeos/dbus/power_manager/policy.pb.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"

@@ -11,7 +11,7 @@ component("biod") {
 
   public_deps = [
     ":biod_proto",
-    "//chromeos/dbus:common",
+    "//chromeos/dbus/common",
   ]
 
   deps = [

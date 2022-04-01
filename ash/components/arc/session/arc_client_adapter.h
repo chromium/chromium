@@ -13,7 +13,7 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/observer_list.h"
-#include "chromeos/dbus/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_method_call_status.h"
 
 namespace cryptohome {
 class Identification;

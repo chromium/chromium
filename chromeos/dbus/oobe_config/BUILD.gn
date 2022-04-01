@@ -13,7 +13,7 @@ component("oobe_config") {
   deps = [
     ":proto",
     "//base",
-    "//chromeos/dbus:common",
+    "//chromeos/dbus/common",
     "//chromeos/dbus/constants",
     "//dbus",
   ]

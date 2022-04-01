@@ -9,9 +9,9 @@ component("upstart") {
 
   deps = [
     "//base",
-    "//chromeos/dbus:common",
     "//chromeos/dbus/authpolicy",
     "//chromeos/dbus/authpolicy:authpolicy_proto",
+    "//chromeos/dbus/common",
     "//chromeos/dbus/kerberos",
     "//chromeos/dbus/media_analytics",
     "//dbus",

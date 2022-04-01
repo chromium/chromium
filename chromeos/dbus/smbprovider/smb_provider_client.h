@@ -13,7 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/dbus/dbus_client.h"
+#include "chromeos/dbus/common/dbus_client.h"
 #include "chromeos/dbus/smbprovider/directory_entry.pb.h"
 #include "dbus/object_proxy.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"

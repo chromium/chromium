@@ -11,8 +11,8 @@ component("dlcservice") {
 
   public_deps = [
     ":dlcservice_proto",
-    "//chromeos/dbus:common",
     "//chromeos/dbus:dbus",
+    "//chromeos/dbus/common",
   ]
 
   deps = [

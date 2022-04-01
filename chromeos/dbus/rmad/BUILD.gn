@@ -12,7 +12,7 @@ component("rmad") {
   deps = [
     ":rmad_proto",
     "//base",
-    "//chromeos/dbus:common",
+    "//chromeos/dbus/common",
     "//dbus",
   ]
 

@@ -13,8 +13,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/dbus_method_call_status.h"
-#include "chromeos/dbus/pipe_reader.h"
+#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/common/pipe_reader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {

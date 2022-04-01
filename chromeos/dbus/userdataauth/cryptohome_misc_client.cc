@@ -14,7 +14,7 @@
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/blocking_method_caller.h"
+#include "chromeos/dbus/common/blocking_method_caller.h"
 #include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"

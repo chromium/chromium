@@ -13,7 +13,7 @@ component("update_engine") {
   deps = [
     ":proto",
     "//base",
-    "//chromeos/dbus:common",
+    "//chromeos/dbus/common",
     "//chromeos/dbus/constants",
     "//chromeos/dbus/util",
     "//dbus",

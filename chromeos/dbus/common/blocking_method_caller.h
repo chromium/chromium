@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_BLOCKING_METHOD_CALLER_H_
-#define CHROMEOS_DBUS_BLOCKING_METHOD_CALLER_H_
+#ifndef CHROMEOS_DBUS_COMMON_BLOCKING_METHOD_CALLER_H_
+#define CHROMEOS_DBUS_COMMON_BLOCKING_METHOD_CALLER_H_
 
 #include <memory>
 
@@ -24,7 +24,7 @@ namespace chromeos {
 // A utility class to call D-Bus methods in a synchronous (blocking) way.
 // Note: Blocking the thread until it returns is not a good idea in most cases.
 //       Avoid using this class as hard as you can.
-class COMPONENT_EXPORT(CHROMEOS_DBUS) BlockingMethodCaller {
+class COMPONENT_EXPORT(CHROMEOS_DBUS_COMMON) BlockingMethodCaller {
  public:
   BlockingMethodCaller(dbus::Bus* bus, dbus::ObjectProxy* proxy);
 
@@ -51,4 +51,4 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) BlockingMethodCaller {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_DBUS_BLOCKING_METHOD_CALLER_H_
+#endif  // CHROMEOS_DBUS_COMMON_BLOCKING_METHOD_CALLER_H_

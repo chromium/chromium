@@ -14,7 +14,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/dbus/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "chromeos/dbus/login_manager/arc.pb.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 
