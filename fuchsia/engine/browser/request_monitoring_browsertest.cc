@@ -595,25 +595,4 @@ IN_PROC_BROWSER_TEST_F(RequestMonitoringTest,
               testing::Not(testing::Contains(testing::Key("Test4"))));
 }
 
-// Tests the URLRequestRewrite API properly closes the Frame channel if the
-// rules are invalid.
-IN_PROC_BROWSER_TEST_F(RequestMonitoringTest, UrlRequestRewriteInvalidRules) {
-  auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
-  base::RunLoop run_loop;
-  frame.ptr().set_error_handler([&run_loop](zx_status_t status) {
-    EXPECT_EQ(status, ZX_ERR_INVALID_ARGS);
-    run_loop.Quit();
-  });
-
-  std::vector<fuchsia::web::UrlRequestRewrite> rewrites;
-  rewrites.push_back(cr_fuchsia::CreateRewriteAddHeaders("Te\nst1", "Value"));
-  fuchsia::web::UrlRequestRewriteRule rule;
-  rule.set_rewrites(std::move(rewrites));
-  std::vector<fuchsia::web::UrlRequestRewriteRule> rules;
-  rules.push_back(std::move(rule));
-
-  frame->SetUrlRequestRewriteRules(std::move(rules), []() {});
-  run_loop.Run();
-}
-
 }  // namespace
