@@ -100,7 +100,11 @@ const CGFloat kTrackingAreaAdditionalThreshold = 50;
   if (!_trackingArea)
     return;
 
-  DCHECK(_contentView);
+  // TODO(https://crbug.com/1063417, https://crbug.com/1064911): This DCHECK
+  // is hit when closing a fullscreen window using the traffic lights. This is
+  // because removeTrackingArea should be removed in response to the window
+  // closing, but isn't.
+  // DCHECK(_contentView);
   [_contentView removeTrackingArea:_trackingArea];
   _trackingArea.reset();
   _contentView.reset();
