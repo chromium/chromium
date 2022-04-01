@@ -58,7 +58,8 @@ IN_PROC_BROWSER_TEST_F(MultiTabLoadingPageLoadMetricsBrowserTest, SingleTab) {
 }
 
 // TODO(crbug.com/1310328): Test is flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1312321): Test is flaky on linux-lacros-tester-rel.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_MultiTabForeground DISABLED_MultiTabForeground
 #else
 #define MAYBE_MultiTabForeground MultiTabForeground
