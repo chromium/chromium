@@ -143,6 +143,10 @@ class ASH_EXPORT AppListTestApi {
   // drag-and-drop. `source_index` and `target_index` are view indices in the
   // root apps grid.
   void ReorderItemInRootByDragAndDrop(int source_index, int target_index);
+
+  // Returns the view at the provided index in the list of visible search result
+  // views in the launcher search UI. Expects the launcher UI to be shown.
+  views::View* GetVisibleSearchResultView(int index);
 };
 
 }  // namespace ash

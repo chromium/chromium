@@ -212,10 +212,10 @@ AutomationPredicate = class {
    */
   static touchLeaf(node) {
     return !!(!node.firstChild && node.name) || node.role === Role.BUTTON ||
-        node.role === Role.CHECK_BOX || node.role === Role.LIST_BOX ||
-        node.role === Role.POP_UP_BUTTON || node.role === Role.PORTAL ||
-        node.role === Role.RADIO_BUTTON || node.role === Role.SLIDER ||
-        node.role === Role.SWITCH || node.role === Role.TEXT_FIELD ||
+        node.role === Role.CHECK_BOX || node.role === Role.POP_UP_BUTTON ||
+        node.role === Role.PORTAL || node.role === Role.RADIO_BUTTON ||
+        node.role === Role.SLIDER || node.role === Role.SWITCH ||
+        node.role === Role.TEXT_FIELD ||
         node.role === Role.TEXT_FIELD_WITH_COMBO_BOX ||
         (node.role === Role.MENU_ITEM && !hasActionableDescendant(node)) ||
         // Simple list items should be leaves.
@@ -269,7 +269,7 @@ AutomationPredicate = class {
    * @return {boolean}
    */
   static leaf(node) {
-    return AutomationPredicate.touchLeaf(node) ||
+    return AutomationPredicate.touchLeaf(node) || node.role === Role.LIST_BOX ||
         // A node acting as a label should be a leaf if it has no actionable
         // controls.
         (!!node.labelFor && node.labelFor.length > 0 &&

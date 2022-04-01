@@ -16,6 +16,7 @@
 namespace ash {
 
 SearchResultBaseView::SearchResultBaseView() {
+  SetGroup(kSearchResultViewGroup);
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   SetInstallFocusRingOnFocus(false);
 }

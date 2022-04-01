@@ -33,6 +33,10 @@ constexpr int kAppListProfileIdStartFrom = 0;
 // drag offset is smaller than the threshold.
 constexpr int kMouseDragThreshold = 2;
 
+// View group for launcher search result views that have a result set. Used
+// primarily in browser tests to find shown search result views.
+constexpr int kSearchResultViewGroup = 2;
+
 // Id of OEM folder in app list.
 ASH_PUBLIC_EXPORT extern const char kOemFolderId[];
 
