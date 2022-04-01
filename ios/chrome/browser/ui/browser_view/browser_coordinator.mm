@@ -43,6 +43,7 @@
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/feed_commands.h"
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/ui/commands/infobar_commands.h"
 #import "ios/chrome/browser/ui/commands/page_info_commands.h"
@@ -69,6 +70,7 @@
 #import "ios/chrome/browser/ui/elements/activity_overlay_coordinator.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_controller_ios.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_coordinator.h"
+#import "ios/chrome/browser/ui/follow/first_follow_coordinator.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_mediator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
@@ -177,6 +179,9 @@
 
 // Coordinator for the find bar.
 @property(nonatomic, strong) FindBarCoordinator* findBarCoordinator;
+
+// Coordinator for the First Follow modal.
+@property(nonatomic, strong) FirstFollowCoordinator* firstFollowCoordinator;
 
 // Coordinator in charge of the presenting autofill options above the
 // keyboard.
@@ -298,6 +303,7 @@
     @protocol(BrowserCoordinatorCommands),
     @protocol(DefaultPromoCommands),
     @protocol(DefaultBrowserPromoNonModalCommands),
+    @protocol(FeedCommands),
     @protocol(FindInPageCommands),
     @protocol(PageInfoCommands),
     @protocol(PasswordBreachCommands),
@@ -577,6 +583,9 @@
   [self.findBarCoordinator stop];
   self.findBarCoordinator = nil;
 
+  [self.firstFollowCoordinator stop];
+  self.firstFollowCoordinator = nil;
+
   [self.formInputAccessoryCoordinator stop];
   self.formInputAccessoryCoordinator = nil;
 
@@ -849,6 +858,16 @@
   self.defaultBrowserPromoCoordinator = nil;
   [self.tailoredPromoCoordinator stop];
   self.tailoredPromoCoordinator = nil;
+}
+
+#pragma mark - FeedCommands
+
+- (void)showFirstFollowModalWithWebChannelTitle:(NSString*)webChannelTitle {
+  self.firstFollowCoordinator = [[FirstFollowCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  self.firstFollowCoordinator.webChannelTitle = webChannelTitle;
+  [self.firstFollowCoordinator start];
 }
 
 #pragma mark - FindInPageCommands

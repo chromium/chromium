@@ -923,6 +923,21 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_FEED_SORT_PUBLISHER" desc="Sort by publisher label text in feed sort menu.">
         Sort by Publisher
       </message>
+      <message name="IDS_IOS_FIRST_FOLLOW_TITLE" desc="The title of the first follow surface.">
+        You're following <ph name="CHANNEL_NAME">$1<ex>ESPN</ex></ph>
+      </message>
+      <message name="IDS_IOS_FIRST_FOLLOW_SUBTITLE" desc="The subtitle of the first follow surface.">
+        You'll now see stories from it when you open a new tab.
+      </message>
+      <message name="IDS_IOS_FIRST_FOLLOW_BODY" desc="The body of the first follow surface.">
+        Sites you follow are saved in your Google account. You can Manage them in Discover Settings.
+      </message>
+      <message name="IDS_IOS_FIRST_FOLLOW_GO_TO_FEED" desc="The action button to see the feed in the first follow surface.">
+        Go To Feed
+      </message>
+      <message name="IDS_IOS_FIRST_FOLLOW_GOT_IT" desc="The action button to dismiss the first follow surface.">
+        Got It
+      </message>
       <message name="IDS_IOS_FOLLOW_MANAGEMENT_TITLE" desc="The title of the following feed management UI.">
         Following
       </message>
