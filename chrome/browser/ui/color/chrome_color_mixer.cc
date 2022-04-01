@@ -226,6 +226,19 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorCapturedTabContentsBorder] = {ui::kColorAccent};
   mixer[kColorDesktopMediaTabListBorder] = {ui::kColorMidground};
   mixer[kColorDesktopMediaTabListPreviewBackground] = {ui::kColorMidground};
+  mixer[kColorDownloadItemForeground] = {kColorDownloadShelfForeground};
+  mixer[kColorDownloadItemForegroundDangerous] = ui::PickGoogleColor(
+      ui::SelectBasedOnDarkInput(kColorToolbar, gfx::kGoogleRed300,
+                                 gfx::kGoogleRed600),
+      kColorToolbar, color_utils::kMinimumReadableContrastRatio);
+  mixer[kColorDownloadItemForegroundDisabled] = BlendForMinContrast(
+      ui::AlphaBlend(kColorDownloadItemForeground, kColorToolbar,
+                     gfx::kGoogleGreyAlpha600),
+      kColorToolbar, kColorDownloadItemForeground);
+  mixer[kColorDownloadItemForegroundSafe] = ui::PickGoogleColor(
+      ui::SelectBasedOnDarkInput(kColorToolbar, gfx::kGoogleGreen300,
+                                 gfx::kGoogleGreen700),
+      kColorToolbar, color_utils::kMinimumReadableContrastRatio);
   mixer[kColorDownloadItemProgressRingBackground] = {
       ui::kColorThrobberPreconnect};
   mixer[kColorDownloadItemProgressRingForeground] = {ui::kColorThrobber};

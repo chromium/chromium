@@ -127,22 +127,6 @@ SkColor ChromeTypographyProvider::GetColor(const views::View& view,
       context == CONTEXT_DIALOG_BODY_TEXT_SMALL)
     context = views::style::CONTEXT_LABEL;
 
-  const auto* color_provider = view.GetColorProvider();
-  if (context == CONTEXT_DOWNLOAD_SHELF ||
-      (context == CONTEXT_DOWNLOAD_SHELF_STATUS &&
-       style == views::style::STYLE_DISABLED)) {
-    if (!color_provider)
-      return gfx::kPlaceholderColor;
-    const SkColor base_color = color_provider->GetColor(kColorToolbarText);
-    // TODO(pkasting): Should use some way of dimming text that's as analogous
-    // as possible to e.g. enabled vs. disabled labels.
-    const SkColor dimmed_color = SkColorSetA(base_color, 0xC7);
-    if (style == views::style::STYLE_DISABLED)
-      return dimmed_color;
-    if (context == CONTEXT_DOWNLOAD_SHELF)
-      return base_color;
-  }
-
   // Monospaced styles have the same colors as their normal counterparts.
   if (style == STYLE_PRIMARY_MONOSPACED) {
     style = views::style::STYLE_PRIMARY;
@@ -150,7 +134,27 @@ SkColor ChromeTypographyProvider::GetColor(const views::View& view,
     style = views::style::STYLE_SECONDARY;
   }
 
+  const auto* color_provider = view.GetColorProvider();
   ui::ColorId color_id;
+  if (context == CONTEXT_DOWNLOAD_SHELF ||
+      context == CONTEXT_DOWNLOAD_SHELF_STATUS) {
+    switch (style) {
+      case STYLE_RED:
+        color_id = kColorDownloadItemForegroundDangerous;
+        break;
+      case STYLE_GREEN:
+        color_id = kColorDownloadItemForegroundSafe;
+        break;
+      case views::style::STYLE_DISABLED:
+        color_id = kColorDownloadItemForegroundDisabled;
+        break;
+      default:
+        color_id = kColorDownloadItemForeground;
+        break;
+    }
+    return color_provider->GetColor(color_id);
+  }
+
   switch (style) {
     case STYLE_RED:
       color_id = ui::kColorAlertHighSeverity;

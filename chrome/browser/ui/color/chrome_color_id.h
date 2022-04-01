@@ -52,6 +52,10 @@
   E_CPONLY(kColorDesktopMediaTabListBorder) \
   E_CPONLY(kColorDesktopMediaTabListPreviewBackground) \
   /* Download shelf colors. */ \
+  E_CPONLY(kColorDownloadItemForeground) \
+  E_CPONLY(kColorDownloadItemForegroundDangerous) \
+  E_CPONLY(kColorDownloadItemForegroundDisabled) \
+  E_CPONLY(kColorDownloadItemForegroundSafe) \
   E_CPONLY(kColorDownloadItemProgressRingBackground) \
   E_CPONLY(kColorDownloadItemProgressRingForeground) \
   E(kColorDownloadShelfBackground, ThemeProperties::COLOR_DOWNLOAD_SHELF) \
