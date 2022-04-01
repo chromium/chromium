@@ -201,6 +201,7 @@ std::string ProtocolUtils::CreateNextScriptActionsRequest(
     const std::string& script_payload,
     const std::vector<ProcessedActionProto>& processed_actions,
     const RoundtripTimingStats& timing_stats,
+    const RoundtripNetworkStats& network_stats,
     const ClientContextProto& client_context) {
   ScriptActionRequestProto request_proto;
   request_proto.set_global_payload(global_payload);
@@ -211,6 +212,7 @@ std::string ProtocolUtils::CreateNextScriptActionsRequest(
     next_request->add_processed_actions()->MergeFrom(processed_action);
   }
   *next_request->mutable_timing_stats() = timing_stats;
+  *next_request->mutable_network_stats() = network_stats;
   *request_proto.mutable_client_context() = client_context;
   std::string serialized_request_proto;
   bool success = request_proto.SerializeToString(&serialized_request_proto);
@@ -964,6 +966,28 @@ std::string ProtocolUtils::CreateGetUserDataRequest(
   bool success = request_proto.SerializeToString(&serialized_request_proto);
   DCHECK(success);
   return serialized_request_proto;
+}
+
+// static
+RoundtripNetworkStats ProtocolUtils::ComputeNetworkStats(
+    const std::string& response,
+    const ServiceRequestSender::ResponseInfo& response_info,
+    const std::vector<std::unique_ptr<Action>>& actions) {
+  RoundtripNetworkStats stats;
+  stats.set_roundtrip_decoded_body_size_bytes(response.size());
+  stats.set_roundtrip_encoded_body_size_bytes(
+      response_info.encoded_body_length);
+  for (const auto& action : actions) {
+    RoundtripNetworkStats::ActionNetworkStats* action_stats =
+        stats.add_action_stats();
+    action_stats->set_action_info_case(
+        static_cast<int>(action->proto().action_info_case()));
+
+    std::string serialized_action;
+    action->proto().SerializeToString(&serialized_action);
+    action_stats->set_decoded_size_bytes(serialized_action.size());
+  }
+  return stats;
 }
 
 }  // namespace autofill_assistant

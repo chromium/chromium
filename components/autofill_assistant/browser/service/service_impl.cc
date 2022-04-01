@@ -131,13 +131,14 @@ void ServiceImpl::GetNextActions(
     const std::string& previous_script_payload,
     const std::vector<ProcessedActionProto>& processed_actions,
     const RoundtripTimingStats& timing_stats,
+    const RoundtripNetworkStats& network_stats,
     ServiceRequestSender::ResponseCallback callback) {
   client_context_->Update(trigger_context);
   request_sender_->SendRequest(
       script_action_server_url_,
       ProtocolUtils::CreateNextScriptActionsRequest(
           previous_global_payload, previous_script_payload, processed_actions,
-          timing_stats, client_context_->AsProto()),
+          timing_stats, network_stats, client_context_->AsProto()),
       GetDefaultAuthMode(), std::move(callback), RpcType::GET_ACTIONS);
 }
 
