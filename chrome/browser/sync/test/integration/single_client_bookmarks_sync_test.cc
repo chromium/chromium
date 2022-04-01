@@ -1814,13 +1814,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
                 .value());
 }
 
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_DepleteQuota DISABLED_DepleteQuota
-#else
-#define MAYBE_DepleteQuota DepleteQuota
-#endif
+// TODO(crbug.com/1145138): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
-                       MAYBE_DepleteQuota) {
+                       DISABLED_DepleteQuota) {
   ASSERT_TRUE(SetupClients());
 
   // Setup custom quota params: to effectively never refill.
@@ -1854,15 +1850,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
   // Recovering from depleted quota is tested by another test.
 }
 
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_DepletedQuotaDoesNotStopCommitCycle \
-  DISABLED_DepletedQuotaDoesNotStopCommitCycle
-#else
-#define MAYBE_DepletedQuotaDoesNotStopCommitCycle \
-  DepletedQuotaDoesNotStopCommitCycle
-#endif
+// TODO(crbug.com/1145138): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
-                       MAYBE_DepletedQuotaDoesNotStopCommitCycle) {
+                       DISABLED_DepletedQuotaDoesNotStopCommitCycle) {
   ASSERT_TRUE(SetupClients());
 
   // Setup custom quota params: to effectively never refill.
@@ -1897,14 +1887,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
                        ModelTypeHistogramValue(syncer::BOOKMARKS)));
 }
 
-// TODO(crbug.com/1311883): flakes on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_DoNotDepleteQuota DISABLED_DoNotDepleteQuota
-#else
-#define MAYBE_DoNotDepleteQuota DoNotDepleteQuota
-#endif
+// TODO(crbug.com/1145138): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
-                       MAYBE_DoNotDepleteQuota) {
+                       DISABLED_DoNotDepleteQuota) {
   ASSERT_TRUE(SetupClients());
 
   // Setup custom quota params: to effectively never refill.
@@ -1947,13 +1932,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
   histogram_tester.ExpectTotalCount("Sync.ModelTypeCommitWithDepletedQuota", 0);
 }
 
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_DepleteQuotaAndRecover DISABLED_DepleteQuotaAndRecover
-#else
-#define MAYBE_DepleteQuotaAndRecover DepleteQuotaAndRecover
-#endif
+// TODO(crbug.com/1145138): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
-                       MAYBE_DepleteQuotaAndRecover) {
+                       DISABLED_DepleteQuotaAndRecover) {
   ASSERT_TRUE(SetupClients());
 
   // Setup custom quota params: 10 token that effectively never refill and
