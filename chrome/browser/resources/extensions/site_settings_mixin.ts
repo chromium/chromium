@@ -11,6 +11,8 @@
 import {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ItemDelegate} from './item.js';
+
 type Constructor<T> = new (...args: any[]) => T;
 
 export interface SiteSettingsDelegate {
@@ -34,22 +36,22 @@ export const SiteSettingsMixin = dedupingMixin(
             delegate: Object,
             enableEnhancedSiteControls: Boolean,
 
-            permittedSites: {
+            restrictedSites: {
               type: Array,
               value: [],
             },
 
-            restrictedSites: {
+            permittedSites: {
               type: Array,
               value: [],
             },
           };
         }
 
-        delegate: SiteSettingsDelegate;
+        delegate: ItemDelegate&SiteSettingsDelegate;
         enableEnhancedSiteControls: boolean;
+        restrictedSites: string[];
         protected permittedSites: string[];
-        protected restrictedSites: string[];
 
         override ready() {
           super.ready();
@@ -74,6 +76,7 @@ export const SiteSettingsMixin = dedupingMixin(
     });
 
 export interface SiteSettingsMixinInterface {
-  delegate: SiteSettingsDelegate;
+  delegate: ItemDelegate&SiteSettingsDelegate;
   enableEnhancedSiteControls: boolean;
+  restrictedSites: string[];
 }

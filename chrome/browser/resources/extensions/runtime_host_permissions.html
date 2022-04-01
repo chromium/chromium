@@ -211,6 +211,7 @@
 <template is="dom-if" if="[[showHostDialog_]]" restamp>
   <extensions-runtime-hosts-dialog
       delegate="[[delegate]]" item-id="[[itemId]]"
+      enable-enhanced-site-controls="[[enableEnhancedSiteControls]]"
       current-site="[[hostDialogModel_]]"
       update-host-access="[[dialogShouldUpdateHostAccess_(oldHostAccess_)]]"
       on-close="onHostDialogClose_"

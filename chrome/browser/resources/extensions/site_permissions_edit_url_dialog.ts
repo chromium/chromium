@@ -24,7 +24,7 @@ import {SiteSettingsDelegate} from './site_settings_mixin.js';
 // 2: Scheme only (e.g., 'https').
 // 3: Hostname (e.g., 'example.com').
 // 4: Port, including ':' separator (e.g., ':80').
-const patternRegExp = new RegExp(
+export const sitePermissionsPatternRegExp = new RegExp(
     '^' +
     // Scheme; optional.
     '((http|https)://)?' +
@@ -35,7 +35,7 @@ const patternRegExp = new RegExp(
     '$');
 
 export function getSitePermissionsPatternFromSite(site: string): string {
-  const res = patternRegExp.exec(site)!;
+  const res = sitePermissionsPatternRegExp.exec(site)!;
   assert(res);
   const scheme = res[1] || 'https://';
   const host = res[3];
@@ -108,8 +108,8 @@ export class SitePermissionsEditUrlDialogElement extends PolymerElement {
    * be disabled.
    */
   private validate_() {
-    this.inputValid_ =
-        this.site_.trim().length === 0 || patternRegExp.test(this.site_);
+    this.inputValid_ = this.site_.trim().length === 0 ||
+        sitePermissionsPatternRegExp.test(this.site_);
   }
 
   private computeDialogTitle_(): string {

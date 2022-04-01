@@ -24,6 +24,7 @@ suite('RuntimeHostPermissions', function() {
     document.body.innerHTML = '';
     element = document.createElement('extensions-runtime-host-permissions');
     delegate = new TestService();
+    delegate.userSiteSettings = {permittedSites: [], restrictedSites: []};
     element.delegate = delegate;
     element.itemId = ITEM_ID;
     element.enableEnhancedSiteControls = false;

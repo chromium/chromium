@@ -5,17 +5,22 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './strings.m.js';
+import './shared_vars.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ItemDelegate} from './item.js';
 import {getTemplate} from './runtime_hosts_dialog.html.js';
+import {sitePermissionsPatternRegExp} from './site_permissions_edit_url_dialog.js';
+import {SiteSettingsMixin} from './site_settings_mixin.js';
 
 // A RegExp to roughly match acceptable patterns entered by the user.
 // exec'ing() this RegExp will match the following groups:
@@ -26,7 +31,7 @@ import {getTemplate} from './runtime_hosts_dialog.html.js';
 // 4: Hostname (e.g., 'example.com').
 // 5: Port, including ':' separator (e.g., ':80').
 // 6: Path, include '/' separator (e.g., '/*').
-const patternRegExp = new RegExp(
+const runtimeHostsPatternRegExp = new RegExp(
     '^' +
     // Scheme; optional.
     '((http|https|\\*)://)?' +
@@ -41,13 +46,56 @@ const patternRegExp = new RegExp(
     '$');
 
 export function getPatternFromSite(site: string): string {
-  const res = patternRegExp.exec(site)!;
+  const res = runtimeHostsPatternRegExp.exec(site)!;
   assert(res);
   const scheme = res[1] || '*://';
   const host = (res[3] || '') + res[4];
   const port = res[5] || '';
   const path = '/*';
   return scheme + host + port + path;
+}
+
+// Returns the sublist of `userSites` which match the pattern specified by
+// `host`.
+export function getMatchingUserSpecifiedSites(
+    userSites: string[], host: string): string[] {
+  if (!runtimeHostsPatternRegExp.test(host)) {
+    return [];
+  }
+
+  const newHostRes = runtimeHostsPatternRegExp.exec(host);
+  assert(newHostRes);
+
+  const matchAllSchemes = !newHostRes[1] || newHostRes[1] === '*://';
+  const matchAllSubdomains = newHostRes[3] === '*.';
+
+  // For each restricted site, break it down into
+  // `sitePermissionsPatternRegExp` components and check against components
+  // from `newHostRes`.
+  return userSites.filter((userSite: string) => {
+    const siteRes = sitePermissionsPatternRegExp.exec(userSite);
+    assert(siteRes);
+
+    // Check if schemes match, unless `newHostRes` has a wildcard scheme.
+    if (!matchAllSchemes && newHostRes[1] !== siteRes[1]) {
+      return false;
+    }
+
+    // Check if host names match. If `matchAllSubdomains` is specified, check
+    // that `newHostRes[4]` is a suffix of `siteRes[3]`
+    if (matchAllSubdomains && !siteRes[3].endsWith(newHostRes[4])) {
+      return false;
+    }
+    if (!matchAllSubdomains && siteRes[3] !== newHostRes[4]) {
+      return false;
+    }
+
+    // Ports match if:
+    //  - both are unspecified
+    //  - both are specified and are an exact match
+    //  - specified for `restrictedSite` but not `this,site_`
+    return !newHostRes[5] || newHostRes[5] === siteRes[4];
+  });
 }
 
 export interface ExtensionsRuntimeHostsDialogElement {
@@ -57,7 +105,11 @@ export interface ExtensionsRuntimeHostsDialogElement {
   };
 }
 
-export class ExtensionsRuntimeHostsDialogElement extends PolymerElement {
+const ExtensionsRuntimeHostsDialogElementBase =
+    I18nMixin(SiteSettingsMixin(PolymerElement));
+
+export class ExtensionsRuntimeHostsDialogElement extends
+    ExtensionsRuntimeHostsDialogElementBase {
   static get is() {
     return 'extensions-runtime-hosts-dialog';
   }
@@ -68,8 +120,6 @@ export class ExtensionsRuntimeHostsDialogElement extends PolymerElement {
 
   static get properties() {
     return {
-      delegate: Object,
-
       itemId: String,
 
       /**
@@ -98,15 +148,24 @@ export class ExtensionsRuntimeHostsDialogElement extends PolymerElement {
         type: Boolean,
         value: false,
       },
+
+      /**
+       * the list of user specified restricted sites that match with `site_` if
+       * `site_` is valid.
+       */
+      matchingRestrictedSites_: {
+        type: Array,
+        computed: 'computeMatchingRestrictedSites_(site_, restrictedSites)',
+      },
     };
   }
 
-  delegate: ItemDelegate;
   itemId: string;
   currentSite: string|null;
   updateHostAccess: boolean;
   private site_: string;
   private inputInvalid_: boolean;
+  private matchingRestrictedSites_: string[];
 
   override connectedCallback() {
     super.connectedCallback();
@@ -133,8 +192,7 @@ export class ExtensionsRuntimeHostsDialogElement extends PolymerElement {
       return;
     }
 
-    const valid = patternRegExp.test(this.site_);
-    this.inputInvalid_ = !valid;
+    this.inputInvalid_ = !runtimeHostsPatternRegExp.test(this.site_);
   }
 
   private computeDialogTitle_(): string {
@@ -151,6 +209,10 @@ export class ExtensionsRuntimeHostsDialogElement extends PolymerElement {
   private computeSubmitButtonLabel_(): string {
     const stringId = this.currentSite === null ? 'add' : 'save';
     return loadTimeData.getString(stringId);
+  }
+
+  private computeMatchingRestrictedSites_(): string[] {
+    return getMatchingUserSpecifiedSites(this.restrictedSites, this.site_);
   }
 
   private onCancelTap_() {
@@ -215,14 +277,33 @@ export class ExtensionsRuntimeHostsDialogElement extends PolymerElement {
    */
   private addPermission_() {
     const pattern = getPatternFromSite(this.site_);
+    const restrictedSites = this.matchingRestrictedSites_;
     this.delegate.addRuntimeHostPermission(this.itemId, pattern)
         .then(
             () => {
+              if (restrictedSites.length) {
+                this.delegate.removeUserSpecifiedSites(
+                    chrome.developerPrivate.UserSiteSet.RESTRICTED,
+                    restrictedSites);
+              }
               this.$.dialog.close();
             },
             () => {
               this.inputInvalid_ = true;
             });
+  }
+
+  /**
+   * Returns a warning message containing the first restricted site that
+   * overlaps with `this.site_`, or an empty string if there are no matching
+   * restricted sites.
+   */
+  private computeMatchingRestrictedSitesWarning_(): string {
+    return this.matchingRestrictedSites_.length ?
+        this.i18n(
+            'matchingRestrictedSitesWarning',
+            this.matchingRestrictedSites_[0]) :
+        '';
   }
 }
 

@@ -4,9 +4,10 @@
 
 import 'chrome://extensions/extensions.js';
 
-import {ExtensionsRuntimeHostsDialogElement, getPatternFromSite} from 'chrome://extensions/extensions.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {ExtensionsRuntimeHostsDialogElement, getMatchingUserSpecifiedSites, getPatternFromSite} from 'chrome://extensions/extensions.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
 import {MetricsPrivateMock} from './test_util.js';
@@ -17,12 +18,21 @@ suite('RuntimeHostsDialog', function() {
   let metricsPrivateMock: MetricsPrivateMock;
 
   const ITEM_ID = 'a'.repeat(32);
+  const userSiteSettings: chrome.developerPrivate.UserSiteSettings = {
+    permittedSites: [],
+    restrictedSites: [
+      'http://restricted.com', 'https://restricted.com:8080',
+      'http://sub.restricted.com'
+    ]
+  };
 
   setup(function() {
     document.body.innerHTML = '';
     dialog = document.createElement('extensions-runtime-hosts-dialog');
+    dialog.enableEnhancedSiteControls = true;
 
     delegate = new TestService();
+    delegate.userSiteSettings = userSiteSettings;
     dialog.delegate = delegate;
     dialog.itemId = ITEM_ID;
 
@@ -167,5 +177,86 @@ suite('RuntimeHostsDialog', function() {
       assertEquals(
           chrome.developerPrivate.HostAccess.ON_SPECIFIC_SITES, access);
     });
+  });
+
+  test('get matching user specified sites', function() {
+    // Invalid pattern returns no matches.
+    assertDeepEquals(
+        [], getMatchingUserSpecifiedSites(['https://google.com'], 'invalid'));
+
+    // Scheme match.
+    assertDeepEquals(
+        [],
+        getMatchingUserSpecifiedSites(
+            ['https://google.com'], 'http://google.com'));
+    assertDeepEquals(
+        ['https://google.com'],
+        getMatchingUserSpecifiedSites(['https://google.com'], 'google.com'));
+
+    // Subdomain and hostname match.
+    assertDeepEquals(
+        ['https://sub.restricted.com'],
+        getMatchingUserSpecifiedSites(
+            [
+              'http://restricted.com', 'https://sub.restricted.com', 'other.com'
+            ],
+            '*://sub.restricted.com'));
+
+    assertDeepEquals(
+        ['http://restricted.com', 'https://sub.restricted.com'],
+        getMatchingUserSpecifiedSites(
+            [
+              'http://restricted.com', 'https://sub.restricted.com', 'other.com'
+            ],
+            '*://*.restricted.com'));
+
+    // Port match.
+    assertDeepEquals(
+        ['https://google.com:8080'],
+        getMatchingUserSpecifiedSites(
+            [
+              'https://google.com:8080', 'https://google.com:1337',
+              'https://google.com'
+            ],
+            '*://google.com:8080'));
+
+    assertDeepEquals(
+        ['https://google.com:1337', 'https://google.com'],
+        getMatchingUserSpecifiedSites(
+            ['https://google.com:1337', 'https://google.com'],
+            '*://google.com'));
+  });
+
+  test('adding site removes matching restricted sites', async function() {
+    await delegate.whenCalled('getUserSiteSettings');
+    flush();
+
+    const input = dialog.shadowRoot!.querySelector('cr-input');
+    assertTrue(!!input);
+    input.value = 'http://www.nomatch.com';
+    input.fire('input');
+    assertFalse(input.invalid);
+    assertFalse(isVisible(dialog.shadowRoot!.querySelector(
+        '#matching-restricted-sites-warning')));
+
+    input.value = 'http://*.restricted.com';
+    input.fire('input');
+    assertFalse(input.invalid);
+    assertTrue(isVisible(dialog.shadowRoot!.querySelector(
+        '#matching-restricted-sites-warning')));
+
+    const submit = dialog.$.submit;
+    assertFalse(submit.disabled);
+    submit.click();
+
+    let [id, host] = await delegate.whenCalled('addRuntimeHostPermission');
+    assertEquals(ITEM_ID, id);
+    assertEquals('http://*.restricted.com/*', host);
+
+    let [siteSet, removedSites] =
+        await delegate.whenCalled('removeUserSpecifiedSites');
+    assertEquals(chrome.developerPrivate.UserSiteSet.RESTRICTED, siteSet);
+    assertDeepEquals(
+        ['http://restricted.com', 'http://sub.restricted.com'], removedSites);
   });
 });
