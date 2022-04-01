@@ -59,6 +59,10 @@ class DateFormatter : public system::TimezoneSettings::Observer {
     return twelve_hour_clock_formatter_;
   }
 
+  icu::SimpleDateFormat& twenty_four_hour_clock_formatter() {
+    return twenty_four_hour_clock_formatter_;
+  }
+
   icu::SimpleDateFormat& year_formatter() { return year_formatter_; }
 
  private:
@@ -93,6 +97,9 @@ class DateFormatter : public system::TimezoneSettings::Observer {
 
   // Formatter for 12 hour clock hours and minutes.
   icu::SimpleDateFormat twelve_hour_clock_formatter_;
+
+  // Formatter for 24 hour clock hours and minutes.
+  icu::SimpleDateFormat twenty_four_hour_clock_formatter_;
 
   // Formatter for getting the year.
   icu::SimpleDateFormat year_formatter_;

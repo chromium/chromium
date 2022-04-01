@@ -90,6 +90,10 @@ ASH_EXPORT std::u16string GetMonthNameAndDayOfMonth(const base::Time date);
 // (e.g. 2:31 AM)
 ASH_EXPORT std::u16string GetTwelveHourClockTime(const base::Time date);
 
+// Gets the `date`'s hour in twenty four hour clock format.
+// (e.g. 22:31)
+ASH_EXPORT std::u16string GetTwentyFourHourClockTime(const base::Time date);
+
 // Gets the `date`'s time zone.
 // (e.g. Greenwich Mean Time)
 ASH_EXPORT std::u16string GetTimeZone(const base::Time date);

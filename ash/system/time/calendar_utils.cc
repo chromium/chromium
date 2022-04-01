@@ -102,6 +102,11 @@ std::u16string GetTwelveHourClockTime(const base::Time date) {
       DateFormatter::GetInstance()->twelve_hour_clock_formatter(), date);
 }
 
+std::u16string GetTwentyFourHourClockTime(const base::Time date) {
+  return calendar_utils::FormatDate(
+      DateFormatter::GetInstance()->twenty_four_hour_clock_formatter(), date);
+}
+
 std::u16string GetTimeZone(const base::Time date) {
   return calendar_utils::FormatDate(
       DateFormatter::GetInstance()->time_zone_formatter(), date);

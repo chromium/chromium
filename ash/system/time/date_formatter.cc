@@ -52,6 +52,7 @@ void DateFormatter::ResetFormatters() {
   month_name_year_formatter_ = CreateSimpleDateFormatter("MMMM yyyy");
   time_zone_formatter_ = CreateSimpleDateFormatter("zzzz");
   twelve_hour_clock_formatter_ = CreateSimpleDateFormatter("h:mm a");
+  twenty_four_hour_clock_formatter_ = CreateSimpleDateFormatter("HH:mm");
   year_formatter_ = CreateSimpleDateFormatter("YYYY");
 }
 
@@ -63,6 +64,7 @@ DateFormatter::DateFormatter()
       month_name_year_formatter_(CreateSimpleDateFormatter("MMMM yyyy")),
       time_zone_formatter_(CreateSimpleDateFormatter("zzzz")),
       twelve_hour_clock_formatter_(CreateSimpleDateFormatter("h:mm a")),
+      twenty_four_hour_clock_formatter_(CreateSimpleDateFormatter("HH:mm")),
       year_formatter_(CreateSimpleDateFormatter("YYYY")) {
   time_zone_settings_observer_.Observe(system::TimezoneSettings::GetInstance());
 }

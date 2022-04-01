@@ -6,6 +6,7 @@
 
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_event_list_item_view.h"
 #include "ash/system/time/calendar_unittest_utils.h"
@@ -38,6 +39,10 @@ std::unique_ptr<google_apis::calendar::EventList> CreateMockEventList() {
       "id_4", "summary_4", "21 Nov 2021 8:30 GMT", "21 Nov 2021 9:30 GMT"));
   event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
       "id_5", "summary_5", "21 Nov 2021 10:30 GMT", "21 Nov 2021 11:30 GMT"));
+  event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
+      "id_6", "summary_6", "22 Nov 2021 20:30 GMT", "22 Nov 2021 21:30 GMT"));
+  event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
+      "id_7", "summary_7", "22 Nov 2021 23:30 GMT", "23 Nov 2021 0:30 GMT"));
 
   return event_list;
 }
@@ -87,6 +92,13 @@ class CalendarViewEventListViewTest : public AshTestBase {
         static_cast<CalendarEventListItemView*>(
             content_view()->children()[child_index])
             ->summary_);
+  }
+
+  views::Label* GetTimeRange(int child_index) {
+    return static_cast<views::Label*>(
+        static_cast<CalendarEventListItemView*>(
+            content_view()->children()[child_index])
+            ->time_range_);
   }
 
   std::u16string GetEmptyLabel() {
@@ -176,6 +188,30 @@ TEST_F(CalendarViewEventListViewTest, LaunchItem) {
 
   histogram_tester.ExpectTotalCount(
       "Ash.Calendar.UserJourneyTime.EventLaunched", 1);
+}
+
+TEST_F(CalendarViewEventListViewTest, CheckTimeFormat) {
+  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
+
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("22 Nov 2021 10:00 GMT", &date));
+
+  // Set the time in AM/PM format.
+  Shell::Get()->system_tray_model()->SetUse24HourClock(false);
+
+  CreateEventListView(date);
+
+  EXPECT_EQ(u"8:30 - 9:30 PM", GetTimeRange(0)->GetText());
+  EXPECT_EQ(u"11:30 PM - 12:30 AM", GetTimeRange(1)->GetText());
+
+  // Set the time in 24 hour format.
+  Shell::Get()->system_tray_model()->SetUse24HourClock(true);
+
+  // Regenerate the event list to refresh events time range.
+  CreateEventListView(date);
+
+  EXPECT_EQ(u"20:30 - 21:30", GetTimeRange(0)->GetText());
+  EXPECT_EQ(u"23:30 - 00:30", GetTimeRange(1)->GetText());
 }
 
 }  // namespace ash
