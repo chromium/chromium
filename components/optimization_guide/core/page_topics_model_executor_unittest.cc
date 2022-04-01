@@ -435,6 +435,8 @@ TEST_F(PageTopicsModelExecutorOverrideListTest, FileDoesntExist) {
       /*OverrideListFileLoadResult::kCouldNotReadFile=*/2, 1);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageTopicsOverrideList.GotFile", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageTopicsOverrideList.UsedOverride", 0);
 }
 
 TEST_F(PageTopicsModelExecutorOverrideListTest, BadGzip) {
@@ -457,6 +459,8 @@ TEST_F(PageTopicsModelExecutorOverrideListTest, BadGzip) {
       /*OverrideListFileLoadResult::kCouldNotUncompressFile=*/3, 1);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageTopicsOverrideList.GotFile", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageTopicsOverrideList.UsedOverride", 0);
 }
 
 TEST_F(PageTopicsModelExecutorOverrideListTest, BadProto) {
@@ -479,6 +483,8 @@ TEST_F(PageTopicsModelExecutorOverrideListTest, BadProto) {
       /*OverrideListFileLoadResult::kCouldNotUnmarshalProtobuf=*/4, 1);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageTopicsOverrideList.GotFile", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageTopicsOverrideList.UsedOverride", 0);
 }
 
 TEST_F(PageTopicsModelExecutorOverrideListTest, SuccessCase) {
@@ -517,6 +523,47 @@ TEST_F(PageTopicsModelExecutorOverrideListTest, SuccessCase) {
       /*OverrideListFileLoadResult::kSuccess=*/1, 1);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageTopicsOverrideList.GotFile", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageTopicsOverrideList.UsedOverride", true, 1);
+}
+
+TEST_F(PageTopicsModelExecutorOverrideListTest, InputNotInOverride) {
+  base::HistogramTester histogram_tester;
+
+  proto::PageTopicsOverrideList override_list;
+  proto::PageTopicsOverrideEntry* entry = override_list.add_entries();
+  entry->set_domain("other");
+  entry->mutable_topics()->add_topic_ids(1337);
+
+  std::string enc_pb;
+  ASSERT_TRUE(override_list.SerializeToString(&enc_pb));
+
+  base::FilePath add_file =
+      WriteToTempFile("override_list.pb.gz", Compress(enc_pb));
+  SendModelWithAdditionalFilesToExecutor({add_file});
+
+  base::RunLoop run_loop;
+  model_executor()->ExecuteJob(
+      run_loop.QuitClosure(),
+      std::make_unique<PageContentAnnotationJob>(
+          base::BindOnce([](const std::vector<BatchAnnotationResult>& results) {
+            ASSERT_EQ(results.size(), 1U);
+            EXPECT_EQ(results[0].input(), "input");
+            EXPECT_EQ(results[0].type(), AnnotationType::kPageTopics);
+            // The passed model file isn't valid so we don't expect an output
+            // here.
+            EXPECT_FALSE(results[0].topics());
+          }),
+          std::vector<std::string>{"input"}, AnnotationType::kPageTopics));
+  run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageTopicsOverrideList.FileLoadResult",
+      /*OverrideListFileLoadResult::kSuccess=*/1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageTopicsOverrideList.GotFile", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageTopicsOverrideList.UsedOverride", false, 1);
 }
 
 TEST_F(PageTopicsModelExecutorOverrideListTest, ModelUnloadsOverrideList) {
@@ -542,6 +589,9 @@ TEST_F(PageTopicsModelExecutorOverrideListTest, ModelUnloadsOverrideList) {
             base::DoNothing(), std::vector<std::string>{"input"},
             AnnotationType::kPageTopics));
     run_loop.Run();
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.PageTopicsOverrideList.UsedOverride", true, 1);
   }
 
   // Request the model to be unloaded, which should also unload the override
@@ -558,6 +608,9 @@ TEST_F(PageTopicsModelExecutorOverrideListTest, ModelUnloadsOverrideList) {
             base::DoNothing(), std::vector<std::string>{"input"},
             AnnotationType::kPageTopics));
     run_loop.Run();
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.PageTopicsOverrideList.UsedOverride", true, 2);
   }
 
   histogram_tester.ExpectUniqueSample(
@@ -600,6 +653,9 @@ TEST_F(PageTopicsModelExecutorOverrideListTest, NewModelUnloadsOverrideList) {
                 }),
             std::vector<std::string>{"input"}, AnnotationType::kPageTopics));
     run_loop.Run();
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.PageTopicsOverrideList.UsedOverride", true, 1);
   }
 
   // Retry an execution and check that the UMA reports the override list being
@@ -641,6 +697,8 @@ TEST_F(PageTopicsModelExecutorOverrideListTest, NewModelUnloadsOverrideList) {
       /*OverrideListFileLoadResult::kSuccess=*/1, 2);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageTopicsOverrideList.GotFile", true, 2);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageTopicsOverrideList.UsedOverride", true, 2);
 }
 
 }  // namespace optimization_guide

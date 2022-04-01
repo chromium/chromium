@@ -135,6 +135,11 @@ void PageTopicsModelExecutor::ExecuteOnSingleInput(
   if (override_list_) {
     DCHECK(override_list_file_path_);
     auto iter = override_list_->find(input);
+
+    base::UmaHistogramBoolean(
+        "OptimizationGuide.PageTopicsOverrideList.UsedOverride",
+        iter != override_list_->end());
+
     if (iter != override_list_->end()) {
       std::move(callback).Run(
           BatchAnnotationResult::CreatePageTopicsResult(input, iter->second));

@@ -797,6 +797,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OptimizationGuide.PageTopicsOverrideList.UsedOverride"
+    enum="Boolean" expires_after="M106">
+  <owner>robertogden@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    When the override list is loaded, whether it contained the given input.
+  </summary>
+</histogram>
+
 <histogram
     name="OptimizationGuide.PredictionManager.DownloadServiceAvailabilityBlockedFetch"
     units="BooleanBlocked" expires_after="M106">
