@@ -634,6 +634,20 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_EmptyUsernamePickFirst) {
             GetMatchForUpdating(parsed, {&stored3, &stored2, &stored1}));
 }
 
+TEST(PasswordManagerUtil,
+     GetMatchForUpdating_EmptyUsernameManualInputNewPassword) {
+  PasswordForm stored = GetTestCredential();
+  stored.username_value = u"Adam";
+  stored.password_value = u"Adam_password";
+
+  PasswordForm parsed = GetTestCredential();
+  parsed.username_value.clear();
+
+  EXPECT_EQ(nullptr,
+            GetMatchForUpdating(parsed, {&stored},
+                                /* username_updated_in_bubble */ true));
+}
+
 TEST(PasswordManagerUtil, MakeNormalizedBlocklistedForm_Android) {
   PasswordForm blocklisted_credential = MakeNormalizedBlocklistedForm(
       password_manager::PasswordFormDigest(GetTestAndroidCredential()));

@@ -333,6 +333,7 @@ void PasswordFormManager::OnUpdateUsernameFromPrompt(
   parsed_submitted_form_->username_value = new_username;
   parsed_submitted_form_->username_element.clear();
 
+  password_save_manager_->UsernameUpdatedInBubble();
   metrics_recorder_->set_username_updated_in_bubble(true);
 
   if (!new_username.empty()) {

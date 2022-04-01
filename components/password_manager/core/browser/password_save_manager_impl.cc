@@ -460,7 +460,8 @@ void PasswordSaveManagerImpl::BlockMovingToAccountStoreFor(
   // We offer moving credentials to the account store only upon successful
   // login. This entails that the credentials must exist in the profile store.
   PendingCredentialsStates states = ComputePendingCredentialsStates(
-      pending_credentials_, form_fetcher_->GetAllRelevantMatches());
+      pending_credentials_, form_fetcher_->GetAllRelevantMatches(),
+      username_updated_in_bubble_);
   DCHECK(states.similar_saved_form_from_profile_store);
   DCHECK_EQ(PendingCredentialsState::EQUAL_TO_SAVED_MATCH,
             states.profile_store_state);
@@ -616,7 +617,8 @@ std::pair<const PasswordForm*, PendingCredentialsState>
 PasswordSaveManagerImpl::FindSimilarSavedFormAndComputeState(
     const PasswordForm& parsed_submitted_form) const {
   PendingCredentialsStates states = ComputePendingCredentialsStates(
-      parsed_submitted_form, form_fetcher_->GetBestMatches());
+      parsed_submitted_form, form_fetcher_->GetBestMatches(),
+      username_updated_in_bubble_);
 
   // Resolve the two states to a single canonical one. This will be used to
   // decide what UI bubble (if any) to show to the user.
@@ -654,8 +656,8 @@ void PasswordSaveManagerImpl::SavePendingToStore(
 void PasswordSaveManagerImpl::SavePendingToStoreImpl(
     const PasswordForm& parsed_submitted_form) {
   auto matches = form_fetcher_->GetAllRelevantMatches();
-  PendingCredentialsStates states =
-      ComputePendingCredentialsStates(parsed_submitted_form, matches);
+  PendingCredentialsStates states = ComputePendingCredentialsStates(
+      parsed_submitted_form, matches, username_updated_in_bubble_);
 
   auto account_matches = AccountStoreMatches(matches);
   auto profile_matches = ProfileStoreMatches(matches);
@@ -872,20 +874,27 @@ bool PasswordSaveManagerImpl::ShouldStoreGeneratedPasswordsInAccountStore()
   return false;
 }
 
+void PasswordSaveManagerImpl::UsernameUpdatedInBubble() {
+  username_updated_in_bubble_ = true;
+}
+
 // static
 PasswordSaveManagerImpl::PendingCredentialsStates
 PasswordSaveManagerImpl::ComputePendingCredentialsStates(
     const PasswordForm& parsed_submitted_form,
-    const std::vector<const PasswordForm*>& matches) {
+    const std::vector<const PasswordForm*>& matches,
+    bool username_updated_in_bubble) {
   PendingCredentialsStates result;
 
   // Try to find a similar existing saved form from each of the stores.
   result.similar_saved_form_from_profile_store =
       password_manager_util::GetMatchForUpdating(parsed_submitted_form,
-                                                 ProfileStoreMatches(matches));
+                                                 ProfileStoreMatches(matches),
+                                                 username_updated_in_bubble);
   result.similar_saved_form_from_account_store =
       password_manager_util::GetMatchForUpdating(parsed_submitted_form,
-                                                 AccountStoreMatches(matches));
+                                                 AccountStoreMatches(matches),
+                                                 username_updated_in_bubble);
 
   // Compute the PendingCredentialsState (i.e. what to do - save, update, silent
   // update) separately for the two stores.

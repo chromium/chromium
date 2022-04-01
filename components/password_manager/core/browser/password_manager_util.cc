@@ -312,7 +312,8 @@ const PasswordForm* FindFormByUsername(
 
 const PasswordForm* GetMatchForUpdating(
     const PasswordForm& submitted_form,
-    const std::vector<const PasswordForm*>& credentials) {
+    const std::vector<const PasswordForm*>& credentials,
+    bool username_updated_in_bubble) {
   // This is the case for the credential management API. It should not depend on
   // form managers. Once that's the case, this should be turned into a DCHECK.
   // TODO(crbug/947030): turn it into a DCHECK.
@@ -353,6 +354,12 @@ const PasswordForm* GetMatchForUpdating(
     if (stored_match->password_value == submitted_form.password_value)
       return stored_match;
   }
+
+  // If the user manually changed the username value: consider this at this
+  // point of the heuristic a new credential (didn't match other
+  // passwords/usernames).
+  if (username_updated_in_bubble)
+    return nullptr;
 
   // Last try. The submitted form had no username but a password. Assume that
   // it's an existing credential.

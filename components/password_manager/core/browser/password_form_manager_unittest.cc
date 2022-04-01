@@ -2731,6 +2731,7 @@ class MockPasswordSaveManager : public PasswordSaveManager {
   MOCK_CONST_METHOD0(IsPasswordUpdate, bool());
   MOCK_CONST_METHOD0(IsSamePassword, bool());
   MOCK_CONST_METHOD0(HasGeneratedPassword, bool());
+  MOCK_METHOD0(UsernameUpdatedInBubble, void());
   std::unique_ptr<PasswordSaveManager> Clone() override {
     return std::make_unique<MockPasswordSaveManager>();
   }

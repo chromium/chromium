@@ -146,14 +146,17 @@ const password_manager::PasswordForm* FindFormByUsername(
 // If the user submits a form, they may have used existing credentials, new
 // credentials, or modified existing credentials that should be updated.
 // The function returns a form from |credentials| that is the best candidate to
-// use for an update. Returned value is NULL if |submitted_form| looks like a
+// use for an update. Returned value is nullptr if |submitted_form| looks like a
 // new credential for the site to be saved.
 // |submitted_form| is the form being submitted.
 // |credentials| are all the credentials relevant for the current site including
 // PSL and Android matches.
+// |username_updated_in_bubble| indicates whether a username was manually
+// updated during the save prompt bubble.
 const password_manager::PasswordForm* GetMatchForUpdating(
     const password_manager::PasswordForm& submitted_form,
-    const std::vector<const password_manager::PasswordForm*>& credentials);
+    const std::vector<const password_manager::PasswordForm*>& credentials,
+    bool username_updated_in_bubble = false);
 
 // This method creates a blocklisted form with |digests|'s scheme, signon_realm
 // and origin. This is done to avoid storing PII and to have a normalized unique
