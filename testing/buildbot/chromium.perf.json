@@ -221,6 +221,21 @@
       }
     ]
   },
+  "android-builder-perf-pgo": {
+    "additional_compile_targets": [
+      "microdump_stackwalk",
+      "chrome_apk",
+      "system_webview_google_apk",
+      "android_tools",
+      "cc_perftests",
+      "chrome_public_apk",
+      "chromium_builder_perf",
+      "dump_syms",
+      "push_apps_to_background_apk",
+      "system_webview_apk",
+      "system_webview_shell_apk"
+    ]
+  },
   "android-go-perf": {
     "isolated_scripts": [
       {
@@ -949,6 +964,21 @@
       }
     ]
   },
+  "android_arm64-builder-perf-pgo": {
+    "additional_compile_targets": [
+      "microdump_stackwalk",
+      "chrome_apk",
+      "system_webview_google_apk",
+      "android_tools",
+      "cc_perftests",
+      "chrome_public_apk",
+      "chromium_builder_perf",
+      "push_apps_to_background_apk",
+      "system_webview_apk",
+      "system_webview_shell_apk",
+      "telemetry_weblayer_apks"
+    ]
+  },
   "chromecast-linux-builder-perf": {
     "additional_compile_targets": [
       "cast_shell"
@@ -1109,6 +1139,11 @@
       }
     ]
   },
+  "linux-builder-perf-pgo": {
+    "additional_compile_targets": [
+      "chromium_builder_perf"
+    ]
+  },
   "linux-builder-perf-rel": {
     "additional_compile_targets": [
       "chromium_builder_perf"
@@ -1261,6 +1296,11 @@
       }
     ]
   },
+  "mac-arm-builder-perf-pgo": {
+    "additional_compile_targets": [
+      "chromium_builder_perf"
+    ]
+  },
   "mac-builder-perf": {
     "additional_compile_targets": [
       "chromedriver",
@@ -1296,6 +1336,11 @@
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         }
       }
+    ]
+  },
+  "mac-builder-perf-pgo": {
+    "additional_compile_targets": [
+      "chromium_builder_perf"
     ]
   },
   "mac-laptop_high_end-perf": {
@@ -1678,6 +1723,11 @@
       }
     ]
   },
+  "win32-builder-perf-pgo": {
+    "additional_compile_targets": [
+      "chromium_builder_perf"
+    ]
+  },
   "win64-builder-perf": {
     "additional_compile_targets": [
       "chromedriver",
@@ -1713,6 +1763,11 @@
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         }
       }
+    ]
+  },
+  "win64-builder-perf-pgo": {
+    "additional_compile_targets": [
+      "chromium_builder_perf"
     ]
   }
 }

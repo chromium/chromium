@@ -439,6 +439,28 @@ BUILDERS = {
         'perf_trigger':
         False,
     },
+    'android-builder-perf-pgo': {
+        'additional_compile_targets': [
+            'microdump_stackwalk',
+            'chrome_apk',
+            'system_webview_google_apk',
+            'android_tools',
+            'cc_perftests',
+            'chrome_public_apk',
+            'chromium_builder_perf',
+            'dump_syms',
+            'push_apps_to_background_apk',
+            'system_webview_apk',
+            'system_webview_shell_apk',
+        ],
+        'dimension': {
+            'cpu': 'x86',
+            'os': 'Ubuntu-18.04',
+            'pool': 'chrome.tests',
+        },
+        'perf_trigger':
+        False,
+    },
     'android_arm64-builder-perf': {
         'additional_compile_targets': [
             'microdump_stackwalk',
@@ -527,6 +549,28 @@ BUILDERS = {
         'perf_trigger':
         False,
     },
+    'android_arm64-builder-perf-pgo': {
+        'additional_compile_targets': [
+            'microdump_stackwalk',
+            'chrome_apk',
+            'system_webview_google_apk',
+            'android_tools',
+            'cc_perftests',
+            'chrome_public_apk',
+            'chromium_builder_perf',
+            'push_apps_to_background_apk',
+            'system_webview_apk',
+            'system_webview_shell_apk',
+            'telemetry_weblayer_apks',
+        ],
+        'dimension': {
+            'cpu': 'x86',
+            'os': 'Ubuntu-18.04',
+            'pool': 'chrome.tests',
+        },
+        'perf_trigger':
+        False,
+    },
     'linux-builder-perf': {
         'additional_compile_targets': ['chromedriver', 'chromium_builder_perf'],
         'tests': [{
@@ -544,6 +588,15 @@ BUILDERS = {
         },
         'perf_trigger':
         False,
+    },
+    'linux-builder-perf-pgo': {
+        'additional_compile_targets': ['chromium_builder_perf'],
+        'dimension': {
+            'cpu': 'x86-64',
+            'os': 'Ubuntu-18.04',
+            'pool': 'chrome.tests',
+        },
+        'perf_trigger': False,
     },
     'linux-builder-perf-rel': {
         'additional_compile_targets': ['chromium_builder_perf'],
@@ -566,6 +619,15 @@ BUILDERS = {
         'perf_trigger':
         False,
     },
+    'mac-builder-perf-pgo': {
+        'additional_compile_targets': ['chromium_builder_perf'],
+        'dimension': {
+            'cpu': 'x86-64',
+            'os': 'Mac',
+            'pool': 'chrome.tests',
+        },
+        'perf_trigger': False,
+    },
     'mac-arm-builder-perf': {
         'additional_compile_targets': ['chromedriver', 'chromium_builder_perf'],
         'tests': [{
@@ -583,6 +645,15 @@ BUILDERS = {
         },
         'perf_trigger':
         False,
+    },
+    'mac-arm-builder-perf-pgo': {
+        'additional_compile_targets': ['chromium_builder_perf'],
+        'dimension': {
+            'cpu': 'x86',
+            'os': 'Mac',
+            'pool': 'chrome.tests',
+        },
+        'perf_trigger': False,
     },
     'win32-builder-perf': {
         'additional_compile_targets': ['chromedriver', 'chromium_builder_perf'],
@@ -602,6 +673,15 @@ BUILDERS = {
         'perf_trigger':
         False,
     },
+    'win32-builder-perf-pgo': {
+        'additional_compile_targets': ['chromium_builder_perf'],
+        'dimension': {
+            'cpu': 'x86',
+            'os': 'Windows',
+            'pool': 'chrome.tests',
+        },
+        'perf_trigger': False,
+    },
     'win64-builder-perf': {
         'additional_compile_targets': ['chromedriver', 'chromium_builder_perf'],
         'tests': [{
@@ -619,6 +699,15 @@ BUILDERS = {
         },
         'perf_trigger':
         False,
+    },
+    'win64-builder-perf-pgo': {
+        'additional_compile_targets': ['chromium_builder_perf'],
+        'dimension': {
+            'cpu': 'x86-64',
+            'os': 'Windows',
+            'pool': 'chrome.tests',
+        },
+        'perf_trigger': False,
     },
     'android-go-perf': {
         'tests': [{
