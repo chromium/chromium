@@ -52,7 +52,6 @@ js_modulizer("modulize") {
     "guest_os_shared_usb_devices_test.js",
     "kerberos_accounts_test.js",
     "kerberos_page_test.js",
-    "keyboard_shortcut_banner_test.js",
     "manage_accessibility_page_tests.js",
     "onc_mojo_test.js",
     "os_a11y_page_tests.js",

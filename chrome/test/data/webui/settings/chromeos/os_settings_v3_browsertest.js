@@ -412,7 +412,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['InternetPage', 'internet_page_tests.js'],
  ['KerberosAccounts', 'kerberos_accounts_test.m.js'],
  ['KerberosPage', 'kerberos_page_test.m.js'],
- ['KeyboardShortcutBanner', 'keyboard_shortcut_banner_test.m.js'],
+ ['KeyboardShortcutBanner', 'keyboard_shortcut_banner_test.js'],
  ['LockScreenPage', 'lock_screen_tests.m.js'],
  ['ManageAccessibilityPage', 'manage_accessibility_page_tests.m.js'],
  ['MultideviceCombinedSetupItem', 'multidevice_combined_setup_item_tests.js'],

@@ -292,7 +292,6 @@ if (include_js_tests) {
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/onc_mojo_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/kerberos_accounts_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/kerberos_page_test.m.js",
-        "$root_gen_dir/chrome/test/data/webui/settings/chromeos/keyboard_shortcut_banner_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/manage_accessibility_page_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_about_page_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_edit_dictionary_page_test.m.js",
