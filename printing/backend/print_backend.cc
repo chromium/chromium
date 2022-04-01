@@ -5,6 +5,7 @@
 #include "printing/backend/print_backend.h"
 
 #include <string>
+#include <utility>
 
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
@@ -116,7 +117,8 @@ PageOutputQuality::PageOutputQuality() = default;
 PageOutputQuality::PageOutputQuality(
     PageOutputQualityAttributes qualities,
     absl::optional<std::string> default_quality)
-    : qualities(qualities), default_quality(default_quality) {}
+    : qualities(std::move(qualities)),
+      default_quality(std::move(default_quality)) {}
 
 PageOutputQuality::PageOutputQuality(const PageOutputQuality& other) = default;
 
