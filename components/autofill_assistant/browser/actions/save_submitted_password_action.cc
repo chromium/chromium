@@ -26,17 +26,27 @@ void SaveSubmittedPasswordAction::InternalProcessAction(
     ProcessActionCallback callback) {
   callback_ = std::move(callback);
 
+  // If no password form has been submitted, fail.
   if (!delegate_->GetWebsiteLoginManager()->ReadyToCommitSubmittedPassword()) {
     VLOG(1) << "SaveSubmittedPasswordAction: no submitted password to save.";
     EndAction(ClientStatus(PRECONDITION_FAILED));
     return;
   }
 
-  delegate_->GetWebsiteLoginManager()->SaveSubmittedPassword();
-  delegate_->GetPasswordChangeSuccessTracker()->OnChangePasswordFlowCompleted(
-      delegate_->GetUserData()->selected_login_->origin,
-      delegate_->GetUserData()->selected_login_->username,
-      PasswordChangeSuccessTracker::EndEvent::kAutomatedOwnPasswordFlow);
+  // If a password form has been submitted, but no password update is
+  // registered, then the new password must be the same as the previous one.
+  // In that case, set a flag in the response so that scripts can retrigger
+  // the flow.
+  if (!delegate_->GetWebsiteLoginManager()->SubmittedPasswordIsSame()) {
+    delegate_->GetWebsiteLoginManager()->SaveSubmittedPassword();
+    delegate_->GetPasswordChangeSuccessTracker()->OnChangePasswordFlowCompleted(
+        delegate_->GetUserData()->selected_login_->origin,
+        delegate_->GetUserData()->selected_login_->username,
+        PasswordChangeSuccessTracker::EndEvent::kAutomatedOwnPasswordFlow);
+  } else {
+    processed_action_proto_->mutable_save_submitted_password_result()
+        ->set_used_same_password(true);
+  }
 
   EndAction(ClientStatus(ACTION_APPLIED));
 }

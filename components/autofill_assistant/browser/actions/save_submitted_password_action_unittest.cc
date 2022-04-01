@@ -39,21 +39,26 @@ class SaveSubmittedPasswordActionTest : public testing::Test {
   }
 
  protected:
+  void Run() {
+    ActionProto action_proto;
+    SaveSubmittedPasswordAction action(&mock_action_delegate_, action_proto);
+    action.ProcessAction(callback_.Get());
+  }
+
   MockActionDelegate mock_action_delegate_;
   MockWebsiteLoginManager mock_website_login_manager_;
   MockPasswordChangeSuccessTracker mock_password_change_success_tracker_;
   base::MockCallback<Action::ProcessActionCallback> callback_;
-  ActionProto proto_;
   UserData user_data_;
 };
 
 TEST_F(SaveSubmittedPasswordActionTest, SaveSubmittedPasswordSuccess) {
-  SaveSubmittedPasswordAction action(&mock_action_delegate_, proto_);
-
   user_data_.selected_login_.emplace(GURL(kOrigin), kUsername);
 
   EXPECT_CALL(mock_website_login_manager_, ReadyToCommitSubmittedPassword)
       .WillOnce(Return(true));
+  EXPECT_CALL(mock_website_login_manager_, SubmittedPasswordIsSame)
+      .WillOnce(Return(false));
   EXPECT_CALL(mock_website_login_manager_, SaveSubmittedPassword);
   EXPECT_CALL(
       mock_password_change_success_tracker_,
@@ -62,21 +67,47 @@ TEST_F(SaveSubmittedPasswordActionTest, SaveSubmittedPasswordSuccess) {
           PasswordChangeSuccessTracker::EndEvent::kAutomatedOwnPasswordFlow));
   EXPECT_CALL(
       callback_,
-      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+      Run(Pointee(AllOf(
+          Property(&ProcessedActionProto::status, ACTION_APPLIED),
+          Property(
+              &ProcessedActionProto::save_submitted_password_result,
+              Property(&SaveSubmittedPasswordProto::Result::used_same_password,
+                       false))))));
+  Run();
+}
 
-  action.ProcessAction(callback_.Get());
+TEST_F(SaveSubmittedPasswordActionTest, AttemptToSaveSameSubmittedPassword) {
+  user_data_.selected_login_.emplace(GURL(kOrigin), kUsername);
+
+  EXPECT_CALL(mock_website_login_manager_, ReadyToCommitSubmittedPassword)
+      .WillOnce(Return(true));
+  EXPECT_CALL(mock_website_login_manager_, SubmittedPasswordIsSame)
+      .WillOnce(Return(true));
+
+  // If the submitted password is the same as the previous one, we expect that
+  // the action applies, but no save methods are called and the respective
+  // flag is set in the returned proto.
+  EXPECT_CALL(mock_website_login_manager_, SaveSubmittedPassword).Times(0);
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(AllOf(
+          Property(&ProcessedActionProto::status, ACTION_APPLIED),
+          Property(
+              &ProcessedActionProto::save_submitted_password_result,
+              Property(&SaveSubmittedPasswordProto::Result::used_same_password,
+                       true))))));
+  Run();
 }
 
 TEST_F(SaveSubmittedPasswordActionTest,
        ReadyToCommitSubmittedPasswordPreconditionFails) {
-  SaveSubmittedPasswordAction action(&mock_action_delegate_, proto_);
-
   EXPECT_CALL(mock_website_login_manager_, ReadyToCommitSubmittedPassword)
       .WillOnce(Return(false));
   EXPECT_CALL(mock_website_login_manager_, SaveSubmittedPassword).Times(0);
   EXPECT_CALL(callback_, Run(Pointee(Property(&ProcessedActionProto::status,
                                               PRECONDITION_FAILED))));
-  action.ProcessAction(callback_.Get());
+  Run();
 }
 
 }  // namespace autofill_assistant

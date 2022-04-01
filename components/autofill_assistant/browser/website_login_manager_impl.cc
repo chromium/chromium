@@ -503,6 +503,10 @@ bool WebsiteLoginManagerImpl::ReadyToCommitSubmittedPassword() {
   return client_->GetPasswordManager()->HasSubmittedManager();
 }
 
+bool WebsiteLoginManagerImpl::SubmittedPasswordIsSame() {
+  return client_->GetPasswordManager()->HasSubmittedManagerWithSamePassword();
+}
+
 bool WebsiteLoginManagerImpl::SaveSubmittedPassword() {
   if (!ReadyToCommitSubmittedPassword()) {
     return false;

@@ -216,6 +216,10 @@ class PasswordManager : public PasswordManagerInterface {
   // Returns true if password manager has recorded a submitted manager.
   bool HasSubmittedManager() const;
 
+  // Returns true if the password manager has recorded a submitted form
+  // and the new password in that form is the same as the old one.
+  bool HasSubmittedManagerWithSamePassword() const;
+
   // Saves the current submitted password to the disk. Password manager must
   // have a submitted manager.
   void SaveSubmittedManager();

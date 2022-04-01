@@ -1096,6 +1096,8 @@ message ProcessedActionProto {
     SendKeystrokeEventsProto.Result send_key_stroke_events_result = 36;
     // Should be set as a result of JsFlowProto.
     JsFlowProto.Result js_flow_result = 37;
+    // Should be set as a result of SaveSubmittedPassword.
+    SaveSubmittedPasswordProto.Result save_submitted_password_result = 38;
   }
 
   // Reports information about navigation that happened while
@@ -2867,7 +2869,15 @@ message ResetPendingCredentialsProto {}
 
 // Saves the current submitted password to the password store. The action
 // fails if the password manager has no record of a submitted password.
-message SaveSubmittedPasswordProto {}
+message SaveSubmittedPasswordProto {
+  message Result {
+    // If the same password was used and therefore the credential is still
+    // insecure, the action succeeds to avoid script termination.
+    // Instead it returns a result flagging the re-use of the
+    // password so that the Autobot flow can try again.
+    optional bool used_same_password = 1;
+  }
+}
 
 // Configures the UI of the autofill assistant client.
 message ConfigureUiStateProto {

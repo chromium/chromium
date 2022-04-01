@@ -101,6 +101,12 @@ class WebsiteLoginManager {
   // the password store.
   virtual bool ReadyToCommitSubmittedPassword() = 0;
 
+  // Checks whether there is a password submission on the website and whether
+  // the submission corresponds to a password update. In particular, it returns
+  // false if the submitted password update is the same as the previously used
+  // password.
+  virtual bool SubmittedPasswordIsSame() = 0;
+
   // Saves the current submitted password to the disk. Returns true if a
   // submitted password exist (E.g ReadyToCommitSubmittedPassword) and it is
   // properly saved, false otherwise.

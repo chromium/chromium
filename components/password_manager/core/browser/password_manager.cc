@@ -1184,6 +1184,11 @@ bool PasswordManager::HasSubmittedManager() const {
   return GetSubmittedManager() != nullptr;
 }
 
+bool PasswordManager::HasSubmittedManagerWithSamePassword() const {
+  PasswordFormManager* submitted_manager = GetSubmittedManager();
+  return submitted_manager && submitted_manager->IsSamePassword();
+}
+
 void PasswordManager::SaveSubmittedManager() {
   PasswordFormManager* submitted_manager = GetSubmittedManager();
   DCHECK(submitted_manager);

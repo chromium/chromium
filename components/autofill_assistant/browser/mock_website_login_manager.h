@@ -77,6 +77,8 @@ class MockWebsiteLoginManager : public WebsiteLoginManager {
 
   MOCK_METHOD(bool, ReadyToCommitSubmittedPassword, (), (override));
 
+  MOCK_METHOD(bool, SubmittedPasswordIsSame, (), (override));
+
   MOCK_METHOD(bool, SaveSubmittedPassword, (), (override));
 };
 

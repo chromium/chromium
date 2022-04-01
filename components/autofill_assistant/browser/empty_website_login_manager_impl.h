@@ -51,6 +51,7 @@ class EmptyWebsiteLoginManagerImpl : public WebsiteLoginManager {
   void CommitGeneratedPassword() override;
   void ResetPendingCredentials() override;
   bool ReadyToCommitSubmittedPassword() override;
+  bool SubmittedPasswordIsSame() override;
   bool SaveSubmittedPassword() override;
 };
 

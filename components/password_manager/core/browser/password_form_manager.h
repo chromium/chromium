@@ -184,6 +184,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   void SetGenerationElement(autofill::FieldRendererId generation_element);
   bool HasLikelyChangePasswordFormSubmitted() const;
   bool IsPasswordUpdate() const;
+  bool IsSamePassword() const;
   base::WeakPtr<PasswordManagerDriver> GetDriver() const;
   const PasswordForm* GetSubmittedForm() const;
 

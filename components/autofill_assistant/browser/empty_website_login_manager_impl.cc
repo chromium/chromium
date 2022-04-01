@@ -75,6 +75,10 @@ bool EmptyWebsiteLoginManagerImpl::ReadyToCommitSubmittedPassword() {
   return false;
 }
 
+bool EmptyWebsiteLoginManagerImpl::SubmittedPasswordIsSame() {
+  return false;
+}
+
 bool EmptyWebsiteLoginManagerImpl::SaveSubmittedPassword() {
   return false;
 }

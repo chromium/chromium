@@ -64,6 +64,8 @@ class WebsiteLoginManagerImpl : public WebsiteLoginManager {
 
   bool ReadyToCommitSubmittedPassword() override;
 
+  bool SubmittedPasswordIsSame() override;
+
   bool SaveSubmittedPassword() override;
 
  private:
