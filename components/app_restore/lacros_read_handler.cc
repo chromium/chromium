@@ -119,8 +119,10 @@ void LacrosReadHandler::OnWindowDestroyed(aura::Window* window) {
 int32_t LacrosReadHandler::GetLacrosRestoreWindowId(
     const std::string& lacros_window_id) const {
   auto it = lacros_window_id_to_app_id_.find(lacros_window_id);
+  // Set restore window id as 0 to prevent the window is added to the hidden
+  // container. Windows restoration will be done by exo with another method.
   return it == lacros_window_id_to_app_id_.end()
-             ? kParentToHiddenContainer
+             ? 0
              : full_restore::FullRestoreReadHandler::GetInstance()
                    ->FetchRestoreWindowId(it->second);
 }
