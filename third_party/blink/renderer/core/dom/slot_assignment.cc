@@ -35,7 +35,9 @@ void SlotAssignment::DidAddSlot(HTMLSlotElement& slot) {
   needs_collect_slots_ = true;
 
   if (owner_->IsManualSlotting()) {
-    // Adding a new slot should not require assignment recalc.
+    // Adding a new slot should not require assignment recalc, but still needs
+    // setting up the fallback if any.
+    slot.CheckFallbackAfterInsertedIntoShadowTree();
     return;
   }
 
