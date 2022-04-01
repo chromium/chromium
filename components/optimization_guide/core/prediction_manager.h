@@ -218,8 +218,8 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // |last_success_time|.
   void SetLastModelFetchSuccessTime(base::Time last_success_time);
 
-  // Fetch models if enabled for this profile.
-  void MaybeFetchModels();
+  // Schedule first fetch for models if enabled for this profile.
+  void MaybeScheduleFirstModelFetch();
 
   // Schedule |fetch_timer_| to fire based on:
   // 1. The update time for models in the store and
@@ -277,6 +277,9 @@ class PredictionManager : public PredictionModelDownloadObserver {
 
   // A reference to the PrefService for this profile. Not owned.
   raw_ptr<PrefService> pref_service_ = nullptr;
+
+  // Time the prediction manager got initialized.
+  base::TimeTicks init_time_;
 
   // The timer used to schedule fetching prediction models and host model
   // features from the remote Optimization Guide Service.

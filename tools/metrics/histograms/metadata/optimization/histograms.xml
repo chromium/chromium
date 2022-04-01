@@ -880,6 +880,32 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.PredictionModel.FirstModelFetchSinceServiceInit"
+    units="ms" expires_after="M106">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the time duration it took for the first model fetch to start from
+    the time the optimization guide service was initialized. Recorded once at
+    startup when the first model fetch happens.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PredictionModel.RegistrationTimeSinceServiceInit.{OptimizationTarget}"
+    units="ms" expires_after="M106">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the time duration it took for the feature to register with the
+    optimization guide for {OptimizationTarget} from the time the optimization
+    guide service was initialized. Recorded once when the feature registers with
+    the service.
+  </summary>
+  <token key="OptimizationTarget" variants="OptimizationTarget"/>
+</histogram>
+
+<histogram
     name="OptimizationGuide.PredictionModelDownloadManager.DownloadStartLatency.{OptimizationTarget}"
     units="ms" expires_after="M106">
   <owner>rajendrant@chromium.org</owner>

@@ -291,6 +291,10 @@ void PredictionManager::AddObserverForOptimizationTargetModel(
     RecordLifecycleState(optimization_target,
                          ModelDeliveryEvent::kModelDeliveredAtRegistration);
   }
+  base::UmaHistogramMediumTimes(
+      "OptimizationGuide.PredictionManager.RegistrationTimeSinceServiceInit." +
+          GetStringNameForOptimizationTarget(optimization_target),
+      base::TimeTicks::Now() - init_time_);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (registered_optimization_targets_and_metadata_.contains(
@@ -313,7 +317,7 @@ void PredictionManager::AddObserverForOptimizationTargetModel(
 
   // If no fetch is scheduled, maybe schedule one.
   if (!fetch_timer_.IsRunning())
-    MaybeFetchModels();
+    MaybeScheduleFirstModelFetch();
 
   // Otherwise, load prediction models for any newly registered targets.
   LoadPredictionModels({optimization_target});
@@ -647,6 +651,7 @@ void PredictionManager::OnStoreInitialized(
     BackgroundDownloadServiceProvider background_download_service_provider) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   store_is_ready_ = true;
+  init_time_ = base::TimeTicks::Now();
   LOCAL_HISTOGRAM_BOOLEAN(
       "OptimizationGuide.PredictionManager.StoreInitialized", true);
 
@@ -676,7 +681,7 @@ void PredictionManager::OnStoreInitialized(
   // targets.
   LoadPredictionModels(GetRegisteredOptimizationTargets());
 
-  MaybeFetchModels();
+  MaybeScheduleFirstModelFetch();
 }
 
 void PredictionManager::LoadPredictionModels(
@@ -835,9 +840,13 @@ void PredictionManager::StoreLoadedModelInfo(
                                                        std::move(model_info));
 }
 
-void PredictionManager::MaybeFetchModels() {
+void PredictionManager::MaybeScheduleFirstModelFetch() {
   if (!ShouldFetchModels(off_the_record_, pref_service_))
     return;
+
+  base::UmaHistogramMediumTimes(
+      "OptimizationGuide.PredictionManager.FirstModelFetchSinceServiceInit",
+      base::TimeTicks::Now() - init_time_);
 
   // Add a slight delay to allow the rest of the browser startup process to
   // finish up.

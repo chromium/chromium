@@ -595,6 +595,12 @@ TEST_F(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
       "google.internal.chrome.optimizationguide.v1.PageEntitiesModelMetadata");
   prediction_model_fetcher()->SetExpectedModelMetadataForOptimizationTarget(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, model_metadata);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionManager.RegistrationTimeSinceServiceInit."
+      "PainfulPageLoad",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionManager.FirstModelFetchSinceServiceInit", 0);
 
   FakeOptimizationTargetModelObserver observer;
   prediction_manager()->AddObserverForOptimizationTargetModel(
@@ -606,12 +612,18 @@ TEST_F(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
       "OptimizationGuide.PredictionManager.ModelAvailableAtRegistration."
       "PainfulPageLoad",
       false, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionManager.RegistrationTimeSinceServiceInit."
+      "PainfulPageLoad",
+      1);
 
   EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
   // Make sure the test histogram is recorded. We don't check for value here
   // since that is too much toil for someone whenever they add a new version.
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PredictionManager.SupportedModelEngineVersion", 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionManager.FirstModelFetchSinceServiceInit", 1);
 
   EXPECT_TRUE(prediction_manager()->GetRegisteredOptimizationTargets().contains(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
