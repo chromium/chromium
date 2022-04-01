@@ -37,7 +37,7 @@ void SavePasswordInfoBarDelegate::Create(
   // is_smartlock_branding_enabled indicates whether the user is syncing
   // passwords to their Google Account.
   bool is_smartlock_branding_enabled =
-      password_bubble_experiment::IsSmartLockUser(sync_service);
+      password_bubble_experiment::HasChosenToSyncPasswords(sync_service);
   infobars::ContentInfoBarManager* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(web_contents);
   infobar_manager->AddInfoBar(std::make_unique<SavePasswordInfoBar>(

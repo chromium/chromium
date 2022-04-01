@@ -88,7 +88,7 @@ std::u16string CredentialManagerDialogControllerImpl::GetAutoSigninText()
 bool CredentialManagerDialogControllerImpl::ShouldShowFooter() const {
   const syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_);
-  return password_bubble_experiment::IsSmartLockUser(sync_service);
+  return password_bubble_experiment::HasChosenToSyncPasswords(sync_service);
 }
 
 void CredentialManagerDialogControllerImpl::OnChooseCredentials(

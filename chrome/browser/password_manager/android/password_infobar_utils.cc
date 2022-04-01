@@ -29,7 +29,7 @@ AccountInfo GetAccountInfoForPasswordInfobars(Profile* profile,
 AccountInfo GetAccountInfoForPasswordMessages(Profile* profile) {
   DCHECK(profile);
 
-  if (!password_bubble_experiment::IsSmartLockUser(
+  if (!password_bubble_experiment::HasChosenToSyncPasswords(
           SyncServiceFactory::GetForProfile(profile))) {
     return AccountInfo();
   }

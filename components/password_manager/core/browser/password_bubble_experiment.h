@@ -17,9 +17,8 @@ namespace password_bubble_experiment {
 // user before it's not shown automatically.
 int GetSmartBubbleDismissalThreshold();
 
-// Returns true if the user syncs passwords to Google Account.
-// TODO(crbug.com/862269): rename the function.
-bool IsSmartLockUser(const syncer::SyncService* sync_service);
+// Returns true if the user has chosen to sync passwords to Google Account.
+bool HasChosenToSyncPasswords(const syncer::SyncService* sync_service);
 
 // Returns true if first run experience for auto sign-in prompt should be shown.
 bool ShouldShowAutoSignInPromptFirstRunExperience(PrefService* prefs);

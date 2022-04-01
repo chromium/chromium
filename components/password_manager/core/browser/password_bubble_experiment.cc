@@ -19,6 +19,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 
@@ -28,9 +29,10 @@ int GetSmartBubbleDismissalThreshold() {
   return 3;
 }
 
-bool IsSmartLockUser(const syncer::SyncService* sync_service) {
-  return password_manager_util::GetPasswordSyncState(sync_service) !=
-         password_manager::SyncState::kNotSyncing;
+bool HasChosenToSyncPasswords(const syncer::SyncService* sync_service) {
+  return sync_service && sync_service->IsSyncFeatureEnabled() &&
+         sync_service->GetUserSettings()->GetSelectedTypes().Has(
+             syncer::UserSelectableType::kPasswords);
 }
 
 bool ShouldShowAutoSignInPromptFirstRunExperience(PrefService* prefs) {

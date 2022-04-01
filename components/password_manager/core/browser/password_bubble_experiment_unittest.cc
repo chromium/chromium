@@ -18,6 +18,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,10 +40,9 @@ class PasswordManagerPasswordBubbleExperimentTest : public testing::Test {
   syncer::TestSyncService* sync_service() { return &fake_sync_service_; }
 
  protected:
-  void SetupFakeSyncServiceForTestCase(syncer::ModelType type,
+  void SetupFakeSyncServiceForTestCase(syncer::UserSelectableType type,
                                        CustomPassphraseState passphrase_state) {
-    sync_service()->SetPreferredDataTypes({type});
-    sync_service()->SetActiveDataTypes({type});
+    sync_service()->GetUserSettings()->SetSelectedTypes(false, {type});
     sync_service()->SetIsUsingExplicitPassphrase(passphrase_state ==
                                                  CustomPassphraseState::SET);
   }
@@ -52,23 +52,38 @@ class PasswordManagerPasswordBubbleExperimentTest : public testing::Test {
   TestingPrefServiceSimple pref_service_;
 };
 
-TEST_F(PasswordManagerPasswordBubbleExperimentTest, IsSmartLockUser) {
+TEST_F(PasswordManagerPasswordBubbleExperimentTest, HasChosenToSyncPasswords) {
   constexpr struct {
-    syncer::ModelType type;
+    syncer::UserSelectableType type;
     CustomPassphraseState passphrase_state;
     bool expected_sync_user;
   } kTestData[] = {
-      {syncer::ModelType::BOOKMARKS, CustomPassphraseState::NONE, false},
-      {syncer::ModelType::BOOKMARKS, CustomPassphraseState::SET, false},
-      {syncer::ModelType::PASSWORDS, CustomPassphraseState::NONE, true},
-      {syncer::ModelType::PASSWORDS, CustomPassphraseState::SET, true},
+      {syncer::UserSelectableType::kBookmarks, CustomPassphraseState::NONE,
+       false},
+      {syncer::UserSelectableType::kBookmarks, CustomPassphraseState::SET,
+       false},
+      {syncer::UserSelectableType::kPasswords, CustomPassphraseState::NONE,
+       true},
+      {syncer::UserSelectableType::kPasswords, CustomPassphraseState::SET,
+       true},
   };
   for (const auto& test_case : kTestData) {
     SCOPED_TRACE(testing::Message("#test_case = ") << (&test_case - kTestData));
     SetupFakeSyncServiceForTestCase(test_case.type, test_case.passphrase_state);
 
-    EXPECT_EQ(test_case.expected_sync_user, IsSmartLockUser(sync_service()));
+    EXPECT_EQ(test_case.expected_sync_user,
+              HasChosenToSyncPasswords(sync_service()));
   }
+}
+
+TEST_F(PasswordManagerPasswordBubbleExperimentTest,
+       HasChosenToSyncPasswordsSyncFeatureDisabled) {
+  SetupFakeSyncServiceForTestCase(syncer::UserSelectableType::kPasswords,
+                                  CustomPassphraseState::NONE);
+  sync_service()->SetDisableReasons(
+      {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
+
+  EXPECT_FALSE(HasChosenToSyncPasswords(sync_service()));
 }
 
 }  // namespace password_bubble_experiment

@@ -33,7 +33,7 @@ void UpdatePasswordInfoBarDelegate::Create(
   // is_smartlock_branding_enabled indicates whether the user is syncing
   // passwords to their Google Account.
   const bool is_smartlock_branding_enabled =
-      password_bubble_experiment::IsSmartLockUser(
+      password_bubble_experiment::HasChosenToSyncPasswords(
           SyncServiceFactory::GetForProfile(
               Profile::FromBrowserContext(web_contents->GetBrowserContext())));
   infobars::ContentInfoBarManager::FromWebContents(web_contents)

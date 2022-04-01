@@ -449,7 +449,8 @@ BOOL IsPasswordManagerBrandingUpdateEnabled() {
   if (self.browserState) {
     syncer::SyncService* syncService =
         SyncServiceFactory::GetForBrowserState(self.browserState);
-    isSyncUser = password_bubble_experiment::IsSmartLockUser(syncService);
+    isSyncUser =
+        password_bubble_experiment::HasChosenToSyncPasswords(syncService);
   }
   infobars::InfoBarManager* infoBarManager =
       InfoBarManagerImpl::FromWebState(_webState);
