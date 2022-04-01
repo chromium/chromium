@@ -380,8 +380,7 @@ void PageLoadTracker::Commit(content::NavigationHandle* navigation_handle) {
   const std::string& mime_type =
       navigation_handle->GetWebContents()->GetContentsMimeType();
   INVOKE_AND_PRUNE_OBSERVERS(observers_, ShouldObserveMimeType, mime_type);
-  INVOKE_AND_PRUNE_OBSERVERS(observers_, OnCommit, navigation_handle,
-                             source_id_);
+  INVOKE_AND_PRUNE_OBSERVERS(observers_, OnCommit, navigation_handle);
 }
 
 void PageLoadTracker::DidActivatePrerenderedPage(

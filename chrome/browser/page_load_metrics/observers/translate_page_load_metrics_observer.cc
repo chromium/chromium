@@ -44,9 +44,8 @@ TranslatePageLoadMetricsObserver::OnStart(
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 TranslatePageLoadMetricsObserver::OnCommit(
-    content::NavigationHandle* navigation_handle,
-    ukm::SourceId source_id) {
-  translate_metrics_logger_->SetUkmSourceId(source_id);
+    content::NavigationHandle* navigation_handle) {
+  translate_metrics_logger_->SetUkmSourceId(GetDelegate().GetPageUkmSourceId());
   return CONTINUE_OBSERVING;
 }
 

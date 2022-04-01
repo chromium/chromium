@@ -28,8 +28,6 @@ class ForegroundDurationUKMObserver
   ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
                         const GURL& currently_committed_url,
                         bool started_in_foreground) override;
-  ObservePolicy OnCommit(content::NavigationHandle* navigation_handle,
-                         ukm::SourceId source_id) override;
   ObservePolicy FlushMetricsOnAppEnterBackground(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   ObservePolicy OnHidden(
@@ -41,7 +39,6 @@ class ForegroundDurationUKMObserver
  private:
   bool currently_in_foreground_ = false;
   base::TimeTicks last_time_shown_;
-  ukm::SourceId source_id_ = ukm::kInvalidSourceId;
   page_load_metrics::mojom::InputTimingPtr last_page_input_timing_;
   void RecordUkmIfInForeground(base::TimeTicks end_time);
   void RecordInputTimingMetrics(

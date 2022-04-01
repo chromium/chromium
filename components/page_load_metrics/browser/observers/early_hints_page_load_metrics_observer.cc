@@ -31,8 +31,7 @@ EarlyHintsPageLoadMetricsObserver::~EarlyHintsPageLoadMetricsObserver() =
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 EarlyHintsPageLoadMetricsObserver::OnCommit(
-    content::NavigationHandle* navigation_handle,
-    ukm::SourceId source_id) {
+    content::NavigationHandle* navigation_handle) {
   // Continue observing when 103 Early Hints are received during the navigation
   // and these contain at least one resource hints (preload or preconnect).
   if (navigation_handle->WasResourceHintsReceived())

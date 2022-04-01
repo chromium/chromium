@@ -128,8 +128,7 @@ AMPPageLoadMetricsObserver::SubFrameInfo::~SubFrameInfo() = default;
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 AMPPageLoadMetricsObserver::OnCommit(
-    content::NavigationHandle* navigation_handle,
-    ukm::SourceId source_id) {
+    content::NavigationHandle* navigation_handle) {
   current_url_ = navigation_handle->GetURL();
   ProcessMainFrameNavigation(navigation_handle);
   return CONTINUE_OBSERVING;

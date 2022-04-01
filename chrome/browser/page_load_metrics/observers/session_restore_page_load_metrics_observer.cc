@@ -51,8 +51,7 @@ SessionRestorePageLoadMetricsObserver::OnStart(
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 SessionRestorePageLoadMetricsObserver::OnCommit(
-    content::NavigationHandle* navigation_handle,
-    ukm::SourceId source_id) {
+    content::NavigationHandle* navigation_handle) {
   // Session restores use transition reload, so we only observe loads with a
   // reload transition type.
   DCHECK(ui::PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),

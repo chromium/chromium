@@ -106,10 +106,10 @@ SignedExchangePageLoadMetricsObserver::SignedExchangePageLoadMetricsObserver() {
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 SignedExchangePageLoadMetricsObserver::OnCommit(
-    content::NavigationHandle* navigation_handle,
-    ukm::SourceId source_id) {
+    content::NavigationHandle* navigation_handle) {
   if (navigation_handle->IsSignedExchangeInnerResponse()) {
-    ukm::builders::PageLoad_SignedExchange builder(source_id);
+    ukm::builders::PageLoad_SignedExchange builder(
+        GetDelegate().GetPageUkmSourceId());
     if (IsServedFromGoogleCache(navigation_handle))
       builder.SetServedFromGoogleCache(1);
     builder.Record(ukm::UkmRecorder::Get());

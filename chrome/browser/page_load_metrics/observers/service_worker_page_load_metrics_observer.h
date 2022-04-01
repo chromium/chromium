@@ -55,8 +55,7 @@ class ServiceWorkerPageLoadMetricsObserver
       const ServiceWorkerPageLoadMetricsObserver&) = delete;
 
   // page_load_metrics::PageLoadMetricsObserver implementation:
-  ObservePolicy OnCommit(content::NavigationHandle* navigation_handle,
-                         ukm::SourceId source_id) override;
+  ObservePolicy OnCommit(content::NavigationHandle* navigation_handle) override;
   void OnFirstInputInPage(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnParseStart(

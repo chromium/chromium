@@ -24,8 +24,7 @@ FormfillPageLoadMetricsObserver::~FormfillPageLoadMetricsObserver() = default;
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 FormfillPageLoadMetricsObserver::OnCommit(
-    content::NavigationHandle* navigation_handle,
-    ukm::SourceId source_id) {
+    content::NavigationHandle* navigation_handle) {
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(Profile::FromBrowserContext(
           GetDelegate().GetWebContents()->GetBrowserContext()));

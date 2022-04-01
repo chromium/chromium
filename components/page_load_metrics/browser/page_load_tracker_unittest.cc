@@ -57,8 +57,8 @@ class TestPageLoadMetricsObserver final : public PageLoadMetricsObserver {
     events_->was_prerender_started = true;
     return stop_on_prerender_ ? STOP_OBSERVING : CONTINUE_OBSERVING;
   }
-  ObservePolicy OnCommit(content::NavigationHandle* navigation_handle,
-                         ukm::SourceId source_id) override {
+  ObservePolicy OnCommit(
+      content::NavigationHandle* navigation_handle) override {
     events_->was_committed = true;
     return CONTINUE_OBSERVING;
   }

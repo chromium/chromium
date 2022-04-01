@@ -64,8 +64,7 @@ PrefetchProxyPageLoadMetricsObserver::OnRedirect(
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 PrefetchProxyPageLoadMetricsObserver::OnCommit(
-    content::NavigationHandle* navigation_handle,
-    ukm::SourceId source_id) {
+    content::NavigationHandle* navigation_handle) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!navigation_handle->GetURL().SchemeIsHTTPOrHTTPS())

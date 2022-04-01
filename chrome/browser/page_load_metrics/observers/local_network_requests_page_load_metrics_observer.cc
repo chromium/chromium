@@ -307,8 +307,7 @@ LocalNetworkRequestsPageLoadMetricsObserver::
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 LocalNetworkRequestsPageLoadMetricsObserver::OnCommit(
-    content::NavigationHandle* navigation_handle,
-    ukm::SourceId source_id) {
+    content::NavigationHandle* navigation_handle) {
   // Upon page load, we want to determine whether the page loaded was a public
   // domain or private domain and generate an event describing the domain type.
   net::IPEndPoint remote_endpoint = navigation_handle->GetSocketAddress();
@@ -344,7 +343,7 @@ LocalNetworkRequestsPageLoadMetricsObserver::OnCommit(
     page_domain_type_ = internal::DOMAIN_TYPE_PUBLIC;
   }
 
-  RecordUkmDomainType(source_id);
+  RecordUkmDomainType(GetDelegate().GetPageUkmSourceId());
 
   // If the load was localhost, we don't track it because it isn't meaningful
   // for our purposes.

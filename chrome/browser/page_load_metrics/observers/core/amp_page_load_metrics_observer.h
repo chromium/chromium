@@ -61,8 +61,7 @@ class AMPPageLoadMetricsObserver
   ~AMPPageLoadMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver:
-  ObservePolicy OnCommit(content::NavigationHandle* navigation_handle,
-                         ukm::SourceId source_id) override;
+  ObservePolicy OnCommit(content::NavigationHandle* navigation_handle) override;
   void OnCommitSameDocumentNavigation(
       content::NavigationHandle* navigation_handle) override;
   void OnDidFinishSubFrameNavigation(

@@ -257,8 +257,7 @@ PageLoadMetricsObserver::ObservePolicy AdsPageLoadMetricsObserver::OnStart(
 }
 
 PageLoadMetricsObserver::ObservePolicy AdsPageLoadMetricsObserver::OnCommit(
-    content::NavigationHandle* navigation_handle,
-    ukm::SourceId source_id) {
+    content::NavigationHandle* navigation_handle) {
   DCHECK(ad_frames_data_.empty());
 
   page_load_is_reload_ =

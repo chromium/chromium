@@ -269,8 +269,7 @@ UkmPageLoadMetricsObserver::ShouldObserveMimeType(
 }
 
 UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnCommit(
-    content::NavigationHandle* navigation_handle,
-    ukm::SourceId source_id) {
+    content::NavigationHandle* navigation_handle) {
   content::WebContents* web_contents = navigation_handle->GetWebContents();
   if (web_contents->GetContentsMimeType() == kOfflinePreviewsMimeType) {
     if (!IsOfflinePreview(web_contents))
@@ -288,6 +287,7 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnCommit(
   prerender::NoStatePrefetchManager* const no_state_prefetch_manager =
       prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
           web_contents->GetBrowserContext());
+  ukm::SourceId source_id = GetDelegate().GetPageUkmSourceId();
   if (no_state_prefetch_manager) {
     prerender::RecordNoStatePrefetchMetrics(navigation_handle, source_id,
                                             no_state_prefetch_manager);

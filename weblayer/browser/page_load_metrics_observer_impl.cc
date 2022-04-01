@@ -20,8 +20,7 @@ namespace weblayer {
 
 PageLoadMetricsObserverImpl::ObservePolicy
 PageLoadMetricsObserverImpl::OnCommit(
-    content::NavigationHandle* navigation_handle,
-    ukm::SourceId source_id) {
+    content::NavigationHandle* navigation_handle) {
 #if BUILDFLAG(IS_ANDROID)
   if (!ukm::UkmRecorder::Get())
     return CONTINUE_OBSERVING;
@@ -33,7 +32,8 @@ PageLoadMetricsObserverImpl::OnCommit(
           navigation_handle->GetWebContents()->GetBrowserContext());
   if (!no_state_prefetch_manager)
     return CONTINUE_OBSERVING;
-  prerender::RecordNoStatePrefetchMetrics(navigation_handle, source_id,
+  prerender::RecordNoStatePrefetchMetrics(navigation_handle,
+                                          GetDelegate().GetPageUkmSourceId(),
                                           no_state_prefetch_manager);
 #endif
   return CONTINUE_OBSERVING;

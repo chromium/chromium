@@ -61,8 +61,7 @@ class PrefetchProxyPageLoadMetricsObserver
                         bool started_in_foreground) override;
   ObservePolicy OnRedirect(
       content::NavigationHandle* navigation_handle) override;
-  ObservePolicy OnCommit(content::NavigationHandle* navigation_handle,
-                         ukm::SourceId source_id) override;
+  ObservePolicy OnCommit(content::NavigationHandle* navigation_handle) override;
   void OnDidInternalNavigationAbort(
       content::NavigationHandle* navigation_handle) override;
   ObservePolicy FlushMetricsOnAppEnterBackground(

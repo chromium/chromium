@@ -24,8 +24,7 @@ class FormfillPageLoadMetricsObserver
       const FormfillPageLoadMetricsObserver&) = delete;
 
   // page_load_metrics::PageLoadMetricsObserver
-  ObservePolicy OnCommit(content::NavigationHandle* navigation_handle,
-                         ukm::SourceId source_id) override;
+  ObservePolicy OnCommit(content::NavigationHandle* navigation_handle) override;
   void OnFeaturesUsageObserved(
       content::RenderFrameHost* rfh,
       const std::vector<blink::UseCounterFeature>& features) override;

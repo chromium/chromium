@@ -17,7 +17,6 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
-#include "services/metrics/public/cpp/ukm_source.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
@@ -283,8 +282,7 @@ class PageLoadMetricsObserver {
   // reference to it.
   // Observers that return STOP_OBSERVING will not receive any additional
   // callbacks, and will be deleted after invocation of this method returns.
-  virtual ObservePolicy OnCommit(content::NavigationHandle* navigation_handle,
-                                 ukm::SourceId source_id);
+  virtual ObservePolicy OnCommit(content::NavigationHandle* navigation_handle);
 
   // OnDidInternalNavigationAbort is triggered when the main frame navigation
   // aborts with HTTP responses that don't commit, such as HTTP 204 responses

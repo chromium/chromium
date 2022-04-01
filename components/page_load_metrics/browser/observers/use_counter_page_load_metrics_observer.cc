@@ -69,8 +69,7 @@ UseCounterPageLoadMetricsObserver::~UseCounterPageLoadMetricsObserver() =
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 UseCounterPageLoadMetricsObserver::OnCommit(
-    content::NavigationHandle* navigation_handle,
-    ukm::SourceId source_id) {
+    content::NavigationHandle* navigation_handle) {
   // Verify that no feature usage is observed before commit
   DCHECK_EQ(features_recorded_.count(), 0ul);
   DCHECK_EQ(main_frame_features_recorded_.count(), 0ul);
@@ -86,7 +85,7 @@ UseCounterPageLoadMetricsObserver::OnCommit(
   auto web_feature_page_visit =
       static_cast<blink::UseCounterFeature::EnumValue>(WebFeature::kPageVisits);
 
-  ukm::builders::Blink_UseCounter(source_id)
+  ukm::builders::Blink_UseCounter(GetDelegate().GetPageUkmSourceId())
       .SetFeature(web_feature_page_visit)
       .SetIsMainFrameFeature(1)
       .Record(ukm::UkmRecorder::Get());

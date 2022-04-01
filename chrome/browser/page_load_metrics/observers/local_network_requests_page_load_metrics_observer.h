@@ -72,8 +72,7 @@ class LocalNetworkRequestsPageLoadMetricsObserver
   ~LocalNetworkRequestsPageLoadMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver
-  ObservePolicy OnCommit(content::NavigationHandle* navigation_handle,
-                         ukm::SourceId source_id) override;
+  ObservePolicy OnCommit(content::NavigationHandle* navigation_handle) override;
   ObservePolicy FlushMetricsOnAppEnterBackground(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnLoadedResource(const page_load_metrics::ExtraRequestCompleteInfo&

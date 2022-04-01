@@ -42,8 +42,7 @@ SchemePageLoadMetricsObserver::OnStart(
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 SchemePageLoadMetricsObserver::OnCommit(
-    content::NavigationHandle* navigation_handle,
-    ukm::SourceId source_id) {
+    content::NavigationHandle* navigation_handle) {
   // Capture committed transition type.
   transition_ = navigation_handle->GetPageTransition();
   if (navigation_handle->GetURL().scheme() == url::kHttpScheme ||

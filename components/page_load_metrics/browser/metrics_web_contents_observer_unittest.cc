@@ -1567,8 +1567,7 @@ class MetricsWebContentsObserverNonPrimaryPageTest
         MetricsWebContentsObserverNonPrimaryPageTest* owner)
         : owner_(owner) {}
 
-    ObservePolicy OnCommit(content::NavigationHandle* handle,
-                           ukm::SourceId source_id) override {
+    ObservePolicy OnCommit(content::NavigationHandle* handle) override {
       committed_url_ = handle->GetURL();
       return CONTINUE_OBSERVING;
     }

@@ -109,8 +109,7 @@ PageLoadMetricsObserver::ObservePolicy PageLoadMetricsObserver::OnRedirect(
 }
 
 PageLoadMetricsObserver::ObservePolicy PageLoadMetricsObserver::OnCommit(
-    content::NavigationHandle* navigation_handle,
-    ukm::SourceId source_id) {
+    content::NavigationHandle* navigation_handle) {
   return CONTINUE_OBSERVING;
 }
 

@@ -182,8 +182,7 @@ class UmaPageLoadMetricsObserver
   // page_load_metrics::PageLoadMetricsObserver:
   ObservePolicy OnRedirect(
       content::NavigationHandle* navigation_handle) override;
-  ObservePolicy OnCommit(content::NavigationHandle* navigation_handle,
-                         ukm::SourceId source_id) override;
+  ObservePolicy OnCommit(content::NavigationHandle* navigation_handle) override;
   void OnDomContentLoadedEventStart(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnLoadEventStart(
