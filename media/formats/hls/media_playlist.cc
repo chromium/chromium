@@ -14,11 +14,7 @@
 
 namespace media::hls {
 
-MediaPlaylist::MediaPlaylist(const MediaPlaylist&) = default;
-
 MediaPlaylist::MediaPlaylist(MediaPlaylist&&) = default;
-
-MediaPlaylist& MediaPlaylist::operator=(const MediaPlaylist&) = default;
 
 MediaPlaylist& MediaPlaylist::operator=(MediaPlaylist&&) = default;
 
@@ -149,9 +145,7 @@ MediaPlaylist::MediaPlaylist(GURL uri,
                              types::DecimalInteger version,
                              bool independent_segments,
                              std::vector<MediaSegment> segments)
-    : uri_(std::move(uri)),
-      version_(version),
-      independent_segments_(independent_segments),
+    : Playlist(std::move(uri), version, independent_segments),
       segments_(std::move(segments)) {
   base::TimeDelta duration;
   for (const auto& segment : segments_) {

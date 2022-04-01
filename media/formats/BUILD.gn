@@ -193,6 +193,8 @@ source_set("formats") {
     "hls/media_segment.h",
     "hls/parse_status.cc",
     "hls/parse_status.h",
+    "hls/playlist.cc",
+    "hls/playlist.h",
     "hls/playlist_common.cc",
     "hls/playlist_common.h",
     "hls/source_string.cc",
