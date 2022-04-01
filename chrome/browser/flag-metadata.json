@@ -4681,13 +4681,13 @@
   },
   {
     "name": "paint-preview-demo",
-    "owners": [ "ckitagawa", "fredmello", "yashard" ],
-    "expiry_milestone": 101
+    "owners": [ "ckitagawa", "fredmello", "chrome-fdt@google.com" ],
+    "expiry_milestone": 104
   },
   {
     "name": "paint-preview-startup",
-    "owners": [ "ckitagawa", "fredmello", "yashard" ],
-    "expiry_milestone": 101
+    "owners": [ "ckitagawa", "fredmello", "chrome-fdt@google.com" ],
+    "expiry_milestone": 104
   },
   {
     "name": "partitioned-cookies",
