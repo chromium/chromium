@@ -110,4 +110,41 @@ const HatsConfig kHatsAudioSurvey = {
     prefs::kHatsAudioSurveyCycleEndTs,          // cycle_end_timestamp_pref_name
 };
 
+// Personalization Avatar Survey -- shown 60 seconds after a user closes the
+// Avatar selection page of either OS Settings or Personalization Hub, depending
+// on whether PersonalizationHub feature is enabled.
+const HatsConfig kHatsPersonalizationAvatarSurvey = {
+    ::features::kHappinessTrackingPersonalizationAvatar,        // feature
+    "Browser.ChromeOS.HatsSatisfaction.PersonalizationAvatar",  // histogram_name
+    base::Days(1),                                      // new_device_threshold
+    prefs::kHatsPersonalizationAvatarSurveyIsSelected,  // is_selected_pref_name
+    prefs::
+        kHatsPersonalizationAvatarSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
+};
+
+// Personalization Screensaver Survey -- shown 60 seconds after a user closes
+// the Screensaver settings page of either OS Settings or Personalization Hub,
+// depending on whether PersonalizationHub feature is enabled.
+const HatsConfig kHatsPersonalizationScreensaverSurvey = {
+    ::features::kHappinessTrackingPersonalizationScreensaver,        // feature
+    "Browser.ChromeOS.HatsSatisfaction.PersonalizationScreensaver",  // histogram_name
+    base::Days(1),  // new_device_threshold
+    prefs::
+        kHatsPersonalizationScreensaverSurveyIsSelected,  // is_selected_pref_name
+    prefs::
+        kHatsPersonalizationScreensaverSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
+};
+
+// Personalization Wallpaper Survey -- shown 60 seconds after a user closes the
+// Wallpaper subpage of the Personalization App.
+const HatsConfig kHatsPersonalizationWallpaperSurvey = {
+    ::features::kHappinessTrackingPersonalizationWallpaper,        // feature
+    "Browser.ChromeOS.HatsSatisfaction.PersonalizationWallpaper",  // histogram_name
+    base::Days(1),  // new_device_threshold
+    prefs::
+        kHatsPersonalizationWallpaperSurveyIsSelected,  // is_selected_pref_name
+    prefs::
+        kHatsPersonalizationWallpaperSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
+};
+
 }  // namespace ash

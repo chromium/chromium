@@ -63,6 +63,9 @@ class PersonalizationAppUserProviderImpl
 
   void GetUserInfo(GetUserInfoCallback callback) override;
 
+  // This function is called when a user navigates to the page to change
+  // Avatar image. Therefore use it to track if the user has seen the change
+  // avatar page for Personalization HaTS.
   void GetDefaultUserImages(GetDefaultUserImagesCallback callback) override;
 
   void SelectImageFromDisk() override;
@@ -116,6 +119,9 @@ class PersonalizationAppUserProviderImpl
 
   // Pointer to profile of user that opened personalization SWA. Not owned.
   raw_ptr<Profile> profile_ = nullptr;
+
+  // Flag to track whether the user viewed the user subpage.
+  bool page_viewed_ = false;
 
   std::unique_ptr<user_manager::UserImage> last_external_user_image_;
 

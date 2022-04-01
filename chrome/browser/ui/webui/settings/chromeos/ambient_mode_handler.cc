@@ -23,8 +23,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/web_contents.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -131,7 +135,14 @@ AmbientModeHandler::AmbientModeHandler(PrefService* pref_service)
       update_settings_retry_backoff_(&kRetryBackoffPolicy),
       pref_service_(pref_service) {}
 
-AmbientModeHandler::~AmbientModeHandler() = default;
+AmbientModeHandler::~AmbientModeHandler() {
+  if (IsJavascriptAllowed()) {
+    ::ash::personalization_app::PersonalizationAppManagerFactory::
+        GetForBrowserContext(web_ui()->GetWebContents()->GetBrowserContext())
+            ->MaybeStartHatsTimer(
+                ::ash::personalization_app::HatsSurveyType::kScreensaver);
+  }
+}
 
 void AmbientModeHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(

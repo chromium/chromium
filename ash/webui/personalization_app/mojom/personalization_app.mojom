@@ -488,4 +488,7 @@ interface AmbientProvider {
 
   // Sets one album as selected or not.
   SetAlbumSelected(string id, TopicSource topic_source, bool selected);
+
+  // Record that the user viewed the Ambient mode page.
+  SetPageViewed();
 };

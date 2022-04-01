@@ -24,6 +24,8 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -88,7 +90,14 @@ PersonalizationAppAmbientProviderImpl::PersonalizationAppAmbientProviderImpl(
 }
 
 PersonalizationAppAmbientProviderImpl::
-    ~PersonalizationAppAmbientProviderImpl() = default;
+    ~PersonalizationAppAmbientProviderImpl() {
+  if (page_viewed_) {
+    ::ash::personalization_app::PersonalizationAppManagerFactory::
+        GetForBrowserContext(profile_)
+            ->MaybeStartHatsTimer(
+                ::ash::personalization_app::HatsSurveyType::kScreensaver);
+  }
+}
 
 void PersonalizationAppAmbientProviderImpl::BindInterface(
     mojo::PendingReceiver<ash::personalization_app::mojom::AmbientProvider>
@@ -216,6 +225,10 @@ void PersonalizationAppAmbientProviderImpl::SetAlbumSelected(
 
   UpdateSettings();
   OnTopicSourceChanged();
+}
+
+void PersonalizationAppAmbientProviderImpl::SetPageViewed() {
+  page_viewed_ = true;
 }
 
 void PersonalizationAppAmbientProviderImpl::OnAmbientModeEnabledChanged() {

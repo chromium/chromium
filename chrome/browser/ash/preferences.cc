@@ -433,6 +433,21 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(::prefs::kHatsStabilityDeviceIsSelected, false);
 
+  // Personalization HaTS survey prefs for avatar, screensaver, and wallpaper
+  // features.
+  registry->RegisterInt64Pref(
+      ::prefs::kHatsPersonalizationAvatarSurveyCycleEndTs, 0);
+  registry->RegisterBooleanPref(
+      ::prefs::kHatsPersonalizationAvatarSurveyIsSelected, false);
+  registry->RegisterInt64Pref(
+      ::prefs::kHatsPersonalizationScreensaverSurveyCycleEndTs, 0);
+  registry->RegisterBooleanPref(
+      ::prefs::kHatsPersonalizationScreensaverSurveyIsSelected, false);
+  registry->RegisterInt64Pref(
+      ::prefs::kHatsPersonalizationWallpaperSurveyCycleEndTs, 0);
+  registry->RegisterBooleanPref(
+      ::prefs::kHatsPersonalizationWallpaperSurveyIsSelected, false);
+
   registry->RegisterBooleanPref(::prefs::kPinUnlockFeatureNotificationShown,
                                 false);
   registry->RegisterBooleanPref(

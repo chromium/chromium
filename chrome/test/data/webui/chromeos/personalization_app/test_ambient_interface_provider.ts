@@ -52,6 +52,7 @@ export class TestAmbientProvider extends TestBrowserProxy implements
       'setAmbientObserver',
       'setAmbientModeEnabled',
       'setAnimationTheme',
+      'setPageViewed',
       'setTopicSource',
       'setTemperatureUnit',
       'setAlbumSelected',
@@ -101,5 +102,9 @@ export class TestAmbientProvider extends TestBrowserProxy implements
 
   setAlbumSelected(id: string, topic_source: TopicSource, selected: boolean) {
     this.methodCalled('setAlbumSelected', id, topic_source, selected);
+  }
+
+  setPageViewed() {
+    this.methodCalled('setPageViewed');
   }
 }

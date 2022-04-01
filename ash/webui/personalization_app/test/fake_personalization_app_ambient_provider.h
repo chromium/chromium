@@ -52,6 +52,7 @@ class FakePersonalizationAppAmbientProvider
   void SetAlbumSelected(const std::string& id,
                         ash::AmbientModeTopicSource topic_source,
                         bool selected) override {}
+  void SetPageViewed() override {}
 
  private:
   mojo::Receiver<ash::personalization_app::mojom::AmbientProvider>

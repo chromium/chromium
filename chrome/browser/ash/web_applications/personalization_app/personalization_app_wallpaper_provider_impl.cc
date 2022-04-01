@@ -31,6 +31,8 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/wallpaper/wallpaper_enumerator.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager_factory.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
@@ -102,7 +104,17 @@ PersonalizationAppWallpaperProviderImpl::
 }
 
 PersonalizationAppWallpaperProviderImpl::
-    ~PersonalizationAppWallpaperProviderImpl() = default;
+    ~PersonalizationAppWallpaperProviderImpl() {
+  if (!image_asset_id_map_.empty()) {
+    // User viewed wallpaper page at least once during this session because
+    // |image_asset_id_map_| has wallpaper asset ids saved. Check if this user
+    // should see a wallpaper HaTS.
+    ::ash::personalization_app::PersonalizationAppManagerFactory::
+        GetForBrowserContext(profile_)
+            ->MaybeStartHatsTimer(
+                ::ash::personalization_app::HatsSurveyType::kWallpaper);
+  }
+}
 
 void PersonalizationAppWallpaperProviderImpl::BindInterface(
     mojo::PendingReceiver<ash::personalization_app::mojom::WallpaperProvider>

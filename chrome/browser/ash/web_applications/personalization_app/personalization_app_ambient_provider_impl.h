@@ -58,6 +58,7 @@ class PersonalizationAppAmbientProviderImpl
   void SetAlbumSelected(const std::string& id,
                         ash::AmbientModeTopicSource topic_source,
                         bool selected) override;
+  void SetPageViewed() override;
 
   // Notify WebUI the latest values.
   void OnAmbientModeEnabledChanged();
@@ -155,6 +156,9 @@ class PersonalizationAppAmbientProviderImpl
 
   // Whether there are pending updates.
   bool has_pending_updates_for_backend_ = false;
+
+  // A flag to record if the user has seen the ambient mode page.
+  bool page_viewed_ = false;
 
   std::vector<gfx::ImageSkia> recent_highlights_preview_images_;
 

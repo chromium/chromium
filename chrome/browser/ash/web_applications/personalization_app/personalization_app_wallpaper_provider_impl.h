@@ -315,7 +315,8 @@ class PersonalizationAppWallpaperProviderImpl
   };
 
   // Store a mapping of valid image asset_ids to their ImageInfo to validate
-  // user wallpaper selections.
+  // user wallpaper selections. This is filled when a user first visits the
+  // Wallpaper subpage of Personalization App.
   std::map<uint64_t, ImageInfo> image_asset_id_map_;
 
   // When local images are fetched, store the valid file paths in the set. This
