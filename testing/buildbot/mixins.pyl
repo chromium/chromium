@@ -563,13 +563,6 @@
   'isolate_profile_data': {
     'isolate_profile_data': True,
   },
-  'kitkat': {
-    'swarming': {
-      'dimensions': {
-        'device_os': 'KTU84P',
-      },
-    },
-  },
   'kitkat-x86-emulator': {
     '$mixin_append': {
       'args': [

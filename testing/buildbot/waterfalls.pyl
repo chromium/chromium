@@ -770,17 +770,6 @@
           'isolated_scripts': 'cronet_rel_isolated_scripts',
         },
       },
-      'android-cronet-arm-rel-kitkat-tests': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'kitkat',
-          'hammerhead',
-        ],
-        'test_suites': {
-          'gtest_tests': 'cronet_gtests',
-        },
-        'os_type': 'android',
-      },
       'android-cronet-arm64-dbg': {
         'additional_compile_targets': [
           'cronet_package',
@@ -870,6 +859,32 @@
           'gtest_tests': 'cronet_gtests',
         },
       },
+      'android-cronet-x86-dbg-lollipop-tests': {
+        'mixins': [
+          'lollipop-x86-emulator',
+          'emulator-4-cores',
+          'has_native_resultdb_integration',
+          'linux-xenial-or-bionic',
+          'x86-64',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'cronet_gtests',
+        },
+      },
+      'android-cronet-x86-dbg-marshmallow-tests': {
+        'mixins': [
+          'marshmallow-x86-emulator',
+          'emulator-4-cores',
+          'has_native_resultdb_integration',
+          'linux-xenial-or-bionic',
+          'x86-64',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'cronet_gtests',
+        },
+      },
       'android-cronet-x86-dbg-oreo-tests': {
         'mixins': [
           'oreo-x86-emulator',
@@ -910,6 +925,19 @@
         ],
         'test_suites': {
           'isolated_scripts': 'cronet_rel_isolated_scripts',
+        },
+      },
+      'android-cronet-x86-rel-kitkat-tests': {
+        'mixins': [
+          'kitkat-x86-emulator',
+          'emulator-4-cores',
+          'has_native_resultdb_integration',
+          'linux-xenial-or-bionic',
+          'x86-64',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'cronet_gtests',
         },
       },
       'android-marshmallow-arm64-rel': {
@@ -1156,45 +1184,6 @@
           'gtest_tests': 'cronet_gtests',
         },
         'os_type': 'android',
-      },
-      'android-cronet-x86-dbg-lollipop-tests': {
-        'mixins': [
-          'lollipop-x86-emulator',
-          'emulator-4-cores',
-          'has_native_resultdb_integration',
-          'linux-xenial-or-bionic',
-          'x86-64',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'cronet_gtests',
-        },
-      },
-      'android-cronet-x86-dbg-marshmallow-tests': {
-        'mixins': [
-          'marshmallow-x86-emulator',
-          'emulator-4-cores',
-          'has_native_resultdb_integration',
-          'linux-xenial-or-bionic',
-          'x86-64',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'cronet_gtests',
-        },
-      },
-      'android-cronet-x86-rel-kitkat-tests': {
-        'mixins': [
-          'kitkat-x86-emulator',
-          'emulator-4-cores',
-          'has_native_resultdb_integration',
-          'linux-xenial-or-bionic',
-          'x86-64',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'cronet_gtests',
-        },
       },
       # A builder for early prototype of test-reviver in Clank.
       # TODO(crbug.com/1300020): Remove this builder once we have a way to reuse

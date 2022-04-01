@@ -361,18 +361,6 @@ ci.builder(
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
-ci.builder(
-    name = "android-cronet-arm-rel-kitkat-tests",
-    branch_selector = branches.STANDARD_MILESTONE,
-    console_view_entry = consoles.console_view_entry(
-        category = "cronet|test",
-        short_name = "k",
-    ),
-    cq_mirrors_console_view = "mirrors",
-    notifies = ["cronet"],
-    triggered_by = ["ci/android-cronet-arm-rel"],
-)
-
 # Runs on a specific machine with an attached phone
 ci.builder(
     name = "android-cronet-marshmallow-arm64-perf-rel",
@@ -400,6 +388,26 @@ ci.builder(
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+)
+
+ci.builder(
+    name = "android-cronet-x86-dbg-lollipop-tests",
+    console_view_entry = consoles.console_view_entry(
+        category = "cronet|test",
+        short_name = "l",
+    ),
+    notifies = ["cronet"],
+    triggered_by = ["ci/android-cronet-x86-dbg"],
+)
+
+ci.builder(
+    name = "android-cronet-x86-dbg-marshmallow-tests",
+    console_view_entry = consoles.console_view_entry(
+        category = "cronet|test",
+        short_name = "m",
+    ),
+    notifies = ["cronet"],
+    triggered_by = ["ci/android-cronet-x86-dbg"],
 )
 
 ci.builder(
@@ -452,6 +460,16 @@ ci.builder(
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+)
+
+ci.builder(
+    name = "android-cronet-x86-rel-kitkat-tests",
+    console_view_entry = consoles.console_view_entry(
+        category = "cronet|test",
+        short_name = "k",
+    ),
+    notifies = ["cronet"],
+    triggered_by = ["ci/android-cronet-x86-rel"],
 )
 
 ci.builder(
