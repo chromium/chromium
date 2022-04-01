@@ -286,8 +286,8 @@ class ZipReader {
   base::WeakPtrFactory<ZipReader> weak_ptr_factory_{this};
 };
 
-// A writer delegate that writes to a given File. This file is expected to be
-// initially empty.
+// A writer delegate that writes to a given File. It is recommended that this
+// file be initially empty.
 class FileWriterDelegate : public WriterDelegate {
  public:
   // Constructs a FileWriterDelegate that manipulates |file|. The delegate will

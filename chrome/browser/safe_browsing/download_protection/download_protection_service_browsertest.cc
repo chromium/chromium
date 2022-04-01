@@ -68,14 +68,7 @@ const uint8_t DownloadProtectionServiceBrowserTest::kBZipDigest[] = {
     0xe2, 0x8c, 0x38, 0x6c, 0xb2, 0x11, 0x91, 0xf3, 0x77, 0xa7, 0x2c,
     0x11, 0x92, 0xe0, 0x25, 0xb0, 0xe5, 0xc7, 0x70, 0x3b, 0x23};
 
-// TODO(crbug.com/1309879): Re-enable this test
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_VerifyZipHash DISABLED_VerifyZipHash
-#else
-#define MAYBE_VerifyZipHash VerifyZipHash
-#endif
-IN_PROC_BROWSER_TEST_F(DownloadProtectionServiceBrowserTest,
-                       MAYBE_VerifyZipHash) {
+IN_PROC_BROWSER_TEST_F(DownloadProtectionServiceBrowserTest, VerifyZipHash) {
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -92,10 +85,12 @@ IN_PROC_BROWSER_TEST_F(DownloadProtectionServiceBrowserTest,
   ASSERT_EQ(2, requests[0]->archived_binary_size());
 
   EXPECT_EQ("a.zip", requests[0]->archived_binary(0).file_basename());
+  EXPECT_EQ(11, requests[0]->archived_binary(0).length());
   EXPECT_EQ(std::string(kAZipDigest, kAZipDigest + crypto::kSHA256Length),
             requests[0]->archived_binary(0).digests().sha256());
 
   EXPECT_EQ("b.zip", requests[0]->archived_binary(1).file_basename());
+  EXPECT_EQ(10, requests[0]->archived_binary(1).length());
   EXPECT_EQ(std::string(kBZipDigest, kBZipDigest + crypto::kSHA256Length),
             requests[0]->archived_binary(1).digests().sha256());
 }

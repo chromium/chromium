@@ -61,8 +61,15 @@ void AnalyzeZipFile(base::File zip_file,
     }
 
     // Clear the |temp_file| between extractions.
-    temp_file.Seek(base::File::Whence::FROM_BEGIN, 0);
-    temp_file.SetLength(0);
+    if (temp_file.Seek(base::File::Whence::FROM_BEGIN, 0) != 0)
+      PLOG(WARNING) << "Failed seek";
+
+    // Since this code is expected to run within a utility process, this call
+    // will fail on some platforms. We handle this by passing the length
+    // into `UpdateArchiveAnalyzerResultsWithFile`, which will only consider the
+    // appropriate bytes. See crbug.com/1309879 and crbug.com/774762.
+    if (!temp_file.SetLength(0))
+      PLOG(WARNING) << "Failed truncate";
     zip::FileWriterDelegate writer(&temp_file);
     reader.ExtractCurrentEntry(&writer, std::numeric_limits<uint64_t>::max());
     UpdateArchiveAnalyzerResultsWithFile(entry->path, &temp_file,

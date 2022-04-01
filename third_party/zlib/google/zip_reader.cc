@@ -596,11 +596,11 @@ bool FileWriterDelegate::PrepareOutput() {
     return false;
   }
 
-  if (length > 0) {
-    PLOG(ERROR) << "File handle " << file_->GetPlatformFile()
-                << " is not empty: Its length is " << length << " bytes";
-    return false;
-  }
+  // Just log a warning if the file is not empty.
+  // See crbug.com/1309879 and crbug.com/774762.
+  LOG_IF(WARNING, length > 0)
+      << "File handle " << file_->GetPlatformFile()
+      << " is not empty: Its length is " << length << " bytes";
 
   return true;
 }
@@ -659,8 +659,8 @@ bool FilePathWriterDelegate::PrepareOutput() {
   }
 
   if (length > 0) {
-    PLOG(ERROR) << "File " << Redact(output_file_path_)
-                << " is not empty: Its length is " << length << " bytes";
+    LOG(ERROR) << "File " << Redact(output_file_path_)
+               << " is not empty: Its length is " << length << " bytes";
     return false;
   }
 
