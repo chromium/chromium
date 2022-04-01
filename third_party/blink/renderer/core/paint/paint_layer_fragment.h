@@ -80,6 +80,9 @@ struct PaintLayerFragment {
   // See PaintLayerClipper::CalculateRects.
   ClipRect foreground_rect;
 
+  // The fragment index of fragment_data / physical_fragment.
+  wtf_size_t fragment_idx = WTF::kNotFound;
+
   // Defines the coordinate space of the above rects:
   // root_fragment_data->LocalBorderBoxProperties().Transform() +
   // root_fragment_data.PaintOffset().

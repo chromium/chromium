@@ -1324,6 +1324,8 @@ void PaintLayer::CollectFragments(
       DCHECK(fragment.physical_fragment);
     }
 
+    fragment.fragment_idx = physical_fragment_idx;
+
     fragments.push_back(fragment);
   }
 }
@@ -1878,13 +1880,17 @@ bool PaintLayer::HitTestContentsForFragments(
 
     inside_clip_rect = true;
     PhysicalOffset fragment_offset = fragment.layer_bounds.offset;
-    if (UNLIKELY(layer_fragments.size() > 1 &&
-                 GetLayoutObject().IsLayoutInline() &&
+    if (UNLIKELY(GetLayoutObject().IsLayoutInline() &&
                  GetLayoutObject().CanTraversePhysicalFragments())) {
-      // When hit-testing a relatively positioned inline, we'll search for it in
+      // When hit-testing an inline that has a layer, we'll search for it in
       // each fragment of the containing block. Each fragment has its own
-      // offset, and we need to do one fragment at a time.
-      HitTestLocation location_for_fragment(hit_test_location, i);
+      // offset, and we need to do one fragment at a time. If the inline uses a
+      // transform, though, we'll only have one PaintLayerFragment in the list
+      // at this point (we iterate over them further up on the stack, and pass a
+      // "list" of one fragment at a time from there instead).
+      DCHECK(fragment.fragment_idx != WTF::kNotFound);
+      HitTestLocation location_for_fragment(hit_test_location,
+                                            fragment.fragment_idx);
       if (HitTestContents(result, fragment.physical_fragment, fragment_offset,
                           location_for_fragment, hit_test_filter))
         return true;
