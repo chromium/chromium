@@ -535,11 +535,6 @@
     "expiry_milestone": 102
   },
   {
-    "name": "autofill-use-renderer-ids",
-    "owners": [ "kazinova@google.com" ],
-    "expiry_milestone": 96
-  },
-  {
     "name": "autofill-visual-improvements-for-suggestion-ui",
     "owners": [ "koerber", "vasilii" ],
     "expiry_milestone": 103
