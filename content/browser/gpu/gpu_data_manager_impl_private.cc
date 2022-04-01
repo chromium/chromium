@@ -299,20 +299,23 @@ void UpdateFeatureStats(const gpu::GpuFeatureInfo& gpu_feature_info) {
       gpu::GPU_FEATURE_TYPE_ACCELERATED_GL,
       gpu::GPU_FEATURE_TYPE_GPU_RASTERIZATION,
       gpu::GPU_FEATURE_TYPE_ACCELERATED_WEBGL,
-      gpu::GPU_FEATURE_TYPE_ACCELERATED_WEBGL2};
+      gpu::GPU_FEATURE_TYPE_ACCELERATED_WEBGL2,
+      gpu::GPU_FEATURE_TYPE_ACCELERATED_WEBGPU};
   const std::string kGpuBlocklistFeatureHistogramNames[] = {
       "GPU.BlocklistFeatureTestResults.Accelerated2dCanvas",
       "GPU.BlocklistFeatureTestResults.GpuCompositing",
       "GPU.BlocklistFeatureTestResults.GpuRasterization",
       "GPU.BlocklistFeatureTestResults.Webgl",
-      "GPU.BlocklistFeatureTestResults.Webgl2"};
+      "GPU.BlocklistFeatureTestResults.Webgl2",
+      "GPU.BlocklistFeatureTestResults.Webgpu"};
   const bool kGpuFeatureUserFlags[] = {
       command_line.HasSwitch(switches::kDisableAccelerated2dCanvas),
       command_line.HasSwitch(switches::kDisableGpu),
       command_line.HasSwitch(switches::kDisableGpuRasterization),
       command_line.HasSwitch(switches::kDisableWebGL),
       (command_line.HasSwitch(switches::kDisableWebGL) ||
-       command_line.HasSwitch(switches::kDisableWebGL2))};
+       command_line.HasSwitch(switches::kDisableWebGL2)),
+      !command_line.HasSwitch(switches::kEnableUnsafeWebGPU)};
   const size_t kNumFeatures =
       sizeof(kGpuFeatures) / sizeof(gpu::GpuFeatureType);
   for (size_t i = 0; i < kNumFeatures; ++i) {

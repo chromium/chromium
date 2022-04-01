@@ -12,6 +12,7 @@
 namespace gpu {
 
 class DecoderClient;
+struct GpuFeatureInfo;
 struct GpuPreferences;
 class MemoryTracker;
 class SharedContextState;
@@ -42,7 +43,7 @@ class GPU_GLES2_EXPORT WebGPUDecoder : public DecoderContext,
 
   // WebGPU-specific initialization that's different than DecoderContext's
   // Initialize that is tied to GLES2 concepts and a noop for WebGPU decoders.
-  virtual ContextResult Initialize() = 0;
+  virtual ContextResult Initialize(const GpuFeatureInfo& gpu_feature_info) = 0;
 
   ContextResult Initialize(const scoped_refptr<gl::GLSurface>& surface,
                            const scoped_refptr<gl::GLContext>& context,

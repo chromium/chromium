@@ -221,6 +221,14 @@ const GpuFeatureData GetGpuFeatureData(
      DisableInfo::NotProblem(), false},
     {"direct_rendering_display_compositor", gpu::kGpuFeatureStatusEnabled,
      !features::IsDrDcEnabled(), DisableInfo::NotProblem(), false},
+    {"webgpu",
+     SafeGetFeatureStatus(gpu_feature_info,
+                          gpu::GPU_FEATURE_TYPE_ACCELERATED_WEBGPU),
+     !command_line.HasSwitch(switches::kEnableUnsafeWebGPU) &&
+         !base::FeatureList::IsEnabled(features::kWebGPUService),
+     DisableInfo::Problem(
+         "WebGPU has been disabled via blocklist or the command line."),
+     false},
   };
   DCHECK(index < std::size(kGpuFeatureData));
   *eof = (index == std::size(kGpuFeatureData) - 1);
@@ -275,7 +283,8 @@ base::Value GetFeatureStatusImpl(GpuFeatureInfoType type) {
         status += "_on";
       }
       if ((gpu_feature_data.name == "webgl" ||
-           gpu_feature_data.name == "webgl2") &&
+           gpu_feature_data.name == "webgl2" ||
+           gpu_feature_data.name == "webgpu") &&
           is_gpu_compositing_disabled)
         status += "_readback";
       if (gpu_feature_data.name == "rasterization") {

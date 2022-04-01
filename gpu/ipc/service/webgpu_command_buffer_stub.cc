@@ -127,7 +127,7 @@ gpu::ContextResult WebGPUCommandBufferStub::Initialize(
       channel_->sync_point_manager()->CreateSyncPointClientState(
           CommandBufferNamespace::GPU_IO, command_buffer_id_, sequence_id_);
 
-  result = decoder->Initialize();
+  result = decoder->Initialize(manager->gpu_feature_info());
   if (result != gpu::ContextResult::kSuccess) {
     DLOG(ERROR) << "Failed to initialize decoder.";
     return result;

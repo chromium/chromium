@@ -281,6 +281,7 @@ export function makeInfoView(browserBridge) {
         'video_encode': 'Video Encode',
         'direct_rendering_display_compositor':
             'Direct Rendering Display Compositor',
+        'webgpu': 'WebGPU',
       };
 
       const statusMap = {

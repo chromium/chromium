@@ -37,7 +37,7 @@ class WebGPUDecoderTest : public ::testing::Test {
     decoder_.reset(WebGPUDecoder::Create(
         decoder_client_.get(), command_buffer_service_.get(), nullptr, nullptr,
         &outputter_, GpuPreferences(), nullptr));
-    ASSERT_EQ(decoder_->Initialize(), ContextResult::kSuccess);
+    ASSERT_EQ(decoder_->Initialize(GpuFeatureInfo()), ContextResult::kSuccess);
 
     constexpr uint32_t kAdapterClientID = 0;
     cmds::RequestAdapter requestAdapterCmd;

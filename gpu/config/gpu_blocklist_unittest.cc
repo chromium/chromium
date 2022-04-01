@@ -101,6 +101,9 @@ GPU_BLOCKLIST_FEATURE_TEST(GL, GPU_FEATURE_TYPE_ACCELERATED_GL)
 
 GPU_BLOCKLIST_FEATURE_TEST(Vulkan, GPU_FEATURE_TYPE_VULKAN)
 
+GPU_BLOCKLIST_FEATURE_TEST(AcceleratedWebGPU,
+                           GPU_FEATURE_TYPE_ACCELERATED_WEBGPU)
+
 // Test for invariant "Assume the newly last added entry has the largest ID".
 // See GpuControlList::GpuControlList.
 // It checks software_rendering_list.json

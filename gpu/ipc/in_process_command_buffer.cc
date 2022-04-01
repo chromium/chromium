@@ -498,7 +498,8 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
             this, command_buffer_.get(), task_executor_->shared_image_manager(),
             gpu_dependency_->memory_tracker(), task_executor_->outputter(),
             task_executor_->gpu_preferences(), context_state_));
-    gpu::ContextResult result = webgpu_decoder->Initialize();
+    gpu::ContextResult result =
+        webgpu_decoder->Initialize(task_executor_->gpu_feature_info());
     if (result != gpu::ContextResult::kSuccess) {
       DestroyOnGpuThread();
       DLOG(ERROR) << "Failed to initialize WebGPU decoder.";
