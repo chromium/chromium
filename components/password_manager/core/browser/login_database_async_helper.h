@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
+#include "components/password_manager/core/browser/password_store_backend_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_store_sync.h"
 
 namespace syncer {
@@ -41,7 +42,8 @@ class LoginDatabaseAsyncHelper : private PasswordStoreSync {
       base::RepeatingClosure sync_enabled_or_disabled_cb);
 
   // Synchronous implementation of PasswordStoreBackend interface.
-  LoginsResult GetAllLogins();
+  LoginsResult GetAllLogins(
+      PasswordStoreBackendMetricsRecorder metrics_recorder);
   LoginsResult GetAutofillableLogins();
   LoginsResult FillMatchingLogins(const std::vector<PasswordFormDigest>& forms,
                                   bool include_psl);

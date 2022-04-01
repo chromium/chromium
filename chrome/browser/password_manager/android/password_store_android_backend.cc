@@ -150,58 +150,10 @@ PasswordStoreAndroidBackendBridge::Account GetAccount(
 
 }  // namespace
 
-PasswordStoreAndroidBackend::MetricsRecorder::MetricsRecorder() = default;
-
-PasswordStoreAndroidBackend::MetricsRecorder::MetricsRecorder(
-    MetricInfix metric_infix)
-    : metric_infix_(std::move(metric_infix)) {}
-
-PasswordStoreAndroidBackend::MetricsRecorder::MetricsRecorder(
-    MetricsRecorder&&) = default;
-
-PasswordStoreAndroidBackend::MetricsRecorder&
-PasswordStoreAndroidBackend::MetricsRecorder::MetricsRecorder::operator=(
-    MetricsRecorder&&) = default;
-
-PasswordStoreAndroidBackend::MetricsRecorder::~MetricsRecorder() = default;
-
-void PasswordStoreAndroidBackend::MetricsRecorder::RecordMetrics(
-    bool success,
-    absl::optional<AndroidBackendError> error) const {
-  auto BuildMetricName = [this](base::StringPiece suffix) {
-    return base::StrCat({"PasswordManager.PasswordStoreAndroidBackend.",
-                         *metric_infix_, ".", suffix});
-  };
-  base::TimeDelta duration = base::Time::Now() - start_;
-  base::UmaHistogramMediumTimes(BuildMetricName("Latency"), duration);
-  base::UmaHistogramBoolean(BuildMetricName("Success"), success);
-  if (!error.has_value())
-    return;
-
-  DCHECK(!success);
-  // In case of AndroidBackend error, we report additional metrics.
-  base::UmaHistogramEnumeration(
-      "PasswordManager.PasswordStoreAndroidBackend.ErrorCode",
-      error.value().type);
-  base::UmaHistogramEnumeration(BuildMetricName("ErrorCode"),
-                                error.value().type);
-  if (error.value().type == AndroidBackendErrorType::kExternalError) {
-    DCHECK(error.value().api_error_code.has_value());
-    base::HistogramBase* histogram = base::SparseHistogram::FactoryGet(
-        "PasswordManager.PasswordStoreAndroidBackend.APIError",
-        base::HistogramBase::kUmaTargetedHistogramFlag);
-    histogram->Add(error.value().api_error_code.value());
-    histogram = base::SparseHistogram::FactoryGet(
-        BuildMetricName("APIError"),
-        base::HistogramBase::kUmaTargetedHistogramFlag);
-    histogram->Add(error.value().api_error_code.value());
-  }
-}
-
 class PasswordStoreAndroidBackend::ClearAllLocalPasswordsMetricRecorder {
  public:
   explicit ClearAllLocalPasswordsMetricRecorder(
-      PasswordStoreAndroidBackend::MetricsRecorder metrics_recorder)
+      PasswordStoreBackendMetricsRecorder metrics_recorder)
       : metrics_recorder_(std::move(metrics_recorder)) {}
 
   void OnAllRemovalsFinished() {
@@ -229,20 +181,20 @@ class PasswordStoreAndroidBackend::ClearAllLocalPasswordsMetricRecorder {
  private:
   int total_count_ = 0;
   int failure_count_ = 0;
-  MetricsRecorder metrics_recorder_;
+  PasswordStoreBackendMetricsRecorder metrics_recorder_;
 };
 
 PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler() = default;
 
 PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
     LoginsOrErrorReply callback,
-    MetricsRecorder metrics_recorder)
+    PasswordStoreBackendMetricsRecorder metrics_recorder)
     : success_callback_(std::move(callback)),
       metrics_recorder_(std::move(metrics_recorder)) {}
 
 PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
     PasswordStoreChangeListReply callback,
-    MetricsRecorder metrics_recorder)
+    PasswordStoreBackendMetricsRecorder metrics_recorder)
     : success_callback_(std::move(callback)),
       metrics_recorder_(std::move(metrics_recorder)) {}
 
@@ -458,7 +410,8 @@ void PasswordStoreAndroidBackend::DisableAutoSignInForOriginsAsync(
   // this callback more gracefully when it's implemented.
   PasswordStoreChangeListReply record_metrics_and_run_completion =
       base::BindOnce(
-          [](MetricsRecorder metrics_recorder, base::OnceClosure completion,
+          [](PasswordStoreBackendMetricsRecorder metrics_recorder,
+             base::OnceClosure completion,
              absl::optional<PasswordStoreChangeList> changes) {
             // Errors are not recorded at the moment.
             // TODO(https://crbug.com/1278807): Implement error handling, when
@@ -467,7 +420,9 @@ void PasswordStoreAndroidBackend::DisableAutoSignInForOriginsAsync(
                                            /*error=*/absl::nullopt);
             std::move(completion).Run();
           },
-          MetricsRecorder(MetricInfix("DisableAutoSignInForOriginsAsync")),
+          PasswordStoreBackendMetricsRecorder(
+              ClassInfix("PasswordStoreAndroidBackend"),
+              MetricInfix("DisableAutoSignInForOriginsAsync")),
           std::move(completion));
 
   GetAllLoginsAsync(
@@ -492,7 +447,7 @@ PasswordStoreAndroidBackend::CreateSyncControllerDelegate() {
 void PasswordStoreAndroidBackend::ClearAllLocalPasswords() {
   LoginsOrErrorReply cleaning_callback = base::BindOnce(
       [](base::WeakPtr<PasswordStoreAndroidBackend> weak_self,
-         MetricsRecorder metrics_recorder,
+         PasswordStoreBackendMetricsRecorder metrics_recorder,
          LoginsResultOrError logins_or_error) {
         if (!weak_self || absl::holds_alternative<PasswordStoreBackendError>(
                               logins_or_error)) {
@@ -529,7 +484,9 @@ void PasswordStoreAndroidBackend::ClearAllLocalPasswords() {
         std::move(callbacks_chain).Run();
       },
       weak_ptr_factory_.GetWeakPtr(),
-      MetricsRecorder(MetricInfix("ClearAllLocalPasswords")));
+      PasswordStoreBackendMetricsRecorder(
+          ClassInfix("PasswordStoreAndroidBackend"),
+          MetricInfix("ClearAllLocalPasswords")));
 
   GetAllLoginsForAccount(PasswordStoreOperationTarget::kLocalStorage,
                          std::move(cleaning_callback));
@@ -592,7 +549,9 @@ void PasswordStoreAndroidBackend::QueueNewJob(JobId job_id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   request_for_job_.emplace(
       job_id, JobReturnHandler(std::move(callback),
-                               MetricsRecorder(std::move(metric_infix))));
+                               PasswordStoreBackendMetricsRecorder(
+                                   ClassInfix("PasswordStoreAndroidBackend"),
+                                   std::move(metric_infix))));
 }
 
 PasswordStoreAndroidBackend::JobReturnHandler
@@ -660,8 +619,8 @@ PasswordStoreAndroidBackend::ReportMetricsAndInvokeCallbackForLoginsRetrieval(
   // TODO(https://crbug.com/1229655) Switch to using base::PassThrough to handle
   // this callback more gracefully when it's implemented.
   return base::BindOnce(
-      [](MetricsRecorder metrics_recorder, LoginsReply callback,
-         LoginsResultOrError results) {
+      [](PasswordStoreBackendMetricsRecorder metrics_recorder,
+         LoginsReply callback, LoginsResultOrError results) {
         metrics_recorder.RecordMetrics(
             /*success=*/!(
                 absl::holds_alternative<PasswordStoreBackendError>(results)),
@@ -669,7 +628,9 @@ PasswordStoreAndroidBackend::ReportMetricsAndInvokeCallbackForLoginsRetrieval(
         std::move(callback).Run(
             GetLoginsOrEmptyListOnFailure(std::move(results)));
       },
-      MetricsRecorder(metric_infix), std::move(callback));
+      PasswordStoreBackendMetricsRecorder(
+          ClassInfix("PasswordStoreAndroidBackend"), metric_infix),
+      std::move(callback));
 }
 
 // static
@@ -680,7 +641,7 @@ PasswordStoreChangeListReply PasswordStoreAndroidBackend::
   // TODO(https://crbug.com/1229655) Switch to using base::PassThrough to handle
   // this callback more gracefully when it's implemented.
   return base::BindOnce(
-      [](MetricsRecorder metrics_recorder,
+      [](PasswordStoreBackendMetricsRecorder metrics_recorder,
          PasswordStoreChangeListReply callback,
          absl::optional<PasswordStoreChangeList> results) {
         // Errors are not recorded at the moment.
@@ -690,7 +651,9 @@ PasswordStoreChangeListReply PasswordStoreAndroidBackend::
                                        /*error=*/absl::nullopt);
         std::move(callback).Run(std::move(results));
       },
-      MetricsRecorder(metric_infix), std::move(callback));
+      PasswordStoreBackendMetricsRecorder(
+          ClassInfix("PasswordStoreAndroidBackend"), metric_infix),
+      std::move(callback));
 }
 
 void PasswordStoreAndroidBackend::GetAllLoginsForAccount(

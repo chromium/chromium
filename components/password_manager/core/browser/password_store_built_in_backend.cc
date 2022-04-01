@@ -59,11 +59,15 @@ void PasswordStoreBuiltInBackend::GetAllLoginsAsync(
     LoginsOrErrorReply callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(helper_);
+  PasswordStoreBackendMetricsRecorder metrics_recorder =
+      PasswordStoreBackendMetricsRecorder(
+          ClassInfix("PasswordStoreBuiltInBackend"),
+          MetricInfix("GetAllLoginsAsync"));
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(
-          &LoginDatabaseAsyncHelper::GetAllLogins,
-          base::Unretained(helper_.get())),  // Safe until `Shutdown()`.
+      base::BindOnce(&LoginDatabaseAsyncHelper::GetAllLogins,
+                     base::Unretained(helper_.get()),
+                     std::move(metrics_recorder)),  // Safe until `Shutdown()`.
       std::move(callback));
 }
 

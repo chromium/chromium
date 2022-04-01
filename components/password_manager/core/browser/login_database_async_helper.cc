@@ -74,22 +74,34 @@ bool LoginDatabaseAsyncHelper::Initialize(
   return success;
 }
 
-LoginsResult LoginDatabaseAsyncHelper::GetAllLogins() {
+LoginsResult LoginDatabaseAsyncHelper::GetAllLogins(
+    PasswordStoreBackendMetricsRecorder metrics_recorder) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   PrimaryKeyToFormMap key_to_form_map;
 
-  if (!login_db_)
+  if (!login_db_) {
+    metrics_recorder.RecordMetrics(
+        /*success=*/false,
+        /*error=*/absl::optional<ErrorFromPasswordStoreOrAndroidBackend>(
+            PasswordStoreBackendError::kUnrecoverable));
     return {};
+  }
   FormRetrievalResult result = login_db_->GetAllLogins(&key_to_form_map);
   if (result != FormRetrievalResult::kSuccess &&
-      result != FormRetrievalResult::kEncryptionServiceFailureWithPartialData)
+      result != FormRetrievalResult::kEncryptionServiceFailureWithPartialData) {
+    metrics_recorder.RecordMetrics(
+        /*success=*/false,
+        /*error=*/absl::optional<ErrorFromPasswordStoreOrAndroidBackend>(
+            PasswordStoreBackendError::kUnrecoverable));
     return {};
+  }
 
   std::vector<std::unique_ptr<PasswordForm>> obtained_forms;
   obtained_forms.reserve(key_to_form_map.size());
   for (auto& pair : key_to_form_map) {
     obtained_forms.push_back(std::move(pair.second));
   }
+  metrics_recorder.RecordMetrics(/*success=*/true, /*error=*/absl::nullopt);
   return obtained_forms;
 }
 
