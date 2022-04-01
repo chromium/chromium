@@ -14,6 +14,7 @@
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/services/nearby/public/cpp/nearby_client_uuids.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
@@ -308,6 +309,10 @@ void BluetoothNotificationController::OnGetAdapter(
 }
 
 void BluetoothNotificationController::NotifyAdapterDiscoverable() {
+  // Do not show toast in kiosk app mode.
+  if (Shell::Get()->session_controller()->IsRunningInAppMode())
+    return;
+
   // If Nearby Share has made the local device discoverable, do not
   // unnecessarily display this toast.
   // TODO(crbug.com/1155669): Generalize this logic to prevent leaking Nearby
