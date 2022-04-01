@@ -63,7 +63,7 @@ class UrlParamClassificationComponentInstallerTest : public ::testing::Test {
 
   void SetComponentFileContents(base::StringPiece content) {
     base::FilePath path = component_install_dir_.GetPath().Append(
-        FILE_PATH_LITERAL("url_param_classifications.pb"));
+        FILE_PATH_LITERAL("url-param-filter-list.textproto"));
     CHECK(base::WriteFile(path, content));
     CHECK(base::PathExists(path));
   }
