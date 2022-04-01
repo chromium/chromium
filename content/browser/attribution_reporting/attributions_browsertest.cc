@@ -636,57 +636,6 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
-                       ConversionRegisteredWithEmbedderDisallow_NoData) {
-  MockAttributionReportingContentBrowserClient browser_client;
-  EXPECT_CALL(browser_client, IsConversionMeasurementOperationAllowed)
-      .WillRepeatedly(Return(false));
-  ScopedContentBrowserClientSetting setting(&browser_client);
-
-  // Expected reports must be registered before the server starts.
-  ExpectedReportWaiter expected_report(
-      GURL("https://a.test/.well-known/attribution-reporting/"
-           "report-event-attribution"),
-      /*body=*/base::Value(), https_server());
-  ASSERT_TRUE(https_server()->Start());
-
-  GURL impression_url = https_server()->GetURL(
-      "a.test", "/attribution_reporting/page_with_impression_creator.html");
-  EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
-
-  // Create an anchor tag with impression attributes and click the link. By
-  // default the target is set to "_top".
-  GURL conversion_url = https_server()->GetURL(
-      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
-  EXPECT_TRUE(
-      ExecJs(web_contents(),
-             JsReplace(R"(
-    createImpressionTag({id: 'link',
-                        url: $1,
-                        data: '1',
-                        destination: $2});)",
-                       conversion_url, url::Origin::Create(conversion_url))));
-
-  TestNavigationObserver observer(web_contents());
-  EXPECT_TRUE(ExecJs(shell(), "simulateClick('link');"));
-  observer.Wait();
-
-  // Register a conversion with the original page as the reporting origin.
-  EXPECT_TRUE(ExecJs(web_contents(),
-                     JsReplace("registerConversion({data: 7, origin: $1})",
-                               url::Origin::Create(impression_url))));
-
-  // Since we want to verify that a report _isn't_ sent, we can't really wait on
-  // any event here. The best thing we can do is just impose a short delay and
-  // verify the browser didn't send anything. Worst case, this should start
-  // flakily failing if the logic breaks.
-  base::RunLoop run_loop;
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
-  run_loop.Run();
-  EXPECT_FALSE(expected_report.HasRequest());
-}
-
-IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
                        EventSourceImpressionWithDebugKeyConversion_ReportSent) {
   // Expected reports must be registered before the server starts.
   ExpectedReportWaiter expected_report(
