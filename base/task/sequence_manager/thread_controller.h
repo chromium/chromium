@@ -10,6 +10,7 @@
 
 #include "base/base_export.h"
 #include "base/message_loop/message_pump.h"
+#include "base/profiler/sample_metadata.h"
 #include "base/run_loop.h"
 #include "base/task/sequence_manager/lazy_now.h"
 #include "base/task/sequence_manager/tasks.h"
@@ -216,7 +217,7 @@ class ThreadController {
    private:
     class RunLevel {
      public:
-      explicit RunLevel(State initial_state);
+      explicit RunLevel(State initial_state, bool is_nested);
       ~RunLevel();
 
       // Moveable for STL compat. Marks |other| as idle so it noops on
@@ -230,6 +231,10 @@ class ThreadController {
 
      private:
       State state_ = kIdle;
+      bool is_nested_;
+
+      SampleMetadata thread_controller_sample_metadata_;
+      size_t thread_controller_active_id_ = 0;
     };
 
     std::stack<RunLevel, std::vector<RunLevel>> run_levels_;

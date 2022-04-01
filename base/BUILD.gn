@@ -1912,6 +1912,7 @@ mixed_component("base") {
       "files/file_path_watcher_stub.cc",
       "memory/page_size_nacl.cc",
       "process/process_stubs.cc",
+      "profiler/stack_sampler_posix.cc",
       "sync_socket_nacl.cc",
       "threading/platform_thread_linux.cc",
     ]

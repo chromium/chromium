@@ -18,7 +18,7 @@ ThreadController::RunLevelTracker::~RunLevelTracker() {
 }
 
 void ThreadController::RunLevelTracker::OnRunLoopStarted(State initial_state) {
-  run_levels_.emplace(initial_state);
+  run_levels_.emplace(initial_state, run_levels_.empty());
 }
 
 void ThreadController::RunLevelTracker::OnRunLoopEnded() {
@@ -45,7 +45,7 @@ void ThreadController::RunLevelTracker::OnTaskStarted() {
   // Already running a task?
   if (run_levels_.top().state() == kRunningTask) {
     // #task-in-task-implies-nested
-    run_levels_.emplace(kRunningTask);
+    run_levels_.emplace(kRunningTask, true);
   } else {
     // Simply going from kIdle or kSelectingNextTask to kRunningTask.
     run_levels_.top().UpdateState(kRunningTask);
@@ -78,7 +78,7 @@ void ThreadController::RunLevelTracker::OnIdle() {
     // DoIdleWork() can be invoked without DoWork() being first invoked at this
     // run-level. We need to create a nested kIdle RunLevel or we break
     // #done-task-while-not-running-implies-done-nested.
-    run_levels_.emplace(kIdle);
+    run_levels_.emplace(kIdle, true);
   } else {
     // Simply going kIdle at the current run-level.
     run_levels_.top().UpdateState(kIdle);
@@ -96,16 +96,30 @@ void ThreadController::RunLevelTracker::SetTraceObserverForTesting(
 ThreadController::RunLevelTracker::TraceObserverForTesting*
     ThreadController::RunLevelTracker::trace_observer_for_testing_ = nullptr;
 
-ThreadController::RunLevelTracker::RunLevel::RunLevel(State initial_state) {
+ThreadController::RunLevelTracker::RunLevel::RunLevel(State initial_state,
+                                                      bool is_nested)
+    : is_nested_(is_nested),
+      thread_controller_sample_metadata_("ThreadController active",
+                                         base::SampleMetadataScope::kThread) {
   UpdateState(initial_state);
 }
 
 ThreadController::RunLevelTracker::RunLevel::~RunLevel() {
   UpdateState(kIdle);
+  // Intentionally ordered after UpdateState(kIdle), reinstantiates
+  // thread_controller_sample_metadata_ when yielding back to a parent RunLevel
+  // (which is active by definition as it is currently running this one).
+  if (is_nested_) {
+    thread_controller_sample_metadata_.Set(++thread_controller_active_id_);
+  }
 }
 
 ThreadController::RunLevelTracker::RunLevel::RunLevel(RunLevel&& other)
-    : state_(std::exchange(other.state_, kIdle)) {}
+    : state_(std::exchange(other.state_, kIdle)),
+      is_nested_(std::exchange(other.is_nested_, false)),
+      thread_controller_sample_metadata_(
+          other.thread_controller_sample_metadata_),
+      thread_controller_active_id_(other.thread_controller_active_id_) {}
 ThreadController::RunLevelTracker::RunLevel&
 ThreadController::RunLevelTracker::RunLevel::operator=(RunLevel&& other) {
   state_ = std::exchange(other.state_, kIdle);
@@ -128,7 +142,11 @@ void ThreadController::RunLevelTracker::RunLevel::UpdateState(State new_state) {
   // Change of state.
   if (is_active) {
     TRACE_EVENT_BEGIN0("base", "ThreadController active");
+    // Overriding the annotation from the previous RunLevel is intentional. Only
+    // the top RunLevel is ever updated, which holds the relevant state.
+    thread_controller_sample_metadata_.Set(++thread_controller_active_id_);
   } else {
+    thread_controller_sample_metadata_.Remove();
     TRACE_EVENT_END0("base", "ThreadController active");
     // TODO(crbug.com/1021571): Remove this once fixed.
     PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
