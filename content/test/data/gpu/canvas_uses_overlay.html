@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Canvas Uses CALayerOVerlay Test</title>
+
+<script>
+// '--enable-gpu-benchmarking' is required for this test.
+function errorCodeHandler(errorCode) {
+  // gfx::kCALayerSuccess = 0
+  if (errorCode == 0) {
+    window.domAutomationController.send("SUCCESS");
+  } else {
+    console.log("CALayerOverlay is not used. Error code:" , errorCode);
+    window.domAutomationController.send("FAILED");
+  }
+}
+
+function main() {
+  const canvas = document.getElementById('canvas');
+  const context = canvas.getContext('2d');
+
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.fillStyle = "Red";
+  context.fillRect(0, 0, 80, 80);
+
+  function draw() {
+     if (!chrome.gpuBenchmarking.addCoreAnimationStatusEventListener(errorCodeHandler)) {
+       console.log("addCoreAnimationStatusEventListener fails!");
+       window.domAutomationController.send("FAILED");
+     }
+
+     // if gpuBenchmarking is not supported, the test will not reach here and
+     // the dark green quad will not be drawn.
+     context.clearRect(0, 0, canvas.width, canvas.height);
+     context.fillStyle = "DarkGreen";
+     context.fillRect(100, 0, 100, 100);
+  }
+
+  window.requestAnimationFrame(draw);
+}
+
+</script>
+</head>
+<body onload="main()">
+<canvas id="canvas" width="200" height="200" style="position:absolute; top:0px; left:0px"</canvas>
+</body>
+</html>

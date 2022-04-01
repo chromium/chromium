@@ -739,6 +739,12 @@ class PixelTestPages():
                       base_name + '_CoreAnimationStatusApiWithError',
                       test_rect=[0, 0, 300, 300],
                       browser_args=no_overlays_args),
+
+        # --enable-gpu-benchmarking is required to run this test. it's added to
+        # the pixel tests by default.
+        PixelTestPage('canvas_uses_overlay.html',
+                      base_name + '_CanvasUsesOverlay',
+                      test_rect=[0, 0, 200, 200]),
     ]
 
   # Pages that should be run only on dual-GPU MacBook Pros (at the
