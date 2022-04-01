@@ -60,7 +60,7 @@
     <dimen name="divider_height">1dp</dimen>
 
     <!-- Drag shadow dimens -->
-    <dimen name="drag_shadow_min_width">48dp</dimen>
+    <dimen name="drag_shadow_min_size">48dp</dimen>
 
     <!-- Misc -->
     <dimen name="default_ripple_background_border_size">0dp</dimen>
