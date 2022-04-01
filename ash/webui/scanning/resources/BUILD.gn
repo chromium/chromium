@@ -157,9 +157,10 @@ js_library("scanning_app") {
     ":source_select",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:cr_container_shadow_behavior.m",
-    "//ui/webui/resources/cr_elements/cr_toast:cr_toast",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_toast/cr_toast_externs.js" ]
 }
 
 js_library("scanning_app_types") {

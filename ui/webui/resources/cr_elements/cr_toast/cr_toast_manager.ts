@@ -11,23 +11,30 @@ import './cr_toast.js';
 
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assert} from '../../js/assert.m.js';
+import {assert} from '../../js/assert_ts.js';
 
-/** @private {?CrToastManagerElement} */
-let toastManagerInstance = null;
+import {CrToastElement} from './cr_toast.js';
 
-/** @return {!CrToastManagerElement} */
-export function getToastManager() {
-  return assert(toastManagerInstance);
+let toastManagerInstance: CrToastManagerElement|null = null;
+
+export function getToastManager(): CrToastManagerElement {
+  assert(toastManagerInstance);
+  return toastManagerInstance;
 }
 
-/** @param {?CrToastManagerElement} instance */
-function setInstance(instance) {
+function setInstance(instance: CrToastManagerElement|null) {
   assert(!instance || !toastManagerInstance);
   toastManagerInstance = instance;
 }
 
-/** @polymer */
+export interface CrToastManagerElement {
+  $: {
+    content: HTMLElement,
+    slotted: HTMLSlotElement,
+    toast: CrToastElement,
+  };
+}
+
 export class CrToastManagerElement extends PolymerElement {
   static get is() {
     return 'cr-toast-manager';
@@ -46,45 +53,42 @@ export class CrToastManagerElement extends PolymerElement {
     };
   }
 
-  /** @return {boolean} */
-  get isToastOpen() {
+  duration: number;
+
+  get isToastOpen(): boolean {
     return this.$.toast.open;
   }
 
-  /** @return {boolean} */
-  get slottedHidden() {
+  get slottedHidden(): boolean {
     return this.$.slotted.hidden;
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     setInstance(this);
   }
 
-  /** @override */
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     setInstance(null);
   }
 
   /**
-   * @param {string} label The label to display inside the toast.
-   * @param {boolean=} hideSlotted
+   * @param label The label to display inside the toast.
    */
-  show(label, hideSlotted = false) {
+  show(label: string, hideSlotted: boolean = false) {
     this.$.content.textContent = label;
     this.showInternal_(hideSlotted);
   }
 
   /**
    * Shows the toast, making certain text fragments collapsible.
-   * @param {!Array<!{value: string, collapsible: boolean}>} pieces
-   * @param {boolean=} hideSlotted
    */
-  showForStringPieces(pieces, hideSlotted = false) {
+  showForStringPieces(
+      pieces: Array<{value: string, collapsible: boolean}>,
+      hideSlotted: boolean = false) {
     const content = this.$.content;
     content.textContent = '';
     pieces.forEach(function(p) {
@@ -104,17 +108,19 @@ export class CrToastManagerElement extends PolymerElement {
     this.showInternal_(hideSlotted);
   }
 
-  /**
-   * @param {boolean} hideSlotted
-   * @private
-   */
-  showInternal_(hideSlotted) {
+  private showInternal_(hideSlotted: boolean) {
     this.$.slotted.hidden = hideSlotted;
     this.$.toast.show();
   }
 
   hide() {
     this.$.toast.hide();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-toast-manager': CrToastManagerElement;
   }
 }
 

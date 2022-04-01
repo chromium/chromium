@@ -9,7 +9,10 @@ import '../shared_vars_css.m.js';
 
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @polymer */
+export interface CrToastElement {
+  _setOpen(open: boolean): void;
+}
+
 export class CrToastElement extends PolymerElement {
   static get is() {
     return 'cr-toast';
@@ -35,22 +38,18 @@ export class CrToastElement extends PolymerElement {
     };
   }
 
+  duration: number;
+  open: boolean;
+  private hideTimeoutId_: number|null = null;
+
   static get observers() {
     return ['resetAutoHide_(duration, open)'];
   }
 
-  constructor() {
-    super();
-
-    /** @private {?number} */
-    this.hideTimeoutId_ = null;
-  }
-
   /**
    * Cancels existing auto-hide, and sets up new auto-hide.
-   * @private
    */
-  resetAutoHide_() {
+  private resetAutoHide_() {
     if (this.hideTimeoutId_ !== null) {
       window.clearTimeout(this.hideTimeoutId_);
       this.hideTimeoutId_ = null;
@@ -98,6 +97,12 @@ export class CrToastElement extends PolymerElement {
   hide() {
     this.setAttribute('aria-hidden', 'true');
     this._setOpen(false);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-toast': CrToastElement;
   }
 }
 
