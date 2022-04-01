@@ -7,6 +7,9 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/sync/protocol/workspace_desk_specifics.pb.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace ash {
 class DeskTemplate;
@@ -24,6 +27,10 @@ namespace desks_storage {
 
 namespace desk_template_conversion {
 
+using SyncWindowOpenDisposition =
+    sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition;
+using SyncLaunchContainer = sync_pb::WorkspaceDeskSpecifics_LaunchContainer;
+
 // Converts a time field from sync protobufs to a time object.
 base::Time ProtoTimeToTime(int64_t proto_time);
 
@@ -40,6 +47,30 @@ std::unique_ptr<ash::DeskTemplate> ParseDeskTemplateFromPolicy(
 base::Value SerializeDeskTemplateAsPolicy(
     const ash::DeskTemplate* desk_template,
     apps::AppRegistryCache* app_cache);
+
+// Convert sync proto WindowOpenDisposition to base's WindowOpenDisposition.
+// This value is cast to int32_t by the caller to be assigned to the
+// `disposition` field in AppRestoreData.
+WindowOpenDisposition ToBaseWindowOpenDisposition(
+    SyncWindowOpenDisposition disposition);
+
+// Convert sync proto WindowOpenDisposition to base's WindowOpenDisposition.
+// This value is cast to int32_t by the caller to be assigned to the
+// `disposition` field in AppRestoreData.
+SyncWindowOpenDisposition FromBaseWindowOpenDisposition(
+    WindowOpenDisposition disposition);
+
+// Convert from apps::mojom::LaunchContainer to sunc proto LaunchContainer.
+// Assumes caller has cast `container` from int32_t to
+// apps::mojom::LaunchContainer.
+SyncLaunchContainer FromMojomLaunchContainer(
+    apps::mojom::LaunchContainer container);
+
+// Convert sync proto LaunchContainer to apps::Mojom::LaunchContainer
+// used in the AppRestoreData `container` field.  This value is cast to
+// int32_t by the caller to be assigned to the field in AppRestoreData.
+apps::mojom::LaunchContainer ToMojomLaunchContainer(
+    SyncLaunchContainer container);
 
 }  // namespace desk_template_conversion
 

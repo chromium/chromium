@@ -165,63 +165,6 @@ std::string GetAppId(const sync_pb::WorkspaceDeskSpecifics_App& app) {
   }
 }
 
-// Convert sync proto WindowOpenDisposition to base's WindowOpenDisposition.
-// This value is cast to int32_t by the caller to be assigned to the
-// `disposition` field in AppRestoreData.
-WindowOpenDisposition ToBaseWindowOpenDisposition(
-    SyncWindowOpenDisposition disposition) {
-  switch (disposition) {
-    case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_UNKNOWN:
-      return WindowOpenDisposition::UNKNOWN;
-    case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_CURRENT_TAB:
-      return WindowOpenDisposition::CURRENT_TAB;
-    case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_SINGLETON_TAB:
-      return WindowOpenDisposition::SINGLETON_TAB;
-    case sync_pb::
-        WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_FOREGROUND_TAB:
-      return WindowOpenDisposition::NEW_FOREGROUND_TAB;
-    case sync_pb::
-        WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_BACKGROUND_TAB:
-      return WindowOpenDisposition::NEW_BACKGROUND_TAB;
-    case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_POPUP:
-      return WindowOpenDisposition::NEW_POPUP;
-    case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_WINDOW:
-      return WindowOpenDisposition::NEW_WINDOW;
-    case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_SAVE_TO_DISK:
-      return WindowOpenDisposition::SAVE_TO_DISK;
-    case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_OFF_THE_RECORD:
-      return WindowOpenDisposition::OFF_THE_RECORD;
-    case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_IGNORE_ACTION:
-      return WindowOpenDisposition::IGNORE_ACTION;
-    case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_SWITCH_TO_TAB:
-      return WindowOpenDisposition::SWITCH_TO_TAB;
-    case sync_pb::
-        WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_PICTURE_IN_PICTURE:
-      return WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
-  }
-}
-
-// Convert sync proto LaunchContainer to apps::Mojom::LaunchContainer
-// used in the AppRestoreData `container` field.  This value is cast to
-// int32_t by the caller to be assigned to the field in AppRestoreData.
-apps::mojom::LaunchContainer ToMojomLaunchContainer(LaunchContainer container) {
-  switch (container) {
-    case sync_pb::
-        WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_UNSPECIFIED:
-      return apps::mojom::LaunchContainer::kLaunchContainerWindow;
-    case sync_pb::
-        WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_WINDOW:
-      return apps::mojom::LaunchContainer::kLaunchContainerWindow;
-    case sync_pb::
-        WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_PANEL_DEPRECATED:
-      return apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated;
-    case sync_pb::WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_TAB:
-      return apps::mojom::LaunchContainer::kLaunchContainerTab;
-    case sync_pb::WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_NONE:
-      return apps::mojom::LaunchContainer::kLaunchContainerNone;
-  }
-}
-
 // Convert App proto to |app_restore::AppLaunchInfo|.
 std::unique_ptr<app_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
     const sync_pb::WorkspaceDeskSpecifics_App& app) {
@@ -238,13 +181,14 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
     app_launch_info->display_id = app.display_id();
 
   if (app.has_container()) {
-    app_launch_info->container =
-        static_cast<int32_t>(ToMojomLaunchContainer(app.container()));
+    app_launch_info->container = static_cast<int32_t>(
+        desk_template_conversion::ToMojomLaunchContainer(app.container()));
   }
 
   if (app.has_disposition()) {
-    app_launch_info->disposition =
-        static_cast<int32_t>(ToBaseWindowOpenDisposition(app.disposition()));
+    app_launch_info->disposition = static_cast<int32_t>(
+        desk_template_conversion::ToBaseWindowOpenDisposition(
+            app.disposition()));
   }
 
   if (app.has_app_name())
@@ -255,6 +199,8 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
   // so always default to 0 which is no action.
   // https://source.chromium.org/chromium/chromium/src/
   // +/main:ui/base/window_open_disposition.cc;l=34
+  //
+  // TODO(crbug.com/1311801): Add support for actual event_flag values.
   app_launch_info->event_flag = 0;
 
   switch (app.app().app_case()) {
@@ -331,67 +277,6 @@ chromeos::WindowStateType ToChromeOsWindowState(WindowState state) {
       return chromeos::WindowStateType::kPrimarySnapped;
     case WindowState::WorkspaceDeskSpecifics_WindowState_SECONDARY_SNAPPED:
       return chromeos::WindowStateType::kSecondarySnapped;
-  }
-}
-
-// Convert from apps::mojom::LaunchContainer to sunc proto LaunchContainer.
-// Assumes caller has cast `container` from int32_t to
-// apps::mojom::LaunchContainer.
-LaunchContainer FromMojomLaunchContainer(
-    apps::mojom::LaunchContainer container) {
-  switch (container) {
-    case apps::mojom::LaunchContainer::kLaunchContainerWindow:
-      return sync_pb::
-          WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_WINDOW;
-    case apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated:
-      return sync_pb::
-          WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_PANEL_DEPRECATED;
-    case apps::mojom::LaunchContainer::kLaunchContainerTab:
-      return sync_pb::
-          WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_TAB;
-    case apps::mojom::LaunchContainer::kLaunchContainerNone:
-      return sync_pb::
-          WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_NONE;
-  }
-}
-
-// Convert sync proto WindowOpenDisposition to base's WindowOpenDisposition.
-// This value is cast to int32_t by the caller to be assigned to the
-// `disposition` field in AppRestoreData.
-SyncWindowOpenDisposition FromBaseWindowOpenDisposition(
-    WindowOpenDisposition disposition) {
-  switch (disposition) {
-    case WindowOpenDisposition::UNKNOWN:
-      return sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_UNKNOWN;
-    case WindowOpenDisposition::CURRENT_TAB:
-      return sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_CURRENT_TAB;
-    case WindowOpenDisposition::SINGLETON_TAB:
-      return sync_pb::
-          WorkspaceDeskSpecifics_WindowOpenDisposition_SINGLETON_TAB;
-    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
-      return sync_pb::
-          WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_FOREGROUND_TAB;
-    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
-      return sync_pb::
-          WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_BACKGROUND_TAB;
-    case WindowOpenDisposition::NEW_POPUP:
-      return sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_POPUP;
-    case WindowOpenDisposition::NEW_WINDOW:
-      return sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_WINDOW;
-    case WindowOpenDisposition::SAVE_TO_DISK:
-      return sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_SAVE_TO_DISK;
-    case WindowOpenDisposition::OFF_THE_RECORD:
-      return sync_pb::
-          WorkspaceDeskSpecifics_WindowOpenDisposition_OFF_THE_RECORD;
-    case WindowOpenDisposition::IGNORE_ACTION:
-      return sync_pb::
-          WorkspaceDeskSpecifics_WindowOpenDisposition_IGNORE_ACTION;
-    case WindowOpenDisposition::SWITCH_TO_TAB:
-      return sync_pb::
-          WorkspaceDeskSpecifics_WindowOpenDisposition_SWITCH_TO_TAB;
-    case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
-      return sync_pb::
-          WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_PICTURE_IN_PICTURE;
   }
 }
 
@@ -516,8 +401,8 @@ void FillAppWithLaunchContainer(
     const app_restore::AppRestoreData* app_restore_data,
     WorkspaceDeskSpecifics_App* out_app) {
   if (app_restore_data->container.has_value()) {
-    out_app->set_container(
-        FromMojomLaunchContainer(static_cast<apps::mojom::LaunchContainer>(
+    out_app->set_container(desk_template_conversion::FromMojomLaunchContainer(
+        static_cast<apps::mojom::LaunchContainer>(
             app_restore_data->container.value())));
   }
 }
@@ -528,8 +413,9 @@ void FillAppWithWindowOpenDisposition(
     WorkspaceDeskSpecifics_App* out_app) {
   if (app_restore_data->disposition.has_value()) {
     out_app->set_disposition(
-        FromBaseWindowOpenDisposition(static_cast<WindowOpenDisposition>(
-            app_restore_data->disposition.value())));
+        desk_template_conversion::FromBaseWindowOpenDisposition(
+            static_cast<WindowOpenDisposition>(
+                app_restore_data->disposition.value())));
   }
 }
 

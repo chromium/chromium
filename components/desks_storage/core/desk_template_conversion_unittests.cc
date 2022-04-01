@@ -46,7 +46,8 @@ const std::string kValidTemplateBrowser =
     "\"url\":\"https://example.com/\"},{\"url\":\"https://"
     "example.com/"
     "2\"}],\"active_tab_index\":1,\"window_id\":0,"
-    "\"display_id\":\"100\",\"pre_minimized_window_state\":\"NORMAL\"}]}}";
+    "\"display_id\":\"100\",\"event_flag\":0,\"pre_minimized_window_state\":"
+    "\"NORMAL\"}]}}";
 const std::string kValidTemplateChromeAndProgressive =
     "{\"version\":1,\"uuid\":\"" + kTestUuidChromeAndProgressive +
     "\",\"name\":\"" + kChromePwaTemplateName +
@@ -56,13 +57,13 @@ const std::string kValidTemplateChromeAndProgressive =
     "\"left\":200,\"top\":200,\"height\":1000,\"width\":1000},\"window_state\":"
     "\"NORMAL\",\"z_index\":2,\"app_type\":\"CHROME_APP\",\"app_id\":\"" +
     kChromeAppId +
-    "\",\"window_id\":0,\"display_id\":\"100\",\"pre_"
+    "\",\"window_id\":0,\"display_id\":\"100\",\"event_flag\":0,\"pre_"
     "minimized_window_state\":\"NORMAL\"},{\"window_"
     "bound\":{\"left\":0,\"top\":0,\"height\":120,\"width\":120},\"window_"
     "state\":\"NORMAL\",\"z_index\":1,\"app_type\":\"PWA\",\"app_id\":\"" +
     kProgressiveAppid +
     "\",\"window_id\":1,\"display_id\":"
-    "\"100\",\"pre_minimized_window_state\":\"NORMAL\"}]}}";
+    "\"100\",\"event_flag\":0,\"pre_minimized_window_state\":\"NORMAL\"}]}}";
 
 apps::AppPtr MakeApp(const char* app_id,
                      const char* name,

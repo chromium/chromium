@@ -78,6 +78,7 @@ using testing::StrEq;
 constexpr char kTestPwaAppId[] = "test_pwa_app_id";
 constexpr char kTestChromeAppId[] = "test_chrome_app_id";
 constexpr char kTestArcAppId[] = "test_arc_app_id";
+constexpr char kTestArcAppTitle[] = "test_arc_app_title";
 constexpr char kUuidFormat[] = "9e186d5a-502e-49ce-9ee1-00000000000%d";
 constexpr char kAdminTemplateUuidFormat[] =
     "59dbe2b8-671f-4fd0-92ec-11111111100%d";
@@ -228,6 +229,8 @@ void FillExampleArcAppWindow(WorkspaceDeskSpecifics_App* app) {
   app->set_display_id(99887766l);
   app->set_z_index(233);
   app->set_window_id(2555);
+
+  app_window->set_title(kTestArcAppTitle);
 }
 
 WorkspaceDeskSpecifics ExampleWorkspaceDeskSpecifics(
@@ -594,6 +597,31 @@ TEST_F(DeskSyncBridgeTest, DeskTemplateConversionShouldBeLossless) {
       DeskSyncBridge::FromSyncProto(desk_proto);
   WorkspaceDeskSpecifics converted_desk_proto =
       bridge()->ToSyncProto(desk_template.get());
+
+  EXPECT_THAT(converted_desk_proto, EqualsSpecifics(desk_proto));
+}
+
+TEST_F(DeskSyncBridgeTest, DeskTemplateJsonConversionShouldBeLossless) {
+  CreateBridge();
+
+  WorkspaceDeskSpecifics desk_proto = ExampleWorkspaceDeskSpecifics(
+      kTestUuid1.AsLowercaseString(), "template 1");
+
+  std::unique_ptr<DeskTemplate> desk_template =
+      DeskSyncBridge::FromSyncProto(desk_proto);
+
+  base::Value template_value =
+      desk_template_conversion::SerializeDeskTemplateAsPolicy(
+          desk_template.get(), app_cache());
+
+  std::unique_ptr<ash::DeskTemplate> converted_desk_template =
+      desk_template_conversion::ParseDeskTemplateFromPolicy(template_value);
+
+  EXPECT_EQ(desk_template->desk_restore_data()->ConvertToValue(),
+            converted_desk_template->desk_restore_data()->ConvertToValue());
+
+  WorkspaceDeskSpecifics converted_desk_proto =
+      bridge()->ToSyncProto(converted_desk_template.get());
 
   EXPECT_THAT(converted_desk_proto, EqualsSpecifics(desk_proto));
 }
