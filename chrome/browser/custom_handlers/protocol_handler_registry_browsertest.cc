@@ -7,7 +7,6 @@
 
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
@@ -23,7 +22,6 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
@@ -220,39 +218,6 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest, FencedFrame) {
 
   // Ensure the registry is still empty.
   ASSERT_EQ(0u, registry->GetHandlersFor(url.scheme()).size());
-}
-
-class RegisterProtocolHandlerSubresourceWebBundlesBrowserTest
-    : public RegisterProtocolHandlerBrowserTest {
- public:
-  RegisterProtocolHandlerSubresourceWebBundlesBrowserTest() = default;
-  ~RegisterProtocolHandlerSubresourceWebBundlesBrowserTest() override = default;
-
-  void SetUp() override {
-    feature_list_.InitWithFeatures({features::kSubresourceWebBundles}, {});
-    RegisterProtocolHandlerBrowserTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerSubresourceWebBundlesBrowserTest,
-                       UrnProtocolHandler) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  GURL handler_url = embedded_test_server()->GetURL("/%s");
-  AddProtocolHandler("urn", handler_url);
-
-  std::u16string expected_title = u"OK";
-  content::TitleWatcher title_watcher(
-      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_test_server()->GetURL("/web_bundle/urn-handler-test.html")));
-
-  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 }
 
 using RegisterProtocolHandlerExtensionBrowserTest =

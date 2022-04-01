@@ -16,14 +16,6 @@ ProtocolHandlerThrottle::ProtocolHandlerThrottle(
 void ProtocolHandlerThrottle::WillStartRequest(
     network::ResourceRequest* request,
     bool* defer) {
-  // Don't translate the urn: scheme URL while loading the resource from the
-  // specified web bundle.
-  // TODO(https://crbug.com/1257045): Remove this when we drop urn: scheme
-  // support in WebBundles.
-  if (request->web_bundle_token_params &&
-      request->url.SchemeIs(url::kUrnScheme)) {
-    return;
-  }
   TranslateUrl(request->url);
 }
 
