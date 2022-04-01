@@ -39,15 +39,10 @@ WhatsNewPromoStatus GetWhatsNewPromoStatus();
 // Returns the URL for the alternative Discover Feed server.
 NSString* GetAlternateDiscoverFeedServerURL();
 
-// Returns true if the count of showing the First Follow modal should be reset
-// to zero.
-// TODO(crbug.com/1312124): Remove after launch.
-bool ShouldResetFirstFollowCount();
-
-// Should be called after the count has been reset so that the resetting flag
-// can be turned off.
-// TODO(crbug.com/1312124): Remove after launch.
-void DidResetFirstFollowCount();
+// Returns true if the prefs for the notice card views count and clicks count
+// should be reset to zero on feed start.
+// TODO(crbug.com/1189232): Remove after launch.
+bool ShouldResetNoticeCardOnFeedStart();
 
 // Whether memory debugging tools are enabled.
 bool IsMemoryDebuggingEnabled();
