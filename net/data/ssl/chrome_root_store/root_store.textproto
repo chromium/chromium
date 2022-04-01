@@ -5,7 +5,7 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 1
+version_major: 2
 
 # CN=Actalis Authentication Root CA, O=Actalis S.p.A./03358520967, L=Milan, C=IT
 trust_anchors {
@@ -332,11 +332,6 @@ trust_anchors {
   sha256_hex: "ebc5570c29018c4d67b1aa127baf12f703b4611ebc17b7dab5573894179b93fa"
 }
 
-# CN=Staat der Nederlanden Root CA - G3, O=Staat der Nederlanden, C=NL
-trust_anchors {
-  sha256_hex: "3c4fb0b95ab8b30032f432b86f535fe172c185d0fd39865837cf36187fa6f428"
-}
-
 # CN=Staat der Nederlanden EV Root CA, O=Staat der Nederlanden, C=NL
 trust_anchors {
   sha256_hex: "4d2491414cfe956746ec4cefa6cf6f72e28a1329432f9d8a907ac4cb5dadc15a"
@@ -355,11 +350,6 @@ trust_anchors {
 # CN=Hellenic Academic and Research Institutions RootCA 2015, O=Hellenic Academic and Research Institutions Cert. Authority, L=Athens, C=GR
 trust_anchors {
   sha256_hex: "a040929a02ce53b4acf4f2ffc6981ce4496f755e6d45fe0b2a692bcd52523f36"
-}
-
-# CN=Hellenic Academic and Research Institutions RootCA 2011, O=Hellenic Academic and Research Institutions Cert. Authority, C=GR
-trust_anchors {
-  sha256_hex: "bc104f15a48be709dca542a7e1d4b9df6f054527e802eaa92d595444258afe71"
 }
 
 # CN=IdenTrust Public Sector Root CA 1, O=IdenTrust, C=US
