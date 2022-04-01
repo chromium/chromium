@@ -297,8 +297,12 @@ std::string Command::CommandPlatform() {
   return values::kKeybindingPlatformChromeOs;
 #elif BUILDFLAG(IS_LINUX)
   return values::kKeybindingPlatformLinux;
+#elif BUILDFLAG(IS_FUCHSIA)
+  // TODO(crbug.com/1312215): Change this once we decide what string should be
+  // used for Fuchsia.
+  return values::kKeybindingPlatformLinux;
 #else
-  return "";
+#error Unsupported platform
 #endif
 }
 
