@@ -193,7 +193,7 @@ TEST_P(LinkLoaderPreloadTest, Preload) {
       LinkRelAttribute("preload"), kCrossOriginAttributeNotSet, String(),
       test_case.as, String(), String(), String(), String(),
       network::mojom::ReferrerPolicy::kDefault, KURL(NullURL(), test_case.href),
-      String(), String());
+      String(), String(), String());
   Expectations expectations = {
       test_case.priority, test_case.context, test_case.expecting_load,
       test_case.expecting_load ? params.href : NullURL(),
@@ -280,7 +280,7 @@ TEST_P(LinkLoaderPreloadMimeTypeTest, Preload) {
       LinkRelAttribute("preload"), kCrossOriginAttributeNotSet, test_case.type,
       test_case.as, String(), String(), String(), String(),
       network::mojom::ReferrerPolicy::kDefault, KURL(NullURL(), test_case.href),
-      String(), String());
+      String(), String(), String());
   Expectations expectations = {
       test_case.priority, test_case.context, test_case.expecting_load,
       test_case.expecting_load ? params.href : NullURL(),
@@ -310,11 +310,12 @@ class LinkLoaderPreloadMediaTest
 
 TEST_P(LinkLoaderPreloadMediaTest, Preload) {
   const auto& test_case = GetParam();
-  LinkLoadParameters params(
-      LinkRelAttribute("preload"), kCrossOriginAttributeNotSet, "image/gif",
-      "image", test_case.media, String(), String(), String(),
-      network::mojom::ReferrerPolicy::kDefault,
-      KURL(NullURL(), "http://example.test/cat.gif"), String(), String());
+  LinkLoadParameters params(LinkRelAttribute("preload"),
+                            kCrossOriginAttributeNotSet, "image/gif", "image",
+                            test_case.media, String(), String(), String(),
+                            network::mojom::ReferrerPolicy::kDefault,
+                            KURL(NullURL(), "http://example.test/cat.gif"),
+                            String(), String(), String());
   Expectations expectations = {
       test_case.priority, mojom::blink::RequestContextType::IMAGE,
       test_case.link_loader_should_load_value,
@@ -344,7 +345,8 @@ TEST_P(LinkLoaderPreloadReferrerPolicyTest, Preload) {
   LinkLoadParameters params(
       LinkRelAttribute("preload"), kCrossOriginAttributeNotSet, "image/gif",
       "image", String(), String(), String(), String(), referrer_policy,
-      KURL(NullURL(), "http://example.test/cat.gif"), String(), String());
+      KURL(NullURL(), "http://example.test/cat.gif"), String(), String(),
+      String());
   Expectations expectations = {ResourceLoadPriority::kLow,
                                mojom::blink::RequestContextType::IMAGE, true,
                                params.href, referrer_policy};
@@ -381,11 +383,12 @@ TEST_P(LinkLoaderPreloadNonceTest, Preload) {
           network::mojom::ContentSecurityPolicyType::kEnforce,
           network::mojom::ContentSecurityPolicySource::kHTTP,
           *(dummy_page_holder_->GetFrame().DomWindow()->GetSecurityOrigin())));
-  LinkLoadParameters params(
-      LinkRelAttribute("preload"), kCrossOriginAttributeNotSet, String(),
-      "script", String(), test_case.nonce, String(), String(),
-      network::mojom::ReferrerPolicy::kDefault,
-      KURL(NullURL(), "http://example.test/cat.js"), String(), String());
+  LinkLoadParameters params(LinkRelAttribute("preload"),
+                            kCrossOriginAttributeNotSet, String(), "script",
+                            String(), test_case.nonce, String(), String(),
+                            network::mojom::ReferrerPolicy::kDefault,
+                            KURL(NullURL(), "http://example.test/cat.js"),
+                            String(), String(), String());
   Expectations expectations = {
       ResourceLoadPriority::kHigh, mojom::blink::RequestContextType::SCRIPT,
       test_case.expecting_load,
@@ -438,7 +441,7 @@ TEST_P(LinkLoaderPreloadImageSrcsetTest, Preload) {
       LinkRelAttribute("preload"), kCrossOriginAttributeNotSet, "image/gif",
       "image", String(), String(), String(), String(),
       network::mojom::ReferrerPolicy::kDefault, KURL(NullURL(), test_case.href),
-      test_case.image_srcset, test_case.image_sizes);
+      test_case.image_srcset, test_case.image_sizes, String());
   Expectations expectations = {ResourceLoadPriority::kLow,
                                mojom::blink::RequestContextType::IMAGE, true,
                                KURL(NullURL(), test_case.expected_url),
@@ -528,7 +531,8 @@ TEST_P(LinkLoaderModulePreloadTest, ModulePreload) {
       LinkRelAttribute("modulepreload"), test_case.cross_origin,
       String() /* type */, String() /* as */, String() /* media */,
       test_case.nonce, test_case.integrity, String(), test_case.referrer_policy,
-      href_url, String() /* image_srcset */, String() /* image_sizes */);
+      href_url, String() /* image_srcset */, String() /* image_sizes */,
+      String() /* blocking */);
   loader->LoadLink(params, dummy_page_holder->GetDocument());
   ASSERT_EQ(test_case.expecting_load, modulator->fetched());
 }
@@ -581,7 +585,8 @@ TEST_P(LinkLoaderTestPrefetchPrivacyChanges, PrefetchPrivacyChanges) {
   LinkLoadParameters params(
       LinkRelAttribute("prefetch"), kCrossOriginAttributeNotSet, "image/jpg",
       "", "", "", "", String(), network::mojom::ReferrerPolicy::kDefault,
-      href_url, String() /* image_srcset */, String() /* image_sizes */);
+      href_url, String() /* image_srcset */, String() /* image_sizes */,
+      String() /* blocking */);
   loader->LoadLink(params, dummy_page_holder->GetDocument());
   ASSERT_TRUE(dummy_page_holder->GetDocument().Fetcher());
   Resource* resource = loader->GetResourceForTesting();
@@ -650,7 +655,7 @@ TEST_F(LinkLoaderTest, Prefetch) {
         LinkRelAttribute("prefetch"), kCrossOriginAttributeNotSet,
         test_case.type, "", test_case.media, "", "", String(),
         test_case.referrer_policy, href_url, String() /* image_srcset */,
-        String() /* image_sizes */);
+        String() /* image_sizes */, String() /* blocking */);
     loader->LoadLink(params, dummy_page_holder->GetDocument());
     ASSERT_TRUE(dummy_page_holder->GetDocument().Fetcher());
     Resource* resource = loader->GetResourceForTesting();
@@ -700,7 +705,8 @@ TEST_F(LinkLoaderTest, DNSPrefetch) {
         LinkRelAttribute("dns-prefetch"), kCrossOriginAttributeNotSet, String(),
         String(), String(), String(), String(), String(),
         network::mojom::ReferrerPolicy::kDefault, href_url,
-        String() /* image_srcset */, String() /* image_sizes */);
+        String() /* image_srcset */, String() /* image_sizes */,
+        String() /* blocking */);
     loader->LoadLink(params, dummy_page_holder->GetDocument());
     EXPECT_FALSE(mock_network_hints->DidPreconnect());
     EXPECT_EQ(test_case.should_load, mock_network_hints->DidDnsPrefetch());
@@ -739,7 +745,8 @@ TEST_F(LinkLoaderTest, Preconnect) {
         LinkRelAttribute("preconnect"), test_case.cross_origin, String(),
         String(), String(), String(), String(), String(),
         network::mojom::ReferrerPolicy::kDefault, href_url,
-        String() /* image_srcset */, String() /* image_sizes */);
+        String() /* image_srcset */, String() /* image_sizes */,
+        String() /* blocking */);
     loader->LoadLink(params, dummy_page_holder->GetDocument());
     EXPECT_EQ(test_case.should_load, mock_network_hints->DidPreconnect());
     EXPECT_EQ(test_case.is_https, mock_network_hints->IsHTTPS());
@@ -770,7 +777,8 @@ TEST_F(LinkLoaderTest, PreloadAndPrefetch) {
       LinkRelAttribute("preload prefetch"), kCrossOriginAttributeNotSet,
       "application/javascript", "script", "", "", "", String(),
       network::mojom::ReferrerPolicy::kDefault, href_url,
-      String() /* image_srcset */, String() /* image_sizes */);
+      String() /* image_srcset */, String() /* image_sizes */,
+      String() /* blocking */);
   loader->LoadLink(params, dummy_page_holder->GetDocument());
   ASSERT_EQ(1, fetcher->CountPreloads());
   Resource* resource = loader->GetResourceForTesting();

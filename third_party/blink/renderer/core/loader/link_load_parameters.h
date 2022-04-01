@@ -31,9 +31,7 @@ struct CORE_EXPORT LinkLoadParameters {
                      const KURL& href,
                      const String& image_srcset,
                      const String& image_sizes,
-                     // TODO(xiaochengh): The default parameter is temporarily
-                     // introduced to reduce patch diff. Remove it later.
-                     const String& blocking = String());
+                     const String& blocking);
   LinkLoadParameters(const LinkHeader&, const KURL& base_url);
 
   LinkRelAttribute rel;
