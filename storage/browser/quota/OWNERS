@@ -2,10 +2,9 @@
 ayui@chromium.org
 
 # Secondary
+asully@chromium.org
 jarrydg@chromium.org
 jsbell@chromium.org
-mek@chromium.org
-pwnall@chromium.org
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS

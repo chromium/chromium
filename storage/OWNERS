@@ -1,5 +1,9 @@
 set noparent
+
+# Primary
+ayui@chromium.org
+
+# Secondary
+asully@chromium.org
 dmurph@chromium.org
 jsbell@chromium.org
-pwnall@chromium.org
-mek@chromium.org
