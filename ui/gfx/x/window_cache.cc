@@ -11,6 +11,8 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -22,19 +24,23 @@
 
 namespace x11 {
 
+const base::TimeDelta kDestroyTimerInterval = base::Seconds(3);
+
 Window GetWindowAtPoint(const gfx::Point& point_px,
                         const base::flat_set<Window>* ignore) {
   auto* connection = Connection::Get();
   Window root = connection->default_root();
 
-  if (auto* instance = WindowCache::instance()) {
-    instance->WaitUntilReady();
-    return instance->GetWindowAtPoint(point_px, root, ignore);
+  if (!WindowCache::instance()) {
+    auto instance =
+        std::make_unique<WindowCache>(connection, connection->default_root());
+    auto* cache = instance.get();
+    cache->BeginDestroyTimer(std::move(instance));
   }
 
-  WindowCache cache(connection, connection->default_root(), false);
-  cache.WaitUntilReady();
-  return cache.GetWindowAtPoint(point_px, root, ignore);
+  auto* instance = WindowCache::instance();
+  instance->WaitUntilReady();
+  return instance->GetWindowAtPoint(point_px, root, ignore);
 }
 
 ScopedShapeEventSelector::ScopedShapeEventSelector(Connection* connection,
@@ -56,24 +62,21 @@ WindowCache::WindowInfo::~WindowInfo() = default;
 // static
 WindowCache* WindowCache::instance_ = nullptr;
 
-WindowCache::WindowCache(Connection* connection, Window root, bool track_events)
+WindowCache::WindowCache(Connection* connection, Window root)
     : connection_(connection),
       root_(root),
-      track_events_(track_events),
       gtk_frame_extents_(GetAtom("_GTK_FRAME_EXTENTS")) {
   DCHECK(!instance_) << "Only one WindowCache should be active at a time";
   instance_ = this;
 
   connection_->AddEventObserver(this);
 
-  if (track_events_) {
-    // We select for SubstructureNotify events on all windows (to receive
-    // CreateNotify events), which will cause events to be sent for all child
-    // windows.  This means we need to additionally select for StructureNotify
-    // changes for the root window.
-    root_events_ = std::make_unique<XScopedEventSelector>(
-        root_, EventMask::StructureNotify);
-  }
+  // We select for SubstructureNotify events on all windows (to receive
+  // CreateNotify events), which will cause events to be sent for all child
+  // windows.  This means we need to additionally select for StructureNotify
+  // changes for the root window.
+  root_events_ =
+      std::make_unique<XScopedEventSelector>(root_, EventMask::StructureNotify);
   AddWindow(root_, Window::None);
 }
 
@@ -103,6 +106,16 @@ void WindowCache::WaitUntilReady() {
     last_processed_event_ = events[event - 1].sequence();
 }
 
+void WindowCache::BeginDestroyTimer(std::unique_ptr<WindowCache> self) {
+  DCHECK_EQ(this, self.get());
+  delete_when_destroy_timer_fires_ = false;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&WindowCache::OnDestroyTimerExpired,
+                     base::Unretained(this), std::move(self)),
+      kDestroyTimerInterval);
+}
+
 void WindowCache::SyncForTest() {
   do {
     // Perform a blocking sync to prevent spinning while waiting for replies.
@@ -114,6 +127,7 @@ void WindowCache::SyncForTest() {
 Window WindowCache::GetWindowAtPoint(gfx::Point point_px,
                                      Window window,
                                      const base::flat_set<Window>* ignore) {
+  delete_when_destroy_timer_fires_ = true;
   if (ignore && ignore->contains(window))
     return Window::None;
   auto* info = GetInfo(window);
@@ -251,12 +265,10 @@ void WindowCache::AddWindow(Window window, Window parent) {
     return;
   WindowInfo& info = windows_[window];
   info.parent = parent;
-  if (track_events_) {
-    // Events must be selected before getting the initial window info to
-    // prevent race conditions.
-    info.events = std::make_unique<XScopedEventSelector>(
-        window, EventMask::SubstructureNotify | EventMask::PropertyChange);
-  }
+  // Events must be selected before getting the initial window info to
+  // prevent race conditions.
+  info.events = std::make_unique<XScopedEventSelector>(
+      window, EventMask::SubstructureNotify | EventMask::PropertyChange);
 
   AddRequest(connection_->GetWindowAttributes(window),
              &WindowCache::OnGetWindowAttributesResponse, window);
@@ -270,10 +282,8 @@ void WindowCache::AddWindow(Window window, Window parent) {
 
   auto& shape = connection_->shape();
   if (shape.present()) {
-    if (track_events_) {
-      info.shape_events =
-          std::make_unique<ScopedShapeEventSelector>(connection_, window);
-    }
+    info.shape_events =
+        std::make_unique<ScopedShapeEventSelector>(connection_, window);
 
     for (auto kind : {Shape::Sk::Bounding, Shape::Sk::Input}) {
       AddRequest(shape.GetRectangles(window, kind),
@@ -379,6 +389,13 @@ void WindowCache::OnGetRectanglesResponse(
         break;
     }
   }
+}
+
+void WindowCache::OnDestroyTimerExpired(std::unique_ptr<WindowCache> self) {
+  if (!delete_when_destroy_timer_fires_)
+    return;  // destroy `this`
+
+  BeginDestroyTimer(std::move(self));
 }
 
 }  // namespace x11

@@ -77,7 +77,7 @@ class COMPONENT_EXPORT(X11) WindowCache : public EventObserver {
   // If `track_events` is true, the WindowCache will keep the cache state synced
   // with the server's state over time. It may be set to false if the cache is
   // short-lived, if only a single GetWindowAtPoint call is made.
-  WindowCache(Connection* connection, Window root, bool track_events);
+  WindowCache(Connection* connection, Window root);
   WindowCache(const WindowCache&) = delete;
   WindowCache& operator=(const WindowCache&) = delete;
   ~WindowCache() override;
@@ -90,6 +90,10 @@ class COMPONENT_EXPORT(X11) WindowCache : public EventObserver {
 
   // Blocks until all outstanding requests are processed.
   void WaitUntilReady();
+
+  // Destroys |self| if no calls to GetWindowAtPoint() are made within
+  // a time window.
+  void BeginDestroyTimer(std::unique_ptr<WindowCache> self);
 
   void SyncForTest();
 
@@ -142,11 +146,12 @@ class COMPONENT_EXPORT(X11) WindowCache : public EventObserver {
                                Shape::Sk kind,
                                Shape::GetRectanglesResponse response);
 
+  void OnDestroyTimerExpired(std::unique_ptr<WindowCache> self);
+
   static WindowCache* instance_;
 
   Connection* const connection_;
   const Window root_;
-  const bool track_events_;
   const Atom gtk_frame_extents_;
   std::unique_ptr<XScopedEventSelector> root_events_;
 
@@ -157,6 +162,9 @@ class COMPONENT_EXPORT(X11) WindowCache : public EventObserver {
   // The latest event processed out-of-order, or nullopt if the latest event was
   // processed in order.
   absl::optional<uint32_t> last_processed_event_;
+
+  // True iff GetWindowAtPoint() was called since the last timer interval.
+  bool delete_when_destroy_timer_fires_ = false;
 
   // Although only one instance of WindowCache may be created at a time, the
   // instance will be created and destroyed as needed, so WeakPtrs are still

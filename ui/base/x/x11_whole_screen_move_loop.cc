@@ -26,7 +26,6 @@
 #include "ui/events/x/x11_event_translation.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/keysyms/keysyms.h"
-#include "ui/gfx/x/window_cache.h"
 #include "ui/gfx/x/x11_window_event_manager.h"
 #include "ui/gfx/x/xproto.h"
 
@@ -151,10 +150,6 @@ bool X11WholeScreenMoveLoop::RunMoveLoop(
 
   auto* connection = x11::Connection::Get();
   CreateDragInputWindow(connection);
-
-  // Keep a window cache alive for the duration of the drag so that the drop
-  // target under the drag window can be quickly determined.
-  x11::WindowCache cache(connection, connection->default_root(), true);
 
   // Only grab mouse capture of |grab_input_window_| if |can_grab_pointer| is
   // true aka the source that initiated the move loop doesn't have explicit
