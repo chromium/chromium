@@ -90,4 +90,13 @@ base::FilePath CreateCustomFolderInUserDownloadsPath(
   return custom_folder;
 }
 
+void SendKey(ui::KeyboardCode key_code,
+             ui::test::EventGenerator* event_generator,
+             bool shift_down,
+             int count) {
+  const int flags = shift_down ? ui::EF_SHIFT_DOWN : 0;
+  for (int i = 0; i < count; ++i)
+    event_generator->PressAndReleaseKey(key_code, flags);
+}
+
 }  // namespace ash

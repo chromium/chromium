@@ -234,7 +234,7 @@ class CaptureModeCameraTest : public AshTestBase {
 
   CaptureModeButton* GetPreviewResizeButton() const {
     return GetCameraController()
-        ->camera_preview_view_for_test()
+        ->camera_preview_view()
         ->resize_button_for_test();
   }
 
@@ -1460,6 +1460,182 @@ TEST_F(CaptureModeCameraTest,
   EXPECT_EQ(capture_label_widget->GetLayer()->GetTargetOpacity(), 1.0f);
 }
 
+TEST_F(CaptureModeCameraTest, FocusableCameraPreviewInFullscreen) {
+  auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                         CaptureModeType::kVideo);
+  AddDefaultCamera();
+  GetCameraController()->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+
+  auto* event_generator = GetEventGenerator();
+  using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
+  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
+
+  // Tests that the camera preview is focusable in fullscreen capture.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/6);
+  EXPECT_EQ(FocusGroup::kCameraPreview, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+
+  // When the camera preview is focused, press tab should advance to focus on
+  // the settings button.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+
+  // Shift tab should advance the focus from the settings button back to the
+  // camera preview.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/true);
+  EXPECT_EQ(FocusGroup::kCameraPreview, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+
+  // Shift tab again should advance the focus from the camera preview back to
+  // the window capture source button.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/true);
+  EXPECT_EQ(FocusGroup::kTypeSource, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(4u, test_api.GetCurrentFocusIndex());
+}
+
+TEST_F(CaptureModeCameraTest, FocusableCameraPreviewInRegion) {
+  auto* controller = CaptureModeController::Get();
+  controller->SetUserCaptureRegion(gfx::Rect(10, 10, 400, 550),
+                                   /*by_user=*/true);
+
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kVideo);
+  AddDefaultCamera();
+  GetCameraController()->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+
+  auto* event_generator = GetEventGenerator();
+  using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
+  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
+
+  // Tests that the camera preview is focusable in region capture.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/15);
+  EXPECT_EQ(FocusGroup::kCameraPreview, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+
+  // When the camera preview is focused, press tab should advance to focus on
+  // the capture button.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(FocusGroup::kCaptureButton, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+
+  // Press tab again to advance focus on the settings button.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+
+  // Shift tab should advance the focus from the settings button back to the
+  // capture button.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/true);
+  EXPECT_EQ(FocusGroup::kCaptureButton, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+
+  // Shift tab again should advance the focus from the capture button back to
+  // the camera preview.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/true);
+  EXPECT_EQ(FocusGroup::kCameraPreview, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+
+  // Shift tab to advance the focus back to the window capture source button.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/true, /*count=*/10);
+  EXPECT_EQ(FocusGroup::kTypeSource, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(4u, test_api.GetCurrentFocusIndex());
+}
+
+TEST_F(CaptureModeCameraTest, FocusableCameraPreviewInWindow) {
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
+  AddDefaultCamera();
+  auto* camera_controller = GetCameraController();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+
+  auto* event_generator = GetEventGenerator();
+  using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
+  auto* capture_mode_session = controller->capture_mode_session();
+  CaptureModeSessionTestApi test_api(capture_mode_session);
+
+  // Create one more window besides `window_`.
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindow(gfx::Rect(150, 150, 420, 450)));
+  const auto* preview_window =
+      camera_controller->camera_preview_widget()->GetNativeWindow();
+
+  // Tab to focus on `window2`, which is the most recently used window. It
+  // should be set to the current selected window, and the camera preview should
+  // be shown inside it.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/6);
+  EXPECT_EQ(FocusGroup::kCaptureWindow, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+  EXPECT_EQ(window2.get(), capture_mode_session->GetSelectedWindow());
+  EXPECT_EQ(window2.get(), preview_window->parent());
+
+  // Press tab should advance to focus on the camera preview inside. But the
+  // FocusGroup should not change, as the camera preview is treated as part of
+  // the selected window in this case.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(FocusGroup::kCaptureWindow, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(1u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(camera_controller->camera_preview_view()->has_focus());
+
+  // Press tab again should advance focus and set another window `window_` to be
+  // the current selected window. The camera preview should be shown inside it
+  // now.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(FocusGroup::kCaptureWindow, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(2u, test_api.GetCurrentFocusIndex());
+  EXPECT_EQ(window(), capture_mode_session->GetSelectedWindow());
+  EXPECT_EQ(window(), preview_window->parent());
+
+  // Press tab should advance to focus on the camera preview that inside
+  // `window_` now.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(FocusGroup::kCaptureWindow, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(3u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(camera_controller->camera_preview_view()->has_focus());
+
+  // Press tab again should advance to focus on the settings button.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+
+  // Shift tab when the settings button is focused should advance back to focus
+  // on the camera preview inside `window_`. And `window_` should be the current
+  // selected window.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/true);
+  EXPECT_EQ(FocusGroup::kCaptureWindow, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(3u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(camera_controller->camera_preview_view()->has_focus());
+  EXPECT_EQ(window(), capture_mode_session->GetSelectedWindow());
+  EXPECT_EQ(window(), preview_window->parent());
+
+  // Shift tab again should focus on the `window_`
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/true);
+  EXPECT_EQ(FocusGroup::kCaptureWindow, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(2u, test_api.GetCurrentFocusIndex());
+  EXPECT_FALSE(camera_controller->camera_preview_view()->has_focus());
+  EXPECT_EQ(window(), capture_mode_session->GetSelectedWindow());
+
+  // Continue shift tab should advance back to focus on the camera preview
+  // inside `window2` now. And `window2` should be the current selected window.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/true);
+  EXPECT_EQ(FocusGroup::kCaptureWindow, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(1u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(camera_controller->camera_preview_view()->has_focus());
+  EXPECT_EQ(window2.get(), capture_mode_session->GetSelectedWindow());
+  EXPECT_EQ(window2.get(), preview_window->parent());
+
+  // Continue shift tab should focus on the `window2`.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/true);
+  EXPECT_EQ(FocusGroup::kCaptureWindow, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+  EXPECT_FALSE(camera_controller->camera_preview_view()->has_focus());
+  EXPECT_EQ(window2.get(), capture_mode_session->GetSelectedWindow());
+
+  // Continue shift tab should advance back to the window capture source button.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/true);
+  EXPECT_EQ(FocusGroup::kTypeSource, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(4u, test_api.GetCurrentFocusIndex());
+}
+
 class CaptureModeCameraPreviewTest
     : public CaptureModeCameraTest,
       public testing::WithParamInterface<CaptureModeSource> {
@@ -2001,7 +2177,7 @@ TEST_P(CaptureModeCameraFramesTest, SelectAnotherCameraWhileRendering) {
   test_api.StartForFullscreen(/*for_video=*/true);
   auto* camera_controller = GetCameraController();
   EXPECT_TRUE(camera_controller->camera_preview_widget());
-  auto* preview_view = camera_controller->camera_preview_view_for_test();
+  auto* preview_view = camera_controller->camera_preview_view();
   ASSERT_TRUE(preview_view);
   EXPECT_EQ(preview_view->camera_id(), camera_controller->selected_camera());
   WaitForAndVerifyRenderedVideoFrame();
@@ -2012,15 +2188,15 @@ TEST_P(CaptureModeCameraFramesTest, SelectAnotherCameraWhileRendering) {
   const std::string display_name = "Integrated Webcam";
   const std::string model_id = "0123:4567";
   AddFakeCamera(device_id, display_name, model_id);
-  EXPECT_EQ(preview_view, camera_controller->camera_preview_view_for_test());
+  EXPECT_EQ(preview_view, camera_controller->camera_preview_view());
 
   // Now select the new camera, a new widget should be created immediately for
   // the new camera.
   const CameraId second_camera_id(model_id, 1);
   camera_controller->SetSelectedCamera(second_camera_id);
   EXPECT_TRUE(camera_controller->camera_preview_widget());
-  EXPECT_NE(preview_view, camera_controller->camera_preview_view_for_test());
-  preview_view = camera_controller->camera_preview_view_for_test();
+  EXPECT_NE(preview_view, camera_controller->camera_preview_view());
+  preview_view = camera_controller->camera_preview_view();
   EXPECT_EQ(preview_view->camera_id(), second_camera_id);
   WaitForAndVerifyRenderedVideoFrame();
 }

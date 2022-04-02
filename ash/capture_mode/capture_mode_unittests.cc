@@ -142,17 +142,6 @@ void TouchOnView(const views::View* view,
   event_generator->ReleaseTouch();
 }
 
-// Sends a press release key combo |count| times.
-void SendKey(ui::KeyboardCode key_code,
-             ui::test::EventGenerator* event_generator,
-             bool shift_down = false,
-             int count = 1) {
-  const int flags = shift_down ? ui::EF_SHIFT_DOWN : 0;
-  for (int i = 0; i < count; ++i) {
-    event_generator->PressAndReleaseKey(key_code, flags);
-  }
-}
-
 const message_center::Notification* GetPreviewNotification() {
   const message_center::NotificationList::Notifications notifications =
       message_center::MessageCenter::Get()->GetVisibleNotifications();

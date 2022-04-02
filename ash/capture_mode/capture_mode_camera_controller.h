@@ -136,6 +136,9 @@ class ASH_EXPORT CaptureModeCameraController
   views::Widget* camera_preview_widget() const {
     return camera_preview_widget_.get();
   }
+  CameraPreviewView* camera_preview_view() const {
+    return camera_preview_view_;
+  }
   bool should_show_preview() const { return should_show_preview_; }
   CameraPreviewSnapPosition camera_preview_snap_position() const {
     return camera_preview_snap_position_;
@@ -196,9 +199,6 @@ class ASH_EXPORT CaptureModeCameraController
 
   base::OneShotTimer* camera_reconnect_timer_for_test() {
     return &camera_reconnect_timer_;
-  }
-  CameraPreviewView* camera_preview_view_for_test() const {
-    return camera_preview_view_;
   }
 
  private:

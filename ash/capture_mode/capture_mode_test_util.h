@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/capture_mode/capture_mode_types.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace base {
 class FilePath;
@@ -62,6 +63,12 @@ base::FilePath WaitForCaptureFileToBeSaved();
 // the default downloads folder with given `custom_folder_name`.
 base::FilePath CreateCustomFolderInUserDownloadsPath(
     const std::string& custom_folder_name);
+
+// Sends a press release key combo `count` times.
+void SendKey(ui::KeyboardCode key_code,
+             ui::test::EventGenerator* event_generator,
+             bool shift_down = false,
+             int count = 1);
 
 }  // namespace ash
 

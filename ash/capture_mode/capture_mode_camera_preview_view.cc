@@ -150,6 +150,10 @@ void CameraPreviewView::Layout() {
       gfx::RoundedCornersF(height() / 2.f));
 }
 
+views::View* CameraPreviewView::GetView() {
+  return this;
+}
+
 void CameraPreviewView::OnResizeButtonPressed() {
   camera_controller_->ToggleCameraPreviewSize();
   UpdateResizeButton();

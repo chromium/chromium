@@ -7,6 +7,7 @@
 
 #include "ash/capture_mode/camera_video_frame_renderer.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
+#include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
@@ -31,7 +32,9 @@ class CaptureModeButton;
 
 // A view that acts as the contents view of the camera preview widget. It will
 // be responsible for painting the latest camera video frame inside its bounds.
-class CameraPreviewView : public views::View {
+class CameraPreviewView
+    : public views::View,
+      public CaptureModeSessionFocusCycler::HighlightableView {
  public:
   METADATA_HEADER(CameraPreviewView);
 
@@ -54,6 +57,9 @@ class CameraPreviewView : public views::View {
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void Layout() override;
+
+  // CaptureModeSessionFocusCycler::HighlightableView:
+  views::View* GetView() override;
 
   CaptureModeButton* resize_button_for_test() const { return resize_button_; }
 

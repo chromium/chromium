@@ -57,6 +57,8 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
     kPendingSettings,
     // The buttons inside the settings menu.
     kSettingsMenu,
+    // The camera preview shown inside the current capture surface.
+    kCameraPreview,
   };
 
   // If a focusable capture session item is part of a views hierarchy, it needs
@@ -162,6 +164,15 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
   // Get the next group in the focus order.
   FocusGroup GetNextGroup(bool reverse) const;
 
+  // Returns the current focus group list. It will be one of
+  // `groups_for_fullscreen_`, `groups_for_region_` and `groups_for_window_`,
+  // depending on the current capture source.
+  const std::vector<FocusGroup>& GetCurrentGroupList() const;
+
+  // Returns true if the given `group` is available inside the focus group list
+  // returned from GetCurrentGroupList().
+  bool IsGroupAvailable(FocusGroup group) const;
+
   // Returns the number of elements in a particular group.
   size_t GetGroupSize(FocusGroup group) const;
 
@@ -185,9 +196,22 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
   bool FindFocusedViewAndUpdateFocusIndex(
       std::vector<HighlightableView*> views);
 
+  // Called by AdvanceFocus() to advance the focus when `current_focus_group_`
+  // is `kCaptureWindow`. Advances the focus to a window will set this window as
+  // current selected window, which will show the camera preview inside it if
+  // feasible. The camera preview inside the window will be treated as part of
+  // the window, advances the focus on to it will not change the current focus
+  // group.
+  void AdvanceFocusInsideCaptureWindow(size_t focus_index, bool reverse);
+
   // The current focus group and focus index.
   FocusGroup current_focus_group_ = FocusGroup::kNone;
   size_t focus_index_ = 0u;
+
+  // Focusable groups for each capture source.
+  const std::vector<FocusGroup> groups_for_fullscreen_;
+  const std::vector<FocusGroup> groups_for_region_;
+  const std::vector<FocusGroup> groups_for_window_;
 
   // The session that owns |this|. Guaranteed to be non null for the lifetime of
   // |this|.
