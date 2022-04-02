@@ -1119,18 +1119,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Shill.Cellular.Disconnect"
-    enum="NetworkDisconnectType" expires_after="2022-12-30">
-  <owner>ejcaruso@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network usage metric that tracks whether the cellular network was
-    disconnected due to an error or was explicitly disconnected by the user.
-
-    NOTE: This metric was expired from 2021-12-01 to 2022-04-01.
-  </summary>
-</histogram>
-
 <histogram name="Network.Shill.Cellular.Drop" enum="NetworkCellularTechnology"
     expires_after="2022-12-30">
   <owner>ejcaruso@chromium.org</owner>
@@ -1346,14 +1334,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.ConnectionDiagnosticsIssue"
-    enum="ConnectionDiagnosticsIssue" expires_after="2022-04-10">
-  <owner>stevenjb@chromium.org</owner>
+    enum="ConnectionDiagnosticsIssue" expires_after="2022-12-31">
+  <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric that tracks the connectivity issue diagnosed by the
-    ConnectionDiagnostics class in Shill. This metric is logged each time a
-    ConnectionDiagnostics object completes its diagnostics actions and reports
-    the results to its caller.
+    Chrome OS network metric that tracks Layer 3 connectivity issues diagnosed
+    by the ConnectionDiagnostics class in Shill ran on a connected network after
+    Shill portal detection has failed to validate the network. This metric is
+    logged each time a ConnectionDiagnostics object completes its diagnostics
+    actions and reports the results to its caller.
   </summary>
 </histogram>
 
@@ -1423,42 +1412,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Shill.DHCPClientMTUValue" units="bytes"
-    expires_after="2021-12-01">
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network diagnostic metric sampling the MTU value proposed by the
-    DHCP server. A sample is emitted each time the DHCP client completes
-    negotiation with a server.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.DHCPClientStatus" enum="NetworkDhcpClientStatus"
-    expires_after="2022-04-24">
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network diagnostic metric sampling the current state of the DHCP
-    client. A sample is emitted each time the DHCP client state changes.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.DHCPOptionFailureDetected"
-    enum="NetworkTechnology" expires_after="2021-12-01">
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network metric that tracks the number of DHCP option failures
-    encountered by Shill for each network technology. This indicates that Shill
-    is using minimal DHCP options due to suspected MTU issues on the return path
-    from the DHCP server back to the client.
-  </summary>
-</histogram>
-
 <histogram name="Network.Shill.Ethernet.DevicePresenceStatus"
-    enum="BooleanPresent" expires_after="2022-04-24">
-  <owner>stevenjb@chromium.org</owner>
+    enum="BooleanPresent" expires_after="2022-12-31">
+  <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network metric that tracks the presence of an Ethernet device in
@@ -1466,114 +1422,60 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Shill.Ethernet.Disconnect"
-    enum="NetworkDisconnectType" expires_after="2021-12-01">
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network usage metric that tracks whether the Ethernet network was
-    disconnected due to an error or was explicitly disconnected by the user.
-  </summary>
-</histogram>
-
 <histogram name="Network.Shill.Ethernet.ExpiredLeaseLengthSeconds2"
-    units="seconds" expires_after="2021-12-01">
-  <owner>stevenjb@chromium.org</owner>
+    units="seconds" expires_after="2022-12-31">
+  <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network performance metric that tracks the length of a lease for
     an Ethernet network at the time it expired without the DHCP client being
     able to renew it.
-  </summary>
-</histogram>
 
-<histogram name="Network.Shill.Ethernet.LinkMonitorBroadcastErrorsAtFailure"
-    units="units" expires_after="2021-12-01">
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network performance metric that tracks the number of LinkMonitor
-    broadcast errors that were accrued on an Ethernet network at the time that
-    the link was declaired to be failed.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.Ethernet.LinkMonitorFailure"
-    enum="LinkMonitorFailureType" expires_after="2021-12-01">
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS metric that signals the type of failure the LinkMonitor
-    encountered which caused it to stop monitoring an Ethernet network.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.Ethernet.LinkMonitorResponseTimeSample"
-    units="ms" expires_after="2021-12-01">
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network performance metric that tracks the number of milliseconds
-    between an ARP request and a received reply on an Ethernet network.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.Ethernet.LinkMonitorSecondsToFailure"
-    units="seconds" expires_after="2021-12-01">
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network performance metric that tracks the number of seconds from
-    the start of the LinkMonitor until failure on an Ethernet network.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.Ethernet.LinkMonitorUnicastErrorsAtFailure"
-    units="units" expires_after="2021-12-01">
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network performance metric that tracks the number of LinkMonitor
-    unicast errors that were accrued on an Ethernet network at the time that the
-    link was declaired to be failed.
+    NOTE: This metric was expired from 2021-12-01 to 2022-04-01.
   </summary>
 </histogram>
 
 <histogram name="Network.Shill.Ethernet.PortalAttempts" units="units"
-    expires_after="2021-12-01">
-  <owner>stevenjb@chromium.org</owner>
+    expires_after="2022-12-31">
+  <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network diagnostic metric sampling the number of portal detection
     attempts per pass for an Ethernet network. This includes failure, timeout
     and successful attempts.
+
+    NOTE: This metric was expired from 2021-12-01 to 2022-04-01.
   </summary>
 </histogram>
 
 <histogram name="Network.Shill.Ethernet.PortalAttemptsToOnline" units="units"
-    expires_after="2021-12-01">
-  <owner>stevenjb@chromium.org</owner>
+    expires_after="2022-12-31">
+  <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network diagnostic metric sampling the total number of portal
     detection attempts performed for an Ethernet network between the Connected
     and Online state. This includes failure, timeout and successful attempts.
+
+    NOTE: This metric was expired from 2021-12-01 to 2022-04-01.
   </summary>
 </histogram>
 
 <histogram name="Network.Shill.Ethernet.PortalResult"
-    enum="NetworkPortalResult" expires_after="2021-12-01">
-  <owner>stevenjb@chromium.org</owner>
+    enum="NetworkPortalResult" expires_after="2022-12-31">
+  <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network diagnostic metric sampling the result of portal detections
     for an Ethernet network.
+
+    NOTE: This metric was expired from 2021-12-01 to 2022-04-01.
   </summary>
 </histogram>
 
 <histogram name="Network.Shill.Ethernet.ServiceErrors"
-    enum="NetworkServiceError" expires_after="2023-01-01">
-  <owner>kuabhs@chromium.org</owner>
+    enum="NetworkServiceError" expires_after="2022-12-31">
+  <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS connection manager service errors for ethernet interface. NOTE:
@@ -1582,59 +1484,69 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Ethernet.TimeOnline" units="seconds"
-    expires_after="2021-12-01">
-  <owner>stevenjb@chromium.org</owner>
+    expires_after="2022-12-31">
+  <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network metric sampling the time spent using Ethernet to transport
     data. These data are mostly useful when summed and compared to TimeOnline
     for other network technologies (e.g. WiFi vs Cellular).
+
+    NOTE: This metric was expired from 2021-12-01 to 2022-04-01.
   </summary>
 </histogram>
 
 <histogram name="Network.Shill.Ethernet.TimeToConfig" units="ms"
-    expires_after="2021-12-01">
-  <owner>stevenjb@chromium.org</owner>
+    expires_after="2022-12-31">
+  <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network performance metric sampling the time to join a wired
     Ethernet network and configure Layer 3 state (typically acquire a DHCP
     lease).
+
+    NOTE: This metric was expired from 2021-12-01 to 2022-04-01.
   </summary>
 </histogram>
 
 <histogram name="Network.Shill.Ethernet.TimeToInitialize" units="ms"
-    expires_after="2021-12-01">
-  <owner>stevenjb@chromium.org</owner>
+    expires_after="2022-12-31">
+  <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network performance metric sampling the time to initialize an
     Ethernet device.
+
+    NOTE: This metric was expired from 2021-12-01 to 2022-04-01.
   </summary>
 </histogram>
 
 <histogram name="Network.Shill.Ethernet.TimeToOnline" units="ms"
-    expires_after="2021-12-01">
-  <owner>stevenjb@chromium.org</owner>
+    expires_after="2022-12-31">
+  <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network performance metric sampling the time to determine that an
     Ethernet network is online after configuring Layer 3 state.
+
+    NOTE: This metric was expired from 2021-12-01 to 2022-04-01.
   </summary>
 </histogram>
 
 <histogram name="Network.Shill.Ethernet.TimeToPortal" units="ms"
-    expires_after="2021-12-01">
-  <owner>stevenjb@chromium.org</owner>
+    expires_after="2022-12-31">
+  <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network performance metric sampling the time to determine that an
     Ethernet network is in a captive portal after configuring Layer 3 state.
+
+    NOTE: This metric was expired from 2021-12-01 to 2022-04-01.
   </summary>
 </histogram>
 
 <histogram name="Network.Shill.Ethernet.TimeToRedirectFound" units="ms"
-    expires_after="2021-12-01">
+    expires_after="2022-12-31">
   <owner>matthewmwang@chromium.org</owner>
   <owner>hugobenichi@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -1642,6 +1554,8 @@ chromium-metrics-reviews@google.com.
     Chrome OS network performance metric sampling the time to determine that an
     Ethernet network is in a captive portal with a valid redirect URL after
     configuring Layer 3 state.
+
+    NOTE: This metric was expired from 2021-12-01 to 2022-04-01.
   </summary>
 </histogram>
 
