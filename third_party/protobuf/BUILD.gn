@@ -262,6 +262,11 @@ static_library("protobuf_full") {
     "//third_party/vulkan-deps/spirv-tools/src:spvtools_fuzz_proto",
 
     # Some fuzzers for tint need protobuf_full and are not included in Chrome.
+    # TODO(dawn:1339): Remove the *third_party/tint* entries once Tint
+    #                  is merged into Dawn
+    "//third_party/dawn/src/tint/fuzzers/tint_ast_fuzzer:tint_ast_fuzzer",
+    "//third_party/dawn/src/tint/fuzzers/tint_ast_fuzzer:tint_ast_fuzzer_proto",
+    "//third_party/dawn/src/tint/fuzzers/tint_spirv_tools_fuzzer:tint_spirv_tools_fuzzer",
     "//third_party/dawn/third_party/tint/src/tint/fuzzers/tint_ast_fuzzer:tint_ast_fuzzer",
     "//third_party/dawn/third_party/tint/src/tint/fuzzers/tint_ast_fuzzer:tint_ast_fuzzer_proto",
     "//third_party/dawn/third_party/tint/src/tint/fuzzers/tint_spirv_tools_fuzzer:tint_spirv_tools_fuzzer",

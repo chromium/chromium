@@ -846,8 +846,8 @@ group("gn_all") {
       "//third_party/dawn/src/dawn/tests:dawn_end2end_tests",
       "//third_party/dawn/src/dawn/tests:dawn_unittests",
       "//third_party/dawn/src/fuzzers/dawn:dawn_fuzzers",
-      "//third_party/dawn/third_party/tint/src/tint/fuzzers",
-      "//third_party/dawn/third_party/tint/test/tint:tint_unittests",
+      "//third_party/dawn/src/tint/fuzzers",
+      "//third_party/dawn/test/tint:tint_unittests",
     ]
   }
 
@@ -1606,7 +1606,7 @@ if (!is_ios && !is_android && !is_chromecast) {
     }
 
     if (build_dawn_tests) {
-      deps += [ "//third_party/dawn/third_party/tint/src/tint/fuzzers:fuzzers" ]
+      deps += [ "//third_party/dawn/src/tint/fuzzers:fuzzers" ]
     }
   }
 }
