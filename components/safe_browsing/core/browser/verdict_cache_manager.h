@@ -102,6 +102,9 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   void HistoryServiceBeingDeleted(
       history::HistoryService* history_service) override;
 
+  // Called by browsing data remover.
+  void OnCookiesDeleted();
+
   // Returns true if an artificial unsafe URL has been provided using
   // command-line flags.
   static bool has_artificial_unsafe_url();
@@ -129,8 +132,9 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   // histograms. Entries must not be removed or reordered.
   enum class ClearReason {
     kSafeBrowsingStateChanged = 0,
+    kCookiesDeleted = 1,
 
-    kMaxValue = kSafeBrowsingStateChanged
+    kMaxValue = kCookiesDeleted
   };
 
   void ScheduleNextCleanUpAfterInterval(base::TimeDelta interval);

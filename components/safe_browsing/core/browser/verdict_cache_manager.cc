@@ -766,6 +766,10 @@ void VerdictCacheManager::HistoryServiceBeingDeleted(
   history_service_observation_.Reset();
 }
 
+void VerdictCacheManager::OnCookiesDeleted() {
+  CleanUpAllPageLoadTokens(ClearReason::kCookiesDeleted);
+}
+
 bool VerdictCacheManager::RemoveExpiredPhishGuardVerdicts(
     LoginReputationClientRequest::TriggerType trigger_type,
     base::Value* cache_dictionary) {
