@@ -7,12 +7,13 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "content/common/content_export.h"
 
 namespace content {
 
 // Enables the Aggregation Service. See crbug.com/1207974.
-extern const base::Feature kPrivacySandboxAggregationService;
-extern const base::FeatureParam<std::string>
+extern CONTENT_EXPORT const base::Feature kPrivacySandboxAggregationService;
+extern CONTENT_EXPORT const base::FeatureParam<std::string>
     kPrivacySandboxAggregationServiceTrustedServerUrlParam;
 
 }  // namespace content

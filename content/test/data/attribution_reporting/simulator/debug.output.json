@@ -1,5 +1,5 @@
 {
-  "debug_reports": [
+  "debug_event_level_reports": [
     {
      "report": {
          "attribution_destination": "https://d.test",
@@ -17,7 +17,7 @@
       }
     }
   ],
-  "reports": [
+  "event_level_reports": [
     {
      "report": {
          "attribution_destination": "https://d.test",

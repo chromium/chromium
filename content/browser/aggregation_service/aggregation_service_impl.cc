@@ -19,6 +19,7 @@
 #include "base/values.h"
 #include "content/browser/aggregation_service/aggregatable_report_assembler.h"
 #include "content/browser/aggregation_service/aggregation_service_storage_sql.h"
+#include "content/browser/aggregation_service/public_key.h"
 #include "content/browser/storage_partition_impl.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -112,6 +113,13 @@ void AggregationServiceImpl::ClearData(base::Time delete_begin,
       .AsyncCall(&AggregationServiceKeyStorage::ClearPublicKeysFetchedBetween)
       .WithArgs(delete_begin, delete_end)
       .Then(std::move(done));
+}
+
+void AggregationServiceImpl::SetPublicKeysForTesting(
+    const GURL& url,
+    const PublicKeyset& keyset) {
+  key_storage_.AsyncCall(&AggregationServiceKeyStorage::SetPublicKeys)
+      .WithArgs(url, keyset);
 }
 
 }  // namespace content

@@ -19,6 +19,8 @@
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class GURL;
+
 namespace base {
 class Clock;
 class FilePath;
@@ -26,6 +28,7 @@ class FilePath;
 
 namespace content {
 
+struct PublicKeyset;
 class StoragePartitionImpl;
 
 // UI thread class that manages the lifetime of the underlying storage. Owned by
@@ -68,6 +71,9 @@ class CONTENT_EXPORT AggregationServiceImpl
   // AggregationServiceStorageContext:
   const base::SequenceBound<AggregationServiceKeyStorage>& GetKeyStorage()
       override;
+
+  // Sets the public keys for `url` in storage to allow testing without network.
+  void SetPublicKeysForTesting(const GURL& url, const PublicKeyset& keyset);
 
  private:
   AggregationServiceImpl(bool run_in_memory,

@@ -119,6 +119,7 @@ TEST_P(AttributionSimulatorImplTest, HasExpectedOutput) {
       .delay_mode = AttributionDelayMode::kDefault,
       .remove_report_ids = true,
       .report_time_format = AttributionReportTimeFormat::kSecondsSinceUnixEpoch,
+      .remove_assembled_report = true,
   };
 
   const base::FilePath options_path = OptionsPath(input_path);

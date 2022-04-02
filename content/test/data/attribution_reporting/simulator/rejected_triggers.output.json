@@ -1,7 +1,7 @@
 {
   "rejected_triggers": [
     {
-      "reason": "noMatchingSources",
+      "event_level_reason": "noMatchingSources",
       "trigger": {
         "trigger_time": 1643235572,
         "reporting_origin": "https://r.test",
@@ -12,11 +12,11 @@
               "trigger_data": "1"
             }
           ]
-	}
+        }
       }
     },
     {
-      "reason": "deduplicated",
+      "event_level_reason": "deduplicated",
       "trigger": {
         "trigger_time": 1643235575,
         "reporting_origin": "https://r.test",
@@ -32,7 +32,8 @@
       }
     },
     {
-      "reason": "priorityTooLow",
+      "aggregatable_reason": "noHistograms",
+      "event_level_reason": "priorityTooLow",
       "trigger": {
         "trigger_time": 1643235578,
         "reporting_origin": "https://r.test",
@@ -42,12 +43,23 @@
             {
               "trigger_data": "6"
             }
-          ]
+          ],
+          "aggregatable_trigger": {
+            "trigger_data": [
+              {
+                "source_keys": ["a"],
+                "key_piece": "0x400"
+              }
+            ],
+            "values": {
+              "b": 123
+            }
+          }
         }
       }
     }
   ],
-  "reports": [
+  "event_level_reports": [
     {
      "report": {
          "attribution_destination": "https://d.test",

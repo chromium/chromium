@@ -7,7 +7,13 @@
       "source_type": "navigation",
       "registration_config": {
         "destination": "https://d.test",
-        "source_event_id": "123"
+        "source_event_id": "123",
+        "aggregatable_source": [
+          {
+            "key_id": "a",
+            "key_piece": "0x159"
+          }
+        ]
       }
     }
   ],
@@ -85,7 +91,18 @@
           {
             "trigger_data": "6"
           }
-        ]
+        ],
+        "aggregatable_trigger": {
+          "trigger_data": [
+            {
+              "source_keys": ["a"],
+              "key_piece": "0x400"
+            }
+          ],
+          "values": {
+            "b": 123
+          }
+      	}
       }
     }
   ]

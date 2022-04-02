@@ -48,6 +48,13 @@ struct AttributionSimulationOptions {
 
   AttributionReportTimeFormat report_time_format =
       AttributionReportTimeFormat::kSecondsSinceUnixEpoch;
+
+  // If true, removes the `shared_info`, `aggregation_service_payloads` and
+  // `source_registration_time` fields from aggregatable reports before output.
+  //
+  // These fields normally encode a random GUID or the absolute time and
+  // therefore are sources of nondeterminism in the output.
+  bool remove_assembled_report = false;
 };
 
 // Simulates the Attribution Reporting API for a single user on sources and

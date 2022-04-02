@@ -1,0 +1,37 @@
+{
+  "aggregatable_reports": [
+    {
+      "report": {
+        "attribution_destination": "https://d.test",
+        "source_site": "https://s.test"
+      },
+      "report_time": 1643235574,
+      "report_url": "https://r.test/.well-known/attribution-reporting/report-aggregate-attribution",
+      "test_info": {
+        "histograms": [
+          {
+            "key_high_bits": "0",
+            "key_low_bits": "1369",
+            "value": "123"
+          }
+        ]
+      }
+    }
+  ],
+  "event_level_reports": [
+    {
+      "report": {
+        "attribution_destination": "https://d.test",
+        "randomized_trigger_rate": 0.0024,
+        "source_event_id": "123",
+        "source_type": "navigation",
+        "trigger_data": "7"
+      },
+      "report_time": 1643408373,
+      "report_url": "https://r.test/.well-known/attribution-reporting/report-event-attribution",
+      "test_info": {
+         "randomized_trigger": false
+      }
+    }
+  ]
+}
