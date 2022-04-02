@@ -12,6 +12,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
@@ -119,6 +120,23 @@ TEST_F(WebUIBubbleDialogViewTest, CloseUIClearsContentsWrapper) {
 
   EXPECT_EQ(nullptr, contents_wrapper());
   EXPECT_EQ(nullptr, web_view()->web_contents());
+}
+
+TEST_F(WebUIBubbleDialogViewTest, GetAnchorRectWithProvidedAnchorRect) {
+  UniqueWidgetPtr anchor_widget = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  anchor_widget->Init(std::move(params));
+  auto profile_ = std::make_unique<TestingProfile>();
+  auto contents_wrapper =
+      std::make_unique<TestBubbleContentsWrapper>(profile_.get());
+
+  gfx::Rect anchor(666, 666, 0, 0);
+  auto bubble_dialog = std::make_unique<WebUIBubbleDialogView>(
+      anchor_widget->GetContentsView(), contents_wrapper.get(), anchor);
+
+  EXPECT_EQ(bubble_dialog->GetAnchorRect(), anchor);
+
+  anchor_widget->CloseNow();
 }
 
 }  // namespace test
