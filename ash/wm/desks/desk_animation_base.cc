@@ -37,13 +37,15 @@ DeskAnimationBase::~DeskAnimationBase() {
 }
 
 void DeskAnimationBase::Launch() {
+  launch_time_ = base::TimeTicks::Now();
+
   for (auto& observer : controller_->observers_)
     observer.OnDeskSwitchAnimationLaunching();
 
   // The throughput tracker measures the animation when the user lifts their
   // fingers off the trackpad, which is done in EndSwipeAnimation.
   if (!is_continuous_gesture_animation_)
-    throughput_tracker_.Start(GetReportCallback());
+    throughput_tracker_.Start(GetSmoothnessReportCallback());
 
   // This step makes sure that the containers of the target desk are shown at
   // the beginning of the animation (but not actually visible to the user yet,
@@ -121,6 +123,11 @@ void DeskAnimationBase::OnEndingDeskScreenshotTaken() {
        !did_continuous_gesture_end_fast_);
   if (skip_start_animation)
     return;
+
+  if (!launch_time_.is_null()) {
+    GetLatencyReportCallback().Run(base::TimeTicks::Now() - launch_time_);
+    launch_time_ = base::TimeTicks();
+  }
 
   for (auto& animator : desk_switch_animators_)
     animator->StartAnimation();

@@ -1172,6 +1172,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Desks.AnimationLatency.DeskActivation" units="ms"
+    expires_after="2023-04-23">
+  <owner>amusbach@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    Emitted when the virtual desks activation animation begins, to report the
+    latency of starting this animation. In a continuous desk animation, this
+    metric is recorded only for the first desk switch.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.AnimationLatency.DeskRemoval" units="ms"
+    expires_after="2023-04-23">
+  <owner>amusbach@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    Emitted when the virtual desks removal animation begins, to report the
+    latency of starting this animation. In a continuous desk animation, this
+    metric is recorded only for the first desk switch.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Desks.AnimationSmoothness.DeskActivation" units="%"
     expires_after="2023-04-23">
   <owner>afakhry@chromium.org</owner>

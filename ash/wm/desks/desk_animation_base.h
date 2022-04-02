@@ -9,6 +9,8 @@
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/root_window_desk_switch_animator.h"
+#include "base/callback.h"
+#include "base/time/time.h"
 #include "ui/compositor/throughput_tracker.h"
 
 namespace ash {
@@ -78,11 +80,13 @@ class ASH_EXPORT DeskAnimationBase
   virtual void OnDeskSwitchAnimationFinishedInternal() = 0;
 
   // Since performance here matters, we have to use the UMA histograms macros to
-  // report the smoothness histograms, but each macro use has to be associated
-  // with exactly one histogram name. This function allows subclasses to return
-  // a callback that reports the histogram using the macro with their desired
-  // name.
-  virtual metrics_util::ReportCallback GetReportCallback() const = 0;
+  // report the histograms, but each macro use has to be associated with exactly
+  // one histogram name. These functions allow subclasses to return callbacks
+  // that report each histogram using the macro with their desired name.
+  using LatencyReportCallback =
+      base::OnceCallback<void(const base::TimeDelta& latency)>;
+  virtual LatencyReportCallback GetLatencyReportCallback() const = 0;
+  virtual metrics_util::ReportCallback GetSmoothnessReportCallback() const = 0;
 
   DesksController* const controller_;
 
@@ -115,6 +119,11 @@ class ASH_EXPORT DeskAnimationBase
   // screenshot taken. This will only change for an activation animation, not a
   // remove animation.
   int visible_desk_changes_ = 0;
+
+  // Used for the Ash.Desks.AnimationLatency.* histograms. Null if no animation
+  // is being prepared. In a continuous desk animation, the latency is reported
+  // only for the first desk switch, and `launch_time_` is null thereafter.
+  base::TimeTicks launch_time_;
 
   // ThroughputTracker used for measuring this animation smoothness.
   ui::ThroughputTracker throughput_tracker_;

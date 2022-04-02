@@ -37,7 +37,8 @@ class ASH_EXPORT DeskActivationAnimation : public DeskAnimationBase {
   bool EndSwipeAnimation() override;
   void OnStartingDeskScreenshotTakenInternal(int ending_desk_index) override;
   void OnDeskSwitchAnimationFinishedInternal() override;
-  metrics_util::ReportCallback GetReportCallback() const override;
+  LatencyReportCallback GetLatencyReportCallback() const override;
+  metrics_util::ReportCallback GetSmoothnessReportCallback() const override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(DeskActivationAnimationTest,
@@ -82,7 +83,8 @@ class DeskRemovalAnimation : public DeskAnimationBase {
   // DeskAnimationBase:
   void OnStartingDeskScreenshotTakenInternal(int ending_desk_index) override;
   void OnDeskSwitchAnimationFinishedInternal() override;
-  metrics_util::ReportCallback GetReportCallback() const override;
+  LatencyReportCallback GetLatencyReportCallback() const override;
+  metrics_util::ReportCallback GetSmoothnessReportCallback() const override;
 
  private:
   const int desk_to_remove_index_;

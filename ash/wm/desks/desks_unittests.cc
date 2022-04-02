@@ -1927,6 +1927,30 @@ TEST_F(DesksTest, FullscreenStateUpdatedAcrossDesks) {
   EXPECT_TRUE(full_screen_state_observer.is_fullscreen());
 }
 
+// Tests the Ash.Desks.AnimationLatency.DeskActivation histogram.
+TEST_F(DesksTest, AnimationLatencyDeskActivation) {
+  NewDesk();
+  auto* controller = DesksController::Get();
+  ASSERT_EQ(2u, controller->desks().size());
+
+  base::HistogramTester histogram_tester;
+  ActivateDesk(controller->desks()[1].get());
+  histogram_tester.ExpectTotalCount("Ash.Desks.AnimationLatency.DeskActivation",
+                                    1);
+}
+
+// Tests the Ash.Desks.AnimationLatency.DeskRemoval histogram.
+TEST_F(DesksTest, AnimationLatencyDeskRemoval) {
+  NewDesk();
+  auto* controller = DesksController::Get();
+  ASSERT_EQ(2u, controller->desks().size());
+
+  base::HistogramTester histogram_tester;
+  RemoveDesk(controller->desks()[0].get());
+  histogram_tester.ExpectTotalCount("Ash.Desks.AnimationLatency.DeskRemoval",
+                                    1);
+}
+
 class DesksWithMultiDisplayOverview : public AshTestBase {
  public:
   DesksWithMultiDisplayOverview() = default;

@@ -23,8 +23,12 @@ namespace ash {
 
 namespace {
 
+constexpr char kDeskActivationLatencyHistogramName[] =
+    "Ash.Desks.AnimationLatency.DeskActivation";
 constexpr char kDeskActivationSmoothnessHistogramName[] =
     "Ash.Desks.AnimationSmoothness.DeskActivation";
+constexpr char kDeskRemovalLatencyHistogramName[] =
+    "Ash.Desks.AnimationLatency.DeskRemoval";
 constexpr char kDeskRemovalSmoothnessHistogramName[] =
     "Ash.Desks.AnimationSmoothness.DeskRemoval";
 
@@ -261,8 +265,15 @@ void DeskActivationAnimation::OnDeskSwitchAnimationFinishedInternal() {
       update_window_activation_);
 }
 
-metrics_util::ReportCallback DeskActivationAnimation::GetReportCallback()
-    const {
+DeskAnimationBase::LatencyReportCallback
+DeskActivationAnimation::GetLatencyReportCallback() const {
+  return base::BindOnce([](const base::TimeDelta& latency) {
+    UMA_HISTOGRAM_TIMES(kDeskActivationLatencyHistogramName, latency);
+  });
+}
+
+metrics_util::ReportCallback
+DeskActivationAnimation::GetSmoothnessReportCallback() const {
   return metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
     UMA_HISTOGRAM_PERCENTAGE(kDeskActivationSmoothnessHistogramName,
                              smoothness);
@@ -365,7 +376,15 @@ void DeskRemovalAnimation::OnDeskSwitchAnimationFinishedInternal() {
   MaybeRestoreSplitView(/*refresh_snapped_windows=*/true);
 }
 
-metrics_util::ReportCallback DeskRemovalAnimation::GetReportCallback() const {
+DeskAnimationBase::LatencyReportCallback
+DeskRemovalAnimation::GetLatencyReportCallback() const {
+  return base::BindOnce([](const base::TimeDelta& latency) {
+    UMA_HISTOGRAM_TIMES(kDeskRemovalLatencyHistogramName, latency);
+  });
+}
+
+metrics_util::ReportCallback DeskRemovalAnimation::GetSmoothnessReportCallback()
+    const {
   return ash::metrics_util::ForSmoothness(
       base::BindRepeating([](int smoothness) {
         UMA_HISTOGRAM_PERCENTAGE(kDeskRemovalSmoothnessHistogramName,
