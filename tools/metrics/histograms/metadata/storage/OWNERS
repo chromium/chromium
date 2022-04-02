@@ -7,5 +7,4 @@ per-file OWNERS=file://tools/metrics/histograms/metadata/METRIC_REVIEWER_OWNERS
 ayui@chromium.org
 
 # Secondary
-pwnall@chromium.org
 wanderview@chromium.org
