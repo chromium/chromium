@@ -24,9 +24,9 @@ UnifiedNetworkDetailedViewController::~UnifiedNetworkDetailedViewController() =
 
 views::View* UnifiedNetworkDetailedViewController::CreateView() {
   DCHECK(!view_);
-  view_ = new tray::NetworkListView(
-      detailed_view_delegate_.get(),
-      Shell::Get()->session_controller()->login_status());
+  view_ =
+      new NetworkListView(detailed_view_delegate_.get(),
+                          Shell::Get()->session_controller()->login_status());
   view_->Init();
   return view_;
 }

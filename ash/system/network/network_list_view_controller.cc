@@ -9,15 +9,13 @@
 
 namespace ash {
 
-namespace tray {
-
 namespace {
 NetworkListViewController::Factory* g_test_factory = nullptr;
 }  // namespace
 
 std::unique_ptr<NetworkListViewController>
 NetworkListViewController::Factory::Create(
-    tray::NetworkDetailedNetworkView* network_detailed_network_view) {
+    NetworkDetailedNetworkView* network_detailed_network_view) {
   if (g_test_factory)
     return g_test_factory->CreateForTesting();  // IN-TEST
   return std::make_unique<NetworkListViewControllerImpl>(
@@ -29,5 +27,4 @@ void NetworkListViewController::Factory::SetFactoryForTesting(
   g_test_factory = test_factory;
 }
 
-}  // namespace tray
 }  // namespace ash

@@ -7,7 +7,6 @@
 #include "ash/system/network/network_detailed_network_view.h"
 
 namespace ash {
-namespace tray {
 
 FakeNetworkDetailedNetworkView::FakeNetworkDetailedNetworkView(
     Delegate* delegate)
@@ -19,5 +18,4 @@ views::View* FakeNetworkDetailedNetworkView::GetAsView() {
   return this;
 }
 
-}  // namespace tray
 }  // namespace ash

@@ -34,7 +34,6 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
-namespace tray {
 namespace {
 
 using base::UserMetricsAction;
@@ -482,5 +481,4 @@ bool NetworkStateListDetailedView::IsWifiEnabled() {
          DeviceStateType::kEnabled;
 }
 
-}  // namespace tray
 }  // namespace ash

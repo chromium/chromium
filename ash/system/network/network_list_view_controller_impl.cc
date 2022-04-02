@@ -11,7 +11,6 @@
 #include "ash/system/network/tray_network_state_model.h"
 
 namespace ash {
-namespace tray {
 
 NetworkListViewControllerImpl::NetworkListViewControllerImpl(
     NetworkDetailedNetworkView* network_detailed_network_view)
@@ -38,5 +37,4 @@ void NetworkListViewControllerImpl::DeviceStateListChanged() {
   // TODO(b/207089013): Implement this function.
 }
 
-}  // namespace tray
 }  // namespace ash

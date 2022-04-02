@@ -14,7 +14,6 @@
 #include "ash/system/tray/tray_item_view.h"
 
 namespace ash {
-namespace tray {
 
 // View class containing an ImageView for a network icon in the tray.
 // The ActiveNetworkIcon::Type parameter determines what type of icon is
@@ -77,7 +76,6 @@ class NetworkTrayView : public TrayItemView,
   std::u16string tooltip_;
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_NETWORK_NETWORK_TRAY_VIEW_H_

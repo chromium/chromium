@@ -10,7 +10,6 @@
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 
 namespace ash {
-namespace tray {
 
 namespace {
 
@@ -41,7 +40,6 @@ class ASH_EXPORT FakeNetworkDetailedViewDelegate
   NetworkStatePropertiesPtr last_network_list_item_selected_;
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_NETWORK_FAKE_NETWORK_DETAILED_VIEW_DELEGATE_H_

@@ -9,7 +9,6 @@
 #include "ash/system/tray/detailed_view_delegate.h"
 
 namespace ash {
-namespace tray {
 namespace {
 NetworkDetailedNetworkView::Factory* g_test_factory = nullptr;
 }  // namespace
@@ -25,7 +24,7 @@ NetworkDetailedNetworkView::Factory::Create(
     Delegate* delegate) {
   if (g_test_factory)
     return g_test_factory->CreateForTesting(delegate);  // IN-TEST
-  return std::make_unique<tray::NetworkDetailedNetworkViewImpl>(
+  return std::make_unique<NetworkDetailedNetworkViewImpl>(
       detailed_view_delegate, delegate);
 }
 
@@ -34,5 +33,4 @@ void NetworkDetailedNetworkView::Factory::SetFactoryForTesting(
   g_test_factory = test_factory;
 }
 
-}  // namespace tray
 }  // namespace ash

@@ -9,7 +9,6 @@
 #include "ash/system/network/network_detailed_network_view.h"
 
 namespace ash {
-namespace tray {
 
 // This class defines the interface used to add, modify, and remove networks
 // from the network list of the detailed network device page within the quick
@@ -24,7 +23,7 @@ class ASH_EXPORT NetworkListViewController {
     virtual ~Factory() = default;
 
     static std::unique_ptr<NetworkListViewController> Create(
-        tray::NetworkDetailedNetworkView* network_detailed_network_view);
+        NetworkDetailedNetworkView* network_detailed_network_view);
     static void SetFactoryForTesting(Factory* test_factory);
 
    protected:
@@ -42,7 +41,6 @@ class ASH_EXPORT NetworkListViewController {
   NetworkListViewController() = default;
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_NETWORK_NETWORK_LIST_VIEW_CONTROLLER_H_

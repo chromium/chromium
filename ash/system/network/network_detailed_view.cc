@@ -19,7 +19,6 @@
 #include "ui/views/controls/button/button.h"
 
 namespace ash {
-namespace tray {
 
 NetworkDetailedView::NetworkDetailedView(
     DetailedViewDelegate* detailed_view_delegate,
@@ -129,5 +128,4 @@ void NetworkDetailedView::OnSettingsClicked() {
     system_tray_client->ShowNetworkSettings(guid);
 }
 
-}  // namespace tray
 }  // namespace ash

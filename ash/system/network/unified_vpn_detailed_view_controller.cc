@@ -23,9 +23,8 @@ UnifiedVPNDetailedViewController::~UnifiedVPNDetailedViewController() = default;
 
 views::View* UnifiedVPNDetailedViewController::CreateView() {
   DCHECK(!view_);
-  view_ =
-      new tray::VPNListView(detailed_view_delegate_.get(),
-                            Shell::Get()->session_controller()->login_status());
+  view_ = new VPNListView(detailed_view_delegate_.get(),
+                          Shell::Get()->session_controller()->login_status());
   view_->Init();
   return view_;
 }

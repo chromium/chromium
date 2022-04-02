@@ -14,8 +14,6 @@ namespace ash {
 
 class DetailedViewDelegate;
 
-namespace tray {
-
 // This class is an implementation for NetworkDetailedNetworkView.
 // TODO(b/207089013): extend and implement
 // NetworkListNetworkHeaderView::Delegate when available.
@@ -39,7 +37,6 @@ class ASH_EXPORT NetworkDetailedNetworkViewImpl
   views::View* GetAsView() override;
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_NETWORK_NETWORK_DETAILED_NETWORK_VIEW_H_

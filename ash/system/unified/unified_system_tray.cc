@@ -205,12 +205,12 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
 
   if (features::IsSeparateNetworkIconsEnabled()) {
     network_tray_view_ =
-        new tray::NetworkTrayView(shelf, ActiveNetworkIcon::Type::kPrimary);
+        new NetworkTrayView(shelf, ActiveNetworkIcon::Type::kPrimary);
     AddTrayItemToContainer(
-        new tray::NetworkTrayView(shelf, ActiveNetworkIcon::Type::kCellular));
+        new NetworkTrayView(shelf, ActiveNetworkIcon::Type::kCellular));
   } else {
     network_tray_view_ =
-        new tray::NetworkTrayView(shelf, ActiveNetworkIcon::Type::kSingle);
+        new NetworkTrayView(shelf, ActiveNetworkIcon::Type::kSingle);
   }
 
   AddTrayItemToContainer(network_tray_view_);

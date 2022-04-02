@@ -24,7 +24,6 @@
 #include "ui/views/view.h"
 
 namespace ash {
-namespace tray {
 namespace {
 
 using chromeos::network_config::CrosNetworkConfigTestHelper;
@@ -289,5 +288,4 @@ TEST_F(NetworkInfoBubbleTest, HasCorrectText) {
   CloseBubble();
 }
 
-}  // namespace tray
 }  // namespace ash

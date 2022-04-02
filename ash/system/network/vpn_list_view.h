@@ -20,7 +20,6 @@ class View;
 }
 
 namespace ash {
-namespace tray {
 
 // A list of VPN providers and networks that shows VPN providers and networks in
 // a hierarchical layout, allowing the user to see at a glance which provider a
@@ -101,7 +100,6 @@ class VPNListView : public NetworkStateListDetailedView,
   base::WeakPtrFactory<VPNListView> weak_ptr_factory_{this};
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_NETWORK_VPN_LIST_VIEW_H_

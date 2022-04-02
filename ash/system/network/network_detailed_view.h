@@ -24,8 +24,6 @@ class TrayNetworkStateModel;
 class DetailedViewDelegate;
 class Button;
 
-namespace tray {
-
 // This class defines both the interface used to interact with the detailed
 // Network page within the quick settings, including the view responsible for
 // containing the network list. This class includes the declaration for the
@@ -104,7 +102,6 @@ class ASH_EXPORT NetworkDetailedView : public TrayDetailedView,
   base::WeakPtrFactory<NetworkDetailedView> weak_ptr_factory_{this};
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_NETWORK_NETWORK_DETAILED_VIEW_H_

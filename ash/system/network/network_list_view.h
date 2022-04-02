@@ -24,13 +24,12 @@ class View;
 }  // namespace views
 
 namespace ash {
-class HoverHighlightView;
-class TrayInfoLabel;
-class TriView;
 
-namespace tray {
+class HoverHighlightView;
 class NetworkSectionHeaderView;
 class MobileSectionHeaderView;
+class TrayInfoLabel;
+class TriView;
 class WifiSectionHeaderView;
 
 // A list of available networks of a given type. This class is used for all
@@ -166,7 +165,6 @@ class NetworkListView : public NetworkStateListDetailedView,
   base::WeakPtrFactory<NetworkListView> weak_ptr_factory_{this};
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_NETWORK_NETWORK_LIST_VIEW_H_

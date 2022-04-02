@@ -345,8 +345,7 @@ void UnifiedSystemTrayController::ShowNetworkDetailedView(bool force) {
   base::RecordAction(base::UserMetricsAction("StatusArea_Network_Detailed"));
 
   if (ash::features::IsQuickSettingsNetworkRevampEnabled()) {
-    ShowDetailedView(
-        std::make_unique<tray::NetworkDetailedViewController>(this));
+    ShowDetailedView(std::make_unique<NetworkDetailedViewController>(this));
   } else {
     ShowDetailedView(
         std::make_unique<UnifiedNetworkDetailedViewController>(this));

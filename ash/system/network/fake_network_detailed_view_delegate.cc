@@ -7,7 +7,6 @@
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 
 namespace ash {
-namespace tray {
 
 namespace {
 
@@ -23,5 +22,4 @@ void FakeNetworkDetailedViewDelegate::OnNetworkListItemSelected(
   last_network_list_item_selected_ = mojo::Clone(network);
 }
 
-}  // namespace tray
 }  // namespace ash

@@ -12,7 +12,6 @@
 #include "base/test/scoped_feature_list.h"
 
 namespace ash {
-namespace tray {
 
 class NetworkListViewControllerTest : public AshTestBase {
  public:
@@ -57,5 +56,4 @@ TEST_F(NetworkListViewControllerTest, CanConstruct) {
   EXPECT_TRUE(true);
 }
 
-}  // namespace tray
 }  // namespace ash

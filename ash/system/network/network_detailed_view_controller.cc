@@ -14,7 +14,6 @@
 #include "ui/views/view.h"
 
 namespace ash {
-namespace tray {
 
 NetworkDetailedViewController::NetworkDetailedViewController(
     UnifiedSystemTrayController* tray_controller)
@@ -27,7 +26,7 @@ NetworkDetailedViewController::~NetworkDetailedViewController() = default;
 
 views::View* NetworkDetailedViewController::CreateView() {
   DCHECK(!network_detailed_view_);
-  std::unique_ptr<tray::NetworkDetailedNetworkView> view =
+  std::unique_ptr<NetworkDetailedNetworkView> view =
       NetworkDetailedNetworkView::Factory::Create(detailed_view_delegate_.get(),
                                                   /*delegate=*/this);
   network_detailed_view_ = view.get();
@@ -52,5 +51,4 @@ void NetworkDetailedViewController::OnMobileToggleClicked(bool new_state) {}
 
 void NetworkDetailedViewController::OnWifiToggleClicked(bool new_state) {}
 
-}  // namespace tray
 }  // namespace ash

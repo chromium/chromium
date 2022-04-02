@@ -11,12 +11,9 @@
 
 namespace ash {
 
-namespace tray {
-class VPNListView;
-}  // namespace tray
-
 class DetailedViewDelegate;
 class UnifiedSystemTrayController;
+class VPNListView;
 
 // Controller of VPN detailed view in UnifiedSystemTray.
 class UnifiedVPNDetailedViewController : public DetailedViewController {
@@ -38,7 +35,7 @@ class UnifiedVPNDetailedViewController : public DetailedViewController {
  private:
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
-  tray::VPNListView* view_ = nullptr;
+  VPNListView* view_ = nullptr;
 };
 
 }  // namespace ash

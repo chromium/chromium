@@ -22,8 +22,6 @@ class Button;
 namespace ash {
 class TrayNetworkStateModel;
 
-namespace tray {
-
 bool CanNetworkConnect(
     chromeos::network_config::mojom::ConnectionStateType connection_state,
     chromeos::network_config::mojom::NetworkType type,
@@ -127,7 +125,6 @@ class ASH_EXPORT NetworkStateListDetailedView
   base::WeakPtrFactory<NetworkStateListDetailedView> weak_ptr_factory_{this};
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_NETWORK_NETWORK_STATE_LIST_DETAILED_VIEW_H_

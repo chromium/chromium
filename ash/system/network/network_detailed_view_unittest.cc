@@ -32,7 +32,6 @@ class View;
 }  // namespace views
 
 namespace ash {
-namespace tray {
 namespace {
 
 const std::string kNetworkdId = "/network/id";
@@ -140,5 +139,4 @@ TEST_F(NetworkDetailedViewTest, PressingInfoButtonOpensInfoBubble) {
   }
 }
 
-}  // namespace tray
 }  // namespace ash

@@ -20,7 +20,6 @@
 #include "ui/views/view.h"
 
 namespace ash {
-namespace tray {
 namespace {
 
 using chromeos::network_config::mojom::DeviceStateProperties;
@@ -153,5 +152,4 @@ std::u16string NetworkInfoBubble::ComputeInfoText() {
   return info_text;
 }
 
-}  // namespace tray
 }  // namespace ash

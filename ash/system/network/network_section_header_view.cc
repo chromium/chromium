@@ -39,7 +39,6 @@ using chromeos::network_config::mojom::NetworkStatePropertiesPtr;
 using chromeos::network_config::mojom::NetworkType;
 
 namespace ash {
-namespace tray {
 
 namespace {
 
@@ -509,5 +508,4 @@ void WifiSectionHeaderView::JoinButtonPressed() {
       ::onc::network_type::kWiFi);
 }
 
-}  // namespace tray
 }  // namespace ash

@@ -23,8 +23,6 @@ namespace ash {
 class IconButton;
 class TrayNetworkStateModel;
 
-namespace tray {
-
 // A header row for sections in network detailed view which contains a title and
 // a toggle button to turn on/off the section. Subclasses are given the
 // opportunity to add extra buttons before the toggle button is added.
@@ -181,7 +179,6 @@ class WifiSectionHeaderView : public NetworkSectionHeaderView,
   IconButton* join_button_ = nullptr;
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_NETWORK_NETWORK_SECTION_HEADER_VIEW_H_

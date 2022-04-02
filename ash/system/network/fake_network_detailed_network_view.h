@@ -10,7 +10,6 @@
 #include "ui/views/view.h"
 
 namespace ash {
-namespace tray {
 
 // Fake implementation of NetworkDetailedNetworkView.
 class ASH_EXPORT FakeNetworkDetailedNetworkView
@@ -29,7 +28,6 @@ class ASH_EXPORT FakeNetworkDetailedNetworkView
   views::View* GetAsView() override;
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_NETWORK_FAKE_NETWORK_DETAILED_NETWORK_VIEW_H_

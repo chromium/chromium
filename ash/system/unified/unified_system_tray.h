@@ -28,16 +28,13 @@ class MessagePopupView;
 
 namespace ash {
 
-namespace tray {
-class NetworkTrayView;
-}  // namespace tray
-
 class AshMessagePopupCollection;
 class CameraMicTrayItemView;
 class CurrentLocaleView;
 class ImeModeView;
 class HpsNotifyView;
 class ManagedDeviceTrayItemView;
+class NetworkTrayView;
 class NotificationIconsController;
 class PrivacyScreenToastController;
 class TimeTrayItemView;
@@ -259,7 +256,7 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
   CameraMicTrayItemView* const mic_view_;
   TimeTrayItemView* const time_view_;
 
-  tray::NetworkTrayView* network_tray_view_ = nullptr;
+  NetworkTrayView* network_tray_view_ = nullptr;
 
   // Contains all tray items views added to tray_container().
   std::list<TrayItemView*> tray_items_;

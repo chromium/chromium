@@ -21,7 +21,6 @@ class View;
 }  // namespace views
 
 namespace ash {
-namespace tray {
 
 // This class encapsulates the logic to update the detailed Network device
 // page within the quick settings and translate user interaction with the
@@ -57,7 +56,6 @@ class ASH_EXPORT NetworkDetailedViewController
   std::unique_ptr<NetworkListViewController> network_list_view_controller_;
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_NETWORK_NETWORK_DETAILED_VIEW_CONTROLLER_H_

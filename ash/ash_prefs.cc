@@ -102,10 +102,10 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   quick_pair::Mediator::RegisterProfilePrefs(registry);
   ShelfController::RegisterProfilePrefs(registry);
   TouchDevicesController::RegisterProfilePrefs(registry, for_test);
-  tray::VPNListView::RegisterProfilePrefs(registry);
   UnifiedSystemTrayController::RegisterProfilePrefs(registry);
   MediaTray::RegisterProfilePrefs(registry);
   UsbPeripheralNotificationController::RegisterProfilePrefs(registry);
+  VPNListView::RegisterProfilePrefs(registry);
   WallpaperControllerImpl::RegisterProfilePrefs(registry);
   WindowCycleController::RegisterProfilePrefs(registry);
 

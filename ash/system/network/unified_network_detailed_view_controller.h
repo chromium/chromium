@@ -11,11 +11,8 @@
 
 namespace ash {
 
-namespace tray {
-class NetworkListView;
-}  // namespace tray
-
 class DetailedViewDelegate;
+class NetworkListView;
 class UnifiedSystemTrayController;
 
 // Controller of Network detailed view in UnifiedSystemTray.
@@ -38,7 +35,7 @@ class UnifiedNetworkDetailedViewController : public DetailedViewController {
  private:
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
-  tray::NetworkListView* view_ = nullptr;
+  NetworkListView* view_ = nullptr;
 };
 
 }  // namespace ash

@@ -10,7 +10,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace ash {
-namespace tray {
 
 NetworkDetailedNetworkViewImpl::NetworkDetailedNetworkViewImpl(
     DetailedViewDelegate* detailed_view_delegate,
@@ -31,5 +30,4 @@ views::View* NetworkDetailedNetworkViewImpl::GetAsView() {
 BEGIN_METADATA(NetworkDetailedNetworkViewImpl, views::View)
 END_METADATA
 
-}  // namespace tray
 }  // namespace ash

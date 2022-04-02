@@ -60,7 +60,6 @@ using chromeos::network_config::mojom::OncSource;
 using chromeos::network_config::mojom::ProxyMode;
 
 namespace ash {
-namespace tray {
 namespace {
 
 const int kMobileNetworkBatteryIconSize = 20;
@@ -647,7 +646,7 @@ std::u16string NetworkListView::GenerateAccessibilityDescription(
     default:
       return u"";
   }
-}  // namespace tray
+}
 
 views::View* NetworkListView::CreatePowerStatusView(const NetworkInfo& info) {
   // Mobile can be Cellular or Tether.
@@ -824,5 +823,4 @@ TriView* NetworkListView::CreateConnectionWarning() {
   return connection_warning;
 }
 
-}  // namespace tray
 }  // namespace ash

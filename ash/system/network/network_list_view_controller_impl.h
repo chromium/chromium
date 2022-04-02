@@ -11,7 +11,6 @@
 #include "ash/system/network/tray_network_state_observer.h"
 
 namespace ash {
-namespace tray {
 
 class NetworkDetailedNetworkView;
 
@@ -28,7 +27,7 @@ class ASH_EXPORT NetworkListViewControllerImpl
   ~NetworkListViewControllerImpl() override;
 
  protected:
-  tray::NetworkDetailedNetworkView* network_detailed_network_view() {
+  NetworkDetailedNetworkView* network_detailed_network_view() {
     return network_detailed_network_view_;
   }
 
@@ -38,10 +37,9 @@ class ASH_EXPORT NetworkListViewControllerImpl
   void NetworkListChanged() override;
   void DeviceStateListChanged() override;
 
-  tray::NetworkDetailedNetworkView* network_detailed_network_view_;
+  NetworkDetailedNetworkView* network_detailed_network_view_;
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_NETWORK_NETWORK_LIST_VIEW_CONTROLLER_IMPL_H_

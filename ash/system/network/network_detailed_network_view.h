@@ -12,8 +12,6 @@ namespace ash {
 
 class DetailedViewDelegate;
 
-namespace tray {
-
 // This class defines both the interface used to interact with the
 // NetworkDetailedView and declares delegate interface it uses to propagate user
 // interactions. It also defines the factory used to create instances of
@@ -72,7 +70,6 @@ class ASH_EXPORT NetworkDetailedNetworkView {
   Delegate* delegate_;
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_NETWORK_NETWORK_DETAILED_NETWORK_VIEW_H_

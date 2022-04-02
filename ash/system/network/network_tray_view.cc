@@ -18,7 +18,6 @@
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
-namespace tray {
 
 namespace {
 
@@ -131,5 +130,4 @@ void NetworkTrayView::UpdateConnectionStatus(bool notify_a11y) {
   }
 }
 
-}  // namespace tray
 }  // namespace ash

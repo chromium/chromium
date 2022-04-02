@@ -61,7 +61,6 @@ using chromeos::network_config::mojom::VPNStatePropertiesPtr;
 using chromeos::network_config::mojom::VpnType;
 
 namespace ash {
-namespace tray {
 namespace {
 
 struct CompareArcVpnProviderByLastLaunchTime {
@@ -529,5 +528,4 @@ void VPNListView::AddProvidersAndNetworks(const NetworkStateList& networks) {
   }
 }
 
-}  // namespace tray
 }  // namespace ash
