@@ -26,12 +26,12 @@ class WebUI;
 // reports being sent or dropped, to the internals WebUI. Owned by
 // `AttributionInternalsUI`.
 class AttributionInternalsHandlerImpl
-    : public mojom::AttributionInternalsHandler,
+    : public attribution_internals::mojom::Handler,
       public AttributionObserver {
  public:
   AttributionInternalsHandlerImpl(
       WebUI* web_ui,
-      mojo::PendingReceiver<mojom::AttributionInternalsHandler> receiver);
+      mojo::PendingReceiver<attribution_internals::mojom::Handler> receiver);
   AttributionInternalsHandlerImpl(
       const AttributionInternalsHandlerImpl& other) = delete;
   AttributionInternalsHandlerImpl& operator=(
@@ -44,28 +44,28 @@ class AttributionInternalsHandlerImpl
 
   // mojom::AttributionInternalsHandler:
   void IsAttributionReportingEnabled(
-      mojom::AttributionInternalsHandler::IsAttributionReportingEnabledCallback
-          callback) override;
+      attribution_internals::mojom::Handler::
+          IsAttributionReportingEnabledCallback callback) override;
   void GetActiveSources(
-      mojom::AttributionInternalsHandler::GetActiveSourcesCallback callback)
+      attribution_internals::mojom::Handler::GetActiveSourcesCallback callback)
       override;
-  void GetReports(
-      AttributionReport::ReportType report_type,
-      mojom::AttributionInternalsHandler::GetReportsCallback callback) override;
+  void GetReports(AttributionReport::ReportType report_type,
+                  attribution_internals::mojom::Handler::GetReportsCallback
+                      callback) override;
   void SendEventLevelReports(
       const std::vector<AttributionReport::EventLevelData::Id>& ids,
-      mojom::AttributionInternalsHandler::SendEventLevelReportsCallback
+      attribution_internals::mojom::Handler::SendEventLevelReportsCallback
           callback) override;
   void SendAggregatableAttributionReports(
       const std::vector<AttributionReport::AggregatableAttributionData::Id>&
           ids,
-      mojom::AttributionInternalsHandler::
+      attribution_internals::mojom::Handler::
           SendAggregatableAttributionReportsCallback callback) override;
-  void ClearStorage(mojom::AttributionInternalsHandler::ClearStorageCallback
+  void ClearStorage(attribution_internals::mojom::Handler::ClearStorageCallback
                         callback) override;
   void AddObserver(
-      mojo::PendingRemote<mojom::AttributionInternalsObserver> observer,
-      mojom::AttributionInternalsHandler::AddObserverCallback callback)
+      mojo::PendingRemote<attribution_internals::mojom::Observer> observer,
+      attribution_internals::mojom::Handler::AddObserverCallback callback)
       override;
 
   void SetAttributionManagerProviderForTesting(
@@ -90,9 +90,9 @@ class AttributionInternalsHandlerImpl
   raw_ptr<WebUI> web_ui_;
   std::unique_ptr<AttributionManagerProvider> manager_provider_;
 
-  mojo::Receiver<mojom::AttributionInternalsHandler> receiver_;
+  mojo::Receiver<attribution_internals::mojom::Handler> receiver_;
 
-  mojo::RemoteSet<mojom::AttributionInternalsObserver> observers_;
+  mojo::RemoteSet<attribution_internals::mojom::Observer> observers_;
 
   base::ScopedObservation<AttributionManager, AttributionObserver>
       manager_observation_{this};

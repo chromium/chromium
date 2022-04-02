@@ -32,7 +32,7 @@ class CONTENT_EXPORT AttributionInternalsUI : public WebUIController {
   void WebUIRenderFrameCreated(RenderFrameHost* render_frame_host) override;
 
   void BindInterface(
-      mojo::PendingReceiver<mojom::AttributionInternalsHandler> receiver);
+      mojo::PendingReceiver<attribution_internals::mojom::Handler> receiver);
 
   void SetAttributionManagerProviderForTesting(
       std::unique_ptr<AttributionManagerProvider> manager_provider);

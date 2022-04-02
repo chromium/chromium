@@ -18,19 +18,19 @@ mojom("mojo_bindings") {
     {
       types = [
         {
-          mojom = "content.mojom.AttributionReportAggregatableAttributionID"
+          mojom = "attribution_internals.mojom.AggregatableAttributionReportID"
           cpp = "::content::AttributionReport::AggregatableAttributionData::Id"
         },
         {
-          mojom = "content.mojom.AttributionReportEventLevelID"
+          mojom = "attribution_internals.mojom.EventLevelReportID"
           cpp = "::content::AttributionReport::EventLevelData::Id"
         },
         {
-          mojom = "content.mojom.AttributionSourceType"
+          mojom = "attribution_internals.mojom.SourceType"
           cpp = "::content::AttributionSourceType"
         },
         {
-          mojom = "content.mojom.AttributionReportType"
+          mojom = "attribution_internals.mojom.ReportType"
           cpp = "::content::AttributionReport::ReportType"
         },
       ]

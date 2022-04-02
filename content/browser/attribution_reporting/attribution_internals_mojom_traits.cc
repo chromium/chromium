@@ -7,9 +7,9 @@
 namespace mojo {
 
 // static
-bool StructTraits<content::mojom::AttributionReportEventLevelIDDataView,
+bool StructTraits<attribution_internals::mojom::EventLevelReportIDDataView,
                   content::AttributionReport::EventLevelData::Id>::
-    Read(content::mojom::AttributionReportEventLevelIDDataView data,
+    Read(attribution_internals::mojom::EventLevelReportIDDataView data,
          content::AttributionReport::EventLevelData::Id* out) {
   *out = content::AttributionReport::EventLevelData::Id(data.value());
   return true;
@@ -17,11 +17,11 @@ bool StructTraits<content::mojom::AttributionReportEventLevelIDDataView,
 
 // static
 bool StructTraits<
-    content::mojom::AttributionReportAggregatableAttributionIDDataView,
+    attribution_internals::mojom::AggregatableAttributionReportIDDataView,
     content::AttributionReport::AggregatableAttributionData::Id>::
-    Read(
-        content::mojom::AttributionReportAggregatableAttributionIDDataView data,
-        content::AttributionReport::AggregatableAttributionData::Id* out) {
+    Read(attribution_internals::mojom::AggregatableAttributionReportIDDataView
+             data,
+         content::AttributionReport::AggregatableAttributionData::Id* out) {
   *out =
       content::AttributionReport::AggregatableAttributionData::Id(data.value());
   return true;

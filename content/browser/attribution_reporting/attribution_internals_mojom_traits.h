@@ -16,26 +16,26 @@
 namespace mojo {
 
 template <>
-class EnumTraits<content::mojom::AttributionSourceType,
+class EnumTraits<attribution_internals::mojom::SourceType,
                  content::AttributionSourceType> {
  public:
-  static content::mojom::AttributionSourceType ToMojom(
+  static attribution_internals::mojom::SourceType ToMojom(
       content::AttributionSourceType input) {
     switch (input) {
       case content::AttributionSourceType::kNavigation:
-        return content::mojom::AttributionSourceType::kNavigation;
+        return attribution_internals::mojom::SourceType::kNavigation;
       case content::AttributionSourceType::kEvent:
-        return content::mojom::AttributionSourceType::kEvent;
+        return attribution_internals::mojom::SourceType::kEvent;
     }
   }
 
-  static bool FromMojom(content::mojom::AttributionSourceType input,
+  static bool FromMojom(attribution_internals::mojom::SourceType input,
                         content::AttributionSourceType* out) {
     switch (input) {
-      case content::mojom::AttributionSourceType::kNavigation:
+      case attribution_internals::mojom::SourceType::kNavigation:
         *out = content::AttributionSourceType::kNavigation;
         break;
-      case content::mojom::AttributionSourceType::kEvent:
+      case attribution_internals::mojom::SourceType::kEvent:
         *out = content::AttributionSourceType::kEvent;
         break;
     }
@@ -45,26 +45,27 @@ class EnumTraits<content::mojom::AttributionSourceType,
 };
 
 template <>
-class EnumTraits<content::mojom::AttributionReportType,
+class EnumTraits<attribution_internals::mojom::ReportType,
                  content::AttributionReport::ReportType> {
  public:
-  static content::mojom::AttributionReportType ToMojom(
+  static attribution_internals::mojom::ReportType ToMojom(
       content::AttributionReport::ReportType input) {
     switch (input) {
       case content::AttributionReport::ReportType::kEventLevel:
-        return content::mojom::AttributionReportType::kEventLevel;
+        return attribution_internals::mojom::ReportType::kEventLevel;
       case content::AttributionReport::ReportType::kAggregatableAttribution:
-        return content::mojom::AttributionReportType::kAggregatableAttribution;
+        return attribution_internals::mojom::ReportType::
+            kAggregatableAttribution;
     }
   }
 
-  static bool FromMojom(content::mojom::AttributionReportType input,
+  static bool FromMojom(attribution_internals::mojom::ReportType input,
                         content::AttributionReport::ReportType* out) {
     switch (input) {
-      case content::mojom::AttributionReportType::kEventLevel:
+      case attribution_internals::mojom::ReportType::kEventLevel:
         *out = content::AttributionReport::ReportType::kEventLevel;
         break;
-      case content::mojom::AttributionReportType::kAggregatableAttribution:
+      case attribution_internals::mojom::ReportType::kAggregatableAttribution:
         *out = content::AttributionReport::ReportType::kAggregatableAttribution;
         break;
     }
@@ -74,7 +75,7 @@ class EnumTraits<content::mojom::AttributionReportType,
 };
 
 template <>
-class StructTraits<content::mojom::AttributionReportEventLevelIDDataView,
+class StructTraits<attribution_internals::mojom::EventLevelReportIDDataView,
                    content::AttributionReport::EventLevelData::Id> {
  public:
   static int64_t value(
@@ -82,13 +83,14 @@ class StructTraits<content::mojom::AttributionReportEventLevelIDDataView,
     return *id;
   }
 
-  static bool Read(content::mojom::AttributionReportEventLevelIDDataView data,
-                   content::AttributionReport::EventLevelData::Id* out);
+  static bool Read(
+      attribution_internals::mojom::EventLevelReportIDDataView data,
+      content::AttributionReport::EventLevelData::Id* out);
 };
 
 template <>
 class StructTraits<
-    content::mojom::AttributionReportAggregatableAttributionIDDataView,
+    attribution_internals::mojom::AggregatableAttributionReportIDDataView,
     content::AttributionReport::AggregatableAttributionData::Id> {
  public:
   static int64_t value(
@@ -97,7 +99,8 @@ class StructTraits<
   }
 
   static bool Read(
-      content::mojom::AttributionReportAggregatableAttributionIDDataView data,
+      attribution_internals::mojom::AggregatableAttributionReportIDDataView
+          data,
       content::AttributionReport::AggregatableAttributionData::Id* out);
 };
 

@@ -7,7 +7,7 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {$, getRequiredElement, queryRequiredElement} from 'chrome://resources/js/util.m.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
-import {AttributionInternalsHandler, AttributionInternalsHandlerRemote, AttributionInternalsObserverInterface, AttributionInternalsObserverReceiver, AttributionReportAggregatableAttributionID, AttributionReportEventLevelID, AttributionReportType, AttributionSourceType, WebUIAttributionReport, WebUIAttributionReport_Status, WebUIAttributionSource, WebUIAttributionSource_Attributability} from './attribution_internals.mojom-webui.js';
+import {Handler as AttributionInternalsHandler, HandlerRemote as AttributionInternalsHandlerRemote, ObserverInterface, ObserverReceiver, AggregatableAttributionReportID, EventLevelReportID, ReportType, SourceType, WebUIReport, WebUIReport_Status, WebUISource, WebUISource_Attributability} from './attribution_internals.mojom-webui.js';
 
 /**
  * @template T
@@ -454,7 +454,7 @@ Table.prototype.__proto__ = HTMLDivElement.prototype;
 
 class Source {
   /**
-   * @param {!WebUIAttributionSource} mojo
+   * @param {!WebUISource} mojo
    */
   constructor(mojo) {
     this.sourceEventId = mojo.sourceEventId;
@@ -541,7 +541,7 @@ class SourceTableModel extends TableModel {
  */
 class Report extends Selectable {
   /**
-   * @param {!WebUIAttributionReport} mojo
+   * @param {!WebUIReport} mojo
    * @param {ID} id
    */
   constructor(mojo, id) {
@@ -555,7 +555,7 @@ class Report extends Selectable {
 
     // Only pending reports are selectable.
     if (this.id === null ||
-        mojo.status !== WebUIAttributionReport_Status.kPending) {
+        mojo.status !== WebUIReport_Status.kPending) {
       this.input.disabled = true;
     }
 
@@ -563,57 +563,57 @@ class Report extends Selectable {
                        '/.well-known/attribution-reporting/debug/') >= 0;
 
     switch (mojo.status) {
-      case WebUIAttributionReport_Status.kSent:
+      case WebUIReport_Status.kSent:
         this.status = `Sent: HTTP ${mojo.httpResponseCode}`;
         this.httpResponseCode = mojo.httpResponseCode;
         break;
-      case WebUIAttributionReport_Status.kPending:
+      case WebUIReport_Status.kPending:
         this.status = 'Pending';
         break;
-      case WebUIAttributionReport_Status.kDroppedDueToExcessiveAttributions:
+      case WebUIReport_Status.kDroppedDueToExcessiveAttributions:
         this.status = 'Dropped due to excessive attributions';
         break;
-      case WebUIAttributionReport_Status.kDroppedDueToExcessiveReportingOrigins:
+      case WebUIReport_Status.kDroppedDueToExcessiveReportingOrigins:
         this.status = 'Dropped due to excessive reporting origins';
         break;
-      case WebUIAttributionReport_Status.kDroppedDueToLowPriority:
+      case WebUIReport_Status.kDroppedDueToLowPriority:
         this.status = 'Dropped due to low priority';
         break;
-      case WebUIAttributionReport_Status.kDroppedForNoise:
+      case WebUIReport_Status.kDroppedForNoise:
         this.status = 'Dropped for noise';
         break;
-      case WebUIAttributionReport_Status.kDeduplicated:
+      case WebUIReport_Status.kDeduplicated:
         this.status = 'Deduplicated';
         break;
-      case WebUIAttributionReport_Status.kNoReportCapacityForDestinationSite:
+      case WebUIReport_Status.kNoReportCapacityForDestinationSite:
         this.status = 'No report capacity for destination site';
         break;
-      case WebUIAttributionReport_Status.kInternalError:
+      case WebUIReport_Status.kInternalError:
         this.status = 'Internal error';
         break;
-      case WebUIAttributionReport_Status.kProhibitedByBrowserPolicy:
+      case WebUIReport_Status.kProhibitedByBrowserPolicy:
         this.status = 'Prohibited by browser policy';
         break;
-      case WebUIAttributionReport_Status.kNetworkError:
+      case WebUIReport_Status.kNetworkError:
         this.status = 'Network error';
         break;
-      case WebUIAttributionReport_Status.kNoMatchingSourceFilterData:
+      case WebUIReport_Status.kNoMatchingSourceFilterData:
         this.status = 'Dropped due to no matching source filter data';
         break;
-      case WebUIAttributionReport_Status.kFailedToAssemble:
+      case WebUIReport_Status.kFailedToAssemble:
         this.status = 'Dropped due to assembly failure';
         break;
-      case WebUIAttributionReport_Status.kInsufficientAggregatableBudget:
+      case WebUIReport_Status.kInsufficientAggregatableBudget:
         this.status = 'Dropped due to insufficient aggregatable budget';
         break;
     }
   }
 }
 
-/** @extends {Report<!AttributionReportEventLevelID>} */
+/** @extends {Report<!EventLevelReportID>} */
 class EventLevelReport extends Report {
   /**
-   * @param {!WebUIAttributionReport} mojo
+   * @param {!WebUIReport} mojo
    */
   constructor(mojo) {
     super(mojo, mojo.data.eventLevelData.id);
@@ -623,10 +623,10 @@ class EventLevelReport extends Report {
   }
 }
 
-/** @extends {Report<!AttributionReportAggregatableAttributionID>} */
+/** @extends {Report<!AggregatableAttributionReportID>} */
 class AggregatableAttributionReport extends Report {
   /**
-   * @param {!WebUIAttributionReport} mojo
+   * @param {!WebUIReport} mojo
    */
   constructor(mojo) {
     super(mojo, mojo.data.aggregatableAttributionData.id);
@@ -740,7 +740,7 @@ class ReportTableModel extends TableModel {
   }
 }
 
-/** @extends {ReportTableModel<!AttributionReportEventLevelID>} */
+/** @extends {ReportTableModel<!EventLevelReportID>} */
 class EventLevelReportTableModel extends ReportTableModel {
   /**
    * @param {!Element} showDebugReportsContainer
@@ -765,7 +765,7 @@ class EventLevelReportTableModel extends ReportTableModel {
   }
 }
 
-/** @extends {ReportTableModel<!AttributionReportAggregatableAttributionID>} */
+/** @extends {ReportTableModel<!AggregatableAttributionReportID>} */
 class AggregatableAttributionReportTableModel extends ReportTableModel {
   /**
    * @param {!Element} showDebugReportsContainer
@@ -825,15 +825,15 @@ function OriginToText(origin) {
 }
 
 /**
- * Converts a mojo AttributionSourceType into a user-readable string.
- * @param {AttributionSourceType} sourceType Source type to convert
+ * Converts a mojo SourceType into a user-readable string.
+ * @param {SourceType} sourceType Source type to convert
  * @return {string}
  */
 function SourceTypeToText(sourceType) {
   switch (sourceType) {
-    case AttributionSourceType.kNavigation:
+    case SourceType.kNavigation:
       return 'Navigation';
-    case AttributionSourceType.kEvent:
+    case SourceType.kEvent:
       return 'Event';
     default:
       return sourceType.toString();
@@ -842,28 +842,28 @@ function SourceTypeToText(sourceType) {
 
 /**
  * Converts a mojo Attributability into a user-readable string.
- * @param {WebUIAttributionSource_Attributability} attributability
+ * @param {WebUISource_Attributability} attributability
  *     Attributability to convert
  * @return {string}
  */
 function AttributabilityToText(attributability) {
   switch (attributability) {
-    case WebUIAttributionSource_Attributability.kAttributable:
+    case WebUISource_Attributability.kAttributable:
       return 'Attributable';
-    case WebUIAttributionSource_Attributability.kNoised:
+    case WebUISource_Attributability.kNoised:
       return 'Unattributable: noised';
-    case WebUIAttributionSource_Attributability.kReplacedByNewerSource:
+    case WebUISource_Attributability.kReplacedByNewerSource:
       return 'Unattributable: replaced by newer source';
-    case WebUIAttributionSource_Attributability.kReachedEventLevelAttributionLimit:
+    case WebUISource_Attributability.kReachedEventLevelAttributionLimit:
       return 'Attributable: reached event-level attribution limit';
-    case WebUIAttributionSource_Attributability.kInternalError:
+    case WebUISource_Attributability.kInternalError:
       return 'Rejected: internal error';
-    case WebUIAttributionSource_Attributability.kInsufficientSourceCapacity:
+    case WebUISource_Attributability.kInsufficientSourceCapacity:
       return 'Rejected: insufficient source capacity';
-    case WebUIAttributionSource_Attributability
+    case WebUISource_Attributability
         .kInsufficientUniqueDestinationCapacity:
       return 'Rejected: insufficient unique destination capacity';
-    case WebUIAttributionSource_Attributability.kExcessiveReportingOrigins:
+    case WebUISource_Attributability.kExcessiveReportingOrigins:
       return 'Rejected: excessive reporting origins';
     default:
       return attributability.toString();
@@ -891,8 +891,8 @@ function updatePageData() {
   });
 
   updateSources();
-  updateReports(AttributionReportType.kEventLevel);
-  updateReports(AttributionReportType.kAggregatableAttribution);
+  updateReports(ReportType.kEventLevel);
+  updateReports(ReportType.kAggregatableAttribution);
 }
 
 function updateSources() {
@@ -903,18 +903,18 @@ function updateSources() {
 }
 
 /**
- * @param {!AttributionReportType} reportType
+ * @param {!ReportType} reportType
  */
 function updateReports(reportType) {
   pageHandler.getReports(reportType).then((response) => {
     switch (reportType) {
-      case AttributionReportType.kEventLevel:
+      case ReportType.kEventLevel:
         eventLevelReportTableModel.setStoredReports(
             response.reports
                 .filter((mojo) => mojo.data.eventLevelData !== undefined)
                 .map((mojo) => new EventLevelReport(mojo)));
         break;
-      case AttributionReportType.kAggregatableAttribution:
+      case ReportType.kAggregatableAttribution:
         aggregatableAttributionReportTableModel.setStoredReports(
             response.reports
                 .filter(
@@ -983,7 +983,7 @@ function sendAggregatableAttributionReports() {
 }
 
 /**
- * @param {!WebUIAttributionReport} mojo
+ * @param {!WebUIReport} mojo
  */
 function addSentOrDroppedReport(mojo) {
   if (mojo.data.eventLevelData !== undefined) {
@@ -995,7 +995,7 @@ function addSentOrDroppedReport(mojo) {
   }
 }
 
-/** @implements {AttributionInternalsObserverInterface} */
+/** @implements {ObserverInterface} */
 class Observer {
   /** @override */
   onSourcesChanged() {
@@ -1060,7 +1060,7 @@ document.addEventListener('DOMContentLoaded', function() {
       getRequiredElement('aggregatable-report-table-wrapper'),
       aggregatableAttributionReportTableModel);
 
-  const receiver = new AttributionInternalsObserverReceiver(new Observer());
+  const receiver = new ObserverReceiver(new Observer());
   pageHandler.addObserver(receiver.$.bindNewPipeAndPassRemote());
 
   updatePageData();

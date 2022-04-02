@@ -269,7 +269,7 @@ void BindColorChooserFactoryForFrame(
 
 void BindAttributionInternalsHandler(
     RenderFrameHost* host,
-    mojo::PendingReceiver<mojom::AttributionInternalsHandler> receiver) {
+    mojo::PendingReceiver<attribution_internals::mojom::Handler> receiver) {
   WebUI* web_ui = host->GetWebUI();
 
   // Performs a safe downcast to the concrete AttributionInternalsUI subclass.
@@ -1139,7 +1139,7 @@ void PopulateBinderMapWithContext(
   map->Add<device::mojom::VRService>(
       base::BindRepeating(&EmptyBinderForFrame<device::mojom::VRService>));
 #endif
-  map->Add<mojom::AttributionInternalsHandler>(
+  map->Add<attribution_internals::mojom::Handler>(
       base::BindRepeating(&BindAttributionInternalsHandler));
   map->Add<mojom::PrerenderInternalsHandler>(
       base::BindRepeating(&BindPrerenderInternalsHandler));
