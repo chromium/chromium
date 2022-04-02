@@ -28,7 +28,7 @@ namespace media {
 
 // Return the number of channels from the data in |frame|.
 static inline int DetermineChannels(AVFrame* frame) {
-  return frame->channels;
+  return frame->ch_layout.nb_channels;
 }
 
 // Called by FFmpeg's allocation routine to allocate a buffer. Uses
@@ -231,7 +231,7 @@ bool FFmpegAudioDecoder::OnNewFrame(const DecoderBuffer& buffer,
   // Translate unsupported into discrete layouts for discrete configurations;
   // ffmpeg does not have a labeled discrete configuration internally.
   ChannelLayout channel_layout = ChannelLayoutToChromeChannelLayout(
-      codec_context_->channel_layout, codec_context_->channels);
+      codec_context_->ch_layout.u.mask, codec_context_->ch_layout.nb_channels);
   if (channel_layout == CHANNEL_LAYOUT_UNSUPPORTED &&
       config_.channel_layout() == CHANNEL_LAYOUT_DISCRETE) {
     channel_layout = CHANNEL_LAYOUT_DISCRETE;
@@ -348,11 +348,11 @@ bool FFmpegAudioDecoder::ConfigureDecoder(const AudioDecoderConfig& config) {
   // Success!
   av_sample_format_ = codec_context_->sample_fmt;
 
-  if (codec_context_->channels != config.channels()) {
+  if (codec_context_->ch_layout.nb_channels != config.channels()) {
     MEDIA_LOG(ERROR, media_log_)
         << "Audio configuration specified " << config.channels()
         << " channels, but FFmpeg thinks the file contains "
-        << codec_context_->channels << " channels";
+        << codec_context_->ch_layout.nb_channels << " channels";
     ReleaseFFmpegResources();
     state_ = DecoderState::kUninitialized;
     return false;
@@ -403,7 +403,7 @@ int FFmpegAudioDecoder::GetAudioBuffer(struct AVCodecContext* s,
   if (frame->nb_samples <= 0)
     return AVERROR(EINVAL);
 
-  if (s->channels != channels) {
+  if (s->ch_layout.nb_channels != channels) {
     DLOG(ERROR) << "AVCodecContext and AVFrame disagree on channel count.";
     return AVERROR(EINVAL);
   }
@@ -436,7 +436,8 @@ int FFmpegAudioDecoder::GetAudioBuffer(struct AVCodecContext* s,
   ChannelLayout channel_layout =
       config_.channel_layout() == CHANNEL_LAYOUT_DISCRETE
           ? CHANNEL_LAYOUT_DISCRETE
-          : ChannelLayoutToChromeChannelLayout(s->channel_layout, s->channels);
+          : ChannelLayoutToChromeChannelLayout(s->ch_layout.u.mask,
+                                               s->ch_layout.nb_channels);
 
   if (channel_layout == CHANNEL_LAYOUT_UNSUPPORTED) {
     DLOG(ERROR) << "Unsupported channel layout.";

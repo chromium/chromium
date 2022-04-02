@@ -74,7 +74,7 @@ void CdmAudioDecoderConfigToAVCodecContext(
       codec_context->sample_fmt = AV_SAMPLE_FMT_NONE;
   }
 
-  codec_context->channels = config.channel_count;
+  codec_context->ch_layout.nb_channels = config.channel_count;
   codec_context->sample_rate = config.samples_per_second;
 
   if (config.extra_data) {
@@ -124,8 +124,8 @@ void CopySamples(cdm::AudioFormat cdm_format,
     case cdm::kAudioFormatPlanarS16:
     case cdm::kAudioFormatPlanarF32: {
       const int decoded_size_per_channel =
-          decoded_audio_size / av_frame.channels;
-      for (int i = 0; i < av_frame.channels; ++i) {
+          decoded_audio_size / av_frame.ch_layout.nb_channels;
+      for (int i = 0; i < av_frame.ch_layout.nb_channels; ++i) {
         memcpy(output_buffer, av_frame.extended_data[i],
                decoded_size_per_channel);
         output_buffer += decoded_size_per_channel;
@@ -185,13 +185,14 @@ bool FFmpegCdmAudioDecoder::Initialize(
   // Success!
   decoding_loop_ = std::make_unique<FFmpegDecodingLoop>(codec_context_.get());
   samples_per_second_ = config.samples_per_second;
-  bytes_per_frame_ = codec_context_->channels * config.bits_per_channel / 8;
+  bytes_per_frame_ =
+      codec_context_->ch_layout.nb_channels * config.bits_per_channel / 8;
   output_timestamp_helper_ =
       std::make_unique<AudioTimestampHelper>(config.samples_per_second);
   is_initialized_ = true;
 
   // Store initial values to guard against midstream configuration changes.
-  channels_ = codec_context_->channels;
+  channels_ = codec_context_->ch_layout.nb_channels;
   av_sample_format_ = codec_context_->sample_fmt;
 
   return true;
@@ -291,17 +292,19 @@ cdm::Status FFmpegCdmAudioDecoder::DecodeBuffer(
   for (auto& frame : audio_frames) {
     int decoded_audio_size = 0;
     if (frame->sample_rate != samples_per_second_ ||
-        frame->channels != channels_ || frame->format != av_sample_format_) {
+        frame->ch_layout.nb_channels != channels_ ||
+        frame->format != av_sample_format_) {
       DLOG(ERROR) << "Unsupported midstream configuration change!"
                   << " Sample Rate: " << frame->sample_rate << " vs "
-                  << samples_per_second_ << ", Channels: " << frame->channels
-                  << " vs " << channels_ << ", Sample Format: " << frame->format
-                  << " vs " << av_sample_format_;
+                  << samples_per_second_
+                  << ", Channels: " << frame->ch_layout.nb_channels << " vs "
+                  << channels_ << ", Sample Format: " << frame->format << " vs "
+                  << av_sample_format_;
       return cdm::kDecodeError;
     }
 
     decoded_audio_size = av_samples_get_buffer_size(
-        nullptr, codec_context_->channels, frame->nb_samples,
+        nullptr, codec_context_->ch_layout.nb_channels, frame->nb_samples,
         codec_context_->sample_fmt, 1);
     if (!decoded_audio_size)
       continue;
@@ -320,9 +323,9 @@ bool FFmpegCdmAudioDecoder::OnNewFrame(
     size_t* total_size,
     std::vector<std::unique_ptr<AVFrame, ScopedPtrAVFreeFrame>>* audio_frames,
     AVFrame* frame) {
-  *total_size += av_samples_get_buffer_size(nullptr, codec_context_->channels,
-                                            frame->nb_samples,
-                                            codec_context_->sample_fmt, 1);
+  *total_size += av_samples_get_buffer_size(
+      nullptr, codec_context_->ch_layout.nb_channels, frame->nb_samples,
+      codec_context_->sample_fmt, 1);
   audio_frames->emplace_back(av_frame_clone(frame));
   return true;
 }

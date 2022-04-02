@@ -121,11 +121,11 @@ class AudioFileReaderTest : public testing::Test {
     EXPECT_FALSE(reader_->Open());
   }
 
-  void RunTestFailingDecode(const char* fn) {
+  void RunTestFailingDecode(const char* fn, int expect_read = 0) {
     Initialize(fn);
     EXPECT_TRUE(reader_->Open());
     std::vector<std::unique_ptr<AudioBus>> decoded_audio_packets;
-    EXPECT_EQ(reader_->Read(&decoded_audio_packets), 0);
+    EXPECT_EQ(reader_->Read(&decoded_audio_packets), expect_read);
   }
 
   void RunTestPartialDecode(const char* fn) {
@@ -219,7 +219,7 @@ TEST_F(AudioFileReaderTest, AAC_ADTS) {
 }
 
 TEST_F(AudioFileReaderTest, MidStreamConfigChangesFail) {
-  RunTestFailingDecode("midstream_config_change.mp3");
+  RunTestFailingDecode("midstream_config_change.mp3", 42624);
 }
 #endif
 

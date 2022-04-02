@@ -34,7 +34,7 @@ class FFmpegAACBitstreamConverterTest : public testing::Test {
     memset(&test_parameters_, 0, sizeof(AVCodecParameters));
     test_parameters_.codec_id = AV_CODEC_ID_AAC;
     test_parameters_.profile = FF_PROFILE_AAC_MAIN;
-    test_parameters_.channels = 2;
+    test_parameters_.ch_layout.nb_channels = 2;
     test_parameters_.extradata = extradata_header_;
     test_parameters_.extradata_size = sizeof(extradata_header_);
   }

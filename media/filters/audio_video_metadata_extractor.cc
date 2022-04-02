@@ -113,6 +113,15 @@ bool AudioVideoMetadataExtractor::Extract(DataSource* source,
     if (!stream)
       continue;
 
+    void* display_matrix =
+        av_stream_get_side_data(stream, AV_PKT_DATA_DISPLAYMATRIX, nullptr);
+    if (display_matrix) {
+      rotation_ = VideoTransformation::FromFFmpegDisplayMatrix(
+                      static_cast<int32_t*>(display_matrix))
+                      .rotation;
+      info.tags["rotate"] = base::NumberToString(rotation_);
+    }
+
     // Extract dictionary from streams also. Needed for containers that attach
     // metadata to contained streams instead the container itself, like OGG.
     ExtractDictionary(stream->metadata, &info.tags);
@@ -255,8 +264,6 @@ void AudioVideoMetadataExtractor::ExtractDictionary(AVDictionary* metadata,
     if (raw_tags->find(tag->key) == raw_tags->end())
       (*raw_tags)[tag->key] = tag->value;
 
-    if (ExtractInt(tag, "rotate", &rotation_))
-      continue;
     if (ExtractString(tag, "album", &album_))
       continue;
     if (ExtractString(tag, "artist", &artist_))
