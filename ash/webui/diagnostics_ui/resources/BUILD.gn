@@ -113,6 +113,7 @@ js_library("data_point") {
 js_library("diagnostics_app") {
   deps = [
     ":diagnostics_sticky_banner",
+    ":input_list",
     ":network_list",
     ":system_page",
     "//ash/webui/common/resources:navigation_view_panel",
@@ -393,7 +394,6 @@ js_library("system_page") {
     ":diagnostics_card",
     ":diagnostics_sticky_banner",
     ":diagnostics_types",
-    ":input_list",
     ":memory_card",
     ":mojo_interface_provider",
     ":overview_card",
