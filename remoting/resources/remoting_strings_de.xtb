@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
-<translation id="1002108253973310084">Eine inkompatible Protokollversion wurde erkannt. Überprüfen Sie, ob die neueste Version der Software auf beiden Computern installiert ist, und versuchen Sie es erneut.</translation>
+<translation id="1002108253973310084">Eine inkompatible Protokollversion wurde erkannt. Überprüfe, ob die neueste Version der Software auf beiden Computern installiert ist, und versuche es erneut.</translation>
 <translation id="1008557486741366299">Jetzt nicht</translation>
 <translation id="1201402288615127009">Weiter</translation>
 <translation id="1297009705180977556">Fehler beim Herstellen der Verbindung mit <ph name="HOSTNAME" /></translation>
@@ -32,7 +32,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Zuletzt online: <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" /> Berechtigung für die Bedienungshilfen erteilen</translation>
 <translation id="2509394361235492552">Verbunden mit <ph name="HOSTNAME" /></translation>
-<translation id="2540992418118313681">Möchten Sie diesen Computer für einen anderen Nutzer zur Ansicht und Steuerung freigeben?</translation>
+<translation id="2540992418118313681">Möchtest du diesen Computer für einen anderen Nutzer zur Ansicht und Steuerung freigeben?</translation>
 <translation id="2579271889603567289">Der Host ist abgestürzt oder konnte nicht gestartet werden.</translation>
 <translation id="2599300881200251572">Dieser Dienst ermöglicht eingehende Verbindungen von Chrome Remote Desktop-Clients.</translation>
 <translation id="2647232381348739934">Chromoting Service</translation>
@@ -62,11 +62,11 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="3905196214175737742">Ungültige Hostinhaberdomain</translation>
 <translation id="3931191050278863510">Host angehalten</translation>
 <translation id="3950820424414687140">Anmelden</translation>
-<translation id="405887016757208221">Der Remote-Computer konnte die Sitzung nicht initialisieren. Sollte das Problem weiter bestehen, versuchen Sie bitte, den Host nochmals zu konfigurieren.</translation>
+<translation id="405887016757208221">Der Remote-Computer konnte die Sitzung nicht initialisieren. Sollte das Problem weiter bestehen, versuche bitte, den Host nochmals zu konfigurieren.</translation>
 <translation id="4060747889721220580">Datei herunterladen</translation>
 <translation id="4126409073460786861">Aktualisieren Sie diese Seite nach der Einrichtung. Anschließend können Sie auf den Computer zugreifen, indem Sie das Gerät auswählen und die PIN eingeben.</translation>
 <translation id="4145029455188493639">Angemeldet als <ph name="EMAIL_ADDRESS" />.</translation>
-<translation id="4155497795971509630">Es fehlen einige erforderliche Komponenten. Überprüfen Sie, ob Sie die neueste Version der Software installiert haben, und versuchen Sie es erneut.</translation>
+<translation id="4155497795971509630">Es fehlen einige erforderliche Komponenten. Überprüfe, ob du die neueste Version der Software installiert hast, und versuche es erneut.</translation>
 <translation id="4176825807642096119">Zugriffscode</translation>
 <translation id="4227991223508142681">Host Provisioning-Dienstprogramm</translation>
 <translation id="4240294130679914010">Chromoting Host-Deinstallationsprogramm</translation>
@@ -83,7 +83,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="4635770493235256822">Remote-Geräte</translation>
 <translation id="4660011489602794167">Tastatur anzeigen</translation>
 <translation id="4703799847237267011">Deine Chromoting-Sitzung wurde beendet.</translation>
-<translation id="4741792197137897469">Fehler bei der Authentifizierung. Melden Sie sich erneut in Chrome an.</translation>
+<translation id="4741792197137897469">Fehler bei der Authentifizierung. Melde dich erneut in Chrome an.</translation>
 <translation id="4784508858340177375">Der X-Server ist abgestürzt oder konnte nicht gestartet werden.</translation>
 <translation id="4798680868612952294">Mausoptionen</translation>
 <translation id="4804818685124855865">Verbindung trennen</translation>
@@ -94,7 +94,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="4985296110227979402">Richte zuerst deinen Computer für den Remotezugriff ein</translation>
 <translation id="4987330545941822761">Chrome Remote Desktop kann nicht ermitteln, welcher Browser zum lokalen Öffnen der Links verwendet werden soll. Wählen Sie einen aus der folgenden Liste aus.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (offline)</translation>
-<translation id="507204348399810022">Möchten Sie die Remote-Verbindungen zu <ph name="HOSTNAME" /> wirklich deaktivieren?</translation>
+<translation id="507204348399810022">Möchtest du die Remote-Verbindungen zu <ph name="HOSTNAME" /> wirklich deaktivieren?</translation>
 <translation id="5170982930780719864">Ungültige Host-ID</translation>
 <translation id="5204575267916639804">Häufig gestellte Fragen</translation>
 <translation id="5222676887888702881">Abmelden</translation>
@@ -156,7 +156,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="7868137160098754906">Gib deine PIN für den Remote-Computer ein.</translation>
 <translation id="7895403300744144251">Die Sicherheitsrichtlinien auf dem Remote-Computer gestatten keine Verbindungen von deinem Konto.</translation>
 <translation id="7936528439960309876">Rechts verankern</translation>
-<translation id="7970576581263377361">Fehler bei der Authentifizierung. Melden Sie sich erneut in Chromium an.</translation>
+<translation id="7970576581263377361">Fehler bei der Authentifizierung. Melde dich erneut in Chromium an.</translation>
 <translation id="7981525049612125370">Die Remote-Sitzung ist abgelaufen.</translation>
 <translation id="8038111231936746805">(Standard)</translation>
 <translation id="8041089156583427627">Feedback geben</translation>
@@ -164,7 +164,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="806699900641041263">Verbindung zu <ph name="HOSTNAME" /> wird hergestellt</translation>
 <translation id="8073845705237259513">Wenn du Chrome Remote Desktop verwenden möchtest, füge deinem Gerät ein Google-Konto hinzu.</translation>
 <translation id="809687642899217504">Meine Computer</translation>
-<translation id="8116630183974937060">Ein Netzwerkfehler ist aufgetreten. Bitte überprüfen Sie, ob das Gerät online ist, und versuchen Sie es erneut.</translation>
+<translation id="8116630183974937060">Ein Netzwerkfehler ist aufgetreten. Bitte überprüfe, ob das Gerät online ist, und versuche es erneut.</translation>
 <translation id="8295077433896346116">Sie müssen eine Berechtigung für die Bedienungshilfen erteilen, um <ph name="PRODUCT_NAME" /> zu verwenden. Erst dann kann dieser Mac über Eingaben vom Remote-Computer gesteuert werden.
 
 Klicken Sie zum Erteilen dieser Berechtigung auf "<ph name="BUTTON_NAME" />" unten, um die Einstellungen für die Bedienungshilfen zu öffnen. Klicken Sie dort das Kästchen neben "<ph name="SERVICE_SCRIPT_NAME" />" an.

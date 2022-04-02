@@ -13,7 +13,7 @@
 <translation id="1182414570724401860">Chrome empfiehlt dir, diese Datei nicht herunterzuladen oder zu öffnen</translation>
 <translation id="1278833599417554002">Neu starten, um &amp;Chrome zu aktualisieren</translation>
 <translation id="1293325835983155583">Für <ph name="MANAGER" /> ist es erforderlich, dass Sie vor der Verwendung dieses Geräts die folgenden Nutzungsbedingungen akzeptieren. Durch diese Nutzungsbedingungen werden die Google Chrome OS-Nutzungsbedingungen nicht erweitert, geändert oder eingeschränkt.</translation>
-<translation id="1302523850133262269">Bitte warten Sie, bis die aktuellen Systemupdates von Chrome installiert wurden.</translation>
+<translation id="1302523850133262269">Bitte warte, bis die aktuellen Systemupdates von Chrome installiert wurden.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Auf diesem Computer befindet sich bereits eine neuere Version von Google Chrome. Falls die Software nicht funktioniert, deinstalliere Google Chrome und versuche es noch einmal.</translation>
 <translation id="1434626383986940139">Chrome Canary-Apps</translation>
@@ -162,7 +162,7 @@
 <translation id="4970761609246024540">Willkommen bei den Chrome-Profilen</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5062123544085870375">Chrome OS neu starten</translation>
-<translation id="5132929315877954718">Entdecken Sie tolle Apps, Spiele, Erweiterungen und Designs für Google Chrome.</translation>
+<translation id="5132929315877954718">Entdecke tolle Apps, Spiele, Erweiterungen und Designs für Google Chrome.</translation>
 <translation id="5139423532931106058">Chrome-Profil personalisieren</translation>
 <translation id="5163087008893166964">Willkommen bei Chrome; neues Browserfenster geöffnet</translation>
 <translation id="5170938038195470297">Dein Profil kann nicht verwendet werden, da es von einer neueren Version von Google Chrome stammt. Einige Funktionen stehen möglicherweise nicht zur Verfügung. Gib bitte ein anderes Profilverzeichnis an oder verwende eine neuere Version von Google Chrome.</translation>
@@ -286,7 +286,7 @@
 <translation id="873133009373065397">Google Chrome kann den Standardbrowser nicht bestimmen oder festlegen</translation>
 <translation id="8823341990149967727">Chrome ist veraltet.</translation>
 <translation id="8834965163890861871">Google Chrome versucht, Passwörter zu bearbeiten. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
-<translation id="884296878221830158">Die Erweiterung legt auch fest, welche Seite beim Start von Chrome angezeigt wird oder wenn Sie auf die Schaltfläche "Startseite" klicken.</translation>
+<translation id="884296878221830158">Die Erweiterung legt auch fest, welche Seite beim Start von Chrome angezeigt wird oder wenn du auf die Schaltfläche „Startseite“ klickst.</translation>
 <translation id="8862326446509486874">Du verfügst nicht über die erforderlichen Rechte für eine systemweite Installation. Starte das Installationsprogramm als Administrator.</translation>
 <translation id="8914504000324227558">Chrome neu starten</translation>
 <translation id="8922193594870374009">Wenn du eine Nummer von <ph name="ORIGIN" /> an dein Android-Smartphone senden möchtest, musst du dich auf beiden Geräten in Chrome anmelden.</translation>

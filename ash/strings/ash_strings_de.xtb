@@ -3,7 +3,7 @@
 <translationbundle lang="de">
 <translation id="1012876632442809908">USB-C-Gerät (Port vorne)</translation>
 <translation id="1013598600051641573">"<ph name="DISPLAY_NAME" />" wurde auf <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) umgestellt. Bitte bestätigen, um die Änderungen beizubehalten. Die vorherigen Einstellungen werden in <ph name="TIMEOUT_SECONDS" /> wiederhergestellt.</translation>
-<translation id="1013923882670373915">Das Bluetooth-Gerät "<ph name="DEVICE_NAME" />" bittet um Erlaubnis für Kopplung. Geben Sie folgenden PIN-Code auf dem Gerät ein: <ph name="PINCODE" />.</translation>
+<translation id="1013923882670373915">Das Bluetooth-Gerät „<ph name="DEVICE_NAME" />“ bittet um Erlaubnis für Kopplung. Gib folgenden PIN-Code auf dem Gerät ein: <ph name="PINCODE" />.</translation>
 <translation id="1024261588257374085">Screenshot eines Bildschirmausschnitts ausgewählt</translation>
 <translation id="1032891413405719768">Die Batterie des Eingabestifts ist schwach</translation>
 <translation id="1036073649888683237">Benachrichtigungen unter Einstellungen verwalten</translation>
@@ -126,7 +126,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1882897271359938046">Wird auf <ph name="DISPLAY_NAME" /> gespiegelt...</translation>
 <translation id="1885785240814121742">Mit Fingerabdruck entsperren</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> unterstützt <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) nicht. Die Auflösung wurde zu <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) geändert. Bitte bestätigen, um die Änderungen beizubehalten. Die vorherigen Einstellungen werden in <ph name="TIMEOUT_SECONDS" /> wiederhergestellt.</translation>
-<translation id="1919743966458266018">Die Tastenkombination zum Öffnen des Task-Managers hat sich geändert. Bitte drücken Sie <ph name="NEW_SHORTCUT" /> statt <ph name="OLD_SHORTCUT" />.</translation>
+<translation id="1919743966458266018">Die Tastenkombination zum Öffnen des Task-Managers hat sich geändert. Bitte drücke <ph name="NEW_SHORTCUT" /> statt <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatische Klicks</translation>
 <translation id="1928739107511554905">Du kannst das Update vornehmen, indem du den Touchscreen verwendest, um dein Chromebook mit angeschlossener Tastatur neu zu starten.</translation>
 <translation id="1951012854035635156">Assistant</translation>
@@ -198,7 +198,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2408955596600435184">PIN eingeben</translation>
 <translation id="2412593942846481727">Update verfügbar</translation>
 <translation id="2427507373259914951">Linksklick</translation>
-<translation id="2429753432712299108">Das Bluetooth-Gerät "<ph name="DEVICE_NAME" />" bittet um Erlaubnis für Kopplung. Bevor Sie akzeptieren, überprüfen Sie, ob folgender Zugangscode auf dem Gerät angezeigt wird: <ph name="PASSKEY" />.</translation>
+<translation id="2429753432712299108">Das Bluetooth-Gerät „<ph name="DEVICE_NAME" />“ bittet um Erlaubnis für Kopplung. Bevor du akzeptierst, überprüfe, ob folgender Zugangscode auf dem Gerät angezeigt wird: <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Passwort anzeigen</translation>
 <translation id="24452542372838207">Benachrichtigung erweitern</translation>
 <translation id="2450205753526923158">Screenshotmodus</translation>
@@ -238,7 +238,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2782591952652094792">Aufnahmemodus beenden</translation>
 <translation id="2792498699870441125">Alt+Suchtaste</translation>
 <translation id="2814448776515246190">Ausschnitt aufnehmen</translation>
-<translation id="2819276065543622893">Sie werden jetzt abgemeldet.</translation>
+<translation id="2819276065543622893">Du wirst jetzt abgemeldet.</translation>
 <translation id="28232023175184696">Keine Verbindung zum Internet. Zum Wiederholen klicken.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> unterstützt <ph name="SPECIFIED_RESOLUTION" /> nicht. Die Auflösung wurde zu <ph name="FALLBACK_RESOLUTION" /> geändert.</translation>
 <translation id="2825619548187458965">Ablage</translation>
@@ -387,7 +387,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3846575436967432996">Keine Netzwerkinformationen verfügbar</translation>
 <translation id="385051799172605136">Zurück</translation>
 <translation id="385300504083504382">Anfang</translation>
-<translation id="3891340733213178823">Drücken Sie zum Abmelden zweimal Strg + Umschalttaste + Q.</translation>
+<translation id="3891340733213178823">Drücke zum Abmelden zweimal Strg + Umschalttaste + Q.</translation>
 <translation id="3893630138897523026">ChromeVox (gesprochenes Feedback)</translation>
 <translation id="3897533311200664389">Schriftliche Anfrage starten</translation>
 <translation id="3899995891769452915">Spracheingabe</translation>
@@ -465,7 +465,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="4405151984121254935">Das angeschlossene Peripheriegerät wird nicht unterstützt</translation>
 <translation id="4406883609789734330">Automatische Untertitel</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ist deaktiviert.</translation>
-<translation id="4421231901400348175">Sie teilen sich die Bildschirmsteuerung mit <ph name="HELPER_NAME" /> per Remote-Unterstützung.</translation>
+<translation id="4421231901400348175">Du teilst dir die Bildschirmsteuerung mit <ph name="HELPER_NAME" /> per Remote-Unterstützung.</translation>
 <translation id="4424159417645388645">Desktop 5</translation>
 <translation id="4430019312045809116">Lautstärke</translation>
 <translation id="4445159312344259901">Zum Entsperren anmelden</translation>
@@ -610,7 +610,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="5433020815079095860">Audioeingabe</translation>
 <translation id="544691375626129091">Alle verfügbaren Nutzer wurden bereits zur Sitzung hinzugefügt.</translation>
 <translation id="54609108002486618">Verwaltet</translation>
-<translation id="5465662442746197494">Brauchen Sie Hilfe?</translation>
+<translation id="5465662442746197494">Brauchst du Hilfe?</translation>
 <translation id="5496819745535887422">Dein Administrator setzt das Gerät zurück. Beim Neustart des Geräts werden alle Daten gelöscht.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5523434445161341166">"<ph name="FEATURE_NAME" />" wird verbunden.</translation>
@@ -676,7 +676,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="5958529069007801266">Betreuter Nutzer</translation>
 <translation id="5960825221082587934">Du kannst dir von Assistant Informationen wie die Definition, Übersetzung oder das Umrechnen von Einheiten für deine Auswahl zeigen lassen.</translation>
 <translation id="5977415296283489383">Kopfhörer</translation>
-<translation id="5978382165065462689">Sie teilen sich die Bildschirmsteuerung per Remote-Unterstützung.</translation>
+<translation id="5978382165065462689">Du teilst dir die Bildschirmsteuerung per Remote-Unterstützung.</translation>
 <translation id="5980301590375426705">Gastsitzung beenden</translation>
 <translation id="598882571027504733">Du kannst das Update vornehmen, indem du dein Chromebook mit angeschlossener Tastatur neu startest.</translation>
 <translation id="5992218262414051481">Modus mit hohem Kontrast aktiviert. Drücken Sie Strg + Suche + H, um ihn zu deaktivieren.</translation>
@@ -690,11 +690,11 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="6040143037577758943">Schließen</translation>
 <translation id="6043212731627905357">Dieser Monitor ist mit deinem <ph name="DEVICE_TYPE" /> nicht kompatibel (wird nicht unterstützt).</translation>
 <translation id="6043994281159824495">Jetzt abmelden</translation>
-<translation id="6047696787498798094">Wenn Sie zu einem anderen Nutzer wechseln, wird die Bildschirmfreigabe beendet. Möchten Sie fortfahren?</translation>
+<translation id="6047696787498798094">Wenn du zu einem anderen Nutzer wechselst, wird die Bildschirmfreigabe beendet. Möchtest du fortfahren?</translation>
 <translation id="6050368268239407309">Präsentations-Tools</translation>
 <translation id="6054305421211936131">Mit Smartcard anmelden</translation>
 <translation id="6059276912018042191">Zuletzt geöffnete Chrome-Tabs</translation>
-<translation id="6062360702481658777">Sie werden in <ph name="LOGOUT_TIME_LEFT" /> automatisch abgemeldet.</translation>
+<translation id="6062360702481658777">Du wirst in <ph name="LOGOUT_TIME_LEFT" /> automatisch abgemeldet.</translation>
 <translation id="6073451960410192870">Aufnahme beenden</translation>
 <translation id="607652042414456612">Dein Computer kann von Bluetooth-Geräten in der näheren Umgebung erkannt werden. Er erscheint als „<ph name="NAME" />“ mit der Adresse <ph name="ADDRESS" />.</translation>
 <translation id="6094290315941448991">Die Administratorrichtlinie blockiert die Bildschirmaufzeichnung, wenn vertrauliche Inhalte sichtbar sind</translation>
@@ -757,7 +757,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="6637729079642709226">Zeitraum ändern</translation>
 <translation id="6641720045729354415">Automatische Untertitel ein-/ausschalten. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> möchte sichergehen, dass Sie das sind</translation>
-<translation id="6650933572246256093">Das Bluetooth-Gerät "<ph name="DEVICE_NAME" />" bittet um Erlaubnis für Kopplung. Geben Sie auf dem Gerät folgenden Zugangscode ein: <ph name="PASSKEY" />.</translation>
+<translation id="6650933572246256093">Das Bluetooth-Gerät „<ph name="DEVICE_NAME" />“ bittet um Erlaubnis für Kopplung. Gib auf dem Gerät folgenden Zugangscode ein: <ph name="PASSKEY" />.</translation>
 <translation id="6657585470893396449">Passwort</translation>
 <translation id="6665545700722362599">Websites, Apps und Erweiterungen die Berechtigung zur Verwendung von Standortdiensten, des Mikrofons, der Kamera oder anderer Funktionen des Geräts gewähren</translation>
 <translation id="6667908387435388584">In Phone Hub kannst du dich mit dem Hotspot deines Smartphones verbinden, dein Gerät stummschalten und suchen und kürzlich auf deinem Smartphone geöffnete Chrome-Tabs aufrufen</translation>
@@ -767,7 +767,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="6692996468359469499">Informationen zu deiner Auswahl erhalten</translation>
 <translation id="6696025732084565524">Wichtiges Update für deine abnehmbare Tastatur</translation>
 <translation id="6700713906295497288">IME-Menüschaltfläche</translation>
-<translation id="6713285437468012787">Das Bluetooth-Gerät "<ph name="DEVICE_NAME" />" wurde gekoppelt und ist nun für alle Nutzer verfügbar. Sie können die Kopplung in "Einstellungen" wieder entfernen.</translation>
+<translation id="6713285437468012787">Das Bluetooth-Gerät „<ph name="DEVICE_NAME" />“ wurde gekoppelt und ist nun für alle Nutzer verfügbar. Du kannst die Kopplung in „Einstellungen“ wieder entfernen.</translation>
 <translation id="6723839937902243910">Leistung</translation>
 <translation id="6727969043791803658">Verbunden, Akkustand bei <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1109,7 +1109,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="9215934040295798075">Hintergrund festlegen</translation>
 <translation id="921989828232331238">Deine Eltern haben dein Gerät für heute gesperrt</translation>
 <translation id="9220525904950070496">Konto entfernen</translation>
-<translation id="923686485342484400">Drücken Sie zum Abmelden zweimal Steuerung - Umschalttaste - Q.</translation>
+<translation id="923686485342484400">Drücke zum Abmelden zweimal Steuerung - Umschalttaste - Q.</translation>
 <translation id="925832987464884575">Vorschauen ausblenden</translation>
 <translation id="938963181863597773">Welche Termine stehen an?</translation>
 <translation id="945522503751344254">Feedback geben</translation>

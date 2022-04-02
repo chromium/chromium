@@ -5,7 +5,7 @@
 <translation id="2053553514270667976">Postleitzahl</translation>
 <translation id="2096368010154057602">Abteilung</translation>
 <translation id="2577522251608256362">Stadtteil</translation>
-<translation id="3050787670591910834">Sie müssen eine Postleitzahl angeben, wie beispielsweise <ph name="EXAMPLE" />.</translation>
+<translation id="3050787670591910834">Du musst eine Postleitzahl angeben, wie beispielsweise <ph name="EXAMPLE" />.</translation>
 <translation id="3174168572213147020">Insel</translation>
 <translation id="3713769522066937702">Dieses Postleitzahlformat wurde nicht erkannt. Beispiel für eine gültige Postleitzahl: <ph name="EXAMPLE" />. Du kennst deine Postleitzahl nicht? <ph name="BEGIN_LINK" />Schlage sie hier nach<ph name="END_LINK" />.</translation>
 <translation id="3882422586004212847">Dieses Postleitzahlformat wurde nicht erkannt. Beispiel für eine gültige Postleitzahl: <ph name="EXAMPLE" />.</translation>
@@ -26,7 +26,7 @@
 <translation id="6403469950615936250">Dieses Postleitzahlformat wurde nicht erkannt. Beispiel für eine gültige Postleitzahl: <ph name="EXAMPLE" />. Du kennst deine Postleitzahl nicht? <ph name="BEGIN_LINK" />Schlage sie hier nach<ph name="END_LINK" />.</translation>
 <translation id="6735419622867539268"><ph name="FIELD_VALUE" /> ist kein gültiger Wert für dieses Feld.</translation>
 <translation id="6768780634682399515">Eircode</translation>
-<translation id="6777217372746654521">Diese Adresszeile enthält offenbar ein Postfach. Geben Sie eine Straßen- oder Gebäudeadresse ein.</translation>
+<translation id="6777217372746654521">Diese Adresszeile enthält offenbar ein Postfach. Gib eine Straßen- oder Gebäudeadresse ein.</translation>
 <translation id="6839929833149231406">Region</translation>
 <translation id="684852933191805996">Townland</translation>
 <translation id="6970216967273061347">Bezirk</translation>
@@ -43,5 +43,5 @@
 <translation id="8449204988444194299">Stadt</translation>
 <translation id="8471101563037901452">Die Postleitzahl stimmt offenbar nicht mit dem Rest der Adresse überein. Du kennst deine Postleitzahl nicht? <ph name="BEGIN_LINK" />Schlage sie hier nach<ph name="END_LINK" />.</translation>
 <translation id="9104066683700680171">Diese Postleitzahl scheint nicht zum Rest dieser Adresse zu passen.</translation>
-<translation id="9207002871037636573">Sie müssen eine Postleitzahl angeben, wie beispielsweise <ph name="EXAMPLE" />.</translation>
+<translation id="9207002871037636573">Du musst eine Postleitzahl angeben, wie beispielsweise <ph name="EXAMPLE" />.</translation>
 </translationbundle>

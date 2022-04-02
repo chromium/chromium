@@ -12,12 +12,12 @@
 <translation id="48558539577516920">Erlaube Chromium in deinen Firewall- und Virenschutzeinstellungen den Zugriff auf das Netzwerk.</translation>
 <translation id="580822234363523061">Gehe zum Chromium-Menü &gt; „<ph name="SETTINGS_TITLE" />“ &gt; „<ph name="ADVANCED_TITLE" />“ &gt; „<ph name="PROXIES_TITLE" />“ und vergewissere dich, dass in deiner Konfiguration die Einstellung „Kein Proxy“ oder „Direkt“ verwendet wird.</translation>
 <translation id="6613594504749178791">Deine Änderungen werden beim nächsten Neustart von Chromium wirksam.</translation>
-<translation id="7861509383340276692">Öffnen Sie
+<translation id="7861509383340276692">Öffne
           das Chromium-Menü &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
           <ph name="ADVANCED_TITLE" />
-          und deaktivieren Sie "<ph name="NO_PREFETCH_DESCRIPTION" />".
+          und deaktiviere "<ph name="NO_PREFETCH_DESCRIPTION" />".
           Falls das Problem nicht dadurch verursacht wurde, empfehlen wir,
           diese Option für eine verbesserte Leistung wieder zu aktivieren.</translation>
 <translation id="8187289872471304532">Gehe zu „Programme“ &gt; „Systemeinstellungen“ &gt; „Netzwerk“ &gt; „Erweitert“ &gt; „Proxys“ und deaktiviere alle ausgewählten Proxyserver.</translation>
