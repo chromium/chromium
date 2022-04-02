@@ -48,7 +48,7 @@ index 000000000..9692de109
 +
 +  @Override
 +  public String getMergeKey(DexProgramClass clazz) {
-+    String packageName = clazz.getType().toDescriptorString().replaceAll("\\$.*", "");
++    String packageName = clazz.getType().toDescriptorString().replaceAll("^([^$]+)\\$.*", "$1");
 +    if (isClassesInPackageEligibleForMerging(packageName)) {
 +      return packageName;
 +    }
