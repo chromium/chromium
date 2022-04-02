@@ -73,6 +73,14 @@ bool ShouldResetNoticeCardOnFeedStart() {
       boolForKey:@"ResetNoticeCard"];
 }
 
+bool ShouldResetFirstFollowCount() {
+  return [[NSUserDefaults standardUserDefaults] boolForKey:@"ResetFirstFollow"];
+}
+
+void DidResetFirstFollowCount() {
+  [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"ResetFirstFollow"];
+}
+
 bool IsMemoryDebuggingEnabled() {
 // Always return true for Chromium builds, but check the user default for
 // official builds because memory debugging should never be enabled on stable.

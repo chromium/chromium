@@ -44,6 +44,16 @@ NSString* GetAlternateDiscoverFeedServerURL();
 // TODO(crbug.com/1189232): Remove after launch.
 bool ShouldResetNoticeCardOnFeedStart();
 
+// Returns true if the count of showing the First Follow modal should be reset
+// to zero.
+// TODO(crbug.com/1312124): Remove after launch.
+bool ShouldResetFirstFollowCount();
+
+// Should be called after the count has been reset so that the resetting flag
+// can be turned off.
+// TODO(crbug.com/1312124): Remove after launch.
+void DidResetFirstFollowCount();
+
 // Whether memory debugging tools are enabled.
 bool IsMemoryDebuggingEnabled();
 
