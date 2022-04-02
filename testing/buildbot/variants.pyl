@@ -902,8 +902,8 @@
   'CROS_ATLAS_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_chrome_version': '99.0.4844.94',
-      'cros_img': 'atlas-release/R99-14469.59.0',
+      'cros_chrome_version': '100.0.4896.64',
+      'cros_img': 'atlas-release/R100-14526.57.0',
     },
     'enabled': True,
     'identifier': 'ATLAS_RELEASE_STABLE',
@@ -938,8 +938,8 @@
   'CROS_EVE_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_chrome_version': '99.0.4844.86',
-      'cros_img': 'eve-release/R99-14469.58.0',
+      'cros_chrome_version': '100.0.4896.64',
+      'cros_img': 'eve-release/R100-14526.57.0',
     },
     'enabled': True,
     'identifier': 'EVE_RELEASE_STABLE',
@@ -1019,8 +1019,8 @@
   'CROS_JACUZZI_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_chrome_version': '99.0.4844.94',
-      'cros_img': 'jacuzzi-release/R99-14469.59.0',
+      'cros_chrome_version': '100.0.4896.64',
+      'cros_img': 'jacuzzi-release/R100-14526.57.0',
     },
     'enabled': True,
     'identifier': 'JACUZZI_RELEASE_STABLE',
@@ -1064,8 +1064,8 @@
   'CROS_OCTOPUS_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '99.0.4844.94',
-      'cros_img': 'octopus-release/R99-14469.59.0',
+      'cros_chrome_version': '100.0.4896.64',
+      'cros_img': 'octopus-release/R100-14526.57.0',
     },
     'enabled': True,
     'identifier': 'OCTOPUS_RELEASE_STABLE',
