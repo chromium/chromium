@@ -71,11 +71,9 @@ int FocusRingOffset(const ComputedStyle& style,
 // A negative outline-offset should not cause the rendered outline shape to
 // become smaller than twice the computed value of the outline-width, in each
 // direction separately. See: https://drafts.csswg.org/css-ui/#outline-offset
-int AdjustedOutlineOffsetX(const gfx::Rect& rect, int offset) {
-  return std::max(offset, -rect.width() / 2);
-}
-int AdjustedOutlineOffsetY(const gfx::Rect& rect, int offset) {
-  return std::max(offset, -rect.height() / 2);
+gfx::Outsets AdjustedOutlineOffset(const gfx::Rect& rect, int offset) {
+  return gfx::Outsets::VH(std::max(offset, -rect.height() / 2),
+                          std::max(offset, -rect.width() / 2));
 }
 
 // Construct a clockwise path along the outer edge of the region covered by
@@ -89,8 +87,7 @@ bool ComputeRightAnglePath(SkPath& path,
   SkRegion region;
   for (auto& r : rects) {
     gfx::Rect rect = r;
-    rect.Outset(AdjustedOutlineOffsetX(rect, outline_offset),
-                AdjustedOutlineOffsetY(rect, outline_offset));
+    rect.Outset(AdjustedOutlineOffset(rect, outline_offset));
     rect.Outset(additional_outset);
     region.op(gfx::RectToSkIRect(rect), SkRegion::kUnion_Op);
   }
@@ -893,8 +890,8 @@ void OutlinePainter::PaintOutlineRects(
   if (*united_outline_rect == pixel_snapped_outline_rects[0]) {
     BoxBorderPainter::PaintSingleRectOutline(
         paint_info.context, style, outline_rects[0], info.width,
-        AdjustedOutlineOffsetX(*united_outline_rect, info.offset),
-        AdjustedOutlineOffsetY(*united_outline_rect, info.offset));
+        LayoutRectOutsets(
+            AdjustedOutlineOffset(*united_outline_rect, info.offset)));
     return;
   }
 

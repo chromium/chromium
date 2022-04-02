@@ -922,12 +922,10 @@ BoxBorderPainter::BoxBorderPainter(GraphicsContext& context,
                                    const ComputedStyle& style,
                                    const PhysicalRect& border_rect,
                                    int width,
-                                   int inner_outset_x,
-                                   int inner_outset_y)
+                                   const LayoutRectOutsets& inner_outsets)
     : context_(context),
       border_rect_(border_rect),
-      outer_outset_x_(inner_outset_x + width),
-      outer_outset_y_(inner_outset_y + width),
+      outer_outsets_(inner_outsets + LayoutUnit(width)),
       style_(style),
       bleed_avoidance_(kBackgroundBleedNone),
       sides_to_include_(PhysicalBoxSides()),
@@ -949,15 +947,11 @@ BoxBorderPainter::BoxBorderPainter(GraphicsContext& context,
   ComputeBorderProperties();
 
   outer_ = RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
-      style, border_rect,
-      LayoutRectOutsets(outer_outset_y_, outer_outset_x_, outer_outset_y_,
-                        outer_outset_x_));
+      style, border_rect, outer_outsets_);
   is_rounded_ = outer_.IsRounded();
 
   inner_ = RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
-      style, border_rect,
-      LayoutRectOutsets(inner_outset_y, inner_outset_x, inner_outset_y,
-                        inner_outset_x));
+      style, border_rect, inner_outsets);
 }
 
 void BoxBorderPainter::ComputeBorderProperties() {
@@ -1770,22 +1764,20 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
 
 LayoutRectOutsets BoxBorderPainter::DoubleStripeOutsets(
     BorderEdge::DoubleBorderStripe stripe) const {
-  return LayoutRectOutsets(
-      outer_outset_y_ - Edge(BoxSide::kTop).GetDoubleBorderStripeWidth(stripe),
-      outer_outset_x_ -
-          Edge(BoxSide::kRight).GetDoubleBorderStripeWidth(stripe),
-      outer_outset_y_ -
-          Edge(BoxSide::kBottom).GetDoubleBorderStripeWidth(stripe),
-      outer_outset_x_ -
-          Edge(BoxSide::kLeft).GetDoubleBorderStripeWidth(stripe));
+  return outer_outsets_ -
+         LayoutRectOutsets(
+             Edge(BoxSide::kTop).GetDoubleBorderStripeWidth(stripe),
+             Edge(BoxSide::kRight).GetDoubleBorderStripeWidth(stripe),
+             Edge(BoxSide::kBottom).GetDoubleBorderStripeWidth(stripe),
+             Edge(BoxSide::kLeft).GetDoubleBorderStripeWidth(stripe));
 }
 
 LayoutRectOutsets BoxBorderPainter::CenterOutsets() const {
-  return LayoutRectOutsets(
-      outer_outset_y_ - Edge(BoxSide::kTop).UsedWidth() * 0.5,
-      outer_outset_x_ - Edge(BoxSide::kRight).UsedWidth() * 0.5,
-      outer_outset_y_ - Edge(BoxSide::kBottom).UsedWidth() * 0.5,
-      outer_outset_x_ - Edge(BoxSide::kLeft).UsedWidth() * 0.5);
+  return outer_outsets_ -
+         LayoutRectOutsets(Edge(BoxSide::kTop).UsedWidth() * 0.5,
+                           Edge(BoxSide::kRight).UsedWidth() * 0.5,
+                           Edge(BoxSide::kBottom).UsedWidth() * 0.5,
+                           Edge(BoxSide::kLeft).UsedWidth() * 0.5);
 }
 
 bool BoxBorderPainter::ColorsMatchAtCorner(BoxSide side,
