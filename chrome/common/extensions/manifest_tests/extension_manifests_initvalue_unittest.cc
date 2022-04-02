@@ -10,6 +10,7 @@
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/simple_feature.h"
 #include "extensions/common/manifest_constants.h"
@@ -88,9 +89,14 @@ TEST_F(InitValueManifestTest, InitFromValueInvalid) {
       Testcase("init_invalid_permissions_invalid.json",
                errors::kInvalidPermissions),
       Testcase("init_invalid_host_permissions_invalid.json",
-               errors::kInvalidHostPermissions),
+               ErrorUtils::FormatErrorMessageUTF16(
+                   errors::kInvalidHostPermissions, keys::kHostPermissions)),
       Testcase("init_invalid_permissions_item_invalid.json",
                errors::kInvalidPermission),
+      Testcase(
+          "init_invalid_optional_host_permissions_invalid.json",
+          ErrorUtils::FormatErrorMessageUTF16(errors::kInvalidHostPermissions,
+                                              keys::kOptionalHostPermissions)),
       Testcase("init_invalid_options_url_invalid.json",
                errors::kInvalidOptionsPage),
       Testcase("init_invalid_locale_invalid.json",

@@ -87,17 +87,18 @@ bool CanSpecifyHostPermission(const Extension* extension,
   return true;
 }
 
-// Parses hosts from the |keys::kHostPermissions| key in the extension's
-// manifest into |hosts|.
+// Parses hosts from `key` in the extension's manifest into |hosts|.
 bool ParseHostsFromJSON(Extension* extension,
+                        const char* key,
                         std::vector<std::string>* hosts,
                         std::u16string* error) {
-  if (!extension->manifest()->FindKey(keys::kHostPermissions))
+  if (!extension->manifest()->FindKey(key))
     return true;
 
   const base::Value* permissions = nullptr;
-  if (!extension->manifest()->GetList(keys::kHostPermissions, &permissions)) {
-    *error = base::UTF8ToUTF16(errors::kInvalidHostPermissions);
+  if (!extension->manifest()->GetList(key, &permissions)) {
+    *error = ErrorUtils::FormatErrorMessageUTF16(
+        errors::kInvalidHostPermissions, key);
     return false;
   }
 
@@ -108,7 +109,7 @@ bool ParseHostsFromJSON(Extension* extension,
       hosts->push_back(list_view[i].GetString());
     } else {
       *error = ErrorUtils::FormatErrorMessageUTF16(
-          errors::kInvalidHostPermission, base::NumberToString(i));
+          errors::kInvalidHostPermission, key, base::NumberToString(i));
       return false;
     }
   }
@@ -359,6 +360,9 @@ void RemoveOverlappingHostPermissions(
     URLPatternSet* optional_host_permissions) {
   URLPatternSet new_optional_host_permissions;
   std::vector<InstallWarning> install_warnings;
+  const char* key = extension->manifest_version() >= 3
+                        ? keys::kOptionalHostPermissions
+                        : keys::kOptionalPermissions;
 
   for (const URLPattern& host_permission : *optional_host_permissions) {
     if (required_host_permissions.ContainsPattern(host_permission)) {
@@ -369,7 +373,7 @@ void RemoveOverlappingHostPermissions(
           ErrorUtils::FormatErrorMessage(
               manifest_errors::kPermissionMarkedOptionalAndRequired,
               host_permission.GetAsString()),
-          keys::kOptionalPermissions);
+          key);
     } else {
       new_optional_host_permissions.AddPattern(host_permission);
     }
@@ -406,24 +410,35 @@ bool PermissionsParser::Parse(Extension* extension, std::u16string* error) {
     return false;
   }
 
+  initial_optional_permissions_ = std::make_unique<InitialPermissions>();
+  if (!ParseHelper(extension, keys::kOptionalPermissions,
+                   &initial_optional_permissions_->api_permissions,
+                   &initial_optional_permissions_->host_permissions, error)) {
+    return false;
+  }
+
   if (extension->manifest_version() >= 3) {
     std::vector<std::string> manifest_hosts;
-    if (!ParseHostsFromJSON(extension, &manifest_hosts, error))
+    std::vector<std::string> manifest_optional_hosts;
+    if (!ParseHostsFromJSON(extension, keys::kHostPermissions, &manifest_hosts,
+                            error)) {
       return false;
+    }
+
+    if (!ParseHostsFromJSON(extension, keys::kOptionalHostPermissions,
+                            &manifest_optional_hosts, error)) {
+      return false;
+    }
 
     // TODO(kelvinjiang): Remove the dependency for |api_permissions| here.
     ParseHostPermissions(extension, keys::kHostPermissions, manifest_hosts,
                          initial_required_permissions_->api_permissions,
                          &initial_required_permissions_->host_permissions);
-  }
 
-  initial_optional_permissions_ = std::make_unique<InitialPermissions>();
-  if (!ParseHelper(extension,
-                   keys::kOptionalPermissions,
-                   &initial_optional_permissions_->api_permissions,
-                   &initial_optional_permissions_->host_permissions,
-                   error)) {
-    return false;
+    ParseHostPermissions(extension, keys::kOptionalHostPermissions,
+                         manifest_optional_hosts,
+                         initial_optional_permissions_->api_permissions,
+                         &initial_optional_permissions_->host_permissions);
   }
 
   // Remove and add install warnings for specified optional API permissions

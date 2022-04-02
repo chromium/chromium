@@ -99,6 +99,7 @@ const char kNaClModulesPath[] = "path";
 const char kNativelyConnectable[] = "natively_connectable";
 const char kOfflineEnabled[] = "offline_enabled";
 const char kOmniboxKeyword[] = "omnibox.keyword";
+const char kOptionalHostPermissions[] = "optional_host_permissions";
 const char kOptionalPermissions[] = "optional_permissions";
 const char kOptionsPage[] = "options_page";
 const char kOptionsUI[] = "options_ui";
@@ -391,9 +392,8 @@ const char kInvalidHomepageOverrideURL[] =
     "Invalid value for overriding homepage url: '[*]'.";
 const char kInvalidHomepageURL[] =
     "Invalid value for homepage url: '[*]'.";
-const char kInvalidHostPermission[] =
-    "Invalid value for 'host_permissions[*]'.";
-const char kInvalidHostPermissions[] = "Invalid value for 'host_permissions'.";
+const char kInvalidHostPermission[] = "Invalid value for '*[*]'.";
+const char kInvalidHostPermissions[] = "Invalid value for '*'.";
 const char kInvalidIconKey[] = "Invalid key in icons: \"*\".";
 const char kInvalidIconPath[] =
     "Invalid value for 'icons[\"*\"]'.";

@@ -65,6 +65,34 @@ TEST_F(PermissionsParserTest, RemoveOverlappingHostPermissions) {
               testing::UnorderedElementsAre("*://chromium.org/*"));
 }
 
+// Same as the above test, except host permissions are specified in
+// `host_permissions` and `optional_host_permissions` as the extension is
+// running Manifest V3.
+TEST_F(PermissionsParserTest, RemoveOverlappingHostPermissions_ManifestV3) {
+  scoped_refptr<Extension> extension(LoadAndExpectWarning(
+      "permissions_overlapping_host_permissions_mv3.json",
+      ErrorUtils::FormatErrorMessage(
+          manifest_errors::kPermissionMarkedOptionalAndRequired,
+          "https://google.com/*")));
+
+  const URLPatternSet& required_hosts =
+      PermissionsParser::GetRequiredPermissions(extension.get())
+          .explicit_hosts();
+
+  const URLPatternSet& optional_hosts =
+      PermissionsParser::GetOptionalPermissions(extension.get())
+          .explicit_hosts();
+
+  // Check that required hosts have not changed at all while
+  // "https://google.com/maps" is removed from optional hosts as it is a strict
+  // subset of hosts specified as required.
+  EXPECT_THAT(*required_hosts.ToStringVector(),
+              testing::UnorderedElementsAre("https://example.com/*",
+                                            "https://*.google.com/*"));
+  EXPECT_THAT(*optional_hosts.ToStringVector(),
+              testing::UnorderedElementsAre("*://chromium.org/*"));
+}
+
 TEST_F(PermissionsParserTest, RequiredHostPermissionsAllURLs) {
   scoped_refptr<Extension> extension(LoadAndExpectWarning(
       "permissions_all_urls_host_permissions.json",
@@ -114,11 +142,14 @@ TEST_F(PermissionsParserTest, OptionalHostPermissionsInvalidScheme) {
 }
 
 TEST_F(PermissionsParserTest, HostPermissionsKey) {
-  std::string expected_warning = ErrorUtils::FormatErrorMessage(
-      manifest_errors::kPermissionUnknownOrMalformed, "https://google.com/*");
+  std::vector<std::string> expected_warnings;
+  expected_warnings.push_back(ErrorUtils::FormatErrorMessage(
+      manifest_errors::kPermissionUnknownOrMalformed, "https://google.com/*"));
+  expected_warnings.push_back(ErrorUtils::FormatErrorMessage(
+      manifest_errors::kPermissionUnknownOrMalformed, "http://chromium.org/*"));
 
   scoped_refptr<Extension> extension(
-      LoadAndExpectWarning("host_permissions_key.json", expected_warning));
+      LoadAndExpectWarnings("host_permissions_key.json", expected_warnings));
 
   // Expect that the host specified in |host_permissions| is parsed.
   const URLPatternSet& required_hosts =
@@ -127,23 +158,39 @@ TEST_F(PermissionsParserTest, HostPermissionsKey) {
 
   EXPECT_THAT(*required_hosts.ToStringVector(),
               testing::UnorderedElementsAre("https://example.com/*"));
+
+  // Expect that the host specified in |optional_host_permissions| is parsed.
+  const URLPatternSet& optional_hosts =
+      PermissionsParser::GetOptionalPermissions(extension.get())
+          .explicit_hosts();
+
+  EXPECT_THAT(*optional_hosts.ToStringVector(),
+              testing::UnorderedElementsAre("https://optional.com/*"));
 }
 
 TEST_F(PermissionsParserTest, HostPermissionsKeyInvalidHosts) {
-  std::string expected_warning = ErrorUtils::FormatErrorMessage(
-      manifest_errors::kPermissionUnknownOrMalformed, "malformed_host");
+  std::vector<std::string> expected_warnings;
+  expected_warnings.push_back(ErrorUtils::FormatErrorMessage(
+      manifest_errors::kPermissionUnknownOrMalformed, "malformed_host"));
+  expected_warnings.push_back(ErrorUtils::FormatErrorMessage(
+      manifest_errors::kPermissionUnknownOrMalformed,
+      "optional_malformed_host"));
 
-  scoped_refptr<Extension> extension(LoadAndExpectWarning(
-      "host_permissions_key_invalid_hosts.json", expected_warning));
+  scoped_refptr<Extension> extension(LoadAndExpectWarnings(
+      "host_permissions_key_invalid_hosts.json", expected_warnings));
 }
 
 TEST_F(PermissionsParserTest, HostPermissionsKeyInvalidScheme) {
-  std::string expected_warning = ErrorUtils::FormatErrorMessage(
+  std::vector<std::string> expected_warnings;
+  expected_warnings.push_back(ErrorUtils::FormatErrorMessage(
       manifest_errors::kInvalidPermissionScheme,
-      manifest_keys::kHostPermissions, "chrome://extensions/");
+      manifest_keys::kHostPermissions, "chrome://extensions/"));
+  expected_warnings.push_back(ErrorUtils::FormatErrorMessage(
+      manifest_errors::kInvalidPermissionScheme,
+      manifest_keys::kOptionalHostPermissions, "chrome://settings/"));
 
-  scoped_refptr<Extension> extension(LoadAndExpectWarning(
-      "host_permissions_key_invalid_scheme.json", expected_warning));
+  scoped_refptr<Extension> extension(LoadAndExpectWarnings(
+      "host_permissions_key_invalid_scheme.json", expected_warnings));
 }
 
 // Tests that listing a permissions as optional when that permission cannot be

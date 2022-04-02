@@ -103,6 +103,7 @@ extern const char kName[];
 extern const char kNativelyConnectable[];
 extern const char kOfflineEnabled[];
 extern const char kOmniboxKeyword[];
+extern const char kOptionalHostPermissions[];
 extern const char kOptionalPermissions[];
 extern const char kOptionsPage[];
 extern const char kOptionsUI[];
