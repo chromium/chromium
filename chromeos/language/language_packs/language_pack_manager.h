@@ -101,12 +101,13 @@ class LanguagePackManager : public DlcserviceClient::Observer {
   // Returns true if the given Language Pack exists and can be installed on
   // this device.
   // TODO(claudiomagni): Check per board.
-  bool IsPackAvailable(const std::string& pack_id, const std::string& locale);
+  bool IsPackAvailable(const std::string& feature_id,
+                       const std::string& locale);
 
   // Installs the Language Pack.
   // It takes a callback that will be triggered once the operation is done.
   // A state is passed to the callback.
-  void InstallPack(const std::string& pack_id,
+  void InstallPack(const std::string& feature_id,
                    const std::string& locale,
                    OnInstallCompleteCallback callback);
 
@@ -116,7 +117,7 @@ class LanguagePackManager : public DlcserviceClient::Observer {
   // If the state marks the Language Pack as ready, then there's no need to
   // call Install(), otherwise the client should call Install() and not call
   // this method a second time.
-  void GetPackState(const std::string& pack_id,
+  void GetPackState(const std::string& feature_id,
                     const std::string& locale,
                     GetPackStateCallback callback);
 
@@ -126,7 +127,7 @@ class LanguagePackManager : public DlcserviceClient::Observer {
   // when that will happen.
   // TODO(claudiomagni): Allow callers to force immediate removal. Useful to
   //                     clear space on disk for another language.
-  void RemovePack(const std::string& pack_id,
+  void RemovePack(const std::string& feature_id,
                   const std::string& locale,
                   OnUninstallCompleteCallback callback);
 
@@ -155,7 +156,7 @@ class LanguagePackManager : public DlcserviceClient::Observer {
 
   // Finds the ID of the DLC corresponding to the given spec.
   // Returns true if the DLC exists or false otherwise.
-  bool GetDlcId(const std::string& pack_id,
+  bool GetDlcId(const std::string& feature_id,
                 const std::string& locale,
                 std::string* dlc_id);
 

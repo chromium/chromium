@@ -110,18 +110,18 @@ void OnGetDlcState(GetPackStateCallback callback,
 
 }  // namespace
 
-bool LanguagePackManager::IsPackAvailable(const std::string& pack_id,
+bool LanguagePackManager::IsPackAvailable(const std::string& feature_id,
                                           const std::string& locale) {
   // We search in the static list for the given Pack spec.
-  const PackSpecPair spec(pack_id, locale);
+  const PackSpecPair spec(feature_id, locale);
   return base::Contains(GetAllDlcIds(), spec);
 }
 
-bool LanguagePackManager::GetDlcId(const std::string& pack_id,
+bool LanguagePackManager::GetDlcId(const std::string& feature_id,
                                    const std::string& locale,
                                    std::string* const dlc_id) {
   // We search in the static list for the given Pack spec.
-  const PackSpecPair spec(pack_id, locale);
+  const PackSpecPair spec(feature_id, locale);
   const auto it = GetAllDlcIds().find(spec);
 
   if (it == GetAllDlcIds().end()) {
@@ -132,11 +132,11 @@ bool LanguagePackManager::GetDlcId(const std::string& pack_id,
   return true;
 }
 
-void LanguagePackManager::InstallPack(const std::string& pack_id,
+void LanguagePackManager::InstallPack(const std::string& feature_id,
                                       const std::string& locale,
                                       OnInstallCompleteCallback callback) {
   std::string dlc_id;
-  const bool found = GetDlcId(pack_id, locale, &dlc_id);
+  const bool found = GetDlcId(feature_id, locale, &dlc_id);
 
   // If the given Language Pack doesn't exist, run callback and don't reach the
   // DLC Service.
@@ -156,11 +156,11 @@ void LanguagePackManager::InstallPack(const std::string& pack_id,
       base::DoNothing());
 }
 
-void LanguagePackManager::GetPackState(const std::string& pack_id,
+void LanguagePackManager::GetPackState(const std::string& feature_id,
                                        const std::string& locale,
                                        GetPackStateCallback callback) {
   std::string dlc_id;
-  const bool found = GetDlcId(pack_id, locale, &dlc_id);
+  const bool found = GetDlcId(feature_id, locale, &dlc_id);
 
   // If the given Language Pack doesn't exist, run callback and don't reach the
   // DLC Service.
@@ -176,11 +176,11 @@ void LanguagePackManager::GetPackState(const std::string& pack_id,
       dlc_id, base::BindOnce(&OnGetDlcState, std::move(callback)));
 }
 
-void LanguagePackManager::RemovePack(const std::string& pack_id,
+void LanguagePackManager::RemovePack(const std::string& feature_id,
                                      const std::string& locale,
                                      OnUninstallCompleteCallback callback) {
   std::string dlc_id;
-  const bool found = GetDlcId(pack_id, locale, &dlc_id);
+  const bool found = GetDlcId(feature_id, locale, &dlc_id);
 
   // If the given Language Pack doesn't exist, run callback and don't reach the
   // DLC Service.
