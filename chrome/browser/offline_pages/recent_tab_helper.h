@@ -109,6 +109,9 @@ class RecentTabHelper
                                      const std::string& origin);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(RecentTabHelperFencedFrameTest,
+                           FencedFrameDoesNotChangePageQuality);
+
   struct SnapshotProgressInfo;
 
   explicit RecentTabHelper(content::WebContents* web_contents);
