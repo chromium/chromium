@@ -287,6 +287,13 @@ void UnifiedMessageCenterBubble::UpdateBubbleState() {
 }
 
 int UnifiedMessageCenterBubble::CalculateAvailableHeight() {
+  // TODO(crbug/1311738): Temporary fix to prevent crashes in case the quick
+  // settings bubble is destroyed before the message center bubble. In the long
+  // term we should remove this code altogether and calculate the max height for
+  // the message center bubble separately.
+  if (!tray_->bubble())
+    return 0;
+
   return tray_->bubble()->CalculateMaxHeight() -
          tray_->bubble()->GetCurrentTrayHeight() -
          GetBubbleInsetHotseatCompensation() -
