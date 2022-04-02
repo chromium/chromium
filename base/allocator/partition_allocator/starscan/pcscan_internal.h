@@ -20,6 +20,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 
+// TODO(crbug.com/1288247): Remove this when migration is complete.
+namespace partition_alloc::internal {
+
+class StarScanSnapshot;
+
+}  // namespace partition_alloc::internal
+
 namespace base {
 
 class StatsReporter;
@@ -112,7 +119,7 @@ class PCScanInternal final {
 
  private:
   friend base::NoDestructor<PCScanInternal>;
-  friend class StarScanSnapshot;
+  friend class partition_alloc::internal::StarScanSnapshot;
 
   using StackTops = std::unordered_map<
       PlatformThreadId,
@@ -150,5 +157,12 @@ class PCScanInternal final {
 }  // namespace internal
 
 }  // namespace base
+
+// TODO(crbug.com/1288247): Remove this when migration is complete.
+namespace partition_alloc::internal {
+
+using ::base::internal::PCScanInternal;
+
+}
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_PCSCAN_INTERNAL_H_

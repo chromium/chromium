@@ -10,8 +10,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/starscan/pcscan_internal.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 std::unique_ptr<StarScanSnapshot> StarScanSnapshot::Create(
     const PCScanInternal& pcscan) {
@@ -44,5 +43,4 @@ StarScanSnapshot::StarScanSnapshot(const PCScanInternal& pcscan) {
 
 StarScanSnapshot::~StarScanSnapshot() = default;
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal

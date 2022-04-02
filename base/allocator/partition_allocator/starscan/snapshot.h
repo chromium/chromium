@@ -11,10 +11,7 @@
 #include "base/allocator/partition_allocator/starscan/pcscan_internal.h"
 #include "base/allocator/partition_allocator/starscan/raceful_worklist.h"
 
-namespace base {
-namespace internal {
-
-class PCScanInternal;
+namespace partition_alloc::internal {
 
 class StarScanSnapshot final : public AllocatedOnPCScanMetadataPartition {
  public:
@@ -92,7 +89,13 @@ StarScanSnapshot::SweepingView::SweepingView(StarScanSnapshot& snapshot)
 StarScanSnapshot::UnprotectingView::UnprotectingView(StarScanSnapshot& snapshot)
     : StarScanSnapshot::ViewBase(snapshot.unprotect_worklist_) {}
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
+
+// TODO(crbug.com/1288247): Remove this when migration is complete.
+namespace base::internal {
+
+using ::partition_alloc::internal::StarScanSnapshot;
+
+}  // namespace base::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_SNAPSHOT_H_
