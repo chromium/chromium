@@ -16,6 +16,7 @@ enum Direct3DFeatureLevel {
   k11_1,
   k12_0,
   k12_1,
+  k12_2,
 };
 
 // Corresponds to |gpu::HasDisceretGpu| in "gpu/config/device_perf_info.h"

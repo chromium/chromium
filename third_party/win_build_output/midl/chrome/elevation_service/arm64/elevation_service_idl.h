@@ -7,7 +7,7 @@
 /* at a redacted point in time
  */
 /* Compiler settings for ../../chrome/elevation_service/elevation_service_idl.idl:
-    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=ARM64 8.01.0622 
+    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=ARM64 8.01.0626 
     protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
     VC __declspec() decoration level: 
@@ -41,6 +41,14 @@
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
+#endif
+
+#ifndef DECLSPEC_XFGVIRT
+#if _CONTROL_FLOW_GUARD_XFG
+#define DECLSPEC_XFGVIRT(base, func) __declspec(xfg_virtual(base, func))
+#else
+#define DECLSPEC_XFGVIRT(base, func)
+#endif
 #endif
 
 /* Forward Declarations */ 
@@ -170,18 +178,22 @@ EXTERN_C const IID IID_IElevator;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IElevator * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IElevator * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IElevator * This);
         
+        DECLSPEC_XFGVIRT(IElevator, RunRecoveryCRXElevated)
         HRESULT ( STDMETHODCALLTYPE *RunRecoveryCRXElevated )( 
             IElevator * This,
             /* [string][in] */ const WCHAR *crx_path,
@@ -252,18 +264,22 @@ EXTERN_C const IID IID_IElevatorChromium;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IElevatorChromium * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IElevatorChromium * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IElevatorChromium * This);
         
+        DECLSPEC_XFGVIRT(IElevator, RunRecoveryCRXElevated)
         HRESULT ( STDMETHODCALLTYPE *RunRecoveryCRXElevated )( 
             IElevatorChromium * This,
             /* [string][in] */ const WCHAR *crx_path,
@@ -335,18 +351,22 @@ EXTERN_C const IID IID_IElevatorChrome;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IElevatorChrome * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IElevatorChrome * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IElevatorChrome * This);
         
+        DECLSPEC_XFGVIRT(IElevator, RunRecoveryCRXElevated)
         HRESULT ( STDMETHODCALLTYPE *RunRecoveryCRXElevated )( 
             IElevatorChrome * This,
             /* [string][in] */ const WCHAR *crx_path,
@@ -418,18 +438,22 @@ EXTERN_C const IID IID_IElevatorChromeBeta;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IElevatorChromeBeta * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IElevatorChromeBeta * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IElevatorChromeBeta * This);
         
+        DECLSPEC_XFGVIRT(IElevator, RunRecoveryCRXElevated)
         HRESULT ( STDMETHODCALLTYPE *RunRecoveryCRXElevated )( 
             IElevatorChromeBeta * This,
             /* [string][in] */ const WCHAR *crx_path,
@@ -501,18 +525,22 @@ EXTERN_C const IID IID_IElevatorChromeDev;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IElevatorChromeDev * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IElevatorChromeDev * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IElevatorChromeDev * This);
         
+        DECLSPEC_XFGVIRT(IElevator, RunRecoveryCRXElevated)
         HRESULT ( STDMETHODCALLTYPE *RunRecoveryCRXElevated )( 
             IElevatorChromeDev * This,
             /* [string][in] */ const WCHAR *crx_path,
@@ -584,18 +612,22 @@ EXTERN_C const IID IID_IElevatorChromeCanary;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IElevatorChromeCanary * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IElevatorChromeCanary * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IElevatorChromeCanary * This);
         
+        DECLSPEC_XFGVIRT(IElevator, RunRecoveryCRXElevated)
         HRESULT ( STDMETHODCALLTYPE *RunRecoveryCRXElevated )( 
             IElevatorChromeCanary * This,
             /* [string][in] */ const WCHAR *crx_path,

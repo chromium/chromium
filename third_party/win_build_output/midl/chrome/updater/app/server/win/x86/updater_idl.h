@@ -43,6 +43,14 @@
 #pragma once
 #endif
 
+#ifndef DECLSPEC_XFGVIRT
+#if _CONTROL_FLOW_GUARD_XFG
+#define DECLSPEC_XFGVIRT(base, func) __declspec(xfg_virtual(base, func))
+#else
+#define DECLSPEC_XFGVIRT(base, func)
+#endif
+#endif
+
 /* Forward Declarations */ 
 
 #ifndef __IUpdateState_FWD_DEFINED__
@@ -199,50 +207,62 @@ EXTERN_C const IID IID_IUpdateState;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IUpdateState * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IUpdateState * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IUpdateState * This);
         
+        DECLSPEC_XFGVIRT(IUpdateState, get_state)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_state )( 
             IUpdateState * This,
             /* [retval][out] */ LONG *__MIDL__IUpdateState0000);
         
+        DECLSPEC_XFGVIRT(IUpdateState, get_appId)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_appId )( 
             IUpdateState * This,
             /* [retval][out] */ BSTR *__MIDL__IUpdateState0001);
         
+        DECLSPEC_XFGVIRT(IUpdateState, get_nextVersion)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nextVersion )( 
             IUpdateState * This,
             /* [retval][out] */ BSTR *__MIDL__IUpdateState0002);
         
+        DECLSPEC_XFGVIRT(IUpdateState, get_downloadedBytes)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_downloadedBytes )( 
             IUpdateState * This,
             /* [retval][out] */ LONGLONG *__MIDL__IUpdateState0003);
         
+        DECLSPEC_XFGVIRT(IUpdateState, get_totalBytes)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_totalBytes )( 
             IUpdateState * This,
             /* [retval][out] */ LONGLONG *__MIDL__IUpdateState0004);
         
+        DECLSPEC_XFGVIRT(IUpdateState, get_installProgress)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_installProgress )( 
             IUpdateState * This,
             /* [retval][out] */ LONG *__MIDL__IUpdateState0005);
         
+        DECLSPEC_XFGVIRT(IUpdateState, get_errorCategory)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_errorCategory )( 
             IUpdateState * This,
             /* [retval][out] */ LONG *__MIDL__IUpdateState0006);
         
+        DECLSPEC_XFGVIRT(IUpdateState, get_errorCode)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_errorCode )( 
             IUpdateState * This,
             /* [retval][out] */ LONG *__MIDL__IUpdateState0007);
         
+        DECLSPEC_XFGVIRT(IUpdateState, get_extraCode1)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_extraCode1 )( 
             IUpdateState * This,
             /* [retval][out] */ LONG *__MIDL__IUpdateState0008);
@@ -335,18 +355,22 @@ EXTERN_C const IID IID_IUpdaterRegisterAppCallback;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IUpdaterRegisterAppCallback * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IUpdaterRegisterAppCallback * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IUpdaterRegisterAppCallback * This);
         
+        DECLSPEC_XFGVIRT(IUpdaterRegisterAppCallback, Run)
         HRESULT ( STDMETHODCALLTYPE *Run )( 
             IUpdaterRegisterAppCallback * This,
             /* [in] */ LONG status_code);
@@ -418,22 +442,27 @@ EXTERN_C const IID IID_ICompleteStatus;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             ICompleteStatus * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             ICompleteStatus * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             ICompleteStatus * This);
         
+        DECLSPEC_XFGVIRT(ICompleteStatus, get_statusCode)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_statusCode )( 
             ICompleteStatus * This,
             /* [retval][out] */ LONG *__MIDL__ICompleteStatus0000);
         
+        DECLSPEC_XFGVIRT(ICompleteStatus, get_statusMessage)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_statusMessage )( 
             ICompleteStatus * This,
             /* [retval][out] */ BSTR *__MIDL__ICompleteStatus0001);
@@ -508,22 +537,27 @@ EXTERN_C const IID IID_IUpdaterObserver;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IUpdaterObserver * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IUpdaterObserver * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IUpdaterObserver * This);
         
+        DECLSPEC_XFGVIRT(IUpdaterObserver, OnStateChange)
         HRESULT ( STDMETHODCALLTYPE *OnStateChange )( 
             IUpdaterObserver * This,
             /* [in] */ IUpdateState *update_state);
         
+        DECLSPEC_XFGVIRT(IUpdaterObserver, OnComplete)
         HRESULT ( STDMETHODCALLTYPE *OnComplete )( 
             IUpdaterObserver * This,
             /* [in] */ ICompleteStatus *status);
@@ -595,18 +629,22 @@ EXTERN_C const IID IID_IUpdaterCallback;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IUpdaterCallback * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IUpdaterCallback * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IUpdaterCallback * This);
         
+        DECLSPEC_XFGVIRT(IUpdaterCallback, Run)
         HRESULT ( STDMETHODCALLTYPE *Run )( 
             IUpdaterCallback * This,
             /* [in] */ LONG result);
@@ -698,26 +736,32 @@ EXTERN_C const IID IID_IUpdater;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IUpdater * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IUpdater * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IUpdater * This);
         
+        DECLSPEC_XFGVIRT(IUpdater, GetVersion)
         HRESULT ( STDMETHODCALLTYPE *GetVersion )( 
             IUpdater * This,
             /* [retval][out] */ BSTR *version);
         
+        DECLSPEC_XFGVIRT(IUpdater, CheckForUpdate)
         HRESULT ( STDMETHODCALLTYPE *CheckForUpdate )( 
             IUpdater * This,
             /* [string][in] */ const WCHAR *app_id);
         
+        DECLSPEC_XFGVIRT(IUpdater, RegisterApp)
         HRESULT ( STDMETHODCALLTYPE *RegisterApp )( 
             IUpdater * This,
             /* [string][in] */ const WCHAR *app_id,
@@ -727,10 +771,12 @@ EXTERN_C const IID IID_IUpdater;
             /* [string][in] */ const WCHAR *existence_checker_path,
             /* [in] */ IUpdaterRegisterAppCallback *callback);
         
+        DECLSPEC_XFGVIRT(IUpdater, RunPeriodicTasks)
         HRESULT ( STDMETHODCALLTYPE *RunPeriodicTasks )( 
             IUpdater * This,
             /* [in] */ IUpdaterCallback *callback);
         
+        DECLSPEC_XFGVIRT(IUpdater, Update)
         HRESULT ( STDMETHODCALLTYPE *Update )( 
             IUpdater * This,
             /* [string][in] */ const WCHAR *app_id,
@@ -738,6 +784,7 @@ EXTERN_C const IID IID_IUpdater;
             /* [in] */ BOOL same_version_update_allowed,
             /* [in] */ IUpdaterObserver *observer);
         
+        DECLSPEC_XFGVIRT(IUpdater, UpdateAll)
         HRESULT ( STDMETHODCALLTYPE *UpdateAll )( 
             IUpdater * This,
             /* [in] */ IUpdaterObserver *observer);

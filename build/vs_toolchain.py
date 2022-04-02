@@ -19,8 +19,8 @@ import sys
 
 from gn_helpers import ToGNString
 
-# VS 2019 16.61 with 10.0.19041 SDK, and 10.0.20348 version of
-# d3dcompiler_47.dll, with ARM64 libraries and UWP support.
+# VS 2019 16.61 with 10.0.20348.0 SDK, 10.0.19041 version of Debuggers
+# with ARM64 libraries and UWP support.
 # See go/chromium-msvc-toolchain for instructions about how to update the
 # toolchain.
 #
@@ -33,7 +33,7 @@ from gn_helpers import ToGNString
 #   Affects the availability of APIs in the toolchain headers.
 # * //docs/windows_build_instructions.md mentions of VS or Windows SDK.
 #   Keeps the document consistent with the toolchain version.
-TOOLCHAIN_HASH = 'e41785f09f'
+TOOLCHAIN_HASH = '1023ce2e82'
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 json_data_file = os.path.join(script_dir, 'win_toolchain.json')
@@ -443,7 +443,7 @@ def _CopyDebugger(target_dir, target_cpu):
         continue
       else:
         raise Exception('%s not found in "%s"\r\nYou must install '
-                        'Windows 10 SDK version 10.0.19041.0 including the '
+                        'Windows 10 SDK version 10.0.20348.0 including the '
                         '"Debugging Tools for Windows" feature.' %
                         (debug_file, full_path))
     target_path = os.path.join(target_dir, debug_file)

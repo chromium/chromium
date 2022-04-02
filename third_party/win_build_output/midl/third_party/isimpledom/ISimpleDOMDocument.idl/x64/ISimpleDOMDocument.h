@@ -43,6 +43,14 @@
 #pragma once
 #endif
 
+#ifndef DECLSPEC_XFGVIRT
+#if _CONTROL_FLOW_GUARD_XFG
+#define DECLSPEC_XFGVIRT(base, func) __declspec(xfg_virtual(base, func))
+#else
+#define DECLSPEC_XFGVIRT(base, func)
+#endif
+#endif
+
 /* Forward Declarations */ 
 
 #ifndef __ISimpleDOMDocument_FWD_DEFINED__
@@ -177,39 +185,48 @@ EXTERN_C const IID IID_ISimpleDOMDocument;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             ISimpleDOMDocument * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             ISimpleDOMDocument * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             ISimpleDOMDocument * This);
         
+        DECLSPEC_XFGVIRT(ISimpleDOMDocument, get_URL)
         /* [id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_URL )( 
             ISimpleDOMDocument * This,
             /* [retval][out] */ BSTR *url);
         
+        DECLSPEC_XFGVIRT(ISimpleDOMDocument, get_title)
         /* [id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_title )( 
             ISimpleDOMDocument * This,
             /* [retval][out] */ BSTR *title);
         
+        DECLSPEC_XFGVIRT(ISimpleDOMDocument, get_mimeType)
         /* [id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_mimeType )( 
             ISimpleDOMDocument * This,
             /* [retval][out] */ BSTR *mimeType);
         
+        DECLSPEC_XFGVIRT(ISimpleDOMDocument, get_docType)
         /* [id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_docType )( 
             ISimpleDOMDocument * This,
             /* [retval][out] */ BSTR *docType);
         
+        DECLSPEC_XFGVIRT(ISimpleDOMDocument, get_nameSpaceURIForID)
         /* [id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_nameSpaceURIForID )( 
             ISimpleDOMDocument * This,
             /* [in] */ short nameSpaceID,
             /* [retval][out] */ BSTR *nameSpaceURI);
         
+        DECLSPEC_XFGVIRT(ISimpleDOMDocument, put_alternateViewMediaTypes)
         /* [id][propput] */ HRESULT ( STDMETHODCALLTYPE *put_alternateViewMediaTypes )( 
             ISimpleDOMDocument * This,
             /* [in] */ BSTR *commaSeparatedMediaTypes);

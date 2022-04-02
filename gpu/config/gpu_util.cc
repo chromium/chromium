@@ -78,7 +78,8 @@ enum class D3D11FeatureLevel {
   k11_1 = 10,
   k12_0 = 11,
   k12_1 = 12,
-  kMaxValue = k12_1,
+  k12_2 = 13,
+  kMaxValue = k12_2,
 };
 
 inline D3D11FeatureLevel ConvertToHistogramD3D11FeatureLevel(
@@ -104,6 +105,8 @@ inline D3D11FeatureLevel ConvertToHistogramD3D11FeatureLevel(
       return D3D11FeatureLevel::k12_0;
     case D3D_FEATURE_LEVEL_12_1:
       return D3D11FeatureLevel::k12_1;
+    case D3D_FEATURE_LEVEL_12_2:
+      return D3D11FeatureLevel::k12_2;
     default:
       NOTREACHED();
       return D3D11FeatureLevel::kUnknown;

@@ -191,6 +191,8 @@ const char* EffectTypeToString(
       return "SpeakerCompensation";
     case ABI::Windows::Media::Effects::AudioEffectType_DynamicRangeCompression:
       return "DynamicRangeCompression";
+    case ABI::Windows::Media::Effects::AudioEffectType_FarFieldBeamForming:
+      return "FarFieldBeamForming";
   }
   return "Unknown";
 }

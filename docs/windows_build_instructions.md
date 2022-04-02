@@ -51,7 +51,7 @@ $ PATH_TO_INSTALLER.EXE ^
 --includeRecommended
 ```
 
--You must have the version 10.0.19041 or higher [Windows 10 SDK](https://developer.microsoft.com/en-us/windows/downloads/sdk-archive/)
+-You must have the version 10.0.20348.0 or higher [Windows 10 SDK](https://developer.microsoft.com/en-us/windows/downloads/sdk-archive/)
 installed. This
 can be installed separately or by checking the appropriate box in the Visual
 Studio Installer.

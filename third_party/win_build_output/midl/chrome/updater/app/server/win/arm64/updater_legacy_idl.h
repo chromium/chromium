@@ -7,7 +7,7 @@
 /* at a redacted point in time
  */
 /* Compiler settings for ../../chrome/updater/app/server/win/updater_legacy_idl.template:
-    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=ARM64 8.01.0622 
+    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=ARM64 8.01.0626 
     protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
     VC __declspec() decoration level: 
@@ -41,6 +41,14 @@
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
+#endif
+
+#ifndef DECLSPEC_XFGVIRT
+#if _CONTROL_FLOW_GUARD_XFG
+#define DECLSPEC_XFGVIRT(base, func) __declspec(xfg_virtual(base, func))
+#else
+#define DECLSPEC_XFGVIRT(base, func)
+#endif
 #endif
 
 /* Forward Declarations */ 
@@ -279,28 +287,34 @@ EXTERN_C const IID IID_ICurrentState;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             ICurrentState * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             ICurrentState * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             ICurrentState * This);
         
+        DECLSPEC_XFGVIRT(IDispatch, GetTypeInfoCount)
         HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
             ICurrentState * This,
             /* [out] */ UINT *pctinfo);
         
+        DECLSPEC_XFGVIRT(IDispatch, GetTypeInfo)
         HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
             ICurrentState * This,
             /* [in] */ UINT iTInfo,
             /* [in] */ LCID lcid,
             /* [out] */ ITypeInfo **ppTInfo);
         
+        DECLSPEC_XFGVIRT(IDispatch, GetIDsOfNames)
         HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
             ICurrentState * This,
             /* [in] */ REFIID riid,
@@ -309,6 +323,7 @@ EXTERN_C const IID IID_ICurrentState;
             /* [in] */ LCID lcid,
             /* [size_is][out] */ DISPID *rgDispId);
         
+        DECLSPEC_XFGVIRT(IDispatch, Invoke)
         /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
             ICurrentState * This,
             /* [annotation][in] */ 
@@ -328,70 +343,87 @@ EXTERN_C const IID IID_ICurrentState;
             /* [annotation][out] */ 
             _Out_opt_  UINT *puArgErr);
         
+        DECLSPEC_XFGVIRT(ICurrentState, get_stateValue)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_stateValue )( 
             ICurrentState * This,
             /* [retval][out] */ LONG *__MIDL__ICurrentState0000);
         
+        DECLSPEC_XFGVIRT(ICurrentState, get_availableVersion)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_availableVersion )( 
             ICurrentState * This,
             /* [retval][out] */ BSTR *__MIDL__ICurrentState0001);
         
+        DECLSPEC_XFGVIRT(ICurrentState, get_bytesDownloaded)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_bytesDownloaded )( 
             ICurrentState * This,
             /* [retval][out] */ ULONG *__MIDL__ICurrentState0002);
         
+        DECLSPEC_XFGVIRT(ICurrentState, get_totalBytesToDownload)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_totalBytesToDownload )( 
             ICurrentState * This,
             /* [retval][out] */ ULONG *__MIDL__ICurrentState0003);
         
+        DECLSPEC_XFGVIRT(ICurrentState, get_downloadTimeRemainingMs)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_downloadTimeRemainingMs )( 
             ICurrentState * This,
             /* [retval][out] */ LONG *__MIDL__ICurrentState0004);
         
+        DECLSPEC_XFGVIRT(ICurrentState, get_nextRetryTime)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nextRetryTime )( 
             ICurrentState * This,
             /* [retval][out] */ ULONGLONG *__MIDL__ICurrentState0005);
         
+        DECLSPEC_XFGVIRT(ICurrentState, get_installProgress)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_installProgress )( 
             ICurrentState * This,
             /* [retval][out] */ LONG *__MIDL__ICurrentState0006);
         
+        DECLSPEC_XFGVIRT(ICurrentState, get_installTimeRemainingMs)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_installTimeRemainingMs )( 
             ICurrentState * This,
             /* [retval][out] */ LONG *__MIDL__ICurrentState0007);
         
+        DECLSPEC_XFGVIRT(ICurrentState, get_isCanceled)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_isCanceled )( 
             ICurrentState * This,
             /* [retval][out] */ VARIANT_BOOL *is_canceled);
         
+        DECLSPEC_XFGVIRT(ICurrentState, get_errorCode)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_errorCode )( 
             ICurrentState * This,
             /* [retval][out] */ LONG *__MIDL__ICurrentState0008);
         
+        DECLSPEC_XFGVIRT(ICurrentState, get_extraCode1)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_extraCode1 )( 
             ICurrentState * This,
             /* [retval][out] */ LONG *__MIDL__ICurrentState0009);
         
+        DECLSPEC_XFGVIRT(ICurrentState, get_completionMessage)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_completionMessage )( 
             ICurrentState * This,
             /* [retval][out] */ BSTR *__MIDL__ICurrentState0010);
         
+        DECLSPEC_XFGVIRT(ICurrentState, get_installerResultCode)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_installerResultCode )( 
             ICurrentState * This,
             /* [retval][out] */ LONG *__MIDL__ICurrentState0011);
         
+        DECLSPEC_XFGVIRT(ICurrentState, get_installerResultExtraCode1)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_installerResultExtraCode1 )( 
             ICurrentState * This,
             /* [retval][out] */ LONG *__MIDL__ICurrentState0012);
         
+        DECLSPEC_XFGVIRT(ICurrentState, get_postInstallLaunchCommandLine)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_postInstallLaunchCommandLine )( 
             ICurrentState * This,
             /* [retval][out] */ BSTR *__MIDL__ICurrentState0013);
         
+        DECLSPEC_XFGVIRT(ICurrentState, get_postInstallUrl)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_postInstallUrl )( 
             ICurrentState * This,
             /* [retval][out] */ BSTR *__MIDL__ICurrentState0014);
         
+        DECLSPEC_XFGVIRT(ICurrentState, get_postInstallAction)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_postInstallAction )( 
             ICurrentState * This,
             /* [retval][out] */ LONG *__MIDL__ICurrentState0015);
@@ -521,28 +553,34 @@ EXTERN_C const IID IID_IGoogleUpdate3Web;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IGoogleUpdate3Web * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IGoogleUpdate3Web * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IGoogleUpdate3Web * This);
         
+        DECLSPEC_XFGVIRT(IDispatch, GetTypeInfoCount)
         HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
             IGoogleUpdate3Web * This,
             /* [out] */ UINT *pctinfo);
         
+        DECLSPEC_XFGVIRT(IDispatch, GetTypeInfo)
         HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
             IGoogleUpdate3Web * This,
             /* [in] */ UINT iTInfo,
             /* [in] */ LCID lcid,
             /* [out] */ ITypeInfo **ppTInfo);
         
+        DECLSPEC_XFGVIRT(IDispatch, GetIDsOfNames)
         HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
             IGoogleUpdate3Web * This,
             /* [in] */ REFIID riid,
@@ -551,6 +589,7 @@ EXTERN_C const IID IID_IGoogleUpdate3Web;
             /* [in] */ LCID lcid,
             /* [size_is][out] */ DISPID *rgDispId);
         
+        DECLSPEC_XFGVIRT(IDispatch, Invoke)
         /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
             IGoogleUpdate3Web * This,
             /* [annotation][in] */ 
@@ -570,6 +609,7 @@ EXTERN_C const IID IID_IGoogleUpdate3Web;
             /* [annotation][out] */ 
             _Out_opt_  UINT *puArgErr);
         
+        DECLSPEC_XFGVIRT(IGoogleUpdate3Web, createAppBundleWeb)
         HRESULT ( STDMETHODCALLTYPE *createAppBundleWeb )( 
             IGoogleUpdate3Web * This,
             /* [retval][out] */ IDispatch **app_bundle_web);
@@ -696,28 +736,34 @@ EXTERN_C const IID IID_IAppBundleWeb;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IAppBundleWeb * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IAppBundleWeb * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IAppBundleWeb * This);
         
+        DECLSPEC_XFGVIRT(IDispatch, GetTypeInfoCount)
         HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
             IAppBundleWeb * This,
             /* [out] */ UINT *pctinfo);
         
+        DECLSPEC_XFGVIRT(IDispatch, GetTypeInfo)
         HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
             IAppBundleWeb * This,
             /* [in] */ UINT iTInfo,
             /* [in] */ LCID lcid,
             /* [out] */ ITypeInfo **ppTInfo);
         
+        DECLSPEC_XFGVIRT(IDispatch, GetIDsOfNames)
         HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
             IAppBundleWeb * This,
             /* [in] */ REFIID riid,
@@ -726,6 +772,7 @@ EXTERN_C const IID IID_IAppBundleWeb;
             /* [in] */ LCID lcid,
             /* [size_is][out] */ DISPID *rgDispId);
         
+        DECLSPEC_XFGVIRT(IDispatch, Invoke)
         /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
             IAppBundleWeb * This,
             /* [annotation][in] */ 
@@ -745,6 +792,7 @@ EXTERN_C const IID IID_IAppBundleWeb;
             /* [annotation][out] */ 
             _Out_opt_  UINT *puArgErr);
         
+        DECLSPEC_XFGVIRT(IAppBundleWeb, createApp)
         /* [id] */ HRESULT ( STDMETHODCALLTYPE *createApp )( 
             IAppBundleWeb * This,
             /* [in] */ BSTR app_guid,
@@ -752,60 +800,76 @@ EXTERN_C const IID IID_IAppBundleWeb;
             /* [in] */ BSTR language,
             /* [in] */ BSTR ap);
         
+        DECLSPEC_XFGVIRT(IAppBundleWeb, createInstalledApp)
         /* [id] */ HRESULT ( STDMETHODCALLTYPE *createInstalledApp )( 
             IAppBundleWeb * This,
             /* [in] */ BSTR app_id);
         
+        DECLSPEC_XFGVIRT(IAppBundleWeb, createAllInstalledApps)
         /* [id] */ HRESULT ( STDMETHODCALLTYPE *createAllInstalledApps )( 
             IAppBundleWeb * This);
         
+        DECLSPEC_XFGVIRT(IAppBundleWeb, get_displayLanguage)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_displayLanguage )( 
             IAppBundleWeb * This,
             /* [retval][out] */ BSTR *__MIDL__IAppBundleWeb0000);
         
+        DECLSPEC_XFGVIRT(IAppBundleWeb, put_displayLanguage)
         /* [propput] */ HRESULT ( STDMETHODCALLTYPE *put_displayLanguage )( 
             IAppBundleWeb * This,
             /* [in] */ BSTR __MIDL__IAppBundleWeb0001);
         
+        DECLSPEC_XFGVIRT(IAppBundleWeb, put_parentHWND)
         /* [propput] */ HRESULT ( STDMETHODCALLTYPE *put_parentHWND )( 
             IAppBundleWeb * This,
             /* [in] */ ULONG_PTR hwnd);
         
+        DECLSPEC_XFGVIRT(IAppBundleWeb, get_length)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_length )( 
             IAppBundleWeb * This,
             /* [retval][out] */ int *index);
         
+        DECLSPEC_XFGVIRT(IAppBundleWeb, get_appWeb)
         /* [propget][id] */ HRESULT ( STDMETHODCALLTYPE *get_appWeb )( 
             IAppBundleWeb * This,
             /* [in] */ int index,
             /* [retval][out] */ IDispatch **app_web);
         
+        DECLSPEC_XFGVIRT(IAppBundleWeb, initialize)
         HRESULT ( STDMETHODCALLTYPE *initialize )( 
             IAppBundleWeb * This);
         
+        DECLSPEC_XFGVIRT(IAppBundleWeb, checkForUpdate)
         HRESULT ( STDMETHODCALLTYPE *checkForUpdate )( 
             IAppBundleWeb * This);
         
+        DECLSPEC_XFGVIRT(IAppBundleWeb, download)
         HRESULT ( STDMETHODCALLTYPE *download )( 
             IAppBundleWeb * This);
         
+        DECLSPEC_XFGVIRT(IAppBundleWeb, install)
         HRESULT ( STDMETHODCALLTYPE *install )( 
             IAppBundleWeb * This);
         
+        DECLSPEC_XFGVIRT(IAppBundleWeb, pause)
         HRESULT ( STDMETHODCALLTYPE *pause )( 
             IAppBundleWeb * This);
         
+        DECLSPEC_XFGVIRT(IAppBundleWeb, resume)
         HRESULT ( STDMETHODCALLTYPE *resume )( 
             IAppBundleWeb * This);
         
+        DECLSPEC_XFGVIRT(IAppBundleWeb, cancel)
         HRESULT ( STDMETHODCALLTYPE *cancel )( 
             IAppBundleWeb * This);
         
+        DECLSPEC_XFGVIRT(IAppBundleWeb, downloadPackage)
         HRESULT ( STDMETHODCALLTYPE *downloadPackage )( 
             IAppBundleWeb * This,
             /* [in] */ BSTR app_id,
             /* [in] */ BSTR package_name);
         
+        DECLSPEC_XFGVIRT(IAppBundleWeb, get_currentState)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_currentState )( 
             IAppBundleWeb * This,
             /* [retval][out] */ VARIANT *current_state);
@@ -960,28 +1024,34 @@ EXTERN_C const IID IID_IAppWeb;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IAppWeb * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IAppWeb * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IAppWeb * This);
         
+        DECLSPEC_XFGVIRT(IDispatch, GetTypeInfoCount)
         HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
             IAppWeb * This,
             /* [out] */ UINT *pctinfo);
         
+        DECLSPEC_XFGVIRT(IDispatch, GetTypeInfo)
         HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
             IAppWeb * This,
             /* [in] */ UINT iTInfo,
             /* [in] */ LCID lcid,
             /* [out] */ ITypeInfo **ppTInfo);
         
+        DECLSPEC_XFGVIRT(IDispatch, GetIDsOfNames)
         HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
             IAppWeb * This,
             /* [in] */ REFIID riid,
@@ -990,6 +1060,7 @@ EXTERN_C const IID IID_IAppWeb;
             /* [in] */ LCID lcid,
             /* [size_is][out] */ DISPID *rgDispId);
         
+        DECLSPEC_XFGVIRT(IDispatch, Invoke)
         /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
             IAppWeb * This,
             /* [annotation][in] */ 
@@ -1009,40 +1080,50 @@ EXTERN_C const IID IID_IAppWeb;
             /* [annotation][out] */ 
             _Out_opt_  UINT *puArgErr);
         
+        DECLSPEC_XFGVIRT(IAppWeb, get_appId)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_appId )( 
             IAppWeb * This,
             /* [retval][out] */ BSTR *__MIDL__IAppWeb0000);
         
+        DECLSPEC_XFGVIRT(IAppWeb, get_currentVersionWeb)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_currentVersionWeb )( 
             IAppWeb * This,
             /* [retval][out] */ IDispatch **current);
         
+        DECLSPEC_XFGVIRT(IAppWeb, get_nextVersionWeb)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nextVersionWeb )( 
             IAppWeb * This,
             /* [retval][out] */ IDispatch **next);
         
+        DECLSPEC_XFGVIRT(IAppWeb, get_command)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_command )( 
             IAppWeb * This,
             /* [in] */ BSTR command_id,
             /* [retval][out] */ IDispatch **command);
         
+        DECLSPEC_XFGVIRT(IAppWeb, cancel)
         HRESULT ( STDMETHODCALLTYPE *cancel )( 
             IAppWeb * This);
         
+        DECLSPEC_XFGVIRT(IAppWeb, get_currentState)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_currentState )( 
             IAppWeb * This,
             /* [retval][out] */ IDispatch **current_state);
         
+        DECLSPEC_XFGVIRT(IAppWeb, launch)
         HRESULT ( STDMETHODCALLTYPE *launch )( 
             IAppWeb * This);
         
+        DECLSPEC_XFGVIRT(IAppWeb, uninstall)
         HRESULT ( STDMETHODCALLTYPE *uninstall )( 
             IAppWeb * This);
         
+        DECLSPEC_XFGVIRT(IAppWeb, get_serverInstallDataIndex)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_serverInstallDataIndex )( 
             IAppWeb * This,
             /* [retval][out] */ BSTR *__MIDL__IAppWeb0001);
         
+        DECLSPEC_XFGVIRT(IAppWeb, put_serverInstallDataIndex)
         /* [propput] */ HRESULT ( STDMETHODCALLTYPE *put_serverInstallDataIndex )( 
             IAppWeb * This,
             /* [in] */ BSTR __MIDL__IAppWeb0002);
@@ -1161,27 +1242,33 @@ EXTERN_C const IID IID_IProcessLauncher;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IProcessLauncher * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IProcessLauncher * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IProcessLauncher * This);
         
+        DECLSPEC_XFGVIRT(IProcessLauncher, LaunchCmdLine)
         HRESULT ( STDMETHODCALLTYPE *LaunchCmdLine )( 
             IProcessLauncher * This,
             /* [string][in] */ const WCHAR *cmd_line);
         
+        DECLSPEC_XFGVIRT(IProcessLauncher, LaunchBrowser)
         HRESULT ( STDMETHODCALLTYPE *LaunchBrowser )( 
             IProcessLauncher * This,
             /* [in] */ DWORD browser_type,
             /* [string][in] */ const WCHAR *url);
         
+        DECLSPEC_XFGVIRT(IProcessLauncher, LaunchCmdElevated)
         HRESULT ( STDMETHODCALLTYPE *LaunchCmdElevated )( 
             IProcessLauncher * This,
             /* [string][in] */ const WCHAR *app_guid,
@@ -1262,27 +1349,33 @@ EXTERN_C const IID IID_IProcessLauncher2;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IProcessLauncher2 * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IProcessLauncher2 * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IProcessLauncher2 * This);
         
+        DECLSPEC_XFGVIRT(IProcessLauncher, LaunchCmdLine)
         HRESULT ( STDMETHODCALLTYPE *LaunchCmdLine )( 
             IProcessLauncher2 * This,
             /* [string][in] */ const WCHAR *cmd_line);
         
+        DECLSPEC_XFGVIRT(IProcessLauncher, LaunchBrowser)
         HRESULT ( STDMETHODCALLTYPE *LaunchBrowser )( 
             IProcessLauncher2 * This,
             /* [in] */ DWORD browser_type,
             /* [string][in] */ const WCHAR *url);
         
+        DECLSPEC_XFGVIRT(IProcessLauncher, LaunchCmdElevated)
         HRESULT ( STDMETHODCALLTYPE *LaunchCmdElevated )( 
             IProcessLauncher2 * This,
             /* [string][in] */ const WCHAR *app_guid,
@@ -1290,6 +1383,7 @@ EXTERN_C const IID IID_IProcessLauncher2;
             /* [in] */ DWORD caller_proc_id,
             /* [out] */ ULONG_PTR *proc_handle);
         
+        DECLSPEC_XFGVIRT(IProcessLauncher2, LaunchCmdLineEx)
         HRESULT ( STDMETHODCALLTYPE *LaunchCmdLineEx )( 
             IProcessLauncher2 * This,
             /* [string][in] */ const WCHAR *cmd_line,

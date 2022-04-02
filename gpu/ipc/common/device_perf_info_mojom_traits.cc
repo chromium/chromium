@@ -34,6 +34,8 @@ EnumTraits<gpu::mojom::Direct3DFeatureLevel, D3D_FEATURE_LEVEL>::ToMojom(
       return gpu::mojom::Direct3DFeatureLevel::k12_0;
     case D3D_FEATURE_LEVEL_12_1:
       return gpu::mojom::Direct3DFeatureLevel::k12_1;
+    case D3D_FEATURE_LEVEL_12_2:
+      return gpu::mojom::Direct3DFeatureLevel::k12_2;
   }
   NOTREACHED() << "Invalid D3D_FEATURE_LEVEL:" << d3d_feature_level;
   return gpu::mojom::Direct3DFeatureLevel::k1_0_Core;
@@ -73,6 +75,9 @@ bool EnumTraits<gpu::mojom::Direct3DFeatureLevel, D3D_FEATURE_LEVEL>::FromMojom(
       return true;
     case gpu::mojom::Direct3DFeatureLevel::k12_1:
       *out = D3D_FEATURE_LEVEL_12_1;
+      return true;
+    case gpu::mojom::Direct3DFeatureLevel::k12_2:
+      *out = D3D_FEATURE_LEVEL_12_2;
       return true;
   }
   NOTREACHED() << "Invalid D3D_FEATURE_LEVEL: " << input;
