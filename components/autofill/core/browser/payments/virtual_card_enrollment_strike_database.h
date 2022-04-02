@@ -23,6 +23,10 @@ class VirtualCardEnrollmentStrikeDatabase
       StrikeDatabaseBase* strike_database);
   ~VirtualCardEnrollmentStrikeDatabase() override;
 
+  // Whether bubble to be shown is the last offer for the card with
+  // |instrument_id|.
+  bool IsLastOffer(const std::string& instrument_id) const;
+
   absl::optional<size_t> GetMaximumEntries() const override;
   absl::optional<size_t> GetMaximumEntriesAfterCleanup() const override;
 

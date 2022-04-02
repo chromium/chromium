@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -667,6 +668,44 @@ TEST_F(VirtualCardEnrollmentManagerTest,
                                        ->virtual_card_enrollment_fields
                                        .credit_card.instrument_id()),
               VirtualCardEnrollmentSource::kSettingsPage));
+}
+
+// Test to ensure that the |last_show| inside a VirtualCardEnrollmentFields is
+// set correctly.
+TEST_F(VirtualCardEnrollmentManagerTest, VirtualCardEnrollmentFields_LastShow) {
+  base::HistogramTester histogram_tester;
+  raw_ptr<VirtualCardEnrollmentProcessState> state =
+      virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
+  state->vcn_context_token = kTestVcnContextToken;
+  SetUpCard();
+  state->virtual_card_enrollment_fields.credit_card = *card_;
+  personal_data_manager_->SetPaymentsCustomerData(
+      std::make_unique<PaymentsCustomerData>("123456"));
+
+  // Making sure there is no existing strike for the card.
+  ASSERT_EQ(
+      virtual_card_enrollment_manager_->GetVirtualCardEnrollmentStrikeDatabase()
+          ->GetStrikes(
+              base::NumberToString(state->virtual_card_enrollment_fields
+                                       .credit_card.instrument_id())),
+      0);
+
+  for (int i = 0; i < virtual_card_enrollment_manager_
+                              ->GetVirtualCardEnrollmentStrikeDatabase()
+                              ->GetMaxStrikesLimit() -
+                          1;
+       i++) {
+    // Show the bubble and ensures VirtualCardEnrollmentFields is set correctly.
+    virtual_card_enrollment_manager_->ShowVirtualCardEnrollBubble();
+    EXPECT_FALSE(state->virtual_card_enrollment_fields.last_show);
+    // Reject the bubble and log strike.
+    virtual_card_enrollment_manager_->OnVirtualCardEnrollmentBubbleCancelled();
+  }
+
+  // Show the bubble for the last time and ensures VirtualCardEnrollmentFields
+  // is set correctly.
+  virtual_card_enrollment_manager_->ShowVirtualCardEnrollBubble();
+  EXPECT_TRUE(state->virtual_card_enrollment_fields.last_show);
 }
 #endif  // !BUILDFLAG(IS_IOS)
 

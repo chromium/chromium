@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
@@ -274,6 +275,17 @@ void VirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble() {
         AutofillClock::Now() - save_card_bubble_accepted_timestamp_.value());
     save_card_bubble_accepted_timestamp_.reset();
   }
+
+  // Check in StrikeDatabase whether enrollment has been offered for this card
+  // before.
+  state_.virtual_card_enrollment_fields.last_show = false;
+  if (GetVirtualCardEnrollmentStrikeDatabase() &&
+      GetVirtualCardEnrollmentStrikeDatabase()->IsLastOffer(
+          base::NumberToString(state_.virtual_card_enrollment_fields.credit_card
+                                   .instrument_id()))) {
+    state_.virtual_card_enrollment_fields.last_show = true;
+  }
+
   autofill_client_->ShowVirtualCardEnrollDialog(
       state_.virtual_card_enrollment_fields,
       base::BindOnce(&VirtualCardEnrollmentManager::Enroll,

@@ -128,6 +128,11 @@ TestAutofillClient::GetVirtualCardEnrollmentManager() {
   return form_data_importer_->GetVirtualCardEnrollmentManager();
 }
 
+void TestAutofillClient::ShowVirtualCardEnrollDialog(
+    const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
+    base::OnceClosure accept_virtual_card_callback,
+    base::OnceClosure decline_virtual_card_callback) {}
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 std::vector<std::string>
 TestAutofillClient::GetAllowedMerchantsForVirtualCards() {

@@ -474,7 +474,7 @@
     From Google Pay
   </message>
 
-  <!-- virtual cards related strings -->
+  <!-- virtual cards related strings - start -->
   <if expr="not is_ios and not is_android">
     <message name="IDS_AUTOFILL_CLOUD_TOKEN_DROPDOWN_OPTION_LABEL" desc="Text shown in the button in the Autofill dropdown menu when a credit card form field is queried, to offer the option to use a virtual card.">
       Use a virtual card number...
@@ -535,7 +535,6 @@
       Copied
     </message>
   </if>
-
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_IPH_BUBBLE_LABEL" desc="Text shown in the IPH bubble for the virtual card option in the suggestion dropdown bubble.">
       Use your virtual card for added security
   </message>
@@ -545,6 +544,55 @@
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DIALOG_TITLE_LABEL" desc="Title encouraging users to enroll their card to VCN." formatter_data="android_java">
       Make it more secure with a virtual card?
   </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DIALOG_CONTENT_LABEL" desc="Text explaining the benefit of enrolling a credit card as a virtual card. Also contains a link to learn more about virtual cards from IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL.">
+    A virtual card disguises your actual card to help protect you from potential fraud. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL">$1<ex>Learn about virtual cards</ex></ph>
+  </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DECLINE_BUTTON_LABEL_SKIP" desc="Text displayed in the decline button in the virtual card enroll bubble. It is displayed only if the bubble/infobar will still be shown again at a later date after this one is declined.">
+    Skip
+  </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DECLINE_BUTTON_LABEL_NO_THANKS" desc="Text displayed in the decline button in the virtual card enroll bubble. It is displayed only if the bubble/infobar is shown for the last time.">
+    No thanks
+  </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" desc="Link text to learn more about virtual cards. Added to the end of the explanatory message of the virtual card enrollment dialog in IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DIALOG_CONTENT_LABEL.">
+    Learn about virtual cards
+  </message>
+    <message name="IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE" desc="The text shown in the virtual card option in the credit card suggestion list. It is shown as the value of the suggestion.">
+    Virtual card
+  </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_TEMPORARY_ERROR_TITLE" desc="Text to be displayed as the title of the error dialog for virtual card temporary error.">
+    Something went wrong
+  </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_PERMANENT_ERROR_TITLE" desc="Text to be displayed as the title of the error dialog for virtual card permanent error.">
+    Virtual card not available
+  </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_TEMPORARY_ERROR_DESCRIPTION" desc="Text to be displayed as the description of the error dialog for virtual card temporary error.">
+    Virtual card is not available right now, please try again later
+  </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_PERMANENT_ERROR_DESCRIPTION" desc="Text to be displayed as the description of the error dialog for virtual card permanent error.">
+    Virtual card is not available right now, please contact your bank
+  </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_NOT_ELIGIBLE_ERROR_TITLE" desc="Text to be displayed as the title of the error dialog for virtual card permanent error">
+    Not eligible for virtual card
+  </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_NOT_ELIGIBLE_ERROR_DESCRIPTION" desc="Text to be displayed as the description of the error dialog for virtual card permanent error">
+    This card is not eligible for virtual card number.
+  </message>
+  <message name="IDS_AUTOFILL_ERROR_DIALOG_NEGATIVE_BUTTON_LABEL" desc="Label for the negative button for the error dialog.">
+    Close
+  </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_NUMBER_SWITCH_LABEL" desc="The text shown as the label for virtual card enrollment switch in the server card edit page." formatter_data="android_java">
+    Virtual card
+  </message>
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_VIRTUAL_CARD_NUMBER_SNACKBAR_MESSAGE_TEXT" desc="Text to be displayed in the snackbar shown after a virtual card number id autofilled.">
+      Virtual card number not filled in?
+    </message>
+    <message name="IDS_AUTOFILL_VIRTUAL_CARD_NUMBER_SNACKBAR_ACTION_TEXT" desc="Text to be displayed as the snackbar action shown after a virtual card number id autofilled.">
+      View card
+    </message>
+  </if>
+  <!-- virtual cards related strings - end -->
+
   <message name="IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_ISSUER_CONFIRMATION_TEXT" desc="The issuer confirmation text shown in the Autofill card unmask authentication selection dialog on Desktop. This is the header text of the dialog, and it is the text stating that the issuer wants additional authentication. This dialog lets the user choose the method of authentication when unmasking a server card, including a virtual card.">
       Your bank wants to confirm it's you.
   </message>
@@ -578,50 +626,6 @@
   <message name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_ENTER_CORRECT_CODE_LABEL" desc="This text is shown after an OTP is already sent, when the user enters an incorrect OTP code. It directs the user to enter the correct code that was sent to them.">
     Enter correct code
   </message>
-  <message name="IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE" desc="The text shown in the virtual card option in the credit card suggestion list. It is shown as the value of the suggestion.">
-    Virtual card
-  </message>
-  <message name="IDS_AUTOFILL_VIRTUAL_CARD_TEMPORARY_ERROR_TITLE" desc="Text to be displayed as the title of the error dialog for virtual card temporary error.">
-    Something went wrong
-  </message>
-  <message name="IDS_AUTOFILL_VIRTUAL_CARD_PERMANENT_ERROR_TITLE" desc="Text to be displayed as the title of the error dialog for virtual card permanent error.">
-    Virtual card not available
-  </message>
-  <message name="IDS_AUTOFILL_VIRTUAL_CARD_TEMPORARY_ERROR_DESCRIPTION" desc="Text to be displayed as the description of the error dialog for virtual card temporary error.">
-    Virtual card is not available right now, please try again later
-  </message>
-  <message name="IDS_AUTOFILL_VIRTUAL_CARD_PERMANENT_ERROR_DESCRIPTION" desc="Text to be displayed as the description of the error dialog for virtual card permanent error.">
-    Virtual card is not available right now, please contact your bank
-  </message>
-  <message name="IDS_AUTOFILL_VIRTUAL_CARD_NOT_ELIGIBLE_ERROR_TITLE" desc="Text to be displayed as the title of the error dialog for virtual card permanent error">
-    Not eligible for virtual card
-  </message>
-  <message name="IDS_AUTOFILL_VIRTUAL_CARD_NOT_ELIGIBLE_ERROR_DESCRIPTION" desc="Text to be displayed as the description of the error dialog for virtual card permanent error">
-    This card is not eligible for virtual card number.
-  </message>
-  <message name="IDS_AUTOFILL_ERROR_DIALOG_NEGATIVE_BUTTON_LABEL" desc="Label for the negative button for the error dialog.">
-    Close
-  </message>
-  <message name="IDS_AUTOFILL_VIRTUAL_CARD_NUMBER_SWITCH_LABEL" desc="The text shown as the label for virtual card enrollment switch in the server card edit page." formatter_data="android_java">
-    Virtual card
-  </message>
-  <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DIALOG_CONTENT_LABEL" desc="Text explaining the benefit of enrolling a credit card as a virtual card. Also contains a link to learn more about virtual cards from IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL.">
-    A virtual card disguises your actual card to help protect you from potential fraud. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL">$1<ex>Learn about virtual cards</ex></ph>
-  </message>
-  <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DECLINE_BUTTON_LABEL" desc="Decline enrolling card as a virtual card.">
-    No Thanks
-  </message>
-  <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" desc="Link text to learn more about virtual cards. Added to the end of the explanatory message of the virtual card enrollment dialog in IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DIALOG_CONTENT_LABEL.">
-    Learn about virtual cards
-  </message>
-  <if expr="is_android">
-    <message name="IDS_AUTOFILL_VIRTUAL_CARD_NUMBER_SNACKBAR_MESSAGE_TEXT" desc="Text to be displayed in the snackbar shown after a virtual card number id autofilled.">
-      Virtual card number not filled in?
-    </message>
-    <message name="IDS_AUTOFILL_VIRTUAL_CARD_NUMBER_SNACKBAR_ACTION_TEXT" desc="Text to be displayed as the snackbar action shown after a virtual card number id autofilled.">
-      View card
-    </message>
-  </if>
 
   <message name="IDS_AUTOFILL_SAVE_UPI_PROMPT_TITLE" desc="Title text for the prompt to save a UPI ID locally, which the user used in a page. UPI is an online payment method. A UPI ID is an email-like string.">
     Remember your UPI ID?

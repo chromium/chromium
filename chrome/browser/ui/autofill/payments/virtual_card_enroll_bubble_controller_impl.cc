@@ -94,7 +94,9 @@ std::u16string VirtualCardEnrollBubbleControllerImpl::GetDeclineButtonText()
       virtual_card_enrollment_fields_.virtual_card_enrollment_source ==
               VirtualCardEnrollmentSource::kSettingsPage
           ? IDS_CANCEL
-          : IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DECLINE_BUTTON_LABEL);
+          : virtual_card_enrollment_fields_.last_show
+                ? IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DECLINE_BUTTON_LABEL_NO_THANKS
+                : IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DECLINE_BUTTON_LABEL_SKIP);
 }
 
 std::u16string VirtualCardEnrollBubbleControllerImpl::GetLearnMoreLinkText()

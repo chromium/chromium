@@ -79,6 +79,10 @@ class TestAutofillClient : public AutofillClient {
   void OnUnmaskVerificationResult(PaymentsRpcResult result) override;
   raw_ptr<VirtualCardEnrollmentManager> GetVirtualCardEnrollmentManager()
       override;
+  void ShowVirtualCardEnrollDialog(
+      const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
+      base::OnceClosure accept_virtual_card_callback,
+      base::OnceClosure decline_virtual_card_callback) override;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   std::vector<std::string> GetAllowedMerchantsForVirtualCards() override;
   std::vector<std::string> GetAllowedBinRangesForVirtualCards() override;

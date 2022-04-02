@@ -31,6 +31,13 @@ VirtualCardEnrollmentStrikeDatabase::VirtualCardEnrollmentStrikeDatabase(
 VirtualCardEnrollmentStrikeDatabase::~VirtualCardEnrollmentStrikeDatabase() =
     default;
 
+bool VirtualCardEnrollmentStrikeDatabase::IsLastOffer(
+    const std::string& instrument_id) const {
+  // This check should not be invoked for blocked bubble.
+  DCHECK_LT(GetStrikes(instrument_id), GetMaxStrikesLimit());
+  return GetStrikes(instrument_id) == GetMaxStrikesLimit() - 1;
+}
+
 absl::optional<size_t> VirtualCardEnrollmentStrikeDatabase::GetMaximumEntries()
     const {
   return absl::optional<size_t>(kMaxStrikeEntities);
