@@ -9,12 +9,14 @@
     box-shadow: var(--ntp-realbox-shadow);
     display: block;
     margin-bottom: 8px;
+    overflow: hidden;
     padding-bottom: 8px;
     padding-top: var(--ntp-realbox-height);
   }
 
   :host([round-corners]) #selector {
     border-radius: calc(0.5 * var(--ntp-realbox-height));
+    padding-bottom: 16px;
   }
 
   @media (forced-colors: active) {
