@@ -2912,7 +2912,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_M100",
+                    "name": "Enabled_MovementThreshold_6_20220328",
+                    "params": {
+                        "DragAndDropMovementThresholdDipParam": "6"
+                    },
                     "enable_features": [
                         "ContextMenuPopupStyle",
                         "TouchDragAndContextMenu"
