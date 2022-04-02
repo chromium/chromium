@@ -675,9 +675,10 @@ void AshNotificationView::PopulateGroupNotifications(
   total_grouped_notifications_ = 0;
   grouped_notifications_container_->RemoveAllChildViews();
 
-  for (auto* notification : notifications) {
+  for (auto notification = notifications.rbegin();
+       notification != notifications.rend(); notification++) {
     auto notification_view =
-        std::make_unique<AshNotificationView>(*notification,
+        std::make_unique<AshNotificationView>(**notification,
                                               /*shown_in_popup=*/false);
     notification_view->SetVisible(
         total_grouped_notifications_ <
@@ -687,10 +688,11 @@ void AshNotificationView::PopulateGroupNotifications(
     notification_view->set_scroller(
         scroller() ? scroller() : grouped_notifications_scroll_view_);
 
-    grouped_notifications_container_->AddChildViewAt(
-        std::move(notification_view), 0);
+    grouped_notifications_container_->AddChildView(
+        std::move(notification_view));
+
+    total_grouped_notifications_++;
   }
-  total_grouped_notifications_ = notifications.size();
   left_content_->SetVisible(total_grouped_notifications_ == 0);
   expand_button_->UpdateGroupedNotificationsCount(total_grouped_notifications_);
 }
