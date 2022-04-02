@@ -23,6 +23,7 @@
 #include "ash/app_list/views/folder_background_view.h"
 #include "ash/app_list/views/page_switcher.h"
 #include "ash/app_list/views/search_box_view.h"
+#include "ash/app_list/views/search_result_page_dialog_controller.h"
 #include "ash/app_list/views/suggestion_chip_container_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/controls/gradient_layer_delegate.h"
@@ -152,7 +153,8 @@ constexpr base::TimeDelta kZeroStateSearchTimeout = base::Milliseconds(16);
 class AppsContainerView::ContinueContainer : public views::View {
  public:
   ContinueContainer(AppsContainerView* apps_container,
-                    AppListViewDelegate* view_delegate)
+                    AppListViewDelegate* view_delegate,
+                    SearchResultPageDialogController* dialog_controller)
       : separator_(apps_container->separator()) {
     SetPaintToLayer(ui::LAYER_NOT_DRAWN);
 
@@ -160,7 +162,8 @@ class AppsContainerView::ContinueContainer : public views::View {
         ->SetOrientation(views::LayoutOrientation::kVertical);
 
     continue_section_ = AddChildView(std::make_unique<ContinueSectionView>(
-        view_delegate, kContinueColumnCount, /*tablet_mode=*/true));
+        view_delegate, dialog_controller, kContinueColumnCount,
+        /*tablet_mode=*/true));
     continue_section_->SetPaintToLayer();
     continue_section_->layer()->SetFillsBoundsOpaquely(false);
 
@@ -252,8 +255,12 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
     // Visibility for `separator_` will be managed by the `continue_container_`.
     separator_->SetVisible(false);
 
-    continue_container_ = scrollable_container_->AddChildView(
-        std::make_unique<ContinueContainer>(this, view_delegate));
+    dialog_controller_ =
+        std::make_unique<SearchResultPageDialogController>(this);
+
+    continue_container_ =
+        scrollable_container_->AddChildView(std::make_unique<ContinueContainer>(
+            this, view_delegate, dialog_controller_.get()));
     continue_container_->continue_section()->SetNudgeController(
         app_list_nudge_controller_.get());
     // Update the suggestion tasks after the app list nudge controller is set in
@@ -1102,6 +1109,8 @@ void AppsContainerView::OnShown() {
     toast_container_->UpdateVisibilityState(
         AppListToastContainerView::VisibilityState::kShown);
   }
+  if (dialog_controller_)
+    dialog_controller_->Reset(/*enabled=*/true);
 }
 
 void AppsContainerView::OnWillBeHidden() {
@@ -1129,6 +1138,8 @@ void AppsContainerView::OnHidden() {
     toast_container_->UpdateVisibilityState(
         AppListToastContainerView::VisibilityState::kShownInBackground);
   }
+  if (dialog_controller_)
+    dialog_controller_->Reset(/*enabled=*/false);
 }
 
 void AppsContainerView::OnAnimationStarted(AppListState from_state,

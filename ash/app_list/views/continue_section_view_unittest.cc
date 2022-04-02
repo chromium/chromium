@@ -22,10 +22,14 @@
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/continue_task_view.h"
 #include "ash/app_list/views/recent_apps_view.h"
+#include "ash/app_list/views/remove_task_feedback_dialog.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
+#include "ash/app_list/views/search_result_page_anchored_dialog.h"
+#include "ash/app_list/views/search_result_page_dialog_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -44,6 +48,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/widget/widget_delegate.h"
 
 namespace ash {
 namespace {
@@ -91,7 +96,9 @@ class ContinueSectionViewTestBase : public AshTestBase {
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         tablet_mode_(tablet_mode) {
     scoped_feature_list_.InitWithFeatures(
-        {features::kLauncherAppSort, features::kProductivityLauncher}, {});
+        {features::kLauncherAppSort, features::kProductivityLauncher,
+         app_list_features::kFeedbackOnContinueSectionRemove},
+        {});
   }
   ~ContinueSectionViewTestBase() override = default;
 
@@ -274,6 +281,30 @@ class ContinueSectionViewTestBase : public AshTestBase {
       bounds.push_back(GetCurrentLayerBounds(result_view));
     }
     return bounds;
+  }
+
+  SearchResultPageAnchoredDialog* GetSearchViewAnchoredDialog() {
+    if (Shell::Get()->tablet_mode_controller()->InTabletMode())
+      return GetAppListTestHelper()->GetFullscreenSearchPageDialog();
+    return GetAppListTestHelper()->GetBubbleSearchPageDialog();
+  }
+
+  void ConfirmSearchViewAnchoredDialog() {
+    SearchResultPageAnchoredDialog* dialog = GetSearchViewAnchoredDialog();
+    ASSERT_TRUE(dialog);
+    views::WidgetDelegate* widget_delegate =
+        dialog->widget()->widget_delegate();
+    GestureTapOn(static_cast<RemoveTaskFeedbackDialog*>(widget_delegate)
+                     ->remove_button_for_test());
+  }
+
+  void CancelSearchViewAnchoredDialog() {
+    SearchResultPageAnchoredDialog* dialog = GetSearchViewAnchoredDialog();
+    ASSERT_TRUE(dialog);
+    views::WidgetDelegate* widget_delegate =
+        dialog->widget()->widget_delegate();
+    GestureTapOn(static_cast<RemoveTaskFeedbackDialog*>(widget_delegate)
+                     ->cancel_button_for_test());
   }
 
   test::AppsGridViewTestApi* test_api() { return test_api_.get(); }
@@ -703,6 +734,66 @@ TEST_P(ContinueSectionViewTest, OpenWithContextMenuOption) {
   EXPECT_EQ("id1", client->last_opened_search_result());
 }
 
+TEST_P(ContinueSectionViewTest, SelectCancelOptionCloseDialogNoRemove) {
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+
+  EnsureLauncherShown();
+
+  VerifyResultViewsUpdated();
+
+  ContinueTaskView* continue_task_view = GetResultViewAt(0);
+  EXPECT_EQ(continue_task_view->result()->id(), "id1");
+
+  GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
+  SimulateRightClickOrLongPressOn(continue_task_view);
+  EXPECT_TRUE(continue_task_view->IsMenuShowing());
+  continue_task_view->ExecuteCommand(ContinueTaskCommandId::kRemoveResult,
+                                     ui::EventFlags::EF_NONE);
+
+  ASSERT_TRUE(GetSearchViewAnchoredDialog());
+  CancelSearchViewAnchoredDialog();
+
+  EXPECT_FALSE(GetSearchViewAnchoredDialog());
+
+  TestAppListClient* client = GetAppListTestHelper()->app_list_client();
+  std::vector<TestAppListClient::SearchResultActionId> invoked_actions =
+      client->GetAndClearInvokedResultActions();
+  EXPECT_TRUE(invoked_actions.empty());
+}
+
+TEST_P(ContinueSectionViewTest, SelectRemoveOptionCloseDialogAndRemove) {
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+
+  EnsureLauncherShown();
+
+  VerifyResultViewsUpdated();
+
+  ContinueTaskView* continue_task_view = GetResultViewAt(0);
+  EXPECT_EQ(continue_task_view->result()->id(), "id1");
+
+  GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
+  SimulateRightClickOrLongPressOn(continue_task_view);
+  EXPECT_TRUE(continue_task_view->IsMenuShowing());
+  continue_task_view->ExecuteCommand(ContinueTaskCommandId::kRemoveResult,
+                                     ui::EventFlags::EF_NONE);
+
+  ASSERT_TRUE(GetSearchViewAnchoredDialog());
+  ConfirmSearchViewAnchoredDialog();
+
+  EXPECT_FALSE(GetSearchViewAnchoredDialog());
+
+  TestAppListClient* client = GetAppListTestHelper()->app_list_client();
+  std::vector<TestAppListClient::SearchResultActionId> expected_actions = {
+      {"id1", SearchResultActionType::kRemove}};
+  std::vector<TestAppListClient::SearchResultActionId> invoked_actions =
+      client->GetAndClearInvokedResultActions();
+  EXPECT_EQ(expected_actions, invoked_actions);
+}
+
 TEST_P(ContinueSectionViewTest, RemoveWithContextMenuOption) {
   AddSearchResult("id1", AppListSearchResultType::kFileChip);
   AddSearchResult("id2", AppListSearchResultType::kDriveChip);
@@ -720,6 +811,9 @@ TEST_P(ContinueSectionViewTest, RemoveWithContextMenuOption) {
   EXPECT_TRUE(continue_task_view->IsMenuShowing());
   continue_task_view->ExecuteCommand(ContinueTaskCommandId::kRemoveResult,
                                      ui::EventFlags::EF_NONE);
+
+  ASSERT_TRUE(GetSearchViewAnchoredDialog());
+  ConfirmSearchViewAnchoredDialog();
 
   TestAppListClient* client = GetAppListTestHelper()->app_list_client();
   std::vector<TestAppListClient::SearchResultActionId> expected_actions = {

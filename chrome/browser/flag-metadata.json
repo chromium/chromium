@@ -3843,6 +3843,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "launcher-feedback-on-continue-section-remove",
+    "owners": ["anasalazar", "//ash/app_list/OWNERS"],
+    "expiry_milestone": 107
+  },
+  {
     "name": "launcher-game-search",
     "owners": ["wrong", "napper", "tby"],
     "expiry_milestone": 110

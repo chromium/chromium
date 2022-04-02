@@ -16,6 +16,7 @@
 #include "ash/app_list/views/app_list_page.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/recent_apps_view.h"
+#include "ash/app_list/views/search_result_page_dialog_controller.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "base/callback_helpers.h"
@@ -33,6 +34,7 @@ class ContentsView;
 class ContinueSectionView;
 class FolderBackgroundView;
 class PageSwitcher;
+class SearchResultPageAnchoredDialog;
 class SuggestionChipContainerView;
 class GradientLayerDelegate;
 
@@ -232,6 +234,10 @@ class ASH_EXPORT AppsContainerView
   // Gets the height of the `separator_` including its vertical margin.
   int GetSeparatorHeight();
 
+  SearchResultPageAnchoredDialog* dialog_for_test() {
+    return dialog_controller_->dialog();
+  }
+
  private:
   enum ShowState {
     SHOW_NONE,  // initial state
@@ -336,6 +342,9 @@ class ASH_EXPORT AppsContainerView
   std::unique_ptr<AppListConfig> app_list_config_;
 
   std::unique_ptr<AppListNudgeController> app_list_nudge_controller_;
+
+  // Controller for showing a modal dialog in the continue section.
+  std::unique_ptr<SearchResultPageDialogController> dialog_controller_;
 
   // The number of active requests to disable blur.
   size_t suggestion_chips_blur_disabler_count_ = 0;

@@ -5399,6 +5399,12 @@ const char kLauncherGameSearchName[] = "Enable launcher game search";
 const char kLauncherGameSearchDescription[] =
     "Enables cloud game search results in the launcher.";
 
+const char kLauncherFeedbackOnContinueSectionRemoveName[] =
+    "Enable requesting for feedback on continue section suggestions";
+const char kLauncherFeedbackOnContinueSectionRemoveDescription[] =
+    "When enabled, if a user removes a continue section suggestion, a dialog "
+    "will appear on the launcher requesting feedback on the suggestions shown.";
+
 const char kLauncherNudgeName[] = "Enable launcher nudge";
 const char kLauncherNudgeDescription[] =
     "Enables nudges that bring new users' attention to the launcher button.";

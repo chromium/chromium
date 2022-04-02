@@ -31,10 +31,9 @@ void SearchResultPageDialogController::Show(
   dialog_->widget()->Show();
 }
 
-void SearchResultPageDialogController::SetEnabled(bool enabled) {
+void SearchResultPageDialogController::Reset(bool enabled) {
   enabled_ = enabled;
-  if (!enabled)
-    dialog_.reset();
+  dialog_.reset();
 }
 
 void SearchResultPageDialogController::OnAnchoredDialogClosed() {

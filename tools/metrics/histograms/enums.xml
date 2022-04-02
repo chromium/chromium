@@ -51779,6 +51779,7 @@ from previous Chrome versions.
   <int value="-2140007754" label="HomepageSettingsUIConversion:disabled"/>
   <int value="-2139379065" label="StoragePressureUI:enabled"/>
   <int value="-2138883960" label="AutofillRejectCompanyBirthyearName:disabled"/>
+  <int value="-2138128164" label="FeedbackOnContinueSectionRemove:enabled"/>
   <int value="-2136173537" label="QuickAnswers:enabled"/>
   <int value="-2134886830" label="ChromeWideEchoCancellation:disabled"/>
   <int value="-2134333982" label="ShowArcFilesApp:enabled"/>
@@ -54243,6 +54244,7 @@ from previous Chrome versions.
   <int value="-508346329" label="TerminalSystemAppLegacySettings:disabled"/>
   <int value="-508250572" label="ServiceWorkerLongRunningMessage:disabled"/>
   <int value="-508143738" label="disable-accelerated-fixed-root-background"/>
+  <int value="-507719964" label="FeedbackOnContinueSectionRemove:disabled"/>
   <int value="-507066244" label="AndroidDarkSearch:enabled"/>
   <int value="-506706655" label="respect-autocomplete-off-autofill"/>
   <int value="-506366023" label="VizHitTest:enabled"/>

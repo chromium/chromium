@@ -45,6 +45,8 @@ const base::Feature kDynamicSearchUpdateAnimation{
     "DynamicSearchUpdateAnimation", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kLauncherLacrosIntegration{
     "LauncherLacrosIntegration", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kFeedbackOnContinueSectionRemove{
+    "FeedbackOnContinueSectionRemove", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsAppRankerEnabled() {
   return base::FeatureList::IsEnabled(kEnableAppRanker);
@@ -137,6 +139,11 @@ base::TimeDelta DynamicSearchUpdateAnimationDuration() {
 
 bool IsForceShowContinueSectionEnabled() {
   return base::FeatureList::IsEnabled(kForceShowContinueSection);
+}
+
+bool IsFeedbackOnContinueSectionRemoveEnabled() {
+  return ash::features::IsProductivityLauncherEnabled() &&
+         base::FeatureList::IsEnabled(kFeedbackOnContinueSectionRemove);
 }
 
 }  // namespace app_list_features

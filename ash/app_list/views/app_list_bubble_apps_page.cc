@@ -19,6 +19,7 @@
 #include "ash/app_list/views/continue_section_view.h"
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
+#include "ash/app_list/views/search_result_page_dialog_controller.h"
 #include "ash/bubble/bubble_utils.h"
 #include "ash/constants/ash_features.h"
 #include "ash/controls/rounded_scroll_bar.h"
@@ -102,8 +103,10 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
     ApplicationDragAndDropHost* drag_and_drop_host,
     AppListConfig* app_list_config,
     AppListA11yAnnouncer* a11y_announcer,
+    SearchResultPageDialogController* dialog_controller,
     AppListFolderController* folder_controller)
-    : app_list_nudge_controller_(std::make_unique<AppListNudgeController>()) {
+    : app_list_nudge_controller_(std::make_unique<AppListNudgeController>()),
+      dialog_controller_(dialog_controller) {
   DCHECK(view_delegate);
   DCHECK(drag_and_drop_host);
   DCHECK(a11y_announcer);
@@ -146,7 +149,8 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   // Continue section row.
   continue_section_ =
       scroll_contents->AddChildView(std::make_unique<ContinueSectionView>(
-          view_delegate, kContinueColumnCount, /*tablet_mode=*/false));
+          view_delegate, dialog_controller_, kContinueColumnCount,
+          /*tablet_mode=*/false));
   continue_section_->SetBorder(
       views::CreateEmptyBorder(kContinueSectionInsets));
   continue_section_->SetNudgeController(app_list_nudge_controller_.get());

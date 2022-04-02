@@ -4499,6 +4499,30 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_PRIVACY_BUTTON" desc="Text for the privacy notice accepting button in the continue section of the launcher, which shows recent files and apps that the user can continue using.">
         OK
       </message>
+      <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_REMOVE_DIALOG_TITLE" desc="The title for the feedback dialog shown to users when they try to remove a file suggestion in the ChromeOS launcher UI (the launcher UI has a section that displays files the user may want to continue working on, and the user can remove individual suggestions).">
+        Remove this suggestion?
+      </message>
+      <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_REMOVE_DIALOG_FEEDBACK_TEXT" desc="The text asking the user to provide optional feedback in a dialog shown to users when they try to remove a file suggestion in the ChromeOS launcher UI (the launcher UI has a section that displays files the user may want to continue working on, and the user can remove individual suggestions).">
+        Provide optional feedback to improve suggestions:
+      </message>
+      <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_REMOVE_DIALOG_ANY_SUGGESTIONS_OPTION" desc="A radio button option shown in a feedback dialog shown to users when they try to remove a file suggestion in the ChromeOS launcher UI (the launcher UI has a section that displays files the user may want to continue working on, and the user can remove individual suggestions). The user can select this option to indicate that they are not interested in any file suggestions. The feedback dialog has another radio button to indicate the user is not interested in the specific suggestion that is being removed.">
+        Not interested in any suggestions
+      </message>
+      <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_REMOVE_DIALOG_THIS_SUGGESTION_OPTION" desc="A radio button option shown in a feedback dialog shown to users when they try to remove a file suggestion in the ChromeOS launcher UI (the launcher UI has a section that displays files the user may want to continue working on, and the user can remove individual suggestions). The user can select this option to indicate that they are not interested in the specific file suggestion that is being removed. The feedback dialog has another radio button to indicate the user is not interested in the any file suggestions. After the user selects this choice, more options will be presented in the form of checkbox buttons to provide additional feedback for an specific suggestion.">
+        Not interested in this suggestion
+      </message>
+      <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_REMOVE_DIALOG_FILE_DONE_OPTION" desc="A checkbutton option shown in a feedback dialog shown to users when they try to remove a file suggestion in the ChromeOS launcher UI (the launcher UI has a section that displays files the user may want to continue working on, and the user can remove individual suggestions). This option will be shown only to users who indicate that are not interested in one particular suggestion. The user can check this option to indicate that they will not use the file any further.">
+        Done using the file
+      </message>
+      <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_REMOVE_DIALOG_DO_NOT_SHOW_FILE_OPTION" desc="A checkbutton option shown in a feedback dialog shown to users when they try to remove a file suggestion in the ChromeOS launcher UI (the launcher UI has a section that displays files the user may want to continue working on, and the user can remove individual suggestions). This option will be shown only to users who indicate that are not interested in one particular suggestion. The user can check this option to indicate that they are concerned about this file suggestion showing.">
+        Don't want this file shown
+      </message>
+      <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_REMOVE_DIALOG_CANCEL_BUTTON_LABEL" desc="The label for the cancel button in a feedback dialog shown to users when they try to remove a file suggestion in the ChromeOS launcher UI (the launcher UI has a section that displays files the user may want to continue working on, and the user can remove individual suggestions). This button closes the dialog without removing the item suggestion.">
+        Cancel
+      </message>
+      <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_REMOVE_DIALOG_REMOVE_BUTTON_LABEL" desc="The label for the remove button in a feedback dialog shown to users when they try to remove a file suggestion in the ChromeOS launcher UI (the launcher UI has a section that displays files the user may want to continue working on, and the user can remove individual suggestions). This button removes the item suggestion and collects the feedback provided by the user (if any).">
+        Remove
+      </message>
 
       <!-- Launcher / App List -->
       <message name="IDS_ASH_LAUNCHER_APPS_GRID_CONTEXT_MENU_REORDER_TITLE" desc="Title of the context menu in apps grid view in Productivity Launcher that allows users to sort their apps in the laucher. The context menu will have provide options to sort by name or color.">

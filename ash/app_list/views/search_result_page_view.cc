@@ -782,7 +782,7 @@ void SearchResultPageView::OnHidden() {
   // being moved onto suggested apps when zero state is enabled.
   AppListPage::OnHidden();
   notify_a11y_results_changed_timer_.Stop();
-  dialog_controller_->SetEnabled(false);
+  dialog_controller_->Reset(false);
   SetVisible(false);
   for (auto* container_view : result_container_views_) {
     container_view->SetShown(false);
@@ -796,7 +796,7 @@ void SearchResultPageView::OnHidden() {
 void SearchResultPageView::OnShown() {
   AppListPage::OnShown();
 
-  dialog_controller_->SetEnabled(true);
+  dialog_controller_->Reset(true);
 
   for (auto* container_view : result_container_views_) {
     container_view->SetShown(ShouldShowSearchResultView());

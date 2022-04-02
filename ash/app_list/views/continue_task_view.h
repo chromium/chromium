@@ -22,6 +22,7 @@ class MenuRunner;
 
 namespace ash {
 class AppListViewDelegate;
+class SearchResultPageDialogController;
 
 enum ContinueTaskCommandId {
   // Context Menu option to open the selected suggestion.
@@ -46,7 +47,9 @@ class ASH_EXPORT ContinueTaskView : public views::Button,
 
   METADATA_HEADER(ContinueTaskView);
 
-  ContinueTaskView(AppListViewDelegate* view_delegate, bool tablet_mode);
+  ContinueTaskView(AppListViewDelegate* view_delegate,
+                   SearchResultPageDialogController* dialog_controller,
+                   bool tablet_mode);
   ContinueTaskView(const ContinueTaskView&) = delete;
   ContinueTaskView& operator=(const ContinueTaskView&) = delete;
   ~ContinueTaskView() override;
@@ -92,6 +95,9 @@ class ASH_EXPORT ContinueTaskView : public views::Button,
   // Removes the search result related to the view.
   void RemoveResult();
 
+  // Displays a dialog requesting for continue section feedback.
+  void ShowFeedbackDialog();
+
   // Builds and returns a raw pointer to `context_menu_model_`.
   ui::SimpleMenuModel* BuildMenuModel();
 
@@ -113,6 +119,9 @@ class ASH_EXPORT ContinueTaskView : public views::Button,
   views::Label* subtitle_ = nullptr;
   views::ImageView* icon_ = nullptr;
   SearchResult* result_ = nullptr;  // Owned by SearchModel::SearchResults.
+
+  // Controller for displaying a searchbox anchored dialog.
+  SearchResultPageDialogController* const dialog_controller_;
 
   const bool is_tablet_mode_;
 

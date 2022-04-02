@@ -11,8 +11,11 @@
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/search/search_result.h"
+#include "ash/app_list/views/remove_task_feedback_dialog.h"
+#include "ash/app_list/views/search_result_page_dialog_controller.h"
 #include "ash/bubble/bubble_utils.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -67,9 +70,13 @@ int GetCornerRadius(bool tablet_mode) {
 
 }  // namespace
 
-ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate,
-                                   bool tablet_mode)
-    : view_delegate_(view_delegate), is_tablet_mode_(tablet_mode) {
+ContinueTaskView::ContinueTaskView(
+    AppListViewDelegate* view_delegate,
+    SearchResultPageDialogController* dialog_controller,
+    bool tablet_mode)
+    : view_delegate_(view_delegate),
+      dialog_controller_(dialog_controller),
+      is_tablet_mode_(tablet_mode) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
@@ -244,7 +251,12 @@ void ContinueTaskView::ExecuteCommand(int command_id, int event_flags) {
       OpenResult(event_flags);
       break;
     case ContinueTaskCommandId::kRemoveResult:
-      RemoveResult();
+      // TODO(crbug.com/1307371): Create a pref to control the dialog showing
+      // only one time to the user.
+      if (app_list_features::IsFeedbackOnContinueSectionRemoveEnabled())
+        ShowFeedbackDialog();
+      else
+        RemoveResult();
       break;
     default:
       NOTREACHED();
@@ -287,15 +299,18 @@ void ContinueTaskView::OpenResult(int event_flags) {
       false /* launch_as_default */);
 }
 
+void ContinueTaskView::ShowFeedbackDialog() {
+  dialog_controller_->Show(
+      std::make_unique<RemoveTaskFeedbackDialog>(base::BindOnce(
+          &ContinueTaskView::RemoveResult, weak_ptr_factory_.GetWeakPtr())));
+}
+
 void ContinueTaskView::RemoveResult() {
   // May be null if the result got reset, and the task view is animating out.
   if (!result())
     return;
 
   LogMetricsOnResultRemoved();
-
-  // TODO(crbug.com/1264530): The ML service may change the way Search Results
-  // are removed.
   view_delegate_->InvokeSearchResultAction(result()->id(),
                                            SearchResultActionType::kRemove);
 }

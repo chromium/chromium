@@ -239,9 +239,18 @@ SearchResultPageView* AppListTestHelper::GetFullscreenSearchResultPageView() {
       ->search_result_page_view();
 }
 
+bool AppListTestHelper::IsShowingFullscreenSearchResults() {
+  return GetAppListView()
+      ->app_list_main_view()
+      ->contents_view()
+      ->IsShowingSearchResults();
+}
+
 SearchResultPageAnchoredDialog*
 AppListTestHelper::GetFullscreenSearchPageDialog() {
-  return GetFullscreenSearchResultPageView()->dialog_for_test();
+  if (IsShowingFullscreenSearchResults())
+    return GetFullscreenSearchResultPageView()->dialog_for_test();
+  return GetAppsContainerView()->dialog_for_test();
 }
 
 AppListBubbleView* AppListTestHelper::GetBubbleView() {

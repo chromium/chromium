@@ -129,6 +129,9 @@ class AppListTestHelper {
   ProductivityLauncherSearchView* GetProductivityLauncherSearchView();
   views::View* GetFullscreenLauncherAppsSeparatorView();
 
+  // Whether the fullscreen/peeking launcher is showing the search results view.
+  bool IsShowingFullscreenSearchResults();
+
   // Paged launcher helpers.
   PagedAppsGridView* GetRootPagedAppsGridView();
 

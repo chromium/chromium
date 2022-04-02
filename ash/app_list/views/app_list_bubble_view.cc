@@ -255,17 +255,18 @@ void AppListBubbleView::InitContentsView(
   // so flex the entire container.
   layout->SetFlexForView(pages_container, 1);
 
+  search_page_dialog_controller_ =
+      std::make_unique<SearchResultPageDialogController>(this);
+
   // NOTE: Passing drag and drop host from a specific shelf instance assumes
   // that the `apps_page_` will not get reused for showing the app list in
   // another root window.
   apps_page_ =
       pages_container->AddChildView(std::make_unique<AppListBubbleAppsPage>(
           view_delegate_, drag_and_drop_host, GetAppListConfig(),
-          a11y_announcer_.get(),
+          a11y_announcer_.get(), search_page_dialog_controller_.get(),
           /*folder_controller=*/this));
 
-  search_page_dialog_controller_ =
-      std::make_unique<SearchResultPageDialogController>(this);
   search_page_ =
       pages_container->AddChildView(std::make_unique<AppListBubbleSearchPage>(
           view_delegate_, search_page_dialog_controller_.get(),
@@ -423,8 +424,10 @@ void AppListBubbleView::ShowPage(AppListBubblePage page) {
   search_box_view_->SetVisible(page != AppListBubblePage::kAssistant);
   separator_->SetVisible(page != AppListBubblePage::kAssistant);
 
-  search_page_dialog_controller_->SetEnabled(page ==
-                                             AppListBubblePage::kSearch);
+  const bool supports_anchored_dialogs =
+      page == AppListBubblePage::kApps || page == AppListBubblePage::kSearch;
+
+  search_page_dialog_controller_->Reset(/*enabled=*/supports_anchored_dialogs);
   assistant_page_->SetVisible(page == AppListBubblePage::kAssistant);
   switch (current_page_) {
     case AppListBubblePage::kNone:

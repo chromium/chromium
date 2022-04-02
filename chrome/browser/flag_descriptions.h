@@ -3107,6 +3107,9 @@ extern const char kWindowControlMenuDescription[];
 extern const char kLauncherGameSearchName[];
 extern const char kLauncherGameSearchDescription[];
 
+extern const char kLauncherFeedbackOnContinueSectionRemoveName[];
+extern const char kLauncherFeedbackOnContinueSectionRemoveDescription[];
+
 extern const char kLauncherNudgeName[];
 extern const char kLauncherNudgeDescription[];
 
