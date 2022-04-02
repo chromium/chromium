@@ -334,11 +334,6 @@ void HTMLLinkElement::LinkLoadingErrored() {
   DispatchEvent(*Event::Create(event_type_names::kError));
 }
 
-scoped_refptr<base::SingleThreadTaskRunner>
-HTMLLinkElement::GetLoadingTaskRunner() {
-  return GetDocument().GetTaskRunner(TaskType::kNetworking);
-}
-
 bool HTMLLinkElement::SheetLoaded() {
   DCHECK(GetLinkStyle());
   return GetLinkStyle()->SheetLoaded();

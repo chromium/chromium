@@ -50,10 +50,6 @@ class CORE_EXPORT LinkLoaderClient : public GarbageCollectedMixin {
   // There is no notification for cancellation.
 
   virtual bool IsLinkCreatedByParser() = 0;
-
-  // TODO(xiaochengh): Remove this unused function.
-  virtual scoped_refptr<base::SingleThreadTaskRunner>
-  GetLoadingTaskRunner() = 0;
 };
 
 }  // namespace blink

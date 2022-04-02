@@ -53,10 +53,6 @@ class MockLinkLoaderClient final
   void LinkLoaded() override {}
   void LinkLoadingErrored() override {}
 
-  scoped_refptr<base::SingleThreadTaskRunner> GetLoadingTaskRunner() override {
-    return Thread::Current()->GetTaskRunner();
-  }
-
  private:
   const bool should_load_;
 };
