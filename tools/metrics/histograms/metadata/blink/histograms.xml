@@ -1525,6 +1525,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.Input.GestureScrollBeginAsCursorControl"
     enum="BooleanSuccess" expires_after="M91">
+  <obsolete>
+    Cursor Control feature is launched, the metrics is no longer needed. Removed
+    in March 2022.
+  </obsolete>
   <owner>ctzsm@chromium.org</owner>
   <owner>changwan@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
