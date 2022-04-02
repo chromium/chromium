@@ -9,6 +9,8 @@
 #include <string>
 
 #include "build/build_config.h"
+#include "ui/gfx/geometry/insets_f.h"
+#include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -19,9 +21,6 @@ typedef struct CGRect CGRect;
 #endif
 
 namespace gfx {
-
-class InsetsF;
-class OutsetsF;
 
 // A floating version of gfx::Rect.
 class GEOMETRY_EXPORT RectF {
@@ -89,28 +88,31 @@ class GEOMETRY_EXPORT RectF {
     size_.SetSize(width, height);
   }
 
-  // Shrink the rectangle by |inset| on all sides.
-  void Inset(float inset) { Inset(inset, inset); }
-  // Shrink the rectangle by a horizontal and vertical distance on all sides.
-  void Inset(float horizontal, float vertical) {
-    Inset(horizontal, vertical, horizontal, vertical);
-  }
-
-  // Shrink the rectangle by the given insets.
+  // Shrinks the rectangle by |inset| on all sides.
+  void Inset(float inset) { Inset(InsetsF(inset)); }
+  // Shrinks the rectangle by the given |insets|.
   void Inset(const InsetsF& insets);
 
-  // Shrink the rectangle by the specified amount on each side.
-  void Inset(float left, float top, float right, float bottom);
-
-  // Expand the rectangle by the specified amount on each side.
+  // Expands the rectangle by |outset| on all sides.
   void Outset(float outset) { Inset(-outset); }
+  // Expands the rectangle by the given |outsets|.
+  void Outset(const OutsetsF& outsets) { Inset(outsets.ToInsets()); }
+
+  // TODO(crbug.com/1302500): Remove these functions in favor of the above
+  // functions, because these functions are error-prone about the order of the
+  // parameters.
+  void Inset(float horizontal, float vertical) {
+    Inset(InsetsF::VH(vertical, horizontal));
+  }
   void Outset(float horizontal, float vertical) {
     Inset(-horizontal, -vertical);
+  }
+  void Inset(float left, float top, float right, float bottom) {
+    Inset(InsetsF::TLBR(top, left, bottom, right));
   }
   void Outset(float left, float top, float right, float bottom) {
     Inset(-left, -top, -right, -bottom);
   }
-  void Outset(const OutsetsF& outsets);
 
   // Move the rectangle by a horizontal and vertical distance.
   void Offset(float horizontal, float vertical);

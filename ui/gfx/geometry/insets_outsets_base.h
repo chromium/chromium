@@ -86,6 +86,18 @@ class InsetsOutsetsBase {
     return *static_cast<T*>(this);
   }
 
+  // In addition to the above, we can also use the following methods to
+  // construct Insets/Outsets.
+  // TLBR() is for Chomium UI code. We should not use it in blink code because
+  // the order of parameters is different from the normal orders used in blink.
+  // Blink code can use the above setters and VH().
+  static constexpr T TLBR(int top, int left, int bottom, int right) {
+    return T().set_top_bottom(top, bottom).set_left_right(left, right);
+  }
+  static constexpr T VH(int vertical, int horizontal) {
+    return TLBR(vertical, horizontal, vertical, horizontal);
+  }
+
   // Sets each side to the maximum of the side and the corresponding side of
   // |other|.
   void SetToMax(const T& other) {

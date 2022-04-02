@@ -44,17 +44,9 @@ CGRect RectF::ToCGRect() const {
 #endif
 
 void RectF::Inset(const InsetsF& insets) {
-  Inset(insets.left(), insets.top(), insets.right(), insets.bottom());
-}
-
-void RectF::Inset(float left, float top, float right, float bottom) {
-  origin_ += Vector2dF(left, top);
-  set_width(std::max(width() - left - right, 0.0f));
-  set_height(std::max(height() - top - bottom, 0.0f));
-}
-
-void RectF::Outset(const OutsetsF& outsets) {
-  Outset(outsets.left(), outsets.top(), outsets.right(), outsets.bottom());
+  origin_ += Vector2dF(insets.left(), insets.top());
+  set_width(width() - insets.width());
+  set_height(height() - insets.height());
 }
 
 void RectF::Offset(float horizontal, float vertical) {

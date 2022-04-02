@@ -22,17 +22,6 @@ class GEOMETRY_EXPORT Insets : public InsetsOutsetsBase<Insets> {
  public:
   using InsetsOutsetsBase::InsetsOutsetsBase;
 
-  // These are for Chromium UI code to replace the original usages of
-  // Insets::Insets(top, left, bottom, right) and Insets(vertical, horizontal).
-  static constexpr Insets TLBR(int top, int left, int bottom, int right) {
-    return Insets().set_top_bottom(top, bottom).set_left_right(left, right);
-  }
-  static constexpr Insets VH(int vertical, int horizontal) {
-    return Insets()
-        .set_top_bottom(vertical, vertical)
-        .set_left_right(horizontal, horizontal);
-  }
-
   // Conversion from Insets to Outsets negates all components.
   Outsets ToOutsets() const;
 

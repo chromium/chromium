@@ -17,23 +17,6 @@ class GEOMETRY_EXPORT InsetsF : public InsetsOutsetsFBase<InsetsF> {
  public:
   using InsetsOutsetsFBase::InsetsOutsetsFBase;
 
-  // These are for Chromium UI code to replace the original usages of
-  // InsetsF(top, left, bottom, right) and InsetsF(vertical, horizontal).
-  static constexpr inline InsetsF TLBR(float top,
-                                       float left,
-                                       float bottom,
-                                       float right) {
-    return InsetsF().set_top(top).set_left(left).set_bottom(bottom).set_right(
-        right);
-  }
-  static constexpr inline InsetsF VH(float vertical, float horizontal) {
-    return InsetsF()
-        .set_top(vertical)
-        .set_left(horizontal)
-        .set_bottom(vertical)
-        .set_right(horizontal);
-  }
-
   // Conversion from InsetsF to OutsetsF negates all components.
   OutsetsF ToOutsets() const;
 };
