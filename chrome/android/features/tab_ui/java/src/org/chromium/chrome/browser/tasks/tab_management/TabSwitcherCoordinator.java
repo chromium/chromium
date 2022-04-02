@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -117,6 +118,7 @@ public class TabSwitcherCoordinator
     private TabCreatorManager mTabCreatorManager;
     private boolean mIsInitialized;
     private PriceMessageService mPriceMessageService;
+    private SharedPreferencesManager.Observer mPriceAnnotationsPrefObserver;
     private final ViewGroup mCoordinatorView;
     private final ViewGroup mRootView;
 
@@ -293,6 +295,20 @@ public class TabSwitcherCoordinator
                 mTabListCoordinator.registerItemType(TabProperties.UiType.LARGE_MESSAGE,
                         new LayoutViewBuilder(R.layout.large_message_card_item),
                         LargeMessageCardViewBinder::bind);
+
+                if (PriceTrackingUtilities.getPriceTrackingEnabled()) {
+                    mPriceAnnotationsPrefObserver = key -> {
+                        if (PriceTrackingUtilities.TRACK_PRICES_ON_TABS.equals(key)
+                                && !mTabModelSelector.isIncognitoSelected()
+                                && mTabModelSelector.isTabStateInitialized()) {
+                            resetWithTabList(mTabModelSelector.getTabModelFilterProvider()
+                                                     .getCurrentTabModelFilter(),
+                                    false, isShowingTabsInMRUOrder(mMode));
+                        }
+                    };
+                    SharedPreferencesManager.getInstance().addObserver(
+                            mPriceAnnotationsPrefObserver);
+                }
             }
         }
 
@@ -676,6 +692,9 @@ public class TabSwitcherCoordinator
         mLifecycleDispatcher.unregister(this);
         if (mTabAttributeCache != null) {
             mTabAttributeCache.destroy();
+        }
+        if (mPriceAnnotationsPrefObserver != null) {
+            SharedPreferencesManager.getInstance().removeObserver(mPriceAnnotationsPrefObserver);
         }
     }
 

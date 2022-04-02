@@ -33,7 +33,6 @@ public class PriceTrackingUtilities {
     @VisibleForTesting
     public static final String ALLOW_DISABLE_PRICE_ANNOTATIONS_PARAM =
             "allow_disable_price_annotations";
-    @VisibleForTesting
     public static final String TRACK_PRICES_ON_TABS =
             ChromePreferenceKeys.PRICE_TRACKING_TRACK_PRICES_ON_TABS;
     @VisibleForTesting
