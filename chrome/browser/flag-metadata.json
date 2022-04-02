@@ -5490,11 +5490,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "sms-receiver-cross-device",
-    "owners": [ "goto", "yigu", "web-identity@google.com" ],
-    "expiry_milestone": 96
-  },
-  {
     "name": "snooping-protection",
     "owners": [ "martis", "charleszhao", "napper" ],
     "expiry_milestone": 102

@@ -2373,10 +2373,6 @@ const char kSmoothScrollingName[] = "Smooth Scrolling";
 const char kSmoothScrollingDescription[] =
     "Animate smoothly when scrolling page content.";
 
-const char kWebOTPCrossDeviceName[] = "WebOTP Cross Device";
-const char kWebOTPCrossDeviceDescription[] =
-    "Enable the WebOTP API to work across devices";
-
 const char kSplitCacheByNetworkIsolationKeyName[] = "HTTP Cache Partitioning";
 const char kSplitCacheByNetworkIsolationKeyDescription[] =
     "Partitions the HTTP Cache by (top-level site, current-frame site) to "

@@ -1345,9 +1345,6 @@ extern const char kSiteIsolationOptOutChoiceOptOut[];
 extern const char kSmoothScrollingName[];
 extern const char kSmoothScrollingDescription[];
 
-extern const char kWebOTPCrossDeviceName[];
-extern const char kWebOTPCrossDeviceDescription[];
-
 extern const char kSplitCacheByNetworkIsolationKeyName[];
 extern const char kSplitCacheByNetworkIsolationKeyDescription[];
 

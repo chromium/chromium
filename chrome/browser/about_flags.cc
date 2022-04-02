@@ -52,7 +52,6 @@
 #include "chrome/browser/share/share_features.h"
 #include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/shared_clipboard/feature_flags.h"
-#include "chrome/browser/sharing/sms/sms_flags.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/site_isolation/about_flags.h"
 #include "chrome/browser/ui/app_list/search/search_features.h"
@@ -3143,9 +3142,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsLinux | kOsCrOS | kOsWin | kOsAndroid | kOsFuchsia,
      ENABLE_DISABLE_VALUE_TYPE(switches::kEnableSmoothScrolling,
                                switches::kDisableSmoothScrolling)},
-    {"sms-receiver-cross-device", flag_descriptions::kWebOTPCrossDeviceName,
-     flag_descriptions::kWebOTPCrossDeviceDescription, kOsAll,
-     FEATURE_VALUE_TYPE(kWebOTPCrossDevice)},
     {"fractional-scroll-offsets",
      flag_descriptions::kFractionalScrollOffsetsName,
      flag_descriptions::kFractionalScrollOffsetsDescription, kOsAll,
