@@ -148,6 +148,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/download_test_observer.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_renderer_host.h"
@@ -8396,6 +8397,72 @@ IN_PROC_BROWSER_TEST_F(SSLUITestWithEnhancedProtectionMessage,
   ASSERT_TRUE(chrome_browser_interstitials::IsShowingSSLInterstitial(contents));
   ExpectInterstitialElementHidden(contents, "enhanced-protection-message",
                                   true /* expect_hidden */);
+}
+
+class InsecureFormNavigationThrottleFencedFrameBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  InsecureFormNavigationThrottleFencedFrameBrowserTest() = default;
+  ~InsecureFormNavigationThrottleFencedFrameBrowserTest() override = default;
+
+  WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+// Tests that a fenced frame doesn't create a security interstitial.
+IN_PROC_BROWSER_TEST_F(InsecureFormNavigationThrottleFencedFrameBrowserTest,
+                       DoNotCreateSecurityInterstitialInFencedFrame) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.AddDefaultHandlers(GetChromeTestDataDir());
+  ASSERT_TRUE(https_server.Start());
+
+  GURL initial_url = https_server.GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  std::string replacement_path =
+      SSLUITestBase::GetFilePathWithHostAndPortReplacement(
+          "/ssl/page_displays_insecure_form.html",
+          embedded_test_server()->host_port_pair());
+  GURL form_site_url = https_server.GetURL(replacement_path);
+
+  // Navigate to site with an insecure form and submit it in a fenced frame.
+  content::RenderFrameHost* fenced_frame =
+      fenced_frame_test_helper().CreateFencedFrame(
+          browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+          form_site_url);
+  ASSERT_TRUE(fenced_frame);
+  content::TestNavigationObserver observer(GetWebContents());
+  content::WebContentsConsoleObserver console_observer(GetWebContents());
+  console_observer.SetPattern(
+      "Mixed Content: The page at * was loaded over a secure connection, but "
+      "contains a form that targets an insecure endpoint "
+      "'http://does-not-exist.test/ssl/google_files/logo.gif'. This endpoint "
+      "should be made available over a secure connection.");
+  ASSERT_TRUE(content::ExecuteScript(fenced_frame, "submitForm();"));
+  observer.Wait();
+
+  security_interstitials::SecurityInterstitialTabHelper* helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          GetWebContents());
+
+  // No interstitial should be created in the fenced frame, and the the fenced
+  // frame should be in |form_site_url| and primary mainframe should be in the
+  // initial URL.
+  EXPECT_TRUE(!helper || !helper->IsDisplayingInterstitial());
+  EXPECT_EQ(fenced_frame->GetLastCommittedURL(), form_site_url);
+  EXPECT_EQ(GetWebContents()->GetVisibleURL(), initial_url);
+
+  // Check console message was printed.
+  EXPECT_EQ(console_observer.messages().size(), 1u);
 }
 
 // TODO(jcampan): more tests to do below.
