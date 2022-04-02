@@ -75,6 +75,7 @@ class PlatformNotificationContext;
 class ServiceWorkerContext;
 class SharedWorkerService;
 class ZoomLevelDelegate;
+class NavigationRequest;
 
 // Defines what persistent state a child process can access.
 //
@@ -129,7 +130,7 @@ class CONTENT_EXPORT StoragePartition {
 
   virtual mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
   CreateURLLoaderNetworkObserverForNavigationRequest(
-      int frame_tree_node_id) = 0;
+      NavigationRequest& navigation_request) = 0;
 
   virtual storage::QuotaManager* GetQuotaManager() = 0;
   virtual BackgroundSyncContext* GetBackgroundSyncContext() = 0;

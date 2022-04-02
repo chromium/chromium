@@ -43,6 +43,7 @@
 #include "content/browser/loader/navigation_early_hints_manager.h"
 #include "content/browser/loader/navigation_url_loader.h"
 #include "content/browser/loader/object_navigation_fallback_body_loader.h"
+#include "content/browser/navigation_or_document_handle.h"
 #include "content/browser/net/cross_origin_embedder_policy_reporter.h"
 #include "content/browser/net/cross_origin_opener_policy_reporter.h"
 #include "content/browser/network_service_instance_impl.h"
@@ -1455,6 +1456,8 @@ NavigationRequest::NavigationRequest(
     if (initiator_rfh)
       initiator_document_ = initiator_rfh->GetWeakDocumentPtr();
   }
+  navigation_or_document_handle_ =
+      NavigationOrDocumentHandle::CreateForNavigation(*this);
 
   policy_container_navigation_bundle_.emplace(
       GetParentFrame(),
@@ -4096,8 +4099,7 @@ void NavigationRequest::OnStartChecksComplete(
       std::move(prefetched_signed_exchange_cache_), this, loader_type,
       CreateCookieAccessObserver(),
       static_cast<StoragePartitionImpl*>(partition)
-          ->CreateURLLoaderNetworkObserverForNavigationRequest(
-              frame_tree_node_->frame_tree_node_id()),
+          ->CreateURLLoaderNetworkObserverForNavigationRequest(*this),
       NetworkServiceDevToolsObserver::MakeSelfOwned(frame_tree_node_),
       std::move(cached_response_head), std::move(interceptor));
   DCHECK(!render_frame_host_);
@@ -5803,6 +5805,7 @@ void NavigationRequest::DidCommitNavigation(
     EnterChildTraceEvent("DidCommitNavigation", this);
     SetState(DID_COMMIT);
   }
+  navigation_or_document_handle_->OnNavigationCommitted(*this);
 
   StopCommitTimeout();
 

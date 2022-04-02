@@ -82,7 +82,7 @@ class TestStoragePartition : public StoragePartition {
 
   mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
   CreateURLLoaderNetworkObserverForNavigationRequest(
-      int frame_tree_id) override;
+      NavigationRequest& navigation_request) override;
 
   void set_quota_manager(storage::QuotaManager* manager) {
     quota_manager_ = manager;

@@ -73,6 +73,7 @@
 #include "content/browser/loader/prefetch_url_loader_service.h"
 #include "content/browser/locks/lock_manager.h"
 #include "content/browser/native_io/native_io_context_impl.h"
+#include "content/browser/navigation_or_document_handle.h"
 #include "content/browser/network_context_client_base_impl.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/payments/payment_app_context_impl.h"
@@ -80,6 +81,7 @@
 #include "content/browser/push_messaging/push_messaging_context.h"
 #include "content/browser/quota/quota_context.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
@@ -434,16 +436,9 @@ BrowserContext* GetBrowserContextFromStoragePartition(
 // Returns the WebContents corresponding to `context`.
 WebContents* GetWebContents(
     StoragePartitionImpl::URLLoaderNetworkContext context) {
-  switch (context.type()) {
-    case Type::kRenderFrameHostContext: {
-      return WebContents::FromRenderFrameHost(
-          RenderFrameHostImpl::FromID(context.render_frame_host_id()));
-    }
-    case Type::kNavigationRequestContext:
-      return WebContents::FromFrameTreeNodeId(context.frame_tree_node_id());
-  }
-  NOTREACHED();
-  return nullptr;
+  if (!context.navigation_or_document())
+    return nullptr;
+  return context.navigation_or_document()->GetWebContents();
 }
 
 // LoginHandlerDelegate manages HTTP auth. It is self-owning and deletes itself
@@ -568,16 +563,11 @@ void OnAuthRequiredContinuation(
 
 // Returns true if the request is the primary main frame navigation.
 bool IsPrimaryMainFrameRequest(
-    StoragePartitionImpl::URLLoaderNetworkContext context) {
+    const StoragePartitionImpl::URLLoaderNetworkContext& context) {
   if (!context.IsNavigationRequestContext())
     return false;
 
-  auto* frame_tree_node =
-      FrameTreeNode::GloballyFindByID(context.frame_tree_node_id());
-  // TODO(1254377): Consider replacing FrameTree::Type with the type on the
-  // FrameTreeNode.
-  return frame_tree_node && frame_tree_node->IsMainFrame() &&
-         frame_tree_node->frame_tree()->type() == FrameTree::Type::kPrimary;
+  return context.navigation_or_document()->IsInPrimaryMainFrame();
 }
 
 // This class lives on the UI thread. It is self-owned and will delete itself
@@ -655,27 +645,26 @@ void CallCancelRequest(
   client_cert_responder->CancelRequest();
 }
 
-// Cancels prerendering if `frame_tree_node_id` is in a prerendered frame tree,
-// using `final_status` as the cancellation reason. Returns true if cancelled.
-bool CancelIfPrerendering(int frame_tree_node_id,
-                          PrerenderHost::FinalStatus final_status) {
-  auto* frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
-  if (!frame_tree_node)
-    return false;
-  auto* web_contents = WebContentsImpl::FromFrameTreeNode(frame_tree_node);
-  return web_contents->CancelPrerendering(frame_tree_node, final_status);
-}
-
-// Cancels prerendering if `render_frame_host_id` is in a prerendered frame
+// Cancels prerendering if `navigation_or_document` is in a prerendered frame
 // tree, using `final_status` as the cancellation reason. Returns true if
 // cancelled.
-bool CancelIfPrerendering(GlobalRenderFrameHostId render_frame_host_id,
+bool CancelIfPrerendering(NavigationOrDocumentHandle* navigation_or_document,
                           PrerenderHost::FinalStatus final_status) {
-  auto* render_frame_host_impl =
-      RenderFrameHostImpl::FromID(render_frame_host_id);
-  if (!render_frame_host_impl)
+  FrameTreeNode* frame_tree_node = nullptr;
+  // `navigation_or_document` can be null for `kServiceWorkerContext`.
+  if (!navigation_or_document)
     return false;
-  return render_frame_host_impl->CancelPrerendering(final_status);
+  auto* navigation_request = navigation_or_document->GetNavigationRequest();
+  if (navigation_request)
+    frame_tree_node = navigation_request->frame_tree_node();
+  auto* render_frame_host = navigation_or_document->GetDocument();
+  if (render_frame_host)
+    frame_tree_node = FrameTreeNode::From(render_frame_host);
+  if (!frame_tree_node)
+    return false;
+
+  auto* web_contents = WebContentsImpl::FromFrameTreeNode(frame_tree_node);
+  return web_contents->CancelPrerendering(frame_tree_node, final_status);
 }
 
 void OnCertificateRequestedContinuation(
@@ -1807,13 +1796,14 @@ void StoragePartitionImpl::OnAuthRequired(
                 render_frame_host_impl->IsInPrimaryMainFrame();
           }
         } else {
-          // Overwrite the context; set `type` to kNavigationRequestContext
-          // which indicates that `frame_tree_node_id` is actually a
-          // FrameTreeNode ID.
+          // Overwrite the context; set `type` to kNavigationRequestContext.
           // TODO(https://crbug.com/1239554): Optimize locating logic.
-          context = URLLoaderNetworkContext::CreateForNavigation(
+          int frame_tree_node_id =
               container_host->GetFrameTreeNodeIdForOngoingNavigation(
-                  base::PassKey<StoragePartitionImpl>()));
+                  base::PassKey<StoragePartitionImpl>());
+          context = URLLoaderNetworkContext::CreateForNavigation(
+              *(FrameTreeNode::GloballyFindByID(frame_tree_node_id)
+                    ->navigation_request()));
         }
       }
     }
@@ -1822,14 +1812,8 @@ void StoragePartitionImpl::OnAuthRequired(
   // If the request is for a prerendering page, prerendering should be cancelled
   // because the embedder may show UI for auth requests, and it's unsuitable for
   // a hidden page.
-  if (context.IsNavigationRequestContext()) {
-    if (CancelIfPrerendering(context.frame_tree_node_id(),
-                             PrerenderHost::FinalStatus::kLoginAuthRequested)) {
-      return;
-    }
-  } else if (CancelIfPrerendering(
-                 context.render_frame_host_id(),
-                 PrerenderHost::FinalStatus::kLoginAuthRequested)) {
+  if (CancelIfPrerendering(context.navigation_or_document(),
+                           PrerenderHost::FinalStatus::kLoginAuthRequested)) {
     return;
   }
 
@@ -1838,15 +1822,17 @@ void StoragePartitionImpl::OnAuthRequired(
   auto web_contents_getter = base::BindRepeating(GetWebContents, context);
   int process_id;
   switch (context.type()) {
-    case URLLoaderNetworkContext::Type::kRenderFrameHostContext:
-      process_id = context.render_frame_host_id().child_id;
+    case URLLoaderNetworkContext::Type::kRenderFrameHostContext: {
+      auto* render_frame_host = context.navigation_or_document()->GetDocument();
+      DCHECK(render_frame_host);
+      process_id = render_frame_host->GetGlobalId().child_id;
       break;
+    }
     case URLLoaderNetworkContext::Type::kNavigationRequestContext:
+    case URLLoaderNetworkContext::Type::kServiceWorkerContext: {
       process_id = network::mojom::kBrowserProcessId;
       break;
-    default:
-      NOTREACHED();
-      break;
+    }
   }
   OnAuthRequiredContinuation(
       process_id, request_id, url, *is_primary_main_frame, first_auth_attempt,
@@ -1882,14 +1868,14 @@ void StoragePartitionImpl::OnCertificateRequested(
           context = URLLoaderNetworkContext::CreateForRenderFrameHost(
               render_frame_host_id);
         } else {
-          // Overwrite the render_frame_host_id; set
-          // `render_frame_host_id.child_id` to kBrowserProcessId which
-          // indicates that `render_frame_host_id.frame_routing_id` is actually
-          // a FrameTreeNode ID.
+          // Overwrite the context; set `type` to kNavigationRequestContext.
           // TODO(https://crbug.com/1239554): Optimize locating logic.
-          context = URLLoaderNetworkContext::CreateForNavigation(
+          int frame_tree_node_id =
               container_host->GetFrameTreeNodeIdForOngoingNavigation(
-                  base::PassKey<StoragePartitionImpl>()));
+                  base::PassKey<StoragePartitionImpl>());
+          context = URLLoaderNetworkContext::CreateForNavigation(
+              *(FrameTreeNode::GloballyFindByID(frame_tree_node_id)
+                    ->navigation_request()));
         }
       }
     }
@@ -1898,16 +1884,8 @@ void StoragePartitionImpl::OnCertificateRequested(
   // If the request is for a prerendering page, prerendering should be cancelled
   // because the embedder may show a dialog and ask users to select client
   // certificates, and it's unsuitable for a hidden page.
-  if (context.IsNavigationRequestContext()) {
-    if (CancelIfPrerendering(
-            context.frame_tree_node_id(),
-            PrerenderHost::FinalStatus::kClientCertRequested)) {
-      CallCancelRequest(std::move(cert_responder));
-      return;
-    }
-  } else if (CancelIfPrerendering(
-                 context.render_frame_host_id(),
-                 PrerenderHost::FinalStatus::kClientCertRequested)) {
+  if (CancelIfPrerendering(context.navigation_or_document(),
+                           PrerenderHost::FinalStatus::kClientCertRequested)) {
     CallCancelRequest(std::move(cert_responder));
     return;
   }
@@ -1926,33 +1904,13 @@ void StoragePartitionImpl::OnSSLCertificateError(
   URLLoaderNetworkContext context =
       url_loader_network_observers_.current_context();
 
-  if (context.IsNavigationRequestContext()) {
-    // The remote end of this URLLoaderNetworkServiceObserver pipe was created
-    // for NavigationRequest, see
-    // `CreateURLLoaderNetworkObserverForNavigationRequest`.
-
-    // Cancel this request and the prerendering if the request is for a
-    // prerendering page, because prerendering pages are invisble and browser
-    // cannot show errors on invisible pages.
-    if (CancelIfPrerendering(
-            context.frame_tree_node_id(),
-            PrerenderHost::FinalStatus::kSslCertificateError)) {
-      std::move(response).Run(net_error);
-      return;
-    }
-  } else {
-    // The remote end of this URLLoaderNetworkServiceObserver pipe was created
-    // for Frame, see `CreateURLLoaderNetworkObserverForFrame`.
-
-    // Cancel this request and the prerendering if the request is for a
-    // prerendering page, because prerendering pages are invisble and browser
-    // cannot show errors on invisible pages.
-    if (CancelIfPrerendering(
-            context.render_frame_host_id(),
-            PrerenderHost::FinalStatus::kSslCertificateError)) {
-      std::move(response).Run(net_error);
-      return;
-    }
+  // Cancel this request and the prerendering if the request is for a
+  // prerendering page, because prerendering pages are invisible and browser
+  // cannot show errors on invisible pages.
+  if (CancelIfPrerendering(context.navigation_or_document(),
+                           PrerenderHost::FinalStatus::kSslCertificateError)) {
+    std::move(response).Run(net_error);
+    return;
   }
 
   SSLErrorDelegate* delegate =
@@ -1981,11 +1939,19 @@ void StoragePartitionImpl::OnDataUseUpdate(
     int64_t sent_bytes) {
   URLLoaderNetworkContext context =
       url_loader_network_observers_.current_context();
+  // `navigation_or_document()` can be null for `kServiceWorkerContext`.
+  auto* render_frame_host =
+      context.navigation_or_document()
+          ? context.navigation_or_document()->GetDocument()
+          : nullptr;
   // It can pass empty GlobalRenderFrameHostId() when the context type is
-  // `kNavigationRequestContext`.
+  // not `kRenderFrameHostContext`.
+  GlobalRenderFrameHostId render_frame_host_id =
+      render_frame_host ? render_frame_host->GetGlobalId()
+                        : GlobalRenderFrameHostId();
   GetContentClient()->browser()->OnNetworkServiceDataUseUpdate(
-      context.render_frame_host_id(), network_traffic_annotation_id_hash,
-      recv_bytes, sent_bytes);
+      render_frame_host_id, network_traffic_annotation_id_hash, recv_bytes,
+      sent_bytes);
 }
 
 void StoragePartitionImpl::Clone(
@@ -2009,11 +1975,11 @@ StoragePartitionImpl::CreateURLLoaderNetworkObserverForFrame(int process_id,
 
 mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
 StoragePartitionImpl::CreateURLLoaderNetworkObserverForNavigationRequest(
-    int frame_tree_id) {
+    NavigationRequest& navigation_request) {
   mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver> remote;
   url_loader_network_observers_.Add(
       this, remote.InitWithNewPipeAndPassReceiver(),
-      URLLoaderNetworkContext::CreateForNavigation(frame_tree_id));
+      URLLoaderNetworkContext::CreateForNavigation(navigation_request));
   return remote;
 }
 
@@ -2022,8 +1988,7 @@ StoragePartitionImpl::CreateAuthCertObserverForServiceWorker() {
   mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver> remote;
   url_loader_network_observers_.Add(
       this, remote.InitWithNewPipeAndPassReceiver(),
-      URLLoaderNetworkContext::CreateForNavigation(
-          RenderFrameHost::kNoFrameTreeNodeId));
+      URLLoaderNetworkContext::CreateForServiceWorker());
   return remote;
 }
 
@@ -3012,11 +2977,30 @@ void StoragePartitionImpl::
 
 StoragePartitionImpl::URLLoaderNetworkContext::URLLoaderNetworkContext(
     URLLoaderNetworkContext::Type type,
-    GlobalRenderFrameHostId render_frame_host_id,
-    int frame_tree_node_id)
-    : type_(type),
-      render_frame_host_id_(render_frame_host_id),
-      frame_tree_node_id_(frame_tree_node_id) {}
+    GlobalRenderFrameHostId render_frame_host_id)
+    : type_(type) {
+  // `render_frame_host_id` can be invalid for `kServiceWorkerContext`.
+  if (!render_frame_host_id)
+    return;
+  auto* render_frame_host = RenderFrameHostImpl::FromID(render_frame_host_id);
+  if (!render_frame_host)
+    return;
+
+  navigation_or_document_ = render_frame_host->GetNavigationOrDocumentHandle();
+}
+
+StoragePartitionImpl::URLLoaderNetworkContext::URLLoaderNetworkContext(
+    NavigationRequest& navigation_request)
+    : type_(Type::kNavigationRequestContext) {
+  navigation_or_document_ = navigation_request.navigation_or_document_handle();
+}
+
+StoragePartitionImpl::URLLoaderNetworkContext::URLLoaderNetworkContext(
+    const URLLoaderNetworkContext& other) = default;
+
+StoragePartitionImpl::URLLoaderNetworkContext&
+StoragePartitionImpl::URLLoaderNetworkContext::operator=(
+    const URLLoaderNetworkContext& other) = default;
 
 StoragePartitionImpl::URLLoaderNetworkContext::~URLLoaderNetworkContext() =
     default;
@@ -3024,21 +3008,26 @@ StoragePartitionImpl::URLLoaderNetworkContext::~URLLoaderNetworkContext() =
 StoragePartitionImpl::URLLoaderNetworkContext
 StoragePartitionImpl::URLLoaderNetworkContext::CreateForRenderFrameHost(
     GlobalRenderFrameHostId render_frame_host_id) {
-  return URLLoaderNetworkContext(
+  return StoragePartitionImpl::URLLoaderNetworkContext(
       URLLoaderNetworkContext::Type::kRenderFrameHostContext,
-      render_frame_host_id, MSG_ROUTING_NONE);
+      render_frame_host_id);
 }
 
 StoragePartitionImpl::URLLoaderNetworkContext
 StoragePartitionImpl::URLLoaderNetworkContext::CreateForNavigation(
-    int frame_tree_node_id) {
-  return URLLoaderNetworkContext(
-      URLLoaderNetworkContext::Type::kNavigationRequestContext,
-      GlobalRenderFrameHostId(), frame_tree_node_id);
+    NavigationRequest& navigation_request) {
+  return StoragePartitionImpl::URLLoaderNetworkContext(navigation_request);
 }
 
-bool StoragePartitionImpl::URLLoaderNetworkContext::
-    IsNavigationRequestContext() {
+StoragePartitionImpl::URLLoaderNetworkContext
+StoragePartitionImpl::URLLoaderNetworkContext::CreateForServiceWorker() {
+  return StoragePartitionImpl::URLLoaderNetworkContext(
+      URLLoaderNetworkContext::Type::kServiceWorkerContext,
+      GlobalRenderFrameHostId());
+}
+
+bool StoragePartitionImpl::URLLoaderNetworkContext::IsNavigationRequestContext()
+    const {
   return type_ == URLLoaderNetworkContext::Type::kNavigationRequestContext;
 }
 

@@ -80,6 +80,7 @@
 #include "content/browser/manifest/manifest_manager_host.h"
 #include "content/browser/media/media_interface_proxy.h"
 #include "content/browser/media/webaudio/audio_context_manager_impl.h"
+#include "content/browser/navigation_or_document_handle.h"
 #include "content/browser/navigation_subresource_loader_params.h"
 #include "content/browser/net/cross_origin_embedder_policy_reporter.h"
 #include "content/browser/net/cross_origin_opener_policy_reporter.h"
@@ -4475,6 +4476,15 @@ void RenderFrameHostImpl::SetNavigationRequest(
   }
   navigation_requests_[navigation_request.get()] =
       std::move(navigation_request);
+}
+
+const scoped_refptr<NavigationOrDocumentHandle>&
+RenderFrameHostImpl::GetNavigationOrDocumentHandle() {
+  if (!document_associated_data_->navigation_or_document_handle) {
+    document_associated_data_->navigation_or_document_handle =
+        NavigationOrDocumentHandle::CreateForDocument(GetGlobalId());
+  }
+  return document_associated_data_->navigation_or_document_handle;
 }
 
 void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {

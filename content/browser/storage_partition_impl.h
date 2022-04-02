@@ -15,6 +15,8 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
@@ -91,6 +93,7 @@ class PushMessagingContext;
 class QuotaContext;
 class SharedStorageWorkletHostManager;
 class SharedWorkerServiceImpl;
+class NavigationOrDocumentHandle;
 
 class CONTENT_EXPORT StoragePartitionImpl
     : public StoragePartition,
@@ -162,7 +165,7 @@ class CONTENT_EXPORT StoragePartitionImpl
                                          int routing_id) override;
   mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
   CreateURLLoaderNetworkObserverForNavigationRequest(
-      int frame_tree_id) override;
+      NavigationRequest& navigation_request) override;
   storage::QuotaManager* GetQuotaManager() override;
   BackgroundSyncContextImpl* GetBackgroundSyncContext() override;
   storage::FileSystemContext* GetFileSystemContext() override;
@@ -430,42 +433,51 @@ class CONTENT_EXPORT StoragePartitionImpl
   class URLLoaderNetworkContext {
    public:
     enum class Type {
-      // A network context for a RenderFrameHost.
       kRenderFrameHostContext,
-      // A network context for a navigation request or a service worker.
       kNavigationRequestContext,
+      kServiceWorkerContext,
     };
 
     ~URLLoaderNetworkContext();
 
+    // Allow copy and assign.
+    URLLoaderNetworkContext(const URLLoaderNetworkContext& other);
+    URLLoaderNetworkContext& operator=(const URLLoaderNetworkContext& other);
+
     // Creates a URLLoaderNetworkContext for the render frame host.
-    static URLLoaderNetworkContext CreateForRenderFrameHost(
+    static StoragePartitionImpl::URLLoaderNetworkContext
+    CreateForRenderFrameHost(
         GlobalRenderFrameHostId global_render_frame_host_id);
 
     // Creates a URLLoaderNetworkContext for the navigation request.
-    static URLLoaderNetworkContext CreateForNavigation(int frame_tree_node_id);
+    static StoragePartitionImpl::URLLoaderNetworkContext CreateForNavigation(
+        NavigationRequest& navigation_request);
+
+    // Creates a URLLoaderNetworkContext for the service worker.
+    static StoragePartitionImpl::URLLoaderNetworkContext
+    CreateForServiceWorker();
+
+    // Used when `type` is `kRenderFrameHostContext` or
+    // `kNavigationRequestContext`.
+    URLLoaderNetworkContext(
+        URLLoaderNetworkContext::Type type,
+        GlobalRenderFrameHostId global_render_frame_host_id);
+
+    // Used when `type` is `kNavigationRequestContext`.
+    explicit URLLoaderNetworkContext(NavigationRequest& navigation_request);
 
     // Returns true if `type` is `kNavigationRequestContext`.
-    bool IsNavigationRequestContext();
+    bool IsNavigationRequestContext() const;
 
     Type type() const { return type_; }
 
-    GlobalRenderFrameHostId render_frame_host_id() const {
-      return render_frame_host_id_;
+    NavigationOrDocumentHandle* navigation_or_document() const {
+      return navigation_or_document_.get();
     }
 
-    int frame_tree_node_id() const { return frame_tree_node_id_; }
-
    private:
-    URLLoaderNetworkContext(URLLoaderNetworkContext::Type type,
-                            GlobalRenderFrameHostId global_render_frame_host_id,
-                            int frame_tree_node_id);
-
     Type type_;
-    // Used for kRenderFrameHostContext.
-    GlobalRenderFrameHostId render_frame_host_id_;
-    // Used for kNavigationRequestContext.
-    int frame_tree_node_id_;
+    scoped_refptr<NavigationOrDocumentHandle> navigation_or_document_;
   };
 
  private:

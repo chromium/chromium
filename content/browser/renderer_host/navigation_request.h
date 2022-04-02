@@ -940,6 +940,11 @@ class CONTENT_EXPORT NavigationRequest
   // BrowsingInstance swap. Used only in tests.
   bool force_new_browsing_instance() { return force_new_browsing_instance_; }
 
+  const scoped_refptr<NavigationOrDocumentHandle>&
+  navigation_or_document_handle() {
+    return navigation_or_document_handle_;
+  }
+
  private:
   friend class NavigationRequestTest;
 
@@ -2018,6 +2023,8 @@ class CONTENT_EXPORT NavigationRequest
   // This navigation request should swap browsing instances as part of a test
   // reset.
   bool force_new_browsing_instance_ = false;
+
+  scoped_refptr<NavigationOrDocumentHandle> navigation_or_document_handle_;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };

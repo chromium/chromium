@@ -868,6 +868,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SetNavigationRequest(
       std::unique_ptr<NavigationRequest> navigation_request);
 
+  const scoped_refptr<NavigationOrDocumentHandle>&
+  GetNavigationOrDocumentHandle();
+
   // Tells the renderer that this RenderFrame is being replaced with one in a
   // different renderer process.  It should run its unload handler and move to
   // a blank document.  If |proxy| is not null, it should also create a
@@ -4017,6 +4020,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
     // "Owned" but not with std::unique_ptr, as a DocumentServiceBase is
     // allowed to delete itself directly.
     std::vector<internal::DocumentServiceBase*> services;
+
+    // This handle supports a seamless transfer from a navigation to a committed
+    // document.
+    scoped_refptr<NavigationOrDocumentHandle> navigation_or_document_handle;
 
     // Produces weak pointers to the hosting RenderFrameHostImpl. This is
     // invalidated whenever DocumentAssociatedData is destroyed, due to
