@@ -23,6 +23,11 @@ class GPUBindGroup : public DawnObject<WGPUBindGroup> {
 
   GPUBindGroup(const GPUBindGroup&) = delete;
   GPUBindGroup& operator=(const GPUBindGroup&) = delete;
+
+  void setLabelImpl(const String& value) override {
+    std::string utf8_label = value.Utf8();
+    GetProcs().bindGroupSetLabel(GetHandle(), utf8_label.c_str());
+  }
 };
 
 }  // namespace blink

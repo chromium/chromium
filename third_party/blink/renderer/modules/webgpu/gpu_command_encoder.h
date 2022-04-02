@@ -94,6 +94,11 @@ class GPUCommandEncoder : public DawnObject<WGPUCommandEncoder> {
                                          offset, size);
   }
   GPUCommandBuffer* finish(const GPUCommandBufferDescriptor* descriptor);
+
+  void setLabelImpl(const String& value) override {
+    std::string utf8_label = value.Utf8();
+    GetProcs().commandEncoderSetLabel(GetHandle(), utf8_label.c_str());
+  }
 };
 
 }  // namespace blink

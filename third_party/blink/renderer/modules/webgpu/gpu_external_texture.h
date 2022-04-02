@@ -33,6 +33,11 @@ class GPUExternalTexture : public DawnObject<WGPUExternalTexture> {
   void Destroy();
 
  private:
+  void setLabelImpl(const String& value) override {
+    std::string utf8_label = value.Utf8();
+    GetProcs().externalTextureSetLabel(GetHandle(), utf8_label.c_str());
+  }
+
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture_;
 };
 

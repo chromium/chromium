@@ -1061,7 +1061,7 @@ void WebGPUDecoderImpl::DoRequestDevice(
   DCHECK_LT(static_cast<size_t>(requested_adapter_index),
             dawn_adapters_.size());
 
-  WGPUDeviceDescriptor device_descriptor;
+  WGPUDeviceDescriptor device_descriptor = {};
 
   // We need to request internal usage to be able to do operations with internal
   // methods that would need specific usages.

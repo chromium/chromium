@@ -36,6 +36,7 @@ void DawnObjectBase::setLabel(ScriptState* script_state,
 void DawnObjectBase::setLabel(const String& value) {
   // TODO: Relay label changes to Dawn
   label_ = value;
+  setLabelImpl(value);
 }
 
 void DawnObjectBase::EnsureFlush() {

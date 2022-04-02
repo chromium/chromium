@@ -104,6 +104,8 @@ class DawnObjectBase {
 
   void setLabel(const String& value);
 
+  virtual void setLabelImpl(const String& value){};
+
  private:
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
   String label_;

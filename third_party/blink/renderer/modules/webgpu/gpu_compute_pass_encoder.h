@@ -72,6 +72,11 @@ class GPUComputePassEncoder : public DawnObject<WGPUComputePassEncoder>,
   }
   void end() { GetProcs().computePassEncoderEnd(GetHandle()); }
   void endPass();
+
+  void setLabelImpl(const String& value) override {
+    std::string utf8_label = value.Utf8();
+    GetProcs().computePassEncoderSetLabel(GetHandle(), utf8_label.c_str());
+  }
 };
 
 }  // namespace blink

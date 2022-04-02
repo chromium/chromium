@@ -17,6 +17,12 @@ class GPUTextureView : public DawnObject<WGPUTextureView> {
 
   GPUTextureView(const GPUTextureView&) = delete;
   GPUTextureView& operator=(const GPUTextureView&) = delete;
+
+ private:
+  void setLabelImpl(const String& value) override {
+    std::string utf8_label = value.Utf8();
+    GetProcs().textureViewSetLabel(GetHandle(), utf8_label.c_str());
+  }
 };
 
 }  // namespace blink

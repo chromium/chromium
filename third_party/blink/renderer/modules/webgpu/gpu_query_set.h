@@ -25,6 +25,12 @@ class GPUQuerySet : public DawnObject<WGPUQuerySet> {
 
   // gpu_queryset.idl
   void destroy();
+
+ private:
+  void setLabelImpl(const String& value) override {
+    std::string utf8_label = value.Utf8();
+    GetProcs().querySetSetLabel(GetHandle(), utf8_label.c_str());
+  }
 };
 
 }  // namespace blink

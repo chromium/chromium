@@ -92,6 +92,12 @@ class GPURenderPipeline : public DawnObject<WGPURenderPipeline> {
   GPURenderPipeline& operator=(const GPURenderPipeline&) = delete;
 
   GPUBindGroupLayout* getBindGroupLayout(uint32_t index);
+
+ private:
+  void setLabelImpl(const String& value) override {
+    std::string utf8_label = value.Utf8();
+    GetProcs().renderPipelineSetLabel(GetHandle(), utf8_label.c_str());
+  }
 };
 
 }  // namespace blink

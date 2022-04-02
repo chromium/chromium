@@ -34,6 +34,11 @@ class GPUShaderModule : public DawnObject<WGPUShaderModule> {
   void OnCompilationInfoCallback(ScriptPromiseResolver* resolver,
                                  WGPUCompilationInfoRequestStatus status,
                                  const WGPUCompilationInfo* info);
+
+  void setLabelImpl(const String& value) override {
+    std::string utf8_label = value.Utf8();
+    GetProcs().shaderModuleSetLabel(GetHandle(), utf8_label.c_str());
+  }
 };
 
 }  // namespace blink

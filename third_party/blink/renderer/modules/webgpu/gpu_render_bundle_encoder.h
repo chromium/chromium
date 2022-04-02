@@ -120,6 +120,11 @@ class GPURenderBundleEncoder : public DawnObject<WGPURenderBundleEncoder>,
   }
 
   GPURenderBundle* finish(const GPURenderBundleDescriptor* webgpu_desc);
+
+  void setLabelImpl(const String& value) override {
+    std::string utf8_label = value.Utf8();
+    GetProcs().renderBundleEncoderSetLabel(GetHandle(), utf8_label.c_str());
+  }
 };
 
 }  // namespace blink

@@ -77,6 +77,11 @@ class GPUBuffer : public DawnObject<WGPUBuffer> {
       ExecutionContext* execution_context);
   void ResetMappingState(v8::Isolate* isolate);
 
+  void setLabelImpl(const String& value) override {
+    std::string utf8_label = value.Utf8();
+    GetProcs().bufferSetLabel(GetHandle(), utf8_label.c_str());
+  }
+
   uint64_t size_;
 
   // Holds onto any ArrayBuffers returned by getMappedRange, mapReadAsync, or
