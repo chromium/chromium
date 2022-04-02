@@ -83,8 +83,7 @@ void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
 
   SkFontMetrics metrics;
 
-  font_ = SkFont();
-  platform_data_.SetupSkFont(&font_);
+  font_ = platform_data_.CreateSkFont();
   font_.getMetrics(&metrics);
 
   float ascent;

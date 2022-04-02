@@ -258,8 +258,7 @@ std::unique_ptr<FontPlatformData> FontPlatformDataFromNSFont(
   return make_typeface_fontplatformdata();
 }
 
-void FontPlatformData::SetupSkFont(
-    SkFont* skfont,
+SkFont FontPlatformData::CreateSkFont(
     float,
     const FontDescription* font_description) const {
   bool should_smooth_fonts = true;
@@ -292,25 +291,26 @@ void FontPlatformData::SetupSkFont(
         WebTestSupport::IsTextSubpixelPositioningAllowedForTest();
   }
 
+  SkFont skfont;
   if (should_antialias && should_smooth_fonts) {
-    skfont->setEdging(SkFont::Edging::kSubpixelAntiAlias);
+    skfont.setEdging(SkFont::Edging::kSubpixelAntiAlias);
   } else if (should_antialias) {
-    skfont->setEdging(SkFont::Edging::kAntiAlias);
+    skfont.setEdging(SkFont::Edging::kAntiAlias);
   } else {
-    skfont->setEdging(SkFont::Edging::kAlias);
+    skfont.setEdging(SkFont::Edging::kAlias);
   }
-  skfont->setEmbeddedBitmaps(false);
+  skfont.setEmbeddedBitmaps(false);
   const float ts = text_size_ >= 0 ? text_size_ : 12;
-  skfont->setSize(SkFloatToScalar(ts));
-  skfont->setTypeface(typeface_);
-  skfont->setEmbolden(synthetic_bold_);
-  skfont->setSkewX(synthetic_italic_ ? -SK_Scalar1 / 4 : 0);
-  skfont->setSubpixel(should_subpixel_position);
+  skfont.setSize(SkFloatToScalar(ts));
+  skfont.setTypeface(typeface_);
+  skfont.setEmbolden(synthetic_bold_);
+  skfont.setSkewX(synthetic_italic_ ? -SK_Scalar1 / 4 : 0);
+  skfont.setSubpixel(should_subpixel_position);
 
   // CoreText always provides linear metrics if it can, so the linear metrics
   // flag setting doesn't affect typefaces backed by CoreText. However, it
   // does affect FreeType backed typefaces, so set the flag for consistency.
-  skfont->setLinearMetrics(should_subpixel_position);
+  skfont.setLinearMetrics(should_subpixel_position);
 
   // When rendering using CoreGraphics, disable hinting when
   // webkit-font-smoothing:antialiased or text-rendering:geometricPrecision is
@@ -318,7 +318,8 @@ void FontPlatformData::SetupSkFont(
   if (font_description &&
       (font_description->FontSmoothing() == kAntialiased ||
        font_description->TextRendering() == kGeometricPrecision))
-    skfont->setHinting(SkFontHinting::kNone);
+    skfont.setHinting(SkFontHinting::kNone);
+  return skfont;
 }
 
 }  // namespace blink

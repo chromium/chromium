@@ -131,9 +131,8 @@ class PLATFORM_EXPORT FontPlatformData {
   const WebFontRenderStyle& GetFontRenderStyle() const { return style_; }
 #endif
 
-  void SetupSkFont(SkFont*,
-                   float device_scale_factor = 1,
-                   const FontDescription* = nullptr) const;
+  SkFont CreateSkFont(float device_scale_factor = 1,
+                      const FontDescription* = nullptr) const;
 
   // Computes a digest from the typeface. The digest only depends on the
   // underlying font itself, and does not vary by the style (size, weight,

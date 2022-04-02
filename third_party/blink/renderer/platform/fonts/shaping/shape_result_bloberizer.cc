@@ -167,9 +167,8 @@ void ShapeResultBloberizer::CommitPendingRun() {
   if (UNLIKELY(!current_character_indexes_.IsEmpty()))
     CommitText();
 
-  SkFont run_font;
-  pending_font_data_->PlatformData().SetupSkFont(
-      &run_font, device_scale_factor_, &font_description_);
+  SkFont run_font = pending_font_data_->PlatformData().CreateSkFont(
+      device_scale_factor_, &font_description_);
 
   const auto run_size = pending_glyphs_.size();
   const auto text_size = pending_utf8_.size();

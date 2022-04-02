@@ -41,8 +41,7 @@ struct HarfBuzzFontData : public RefCounted<HarfBuzzFontData> {
     unsigned dummy_ascent_inflation = 0;
     unsigned dummy_descent_inflation = 0;
 
-    font_ = SkFont();
-    platform_data.SetupSkFont(&font_);
+    font_ = platform_data.CreateSkFont();
 
     if (UNLIKELY(vertical_layout == HarfBuzzFace::kPrepareForVerticalLayout)) {
       FontMetrics::AscentDescentWithHacks(

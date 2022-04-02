@@ -207,9 +207,7 @@ unsigned FontPlatformData::GetHash() const {
 
 #if !BUILDFLAG(IS_MAC)
 bool FontPlatformData::FontContainsCharacter(UChar32 character) {
-  SkFont font;
-  SetupSkFont(&font);
-  return font.unicharToGlyph(character);
+  return CreateSkFont().unicharToGlyph(character);
 }
 #endif
 
@@ -236,18 +234,20 @@ WebFontRenderStyle FontPlatformData::QuerySystemRenderStyle(
   return result;
 }
 
-void FontPlatformData::SetupSkFont(SkFont* font,
-                                   float device_scale_factor,
-                                   const FontDescription*) const {
-  style_.ApplyToSkFont(font, device_scale_factor);
+SkFont FontPlatformData::CreateSkFont(float device_scale_factor,
+                                      const FontDescription*) const {
+  SkFont font;
+  style_.ApplyToSkFont(&font, device_scale_factor);
 
   const float ts = text_size_ >= 0 ? text_size_ : 12;
-  font->setSize(SkFloatToScalar(ts));
-  font->setTypeface(typeface_);
-  font->setEmbolden(synthetic_bold_);
-  font->setSkewX(synthetic_italic_ ? -SK_Scalar1 / 4 : 0);
+  font.setSize(SkFloatToScalar(ts));
+  font.setTypeface(typeface_);
+  font.setEmbolden(synthetic_bold_);
+  font.setSkewX(synthetic_italic_ ? -SK_Scalar1 / 4 : 0);
 
-  font->setEmbeddedBitmaps(!avoid_embedded_bitmaps_);
+  font.setEmbeddedBitmaps(!avoid_embedded_bitmaps_);
+
+  return font;
 }
 #endif
 
