@@ -326,6 +326,9 @@ crbug.com/575305 [ fuchsia ] Pixel_WebGLSadCanvas [ Failure ]
 # Fails on Nexus 5
 crbug.com/883500 [ android android-nexus-5 ] Pixel_BackgroundImage [ Failure ]
 
+# Fails on Nexus 5X.
+crbug.com/1307317 [ android android-chromium android-nexus-5x ] Pixel_PrecisionRoundedCorner [ Failure ]
+
 # Flakes on Nexus 5X.
 crbug.com/883500 [ android android-chromium android-nexus-5x ] Pixel_BackgroundImage [ RetryOnFailure ]
 crbug.com/1065514 [ android android-chromium android-nexus-5x ] Pixel_WebGLReadPixelsTabSwitch [ RetryOnFailure ]
