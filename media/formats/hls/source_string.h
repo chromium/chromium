@@ -47,6 +47,8 @@ struct MEDIA_EXPORT SourceString {
 
   bool Empty() const { return str_.empty(); }
 
+  size_t Size() const { return str_.size(); }
+
   SourceString Substr(size_t pos = 0,
                       size_t count = base::StringPiece::npos) const;
 

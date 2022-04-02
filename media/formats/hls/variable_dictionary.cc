@@ -6,8 +6,8 @@
 
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
-#include "base/types/pass_key.h"
 #include "media/formats/hls/parse_status.h"
+#include "media/formats/hls/source_string.h"
 #include "media/formats/hls/types.h"
 
 namespace media::hls {
@@ -61,8 +61,11 @@ GetNextVariableResult GetNextVariable(const SourceString input) {
 }  // namespace
 
 VariableDictionary::VariableDictionary() = default;
+
 VariableDictionary::~VariableDictionary() = default;
+
 VariableDictionary::VariableDictionary(VariableDictionary&&) = default;
+
 VariableDictionary& VariableDictionary::operator=(VariableDictionary&&) =
     default;
 

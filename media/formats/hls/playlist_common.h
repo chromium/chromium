@@ -20,7 +20,12 @@ struct CommonParserState {
   absl::optional<XVersionTag> version_tag;
   absl::optional<XIndependentSegmentsTag> independent_segments_tag;
 
+  // The dictionary for variables defined in the current playlist.
   VariableDictionary variable_dict;
+
+  // The dictionary of variables defined in the parent playlist. This may remain
+  // null if there is no parent playlist (in the case of a multivariant
+  // playlist, or a media playlist without other variants).
   VariableDictionary* parent_variable_dict = nullptr;
 
   // Returns the version specified by `version_tag`, or the default version if

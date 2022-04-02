@@ -9,6 +9,7 @@
 #include "base/containers/span.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/source_string.h"
+#include "media/formats/hls/variable_dictionary.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media::hls::types {
@@ -28,6 +29,20 @@ using SignedDecimalFloatingPoint = double;
 
 ParseStatus::Or<SignedDecimalFloatingPoint> MEDIA_EXPORT
 ParseSignedDecimalFloatingPoint(SourceString source_str);
+
+// Parses a string surrounded by double-quotes ("), returning the inner string.
+// These appear in the context of attribute-lists, and are subject to variable
+// substitution. `sub_buffer` must outlive the returned string.
+ParseStatus::Or<base::StringPiece> MEDIA_EXPORT
+ParseQuotedString(SourceString source_str,
+                  const VariableDictionary& variable_dict,
+                  VariableDictionary::SubstitutionBuffer& sub_buffer);
+
+// Parses a string surrounded by double-quotes ("), returning the interior
+// string. These appear in the context of attribute-lists, however certain tags
+// disallow variable substitution so this function exists to serve those.
+ParseStatus::Or<SourceString> MEDIA_EXPORT
+ParseQuotedStringWithoutSubstitution(SourceString source_str);
 
 // Provides an iterator-style interface over attribute-lists.
 // Since the number of attributes expected in an attribute-list for a tag varies

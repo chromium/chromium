@@ -18,6 +18,7 @@ enum class ParseStatusCode : StatusCodeType {
   kFailedToParseDecimalInteger,
   kFailedToParseDecimalFloatingPoint,
   kFailedToParseSignedDecimalFloatingPoint,
+  kFailedToParseQuotedString,
   kInvalidPlaylistVersion,
   kMalformedAttributeList,
   kAttributeListHasDuplicateNames,

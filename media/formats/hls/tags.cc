@@ -25,26 +25,6 @@ ParseStatus::Or<T> ParseEmptyTag(TagItem tag) {
   return T{};
 }
 
-// Quoted strings in EXT-X-DEFINE tags are unique in that they aren't subject to
-// variable substitution. To simplify things, we define a special quoted-string
-// extraction function here.
-ParseStatus::Or<SourceString> ParseXDefineTagQuotedString(
-    SourceString source_str) {
-  if (source_str.Str().size() < 2) {
-    return ParseStatusCode::kMalformedTag;
-  }
-
-  if (*source_str.Str().begin() != '"') {
-    return ParseStatusCode::kMalformedTag;
-  }
-
-  if (*source_str.Str().rbegin() != '"') {
-    return ParseStatusCode::kMalformedTag;
-  }
-
-  return source_str.Substr(1, source_str.Str().size() - 2);
-}
-
 // Attributes expected in `EXT-X-DEFINE` tag contents.
 // These must remain sorted alphabetically.
 enum class XDefineTagAttribute {
@@ -210,7 +190,12 @@ XDefineTag XDefineTag::CreateImport(types::VariableName name) {
 }
 
 ParseStatus::Or<XDefineTag> XDefineTag::Parse(TagItem tag) {
-  // Parse the attribute-list
+  DCHECK(tag.name == ToTagName(XDefineTag::kName));
+
+  // Parse the attribute-list.
+  // Quoted strings in EXT-X-DEFINE tags are unique in that they aren't subject
+  // to variable substitution. For that reason, we use the
+  // `ParseQuotedStringWithoutSubstitution` function here.
   TypedAttributeMap<XDefineTagAttribute> map;
   types::AttributeListIterator iter(tag.content);
   auto result = map.FillUntilError(&iter);
@@ -227,9 +212,9 @@ ParseStatus::Or<XDefineTag> XDefineTag::Parse(TagItem tag) {
   }
 
   if (map.HasValue(XDefineTagAttribute::kName)) {
-    auto var_name =
-        ParseXDefineTagQuotedString(map.GetValue(XDefineTagAttribute::kName))
-            .MapValue(types::VariableName::Parse);
+    auto var_name = types::ParseQuotedStringWithoutSubstitution(
+                        map.GetValue(XDefineTagAttribute::kName))
+                        .MapValue(types::VariableName::Parse);
     if (var_name.has_error()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(var_name).error());
@@ -240,8 +225,8 @@ ParseStatus::Or<XDefineTag> XDefineTag::Parse(TagItem tag) {
       return ParseStatusCode::kMalformedTag;
     }
 
-    auto value =
-        ParseXDefineTagQuotedString(map.GetValue(XDefineTagAttribute::kValue));
+    auto value = types::ParseQuotedStringWithoutSubstitution(
+        map.GetValue(XDefineTagAttribute::kValue));
     if (value.has_error()) {
       return ParseStatus(ParseStatusCode::kMalformedTag);
     }
@@ -251,9 +236,9 @@ ParseStatus::Or<XDefineTag> XDefineTag::Parse(TagItem tag) {
   }
 
   if (map.HasValue(XDefineTagAttribute::kImport)) {
-    auto var_name =
-        ParseXDefineTagQuotedString(map.GetValue(XDefineTagAttribute::kImport))
-            .MapValue(types::VariableName::Parse);
+    auto var_name = types::ParseQuotedStringWithoutSubstitution(
+                        map.GetValue(XDefineTagAttribute::kImport))
+                        .MapValue(types::VariableName::Parse);
     if (var_name.has_error()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(var_name).error());

@@ -7,12 +7,18 @@
 
 #include <string>
 
+#include "base/strings/string_piece.h"
 #include "media/base/media_export.h"
 #include "media/formats/hls/parse_status.h"
-#include "media/formats/hls/types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media::hls {
+
+struct SourceString;
+
+namespace types {
+class VariableName;
+}
 
 class MEDIA_EXPORT VariableDictionary {
  public:
