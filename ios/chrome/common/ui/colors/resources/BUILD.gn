@@ -12,6 +12,7 @@ group("resources") {
     ":blue_color",
     ":blue_halo_color",
     ":close_button_color",
+    ":darker_scrim_background_color",
     ":disabled_tint_color",
     ":favicon_background_color",
     ":green_50_color",
@@ -154,6 +155,10 @@ colorset("placeholder_image_tint_color") {
 
 colorset("scrim_background_color") {
   sources = [ "scrim_background_color.colorset/Contents.json" ]
+}
+
+colorset("darker_scrim_background_color") {
+  sources = [ "darker_scrim_background_color.colorset/Contents.json" ]
 }
 
 colorset("separator_color") {

@@ -154,8 +154,9 @@ id<GREYMatcher> RecentTabsTable() {
 }
 
 // Returns a matcher for the scrim view on the tab search.
-id<GREYMatcher> SearchScrim() {
-  return grey_accessibilityID(kTabGridScrimIdentifier);
+id<GREYMatcher> VisibleSearchScrim() {
+  return grey_allOf(grey_accessibilityID(kTabGridScrimIdentifier),
+                    grey_sufficientlyVisible(), nil);
 }
 
 // Returns a matcher for the search bar text field containing |searchText|.
@@ -1534,19 +1535,19 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       performAction:grey_tap()];
 
   // Upon entry, the search bar is empty. Verify that scrim is visible.
-  [[EarlGrey selectElementWithMatcher:SearchScrim()]
+  [[EarlGrey selectElementWithMatcher:VisibleSearchScrim()]
       assertWithMatcher:grey_notNil()];
 
   // Searching with any query should render scrim invisible.
   [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
       performAction:grey_typeText(@"text")];
-  [[EarlGrey selectElementWithMatcher:SearchScrim()]
+  [[EarlGrey selectElementWithMatcher:VisibleSearchScrim()]
       assertWithMatcher:grey_nil()];
 
   // Clearing search bar text should render scrim visible again.
   [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
       performAction:grey_clearText()];
-  [[EarlGrey selectElementWithMatcher:SearchScrim()]
+  [[EarlGrey selectElementWithMatcher:VisibleSearchScrim()]
       assertWithMatcher:grey_notNil()];
 
   // Cancel search mode.
@@ -1554,7 +1555,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       performAction:grey_tap()];
 
   // Verify that scrim is not visible anymore.
-  [[EarlGrey selectElementWithMatcher:SearchScrim()]
+  [[EarlGrey selectElementWithMatcher:VisibleSearchScrim()]
       assertWithMatcher:grey_nil()];
 }
 
@@ -1569,11 +1570,12 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       performAction:grey_tap()];
 
   // Tap on scrim.
-  [[EarlGrey selectElementWithMatcher:SearchScrim()] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:VisibleSearchScrim()]
+      performAction:grey_tap()];
 
   // Verify that search mode is exit, scrim not visible, and transition to
   // normal mode was successful.
-  [[EarlGrey selectElementWithMatcher:SearchScrim()]
+  [[EarlGrey selectElementWithMatcher:VisibleSearchScrim()]
       assertWithMatcher:grey_nil()];
   [[EarlGrey selectElementWithMatcher:TabGridNormalModePageControl()]
       assertWithMatcher:grey_notNil()];

@@ -181,6 +181,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 @property(nonatomic, assign) TabGridPageConfiguration pageConfiguration;
 // If the scrim view is being presented.
 @property(nonatomic, assign) BOOL isScrimDisplayed;
+// Wether there is a search being performed in the tab grid or not.
+@property(nonatomic, assign) BOOL isPerformingSearch;
 // Pan gesture for when the search results view is scrolled during the search
 // mode.
 @property(nonatomic, strong) UIPanGestureRecognizer* searchResultPanRecognizer;
@@ -1838,7 +1840,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)setupSearchUI {
   self.scrimView = [[UIControl alloc] init];
-  self.scrimView.backgroundColor = [UIColor colorNamed:kScrimBackgroundColor];
+  self.scrimView.backgroundColor =
+      [UIColor colorNamed:kDarkerScrimBackgroundColor];
   self.scrimView.translatesAutoresizingMaskIntoConstraints = NO;
   self.scrimView.accessibilityIdentifier = kTabGridScrimIdentifier;
   [self.scrimView addTarget:self
@@ -1855,13 +1858,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 // Shows scrim overlay.
 - (void)showScrim {
-  if (self.isScrimDisplayed) {
-    return;
-  }
-
   self.scrimView.alpha = 0.0f;
-  [self.scrollContentView addSubview:self.scrimView];
-  AddSameConstraints(self.scrimView, self.view.superview);
+  if (!self.scrimView.superview) {
+    [self.scrollContentView addSubview:self.scrimView];
+    AddSameConstraints(self.scrimView, self.view.superview);
+  }
   self.currentPageViewController.accessibilityElementsHidden = YES;
   __weak __typeof(self) weakSelf = self;
   [UIView animateWithDuration:0.2
@@ -1869,32 +1870,37 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
         TabGridViewController* strongSelf = weakSelf;
         if (!strongSelf)
           return;
+        strongSelf.scrimView.hidden = NO;
         strongSelf.scrimView.alpha = 1.0f;
         [strongSelf.view layoutIfNeeded];
-      }
-      completion:^(BOOL finished) {
-        weakSelf.isScrimDisplayed = YES;
-      }];
-}
-
-// Hides scrim overlay.
-- (void)hideScrim {
-  if (!self.isScrimDisplayed) {
-    return;
-  }
-
-  __weak TabGridViewController* weakSelf = self;
-  [UIView animateWithDuration:0.2
-      animations:^{
-        weakSelf.scrimView.alpha = 0.0f;
       }
       completion:^(BOOL finished) {
         TabGridViewController* strongSelf = weakSelf;
         if (!strongSelf)
           return;
-        [strongSelf.scrimView removeFromSuperview];
+        strongSelf.isScrimDisplayed = (strongSelf.scrimView.alpha > 0);
+        strongSelf.currentPageViewController.accessibilityElementsHidden = YES;
+      }];
+}
+
+// Hides scrim overlay.
+- (void)hideScrim {
+  __weak TabGridViewController* weakSelf = self;
+  [UIView animateWithDuration:0.2
+      animations:^{
+        TabGridViewController* strongSelf = weakSelf;
+        if (!strongSelf)
+          return;
+
+        strongSelf.scrimView.alpha = 0.0f;
+        strongSelf.scrimView.hidden = YES;
+      }
+      completion:^(BOOL finished) {
+        TabGridViewController* strongSelf = weakSelf;
+        if (!strongSelf)
+          return;
         strongSelf.currentPageViewController.accessibilityElementsHidden = NO;
-        strongSelf.isScrimDisplayed = NO;
+        strongSelf.isScrimDisplayed = (strongSelf.scrimView.alpha > 0);
       }];
 }
 
@@ -1961,11 +1967,15 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)updateScrimVisibilityForText:(NSString*)searchText {
-  if (_tabGridMode == TabGridModeSearch && searchText.length == 0) {
+  if (_tabGridMode != TabGridModeSearch)
+    return;
+  if (searchText.length == 0) {
+    self.isPerformingSearch = NO;
     [self showScrim];
-  } else {
-    // If no results have been presented yet, then hide the scrim to present the
-    // results.
+  } else if (!self.isPerformingSearch) {
+    self.isPerformingSearch = YES;
+    // If no results have been presented yet, then hide the scrim to present
+    // the results.
     [self hideScrim];
   }
 }

@@ -28,6 +28,7 @@ extern NSString* const kPlaceholderImageTintColor;
 // Primary background color.
 extern NSString* const kPrimaryBackgroundColor;
 extern NSString* const kScrimBackgroundColor;
+extern NSString* const kDarkerScrimBackgroundColor;
 // Secondary background color.
 extern NSString* const kSecondaryBackgroundColor;
 extern NSString* const kSeparatorColor;
