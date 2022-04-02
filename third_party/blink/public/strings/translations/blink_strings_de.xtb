@@ -57,7 +57,7 @@
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Bild im Bild beenden</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
-<translation id="3822383571486410024">Verlängern Sie diesen Text auf mindestens <ph name="MIN_CHARACTERS" /> Zeichen. Derzeit verwenden Sie <ph name="CURRENT_LENGTH" /> Zeichen.</translation>
+<translation id="3822383571486410024">Verlängere diesen Text auf mindestens <ph name="MIN_CHARACTERS" /> Zeichen. Derzeit verwendest du <ph name="CURRENT_LENGTH" /> Zeichen.</translation>
 <translation id="383465348367842624">Vor dem <ph name="ATSIGN" />-Zeichen darf das Zeichen "<ph name="INVALIDCHARACTER" />" nicht verwendet werden.</translation>
 <translation id="3846214748874656680">Vollbildmodus beenden</translation>
 <translation id="4103419683916926126">Millisekunden</translation>

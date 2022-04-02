@@ -107,7 +107,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="4036079820698952681">Hilf uns mit deinem Feedback zu den <ph name="BEGIN_LINK" />aktuellen Einstellungen<ph name="END_LINK" /> bei der Verbesserung von Chromium</translation>
 <translation id="4050175100176540509">Wichtige Sicherheitsverbesserungen und neue Funktionen sind in der aktuellen Version verfügbar.</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Netzwerkanmeldung – Chromium</translation>
-<translation id="421369550622382712">Entdecken Sie tolle Apps, Spiele, Erweiterungen und Designs für Chromium.</translation>
+<translation id="421369550622382712">Entdecke tolle Apps, Spiele, Erweiterungen und Designs für Chromium.</translation>
 <translation id="4216212958613226427">Diese Sprache wird für die Chromium-UI verwendet</translation>
 <translation id="4230135487732243613">Deine Chromium-Daten mit diesem Konto verknüpfen?</translation>
 <translation id="4264410486868823224">Für <ph name="MANAGER" /> ist erforderlich, dass Sie vor der Verwendung dieses Geräts die folgenden Nutzungsbedingungen akzeptieren. Durch diese Nutzungsbedingungen werden die Chromium-Nutzungsbedingungen nicht erweitert, geändert oder eingeschränkt.</translation>
@@ -122,7 +122,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="454579500955453258">Mit einem neuen Chromium-Profil fortfahren?</translation>
 <translation id="4567424176335768812">Du bist als <ph name="USER_EMAIL_ADDRESS" /> angemeldet. Auf allen Geräten, auf denen du angemeldet bist, sind nun deine Lesezeichen, dein Verlauf und andere Einstellungen verfügbar.</translation>
 <translation id="459535195905078186">Chromium-Apps</translation>
-<translation id="4621240073146040695">Fast fertig! Starten Sie Chromium neu, um die Aktualisierung abzuschließen.</translation>
+<translation id="4621240073146040695">Fast fertig! Starte Chromium neu, um die Aktualisierung abzuschließen.</translation>
 <translation id="4665829708273112819">Achtung: Chromium kann nicht verhindern, dass dein Browserverlauf von Erweiterungen protokolliert wird. Du kannst diese Erweiterung für den Inkognitomodus deaktivieren, indem du die Auswahl für die entsprechende Option aufhebst.</translation>
 <translation id="4673151026126227699">Wenn du Chromium-Nutzungsberichte teilst, enthalten diese Berichte die von dir aufgerufenen URLs</translation>
 <translation id="4677944499843243528">Das Profil wird offenbar gerade von einem Chromium-Prozess (<ph name="PROCESS_ID" />) auf einem anderen Computer (<ph name="HOST_NAME" />) verwendet. Das Profil wurde von Chromium gesperrt, damit es nicht beschädigt wird. Wenn du sicher bist, dass das Profil nicht von anderen Prozessen verwendet wird, kannst du das Profil entsperren und Chromium neu starten.</translation>
@@ -147,7 +147,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5427571867875391349">Chromium als Standardbrowser festlegen</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
 <translation id="5480860683791598150">Chromium benötigt Zugriff auf deinen Standort, um ihn mit dieser Website zu teilen</translation>
-<translation id="549669000822060376">Bitte warten Sie, bis die aktuellen Systemupdates von Chromium installiert wurden.</translation>
+<translation id="549669000822060376">Bitte warte, bis die aktuellen Systemupdates von Chromium installiert wurden.</translation>
 <translation id="5496810170689441661">Chromium versucht, Passwörter zu bearbeiten. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="5527463683072221100">PDFs in Chromium öffnen</translation>
 <translation id="5623402015214259806">{0,plural, =0{Ein Chromium-Update ist verfügbar}=1{Ein Chromium-Update ist verfügbar}other{Ein Chromium-Update ist seit # Tagen verfügbar}}</translation>
@@ -285,7 +285,7 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="8821041990367117597">Chromium konnte deine Daten nicht synchronisieren, da die Anmeldedaten deines Kontos nicht mehr aktuell sind.</translation>
 <translation id="8862326446509486874">Du verfügst nicht über die erforderlichen Rechte für eine systemweite Installation. Starte das Installationsprogramm als Administrator.</translation>
 <translation id="8880203542552872219">Falls ja, ändere dein gespeichertes Passwort in Chromium, damit es mit dem neuen Passwort übereinstimmt.</translation>
-<translation id="8897323336392112261">Die Erweiterung legt auch fest, welche Seite beim Start von Chromium angezeigt wird oder wenn Sie auf die Schaltfläche "Startseite" klicken.</translation>
+<translation id="8897323336392112261">Die Erweiterung legt auch fest, welche Seite beim Start von Chromium angezeigt wird oder wenn du auf die Schaltfläche „Startseite“ klickst.</translation>
 <translation id="8907580949721785412">Chromium möchte Passwörter anzeigen. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="8941642502866065432">Chromium kann nicht aktualisiert werden</translation>
 <translation id="8974095189086268230">Chromium OS wird durch zusätzliche <ph name="BEGIN_LINK_CROS_OSS" />Open-Source-Software<ph name="END_LINK_CROS_OSS" /> ermöglicht.</translation>

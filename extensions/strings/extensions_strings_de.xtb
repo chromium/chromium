@@ -28,7 +28,7 @@
 <translation id="4115165561519362854">Der Administrator dieses Geräts hat festgelegt, dass für <ph name="EXTENSION_NAME" /> mindestens Version <ph name="EXTENSION_VERSION" /> installiert sein muss. Die Erweiterung kann erst aktiviert werden, nachdem sie auf diese oder eine höhere Version aktualisiert wurde.</translation>
 <translation id="4233778200880751280">Infoseite "<ph name="ABOUT_PAGE" />" konnte nicht geladen werden.</translation>
 <translation id="471800408830181311">Privater Schlüssel konnte nicht ausgegeben werden.</translation>
-<translation id="4811956658694082538">Das Paket konnte nicht installiert werden, da der Prozess eines Dienstprogramms abgestürzt ist. Starten Sie Chrome neu und versuchen Sie es erneut.</translation>
+<translation id="4811956658694082538">Das Paket konnte nicht installiert werden, da der Prozess eines Dienstprogramms abgestürzt ist. Starte Chrome neu und versuche es noch einmal.</translation>
 <translation id="4988792151665380515">Öffentlicher Schlüssel konnte nicht exportiert werden.</translation>
 <translation id="5026754133087629784">Web-Ansicht: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Der absolute Pfad zum Verzeichnis wurde nicht gefunden.</translation>

@@ -464,7 +464,7 @@
 <translation id="5004584466530475658"><ph name="FILE_COUNT" /> neue Fotos</translation>
 <translation id="5010406651457630570">Computer</translation>
 <translation id="5011233892417813670">Chromebook</translation>
-<translation id="5024856940085636730">Ein Vorgang dauert länger als erwartet. Möchten Sie ihn abbrechen?</translation>
+<translation id="5024856940085636730">Ein Vorgang dauert länger als erwartet. Möchtest du ihn abbrechen?</translation>
 <translation id="5036159836254554629">Freigabe für Parallels Desktop verwalten</translation>
 <translation id="5038625366300922036">Mehr...</translation>
 <translation id="5044852990838351217">Armenisch</translation>
@@ -511,7 +511,7 @@
 <translation id="5317780077021120954">Speichern</translation>
 <translation id="5318819489018851358">Mit Linux teilen</translation>
 <translation id="5323213332664049067">Lateinamerikanisch</translation>
-<translation id="5330145655348521461">Diese Dateien wurden auf einem anderen Desktop geöffnet. Wechseln Sie zu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), um sie anzusehen.</translation>
+<translation id="5330145655348521461">Diese Dateien wurden auf einem anderen Desktop geöffnet. Wechsle zu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), um sie anzusehen.</translation>
 <translation id="5330512191124428349">Informationen ansehen</translation>
 <translation id="5335458522276292100"><ph name="FILE_COUNT" /> werden auf <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> gesichert</translation>
 <translation id="535792325654997756">Person mit Katzen</translation>
@@ -599,7 +599,7 @@
 <translation id="613750717151263950">Japanisch mit US-Tastatur</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, nicht verbunden</translation>
 <translation id="6146563240635539929">Videos</translation>
-<translation id="6150853954427645995">Wenn Sie diese Datei zur Offline-Nutzung speichern möchten, gehen Sie online, klicken Sie mit der rechten Maustaste auf die Datei und wählen Sie die Option "<ph name="OFFLINE_CHECKBOX_NAME" />" aus.</translation>
+<translation id="6150853954427645995">Wenn du diese Datei zur Offline-Nutzung speichern möchtest, gehe online, klicke mit der rechten Maustaste auf die Datei und wähle die Option „<ph name="OFFLINE_CHECKBOX_NAME" />“ aus.</translation>
 <translation id="6164412158936057769">Schmetterlinge</translation>
 <translation id="6165508094623778733">Weitere Informationen</translation>
 <translation id="6170470584681422115">Sandwich</translation>
@@ -607,7 +607,7 @@
 <translation id="6189412234224385711">Öffnen mit <ph name="EXTENSION_NAME" /></translation>
 <translation id="6198252989419008588">PIN ändern</translation>
 <translation id="6199801702437275229">Speicherplatzangaben werden abgerufen...</translation>
-<translation id="6205710420833115353">Einige Vorgänge dauern länger als erwartet. Möchten Sie sie abbrechen?</translation>
+<translation id="6205710420833115353">Einige Vorgänge dauern länger als erwartet. Möchtest du sie abbrechen?</translation>
 <translation id="6220423280121890987">Punjabi</translation>
 <translation id="6224240818060029162">Dänisch</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> formatieren</translation>
@@ -628,7 +628,7 @@
 <translation id="6358884629796491903">Drache</translation>
 <translation id="636254897931573416">Ungültige Übereinstimmung für das Domain-Suffix</translation>
 <translation id="6367976544441405720">Transporter</translation>
-<translation id="637062427944097960">Diese Datei wurde auf einem anderen Desktop geöffnet. Wechseln Sie zu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), um die Datei anzusehen.</translation>
+<translation id="637062427944097960">Diese Datei wurde auf einem anderen Desktop geöffnet. Wechsle zu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), um die Datei anzusehen.</translation>
 <translation id="6394388407447716302">Schreibgeschützt</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> Elemente</translation>
 <translation id="6398765197997659313">Vollbildmodus beenden</translation>
@@ -761,7 +761,7 @@
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> wird offline bereitgestellt</translation>
 <translation id="7600126690270271294">Serbisch</translation>
 <translation id="7603724359189955920">Gitter</translation>
-<translation id="7627790789328695202">Hoppla, <ph name="FILE_NAME" /> existiert bereits. Geben Sie einen anderen Namen ein und versuchen Sie es erneut.</translation>
+<translation id="7627790789328695202">Hoppla, <ph name="FILE_NAME" /> existiert bereits. Gib einen anderen Namen ein und versuche es erneut.</translation>
 <translation id="7628656427739290098">Zu <ph name="PERCENT" /> % abgeschlossen.</translation>
 <translation id="7649070708921625228">Hilfe</translation>
 <translation id="7654209398114106148"><ph name="NUMBER_OF_ITEMS" /> Elemente werden verschoben...</translation>
@@ -780,9 +780,9 @@
 <translation id="7760449188139285140">Chinesisch (Wubi)</translation>
 <translation id="7765158879357617694">Verschieben</translation>
 <translation id="7774365994322694683">Vogel</translation>
-<translation id="7788080748068240085">Wenn Sie "<ph name="FILE_NAME" />" offline speichern möchten, müssen Sie <ph name="TOTAL_FILE_SIZE" /> zusätzlichen Speicherplatz freigeben:<ph name="MARKUP_1" />
-    <ph name="MARKUP_2" />Entfernen Sie Dateien, auf die Sie nicht mehr offline zugreifen müssen.<ph name="MARKUP_3" />
-    <ph name="MARKUP_4" />Löschen Sie Dateien aus dem Ordner "Downloads".<ph name="MARKUP_5" /></translation>
+<translation id="7788080748068240085">Wenn du „<ph name="FILE_NAME" />“ offline speichern möchtest, musst du <ph name="TOTAL_FILE_SIZE" /> zusätzlichen Speicherplatz freigeben:<ph name="MARKUP_1" />
+    <ph name="MARKUP_2" />Entferne Dateien, auf die du nicht mehr offline zugreifen musst.<ph name="MARKUP_3" />
+    <ph name="MARKUP_4" />Lösche Dateien aus dem Ordner „Downloads“.<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">Gerät formatieren</translation>
 <translation id="7799329977874311193">HTML-Dokument</translation>
 <translation id="7801354353640549019">Chromebooks</translation>
@@ -838,7 +838,7 @@
 <translation id="8179976553408161302">Eingabetaste</translation>
 <translation id="8193175696669055101">Gerätemodell</translation>
 <translation id="8208580316430297579">Artwork</translation>
-<translation id="8223479393428528563">Wenn Sie diese Dateien zur Offline-Nutzung speichern möchten, gehen Sie online, klicken Sie mit der rechten Maustaste auf die Dateien und wählen Sie die Option "<ph name="OFFLINE_CHECKBOX_NAME" />" aus.</translation>
+<translation id="8223479393428528563">Wenn du diese Dateien zur Offline-Nutzung speichern möchtest, gehe online, klicke mit der rechten Maustaste auf die Dateien und wähle die Option „<ph name="OFFLINE_CHECKBOX_NAME" />“ aus.</translation>
 <translation id="8249296373107784235">Abbrechen</translation>
 <translation id="8261506727792406068">Löschen</translation>
 <translation id="8261561378965667560">Chinesisch (Array)</translation>
@@ -936,7 +936,7 @@
 <translation id="908378762078012445">Russisch mit phonetischer Tastatur (AATSEEL)</translation>
 <translation id="9099674669267916096">Seitenzahl</translation>
 <translation id="9100610230175265781">Passphrase erforderlich</translation>
-<translation id="9110990317705400362">Wir arbeiten stets daran, das Surfen für dich sicherer zu machen. Früher konntest du von jeder beliebigen Website aufgefordert werden, deinem Browser eine Erweiterung hinzuzufügen. In neueren Versionen von Google Chrome musst du Chrome ausdrücklich mitteilen, dass du diese Erweiterungen installieren möchtest, indem du sie über die Seite "Erweiterungen" hinzufügst. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
+<translation id="9110990317705400362">Wir arbeiten stets daran, das Surfen für dich sicherer zu machen. Früher konntest du von jeder beliebigen Website aufgefordert werden, deinem Browser eine Erweiterung hinzuzufügen. In neueren Versionen von Google Chrome musst du Chrome ausdrücklich mitteilen, dass du diese Erweiterungen installieren möchtest, indem du sie über die Seite „Erweiterungen“ hinzufügst. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Entsperren</translation>
 <translation id="912419004897138677">Codec</translation>
 <translation id="9130775360844693113">Mitglieder von "<ph name="DESTINATION_NAME" />" erhalten Zugriff auf diese Dateien.</translation>

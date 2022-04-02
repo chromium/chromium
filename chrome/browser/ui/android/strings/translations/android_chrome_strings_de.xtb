@@ -110,7 +110,7 @@
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 ausgewähltes Element entfernen}other{# ausgewählte Elemente entfernen}}</translation>
 <translation id="1633659023549081553">Entdecken Sie neue Inhalte auf der Startseite von Chrome</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
-<translation id="164269334534774161">Sie sehen sich momentan eine Offlinekopie dieser Seite vom <ph name="CREATION_TIME" /> an</translation>
+<translation id="164269334534774161">Du siehst dir momentan eine Offlinekopie dieser Seite vom <ph name="CREATION_TIME" /> an</translation>
 <translation id="1644574205037202324">Verlauf</translation>
 <translation id="1668122540633280551">Hier können Sie festlegen, wie Videovorschauen auf der Chrome-Startseite automatisch abgespielt werden.</translation>
 <translation id="1670399744444387456">Grundlegend</translation>
@@ -456,7 +456,7 @@ Berühre und halte ein Wort, um eine Suche damit zu starten. Du kannst deine Suc
 <translation id="3622349720008044802">Fenster verwalten</translation>
 <translation id="3624977496395967031">Klicken, um Sortieroptionen anzuzeigen</translation>
 <translation id="3631987586758005671">Wird mit "<ph name="DEVICE_NAME" />" geteilt</translation>
-<translation id="363596933471559332">Sie werden mit gespeicherten Anmeldedaten automatisch auf Websites angemeldet. Wenn diese Funktion nicht aktiviert ist, werden Sie jedes Mal aufgefordert, sich manuell auf einer Website anzumelden.</translation>
+<translation id="363596933471559332">Du wirst mit gespeicherten Anmeldedaten automatisch auf Websites angemeldet. Wenn diese Funktion nicht aktiviert ist, wirst du jedes Mal aufgefordert, dich manuell auf einer Website anzumelden.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Mobile Version anfordern</translation>
 <translation id="3687645719033307815">Sie sehen eine Vorschau dieser Seite</translation>
@@ -875,7 +875,7 @@ Privacy Sandbox befindet sich noch in der Entwicklung und Testversionen sind nur
 <translation id="6140709049082532940">Erweiterter Schutz</translation>
 <translation id="6140912465461743537">Land/Region</translation>
 <translation id="6141988275892716286">Download bestätigen</translation>
-<translation id="614940544461990577">Versuchen Sie Folgendes:</translation>
+<translation id="614940544461990577">Versuche Folgendes:</translation>
 <translation id="6150320133806434356">Lesezeichen ist gespeichert</translation>
 <translation id="6154478581116148741">Aktiviere die Displaysperre unter „Einstellungen“, um deine Passwörter aus dem Gerät zu exportieren</translation>
 <translation id="6159729262978459665">Löscht den Verlauf auf allen synchronisierten Geräten.</translation>
@@ -1113,7 +1113,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7456774706094330779">Erweitertes Vorabladen</translation>
 <translation id="7468819939926272717">Eine Emotion auswählen</translation>
 <translation id="7474822150871987353">Erfahren Sie mehr über Website-Themen, ohne die Seite zu verlassen. Wählen Sie mindestens ein Wort auf der Seite aus, um dazu Suchergebnisse zu erhalten.</translation>
-<translation id="7475192538862203634">Sollten Sie diese Meldung häufiger erhalten, sehen Sie sich unsere <ph name="BEGIN_LINK" />Empfehlungen<ph name="END_LINK" /> an.</translation>
+<translation id="7475192538862203634">Solltest du diese Meldung häufiger erhalten, sieh dir unsere <ph name="BEGIN_LINK" />Empfehlungen<ph name="END_LINK" /> an.</translation>
 <translation id="7475688122056506577">SD-Karte nicht gefunden. Einige deiner Dateien fehlen möglicherweise.</translation>
 <translation id="7479104141328977413">Tab-Verwaltung</translation>
 <translation id="7481312909269577407">Vorwärts</translation>
@@ -1248,7 +1248,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8127542551745560481">Startseite bearbeiten</translation>
 <translation id="8130309322784422030">Deine gespeicherten Anmeldedaten sind möglicherweise veraltet</translation>
 <translation id="813082847718468539">Website-Informationen anzeigen</translation>
-<translation id="8137558756159375272">Mit "Zum Suchen antippen" werden das ausgewählte Wort und die aktuelle Seite als Kontext an die Google Suche gesendet. Sie können die Funktion in den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> deaktivieren.</translation>
+<translation id="8137558756159375272">Mit „Zum Suchen antippen“ werden das ausgewählte Wort und die aktuelle Seite als Kontext an die Google Suche gesendet. Du kannst die Funktion in den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> deaktivieren.</translation>
 <translation id="8153351135626613369">Assistant erscheint auf unterstützten Websites, wenn erkannt wird, dass er dir helfen kann</translation>
 <translation id="8156139159503939589">Welche Sprachen können Sie lesen?</translation>
 <translation id="8168435359814927499">Inhalte</translation>
