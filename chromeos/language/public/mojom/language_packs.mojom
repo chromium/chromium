@@ -13,11 +13,14 @@ module chromeos.language.mojom;
 // numeric values should never be reused. When adding new enumerations to this
 // enum, you must add those to the LanguagePackMojoFeatureId definition in
 // tools/metrics/histograms/enums.xml to keep them in sync.
+[Extensible]
 enum FeatureId {
   // Unknown feature, not supported.
   UNSUPPORTED_UNKNOWN = 0,
   // Handwriting Recognition used by the Virtual Keyboard.
   HANDWRITING_RECOGNITION = 1,
+  // Text-To-Speech feature.
+  [MinVersion=1] TTS = 2,
 };
 
 // Current state of Pack on disk.

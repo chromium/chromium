@@ -17,6 +17,7 @@ namespace chromeos::language_packs {
 
 // All Language Pack IDs are listed here.
 constexpr char kHandwritingFeatureId[] = "LP_ID_HANDWRITING";
+constexpr char kTtsFeatureId[] = "LP_ID_TTS";
 
 // Status contains information about the status of an operation.
 struct PackResult {

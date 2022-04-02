@@ -24,6 +24,9 @@ absl::optional<std::string> ConvertMojoFeatureToPackId(FeatureId mojo_id) {
     case FeatureId::HANDWRITING_RECOGNITION:
       return kHandwritingFeatureId;
 
+    case FeatureId::TTS:
+      return kTtsFeatureId;
+
     // Catch all unknown cases here.
     default:
       return absl::nullopt;
