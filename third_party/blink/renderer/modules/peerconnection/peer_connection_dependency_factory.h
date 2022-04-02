@@ -171,7 +171,7 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
       const gfx::ColorSpace& render_color_space,
       scoped_refptr<base::SequencedTaskRunner> media_task_runner,
       media::GpuVideoAcceleratorFactories* gpu_factories,
-      media::DecoderFactory* media_decoder_factory,
+      base::WeakPtr<media::DecoderFactory> media_decoder_factory,
       base::WaitableEvent* event);
 
   void CreateIpcNetworkManagerOnNetworkThread(

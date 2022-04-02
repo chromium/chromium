@@ -757,6 +757,8 @@ class CONTENT_EXPORT RenderFrameImpl
     send_content_state_immediately_ = value;
   }
 
+  base::WeakPtr<media::DecoderFactory> GetMediaDecoderFactory();
+
  protected:
   explicit RenderFrameImpl(CreateParams params);
 

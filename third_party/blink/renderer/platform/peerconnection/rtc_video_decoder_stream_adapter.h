@@ -83,7 +83,7 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
   // Called on the worker thread.
   static std::unique_ptr<RTCVideoDecoderStreamAdapter> Create(
       media::GpuVideoAcceleratorFactories* gpu_factories,
-      media::DecoderFactory* decoder_factory,
+      base::WeakPtr<media::DecoderFactory> decoder_factory,
       scoped_refptr<base::SequencedTaskRunner> media_task_runner,
       const gfx::ColorSpace& render_color_space,
       const webrtc::SdpVideoFormat& format);
@@ -124,7 +124,7 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
   // Called on the worker thread.
   RTCVideoDecoderStreamAdapter(
       media::GpuVideoAcceleratorFactories* gpu_factories,
-      media::DecoderFactory* decoder_factory,
+      base::WeakPtr<media::DecoderFactory> decoder_factory,
       scoped_refptr<base::SequencedTaskRunner> media_task_runner,
       const gfx::ColorSpace& render_color_space,
       const media::VideoDecoderConfig& config,
@@ -197,7 +197,7 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
   // Construction parameters.
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   media::GpuVideoAcceleratorFactories* const gpu_factories_;
-  media::DecoderFactory* const decoder_factory_;
+  base::WeakPtr<media::DecoderFactory> const decoder_factory_;
   gfx::ColorSpace render_color_space_;
   const webrtc::SdpVideoFormat format_;
   media::VideoDecoderConfig config_;

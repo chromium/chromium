@@ -26,7 +26,7 @@ class RTCVideoDecoderFactory : public webrtc::VideoDecoderFactory {
  public:
   explicit RTCVideoDecoderFactory(
       media::GpuVideoAcceleratorFactories* gpu_factories,
-      media::DecoderFactory* decoder_factory,
+      base::WeakPtr<media::DecoderFactory> decoder_factory,
       scoped_refptr<base::SequencedTaskRunner> media_task_runner,
       const gfx::ColorSpace& render_color_space);
   RTCVideoDecoderFactory(const RTCVideoDecoderFactory&) = delete;
@@ -47,7 +47,7 @@ class RTCVideoDecoderFactory : public webrtc::VideoDecoderFactory {
  private:
   void CheckAndWaitDecoderSupportStatusIfNeeded() const;
   media::GpuVideoAcceleratorFactories* gpu_factories_;
-  media::DecoderFactory* decoder_factory_;
+  base::WeakPtr<media::DecoderFactory> decoder_factory_;
 
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   gfx::ColorSpace render_color_space_;

@@ -268,7 +268,7 @@ class RTCVideoDecoderStreamAdapter::InternalDemuxerStream
 std::unique_ptr<RTCVideoDecoderStreamAdapter>
 RTCVideoDecoderStreamAdapter::Create(
     media::GpuVideoAcceleratorFactories* gpu_factories,
-    media::DecoderFactory* decoder_factory,
+    base::WeakPtr<media::DecoderFactory> decoder_factory,
     scoped_refptr<base::SequencedTaskRunner> media_task_runner,
     const gfx::ColorSpace& render_color_space,
     const webrtc::SdpVideoFormat& format) {
@@ -324,7 +324,7 @@ RTCVideoDecoderStreamAdapter::Create(
 
 RTCVideoDecoderStreamAdapter::RTCVideoDecoderStreamAdapter(
     media::GpuVideoAcceleratorFactories* gpu_factories,
-    media::DecoderFactory* decoder_factory,
+    base::WeakPtr<media::DecoderFactory> decoder_factory,
     scoped_refptr<base::SequencedTaskRunner> media_task_runner,
     const gfx::ColorSpace& render_color_space,
     const media::VideoDecoderConfig& config,
@@ -760,19 +760,21 @@ void RTCVideoDecoderStreamAdapter::InitializeOnMediaThread(
   media::RequestOverlayInfoCB request_overlay_cb = base::DoNothing();
   auto create_decoders_cb = base::BindRepeating(
       [](scoped_refptr<base::SequencedTaskRunner> task_runner,
-         media::DecoderFactory* decoder_factory,
+         base::WeakPtr<media::DecoderFactory> decoder_factory,
          media::GpuVideoAcceleratorFactories* gpu_factories,
          const gfx::ColorSpace render_color_space, media::MediaLog* media_log,
          const media::RequestOverlayInfoCB& request_overlay_cb) {
         std::vector<std::unique_ptr<media::VideoDecoder>> video_decoders;
-        decoder_factory->CreateVideoDecoders(
-            std::move(task_runner), gpu_factories, media_log,
-            request_overlay_cb, render_color_space, &video_decoders);
+        media::DecoderFactory* decoder_factory_ptr = decoder_factory.get();
+        if (decoder_factory_ptr) {
+          decoder_factory_ptr->CreateVideoDecoders(
+              std::move(task_runner), gpu_factories, media_log,
+              request_overlay_cb, render_color_space, &video_decoders);
+        }
         return video_decoders;
       },
-      media_task_runner_, base::Unretained(decoder_factory_),
-      base::Unretained(gpu_factories_), render_color_space_, media_log_.get(),
-      std::move(request_overlay_cb));
+      media_task_runner_, decoder_factory_, base::Unretained(gpu_factories_),
+      render_color_space_, media_log_.get(), std::move(request_overlay_cb));
 
   decoder_stream_ = std::make_unique<media::VideoDecoderStream>(
       std::move(traits), media_task_runner_, std::move(create_decoders_cb),

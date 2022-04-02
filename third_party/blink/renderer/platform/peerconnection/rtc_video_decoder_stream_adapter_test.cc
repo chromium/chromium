@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/thread_pool.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -154,8 +155,14 @@ class MockDecoderFactory : public media::DecoderFactory {
         std::make_unique<MockVideoDecoder>(is_platform_decoder));
   }
 
+  base::WeakPtr<DecoderFactory> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   std::vector<std::unique_ptr<MockVideoDecoder>> decoders_;
+
+  base::WeakPtrFactory<MockDecoderFactory> weak_factory_{this};
 };
 
 // Wraps a callback as a webrtc::DecodedImageCallback.
@@ -269,8 +276,9 @@ class RTCVideoDecoderStreamAdapterTest
 
   bool CreateDecoderStream() {
     adapter_ = RTCVideoDecoderStreamAdapter::Create(
-        use_hw_decoders_ ? &gpu_factories_ : nullptr, decoder_factory_.get(),
-        media_thread_task_runner_, gfx::ColorSpace{}, sdp_format_);
+        use_hw_decoders_ ? &gpu_factories_ : nullptr,
+        decoder_factory_->GetWeakPtr(), media_thread_task_runner_,
+        gfx::ColorSpace{}, sdp_format_);
     return !!adapter_;
   }
 

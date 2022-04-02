@@ -813,7 +813,9 @@ class BLINK_PLATFORM_EXPORT Platform {
     return nullptr;
   }
 
-  virtual media::DecoderFactory* GetMediaDecoderFactory() { return nullptr; }
+  virtual base::WeakPtr<media::DecoderFactory> GetMediaDecoderFactory() {
+    return nullptr;
+  }
 
   virtual void SetRenderingColorSpace(const gfx::ColorSpace& color_space) {}
 

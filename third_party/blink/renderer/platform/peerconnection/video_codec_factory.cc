@@ -269,7 +269,7 @@ std::unique_ptr<webrtc::VideoEncoderFactory> CreateWebrtcVideoEncoderFactory(
 
 std::unique_ptr<webrtc::VideoDecoderFactory> CreateWebrtcVideoDecoderFactory(
     media::GpuVideoAcceleratorFactories* gpu_factories,
-    media::DecoderFactory* media_decoder_factory,
+    base::WeakPtr<media::DecoderFactory> media_decoder_factory,
     scoped_refptr<base::SequencedTaskRunner> media_task_runner,
     const gfx::ColorSpace& render_color_space,
     StatsCollector::StoreProcessingStatsCB stats_callback) {

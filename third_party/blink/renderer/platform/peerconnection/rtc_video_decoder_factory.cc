@@ -191,7 +191,7 @@ class ScopedVideoDecoder : public webrtc::VideoDecoder {
 
 RTCVideoDecoderFactory::RTCVideoDecoderFactory(
     media::GpuVideoAcceleratorFactories* gpu_factories,
-    media::DecoderFactory* decoder_factory,
+    base::WeakPtr<media::DecoderFactory> decoder_factory,
     scoped_refptr<base::SequencedTaskRunner> media_task_runner,
     const gfx::ColorSpace& render_color_space)
     : gpu_factories_(gpu_factories),

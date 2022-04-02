@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "media/base/decoder_factory.h"
 #include "media/base/media_export.h"
@@ -25,13 +26,12 @@ class MEDIA_EXPORT DefaultDecoderFactory final : public DecoderFactory {
 
   ~DefaultDecoderFactory() final;
 
+  // DecoderFactory implementation.
   void CreateAudioDecoders(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       MediaLog* media_log,
       std::vector<std::unique_ptr<AudioDecoder>>* audio_decoders) final;
-
   SupportedVideoDecoderConfigs GetSupportedVideoDecoderConfigsForWebRTC() final;
-
   void CreateVideoDecoders(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       GpuVideoAcceleratorFactories* gpu_factories,
@@ -44,12 +44,16 @@ class MEDIA_EXPORT DefaultDecoderFactory final : public DecoderFactory {
   // vended on other threads.
   void Shutdown();
 
+  base::WeakPtr<DecoderFactory> GetWeakPtr();
+
  private:
   base::Lock shutdown_lock_;
   bool is_shutdown_ GUARDED_BY(shutdown_lock_) = false;
 
   std::unique_ptr<DecoderFactory> external_decoder_factory_
       GUARDED_BY(shutdown_lock_);
+
+  base::WeakPtrFactory<DefaultDecoderFactory> weak_factory_{this};
 };
 
 }  // namespace media

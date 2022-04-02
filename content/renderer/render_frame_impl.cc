@@ -6206,6 +6206,10 @@ url::Origin RenderFrameImpl::GetSecurityOriginOfTopFrame() {
   return frame_->Top()->GetSecurityOrigin();
 }
 
+base::WeakPtr<media::DecoderFactory> RenderFrameImpl::GetMediaDecoderFactory() {
+  return media_factory_.GetDecoderFactory();
+}
+
 gfx::RectF RenderFrameImpl::ElementBoundsInWindow(
     const blink::WebElement& element) {
   return gfx::RectF(GetLocalRootWebFrameWidget()->BlinkSpaceToEnclosedDIPs(

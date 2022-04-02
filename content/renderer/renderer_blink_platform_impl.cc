@@ -1069,10 +1069,12 @@ RendererBlinkPlatformImpl::MediaThreadTaskRunner() {
   return render_thread->GetMediaThreadTaskRunner();
 }
 
-media::DecoderFactory* RendererBlinkPlatformImpl::GetMediaDecoderFactory() {
-  auto* render_thread = RenderThreadImpl::current();
-  DCHECK(!!render_thread);
-  return render_thread->GetMediaDecoderFactory();
+base::WeakPtr<media::DecoderFactory>
+RendererBlinkPlatformImpl::GetMediaDecoderFactory() {
+  blink::WebLocalFrame* const web_frame =
+      blink::WebLocalFrame::FrameForCurrentContext();
+  RenderFrameImpl* render_frame = RenderFrameImpl::FromWebFrame(web_frame);
+  return render_frame->GetMediaDecoderFactory();
 }
 
 void RendererBlinkPlatformImpl::SetRenderingColorSpace(

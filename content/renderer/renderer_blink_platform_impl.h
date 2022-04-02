@@ -248,7 +248,7 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
       bool is_on_worker) override;
   media::GpuVideoAcceleratorFactories* GetGpuFactories() override;
   scoped_refptr<base::SingleThreadTaskRunner> MediaThreadTaskRunner() override;
-  media::DecoderFactory* GetMediaDecoderFactory() override;
+  base::WeakPtr<media::DecoderFactory> GetMediaDecoderFactory() override;
   void SetRenderingColorSpace(const gfx::ColorSpace& color_space) override;
   gfx::ColorSpace GetRenderingColorSpace() const override;
   void SetActiveURL(const blink::WebURL& url,

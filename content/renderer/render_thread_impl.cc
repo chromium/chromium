@@ -85,7 +85,6 @@
 #include "content/renderer/effective_connection_type_helper.h"
 #include "content/renderer/media/gpu/gpu_video_accelerator_factories_impl.h"
 #include "content/renderer/media/media_factory.h"
-#include "content/renderer/media/media_interface_factory.h"
 #include "content/renderer/media/render_media_client.h"
 #include "content/renderer/net_info_helper.h"
 #include "content/renderer/render_frame_proxy.h"
@@ -1146,30 +1145,6 @@ media::GpuVideoAcceleratorFactories* RenderThreadImpl::GetGpuFactories() {
       std::move(interface_factory), std::move(vea_provider)));
   gpu_factories_.back()->SetRenderingColorSpace(rendering_color_space_);
   return gpu_factories_.back().get();
-}
-
-media::DecoderFactory* RenderThreadImpl::GetMediaDecoderFactory() {
-  DCHECK(IsMainThread());
-
-  // Note that we don't reset this, ever. We instantiate it once and never reset
-  // it, even if the gpu process restarts.
-  if (media_decoder_factory_)
-    return media_decoder_factory_.get();
-
-  // MediaInterfaceFactory guarantees that the media::InterfaceFactory is
-  // accessed from the current (main) thread.
-  mojo::PendingRemote<media::mojom::InterfaceFactory> interface_factory;
-  BindHostReceiver(interface_factory.InitWithNewPipeAndPassReceiver());
-  media_interface_factory_ = std::make_unique<MediaInterfaceFactory>(
-      base::ThreadTaskRunnerHandle::Get(), std::move(interface_factory));
-  // TODO(liberato): Should destruction of `media_decoder_factory_` be posted
-  // to the media thread?  I don't think it's needed, since it's owned by us
-  // rather than tied to a particular frame.  Calls into it might happen on
-  // the media thread, but we own the media thread.
-  media_decoder_factory_ =
-      MediaFactory::CreateDecoderFactory(media_interface_factory_.get());
-
-  return media_decoder_factory_.get();
 }
 
 scoped_refptr<viz::RasterContextProvider>
