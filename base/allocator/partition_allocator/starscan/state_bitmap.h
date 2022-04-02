@@ -19,8 +19,7 @@
 #include "base/bits.h"
 #include "base/compiler_specific.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 // Bitmap which tracks allocation states. An allocation can be in one of 3
 // states:
@@ -70,7 +69,7 @@ class StateBitmap final {
   using CellType = uintptr_t;
   static constexpr size_t kBitsPerCell = sizeof(CellType) * CHAR_BIT;
   static constexpr size_t kBitsNeededForAllocation =
-      bits::Log2Floor(static_cast<size_t>(State::kNumOfStates));
+      base::bits::Log2Floor(static_cast<size_t>(State::kNumOfStates));
   static constexpr CellType kStateMask = (1 << kBitsNeededForAllocation) - 1;
 
   static constexpr size_t kBitmapSize =
@@ -483,7 +482,6 @@ void StateBitmap<PageSize, PageAlignment, AllocationAlignment>::Clear() {
   std::fill(bitmap_.begin(), bitmap_.end(), '\0');
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_STATE_BITMAP_H_

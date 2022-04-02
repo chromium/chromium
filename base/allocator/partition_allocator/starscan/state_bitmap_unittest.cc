@@ -10,8 +10,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 namespace {
 
@@ -340,5 +339,4 @@ TEST_F(PartitionAllocStateBitmapTest, AdjacentQuarantinedObjectsAtEnd) {
   }
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal

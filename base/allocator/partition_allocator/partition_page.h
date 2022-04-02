@@ -85,7 +85,7 @@ ALWAYS_INLINE uintptr_t SuperPagesEndFromExtent(
          (extent->number_of_consecutive_super_pages * kSuperPageSize);
 }
 
-using AllocationStateMap = ::base::internal::
+using AllocationStateMap =
     StateBitmap<kSuperPageSize, kSuperPageAlignment, kAlignment>;
 
 // Metadata of the slot span.
