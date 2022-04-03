@@ -83,16 +83,31 @@ def _RunValidationScript(
   perf_dir = input_api.PresubmitLocalPath()
   script_abs_path = input_api.os_path.join(perf_dir, script_path)
   extra_args = extra_args if extra_args else []
-  args = [vpython, script_abs_path] + extra_args
-  out, return_code = _RunArgs(args, input_api)
-  if return_code:
-    error_msg = 'Script ' + script_path + ' failed.'
-    if block_on_failure is None or block_on_failure:
-      results.append(output_api.PresubmitError(
-          error_msg, long_text=out))
-    else:
-      results.append(output_api.PresubmitPromptWarning(
-          error_msg, long_text=out))
+  # When running git cl presubmit --all this presubmit may be asked to check
+  # ~500 files, leading to a command line that is over 43,000 characters.
+  # This goes past the Windows 8191 character cmd.exe limit and causes cryptic
+  # failures. To avoid these we break the command up into smaller pieces. The
+  # non-Windows limit is chosen so that the code that splits up commands will
+  # get some exercise on other platforms.
+  # Depending on how long the command is on Windows the error may be:
+  #     The command line is too long.
+  # Or it may be:
+  #     OSError: Execution failed with error: [WinError 206] The filename or
+  #     extension is too long.
+  # I suspect that the latter error comes from CreateProcess hitting its 32768
+  # character limit.
+  files_per_command = 50 if input_api.is_windows else 1000
+  # Handle the case where extra_args is empty.
+  for i in range(0, len(extra_args) if extra_args else 1, files_per_command):
+    args = [vpython, script_abs_path] + extra_args[i:i + files_per_command]
+    out, return_code = _RunArgs(args, input_api)
+    if return_code:
+      error_msg = 'Script ' + script_path + ' failed.'
+      if block_on_failure is None or block_on_failure:
+        results.append(output_api.PresubmitError(error_msg, long_text=out))
+      else:
+        results.append(
+            output_api.PresubmitPromptWarning(error_msg, long_text=out))
   return results
 
 def _CheckExpectations(input_api, output_api):
