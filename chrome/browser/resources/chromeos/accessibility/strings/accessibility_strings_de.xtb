@@ -6,11 +6,11 @@
 <translation id="1012173283529841972">Listenelement</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">Mit zwei Fingern nach rechts wischen</translation>
-<translation id="1022586497894531524">Verwenden Sie gesprochenes Feedback von ChromeVox zum ersten Mal? In dieser kurzen Anleitung erfahren Sie die Grundlagen für die Nutzung von ChromeVox.</translation>
+<translation id="1022586497894531524">Verwende gesprochenes Feedback von ChromeVox zum ersten Mal? In dieser kurzen Anleitung erfährst du die Grundlagen für die Nutzung von ChromeVox.</translation>
 <translation id="1025074108959230262">Fixierter Modus deaktiviert</translation>
 <translation id="1031961866430398710">und</translation>
 <translation id="1038643060055067718">Zeilen:</translation>
-<translation id="1038795173450935438">Um sich zwischen den Elementen auf einer Seite vorwärts zu bewegen, drücken Sie Suche + Rechtspfeil oder Suche + Linkspfeil, um zurückzuspringen. Um in die nächste Zeile zu gelangen, drücken Sie Suche + Abwärtspfeil. Um zur vorherigen Zeile zu springen, verwenden Sie Suche + Aufwärtspfeil. Wenn Sie ein Element erreichen, auf das Sie klicken möchten, drücken Sie Suche + Leertaste.</translation>
+<translation id="1038795173450935438">Um sich zwischen den Elementen auf einer Seite vorwärts zu bewegen, drücke Suche + Rechtspfeil oder Suche + Linkspfeil, um zurückzuspringen. Um in die nächste Zeile zu gelangen, drücke Suche + Abwärtspfeil. Um zur vorherigen Zeile zu springen, verwende Suche + Aufwärtspfeil. Wenn du ein Element erreichst, auf das du klicken möchtest, drücke Suche + Leertaste.</translation>
 <translation id="106222400312645156">rwhdr</translation>
 <translation id="1065552602950927991">Ungültige Eingabe</translation>
 <translation id="1066085461259044485">Waldgrün</translation>
@@ -69,7 +69,7 @@
 <translation id="1354356357730355833">Kopieren</translation>
 <translation id="135978014023467274">ChromeVox wurde auf Version 63 aktualisiert.</translation>
 <translation id="1360699455582016846">Klicken Sie auf das Element unterhalb des Routing-Schlüssels <ph name="ROUTING_KEY_NUMBER" /></translation>
-<translation id="1377925789329510816">Hierbei handelt es sich um die letzte Überschrift. Drücken Sie "Suche + H", um zur ersten Überschrift zu gelangen, oder "Suche + Umschalttaste + H", um zur zweiten Überschrift auf dieser Seite zu springen.</translation>
+<translation id="1377925789329510816">Hierbei handelt es sich um die letzte Überschrift. Drücke „Suche + H“, um zur ersten Überschrift zu gelangen, oder „Suche + Umschalttaste + H“, um zur zweiten Überschrift auf dieser Seite zu springen.</translation>
 <translation id="138218114945450791">Hellblau</translation>
 <translation id="1383876407941801731">Durchsuchen</translation>
 <translation id="1396114365388024581">tablst</translation>
@@ -197,7 +197,7 @@
 <translation id="2347456970887948350">Ein Link</translation>
 <translation id="2365384324219615024">Du kannst zum Aktivieren von Elementen auch die Eingabetaste drücken. Die Eingabetaste kann beispielsweise verwendet werden, um Text in einem Formular abzusenden. Drücke zum Fortfahren die Eingabetaste.</translation>
 <translation id="2381733276052567791">Sprachausgabe aktivieren oder deaktivieren</translation>
-<translation id="2390264819538553347">Drücken Sie die Eingabetaste, um zur nächsten Seite, oder die Rücktaste, um zur vorigen Seite zu gelangen.</translation>
+<translation id="2390264819538553347">Drücke die Eingabetaste, um zur nächsten Seite, oder die Rücktaste, um zur vorigen Seite zu gelangen.</translation>
 <translation id="2398579267367951220">Geben Sie etwas ein, um die Seite zu durchsuchen. Drücken Sie die Eingabetaste, um zu den Ergebnissen zu springen und drücken Sie auf den Aufwärts- bzw. Abwärtspfeil, um zwischen den Ergebnissen hin- und herzuspringen. Außerdem können Sie noch mehr eingeben, um die Suche zu ändern, oder die Suche über die Esc-Taste abbrechen.</translation>
 <translation id="240709722712693803">Blauviolett</translation>
 <translation id="2410298923485357543">Natürliche Stimme verwenden, wenn das Gerät online ist</translation>
@@ -263,7 +263,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Sie können auch mit einem Finger von rechts nach links wischen, um zum vorherigen Element zu gelangen. Probieren Sie es jetzt aus.</translation>
 <translation id="280499067616661124">ChromeVox-Suche auf der Seite</translation>
-<translation id="2811019999044652585">Sie gelangen zu anderen Bildschirmbereichen, z. B. zu den Symbolleisten oder zur Taskleiste, indem Sie Strg + Weitertaste drücken. Auf einem Chromebook befindet sich die Weitertaste direkt über der Taste der Zahl 2.</translation>
+<translation id="2811019999044652585">Du gelangst zu anderen Bildschirmbereichen, z. B. zu den Symbolleisten oder zur Taskleiste, indem du Strg + Weitertaste drückst. Auf einem Chromebook befindet sich die Weitertaste direkt über der Taste der Zahl 2.</translation>
 <translation id="2811204574343810641">Zeile</translation>
 <translation id="2816868829355607410">Übungsbereich: Sprungbefehle</translation>
 <translation id="2841013758207633010">Zeit</translation>
@@ -276,7 +276,7 @@
 <translation id="2873259058405069099">Zum Anfang der Tabelle gehen</translation>
 <translation id="287383510823843610">Dunkelorange</translation>
 <translation id="2879867157561757640">Mit drei Fingern nach unten wischen</translation>
-<translation id="288178314850623291">Mit bestimmten Befehlen können Sie verschiedene Elementtypen überspringen. Um zwischen Überschriften vorwärts zu springen, drücken Sie Suche + H, und um rückwärts zu springen Suche + Umschalttaste + H.</translation>
+<translation id="288178314850623291">Mit bestimmten Befehlen kannst du verschiedene Elementtypen überspringen. Um zwischen Überschriften vorwärts zu springen, drücke Suche + H, und um rückwärts zu springen Suche + Umschalttaste + H.</translation>
 <translation id="2885764457467528513">{COUNT,plural, =1{Minute}other{Minuten}}</translation>
 <translation id="2894654529758326923">Informationen</translation>
 <translation id="2899328121302785497">{COUNT,plural, =1{geschweifte Klammer links}other{# geschweifte Klammern links}}</translation>
@@ -321,7 +321,7 @@
 <translation id="3104705064753753826">alrt dlg</translation>
 <translation id="3109724472072898302">Minimiert</translation>
 <translation id="311015743332597320">Mit vier Fingern nach rechts wischen</translation>
-<translation id="3112457281078985179">Um ChromeVox ein- bzw. auszuschalten, verwenden Sie Strg + Alt + Z.</translation>
+<translation id="3112457281078985179">Um ChromeVox ein- bzw. auszuschalten, verwende Strg + Alt + Z.</translation>
 <translation id="3115800313647508384">Display ausschalten?</translation>
 <translation id="3131002934070407451">Nummern vorlesen als:</translation>
 <translation id="3134461040845705080">rdonly</translation>
@@ -462,7 +462,7 @@
 <translation id="4053520724192563562">Gelbgrün</translation>
 <translation id="4054936709456751127">sts</translation>
 <translation id="4058278702844053247">Eine Seite wird aufgebaut</translation>
-<translation id="4065205963140826639">Verwenden Sie jetzt Suche + Rechtspfeil, um die Schaltfläche "Weiter" zu finden, und drücken Sie dann Suche + Leertaste, um auf die Schaltfläche zu klicken.</translation>
+<translation id="4065205963140826639">Verwende jetzt Suche + Rechtspfeil, um die Schaltfläche „Weiter“ zu finden, und drücke dann Suche + Leertaste, um auf die Schaltfläche zu klicken.</translation>
 <translation id="4081085052247739398">{COUNT,plural, =1{Tilde}other{# Tilden}}</translation>
 <translation id="409334809956508737">Vorheriges Objekt</translation>
 <translation id="4099274309791143834">mit Untermenü</translation>
@@ -531,7 +531,7 @@
 <translation id="4601367666219428522">Tab. <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Nächster Tastenanschlag wird ignoriert.</translation>
 <translation id="4623097797855662355">Kolophon</translation>
-<translation id="463135993322337640">Wenn Sie mehr über die neuen Funktionen von ChromeVox erfahren möchten, drücken Sie ChromeVox "O" und "N"</translation>
+<translation id="463135993322337640">Wenn du mehr über die neuen Funktionen von ChromeVox erfahren möchtest, drücke ChromeVox „O“ und „N“</translation>
 <translation id="4649220074413114917">Sie können mit zwei Fingern auf den Bildschirm tippen, um die aktuelle Sprachausgabe anzuhalten. Das ist hilfreich, wenn Sie nicht möchten, dass ChromeVox etwas vorliest. Tippen Sie mit zwei Fingern auf den Bildschirm, um fortzufahren.</translation>
 <translation id="4660783501463101648">Classic wurde entfernt. Die Tastaturschaltfläche für den Wechsel zu ChromeVox Classic wurde entfernt.</translation>
 <translation id="4661075872484491155">tree</translation>
@@ -559,7 +559,7 @@
 <translation id="4838490795649708173">Mit vier Fingern tippen</translation>
 <translation id="4839925464551908214">Zur vorherigen Zeile</translation>
 <translation id="4841614409681890122">Tiefrosa</translation>
-<translation id="4844625982113518938">Drücken Sie eine beliebige Taste, um ihren Namen zu erfahren. Mit "Strg + W" können Sie den Lernmodus schließen.</translation>
+<translation id="4844625982113518938">Drücke eine beliebige Taste, um ihren Namen zu erfahren. Mit „Strg + W“ kannst du den Lernmodus schließen.</translation>
 <translation id="4846428657345567687">Willkommen bei ChromeVox!</translation>
 <translation id="4848993367330139335">tmr</translation>
 <translation id="4854380505292502090">Kein vorheriges Medien-Widget</translation>
@@ -692,7 +692,7 @@
 <translation id="5712244464475377681">popbtn</translation>
 <translation id="5712889723513495267">Zum nächsten oder vorherigen Abschnitt wechseln</translation>
 <translation id="5725079927589231571">Helles Stahlblau</translation>
-<translation id="5732189279857692565">Hierbei handelt es sich um die zweite Überschrift. Zum Springen drücken Sie entweder auf "Suche + H" oder auf "Suche + Umschalttaste + H".</translation>
+<translation id="5732189279857692565">Hierbei handelt es sich um die zweite Überschrift. Zum Springen drückst du entweder auf „Suche + H“ oder auf „Suche + Umschalttaste + H“.</translation>
 <translation id="5748623122140342504">Vorherige Überschrift der Ebene 5</translation>
 <translation id="5760594853119905566">Anhang</translation>
 <translation id="5761219715606611783">Perfekt! Sie kennen jetzt die Grundlagen von ChromeVox. Sie können diese Anleitung noch einmal starten oder sie beenden, indem Sie unten auf die entsprechende Schaltfläche tippen.</translation>
@@ -709,7 +709,7 @@
 <translation id="5851548754964597211">Tab-Liste</translation>
 <translation id="5866042630553435010">Teilweise aktiviert</translation>
 <translation id="5866210856231860256">Drücke „Suchtaste + Rechtspfeil“ oder „Suchtaste + Linkspfeil“, um dir die Lektionen für dieses Thema anzusehen</translation>
-<translation id="5867591286054666064">Drücken Sie während dieser Anleitung auf eine beliebige Taste, um ihren Namen zu hören.</translation>
+<translation id="5867591286054666064">Drücke während dieser Anleitung auf eine beliebige Taste, um ihren Namen zu hören.</translation>
 <translation id="5869546221129391014">Raster</translation>
 <translation id="5876817486144482042">Sprachlautstärke verringern</translation>
 <translation id="5878206664863390311">Drücke „Suchtaste + Rechtspfeil“ oder „Suchtaste + Linkspfeil“, um dir die Themen anzusehen</translation>
@@ -1070,7 +1070,7 @@
 <translation id="8503360654911991865">Navigationsgenauigkeit verringern</translation>
 <translation id="8520472399088452386">Drehfeld</translation>
 <translation id="8534394844575788431">Formatierung</translation>
-<translation id="8542271685829952264">Um alle Befehle und Tastenkombinationen in ChromeVox zu erkunden, drücken Sie "Suche + Punkt" und navigieren Sie dann mit den Pfeiltasten in den Menüs. Mit der Eingabetaste aktivieren Sie einen Befehl. Durch "Suche + o" und anschließend "t" können Sie wieder hierher zurückkehren.</translation>
+<translation id="8542271685829952264">Um alle Befehle und Tastenkombinationen in ChromeVox zu erkunden, drücke „Suche + Punkt“ und navigiere dann mit den Pfeiltasten in den Menüs. Mit der Eingabetaste aktivierst du einen Befehl. Durch „Suche + o“ und anschließend „t“ kannst du wieder hierher zurückkehren.</translation>
 <translation id="8548973727659841685">Zeichen</translation>
 <translation id="8561322612995434619">enthält ein Pop-up-Fenster</translation>
 <translation id="8571096049907249734">div</translation>
