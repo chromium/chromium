@@ -138,6 +138,7 @@
 #include "components/security_interstitials/content/insecure_form_blocking_page.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
+#include "components/services/screen_ai/public/cpp/pref_names.h"
 #include "components/sessions/core/session_id_generator.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -1198,6 +1199,10 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 
   registry->RegisterBooleanPref(
       policy::policy_prefs::kSetTimeoutWithout1MsClampEnabled, false);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  screen_ai::RegisterLocalStatePrefs(registry);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   // This is intentionally last.
   RegisterLocalStatePrefsForMigration(registry);

@@ -4,18 +4,13 @@
 
 #include "components/services/screen_ai/screen_ai_service_impl.h"
 
-namespace screen_ai {
+#include "components/services/screen_ai/public/cpp/utilities.h"
 
-// static
-base::FilePath ScreenAIService::GetLibraryPath() {
-  return base::FilePath(FILE_PATH_LITERAL("/"))
-      .Append(FILE_PATH_LITERAL("lib"))
-      .Append(FILE_PATH_LITERAL("libchrome_screen_ai.so"));
-}
+namespace screen_ai {
 
 ScreenAIService::ScreenAIService(
     mojo::PendingReceiver<mojom::ScreenAIService> receiver)
-    : library_(GetLibraryPath()),
+    : library_(screen_ai::GetLibraryFilePath()),
       init_function_(reinterpret_cast<ScreenAIInitFunction>(
           library_.GetFunctionPointer("Init"))),
       annotator_function_(reinterpret_cast<ScreenAIAnnotateFunction>(

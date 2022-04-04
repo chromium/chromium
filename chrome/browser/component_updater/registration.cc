@@ -64,7 +64,6 @@
 #include "chrome/browser/component_updater/commerce_heuristics_component_installer.h"
 #include "chrome/browser/component_updater/desktop_screenshot_editor_component_installer.h"
 #include "chrome/browser/component_updater/desktop_sharing_hub_component_installer.h"
-#include "chrome/browser/component_updater/soda_component_installer.h"
 #include "chrome/browser/component_updater/zxcvbn_data_component_installer.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "media/base/media_switches.h"
@@ -89,6 +88,10 @@
 #if BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
 #include "chrome/browser/component_updater/widevine_cdm_component_installer.h"
 #endif  // BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
+
+#if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/component_updater/screen_ai_component_installer.h"
+#endif  // BUILDFLAG(IS_LINUX)
 
 #if defined(USE_AURA)
 #include "ui/aura/env.h"
@@ -209,6 +212,10 @@ void RegisterComponentsForUpdate() {
   RegisterAutofillRegexComponent(cus);
 
   RegisterClientSidePhishingComponent(cus);
+
+#if BUILDFLAG(IS_LINUX)
+  RegisterScreenAIComponent(cus, g_browser_process->local_state());
+#endif  // BUILDFLAG(IS_LINUX)
 }
 
 }  // namespace component_updater

@@ -30,8 +30,6 @@ class ScreenAIService : public mojom::ScreenAIService,
   ScreenAIService& operator=(const ScreenAIService&) = delete;
   ~ScreenAIService() override;
 
-  static base::FilePath GetLibraryPath();
-
  private:
   base::ScopedNativeLibrary library_;
 

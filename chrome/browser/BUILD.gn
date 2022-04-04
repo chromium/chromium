@@ -2553,9 +2553,15 @@ static_library("browser") {
     ]
   }
   if (is_linux || is_chromeos) {
+    sources += [
+      "component_updater/screen_ai_component_installer.cc",
+      "component_updater/screen_ai_component_installer.h",
+    ]
+
     deps += [
       "//chrome/browser/error_reporting",
       "//components/services/screen_ai/public/cpp:screen_ai_service_router_factory",
+      "//components/services/screen_ai/public/cpp:utilities",
     ]
   }
 

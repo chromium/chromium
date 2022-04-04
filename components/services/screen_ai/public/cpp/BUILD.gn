@@ -17,3 +17,18 @@ source_set("screen_ai_service_router_factory") {
     "//content/public/browser",
   ]
 }
+
+source_set("utilities") {
+  sources = [
+    "pref_names.cc",
+    "pref_names.h",
+    "utilities.cc",
+    "utilities.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/component_updater",
+    "//components/prefs",
+  ]
+}
