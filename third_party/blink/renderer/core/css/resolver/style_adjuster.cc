@@ -576,10 +576,7 @@ static void AdjustStyleForDisplay(ComputedStyle& style,
       style.SetIsFlexOrGridItem();
   }
 
-  if (style.Display() == EDisplay::kBlock && !style.IsFloating())
-    return;
-
-  if (style.Display() == EDisplay::kContents)
+  if (style.Display() == EDisplay::kBlock)
     return;
 
   // FIXME: Don't support this mutation for pseudo styles like first-letter or
@@ -602,21 +599,6 @@ static void AdjustStyleForDisplay(ComputedStyle& style,
     style.SetWritingMode(layout_parent_style.GetWritingMode());
     style.SetTextOrientation(layout_parent_style.GetTextOrientation());
     style.UpdateFontOrientation();
-  }
-
-  if (layout_parent_style.IsDisplayFlexibleOrGridBox()) {
-    // We want to count vertical percentage paddings/margins on flex items
-    // because our current behavior is different from the spec and we want to
-    // gather compatibility data.
-    if (style.PaddingBefore().IsPercentOrCalc() ||
-        style.PaddingAfter().IsPercentOrCalc()) {
-      UseCounter::Count(document,
-                        WebFeature::kFlexboxPercentagePaddingVertical);
-    }
-    if (style.MarginBefore().IsPercentOrCalc() ||
-        style.MarginAfter().IsPercentOrCalc()) {
-      UseCounter::Count(document, WebFeature::kFlexboxPercentageMarginVertical);
-    }
   }
 }
 
