@@ -24,6 +24,11 @@ class MediaSystemAppDelegate : public web_app::SystemWebAppDelegate {
   bool ShouldHandleFileOpenIntents() const override;
   base::FilePath GetLaunchDirectory(
       const apps::AppLaunchParams& params) const override;
+  Browser* LaunchAndNavigateSystemWebApp(
+      Profile* profile,
+      web_app::WebAppProvider* provider,
+      const GURL& url,
+      const apps::AppLaunchParams& params) const override;
 };
 
 // Return a WebAppInstallInfo used to install the app.
