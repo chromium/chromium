@@ -977,11 +977,6 @@
       status: "experimental",
     },
     {
-      // http://crbug.com/707656 content editable in LayoutNG.
-      name: "EditingNG",
-      status: "stable",
-    },
-    {
       name: "ElementSuperRareData",
       status: "experimental",
     },

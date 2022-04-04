@@ -604,12 +604,6 @@ static void AdjustStyleForDisplay(ComputedStyle& style,
     style.UpdateFontOrientation();
   }
 
-  // Disable editing custom layout elements, until EditingNG is ready.
-  if (!RuntimeEnabledFeatures::EditingNGEnabled() &&
-      (style.Display() == EDisplay::kLayoutCustom ||
-       style.Display() == EDisplay::kInlineLayoutCustom))
-    style.SetUserModify(EUserModify::kReadOnly);
-
   if (layout_parent_style.IsDisplayFlexibleOrGridBox()) {
     // We want to count vertical percentage paddings/margins on flex items
     // because our current behavior is different from the spec and we want to

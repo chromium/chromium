@@ -424,16 +424,6 @@ bool CalculateStyleShouldForceLegacyLayout(const Element& element,
   if (style.DisplayTypeRequiresLayoutNG())
     return false;
 
-  // TODO(layout-dev): Once LayoutNG handles inline content editable, we
-  // should get rid of following code fragment.
-  if (!RuntimeEnabledFeatures::EditingNGEnabled()) {
-    if (style.UsedUserModify() != EUserModify::kReadOnly ||
-        document.InDesignMode()) {
-      UseCounter::Count(document, WebFeature::kLegacyLayoutByEditing);
-      return true;
-    }
-  }
-
   if (!RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
     // Disable NG for the entire subtree if we're establishing a multicol
     // container.

@@ -104,39 +104,6 @@ TEST_F(HitTestingTest, OcclusionHitTestWithClipPath) {
   EXPECT_EQ(result.InnerNode(), occluder);
 }
 
-// crbug.com/1153037
-TEST_F(HitTestingTest, LegacyInputElementInFragmentTraversal) {
-  ScopedLayoutNGFragmentTraversalForTest fragment_traversal_feature(true);
-  ScopedEditingNGForTest editing_feature(false);
-
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      body { margin:100px; }
-    </style>
-    <input id="target">
-  )HTML");
-
-  const HitTestRequest hit_request(HitTestRequest::kActive);
-  const HitTestLocation hit_location(PhysicalOffset(110, 110));
-  HitTestResult hit_result(hit_request, hit_location);
-  ASSERT_TRUE(GetLayoutView().HitTest(hit_location, hit_result));
-  ASSERT_TRUE(hit_result.InnerNode());
-  const auto* layout_object = hit_result.InnerNode()->GetLayoutObject();
-  ASSERT_TRUE(layout_object);
-
-  // In this test we'll use the legacy layout engine for form controls, so the
-  // INPUT element will generate a LayoutTextControl with an inner editable
-  // LayoutBlockFlow child. We'll hit-test by traversing the fragment tree
-  // (rather than the LayoutObject tree). We should hit the inner
-  // LayoutBlockFlow. Since it is a legacy object and it is also laid out by a
-  // legacy parent, it will not generate any NG fragments. Check that we hit the
-  // right node, and that the hit-testing code hasn't incorrectly set an NG
-  // fragment from an ancestor.
-
-  ASSERT_EQ(layout_object->Parent()->GetNode(),
-            GetDocument().getElementById("target"));
-}
-
 TEST_F(HitTestingTest, ScrolledInline) {
   SetBodyInnerHTML(R"HTML(
     <style>

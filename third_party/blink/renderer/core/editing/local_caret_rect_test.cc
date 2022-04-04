@@ -1138,9 +1138,6 @@ TEST_P(ParameterizedLocalCaretRectTest, AfterCollapsedWhiteSpaceInRTLText) {
 
 // https://crbug.com/936988
 TEST_P(ParameterizedLocalCaretRectTest, AfterIneditableInline) {
-  // For LayoutNG, we also enable EditingNG to test NG caret rendering.
-  ScopedEditingNGForTest editing_ng(LayoutNGEnabled());
-
   LoadAhem();
   InsertStyleElement("div { font: 10px/10px Ahem }");
   SetBodyContent(
@@ -1155,9 +1152,6 @@ TEST_P(ParameterizedLocalCaretRectTest, AfterIneditableInline) {
 
 // http://crbug.com/688015
 TEST_P(ParameterizedLocalCaretRectTest, LocalCaretAtBeginningOfNonEditable) {
-  // For LayoutNG, we also enable EditingNG to test NG caret rendering.
-  ScopedEditingNGForTest editing_ng(LayoutNGEnabled());
-
   LoadAhem();
   InsertStyleElement(
       "div { width: 70px; padding-left: 10px; font: 10px/10px Ahem }"
@@ -1177,9 +1171,6 @@ TEST_P(ParameterizedLocalCaretRectTest, LocalCaretAtBeginningOfNonEditable) {
 // http://crbug.com/688015
 TEST_P(ParameterizedLocalCaretRectTest,
        LocalCaretAtBeginningOfNonEditableInFlatTree) {
-  // For LayoutNG, we also enable EditingNG to test NG caret rendering.
-  ScopedEditingNGForTest editing_ng(LayoutNGEnabled());
-
   LoadAhem();
   InsertStyleElement(
       "div { width: 70px; padding-left: 10px; font: 10px/10px Ahem }"
@@ -1217,9 +1208,6 @@ TEST_P(ParameterizedLocalCaretRectTest,
 
 // http://crbug.com/688015
 TEST_P(ParameterizedLocalCaretRectTest, LocalCaretAtEndOfNonEditable) {
-  // For LayoutNG, we also enable EditingNG to test NG caret rendering.
-  ScopedEditingNGForTest editing_ng(LayoutNGEnabled());
-
   LoadAhem();
   InsertStyleElement(
       "div { width: 70px; padding: 10px; font: 10px/10px Ahem }"
@@ -1244,9 +1232,6 @@ TEST_P(ParameterizedLocalCaretRectTest, LocalCaretAtEndOfNonEditable) {
 // http://crbug.com/688015
 TEST_P(ParameterizedLocalCaretRectTest,
        LocalCaretAtEndOfNonEditableInFlatTree) {
-  // For LayoutNG, we also enable EditingNG to test NG caret rendering.
-  ScopedEditingNGForTest editing_ng(LayoutNGEnabled());
-
   LoadAhem();
   InsertStyleElement(
       "div { width: 70px; padding: 10px; font: 10px/10px Ahem }"
@@ -1296,9 +1281,6 @@ TEST_P(ParameterizedLocalCaretRectTest,
 
 // http://crbug.com/688015
 TEST_P(ParameterizedLocalCaretRectTest, AbsoluteCaretAtEndOfNonEditable) {
-  // For LayoutNG, we also enable EditingNG to test NG caret rendering.
-  ScopedEditingNGForTest editing_ng(LayoutNGEnabled());
-
   LoadAhem();
   InsertStyleElement(
       "body { margin: 5px; }"
@@ -1327,9 +1309,6 @@ TEST_P(ParameterizedLocalCaretRectTest, AbsoluteCaretAtEndOfNonEditable) {
 
 // http://crbug.com/688015
 TEST_P(ParameterizedLocalCaretRectTest, AbsoluteCaretAtBeginningOfNonEditable) {
-  // For LayoutNG, we also enable EditingNG to test NG caret rendering.
-  ScopedEditingNGForTest editing_ng(LayoutNGEnabled());
-
   LoadAhem();
   InsertStyleElement(
       "body { margin: 5px; }"
