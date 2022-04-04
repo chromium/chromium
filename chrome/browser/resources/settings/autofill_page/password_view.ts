@@ -60,6 +60,7 @@ export class PasswordViewElement extends PasswordViewElementBase {
     this.credential = {
       urls: {
         shown: site,
+        link: site,
       }
     } as MultiStorePasswordUiEntry;
   }

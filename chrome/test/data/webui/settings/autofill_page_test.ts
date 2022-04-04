@@ -3,14 +3,18 @@
 // found in the LICENSE file.
 
 // clang-format off
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {DomIf, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AutofillManagerImpl, PasswordsSectionElement, PaymentsManagerImpl, SettingsAutofillSectionElement, SettingsPaymentsSectionElement} from 'chrome://settings/lazy_load.js';
+import {buildRouter, Router, routes} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, MultiStoreExceptionEntry, MultiStorePasswordUiEntry, OpenWindowProxyImpl, PasswordManagerImpl, SettingsAutofillPageElement, SettingsPluralStringProxyImpl, SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {assertDeepEquals, assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {SettingsRoutes} from 'chrome://settings/settings_routes.js';
+import {assertDeepEquals, assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
+import {flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {FakeSettingsPrivate} from './fake_settings_private.js';
-import {AutofillManagerExpectations, createAddressEntry, createCreditCardEntry, createExceptionEntry, createPasswordEntry, PaymentsManagerExpectations, TestAutofillManager, TestPaymentsManager} from './passwords_and_autofill_fake_data.js';
+import {AutofillManagerExpectations, createAddressEntry, createCreditCardEntry, createExceptionEntry, createMultiStorePasswordEntry, createPasswordEntry, PaymentsManagerExpectations, TestAutofillManager, TestPaymentsManager} from './passwords_and_autofill_fake_data.js';
 import {makeCompromisedCredential} from './passwords_and_autofill_fake_data.js';
 import {TestOpenWindowProxy} from './test_open_window_proxy.js';
 import {PasswordManagerExpectations,TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -356,5 +360,25 @@ suite('PasswordsUITest', function() {
         autofillPage.shadowRoot!
             .querySelector<HTMLElement>(
                 '#passwordManagerSubLabel')!.innerText.trim());
+  });
+
+  test('Credential urls is used in the subpage header', async function() {
+    const SHOWN_URL = 'www.google.com';
+    loadTimeData.overrideValues({enablePasswordNotes: true});
+    Router.resetInstanceForTesting(buildRouter());
+    routes.PASSWORD_VIEW =
+        (Router.getInstance().getRoutes() as SettingsRoutes).PASSWORD_VIEW;
+    const autofillSection = createAutofillPageSection();
+    autofillSection.credential =
+        createMultiStorePasswordEntry({url: SHOWN_URL, deviceId: 1});
+
+    Router.getInstance().navigateTo(routes.PASSWORD_VIEW);
+    await flushTasks();
+    const subpage =
+        autofillSection.shadowRoot!.querySelector('settings-subpage');
+
+    assertTrue(!!subpage);
+    assertEquals(`http://${SHOWN_URL}/login`, subpage.faviconSiteUrl);
+    assertEquals(SHOWN_URL, subpage.pageTitle);
   });
 });

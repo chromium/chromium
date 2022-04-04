@@ -372,6 +372,7 @@ preprocess_if_expr("copy_browser_settings_tsc") {
     "settings_page/settings_animated_pages.js",
     "settings_page/settings_section.js",
     "settings_page/settings_subpage.js",
+    "site_favicon.js",
   ]
 
   in_files = [

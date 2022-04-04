@@ -82,6 +82,23 @@ suite('SettingsSubpage', function() {
     assertEquals('ltr', icon!.getAttribute('dir'));
   });
 
+  test('favicon', function() {
+    const subpage = document.createElement('settings-subpage');
+    document.body.appendChild(subpage);
+    flush();
+
+    // No favicon is shown when the URL is not given.
+    assertFalse(!!subpage.shadowRoot!.querySelector('site-favicon'));
+
+    subpage.faviconSiteUrl = 'https://www.chromium.org';
+    flush();
+
+    // Favicon is shown when the URL is specified.
+    const favicon = subpage.shadowRoot!.querySelector('site-favicon');
+    assertTrue(!!favicon);
+    assertEquals(subpage.faviconSiteUrl, favicon.url);
+  });
+
   test('clear search (event)', function() {
     const subpage = document.createElement('settings-subpage');
     // Having a searchLabel will create the cr-search-field.
