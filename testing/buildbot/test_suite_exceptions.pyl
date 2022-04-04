@@ -2902,18 +2902,6 @@
           'shards': 6,
         },
       },
-      # TODO(crbug.com/1131588) Tests are flaky only on CQ.
-      'Mac10.13 Tests': {
-        'precommit_args': [
-            '--gtest_filter=-*',
-          ],
-      },
-      # TODO(crbug.com/1131588) Tests are flaky only on CQ.
-      'Mac11 Tests': {
-        'precommit_args': [
-            '--gtest_filter=-*',
-          ],
-      },
       'ToTLinuxTSan': {
         'swarming': {
           'shards': 6,
