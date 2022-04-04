@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/persistent_memory_allocator.h"
+#include "base/metrics/ranges_manager.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
@@ -298,6 +299,10 @@ class BASE_EXPORT PersistentHistogramAllocator {
   void CreateTrackingHistograms(StringPiece name);
   void UpdateTrackingHistograms();
 
+  // Sets the internal |ranges_manager_|, which will be used by the allocator to
+  // register BucketRanges. Takes ownership of the passed |ranges_manager|.
+  void SetRangesManager(RangesManager* ranges_manager);
+
   // Clears the internal |last_created_| reference so testing can validate
   // operation without that optimization.
   void ClearLastCreatedReferenceForTesting();
@@ -331,6 +336,14 @@ class BASE_EXPORT PersistentHistogramAllocator {
 
   // The memory allocator that provides the actual histogram storage.
   std::unique_ptr<PersistentMemoryAllocator> memory_allocator_;
+
+  // The RangesManager that the allocator will register its BucketRanges with.
+  // If this is null (default), the BucketRanges will be registered with the
+  // global statistics recorder. Used when loading self-contained metrics coming
+  // from a previous session. Registering the BucketRanges with the global
+  // statistics recorder could create unnecessary contention, and a low amount
+  // of extra memory.
+  std::unique_ptr<base::RangesManager> ranges_manager_;
 
   // The data-manager used to improve performance of sparse histograms.
   PersistentSparseHistogramDataManager sparse_histogram_data_manager_;

@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/metrics/statistics_recorder.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -213,7 +214,10 @@ TEST_F(PersistentHistogramAllocatorTest, CreateSpareFile) {
 TEST_F(PersistentHistogramAllocatorTest, StatisticsRecorderMerge) {
   const char LinearHistogramName[] = "SRTLinearHistogram";
   const char SparseHistogramName[] = "SRTSparseHistogram";
-  const size_t starting_sr_count = StatisticsRecorder::GetHistogramCount();
+  const size_t global_sr_initial_histogram_count =
+      StatisticsRecorder::GetHistogramCount();
+  const size_t global_sr_initial_bucket_ranges_count =
+      StatisticsRecorder::GetBucketRanges().size();
 
   // Create a local StatisticsRecorder in which the newly created histogram
   // will be recorded. The global allocator must be replaced after because the
@@ -255,7 +259,10 @@ TEST_F(PersistentHistogramAllocatorTest, StatisticsRecorderMerge) {
   std::unique_ptr<GlobalHistogramAllocator> new_allocator =
       GlobalHistogramAllocator::ReleaseForTesting();
   local_sr.reset();
-  EXPECT_EQ(starting_sr_count, StatisticsRecorder::GetHistogramCount());
+  EXPECT_EQ(global_sr_initial_histogram_count,
+            StatisticsRecorder::GetHistogramCount());
+  EXPECT_EQ(global_sr_initial_bucket_ranges_count,
+            StatisticsRecorder::GetBucketRanges().size());
   GlobalHistogramAllocator::Set(std::move(old_allocator));
 
   // Create a "recovery" allocator using the same memory as the local one.
@@ -278,7 +285,8 @@ TEST_F(PersistentHistogramAllocatorTest, StatisticsRecorderMerge) {
         StatisticsRecorder::FindHistogram(recovered->histogram_name());
     EXPECT_NE(recovered.get(), found);
   }
-  EXPECT_EQ(starting_sr_count + 2, StatisticsRecorder::GetHistogramCount());
+  EXPECT_EQ(global_sr_initial_histogram_count + 2,
+            StatisticsRecorder::GetHistogramCount());
 
   // Check the merged histograms for accuracy.
   HistogramBase* found = StatisticsRecorder::FindHistogram(LinearHistogramName);
@@ -299,6 +307,12 @@ TEST_F(PersistentHistogramAllocatorTest, StatisticsRecorderMerge) {
   EXPECT_EQ(1, snapshot->GetCount(4));
   EXPECT_EQ(1, snapshot->GetCount(6));
 
+  // Verify that the LinearHistogram's BucketRanges was registered with the
+  // global SR since the recovery allocator does not specify a custom
+  // RangesManager.
+  ASSERT_EQ(global_sr_initial_bucket_ranges_count + 1,
+            StatisticsRecorder::GetBucketRanges().size());
+
   // Perform additional histogram increments.
   histogram1->AddCount(1, 3);
   histogram1->Add(6);
@@ -317,7 +331,8 @@ TEST_F(PersistentHistogramAllocatorTest, StatisticsRecorderMerge) {
       break;
     recovery2.MergeHistogramDeltaToStatisticsRecorder(recovered.get());
   }
-  EXPECT_EQ(starting_sr_count + 2, StatisticsRecorder::GetHistogramCount());
+  EXPECT_EQ(global_sr_initial_histogram_count + 2,
+            StatisticsRecorder::GetHistogramCount());
 
   // And verify.
   found = StatisticsRecorder::FindHistogram(LinearHistogramName);
@@ -336,6 +351,70 @@ TEST_F(PersistentHistogramAllocatorTest, StatisticsRecorderMerge) {
   EXPECT_EQ(1, snapshot->GetCount(4));
   EXPECT_EQ(1, snapshot->GetCount(6));
   EXPECT_EQ(1, snapshot->GetCount(7));
+}
+
+TEST_F(PersistentHistogramAllocatorTest, CustomRangesManager) {
+  const char LinearHistogramName[] = "TestLinearHistogram";
+  const size_t global_sr_initial_bucket_ranges_count =
+      StatisticsRecorder::GetBucketRanges().size();
+
+  // Create a local StatisticsRecorder in which the newly created histogram
+  // will be recorded. The global allocator must be replaced after because the
+  // act of releasing will cause the active SR to forget about all histograms
+  // in the released memory.
+  std::unique_ptr<StatisticsRecorder> local_sr =
+      StatisticsRecorder::CreateTemporaryForTesting();
+  EXPECT_EQ(0U, StatisticsRecorder::GetHistogramCount());
+  std::unique_ptr<GlobalHistogramAllocator> old_allocator =
+      GlobalHistogramAllocator::ReleaseForTesting();
+  GlobalHistogramAllocator::CreateWithLocalMemory(kAllocatorMemorySize, 0, "");
+  ASSERT_TRUE(GlobalHistogramAllocator::Get());
+
+  // Create a linear histogram and verify it is registered with the local SR.
+  HistogramBase* histogram = LinearHistogram::FactoryGet(
+      LinearHistogramName, /*minimum=*/1, /*maximum=*/10, /*bucket_count=*/10,
+      /*flags=*/0);
+  ASSERT_TRUE(histogram);
+  EXPECT_EQ(1U, StatisticsRecorder::GetHistogramCount());
+  histogram->Add(1);
+
+  // Destroy the local SR and ensure that we're back to the initial state and
+  // restore the global allocator. The histogram created in the local SR will
+  // become unmanaged.
+  std::unique_ptr<GlobalHistogramAllocator> new_allocator =
+      GlobalHistogramAllocator::ReleaseForTesting();
+  local_sr.reset();
+  EXPECT_EQ(global_sr_initial_bucket_ranges_count,
+            StatisticsRecorder::GetBucketRanges().size());
+  GlobalHistogramAllocator::Set(std::move(old_allocator));
+
+  // Create a "recovery" allocator using the same memory as the local one.
+  PersistentHistogramAllocator recovery(
+      std::make_unique<PersistentMemoryAllocator>(
+          const_cast<void*>(new_allocator->memory_allocator()->data()),
+          new_allocator->memory_allocator()->size(), 0, 0, "", false));
+
+  // Set a custom RangesManager for the recovery allocator so that the
+  // BucketRanges are not registered with the global SR.
+  RangesManager* ranges_manager = new RangesManager();
+  recovery.SetRangesManager(ranges_manager);
+  EXPECT_EQ(0U, ranges_manager->GetBucketRanges().size());
+
+  // Get the histogram that was created locally (and forgotten).
+  PersistentHistogramAllocator::Iterator histogram_iter1(&recovery);
+  std::unique_ptr<HistogramBase> recovered = histogram_iter1.GetNext();
+  ASSERT_TRUE(recovered);
+
+  // Verify that there are no more histograms.
+  ASSERT_FALSE(histogram_iter1.GetNext());
+
+  // Expect that the histogram's BucketRanges was not registered with the global
+  // statistics recorder since the recovery allocator specifies a custom
+  // RangesManager.
+  EXPECT_EQ(global_sr_initial_bucket_ranges_count,
+            StatisticsRecorder::GetBucketRanges().size());
+
+  EXPECT_EQ(1U, ranges_manager->GetBucketRanges().size());
 }
 
 TEST_F(PersistentHistogramAllocatorTest, RangesDeDuplication) {
