@@ -120,12 +120,6 @@ const base::Feature kAutofillDelayPopupControllerDeletion{
 const base::Feature kAutofillDisableFilling{"AutofillDisableFilling",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether to displace removed forms in both FormCache and
-// AutofillManager.
-// TODO(crbug.com/1215333): Remove the feature when the experiment is completed.
-const base::Feature kAutofillDisplaceRemovedForms{
-    "AutofillDisplaceRemovedForms", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Kill switch for Autofill address import.
 const base::Feature kAutofillDisableAddressImport{
     "AutofillDisableAddressImport", base::FEATURE_DISABLED_BY_DEFAULT};

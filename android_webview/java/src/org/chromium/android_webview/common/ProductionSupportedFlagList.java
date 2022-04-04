@@ -162,8 +162,6 @@ public final class ProductionSupportedFlagList {
                             + "interact with a payment form."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_AUGMENTED_PHONE_COUNTRY_CODE,
                     "Enables support for phone code number fields with additional text."),
-            Flag.baseFeature(AutofillFeatures.AUTOFILL_DISPLACE_REMOVED_FORMS,
-                    "Fixes memory leaks in the renderer- and browser-form caches."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_USE_UNASSOCIATED_LISTED_ELEMENTS,
                     "Caches unowned listed elements in the document."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_PARSING_PATTERN_PROVIDER,

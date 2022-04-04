@@ -27,12 +27,6 @@ const std::vector<const char*> kOptions = {"Option1", "Option2", "Option3",
                                            "Option4"};
 namespace {
 
-template <typename T>
-bool EquivalentData(const T& a, const T& b) {
-  typename T::IdentityComparator less;
-  return !less(a, b) && !less(b, a);
-}
-
 void CreateTestFieldDataPredictions(const std::string& signature,
                                     FormFieldDataPredictions* field_predict) {
   field_predict->host_form_signature = "TestHostFormSignature";
@@ -86,12 +80,12 @@ void CheckEqualPasswordFormFillData(const PasswordFormFillData& expected,
                                     const PasswordFormFillData& actual) {
   EXPECT_EQ(expected.form_renderer_id, actual.form_renderer_id);
   EXPECT_EQ(expected.action, actual.action);
-  EXPECT_TRUE(
-      EquivalentData(test::WithoutUnserializedData(expected.username_field),
-                     actual.username_field));
-  EXPECT_TRUE(
-      EquivalentData(test::WithoutUnserializedData(expected.password_field),
-                     actual.password_field));
+  EXPECT_TRUE(FormFieldData::DeepEqual(
+      test::WithoutUnserializedData(expected.username_field),
+      actual.username_field));
+  EXPECT_TRUE(FormFieldData::DeepEqual(
+      test::WithoutUnserializedData(expected.password_field),
+      actual.password_field));
   EXPECT_EQ(expected.preferred_realm, actual.preferred_realm);
   EXPECT_EQ(expected.uses_account_store, actual.uses_account_store);
 
@@ -133,7 +127,7 @@ void CheckEqualPassPasswordGenerationUIData(
 class AutofillTypeTraitsTestImpl : public testing::Test,
                                    public mojom::TypeTraitsTest {
  public:
-  AutofillTypeTraitsTestImpl() {}
+  AutofillTypeTraitsTestImpl() = default;
 
   mojo::PendingRemote<mojom::TypeTraitsTest> GetTypeTraitsTestRemote() {
     mojo::PendingRemote<mojom::TypeTraitsTest> remote;
@@ -191,7 +185,8 @@ void ExpectFormFieldData(const FormFieldData& expected,
                          base::OnceClosure closure,
                          const FormFieldData& passed) {
   EXPECT_TRUE(passed.host_frame.is_empty());
-  EXPECT_TRUE(EquivalentData(test::WithoutUnserializedData(expected), passed));
+  EXPECT_TRUE(FormFieldData::DeepEqual(test::WithoutUnserializedData(expected),
+                                       passed));
   EXPECT_EQ(expected.value, passed.value);
   EXPECT_EQ(expected.user_input, passed.user_input);
   std::move(closure).Run();
@@ -201,7 +196,8 @@ void ExpectFormData(const FormData& expected,
                     base::OnceClosure closure,
                     const FormData& passed) {
   EXPECT_TRUE(passed.host_frame.is_empty());
-  EXPECT_TRUE(EquivalentData(test::WithoutUnserializedData(expected), passed));
+  EXPECT_TRUE(
+      FormData::DeepEqual(test::WithoutUnserializedData(expected), passed));
   std::move(closure).Run();
 }
 

@@ -178,13 +178,11 @@ void AutofillManager::OnFormSubmitted(const FormData& form,
 void AutofillManager::OnFormsSeen(
     const std::vector<FormData>& updated_forms,
     const std::vector<FormGlobalId>& removed_forms) {
-  if (base::FeatureList::IsEnabled(features::kAutofillDisplaceRemovedForms)) {
-    // Erase forms that have been removed from the DOM. This prevents
-    // |form_structures_| from growing up its upper bound
-    // kAutofillManagerMaxFormCacheSize.
-    for (FormGlobalId removed_form : removed_forms)
-      form_structures_.erase(removed_form);
-  }
+  // Erase forms that have been removed from the DOM. This prevents
+  // |form_structures_| from growing up its upper bound
+  // kAutofillManagerMaxFormCacheSize.
+  for (FormGlobalId removed_form : removed_forms)
+    form_structures_.erase(removed_form);
 
   if (!IsValidFormDataVector(updated_forms) || !driver_->RendererIsAvailable())
     return;

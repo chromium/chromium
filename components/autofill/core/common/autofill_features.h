@@ -60,8 +60,6 @@ COMPONENT_EXPORT(AUTOFILL) extern const base::Feature kAutofillDisableFilling;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillDisableAddressImport;
 COMPONENT_EXPORT(AUTOFILL)
-extern const base::Feature kAutofillDisplaceRemovedForms;
-COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillEnableAccountWalletStorage;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillEnableAugmentedPhoneCountryCode;

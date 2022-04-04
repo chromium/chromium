@@ -184,7 +184,7 @@ MATCHER(WerePasswordsCleared, "Passwords not cleared") {
 }
 
 MATCHER_P(FormDataEqualTo, form_data, "") {
-  return autofill::FormDataEqualForTesting(arg, form_data);
+  return autofill::FormData::DeepEqual(arg, form_data);
 }
 
 }  // namespace

@@ -53,24 +53,6 @@ class FormCache {
 
   ~FormCache();
 
-  // Scans the DOM in |frame_| extracting and storing forms that have not been
-  // seen before. Returns the extracted forms.
-  //
-  // Note that modified forms are considered new forms.
-  //
-  // To reduce the computational cost, we limit the number of fields and frames
-  // summed over all forms, in addition to the per-form limits in
-  // form_util::FormOrFieldsetsToFormData():
-  // - if the number of fields over all forms exceeds |kMaxParseableFields|,
-  //   only a subset of forms is returned which does not exceed the limit;
-  // - if the number of frames over all forms exceeds kMaxParseableFrames, all
-  //   forms are returned but only a subset of them have non-empty
-  //   FormData::child_frames.
-  // In either case, the subset is chosen so that the returned list of forms
-  // does not exceed the limits of fields and frames.
-  UpdateFormCacheResult ExtractNewForms(
-      const FieldDataManager* field_data_manager);
-
   // Returns the diff of forms since the last call to UpdateFormCache(): the new
   // forms, the still present but changed forms, and the removed forms.
   //
@@ -99,12 +81,7 @@ class FormCache {
   // In either case, the subset is chosen so that the returned list of forms
   // does not exceed the limits of fields and frames.
   //
-  // Updates |parsed_forms_by_renderer_id_| to contain the forms that are
-  // currently in the DOM.
-  //
-  // TODO(crbug/1215333):/ Modified version of ExtractNewForms(). It is used
-  // only if `AutofillUseNewFormExtraction` feature is enabled. Remove
-  // ExtractNewForms() after the feature is deleted.
+  // Updates |parsed_forms_| to contain the forms that are currently in the DOM.
   UpdateFormCacheResult UpdateFormCache(
       const FieldDataManager* field_data_manager);
 
@@ -150,30 +127,13 @@ class FormCache {
   // |initial_checked_state_| whose keys not contained in |ids_to_retain|.
   void PruneInitialValueCaches(const std::set<FieldRendererId>& ids_to_retain);
 
-  // Update the peak size of the cached forms stored in
-  // |peak_size_of_parsed_forms_|.
-  // TODO(crbug/1215333): Remove after `Autofill.FormCacheSize` experiment is
-  // completed.
-  void MaybeUpdateParsedFormsPeak();
-
   // The frame this FormCache is associated with. Weak reference.
   blink::WebLocalFrame* frame_;
-
-  // The cached forms. Used to prevent re-extraction of forms.
-  // TODO(crbug/896689) Move to std::map<unique_rederer_id, FormData>.
-  std::set<FormData, FormData::IdentityComparator> parsed_forms_;
 
   // Same as |parsed_forms_|, but moved to a different type. It is used only if
   // `AutofillUseNewFormExtraction` feature is enabled.
   // TODO(crbug/1215333): Remove |parsed_forms_| after the feature is deleted.
-  std::map<FormRendererId, FormData> parsed_forms_by_renderer_id_;
-
-  // Stores the peak size of the cached forms for `Autofill.FormCacheSize`
-  // metric. The cached forms are stored in |parsed_forms_| or
-  // |parsed_forms_by_renderer_id_| depending on the
-  // `AutofillUseNewFormExtraction` feature.
-  // TODO(crbug/1215333): Remove after the experiment is completed.
-  size_t peak_size_of_parsed_forms_ = 0;
+  std::map<FormRendererId, FormData> parsed_forms_;
 
   // The synthetic FormData is for all the fieldsets in the document without a
   // form owner.
