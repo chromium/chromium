@@ -49,6 +49,7 @@ class OmniboxAnswerResult : public ChromeSearchResult,
   void FetchImage(const GURL& url);
 
   bool IsCalculatorResult() const;
+  bool IsDictionaryResult() const;
   bool IsWeatherResult() const;
 
   Profile* profile_;

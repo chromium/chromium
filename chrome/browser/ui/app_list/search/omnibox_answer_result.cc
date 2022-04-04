@@ -234,6 +234,10 @@ void OmniboxAnswerResult::UpdateTitleAndDetails() {
 
     SetTitleTextVector(first_vector);
     SetDetailsTextVector(second_vector);
+
+    // Dictionary answer details can be split over multiple lines.
+    if (IsDictionaryResult())
+      SetMultilineDetails(true);
   }
 
   std::u16string accessible_name = ComputeAccessibleName(
@@ -291,6 +295,11 @@ void OmniboxAnswerResult::OnFetchComplete(const GURL& url,
 
 bool OmniboxAnswerResult::IsCalculatorResult() const {
   return match_.type == AutocompleteMatchType::CALCULATOR;
+}
+
+bool OmniboxAnswerResult::IsDictionaryResult() const {
+  return match_.answer.has_value() &&
+         match_.answer->type() == SuggestionAnswer::ANSWER_TYPE_DICTIONARY;
 }
 
 bool OmniboxAnswerResult::IsWeatherResult() const {

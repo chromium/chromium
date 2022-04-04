@@ -82,6 +82,9 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   }
   void SetDetailsTextVector(const TextVector& vector);
 
+  bool multiline_details() const { return metadata_->multiline_details; }
+  void SetMultilineDetails(bool multiline_details);
+
   const TextVector& big_title_text_vector() const {
     return metadata_->big_title_vector;
   }

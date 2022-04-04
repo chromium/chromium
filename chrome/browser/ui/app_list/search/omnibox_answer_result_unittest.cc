@@ -256,4 +256,28 @@ TEST_F(OmniboxAnswerResultTest, AnswerResult) {
                   TagEquals(Tag(Tag::Style::GREEN, 0, length))));
 }
 
+TEST_F(OmniboxAnswerResultTest, DictionaryResultMultiline) {
+  // This comes from SuggestionAnswer::AnswerType::ANSWER_TYPE_DICTIONARY.
+  const std::u16string kDictionaryType = u"1";
+
+  SuggestionAnswer answer;
+  std::string json =
+      "{ \"l\": ["
+      "  { \"il\": { \"t\": [{ \"t\": \"text one\", \"tt\": 8 }] } }, "
+      "  { \"il\": { \"t\": [{ \"t\": \"text two\", \"tt\": 5 }] } } "
+      "] }";
+  absl::optional<base::Value> value = base::JSONReader::Read(json);
+  ASSERT_TRUE(value && value->is_dict());
+  ASSERT_TRUE(SuggestionAnswer::ParseAnswer(value->GetDict(), kDictionaryType,
+                                            &answer));
+
+  AutocompleteMatch match;
+  match.answer = answer;
+  match.contents = u"contents";
+  match.description = u"description";
+
+  OmniboxAnswerResult result(nullptr, nullptr, nullptr, match, u"query");
+  EXPECT_TRUE(result.multiline_details());
+}
+
 }  // namespace app_list
