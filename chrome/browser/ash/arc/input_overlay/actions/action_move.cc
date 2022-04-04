@@ -76,7 +76,11 @@ class ActionMove::ActionMoveMouseView : public ActionView {
   }
 
   // TODO(cuicuiruan): rewrite for post MVP once design is ready.
-  void OnKeyBindingChange(ActionTag* action_tag, ui::DomCode code) override {}
+  void OnKeyBindingChange(ActionTag* action_tag, ui::DomCode code) override {
+    NOTIMPLEMENTED();
+  }
+  void OnBindingToKeyboard() override { NOTIMPLEMENTED(); }
+  void OnBindingToMouse(std::string mouse_action) override { NOTIMPLEMENTED(); }
 };
 
 class ActionMove::ActionMoveKeyView : public ActionView {
@@ -144,6 +148,10 @@ class ActionMove::ActionMoveKeyView : public ActionView {
     // TODO(cuicuiruan): Implement the key binding change for key-bound
     // |ActionMove|.
   }
+
+  // TODO(cuicuiruan): implement for post MVP once the design is ready.
+  void OnBindingToKeyboard() override { NOTIMPLEMENTED(); }
+  void OnBindingToMouse(std::string mouse_action) override { NOTIMPLEMENTED(); }
 };
 
 ActionMove::ActionMove(aura::Window* window) : Action(window) {}

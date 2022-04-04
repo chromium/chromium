@@ -27,8 +27,10 @@ constexpr char kTapAction[] = "tap";
 constexpr char kMoveAction[] = "move";
 constexpr char kMouseLock[] = "mouse_lock";
 // Mask for interesting modifiers.
-const int kInterestingFlagsMask =
+constexpr int kInterestingFlagsMask =
     ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN;
+// Default mouse lock key.
+constexpr ui::DomCode kDefaultMouseLockCode = ui::DomCode::ESCAPE;
 
 // UI strings.
 // TODO(cuicuiruan): move the strings to chrome/app/generated_resources.grd
@@ -275,11 +277,17 @@ void TouchInjector::SendExtraEvent(
 
 void TouchInjector::ParseMouseLock(const base::Value& value) {
   auto* mouse_lock = value.FindKey(kMouseLock);
-  if (!mouse_lock)
+  if (!mouse_lock) {
+    mouse_lock_ = std::make_unique<KeyCommand>(
+        kDefaultMouseLockCode, /*modifier=*/0,
+        base::BindRepeating(&TouchInjector::FlipMouseLockFlag,
+                            weak_ptr_factory_.GetWeakPtr()));
     return;
+  }
   auto key = ParseKeyboardKey(*mouse_lock, kMouseLock);
   if (!key)
     return;
+  // Customized mouse lock overrides the default mouse lock.
   mouse_lock_ = std::make_unique<KeyCommand>(
       key->first, key->second,
       base::BindRepeating(&TouchInjector::FlipMouseLockFlag,

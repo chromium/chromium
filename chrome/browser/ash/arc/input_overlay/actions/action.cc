@@ -235,11 +235,12 @@ void Action::CancelPendingBind(const gfx::RectF& content_bounds) {
 
 void Action::RestoreToDefault(const gfx::RectF& content_bounds) {
   DCHECK(action_view_);
-  if (!action_view_)
+  if (!action_view_ || GetCurrentDisplayedBinding() == *original_binding_)
     return;
   pending_binding_.reset();
   pending_binding_ = std::make_unique<InputElement>(*original_binding_);
   action_view_->SetViewContent(BindingOption::kPending, content_bounds);
+  action_view_->SetDisplayMode(DisplayMode::kEdited);
 }
 
 const InputElement& Action::GetCurrentDisplayedBinding() {

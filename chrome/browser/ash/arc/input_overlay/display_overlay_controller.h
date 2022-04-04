@@ -52,8 +52,8 @@ class DisplayOverlayController : public ui::EventHandler {
   void AddEditErrorMsg(ActionView* action_view, base::StringPiece error_msg);
   void RemoveEditErrorMsg();
 
-  void OnKeyBindingChange(Action* action,
-                          std::unique_ptr<InputElement> input_element);
+  void OnBindingChange(Action* action,
+                       std::unique_ptr<InputElement> input_element);
 
   // Save the changes when users press the save button after editing.
   void OnCustomizeSave();

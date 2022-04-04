@@ -128,8 +128,34 @@ class ActionTap::ActionTapView : public ActionView {
       return;
 
     auto input_element = InputElement::CreateActionTapKeyElement(code);
-    display_overlay_controller_->OnKeyBindingChange(action_,
-                                                    std::move(input_element));
+    display_overlay_controller_->OnBindingChange(action_,
+                                                 std::move(input_element));
+  }
+
+  void OnBindingToKeyboard() override {
+    const auto& binding = action_->GetCurrentDisplayedBinding();
+    if (!IsMouseBound(binding))
+      return;
+
+    auto input_element = std::make_unique<InputElement>();
+    action_->set_pending_binding(std::move(input_element));
+    auto bounds = CalculateWindowContentBounds(action_->target_window());
+    SetViewContent(BindingOption::kPending, bounds);
+    SetDisplayMode(DisplayMode::kEdited);
+  }
+
+  void OnBindingToMouse(std::string mouse_action) override {
+    DCHECK(mouse_action == kPrimaryClick || mouse_action == kSecondaryClick);
+    if (mouse_action != kPrimaryClick && mouse_action != kSecondaryClick)
+      return;
+    const auto& binding = action_->GetCurrentDisplayedBinding();
+    if (IsMouseBound(binding) && binding.mouse_action() == mouse_action)
+      return;
+
+    auto input_element =
+        InputElement::CreateActionTapMouseElement(mouse_action);
+    display_overlay_controller_->OnBindingChange(action_,
+                                                 std::move(input_element));
   }
 };
 

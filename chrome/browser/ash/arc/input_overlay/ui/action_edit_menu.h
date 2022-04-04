@@ -38,14 +38,14 @@ class ActionEditMenu : public views::View {
 
   void InitActionTapEditMenu();
   void OnKeyBoardKeyBindingButtonPressed();
-  void OnMouseLeftBindingButtonPressed();
-  void OnMouseRightBindingButtonPressed();
+  void OnMouseLeftClickBindingButtonPressed();
+  void OnMouseRightClickBindingButtonPressed();
   void OnResetButtonPressed();
 
   // Reference to owner class.
   const raw_ptr<DisplayOverlayController> display_overlay_controller_ = nullptr;
   // Reference to position.
-  raw_ptr<ActionView> anchor_ = nullptr;
+  raw_ptr<ActionView> anchor_view_ = nullptr;
   // Reference to the menu items.
   raw_ptr<BindingButton> keyboard_key_ = nullptr;
   raw_ptr<BindingButton> mouse_left_ = nullptr;

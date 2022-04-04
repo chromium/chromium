@@ -81,6 +81,17 @@ void ActionView::ShowErrorMsg(base::StringPiece error_msg) {
   SetDisplayMode(DisplayMode::kEdited);
 }
 
+void ActionView::OnResetBinding() {
+  const auto& binding = action_->GetCurrentDisplayedBinding();
+  if (!IsBound(binding) || binding == *action_->current_binding())
+    return;
+
+  auto input_element =
+      std::make_unique<InputElement>(*(action_->current_binding()));
+  display_overlay_controller_->OnBindingChange(action_,
+                                               std::move(input_element));
+}
+
 void ActionView::AddEditButton() {
   if (!editable_ || menu_entry_)
     return;

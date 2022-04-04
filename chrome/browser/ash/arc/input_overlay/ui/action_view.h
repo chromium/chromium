@@ -38,6 +38,8 @@ class ActionView : public views::View {
                               const gfx::RectF& content_bounds) = 0;
   // Each type of the actions acts differently on key binding change.
   virtual void OnKeyBindingChange(ActionTag* action_tag, ui::DomCode code) = 0;
+  virtual void OnBindingToKeyboard() = 0;
+  virtual void OnBindingToMouse(std::string mouse_action) = 0;
 
   // Set position from its center position.
   void SetPositionFromCenterPosition(gfx::PointF& center_position);
@@ -46,8 +48,10 @@ class ActionView : public views::View {
   // Get edit menu position in parent's bounds.
   gfx::Point GetEditMenuPosition(gfx::Size menu_size);
   void RemoveEditMenu();
-
+  // Show error message for action.
   void ShowErrorMsg(base::StringPiece error_msg);
+  // Reset binding to its previous binding before entering to the edit mode.
+  void OnResetBinding();
 
   Action* action() { return action_; }
   void set_editable(bool editable) { editable_ = editable; }

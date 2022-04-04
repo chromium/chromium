@@ -130,6 +130,8 @@ void ActionLabel::SetToEditedUnBind() {
   SetBackground(views::CreateRoundedRectBackground(kEditedUnboundBgColor,
                                                    kCornerRadiusView));
   SetSize(GetPreferredSize());
+  SetSelectable(true);
+  SetEnabled(true);
 }
 
 void ActionLabel::SetToEditFocus() {

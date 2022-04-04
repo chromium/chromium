@@ -325,7 +325,7 @@ void DisplayOverlayController::RemoveEditErrorMsg() {
   error_ = nullptr;
 }
 
-void DisplayOverlayController::OnKeyBindingChange(
+void DisplayOverlayController::OnBindingChange(
     Action* action,
     std::unique_ptr<InputElement> input_element) {
   touch_injector_->OnBindingChange(action, std::move(input_element));
