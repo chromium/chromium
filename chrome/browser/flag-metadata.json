@@ -273,7 +273,7 @@
   {
     "name": "arc-use-limit-cache-balloon-policy",
     "owners": [ "cwd" ],
-    "expiry_milestone": 97
+    "expiry_milestone": 110
   },
   {
     "name": "arc-window-predictor",
