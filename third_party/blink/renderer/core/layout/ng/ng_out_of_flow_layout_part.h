@@ -27,10 +27,10 @@ class ComputedStyle;
 class LayoutBox;
 class LayoutObject;
 class NGBlockBreakToken;
+template <typename OffsetType>
+class NGContainingBlock;
 class NGLayoutResult;
 class NGSimplifiedOOFLayoutAlgorithm;
-template <typename OffsetType>
-struct NGContainingBlock;
 struct NGLink;
 struct NGLogicalOutOfFlowPositionedNode;
 template <typename OffsetType>

@@ -96,11 +96,11 @@ NGContainingBlock<PhysicalOffset> PhysicalContainingBlock(
     PhysicalSize inner_size,
     const NGContainingBlock<LogicalOffset>& containing_block) {
   return NGContainingBlock<PhysicalOffset>(
-      containing_block.offset.ConvertToPhysical(
+      containing_block.Offset().ConvertToPhysical(
           builder->Style().GetWritingDirection(), outer_size, inner_size),
-      containing_block.relative_offset.ConvertToPhysical(
+      containing_block.RelativeOffset().ConvertToPhysical(
           builder->Style().GetWritingDirection(), outer_size, inner_size),
-      containing_block.fragment, containing_block.is_inside_column_spanner);
+      containing_block.Fragment(), containing_block.IsInsideColumnSpanner());
 }
 
 NGContainingBlock<PhysicalOffset> PhysicalContainingBlock(
@@ -108,7 +108,7 @@ NGContainingBlock<PhysicalOffset> PhysicalContainingBlock(
     PhysicalSize size,
     const NGContainingBlock<LogicalOffset>& containing_block) {
   PhysicalSize containing_block_size =
-      containing_block.fragment ? containing_block.fragment->Size() : size;
+      containing_block.Fragment() ? containing_block.Fragment()->Size() : size;
   return PhysicalContainingBlock(builder, size, containing_block_size,
                                  containing_block);
 }
@@ -482,8 +482,8 @@ NGPhysicalFragment::FragmentedOutOfFlowDataFromBuilder(
 
     // The static position should remain relative to the containing block.
     PhysicalSize containing_block_size =
-        descendant.containing_block.fragment
-            ? descendant.containing_block.fragment->Size()
+        descendant.containing_block.Fragment()
+            ? descendant.containing_block.Fragment()->Size()
             : size;
     const WritingModeConverter containing_block_converter(
         writing_direction, containing_block_size);

@@ -290,7 +290,7 @@ void NGContainerFragmentBuilder::TransferOutOfFlowCandidates(
   for (auto& candidate : oof_positioned_candidates_) {
     NGBlockNode node = candidate.Node();
     candidate.static_position.offset += additional_offset;
-    if (multicol && multicol->fixedpos_containing_block.fragment &&
+    if (multicol && multicol->fixedpos_containing_block.Fragment() &&
         node.Style().GetPosition() == EPosition::kFixed) {
       // A fixedpos containing block was found in |multicol|. Add the fixedpos
       // as a fragmentainer descendant instead.
@@ -392,8 +392,8 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
       // its containing block, that relative offset should be applied to the
       // static position (before fragmentation).
       static_position.offset +=
-          relative_offset - fixedpos_containing_block->relative_offset;
-      if (fixedpos_containing_block && fixedpos_containing_block->fragment) {
+          relative_offset - fixedpos_containing_block->RelativeOffset();
+      if (fixedpos_containing_block && fixedpos_containing_block->Fragment()) {
         AddOutOfFlowFragmentainerDescendant(
             {node, static_position, new_inline_container,
              /* needs_block_offset_adjustment */ false,
@@ -431,7 +431,7 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
           converter.ToLogical(multicol_info->multicol_offset, PhysicalSize());
 
       const NGPhysicalFragment* fixedpos_containing_block_fragment =
-          multicol_info->fixedpos_containing_block.fragment;
+          multicol_info->fixedpos_containing_block.Fragment();
       if (!fixedpos_containing_block_fragment && fragment.GetLayoutObject() &&
           fragment.GetLayoutObject()->CanContainFixedPositionObjects()) {
         DCHECK(box_fragment);  // shouldn't be line box by |GetLayoutObject()|.
@@ -445,13 +445,13 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
       LogicalOffset fixedpos_containing_block_offset;
       LogicalOffset fixedpos_containing_block_rel_offset;
       bool is_inside_column_spanner =
-          multicol_info->fixedpos_containing_block.is_inside_column_spanner;
+          multicol_info->fixedpos_containing_block.IsInsideColumnSpanner();
       if (fixedpos_containing_block_fragment) {
-        fixedpos_containing_block_offset =
-            converter.ToLogical(multicol_info->fixedpos_containing_block.offset,
-                                fixedpos_containing_block_fragment->Size());
+        fixedpos_containing_block_offset = converter.ToLogical(
+            multicol_info->fixedpos_containing_block.Offset(),
+            fixedpos_containing_block_fragment->Size());
         fixedpos_containing_block_rel_offset = converter.ToLogical(
-            multicol_info->fixedpos_containing_block.relative_offset,
+            multicol_info->fixedpos_containing_block.RelativeOffset(),
             fixedpos_containing_block_fragment->Size());
         fixedpos_containing_block_rel_offset += relative_offset;
         // We want the fixedpos containing block offset to be the offset from
@@ -492,11 +492,11 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     next_idx = idx + 1;
     const auto& descendant = out_of_flow_fragmentainer_descendants[idx];
     const NGPhysicalFragment* containing_block_fragment =
-        descendant.containing_block.fragment;
+        descendant.containing_block.Fragment();
     bool container_inside_column_spanner =
-        descendant.containing_block.is_inside_column_spanner;
+        descendant.containing_block.IsInsideColumnSpanner();
     bool fixedpos_container_inside_column_spanner =
-        descendant.fixedpos_containing_block.is_inside_column_spanner;
+        descendant.fixedpos_containing_block.IsInsideColumnSpanner();
     bool remove_descendant = false;
 
     if (!containing_block_fragment) {
@@ -526,10 +526,11 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     if (is_column_spanner)
       container_inside_column_spanner = true;
 
-    LogicalOffset containing_block_offset = converter.ToLogical(
-        descendant.containing_block.offset, containing_block_fragment->Size());
+    LogicalOffset containing_block_offset =
+        converter.ToLogical(descendant.containing_block.Offset(),
+                            containing_block_fragment->Size());
     LogicalOffset containing_block_rel_offset =
-        converter.ToLogical(descendant.containing_block.relative_offset,
+        converter.ToLogical(descendant.containing_block.RelativeOffset(),
                             containing_block_fragment->Size());
     containing_block_rel_offset += relative_offset;
     if (!fragment.IsFragmentainerBox())
@@ -537,7 +538,7 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     containing_block_offset.block_offset += containing_block_adjustment;
 
     const NGPhysicalFragment* fixedpos_containing_block_fragment =
-        descendant.fixedpos_containing_block.fragment;
+        descendant.fixedpos_containing_block.Fragment();
     if (!fixedpos_containing_block_fragment && fragment.GetLayoutObject() &&
         fragment.GetLayoutObject()->CanContainFixedPositionObjects()) {
       DCHECK(box_fragment);  // shouldn't ba line box by |GetLayoutObject()|.
@@ -548,10 +549,10 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     LogicalOffset fixedpos_containing_block_rel_offset;
     if (fixedpos_containing_block_fragment) {
       fixedpos_containing_block_offset =
-          converter.ToLogical(descendant.fixedpos_containing_block.offset,
+          converter.ToLogical(descendant.fixedpos_containing_block.Offset(),
                               fixedpos_containing_block_fragment->Size());
       fixedpos_containing_block_rel_offset = converter.ToLogical(
-          descendant.fixedpos_containing_block.relative_offset,
+          descendant.fixedpos_containing_block.RelativeOffset(),
           fixedpos_containing_block_fragment->Size());
       fixedpos_containing_block_rel_offset += relative_offset;
       if (!fragment.IsFragmentainerBox())
@@ -564,10 +565,11 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     }
 
     if (!fixedpos_containing_block_fragment && fixedpos_containing_block) {
-      fixedpos_containing_block_fragment = fixedpos_containing_block->fragment;
-      fixedpos_containing_block_offset = fixedpos_containing_block->offset;
+      fixedpos_containing_block_fragment =
+          fixedpos_containing_block->Fragment();
+      fixedpos_containing_block_offset = fixedpos_containing_block->Offset();
       fixedpos_containing_block_rel_offset =
-          fixedpos_containing_block->relative_offset;
+          fixedpos_containing_block->RelativeOffset();
     }
 
     LogicalOffset inline_relative_offset = converter.ToLogical(

@@ -597,19 +597,19 @@ void NGBoxFragmentBuilder::AdjustOffsetsForFragmentainerDescendant(
   // adjust the static position to be relative to the adjusted containing block
   // offset.
   if (!only_fixedpos_containing_block &&
-      !descendant.containing_block.fragment) {
-    descendant.containing_block.offset.block_offset -=
-        previous_consumed_block_size;
+      !descendant.containing_block.Fragment()) {
+    descendant.containing_block.IncreaseBlockOffset(
+        -previous_consumed_block_size);
     descendant.static_position.offset.block_offset +=
         previous_consumed_block_size;
   }
 
   // If the fixedpos containing block is fragmented, adjust the offset to be
   // from the first containing block fragment to the fragmentation context root.
-  if (!descendant.fixedpos_containing_block.fragment &&
+  if (!descendant.fixedpos_containing_block.Fragment() &&
       node_.IsFixedContainer()) {
-    descendant.fixedpos_containing_block.offset.block_offset -=
-        previous_consumed_block_size;
+    descendant.fixedpos_containing_block.IncreaseBlockOffset(
+        -previous_consumed_block_size);
   }
 }
 
@@ -645,9 +645,9 @@ void NGBoxFragmentBuilder::AdjustFixedposContainingBlockForInnerMulticols() {
       PreviousBreakToken()->ConsumedBlockSize();
   for (auto& multicol : multicols_with_pending_oofs_) {
     NGMulticolWithPendingOOFs<LogicalOffset>& value = *multicol.value;
-    if (!value.fixedpos_containing_block.fragment) {
-      value.fixedpos_containing_block.offset.block_offset -=
-          previous_consumed_block_size;
+    if (!value.fixedpos_containing_block.Fragment()) {
+      value.fixedpos_containing_block.IncreaseBlockOffset(
+          -previous_consumed_block_size);
       value.multicol_offset.block_offset += previous_consumed_block_size;
     }
   }

@@ -23,31 +23,40 @@ namespace blink {
 // NGPhysicalOOFNodeForFragmentation/NGLogicalOutOfFlowPositionedNode for more
 // details.
 template <typename OffsetType>
-struct NGContainingBlock {
+class NGContainingBlock {
   DISALLOW_NEW();
 
  public:
-  OffsetType offset;
-  // The relative offset is stored separately to ensure that it is applied after
-  // fragmentation: https://www.w3.org/TR/css-break-3/#transforms.
-  OffsetType relative_offset;
-  Member<const NGPhysicalFragment> fragment;
-  // True if there is a column spanner between the containing block and the
-  // multicol container (or if the containing block is a column spanner).
-  bool is_inside_column_spanner = false;
-
-  NGContainingBlock() : fragment(nullptr) {}
+  NGContainingBlock() = default;
 
   NGContainingBlock(OffsetType offset,
                     OffsetType relative_offset,
                     const NGPhysicalFragment* fragment,
                     bool is_inside_column_spanner)
-      : offset(offset),
-        relative_offset(relative_offset),
-        fragment(std::move(fragment)),
-        is_inside_column_spanner(is_inside_column_spanner) {}
+      : offset_(offset),
+        relative_offset_(relative_offset),
+        fragment_(std::move(fragment)),
+        is_inside_column_spanner_(is_inside_column_spanner) {}
 
-  void Trace(Visitor* visitor) const { visitor->Trace(fragment); }
+  OffsetType Offset() const { return offset_; }
+  void IncreaseBlockOffset(LayoutUnit block_offset) {
+    offset_.block_offset += block_offset;
+  }
+  OffsetType RelativeOffset() const { return relative_offset_; }
+  const NGPhysicalFragment* Fragment() const { return fragment_; }
+  bool IsInsideColumnSpanner() const { return is_inside_column_spanner_; }
+
+  void Trace(Visitor* visitor) const { visitor->Trace(fragment_); }
+
+ private:
+  OffsetType offset_;
+  // The relative offset is stored separately to ensure that it is applied after
+  // fragmentation: https://www.w3.org/TR/css-break-3/#transforms.
+  OffsetType relative_offset_;
+  Member<const NGPhysicalFragment> fragment_;
+  // True if there is a column spanner between the containing block and the
+  // multicol container (or if the containing block is a column spanner).
+  bool is_inside_column_spanner_ = false;
 };
 
 // This holds the containing block for an out-of-flow positioned element
