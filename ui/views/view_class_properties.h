@@ -70,8 +70,8 @@ VIEWS_EXPORT extern const ui::ClassProperty<LayoutAlignment*>* const
     kTableVertAlignKey;
 
 // Property indicating whether a view should be ignored by a layout. Supported
-// by View::DefaultFillLayout.
-// TODO(kylixrd): Revisit using for FillLayout.
+// by View::DefaultFillLayout and BoxLayout.
+// TODO(kylixrd): Use for other layouts.
 VIEWS_EXPORT extern const ui::ClassProperty<bool>* const
     kViewIgnoredByLayoutKey;
 

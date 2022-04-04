@@ -79,8 +79,8 @@ void BoxLayout::ViewWrapper::SetBoundsRect(const gfx::Rect& bounds) {
   view_->SetBoundsRect(new_bounds);
 }
 
-bool BoxLayout::ViewWrapper::visible() const {
-  return view_->GetVisible();
+bool BoxLayout::ViewWrapper::VisibleToLayout() const {
+  return view_->GetVisible() && !view_->GetProperty(kViewIgnoredByLayoutKey);
 }
 
 BoxLayout::BoxLayout(BoxLayout::Orientation orientation,
@@ -160,7 +160,7 @@ void BoxLayout::Layout(View* host) {
   // Calculate the total size of children in the main axis.
   for (auto i = host->children().cbegin(); i != host->children().cend(); ++i) {
     const ViewWrapper child(this, *i);
-    if (!child.visible())
+    if (!child.VisibleToLayout())
       continue;
     int flex = GetFlexForView(child.view());
     int child_main_axis_size = MainAxisSizeForView(child, child_area.width());
@@ -210,7 +210,7 @@ void BoxLayout::Layout(View* host) {
   int current_flex = 0;
   for (auto i = host->children().cbegin(); i != host->children().cend(); ++i) {
     ViewWrapper child(this, *i);
-    if (!child.visible())
+    if (!child.VisibleToLayout())
       continue;
 
     // TODO(bruthig): Fix this. The main axis should be calculated before
@@ -319,7 +319,7 @@ gfx::Size BoxLayout::GetPreferredSize(const View* host) const {
     gfx::Rect child_view_area;
     for (View* view : host_->children()) {
       const ViewWrapper child(this, view);
-      if (!child.visible())
+      if (!child.VisibleToLayout())
         continue;
 
       // We need to bypass the ViewWrapper GetPreferredSize() to get the actual
@@ -512,7 +512,7 @@ gfx::Insets BoxLayout::CrossAxisMaxViewMargin() const {
   int trailing = 0;
   for (View* view : host_->children()) {
     const ViewWrapper child(this, view);
-    if (!child.visible())
+    if (!child.VisibleToLayout())
       continue;
     leading = std::max(leading, CrossAxisLeadingInset(child.margins()));
     trailing = std::max(trailing, CrossAxisTrailingInset(child.margins()));
@@ -576,7 +576,7 @@ gfx::Size BoxLayout::GetPreferredSizeForChildWidth(const View* host,
     for (auto i = host->children().cbegin(); i != host->children().cend();
          ++i) {
       const ViewWrapper child(this, *i);
-      if (!child.visible())
+      if (!child.VisibleToLayout())
         continue;
 
       gfx::Size size(child.view()->GetPreferredSize());
@@ -623,7 +623,7 @@ gfx::Size BoxLayout::GetPreferredSizeForChildWidth(const View* host,
     for (auto i = host->children().cbegin(); i != host->children().cend();
          ++i) {
       const ViewWrapper child(this, *i);
-      if (!child.visible())
+      if (!child.VisibleToLayout())
         continue;
 
       const ViewWrapper next(this, NextVisibleView(std::next(i)));
@@ -657,19 +657,21 @@ gfx::Size BoxLayout::NonChildSize(const View* host) const {
 }
 
 View* BoxLayout::NextVisibleView(View::Views::const_iterator pos) const {
-  const auto i = std::find_if(pos, host_->children().cend(),
-                              [](const View* v) { return v->GetVisible(); });
+  const auto i = std::find_if(pos, host_->children().cend(), [this](View* v) {
+    return ViewWrapper(this, v).VisibleToLayout();
+  });
   return (i == host_->children().cend()) ? nullptr : *i;
 }
 
 View* BoxLayout::FirstVisibleView() const {
-  return NextVisibleView(host_->children().cbegin());
+  return NextVisibleView(host_->children().begin());
 }
 
 View* BoxLayout::LastVisibleView() const {
   const auto& children = host_->children();
-  const auto i = std::find_if(children.crbegin(), children.crend(),
-                              [](const View* v) { return v->GetVisible(); });
+  const auto i = std::find_if(
+      children.crbegin(), children.crend(),
+      [this](View* v) { return ViewWrapper(this, v).VisibleToLayout(); });
   return (i == children.crend()) ? nullptr : *i;
 }
 

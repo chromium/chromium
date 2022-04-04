@@ -207,7 +207,7 @@ class VIEWS_EXPORT BoxLayout : public LayoutManager {
     gfx::Size GetPreferredSize() const;
     void SetBoundsRect(const gfx::Rect& bounds);
     View* view() const { return view_; }
-    bool visible() const;
+    bool VisibleToLayout() const;
 
    private:
     raw_ptr<View> view_ = nullptr;

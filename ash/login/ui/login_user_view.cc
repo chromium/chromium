@@ -39,8 +39,8 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/painter.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 namespace {
@@ -597,6 +597,14 @@ void LoginUserView::OnThemeChanged() {
   }
 }
 
+views::View::Views LoginUserView::GetChildrenInZOrder() {
+  auto children = views::View::GetChildrenInZOrder();
+  auto tap_button_iter = base::ranges::find(children, tap_button_);
+  DCHECK(tap_button_iter != children.end());
+  std::rotate(tap_button_iter, tap_button_iter + 1, children.end());
+  return children;
+}
+
 void LoginUserView::OnHover(bool has_hover) {
   UpdateOpacity();
 }
@@ -696,88 +704,52 @@ void LoginUserView::UpdateOpacity() {
 }
 
 void LoginUserView::SetLargeLayout() {
-  // Add views in tabbing order; they are rendered in a different order below.
-  AddChildView(user_image_);
-  AddChildView(user_label_);
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+      kVerticalSpacingBetweenEntriesDp));
   AddChildView(tap_button_);
+  tap_button_->SetProperty(views::kViewIgnoredByLayoutKey, true);
+
+  // Centered user image.
+  auto* image_row = AddChildView(std::make_unique<NonAccessibleView>());
+  auto* image_layout =
+      image_row->SetLayoutManager(std::make_unique<views::BoxLayout>());
+  image_layout->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kCenter);
+  image_row->AddChildView(user_image_);
+
+  // User name, menu dropdown.
+  auto* label_row = AddChildView(std::make_unique<NonAccessibleView>());
+  auto* label_layout =
+      label_row->SetLayoutManager(std::make_unique<views::BoxLayout>());
+  label_layout->set_between_child_spacing(
+      kDistanceBetweenUsernameAndDropdownDp);
+  label_layout->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kCenter);
+
+  // Add an empty view that has the same size as the dropdown so we center on
+  // `user_label_`. This is simpler than doing manual size calculation to take
+  // into account the extra offset.
+  if (dropdown_) {
+    label_row->AddChildView(std::make_unique<NonAccessibleView>())
+        ->SetPreferredSize(dropdown_->GetPreferredSize());
+  }
+
+  label_row->AddChildView(user_label_);
+
   if (dropdown_)
-    AddChildView(dropdown_);
-
-  // Use views::GridLayout instead of views::BoxLayout because views::BoxLayout
-  // lays out children according to the view->children order.
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-
-  constexpr int kImageColumnId = 0;
-  constexpr int kLabelDropdownColumnId = 1;
-  constexpr int kLabelDomainColumnId = 2;
-
-  {
-    views::ColumnSet* image = layout->AddColumnSet(kImageColumnId);
-    image->AddColumn(views::GridLayout::CENTER, views::GridLayout::CENTER,
-                     1 /*resize_percent*/,
-                     views::GridLayout::ColumnSize::kUsePreferred,
-                     0 /*fixed_width*/, 0 /*min_width*/);
-  }
-
-  {
-    views::ColumnSet* label_dropdown =
-        layout->AddColumnSet(kLabelDropdownColumnId);
-    label_dropdown->AddPaddingColumn(1.0f /*resize_percent*/, 0 /*width*/);
-    if (dropdown_) {
-      label_dropdown->AddPaddingColumn(
-          0 /*resize_percent*/, dropdown_->GetPreferredSize().width() +
-                                    kDistanceBetweenUsernameAndDropdownDp);
-    }
-    label_dropdown->AddColumn(views::GridLayout::CENTER,
-                              views::GridLayout::CENTER, 0 /*resize_percent*/,
-                              views::GridLayout::ColumnSize::kUsePreferred,
-                              0 /*fixed_width*/, 0 /*min_width*/);
-    if (dropdown_) {
-      label_dropdown->AddPaddingColumn(0 /*resize_percent*/,
-                                       kDistanceBetweenUsernameAndDropdownDp);
-      label_dropdown->AddColumn(views::GridLayout::CENTER,
-                                views::GridLayout::CENTER, 0 /*resize_percent*/,
-                                views::GridLayout::ColumnSize::kUsePreferred,
-                                0 /*fixed_width*/, 0 /*min_width*/);
-    }
-    label_dropdown->AddPaddingColumn(1.0f /*resize_percent*/, 0 /*width*/);
-  }
-
-  {
-    views::ColumnSet* label_domain = layout->AddColumnSet(kLabelDomainColumnId);
-    label_domain->AddColumn(views::GridLayout::CENTER,
-                            views::GridLayout::CENTER, 1 /*resize_percent*/,
-                            views::GridLayout::ColumnSize::kUsePreferred,
-                            0 /*fixed_width*/, 0 /*min_width*/);
-  }
-
-  auto add_padding = [&](int amount) {
-    layout->AddPaddingRow(0 /*vertical_resize*/, amount /*size*/);
-  };
-
-  // Add views in rendering order.
-  // Image
-  layout->StartRow(0 /*vertical_resize*/, kImageColumnId);
-  layout->AddExistingView(user_image_);
-
-  add_padding(kVerticalSpacingBetweenEntriesDp);
-
-  // Label/dropdown.
-  layout->StartRow(0 /*vertical_resize*/, kLabelDropdownColumnId);
-  layout->AddExistingView(user_label_);
-  if (dropdown_)
-    layout->AddExistingView(dropdown_);
+    label_row->AddChildView(dropdown_);
 }
 
 void LoginUserView::SetSmallishLayout() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
       kSmallManyDistanceFromUserIconToUserLabelDp));
+  AddChildView(tap_button_);
+  tap_button_->SetProperty(views::kViewIgnoredByLayoutKey, true);
 
   AddChildView(user_image_);
   AddChildView(user_label_);
-  AddChildView(tap_button_);
 }
 
 void LoginUserView::DeleteDialog() {

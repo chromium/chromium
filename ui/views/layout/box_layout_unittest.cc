@@ -161,6 +161,22 @@ TEST_F(BoxLayoutTest, InvisibleChild) {
   EXPECT_EQ(gfx::Rect(10, 10, 10, 10), v2->bounds());
 }
 
+TEST_F(BoxLayoutTest, ChildIgnoredByLayout) {
+  BoxLayout* layout = host_->SetLayoutManager(std::make_unique<BoxLayout>(
+      BoxLayout::Orientation::kHorizontal, gfx::Insets(10), 10));
+  View* v1 = new StaticSizedView(gfx::Size(20, 20));
+  v1->SetProperty(kViewIgnoredByLayoutKey, true);
+  host_->AddChildView(v1);
+  v1->SetBounds(5, 5, 20, 20);
+  View* v2 = new StaticSizedView(gfx::Size(10, 10));
+  host_->AddChildView(v2);
+  EXPECT_EQ(gfx::Size(30, 30), layout->GetPreferredSize(host_.get()));
+  host_->SetBounds(0, 0, 30, 30);
+  host_->Layout();
+  EXPECT_EQ(gfx::Rect(5, 5, 20, 20), v1->bounds());
+  EXPECT_EQ(gfx::Rect(10, 10, 10, 10), v2->bounds());
+}
+
 TEST_F(BoxLayoutTest, UseHeightForWidth) {
   BoxLayout* layout = host_->SetLayoutManager(
       std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical));
