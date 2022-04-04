@@ -14,7 +14,7 @@
 #include "third_party/webrtc/api/task_queue/task_queue_base.h"
 #include "third_party/webrtc/api/task_queue/task_queue_factory.h"
 
-namespace {
+namespace blink {
 
 class WebrtcTaskQueue final : public webrtc::TaskQueueBase {
  public:
@@ -84,12 +84,15 @@ void WebrtcTaskQueue::PostTask(std::unique_ptr<webrtc::QueuedTask> task) {
 
 void WebrtcTaskQueue::PostDelayedTask(std::unique_ptr<webrtc::QueuedTask> task,
                                       uint32_t milliseconds) {
-  task_runner_->PostDelayedTask(
-      FROM_HERE,
+  task_runner_->PostDelayedTaskAt(
+      base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
       base::BindOnce(&WebrtcTaskQueue::RunTask, base::Unretained(this),
                      is_active_, std::move(task)),
-      base::Milliseconds(milliseconds));
+      base::TimeTicks::Now() + base::Milliseconds(milliseconds),
+      base::subtle::DelayPolicy::kPrecise);
 }
+
+namespace {
 
 base::TaskTraits TaskQueuePriority2Traits(
     webrtc::TaskQueueFactory::Priority priority) {
@@ -130,12 +133,14 @@ class WebrtcTaskQueueFactory final : public webrtc::TaskQueueFactory {
 
 }  // namespace
 
+}  // namespace blink
+
 std::unique_ptr<webrtc::TaskQueueFactory> CreateWebRtcTaskQueueFactory() {
-  return std::make_unique<WebrtcTaskQueueFactory>();
+  return std::make_unique<blink::WebrtcTaskQueueFactory>();
 }
 
 std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>
 CreateWebRtcTaskQueue(webrtc::TaskQueueFactory::Priority priority) {
   return std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>(
-      new WebrtcTaskQueue(TaskQueuePriority2Traits(priority)));
+      new blink::WebrtcTaskQueue(blink::TaskQueuePriority2Traits(priority)));
 }
