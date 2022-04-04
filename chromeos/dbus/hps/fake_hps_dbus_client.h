@@ -64,6 +64,9 @@ class COMPONENT_EXPORT(HPS) FakeHpsDBusClient : public HpsDBusClient {
   // Simulte HpsService restart.
   void Restart();
 
+  // Simulte HpsService shutdown.
+  void Shutdown();
+
   // Resets all parameters; used in unittests.
   void Reset();
 

@@ -781,6 +781,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<FloatController> float_controller_;
   std::unique_ptr<GeolocationController> geolocation_controller_;
   std::unique_ptr<HoldingSpaceController> holding_space_controller_;
+  std::unique_ptr<PowerPrefs> power_prefs_;
   std::unique_ptr<HpsNotifyController> hps_notify_controller_;
   std::unique_ptr<HpsOrientationController> hps_orientation_controller_;
   std::unique_ptr<ImeControllerImpl> ime_controller_;
@@ -892,7 +893,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<PeripheralBatteryListener> peripheral_battery_listener_;
   std::unique_ptr<PeripheralBatteryNotifier> peripheral_battery_notifier_;
   std::unique_ptr<PowerEventObserver> power_event_observer_;
-  std::unique_ptr<PowerPrefs> power_prefs_;
   std::unique_ptr<ui::UserActivityPowerManagerNotifier> user_activity_notifier_;
   std::unique_ptr<VideoActivityNotifier> video_activity_notifier_;
   std::unique_ptr<StickyKeysController> sticky_keys_controller_;

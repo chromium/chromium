@@ -82,6 +82,12 @@ void FakeHpsDBusClient::Restart() {
   }
 }
 
+void FakeHpsDBusClient::Shutdown() {
+  for (auto& observer : observers_) {
+    observer.OnShutdown();
+  }
+}
+
 void FakeHpsDBusClient::Reset() {
   hps_notify_result_.reset();
   hps_notify_count_ = 0;

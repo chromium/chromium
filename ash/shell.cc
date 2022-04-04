@@ -713,6 +713,9 @@ Shell::~Shell() {
   // before destroying |session_controller_|.
   accelerator_controller_->Shutdown();
 
+  // Must be destructed before hps_orientation_controller_.
+  power_prefs_.reset();
+
   // Must be destructed before the tablet mode and message center controllers,
   // both of which these rely on.
   hps_notify_controller_.reset();
@@ -787,7 +790,6 @@ Shell::~Shell() {
   event_client_.reset();
   toplevel_window_event_handler_.reset();
   visibility_controller_.reset();
-  power_prefs_.reset();
 
   tray_action_.reset();
 
@@ -1009,10 +1011,15 @@ void Shell::Init(
     rgb_keyboard_manager_ = std::make_unique<RgbKeyboardManager>();
   }
 
-  // Observes the tablet mode controller and adds a notification to the message
-  // center, so must be constructed after both.
-  if (features::IsSnoopingProtectionEnabled()) {
+  // Observes the tablet mode controller if any hps feature is enabled.
+  if (features::IsSnoopingProtectionEnabled() ||
+      features::IsQuickDimEnabled()) {
     hps_orientation_controller_ = std::make_unique<HpsOrientationController>();
+  }
+
+  // Construct HpsNotifyController, must be constructed after
+  // HpsOrientationController.
+  if (features::IsSnoopingProtectionEnabled()) {
     hps_notify_controller_ = std::make_unique<HpsNotifyController>();
   }
 
