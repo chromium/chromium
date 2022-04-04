@@ -6504,6 +6504,14 @@ others/histograms.xml -->
   <int value="1841" label="ADDRESS_HOME_ADDRESS_WITH_NAME: accepted"/>
   <int value="1856" label="ADDRESS_HOME_FLOOR: edited"/>
   <int value="1857" label="ADDRESS_HOME_FLOOR: accepted"/>
+  <int value="1872" label="NAME_FULL_WITH_HONORIFIC_PREFIX: edited"/>
+  <int value="1873" label="NAME_FULL_WITH_HONORIFIC_PREFIX: accepted"/>
+  <int value="1888" label="BIRTHDATE_DAY: edited"/>
+  <int value="1889" label="BIRTHDATE_DAY: accepted"/>
+  <int value="1904" label="BIRTHDATE_MONTH: edited"/>
+  <int value="1905" label="BIRTHDATE_MONTH: accepted"/>
+  <int value="1920" label="BIRTHDATE_YEAR_4_DIGITS: edited"/>
+  <int value="1921" label="BIRTHDATE_YEAR_4_DIGITS: accepted"/>
 </enum>
 
 <enum name="AutofillErrorDialogType">
@@ -7399,6 +7407,27 @@ others/histograms.xml -->
   <int value="97" label="SEARCH_TERM"/>
   <int value="98" label="PRICE"/>
   <int value="99" label="NOT_PASSWORD"/>
+  <int value="100" label="SINGLE_USERNAME"/>
+  <int value="101" label="NOT_USERNAME"/>
+  <int value="102" label="UPI_VPA"/>
+  <int value="103" label="ADDRESS_HOME_STREET_NAME"/>
+  <int value="104" label="ADDRESS_HOME_HOUSE_NUMBER"/>
+  <int value="105" label="ADDRESS_HOME_SUBPREMISE"/>
+  <int value="106" label="ADDRESS_HOME_OTHER_SUBUNIT"/>
+  <int value="107" label="NAME_LAST_FIRST"/>
+  <int value="108" label="NAME_LAST_CONJUNCTION"/>
+  <int value="109" label="NAME_LAST_SECOND"/>
+  <int value="110" label="NAME_HONORIFIC_PREFIX"/>
+  <int value="111" label="ADDRESS_HOME_PREMISE_NAME"/>
+  <int value="112" label="ADDRESS_HOME_DEPENDENT_STREET_NAME"/>
+  <int value="113" label="ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME"/>
+  <int value="114" label="ADDRESS_HOME_ADDRESS"/>
+  <int value="115" label="ADDRESS_HOME_ADDRESS_WITH_NAME"/>
+  <int value="116" label="ADDRESS_HOME_FLOOR"/>
+  <int value="117" label="NAME_FULL_WITH_HONORIFIC_PREFIX"/>
+  <int value="118" label="BIRTHDATE_DAY"/>
+  <int value="119" label="BIRTHDATE_MONTH"/>
+  <int value="120" label="BIRTHDATE_YEAR_4_DIGITS"/>
 </enum>
 
 <enum name="AutofillServerPredictionAvailability">
