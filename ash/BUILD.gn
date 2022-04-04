@@ -1289,6 +1289,8 @@ component("ash") {
     "system/network/network_info.h",
     "system/network/network_info_bubble.cc",
     "system/network/network_info_bubble.h",
+    "system/network/network_list_header_view.cc",
+    "system/network/network_list_header_view.h",
     "system/network/network_list_view.cc",
     "system/network/network_list_view.h",
     "system/network/network_list_view_controller.cc",
