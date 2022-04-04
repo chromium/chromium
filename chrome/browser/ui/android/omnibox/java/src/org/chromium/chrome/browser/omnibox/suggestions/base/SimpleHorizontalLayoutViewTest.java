@@ -17,13 +17,13 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SimpleHorizontalLayoutView.LayoutParams;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 /**
  * Tests for {@link SimpleHorizontalLayoutView}.
  */
-@RunWith(LocalRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SimpleHorizontalLayoutViewTest {
     private static final int SMALL_VIEW_WIDTH = 50;

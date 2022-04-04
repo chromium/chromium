@@ -21,13 +21,13 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 /**
  * Tests for {@link BaseSuggestionViewProcessor}.
  */
-@RunWith(LocalRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SuggestionSpannableUnitTest {
     private Activity mActivity;
