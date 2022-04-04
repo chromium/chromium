@@ -213,8 +213,11 @@ void CopyConstraintsIntoRtcConfiguration(
   configuration->combined_audio_video_bwe = ConstraintToOptional(
       constraints,
       &MediaTrackConstraintSetPlatform::goog_combined_audio_video_bwe);
+#if BUILDFLAG(IS_FUCHSIA)
+  // TODO(crbug.com/804275): Delete when Fuchsia no longer depends on it.
   configuration->enable_dtls_srtp = ConstraintToOptional(
       constraints, &MediaTrackConstraintSetPlatform::enable_dtls_srtp);
+#endif
 }
 
 // Class mapping responses from calls to libjingle CreateOffer/Answer and

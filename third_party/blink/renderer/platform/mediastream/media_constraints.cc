@@ -371,7 +371,10 @@ MediaTrackConstraintSetPlatform::MediaTrackConstraintSetPlatform()
       voice_activity_detection("voiceActivityDetection"),
       ice_restart("iceRestart"),
       goog_use_rtp_mux("googUseRtpMux"),
+#if BUILDFLAG(IS_FUCHSIA)
+      // TODO(crbug.com/804275): Delete when Fuchsia no longer depends on it.
       enable_dtls_srtp("enableDtlsSrtp"),
+#endif
       enable_rtp_data_channels("enableRtpDataChannels"),
       enable_dscp("enableDscp"),
       enable_i_pv6("enableIPv6"),
@@ -383,58 +386,33 @@ MediaTrackConstraintSetPlatform::MediaTrackConstraintSetPlatform()
       goog_cpu_overuse_detection("googCpuOveruseDetection"),
       goog_high_start_bitrate("googHighStartBitrate"),
       goog_payload_padding("googPayloadPadding"),
-      goog_latency_ms("latencyMs") {}
+      goog_latency_ms("latencyMs") {
+}
 
 Vector<const BaseConstraint*> MediaTrackConstraintSetPlatform::AllConstraints()
     const {
-  return {&width,
-          &height,
-          &aspect_ratio,
-          &frame_rate,
-          &facing_mode,
-          &resize_mode,
-          &volume,
-          &sample_rate,
-          &sample_size,
-          &echo_cancellation,
-          &echo_cancellation_type,
-          &latency,
-          &channel_count,
-          &device_id,
-          &group_id,
-          &media_stream_source,
-          &disable_local_echo,
-          &pan,
-          &tilt,
-          &zoom,
-          &render_to_associated_sink,
-          &goog_echo_cancellation,
-          &goog_experimental_echo_cancellation,
-          &goog_auto_gain_control,
-          &goog_experimental_auto_gain_control,
-          &goog_noise_suppression,
-          &goog_highpass_filter,
-          &goog_experimental_noise_suppression,
-          &goog_audio_mirroring,
-          &goog_da_echo_cancellation,
-          &goog_noise_reduction,
-          &offer_to_receive_audio,
-          &offer_to_receive_video,
-          &voice_activity_detection,
-          &ice_restart,
-          &goog_use_rtp_mux,
-          &enable_dtls_srtp,
-          &enable_rtp_data_channels,
-          &enable_dscp,
-          &enable_i_pv6,
-          &goog_enable_video_suspend_below_min_bitrate,
-          &goog_num_unsignalled_recv_streams,
-          &goog_combined_audio_video_bwe,
-          &goog_screencast_min_bitrate,
-          &goog_cpu_overuse_detection,
-          &goog_high_start_bitrate,
-          &goog_payload_padding,
-          &goog_latency_ms};
+  return {
+    &width, &height, &aspect_ratio, &frame_rate, &facing_mode, &resize_mode,
+        &volume, &sample_rate, &sample_size, &echo_cancellation,
+        &echo_cancellation_type, &latency, &channel_count, &device_id,
+        &group_id, &media_stream_source, &disable_local_echo, &pan, &tilt,
+        &zoom, &render_to_associated_sink, &goog_echo_cancellation,
+        &goog_experimental_echo_cancellation, &goog_auto_gain_control,
+        &goog_experimental_auto_gain_control, &goog_noise_suppression,
+        &goog_highpass_filter, &goog_experimental_noise_suppression,
+        &goog_audio_mirroring, &goog_da_echo_cancellation,
+        &goog_noise_reduction, &offer_to_receive_audio, &offer_to_receive_video,
+        &voice_activity_detection, &ice_restart, &goog_use_rtp_mux,
+#if BUILDFLAG(IS_FUCHSIA)
+        // TODO(crbug.com/804275): Delete when Fuchsia no longer depends on it.
+        &enable_dtls_srtp,
+#endif
+        &enable_rtp_data_channels, &enable_dscp, &enable_i_pv6,
+        &goog_enable_video_suspend_below_min_bitrate,
+        &goog_num_unsignalled_recv_streams, &goog_combined_audio_video_bwe,
+        &goog_screencast_min_bitrate, &goog_cpu_overuse_detection,
+        &goog_high_start_bitrate, &goog_payload_padding, &goog_latency_ms
+  };
 }
 
 bool MediaTrackConstraintSetPlatform::IsUnconstrained() const {
