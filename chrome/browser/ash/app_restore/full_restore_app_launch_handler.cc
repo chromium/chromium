@@ -171,6 +171,7 @@ void FullRestoreAppLaunchHandler::OnMojoDisconnected() {
 void FullRestoreAppLaunchHandler::OnStateChanged() {
   if (crosapi::BrowserManager::Get()->IsRunning()) {
     observation_.Reset();
+    VLOG(1) << "Full restore opens Lacros";
     crosapi::BrowserManager::Get()->OpenForFullRestore();
   }
 }
@@ -343,6 +344,7 @@ void FullRestoreAppLaunchHandler::MaybeRestoreLacros() {
   restore_data()->RemoveApp(app_constants::kLacrosAppId);
 
   if (crosapi::BrowserManager::Get()->IsRunning()) {
+    VLOG(1) << "Full restore opens Lacros";
     crosapi::BrowserManager::Get()->OpenForFullRestore();
     return;
   }
