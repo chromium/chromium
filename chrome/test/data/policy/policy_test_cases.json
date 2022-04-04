@@ -18050,5 +18050,24 @@
         }
       }
     ]
+  },
+  "WarnBeforeQuittingEnabled": {
+    "os": [
+      "mac"
+    ],
+    "can_be_recommended": true,
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "WarnBeforeQuittingEnabled": true
+        },
+        "prefs": {
+          "browser.confirm_to_quit": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      }
+    ]
   }
 }

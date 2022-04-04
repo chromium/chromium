@@ -30618,6 +30618,38 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       When the device is on AC, the adaptive charging model evaluates if charging process should be hold to extend battery life. If the adaptive charging model holds the charging process, it'll keep the battery at a certain level (i.e. 80%) and then charge the device to 100% when the user need it.
       If this policy is set to True or left not set, the adaptive charging model will be enabled and allowed to hold the charging process to extend battery life. If this policy is set to False, the adaptive charging model will not influence the charging process.''',
     },
+    {
+      'name': 'WarnBeforeQuittingEnabled',
+      'owners': ['file://components/policy/resources/OWNERS'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'items': [
+        {
+          'value': True,
+          'caption': '''Show a warning dialog when the user is attempting to quit''',
+        },
+        {
+          'value': False,
+          'caption': '''Do not show a warning dialog when the user is attempting to quit''',
+        },
+      ],
+      'supported_on': ['chrome.mac:102-'],
+      'features': {
+        'can_be_recommended': True,
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'example_value': True,
+      'default': True,
+      'id': 973,
+      'caption': '''Show a warning dialog when the user is attempting to quit''',
+      'tags': [],
+      'desc': '''Controls "Warn Before Quitting (⌘Q)" dialog when the user is attempting to quit browser.
+
+      If this policy is set to Enabled or not set, a warning dialog is shown when the user is attempting to quit.
+
+      If this policy is set to Disabled, a warning dialog is not shown when the user is attempting to quit.'''
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -31614,6 +31646,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 972,
+  'highest_id_currently_used': 973,
   'highest_atomic_group_id_currently_used': 42
 }

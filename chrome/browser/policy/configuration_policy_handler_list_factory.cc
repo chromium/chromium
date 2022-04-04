@@ -1636,6 +1636,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kFirstPartySetsOverrides,
     first_party_sets::kFirstPartySetsOverrides,
     base::Value::Type::DICTIONARY},
+#if BUILDFLAG(IS_MAC)
+  { key::kWarnBeforeQuittingEnabled,
+    prefs::kConfirmToQuitEnabled,
+    base::Value::Type::BOOLEAN },
+#endif
 };
 // clang-format on
 
