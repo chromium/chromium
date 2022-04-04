@@ -45,6 +45,8 @@
 #include "chrome/browser/ui/webui/chromeos/edu_coexistence/edu_coexistence_login_handler_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler_chromeos.h"
+#include "chrome/grit/arc_account_picker_resources.h"
+#include "chrome/grit/arc_account_picker_resources_map.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -106,6 +108,11 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
       base::make_span(kGaiaAuthHostResources, kGaiaAuthHostResourcesSize),
       IDR_INLINE_LOGIN_HTML);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  source->AddResourcePaths(base::make_span(kArcAccountPickerResources,
+                                           kArcAccountPickerResourcesSize));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   // Only add a filter when runing as test.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   const bool is_running_test = command_line->HasSwitch(::switches::kTestName) ||
@@ -121,10 +128,6 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
     {"webview_saml_injected.js", IDR_GAIA_AUTH_WEBVIEW_SAML_INJECTED_JS},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"inline_login_util.js", IDR_INLINE_LOGIN_UTIL_JS},
-    {"arc_account_picker_app.js",
-     IDR_ARC_ACCOUNT_PICKER_ARC_ACCOUNT_PICKER_APP_JS},
-    {"arc_account_picker_browser_proxy.js",
-     IDR_ARC_ACCOUNT_PICKER_ARC_ACCOUNT_PICKER_BROWSER_PROXY_JS},
     {"welcome_page_app.js", IDR_INLINE_LOGIN_WELCOME_PAGE_APP_JS},
     {"signin_blocked_by_policy_page.js",
      IDR_INLINE_LOGIN_SIGNIN_BLOCKED_BY_POLICY_PAGE_JS},

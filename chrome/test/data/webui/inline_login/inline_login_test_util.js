@@ -4,6 +4,7 @@
 
 import {InlineLoginBrowserProxy} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+import {AuthMode, AuthParams} from 'chrome://chrome-signin/gaia_auth_host/authenticator.m.js';
 // <if expr="chromeos_ash">
 import {AccountAdditionOptions} from 'chrome://chrome-signin/inline_login_util.js';
 // </if>
@@ -39,19 +40,12 @@ export const fakeSigninBlockedByPolicyData = {
 export class TestAuthenticator extends EventTarget {
   constructor() {
     super();
-    // Note: We cannot import types from authenticator.m.js because we replace
-    // "chrome://chrome-signin/" with "chrome/browser/resources/inline_login/"
-    // and authenticator is in "chrome/browser/resources/gaia_auth_host/"
-    // folder.
-
     /**
-     * Type AuthMode (see Authenticator).
-     * @type {?Object}
+     * @type {?AuthMode}
      */
     this.authMode = null;
     /**
-     * Type AuthParams (see Authenticator).
-     * @type {?Object}
+     * @type {?AuthParams}
      */
     this.data = null;
     /** @type {number} */
@@ -63,9 +57,8 @@ export class TestAuthenticator extends EventTarget {
   }
 
   /**
-   * @param {Object} authMode Authorization mode (type AuthMode).
-   * @param {Object} data Parameters for the authorization flow (type
-   *     AuthParams).
+   * @param {AuthMode} authMode Authorization mode.
+   * @param {AuthParams} data Parameters for the authorization flow.
    */
   load(authMode, data) {
     this.loadCalls++;
