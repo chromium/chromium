@@ -321,8 +321,8 @@ void TabSearchPageHandler::AddRecentlyClosedEntries(
       for (auto& window_tab : window->tabs) {
         sessions::TabRestoreService::Tab* tab =
             static_cast<sessions::TabRestoreService::Tab*>(window_tab.get());
-        if (AddRecentlyClosedTab(tab, recently_closed_tabs, tab_dedup_keys,
-                                 tab_group_ids, tab_groups)) {
+        if (AddRecentlyClosedTab(tab, entry->timestamp, recently_closed_tabs,
+                                 tab_dedup_keys, tab_group_ids, tab_groups)) {
           recently_closed_tab_count += 1;
           recently_closed_item_count += 1;
         }
@@ -336,8 +336,8 @@ void TabSearchPageHandler::AddRecentlyClosedEntries(
       sessions::TabRestoreService::Tab* tab =
           static_cast<sessions::TabRestoreService::Tab*>(entry.get());
 
-      if (AddRecentlyClosedTab(tab, recently_closed_tabs, tab_dedup_keys,
-                               tab_group_ids, tab_groups)) {
+      if (AddRecentlyClosedTab(tab, entry->timestamp, recently_closed_tabs,
+                               tab_dedup_keys, tab_group_ids, tab_groups)) {
         recently_closed_tab_count += 1;
         recently_closed_item_count += 1;
       }
@@ -360,8 +360,9 @@ void TabSearchPageHandler::AddRecentlyClosedEntries(
           GetLastActiveElapsedText(entry->timestamp);
 
       for (auto& tab : group->tabs) {
-        if (AddRecentlyClosedTab(tab.get(), recently_closed_tabs,
-                                 tab_dedup_keys, tab_group_ids, tab_groups)) {
+        if (AddRecentlyClosedTab(tab.get(), entry->timestamp,
+                                 recently_closed_tabs, tab_dedup_keys,
+                                 tab_group_ids, tab_groups)) {
           recently_closed_tab_count += 1;
         }
       }
@@ -376,6 +377,7 @@ void TabSearchPageHandler::AddRecentlyClosedEntries(
 
 bool TabSearchPageHandler::AddRecentlyClosedTab(
     sessions::TabRestoreService::Tab* tab,
+    const base::Time& close_time,
     std::vector<tab_search::mojom::RecentlyClosedTabPtr>& recently_closed_tabs,
     std::set<DedupKey>& tab_dedup_keys,
     std::set<tab_groups::TabGroupId>& tab_group_ids,
@@ -384,7 +386,7 @@ bool TabSearchPageHandler::AddRecentlyClosedTab(
     return false;
 
   tab_search::mojom::RecentlyClosedTabPtr recently_closed_tab =
-      GetRecentlyClosedTab(tab);
+      GetRecentlyClosedTab(tab, close_time);
 
   DedupKey dedup_id(recently_closed_tab->url, recently_closed_tab->group_id);
   // Ignore NTP entries, duplicate entries and tabs with invalid URLs such as
@@ -462,7 +464,8 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
 
 tab_search::mojom::RecentlyClosedTabPtr
 TabSearchPageHandler::GetRecentlyClosedTab(
-    sessions::TabRestoreService::Tab* tab) {
+    sessions::TabRestoreService::Tab* tab,
+    const base::Time& close_time) {
   auto recently_closed_tab = tab_search::mojom::RecentlyClosedTab::New();
   DCHECK(tab->navigations.size() > 0);
   sessions::SerializedNavigationEntry& entry =
@@ -472,7 +475,10 @@ TabSearchPageHandler::GetRecentlyClosedTab(
   recently_closed_tab->title = entry.title().empty()
                                    ? recently_closed_tab->url.spec()
                                    : base::UTF16ToUTF8(entry.title());
-  const base::Time last_active_time = entry.timestamp();
+  // Fall back to the navigation last active time if the restore entry has no
+  // associated timestamp.
+  const base::Time last_active_time =
+      close_time.is_null() ? entry.timestamp() : close_time;
   recently_closed_tab->last_active_time = last_active_time;
   recently_closed_tab->last_active_elapsed_text =
       GetLastActiveElapsedText(last_active_time);
@@ -522,7 +528,7 @@ void TabSearchPageHandler::OnTabStripModelChanged(
           sessions::TabRestoreService::Tab* tab =
               static_cast<sessions::TabRestoreService::Tab*>(entry.get());
           tab_search::mojom::RecentlyClosedTabPtr recently_closed_tab =
-              GetRecentlyClosedTab(tab);
+              GetRecentlyClosedTab(tab, entry->timestamp);
           tabs_removed_info->recently_closed_tabs.push_back(
               std::move(recently_closed_tab));
         }

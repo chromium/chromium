@@ -114,6 +114,7 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   // Returns true if a recently closed tab was added to `recently_closed_tabs`
   bool AddRecentlyClosedTab(
       sessions::TabRestoreService::Tab* tab,
+      const base::Time& close_time,
       std::vector<tab_search::mojom::RecentlyClosedTabPtr>&
           recently_closed_tabs,
       std::set<DedupKey>& tab_dedup_keys,
@@ -124,7 +125,8 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
                                    content::WebContents* contents,
                                    int index);
   tab_search::mojom::RecentlyClosedTabPtr GetRecentlyClosedTab(
-      sessions::TabRestoreService::Tab* tab);
+      sessions::TabRestoreService::Tab* tab,
+      const base::Time& close_time);
 
   // Returns tab details required to perform an action on the tab.
   absl::optional<TabDetails> GetTabDetails(int32_t tab_id);
