@@ -148957,7 +148957,7 @@
       ]
      ],
      "block-ruby-001.html": [
-      "f6a058807c48dc5c0cfe056a95355f3d234ac0ad",
+      "0602116aacae5187176de06d865b584cbf9bc0b8",
       [
        null,
        [
@@ -278333,7 +278333,7 @@
       []
      ],
      "block-ruby-001-ref.html": [
-      "b8d851fb532107b8d3e7fd792438295577b6ac23",
+      "076a2f01cfba8693e633b15dfd50e0946fe8167d",
       []
      ],
      "block-ruby-002-ref.html": [
@@ -294371,7 +294371,7 @@
       []
      ],
      "testharness.md": [
-      "57cbd33ea0b35c39af321bafca75a56d8728797a",
+      "2a13c4c7f1101d16adfa3aba8c20d1fd2c0c330c",
       []
      ],
      "tools.md": [
@@ -299562,6 +299562,10 @@
      ]
     },
     "range": {
+     "general.any.serviceworker-expected.txt": [
+      "61126fdaf3eaaebfbee0d435c749a4920f489a81",
+      []
+     ],
      "general.window-expected.txt": [
       "d15469b170082ed0d182f611184954647d90379a",
       []
@@ -299572,7 +299576,7 @@
        []
       ],
       "long-wav.py": [
-       "be7df7b83d8723ffd8c977d3f4b5c42a23d7918a",
+       "acfc81a71809dc3867a956872e6d65e23ad4d58d",
        []
       ],
       "partial-script.py": [
@@ -310036,7 +310040,7 @@
        ]
       },
       "structured-cloning-error-stack-optional.sub.window-expected.txt": [
-       "c939958ba0335696671453638f8803501a25b0b1",
+       "bdda3adea39bd4b931d43ad525cfb94a3a1d8e3f",
        []
       ]
      },
@@ -326888,7 +326892,7 @@
      []
     ],
     "testharness.js": [
-     "a6f48e1f943b9952a8fbe5d882278c2cfb86baba",
+     "2c5df32b8c73c8cc4b1c0e0f3bec406fef345e72",
      []
     ],
     "testharness.js.headers": [
@@ -390476,7 +390480,7 @@
        ]
       ],
       "table-width-redistribution-fixed-padding.html": [
-       "57843d5eb6e845b95bcab53c6dd3b24fc71be7ae",
+       "097ddacfc3139105f0d80689e0c03ac722a00aeb",
        [
         null,
         {}
@@ -433833,7 +433837,7 @@
     },
     "range": {
      "general.any.js": [
-      "80791c3847eac7501191b44e541d85f5b8f293b7",
+      "3c4669ad0bbc1c3f10bca384194cd75dd54aa171",
       [
        "fetch/range/general.any.html",
        {
@@ -433841,6 +433845,10 @@
          [
           "global",
           "window,worker"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
          ],
          [
           "script",
@@ -433859,6 +433867,10 @@
          ],
          [
           "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ]
         ]
@@ -433874,6 +433886,10 @@
          ],
          [
           "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
           "/common/utils.js"
          ]
         ]
@@ -433886,6 +433902,10 @@
          [
           "global",
           "window,worker"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
          ],
          [
           "script",
@@ -473257,7 +473277,7 @@
         ]
        ],
        "focus-after-close.html": [
-        "7061c34e4e45252bc3a325b104fdbae07be36004",
+        "d66d45527a7e39fa96ee11d9a331bcc2109aeb37",
         [
          null,
          {

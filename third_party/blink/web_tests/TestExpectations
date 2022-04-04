@@ -3331,6 +3331,12 @@ crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/preren
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/private-network-access/nested-worker.https.window.html [ Timeout ]
+crbug.com/626703 [ Mac10.12 ] external/wpt/html/cross-origin-opener-policy/header-parsing.https.html [ Timeout ]
+crbug.com/626703 [ Mac10.12 ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/property-opener-set.https.html [ Timeout ]
+crbug.com/626703 [ Mac10.12 ] virtual/document-transition/wpt_internal/document-transition/new-content-container-writing-modes.html [ Timeout ]
+crbug.com/626703 [ Mac10.12 ] virtual/no-alloc-direct-call/external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-ImageBitmap-cloned.html [ Timeout ]
+crbug.com/626703 [ Mac10.12 ] virtual/split-http-cache/external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_fetch_error-downgraded.tentative.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-ui/compute-kind-widget-generated/kind-of-widget-fallback-meter-background-attachment-001.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/css/css-ui/compute-kind-widget-generated/kind-of-widget-fallback-meter-background-clip-001.html [ Failure ]
@@ -7700,7 +7706,7 @@ crbug.com/1311786 external/wpt/navigation-api/navigation-methods/sandboxing-back
 # Scroll Unification known issues (go/su-web-tests) for enabling in test:
 crbug.com/1311431 [ Mac ] fast/scroll-behavior/overscroll-behavior.html [ Failure Pass ]
 crbug.com/1248231 fast/events/touch/touch-latched-scroll-node-removed.html [ Failure Pass ]
-crbug.com/1248231 fast/events/wheel/wheel-latched-scroll-node-removed.html [ Failure Timeout Pass ]
+crbug.com/1248231 fast/events/wheel/wheel-latched-scroll-node-removed.html [ Failure Pass Timeout ]
 crbug.com/1311731 [ Linux ] fast/events/touch/gesture/touch-gesture-scroll-input-field.html [ Failure Pass ]
 crbug.com/1311731 [ Win ] fast/events/touch/gesture/touch-gesture-scroll-input-field.html [ Failure Pass ]
 crbug.com/1248581 fast/scrolling/resize-corner-tracking-touch.html [ Failure Pass ]
