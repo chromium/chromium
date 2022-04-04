@@ -30,6 +30,7 @@ class ASH_EXPORT DateTray : public TrayBackgroundView {
   std::u16string GetAccessibleNameForBubble() override;
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
+  void UpdateLayout() override;
   void ShowBubble() override {}
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override {}
   void ClickedOutsideBubble() override {}

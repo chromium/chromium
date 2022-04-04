@@ -61,7 +61,7 @@ const int kVerticalClockLeftPadding = 9;
 const int kVerticalDateClockHorizontalPadding = 4;
 
 // Padding on top/bottom of the vertical clock date view.
-const int kVerticalDateVerticalPadding = 4;
+const int kVerticalDateVerticalPadding = 2;
 
 // How much size smaller the text in the date view compare to the text size of
 // the clock view.
@@ -95,8 +95,6 @@ VerticalDateView::VerticalDateView()
   UpdateText();
   text_label_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(kVerticalDateVerticalPadding, 0, 0, 0)));
-  SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(0, 0, kVerticalDateVerticalPadding, 0)));
 }
 
 VerticalDateView::~VerticalDateView() = default;
@@ -145,20 +143,40 @@ TimeView::~TimeView() {
 }
 
 void TimeView::UpdateClockLayout(ClockLayout clock_layout) {
-  if (type_ != kTime)
-    return;
+  switch (type_) {
+    case kDate: {
+      // Do nothing if the layout hasn't changed.
+      if (clock_layout == ClockLayout::HORIZONTAL_CLOCK
+              ? vertical_date_view_
+              : horizontal_date_view_) {
+        return;
+      }
 
-  // Do nothing if the layout hasn't changed.
-  if (clock_layout == ClockLayout::HORIZONTAL_CLOCK ? vertical_view_
-                                                    : horizontal_view_)
-    return;
+      if (clock_layout == ClockLayout::HORIZONTAL_CLOCK) {
+        vertical_date_view_ = RemoveChildViewT(children()[0]);
+        AddChildView(std::move(horizontal_date_view_));
+      } else {
+        horizontal_date_view_ = RemoveChildViewT(children()[0]);
+        AddChildView(std::move(vertical_date_view_));
+      }
+      break;
+    }
+    case kTime: {
+      // Do nothing if the layout hasn't changed.
+      if (clock_layout == ClockLayout::HORIZONTAL_CLOCK ? vertical_view_
+                                                        : horizontal_view_) {
+        return;
+      }
 
-  if (clock_layout == ClockLayout::HORIZONTAL_CLOCK) {
-    vertical_view_ = RemoveChildViewT(children()[0]);
-    AddChildView(std::move(horizontal_view_));
-  } else {
-    horizontal_view_ = RemoveChildViewT(children()[0]);
-    AddChildView(std::move(vertical_view_));
+      if (clock_layout == ClockLayout::HORIZONTAL_CLOCK) {
+        vertical_view_ = RemoveChildViewT(children()[0]);
+        AddChildView(std::move(horizontal_view_));
+      } else {
+        horizontal_view_ = RemoveChildViewT(children()[0]);
+        AddChildView(std::move(vertical_view_));
+      }
+      break;
+    }
   }
   Layout();
 }
@@ -203,16 +221,6 @@ void TimeView::SetTextShadowValues(const gfx::ShadowValues& shadows) {
     case kDate:
       horizontal_label_date_->SetShadows(shadows);
   }
-}
-
-void TimeView::SetShowDate(bool show_date) {
-  if (show_date_ == show_date)
-    return;
-  show_date_ = show_date;
-  UpdateText();
-  if (type_ == kTime)
-    SetupVerticalSubViews();
-  PreferredSizeChanged();
 }
 
 void TimeView::OnDateFormatChanged() {
@@ -306,7 +314,6 @@ void TimeView::UpdateTextInternal(const base::Time& now) {
           !base::i18n::IsRTL())
         hour = u"0" + hour;
 
-      vertical_date_view_->UpdateText();
       vertical_label_hours_->SetText(hour);
       vertical_label_minutes_->SetText(minute);
       vertical_label_hours_->NotifyAccessibilityEvent(
@@ -328,6 +335,7 @@ void TimeView::UpdateTextInternal(const base::Time& now) {
       horizontal_label_date_->SetTooltipText(friendly_format_date);
       horizontal_label_date_->NotifyAccessibilityEvent(
           ax::mojom::Event::kTextChanged, true);
+      date_view_->UpdateText();
     }
   }
 }
@@ -340,17 +348,10 @@ void TimeView::SetupVerticalSubViews() {
       vertical_view->SetLayoutManager(std::make_unique<views::GridLayout>());
   const int kColumnId = 0;
   views::ColumnSet* columns = layout->AddColumnSet(kColumnId);
-  columns->AddPaddingColumn(0, show_date_ ? kVerticalDateClockHorizontalPadding
-                                          : kVerticalClockLeftPadding);
+  columns->AddPaddingColumn(0, kVerticalClockLeftPadding);
   columns->AddColumn(views::GridLayout::TRAILING, views::GridLayout::CENTER, 0,
                      views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  if (show_date_) {
-    layout->StartRow(0, kColumnId);
-    layout->AddExistingView(vertical_date_view_);
-    vertical_date_view_->SetVisible(true);
-  } else {
-    vertical_date_view_->SetVisible(false);
-  }
+
   layout->StartRow(0, kColumnId);
   layout->AddExistingView(vertical_label_hours_);
   layout->StartRow(0, kColumnId);
@@ -362,7 +363,7 @@ void TimeView::SetupVerticalSubViews() {
 void TimeView::SetupDateviews(ClockLayout clock_layout) {
   DCHECK_EQ(type_, kDate);
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  horizontal_date_view_ = AddChildView(std::make_unique<View>());
+  horizontal_date_view_ = std::make_unique<View>();
   horizontal_date_view_->SetLayoutManager(
       std::make_unique<views::FillLayout>());
   horizontal_date_view_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
@@ -370,6 +371,16 @@ void TimeView::SetupDateviews(ClockLayout clock_layout) {
   horizontal_label_date_ =
       horizontal_date_view_->AddChildView(std::make_unique<views::Label>());
   SetupLabel(horizontal_label_date_);
+
+  vertical_date_view_ = std::make_unique<View>();
+  vertical_date_view_->SetLayoutManager(std::make_unique<views::FillLayout>());
+  date_view_ =
+      vertical_date_view_->AddChildView(std::make_unique<VerticalDateView>());
+  date_view_->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::TLBR(0, 0, 0, 0)));
+  AddChildView(clock_layout == ClockLayout::HORIZONTAL_CLOCK
+                   ? std::move(horizontal_date_view_)
+                   : std::move(vertical_date_view_));
 }
 
 void TimeView::SetupSubviews(ClockLayout clock_layout) {
@@ -384,8 +395,6 @@ void TimeView::SetupSubviews(ClockLayout clock_layout) {
 
   vertical_view_ = std::make_unique<View>();
   vertical_view_->SetID(kVerticalViewId);
-  vertical_date_view_ =
-      vertical_view_->AddChildView(std::make_unique<VerticalDateView>());
   vertical_label_hours_ =
       vertical_view_->AddChildView(std::make_unique<views::Label>());
   SetupLabel(vertical_label_hours_);

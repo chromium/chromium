@@ -171,7 +171,7 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
                                     CameraMicTrayItemView::Type::kCamera)),
       mic_view_(
           new CameraMicTrayItemView(shelf, CameraMicTrayItemView::Type::kMic)),
-      time_view_(new TimeTrayItemView(shelf, model_, TimeView::Type::kTime)) {
+      time_view_(new TimeTrayItemView(shelf, TimeView::Type::kTime)) {
   tray_container()->SetMargin(
       kUnifiedTrayContentPadding -
           ShelfConfig::Get()->status_area_hit_region_padding(),
@@ -239,10 +239,6 @@ UnifiedSystemTray::~UnifiedSystemTray() {
 
   message_center_bubble_.reset();
   bubble_.reset();
-
-  // Reset the view to remove its dependency from |model_|, since this view is
-  // destructed after |model_|.
-  time_view_->Reset();
 }
 
 bool UnifiedSystemTray::MoreThanOneVisibleTrayItem() const {

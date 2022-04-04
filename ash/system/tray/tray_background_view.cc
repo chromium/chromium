@@ -521,7 +521,19 @@ void TrayBackgroundView::UpdateBackground() {
         break;
     }
   } else {
-    rounded_corners = {radius, radius, radius, radius};
+    switch (corner_behavior_) {
+      case kAllRounded:
+        rounded_corners = {radius, radius, radius, radius};
+        break;
+      case kStartRounded:
+        rounded_corners = {radius, radius, kUnifiedTrayNonRoundedSideRadius,
+                           kUnifiedTrayNonRoundedSideRadius};
+        break;
+      case kEndRounded:
+        rounded_corners = {kUnifiedTrayNonRoundedSideRadius,
+                           kUnifiedTrayNonRoundedSideRadius, radius, radius};
+        break;
+    }
   }
 
   layer()->SetRoundedCornerRadius(rounded_corners);

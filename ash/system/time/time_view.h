@@ -83,9 +83,6 @@ class ASH_EXPORT TimeView : public ActionableView, public ClockObserver {
   // Updates the time text shadow values.
   void SetTextShadowValues(const gfx::ShadowValues& shadows);
 
-  // Shows the date when `show_date` is true.
-  void SetShowDate(bool show_date);
-
   // ClockObserver:
   void OnDateFormatChanged() override;
   void OnSystemClockTimeUpdated() override;
@@ -93,10 +90,6 @@ class ASH_EXPORT TimeView : public ActionableView, public ClockObserver {
   void Refresh() override;
 
   base::HourClockType GetHourTypeForTesting() const;
-
-  // If this time view should show date. If in the horizontal view it's today's
-  // date, and in the vertical view it's a calendar date view.
-  bool show_date() { return show_date_; }
 
   views::Label* horizontal_label_for_test() { return horizontal_label_; }
   views::Label* horizontal_label_date_for_test() {
@@ -143,18 +136,16 @@ class ASH_EXPORT TimeView : public ActionableView, public ClockObserver {
   views::Label* horizontal_label_ = nullptr;
   views::Label* horizontal_label_date_ = nullptr;
 
+  // The horizontal and vertical date view for the `DateTray`.
+  std::unique_ptr<views::View> horizontal_date_view_;
+  std::unique_ptr<views::View> vertical_date_view_;
+
   // The time label is split into two lines for the vertical shelf.
   views::Label* vertical_label_hours_ = nullptr;
   views::Label* vertical_label_minutes_ = nullptr;
 
   // The vertical date in a calendar icon view for the vertical shelf.
-  VerticalDateView* vertical_date_view_ = nullptr;
-
-  // The horizontal date view for the `DateTray`.
-  views::View* horizontal_date_view_ = nullptr;
-
-  // Indicates if date should be show in horizontal view.
-  bool show_date_ = false;
+  VerticalDateView* date_view_ = nullptr;
 
   // Invokes UpdateText() when the displayed time should change.
   base::OneShotTimer timer_;

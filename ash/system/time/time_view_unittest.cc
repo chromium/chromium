@@ -43,21 +43,30 @@ class TimeViewTest : public AshTestBase {
   // Access to private fields of |time_view_|.
   views::View* horizontal_view() { return time_view_->horizontal_view_.get(); }
   views::View* vertical_view() { return time_view_->vertical_view_.get(); }
+  views::View* horizontal_date_view() {
+    return time_view_->horizontal_date_view_.get();
+  }
+  views::View* vertical_date_view() {
+    return time_view_->vertical_date_view_.get();
+  }
   views::Label* horizontal_label() { return time_view_->horizontal_label_; }
   views::Label* vertical_label_hours() {
     return time_view_->vertical_label_hours_;
   }
+
   views::Label* vertical_label_minutes() {
     return time_view_->vertical_label_minutes_;
   }
-  VerticalDateView* vertical_date_view() {
-    return time_view_->vertical_date_view_;
+  views::Label* horizontal_date_label() {
+    return time_view_->horizontal_label_date_;
   }
+  VerticalDateView* vertical_date() { return time_view_->date_view_; }
 
   // Creates a time view with horizontal or vertical |clock_layout|.
-  void CreateTimeView(TimeView::ClockLayout clock_layout) {
+  void CreateTimeView(TimeView::ClockLayout clock_layout,
+                      TimeView::Type type = TimeView::kTime) {
     time_view_ = widget_->SetContentsView(std::make_unique<TimeView>(
-        clock_layout, Shell::Get()->system_tray_model()->clock()));
+        clock_layout, Shell::Get()->system_tray_model()->clock(), type));
   }
 
  private:
@@ -123,26 +132,6 @@ TEST_F(TimeViewTest, Basics) {
   EXPECT_FALSE(vertical_view()->parent());
 }
 
-// Test the show date mode in the time view.
-TEST_F(TimeViewTest, ShowDateMode) {
-  CreateTimeView(TimeView::ClockLayout::HORIZONTAL_CLOCK);
-  std::u16string time_text = horizontal_label()->GetText();
-
-  // Disable show date mode should show only the time.
-  time_view()->SetShowDate(false /* show_date */);
-  EXPECT_EQ(time_text, horizontal_label()->GetText());
-  EXPECT_FALSE(vertical_date_view()->GetVisible());
-
-  time_view()->UpdateClockLayout(TimeView::ClockLayout::VERTICAL_CLOCK);
-  std::u16string hours_text = vertical_label_hours()->GetText();
-  std::u16string minutes_text = vertical_label_minutes()->GetText();
-
-  // Show date mode should not affect vertical view.
-  time_view()->SetShowDate(true /* show_date */);
-  EXPECT_EQ(hours_text, vertical_label_hours()->GetText());
-  EXPECT_EQ(minutes_text, vertical_label_minutes()->GetText());
-}
-
 // Test `PreferredSizeChanged()` is called when there's a size change of the
 // `TimeView`.
 TEST_F(TimeViewTest, UpdateSize) {
@@ -164,6 +153,33 @@ TEST_F(TimeViewTest, UpdateSize) {
   // Move to 10:00AM. There should be a layout change of the `time_view()`.
   task_environment()->FastForwardBy(base::Seconds(61));
   EXPECT_TRUE(test_observer.preferred_size_changed_called());
+}
+
+// Test the Date view of the time view.
+TEST_F(TimeViewTest, DateView) {
+  // A newly created horizontal Date only has the horizontal date view.
+  CreateTimeView(TimeView::ClockLayout::HORIZONTAL_CLOCK, TimeView::kDate);
+  ASSERT_TRUE(horizontal_date_label()->parent());
+  EXPECT_EQ(time_view(), horizontal_date_label()->parent()->parent());
+  EXPECT_FALSE(horizontal_date_view());
+  ASSERT_TRUE(vertical_date_view());
+  EXPECT_FALSE(vertical_date_view()->parent());
+
+  // Switching the date to vertical updates the views.
+  time_view()->UpdateClockLayout(TimeView::ClockLayout::VERTICAL_CLOCK);
+  ASSERT_TRUE(horizontal_date_view());
+  EXPECT_FALSE(horizontal_date_view()->parent());
+  EXPECT_FALSE(vertical_date_view());
+  ASSERT_TRUE(vertical_date()->parent());
+  EXPECT_EQ(time_view(), vertical_date()->parent()->parent());
+
+  // Switching back to horizontal updates the views again.
+  time_view()->UpdateClockLayout(TimeView::ClockLayout::HORIZONTAL_CLOCK);
+  ASSERT_TRUE(horizontal_date_label()->parent());
+  EXPECT_EQ(time_view(), horizontal_date_label()->parent()->parent());
+  EXPECT_FALSE(horizontal_date_view());
+  ASSERT_TRUE(vertical_date_view());
+  EXPECT_FALSE(vertical_date_view()->parent());
 }
 
 }  // namespace ash

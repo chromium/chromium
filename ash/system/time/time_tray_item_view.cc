@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -14,24 +13,17 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/time_view.h"
 #include "ash/system/tray/tray_utils.h"
-#include "base/memory/scoped_refptr.h"
 #include "ui/views/border.h"
 
 namespace ash {
 
-TimeTrayItemView::TimeTrayItemView(Shelf* shelf,
-                                   scoped_refptr<UnifiedSystemTrayModel> model,
-                                   TimeView::Type type)
-    : TrayItemView(shelf), model_(model), session_observer_(this) {
-  system_tray_model_observation_.Observe(model_.get());
-
+TimeTrayItemView::TimeTrayItemView(Shelf* shelf, TimeView::Type type)
+    : TrayItemView(shelf), session_observer_(this) {
   TimeView::ClockLayout clock_layout =
       shelf->IsHorizontalAlignment() ? TimeView::ClockLayout::HORIZONTAL_CLOCK
                                      : TimeView::ClockLayout::VERTICAL_CLOCK;
   time_view_ = AddChildView(std::make_unique<TimeView>(
       clock_layout, Shell::Get()->system_tray_model()->clock(), type));
-
-  OnSystemTrayButtonSizeChanged(model_->GetSystemTrayButtonSize());
 }
 
 TimeTrayItemView::~TimeTrayItemView() = default;
@@ -50,17 +42,6 @@ void TimeTrayItemView::HandleLocaleChange() {
 void TimeTrayItemView::OnSessionStateChanged(
     session_manager::SessionState state) {
   time_view_->SetTextColor(TrayIconColor(state));
-}
-
-void TimeTrayItemView::OnSystemTrayButtonSizeChanged(
-    UnifiedSystemTrayModel::SystemTrayButtonSize system_tray_size) {
-  time_view_->SetShowDate(
-      features::IsCalendarViewEnabled() &&
-      system_tray_size == UnifiedSystemTrayModel::SystemTrayButtonSize::kLarge);
-}
-
-void TimeTrayItemView::Reset() {
-  system_tray_model_observation_.Reset();
 }
 
 const char* TimeTrayItemView::GetClassName() const {

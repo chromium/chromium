@@ -76,6 +76,8 @@ PhoneHubTray::PhoneHubTray(Shelf* shelf)
       l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME));
   icon->SetImageVerticalAlignment(
       views::ImageButton::VerticalAlignment::ALIGN_MIDDLE);
+  icon->SetImageHorizontalAlignment(
+      views::ImageButton::HorizontalAlignment::ALIGN_CENTER);
   icon_ = tray_container()->AddChildView(std::move(icon));
 }
 

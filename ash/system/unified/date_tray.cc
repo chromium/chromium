@@ -20,9 +20,7 @@ namespace ash {
 DateTray::DateTray(Shelf* shelf, UnifiedSystemTray* tray)
     : TrayBackgroundView(shelf, TrayBackgroundView::kStartRounded),
       time_view_(tray_container()->AddChildView(
-          std::make_unique<TimeTrayItemView>(shelf,
-                                             tray->model(),
-                                             TimeView::Type::kDate))),
+          std::make_unique<TimeTrayItemView>(shelf, TimeView::Type::kDate))),
       unified_system_tray_(tray) {
   tray_container()->SetMargin(
       /*main_axis_margin=*/kUnifiedTrayContentPadding -
@@ -30,11 +28,7 @@ DateTray::DateTray(Shelf* shelf, UnifiedSystemTray* tray)
       /*cross_axis_margin=*/0);
 }
 
-DateTray::~DateTray() {
-  // Reset the view to remove its dependency from |model_|, since this view is
-  // destructed after |model_|.
-  time_view_->Reset();
-}
+DateTray::~DateTray() = default;
 
 bool DateTray::PerformAction(const ui::Event& event) {
   // Lets the `unified_system_tray_` decide whether to show the bubble or not,
@@ -68,6 +62,11 @@ std::u16string DateTray::GetAccessibleNameForTray() {
              now, Shell::Get()->system_tray_model()->clock()->hour_clock_type(),
              base::kKeepAmPm) +
          u", " + base::TimeFormatFriendlyDate(now);
+}
+
+void DateTray::UpdateLayout() {
+  TrayBackgroundView::UpdateLayout();
+  time_view_->UpdateAlignmentForShelf(shelf());
 }
 
 }  // namespace ash
