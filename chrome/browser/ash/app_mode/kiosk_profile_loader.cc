@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/login/auth/chrome_login_performer.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
@@ -154,7 +155,8 @@ void KioskProfileLoader::Start() {
 }
 
 void KioskProfileLoader::LoginAsKioskAccount() {
-  login_performer_ = std::make_unique<ChromeLoginPerformer>(this);
+  login_performer_ = std::make_unique<ChromeLoginPerformer>(
+      this, LoginDisplayHost::default_host()->metrics_recorder());
   switch (app_type_) {
     case KioskAppType::kArcApp:
       login_performer_->LoginAsArcKioskAccount(account_id_);

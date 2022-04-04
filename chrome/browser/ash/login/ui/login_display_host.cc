@@ -14,6 +14,7 @@ LoginDisplayHost* LoginDisplayHost::default_host_ = nullptr;
 LoginDisplayHost::LoginDisplayHost() {
   DCHECK(default_host() == nullptr);
   default_host_ = this;
+  metrics_recorder_ = std::make_unique<MetricsRecorder>();
 }
 
 LoginDisplayHost::~LoginDisplayHost() {

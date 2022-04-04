@@ -4,12 +4,10 @@
 
 #include "ash/components/login/auth/login_performer.h"
 
+#include "ash/components/login/auth/metrics_recorder.h"
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -20,13 +18,15 @@
 #include "components/user_manager/user_names.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
-using base::UserMetricsAction;
-
 namespace ash {
 
-LoginPerformer::LoginPerformer(Delegate* delegate)
+LoginPerformer::LoginPerformer(Delegate* delegate,
+                               MetricsRecorder* metrics_recorder)
     : delegate_(delegate),
-      last_login_failure_(AuthFailure::AuthFailureNone()) {}
+      metrics_recorder_(metrics_recorder),
+      last_login_failure_(AuthFailure::AuthFailureNone()) {
+  DCHECK(metrics_recorder_);
+}
 
 LoginPerformer::~LoginPerformer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -40,11 +40,8 @@ LoginPerformer::~LoginPerformer() {
 
 void LoginPerformer::OnAuthFailure(const AuthFailure& failure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::RecordAction(UserMetricsAction("Login_Failure"));
 
-  UMA_HISTOGRAM_ENUMERATION("Login.FailureReason",
-                            failure.reason(),
-                            AuthFailure::NUM_FAILURE_REASONS);
+  metrics_recorder_->OnAuthFailure(failure.reason());
 
   LOG(ERROR) << "Login failure, reason=" << failure.reason()
              << ", error.state=" << failure.error().state();
@@ -57,11 +54,9 @@ void LoginPerformer::OnAuthFailure(const AuthFailure& failure) {
 
 void LoginPerformer::OnAuthSuccess(const UserContext& user_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::RecordAction(UserMetricsAction("Login_Success"));
 
   // Do not distinguish between offline and online success.
-  UMA_HISTOGRAM_ENUMERATION("Login.SuccessReason", OFFLINE_AND_ONLINE,
-                            NUM_SUCCESS_REASONS);
+  metrics_recorder_->OnLoginSuccess(OFFLINE_AND_ONLINE);
 
   VLOG(1) << "LoginSuccess hash: " << user_context.GetUserIDHash();
   base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -71,7 +66,7 @@ void LoginPerformer::OnAuthSuccess(const UserContext& user_context) {
 
 void LoginPerformer::OnOffTheRecordAuthSuccess() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::RecordAction(UserMetricsAction("Login_GuestLoginSuccess"));
+  metrics_recorder_->OnGuestLoignSuccess();
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&LoginPerformer::NotifyOffTheRecordAuthSuccess,

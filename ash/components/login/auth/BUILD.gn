@@ -69,6 +69,8 @@ component("auth") {
     "key.h",
     "login_performer.cc",
     "login_performer.h",
+    "metrics_recorder.cc",
+    "metrics_recorder.h",
     "password_visibility_utils.cc",
     "password_visibility_utils.h",
     "safe_mode_delegate.h",

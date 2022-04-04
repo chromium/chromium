@@ -11,9 +11,11 @@
 #include "ash/components/login/auth/auth_status_consumer.h"
 #include "ash/components/login/auth/authenticator.h"
 #include "ash/components/login/auth/extended_authenticator.h"
+#include "ash/components/login/auth/metrics_recorder.h"
 #include "ash/components/login/auth/user_context.h"
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/user_manager/user_type.h"
@@ -55,7 +57,8 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) LoginPerformer
     virtual void PolicyLoadFailed() = 0;
   };
 
-  explicit LoginPerformer(Delegate* delegate);
+  explicit LoginPerformer(Delegate* delegate,
+                          MetricsRecorder* metrics_recorder);
 
   LoginPerformer(const LoginPerformer&) = delete;
   LoginPerformer& operator=(const LoginPerformer&) = delete;
@@ -190,6 +193,9 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) LoginPerformer
 
   // Used for logging in.
   scoped_refptr<Authenticator> authenticator_;
+
+  // Used for metric reporting.
+  const raw_ptr<MetricsRecorder> metrics_recorder_;
 
   // Represents last login failure that was encountered when communicating to
   // sign-in server. AuthFailure.LoginFailureNone() by default.

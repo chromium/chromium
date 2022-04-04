@@ -598,7 +598,8 @@ void ExistingUserController::PerformLogin(
   if (!login_performer_.get() || num_login_attempts_ <= 1) {
     // Only one instance of LoginPerformer should exist at a time.
     login_performer_.reset(nullptr);
-    login_performer_ = std::make_unique<ChromeLoginPerformer>(this);
+    login_performer_ = std::make_unique<ChromeLoginPerformer>(
+        this, GetLoginDisplayHost()->metrics_recorder());
   }
   if (IsActiveDirectoryManaged() &&
       user_context.GetUserType() != user_manager::USER_TYPE_ACTIVE_DIRECTORY) {
@@ -1227,7 +1228,8 @@ void ExistingUserController::LoginAsGuest() {
 
   // Only one instance of LoginPerformer should exist at a time.
   login_performer_.reset(nullptr);
-  login_performer_ = std::make_unique<ChromeLoginPerformer>(this);
+  login_performer_ = std::make_unique<ChromeLoginPerformer>(
+      this, GetLoginDisplayHost()->metrics_recorder());
   login_performer_->LoginOffTheRecord();
   SendAccessibilityAlert(
       l10n_util::GetStringUTF8(IDS_CHROMEOS_ACC_LOGIN_SIGNIN_OFFRECORD));
@@ -1521,7 +1523,8 @@ void ExistingUserController::LoginAsPublicSessionInternal(
   VLOG(2) << "LoginAsPublicSessionInternal for user: "
           << user_context.GetAccountId();
   login_performer_.reset(nullptr);
-  login_performer_ = std::make_unique<ChromeLoginPerformer>(this);
+  login_performer_ = std::make_unique<ChromeLoginPerformer>(
+      this, GetLoginDisplayHost()->metrics_recorder());
   login_performer_->LoginAsPublicSession(user_context);
   SendAccessibilityAlert(
       l10n_util::GetStringUTF8(IDS_CHROMEOS_ACC_LOGIN_SIGNIN_PUBLIC_ACCOUNT));

@@ -12,6 +12,7 @@
 #include "ash/components/login/auth/authenticator.h"
 #include "ash/components/login/auth/extended_authenticator.h"
 #include "ash/components/login/auth/login_performer.h"
+#include "ash/components/login/auth/metrics_recorder.h"
 #include "ash/components/login/auth/user_context.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/login/wildcard_login_checker.h"
@@ -33,7 +34,8 @@ namespace ash {
 
 class ChromeLoginPerformer : public LoginPerformer {
  public:
-  explicit ChromeLoginPerformer(Delegate* delegate);
+  explicit ChromeLoginPerformer(Delegate* delegate,
+                                MetricsRecorder* metrics_recorder);
 
   ChromeLoginPerformer(const ChromeLoginPerformer&) = delete;
   ChromeLoginPerformer& operator=(const ChromeLoginPerformer&) = delete;
