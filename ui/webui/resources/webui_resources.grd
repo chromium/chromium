@@ -13,7 +13,7 @@ without changes to the corresponding grd file. -->
   </outputs>
   <release seq="1">
     <includes>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <include name="IDR_WEBUI_CROS_COLORS_CSS"
                  file="${root_gen_dir}/ui/chromeos/styles/cros_styles.css"
                  resource_path="chromeos/colors/cros_styles.css"
@@ -37,7 +37,7 @@ without changes to the corresponding grd file. -->
       <structure name="IDR_WEBUI_CSS_WIDGETS_CSS"
                  file="css/widgets.css" type="chrome_html"
                  flattenhtml="true" />
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <structure name="IDR_WEBUI_CSS_OVERLAY_CSS"
                    file="css/overlay.css" type="chrome_html"
                    flattenhtml="true" />

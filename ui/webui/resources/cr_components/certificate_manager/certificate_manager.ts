@@ -14,7 +14,7 @@ import './certificate_list.js';
 import './certificate_password_decryption_dialog.js';
 import './certificate_password_encryption_dialog.js';
 import './certificates_error_dialog.js';
-// <if expr="chromeos">
+// <if expr="chromeos_ash">
 import './certificate_provisioning_list.js';
 // </if>
 

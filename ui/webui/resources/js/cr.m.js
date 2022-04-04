@@ -203,7 +203,7 @@ export const isWindows = /Win/.test(navigator.platform);
 /** Whether this is the ChromeOS/ash web browser. */
 export const isChromeOS = (() => {
   let returnValue = false;
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   returnValue = true;
   // </if>
   return returnValue;
@@ -212,7 +212,7 @@ export const isChromeOS = (() => {
 /** Whether this is the ChromeOS/Lacros web browser. */
 export const isLacros = (() => {
   let returnValue = false;
-  // <if expr="lacros">
+  // <if expr="chromeos_lacros">
   returnValue = true;
   // </if>
   return returnValue;

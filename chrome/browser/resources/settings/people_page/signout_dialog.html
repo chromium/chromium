@@ -40,7 +40,7 @@
           $i18n{syncDisconnectConfirm}
         </cr-button>
       </div>
-<if expr="(not chromeos and is_posix) or is_win or is_macosx">
+<if expr="(not chromeos_ash and is_posix) or is_win or is_macosx">
       <template is="dom-if" if="[[!syncStatus.domain]]">
         <div id="wideFooter" slot="footer">
           <div class="cr-row first">

@@ -421,7 +421,7 @@ var cr = cr || function(global) {
       let returnValue = false;
       // TODO(https://crbug.com/1118190): grit conditionals do not work in many
       // WebUI tests.
-      // <if expr="chromeos">
+      // <if expr="chromeos_ash">
       returnValue = true;
       // </if>
       return returnValue;
@@ -432,7 +432,7 @@ var cr = cr || function(global) {
       let returnValue = false;
       // TODO(https://crbug.com/1118190): grit conditionals do not work in many
       // WebUI tests.
-      // <if expr="lacros">
+      // <if expr="chromeos_lacros">
       returnValue = true;
       // </if>
       return returnValue;

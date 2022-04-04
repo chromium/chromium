@@ -17,7 +17,7 @@
 
 /** @polymerBehavior */
 /* #export */ const I18nBehavior = {
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   // Dynamic locale changes are only relevant in ChromeOS OOBE/Login flows.
   // On other platforms Chrome process is restarted upon locale changes.
   // TODO(crbug.com/955194): move it to OobeI18nBehavior.
@@ -137,13 +137,13 @@
 /** @interface */
 /* #export */ class I18nBehaviorInterface {
   constructor() {
-    // <if expr="chromeos">
+    // <if expr="chromeos_ash">
     /** @type {string} */
     this.locale;
     // </if>
   }
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   i18nUpdateLocale() {}
   // </if>
 

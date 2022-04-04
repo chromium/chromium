@@ -12,7 +12,7 @@
 <title>$i18n{title}</title>
 
 <link rel="stylesheet" href="flags.css">
-<if expr="lacros or chromeos">
+<if expr="chromeos_lacros or chromeos_ash">
   <link rel="stylesheet" href="chrome://resources/css/os_header.css">
 </if>
 
@@ -45,7 +45,7 @@
 </div>
 <div id="body-container" style="visibility:hidden">
   <div id="flagsTemplate">
-<if expr="lacros or chromeos">
+<if expr="chromeos_lacros or chromeos_ash">
     <div class="os-link-container" id="os-link-container">
       <span id="os-flags-link-container" class="os-link-icon"></span>
       <span aria-hidden="true" id="os-link-desc">$i18n{os-flags-text1}</span>
@@ -63,7 +63,7 @@
     <div class="blurb-container">
       <span class="blurb-warning">$i18n{page-warning}</span>
       <span>$i18n{page-warning-explanation}</span>
-<if expr="chromeos">
+<if expr="chromeos_ash">
       <p id="owner-warning">$i18n{owner-warning}</p>
 </if>
     </div>

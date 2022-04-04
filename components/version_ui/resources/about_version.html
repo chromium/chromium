@@ -21,7 +21,7 @@ about:version template page
 <if expr="is_android or is_ios">
     <link rel="stylesheet" href="about_version_mobile.css">
 </if>
-<if expr="lacros or chromeos">
+<if expr="chromeos_lacros or chromeos_ash">
     <link rel="stylesheet" href="chrome://resources/css/os_header.css">
 </if>
 
@@ -29,7 +29,7 @@ about:version template page
   </head>
 
   <body>
-<if expr="lacros or chromeos">
+<if expr="chromeos_lacros or chromeos_ash">
     <div class="os-link-container-container" id="os-link-container" hidden>
       <div class="os-link-container">
         <span class="os-link-icon"></span>
@@ -87,7 +87,7 @@ about:version template page
             <span>$i18n{cl}</span>
           </td>
         </tr>
-<if expr="not chromeos">
+<if expr="not chromeos_ash">
         <tr>
           <td class="label">$i18n{os_name}</td>
           <td class="version" id="os_type">
@@ -109,7 +109,7 @@ about:version template page
           </td>
         </tr>
 </if>
-<if expr="chromeos">
+<if expr="chromeos_ash">
         <tr>
           <td class="label">$i18n{platform}</td>
           <td class="version" id="os_type">

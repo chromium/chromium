@@ -45,7 +45,7 @@
   return a;
 }
 
-// <if expr="chromeos">
+// <if expr="chromeos_ash">
 /**
  * DEPRECATED (if using Polymer): Use Polymer.IronA11yAnnouncer instead.
  * TODO(crbug.com/985410): Replace all existing usages and remove this function.
