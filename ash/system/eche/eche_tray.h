@@ -9,13 +9,21 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_observer.h"
+#include "ash/shell.h"
+#include "ash/shell_observer.h"
 #include "ash/system/eche/eche_icon_loading_indicator_view.h"
+#include "ash/system/screen_layout_observer.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/gtest_prod_util.h"
 #include "base/timer/timer.h"
 #include "components/session_manager/session_manager_types.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/button/button.h"
 #include "url/gurl.h"
 
@@ -47,7 +55,12 @@ class PhoneHubTray;
 
 // This class represents the Eche tray button in the status area and
 // controls the bubble that is shown when the tray button is clicked.
-class ASH_EXPORT EcheTray : public TrayBackgroundView, public SessionObserver {
+class ASH_EXPORT EcheTray : public TrayBackgroundView,
+                            public SessionObserver,
+                            public ScreenLayoutObserver,
+                            public ShelfObserver,
+                            public TabletModeObserver,
+                            ShellObserver {
  public:
   METADATA_HEADER(EcheTray);
 
@@ -155,6 +168,27 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView, public SessionObserver {
   PhoneHubTray* GetPhoneHubTray();
   EcheIconLoadingIndicatorView* GetLoadingIndicator();
 
+  // Updates the bubble's position based on the movements of the shelf.
+  void UpdateBubbleBounds();
+
+  // ScreenLayoutObserver:
+  void OnDisplayConfigurationChanged() override;
+
+  // ShelfObserver:
+  void OnAutoHideStateChanged(ShelfAutoHideState new_state) override;
+  void OnShelfIconPositionsChanged() override;
+
+  // TabletModeObserver:
+  void OnTabletModeStarted() override;
+  void OnTabletModeEnded() override;
+
+  // ShellObserver:
+  void OnShelfAlignmentChanged(aura::Window* root_window,
+                               ShelfAlignment old_alignment) override;
+
+  // returns the position of the anchor that bubble needs to be anchored to.
+  gfx::Rect GetAnchor();
+
   // The url that is transferred to the web view.
   // In the current implementation, this is supposed to be
   // Eche window URL. However, the bubble does not interpret,
@@ -171,9 +205,6 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView, public SessionObserver {
   // owned by `bubble_`
   AshWebView* web_view_ = nullptr;
 
-  base::ScopedObservation<SessionControllerImpl, SessionObserver>
-      observed_session_{this};
-
   GracefulCloseCallback graceful_close_callback_;
 
   // The unload timer to force close EcheTray in case unload error.
@@ -181,6 +212,18 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView, public SessionObserver {
 
   views::Button* close_button_ = nullptr;
   views::Button* minimize_button_ = nullptr;
+
+  // Observers
+  base::ScopedObservation<SessionControllerImpl, SessionObserver>
+      observed_session_{this};
+  base::ScopedObservation<Shelf, ShelfObserver> shelf_observation_{this};
+  base::ScopedObservation<TabletModeController, TabletModeObserver>
+      tablet_mode_observation_{this};
+  base::ScopedObservation<Shell,
+                          ShellObserver,
+                          &Shell::AddShellObserver,
+                          &Shell::RemoveShellObserver>
+      shell_observer_{this};
 
   base::WeakPtrFactory<EcheTray> weak_factory_{this};
 };

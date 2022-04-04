@@ -101,14 +101,18 @@ EcheTray::EcheTray(Shelf* shelf)
     : TrayBackgroundView(shelf),
       icon_(tray_container()->AddChildView(
           std::make_unique<views::ImageView>())) {
-  observed_session_.Observe(Shell::Get()->session_controller());
-
   const int icon_padding = (kTrayItemSize - kIconSize) / 2;
 
   icon_->SetBorder(
       views::CreateEmptyBorder(gfx::Insets::VH(icon_padding, icon_padding)));
 
+  // Observers setup
+  // Note: `ScreenLayoutObserver` starts observing at its constructor.
+  observed_session_.Observe(Shell::Get()->session_controller());
   icon_->SetTooltipText(GetAccessibleNameForTray());
+  shelf_observation_.Observe(shelf);
+  tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
+  shell_observer_.Observe(Shell::Get());
 }
 
 EcheTray::~EcheTray() {
@@ -324,7 +328,7 @@ void EcheTray::InitBubble() {
       tray_container()->GetWidget()->GetNativeWindow()->GetRootWindow(),
       kShellWindowId_AlwaysOnTopContainer);
   init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
-  init_params.anchor_rect = shelf()->GetSystemTrayAnchorRect();
+  init_params.anchor_rect = GetAnchor();
   init_params.insets = GetTrayBubbleInsets();
   init_params.shelf_alignment = shelf()->alignment();
   const gfx::Size eche_size = CalculateSizeForEche();
@@ -467,6 +471,40 @@ EcheIconLoadingIndicatorView* EcheTray::GetLoadingIndicator() {
   if (!phone_hub_tray)
     return nullptr;
   return phone_hub_tray->eche_loading_indicator();
+}
+
+void EcheTray::UpdateBubbleBounds() {
+  if (!bubble_)
+    return;
+  bubble_->GetBubbleView()->ChangeAnchorRect(GetAnchor());
+}
+
+void EcheTray::OnDisplayConfigurationChanged() {
+  UpdateBubbleBounds();
+}
+
+void EcheTray::OnAutoHideStateChanged(ShelfAutoHideState state) {
+  UpdateBubbleBounds();
+}
+
+void EcheTray::OnShelfIconPositionsChanged() {
+  UpdateBubbleBounds();
+}
+
+void EcheTray::OnTabletModeStarted() {
+  UpdateBubbleBounds();
+}
+
+void EcheTray::OnTabletModeEnded() {
+  UpdateBubbleBounds();
+}
+void EcheTray::OnShelfAlignmentChanged(aura::Window* root_window,
+                                       ShelfAlignment old_alignment) {
+  UpdateBubbleBounds();
+}
+
+gfx::Rect EcheTray::GetAnchor() {
+  return shelf()->GetSystemTrayAnchorRect();
 }
 
 BEGIN_METADATA(EcheTray, TrayBackgroundView)
