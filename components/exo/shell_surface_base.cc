@@ -1610,8 +1610,7 @@ void ShellSurfaceBase::SetParentInternal(aura::Window* parent) {
 bool ShellSurfaceBase::CalculateCanResize() const {
   if (overlay_widget_ && overlay_can_resize_.has_value())
     return *overlay_can_resize_;
-  return !movement_disabled_ &&
-         (minimum_size_.IsEmpty() || minimum_size_ != maximum_size_);
+  return !movement_disabled_ && GetCanResizeFromSizeConstraints();
 }
 
 void ShellSurfaceBase::CommitWidget() {

@@ -1193,6 +1193,26 @@ TEST_F(ClientControlledShellSurfaceTest, ClientIniatedResize) {
   ASSERT_FALSE(window_state->is_dragged());
 }
 
+TEST_F(ClientControlledShellSurfaceTest, ResizabilityAndSizeConstraints) {
+  std::unique_ptr<Surface> surface(new Surface);
+  auto shell_surface =
+      exo_test_helper()->CreateClientControlledShellSurface(surface.get());
+  shell_surface->SetMinimumSize(gfx::Size(0, 0));
+  shell_surface->SetMaximumSize(gfx::Size(0, 0));
+  surface->Commit();
+  EXPECT_FALSE(shell_surface->GetWidget()->widget_delegate()->CanResize());
+
+  shell_surface->SetMinimumSize(gfx::Size(400, 400));
+  shell_surface->SetMaximumSize(gfx::Size(0, 0));
+  surface->Commit();
+  EXPECT_TRUE(shell_surface->GetWidget()->widget_delegate()->CanResize());
+
+  shell_surface->SetMinimumSize(gfx::Size(400, 400));
+  shell_surface->SetMaximumSize(gfx::Size(400, 400));
+  surface->Commit();
+  EXPECT_FALSE(shell_surface->GetWidget()->widget_delegate()->CanResize());
+}
+
 namespace {
 
 // This class is only meant to used by CloseWindowWhenDraggingTest.

@@ -2284,4 +2284,12 @@ TEST_F(ShellSurfaceTest, NoNonClientViewWithConfigure) {
   EXPECT_EQ(callbacks.configure_state->bounds, gfx::Rect(10, 10, 300, 300));
 }
 
+TEST_F(ShellSurfaceTest, WindowIsResizableWithEmptySizeConstraints) {
+  auto shell_surface = test::ShellSurfaceBuilder({20, 20})
+                           .SetMinimumSize(gfx::Size(0, 0))
+                           .SetMaximumSize(gfx::Size(0, 0))
+                           .BuildShellSurface();
+  EXPECT_TRUE(shell_surface->GetWidget()->widget_delegate()->CanResize());
+}
+
 }  // namespace exo

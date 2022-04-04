@@ -174,6 +174,8 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   // the behaviour to check for window dragging by setting ends_drag to true.
   void Configure(bool ends_drag = false);
 
+  bool GetCanResizeFromSizeConstraints() const override;
+
   void AttemptToStartDrag(int component);
 
   void EndDrag();

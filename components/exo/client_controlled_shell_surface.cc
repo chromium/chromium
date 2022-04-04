@@ -1390,6 +1390,23 @@ void ClientControlledShellSurface::UpdateFrameType() {
     UpdateSurfaceBounds();
 }
 
+bool ClientControlledShellSurface::GetCanResizeFromSizeConstraints() const {
+  // Both min and max bounds of unresizable, maximized ARC windows are empty
+  // because Ash requires maximizable apps have empty max bounds.
+  // This assumes that ARC sets non-empty min sizes to all resizable apps.
+  //
+  // Example values of size constraints:
+  // ----------------------------------------------------------------------
+  // |           |          resizable           |      non-resizable      |
+  // ----------------------------------------------------------------------
+  // | freeform  | min: (400, 400), max: (0, 0) | min = max = window size |
+  // ----------------------------------------------------------------------
+  // | maximized | min: (400, 400), max: (0, 0) |   min = max = (0, 0)    |
+  // ----------------------------------------------------------------------
+
+  return minimum_size_ != maximum_size_;
+}
+
 void ClientControlledShellSurface::
     EnsureCompositorIsLockedForOrientationChange() {
   if (!orientation_compositor_lock_) {

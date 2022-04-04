@@ -159,6 +159,13 @@ ShellSurfaceBuilder& ShellSurfaceBuilder::SetMaximumSize(
   return *this;
 }
 
+ShellSurfaceBuilder& ShellSurfaceBuilder::SetMinimumSize(
+    const gfx::Size& size) {
+  DCHECK(!built_);
+  min_size_ = size;
+  return *this;
+}
+
 ShellSurfaceBuilder& ShellSurfaceBuilder::SetDisableMovement() {
   DCHECK(!built_);
   disable_movement_ = true;
@@ -215,6 +222,9 @@ std::unique_ptr<ShellSurface> ShellSurfaceBuilder::BuildShellSurface() {
 
   if (!max_size_.IsEmpty())
     shell_surface->SetMaximumSize(max_size_);
+
+  if (!min_size_.IsEmpty())
+    shell_surface->SetMaximumSize(min_size_);
 
   if (popup_)
     shell_surface->SetPopup();

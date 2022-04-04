@@ -148,6 +148,8 @@ ExoTestHelper::CreateClientControlledShellSurface(
       WMHelper::GetInstance()->GetDefaultDeviceScaleFactor(),
       default_scale_cancellation);
   shell_surface->SetApplicationId("arc");
+  // ARC's default min size is non-empty.
+  shell_surface->SetMinimumSize(gfx::Size(1, 1));
   shell_surface->set_delegate(
       std::make_unique<ClientControlledShellSurfaceDelegate>(
           shell_surface.get()));

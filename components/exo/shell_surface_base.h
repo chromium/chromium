@@ -357,9 +357,9 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   void SetParentInternal(aura::Window* window);
   void SetContainerInternal(int container);
 
-  // Returns the resizability of the window. Useful to get the resizability
-  // without actually updating it.
-  bool CalculateCanResize() const;
+  // Converts min/max sizes to resizeability. This needs to be overridden as
+  // different clients have different default min/max values.
+  virtual bool GetCanResizeFromSizeConstraints() const = 0;
 
   // Returns true if this surface will exit fullscreen from a restore or
   // maximize request. Currently only true for Lacros.
@@ -385,6 +385,8 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   bool server_side_resize_ = false;
   bool needs_layout_on_show_ = false;
   bool client_supports_window_bounds_ = false;
+  gfx::Size minimum_size_;
+  gfx::Size maximum_size_;
 
   // The orientation to be applied when widget is being created. Only set when
   // widget is not created yet orientation lock is being set. This is currently
@@ -417,6 +419,10 @@ class ShellSurfaceBase : public SurfaceTreeHost,
 
   void UpdatePinned();
 
+  // Returns the resizability of the window. Useful to get the resizability
+  // without actually updating it.
+  bool CalculateCanResize() const;
+
   aura::Window* parent_ = nullptr;
   bool activatable_ = true;
   bool can_minimize_ = true;
@@ -432,9 +438,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   base::OnceClosure surface_destroyed_callback_;
   bool system_modal_ = false;
   bool non_system_modal_window_was_active_ = false;
-  gfx::Size minimum_size_;
   gfx::Size pending_minimum_size_;
-  gfx::Size maximum_size_;
   gfx::Size pending_maximum_size_;
   gfx::SizeF pending_aspect_ratio_;
   bool pending_pip_ = false;

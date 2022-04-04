@@ -632,6 +632,12 @@ void ShellSurface::Configure(bool ends_drag) {
     observer.OnConfigure(serial);
 }
 
+bool ShellSurface::GetCanResizeFromSizeConstraints() const {
+  // Both the default min and max sizes are empty and windows must be resizable
+  // in that case.
+  return (minimum_size_.IsEmpty() || minimum_size_ != maximum_size_);
+}
+
 void ShellSurface::AttemptToStartDrag(int component) {
   ash::WindowState* window_state =
       ash::WindowState::Get(widget_->GetNativeWindow());
