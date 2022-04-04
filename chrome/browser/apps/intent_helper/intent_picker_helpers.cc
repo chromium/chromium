@@ -11,7 +11,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/intent_helper/intent_picker_auto_display_service.h"
+#include "chrome/browser/apps/intent_helper/intent_picker_auto_display_prefs.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_internal.h"
 #include "chrome/browser/profiles/profile.h"
@@ -69,7 +69,7 @@ void LaunchAppFromIntentPicker(content::WebContents* web_contents,
   if (base::FeatureList::IsEnabled(features::kLinkCapturingUiUpdate)) {
     Profile* profile =
         Profile::FromBrowserContext(web_contents->GetBrowserContext());
-    IntentPickerAutoDisplayService::Get(profile)->ResetIntentChipCounter(url);
+    IntentPickerAutoDisplayPrefs::ResetIntentChipCounter(profile, url);
   }
 
   switch (app_type) {
@@ -89,38 +89,26 @@ void LaunchAppFromIntentPicker(content::WebContents* web_contents,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-void OnIntentPickerClosed(
-    content::WebContents* web_contents,
-    IntentPickerAutoDisplayService* ui_auto_display_service,
-    const GURL& url,
-    const std::string& launch_name,
-    PickerEntryType entry_type,
-    IntentPickerCloseReason close_reason,
-    bool should_persist) {
+void OnIntentPickerClosed(content::WebContents* web_contents,
+                          const GURL& url,
+                          const std::string& launch_name,
+                          PickerEntryType entry_type,
+                          IntentPickerCloseReason close_reason,
+                          bool should_persist) {
 #if BUILDFLAG(IS_CHROMEOS)
-  OnIntentPickerClosedChromeOs(web_contents, ui_auto_display_service,
-                               PickerShowState::kOmnibox, url, launch_name,
-                               entry_type, close_reason, should_persist);
+  OnIntentPickerClosedChromeOs(web_contents, PickerShowState::kOmnibox, url,
+                               launch_name, entry_type, close_reason,
+                               should_persist);
 #else
   const bool should_launch_app =
       close_reason == apps::IntentPickerCloseReason::OPEN_APP;
   if (should_launch_app) {
     LaunchAppFromIntentPicker(web_contents, url, launch_name, entry_type);
   }
-
-  if (entry_type == PickerEntryType::kUnknown &&
-      close_reason == IntentPickerCloseReason::DIALOG_DEACTIVATED &&
-      ui_auto_display_service) {
-    // We reach here if the picker was closed without an app being chosen, e.g.
-    // due to the tab being closed. Keep count of this scenario so we can stop
-    // the UI from showing after 2+ dismissals.
-    ui_auto_display_service->IncrementPickerUICounter(url);
-  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void OnAppIconsLoaded(content::WebContents* web_contents,
-                      IntentPickerAutoDisplayService* ui_auto_display_service,
                       const GURL& url,
                       std::vector<IntentPickerAppInfo> apps) {
   ShowIntentPickerBubbleForApps(
@@ -132,8 +120,7 @@ void OnAppIconsLoaded(content::WebContents* web_contents,
       /*show_stay_in_chrome=*/false,
       /*show_remember_selection=*/false,
 #endif  // BUILDFLAG(IS_CHROMEOS)
-      base::BindOnce(&OnIntentPickerClosed, web_contents,
-                     ui_auto_display_service, url));
+      base::BindOnce(&OnIntentPickerClosed, web_contents, url));
 }
 
 std::vector<IntentPickerAppInfo> GetAppsForIntentPicker(
@@ -190,8 +177,7 @@ void ShowIntentPickerBubble(content::WebContents* web_contents,
 
   IntentPickerTabHelper::LoadAppIcons(
       web_contents, std::move(apps),
-      base::BindOnce(&OnAppIconsLoaded, web_contents,
-                     /*ui_auto_display_service=*/nullptr, url));
+      base::BindOnce(&OnAppIconsLoaded, web_contents, url));
 }
 
 bool IntentPickerPwaPersistenceEnabled() {

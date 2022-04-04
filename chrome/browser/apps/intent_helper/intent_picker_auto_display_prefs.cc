@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/intent_helper/intent_picker_auto_display_service.h"
+#include "chrome/browser/apps/intent_helper/intent_picker_auto_display_prefs.h"
 
 #include "base/values.h"
-#include "chrome/browser/apps/intent_helper/intent_picker_auto_display_service_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -44,23 +43,18 @@ base::Value GetAutoDisplayDictForSettings(
 }  // namespace
 
 // static
-IntentPickerAutoDisplayService* IntentPickerAutoDisplayService::Get(
-    Profile* profile) {
-  return IntentPickerAutoDisplayServiceFactory::GetForProfile(profile);
-}
-
-IntentPickerAutoDisplayService::IntentPickerAutoDisplayService(Profile* profile)
-    : profile_(profile) {}
-
-bool IntentPickerAutoDisplayService::ShouldAutoDisplayUi(const GURL& url) {
+bool IntentPickerAutoDisplayPrefs::ShouldAutoDisplayUi(Profile* profile,
+                                                       const GURL& url) {
   base::Value pref_dict = GetAutoDisplayDictForSettings(
-      HostContentSettingsMapFactory::GetForProfile(profile_), url);
+      HostContentSettingsMapFactory::GetForProfile(profile), url);
 
   return pref_dict.FindIntKey(kAutoDisplayKey).value_or(0) < kDismissThreshold;
 }
 
-void IntentPickerAutoDisplayService::IncrementPickerUICounter(const GURL& url) {
-  auto* settings_map = HostContentSettingsMapFactory::GetForProfile(profile_);
+// static
+void IntentPickerAutoDisplayPrefs::IncrementPickerUICounter(Profile* profile,
+                                                            const GURL& url) {
+  auto* settings_map = HostContentSettingsMapFactory::GetForProfile(profile);
   base::Value pref_dict = GetAutoDisplayDictForSettings(settings_map, url);
 
   int dismissed_count = pref_dict.FindIntKey(kAutoDisplayKey).value_or(0);
@@ -71,10 +65,11 @@ void IntentPickerAutoDisplayService::IncrementPickerUICounter(const GURL& url) {
       std::move(pref_dict));
 }
 
-IntentPickerAutoDisplayService::ChipState
-IntentPickerAutoDisplayService::GetChipStateAndIncrementCounter(
-    const GURL& url) {
-  auto* settings_map = HostContentSettingsMapFactory::GetForProfile(profile_);
+// static
+IntentPickerAutoDisplayPrefs::ChipState
+IntentPickerAutoDisplayPrefs::GetChipStateAndIncrementCounter(Profile* profile,
+                                                              const GURL& url) {
+  auto* settings_map = HostContentSettingsMapFactory::GetForProfile(profile);
   base::Value pref_dict = GetAutoDisplayDictForSettings(settings_map, url);
 
   int display_count = pref_dict.FindIntKey(kIntentChipCountKey).value_or(0);
@@ -91,8 +86,10 @@ IntentPickerAutoDisplayService::GetChipStateAndIncrementCounter(
   return ChipState::kExpanded;
 }
 
-void IntentPickerAutoDisplayService::ResetIntentChipCounter(const GURL& url) {
-  auto* settings_map = HostContentSettingsMapFactory::GetForProfile(profile_);
+// static
+void IntentPickerAutoDisplayPrefs::ResetIntentChipCounter(Profile* profile,
+                                                          const GURL& url) {
+  auto* settings_map = HostContentSettingsMapFactory::GetForProfile(profile);
   base::Value pref_dict = GetAutoDisplayDictForSettings(settings_map, url);
 
   pref_dict.SetIntKey(kIntentChipCountKey, 0);
@@ -102,10 +99,12 @@ void IntentPickerAutoDisplayService::ResetIntentChipCounter(const GURL& url) {
       std::move(pref_dict));
 }
 
-IntentPickerAutoDisplayService::Platform
-IntentPickerAutoDisplayService::GetLastUsedPlatformForTablets(const GURL& url) {
+// static
+IntentPickerAutoDisplayPrefs::Platform
+IntentPickerAutoDisplayPrefs::GetLastUsedPlatformForTablets(Profile* profile,
+                                                            const GURL& url) {
   base::Value pref_dict = GetAutoDisplayDictForSettings(
-      HostContentSettingsMapFactory::GetForProfile(profile_), url);
+      HostContentSettingsMapFactory::GetForProfile(profile), url);
   int platform = pref_dict.FindIntKey(kPlatformKey).value_or(0);
 
   DCHECK_GE(platform, static_cast<int>(Platform::kNone));
@@ -114,10 +113,11 @@ IntentPickerAutoDisplayService::GetLastUsedPlatformForTablets(const GURL& url) {
   return static_cast<Platform>(platform);
 }
 
-void IntentPickerAutoDisplayService::UpdatePlatformForTablets(
-    const GURL& url,
-    Platform platform) {
-  auto* settings_map = HostContentSettingsMapFactory::GetForProfile(profile_);
+// static
+void IntentPickerAutoDisplayPrefs::UpdatePlatformForTablets(Profile* profile,
+                                                            const GURL& url,
+                                                            Platform platform) {
+  auto* settings_map = HostContentSettingsMapFactory::GetForProfile(profile);
   base::Value pref_dict = GetAutoDisplayDictForSettings(settings_map, url);
 
   DCHECK_GE(static_cast<int>(platform), static_cast<int>(Platform::kNone));

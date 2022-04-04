@@ -11,7 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/intent_helper/intent_picker_auto_display_service.h"
+#include "chrome/browser/apps/intent_helper/intent_picker_auto_display_prefs.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -190,10 +190,11 @@ void IntentPickerTabHelper::UpdateCollapsedState() {
     last_shown_origin_ = origin;
     Profile* profile =
         Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-    auto chip_state = IntentPickerAutoDisplayService::Get(profile)
-                          ->GetChipStateAndIncrementCounter(url);
+    auto chip_state =
+        IntentPickerAutoDisplayPrefs ::GetChipStateAndIncrementCounter(profile,
+                                                                       url);
     should_show_collapsed_chip_ =
-        chip_state == IntentPickerAutoDisplayService::ChipState::kCollapsed;
+        chip_state == IntentPickerAutoDisplayPrefs::ChipState::kCollapsed;
   }
 }
 
