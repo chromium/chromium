@@ -980,7 +980,7 @@ TEST_F(FullscreenOverlayTest, OnTopFail) {
 TEST_F(FullscreenOverlayTest, NotCoveringFullscreenFail) {
   auto pass = CreateRenderPass();
   gfx::Rect inset_rect = pass->output_rect;
-  inset_rect.Inset(0, 1, 0, 1);
+  inset_rect.Inset(gfx::Insets::VH(1, 0));
   CreateCandidateQuadAt(resource_provider_.get(),
                         child_resource_provider_.get(), child_provider_.get(),
                         pass->shared_quad_state_list.back(), pass.get(),
@@ -2646,7 +2646,7 @@ TEST_F(FullThresholdTest, ThresholdTestForPrioritization) {
   // This quad is used to occlude the damage of the overlay candidate to the
   // point that the damage is no longer considered significant.
   auto nearly_occluding_quad = kOverlayRect;
-  nearly_occluding_quad.Inset(1, 1);
+  nearly_occluding_quad.Inset(1);
 
   for (size_t i = 0; i < kSlowFrameTestEnd; ++i) {
     SCOPED_TRACE(i);
@@ -3830,7 +3830,7 @@ TEST_F(UnderlayCastTest, RoundContentBounds) {
   // Check rounding behaviour on content quads (bounds should be enclosing
   // rect).
   gfx::Rect overlay_rect = kOverlayRect;
-  overlay_rect.Inset(0, 0, 1, 1);
+  overlay_rect.Inset(gfx::Insets::TLBR(0, 0, 1, 1));
   AddExpectedRectToOverlayProcessor(gfx::RectF(0.5f, 0.5f, 255, 255));
 
   gfx::Transform transform;

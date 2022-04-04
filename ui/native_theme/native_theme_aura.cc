@@ -328,9 +328,9 @@ void NativeThemeAura::PaintScrollbarThumb(cc::PaintCanvas* canvas,
     const int extra_padding =
         (scrollbar_button_length() == 0) ? kThumbPadding : 0;
     if (part == NativeTheme::kScrollbarVerticalThumb)
-      thumb_rect.Inset(kThumbPadding, extra_padding);
+      thumb_rect.Inset(gfx::Insets::VH(extra_padding, kThumbPadding));
     else
-      thumb_rect.Inset(extra_padding, kThumbPadding);
+      thumb_rect.Inset(gfx::Insets::VH(kThumbPadding, extra_padding));
 
     thumb_color =
         (InForcedColorsMode() && features::IsForcedColorsEnabled())

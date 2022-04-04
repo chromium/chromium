@@ -97,7 +97,7 @@ void SwitchAccessMenuBubbleController::ShowMenu(
   // The resting bounds includes padding on each side of the menu.
   // Remove that before passing to the back button controller so the back button
   // appears in the correct position.
-  resting_bounds.Inset(kBubbleMenuPadding, kBubbleMenuPadding);
+  resting_bounds.Inset(kBubbleMenuPadding);
   back_button_controller_->ShowBackButton(resting_bounds,
                                           /*show_focus_ring=*/false,
                                           /*for_menu=*/true);

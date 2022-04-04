@@ -140,7 +140,7 @@ void DelegatedInkPointRendererSkia::FinalizePathForDraw() {
   // presentation area so that is can't extend beyond the drawable area.
   gfx::RectF damage_rect = gfx::SkRectToRectF(path_.computeTightBounds());
   const float kRadius = metadata_->diameter() / 2.f;
-  damage_rect.Inset(-kRadius, -kRadius);
+  damage_rect.Inset(-kRadius);
   damage_rect.Intersect(metadata_->presentation_area());
 
   TRACE_EVENT_INSTANT1("delegated_ink_trails",

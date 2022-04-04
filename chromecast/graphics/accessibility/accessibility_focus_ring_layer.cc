@@ -106,7 +106,7 @@ void AccessibilityFocusRingLayer::Set(const AccessibilityFocusRing& ring) {
 
   gfx::Rect bounds = ring.GetBounds();
   int inset = kGradientWidth;
-  bounds.Inset(-inset, -inset, -inset, -inset);
+  bounds.Inset(-inset);
 
   DCHECK(root_window());
   display::Display display =
@@ -115,7 +115,7 @@ void AccessibilityFocusRingLayer::Set(const AccessibilityFocusRing& ring) {
   CreateOrUpdateLayer(root_window(), "AccessibilityFocusRing", bounds);
 
   gfx::Rect wbounds = root_window()->bounds();
-  wbounds.Inset(inset / 2, inset / 2, inset / 2, inset / 2);
+  wbounds.Inset(inset / 2);
   int top = wbounds.x();
   int left = wbounds.y();
   int bottom = top + wbounds.height();

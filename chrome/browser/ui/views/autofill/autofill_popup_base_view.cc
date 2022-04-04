@@ -379,7 +379,8 @@ bool AutofillPopupBaseView::DoUpdateBoundsAndRedrawPopup() {
   // Consider the element is |kElementBorderPadding| pixels larger at the top
   // and at the bottom in order to reposition the dropdown, so that it doesn't
   // look too close to the element.
-  element_bounds.Inset(/*horizontal=*/0, /*vertical=*/-kElementBorderPadding);
+  element_bounds.Inset(
+      gfx::Insets::VH(/*vertical=*/-kElementBorderPadding, /*horizontal=*/0));
 
   // At least one row of the popup should be shown in the bounds of the content
   // area so that the user notices the presence of the popup.

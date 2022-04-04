@@ -50,7 +50,8 @@ void ContentShadow::OnPaint(gfx::Canvas* canvas) {
   // Outdent the sides to make the shadow appear uniform in the corners.
   gfx::RectF container_bounds(parent()->GetLocalBounds());
   View::ConvertRectToTarget(parent(), this, &container_bounds);
-  container_bounds.Inset(-views::BubbleBorder::kShadowBlur, 0);
+  container_bounds.Inset(
+      gfx::InsetsF::VH(0, -views::BubbleBorder::kShadowBlur));
 
   views::BubbleBorder::DrawBorderAndShadow(gfx::RectFToSkRect(container_bounds),
                                            canvas, GetColorProvider());

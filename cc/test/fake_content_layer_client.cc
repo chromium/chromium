@@ -137,7 +137,7 @@ FakeContentLayerClient::PaintContentsToDisplayList() {
     display_list->StartPaint();
     while (!draw_rect.IsEmpty()) {
       display_list->push<DrawIRectOp>(gfx::RectToSkIRect(draw_rect), flags);
-      draw_rect.Inset(1, 1);
+      draw_rect.Inset(1);
     }
     display_list->EndPaintOfUnpaired(PaintableRegion());
   }

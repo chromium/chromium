@@ -584,7 +584,7 @@ TEST_F(DrmOverlayValidatorTest, NonIntegerDisplayRect) {
                  {.formats = {DRM_FORMAT_XRGB8888, DRM_FORMAT_NV12}}}};
   InitDrmStatesAndControllers(std::vector<CrtcState>(1, state));
 
-  overlay_params_.back().display_rect.Inset(0.005f, 0.005f);
+  overlay_params_.back().display_rect.Inset(0.005f);
   plane_list_.pop_back();
   AddPlane(overlay_params_.back());
 

@@ -422,7 +422,7 @@ class TabGroupButton : public BookmarkMenuButtonBase {
   void OnPaintBackground(gfx::Canvas* canvas) override {
     const ui::ThemeProvider* const tp = GetThemeProvider();
     gfx::RectF rect_f = gfx::RectF(width(), height());
-    rect_f.Inset(1.0f, 1.0f);
+    rect_f.Inset(1.0f);
     float border_thickness_ = 2.0f;
 
     // Relies on logic in theme_helper.cc to determine dark/light palette.
@@ -439,7 +439,7 @@ class TabGroupButton : public BookmarkMenuButtonBase {
       border_color =
           tp->GetColor(GetTabGroupDialogColorId(tab_group_color_id_));
       border_thickness_ = 2.0f;
-      rect_f.Inset(border_thickness_ / 2, border_thickness_ / 2);
+      rect_f.Inset(border_thickness_ / 2);
     }
 
     // Draw background.

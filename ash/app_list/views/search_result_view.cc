@@ -729,7 +729,7 @@ void SearchResultView::Layout() {
       (kPreferredIconViewWidth - icon_->GetImage().width()) / 2;
   int top_bottom_padding = (rect.height() - icon_->GetImage().height()) / 2;
   icon_bounds.set_width(kPreferredIconViewWidth);
-  icon_bounds.Inset(left_right_padding, top_bottom_padding);
+  icon_bounds.Inset(gfx::Insets::VH(top_bottom_padding, left_right_padding));
   icon_bounds.Intersect(rect);
   icon_->SetBoundsRect(icon_bounds);
 

@@ -557,9 +557,9 @@ void BoxLayout::InsetCrossAxis(gfx::Rect* rect,
                                int leading,
                                int trailing) const {
   if (orientation_ == Orientation::kVertical)
-    rect->Inset(leading, 0, trailing, 0);
+    rect->Inset(gfx::Insets::TLBR(0, leading, 0, trailing));
   else
-    rect->Inset(0, leading, 0, trailing);
+    rect->Inset(gfx::Insets::TLBR(leading, 0, trailing, 0));
 }
 
 gfx::Size BoxLayout::GetPreferredSizeForChildWidth(const View* host,
@@ -607,7 +607,8 @@ gfx::Size BoxLayout::GetPreferredSizeForChildWidth(const View* host,
       } else {
         child_bounds.set_origin(
             gfx::Point(position, -(child_bounds.height() / 2)));
-        child_bounds.Inset(0, -child_margins.top(), 0, -child_margins.bottom());
+        child_bounds.Inset(gfx::Insets::TLBR(-child_margins.top(), 0,
+                                             -child_margins.bottom(), 0));
       }
 
       child_area_bounds.Union(child_bounds);

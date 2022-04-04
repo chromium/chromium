@@ -350,7 +350,8 @@ gfx::Rect AppsContainerView::CalculateAvailableBoundsForAppsGrid(
     const gfx::Rect& contents_bounds) const {
   gfx::Rect available_bounds = contents_bounds;
   // Reserve horizontal margins to accommodate page switcher.
-  available_bounds.Inset(GetMinHorizontalMarginForAppsGrid(), 0);
+  available_bounds.Inset(
+      gfx::Insets::VH(0, GetMinHorizontalMarginForAppsGrid()));
   // Reserve vertical space for search box and suggestion chips.
   available_bounds.Inset(
       0,
@@ -358,7 +359,7 @@ gfx::Rect AppsContainerView::CalculateAvailableBoundsForAppsGrid(
           contents_view_->GetSearchBoxSize(AppListState::kStateApps)),
       0, 0);
   // Subtracts apps grid view insets from space available for apps grid.
-  available_bounds.Inset(0, kGridVerticalMargin);
+  available_bounds.Inset(gfx::Insets::VH(kGridVerticalMargin, 0));
 
   return available_bounds;
 }
@@ -877,7 +878,7 @@ void AppsContainerView::Layout() {
 
   if (suggestion_chip_container_view_) {
     chip_container_rect.set_height(kSuggestionChipContainerHeight);
-    chip_container_rect.Inset(GetIdealHorizontalMargin(), 0);
+    chip_container_rect.Inset(gfx::Insets::VH(0, GetIdealHorizontalMargin()));
     suggestion_chip_container_view_->SetBoundsRect(chip_container_rect);
   } else {
     chip_container_rect.set_height(0);
@@ -916,7 +917,8 @@ void AppsContainerView::Layout() {
   // `scrollable_container_` bounds to make room for the gradient mask to be
   // placed above the continue section.
   if (features::IsProductivityLauncherEnabled())
-    scrollable_bounds.Inset(0, -kDefaultFadeoutMaskHeight, 0, 0);
+    scrollable_bounds.Inset(
+        gfx::Insets::TLBR(-kDefaultFadeoutMaskHeight, 0, 0, 0));
   scrollable_container_->SetBoundsRect(scrollable_bounds);
 
   if (gradient_layer_delegate_)

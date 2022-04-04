@@ -67,7 +67,7 @@ void Windows10CaptionButton::OnPaintBackground(gfx::Canvas* canvas) {
       ThemeProperties::COLOR_CONTROL_BUTTON_BACKGROUND);
   const SkAlpha theme_alpha = SkColorGetA(bg_color);
   gfx::Rect bounds = GetContentsBounds();
-  bounds.Inset(GetBetweenButtonSpacing(), 0, 0, 0);
+  bounds.Inset(gfx::Insets::TLBR(0, GetBetweenButtonSpacing(), 0, 0));
 
   if (theme_alpha > 0) {
     canvas->FillRect(
@@ -177,7 +177,7 @@ void DrawRect(gfx::Canvas* canvas,
               const cc::PaintFlags& flags) {
   gfx::RectF rect_f(rect);
   float stroke_half_width = flags.getStrokeWidth() / 2;
-  rect_f.Inset(stroke_half_width, stroke_half_width);
+  rect_f.Inset(stroke_half_width);
   canvas->DrawRect(rect_f, flags);
 }
 
@@ -236,7 +236,7 @@ void Windows10CaptionButton::PaintSymbol(gfx::Canvas* canvas) {
     case VIEW_ID_RESTORE_BUTTON: {
       // Bottom left ("in front") square.
       const int separation = std::floor(2 * scale);
-      symbol_rect.Inset(0, separation, separation, 0);
+      symbol_rect.Inset(gfx::Insets::TLBR(separation, 0, 0, separation));
       DrawRect(canvas, symbol_rect, flags);
 
       // Top right ("behind") square.
@@ -272,7 +272,7 @@ void Windows10CaptionButton::PaintSymbol(gfx::Canvas* canvas) {
       canvas->ClipRect(symbol_rect);
       // The chevron should occupy the space between the upper and lower quarter
       // of the `symbol_rect` bounds.
-      symbol_rect.Inset(0, symbol_rect.height() / 4);
+      symbol_rect.Inset(gfx::Insets::VH(symbol_rect.height() / 4, 0));
       SkPath path;
       path.moveTo(gfx::PointToSkPoint(symbol_rect.origin()));
       path.lineTo(gfx::PointToSkPoint(symbol_rect.bottom_center()));

@@ -360,7 +360,7 @@ TEST_F(LockLayoutManagerTest, AccessibilityPanelWithMultipleMonitors) {
 
   gfx::Rect target_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
-  target_bounds.Inset(0, kAccessibilityPanelHeight, 0, 0);
+  target_bounds.Inset(gfx::Insets::TLBR(kAccessibilityPanelHeight, 0, 0, 0));
   EXPECT_EQ(target_bounds, window->GetBoundsInScreen());
 
   // Restore window with bounds in the second display, the window should be

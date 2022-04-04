@@ -88,7 +88,7 @@ void AutoclickScrollBubbleController::SetScrollPosition(
     // Buffer around the point so that the scroll bubble does not overlap it.
     // ScrollBubbleController will automatically layout to avoid edges.
     // Aims to lay out like the context menu, at 16x16 to the bottom right.
-    anchor.Inset(-kScrollPointBufferDips, 0);
+    anchor.Inset(gfx::Insets::VH(0, -kScrollPointBufferDips));
     bubble_view_->UpdateAnchorRect(anchor,
                                    views::BubbleBorder::Arrow::LEFT_TOP);
     return;
@@ -99,8 +99,8 @@ void AutoclickScrollBubbleController::SetScrollPosition(
   // Try to show the scroll bubble on the side of the rect closest to the point.
   // Determine whether there will be space to show the scroll bubble between the
   // scroll bounds and display bounds.
-  work_area.Inset(kAutoclickScrollMenuSizeDips, kAutoclickScrollMenuSizeDips);
-  scroll_bounds_in_dips.Inset(-kScrollRectBufferDips, -kScrollRectBufferDips);
+  work_area.Inset(kAutoclickScrollMenuSizeDips);
+  scroll_bounds_in_dips.Inset(-kScrollRectBufferDips);
   bool fits_left = scroll_bounds_in_dips.x() > work_area.x();
   bool fits_right = scroll_bounds_in_dips.right() < work_area.right();
   bool fits_above = scroll_bounds_in_dips.y() > work_area.y();

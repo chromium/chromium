@@ -40,7 +40,8 @@ bool HitTestButton(const views::FrameCaptionButton* button,
   gfx::Rect expanded_bounds_in_screen = button->GetBoundsInScreen();
   if (button->GetState() == views::Button::STATE_HOVERED ||
       button->GetState() == views::Button::STATE_PRESSED) {
-    expanded_bounds_in_screen.Inset(-kMaxOvershootX, -kMaxOvershootY);
+    expanded_bounds_in_screen.Inset(
+        gfx::Insets::VH(-kMaxOvershootY, -kMaxOvershootX));
   }
   return expanded_bounds_in_screen.Contains(location_in_screen);
 }

@@ -742,7 +742,7 @@ void DesksBarView::Layout() {
   gfx::Rect scroll_bounds = bounds();
   // Align with the overview grid in horizontal, so only horizontal insets are
   // needed here.
-  scroll_bounds.Inset(horizontal_padding, 0);
+  scroll_bounds.Inset(gfx::Insets::VH(0, horizontal_padding));
   scroll_view_->SetBoundsRect(scroll_bounds);
 
   // Clip the contents that are outside of the |scroll_view_|'s bounds.

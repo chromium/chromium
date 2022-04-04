@@ -79,9 +79,9 @@ class MaskContentLayerClient : public ContentLayerClient {
 
     gfx::Rect inset_rect(bounds_);
     while (!inset_rect.IsEmpty()) {
-      inset_rect.Inset(3, 3, 2, 2);
+      inset_rect.Inset(gfx::Insets::TLBR(3, 3, 2, 2));
       display_list->push<DrawRectOp>(gfx::RectToSkRect(inset_rect), flags);
-      inset_rect.Inset(3, 3, 2, 2);
+      inset_rect.Inset(gfx::Insets::TLBR(3, 3, 2, 2));
     }
 
     display_list->push<RestoreOp>();

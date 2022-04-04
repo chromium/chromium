@@ -103,7 +103,7 @@ class SelectToSpeakTest : public InProcessBrowserTest {
   gfx::Rect GetWebContentsBounds() const {
     // TODO(katie): Find a way to get the exact bounds programmatically.
     gfx::Rect bounds = browser()->window()->GetBounds();
-    bounds.Inset(8, 8, 75, 8);
+    bounds.Inset(gfx::Insets::TLBR(8, 8, 8, 75));
     return bounds;
   }
 

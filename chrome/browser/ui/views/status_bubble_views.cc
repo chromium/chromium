@@ -505,7 +505,7 @@ void StatusView::OnPaint(gfx::Canvas* canvas) {
 
   const int clip_bottom = clip_left || clip_right ? shadow_thickness_pixels : 0;
   gfx::Rect clip_rect(scaled_size);
-  clip_rect.Inset(clip_left, 0, clip_right, clip_bottom);
+  clip_rect.Inset(gfx::Insets::TLBR(0, clip_left, clip_bottom, clip_right));
   canvas->ClipRect(clip_rect);
 
   gfx::RectF bubble_rect{gfx::SizeF(scaled_size)};
@@ -518,7 +518,7 @@ void StatusView::OnPaint(gfx::Canvas* canvas) {
   bubble_rect.Inset(style_ == BubbleStyle::kStandardRight ? 0 : inset, 0,
                     style_ == BubbleStyle::kStandardRight ? inset : 0, inset);
   // Align to pixel centers now that the layout is correct.
-  bubble_rect.Inset(0.5, 0.5);
+  bubble_rect.Inset(0.5);
 
   SkPath path;
   path.addRoundRect(gfx::RectFToSkRect(bubble_rect), rad);

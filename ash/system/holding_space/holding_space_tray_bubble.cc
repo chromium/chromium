@@ -165,7 +165,8 @@ class ChildBubbleContainerLayout {
       const int height_to_cede =
           std::min(layout.child_layouts[0].bounds.height(),
                    layout.host_size.height() - max_height_);
-      layout.child_layouts[0].bounds.Inset(0, 0, 0, height_to_cede);
+      layout.child_layouts[0].bounds.Inset(
+          gfx::Insets::TLBR(0, 0, height_to_cede, 0));
       for (size_t i = 1; i < layout.child_layouts.size(); ++i)
         layout.child_layouts[i].bounds.Offset(0, -height_to_cede);
       layout.host_size.Enlarge(0, -height_to_cede);

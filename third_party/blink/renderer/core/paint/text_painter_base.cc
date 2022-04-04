@@ -365,7 +365,7 @@ void TextPainterBase::PaintDecorationUnderOrOverLine(
       ETextDecorationSkipInk::kAuto) {
     // In order to ignore intersects less than 0.5px, inflate by -0.5.
     gfx::RectF decoration_bounds = decoration_info.Bounds();
-    decoration_bounds.Inset(0, 0.5);
+    decoration_bounds.Inset(gfx::InsetsF::VH(0.5, 0));
     ClipDecorationsStripe(
         decoration_info.InkSkipClipUpper(decoration_bounds.y()),
         decoration_bounds.height(),

@@ -211,7 +211,7 @@ void AccessibilityFocusRingController::RectsToRings(
   rects.resize(src_rects.size());
   for (size_t i = 0; i < src_rects.size(); ++i) {
     rects[i] = src_rects[i];
-    rects[i].Inset(-GetMargin(), -GetMargin());
+    rects[i].Inset(-GetMargin());
   }
 
   // Split the rects into contiguous regions.

@@ -90,7 +90,7 @@ void CpuGraphPageView::OnPaint(gfx::Canvas* canvas) {
   // Layout graphs.
   gfx::Rect rect = GetContentsBounds();
   // Adjust bounds to not overlap with bordering reference lines.
-  rect.Inset(kHUDGraphReferenceLineWidth, kHUDGraphReferenceLineWidth);
+  rect.Inset(kHUDGraphReferenceLineWidth);
   cpu_other_.Layout(rect, nullptr /* base*/);
   cpu_system_.Layout(rect, &cpu_other_);
   cpu_user_.Layout(rect, &cpu_system_);

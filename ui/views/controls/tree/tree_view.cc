@@ -1034,7 +1034,8 @@ void TreeView::LayoutEditor() {
       GetMirroredXWithWidthInView(row_bounds.x(), row_bounds.width()));
   row_bounds.set_x(row_bounds.x() + text_offset_);
   row_bounds.set_width(row_bounds.width() - text_offset_);
-  row_bounds.Inset(kTextHorizontalPadding, kTextVerticalPadding);
+  row_bounds.Inset(
+      gfx::Insets::VH(kTextVerticalPadding, kTextHorizontalPadding));
   row_bounds.Inset(-empty_editor_size_.width() / 2,
                    -(empty_editor_size_.height() - font_list_.GetHeight()) / 2);
   // Give a little extra space for editing.
@@ -1252,9 +1253,9 @@ gfx::Rect TreeView::GetForegroundBoundsForNode(InternalNode* node) {
 gfx::Rect TreeView::GetTextBoundsForNode(InternalNode* node) {
   gfx::Rect bounds(GetForegroundBoundsForNode(node));
   if (drawing_provider()->ShouldDrawIconForNode(this, node->model_node()))
-    bounds.Inset(text_offset_, 0, 0, 0);
+    bounds.Inset(gfx::Insets::TLBR(0, text_offset_, 0, 0));
   else
-    bounds.Inset(kArrowRegionSize, 0, 0, 0);
+    bounds.Inset(gfx::Insets::TLBR(0, kArrowRegionSize, 0, 0));
   return bounds;
 }
 

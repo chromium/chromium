@@ -55,7 +55,7 @@ void PaintLoadingArc(gfx::Canvas* canvas,
                      double loading_fraction) {
   gfx::Rect oval = bounds;
   // Inset to make sure the whole arc is inside the visible rect.
-  oval.Inset(/*horizontal=*/1, /*vertical=*/1);
+  oval.Inset(gfx::Insets::VH(/*vertical=*/1, /*horizontal=*/1));
 
   SkPath path;
   path.arcTo(RectToSkRect(oval), /*startAngle=*/-90,

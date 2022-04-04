@@ -116,7 +116,7 @@ void MoveCursorTo(AshWindowTreeHost* ash_host,
   // Shrink further so that the mouse doesn't warp on the
   // edge. The right/bottom needs to be shrink by 2 to subtract
   // the 1 px from width/height value.
-  native_bounds.Inset(1, 1, 2, 2);
+  native_bounds.Inset(gfx::Insets::TLBR(1, 1, 2, 2));
 
   // Ensure that |point_in_native| is inside the |native_bounds|.
   point_in_native.SetToMax(native_bounds.origin());

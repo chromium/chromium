@@ -81,7 +81,7 @@ class AccessibilityFocusRingControllerTest : public aura::test::AuraTestBase {
 
  protected:
   gfx::Rect AddMargin(gfx::Rect r) {
-    r.Inset(-controller_->GetMargin(), -controller_->GetMargin());
+    r.Inset(-controller_->GetMargin());
     return r;
   }
 

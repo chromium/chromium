@@ -454,7 +454,7 @@ gfx::RectF ScopedOverviewTransformWindow::ShrinkRectToFitPreservingAspectRatio(
       } else {
         const float new_height = bounds.width() / window_ratio;
         new_bounds = bounds;
-        new_bounds.Inset(0, title_height, 0, 0);
+        new_bounds.Inset(gfx::InsetsF::TLBR(title_height, 0, 0, 0));
         if (top_view_inset) {
           new_bounds.set_height(new_height);
           // Calculate `scaled_top_view_inset` without considering `title_height`

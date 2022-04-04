@@ -1412,7 +1412,7 @@ gfx::Rect OverviewGrid::GetGridEffectiveBounds() const {
     return bounds_;
 
   gfx::Rect effective_bounds = bounds_;
-  effective_bounds.Inset(0, GetDesksBarHeight(), 0, 0);
+  effective_bounds.Inset(gfx::Insets::TLBR(GetDesksBarHeight(), 0, 0, 0));
   return effective_bounds;
 }
 
@@ -2198,7 +2198,8 @@ std::vector<gfx::RectF> OverviewGrid::GetWindowRectsForTabletModeLayout(
   gfx::Rect total_bounds = GetGridEffectiveBounds();
   // Windows occupy vertically centered area with additional vertical insets.
   total_bounds.Inset(GetGridInsetsImpl(total_bounds));
-  total_bounds.Inset(0, kTabletModeOverviewItemTopPaddingDp, 0, 0);
+  total_bounds.Inset(
+      gfx::Insets::TLBR(kTabletModeOverviewItemTopPaddingDp, 0, 0, 0));
 
   // |scroll_offset_min_| may be changed on positioning (either by closing
   // windows or display changes). Recalculate it and clamp |scroll_offset_|, so

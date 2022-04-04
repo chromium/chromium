@@ -78,7 +78,7 @@ gfx::RectF CalculateWindowContentBounds(aura::Window* window) {
   DCHECK(frame_view);
   int height = frame_view->GetBoundsForClientView().y();
   auto bounds = gfx::RectF(window->bounds());
-  bounds.Inset(0, height, 0, 0);
+  bounds.Inset(gfx::InsetsF::TLBR(height, 0, 0, 0));
   return bounds;
 }
 

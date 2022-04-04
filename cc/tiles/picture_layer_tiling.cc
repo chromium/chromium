@@ -500,7 +500,8 @@ PictureLayerTiling::CoverageIterator::operator++() {
 
     int inset_left = std::max(0, min_left - current_geometry_rect_.x());
     int inset_top = std::max(0, min_top - current_geometry_rect_.y());
-    current_geometry_rect_.Inset(inset_left, inset_top, 0, 0);
+    current_geometry_rect_.Inset(
+        gfx::Insets::TLBR(inset_top, inset_left, 0, 0));
 
 #if DCHECK_IS_ON()
     // Sometimes we run into an extreme case where we are at the edge of integer
@@ -537,7 +538,7 @@ gfx::Rect PictureLayerTiling::CoverageIterator::ComputeGeometryRect() const {
     // 255 * (1 - (1 - 1/1024) * (1 - 1/1024)) ~= 0.498
     // i.e. The color value can never flip over a rounding threshold.
     constexpr float epsilon = 1.f / 1024.f;
-    texel_extent.Inset(-epsilon, -epsilon);
+    texel_extent.Inset(-epsilon);
   }
 
   // Convert texel_extent to coverage scale, which is what we have to report

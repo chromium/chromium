@@ -173,7 +173,7 @@ void WindowMiniView::UpdateIconView() {
 
 gfx::Rect WindowMiniView::GetContentAreaBounds() const {
   gfx::Rect bounds(GetContentsBounds());
-  bounds.Inset(0, kHeaderHeightDp, 0, 0);
+  bounds.Inset(gfx::Insets::TLBR(kHeaderHeightDp, 0, 0, 0));
   return bounds;
 }
 

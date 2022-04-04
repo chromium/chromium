@@ -83,7 +83,7 @@ class ResultLayer : public ui::Layer, public ui::LayerDelegate {
 ResultLayer::ResultLayer(const gfx::Rect& box) {
   SetName("HighlighterResultView:ResultLayer");
   gfx::Rect bounds = box;
-  bounds.Inset(-kResultLayerMargin, -kResultLayerMargin);
+  bounds.Inset(-kResultLayerMargin);
   SetBounds(bounds);
   SetFillsBoundsOpaquely(false);
   SetMasksToBounds(false);

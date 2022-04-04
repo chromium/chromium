@@ -315,7 +315,7 @@ void LabelButton::Layout() {
   // If the button have a limited space to fit in, the image and the label
   // may overlap with the border, which often times contains a lot of empty
   // padding.
-  image_area.Inset(insets.left(), 0, insets.right(), 0);
+  image_area.Inset(gfx::Insets::TLBR(0, insets.left(), 0, insets.right()));
   // The space that the label can use. Labels truncate horizontally, so there
   // is no need to allow the label to take up the complete horizontal space.
   gfx::Rect label_area = image_area;
@@ -327,9 +327,9 @@ void LabelButton::Layout() {
   if (!image_size.IsEmpty()) {
     int image_space = image_size.width() + GetImageLabelSpacing();
     if (horizontal_alignment == gfx::ALIGN_RIGHT)
-      label_area.Inset(0, 0, image_space, 0);
+      label_area.Inset(gfx::Insets::TLBR(0, 0, 0, image_space));
     else
-      label_area.Inset(image_space, 0, 0, 0);
+      label_area.Inset(gfx::Insets::TLBR(0, image_space, 0, 0));
   }
 
   gfx::Size label_size(

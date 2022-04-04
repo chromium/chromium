@@ -564,7 +564,8 @@ bool TouchSelectionControllerImpl::ShouldShowHandleFor(
   if (bound.GetHeight() < kSelectionHandleBarMinHeight)
     return false;
   gfx::Rect client_bounds = client_view_->GetBounds();
-  client_bounds.Inset(0, 0, 0, -kSelectionHandleBarBottomAllowance);
+  client_bounds.Inset(
+      gfx::Insets::TLBR(0, 0, -kSelectionHandleBarBottomAllowance, 0));
   return client_bounds.Contains(BoundToRect(bound));
 }
 
@@ -685,7 +686,7 @@ gfx::Rect TouchSelectionControllerImpl::GetQuickMenuAnchorRect() const {
 
   // Enlarge the anchor rect so that the menu is offset from the text at least
   // by the same distance the handles are offset from the text.
-  menu_anchor.Inset(0, -kSelectionHandleVerticalVisualOffset);
+  menu_anchor.Inset(gfx::Insets::VH(-kSelectionHandleVerticalVisualOffset, 0));
 
   return menu_anchor;
 }

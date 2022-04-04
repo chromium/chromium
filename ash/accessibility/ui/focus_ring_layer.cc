@@ -62,7 +62,7 @@ void FocusRingLayer::OnPaintLayer(const ui::PaintContext& context) {
     // Fade out alpha quadratically.
     flags.setAlpha((kShadowAlpha * (r - i) * (r - i)) / (r * r));
     gfx::Rect outsetRect = bounds;
-    outsetRect.Inset(-i, -i, -i, -i);
+    outsetRect.Inset(-i);
     recorder.canvas()->DrawRect(outsetRect, flags);
   }
 }

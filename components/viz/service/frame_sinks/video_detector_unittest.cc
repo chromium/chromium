@@ -252,7 +252,7 @@ TEST_F(VideoDetectorTest, DontReportWhenDamageTooSmall) {
     // Send damages with a smaller width than |kMinRect|. Make sure video
     // activity isn't detected.
     gfx::Rect rect = kMinRect;
-    rect.Inset(0, 0, 1, 0);
+    rect.Inset(gfx::Insets::TLBR(0, 0, 0, 1));
     SendUpdates(frame_sink.get(), rect, /*may_contain_video=*/true, 2 * kMinFps,
                 2 * kMinDuration);
     EXPECT_TRUE(observer_.IsEmpty());
@@ -262,7 +262,7 @@ TEST_F(VideoDetectorTest, DontReportWhenDamageTooSmall) {
     // Send damages with a smaller height than |kMinRect|. Make sure video
     // activity isn't detected.
     gfx::Rect rect = kMinRect;
-    rect.Inset(0, 0, 1, 0);
+    rect.Inset(gfx::Insets::TLBR(0, 0, 0, 1));
     SendUpdates(frame_sink.get(), rect, /*may_contain_video=*/true, 2 * kMinFps,
                 2 * kMinDuration);
     EXPECT_TRUE(observer_.IsEmpty());

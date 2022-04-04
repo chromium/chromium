@@ -258,7 +258,7 @@ TEST_F(SoftwareRendererTest, TileQuadVisibleRect) {
   gfx::Rect tile_rect(tile_size);
   gfx::Rect visible_rect = tile_rect;
   bool needs_blending = false;
-  visible_rect.Inset(1, 2, 3, 4);
+  visible_rect.Inset(gfx::Insets::TLBR(2, 1, 4, 3));
   InitializeRenderer(std::make_unique<SoftwareOutputDevice>());
 
   SkBitmap cyan_tile;  // The lowest five rows are yellow.

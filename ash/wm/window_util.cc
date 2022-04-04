@@ -421,7 +421,7 @@ gfx::RectF GetTransformedBounds(aura::Window* transformed_window,
       gfx::RectF header_bounds(window_bounds);
       header_bounds.set_height(top_inset);
       new_transform.TransformRect(&header_bounds);
-      window_bounds.Inset(0, header_bounds.height(), 0, 0);
+      window_bounds.Inset(gfx::InsetsF::TLBR(header_bounds.height(), 0, 0, 0));
     }
     ::wm::TranslateRectToScreen(window->parent(), &window_bounds);
     bounds.Union(window_bounds);

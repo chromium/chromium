@@ -267,7 +267,7 @@ TEST_F(AssistiveWindowControllerTest, SetsUndoWindowAnchorRectCorrectly) {
       ->SetAssistiveWindowProperties(window);
 
   ASSERT_TRUE(controller_->GetUndoWindowForTesting() != nullptr);
-  autocorrect_bounds.Inset(-4, -4);
+  autocorrect_bounds.Inset(-4);
   EXPECT_EQ(autocorrect_bounds,
             controller_->GetUndoWindowForTesting()->GetAnchorRect());
 }

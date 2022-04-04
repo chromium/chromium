@@ -296,7 +296,7 @@ SkCanvas::SrcRectConstraint GetTextureConstraint(
   }
 
   gfx::RectF safe_texels = valid_texel_bounds;
-  safe_texels.Inset(0.5f, 0.5f);
+  safe_texels.Inset(0.5f);
 
   // Check each axis independently; tile quads may only need clamping on one
   // side (e.g. right or bottom) and this logic doesn't fully match a simple

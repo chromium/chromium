@@ -968,7 +968,7 @@ int LocationBarView::GetMinimumTrailingWidth() const {
 gfx::Rect LocationBarView::GetLocalBoundsWithoutEndcaps() const {
   const int border_radius = height() / 2;
   gfx::Rect bounds_without_endcaps(GetLocalBounds());
-  bounds_without_endcaps.Inset(border_radius, 0);
+  bounds_without_endcaps.Inset(gfx::Insets::VH(0, border_radius));
   return bounds_without_endcaps;
 }
 

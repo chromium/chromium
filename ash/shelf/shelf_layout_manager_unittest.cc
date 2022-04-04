@@ -2386,7 +2386,7 @@ TEST_F(ShelfLayoutManagerTest, StatusAreaHitBoxCoversEdge) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
   gfx::Rect inset_display_bounds = display.bounds();
-  inset_display_bounds.Inset(0, 0, 1, 1);
+  inset_display_bounds.Inset(gfx::Insets::TLBR(0, 0, 1, 1));
 
   // Test bottom right pixel for bottom alignment.
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kBottom);

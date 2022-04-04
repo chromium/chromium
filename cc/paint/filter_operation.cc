@@ -383,7 +383,7 @@ gfx::Rect MapRectInternal(const FilterOperation& op,
       float spread_x = std::abs(spread.x()) * sign;
       float spread_y = std::abs(spread.y()) * sign;
       gfx::RectF result(rect);
-      result.Inset(spread_x, spread_y, spread_x, spread_y);
+      result.Inset(gfx::InsetsF::VH(spread_y, spread_x));
       return gfx::ToEnclosingRect(result);
     }
     case FilterOperation::DROP_SHADOW: {
@@ -391,7 +391,7 @@ gfx::Rect MapRectInternal(const FilterOperation& op,
       float spread_x = std::abs(spread.x());
       float spread_y = std::abs(spread.y());
       gfx::RectF result(rect);
-      result.Inset(-spread_x, -spread_y, -spread_x, -spread_y);
+      result.Inset(gfx::InsetsF::VH(-spread_y, -spread_x));
 
       gfx::Point drop_shadow_offset = op.drop_shadow_offset();
       SkVector mapped_drop_shadow_offset;

@@ -332,7 +332,7 @@ void ScreenshotFlow::OnPaintLayer(const ui::PaintContext& context) {
 
   auto selection_rect = gfx::BoundingRect(drag_start_, drag_end_);
   // Draw border exclusively outside selected region.
-  selection_rect.Inset(-1, -1, 0, 0);
+  selection_rect.Inset(gfx::Insets::TLBR(-1, -1, 0, 0));
   PaintSelectionLayer(canvas, selection_rect, gfx::Rect());
   paint_invalidation_ = gfx::Rect();
 }

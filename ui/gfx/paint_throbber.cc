@@ -48,7 +48,7 @@ void PaintArc(Canvas* canvas,
   // Inset by half the stroke width to make sure the whole arc is inside
   // the visible rect.
   const int inset = SkScalarCeilToInt(*stroke_width / 2.0);
-  oval.Inset(inset, inset);
+  oval.Inset(inset);
 
   SkPath path;
   path.arcTo(RectToSkRect(oval), start_angle, sweep, true);

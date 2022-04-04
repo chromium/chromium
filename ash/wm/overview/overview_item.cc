@@ -732,7 +732,7 @@ void OverviewItem::SetShadowBounds(
   shadow_->layer()->SetVisible(true);
   gfx::Rect bounds_in_item =
       gfx::Rect(item_widget_->GetNativeWindow()->GetTargetBounds().size());
-  bounds_in_item.Inset(0, kHeaderHeightDp, 0, 0);
+  bounds_in_item.Inset(gfx::Insets::TLBR(kHeaderHeightDp, 0, 0, 0));
   bounds_in_item.ClampToCenteredSize(
       gfx::ToRoundedSize(bounds_in_screen->size()));
   shadow_->SetContentBounds(bounds_in_item);
@@ -1086,8 +1086,8 @@ gfx::Rect OverviewItem::GetShadowBoundsForTesting() {
 
 gfx::RectF OverviewItem::GetWindowTargetBoundsWithInsets() const {
   gfx::RectF window_target_bounds = target_bounds_;
-  window_target_bounds.Inset(kWindowMargin, kWindowMargin);
-  window_target_bounds.Inset(0, kHeaderHeightDp, 0, 0);
+  window_target_bounds.Inset(kWindowMargin);
+  window_target_bounds.Inset(gfx::InsetsF::TLBR(kHeaderHeightDp, 0, 0, 0));
   return window_target_bounds;
 }
 
@@ -1201,7 +1201,7 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
 
   // |target_bounds| are the bounds of the |item_widget|, which include a
   // border.
-  transformed_bounds.Inset(kWindowMargin, kWindowMargin);
+  transformed_bounds.Inset(kWindowMargin);
 
   // Update |transformed_bounds| to match the unclipped size of the window, so
   // we transform the window to the correct size.

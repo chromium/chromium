@@ -334,15 +334,15 @@ TEST(RectFTest, Inset) {
   r.Inset(-1.5);
   EXPECT_RECTF_EQ(RectF(10, 20, 30, 40), r);
 
-  r.Inset(1.5, 2.25);
+  r.Inset(gfx::InsetsF::VH(2.25, 1.5));
   EXPECT_RECTF_EQ(RectF(11.5, 22.25, 27, 35.5), r);
-  r.Inset(-1.5, -2.25);
+  r.Inset(gfx::InsetsF::VH(-2.25, -1.5));
   EXPECT_RECTF_EQ(RectF(10, 20, 30, 40), r);
 
   // The parameters are left, top, right, bottom.
-  r.Inset(1.5, 2.25, 3.75, 4);
+  r.Inset(gfx::InsetsF::TLBR(2.25, 1.5, 4, 3.75));
   EXPECT_RECTF_EQ(RectF(11.5, 22.25, 24.75, 33.75), r);
-  r.Inset(-1.5, -2.25, -3.75, -4);
+  r.Inset(gfx::InsetsF::TLBR(-2.25, -1.5, -4, -3.75));
   EXPECT_RECTF_EQ(RectF(10, 20, 30, 40), r);
 
   // InsetsF parameters are top, right, bottom, left.
@@ -379,14 +379,14 @@ TEST(RectFTest, InsetClamped) {
   r.Inset(-18);
   EXPECT_RECTF_EQ(RectF(10, 20, 36, 40), r);
 
-  r.Inset(15, 30);
+  r.Inset(gfx::InsetsF::VH(30, 15));
   EXPECT_RECTF_EQ(RectF(25, 50, 6, 0), r);
-  r.Inset(-15, -30);
+  r.Inset(gfx::InsetsF::VH(-30, -15));
   EXPECT_RECTF_EQ(RectF(10, 20, 36, 60), r);
 
-  r.Inset(20, 30, 40, 50);
+  r.Inset(gfx::InsetsF::TLBR(30, 20, 50, 40));
   EXPECT_RECTF_EQ(RectF(30, 50, 0, 0), r);
-  r.Inset(-20, -30, -40, -50);
+  r.Inset(gfx::InsetsF::TLBR(-30, -20, -50, -40));
   EXPECT_RECTF_EQ(RectF(10, 20, 60, 80), r);
 }
 

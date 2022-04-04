@@ -137,7 +137,7 @@ void RoundedRectBorder::Paint(const View& view, gfx::Canvas* canvas) {
   const float half_thickness = thickness_ / 2.0f;
   gfx::RectF bounds(view.GetLocalBounds());
   bounds.Inset(gfx::InsetsF(paint_insets_));
-  bounds.Inset(half_thickness, half_thickness);
+  bounds.Inset(half_thickness);
   canvas->DrawRoundRect(bounds, corner_radius_ - half_thickness, flags);
 }
 

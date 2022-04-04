@@ -467,7 +467,8 @@ void ImmersiveFullscreenController::UpdateLocatedEventRevealedLock(
     // overshoots slightly.
     if (event && event->type() == ui::ET_MOUSE_MOVED) {
       const int kBoundsOffsetY = 8;
-      hit_bounds_in_screen[i].Inset(0, 0, 0, -kBoundsOffsetY);
+      hit_bounds_in_screen[i].Inset(
+          gfx::Insets::TLBR(0, 0, -kBoundsOffsetY, 0));
     }
 
     if (hit_bounds_in_screen[i].Contains(location_in_screen)) {

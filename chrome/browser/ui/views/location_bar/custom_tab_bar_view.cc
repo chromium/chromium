@@ -297,7 +297,7 @@ void CustomTabBarView::OnPaintBackground(gfx::Canvas* canvas) {
 
   // Inset the bounds by 1 on the bottom, so we draw the bottom border inside
   // the custom tab bar.
-  bounds.Inset(0, 0, 0, 1);
+  bounds.Inset(gfx::Insets::TLBR(0, 0, 1, 0));
 
   // Custom tab/content separator (bottom border).
   canvas->FillRect(gfx::Rect(bounds.bottom_left(), separator_size),

@@ -1064,7 +1064,7 @@ TEST_P(RendererPixelTest, TextureDrawQuadVisibleRectInsetTopLeft) {
       texture_quad_state, this->resource_provider_.get(),
       this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
       this->child_context_provider_, pass.get());
-  pass->quad_list.front()->visible_rect.Inset(30, 50, 0, 0);
+  pass->quad_list.front()->visible_rect.Inset(gfx::Insets::TLBR(50, 30, 0, 0));
   SharedQuadState* color_quad_state = CreateTestSharedQuadState(
       gfx::Transform(), rect, pass.get(), gfx::MaskFilterInfo());
   auto* color_quad = pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
@@ -1104,7 +1104,7 @@ TEST_P(RendererPixelTest,
   auto* quad = static_cast<TextureDrawQuad*>(pass->quad_list.front());
   quad->rect.Offset(10, 10);
   quad->visible_rect.Offset(10, 10);
-  quad->visible_rect.Inset(30, 50, 12, 12);
+  quad->visible_rect.Inset(gfx::Insets::TLBR(50, 30, 12, 12));
   quad->uv_top_left.SetPoint(.2, .3);
   quad->uv_bottom_right.SetPoint(.4, .7);
   quad->nearest_neighbor = true;  // To avoid bilinear filter differences.
@@ -1142,7 +1142,7 @@ TEST_P(RendererPixelTest, TextureDrawQuadVisibleRectInsetBottomRight) {
       texture_quad_state, this->resource_provider_.get(),
       this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
       this->child_context_provider_, pass.get());
-  pass->quad_list.front()->visible_rect.Inset(0, 0, 40, 60);
+  pass->quad_list.front()->visible_rect.Inset(gfx::Insets::TLBR(0, 0, 60, 40));
   SharedQuadState* color_quad_state = CreateTestSharedQuadState(
       gfx::Transform(), rect, pass.get(), gfx::MaskFilterInfo());
   auto* color_quad = pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
@@ -2556,11 +2556,11 @@ TEST_P(RendererPixelTest, RenderPassAndMaskWithPartialQuad) {
   canvas.clear(SK_ColorTRANSPARENT);
   gfx::Rect rect = mask_rect;
   while (!rect.IsEmpty()) {
-    rect.Inset(6, 6, 4, 4);
+    rect.Inset(gfx::Insets::TLBR(6, 6, 4, 4));
     canvas.drawRect(
         SkRect::MakeXYWH(rect.x(), rect.y(), rect.width(), rect.height()),
         flags);
-    rect.Inset(6, 6, 4, 4);
+    rect.Inset(gfx::Insets::TLBR(6, 6, 4, 4));
   }
 
   ResourceId mask_resource_id;
@@ -2653,11 +2653,11 @@ TEST_P(RendererPixelTest, RenderPassAndMaskWithPartialQuad2) {
   canvas.clear(SK_ColorTRANSPARENT);
   gfx::Rect rect = mask_rect;
   while (!rect.IsEmpty()) {
-    rect.Inset(6, 6, 4, 4);
+    rect.Inset(gfx::Insets::TLBR(6, 6, 4, 4));
     canvas.drawRect(
         SkRect::MakeXYWH(rect.x(), rect.y(), rect.width(), rect.height()),
         flags);
-    rect.Inset(6, 6, 4, 4);
+    rect.Inset(gfx::Insets::TLBR(6, 6, 4, 4));
   }
 
   ResourceId mask_resource_id;
@@ -2748,7 +2748,7 @@ TEST_P(RendererPixelTest, RenderPassAndMaskForRoundedCorner) {
   flags.setAntiAlias(true);
   canvas.clear(SK_ColorTRANSPARENT);
   gfx::Rect rounded_corner_rect = mask_rect;
-  rounded_corner_rect.Inset(kInset, kInset);
+  rounded_corner_rect.Inset(kInset);
   SkRRect rounded_corner = SkRRect::MakeRectXY(
       gfx::RectToSkRect(rounded_corner_rect), kCornerRadius, kCornerRadius);
   canvas.drawRRect(rounded_corner, flags);
@@ -2851,7 +2851,7 @@ TEST_P(RendererPixelTest, RenderPassAndMaskForRoundedCornerMultiRadii) {
   flags.setAntiAlias(true);
   canvas.clear(SK_ColorTRANSPARENT);
   gfx::Rect rounded_corner_rect = mask_rect;
-  rounded_corner_rect.Inset(kInset, kInset);
+  rounded_corner_rect.Inset(kInset);
   SkRRect rounded_corner =
       SkRRect::MakeRect(gfx::RectToSkRect(rounded_corner_rect));
   rounded_corner.setRectRadii(rounded_corner.rect(), kCornerRadii);
@@ -2957,7 +2957,7 @@ class RendererPixelTestWithBackdropFilter : public VizPixelTestWithParam {
       flags.setAntiAlias(true);
       canvas.clear(SK_ColorTRANSPARENT);
       gfx::Rect rounded_corner_rect = mask_rect;
-      rounded_corner_rect.Inset(kInset, kInset);
+      rounded_corner_rect.Inset(kInset);
       SkRRect rounded_corner =
           SkRRect::MakeRect(gfx::RectToSkRect(rounded_corner_rect));
       rounded_corner.setRectRadii(rounded_corner.rect(), kCornerRadii);
@@ -3072,7 +3072,7 @@ INSTANTIATE_TEST_SUITE_P(,
 TEST_P(RendererPixelTestWithBackdropFilter, InvertFilter) {
   this->backdrop_filters_.Append(cc::FilterOperation::CreateInvertFilter(1.f));
   this->filter_pass_layer_rect_ = gfx::Rect(this->device_viewport_size_);
-  this->filter_pass_layer_rect_.Inset(12, 14, 16, 18);
+  this->filter_pass_layer_rect_.Inset(gfx::Insets::TLBR(14, 12, 18, 16));
   this->backdrop_filter_bounds_ =
       gfx::RRectF(gfx::RectF(this->filter_pass_layer_rect_));
   this->SetUpRenderPassList();
@@ -3090,7 +3090,7 @@ TEST_P(RendererPixelTestWithBackdropFilter, InvertFilterWithMask) {
 
   this->backdrop_filters_.Append(cc::FilterOperation::CreateInvertFilter(1.f));
   this->filter_pass_layer_rect_ = gfx::Rect(this->device_viewport_size_);
-  this->filter_pass_layer_rect_.Inset(12, 14, 16, 18);
+  this->filter_pass_layer_rect_.Inset(gfx::Insets::TLBR(14, 12, 18, 16));
   this->backdrop_filter_bounds_ =
       gfx::RRectF(gfx::RectF(this->filter_pass_layer_rect_));
   this->include_backdrop_mask_ = true;
@@ -4190,8 +4190,8 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadNonIdentityScale) {
   // Because scaling up will cause sampling outside the rects, add one extra
   // pixel of buffer at the final content scale.
   float inset = -1.f / contents_scale;
-  blue_layer_rect1.Inset(inset, inset, inset, inset);
-  blue_layer_rect2.Inset(inset, inset, inset, inset);
+  blue_layer_rect1.Inset(inset);
+  blue_layer_rect2.Inset(inset);
 
   std::unique_ptr<cc::FakeRecordingSource> recording =
       cc::FakeRecordingSource::CreateFilledRecordingSource(layer_rect.size());
@@ -4428,11 +4428,11 @@ TEST_P(GPURendererPixelTest, TextureQuadBatching) {
   canvas.clear(SK_ColorWHITE);
   gfx::Rect inset_rect = rect;
   while (!inset_rect.IsEmpty()) {
-    inset_rect.Inset(6, 6, 4, 4);
+    inset_rect.Inset(gfx::Insets::TLBR(6, 6, 4, 4));
     canvas.drawRect(SkRect::MakeXYWH(inset_rect.x(), inset_rect.y(),
                                      inset_rect.width(), inset_rect.height()),
                     paint);
-    inset_rect.Inset(6, 6, 4, 4);
+    inset_rect.Inset(gfx::Insets::TLBR(6, 6, 4, 4));
   }
 
   ResourceId resource = CreateGpuResource(
@@ -4571,7 +4571,7 @@ TEST_P(RendererPixelTest, RoundedCornerSimpleSolidDrawQuad) {
   gfx::Rect blue_rect(0, 0, this->device_viewport_size_.width(),
                       this->device_viewport_size_.height());
   gfx::Rect red_rect = blue_rect;
-  blue_rect.Inset(kInset, kInset);
+  blue_rect.Inset(kInset);
 
   gfx::RRectF rounded_corner_rrect(gfx::RectF(blue_rect), kCornerRadius);
   SharedQuadState* shared_state_rounded = CreateTestSharedQuadState(
@@ -4619,7 +4619,7 @@ TEST_P(GPURendererPixelTest, RoundedCornerSimpleTextureDrawQuad) {
   gfx::Rect blue_rect(0, 0, this->device_viewport_size_.width(),
                       this->device_viewport_size_.height());
   gfx::Rect red_rect = blue_rect;
-  blue_rect.Inset(kInset, kInset);
+  blue_rect.Inset(kInset);
 
   gfx::RRectF rounded_corner_rrect(gfx::RectF(blue_rect), kCornerRadius);
   SharedQuadState* shared_state_rounded = CreateTestSharedQuadState(
@@ -4687,7 +4687,7 @@ TEST_P(RendererPixelTest, RoundedCornerOnRenderPass) {
 
   AggregatedRenderPassId child_pass_id{2};
   gfx::Rect pass_rect(this->device_viewport_size_);
-  pass_rect.Inset(kInset, kInset);
+  pass_rect.Inset(kInset);
   gfx::Rect child_pass_local_rect = gfx::Rect(pass_rect.size());
   gfx::Transform transform_to_root;
   transform_to_root.Translate(pass_rect.OffsetFromOrigin());
@@ -4746,7 +4746,7 @@ TEST_P(RendererPixelTest, RoundedCornerMultiRadii) {
   auto root_pass = CreateTestRootRenderPass(root_pass_id, viewport_rect);
 
   gfx::Rect pass_rect(this->device_viewport_size_);
-  pass_rect.Inset(kInset, kInset);
+  pass_rect.Inset(kInset);
   gfx::RRectF rounded_corner_bounds(gfx::RectF(pass_rect), kCornerRadii);
   gfx::Rect blue_rect = pass_rect;
   blue_rect.set_height(blue_rect.height() / 2);
@@ -4803,7 +4803,7 @@ TEST_P(RendererPixelTest, RoundedCornerMultipleQads) {
   auto root_pass = CreateTestRootRenderPass(root_pass_id, viewport_rect);
 
   gfx::Rect pass_rect(this->device_viewport_size_);
-  pass_rect.Inset(kInset, kInset);
+  pass_rect.Inset(kInset);
   gfx::RRectF rounded_corner_bounds_ul(gfx::RectF(pass_rect), kCornerRadiiUL);
   gfx::RRectF rounded_corner_bounds_ur(gfx::RectF(pass_rect), kCornerRadiiUR);
   gfx::RRectF rounded_corner_bounds_lr(gfx::RectF(pass_rect), kCornerRadiiLR);

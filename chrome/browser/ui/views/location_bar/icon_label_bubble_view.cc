@@ -565,7 +565,8 @@ void IconLabelBubbleView::HideAnimation() {
 SkPath IconLabelBubbleView::GetHighlightPath() const {
   gfx::Rect highlight_bounds = GetLocalBounds();
   if (ShouldShowSeparator())
-    highlight_bounds.Inset(0, 0, GetEndPaddingWithSeparator(), 0);
+    highlight_bounds.Inset(
+        gfx::Insets::TLBR(0, 0, 0, GetEndPaddingWithSeparator()));
   highlight_bounds = GetMirroredRect(highlight_bounds);
 
   const float corner_radius = highlight_bounds.height() / 2.f;

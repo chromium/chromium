@@ -754,7 +754,8 @@ SkBitmap GetWin2xAvatarIconAsSquare(const SkBitmap& source_bitmap) {
   // old avatar icon, shave a couple of columns so the |source_bitmap| is more
   // square. So when resized to a square aspect ratio it looks pretty.
   gfx::Rect frame(gfx::SkIRectToRect(source_bitmap.bounds()));
-  frame.Inset(/*horizontal=*/kIconScaleFactor * 2, /*vertical=*/0);
+  frame.Inset(
+      gfx::Insets::VH(/*vertical=*/0, /*horizontal=*/kIconScaleFactor * 2));
   SkBitmap cropped_bitmap;
   source_bitmap.extractSubset(&cropped_bitmap, gfx::RectToSkIRect(frame));
   return cropped_bitmap;

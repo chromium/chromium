@@ -297,7 +297,7 @@ TEST(RasterSourceTest, RasterFullContents) {
       // up to one pixel outside the content rect is guaranteed to be opaque.
       // Outside of that is undefined.
       gfx::Rect canvas_rect(content_rect);
-      canvas_rect.Inset(0, 0, -1, -1);
+      canvas_rect.Inset(gfx::Insets::TLBR(0, 0, -1, -1));
 
       SkBitmap bitmap;
       bitmap.allocN32Pixels(canvas_rect.width(), canvas_rect.height());
@@ -437,7 +437,7 @@ TEST(RasterSourceTest, RasterPartialContents) {
 
   // We're going to playback from "everything is black" into a smaller area,
   // that touches the edge pixels of the recording.
-  playback_rect.Inset(1, 2, 0, 1);
+  playback_rect.Inset(gfx::Insets::TLBR(2, 1, 1, 0));
   raster->PlaybackToCanvas(
       &canvas, content_bounds, raster_full_rect, playback_rect,
       gfx::AxisTransform2d(contents_scale, gfx::Vector2dF()),
@@ -519,7 +519,7 @@ TEST(RasterSourceTest, RasterPartialContentsWithRasterTranslation) {
 
   // We're going to playback from "everything is black" into a smaller area,
   // that touches the edge pixels of the recording.
-  playback_rect.Inset(1, 2, 0, 1);
+  playback_rect.Inset(gfx::Insets::TLBR(2, 1, 1, 0));
   raster->PlaybackToCanvas(
       &canvas, content_bounds, raster_full_rect, playback_rect,
       gfx::AxisTransform2d(1.0f, gfx::Vector2dF(0.3f, 0.7f)),
@@ -642,7 +642,7 @@ TEST(RasterSourceTest, RasterContentsTransparent) {
       gfx::ScaleToCeiledSize(layer_bounds, contents_scale));
 
   gfx::Rect canvas_rect(content_bounds);
-  canvas_rect.Inset(0, 0, -1, -1);
+  canvas_rect.Inset(gfx::Insets::TLBR(0, 0, -1, -1));
 
   SkBitmap bitmap;
   bitmap.allocN32Pixels(canvas_rect.width(), canvas_rect.height());

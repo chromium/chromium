@@ -698,7 +698,7 @@ void PictureLayerImpl::UpdateViewportRectForTilePriorityInContentSpace() {
                                ->settings()
                                .skewport_extrapolation_limit_in_screen_pixels *
                            MaximumTilingContentsScale();
-      padded_bounds.Inset(-padding_amount, -padding_amount);
+      padded_bounds.Inset(-padding_amount);
       visible_rect_in_content_space =
           SafeIntersectRects(visible_rect_in_content_space, padded_bounds);
     }

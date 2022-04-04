@@ -4023,7 +4023,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
   ASSERT_EQ(2, screen->GetNumDisplays());
   const std::pair<Display, Display> displays = GetDisplays(screen);
   gfx::Rect work_area = displays.second.work_area();
-  work_area.Inset(20, 20, 20, 60);
+  work_area.Inset(gfx::Insets::TLBR(20, 20, 60, 20));
   Browser::CreateParams params(browser()->profile(), true);
   params.initial_show_state = ui::SHOW_STATE_NORMAL;
   params.initial_bounds = work_area;

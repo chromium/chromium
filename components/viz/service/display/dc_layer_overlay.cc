@@ -77,7 +77,7 @@ gfx::RectF GetExpandedRectWithPixelMovingFilter(
     float max_pixel_movement) {
   const SharedQuadState* shared_quad_state = rpdq->shared_quad_state;
   gfx::RectF expanded_rect(rpdq->rect);
-  expanded_rect.Inset(-max_pixel_movement, -max_pixel_movement);
+  expanded_rect.Inset(-max_pixel_movement);
 
   // expanded_rect in the target space
   return cc::MathUtil::MapClippedRect(

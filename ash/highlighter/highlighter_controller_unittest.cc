@@ -335,7 +335,7 @@ TEST_F(HighlighterControllerTest, HighlighterGesturesScaled) {
       gfx::Rect inflated_px(original_px);
       // Allow for rounding errors within 1dp.
       const int error_margin = static_cast<int>(std::ceil(combined_scale));
-      inflated_px.Inset(-error_margin, -error_margin);
+      inflated_px.Inset(-error_margin);
       EXPECT_TRUE(inflated_px.Contains(selection_px));
     }
   }

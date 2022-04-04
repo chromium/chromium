@@ -223,9 +223,9 @@ void SnapToLinesLayouter::UpdateLayout() {
   gfx::Rect title_area =
       ToEnclosingRect(cue_box_.ContainingBlock()->PhysicalBorderBoxRect());
   if (blink::IsHorizontalWritingMode(writing_mode)) {
-    title_area.Inset(0, margin.ToInt());
+    title_area.Inset(gfx::Insets::VH(margin.ToInt(), 0));
   } else {
-    title_area.Inset(margin.ToInt(), 0);
+    title_area.Inset(gfx::Insets::VH(0, margin.ToInt()));
   }
 
   // 15. Step loop: If none of the boxes in boxes would overlap any of the

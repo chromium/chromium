@@ -116,7 +116,8 @@ Float4 UVClampRect(gfx::RectF uv_visible_rect,
   } else {
     uv_visible_rect.Scale(texture_size.width(), texture_size.height());
   }
-  uv_visible_rect.Inset(half_texel.width(), half_texel.height());
+  uv_visible_rect.Inset(
+      gfx::InsetsF::VH(half_texel.height(), half_texel.width()));
   return {{uv_visible_rect.x(), uv_visible_rect.y(), uv_visible_rect.right(),
            uv_visible_rect.bottom()}};
 }
@@ -906,7 +907,7 @@ gfx::Rect GLRenderer::GetBackdropBoundingBoxForRenderPassQuad(
     // If we have regular filters or antialiasing, grab an extra one-pixel
     // border around the background, so texture edge clamping gives us a
     // transparent border.
-    backdrop_rect.Inset(-1, -1, -1, -1);
+    backdrop_rect.Inset(-1);
   }
 
   *unclipped_rect = backdrop_rect;
@@ -915,7 +916,7 @@ gfx::Rect GLRenderer::GetBackdropBoundingBoxForRenderPassQuad(
   if (ShouldApplyBackdropFilters(params)) {
     float max_pixel_movement = params->backdrop_filters->MaximumPixelMovement();
     gfx::Rect scissor_rect(current_window_space_viewport_);
-    scissor_rect.Inset(-max_pixel_movement, -max_pixel_movement);
+    scissor_rect.Inset(-max_pixel_movement);
     backdrop_rect.Intersect(scissor_rect);
   }
 
@@ -2333,8 +2334,8 @@ void GLRenderer::DrawContentQuadAA(const ContentDrawQuadBase* quad,
   float geom_clamp_y =
       std::min(tex_clamp_y * tex_to_geom_scale_y,
                0.5f * clamp_geom_rect.height() - kAntiAliasingEpsilon);
-  clamp_geom_rect.Inset(geom_clamp_x, geom_clamp_y, geom_clamp_x, geom_clamp_y);
-  clamp_tex_rect.Inset(tex_clamp_x, tex_clamp_y, tex_clamp_x, tex_clamp_y);
+  clamp_geom_rect.Inset(gfx::InsetsF::VH(geom_clamp_y, geom_clamp_x));
+  clamp_tex_rect.Inset(gfx::InsetsF::VH(tex_clamp_y, tex_clamp_x));
 
   // Map clamping rectangle to unit square.
   float vertex_tex_translate_x = -clamp_geom_rect.x() / clamp_geom_rect.width();

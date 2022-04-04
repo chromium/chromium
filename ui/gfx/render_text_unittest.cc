@@ -4409,7 +4409,7 @@ TEST_F(RenderTextTest, CenteredDisplayOffset) {
 
   // Widen the display rect and, by checking the cursor bounds, make sure no
   // empty space is introduced to the left of the text.
-  display_rect.Inset(0, 0, -kEnlargement, 0);
+  display_rect.Inset(gfx::Insets::TLBR(0, 0, 0, -kEnlargement));
   render_text->SetDisplayRect(display_rect);
   EXPECT_EQ(display_rect.x(), render_text->GetUpdatedCursorBounds().x());
 
@@ -4421,7 +4421,7 @@ TEST_F(RenderTextTest, CenteredDisplayOffset) {
 
   // Widen the display rect and, by checking the cursor bounds, make sure no
   // empty space is introduced to the right of the text.
-  display_rect.Inset(0, 0, -kEnlargement, 0);
+  display_rect.Inset(gfx::Insets::TLBR(0, 0, 0, -kEnlargement));
   render_text->SetDisplayRect(display_rect);
   EXPECT_EQ(display_rect.right(),
             render_text->GetUpdatedCursorBounds().right());
@@ -5284,7 +5284,7 @@ TEST_F(RenderTextTest, GetTextOffset) {
   EXPECT_TRUE(offset.IsZero());
 
   const int kEnlargementX = 2;
-  display_rect.Inset(0, 0, -kEnlargementX, 0);
+  display_rect.Inset(gfx::Insets::TLBR(0, 0, 0, -kEnlargementX));
   render_text->SetDisplayRect(display_rect);
 
   // Check the default horizontal alignment.
@@ -5304,10 +5304,10 @@ TEST_F(RenderTextTest, GetTextOffset) {
 
   // Check that text is vertically centered within taller display rects.
   const int kEnlargementY = display_rect.height();
-  display_rect.Inset(0, 0, 0, -kEnlargementY);
+  display_rect.Inset(gfx::Insets::TLBR(0, 0, -kEnlargementY, 0));
   render_text->SetDisplayRect(display_rect);
   const Vector2d prev_offset = render_text->GetLineOffset(0);
-  display_rect.Inset(0, 0, 0, -2 * kEnlargementY);
+  display_rect.Inset(gfx::Insets::TLBR(0, 0, -2 * kEnlargementY, 0));
   render_text->SetDisplayRect(display_rect);
   offset = render_text->GetLineOffset(0);
   EXPECT_EQ(prev_offset.y() + kEnlargementY, offset.y());
@@ -5352,7 +5352,7 @@ TEST_F(RenderTextTest, GetTextOffsetVerticalAlignment) {
   EXPECT_TRUE(offset.IsZero());
 
   const int kEnlargementY = 10;
-  display_rect.Inset(0, 0, 0, -kEnlargementY);
+  display_rect.Inset(gfx::Insets::TLBR(0, 0, -kEnlargementY, 0));
   render_text->SetDisplayRect(display_rect);
 
   // Check the default vertical alignment (ALIGN_MIDDLE).
@@ -5392,7 +5392,7 @@ TEST_F(RenderTextTest, GetTextOffsetVerticalAlignment_Multiline) {
   EXPECT_TRUE(offset.IsZero());
 
   const int kEnlargementY = 10;
-  display_rect.Inset(0, 0, 0, -kEnlargementY);
+  display_rect.Inset(gfx::Insets::TLBR(0, 0, -kEnlargementY, 0));
   render_text->SetDisplayRect(display_rect);
 
   // Check the default vertical alignment (ALIGN_MIDDLE).
@@ -5424,7 +5424,7 @@ TEST_F(RenderTextTest, SetDisplayOffset) {
   // different possible situations. In this case the only possible display
   // offset is zero.
   Rect display_rect(font_size);
-  display_rect.Inset(0, 0, -kEnlargement, 0);
+  display_rect.Inset(gfx::Insets::TLBR(0, 0, 0, -kEnlargement));
   render_text->SetDisplayRect(display_rect);
 
   struct {
@@ -5451,7 +5451,7 @@ TEST_F(RenderTextTest, SetDisplayOffset) {
   // Set display width |kEnlargement| pixels less than content width and test
   // different possible situations.
   display_rect = Rect(font_size);
-  display_rect.Inset(0, 0, kEnlargement, 0);
+  display_rect.Inset(gfx::Insets::TLBR(0, 0, 0, kEnlargement));
   render_text->SetDisplayRect(display_rect);
 
   struct {

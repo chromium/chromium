@@ -897,7 +897,7 @@ int TouchExplorationController::FindEdgesWithinInset(gfx::Point point_dip,
                                                      float horiz_inset,
                                                      float vert_inset) {
   gfx::RectF inner_bounds_dip(root_window_->bounds());
-  inner_bounds_dip.Inset(horiz_inset, vert_inset);
+  inner_bounds_dip.Inset(gfx::InsetsF::VH(vert_inset, horiz_inset));
 
   // Bitwise manipulation in order to determine where on the screen the point
   // lies. If more than one bit is turned on, then it is a corner where the two

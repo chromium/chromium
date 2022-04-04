@@ -599,7 +599,7 @@ void Textfield::FitToLocalBounds() {
   } else {
     // The text will draw with the correct vertical alignment if we don't apply
     // the vertical insets.
-    bounds.Inset(insets.left(), 0, insets.right(), 0);
+    bounds.Inset(gfx::Insets::TLBR(0, insets.left(), 0, insets.right()));
   }
 
   bounds.set_x(GetMirroredXForRect(bounds));

@@ -75,7 +75,7 @@ void BackgroundBorderAdderImageSource::Draw(gfx::Canvas* canvas) {
   float half_thickness = kBorderThickness / 2.0f;
   gfx::SizeF size_f(size());
   gfx::RectF bounds(size_f);
-  bounds.Inset(half_thickness, half_thickness);
+  bounds.Inset(half_thickness);
   // Draw the background
   if (add_background_) {
     DCHECK(background_color_);

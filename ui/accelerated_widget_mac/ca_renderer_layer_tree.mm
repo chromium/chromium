@@ -534,12 +534,12 @@ CARendererLayerTree::ContentLayer::ContentLayer(
       const float width_correction =
           rect_.width() * ratio_error - rect_.width();
       if (width_correction < 1)
-        rect_.Inset(-width_correction / 2, 0);
+        rect_.Inset(gfx::InsetsF::VH(0, -width_correction / 2));
     } else if (ratio_error < 1) {
       const float height_correction =
           rect_.height() / ratio_error - rect_.height();
       if (height_correction < 1)
-        rect_.Inset(0, -height_correction / 2);
+        rect_.Inset(gfx::InsetsF::VH(-height_correction / 2, 0));
     }
   }
 }

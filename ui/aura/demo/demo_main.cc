@@ -90,7 +90,7 @@ class DemoWindowDelegate : public aura::WindowDelegate {
     // Fill with a non-solid color so that the compositor will exercise its
     // texture upload path.
     while (!r.IsEmpty()) {
-      r.Inset(2, 2);
+      r.Inset(2);
       recorder.canvas()->FillRect(r, color_, SkBlendMode::kXor);
     }
   }

@@ -459,7 +459,8 @@ gfx::Rect PictureLayerTilingSet::ComputeSkewport(
   max_skewport.Inset(-skewport_extrapolation_limit_in_layer_pixels,
                      -skewport_extrapolation_limit_in_layer_pixels);
 
-  skewport.Inset(inset_x, inset_y, inset_right, inset_bottom);
+  skewport.Inset(
+      gfx::Insets::TLBR(inset_y, inset_x, inset_bottom, inset_right));
   skewport.Union(visible_rect_in_layer_space);
   skewport.Intersect(max_skewport);
 
@@ -482,7 +483,7 @@ gfx::Rect PictureLayerTilingSet::ComputeSoonBorderRect(
                     max_dimension * kSoonBorderDistanceViewportPercentage);
 
   gfx::Rect soon_border_rect = visible_rect;
-  soon_border_rect.Inset(-distance, -distance);
+  soon_border_rect.Inset(-distance);
   soon_border_rect.Intersect(eventually_rect_in_layer_space_);
   return soon_border_rect;
 }

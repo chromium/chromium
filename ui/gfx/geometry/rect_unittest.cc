@@ -646,7 +646,7 @@ TEST(RectTest, IntegerOverflow) {
 
   // Insetting an empty rect, but the total inset (left + right) could overflow.
   Rect inset_overflow;
-  inset_overflow.Inset(large_number, large_number, 100, 100);
+  inset_overflow.Inset(gfx::Insets::TLBR(large_number, large_number, 100, 100));
   EXPECT_EQ(large_offset, inset_overflow.origin());
   EXPECT_EQ(gfx::Size(), inset_overflow.size());
 
@@ -654,7 +654,7 @@ TEST(RectTest, IntegerOverflow) {
   // Also, this insetting by the min limit in all directions cannot
   // represent width() without overflow, so that will also clamp.
   Rect inset_overflow2;
-  inset_overflow2.Inset(min_limit, min_limit, min_limit, min_limit);
+  inset_overflow2.Inset(min_limit);
   EXPECT_EQ(inset_overflow2, gfx::Rect(min_limit, min_limit, limit, limit));
 
   // Insetting where the width shouldn't change, but if the insets operations
@@ -664,11 +664,11 @@ TEST(RectTest, IntegerOverflow) {
   // max int anyway.  Additionally, if left + right underflows, it cannot be
   // increased by more then max int.
   Rect inset_overflow3(0, 0, limit, limit);
-  inset_overflow3.Inset(-100, -100, 100, 100);
+  inset_overflow3.Inset(gfx::Insets::TLBR(-100, -100, 100, 100));
   EXPECT_EQ(inset_overflow3, gfx::Rect(-100, -100, limit, limit));
 
   Rect inset_overflow4(-1000, -1000, limit, limit);
-  inset_overflow4.Inset(100, 100, -100, -100);
+  inset_overflow4.Inset(gfx::Insets::TLBR(100, 100, -100, -100));
   EXPECT_EQ(inset_overflow4, gfx::Rect(-900, -900, limit, limit));
 
   Rect offset_overflow(0, 0, 100, 100);
@@ -751,15 +751,15 @@ TEST(RectTest, Inset) {
   r.Inset(-1);
   EXPECT_EQ(Rect(10, 20, 30, 40), r);
 
-  r.Inset(1, 2);
+  r.Inset(gfx::Insets::VH(2, 1));
   EXPECT_EQ(Rect(11, 22, 28, 36), r);
-  r.Inset(-1, -2);
+  r.Inset(gfx::Insets::VH(-2, -1));
   EXPECT_EQ(Rect(10, 20, 30, 40), r);
 
   // The parameters are left, top, right, bottom.
-  r.Inset(1, 2, 3, 4);
+  r.Inset(gfx::Insets::TLBR(2, 1, 4, 3));
   EXPECT_EQ(Rect(11, 22, 26, 34), r);
-  r.Inset(-1, -2, -3, -4);
+  r.Inset(gfx::Insets::TLBR(-2, -1, -4, -3));
   EXPECT_EQ(Rect(10, 20, 30, 40), r);
 
   r.Inset(Insets::TLBR(1, 2, 3, 4));
@@ -795,14 +795,14 @@ TEST(RectTest, InsetOutsetClamped) {
   r.Inset(-18);
   EXPECT_EQ(Rect(10, 20, 36, 40), r);
 
-  r.Inset(15, 30);
+  r.Inset(gfx::Insets::VH(30, 15));
   EXPECT_EQ(Rect(25, 50, 6, 0), r);
-  r.Inset(-15, -30);
+  r.Inset(gfx::Insets::VH(-30, -15));
   EXPECT_EQ(Rect(10, 20, 36, 60), r);
 
-  r.Inset(20, 30, 40, 50);
+  r.Inset(gfx::Insets::TLBR(30, 20, 50, 40));
   EXPECT_EQ(Rect(30, 50, 0, 0), r);
-  r.Inset(-20, -30, -40, -50);
+  r.Inset(gfx::Insets::TLBR(-30, -20, -50, -40));
   EXPECT_EQ(Rect(10, 20, 60, 80), r);
 
   r.Outset(kMaxInt);

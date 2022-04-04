@@ -42,7 +42,8 @@ bool CalculateClearForOpaqueRasterRects(const gfx::Vector2dF& translation,
   // If not fully covered, one texel inside the content rect may not be opaque
   // (because of blending during raster) and, for scale, one texel outside
   // (because of bilinear filtering during draw) may not be opaque.
-  outer_rect.Inset(0, 0, right_opaque ? 0 : -1, bottom_opaque ? 0 : -1);
+  outer_rect.Inset(
+      gfx::Insets::TLBR(0, 0, bottom_opaque ? 0 : -1, right_opaque ? 0 : -1));
   inner_rect.Inset(left_opaque ? 0 : 1, top_opaque ? 0 : 1,
                    right_opaque ? 0 : 1, bottom_opaque ? 0 : 1);
 

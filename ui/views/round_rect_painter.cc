@@ -26,7 +26,7 @@ void RoundRectPainter::Paint(gfx::Canvas* canvas, const gfx::Size& size) {
   flags.setStrokeWidth(kBorderWidth);
   flags.setAntiAlias(true);
   gfx::Rect rect(size);
-  rect.Inset(0, 0, kBorderWidth, kBorderWidth);
+  rect.Inset(gfx::Insets::TLBR(0, 0, kBorderWidth, kBorderWidth));
   SkRect skia_rect = gfx::RectToSkRect(rect);
   skia_rect.offset(kBorderWidth / 2.f, kBorderWidth / 2.f);
   canvas->sk_canvas()->drawRoundRect(skia_rect, SkIntToScalar(corner_radius_),

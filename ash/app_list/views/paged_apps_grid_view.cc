@@ -949,7 +949,7 @@ bool PagedAppsGridView::DoesIntersectRect(const views::View* target,
   gfx::Rect target_bounds(target->GetLocalBounds());
   if (features::IsProductivityLauncherEnabled() && GetSelectedPage() == 0) {
     // Allow events to pass to the continue section and recent apps.
-    target_bounds.Inset(0, first_page_offset_, 0, 0);
+    target_bounds.Inset(gfx::Insets::TLBR(first_page_offset_, 0, 0, 0));
   }
   return target_bounds.Intersects(rect);
 }

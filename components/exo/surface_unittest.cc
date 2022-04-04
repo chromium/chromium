@@ -244,7 +244,7 @@ TEST_P(SurfaceTest, Damage) {
 
   // Adjust damage for DSF filtering and verify it below.
   if (device_scale_factor() > 1.f)
-    buffer_damage.Inset(-1.f, -1.f);
+    buffer_damage.Inset(-1.f);
 
   {
     const viz::CompositorFrame& frame =

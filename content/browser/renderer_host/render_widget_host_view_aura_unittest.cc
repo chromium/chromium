@@ -1094,7 +1094,7 @@ TEST_F(RenderWidgetHostViewAuraTest, PositionChildPopup) {
   gfx::Rect bounds_in_screen = parent_view_->GetViewBounds();
   int horiz = bounds_in_screen.width() / 4;
   int vert = bounds_in_screen.height() / 4;
-  bounds_in_screen.Inset(horiz, vert);
+  bounds_in_screen.Inset(gfx::Insets::VH(vert, horiz));
 
   // Verify that when the popup is initialized for the first time, it correctly
   // treats the input bounds as screen coordinates.

@@ -122,7 +122,7 @@ void MemoryGraphPageView::OnPaint(gfx::Canvas* canvas) {
   // Layout graphs.
   gfx::Rect rect = GetContentsBounds();
   // Adjust bounds to not overlap with bordering reference lines.
-  rect.Inset(kHUDGraphReferenceLineWidth, kHUDGraphReferenceLineWidth);
+  rect.Inset(kHUDGraphReferenceLineWidth);
   graph_chrome_rss_private_.Layout(rect, /*base=*/nullptr);
   graph_mem_free_.Layout(rect, &graph_chrome_rss_private_);
   graph_mem_used_unknown_.Layout(rect, &graph_mem_free_);

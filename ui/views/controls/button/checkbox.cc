@@ -179,7 +179,7 @@ void Checkbox::OnThemeChanged() {
 SkPath Checkbox::GetFocusRingPath() const {
   SkPath path;
   gfx::Rect bounds = image()->GetMirroredContentsBounds();
-  bounds.Inset(1, 1);
+  bounds.Inset(1);
   path.addRect(RectToSkRect(bounds));
   return path;
 }

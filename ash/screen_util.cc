@@ -119,13 +119,13 @@ gfx::Rect SnapBoundsToDisplayEdge(const gfx::Rect& bounds,
   gfx::Rect snapped_bounds = bounds;
   if (scaled_size_in_pixel.width() < display_size_in_pixel.width() &&
       display.bounds().right() == bounds.right()) {
-    snapped_bounds.Inset(0, 0, -1, 0);
+    snapped_bounds.Inset(gfx::Insets::TLBR(0, 0, 0, -1));
     DCHECK_GE(gfx::ScaleToEnclosedRect(snapped_bounds, dsf).right(),
               gfx::ScaleToEnclosingRect(bounds, dsf).right());
   }
   if (scaled_size_in_pixel.height() < display_size_in_pixel.height() &&
       display.bounds().bottom() == bounds.bottom()) {
-    snapped_bounds.Inset(0, 0, 0, -1);
+    snapped_bounds.Inset(gfx::Insets::TLBR(0, 0, -1, 0));
     DCHECK_GE(gfx::ScaleToEnclosedRect(snapped_bounds, dsf).bottom(),
               gfx::ScaleToEnclosingRect(bounds, dsf).bottom());
   }

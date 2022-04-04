@@ -547,7 +547,8 @@ class AppListBackgroundShieldView : public views::View {
     // add the inset to the bottom to keep padding at the top of the AppList the
     // same.
     gfx::Rect new_bounds = bounds;
-    new_bounds.Inset(0, 0, 0, -shelf_background_corner_radius_ * 2);
+    new_bounds.Inset(
+        gfx::Insets::TLBR(0, 0, -shelf_background_corner_radius_ * 2, 0));
     SetBoundsRect(new_bounds);
   }
 

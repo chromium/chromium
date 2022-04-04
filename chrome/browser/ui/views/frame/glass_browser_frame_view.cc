@@ -334,7 +334,7 @@ int GlassBrowserFrameView::NonClientHitTest(const gfx::Point& point) {
       // show the resize cursor when resizing is possible. The cost of which
       // is also maybe showing it over the portion of the DIP that isn't the
       // outermost pixel.
-      buttons.Inset(0, kCaptionButtonTopInset, 0, 0);
+      buttons.Inset(gfx::Insets::TLBR(kCaptionButtonTopInset, 0, 0, 0));
       if (buttons.Contains(point))
         return HTNOWHERE;
     }
@@ -769,7 +769,7 @@ void GlassBrowserFrameView::LayoutClientView() {
   if (browser_view()->IsWindowControlsOverlayEnabled()) {
     top_inset = frame()->IsFullscreen() ? 0 : WindowTopY();
   }
-  client_view_bounds_.Inset(0, top_inset, 0, 0);
+  client_view_bounds_.Inset(gfx::Insets::TLBR(top_inset, 0, 0, 0));
 }
 
 void GlassBrowserFrameView::StartThrobber() {

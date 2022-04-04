@@ -1822,13 +1822,15 @@ void RenderText::ApplyFadeEffects(internal::SkiaTextRenderer* renderer) {
   Rect right_part;
   if (horizontal_alignment != ALIGN_LEFT) {
     left_part = solid_part;
-    left_part.Inset(0, 0, solid_part.width() - gradient_width, 0);
-    solid_part.Inset(gradient_width, 0, 0, 0);
+    left_part.Inset(
+        gfx::Insets::TLBR(0, 0, 0, solid_part.width() - gradient_width));
+    solid_part.Inset(gfx::Insets::TLBR(0, gradient_width, 0, 0));
   }
   if (horizontal_alignment != ALIGN_RIGHT) {
     right_part = solid_part;
-    right_part.Inset(solid_part.width() - gradient_width, 0, 0, 0);
-    solid_part.Inset(0, 0, gradient_width, 0);
+    right_part.Inset(
+        gfx::Insets::TLBR(0, solid_part.width() - gradient_width, 0, 0));
+    solid_part.Inset(gfx::Insets::TLBR(0, 0, 0, gradient_width));
   }
 
   // CreateFadeShader() expects at least one part to not be empty.
@@ -1837,7 +1839,7 @@ void RenderText::ApplyFadeEffects(internal::SkiaTextRenderer* renderer) {
     return;
 
   Rect text_rect = display_rect();
-  text_rect.Inset(GetAlignmentOffset(0).x(), 0, 0, 0);
+  text_rect.Inset(gfx::Insets::TLBR(0, GetAlignmentOffset(0).x(), 0, 0));
 
   // TODO(msw): Use the actual text colors corresponding to each faded part.
   renderer->SetShader(

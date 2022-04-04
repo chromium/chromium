@@ -166,7 +166,7 @@ class GtkButtonImageSource : public gfx::ImageSkiaSource {
       if (!GtkCheckVersion(3, 14)) {
         gint focus_pad;
         GtkStyleContextGetStyle(context, "focus-padding", &focus_pad, nullptr);
-        focus_rect.Inset(focus_pad, focus_pad);
+        focus_rect.Inset(focus_pad);
 
         if (state_ == ui::NativeTheme::kPressed) {
           gint child_displacement_x, child_displacement_y;

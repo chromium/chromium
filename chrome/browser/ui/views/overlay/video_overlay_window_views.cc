@@ -520,7 +520,7 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
   // Adding an extra pixel to width/height makes sure the scrim covers the
   // entire window when the platform has fractional scaling applied.
   gfx::Rect larger_window_bounds = gfx::Rect(GetBounds().size());
-  larger_window_bounds.Inset(-1, -1);
+  larger_window_bounds.Inset(-1);
   controls_scrim_view_->SetBoundsRect(larger_window_bounds);
 
   WindowQuadrant quadrant =

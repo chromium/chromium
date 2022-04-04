@@ -113,7 +113,7 @@ gfx::Rect SwitchAccessBackButtonBubbleController::AdjustAnchorRect(
   gfx::Rect display_bounds =
       display::Screen::GetScreen()->GetDisplayMatching(anchor).bounds();
   // Ensure that the back button displays onscreen.
-  display_bounds.Inset(0, button_size.height(), 0, 0);
+  display_bounds.Inset(gfx::Insets::TLBR(button_size.height(), 0, 0, 0));
 
   if (adjusted_anchor.Intersects(display_bounds)) {
     adjusted_anchor.Intersect(display_bounds);

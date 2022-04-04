@@ -262,7 +262,7 @@ void SimpleWebViewDialog::Init() {
   UpdateReload(web_view_->web_contents()->IsLoading(), true);
 
   gfx::Rect bounds(CalculateScreenBounds(gfx::Size()));
-  bounds.Inset(kExternalMargin, kExternalMargin);
+  bounds.Inset(kExternalMargin);
   layout->set_minimum_size(bounds.size());
 
   Layout();

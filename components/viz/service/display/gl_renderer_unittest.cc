@@ -1496,7 +1496,7 @@ TEST_F(GLRendererTest, DrawYUVVideoDrawQuadWithVisibleRect) {
   gfx::Rect rect(viewport_size);
   gfx::Rect visible_rect(rect);
   gfx::RectF tex_coord_rect(0, 0, 1, 1);
-  visible_rect.Inset(10, 20, 30, 40);
+  visible_rect.Inset(gfx::Insets::TLBR(20, 10, 40, 30));
 
   SharedQuadState* shared_state = root_pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(gfx::Transform(), gfx::Rect(), rect,

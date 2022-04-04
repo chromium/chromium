@@ -292,20 +292,20 @@ HeaderView* NonClientFrameViewAsh::GetHeaderView() {
 gfx::Rect NonClientFrameViewAsh::GetClientBoundsForWindowBounds(
     const gfx::Rect& window_bounds) const {
   gfx::Rect client_bounds(window_bounds);
-  client_bounds.Inset(0, NonClientTopBorderHeight(), 0, 0);
+  client_bounds.Inset(gfx::Insets::TLBR(NonClientTopBorderHeight(), 0, 0, 0));
   return client_bounds;
 }
 
 gfx::Rect NonClientFrameViewAsh::GetBoundsForClientView() const {
   gfx::Rect client_bounds = bounds();
-  client_bounds.Inset(0, NonClientTopBorderHeight(), 0, 0);
+  client_bounds.Inset(gfx::Insets::TLBR(NonClientTopBorderHeight(), 0, 0, 0));
   return client_bounds;
 }
 
 gfx::Rect NonClientFrameViewAsh::GetWindowBoundsForClientBounds(
     const gfx::Rect& client_bounds) const {
   gfx::Rect window_bounds = client_bounds;
-  window_bounds.Inset(0, -NonClientTopBorderHeight(), 0, 0);
+  window_bounds.Inset(gfx::Insets::TLBR(-NonClientTopBorderHeight(), 0, 0, 0));
   return window_bounds;
 }
 

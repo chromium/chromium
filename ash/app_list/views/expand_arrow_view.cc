@@ -429,7 +429,7 @@ bool ExpandArrowView::DoesIntersectRect(const views::View* target,
   // (kTapTargetWidth x kTapTargetHeight).
   const int horizontal_padding = (kTapTargetWidth - button_bounds.width()) / 2;
   const int vertical_padding = (kTapTargetHeight - button_bounds.height()) / 2;
-  button_bounds.Inset(-horizontal_padding, -vertical_padding);
+  button_bounds.Inset(gfx::Insets::VH(-vertical_padding, -horizontal_padding));
   return button_bounds.Intersects(rect);
 }
 

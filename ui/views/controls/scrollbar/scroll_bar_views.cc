@@ -190,9 +190,11 @@ void ScrollBarViews::OnPaint(gfx::Canvas* canvas) {
 
   params_.scrollbar_track.is_upper = false;
   if (IsHorizontal())
-    bounds.Inset(thumb->bounds().right() - bounds.x(), 0, 0, 0);
+    bounds.Inset(
+        gfx::Insets::TLBR(0, thumb->bounds().right() - bounds.x(), 0, 0));
   else
-    bounds.Inset(0, thumb->bounds().bottom() - bounds.y(), 0, 0);
+    bounds.Inset(
+        gfx::Insets::TLBR(thumb->bounds().bottom() - bounds.y(), 0, 0, 0));
   if (!bounds.IsEmpty()) {
     GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(), part_,
                             state_, bounds, params_);

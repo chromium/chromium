@@ -82,7 +82,8 @@ void TouchSelectionMenuViews::ShowMenu(const gfx::Rect& anchor_rect,
   // |anchor_rect| plus the handle image height instead of |handle_image_size|.
   // Perhaps we should also allow for some minimum padding.
   if (menu_width > anchor_rect.width() - handle_image_size.width())
-    adjusted_anchor_rect.Inset(0, 0, 0, -handle_image_size.height());
+    adjusted_anchor_rect.Inset(
+        gfx::Insets::TLBR(0, 0, -handle_image_size.height(), 0));
   SetAnchorRect(adjusted_anchor_rect);
 
   BubbleDialogDelegateView::CreateBubble(this);

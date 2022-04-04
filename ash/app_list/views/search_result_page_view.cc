@@ -851,7 +851,8 @@ gfx::Rect SearchResultPageView::GetPageBoundsForState(
   }
 
   gfx::Rect bounding_rect = contents_bounds;
-  bounding_rect.Inset(0, 0, 0, kSearchResultPageMinimumBottomMargin);
+  bounding_rect.Inset(
+      gfx::Insets::TLBR(0, 0, kSearchResultPageMinimumBottomMargin, 0));
 
   gfx::Rect preferred_bounds = gfx::Rect(
       search_box_bounds.origin(),

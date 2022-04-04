@@ -27,7 +27,7 @@ gfx::Rect GetClientAreaBoundsInScreen(aura::Window* window) {
   const int inset = window->GetProperty(aura::client::kTopViewInset);
   if (inset > 0) {
     gfx::Rect bounds = window->GetBoundsInScreen();
-    bounds.Inset(0, inset, 0, 0);
+    bounds.Inset(gfx::Insets::TLBR(inset, 0, 0, 0));
     return bounds;
   }
   // The source window may not have a widget in unit tests.

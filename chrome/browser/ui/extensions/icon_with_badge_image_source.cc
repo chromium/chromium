@@ -188,7 +188,7 @@ void IconWithBadgeImageSource::PaintBadge(gfx::Canvas* canvas) {
 
   // Clear part of the background icon.
   gfx::Rect cutout_rect(badge_background_rect_);
-  cutout_rect.Inset(-1, -1);
+  cutout_rect.Inset(-1);
   cc::PaintFlags cutout_flags = rect_flags;
   cutout_flags.setBlendMode(SkBlendMode::kClear);
   constexpr int kOuterCornerRadius = 3;

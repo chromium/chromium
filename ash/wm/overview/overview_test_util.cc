@@ -102,7 +102,7 @@ gfx::Rect ShrinkBoundsByHotseatInset(const gfx::Rect& rect) {
   const int hotseat_bottom_inset = ShelfConfig::Get()->GetHotseatSize(
                                        /*density=*/HotseatDensity::kNormal) +
                                    ShelfConfig::Get()->hotseat_bottom_padding();
-  new_rect.Inset(0, 0, 0, hotseat_bottom_inset);
+  new_rect.Inset(gfx::Insets::TLBR(0, 0, hotseat_bottom_inset, 0));
   return new_rect;
 }
 

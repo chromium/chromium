@@ -188,8 +188,8 @@ TEST_P(CollisionDetectionUtilsDisplayTest,
   keyboard_window->SetBounds(keyboard_bounds);
 
   gfx::Rect expected = gfx::Rect(GetDisplay().bounds().size());
-  expected.Inset(0, 0, 0, keyboard_height);
-  expected.Inset(8, 8);
+  expected.Inset(gfx::Insets::TLBR(0, 0, keyboard_height, 0));
+  expected.Inset(8);
 
   gfx::Rect area = CollisionDetectionUtils::GetMovementArea(GetDisplay());
   EXPECT_EQ(ConvertToScreen(expected), area);

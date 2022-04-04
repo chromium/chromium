@@ -27,7 +27,7 @@ int FrameBorderNonClientHitTest(views::NonClientFrameView* view,
 
   if (aura::Env::GetInstance()->is_touch_down())
     outside_bounds *= chromeos::kResizeOutsideBoundsScaleForTouch;
-  expanded_bounds.Inset(-outside_bounds, -outside_bounds);
+  expanded_bounds.Inset(-outside_bounds);
 
   if (!expanded_bounds.Contains(point_in_widget))
     return HTNOWHERE;

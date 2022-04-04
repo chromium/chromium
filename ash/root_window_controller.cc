@@ -369,7 +369,7 @@ class RootWindowTargeter : public aura::WindowTargeter {
                                             ui::LocatedEvent* event) {
     constexpr int ExtraMarginForTelemetryTest = -10;
     gfx::Rect bounds = window->bounds();
-    bounds.Inset(ExtraMarginForTelemetryTest, ExtraMarginForTelemetryTest);
+    bounds.Inset(ExtraMarginForTelemetryTest);
     return bounds.Contains(event->location());
   }
 

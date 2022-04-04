@@ -986,7 +986,7 @@ TEST_F(ScreenManagerTest, CheckControllerToWindowMappingWithDifferentBounds) {
       new ui::DrmWindow(1, device_manager_.get(), screen_manager_.get()));
   window->Initialize();
   gfx::Rect new_bounds = GetPrimaryBounds();
-  new_bounds.Inset(0, 0, 1, 1);
+  new_bounds.Inset(gfx::Insets::TLBR(0, 0, 1, 1));
   window->SetBounds(new_bounds);
   screen_manager_->AddWindow(1, std::move(window));
 

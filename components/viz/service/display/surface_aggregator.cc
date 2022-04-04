@@ -132,7 +132,7 @@ gfx::Rect GetExpandedRectWithPixelMovingForegroundFilter(
   const SharedQuadState* shared_quad_state = rpdq->shared_quad_state;
   float max_pixel_movement = child_render_pass.filters.MaximumPixelMovement();
   gfx::RectF rect(rpdq->rect);
-  rect.Inset(-max_pixel_movement, -max_pixel_movement);
+  rect.Inset(-max_pixel_movement);
   gfx::Rect expanded_rect = gfx::ToEnclosingRect(rect);
 
   // expanded_rect in the target space
@@ -2454,7 +2454,8 @@ void SurfaceAggregator::CreateDeJellyRenderPassQuads(
   gfx::Rect render_pass_visible_rect =
       gfx::ToEnclosingRect(render_pass_visible_rect_f);
   // Finally, expand by our un_clip amounts.
-  render_pass_visible_rect.Inset(0, -un_clip_top, 0, -un_clip_bottom);
+  render_pass_visible_rect.Inset(
+      gfx::Insets::TLBR(-un_clip_top, 0, -un_clip_bottom, 0));
 
   // Expand the |render_pass|'s rects.
   render_pass->output_rect =
@@ -2472,7 +2473,8 @@ void SurfaceAggregator::CreateDeJellyRenderPassQuads(
     }
 
     // Expand our clip by un clip amounts.
-    new_state->clip_rect->Inset(0, -un_clip_top, 0, -un_clip_bottom);
+    new_state->clip_rect->Inset(
+        gfx::Insets::TLBR(-un_clip_top, 0, -un_clip_bottom, 0));
   }
 
   // Append all quads sharing |new_state|.

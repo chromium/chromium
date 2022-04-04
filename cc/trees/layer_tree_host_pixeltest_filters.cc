@@ -579,7 +579,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageFilterScaled) {
 
     background->AddChild(layer);
 
-    rect.Inset(kInset, kInset);
+    rect.Inset(kInset);
   }
 
   scoped_refptr<SolidColorLayer> filter =
@@ -1017,8 +1017,8 @@ TEST_P(LayerTreeHostFiltersPixelTest, EnlargedTextureWithAlphaThresholdFilter) {
   filter_layer->AddChild(child1);
   filter_layer->AddChild(child2);
 
-  rect1.Inset(-5, -5);
-  rect2.Inset(-5, -5);
+  rect1.Inset(-5);
+  rect2.Inset(-5);
   FilterOperation::ShapeRects alpha_shape = {rect1, rect2};
   FilterOperations filters;
   filters.Append(

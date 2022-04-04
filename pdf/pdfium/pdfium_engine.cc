@@ -3554,7 +3554,7 @@ PDFiumEngine::SelectionChangeInvalidator::GetVisibleSelections() const {
 void PDFiumEngine::SelectionChangeInvalidator::Invalidate(
     const gfx::Rect& selection) {
   gfx::Rect expanded_selection = selection;
-  expanded_selection.Inset(-1, -1);
+  expanded_selection.Inset(-1);
   engine_->client_->Invalidate(expanded_selection);
 }
 

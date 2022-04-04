@@ -1181,7 +1181,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, OnBoundsChanged) {
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
   gfx::Rect rect = browser()->window()->GetBounds();
-  rect.Inset(10, 10);
+  rect.Inset(10);
   browser()->window()->SetBounds(rect);
 
   listener.Reply(base::StringPrintf(

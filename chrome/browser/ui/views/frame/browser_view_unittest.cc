@@ -206,7 +206,7 @@ TEST_F(BrowserViewTest, FindBarBoundingBoxNoLocationBar) {
   const gfx::Rect find_bar_bounds = browser_view()->GetFindBarBoundingBox();
   gfx::Rect contents_bounds = contents_container->ConvertRectToWidget(
       contents_container->GetLocalBounds());
-  contents_bounds.Inset(0, 0, gfx::scrollbar_size(), 0);
+  contents_bounds.Inset(gfx::Insets::TLBR(0, 0, 0, gfx::scrollbar_size()));
 
   EXPECT_EQ(contents_bounds.ToString(), find_bar_bounds.ToString());
 }

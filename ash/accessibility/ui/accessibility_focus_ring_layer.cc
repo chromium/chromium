@@ -108,7 +108,7 @@ void AccessibilityFocusRingLayer::Set(const AccessibilityFocusRing& ring) {
     bounds = display.bounds();
   } else {
     int inset = kGradientWidth;
-    bounds.Inset(-inset, -inset, -inset, -inset);
+    bounds.Inset(-inset);
   }
   ::wm::ConvertRectFromScreen(container, &bounds);
   bool stack_at_top =

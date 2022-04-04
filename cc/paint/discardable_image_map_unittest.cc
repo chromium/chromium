@@ -109,7 +109,7 @@ class DiscardableImageMapTest : public testing::Test {
     std::vector<gfx::Rect> result;
     for (auto& image : images) {
       result.push_back(image.image_rect);
-      result.back().Inset(1, 1, 1, 1);
+      result.back().Inset(1);
     }
     return result;
   }
@@ -1100,7 +1100,7 @@ TEST_F(DiscardableImageMapTest, TracksImageRegions) {
                                   gfx::Rect(400, 400, 100, 100)};
   Region expected_region;
   for (auto& rect : rects) {
-    rect.Inset(-1, -1);
+    rect.Inset(-1);
     expected_region.Union(rect);
   }
 

@@ -988,7 +988,7 @@ bool Pointer::ShouldMoveToCenter() {
     return false;
 
   gfx::Rect rect = capture_window_->GetRootWindow()->bounds();
-  rect.Inset(rect.width() / 6, rect.height() / 6);
+  rect.Inset(gfx::Insets::VH(rect.height() / 6, rect.width() / 6));
   return !rect.Contains(location_.x(), location_.y());
 }
 

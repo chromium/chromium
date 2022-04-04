@@ -1067,7 +1067,7 @@ gfx::Rect BrowserView::GetFindBarBoundingBox() const {
       return bounding_box;
   }
 
-  contents_bounds.Inset(0, 0, gfx::scrollbar_size(), 0);
+  contents_bounds.Inset(gfx::Insets::TLBR(0, 0, 0, gfx::scrollbar_size()));
   return contents_container_->GetMirroredRect(contents_bounds);
 }
 

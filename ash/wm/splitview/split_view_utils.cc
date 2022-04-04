@@ -428,7 +428,7 @@ SplitViewController::SnapPosition GetSnapPositionForLocation(
   SplitViewController::SnapPosition snap_position = SplitViewController::NONE;
   if (horizontal) {
     gfx::Rect area(work_area);
-    area.Inset(horizontal_edge_inset, 0);
+    area.Inset(gfx::Insets::VH(0, horizontal_edge_inset));
     if (location_in_screen.x() <= area.x()) {
       snap_position = right_side_up ? SplitViewController::LEFT
                                     : SplitViewController::RIGHT;
@@ -438,7 +438,7 @@ SplitViewController::SnapPosition GetSnapPositionForLocation(
     }
   } else {
     gfx::Rect area(work_area);
-    area.Inset(0, vertical_edge_inset);
+    area.Inset(gfx::Insets::VH(vertical_edge_inset, 0));
     if (location_in_screen.y() <= area.y()) {
       snap_position = right_side_up ? SplitViewController::LEFT
                                     : SplitViewController::RIGHT;
@@ -459,7 +459,7 @@ SplitViewController::SnapPosition GetSnapPositionForLocation(
   // from edge.
   bool drag_end_near_edge = false;
   gfx::Rect area(work_area);
-  area.Inset(snap_distance_from_edge, snap_distance_from_edge);
+  area.Inset(snap_distance_from_edge);
   if (horizontal ? location_in_screen.x() < area.x() ||
                        location_in_screen.x() > area.right()
                  : location_in_screen.y() < area.y() ||

@@ -264,7 +264,8 @@ static void ReduceOcclusionBelowSurface(
             ? 0
             : target_rect.y() - affected_area_in_target.y();
 
-    occlusion_rect.Inset(shrink_left, shrink_top, shrink_right, shrink_bottom);
+    occlusion_rect.Inset(gfx::Insets::TLBR(shrink_top, shrink_left,
+                                           shrink_bottom, shrink_right));
 
     occlusion_from_inside_target->Union(occlusion_rect);
   }

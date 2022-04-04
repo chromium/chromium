@@ -40,7 +40,7 @@ void AccessibilityLayer::Set(aura::Window* root_window,
   layer_rect_ = bounds;
   gfx::Rect layer_bounds = bounds;
   int inset = -(GetInset());
-  layer_bounds.Inset(inset, inset, inset, inset);
+  layer_bounds.Inset(inset);
   CreateOrUpdateLayer(root_window, "AccessibilityLayer", layer_bounds);
 }
 

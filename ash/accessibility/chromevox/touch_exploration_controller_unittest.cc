@@ -1726,7 +1726,7 @@ TEST_F(TouchExplorationTest, ExclusionArea) {
 
   gfx::Rect window = BoundsOfRootWindowInDIP();
   gfx::Rect exclude = window;
-  exclude.Inset(0, 0, 0, 30);
+  exclude.Inset(gfx::Insets::TLBR(0, 0, 30, 0));
   SetExcludeBounds(exclude);
 
   gfx::Point in_pt = exclude.CenterPoint();
@@ -1800,7 +1800,7 @@ TEST_F(TouchExplorationTest, SingleTapInLiftActivationArea) {
   SwitchTouchExplorationMode(true);
 
   gfx::Rect lift_activation = BoundsOfRootWindowInDIP();
-  lift_activation.Inset(0, 0, 0, 30);
+  lift_activation.Inset(gfx::Insets::TLBR(0, 0, 30, 0));
   SetLiftActivationBounds(lift_activation);
 
   // Tap at one location, and get tap and mouse move events.
@@ -1837,7 +1837,7 @@ TEST_F(TouchExplorationTest, TouchExploreLiftInLiftActivationArea) {
   SwitchTouchExplorationMode(true);
 
   gfx::Rect lift_activation = BoundsOfRootWindowInDIP();
-  lift_activation.Inset(0, 0, 0, 30);
+  lift_activation.Inset(gfx::Insets::TLBR(0, 0, 30, 0));
   SetLiftActivationBounds(lift_activation);
 
   // Explore at one location, and get tap and touch explore events.

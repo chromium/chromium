@@ -650,7 +650,7 @@ TEST_F(AppListControllerImplTest,
                                ->GetBoundsInScreen();
   const int horizontal_padding = (tapping_width - expand_arrow.width()) / 2;
   const int vertical_padding = (tapping_height - expand_arrow.height()) / 2;
-  expand_arrow.Inset(-horizontal_padding, -vertical_padding);
+  expand_arrow.Inset(gfx::Insets::VH(-vertical_padding, -horizontal_padding));
 
   // Tap expand arrow icon and check that full screen apps view is entered.
   ui::test::EventGenerator* event_generator = GetEventGenerator();

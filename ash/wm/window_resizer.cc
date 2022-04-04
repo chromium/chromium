@@ -210,7 +210,8 @@ gfx::Rect WindowResizer::CalculateBoundsForDrag(
         // Update bottom edge to stay in the work area when we are resizing
         // by dragging the bottom edge or corners.
         if (new_bounds.bottom() > work_area.bottom())
-          new_bounds.Inset(0, 0, 0, new_bounds.bottom() - work_area.bottom());
+          new_bounds.Inset(gfx::Insets::TLBR(
+              0, 0, new_bounds.bottom() - work_area.bottom(), 0));
       }
     }
     if (details().bounds_change & kBoundsChange_Repositions &&
@@ -235,7 +236,7 @@ gfx::Rect WindowResizer::CalculateBoundsForDrag(
     const display::Display& display =
         display::Screen::GetScreen()->GetDisplayMatching(near_passed_location);
     gfx::Rect screen_work_area = display.work_area();
-    screen_work_area.Inset(kMinimumOnScreenArea, 0);
+    screen_work_area.Inset(gfx::Insets::VH(0, kMinimumOnScreenArea));
     gfx::Rect new_bounds_in_screen(new_bounds);
     ::wm::ConvertRectToScreen(parent, &new_bounds_in_screen);
     if (!screen_work_area.Intersects(new_bounds_in_screen)) {

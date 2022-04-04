@@ -332,7 +332,7 @@ int BrowserViewLayout::NonClientHitTest(const gfx::Point& point) {
   // otherwise within the bounds of this view, the point is considered to be
   // within the client area.
   gfx::Rect bounds_from_toolbar_top = browser_view_->bounds();
-  bounds_from_toolbar_top.Inset(0, GetClientAreaTop(), 0, 0);
+  bounds_from_toolbar_top.Inset(gfx::Insets::TLBR(GetClientAreaTop(), 0, 0, 0));
   if (bounds_from_toolbar_top.Contains(point))
     return HTCLIENT;
 

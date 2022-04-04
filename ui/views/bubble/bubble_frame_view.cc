@@ -399,7 +399,7 @@ void BubbleFrameView::Layout() {
   if (header_height > 0) {
     header_view_->SetBounds(contents_bounds.x(), contents_bounds.y(),
                             contents_bounds.width(), header_height);
-    bounds.Inset(0, header_height, 0, 0);
+    bounds.Inset(gfx::Insets::TLBR(header_height, 0, 0, 0));
     header_bottom = header_view_->bounds().bottom();
   }
 

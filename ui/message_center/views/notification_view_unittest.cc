@@ -211,16 +211,16 @@ class NotificationViewTest : public views::ViewObserver,
     gfx::Rect rect(canvas_size);
     while (rect.width() > 0 &&
            bitmap.getColor(rect.x(), kHalfHeight) != kBitmapColor)
-      rect.Inset(1, 0, 0, 0);
+      rect.Inset(gfx::Insets::TLBR(0, 1, 0, 0));
     while (rect.height() > 0 &&
            bitmap.getColor(kHalfWidth, rect.y()) != kBitmapColor)
-      rect.Inset(0, 1, 0, 0);
+      rect.Inset(gfx::Insets::TLBR(1, 0, 0, 0));
     while (rect.width() > 0 &&
            bitmap.getColor(rect.right() - 1, kHalfHeight) != kBitmapColor)
-      rect.Inset(0, 0, 1, 0);
+      rect.Inset(gfx::Insets::TLBR(0, 0, 0, 1));
     while (rect.height() > 0 &&
            bitmap.getColor(kHalfWidth, rect.bottom() - 1) != kBitmapColor)
-      rect.Inset(0, 0, 0, 1);
+      rect.Inset(gfx::Insets::TLBR(0, 0, 1, 0));
 
     return rect.size();
   }
@@ -692,7 +692,7 @@ TEST_F(NotificationViewTest, InlineSettingsInkDropAnimation) {
 
   // Resize the widget by 1px to simulate the expand animation.
   gfx::Rect size = notification_view()->GetWidget()->GetWindowBoundsInScreen();
-  size.Inset(0, 0, 0, 1);
+  size.Inset(gfx::Insets::TLBR(0, 0, 1, 0));
   notification_view()->GetWidget()->SetBounds(size);
 
   views::InkDrop::Get(notification_view())->GetInkDrop()->RemoveObserver(this);

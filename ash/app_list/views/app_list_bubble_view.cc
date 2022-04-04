@@ -567,7 +567,7 @@ void AppListBubbleView::Layout() {
   // grid, so the folder needs to be laid out after the root apps grid.
   if (showing_folder_) {
     gfx::Rect folder_bounding_box = GetLocalBounds();
-    folder_bounding_box.Inset(kFolderViewInset, kFolderViewInset);
+    folder_bounding_box.Inset(kFolderViewInset);
     folder_view_->SetBoundingBox(folder_bounding_box);
     folder_view_->UpdatePreferredBounds();
     // NOTE: Folder view bounds are also modified during reparent drag when the

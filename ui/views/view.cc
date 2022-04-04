@@ -2535,11 +2535,11 @@ void View::PaintDebugRects(const PaintInfo& parent_paint_info) {
       ScaleToEnclosedRect(GetContentsBounds(), scale));
   const auto* color_provider = GetColorProvider();
   if (content_outline_rect != outline_rect) {
-    content_outline_rect.Inset(0.5f, 0.5f);
+    content_outline_rect.Inset(0.5f);
     canvas->DrawRect(content_outline_rect,
                      color_provider->GetColor(ui::kColorDebugContentOutline));
   }
-  outline_rect.Inset(0.5f, 0.5f);
+  outline_rect.Inset(0.5f);
   canvas->DrawRect(outline_rect,
                    color_provider->GetColor(ui::kColorDebugBoundsOutline));
 }

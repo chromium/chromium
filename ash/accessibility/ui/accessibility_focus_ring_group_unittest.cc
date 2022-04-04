@@ -51,7 +51,7 @@ class AccessibilityFocusRingGroupTest : public AshTestBase {
 
  protected:
   gfx::Rect AddMargin(gfx::Rect r) {
-    r.Inset(-group_.GetMargin(), -group_.GetMargin());
+    r.Inset(-group_.GetMargin());
     return r;
   }
 

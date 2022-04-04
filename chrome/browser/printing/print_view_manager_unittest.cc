@@ -162,7 +162,7 @@ void TestPrinterQuery::SetSettings(base::Value new_settings,
                 settings->requested_media().size_microns.height() /
                     device_microns_per_device_unit);
   gfx::Rect paper_rect(0, 0, paper_size.width(), paper_size.height());
-  paper_rect.Inset(offsets_->x(), offsets_->y());
+  paper_rect.Inset(gfx::Insets::VH(offsets_->y(), offsets_->x()));
   settings->SetPrinterPrintableArea(paper_size, paper_rect, true);
 #if BUILDFLAG(IS_WIN)
   settings->set_printer_language_type(*printer_language_type_);

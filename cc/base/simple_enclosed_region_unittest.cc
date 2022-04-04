@@ -145,22 +145,22 @@ TEST(SimpleEnclosedRegionTest, Contains) {
 
   gfx::Rect q(1, 2, 5, 6);
   EXPECT_TRUE(r.Contains(q)) << q.ToString();
-  q.Inset(-1, 0, 0, 0);
+  q.Inset(gfx::Insets::TLBR(0, -1, 0, 0));
   EXPECT_FALSE(r.Contains(q)) << q.ToString();
-  q.Inset(1, -1, 0, 0);
+  q.Inset(gfx::Insets::TLBR(-1, 1, 0, 0));
   EXPECT_FALSE(r.Contains(q)) << q.ToString();
-  q.Inset(0, 1, -1, 0);
+  q.Inset(gfx::Insets::TLBR(1, 0, 0, -1));
   EXPECT_FALSE(r.Contains(q)) << q.ToString();
-  q.Inset(0, 0, 1, -1);
+  q.Inset(gfx::Insets::TLBR(0, 0, -1, 1));
   EXPECT_FALSE(r.Contains(q)) << q.ToString();
 
-  q.Inset(1, 0, 0, 1);
+  q.Inset(gfx::Insets::TLBR(0, 1, 1, 0));
   EXPECT_TRUE(r.Contains(q)) << q.ToString();
-  q.Inset(-1, 1, 0, 0);
+  q.Inset(gfx::Insets::TLBR(1, -1, 0, 0));
   EXPECT_TRUE(r.Contains(q)) << q.ToString();
-  q.Inset(0, -1, 1, 0);
+  q.Inset(gfx::Insets::TLBR(-1, 0, 0, 1));
   EXPECT_TRUE(r.Contains(q)) << q.ToString();
-  q.Inset(0, 0, -1, 1);
+  q.Inset(gfx::Insets::TLBR(0, 0, 1, -1));
   EXPECT_TRUE(r.Contains(q)) << q.ToString();
 
   EXPECT_FALSE(r.Contains(SimpleEnclosedRegion(0, 2, 1, 1)));
@@ -185,22 +185,22 @@ TEST(SimpleEnclosedRegionTest, Contains) {
 
   q = gfx::Rect(1, 2, 5, 6);
   EXPECT_TRUE(r.Contains(SimpleEnclosedRegion(q))) << q.ToString();
-  q.Inset(-1, 0, 0, 0);
+  q.Inset(gfx::Insets::TLBR(0, -1, 0, 0));
   EXPECT_FALSE(r.Contains(SimpleEnclosedRegion(q))) << q.ToString();
-  q.Inset(1, -1, 0, 0);
+  q.Inset(gfx::Insets::TLBR(-1, 1, 0, 0));
   EXPECT_FALSE(r.Contains(SimpleEnclosedRegion(q))) << q.ToString();
-  q.Inset(0, 1, -1, 0);
+  q.Inset(gfx::Insets::TLBR(1, 0, 0, -1));
   EXPECT_FALSE(r.Contains(SimpleEnclosedRegion(q))) << q.ToString();
-  q.Inset(0, 0, 1, -1);
+  q.Inset(gfx::Insets::TLBR(0, 0, -1, 1));
   EXPECT_FALSE(r.Contains(SimpleEnclosedRegion(q))) << q.ToString();
 
-  q.Inset(1, 0, 0, 1);
+  q.Inset(gfx::Insets::TLBR(0, 1, 1, 0));
   EXPECT_TRUE(r.Contains(SimpleEnclosedRegion(q))) << q.ToString();
-  q.Inset(-1, 1, 0, 0);
+  q.Inset(gfx::Insets::TLBR(1, -1, 0, 0));
   EXPECT_TRUE(r.Contains(SimpleEnclosedRegion(q))) << q.ToString();
-  q.Inset(0, -1, 1, 0);
+  q.Inset(gfx::Insets::TLBR(-1, 0, 0, 1));
   EXPECT_TRUE(r.Contains(SimpleEnclosedRegion(q))) << q.ToString();
-  q.Inset(0, 0, -1, 1);
+  q.Inset(gfx::Insets::TLBR(0, 0, 1, -1));
   EXPECT_TRUE(r.Contains(SimpleEnclosedRegion(q))) << q.ToString();
 }
 
@@ -229,22 +229,22 @@ TEST(SimpleEnclosedRegionTest, Intersects) {
 
   gfx::Rect q(1, 2, 5, 6);
   EXPECT_TRUE(r.Intersects(q)) << q.ToString();
-  q.Inset(-1, 0, 0, 0);
+  q.Inset(gfx::Insets::TLBR(0, -1, 0, 0));
   EXPECT_TRUE(r.Intersects(q)) << q.ToString();
-  q.Inset(1, -1, 0, 0);
+  q.Inset(gfx::Insets::TLBR(-1, 1, 0, 0));
   EXPECT_TRUE(r.Intersects(q)) << q.ToString();
-  q.Inset(0, 1, -1, 0);
+  q.Inset(gfx::Insets::TLBR(1, 0, 0, -1));
   EXPECT_TRUE(r.Intersects(q)) << q.ToString();
-  q.Inset(0, 0, 1, -1);
+  q.Inset(gfx::Insets::TLBR(0, 0, -1, 1));
   EXPECT_TRUE(r.Intersects(q)) << q.ToString();
 
-  q.Inset(1, 0, 0, 1);
+  q.Inset(gfx::Insets::TLBR(0, 1, 1, 0));
   EXPECT_TRUE(r.Intersects(q)) << q.ToString();
-  q.Inset(-1, 1, 0, 0);
+  q.Inset(gfx::Insets::TLBR(1, -1, 0, 0));
   EXPECT_TRUE(r.Intersects(q)) << q.ToString();
-  q.Inset(0, -1, 1, 0);
+  q.Inset(gfx::Insets::TLBR(-1, 0, 0, 1));
   EXPECT_TRUE(r.Intersects(q)) << q.ToString();
-  q.Inset(0, 0, -1, 1);
+  q.Inset(gfx::Insets::TLBR(0, 0, 1, -1));
   EXPECT_TRUE(r.Intersects(q)) << q.ToString();
 
   EXPECT_FALSE(r.Intersects(SimpleEnclosedRegion(0, 2, 1, 1)));
@@ -269,22 +269,22 @@ TEST(SimpleEnclosedRegionTest, Intersects) {
 
   q = gfx::Rect(1, 2, 5, 6);
   EXPECT_TRUE(r.Intersects(SimpleEnclosedRegion(q))) << q.ToString();
-  q.Inset(-1, 0, 0, 0);
+  q.Inset(gfx::Insets::TLBR(0, -1, 0, 0));
   EXPECT_TRUE(r.Intersects(SimpleEnclosedRegion(q))) << q.ToString();
-  q.Inset(1, -1, 0, 0);
+  q.Inset(gfx::Insets::TLBR(-1, 1, 0, 0));
   EXPECT_TRUE(r.Intersects(SimpleEnclosedRegion(q))) << q.ToString();
-  q.Inset(0, 1, -1, 0);
+  q.Inset(gfx::Insets::TLBR(1, 0, 0, -1));
   EXPECT_TRUE(r.Intersects(SimpleEnclosedRegion(q))) << q.ToString();
-  q.Inset(0, 0, 1, -1);
+  q.Inset(gfx::Insets::TLBR(0, 0, -1, 1));
   EXPECT_TRUE(r.Intersects(SimpleEnclosedRegion(q))) << q.ToString();
 
-  q.Inset(1, 0, 0, 1);
+  q.Inset(gfx::Insets::TLBR(0, 1, 1, 0));
   EXPECT_TRUE(r.Intersects(SimpleEnclosedRegion(q))) << q.ToString();
-  q.Inset(-1, 1, 0, 0);
+  q.Inset(gfx::Insets::TLBR(1, -1, 0, 0));
   EXPECT_TRUE(r.Intersects(SimpleEnclosedRegion(q))) << q.ToString();
-  q.Inset(0, -1, 1, 0);
+  q.Inset(gfx::Insets::TLBR(-1, 0, 0, 1));
   EXPECT_TRUE(r.Intersects(SimpleEnclosedRegion(q))) << q.ToString();
-  q.Inset(0, 0, -1, 1);
+  q.Inset(gfx::Insets::TLBR(0, 0, 1, -1));
   EXPECT_TRUE(r.Intersects(SimpleEnclosedRegion(q))) << q.ToString();
 }
 

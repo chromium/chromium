@@ -160,7 +160,7 @@ absl::optional<SkColor> GetNotificationForegroundColor(
   const SkColor fallback_color = is_light ? SK_ColorBLACK : SK_ColorWHITE;
 
   gfx::Rect bitmap_area(source->width(), source->height());
-  bitmap_area.Inset(source->width() * 0.4, 0, 0, 0);
+  bitmap_area.Inset(gfx::Insets::TLBR(0, source->width() * 0.4, 0, 0));
 
   // If the background color is dark we want to look for colors that are darker
   // and vice versa.

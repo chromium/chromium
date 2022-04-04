@@ -1081,7 +1081,7 @@ TEST_F(CaptureModeTest, CaptureRegionCaptureButtonDoesNotIntersectCaptureBar) {
   const gfx::Rect capture_bar_bounds =
       GetCaptureModeBarWidget()->GetWindowBoundsInScreen();
   gfx::Rect region_bounds = capture_bar_bounds;
-  region_bounds.Inset(-20, -20);
+  region_bounds.Inset(-20);
   SelectRegion(region_bounds);
   EXPECT_FALSE(capture_bar_bounds.Intersects(
       GetCaptureModeLabelWidget()->GetWindowBoundsInScreen()));

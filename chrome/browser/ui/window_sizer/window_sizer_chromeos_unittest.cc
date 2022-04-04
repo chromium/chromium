@@ -706,7 +706,7 @@ TEST_F(WindowSizerChromeOSTest, DefaultStateBecomesMaximized) {
   gfx::Rect specified_bounds = display_bounds;
 
   // Make a window bigger than the display work area.
-  specified_bounds.Inset(-20, -20);
+  specified_bounds.Inset(-20);
   ui::WindowShowState show_state = ui::SHOW_STATE_DEFAULT;
   gfx::Rect bounds;
   WindowSizer::GetBrowserWindowBoundsAndShowState(
@@ -717,7 +717,7 @@ TEST_F(WindowSizerChromeOSTest, DefaultStateBecomesMaximized) {
   EXPECT_TRUE(display_bounds.Contains(bounds));
 
   // Make a window smaller than the display work area.
-  specified_bounds.Inset(100, 100);
+  specified_bounds.Inset(100);
   show_state = ui::SHOW_STATE_DEFAULT;
   WindowSizer::GetBrowserWindowBoundsAndShowState(
       specified_bounds, browser.get(), &bounds, &show_state);

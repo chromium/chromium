@@ -278,7 +278,8 @@ absl::optional<int> RootWindowDeskSwitchAnimator::UpdateSwipeAnimation(
       transformed_animation_layer_bounds.x() == 0 ||
       transformed_animation_layer_bounds.right() == root_window_size_.width();
 
-  transformed_animation_layer_bounds.Inset(edge_padding_width_dp_, 0);
+  transformed_animation_layer_bounds.Inset(
+      gfx::InsetsF::VH(0, edge_padding_width_dp_));
 
   const bool moving_left = scroll_delta_x < 0.f;
   const bool going_out_of_bounds =

@@ -50,7 +50,7 @@ void AccessibilityCursorRingLayer::Set(const gfx::Point& location) {
 
   gfx::Rect bounds = gfx::Rect(location.x(), location.y(), 0, 0);
   int inset = kGradientWidth + kCursorRingRadius + kLayerMargin;
-  bounds.Inset(-inset, -inset, -inset, -inset);
+  bounds.Inset(-inset);
 
   DCHECK(root_window());
   display::Display display =
@@ -70,13 +70,13 @@ void AccessibilityCursorRingLayer::OnPaintLayer(
 
   gfx::Rect r = layer()->bounds();
   r.Offset(-r.OffsetFromOrigin());
-  r.Inset(kLayerMargin, kLayerMargin, kLayerMargin, kLayerMargin);
+  r.Inset(kLayerMargin);
   const int w = kGradientWidth;
   for (int i = 0; i < w; ++i) {
     flags.setColor(SkColorSetARGB(255 * i * i / (w * w), red_, green_, blue_));
     SkPath path;
     path.addOval(SkRect::MakeXYWH(r.x(), r.y(), r.width(), r.height()));
-    r.Inset(1, 1, 1, 1);
+    r.Inset(1);
     recorder.canvas()->DrawPath(path, flags);
   }
 }

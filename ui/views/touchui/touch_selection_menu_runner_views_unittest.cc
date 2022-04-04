@@ -115,7 +115,7 @@ TEST_F(TouchSelectionMenuRunnerViewsTest, QuickMenuAdjustsAnchorRect) {
   gfx::Rect anchor_rect(0, 0, quick_menu_width + handle_size.width() - 10, 20);
   ui::TouchSelectionMenuRunner::GetInstance()->OpenMenu(
       this, anchor_rect, handle_size, GetContext());
-  anchor_rect.Inset(0, 0, 0, -handle_size.height());
+  anchor_rect.Inset(gfx::Insets::TLBR(0, 0, -handle_size.height(), 0));
   EXPECT_EQ(anchor_rect, test_api.GetAnchorRect());
 
   // Set anchor rect's width a bit greater than the quick menu width plus handle

@@ -259,7 +259,7 @@ gfx::Rect GetGridBoundsInScreen(
               /*density=*/HotseatDensity::kNormal) +
           ShelfConfig::Get()->hotseat_bottom_padding();
 
-      bounds.Inset(0, 0, 0, hotseat_bottom_inset);
+      bounds.Inset(gfx::Insets::TLBR(0, 0, hotseat_bottom_inset, 0));
     }
   }
 

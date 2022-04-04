@@ -260,7 +260,8 @@ gfx::Rect RenderSurfaceImpl::CalculateClippedAccumulatedContentRect() {
     clipped_accumulated_rect_in_target_space = clip_rect();
   }
   if (layer_tree_impl_->settings().allow_de_jelly_effect) {
-    clipped_accumulated_rect_in_target_space.Inset(0, -viz::MaxDeJellyHeight());
+    clipped_accumulated_rect_in_target_space.Inset(
+        gfx::Insets::VH(-viz::MaxDeJellyHeight(), 0));
   }
   clipped_accumulated_rect_in_target_space.Intersect(
       accumulated_rect_in_target_space);

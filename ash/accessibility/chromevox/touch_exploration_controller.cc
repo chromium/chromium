@@ -1037,7 +1037,7 @@ void TouchExplorationController::OnSwipeEvent(ui::GestureEvent* swipe_gesture) {
 int TouchExplorationController::FindEdgesWithinInset(gfx::Point point_dip,
                                                      float inset) {
   gfx::RectF inner_bounds_dip(root_window_->bounds());
-  inner_bounds_dip.Inset(inset, inset);
+  inner_bounds_dip.Inset(inset);
 
   // Bitwise manipulation in order to determine where on the screen the point
   // lies. If more than one bit is turned on, then it is a corner where the two

@@ -530,7 +530,7 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
 #if BUILDFLAG(IS_MAC)
     // Mask out the corners, which may be drawn differently on Mac because of
     // rounded corners.
-    matching_mask.Inset(4, 4, 4, 4);
+    matching_mask.Inset(4);
 #endif
 
     // A color profile can be installed on the host that could affect

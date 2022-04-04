@@ -536,7 +536,7 @@ TEST_F(TileManagerTilePriorityQueueTest, RasterTilePriorityQueueInvalidation) {
   // ensure that border math doesn't invalidate neighbouring tiles.
   gfx::Rect invalidation =
       active_layer()->HighResTiling()->TileAt(1, 0)->content_rect();
-  invalidation.Inset(2, 2);
+  invalidation.Inset(2);
 
   pending_layer()->set_invalidation(invalidation);
   pending_layer()->HighResTiling()->Invalidate(invalidation);
@@ -1183,7 +1183,7 @@ TEST_F(TileManagerTilePriorityQueueTest,
 
   const int soon_border_outset = 312;
   gfx::Rect soon_rect = viewport;
-  soon_rect.Inset(-soon_border_outset, -soon_border_outset);
+  soon_rect.Inset(-soon_border_outset);
 
   client.SetTileSize(gfx::Size(30, 30));
   LayerTreeSettings settings;
@@ -1319,7 +1319,7 @@ TEST_F(TileManagerTilePriorityQueueTest,
 
   const int soon_border_outset = 312;
   gfx::Rect soon_rect = moved_viewport;
-  soon_rect.Inset(-soon_border_outset, -soon_border_outset);
+  soon_rect.Inset(-soon_border_outset);
 
   // There are 3 bins in TilePriority.
   bool have_tiles[3] = {};

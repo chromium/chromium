@@ -239,10 +239,11 @@ class MediaNotificationBackgroundImplBlackWhiteTest
     bitmap.allocN32Pixels(area.width(), area.height());
     bitmap.eraseColor(GetParam());
 
-    area.Inset(40, 0, 0, 0);
+    area.Inset(gfx::Insets::TLBR(0, 40, 0, 0));
     bitmap.erase(first, gfx::RectToSkIRect(area));
 
-    area.Inset(first_width, area.height() - second_height, 0, 0);
+    area.Inset(
+        gfx::Insets::TLBR(area.height() - second_height, first_width, 0, 0));
     bitmap.erase(second, gfx::RectToSkIRect(area));
 
     return gfx::ImageSkia::CreateFrom1xBitmap(bitmap);

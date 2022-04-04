@@ -377,7 +377,8 @@ TEST_F(DockedMagnifierTest, DisplaysWorkAreas) {
   const gfx::Rect disp_1_bounds(0, 0, 800, 600);
   EXPECT_EQ(disp_1_bounds, display_1.bounds());
   gfx::Rect disp_1_workarea_no_magnifier = disp_1_bounds;
-  disp_1_workarea_no_magnifier.Inset(0, 0, 0, ShelfConfig::Get()->shelf_size());
+  disp_1_workarea_no_magnifier.Inset(
+      gfx::Insets::TLBR(0, 0, ShelfConfig::Get()->shelf_size(), 0));
   EXPECT_EQ(disp_1_workarea_no_magnifier, display_1.work_area());
   // At this point, normal mouse cursor confinement should be used.
   AshWindowTreeHost* host1 =
@@ -391,7 +392,8 @@ TEST_F(DockedMagnifierTest, DisplaysWorkAreas) {
   const gfx::Rect disp_2_bounds(800, 0, 400, 300);
   EXPECT_EQ(disp_2_bounds, display_2.bounds());
   gfx::Rect disp_2_workarea_no_magnifier = disp_2_bounds;
-  disp_2_workarea_no_magnifier.Inset(0, 0, 0, ShelfConfig::Get()->shelf_size());
+  disp_2_workarea_no_magnifier.Inset(
+      gfx::Insets::TLBR(0, 0, ShelfConfig::Get()->shelf_size(), 0));
   EXPECT_EQ(disp_2_workarea_no_magnifier, display_2.work_area());
   AshWindowTreeHost* host2 =
       Shell::Get()
@@ -414,7 +416,8 @@ TEST_F(DockedMagnifierTest, DisplaysWorkAreas) {
   gfx::Rect disp_1_workspace_with_magnifier = disp_1_workarea_no_magnifier;
   const int disp_1_magnifier_height =
       GetMagnifierHeight(disp_1_bounds.height());
-  disp_1_workspace_with_magnifier.Inset(0, disp_1_magnifier_height, 0, 0);
+  disp_1_workspace_with_magnifier.Inset(
+      gfx::Insets::TLBR(disp_1_magnifier_height, 0, 0, 0));
   EXPECT_EQ(disp_1_bounds, display_1.bounds());
   EXPECT_EQ(disp_1_workspace_with_magnifier, display_1.work_area());
   // The first display should confine the mouse movement outside of the
@@ -452,7 +455,8 @@ TEST_F(DockedMagnifierTest, DisplaysWorkAreas) {
   gfx::Rect disp_2_workspace_with_magnifier = disp_2_workarea_no_magnifier;
   const int disp_2_magnifier_height =
       GetMagnifierHeight(disp_2_bounds.height());
-  disp_2_workspace_with_magnifier.Inset(0, disp_2_magnifier_height, 0, 0);
+  disp_2_workspace_with_magnifier.Inset(
+      gfx::Insets::TLBR(disp_2_magnifier_height, 0, 0, 0));
   EXPECT_EQ(disp_2_workspace_with_magnifier, display_2.work_area());
   // Display 2's mouse is confined outside the viewport.
   gfx::Rect disp_2_confine_bounds(
@@ -501,7 +505,8 @@ TEST_F(DockedMagnifierTest, DisplaysWorkAreasOverviewMode) {
   const display::Display& display = display_manager()->GetDisplayAt(0);
   gfx::Rect workarea = display.bounds();
   const int magnifier_height = GetMagnifierHeight(display.bounds().height());
-  workarea.Inset(0, magnifier_height, 0, ShelfConfig::Get()->shelf_size());
+  workarea.Inset(gfx::Insets::TLBR(magnifier_height, 0,
+                                   ShelfConfig::Get()->shelf_size(), 0));
   EXPECT_EQ(workarea, display.work_area());
   EXPECT_EQ(workarea, window->bounds());
   EXPECT_TRUE(WindowState::Get(window.get())->IsMaximized());
@@ -589,7 +594,8 @@ TEST_F(DockedMagnifierTest, DisplaysWorkAreasSingleSplitView) {
   const display::Display& display = display_manager()->GetDisplayAt(0);
   const int magnifier_height = GetMagnifierHeight(display.bounds().height());
   gfx::Rect work_area = display.bounds();
-  work_area.Inset(0, magnifier_height, 0, ShelfConfig::Get()->shelf_size());
+  work_area.Inset(gfx::Insets::TLBR(magnifier_height, 0,
+                                    ShelfConfig::Get()->shelf_size(), 0));
   EXPECT_EQ(work_area, display.work_area());
   EXPECT_EQ(work_area, window->bounds());
   EXPECT_TRUE(WindowState::Get(window.get())->IsMaximized());
@@ -639,7 +645,8 @@ TEST_F(DockedMagnifierTest, DisplaysWorkAreasDoubleSplitView) {
   const display::Display& display = display_manager()->GetDisplayAt(0);
   const int magnifier_height = GetMagnifierHeight(display.bounds().height());
   gfx::Rect work_area = display.bounds();
-  work_area.Inset(0, magnifier_height, 0, ShelfConfig::Get()->shelf_size());
+  work_area.Inset(gfx::Insets::TLBR(magnifier_height, 0,
+                                    ShelfConfig::Get()->shelf_size(), 0));
   EXPECT_EQ(work_area, display.work_area());
   EXPECT_EQ(work_area.height(), window1->bounds().height());
   EXPECT_EQ(work_area.height(), window2->bounds().height());

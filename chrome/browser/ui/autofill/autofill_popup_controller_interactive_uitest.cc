@@ -105,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
 
   // Resize the window, which should cause the popup to hide.
   gfx::Rect new_bounds = browser()->window()->GetBounds();
-  new_bounds.Inset(1, 1);
+  new_bounds.Inset(1);
   browser()->window()->SetBounds(new_bounds);
 
   autofill_external_delegate_->WaitForPopupHidden();

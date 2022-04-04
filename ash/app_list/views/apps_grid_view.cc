@@ -2497,7 +2497,7 @@ void AppsGridView::DeleteItemViewAtIndex(int index) {
 
 bool AppsGridView::IsPointWithinDragBuffer(const gfx::Point& point) const {
   gfx::Rect rect(GetLocalBounds());
-  rect.Inset(-kDragBufferPx, -kDragBufferPx, -kDragBufferPx, -kDragBufferPx);
+  rect.Inset(-kDragBufferPx);
   return rect.Contains(point);
 }
 

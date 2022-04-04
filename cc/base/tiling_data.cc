@@ -334,7 +334,7 @@ int TilingData::TileSizeY(int y_index) const {
 
 gfx::RectF TilingData::TexelExtent(int i, int j) const {
   gfx::RectF result(TileBoundsWithBorder(i, j));
-  result.Inset(0.5f, 0.5f);
+  result.Inset(0.5f);
   return result;
 }
 

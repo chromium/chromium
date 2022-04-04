@@ -171,7 +171,7 @@ void AccessibilityFocusHighlight::CreateOrUpdateLayer(gfx::Rect node_bounds) {
   // plus the extra padding to ensure the highlight isn't clipped.
   gfx::Rect layer_bounds = node_bounds;
   int padding = kTotalLayerPadding;
-  layer_bounds.Inset(-padding, -padding);
+  layer_bounds.Inset(-padding);
 
   layer_->SetBounds(layer_bounds);
 
@@ -275,12 +275,12 @@ void AccessibilityFocusHighlight::OnPaintLayer(
   gfx::RectF bounds(node_bounds_);
 
   // Apply padding
-  bounds.Inset(-kPadding, -kPadding);
+  bounds.Inset(-kPadding);
 
   // Draw gradient first, so other lines will be drawn over the top.
   gfx::RectF gradient_bounds(bounds);
   int gradient_border_radius = kBorderRadius;
-  gradient_bounds.Inset(-kStrokeWidth, -kStrokeWidth);
+  gradient_bounds.Inset(-kStrokeWidth);
   gradient_border_radius += kStrokeWidth;
   cc::PaintFlags gradient_flags(original_flags);
   gradient_flags.setStrokeWidth(1);
@@ -298,7 +298,7 @@ void AccessibilityFocusHighlight::OnPaintLayer(
     recorder.canvas()->DrawRoundRect(gradient_bounds, gradient_border_radius,
                                      gradient_flags);
 
-    gradient_bounds.Inset(-1, -1);
+    gradient_bounds.Inset(-1);
     gradient_border_radius += 1;
   }
 
@@ -308,7 +308,7 @@ void AccessibilityFocusHighlight::OnPaintLayer(
 
   // Resize bounds and border radius around inner ring
   gfx::RectF white_ring_bounds(bounds);
-  white_ring_bounds.Inset(-(kStrokeWidth / 2), -(kStrokeWidth / 2));
+  white_ring_bounds.Inset(-(kStrokeWidth / 2));
   int white_ring_border_radius = kBorderRadius + (kStrokeWidth / 2);
 
   cc::PaintFlags white_ring_flags(original_flags);

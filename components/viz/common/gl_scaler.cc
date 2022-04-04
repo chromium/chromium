@@ -1584,7 +1584,7 @@ gfx::Rect GLScaler::ScalerStage::ToInputRect(gfx::RectF source_rect) const {
       break;
   }
 
-  source_rect.Inset(-overscan_x, -overscan_y);
+  source_rect.Inset(gfx::InsetsF::VH(-overscan_y, -overscan_x));
   return gfx::ToEnclosingRect(source_rect);
 }
 

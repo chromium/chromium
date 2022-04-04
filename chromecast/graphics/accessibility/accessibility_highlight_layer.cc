@@ -47,7 +47,7 @@ void AccessibilityHighlightLayer::Set(const std::vector<gfx::Rect>& rects,
   }
 
   int inset = kLayerMargin;
-  bounds.Inset(-inset, -inset, -inset, -inset);
+  bounds.Inset(-inset);
 
   display::Display display =
       display::Screen::GetScreen()->GetDisplayMatching(bounds);
@@ -78,7 +78,7 @@ void AccessibilityHighlightLayer::OnPaintLayer(
     // Offset the rect based on where the layer is on the screen.
     rect.Offset(-r.OffsetFromOrigin());
     // Add a little bit of margin to the drawn box.
-    rect.Inset(-kLayerMargin, -kLayerMargin, -kLayerMargin, -kLayerMargin);
+    rect.Inset(-kLayerMargin);
     recorder.canvas()->DrawRect(rect, flags);
   }
 }

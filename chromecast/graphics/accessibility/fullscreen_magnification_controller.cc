@@ -447,7 +447,7 @@ void FullscreenMagnificationController::OnPaintLayer(
         std::pow(kHighlightShadowRadius, 2));
 
     gfx::Rect outsetRect = bounds;
-    outsetRect.Inset(i, i, i, i);
+    outsetRect.Inset(i);
     recorder.canvas()->DrawRect(outsetRect, flags);
   }
 }

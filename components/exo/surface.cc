@@ -994,7 +994,7 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
   int outset = state_.basic_state.input_outset;
   if (outset > 0) {
     gfx::Rect input_rect = surface_hierarchy_content_bounds_;
-    input_rect.Inset(-outset, -outset);
+    input_rect.Inset(-outset);
     hit_test_region_ = input_rect;
   }
 
@@ -1296,7 +1296,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
     // Outset damage by 1 DIP to as damage is in surface coordinate space and
     // client might not be aware of |device_scale_factor| and the
     // scaling/filtering it requires.
-    damage_rect.Inset(-1, -1);
+    damage_rect.Inset(-1);
     damage_rect += origin.OffsetFromOrigin();
     damage_rect.Intersect(output_rect);
 

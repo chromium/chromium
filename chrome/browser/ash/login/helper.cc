@@ -47,7 +47,7 @@ gfx::Rect CalculateScreenBounds(const gfx::Size& size) {
   if (!size.IsEmpty()) {
     int horizontal_diff = bounds.width() - size.width();
     int vertical_diff = bounds.height() - size.height();
-    bounds.Inset(horizontal_diff / 2, vertical_diff / 2);
+    bounds.Inset(gfx::Insets::VH(vertical_diff / 2, horizontal_diff / 2));
   }
   return bounds;
 }

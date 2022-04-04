@@ -2177,7 +2177,8 @@ void CaptureModeSession::UpdateDimensionsLabelBounds() {
   // The dimension label should always be within the screen and at the bottom of
   // the capture region. If it does not fit below the bottom edge fo the region,
   // move it above the bottom edge into the capture region.
-  screen_region.Inset(0, 0, 0, kSizeLabelYDistanceFromRegionDp);
+  screen_region.Inset(
+      gfx::Insets::TLBR(0, 0, kSizeLabelYDistanceFromRegionDp, 0));
   bounds.AdjustToFit(screen_region);
 
   wm::ConvertRectToScreen(current_root_, &bounds);

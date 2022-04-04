@@ -265,14 +265,14 @@ void SearchResultTileItemView::PaintButtonContents(gfx::Canvas* canvas) {
   flags.setColor(AppListColorProvider::Get()->GetFocusRingColor());
 
   gfx::RectF selection_ring = GetSelectionRingBounds();
-  selection_ring.Inset(0, kSelectionRingWidth / 2.0);
+  selection_ring.Inset(gfx::InsetsF::VH(kSelectionRingWidth / 2.0, 0));
   canvas->DrawRoundRect(selection_ring, kIconSelectedCornerRadius, flags);
 }
 
 gfx::RectF SearchResultTileItemView::GetSelectionRingBounds() const {
   gfx::RectF bounds(GetContentsBounds());
   const float horizontal_padding = (bounds.width() - kIconSelectedSize) / 2.0;
-  bounds.Inset(horizontal_padding, 0);
+  bounds.Inset(gfx::InsetsF::VH(0, horizontal_padding));
   bounds.set_height(kIconSelectedSize);
   return bounds;
 }

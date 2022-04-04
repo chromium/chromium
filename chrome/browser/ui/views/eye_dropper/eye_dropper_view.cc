@@ -263,12 +263,12 @@ void EyeDropperView::OnPaint(gfx::Canvas* view_canvas) {
   flags.setColor(
       color_provider->GetColor(kColorEyedropperCentralPixelOuterRing));
   flags.setStrokeWidth(2);
-  pixel.Inset(-0.5f, -0.5f);
+  pixel.Inset(-0.5f);
   view_canvas->DrawRect(pixel, flags);
   flags.setColor(
       color_provider->GetColor(kColorEyedropperCentralPixelInnerRing));
   flags.setStrokeWidth(1);
-  pixel.Inset(0.5f, 0.5f);
+  pixel.Inset(0.5f);
   view_canvas->DrawRect(pixel, flags);
 
   // Paint outline.

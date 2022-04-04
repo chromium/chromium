@@ -54,7 +54,7 @@ void WmHighlightItemBorder::Paint(const views::View& view,
   // The following inset is needed for the rounded corners of the border to
   // look correct. Otherwise, the borders will be painted at the edge of the
   // view, resulting in this border looking chopped.
-  bounds.Inset(kBorderSize / 2, kBorderSize / 2);
+  bounds.Inset(kBorderSize / 2);
   canvas->DrawRoundRect(bounds, corner_radius_, flags);
 }
 

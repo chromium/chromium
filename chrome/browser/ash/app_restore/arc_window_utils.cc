@@ -28,7 +28,7 @@ void ScaleToRoundedRectWithHeightInsets(apps::mojom::Rect* rect,
 
   gfx::Rect bounds = gfx::Rect(rect->x, rect->y, rect->width, rect->height);
   if (height)
-    bounds.Inset(0, height, 0, 0);
+    bounds.Inset(gfx::Insets::TLBR(height, 0, 0, 0));
   auto res_rect = gfx::ScaleToRoundedRect(bounds, scale_factor);
   rect->x = res_rect.x();
   rect->y = res_rect.y();
