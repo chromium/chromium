@@ -137,7 +137,7 @@ public class ExploreSitesPageTest {
 
     @Test
     @SmallTest
-    @DisabledTest
+    @DisabledTest(message = "crbug.com/953254")
     @Feature({"ExploreSites", "RenderTest"})
     @Features.EnableFeatures(ChromeFeatureList.EXPLORE_SITES)
     public void testScrolledLayout_withBack() throws Exception {

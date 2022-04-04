@@ -282,8 +282,8 @@ public class FullscreenManagerTest {
     }
 
     @Test
-    //@LargeTest
-    //@Feature({"Fullscreen"})
+    @LargeTest
+    @Feature({"Fullscreen"})
     @DisabledTest(message = "crbug.com/901280")
     public void testManualHidingShowingBrowserControls() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
@@ -573,10 +573,9 @@ public class FullscreenManagerTest {
         FullscreenTestUtils.waitForPersistentFullscreen(delegate, true);
     }
 
-    /* @LargeTest
-     * @Feature({"Fullscreen"})
-     */
     @Test
+    @LargeTest
+    @Feature({"Fullscreen"})
     @DisabledTest(message = "crbug.com/698413")
     public void testBrowserControlsShownWhenInputIsFocused() throws TimeoutException {
         FullscreenManagerTestUtils.disableBrowserOverrides();
@@ -609,8 +608,8 @@ public class FullscreenManagerTest {
     }
 
     @Test
-    //@LargeTest
-    //@Feature({"Fullscreen"})
+    @LargeTest
+    @Feature({"Fullscreen"})
     @DisabledTest(message = "crbug.com/979189")
     public void testPersistentFullscreenWithOptions() {
         FullscreenManagerTestUtils.disableBrowserOverrides();

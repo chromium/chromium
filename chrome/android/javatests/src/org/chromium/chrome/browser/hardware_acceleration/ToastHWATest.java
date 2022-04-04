@@ -10,6 +10,7 @@ import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 
+import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -89,12 +90,9 @@ public class ToastHWATest implements CustomMainActivityStart {
         Utils.assertNoRenderThread();
     }
 
-    /*
-     * @MediumTest
-     * @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
-     * BUG=crbug.com/668217
-    */
     @Test
+    @MediumTest
+    @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
     @DisabledTest(message = "crbug.com/668217")
     public void testDownloadingToast() throws Exception {
         mDownloadTestRule.loadUrl(mTestServer.getURL(URL_PATH));
