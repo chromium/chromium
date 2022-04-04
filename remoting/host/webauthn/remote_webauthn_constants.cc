@@ -13,6 +13,7 @@ const char kGetRemoteStateMessageType[] = "getRemoteState";
 const char kCreateMessageType[] = "create";
 const char kGetMessageType[] = "get";
 const char kCancelMessageType[] = "cancel";
+const char kClientDisconnectedMessageType[] = "clientDisconnected";
 
 const char kIsUvpaaResponseIsAvailableKey[] = "isAvailable";
 const char kGetRemoteStateResponseIsRemotedKey[] = "isRemoted";

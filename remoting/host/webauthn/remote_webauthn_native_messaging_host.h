@@ -67,15 +67,9 @@ class RemoteWebAuthnNativeMessagingHost final
 
   // Attempts to connect to the IPC server if the connection has not been
   // established. Returns a boolean indicating whether there is a valid IPC
-  // connection to the crd host
+  // connection to the crd host.
   bool EnsureIpcConnection();
   void SendMessageToClient(base::Value message);
-
-  // Attempts to connect IPC. If it succeeds, |response| will not be touched and
-  // `true` will be returned; if it fails, |response| will be attached with a
-  // WebAuthn error dict and sent to the NMH client, and `false` will be
-  // returned.
-  bool ConnectIpcOrSendError(base::Value& response);
 
   // Finds and returns the message ID from |response|. If message ID is not
   // found, |response| will be attached with a WebAuthn error dict and sent to
@@ -95,6 +89,10 @@ class RemoteWebAuthnNativeMessagingHost final
   void RemoveRequestCancellerByMessageId(const base::Value& message_id);
   void OnRequestCancellerDisconnected(
       mojo::RemoteSetElementId disconnecting_canceller);
+
+  // Sends a clientDisconnected message to the extension, so it can detach from
+  // the WebAuthn proxy API and clean up pending requests.
+  void SendClientDisconnectedMessage();
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   raw_ptr<extensions::NativeMessageHost::Client> client_ = nullptr;

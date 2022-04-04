@@ -128,8 +128,7 @@ void RemoteWebAuthnNativeMessagingHost::ProcessIsUvpaa(
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   if (!EnsureIpcConnection()) {
-    response.SetBoolKey(kIsUvpaaResponseIsAvailableKey, false);
-    SendMessageToClient(std::move(response));
+    SendClientDisconnectedMessage();
     return;
   }
 
@@ -148,7 +147,8 @@ void RemoteWebAuthnNativeMessagingHost::ProcessCreate(
 
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  if (!ConnectIpcOrSendError(response)) {
+  if (!EnsureIpcConnection()) {
+    SendClientDisconnectedMessage();
     return;
   }
   const base::Value* message_id = FindMessageIdOrSendError(response);
@@ -176,7 +176,8 @@ void RemoteWebAuthnNativeMessagingHost::ProcessGet(const base::Value& request,
 
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  if (!ConnectIpcOrSendError(response)) {
+  if (!EnsureIpcConnection()) {
+    SendClientDisconnectedMessage();
     return;
   }
   const base::Value* message_id = FindMessageIdOrSendError(response);
@@ -202,8 +203,7 @@ void RemoteWebAuthnNativeMessagingHost::ProcessCancel(
   //   {id: string, type: 'cancelResponse', wasCanceled: boolean}
 
   if (!EnsureIpcConnection()) {
-    response.SetBoolKey(kCancelResponseWasCanceledKey, false);
-    SendMessageToClient(std::move(response));
+    SendClientDisconnectedMessage();
     return;
   }
 
@@ -257,10 +257,11 @@ void RemoteWebAuthnNativeMessagingHost::OnQueryVersionResult(uint32_t version) {
 void RemoteWebAuthnNativeMessagingHost::OnIpcDisconnected() {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  // TODO(yuweih): Feed pending callbacks with error responses.
   remote_.reset();
   if (!get_remote_state_responses_.empty()) {
     SendNextRemoteState(false);
+  } else {
+    SendClientDisconnectedMessage();
   }
 }
 
@@ -413,21 +414,6 @@ void RemoteWebAuthnNativeMessagingHost::SendMessageToClient(
   client_->PostMessageFromNativeHost(message_json);
 }
 
-bool RemoteWebAuthnNativeMessagingHost::ConnectIpcOrSendError(
-    base::Value& response) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-
-  if (EnsureIpcConnection()) {
-    return true;
-  }
-  // TODO(yuweih): See if this is the right error to use here.
-  response.SetKey(kWebAuthnErrorKey,
-                  CreateWebAuthnExceptionDetailsDict(
-                      "InvalidStateError", "Failed to connect to IPC server."));
-  SendMessageToClient(std::move(response));
-  return false;
-}
-
 const base::Value* RemoteWebAuthnNativeMessagingHost::FindMessageIdOrSendError(
     base::Value& response) {
   const base::Value* message_id = response.FindKey(kMessageId);
@@ -503,6 +489,14 @@ void RemoteWebAuthnNativeMessagingHost::OnRequestCancellerDisconnected(
   if (on_request_canceller_disconnected_for_testing_) {
     on_request_canceller_disconnected_for_testing_.Run();
   }
+}
+
+void RemoteWebAuthnNativeMessagingHost::SendClientDisconnectedMessage() {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetStringKey(kMessageType, kClientDisconnectedMessageType);
+  SendMessageToClient(std::move(message));
 }
 
 }  // namespace remoting

@@ -15,6 +15,7 @@ extern const char kGetRemoteStateMessageType[];
 extern const char kCreateMessageType[];
 extern const char kGetMessageType[];
 extern const char kCancelMessageType[];
+extern const char kClientDisconnectedMessageType[];
 
 // NMH message keys.
 extern const char kIsUvpaaResponseIsAvailableKey[];

@@ -125,6 +125,8 @@ class RemoteWebAuthnNativeMessagingHostTest
   // Blocks until a new message is received, then returns the message.
   const base::Value& ReadMessage();
 
+  void ResetReceiver();
+
   MockWebAuthnProxy webauthn_proxy_;
   MockChromotingHostServicesProvider* api_provider_;
   MockChromotingSessionServices api_;
@@ -207,6 +209,10 @@ const base::Value& RemoteWebAuthnNativeMessagingHostTest::ReadMessage() {
   return latest_message_;
 }
 
+void RemoteWebAuthnNativeMessagingHostTest::ResetReceiver() {
+  webauthn_proxy_receiver_.reset();
+}
+
 TEST_F(RemoteWebAuthnNativeMessagingHostTest, HelloRequest) {
   SendMessage(CreateRequestMessage(kHelloMessage));
 
@@ -257,6 +263,21 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest, IsUvpaa) {
   ASSERT_EQ(*response.FindBoolKey(kIsUvpaaResponseIsAvailableKey), true);
 }
 
+TEST_F(RemoteWebAuthnNativeMessagingHostTest,
+       ClientDisconnectedWhenRequestIsPending_MessageSent) {
+  ExpectGetSessionServices();
+  ExpectBindWebAuthnProxy();
+  EXPECT_CALL(webauthn_proxy_, IsUserVerifyingPlatformAuthenticatorAvailable(_))
+      .WillOnce([&](mojom::WebAuthnProxy::
+                        IsUserVerifyingPlatformAuthenticatorAvailableCallback
+                            callback) { ResetReceiver(); });
+  SendMessage(CreateRequestMessage(kIsUvpaaMessageType));
+
+  const base::Value& response = ReadMessage();
+  ASSERT_EQ(*response.FindStringKey(kMessageType),
+            kClientDisconnectedMessageType);
+}
+
 TEST_F(RemoteWebAuthnNativeMessagingHostTest, ParallelIsUvpaaRequests) {
   ExpectGetSessionServices();
   ExpectBindWebAuthnProxy();
@@ -300,7 +321,7 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest, Create_RequestMissingData_Error) {
 }
 
 TEST_F(RemoteWebAuthnNativeMessagingHostTest,
-       Create_IpcConnectionFailed_Error) {
+       Create_IpcConnectionFailed_ClientDisconnectMessageSent) {
   ExpectGetSessionServices(false);
   auto request = CreateRequestMessage(kCreateMessageType);
   request.SetStringKey(kCreateRequestDataKey, "fake");
@@ -308,9 +329,8 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest,
 
   const base::Value& response = ReadMessage();
 
-  VerifyResponseMessage(response, kCreateMessageType);
-  ASSERT_EQ(response.FindStringKey(kCreateResponseDataKey), nullptr);
-  ASSERT_NE(response.FindKey(kWebAuthnErrorKey), nullptr);
+  ASSERT_EQ(*response.FindStringKey(kMessageType),
+            kClientDisconnectedMessageType);
 }
 
 TEST_F(RemoteWebAuthnNativeMessagingHostTest, Create_EmptyResponse) {
@@ -380,7 +400,8 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest, Get_RequestMissingData_Error) {
   ASSERT_NE(response.FindKey(kWebAuthnErrorKey), nullptr);
 }
 
-TEST_F(RemoteWebAuthnNativeMessagingHostTest, Get_IpcConnectionFailed_Error) {
+TEST_F(RemoteWebAuthnNativeMessagingHostTest,
+       Get_IpcConnectionFailed_ClientDisconnectedMessageSent) {
   ExpectGetSessionServices(false);
   auto request = CreateRequestMessage(kGetMessageType);
   request.SetStringKey(kGetRequestDataKey, "fake");
@@ -388,9 +409,8 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest, Get_IpcConnectionFailed_Error) {
 
   const base::Value& response = ReadMessage();
 
-  VerifyResponseMessage(response, kGetMessageType);
-  ASSERT_EQ(response.FindStringKey(kGetResponseDataKey), nullptr);
-  ASSERT_NE(response.FindKey(kWebAuthnErrorKey), nullptr);
+  ASSERT_EQ(*response.FindStringKey(kMessageType),
+            kClientDisconnectedMessageType);
 }
 
 TEST_F(RemoteWebAuthnNativeMessagingHostTest, Get_EmptyResponse) {
@@ -446,15 +466,15 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest, Get_DataResponse) {
 }
 
 TEST_F(RemoteWebAuthnNativeMessagingHostTest,
-       Cancel_IpcConnectionFailed_Failure) {
+       Cancel_IpcConnectionFailed_ClientDisconnectedMessageSent) {
   ExpectGetSessionServices(false);
 
   SendMessage(CreateRequestMessage(kCancelMessageType));
 
   const base::Value& response = ReadMessage();
 
-  VerifyResponseMessage(response, kCancelMessageType);
-  ASSERT_EQ(*response.FindBoolKey(kCancelResponseWasCanceledKey), false);
+  ASSERT_EQ(*response.FindStringKey(kMessageType),
+            kClientDisconnectedMessageType);
 }
 
 TEST_F(RemoteWebAuthnNativeMessagingHostTest, Cancel_NonexistentId_Failure) {
