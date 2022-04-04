@@ -4784,6 +4784,25 @@
             ]
         }
     ],
+    "OmniboxLocalHistoryZPSoniOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_90_Days_V2",
+                    "params": {
+                        "OmniboxLocalZeroSuggestAgeThreshold": "90"
+                    },
+                    "enable_features": [
+                        "LocalHistoryZeroSuggest",
+                        "OmniboxLocalZeroSuggestAgeThreshold"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxPedalsBatch1Android": [
         {
             "platforms": [
