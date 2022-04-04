@@ -3495,6 +3495,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.SourceEligibleDataHostLifeTime" units="ms"
+    expires_after="2022-09-25">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the time between the registration and completion of a data host that
+    is eligible to register a source. For trigger data hosts, the completion
+    time is when the trigger data is available for the data host. For source
+    data hosts, the completion time is after the final source data is available
+    for the data host. This can be used as an upper bound to determine the
+    amount of delay a trigger event may receive.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.Storage.ClearDataWithFilterDuration" units="ms"
     expires_after="M105">
   <owner>johnidel@chromium.org</owner>

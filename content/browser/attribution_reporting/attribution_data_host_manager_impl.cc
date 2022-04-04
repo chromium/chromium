@@ -95,6 +95,8 @@ struct AttributionDataHostManagerImpl::FrozenContext {
   absl::optional<url::Origin> destination;
 
   int num_data_registered = 0;
+
+  const base::TimeTicks register_time;
 };
 
 struct AttributionDataHostManagerImpl::DelayedTrigger {
@@ -110,6 +112,11 @@ struct AttributionDataHostManagerImpl::DelayedTrigger {
     base::UmaHistogramMediumTimes("Conversions.TriggerQueueDelay",
                                   base::TimeTicks::Now() - original_time);
   }
+};
+
+struct AttributionDataHostManagerImpl::NavigationDataHost {
+  mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host;
+  base::TimeTicks register_time;
 };
 
 AttributionDataHostManagerImpl::AttributionDataHostManagerImpl(
@@ -132,15 +139,18 @@ void AttributionDataHostManagerImpl::RegisterDataHost(
 
   receivers_.Add(this, std::move(data_host),
                  FrozenContext{.context_origin = std::move(context_origin),
-                               .source_type = AttributionSourceType::kEvent});
+                               .source_type = AttributionSourceType::kEvent,
+                               .register_time = base::TimeTicks::Now()});
   data_hosts_in_source_mode_++;
 }
 
 void AttributionDataHostManagerImpl::RegisterNavigationDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
     const blink::AttributionSrcToken& attribution_src_token) {
-  navigation_data_host_map_.emplace(attribution_src_token,
-                                    std::move(data_host));
+  navigation_data_host_map_.emplace(
+      attribution_src_token,
+      NavigationDataHost{.data_host = std::move(data_host),
+                         .register_time = base::TimeTicks::Now()});
   data_hosts_in_source_mode_++;
 }
 
@@ -161,10 +171,11 @@ void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
     return;
 
   receivers_.Add(
-      this, std::move(it->second),
+      this, std::move(it->second.data_host),
       FrozenContext{.context_origin = source_origin,
                     .source_type = AttributionSourceType::kNavigation,
-                    .destination = destination_origin});
+                    .destination = destination_origin,
+                    .register_time = it->second.register_time});
 
   navigation_data_host_map_.erase(it);
 }
@@ -172,8 +183,13 @@ void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
 void AttributionDataHostManagerImpl::NotifyNavigationFailure(
     const blink::AttributionSrcToken& attribution_src_token) {
   // TODO(johnidel): Record metrics for how many potential sources are dropped.
-  navigation_data_host_map_.erase(attribution_src_token);
-  OnSourceEligibleDataHostFinished();
+
+  auto it = navigation_data_host_map_.find(attribution_src_token);
+  DCHECK(it != navigation_data_host_map_.end());
+
+  base::TimeTicks register_time = it->second.register_time;
+  navigation_data_host_map_.erase(it);
+  OnSourceEligibleDataHostFinished(register_time);
 }
 
 void AttributionDataHostManagerImpl::SourceDataAvailable(
@@ -258,7 +274,7 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
 
   if (!context.destination.has_value()) {
     context.destination = url::Origin();
-    OnSourceEligibleDataHostFinished();
+    OnSourceEligibleDataHostFinished(context.register_time);
   } else if (!context.destination->opaque()) {
     return;
   }
@@ -390,10 +406,11 @@ void AttributionDataHostManagerImpl::OnReceiverDisconnected() {
   if (context.destination.has_value() && context.destination->opaque())
     return;
 
-  OnSourceEligibleDataHostFinished();
+  OnSourceEligibleDataHostFinished(context.register_time);
 }
 
-void AttributionDataHostManagerImpl::OnSourceEligibleDataHostFinished() {
+void AttributionDataHostManagerImpl::OnSourceEligibleDataHostFinished(
+    base::TimeTicks register_time) {
   // Decrement the number of receivers in source mode and flush triggers if
   // applicable.
   //
@@ -403,6 +420,9 @@ void AttributionDataHostManagerImpl::OnSourceEligibleDataHostFinished() {
   //
   // TODO(apaseltiner): Should we flush triggers when the
   // `AttributionDataHostManagerImpl` is about to be destroyed?
+
+  base::UmaHistogramMediumTimes("Conversions.SourceEligibleDataHostLifeTime",
+                                base::TimeTicks::Now() - register_time);
 
   DCHECK_GT(data_hosts_in_source_mode_, 0u);
   data_hosts_in_source_mode_--;

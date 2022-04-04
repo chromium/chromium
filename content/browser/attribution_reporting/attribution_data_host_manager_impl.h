@@ -19,6 +19,7 @@
 
 namespace base {
 class TimeDelta;
+class TimeTicks;
 }  // namespace base
 
 namespace content {
@@ -67,6 +68,8 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
 
   struct DelayedTrigger;
 
+  struct NavigationDataHost;
+
   // blink::mojom::AttributionDataHost:
   void SourceDataAvailable(
       blink::mojom::AttributionSourceDataPtr data) override;
@@ -74,7 +77,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       blink::mojom::AttributionTriggerDataPtr data) override;
 
   void OnReceiverDisconnected();
-  void OnSourceEligibleDataHostFinished();
+  void OnSourceEligibleDataHostFinished(base::TimeTicks register_time);
 
   void SetTriggerTimer(base::TimeDelta delay);
   void ProcessDelayedTrigger();
@@ -89,8 +92,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   // register sources associated with a navigation. These are not added to
   // `receivers_` until the necessary browser process information is available
   // to validate the attribution sources which is after the navigation finishes.
-  base::flat_map<blink::AttributionSrcToken,
-                 mojo::PendingReceiver<blink::mojom::AttributionDataHost>>
+  base::flat_map<blink::AttributionSrcToken, NavigationDataHost>
       navigation_data_host_map_;
 
   // The number of connected receivers that may register a source. Used to
