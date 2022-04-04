@@ -99,26 +99,6 @@ TEST_F(
     'OSSettingsPeoplePageAccountManagerWithArcAccountRestrictionsEnabledV3Test',
     'All', () => mocha.run());
 
-var OSSettingsDevicePageKeyboardArrangementDisabledV3Test =
-    class extends OSSettingsV3BrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/device_page_tests.m.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: super.featureList.enabled,
-      disabled: ['ash::features::kKeyboardBasedDisplayArrangementInSettings']
-    };
-  }
-};
-
-TEST_F(
-    'OSSettingsDevicePageKeyboardArrangementDisabledV3Test', 'All',
-    () => mocha.grep('/.*arrow_key_arrangement_disabled.*/').run());
-
 var OSSettingsNearbyShareSubPageV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {

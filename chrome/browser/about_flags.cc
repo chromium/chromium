@@ -3814,12 +3814,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExtensionContentVerificationDescription, kOsDesktop,
      MULTI_VALUE_TYPE(kExtensionContentVerificationChoices)},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"keyboard-based-display-arrangement-in-settings",
-     flag_descriptions::kKeyboardBasedDisplayArrangementInSettingsName,
-     flag_descriptions::kKeyboardBasedDisplayArrangementInSettingsDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         ash::features::kKeyboardBasedDisplayArrangementInSettings)},
     {"enable-lock-screen-notification",
      flag_descriptions::kLockScreenNotificationName,
      flag_descriptions::kLockScreenNotificationDescription, kOsCrOS,

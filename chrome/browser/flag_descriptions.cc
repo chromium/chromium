@@ -4954,12 +4954,6 @@ const char kCrosLanguageSettingsImeOptionsInSettingsName[] =
 const char kCrosLanguageSettingsImeOptionsInSettingsDescription[] =
     "Adds IME settings to the settings menu";
 
-const char kKeyboardBasedDisplayArrangementInSettingsName[] =
-    "Keyboard-based Display Arrangement in Settings";
-const char kKeyboardBasedDisplayArrangementInSettingsDescription[] =
-    "Enables using arrow keys to rearrange displays on Settings > Device > "
-    "Displays page.";
-
 const char kLacrosAvailabilityIgnoreName[] =
     "Ignore lacros-availability policy";
 const char kLacrosAvailabilityIgnoreDescription[] =

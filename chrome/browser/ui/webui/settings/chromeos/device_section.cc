@@ -677,10 +677,7 @@ void AddDeviceDisplayStrings(content::WebUIDataSource* html_source) {
 
   html_source->AddLocalizedString(
       "displayArrangementText",
-      base::FeatureList::IsEnabled(
-          ash::features::kKeyboardBasedDisplayArrangementInSettings)
-          ? IDS_SETTINGS_DISPLAY_ARRANGEMENT_WITH_KEYBOARD_TEXT
-          : IDS_SETTINGS_DISPLAY_ARRANGEMENT_TEXT);
+      IDS_SETTINGS_DISPLAY_ARRANGEMENT_WITH_KEYBOARD_TEXT);
 
   html_source->AddBoolean("unifiedDesktopAvailable",
                           IsUnifiedDesktopAvailable());
@@ -700,11 +697,6 @@ void AddDeviceDisplayStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "allowDisplayAlignmentApi",
       base::FeatureList::IsEnabled(ash::features::kDisplayAlignAssist));
-
-  html_source->AddBoolean(
-      "allowKeyboardBasedDisplayArrangementInSettings",
-      base::FeatureList::IsEnabled(
-          ash::features::kKeyboardBasedDisplayArrangementInSettings));
 }
 
 void AddDeviceStorageStrings(content::WebUIDataSource* html_source,

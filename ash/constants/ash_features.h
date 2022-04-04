@@ -329,8 +329,6 @@ extern const base::Feature kImeStylusHandwriting;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kImprovedDesksKeyboardShortcuts;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kInstantTethering;
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kKeyboardBasedDisplayArrangementInSettings;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kLacrosOnly;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kLacrosPrimary;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kLacrosSupport;
@@ -630,8 +628,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsInstantTetheringBackgroundAdvertisingSupported();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsKeyboardBacklightToggleEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsKeyboardBasedDisplayArrangementInSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLanguagePacksEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherAppSortEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)

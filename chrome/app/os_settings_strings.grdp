@@ -3672,9 +3672,6 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_DISPLAY_TITLE" desc="In Device Settings, the title for display settings.">
     Displays
   </message>
-  <message name="IDS_SETTINGS_DISPLAY_ARRANGEMENT_TEXT" desc="In Device Settings > Displays, text describing to use a mouse to drag the displays and change the arrangement.">
-    Drag to move a display
-  </message>
   <message name="IDS_SETTINGS_DISPLAY_ARRANGEMENT_WITH_KEYBOARD_TEXT" desc="In Device Settings > Displays, text describing how to use a mouse or keyboard to change arrangement of displays.">
     Drag or use arrow keys to move a display
   </message>

@@ -2854,9 +2854,6 @@ extern const char kImeSystemEmojiPickerSearchExtensionDescription[];
 extern const char kImeStylusHandwritingName[];
 extern const char kImeStylusHandwritingDescription[];
 
-extern const char kKeyboardBasedDisplayArrangementInSettingsName[];
-extern const char kKeyboardBasedDisplayArrangementInSettingsDescription[];
-
 extern const char kLacrosAvailabilityIgnoreName[];
 extern const char kLacrosAvailabilityIgnoreDescription[];
 

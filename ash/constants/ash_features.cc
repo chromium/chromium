@@ -839,11 +839,6 @@ const base::Feature kImprovedDesksKeyboardShortcuts{
 const base::Feature kInstantTethering{"InstantTethering",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables using arrow keys for display arrangement in display settings page.
-const base::Feature kKeyboardBasedDisplayArrangementInSettings{
-    "KeyboardBasedDisplayArrangementInSettings",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables to use lacros-chrome as the only web browser on Chrome OS.
 // This works only when both LacrosSupport and LacrosPrimary below are enabled.
 // NOTE: Use crosapi::browser_util::IsAshWebBrowserEnabled() instead of checking
@@ -1750,11 +1745,6 @@ bool IsInstantTetheringBackgroundAdvertisingSupported() {
 
 bool IsKeyboardBacklightToggleEnabled() {
   return base::FeatureList::IsEnabled(kEnableKeyboardBacklightToggle);
-}
-
-bool IsKeyboardBasedDisplayArrangementInSettingsEnabled() {
-  return base::FeatureList::IsEnabled(
-      kKeyboardBasedDisplayArrangementInSettings);
 }
 
 bool IsLanguagePacksEnabled() {

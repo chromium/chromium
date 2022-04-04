@@ -89,10 +89,6 @@ Polymer({
   allowDisplayAlignmentApi_:
       loadTimeData.getBoolean('allowDisplayAlignmentApi'),
 
-  /** @private {boolean} */
-  allowKeyboardDrag_:
-      loadTimeData.getBoolean('allowKeyboardBasedDisplayArrangementInSettings'),
-
   /** @private {string} */
   invalidDisplayId_: loadTimeData.getString('invalidDisplayId'),
 
@@ -129,8 +125,8 @@ Polymer({
     }
     tryCalcVisualScale();
 
-    // Pass keyboard dragging flag to drag behavior before initializing.
-    this.keyboardDragEnabled = this.allowKeyboardDrag_;
+    // Enable keyboard dragging before initialization.
+    this.keyboardDragEnabled = true;
     this.initializeDrag(
         !this.mirroring, this.$.displayArea,
         (id, amount) => this.onDrag_(id, amount));
