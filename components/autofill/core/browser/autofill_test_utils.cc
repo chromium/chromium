@@ -136,6 +136,7 @@ std::unique_ptr<PrefService> PrefServiceForTesting() {
   registry->RegisterBooleanPref(
       RandomizedEncoder::kUrlKeyedAnonymizedDataCollectionEnabled, false);
   registry->RegisterBooleanPref(::prefs::kMixedFormsWarningsEnabled, true);
+  registry->RegisterStringPref(prefs::kAutofillStatesDataDir, "");
   return PrefServiceForTesting(registry.get());
 }
 
