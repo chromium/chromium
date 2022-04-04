@@ -1232,13 +1232,11 @@ void PeerConnectionTracker::SendPeerConnectionUpdate(
 }
 
 void PeerConnectionTracker::AddStandardStats(int lid, base::Value::List value) {
-  peer_connection_tracker_host_->AddStandardStats(
-      lid, base::Value(std::move(value)));
+  peer_connection_tracker_host_->AddStandardStats(lid, std::move(value));
 }
 
 void PeerConnectionTracker::AddLegacyStats(int lid, base::Value::List value) {
-  peer_connection_tracker_host_->AddLegacyStats(lid,
-                                                base::Value(std::move(value)));
+  peer_connection_tracker_host_->AddLegacyStats(lid, std::move(value));
 }
 
 }  // namespace blink

@@ -72,10 +72,10 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
                                const std::string& value) override;
   void OnAddStandardStats(GlobalRenderFrameHostId frame_id,
                           int lid,
-                          base::Value value) override;
+                          base::Value::List value) override;
   void OnAddLegacyStats(GlobalRenderFrameHostId frame_id,
                         int lid,
-                        base::Value value) override;
+                        base::Value::List value) override;
   void OnGetUserMedia(GlobalRenderFrameHostId frame_id,
                       base::ProcessId pid,
                       int request_id,

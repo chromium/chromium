@@ -255,32 +255,32 @@ void WebRTCInternals::OnPeerConnectionUpdated(GlobalRenderFrameHostId frame_id,
 
 void WebRTCInternals::OnAddStandardStats(GlobalRenderFrameHostId frame_id,
                                          int lid,
-                                         base::Value value) {
+                                         base::Value::List value) {
   if (observers_.empty())
     return;
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("rid", frame_id.child_id);
-  dict.SetIntKey("lid", lid);
+  base::Value::Dict dict;
+  dict.Set("rid", frame_id.child_id);
+  dict.Set("lid", lid);
 
-  dict.SetKey("reports", std::move(value));
+  dict.Set("reports", std::move(value));
 
-  SendUpdate("add-standard-stats", std::move(dict));
+  SendUpdate("add-standard-stats", base::Value(std::move(dict)));
 }
 
 void WebRTCInternals::OnAddLegacyStats(GlobalRenderFrameHostId frame_id,
                                        int lid,
-                                       base::Value value) {
+                                       base::Value::List value) {
   if (observers_.empty())
     return;
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("rid", frame_id.child_id);
-  dict.SetIntKey("lid", lid);
+  base::Value::Dict dict;
+  dict.Set("rid", frame_id.child_id);
+  dict.Set("lid", lid);
 
-  dict.SetKey("reports", std::move(value));
+  dict.Set("reports", std::move(value));
 
-  SendUpdate("add-legacy-stats", std::move(dict));
+  SendUpdate("add-legacy-stats", base::Value(std::move(dict)));
 }
 
 void WebRTCInternals::OnGetUserMedia(GlobalRenderFrameHostId frame_id,

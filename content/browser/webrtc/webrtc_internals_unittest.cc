@@ -133,30 +133,28 @@ class WebRTCInternalsForTest : public WebRTCInternals {
 
 class WebRtcInternalsTest : public testing::Test {
  protected:
-  void VerifyString(const base::DictionaryValue& dict,
+  void VerifyString(const base::Value::Dict& dict,
                     const std::string& key,
                     const std::string& expected) {
-    const std::string* actual = dict.FindStringKey(key);
+    const std::string* actual = dict.FindString(key);
     ASSERT_TRUE(actual);
     EXPECT_EQ(expected, *actual);
   }
 
-  void VerifyInt(const base::DictionaryValue& dict,
+  void VerifyInt(const base::Value::Dict& dict,
                  const std::string& key,
                  int expected) {
-    absl::optional<int> actual = dict.FindIntKey(key);
+    absl::optional<int> actual = dict.FindInt(key);
     ASSERT_TRUE(actual.has_value());
     EXPECT_EQ(expected, actual.value());
   }
 
-  void VerifyList(const base::Value& dict,
+  void VerifyList(const base::Value::Dict& dict,
                   base::StringPiece key,
-                  const base::Value& expected) {
-    ASSERT_TRUE(dict.is_dict());
-    ASSERT_TRUE(expected.is_list());
-    const base::Value* actual = dict.FindListKey(key);
+                  const base::Value::List& expected) {
+    const base::Value::List* actual = dict.FindList(key);
     ASSERT_TRUE(actual);
-    EXPECT_TRUE(expected.Equals(actual));
+    EXPECT_EQ(expected, *actual);
   }
 
   void VerifyGetUserMediaData(base::Value* actual_data,
@@ -166,8 +164,7 @@ class WebRtcInternalsTest : public testing::Test {
                               const std::string& audio,
                               const std::string& video) {
     ASSERT_TRUE(actual_data->is_dict());
-    const base::DictionaryValue& dict =
-        base::Value::AsDictionaryValue(*actual_data);
+    const base::Value::Dict& dict = actual_data->GetDict();
 
     VerifyInt(dict, "rid", frame_id.child_id);
     VerifyInt(dict, "pid", pid);
@@ -186,8 +183,7 @@ class WebRtcInternalsTest : public testing::Test {
                                      const std::string& audio_track_info,
                                      const std::string& video_track_info) {
     ASSERT_TRUE(actual_data->is_dict());
-    const base::DictionaryValue& dict =
-        base::Value::AsDictionaryValue(*actual_data);
+    const base::Value::Dict& dict = actual_data->GetDict();
 
     VerifyInt(dict, "rid", frame_id.child_id);
     VerifyInt(dict, "pid", pid);
@@ -204,8 +200,7 @@ class WebRtcInternalsTest : public testing::Test {
                                      const std::string& error,
                                      const std::string& error_message) {
     ASSERT_TRUE(actual_data->is_dict());
-    const base::DictionaryValue& dict =
-        base::Value::AsDictionaryValue(*actual_data);
+    const base::Value::Dict& dict = actual_data->GetDict();
 
     VerifyInt(dict, "rid", frame_id.child_id);
     VerifyInt(dict, "pid", pid);
@@ -315,8 +310,7 @@ TEST_F(WebRtcInternalsTest, SendAddPeerConnectionUpdate) {
   ASSERT_EQ("add-peer-connection", observer.event_name());
 
   ASSERT_TRUE(observer.event_data()->is_dict());
-  const base::DictionaryValue& dict =
-      base::Value::AsDictionaryValue(*observer.event_data());
+  const base::Value::Dict& dict = observer.event_data()->GetDict();
 
   VerifyInt(dict, "rid", kFrameId.child_id);
   VerifyInt(dict, "lid", kLid);
@@ -345,8 +339,7 @@ TEST_F(WebRtcInternalsTest, SendRemovePeerConnectionUpdate) {
   ASSERT_EQ("remove-peer-connection", observer.event_name());
 
   ASSERT_TRUE(observer.event_data()->is_dict());
-  const base::DictionaryValue& dict =
-      base::Value::AsDictionaryValue(*observer.event_data());
+  const base::Value::Dict& dict = observer.event_data()->GetDict();
 
   VerifyInt(dict, "rid", kFrameId.child_id);
   VerifyInt(dict, "lid", kLid);
@@ -374,15 +367,14 @@ TEST_F(WebRtcInternalsTest, SendUpdatePeerConnectionUpdate) {
   ASSERT_EQ("update-peer-connection", observer.event_name());
 
   ASSERT_TRUE(observer.event_data()->is_dict());
-  const base::DictionaryValue& dict =
-      base::Value::AsDictionaryValue(*observer.event_data());
+  const base::Value::Dict& dict = observer.event_data()->GetDict();
 
   VerifyInt(dict, "rid", kFrameId.child_id);
   VerifyInt(dict, "lid", kLid);
   VerifyString(dict, "type", update_type);
   VerifyString(dict, "value", update_value);
 
-  const std::string* time = dict.FindStringKey("time");
+  const std::string* time = dict.FindString("time");
   ASSERT_TRUE(time);
   EXPECT_FALSE(time->empty());
 
@@ -504,8 +496,7 @@ TEST_F(WebRtcInternalsTest, SendAllUpdatesWithPeerConnectionUpdate) {
   EXPECT_EQ(1U, list.size());
 
   ASSERT_TRUE(list.begin()->is_dict());
-  const base::DictionaryValue& dict =
-      base::Value::AsDictionaryValue(*list.begin());
+  const base::Value::Dict& dict = list.begin()->GetDict();
 
   VerifyInt(dict, "rid", kFrameId.child_id);
   VerifyInt(dict, "lid", kLid);
@@ -514,18 +505,16 @@ TEST_F(WebRtcInternalsTest, SendAllUpdatesWithPeerConnectionUpdate) {
   VerifyString(dict, "rtcConfiguration", kRtcConfiguration);
   VerifyString(dict, "constraints", kConstraints);
 
-  const base::Value* log_value = dict.FindListKey("log");
+  const base::Value::List* log_value = dict.FindList("log");
   ASSERT_TRUE(log_value);
-  base::Value::ConstListView log = log_value->GetListDeprecated();
-  EXPECT_EQ(1U, log.size());
+  EXPECT_EQ(1U, log_value->size());
 
-  ASSERT_TRUE(log.begin()->is_dict());
-  const base::DictionaryValue& inner_dict =
-      base::Value::AsDictionaryValue(*log.begin());
+  ASSERT_TRUE(log_value->begin()->is_dict());
+  const base::Value::Dict& inner_dict = log_value->begin()->GetDict();
   VerifyString(inner_dict, "type", update_type);
   VerifyString(inner_dict, "value", update_value);
 
-  const std::string* time = inner_dict.FindStringKey("time");
+  const std::string* time = inner_dict.FindString("time");
   ASSERT_TRUE(time);
   EXPECT_FALSE(time->empty());
 
@@ -540,7 +529,7 @@ TEST_F(WebRtcInternalsTest, OnAddStandardStats) {
   webrtc_internals.OnPeerConnectionAdded(kFrameId, kLid, kPid, kUrl,
                                          kRtcConfiguration, kConstraints);
 
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append("xxx");
   list.Append("yyy");
   webrtc_internals.OnAddStandardStats(kFrameId, kLid, list.Clone());
@@ -551,8 +540,7 @@ TEST_F(WebRtcInternalsTest, OnAddStandardStats) {
   ASSERT_TRUE(observer.event_data());
 
   ASSERT_TRUE(observer.event_data()->is_dict());
-  const base::DictionaryValue& dict =
-      base::Value::AsDictionaryValue(*observer.event_data());
+  const base::Value::Dict& dict = observer.event_data()->GetDict();
 
   VerifyInt(dict, "rid", kFrameId.child_id);
   VerifyInt(dict, "lid", kLid);
@@ -569,7 +557,7 @@ TEST_F(WebRtcInternalsTest, OnAddLegacyStats) {
   webrtc_internals.OnPeerConnectionAdded(kFrameId, kLid, kPid, kUrl,
                                          kRtcConfiguration, kConstraints);
 
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append("xxx");
   list.Append("yyy");
   webrtc_internals.OnAddLegacyStats(kFrameId, kLid, list.Clone());
@@ -580,8 +568,7 @@ TEST_F(WebRtcInternalsTest, OnAddLegacyStats) {
   ASSERT_TRUE(observer.event_data());
 
   ASSERT_TRUE(observer.event_data()->is_dict());
-  const base::DictionaryValue& dict =
-      base::Value::AsDictionaryValue(*observer.event_data());
+  const base::Value::Dict& dict = observer.event_data()->GetDict();
 
   VerifyInt(dict, "rid", kFrameId.child_id);
   VerifyInt(dict, "lid", kLid);

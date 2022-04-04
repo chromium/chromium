@@ -89,10 +89,10 @@ class CONTENT_EXPORT PeerConnectionTrackerHostObserver
   // - |value| is the list of stats reports.
   virtual void OnAddStandardStats(GlobalRenderFrameHostId render_frame_host_id,
                                   int lid,
-                                  base::Value value) {}
+                                  base::Value::List value) {}
   virtual void OnAddLegacyStats(GlobalRenderFrameHostId render_frame_host_id,
                                 int lid,
-                                base::Value value) {}
+                                base::Value::List value) {}
 
   // This method is called when getUserMedia is called.
   // - |render_frame_host_id| identifies the RenderFrameHost.

@@ -136,7 +136,8 @@ void PeerConnectionTrackerHost::OnPeerConnectionSessionIdSet(
   }
 }
 
-void PeerConnectionTrackerHost::AddStandardStats(int lid, base::Value value) {
+void PeerConnectionTrackerHost::AddStandardStats(int lid,
+                                                 base::Value::List value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   for (auto& observer : GetObserverList()) {
@@ -144,7 +145,8 @@ void PeerConnectionTrackerHost::AddStandardStats(int lid, base::Value value) {
   }
 }
 
-void PeerConnectionTrackerHost::AddLegacyStats(int lid, base::Value value) {
+void PeerConnectionTrackerHost::AddLegacyStats(int lid,
+                                               base::Value::List value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   for (auto& observer : GetObserverList()) {
