@@ -78,7 +78,8 @@ struct VideoEncoderClientConfig {
   const bool reverse = false;
 };
 
-struct VideoEncoderStats {
+class VideoEncoderStats {
+ public:
   VideoEncoderStats();
   VideoEncoderStats(const VideoEncoderStats&);
   ~VideoEncoderStats();
@@ -86,6 +87,7 @@ struct VideoEncoderStats {
                     size_t num_temporal_layers,
                     size_t num_spatial_layers);
   uint32_t Bitrate() const;
+  uint32_t LayerBitrate(size_t spatial_idx, size_t temporal_idx) const;
   void Reset();
 
   uint32_t framerate = 0;

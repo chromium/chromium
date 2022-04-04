@@ -31,7 +31,7 @@ class BitstreamProcessor;
 class Video;
 class VideoEncoderClient;
 struct VideoEncoderClientConfig;
-struct VideoEncoderStats;
+class VideoEncoderStats;
 
 // This class provides a framework to build video encode accelerator tests upon.
 // It provides methods to control video encoding, and wait for specific events

@@ -89,55 +89,59 @@ VideoEncoderStats::VideoEncoderStats(uint32_t framerate,
       num_temporal_layers(num_temporal_layers) {}
 
 uint32_t VideoEncoderStats::Bitrate() const {
-  auto compute_bitrate = [](double framerate_dbl, size_t num_frames,
-                            size_t total_size,
-                            absl::optional<size_t> temporal_index,
-                            absl::optional<size_t> spatial_index) {
-    const size_t average_frame_size_in_bits = total_size * 8 / num_frames;
-    const uint32_t average_bitrate = average_frame_size_in_bits * framerate_dbl;
-    std::string prefix = "[Total] ";
-    if (spatial_index) {
-      prefix = "[SL#" + base::NumberToString(*spatial_index) + " TL#" +
-               base::NumberToString(*temporal_index) + "] ";
-    } else if (temporal_index) {
-      prefix = "[TL#" + base::NumberToString(*temporal_index) + "] ";
-    }
-    VLOGF(2) << prefix << "encoded_frames=" << num_frames
-             << ", framerate=" << framerate_dbl
-             << ", total_encoded_frames_size=" << total_size
-             << ", average_frame_size_in_bits=" << average_frame_size_in_bits
-             << ", average bitrate=" << average_bitrate;
-    return average_bitrate;
+  const size_t average_frame_size_in_bits =
+      total_encoded_frames_size * 8 / total_num_encoded_frames;
+  const uint32_t average_bitrate = base::checked_cast<uint32_t>(
+      average_frame_size_in_bits * framerate * num_spatial_layers);
+  VLOGF(2) << " [Total] encoded_frames=" << total_num_encoded_frames
+           << ", framerate=" << framerate
+           << ", num_spatial_layers=" << num_spatial_layers
+           << ", total_encoded_frames_size=" << total_encoded_frames_size
+           << ", average_frame_size_in_bits=" << average_frame_size_in_bits
+           << ", average bitrate=" << average_bitrate;
+
+  return average_bitrate;
+}
+
+uint32_t VideoEncoderStats::LayerBitrate(size_t spatial_idx,
+                                         size_t temporal_idx) const {
+  const size_t num_frames =
+      num_encoded_frames_per_layer[spatial_idx][temporal_idx];
+  const size_t frames_size =
+      encoded_frames_size_per_layer[spatial_idx][temporal_idx];
+  // Used to compute the ratio of the framerate on each layer. For example,
+  // when the number of temporal layers is three, the ratio of framerate of
+  // layers are 1/4, 1/4 and 1/2 for the first, second and third layer,
+  // respectively.
+  constexpr size_t kFramerateDenom[][3] = {
+      {1, 0, 0},
+      {2, 2, 0},
+      {4, 4, 2},
   };
 
-  if (num_spatial_layers == 1 && num_temporal_layers == 1) {
-    return compute_bitrate(framerate, total_num_encoded_frames,
-                           total_encoded_frames_size, absl::nullopt,
-                           absl::nullopt);
+  const double layer_framerate =
+      static_cast<double>(framerate) /
+      kFramerateDenom[num_temporal_layers - 1][temporal_idx];
+  const double average_frame_size_in_bits = frames_size * 8 / num_frames;
+  const uint32_t average_bitrate = base::checked_cast<uint32_t>(
+      average_frame_size_in_bits * layer_framerate);
+
+  std::string prefix;
+  if (num_spatial_layers > 1) {
+    prefix = "[SL#" + base::NumberToString(spatial_idx) + " TL#" +
+             base::NumberToString(temporal_idx) + "] ";
+  } else {
+    DCHECK_NE(num_temporal_layers, 1u);
+    prefix = "[TL#" + base::NumberToString(temporal_idx) + "] ";
   }
 
-  for (size_t sid = 0; sid < num_spatial_layers; ++sid) {
-    for (size_t tid = 0; tid < num_temporal_layers; ++tid) {
-      // Used to compute the ratio of the framerate on each layer. For example,
-      // when the number of temporal layers is three, the ratio of framerate of
-      // layers are 1/4, 1/4 and 1/2 for the first, second and third layer,
-      // respectively.
-      constexpr size_t kFramerateDenom[][3] = {
-          {1, 0, 0},
-          {2, 2, 0},
-          {4, 4, 2},
-      };
-      const size_t num_frames = num_encoded_frames_per_layer[sid][tid];
-      const size_t frames_size = encoded_frames_size_per_layer[sid][tid];
-      const uint32_t layer_framerate =
-          static_cast<double>(framerate) /
-          kFramerateDenom[num_temporal_layers - 1][tid];
-      compute_bitrate(layer_framerate, num_frames, frames_size, tid, sid);
-    }
-  }
-  return compute_bitrate(framerate * num_spatial_layers,
-                         total_num_encoded_frames, total_encoded_frames_size,
-                         absl::nullopt, absl::nullopt);
+  VLOGF(2) << prefix << "encoded_frames=" << num_frames
+           << ", framerate=" << layer_framerate
+           << ", total_encoded_frames_size=" << frames_size
+           << ", average_frame_size_in_bits=" << average_frame_size_in_bits
+           << ", average bitrate=" << average_bitrate;
+
+  return average_bitrate;
 }
 
 void VideoEncoderStats::Reset() {
