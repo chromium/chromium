@@ -7,13 +7,8 @@
 
 #include <map>
 
-#include "base/callback.h"
-#include "base/containers/queue.h"
 #include "base/files/file_path.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/task/sequenced_task_runner.h"
-#include "components/services/app_service/public/cpp/preferred_apps_list.h"
+#include "components/services/app_service/public/cpp/preferred_apps.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -23,10 +18,13 @@
 
 namespace apps {
 
+class PreferredAppsList;
+
 // The implementation of the apps::mojom::AppService Mojo interface.
 //
 // See components/services/app_service/README.md.
-class AppServiceMojomImpl : public apps::mojom::AppService {
+class AppServiceMojomImpl : public apps::mojom::AppService,
+                            public PreferredApps::Host {
  public:
   AppServiceMojomImpl(
       const base::FilePath& profile_dir,
@@ -127,46 +125,30 @@ class AppServiceMojomImpl : public apps::mojom::AppService {
       const std::string& app_id,
       apps::mojom::RunOnOsLoginMode run_on_os_login_mode) override;
 
+  // PreferredApps::Host overrides.
+  void InitializePreferredAppsForAllSubscribers() override;
+
+  void OnPreferredAppsChanged(
+      apps::mojom::PreferredAppChangesPtr changes) override;
+
+  void OnPreferredAppSet(
+      const std::string& app_id,
+      apps::mojom::IntentFilterPtr intent_filter,
+      apps::mojom::IntentPtr intent,
+      apps::mojom::ReplacedAppPreferencesPtr replaced_app_preferences) override;
+
+  void OnSupportedLinksPreferenceChanged(const std::string& app_id,
+                                         bool open_in_app) override;
+
+  // Returns publisher for `app_type`, or nullptr if there is no publisher for
+  // `app_type`.
+  apps::mojom::Publisher* GetPublisher(apps::mojom::AppType app_type) override;
+
   // Retern the preferred_apps_list_ for testing.
   PreferredAppsList& GetPreferredAppsListForTesting();
 
  private:
   void OnPublisherDisconnected(apps::mojom::AppType app_type);
-
-  // Initialize the preferred apps from disk.
-  void InitializePreferredApps();
-
-  // Write the preferred apps to a json file.
-  void WriteToJSON(const base::FilePath& profile_dir,
-                   const apps::PreferredAppsList& preferred_apps);
-
-  void WriteCompleted();
-
-  void ReadFromJSON(const base::FilePath& profile_dir);
-
-  void ReadCompleted(std::string preferred_apps_string);
-
-  // Runs |task| after the PreferredAppsList is fully initialized. |task| will
-  // be run immediately if preferred apps are already initialized.
-  void RunAfterPreferredAppsReady(base::OnceClosure task);
-
-  void AddPreferredAppImpl(apps::mojom::AppType app_type,
-                           const std::string& app_id,
-                           apps::mojom::IntentFilterPtr intent_filter,
-                           apps::mojom::IntentPtr intent,
-                           bool from_publisher);
-  void RemovePreferredAppImpl(apps::mojom::AppType app_type,
-                              const std::string& app_id);
-  void RemovePreferredAppForFilterImpl(
-      apps::mojom::AppType app_type,
-      const std::string& app_id,
-      apps::mojom::IntentFilterPtr intent_filter);
-  void SetSupportedLinksPreferenceImpl(
-      apps::mojom::AppType app_type,
-      const std::string& app_id,
-      std::vector<apps::mojom::IntentFilterPtr> all_link_filters);
-  void RemoveSupportedLinksPreferenceImpl(apps::mojom::AppType app_type,
-                                          const std::string& app_id);
 
   // publishers_ is a std::map, not a mojo::RemoteSet, since we want to
   // be able to find *the* publisher for a given apps::mojom::AppType.
@@ -178,28 +160,7 @@ class AppServiceMojomImpl : public apps::mojom::AppService {
   // destroyed first, closing the connection to avoid dangling callbacks.
   mojo::ReceiverSet<apps::mojom::AppService> receivers_;
 
-  PreferredAppsList preferred_apps_list_;
-
-  base::FilePath profile_dir_;
-
-  // True if need to write preferred apps to file after the current write is
-  // completed.
-  bool should_write_preferred_apps_to_file_;
-
-  // True if it is currently writing preferred apps to file.
-  bool writing_preferred_apps_;
-
-  // Task runner where the file operations takes place. This is to make sure the
-  // write operation will be operated in sequence.
-  scoped_refptr<base::SequencedTaskRunner> const task_runner_;
-
-  base::OnceClosure read_completed_for_testing_;
-
-  base::OnceClosure write_completed_for_testing_;
-
-  base::queue<base::OnceClosure> pending_preferred_apps_tasks_;
-
-  base::WeakPtrFactory<AppServiceMojomImpl> weak_ptr_factory_{this};
+  PreferredApps preferred_apps_;
 };
 
 }  // namespace apps

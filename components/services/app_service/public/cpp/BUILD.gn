@@ -230,6 +230,8 @@ source_set("protocol_handling") {
 
 source_set("preferred_apps") {
   sources = [
+    "preferred_apps.cc",
+    "preferred_apps.h",
     "preferred_apps_converter.cc",
     "preferred_apps_converter.h",
     "preferred_apps_list.cc",
@@ -243,6 +245,7 @@ source_set("preferred_apps") {
     ":intents",
     "//base",
     "//components/services/app_service/public/mojom",
+    "//content/public/browser",
     "//url",
   ]
 }
