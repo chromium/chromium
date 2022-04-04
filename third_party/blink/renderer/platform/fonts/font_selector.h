@@ -30,8 +30,8 @@
 #include "third_party/blink/renderer/platform/fonts/font_cache_client.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
 #include "third_party/blink/renderer/platform/fonts/font_invalidation_reason.h"
-#include "third_party/blink/renderer/platform/fonts/font_matching_metrics.h"
-#include "third_party/blink/renderer/platform/fonts/segmented_font_data.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -40,12 +40,14 @@ namespace blink {
 
 class ExecutionContext;
 class FontData;
+class FontDataForRangeSet;
 class FontDescription;
 class FontFaceCache;
 class FontFallbackMap;
 class FontFamily;
 class FontSelectorClient;
 class GenericFontFamilySettings;
+class SimpleFontData;
 class UseCounter;
 
 class PLATFORM_EXPORT FontSelector : public FontCacheClient {

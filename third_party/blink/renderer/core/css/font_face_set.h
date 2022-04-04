@@ -23,6 +23,7 @@
 
 namespace blink {
 
+class Font;
 class FontFaceCache;
 
 using FontFaceSetIterable = SetlikeIterable<Member<FontFace>, FontFace>;
