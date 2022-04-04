@@ -51,7 +51,11 @@
   #title-and-annotations {
     align-items: center;
     display: flex;
-    line-height: 2;  /* 28px */
+    line-height: 2;  /* 32px */
+  }
+
+  :host([is-top-visit]) #title-and-annotations {
+    line-height: 1.75; /* 28px */
   }
 
   .annotation {
@@ -83,7 +87,11 @@
 
   #url {
     color: var(--url-color);
-    line-height: 1.5;  /* 21px */
+    line-height: 1.5;  /* 24px */
+  }
+
+  :host([is-top-visit]) #url {
+    line-height: 1.25;  /* 20px */
   }
 
   #debug-info {
