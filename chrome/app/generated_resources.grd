@@ -1179,7 +1179,7 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_TOGGLE_QUICK_COMMANDS" desc="The text label of the Toggle Quick Commands menu item">
           Quick commands
           </message>
-          <message name="IDS_SEARCH_TABS" desc="In Title Case:The text label of the Search Tabs... menu item">
+          <message name="IDS_SEARCH_TABS" desc="The text label of the Search Tabs... menu item">
           Search tabs...
           </message>
         </if>
