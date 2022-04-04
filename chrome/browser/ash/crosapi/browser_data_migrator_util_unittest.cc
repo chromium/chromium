@@ -646,19 +646,82 @@ TEST_F(BrowserDataMigratorUtilWithTargetsTest, DryRunToCollectUMA) {
       kDryRunDeleteAndCopyMigrationHasEnoughDiskSpace, 1);
 }
 
-TEST(BrowserDataMigratorUtilTest, MigratePreferencesContents) {
-  const std::string keep_extension_key =
+TEST(BrowserDataMigratorUtilTest, UpdatePreferencesKeyByType) {
+  const std::string keep_extension_dict_key =
       std::string("extensions.settings.") + kExtensionsAshOnly[0];
-  const std::string move_extension_key =
+  const std::string move_extension_dict_key =
       std::string("extensions.settings.") + kMoveExtensionId;
+
+  base::Value::List extension_list;
+  extension_list.Append(kExtensionsAshOnly[0]);
+  extension_list.Append(kMoveExtensionId);
+  const std::string extension_list_key = "extensions.pinned_extensions";
+
+  // List of dictionaries instead of list of strings as expected.
+  // {"extensions.toolbar": [
+  //   { <kExtensionsAshOnly[0]> : "test1"},
+  //   { <kMoveExtensionId> : "test2"},
+  // ]}
+  base::Value::Dict wrong_type_value1;
+  wrong_type_value1.Set(kExtensionsAshOnly[0], "test1");
+  base::Value::Dict wrong_type_value2;
+  wrong_type_value2.Set(kMoveExtensionId, "test2");
+  base::Value::List wrong_type_list;
+  wrong_type_list.Append(std::move(wrong_type_value1));
+  wrong_type_list.Append(std::move(wrong_type_value2));
+  const std::string wrong_type_key = "extensions.toolbar";
+
+  base::Value::Dict ash_dict;
+  ash_dict.SetByDottedPath(keep_extension_dict_key, "test1");
+  ash_dict.SetByDottedPath(move_extension_dict_key, "test2");
+  ash_dict.SetByDottedPath(extension_list_key, std::move(extension_list));
+  ash_dict.SetByDottedPath(wrong_type_key, std::move(wrong_type_list));
+  base::Value::Dict lacros_dict = ash_dict.Clone();
+
+  UpdatePreferencesKeyByType(&ash_dict, "extensions.settings",
+                             ChromeType::kAsh);
+  UpdatePreferencesKeyByType(&lacros_dict, "extensions.settings",
+                             ChromeType::kLacros);
+
+  // Test Ash against expected results.
+  base::Value::Dict* d = ash_dict.FindDictByDottedPath("extensions.settings");
+  EXPECT_NE(nullptr, d);
+  EXPECT_EQ(1, d->size());
+  EXPECT_EQ(kExtensionsAshOnly[0], d->begin()->first);
+  // If a type other than string is found in a list, it will be left unchanged.
+  base::Value::List* l = ash_dict.FindListByDottedPath(wrong_type_key);
+  EXPECT_NE(nullptr, l);
+  EXPECT_EQ(2, l->size());
+
+  // Test Lacros against expected results.
+  d = lacros_dict.FindDictByDottedPath("extensions.settings");
+  EXPECT_NE(nullptr, d);
+  EXPECT_EQ(1, d->size());
+  EXPECT_EQ(kMoveExtensionId, d->begin()->first);
+  l = lacros_dict.FindListByDottedPath(wrong_type_key);
+  EXPECT_NE(nullptr, l);
+  EXPECT_EQ(2, l->size());
+}
+
+TEST(BrowserDataMigratorUtilTest, MigratePreferencesContents) {
+  const std::string keep_extension_dict_key =
+      std::string("extensions.settings.") + kExtensionsAshOnly[0];
+  const std::string move_extension_dict_key =
+      std::string("extensions.settings.") + kMoveExtensionId;
+
+  base::Value::List extension_list;
+  extension_list.Append(kExtensionsAshOnly[0]);
+  extension_list.Append(kMoveExtensionId);
+  const std::string extension_list_key = "extensions.pinned_extensions";
 
   std::string original_contents;
   base::Value::Dict dict;
   dict.SetByDottedPath(kLacrosOnlyPreferencesKeys[0], "test1");
   dict.SetByDottedPath(kAshOnlyPreferencesKeys[0], "test2");
   dict.SetByDottedPath("unrelated.key", "test3");
-  dict.SetByDottedPath(keep_extension_key, "test4");
-  dict.SetByDottedPath(move_extension_key, "test5");
+  dict.SetByDottedPath(keep_extension_dict_key, "test4");
+  dict.SetByDottedPath(move_extension_dict_key, "test5");
+  dict.SetByDottedPath(extension_list_key, std::move(extension_list));
   base::JSONWriter::Write(dict, &original_contents);
 
   auto contents = MigratePreferencesContents(original_contents);
@@ -674,8 +737,14 @@ TEST(BrowserDataMigratorUtilTest, MigratePreferencesContents) {
             *ash_root_dict->FindStringByDottedPath(kAshOnlyPreferencesKeys[0]));
   EXPECT_EQ("test3", *ash_root_dict->FindStringByDottedPath("unrelated.key"));
   EXPECT_EQ("test4",
-            *ash_root_dict->FindStringByDottedPath(keep_extension_key));
-  EXPECT_EQ(nullptr, ash_root_dict->FindStringByDottedPath(move_extension_key));
+            *ash_root_dict->FindStringByDottedPath(keep_extension_dict_key));
+  EXPECT_EQ(nullptr,
+            ash_root_dict->FindStringByDottedPath(move_extension_dict_key));
+  base::Value::List* ash_extension_list =
+      ash_root_dict->FindListByDottedPath(extension_list_key);
+  EXPECT_NE(nullptr, ash_extension_list);
+  EXPECT_EQ(1, ash_extension_list->size());
+  EXPECT_EQ(kExtensionsAshOnly[0], ash_extension_list->front().GetString());
 
   absl::optional<base::Value> lacros_root =
       base::JSONReader::Read(contents->lacros);
@@ -689,9 +758,14 @@ TEST(BrowserDataMigratorUtilTest, MigratePreferencesContents) {
   EXPECT_EQ("test3",
             *lacros_root_dict->FindStringByDottedPath("unrelated.key"));
   EXPECT_EQ(nullptr,
-            lacros_root_dict->FindStringByDottedPath(keep_extension_key));
+            lacros_root_dict->FindStringByDottedPath(keep_extension_dict_key));
   EXPECT_EQ("test5",
-            *lacros_root_dict->FindStringByDottedPath(move_extension_key));
+            *lacros_root_dict->FindStringByDottedPath(move_extension_dict_key));
+  base::Value::List* lacros_extension_list =
+      lacros_root_dict->FindListByDottedPath(extension_list_key);
+  EXPECT_NE(nullptr, lacros_extension_list);
+  EXPECT_EQ(1, lacros_extension_list->size());
+  EXPECT_EQ(kMoveExtensionId, lacros_extension_list->front().GetString());
 }
 
 TEST(BrowserDataMigratorUtilTest, MigratePreferences) {

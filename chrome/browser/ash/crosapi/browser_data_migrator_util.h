@@ -11,6 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/synchronization/atomic_flag.h"
+#include "base/values.h"
 #include "chrome/browser/ash/crosapi/migration_progress_tracker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/leveldatabase/env_chromium.h"
@@ -242,11 +243,18 @@ struct PreferencesContents {
   std::string lacros;
 };
 
+// Chrome instance type (Ash or Lacros).
+enum class ChromeType {
+  kAsh,
+  kLacros,
+};
+
 // Preferences's keys that have to be split between Ash and Lacros
 // based on extension id.
-// TODO(andreaorru): fill this in with the complete list.
 constexpr const char* kSplitPreferencesKeys[] = {
-    "extensions.settings",
+    "app_list.local_state",  "extensions.pinned_extensions",
+    "extensions.settings",   "extensions.toolbar",
+    "updateclientdata.apps", "web_apps.web_app_ids",
 };
 // Preferences's keys that should not be migrated to Lacros.
 constexpr const char* kAshOnlyPreferencesKeys[] = {
@@ -437,6 +445,24 @@ IndexedDBPaths GetIndexedDBPaths(const base::FilePath& profile_path,
 bool MigrateLevelDB(const base::FilePath& original_path,
                     const base::FilePath& target_path,
                     const LevelDBType leveldb_type);
+
+// Manipulates the given representation of Preferences (`root_dict`)
+// so that the given key only contains values relevant to Ash or
+// Lacros, depending on `chrome_type`.
+//
+// If the entry in `root_dict` at `key` is a dict in the format
+// { <AppId> : { ... }, ... }, it will change the dict to contain only
+// AppIds of extensions meant to be in `chrome_type` (Ash or Lacros).
+//
+// If the entry is a list in the format [ <AppId>, ... ], it will
+// change the list to contain only AppIds of extensions meant to be
+// in `chrome_type` (Ash or Lacros).
+//
+// If the entry is a list in any other format, if it doesn't exist,
+// or if it's not container type, no changes will be performed.
+void UpdatePreferencesKeyByType(base::Value::Dict* root_dict,
+                                const base::StringPiece key,
+                                ChromeType chrome_type);
 
 // Given a `original_contents` string containing the original Preferences
 // file, return the migrated Ash and Lacros versions of Preferences.

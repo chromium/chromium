@@ -145,33 +145,40 @@ constexpr char kKeyPrefix[] = "_chrome-extension://";
 constexpr char kIndexedDBBlobExtension[] = ".indexeddb.blob";
 constexpr char kIndexedDBLevelDBExtension[] = ".indexeddb.leveldb";
 
-// Chrome instance type (Ash or Lacros).
-enum class ChromeType {
-  kAsh = 0,
-  kLacros = 1,
-};
-
-void SplitPreferenceKey(base::Value::Dict* root_dict,
-                        const base::StringPiece key,
-                        ChromeType chrome_type) {
-  base::Value::Dict* dict = root_dict->FindDictByDottedPath(key);
-  if (!dict)
-    return;
-
+void UpdatePreferencesDictByType(base::Value::Dict& dict,
+                                 ChromeType chrome_type) {
   std::vector<std::string> keys_to_remove;
-  for (const auto entry : *dict) {
-    const base::StringPiece extension_id = entry.first;
-    bool keep_extension = base::Contains(kExtensionsAshOnly, extension_id);
 
-    if (((chrome_type == ChromeType::kLacros) && keep_extension) ||
-        ((chrome_type == ChromeType::kAsh) && !keep_extension)) {
+  // Collect keys that don't belong in `chrome_type`.
+  for (const auto entry : dict) {
+    const base::StringPiece extension_id = entry.first;
+    bool ash_extension = base::Contains(kExtensionsAshOnly, extension_id);
+
+    if (((chrome_type == ChromeType::kLacros) && ash_extension) ||
+        ((chrome_type == ChromeType::kAsh) && !ash_extension)) {
       keys_to_remove.emplace_back(extension_id);
     }
   }
 
+  // Delete those keys.
   for (const std::string& k : keys_to_remove) {
-    dict->Remove(k);
+    dict.Remove(k);
   }
+}
+
+void UpdatePreferencesListByType(base::Value::List& list,
+                                 ChromeType chrome_type) {
+  // Erase all elements in the list that don't belong in `chrome_type`.
+  list.EraseIf([&](const base::Value& item) {
+    if (!item.is_string())
+      return false;
+
+    const base::StringPiece extension_id = item.GetString();
+    bool ash_extension = base::Contains(kExtensionsAshOnly, extension_id);
+
+    return ((chrome_type == ChromeType::kLacros) && ash_extension) ||
+           ((chrome_type == ChromeType::kAsh) && !ash_extension);
+  });
 }
 
 }  // namespace
@@ -693,6 +700,20 @@ bool MigrateLevelDB(const base::FilePath& original_path,
   return true;
 }
 
+void UpdatePreferencesKeyByType(base::Value::Dict* root_dict,
+                                const base::StringPiece key,
+                                ChromeType chrome_type) {
+  base::Value* value = root_dict->FindByDottedPath(key);
+  if (!value)
+    return;
+
+  if (value->is_dict()) {
+    UpdatePreferencesDictByType(value->GetDict(), chrome_type);
+  } else if (value->is_list()) {
+    UpdatePreferencesListByType(value->GetList(), chrome_type);
+  }
+}
+
 absl::optional<PreferencesContents> MigratePreferencesContents(
     const base::StringPiece original_contents) {
   // Parse the original JSON file from Ash.
@@ -732,8 +753,8 @@ absl::optional<PreferencesContents> MigratePreferencesContents(
 
   // Some preferences need to be split between Ash and Lacros.
   for (const char* key : kSplitPreferencesKeys) {
-    SplitPreferenceKey(ash_root_dict, key, ChromeType::kAsh);
-    SplitPreferenceKey(lacros_root_dict, key, ChromeType::kLacros);
+    UpdatePreferencesKeyByType(ash_root_dict, key, ChromeType::kAsh);
+    UpdatePreferencesKeyByType(lacros_root_dict, key, ChromeType::kLacros);
   }
 
   // Generate the resulting JSON.
