@@ -67,7 +67,8 @@ class FakeSegmentSelectorImpl : public SegmentSelectorImpl {
                             result_prefs,
                             config,
                             nullptr,
-                            PlatformOptions::CreateDefault()) {}
+                            PlatformOptions::CreateDefault(),
+                            nullptr) {}
   ~FakeSegmentSelectorImpl() override = default;
 
   void UpdateSelectedSegment(OptimizationTarget new_selection) override {

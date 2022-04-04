@@ -71,6 +71,9 @@ class TestModelProviderFactory : public ModelProviderFactory {
   std::unique_ptr<ModelProvider> CreateProvider(
       optimization_guide::proto::OptimizationTarget segment_id) override;
 
+  std::unique_ptr<ModelProvider> CreateDefaultProvider(
+      optimization_guide::proto::OptimizationTarget) override;
+
  private:
   raw_ptr<Data> data_;
 };

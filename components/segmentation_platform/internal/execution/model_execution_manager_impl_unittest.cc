@@ -97,7 +97,8 @@ class MockFeatureListQueryProcessor : public FeatureListQueryProcessor {
 
 class ModelExecutionManagerTest : public testing::Test {
  public:
-  ModelExecutionManagerTest() = default;
+  ModelExecutionManagerTest()
+      : model_provider_factory_(&model_provider_data_) {}
   ~ModelExecutionManagerTest() override = default;
 
   void SetUp() override {
@@ -116,14 +117,11 @@ class ModelExecutionManagerTest : public testing::Test {
   void CreateModelExecutionManager(
       std::vector<OptimizationTarget> segment_ids,
       const ModelExecutionManager::SegmentationModelUpdatedCallback& callback) {
-    auto model_provider_factory =
-        std::make_unique<TestModelProviderFactory>(&model_provider_data_);
     feature_list_query_processor_ =
         std::make_unique<MockFeatureListQueryProcessor>();
     model_execution_manager_ = std::make_unique<ModelExecutionManagerImpl>(
-        segment_ids, std::move(model_provider_factory), &clock_,
-        segment_database_.get(), signal_database_.get(),
-        feature_list_query_processor_.get(), callback);
+        segment_ids, &model_provider_factory_, &clock_, segment_database_.get(),
+        signal_database_.get(), feature_list_query_processor_.get(), callback);
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -161,6 +159,7 @@ class ModelExecutionManagerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   TestModelProviderFactory::Data model_provider_data_;
+  TestModelProviderFactory model_provider_factory_;
 
   base::SimpleTestClock clock_;
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_database_;

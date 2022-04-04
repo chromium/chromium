@@ -68,6 +68,12 @@ class ModelProviderFactory {
   // Creates a model provider for the given `optimization_target`.
   virtual std::unique_ptr<ModelProvider> CreateProvider(
       optimization_guide::proto::OptimizationTarget) = 0;
+
+  // Creates a default model provider to be used when the original provider did
+  // not provide a model. Returns `nullptr` when a default provider is not
+  // available.
+  virtual std::unique_ptr<ModelProvider> CreateDefaultProvider(
+      optimization_guide::proto::OptimizationTarget) = 0;
 };
 
 }  // namespace segmentation_platform

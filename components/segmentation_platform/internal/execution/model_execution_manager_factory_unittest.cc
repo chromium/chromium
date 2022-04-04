@@ -52,9 +52,9 @@ class ModelExecutionManagerFactoryTest : public testing::Test {
 
 TEST_F(ModelExecutionManagerFactoryTest, CreateModelExecutionManager) {
   TestModelProviderFactory::Data data;
+  TestModelProviderFactory factory(&data);
   auto model_execution_manager = CreateModelExecutionManager(
-      std::make_unique<TestModelProviderFactory>(&data),
-      task_environment_.GetMainThreadTaskRunner(),
+      &factory, task_environment_.GetMainThreadTaskRunner(),
       {OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB},
       &test_clock_, segment_database_.get(), &mock_signal_database_,
       feature_list_query_processor_.get(), base::DoNothing());

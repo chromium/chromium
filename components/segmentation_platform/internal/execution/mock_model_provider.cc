@@ -49,4 +49,9 @@ std::unique_ptr<ModelProvider> TestModelProviderFactory::CreateProvider(
   return provider;
 }
 
+std::unique_ptr<ModelProvider> TestModelProviderFactory::CreateDefaultProvider(
+    optimization_guide::proto::OptimizationTarget) {
+  return nullptr;
+}
+
 }  // namespace segmentation_platform

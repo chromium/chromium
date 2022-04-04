@@ -23,7 +23,7 @@
 namespace segmentation_platform {
 
 std::unique_ptr<ModelExecutionManager> CreateModelExecutionManager(
-    std::unique_ptr<ModelProviderFactory> model_provider_factory,
+    ModelProviderFactory* model_provider_factory,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     const base::flat_set<optimization_guide::proto::OptimizationTarget>&
         segment_ids,
@@ -37,7 +37,7 @@ std::unique_ptr<ModelExecutionManager> CreateModelExecutionManager(
   // run default models.
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   return std::make_unique<ModelExecutionManagerImpl>(
-      segment_ids, std::move(model_provider_factory), clock, segment_database,
+      segment_ids, model_provider_factory, clock, segment_database,
       signal_database, feature_list_query_processor, model_updated_callback);
 #else
   return std::make_unique<DummyModelExecutionManager>();

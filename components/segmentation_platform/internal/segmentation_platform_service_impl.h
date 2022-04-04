@@ -144,7 +144,6 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   // Called when service status changes.
   void OnServiceStatusChanged();
 
-  // Moved to ModelExecutionManagerImpl on initialization of service.
   std::unique_ptr<ModelProviderFactory> model_provider_factory_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

@@ -159,7 +159,8 @@ enum class SegmentationSelectionFailureReason {
   kFailedToSaveModelResult = 8,
   kInvalidSelectionResultInPrefs = 9,
   kDBInitFailure = 10,
-  kMaxValue = kDBInitFailure
+  kAtLeastOneSegmentNotAvailable = 11,
+  kMaxValue = kAtLeastOneSegmentNotAvailable
 };
 
 // Records the reason for failure or success to compute a segment selection.

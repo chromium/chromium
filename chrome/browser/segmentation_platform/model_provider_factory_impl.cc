@@ -31,4 +31,9 @@ std::unique_ptr<ModelProvider> ModelProviderFactoryImpl::CreateProvider(
   return nullptr;
 }
 
+std::unique_ptr<ModelProvider> ModelProviderFactoryImpl::CreateDefaultProvider(
+    optimization_guide::proto::OptimizationTarget optimization_target) {
+  return nullptr;
+}
+
 }  // namespace segmentation_platform
