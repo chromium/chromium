@@ -285,7 +285,12 @@ CursorDirective LayoutEmbeddedContent::GetCursor(const PhysicalOffset& point,
 PhysicalRect LayoutEmbeddedContent::ReplacedContentRect() const {
   NOT_DESTROYED();
   PhysicalRect content_rect = PhysicalContentBoxRect();
+
   // IFrames set as the root scroller should get their size from their parent.
+  // When scrolling starts so as to hide the URL bar, IFRAME wouldn't resize to
+  // match the now expanded size of the viewport until the scrolling stops. This
+  // makes sure the |ReplacedContentRect| matches the expanded viewport even
+  // before IFRAME resizes, for clipping to work correctly.
   if (ChildFrameView() && View() && IsEffectiveRootScroller()) {
     content_rect.offset = PhysicalOffset();
     content_rect.size = View()->ViewRect().size;
