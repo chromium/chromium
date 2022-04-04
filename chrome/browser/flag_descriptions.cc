@@ -214,8 +214,8 @@ const char kUseStorkSmdsServerAddressDescription[] =
     "Use the Stork SM-DS address to fetch pending eSIM profiles managed by the "
     "Stork prod server. Note that Stork profiles can be created with an EID at "
     "go/stork-profile, and managed at go/stork-batch > View Profiles. Also "
-    "note that an external EUICC card is required to use this feature, and "
-    "that the kCellularUseExternal flag must be enabled. Go to "
+    "note that an test EUICC card is required to use this feature, usually "
+    "that requires the kCellularUseSecond flag to be enabled. Go to "
     "go/cros-connectivity > Dev Tips for more instructions.";
 
 const char kUseWallpaperStagingUrlName[] = "Use Wallpaper staging URL";
@@ -4284,10 +4284,10 @@ const char kCellularUseAttachApnDescription[] =
     "for the LTE connections rather than letting the modem decide which "
     "attach APN to use or retrieve it from the network";
 
-const char kCellularUseExternalEuiccName[] = "Use external Euicc";
-const char kCellularUseExternalEuiccDescription[] =
-    "When enabled Cellular Setup and Settings UI will use the first available "
-    "external Euicc.";
+const char kCellularUseSecondEuiccName[] = "Use second Euicc";
+const char kCellularUseSecondEuiccDescription[] =
+    "When enabled Cellular Setup and Settings UI will use the second available "
+    "Euicc that's exposed by Hermes.";
 
 const char kComponentUpdaterTestRequestName[] =
     "Enable the component updater check 'test-request' parameter";

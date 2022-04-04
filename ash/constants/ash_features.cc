@@ -280,9 +280,10 @@ const base::Feature kCellularForbidAttachApn{"CellularForbidAttachApn",
 const base::Feature kCellularUseAttachApn{"CellularUseAttachApn",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
-// If enabled, use external euicc in Cellular Setup and Settings.
-const base::Feature kCellularUseExternalEuicc{
-    "CellularUseExternalEuicc", base::FEATURE_DISABLED_BY_DEFAULT};
+// If enabled, use second the Euicc that is exposed by Hermes in Cellular Setup
+// and Settings.
+const base::Feature kCellularUseSecondEuicc{"CellularUseSecondEuicc",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables pasting a few recently copied items in a menu when pressing search +
 // v.

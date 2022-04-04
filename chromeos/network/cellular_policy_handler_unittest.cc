@@ -368,12 +368,12 @@ TEST_F(CellularPolicyHandlerTest, InstallProfileFailure) {
   CheckIccidSmdpPairInPref(/*is_installed=*/false);
 }
 
-TEST_F(CellularPolicyHandlerTest, InstallOnExternalEUICC) {
+TEST_F(CellularPolicyHandlerTest, InstallOnSecondEUICC) {
   SetupEuicc();
   // Verify esim profile get installed successfully when installing policy
   // on the external EUICC.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kCellularUseExternalEuicc);
+  feature_list.InitAndEnableFeature(ash::features::kCellularUseSecondEuicc);
   SetupEuicc2();
   const std::string policy =
       GenerateCellularPolicy(HermesEuiccClient::Get()

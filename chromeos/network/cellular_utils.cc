@@ -154,14 +154,20 @@ bool IsStubCellularServicePath(const std::string& service_path) {
 }
 
 absl::optional<dbus::ObjectPath> GetCurrentEuiccPath() {
-  bool use_external_euicc = base::FeatureList::IsEnabled(
-      chromeos::features::kCellularUseExternalEuicc);
+  // Always use the first Euicc if Hermes only exposes one Euicc.
+  // If useSecondEuicc flag is set and there are two Euicc available,
+  // use the second available Euicc.
   const std::vector<dbus::ObjectPath>& euicc_paths =
       HermesManagerClient::Get()->GetAvailableEuiccs();
-  if (euicc_paths.empty() || (use_external_euicc && euicc_paths.size() < 2))
+  if (euicc_paths.empty())
     return absl::nullopt;
 
-  return use_external_euicc ? euicc_paths[1] : euicc_paths[0];
+  if (euicc_paths.size() == 1)
+    return euicc_paths[0];
+
+  bool use_second_euicc =
+      base::FeatureList::IsEnabled(chromeos::features::kCellularUseSecondEuicc);
+  return use_second_euicc ? euicc_paths[1] : euicc_paths[0];
 }
 
 }  // namespace chromeos

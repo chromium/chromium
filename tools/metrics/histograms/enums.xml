@@ -54675,6 +54675,7 @@ from previous Chrome versions.
   <int value="-240531943" label="ContextualSearchRankerQuery:disabled"/>
   <int value="-239616243" label="HighDynamicRange:enabled"/>
   <int value="-239176328" label="BluetoothAggressiveAppearanceFilter:enabled"/>
+  <int value="-238717837" label="CellularUseSecondEuicc:disabled"/>
   <int value="-238415226" label="GlobalVaapiLock:disabled"/>
   <int value="-237367320" label="AssistantAudioEraser:disabled"/>
   <int value="-236433493" label="ArcKeyboardShortcutHelperIntegration:enabled"/>
@@ -55980,6 +55981,7 @@ from previous Chrome versions.
   <int value="662935193" label="MultiPaste:enabled"/>
   <int value="663027937" label="NewTabPageCustomLinks:enabled"/>
   <int value="663069508" label="TabToGTSAnimation:enabled"/>
+  <int value="663252940" label="CellularUseSecondEuicc:enabled"/>
   <int value="663294302" label="ForceUseAPDownloadProtection:disabled"/>
   <int value="664363259" label="SiteCharacteristicsDatabase:enabled"/>
   <int value="664591021" label="EnableContinueReading:enabled"/>
@@ -57333,7 +57335,6 @@ from previous Chrome versions.
   <int value="1609059016" label="CupsIppPrintingBackend:enabled"/>
   <int value="1611265771" label="Win10TabSearchCaptionButton:enabled"/>
   <int value="1611522475" label="AutofillPrimaryInfoStyleExperiment:disabled"/>
-  <int value="1611838284" label="CellularUseExternalEuicc:enabled"/>
   <int value="1612206633" label="CCTModuleCustomHeader:enabled"/>
   <int value="1612446645" label="enable-weak-memorycache"/>
   <int value="1612871297" label="WebPayments:disabled"/>
@@ -57611,7 +57612,6 @@ from previous Chrome versions.
   <int value="1795214277" label="SupportForAddPasswordsInSettings:disabled"/>
   <int value="1796436890" label="MinorModeSupport:enabled"/>
   <int value="1796592669" label="InstalledAppsInCbd:disabled"/>
-  <int value="1797872070" label="CellularUseExternalEuicc:disabled"/>
   <int value="1798347197"
       label="ContextualSuggestionsIPHReverseScroll:disabled"/>
   <int value="1799521026" label="LegacyTLSEnforced:disabled"/>

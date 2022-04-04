@@ -86,12 +86,18 @@ cr.define('cellular_setup', function() {
     if (!response || !response.euiccs) {
       return null;
     }
-    // Onboard Euicc always appears at index 0. If useExternalEuicc flag
-    // is set, use the next available Euicc.
-    const euiccIndex = loadTimeData.getBoolean('useExternalEuicc') ? 1 : 0;
-    if (euiccIndex >= response.euiccs.length) {
+    // Always use the first Euicc if Hermes only exposes one Euicc.
+    // If useSecondEuicc flag is set and there are two Euicc available,
+    // use the second available Euicc.
+    if (response.euiccs.length === 0) {
       return null;
     }
+
+    if (response.euiccs.length === 1) {
+      return response.euiccs[0];
+    }
+
+    const euiccIndex = loadTimeData.getBoolean('useSecondEuicc') ? 1 : 0;
     return response.euiccs[euiccIndex];
   }
 

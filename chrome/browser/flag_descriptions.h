@@ -2457,8 +2457,8 @@ extern const char kCellularForbidAttachApnDescription[];
 extern const char kCellularUseAttachApnName[];
 extern const char kCellularUseAttachApnDescription[];
 
-extern const char kCellularUseExternalEuiccName[];
-extern const char kCellularUseExternalEuiccDescription[];
+extern const char kCellularUseSecondEuiccName[];
+extern const char kCellularUseSecondEuiccDescription[];
 
 extern const char kComponentUpdaterTestRequestName[];
 extern const char kComponentUpdaterTestRequestDescription[];

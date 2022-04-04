@@ -727,7 +727,7 @@
     "expiry_milestone": 105
   },
   {
-    "name": "cellular-use-external-euicc",
+    "name": "cellular-use-second-euicc",
     "owners": [ "azeemarshad", "khorimoto", "cros-connectivity@google.com" ],
     // Never expires. This used in ChromeOS to switch to removable EUICC for
     // all eSIM operations. This is useful for debugging with test SIM cards.

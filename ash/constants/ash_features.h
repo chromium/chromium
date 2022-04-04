@@ -119,7 +119,7 @@ extern const base::Feature kCellularForbidAttachApn;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCellularUseAttachApn;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kCellularUseExternalEuicc;
+extern const base::Feature kCellularUseSecondEuicc;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kClipboardHistory;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kClipboardHistoryContextMenuNudge;

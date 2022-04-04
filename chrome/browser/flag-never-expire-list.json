@@ -20,7 +20,7 @@
   "ash-debug-shortcuts",
   "ash-enable-unified-desktop",
   "cellular-bypass-esim-installation-connectivity-check",
-  "cellular-use-external-euicc",
+  "cellular-use-second-euicc",
   "dcheck-is-fatal",
   "disable-accelerated-2d-canvas",
   "disable-accelerated-mjpeg-decode",

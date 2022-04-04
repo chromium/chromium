@@ -298,6 +298,7 @@ source_set("unit_tests") {
     "cellular_inhibitor_unittest.cc",
     "cellular_metrics_logger_unittest.cc",
     "cellular_policy_handler_unittest.cc",
+    "cellular_utils_unittest.cc",
     "certificate_helper_unittest.cc",
     "client_cert_resolver_unittest.cc",
     "device_state_unittest.cc",
