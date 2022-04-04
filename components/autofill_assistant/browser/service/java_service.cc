@@ -68,7 +68,6 @@ void JavaService::GetNextActions(
     const std::string& previous_script_payload,
     const std::vector<ProcessedActionProto>& processed_actions,
     const RoundtripTimingStats& timing_stats,
-    const RoundtripNetworkStats& network_stats,
     ServiceRequestSender::ResponseCallback callback) {
   JNIEnv* env = base::android::AttachCurrentThread();
   auto jprocessed_actions =

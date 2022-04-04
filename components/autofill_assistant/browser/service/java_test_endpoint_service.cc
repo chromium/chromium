@@ -115,11 +115,10 @@ void JavaTestEndpointService::GetNextActions(
     const std::string& previous_script_payload,
     const std::vector<ProcessedActionProto>& processed_actions,
     const RoundtripTimingStats& timing_stats,
-    const RoundtripNetworkStats& network_stats,
     ServiceRequestSender::ResponseCallback callback) {
-  service_impl_->GetNextActions(
-      trigger_context, previous_global_payload, previous_script_payload,
-      processed_actions, timing_stats, network_stats, std::move(callback));
+  service_impl_->GetNextActions(trigger_context, previous_global_payload,
+                                previous_script_payload, processed_actions,
+                                timing_stats, std::move(callback));
 }
 
 void JavaTestEndpointService::GetUserData(

@@ -273,9 +273,7 @@ class ScriptExecutor : public ActionDelegate,
                     int http_status,
                     const std::string& response,
                     const ServiceRequestSender::ResponseInfo& response_info);
-  bool ProcessNextActionResponse(
-      const std::string& response,
-      const ServiceRequestSender::ResponseInfo& response_info);
+  bool ProcessNextActionResponse(const std::string& response);
   void ReportPayloadsToListener();
   void ReportScriptsUpdateToListener(
       std::vector<std::unique_ptr<Script>> scripts);
@@ -394,7 +392,6 @@ class ScriptExecutor : public ActionDelegate,
 
   base::TimeTicks batch_start_time_;
   RoundtripTimingStats roundtrip_timing_stats_;
-  RoundtripNetworkStats roundtrip_network_stats_;
 
   bool connection_warning_already_shown_ = false;
   bool website_warning_already_shown_ = false;

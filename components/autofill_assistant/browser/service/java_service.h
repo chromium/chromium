@@ -54,7 +54,6 @@ class JavaService : public Service {
       const std::string& previous_script_payload,
       const std::vector<ProcessedActionProto>& processed_actions,
       const RoundtripTimingStats& timing_stats,
-      const RoundtripNetworkStats& network_stats,
       ServiceRequestSender::ResponseCallback callback) override;
 
   // Get user data.

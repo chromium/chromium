@@ -8,51 +8,69 @@
 #include <string>
 #include <vector>
 
-#include "components/autofill_assistant/browser/service/service.h"
+#include "components/autofill_assistant/browser/service/service_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
 
-class MockService : public Service {
+// TODO(crbug.com/806868): inherit from |Service| instead, and properly mock
+// methods as necessary.
+class MockService : public ServiceImpl {
  public:
   MockService();
   ~MockService() override;
 
-  MOCK_METHOD(void,
-              GetScriptsForUrl,
-              (const GURL& url,
-               const TriggerContext& trigger_context,
-               ServiceRequestSender::ResponseCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              GetActions,
-              (const std::string& script_path,
-               const GURL& url,
-               const TriggerContext& trigger_context,
-               const std::string& global_payload,
-               const std::string& script_payload,
-               ServiceRequestSender::ResponseCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              GetNextActions,
-              (const TriggerContext& trigger_context,
-               const std::string& previous_global_payload,
-               const std::string& previous_script_payload,
-               const std::vector<ProcessedActionProto>& processed_actions,
-               const RoundtripTimingStats& timing_stats,
-               const RoundtripNetworkStats& network_stats,
-               ServiceRequestSender::ResponseCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              SetScriptStoreConfig,
-              (const ScriptStoreConfig& script_store_config),
-              (override));
-  MOCK_METHOD(void,
-              GetUserData,
-              (const CollectUserDataOptions& options,
-               uint64_t run_id,
-               ServiceRequestSender::ResponseCallback callback),
-              (override));
+  void GetScriptsForUrl(
+      const GURL& url,
+      const TriggerContext& trigger_context,
+      ServiceRequestSender::ResponseCallback callback) override {
+    // Transforming callback into a references allows using RunOnceCallback on
+    // the argument.
+    OnGetScriptsForUrl(url, trigger_context, callback);
+  }
+  MOCK_METHOD3(OnGetScriptsForUrl,
+               void(const GURL& url,
+                    const TriggerContext& trigger_context,
+                    ServiceRequestSender::ResponseCallback& callback));
+
+  void GetActions(const std::string& script_path,
+                  const GURL& url,
+                  const TriggerContext& trigger_context,
+                  const std::string& global_payload,
+                  const std::string& script_payload,
+                  ServiceRequestSender::ResponseCallback callback) override {
+    OnGetActions(script_path, url, trigger_context, global_payload,
+                 script_payload, callback);
+  }
+  MOCK_METHOD6(OnGetActions,
+               void(const std::string& script_path,
+                    const GURL& url,
+                    const TriggerContext& trigger_contexts,
+                    const std::string& global_payload,
+                    const std::string& script_payload,
+                    ServiceRequestSender::ResponseCallback& callback));
+
+  void GetNextActions(
+      const TriggerContext& trigger_context,
+      const std::string& previous_global_payload,
+      const std::string& previous_script_payload,
+      const std::vector<ProcessedActionProto>& processed_actions,
+      const RoundtripTimingStats& timing_stats,
+      ServiceRequestSender::ResponseCallback callback) override {
+    OnGetNextActions(trigger_context, previous_global_payload,
+                     previous_script_payload, processed_actions, timing_stats,
+                     callback);
+  }
+  MOCK_METHOD6(OnGetNextActions,
+               void(const TriggerContext& trigger_contexts,
+                    const std::string& previous_global_payload,
+                    const std::string& previous_script_payload,
+                    const std::vector<ProcessedActionProto>& processed_actions,
+                    const RoundtripTimingStats& timing_stats,
+                    ServiceRequestSender::ResponseCallback& callback));
+
+  MOCK_METHOD1(SetScriptStoreConfig,
+               void(const ScriptStoreConfig& script_store_config));
 };
 
 }  // namespace autofill_assistant
