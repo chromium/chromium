@@ -348,6 +348,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"EditingNG", blink::features::kEditingNG},
           {"ElementSuperRareData", blink::features::kElementSuperRareData},
           {"FileHandling", blink::features::kFileHandlingAPI},
+          {"Fledge", blink::features::kFledge,
+           kSetOnlyIfOverridden},
           {"Fledge", features::kPrivacySandboxAdsAPIsOverride,
            kSetOnlyIfOverridden},
           {"FontAccess", blink::features::kFontAccess},
