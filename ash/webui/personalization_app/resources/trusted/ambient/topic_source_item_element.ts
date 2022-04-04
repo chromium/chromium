@@ -104,6 +104,10 @@ export class TopicSourceItem extends WithPersonalizationStore {
   }
 
   private computeAriaLabel_(): string {
+    // topicSource may be undefined when aria label is computed the first time.
+    if (this.topicSource === undefined) {
+      return '';
+    }
     if (this.checked) {
       return this.i18n(
           'ambientModeTopicSourceSelectedRow', this.getItemName_(),
