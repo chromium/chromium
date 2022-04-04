@@ -5,6 +5,7 @@
 #ifndef CONTENT_RENDERER_ACCESSIBILITY_AX_TREE_DISTILLER_H_
 #define CONTENT_RENDERER_ACCESSIBILITY_AX_TREE_DISTILLER_H_
 
+#include <memory>
 #include <vector>
 
 #include "ui/accessibility/ax_node_id_forward.h"
