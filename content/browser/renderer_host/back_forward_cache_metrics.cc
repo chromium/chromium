@@ -336,34 +336,44 @@ void BackForwardCacheMetrics::MarkNotRestoredWithReason(
 
 void BackForwardCacheMetrics::UpdateNotRestoredReasonsForNavigation(
     NavigationRequest* navigation) {
+  BackForwardCacheCanStoreDocumentResult new_blocking_reasons;
   // |last_committed_cross_document_main_frame_navigation_id_| is -1 when
   // navigation history has never been initialized. This can happen only when
   // the session history has been restored.
   if (last_committed_cross_document_main_frame_navigation_id_ == -1) {
-    page_store_result_->No(NotRestoredReason::kSessionRestored);
+    new_blocking_reasons.No(NotRestoredReason::kSessionRestored);
   }
 
   if (!DidSwapBrowsingInstance()) {
-    page_store_result_->No(NotRestoredReason::kBrowsingInstanceNotSwapped);
+    new_blocking_reasons.No(NotRestoredReason::kBrowsingInstanceNotSwapped);
   }
+
+  // This should not happen, but record this as an 'unknown' reason just in
+  // case.
+  if (page_store_result_->not_stored_reasons().Empty() &&
+      new_blocking_reasons.not_stored_reasons().Empty() &&
+      !navigation->IsServedFromBackForwardCache()) {
+    // TODO(altimin): Add a (D)CHECK here, but this code is reached in
+    // unittests.
+    new_blocking_reasons.No(NotRestoredReason::kUnknown);
+  }
+
+  page_store_result_->AddReasonsFrom(new_blocking_reasons);
+
+  // Initialize the empty tree result if nothing is set.
+  if (!page_store_tree_result_) {
+    page_store_tree_result_ =
+        BackForwardCacheCanStoreTreeResult::CreateEmptyTree(
+            navigation->GetRenderFrameHost());
+  }
+  // Add the same reason to the root node of the tree once we update the
+  // flattened list of reasons.
+  page_store_tree_result_->AddReasonsToSubtreeRootFrom(new_blocking_reasons);
 
   TRACE_EVENT("navigation",
               "BackForwardCacheMetrics::UpdateNotRestoredReasonsForNavigation",
               ChromeTrackEvent::kBackForwardCacheCanStoreDocumentResult,
               *(page_store_result_.get()));
-
-  // This should not happen, but record this as an 'unknown' reason just in
-  // case.
-  if (page_store_result_->not_stored_reasons().Empty() &&
-      !navigation->IsServedFromBackForwardCache()) {
-    page_store_result_->No(NotRestoredReason::kUnknown);
-
-    // TODO(altimin): Add a (D)CHECK here, but this code is reached in
-    // unittests.
-    return;
-  }
-  // TODO(yuzus): Update |page_store_tree_result_| to match with
-  // |page_store_result_|.
 }
 
 void BackForwardCacheMetrics::RecordMetricsForHistoryNavigationCommit(

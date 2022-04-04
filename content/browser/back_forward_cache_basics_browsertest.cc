@@ -33,6 +33,8 @@ using testing::UnorderedElementsAreArray;
 namespace content {
 
 using NotRestoredReason = BackForwardCacheMetrics::NotRestoredReason;
+using NotStoredReasons =
+    BackForwardCacheCanStoreDocumentResult::NotStoredReasons;
 
 // Navigate from A to B and go back.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, Basic) {
@@ -191,6 +193,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpen) {
   EXPECT_EQ(1u, rfh_a->GetSiteInstance()->GetRelatedActiveContentsCount());
   Shell* popup = OpenPopup(rfh_a.get(), url_a, "");
   EXPECT_EQ(2u, rfh_a->GetSiteInstance()->GetRelatedActiveContentsCount());
+  rfh_a->GetBackForwardCacheMetrics()->SetObserverForTesting(this);
 
   // 2) Navigate to B. The previous document can't enter the BackForwardCache,
   // because of the popup.
@@ -209,6 +212,13 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpen) {
                     {},
                     {ShouldSwapBrowsingInstance::kNo_HasRelatedActiveContents},
                     {}, {}, FROM_HERE);
+  // Make sure that the tree result also has the same reasons.
+  EXPECT_THAT(
+      GetTreeResult()->GetDocumentResult(),
+      MatchesDocumentResult(
+          NotStoredReasons(NotRestoredReason::kRelatedActiveContentsExist,
+                           NotRestoredReason::kBrowsingInstanceNotSwapped),
+          BlockListedFeatures()));
 
   // 4) Make the popup drop the window.opener connection. It happens when the
   //    user does an omnibox-initiated navigation, which happens in a new

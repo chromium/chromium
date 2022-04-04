@@ -12,6 +12,17 @@ Test that back/forward navigations report the bfcache status
             type : Circumstantial
         }
     ]
+    notRestoredExplanationsTree : {
+        children : [
+        ]
+        explanations : [
+            [0] : {
+                reason : BrowsingInstanceNotSwapped
+                type : Circumstantial
+            }
+        ]
+        url : https://devtools.test:8443/inspector-protocol/resources/empty.html
+    }
 }
 {
     frameId : <string>
@@ -22,5 +33,16 @@ Test that back/forward navigations report the bfcache status
             type : Circumstantial
         }
     ]
+    notRestoredExplanationsTree : {
+        children : [
+        ]
+        explanations : [
+            [0] : {
+                reason : BrowsingInstanceNotSwapped
+                type : Circumstantial
+            }
+        ]
+        url : https://devtools.test:8443/inspector-protocol/resources/hellow-world.html
+    }
 }
 
