@@ -23,8 +23,10 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
                                NGBoxFragmentBuilder,
                                NGBlockBreakToken> {
  public:
-  explicit NGFlexLayoutAlgorithm(const NGLayoutAlgorithmParams& params,
-                                 DevtoolsFlexInfo* devtools = nullptr);
+  explicit NGFlexLayoutAlgorithm(
+      const NGLayoutAlgorithmParams& params,
+      DevtoolsFlexInfo* devtools = nullptr,
+      const HashMap<wtf_size_t, LayoutUnit>* cross_size_adjustments = nullptr);
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
   const NGLayoutResult* Layout() override;
@@ -159,6 +161,17 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   // Add an early break for the column at the provided |index|.
   void AddColumnEarlyBreak(NGEarlyBreak* breakpoint, wtf_size_t index);
 
+  // Add the amount an item expanded by to the item offset adjustment of the
+  // flex line at the index directly after |flex_line_idx|, if there is one.
+  void AdjustOffsetForNextLine(HeapVector<NGFlexLine>* flex_line_outputs,
+                               wtf_size_t flex_line_idx,
+                               LayoutUnit item_expansion) const;
+
+  // If a flex item expands past the row cross-size as a result of
+  // fragmentation, we will abort and re-run layout with the appropriate row
+  // cross-size adjustments.
+  const NGLayoutResult* RelayoutWithNewRowSizes();
+
 #if DCHECK_IS_ON()
   void CheckFlexLines(HeapVector<NGFlexLine>& flex_line_outputs) const;
 #endif
@@ -198,6 +211,15 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   // return to an early break within multiple flex columns. This stores the
   // early breaks per column to be used when aborting layout.
   HeapVector<Member<NGEarlyBreak>> column_early_breaks_;
+
+  // If an item expands past the row block-end, we will re-run layout with the
+  // new cross size. Keep track of each such flex line index mapped to how much
+  // it should expand by in the next layout pass.
+  HashMap<wtf_size_t, LayoutUnit> row_cross_size_updates_;
+
+  // If set, that means that we are re-running layout with updated row
+  // cross-sizes. See |row_cross_size_updates_| for what this maps to.
+  const HashMap<wtf_size_t, LayoutUnit>* cross_size_adjustments_ = nullptr;
 };
 
 }  // namespace blink

@@ -42,6 +42,8 @@ class CORE_EXPORT NGFlexItemIterator {
   struct Entry;
   Entry NextItem(bool broke_before_row);
 
+  bool HasMoreBreakTokens() const { return break_token_; }
+
   // Move the iterator to the next line, unless we are already at the start of a
   // line.
   void NextLine();

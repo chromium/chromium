@@ -25,7 +25,7 @@ struct NGFlexItem {
   // This will originally be set to the total block size of the item before
   // fragmentation. It will then be reduced while performing fragmentation. If
   // it becomes negative, that means that the item expanded as a result of
-  // fragmentation.
+  // fragmentation. This is only used for column flex containers.
   LayoutUnit total_remaining_block_size;
   FlexOffset offset;
   bool has_descendant_that_depends_on_percentage_block_size = false;
@@ -37,6 +37,10 @@ struct NGFlexLine {
 
  public:
   explicit NGFlexLine(wtf_size_t num_items) : line_items(num_items) {}
+
+  LayoutUnit LineCrossEnd() const {
+    return line_cross_size + cross_axis_offset + item_offset_adjustment;
+  }
 
   void Trace(Visitor* visitor) const { visitor->Trace(line_items); }
 

@@ -48,6 +48,7 @@ class CORE_EXPORT NGLayoutResult final
     kNeedsRelayoutWithNoForcedTruncateAtLineClamp = 4,
     kDisableFragmentation = 5,
     kNeedsRelayoutWithNoChildScrollbarChanges = 6,
+    kNeedsRelayoutWithRowCrossSizeChanges = 7,
     // When adding new values, make sure the bit size of |Bitfields::status| is
     // large enough to store.
   };

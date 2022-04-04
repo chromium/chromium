@@ -207,7 +207,7 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
   // There are cases where we may need more than one early break per fragment.
   // For example, there may be an early break within multiple flex columns. This
   // can be used to pass additional early breaks to the next layout pass.
-  const HeapVector<Member<NGEarlyBreak>>* additional_early_breaks_;
+  const HeapVector<Member<NGEarlyBreak>>* additional_early_breaks_ = nullptr;
 };
 
 }  // namespace blink
