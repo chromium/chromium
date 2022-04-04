@@ -718,7 +718,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_remoting_unittests_iPad Air (3rd generation) 14.5",
+        "name": "ios_remoting_unittests iPad Air (3rd generation) 14.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -769,7 +769,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_remoting_unittests_iPhone X 14.5",
+        "name": "ios_remoting_unittests iPhone X 14.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true

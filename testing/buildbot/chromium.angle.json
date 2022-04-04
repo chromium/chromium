@@ -282,7 +282,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "angle_end2end_tests_iPhone X 14.4",
+        "name": "angle_end2end_tests iPhone X 14.4",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -341,7 +341,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "angle_white_box_tests_iPhone X 14.4",
+        "name": "angle_white_box_tests iPhone X 14.4",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true

@@ -266,6 +266,13 @@ def check_matrix_identifier(sub_suite=None,
     if not 'identifier' in variant:
       raise BBGenErr('Missing required identifier field in matrix '
                      'compound suite %s, %s' % (suite, sub_suite))
+    if variant['identifier'] == '':
+      raise BBGenErr('Identifier field can not be "" in matrix '
+                     'compound suite %s, %s' % (suite, sub_suite))
+    if variant['identifier'].strip() != variant['identifier']:
+      raise BBGenErr('Identifier field can not have leading and trailing '
+                     'whitespace in matrix compound suite %s, %s' %
+                     (suite, sub_suite))
 
 
 class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
@@ -1204,7 +1211,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         # The identifier is used to make the name of the test unique.
         # Generators in the recipe uniquely identify a test by it's name, so we
         # don't want to have the same name for each variant.
-        cloned_config['name'] = '{}_{}'.format(test_name,
+        cloned_config['name'] = '{} {}'.format(test_name,
                                                cloned_variant['identifier'])
         definitions.append(cloned_config)
       test_suite[test_name] = definitions

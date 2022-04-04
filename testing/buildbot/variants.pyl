@@ -24,7 +24,7 @@
     'args': [
       '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.filter',
     ],
-    'identifier': 'Lacros plus ToT ash',
+    'identifier': 'on ToT ash',
   },
   'LACROS_VERSION_SKEW_CANARY': {
     'args': [

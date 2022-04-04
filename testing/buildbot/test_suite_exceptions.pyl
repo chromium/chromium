@@ -148,13 +148,13 @@
       },
     },
   },
-  'aura_unittests_amd64-generic': {
+  'aura_unittests amd64-generic': {
     'remove_from': [
       # TODO(crbug.com/1204231): Re-enable.
       'lacros-amd64-generic-rel',
     ]
   },
-  'aura_unittests_eve': {
+  'aura_unittests eve': {
     'remove_from': [
       # TODO(crbug.com/1204231): Re-enable.
       'lacros-amd64-generic-rel',
@@ -2065,14 +2065,14 @@
       },
     },
   },
-  'interactive_ui_tests_amd64-generic': {
+  'interactive_ui_tests amd64-generic': {
     'remove_from': [
       # TODO(crbug.com/1204231): Re-enable.
       'lacros-amd64-generic-rel',
       'lacros-amd64-generic-rel-fyi',
     ]
   },
-  'interactive_ui_tests_eve': {
+  'interactive_ui_tests eve': {
     'remove_from': [
       # TODO(crbug.com/1204231): Re-enable.
       'lacros-amd64-generic-rel',

@@ -8085,11 +8085,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_instrumentation_test_apk_ToT_Tests"
+            "weblayer_instrumentation_test_apk ToT_Tests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_instrumentation_test_apk_ToT_Tests",
+        "name": "weblayer_instrumentation_test_apk ToT_Tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -8163,11 +8163,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_skew_tests_with_client_from_100"
+            "weblayer_skew_tests with_client_from_100"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_skew_tests_with_client_from_100",
+        "name": "weblayer_skew_tests with_client_from_100",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -8247,11 +8247,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_skew_tests_with_client_from_101"
+            "weblayer_skew_tests with_client_from_101"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_skew_tests_with_client_from_101",
+        "name": "weblayer_skew_tests with_client_from_101",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -8331,11 +8331,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_skew_tests_with_client_from_96"
+            "weblayer_skew_tests with_client_from_96"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_skew_tests_with_client_from_96",
+        "name": "weblayer_skew_tests with_client_from_96",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -8415,11 +8415,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_skew_tests_with_client_from_97"
+            "weblayer_skew_tests with_client_from_97"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_skew_tests_with_client_from_97",
+        "name": "weblayer_skew_tests with_client_from_97",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -8499,11 +8499,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_skew_tests_with_client_from_98"
+            "weblayer_skew_tests with_client_from_98"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_skew_tests_with_client_from_98",
+        "name": "weblayer_skew_tests with_client_from_98",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -8583,11 +8583,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_skew_tests_with_client_from_99"
+            "weblayer_skew_tests with_client_from_99"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_skew_tests_with_client_from_99",
+        "name": "weblayer_skew_tests with_client_from_99",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -8667,11 +8667,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_skew_tests_with_impl_from_100"
+            "weblayer_skew_tests with_impl_from_100"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_skew_tests_with_impl_from_100",
+        "name": "weblayer_skew_tests with_impl_from_100",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -8751,11 +8751,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_skew_tests_with_impl_from_101"
+            "weblayer_skew_tests with_impl_from_101"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_skew_tests_with_impl_from_101",
+        "name": "weblayer_skew_tests with_impl_from_101",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -8835,11 +8835,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_skew_tests_with_impl_from_96"
+            "weblayer_skew_tests with_impl_from_96"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_skew_tests_with_impl_from_96",
+        "name": "weblayer_skew_tests with_impl_from_96",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -8919,11 +8919,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_skew_tests_with_impl_from_97"
+            "weblayer_skew_tests with_impl_from_97"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_skew_tests_with_impl_from_97",
+        "name": "weblayer_skew_tests with_impl_from_97",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -9003,11 +9003,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_skew_tests_with_impl_from_98"
+            "weblayer_skew_tests with_impl_from_98"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_skew_tests_with_impl_from_98",
+        "name": "weblayer_skew_tests with_impl_from_98",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -9087,11 +9087,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_skew_tests_with_impl_from_99"
+            "weblayer_skew_tests with_impl_from_99"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_skew_tests_with_impl_from_99",
+        "name": "weblayer_skew_tests with_impl_from_99",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true

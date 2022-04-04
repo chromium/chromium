@@ -40537,7 +40537,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "absl_hardening_tests_iPhone 6s 15.2",
+        "name": "absl_hardening_tests iPhone 6s 15.2",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -40588,7 +40588,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "base_unittests_iPhone 6s 15.2",
+        "name": "base_unittests iPhone 6s 15.2",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -40639,7 +40639,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "boringssl_crypto_tests_iPhone 6s 15.2",
+        "name": "boringssl_crypto_tests iPhone 6s 15.2",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -40690,7 +40690,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "boringssl_ssl_tests_iPhone 6s 15.2",
+        "name": "boringssl_ssl_tests iPhone 6s 15.2",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -40741,7 +40741,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "components_unittests_iPhone 6s 15.2",
+        "name": "components_unittests iPhone 6s 15.2",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -40792,7 +40792,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "crypto_unittests_iPhone 6s 15.2",
+        "name": "crypto_unittests iPhone 6s 15.2",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -40843,7 +40843,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "gfx_unittests_iPhone 6s 15.2",
+        "name": "gfx_unittests iPhone 6s 15.2",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -40894,7 +40894,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "google_apis_unittests_iPhone 6s 15.2",
+        "name": "google_apis_unittests iPhone 6s 15.2",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -40945,7 +40945,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_unittests_iPhone 6s 15.2",
+        "name": "ios_chrome_unittests iPhone 6s 15.2",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -40996,7 +40996,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_net_unittests_iPhone 6s 15.2",
+        "name": "ios_net_unittests iPhone 6s 15.2",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41047,7 +41047,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_inttests_iPhone 6s 15.2",
+        "name": "ios_web_inttests iPhone 6s 15.2",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41098,7 +41098,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_unittests_iPhone 6s 15.2",
+        "name": "ios_web_unittests iPhone 6s 15.2",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41149,7 +41149,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_view_inttests_iPhone 6s 15.2",
+        "name": "ios_web_view_inttests iPhone 6s 15.2",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41200,7 +41200,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "net_unittests_iPhone 6s 15.2",
+        "name": "net_unittests iPhone 6s 15.2",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41251,7 +41251,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "skia_unittests_iPhone 6s 15.2",
+        "name": "skia_unittests iPhone 6s 15.2",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41302,7 +41302,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "sql_unittests_iPhone 6s 15.2",
+        "name": "sql_unittests iPhone 6s 15.2",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41353,7 +41353,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ui_base_unittests_iPhone 6s 15.2",
+        "name": "ui_base_unittests iPhone 6s 15.2",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41404,7 +41404,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "url_unittests_iPhone 6s 15.2",
+        "name": "url_unittests iPhone 6s 15.2",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41475,7 +41475,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "absl_hardening_tests_iPhone 6S 12.3.1",
+        "name": "absl_hardening_tests iPhone 6S 12.3.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41521,7 +41521,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "base_unittests_iPhone 6S 12.3.1",
+        "name": "base_unittests iPhone 6S 12.3.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41567,7 +41567,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "boringssl_crypto_tests_iPhone 6S 12.3.1",
+        "name": "boringssl_crypto_tests iPhone 6S 12.3.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41613,7 +41613,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "boringssl_ssl_tests_iPhone 6S 12.3.1",
+        "name": "boringssl_ssl_tests iPhone 6S 12.3.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41659,7 +41659,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "components_unittests_iPhone 6S 12.3.1",
+        "name": "components_unittests iPhone 6S 12.3.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41705,7 +41705,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "crypto_unittests_iPhone 6S 12.3.1",
+        "name": "crypto_unittests iPhone 6S 12.3.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41751,7 +41751,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "gfx_unittests_iPhone 6S 12.3.1",
+        "name": "gfx_unittests iPhone 6S 12.3.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41797,7 +41797,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "google_apis_unittests_iPhone 6S 12.3.1",
+        "name": "google_apis_unittests iPhone 6S 12.3.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41843,7 +41843,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_unittests_iPhone 6S 12.3.1",
+        "name": "ios_chrome_unittests iPhone 6S 12.3.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41889,7 +41889,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_net_unittests_iPhone 6S 12.3.1",
+        "name": "ios_net_unittests iPhone 6S 12.3.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41935,7 +41935,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_inttests_iPhone 6S 12.3.1",
+        "name": "ios_web_inttests iPhone 6S 12.3.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -41981,7 +41981,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_unittests_iPhone 6S 12.3.1",
+        "name": "ios_web_unittests iPhone 6S 12.3.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -42027,7 +42027,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_view_inttests_iPhone 6S 12.3.1",
+        "name": "ios_web_view_inttests iPhone 6S 12.3.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -42073,7 +42073,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "net_unittests_iPhone 6S 12.3.1",
+        "name": "net_unittests iPhone 6S 12.3.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -42119,7 +42119,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "skia_unittests_iPhone 6S 12.3.1",
+        "name": "skia_unittests iPhone 6S 12.3.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -42165,7 +42165,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "sql_unittests_iPhone 6S 12.3.1",
+        "name": "sql_unittests iPhone 6S 12.3.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -42211,7 +42211,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ui_base_unittests_iPhone 6S 12.3.1",
+        "name": "ui_base_unittests iPhone 6S 12.3.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -42257,7 +42257,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "url_unittests_iPhone 6S 12.3.1",
+        "name": "url_unittests iPhone 6S 12.3.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
