@@ -401,9 +401,8 @@ void CSSPropertyAttributeSet(const v8::FunctionCallbackInfo<v8::Value>& info) {
   CSSStyleDeclaration* blink_receiver =
       V8CSSStyleDeclaration::ToWrappableUnsafe(v8_receiver);
   v8::Local<v8::Value> v8_property_value = info[0];
-  auto&& arg1_value =
-      NativeValueTraits<IDLStringTreatNullAsEmptyString>::NativeValue(
-          isolate, v8_property_value, exception_state);
+  auto&& arg1_value = NativeValueTraits<IDLAny>::NativeValue(
+      isolate, v8_property_value, exception_state);
   if (UNLIKELY(exception_state.HadException())) {
     return;
   }
