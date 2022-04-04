@@ -5,6 +5,7 @@
 #include "chrome/browser/content_settings/sound_content_setting_observer.h"
 
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/sound_content_setting_observer.h"
@@ -18,6 +19,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -115,11 +117,10 @@ class TestAutoplayConfigurationClient
 // overrides binding for blink::mojom::AutoplayConfigurationClient.
 class MultipleFramesObserver : public content::WebContentsObserver {
  public:
-  explicit MultipleFramesObserver(content::WebContents* web_contents)
-      : content::WebContentsObserver(web_contents) {}
+  explicit MultipleFramesObserver(content::WebContents* web_contents,
+                                  size_t num_frames)
+      : content::WebContentsObserver(web_contents), num_frames_(num_frames) {}
   ~MultipleFramesObserver() override = default;
-
-  const size_t kMaxFrameSize = 2u;
 
   void RenderFrameCreated(
       content::RenderFrameHost* render_frame_host) override {
@@ -129,9 +130,13 @@ class MultipleFramesObserver : public content::WebContentsObserver {
         std::make_unique<TestAutoplayConfigurationClient>();
     OverrideInterface(render_frame_host,
                       frame_to_client_map_[render_frame_host].get());
-    if (quit_on_sub_frame_created_) {
-      if (frame_to_client_map_.size() == kMaxFrameSize)
+    if (render_frame_host->GetParent() && quit_on_sub_frame_created_) {
+      if (frame_to_client_map_.size() == num_frames_)
         std::move(quit_on_sub_frame_created_).Run();
+    } else if (render_frame_host->IsFencedFrameRoot() &&
+               quit_on_fenced_frame_created_) {
+      if (frame_to_client_map_.size() == num_frames_)
+        std::move(quit_on_fenced_frame_created_).Run();
     }
   }
 
@@ -142,10 +147,19 @@ class MultipleFramesObserver : public content::WebContentsObserver {
 
   // Waits for sub frame creations.
   void WaitForSubFrame() {
-    if (frame_to_client_map_.size() == kMaxFrameSize)
+    if (frame_to_client_map_.size() == num_frames_)
       return;
     base::RunLoop run_loop;
     quit_on_sub_frame_created_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  // Wait for fenced frame creation.
+  void WaitForFencedFrame() {
+    if (frame_to_client_map_.size() == num_frames_)
+      return;
+    base::RunLoop run_loop;
+    quit_on_fenced_frame_created_ = run_loop.QuitClosure();
     run_loop.Run();
   }
 
@@ -153,11 +167,24 @@ class MultipleFramesObserver : public content::WebContentsObserver {
   // it searches for the main frame and return it. Otherwise, it returns a
   // sub frame.
   TestAutoplayConfigurationClient* GetTestClient(bool request_main_frame) {
+    return GetTestClient(base::BindLambdaForTesting(
+        [&request_main_frame](content::RenderFrameHost* rfh) {
+          bool is_main_frame = rfh->GetMainFrame() == rfh;
+          return request_main_frame ? is_main_frame : !is_main_frame;
+        }));
+  }
+
+  TestAutoplayConfigurationClient* GetTestClientForFencedFrame() {
+    return GetTestClient(
+        [](content::RenderFrameHost* rfh) { return rfh->IsFencedFrameRoot(); });
+  }
+
+  using Filter = base::RepeatingCallback<bool(content::RenderFrameHost*)>;
+  TestAutoplayConfigurationClient* GetTestClient(Filter filter) {
     for (auto& client : frame_to_client_map_) {
-      bool is_main_frame = client.first->GetMainFrame() == client.first;
-      bool expected = request_main_frame ? is_main_frame : !is_main_frame;
-      if (expected)
+      if (filter.Run(client.first)) {
         return client.second.get();
+      }
     }
     NOTREACHED();
     return nullptr;
@@ -177,6 +204,8 @@ class MultipleFramesObserver : public content::WebContentsObserver {
            std::unique_ptr<TestAutoplayConfigurationClient>>
       frame_to_client_map_;
   base::OnceClosure quit_on_sub_frame_created_;
+  base::OnceClosure quit_on_fenced_frame_created_;
+  size_t num_frames_;
 };
 
 }  // namespace
@@ -278,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(SoundContentSettingObserverBrowserTest,
 
   // Creates MultipleFramesObserver to intercept AddAutoplayFlags() for each
   // frame.
-  MultipleFramesObserver observer{web_contents()};
+  MultipleFramesObserver observer{web_contents(), 2};
 
   // Loads a page in the prerender.
   prerender_helper()->AddPrerenderAsync(prerender_url);
@@ -317,4 +346,58 @@ IN_PROC_BROWSER_TEST_F(SoundContentSettingObserverBrowserTest,
 
   // Makes sure that the page is activated from the prerendering.
   EXPECT_TRUE(host_observer.was_activated());
+}
+
+class SoundContentSettingObserverFencedFrameBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  SoundContentSettingObserverFencedFrameBrowserTest() = default;
+  ~SoundContentSettingObserverFencedFrameBrowserTest() override = default;
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_test_helper_;
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SoundContentSettingObserverFencedFrameBrowserTest,
+                       AddAutoplayFlagsInFencedFrame) {
+  // Sets up the embedded test server to serve the test javascript file.
+  net::test_server::EmbeddedTestServerHandle test_server_handle;
+  ASSERT_TRUE(test_server_handle =
+                  embedded_test_server()->StartAndReturnHandle());
+
+  // Configures SoundContentSettingObserver and explicitly allows the SOUND
+  // setting for the primary page's URL.
+  GURL url = embedded_test_server()->GetURL("/simple.html");
+  HostContentSettingsMap* content_settings =
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  content_settings->SetContentSettingDefaultScope(
+      url, url, ContentSettingsType::SOUND, CONTENT_SETTING_ALLOW);
+
+  // Loads a simple page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  auto fenced_frame_url =
+      embedded_test_server()->GetURL("/fenced_frames/title1.html");
+
+  // Creates MultipleFramesObserver to observe fenced frame creation and
+  // intercept AddAutoplayFlags() for it.
+  MultipleFramesObserver observer{web_contents(), 1};
+
+  // Create a fenced frame and wait for the autoplay flag to be set.
+  fenced_frame_test_helper().CreateFencedFrameAsync(
+      web_contents()->GetMainFrame(), fenced_frame_url);
+  observer.WaitForFencedFrame();
+  observer.GetTestClientForFencedFrame()->AddExpectedOriginAndFlags(
+      url::Origin::Create(fenced_frame_url),
+      blink::mojom::kAutoplayFlagUserException);
+  observer.GetTestClientForFencedFrame()->WaitForAddAutoplayFlags();
 }

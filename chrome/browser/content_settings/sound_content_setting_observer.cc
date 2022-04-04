@@ -53,16 +53,15 @@ void SoundContentSettingObserver::ReadyToCommitNavigation(
   if (navigation_handle->IsSameDocument())
     return;
 
-  GURL url = navigation_handle->IsInMainFrame()
+  GURL url = !navigation_handle->GetParentFrameOrOuterDocument()
                  ? navigation_handle->GetURL()
                  : navigation_handle->GetRenderFrameHost()
-                       ->GetMainFrame()
+                       ->GetOutermostMainFrame()
                        ->GetLastCommittedURL();
 
   content_settings::SettingInfo setting_info;
   const base::Value setting = host_content_settings_map_->GetWebsiteSetting(
-      url, navigation_handle->GetURL(), ContentSettingsType::SOUND,
-      &setting_info);
+      url, url, ContentSettingsType::SOUND, &setting_info);
 
   if (content_settings::ValueToContentSetting(setting) !=
       CONTENT_SETTING_ALLOW) {
@@ -72,8 +71,8 @@ void SoundContentSettingObserver::ReadyToCommitNavigation(
   if (setting_info.source != content_settings::SETTING_SOURCE_USER)
     return;
 
-  if (setting_info.primary_pattern == ContentSettingsPattern::Wildcard() &&
-      setting_info.secondary_pattern == ContentSettingsPattern::Wildcard()) {
+  if (setting_info.primary_pattern.MatchesAllHosts() &&
+      setting_info.secondary_pattern.MatchesAllHosts()) {
     return;
   }
 
