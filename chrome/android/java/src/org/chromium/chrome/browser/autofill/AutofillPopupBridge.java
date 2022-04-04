@@ -36,7 +36,7 @@ import org.chromium.url.GURL;
 */
 @JNINamespace("autofill")
 public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.OnClickListener {
-    private final long mNativeAutofillPopup;
+    private long mNativeAutofillPopup;
     private final AutofillPopup mAutofillPopup;
     private AlertDialog mDeletionDialog;
     private final Context mContext;
@@ -75,17 +75,20 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
 
     @Override
     public void dismissed() {
+        if (mNativeAutofillPopup == 0) return;
         AutofillPopupBridgeJni.get().popupDismissed(mNativeAutofillPopup, AutofillPopupBridge.this);
     }
 
     @Override
     public void suggestionSelected(int listIndex) {
+        if (mNativeAutofillPopup == 0) return;
         AutofillPopupBridgeJni.get().suggestionSelected(
                 mNativeAutofillPopup, AutofillPopupBridge.this, listIndex);
     }
 
     @Override
     public void deleteSuggestion(int listIndex) {
+        if (mNativeAutofillPopup == 0) return;
         AutofillPopupBridgeJni.get().deletionRequested(
                 mNativeAutofillPopup, AutofillPopupBridge.this, listIndex);
     }
@@ -97,6 +100,7 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
 
     @Override
     public void onClick(DialogInterface dialog, int which) {
+        if (mNativeAutofillPopup == 0) return;
         assert which == DialogInterface.BUTTON_POSITIVE;
         AutofillPopupBridgeJni.get().deletionConfirmed(
                 mNativeAutofillPopup, AutofillPopupBridge.this);
@@ -107,6 +111,7 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
      */
     @CalledByNative
     private void dismiss() {
+        mNativeAutofillPopup = 0;
         if (mAutofillPopup != null) mAutofillPopup.dismiss();
         if (mDeletionDialog != null) mDeletionDialog.dismiss();
         mWebContentsAccessibility.onAutofillPopupDismissed();
