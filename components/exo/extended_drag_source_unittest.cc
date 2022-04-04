@@ -532,6 +532,23 @@ TEST_F(ExtendedDragSourceTest, DestroyDraggedSurfaceWhileDragging) {
   EXPECT_TRUE(surface->window()->GetBoundsInScreen().origin().IsOrigin());
 }
 
+TEST_F(ExtendedDragSourceTest, DragRequestsInRow_NoCrash) {
+  // Create and map a toplevel shell surface, but hidden.
+  auto shell_surface =
+      exo::test::ShellSurfaceBuilder({32, 32}).BuildShellSurface();
+  auto* surface = shell_surface->root_surface();
+  shell_surface->GetWidget()->Hide();
+
+  // Request two dragging |surface|'s actions in a roll, which a real
+  // world use case scenario when system is under heavy load.
+  extended_drag_source_->Drag(surface, gfx::Vector2d());
+  extended_drag_source_->Drag(surface, gfx::Vector2d());
+
+  // Make sure extended drag source gracefully handles window destruction during
+  // while the drag session is still alive.
+  shell_surface.reset();
+}
+
 TEST_F(ExtendedDragSourceTest, CancelDraggingOperation) {
   // Create and map a toplevel shell surface.
   auto shell_surface =

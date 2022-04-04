@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "components/exo/data_source.h"
 #include "components/exo/surface.h"
+#include "components/exo/surface_observer.h"
 #include "components/exo/wm_helper.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
@@ -49,7 +50,8 @@ ExtendedDragSource* ExtendedDragSource::instance_ = nullptr;
 // well as newly created ones (i.e: not added to a root window yet), in which
 // case OnDraggedWindowVisibilityChanged callback is called to notify when it
 // has just got visible.
-class ExtendedDragSource::DraggedWindowHolder : public aura::WindowObserver {
+class ExtendedDragSource::DraggedWindowHolder : public aura::WindowObserver,
+                                                public SurfaceObserver {
  public:
   DraggedWindowHolder(Surface* surface,
                       const gfx::Vector2d& drag_offset,
@@ -57,6 +59,7 @@ class ExtendedDragSource::DraggedWindowHolder : public aura::WindowObserver {
       : surface_(surface), drag_offset_(drag_offset), source_(source) {
     DCHECK(surface_);
     DCHECK(surface_->window());
+    surface_->AddSurfaceObserver(this);
     if (!FindToplevelWindow()) {
       DVLOG(1) << "Dragged window not added to root window yet.";
       surface_->window()->AddObserver(this);
@@ -70,9 +73,12 @@ class ExtendedDragSource::DraggedWindowHolder : public aura::WindowObserver {
     if (toplevel_window_) {
       toplevel_window_->RemoveObserver(this);
       toplevel_window_ = nullptr;
-    } else {
+    } else if (surface_) {
       surface_->window()->RemoveObserver(this);
     }
+
+    if (surface_)
+      surface_->RemoveSurfaceObserver(this);
   }
 
   aura::Window* toplevel_window() { return toplevel_window_; }
@@ -102,6 +108,22 @@ class ExtendedDragSource::DraggedWindowHolder : public aura::WindowObserver {
       source_->OnDraggedWindowVisibilityChanged(visible);
   }
 
+  void OnWindowDestroying(aura::Window* window) override {
+    DCHECK(window);
+    if (window == toplevel_window_) {
+      toplevel_window_->RemoveObserver(this);
+      toplevel_window_ = nullptr;
+    }
+  }
+
+  // SurfaceObserver:
+  void OnSurfaceDestroying(Surface* surface) override {
+    if (surface_ == surface) {
+      surface_->RemoveSurfaceObserver(this);
+      surface_ = nullptr;
+    }
+  }
+
   bool FindToplevelWindow() {
     if (!surface_->window()->GetRootWindow())
       return false;
@@ -114,7 +136,7 @@ class ExtendedDragSource::DraggedWindowHolder : public aura::WindowObserver {
     return true;
   }
 
-  Surface* const surface_;
+  Surface* surface_;
   gfx::Vector2d drag_offset_;
   ExtendedDragSource* const source_;
   aura::Window* toplevel_window_ = nullptr;
