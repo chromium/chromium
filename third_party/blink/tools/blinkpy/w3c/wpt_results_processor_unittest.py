@@ -503,8 +503,8 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self._create_json_output(json_dict)
         # Also create a checked-in metadata file for this test
         self.fs.write_text_file(
-            self.fs.join(self.processor.web_tests_dir, 'test.html.ini'),
-            'test.html checked-in metadata')
+            self.fs.join(self.processor.web_tests_dir, 'external', 'wpt',
+                         'test.html.ini'), 'test.html checked-in metadata')
 
         self.processor.process_wpt_results(OUTPUT_JSON_FILENAME)
         written_files = self.fs.written_files
@@ -578,7 +578,8 @@ class WPTResultsProcessorTest(LoggingTestCase):
         # matches the test *file* name, not the test name (which includes the
         # variant).
         self.fs.write_text_file(
-            self.fs.join(self.processor.web_tests_dir, "variant.html.ini"),
+            self.fs.join(self.processor.web_tests_dir, 'external', 'wpt',
+                         'variant.html.ini'),
             "variant.html checked-in metadata")
 
         self.processor.process_wpt_results(OUTPUT_JSON_FILENAME)
@@ -640,8 +641,8 @@ class WPTResultsProcessorTest(LoggingTestCase):
         # matches the test *file* name, not the test name (which includes test
         # scope).
         self.fs.write_text_file(
-            self.fs.join(self.processor.web_tests_dir,
-                         "dir/multiglob.https.any.js.ini"),
+            self.fs.join(self.processor.web_tests_dir, 'external', 'wpt',
+                         'dir/multiglob.https.any.js.ini'),
             "dir/multiglob checked-in metadata")
 
         self.processor.process_wpt_results(OUTPUT_JSON_FILENAME)

@@ -266,6 +266,7 @@ class WPTResultsProcessor(object):
         test_file_subpath = self.wpt_manifest.file_path_for_test_url(wpt_name)
         if test_file_subpath:
             expected_path = self.fs.join(self.web_tests_dir,
+                                         self.path_finder.wpt_prefix(),
                                          test_file_subpath + extension)
             if self.fs.exists(expected_path):
                 return expected_path
