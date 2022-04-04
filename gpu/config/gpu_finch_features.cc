@@ -345,10 +345,6 @@ bool IsUsingThreadSafeMediaForWebView() {
   if (!IsAImageReaderEnabled() || LimitAImageReaderMaxSizeToOne())
     return false;
 
-  // Not yet compatible with Vulkan.
-  if (IsUsingVulkan())
-    return false;
-
   return base::FeatureList::IsEnabled(kWebViewThreadSafeMedia);
 #else
   return false;
