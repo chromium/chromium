@@ -21,6 +21,8 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_service.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
@@ -745,6 +747,14 @@ void RealboxHandler::OnResultChanged(AutocompleteController* controller,
       autocomplete_controller_->result(),
       BookmarkModelFactory::GetForBrowserContext(profile_),
       profile_->GetPrefs()));
+
+  if (autocomplete_controller_->done()) {
+    if (SearchPrefetchService* search_prefetch_service =
+            SearchPrefetchServiceFactory::GetForProfile(profile_)) {
+      search_prefetch_service->OnResultChanged(
+          autocomplete_controller_->result());
+    }
+  }
 
   // Clear pending bitmap requests before requesting new ones.
   for (auto bitmap_request_id : bitmap_request_ids_) {
