@@ -1436,11 +1436,6 @@
     "expiry_milestone": 106
   },
   {
-    "name": "eche-swa-in-background",
-    "owners": [ "dhnishi" ],
-    "expiry_milestone": 106
-  },
-  {
     "name": "edit-context",
     "owners": [ "shihken@microsoft.com", "snianu@microsoft.com", "yosin" ],
     "expiry_milestone": 104

@@ -4660,11 +4660,6 @@ const char kEcheCustomWidgetDescription[] =
 const char kEcheSWADebugModeName[] = "Enable Eche Debug Mode";
 const char kEcheSWADebugModeDescription[] = "Enable the Debug Mode of the Eche";
 
-const char kEcheSWAInBackgroundName[] = "Enable Eche Background Mode";
-const char kEcheSWAInBackgroundDescription[] =
-    "Enable the Eche SWA to run in the background before connection "
-    "established";
-
 const char kEnableIdleInhibitName[] = "Enable Idle Inhibit Protocol";
 const char kEnableIdleInhibitDescription[] =
     "Enables the Wayland idle-inhibit-unstable-v1 protocol";

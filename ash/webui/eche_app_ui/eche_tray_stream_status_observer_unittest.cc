@@ -35,7 +35,7 @@ class EcheTrayStreamStatusObserverTest : public AshTestBase {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
-        /*disabled_features=*/{features::kEcheSWAInBackground});
+        /*disabled_features=*/{});
     DCHECK(test_web_view_factory_.get());
     ui::ResourceBundle::CleanupSharedInstance();
     AshTestSuite::LoadTestResources();
