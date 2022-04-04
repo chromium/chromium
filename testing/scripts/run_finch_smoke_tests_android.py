@@ -88,6 +88,8 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     super(FinchTestCase, self).__init__()
     self._device = device
     self.parse_args()
+    self.output_directory = os.path.join(SRC_DIR, 'out', self.options.target)
+    self.mojo_js_directory = os.path.join(self.output_directory, 'gen')
     self.browser_package_name = apk_helper.GetPackageName(
         self.options.browser_apk)
     self.browser_activity_name = (self.options.browser_activity_name or
@@ -105,6 +107,10 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
 
   @classmethod
   def product_name(cls):
+    raise NotImplementedError
+
+  @classmethod
+  def wpt_product_name(cls):
     raise NotImplementedError
 
   @property
@@ -158,8 +164,23 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
   @property
   def rest_args(self):
     rest_args = super(FinchTestCase, self).rest_args
+    # Update the output directory to the default if it's not set.
+    self.maybe_set_default_isolated_script_test_output()
 
+    # Here we add all of the arguments required to run WPT tests on Android.
     rest_args.extend([
+        os.path.join(SRC_DIR, 'third_party', 'wpt_tools', 'wpt', 'wpt')])
+
+    # By default, WPT will treat unexpected passes as errors, so we disable
+    # that to be consistent with Chromium CI.
+    rest_args.extend(['--no-fail-on-unexpected-pass'])
+
+    # vpython has packages needed by wpt, so force it to skip the setup
+    rest_args.extend(['--venv=' + SRC_DIR, '--skip-venv-setup'])
+
+    rest_args.extend(['run',
+      self.wpt_product_name(),
+      '--tests=' + wpt_common.TESTS_ROOT_DIR,
       '--device-serial',
       self._device.serial,
       '--webdriver-binary',
@@ -169,6 +190,11 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
       '--package-name',
       self.browser_package_name,
       '--keep-app-data-directory',
+      '--no-pause-after-test',
+      '--no-capture-stdio',
+      '--no-manifest-download',
+      '--enable-mojojs',
+      '--mojojs-path=' + self.mojo_js_directory,
     ])
 
     for binary_arg in self.browser_command_line_args():
@@ -177,10 +203,18 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     for test in self.tests:
       rest_args.extend(['--include', test])
 
+    if self.options.verbose >= 3:
+      rest_args.extend(['--log-mach=-', '--log-mach-level=debug',
+                        '--log-mach-verbose'])
+
+    if self.options.verbose >= 4:
+      rest_args.extend(['--webdriver-arg=--verbose',
+                        '--webdriver-arg="--log-path=-"'])
+
     return rest_args
 
   @classmethod
-  def add_common_arguments(cls, parser):
+  def add_extra_arguments(cls, parser):
     parser.add_argument('--test-case',
                         choices=TEST_CASES.keys(),
                         # TODO(rmhasan): Remove default values after
@@ -208,6 +242,10 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     parser.add_argument('--browser-activity-name',
                         action='store',
                         help='Browser activity name')
+    parser.add_argument('--target',
+                        action='store',
+                        default='Release',
+                        help='Build configuration')
     parser.add_argument('--fake-variations-channel',
                         action='store',
                         default='stable',
@@ -215,10 +253,9 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
                         help='Finch seed release channel')
 
     add_emulator_args(parser)
-
-  def add_extra_arguments(self, parser):
-    super(FinchTestCase, self).add_extra_arguments(parser)
-    self.add_common_arguments(parser)
+    script_common.AddDeviceArguments(parser)
+    script_common.AddEnvironmentArguments(parser)
+    logging_common.AddLoggingArguments(parser)
 
   @contextlib.contextmanager
   def _install_apks(self):
@@ -517,21 +554,13 @@ def main(args):
        for p in [ChromeFinchTestCase, WebViewFinchTestCase,
                  WebLayerFinchTestCase]})
 
-  # Unfortunately, there's a circular dependency between the parser made
-  # available from `FinchTestCase.add_extra_arguments` and the selection of the
-  # correct test case. The workaround is a second parser used in `main` only
-  # that shares some arguments with the script adapter parser. The second parser
-  # handles --help, so not all arguments are documented. Important arguments
-  # added by the script adapter are re-added here for visibility.
   parser = argparse.ArgumentParser()
-  FinchTestCase.add_common_arguments(parser)
+
+  FinchTestCase.add_extra_arguments(parser)
   parser.add_argument(
         '--isolated-script-test-output', type=str,
         required=False,
         help='path to write test results JSON object to')
-  script_common.AddDeviceArguments(parser)
-  script_common.AddEnvironmentArguments(parser)
-  logging_common.AddLoggingArguments(parser)
   options, _ = parser.parse_known_args(args)
 
   with get_device(options) as device, \
