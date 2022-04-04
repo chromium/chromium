@@ -840,13 +840,6 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
             g_browser_process->GetBreadcrumbPersistentStorageManager();
     DCHECK(persistent_storage_manager);
     breadcrumb_service->StartPersisting(persistent_storage_manager);
-
-    // Get stored persistent breadcrumbs from last run to set on crash reports.
-    persistent_storage_manager->GetStoredEvents(
-        base::BindOnce([](std::vector<std::string> events) {
-          breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
-              .SetPreviousSessionEvents(events);
-        }));
   }
 }
 

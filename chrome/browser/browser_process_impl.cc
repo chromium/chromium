@@ -93,6 +93,7 @@
 #include "components/breadcrumbs/core/application_breadcrumbs_logger.h"
 #include "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
 #include "components/breadcrumbs/core/breadcrumb_persistent_storage_util.h"
+#include "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/timer_update_scheduler.h"
 #include "components/crash/core/common/crash_key.h"
@@ -1210,6 +1211,13 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
     application_breadcrumbs_logger_ =
         std::make_unique<breadcrumbs::ApplicationBreadcrumbsLogger>(
             user_data_dir);
+
+    // Get stored persistent breadcrumbs from last run to set on crash reports.
+    GetBreadcrumbPersistentStorageManager()->GetStoredEvents(
+        base::BindOnce([](std::vector<std::string> events) {
+          breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
+              .SetPreviousSessionEvents(events);
+        }));
   } else {
     breadcrumbs::DeleteBreadcrumbFiles(user_data_dir);
   }
