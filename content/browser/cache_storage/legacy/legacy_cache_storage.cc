@@ -309,7 +309,8 @@ class LegacyCacheStorage::SimpleCacheLoader
       const std::string& cache_name,
       CacheAndErrorCallback callback,
       const std::tuple<CacheStorageError, std::string>& result) {
-    auto [status, cache_dir] = result;
+    CacheStorageError status = std::get<0>(result);
+    const std::string& cache_dir = std::get<1>(result);
 
     if (status != CacheStorageError::kSuccess) {
       std::move(callback).Run(nullptr, status);
