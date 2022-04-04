@@ -37,8 +37,8 @@ per-file dwrite_*=drott@chromium.org
 per-file back_forward_cache*=file://content/browser/BACK_FORWARD_CACHE_OWNERS
 
 # Clipboard
-per-file *clipboard_host_impl*=mek@chromium.org
-per-file *clipboard_host_impl*=pwnall@chromium.org
+per-file *clipboard_host_impl*=asully@chromium.org
+per-file *clipboard_host_impl*=ayui@chromium.org
 per-file *clipboard_host_impl*=dcheng@chromium.org
 
 # AgentSchedulingGroup (MBI)
