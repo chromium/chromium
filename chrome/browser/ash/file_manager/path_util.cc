@@ -87,6 +87,11 @@ constexpr base::FilePath::CharType kArcExternalFilesRoot[] =
 // Sync with the volume provider in ARC++ side.
 constexpr char kArcRemovableMediaContentUrlPrefix[] =
     "content://org.chromium.arc.volumeprovider/";
+// A predefined removable media UUID for testing. Defined in
+// ash/components/arc/volume_mounter/arc_volume_mounter_bridge.cc.
+// TODO(crbug.com/1274481): Move ash-wide constants to a common place.
+constexpr char kArcRemovableMediaUuidForTesting[] =
+    "00000000000000000000000000000000DEADBEEF";
 // The dummy UUID of the MyFiles volume is taken from
 // ash/components/arc/volume_mounter/arc_volume_mounter_bridge.cc.
 // TODO(crbug.com/929031): Move MyFiles constants to a common place.
@@ -636,10 +641,10 @@ bool ConvertPathToArcUrl(const base::FilePath& path,
     if (volume_name.empty())
       return false;
     const std::string fs_uuid = GetFsUuidForRemovableMedia(volume_name);
-    if (fs_uuid.empty())
-      return false;
     // Replace the volume name in the relative path with the UUID.
-    base::FilePath relative_path_with_uuid = base::FilePath(fs_uuid);
+    // When no UUID is found for the volume, use the predefined one for testing.
+    base::FilePath relative_path_with_uuid = base::FilePath(
+        fs_uuid.empty() ? kArcRemovableMediaUuidForTesting : fs_uuid);
     if (!base::FilePath(volume_name)
              .AppendRelativePath(relative_path, &relative_path_with_uuid)) {
       LOG(WARNING) << "Failed to replace volume name \"" << volume_name
