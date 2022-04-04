@@ -20,7 +20,6 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "gin/array_buffer.h"
@@ -61,15 +60,12 @@ class SandboxRunnerDelegate : public gin::ShellRunnerDelegate {
 }  // namespace
 
 namespace android_webview {
+
 JsSandboxContext::JsSandboxContext() {
-  // TODO(crbug.com/1297672): Currently we use the address of the object as a
-  // key for the context, we could allow users to specify a name for the
-  // context and use it as a key.
-  std::string thread_name =
-      base::StringPrintf("js_context_%p", static_cast<const void*>(this));
-  thread_ = std::make_unique<base::Thread>(thread_name);
-  thread_->Start();
-  task_runner_ = thread_->task_runner();
+  task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
+      {base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
+      base::SingleThreadTaskRunnerThreadMode::DEDICATED);
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&JsSandboxContext::InitializeIsolateOnThread,
                                 base::Unretained(this)));
@@ -145,6 +141,7 @@ jboolean JsSandboxContext::EvaluateJavascript(
 }
 
 static void JNI_JsSandboxContext_InitializeEnvironment(JNIEnv* env) {
+  base::ThreadPoolInstance::CreateAndStartWithDefaultParams("JsSandboxContext");
 #ifdef V8_USE_EXTERNAL_STARTUP_DATA
   gin::V8Initializer::LoadV8Snapshot();
 #endif
