@@ -23,7 +23,7 @@ constexpr StaticOobeScreenId ActiveDirectoryPasswordChangeView::kScreenId;
 ActiveDirectoryPasswordChangeScreenHandler::
     ActiveDirectoryPasswordChangeScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path(
+  set_user_acted_method_path_deprecated(
       "login.ActiveDirectoryPasswordChangeScreen.userActed");
 }
 

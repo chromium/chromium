@@ -23,7 +23,8 @@ constexpr StaticOobeScreenId EnableDebuggingScreenView::kScreenId;
 
 EnableDebuggingScreenHandler::EnableDebuggingScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.EnableDebuggingScreen.userActed");
+  set_user_acted_method_path_deprecated(
+      "login.EnableDebuggingScreen.userActed");
 }
 
 EnableDebuggingScreenHandler::~EnableDebuggingScreenHandler() {

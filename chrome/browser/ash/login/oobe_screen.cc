@@ -10,7 +10,13 @@ namespace ash {
 
 OobeScreenId::OobeScreenId(const std::string& name) : name(name) {}
 
-OobeScreenId::OobeScreenId(const StaticOobeScreenId& id) : name(id.name) {}
+OobeScreenId::OobeScreenId(const StaticOobeScreenId& id)
+    : name(id.name) {
+  if (id.external_api_prefix)
+    external_api_prefix = id.external_api_prefix;
+  // TODO(https://crbug.com/1312879): Uncomment when the bug is fixed.
+  // DCHECK(!external_api_prefix.empty());
+}
 
 bool OobeScreenId::operator==(const OobeScreenId& rhs) const {
   return name == rhs.name;

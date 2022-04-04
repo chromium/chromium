@@ -56,7 +56,7 @@ constexpr StaticOobeScreenId WelcomeView::kScreenId;
 
 WelcomeScreenHandler::WelcomeScreenHandler(CoreOobeView* core_oobe_view)
     : BaseScreenHandler(kScreenId), core_oobe_view_(core_oobe_view) {
-  set_user_acted_method_path("login.WelcomeScreen.userActed");
+  set_user_acted_method_path_deprecated("login.WelcomeScreen.userActed");
   DCHECK(core_oobe_view_);
 
   AccessibilityManager* accessibility_manager = AccessibilityManager::Get();

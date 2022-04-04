@@ -17,7 +17,7 @@ constexpr StaticOobeScreenId OfflineLoginView::kScreenId;
 
 OfflineLoginScreenHandler::OfflineLoginScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.OfflineLoginScreen.userActed");
+  set_user_acted_method_path_deprecated("login.OfflineLoginScreen.userActed");
 }
 
 OfflineLoginScreenHandler::~OfflineLoginScreenHandler() {

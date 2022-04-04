@@ -33,7 +33,7 @@ constexpr StaticOobeScreenId AppDownloadingScreenView::kScreenId;
 
 AppDownloadingScreenHandler::AppDownloadingScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.AppDownloadingScreen.userActed");
+  set_user_acted_method_path_deprecated("login.AppDownloadingScreen.userActed");
 }
 
 AppDownloadingScreenHandler::~AppDownloadingScreenHandler() {

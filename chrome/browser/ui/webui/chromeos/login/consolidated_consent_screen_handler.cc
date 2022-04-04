@@ -22,7 +22,8 @@ constexpr StaticOobeScreenId ConsolidatedConsentScreenView::kScreenId;
 
 ConsolidatedConsentScreenHandler::ConsolidatedConsentScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.ConsolidatedConsentScreen.userActed");
+  set_user_acted_method_path_deprecated(
+      "login.ConsolidatedConsentScreen.userActed");
 }
 
 ConsolidatedConsentScreenHandler::~ConsolidatedConsentScreenHandler() {

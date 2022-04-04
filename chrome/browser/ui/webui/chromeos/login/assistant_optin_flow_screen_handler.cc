@@ -63,7 +63,8 @@ constexpr StaticOobeScreenId AssistantOptInFlowScreenView::kScreenId;
 
 AssistantOptInFlowScreenHandler::AssistantOptInFlowScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.AssistantOptInFlowScreen.userActed");
+  set_user_acted_method_path_deprecated(
+      "login.AssistantOptInFlowScreen.userActed");
 }
 
 AssistantOptInFlowScreenHandler::~AssistantOptInFlowScreenHandler() {

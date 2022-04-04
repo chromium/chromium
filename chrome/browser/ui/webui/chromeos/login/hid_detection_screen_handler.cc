@@ -23,7 +23,7 @@ constexpr StaticOobeScreenId HIDDetectionView::kScreenId;
 
 HIDDetectionScreenHandler::HIDDetectionScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.HIDDetectionScreen.userActed");
+  set_user_acted_method_path_deprecated("login.HIDDetectionScreen.userActed");
 }
 
 HIDDetectionScreenHandler::~HIDDetectionScreenHandler() {

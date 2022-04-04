@@ -22,7 +22,8 @@ constexpr StaticOobeScreenId ActiveDirectoryLoginView::kScreenId;
 
 ActiveDirectoryLoginScreenHandler::ActiveDirectoryLoginScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.ActiveDirectoryLoginScreen.userActed");
+  set_user_acted_method_path_deprecated(
+      "login.ActiveDirectoryLoginScreen.userActed");
 }
 
 ActiveDirectoryLoginScreenHandler::~ActiveDirectoryLoginScreenHandler() {

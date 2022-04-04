@@ -16,7 +16,7 @@ namespace chromeos {
 constexpr StaticOobeScreenId PinSetupScreenView::kScreenId;
 
 PinSetupScreenHandler::PinSetupScreenHandler() : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.PinSetupScreen.userActed");
+  set_user_acted_method_path_deprecated("login.PinSetupScreen.userActed");
 }
 
 PinSetupScreenHandler::~PinSetupScreenHandler() {}

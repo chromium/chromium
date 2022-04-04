@@ -196,7 +196,8 @@ EnrollmentScreenHandler::EnrollmentScreenHandler(
   DCHECK(network_state_informer_.get());
   DCHECK(error_screen_);
   network_state_informer_->AddObserver(this);
-  set_user_acted_method_path("login.OAuthEnrollmentScreen.userActed");
+  set_user_acted_method_path_deprecated(
+      "login.OAuthEnrollmentScreen.userActed");
 }
 
 EnrollmentScreenHandler::~EnrollmentScreenHandler() {

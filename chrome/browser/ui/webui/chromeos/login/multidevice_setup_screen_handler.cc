@@ -16,7 +16,8 @@ constexpr StaticOobeScreenId MultiDeviceSetupScreenView::kScreenId;
 
 MultiDeviceSetupScreenHandler::MultiDeviceSetupScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.MultiDeviceSetupScreen.userActed");
+  set_user_acted_method_path_deprecated(
+      "login.MultiDeviceSetupScreen.userActed");
 }
 
 MultiDeviceSetupScreenHandler::~MultiDeviceSetupScreenHandler() = default;

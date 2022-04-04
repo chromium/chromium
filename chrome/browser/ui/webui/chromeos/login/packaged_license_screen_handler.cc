@@ -14,7 +14,8 @@ constexpr StaticOobeScreenId PackagedLicenseView::kScreenId;
 
 PackagedLicenseScreenHandler::PackagedLicenseScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.PackagedLicenseScreen.userActed");
+  set_user_acted_method_path_deprecated(
+      "login.PackagedLicenseScreen.userActed");
 }
 
 PackagedLicenseScreenHandler::~PackagedLicenseScreenHandler() {}

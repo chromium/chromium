@@ -15,7 +15,8 @@ constexpr StaticOobeScreenId WrongHWIDScreenView::kScreenId;
 
 WrongHWIDScreenHandler::WrongHWIDScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.WrongHWIDMessageScreen.userActed");
+  set_user_acted_method_path_deprecated(
+      "login.WrongHWIDMessageScreen.userActed");
 }
 
 WrongHWIDScreenHandler::~WrongHWIDScreenHandler() {

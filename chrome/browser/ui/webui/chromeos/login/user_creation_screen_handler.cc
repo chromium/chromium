@@ -19,7 +19,7 @@ constexpr StaticOobeScreenId UserCreationView::kScreenId;
 
 UserCreationScreenHandler::UserCreationScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.UserCreationScreen.userActed");
+  set_user_acted_method_path_deprecated("login.UserCreationScreen.userActed");
 }
 
 UserCreationScreenHandler::~UserCreationScreenHandler() {

@@ -16,7 +16,8 @@ constexpr StaticOobeScreenId FamilyLinkNoticeView::kScreenId;
 
 FamilyLinkNoticeScreenHandler::FamilyLinkNoticeScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.FamilyLinkNoticeScreen.userActed");
+  set_user_acted_method_path_deprecated(
+      "login.FamilyLinkNoticeScreen.userActed");
 }
 
 FamilyLinkNoticeScreenHandler::~FamilyLinkNoticeScreenHandler() {

@@ -326,7 +326,7 @@ GaiaScreenHandler::GaiaScreenHandler(
       network_state_informer_(network_state_informer),
       core_oobe_view_(core_oobe_view) {
   DCHECK(network_state_informer_.get());
-  set_user_acted_method_path("login.GaiaSigninScreen.userActed");
+  set_user_acted_method_path_deprecated("login.GaiaSigninScreen.userActed");
 }
 
 GaiaScreenHandler::~GaiaScreenHandler() {

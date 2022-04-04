@@ -34,7 +34,7 @@ constexpr StaticOobeScreenId TermsOfServiceScreenView::kScreenId;
 
 TermsOfServiceScreenHandler::TermsOfServiceScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.TermsOfServiceScreen.userActed");
+  set_user_acted_method_path_deprecated("login.TermsOfServiceScreen.userActed");
 }
 
 TermsOfServiceScreenHandler::~TermsOfServiceScreenHandler() {

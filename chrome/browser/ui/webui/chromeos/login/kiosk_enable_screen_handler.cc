@@ -21,7 +21,7 @@ constexpr StaticOobeScreenId KioskEnableScreenView::kScreenId;
 
 KioskEnableScreenHandler::KioskEnableScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.KioskEnableScreen.userActed");
+  set_user_acted_method_path_deprecated("login.KioskEnableScreen.userActed");
 }
 
 KioskEnableScreenHandler::~KioskEnableScreenHandler() {

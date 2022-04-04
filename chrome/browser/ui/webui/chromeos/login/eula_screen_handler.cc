@@ -31,7 +31,7 @@ namespace chromeos {
 constexpr StaticOobeScreenId EulaView::kScreenId;
 
 EulaScreenHandler::EulaScreenHandler() : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.EulaScreen.userActed");
+  set_user_acted_method_path_deprecated("login.EulaScreen.userActed");
 }
 
 EulaScreenHandler::~EulaScreenHandler() {

@@ -18,7 +18,8 @@ constexpr StaticOobeScreenId FingerprintSetupScreenView::kScreenId;
 
 FingerprintSetupScreenHandler::FingerprintSetupScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.FingerprintSetupScreen.userActed");
+  set_user_acted_method_path_deprecated(
+      "login.FingerprintSetupScreen.userActed");
 }
 
 FingerprintSetupScreenHandler::~FingerprintSetupScreenHandler() = default;

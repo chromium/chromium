@@ -23,7 +23,8 @@ constexpr StaticOobeScreenId ParentalHandoffScreenView::kScreenId;
 
 ParentalHandoffScreenHandler::ParentalHandoffScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.ParentalHandoffScreen.userActed");
+  set_user_acted_method_path_deprecated(
+      "login.ParentalHandoffScreen.userActed");
 }
 
 ParentalHandoffScreenHandler::~ParentalHandoffScreenHandler() {

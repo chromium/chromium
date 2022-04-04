@@ -14,7 +14,8 @@ constexpr StaticOobeScreenId GestureNavigationScreenView::kScreenId;
 
 GestureNavigationScreenHandler::GestureNavigationScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.GestureNavigationScreen.userActed");
+  set_user_acted_method_path_deprecated(
+      "login.GestureNavigationScreen.userActed");
 }
 
 GestureNavigationScreenHandler::~GestureNavigationScreenHandler() = default;

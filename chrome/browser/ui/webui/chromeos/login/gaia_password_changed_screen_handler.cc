@@ -19,7 +19,8 @@ constexpr StaticOobeScreenId GaiaPasswordChangedView::kScreenId;
 
 GaiaPasswordChangedScreenHandler::GaiaPasswordChangedScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.GaiaPasswordChangedScreen.userActed");
+  set_user_acted_method_path_deprecated(
+      "login.GaiaPasswordChangedScreen.userActed");
 }
 
 GaiaPasswordChangedScreenHandler::~GaiaPasswordChangedScreenHandler() {

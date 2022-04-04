@@ -20,7 +20,8 @@ constexpr StaticOobeScreenId SignInFatalErrorView::kScreenId;
 
 SignInFatalErrorScreenHandler::SignInFatalErrorScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.SignInFatalErrorScreen.userActed");
+  set_user_acted_method_path_deprecated(
+      "login.SignInFatalErrorScreen.userActed");
 }
 
 SignInFatalErrorScreenHandler::~SignInFatalErrorScreenHandler() {

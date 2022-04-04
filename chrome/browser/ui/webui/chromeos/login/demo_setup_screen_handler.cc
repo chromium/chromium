@@ -21,7 +21,7 @@ DemoSetupScreenView::~DemoSetupScreenView() = default;
 
 DemoSetupScreenHandler::DemoSetupScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.DemoSetupScreen.userActed");
+  set_user_acted_method_path_deprecated("login.DemoSetupScreen.userActed");
 }
 
 DemoSetupScreenHandler::~DemoSetupScreenHandler() {

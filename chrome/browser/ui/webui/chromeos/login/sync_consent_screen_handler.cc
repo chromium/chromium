@@ -55,7 +55,7 @@ constexpr StaticOobeScreenId SyncConsentScreenView::kScreenId;
 // TODO(https://crbug.com/1229582): Remove SplitSettings from names in this file
 SyncConsentScreenHandler::SyncConsentScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.SyncConsentScreen.userActed");
+  set_user_acted_method_path_deprecated("login.SyncConsentScreen.userActed");
 }
 
 SyncConsentScreenHandler::~SyncConsentScreenHandler() = default;

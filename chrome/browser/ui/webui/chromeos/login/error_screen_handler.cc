@@ -18,7 +18,7 @@ namespace chromeos {
 constexpr StaticOobeScreenId ErrorScreenView::kScreenId;
 
 ErrorScreenHandler::ErrorScreenHandler() : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.ErrorMessageScreen.userActed");
+  set_user_acted_method_path_deprecated("login.ErrorMessageScreen.userActed");
 }
 
 ErrorScreenHandler::~ErrorScreenHandler() {

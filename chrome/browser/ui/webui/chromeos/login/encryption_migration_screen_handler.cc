@@ -17,7 +17,8 @@ constexpr StaticOobeScreenId EncryptionMigrationScreenView::kScreenId;
 
 EncryptionMigrationScreenHandler::EncryptionMigrationScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.EncryptionMigrationScreen.userActed");
+  set_user_acted_method_path_deprecated(
+      "login.EncryptionMigrationScreen.userActed");
 }
 
 EncryptionMigrationScreenHandler::~EncryptionMigrationScreenHandler() {

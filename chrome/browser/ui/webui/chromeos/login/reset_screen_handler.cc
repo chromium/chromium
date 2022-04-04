@@ -23,7 +23,7 @@ namespace chromeos {
 constexpr StaticOobeScreenId ResetView::kScreenId;
 
 ResetScreenHandler::ResetScreenHandler() : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.ResetScreen.userActed");
+  set_user_acted_method_path_deprecated("login.ResetScreen.userActed");
 }
 
 ResetScreenHandler::~ResetScreenHandler() {

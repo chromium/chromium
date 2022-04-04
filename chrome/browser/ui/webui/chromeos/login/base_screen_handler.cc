@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
+#include "base/strings/strcat.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
@@ -14,6 +15,10 @@ namespace chromeos {
 BaseScreenHandler::BaseScreenHandler(OobeScreenId oobe_screen)
     : oobe_screen_(oobe_screen) {
   DCHECK_NE(oobe_screen_.name, OobeScreen::SCREEN_UNKNOWN.name);
+  if (!oobe_screen_.external_api_prefix.empty()) {
+    user_acted_method_path_ = base::StrCat(
+        {"login.", oobe_screen_.external_api_prefix, ".userActed"});
+  }
 }
 
 BaseScreenHandler::~BaseScreenHandler() = default;

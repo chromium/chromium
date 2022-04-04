@@ -17,7 +17,8 @@ DemoPreferencesScreenView::~DemoPreferencesScreenView() = default;
 
 DemoPreferencesScreenHandler::DemoPreferencesScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.DemoPreferencesScreen.userActed");
+  set_user_acted_method_path_deprecated(
+      "login.DemoPreferencesScreen.userActed");
 }
 
 DemoPreferencesScreenHandler::~DemoPreferencesScreenHandler() {

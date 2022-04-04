@@ -13,7 +13,7 @@ constexpr StaticOobeScreenId QuickStartView::kScreenId;
 
 QuickStartScreenHandler::QuickStartScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.QuickStartScreen.userActed");
+  set_user_acted_method_path_deprecated("login.QuickStartScreen.userActed");
 }
 
 QuickStartScreenHandler::~QuickStartScreenHandler() {

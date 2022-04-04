@@ -16,7 +16,8 @@ constexpr StaticOobeScreenId SmartPrivacyProtectionView::kScreenId;
 
 SmartPrivacyProtectionScreenHandler::SmartPrivacyProtectionScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.SmartPrivacyProtectionScreen.userActed");
+  set_user_acted_method_path_deprecated(
+      "login.SmartPrivacyProtectionScreen.userActed");
 }
 
 SmartPrivacyProtectionScreenHandler::~SmartPrivacyProtectionScreenHandler() {

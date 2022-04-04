@@ -16,7 +16,8 @@ constexpr StaticOobeScreenId LacrosDataMigrationScreenView::kScreenId;
 
 LacrosDataMigrationScreenHandler::LacrosDataMigrationScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.LacrosDataMigrationScreen.userActed");
+  set_user_acted_method_path_deprecated(
+      "login.LacrosDataMigrationScreen.userActed");
 }
 
 LacrosDataMigrationScreenHandler::~LacrosDataMigrationScreenHandler() {

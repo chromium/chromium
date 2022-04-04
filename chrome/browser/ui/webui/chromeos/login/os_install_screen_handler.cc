@@ -30,7 +30,7 @@ constexpr StaticOobeScreenId OsInstallScreenView::kScreenId;
 
 OsInstallScreenHandler::OsInstallScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.OsInstallScreen.userActed");
+  set_user_acted_method_path_deprecated("login.OsInstallScreen.userActed");
 }
 
 OsInstallScreenHandler::~OsInstallScreenHandler() {

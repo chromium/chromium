@@ -18,7 +18,8 @@ constexpr StaticOobeScreenId HWDataCollectionView::kScreenId;
 
 HWDataCollectionScreenHandler::HWDataCollectionScreenHandler()
     : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path("login.HWDataCollectionScreen.userActed");
+  set_user_acted_method_path_deprecated(
+      "login.HWDataCollectionScreen.userActed");
 }
 
 HWDataCollectionScreenHandler::~HWDataCollectionScreenHandler() {

@@ -44,7 +44,9 @@ class BaseScreenHandler : public BaseWebUIHandler {
   //
   // If this is not called then userActed-style callbacks will not be available
   // for the screen.
-  void set_user_acted_method_path(const std::string& user_acted_method_path) {
+  // DEPRECATED: Use 'StaticOobeScreenId::external_api_prefix' instead.
+  void set_user_acted_method_path_deprecated(
+      const std::string& user_acted_method_path) {
     user_acted_method_path_ = user_acted_method_path;
   }
 

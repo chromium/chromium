@@ -18,7 +18,8 @@ namespace chromeos {
 class EnableAdbSideloadingScreenView
     : public base::SupportsWeakPtr<EnableAdbSideloadingScreenView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"adb-sideloading"};
+  inline constexpr static StaticOobeScreenId kScreenId{
+      "adb-sideloading", "EnableAdbSideloadingScreen"};
 
   // The constants need to be synced with oobe_adb_sideloading_screen.js.
   enum class UIState {

@@ -52,7 +52,8 @@ ArcTermsOfServiceScreenHandler::ArcTermsOfServiceScreenHandler()
     : BaseScreenHandler(kScreenId),
       is_child_account_(
           user_manager::UserManager::Get()->IsLoggedInAsChildUser()) {
-  set_user_acted_method_path("login.ArcTermsOfServiceScreen.userActed");
+  set_user_acted_method_path_deprecated(
+      "login.ArcTermsOfServiceScreen.userActed");
 }
 
 ArcTermsOfServiceScreenHandler::~ArcTermsOfServiceScreenHandler() {
