@@ -6676,9 +6676,6 @@ test("unit_tests") {
         # Fuchsia does not need real file lock as the filesystem is not shared
         # across components.
         "../browser/importer/firefox_profile_lock_unittest.cc",
-
-        # Fuchsia does not currently support the service process.
-        "../common/multi_process_lock_unittest.cc",
       ]
     }
     if (is_posix) {

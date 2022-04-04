@@ -124,7 +124,6 @@ static_library("common") {
     "media/media_resource_provider.cc",
     "media/media_resource_provider.h",
     "media_galleries/metadata_types.h",
-    "multi_process_lock.h",
     "pdf_util.cc",
     "pdf_util.h",
     "pref_names_util.cc",
@@ -345,7 +344,6 @@ static_library("common") {
       "mac/launchd.mm",
       "mac/service_management.h",
       "mac/service_management.mm",
-      "multi_process_lock_mac.cc",
     ]
     public_deps += [ ":app_mode_app_support" ]
   }
@@ -395,7 +393,6 @@ static_library("common") {
       "conflicts/module_watcher_win.h",
       "conflicts/remote_module_watcher_win.cc",
       "conflicts/remote_module_watcher_win.h",
-      "multi_process_lock_win.cc",
       "protobuf_init.cc",
       "protobuf_init.h",
     ]
@@ -461,7 +458,6 @@ static_library("common") {
     sources += [
       "auto_start_linux.cc",
       "auto_start_linux.h",
-      "multi_process_lock_linux.cc",
     ]
     deps += [ "//sandbox/linux:sandbox_services" ]
   }
