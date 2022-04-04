@@ -69,7 +69,8 @@ import java.util.List;
  * Unit tests for the context menu. Use density=mdpi so the screen density is 1.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.DisableFeatures(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE)
+@Features.DisableFeatures(
+        {ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE, ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
 public class ContextMenuCoordinatorTest {
     private static final int TOP_CONTENT_OFFSET_PX = 17;
     /**

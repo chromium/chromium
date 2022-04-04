@@ -12,7 +12,6 @@ import android.text.TextUtils;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver.PerformanceClass;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -36,11 +35,8 @@ class ContextMenuHeaderCoordinator {
 
     @VisibleForTesting
     static PropertyModel buildModel(Context context, String title, CharSequence url) {
-        boolean usePopupContextMenu =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE);
-        boolean hideHeaderImage = ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE,
-                ContextMenuCoordinator.HIDE_HEADER_IMAGE_PARAM, false);
+        boolean usePopupContextMenu = ContextMenuUtils.forcePopupStyleEnabled();
+        boolean hideHeaderImage = ContextMenuUtils.hideContextMenuHeaderImage();
 
         int monogramSizeDimen = usePopupContextMenu
                 ? R.dimen.context_menu_popup_header_monogram_size

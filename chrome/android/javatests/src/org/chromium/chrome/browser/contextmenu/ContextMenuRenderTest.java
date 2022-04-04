@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -74,6 +75,7 @@ public class ContextMenuRenderTest extends BlankUiTestActivityTestCase {
 
         mTestValues = new TestValues();
         mTestValues.addFeatureFlagOverride(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE, false);
+        mTestValues.addFeatureFlagOverride(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, false);
         FeatureList.setTestValues(mTestValues);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -140,7 +142,7 @@ public class ContextMenuRenderTest extends BlankUiTestActivityTestCase {
     public void testContextMenuViewWithLink_HideHeaderImage() throws IOException {
         mTestValues.addFeatureFlagOverride(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE, true);
         mTestValues.addFieldTrialParamOverride(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE,
-                ContextMenuCoordinator.HIDE_HEADER_IMAGE_PARAM, "true");
+                ContextMenuUtils.HIDE_HEADER_IMAGE_PARAM, "true");
         doTestContextMenuViewWithLink("context_menu_with_link_no_header");
     }
 
@@ -165,7 +167,7 @@ public class ContextMenuRenderTest extends BlankUiTestActivityTestCase {
     public void testContextMenuViewWithImageLink_HideHeaderImage() throws IOException {
         mTestValues.addFeatureFlagOverride(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE, true);
         mTestValues.addFieldTrialParamOverride(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE,
-                ContextMenuCoordinator.HIDE_HEADER_IMAGE_PARAM, "true");
+                ContextMenuUtils.HIDE_HEADER_IMAGE_PARAM, "true");
         doTestContextMenuViewWithImageLink("context_menu_with_image_link_no_header");
     }
 
