@@ -57,6 +57,14 @@
           <settings-password-check prefs="{{prefs}}"></settings-password-check>
         </settings-subpage>
       </template>
+      <template is="dom-if" if="[[enablePasswordViewPage_]]">
+        <template is="dom-if" route-path="/passwords/view">
+          <settings-subpage page-title="[[credential.urls.shown]]">
+            <password-view credential="{{credential}}">
+            </password-view>
+            </settings-subpage>
+        </template>
+      </template>
       <template is="dom-if" route-path="/payments">
         <settings-subpage
             associated-control="[[$$('#paymentManagerButton')]]"

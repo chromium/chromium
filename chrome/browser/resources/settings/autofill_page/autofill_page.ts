@@ -17,11 +17,13 @@ import '../settings_shared_css.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
+import {loadTimeData} from '../i18n_setup.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
 import {getTemplate} from './autofill_page.html.js';
+import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PasswordCheckMixin} from './password_check_mixin.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 
@@ -64,12 +66,28 @@ export class SettingsAutofillPageElement extends
         type: String,
         computed: 'computePasswordManagerSubLabel_(compromisedPasswordsCount)',
       },
+
+      enablePasswordViewPage_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enablePasswordNotes');
+        }
+      },
+
+      // The credential is only used to pass the credential from password-view
+      // to settings-subpage
+      credential: {
+        type: Object,
+        value: null,
+      },
     };
   }
 
   private passwordFilter_: string;
   private focusConfig_: Map<string, string>;
   private passwordManagerSubLabel_: string;
+  private enablePasswordViewPage_: string;
+  credential: MultiStorePasswordUiEntry|null;
 
   /**
    * Shows the manage addresses sub page.

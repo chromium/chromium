@@ -40,6 +40,7 @@ web_component_files = [
   "autofill_page/password_move_to_account_dialog.ts",
   "autofill_page/password_remove_confirmation_dialog.ts",
   "autofill_page/password_remove_dialog.ts",
+  "autofill_page/password_view.ts",
   "autofill_page/passwords_device_section.ts",
   "autofill_page/passwords_export_dialog.ts",
   "autofill_page/passwords_list_handler.ts",

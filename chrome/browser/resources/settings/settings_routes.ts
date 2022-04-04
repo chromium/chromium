@@ -32,6 +32,7 @@ export type SettingsRoutes = {
   MANAGE_PROFILE: Route,
   ON_STARTUP: Route,
   PASSWORDS: Route,
+  PASSWORD_VIEW: Route,
   DEVICE_PASSWORDS: Route,
   PAYMENTS: Route,
   PEOPLE: Route,
