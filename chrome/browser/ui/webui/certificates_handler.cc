@@ -415,17 +415,22 @@ void CertificatesHandler::HandleViewCertificate(const base::Value::List& args) {
       std::move(certs), web_ui()->GetWebContents(), GetParentWindow());
 }
 
-void CertificatesHandler::AssignWebUICallbackId(const base::Value::List& args) {
+bool CertificatesHandler::AssignWebUICallbackId(const base::Value::List& args) {
   CHECK_LE(1U, args.size());
-  CHECK(webui_callback_id_.empty());
+  if (!webui_callback_id_.empty())
+    return false;
   webui_callback_id_ = args[0].GetString();
+  return true;
 }
 
 void CertificatesHandler::HandleGetCATrust(const base::Value::List& args) {
   AllowJavascript();
 
   CHECK_EQ(2U, args.size());
-  AssignWebUICallbackId(args);
+  if (!AssignWebUICallbackId(args)) {
+    RejectJavascriptCallback(base::Value(args[0].GetString()), base::Value());
+    return;
+  }
 
   CertificateManagerModel::CertInfo* cert_info =
       GetCertInfoFromCallbackArgs(args, 1 /* arg_index */);
@@ -451,7 +456,10 @@ void CertificatesHandler::HandleGetCATrust(const base::Value::List& args) {
 
 void CertificatesHandler::HandleEditCATrust(const base::Value::List& args) {
   CHECK_EQ(5U, args.size());
-  AssignWebUICallbackId(args);
+  if (!AssignWebUICallbackId(args)) {
+    RejectJavascriptCallback(base::Value(args[0].GetString()), base::Value());
+    return;
+  }
 
   CertificateManagerModel::CertInfo* cert_info =
       GetCertInfoFromCallbackArgs(args, 1 /* arg_index */);
@@ -490,7 +498,10 @@ void CertificatesHandler::HandleEditCATrust(const base::Value::List& args) {
 
 void CertificatesHandler::HandleExportPersonal(const base::Value::List& args) {
   CHECK_EQ(2U, args.size());
-  AssignWebUICallbackId(args);
+  if (!AssignWebUICallbackId(args)) {
+    RejectJavascriptCallback(base::Value(args[0].GetString()), base::Value());
+    return;
+  }
 
   CertificateManagerModel::CertInfo* cert_info =
       GetCertInfoFromCallbackArgs(args, 1 /* arg_index */);
@@ -525,7 +536,10 @@ void CertificatesHandler::ExportPersonalFileSelected(
 void CertificatesHandler::HandleExportPersonalPasswordSelected(
     const base::Value::List& args) {
   CHECK_EQ(2U, args.size());
-  AssignWebUICallbackId(args);
+  if (!AssignWebUICallbackId(args)) {
+    RejectJavascriptCallback(base::Value(args[0].GetString()), base::Value());
+    return;
+  }
   password_ = UTF8ToUTF16(args[1].GetString());  // CHECKs if non-string.
 
   // Currently, we don't support exporting more than one at a time.  If we do,
@@ -586,7 +600,10 @@ void CertificatesHandler::HandleImportPersonal(const base::Value::List& args) {
   }
 
   CHECK_EQ(2U, args.size());
-  AssignWebUICallbackId(args);
+  if (!AssignWebUICallbackId(args)) {
+    RejectJavascriptCallback(base::Value(args[0].GetString()), base::Value());
+    return;
+  }
   use_hardware_backed_ = args[1].GetBool();
 
   ui::SelectFileDialog::FileTypeInfo file_type_info;
@@ -667,7 +684,10 @@ void CertificatesHandler::ImportPersonalFileRead(const int* read_errno,
 void CertificatesHandler::HandleImportPersonalPasswordSelected(
     const base::Value::List& args) {
   CHECK_EQ(2U, args.size());
-  AssignWebUICallbackId(args);
+  if (!AssignWebUICallbackId(args)) {
+    RejectJavascriptCallback(base::Value(args[0].GetString()), base::Value());
+    return;
+  }
   password_ = UTF8ToUTF16(args[1].GetString());  // CHECKs if non-string.
 
   if (use_hardware_backed_) {
@@ -747,7 +767,10 @@ void CertificatesHandler::ImportExportCleanup() {
 
 void CertificatesHandler::HandleImportServer(const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
-  AssignWebUICallbackId(args);
+  if (!AssignWebUICallbackId(args)) {
+    RejectJavascriptCallback(base::Value(args[0].GetString()), base::Value());
+    return;
+  }
 
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this,
@@ -821,7 +844,10 @@ void CertificatesHandler::HandleImportCA(const base::Value::List& args) {
   }
 
   CHECK_EQ(1U, args.size());
-  AssignWebUICallbackId(args);
+  if (!AssignWebUICallbackId(args)) {
+    RejectJavascriptCallback(base::Value(args[0].GetString()), base::Value());
+    return;
+  }
 
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this,
@@ -879,7 +905,10 @@ void CertificatesHandler::ImportCAFileRead(const int* read_errno,
 void CertificatesHandler::HandleImportCATrustSelected(
     const base::Value::List& args) {
   CHECK_EQ(4U, args.size());
-  AssignWebUICallbackId(args);
+  if (!AssignWebUICallbackId(args)) {
+    RejectJavascriptCallback(base::Value(args[0].GetString()), base::Value());
+    return;
+  }
 
   const bool trust_ssl = args[1].GetBool();
   const bool trust_email = args[2].GetBool();
@@ -927,7 +956,10 @@ void CertificatesHandler::HandleExportCertificate(
 void CertificatesHandler::HandleDeleteCertificate(
     const base::Value::List& args) {
   CHECK_EQ(2U, args.size());
-  AssignWebUICallbackId(args);
+  if (!AssignWebUICallbackId(args)) {
+    RejectJavascriptCallback(base::Value(args[0].GetString()), base::Value());
+    return;
+  }
 
   CertificateManagerModel::CertInfo* cert_info =
       GetCertInfoFromCallbackArgs(args, 1 /* arg_index */);

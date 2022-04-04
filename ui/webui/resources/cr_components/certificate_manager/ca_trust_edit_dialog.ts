@@ -104,6 +104,9 @@ export class CaTrustEditDialogElement extends CaTrustEditDialogElementBase {
           this.$.dialog.close();
         },
         error => {
+          if (error === null) {
+            return;
+          }
           this.$.dialog.close();
           this.dispatchEvent(new CustomEvent('certificates-error', {
             bubbles: true,

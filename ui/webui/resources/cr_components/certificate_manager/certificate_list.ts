@@ -118,8 +118,9 @@ export class CertificateListElement extends CertificateListElementBase {
       anchor: HTMLElement,
       error: CertificatesError|CertificatesImportError|null) {
     if (error === null) {
-      // Nothing to do here. Null indicates that the user clicked "cancel" on
-      // a native file chooser dialog.
+      // Nothing to do here. Null indicates that the user clicked "cancel" on a
+      // native file chooser dialog or that the request was ignored by the
+      // handler due to being received while another was still being processed.
       return;
     }
 

@@ -190,9 +190,10 @@ class CertificatesHandler : public content::WebUIMessageHandler,
       const std::string& title,
       const net::NSSCertDatabase::ImportCertFailureList& not_imported);
 
-  // Assigns a new |webui_callback_id_|. Ensures that previous in-flight request
-  // has been fulfilled.
-  void AssignWebUICallbackId(const base::Value::List& args);
+  // Assigns a new |webui_callback_id_|. Returns false if a previous request
+  // is still in-flight, in which case the new request should be rejected and
+  // ignored.
+  [[nodiscard]] bool AssignWebUICallbackId(const base::Value::List& args);
 
   gfx::NativeWindow GetParentWindow();
 
