@@ -32,11 +32,6 @@ js_library("fake_settings_search_handler") {
 
 js_modulizer("modulize") {
   input_files = [
-    "cups_printer_entry_tests.js",
-    "cups_printer_landing_page_tests.js",
-    "cups_printer_page_tests.js",
-    "cups_printer_test_utils.js",
-    "device_page_tests.js",
     "fake_quick_unlock_private.js",
     "fake_quick_unlock_uma.js",
     "fake_receive_manager.js",
@@ -48,7 +43,6 @@ js_modulizer("modulize") {
     "onc_mojo_test.js",
     "os_files_page_test.js",
     "os_reset_page_test.js",
-    "os_printing_page_tests.js",
     "os_privacy_page_test.js",
     "os_search_page_test.js",
     "os_settings_main_test.js",
@@ -66,8 +60,6 @@ js_modulizer("modulize") {
     "settings_traffic_counters_test.js",
     "smart_privacy_subpage_tests.js",
     "smb_shares_page_tests.js",
-    "test_cups_printers_browser_proxy.js",
-    "test_device_name_browser_proxy.js",
     "test_kerberos_accounts_browser_proxy.js",
     "test_os_lifetime_browser_proxy.js",
     "test_os_reset_browser_proxy.js",

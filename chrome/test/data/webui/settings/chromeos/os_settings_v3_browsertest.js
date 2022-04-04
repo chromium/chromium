@@ -37,7 +37,7 @@ var OSSettingsV3BrowserTest = class extends PolymerTest {
 var OSSettingsDevicePageV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/device_page_tests.m.js';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/device_page_tests.js';
   }
 
   /** @override */
@@ -368,10 +368,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'DictationChangeLanguageLocaleDialogTest',
    'change_dictation_locale_dialog_test.js'
  ],
- ['CupsPrinterEntry', 'cups_printer_entry_tests.m.js'],
- ['CupsPrinterLandingPage', 'cups_printer_landing_page_tests.m.js'],
+ ['CupsPrinterEntry', 'cups_printer_entry_tests.js'],
+ ['CupsPrinterLandingPage', 'cups_printer_landing_page_tests.js'],
  // TODO(crbug/1240970): Re-enable once flakiness is fixed.
- // ['CupsPrinterPage', 'cups_printer_page_tests.m.js'],
+ // ['CupsPrinterPage', 'cups_printer_page_tests.js'],
  ['DarkModeSubpage', 'dark_mode_subpage_tests.js'],
  ['DateTimePage', 'date_time_page_tests.js'],
  ['EsimInstallErrorDialog', 'esim_install_error_dialog_test.js'],
@@ -455,7 +455,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'quick_unlock_authenticate_browsertest_chromeos.m.js'
  ],
  ['PersonalizationPage', 'personalization_page_test.js'],
- ['PrintingPage', 'os_printing_page_tests.m.js'],
+ ['PrintingPage', 'os_printing_page_tests.js'],
  ['PrivacyPage', 'os_privacy_page_test.m.js'],
  ['ResetPage', 'os_reset_page_test.m.js'],
  ['SettingsSchedulerSlider', 'settings_scheduler_slider_test.m.js'],

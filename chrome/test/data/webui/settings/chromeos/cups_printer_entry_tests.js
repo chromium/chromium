@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/lazy_load.js';
+import 'chrome://os-settings/chromeos/lazy_load.js';
 
-// #import {PrinterType} from 'chrome://os-settings/chromeos/lazy_load.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format on
+import {PrinterType} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * Helper function to verify that printers in |printerListEntries| that contain
@@ -68,7 +66,7 @@ function verifySearchQueryResults(
     printerEntryListTestElement, expectedVisiblePrinters, searchTerm) {
   printerEntryListTestElement.searchTerm = searchTerm;
 
-  Polymer.dom.flush();
+  flush();
 
   verifyVisiblePrinters(printerEntryListTestElement, expectedVisiblePrinters);
   verifyFilteredPrinters(printerEntryListTestElement, searchTerm);
@@ -160,7 +158,7 @@ suite('CupsPrinterEntry', function() {
     // Assert that three dot menu is not shown before the dom is updated.
     assertFalse(!!printerEntryTestElement.$$('.icon-more-vert'));
 
-    Polymer.dom.flush();
+    flush();
 
     // Three dot menu should be visible when |printerType| is set to
     // PrinterType.SAVED.
@@ -177,7 +175,7 @@ suite('CupsPrinterEntry', function() {
     for (let i = 0; i < printerTypes.length; i++) {
       printerEntryTestElement.printerEntry =
           createPrinterEntry(printerTypes[i]);
-      Polymer.dom.flush();
+      flush();
       const actionButton = printerEntryTestElement.$$(printerIds[i]);
       printerEntryTestElement.savingPrinter = true;
       printerEntryTestElement.userPrintersAllowed = true;

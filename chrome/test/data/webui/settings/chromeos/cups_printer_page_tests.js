@@ -2,20 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/lazy_load.js';
+import {CupsPrintersBrowserProxyImpl, CupsPrintersEntryManager, PrinterSetupResult, PrinterType, PrintServerResult} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {CupsPrintersBrowserProxyImpl,PrinterSetupResult,CupsPrintersEntryManager,PrintServerResult,PrinterType} from 'chrome://os-settings/chromeos/lazy_load.js';
-// #import {TestCupsPrintersBrowserProxy} from './test_cups_printers_browser_proxy.m.js';
-// #import {createCupsPrinterInfo,createPrinterListEntry} from './cups_printer_test_utils.m.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
-// #import {flushTasks} from '../../test_util.js';
-// #import {MojoInterfaceProviderImpl, MojoInterfaceProvider} from '//resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
-// #import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-// #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
-// clang-format on
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {flushTasks} from '../../test_util.js';
+
+import {createCupsPrinterInfo, createPrinterListEntry} from './cups_printer_test_utils.js';
+import {TestCupsPrintersBrowserProxy} from './test_cups_printers_browser_proxy.js';
 
 /*
  * Helper function that waits for |getEulaUrl| to get called and then verifies
@@ -88,8 +85,8 @@ suite('CupsAddPrinterDialogTests', function() {
     // Test that pressing Enter before all the fields are populated does not
     // advance to the next dialog.
     const input = addDialog.$$(crInputId);
-    MockInteractions.keyEventOn(input, 'keypress', /*keycode=*/13, [], 'Enter');
-    Polymer.dom.flush();
+    keyEventOn(input, 'keypress', /*keycode=*/ 13, [], 'Enter');
+    flush();
 
     assertFalse(!!dialog.$$('add-printer-manufacturer-model-dialog'));
     assertFalse(dialog.showManufacturerDialog_);
@@ -100,16 +97,16 @@ suite('CupsAddPrinterDialogTests', function() {
 
     // Test that key press on random key while in input field is not accepted as
     // as valid Enter press.
-    MockInteractions.keyEventOn(input, 'keypress', /*keycode=*/16, [], 'Shift');
-    Polymer.dom.flush();
+    keyEventOn(input, 'keypress', /*keycode=*/ 16, [], 'Shift');
+    flush();
 
     assertFalse(!!dialog.$$('add-printer-manufacturer-model-dialog'));
     assertFalse(dialog.showManufacturerDialog_);
     assertTrue(dialog.showManuallyAddDialog_);
 
     // Now test Enter press with valid input.
-    MockInteractions.keyEventOn(input, 'keypress', /*keycode=*/13, [], 'Enter');
-    Polymer.dom.flush();
+    keyEventOn(input, 'keypress', /*keycode=*/ 13, [], 'Enter');
+    flush();
   }
 
   let page = null;
@@ -119,9 +116,8 @@ suite('CupsAddPrinterDialogTests', function() {
   let cupsPrintersBrowserProxy = null;
 
   setup(function() {
-    cupsPrintersBrowserProxy =
-        new printerBrowserProxy.TestCupsPrintersBrowserProxy();
-    settings.CupsPrintersBrowserProxyImpl.instance_ = cupsPrintersBrowserProxy;
+    cupsPrintersBrowserProxy = new TestCupsPrintersBrowserProxy();
+    CupsPrintersBrowserProxyImpl.instance_ = cupsPrintersBrowserProxy;
 
     PolymerTest.clearBody();
     page = document.createElement('settings-cups-printers');
@@ -133,7 +129,7 @@ suite('CupsAddPrinterDialogTests', function() {
     assertTrue(!!dialog);
 
     dialog.open();
-    Polymer.dom.flush();
+    flush();
   });
 
   teardown(function() {
@@ -207,17 +203,17 @@ suite('CupsAddPrinterDialogTests', function() {
     // Starts in add manual dialog.
     const addDialog = dialog.$$('add-printer-manually-dialog');
     assertTrue(!!addDialog);
-    Polymer.dom.flush();
+    flush();
     fillAddManuallyDialog(addDialog);
 
     addDialog.$$('.action-button').click();
-    Polymer.dom.flush();
+    flush();
 
     // Upon rejection, show model.
     return cupsPrintersBrowserProxy
         .whenCalled('getCupsPrinterManufacturersList')
         .then(function() {
-          return test_util.flushTasks();
+          return flushTasks();
         })
         .then(function() {
           // Showing model selection.
@@ -236,7 +232,7 @@ suite('CupsAddPrinterDialogTests', function() {
     // Starts in add manual dialog.
     const addDialog = dialog.$$('add-printer-manually-dialog');
     assertTrue(!!addDialog);
-    Polymer.dom.flush();
+    flush();
 
     fillAddManuallyDialog(addDialog);
 
@@ -246,7 +242,7 @@ suite('CupsAddPrinterDialogTests', function() {
 
     // Attempt to add the printer.
     addDialog.$$('.action-button').click();
-    Polymer.dom.flush();
+    flush();
 
     // Upon rejection, show model.
     return cupsPrintersBrowserProxy.whenCalled('getPrinterInfo')
@@ -267,7 +263,7 @@ suite('CupsAddPrinterDialogTests', function() {
     // Starts in add manual dialog.
     const addDialog = dialog.$$('add-printer-manually-dialog');
     assertTrue(!!addDialog);
-    Polymer.dom.flush();
+    flush();
 
     fillAddManuallyDialog(addDialog);
 
@@ -277,7 +273,7 @@ suite('CupsAddPrinterDialogTests', function() {
 
     // Attempt to add the printer.
     addDialog.$$('.action-button').click();
-    Polymer.dom.flush();
+    flush();
 
     // Upon rejection, show model.
     return cupsPrintersBrowserProxy.whenCalled('getPrinterInfo')
@@ -295,7 +291,7 @@ suite('CupsAddPrinterDialogTests', function() {
     // Starts in add manual dialog.
     const addDialog = dialog.$$('add-printer-manually-dialog');
     assertTrue(!!addDialog);
-    Polymer.dom.flush();
+    flush();
     fillAddManuallyDialog(addDialog);
 
     // Verify that getCupsPrinterModelList is not called.
@@ -308,7 +304,7 @@ suite('CupsAddPrinterDialogTests', function() {
     cupsPrintersBrowserProxy.manufacturers =
         ['ManufacturerA', 'ManufacturerB', 'Chromites'];
     addDialog.$$('.action-button').click();
-    Polymer.dom.flush();
+    flush();
 
     return cupsPrintersBrowserProxy
         .whenCalled('getCupsPrinterManufacturersList')
@@ -329,7 +325,7 @@ suite('CupsAddPrinterDialogTests', function() {
     const makeAndModel = 'Printer Make And Model';
     // Start on add manual dialog.
     dialog.fire('open-manually-add-printer-dialog');
-    Polymer.dom.flush();
+    flush();
 
     // Populate the printer object.
     dialog.newPrinter = {
@@ -363,7 +359,7 @@ suite('CupsAddPrinterDialogTests', function() {
     // Press the add button to advance dialog.
     const addDialog = dialog.$$('add-printer-manually-dialog');
     assertTrue(!!addDialog);
-    Polymer.dom.flush();
+    flush();
     clickAddButton(addDialog);
 
     // Click cancel on the manufacturer dialog when it shows up then verify
@@ -371,7 +367,7 @@ suite('CupsAddPrinterDialogTests', function() {
     return cupsPrintersBrowserProxy
         .whenCalled('getCupsPrinterManufacturersList')
         .then(function() {
-          Polymer.dom.flush();
+          flush();
           // Cancel setup with the cancel button.
           clickCancelButton(dialog.$$('add-printer-manufacturer-model-dialog'));
           return cupsPrintersBrowserProxy.whenCalled('cancelPrinterSetUp');
@@ -390,11 +386,11 @@ suite('CupsAddPrinterDialogTests', function() {
     // Start in add manual dialog.
     const addDialog = dialog.$$('add-printer-manually-dialog');
     assertTrue(!!addDialog);
-    Polymer.dom.flush();
+    flush();
     fillAddManuallyDialog(addDialog);
 
     addDialog.$$('.action-button').click();
-    Polymer.dom.flush();
+    flush();
 
     const expectedEulaLink = 'chrome://os-credits/#google';
     const expectedManufacturer = 'Google';
@@ -462,10 +458,10 @@ suite('CupsAddPrinterDialogTests', function() {
     // manufacturer dialog.
     const addDialog = dialog.$$('add-printer-manually-dialog');
     assertTrue(!!addDialog);
-    Polymer.dom.flush();
+    flush();
     fillAddManuallyDialog(addDialog);
     clickAddButton(addDialog);
-    Polymer.dom.flush();
+    flush();
 
     // Click the add button on the manufacturer dialog and then verify it is
     // disabled.
@@ -502,7 +498,7 @@ suite('CupsAddPrinterDialogTests', function() {
     return cupsPrintersBrowserProxy
         .whenCalled('getCupsPrinterManufacturersList')
         .then(function() {
-          return test_util.flushTasks();
+          return flushTasks();
         })
         .then(function() {
           // Showing model selection.
@@ -519,7 +515,7 @@ suite('CupsAddPrinterDialogTests', function() {
     return cupsPrintersBrowserProxy
         .whenCalled('getCupsPrinterManufacturersList')
         .then(function() {
-          return test_util.flushTasks();
+          return flushTasks();
         })
         .then(function() {
           // Showing model selection.
@@ -536,7 +532,7 @@ suite('CupsAddPrinterDialogTests', function() {
     return cupsPrintersBrowserProxy
         .whenCalled('getCupsPrinterManufacturersList')
         .then(function() {
-          return test_util.flushTasks();
+          return flushTasks();
         })
         .then(function() {
           // Showing model selection.
@@ -555,10 +551,10 @@ suite('CupsAddPrinterDialogTests', function() {
     // manufacturer dialog.
     const addDialog = dialog.$$('add-printer-manually-dialog');
     assertTrue(!!addDialog);
-    Polymer.dom.flush();
+    flush();
     fillAddManuallyDialog(addDialog);
     clickAddButton(addDialog);
-    Polymer.dom.flush();
+    flush();
 
     return cupsPrintersBrowserProxy
         .whenCalled('getCupsPrinterManufacturersList')
@@ -612,14 +608,14 @@ suite('CupsAddPrinterDialogTests', function() {
 
     select.value = 'socket';
     select.dispatchEvent(new CustomEvent('change'), {'bubbles': true});
-    Polymer.dom.flush();
+    flush();
 
     printerQueueInput = addDialog.$$('#printerQueueInput');
     assertFalse(!!printerQueueInput);
 
     select.value = 'http';
     select.dispatchEvent(new CustomEvent('change'), {'bubbles': true});
-    Polymer.dom.flush();
+    flush();
 
     printerQueueInput = addDialog.$$('#printerQueueInput');
     assertTrue(!!printerQueueInput);
@@ -641,23 +637,22 @@ suite('EditPrinterDialog', function() {
   setup(function() {
     const mojom = chromeos.networkConfig.mojom;
 
-    cupsPrintersBrowserProxy =
-        new printerBrowserProxy.TestCupsPrintersBrowserProxy();
+    cupsPrintersBrowserProxy = new TestCupsPrintersBrowserProxy();
 
-    settings.CupsPrintersBrowserProxyImpl.instance_ = cupsPrintersBrowserProxy;
+    CupsPrintersBrowserProxyImpl.instance_ = cupsPrintersBrowserProxy;
 
     // Simulate internet connection.
     wifi1 = OncMojo.getDefaultNetworkState(mojom.NetworkType.kWiFi, 'wifi1');
     wifi1.connectionState = mojom.ConnectionStateType.kOnline;
 
     PolymerTest.clearBody();
-    settings.Router.getInstance().navigateTo(settings.routes.CUPS_PRINTERS);
+    Router.getInstance().navigateTo(routes.CUPS_PRINTERS);
 
     page = document.createElement('settings-cups-printers');
     document.body.appendChild(page);
     assertTrue(!!page);
     page.onActiveNetworksChanged([wifi1]);
-    Polymer.dom.flush();
+    flush();
   });
 
   teardown(function() {
@@ -706,8 +701,7 @@ suite('EditPrinterDialog', function() {
   function initializeAndOpenEditDialog(
       name, address, id, autoconf, manufacturer, model, protocol,
       serverAddress) {
-    page.activePrinter =
-        cups_printer_test_util.createCupsPrinterInfo(name, address, id);
+    page.activePrinter = createCupsPrinterInfo(name, address, id);
     page.activePrinter.printerPpdReference.autoconf = autoconf;
     page.activePrinter.printerProtocol = protocol;
     page.activePrinter.printServerUri = serverAddress;
@@ -717,7 +711,7 @@ suite('EditPrinterDialog', function() {
     };
     // Trigger the edit dialog to open.
     page.fire('edit-cups-printer-details');
-    Polymer.dom.flush();
+    flush();
     dialog = page.$$('settings-cups-edit-printer-dialog');
     // This proxy function gets called whenever the edit dialog is initialized.
     return cupsPrintersBrowserProxy.whenCalled('getCupsPrinterModelsList');
@@ -834,7 +828,7 @@ suite('EditPrinterDialog', function() {
           assertTrue(!!nameField);
           nameField.value = expectedName;
 
-          Polymer.dom.flush();
+          flush();
           clickSaveButton(dialog);
           return cupsPrintersBrowserProxy.whenCalled('updateCupsPrinter');
         })
@@ -1014,7 +1008,7 @@ suite('EditPrinterDialog', function() {
           const dropDown = dialog.$$('.md-select');
           dropDown.value = 'http';
           dropDown.dispatchEvent(new CustomEvent('change'), {'bubbles': true});
-          Polymer.dom.flush();
+          flush();
           assertTrue(!saveButton.disabled);
         });
   });
@@ -1056,7 +1050,7 @@ suite('EditPrinterDialog', function() {
           modelDropDown.dispatchEvent(
               new CustomEvent('change'), {'bubbles': true});
 
-          Polymer.dom.flush();
+          flush();
           assertTrue(!saveButton.disabled);
         });
   });
@@ -1130,7 +1124,7 @@ suite('EditPrinterDialog', function() {
     wifi1.connectionState =
         chromeos.networkConfig.mojom.ConnectionStateType.kConnected;
     page.onActiveNetworksChanged([wifi1]);
-    Polymer.dom.flush();
+    flush();
     const expectedName = 'editedName';
     return initializeAndOpenEditDialog(
                /*name=*/ 'name', /*address=*/ 'address', /*id=*/ 'id',
@@ -1142,7 +1136,7 @@ suite('EditPrinterDialog', function() {
           nameField.value = expectedName;
           nameField.fire('input');
 
-          Polymer.dom.flush();
+          flush();
 
           const saveButton = dialog.$$('.action-button');
           assertTrue(!!saveButton);
@@ -1176,7 +1170,7 @@ suite('EditPrinterDialog', function() {
           nameField.value = expectedName;
           nameField.fire('input');
 
-          Polymer.dom.flush();
+          flush();
 
           const saveButton = dialog.$$('.action-button');
           assertTrue(!!saveButton);
@@ -1195,7 +1189,7 @@ suite('PrintServerTests', function() {
   let page = null;
   let dialog = null;
 
-  /** @type {?settings.printing.CupsPrintersEntryManager} */
+  /** @type {?CupsPrintersEntryManager} */
   let entryManager = null;
 
   /** @type {?settings.TestCupsPrintersBrowserProxy} */
@@ -1203,18 +1197,17 @@ suite('PrintServerTests', function() {
 
 
   setup(function() {
-    entryManager = settings.printing.CupsPrintersEntryManager.getInstance();
+    entryManager = CupsPrintersEntryManager.getInstance();
     setEntryManagerPrinters(
         /*savedPrinters=*/[], /*automaticPrinters=*/[],
         /*discoveredPrinters=*/[], /*printServerPrinters=*/[]);
 
-    cupsPrintersBrowserProxy =
-        new printerBrowserProxy.TestCupsPrintersBrowserProxy();
+    cupsPrintersBrowserProxy = new TestCupsPrintersBrowserProxy();
 
-    settings.CupsPrintersBrowserProxyImpl.instance_ = cupsPrintersBrowserProxy;
+    CupsPrintersBrowserProxyImpl.instance_ = cupsPrintersBrowserProxy;
 
     PolymerTest.clearBody();
-    settings.Router.getInstance().navigateTo(settings.routes.CUPS_PRINTERS);
+    Router.getInstance().navigateTo(routes.CUPS_PRINTERS);
 
     page = document.createElement('settings-cups-printers');
     document.body.appendChild(page);
@@ -1222,7 +1215,7 @@ suite('PrintServerTests', function() {
     dialog = page.$$('settings-cups-add-printer-dialog');
     assertTrue(!!dialog);
 
-    Polymer.dom.flush();
+    flush();
   });
 
   teardown(function() {
@@ -1270,18 +1263,18 @@ suite('PrintServerTests', function() {
     // Open the add manual printe dialog.
     assertTrue(!!page);
     dialog.open();
-    Polymer.dom.flush();
+    flush();
 
     const addPrinterDialog = dialog.$$('add-printer-manually-dialog');
     // Switch to Add print server dialog.
     addPrinterDialog.$$('#print-server-button').click();
-    Polymer.dom.flush();
+    flush();
     const printServerDialog = dialog.$$('add-print-server-dialog');
     assertTrue(!!printServerDialog);
 
-    Polymer.dom.flush();
+    flush();
     cupsPrintersBrowserProxy.setQueryPrintServerResult(error);
-    return test_util.flushTasks().then(() => {
+    return flushTasks().then(() => {
       // Fill dialog with the server address.
       const address = printServerDialog.$$('#printServerAddressInput');
       assertTrue(!!address);
@@ -1332,15 +1325,13 @@ suite('PrintServerTests', function() {
     cupsPrintersBrowserProxy.printServerPrinters =
         /** @type{!CupsPrintServerPrintersInfo} */ ({
           printerList: [
-            cups_printer_test_util.createCupsPrinterInfo(
-                'nameA', 'serverAddress', 'idA'),
-            cups_printer_test_util.createCupsPrinterInfo(
-                'nameB', 'serverAddress', 'idB')
+            createCupsPrinterInfo('nameA', 'serverAddress', 'idA'),
+            createCupsPrinterInfo('nameB', 'serverAddress', 'idB')
           ]
         });
     return addPrintServer('serverAddress', PrintServerResult.NO_ERRORS)
         .then(() => {
-          Polymer.dom.flush();
+          flush();
           verifyToastMessage(
               'printServerFoundManyPrinters', /*numPrinters=*/ 2);
           assertEquals(2, entryManager.printServerPrinters.length);
@@ -1352,25 +1343,23 @@ suite('PrintServerTests', function() {
     cupsPrintersBrowserProxy.printServerPrinters =
         /** @type{!CupsPrintServerPrintersInfo} */ ({
           printerList: [
-            cups_printer_test_util.createCupsPrinterInfo(
-                'nameA', 'serverAddress', 'idA'),
-            cups_printer_test_util.createCupsPrinterInfo(
-                'nameB', 'serverAddress', 'idB')
+            createCupsPrinterInfo('nameA', 'serverAddress', 'idA'),
+            createCupsPrinterInfo('nameB', 'serverAddress', 'idB')
           ]
         });
 
-    return test_util.flushTasks()
+    return flushTasks()
         .then(() => {
           // Simulate that a print server was queried previously.
           setEntryManagerPrinters(
               /*savedPrinters=*/[], /*nearbyPrinters=*/[],
               /*discoveredPrinters=*/[], [
-                cups_printer_test_util.createPrinterListEntry(
+                createPrinterListEntry(
                     'nameA', 'serverAddress', 'idA', PrinterType.PRINTSERVER),
-                cups_printer_test_util.createPrinterListEntry(
+                createPrinterListEntry(
                     'nameB', 'serverAddress', 'idB', PrinterType.PRINTSERVER)
               ]);
-          Polymer.dom.flush();
+          flush();
           assertEquals(2, entryManager.printServerPrinters.length);
 
           // This will attempt to add duplicate print server printers.
@@ -1378,7 +1367,7 @@ suite('PrintServerTests', function() {
           return addPrintServer('serverAddress', PrintServerResult.NO_ERRORS);
         })
         .then(() => {
-          Polymer.dom.flush();
+          flush();
 
           verifyToastMessage(
               'printServerFoundManyPrinters', /*numPrinters=*/ 2);
@@ -1396,38 +1385,35 @@ suite('PrintServerTests', function() {
     cupsPrintersBrowserProxy.printServerPrinters =
         /** @type{} CupsPrintServerPrintersInfo*/ ({
           printerList: [
-            cups_printer_test_util.createCupsPrinterInfo(
-                'nameA', 'serverAddress', 'idA'),
-            cups_printer_test_util.createCupsPrinterInfo(
-                'nameB', 'serverAddress', 'idB')
+            createCupsPrinterInfo('nameA', 'serverAddress', 'idA'),
+            createCupsPrinterInfo('nameB', 'serverAddress', 'idB')
           ]
         });
 
-    return test_util.flushTasks().then(() => {
+    return flushTasks().then(() => {
       // Simulate that a print server was queried previously.
       setEntryManagerPrinters(
           /*savedPrinters=*/[], /*nearbyPrinters=*/[],
           /*discoveredPrinters=*/[], [
-            cups_printer_test_util.createPrinterListEntry(
+            createPrinterListEntry(
                 'nameA', 'serverAddress', 'idA', PrinterType.PRINTSERVER),
-            cups_printer_test_util.createPrinterListEntry(
+            createPrinterListEntry(
                 'nameB', 'serverAddress', 'idB', PrinterType.PRINTSERVER)
           ]);
-      Polymer.dom.flush();
+      flush();
       assertEquals(2, entryManager.printServerPrinters.length);
 
       // Simulate adding a saved printer.
-      entryManager.setSavedPrintersList(
-          [cups_printer_test_util.createPrinterListEntry(
-              'nameA', 'serverAddress', 'idA', PrinterType.SAVED)]);
-      Polymer.dom.flush();
+      entryManager.setSavedPrintersList([createPrinterListEntry(
+          'nameA', 'serverAddress', 'idA', PrinterType.SAVED)]);
+      flush();
 
       // Simulate the underlying model changes. Nearby printers are also
       // updated after changes to saved printers.
       cr.webUIListenerCallback(
           'on-nearby-printers-changed', /*automaticPrinter=*/[],
           /*discoveredPrinters=*/[]);
-      Polymer.dom.flush();
+      flush();
 
       // Verify that we now only have 1 printer in print server printers
       // list.
@@ -1447,7 +1433,7 @@ suite('PrintServerTests', function() {
         /** @type{} CupsPrintServerPrintersInfo*/ ({printerList: []});
     return addPrintServer('serverAddress', PrintServerResult.INCORRECT_URL)
         .then(() => {
-          Polymer.dom.flush();
+          flush();
           const printServerDialog = getPrintServerDialog(page);
           // Assert that the dialog did not close on errors.
           assertTrue(!!printServerDialog);
@@ -1461,7 +1447,7 @@ suite('PrintServerTests', function() {
         /** @type{} CupsPrintServerPrintersInfo*/ ({printerList: []});
     return addPrintServer('serverAddress', PrintServerResult.CONNECTION_ERROR)
         .then(() => {
-          Polymer.dom.flush();
+          flush();
           verifyErrorMessage('printServerConnectionError');
         });
   });
@@ -1472,7 +1458,7 @@ suite('PrintServerTests', function() {
     return addPrintServer(
                'serverAddress', PrintServerResult.CANNOT_PARSE_IPP_RESPONSE)
         .then(() => {
-          Polymer.dom.flush();
+          flush();
           verifyErrorMessage('printServerConfigurationErrorMessage');
         });
   });
@@ -1482,7 +1468,7 @@ suite('PrintServerTests', function() {
         /** @type{} CupsPrintServerPrintersInfo*/ ({printerList: []});
     return addPrintServer('serverAddress', PrintServerResult.HTTP_ERROR)
         .then(() => {
-          Polymer.dom.flush();
+          flush();
           verifyErrorMessage('printServerConfigurationErrorMessage');
         });
   });

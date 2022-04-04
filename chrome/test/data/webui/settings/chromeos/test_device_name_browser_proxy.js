@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
-// #import {SetDeviceNameResult} from 'chrome://os-settings/chromeos/os_settings.js'
-// clang-format on
+import {SetDeviceNameResult} from 'chrome://os-settings/chromeos/os_settings.js';
+
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
 /** @implements {DeviceNameBrowserProxy} */
-/* #export */ class TestDeviceNameBrowserProxy extends TestBrowserProxy {
+export class TestDeviceNameBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
       'notifyReadyForDeviceName',
