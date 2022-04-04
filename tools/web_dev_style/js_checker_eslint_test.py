@@ -38,17 +38,16 @@ class JsCheckerEsLintTest(unittest.TestCase):
 
     checker = js_checker.JSChecker(input_api, MockOutputApi())
 
-    try:
-      # ESLint JSON warnings come from stdout without error return.
-      output = checker.RunEsLintChecks(input_api.AffectedFiles(),
-                                       format='json')[0]
-      json_error = str(output)
-    except RuntimeError as err:
-      # Extract ESLint's JSON error output from the error message.
-      message = str(err)
-      json_error = message[message.index('['):]
+    output = checker.RunEsLintChecks(input_api.AffectedFiles(),
+                                     format='json')[0]
 
-    return json.loads(json_error)[0].get('messages')
+    # Extract ESLint's error from the PresubmitError. This is added in
+    # third_party/node/node.py.
+    search_token = '\' failed\n'
+    json_start_index = output.message.index(search_token)
+    json_error_str = output.message[json_start_index + len(search_token):]
+    # ESLint's errors are in JSON format.
+    return json.loads(json_error_str)[0].get('messages')
 
   def _assertError(self, results, rule_id, line):
     self.assertEqual(1, len(results))

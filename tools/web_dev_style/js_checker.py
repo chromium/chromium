@@ -79,9 +79,12 @@ class JSChecker(object):
     args += affected_js_files_paths
 
     from . import eslint
-    output = eslint.Run(os_path=os_path, args=args)
 
-    return [self.output_api.PresubmitError(output)] if output else []
+    try:
+      output = eslint.Run(os_path=os_path, args=args)
+    except RuntimeError as err:
+      return [self.output_api.PresubmitError(str(err))]
+    return []
 
   def VariableNameCheck(self, i, line):
     """See the style guide. http://goo.gl/eQiXVW"""
