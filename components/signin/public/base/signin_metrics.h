@@ -267,6 +267,8 @@ enum class AccountConsistencyPromoAction : int {
   SUPPRESSED_CONSECUTIVE_DISMISSALS = 16,
   // The timeout erreur was shown to the user.
   TIMEOUT_ERROR_SHOWN = 17,
+  // The web sign-in is not shown because the user is already signed in.
+  SUPPRESSED_ALREADY_SIGNED_IN = 18,
   MAX = 18,
 };
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

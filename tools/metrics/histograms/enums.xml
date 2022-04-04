@@ -1119,6 +1119,9 @@ Unknown properties are collapsed to zero. -->
   <int value="17" label="SigninTimeoutErrorShown">
     The sign-in time out error was shown to the user.
   </int>
+  <int value="18" label="SuppressedAlreadySignedIn">
+    The web sign-in is not shown because the user is already signed in.
+  </int>
 </enum>
 
 <enum name="AccountConsistencyPromoAfterDismissal">

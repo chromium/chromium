@@ -10,6 +10,8 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_coordinator.h"
@@ -165,15 +167,30 @@ using signin_metrics::PromoAction;
     consistencyPromoSigninCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                                     browser:(Browser*)browser {
+  ChromeBrowserState* browserState = browser->GetBrowserState();
   ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(
-          browser->GetBrowserState());
+      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
   if (!accountManagerService->HasIdentities()) {
     RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::SUPPRESSED_NO_ACCOUNTS);
     return nil;
   }
-  PrefService* userPrefService = browser->GetBrowserState()->GetPrefs();
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
+  if (authenticationService->HasPrimaryIdentity(
+          signin::ConsentLevel::kSignin)) {
+    // For some reasons, Gaia might ask for the web sign-in while the user is
+    // already signed in. It might be a race conditions with a token already
+    // disabled on Gaia, and Chrome not aware of it yet?
+    // To avoid a crash (hitting CHECK() to sign-in while already being signed
+    // in), we need to skip the web sign-in dialog.
+    // Related to crbug.com/1308448.
+    RecordConsistencyPromoUserAction(
+        signin_metrics::AccountConsistencyPromoAction::
+            SUPPRESSED_ALREADY_SIGNED_IN);
+    return nil;
+  }
+  PrefService* userPrefService = browserState->GetPrefs();
   if (!signin::IsSigninAllowed(userPrefService)) {
     RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::
