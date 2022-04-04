@@ -21,6 +21,10 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "components/custom_handlers/protocol_handler.h"
+#include "components/custom_handlers/protocol_handler_registry.h"
+#include "components/custom_handlers/simple_protocol_handler_registry_factory.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -490,6 +494,43 @@ blink::mojom::DisplayMode Shell::GetDisplayMode(
              ? blink::mojom::DisplayMode::kFullscreen
              : blink::mojom::DisplayMode::kBrowser;
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void Shell::RegisterProtocolHandler(RenderFrameHost* requesting_frame,
+                                    const std::string& protocol,
+                                    const GURL& url,
+                                    bool user_gesture) {
+  content::BrowserContext* context = requesting_frame->GetBrowserContext();
+  if (context->IsOffTheRecord())
+    return;
+
+  custom_handlers::ProtocolHandler handler =
+      custom_handlers::ProtocolHandler::CreateProtocolHandler(
+          protocol, url, GetProtocolHandlerSecurityLevel(requesting_frame));
+
+  // The parameters's normalization process defined in the spec has been already
+  // applied in the WebContentImpl class, so at this point it shouldn't be
+  // possible to create an invalid handler.
+  // https://html.spec.whatwg.org/multipage/system-state.html#normalize-protocol-handler-parameters
+  DCHECK(handler.IsValid());
+
+  custom_handlers::ProtocolHandlerRegistry* registry = custom_handlers::
+      SimpleProtocolHandlerRegistryFactory::GetForBrowserContext(context, true);
+  DCHECK(registry);
+  if (registry->SilentlyHandleRegisterHandlerRequest(handler))
+    return;
+
+  // FencedFrames can not register to handle any protocols.
+  if (requesting_frame->IsNestedWithinFencedFrame()) {
+    registry->OnIgnoreRegisterProtocolHandler(handler);
+    return;
+  }
+
+  // TODO(jfernandez): Are we interested at all on using the
+  // PermissionRequestManager in the ContentShell ?
+  registry->OnAcceptRegisterProtocolHandler(handler);
+}
+#endif
 
 void Shell::RequestToLockMouse(WebContents* web_contents,
                                bool user_gesture,

@@ -768,6 +768,7 @@ if (!is_ios) {
       "//components/content_settings/renderer",
       "//components/continuous_search/common/public/mojom",
       "//components/continuous_search/renderer",
+      "//components/custom_handlers:browser_tests",
       "//components/dom_distiller/content/browser",
       "//components/dom_distiller/core",
       "//components/dom_distiller/core:test_support",

@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 self.addEventListener('fetch', function(event) {
-  if (!event.request.url.includes('handler.html'))
+  if (!event.request.url.includes('handler.html')) {
     return;
+  }
 
   event.respondWith(new Response(
       `<script>

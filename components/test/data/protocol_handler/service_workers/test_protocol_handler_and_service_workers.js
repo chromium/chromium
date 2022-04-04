@@ -26,16 +26,16 @@ async function handledByServiceWorker(url) {
   a.href = url;
   a.rel = 'opener';
   a.target = '_blank';
-  let handled_by_service_worker;
+  let handledByServiceWorker;
   await new Promise(resolve => {
     window.addEventListener('message', function(event) {
-      handled_by_service_worker = event.data.handled_by_service_worker;
+      handledByServiceWorker = event.data.handled_by_service_worker;
       event.source.close();
       resolve();
-    }, {once: true})
+    }, {once: true});
     a.click();
   });
-  return handled_by_service_worker;
+  return handledByServiceWorker;
 }
 
 function pageWithCustomSchemeHandledByServiceWorker() {

@@ -234,6 +234,8 @@ static_library("content_shell_lib") {
     "//build:chromeos_buildflags",
     "//cc/base",
     "//components/cdm/renderer",
+    "//components/custom_handlers",
+    "//components/custom_handlers:test_support",
     "//components/keyed_service/content",
     "//components/metrics",
     "//components/metrics:net",
