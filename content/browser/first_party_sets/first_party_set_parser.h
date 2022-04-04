@@ -15,6 +15,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/first_party_sets_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
@@ -28,32 +29,9 @@ class CONTENT_EXPORT FirstPartySetParser {
   using SetsMap = base::flat_map<net::SchemefulSite, net::SchemefulSite>;
   using SingleSet =
       std::pair<net::SchemefulSite, base::flat_set<net::SchemefulSite>>;
-
-  enum class ParseError {
-    // The set definition was not the correct data type.
-    kInvalidType,
-    // A string in the set was not a registrable domain.
-    kInvalidOrigin,
-    // The set had no members.
-    kSingletonSet,
-    // The set was non-disjoint with other pre-existing sets.
-    kNonDisjointSets,
-    // The set repeated the same domain more than once in its definition.
-    kRepeatedDomain,
-  };
-
-  enum class PolicySetType { kReplacement, kAddition };
-
-  struct CONTENT_EXPORT PolicyParsingError {
-    bool operator==(const PolicyParsingError& other) const;
-
-    // The kind of error that was found when parsing the policy sets.
-    ParseError error;
-    // The field of the policy that was being parsed when the error was found.
-    PolicySetType set_type;
-    // The index of the set in the 'set_type' list where the error was found.
-    int error_index;
-  };
+  using ParseError = FirstPartySetsHandler::ParseError;
+  using PolicySetType = FirstPartySetsHandler::PolicySetType;
+  using PolicyParsingError = FirstPartySetsHandler::PolicyParsingError;
 
   struct CONTENT_EXPORT ParsedPolicySetLists {
     ParsedPolicySetLists(std::vector<SingleSet> replacement_list,
@@ -111,15 +89,15 @@ class CONTENT_EXPORT FirstPartySetParser {
   // Parses two lists of First-Party Sets from `policy` using the "replacements"
   // and "additions" list fields if present.
   //
-  // Returns an optional FirstPartySetParseError and the location of the error
-  // if any set in these lists violates the required invariants of First-Party
-  // Sets.
+  // Returns an optional PolicyParsingError encoding an error and its location
+  // if any set in these lists violates the required invariants of a First-Party
+  // Set.
   //
-  // If no errors are found, `out_sets` will be populated with the parsed
-  // replacement sets and parsed addition sets.
+  // If no errors are found and `out_sets` is non-null, then `out_sets` will
+  // be populated with the parsed replacement sets and parsed addition sets.
   [[nodiscard]] static absl::optional<PolicyParsingError>
-  ParseSetsFromEnterprisePolicy(const base::Value& policy,
-                                ParsedPolicySetLists& out_sets);
+  ParseSetsFromEnterprisePolicy(const base::Value::Dict& policy,
+                                ParsedPolicySetLists* out_sets);
 };
 
 }  // namespace content

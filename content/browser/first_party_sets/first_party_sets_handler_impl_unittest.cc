@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
+#include "content/public/browser/first_party_sets_handler.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -261,6 +262,57 @@ TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_EmptyCurrentSets) {
   EXPECT_THAT(FirstPartySetsHandlerImpl::ComputeSetsDiff(old_sets, {}),
               UnorderedElementsAre(SerializesTo("https://example.test"),
                                    SerializesTo("https://member1.test")));
+}
+
+TEST(FirstPartySetsHandlerImpl, ValidateEnterprisePolicy_ValidPolicy) {
+  base::Value input = base::JSONReader::Read(R"(
+             {
+                "replacements": [
+                  {
+                    "owner": "https://owner1.test",
+                    "members": ["https://member1.test"]
+                  }
+                ],
+                "additions": [
+                  {
+                    "owner": "https://owner2.test",
+                    "members": ["https://member2.test"]
+                  }
+                ]
+              }
+            )")
+                          .value();
+  EXPECT_EQ(FirstPartySetsHandlerImpl::GetInstance()->ValidateEnterprisePolicy(
+                input.GetDict()),
+            absl::nullopt);
+}
+
+TEST(FirstPartySetsHandlerImpl, ValidateEnterprisePolicy_InvalidPolicy) {
+  // Some input that matches our policies schema but breaks FPS invariants.
+  // For more test coverage, see the ParseSetsFromEnterprisePolicy unit tests.
+  base::Value input = base::JSONReader::Read(R"(
+              {
+                "replacements": [
+                  {
+                    "owner": "https://owner1.test",
+                    "members": ["https://member1.test"]
+                  }
+                ],
+                "additions": [
+                  {
+                    "owner": "https://owner1.test",
+                    "members": ["https://member2.test"]
+                  }
+                ]
+              }
+            )")
+                          .value();
+  FirstPartySetsHandler::PolicyParsingError expected_error{
+      FirstPartySetsHandler::ParseError::kNonDisjointSets,
+      FirstPartySetsHandler::PolicySetType::kAddition, 0};
+  EXPECT_EQ(FirstPartySetsHandlerImpl::GetInstance()->ValidateEnterprisePolicy(
+                input.GetDict()),
+            expected_error);
 }
 
 class FirstPartySetsHandlerImplTest : public ::testing::Test {

@@ -31,8 +31,23 @@ class FirstPartySetsOverridesPolicyHandler
   ~FirstPartySetsOverridesPolicyHandler() override;
 
   // ConfigurationPolicyHandler methods:
+  bool CheckPolicySettings(const policy::PolicyMap& policies,
+                           policy::PolicyErrorMap* errors) override;
   void ApplyPolicySettings(const policy::PolicyMap& policies,
                            PrefValueMap* prefs) override;
+
+  // Returns the validated policy, which is stored in the 'validated_dict_'
+  // member variable.
+  //
+  // This method must only be called after CheckPolicySettings returns true,
+  // which indicates that validating the policy was successful and the member
+  // variable was populated.
+  base::Value::Dict GetValidatedDictForTesting();
+
+ private:
+  // Result of validating the policy sets, stored for future use in
+  // ApplyPolicySettings
+  absl::optional<base::Value::Dict> validated_dict_;
 };
 
 }  // namespace first_party_sets

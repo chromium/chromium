@@ -173,12 +173,6 @@ absl::optional<FirstPartySetParser::PolicyParsingError> GetPolicySetsFromList(
 
 }  // namespace
 
-bool FirstPartySetParser::PolicyParsingError::operator==(
-    const FirstPartySetParser::PolicyParsingError& other) const {
-  return std::tie(error, set_type, error_index) ==
-         std::tie(other.error, other.set_type, other.error_index);
-}
-
 FirstPartySetParser::ParsedPolicySetLists::ParsedPolicySetLists(
     std::vector<FirstPartySetParser::SingleSet> replacement_list,
     std::vector<FirstPartySetParser::SingleSet> addition_list)
@@ -302,31 +296,30 @@ FirstPartySetParser::ParseSetsFromStream(std::istream& input) {
 
 absl::optional<FirstPartySetParser::PolicyParsingError>
 FirstPartySetParser::ParseSetsFromEnterprisePolicy(
-    const base::Value& policy,
-    FirstPartySetParser::ParsedPolicySetLists& out_sets) {
+    const base::Value::Dict& policy,
+    ParsedPolicySetLists* out_sets) {
   std::vector<SingleSet> parsed_replacements, parsed_additions;
   base::flat_set<net::SchemefulSite> elements;
 
-  if (absl::optional<FirstPartySetParser::PolicyParsingError> error =
-          GetPolicySetsFromList(
-              policy.GetDict().FindList(kFirstPartySetPolicyReplacementsField),
-              elements, FirstPartySetParser::PolicySetType::kReplacement,
-              parsed_replacements);
+  if (absl::optional<PolicyParsingError> error = GetPolicySetsFromList(
+          policy.FindList(kFirstPartySetPolicyReplacementsField), elements,
+          PolicySetType::kReplacement, parsed_replacements);
       error.has_value()) {
     return error.value();
   }
 
-  if (absl::optional<FirstPartySetParser::PolicyParsingError> error =
-          GetPolicySetsFromList(
-              policy.GetDict().FindList(kFirstPartySetPolicyAdditionsField),
-              elements, FirstPartySetParser::PolicySetType::kAddition,
-              parsed_additions);
+  if (absl::optional<PolicyParsingError> error = GetPolicySetsFromList(
+          policy.FindList(kFirstPartySetPolicyAdditionsField), elements,
+          PolicySetType::kAddition, parsed_additions);
       error.has_value()) {
     return error.value();
   }
 
-  out_sets = FirstPartySetParser::ParsedPolicySetLists(
-      std::move(parsed_replacements), std::move(parsed_additions));
+  if (out_sets) {
+    *out_sets = ParsedPolicySetLists(std::move(parsed_replacements),
+                                     std::move(parsed_additions));
+  }
+
   return absl::nullopt;
 }
 

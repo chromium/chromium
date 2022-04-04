@@ -57,6 +57,12 @@ void MaybeWriteSetsToDisk(const base::FilePath& path, base::StringPiece sets) {
 
 }  // namespace
 
+bool FirstPartySetsHandler::PolicyParsingError::operator==(
+    const FirstPartySetsHandler::PolicyParsingError& other) const {
+  return std::tie(error, set_type, error_index) ==
+         std::tie(other.error, other.set_type, other.error_index);
+}
+
 // static
 FirstPartySetsHandler* FirstPartySetsHandler::GetInstance() {
   return FirstPartySetsHandlerImpl::GetInstance();
@@ -103,6 +109,16 @@ void FirstPartySetsHandlerImpl::SetPublicFirstPartySets(base::File sets_file) {
     return;
   }
   sets_loader_->SetComponentSets(std::move(sets_file));
+}
+
+absl::optional<FirstPartySetsHandler::PolicyParsingError>
+FirstPartySetsHandlerImpl::ValidateEnterprisePolicy(
+    const base::Value::Dict& policy) const {
+  // Call ParseSetsFromEnterprisePolicy to determine if the all sets in the
+  // policy are valid First-Party Sets. A nullptr is provided since we don't
+  // have use for the actual parsed sets.
+  return FirstPartySetParser::ParseSetsFromEnterprisePolicy(
+      policy, /*out_sets=*/nullptr);
 }
 
 void FirstPartySetsHandlerImpl::SetManuallySpecifiedSet(

@@ -4,20 +4,62 @@
 
 #include "chrome/browser/first_party_sets/first_party_sets_overrides_policy_handler.h"
 
+#include <string>
+
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/json/json_reader.h"
-#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "components/policy/core/browser/configuration_policy_handler.h"
-#include "components/policy/core/browser/configuration_policy_handler_list.h"
-#include "components/policy/core/browser/configuration_policy_pref_store.h"
 #include "components/policy/core/browser/configuration_policy_pref_store_test.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
-#include "components/prefs/pref_value_map.h"
 
 namespace first_party_sets {
+
 namespace {
+
+// Create a base::Value::Dict representation of a First-Party Set that has
+// an owner field equal to |owner| and members field equal to |members|.
+base::Value::Dict MakeFirstPartySetDict(
+    const std::string& owner,
+    const base::flat_set<std::string>& members) {
+  base::Value::Dict dict;
+  base::Value::List member_list;
+
+  dict.Set("owner", owner);
+  for (const std::string& member : members) {
+    member_list.Append(member);
+  }
+  dict.Set("members", std::move(member_list));
+  return dict;
+}
+
+// Converts a map of (owner->members) into a base::Value::List of First-Party
+// Sets, each represented as a base::Value::Dict for ease of testing.
+base::Value::List MakeFirstPartySetsList(
+    const base::flat_map<std::string, base::flat_set<std::string>>&
+        owners_to_members) {
+  base::Value::List set_list;
+  for (auto& [owner, members] : owners_to_members) {
+    set_list.Append(MakeFirstPartySetDict(owner, members));
+  }
+  return set_list;
+}
+
+// Creates a base::Value::Dict representing a policy input JSON with a
+// 'replacements' field equal to |replacements| and an 'additions' field equal
+// to |additions|.
+base::Value::Dict CreatePolicyDict(
+    absl::optional<base::Value::List> replacements,
+    absl::optional<base::Value::List> additions) {
+  base::Value::Dict result;
+  if (replacements.has_value())
+    result.Set("replacements", base::Value(std::move(replacements.value())));
+  if (additions.has_value())
+    result.Set("additions", base::Value(std::move(additions.value())));
+  return result;
+}
 
 class FirstPartySetsOverridesPolicyHandlerTest
     : public policy::ConfigurationPolicyPrefStoreTest {
@@ -101,8 +143,8 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
       {
         "replacements": [
           {
-            "owner": "owner.test",
-            "members": [],
+            "owner": "https://owner.test",
+            "members": ["https://member.test"],
             "unknown": "field"
           }
         ],
@@ -126,8 +168,8 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
         "replacements": [],
         "additions": [
           {
-            "owner": "owner.test",
-            "members": [],
+            "owner": "https://owner.test",
+            "members": ["https://member.test"],
             "unknown": "field"
           }
         ]
@@ -305,19 +347,18 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
       {
         "replacements": [
           {
-            "owner": "owner1.test",
-            "members": ["member1.test"]
+            "owner": "https://owner1.test",
+            "members": ["https://member1.test"]
           }
         ],
         "additions": [
           {
-            "owner": "owner2.test",
-            "members": ["member2.test"]
+            "owner": "https://owner2.test",
+            "members": ["https://member2.test"]
           }
         ]
       }
     )";
-
   EXPECT_TRUE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
   EXPECT_TRUE(errors.empty());
@@ -331,15 +372,15 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
         "unknown0": "field0",
         "replacements": [
           {
-            "owner": "owner1.test",
-            "members": ["member1.test"],
+            "owner": "https://owner1.test",
+            "members": ["https://member1.test"],
             "unknown1": "field1"
           }
         ],
         "additions": [
           {
-            "owner": "owner2.test",
-            "members": ["member2.test"],
+            "owner": "https://owner2.test",
+            "members": ["https://member2.test"],
             "unknown2": "field2"
           }
         ],
@@ -355,5 +396,266 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
       u"Schema validation error at \"(ROOT)\": Unknown property: unknown3");
 }
 
+TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
+       CheckPolicySettings_Handler_RejectsInvalidOriginOwner) {
+  policy::PolicyMap policy;
+  policy::PolicyErrorMap errors;
+  std::string input = R"(
+      {
+        "replacements": [
+          {
+            "owner": "http://owner.test",
+            "members": ["https://member.test"]
+          }
+        ],
+        "additions": []
+      }
+    )";
+
+  EXPECT_FALSE(
+      handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
+  EXPECT_EQ(errors.GetErrors(policy::key::kFirstPartySetsOverrides),
+            u"Schema validation error at \"replacements.items[0]\": This set "
+            u"contains an invalid origin.");
+}
+
+TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
+       CheckPolicySettings_Handler_RejectsInvalidOriginMember) {
+  policy::PolicyMap policy;
+  policy::PolicyErrorMap errors;
+  std::string input = R"(
+      {
+        "replacements": [],
+        "additions": [
+          {
+            "owner": "https://owner.test",
+            "members": ["https://member1.test", ""]
+          }
+        ]
+      }
+    )";
+
+  EXPECT_FALSE(
+      handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
+  EXPECT_EQ(errors.GetErrors(policy::key::kFirstPartySetsOverrides),
+            u"Schema validation error at \"additions.items[0]\": This set "
+            u"contains an invalid origin.");
+}
+
+TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
+       CheckPolicySettings_Handler_RejectsSingletonSet) {
+  policy::PolicyMap policy;
+  policy::PolicyErrorMap errors;
+  std::string input = R"(
+              {
+                "replacements": [
+                  {
+                    "owner": "https://owner1.test",
+                    "members": []
+                  }
+                ],
+                "additions": []
+              }
+            )";
+
+  EXPECT_FALSE(
+      handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
+  EXPECT_EQ(
+      errors.GetErrors(policy::key::kFirstPartySetsOverrides),
+      u"Schema validation error at \"replacements.items[0]\": This set doesn't "
+      u"contain any sites in its members list.");
+}
+
+TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
+       CheckPolicySettings_Handler_RejectsNonDisjointSetsSameList) {
+  policy::PolicyMap policy;
+  policy::PolicyErrorMap errors;
+  std::string input = R"(
+              {
+                "replacements": [],
+                "additions": [
+                  {
+                    "owner": "https://owner1.test",
+                    "members": ["https://member1.test"]
+                  },
+                  {
+                    "owner": "https://owner2.test",
+                    "members": ["https://member1.test"]
+                  }]
+              }
+            )";
+
+  EXPECT_FALSE(
+      handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
+  EXPECT_EQ(errors.GetErrors(policy::key::kFirstPartySetsOverrides),
+            u"Schema validation error at \"additions.items[1]\": This set "
+            u"contains a domain that also exists in another First-Party Set.");
+}
+
+TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
+       CheckPolicySettings_Handler_RejectsNonDisjointSetsCrossList) {
+  policy::PolicyMap policy;
+  policy::PolicyErrorMap errors;
+  std::string input = R"(
+              {
+                "replacements": [
+                  {
+                    "owner": "https://owner1.test",
+                    "members": ["https://member1.test"]
+                  }
+                ],
+                "additions": [
+                  {
+                    "owner": "https://owner2.test",
+                    "members": ["https://member1.test"]
+                  }]
+              }
+            )";
+
+  EXPECT_FALSE(
+      handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
+  EXPECT_EQ(errors.GetErrors(policy::key::kFirstPartySetsOverrides),
+            u"Schema validation error at \"additions.items[0]\": This set "
+            u"contains a domain that also exists in another First-Party Set.");
+}
+
+TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
+       CheckPolicySettings_Handler_RejectsRepeatedDomainInReplacements) {
+  policy::PolicyMap policy;
+  policy::PolicyErrorMap errors;
+  std::string input = R"(
+              {
+                "replacements": [
+                  {
+                    "owner": "https://owner1.test",
+                    "members": ["https://owner1.test"]
+                  }
+                ],
+                "additions": [
+                  {
+                    "owner": "https://owner2.test",
+                    "members": ["https://member2.test"]
+                  }]
+              }
+            )";
+
+  EXPECT_FALSE(
+      handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
+  EXPECT_EQ(errors.GetErrors(policy::key::kFirstPartySetsOverrides),
+            u"Schema validation error at \"replacements.items[0]\": This set "
+            u"contains more than one occurrence of the same domain.");
+}
+
+TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
+       CheckPolicySettings_Handler_RejectsRepeatedDomainInAdditions) {
+  policy::PolicyMap policy;
+  policy::PolicyErrorMap errors;
+  std::string input = R"(
+              {
+                "replacements": [
+                  {
+                    "owner": "https://owner1.test",
+                    "members": ["https://member1.test"]
+                  }
+                ],
+                "additions": [
+                  {
+                    "owner": "https://owner2.test",
+                    "members": ["https://owner2.test"]
+                  }]
+              }
+            )";
+
+  EXPECT_FALSE(
+      handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
+  EXPECT_EQ(errors.GetErrors(policy::key::kFirstPartySetsOverrides),
+            u"Schema validation error at \"additions.items[0]\": This set "
+            u"contains more than one occurrence of the same domain.");
+}
+
+TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
+       CheckPolicySettings_Handler_AcceptsAndOutputsLists_JustAdditions) {
+  policy::PolicyMap policy;
+  policy::PolicyErrorMap errors;
+  std::string input = R"(
+              {
+                "additions": [
+                  {
+                    "owner": "https://owner1.test",
+                    "members": ["https://member1.test"]
+                  }]
+              }
+            )";
+
+  EXPECT_TRUE(
+      handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
+  EXPECT_TRUE(errors.empty());
+
+  EXPECT_EQ(handler()->GetValidatedDictForTesting(),
+            CreatePolicyDict(absl::nullopt, MakeFirstPartySetsList(
+                                                {{"https://owner1.test",
+                                                  {"https://member1.test"}}})));
+}
+
+TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
+       CheckPolicySettings_Handler_AcceptsAndOutputsLists_JustReplacements) {
+  policy::PolicyMap policy;
+  policy::PolicyErrorMap errors;
+  std::string input = R"(
+              {
+                "replacements": [
+                  {
+                    "owner": "https://owner1.test",
+                    "members": ["https://member1.test"]
+                  }
+                ]
+              }
+            )";
+
+  EXPECT_TRUE(
+      handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
+  EXPECT_TRUE(errors.empty());
+
+  EXPECT_EQ(
+      handler()->GetValidatedDictForTesting(),
+      CreatePolicyDict(MakeFirstPartySetsList(
+                           {{"https://owner1.test", {"https://member1.test"}}}),
+                       absl::nullopt));
+}
+
+TEST_F(
+    FirstPartySetsOverridesPolicyHandlerTest,
+    CheckPolicySettings_Handler_AcceptsAndOutputsLists_AdditionsAndReplacements) {
+  policy::PolicyMap policy;
+  policy::PolicyErrorMap errors;
+  std::string input = R"(
+              {
+                "replacements": [
+                  {
+                    "owner": "https://owner1.test",
+                    "members": ["https://member1.test"]
+                  }
+                ],
+                "additions": [
+                  {
+                    "owner": "https://owner2.test",
+                    "members": ["https://member2.test"]
+                  }]
+              }
+            )";
+
+  EXPECT_TRUE(
+      handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
+  EXPECT_TRUE(errors.empty());
+
+  EXPECT_EQ(handler()->GetValidatedDictForTesting(),
+            CreatePolicyDict(
+                MakeFirstPartySetsList(
+                    {{"https://owner1.test", {"https://member1.test"}}}),
+                MakeFirstPartySetsList(
+                    {{"https://owner2.test", {"https://member2.test"}}})));
+}
+
 }  // namespace
+
 }  // namespace first_party_sets

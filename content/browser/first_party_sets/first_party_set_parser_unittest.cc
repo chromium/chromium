@@ -427,20 +427,20 @@ INSTANTIATE_TEST_SUITE_P(
                         R"({"https://member1.test":"https://example1.test",
             "https://example1.test":"https://example2.test"})")));
 
-TEST(ParseFromEnterpriseSetsTest, Accepts_MissingSetLists) {
+TEST(ParseSetsFromEnterprisePolicyTest, Accepts_MissingSetLists) {
   base::Value policy_value = base::JSONReader::Read(R"(
               {
               }
             )")
                                  .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
-                                                                 out_sets),
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
+                  policy_value.GetDict(), &out_sets),
               Eq(absl::nullopt));
   EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
 }
 
-TEST(ParseFromEnterpriseSetsTest, Accepts_EmptyLists) {
+TEST(ParseSetsFromEnterprisePolicyTest, Accepts_EmptyLists) {
   base::Value policy_value = base::JSONReader::Read(R"(
               {
                 "replacements": [],
@@ -449,13 +449,47 @@ TEST(ParseFromEnterpriseSetsTest, Accepts_EmptyLists) {
             )")
                                  .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
-                                                                 out_sets),
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
+                  policy_value.GetDict(), &out_sets),
               Eq(absl::nullopt));
   EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
 }
 
-TEST(ParseFromEnterpriseSetsTest, InvalidTypeError_MissingOwner) {
+TEST(ParseSetsFromEnterprisePolicyTest, ValidPolicy_NullOutParam) {
+  base::Value policy_value = base::JSONReader::Read(R"(
+              {
+                "replacements": [],
+                "additions": []
+              }
+            )")
+                                 .value();
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
+                  policy_value.GetDict(), nullptr),
+              Eq(absl::nullopt));
+}
+
+TEST(ParseSetsFromEnterprisePolicyTest, InvalidPolicy_NullOutParam) {
+  base::Value policy_value = base::JSONReader::Read(R"(
+              {
+                "replacements": [],
+                "additions": [
+                  {
+                    "owner": "https://owner1.test",
+                    "members": ["https://owner1.test"]
+                  }
+                ]
+              }
+            )")
+                                 .value();
+  FirstPartySetParser::PolicyParsingError expected_error{
+      FirstPartySetParser::ParseError::kRepeatedDomain,
+      FirstPartySetParser::PolicySetType::kAddition, 0};
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
+                  policy_value.GetDict(), nullptr),
+              expected_error);
+}
+
+TEST(ParseSetsFromEnterprisePolicyTest, InvalidTypeError_MissingOwner) {
   base::Value policy_value = base::JSONReader::Read(R"(
               {
                 "replacements": [
@@ -468,15 +502,15 @@ TEST(ParseFromEnterpriseSetsTest, InvalidTypeError_MissingOwner) {
             )")
                                  .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
-                                                                 out_sets),
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
+                  policy_value.GetDict(), &out_sets),
               FirstPartySetParser::PolicyParsingError(
                   {FirstPartySetParser::ParseError::kInvalidType,
                    FirstPartySetParser::PolicySetType::kReplacement, 0}));
   EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
 }
 
-TEST(ParseFromEnterpriseSetsTest, InvalidTypeError_MissingMembers) {
+TEST(ParseSetsFromEnterprisePolicyTest, InvalidTypeError_MissingMembers) {
   base::Value policy_value = base::JSONReader::Read(R"(
               {
                 "replacements": [
@@ -489,15 +523,15 @@ TEST(ParseFromEnterpriseSetsTest, InvalidTypeError_MissingMembers) {
             )")
                                  .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
-                                                                 out_sets),
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
+                  policy_value.GetDict(), &out_sets),
               FirstPartySetParser::PolicyParsingError(
                   {FirstPartySetParser::ParseError::kInvalidType,
                    FirstPartySetParser::PolicySetType::kReplacement, 0}));
   EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
 }
 
-TEST(ParseFromEnterpriseSetsTest, InvalidTypeError_WrongOwnerType) {
+TEST(ParseSetsFromEnterprisePolicyTest, InvalidTypeError_WrongOwnerType) {
   base::Value policy_value = base::JSONReader::Read(R"(
               {
                 "replacements": [
@@ -511,15 +545,16 @@ TEST(ParseFromEnterpriseSetsTest, InvalidTypeError_WrongOwnerType) {
             )")
                                  .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
-                                                                 out_sets),
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
+                  policy_value.GetDict(), &out_sets),
               FirstPartySetParser::PolicyParsingError(
                   {FirstPartySetParser::ParseError::kInvalidType,
                    FirstPartySetParser::PolicySetType::kReplacement, 0}));
   EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
 }
 
-TEST(ParseFromEnterpriseSetsTest, InvalidTypeError_WrongMembersFieldType) {
+TEST(ParseSetsFromEnterprisePolicyTest,
+     InvalidTypeError_WrongMembersFieldType) {
   base::Value policy_value = base::JSONReader::Read(R"(
               {
                 "replacements": [
@@ -533,15 +568,15 @@ TEST(ParseFromEnterpriseSetsTest, InvalidTypeError_WrongMembersFieldType) {
             )")
                                  .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
-                                                                 out_sets),
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
+                  policy_value.GetDict(), &out_sets),
               FirstPartySetParser::PolicyParsingError(
                   {FirstPartySetParser::ParseError::kInvalidType,
                    FirstPartySetParser::PolicySetType::kReplacement, 0}));
   EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
 }
 
-TEST(ParseFromEnterpriseSetsTest, InvalidTypeError_WrongMemberType) {
+TEST(ParseSetsFromEnterprisePolicyTest, InvalidTypeError_WrongMemberType) {
   base::Value policy_value = base::JSONReader::Read(R"(
               {
           "replacements": [
@@ -556,15 +591,15 @@ TEST(ParseFromEnterpriseSetsTest, InvalidTypeError_WrongMemberType) {
             )")
                                  .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
-                                                                 out_sets),
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
+                  policy_value.GetDict(), &out_sets),
               FirstPartySetParser::PolicyParsingError(
                   {FirstPartySetParser::ParseError::kInvalidType,
                    FirstPartySetParser::PolicySetType::kReplacement, 0}));
   EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
 }
 
-TEST(ParseFromEnterpriseSetsTest, InvalidOriginError_OwnerOpaque) {
+TEST(ParseSetsFromEnterprisePolicyTest, InvalidOriginError_OwnerOpaque) {
   base::Value policy_value = base::JSONReader::Read(R"(
               {
                 "replacements": [
@@ -578,15 +613,15 @@ TEST(ParseFromEnterpriseSetsTest, InvalidOriginError_OwnerOpaque) {
             )")
                                  .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
-                                                                 out_sets),
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
+                  policy_value.GetDict(), &out_sets),
               FirstPartySetParser::PolicyParsingError(
                   {FirstPartySetParser::ParseError::kInvalidOrigin,
                    FirstPartySetParser::PolicySetType::kReplacement, 0}));
   EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
 }
 
-TEST(ParseFromEnterpriseSetsTest, InvalidOriginError_MemberOpaque) {
+TEST(ParseSetsFromEnterprisePolicyTest, InvalidOriginError_MemberOpaque) {
   base::Value policy_value = base::JSONReader::Read(R"(
                {
                 "replacements": [
@@ -600,15 +635,15 @@ TEST(ParseFromEnterpriseSetsTest, InvalidOriginError_MemberOpaque) {
             )")
                                  .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
-                                                                 out_sets),
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
+                  policy_value.GetDict(), &out_sets),
               FirstPartySetParser::PolicyParsingError(
                   {FirstPartySetParser::ParseError::kInvalidOrigin,
                    FirstPartySetParser::PolicySetType::kReplacement, 0}));
   EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
 }
 
-TEST(ParseFromEnterpriseSetsTest, InvalidOriginError_OwnerNonHttps) {
+TEST(ParseSetsFromEnterprisePolicyTest, InvalidOriginError_OwnerNonHttps) {
   base::Value policy_value = base::JSONReader::Read(R"(
                  {
                 "replacements": [
@@ -622,15 +657,15 @@ TEST(ParseFromEnterpriseSetsTest, InvalidOriginError_OwnerNonHttps) {
             )")
                                  .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
-                                                                 out_sets),
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
+                  policy_value.GetDict(), &out_sets),
               FirstPartySetParser::PolicyParsingError(
                   {FirstPartySetParser::ParseError::kInvalidOrigin,
                    FirstPartySetParser::PolicySetType::kReplacement, 0}));
   EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
 }
 
-TEST(ParseFromEnterpriseSetsTest, InvalidOriginError_MemberNonHttps) {
+TEST(ParseSetsFromEnterprisePolicyTest, InvalidOriginError_MemberNonHttps) {
   base::Value policy_value = base::JSONReader::Read(R"(
                {
                 "replacements": [
@@ -644,15 +679,16 @@ TEST(ParseFromEnterpriseSetsTest, InvalidOriginError_MemberNonHttps) {
             )")
                                  .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
-                                                                 out_sets),
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
+                  policy_value.GetDict(), &out_sets),
               FirstPartySetParser::PolicyParsingError(
                   {FirstPartySetParser::ParseError::kInvalidOrigin,
                    FirstPartySetParser::PolicySetType::kReplacement, 0}));
   EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
 }
 
-TEST(ParseFromEnterpriseSetsTest, InvalidOriginError_OwnerNonRegisteredDomain) {
+TEST(ParseSetsFromEnterprisePolicyTest,
+     InvalidOriginError_OwnerNonRegisteredDomain) {
   base::Value policy_value = base::JSONReader::Read(R"(
                 {
                 "replacements": [
@@ -666,15 +702,15 @@ TEST(ParseFromEnterpriseSetsTest, InvalidOriginError_OwnerNonRegisteredDomain) {
             )")
                                  .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
-                                                                 out_sets),
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
+                  policy_value.GetDict(), &out_sets),
               FirstPartySetParser::PolicyParsingError(
                   {FirstPartySetParser::ParseError::kInvalidOrigin,
                    FirstPartySetParser::PolicySetType::kReplacement, 0}));
   EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
 }
 
-TEST(ParseFromEnterpriseSetsTest,
+TEST(ParseSetsFromEnterprisePolicyTest,
      InvalidOriginError_MemberNonRegisteredDomain) {
   base::Value policy_value = base::JSONReader::Read(R"(
               {
@@ -689,15 +725,15 @@ TEST(ParseFromEnterpriseSetsTest,
             )")
                                  .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
-                                                                 out_sets),
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
+                  policy_value.GetDict(), &out_sets),
               FirstPartySetParser::PolicyParsingError(
                   {FirstPartySetParser::ParseError::kInvalidOrigin,
                    FirstPartySetParser::PolicySetType::kReplacement, 0}));
   EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
 }
 
-TEST(ParseFromEnterpriseSetsTest, SingletonSetError_EmptyMembers) {
+TEST(ParseSetsFromEnterprisePolicyTest, SingletonSetError_EmptyMembers) {
   base::Value policy_value = base::JSONReader::Read(R"(
              {
                 "replacements": [
@@ -711,15 +747,16 @@ TEST(ParseFromEnterpriseSetsTest, SingletonSetError_EmptyMembers) {
             )")
                                  .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
-                                                                 out_sets),
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
+                  policy_value.GetDict(), &out_sets),
               FirstPartySetParser::PolicyParsingError(
                   {FirstPartySetParser::ParseError::kSingletonSet,
                    FirstPartySetParser::PolicySetType::kReplacement, 0}));
   EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
 }
 
-TEST(ParseFromEnterpriseSetsTest, RepeatedDomainError_WithinReplacements) {
+TEST(ParseSetsFromEnterprisePolicyTest,
+     RepeatedDomainError_WithinReplacements) {
   base::Value policy_value = base::JSONReader::Read(R"(
               {
                 "replacements": [
@@ -733,15 +770,15 @@ TEST(ParseFromEnterpriseSetsTest, RepeatedDomainError_WithinReplacements) {
             )")
                                  .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
-                                                                 out_sets),
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
+                  policy_value.GetDict(), &out_sets),
               FirstPartySetParser::PolicyParsingError(
                   {FirstPartySetParser::ParseError::kRepeatedDomain,
                    FirstPartySetParser::PolicySetType::kReplacement, 0}));
   EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
 }
 
-TEST(ParseFromEnterpriseSetsTest, NonDisjointError_WithinReplacements) {
+TEST(ParseSetsFromEnterprisePolicyTest, NonDisjointError_WithinReplacements) {
   base::Value policy_value = base::JSONReader::Read(R"(
                    {
                 "replacements": [
@@ -759,15 +796,15 @@ TEST(ParseFromEnterpriseSetsTest, NonDisjointError_WithinReplacements) {
             )")
                                  .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
-                                                                 out_sets),
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
+                  policy_value.GetDict(), &out_sets),
               FirstPartySetParser::PolicyParsingError(
                   {FirstPartySetParser::ParseError::kNonDisjointSets,
                    FirstPartySetParser::PolicySetType::kReplacement, 1}));
   EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
 }
 
-TEST(ParseFromEnterpriseSetsTest, NonDisjointError_WithinAdditions) {
+TEST(ParseSetsFromEnterprisePolicyTest, NonDisjointError_WithinAdditions) {
   base::Value policy_value = base::JSONReader::Read(R"(
                    {
                 "replacements": [],
@@ -785,15 +822,15 @@ TEST(ParseFromEnterpriseSetsTest, NonDisjointError_WithinAdditions) {
             )")
                                  .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
-                                                                 out_sets),
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
+                  policy_value.GetDict(), &out_sets),
               FirstPartySetParser::PolicyParsingError(
                   {FirstPartySetParser::ParseError::kNonDisjointSets,
                    FirstPartySetParser::PolicySetType::kAddition, 1}));
   EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
 }
 
-TEST(ParseFromEnterpriseSetsTest, NonDisjointError_AcrossBothLists) {
+TEST(ParseSetsFromEnterprisePolicyTest, NonDisjointError_AcrossBothLists) {
   base::Value policy_value = base::JSONReader::Read(R"(
                {
                 "replacements": [
@@ -812,15 +849,15 @@ TEST(ParseFromEnterpriseSetsTest, NonDisjointError_AcrossBothLists) {
             )")
                                  .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
-                                                                 out_sets),
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
+                  policy_value.GetDict(), &out_sets),
               FirstPartySetParser::PolicyParsingError(
                   {FirstPartySetParser::ParseError::kNonDisjointSets,
                    FirstPartySetParser::PolicySetType::kAddition, 0}));
   EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
 }
 
-TEST(ParseFromEnterpriseSetsTest, SuccessfulMapping_SameList) {
+TEST(ParseSetsFromEnterprisePolicyTest, SuccessfulMapping_SameList) {
   base::Value policy_value = base::JSONReader::Read(R"(
              {
                 "replacements": [
@@ -837,8 +874,8 @@ TEST(ParseFromEnterpriseSetsTest, SuccessfulMapping_SameList) {
             )")
                                  .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
-                                                                 out_sets),
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
+                  policy_value.GetDict(), &out_sets),
               Eq(absl::nullopt));
   EXPECT_THAT(
       out_sets.replacements,
@@ -850,7 +887,7 @@ TEST(ParseFromEnterpriseSetsTest, SuccessfulMapping_SameList) {
   EXPECT_THAT(out_sets.additions, IsEmpty());
 }
 
-TEST(ParseFromEnterpriseSetsTest, SuccessfulMapping_CrossList) {
+TEST(ParseSetsFromEnterprisePolicyTest, SuccessfulMapping_CrossList) {
   base::Value policy_value = base::JSONReader::Read(R"(
                 {
                 "replacements": [
@@ -873,8 +910,8 @@ TEST(ParseFromEnterpriseSetsTest, SuccessfulMapping_CrossList) {
             )")
                                  .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
-                                                                 out_sets),
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(
+                  policy_value.GetDict(), &out_sets),
               Eq(absl::nullopt));
   EXPECT_THAT(
       out_sets.replacements,
