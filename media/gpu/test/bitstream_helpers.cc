@@ -13,8 +13,9 @@ BitstreamProcessor::BitstreamRef::Create(
     scoped_refptr<DecoderBuffer> buffer,
     const BitstreamBufferMetadata& metadata,
     int32_t id,
+    base::TimeTicks source_timestamp,
     base::OnceClosure release_cb) {
-  return new BitstreamRef(std::move(buffer), metadata, id,
+  return new BitstreamRef(std::move(buffer), metadata, id, source_timestamp,
                           std::move(release_cb));
 }
 
@@ -22,10 +23,12 @@ BitstreamProcessor::BitstreamRef::BitstreamRef(
     scoped_refptr<DecoderBuffer> buffer,
     const BitstreamBufferMetadata& metadata,
     int32_t id,
+    base::TimeTicks source_timestamp,
     base::OnceClosure release_cb)
     : buffer(std::move(buffer)),
       metadata(metadata),
       id(id),
+      source_timestamp(source_timestamp),
       release_cb(std::move(release_cb)) {}
 
 BitstreamProcessor::BitstreamRef::~BitstreamRef() {

@@ -195,8 +195,11 @@ void PerformanceEvaluator::ProcessBitstream(
       delivery_time.InMillisecondsF());
   prev_bitstream_delivery_time_ = now;
 
+  // TODO(hiroh): |encode_time| on upper spatial layer in SVC encoding becomes
+  // larger because the bitstram is produced after lower spatial layers are
+  // produced. |encode_time| should be aggregated per spatial layer.
   base::TimeDelta encode_time =
-      now.since_origin() - bitstream->metadata.timestamp;
+      base::TimeTicks::Now() - bitstream->source_timestamp;
   perf_metrics_.bitstream_encode_times_.push_back(
       encode_time.InMillisecondsF());
 }

@@ -354,9 +354,12 @@ VideoEncoderClient::CreateBitstreamRef(
   if (!decoder_buffer)
     return nullptr;
   decoder_buffer->set_timestamp(base::Microseconds(frame_index_));
+  auto source_timestamp_it = source_timestamps_.find(metadata.timestamp);
+  LOG_ASSERT(source_timestamp_it != source_timestamps_.end());
 
   return BitstreamProcessor::BitstreamRef::Create(
       std::move(decoder_buffer), metadata, bitstream_buffer_id,
+      source_timestamp_it->second,
       BindToCurrentLoop(
           base::BindOnce(&VideoEncoderClient::BitstreamBufferProcessed,
                          weak_this_, bitstream_buffer_id)));
@@ -420,10 +423,13 @@ void VideoEncoderClient::BitstreamBufferReady(
       current_top_spatial_index_ =
           metadata.vp9->spatial_layer_resolutions.size() - 1;
     }
-    if (metadata.vp9->spatial_idx == current_top_spatial_index_)
+    if (metadata.vp9->spatial_idx == current_top_spatial_index_) {
       frame_index_++;
+      CHECK_EQ(source_timestamps_.erase(metadata.timestamp), 1u);
+    }
   } else {
     frame_index_++;
+    CHECK_EQ(source_timestamps_.erase(metadata.timestamp), 1u);
   }
   FlushDoneTaskIfNeeded();
 }
@@ -541,6 +547,7 @@ void VideoEncoderClient::EncodeNextFrameTask() {
                     base::TimeDelta>,
       weak_this_, encoder_client_task_runner_,
       &VideoEncoderClient::EncodeDoneTask, video_frame->timestamp()));
+  source_timestamps_[video_frame->timestamp()] = base::TimeTicks::Now();
 
   encoder_->Encode(video_frame, force_keyframe_);
 

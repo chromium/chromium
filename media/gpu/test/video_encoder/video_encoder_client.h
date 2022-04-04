@@ -267,6 +267,10 @@ class VideoEncoderClient : public VideoEncodeAccelerator::Client {
   // The current top spatial layer index.
   uint8_t current_top_spatial_index_ = 0;
 
+  // A map from an input VideoFrame timestamp to the time when it is enqueued
+  // into |encoder_|.
+  std::map<base::TimeDelta, base::TimeTicks> source_timestamps_;
+
   // Force a key frame on next Encode(), only accessed on the
   // |encoder_client_thread_|.
   bool force_keyframe_ = false;

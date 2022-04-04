@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
+#include "base/time/time.h"
 #include "media/video/video_encode_accelerator.h"
 
 namespace media {
@@ -21,6 +22,7 @@ class BitstreamProcessor {
         scoped_refptr<DecoderBuffer> buffer,
         const BitstreamBufferMetadata& metadata,
         int32_t id,
+        base::TimeTicks source_timestamp,
         base::OnceClosure release_cb);
     BitstreamRef() = delete;
     BitstreamRef(const BitstreamRef&) = delete;
@@ -29,12 +31,16 @@ class BitstreamProcessor {
     const scoped_refptr<DecoderBuffer> buffer;
     const BitstreamBufferMetadata metadata;
     const int32_t id;
+    // |source_timestamp| is the timestamp when the VideoFrame for this
+    // bitstream is received to an encoder.
+    const base::TimeTicks source_timestamp;
 
    private:
     friend class base::RefCountedThreadSafe<BitstreamRef>;
     BitstreamRef(scoped_refptr<DecoderBuffer> buffer,
                  const BitstreamBufferMetadata& metadata,
                  int32_t id,
+                 base::TimeTicks source_timestamp,
                  base::OnceClosure release_cb);
     ~BitstreamRef();
 
