@@ -1188,10 +1188,17 @@ PageLoadTracker* MetricsWebContentsObserver::GetPageLoadTracker(
 
 PageLoadTracker* MetricsWebContentsObserver::GetActivePageLoadTrackerForRequest(
     const content::GlobalRequestID& global_request_id) {
+  // TODO(https://crbug.com/1301880): We will see a invalid request ID on
+  // DidFinishNavigation when we modified fencedframe tag's src attribute by
+  // JavaScript. This should be fixed to record metrics correctly.
+  if (global_request_id == content::GlobalRequestID())
+    return nullptr;
+
   // Runs a liner search here as we expect N is small enough. Let's consider
   // optimizations once this assumtion gets incorrect.
   for (const auto& kv : active_pages_) {
     PageLoadTracker* candidate = kv.second.get();
+    DCHECK(candidate);
     if (candidate->HasMatchingNavigationRequestID(global_request_id))
       return candidate;
   }
