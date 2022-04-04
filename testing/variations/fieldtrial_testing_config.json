@@ -8037,9 +8037,9 @@
                 "chromeos",
                 "chromeos_lacros",
                 "linux",
-                "ios",
                 "android",
-                "android_weblayer"
+                "android_weblayer",
+                "android_webview"
             ],
             "experiments": [
                 {
