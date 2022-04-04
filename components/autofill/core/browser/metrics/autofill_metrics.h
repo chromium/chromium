@@ -1174,34 +1174,45 @@ class AutofillMetrics {
     kMaxValue = kOtpMismatchError,
   };
 
-  // Emits a value that indicates which fields of a credit card form were
-  // filled:
-  //
-  // +-------------------------------------------------------------+
-  // |                            | Name | Number | Exp Date | CVC |
-  // |----------------------------+------+--------+----------+-----|
-  // | kFullFill                  |  X   |   X    |    X     |  X  |
-  // +----------------------------+------+--------+----------+-----+
-  // | kOptionalNameMissing       |      |   X    |    X     |  X  |
-  // +----------------------------+------+--------+----------+-----+
-  // | kOptionalCvcMissing        |  X   |   X    |    X     |     |
-  // +----------------------------+------+--------+----------+-----+
-  // | kOptionalNameAndCvcMissing |      |   X    |    X     |     |
-  // +----------------------------+------+--------+----------+-----+
-  // | kFullFillButExpDateMissing |  X   |   X    |          |  X  |
-  // +----------------------------+------+--------+----------+-----+
-  // | kPartialFill               |           otherwise            |
-  // +-------------------------------------------------------------+
-  //
-  // Keep consistent with FORM_EVENT_CREDIT_CARD_SEAMLESSNESS_*.
-  enum class CreditCardSeamlessFillMetric {
-    kFullFill = 0,
-    kOptionalNameMissing = 1,
-    kOptionalCvcMissing = 2,
-    kOptionalNameAndCvcMissing = 3,
-    kFullFillButExpDateMissing = 4,
-    kPartialFill = 5,
-    kMaxValue = kPartialFill,
+  // Utility class for determining the seamlessness of a credit card fill.
+  class CreditCardSeamlessness {
+   public:
+    // A qualitative representation of a fill seamlessness.
+    //
+    // Keep consistent with FORM_EVENT_CREDIT_CARD_SEAMLESSNESS_*.
+    //
+    // The different meaning of the categories is as follows:
+    enum class Metric {                // | Name | Number | Exp Date | CVC |
+      kFullFill = 0,                   // |  X   |   X    |    X     |  X  |
+      kOptionalNameMissing = 1,        // |      |   X    |    X     |  X  |
+      kOptionalCvcMissing = 2,         // |  X   |   X    |    X     |     |
+      kOptionalNameAndCvcMissing = 3,  // |      |   X    |    X     |     |
+      kFullFillButExpDateMissing = 4,  // |  X   |   X    |          |  X  |
+      kPartialFill = 5,                // |           otherwise            |
+      kMaxValue = kPartialFill,
+    };
+
+    explicit CreditCardSeamlessness(const ServerFieldTypeSet& filled_types);
+
+    explicit operator bool() const { return is_valid(); }
+    bool is_valid() const { return name_ || number_ || exp_ || cvc_; }
+
+    // Returns the metric for UMA logging or the corresponding FormEvent value
+    // for UKM logging.
+    Metric QualitativeUmaMetric() const;
+    FormEvent QualitativeFillableFormEvent() const;
+    FormEvent QualitativeFillFormEvent() const;
+
+    // Returns the bitmask for UMA logging.
+    uint8_t BitmaskUmaMetric() const;
+
+    static uint8_t BitmaskExclusiveMax() { return true << 4; }
+
+   private:
+    bool name_ = false;
+    bool number_ = false;
+    bool exp_ = false;
+    bool cvc_ = false;
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -1804,8 +1815,8 @@ class AutofillMetrics {
   //
   // In addition, logs Autofill.CreditCard.Number{Fillable,Fills}.
   // AtFillTime{Before,After}SecurityPolicy.
-  static absl::optional<CreditCardSeamlessFillMetric>
-  LogCreditCardSeamlessnessAtFillTime(const LogCreditCardSeamlessnessParam& p);
+  static CreditCardSeamlessness LogCreditCardSeamlessnessAtFillTime(
+      const LogCreditCardSeamlessnessParam& p);
 
   // Logs Autofill.CreditCard.SeamlessFills.AtSubmissionTime and
   // Autofill.CreditCard.NumberFills.AtSubmissionTime.

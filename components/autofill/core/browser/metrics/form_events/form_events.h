@@ -127,7 +127,7 @@ enum FormEvent {
   // which a frame can allow a child-frame to be autofilled across origin.
   FORM_EVENT_CREDIT_CARD_MISSING_SHARED_AUTOFILL = 49,
 
-  // See AutofillMetrics::CreditCardSeamlessFillMetric for details.
+  // See AutofillMetrics::CreditCardSeamlessness::Metric for details.
   FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_FULL_FILL = 50,
   FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_OPTIONAL_NAME_MISSING = 51,
   FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_OPTIONAL_CVC_MISSING = 52,

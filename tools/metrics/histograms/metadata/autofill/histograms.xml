@@ -822,6 +822,28 @@ chromium-metrics-reviews@google.com.
   <token key="AutofillMeasurementTime" variants="AutofillMeasurementTime"/>
 </histogram>
 
+<histogram name="Autofill.CreditCard.Seamless{AutofillMeasurementTime}.Bitmask"
+    enum="AutofillCreditCardSeamlessnessBitmask" expires_after="2022-10-31">
+  <owner>schwering@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records for each credit card form the quality of the fill.
+    {AutofillMeasurementTime}
+
+    The emitted value is a non-zero bitmask whose bits have the following
+    meaning, from highest to lowest bit:
+
+    Bit #4 is true iff a cardholder name was filled.
+
+    Bit #3 is true iff a card number was filled.
+
+    Bit #2 is true iff an expiraton date was filled.
+
+    Bit #1 is true iff a CVC name was filled.
+  </summary>
+  <token key="AutofillMeasurementTime" variants="AutofillMeasurementTime"/>
+</histogram>
+
 <histogram name="Autofill.CreditCardFillingInfoBar"
     enum="AutofillCreditCardInfoBar" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>

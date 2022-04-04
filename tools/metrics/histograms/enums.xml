@@ -6204,6 +6204,27 @@ others/histograms.xml -->
   <int value="2" label="Preflight call ignored"/>
 </enum>
 
+<enum name="AutofillCreditCardSeamlessnessBitmask">
+  <summary>
+    A bitmask indicating which credit card field types were autofilled.
+  </summary>
+  <int value="1" label="-name, -num, -exp, +cvc"/>
+  <int value="2" label="-name, -num, +exp, -cvc"/>
+  <int value="3" label="-name, -num, +exp, +cvc"/>
+  <int value="4" label="-name, +num, -exp, -cvc"/>
+  <int value="5" label="-name, +num, -exp, +cvc"/>
+  <int value="6" label="-name, +num, +exp, -cvc"/>
+  <int value="7" label="-name, +num, +exp, +cvc"/>
+  <int value="8" label="+name, -num, -exp, -cvc"/>
+  <int value="9" label="+name, -num, -exp, +cvc"/>
+  <int value="10" label="+name, -num, +exp, -cvc"/>
+  <int value="11" label="+name, -num, +exp, +cvc"/>
+  <int value="12" label="+name, +num, -exp, -cvc"/>
+  <int value="13" label="+name, +num, -exp, +cvc"/>
+  <int value="14" label="+name, +num, +exp, -cvc"/>
+  <int value="15" label="+name, +num, +exp, +cvc"/>
+</enum>
+
 <enum name="AutofillCreditCardUnmaskDecisionMetric">
   <int value="0" label="WebAuthn only"/>
   <int value="1" label="CVC followed by WebAuthn"/>

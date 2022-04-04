@@ -196,37 +196,6 @@ std::string GetCreditCardTypeSuffix(
   }
 }
 
-absl::optional<AutofillMetrics::CreditCardSeamlessFillMetric> GetSeamlessness(
-    const ServerFieldTypeSet& filled_types) {
-  bool name = filled_types.contains(CREDIT_CARD_NAME_FULL) ||
-              (filled_types.contains(CREDIT_CARD_NAME_FIRST) &&
-               filled_types.contains(CREDIT_CARD_NAME_LAST));
-  bool number = filled_types.contains(CREDIT_CARD_NUMBER);
-  bool exp = filled_types.contains(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR) ||
-             filled_types.contains(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR) ||
-             (filled_types.contains(CREDIT_CARD_EXP_MONTH) &&
-              (filled_types.contains(CREDIT_CARD_EXP_2_DIGIT_YEAR) ||
-               filled_types.contains(CREDIT_CARD_EXP_4_DIGIT_YEAR)));
-  bool cvc = filled_types.contains(CREDIT_CARD_VERIFICATION_CODE);
-
-  using M = AutofillMetrics::CreditCardSeamlessFillMetric;
-  if (!name && !number && !exp && !cvc) {
-    return absl::nullopt;
-  } else if (name && number && exp && cvc) {
-    return M::kFullFill;
-  } else if (!name && number && exp && cvc) {
-    return M::kOptionalNameMissing;
-  } else if (name && number && exp && !cvc) {
-    return M::kOptionalCvcMissing;
-  } else if (!name && number && exp && !cvc) {
-    return M::kOptionalNameAndCvcMissing;
-  } else if (name && number && !exp && cvc) {
-    return M::kFullFillButExpDateMissing;
-  } else {
-    return M::kPartialFill;
-  }
-}
-
 }  // namespace
 
 // First, translates |field_type| to the corresponding logical |group| from
@@ -2494,10 +2463,96 @@ void AutofillMetrics::LogNumberOfFramesWithAutofilledCreditCardFields(
       num_frames);
 }
 
+AutofillMetrics::CreditCardSeamlessness::CreditCardSeamlessness(
+    const ServerFieldTypeSet& filled_types)
+    : name_(filled_types.contains(CREDIT_CARD_NAME_FULL) ||
+            (filled_types.contains(CREDIT_CARD_NAME_FIRST) &&
+             filled_types.contains(CREDIT_CARD_NAME_LAST))),
+      number_(filled_types.contains(CREDIT_CARD_NUMBER)),
+      exp_(filled_types.contains(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR) ||
+           filled_types.contains(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR) ||
+           (filled_types.contains(CREDIT_CARD_EXP_MONTH) &&
+            (filled_types.contains(CREDIT_CARD_EXP_2_DIGIT_YEAR) ||
+             filled_types.contains(CREDIT_CARD_EXP_4_DIGIT_YEAR)))),
+      cvc_(filled_types.contains(CREDIT_CARD_VERIFICATION_CODE)) {}
+
+AutofillMetrics::CreditCardSeamlessness::Metric
+AutofillMetrics::CreditCardSeamlessness::QualitativeUmaMetric() const {
+  DCHECK(is_valid());
+  if (name_ && number_ && exp_ && cvc_) {
+    return Metric::kFullFill;
+  } else if (!name_ && number_ && exp_ && cvc_) {
+    return Metric::kOptionalNameMissing;
+  } else if (name_ && number_ && exp_ && !cvc_) {
+    return Metric::kOptionalCvcMissing;
+  } else if (!name_ && number_ && exp_ && !cvc_) {
+    return Metric::kOptionalNameAndCvcMissing;
+  } else if (name_ && number_ && !exp_ && cvc_) {
+    return Metric::kFullFillButExpDateMissing;
+  } else {
+    return Metric::kPartialFill;
+  }
+}
+
+FormEvent
+AutofillMetrics::CreditCardSeamlessness::QualitativeFillableFormEvent() const {
+  DCHECK(is_valid());
+  switch (QualitativeUmaMetric()) {
+    case Metric::kFullFill:
+      return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_FULL_FILL;
+    case Metric::kOptionalNameMissing:
+      return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_OPTIONAL_NAME_MISSING;
+    case Metric::kFullFillButExpDateMissing:
+      return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_FULL_FILL_BUT_EXPDATE_MISSING;
+    case Metric::kOptionalNameAndCvcMissing:
+      return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_OPTIONAL_NAME_AND_CVC_MISSING;
+    case Metric::kOptionalCvcMissing:
+      return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_OPTIONAL_CVC_MISSING;
+    case Metric::kPartialFill:
+      return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_PARTIAL_FILL;
+  }
+  NOTREACHED();
+  return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_PARTIAL_FILL;
+}
+
+FormEvent AutofillMetrics::CreditCardSeamlessness::QualitativeFillFormEvent()
+    const {
+  DCHECK(is_valid());
+  switch (QualitativeUmaMetric()) {
+    case Metric::kFullFill:
+      return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_FULL_FILL;
+    case Metric::kOptionalNameMissing:
+      return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_OPTIONAL_NAME_MISSING;
+    case Metric::kFullFillButExpDateMissing:
+      return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_FULL_FILL_BUT_EXPDATE_MISSING;
+    case Metric::kOptionalNameAndCvcMissing:
+      return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_OPTIONAL_NAME_AND_CVC_MISSING;
+    case Metric::kOptionalCvcMissing:
+      return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_OPTIONAL_CVC_MISSING;
+    case Metric::kPartialFill:
+      return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_PARTIAL_FILL;
+  }
+  NOTREACHED();
+  return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_PARTIAL_FILL;
+}
+
+uint8_t AutofillMetrics::CreditCardSeamlessness::BitmaskUmaMetric() const {
+  DCHECK(is_valid());
+  uint8_t bitmask = (name_ << 3) | (number_ << 2) | (exp_ << 1) | (cvc_ << 0);
+  DCHECK_GE(bitmask, 1);
+  DCHECK_LE(bitmask, BitmaskExclusiveMax());
+  return bitmask;
+}
+
 // static
-absl::optional<AutofillMetrics::CreditCardSeamlessFillMetric>
+AutofillMetrics::CreditCardSeamlessness
 AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
     const LogCreditCardSeamlessnessParam& p) {
+  std::string suffix =
+      base::StringPrintf("%s.AtFillTime%sSecurityPolicy",
+                         p.only_newly_filled_fields ? "Fills" : "Fillable",
+                         p.only_after_security_policy ? "After" : "Before");
+
   ServerFieldTypeSet autofilled_types;
   for (const auto& field : p.form) {
     FieldGlobalId id = field->global_id();
@@ -2507,33 +2562,36 @@ AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
       continue;
     autofilled_types.insert(field->Type().GetStorableType());
   }
-  absl::optional<CreditCardSeamlessFillMetric> metric =
-      GetSeamlessness(autofilled_types);
 
-  std::string suffix =
-      base::StringPrintf("%s.AtFillTime%sSecurityPolicy",
-                         p.only_newly_filled_fields ? "Fills" : "Fillable",
-                         p.only_after_security_policy ? "After" : "Before");
-  if (metric) {
-    base::UmaHistogramEnumeration("Autofill.CreditCard.Seamless" + suffix,
-                                  *metric);
-  }
   base::UmaHistogramBoolean("Autofill.CreditCard.Number" + suffix,
                             autofilled_types.contains(CREDIT_CARD_NUMBER));
-  return metric;
+
+  CreditCardSeamlessness seamlessness(autofilled_types);
+  if (seamlessness.is_valid()) {
+    base::UmaHistogramExactLinear(
+        "Autofill.CreditCard.Seamless" + suffix + ".Bitmask",
+        seamlessness.BitmaskUmaMetric(), seamlessness.BitmaskExclusiveMax());
+    base::UmaHistogramEnumeration("Autofill.CreditCard.Seamless" + suffix,
+                                  seamlessness.QualitativeUmaMetric());
+  }
+  return seamlessness;
 }
 
 // static
 void AutofillMetrics::LogCreditCardSeamlessnessAtSubmissionTime(
     const ServerFieldTypeSet& autofilled_types) {
-  absl::optional<CreditCardSeamlessFillMetric> metric =
-      GetSeamlessness(autofilled_types);
-  if (metric) {
-    base::UmaHistogramEnumeration(
-        "Autofill.CreditCard.SeamlessFills.AtSubmissionTime", *metric);
-  }
   base::UmaHistogramBoolean("Autofill.CreditCard.NumberFills.AtSubmissionTime",
                             autofilled_types.contains(CREDIT_CARD_NUMBER));
+
+  CreditCardSeamlessness seamlessness(autofilled_types);
+  if (seamlessness.is_valid()) {
+    base::UmaHistogramExactLinear(
+        "Autofill.CreditCard.SeamlessFills.AtSubmissionTime.Bitmask",
+        seamlessness.BitmaskUmaMetric(), seamlessness.BitmaskExclusiveMax());
+    base::UmaHistogramEnumeration(
+        "Autofill.CreditCard.SeamlessFills.AtSubmissionTime",
+        seamlessness.QualitativeUmaMetric());
+  }
 }
 
 // static
