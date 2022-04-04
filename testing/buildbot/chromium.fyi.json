@@ -96332,40 +96332,6 @@
       }
     ]
   },
-  "win-archive-dbg (goma cache silo)": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
-  "win-archive-dbg (reclient shadow)": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
-  "win-archive-rel (goma cache silo)": {
-    "additional_compile_targets": [
-      "all"
-    ],
-    "scripts": [
-      {
-        "name": "checkbins",
-        "script": "checkbins.py",
-        "swarming": {}
-      }
-    ]
-  },
-  "win-archive-rel (reclient shadow)": {
-    "additional_compile_targets": [
-      "all"
-    ],
-    "scripts": [
-      {
-        "name": "checkbins",
-        "script": "checkbins.py",
-        "swarming": {}
-      }
-    ]
-  },
   "win-backuprefptr-x64-fyi-rel": {
     "gtest_tests": [
       {
