@@ -136,8 +136,7 @@ TEST_P(RecordUploadRequestBuilderTest, BreakListOnSingleBadRecord) {
   ASSERT_FALSE(request_payload.has_value()) << request_payload.value();
 }
 
-TEST_P(RecordUploadRequestBuilderTest,
-       DISABLED_DenyPoorlyFormedEncryptedRecords) {
+TEST_P(RecordUploadRequestBuilderTest, DenyPoorlyFormedEncryptedRecords) {
   // Reject empty record.
   EncryptedRecord record;
 
@@ -203,7 +202,7 @@ TEST_P(RecordUploadRequestBuilderTest, DenyRequestIdWhenBadRecordSet) {
 }
 
 TEST_P(RecordUploadRequestBuilderTest,
-       DISABLED_DontBuildCompressionRequestIfNoInformation) {
+       DontBuildCompressionRequestIfNoInformation) {
   EncryptedRecord compressionless_record = GenerateEncryptedRecord("TEST_INFO");
   ASSERT_FALSE(compressionless_record.has_compression_information());
 
