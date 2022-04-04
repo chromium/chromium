@@ -15,6 +15,7 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/devtools_instrumentation.h"

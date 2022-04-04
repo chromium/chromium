@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/sequence_token.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/condition_variable.h"

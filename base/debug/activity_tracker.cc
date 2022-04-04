@@ -19,6 +19,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/pending_task.h"
 #include "base/pickle.h"
 #include "base/process/process.h"

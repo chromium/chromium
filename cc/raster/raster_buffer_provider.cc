@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/raster/raster_source.h"
 #include "components/viz/common/resources/platform_color.h"

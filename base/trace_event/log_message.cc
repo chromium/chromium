@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/json/string_escape.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 
 namespace base {

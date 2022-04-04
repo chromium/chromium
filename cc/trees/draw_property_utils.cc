@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/stack.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
 #include "cc/layers/draw_properties.h"

@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"

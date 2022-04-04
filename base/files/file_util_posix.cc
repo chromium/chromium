@@ -32,6 +32,7 @@
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/posix/eintr_wrapper.h"

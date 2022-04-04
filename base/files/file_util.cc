@@ -19,6 +19,7 @@
 #include "base/check_op.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"

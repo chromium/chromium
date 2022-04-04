@@ -10,6 +10,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "cc/paint/paint_op_reader.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 
+#include "base/notreached.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 
 namespace apps {

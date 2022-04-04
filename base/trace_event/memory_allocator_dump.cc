@@ -8,6 +8,7 @@
 
 #include "base/format_macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_provider.h"

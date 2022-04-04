@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"

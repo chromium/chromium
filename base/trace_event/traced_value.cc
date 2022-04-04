@@ -15,6 +15,7 @@
 #include "base/json/json_writer.h"
 #include "base/json/string_escape.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/pickle.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"

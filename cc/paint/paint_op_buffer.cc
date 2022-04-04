@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/stl_util.h"
 #include "cc/paint/decoded_draw_image.h"
 #include "cc/paint/display_item_list.h"

@@ -6,6 +6,7 @@
 
 #include "cc/paint/paint_flags.h"
 
+#include "base/notreached.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/paint_op_writer.h"

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "cc/trees/effect_node.h"
+#include "base/notreached.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/layers/layer.h"
 #include "cc/trees/property_tree.h"

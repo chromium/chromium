@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/base/features.h"
 #include "cc/debug/rendering_stats_instrumentation.h"

@@ -18,6 +18,7 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/notreached.h"
 #include "base/process/internal_linux.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"

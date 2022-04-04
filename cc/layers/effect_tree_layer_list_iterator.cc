@@ -4,6 +4,8 @@
 
 #include "cc/layers/effect_tree_layer_list_iterator.h"
 
+#include "base/notreached.h"
+
 namespace cc {
 
 EffectTreeLayerListIterator::EffectTreeLayerListIterator(

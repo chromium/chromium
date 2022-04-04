@@ -16,6 +16,7 @@
 #include "base/debug/activity_tracker.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/kill.h"
 #include "base/threading/thread_restrictions.h"

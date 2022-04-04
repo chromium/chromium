@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
 #include "cc/input/scroll_elasticity_helper.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"

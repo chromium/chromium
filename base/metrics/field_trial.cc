@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/process/memory.h"
 #include "base/process/process_handle.h"
 #include "base/process/process_info.h"

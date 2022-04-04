@@ -4,6 +4,7 @@
 
 #include "base/task/simple_task_executor.h"
 
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 

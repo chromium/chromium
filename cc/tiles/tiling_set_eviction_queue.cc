@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/notreached.h"
 #include "cc/tiles/tiling_set_eviction_queue.h"
 
 namespace cc {

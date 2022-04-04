@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/notreached.h"
 #include "cc/layers/painted_overlay_scrollbar_layer.h"
 #include "cc/layers/painted_scrollbar_layer.h"
 #include "cc/layers/scrollbar_layer_impl_base.h"

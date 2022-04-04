@@ -4,6 +4,7 @@
 
 #include "base/trace_event/typed_macros_internal.h"
 
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/trace_event/thread_instruction_count.h"
 #include "base/trace_event/trace_event.h"

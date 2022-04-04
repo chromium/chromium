@@ -29,6 +29,7 @@
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/metrics/sample_vector.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/notreached.h"
 #include "base/pickle.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"

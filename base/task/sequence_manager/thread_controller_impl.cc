@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/task/sequence_manager/lazy_now.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"

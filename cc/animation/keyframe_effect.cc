@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/containers/cxx20_erase.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_host.h"

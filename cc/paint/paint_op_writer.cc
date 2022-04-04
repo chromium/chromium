@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bits.h"
+#include "base/notreached.h"
 #include "cc/paint/draw_image.h"
 #include "cc/paint/image_provider.h"
 #include "cc/paint/image_transfer_cache_entry.h"

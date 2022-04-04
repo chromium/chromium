@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "base/notreached.h"
 #include "cc/tiles/picture_layer_tiling_set.h"
 #include "cc/tiles/tile.h"
 #include "cc/tiles/tile_priority.h"

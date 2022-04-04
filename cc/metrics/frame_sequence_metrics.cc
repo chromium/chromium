@@ -10,6 +10,7 @@
 
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
