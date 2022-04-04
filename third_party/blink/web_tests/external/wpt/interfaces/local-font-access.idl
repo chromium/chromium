@@ -12,15 +12,15 @@ Navigator includes NavigatorFonts;
 [SecureContext,
  Exposed=Window]
 interface FontManager {
-  Promise<sequence<FontMetadata>> query(optional QueryOptions options = {});
+  Promise<sequence<FontData>> query(optional QueryOptions options = {});
 };
 
 dictionary QueryOptions {
-  sequence<DOMString> select = [];
+  sequence<DOMString> postscriptNames;
 };
 
 [Exposed=Window]
-interface FontMetadata {
+interface FontData {
   Promise<Blob> blob();
 
   // Names

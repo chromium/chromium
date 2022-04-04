@@ -40,7 +40,7 @@ dictionary NavigationOptions {
 
 dictionary NavigationNavigateOptions : NavigationOptions {
   any state;
-  boolean replace = false;
+  NavigationHistoryBehavior history = "auto";
 };
 
 dictionary NavigationReloadOptions : NavigationOptions {
@@ -50,6 +50,12 @@ dictionary NavigationReloadOptions : NavigationOptions {
 dictionary NavigationResult {
   Promise<NavigationHistoryEntry> committed;
   Promise<NavigationHistoryEntry> finished;
+};
+
+enum NavigationHistoryBehavior {
+  "auto",
+  "push",
+  "replace"
 };
 
 [Exposed=Window]
@@ -85,6 +91,7 @@ interface NavigateEvent : Event {
   readonly attribute boolean hashChange;
   readonly attribute AbortSignal signal;
   readonly attribute FormData? formData;
+  readonly attribute DOMString? downloadRequest;
   readonly attribute any info;
 
   undefined transitionWhile(Promise<undefined> newNavigationAction);
@@ -98,6 +105,7 @@ dictionary NavigateEventInit : EventInit {
   boolean hashChange = false;
   required AbortSignal signal;
   FormData? formData = null;
+  DOMString? downloadRequest = null;
   any info;
 };
 

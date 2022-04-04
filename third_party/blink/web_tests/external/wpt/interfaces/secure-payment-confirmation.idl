@@ -9,7 +9,8 @@ dictionary SecurePaymentConfirmationRequest {
     required FrozenArray<BufferSource> credentialIds;
     required PaymentCredentialInstrument instrument;
     unsigned long timeout;
-    required USVString payeeOrigin;
+    DOMString payeeName;
+    USVString payeeOrigin;
     AuthenticationExtensionsClientInputs extensions;
 };
 
@@ -23,6 +24,7 @@ dictionary AuthenticationExtensionsPaymentInputs {
   // Only used for authentication.
   USVString rp;
   USVString topOrigin;
+  DOMString payeeName;
   USVString payeeOrigin;
   PaymentCurrencyAmount total;
   PaymentCredentialInstrument instrument;
@@ -35,7 +37,8 @@ dictionary CollectedClientPaymentData : CollectedClientData {
 dictionary CollectedClientAdditionalPaymentData {
     required USVString rp;
     required USVString topOrigin;
-    required USVString payeeOrigin;
+    DOMString payeeName;
+    USVString payeeOrigin;
     required PaymentCurrencyAmount total;
     required PaymentCredentialInstrument instrument;
 };

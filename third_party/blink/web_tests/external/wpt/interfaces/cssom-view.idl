@@ -101,7 +101,10 @@ dictionary ScrollIntoViewOptions : ScrollOptions {
 };
 
 dictionary IsVisibleOptions {
-
+    boolean checkAriaHidden = false;
+    boolean checkInert = false;
+    boolean checkOpacity = false;
+    boolean checkVisibilityCSS = false;
 };
 
 partial interface Element {

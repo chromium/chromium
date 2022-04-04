@@ -85,6 +85,8 @@ crbug.com/1167321 [ Linux ] external/wpt/webdriver/tests/find_element_from_shado
 crbug.com/1167321 [ Linux ] external/wpt/webdriver/tests/find_element_from_shadow_root/find.py>>test_find_element[xpath-//a] [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/get_current_url/file.py>>test_get_current_url_file_protocol [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/navigate_to/file.py>>test_file_protocol [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/back/back.py>>test_data_urls [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/back/back.py>>test_dismissed_beforeunload [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/back/back.py>>test_fragments [ Failure ]

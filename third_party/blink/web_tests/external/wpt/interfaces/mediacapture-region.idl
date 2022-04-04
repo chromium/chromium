@@ -3,7 +3,7 @@
 // (https://github.com/w3c/webref)
 // Source: Region Capture (https://w3c.github.io/mediacapture-region/)
 
-[Exposed = Window]
+[Exposed=(Window,Worker)]
 interface CropTarget {
   // Intentionally empty; just an opaque identifier.
 };
