@@ -10,6 +10,7 @@ source_set("commerce") {
     "shopping_persisted_data_tab_helper.mm",
   ]
   deps = [
+    ":shopping_service",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:proto",
     "//components/optimization_guide/core:core",
@@ -24,6 +25,23 @@ source_set("commerce") {
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/web",
   ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+static_library("shopping_service") {
+  sources = [
+    "shopping_service_factory.h",
+    "shopping_service_factory.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/commerce/core:shopping_service",
+    "//components/keyed_service/ios",
+    "//ios/chrome/browser/browser_state",
+    "//ios/web",
+  ]
+
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
