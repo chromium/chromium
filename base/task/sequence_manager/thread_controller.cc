@@ -18,7 +18,7 @@ ThreadController::RunLevelTracker::~RunLevelTracker() {
 }
 
 void ThreadController::RunLevelTracker::OnRunLoopStarted(State initial_state) {
-  run_levels_.emplace(initial_state, run_levels_.empty());
+  run_levels_.emplace(initial_state, !run_levels_.empty());
 }
 
 void ThreadController::RunLevelTracker::OnRunLoopEnded() {
