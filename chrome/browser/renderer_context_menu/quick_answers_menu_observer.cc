@@ -130,14 +130,9 @@ void QuickAnswersMenuObserver::OnTextSurroundingSelectionAvailable(
     uint32_t start_offset,
     uint32_t end_offset) {
   Profile* profile = Profile::FromBrowserContext(proxy_->GetBrowserContext());
-  PrefService* prefs = profile->GetPrefs();
 
   Context context;
   context.surrounding_text = base::UTF16ToUTF8(surrounding_text);
-  context.device_properties.language =
-      l10n_util::GetLanguage(g_browser_process->GetApplicationLocale());
-  context.device_properties.preferred_languages =
-      prefs->GetString(language::prefs::kPreferredLanguages);
   context.device_properties.is_internal = IsInternalUser(profile);
   QuickAnswersController::Get()->MaybeShowQuickAnswers(bounds_in_screen_,
                                                        selected_text, context);

@@ -103,6 +103,7 @@ source_set("unit_tests") {
     "//chromeos/services/assistant/public/shared",
     "//chromeos/services/machine_learning/public/cpp:stub",
     "//chromeos/services/machine_learning/public/mojom",
+    "//components/language/core/browser:browser",
     "//components/prefs:prefs",
     "//components/prefs:test_support",
     "//services/data_decoder/public/cpp:test_support",

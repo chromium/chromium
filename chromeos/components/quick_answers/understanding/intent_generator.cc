@@ -113,13 +113,12 @@ bool ShouldSkipDefinition(const std::string& text) {
   return false;
 }
 
-bool IsPreferredLanguage(const std::string& detected_language,
-                         const std::string& preferred_languages_string) {
-  auto preferred_languages =
-      base::SplitString(preferred_languages_string, ",", base::TRIM_WHITESPACE,
-                        base::SPLIT_WANT_NONEMPTY);
+bool IsPreferredLanguage(const std::string& detected_language) {
+  auto preferred_languages_list =
+      base::SplitString(QuickAnswersState::Get()->preferred_languages(), ",",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-  for (const std::string& locale : preferred_languages) {
+  for (const std::string& locale : preferred_languages_list) {
     if (l10n_util::GetLanguage(locale) == detected_language)
       return true;
   }
@@ -195,7 +194,7 @@ void IntentGenerator::CheckSpellingCallback(const QuickAnswersRequest& request,
   if (correctness) {
     std::move(complete_callback_)
         .Run(IntentInfo(request.selected_text, IntentType::kDictionary,
-                        request.context.device_properties.language));
+                        QuickAnswersState::Get()->application_locale()));
     return;
   }
 
@@ -224,7 +223,7 @@ void IntentGenerator::LoadModelCallback(const QuickAnswersRequest& request,
     text_annotation_request->text = base::UTF16ToUTF8(
         base::i18n::ToLower(base::UTF8ToUTF16(request.selected_text)));
     text_annotation_request->default_locales =
-        request.context.device_properties.language;
+        QuickAnswersState::Get()->application_locale();
 
     text_classifier_->Annotate(
         std::move(text_annotation_request),
@@ -265,7 +264,7 @@ void IntentGenerator::AnnotationCallback(
           .Run(IntentInfo(
               entity_str,
               RewriteIntent(request.selected_text, entity_str, it->second),
-              request.context.device_properties.language));
+              QuickAnswersState::Get()->application_locale()));
       return;
     }
   }
@@ -287,7 +286,7 @@ void IntentGenerator::MaybeGenerateTranslationIntent(
   // Don't generate translation intent if no device language is provided or the
   // length of selected text is above the threshold. Returns unknown intent
   // type.
-  if (request.context.device_properties.language.empty() ||
+  if (QuickAnswersState::Get()->application_locale().empty() ||
       request.selected_text.length() > kTranslationTextLengthThreshold) {
     std::move(complete_callback_)
         .Run(IntentInfo(request.selected_text, IntentType::kUnknown));
@@ -310,13 +309,12 @@ void IntentGenerator::LanguageDetectorCallback(
   // Generate translation intent if the detected language is different to the
   // system language and is not one of the preferred languages.
   if (detected_language.has_value() &&
-      detected_language.value() != request.context.device_properties.language &&
-      !IsPreferredLanguage(
-          detected_language.value(),
-          request.context.device_properties.preferred_languages)) {
+      detected_language.value() !=
+          QuickAnswersState::Get()->application_locale() &&
+      !IsPreferredLanguage(detected_language.value())) {
     std::move(complete_callback_)
         .Run(IntentInfo(request.selected_text, IntentType::kTranslation,
-                        request.context.device_properties.language,
+                        QuickAnswersState::Get()->application_locale(),
                         detected_language.value()));
     return;
   }

@@ -19,6 +19,7 @@
 #include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/text_classifier.mojom.h"
+#include "components/language/core/browser/pref_names.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -132,8 +133,8 @@ TEST_F(IntentGeneratorTest, TranslationIntent) {
 
   QuickAnswersRequest request;
   request.selected_text = "quick answers";
-  request.context.device_properties.language = "es";
-  request.context.device_properties.preferred_languages = "es";
+  prefs()->SetString(language::prefs::kApplicationLocale, "es");
+  prefs()->SetString(language::prefs::kPreferredLanguages, "es");
   intent_generator_->GenerateIntent(request);
 
   FlushForTesting();
@@ -152,8 +153,8 @@ TEST_F(IntentGeneratorTest, TranslationIntentSameLanguage) {
 
   QuickAnswersRequest request;
   request.selected_text = "quick answers";
-  request.context.device_properties.language = "en";
-  request.context.device_properties.preferred_languages = "en";
+  prefs()->SetString(language::prefs::kApplicationLocale, "en");
+  prefs()->SetString(language::prefs::kPreferredLanguages, "en");
   intent_generator_->GenerateIntent(request);
 
   FlushForTesting();
@@ -171,8 +172,8 @@ TEST_F(IntentGeneratorTest, TranslationIntentPreferredLocale) {
 
   QuickAnswersRequest request;
   request.selected_text = "quick answers";
-  request.context.device_properties.language = "es";
-  request.context.device_properties.preferred_languages = "es,en,zh";
+  prefs()->SetString(language::prefs::kApplicationLocale, "es");
+  prefs()->SetString(language::prefs::kPreferredLanguages, "es,en,zh");
   intent_generator_->GenerateIntent(request);
 
   FlushForTesting();
@@ -190,8 +191,8 @@ TEST_F(IntentGeneratorTest, TranslationIntentPreferredLanguage) {
 
   QuickAnswersRequest request;
   request.selected_text = "quick answers";
-  request.context.device_properties.language = "es";
-  request.context.device_properties.preferred_languages = "es-MX,en-US,zh-CN";
+  prefs()->SetString(language::prefs::kApplicationLocale, "es");
+  prefs()->SetString(language::prefs::kPreferredLanguages, "es-MX,en-US,zh-CN");
   intent_generator_->GenerateIntent(request);
 
   FlushForTesting();
@@ -212,8 +213,8 @@ TEST_F(IntentGeneratorTest, TranslationIntentTextLengthAboveThreshold) {
       "Search the world's information, including webpages, images, videos and "
       "more. Google has many special features to help you find exactly what "
       "you're looking ...";
-  request.context.device_properties.language = "es";
-  request.context.device_properties.preferred_languages = "es";
+  prefs()->SetString(language::prefs::kApplicationLocale, "es");
+  prefs()->SetString(language::prefs::kPreferredLanguages, "es");
   intent_generator_->GenerateIntent(request);
 
   FlushForTesting();
@@ -231,8 +232,8 @@ TEST_F(IntentGeneratorTest, TranslationIntentTextLengthAboveThreshold) {
 TEST_F(IntentGeneratorTest, TranslationIntentWithAnnotation) {
   QuickAnswersRequest request;
   request.selected_text = "unfathomable";
-  request.context.device_properties.language = "es";
-  request.context.device_properties.preferred_languages = "es";
+  prefs()->SetString(language::prefs::kApplicationLocale, "es");
+  prefs()->SetString(language::prefs::kPreferredLanguages, "es");
 
   // Create the test annotations.
   std::vector<TextEntityPtr> entities;

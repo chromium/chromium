@@ -68,7 +68,12 @@ class QuickAnswersState {
   bool definition_enabled() const { return definition_enabled_; }
   bool translation_enabled() const { return translation_enabled_; }
   bool unit_conversion_enabled() const { return unit_conversion_enabled_; }
-  const std::string& application_locale() const { return application_locale_; }
+  const std::string& application_locale() const {
+    return resolved_application_loacle_;
+  }
+  const std::string& preferred_languages() const {
+    return preferred_languages_;
+  }
   bool is_eligible() const { return is_eligible_; }
 
   void set_eligibility_for_testing(bool is_eligible) {
@@ -88,6 +93,7 @@ class QuickAnswersState {
   void UpdateTranslationEnabled();
   void UpdateUnitConversionEnabled();
   void OnApplicationLocaleReady();
+  void UpdatePreferredLanguages();
 
   // Called when the feature eligibility might change.
   void UpdateEligibility();
@@ -108,8 +114,12 @@ class QuickAnswersState {
   // Whether the Quick Answers unit conversion is enabled.
   bool unit_conversion_enabled_ = true;
 
-  // The application locale.
-  std::string application_locale_;
+  // The resolved application locale.
+  std::string resolved_application_loacle_;
+
+  // The list of preferred languages, separated by comma.
+  // (ex. "en-US,zh,fr").
+  std::string preferred_languages_;
 
   // Whether the Quick Answers feature is eligible. The value is derived from a
   // number of other states.

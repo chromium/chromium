@@ -122,6 +122,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
                                  speech::kUsEnglishLocale);
     registry->RegisterStringPref(language::prefs::kApplicationLocale,
                                  std::string());
+    registry->RegisterStringPref(language::prefs::kPreferredLanguages,
+                                 std::string());
   }
 }
 
