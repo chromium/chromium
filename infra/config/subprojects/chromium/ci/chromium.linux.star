@@ -245,6 +245,9 @@ ci.builder(
     goma_backend = None,
     reclient_jobs = rbe_jobs.DEFAULT,
     reclient_instance = rbe_instance.DEFAULT,
+    # TODO(crbug.com/1312834): Make this builder tree-closing once the current
+    # failures have been resolved.
+    tree_closing = False,
 )
 
 ci.builder(
