@@ -8,5 +8,5 @@
     ImplementedAs=PaymentAppServiceWorkerRegistration,
     RuntimeEnabled=PaymentApp
 ] partial interface ServiceWorkerRegistration {
-    [CallWith=ScriptState, SameObject] readonly attribute PaymentManager paymentManager;
+    [CallWith=ScriptState, SameObject, RaisesException] readonly attribute PaymentManager paymentManager;
 };

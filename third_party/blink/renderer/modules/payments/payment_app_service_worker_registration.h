@@ -33,8 +33,9 @@ class PaymentAppServiceWorkerRegistration final
   static PaymentAppServiceWorkerRegistration& From(ServiceWorkerRegistration&);
 
   static PaymentManager* paymentManager(ScriptState*,
-                                        ServiceWorkerRegistration&);
-  PaymentManager* paymentManager(ScriptState*);
+                                        ServiceWorkerRegistration&,
+                                        ExceptionState&);
+  PaymentManager* paymentManager(ScriptState*, ExceptionState&);
 
   void Trace(Visitor*) const override;
 
