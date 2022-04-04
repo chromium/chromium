@@ -258,13 +258,13 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   int GetNumberOfDesks() const override;
   void SendToDeskAtIndex(aura::Window* window, int desk_index) override;
 
-  // Captures the active desk and returns it as a desk template containing
-  // necessary information that can be used to create a same desk via provided
-  // `callback`, `root_window_to_show` is used to determine which monitor to
-  // show template related dialog.
-  void CaptureActiveDeskAsTemplate(
-      GetDeskTemplateCallback callback,
-      aura::Window* root_window_to_show = nullptr) const;
+  // Captures the active desk and returns it as a desk template (of type
+  // `template_type`) containing necessary information that can be used to
+  // create a same desk via provided `callback`, `root_window_to_show` is used
+  // to determine which monitor to show template related dialog.
+  void CaptureActiveDeskAsTemplate(GetDeskTemplateCallback callback,
+                                   DeskTemplateType template_type,
+                                   aura::Window* root_window_to_show) const;
 
   // Creates (and optionally activates) a new desk for a template with name
   // `template_name` or `template_name ({counter})` to resolve naming

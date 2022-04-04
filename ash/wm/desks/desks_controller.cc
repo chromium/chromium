@@ -904,12 +904,13 @@ void DesksController::SendToDeskAtIndex(aura::Window* window, int desk_index) {
 
 void DesksController::CaptureActiveDeskAsTemplate(
     GetDeskTemplateCallback callback,
+    DeskTemplateType template_type,
     aura::Window* root_window_to_show) const {
   DCHECK(current_account_id_.is_valid());
 
   restore_data_collector_.CaptureActiveDeskAsTemplate(
-      std::move(callback), base::UTF16ToUTF8(active_desk_->name()),
-      root_window_to_show);
+      std::move(callback), template_type,
+      base::UTF16ToUTF8(active_desk_->name()), root_window_to_show);
 }
 
 void DesksController::CreateNewDeskForTemplate(

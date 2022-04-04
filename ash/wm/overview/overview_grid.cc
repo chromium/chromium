@@ -2428,6 +2428,7 @@ void OverviewGrid::UpdateCannotSnapWarningVisibility(bool animate) {
 
 void OverviewGrid::OnSaveDeskAsTemplateButtonPressed() {
   DesksTemplatesPresenter::Get()->MaybeSaveActiveDeskAsTemplate(
+      DeskTemplateType::kTemplate,
       save_desk_as_template_widget_->GetNativeWindow()->GetRootWindow());
 }
 

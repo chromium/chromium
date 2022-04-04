@@ -177,12 +177,13 @@ void DesksTemplatesPresenter::LaunchDeskTemplate(
 }
 
 void DesksTemplatesPresenter::MaybeSaveActiveDeskAsTemplate(
+    DeskTemplateType template_type,
     aura::Window* root_window_to_show) {
   DesksController::Get()->CaptureActiveDeskAsTemplate(
       base::BindOnce(&DesksTemplatesPresenter::SaveOrUpdateDeskTemplate,
                      weak_ptr_factory_.GetWeakPtr(),
                      /*is_update=*/false, root_window_to_show),
-      root_window_to_show);
+      template_type, root_window_to_show);
 }
 
 void DesksTemplatesPresenter::SaveOrUpdateDeskTemplate(

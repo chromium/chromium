@@ -32,6 +32,7 @@ RestoreDataCollector::~RestoreDataCollector() = default;
 
 void RestoreDataCollector::CaptureActiveDeskAsTemplate(
     GetDeskTemplateCallback callback,
+    DeskTemplateType template_type,
     const std::string& template_name,
     aura::Window* root_window_to_show) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -44,6 +45,7 @@ void RestoreDataCollector::CaptureActiveDeskAsTemplate(
   if (root_window_to_show)
     window_tracker_.Add(root_window_to_show);
   call.root_window_to_show = root_window_to_show;
+  call.template_type = template_type;
   call.template_name = template_name;
 
   auto* const shell = Shell::Get();
@@ -126,6 +128,7 @@ void RestoreDataCollector::SendDeskTemplate(uint32_t serial) {
       base::GUID::GenerateRandomV4().AsLowercaseString(),
       DeskTemplateSource::kUser, call.template_name, base::Time::Now());
   desk_template->set_desk_restore_data(std::move(call.data));
+  desk_template->set_type(call.template_type);
 
   if (!call.unsupported_apps.empty() &&
       Shell::Get()->overview_controller()->InOverviewSession()) {

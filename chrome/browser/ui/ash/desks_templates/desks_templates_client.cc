@@ -212,7 +212,9 @@ void DesksTemplatesClient::CaptureActiveDeskAndSaveTemplate(
 
   desks_controller_->CaptureActiveDeskAsTemplate(
       base::BindOnce(&DesksTemplatesClient::OnCapturedDeskTemplate,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      ash::DeskTemplateType::kTemplate,
+      /*root_window_to_show=*/nullptr);
 }
 
 void DesksTemplatesClient::UpdateDeskTemplate(

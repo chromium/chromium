@@ -27,6 +27,7 @@ class Window;
 namespace ash {
 
 class DeskTemplate;
+enum class DeskTemplateType;
 
 // Collects `AppLaunchData` from all applications that are currently active, and
 // returns it in form of `DeskTemplate` record.
@@ -43,6 +44,7 @@ class RestoreDataCollector {
   // Captures the active desk and returns it as a `DeskTemplate` object via the
   // `callback`.
   void CaptureActiveDeskAsTemplate(GetDeskTemplateCallback callback,
+                                   DeskTemplateType template_type,
                                    const std::string& template_name,
                                    aura::Window* root_window_to_show);
 
@@ -54,6 +56,7 @@ class RestoreDataCollector {
     Call& operator=(Call&&);
     ~Call();
 
+    DeskTemplateType template_type;
     std::string template_name;
     aura::Window* root_window_to_show;
     std::vector<aura::Window*> unsupported_apps;
