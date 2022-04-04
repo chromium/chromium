@@ -64,11 +64,9 @@ constexpr int kMinimumRecommendedBlockAlignment = 16;
 // https://docs.microsoft.com/en-us/windows/win32/api/mftransform/nf-mftransform-imftransform-getstreamids#remarks
 constexpr DWORD kStreamId = 0;
 
-// The encoder keeps two full frames of data buffered at all times, which means
-// it must have three full frames of data buffered before it will produce an
-// output frame. It only needs two frames to successfully flush.
-constexpr int kMinSamplesForOutput = kSamplesPerFrame * 3;
-constexpr int kMinSamplesForFlush = kSamplesPerFrame * 2;
+// When not flushing, the encoder must have two full frames of data buffered
+// before it will produce an output frame.
+constexpr int kMinSamplesForOutput = kSamplesPerFrame * 2;
 
 constexpr const wchar_t kMfPlatDllName[] = L"mfplat.dll";
 
@@ -523,7 +521,7 @@ void MFAudioEncoder::Flush(EncoderStatusCB done_cb) {
   }
 
   if (state_ == EncoderState::kError || state_ == EncoderState::kFlushing ||
-      state_ == EncoderState::kDraining || !can_flush_) {
+      state_ == EncoderState::kDraining || !can_produce_output_) {
     std::move(done_cb).Run(EncoderStatus::Codes::kEncoderFailedFlush);
     return;
   }
@@ -531,8 +529,6 @@ void MFAudioEncoder::Flush(EncoderStatusCB done_cb) {
   DCHECK(state_ == EncoderState::kIdle || state_ == EncoderState::kProcessing)
       << "state_ == " << static_cast<int>(state_);
 
-  have_queued_input_task_ = false;
-  have_queued_output_task_ = false;
   state_ = EncoderState::kFlushing;
   TryProcessOutput(base::BindOnce(&MFAudioEncoder::OnFlushComplete,
                                   weak_ptr_factory_.GetWeakPtr(),
@@ -601,14 +597,10 @@ void MFAudioEncoder::EnqueueInput(std::unique_ptr<AudioBus> audio_bus,
 
   input_queue_.emplace_back(std::move(input_sample), audio_bus->frames(),
                             std::move(done_cb));
-  if (state_ == EncoderState::kIdle)
+  if (state_ == EncoderState::kIdle) {
+    state_ = EncoderState::kProcessing;
     TryProcessInput(/*flush_cb=*/base::NullCallback());
-}
-
-void MFAudioEncoder::RunTryProcessInput(FlushCB flush_cb) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  have_queued_input_task_ = false;
-  TryProcessInput(std::move(flush_cb));
+  }
 }
 
 void MFAudioEncoder::TryProcessInput(FlushCB flush_cb) {
@@ -631,7 +623,7 @@ void MFAudioEncoder::TryProcessInput(FlushCB flush_cb) {
     DCHECK(flush_cb);
     DCHECK(input_queue_.empty());
 
-    if (samples_in_encoder_ <= 0)
+    if (samples_in_encoder_ == 0)
       std::move(flush_cb).Run();
     else
       TryProcessOutput(std::move(flush_cb));
@@ -639,23 +631,17 @@ void MFAudioEncoder::TryProcessInput(FlushCB flush_cb) {
     return;
   }
 
-  if (state_ == EncoderState::kIdle)
-    state_ = EncoderState::kProcessing;
-
   DCHECK(state_ == EncoderState::kProcessing ||
          state_ == EncoderState::kFlushing)
       << "state_ == " << static_cast<int>(state_);
 
-  bool not_accepting = false;
   HRESULT hr = S_OK;
   while (SUCCEEDED(hr) && !input_queue_.empty()) {
     InputData& input_data = input_queue_.front();
     hr = mf_encoder_->ProcessInput(kStreamId, input_data.sample.Get(),
                                    /*flags=*/0);
-    if (hr == MF_E_NOTACCEPTING) {
-      not_accepting = true;
+    if (hr == MF_E_NOTACCEPTING)
       break;
-    }
     if (FAILED(hr)) {
       OnError();
       return;
@@ -669,13 +655,7 @@ void MFAudioEncoder::TryProcessInput(FlushCB flush_cb) {
   if (samples_in_encoder_ >= kMinSamplesForOutput)
     can_produce_output_ = true;
 
-  if (samples_in_encoder_ >= kMinSamplesForFlush)
-    can_flush_ = true;
-
-  // We must call `TryProcessOutput` if `not_accepting` is true in order for
-  // the `mf_encoder_` to move data from its input buffer to a staging buffer,
-  // which will allow us to provide more input.
-  if (not_accepting || can_produce_output_ ||
+  if (samples_in_encoder_ >= kMinSamplesForOutput ||
       state_ == EncoderState::kFlushing) {
     TryProcessOutput(std::move(flush_cb));
     return;
@@ -684,21 +664,18 @@ void MFAudioEncoder::TryProcessInput(FlushCB flush_cb) {
   state_ = EncoderState::kIdle;
 }
 
-void MFAudioEncoder::RunTryProcessOutput(FlushCB flush_cb) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  have_queued_output_task_ = false;
-  TryProcessOutput(std::move(flush_cb));
-}
-
 void MFAudioEncoder::TryProcessOutput(FlushCB flush_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(initialized_);
 
-  if (state_ == EncoderState::kError)
+  if (state_ == EncoderState::kError || !can_produce_output_)
     return;
 
-  if (state_ == EncoderState::kIdle)
-    state_ = EncoderState::kProcessing;
+  if (state_ == EncoderState::kIdle) {
+    DCHECK_LT(samples_in_encoder_, kMinSamplesForOutput);
+    DCHECK(input_queue_.empty());
+    return;
+  }
 
   DCHECK(state_ == EncoderState::kProcessing ||
          state_ == EncoderState::kFlushing || state_ == EncoderState::kDraining)
@@ -732,20 +709,10 @@ void MFAudioEncoder::TryProcessOutput(FlushCB flush_cb) {
   }
 
   if (!input_queue_.empty()) {
-    // Setting our state to idle before posting tasks allows the next call to
-    // `EnqueueInput` to call `TryProcessInput`. This lets callers run this
-    // encoder synchronously.
-    if (state_ == EncoderState::kProcessing)
-      state_ = EncoderState::kIdle;
-
-    if (!have_queued_input_task_ || flush_cb) {
-      have_queued_input_task_ = true;
-      task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&MFAudioEncoder::RunTryProcessInput,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(flush_cb)));
-    }
-
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&MFAudioEncoder::TryProcessInput,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(flush_cb)));
     return;
   }
 
@@ -769,32 +736,29 @@ void MFAudioEncoder::TryProcessOutput(FlushCB flush_cb) {
     }
   }
 
-  if (state_ == EncoderState::kDraining) {
-    // When draining, the encoder will produce output even if it has less than
-    // `kMinSamplesForOutput` buffered. It will 0 pad what data it has so that
-    // it can produce the final frame.
-    if (samples_in_encoder_ > 0)
-      TryProcessOutput(std::move(flush_cb));
-    else
-      std::move(flush_cb).Run();
-
-    return;
-  }
-
   // If `mf_encoder_` has enough samples buffered to produce another output
   // frame, we should continue to check for output. Since it is not ready to be
   // processed right now, we post a task to yield the thread to other work that
   // is ready.
-  if (samples_in_encoder_ >= kMinSamplesForOutput) {
-    if (state_ == EncoderState::kProcessing)
-      state_ = EncoderState::kIdle;
+  if (samples_in_encoder_ > kMinSamplesForOutput) {
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&MFAudioEncoder::TryProcessOutput,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(flush_cb)));
+    return;
+  }
 
-    if (!have_queued_output_task_ || flush_cb) {
-      have_queued_output_task_ = true;
+  if (state_ == EncoderState::kDraining) {
+    // When draining the encoder, it will produce output even if it has less
+    // than `kMinSamplesForOutput` buffered. It will 0 pad what data it has so
+    // that it can produce the final frame.
+    if (samples_in_encoder_ > 0) {
       task_runner_->PostTask(
           FROM_HERE,
-          base::BindOnce(&MFAudioEncoder::RunTryProcessOutput,
+          base::BindOnce(&MFAudioEncoder::TryProcessOutput,
                          weak_ptr_factory_.GetWeakPtr(), std::move(flush_cb)));
+    } else {
+      std::move(flush_cb).Run();
     }
 
     return;
@@ -826,13 +790,8 @@ HRESULT MFAudioEncoder::ProcessOutput(EncodedAudioBuffer& encoded_audio) {
   // Retrieve the output.
   // https://docs.microsoft.com/en-us/windows/win32/medfound/basic-mft-processing-model#process-data
   DWORD status;
-  HRESULT hr = mf_encoder_->ProcessOutput(/*flags=*/0, /*buffer_count=*/1,
-                                          &output_data_container, &status);
-  // Avoid logging "need more input" as an error, since this is expected
-  // relatively frequently.
-  if (hr == MF_E_TRANSFORM_NEED_MORE_INPUT)
-    return hr;
-  RETURN_IF_FAILED(hr);
+  RETURN_IF_FAILED(mf_encoder_->ProcessOutput(/*flags=*/0, /*buffer_count=*/1,
+                                              &output_data_container, &status));
 
   // `status` is only set if `ProcessOutput` returns
   // `MF_E_TRANSFORM_STREAM_CHANGE`.
@@ -884,6 +843,9 @@ void MFAudioEncoder::OnFlushComplete(EncoderStatusCB done_cb) {
 
   DCHECK_EQ(state_, EncoderState::kDraining);
   DCHECK(input_queue_.empty());
+
+  // Because the `mf_encoder_` pads its input to produce the final output frame
+  // when flushing, samples_in_encoder_ may be negative.
   DCHECK_LE(samples_in_encoder_, 0);
 
   // Tell the encoder that the drain is complete. Without this, it will not
@@ -896,8 +858,6 @@ void MFAudioEncoder::OnFlushComplete(EncoderStatusCB done_cb) {
   }
 
   samples_in_encoder_ = 0;
-  can_produce_output_ = false;
-  can_flush_ = false;
   input_timestamp_tracker_->SetBaseTimestamp(kNoTimestamp);
   output_timestamp_tracker_->SetBaseTimestamp(kNoTimestamp);
   state_ = EncoderState::kIdle;
