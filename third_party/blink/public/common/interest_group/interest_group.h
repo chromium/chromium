@@ -90,6 +90,32 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   absl::optional<std::vector<std::string>> trusted_bidding_signals_keys;
   absl::optional<std::string> user_bidding_signals;
   absl::optional<std::vector<InterestGroup::Ad>> ads, ad_components;
+
+  static_assert(__LINE__ == 94, R"(
+If modifying InterestGroup fields, make sure to also modify:
+
+* IsValid(), EstimateSize(), and IsEqualForTesting() in this class
+* auction_ad_interest_group.idl
+* navigator_auction.cc
+* interest_group_types.mojom
+* validate_blink_interest_group.cc
+* validate_blink_interest_group_test.cc
+* interest_group_mojom_traits[.h/.cc/.test].
+* bidder_worklet.cc (to pass the InterestGroup to generateBid()).
+
+In interest_group_storage.cc, add the new field and any respective indices,
+and also add a new database version and migration, and migration test.
+
+If the new field is to be updatable via dailyUpdateUrl, also update *all* of
+these:
+
+* InterestGroupStorage::DoStoreInterestGroupUpdate()
+* ParseUpdateJson in interest_group_update_manager.cc
+* Update AdAuctionServiceImplTest.UpdateAllUpdatableFields
+
+See crrev.com/c/3517534 for an example (adding the priority field), and also
+remember to update bidder_worklet.cc too.
+)");
 };
 
 }  // namespace blink

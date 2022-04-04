@@ -842,18 +842,22 @@ TEST_F(AdAuctionServiceImplTest, LeaveInterestFromCrossSiteIFrame) {
 // The server JSON updates all fields that can be updated.
 TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   network_responder_->RegisterUpdateResponse(
-      kDailyUpdateUrlPath,
-      base::StringPrintf(R"({
+      kDailyUpdateUrlPath, base::StringPrintf(R"({
 "priority": 1.59,
 "biddingLogicUrl": "%s/interest_group/new_bidding_logic.js",
+"biddingWasmHelperUrl":"%s/interest_group/new_bidding_wasm_helper_url.wasm",
 "trustedBiddingSignalsUrl":
   "%s/interest_group/new_trusted_bidding_signals_url.json",
 "trustedBiddingSignalsKeys": ["new_key"],
 "ads": [{"renderUrl": "%s/new_ad_render_url",
          "metadata": {"new_a": "b"}
-        }]
+        }],
+"adComponents": [{"renderUrl": "https://example.com/component_url",
+                  "metadata": {"new_c": "d"}
+                 }]
 })",
-                         kOriginStringA, kOriginStringA, kOriginStringA));
+                                              kOriginStringA, kOriginStringA,
+                                              kOriginStringA, kOriginStringA));
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.priority = 2.0;
@@ -883,6 +887,11 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   EXPECT_EQ(group.bidding_url->spec(),
             base::StringPrintf("%s/interest_group/new_bidding_logic.js",
                                kOriginStringA));
+  ASSERT_TRUE(group.bidding_wasm_helper_url.has_value());
+  EXPECT_EQ(
+      group.bidding_wasm_helper_url->spec(),
+      base::StringPrintf("%s/interest_group/new_bidding_wasm_helper_url.wasm",
+                         kOriginStringA));
   ASSERT_TRUE(group.trusted_bidding_signals_url.has_value());
   EXPECT_EQ(group.trusted_bidding_signals_url->spec(),
             base::StringPrintf(
@@ -896,6 +905,11 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
             base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
   EXPECT_EQ(group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+  ASSERT_TRUE(group.ad_components.has_value());
+  ASSERT_EQ(group.ad_components->size(), 1u);
+  EXPECT_EQ(group.ad_components.value()[0].render_url.spec(),
+            "https://example.com/component_url");
+  EXPECT_EQ(group.ad_components.value()[0].metadata, "{\"new_c\":\"d\"}");
 }
 
 // Only set the ads field -- the other fields shouldn't be changed.
