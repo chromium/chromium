@@ -3579,7 +3579,7 @@ void RenderFrameHostManager::CommitPending(
     if (!new_rvh->is_active())
       new_rvh->PostRenderViewReady();
 
-    new_rvh->SetMainFrameRoutingId(render_frame_host_->routing_id());
+    new_rvh->SetMainFrameRoutingId(render_frame_host_->GetRoutingID());
     if (old_rvh != new_rvh)
       old_rvh->SetMainFrameRoutingId(MSG_ROUTING_NONE);
   }

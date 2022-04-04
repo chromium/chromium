@@ -590,8 +590,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // successively.
   void OnAudibleStateChanged(bool is_audible);
 
-  int routing_id() const { return routing_id_; }
-
   // Called when this frame has added a child. This is a continuation of an IPC
   // that was partially handled on the IO thread (to allocate |new_routing_id|,
   // |frame_token| and |devtools_frame_token|), and is forwarded here. The

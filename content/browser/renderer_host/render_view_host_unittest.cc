@@ -232,7 +232,7 @@ TEST_F(RenderViewHostTest, RoutingIdSane) {
       contents()->GetPrimaryFrameTree().root()->current_frame_host();
   EXPECT_EQ(contents()->GetMainFrame(), root_rfh);
   EXPECT_EQ(test_rvh()->GetProcess(), root_rfh->GetProcess());
-  EXPECT_NE(test_rvh()->GetRoutingID(), root_rfh->routing_id());
+  EXPECT_NE(test_rvh()->GetRoutingID(), root_rfh->GetRoutingID());
 }
 
 }  // namespace content

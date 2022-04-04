@@ -917,7 +917,7 @@ void SavePackage::SaveNextFile(bool process_all_remaining_items) {
         save_item_ptr->id(), save_item_ptr->url(), save_item_ptr->referrer(),
         requester_frame->GetProcess()->GetID(),
         requester_frame->render_view_host()->GetRoutingID(),
-        requester_frame->routing_id(), save_item_ptr->save_source(),
+        requester_frame->GetRoutingID(), save_item_ptr->save_source(),
         save_item_ptr->full_path(),
         page_->GetMainDocument().GetBrowserContext(),
         page_->GetMainDocument()

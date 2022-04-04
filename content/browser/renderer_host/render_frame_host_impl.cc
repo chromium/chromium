@@ -10240,7 +10240,7 @@ void RenderFrameHostImpl::BindRestrictedCookieManagerWithOrigin(
   GetStoragePartition()->CreateRestrictedCookieManager(
       network::mojom::RestrictedCookieManagerRole::SCRIPT, origin,
       isolation_info,
-      /*is_service_worker=*/false, GetProcess()->GetID(), routing_id(),
+      /*is_service_worker=*/false, GetProcess()->GetID(), GetRoutingID(),
       std::move(receiver), CreateCookieAccessObserver());
 }
 

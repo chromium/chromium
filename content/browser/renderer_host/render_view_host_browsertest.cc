@@ -100,8 +100,8 @@ IN_PROC_BROWSER_TEST_F(RenderViewHostTest, BasicRenderFrameHost) {
           .root();
 
   EXPECT_TRUE(new_root->current_frame_host());
-  EXPECT_NE(old_root->current_frame_host()->routing_id(),
-            new_root->current_frame_host()->routing_id());
+  EXPECT_NE(old_root->current_frame_host()->GetRoutingID(),
+            new_root->current_frame_host()->GetRoutingID());
 }
 
 IN_PROC_BROWSER_TEST_F(RenderViewHostTest, IsFocusedElementEditable) {

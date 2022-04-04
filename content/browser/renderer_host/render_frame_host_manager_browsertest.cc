@@ -8703,7 +8703,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   RenderFrameDeletedObserver delete_c5(c5);
 
   GURL b2_url = b2->GetLastCommittedURL();
-  int b2_routing_id = b2->routing_id();
+  int b2_routing_id = b2->GetRoutingID();
 
   auto proxy_count = [](RenderFrameHostImpl* rfh) {
     return rfh->browsing_context_state()->GetProxyCount();
@@ -8791,7 +8791,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   NavigateFrameToURL(b2->frame_tree_node(), b2_url);
 
   // B2 has been replaced
-  EXPECT_NE(b2_routing_id, a1->child_at(0)->current_frame_host()->routing_id());
+  EXPECT_NE(b2_routing_id,
+            a1->child_at(0)->current_frame_host()->GetRoutingID());
   // B3 hasn't been replaced.
   EXPECT_EQ(b3, a1->child_at(1)->current_frame_host());
   RenderFrameHostImpl* b6 = a1->child_at(0)->current_frame_host();
