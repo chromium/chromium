@@ -458,8 +458,7 @@ void AmbientBackendControllerImpl::FetchScreenUpdateInfoInternal(
   std::string client_id = GetClientId();
   BackdropClientConfig::Request request =
       backdrop_client_config_.CreateFetchScreenUpdateRequest(
-          num_topics, gaia_id, access_token, client_id,
-          /*use_new_url=*/features::IsAmbientModeNewUrlEnabled());
+          num_topics, gaia_id, access_token, client_id);
   auto resource_request = CreateResourceRequest(request);
 
   DCHECK(!screen_size.IsEmpty());
@@ -603,7 +602,7 @@ void AmbientBackendControllerImpl::FetchPersonalAlbumsInternal(
   BackdropClientConfig::Request request =
       backdrop_client_config_.CreateFetchPersonalAlbumsRequest(
           banner_width, banner_height, num_albums, resume_token, gaia_id,
-          access_token, features::IsAmbientModeNewUrlEnabled());
+          access_token);
   std::unique_ptr<network::ResourceRequest> resource_request =
       CreateResourceRequest(request);
   auto backdrop_url_loader = std::make_unique<BackdropURLLoader>();

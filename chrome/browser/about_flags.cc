@@ -7854,12 +7854,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kAppDiscoveryForOobe)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"ambient-mode-new-url", flag_descriptions::kAmbientModeNewUrlName,
-     flag_descriptions::kAmbientModeNewUrlDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kAmbientModeNewUrl)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_ANDROID)
     {"request-desktop-site-global",
      flag_descriptions::kRequestDesktopSiteGlobalName,

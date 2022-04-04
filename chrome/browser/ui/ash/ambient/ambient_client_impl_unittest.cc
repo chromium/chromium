@@ -119,18 +119,6 @@ TEST_F(AmbientClientImplTest, DisallowedByEmailDomain) {
 }
 
 TEST_F(AmbientClientImplTest, DownloadImage) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(ash::features::kAmbientModeNewUrl);
-  ambient_client().DownloadImage("test_url", base::DoNothing());
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(image_downloader().last_request_headers().IsEmpty());
-}
-
-TEST_F(AmbientClientImplTest, DownloadImageWithNewUrl) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(ash::features::kAmbientModeNewUrl);
-
   identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
   AddAndLoginUser(AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId));
@@ -143,10 +131,7 @@ TEST_F(AmbientClientImplTest, DownloadImageWithNewUrl) {
   EXPECT_EQ("Bearer access_token", out);
 }
 
-TEST_F(AmbientClientImplTest, DownloadImageWithNewUrlMultipleTimes) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(ash::features::kAmbientModeNewUrl);
-
+TEST_F(AmbientClientImplTest, DownloadImageMultipleTimes) {
   identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
   AddAndLoginUser(AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId));

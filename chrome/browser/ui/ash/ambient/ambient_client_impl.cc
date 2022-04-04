@@ -176,29 +176,22 @@ void AmbientClientImpl::RequestAccessToken(GetAccessTokenCallback callback) {
 void AmbientClientImpl::DownloadImage(
     const std::string& url,
     ash::ImageDownloader::DownloadCallback callback) {
-  if (ash::features::IsAmbientModeNewUrlEnabled()) {
-    RequestAccessToken(base::BindOnce(
-        [](const std::string& url,
-           ash::ImageDownloader::DownloadCallback callback,
-           const std::string& gaia_id, const std::string& access_token,
-           const base::Time& expiration_time) {
-          if (access_token.empty()) {
-            std::move(callback).Run({});
-            return;
-          }
-          net::HttpRequestHeaders headers;
-          headers.SetHeader("Authorization", "Bearer " + access_token);
-          ash::ImageDownloader::Get()->Download(
-              GURL(url), kAmbientClientNetworkTag, headers,
-              /*credentials_account_id=*/absl::nullopt, std::move(callback));
-        },
-        url, std::move(callback)));
-  } else {
-    ash::ImageDownloader::Get()->Download(
-        GURL(url), kAmbientClientNetworkTag,
-        /*additional_headers=*/{},
-        /*credentials_account_id=*/absl::nullopt, std::move(callback));
-  }
+  RequestAccessToken(base::BindOnce(
+      [](const std::string& url,
+         ash::ImageDownloader::DownloadCallback callback,
+         const std::string& gaia_id, const std::string& access_token,
+         const base::Time& expiration_time) {
+        if (access_token.empty()) {
+          std::move(callback).Run({});
+          return;
+        }
+        net::HttpRequestHeaders headers;
+        headers.SetHeader("Authorization", "Bearer " + access_token);
+        ash::ImageDownloader::Get()->Download(
+            GURL(url), kAmbientClientNetworkTag, headers,
+            /*credentials_account_id=*/absl::nullopt, std::move(callback));
+      },
+      url, std::move(callback)));
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

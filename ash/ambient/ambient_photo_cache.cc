@@ -86,12 +86,10 @@ std::unique_ptr<network::SimpleURLLoader> CreateSimpleURLLoader(
   resource_request->method = "GET";
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
-  if (ash::features::IsAmbientModeNewUrlEnabled()) {
-    if (token.empty())
-      DVLOG(2) << "Failed to fetch access token";
-    else
-      resource_request->headers.SetHeader("Authorization", "Bearer " + token);
-  }
+  if (token.empty())
+    DVLOG(2) << "Failed to fetch access token";
+  else
+    resource_request->headers.SetHeader("Authorization", "Bearer " + token);
 
   return network::SimpleURLLoader::Create(std::move(resource_request),
                                           kAmbientPhotoCacheNetworkTag);
@@ -173,14 +171,9 @@ class AmbientPhotoCacheImpl : public AmbientPhotoCache {
   void DownloadPhoto(
       const std::string& url,
       base::OnceCallback<void(std::string&&)> callback) override {
-    if (ash::features::IsAmbientModeNewUrlEnabled()) {
-      access_token_controller_.RequestAccessToken(
-          base::BindOnce(&AmbientPhotoCacheImpl::DownloadPhotoInternal,
-                         weak_factory_.GetWeakPtr(), url, std::move(callback)));
-    } else {
-      DownloadPhotoInternal(url, std::move(callback), /*gaia_id=*/std::string(),
-                            /*access_token=*/std::string());
-    }
+    access_token_controller_.RequestAccessToken(
+        base::BindOnce(&AmbientPhotoCacheImpl::DownloadPhotoInternal,
+                       weak_factory_.GetWeakPtr(), url, std::move(callback)));
   }
 
   void DownloadPhotoToFile(const std::string& url,
@@ -188,26 +181,19 @@ class AmbientPhotoCacheImpl : public AmbientPhotoCache {
                            base::OnceCallback<void(bool)> callback) override {
     auto file_path = GetCachePath(cache_index, root_directory_);
     base::OnceClosure download_callback;
-    if (ash::features::IsAmbientModeNewUrlEnabled()) {
-      download_callback = base::BindOnce(
-          [](base::WeakPtr<AmbientPhotoCacheImpl> weak_ptr,
-             base::OnceCallback<void(const std::string&, const std::string&)>
-                 callback) {
-            if (!weak_ptr)
-              return;
-            weak_ptr->access_token_controller_.RequestAccessToken(
-                std::move(callback));
-          },
-          weak_factory_.GetWeakPtr(),
-          base::BindOnce(&AmbientPhotoCacheImpl::DownloadPhotoToFileInternal,
-                         weak_factory_.GetWeakPtr(), url, std::move(callback),
-                         file_path));
-    } else {
-      download_callback = base::BindOnce(
-          &AmbientPhotoCacheImpl::DownloadPhotoToFileInternal,
-          weak_factory_.GetWeakPtr(), url, std::move(callback), file_path,
-          /*gaia_id=*/std::string(), /*access_token=*/std::string());
-    }
+    download_callback = base::BindOnce(
+        [](base::WeakPtr<AmbientPhotoCacheImpl> weak_ptr,
+           base::OnceCallback<void(const std::string&, const std::string&)>
+               callback) {
+          if (!weak_ptr)
+            return;
+          weak_ptr->access_token_controller_.RequestAccessToken(
+              std::move(callback));
+        },
+        weak_factory_.GetWeakPtr(),
+        base::BindOnce(&AmbientPhotoCacheImpl::DownloadPhotoToFileInternal,
+                       weak_factory_.GetWeakPtr(), url, std::move(callback),
+                       file_path));
 
     task_runner_->PostTaskAndReply(
         FROM_HERE,

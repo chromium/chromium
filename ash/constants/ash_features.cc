@@ -116,10 +116,6 @@ const base::Feature kAmbientModeDevUseProdFeature{
 const base::Feature kAmbientModePhotoPreviewFeature{
     "ChromeOSAmbientModePhotoPreview", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls whether to fetch ambient mode images using new url format.
-const base::Feature kAmbientModeNewUrl{"ChromeOSAmbientModeNewUrl",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls whether to enable ARC account restrictions.
 const base::Feature kArcAccountRestrictions{"ArcAccountRestrictions",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1501,10 +1497,6 @@ bool IsAmbientModeEnabled() {
 
 bool IsAmbientModePhotoPreviewEnabled() {
   return base::FeatureList::IsEnabled(kAmbientModePhotoPreviewFeature);
-}
-
-bool IsAmbientModeNewUrlEnabled() {
-  return base::FeatureList::IsEnabled(kAmbientModeNewUrl);
 }
 
 bool IsAppNotificationsPageEnabled() {

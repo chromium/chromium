@@ -40,22 +40,12 @@ class TestAmbientModeHandler : public AmbientModeHandler {
 
 }  // namespace
 
-class AmbientModeHandlerTest : public testing::TestWithParam<bool> {
+class AmbientModeHandlerTest : public testing::Test {
  public:
   AmbientModeHandlerTest() = default;
   ~AmbientModeHandlerTest() override = default;
 
   void SetUp() override {
-    testing::TestWithParam<bool>::SetUp();
-
-    if (IsAmbientModeNewUrlEnabled()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          ash::features::kAmbientModeNewUrl);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          ash::features::kAmbientModeNewUrl);
-    }
-
     web_ui_ = std::make_unique<content::TestWebUI>();
     test_pref_service_ = std::make_unique<TestingPrefServiceSimple>();
 
@@ -75,10 +65,8 @@ class AmbientModeHandlerTest : public testing::TestWithParam<bool> {
 
   void TearDown() override {
     handler_->DisallowJavascript();
-    testing::TestWithParam<bool>::TearDown();
+    testing::Test::TearDown();
   }
-
-  bool IsAmbientModeNewUrlEnabled() { return GetParam(); }
 
   content::TestWebUI* web_ui() { return web_ui_.get(); }
 
@@ -279,11 +267,7 @@ class AmbientModeHandlerTest : public testing::TestWithParam<bool> {
   std::unique_ptr<TestingPrefServiceSimple> test_pref_service_;
 };
 
-INSTANTIATE_TEST_SUITE_P(/* no label */,
-                         AmbientModeHandlerTest,
-                         testing::Bool());
-
-TEST_P(AmbientModeHandlerTest, TestSendTemperatureUnitAndTopicSource) {
+TEST_F(AmbientModeHandlerTest, TestSendTemperatureUnitAndTopicSource) {
   RequestSettings();
   ReplyFetchSettingsAndAlbums(/*success=*/true);
 
@@ -292,7 +276,7 @@ TEST_P(AmbientModeHandlerTest, TestSendTemperatureUnitAndTopicSource) {
   VerifySettingsSent(ash::AmbientModeTopicSource::kGooglePhotos, "celsius");
 }
 
-TEST_P(AmbientModeHandlerTest, TestSendAlbumsForGooglePhotos) {
+TEST_F(AmbientModeHandlerTest, TestSendAlbumsForGooglePhotos) {
   ash::AmbientModeTopicSource topic_source =
       ash::AmbientModeTopicSource::kGooglePhotos;
   RequestAlbums(topic_source);
@@ -300,7 +284,7 @@ TEST_P(AmbientModeHandlerTest, TestSendAlbumsForGooglePhotos) {
   VerifyAlbumsSent(topic_source);
 }
 
-TEST_P(AmbientModeHandlerTest, TestSendAlbumsForArtGallery) {
+TEST_F(AmbientModeHandlerTest, TestSendAlbumsForArtGallery) {
   ash::AmbientModeTopicSource topic_source =
       ash::AmbientModeTopicSource::kArtGallery;
   RequestAlbums(topic_source);
@@ -308,7 +292,7 @@ TEST_P(AmbientModeHandlerTest, TestSendAlbumsForArtGallery) {
   VerifyAlbumsSent(topic_source);
 }
 
-TEST_P(AmbientModeHandlerTest, TestFetchSettings) {
+TEST_F(AmbientModeHandlerTest, TestFetchSettings) {
   FetchSettings();
   EXPECT_TRUE(IsFetchSettingsPendingAtBackend());
 
@@ -316,7 +300,7 @@ TEST_P(AmbientModeHandlerTest, TestFetchSettings) {
   EXPECT_FALSE(IsFetchSettingsPendingAtBackend());
 }
 
-TEST_P(AmbientModeHandlerTest, TestFetchSettingsFailedWillRetry) {
+TEST_F(AmbientModeHandlerTest, TestFetchSettingsFailedWillRetry) {
   FetchSettings();
   EXPECT_TRUE(IsFetchSettingsPendingAtBackend());
 
@@ -327,7 +311,7 @@ TEST_P(AmbientModeHandlerTest, TestFetchSettingsFailedWillRetry) {
   EXPECT_TRUE(IsFetchSettingsPendingAtBackend());
 }
 
-TEST_P(AmbientModeHandlerTest, TestFetchSettingsSecondRetryWillBackoff) {
+TEST_F(AmbientModeHandlerTest, TestFetchSettingsSecondRetryWillBackoff) {
   FetchSettings();
   EXPECT_TRUE(IsFetchSettingsPendingAtBackend());
 
@@ -348,7 +332,7 @@ TEST_P(AmbientModeHandlerTest, TestFetchSettingsSecondRetryWillBackoff) {
   EXPECT_TRUE(IsFetchSettingsPendingAtBackend());
 }
 
-TEST_P(AmbientModeHandlerTest,
+TEST_F(AmbientModeHandlerTest,
        TestFetchSettingsWillNotRetryMoreThanThreeTimes) {
   FetchSettings();
   EXPECT_TRUE(IsFetchSettingsPendingAtBackend());
@@ -382,7 +366,7 @@ TEST_P(AmbientModeHandlerTest,
   EXPECT_FALSE(IsFetchSettingsPendingAtBackend());
 }
 
-TEST_P(AmbientModeHandlerTest, TestUpdateSettings) {
+TEST_F(AmbientModeHandlerTest, TestUpdateSettings) {
   UpdateSettings();
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
   EXPECT_TRUE(IsUpdateSettingsPendingAtHandler());
@@ -394,7 +378,7 @@ TEST_P(AmbientModeHandlerTest, TestUpdateSettings) {
   EXPECT_FALSE(HasPendingUpdatesAtHandler());
 }
 
-TEST_P(AmbientModeHandlerTest, TestUpdateSettingsTwice) {
+TEST_F(AmbientModeHandlerTest, TestUpdateSettingsTwice) {
   UpdateSettings();
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
   EXPECT_TRUE(IsUpdateSettingsPendingAtHandler());
@@ -414,7 +398,7 @@ TEST_P(AmbientModeHandlerTest, TestUpdateSettingsTwice) {
   EXPECT_FALSE(HasPendingUpdatesAtHandler());
 }
 
-TEST_P(AmbientModeHandlerTest, TestUpdateSettingsFailedWillRetry) {
+TEST_F(AmbientModeHandlerTest, TestUpdateSettingsFailedWillRetry) {
   UpdateSettings();
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
   EXPECT_TRUE(IsUpdateSettingsPendingAtHandler());
@@ -431,7 +415,7 @@ TEST_P(AmbientModeHandlerTest, TestUpdateSettingsFailedWillRetry) {
   EXPECT_FALSE(HasPendingUpdatesAtHandler());
 }
 
-TEST_P(AmbientModeHandlerTest, TestUpdateSettingsSecondRetryWillBackoff) {
+TEST_F(AmbientModeHandlerTest, TestUpdateSettingsSecondRetryWillBackoff) {
   UpdateSettings();
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
   EXPECT_TRUE(IsUpdateSettingsPendingAtHandler());
@@ -462,7 +446,7 @@ TEST_P(AmbientModeHandlerTest, TestUpdateSettingsSecondRetryWillBackoff) {
   EXPECT_FALSE(HasPendingUpdatesAtHandler());
 }
 
-TEST_P(AmbientModeHandlerTest,
+TEST_F(AmbientModeHandlerTest,
        TestUpdateSettingsWillNotRetryMoreThanThreeTimes) {
   UpdateSettings();
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
@@ -514,7 +498,7 @@ TEST_P(AmbientModeHandlerTest,
   EXPECT_FALSE(HasPendingUpdatesAtHandler());
 }
 
-TEST_P(AmbientModeHandlerTest, TestNoFetchRequestWhenUpdatingSettings) {
+TEST_F(AmbientModeHandlerTest, TestNoFetchRequestWhenUpdatingSettings) {
   EXPECT_FALSE(HasPendingFetchRequestAtHandler());
   UpdateSettings();
   EXPECT_FALSE(HasPendingFetchRequestAtHandler());
@@ -524,7 +508,7 @@ TEST_P(AmbientModeHandlerTest, TestNoFetchRequestWhenUpdatingSettings) {
   EXPECT_FALSE(IsFetchSettingsPendingAtBackend());
 }
 
-TEST_P(AmbientModeHandlerTest, TestSendSettingsWhenUpdatedSettings) {
+TEST_F(AmbientModeHandlerTest, TestSendSettingsWhenUpdatedSettings) {
   // Simulate initial page request.
   RequestSettings();
   ReplyFetchSettingsAndAlbums(/*success=*/true);
@@ -547,7 +531,7 @@ TEST_P(AmbientModeHandlerTest, TestSendSettingsWhenUpdatedSettings) {
   EXPECT_FALSE(HasPendingFetchRequestAtHandler());
 }
 
-TEST_P(AmbientModeHandlerTest,
+TEST_F(AmbientModeHandlerTest,
        TestSendAlbumsOfGooglePhotosWhenUpdatedSettings) {
   // Simulate initial page request.
   ash::AmbientModeTopicSource topic_source =
@@ -569,7 +553,7 @@ TEST_P(AmbientModeHandlerTest,
   EXPECT_FALSE(HasPendingFetchRequestAtHandler());
 }
 
-TEST_P(AmbientModeHandlerTest, TestSendAlbumsOfArtGalleryWhenUpdatedSettings) {
+TEST_F(AmbientModeHandlerTest, TestSendAlbumsOfArtGalleryWhenUpdatedSettings) {
   // Simulate initial page request.
   ash::AmbientModeTopicSource topic_source =
       ash::AmbientModeTopicSource::kGooglePhotos;
@@ -590,7 +574,7 @@ TEST_P(AmbientModeHandlerTest, TestSendAlbumsOfArtGalleryWhenUpdatedSettings) {
   EXPECT_FALSE(HasPendingFetchRequestAtHandler());
 }
 
-TEST_P(AmbientModeHandlerTest, TestNotUpdateUIWhenFetechedSettings) {
+TEST_F(AmbientModeHandlerTest, TestNotUpdateUIWhenFetechedSettings) {
   EXPECT_FALSE(HasPendingFetchRequestAtHandler());
   RequestSettings();
   EXPECT_TRUE(IsFetchSettingsPendingAtBackend());
@@ -604,7 +588,7 @@ TEST_P(AmbientModeHandlerTest, TestNotUpdateUIWhenFetechedSettings) {
   EXPECT_EQ(0U, web_ui()->call_data().size());
 }
 
-TEST_P(AmbientModeHandlerTest, TestNotSendSettingsWhenFetechedSettings) {
+TEST_F(AmbientModeHandlerTest, TestNotSendSettingsWhenFetechedSettings) {
   EXPECT_FALSE(HasPendingFetchRequestAtHandler());
   RequestSettings();
   EXPECT_TRUE(IsFetchSettingsPendingAtBackend());
@@ -618,7 +602,7 @@ TEST_P(AmbientModeHandlerTest, TestNotSendSettingsWhenFetechedSettings) {
   EXPECT_EQ(0U, web_ui()->call_data().size());
 }
 
-TEST_P(AmbientModeHandlerTest, TestNotSendAlbumsWhenFetechedSettings) {
+TEST_F(AmbientModeHandlerTest, TestNotSendAlbumsWhenFetechedSettings) {
   EXPECT_FALSE(HasPendingFetchRequestAtHandler());
 
   ash::AmbientModeTopicSource topic_source =
@@ -635,7 +619,7 @@ TEST_P(AmbientModeHandlerTest, TestNotSendAlbumsWhenFetechedSettings) {
   EXPECT_EQ(0U, web_ui()->call_data().size());
 }
 
-TEST_P(AmbientModeHandlerTest, TestSendSettingsWhenUpdateSettingsFailed) {
+TEST_F(AmbientModeHandlerTest, TestSendSettingsWhenUpdateSettingsFailed) {
   // Simulate initial page request.
   RequestSettings();
   ReplyFetchSettingsAndAlbums(/*success=*/true);
@@ -663,7 +647,7 @@ TEST_P(AmbientModeHandlerTest, TestSendSettingsWhenUpdateSettingsFailed) {
   VerifySettingsSent(ash::AmbientModeTopicSource::kGooglePhotos, "celsius");
 }
 
-TEST_P(AmbientModeHandlerTest,
+TEST_F(AmbientModeHandlerTest,
        TestSendAlbumsOfGooglePhotosWhenUpdateSettingsFailed) {
   // Simulate initial page request.
   ash::AmbientModeTopicSource topic_source =
@@ -692,7 +676,7 @@ TEST_P(AmbientModeHandlerTest,
   VerifyAlbumsSent(topic_source);
 }
 
-TEST_P(AmbientModeHandlerTest,
+TEST_F(AmbientModeHandlerTest,
        TestSendAlbumsOfArtGalleryWhenUpdateSettingsFailed) {
   // Simulate initial page request.
   ash::AmbientModeTopicSource topic_source =
@@ -724,7 +708,7 @@ TEST_P(AmbientModeHandlerTest,
 // Test that there are two updates, the first update succeeded and the second
 // update failed. When the second update failed, it will update UI to restore
 // the latest successfully updated settings.
-TEST_P(AmbientModeHandlerTest, TestSendSettingsWithCachedSettings) {
+TEST_F(AmbientModeHandlerTest, TestSendSettingsWithCachedSettings) {
   ash::AmbientModeTopicSource topic_source_google_photos =
       ash::AmbientModeTopicSource::kGooglePhotos;
   ash::AmbientModeTopicSource topic_source_art_gallery =
@@ -768,7 +752,7 @@ TEST_P(AmbientModeHandlerTest, TestSendSettingsWithCachedSettings) {
   VerifySettingsSent(topic_source_art_gallery, "celsius");
 }
 
-TEST_P(AmbientModeHandlerTest, TestAlbumNumbersAreRecorded) {
+TEST_F(AmbientModeHandlerTest, TestAlbumNumbersAreRecorded) {
   RequestSettings();
   ReplyFetchSettingsAndAlbums(/*success=*/true);
 
@@ -793,7 +777,7 @@ TEST_P(AmbientModeHandlerTest, TestAlbumNumbersAreRecorded) {
                                       /*count=*/1);
 }
 
-TEST_P(AmbientModeHandlerTest, TestTemperatureUnitChangeUpdatesSettings) {
+TEST_F(AmbientModeHandlerTest, TestTemperatureUnitChangeUpdatesSettings) {
   SetTemperatureUnit(ash::AmbientModeTemperatureUnit::kCelsius);
 
   EXPECT_FALSE(IsUpdateSettingsPendingAtHandler());
@@ -813,7 +797,7 @@ TEST_P(AmbientModeHandlerTest, TestTemperatureUnitChangeUpdatesSettings) {
   EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
 }
 
-TEST_P(AmbientModeHandlerTest, TestSameTemperatureUnitSkipsUpdate) {
+TEST_F(AmbientModeHandlerTest, TestSameTemperatureUnitSkipsUpdate) {
   SetTemperatureUnit(ash::AmbientModeTemperatureUnit::kCelsius);
 
   EXPECT_FALSE(IsUpdateSettingsPendingAtHandler());
@@ -828,7 +812,7 @@ TEST_P(AmbientModeHandlerTest, TestSameTemperatureUnitSkipsUpdate) {
   EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
 }
 
-TEST_P(AmbientModeHandlerTest, TestEnabledPrefChangeUpdatesSettings) {
+TEST_F(AmbientModeHandlerTest, TestEnabledPrefChangeUpdatesSettings) {
   // Simulate initial page request.
   RequestSettings();
   ReplyFetchSettingsAndAlbums(/*success=*/true);
@@ -847,7 +831,7 @@ TEST_P(AmbientModeHandlerTest, TestEnabledPrefChangeUpdatesSettings) {
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
 }
 
-TEST_P(AmbientModeHandlerTest, TestWeatherFalseTriggersUpdateSettings) {
+TEST_F(AmbientModeHandlerTest, TestWeatherFalseTriggersUpdateSettings) {
   ash::AmbientSettings weather_off_settings;
   weather_off_settings.show_weather = false;
 

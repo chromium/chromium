@@ -2343,9 +2343,6 @@ extern const char kAlwaysEnableHdcpType1[];
 extern const char kAmbientModeAnimationName[];
 extern const char kAmbientModeAnimationDescription[];
 
-extern const char kAmbientModeNewUrlName[];
-extern const char kAmbientModeNewUrlDescription[];
-
 extern const char kAppDiscoveryForOobeName[];
 extern const char kAppDiscoveryForOobeDescription[];
 

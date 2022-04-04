@@ -4081,12 +4081,6 @@ const char kAmbientModeAnimationDescription[] =
     "slideshow) when entering ambient mode. Currently, there is only one "
     "animation theme available (feel the breeze).";
 
-const char kAmbientModeNewUrlName[] =
-    "Use new backend URL format for ChromeOS Screensaver";
-const char kAmbientModeNewUrlDescription[] =
-    "Use new backend URL format for ChromeOS Screensaver.  This helps with "
-    "testing new backend migration.";
-
 const char kAppDiscoveryForOobeName[] =
     "OOBE app recommendations with App Discovery Service.";
 const char kAppDiscoveryForOobeDescription[] =

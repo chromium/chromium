@@ -141,30 +141,8 @@ TEST_F(AmbientPhotoCacheTest, SetsDataToEmptyStringWhenFilesMissing) {
   }
 }
 
-TEST_F(AmbientPhotoCacheTest, DisableNewUrlDisablesTokenFetch) {
+TEST_F(AmbientPhotoCacheTest, AttachTokenToDownloadRequest) {
   std::string fake_url = "https://faketesturl/";
-
-  // not token request if new url feature is not enabled.
-  base::test::ScopedFeatureList feature;
-  feature.InitAndDisableFeature(features::kAmbientModeNewUrl);
-
-  EXPECT_FALSE(IsAccessTokenRequestPending());
-  photo_cache()->DownloadPhoto(fake_url, base::BindOnce([](std::string&&) {}));
-
-  RunUntilIdle();
-  EXPECT_FALSE(IsAccessTokenRequestPending());
-
-  photo_cache()->DownloadPhotoToFile(fake_url, /*cache_index=*/1,
-                                     base::BindOnce([](bool) {}));
-
-  RunUntilIdle();
-  EXPECT_FALSE(IsAccessTokenRequestPending());
-}
-
-TEST_F(AmbientPhotoCacheTest, EnableNewUrlAttachesTokenToDownloadRequest) {
-  std::string fake_url = "https://faketesturl/";
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(features::kAmbientModeNewUrl);
 
   photo_cache()->DownloadPhoto(fake_url, base::BindOnce([](std::string&&) {}));
   RunUntilIdle();
@@ -182,11 +160,8 @@ TEST_F(AmbientPhotoCacheTest, EnableNewUrlAttachesTokenToDownloadRequest) {
             std::string("Bearer ") + TestAmbientClient::kTestAccessToken);
 }
 
-TEST_F(AmbientPhotoCacheTest,
-       EnableNewUrlAttachesTokenToDownloadToFileRequest) {
+TEST_F(AmbientPhotoCacheTest, AttachTokenToDownloadToFileRequest) {
   std::string fake_url = "https://faketesturl/";
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(features::kAmbientModeNewUrl);
 
   photo_cache()->DownloadPhotoToFile(fake_url, /*cache_index=*/1,
                                      base::BindOnce([](bool) {}));
