@@ -6,7 +6,7 @@
 
 #include "base/containers/contains.h"
 
-namespace chromeos {
+namespace ash {
 namespace cfm {
 
 namespace {
@@ -46,4 +46,4 @@ bool IsChromeboxForMeetingsAppId(const std::string& app_id) {
 }
 
 }  // namespace cfm
-}  // namespace chromeos
+}  // namespace ash

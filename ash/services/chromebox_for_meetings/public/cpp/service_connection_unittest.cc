@@ -26,9 +26,12 @@ using ::testing::Invoke;
 using ::testing::StrictMock;
 using ::testing::WithArgs;
 
-namespace chromeos {
+namespace ash {
 namespace cfm {
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::chromeos::cfm::mojom;
 
 class CfmServiceConnectionTest : public testing::Test {
  public:
@@ -76,4 +79,4 @@ TEST_F(CfmServiceConnectionTest, FakeBindServiceContext) {
 
 }  // namespace
 }  // namespace cfm
-}  // namespace chromeos
+}  // namespace ash

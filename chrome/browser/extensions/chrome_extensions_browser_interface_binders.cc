@@ -138,7 +138,7 @@ void PopulateChromeFrameBindersForExtension(
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  if (chromeos::cfm::IsChromeboxForMeetingsAppId(extension->id())) {
+  if (ash::cfm::IsChromeboxForMeetingsAppId(extension->id())) {
     binder_map->Add<
         chromeos::cfm::mojom::CfmServiceContext>(base::BindRepeating(
         [](content::RenderFrameHost* frame_host,
@@ -147,7 +147,7 @@ void PopulateChromeFrameBindersForExtension(
 #if BUILDFLAG(PLATFORM_CFM)
           if (base::FeatureList::IsEnabled(
                   chromeos::cfm::features::kMojoServices)) {
-            chromeos::cfm::ServiceConnection::GetInstance()->BindServiceContext(
+            ash::cfm::ServiceConnection::GetInstance()->BindServiceContext(
                 std::move(receiver));
           } else {
             // The experimentation framework used to manage the

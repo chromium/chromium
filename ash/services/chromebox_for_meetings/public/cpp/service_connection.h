@@ -10,7 +10,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace chromeos {
+namespace ash {
 namespace cfm {
 
 // Encapsulates a connection to the CfM Mojo Broker Service daemon via its Mojo
@@ -28,7 +28,8 @@ class ServiceConnection {
 
   // Bind to the CfM Service Context Daemon
   virtual void BindServiceContext(
-      mojo::PendingReceiver<mojom::CfmServiceContext> receiver) = 0;
+      mojo::PendingReceiver<chromeos::cfm::mojom::CfmServiceContext>
+          receiver) = 0;
 
  protected:
   ServiceConnection() = default;
@@ -36,11 +37,6 @@ class ServiceConnection {
 };
 
 }  // namespace cfm
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::cfm {
-using ::chromeos::cfm::ServiceConnection;
-}
+}  // namespace ash
 
 #endif  // ASH_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_SERVICE_CONNECTION_H_

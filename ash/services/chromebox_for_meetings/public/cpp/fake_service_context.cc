@@ -4,8 +4,11 @@
 
 #include "ash/services/chromebox_for_meetings/public/cpp/fake_service_context.h"
 
-namespace chromeos {
+namespace ash {
 namespace cfm {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::chromeos::cfm::mojom;
 
 FakeCfmServiceContext::FakeCfmServiceContext() = default;
 FakeCfmServiceContext::~FakeCfmServiceContext() = default;
@@ -39,4 +42,4 @@ void FakeCfmServiceContext::SetFakeRequestBindServiceCallback(
 }
 
 }  // namespace cfm
-}  // namespace chromeos
+}  // namespace ash

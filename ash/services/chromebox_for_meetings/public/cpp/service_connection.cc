@@ -15,10 +15,13 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 
-namespace chromeos {
+namespace ash {
 namespace cfm {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::chromeos::cfm::mojom;
 
 constexpr char kPlatformErrorMessage[] = "CfmServiceContext bootstrap failed: ";
 
@@ -198,4 +201,4 @@ void ServiceConnection::UseFakeServiceConnectionForTesting(
 }
 
 }  // namespace cfm
-}  // namespace chromeos
+}  // namespace ash

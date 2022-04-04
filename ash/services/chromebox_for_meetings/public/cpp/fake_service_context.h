@@ -10,14 +10,15 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
+namespace ash {
 namespace cfm {
 
-class FakeCfmServiceContext : public mojom::CfmServiceContext {
+class FakeCfmServiceContext : public chromeos::cfm::mojom::CfmServiceContext {
  public:
   using FakeProvideAdaptorCallback = base::OnceCallback<void(
       const std::string& interface_name,
-      mojo::PendingRemote<mojom::CfmServiceAdaptor> adaptor_remote,
+      mojo::PendingRemote<chromeos::cfm::mojom::CfmServiceAdaptor>
+          adaptor_remote,
       ProvideAdaptorCallback callback)>;
 
   using FakeRequestBindServiceCallback =
@@ -32,7 +33,8 @@ class FakeCfmServiceContext : public mojom::CfmServiceContext {
 
   void ProvideAdaptor(
       const std::string& interface_name,
-      mojo::PendingRemote<mojom::CfmServiceAdaptor> adaptor_remote,
+      mojo::PendingRemote<chromeos::cfm::mojom::CfmServiceAdaptor>
+          adaptor_remote,
       ProvideAdaptorCallback callback) override;
 
   void RequestBindService(const std::string& interface_name,
@@ -50,11 +52,6 @@ class FakeCfmServiceContext : public mojom::CfmServiceContext {
 };
 
 }  // namespace cfm
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::cfm {
-using ::chromeos::cfm::FakeCfmServiceContext;
-}
+}  // namespace ash
 
 #endif  // ASH_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_FAKE_SERVICE_CONTEXT_H_

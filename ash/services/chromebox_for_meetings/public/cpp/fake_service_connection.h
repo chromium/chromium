@@ -11,16 +11,16 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace chromeos {
+namespace ash {
 namespace cfm {
 
-// Fake implementation of chromeos::cfm::ServiceConnection.
+// Fake implementation of cfm::ServiceConnection.
 // For use with ServiceConnection::UseFakeServiceConnectionForTesting().
 class FakeServiceConnectionImpl : public ServiceConnection {
  public:
-  using FakeBootstrapCallback =
-      base::OnceCallback<void(mojo::PendingReceiver<mojom::CfmServiceContext>,
-                              bool)>;
+  using FakeBootstrapCallback = base::OnceCallback<void(
+      mojo::PendingReceiver<chromeos::cfm::mojom::CfmServiceContext>,
+      bool)>;
 
   FakeServiceConnectionImpl();
   FakeServiceConnectionImpl(const FakeServiceConnectionImpl&) = delete;
@@ -28,25 +28,22 @@ class FakeServiceConnectionImpl : public ServiceConnection {
       delete;
   ~FakeServiceConnectionImpl() override;
 
-  void BindServiceContext(mojo::PendingReceiver<mojom::CfmServiceContext>
-                              pending_receiver) override;
+  void BindServiceContext(
+      mojo::PendingReceiver<chromeos::cfm::mojom::CfmServiceContext>
+          pending_receiver) override;
 
   void SetCallback(FakeBootstrapCallback callback);
 
  private:
   void CfMContextServiceStarted(
-      mojo::PendingReceiver<mojom::CfmServiceContext> pending_receiver,
+      mojo::PendingReceiver<chromeos::cfm::mojom::CfmServiceContext>
+          pending_receiver,
       bool is_available);
 
   FakeBootstrapCallback callback_;
 };
 
 }  // namespace cfm
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::cfm {
-using ::chromeos::cfm::FakeServiceConnectionImpl;
-}
+}  // namespace ash
 
 #endif  // ASH_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_FAKE_SERVICE_CONNECTION_H_

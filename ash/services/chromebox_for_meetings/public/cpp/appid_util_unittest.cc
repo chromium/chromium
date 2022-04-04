@@ -6,7 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace cfm {
 namespace {
 
@@ -24,4 +24,4 @@ TEST_F(CfmAppIdUtilTest, AppIdIsFalse) {
 
 }  // namespace
 }  // namespace cfm
-}  // namespace chromeos
+}  // namespace ash
