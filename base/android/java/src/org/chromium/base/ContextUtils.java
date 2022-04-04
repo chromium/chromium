@@ -123,6 +123,16 @@ public class ContextUtils {
         Holder.sSharedPreferences = fetchAppSharedPreferences();
     }
 
+    /**
+     * Tests that use the applicationContext may unintentionally use the Context
+     * set by a previously run test.
+     */
+    @VisibleForTesting
+    public static void clearApplicationContextForTests() {
+        sApplicationContext = null;
+        Holder.sSharedPreferences = null;
+    }
+
     private static void initJavaSideApplicationContext(Context appContext) {
         assert appContext != null;
         // Guard against anyone trying to downcast.

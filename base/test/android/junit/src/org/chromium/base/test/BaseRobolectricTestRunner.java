@@ -46,6 +46,7 @@ public class BaseRobolectricTestRunner extends LocalRobolectricTestRunner {
                 LifetimeAssert.assertAllInstancesDestroyedForTesting();
             } finally {
                 ApplicationStatus.destroyForJUnitTests();
+                ContextUtils.clearApplicationContextForTests();
                 PathUtils.resetForTesting();
                 super.afterTest(method);
             }
