@@ -110,6 +110,7 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
  protected:
   bool NeedsPreferredWidthsRecalculation() const final;
   SVGImage* EmbeddedSVGImage() const;
+  bool CanApplyObjectViewBox() const override;
   void ComputeIntrinsicSizingInfo(IntrinsicSizingInfo&) const override;
 
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;

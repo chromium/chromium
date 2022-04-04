@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<title>CSS object-view-box on an element with contain-intrinsic-size</title>
+<link rel="author" href="mailto:khushalsagar@chromium.org">
+<link rel="match" href="object-view-box-size-containment-ref.html">
+
+<style>
+.default {
+  object-view-box: inset(50px 0px 0px 0px);
+  object-fit: fill;
+  contain: size;
+  contain-intrinsic-size: 50px 100px;
+}
+</style>
+<img class="default" src="support/exif-orientation-6-ru.jpg"></img>

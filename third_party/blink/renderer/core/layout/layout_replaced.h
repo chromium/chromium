@@ -22,8 +22,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_REPLACED_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_REPLACED_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
+#include "third_party/blink/renderer/platform/geometry/layout_size.h"
 
 namespace blink {
 
@@ -60,7 +65,10 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
       LayoutUnit estimated_used_width = LayoutUnit()) const override;
 
   bool HasReplacedLogicalHeight() const;
-  // This function returns the local rect of the replaced content.
+
+  // This function returns the local rect of the replaced content. The rectangle
+  // is in the coordinate space of the element's physical border-box and assumes
+  // no clipping.
   virtual PhysicalRect ReplacedContentRect() const;
 
   // This is used by a few special elements, e.g. <video>, <iframe> to ensure
@@ -113,30 +121,21 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   virtual void IntrinsicSizeChanged();
 
  protected:
+  virtual bool CanApplyObjectViewBox() const {
+    NOT_DESTROYED();
+    return true;
+  }
+
   void WillBeDestroyed() override;
 
   void UpdateLayout() override;
 
   LayoutSize IntrinsicSize() const final {
     NOT_DESTROYED();
-    return LayoutSize(IntrinsicWidth(), IntrinsicHeight());
-  }
-
-  LayoutUnit IntrinsicWidth() const {
-    NOT_DESTROYED();
-    if (HasOverrideIntrinsicContentWidth())
-      return OverrideIntrinsicContentWidth();
-    else if (ShouldApplySizeContainment())
-      return LayoutUnit();
-    return intrinsic_size_.Width();
-  }
-  LayoutUnit IntrinsicHeight() const {
-    NOT_DESTROYED();
-    if (HasOverrideIntrinsicContentHeight())
-      return OverrideIntrinsicContentHeight();
-    else if (ShouldApplySizeContainment())
-      return LayoutUnit();
-    return intrinsic_size_.Height();
+    auto width_override = IntrinsicWidthOverride();
+    auto height_override = IntrinsicHeightOverride();
+    return LayoutSize(width_override.value_or(intrinsic_size_.Width()),
+                      height_override.value_or(intrinsic_size_.Height()));
   }
 
   void ComputePositionedLogicalWidth(
@@ -148,8 +147,8 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
 
   // This function calculates the placement of the replaced contents. It takes
   // intrinsic size of the replaced contents, stretch to fit CSS content box
-  // according to object-fit.
-  PhysicalRect ComputeObjectFit(
+  // according to object-fit, object-position and object-view-box.
+  PhysicalRect ComputeReplacedContentRect(
       const LayoutSize* overridden_intrinsic_size = nullptr) const;
 
   LayoutUnit IntrinsicContentLogicalHeight() const override {
@@ -176,7 +175,17 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
     return type == kLayoutObjectReplaced || LayoutBox::IsOfType(type);
   }
 
+  // Computes a rect, relative to the element's intrinsic bounds, that should be
+  // used as the content source when rendering this element. This value is
+  // used as the input for layout sizing and object-fit/object-position during
+  // painting.
+  absl::optional<PhysicalRect> ComputeObjectViewBoxRect(
+      const LayoutSize* overridden_intrinsic_size = nullptr) const;
+
  private:
+  PhysicalRect ComputeObjectFitAndPositionRect(
+      const LayoutSize* overridden_intrinsic_size) const;
+
   MinMaxSizes PreferredLogicalWidths() const final;
 
   void ComputeIntrinsicSizingInfoForReplacedContent(IntrinsicSizingInfo&) const;
@@ -184,6 +193,25 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
 
   LayoutUnit ComputeConstrainedLogicalWidth(ShouldComputePreferred) const;
 
+  absl::optional<LayoutUnit> IntrinsicWidthOverride() const {
+    NOT_DESTROYED();
+    if (HasOverrideIntrinsicContentWidth())
+      return OverrideIntrinsicContentWidth();
+    else if (ShouldApplySizeContainment())
+      return LayoutUnit();
+    return absl::nullopt;
+  }
+  absl::optional<LayoutUnit> IntrinsicHeightOverride() const {
+    NOT_DESTROYED();
+    if (HasOverrideIntrinsicContentHeight())
+      return OverrideIntrinsicContentHeight();
+    else if (ShouldApplySizeContainment())
+      return LayoutUnit();
+    return absl::nullopt;
+  }
+
+  // The natural/intrinsic size for this replaced element based on the natural
+  // size for the element's contents.
   mutable LayoutSize intrinsic_size_;
 };
 

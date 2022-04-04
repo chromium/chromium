@@ -208,11 +208,11 @@ PhysicalRect LayoutVideo::ReplacedContentRect() const {
   if (GetDisplayMode() == kVideo) {
     // Video codecs may need to restart from an I-frame when the output is
     // resized. Round size in advance to avoid 1px snap difference.
-    return PreSnappedRectForPersistentSizing(ComputeObjectFit());
+    return PreSnappedRectForPersistentSizing(ComputeReplacedContentRect());
   }
   // If we are displaying the poster image no pre-rounding is needed, but the
   // size of the image should be used for fitting instead.
-  return ComputeObjectFit(&cached_image_size_);
+  return ComputeReplacedContentRect(&cached_image_size_);
 }
 
 bool LayoutVideo::SupportsAcceleratedRendering() const {
