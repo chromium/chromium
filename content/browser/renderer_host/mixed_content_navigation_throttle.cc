@@ -142,12 +142,17 @@ bool MixedContentNavigationThrottle::ShouldBlockNavigation(bool for_redirect) {
   // If we're in strict mode, we'll automagically fail everything, and
   // intentionally skip the client/embedder checks in order to prevent degrading
   // the site's security UI.
+  // TODO(crbug.com/1312424): Instead of checking node->IsInFencedFrameTree()
+  // set insecure_request_policy to block mixed content requests in a
+  // fenced frame tree and change InWhichFrameIsContentMixed to not cross
+  // the frame tree boundary.
   bool block_all_mixed_content =
-      (mixed_content_frame->frame_tree_node()
-           ->current_replication_state()
-           .insecure_request_policy &
-       blink::mojom::InsecureRequestPolicy::kBlockAllMixedContent) !=
-      blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone;
+      ((mixed_content_frame->frame_tree_node()
+            ->current_replication_state()
+            .insecure_request_policy &
+        blink::mojom::InsecureRequestPolicy::kBlockAllMixedContent) !=
+       blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone) ||
+      node->IsInFencedFrameTree();
   const auto& prefs = mixed_content_frame->GetOrCreateWebPreferences();
   bool strict_mode =
       prefs.strict_mixed_content_checking || block_all_mixed_content;

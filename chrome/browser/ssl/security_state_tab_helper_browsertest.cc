@@ -1864,9 +1864,6 @@ IN_PROC_BROWSER_TEST_P(SecurityStateTabHelperFencedFrameTest,
   }
 }
 
-// TODO(crbug.com/1282044): This behavior should not be allowed, since it allows
-// mixed frames, which are otherwise blocked, once this is fixed, change this
-// test so it verifies the navigation is block.
 IN_PROC_BROWSER_TEST_P(SecurityStateTabHelperFencedFrameTest,
                        LoadFencedFrameViaInsecureURL) {
   // Setup a mock certificate verifier.
@@ -1888,9 +1885,15 @@ IN_PROC_BROWSER_TEST_P(SecurityStateTabHelperFencedFrameTest,
       fenced_frame_test_helper().CreateFencedFrame(
           web_contents()->GetMainFrame(), fenced_frame_url);
   EXPECT_NE(nullptr, fenced_frame_host);
+  // Check that nothing has been loaded in the fenced frame.
+  EXPECT_EQ(
+      0, content::EvalJs(fenced_frame_host, "document.body.childElementCount"));
 
-  CheckSecurityInfoForSecure(web_contents(), security_state::DANGEROUS, false,
-                             false, true, false /* expect cert status error */);
+  // Since we are blocking http content in a fenced frame, the security
+  // indicator should not change, and there should be no mixed content loaded.
+  CheckSecurityInfoForSecure(web_contents(), security_state::SECURE, false,
+                             false, false /* expect no mixed content loaded */,
+                             false /* expect cert status error */);
 }
 
 }  // namespace

@@ -53,6 +53,8 @@ void MixedContentSettingsTabHelper::RenderFrameCreated(
   if (!IsRunningInsecureContentAllowed(*render_frame_host))
     return;
 
+  // Fenced Frames should never allow insecure content.
+  DCHECK(!render_frame_host->IsNestedWithinFencedFrame());
   mojo::AssociatedRemote<content_settings::mojom::ContentSettingsAgent> agent;
   render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(&agent);
   agent->SetAllowRunningInsecureContent();
