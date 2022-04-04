@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/side_search/side_search_config.h"
 #include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_search/side_search_browser_controller.h"
@@ -63,9 +64,11 @@ void SideSearchIconView::UpdateImpl() {
       !tab_contents_helper->toggled_open();
   SetVisible(should_show);
 
+  auto* side_search_config =
+      SideSearchConfig::Get(active_contents->GetBrowserContext());
   if (should_show && !was_visible &&
-      tab_contents_helper->should_show_page_action_label()) {
-    tab_contents_helper->set_should_show_page_action_label(false);
+      side_search_config->should_show_page_action_label()) {
+    side_search_config->set_should_show_page_action_label(false);
     AnimateIn(absl::nullopt);
   }
 }

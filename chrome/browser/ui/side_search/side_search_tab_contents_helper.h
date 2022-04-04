@@ -101,13 +101,6 @@ class SideSearchTabContentsHelper
 
   const absl::optional<GURL>& last_search_url() { return last_search_url_; }
 
-  bool should_show_page_action_label() const {
-    return should_show_page_action_label_;
-  }
-  void set_should_show_page_action_label(bool should_show_page_action_label) {
-    should_show_page_action_label_ = should_show_page_action_label;
-  }
-
  private:
   friend class content::WebContentsUserData<SideSearchTabContentsHelper>;
   explicit SideSearchTabContentsHelper(content::WebContents* web_contents);
@@ -149,10 +142,6 @@ class SideSearchTabContentsHelper
   // A flag to track whether the current tab has its side panel toggled open.
   // Only used with the kSideSearchStatePerTab flag.
   bool toggled_open_ = false;
-
-  // Tracks whether the page action icon has animated-in its label text. Track
-  // this to ensure we only show this at most once per tab.
-  bool should_show_page_action_label_ = true;
 
   // The side panel contents associated with this tab contents.
   // TODO(tluk): Update the way we manage the `side_panel_contents_` to avoid
