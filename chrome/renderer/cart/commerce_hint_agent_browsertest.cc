@@ -1038,7 +1038,9 @@ class CommerceHintTimeoutTest : public CommerceHintAgentTest {
 };
 
 // Flaky on Linux, ChromeOS and Windows: https://crbug.com/1257964.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+// Falky on Mac: https://crbug.com/1312849.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
 #define MAYBE_ExtractCart DISABLED_ExtractCart
 #else
 #define MAYBE_ExtractCart ExtractCart
