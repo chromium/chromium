@@ -53,6 +53,7 @@
 
 interface CoreProbes {
 
+  class ClassicScript;
   class ConsoleMessage;
   class FontCustomPlatformData;
   class FontFace;

@@ -39,6 +39,7 @@
 
 namespace blink {
 
+class KURL;
 class WorkerOrWorkletGlobalScope;
 
 class CORE_EXPORT WorkerOrWorkletScriptController final
