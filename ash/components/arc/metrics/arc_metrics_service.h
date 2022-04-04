@@ -31,6 +31,7 @@
 #include "ui/wm/public/activation_change_observer.h"
 
 class BrowserContextKeyedServiceFactory;
+class PrefService;
 
 namespace metrics {
 class PSIMemoryParser;
@@ -45,6 +46,8 @@ class BrowserContext;
 }  // namespace content
 
 namespace arc {
+
+class ArcMetricsAnr;
 
 namespace mojom {
 class AppInstance;
@@ -160,6 +163,11 @@ class ArcMetricsService : public KeyedService,
                      const std::string& intent);
   void OnTaskDestroyed(int32_t task_id);
 
+  // ArcSessionManagerObserver callbacks which are called through
+  // ArcMetricsServiceProxy.
+  void OnArcStarted();
+  void OnArcSessionStopped();
+
   void AddAppKillObserver(AppKillObserver* obs);
   void RemoveAppKillObserver(AppKillObserver* obs);
 
@@ -180,6 +188,8 @@ class ArcMetricsService : public KeyedService,
   // Make a request to ArcProcessService for App kill counts, so that those
   // counts can be logged to UMA. Public for testing.
   void RequestLowMemoryKillCountsForTesting();
+
+  void set_prefs(PrefService* prefs) { prefs_ = prefs; }
 
  private:
   // Adapter to be able to also observe ProcessInstance events.
@@ -306,6 +316,9 @@ class ArcMetricsService : public KeyedService,
 
   base::ObserverList<AppKillObserver> app_kill_observers_;
   base::ObserverList<UserInteractionObserver> user_interaction_observers_;
+
+  PrefService* prefs_ = nullptr;
+  std::unique_ptr<ArcMetricsAnr> metrics_anr_;
 
   // Always keep this the last member of this class to make sure it's the
   // first thing to be destructed.

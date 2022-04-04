@@ -120,6 +120,15 @@ const char kArcPlayStoreLaunchMetricCanBeRecorded[] =
     "arc.playstore_launched_by_user";
 
 // ======== LOCAL STATE PREFS ========
+// ANR count which is currently pending counted for ARC start, not flashed to
+// UMA.
+const char kAnrOnStartPendingCount[] = "arc.anr_pending_count_on_start";
+
+// ANR count which is currently pending, not flashed to UMA.
+const char kAnrPendingCount[] = "arc.anr_pending_count";
+
+// Keeps the duration of the current ANR rate period.
+const char kAnrPendingDuration[] = "arc.anr_pending_duration";
 
 // A boolean preference that indicates whether this device has run with the
 // native bridge 64 bit support experiment enabled. Persisting value in local
@@ -152,6 +161,10 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kNativeBridge64BitSupportExperimentEnabled,
                                 false);
   registry->RegisterDictionaryPref(kStabilityMetrics);
+
+  registry->RegisterIntegerPref(kAnrPendingCount, 0);
+  registry->RegisterIntegerPref(kAnrOnStartPendingCount, 0);
+  registry->RegisterTimeDeltaPref(kAnrPendingDuration, base::TimeDelta());
 }
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {

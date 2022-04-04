@@ -23,7 +23,8 @@ class TestBrowserContext : public content::TestBrowserContext {
 
   ~TestBrowserContext() override;
 
-  inline PrefRegistrySimple* pref_registry() { return prefs_.registry(); }
+  PrefService* prefs() { return &prefs_; }
+  PrefRegistrySimple* pref_registry() { return prefs_.registry(); }
 
  private:
   BrowserContextDependencyManager* const browser_context_dependency_manager_;
