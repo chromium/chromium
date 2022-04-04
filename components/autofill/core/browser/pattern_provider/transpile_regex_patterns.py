@@ -75,7 +75,7 @@ def build_cpp_function(cpp, output_handle):
   output('// found in the LICENSE file.\n')
   output('\n')
   output('#include "components/autofill/core/browser/pattern_provider/'\
-               'default_regex_patterns.h"\n')
+               'regex_patterns.h"\n')
   output('#include "components/autofill/core/common/language_code.h"\n')
   output('\n')
   output('namespace autofill {\n')
@@ -91,7 +91,9 @@ def build_cpp_function(cpp, output_handle):
   output('\n')
   output('}  // namespace\n')
   output('\n')
-  output('PatternProvider::Map CreateDefaultRegexPatterns() {\n')
+  output('std::map<std::string,')
+  output('         std::map<LanguageCode, std::vector<MatchingPattern>>>');
+  output('CreateRegexPatterns() {\n')
   output('  struct JsonPattern {\n')
   output('    const char* name;\n')
   output('    const char* language;\n')
@@ -105,7 +107,9 @@ def build_cpp_function(cpp, output_handle):
   for line in build_cpp_map_population(cpp):
     output(line)
     output('\n')
-  output('  PatternProvider::Map map;\n')
+  output('  std::map<std::string,')
+  output('           std::map<LanguageCode, std::vector<MatchingPattern>>>');
+  output('  map;\n')
   output('  size_t len = sizeof(patterns) / sizeof(patterns[0]);\n')
   output('  for (size_t i = 0; i < len; ++i) {\n')
   output('    const JsonPattern& p = patterns[i];\n')

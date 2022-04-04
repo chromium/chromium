@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/pattern_provider/default_regex_patterns.h"
+#include "components/autofill/core/browser/pattern_provider/regex_patterns.h"
 
 // Keep these tests in sync with
 // components/autofill/core/browser/autofill_regexes_unittest.cc.
@@ -35,9 +35,8 @@ struct PatternTestCase {
 };
 
 // Returns whether at least one of |patterns| matches |sample|.
-bool MatchesAnyPattern(
-    const std::string& sample,
-    const std::vector<MatchingPattern>& patterns) {
+bool MatchesAnyPattern(const std::string& sample,
+                       const std::vector<MatchingPattern>& patterns) {
   std::u16string utf16_sample = base::UTF8ToUTF16(sample);
 
   // Returns whether |pattern| matches |utf16_sample|.
@@ -79,7 +78,7 @@ void DefaultRegExPatternsTest::Validate(const std::string& pattern_name,
 
   const std::vector<MatchingPattern> patterns =
       PatternProvider::GetInstance().GetMatchPatterns(pattern_name,
-                                                       LanguageCode(language));
+                                                      LanguageCode(language));
 
   EXPECT_EQ(is_positive_sample, MatchesAnyPattern(sample, patterns));
 }

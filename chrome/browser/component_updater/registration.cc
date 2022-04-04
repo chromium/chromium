@@ -15,7 +15,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/component_updater/app_provisioning_component_installer.h"
-#include "chrome/browser/component_updater/autofill_regex_component_installer.h"
+#include "chrome/browser/component_updater/autofill_regex_remover.h"
 #include "chrome/browser/component_updater/chrome_client_side_phishing_component_installer.h"
 #include "chrome/browser/component_updater/chrome_origin_trials_component_installer.h"
 #include "chrome/browser/component_updater/crl_set_component_installer.h"
@@ -145,6 +145,8 @@ void RegisterComponentsForUpdate() {
     // the old file.
     component_updater::DeleteLegacyCRLSet(path);
 
+    component_updater::DeleteAutofillRegex(path);
+
 #if BUILDFLAG(IS_ANDROID)
     // Clean up any desktop sharing hubs that were installed on Android.
     component_updater::DeleteDesktopSharingHub(path);
@@ -208,8 +210,6 @@ void RegisterComponentsForUpdate() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   RegisterAutofillStatesComponent(cus, g_browser_process->local_state());
-
-  RegisterAutofillRegexComponent(cus);
 
   RegisterClientSidePhishingComponent(cus);
 

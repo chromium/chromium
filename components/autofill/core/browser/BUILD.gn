@@ -21,11 +21,11 @@ grit("autofill_address_rewriter_resources") {
   output_dir = "$root_gen_dir/components/autofill/core/browser"
 }
 
-action("default_regex_patterns_cc") {
+action("regex_patterns_cc") {
   visibility = [ ":*" ]
   sources = [ "pattern_provider/resources/regex_patterns.json" ]
-  script = "pattern_provider/transpile_default_regex_patterns.py"
-  outputs = [ "$target_gen_dir/pattern_provider/default_regex_patterns.cc" ]
+  script = "pattern_provider/transpile_regex_patterns.py"
+  outputs = [ "$target_gen_dir/pattern_provider/regex_patterns.cc" ]
   args = rebase_path(sources, root_build_dir) +
          rebase_path(outputs, root_build_dir)
 }
@@ -219,11 +219,9 @@ static_library("browser") {
     "metrics/form_events/form_events.h",
     "metrics/payments/virtual_card_enrollment_metrics.cc",
     "metrics/payments/virtual_card_enrollment_metrics.h",
-    "pattern_provider/default_regex_patterns.h",
-    "pattern_provider/pattern_configuration_parser.cc",
-    "pattern_provider/pattern_configuration_parser.h",
     "pattern_provider/pattern_provider.cc",
     "pattern_provider/pattern_provider.h",
+    "pattern_provider/regex_patterns.h",
     "payments/account_info_getter.h",
     "payments/autofill_offer_manager.cc",
     "payments/autofill_offer_manager.h",
@@ -375,7 +373,7 @@ static_library("browser") {
     "webdata/system_encryptor.h",
   ]
 
-  sources += get_target_outputs(":default_regex_patterns_cc")
+  sources += get_target_outputs(":regex_patterns_cc")
 
   if (is_win) {
     sources += [
@@ -454,7 +452,7 @@ static_library("browser") {
   ]
   deps = [
     ":autofill_address_rewriter_resources",
-    ":default_regex_patterns_cc",
+    ":regex_patterns_cc",
     "//base",
     "//base:i18n",
     "//build:branding_buildflags",
@@ -778,9 +776,7 @@ source_set("unit_tests") {
     "logging/log_manager_unittest.cc",
     "logging/log_router_unittest.cc",
     "metrics/autofill_metrics_unittest.cc",
-    "pattern_provider/default_regex_patterns_unittest.cc",
-    "pattern_provider/pattern_configuration_parser_unittest.cc",
-    "pattern_provider/pattern_provider_unittest.cc",
+    "pattern_provider/regex_patterns_unittest.cc",
     "payments/autofill_offer_manager_unittest.cc",
     "payments/credit_card_access_manager_unittest.cc",
     "payments/credit_card_cvc_authenticator_unittest.cc",

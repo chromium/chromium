@@ -24,16 +24,8 @@ namespace autofill {
 // ways to load the data in for further use.
 class PatternProvider {
  public:
-  // The outer keys are field types or other pattern names. The inner keys are
-  // page languages in lower case.
-  using Map = std::map<std::string,
-                       std::map<LanguageCode, std::vector<MatchingPattern>>>;
-
   // Returns a reference to the global Pattern Provider.
   static PatternProvider& GetInstance();
-
-  // Setter for loading patterns from external storage.
-  void SetPatterns(const Map patterns, const base::Version& version);
 
   // Finds the patterns for a given ServerFieldType and for a given
   // |page_language|.
@@ -50,10 +42,6 @@ class PatternProvider {
 
   // Finds all patterns, across all languages, for a given server field |type|.
   const std::vector<MatchingPattern> GetAllPatternsByType(
-      ServerFieldType type) const;
-
-  // Finds all patterns, across all languages, for a given server field |type|.
-  const std::vector<MatchingPattern> GetAllPatternsByType(
       const std::string& type) const;
 
  protected:
@@ -61,9 +49,17 @@ class PatternProvider {
   ~PatternProvider();
 
  private:
+  // The outer keys are field types or other pattern names. The inner keys are
+  // page languages in lower case.
+  using Map = std::map<std::string,
+                       std::map<LanguageCode, std::vector<MatchingPattern>>>;
+
   FRIEND_TEST_ALL_PREFIXES(AutofillPatternProviderTest, TestDefaultEqualsJson);
 
   friend class base::NoDestructor<PatternProvider>;
+
+  // Setter for loading patterns from external storage.
+  void SetPatterns(Map patterns);
 
   // Sequence checker to ensure thread-safety for pattern swapping.
   // All functions accessing the |patterns_| member variable are
@@ -73,9 +69,6 @@ class PatternProvider {
   // Local map to store a vector of patterns keyed by field type and
   // page language.
   Map patterns_;
-
-  // Version for keeping track which pattern set is currently used.
-  base::Version pattern_version_;
 };
 
 }  // namespace autofill
