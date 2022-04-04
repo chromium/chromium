@@ -128,7 +128,14 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetDeviceId) {
   RunTest(base::StringPrintf(kTest, kAssertions));
 }
 
-IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetPersistentSecret) {
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1222670
+#define MAYBE_GetPersistentSecret DISABLED_GetPersistentSecret
+#else
+#define MAYBE_GetPersistentSecret GetPersistentSecret
+#endif
+IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
+                       MAYBE_GetPersistentSecret) {
   constexpr char kAssertions[] =
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
       "chrome.test.assertNoLastError();"
