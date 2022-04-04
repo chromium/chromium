@@ -31,6 +31,23 @@ void ManagedCellularPrefHandler::SetDevicePrefs(PrefService* device_prefs) {
   device_prefs_ = device_prefs;
 }
 
+void ManagedCellularPrefHandler::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void ManagedCellularPrefHandler::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
+bool ManagedCellularPrefHandler::HasObserver(Observer* observer) const {
+  return observer_list_.HasObserver(observer);
+}
+
+void ManagedCellularPrefHandler::NotifyManagedCellularPrefChanged() {
+  for (auto& observer : observer_list_)
+    observer.OnManagedCellularPrefChanged();
+}
+
 void ManagedCellularPrefHandler::AddIccidSmdpPair(
     const std::string& iccid,
     const std::string& smdp_address) {
@@ -48,6 +65,7 @@ void ManagedCellularPrefHandler::AddIccidSmdpPair(
       device_prefs_, ash::prefs::kManagedCellularIccidSmdpPair);
   update->SetString(iccid, smdp_address);
   network_state_handler_->SyncStubCellularNetworks();
+  NotifyManagedCellularPrefChanged();
 }
 
 void ManagedCellularPrefHandler::RemovePairWithIccid(const std::string& iccid) {
@@ -65,6 +83,7 @@ void ManagedCellularPrefHandler::RemovePairWithIccid(const std::string& iccid) {
       device_prefs_, ash::prefs::kManagedCellularIccidSmdpPair);
   update->Remove(iccid);
   network_state_handler_->SyncStubCellularNetworks();
+  NotifyManagedCellularPrefChanged();
 }
 
 const std::string* ManagedCellularPrefHandler::GetSmdpAddressFromIccid(

@@ -9,9 +9,9 @@
 #include "base/scoped_observation.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
+#include "chromeos/network/managed_cellular_pref_handler.h"
+#include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_policy_observer.h"
-#include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/network_state_handler_observer.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "net/base/backoff_entry.h"
 
@@ -30,11 +30,12 @@ namespace policy {
 
 // Class responsible for uploading the information about the current ESim
 // profiles to DMServer.
-class EuiccStatusUploader : public chromeos::NetworkPolicyObserver,
-                            public chromeos::NetworkStateHandlerObserver,
-                            public chromeos::HermesManagerClient::Observer,
-                            public chromeos::HermesEuiccClient::Observer,
-                            public CloudPolicyClient::Observer {
+class EuiccStatusUploader
+    : public chromeos::NetworkPolicyObserver,
+      public chromeos::HermesManagerClient::Observer,
+      public chromeos::HermesEuiccClient::Observer,
+      public chromeos::ManagedCellularPrefHandler::Observer,
+      public CloudPolicyClient::Observer {
  public:
   EuiccStatusUploader(CloudPolicyClient* client, PrefService* local_state);
   ~EuiccStatusUploader() override;
@@ -74,10 +75,7 @@ class EuiccStatusUploader : public chromeos::NetworkPolicyObserver,
 
   // chromeos::NetworkPolicyObserver:
   void PoliciesApplied(const std::string& userhash) override;
-
-  // chromeos::NetworkStateHandlerObserver:
-  void NetworkListChanged() override;
-  void OnShuttingDown() override;
+  void OnManagedNetworkConfigurationHandlerShuttingDown() override;
 
   // CloudPolicyClient::Observer:
   void OnRegistrationStateChanged(CloudPolicyClient* client) override;
@@ -91,6 +89,9 @@ class EuiccStatusUploader : public chromeos::NetworkPolicyObserver,
 
   // chromeos::HermesEuiccClient:
   void OnEuiccReset(const dbus::ObjectPath& euicc_path) override;
+
+  // chromeos::ManagedCellularPrefHandler:
+  void OnManagedCellularPrefChanged() override;
 
   base::Value GetCurrentEuiccStatus() const;
   void MaybeUploadStatus();
@@ -124,7 +125,8 @@ class EuiccStatusUploader : public chromeos::NetworkPolicyObserver,
   base::ScopedObservation<CloudPolicyClient, CloudPolicyClient::Observer>
       cloud_policy_client_observation_{this};
 
-  chromeos::NetworkHandler* network_handler_ = nullptr;
+  chromeos::ManagedNetworkConfigurationHandler*
+      managed_network_configuration_handler_ = nullptr;
 
   base::WeakPtrFactory<EuiccStatusUploader> weak_ptr_factory_{this};
 };

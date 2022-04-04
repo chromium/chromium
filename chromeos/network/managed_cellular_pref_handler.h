@@ -6,6 +6,8 @@
 #define CHROMEOS_NETWORK_MANAGED_CELLULAR_PREF_HANDLER_H_
 
 #include "base/component_export.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "components/prefs/pref_service.h"
 
 class PrefService;
@@ -20,6 +22,14 @@ class NetworkStateHandler;
 // prefs.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedCellularPrefHandler {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override = default;
+
+    // Invoked when a ICCID - SMDP address is added or removed.
+    virtual void OnManagedCellularPrefChanged() = 0;
+  };
+
   ManagedCellularPrefHandler();
   ManagedCellularPrefHandler(const ManagedCellularPrefHandler&) = delete;
   ManagedCellularPrefHandler& operator=(const ManagedCellularPrefHandler&) =
@@ -44,10 +54,18 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedCellularPrefHandler {
   // nullptr if no such |iccid| is found.
   const std::string* GetSmdpAddressFromIccid(const std::string& iccid) const;
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+  bool HasObserver(Observer* observer) const;
+
  private:
+  void NotifyManagedCellularPrefChanged();
+
   NetworkStateHandler* network_state_handler_ = nullptr;
   // Initialized to null and set once SetDevicePrefs() is called.
   PrefService* device_prefs_ = nullptr;
+
+  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace chromeos

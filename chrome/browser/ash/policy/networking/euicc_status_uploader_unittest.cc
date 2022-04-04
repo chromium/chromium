@@ -12,6 +12,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/components/onc/onc_utils.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
+#include "chromeos/network/managed_cellular_pref_handler.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_ui_data.h"
@@ -99,16 +100,18 @@ const char kEuiccStatusAfterReset[] =
   "esim_profiles":[],"euicc_count":2
 })";
 
-const char kDefaultProfilePath[] = "/profile/default";
-
-const char kCellularDevicePath[] = "/service/cellular1";
-const char kCellularDevicePath2[] = "/service/cellular2";
+const char kCellularServicePath[] = "/service/cellular1";
+const char kCellularServicePath2[] = "/service/cellular2";
+const char kCelluarProfilePath[] = "/org/chromium/Hermes/Profile/1";
+const char kCelluarProfilePath2[] = "/org/chromium/Hermes/Profile/2";
 
 struct FakeESimProfile {
+  std::string profile_path;
   std::string service_path;
   std::string guid;
   std::string iccid;
   std::string smdp_address;
+  hermes::profile::State state;
   bool managed = true;
 };
 struct EuiccTestData {
@@ -119,14 +122,25 @@ struct EuiccTestData {
 
 const EuiccTestData kSetupOneEsimProfile = {
     2,
-    {{kCellularDevicePath, "guid-1", "iccid-1", "smdp-1", true}}};
+    {{kCelluarProfilePath, kCellularServicePath, "guid-1", "iccid-1", "smdp-1",
+      hermes::profile::State::kActive, true}}};
 const EuiccTestData kSetupTwoEsimProfiles = {
     3,
     {
-        {kCellularDevicePath, "guid-1", "iccid-1", "smdp-1", true},
-        {kCellularDevicePath2, "guid-2", "iccid-2", "smdp-2", true},
+        {kCelluarProfilePath, kCellularServicePath, "guid-1", "iccid-1",
+         "smdp-1", hermes::profile::State::kActive, true},
+        {kCelluarProfilePath2, kCellularServicePath2, "guid-2", "iccid-2",
+         "smdp-2", hermes::profile::State::kInactive, true},
     }};
 const EuiccTestData kSetupAfterReset = {2, {}};
+
+std::string GetEid(int euicc_id) {
+  return base::StringPrintf("%s%d", kFakeObjectPath, euicc_id);
+}
+
+std::string GetEuiccPath(int euicc_id) {
+  return base::StringPrintf("%s%d", kFakeEid, euicc_id);
+}
 
 }  // namespace
 
@@ -187,9 +201,8 @@ class EuiccStatusUploaderTest : public testing::Test {
 
   void SetupEuicc(int euicc_id = 0) {
     chromeos::HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
-        dbus::ObjectPath(base::StringPrintf("%s%d", kFakeObjectPath, euicc_id)),
-        base::StringPrintf("%s%d", kFakeEid, euicc_id), /*is_active=*/true,
-        euicc_id);
+        dbus::ObjectPath(GetEuiccPath(euicc_id)), GetEid(euicc_id),
+        /*is_active=*/true, euicc_id);
   }
 
   void SetUpDeviceProfiles(const EuiccTestData& data, bool add_to_onc = true) {
@@ -199,48 +212,21 @@ class EuiccStatusUploaderTest : public testing::Test {
       SetupEuicc(euicc_id);
     }
 
-    ash::ShillServiceClient::TestInterface* shill_service_client =
-        ash::ShillServiceClient::Get()->GetTestInterface();
-    shill_service_client->ClearServices();
-
-    base::Value onc_config(base::Value::Type::LIST);
     for (const auto& test_profile : data.profiles) {
-      shill_service_client->AddService(
-          test_profile.service_path, test_profile.guid, /*name=*/"cellular",
-          shill::kTypeCellular, "ready", /*visible=*/true);
-      shill_service_client->SetServiceProperty(test_profile.service_path,
-                                               shill::kIccidProperty,
-                                               base::Value(test_profile.iccid));
-      shill_service_client->SetServiceProperty(
-          test_profile.service_path, shill::kProfileProperty,
-          base::Value(kDefaultProfilePath));
-      shill_service_client->SetServiceProperty(
-          test_profile.service_path, shill::kUIDataProperty,
-          base::Value(chromeos::NetworkUIData::CreateFromONC(
-                          ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY)
-                          ->GetAsJson()));
+      chromeos::HermesEuiccClient::Get()->GetTestInterface()->AddCarrierProfile(
+          dbus::ObjectPath(test_profile.profile_path),
+          dbus::ObjectPath(GetEuiccPath(/*euicc_id=*/0)), test_profile.iccid,
+          test_profile.guid, "service_provider", "activation_code",
+          test_profile.service_path, test_profile.state,
+          hermes::profile::ProfileClass::kOperational,
+          chromeos::HermesEuiccClient::TestInterface::
+              AddCarrierProfileBehavior::kAddProfileWithService);
 
-      base::Value single_onc = chromeos::onc::ReadDictionaryFromJson(
-          R"({
-              "GUID": ")" +
-          test_profile.guid + R"(",
-              "Name": "Cellular network",
-              "Type": "Cellular",
-              "Cellular": {
-                "SMDPAddress" : ")" +
-          test_profile.smdp_address + R"(",
-              },
-      })");
-      onc_config.Append(std::move(single_onc));
-    }
-
-    if (add_to_onc) {
-      // Set ONC values.
-      chromeos::NetworkHandler::Get()
-          ->managed_network_configuration_handler()
-          ->SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY,
-                      std::string() /* no username hash */,
-                      std::move(onc_config), base::DictionaryValue());
+      if (test_profile.managed) {
+        chromeos::NetworkHandler::Get()
+            ->managed_cellular_pref_handler()
+            ->AddIccidSmdpPair(test_profile.iccid, test_profile.smdp_address);
+      }
     }
 
     // Wait for Shill device and service change notifications to propagate.
@@ -493,26 +479,6 @@ TEST_F(EuiccStatusUploaderTest, UnexpectedNetworkHandlerShutdown) {
 
   // Need to reinitialize before exiting test.
   chromeos::NetworkHandler::Initialize();
-}
-
-// A regression test for b/220933904 to verify that there should be no crash
-// when the cellular policy is not found from the device ONC but the network
-// state still exists.
-TEST_F(EuiccStatusUploaderTest, ShouldNotCrashIfNoPolicyFound) {
-  SetUpDeviceProfiles(kSetupOneEsimProfile, /*add_to_onc=*/false);
-
-  auto status_uploader = CreateStatusUploader();
-  // Initial upload request.
-  EXPECT_EQ(GetRequestCount(), 1);
-  // No value is uploaded yet.
-  EXPECT_EQ("{}", GetStoredPrefString());
-  CheckHistogram(/*total_count=*/1, /*success_count=*/0, /*failed_count=*/1);
-
-  // Make server accept requests.
-  SetServerSuccessStatus(true);
-  UpdateUploader(status_uploader.get());
-  EXPECT_EQ(GetRequestCount(), 2);
-  CheckHistogram(/*total_count=*/2, /*success_count=*/1, /*failed_count=*/1);
 }
 
 }  // namespace policy
