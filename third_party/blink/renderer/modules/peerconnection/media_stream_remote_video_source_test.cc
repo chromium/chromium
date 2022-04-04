@@ -103,12 +103,13 @@ class MediaStreamRemoteVideoSourceTest : public ::testing::Test {
             CrossThreadUnretained(&waitable_event))));
     waitable_event.Wait();
 
-    remote_source_ =
-        new MediaStreamRemoteVideoSourceUnderTest(std::move(track_observer));
+    auto remote_source =
+        std::make_unique<MediaStreamRemoteVideoSourceUnderTest>(
+            std::move(track_observer));
+    remote_source_ = remote_source.get();
     source_ = MakeGarbageCollected<MediaStreamSource>(
         "dummy_source_id", MediaStreamSource::kTypeVideo, "dummy_source_name",
-        true /* remote */);
-    source_->SetPlatformSource(base::WrapUnique(remote_source_));
+        true /* remote */, std::move(remote_source));
   }
 
   void TearDown() override {

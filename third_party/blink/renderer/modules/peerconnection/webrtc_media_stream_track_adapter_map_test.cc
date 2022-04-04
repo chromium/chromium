@@ -40,17 +40,16 @@ class WebRtcMediaStreamTrackAdapterMapTest : public ::testing::Test {
   }
 
   MediaStreamComponent* CreateLocalTrack(const std::string& id) {
+    auto audio_source = std::make_unique<MediaStreamAudioSource>(
+        scheduler::GetSingleThreadTaskRunnerForTesting(), true);
+    MediaStreamAudioSource* audio_source_ptr = audio_source.get();
     auto* source = MakeGarbageCollected<MediaStreamSource>(
         String::FromUTF8(id), MediaStreamSource::kTypeAudio,
-        String::FromUTF8("local_audio_track"), false);
-    MediaStreamAudioSource* audio_source = new MediaStreamAudioSource(
-        scheduler::GetSingleThreadTaskRunnerForTesting(), true);
-    // Takes ownership of |audio_source|.
-    source->SetPlatformSource(base::WrapUnique(audio_source));
+        String::FromUTF8("local_audio_track"), false, std::move(audio_source));
 
     auto* component =
         MakeGarbageCollected<MediaStreamComponent>(source->Id(), source);
-    audio_source->ConnectToTrack(component);
+    audio_source_ptr->ConnectToTrack(component);
     return component;
   }
 

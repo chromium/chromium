@@ -13,13 +13,12 @@ namespace blink {
 MediaStreamComponent* CreateMediaStreamComponent(
     const std::string& id,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  auto* source = MakeGarbageCollected<MediaStreamSource>(
-      String::FromUTF8(id), MediaStreamSource::kTypeAudio,
-      String::FromUTF8("audio_track"), false);
   auto audio_source = std::make_unique<blink::MediaStreamAudioSource>(
       std::move(task_runner), true /* is_local_source */);
   auto* audio_source_ptr = audio_source.get();
-  source->SetPlatformSource(std::move(audio_source));
+  auto* source = MakeGarbageCollected<MediaStreamSource>(
+      String::FromUTF8(id), MediaStreamSource::kTypeAudio,
+      String::FromUTF8("audio_track"), false, std::move(audio_source));
 
   auto* component =
       MakeGarbageCollected<MediaStreamComponent>(source->Id(), source);

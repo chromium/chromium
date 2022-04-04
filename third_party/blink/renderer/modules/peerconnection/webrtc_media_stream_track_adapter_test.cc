@@ -45,13 +45,12 @@ class WebRtcMediaStreamTrackAdapterTest : public ::testing::Test {
   }
 
   MediaStreamComponent* CreateLocalAudioTrack() {
-    auto* source = MakeGarbageCollected<MediaStreamSource>(
-        String::FromUTF8("local_audio_id"), MediaStreamSource::kTypeAudio,
-        String::FromUTF8("local_audio_track"), false);
     auto audio_source = std::make_unique<MediaStreamAudioSource>(
         scheduler::GetSingleThreadTaskRunnerForTesting(), true);
     auto* audio_source_ptr = audio_source.get();
-    source->SetPlatformSource(std::move(audio_source));
+    auto* source = MakeGarbageCollected<MediaStreamSource>(
+        String::FromUTF8("local_audio_id"), MediaStreamSource::kTypeAudio,
+        String::FromUTF8("local_audio_track"), false, std::move(audio_source));
 
     auto* component =
         MakeGarbageCollected<MediaStreamComponent>(source->Id(), source);
@@ -60,12 +59,16 @@ class WebRtcMediaStreamTrackAdapterTest : public ::testing::Test {
   }
 
   MediaStreamComponent* CreateLocalVideoTrack() {
-    auto* source = MakeGarbageCollected<MediaStreamSource>(
-        String::FromUTF8("local_video_id"), MediaStreamSource::kTypeVideo,
-        String::FromUTF8("local_video_track"), false);
     auto video_source = std::make_unique<MockMediaStreamVideoSource>();
     auto* video_source_ptr = video_source.get();
-    source->SetPlatformSource(std::move(video_source));
+    // Dropping the MediaStreamSource reference here is ok, as video_source will
+    // have a weak pointer to it as Owner(), which is picked up by the
+    // MediaStreamComponent created with CreateVideoTrack() below.
+    // TODO(https://crbug.com/1302689): Fix this crazy lifecycle jumping back
+    // and forth between GCed and non-GCed objects...
+    MakeGarbageCollected<MediaStreamSource>(
+        String::FromUTF8("local_video_id"), MediaStreamSource::kTypeVideo,
+        String::FromUTF8("local_video_track"), false, std::move(video_source));
 
     return MediaStreamVideoTrack::CreateVideoTrack(
         video_source_ptr,
