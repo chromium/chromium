@@ -6364,6 +6364,9 @@
         },
       },
       'Win 7 Tests x64 (1)': {
+        'mixins': [
+          'win7',
+        ],
         'test_suites': {
           'gtest_tests': 'chromium_win_gtests',
           'isolated_scripts': 'chromium_win_rel_isolated_scripts',
