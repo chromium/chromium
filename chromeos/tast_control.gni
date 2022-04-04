@@ -155,11 +155,6 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1300941
   "ui.WebUIJSErrors",
 
-  # https://crbug.com/1306316
-  "policy.URLCheck.whitelist",  # nocheck
-  "policy.URLCheck.blacklist",  # nocheck
-  "policy.UserNativePrintersAllowed",  # nocheck
-
   # https://crbug.com/1306441
   "policy.UserAvatarImage",
 
