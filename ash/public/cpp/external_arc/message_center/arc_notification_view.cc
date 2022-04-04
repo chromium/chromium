@@ -124,6 +124,19 @@ void ArcNotificationView::UpdateCornerRadius(int top_radius,
   content_view_->UpdateCornerRadius(top_radius, bottom_radius);
 }
 
+void ArcNotificationView::UpdateBackgroundPainter() {
+  if (features::IsNotificationsRefreshEnabled()) {
+    SetBackground(views::CreateSolidBackground(
+        shown_in_popup_ ? AshColorProvider::Get()->GetBaseLayerColor(
+                              AshColorProvider::BaseLayerType::kTransparent80)
+                        : AshColorProvider::Get()->GetControlsLayerColor(
+                              AshColorProvider::ControlsLayerType::
+                                  kControlBackgroundColorInactive)));
+  } else {
+    MessageView::UpdateBackgroundPainter();
+  }
+}
+
 void ArcNotificationView::UpdateControlButtonsVisibility() {
   content_view_->UpdateControlButtonsVisibility();
 }
@@ -201,12 +214,6 @@ void ArcNotificationView::OnThemeChanged() {
     focus_painter_ = views::Painter::CreateSolidFocusPainter(
         GetColorProvider()->GetColor(ui::kColorFocusableBorderFocused),
         gfx::Insets::TLBR(0, 1, 3, 2));
-  }
-
-  if (features::IsNotificationsRefreshEnabled() && shown_in_popup_) {
-    SetBackground(
-        views::CreateSolidBackground(AshColorProvider::Get()->GetBaseLayerColor(
-            AshColorProvider::BaseLayerType::kTransparent80)));
   }
 }
 

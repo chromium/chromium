@@ -217,6 +217,9 @@ class MESSAGE_CENTER_EXPORT MessageView
   // Changes the background color and schedules a paint.
   virtual void SetDrawBackgroundAsActive(bool active);
 
+  // Updates the background painter using the themed background color and radii.
+  virtual void UpdateBackgroundPainter();
+
   void UpdateControlButtonsVisibilityWithNotification(
       const Notification& notification);
 
@@ -242,9 +245,6 @@ class MESSAGE_CENTER_EXPORT MessageView
 
   // Returns if the control buttons should be shown.
   bool ShouldShowControlButtons() const;
-
-  // Updates the background painter using the themed background color and radii.
-  void UpdateBackgroundPainter();
 
   void UpdateNestedBorder();
 
