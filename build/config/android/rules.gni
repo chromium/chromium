@@ -2058,6 +2058,10 @@ if (enable_java_templates) {
   #     is true when building with Chromium for non-test APKs.
   #   generate_final_jni: If defined and false, skip generating the
   #     GEN_JNI srcjar.
+  #   generate_native_libraries_java: If defined, whether NativeLibraries.java is
+  #     generated is solely controlled by this flag. Otherwise, the default behavior
+  #     is NativeLibraries.java will only be generated for the base module/apk when
+  #     its `shared_libraries` is not empty.
   #   jni_registration_header: If specified, causes the
   #     ${target_name}__final_jni target to additionally output a
   #     header file to this path for use with manual JNI registration.
@@ -2634,10 +2638,14 @@ if (enable_java_templates) {
       _final_deps += [ ":$_copy_arsc_target" ]
     }
 
-    _generate_native_libraries_java =
-        (!_is_bundle_module || _is_base_module) &&
-        (_native_libs_deps != [] || _secondary_abi_native_libs_deps != []) &&
-        !_uses_static_library_synchronized_proguard
+    if (defined(invoker.generate_native_libraries_java)) {
+      _generate_native_libraries_java = invoker.generate_native_libraries_java
+    } else {
+      _generate_native_libraries_java =
+          (!_is_bundle_module || _is_base_module) &&
+          (_native_libs_deps != [] || _secondary_abi_native_libs_deps != []) &&
+          !_uses_static_library_synchronized_proguard
+    }
     if (_generate_native_libraries_java) {
       write_native_libraries_java("${_template_name}__native_libraries") {
         forward_variables_from(invoker, [ "main_component_library" ])
@@ -3580,6 +3588,7 @@ if (enable_java_templates) {
                                "extra_verification_manifest_dep",
                                "generate_buildconfig_java",
                                "generate_final_jni",
+                               "generate_native_libraries_java",
                                "input_jars_paths",
                                "isolated_splits_enabled",
                                "is_base_module",

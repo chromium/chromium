@@ -6,7 +6,6 @@ package org.chromium.chromecast.shell;
 
 import android.content.Context;
 
-import org.chromium.base.BundleUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.CommandLineInitUtil;
 import org.chromium.base.Log;
@@ -22,7 +21,6 @@ import org.chromium.net.NetworkChangeNotifier;
 public class CastBrowserHelper {
     private static final String TAG = "CastBrowserHelper";
     private static final String COMMAND_LINE_FILE = "castshell-command-line";
-    private static final String CAST_BROWSER_LIB = "cast_browser_android";
 
     private static boolean sIsBrowserInitialized;
 
@@ -45,24 +43,9 @@ public class CastBrowserHelper {
         });
 
         DeviceUtils.addDeviceSpecificUserAgentSwitch();
-
-        if (BundleUtils.isBundle()) {
-            // CommandLine.java doesn't expect there to be two copies of //base and it ignores
-            // the second attempt to initialize the native command line.
-            // LibraryLoader.ensureInitialized() is not called because it loads the main
-            // shared lib (libcast_service) and initializes the native command line in its copy of
-            // //base, which leaves the native command line in the libcast_browser_android's copy of
-            // //base uninitialized. The end state of the following two lines is
-            // libcast_browser_android's native command line is initialized and libcast_service's
-            // copy is uninitialized.
-            System.loadLibrary(CAST_BROWSER_LIB);
-            CommandLine.enableNativeProxy();
-        } else {
-            LibraryLoader.getInstance().ensureInitialized();
-        }
+        LibraryLoader.getInstance().ensureInitialized();
 
         Log.d(TAG, "Loading BrowserStartupController...");
-        BrowserStartupController.getInstance().setDisableLibraryLoadForCast(true);
         BrowserStartupController.getInstance().startBrowserProcessesSync(
                 LibraryProcessType.PROCESS_BROWSER, /*singleProcess=*/false);
         NetworkChangeNotifier.init();

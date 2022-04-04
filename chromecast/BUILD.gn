@@ -758,6 +758,7 @@ if (is_android) {
       # TODO(b/222780347): Enable when compile errors are resolved on release
       # builds.
       proguard_enabled = false
+      generate_native_libraries_java = true
     }
   }
 }
