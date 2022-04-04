@@ -296,7 +296,22 @@ fi
 lib32_list="linux-libc-dev:i386 libpci3:i386"
 
 # 32-bit libraries needed for a 32-bit build
-lib32_list="$lib32_list libx11-xcb1:i386"
+lib32_list="$lib32_list
+  libasound2:i386
+  libatk-bridge2.0-0:i386
+  libatk1.0-0:i386
+  libatspi2.0-0:i386
+  libdbus-1-3:i386
+  libglib2.0-0:i386
+  libnss3:i386
+  libpango-1.0-0:i386
+  libx11-xcb1:i386
+  libxcomposite1:i386
+  libxdamage1:i386
+  libxkbcommon0:i386
+  libxrandr2:i386
+  libxtst6:i386
+"
 
 # Packages that have been removed from this script.  Regardless of configuration
 # or options passed to this script, whenever a package is removed, it should be
