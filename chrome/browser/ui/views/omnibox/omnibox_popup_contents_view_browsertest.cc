@@ -37,6 +37,10 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
 
+#if BUILDFLAG(USE_GTK)
+#include "ui/views/linux_ui/linux_ui.h"
+#endif
+
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
 #endif
@@ -206,6 +210,18 @@ class OmniboxPopupContentsViewTest : public InProcessBrowserTest {
     // be different. But when using the GTK theme on Linux, these colors will be
     // the same. Ensure we're not using the system (GTK) theme, which may be
     // conditionally enabled depending on the environment.
+#if BUILDFLAG(USE_GTK)
+    // Normally it would be sufficient to call ThemeService::UseDefaultTheme()
+    // which sets the kUsesSystemTheme user pref on the browser's profile.
+    // However BrowserThemeProvider::GetColorProviderColor() currently does not
+    // pass an aura::Window to LinuxUI::GetNativeTheme() - which means that the
+    // NativeThemeGtk instance will always be returned.
+    // TODO(crbug.com/1304441): Remove this once GTK passthrough is fully
+    // supported.
+    views::LinuxUI::instance()->SetUseSystemThemeCallback(
+        base::BindRepeating([](aura::Window* window) { return false; }));
+    ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
+
     ThemeService* theme_service =
         ThemeServiceFactory::GetForProfile(browser()->profile());
     if (!theme_service->UsingDefaultTheme()) {
@@ -213,6 +229,7 @@ class OmniboxPopupContentsViewTest : public InProcessBrowserTest {
       theme_service->UseDefaultTheme();
     }
     ASSERT_TRUE(theme_service->UsingDefaultTheme());
+#endif  // BUILDFLAG(USE_GTK)
   }
 };
 

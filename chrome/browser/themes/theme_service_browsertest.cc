@@ -16,6 +16,11 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "ui/base/buildflags.h"
+
+#if BUILDFLAG(USE_GTK)
+#include "ui/views/linux_ui/linux_ui.h"
+#endif
 
 namespace {
 
@@ -154,8 +159,13 @@ IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest, GetColorForToolbarButton) {
   // This test relies on toolbar buttons having no tint, which is not currently
-  // true in dark mode.
+  // true in dark mode and GTK.
   ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(false);
+#if BUILDFLAG(USE_GTK)
+  views::LinuxUI::instance()->SetUseSystemThemeCallback(
+      base::BindRepeating([](aura::Window* window) { return false; }));
+#endif  // BUILDFLAG(USE_GTK)
+  ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
 
   const ui::ThemeProvider* provider = browser()->window()->GetThemeProvider();
   SkColor default_toolbar_button_color =
