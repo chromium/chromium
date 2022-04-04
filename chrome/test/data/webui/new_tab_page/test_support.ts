@@ -96,6 +96,7 @@ export function createTheme(): Theme {
   const searchBox = {
     bg: {value: 0xff000000},
     bgHovered: {value: 0xff00000e},
+    borderColor: {value: 0xff00000e},
     icon: {value: 0xff000001},
     iconSelected: {value: 0xff000002},
     isDark: false,

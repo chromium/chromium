@@ -59,6 +59,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/theme_provider.h"
 #include "ui/color/color_provider.h"
@@ -74,7 +75,8 @@ new_tab_page::mojom::ThemePtr MakeTheme(
     const ui::ColorProvider& color_provider,
     const ui::ThemeProvider* theme_provider,
     ThemeService* theme_service,
-    NtpCustomBackgroundService* ntp_custom_background_service) {
+    NtpCustomBackgroundService* ntp_custom_background_service,
+    content::WebContents* web_contents) {
   if (ntp_custom_background_service) {
     ntp_custom_background_service->RefreshBackgroundIfNeeded();
   }
@@ -181,6 +183,10 @@ new_tab_page::mojom::ThemePtr MakeTheme(
   search_box->bg_hovered =
       GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_BACKGROUND,
                       OmniboxPartState::HOVERED);
+  search_box->border_color =
+      webui::GetNativeTheme(web_contents)->UserHasContrastPreference()
+          ? theme_provider->GetColor(ThemeProperties::COLOR_LOCATION_BAR_BORDER)
+          : SkColorSetRGB(218, 220, 224);  // google-grey-300
   search_box->icon = GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_ICON);
   search_box->icon_selected = GetOmniboxColor(
       theme_provider, OmniboxPart::RESULTS_ICON, OmniboxPartState::SELECTED);
@@ -910,7 +916,8 @@ void NewTabPageHandler::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
 
 void NewTabPageHandler::OnThemeChanged() {
   page_->SetTheme(MakeTheme(web_contents_->GetColorProvider(), theme_provider_,
-                            theme_service_, ntp_custom_background_service_));
+                            theme_service_, ntp_custom_background_service_,
+                            web_contents_));
 }
 
 void NewTabPageHandler::OnCustomBackgroundImageUpdated() {

@@ -335,6 +335,8 @@ export class RealboxElement extends PolymerElement {
     }
 
     this.updateStyles({
+      '--search-box-border-color':
+          skColorToRgba(assert(this.theme.borderColor)),
       '--search-box-placeholder': skColorToRgba(assert(this.theme.placeholder)),
       '--search-box-results-bg': skColorToRgba(assert(this.theme.resultsBg)),
       '--search-box-text': skColorToRgba(assert(this.theme.text)),
