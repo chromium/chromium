@@ -1102,11 +1102,11 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-safebrowsing-alerts@chromium.org</owner>
   <summary>
     This histogram is used to record the different actions and events associated
-    with the download shelf context menu on Linux, MacOS, and Windows.
-    Specifically, it records when the dropdown button was clicked as well when
-    DownloadCommands were enabled or executed. Each action or enable event is
-    only emitted once; as a result, it is safe to compute a ratio by dividing
-    enabled events by clicked events.
+    with the download shelf context menu on Linux, MacOS, and Windows. The menu
+    may also be shown on the download bubble. Specifically, it records when the
+    dropdown button was clicked as well when DownloadCommands were enabled or
+    executed. Each action or enable event is only emitted once; as a result, it
+    is safe to compute a ratio by dividing enabled events by clicked events.
   </summary>
 </histogram>
 
@@ -1124,10 +1124,11 @@ chromium-metrics-reviews@google.com.
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@chromium.org</owner>
   <summary>
-    A download warning was shown in the shelf. Note that some downloads may not
-    be shown on the shelf, e.g., if chrome://downloads is already open when the
-    download completes, or if an extension is using the downloads API. Grouped
-    by the type of danger. This histogram is logged on ChromeOS since M93.
+    A download warning was shown in the shelf/bubble. Note that some downloads
+    may not be shown on the shelf, e.g., if a download is not new, is transient,
+    or if the shelf is disabled by an extension using the Downloads API.
+    Similarly, the bubble also does not show transient downloads. Grouped by the
+    type of danger. This histogram is logged on ChromeOS since M93.
 
     This metric is used to populate a dashboard on go/crsb-site.
   </summary>

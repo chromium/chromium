@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/bubble/download_bubble_controller.h"
+#include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/icon_manager.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -63,6 +64,12 @@ std::unique_ptr<views::View> CreateLabelWrapper() {
   return label_wrapper;
 }
 
+// Whether we are warning about a dangerous/malicious download.
+bool is_download_warning(download::DownloadItemMode mode) {
+  return (mode == download::DownloadItemMode::kDangerous) ||
+         (mode == download::DownloadItemMode::kMalicious);
+}
+
 constexpr int kDownloadButtonHeight = 24;
 constexpr int kDownloadSubpageIconMargin = 8;
 
@@ -71,13 +78,27 @@ constexpr int kDownloadSubpageIconMargin = 8;
 bool DownloadBubbleRowView::UpdateBubbleUIInfo() {
   auto mode = download::GetDesiredDownloadItemMode(model_.get());
   auto state = model_->GetState();
-  bool state_changed = (mode_ != mode || state_ != state);
-  if (state_changed) {
-    ui_info_ = model_->GetBubbleUIInfo();
-  }
+  bool mode_unchanged = (mode_ == mode);
+  if (mode_unchanged && (state_ == state))
+    return false;
+
   mode_ = mode;
   state_ = state;
-  return state_changed;
+
+  // If either of mode or state changes, we might need to change UI.
+  ui_info_ = model_->GetBubbleUIInfo();
+
+  // This should only be logged once per download, so only for change in modes
+  // to warning.
+  if (!mode_unchanged && is_download_warning(mode)) {
+    const auto danger_type = model_->GetDangerType();
+    const auto file_path = model_->GetTargetFilePath();
+    bool is_https = model_->GetURL().SchemeIs(url::kHttpsScheme);
+    bool has_user_gesture = model_->HasUserGesture();
+    RecordDangerousDownloadWarningShown(danger_type, file_path, is_https,
+                                        has_user_gesture);
+  }
+  return true;
 }
 
 void DownloadBubbleRowView::AddedToWidget() {
