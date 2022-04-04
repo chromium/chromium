@@ -18,13 +18,14 @@
   /* Any changes to this file should also be copied to index_dark_light.html. */
 
   /*
-   * This is the <iframe> style set for sandboxed guests that use
-   * guest_view_iframe_container.js.
-   * TODO(crbug/996088): Remove the iframe styles if switched to <webview>.
+   * This is the <iframe> style set for sandboxed chrome-untrusted:// guests.
+   * `user-select: none` is applied here to avoid the iframe obtaining a grey
+   * overlay if it is clicked while loading (b/227678322).
    */
   iframe {
     border: 0;
     height: 100%;
+    user-select: none;
     width: 100%;
   }
 </style>
