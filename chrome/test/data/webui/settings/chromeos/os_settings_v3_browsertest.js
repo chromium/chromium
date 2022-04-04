@@ -312,7 +312,7 @@ TEST_F('OSSettingsAppManagementAppDetailsV3Test', 'AllJsTests', () => {
 var OSSettingsCrostiniPageV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/crostini_page_test.m.js';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/crostini_page_test.js';
   }
 
   /** @override */
@@ -329,7 +329,7 @@ var OSSettingsCrostiniExtraContainerPageV3Test =
     class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/crostini_extra_containers_subpage_test.m.js';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/crostini_extra_containers_subpage_test.js';
   }
 
   /** @override */
@@ -342,8 +342,8 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
   mocha.run();
 });
 
-[['AccessibilityPage', 'os_a11y_page_tests.m.js'],
- ['AboutPage', 'os_about_page_tests.m.js'],
+[['AccessibilityPage', 'os_a11y_page_tests.js'],
+ ['AboutPage', 'os_about_page_tests.js'],
  ['AccountsPage', 'add_users_tests.js'],
  ['AmbientModePage', 'ambient_mode_page_test.js'],
  ['AmbientModePhotosPage', 'ambient_mode_photos_page_test.js'],
@@ -414,7 +414,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['KerberosPage', 'kerberos_page_test.m.js'],
  ['KeyboardShortcutBanner', 'keyboard_shortcut_banner_test.js'],
  ['LockScreenPage', 'lock_screen_tests.m.js'],
- ['ManageAccessibilityPage', 'manage_accessibility_page_tests.m.js'],
+ ['ManageAccessibilityPage', 'manage_accessibility_page_tests.js'],
  ['MultideviceCombinedSetupItem', 'multidevice_combined_setup_item_tests.js'],
  // TODO(crbug.com/1227116): Re-enable once flakiness is fixed.
  //  ['MultideviceFeatureItem', 'multidevice_feature_item_tests.js'],
@@ -458,8 +458,8 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'OsBluetoothChangeDeviceNameDialog',
    'os_bluetooth_change_device_name_dialog_tests.js'
  ],
- ['OsEditDictionaryPage', 'os_edit_dictionary_page_test.m.js'],
- ['OsLanguagesPageV2', 'os_languages_page_v2_tests.m.js'],
+ ['OsEditDictionaryPage', 'os_edit_dictionary_page_test.js'],
+ ['OsLanguagesPageV2', 'os_languages_page_v2_tests.js'],
  ['OsPairedBluetoothList', 'os_paired_bluetooth_list_tests.js'],
  ['OsSettingsUi', 'os_settings_ui_test.m.js'],
  ['OsSettingsUi2', 'os_settings_ui_test_2.m.js'],
@@ -481,20 +481,20 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['SettingsSchedulerSlider', 'settings_scheduler_slider_test.m.js'],
  ['SearchSubpage', 'search_subpage_test.m.js'],
  ['SettingsTrafficCounters', 'settings_traffic_counters_test.m.js'],
- ['SmartInputsPage', 'smart_inputs_page_test.m.js'],
+ ['SmartInputsPage', 'smart_inputs_page_test.js'],
  ['SmbPage', 'smb_shares_page_tests.m.js'],
  ['SmartPrivacySubpage', 'smart_privacy_subpage_tests.m.js'],
  [
    'SwitchAccessActionAssignmentDialog',
-   'switch_access_action_assignment_dialog_test.m.js'
+   'switch_access_action_assignment_dialog_test.js'
  ],
- ['SwitchAccessSetupGuideDialog', 'switch_access_setup_guide_dialog_test.m.js'],
- ['SwitchAccessSubpage', 'switch_access_subpage_tests.m.js'],
+ ['SwitchAccessSetupGuideDialog', 'switch_access_setup_guide_dialog_test.js'],
+ ['SwitchAccessSubpage', 'switch_access_subpage_tests.js'],
  ['TetherConnectionDialog', 'tether_connection_dialog_test.m.js'],
- ['TextToSpeechSubpage', 'text_to_speech_subpage_tests.m.js'],
+ ['TextToSpeechSubpage', 'text_to_speech_subpage_tests.js'],
  ['TimezoneSelector', 'timezone_selector_test.js'],
  ['TimezoneSubpage', 'timezone_subpage_test.js'],
- ['TtsSubpage', 'tts_subpage_test.m.js'],
+ ['TtsSubpage', 'tts_subpage_test.js'],
  ['UserPage', 'user_page_tests.js'],
 ].forEach(test => registerTest(...test));
 

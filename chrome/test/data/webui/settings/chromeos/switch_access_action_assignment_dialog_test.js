@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/lazy_load.js';
+import 'chrome://os-settings/chromeos/lazy_load.js';
 
-// #import {assertTrue, assertFalse} from '../../chai_assert.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format on
+import {assertTrue, assertFalse} from '../../chai_assert.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('SwitchAccessActionAssignmentDialogTest', function() {
   /** @type {!SettingsSwitchAccessActionAssignmentDialog} */
@@ -17,7 +15,7 @@ suite('SwitchAccessActionAssignmentDialogTest', function() {
     dialog = document.createElement('settings-switch-access-action-assignment-dialog');
     dialog.action = 'select';
     document.body.appendChild(dialog);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('Exit button closes dialog', function() {

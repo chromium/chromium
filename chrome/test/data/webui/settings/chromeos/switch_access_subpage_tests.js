@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/lazy_load.js';
+import 'chrome://os-settings/chromeos/lazy_load.js';
 
-// #import {SwitchAccessSubpageBrowserProxyImpl, SwitchAccessSubpageBrowserProxy, routes, Router} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
-// #import {assertEquals, assertDeepEquals} from '../../chai_assert.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {waitAfterNextRender} from 'chrome://test/test_util.js';
-// clang-format on
+import {SwitchAccessSubpageBrowserProxyImpl, SwitchAccessSubpageBrowserProxy, routes, Router} from 'chrome://os-settings/chromeos/os_settings.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
+import {assertEquals, assertDeepEquals} from '../../chai_assert.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {waitAfterNextRender} from 'chrome://test/test_util.js';
 
 /**
  * @implements {SwitchAccessSubpageBrowserProxy}
@@ -110,7 +108,7 @@ suite('ManageAccessibilityPageTests', function() {
     if (page) {
       page.remove();
     }
-    settings.Router.getInstance().resetRouteForTesting();
+    Router.getInstance().resetRouteForTesting();
   });
 
   /**
@@ -225,7 +223,7 @@ suite('ManageAccessibilityPageTests', function() {
         {key: 'b', keyCode: 66, device: 'usb'});
 
     const element = page.$$('#switchAccessActionAssignmentDialog');
-    await test_util.waitAfterNextRender(element);
+    await waitAfterNextRender(element);
 
     // This should update the error field at the bottom of the dialog.
     const errorText = page.$$('#switchAccessActionAssignmentDialog')
@@ -243,16 +241,16 @@ suite('ManageAccessibilityPageTests', function() {
     prefs.settings.a11y.switch_access.auto_scan.enabled.value = true;
     initPage(prefs);
 
-    Polymer.dom.flush();
+    flush();
 
     const params = new URLSearchParams();
     params.append('settingId', '1525');
-    settings.Router.getInstance().navigateTo(
-        settings.routes.MANAGE_SWITCH_ACCESS_SETTINGS, params);
+    Router.getInstance().navigateTo(
+        routes.MANAGE_SWITCH_ACCESS_SETTINGS, params);
 
     const deepLinkElement = page.$$('#keyboardScanSpeedSlider')
                                 .shadowRoot.querySelector('cr-slider');
-    await test_util.waitAfterNextRender(deepLinkElement);
+    await waitAfterNextRender(deepLinkElement);
 
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -277,7 +275,7 @@ suite('ManageAccessibilityPageTests', function() {
 
     // Open the setup guide warning dialog.
     page.$.setupGuideLink.click();
-    Polymer.dom.flush();
+    flush();
 
     // Check that the dialog is open.
     let warningDialog =
@@ -288,7 +286,7 @@ suite('ManageAccessibilityPageTests', function() {
     const cancelButton = warningDialog.$.cancel;
     assertTrue(!!cancelButton);
     cancelButton.click();
-    Polymer.dom.flush();
+    flush();
 
     // Check that the dialog is closed, and the setup guide is not open.
     warningDialog =
@@ -300,7 +298,7 @@ suite('ManageAccessibilityPageTests', function() {
 
     // Re-open the warning dialog.
     page.$.setupGuideLink.click();
-    Polymer.dom.flush();
+    flush();
     warningDialog =
         page.$$('settings-switch-access-setup-guide-warning-dialog');
     assertTrue(!!warningDialog);
@@ -309,7 +307,7 @@ suite('ManageAccessibilityPageTests', function() {
     const continueButton = warningDialog.$.continue;
     assertTrue(!!continueButton);
     continueButton.click();
-    Polymer.dom.flush();
+    flush();
     await browserProxy.whenCalled('notifySwitchAccessSetupGuideAttached');
 
     // Check that the setup guide has opened.
@@ -345,7 +343,7 @@ suite('ManageAccessibilityPageTests', function() {
         // Normally on startup, the browser proxy calls a C++ function,
         // which then fires an event that calls this function.
         page.onAssignmentsChanged_({select: [], next: [], previous: []});
-        Polymer.dom.flush();
+        flush();
         await browserProxy.whenCalled('notifySwitchAccessSetupGuideAttached');
 
         const setupDialog =

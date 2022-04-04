@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.m.js';
-// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {flushTasks} from 'chrome://test/test_util.js';
-// #import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
-// clang-format on
+import {TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {flushTasks} from 'chrome://test/test_util.js';
+import {CrostiniBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
 
 suite('CrostiniExtraContainersSubpageTests', function() {
   /** @type {?SettingsCrostiniPageElement} */
@@ -33,7 +31,7 @@ suite('CrostiniExtraContainersSubpageTests', function() {
 
   setup(async function() {
     crostiniBrowserProxy = new TestCrostiniBrowserProxy();
-    settings.CrostiniBrowserProxyImpl.instance_ = crostiniBrowserProxy;
+    CrostiniBrowserProxyImpl.instance_ = crostiniBrowserProxy;
     crostiniPage = document.createElement('settings-crostini-page');
     document.body.appendChild(crostiniPage);
     testing.Test.disableAnimationsAndTransitions();
@@ -42,11 +40,11 @@ suite('CrostiniExtraContainersSubpageTests', function() {
         enabled: {value: true},
       },
     };
-    Polymer.dom.flush();
-    settings.Router.getInstance().navigateTo(
-        settings.routes.CROSTINI_EXTRA_CONTAINERS);
+    flush();
+    Router.getInstance().navigateTo(
+        routes.CROSTINI_EXTRA_CONTAINERS);
 
-    await test_util.flushTasks();
+    await flushTasks();
     subpage = crostiniPage.$$('settings-crostini-extra-containers');
     assertTrue(!!subpage);
 
@@ -64,7 +62,7 @@ suite('CrostiniExtraContainersSubpageTests', function() {
     ];
     subpage.$$('#create').click();
 
-    await test_util.flushTasks();
+    await flushTasks();
     subpage = subpage.$$('settings-crostini-create-container-dialog');
 
     containerNameInput = subpage.root.querySelector('#containerNameInput');
@@ -74,7 +72,7 @@ suite('CrostiniExtraContainersSubpageTests', function() {
 
   teardown(function() {
     crostiniPage.remove();
-    settings.Router.getInstance().resetRouteForTesting();
+    Router.getInstance().resetRouteForTesting();
   });
 
 

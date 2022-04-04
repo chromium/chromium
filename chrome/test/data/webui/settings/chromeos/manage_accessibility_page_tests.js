@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/lazy_load.js';
-
-// #import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, ManageA11yPageBrowserProxyImpl, ManageA11yPageBrowserProxy, CrSettingsPrefs, routes, Router} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {eventToPromise, waitBeforeNextRender, waitAfterNextRender} from 'chrome://test/test_util.js';
-// clang-format on
+import 'chrome://os-settings/chromeos/lazy_load.js';
+import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, routes, Router} from 'chrome://os-settings/chromeos/os_settings.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {eventToPromise, waitBeforeNextRender, waitAfterNextRender} from 'chrome://test/test_util.js';
 
 /**
  * Checks whether a given element is visible to the user.
@@ -25,7 +22,7 @@ suite('ManageAccessibilityPageTests', function() {
   let page = null;
   let deviceBrowserProxy = null;
 
-  /** @implements {settings.DevicePageBrowserProxy} */
+  /** @implements {DevicePageBrowserProxy} */
   class TestDevicePageBrowserProxy {
     constructor() {
       /** @private {boolean} */
@@ -95,7 +92,7 @@ suite('ManageAccessibilityPageTests', function() {
 
   setup(function() {
     deviceBrowserProxy = new TestDevicePageBrowserProxy();
-    settings.DevicePageBrowserProxyImpl.instance_ = deviceBrowserProxy;
+    DevicePageBrowserProxyImpl.instance_ = deviceBrowserProxy;
 
     PolymerTest.clearBody();
   });
@@ -104,7 +101,7 @@ suite('ManageAccessibilityPageTests', function() {
     if (page) {
       page.remove();
     }
-    settings.Router.getInstance().resetRouteForTesting();
+    Router.getInstance().resetRouteForTesting();
   });
 
   test('Pointers row only visible if mouse/touchpad present', function() {
@@ -135,7 +132,7 @@ suite('ManageAccessibilityPageTests', function() {
       showTabletModeShelfNavigationButtonsSettings: true,
     });
     initPage();
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(isVisible(page.$$('#shelfNavigationButtonsEnabledControl')));
   });
@@ -146,7 +143,7 @@ suite('ManageAccessibilityPageTests', function() {
       showTabletModeShelfNavigationButtonsSettings: true,
     });
     initPage();
-    Polymer.dom.flush();
+    flush();
 
     const navButtonsToggle = page.$$('#shelfNavigationButtonsEnabledControl');
     assertTrue(isVisible(navButtonsToggle));
@@ -156,7 +153,7 @@ suite('ManageAccessibilityPageTests', function() {
     // Clicking the toggle should update the toggle checked value, and the
     // backing preference.
     navButtonsToggle.click();
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(navButtonsToggle.checked);
     assertFalse(navButtonsToggle.disabled);
@@ -164,7 +161,7 @@ suite('ManageAccessibilityPageTests', function() {
         page.prefs.settings.a11y.tablet_mode_shelf_nav_buttons_enabled.value);
 
     navButtonsToggle.click();
-    Polymer.dom.flush();
+    flush();
 
     assertFalse(navButtonsToggle.checked);
     assertFalse(navButtonsToggle.disabled);
@@ -183,7 +180,7 @@ suite('ManageAccessibilityPageTests', function() {
     prefs.settings.accessibility.value = true;
 
     initPage(prefs);
-    Polymer.dom.flush();
+    flush();
 
     const navButtonsToggle = page.$$('#shelfNavigationButtonsEnabledControl');
     assertTrue(isVisible(navButtonsToggle));
@@ -195,7 +192,7 @@ suite('ManageAccessibilityPageTests', function() {
 
     // Clicking the toggle should have no effect.
     navButtonsToggle.click();
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(navButtonsToggle.disabled);
     assertTrue(navButtonsToggle.checked);
@@ -204,7 +201,7 @@ suite('ManageAccessibilityPageTests', function() {
 
     // The toggle should be enabled if the spoken feedback gets disabled.
     page.set('prefs.settings.accessibility.value', false);
-    Polymer.dom.flush();
+    flush();
 
     assertFalse(!!navButtonsToggle.disabled);
     assertFalse(navButtonsToggle.checked);
@@ -213,7 +210,7 @@ suite('ManageAccessibilityPageTests', function() {
 
     // Clicking the toggle should update the backing pref.
     navButtonsToggle.click();
-    Polymer.dom.flush();
+    flush();
 
     assertFalse(!!navButtonsToggle.disabled);
     assertTrue(navButtonsToggle.checked);
@@ -230,7 +227,7 @@ suite('ManageAccessibilityPageTests', function() {
     // Add mouse and touchpad to show some hidden settings.
     deviceBrowserProxy.hasMouse = true;
     deviceBrowserProxy.hasTouchpad = true;
-    Polymer.dom.flush();
+    flush();
 
     // Accessibility learn more link should be hidden.
     assertFalse(isVisible(page.$$('setings-localized-link')));
@@ -262,14 +259,14 @@ suite('ManageAccessibilityPageTests', function() {
 
     const params = new URLSearchParams();
     params.append('settingId', '1522');
-    settings.Router.getInstance().navigateTo(
-        settings.routes.MANAGE_ACCESSIBILITY, params);
+    Router.getInstance().navigateTo(
+        routes.MANAGE_ACCESSIBILITY, params);
 
-    Polymer.dom.flush();
+    flush();
 
     const deepLinkElement =
         page.$$('#enableSwitchAccess').shadowRoot.querySelector('cr-toggle');
-    await test_util.waitAfterNextRender(deepLinkElement);
+    await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Switch access toggle should be focused for settingId=1522.');
@@ -288,7 +285,7 @@ suite('ManageAccessibilityPageTests', function() {
       value: 'en-US',
     }];
     cr.webUIListenerCallback('dictation-locales-set', locales);
-    Polymer.dom.flush();
+    flush();
 
     // Dictation toggle.
     const dictationSetting = page.$$('#enableDictation');
@@ -312,7 +309,7 @@ suite('ManageAccessibilityPageTests', function() {
     // Fake a request to change the dictation locale menu subtitle.
     cr.webUIListenerCallback(
         'dictation-locale-menu-subtitle-changed', 'Testing');
-    Polymer.dom.flush();
+    flush();
 
     // Only the dictation locale subtitle should have changed.
     assertEquals('Enable dictation (speak to type)', dictationSetting.label);
@@ -360,7 +357,7 @@ suite('ManageAccessibilityPageTests', function() {
     ];
     cr.webUIListenerCallback('dictation-locales-set', locales);
     page.dictationLocaleSubtitleOverride_ = 'Testing';
-    Polymer.dom.flush();
+    flush();
     assertEquals(
         'English (United States) is processed locally and works offline',
         page.computeDictationLocaleSubtitle_());
@@ -393,22 +390,22 @@ suite('ManageAccessibilityPageTests', function() {
         page.computeDictationLocaleSubtitle_());
   });
 
-  [{selector: '#ttsSubpageButton', route: settings.routes.MANAGE_TTS_SETTINGS},
+  [{selector: '#ttsSubpageButton', route: routes.MANAGE_TTS_SETTINGS},
    {
      selector: '#captionsSubpageButton',
-     route: settings.routes.MANAGE_CAPTION_SETTINGS
+     route: routes.MANAGE_CAPTION_SETTINGS
    },
-   {selector: '#displaySubpageButton', route: settings.routes.DISPLAY},
-   {selector: '#keyboardSubpageButton', route: settings.routes.KEYBOARD},
-   {selector: '#pointerSubpageButton', route: settings.routes.POINTERS},
+   {selector: '#displaySubpageButton', route: routes.DISPLAY},
+   {selector: '#keyboardSubpageButton', route: routes.KEYBOARD},
+   {selector: '#pointerSubpageButton', route: routes.POINTERS},
   ].forEach(({selector, route}) => {
     test(
         `should focus ${selector} button when returning from ${
             route.path} subpage`,
         async () => {
           initPage();
-          Polymer.dom.flush();
-          const router = settings.Router.getInstance();
+          flush();
+          const router = Router.getInstance();
 
           const subpageButton = page.$$(selector);
           assertTrue(!!subpageButton);
@@ -425,7 +422,7 @@ suite('ManageAccessibilityPageTests', function() {
           await waitBeforeNextRender(page);
 
           assertEquals(
-              settings.routes.MANAGE_ACCESSIBILITY, router.getCurrentRoute());
+              routes.MANAGE_ACCESSIBILITY, router.getCurrentRoute());
           assertEquals(
               subpageButton, page.shadowRoot.activeElement,
               `${selector} should be focused`);

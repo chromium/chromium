@@ -2,44 +2,40 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {TestAboutPageBrowserProxyChromeOS} from './test_about_page_browser_proxy_chromeos.m.js';
-// #import {TestDeviceNameBrowserProxy} from './test_device_name_browser_proxy.m.js';
-// #import {BrowserChannel,UpdateStatus,Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {AboutPageBrowserProxyImpl,DeviceNameBrowserProxyImpl,DeviceNameState,LifetimeBrowserProxyImpl, SetDeviceNameResult} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {TestLifetimeBrowserProxy} from './test_os_lifetime_browser_proxy.m.js';
-// #import {eventToPromise,flushTasks,waitAfterNextRender} from 'chrome://test/test_util.js';
-// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {CrPolicyIndicatorType} from '//resources/cr_elements/policy/cr_policy_indicator_behavior.m.js';
-// clang-format on
+import {TestAboutPageBrowserProxyChromeOS} from './test_about_page_browser_proxy_chromeos.js';
+import {TestDeviceNameBrowserProxy} from './test_device_name_browser_proxy.m.js';
+import { AboutPageBrowserProxyImpl, BrowserChannel, DeviceNameBrowserProxyImpl, DeviceNameState, LifetimeBrowserProxyImpl, Router, routes, SetDeviceNameResult, UpdateStatus } from 'chrome://os-settings/chromeos/os_settings.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {TestLifetimeBrowserProxy} from './test_os_lifetime_browser_proxy.m.js';
+import {eventToPromise,flushTasks,waitAfterNextRender} from 'chrome://test/test_util.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {CrPolicyIndicatorType} from '//resources/cr_elements/policy/cr_policy_indicator_behavior.m.js';
 
-cr.define('settings_about_page', function() {
   suite('AboutPageTest', function() {
     let page = null;
 
     /** @type {?settings.TestAboutPageBrowserProxyChromeOS} */
     let aboutBrowserProxy = null;
 
-    /** @type {?settings.TestLifetimeBrowserProxy} */
+    /** @type {?TestLifetimeBrowserProxy} */
     let lifetimeBrowserProxy = null;
 
     const SPINNER_ICON = 'chrome://resources/images/throbber_small.svg';
 
     setup(function() {
-      lifetimeBrowserProxy = new settings.TestLifetimeBrowserProxy();
-      settings.LifetimeBrowserProxyImpl.setInstance(lifetimeBrowserProxy);
+      lifetimeBrowserProxy = new TestLifetimeBrowserProxy();
+      LifetimeBrowserProxyImpl.setInstance(lifetimeBrowserProxy);
 
       aboutBrowserProxy = new TestAboutPageBrowserProxyChromeOS();
-      settings.AboutPageBrowserProxyImpl.instance_ = aboutBrowserProxy;
+      AboutPageBrowserProxyImpl.instance_ = aboutBrowserProxy;
       return initNewPage();
     });
 
     teardown(function() {
       page.remove();
       page = null;
-      settings.Router.getInstance().resetRouteForTesting();
+      Router.getInstance().resetRouteForTesting();
     });
 
     /**
@@ -68,7 +64,7 @@ cr.define('settings_about_page', function() {
       lifetimeBrowserProxy.reset();
       PolymerTest.clearBody();
       page = document.createElement('os-settings-about-page');
-      settings.Router.getInstance().navigateTo(settings.routes.ABOUT);
+      Router.getInstance().navigateTo(routes.ABOUT);
       document.body.appendChild(page);
       return Promise.all([
         aboutBrowserProxy.whenCalled('getChannelInfo'),
@@ -84,10 +80,10 @@ cr.define('settings_about_page', function() {
     function navigateToSettingsPageWithId(id) {
       const params = new URLSearchParams();
       params.append('settingId', id);
-      settings.Router.getInstance().navigateTo(
-          settings.routes.ABOUT_ABOUT, params);
+      Router.getInstance().navigateTo(
+          routes.ABOUT_ABOUT, params);
 
-      Polymer.dom.flush();
+      flush();
     }
 
     /**
@@ -207,7 +203,7 @@ cr.define('settings_about_page', function() {
     test('NoInternet', function() {
       assertTrue(page.$.updateStatusMessage.hidden);
       aboutBrowserProxy.sendStatusNoInternet();
-      Polymer.dom.flush();
+      flush();
       assertFalse(page.$.updateStatusMessage.hidden);
       assertNotEquals(
           page.$.updateStatusMessage.innerHTML.includes('no internet'));
@@ -395,14 +391,14 @@ cr.define('settings_about_page', function() {
 
       const params = new URLSearchParams();
       params.append('settingId', '1703');
-      settings.Router.getInstance().navigateTo(
-          settings.routes.ABOUT_ABOUT, params);
+      Router.getInstance().navigateTo(
+          routes.ABOUT_ABOUT, params);
 
-      Polymer.dom.flush();
+      flush();
 
       const deepLinkElement = page.$$('#releaseNotesOffline')
                                   .shadowRoot.querySelector('cr-icon-button');
-      await test_util.waitAfterNextRender(deepLinkElement);
+      await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
           'Release notes should be focused for settingId=1703.');
@@ -443,7 +439,7 @@ cr.define('settings_about_page', function() {
       aboutBrowserProxy.refreshTPMFirmwareUpdateStatus();
       assertFalse(page.$.aboutTPMFirmwareUpdate.hidden);
       page.$.aboutTPMFirmwareUpdate.click();
-      await test_util.flushTasks();
+      await flushTasks();
       const dialog = page.$$('os-settings-powerwash-dialog');
       assertTrue(!!dialog);
       assertTrue(dialog.$.dialog.open);
@@ -574,7 +570,7 @@ cr.define('settings_about_page', function() {
       });
 
       await initNewPage();
-      Polymer.dom.flush();
+      flush();
 
       assertTrue(!!page.$.diagnostics);
       page.$.diagnostics.click();
@@ -587,13 +583,13 @@ cr.define('settings_about_page', function() {
       });
 
       await initNewPage();
-      Polymer.dom.flush();
+      flush();
 
       const diagnosticsId = '1707';
       navigateToSettingsPageWithId(diagnosticsId);
 
       const deepLinkElement = getDeepLinkButtonElementById('diagnostics');
-      await test_util.waitAfterNextRender(deepLinkElement);
+      await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
           `Diagnostics should be focused for settingId=${diagnosticsId}.`);
@@ -606,7 +602,7 @@ cr.define('settings_about_page', function() {
       });
 
       await initNewPage();
-      Polymer.dom.flush();
+      flush();
 
       assertTrue(!!page.$.firmwareUpdates);
       page.$.firmwareUpdates.click();
@@ -620,13 +616,13 @@ cr.define('settings_about_page', function() {
       });
 
       await initNewPage();
-      Polymer.dom.flush();
+      flush();
 
       const firmwareUpdatesId = '1709';
       navigateToSettingsPageWithId(firmwareUpdatesId);
 
       const deepLinkElement = getDeepLinkButtonElementById('firmwareUpdates');
-      await test_util.waitAfterNextRender(deepLinkElement);
+      await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
           `Firmware updates should be focused for settingId=${
@@ -662,7 +658,7 @@ cr.define('settings_about_page', function() {
     setup(function() {
       browserProxy = new TestAboutPageBrowserProxyChromeOS();
       deviceNameBrowserProxy = new TestDeviceNameBrowserProxy();
-      settings.AboutPageBrowserProxyImpl.instance_ = browserProxy;
+      AboutPageBrowserProxyImpl.instance_ = browserProxy;
       DeviceNameBrowserProxyImpl.instance_ = deviceNameBrowserProxy;
       PolymerTest.clearBody();
     });
@@ -670,7 +666,7 @@ cr.define('settings_about_page', function() {
     teardown(function() {
       page.remove();
       page = null;
-      settings.Router.getInstance().resetRouteForTesting();
+      Router.getInstance().resetRouteForTesting();
     });
 
     test('Initialization', async () => {
@@ -698,7 +694,7 @@ cr.define('settings_about_page', function() {
       page = document.createElement('settings-detailed-build-info');
       document.body.appendChild(page);
       await browserProxy.whenCalled('canChangeChannel');
-      await test_util.waitAfterNextRender(page);
+      await waitAfterNextRender(page);
 
       const changeChannelButton = page.$$('cr-button');
       assertTrue(!!changeChannelButton);
@@ -723,7 +719,7 @@ cr.define('settings_about_page', function() {
       page = document.createElement('settings-detailed-build-info');
       document.body.appendChild(page);
       await browserProxy.whenCalled('canChangeChannel');
-      await test_util.waitAfterNextRender(page);
+      await waitAfterNextRender(page);
 
       const policyIndicator = page.$$('#changeChannelPolicyIndicator');
       assertEquals(!policyIndicator, canChangeChannel);
@@ -804,13 +800,13 @@ cr.define('settings_about_page', function() {
 
       const params = new URLSearchParams();
       params.append('settingId', '1700');
-      settings.Router.getInstance().navigateTo(
-          settings.routes.DETAILED_BUILD_INFO, params);
+      Router.getInstance().navigateTo(
+          routes.DETAILED_BUILD_INFO, params);
 
-      Polymer.dom.flush();
+      flush();
 
       const deepLinkElement = page.$$('cr-button');
-      await test_util.waitAfterNextRender(deepLinkElement);
+      await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
           'Change channel button should be focused for settingId=1700.');
@@ -857,20 +853,20 @@ cr.define('settings_about_page', function() {
 
       const params = new URLSearchParams();
       params.append('settingId', '1708');
-      settings.Router.getInstance().navigateTo(
-          settings.routes.DETAILED_BUILD_INFO, params);
+      Router.getInstance().navigateTo(
+          routes.DETAILED_BUILD_INFO, params);
 
-      Polymer.dom.flush();
+      flush();
 
       const deepLinkElement = page.$$('cr-icon-button');
-      await test_util.waitAfterNextRender(deepLinkElement);
+      await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
           'Change device name button should be focused for settingId=1708.');
     });
 
     function flushAsync() {
-      Polymer.dom.flush();
+      flush();
       // Use setTimeout to wait for the next macrotask.
       return new Promise(resolve => setTimeout(resolve));
     }
@@ -957,11 +953,11 @@ cr.define('settings_about_page', function() {
     teardown(function() {
       dialog.remove();
       dialog = null;
-      settings.Router.getInstance().resetRouteForTesting();
+      Router.getInstance().resetRouteForTesting();
     });
 
     function flushAsync() {
-      Polymer.dom.flush();
+      flush();
       // Use setTimeout to wait for the next macrotask.
       return new Promise(resolve => setTimeout(resolve));
     }
@@ -978,14 +974,14 @@ cr.define('settings_about_page', function() {
       const editHostnameButton = page.$$('#editHostnameButton');
       assertTrue(!!editHostnameButton);
       editHostnameButton.click();
-      Polymer.dom.flush();
+      flush();
 
       dialog = page.$$('edit-hostname-dialog');
       assertTrue(!!dialog);
       assertTrue(dialog.$.dialog.open);
 
       dialog.$$('#cancel').click();
-      Polymer.dom.flush();
+      flush();
       assertFalse(dialog.$.dialog.open);
     });
 
@@ -1132,7 +1128,7 @@ cr.define('settings_about_page', function() {
           SetDeviceNameResult.UPDATE_SUCCESSFUL);
       dialog.$$('#deviceName').value = 'TestName';
       dialog.$$('#done').click();
-      Polymer.dom.flush();
+      flush();
 
       await deviceNameBrowserProxy.whenCalled('attemptSetDeviceName');
       assertEquals(deviceNameBrowserProxy.getDeviceName(), 'TestName');
@@ -1150,7 +1146,7 @@ cr.define('settings_about_page', function() {
       currentChannel = BrowserChannel.BETA;
       browserProxy = new TestAboutPageBrowserProxyChromeOS();
       browserProxy.setChannels(currentChannel, currentChannel);
-      settings.AboutPageBrowserProxyImpl.instance_ = browserProxy;
+      AboutPageBrowserProxyImpl.instance_ = browserProxy;
       PolymerTest.clearBody();
       dialog = document.createElement('settings-channel-switcher-dialog');
       document.body.appendChild(dialog);
@@ -1186,7 +1182,7 @@ cr.define('settings_about_page', function() {
     test('ChangeChannel_LessStable', async () => {
       assertEquals(BrowserChannel.DEV, radioButtons.item(2).name);
       radioButtons.item(2).click();
-      Polymer.dom.flush();
+      flush();
 
       await browserProxy.whenCalled('getChannelInfo');
       assertEquals(dialog.$.warningSelector.selected, 2);
@@ -1195,7 +1191,7 @@ cr.define('settings_about_page', function() {
       assertFalse(dialog.$.changeChannel.hidden);
 
       const whenTargetChannelChangedFired =
-          test_util.eventToPromise('target-channel-changed', dialog);
+          eventToPromise('target-channel-changed', dialog);
 
       dialog.$.changeChannel.click();
       const [channel, isPowerwashAllowed] =
@@ -1210,7 +1206,7 @@ cr.define('settings_about_page', function() {
     test('ChangeChannel_MoreStable', async () => {
       assertEquals(BrowserChannel.STABLE, radioButtons.item(0).name);
       radioButtons.item(0).click();
-      Polymer.dom.flush();
+      flush();
 
       await browserProxy.whenCalled('getChannelInfo');
       assertEquals(dialog.$.warningSelector.selected, 1);
@@ -1220,7 +1216,7 @@ cr.define('settings_about_page', function() {
       assertTrue(dialog.$.changeChannel.hidden);
 
       const whenTargetChannelChangedFired =
-          test_util.eventToPromise('target-channel-changed', dialog);
+          eventToPromise('target-channel-changed', dialog);
 
       dialog.$.changeChannelAndPowerwash.click();
       const [channel, isPowerwashAllowed] =
@@ -1238,7 +1234,7 @@ cr.define('settings_about_page', function() {
 
     setup(function() {
       browserProxy = new TestAboutPageBrowserProxyChromeOS();
-      settings.AboutPageBrowserProxyImpl.instance_ = browserProxy;
+      AboutPageBrowserProxyImpl.instance_ = browserProxy;
       PolymerTest.clearBody();
       page = document.createElement('os-settings-about-page');
       document.body.appendChild(page);
@@ -1247,7 +1243,7 @@ cr.define('settings_about_page', function() {
     teardown(function() {
       page.remove();
       page = null;
-      settings.Router.getInstance().resetRouteForTesting();
+      Router.getInstance().resetRouteForTesting();
     });
 
     test('ReportAnIssue', function() {
@@ -1263,14 +1259,14 @@ cr.define('settings_about_page', function() {
 
       const params = new URLSearchParams();
       params.append('settingId', '1705');
-      settings.Router.getInstance().navigateTo(
-          settings.routes.ABOUT_ABOUT, params);
+      Router.getInstance().navigateTo(
+          routes.ABOUT_ABOUT, params);
 
-      Polymer.dom.flush();
+      flush();
 
       const deepLinkElement =
           page.$$('#reportIssue').shadowRoot.querySelector('cr-icon-button');
-      await test_util.waitAfterNextRender(deepLinkElement);
+      await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
           'Report an issue button should be focused for settingId=1705.');
@@ -1283,19 +1279,15 @@ cr.define('settings_about_page', function() {
 
       const params = new URLSearchParams();
       params.append('settingId', '1706');
-      settings.Router.getInstance().navigateTo(
-          settings.routes.ABOUT_ABOUT, params);
+      Router.getInstance().navigateTo(
+          routes.ABOUT_ABOUT, params);
 
-      Polymer.dom.flush();
+      flush();
 
       const deepLinkElement = page.$$('#aboutProductTos');
-      await test_util.waitAfterNextRender(deepLinkElement);
+      await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
           'Terms of service link should be focused for settingId=1706.');
     });
   });
-
-  // #cr_define_end
-  return {};
-});

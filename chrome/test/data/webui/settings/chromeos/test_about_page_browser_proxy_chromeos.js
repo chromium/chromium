@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
-// #import {BrowserChannel,UpdateStatus} from 'chrome://os-settings/chromeos/os_settings.js';
-// clang-format on
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
+import {BrowserChannel,UpdateStatus} from 'chrome://os-settings/chromeos/os_settings.js';
 
-/** @implements {settings.AboutPageBrowserProxy} */
-/* #export */ class TestAboutPageBrowserProxyChromeOS extends TestBrowserProxy {
+/** @implements {AboutPageBrowserProxy} */
+export class TestAboutPageBrowserProxyChromeOS extends TestBrowserProxy {
   constructor() {
     super([
       'pageReady',

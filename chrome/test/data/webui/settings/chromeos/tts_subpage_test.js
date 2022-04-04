@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/lazy_load.js';
+import 'chrome://os-settings/chromeos/lazy_load.js';
 
-// #import {assertTrue, assertEquals} from '../../chai_assert.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format on
+import {assertTrue, assertEquals} from '../../chai_assert.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('TtsSubpage', function() {
   /** @type {!TtsSubpageElement|undefined} */
@@ -16,7 +14,7 @@ suite('TtsSubpage', function() {
   setup(function() {
     ttsSubpage = document.createElement('settings-tts-subpage');
     document.body.appendChild(ttsSubpage);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('Preview Voice Select Options', function() {
@@ -40,7 +38,7 @@ suite('TtsSubpage', function() {
       {id: 'B', displayLanguage: 'Goa\'uld', name: 'Star Gate'},
       {id: 'C', displayLanguage: 'Dothraki', name: 'Game of Thrones'},
     ]);
-    Polymer.dom.flush();
+    flush();
 
     const previewVoice = ttsSubpage.$.previewVoice;
     assertTrue(!!previewVoice);

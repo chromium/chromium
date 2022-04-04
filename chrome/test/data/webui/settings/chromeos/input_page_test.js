@@ -14,8 +14,8 @@ import {fakeDataBind} from '../../test_util.js';
 
 import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
 import {FakeSettingsPrivate} from './fake_settings_private.js';
-import {TestLanguagesBrowserProxy} from './test_os_languages_browser_proxy.m.js';
-import {TestLanguagesMetricsProxy} from './test_os_languages_metrics_proxy.m.js';
+import {TestLanguagesBrowserProxy} from './test_os_languages_browser_proxy.js';
+import {TestLanguagesMetricsProxy} from './test_os_languages_metrics_proxy.js';
 
 suite('input page', () => {
   /** @type {!SettingsInputPageElement} */
