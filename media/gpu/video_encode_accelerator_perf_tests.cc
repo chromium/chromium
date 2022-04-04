@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <iomanip>
+#include <iostream>
 #include <map>
 #include <numeric>
 #include <vector>
@@ -318,7 +320,11 @@ struct BitstreamQualityMetrics {
                           const SSIMVideoFrameValidator* const ssim_validator,
                           const absl::optional<size_t>& spatial_idx,
                           const absl::optional<size_t>& temporal_idx);
-  void Output();
+
+  void Output(uint32_t target_bitrate, uint32_t actual_bitrate);
+
+  absl::optional<size_t> spatial_idx;
+  absl::optional<size_t> temporal_idx;
 
  private:
   struct QualityStats {
@@ -336,15 +342,19 @@ struct BitstreamQualityMetrics {
   static QualityStats ComputeQualityStats(
       const std::map<size_t, double>& values);
 
-  void WriteToConsole() const;
-  void WriteToFile() const;
+  void WriteToConsole(const std::string& svc_text,
+                      const BitstreamQualityMetrics::QualityStats& psnr_stats,
+                      const BitstreamQualityMetrics::QualityStats& ssim_stats,
+                      uint32_t target_bitrate,
+                      uint32_t actual_bitrate) const;
+  void WriteToFile(const std::string& svc_text,
+                   const BitstreamQualityMetrics::QualityStats& psnr_stats,
+                   const BitstreamQualityMetrics::QualityStats& ssim_stats,
+                   uint32_t target_bitrate,
+                   uint32_t actual_bitrate) const;
 
-  std::string svc_text;
   const PSNRVideoFrameValidator* const psnr_validator;
   const SSIMVideoFrameValidator* const ssim_validator;
-
-  QualityStats psnr_stats;
-  QualityStats ssim_stats;
 };
 
 BitstreamQualityMetrics::BitstreamQualityMetrics(
@@ -352,12 +362,10 @@ BitstreamQualityMetrics::BitstreamQualityMetrics(
     const SSIMVideoFrameValidator* const ssim_validator,
     const absl::optional<size_t>& spatial_idx,
     const absl::optional<size_t>& temporal_idx)
-    : psnr_validator(psnr_validator), ssim_validator(ssim_validator) {
-  if (spatial_idx)
-    svc_text += "L" + base::NumberToString(*spatial_idx + 1);
-  if (temporal_idx)
-    svc_text += "T" + base::NumberToString(*temporal_idx + 1);
-}
+    : spatial_idx(spatial_idx),
+      temporal_idx(temporal_idx),
+      psnr_validator(psnr_validator),
+      ssim_validator(ssim_validator) {}
 
 // static
 BitstreamQualityMetrics::QualityStats
@@ -387,15 +395,36 @@ BitstreamQualityMetrics::ComputeQualityStats(
   return stats;
 }
 
-void BitstreamQualityMetrics::Output() {
-  psnr_stats = ComputeQualityStats(psnr_validator->GetPSNRValues());
-  ssim_stats = ComputeQualityStats(ssim_validator->GetSSIMValues());
-  WriteToConsole();
-  WriteToFile();
+void BitstreamQualityMetrics::Output(uint32_t target_bitrate,
+                                     uint32_t actual_bitrate) {
+  std::string svc_text;
+  if (spatial_idx)
+    svc_text += "L" + base::NumberToString(*spatial_idx + 1);
+  if (temporal_idx)
+    svc_text += "T" + base::NumberToString(*temporal_idx + 1);
+
+  auto psnr_stats = ComputeQualityStats(psnr_validator->GetPSNRValues());
+  auto ssim_stats = ComputeQualityStats(ssim_validator->GetSSIMValues());
+
+  WriteToConsole(svc_text, psnr_stats, ssim_stats, target_bitrate,
+                 actual_bitrate);
+  WriteToFile(svc_text, psnr_stats, ssim_stats, target_bitrate, actual_bitrate);
 }
 
-void BitstreamQualityMetrics::WriteToConsole() const {
+void BitstreamQualityMetrics::WriteToConsole(
+    const std::string& svc_text,
+    const BitstreamQualityMetrics::QualityStats& psnr_stats,
+    const BitstreamQualityMetrics::QualityStats& ssim_stats,
+    uint32_t target_bitrate,
+    uint32_t actual_bitrate) const {
+  const auto default_ssize = std::cout.precision();
   std::cout << "[ Result " << svc_text << "]" << std::endl;
+  std::cout << "Bitrate: " << actual_bitrate << std::endl;
+  std::cout << "Bitrate deviation: " << std::fixed << std::setprecision(2)
+            << (actual_bitrate * 100.0 / target_bitrate) - 100.0 << " %"
+            << std::endl;
+
+  std::cout << std::fixed << std::setprecision(4);
   std::cout << "SSIM - average:       " << ssim_stats.avg << std::endl;
   std::cout << "SSIM - percentile 25: " << ssim_stats.percentile_25
             << std::endl;
@@ -410,9 +439,15 @@ void BitstreamQualityMetrics::WriteToConsole() const {
             << std::endl;
   std::cout << "PSNR - percentile 75: " << psnr_stats.percentile_75
             << std::endl;
+  std::cout.precision(default_ssize);
 }
 
-void BitstreamQualityMetrics::WriteToFile() const {
+void BitstreamQualityMetrics::WriteToFile(
+    const std::string& svc_text,
+    const BitstreamQualityMetrics::QualityStats& psnr_stats,
+    const BitstreamQualityMetrics::QualityStats& ssim_stats,
+    uint32_t target_bitrate,
+    uint32_t actual_bitrate) const {
   base::FilePath output_folder_path = base::FilePath(g_env->OutputFolder());
   if (!DirectoryExists(output_folder_path))
     base::CreateDirectory(output_folder_path);
@@ -421,14 +456,13 @@ void BitstreamQualityMetrics::WriteToFile() const {
   base::Value metrics(base::Value::Type::DICTIONARY);
   if (!svc_text.empty())
     metrics.SetKey("SVC", base::Value(svc_text));
+  metrics.SetKey("Bitrate",
+                 base::Value(base::checked_cast<int>(actual_bitrate)));
+  metrics.SetKey(
+      "Bitrate deviation",
+      base::Value((actual_bitrate * 100.0 / target_bitrate) - 100.0));
   metrics.SetKey("SSIMAverage", base::Value(ssim_stats.avg));
-  metrics.SetKey("SSIMPercentile25", base::Value(ssim_stats.percentile_25));
-  metrics.SetKey("SSIMPercentile50", base::Value(ssim_stats.percentile_50));
-  metrics.SetKey("SSIMPercentile75", base::Value(psnr_stats.percentile_75));
   metrics.SetKey("PSNRAverage", base::Value(psnr_stats.avg));
-  metrics.SetKey("PSNRPercentile25", base::Value(psnr_stats.percentile_25));
-  metrics.SetKey("PSNRPercentile50", base::Value(psnr_stats.percentile_50));
-  metrics.SetKey("PSNRPercentile75", base::Value(psnr_stats.percentile_75));
   // Write ssim values bitstream delivery times to json.
   base::Value ssim_values(base::Value::Type::LIST);
   for (double value : ssim_stats.values_in_order)
@@ -664,8 +698,24 @@ TEST_F(VideoEncoderTest, MeasureProducedBitstreamQuality) {
   EXPECT_EQ(encoder->GetFrameReleasedCount(), kNumFramesToEncodeForPerformance);
   EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
 
-  for (auto& metrics : quality_metrics_)
-    metrics.Output();
+  const VideoEncoderStats stats = encoder->GetStats();
+  for (auto& metrics : quality_metrics_) {
+    absl::optional<size_t> spatial_idx = metrics.spatial_idx;
+    absl::optional<size_t> temporal_idx = metrics.temporal_idx;
+    uint32_t target_bitrate = 0;
+    uint32_t actual_bitrate = 0;
+    if (!spatial_idx && !temporal_idx) {
+      target_bitrate = g_env->Bitrate().GetSumBps();
+      actual_bitrate = stats.Bitrate();
+    } else {
+      CHECK(spatial_idx && temporal_idx);
+      target_bitrate =
+          g_env->Bitrate().GetBitrateBps(*spatial_idx, *temporal_idx);
+      actual_bitrate = stats.LayerBitrate(*spatial_idx, *temporal_idx);
+    }
+
+    metrics.Output(target_bitrate, actual_bitrate);
+  }
 }
 
 // TODO(b/211783279) The |performance_evaluator_| only keeps track of the last
