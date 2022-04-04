@@ -6,7 +6,11 @@ import("//build/config/ui.gni")
 
 declare_args() {
   # Optional system library.
-  use_xkbcommon = use_ozone && (is_linux || is_chromeos) && !is_chromecast
+  use_xkbcommon =
+      use_ozone && (is_linux || is_chromeos) && !is_chromecast &&
+      # Avoid needing the 32-bit version of this library when Android is
+      # building things via secondary toolchains.
+      target_os != "android"
 
   # Whether the platform provides a native accessibility toolkit, in other words
   # the platform has a C/C++ interface for accessibility that Chrome
