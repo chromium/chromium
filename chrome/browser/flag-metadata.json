@@ -223,7 +223,7 @@
   {
     "name": "arc-keyboard-shortcut-helper-integration",
     "owners": [ "yhanada", "mduggan" ],
-    "expiry_milestone": 101
+    "expiry_milestone": 108
   },
   {
     "name": "arc-mouse-wheel-smooth-scroll",
