@@ -212,7 +212,7 @@ void SuggestionView::SetSuggestionText(const std::u16string& text,
   views::StyledLabel::RangeStyleInfo suggestion_style;
   suggestion_style.custom_font = kSuggestionFont;
   suggestion_style.override_color =
-      ResolveSemanticColor(cros_styles::ColorName::kTextColorDisabled);
+      ResolveSemanticColor(cros_styles::ColorName::kTextColorSecondary);
   suggestion_label_->AddStyleRange(gfx::Range(confirmed_length, text.length()),
                                    suggestion_style);
 
