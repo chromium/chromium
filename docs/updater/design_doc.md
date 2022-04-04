@@ -6,36 +6,155 @@ This is the design document for [Chromium Updater](https://source.chromium.org/c
 
 ## Objective
 The objective is to create an updater for desktop client software using Chromium
-code and tools.
+code and tools. The updater is an open-source drop-in replacement for Google
+Update/Omaha and can be customized by 3rd party embedders for updating
+non-Google client software.
 
-## Elevation on Windows when a system application installer is executed
+The desktop platforms include Windows, macOS, Linux.
 
-`UpdaterSetup.exe`, also known as the metainstaller, is typically downloaded
-from the Internet and run by the user from a web browser. When this
-metainstaller is executed, the browser launches it at
+## Overview
+The updater is responsible for:
+*   Installing applications. (On applicable platforms.)
+*   Automatically and silently keeping those applications (and itself)
+    up-to-date.
+*   Providing those applications with services to manage their installation.
+*   Providing update servers with anonymous telemetry about those applications.
+*   Detecting the uninstallation of those applications, and automatically
+    removing itself when all other applications have been uninstalled.
+
+The behavior of the updater is mostly platform-independent. However, platform-
+specific modules exist to translate cross-platform concepts (such as IPC
+interfaces) to platform-specific technologies (such as COM or XPC).
+Additionally, some updater behavior related to installs and uninstalls are
+tailored to platform conventions.
+
+The updater is layered atop //components/update\_client, which implements a
+cross-platform mechanism to interact with an Omaha server for the purpose of
+updating CRXs. //components/update\_client is also used by the component and
+extension updaters in Chrome.
+
+To keep applications up-to-date, the updater periodically polls an Omaha server,
+communicating the state of installed applications, and receiving update
+instructions. It applies updates the server instructs it to, and then reports
+the results of the operation back to Omaha servers.
+
+## Detailed Design
+Once installed, the updater operates as a collection of processes that are
+launched on-demand and orchestrate their operations over IPC. The *server
+process* hosts an engine that conducts most of the work of updating software,
+and it is driven by *client processes* that issue commands to it and potentially
+display UI to the user.
+
+The updater may be installed *per-user* or *system-wide*. If installed per-user,
+the updater can only update applications owned by that user, whereas a system-
+wide updater can update applications owned by any entity on the system. In
+multi-user systems, it is efficient for software such as the browser to be
+installed system-wide, owned by root (or the system user) and run by individual
+users, but this requires the updater to maintain root privileges in order to
+update it. Therefore, in a system-wide installation, the server process runs as
+root (or at high integrity). A system-wide installation of the updater and any
+number of per-user installations of the updater can coexist and operate
+independently on the same system.
+
+Different versions of the updater can coexist even within the same installation
+of the updater, but only one such instance is *active*. Inactive versions of the
+updater periodically attempt to *qualify* themselves by running self-tests and
+(if they pass) take over as the active updater; or uninstall themselves as out
+of date once a newer version of the updater has activated.
+
+The functionality of the server process is split into two interfaces:
+*   UpdateService, which is served only by the active instance and may be called
+    by any client. When an instance activates, it replaces IPC registrations so
+    that UpdateService routes to it.
+*   UpdateServiceInternal, which is served by all instances but may only be
+    called by updater clients of the same version.
+
+Where necessary, the updater acquires a single cross-process lock to prevent
+races between activations and ongoing update operations.
+
+### Installing the Updater
+Instances of the updater are installed in one of the following ways:
+*   A user runs an installer for the updater with the intent of installing an
+    application. The updater will install itself, and then use itself to install
+    the application. (This is the primary flow on Windows.)
+*   An application installs the updater as part of its own installation,
+    first-run experience, or repair/recovery. (This is the primary flow on
+    macOS.)
+*   The updater downloads an update for itself and installs it.
+
+#### Updater Installer Types
+The updater is distributed via the following installer types:
+*   Online Installers
+*   Offline Installers
+
+##### Online Installers
+An online installer installs the updater and then acts as a client process and
+commands the server process to install the application the user desired.
+
+Online installers are composed of three parts: a *tag*, a *metainstaller*, and
+an *updater resource*. The metainstaller is a lightweight executable that
+uncompresses its updater resource into a safe temporary directory and then 
+launches the updater's setup client process (`--install`). It passes along the
+tag, an unsigned (and untrusted) piece of data that is embedded in the
+executable which communicates the installation parameters for the software the
+user is trying to install.
+
+###### Tagging
+TODO(crbug.com/1035895): Document tagging format, process, contents.
+
+###### Updater Resource Extraction
+TODO(crbug.com/1035895): Document updater resource compression.
+
+Online installers are typically run by the end user after being downloaded from
+the Internet. When the installer is executed, the OS launches it at
 [medium integrity](https://docs.microsoft.com/en-us/windows/win32/secauthz/mandatory-integrity-control).
-In order to be able to install a system application (i.e., an application
-installed for all users on the system), this metainstaller needs to run with
-administrative privileges.
 
-To achieve this, the metainstaller detects this condition (running at medium but
-trying to install a system app) early on, and re-launches itself at high
-integrity. This will result in an
+However, depending on the tag, the updater and application may need to be
+installed system-wide. To achieve this, the metainstaller must re-launch itself
+at high integrity. This will result in an
 [UAC prompt](https://docs.microsoft.com/en-us/windows/security/identity-protection/user-account-control/how-user-account-control-works)
 on Windows.
 
-The process flow looks like this:
+The metainstaller determines whether to relaunch before unpacking the updater
+resources, since unpacking to a user-writable temp directory is not secure for
+a system-wide installation.
 
-```
-UpdaterSetup
-  -> Detects the need for elevation
-    -> Elevates UpdaterSetup and add `--expect-elevated` switch
-      -> UpdaterSetup installs the updater and application to %ProgramFiles%
-```
+The metainstaller appends the `--expect-elevated` switch to the relaunch command
+line, to allow the relaunched process to exit with an error if it is not running
+at the correct integrity level.
 
-## Dynamic Install Parameters
+##### Offline Installers
+TODO(crbug.com/1035895): Document the standalone installer.
 
-### `installdataindex`
+TODO(crbug.com/1035895): Document bundling the updater with apps.
+
+#### Activation
+TODO(crbug.com/1035895): Add the state flowchart.
+
+Instances are installed in the `Unqualified` state. Whenever an instance’s
+server starts up, it checks whether it should transition to a new state. Only
+the server instance in the `Active` state is permitted to make changes to the
+various applications managed by the updater. When an updater enters the
+`Active` state, previously active updaters will discover when they next start
+up that they should transition out of the `Active` state and uninstall
+themselves.
+
+TODO(crbug.com/1035895): Add the mode check algorithm.
+
+### Installing Applications
+TODO(crbug.com/1035895): Describe app installs.
+
+TODO(crbug.com/1035895): Describe installer APIs (per platform).
+
+TODO(crbug.com/1035895): Document UI, accessibility, internationalization.
+
+TODO(crbug.com/1035895): Document relevant enterprise policies.
+
+TODO(crbug.com/1035895): Document registration API.
+
+#### Dynamic Install Parameters
+
+##### `installdataindex`
 
 `installdataindex` is one of the install parameters that can be specified for
 first installs on the command line or via the
@@ -187,3 +306,81 @@ passed to the installer: `--installerdata="pathtofile"`.
 The updater will not delete this file.
 * This installerdata is not persisted anywhere else, and it is not sent as a
 part of pings to the update server.
+
+### Updating Applications
+TODO(crbug.com/1035895): Document scheduler.
+
+TODO(crbug.com/1035895): Document differential updates.
+
+TODO(crbug.com/1035895): Document recovery.
+
+TODO(crbug.com/1035895): Document actives API & user count telemetry.
+
+TODO(crbug.com/1035895): Document relevant enterprise policies.
+
+TODO(crbug.com/1035895): Document ticket promotion (macOS).
+
+TODO(crbug.com/1035895): Document usage-stats opt-in.
+
+TODO(crbug.com/1035895): Document EULA/ToS acceptance.
+
+### Uninstalling Applications
+TODO(crbug.com/1035895): Document uninstallation API.
+
+TODO(crbug.com/1035895): Document file-based existence checker on macOS.
+
+TODO(crbug.com/1035895): Document registry-based existence checker on Windows.
+
+TODO(crbug.com/1035895): Document updater uninstallation.
+
+### Advanced Topics
+
+#### State
+TODO(crbug.com/1035895): Document prefs (global & local).
+
+TODO(crbug.com/1035895): Document usage of registry on Windows.
+
+TODO(crbug.com/1035895): Document usage of Keystone tickets on macOS.
+
+#### IPC
+TODO(crbug.com/1035895): Document COM.
+
+TODO(crbug.com/1035895): Document XPC.
+
+TODO(crbug.com/1035895): Document any IPC fallbacks that exist.
+
+#### Network
+TODO(crbug.com/1035895): Document network stack (per platform).
+
+TODO(crbug.com/1035895): Document CUP.
+
+TODO(crbug.com/1035895): Document anti-DoS headers.
+
+TODO(crbug.com/1035895): Document X-Retry-After behavior.
+
+TODO(crbug.com/1035895): Document proxy behavior.
+
+## Testing
+TODO(crbug.com/1035895): Document testing strategies, framework.
+
+TODO(crbug.com/1035895): Document test build.
+
+TODO(crbug.com/1035895): Document external constants override.
+
+TODO(crbug.com/1035895): Document builders & test machines.
+
+TODO(crbug.com/1035895): Document old updater in third\_party.
+
+TODO(crbug.com/1035895): Document manual testing tools.
+
+## Release
+TODO(crbug.com/1035895): Document build.
+
+TODO(crbug.com/1035895): Document signing.
+
+TODO(crbug.com/1035895): Document branching & versioning.
+
+TODO(crbug.com/1035895): Document A/B release qualification process.
+
+## Tools
+TODO(crbug.com/1035895): Document tagger.
