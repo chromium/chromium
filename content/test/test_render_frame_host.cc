@@ -257,8 +257,9 @@ TestRenderFrameHost* TestRenderFrameHost::AppendFencedFrame(
     blink::mojom::FencedFrameMode mode) {
   fenced_frames_.push_back(
       std::make_unique<FencedFrame>(weak_ptr_factory_.GetSafeRef(), mode));
-  return static_cast<TestRenderFrameHost*>(
-      fenced_frames_.back().get()->GetInnerRoot());
+  FencedFrame* fenced_frame = fenced_frames_.back().get();
+  fenced_frame->CreateProxyAndAttachToOuterFrameTree();
+  return static_cast<TestRenderFrameHost*>(fenced_frame->GetInnerRoot());
 }
 
 void TestRenderFrameHost::SendNavigate(int nav_entry_id,

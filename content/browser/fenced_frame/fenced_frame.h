@@ -44,6 +44,11 @@ class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
     receiver_.Bind(std::move(receiver));
   }
 
+  // Called when a fenced frame is created from a synchronous IPC from the
+  // renderer. This creates a proxy to the main frame of the inner `FrameTree`,
+  // for use by the embedding RenderFrameHostImpl.
+  void CreateProxyAndAttachToOuterFrameTree();
+
   // blink::mojom::FencedFrameOwnerHost implementation.
   void Navigate(const GURL& url,
                 base::TimeTicks navigation_start_time) override;
@@ -83,11 +88,6 @@ class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
   bool ShouldPreserveAbortedURLs() override;
   WebContents* DeprecatedGetWebContents() override;
   void UpdateOverridingUserAgent() override;
-
-  // Called when a fenced frame is created from a synchronous IPC from the
-  // renderer. This creates a proxy to the main frame of the inner `FrameTree`,
-  // for use by the embedding RenderFrameHostImpl.
-  void CreateProxyAndAttachToOuterFrameTree();
 
   const raw_ptr<WebContentsImpl> web_contents_;
 

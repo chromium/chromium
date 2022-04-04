@@ -7259,9 +7259,22 @@ void RenderFrameHostImpl::CreateFencedFrame(
                             base::UnguessableToken::Create());
     return;
   }
+  // A fenced frame embedded in another fenced frame cannot have a different
+  // mode than its embedder. This is checked in the renderer, but needs
+  // verification in the browser in case the renderer is compromised.
+  if (GetMainFrame()->IsFencedFrameRoot() &&
+      GetMainFrame()->frame_tree_node()->GetFencedFrameMode() != mode) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(), bad_message::FF_DIFFERENT_MODE_THAN_EMBEDDER);
+    std::move(callback).Run(0, blink::mojom::FrameReplicationState::New(),
+                            blink::RemoteFrameToken(),
+                            base::UnguessableToken::Create());
+    return;
+  }
   fenced_frames_.push_back(
       std::make_unique<FencedFrame>(weak_ptr_factory_.GetSafeRef(), mode));
   FencedFrame* fenced_frame = fenced_frames_.back().get();
+  fenced_frame->CreateProxyAndAttachToOuterFrameTree();
   fenced_frame->Bind(std::move(pending_receiver));
 
   RenderFrameProxyHost* proxy_host = fenced_frame->GetProxyToInnerMainFrame();

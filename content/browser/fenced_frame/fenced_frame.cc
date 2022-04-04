@@ -72,10 +72,6 @@ FencedFrame::FencedFrame(
   web_contents_->NotifySwappedFromRenderManager(
       /*old_frame=*/nullptr,
       frame_tree_->root()->render_manager()->current_frame_host());
-
-  CreateProxyAndAttachToOuterFrameTree();
-
-  devtools_instrumentation::FencedFrameCreated(owner_render_frame_host_, this);
 }
 
 FencedFrame::~FencedFrame() {
@@ -195,6 +191,8 @@ void FencedFrame::CreateProxyAndAttachToOuterFrameTree() {
   CHECK(child_rwhv->IsRenderWidgetHostViewChildFrame());
   inner_render_manager->SetRWHViewForInnerFrameTree(
       static_cast<RenderWidgetHostViewChildFrame*>(child_rwhv));
+
+  devtools_instrumentation::FencedFrameCreated(owner_render_frame_host_, this);
 }
 
 const base::UnguessableToken& FencedFrame::GetDevToolsFrameToken() const {

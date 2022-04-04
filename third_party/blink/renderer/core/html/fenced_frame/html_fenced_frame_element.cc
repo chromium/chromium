@@ -57,6 +57,50 @@ String FencedFrameModeToString(mojom::blink::FencedFrameMode mode) {
   return "";
 }
 
+bool HasDifferentModeThanParent(HTMLFencedFrameElement& outer_element) {
+  mojom::blink::FencedFrameMode current_mode = outer_element.GetMode();
+
+  if (features::kFencedFramesImplementationTypeParam.Get() ==
+      features::FencedFramesImplementationType::kShadowDOM) {
+    // ShadowDOM check.
+    if (Frame* ancestor = outer_element.GetDocument().GetFrame()) {
+      // This loop is only relevant for fenced frames based on ShadowDOM, since
+      // it has to do with the `FramePolicy::is_fenced` bit. We have to keep
+      // traversing up the tree to see if we ever come across a fenced frame of
+      // another mode. In that case, we stop `this` frame from being fully
+      // created, since nested fenced frames of differing modes are not allowed.
+      while (ancestor && ancestor->Owner()) {
+        bool is_ancestor_fenced = ancestor->Owner()->GetFramePolicy().is_fenced;
+        // Note that this variable is only meaningful if `is_ancestor_fenced`
+        // above is true.
+        mojom::blink::FencedFrameMode ancestor_mode =
+            ancestor->Owner()->GetFramePolicy().fenced_frame_mode;
+
+        if (is_ancestor_fenced && ancestor_mode != current_mode) {
+          return true;
+        }
+
+        // If this loop found a fenced ancestor whose mode is compatible with
+        // `current_mode`, it is not necessary to look further up the ancestor
+        // chain. This is because this loop already ran during the creation of
+        // the compatible fenced ancestor, so it is guaranteed that the rest of
+        // the ancestor chain has already been checked and approved for
+        // compatibility.
+        if (is_ancestor_fenced && ancestor_mode == current_mode) {
+          return false;
+        }
+
+        ancestor = ancestor->Tree().Parent();
+      }
+    }
+    return false;
+  }
+  // MPArch check.
+  Page* ancestor_page = outer_element.GetDocument().GetFrame()->GetPage();
+  return ancestor_page->IsMainFrameFencedFrameRoot() &&
+         ancestor_page->FencedFrameMode() != current_mode;
+}
+
 }  // namespace
 
 HTMLFencedFrameElement::HTMLFencedFrameElement(Document& document)
@@ -162,44 +206,27 @@ HTMLFencedFrameElement::FencedFrameDelegate::Create(
   // We must be connected at this point due to the isConnected check at the top
   // of this function.
   DCHECK(outer_element->GetDocument().GetFrame());
-  if (Frame* ancestor = outer_element->GetDocument().GetFrame()) {
-    mojom::blink::FencedFrameMode current_mode = outer_element->GetMode();
-    // This loop is only relevant for fenced frames based on ShadowDOM, since it
-    // has to do with the `FramePolicy::is_fenced` bit. We have to keep
-    // traversing up the tree to see if we ever come across a fenced frame of
-    // another mode. In that case, we stop `this` frame from being fully
-    // created, since nested fenced frames of differing modes are not allowed.
-    while (ancestor && ancestor->Owner()) {
-      bool is_ancestor_fenced = ancestor->Owner()->GetFramePolicy().is_fenced;
-      // Note that this variable is only meaningful if `is_ancestor_fenced`
-      // above is true.
-      mojom::blink::FencedFrameMode ancestor_mode =
-          ancestor->Owner()->GetFramePolicy().fenced_frame_mode;
 
-      if (is_ancestor_fenced && ancestor_mode != current_mode) {
-        outer_element->GetDocument().AddConsoleMessage(
-            MakeGarbageCollected<ConsoleMessage>(
-                mojom::blink::ConsoleMessageSource::kJavaScript,
-                mojom::blink::ConsoleMessageLevel::kWarning,
-                "Cannot create a fenced frame with mode '" +
-                    FencedFrameModeToString(current_mode) +
-                    "' nested in a fenced frame with mode '" +
-                    FencedFrameModeToString(ancestor_mode) + "'."));
-        return nullptr;
-      }
+  if (HasDifferentModeThanParent(*outer_element)) {
+    mojom::blink::FencedFrameMode parent_mode =
+        features::kFencedFramesImplementationTypeParam.Get() ==
+                features::FencedFramesImplementationType::kShadowDOM
+            ? outer_element->GetDocument()
+                  .GetFrame()
+                  ->Owner()
+                  ->GetFramePolicy()
+                  .fenced_frame_mode
+            : outer_element->GetDocument().GetPage()->FencedFrameMode();
 
-      // If this loop found a fenced ancestor whose mode is compatible with
-      // `current_mode`, it is not necessary to look further up the ancestor
-      // chain. This is because this loop already ran during the creation of
-      // the compatible fenced ancestor, so it is guaranteed that the rest of
-      // the ancestor chain has already been checked and approved for
-      // compatibility.
-      if (is_ancestor_fenced && ancestor_mode == current_mode) {
-        break;
-      }
-
-      ancestor = ancestor->Tree().Parent();
-    }
+    outer_element->GetDocument().AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "Cannot create a fenced frame with mode '" +
+                FencedFrameModeToString(outer_element->GetMode()) +
+                "' nested in a fenced frame with mode '" +
+                FencedFrameModeToString(parent_mode) + "'."));
+    return nullptr;
   }
 
   if (features::kFencedFramesImplementationTypeParam.Get() ==

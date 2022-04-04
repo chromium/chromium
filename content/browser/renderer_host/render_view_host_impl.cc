@@ -36,6 +36,7 @@
 #include "content/browser/bad_message.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
+#include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/gpu/gpu_process_host.h"
@@ -497,6 +498,9 @@ bool RenderViewHostImpl::CreateRenderView(
 
   if (is_fenced_frame) {
     params->type = mojom::ViewWidgetType::kFencedFrame;
+
+    params->fenced_frame_mode =
+        frame_tree_->root()->GetFencedFrameMode().value();
   } else if (is_portal) {
     DCHECK(!is_guest_view);
     params->type = mojom::ViewWidgetType::kPortal;
@@ -506,7 +510,7 @@ bool RenderViewHostImpl::CreateRenderView(
     params->type = mojom::ViewWidgetType::kTopLevel;
   }
 
-  // RenderViweHostImpls is reused after a crash, so reset any endpoint that
+  // RenderViewHostImpl is reused after a crash, so reset any endpoint that
   // might be a leftover from a crash.
   page_broadcast_.reset();
   params->blink_page_broadcast =

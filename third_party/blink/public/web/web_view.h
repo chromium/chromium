@@ -127,7 +127,7 @@ class WebView {
       bool is_hidden,
       bool is_prerendering,
       bool is_inside_portal,
-      bool is_fenced_frame,
+      absl::optional<blink::mojom::FencedFrameMode> fenced_frame_mode,
       bool compositing_enabled,
       bool widgets_never_composited,
       WebView* opener,

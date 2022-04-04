@@ -1217,12 +1217,6 @@ class FencedFrameNestedModesTest
 //   3.) Asserts that creation of the child fenced frame either failed or
 //       succeeded depending on its mode.
 IN_PROC_BROWSER_TEST_P(FencedFrameNestedModesTest, NestedModes) {
-  // TODO(lbrady): Don't skip this test for the MPArch implementation, once the
-  // `mode` attribute restrictions are implemented for MPArch.
-  if (std::get<2>(GetParam()) == false) {
-    return;
-  }
-
   const GURL main_url =
       embedded_test_server()->GetURL("fencedframe.test", "/title1.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));

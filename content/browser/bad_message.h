@@ -299,6 +299,7 @@ enum BadMessageReason {
   RFHI_SUBFRAME_NAV_WOULD_CHANGE_MAINFRAME_ORIGIN = 272,
   FF_CREATE_WHILE_PRERENDERING = 273,
   RFHI_SET_OVERLAYS_CONTENT_NOT_OUTERMOST_FRAME = 274,
+  FF_DIFFERENT_MODE_THAN_EMBEDDER = 275,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

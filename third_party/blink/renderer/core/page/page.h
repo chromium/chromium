@@ -28,6 +28,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/page.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-blink.h"
@@ -386,6 +387,11 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // Returns if the main frame of this frame tree is a fenced frame.
   bool IsMainFrameFencedFrameRoot() const;
 
+  void SetFencedFrameMode(mojom::blink::FencedFrameMode mode) {
+    fenced_frame_mode_ = mode;
+  }
+  mojom::blink::FencedFrameMode FencedFrameMode() { return fenced_frame_mode_; }
+
  private:
   friend class ScopedPagePauser;
 
@@ -511,6 +517,12 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // only set for the MPArch implementation and is true when the corresponding
   // browser side FrameTree has the FrameTree::Type of kFencedFrame.
   bool is_fenced_frame_tree_ = false;
+
+  // If the page is hosted inside an MPArch fenced frame, this tracks the
+  // mode that the fenced frame is set to. This will always be set to kDefault
+  // for the ShadowDOM implementation of fenced frames.
+  mojom::blink::FencedFrameMode fenced_frame_mode_ =
+      mojom::blink::FencedFrameMode::kDefault;
 
   mojom::blink::TextAutosizerPageInfo web_text_autosizer_page_info_;
 

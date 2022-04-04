@@ -150,6 +150,14 @@ struct CreateViewParams {
   // nested "main frame" widget type.
   ViewWidgetType type;
 
+  // If the frame being created is a fenced frame, stores the mode the fenced
+  // frame is set to. For all other frame types (type != kFencedFrame), this
+  // value will always be set to kDefault. Frames embedded in fenced frames
+  // will also have this value set to kDefault.
+  // Used by fenced frames to determine various security restrictions such as
+  // the URL type and size constraints.
+  blink.mojom.FencedFrameMode fenced_frame_mode;
+
   // Endpoint for any messages that are broadcast to all views in a WebContents.
   pending_associated_receiver<blink.mojom.PageBroadcast> blink_page_broadcast;
 
