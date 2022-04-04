@@ -2563,9 +2563,6 @@ AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
     autofilled_types.insert(field->Type().GetStorableType());
   }
 
-  base::UmaHistogramBoolean("Autofill.CreditCard.Number" + suffix,
-                            autofilled_types.contains(CREDIT_CARD_NUMBER));
-
   CreditCardSeamlessness seamlessness(autofilled_types);
   if (seamlessness.is_valid()) {
     base::UmaHistogramExactLinear(
@@ -2580,9 +2577,6 @@ AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
 // static
 void AutofillMetrics::LogCreditCardSeamlessnessAtSubmissionTime(
     const ServerFieldTypeSet& autofilled_types) {
-  base::UmaHistogramBoolean("Autofill.CreditCard.NumberFills.AtSubmissionTime",
-                            autofilled_types.contains(CREDIT_CARD_NUMBER));
-
   CreditCardSeamlessness seamlessness(autofilled_types);
   if (seamlessness.is_valid()) {
     base::UmaHistogramExactLinear(

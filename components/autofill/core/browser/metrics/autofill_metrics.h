@@ -1812,14 +1812,10 @@ class AutofillMetrics {
   // Logs one variant of Autofill.CreditCard.Seamless{Fillable,Fills}.
   // AtFillTime{Before,After}SecurityPolicy metrics, depending on the parameter
   // `p`. Returns the emitted metric, if any.
-  //
-  // In addition, logs Autofill.CreditCard.Number{Fillable,Fills}.
-  // AtFillTime{Before,After}SecurityPolicy.
   static CreditCardSeamlessness LogCreditCardSeamlessnessAtFillTime(
       const LogCreditCardSeamlessnessParam& p);
 
-  // Logs Autofill.CreditCard.SeamlessFills.AtSubmissionTime and
-  // Autofill.CreditCard.NumberFills.AtSubmissionTime.
+  // Logs Autofill.CreditCard.SeamlessFills.AtSubmissionTime.
   static void LogCreditCardSeamlessnessAtSubmissionTime(
       const ServerFieldTypeSet& autofilled_types);
 
