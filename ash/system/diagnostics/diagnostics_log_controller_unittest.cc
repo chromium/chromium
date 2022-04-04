@@ -9,11 +9,26 @@
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/files/file_path.h"
+#include "base/memory/ptr_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 namespace diagnostics {
+
+namespace {
+
+// Fake delegate used to set the expected user directory path.
+class FakeDiagnosticsBrowserDelegate : public DiagnosticsBrowserDelegate {
+ public:
+  FakeDiagnosticsBrowserDelegate() = default;
+  ~FakeDiagnosticsBrowserDelegate() override = default;
+
+  base::FilePath GetActiveUserProfileDir() override { return base::FilePath(); }
+};
+
+}  // namespace
 
 class DiagnosticsLogControllerTest : public NoSessionAshTestBase {
  public:
@@ -38,6 +53,14 @@ TEST_F(DiagnosticsLogControllerTest,
        ShellProvidesControllerWhenFeatureEnabled) {
   EXPECT_NO_FATAL_FAILURE(DiagnosticsLogController::Get());
   EXPECT_NE(nullptr, DiagnosticsLogController::Get());
+}
+
+TEST_F(DiagnosticsLogControllerTest, IsInitializedAfterDelegateProvided) {
+  EXPECT_NE(nullptr, DiagnosticsLogController::Get());
+  EXPECT_FALSE(DiagnosticsLogController::IsInitialized());
+  DiagnosticsLogController::Initialize(
+      std::make_unique<FakeDiagnosticsBrowserDelegate>());
+  EXPECT_TRUE(DiagnosticsLogController::IsInitialized());
 }
 
 }  // namespace diagnostics

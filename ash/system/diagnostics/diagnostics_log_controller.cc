@@ -4,7 +4,9 @@
 
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
 
+#include "ash/system/diagnostics/diagnostics_browser_delegate.h"
 #include "base/check_op.h"
+#include "base/notreached.h"
 
 namespace ash {
 namespace diagnostics {
@@ -28,6 +30,18 @@ DiagnosticsLogController::~DiagnosticsLogController() {
 // static
 DiagnosticsLogController* DiagnosticsLogController::Get() {
   return g_instance;
+}
+
+// static
+bool DiagnosticsLogController::IsInitialized() {
+  return g_instance && g_instance->delegate_;
+}
+
+// static
+void DiagnosticsLogController::Initialize(
+    std::unique_ptr<DiagnosticsBrowserDelegate> delegate) {
+  DCHECK(g_instance);
+  g_instance->delegate_ = std::move(delegate);
 }
 
 }  // namespace diagnostics

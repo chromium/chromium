@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_DIAGNOSTICS_DIAGNOSTICS_LOG_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "ash/system/diagnostics/diagnostics_browser_delegate.h"
 
 namespace ash {
 namespace diagnostics {
@@ -25,6 +26,13 @@ class ASH_EXPORT DiagnosticsLogController {
   // outside the expected lifetime or when the
   // `ash::features::kEnableLogControllerForDiagnosticsApp` is false.
   static DiagnosticsLogController* Get();
+
+  // Check if DiagnosticsLogController is ready for use.
+  static bool IsInitialized();
+  static void Initialize(std::unique_ptr<DiagnosticsBrowserDelegate> delegate);
+
+ private:
+  std::unique_ptr<DiagnosticsBrowserDelegate> delegate_;
 };
 
 }  // namespace diagnostics
