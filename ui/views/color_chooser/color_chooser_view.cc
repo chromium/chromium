@@ -30,6 +30,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -280,14 +281,23 @@ class SaturationValueView : public LocatedEventHandlerView {
   gfx::Size CalculatePreferredSize() const override;
   void OnPaint(gfx::Canvas* canvas) override;
 
+  void UpdateMarkerColor();
+
   SaturationValueChangedCallback changed_callback_;
   SkScalar hue_;
+  SkScalar saturation_;
+  SkScalar value_;
   gfx::Point marker_position_;
+  SkColor marker_color_;
 };
 
 SaturationValueView::SaturationValueView(
     const SaturationValueChangedCallback& changed_callback)
-    : changed_callback_(changed_callback), hue_(0) {
+    : changed_callback_(changed_callback),
+      hue_(0),
+      saturation_(0),
+      value_(0),
+      marker_color_(gfx::kPlaceholderColor) {
   SetBorder(CreateSolidBorder(kBorderWidth, gfx::kPlaceholderColor));
 }
 
@@ -301,12 +311,18 @@ void SaturationValueView::OnThemeChanged() {
 void SaturationValueView::OnHueChanged(SkScalar hue) {
   if (hue_ != hue) {
     hue_ = hue;
+    UpdateMarkerColor();
     SchedulePaint();
   }
 }
 
 void SaturationValueView::OnSaturationValueChanged(SkScalar saturation,
                                                    SkScalar value) {
+  if (saturation_ == saturation && value_ == value)
+    return;
+
+  saturation_ = saturation;
+  value_ = value;
   SkScalar scalar_size = SkIntToScalar(kSaturationValueSize - 1);
   int x = SkScalarFloorToInt(saturation * scalar_size) + kBorderWidth;
   int y = SkScalarFloorToInt((SK_Scalar1 - value) * scalar_size) + kBorderWidth;
@@ -315,6 +331,9 @@ void SaturationValueView::OnSaturationValueChanged(SkScalar saturation,
 
   marker_position_.set_x(x);
   marker_position_.set_y(y);
+
+  UpdateMarkerColor();
+
   SchedulePaint();
 }
 
@@ -350,21 +369,22 @@ void SaturationValueView::OnPaint(gfx::Canvas* canvas) {
                    canvas);
 
   // Draw the crosshair marker.
-  // The background is very dark at the bottom of the view.  Use a white
-  // marker in that case.
-  SkColor indicator_color =
-      (marker_position_.y() > width() * 3 / 4) ? SK_ColorWHITE : SK_ColorBLACK;
   canvas->FillRect(
       gfx::Rect(marker_position_.x(),
                 marker_position_.y() - kSaturationValueIndicatorSize, 1,
                 kSaturationValueIndicatorSize * 2 + 1),
-      indicator_color);
+      marker_color_);
   canvas->FillRect(
       gfx::Rect(marker_position_.x() - kSaturationValueIndicatorSize,
                 marker_position_.y(), kSaturationValueIndicatorSize * 2 + 1, 1),
-      indicator_color);
+      marker_color_);
 
   OnPaintBorder(canvas);
+}
+
+void SaturationValueView::UpdateMarkerColor() {
+  SkScalar hsv[3] = {hue_, saturation_, value_};
+  marker_color_ = color_utils::GetColorWithMaxContrast(SkHSVToColor(hsv));
 }
 
 BEGIN_METADATA(SaturationValueView, LocatedEventHandlerView)
