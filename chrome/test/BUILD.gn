@@ -204,6 +204,7 @@ static_library("test_support") {
     "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests_support",
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/spellcheck/renderer",
+    "//ui/webui",
   ]
 
   # New deps should go in the non-iOS section below.

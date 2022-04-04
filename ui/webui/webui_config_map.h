@@ -1,0 +1,68 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef UI_WEBUI_WEBUI_CONFIG_MAP_H_
+#define UI_WEBUI_WEBUI_CONFIG_MAP_H_
+
+#include <map>
+#include <memory>
+
+namespace content {
+class BrowserContext;
+class WebUIControllerFactory;
+}  // namespace content
+
+namespace url {
+class Origin;
+}
+
+namespace ui {
+class WebUIConfig;
+
+// Class that holds all WebUIConfigs for the browser.
+//
+// Embedders wishing to register WebUIConfigs should use
+// AddWebUIConfig and AddUntrustedWebUIConfig.
+//
+// Underneath it uses a WebUIControllerFactory to hook into the rest of the
+// WebUI infra.
+class WebUIConfigMap {
+ public:
+  static WebUIConfigMap& GetInstance();
+
+  WebUIConfigMap();
+  WebUIConfigMap(const WebUIConfigMap&) = delete;
+  WebUIConfigMap& operator=(const WebUIConfigMap&) = delete;
+  ~WebUIConfigMap();
+
+  // Adds a chrome:// WebUIConfig. CHECKs if the WebUIConfig is for a
+  // chrome-untrusted:// WebUIConfig.
+  void AddWebUIConfig(std::unique_ptr<WebUIConfig> config);
+
+  // Adds a chrome-untrusted:// WebUIConfig. CHECKs if the WebUIConfig is
+  // for a chrome:// WebUIConfig.
+  //
+  // Although the scheme is included as part of the WebUIConfig, having
+  // two separate methods for chrome:// and chrome-untrusted:// helps
+  // readers tell what type of WebUIConfig is being added.
+  void AddUntrustedWebUIConfig(std::unique_ptr<WebUIConfig> config);
+
+  // Returns the WebUIConfig for |origin| if it's registered and the WebUI is
+  // enabled. (WebUIs can be disabled based on the profile or feature flags.)
+  WebUIConfig* GetConfig(content::BrowserContext* browser_context,
+                         const url::Origin& origin);
+
+ private:
+  void AddWebUIConfigImpl(std::unique_ptr<WebUIConfig> config);
+
+  using WebUIConfigMapImpl =
+      std::map<url::Origin, std::unique_ptr<ui::WebUIConfig>>;
+  WebUIConfigMapImpl configs_map_;
+
+  std::unique_ptr<content::WebUIControllerFactory> webui_controller_factory_;
+};
+
+}  // namespace ui
+
+#endif  // UI_WEBUI_WEBUI_CONFIG_MAP_H_

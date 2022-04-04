@@ -32,6 +32,7 @@
 #include "ui/base/resource/resource_handle.h"
 #include "ui/base/ui_base_paths.h"
 #include "ui/gl/test/gl_surface_test_support.h"
+#include "ui/webui/webui_config_map.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/dbus/constants/dbus_paths.h"
@@ -161,6 +162,8 @@ void ChromeUnitTestSuite::InitializeProviders() {
 
   content::WebUIControllerFactory::RegisterFactory(
       ChromeWebUIControllerFactory::GetInstance());
+  // Ensure the WebUIConfigMap registers its WebUIControllerFactory.
+  ui::WebUIConfigMap::GetInstance();
 
   gl::GLSurfaceTestSupport::InitializeOneOff();
 
