@@ -5444,7 +5444,7 @@
       },
       'Linux ASan Tests (sandboxed)': {
         'mixins': [
-          'linux-bionic',
+          'linux-xenial',
         ],
         'test_suites': {
           'gtest_tests': 'sandboxed_chromium_memory_linux_gtests',
@@ -5474,7 +5474,7 @@
       },
       'Linux ChromiumOS MSan Tests': {
         'mixins': [
-          'linux-bionic',
+          'linux-xenial',
           'x86-64',
         ],
         'test_suites': {
@@ -5488,7 +5488,7 @@
       },
       'Linux MSan Tests': {
         'mixins': [
-          'linux-bionic',
+          'linux-xenial',
           'x86-64',
         ],
         'test_suites': {
@@ -5522,7 +5522,7 @@
       },
       'WebKit Linux ASAN': {
         'mixins': [
-          'linux-bionic',
+          'linux-xenial',
         ],
         'test_suites': {
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
