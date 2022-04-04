@@ -16,7 +16,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -61,6 +60,9 @@ constexpr FileHandlerConfig kFileHandlers[] = {
     {"image/svg+xml", ".svg,.svgz"},
     {"image/avif", ".avif"},
 
+    // PDF.
+    {"application/pdf", ".pdf"},
+
     // When updating this list, `FOO_EXTENSIONS` in go/bl-launch should be
     // updated as well.
 };
@@ -84,11 +86,6 @@ constexpr FileHandlerConfig kAudioFileHandlers[] = {
     // updated as well.
 };
 
-constexpr char kPdfExtension[] = ".pdf";
-constexpr FileHandlerConfig kPdfFileHandlers[] = {
-    {"application/pdf", kPdfExtension},
-};
-
 // Converts a FileHandlerConfig constexpr into the type needed to populate the
 // WebAppInstallInfo's `accept` property.
 std::vector<apps::FileHandler::AcceptEntry> MakeFileHandlerAccept(
@@ -106,16 +103,6 @@ std::vector<apps::FileHandler::AcceptEntry> MakeFileHandlerAccept(
                                          file_extensions.end());
   }
   return result;
-}
-
-// Picks out a single file from a template launch `params`.
-const apps::AppLaunchParams PickFileFromParams(
-    const apps::AppLaunchParams& params,
-    size_t index) {
-  return apps::AppLaunchParams(params.app_id, params.container,
-                               params.disposition, params.launch_source,
-                               params.display_id, {params.launch_files[index]},
-                               params.intent ? params.intent.Clone() : nullptr);
 }
 
 }  // namespace
@@ -176,21 +163,10 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForMediaWebApp() {
   image_video_handler.action = GURL(ash::kChromeUIMediaAppURL);
   image_video_handler.accept = MakeFileHandlerAccept(kFileHandlers);
   info->file_handlers.push_back(std::move(image_video_handler));
-
   apps::FileHandler audio_handler;
   audio_handler.action = GURL(ash::kChromeUIMediaAppURL);
   audio_handler.accept = MakeFileHandlerAccept(kAudioFileHandlers);
   info->file_handlers.push_back(std::move(audio_handler));
-
-  apps::FileHandler pdf_handler;
-  pdf_handler.action = GURL(ash::kChromeUIMediaAppURL);
-  pdf_handler.accept = MakeFileHandlerAccept(kPdfFileHandlers);
-  // Note setting `apps::FileHandler::LaunchType::kMultipleClients` here has no
-  // effect for system web apps (see comments in
-  // WebAppPublisherHelper::OnFileHandlerDialogCompleted()). The PDF-specifc
-  // behavior to spawn multiple launches occurs in an override of
-  // LaunchAndNavigateSystemWebApp().
-  info->file_handlers.push_back(std::move(pdf_handler));
   return info;
 }
 
@@ -242,26 +218,4 @@ bool MediaSystemAppDelegate::ShouldReuseExistingWindow() const {
 
 bool MediaSystemAppDelegate::ShouldHandleFileOpenIntents() const {
   return true;
-}
-
-Browser* MediaSystemAppDelegate::LaunchAndNavigateSystemWebApp(
-    Profile* profile,
-    web_app::WebAppProvider* provider,
-    const GURL& url,
-    const apps::AppLaunchParams& params) const {
-  // For zero/single-file launches, or non-PDF launches, launch a single window.
-  if (params.launch_files.size() < 2 ||
-      !params.launch_files[0].MatchesExtension(kPdfExtension)) {
-    return SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
-        profile, provider, url, params);
-  }
-
-  // For PDFs, launch all but the last file from scratch. Windows will cascade.
-  for (size_t i = 0; i < params.launch_files.size() - 1; ++i) {
-    web_app::LaunchSystemWebAppImpl(profile, web_app::SystemAppType::MEDIA, url,
-                                    PickFileFromParams(params, i));
-  }
-  return SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
-      profile, provider, url,
-      PickFileFromParams(params, params.launch_files.size() - 1));
 }
