@@ -39,7 +39,6 @@ using device::mojom::BluetoothDeviceInfo;
 using device::mojom::BluetoothSystem;
 
 namespace ash {
-namespace tray {
 namespace {
 
 const int kDisabledPanelLabelBaselineY = 20;
@@ -459,5 +458,4 @@ void BluetoothDetailedViewLegacy::CreateExtraTitleRowButtons() {
   tri_view()->AddView(TriView::Container::END, settings_);
 }
 
-}  // namespace tray
 }  // namespace ash

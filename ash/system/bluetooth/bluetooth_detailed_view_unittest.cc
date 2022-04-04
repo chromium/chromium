@@ -33,7 +33,6 @@ class View;
 }  // namespace views
 
 namespace ash {
-namespace tray {
 namespace {
 
 const std::string kDeviceId = "/device/id";
@@ -314,5 +313,4 @@ TEST_F(BluetoothDetailedViewTest, SelectingDeviceListItemNotifiesDelegate) {
                            ->device_properties->id);
 }
 
-}  // namespace tray
 }  // namespace ash

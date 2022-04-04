@@ -41,10 +41,9 @@ BluetoothDetailedViewController::~BluetoothDetailedViewController() = default;
 
 views::View* BluetoothDetailedViewController::CreateView() {
   DCHECK(!view_);
-  std::unique_ptr<tray::BluetoothDetailedView> bluetooth_detailed_view =
-      tray::BluetoothDetailedView::Factory::Create(
-          detailed_view_delegate_.get(),
-          /*delegate=*/this);
+  std::unique_ptr<BluetoothDetailedView> bluetooth_detailed_view =
+      BluetoothDetailedView::Factory::Create(detailed_view_delegate_.get(),
+                                             /*delegate=*/this);
   view_ = bluetooth_detailed_view.get();
   device_list_controller_ = BluetoothDeviceListController::Factory::Create(
       bluetooth_detailed_view.get());

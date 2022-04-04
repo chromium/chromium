@@ -112,7 +112,7 @@ bool SodaFeatureHasUpdate(SodaFeature feature,
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
-// ash::tray::AccessibilityDetailedView
+// AccessibilityDetailedView
 
 const char AccessibilityDetailedView::kClassName[] = "AccessibilityDetailedView";
 

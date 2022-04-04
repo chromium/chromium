@@ -13,7 +13,7 @@ BluetoothDeviceListController::Factory* g_test_factory = nullptr;
 
 std::unique_ptr<BluetoothDeviceListController>
 BluetoothDeviceListController::Factory::Create(
-    tray::BluetoothDetailedView* bluetooth_detailed_view) {
+    BluetoothDetailedView* bluetooth_detailed_view) {
   if (g_test_factory)
     return g_test_factory->CreateForTesting();  // IN-TEST
   return std::make_unique<BluetoothDeviceListControllerImpl>(

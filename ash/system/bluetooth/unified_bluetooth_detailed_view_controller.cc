@@ -78,7 +78,7 @@ UnifiedBluetoothDetailedViewController::
 
 views::View* UnifiedBluetoothDetailedViewController::CreateView() {
   DCHECK(!view_);
-  view_ = new tray::BluetoothDetailedViewLegacy(
+  view_ = new BluetoothDetailedViewLegacy(
       detailed_view_delegate_.get(),
       Shell::Get()->session_controller()->login_status());
   OnBluetoothSystemStateChanged();

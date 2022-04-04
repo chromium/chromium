@@ -24,8 +24,6 @@ class BluetoothDisabledDetailedView;
 class DetailedViewDelegate;
 class TriView;
 
-namespace tray {
-
 // BluetoothDetailedView implementation.
 class ASH_EXPORT BluetoothDetailedViewImpl : public BluetoothDetailedView,
                                              public TrayDetailedView {
@@ -88,7 +86,6 @@ class ASH_EXPORT BluetoothDetailedViewImpl : public BluetoothDetailedView,
   base::WeakPtrFactory<BluetoothDetailedViewImpl> weak_factory_{this};
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_BLUETOOTH_BLUETOOTH_DETAILED_VIEW_IMPL_H_

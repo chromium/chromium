@@ -35,7 +35,6 @@
 #include "ui/views/view.h"
 
 namespace ash {
-namespace tray {
 
 BluetoothDetailedViewImpl::BluetoothDetailedViewImpl(
     DetailedViewDelegate* detailed_view_delegate,
@@ -226,5 +225,4 @@ void BluetoothDetailedViewImpl::OnToggleClicked() {
   UpdateBluetoothEnabledState(toggle_state);
 }
 
-}  // namespace tray
 }  // namespace ash

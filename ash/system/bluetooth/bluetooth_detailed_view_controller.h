@@ -32,7 +32,7 @@ class UnifiedSystemTrayController;
 class ASH_EXPORT BluetoothDetailedViewController
     : public DetailedViewController,
       public chromeos::bluetooth_config::mojom::SystemPropertiesObserver,
-      public tray::BluetoothDetailedView::Delegate {
+      public BluetoothDetailedView::Delegate {
  public:
   explicit BluetoothDetailedViewController(
       UnifiedSystemTrayController* tray_controller);
@@ -56,7 +56,7 @@ class ASH_EXPORT BluetoothDetailedViewController
       chromeos::bluetooth_config::mojom::BluetoothSystemPropertiesPtr
           properties) override;
 
-  // tray::BluetoothDetailedView::Delegate:
+  // BluetoothDetailedView::Delegate:
   void OnToggleClicked(bool new_state) override;
   void OnPairNewDeviceRequested() override;
   void OnDeviceListItemSelected(
@@ -76,7 +76,7 @@ class ASH_EXPORT BluetoothDetailedViewController
 
   chromeos::bluetooth_config::mojom::BluetoothSystemState system_state_ =
       chromeos::bluetooth_config::mojom::BluetoothSystemState::kUnavailable;
-  tray::BluetoothDetailedView* view_ = nullptr;
+  BluetoothDetailedView* view_ = nullptr;
   std::unique_ptr<BluetoothDeviceListController> device_list_controller_;
   PairedBluetoothDevicePropertiesPtrs connected_devices_;
   PairedBluetoothDevicePropertiesPtrs previously_connected_devices_;

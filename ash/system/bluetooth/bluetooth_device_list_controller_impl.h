@@ -18,9 +18,8 @@ class Separator;
 }  // namespace views
 
 namespace ash {
-namespace tray {
+
 class BluetoothDetailedView;
-}  // namespace tray
 
 class BluetoothDeviceListItemView;
 class TriView;
@@ -30,7 +29,7 @@ class ASH_EXPORT BluetoothDeviceListControllerImpl
     : public BluetoothDeviceListController {
  public:
   explicit BluetoothDeviceListControllerImpl(
-      tray::BluetoothDetailedView* bluetooth_detailed_view);
+      BluetoothDetailedView* bluetooth_detailed_view);
   BluetoothDeviceListControllerImpl(const BluetoothDeviceListControllerImpl&) =
       delete;
   BluetoothDeviceListControllerImpl& operator=(
@@ -64,7 +63,7 @@ class ASH_EXPORT BluetoothDeviceListControllerImpl
       base::flat_map<std::string, BluetoothDeviceListItemView*>* previous_views,
       int index);
 
-  tray::BluetoothDetailedView* bluetooth_detailed_view_;
+  BluetoothDetailedView* const bluetooth_detailed_view_;
 
   bool is_bluetooth_enabled_ = false;
   base::flat_map<std::string, BluetoothDeviceListItemView*>

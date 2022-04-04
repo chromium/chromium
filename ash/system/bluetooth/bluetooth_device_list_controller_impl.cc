@@ -40,7 +40,7 @@ void RemoveAndResetViewIfExists(T** view) {
 }  // namespace
 
 BluetoothDeviceListControllerImpl::BluetoothDeviceListControllerImpl(
-    tray::BluetoothDetailedView* bluetooth_detailed_view)
+    BluetoothDetailedView* bluetooth_detailed_view)
     : bluetooth_detailed_view_(bluetooth_detailed_view) {
   DCHECK(ash::features::IsBluetoothRevampEnabled());
 }

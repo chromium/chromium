@@ -21,8 +21,6 @@ class BluetoothDeviceListItemView;
 class DetailedViewDelegate;
 class TriView;
 
-namespace tray {
-
 // This class defines both the interface used to interact with the detailed
 // Bluetooth page within the quick settings, including the view responsible for
 // containing the device list. This class includes the declaration for the
@@ -99,7 +97,6 @@ class ASH_EXPORT BluetoothDetailedView {
   Delegate* delegate_;
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_BLUETOOTH_BLUETOOTH_DETAILED_VIEW_H_

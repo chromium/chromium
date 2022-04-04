@@ -31,7 +31,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
-namespace tray {
 namespace {
 
 const char kDeviceId[] = "/device/id";
@@ -329,5 +328,4 @@ TEST_F(BluetoothDetailedViewControllerTest,
       bluetooth_device_list_controller()->previously_connected_devices_count());
 }
 
-}  // namespace tray
 }  // namespace ash

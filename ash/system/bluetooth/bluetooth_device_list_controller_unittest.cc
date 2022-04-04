@@ -43,7 +43,7 @@ class BluetoothDeviceListControllerTest : public AshTestBase {
     feature_list_.InitAndEnableFeature(features::kBluetoothRevamp);
 
     fake_bluetooth_detailed_view_ =
-        std::make_unique<tray::FakeBluetoothDetailedView>(/*delegate=*/nullptr);
+        std::make_unique<FakeBluetoothDetailedView>(/*delegate=*/nullptr);
     bluetooth_device_list_controller_impl_ =
         std::make_unique<BluetoothDeviceListControllerImpl>(
             fake_bluetooth_detailed_view_.get());
@@ -157,7 +157,7 @@ class BluetoothDeviceListControllerTest : public AshTestBase {
   }
 
   views::View* device_list() {
-    return static_cast<tray::BluetoothDetailedView*>(
+    return static_cast<BluetoothDetailedView*>(
                fake_bluetooth_detailed_view_.get())
         ->device_list();
   }
@@ -166,7 +166,7 @@ class BluetoothDeviceListControllerTest : public AshTestBase {
     return bluetooth_device_list_controller_impl_.get();
   }
 
-  tray::FakeBluetoothDetailedView* fake_bluetooth_detailed_view() {
+  FakeBluetoothDetailedView* fake_bluetooth_detailed_view() {
     return fake_bluetooth_detailed_view_.get();
   }
 
@@ -186,8 +186,7 @@ class BluetoothDeviceListControllerTest : public AshTestBase {
   }
 
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<tray::FakeBluetoothDetailedView>
-      fake_bluetooth_detailed_view_;
+  std::unique_ptr<FakeBluetoothDetailedView> fake_bluetooth_detailed_view_;
   std::unique_ptr<BluetoothDeviceListControllerImpl>
       bluetooth_device_list_controller_impl_;
 };

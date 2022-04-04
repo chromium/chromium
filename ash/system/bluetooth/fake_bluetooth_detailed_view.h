@@ -23,8 +23,6 @@ namespace ash {
 class BluetoothDeviceListItemView;
 class TriView;
 
-namespace tray {
-
 // Fake BluetoothDetailedView implementation.
 class ASH_EXPORT FakeBluetoothDetailedView : public BluetoothDetailedView,
                                              public ViewClickListener,
@@ -67,7 +65,6 @@ class ASH_EXPORT FakeBluetoothDetailedView : public BluetoothDetailedView,
   BluetoothDeviceListItemView* last_clicked_device_list_item_ = nullptr;
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_BLUETOOTH_FAKE_BLUETOOTH_DETAILED_VIEW_H_

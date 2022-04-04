@@ -130,8 +130,8 @@ class UnifiedBluetoothDetailedViewControllerTest : public AshTestBase {
 };
 
 TEST_F(UnifiedBluetoothDetailedViewControllerTest, UpdateScrollListTest) {
-  std::unique_ptr<tray::BluetoothDetailedViewLegacy> bluetooth_detailed_view =
-      base::WrapUnique(static_cast<tray::BluetoothDetailedViewLegacy*>(
+  std::unique_ptr<BluetoothDetailedViewLegacy> bluetooth_detailed_view =
+      base::WrapUnique(static_cast<BluetoothDetailedViewLegacy*>(
           bt_detailed_view_controller()->CreateView()));
   AddTestDevice();
   task_environment()->FastForwardBy(kUpdateFrequencyMs);
@@ -139,7 +139,7 @@ TEST_F(UnifiedBluetoothDetailedViewControllerTest, UpdateScrollListTest) {
   // Verify that default devices simulated by FakeBluetoothDeviceClient are
   // displayed.
   const views::View* scroll_content = bluetooth_detailed_view->GetViewByID(
-      tray::BluetoothDetailedViewLegacy::kScrollContentID);
+      BluetoothDetailedViewLegacy::kScrollContentID);
   const size_t scroll_content_size = scroll_content->children().size();
   // Expect at least 1 paired device, 1 unpaired device and 2 headers.
   EXPECT_GE(scroll_content_size, 4u);
@@ -163,13 +163,13 @@ TEST_F(UnifiedBluetoothDetailedViewControllerTest,
   adapter_client()->SetDiscoverySimulation(false);
   RemoveAllDevices();
 
-  std::unique_ptr<tray::BluetoothDetailedViewLegacy> bluetooth_detailed_view =
-      base::WrapUnique(static_cast<tray::BluetoothDetailedViewLegacy*>(
+  std::unique_ptr<BluetoothDetailedViewLegacy> bluetooth_detailed_view =
+      base::WrapUnique(static_cast<BluetoothDetailedViewLegacy*>(
           bt_detailed_view_controller()->CreateView()));
   task_environment()->FastForwardBy(kUpdateFrequencyMs);
 
   const views::View* scroll_content = bluetooth_detailed_view->GetViewByID(
-      tray::BluetoothDetailedViewLegacy::kScrollContentID);
+      BluetoothDetailedViewLegacy::kScrollContentID);
   // Only the scanning message should be displayed.
   EXPECT_EQ(1u, scroll_content->children().size());
 

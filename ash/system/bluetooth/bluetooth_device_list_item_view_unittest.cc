@@ -110,7 +110,7 @@ class BluetoothDeviceListItemViewTest : public AshTestBase {
     feature_list_.InitAndEnableFeature(features::kBluetoothRevamp);
 
     fake_bluetooth_detailed_view_ =
-        std::make_unique<tray::FakeBluetoothDetailedView>(/*delegate=*/nullptr);
+        std::make_unique<FakeBluetoothDetailedView>(/*delegate=*/nullptr);
     std::unique_ptr<BluetoothDeviceListItemView> bluetooth_device_list_item =
         std::make_unique<BluetoothDeviceListItemView>(
             fake_bluetooth_detailed_view_.get());
@@ -143,8 +143,7 @@ class BluetoothDeviceListItemViewTest : public AshTestBase {
  private:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
-  std::unique_ptr<tray::FakeBluetoothDetailedView>
-      fake_bluetooth_detailed_view_;
+  std::unique_ptr<FakeBluetoothDetailedView> fake_bluetooth_detailed_view_;
   BluetoothDeviceListItemView* bluetooth_device_list_item_;
 };
 

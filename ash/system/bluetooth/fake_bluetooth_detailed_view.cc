@@ -10,7 +10,6 @@
 #include "ui/views/controls/label.h"
 
 namespace ash {
-namespace tray {
 
 FakeBluetoothDetailedView::FakeBluetoothDetailedView(Delegate* delegate)
     : BluetoothDetailedView(delegate),
@@ -54,5 +53,4 @@ void FakeBluetoothDetailedView::OnViewClicked(views::View* view) {
       static_cast<BluetoothDeviceListItemView*>(view);
 }
 
-}  // namespace tray
 }  // namespace ash

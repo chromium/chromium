@@ -14,10 +14,7 @@
 
 namespace ash {
 
-namespace tray {
 class BluetoothDetailedViewLegacy;
-}  // namespace tray
-
 class DetailedViewDelegate;
 class UnifiedSystemTrayController;
 
@@ -51,7 +48,7 @@ class ASH_EXPORT UnifiedBluetoothDetailedViewController
 
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
-  tray::BluetoothDetailedViewLegacy* view_ = nullptr;
+  BluetoothDetailedViewLegacy* view_ = nullptr;
 
   BluetoothDeviceList connected_devices_;
   BluetoothDeviceList connecting_devices_;

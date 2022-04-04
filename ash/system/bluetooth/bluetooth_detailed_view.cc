@@ -7,7 +7,6 @@
 #include "ash/system/bluetooth/bluetooth_detailed_view_impl.h"
 
 namespace ash {
-namespace tray {
 namespace {
 BluetoothDetailedView::Factory* g_test_factory = nullptr;
 }  // namespace
@@ -20,8 +19,8 @@ std::unique_ptr<BluetoothDetailedView> BluetoothDetailedView::Factory::Create(
     Delegate* delegate) {
   if (g_test_factory)
     return g_test_factory->CreateForTesting(delegate);  // IN-TEST
-  return std::make_unique<tray::BluetoothDetailedViewImpl>(
-      detailed_view_delegate, delegate);
+  return std::make_unique<BluetoothDetailedViewImpl>(detailed_view_delegate,
+                                                     delegate);
 }
 
 void BluetoothDetailedView::Factory::SetFactoryForTesting(
@@ -29,5 +28,4 @@ void BluetoothDetailedView::Factory::SetFactoryForTesting(
   g_test_factory = test_factory;
 }
 
-}  // namespace tray
 }  // namespace ash

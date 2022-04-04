@@ -21,8 +21,6 @@ namespace ash {
 class TriView;
 class TrayInfoLabel;
 
-namespace tray {
-
 // TODO(crbug.com/1234138): Remove this class when the
 // |ash::features::kBluetoothRevamp| feature flag is fully launched.
 class BluetoothDetailedViewLegacy : public TrayDetailedView {
@@ -125,7 +123,6 @@ class BluetoothDetailedViewLegacy : public TrayDetailedView {
   views::View* disabled_panel_ = nullptr;
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_BLUETOOTH_BLUETOOTH_DETAILED_VIEW_LEGACY_H_
