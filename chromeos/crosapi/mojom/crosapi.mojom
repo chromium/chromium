@@ -977,8 +977,8 @@ struct OpenUrlParams {
 // has accidentally become a kitchen sink for different features. This was not
 // intentional.
 //
-// Next MinVersion: 64.
-// Next ID: 15
+// Next MinVersion: 65.
+// Next ID: 16
 //
 [Stable, Uuid="4e04dc16-b34c-40fd-9e3f-3c55c2c6cf91",
  RenamedFrom="crosapi.mojom.LacrosChromeService"]
@@ -1085,6 +1085,12 @@ interface BrowserService {
   // Introduced in M97.
   [MinVersion=14]
   UpdateKeepAlive@12(bool enabled);
+
+  // Opens lacros with a full restore (all previously open windows from the
+  // previous lacros session). This must be called before a browser has been
+  // created as this will update the state of the last opened profiles.
+  [MinVersion=64]
+  OpenForFullRestore@15();
 };
 
 // TODO(crbug.com/1180712): move to its own file. Currently due to circular

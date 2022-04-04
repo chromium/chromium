@@ -558,6 +558,9 @@ bool StartupBrowserCreator::was_restarted_read_ = false;
 // static
 bool StartupBrowserCreator::in_synchronous_profile_launch_ = false;
 
+// static
+bool StartupBrowserCreator::is_launching_browser_for_last_profiles_ = false;
+
 void StartupBrowserCreator::AddFirstRunTab(const GURL& url) {
   first_run_tabs_.push_back(url);
 }
@@ -616,6 +619,10 @@ void StartupBrowserCreator::LaunchBrowserForLastProfiles(
     StartupProfileInfo profile_info,
     const Profiles& last_opened_profiles) {
   DCHECK_NE(profile_info.mode, StartupProfileMode::kError);
+  DCHECK(!is_launching_browser_for_last_profiles_);
+  base::AutoReset<bool> resetter(&is_launching_browser_for_last_profiles_,
+                                 true);
+
   Profile* profile = profile_info.profile;
   // On Windows, when chrome is launched by notification activation where the
   // kNotificationLaunchId switch is used, always use `profile` which contains
@@ -670,6 +677,11 @@ void StartupBrowserCreator::LaunchBrowserForLastProfiles(
   }
   ProcessLastOpenedProfiles(command_line, cur_dir, process_startup,
                             is_first_run, profile, last_opened_profiles);
+}
+
+// static
+bool StartupBrowserCreator::IsLaunchingBrowserForLastProfiles() {
+  return is_launching_browser_for_last_profiles_;
 }
 
 // static

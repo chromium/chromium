@@ -171,8 +171,7 @@ void FullRestoreAppLaunchHandler::OnMojoDisconnected() {
 void FullRestoreAppLaunchHandler::OnStateChanged() {
   if (crosapi::BrowserManager::Get()->IsRunning()) {
     observation_.Reset();
-    crosapi::BrowserManager::Get()->NewWindow(
-        /*incognito=*/false, /*should_trigger_session_restore=*/true);
+    crosapi::BrowserManager::Get()->OpenForFullRestore();
   }
 }
 
@@ -344,8 +343,7 @@ void FullRestoreAppLaunchHandler::MaybeRestoreLacros() {
   restore_data()->RemoveApp(app_constants::kLacrosAppId);
 
   if (crosapi::BrowserManager::Get()->IsRunning()) {
-    crosapi::BrowserManager::Get()->NewWindow(
-        /*incognito=*/false, /*should_trigger_session_restore=*/true);
+    crosapi::BrowserManager::Get()->OpenForFullRestore();
     return;
   }
 
