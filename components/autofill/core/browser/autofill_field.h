@@ -37,6 +37,11 @@ class AutofillField : public FormFieldData {
     PHONE_SUFFIX = 2,
   };
 
+  enum class PredictionSource {
+    kDefaultHeuristics,
+    kMaxValue = kDefaultHeuristics
+  };
+
   AutofillField();
   explicit AutofillField(const FormFieldData& field);
 
@@ -51,8 +56,11 @@ class AutofillField : public FormFieldData {
   static std::unique_ptr<AutofillField> CreateForPasswordManagerUpload(
       FieldSignature field_signature);
 
-  ServerFieldType heuristic_type() const { return heuristic_type_; }
+  ServerFieldType heuristic_type() const;
   ServerFieldType server_type() const;
+  ServerFieldType get_prediction(PredictionSource s) const {
+    return local_type_predictions_[static_cast<size_t>(s)];
+  }
   bool server_type_prediction_is_override() const;
   const std::vector<
       AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction>&
@@ -81,6 +89,9 @@ class AutofillField : public FormFieldData {
   void set_server_predictions(
       std::vector<AutofillQueryResponse::FormSuggestion::FieldSuggestion::
                       FieldPrediction> predictions);
+  void set_prediction(PredictionSource s, ServerFieldType t) {
+    local_type_predictions_[static_cast<size_t>(s)] = t;
+  }
 
   void set_may_use_prefilled_placeholder(bool may_use_prefilled_placeholder) {
     may_use_prefilled_placeholder_ = may_use_prefilled_placeholder;
@@ -248,8 +259,12 @@ class AutofillField : public FormFieldData {
   // Corresponds to the requirements determined by the Autofill server.
   absl::optional<PasswordRequirementsSpec> password_requirements_;
 
-  // The type of the field, as determined by the local heuristics.
-  ServerFieldType heuristic_type_ = UNKNOWN_TYPE;
+  // Predictions which where calculated on the client. This is initialized to
+  // `NO_SERVER_DATA`, which means "NO_DATA", i.e. no classification was
+  // attempted.
+  std::array<ServerFieldType,
+             static_cast<size_t>(PredictionSource::kMaxValue) + 1>
+      local_type_predictions_;
 
   // The type of the field. Overrides all other types (html_type_,
   // heuristic_type_).
