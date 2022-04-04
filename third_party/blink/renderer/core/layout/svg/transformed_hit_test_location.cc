@@ -24,12 +24,17 @@ const HitTestLocation* InverseTransformLocationIfNeeded(
     storage.emplace(transformed_point,
                     inverse.MapQuad(location.TransformedRect()));
   } else {
-    // Specify |bounding_box| argument even if |location| is not rect-based.
-    // Without it, HitTestLocation would have 1x1 bounding box, and it would
-    // be mapped to NxN screen pixels if scaling factor is N.
-    storage.emplace(transformed_point,
-                    PhysicalRect::EnclosingRect(
-                        inverse.MapRect(gfx::RectF(location.BoundingBox()))));
+    gfx::RectF mapped_rect =
+        inverse.MapRect(gfx::RectF(location.BoundingBox()));
+    if (mapped_rect.width() < 1 || mapped_rect.height() < 1) {
+      // Specify |bounding_box| argument even if |location| is not rect-based.
+      // Without it, HitTestLocation would have 1x1 bounding box, and it would
+      // be mapped to NxN screen pixels if scaling factor is N.
+      storage.emplace(transformed_point,
+                      PhysicalRect::EnclosingRect(mapped_rect));
+    } else {
+      storage.emplace(transformed_point);
+    }
   }
   return &*storage;
 }
