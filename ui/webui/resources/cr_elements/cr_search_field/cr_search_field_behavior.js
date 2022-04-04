@@ -48,10 +48,10 @@ export const CrSearchFieldBehavior = {
   /**
    * Sets the value of the search field.
    * @param {string} value
-   * @param {boolean=} opt_noEvent Whether to prevent a 'search-changed' event
+   * @param {boolean=} noEvent Whether to prevent a 'search-changed' event
    *     firing for this change.
    */
-  setValue(value, opt_noEvent) {
+  setValue(value, noEvent) {
     const updated = this.updateEffectiveValue_(value);
     this.getSearchInput().value = this.effectiveValue_;
     if (!updated) {
@@ -64,7 +64,7 @@ export const CrSearchFieldBehavior = {
     }
 
     this.onSearchTermInput();
-    if (!opt_noEvent) {
+    if (!noEvent) {
       this.fire('search-changed', this.effectiveValue_);
     }
   },
@@ -162,10 +162,10 @@ export class CrSearchFieldBehaviorInterface {
 
   /**
    * @param {string} value
-   * @param {boolean=} opt_noEvent Whether to prevent a 'search-changed' event
+   * @param {boolean=} noEvent Whether to prevent a 'search-changed' event
    *     firing for this change.
    */
-  setValue(value, opt_noEvent) {}
+  setValue(value, noEvent) {}
 
   onSearchTermSearch() {}
 

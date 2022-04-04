@@ -49,8 +49,8 @@ class DiscardsGraphChangeStreamImpl implements GraphChangeStreamInterface {
     this.postMessage_('workerChanged', worker);
   }
 
-  favIconDataAvailable(icon_info: FavIconInfo) {
-    this.postMessage_('favIconDataAvailable', icon_info);
+  favIconDataAvailable(iconInfo: FavIconInfo) {
+    this.postMessage_('favIconDataAvailable', iconInfo);
   }
 
   nodeDeleted(nodeId: bigint) {

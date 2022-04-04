@@ -31,7 +31,7 @@ import {getTemplate} from './live_caption_section.html.js';
  *     model is being downloaded.
  */
 type LiveCaptionLanguage = {
-  display_name: string,
+  displayName: string,
   code: string,
   downloadProgress: string,
 };
@@ -82,37 +82,37 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
         value() {
           return [
             {
-              display_name:
+              displayName:
                   loadTimeData.getString('sodaLanguageDisplayNameEnglish'),
               code: loadTimeData.getString('sodaLanguageCodeEnglish'),
               downloadProgress: '',
             },
             {
-              display_name:
+              displayName:
                   loadTimeData.getString('sodaLanguageDisplayNameFrench'),
               code: loadTimeData.getString('sodaLanguageCodeFrench'),
               downloadProgress: '',
             },
             {
-              display_name:
+              displayName:
                   loadTimeData.getString('sodaLanguageDisplayNameGerman'),
               code: loadTimeData.getString('sodaLanguageCodeGerman'),
               downloadProgress: '',
             },
             {
-              display_name:
+              displayName:
                   loadTimeData.getString('sodaLanguageDisplayNameItalian'),
               code: loadTimeData.getString('sodaLanguageCodeItalian'),
               downloadProgress: '',
             },
             {
-              display_name:
+              displayName:
                   loadTimeData.getString('sodaLanguageDisplayNameJapanese'),
               code: loadTimeData.getString('sodaLanguageCodeJapanese'),
               downloadProgress: '',
             },
             {
-              display_name:
+              displayName:
                   loadTimeData.getString('sodaLanguageDisplayNameSpanish'),
               code: loadTimeData.getString('sodaLanguageCodeSpanish'),
               downloadProgress: '',

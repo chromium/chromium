@@ -86,18 +86,18 @@ export enum PasswordDialogMode {
  */
 export enum AddCredentialFromSettingsUserInteractions {
   // Used when the add credential dialog is opened from the settings.
-  Add_Dialog_Opened = 0,
+  ADD_DIALOG_OPENED = 0,
   // Used when the add credential dialog is closed from the settings.
-  Add_Dialog_Closed = 1,
+  ADD_DIALOG_CLOSED = 1,
   // Used when a new credential is added from the settings .
-  Credential_Added = 2,
+  CREDENTIAL_ADDED = 2,
   // Used when a new credential is being added from the add credential dialog in
   // settings and another credential exists with the same username/website
   // combination.
-  Duplicated_Credential_Entered = 3,
+  DUPLICATED_CREDENTIAL_ENTERED = 3,
   // Used when an existing credential is viewed while adding a new credential
   // from the settings.
-  Duplicate_Credential_Viewed = 4,
+  DUPLICATE_CREDENTIAL_VIEWED = 4,
   // Must be last.
   COUNT = 5,
 }
@@ -715,7 +715,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
   private onViewExistingPasswordClick_() {
     chrome.metricsPrivate.recordEnumerationValue(
         'PasswordManager.AddCredentialFromSettings.UserAction',
-        AddCredentialFromSettingsUserInteractions.Duplicate_Credential_Viewed,
+        AddCredentialFromSettingsUserInteractions.DUPLICATE_CREDENTIAL_VIEWED,
         AddCredentialFromSettingsUserInteractions.COUNT);
     const existingEntry = this.savedPasswords.find(entry => {
       return entry.urls.origin === this.websiteUrls_!.origin &&
@@ -758,7 +758,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
       chrome.metricsPrivate.recordEnumerationValue(
           'PasswordManager.AddCredentialFromSettings.UserAction',
           AddCredentialFromSettingsUserInteractions
-              .Duplicated_Credential_Entered,
+              .DUPLICATED_CREDENTIAL_ENTERED,
           AddCredentialFromSettingsUserInteractions.COUNT);
     }
 

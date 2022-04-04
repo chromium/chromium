@@ -296,14 +296,14 @@ export class DestinationStore extends EventTarget {
   }
 
   /**
-   * @param opt_account Account to filter destinations by. When
+   * @param account Account to filter destinations by. When
    *     null or omitted, all destinations are returned.
    * @return List of destinations accessible by the {@code account}.
    */
-  destinations(opt_account?: string|null): Destination[] {
+  destinations(account?: string|null): Destination[] {
     return this.destinations_.filter(function(destination) {
       return !destination.account ||
-          (!!opt_account && destination.account === opt_account);
+          (!!account && destination.account === account);
     });
   }
 
@@ -843,16 +843,16 @@ export class DestinationStore extends EventTarget {
 
   /**
    * Initiates loading of cloud destinations.
-   * @param opt_origin Search destinations for the specified origin only.
+   * @param origin Search destinations for the specified origin only.
    */
-  startLoadCloudDestinations(opt_origin?: DestinationOrigin) {
+  startLoadCloudDestinations(origin?: DestinationOrigin) {
     if (this.cloudPrintInterface_ === null) {
       return;
     }
 
     const origins = this.loadedCloudOrigins_.get(this.activeUser_) || [];
-    if (origins.length === 0 || (opt_origin && origins.includes(opt_origin))) {
-      this.cloudPrintInterface_.search(this.activeUser_, opt_origin);
+    if (origins.length === 0 || (origin && origins.includes(origin))) {
+      this.cloudPrintInterface_.search(this.activeUser_, origin);
     }
   }
 

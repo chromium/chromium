@@ -308,27 +308,25 @@ export class Destination {
   constructor(
       id: string, type: DestinationType, origin: DestinationOrigin,
       displayName: string, connectionStatus: DestinationConnectionStatus,
-      opt_params?: DestinationOptionalParams) {
+      params?: DestinationOptionalParams) {
     this.id_ = id;
     this.type_ = type;
     this.origin_ = origin;
     this.displayName_ = displayName || '';
-    this.tags_ = (opt_params && opt_params.tags) || [];
-    this.isOwned_ = (opt_params && opt_params.isOwned) || false;
-    this.isEnterprisePrinter_ =
-        (opt_params && opt_params.isEnterprisePrinter) || false;
-    this.account_ = (opt_params && opt_params.account) || '';
-    this.description_ = (opt_params && opt_params.description) || '';
+    this.tags_ = (params && params.tags) || [];
+    this.isOwned_ = (params && params.isOwned) || false;
+    this.isEnterprisePrinter_ = (params && params.isEnterprisePrinter) || false;
+    this.account_ = (params && params.account) || '';
+    this.description_ = (params && params.description) || '';
     this.connectionStatus_ = connectionStatus;
-    this.lastAccessTime_ =
-        (opt_params && opt_params.lastAccessTime) || Date.now();
-    this.cloudID_ = (opt_params && opt_params.cloudID) || '';
-    this.extensionId_ = (opt_params && opt_params.extensionId) || '';
-    this.extensionName_ = (opt_params && opt_params.extensionName) || '';
-    this.provisionalType_ = (opt_params && opt_params.provisionalType) ||
-        DestinationProvisionalType.NONE;
-    this.certificateStatus_ = opt_params && opt_params.certificateStatus ||
-        DestinationCertificateStatus.NONE;
+    this.lastAccessTime_ = (params && params.lastAccessTime) || Date.now();
+    this.cloudID_ = (params && params.cloudID) || '';
+    this.extensionId_ = (params && params.extensionId) || '';
+    this.extensionName_ = (params && params.extensionName) || '';
+    this.provisionalType_ =
+        (params && params.provisionalType) || DestinationProvisionalType.NONE;
+    this.certificateStatus_ =
+        params && params.certificateStatus || DestinationCertificateStatus.NONE;
 
     assert(
         this.provisionalType_ !==

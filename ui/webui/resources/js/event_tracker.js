@@ -32,10 +32,9 @@ cr.define('cr', function() {
      * @param {!EventTarget} target The DOM target to add a listener to.
      * @param {string} eventType The type of event to subscribe to.
      * @param {EventListener|Function} listener The listener to add.
-     * @param {boolean=} opt_capture Whether to invoke during the capture phase.
+     * @param {boolean=} capture Whether to invoke during the capture phase.
      */
-    add(target, eventType, listener, opt_capture) {
-      const capture = !!opt_capture;
+    add(target, eventType, listener, capture = false) {
       const h = {
         target: target,
         eventType: eventType,

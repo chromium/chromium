@@ -38,8 +38,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     const callbackRouter = this.apiProxy_.getCallbackRouter();
     this.listenerIds_ = [callbackRouter.onEssentialContent.addListener(
-        (essential_content: string[]) =>
-            this.showEssentialContent_(essential_content))];
+        (essentialContent: string[]) =>
+            this.showEssentialContent_(essentialContent))];
 
     this.apiProxy_.showUI();
   }
@@ -51,8 +51,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         id => this.apiProxy_.getCallbackRouter().removeListener(id));
   }
 
-  showEssentialContent_(essential_content: string[]) {
-    this.paragraphs_ = essential_content;
+  showEssentialContent_(essentialContent: string[]) {
+    this.paragraphs_ = essentialContent;
   }
 }
 customElements.define(ReadAnythingElement.is, ReadAnythingElement);

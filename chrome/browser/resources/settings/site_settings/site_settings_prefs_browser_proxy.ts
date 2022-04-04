@@ -384,9 +384,9 @@ export interface SiteSettingsPrefsBrowserProxy {
    * Deletes a protocol handler by url from the app approved list.
    * @param protocol The protocol to delete the url from.
    * @param url The url to delete.
-   * @param app_id The web app's ID to delete.
+   * @param appId The web app's ID to delete.
    */
-  removeAppDisallowedHandler(protocol: string, url: string, app_id: string):
+  removeAppDisallowedHandler(protocol: string, url: string, appId: string):
       void;
 
   /**
@@ -557,8 +557,8 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
     chrome.send('removeAppAllowedHandler', [protocol, url, appId]);
   }
 
-  removeAppDisallowedHandler(protocol: string, url: string, app_id: string) {
-    chrome.send('removeAppDisallowedHandler', [protocol, url, app_id]);
+  removeAppDisallowedHandler(protocol: string, url: string, appId: string) {
+    chrome.send('removeAppDisallowedHandler', [protocol, url, appId]);
   }
 
   updateIncognitoStatus() {

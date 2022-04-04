@@ -123,11 +123,11 @@ var CrPolicyStrings;
    * @param {!CrPolicyIndicatorType} type
    * @param {string} name The name associated with the indicator. See
    *     chrome.settingsPrivate.PrefObject.controlledByName
-   * @param {boolean=} opt_matches For RECOMMENDED only, whether the indicator
+   * @param {boolean=} matches For RECOMMENDED only, whether the indicator
    *     value matches the recommended value.
    * @return {string} The tooltip text for |type|.
    */
-  getIndicatorTooltip(type, name, opt_matches) {
+  getIndicatorTooltip(type, name, matches) {
     if (!window['CrPolicyStrings']) {
       return '';
     }  // Tooltips may not be defined, e.g. in OOBE.
@@ -148,9 +148,8 @@ var CrPolicyStrings;
       case CrPolicyIndicatorType.DEVICE_POLICY:
         return CrPolicyStrings.controlledSettingPolicy;
       case CrPolicyIndicatorType.RECOMMENDED:
-        return opt_matches ?
-            CrPolicyStrings.controlledSettingRecommendedMatches :
-            CrPolicyStrings.controlledSettingRecommendedDiffers;
+        return matches ? CrPolicyStrings.controlledSettingRecommendedMatches :
+                         CrPolicyStrings.controlledSettingRecommendedDiffers;
       case CrPolicyIndicatorType.PARENT:
         return CrPolicyStrings.controlledSettingParent;
       case CrPolicyIndicatorType.CHILD_RESTRICTION:

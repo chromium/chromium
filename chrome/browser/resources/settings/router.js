@@ -272,20 +272,19 @@ import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
     /**
      * Navigates to a canonical route and pushes a new history entry.
      * @param {!Route} route
-     * @param {URLSearchParams=} opt_dynamicParameters Navigations to the same
+     * @param {URLSearchParams=} dynamicParameters Navigations to the same
      *     URL parameters in a different order will still push to history.
-     * @param {boolean=} opt_removeSearch Whether to strip the 'search' URL
+     * @param {boolean=} removeSearch Whether to strip the 'search' URL
      *     parameter during navigation. Defaults to false.
      */
-    navigateTo(route, opt_dynamicParameters, opt_removeSearch) {
+    navigateTo(route, dynamicParameters, removeSearch = false) {
       // The ADVANCED route only serves as a parent of subpages, and should not
       // be possible to navigate to it directly.
       if (route === this.routes_.ADVANCED) {
         route = this.routes_.BASIC;
       }
 
-      const params = opt_dynamicParameters || new URLSearchParams();
-      const removeSearch = !!opt_removeSearch;
+      const params = dynamicParameters || new URLSearchParams();
 
       const oldSearchParam = this.getQueryParameters().get('search') || '';
       const newSearchParam = params.get('search') || '';
@@ -401,9 +400,9 @@ import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
       /**
        * @param {!Route} newRoute
-       * @param {!Route=} opt_oldRoute
+       * @param {!Route=} oldRoute
        */
-      currentRouteChanged(newRoute, opt_oldRoute) {
+      currentRouteChanged(newRoute, oldRoute) {
         assertNotReached();
       }
     }
@@ -415,7 +414,7 @@ import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
   export class RouteObserverMixinInterface {
     /**
      * @param {!Route} newRoute
-     * @param {!Route=} opt_oldRoute
+     * @param {!Route=} oldRoute
      */
-    currentRouteChanged(newRoute, opt_oldRoute) {}
+    currentRouteChanged(newRoute, oldRoute) {}
   }

@@ -101,24 +101,24 @@
 /**
  * Disables text selection and dragging, with optional callbacks to specify
  * overrides.
- * @param {function(Event):boolean=} opt_allowSelectStart Unless this function
+ * @param {function(Event):boolean=} allowSelectStart Unless this function
  *    is defined and returns true, the onselectionstart event will be
  *    suppressed.
- * @param {function(Event):boolean=} opt_allowDragStart Unless this function
+ * @param {function(Event):boolean=} allowDragStart Unless this function
  *    is defined and returns true, the ondragstart event will be suppressed.
  */
 /* #export */ function disableTextSelectAndDrag(
-    opt_allowSelectStart, opt_allowDragStart) {
+    allowSelectStart, allowDragStart) {
   // Disable text selection.
   document.onselectstart = function(e) {
-    if (!(opt_allowSelectStart && opt_allowSelectStart.call(this, e))) {
+    if (!(allowSelectStart && allowSelectStart.call(this, e))) {
       e.preventDefault();
     }
   };
 
   // Disable dragging.
   document.ondragstart = function(e) {
-    if (!(opt_allowDragStart && opt_allowDragStart.call(this, e))) {
+    if (!(allowDragStart && allowDragStart.call(this, e))) {
       e.preventDefault();
     }
   };
@@ -149,12 +149,12 @@
  * just calling querySelector and not checking the result because this lets us
  * satisfy the JSCompiler type system.
  * @param {string} selectors CSS selectors to query the element.
- * @param {(!Document|!DocumentFragment|!Element)=} opt_context An optional
+ * @param {(!Document|!DocumentFragment|!Element)=} context An optional
  *     context object for querySelector.
  * @return {!HTMLElement} the Element.
  */
-/* #export */ function queryRequiredElement(selectors, opt_context) {
-  const element = (opt_context || document).querySelector(selectors);
+/* #export */ function queryRequiredElement(selectors, context) {
+  const element = (context || document).querySelector(selectors);
   return assertInstanceof(
       element, HTMLElement, 'Missing required element: ' + selectors);
 }
@@ -193,17 +193,17 @@
  * or when no paint happens during the animation). This function sets up
  * a timer and emulate the event if it is not fired when the timer expires.
  * @param {!HTMLElement} el The element to watch for transitionend.
- * @param {number=} opt_timeOut The maximum wait time in milliseconds for the
+ * @param {number=} timeOut The maximum wait time in milliseconds for the
  *     transitionend to happen. If not specified, it is fetched from |el|
  *     using the transitionDuration style value.
  */
-/* #export */ function ensureTransitionEndEvent(el, opt_timeOut) {
-  if (opt_timeOut === undefined) {
+/* #export */ function ensureTransitionEndEvent(el, timeOut) {
+  if (timeOut === undefined) {
     const style = getComputedStyle(el);
-    opt_timeOut = parseFloat(style.transitionDuration) * 1000;
+    timeOut = parseFloat(style.transitionDuration) * 1000;
 
     // Give an additional 50ms buffer for the animation to complete.
-    opt_timeOut += 50;
+    timeOut += 50;
   }
 
   let fired = false;
@@ -215,7 +215,7 @@
     if (!fired) {
       cr.dispatchSimpleEvent(el, 'transitionend', true);
     }
-  }, opt_timeOut);
+  }, timeOut);
 }
 
 /**

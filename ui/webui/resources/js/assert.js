@@ -61,26 +61,26 @@
  * This code should only be hit in the case of serious programmer error or
  * unexpected input.
  *
- * @param {string=} opt_message A message to show when this is hit.
+ * @param {string=} message A message to show when this is hit.
  * @closurePrimitive {asserts.fail}
  */
-/* #export */ function assertNotReached(opt_message) {
-  assert(false, opt_message || 'Unreachable code hit');
+/* #export */ function assertNotReached(message) {
+  assert(false, message || 'Unreachable code hit');
 }
 
 /**
  * @param {*} value The value to check.
  * @param {function(new: T, ...)} type A user-defined constructor.
- * @param {string=} opt_message A message to show when this is hit.
+ * @param {string=} message A message to show when this is hit.
  * @return {T}
  * @template T
  */
-/* #export */ function assertInstanceof(value, type, opt_message) {
+/* #export */ function assertInstanceof(value, type, message) {
   // We don't use assert immediately here so that we avoid constructing an error
   // message if we don't have to.
   if (!(value instanceof type)) {
     assertNotReached(
-        opt_message ||
+        message ||
         'Value ' + value + ' is not a[n] ' + (type.name || typeof type));
   }
   return value;

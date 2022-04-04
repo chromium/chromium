@@ -662,7 +662,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private onAddPasswordTap_() {
     chrome.metricsPrivate.recordEnumerationValue(
         'PasswordManager.AddCredentialFromSettings.UserAction',
-        AddCredentialFromSettingsUserInteractions.Add_Dialog_Opened,
+        AddCredentialFromSettingsUserInteractions.ADD_DIALOG_OPENED,
         AddCredentialFromSettingsUserInteractions.COUNT);
     this.showAddPasswordDialog_ = true;
     this.activeDialogAnchorStack_.push(
@@ -672,7 +672,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private onAddPasswordDialogClosed_() {
     chrome.metricsPrivate.recordEnumerationValue(
         'PasswordManager.AddCredentialFromSettings.UserAction',
-        AddCredentialFromSettingsUserInteractions.Add_Dialog_Closed,
+        AddCredentialFromSettingsUserInteractions.ADD_DIALOG_CLOSED,
         AddCredentialFromSettingsUserInteractions.COUNT);
     this.showAddPasswordDialog_ = false;
     focusWithoutInk(assert(this.activeDialogAnchorStack_.pop()!));

@@ -158,7 +158,7 @@ export class Service implements ServiceInterface {
   /**
    * @return A signal that loading finished, rejected if any error occurred.
    */
-  private loadUnpackedHelper_(opt_options?:
+  private loadUnpackedHelper_(extraOptions?:
                                   chrome.developerPrivate.LoadUnpackedOptions):
       Promise<boolean> {
     return new Promise(function(resolve, reject) {
@@ -167,7 +167,7 @@ export class Service implements ServiceInterface {
             failQuietly: true,
             populateError: true,
           },
-          opt_options);
+          extraOptions);
 
       chrome.developerPrivate.loadUnpacked(options, (loadError) => {
         if (chrome.runtime.lastError &&

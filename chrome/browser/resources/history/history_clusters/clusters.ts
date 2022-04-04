@@ -268,8 +268,8 @@ class HistoryClustersElement extends PolymerElement {
    * loaded before the user ever gets a chance to see this button.
    */
   private getLoadMoreButtonHidden_(
-      _result: QueryResult, _result_clusters: Array<Cluster>,
-      _result_can_load_more: Time): boolean {
+      _result: QueryResult, _resultClusters: Array<Cluster>,
+      _resultCanLoadMore: Time): boolean {
     return !this.result_ || this.result_.clusters.length === 0 ||
         !this.result_.canLoadMore;
   }

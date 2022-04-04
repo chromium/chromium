@@ -176,18 +176,18 @@ export class SettingsPrefsElement extends PolymerElement {
   }
 
   /**
-   * @param opt_settingsApi SettingsPrivate implementation to use
+   * @param settingsApi SettingsPrivate implementation to use
    *     (chrome.settingsPrivate by default).
    */
-  initialize(opt_settingsApi?: typeof chrome.settingsPrivate) {
+  initialize(settingsApi?: typeof chrome.settingsPrivate) {
     // Only initialize once (or after resetForTesting() is called).
     if (this.initialized_) {
       return;
     }
     this.initialized_ = true;
 
-    if (opt_settingsApi) {
-      this.settingsApi_ = opt_settingsApi;
+    if (settingsApi) {
+      this.settingsApi_ = settingsApi;
     }
 
     this.boundPrefsChanged_ = this.onSettingsPrivatePrefsChanged_.bind(this);

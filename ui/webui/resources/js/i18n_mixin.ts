@@ -25,14 +25,13 @@ export const I18nMixin = dedupingMixin(
          * Returns a translated string where $1 to $9 are replaced by the given
          * values.
          * @param id The ID of the string to translate.
-         * @param var_args Values to replace the placeholders $1 to $9 in the
+         * @param varArgs Values to replace the placeholders $1 to $9 in the
          *     string.
          * @return A translated, substituted string.
          */
-        private i18nRaw_(id: string, ...var_args: Array<string|number>) {
-          return var_args.length === 0 ?
-              loadTimeData.getString(id) :
-              loadTimeData.getStringF(id, ...var_args);
+        private i18nRaw_(id: string, ...varArgs: Array<string|number>) {
+          return varArgs.length === 0 ? loadTimeData.getString(id) :
+                                        loadTimeData.getStringF(id, ...varArgs);
         }
 
         /**
@@ -41,12 +40,12 @@ export const I18nMixin = dedupingMixin(
          * Use with Polymer bindings that are *not* inner-h-t-m-l.
          * NOTE: This is not related to $i18n{foo} in HTML, see file overview.
          * @param id The ID of the string to translate.
-         * @param var_args Values to replace the placeholders $1 to $9 in the
+         * @param varArgs Values to replace the placeholders $1 to $9 in the
          *     string.
          * @return A translated, sanitized, substituted string.
          */
-        i18n(id: string, ...var_args: Array<string|number>) {
-          const rawString = this.i18nRaw_(id, ...var_args);
+        i18n(id: string, ...varArgs: Array<string|number>) {
+          const rawString = this.i18nRaw_(id, ...varArgs);
           return parseHtmlSubset(`<b>${rawString}</b>`).firstChild!.textContent!
               ;
         }
@@ -70,27 +69,27 @@ export const I18nMixin = dedupingMixin(
          * updates when the locale changes.
          * @param locale The UI language used.
          * @param id The ID of the string to translate.
-         * @param var_args Values to replace the placeholders $1 to $9 in the
+         * @param varArgs Values to replace the placeholders $1 to $9 in the
          *     string.
          * @return A translated, sanitized, substituted string.
          */
-        i18nDynamic(_locale: string, id: string, ...var_args: string[]) {
-          return this.i18n(id, ...var_args);
+        i18nDynamic(_locale: string, id: string, ...varArgs: string[]) {
+          return this.i18n(id, ...varArgs);
         }
 
         /**
-         * Similar to 'i18nDynamic', but var_args valus are interpreted as keys
+         * Similar to 'i18nDynamic', but varArgs valus are interpreted as keys
          * in loadTimeData. This allows generation of strings that take other
          * localized strings as parameters.
          * @param locale The UI language used.
          * @param id The ID of the string to translate.
-         * @param var_args Values to replace the placeholders $1 to $9
+         * @param varArgs Values to replace the placeholders $1 to $9
          *     in the string. Values are interpreted as strings IDs if found in
          * the list of localized strings.
          * @return A translated, sanitized, substituted string.
          */
-        i18nRecursive(locale: string, id: string, ...var_args: string[]) {
-          let args = var_args;
+        i18nRecursive(locale: string, id: string, ...varArgs: string[]) {
+          let args = varArgs;
           if (args.length > 0) {
             // Try to replace IDs with localized values.
             args = args.map(str => {
@@ -112,9 +111,9 @@ export const I18nMixin = dedupingMixin(
     });
 
 export interface I18nMixinInterface {
-  i18n(id: string, ...var_args: Array<string|number>): string;
+  i18n(id: string, ...varArgs: Array<string|number>): string;
   i18nAdvanced(id: string, opts?: SanitizeInnerHtmlOpts): string;
-  i18nDynamic(locale: string, id: string, ...var_args: string[]): string;
-  i18nRecursive(locale: string, id: string, ...var_args: string[]): string;
+  i18nDynamic(locale: string, id: string, ...varArgs: string[]): string;
+  i18nRecursive(locale: string, id: string, ...varArgs: string[]): string;
   i18nExists(id: string): boolean;
 }

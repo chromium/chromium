@@ -53,7 +53,7 @@ class ToolTip {
   y: number;
   node: GraphNode;
   private div_: d3.Selection<HTMLDivElement, unknown, null, undefined>;
-  private description_json_: string = '';
+  private descriptionJson_: string = '';
 
   constructor(div: Element, node: GraphNode) {
     this.x = node.x;
@@ -105,8 +105,8 @@ class ToolTip {
   /**
    * Updates the description displayed.
    */
-  onDescription(description_json: string) {
-    if (this.description_json_ === description_json) {
+  onDescription(descriptionJson: string) {
+    if (this.descriptionJson_ === descriptionJson) {
       return;
     }
 
@@ -180,8 +180,8 @@ class ToolTip {
     // flattened to an array. Each top-level dictionary entry is flattened to a
     // 'heading' with [`the describer's name`, null], followed by some number of
     // entries with a two-element list, each representing a key/value pair.
-    this.description_json_ = description_json;
-    const description = JSON.parse(description_json);
+    this.descriptionJson_ = descriptionJson;
+    const description = JSON.parse(descriptionJson);
     const flattenedDescription = [];
     for (const [title, value] of Object.entries(description)) {
       flattenedDescription.push([title, null]);
