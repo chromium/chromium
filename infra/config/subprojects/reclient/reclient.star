@@ -6,6 +6,7 @@ load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "cpu", "os")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/structs.star", "structs")
 load("//console-header.star", "HEADER")
 
 luci.bucket(
@@ -91,6 +92,20 @@ fyi_reclient_test_builder(
 
 fyi_reclient_staging_builder(
     name = "Win x64 Builder reclient staging",
+    builder_spec = builder_config.copy_from(
+        "ci/Win x64 Builder",
+        lambda spec: structs.evolve(
+            spec,
+            gclient_config = structs.extend(
+                spec.gclient_config,
+                apply_configs = [
+                    "enable_reclient",
+                    "reclient_staging",
+                ],
+            ),
+            build_gs_bucket = "chromium-fyi-archive",
+        ),
+    ),
     builderless = True,
     console_view_category = "win",
     cores = 32,
@@ -100,6 +115,20 @@ fyi_reclient_staging_builder(
 
 fyi_reclient_test_builder(
     name = "Win x64 Builder reclient test",
+    builder_spec = builder_config.copy_from(
+        "ci/Win x64 Builder",
+        lambda spec: structs.evolve(
+            spec,
+            gclient_config = structs.extend(
+                spec.gclient_config,
+                apply_configs = [
+                    "enable_reclient",
+                    "reclient_test",
+                ],
+            ),
+            build_gs_bucket = "chromium-fyi-archive",
+        ),
+    ),
     builderless = True,
     console_view_category = "win",
     cores = 32,
