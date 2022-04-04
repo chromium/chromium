@@ -19,7 +19,6 @@
 
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
-
 #include "base/check_op.h"
 #include "base/debug/proc_maps_linux.h"
 #include "base/files/file.h"
@@ -34,8 +33,11 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "tools/memory/partition_allocator/inspect_utils.h"
 
-namespace partition_alloc::internal::tools {
+namespace partition_alloc::tools {
 namespace {
+
+using partition_alloc::internal::BucketIndexLookup;
+using partition_alloc::internal::kNumBuckets;
 
 constexpr const char* kDumpName = "dump.dat";
 constexpr const char* kTmpDumpName = "dump.dat.tmp";
@@ -46,7 +48,7 @@ uintptr_t FindAllocInfoAddress(pid_t pid, int mem_fd) {
 
 void DisplayPerBucketData(
     const std::unordered_map<uintptr_t, size_t>& live_allocs) {
-  constexpr base::internal::BucketIndexLookup lookup{};
+  constexpr BucketIndexLookup lookup{};
   std::cout << "Per-bucket stats:"
             << "\nIndex\tBucket Size\t#Allocs\tTotal Size\tFragmentation"
             << std::string(80, '-') << "\n";
@@ -56,7 +58,7 @@ void DisplayPerBucketData(
   size_t total_memory = 0;
   for (const auto& pair : live_allocs) {
     total_memory += pair.second;
-    const auto index = base::internal::BucketIndexLookup::GetIndex(pair.second);
+    const auto index = BucketIndexLookup::GetIndex(pair.second);
     alloc_size[index] += pair.second;
     alloc_nums[index]++;
   }
@@ -91,9 +93,12 @@ void DisplayPerBucketData(
 }
 
 }  // namespace
-}  // namespace partition_alloc::internal::tools
+}  // namespace partition_alloc::tools
 
 int main(int argc, char** argv) {
+  using partition_alloc::internal::AllocInfo;
+  using partition_alloc::internal::kAllocInfoSize;
+
   if (argc < 2) {
     LOG(ERROR) << "Usage:" << argv[0] << " <PID> "
                << "[address. 0 to scan the process memory]";
@@ -103,7 +108,7 @@ int main(int argc, char** argv) {
   int pid = atoi(argv[1]);
   uintptr_t registry_address = 0;
 
-  auto mem_fd = partition_alloc::internal::tools::OpenProcMem(pid);
+  auto mem_fd = partition_alloc::tools::OpenProcMem(pid);
 
   if (argc == 3) {
     uint64_t address;
@@ -111,24 +116,22 @@ int main(int argc, char** argv) {
     registry_address = static_cast<uintptr_t>(address);
   } else {
     // Scan the memory.
-    registry_address = partition_alloc::internal::tools::FindAllocInfoAddress(
-        pid, mem_fd.get());
+    registry_address =
+        partition_alloc::tools::FindAllocInfoAddress(pid, mem_fd.get());
   }
 
   CHECK(registry_address);
 
-  auto alloc_info = std::make_unique<partition_alloc::internal::AllocInfo>();
-  partition_alloc::internal::tools::ReadMemory(
-      mem_fd.get(), registry_address,
-      sizeof(partition_alloc::internal::AllocInfo),
-      reinterpret_cast<char*>(alloc_info.get()));
+  auto alloc_info = std::make_unique<AllocInfo>();
+  partition_alloc::tools::ReadMemory(mem_fd.get(), registry_address,
+                                     sizeof(AllocInfo),
+                                     reinterpret_cast<char*>(alloc_info.get()));
 
   size_t old_index = 0;
   size_t new_index = alloc_info->index;
 
   std::unordered_map<uintptr_t, size_t> live_allocs = {};
   while (true) {
-    using partition_alloc::internal::kAllocInfoSize;
     base::TimeTicks tick = base::TimeTicks::Now();
 
     size_t len = old_index < new_index ? new_index - old_index
@@ -150,11 +153,10 @@ int main(int argc, char** argv) {
     constexpr const char* kClearScreen = "\033[2J\033[1;1H";
     std::cout << kClearScreen << "Time to gather data = " << gather_time_ms
               << "ms\n";
-    partition_alloc::internal::tools::DisplayPerBucketData(live_allocs);
+    partition_alloc::tools::DisplayPerBucketData(live_allocs);
 
-    partition_alloc::internal::tools::ReadMemory(
-        mem_fd.get(), registry_address,
-        sizeof(partition_alloc::internal::AllocInfo),
+    partition_alloc::tools::ReadMemory(
+        mem_fd.get(), registry_address, sizeof(AllocInfo),
         reinterpret_cast<char*>(alloc_info.get()));
 
     old_index = new_index;

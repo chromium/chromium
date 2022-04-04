@@ -5,11 +5,13 @@
 // Dumps PartitionAlloc's heap into a file.
 
 #include <sys/mman.h>
+
 #include <cstdlib>
 #include <cstring>
 #include <string>
 
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
+#include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/check.h"
@@ -22,7 +24,18 @@
 #include "base/values.h"
 #include "tools/memory/partition_allocator/inspect_utils.h"
 
-namespace partition_alloc::internal::tools {
+namespace partition_alloc::tools {
+
+using partition_alloc::internal::kInvalidBucketSize;
+using partition_alloc::internal::kSuperPageSize;
+using partition_alloc::internal::PartitionPage;
+using partition_alloc::internal::PartitionPageSize;
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+using partition_alloc::internal::PartitionRefCountPointer;
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
+using partition_alloc::internal::PartitionSuperPageExtentEntry;
+using partition_alloc::internal::SystemPageSize;
+using partition_alloc::internal::ThreadSafe;
 
 class HeapDumper {
  public:
@@ -260,7 +273,7 @@ class HeapDumper {
           }
           uintptr_t slot_address =
               slot_span_start + slot_index * metadata.bucket->slot_size;
-          auto* ref_count = internal::PartitionRefCountPointer(slot_address);
+          auto* ref_count = PartitionRefCountPointer(slot_address);
           uint32_t requested_size = ref_count->requested_size();
 
           // Address space dumping is not synchronized with allocation, meaning
@@ -303,9 +316,8 @@ class HeapDumper {
                                    int mem_fd) NO_THREAD_SAFETY_ANALYSIS {
     uintptr_t tcache_registry_address =
         IndexThreadCacheNeedleArray(pid, mem_fd, 1);
-    auto registry =
-        RawBuffer<base::internal::ThreadCacheRegistry>::ReadFromMemFd(
-            mem_fd, tcache_registry_address);
+    auto registry = RawBuffer<ThreadCacheRegistry>::ReadFromMemFd(
+        mem_fd, tcache_registry_address);
     if (!registry)
       return 0;
 
@@ -314,8 +326,7 @@ class HeapDumper {
     if (!tcache_address)
       return 0;
 
-    auto tcache = RawBuffer<base::internal::ThreadCache>::ReadFromMemFd(
-        mem_fd, tcache_address);
+    auto tcache = RawBuffer<ThreadCache>::ReadFromMemFd(mem_fd, tcache_address);
     if (!tcache)
       return 0;
 
@@ -335,7 +346,7 @@ class HeapDumper {
   size_t local_root_copy_mapping_size_ = 0;
 };
 
-}  // namespace partition_alloc::internal::tools
+}  // namespace partition_alloc::tools
 
 int main(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);
@@ -349,11 +360,11 @@ int main(int argc, char** argv) {
   int pid = atoi(command_line->GetSwitchValueASCII("pid").c_str());
   LOG(WARNING) << "PID = " << pid;
 
-  auto mem_fd = partition_alloc::internal::tools::OpenProcMem(pid);
-  partition_alloc::internal::tools::HeapDumper dumper{pid, mem_fd.get()};
+  auto mem_fd = partition_alloc::tools::OpenProcMem(pid);
+  partition_alloc::tools::HeapDumper dumper{pid, mem_fd.get()};
 
   {
-    partition_alloc::internal::tools::ScopedSigStopper stopper{pid};
+    partition_alloc::tools::ScopedSigStopper stopper{pid};
     if (!dumper.FindRoot()) {
       LOG(WARNING) << "Cannot find (or copy) the root";
       return 1;

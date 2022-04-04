@@ -19,7 +19,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace partition_alloc::internal::tools {
+namespace partition_alloc::tools {
 
 // SIGSTOPs a process.
 class ScopedSigStopper {
@@ -78,6 +78,6 @@ class RawBuffer {
   alignas(T) char buffer_[sizeof(T)];
 };
 
-}  // namespace partition_alloc::internal::tools
+}  // namespace partition_alloc::tools
 
 #endif  // TOOLS_MEMORY_PARTITION_ALLOCATOR_INSPECT_UTILS_H_

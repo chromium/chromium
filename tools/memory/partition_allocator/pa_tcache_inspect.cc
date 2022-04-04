@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+
 #include <algorithm>
 #include <cstring>
 #include <ios>
@@ -20,7 +21,6 @@
 
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
-
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/debug/proc_maps_linux.h"
@@ -41,7 +41,13 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "tools/memory/partition_allocator/inspect_utils.h"
 
-namespace partition_alloc::internal::tools {
+namespace partition_alloc::tools {
+
+using partition_alloc::internal::BucketIndexLookup;
+using partition_alloc::internal::PartitionBucket;
+using partition_alloc::internal::SlotSpanMetadata;
+using partition_alloc::internal::ThreadSafe;
+
 namespace {
 
 // Scans the process memory to look for the thread cache registry address. This
@@ -124,13 +130,11 @@ class ThreadCacheInspector {
   size_t CachedMemory() const;
   uintptr_t GetRootAddress();
 
-  const std::vector<RawBuffer<base::internal::ThreadCache>>& thread_caches()
-      const {
+  const std::vector<RawBuffer<ThreadCache>>& thread_caches() const {
     return thread_caches_;
   }
 
-  static bool should_purge(
-      const RawBuffer<base::internal::ThreadCache>& tcache) {
+  static bool should_purge(const RawBuffer<ThreadCache>& tcache) {
     return tcache.get()->should_purge_;
   }
 
@@ -143,8 +147,8 @@ class ThreadCacheInspector {
   uintptr_t registry_addr_;
   int mem_fd_;
   pid_t pid_;
-  RawBuffer<base::internal::ThreadCacheRegistry> registry_;
-  std::vector<RawBuffer<base::internal::ThreadCache>> thread_caches_;
+  RawBuffer<ThreadCacheRegistry> registry_;
+  std::vector<RawBuffer<ThreadCache>> thread_caches_;
 };
 
 class PartitionRootInspector {
@@ -154,7 +158,7 @@ class PartitionRootInspector {
     size_t allocated_slots = 0;
     size_t freelist_size = 0;
 
-    base::internal::PartitionBucket<base::internal::ThreadSafe> bucket;
+    PartitionBucket<ThreadSafe> bucket;
     std::vector<size_t> freelist_sizes;
     // Flattened versions of the lists.
     std::vector<SlotSpanMetadata<ThreadSafe>> active_slot_spans;
@@ -167,9 +171,7 @@ class PartitionRootInspector {
   // Returns true for success.
   bool GatherStatistics();
   const std::vector<BucketStats>& bucket_stats() const { return bucket_stats_; }
-  const PartitionRoot<base::internal::ThreadSafe>* root() {
-    return root_.get();
-  }
+  const PartitionRoot<ThreadSafe>* root() { return root_.get(); }
 
  private:
   void Update();
@@ -177,7 +179,7 @@ class PartitionRootInspector {
   uintptr_t root_addr_;
   int mem_fd_;
   pid_t pid_;
-  RawBuffer<PartitionRoot<base::internal::ThreadSafe>> root_;
+  RawBuffer<PartitionRoot<ThreadSafe>> root_;
   std::vector<BucketStats> bucket_stats_;
 };
 
@@ -194,15 +196,15 @@ bool ThreadCacheInspector::GetAllThreadCaches() NO_THREAD_SAFETY_ANALYSIS {
   // This is going to take a while, make sure that the metadata don't change.
   ScopedSigStopper stopper{pid_};
 
-  auto registry = RawBuffer<base::internal::ThreadCacheRegistry>::ReadFromMemFd(
-      mem_fd_, registry_addr_);
+  auto registry =
+      RawBuffer<ThreadCacheRegistry>::ReadFromMemFd(mem_fd_, registry_addr_);
   if (!registry.has_value())
     return false;
 
   registry_ = *registry;
-  base::internal::ThreadCache* head = registry_.get()->list_head_;
+  ThreadCache* head = registry_.get()->list_head_;
   while (head) {
-    auto tcache = RawBuffer<base::internal::ThreadCache>::ReadFromMemFd(
+    auto tcache = RawBuffer<ThreadCache>::ReadFromMemFd(
         mem_fd_, reinterpret_cast<uintptr_t>(head));
     if (!tcache.has_value()) {
       LOG(WARNING) << "Failed to read a ThreadCache";
@@ -232,16 +234,16 @@ uintptr_t ThreadCacheInspector::GetRootAddress() {
 
 std::vector<ThreadCacheInspector::BucketStats>
 ThreadCacheInspector::AccumulateThreadCacheBuckets() {
-  std::vector<BucketStats> result(base::internal::ThreadCache::kBucketCount);
+  std::vector<BucketStats> result(ThreadCache::kBucketCount);
   for (auto& tcache : thread_caches_) {
-    for (int i = 0; i < base::internal::ThreadCache::kBucketCount; i++) {
+    for (int i = 0; i < ThreadCache::kBucketCount; i++) {
       result[i].count += tcache.get()->buckets_[i].count;
       result[i].per_thread_limit = tcache.get()->buckets_[i].limit;
     }
   }
 
-  base::internal::BucketIndexLookup lookup{};
-  for (int i = 0; i < base::internal::ThreadCache::kBucketCount; i++) {
+  BucketIndexLookup lookup{};
+  for (int i = 0; i < ThreadCache::kBucketCount; i++) {
     result[i].size = lookup.bucket_sizes()[i];
   }
   return result;
@@ -249,26 +251,22 @@ ThreadCacheInspector::AccumulateThreadCacheBuckets() {
 
 void PartitionRootInspector::Update() {
   auto root =
-      RawBuffer<PartitionRoot<base::internal::ThreadSafe>>::ReadFromMemFd(
-          mem_fd_, root_addr_);
+      RawBuffer<PartitionRoot<ThreadSafe>>::ReadFromMemFd(mem_fd_, root_addr_);
   if (root.has_value())
     root_ = *root;
 }
 
 namespace {
 
-bool CopySlotSpanList(
-    std::vector<base::internal::SlotSpanMetadata<base::internal::ThreadSafe>>&
-        list,
-    uintptr_t head_address,
-    int mem_fd) {
-  absl::optional<RawBuffer<base::internal::SlotSpanMetadata<ThreadSafe>>>
-      metadata;
+bool CopySlotSpanList(std::vector<SlotSpanMetadata<ThreadSafe>>& list,
+                      uintptr_t head_address,
+                      int mem_fd) {
+  absl::optional<RawBuffer<SlotSpanMetadata<ThreadSafe>>> metadata;
   for (uintptr_t slot_span_address = head_address; slot_span_address;
        slot_span_address =
            reinterpret_cast<uintptr_t>(metadata->get()->next_slot_span)) {
-    metadata = RawBuffer<base::internal::SlotSpanMetadata<
-        base::internal::ThreadSafe>>::ReadFromMemFd(mem_fd, slot_span_address);
+    metadata = RawBuffer<SlotSpanMetadata<ThreadSafe>>::ReadFromMemFd(
+        mem_fd, slot_span_address);
     if (!metadata.has_value())
       return false;
     list.push_back(*metadata->get());
@@ -560,7 +558,7 @@ base::Value Dump(PartitionRootInspector& root_inspector) {
   result.SetKey("buckets", std::move(bucket_stats));
   return result;
 }
-}  // namespace partition_alloc::internal::tools
+}  // namespace partition_alloc::tools
 
 int main(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);
@@ -578,15 +576,14 @@ int main(int argc, char** argv) {
   base::FilePath json_filename =
       base::CommandLine::ForCurrentProcess()->GetSwitchValuePath("json");
 
-  auto mem_fd = partition_alloc::internal::tools::OpenProcMem(pid);
+  auto mem_fd = partition_alloc::tools::OpenProcMem(pid);
   // Scan the memory.
   uintptr_t registry_address =
-      partition_alloc::internal::tools::FindThreadCacheRegistry(pid,
-                                                                mem_fd.get());
+      partition_alloc::tools::FindThreadCacheRegistry(pid, mem_fd.get());
   CHECK(registry_address);
 
   LOG(INFO) << "Getting the thread cache registry";
-  partition_alloc::internal::tools::ThreadCacheInspector thread_cache_inspector{
+  partition_alloc::tools::ThreadCacheInspector thread_cache_inspector{
       registry_address, mem_fd.get(), pid};
   std::map<base::PlatformThreadId, std::string> tid_to_name;
 
@@ -601,7 +598,7 @@ int main(int argc, char** argv) {
     if (!ok)
       continue;
 
-    partition_alloc::internal::tools::PartitionRootInspector root_inspector{
+    partition_alloc::tools::PartitionRootInspector root_inspector{
         thread_cache_inspector.GetRootAddress(), mem_fd.get(), pid};
     bool has_bucket_stats = root_inspector.GatherStatistics();
 
@@ -610,7 +607,7 @@ int main(int argc, char** argv) {
       // as at worst we would display wrong data, and TID reuse is very unlikely
       // in normal scenarios.
       if (tid_to_name.find(tcache.get()->thread_id()) == tid_to_name.end()) {
-        tid_to_name = partition_alloc::internal::tools::ThreadNames(pid);
+        tid_to_name = partition_alloc::tools::ThreadNames(pid);
         break;
       }
     }

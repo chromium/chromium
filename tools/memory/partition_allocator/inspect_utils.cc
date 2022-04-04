@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 
-namespace partition_alloc::internal::tools {
+namespace partition_alloc::tools {
 
 base::ScopedFD OpenProcMem(pid_t pid) {
   std::string path = base::StringPrintf("/proc/%d/mem", pid);
@@ -75,8 +75,7 @@ char* ReadAtSameAddressInLocalMemory(int fd,
 
 uintptr_t IndexThreadCacheNeedleArray(pid_t pid, int mem_fd, size_t index) {
   std::vector<base::debug::MappedMemoryRegion> regions;
-  DCHECK_LT(index,
-            partition_alloc::internal::tools::kThreadCacheNeedleArraySize);
+  DCHECK_LT(index, kThreadCacheNeedleArraySize);
 
   {
     // Ensures that the mappings are not going to change.
@@ -135,10 +134,8 @@ uintptr_t IndexThreadCacheNeedleArray(pid_t pid, int mem_fd, size_t index) {
         continue;
       }
 
-      if (needle_array_candidate[0] ==
-              partition_alloc::internal::tools::kNeedle1 &&
-          needle_array_candidate[kThreadCacheNeedleArraySize - 1] ==
-              partition_alloc::internal::tools::kNeedle2) {
+      if (needle_array_candidate[0] == kNeedle1 &&
+          needle_array_candidate[kThreadCacheNeedleArraySize - 1] == kNeedle2) {
         LOG(INFO) << "Got it! Address = 0x" << std::hex
                   << needle_array_candidate[index];
         return needle_array_candidate[index];
@@ -150,4 +147,4 @@ uintptr_t IndexThreadCacheNeedleArray(pid_t pid, int mem_fd, size_t index) {
   return 0;
 }
 
-}  // namespace partition_alloc::internal::tools
+}  // namespace partition_alloc::tools

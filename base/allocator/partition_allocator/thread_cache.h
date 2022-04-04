@@ -32,8 +32,6 @@ namespace partition_alloc {
 
 class ThreadCache;
 
-namespace internal {
-
 namespace tools {
 
 // This is used from ThreadCacheInspector, which runs in a different process. It
@@ -65,6 +63,8 @@ class HeapDumper;
 class ThreadCacheInspector;
 
 }  // namespace tools
+
+namespace internal {
 
 extern BASE_EXPORT PartitionTlsKey g_thread_cache_key;
 // On Android, we have to go through emutls, since this is always a shared
@@ -150,8 +150,8 @@ class BASE_EXPORT ThreadCacheRegistry {
   static constexpr size_t kMinCachedMemoryForPurging = 500 * 1024;
 
  private:
-  friend class internal::tools::ThreadCacheInspector;
-  friend class internal::tools::HeapDumper;
+  friend class tools::ThreadCacheInspector;
+  friend class tools::HeapDumper;
 
   // Not using base::Lock as the object's constructor must be constexpr.
   internal::Lock lock_;
@@ -327,8 +327,8 @@ class BASE_EXPORT ThreadCache {
       ThreadCacheLimits::kLargeSizeThreshold;
 
  private:
-  friend class internal::tools::HeapDumper;
-  friend class internal::tools::ThreadCacheInspector;
+  friend class tools::HeapDumper;
+  friend class tools::ThreadCacheInspector;
 
   struct Bucket {
     internal::PartitionFreelistEntry* freelist_head = nullptr;
@@ -417,7 +417,7 @@ class BASE_EXPORT ThreadCache {
 
   friend class ThreadCacheRegistry;
   friend class PartitionAllocThreadCacheTest;
-  friend class internal::tools::ThreadCacheInspector;
+  friend class tools::ThreadCacheInspector;
   FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest, Simple);
   FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
                            MultipleObjectsCachedPerBucket);
