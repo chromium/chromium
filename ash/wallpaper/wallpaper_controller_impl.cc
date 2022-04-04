@@ -3008,7 +3008,7 @@ void WallpaperControllerImpl::UpdateDailyRefreshWallpaper(
                        set_wallpaper_weak_factory_.GetWeakPtr(), account_id,
                        GetDailyRefreshCollectionId(account_id),
                        ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-                       /*preview_mode=*/false, std::move(callback)));
+                       std::move(callback)));
   } else {
     StartDailyRefreshTimer();
     std::move(callback).Run(false);
@@ -3019,7 +3019,6 @@ void WallpaperControllerImpl::SetDailyWallpaper(
     const AccountId& account_id,
     const std::string& collection_id,
     WallpaperLayout layout,
-    bool preview_mode,
     RefreshWallpaperCallback callback,
     bool success,
     const backdrop::Image& image) {
@@ -3170,7 +3169,7 @@ void WallpaperControllerImpl::HandleDailyWallpaperInfoSyncedIn(
       base::BindOnce(&WallpaperControllerImpl::SetDailyWallpaper,
                      weak_factory_.GetWeakPtr(), account_id, info.collection_id,
                      ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-                     /*preview_mode=*/false, base::DoNothing()));
+                     base::DoNothing()));
 }
 
 void WallpaperControllerImpl::HandleOnlineWallpaperInfoSyncedIn(

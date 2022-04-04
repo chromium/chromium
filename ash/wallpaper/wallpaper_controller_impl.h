@@ -671,7 +671,6 @@ class ASH_EXPORT WallpaperControllerImpl
   void SetDailyWallpaper(const AccountId& account_id,
                          const std::string& collection_id,
                          WallpaperLayout layout,
-                         bool preview_mode,
                          RefreshWallpaperCallback callback,
                          bool success,
                          const backdrop::Image& image);
