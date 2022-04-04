@@ -90,7 +90,7 @@
 <translation id="1084096383128641877">Durch das Entfernen dieses Passworts wird dein <ph name="DOMAIN" />-Konto nicht gelöscht. Ändere dein Passwort oder lösche dein <ph name="DOMAIN_LINK" />-Konto, um es vor anderen zu schützen.</translation>
 <translation id="1084824384139382525">Adr&amp;esse des Links kopieren</translation>
 <translation id="1085064499066015002">Immer auf allen Websites</translation>
-<translation id="1085697365578766383">Fehler beim Starten der virtuellen Maschine. Bitte versuchen Sie es noch einmal.</translation>
+<translation id="1085697365578766383">Fehler beim Starten der virtuellen Maschine. Bitte versuche es noch einmal.</translation>
 <translation id="1087965115100412394">Websites dürfen keine Verbindung mit MIDI-Geräten herstellen</translation>
 <translation id="1088654056000736875">Chrome entfernt schädliche Software von deinem Computer…</translation>
 <translation id="1088659085457112967">Lesemodus aktivieren</translation>
@@ -763,7 +763,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="174123615272205933">Benutzerdefiniert</translation>
 <translation id="1741314857973421784">Weiter</translation>
 <translation id="1743970419083351269">Downloadleiste schließen</translation>
-<translation id="1744060673522309905">Das Gerät konnte der Domain nicht beitreten. Sie dürfen nicht mehr als die erlaubte Anzahl von Geräten hinzufügen.</translation>
+<translation id="1744060673522309905">Das Gerät konnte der Domain nicht beitreten. Du darfst nicht mehr als die erlaubte Anzahl von Geräten hinzufügen.</translation>
 <translation id="1744108098763830590">Hintergrundseite</translation>
 <translation id="1745732479023874451">Kontakte verwalten</translation>
 <translation id="1748563609363301860">Du kannst dieses Passwort entweder in deinem Google-Konto oder nur auf diesem Gerät speichern</translation>
@@ -876,7 +876,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1841705068325380214"><ph name="EXTENSION_NAME" /> ist deaktiviert</translation>
 <translation id="184183613002882946">Nein, nur 1 Schalter</translation>
 <translation id="184273675144259287">Linux-Apps und -Dateien durch eine vorherige Sicherung ersetzen</translation>
-<translation id="1842766183094193446">Möchten Sie den Demomodus wirklich aktivieren?</translation>
+<translation id="1842766183094193446">Möchtest du den Demomodus wirklich aktivieren?</translation>
 <translation id="1845727111305721124">Dürfen Ton abspielen</translation>
 <translation id="1846308012215045257">Zum Ausführen von <ph name="PLUGIN_NAME" /> die Strg-Taste drücken und mit der Maus klicken</translation>
 <translation id="184862733444771842">Funktionsanfrage</translation>
@@ -1107,7 +1107,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2081816110395725788">Inaktivität im Akkubetrieb</translation>
 <translation id="2082187087049518845">Tab gruppieren</translation>
 <translation id="2082510809738716738">Designfarbe auswählen</translation>
-<translation id="208586643495776849">Versuchen Sie es bitte noch einmal</translation>
+<translation id="208586643495776849">Versuche es bitte noch einmal</translation>
 <translation id="208634871997892083">Durchgehend aktives VPN</translation>
 <translation id="2087822576218954668">Drucken: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Die Anmeldung wird erst nach der Installation von <ph name="DEVICE_OS" /> unterstützt.</translation>
@@ -2315,7 +2315,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3289856944988573801">Verwende Ethernet oder WLAN zur Suche nach Updates.</translation>
 <translation id="3290249595466894471">Sendet außerdem eine kleine Auswahl von Seiten, Downloads, Erweiterungsaktivitäten und Systeminformationen, um die Erkennung neuer Bedrohungen zu verbessern</translation>
 <translation id="3293644607209440645">Diese Seite senden</translation>
-<translation id="32939749466444286">Der Linux-Container konnte nicht gestartet werden. Bitte versuchen Sie es noch einmal.</translation>
+<translation id="32939749466444286">Der Linux-Container konnte nicht gestartet werden. Bitte versuche es noch einmal.</translation>
 <translation id="3294437725009624529">Gast</translation>
 <translation id="3294686910656423119">Nutzungsstatistik und Absturzberichte</translation>
 <translation id="3297536526040732495">Verknüpft diese Daten vorübergehend mit deinem Google-Konto, sofern du angemeldet bist, um dich in Google-Apps zu schützen</translation>
@@ -2562,7 +2562,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3532521178906420528">Netzwerkverbindung wird hergestellt…</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – stummgeschaltet</translation>
 <translation id="3537881477201137177">Das kann später in den Einstellungen geändert werden</translation>
-<translation id="3538066758857505094">Fehler beim Deinstallieren von Linux. Bitte versuchen Sie es noch einmal.</translation>
+<translation id="3538066758857505094">Fehler beim Deinstallieren von Linux. Bitte versuche es noch einmal.</translation>
 <translation id="354060433403403521">Netzteil</translation>
 <translation id="354068948465830244">Kann Websitedaten lesen und ändern</translation>
 <translation id="3541823293333232175">Zugewiesen</translation>
@@ -2639,7 +2639,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3615073365085224194">Berühren Sie den Fingerabdrucksensor mit dem Finger</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> wird gegenwärtig gescannt</translation>
 <translation id="3616741288025931835">&amp;Browserdaten löschen...</translation>
-<translation id="3617891479562106823">Hintergründe sind nicht verfügbar. Bitte versuchen Sie es später noch einmal.</translation>
+<translation id="3617891479562106823">Hintergründe sind nicht verfügbar. Bitte versuche es später noch einmal.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3619962278978697442">Sie können bei jeder Anmeldung eine der Optionen auswählen</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{eine App}other{# Apps}}</translation>
@@ -2768,7 +2768,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3719826155360621982">Startseite</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Google und ich</translation>
-<translation id="3722108462506185496">Fehler beim Starten des Dienstes für die virtuelle Maschine. Bitte versuchen Sie es noch einmal.</translation>
+<translation id="3722108462506185496">Fehler beim Starten des Dienstes für die virtuelle Maschine. Bitte versuche es noch einmal.</translation>
 <translation id="3727144509609414201">Verfügbare WLANs</translation>
 <translation id="3727187387656390258">Pop-up prüfen</translation>
 <translation id="372722114124766626">Nur einmal</translation>
@@ -2907,7 +2907,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3848547754896969219">In &amp;Inkognitofenster öffnen</translation>
 <translation id="385051799172605136">Zurück</translation>
 <translation id="3851428669031642514">Unsichere Skripts laden</translation>
-<translation id="3854599674806204102">Wählen Sie eine Option aus</translation>
+<translation id="3854599674806204102">Wähle eine Option aus</translation>
 <translation id="3854967233147778866">Übersetzung von fremdsprachigen Websites anbieten</translation>
 <translation id="3854976556788175030">Ausgabefach ist voll</translation>
 <translation id="3855441664322950881">Erweiterung packen</translation>
@@ -4419,7 +4419,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5436575196282187764">Google Fotos-Erinnerungen</translation>
 <translation id="5439680044267106777">Überspringen und neues Profil einrichten</translation>
 <translation id="544083962418256601">Verknüpfungen erstellen...</translation>
-<translation id="5442228125690314719">Fehler beim Erstellen des Datenträgerabbilds. Bitte versuchen Sie es noch einmal.</translation>
+<translation id="5442228125690314719">Fehler beim Erstellen des Datenträgerabbilds. Bitte versuche es noch einmal.</translation>
 <translation id="5442550868130618860">Automatische Updates aktivieren</translation>
 <translation id="5445400788035474247">10-fach</translation>
 <translation id="5446983216438178612">Zertifikate für die Organisation anzeigen</translation>
@@ -5093,7 +5093,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6102043788063419338">Diese Datei wurde vom Erweiterten Sicherheitsprogramm blockiert.</translation>
 <translation id="6103681770816982672">Achtung: Du wechselst zum Entwicklerkanal</translation>
 <translation id="6104068876731806426">Google Konten</translation>
-<translation id="6104311680260824317">Das Gerät konnte der Domain nicht beitreten. Der Server bietet keine Unterstützung für die angegebenen Kerberos-Verschlüsselungstypen. Unter "Weitere Optionen" finden Sie die Verschlüsselungseinstellungen.</translation>
+<translation id="6104311680260824317">Das Gerät konnte der Domain nicht beitreten. Der Server bietet keine Unterstützung für die angegebenen Kerberos-Verschlüsselungstypen. Unter "Weitere Optionen" findest du die Verschlüsselungseinstellungen.</translation>
 <translation id="6104796831253957966">Druckerwarteschlange voll</translation>
 <translation id="6105994589138235234">Chrome-Synchronisierung</translation>
 <translation id="6111972606040028426">Google Assistant aktivieren</translation>
@@ -5193,7 +5193,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="621470880408090483">Websites dürfen keine Verbindung mit Bluetooth-Geräten herstellen</translation>
 <translation id="6216601812881225442">Dein Container unterstützt keine Größenanpassung. Wenn du den Speicherplatz anpassen möchtest, der Linux zugewiesen wurde, mache eine Sicherungskopie und stelle ihn in einem neuen Container wieder her.</translation>
 <translation id="6216696360484424239">Automatisch anmelden</translation>
-<translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> ist offline. Stellen Sie eine Internetverbindung her und versuchen Sie es noch einmal.</translation>
+<translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> ist offline. Stelle eine Internetverbindung her und versuche es noch einmal.</translation>
 <translation id="6220413761270491930">Fehler beim Laden der Erweiterung</translation>
 <translation id="6223447490656896591">Benutzerdefiniertes Bild:</translation>
 <translation id="6224481128663248237">Formatierung abgeschlossen</translation>
@@ -5724,7 +5724,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6762833852331690540">An</translation>
 <translation id="676560328519657314">Deine Zahlungsmethoden in Google Pay</translation>
 <translation id="6767566652486411142">Andere Sprache auswählen…</translation>
-<translation id="6767639283522617719">Beitritt zur Domain nicht möglich. Achten Sie darauf, dass die Einstellungen für die Organisationseinheit richtig sind.</translation>
+<translation id="6767639283522617719">Beitritt zur Domain nicht möglich. Achte darauf, dass die Einstellungen für die Organisationseinheit richtig sind.</translation>
 <translation id="6768034047581882264">Unsichere Inhalte dürfen nicht angezeigt werden</translation>
 <translation id="6770602306803890733">Verbessert die Sicherheit für Sie und alle im Internet</translation>
 <translation id="6771503742377376720">Ist eine Zertifizierungsstelle</translation>
@@ -6100,7 +6100,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="7134098520442464001">Schrift verkleinern</translation>
 <translation id="7135729336746831607">Bluetooth aktivieren?</translation>
 <translation id="7136694880210472378">Als Standard festlegen</translation>
-<translation id="7136993520339022828">Ein Fehler ist aufgetreten. Versuchen Sie es noch einmal mit anderen Bildern.</translation>
+<translation id="7136993520339022828">Ein Fehler ist aufgetreten. Versuche es noch einmal mit anderen Bildern.</translation>
 <translation id="7137472406312798422">Websites dürfen nachfragen, wenn sie Informationen über meine Bildschirme zum Öffnen und Platzieren von Fenstern verwenden möchten</translation>
 <translation id="7138515695467025690">Aus – wird automatisch bei Sonnenuntergang aktiviert</translation>
 <translation id="7138678301420049075">Sonstiges</translation>
@@ -6890,7 +6890,7 @@ Drücken Sie zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter ode
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Stummschaltung für Website aufheben}other{Stummschaltung für Websites aufheben}}</translation>
 <translation id="7933518760693751884">Klicken Sie auf das Lesezeichen-Symbol, um eine Seite für später zu speichern</translation>
 <translation id="7933634003144813719">Freigegebene Ordner verwalten</translation>
-<translation id="793531125873261495">Fehler beim Herunterladen der virtuellen Maschine. Bitte versuchen Sie es noch einmal.</translation>
+<translation id="793531125873261495">Fehler beim Herunterladen der virtuellen Maschine. Bitte versuche es noch einmal.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" /> % abgeschlossen</translation>
 <translation id="7938594894617528435">Derzeit offline</translation>
 <translation id="7939062555109487992">Erweiterte Optionen</translation>
