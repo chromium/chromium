@@ -36,13 +36,13 @@ class MODULES_EXPORT BarcodeDetector final : public ShapeDetector {
 
   explicit BarcodeDetector(ExecutionContext*,
                            const BarcodeDetectorOptions*,
-                           ExceptionState& exception_state);
+                           ExceptionState&);
   ~BarcodeDetector() override = default;
 
   void Trace(Visitor*) const override;
 
  private:
-  ScriptPromise DoDetect(ScriptPromiseResolver*, SkBitmap) override;
+  ScriptPromise DoDetect(ScriptState*, SkBitmap, ExceptionState&) override;
   void OnDetectBarcodes(
       ScriptPromiseResolver*,
       Vector<shape_detection::mojom::blink::BarcodeDetectionResultPtr>);

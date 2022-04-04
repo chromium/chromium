@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_barcode_detector_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_detected_barcode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_point_2d.h"
@@ -137,15 +138,16 @@ String BarcodeDetector::BarcodeFormatToString(
   }
 }
 
-ScriptPromise BarcodeDetector::DoDetect(ScriptPromiseResolver* resolver,
-                                        SkBitmap bitmap) {
-  ScriptPromise promise = resolver->Promise();
+ScriptPromise BarcodeDetector::DoDetect(ScriptState* script_state,
+                                        SkBitmap bitmap,
+                                        ExceptionState& exception_state) {
   if (!service_.is_bound()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotSupportedError,
-        "Barcode detection service unavailable."));
-    return promise;
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Barcode detection service unavailable.");
+    return ScriptPromise();
   }
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto promise = resolver->Promise();
   detect_requests_.insert(resolver);
   service_->Detect(std::move(bitmap),
                    WTF::Bind(&BarcodeDetector::OnDetectBarcodes,
@@ -189,7 +191,16 @@ void BarcodeDetector::OnConnectionError() {
   HeapHashSet<Member<ScriptPromiseResolver>> resolvers;
   resolvers.swap(detect_requests_);
   for (const auto& resolver : resolvers) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
+    // check if callback's resolver is still valid
+    if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                       resolver->GetScriptState())) {
+      return;
+    }
+    // enter into resolver's context to support creating DOMException
+    ScriptState::Scope script_state_scope(resolver->GetScriptState());
+
+    resolver->Reject(V8ThrowDOMException::CreateOrDie(
+        resolver->GetScriptState()->GetIsolate(),
         DOMExceptionCode::kNotSupportedError,
         "Barcode Detection not implemented."));
   }

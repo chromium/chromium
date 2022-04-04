@@ -10,5 +10,5 @@
     RuntimeEnabled=FaceDetector
 ] interface FaceDetector {
     [CallWith=ExecutionContext] constructor(optional FaceDetectorOptions faceDetectorOptions = {});
-    [CallWith=ScriptState, MeasureAs=FaceDetectorDetect] Promise<sequence<DetectedFace>> detect(ImageBitmapSource image);
+    [CallWith=ScriptState, MeasureAs=FaceDetectorDetect, RaisesException] Promise<sequence<DetectedFace>> detect(ImageBitmapSource image);
 };

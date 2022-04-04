@@ -20,14 +20,18 @@ class MODULES_EXPORT ShapeDetector : public ScriptWrappable {
   ~ShapeDetector() override = default;
 
   ScriptPromise detect(ScriptState* script_state,
-                       const V8ImageBitmapSource* image_source);
+                       const V8ImageBitmapSource* image_source,
+                       ExceptionState&);
 
  private:
-  ScriptPromise DetectShapesOnImageData(ScriptPromiseResolver*, ImageData*);
-  ScriptPromise DetectShapesOnImageElement(ScriptPromiseResolver*,
-                                           const HTMLImageElement*);
+  ScriptPromise DetectShapesOnImageData(ScriptState*,
+                                        ImageData*,
+                                        ExceptionState&);
+  ScriptPromise DetectShapesOnImageElement(ScriptState*,
+                                           const HTMLImageElement*,
+                                           ExceptionState&);
 
-  virtual ScriptPromise DoDetect(ScriptPromiseResolver*, SkBitmap) = 0;
+  virtual ScriptPromise DoDetect(ScriptState*, SkBitmap, ExceptionState&) = 0;
 };
 
 }  // namespace blink

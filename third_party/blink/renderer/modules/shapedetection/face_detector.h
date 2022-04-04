@@ -32,7 +32,7 @@ class MODULES_EXPORT FaceDetector final : public ShapeDetector {
   void Trace(Visitor*) const override;
 
  private:
-  ScriptPromise DoDetect(ScriptPromiseResolver*, SkBitmap) override;
+  ScriptPromise DoDetect(ScriptState*, SkBitmap, ExceptionState&) override;
   void OnDetectFaces(
       ScriptPromiseResolver*,
       Vector<shape_detection::mojom::blink::FaceDetectionResultPtr>);

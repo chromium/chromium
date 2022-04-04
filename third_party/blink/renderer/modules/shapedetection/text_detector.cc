@@ -8,6 +8,7 @@
 
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_detected_text.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_point_2d.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -33,15 +34,16 @@ TextDetector::TextDetector(ExecutionContext* context) : text_service_(context) {
       &TextDetector::OnTextServiceConnectionError, WrapWeakPersistent(this)));
 }
 
-ScriptPromise TextDetector::DoDetect(ScriptPromiseResolver* resolver,
-                                     SkBitmap bitmap) {
-  ScriptPromise promise = resolver->Promise();
+ScriptPromise TextDetector::DoDetect(ScriptState* script_state,
+                                     SkBitmap bitmap,
+                                     ExceptionState& exception_state) {
   if (!text_service_.is_bound()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotSupportedError,
-        "Text detection service unavailable."));
-    return promise;
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Text detection service unavailable.");
+    return ScriptPromise();
   }
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto promise = resolver->Promise();
   text_service_requests_.insert(resolver);
   text_service_->Detect(
       std::move(bitmap),
@@ -81,9 +83,18 @@ void TextDetector::OnDetectText(
 
 void TextDetector::OnTextServiceConnectionError() {
   for (const auto& request : text_service_requests_) {
-    request->Reject(
-        MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotSupportedError,
-                                           "Text Detection not implemented."));
+    // check if callback's resolver is still valid
+    if (!IsInParallelAlgorithmRunnable(request->GetExecutionContext(),
+                                       request->GetScriptState())) {
+      return;
+    }
+    // enter into resolver's context to support creating DOMException
+    ScriptState::Scope script_state_scope(request->GetScriptState());
+
+    request->Reject(V8ThrowDOMException::CreateOrDie(
+        request->GetScriptState()->GetIsolate(),
+        DOMExceptionCode::kNotSupportedError,
+        "Text Detection not implemented."));
   }
   text_service_requests_.clear();
   text_service_.reset();

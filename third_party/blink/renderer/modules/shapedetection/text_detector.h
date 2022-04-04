@@ -31,7 +31,7 @@ class MODULES_EXPORT TextDetector final : public ShapeDetector {
   void Trace(Visitor*) const override;
 
  private:
-  ScriptPromise DoDetect(ScriptPromiseResolver*, SkBitmap) override;
+  ScriptPromise DoDetect(ScriptState*, SkBitmap, ExceptionState&) override;
   void OnDetectText(
       ScriptPromiseResolver*,
       Vector<shape_detection::mojom::blink::TextDetectionResultPtr>);

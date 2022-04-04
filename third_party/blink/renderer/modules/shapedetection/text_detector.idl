@@ -10,5 +10,5 @@
     RuntimeEnabled=TextDetector
 ] interface TextDetector {
     [CallWith=ExecutionContext] constructor();
-    [CallWith=ScriptState, MeasureAs=TextDetectorDetect] Promise<sequence<DetectedText>> detect(ImageBitmapSource image);
+    [CallWith=ScriptState, MeasureAs=TextDetectorDetect, RaisesException] Promise<sequence<DetectedText>> detect(ImageBitmapSource image);
 };
