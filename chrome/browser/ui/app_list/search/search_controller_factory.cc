@@ -71,7 +71,6 @@ constexpr size_t kMaxZeroStateDriveResults = 10;
 
 // TODO(warx): Need UX spec.
 constexpr size_t kMaxAppShortcutResults = 4;
-constexpr size_t kMaxPlaystoreResults = 12;
 
 constexpr size_t kMaxAssistantTextResults = 1;
 
@@ -132,11 +131,6 @@ std::unique_ptr<SearchController> CreateSearchController(
     controller->AddProvider(drive_file_group_id,
                             std::make_unique<DriveSearchProvider>(profile));
   }
-
-  size_t playstore_api_group_id = controller->AddGroup(kMaxPlaystoreResults);
-  controller->AddProvider(playstore_api_group_id,
-                          std::make_unique<ArcPlayStoreSearchProvider>(
-                              kMaxPlaystoreResults, profile, list_controller));
 
   if (arc::IsArcAllowedForProfile(profile)) {
     size_t app_shortcut_group_id = controller->AddGroup(kMaxAppShortcutResults);
