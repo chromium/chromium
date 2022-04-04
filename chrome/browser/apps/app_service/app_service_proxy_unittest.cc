@@ -515,10 +515,10 @@ TEST_F(AppServiceProxyTest, LaunchCallback) {
   bool called_2 = false;
   auto instance_id_1 = base::UnguessableToken::Create();
   LaunchResult result_1;
-  result_1.instance_id = instance_id_1;
+  result_1.instance_ids.push_back(instance_id_1);
   auto instance_id_2 = base::UnguessableToken::Create();
   LaunchResult result_2;
-  result_2.instance_id = instance_id_2;
+  result_2.instance_ids.push_back(instance_id_2);
 
   // If the instance is not created yet, the callback will be stored.
   proxy.OnLaunched(
@@ -554,6 +554,28 @@ TEST_F(AppServiceProxyTest, LaunchCallback) {
   EXPECT_EQ(proxy.callback_list_.size(), 1U);
   EXPECT_TRUE(called_1);
   EXPECT_FALSE(called_2);
+
+  // A launch that results in multiple instances.
+  LaunchResult result_multi;
+  auto instance_id_3 = base::UnguessableToken::Create();
+  auto instance_id_4 = base::UnguessableToken::Create();
+  result_multi.instance_ids.push_back(instance_id_3);
+  result_multi.instance_ids.push_back(instance_id_4);
+  bool called_multi = false;
+  proxy.OnLaunched(
+      base::BindOnce([](bool* called,
+                        apps::LaunchResult&& launch_result) { *called = true; },
+                     &called_multi),
+      std::move(result_multi));
+  EXPECT_EQ(proxy.callback_list_.size(), 2U);
+  EXPECT_FALSE(called_multi);
+  proxy.InstanceRegistry().OnInstance(
+      std::make_unique<apps::Instance>("foo", instance_id_3, nullptr));
+  proxy.InstanceRegistry().OnInstance(
+      std::make_unique<apps::Instance>("bar", instance_id_4, nullptr));
+  EXPECT_EQ(proxy.callback_list_.size(), 1U);
+
+  EXPECT_TRUE(called_multi);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }  // namespace apps

@@ -206,6 +206,10 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   void OnInstanceRegistryWillBeDestroyed(
       apps::InstanceRegistry* cache) override;
 
+  // Checks if all instance IDs correspond to existing windows.
+  bool CanRunLaunchCallback(
+      const std::vector<base::UnguessableToken>& instance_ids);
+
   SubscriberCrosapi* crosapi_subscriber_ = nullptr;
 
   std::unique_ptr<PublisherHost> publisher_host_;
@@ -241,10 +245,12 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                           apps::InstanceRegistry::Observer>
       instance_registry_observer_{this};
 
-  // A map to record the launch callbacks for an app instance. Note it is
-  // possible to have multiple launches to launch the same app instance for
-  // web apps, so we record a list of launch callbacks for each instance.
-  std::map<base::UnguessableToken, std::vector<LaunchCallback>> callback_list_;
+  // A list to record outstanding launch callbacks. When the first member
+  // returns true, the second member should be run and the pair can be removed
+  // from the outstanding callback queue.
+  std::list<std::pair<base::RepeatingCallback<bool(void)>, base::OnceClosure>>
+      callback_list_;
+
   base::WeakPtrFactory<AppServiceProxyAsh> weak_ptr_factory_{this};
 };
 

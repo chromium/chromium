@@ -12,11 +12,22 @@
 
 namespace apps {
 
+LaunchResult::LaunchResult() = default;
+LaunchResult::~LaunchResult() = default;
+
+LaunchResult::LaunchResult(LaunchResult&& other) = default;
+
 #if BUILDFLAG(IS_CHROMEOS)
 LaunchResult ConvertMojomLaunchResultToLaunchResult(
     crosapi::mojom::LaunchResultPtr mojom_launch_result) {
   auto launch_result = LaunchResult();
-  launch_result.instance_id = std::move(mojom_launch_result->instance_id);
+  if (mojom_launch_result->instance_ids) {
+    for (auto token : *mojom_launch_result->instance_ids)
+      launch_result.instance_ids.push_back(std::move(token));
+  } else {
+    launch_result.instance_ids.push_back(
+        std::move(mojom_launch_result->instance_id));
+  }
   return launch_result;
 }
 

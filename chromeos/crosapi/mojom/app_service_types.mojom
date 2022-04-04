@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 19
+// NOTE: Future MinVersion values should take into account that MinVersion is
+// scoped per struct. In the past, some of the MinVersion values in this file
+// were set based on the understanding that the entire file should share a
+// MinVersion counter.
 
 module crosapi.mojom;
 
@@ -346,8 +349,11 @@ struct Intent {
 // The result from launching an app.
 [Stable]
 struct LaunchResult {
-  // The id to represent which instance the app is launched in.
+  // The id to represent which instance the app is launched in. Deprecated: use
+  // `instance_ids`.
   mojo_base.mojom.UnguessableToken instance_id@0;
+  // The IDs that represent the instances the app is launched in.
+  [MinVersion=1] array<mojo_base.mojom.UnguessableToken>? instance_ids@1;
 };
 
 // Enumeration of app launch sources.

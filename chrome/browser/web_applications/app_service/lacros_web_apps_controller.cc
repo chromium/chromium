@@ -185,7 +185,7 @@ void LacrosWebAppsController::ExecuteContextMenuCommand(
   auto* web_contents = publisher_helper().ExecuteContextMenuCommand(
       app_id, id, display::kDefaultDisplayId);
 
-  ReturnLaunchResult(std::move(callback), web_contents);
+  ReturnLaunchResults(std::move(callback), {web_contents});
 }
 
 void LacrosWebAppsController::StopApp(const std::string& app_id) {
@@ -206,14 +206,14 @@ void LacrosWebAppsController::Launch(
   content::WebContents* web_contents = nullptr;
   if (launch_params->intent) {
     if (!profile_) {
-      ReturnLaunchResult(std::move(callback), nullptr);
+      ReturnLaunchResults(std::move(callback), {});
       return;
     }
 
     web_contents = publisher_helper().MaybeNavigateExistingWindow(
         launch_params->app_id, launch_params->intent->url);
     if (web_contents) {
-      ReturnLaunchResult(std::move(callback), web_contents);
+      ReturnLaunchResults(std::move(callback), {web_contents});
       return;
     }
   }
@@ -232,38 +232,31 @@ void LacrosWebAppsController::Launch(
 
   web_contents = publisher_helper().LaunchAppWithParams(std::move(params));
 
-  ReturnLaunchResult(std::move(callback), web_contents);
-}
-
-void LacrosWebAppsController::ReturnLaunchResult(
-    LaunchCallback callback,
-    content::WebContents* web_contents) {
-  // TODO(crbug.com/1144877): Run callback when the window is ready.
-  auto* app_instance_tracker =
-      apps::AppServiceProxyFactory::GetForProfile(profile_)
-          ->BrowserAppInstanceTracker();
-  auto launch_result = crosapi::mojom::LaunchResult::New();
-  if (app_instance_tracker) {
-    const apps::BrowserAppInstance* app_instance =
-        app_instance_tracker->GetAppInstance(web_contents);
-    launch_result->instance_id =
-        app_instance ? app_instance->id : base::UnguessableToken::Create();
-  } else {
-    // TODO(crbug.com/1144877): This part of code should not be reached
-    // after the instance tracker flag is turn on. Replaced with DCHECK when
-    // the app instance tracker flag is turned on.
-    launch_result->instance_id = base::UnguessableToken::Create();
-  }
-  std::move(callback).Run(std::move(launch_result));
+  ReturnLaunchResults(std::move(callback), {web_contents});
 }
 
 void LacrosWebAppsController::ReturnLaunchResults(
     LaunchCallback callback,
     const std::vector<content::WebContents*>& web_contentses) {
-  // TODO(crbug/1304003): update Lacros to support multilaunch.
-  DCHECK_LE(web_contentses.size(), 1U);
-  ReturnLaunchResult(std::move(callback),
-                     web_contentses.empty() ? nullptr : web_contentses[0]);
+  auto* app_instance_tracker =
+      apps::AppServiceProxyFactory::GetForProfile(profile_)
+          ->BrowserAppInstanceTracker();
+  auto launch_result = crosapi::mojom::LaunchResult::New();
+  launch_result->instance_id = base::UnguessableToken::Create();
+  launch_result->instance_ids = std::vector<base::UnguessableToken>();
+
+  // TODO(crbug.com/1144877): Replaced with DCHECK when the app instance tracker
+  // flag is turned on.
+  if (app_instance_tracker) {
+    for (content::WebContents* web_contents : web_contentses) {
+      const apps::BrowserAppInstance* app_instance =
+          app_instance_tracker->GetAppInstance(web_contents);
+      if (app_instance) {
+        launch_result->instance_ids->push_back(app_instance->id);
+      }
+    }
+  }
+  std::move(callback).Run(std::move(launch_result));
 }
 
 void LacrosWebAppsController::OnShortcutsMenuIconsRead(

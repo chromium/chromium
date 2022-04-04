@@ -1821,11 +1821,6 @@ void WebAppPublisherHelper::OnFileHandlerDialogCompleted(
   // system apps.
   const WebApp* web_app = GetWebApp(params.app_id);
   bool can_multilaunch = !(web_app && web_app->IsSystemApp());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Lacros also sticks to old behavior for now. TODO(crbug/1304003): update
-  // Lacros to support multilaunch.
-  can_multilaunch = false;
-#endif
   std::vector<content::WebContents*> web_contentses;
   if (can_multilaunch) {
     WebAppFileHandlerManager::LaunchInfos file_launch_infos =
@@ -1844,8 +1839,10 @@ void WebAppPublisherHelper::OnFileHandlerDialogCompleted(
     apps::AppLaunchParams params_for_file_launch(
         app_id, params.container, params.disposition, params.launch_source,
         params.display_id, params.launch_files, params.intent);
-    // For now, with Lacros, the URL is calculated by the file browser and
-    // passed in the intent.
+    // For system web apps, the URL is calculated by the file browser and passed
+    // in the intent.
+    // TODO(crbug.com/1264164): remove this check. It's only here to support
+    // tests that haven't been updated.
     if (params.intent) {
       params_for_file_launch.override_url = GURL(*params.intent->activity_name);
     }

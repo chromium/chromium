@@ -106,11 +106,9 @@ class LacrosWebAppsController : public crosapi::mojom::AppController,
       absl::optional<bool> accessing_camera,
       absl::optional<bool> accessing_microphone) override;
 
-  void ReturnLaunchResult(LaunchCallback callback,
-                          content::WebContents* web_contents);
   void ReturnLaunchResults(
       LaunchCallback callback,
-      const std::vector<content::WebContents*>& web_contentses);
+      const std::vector<content::WebContents*>& web_contents);
 
   const WebApp* GetWebApp(const AppId& app_id) const;
 
