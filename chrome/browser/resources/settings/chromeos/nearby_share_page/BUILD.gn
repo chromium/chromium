@@ -126,7 +126,6 @@ js_library("nearby_share_subpage") {
     "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page",
     "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior",
     "//chrome/browser/resources/nearby_share/shared:nearby_visibility_page",
-    "//ui/webui/resources/cr_elements/cr_link_row:cr_link_row",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data",

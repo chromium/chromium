@@ -30,7 +30,6 @@ js_library("google_assistant_page") {
     "//chrome/browser/resources/settings/chromeos:prefs_behavior",
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_link_row:cr_link_row",
     "//ui/webui/resources/cr_elements/policy:cr_policy_pref_indicator.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:i18n_behavior.m",

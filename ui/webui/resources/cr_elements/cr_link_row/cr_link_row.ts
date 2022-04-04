@@ -19,7 +19,14 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @polymer */
+import {CrIconButtonElement} from '../cr_icon_button/cr_icon_button.m.js';
+
+export interface CrLinkRowElement {
+  $: {
+    icon: CrIconButtonElement,
+  };
+}
+
 export class CrLinkRowElement extends PolymerElement {
   static get is() {
     return 'cr-link-row';
@@ -64,7 +71,6 @@ export class CrLinkRowElement extends PolymerElement {
 
       roleDescription: String,
 
-      /** @private */
       hideLabelWrapper_: {
         type: Boolean,
         computed: 'computeHideLabelWrapper_(label, usingSlottedLabel)',
@@ -72,34 +78,31 @@ export class CrLinkRowElement extends PolymerElement {
     };
   }
 
-  /** @type {boolean} */
-  get noink() {
-    return this.$.icon.noink;
-  }
+  startIcon: string;
+  label: string;
+  subLabel: string;
+  disabled: boolean;
+  external: boolean;
+  usingSlottedLabel: boolean;
+  roleDescription: string;
+  private hideLabelWrapper_: boolean;
 
-  /** @type {boolean} */
-  set noink(value) {
-    this.$.icon.noink = value;
-  }
-
-  focus() {
+  override focus() {
     this.$.icon.focus();
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeHideLabelWrapper_() {
+  private computeHideLabelWrapper_(): boolean {
     return !(this.label || this.usingSlottedLabel);
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getIcon_() {
+  private getIcon_(): string {
     return this.external ? 'cr:open-in-new' : 'cr:arrow-right';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-link-row': CrLinkRowElement;
   }
 }
 
