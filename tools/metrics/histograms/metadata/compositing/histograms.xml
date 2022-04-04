@@ -318,6 +318,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compositing.Display.DrmOverlayManager.FirstTestPageFlipPassed"
+    enum="Boolean" expires_after="2022-11-30">
+  <owner>khaslett@chromium.org</owner>
+  <owner>kylechar@chromium.org</owner>
+  <summary>
+    Logged zero or more times per frame, whether the first call to
+    HardwareDisplayController.TestPageFlip succeeded.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.Display.DrmOverlayManager.TestPageFlipCount"
     units="units" expires_after="2022-06-30">
   <owner>khaslett@chromium.org</owner>
