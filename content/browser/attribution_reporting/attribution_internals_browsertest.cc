@@ -984,7 +984,7 @@ IN_PROC_BROWSER_TEST_F(
             table.children[0].children[3].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-aggregate-attribution" &&
             table.children[0].children[2].innerText === "Pending" &&
-            table.children[0].children[6].innerText === '[\n {\n  "key": {\n   "highBits": "0",\n   "lowBits": "1"\n  },\n  "value": 2\n }\n]' &&
+            table.children[0].children[6].innerText === '[ {  "key": {   "highBits": "0",   "lowBits": "1"  },  "value": 2 }]' &&
             table.children[1].children[2].innerText === "Dropped due to insufficient aggregatable budget" &&
             table.children[2].children[2].innerText === "No report capacity for destination site" &&
             table.children[3].children[2].innerText === "Sent: HTTP 200" &&

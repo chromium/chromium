@@ -38,6 +38,7 @@ h1 {
 main {
   border-top: 1px solid rgb(48, 57, 66);
   margin-top: 1rem;
+  padding-top: 1rem;
 }
 
 .content {

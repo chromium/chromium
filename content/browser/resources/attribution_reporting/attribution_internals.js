@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+import {TabBox} from 'chrome://resources/js/cr/ui/tabs.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {$, getRequiredElement, queryRequiredElement} from 'chrome://resources/js/util.m.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
-import {Handler as AttributionInternalsHandler, HandlerRemote as AttributionInternalsHandlerRemote, ObserverInterface, ObserverReceiver, AggregatableAttributionReportID, EventLevelReportID, ReportType, SourceType, WebUIReport, WebUIReport_Status, WebUISource, WebUISource_Attributability} from './attribution_internals.mojom-webui.js';
+import {AggregatableAttributionReportID, EventLevelReportID, Handler as AttributionInternalsHandler, HandlerRemote as AttributionInternalsHandlerRemote, ObserverInterface, ObserverReceiver, ReportType, SourceType, WebUIReport, WebUIReport_Status, WebUISource, WebUISource_Attributability} from './attribution_internals.mojom-webui.js';
 
 /**
  * @template T
@@ -1059,6 +1061,8 @@ document.addEventListener('DOMContentLoaded', function() {
   Table.decorate(
       getRequiredElement('aggregatable-report-table-wrapper'),
       aggregatableAttributionReportTableModel);
+
+  decorate('tabbox', TabBox);
 
   const receiver = new ObserverReceiver(new Observer());
   pageHandler.addObserver(receiver.$.bindNewPipeAndPassRemote());

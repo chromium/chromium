@@ -7,6 +7,7 @@
   <meta charset="utf-8">
   <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
   <link rel="stylesheet" href="chrome://resources/css/roboto.css">
+  <link rel="stylesheet" href="chrome://resources/css/tabs.css">
 
   <link rel="stylesheet" href="attribution_internals.css">
   <script type="module" src="attribution_internals.js"></script>
@@ -21,32 +22,41 @@
 <button id="clear-data">Clear all attribution data</button>
 </header>
 <main>
-<section>
-  <h2>Sources</h2>
-  <div class="content">
-    <div class="table-wrapper" id="source-table-wrapper"></div>
-  </div>
-</section>
-<section>
-  <h2>Sent and Pending Event-Level Reports</h2>
-  <div class="content">
-    <div>
-      <button id="send-reports" disabled>Send Selected Pending Event-Level Reports</button>
-      <label id="show-debug-event-reports"><input type="checkbox" checked>Show Debug Reports<span></span></label>
-    </div>
-    <div class="table-wrapper" id="report-table-wrapper"></div>
-  </div>
-</section>
-<section>
-  <h2>Sent and Pending Aggregatable Reports</h2>
-  <div class="content">
-    <div>
-      <button id="send-aggregatable-reports" disabled>Send Selected Pending Aggregatable Reports</button>
-      <label id="show-debug-aggregatable-reports"><input type="checkbox" checked>Show Debug Reports<span></span></label>
-    </div>
-    <div class="table-wrapper" id="aggregatable-report-table-wrapper"></div>
-  </div>
-</section>
+  <tabbox>
+    <tabs>
+      <tab>Sources</tab>
+      <tab>Event-Level Reports</tab>
+      <tab>Aggregatable Reports</tab>
+    </tabs>
+    <tabpanels>
+      <tabpanel>
+        <h2>Sources</h2>
+        <div class="content">
+          <div class="table-wrapper" id="source-table-wrapper"></div>
+        </div>
+      </tabpanel>
+      <tabpanel>
+        <h2>Sent and Pending Event-Level Reports</h2>
+        <div class="content">
+          <div>
+            <button id="send-reports" disabled>Send Selected Pending Event-Level Reports</button>
+            <label id="show-debug-event-reports"><input type="checkbox" checked>Show Debug Reports<span></span></label>
+          </div>
+          <div class="table-wrapper" id="report-table-wrapper"></div>
+        </div>
+      </tabpanel>
+      <tabpanel>
+        <h2>Sent and Pending Aggregatable Reports</h2>
+        <div class="content">
+          <div>
+            <button id="send-aggregatable-reports" disabled>Send Selected Pending Aggregatable Reports</button>
+            <label id="show-debug-aggregatable-reports"><input type="checkbox" checked>Show Debug Reports<span></span></label>
+          </div>
+          <div class="table-wrapper" id="aggregatable-report-table-wrapper"></div>
+        </div>
+      </tabpanel>
+    </tabpanels>
+  </tabbox>
 </main>
 </body>
 </html>
