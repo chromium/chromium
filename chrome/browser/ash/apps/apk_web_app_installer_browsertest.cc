@@ -434,8 +434,8 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerDelayedArcStartBrowserTest,
   {
     for (const auto& id : installed_web_app_ids_) {
       base::RunLoop run_loop;
-      provider_->install_finalizer().UninstallExternalWebApp(
-          id, webapps::WebappUninstallSource::kArc,
+      provider_->install_finalizer().UninstallWebApp(
+          id, webapps::WebappUninstallSource::kShelf,
           base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
             EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
             run_loop.Quit();
