@@ -472,7 +472,7 @@ void CanvasAsyncBlobCreator::CreateBlobAndReturnResult() {
                                 base::TimeTicks::Now() - start_time_,
                                 image_->width(), image_->height());
 
-  if (IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+  if (IdentifiabilityStudySettings::Get()->ShouldSampleType(
           blink::IdentifiableSurface::Type::kCanvasReadback)) {
     // Creating this ImageDataBuffer has some overhead, namely getting the
     // SkImage and computing the pixmap. We need the StaticBitmapImage to be

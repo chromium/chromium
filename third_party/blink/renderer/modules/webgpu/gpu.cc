@@ -194,7 +194,7 @@ void GPU::RecordAdapterForIdentifiability(
     GPUAdapter* adapter) const {
   constexpr IdentifiableSurface::Type type =
       IdentifiableSurface::Type::kGPU_RequestAdapter;
-  if (!IdentifiabilityStudySettings::Get()->ShouldSample(type))
+  if (!IdentifiabilityStudySettings::Get()->ShouldSampleType(type))
     return;
   ExecutionContext* context = GetExecutionContext();
   if (!context)

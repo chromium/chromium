@@ -285,7 +285,7 @@ void ScreenOrientationController::OnLockOrientationResult(
   if (!pending_callback_ || request_id != request_id_)
     return;
 
-  if (IdentifiabilityStudySettings::Get()->ShouldSample(
+  if (IdentifiabilityStudySettings::Get()->ShouldSampleSurface(
           IdentifiableSurface::FromTypeAndToken(
               IdentifiableSurface::Type::kWebFeature,
               WebFeature::kScreenOrientationLock))) {

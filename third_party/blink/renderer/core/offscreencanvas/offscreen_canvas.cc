@@ -235,7 +235,7 @@ ImageBitmap* OffscreenCanvas::transferToImageBitmap(
 void OffscreenCanvas::RecordIdentifiabilityMetric(
     const blink::IdentifiableSurface& surface,
     const IdentifiableToken& token) const {
-  if (!IdentifiabilityStudySettings::Get()->ShouldSample(surface))
+  if (!IdentifiabilityStudySettings::Get()->ShouldSampleSurface(surface))
     return;
   blink::IdentifiabilityMetricBuilder(GetExecutionContext()->UkmSourceID())
       .Add(surface, token)

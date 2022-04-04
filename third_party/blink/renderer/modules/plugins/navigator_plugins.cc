@@ -83,7 +83,7 @@ bool NavigatorPlugins::javaEnabled(Navigator& navigator) {
 namespace {
 
 void RecordPlugins(LocalDOMWindow* window, DOMPluginArray* plugins) {
-  if (!IdentifiabilityStudySettings::Get()->IsWebFeatureAllowed(
+  if (!IdentifiabilityStudySettings::Get()->ShouldSampleWebFeature(
           WebFeature::kNavigatorPlugins) ||
       !window) {
     return;
@@ -110,7 +110,8 @@ void RecordPlugins(LocalDOMWindow* window, DOMPluginArray* plugins) {
 void RecordMimeTypes(LocalDOMWindow* window, DOMMimeTypeArray* mime_types) {
   constexpr IdentifiableSurface surface = IdentifiableSurface::FromTypeAndToken(
       IdentifiableSurface::Type::kWebFeature, WebFeature::kNavigatorMimeTypes);
-  if (!IdentifiabilityStudySettings::Get()->ShouldSample(surface) || !window) {
+  if (!IdentifiabilityStudySettings::Get()->ShouldSampleSurface(surface) ||
+      !window) {
     return;
   }
   IdentifiableTokenBuilder builder;

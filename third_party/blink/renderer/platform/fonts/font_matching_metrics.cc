@@ -104,7 +104,7 @@ void FontMatchingMetrics::ReportFailedLocalFontMatch(
 void FontMatchingMetrics::ReportLocalFontExistenceByUniqueNameOnly(
     const AtomicString& font_name,
     bool font_exists) {
-  if (!IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+  if (!IdentifiabilityStudySettings::Get()->ShouldSampleType(
           IdentifiableSurface::Type::kLocalFontExistenceByUniqueNameOnly)) {
     return;
   }
@@ -126,7 +126,7 @@ void FontMatchingMetrics::InsertFontHashIntoMap(IdentifiableTokenKey input_key,
   // type and kLocalFontLoadPostScriptName are allowed. (If the former is not,
   // InsertFontHashIntoMap would not be called.)
   if (!font_data ||
-      !IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+      !IdentifiabilityStudySettings::Get()->ShouldSampleType(
           IdentifiableSurface::Type::kLocalFontLoadPostScriptName)) {
     return;
   }
@@ -147,7 +147,7 @@ void FontMatchingMetrics::ReportFontLookupByUniqueOrFamilyName(
     const AtomicString& name,
     const FontDescription& font_description,
     SimpleFontData* resulting_font_data) {
-  if (!IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+  if (!IdentifiabilityStudySettings::Get()->ShouldSampleType(
           IdentifiableSurface::Type::kLocalFontLookupByUniqueOrFamilyName)) {
     return;
   }
@@ -172,7 +172,7 @@ void FontMatchingMetrics::ReportFontLookupByUniqueNameOnly(
   // We ignore lookups that result in loading fallbacks for now as they should
   // only be temporary.
   if (is_loading_fallback ||
-      !IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+      !IdentifiabilityStudySettings::Get()->ShouldSampleType(
           IdentifiableSurface::Type::kLocalFontLookupByUniqueNameOnly)) {
     return;
   }
@@ -194,7 +194,7 @@ void FontMatchingMetrics::ReportFontLookupByFallbackCharacter(
     FontFallbackPriority fallback_priority,
     const FontDescription& font_description,
     SimpleFontData* resulting_font_data) {
-  if (!IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+  if (!IdentifiabilityStudySettings::Get()->ShouldSampleType(
           IdentifiableSurface::Type::kLocalFontLookupByFallbackCharacter)) {
     return;
   }
@@ -213,7 +213,7 @@ void FontMatchingMetrics::ReportFontLookupByFallbackCharacter(
 void FontMatchingMetrics::ReportLastResortFallbackFontLookup(
     const FontDescription& font_description,
     SimpleFontData* resulting_font_data) {
-  if (!IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+  if (!IdentifiabilityStudySettings::Get()->ShouldSampleType(
           IdentifiableSurface::Type::kLocalFontLookupAsLastResort)) {
     return;
   }
@@ -232,7 +232,7 @@ void FontMatchingMetrics::ReportFontFamilyLookupByGenericFamily(
     UScriptCode script,
     FontDescription::GenericFamilyType generic_family_type,
     const AtomicString& resulting_font_name) {
-  if (!IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+  if (!IdentifiabilityStudySettings::Get()->ShouldSampleType(
           IdentifiableSurface::Type::kGenericFontLookup)) {
     return;
   }
@@ -295,7 +295,7 @@ void FontMatchingMetrics::PublishIdentifiabilityMetrics() {
   for (const auto& surface_entry : hash_maps_with_corresponding_surface_types) {
     TokenToTokenHashMap* hash_map = surface_entry.first;
     const IdentifiableSurface::Type surface_type = surface_entry.second;
-    if (IdentifiabilityStudySettings::Get()->ShouldSample(surface_type)) {
+    if (IdentifiabilityStudySettings::Get()->ShouldSampleType(surface_type)) {
       for (const auto& individual_lookup : *hash_map) {
         builder.Add(IdentifiableSurface::FromTypeAndToken(
                         surface_type, individual_lookup.key.token),

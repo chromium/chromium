@@ -609,7 +609,7 @@ void WebGL2RenderingContextBase::RecordInternalFormatParameter(
     GLenum internalformat,
     GLint* values,
     GLint length) {
-  if (!IdentifiabilityStudySettings::Get()->ShouldSample(
+  if (!IdentifiabilityStudySettings::Get()->ShouldSampleType(
           IdentifiableSurface::Type::kWebGLInternalFormatParameter))
     return;
   const auto& ukm_params = GetUkmParameters();

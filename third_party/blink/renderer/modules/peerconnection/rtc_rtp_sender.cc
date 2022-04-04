@@ -822,7 +822,7 @@ RTCRtpCapabilities* RTCRtpSender::getCapabilities(ScriptState* state,
   }
   capabilities->setHeaderExtensions(header_extensions);
 
-  if (IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+  if (IdentifiabilityStudySettings::Get()->ShouldSampleType(
           IdentifiableSurface::Type::kRtcRtpSenderGetCapabilities)) {
     IdentifiableTokenBuilder builder;
     IdentifiabilityAddRTCRtpCapabilitiesToBuilder(builder, *capabilities);

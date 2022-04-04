@@ -801,7 +801,7 @@ void WebGLRenderingContextBase::CompleteXrCompatiblePromiseIfPending(
 
     make_xr_compatible_resolver_ = nullptr;
 
-    if (IdentifiabilityStudySettings::Get()->ShouldSample(
+    if (IdentifiabilityStudySettings::Get()->ShouldSampleSurface(
             IdentifiableSurface::FromTypeAndToken(
                 IdentifiableSurface::Type::kWebFeature,
                 WebFeature::kWebGLRenderingContextMakeXRCompatible))) {
@@ -3378,7 +3378,7 @@ static const GLenum kIdentifiableGLParams[] = {
 };
 
 bool ShouldMeasureGLParam(GLenum pname) {
-  return IdentifiabilityStudySettings::Get()->ShouldSample(
+  return IdentifiabilityStudySettings::Get()->ShouldSampleType(
              blink::IdentifiableSurface::Type::kWebGLParameter) &&
          std::find(std::begin(kIdentifiableGLParams),
                    std::end(kIdentifiableGLParams),
@@ -3390,7 +3390,7 @@ bool ShouldMeasureGLParam(GLenum pname) {
 void WebGLRenderingContextBase::RecordIdentifiableGLParameterDigest(
     GLenum pname,
     IdentifiableToken value) {
-  DCHECK(IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+  DCHECK(IdentifiabilityStudySettings::Get()->ShouldSampleType(
       blink::IdentifiableSurface::Type::kWebGLParameter));
   const auto ukm_params = GetUkmParameters();
   blink::IdentifiabilityMetricBuilder(ukm_params.source_id)
@@ -3404,7 +3404,7 @@ void WebGLRenderingContextBase::RecordShaderPrecisionFormatForStudy(
     GLenum shader_type,
     GLenum precision_type,
     WebGLShaderPrecisionFormat* format) {
-  DCHECK(IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+  DCHECK(IdentifiabilityStudySettings::Get()->ShouldSampleType(
       blink::IdentifiableSurface::Type::kWebGLShaderPrecisionFormat));
 
   const auto& ukm_params = GetUkmParameters();
@@ -3570,7 +3570,7 @@ ScriptValue WebGLRenderingContextBase::getParameter(ScriptState* script_state,
     case GL_SCISSOR_TEST:
       return GetBooleanParameter(script_state, pname);
     case GL_SHADING_LANGUAGE_VERSION:
-      if (IdentifiabilityStudySettings::Get()->ShouldSample(
+      if (IdentifiabilityStudySettings::Get()->ShouldSampleType(
               blink::IdentifiableSurface::Type::kWebGLParameter)) {
         RecordIdentifiableGLParameterDigest(
             pname, IdentifiabilityBenignStringToken(String(
@@ -3638,7 +3638,7 @@ ScriptValue WebGLRenderingContextBase::getParameter(ScriptState* script_state,
     case GL_VENDOR:
       return WebGLAny(script_state, String("WebKit"));
     case GL_VERSION:
-      if (IdentifiabilityStudySettings::Get()->ShouldSample(
+      if (IdentifiabilityStudySettings::Get()->ShouldSampleType(
               blink::IdentifiableSurface::Type::kWebGLParameter)) {
         RecordIdentifiableGLParameterDigest(
             pname, IdentifiabilityBenignStringToken(
@@ -3659,7 +3659,7 @@ ScriptValue WebGLRenderingContextBase::getParameter(ScriptState* script_state,
       return ScriptValue::CreateNull(script_state->GetIsolate());
     case WebGLDebugRendererInfo::kUnmaskedRendererWebgl:
       if (ExtensionEnabled(kWebGLDebugRendererInfoName)) {
-        if (IdentifiabilityStudySettings::Get()->ShouldSample(
+        if (IdentifiabilityStudySettings::Get()->ShouldSampleType(
                 blink::IdentifiableSurface::Type::kWebGLParameter)) {
           RecordIdentifiableGLParameterDigest(
               pname, IdentifiabilityBenignStringToken(
@@ -3674,7 +3674,7 @@ ScriptValue WebGLRenderingContextBase::getParameter(ScriptState* script_state,
       return ScriptValue::CreateNull(script_state->GetIsolate());
     case WebGLDebugRendererInfo::kUnmaskedVendorWebgl:
       if (ExtensionEnabled(kWebGLDebugRendererInfoName)) {
-        if (IdentifiabilityStudySettings::Get()->ShouldSample(
+        if (IdentifiabilityStudySettings::Get()->ShouldSampleType(
                 blink::IdentifiableSurface::Type::kWebGLParameter)) {
           RecordIdentifiableGLParameterDigest(
               pname, IdentifiabilityBenignStringToken(
@@ -3859,7 +3859,7 @@ ScriptValue WebGLRenderingContextBase::getRenderbufferParameter(
     case GL_RENDERBUFFER_DEPTH_SIZE:
     case GL_RENDERBUFFER_STENCIL_SIZE:
       ContextGL()->GetRenderbufferParameteriv(target, pname, &value);
-      if (IdentifiabilityStudySettings::Get()->ShouldSample(
+      if (IdentifiabilityStudySettings::Get()->ShouldSampleType(
               blink::IdentifiableSurface::Type::kWebGLParameter)) {
         RecordIdentifiableGLParameterDigest(pname, value);
       }
@@ -3944,7 +3944,7 @@ WebGLShaderPrecisionFormat* WebGLRenderingContextBase::getShaderPrecisionFormat(
                                         &precision);
   auto* result = MakeGarbageCollected<WebGLShaderPrecisionFormat>(
       range[0], range[1], precision);
-  if (IdentifiabilityStudySettings::Get()->ShouldSample(
+  if (IdentifiabilityStudySettings::Get()->ShouldSampleType(
           blink::IdentifiableSurface::Type::kWebGLShaderPrecisionFormat)) {
     RecordShaderPrecisionFormatForStudy(shader_type, precision_type, result);
   }
@@ -7486,7 +7486,7 @@ ScriptValue WebGLRenderingContextBase::GetFloatParameter(
   GLfloat value = 0;
   if (!isContextLost())
     ContextGL()->GetFloatv(pname, &value);
-  if (IdentifiabilityStudySettings::Get()->ShouldSample(
+  if (IdentifiabilityStudySettings::Get()->ShouldSampleType(
           blink::IdentifiableSurface::Type::kWebGLParameter)) {
     RecordIdentifiableGLParameterDigest(pname, value);
   }
@@ -7512,7 +7512,7 @@ ScriptValue WebGLRenderingContextBase::GetIntParameter(
         break;
     }
   }
-  if (IdentifiabilityStudySettings::Get()->ShouldSample(
+  if (IdentifiabilityStudySettings::Get()->ShouldSampleType(
           blink::IdentifiableSurface::Type::kWebGLParameter)) {
     RecordIdentifiableGLParameterDigest(pname, value);
   }

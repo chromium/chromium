@@ -124,7 +124,7 @@ const HeapVector<Member<NavigatorUABrandVersion>>& NavigatorUAData::brands()
   ExecutionContext* context = GetExecutionContext();
   if (context) {
     // Record IdentifiabilityStudy metrics if the client is in the study.
-    if (UNLIKELY(IdentifiabilityStudySettings::Get()->ShouldSample(
+    if (UNLIKELY(IdentifiabilityStudySettings::Get()->ShouldSampleSurface(
             identifiable_surface))) {
       IdentifiableTokenBuilder token_builder;
       for (const auto& brand : brand_set_) {
@@ -163,7 +163,7 @@ ScriptPromise NavigatorUAData::getHighEntropyValues(
   DCHECK(execution_context);
 
   bool record_identifiability =
-      IdentifiabilityStudySettings::Get()->ShouldSample(
+      IdentifiabilityStudySettings::Get()->ShouldSampleType(
           IdentifiableSurface::Type::kNavigatorUAData_GetHighEntropyValues);
   UADataValues* values = MakeGarbageCollected<UADataValues>();
   // According to

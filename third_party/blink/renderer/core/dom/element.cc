@@ -1317,7 +1317,7 @@ bool Element::IsViewportScrollElement() {
 void Element::RecordScrollbarSizeForStudy(int measurement,
                                           bool is_width,
                                           bool is_offset) {
-  if (!IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+  if (!IdentifiabilityStudySettings::Get()->ShouldSampleType(
           IdentifiableSurface::Type::kScrollbarSize) ||
       (!is_offset && !IsViewportScrollElement()))
     return;

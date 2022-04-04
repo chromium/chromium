@@ -71,7 +71,7 @@ void MaybeRecordMediaFeatureValue(
     T value) {
   Document* document = nullptr;
   if ((document = media_values.GetDocument()) &&
-      (IdentifiabilityStudySettings::Get()->ShouldSample(
+      (IdentifiabilityStudySettings::Get()->ShouldSampleType(
           IdentifiableSurface::Type::kMediaFeature)) &&
       !document->WasMediaFeatureEvaluated(static_cast<int>(feature_name))) {
     IdentifiableSurface surface = IdentifiableSurface::FromTypeAndToken(

@@ -89,7 +89,7 @@ bool IdentifiabilityStudyState::ShouldRecordSurface(
   if (!CanAddOneMoreActiveSurface())
     return false;
 
-  if (!blink::IdentifiabilityStudySettings::Get()->IsSurfaceAllowed(surface))
+  if (!blink::IdentifiabilityStudySettings::Get()->ShouldSampleSurface(surface))
     return false;
 
   // (surface ∈ seen_surfaces_) but (surface ∉ active_surfaces_) means that
@@ -242,7 +242,7 @@ void IdentifiabilityStudyState::UpdateSelectedOffsets(
 namespace {
 // Predicate used in CheckInvariants().
 bool IsSurfaceAllowed(const blink::IdentifiableSurface& value) {
-  return blink::IdentifiabilityStudySettings::Get()->IsSurfaceAllowed(value);
+  return blink::IdentifiabilityStudySettings::Get()->ShouldSampleSurface(value);
 }
 bool IsRepresentativeSurfaceAllowed(const RepresentativeSurface& value) {
   return IsSurfaceAllowed(value.value());
@@ -415,7 +415,7 @@ bool IdentifiabilityStudyState::StripDisallowedSurfaces(
 
     unique_surfaces.insert(surface);
 
-    if (settings->IsSurfaceAllowed(surface)) {
+    if (settings->ShouldSampleSurface(surface)) {
       container[write_position++] = surface;
     } else {
       dropped_offsets.push_back(read_position);
@@ -568,7 +568,7 @@ void IdentifiabilityStudyState::WriteSelectedOffsetsToPrefs() const {
 bool IdentifiabilityStudyState::ShouldReportEncounteredSurface(
     uint64_t source_id,
     blink::IdentifiableSurface surface) {
-  if (!blink::IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+  if (!blink::IdentifiabilityStudySettings::Get()->ShouldSampleType(
           blink::IdentifiableSurface::Type::kMeasuredSurface)) {
     return false;
   }

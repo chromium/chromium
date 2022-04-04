@@ -23,10 +23,10 @@ TEST(IdentifiabilityStudySettingsTest, DisabledProvider) {
 
   EXPECT_FALSE(settings.IsActive());
   EXPECT_EQ(1, counts.count_of_is_active);
-  EXPECT_FALSE(settings.IsSurfaceAllowed(IdentifiableSurface()));
+  EXPECT_FALSE(settings.ShouldSampleSurface(IdentifiableSurface()));
   EXPECT_EQ(1, counts.count_of_is_active);
   EXPECT_FALSE(
-      settings.IsTypeAllowed(IdentifiableSurface::Type::kCanvasReadback));
+      settings.ShouldSampleType(IdentifiableSurface::Type::kCanvasReadback));
 
   // None of these should have been called.
   EXPECT_EQ(0, counts.count_of_is_surface_allowed);
@@ -46,8 +46,9 @@ TEST(IdentifiabilityStudySettingsTest, IsActiveButNothingIsBlocked) {
 
   // No other calls should be made.
   EXPECT_TRUE(settings.IsActive());
-  EXPECT_TRUE(settings.IsSurfaceAllowed(IdentifiableSurface()));
-  EXPECT_TRUE(settings.IsTypeAllowed(IdentifiableSurface::Type::kWebFeature));
+  EXPECT_TRUE(settings.ShouldSampleSurface(IdentifiableSurface()));
+  EXPECT_TRUE(
+      settings.ShouldSampleType(IdentifiableSurface::Type::kWebFeature));
 
   EXPECT_EQ(1, counts.count_of_is_active);
   EXPECT_EQ(1, counts.count_of_is_any_type_or_surface_blocked);
@@ -65,8 +66,9 @@ TEST(IdentifiabilityStudySettingsTest, IsSurfaceOrTypeBlocked) {
 
   // No other calls should be made.
   EXPECT_TRUE(settings.IsActive());
-  EXPECT_FALSE(settings.IsSurfaceAllowed(IdentifiableSurface()));
-  EXPECT_FALSE(settings.IsTypeAllowed(IdentifiableSurface::Type::kWebFeature));
+  EXPECT_FALSE(settings.ShouldSampleSurface(IdentifiableSurface()));
+  EXPECT_FALSE(
+      settings.ShouldSampleType(IdentifiableSurface::Type::kWebFeature));
 
   EXPECT_EQ(1, counts.count_of_is_active);
   EXPECT_EQ(1, counts.count_of_is_any_type_or_surface_blocked);
@@ -77,9 +79,9 @@ TEST(IdentifiabilityStudySettingsTest, IsSurfaceOrTypeBlocked) {
 TEST(IdentifiabilityStudySettingsTest, DefaultSettings) {
   auto* default_settings = IdentifiabilityStudySettings::Get();
   EXPECT_FALSE(default_settings->IsActive());
-  EXPECT_FALSE(default_settings->IsSurfaceAllowed(IdentifiableSurface()));
-  EXPECT_FALSE(
-      default_settings->IsTypeAllowed(IdentifiableSurface::Type::kWebFeature));
+  EXPECT_FALSE(default_settings->ShouldSampleSurface(IdentifiableSurface()));
+  EXPECT_FALSE(default_settings->ShouldSampleType(
+      IdentifiableSurface::Type::kWebFeature));
 }
 
 TEST(IdentifiabilityStudySettingsTest, StaticSetProvider) {
@@ -91,7 +93,7 @@ TEST(IdentifiabilityStudySettingsTest, StaticSetProvider) {
       std::make_unique<CountingSettingsProvider>(&counts));
   auto* settings = IdentifiabilityStudySettings::Get();
   EXPECT_TRUE(settings->IsActive());
-  EXPECT_TRUE(settings->IsSurfaceAllowed(IdentifiableSurface()));
+  EXPECT_TRUE(settings->ShouldSampleSurface(IdentifiableSurface()));
   EXPECT_EQ(1, counts.count_of_is_surface_allowed);
 
   IdentifiabilityStudySettings::ResetStateForTesting();

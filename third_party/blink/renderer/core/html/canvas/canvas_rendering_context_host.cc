@@ -376,7 +376,7 @@ ScriptPromise CanvasRenderingContextHost::convertToBlob(
     auto* execution_context = ExecutionContext::From(script_state);
     auto* async_creator = MakeGarbageCollected<CanvasAsyncBlobCreator>(
         image_bitmap, options, function_type, start_time, execution_context,
-        IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+        IdentifiabilityStudySettings::Get()->ShouldSampleType(
             IdentifiableSurface::Type::kCanvasReadback)
             ? IdentifiabilityInputDigest(context)
             : 0,

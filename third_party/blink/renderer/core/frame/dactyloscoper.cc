@@ -26,7 +26,7 @@ void Dactyloscoper::Record(WebFeature feature) {
 namespace {
 
 bool ShouldSample(WebFeature feature) {
-  return IdentifiabilityStudySettings::Get()->ShouldSample(
+  return IdentifiabilityStudySettings::Get()->ShouldSampleSurface(
       IdentifiableSurface::FromTypeAndToken(
           IdentifiableSurface::Type::kWebFeature, feature));
 }

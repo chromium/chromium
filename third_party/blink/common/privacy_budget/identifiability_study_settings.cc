@@ -117,7 +117,13 @@ bool IdentifiabilityStudySettings::IsActive() const {
   return is_enabled_;
 }
 
-bool IdentifiabilityStudySettings::IsSurfaceAllowed(
+bool IdentifiabilityStudySettings::ShouldSampleWebFeature(
+    mojom::WebFeature feature) const {
+  return ShouldSampleSurface(IdentifiableSurface::FromTypeAndToken(
+      IdentifiableSurface::Type::kWebFeature, feature));
+}
+
+bool IdentifiabilityStudySettings::ShouldSampleSurface(
     IdentifiableSurface surface) const {
   if (LIKELY(!is_enabled_))
     return false;
@@ -128,7 +134,7 @@ bool IdentifiabilityStudySettings::IsSurfaceAllowed(
   return provider_->IsSurfaceAllowed(surface);
 }
 
-bool IdentifiabilityStudySettings::IsTypeAllowed(
+bool IdentifiabilityStudySettings::ShouldSampleType(
     IdentifiableSurface::Type type) const {
   if (LIKELY(!is_enabled_))
     return false;
@@ -137,22 +143,6 @@ bool IdentifiabilityStudySettings::IsTypeAllowed(
     return true;
 
   return provider_->IsTypeAllowed(type);
-}
-
-bool IdentifiabilityStudySettings::IsWebFeatureAllowed(
-    mojom::WebFeature feature) const {
-  return IsSurfaceAllowed(IdentifiableSurface::FromTypeAndToken(
-      IdentifiableSurface::Type::kWebFeature, feature));
-}
-
-bool IdentifiabilityStudySettings::ShouldSample(
-    IdentifiableSurface surface) const {
-  return IsSurfaceAllowed(surface);
-}
-
-bool IdentifiabilityStudySettings::ShouldSample(
-    IdentifiableSurface::Type type) const {
-  return IsTypeAllowed(type);
 }
 
 }  // namespace blink

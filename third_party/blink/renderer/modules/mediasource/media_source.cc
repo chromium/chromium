@@ -683,7 +683,7 @@ bool MediaSource::canConstructInDedicatedWorker(ExecutionContext* context) {
 void MediaSource::RecordIdentifiabilityMetric(ExecutionContext* context,
                                               const String& type,
                                               bool result) {
-  if (!IdentifiabilityStudySettings::Get()->ShouldSample(
+  if (!IdentifiabilityStudySettings::Get()->ShouldSampleType(
           blink::IdentifiableSurface::Type::kMediaSource_IsTypeSupported)) {
     return;
   }

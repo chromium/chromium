@@ -43,7 +43,8 @@ bool PrivacyBudgetUkmEntryFilter::FilterEntry(
   base::EraseIf(entry->metrics, [&](auto metric) {
     const auto surface =
         blink::IdentifiableSurface::FromMetricHash(metric.first);
-    if (!blink::IdentifiabilityStudySettings::Get()->IsSurfaceAllowed(surface))
+    if (!blink::IdentifiabilityStudySettings::Get()->ShouldSampleSurface(
+            surface))
       return true;
 
     if (identifiability_study_state_->ShouldReportEncounteredSurface(

@@ -180,7 +180,7 @@ class IdentifiabilityStudyHelper final {
   void AddTokens() {}
 
   const bool is_canvas_type_allowed_ =
-      IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+      IdentifiabilityStudySettings::Get()->ShouldSampleType(
           blink::IdentifiableSurface::Type::kCanvasReadback);
 
   Member<ExecutionContext> execution_context_;

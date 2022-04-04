@@ -62,7 +62,7 @@ Follow the instructions below for adding instrumentation for an API.
 
    /* ... */
 
-   if (IdentifiabilityStudySettings::Get()->IsSurfaceAllowed(my_surface)) {
+   if (IdentifiabilityStudySettings::Get()->ShouldSampleSurface(my_surface)) {
      // Only do work here.
    }
    ```
@@ -74,7 +74,7 @@ Follow the instructions below for adding instrumentation for an API.
 
    /* ... */
 
-   if (IdentifiabilityStudySettings::Get()->IsTypeAllowed(my_surface_type)) {
+   if (IdentifiabilityStudySettings::Get()->ShouldSampleType(my_surface_type)) {
      // Only do work here.
    }
    ```
@@ -99,7 +99,7 @@ Follow the instructions below for adding instrumentation for an API.
 
    This includes calculating the `IdentifiableSurface` and any related digests.
    If calculating the `IdentifiableSurface` is expensive, then the code should
-   check `IsTypeAllowed()` before progressing.
+   check `ShouldSampleType()` before progressing.
 
    The primary mechanism for recovering from an unforeseen adverse effect of
    sampling a surface is to stop the collection of that specific sample by way

@@ -922,7 +922,7 @@ String HTMLMediaElement::canPlayType(ExecutionContext* context,
   MIMETypeRegistry::SupportsType support =
       GetSupportsType(ContentType(mime_type));
 
-  if (IdentifiabilityStudySettings::Get()->ShouldSample(
+  if (IdentifiabilityStudySettings::Get()->ShouldSampleType(
           blink::IdentifiableSurface::Type::kHTMLMediaElement_CanPlayType)) {
     blink::IdentifiabilityMetricBuilder(context->UkmSourceID())
         .Add(

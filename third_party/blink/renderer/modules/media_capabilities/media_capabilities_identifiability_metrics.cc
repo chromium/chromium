@@ -26,12 +26,12 @@ namespace media_capabilities_identifiability_metrics {
 namespace {
 
 bool IsDecodingInfoTypeAllowed() {
-  return IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+  return IdentifiabilityStudySettings::Get()->ShouldSampleType(
       IdentifiableSurface::Type::kMediaCapabilities_DecodingInfo);
 }
 
 bool ShouldSampleDecodingInfoType() {
-  return IdentifiabilityStudySettings::Get()->ShouldSample(
+  return IdentifiabilityStudySettings::Get()->ShouldSampleType(
       IdentifiableSurface::Type::kMediaCapabilities_DecodingInfo);
 }
 

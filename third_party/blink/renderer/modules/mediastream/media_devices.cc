@@ -242,7 +242,7 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
   constexpr IdentifiableSurface::Type surface_type =
       IdentifiableSurface::Type::kMediaDevices_GetUserMedia;
   IdentifiableSurface surface;
-  if (IdentifiabilityStudySettings::Get()->IsTypeAllowed(surface_type)) {
+  if (IdentifiabilityStudySettings::Get()->ShouldSampleType(surface_type)) {
     surface = IdentifiableSurface::FromTypeAndToken(
         surface_type, TokenFromConstraints(options));
   }
@@ -564,7 +564,7 @@ namespace {
 
 void RecordEnumeratedDevices(ScriptPromiseResolver* resolver,
                              const MediaDeviceInfoVector& media_devices) {
-  if (!IdentifiabilityStudySettings::Get()->IsWebFeatureAllowed(
+  if (!IdentifiabilityStudySettings::Get()->ShouldSampleWebFeature(
           WebFeature::kIdentifiabilityMediaDevicesEnumerateDevices)) {
     return;
   }

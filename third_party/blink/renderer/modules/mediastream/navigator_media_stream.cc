@@ -65,7 +65,7 @@ void NavigatorMediaStream::getUserMedia(
   IdentifiableSurface surface;
   constexpr IdentifiableSurface::Type surface_type =
       IdentifiableSurface::Type::kNavigator_GetUserMedia;
-  if (IdentifiabilityStudySettings::Get()->IsTypeAllowed(surface_type)) {
+  if (IdentifiabilityStudySettings::Get()->ShouldSampleType(surface_type)) {
     surface = IdentifiableSurface::FromTypeAndToken(
         surface_type, TokenFromConstraints(options));
   }
