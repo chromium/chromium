@@ -565,7 +565,11 @@ void ClientSession::CreatePerMonitorVideoStreams() {
 
     video_stream.stream->SelectSource(id);
 
-    video_stream.stream->SetObserver(this);
+    // SetObserver(this) is not called on the new video-stream, because
+    // per-monitor resizing should be handled by OnDesktopDisplayChanged()
+    // rather than OnVideoSizeChanged(). The latter would send out a legacy
+    // (non-extended) video-layout message, which may confuse the client when
+    // multi-stream is being used.
 
     // Pause capturing if necessary.
     video_stream.stream->Pause(pause_video_);
