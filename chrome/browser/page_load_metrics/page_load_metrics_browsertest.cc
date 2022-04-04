@@ -84,6 +84,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -3352,6 +3353,40 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DISABLED_PortalActivation) {
         ukm::builders::Portal_Activate::kEntryName);
     EXPECT_EQ(1u, entries.size());
   }
+}
+
+class PageLoadMetricsBrowserTestWithFencedFrames
+    : public PageLoadMetricsBrowserTest {
+ public:
+  PageLoadMetricsBrowserTestWithFencedFrames()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
+  }
+  ~PageLoadMetricsBrowserTestWithFencedFrames() override = default;
+
+ protected:
+  net::EmbeddedTestServer& https_server() { return https_server_; }
+
+ private:
+  net::EmbeddedTestServer https_server_;
+  content::test::FencedFrameTestHelper helper_;
+};
+
+// Checks if updating fencedframe's src attribute works. This is a regression
+// test to ensure PageLoadMetrics doesn't crash on such navigations.
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithFencedFrames,
+                       FencedFrameSrcAttributeNavigation) {
+  ASSERT_TRUE(https_server().Start());
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      https_server().GetURL("c.test", "/fenced_frames/basic_title.html")));
+
+  content::TestNavigationObserver observer(web_contents());
+  EXPECT_TRUE(content::ExecuteScript(
+      web_contents(),
+      "document.querySelector('fencedframe').src = './title2.html';"));
+  observer.WaitForNavigationFinished();
 }
 
 class PageLoadMetricsBrowserTestWithBackForwardCache
