@@ -647,7 +647,7 @@ media::VideoCaptureFormats MediaDevicesManager::GetVideoInputFormats(
 }
 
 blink::WebMediaDeviceInfoArray MediaDevicesManager::GetCachedDeviceInfo(
-    MediaDeviceType type) {
+    MediaDeviceType type) const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   return current_snapshot_[static_cast<size_t>(type)];
 }

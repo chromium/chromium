@@ -145,7 +145,8 @@ class CONTENT_EXPORT MediaDevicesManager
   // TODO(guidou): Remove this function once content::GetMediaDeviceIDForHMAC
   // is rewritten to receive devices via a callback.
   // See http://crbug.com/648155.
-  blink::WebMediaDeviceInfoArray GetCachedDeviceInfo(MediaDeviceType type);
+  blink::WebMediaDeviceInfoArray GetCachedDeviceInfo(
+      MediaDeviceType type) const;
 
   MediaDevicesPermissionChecker* media_devices_permission_checker();
 
