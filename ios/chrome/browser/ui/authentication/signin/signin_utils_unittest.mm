@@ -83,12 +83,12 @@ class SigninUtilsTest : public PlatformTest {
   ChromeAccountManagerService* account_manager_service_;
 };
 
-// Should show the sign-in upgrade for the first time.
+// Should show the sign-in upgrade for the first time, after FRE.
 TEST_F(SigninUtilsTest, TestWillDisplay) {
   ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
       ->AddIdentities(@[ @"foo", @"bar" ]);
   const base::Version version_1_0("1.0");
-  EXPECT_TRUE(signin::ShouldPresentUserSigninUpgrade(
+  EXPECT_FALSE(signin::ShouldPresentUserSigninUpgrade(
       chrome_browser_state_.get(), version_1_0));
 }
 

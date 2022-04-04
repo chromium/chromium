@@ -137,13 +137,19 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   NSString* version_string =
       [defaults stringForKey:kDisplayedSSORecallForMajorVersionKey];
+  const base::Version version_shown(base::SysNSStringToUTF8(version_string));
 
-  if (version_string) {
-    const base::Version version_shown(base::SysNSStringToUTF8(version_string));
-    if (version_shown.IsValid()) {
-      if (current_version.components()[0] - version_shown.components()[0] < 2)
-        return false;
-    }
+  // If the version was not set, we need to set it in order to wait 2 major
+  // releases to show the sign-in promo.
+  if (!version_shown.IsValid()) {
+    [defaults setObject:base::SysUTF8ToNSString(current_version.GetString())
+                 forKey:kDisplayedSSORecallForMajorVersionKey];
+    return false;
+  }
+
+  // Wait 2 major releases to show the sign-in promo.
+  if (current_version.components()[0] - version_shown.components()[0] < 2) {
+    return false;
   }
 
   // The SSO promo should not be disabled if it is force disabled.
