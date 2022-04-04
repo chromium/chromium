@@ -5511,9 +5511,15 @@ test("unit_tests") {
       "../browser/webauthn/authenticator_request_scheduler_unittest.cc",
       "../browser/webauthn/cablev2_devices_unittest.cc",
       "../browser/webauthn/chrome_authenticator_request_delegate_unittest.cc",
-      "../common/net/x509_certificate_model_unittest.cc",
       "../renderer/cart/commerce_hint_agent_unittest.cc",
     ]
+  }
+
+  # TODO(crbug.com/1265746): Enable x509_certificate_model_unittest on windows
+  # once the cert viewer on windows is changed to use the internal one.
+  # Currently disabled on win due to crbug.com/1311991.
+  if (!is_android && !is_win) {
+    sources += [ "../common/net/x509_certificate_model_unittest.cc" ]
   }
 
   if (is_chromeos) {
