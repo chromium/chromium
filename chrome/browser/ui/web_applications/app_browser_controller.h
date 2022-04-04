@@ -203,6 +203,7 @@ class AppBrowserController
 
   // BrowserThemeProviderDelegate:
   CustomThemeSupplier* GetThemeSupplier() const override;
+  bool ShouldUseSystemTheme() const override;
   bool ShouldUseCustomFrame() const override;
 
   // ui::ColorProviderManager::InitializerSupplier
