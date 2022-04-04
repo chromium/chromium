@@ -754,8 +754,8 @@
 
     'chromium.win': {
       # Windows bots take too long to link w/ full symbols and time out.
-      'Win Builder': 'gpu_tests_release_bot_x86_no_symbols',
-      'Win Builder (dbg)': 'gpu_tests_debug_bot_x86_no_symbols',
+      'Win Builder': 'gpu_tests_release_bot_x86_no_symbols_reclient',
+      'Win Builder (dbg)': 'gpu_tests_debug_bot_x86_no_symbols_reclient',
       'Win x64 Builder': 'gpu_tests_release_bot_minimal_symbols',
       'Win x64 Builder Code Coverage': 'gpu_tests_release_bot_minimal_symbols_code_coverage',
       'Win x64 Builder (dbg)': 'gpu_tests_debug_bot_reclient',
@@ -2530,6 +2530,10 @@
       'gpu_tests', 'debug_bot', 'x86', 'no_symbols'
     ],
 
+    'gpu_tests_debug_bot_x86_no_symbols_reclient': [
+      'gpu_tests', 'debug_bot_reclient', 'x86', 'no_symbols'
+    ],
+
     'gpu_tests_release_bot': [
       'gpu_tests', 'release_bot',
     ],
@@ -2571,8 +2575,8 @@
       'gpu_tests', 'release_bot', 'x86', 'minimal_symbols',
     ],
 
-    'gpu_tests_release_bot_x86_no_symbols': [
-      'gpu_tests', 'release_bot', 'x86', 'no_symbols',
+    'gpu_tests_release_bot_x86_no_symbols_reclient': [
+      'gpu_tests', 'release_bot_reclient', 'x86', 'no_symbols',
     ],
 
     'gpu_tests_release_trybot': [
