@@ -248,6 +248,9 @@ void SetFlags(IsolateHolder::ScriptMode mode,
                          "--no-compact-maps");
   SetV8FlagsIfOverridden(features::kV8UseMapSpace, "--use-map-space",
                          "--no-use-map-space");
+  SetV8FlagsIfOverridden(features::kV8CrashOnEvacuationFailure,
+                         "--crash-on-aborted-evacuation",
+                         "--no-crash-on-aborted-evacuation");
   SetV8FlagsIfOverridden(features::kV8OptimizeJavascript, "--opt", "--no-opt");
   SetV8FlagsIfOverridden(features::kV8FlushBytecode, "--flush-bytecode",
                          "--no-flush-bytecode");

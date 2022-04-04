@@ -19,6 +19,10 @@ const base::Feature kV8CompactWithStack{"V8CompactWithStack",
 const base::Feature kV8CompactMaps{"V8CompactMaps",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Crashes on evacuation failures in a full GC instead of aborting evacuation.
+const base::Feature kV8CrashOnEvacuationFailure{
+    "V8CrashOnEvacuationFailure", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables a separate heap space for all map objects.
 const base::Feature kV8UseMapSpace{"V8UseMapSpace",
                                    base::FEATURE_ENABLED_BY_DEFAULT};
