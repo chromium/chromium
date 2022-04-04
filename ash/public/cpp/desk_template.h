@@ -34,8 +34,8 @@ enum class ASH_PUBLIC_EXPORT DeskTemplateType {
   // Regular desk template.
   kTemplate = 0,
 
-  // Saved desk (Save & Recall).
-  kSavedDesk,
+  // Desk saved for Save & Recall.
+  kSaveAndRecall,
 };
 
 // Class to represent a desk template. It can be used to create a desk with

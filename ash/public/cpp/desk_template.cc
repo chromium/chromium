@@ -55,6 +55,7 @@ std::unique_ptr<DeskTemplate> DeskTemplate::Clone() const {
   if (desk_restore_data_)
     desk_template->set_desk_restore_data(desk_restore_data_->Clone());
   desk_template->set_launch_id(launch_id_);
+  desk_template->set_type(type_);
   return desk_template;
 }
 
@@ -83,8 +84,8 @@ std::string DeskTemplate::ToString() const {
     case DeskTemplateType::kTemplate:
       result += "template\n";
       break;
-    case DeskTemplateType::kSavedDesk:
-      result += "saved desk\n";
+    case DeskTemplateType::kSaveAndRecall:
+      result += "save and recall\n";
       break;
   }
 
