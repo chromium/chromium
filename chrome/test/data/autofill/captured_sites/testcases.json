@@ -163,7 +163,7 @@
     { "site_name": "prima_games" },
     { "site_name": "qvc" },
     { "site_name": "rakuten" },
-    { "site_name": "ralph_lauren", "bug_number":1269463 },
+    { "site_name": "ralph_lauren", "disabled":true, "bug_number":1269463 },
     { "site_name": "rei" },
     { "site_name": "represent" },
     { "site_name": "rock_auto" },
