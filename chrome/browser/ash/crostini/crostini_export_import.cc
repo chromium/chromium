@@ -293,24 +293,53 @@ void CrostiniExportImport::Start(
               },
               path),
           base::BindOnce(
-              &guest_os::GuestOsSharePath::SharePath,
-              base::Unretained(
-                  guest_os::GuestOsSharePath::GetForProfile(profile_)),
-              kCrostiniDefaultVmName, path, false,
+              &CrostiniExportImport::EnsureLxdStartedThenSharePath,
+              weak_ptr_factory_.GetWeakPtr(), operation_data->container_id,
+              path, false,
               base::BindOnce(&CrostiniExportImport::ExportAfterSharing,
                              weak_ptr_factory_.GetWeakPtr(),
                              operation_data->container_id, path,
                              std::move(callback))));
       break;
     case ExportImportType::IMPORT:
-      guest_os::GuestOsSharePath::GetForProfile(profile_)->SharePath(
-          kCrostiniDefaultVmName, path, false,
+      CrostiniExportImport::EnsureLxdStartedThenSharePath(
+          operation_data->container_id, path, false,
           base::BindOnce(&CrostiniExportImport::ImportAfterSharing,
                          weak_ptr_factory_.GetWeakPtr(),
                          operation_data->container_id, path,
                          std::move(callback)));
       break;
   }
+}
+
+void CrostiniExportImport::EnsureLxdStartedThenSharePath(
+    const ContainerId& container_id,
+    const base::FilePath& path,
+    bool persist,
+    guest_os::GuestOsSharePath::SharePathCallback callback) {
+  auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile_);
+  crostini::CrostiniManager::RestartOptions options;
+  options.stop_after_lxd_available = true;
+  crostini_manager->RestartCrostiniWithOptions(
+      container_id, std::move(options),
+      base::BindOnce(&CrostiniExportImport::SharePath,
+                     weak_ptr_factory_.GetWeakPtr(), container_id.vm_name, path,
+                     std::move(callback)));
+}
+
+void CrostiniExportImport::SharePath(
+    const std::string& vm_name,
+    const base::FilePath& path,
+    guest_os::GuestOsSharePath::SharePathCallback callback,
+    crostini::CrostiniResult result) {
+  if (result != CrostiniResult::SUCCESS) {
+    std::move(callback).Run(
+        base::FilePath(), false,
+        base::StringPrintf("VM could not be started: %d", result));
+    return;
+  }
+  guest_os::GuestOsSharePath::GetForProfile(profile_)->SharePath(
+      vm_name, path, false, std::move(callback));
 }
 
 void CrostiniExportImport::ExportAfterSharing(

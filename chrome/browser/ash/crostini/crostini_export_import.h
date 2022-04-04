@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/crostini/crostini_export_import_notification_controller.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -185,6 +186,19 @@ class CrostiniExportImport : public KeyedService,
   void Start(OperationData* params,
              base::FilePath path,
              CrostiniManager::CrostiniResultCallback callback);
+
+  // Restart VM with LXD if required and share the file path with VM.
+  void EnsureLxdStartedThenSharePath(
+      const ContainerId& container_id,
+      const base::FilePath& path,
+      bool persist,
+      guest_os::GuestOsSharePath::SharePathCallback callback);
+
+  // Share the file path with VM after VM has been restarted.
+  void SharePath(const std::string& vm_name,
+                 const base::FilePath& path,
+                 guest_os::GuestOsSharePath::SharePathCallback callback,
+                 crostini::CrostiniResult result);
 
   // crostini::ExportContainerProgressObserver implementation.
   void OnExportContainerProgress(const ContainerId& container_id,

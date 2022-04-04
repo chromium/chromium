@@ -212,6 +212,7 @@ TEST_F(CrostiniExportImportTest, TestExportSuccess) {
       tarball_, 0,
       crostini_export_import_->NewOperationData(ExportImportType::EXPORT));
   task_environment_.RunUntilIdle();
+  EXPECT_TRUE(fake_seneschal_client_->share_path_called());
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
       GetController();
   ASSERT_NE(controller, nullptr);
@@ -454,6 +455,7 @@ TEST_F(CrostiniExportImportTest, TestImportSuccess) {
       tarball_, 0,
       crostini_export_import_->NewOperationData(ExportImportType::IMPORT));
   task_environment_.RunUntilIdle();
+  EXPECT_TRUE(fake_seneschal_client_->share_path_called());
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
       GetController();
   ASSERT_NE(controller, nullptr);
