@@ -7,6 +7,7 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -35,6 +36,10 @@ struct RecordLanguageMetricTestOptions {
   bool has_content_language_in_child = true;
   std::string parent_content_language_value;
   std::string child_content_language_value;
+  bool has_xml_lang = false;
+  bool has_html_lang = false;
+  std::string xml_lang_value;
+  std::string html_lang_value;
 };
 
 const char kLargeLanguages[] =
@@ -47,6 +52,32 @@ const char kLargeLanguages[] =
     "qu,pa,es-VE,es-UY,es-US,es-ES,es-419,es-MX,es-PE,es-HN,es-CR,es-AR,es,st,"
     "so,sl,sk,si,wa,vi,uz,ug,uk,ur,yi,xh,wo,fy,cy,yo,zu,es-CL,es-CO,su,ta,sv,"
     "sw,tg,tn,to,ti,th,te,tt,tr,tk,tw";
+
+// As translate agent reports the metrics can be later than
+// MergeHistogramDeltasForTesting, retries fetching |histogram_name| until it
+// contains at least |count| samples.
+int RetryForHistogramUntilCountReached(
+    const base::HistogramTester* histogram_tester,
+    const std::string& histogram_name,
+    int count) {
+  while (true) {
+    base::ThreadPoolInstance::Get()->FlushForTesting();
+    base::RunLoop().RunUntilIdle();
+
+    std::vector<base::Bucket> buckets =
+        histogram_tester->GetAllSamples(histogram_name);
+    int total = 0;
+    for (const auto& bucket : buckets)
+      total += bucket.count;
+
+    if (total >= count)
+      return total;
+
+    content::FetchHistogramsFromChildProcesses();
+    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+    base::RunLoop().RunUntilIdle();
+  }
+}
 
 }  // namespace
 
@@ -64,6 +95,9 @@ class RecordLanguagesMetricsBrowserTest : public InProcessBrowserTest {
   static constexpr const char kOriginUrl[] = "https://127.0.0.1:44444";
   static constexpr const char kLanguageHistorgramName[] =
       "LanguageUsage.AcceptLanguageAndContentLanguageUsage";
+
+  static constexpr const char kXmlHtmlLanguageHistorgramName[] =
+      "LanguageUsage.AcceptLanguageAndXmlHtmlLangUsage";
 
   void SetUpOnMainThread() override {
     // We use a URLLoaderInterceptor, we also can use the EmbeddedTestServer.
@@ -90,6 +124,10 @@ class RecordLanguagesMetricsBrowserTest : public InProcessBrowserTest {
     return GURL(base::StrCat({kOriginUrl, "/content_language.html"}));
   }
 
+  GURL xml_html_language_url() const {
+    return GURL(base::StrCat({kOriginUrl, "/xml_html_language.html"}));
+  }
+
   GURL content_language_with_iframe_url() const {
     return GURL(
         base::StrCat({kOriginUrl, "/content_language_with_iframe.html"}));
@@ -106,13 +144,27 @@ class RecordLanguagesMetricsBrowserTest : public InProcessBrowserTest {
   void NavigateAndVerifyHistogramsMetric(
       const GURL& url,
       const blink::AcceptLanguageAndContentLanguageUsage expect_metric_type,
-      int expect_metric_count) {
+      const int expect_metric_count) {
     base::HistogramTester histograms;
 
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
     histograms.ExpectBucketCount(kLanguageHistorgramName, expect_metric_type,
                                  expect_metric_count);
+  }
+
+  void NavigateAndVerifyXmlHtmlHistogramsMetric(
+      const GURL& url,
+      const blink::AcceptLanguageAndXmlHtmlLangUsage expect_metric_type,
+      const int expect_metric_count) {
+    base::HistogramTester histograms;
+
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+    RetryForHistogramUntilCountReached(&histograms,
+                                       kXmlHtmlLanguageHistorgramName, 1);
+    histograms.ExpectBucketCount(kXmlHtmlLanguageHistorgramName,
+                                 expect_metric_type, expect_metric_count);
   }
 
   void VerifyAcceptLanguage(const std::string& expected_accept_language) {
@@ -141,6 +193,13 @@ class RecordLanguagesMetricsBrowserTest : public InProcessBrowserTest {
     std::string path = "chrome/test/data/content_language";
     path.append(static_cast<std::string>(params->url_request.url.path_piece()));
 
+    // build response header and body for xml html lang tag value
+    if (params->url_request.url.path() == "/xml_html_language.html") {
+      URLLoaderInterceptor::WriteResponse(
+          BuildXmlHtmlHeader(), BuildXmlHtmlBody(), params->client.get());
+      return true;
+    }
+
     std::string headers = "HTTP/1.1 200 OK\nContent-Type: text/html\n";
     if (params->url_request.url.path() == "/simple.html") {
       base::StrAppend(&headers, {BuildIframeResponseHeader()});
@@ -152,6 +211,37 @@ class RecordLanguagesMetricsBrowserTest : public InProcessBrowserTest {
                                         absl::nullopt,
                                         /*url=*/params->url_request.url);
     return true;
+  }
+
+  std::string BuildXmlHtmlBody() {
+    std::string body = "<html ";
+    if (test_options_.has_xml_lang) {
+      base::StrAppend(&body,
+                      {" xmlns='http://www.w3.org/1999/xhtml' xml:lang='",
+                       test_options_.xml_lang_value, "' "});
+    }
+    if (test_options_.has_html_lang) {
+      base::StrAppend(&body, {" lang='", test_options_.html_lang_value, "' "});
+    }
+    base::StrAppend(&body, {" ><head></head></html>"});
+    return body;
+  }
+
+  std::string BuildXmlHtmlHeader() {
+    std::string headers = "HTTP/1.1 200 OK\n";
+    if (test_options_.has_xml_lang) {
+      base::StrAppend(&headers, {"Content-Type: application/xhtml+xml\n"});
+    } else {
+      base::StrAppend(&headers, {"Content-Type: text/html\n"});
+    }
+
+    if (test_options_.has_content_language_in_parent) {
+      base::StrAppend(&headers,
+                      {"Content-Language: ",
+                       test_options_.parent_content_language_value, "\n"});
+    }
+
+    return headers;
   }
 
   std::string BuildResponseHeader() {
@@ -188,6 +278,8 @@ class RecordLanguagesMetricsBrowserTest : public InProcessBrowserTest {
 constexpr const char RecordLanguagesMetricsBrowserTest::kOriginUrl[];
 constexpr const char
     RecordLanguagesMetricsBrowserTest::kLanguageHistorgramName[];
+constexpr const char
+    RecordLanguagesMetricsBrowserTest::kXmlHtmlLanguageHistorgramName[];
 
 IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest,
                        ContentLanguageEmpty) {
@@ -508,4 +600,308 @@ IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest,
                                blink::AcceptLanguageAndContentLanguageUsage::
                                    kContentLanguageMatchesAnyAcceptLanguage,
                                2);
+}
+
+IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest, XmlLangEmpty) {
+  SetTestOptions({/*has_content_language_in_parent=*/false,
+                  /*has_content_language_in_child=*/false,
+                  /*parent_content_language_value=*/"",
+                  /*child_content_language_value=*/"",
+                  /*has_xml_lang=*/true,
+                  /*has_html_lang=*/true,
+                  /*xml_lang_value=*/"",
+                  /*html_lang_value=*/"en-US"},
+                 {xml_html_language_url()});
+
+  NavigateAndVerifyXmlHtmlHistogramsMetric(
+      xml_html_language_url(),
+      blink::AcceptLanguageAndXmlHtmlLangUsage::kXmlLangEmpty, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest, XmlLangWildcard) {
+  SetTestOptions({/*has_content_language_in_parent=*/false,
+                  /*has_content_language_in_child=*/false,
+                  /*parent_content_language_value=*/"",
+                  /*child_content_language_value=*/"",
+                  /*has_xml_lang=*/true,
+                  /*has_html_lang=*/true,
+                  /*xml_lang_value=*/"*",
+                  /*html_lang_value=*/"en-US"},
+                 {xml_html_language_url()});
+
+  NavigateAndVerifyXmlHtmlHistogramsMetric(
+      xml_html_language_url(),
+      blink::AcceptLanguageAndXmlHtmlLangUsage::kXmlLangWildcard, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest,
+                       XmlLangMatchesAnyNonPrimayAcceptLanguage) {
+  SetTestOptions({/*has_content_language_in_parent=*/false,
+                  /*has_content_language_in_child=*/false,
+                  /*parent_content_language_value=*/"",
+                  /*child_content_language_value=*/"",
+                  /*has_xml_lang=*/true,
+                  /*has_html_lang=*/true,
+                  /*xml_lang_value=*/"zh-CN",
+                  /*html_lang_value=*/"zh-CN"},
+                 {xml_html_language_url()});
+
+  SetPerfsAcceptLanguage({"en-US", "en-GB", "zh", "zh-CN"});
+  NavigateAndVerifyXmlHtmlHistogramsMetric(
+      xml_html_language_url(),
+      blink::AcceptLanguageAndXmlHtmlLangUsage::
+          kXmlLangMatchesAnyNonPrimayAcceptLanguage,
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest,
+                       XmlLangMatchesPrimaryAcceptLanguage) {
+  SetTestOptions({/*has_content_language_in_parent=*/false,
+                  /*has_content_language_in_child=*/false,
+                  /*parent_content_language_value=*/"",
+                  /*child_content_language_value=*/"",
+                  /*has_xml_lang=*/true,
+                  /*has_html_lang=*/true,
+                  /*xml_lang_value=*/"en-US",
+                  /*html_lang_value=*/"en-US"},
+                 {xml_html_language_url()});
+
+  SetPerfsAcceptLanguage({"en-US", "en-GB", "zh", "zh-CN"});
+
+  base::HistogramTester histograms;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), xml_html_language_url()));
+
+  RetryForHistogramUntilCountReached(&histograms,
+                                     kXmlHtmlLanguageHistorgramName, 1);
+  // xml lang matches primary accept language
+  histograms.ExpectBucketCount(kXmlHtmlLanguageHistorgramName,
+                               blink::AcceptLanguageAndXmlHtmlLangUsage::
+                                   kXmlLangMatchesPrimaryAcceptLanguage,
+                               1);
+}
+
+IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest,
+                       XmlLangMatchesPrimaryAcceptLanguageWithoutLocale) {
+  SetTestOptions({/*has_content_language_in_parent=*/false,
+                  /*has_content_language_in_child=*/false,
+                  /*parent_content_language_value=*/"",
+                  /*child_content_language_value=*/"",
+                  /*has_xml_lang=*/true,
+                  /*has_html_lang=*/true,
+                  /*xml_lang_value=*/"en-GB",
+                  /*html_lang_value=*/"en-GB"},
+                 {xml_html_language_url()});
+
+  SetPerfsAcceptLanguage({"en-US", "en-GB", "zh", "zh-CN"});
+
+  base::HistogramTester histograms;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), xml_html_language_url()));
+
+  RetryForHistogramUntilCountReached(&histograms,
+                                     kXmlHtmlLanguageHistorgramName, 1);
+
+  // xml lang matches primary accept language
+  histograms.ExpectBucketCount(kXmlHtmlLanguageHistorgramName,
+                               blink::AcceptLanguageAndXmlHtmlLangUsage::
+                                   kXmlLangMatchesPrimaryAcceptLanguage,
+                               1);
+}
+
+IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest, HtmlLangEmpty) {
+  SetTestOptions({/*has_content_language_in_parent=*/false,
+                  /*has_content_language_in_child=*/false,
+                  /*parent_content_language_value=*/"",
+                  /*child_content_language_value=*/"",
+                  /*has_xml_lang=*/false,
+                  /*has_html_lang=*/true,
+                  /*xml_lang_value=*/"",
+                  /*html_lang_value=*/""},
+                 {xml_html_language_url()});
+
+  NavigateAndVerifyXmlHtmlHistogramsMetric(
+      xml_html_language_url(),
+      blink::AcceptLanguageAndXmlHtmlLangUsage::kHtmlLangEmpty, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest, HtmlLangWildCard) {
+  SetTestOptions({/*has_content_language_in_parent=*/false,
+                  /*has_content_language_in_child=*/false,
+                  /*parent_content_language_value=*/"",
+                  /*child_content_language_value=*/"",
+                  /*has_xml_lang=*/false,
+                  /*has_html_lang=*/true,
+                  /*xml_lang_value=*/"",
+                  /*html_lang_value=*/"*"},
+                 {xml_html_language_url()});
+
+  NavigateAndVerifyXmlHtmlHistogramsMetric(
+      xml_html_language_url(),
+      blink::AcceptLanguageAndXmlHtmlLangUsage::kHtmlLangWildcard, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest,
+                       HtmlLangMatchesAnyNonPrimayAcceptLanguage) {
+  SetTestOptions({/*has_content_language_in_parent=*/false,
+                  /*has_content_language_in_child=*/false,
+                  /*parent_content_language_value=*/"",
+                  /*child_content_language_value=*/"",
+                  /*has_xml_lang=*/false,
+                  /*has_html_lang=*/true,
+                  /*xml_lang_value=*/"",
+                  /*html_lang_value=*/"zh-CN"},
+                 {xml_html_language_url()});
+
+  SetPerfsAcceptLanguage({"en-US", "en-GB", "zh", "zh-CN"});
+  NavigateAndVerifyXmlHtmlHistogramsMetric(
+      xml_html_language_url(),
+      blink::AcceptLanguageAndXmlHtmlLangUsage::
+          kHtmlLangMatchesAnyNonPrimayAcceptLanguage,
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest,
+                       HtmlLangMatchesPrimaryAcceptLanguage) {
+  SetTestOptions({/*has_content_language_in_parent=*/false,
+                  /*has_content_language_in_child=*/false,
+                  /*parent_content_language_value=*/"",
+                  /*child_content_language_value=*/"",
+                  /*has_xml_lang=*/false,
+                  /*has_html_lang=*/true,
+                  /*xml_lang_value=*/"",
+                  /*html_lang_value=*/"en-US"},
+                 {xml_html_language_url()});
+
+  SetPerfsAcceptLanguage({"en-US", "en-GB", "zh", "zh-CN"});
+
+  base::HistogramTester histograms;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), xml_html_language_url()));
+
+  RetryForHistogramUntilCountReached(&histograms,
+                                     kXmlHtmlLanguageHistorgramName, 1);
+
+  // html lang matches primary accept language
+  histograms.ExpectBucketCount(kXmlHtmlLanguageHistorgramName,
+                               blink::AcceptLanguageAndXmlHtmlLangUsage::
+                                   kHtmlLangMatchesPrimaryAcceptLanguage,
+                               1);
+}
+
+IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest,
+                       HtmlLangMatchesPrimaryAcceptLanguageWithoutLocale) {
+  SetTestOptions({/*has_content_language_in_parent=*/false,
+                  /*has_content_language_in_child=*/false,
+                  /*parent_content_language_value=*/"",
+                  /*child_content_language_value=*/"",
+                  /*has_xml_lang=*/false,
+                  /*has_html_lang=*/true,
+                  /*xml_lang_value=*/"",
+                  /*html_lang_value=*/"en-GB"},
+                 {xml_html_language_url()});
+
+  SetPerfsAcceptLanguage({"en-US", "en-GB", "zh", "zh-CN"});
+
+  base::HistogramTester histograms;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), xml_html_language_url()));
+
+  RetryForHistogramUntilCountReached(&histograms,
+                                     kXmlHtmlLanguageHistorgramName, 1);
+
+  // html lang matches primary accept language
+  histograms.ExpectBucketCount(kXmlHtmlLanguageHistorgramName,
+                               blink::AcceptLanguageAndXmlHtmlLangUsage::
+                                   kHtmlLangMatchesPrimaryAcceptLanguage,
+                               1);
+}
+
+IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest,
+                       HtmlLangMatchesMatchNonPrimaryAcceptLanguageZh) {
+  SetTestOptions({/*has_content_language_in_parent=*/false,
+                  /*has_content_language_in_child=*/false,
+                  /*parent_content_language_value=*/"",
+                  /*child_content_language_value=*/"",
+                  /*has_xml_lang=*/false,
+                  /*has_html_lang=*/true,
+                  /*xml_lang_value=*/"",
+                  /*html_lang_value=*/"zh-HK"},
+                 {xml_html_language_url()});
+
+  SetPerfsAcceptLanguage({"zh-CN", "zh-TW", "zh-HK"});
+
+  base::HistogramTester histograms;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), xml_html_language_url()));
+
+  RetryForHistogramUntilCountReached(&histograms,
+                                     kXmlHtmlLanguageHistorgramName, 1);
+
+  // zh family, html lang matches non-primary accept language instead of primary
+  histograms.ExpectBucketCount(kXmlHtmlLanguageHistorgramName,
+                               blink::AcceptLanguageAndXmlHtmlLangUsage::
+                                   kHtmlLangMatchesAnyNonPrimayAcceptLanguage,
+                               1);
+}
+
+IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest,
+                       XmlLanguageContentLanguageIntegrationTest) {
+  SetTestOptions({/*has_content_language_in_parent=*/true,
+                  /*has_content_language_in_child=*/false,
+                  /*parent_content_language_value=*/"zh",
+                  /*child_content_language_value=*/"",
+                  /*has_xml_lang=*/true,
+                  /*has_html_lang=*/true,
+                  /*xml_lang_value=*/"zh-CN",
+                  /*html_lang_value=*/"zh-CN"},
+                 {xml_html_language_url()});
+
+  SetPerfsAcceptLanguage({"en-US", "en-GB", "zh", "zh-CN", "en"});
+
+  base::HistogramTester histograms;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), xml_html_language_url()));
+
+  RetryForHistogramUntilCountReached(&histograms,
+                                     kXmlHtmlLanguageHistorgramName, 1);
+
+  // Accept-Language vs xml:lang: match any
+  histograms.ExpectBucketCount(kXmlHtmlLanguageHistorgramName,
+                               blink::AcceptLanguageAndXmlHtmlLangUsage::
+                                   kXmlLangMatchesAnyNonPrimayAcceptLanguage,
+                               1);
+
+  // Accept-Language vs Content-Language: match any
+  histograms.ExpectBucketCount(kLanguageHistorgramName,
+                               blink::AcceptLanguageAndContentLanguageUsage::
+                                   kContentLanguageMatchesAnyAcceptLanguage,
+                               1);
+}
+
+IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest,
+                       HtmlLanguageContentLanguageIntegrationTest) {
+  SetTestOptions({/*has_content_language_in_parent=*/true,
+                  /*has_content_language_in_child=*/false,
+                  /*parent_content_language_value=*/"zh",
+                  /*child_content_language_value=*/"",
+                  /*has_xml_lang=*/false,
+                  /*has_html_lang=*/true,
+                  /*xml_lang_value=*/"",
+                  /*html_lang_value=*/"en-US"},
+                 {xml_html_language_url()});
+
+  SetPerfsAcceptLanguage({"en-US", "en-GB", "zh", "zh-CN", "en"});
+
+  base::HistogramTester histograms;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), xml_html_language_url()));
+
+  RetryForHistogramUntilCountReached(&histograms,
+                                     kXmlHtmlLanguageHistorgramName, 1);
+
+  // Accept-Language vs html lang: match primary
+  histograms.ExpectBucketCount(kXmlHtmlLanguageHistorgramName,
+                               blink::AcceptLanguageAndXmlHtmlLangUsage::
+                                   kHtmlLangMatchesPrimaryAcceptLanguage,
+                               1);
+
+  // Accept-Language vs Content-Language: match any
+  histograms.ExpectBucketCount(kLanguageHistorgramName,
+                               blink::AcceptLanguageAndContentLanguageUsage::
+                                   kContentLanguageMatchesAnyAcceptLanguage,
+                               1);
 }

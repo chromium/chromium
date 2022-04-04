@@ -206,6 +206,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="LanguageUsage.AcceptLanguageAndXmlHtmlLangUsage"
+    enum="AcceptLanguageAndXmlHtmlLangUsage" expires_after="2023-03-01">
+  <owner>victortan@chromium.org</owner>
+  <owner>abeyad@chromium.org</owner>
+  <summary>
+    Metrics that record matches between the xml:lang, html lang and
+    Accept-Language request header values. This is recorded every time the
+    translate agent captures the page.
+  </summary>
+</histogram>
+
 <histogram name="LanguageUsage.ApplicationLanguage" enum="LanguageName"
     expires_after="2022-09-11">
   <owner>perrier@chromium.org</owner>

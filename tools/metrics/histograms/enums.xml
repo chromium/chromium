@@ -117,6 +117,19 @@ uploading your change for review.  These are checked by presubmit scripts.
       label="Child frame's Content-Language differs from parent frame"/>
 </enum>
 
+<enum name="AcceptLanguageAndXmlHtmlLangUsage">
+  <int value="0" label="xml:lang value is empty"/>
+  <int value="1" label="xml:lang value is wildcard"/>
+  <int value="2"
+      label="xml:lang value matches any non-primary Accept-Language"/>
+  <int value="3" label="xml:lang value matches primary Accept-Language"/>
+  <int value="4" label="html lang tag is absent or value is empty"/>
+  <int value="5" label="html lang value is wildcard"/>
+  <int value="6"
+      label="html lang value matches any non-primary Accept-Language"/>
+  <int value="7" label="html lang value matches primary Accept-Language"/>
+</enum>
+
 <enum name="AccessibilityAndroidAnimationsEnabled">
   <obsolete>
     Removed from code 2020/10.

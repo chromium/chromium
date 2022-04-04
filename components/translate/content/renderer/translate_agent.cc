@@ -196,6 +196,9 @@ void TranslateAgent::PageCaptured(const std::u16string& contents) {
 
   WebLanguageDetectionDetails web_detection_details =
       WebLanguageDetectionDetails::CollectLanguageDetectionDetails(document);
+  WebLanguageDetectionDetails::RecordAcceptLanguageAndXmlHtmlLangMetric(
+      document);
+
   std::string content_language = web_detection_details.content_language.Utf8();
   std::string html_lang = web_detection_details.html_language.Utf8();
   std::string model_detected_language;

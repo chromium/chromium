@@ -10,8 +10,8 @@ namespace blink {
 // Used to record the matches between the Content-Language response header value
 // and the Accept-Language request header values.
 //
-// Corresponds to the "ContentLanguageCase" histogram enumeration type in
-// tools/metrics/histograms/enums.xml.
+// Corresponds to the "AcceptLanguageAndContentLanguageUsage" histogram
+// enumeration type in tools/metrics/histograms/enums.xml.
 //
 // PLEASE DO NOT REORDER, REMOVE, OR CHANGE THE MEANING OF THESE VALUES.
 enum class AcceptLanguageAndContentLanguageUsage {
@@ -21,6 +21,25 @@ enum class AcceptLanguageAndContentLanguageUsage {
   kContentLanguageMatchesPrimaryAcceptLanguage,
   kContentLanguageSubframeDiffers,
   kMaxValue = kContentLanguageSubframeDiffers
+};
+
+// Used to record the matches between the HTML or XML lang value and the
+// Accept-Language request header values.
+//
+// Corresponds to the "AcceptLanguageAndXmlHtmlLangUsage" histogram enumeration
+// type in tools/metrics/histograms/enums.xml.
+//
+// PLEASE DO NOT REORDER, REMOVE, OR CHANGE THE MEANING OF THESE VALUES.
+enum class AcceptLanguageAndXmlHtmlLangUsage {
+  kXmlLangEmpty,
+  kXmlLangWildcard,
+  kXmlLangMatchesAnyNonPrimayAcceptLanguage,
+  kXmlLangMatchesPrimaryAcceptLanguage,
+  kHtmlLangEmpty,
+  kHtmlLangWildcard,
+  kHtmlLangMatchesAnyNonPrimayAcceptLanguage,
+  kHtmlLangMatchesPrimaryAcceptLanguage,
+  kMaxValue = kHtmlLangMatchesPrimaryAcceptLanguage
 };
 
 }  // namespace blink
