@@ -77,8 +77,7 @@ class FakeDisplaySchedulerClient : public DisplaySchedulerClient {
 
   ~FakeDisplaySchedulerClient() override {}
 
-  bool DrawAndSwap(base::TimeTicks frame_time,
-                   base::TimeTicks expected_display_time) override {
+  bool DrawAndSwap(const DrawAndSwapParams& params) override {
     draw_and_swap_count_++;
 
     bool success = !next_draw_and_swap_fails_;

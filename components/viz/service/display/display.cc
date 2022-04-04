@@ -679,8 +679,7 @@ void VisualDebuggerSync(gfx::OverlayTransform current_display_transform,
 
 }  // namespace
 
-bool Display::DrawAndSwap(base::TimeTicks frame_time,
-                          base::TimeTicks expected_display_time) {
+bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
   TRACE_EVENT0("viz", "Display::DrawAndSwap");
   if (debug_settings_->show_aggregated_damage !=
       aggregator_->HasFrameAnnotator()) {
@@ -748,8 +747,9 @@ bool Display::DrawAndSwap(base::TimeTicks frame_time,
     target_damage_bounding_rect.Union(
         renderer_->GetDelegatedInkTrailDamageRect());
     frame = aggregator_->Aggregate(
-        current_surface_id_, expected_display_time, current_display_transform,
-        target_damage_bounding_rect, ++swapped_trace_id_);
+        current_surface_id_, params.expected_display_time,
+        current_display_transform, target_damage_bounding_rect,
+        ++swapped_trace_id_);
 
     // Dump aggregated frame (will dump render passes and draw quads) if run
     // with: --vmodule=display=3
@@ -918,7 +918,7 @@ bool Display::DrawAndSwap(base::TimeTicks frame_time,
         thread_ids.insert(surface_thread_ids.begin(), surface_thread_ids.end());
       }
     }
-    presentation_group_timing.OnDraw(frame_time, draw_timer->Begin(),
+    presentation_group_timing.OnDraw(params.frame_time, draw_timer->Begin(),
                                      std::move(thread_ids));
 
     for (const auto& id_entry : aggregator_->previous_contained_surfaces()) {

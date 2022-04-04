@@ -202,7 +202,7 @@ void TestLayerTreeFrameSink::SubmitCompositorFrame(viz::CompositorFrame frame,
   support_->SubmitCompositorFrame(local_surface_id, std::move(frame));
 
   if (!display_->has_scheduler()) {
-    display_->DrawAndSwap(base::TimeTicks::Now(), base::TimeTicks::Now());
+    display_->DrawAndSwap({base::TimeTicks::Now(), base::TimeTicks::Now()});
     // Post this to get a new stack frame so that we exit this function before
     // calling the client to tell it that it is done.
     compositor_task_runner_->PostTask(

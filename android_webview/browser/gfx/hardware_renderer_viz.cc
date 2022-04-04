@@ -259,7 +259,7 @@ void HardwareRendererViz::OnViz::DrawAndSwapOnViz(
 
   display_->Resize(viewport);
   auto now = base::TimeTicks::Now();
-  display_->DrawAndSwap(now, now);
+  display_->DrawAndSwap({now, now});
 }
 
 void HardwareRendererViz::OnViz::PostDrawOnViz(

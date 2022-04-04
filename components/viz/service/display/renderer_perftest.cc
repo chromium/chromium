@@ -371,8 +371,8 @@ class RendererPerfTest : public VizPerfTest {
                                 .Build();
     support_->SubmitCompositorFrame(id_allocator_.GetCurrentLocalSurfaceId(),
                                     std::move(frame));
-    ASSERT_TRUE(
-        display_->DrawAndSwap(base::TimeTicks::Now(), base::TimeTicks::Now()));
+    ASSERT_TRUE(display_->DrawAndSwap(
+        {base::TimeTicks::Now(), base::TimeTicks::Now()}));
   }
 
   ResourceId MapResourceId(base::flat_map<ResourceId, ResourceId>* resource_map,
