@@ -5,5 +5,13 @@
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
     browserSignals) {
+  forDebuggingOnly.reportAdAuctionLoss(
+    interestGroup.owner + '/echo?bidder_debug_report_loss/' +
+    interestGroup.name + '/before_error');
+
   throw 'Here\'s an error';
+
+  forDebuggingOnly.reportAdAuctionLoss(
+    interestGroup.owner + '/echo?bidder_debug_report_loss/' +
+    interestGroup.name + '/after_error');
 }

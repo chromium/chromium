@@ -436,6 +436,20 @@ bool AdAuctionServiceImpl::IsInterestGroupAPIAllowed(
       origin);
 }
 
+void AdAuctionServiceImpl::HandleReports(
+    network::mojom::URLLoaderFactory* factory,
+    const std::vector<GURL>& report_urls,
+    const std::string& name) {
+  for (const GURL& report_url : report_urls) {
+    base::UmaHistogramCounts100000(
+        base::StrCat({"Ads.InterestGroup.Net.RequestUrlSizeBytes.", name}),
+        report_url.spec().size());
+    base::UmaHistogramCounts100(
+        base::StrCat({"Ads.InterestGroup.Net.ResponseSizeBytes.", name}), 0);
+    FetchReport(factory, report_url, origin(), GetClientSecurityState());
+  }
+}
+
 void AdAuctionServiceImpl::OnAuctionComplete(
     RunAdAuctionCallback callback,
     AuctionRunner* auction,
@@ -467,6 +481,8 @@ void AdAuctionServiceImpl::OnAuctionComplete(
     std::move(callback).Run(absl::nullopt);
     auction_result_metrics->ReportAuctionResult(
         AdAuctionResultMetrics::AuctionResult::kFailed);
+    HandleReports(GetTrustedURLLoaderFactory(),
+                  std::move(debug_loss_report_urls), "DebugLossReport");
     return;
   }
   DCHECK(winning_group_id);  // Should always be present with a render_url
@@ -484,32 +500,9 @@ void AdAuctionServiceImpl::OnAuctionComplete(
       AdAuctionResultMetrics::AuctionResult::kSucceeded);
 
   network::mojom::URLLoaderFactory* factory = GetTrustedURLLoaderFactory();
-  for (const GURL& report_url : report_urls) {
-    base::UmaHistogramCounts100000(
-        "Ads.InterestGroup.Net.RequestUrlSizeBytes.SendReportToReport",
-        report_url.spec().size());
-    base::UmaHistogramCounts100(
-        "Ads.InterestGroup.Net.ResponseSizeBytes.SendReportToReport", 0);
-    FetchReport(factory, report_url, origin(), GetClientSecurityState());
-  }
-  for (const auto& debug_loss_report_url : debug_loss_report_urls) {
-    base::UmaHistogramCounts100000(
-        "Ads.InterestGroup.Net.RequestUrlSizeBytes.DebugLossReport",
-        debug_loss_report_url.spec().size());
-    base::UmaHistogramCounts100(
-        "Ads.InterestGroup.Net.ResponseSizeBytes.DebugLossReport", 0);
-    FetchReport(factory, debug_loss_report_url, origin(),
-                GetClientSecurityState());
-  }
-  for (const auto& debug_win_report_url : debug_win_report_urls) {
-    base::UmaHistogramCounts100000(
-        "Ads.InterestGroup.Net.RequestUrlSizeBytes.DebugWinReport",
-        debug_win_report_url.spec().size());
-    base::UmaHistogramCounts100(
-        "Ads.InterestGroup.Net.ResponseSizeBytes.DebugWinReport", 0);
-    FetchReport(factory, debug_win_report_url, origin(),
-                GetClientSecurityState());
-  }
+  HandleReports(factory, std::move(report_urls), "SendReportToReport");
+  HandleReports(factory, std::move(debug_loss_report_urls), "DebugLossReport");
+  HandleReports(factory, std::move(debug_win_report_urls), "DebugWinReport");
 }
 
 InterestGroupManagerImpl& AdAuctionServiceImpl::GetInterestGroupManager()

@@ -83,6 +83,12 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
                                      interest_group_api_operation,
                                  const url::Origin& origin) const;
 
+  // Handles passed in report URLs. For each url of `report_urls`, call
+  // FetchReport() to send a request to the url, and add UMA histgrams.
+  void HandleReports(network::mojom::URLLoaderFactory* factory,
+                     const std::vector<GURL>& report_urls,
+                     const std::string& name);
+
   // Deletes `auction`.
   void OnAuctionComplete(
       RunAdAuctionCallback callback,
