@@ -60,8 +60,13 @@ public interface SurfaceActionsHandler {
      * @param url The URL that the user clicked on
      * @param entityMids Sorted list (most relevant to least) of entity MIDs that correspond to the
      *         clicked URL
+     * @param contentCategoryMediaType MediaType expresses the primary media format of the content
+     * @param cardCategory Expresses the category of the clicked card
+     * TODO(tbansal): Remove the first method once the callers have been updated.
      */
     default void updateUserProfileOnLinkClick(String url, List<Long> entityMids) {}
+    default void updateUserProfileOnLinkClick(
+            String url, List<Long> entityMids, long contentCategoryMediaType, long cardCategory) {}
 
     /** A request to follow or unfollow a WebFeed. */
     interface WebFeedFollowUpdate {
