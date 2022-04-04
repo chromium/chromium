@@ -189,9 +189,11 @@ mojom::InputFieldType TextInputTypeToMojoType(ui::TextInputType type) {
   }
 }
 
-mojom::AutocorrectMode AutocorrectFlagsToMojoType(int flags) {
-  if ((flags & ui::TEXT_INPUT_FLAG_AUTOCORRECT_OFF) ||
-      (flags & ui::TEXT_INPUT_FLAG_SPELLCHECK_OFF)) {
+mojom::AutocorrectMode AutocorrectFlagsToMojoType(int flags,
+                                                  bool is_normal_screen) {
+  if (((flags & ui::TEXT_INPUT_FLAG_AUTOCORRECT_OFF) ||
+       (flags & ui::TEXT_INPUT_FLAG_SPELLCHECK_OFF)) ||
+      !is_normal_screen) {
     return mojom::AutocorrectMode::kDisabled;
   }
   return mojom::AutocorrectMode::kEnabled;
@@ -770,11 +772,15 @@ void NativeInputMethodEngine::ImeObserver::OnFocus(
       OverrideXkbLayoutIfNeeded(InputMethodManager::Get()->GetImeKeyboard(),
                                 settings);
 
+      const bool is_normal_screen =
+          InputMethodManager::Get()->GetActiveIMEState()->GetUIStyle() ==
+          InputMethodManager::UIStyle::kNormal;
       auto input_field_info = mojom::InputFieldInfo::New(
           TextInputTypeToMojoType(context.type),
-          AutocorrectFlagsToMojoType(context.flags),
-          context.should_do_learning ? mojom::PersonalizationMode::kEnabled
-                                     : mojom::PersonalizationMode::kDisabled);
+          AutocorrectFlagsToMojoType(context.flags, is_normal_screen),
+          context.should_do_learning && is_normal_screen
+              ? mojom::PersonalizationMode::kEnabled
+              : mojom::PersonalizationMode::kDisabled);
       auto on_focus_callback = base::BindOnce(
           &NativeInputMethodEngine::ImeObserver::ActivateTextClient,
           weak_ptr_factory_.GetWeakPtr(), text_client_->context_id);
