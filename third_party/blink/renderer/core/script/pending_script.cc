@@ -161,11 +161,13 @@ void PendingScript::ExecuteScriptBlock(const KURL& document_url) {
 
   std::unique_ptr<scheduler::TaskAttributionTracker::TaskScope>
       task_attribution_scope;
-  DCHECK(ThreadScheduler::Current());
-  ScriptState* script_state = ToScriptStateForMainWorld(frame);
-  if (auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker()) {
-    task_attribution_scope =
-        tracker->CreateTaskScope(script_state, absl::nullopt);
+  if (ScriptState* script_state = ToScriptStateForMainWorld(frame)) {
+    DCHECK(ThreadScheduler::Current());
+    if (auto* tracker =
+            ThreadScheduler::Current()->GetTaskAttributionTracker()) {
+      task_attribution_scope =
+          tracker->CreateTaskScope(script_state, absl::nullopt);
+    }
   }
 
   Script* script = GetSource(document_url);
