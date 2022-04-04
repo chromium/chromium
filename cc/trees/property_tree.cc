@@ -265,8 +265,6 @@ void TransformTree::CombineTransformsBetween(int source_id,
     // loop below.
     DCHECK(IsDescendant(dest_id, current->id));
     CombineInversesBetween(current->id, dest_id, &combined_transform);
-    DCHECK(combined_transform.IsApproximatelyIdentityOrTranslation(
-        SkDoubleToScalar(1e-4)));
   }
 
   size_t source_to_destination_size = source_to_destination.size();
