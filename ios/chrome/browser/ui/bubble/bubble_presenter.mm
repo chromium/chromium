@@ -308,18 +308,23 @@ presentBubbleForFeature:(const base::Feature&)feature
                    text:(NSString*)text
   voiceOverAnnouncement:(NSString*)voiceOverAnnouncement
             anchorPoint:(CGPoint)anchorPoint {
+  DCHECK(self.browserState);
   BubbleViewControllerPresenter* presenter =
       [self bubblePresenterForFeature:feature
                             direction:direction
                             alignment:alignment
                                  text:text];
-
+  if (!presenter)
+    return nil;
   presenter.voiceOverAnnouncement = voiceOverAnnouncement;
-
-  [presenter presentInViewController:self.rootViewController
-                                view:self.rootViewController.view
-                         anchorPoint:anchorPoint];
-
+  if ([presenter canPresentInView:self.rootViewController.view
+                      anchorPoint:anchorPoint] &&
+      feature_engagement::TrackerFactory::GetForBrowserState(self.browserState)
+          ->ShouldTriggerHelpUI(feature)) {
+    [presenter presentInViewController:self.rootViewController
+                                  view:self.rootViewController.view
+                           anchorPoint:anchorPoint];
+  }
   return presenter;
 }
 
@@ -478,7 +483,7 @@ bubblePresenterForFeature:(const base::Feature&)feature
                      text:(NSString*)text {
   DCHECK(self.browserState);
   if (!feature_engagement::TrackerFactory::GetForBrowserState(self.browserState)
-           ->ShouldTriggerHelpUI(feature)) {
+           ->WouldTriggerHelpUI(feature)) {
     return nil;
   }
   // Capture |weakSelf| instead of the feature engagement tracker object

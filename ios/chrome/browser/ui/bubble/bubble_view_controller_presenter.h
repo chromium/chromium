@@ -74,6 +74,10 @@ typedef void (^ProceduralBlockWithSnoozeAction)(
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Check if the bubble has enough space to be presented in |parentView| with an
+// anchor point at |anchorPoint|.
+- (BOOL)canPresentInView:(UIView*)parentView anchorPoint:(CGPoint)anchorPoint;
+
 // Presents the bubble in |parentView|. The underlying BubbleViewController is
 // added as a child view controller of |parentViewController|. |anchorPoint|
 // determines where the bubble is anchored in window coordinates.

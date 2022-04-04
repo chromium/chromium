@@ -152,6 +152,13 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
           dismissalCallback:dismissalCallback];
 }
 
+- (BOOL)canPresentInView:(UIView*)parentView anchorPoint:(CGPoint)anchorPoint {
+  CGPoint anchorPointInParent = [parentView.window convertPoint:anchorPoint
+                                                         toView:parentView];
+  return !CGRectIsEmpty([self frameForBubbleInRect:parentView.bounds
+                                     atAnchorPoint:anchorPointInParent]);
+}
+
 - (void)presentInViewController:(UIViewController*)parentViewController
                            view:(UIView*)parentView
                     anchorPoint:(CGPoint)anchorPoint {
@@ -160,10 +167,9 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
   self.bubbleViewController.view.frame =
       [self frameForBubbleInRect:parentView.bounds
                    atAnchorPoint:anchorPointInParent];
-  // If the bubble's frame is not set, we abandon this IPH attempt.
-  if (CGRectIsEmpty(self.bubbleViewController.view.frame)) {
-    return;
-  }
+  // The bubble's frame must be set. Call |canPresentInView| to make sure that
+  // the frame can be set before calling |presentInViewController|.
+  DCHECK(!CGRectIsEmpty(self.bubbleViewController.view.frame));
 
   self.presenting = YES;
   [parentViewController addChildViewController:self.bubbleViewController];
