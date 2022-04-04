@@ -9,19 +9,22 @@ import '../shared_style_css.m.js';
 import '../shared_vars_css.m.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomIf, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrSearchFieldBehavior, CrSearchFieldBehaviorInterface} from '../cr_search_field/cr_search_field_behavior.js';
+import {CrSearchFieldBehavior} from '../cr_search_field/cr_search_field_behavior.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {CrSearchFieldBehaviorInterface}
- */
+export interface CrToolbarSearchFieldElement {
+  $: {
+    searchInput: HTMLInputElement,
+    spinnerTemplate: DomIf,
+  };
+}
+
 const CrToolbarSearchFieldElementBase =
-    mixinBehaviors(CrSearchFieldBehavior, PolymerElement);
+    mixinBehaviors(CrSearchFieldBehavior, PolymerElement) as
+    {new (): PolymerElement & CrSearchFieldBehavior};
 
-/** @polymer */
+
 export class CrToolbarSearchFieldElement extends
     CrToolbarSearchFieldElementBase {
   static get is() {
@@ -53,41 +56,37 @@ export class CrToolbarSearchFieldElement extends
         reflectToAttribute: true,
       },
 
-      // Prompt text to display in the search field.
-      label: String,
-
-      // Tooltip to display on the clear search button.
-      clearLabel: String,
-
       // When true, show a loading spinner to indicate that the backend is
       // processing the search. Will only show if the search field is open.
       spinnerActive: {type: Boolean, reflectToAttribute: true},
 
-      /** @private */
       isSpinnerShown_: {
         type: Boolean,
         computed: 'computeIsSpinnerShown_(spinnerActive, showingSearch)'
       },
 
-      /** @private */
       searchFocused_: {type: Boolean, value: false},
     };
   }
 
-  /** @override */
-  ready() {
+  narrow: boolean;
+  showingSearch: boolean;
+  override autofocus: boolean;
+  spinnerActive: boolean;
+  private isSpinnerShown_: boolean;
+  private searchFocused_: boolean;
+
+  override ready() {
     super.ready();
 
     this.addEventListener('click', e => this.showSearch_(e));
   }
 
-  /** @return {!HTMLInputElement} */
-  getSearchInput() {
-    return /** @type {!HTMLInputElement} */ (this.$.searchInput);
+  override getSearchInput(): HTMLInputElement {
+    return this.$.searchInput;
   }
 
-  /** @return {boolean} */
-  isSearchFocused() {
+  isSearchFocused(): boolean {
     return this.searchFocused_;
   }
 
@@ -96,45 +95,29 @@ export class CrToolbarSearchFieldElement extends
     this.focus_();
   }
 
-  onSearchTermInput() {
-    CrSearchFieldBehavior.onSearchTermInput.call(this);
+  override onSearchTermInput() {
+    super.onSearchTermInput();
     this.showingSearch = this.hasSearchText || this.isSearchFocused();
   }
 
-  /** @private */
-  onSearchIconClicked_() {
+  private onSearchIconClicked_() {
     this.dispatchEvent(new CustomEvent(
         'search-icon-clicked', {bubbles: true, composed: true}));
   }
 
-  /** @private */
-  focus_() {
+  private focus_() {
     this.getSearchInput().focus();
   }
 
-  /**
-   * @param {boolean} narrow
-   * @return {number}
-   * @private
-   */
-  computeIconTabIndex_(narrow) {
+  private computeIconTabIndex_(narrow: boolean): number {
     return narrow && !this.hasSearchText ? 0 : -1;
   }
 
-  /**
-   * @param {boolean} narrow
-   * @return {string}
-   * @private
-   */
-  computeIconAriaHidden_(narrow) {
+  private computeIconAriaHidden_(narrow: boolean): string {
     return Boolean(!narrow || this.hasSearchText).toString();
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeIsSpinnerShown_() {
+  private computeIsSpinnerShown_(): boolean {
     const showSpinner = this.spinnerActive && this.showingSearch;
     if (showSpinner) {
       this.$.spinnerTemplate.if = true;
@@ -142,52 +125,36 @@ export class CrToolbarSearchFieldElement extends
     return showSpinner;
   }
 
-  /** @private */
-  onInputFocus_() {
+  private onInputFocus_() {
     this.searchFocused_ = true;
   }
 
-  /** @private */
-  onInputBlur_() {
+  private onInputBlur_() {
     this.searchFocused_ = false;
     if (!this.hasSearchText) {
       this.showingSearch = false;
     }
   }
 
-  /** @private */
-  onSearchTermKeydown_(e) {
+  private onSearchTermKeydown_(e: KeyboardEvent) {
     if (e.key === 'Escape') {
       this.showingSearch = false;
     }
   }
 
-  /**
-   * @param {Event} e
-   * @private
-   */
-  showSearch_(e) {
-    if (e.target !== this.shadowRoot.querySelector('#clearSearch')) {
+  private showSearch_(e: Event) {
+    if (e.target !== this.shadowRoot!.querySelector('#clearSearch')) {
       this.showingSearch = true;
     }
   }
 
-  /**
-   * @param {Event} e
-   * @private
-   */
-  clearSearch_(e) {
+  private clearSearch_() {
     this.setValue('');
     this.focus_();
     this.spinnerActive = false;
   }
 
-  /**
-   * @param {boolean} current
-   * @param {boolean|undefined} previous
-   * @private
-   */
-  showingSearchChanged_(current, previous) {
+  private showingSearchChanged_(_current: boolean, previous?: boolean) {
     // Prevent unnecessary 'search-changed' event from firing on startup.
     if (previous === undefined) {
       return;
@@ -200,6 +167,12 @@ export class CrToolbarSearchFieldElement extends
 
     this.setValue('');
     this.getSearchInput().blur();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-toolbar-search-field': CrToolbarSearchFieldElement;
   }
 }
 

@@ -17,9 +17,9 @@ js_library("os_toolbar") {
     "../os_settings_search_box:os_settings_search_box",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
-    "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar_search_field",
     "//ui/webui/resources/js:load_time_data.m",
   ]
+  externs_list = [ "//ui/webui/resources/cr_elements/cr_toolbar/cr_toolbar_search_field_externs.js" ]
 }
 
 html_to_js("web_components") {

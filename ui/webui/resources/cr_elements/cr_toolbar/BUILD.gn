@@ -2,35 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
 
 html_to_js("web_components") {
   js_files = [
-    "cr_toolbar.js",
-    "cr_toolbar_search_field.js",
+    "cr_toolbar.ts",
+    "cr_toolbar_search_field.ts",
     "cr_toolbar_selection_overlay.ts",
-  ]
-}
-
-js_type_check("closure_compile_module") {
-  is_polymer3 = true
-  deps = [
-    ":cr_toolbar",
-    ":cr_toolbar_search_field",
-  ]
-}
-
-js_library("cr_toolbar") {
-  deps = [
-    ":cr_toolbar_search_field",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("cr_toolbar_search_field") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field_behavior",
   ]
 }

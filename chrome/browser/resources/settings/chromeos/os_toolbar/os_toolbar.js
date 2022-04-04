@@ -9,8 +9,8 @@ import '//resources/cr_elements/icons.m.js';
 import '//resources/cr_elements/shared_vars_css.m.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '../os_settings_search_box/os_settings_search_box.js';
+import '//resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 
-import {CrToolbarSearchFieldElement} from '//resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

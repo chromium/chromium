@@ -8,10 +8,17 @@ import '../hidden_style_css.m.js';
 import '../icons.m.js';
 import '../shared_vars_css.m.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
+import './cr_toolbar_search_field.js';
 
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrToolbarSearchFieldElement} from './cr_toolbar_search_field.js';
+
+export interface CrToolbarElement {
+  $: {
+    search: CrToolbarSearchFieldElement,
+  };
+}
 
 export class CrToolbarElement extends PolymerElement {
   static get is() {
@@ -76,7 +83,6 @@ export class CrToolbarElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
-      /** @private */
       showingSearch_: {
         type: Boolean,
         reflectToAttribute: true,
@@ -84,13 +90,24 @@ export class CrToolbarElement extends PolymerElement {
     };
   }
 
-  /** @return {!CrToolbarSearchFieldElement} */
-  getSearchField() {
-    return /** @type {!CrToolbarSearchFieldElement} */ (this.$.search);
+  pageName: string;
+  searchPrompt: string;
+  clearLabel: string;
+  menuLabel: string;
+  spinnerActive: boolean;
+  showMenu: boolean;
+  showSearch: boolean;
+  override autofocus: boolean;
+  narrow: boolean;
+  narrowThreshold: number;
+  alwaysShowLogo: boolean;
+  private showingSearch_: boolean;
+
+  getSearchField(): CrToolbarSearchFieldElement {
+    return this.$.search;
   }
 
-  /** @private */
-  onMenuTap_() {
+  private onMenuTap_() {
     this.dispatchEvent(new CustomEvent(
         'cr-toolbar-menu-tap', {bubbles: true, composed: true}));
   }
@@ -99,17 +116,23 @@ export class CrToolbarElement extends PolymerElement {
     requestAnimationFrame(() => {
       // Wait for next animation frame in case dom-if has not applied yet and
       // added the menu button.
-      const menuButton = this.shadowRoot.querySelector('#menuButton');
+      const menuButton =
+          this.shadowRoot!.querySelector<HTMLElement>('#menuButton');
       if (menuButton) {
         menuButton.focus();
       }
     });
   }
 
-  /** @return {boolean} */
-  isMenuFocused() {
-    return Boolean(this.shadowRoot.activeElement) &&
-        this.shadowRoot.activeElement.id === 'menuButton';
+  isMenuFocused(): boolean {
+    return !!this.shadowRoot!.activeElement &&
+        this.shadowRoot!.activeElement.id === 'menuButton';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-toolbar': CrToolbarElement;
   }
 }
 

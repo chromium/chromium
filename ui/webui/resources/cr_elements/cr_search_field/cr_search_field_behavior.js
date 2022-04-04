@@ -9,11 +9,13 @@
  */
 export const CrSearchFieldBehavior = {
   properties: {
+    // Prompt text to display in the search field.
     label: {
       type: String,
       value: '',
     },
 
+    // Tooltip to display on the clear search button.
     clearLabel: {
       type: String,
       value: '',
