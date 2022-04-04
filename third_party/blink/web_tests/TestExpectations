@@ -5679,7 +5679,6 @@ crbug.com/476553 virtual/scroll-unification/plugins/transformed-events.html [ Cr
 crbug.com/476553 virtual/scroll-unification/scrollbars/listbox-scrollbar-combinations.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification-layout_ng_block_frag/fast/forms/fieldset/fieldset-legend-change.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification-percent-based-scrolling/fast/scrolling/scrollbars/mouse-autoscrolling-on-deleted-scrollbar.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification-percent-based-scrolling/fast/scrolling/scrollbars/mouse-autoscrolling-on-scrollbar.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification-prefer_compositing_to_lcd_text/scrollbars/auto-scrollbar-fades-out.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification-prefer_compositing_to_lcd_text/scrollbars/basic-scrollbar.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification-prefer_compositing_to_lcd_text/scrollbars/disabled-scrollbar.html [ Crash Failure Pass Timeout ]
@@ -5978,9 +5977,6 @@ crbug.com/1130533 [ Mac ] external/wpt/xhr/xhr-timeout-longtask.any.worker.html 
 
 # Sheriff 2020-09-23
 crbug.com/1131551 compositing/transitions/transform-on-large-layer.html [ Failure Pass Timeout ]
-crbug.com/1057060 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/scrollbars/mouse-autoscrolling-on-scrollbar.html [ Failure Pass Timeout ]
-crbug.com/1057060 virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/mouse-autoscrolling-on-scrollbar.html [ Failure Pass Timeout ]
-crbug.com/1057060 virtual/scroll-unification/fast/scrolling/scrollbars/mouse-autoscrolling-on-scrollbar.html [ Failure Pass Timeout ]
 
 crbug.com/1136163 [ Linux ] external/wpt/pointerevents/pointerlock/pointerevent_movementxy_with_pointerlock.html [ Failure ]
 
