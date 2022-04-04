@@ -206,14 +206,21 @@ ScriptPromise PaymentInstruments::set(ScriptState* script_state,
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
+  // TODO(crbug.com/1311953): A service worker can get here without a frame to
+  // check for a user gesture. We should consider either removing the user
+  // gesture requirement or not exposing PaymentInstruments to service workers.
+  LocalDOMWindow* window = LocalDOMWindow::From(script_state);
+  bool user_gesture =
+      window ? LocalFrame::HasTransientUserActivation(window->GetFrame())
+             : false;
+
   // Should move this permission check to browser process.
   // Please see http://crbug.com/795929
   GetPermissionService(script_state)
       ->RequestPermission(
           CreatePermissionDescriptor(
               mojom::blink::PermissionName::PAYMENT_HANDLER),
-          LocalFrame::HasTransientUserActivation(
-              LocalDOMWindow::From(script_state)->GetFrame()),
+          user_gesture,
           WTF::Bind(&PaymentInstruments::OnRequestPermission,
                     WrapPersistent(this), WrapPersistent(resolver),
                     instrument_key, WrapPersistent(details)));
