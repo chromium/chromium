@@ -23,7 +23,7 @@ void DumpDatabaseHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "getDatabaseDump",
       base::BindRepeating(&DumpDatabaseHandler::HandleGetDatabaseDump,
-                          base::Unretained(this)));
+                          weak_factory_.GetWeakPtr()));
 }
 
 void DumpDatabaseHandler::HandleGetDatabaseDump(const base::Value::List& args) {
@@ -32,7 +32,7 @@ void DumpDatabaseHandler::HandleGetDatabaseDump(const base::Value::List& args) {
       SyncFileSystemServiceFactory::GetForProfile(profile_);
   if (sync_service) {
     sync_service->DumpDatabase(base::BindOnce(
-        &DumpDatabaseHandler::DidGetDatabaseDump, base::Unretained(this),
+        &DumpDatabaseHandler::DidGetDatabaseDump, weak_factory_.GetWeakPtr(),
         args[0].GetString() /* callback_id */));
   }
 }
