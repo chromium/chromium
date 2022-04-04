@@ -23,7 +23,7 @@ namespace ash {
 // adb sideloading screen to users.
 class EnableAdbSideloadingScreen : public BaseScreen {
  public:
-  EnableAdbSideloadingScreen(EnableAdbSideloadingScreenView* view,
+  EnableAdbSideloadingScreen(base::WeakPtr<EnableAdbSideloadingScreenView> view,
                              const base::RepeatingClosure& exit_callback);
 
   EnableAdbSideloadingScreen(const EnableAdbSideloadingScreen&) = delete;
@@ -31,9 +31,6 @@ class EnableAdbSideloadingScreen : public BaseScreen {
       delete;
 
   ~EnableAdbSideloadingScreen() override;
-
-  // Called by EnableAdbSideloadingHandler.
-  void OnViewDestroyed(EnableAdbSideloadingScreenView* view);
 
   // Registers Local State preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -60,7 +57,7 @@ class EnableAdbSideloadingScreen : public BaseScreen {
   // Help application used for help dialogs.
   scoped_refptr<HelpAppLauncher> help_app_;
 
-  EnableAdbSideloadingScreenView* view_;
+  base::WeakPtr<EnableAdbSideloadingScreenView> view_;
   base::RepeatingClosure exit_callback_;
   base::WeakPtrFactory<EnableAdbSideloadingScreen> weak_ptr_factory_{this};
 };

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_MOCK_ENABLE_ADB_SIDELOADING_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_MOCK_ENABLE_ADB_SIDELOADING_SCREEN_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/enable_adb_sideloading_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/enable_adb_sideloading_screen_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -13,8 +14,9 @@ namespace ash {
 
 class MockEnableAdbSideloadingScreen : public EnableAdbSideloadingScreen {
  public:
-  MockEnableAdbSideloadingScreen(EnableAdbSideloadingScreenView* view,
-                                 const base::RepeatingClosure& exit_callback);
+  MockEnableAdbSideloadingScreen(
+      base::WeakPtr<EnableAdbSideloadingScreenView> view,
+      const base::RepeatingClosure& exit_callback);
   ~MockEnableAdbSideloadingScreen() override;
 
   MOCK_METHOD(void, ShowImpl, ());

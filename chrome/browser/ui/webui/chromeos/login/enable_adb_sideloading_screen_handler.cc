@@ -23,10 +23,8 @@ EnableAdbSideloadingScreenHandler::EnableAdbSideloadingScreenHandler()
   set_user_acted_method_path("login.EnableAdbSideloadingScreen.userActed");
 }
 
-EnableAdbSideloadingScreenHandler::~EnableAdbSideloadingScreenHandler() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
+EnableAdbSideloadingScreenHandler::~EnableAdbSideloadingScreenHandler() =
+    default;
 
 void EnableAdbSideloadingScreenHandler::Show() {
   if (!page_is_ready()) {
@@ -40,12 +38,10 @@ void EnableAdbSideloadingScreenHandler::Hide() {}
 
 void EnableAdbSideloadingScreenHandler::Bind(
     EnableAdbSideloadingScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen_);
+  BaseScreenHandler::SetBaseScreen(screen);
 }
 
 void EnableAdbSideloadingScreenHandler::Unbind() {
-  screen_ = nullptr;
   BaseScreenHandler::SetBaseScreen(nullptr);
 }
 

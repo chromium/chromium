@@ -608,7 +608,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
     ExpectBindUnbind(mock_enable_adb_sideloading_screen_view_.get());
     mock_enable_adb_sideloading_screen_ = MockScreenExpectLifecycle(
         std::make_unique<MockEnableAdbSideloadingScreen>(
-            mock_enable_adb_sideloading_screen_view_.get(),
+            mock_enable_adb_sideloading_screen_view_->AsWeakPtr(),
             base::BindRepeating(
                 &WizardController::OnEnableAdbSideloadingScreenExit,
                 base::Unretained(wizard_controller))));
