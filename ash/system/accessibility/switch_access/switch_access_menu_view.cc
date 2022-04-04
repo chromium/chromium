@@ -17,7 +17,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/mojom/ax_node_data.mojom-shared.h"
 #include "ui/events/event.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/table_layout.h"
 
 namespace ash {
 
@@ -113,16 +113,16 @@ SwitchAccessMenuView::~SwitchAccessMenuView() = default;
 void SwitchAccessMenuView::SetActions(std::vector<std::string> actions) {
   RemoveAllChildViews();
 
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-  views::ColumnSet* columns = layout->AddColumnSet(0);
-  columns->AddPaddingColumn(0 /* resize_percent */, kBubbleMenuPadding);
+  views::TableLayout* layout =
+      SetLayoutManager(std::make_unique<views::TableLayout>());
+  layout->AddPaddingColumn(views::TableLayout::kFixedSize, kBubbleMenuPadding);
   for (int i = 0; i < kMaxColumns; i++) {
-    columns->AddColumn(views::GridLayout::CENTER, views::GridLayout::CENTER,
-                       0, /* resize_percent */
-                       views::GridLayout::ColumnSize::kFixed,
-                       SwitchAccessMenuButton::kWidthDip, 0);
-    columns->AddPaddingColumn(0 /* resize_percent */, kBubbleMenuPadding);
+    layout->AddColumn(
+        views::LayoutAlignment::kCenter, views::LayoutAlignment::kCenter,
+        views::TableLayout::kFixedSize, views::TableLayout::ColumnSize::kFixed,
+        SwitchAccessMenuButton::kWidthDip, 0);
+    layout->AddPaddingColumn(views::TableLayout::kFixedSize,
+                             kBubbleMenuPadding);
   }
 
   int button_count = 0;
@@ -133,14 +133,15 @@ void SwitchAccessMenuView::SetActions(std::vector<std::string> actions) {
     ButtonInfo info = it->second;
     // If this is the first button of a new row, tell the layout to start a
     // new row.
-    if (button_count % kMaxColumns == 0)
-      layout->StartRowWithPadding(0, 0, 0, kBubbleMenuPadding);
-    layout->AddView(std::make_unique<SwitchAccessMenuButton>(action, *info.icon,
-                                                             info.label_id));
-    button_count++;
+    if (button_count % kMaxColumns == 0) {
+      layout->AddPaddingRow(views::TableLayout::kFixedSize, kBubbleMenuPadding);
+      layout->AddRows(1, views::TableLayout::kFixedSize);
+    }
+    AddChildView(std::make_unique<SwitchAccessMenuButton>(action, *info.icon,
+                                                          info.label_id));
+    ++button_count;
   }
-  layout->AddPaddingRow(0, kBubbleMenuPadding);
-  InvalidateLayout();
+  layout->AddPaddingRow(views::TableLayout::kFixedSize, kBubbleMenuPadding);
 }
 
 int SwitchAccessMenuView::GetBubbleWidthDip() const {
