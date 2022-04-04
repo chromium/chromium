@@ -32,7 +32,6 @@ CompositorFrameReportingController::CompositorFrameReportingController(
       layer_tree_host_id_(layer_tree_host_id),
       latency_ukm_reporter_(std::make_unique<LatencyUkmReporter>()) {
   global_trackers_.latency_ukm_reporter = latency_ukm_reporter_.get();
-  global_trackers_.latency_jank_tracker = &latency_jank_tracker_;
 }
 
 CompositorFrameReportingController::~CompositorFrameReportingController() {

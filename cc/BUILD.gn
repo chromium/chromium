@@ -200,8 +200,6 @@ cc_component("cc") {
     "metrics/jank_injector.h",
     "metrics/jank_metrics.cc",
     "metrics/jank_metrics.h",
-    "metrics/latency_jank_tracker.cc",
-    "metrics/latency_jank_tracker.h",
     "metrics/latency_ukm_reporter.cc",
     "metrics/latency_ukm_reporter.h",
     "metrics/lcd_text_metrics_reporter.cc",

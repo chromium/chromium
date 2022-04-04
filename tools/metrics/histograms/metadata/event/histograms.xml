@@ -961,24 +961,9 @@ chromium-metrics-reviews@google.com.
   <owner>ddrone@google.com</owner>
   <owner>chrometto-team@google.com</owner>
   <summary>
-    IMPORTANT: A new in trial version of this metric exists, please refer to
-    Event.Latency.ScrollJank2.
-
     Tracks janky frames while processing scroll events, which are defined as
     frames taking longer than half of vsync interval compared to previous or
-    next frame, this is reported from the GPU.
-  </summary>
-</histogram>
-
-<histogram name="Event.Latency.ScrollJank2" enum="Boolean"
-    expires_after="2023-03-07">
-  <owner>ddrone@google.com</owner>
-  <owner>mekk@google.com</owner>
-  <owner>chrometto-team@google.com</owner>
-  <summary>
-    Tracks janky frames while processing scroll events, which are defined as
-    frames taking longer than half of vsync interval compared to previous or
-    next frame, this is reported from the renderer compositor's EventMetrics.
+    next frame.
   </summary>
 </histogram>
 
@@ -987,24 +972,9 @@ chromium-metrics-reviews@google.com.
   <owner>ddrone@google.com</owner>
   <owner>chrometto-team@google.com</owner>
   <summary>
-    IMPORTANT: This metric is deprecated, please refer to
-    Event.Latency.ScrollUpdate.JankyDuration2.
-
     Total duration (wall time in milliseconds of potentially concurrent events)
     of LatencyInfo::GestureScrollUpdate events that are detected as janky during
-    a particular scroll, this is reported from the GPU.
-  </summary>
-</histogram>
-
-<histogram name="Event.Latency.ScrollUpdate.JankyDuration2" units="ms"
-    expires_after="2023-03-07">
-  <owner>ddrone@google.com</owner>
-  <owner>mekk@google.com</owner>
-  <owner>chrometto-team@google.com</owner>
-  <summary>
-    Total duration (wall time in milliseconds of potentially concurrent events)
-    of GestureScrollUpdate events that are detected as janky during a particular
-    scroll, this is reported from the renderer compositor's EventMetrics.
+    a particular scroll.
   </summary>
 </histogram>
 
@@ -1013,23 +983,8 @@ chromium-metrics-reviews@google.com.
   <owner>ddrone@google.com</owner>
   <owner>chrometto-team@google.com</owner>
   <summary>
-    IMPORTANT: A new in trial version of this metric exists, please refer to
-    Event.Latency.ScrollUpdate.JankyDurationPercentage2.
-
     Percentage of duration of scroll events that are detected as janky during a
-    particular scroll, this is reported from the GPU.
-  </summary>
-</histogram>
-
-<histogram name="Event.Latency.ScrollUpdate.JankyDurationPercentage2" units="%"
-    expires_after="2023-03-07">
-  <owner>ddrone@google.com</owner>
-  <owner>mekk@google.com</owner>
-  <owner>chrometto-team@google.com</owner>
-  <summary>
-    Percentage of duration of scroll events that are detected as janky during a
-    particular scroll, this is reported from the renderer compositor's
-    EventMetrics.
+    particular scroll.
   </summary>
 </histogram>
 
@@ -1038,23 +993,8 @@ chromium-metrics-reviews@google.com.
   <owner>ddrone@google.com</owner>
   <owner>chrometto-team@google.com</owner>
   <summary>
-    IMPORTANT: A new in trial version of this metric exists, please refer to
-    Event.Latency.ScrollUpdate.JankyEvents2.
-
     Count of LatencyInfo::GestureScrollUpdate events that are detected as janky
-    during a particular scroll, this is reported from the GPU.
-  </summary>
-</histogram>
-
-<histogram name="Event.Latency.ScrollUpdate.JankyEvents2" units="counts"
-    expires_after="2023-03-07">
-  <owner>ddrone@google.com</owner>
-  <owner>mekk@google.com</owner>
-  <owner>chrometto-team@google.com</owner>
-  <summary>
-    Count of GestureScrollUpdate events that are detected as janky during a
-    particular scroll, this is reported from the renderer compositor's
-    EventMetrics.
+    during a particular scroll.
   </summary>
 </histogram>
 
@@ -1219,24 +1159,8 @@ chromium-metrics-reviews@google.com.
   <owner>ddrone@google.com</owner>
   <owner>chrometto-team@google.com</owner>
   <summary>
-    IMPORTANT: A new in trial version of this metric exists, please refer to
-    Event.Latency.ScrollUpdate.TotalDuration2.
-
     Total duration (wall time in milliseconds of potentially concurrent events)
-    of LatencyInfo::GestureScrollUpdate events during a particular scroll, this
-    is reported from the GPU.
-  </summary>
-</histogram>
-
-<histogram name="Event.Latency.ScrollUpdate.TotalDuration2" units="ms"
-    expires_after="2023-03-07">
-  <owner>ddrone@google.com</owner>
-  <owner>mekk@google.com</owner>
-  <owner>chrometto-team@google.com</owner>
-  <summary>
-    Total duration (wall time in milliseconds of potentially concurrent events)
-    of GestureScrollUpdate events during a particular scroll, this is reported
-    from the renderer compositor's EventMetrics.
+    of LatencyInfo::GestureScrollUpdate events during a particular scroll.
   </summary>
 </histogram>
 
@@ -1245,22 +1169,7 @@ chromium-metrics-reviews@google.com.
   <owner>ddrone@google.com</owner>
   <owner>chrometto-team@google.com</owner>
   <summary>
-    IMPORTANT: A new in trial version of this metric exists, please refer to
-    Event.Latency.ScrollUpdate.TotalEvents2.
-
-    Count of LatencyInfo::GestureScrollUpdate events during a particular scroll,
-    this is reported from the GPU.
-  </summary>
-</histogram>
-
-<histogram name="Event.Latency.ScrollUpdate.TotalEvents2" units="counts"
-    expires_after="2023-03-07">
-  <owner>ddrone@google.com</owner>
-  <owner>mekk@google.com</owner>
-  <owner>chrometto-team@google.com</owner>
-  <summary>
-    Count of GestureScrollUpdate events during a particular scroll, this is
-    reported from the renderer compositor's EventMetrics.
+    Count of LatencyInfo::GestureScrollUpdate events during a particular scroll.
   </summary>
 </histogram>
 
