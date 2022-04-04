@@ -107,6 +107,40 @@ chromium-metrics-reviews@google.com.
   <variant name=".NTPSnippets" summary="NTP snippets"/>
 </variants>
 
+<histogram name="Android.ActivityStop.NumberOfTabsUsed" units="%"
+    expires_after="2022-07-31">
+  <owner>gauravjj@google.com</owner>
+  <owner>skavuluru@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Captures the number of regular and incognito tabs used. Used tabs are
+    calculated by identifying the number of tabs that were selected between
+    ChromeTabbedActivity onResumeWithNative() and onStopWithNative(). This is
+    recorded when onStopWithNative() is called by backgrounding the app or by
+    opening another activity like SettingsActivity. If multiple instances are
+    running, each instance will only track and record usage of tabs that it
+    contains.
+  </summary>
+</histogram>
+
+<histogram name="Android.ActivityStop.PercentageOfTabsUsed" units="%"
+    expires_after="2022-07-31">
+  <owner>gauravjj@google.com</owner>
+  <owner>skavuluru@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Captures the percentage of regular and incognito tabs used. This is
+    calculated by finding the ratio of the number of tabs used to the total
+    number of tabs available between ChromeTabbedActivity onResumedWithNative
+    and onStopWithNative. Total number of tabs available is the sum of the tab
+    count when CTA is resumed and any new tabs that are opened before CTA is
+    stopped. This is recorded when ChromeTabbedActivity#onStopWithNative() is
+    called by backgrounding the app or by opening another activity like
+    SettingsActivity. If multiple instances are running, each instance will only
+    track and record usage of tabs that it contains.
+  </summary>
+</histogram>
+
 <histogram name="Android.AdaptiveToolbarButton.Clicked"
     enum="AdaptiveToolbarButtonVariant" expires_after="2022-08-21">
   <owner>bttk@chromium.org</owner>

@@ -1751,6 +1751,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         mInactivityTracker = new ChromeInactivityTracker(
                 ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF);
+        TabUsageTracker.initialize(this.getLifecycleDispatcher(), tabModelSelector);
 
         assert getActivityTabStartupMetricsTracker() != null;
         boolean shouldShowOverviewPageOnStart = shouldShowOverviewPageOnStart();
