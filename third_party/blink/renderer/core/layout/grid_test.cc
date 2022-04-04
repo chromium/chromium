@@ -340,13 +340,13 @@ TEST_F(GridTest, CellInsert) {
     return;
 
   auto track = base::WrapUnique(new ListGrid::GridTrack(0, kForColumns));
-  auto* cell = new ListGrid::GridCell(0, 0);
+  ListGrid::GridCell* cell = MakeGarbageCollected<ListGrid::GridCell>(0, 0);
 
   auto result = track->Insert(cell);
   EXPECT_TRUE(result.is_new_entry);
   EXPECT_EQ(cell, result.node);
 
-  auto* cell2 = new ListGrid::GridCell(1, 0);
+  ListGrid::GridCell* cell2 = MakeGarbageCollected<ListGrid::GridCell>(1, 0);
   result = track->Insert(cell2);
   EXPECT_TRUE(result.is_new_entry);
   EXPECT_EQ(cell2, result.node);
@@ -355,7 +355,7 @@ TEST_F(GridTest, CellInsert) {
   EXPECT_FALSE(result.is_new_entry);
   EXPECT_EQ(cell2, result.node);
 
-  auto* cell3 = new ListGrid::GridCell(2, 0);
+  ListGrid::GridCell* cell3 = MakeGarbageCollected<ListGrid::GridCell>(2, 0);
   result = track->InsertAfter(cell3, cell2);
   EXPECT_TRUE(result.is_new_entry);
   EXPECT_EQ(cell3, result.node);

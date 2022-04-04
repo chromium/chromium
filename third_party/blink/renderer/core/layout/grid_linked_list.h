@@ -54,6 +54,9 @@
 
 namespace blink {
 
+template <typename NodeType>
+class GridLinkedList;
+
 // A class defining the type of node in the GridLinkedList should inherit
 // GridLinkedListNodeBase. This will give previous and next pointer for the
 // node, as well as apply garbage collection to all nodes.
@@ -62,16 +65,20 @@ class GridLinkedListNodeBase
     : public GarbageCollected<GridLinkedListNodeBase<NodeType>> {
  public:
   GridLinkedListNodeBase() = default;
+  virtual ~GridLinkedListNodeBase() = default;
 
   NodeType* Prev() const { return prev_; }
   NodeType* Next() const { return next_; }
-  void SetPrev(NodeType* prev) { prev_ = prev; }
-  void SetNext(NodeType* next) { next_ = next; }
 
-  void Trace(Visitor* visitor) const {
+  virtual void Trace(Visitor* visitor) const {
     visitor->Trace(prev_);
     visitor->Trace(next_);
   }
+
+ protected:
+  friend class GridLinkedList<NodeType>;
+  void SetPrev(NodeType* prev) { prev_ = prev; }
+  void SetNext(NodeType* next) { next_ = next; }
 
  private:
   Member<NodeType> prev_;

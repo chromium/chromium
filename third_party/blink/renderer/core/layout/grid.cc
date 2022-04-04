@@ -139,7 +139,7 @@ Grid::GridIterator::GridIterator(GridTrackSizingDirection direction,
 
 ListGrid::GridCell* ListGrid::GridTrack::Find(wtf_size_t index) const {
   auto orthogonal_axis = OrthogonalDirection(direction_);
-  for (auto* cell = cells_.Head(); cell;
+  for (GridCell* cell = cells_->Head(); cell;
        cell = cell->NextInDirection(direction_)) {
     wtf_size_t cell_index = cell->Index(orthogonal_axis);
     if (cell_index == index)
@@ -154,11 +154,11 @@ static int ComparePositions(wtf_size_t first, wtf_size_t second) {
   return first < second ? -1 : (first != second);
 }
 
-DoublyLinkedList<ListGrid::GridCell>::AddResult ListGrid::GridTrack::Insert(
+GridLinkedList<ListGrid::GridCell>::AddResult ListGrid::GridTrack::Insert(
     GridCell* cell) {
   cell->SetTraversalMode(direction_);
 
-  return cells_.Insert(
+  return cells_->Insert(
       cell, [this](ListGrid::GridCell* first, ListGrid::GridCell* second) {
         // This is ugly but we need to do this in order the
         // DoublyLinkedList::Insert() algorithm to work at that code
@@ -171,7 +171,7 @@ DoublyLinkedList<ListGrid::GridCell>::AddResult ListGrid::GridTrack::Insert(
       });
 }
 
-DoublyLinkedList<ListGrid::GridCell>::AddResult ListGrid::GridTrack::Insert(
+GridLinkedList<ListGrid::GridCell>::AddResult ListGrid::GridTrack::Insert(
     LayoutBox& item,
     const GridSpan& span) {
   auto compare_cells = [this](ListGrid::GridCell* first,
@@ -186,9 +186,9 @@ DoublyLinkedList<ListGrid::GridCell>::AddResult ListGrid::GridTrack::Insert(
   wtf_size_t col_index = direction_ == kForColumns ? Index() : span.StartLine();
   wtf_size_t row_index = direction_ == kForColumns ? span.StartLine() : Index();
 
-  auto result = cells_.Insert(
-      base::WrapUnique(new GridCell(row_index, col_index)), compare_cells);
-  auto* cell = result.node;
+  auto result = cells_->Insert(
+      MakeGarbageCollected<GridCell>(row_index, col_index), compare_cells);
+  GridCell* cell = result.node;
   for (auto index : span) {
     cell->AppendItem(item);
 
@@ -203,21 +203,21 @@ DoublyLinkedList<ListGrid::GridCell>::AddResult ListGrid::GridTrack::Insert(
           direction_ == kForColumns ? Index() : index + 1;
       wtf_size_t next_row_index =
           direction_ == kForColumns ? index + 1 : Index();
-      auto next_cell =
-          base::WrapUnique(new GridCell(next_row_index, next_col_index));
-      if (InsertAfter(next_cell.get(), cell).is_new_entry)
-        next_cell.release();
+      GridCell* next_cell =
+          MakeGarbageCollected<GridCell>(next_row_index, next_col_index);
+      InsertAfter(next_cell, cell);
     }
     cell = cell->Next();
   }
   return result;
 }
 
-DoublyLinkedList<ListGrid::GridCell>::AddResult
-ListGrid::GridTrack::InsertAfter(GridCell* cell, GridCell* insertion_point) {
+GridLinkedList<ListGrid::GridCell>::AddResult ListGrid::GridTrack::InsertAfter(
+    GridCell* cell,
+    GridCell* insertion_point) {
   insertion_point->SetTraversalMode(direction_);
   cell->SetTraversalMode(direction_);
-  if (auto* next = insertion_point->Next()) {
+  if (GridCell* next = insertion_point->Next()) {
     if (next == cell)
       return {cell, false};
     // We need to set the traversal mode for the next cell as we're
@@ -225,25 +225,7 @@ ListGrid::GridTrack::InsertAfter(GridCell* cell, GridCell* insertion_point) {
     // and prev_ pointers.
     next->SetTraversalMode(direction_);
   }
-  return cells_.InsertAfter(cell, insertion_point);
-}
-
-ListGrid::GridTrack::~GridTrack() {
-  // We destroy cells just when disposing columns as we don't want to
-  // double free them.
-  // TODO(svillar): we need to eventually get rid of this different
-  // destructors depending on the axis.
-  if (direction_ == kForRows) {
-    cells_.Clear();
-    return;
-  }
-
-  while (!cells_.IsEmpty()) {
-    cells_.Head()->SetTraversalMode(kForColumns);
-    if (cells_.Head()->Next())
-      cells_.Head()->Next()->SetTraversalMode(kForColumns);
-    delete cells_.RemoveHead();
-  }
+  return cells_->InsertAfter(cell, insertion_point);
 }
 
 const GridItemList& ListGrid::Cell(wtf_size_t row_index,
@@ -251,7 +233,7 @@ const GridItemList& ListGrid::Cell(wtf_size_t row_index,
   DEFINE_STATIC_LOCAL(const GridItemList, empty_vector, ());
   for (auto* row = rows_.Head(); row; row = row->Next()) {
     if (row->Index() == row_index) {
-      auto* cell = row->Find(column_index);
+      GridCell* cell = row->Find(column_index);
       return cell ? cell->Items() : empty_vector;
     }
     if (row->Index() > row_index)
@@ -353,13 +335,17 @@ void ListGrid::GridCell::SetTraversalMode(GridTrackSizingDirection direction) {
   if (direction == direction_)
     return;
   direction_ = direction;
-  std::swap(next_, next_ortho_);
-  std::swap(prev_, prev_ortho_);
+  GridCell* next = Next();
+  SetNext(next_ortho_);
+  next_ortho_ = next;
+  GridCell* prev = Prev();
+  SetPrev(prev_ortho_);
+  prev_ortho_ = prev;
 }
 
 ListGrid::GridCell* ListGrid::GridCell::NextInDirection(
     GridTrackSizingDirection direction) const {
-  return direction_ == direction ? next_ : next_ortho_;
+  return direction_ == direction ? Next() : next_ortho_.Get();
 }
 
 std::unique_ptr<Grid::GridIterator> ListGrid::CreateIterator(

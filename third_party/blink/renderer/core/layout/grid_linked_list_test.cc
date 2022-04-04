@@ -20,7 +20,9 @@ namespace {
 class IntNode : public GridLinkedListNodeBase<IntNode> {
  public:
   explicit IntNode(int value) : value_(value) {}
-  ~IntNode() { destructor_calls.fetch_add(1, std::memory_order_relaxed); }
+  ~IntNode() override {
+    destructor_calls.fetch_add(1, std::memory_order_relaxed);
+  }
 
   int Value() const { return value_; }
 

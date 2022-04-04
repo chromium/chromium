@@ -7,9 +7,11 @@
 
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/grid_linked_list.h"
 #include "third_party/blink/renderer/core/layout/order_iterator.h"
 #include "third_party/blink/renderer/core/style/grid_area.h"
 #include "third_party/blink/renderer/core/style/grid_positions_resolver.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/doubly_linked_list.h"
 #include "third_party/blink/renderer/platform/wtf/linked_hash_set.h"
@@ -29,7 +31,6 @@ struct OrderedTrackIndexSetHashTraits : public HashTraits<wtf_size_t> {
   }
 };
 
-// TODO(svillar): Perhaps we should use references here.
 typedef Vector<UntracedMember<LayoutBox>, 1> GridItemList;
 typedef LinkedHashSet<wtf_size_t, OrderedTrackIndexSetHashTraits>
     OrderedTrackIndexSet;
@@ -175,10 +176,7 @@ class CORE_EXPORT ListGrid final : public Grid {
   // only created for those cells which do have items inside. Each
   // GridCell will be part of two different DLL, one representing the
   // column and another one representing the row.
-  class GridCell final : public DoublyLinkedListNode<GridCell> {
-    USING_FAST_MALLOC(GridCell);
-    friend class WTF::DoublyLinkedListNode<GridCell>;
-
+  class GridCell final : public GridLinkedListNodeBase<GridCell> {
    public:
     GridCell(wtf_size_t row, wtf_size_t column) : row_(row), column_(column) {}
 
@@ -189,6 +187,12 @@ class CORE_EXPORT ListGrid final : public Grid {
     void AppendItem(LayoutBox& item) { items_.push_back(&item); }
 
     const GridItemList& Items() const { return items_; }
+
+    void Trace(Visitor* visitor) const final {
+      visitor->Trace(prev_ortho_);
+      visitor->Trace(next_ortho_);
+      GridLinkedListNodeBase<GridCell>::Trace(visitor);
+    }
 
     // DoublyLinkedListNode classes must provide a next_ and prev_
     // pointers to the DoublyLinkedList class so that it could perform
@@ -213,10 +217,8 @@ class CORE_EXPORT ListGrid final : public Grid {
     GridCell* NextInDirection(GridTrackSizingDirection) const;
 
    private:
-    GridCell* prev_{nullptr};
-    GridCell* next_{nullptr};
-    GridCell* prev_ortho_{nullptr};
-    GridCell* next_ortho_{nullptr};
+    Member<GridCell> prev_ortho_;
+    Member<GridCell> next_ortho_;
 
     GridTrackSizingDirection direction_{kForColumns};
     GridItemList items_;
@@ -239,22 +241,21 @@ class CORE_EXPORT ListGrid final : public Grid {
 
    public:
     GridTrack(wtf_size_t index, GridTrackSizingDirection direction)
-        : index_(index), direction_(direction) {}
+        : cells_(MakeGarbageCollected<GridLinkedList<GridCell>>()),
+          index_(index),
+          direction_(direction) {}
 
     wtf_size_t Index() const { return index_; }
-    DoublyLinkedList<GridCell>::AddResult Insert(GridCell*);
-    DoublyLinkedList<GridCell>::AddResult InsertAfter(
-        GridCell* cell,
-        GridCell* insertion_point);
-    DoublyLinkedList<GridCell>::AddResult Insert(LayoutBox&, const GridSpan&);
+    GridLinkedList<GridCell>::AddResult Insert(GridCell*);
+    GridLinkedList<GridCell>::AddResult InsertAfter(GridCell* cell,
+                                                    GridCell* insertion_point);
+    GridLinkedList<GridCell>::AddResult Insert(LayoutBox&, const GridSpan&);
     GridCell* Find(wtf_size_t cell_index) const;
 
-    const DoublyLinkedList<GridCell>& Cells() const { return cells_; }
-
-    ~GridTrack();
+    const GridLinkedList<GridCell>& Cells() const { return *cells_; }
 
    private:
-    DoublyLinkedList<GridCell> cells_;
+    Persistent<GridLinkedList<GridCell>> cells_;
     wtf_size_t index_;
     GridTrackSizingDirection direction_;
 
@@ -308,7 +309,7 @@ class ListGridIterator final : public Grid::GridIterator {
 
  private:
   const ListGrid& grid_;
-  ListGrid::GridCell* cell_node_{nullptr};
+  Persistent<ListGrid::GridCell> cell_node_;
 };
 
 }  // namespace blink
