@@ -100,7 +100,7 @@
                 "BaselineShiftType", "baseline-shift", "dominant-baseline",
                 "CssDominantBaseline", "text-anchor",
                 "stroke-width", "stroke-miterlimit", "stroke-linecap", "stroke-linejoin",
-                "marker-end", "marker-mid", "marker-start", "scrollbar-width"],
+                "marker-end", "marker-mid", "marker-start", "scrollbar-width", "object-view-box"],
         methods_to_diff: [
           {
             method: "BorderLeftWidth()",
@@ -249,7 +249,7 @@
         fields_to_diff: ["-webkit-user-modify", "user-select", "image-rendering",
                 "column-rule-style", "column-rule-width", "column-rule-color",
                 "-internal-visited-column-rule-color",
-                "-webkit-user-drag", "object-fit", "object-fit", "object-position", "object-view-box",
+                "-webkit-user-drag", "object-fit", "object-fit", "object-position",
                 "mix-blend-mode", "isolation", "Mask", "MaskBoxImage", "mask", "mask-type",
                 "stop-color", "stop-opacity", "flood-color", "flood-opacity",
                 "lighting-color", "shape-rendering", "clip-rule", "fill-rule",
