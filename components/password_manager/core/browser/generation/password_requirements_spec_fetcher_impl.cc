@@ -104,18 +104,6 @@ void PasswordRequirementsSpecFetcherImpl::Fetch(GURL origin,
     return;
   }
 
-  if (!url_loader_factory_) {
-    TriggerCallback(std::move(callback), ResultCode::kErrorNoUrlLoader,
-                    PasswordRequirementsSpec());
-    return;
-  }
-
-  if (!url_loader_factory_) {
-    TriggerCallback(std::move(callback), ResultCode::kErrorNoUrlLoader,
-                    PasswordRequirementsSpec());
-    return;
-  }
-
   if (!origin.is_valid() || origin.HostIsIPAddress() ||
       !origin.SchemeIsHTTPOrHTTPS()) {
     VLOG(1) << "No valid origin";
