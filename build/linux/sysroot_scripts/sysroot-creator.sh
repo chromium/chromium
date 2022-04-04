@@ -362,12 +362,6 @@ HacksAndPatchesCommon() {
   done
   set -e
 
-  # Avoid requiring unsupported glibc versions.
-  "${SCRIPT_DIR}/reversion_glibc.py" \
-    "${INSTALL_ROOT}/lib/${arch}-${os}/libc.so.6"
-  "${SCRIPT_DIR}/reversion_glibc.py" \
-    "${INSTALL_ROOT}/lib/${arch}-${os}/libm.so.6"
-
   # fcntl64() was introduced in glibc 2.28.  Make sure to use fcntl() instead.
   local fcntl_h="${INSTALL_ROOT}/usr/include/fcntl.h"
   sed -i '{N; s/#ifndef __USE_FILE_OFFSET64\(\nextern int fcntl\)/#if 1\1/}' \
@@ -387,37 +381,58 @@ HacksAndPatchesCommon() {
 }
 
 
+ReversionGlibc() {
+  local arch=$1
+  local os=$2
+
+  # Avoid requiring unsupported glibc versions.
+  "${SCRIPT_DIR}/reversion_glibc.py" \
+    "${INSTALL_ROOT}/lib/${arch}-${os}/libc.so.6"
+  "${SCRIPT_DIR}/reversion_glibc.py" \
+    "${INSTALL_ROOT}/lib/${arch}-${os}/libm.so.6"
+}
+
+
 HacksAndPatchesAmd64() {
   HacksAndPatchesCommon x86_64 linux-gnu strip
+  ReversionGlibc x86_64 linux-gnu
 }
 
 
 HacksAndPatchesI386() {
   HacksAndPatchesCommon i386 linux-gnu strip
+  ReversionGlibc i386 linux-gnu
 }
 
 
 HacksAndPatchesARM() {
   HacksAndPatchesCommon arm linux-gnueabihf arm-linux-gnueabihf-strip
+  ReversionGlibc arm linux-gnueabihf
 }
 
 HacksAndPatchesARM64() {
   # Use the unstripped libdbus for arm64 to prevent linker errors.
   # https://bugs.chromium.org/p/webrtc/issues/detail?id=8535
   HacksAndPatchesCommon aarch64 linux-gnu true
+  # Skip reversion_glibc.py. Glibc is compiled in a way where many libm math
+  # functions do not have compatibility symbols for versions <= 2.17.
+  # ReversionGlibc aarch64 linux-gnu
 }
 
 HacksAndPatchesARMEL() {
   HacksAndPatchesCommon arm linux-gnueabi arm-linux-gnueabi-strip
+  ReversionGlibc arm linux-gnueabi
 }
 
 HacksAndPatchesMips() {
   HacksAndPatchesCommon mipsel linux-gnu mipsel-linux-gnu-strip
+  ReversionGlibc mipsel linux-gnu
 }
 
 
 HacksAndPatchesMips64el() {
   HacksAndPatchesCommon mips64el linux-gnuabi64 mips64el-linux-gnuabi64-strip
+  ReversionGlibc mips64el linux-gnuabi64
 }
 
 
