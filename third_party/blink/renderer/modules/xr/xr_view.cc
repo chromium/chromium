@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#define _USE_MATH_DEFINES  // For VC++ to get M_PI. This has to be first.
+
 #include "third_party/blink/renderer/modules/xr/xr_view.h"
+
+#include <cmath>
 
 #include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/modules/xr/xr_camera.h"
