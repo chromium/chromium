@@ -76,6 +76,8 @@ class HarfBuzzFace final : public RefCounted<HarfBuzzFace> {
 
   bool ShouldSubpixelPosition();
 
+  static void Init();
+
  private:
   HarfBuzzFace(FontPlatformData* platform_data,
                scoped_refptr<HarfBuzzFontData> harf_buzz_font_data);

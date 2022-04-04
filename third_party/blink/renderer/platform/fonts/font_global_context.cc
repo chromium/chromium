@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_unique_name_lookup.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_font_cache.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
@@ -40,10 +41,7 @@ FontGlobalContext::FontGlobalContext()
     : typeface_digest_cache_(kCachesMaxSize),
       postscript_name_digest_cache_(kCachesMaxSize) {}
 
-FontGlobalContext::~FontGlobalContext() {
-  hb_font_funcs_destroy(harfbuzz_font_funcs_skia_advances_);
-  hb_font_funcs_destroy(harfbuzz_font_funcs_harfbuzz_advances_);
-}
+FontGlobalContext::~FontGlobalContext() = default;
 
 FontUniqueNameLookup* FontGlobalContext::GetFontUniqueNameLookup() {
   if (!Get().font_unique_name_lookup_) {
@@ -114,6 +112,7 @@ void FontGlobalContext::Init() {
   DCHECK(IsMainThread());
   if (auto* name_lookup = FontGlobalContext::Get().GetFontUniqueNameLookup())
     name_lookup->Init();
+  HarfBuzzFace::Init();
 }
 
 }  // namespace blink
