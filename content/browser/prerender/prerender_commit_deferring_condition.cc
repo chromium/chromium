@@ -4,6 +4,7 @@
 
 #include "content/browser/prerender/prerender_commit_deferring_condition.h"
 
+#include "base/memory/ptr_util.h"
 #include "content/browser/prerender/prerender_host.h"
 #include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/frame_tree.h"

@@ -4,6 +4,7 @@
 
 #include "media/gpu/chromeos/oop_video_decoder.h"
 
+#include "base/memory/ptr_util.h"
 #include "media/gpu/macros.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

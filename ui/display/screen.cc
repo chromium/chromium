@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

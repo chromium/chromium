@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/frame_tree_node.h"

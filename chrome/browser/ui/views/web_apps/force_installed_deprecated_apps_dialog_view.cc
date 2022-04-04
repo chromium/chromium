@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/web_apps/force_installed_deprecated_apps_dialog_view.h"
 
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/common/url_constants.h"

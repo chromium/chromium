@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/parser/preload_request.h"
 
+#include "base/memory/ptr_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "extensions/common/mojom/permission_set_mojom_traits.h"
+#include "base/memory/ptr_util.h"
 #include "extensions/common/manifest_handler.h"
 #include "extensions/common/permissions/permissions_info.h"
 

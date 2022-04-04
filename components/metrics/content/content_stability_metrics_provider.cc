@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/lazy_instance.h"
+#include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "components/metrics/content/extensions_helper.h"

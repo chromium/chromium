@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/memory/ptr_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/debug/debug_colors.h"

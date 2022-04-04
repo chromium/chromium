@@ -6,6 +6,7 @@
 
 #include "base/containers/span.h"
 #include "base/json/json_writer.h"
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"

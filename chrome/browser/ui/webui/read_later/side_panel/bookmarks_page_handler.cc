@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/read_later/side_panel/bookmarks_page_handler.h"
 
+#include "base/memory/ptr_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/app/chrome_command_ids.h"

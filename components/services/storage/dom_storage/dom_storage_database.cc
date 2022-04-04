@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/debug/leak_annotations.h"
+#include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"

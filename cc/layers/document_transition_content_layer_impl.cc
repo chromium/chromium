@@ -4,6 +4,7 @@
 
 #include "cc/layers/document_transition_content_layer_impl.h"
 
+#include "base/memory/ptr_util.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/trees/layer_tree_impl.h"

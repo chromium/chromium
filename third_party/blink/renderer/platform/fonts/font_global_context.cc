@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_global_context.h"
 
+#include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_unique_name_lookup.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"

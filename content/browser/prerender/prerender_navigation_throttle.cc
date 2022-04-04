@@ -4,6 +4,7 @@
 
 #include "content/browser/prerender/prerender_navigation_throttle.h"
 
+#include "base/memory/ptr_util.h"
 #include "content/browser/prerender/prerender_host.h"
 #include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/prerender/prerender_metrics.h"

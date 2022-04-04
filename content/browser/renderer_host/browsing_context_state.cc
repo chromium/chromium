@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/browsing_context_state.h"
 
+#include "base/memory/ptr_util.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"

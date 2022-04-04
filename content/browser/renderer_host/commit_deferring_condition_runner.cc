@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/commit_deferring_condition_runner.h"
 
+#include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "content/browser/renderer_host/back_forward_cache_commit_deferring_condition.h"
 #include "content/browser/renderer_host/navigation_request.h"

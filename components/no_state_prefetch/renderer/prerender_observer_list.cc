@@ -4,6 +4,7 @@
 
 #include "components/no_state_prefetch/renderer/prerender_observer_list.h"
 
+#include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
 #include "components/no_state_prefetch/renderer/prerender_observer.h"
 #include "content/public/renderer/render_frame.h"

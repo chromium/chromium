@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/http_error_navigation_throttle.h"
 
+#include "base/memory/ptr_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/common/content_client.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/flying_indicator.h"
 
+#include "base/memory/ptr_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"

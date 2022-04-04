@@ -5,6 +5,7 @@
 #include "cc/metrics/lcd_text_metrics_reporter.h"
 
 #include "base/lazy_instance.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "cc/base/histograms.h"
 #include "cc/layers/picture_layer_impl.h"
