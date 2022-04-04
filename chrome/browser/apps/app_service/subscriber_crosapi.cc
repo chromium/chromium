@@ -127,6 +127,8 @@ void SubscriberCrosapi::RegisterAppServiceSubscriber(
   mojo::PendingRemote<apps::mojom::Subscriber> app_service_subscriber;
   receivers_.Add(this, app_service_subscriber.InitWithNewPipeAndPassReceiver());
   app_service->RegisterSubscriber(std::move(app_service_subscriber), nullptr);
+
+  proxy->RegisterCrosApiSubScriber(this);
 }
 
 void SubscriberCrosapi::Launch(crosapi::mojom::LaunchParamsPtr launch_params) {

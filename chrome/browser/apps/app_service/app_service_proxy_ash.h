@@ -17,6 +17,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_base.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
 #include "chrome/browser/apps/app_service/publisher_host.h"
+#include "chrome/browser/apps/app_service/subscriber_crosapi.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -73,6 +74,9 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
 
   apps::BrowserAppInstanceTracker* BrowserAppInstanceTracker();
   apps::BrowserAppInstanceRegistry* BrowserAppInstanceRegistry();
+
+  // Registers `crosapi_subscriber_`.
+  void RegisterCrosApiSubScriber(SubscriberCrosapi* subscriber);
 
   // apps::AppServiceProxyBase overrides:
   void Uninstall(const std::string& app_id,
@@ -201,6 +205,8 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   void OnInstanceUpdate(const apps::InstanceUpdate& update) override;
   void OnInstanceRegistryWillBeDestroyed(
       apps::InstanceRegistry* cache) override;
+
+  SubscriberCrosapi* crosapi_subscriber_ = nullptr;
 
   std::unique_ptr<PublisherHost> publisher_host_;
 

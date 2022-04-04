@@ -128,6 +128,12 @@ apps::InstanceRegistry& AppServiceProxyAsh::InstanceRegistry() {
   return instance_registry_;
 }
 
+apps::AppPlatformMetrics* AppServiceProxyAsh::AppPlatformMetrics() {
+  return app_platform_metrics_service_
+             ? app_platform_metrics_service_->AppPlatformMetrics()
+             : nullptr;
+}
+
 apps::BrowserAppInstanceTracker*
 AppServiceProxyAsh::BrowserAppInstanceTracker() {
   return browser_app_instance_tracker_.get();
@@ -138,10 +144,10 @@ AppServiceProxyAsh::BrowserAppInstanceRegistry() {
   return browser_app_instance_registry_.get();
 }
 
-apps::AppPlatformMetrics* AppServiceProxyAsh::AppPlatformMetrics() {
-  return app_platform_metrics_service_
-             ? app_platform_metrics_service_->AppPlatformMetrics()
-             : nullptr;
+void AppServiceProxyAsh::RegisterCrosApiSubScriber(
+    SubscriberCrosapi* subscriber) {
+  crosapi_subscriber_ = subscriber;
+  // TODO(crbug.com/1253250): Init apps and preferred apps.
 }
 
 void AppServiceProxyAsh::Uninstall(
@@ -260,6 +266,8 @@ void AppServiceProxyAsh::SetAppPlatformMetricsServiceForTesting(
 }
 
 void AppServiceProxyAsh::Shutdown() {
+  crosapi_subscriber_ = nullptr;
+
   app_platform_metrics_service_.reset();
 
   uninstall_dialogs_.clear();
