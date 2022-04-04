@@ -474,6 +474,127 @@ chromium-metrics-reviews@google.com.
   <summary>The time taken for copying lacros data.</summary>
 </histogram>
 
+<histogram name="Ash.BrowserDataMigrator.MoveMigrator.CancelledMigrationTime"
+    units="ms" expires_after="M110">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    The time taken for profile migration before it is cancelled by the user
+    during move migration. Profile move migration happens once after Lacros and
+    move migration is enabled. This only gets recorded if the user clicks
+    &quot;Skip&quot; from the migration UI displayed during the migration.
+    Profile move migration is a feature to migrate profile data from Ash to
+    Lacros once after Lacros is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataMigrator.MoveMigrator.PosixErrno.{TaskStatus}"
+    units="errno" expires_after="M110">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    Recorded when profile move migration fails. Profile move migration happens
+    once after Lacros and move migration is enabled. Records the errno set by
+    the operation that caused the migration to fail. `TaskStatus` is used to
+    determine which step the error occurred. Profile move migration is a feature
+    to migrate profile data from Ash to Lacros once after Lacros is enabled.
+  </summary>
+  <token key="TaskStatus">
+    <variant name="Cancelled"/>
+    <variant name="MoveLacrosItemsToNewDirMoveFailed"/>
+    <variant name="MoveLacrosItemsToNewDirNoWritePerm"/>
+    <variant name="MoveSplitItemsToOriginalDirCreateDirFailed"/>
+    <variant name="MoveSplitItemsToOriginalDirMoveExtensionsFailed"/>
+    <variant name="MoveSplitItemsToOriginalDirMoveIndexedDBFailed"/>
+    <variant name="MoveSplitItemsToOriginalDirMoveSplitItemsFailed"/>
+    <variant name="MoveTmpDirToLacrosDirMoveFailed"/>
+    <variant name="PreMigrationCleanUpDeleteLacrosDirFailed"/>
+    <variant name="PreMigrationCleanUpDeleteTmpDirFailed"/>
+    <variant name="PreMigrationCleanUpDeleteTmpSplitDirFailed"/>
+    <variant name="PreMigrationCleanUpNotEnoughSpace"/>
+    <variant name="SetupAshDirCreateSplitDirFailed"/>
+    <variant name="SetupAshDirMigrateLevelDBForLocalStateFailed"/>
+    <variant name="SetupAshDirMigrateLevelDBForStateFailed"/>
+    <variant name="SetupAshDirMigratePreferencesFailed"/>
+    <variant name="SetupLacrosDirCopyTargetItemsFailed"/>
+    <variant name="SetupLacrosDirCreateTmpDirFailed"/>
+    <variant name="SetupLacrosDirCreateTmpProfileDirFailed"/>
+    <variant name="SetupLacrosDirWriteFirstRunSentinelFileFailed"/>
+    <variant name="Succeeded"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.BrowserDataMigrator.MoveMigrator.PreMigrationCleanUpTime"
+    units="ms" expires_after="M110">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    The time taken for move migration to run PreMigrationCleanUp() and recorded
+    once when profile move migration happens. Profile move migration migrates
+    profile data from Ash to Lacros after Lacros is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataMigrator.MoveMigrator.ResumeStep"
+    enum="MoveMigratorResumeStep" expires_after="M110">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    The step from which move migration is resumed from. Recorded once at the
+    beginning of profile move migration. Profile move migration gets resumed
+    from where it left off if the previous attempt were did not finish
+    completely. Profile move migration migrates profile data from Ash to Lacros
+    after Lacros is enabled.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ash.BrowserDataMigrator.MoveMigrator.SetupLacrosDirCopyTargetItemsTime"
+    units="ms" expires_after="M110">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    The time taken for move migration to copy target items inside
+    SetupLacrosDir(). Recorded once during profile move migration. Profile move
+    migration is a feature to migrate profile data from Ash to Lacros once after
+    Lacros is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataMigrator.MoveMigrator.SetupLacrosDirTime"
+    units="ms" expires_after="M110">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    The time taken for move migration to run SetupLacrosDir(). Recorded once
+    during the migration. Profile move migration is a feature to migrate profile
+    data from Ash to Lacros once after Lacros is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataMigrator.MoveMigrator.SuccessfulMigrationTime"
+    units="ms" expires_after="M110">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    The time taken for profile move migration to complete in ms. Recorded once
+    at the end of the migration if it is successful. Profile move migration is a
+    feature to migrate profile data from Ash to Lacros once after Lacros is
+    enabled.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataMigrator.MoveMigrator.TaskStatus"
+    enum="MoveMigratorTaskStatus" expires_after="M110">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    The final status of profile move migration. Recorded once at the end of the
+    migration process. Profile move migration is a feature to migrate profile
+    data from Ash to Lacros once after Lacros is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Ash.BrowserDataMigrator.NoCopyDataSizeMB" units="MB"
     expires_after="M110">
   <owner>ythjkt@chromium.org</owner>

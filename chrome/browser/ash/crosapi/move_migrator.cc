@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/crosapi/move_migrator.h"
 
+#include <errno.h>
+
 #include <memory>
 #include <string>
 
@@ -14,8 +16,12 @@
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/values.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
@@ -53,6 +59,13 @@ void MoveMigrator::Migrate() {
   if (IsResumeStep(resume_step)) {
     const int resume_count =
         UpdateResumeAttemptCountForUser(local_state_, user_id_hash_);
+
+    if (resume_count > 0) {
+      LOG(WARNING) << "Resuming move migration for the " << resume_count
+                   << "th time.";
+      UMA_HISTOGRAM_COUNTS_100(kMoveMigratorResumeCount, resume_count);
+    }
+
     if (resume_count > kMoveMigrationResumeCountLimit) {
       LOG(ERROR) << "The number of resume attempt limit has reached. Marking "
                     "move migration as completed.";
@@ -62,6 +75,7 @@ void MoveMigrator::Migrate() {
   }
 
   // Start or resume migration.
+  UMA_HISTOGRAM_ENUMERATION(kMoveMigratorResumeStepUMA, resume_step);
   switch (resume_step) {
     case ResumeStep::kStart:
       base::ThreadPool::PostTaskAndReplyWithResult(
@@ -113,9 +127,7 @@ void MoveMigrator::Migrate() {
       LOG(ERROR)
           << "This state indicates that migration was marked as completed by"
              "`MoveMigrator` but was not by `BrowserDataMigratorImpl`";
-      std::move(finished_callback_)
-          .Run({BrowserDataMigratorImpl::DataWipeResult::kSucceeded,
-                {BrowserDataMigrator::ResultKind::kSucceeded}});
+      InvokeCallback({TaskStatus::kSucceeded});
       return;
   }
 }
@@ -201,9 +213,10 @@ void MoveMigrator::ClearResumeStepForUser(PrefService* local_state,
 }
 
 // static
-MoveMigrator::PreMigrationCleanUpResult MoveMigrator::PreMigrationCleanUp(
+MoveMigrator::TaskResult MoveMigrator::PreMigrationCleanUp(
     const base::FilePath& original_profile_dir) {
   LOG(WARNING) << "Running PreMigrationCleanUp()";
+  base::ElapsedTimer timer;
 
   const base::FilePath new_user_dir =
       original_profile_dir.Append(browser_data_migrator_util::kLacrosDir);
@@ -212,7 +225,7 @@ MoveMigrator::PreMigrationCleanUpResult MoveMigrator::PreMigrationCleanUp(
     // Delete an existing lacros profile before the migration.
     if (!base::DeletePathRecursively(new_user_dir)) {
       PLOG(ERROR) << "Deleting " << new_user_dir.value() << " failed: ";
-      return {false};
+      return {TaskStatus::kPreMigrationCleanUpDeleteLacrosDirFailed, errno};
     }
   }
 
@@ -226,7 +239,7 @@ MoveMigrator::PreMigrationCleanUpResult MoveMigrator::PreMigrationCleanUp(
     // tmp_user_dir once we start deleting items from the Ash PDD.
     if (!base::DeletePathRecursively(tmp_user_dir)) {
       PLOG(ERROR) << "Deleting " << tmp_user_dir.value() << " failed: ";
-      return {false};
+      return {TaskStatus::kPreMigrationCleanUpDeleteTmpDirFailed, errno};
     }
   }
 
@@ -237,7 +250,7 @@ MoveMigrator::PreMigrationCleanUpResult MoveMigrator::PreMigrationCleanUp(
     // migration attempt. Similar considerations to tmp_user_dir apply.
     if (!base::DeletePathRecursively(tmp_split_dir)) {
       PLOG(ERROR) << "Deleting" << tmp_split_dir.value() << " failed: ";
-      return {false};
+      return {TaskStatus::kPreMigrationCleanUpDeleteTmpSplitDirFailed, errno};
     }
   }
 
@@ -267,28 +280,27 @@ MoveMigrator::PreMigrationCleanUpResult MoveMigrator::PreMigrationCleanUp(
       browser_data_migrator_util::ExtraBytesRequiredToBeFreed(
           need_copy_items.total_size, original_profile_dir);
 
-  return {true, extra_bytes_required_to_be_freed};
-}
-
-void MoveMigrator::OnPreMigrationCleanUp(
-    MoveMigrator::PreMigrationCleanUpResult result) {
-  if (!result.success) {
-    LOG(ERROR) << "PreMigrationCleanup() failed.";
-    std::move(finished_callback_)
-        .Run({BrowserDataMigratorImpl::DataWipeResult::kFailed,
-              {BrowserDataMigrator::ResultKind::kFailed}});
-    return;
-  }
-
-  if (result.extra_bytes_required_to_be_freed.value() > 0u) {
+  UMA_HISTOGRAM_MEDIUM_TIMES(kMoveMigratorPreMigrationCleanUpTimeUMA,
+                             timer.Elapsed());
+  if (extra_bytes_required_to_be_freed > 0u) {
+    UMA_HISTOGRAM_CUSTOM_COUNTS(kMoveMigratorExtraSpaceRequiredMB,
+                                extra_bytes_required_to_be_freed / 1024 / 1024,
+                                1, 10000, 100);
     LOG(ERROR) << "Not enough disk space available to carry out the migration "
                   "safely. Need to free up "
-               << result.extra_bytes_required_to_be_freed.value()
-               << " bytes from " << original_profile_dir_.value();
-    std::move(finished_callback_)
-        .Run({BrowserDataMigratorImpl::DataWipeResult::kFailed,
-              {BrowserDataMigratorImpl::ResultKind::kFailed,
-               result.extra_bytes_required_to_be_freed}});
+               << extra_bytes_required_to_be_freed << " bytes from "
+               << original_profile_dir;
+    return {TaskStatus::kPreMigrationCleanUpNotEnoughSpace, absl::nullopt,
+            extra_bytes_required_to_be_freed};
+  }
+
+  return {TaskStatus::kSucceeded};
+}
+
+void MoveMigrator::OnPreMigrationCleanUp(MoveMigrator::TaskResult result) {
+  if (result.status != TaskStatus::kSucceeded) {
+    LOG(ERROR) << "PreMigrationCleanup() failed.";
+    InvokeCallback(result);
     return;
   }
 
@@ -303,15 +315,16 @@ void MoveMigrator::OnPreMigrationCleanUp(
 }
 
 // static
-bool MoveMigrator::SetupLacrosDir(
+MoveMigrator::TaskResult MoveMigrator::SetupLacrosDir(
     const base::FilePath& original_profile_dir,
     std::unique_ptr<MigrationProgressTracker> progress_tracker,
     scoped_refptr<browser_data_migrator_util::CancelFlag> cancel_flag) {
   LOG(WARNING) << "Running SetupLacrosDir()";
+  base::ElapsedTimer timer;
 
   if (cancel_flag->IsSet()) {
     LOG(WARNING) << "Migration is cancelled.";
-    return false;
+    return {TaskStatus::kCancelled};
   }
   const base::FilePath tmp_user_dir =
       original_profile_dir.Append(browser_data_migrator_util::kMoveTmpDir);
@@ -320,11 +333,11 @@ bool MoveMigrator::SetupLacrosDir(
 
   if (!base::CreateDirectory(tmp_user_dir)) {
     PLOG(ERROR) << "CreateDirectory() failed for  " << tmp_user_dir.value();
-    return false;
+    return {TaskStatus::kSetupLacrosDirCreateTmpDirFailed, errno};
   }
   if (!base::CreateDirectory(tmp_profile_dir)) {
     PLOG(ERROR) << "CreateDirectory() failed for  " << tmp_profile_dir.value();
-    return false;
+    return {TaskStatus::kSetupLacrosDirCreateTmpProfileDirFailed, errno};
   }
 
   browser_data_migrator_util::TargetItems need_copy_items =
@@ -334,27 +347,35 @@ bool MoveMigrator::SetupLacrosDir(
 
   progress_tracker->SetTotalSizeToCopy(need_copy_items.total_size);
 
+  base::ElapsedTimer timer_for_copy;
   if (!browser_data_migrator_util::CopyTargetItems(
           tmp_profile_dir, need_copy_items, cancel_flag.get(),
           progress_tracker.get())) {
+    if (cancel_flag->IsSet()) {
+      return {TaskStatus::kCancelled};
+    }
     LOG(ERROR) << "CopyTargetItems() failed for need_copy_items.";
-    return false;
+    return {TaskStatus::kSetupLacrosDirCopyTargetItemsFailed, errno};
   }
+  UMA_HISTOGRAM_MEDIUM_TIMES(kMoveMigratorSetupLacrosDirCopyTargetItemsTimeUMA,
+                             timer_for_copy.Elapsed());
 
   if (!base::WriteFile(tmp_user_dir.Append(chrome::kFirstRunSentinel), "")) {
     LOG(ERROR) << "WriteFile() failed for " << chrome::kFirstRunSentinel;
-    return false;
+    return {TaskStatus::kSetupLacrosDirWriteFirstRunSentinelFileFailed, errno};
   }
 
-  return true;
+  return {TaskStatus::kSucceeded};
 }
 
-void MoveMigrator::OnSetupLacrosDir(bool success) {
-  if (!success) {
+void MoveMigrator::OnSetupLacrosDir(TaskResult result) {
+  if (result.status != TaskStatus::kSucceeded) {
     LOG(ERROR) << "MoveMigrator::SetupLacrosDir() failed.";
-    std::move(finished_callback_)
-        .Run({BrowserDataMigratorImpl::DataWipeResult::kSucceeded,
-              {BrowserDataMigrator::ResultKind::kFailed}});
+    if (cancel_flag_->IsSet()) {
+      UMA_HISTOGRAM_MEDIUM_TIMES(kMoveMigratorCancelledMigrationTimeUMA,
+                                 timer_.Elapsed());
+    }
+    InvokeCallback(result);
     return;
   }
 
@@ -368,7 +389,7 @@ void MoveMigrator::OnSetupLacrosDir(bool success) {
 }
 
 // static
-bool MoveMigrator::SetupAshSplitDir(
+MoveMigrator::TaskResult MoveMigrator::SetupAshSplitDir(
     const base::FilePath& original_profile_dir) {
   LOG(WARNING) << "Running SetupAshSplitDir()";
 
@@ -380,7 +401,7 @@ bool MoveMigrator::SetupAshSplitDir(
       original_profile_dir.Append(browser_data_migrator_util::kSplitTmpDir);
   if (!base::CreateDirectory(tmp_split_dir)) {
     PLOG(ERROR) << "CreateDirectory() failed for  " << tmp_split_dir.value();
-    return false;
+    return {TaskStatus::kSetupAshDirCreateSplitDirFailed, errno};
   }
 
   // Create Ash's version of `Local Storage`, holding *only* the keys
@@ -398,7 +419,7 @@ bool MoveMigrator::SetupAshSplitDir(
                 .Append(browser_data_migrator_util::kLocalStorageLeveldbName),
             browser_data_migrator_util::LevelDBType::kLocalStorage)) {
       LOG(ERROR) << "MigrateLevelDB() failed for `Local Storage`";
-      return false;
+      return {TaskStatus::kSetupAshDirMigrateLevelDBForLocalStateFailed};
     }
   }
 
@@ -409,7 +430,7 @@ bool MoveMigrator::SetupAshSplitDir(
               original_profile_dir.Append(path), tmp_split_dir.Append(path),
               browser_data_migrator_util::LevelDBType::kStateStore)) {
         LOG(ERROR) << "MigrateLevelDB() failed for `" << path << "`";
-        return false;
+        return {TaskStatus::kSetupAshDirMigrateLevelDBForStateFailed};
       }
     }
   }
@@ -420,18 +441,16 @@ bool MoveMigrator::SetupAshSplitDir(
           tmp_split_dir.Append(chrome::kPreferencesFilename),
           tmp_profile_dir.Append(chrome::kPreferencesFilename))) {
     LOG(ERROR) << "MigratePreferences() failed.";
-    return false;
+    return {TaskStatus::kSetupAshDirMigratePreferencesFailed};
   }
 
-  return true;
+  return {TaskStatus::kSucceeded};
 }
 
-void MoveMigrator::OnSetupAshSplitDir(bool success) {
-  if (!success) {
+void MoveMigrator::OnSetupAshSplitDir(TaskResult result) {
+  if (result.status != TaskStatus::kSucceeded) {
     LOG(ERROR) << "MoveMigrator::SetupAshSplitDir() failed.";
-    std::move(finished_callback_)
-        .Run({BrowserDataMigratorImpl::DataWipeResult::kSucceeded,
-              {BrowserDataMigratorImpl::ResultKind::kFailed}});
+    InvokeCallback(result);
     return;
   }
 
@@ -453,9 +472,11 @@ void MoveMigrator::OnSetupAshSplitDir(bool success) {
 }
 
 // static
-bool MoveMigrator::MoveLacrosItemsToNewDir(
+MoveMigrator::TaskResult MoveMigrator::MoveLacrosItemsToNewDir(
     const base::FilePath& original_profile_dir) {
   LOG(WARNING) << "Running MoveLacrosItemsToNewDir()";
+
+  base::ElapsedTimer timer;
 
   browser_data_migrator_util::TargetItems lacros_items =
       browser_data_migrator_util::GetTargetItems(
@@ -463,11 +484,10 @@ bool MoveMigrator::MoveLacrosItemsToNewDir(
 
   for (const auto& item : lacros_items.items) {
     if (item.is_directory && !base::PathIsWritable(item.path)) {
-      // TODO(ythjkt): Add a UMA.
       PLOG(ERROR) << "The current process does not have write permission to "
                      "the directory "
                   << item.path.value();
-      return false;
+      return {TaskStatus::kMoveLacrosItemsToNewDirNoWritePerm, errno};
     }
   }
 
@@ -479,18 +499,19 @@ bool MoveMigrator::MoveLacrosItemsToNewDir(
     if (!base::Move(item.path, tmp_profile_dir.Append(item.path.BaseName()))) {
       PLOG(ERROR) << "Failed to move item " << item.path.value() << " to "
                   << tmp_profile_dir.Append(item.path.BaseName()) << ": ";
-      return false;
+      return {TaskStatus::kMoveLacrosItemsToNewDirMoveFailed, errno};
     }
   }
-  return true;
+
+  UMA_HISTOGRAM_MEDIUM_TIMES(kMoveMigratorMoveLacrosItemsTimeUMA,
+                             timer.Elapsed());
+  return {TaskStatus::kSucceeded};
 }
 
-void MoveMigrator::OnMoveLacrosItemsToNewDir(bool success) {
-  if (!success) {
+void MoveMigrator::OnMoveLacrosItemsToNewDir(TaskResult result) {
+  if (result.status != TaskStatus::kSucceeded) {
     LOG(ERROR) << "Moving Lacros items to temporary directory failed.";
-    std::move(finished_callback_)
-        .Run({BrowserDataMigratorImpl::DataWipeResult::kSucceeded,
-              {BrowserDataMigrator::ResultKind::kFailed}});
+    InvokeCallback(result);
     return;
   }
 
@@ -507,7 +528,7 @@ void MoveMigrator::OnMoveLacrosItemsToNewDir(bool success) {
 }
 
 // static
-bool MoveMigrator::MoveSplitItemsToOriginalDir(
+MoveMigrator::TaskResult MoveMigrator::MoveSplitItemsToOriginalDir(
     const base::FilePath& original_profile_dir) {
   LOG(WARNING) << "Running MoveSplitItemsToOriginalDir()";
 
@@ -527,7 +548,8 @@ bool MoveMigrator::MoveSplitItemsToOriginalDir(
     if (!base::Move(path, ash_path)) {
       PLOG(ERROR) << "Failed moving " << path.value() << " to "
                   << ash_path.value();
-      return false;
+      return {TaskStatus::kMoveSplitItemsToOriginalDirMoveSplitItemsFailed,
+              errno};
     }
   }
 
@@ -545,7 +567,7 @@ bool MoveMigrator::MoveSplitItemsToOriginalDir(
     if (!base::CreateDirectory(ash_extensions_dir)) {
       PLOG(ERROR) << "CreateDirectory() failed for  "
                   << ash_extensions_dir.value();
-      return false;
+      return {TaskStatus::kMoveSplitItemsToOriginalDirCreateDirFailed, errno};
     }
 
     for (const char* extension_id :
@@ -556,7 +578,8 @@ bool MoveMigrator::MoveSplitItemsToOriginalDir(
         if (!base::Move(lacros_path, ash_path)) {
           PLOG(ERROR) << "Failed moving " << lacros_path.value() << " to "
                       << ash_path.value();
-          return false;
+          return {TaskStatus::kMoveSplitItemsToOriginalDirMoveExtensionsFailed,
+                  errno};
         }
       }
     }
@@ -572,7 +595,7 @@ bool MoveMigrator::MoveSplitItemsToOriginalDir(
     if (!base::CreateDirectory(ash_indexed_db_dir)) {
       PLOG(ERROR) << "CreateDirectory() failed for  "
                   << ash_indexed_db_dir.value();
-      return false;
+      return {TaskStatus::kMoveSplitItemsToOriginalDirCreateDirFailed, errno};
     }
 
     for (const char* extension_id :
@@ -586,7 +609,8 @@ bool MoveMigrator::MoveSplitItemsToOriginalDir(
         if (!base::Move(blob_path, ash_blob_path)) {
           PLOG(ERROR) << "Failed moving " << blob_path.value() << " to "
                       << ash_blob_path.value();
-          return false;
+          return {TaskStatus::kMoveSplitItemsToOriginalDirMoveIndexedDBFailed,
+                  errno};
         }
       }
       if (base::PathExists(leveldb_path)) {
@@ -595,21 +619,20 @@ bool MoveMigrator::MoveSplitItemsToOriginalDir(
         if (!base::Move(leveldb_path, ash_indexed_db_dir)) {
           PLOG(ERROR) << "Failed moving " << leveldb_path.value() << " to "
                       << ash_leveldb_path.value();
-          return false;
+          return {TaskStatus::kMoveSplitItemsToOriginalDirMoveIndexedDBFailed,
+                  errno};
         }
       }
     }
   }
 
-  return true;
+  return {TaskStatus::kSucceeded};
 }
 
-void MoveMigrator::OnMoveSplitItemsToOriginalDir(bool success) {
-  if (!success) {
+void MoveMigrator::OnMoveSplitItemsToOriginalDir(TaskResult result) {
+  if (result.status != TaskStatus::kSucceeded) {
     LOG(ERROR) << "Moving split objects has failed.";
-    std::move(finished_callback_)
-        .Run({BrowserDataMigratorImpl::DataWipeResult::kSucceeded,
-              {BrowserDataMigratorImpl::ResultKind::kFailed}});
+    InvokeCallback(result);
     return;
   }
 
@@ -626,7 +649,7 @@ void MoveMigrator::OnMoveSplitItemsToOriginalDir(bool success) {
 }
 
 // static
-bool MoveMigrator::MoveTmpDirToLacrosDir(
+MoveMigrator::TaskResult MoveMigrator::MoveTmpDirToLacrosDir(
     const base::FilePath& original_profile_dir) {
   LOG(WARNING) << "Running MoveTmpDirToLacrosDir()";
 
@@ -644,27 +667,116 @@ bool MoveMigrator::MoveTmpDirToLacrosDir(
                 << original_profile_dir
                        .Append(browser_data_migrator_util::kLacrosDir)
                        .value();
-    return false;
+    return {TaskStatus::kMoveTmpDirToLacrosDirMoveFailed, errno};
   }
 
-  return true;
+  return {TaskStatus::kSucceeded};
 }
 
-void MoveMigrator::OnMoveTmpDirToLacrosDir(bool success) {
-  if (!success) {
+void MoveMigrator::OnMoveTmpDirToLacrosDir(TaskResult result) {
+  if (result.status != TaskStatus::kSucceeded) {
     LOG(ERROR) << "Moving tmp dir to lacros dir failed.";
-    std::move(finished_callback_)
-        .Run({BrowserDataMigratorImpl::DataWipeResult::kSucceeded,
-              {BrowserDataMigrator::ResultKind::kFailed}});
+    InvokeCallback(result);
     return;
   }
 
+  UMA_HISTOGRAM_MEDIUM_TIMES(kMoveMigratorSuccessfulMigrationTimeUMA,
+                             timer_.Elapsed());
   SetResumeStep(local_state_, user_id_hash_, ResumeStep::kCompleted);
 
   LOG(WARNING) << "Move migration completed successfully.";
+  InvokeCallback(result);
+}
+
+void MoveMigrator::InvokeCallback(TaskResult result) {
+  UMA_HISTOGRAM_ENUMERATION(kMoveMigratorTaskStatusUMA, result.status);
+  if (result.status != TaskStatus::kSucceeded &&
+      result.posix_errno.has_value()) {
+    RecordPosixErrnoUMA(result.status, result.posix_errno.value());
+  }
+
   std::move(finished_callback_)
-      .Run({BrowserDataMigratorImpl::DataWipeResult::kSucceeded,
-            {BrowserDataMigratorImpl::ResultKind::kSucceeded}});
+      .Run(ToBrowserDataMigratorMigrationResult(result));
+}
+
+BrowserDataMigratorImpl::MigrationResult
+MoveMigrator::ToBrowserDataMigratorMigrationResult(TaskResult result) {
+  switch (result.status) {
+    case TaskStatus::kSucceeded:
+      return {BrowserDataMigratorImpl::DataWipeResult::kSucceeded,
+              {BrowserDataMigratorImpl::ResultKind::kSucceeded}};
+    case TaskStatus::kCancelled:
+      return {BrowserDataMigratorImpl::DataWipeResult::kSucceeded,
+              {BrowserDataMigratorImpl::ResultKind::kSkipped}};
+    case TaskStatus::kPreMigrationCleanUpDeleteLacrosDirFailed:
+    case TaskStatus::kPreMigrationCleanUpDeleteTmpDirFailed:
+    case TaskStatus::kPreMigrationCleanUpDeleteTmpSplitDirFailed:
+      return {BrowserDataMigratorImpl::DataWipeResult::kFailed,
+              {BrowserDataMigratorImpl::ResultKind::kFailed}};
+    case TaskStatus::kPreMigrationCleanUpNotEnoughSpace:
+      return {BrowserDataMigratorImpl::DataWipeResult::kSucceeded,
+              {BrowserDataMigratorImpl::ResultKind::kFailed,
+               result.extra_bytes_required_to_be_freed.value()}};
+    case TaskStatus::kSetupLacrosDirCreateTmpDirFailed:
+    case TaskStatus::kSetupLacrosDirCreateTmpProfileDirFailed:
+    case TaskStatus::kSetupLacrosDirCopyTargetItemsFailed:
+    case TaskStatus::kSetupLacrosDirWriteFirstRunSentinelFileFailed:
+    case TaskStatus::kSetupAshDirCreateSplitDirFailed:
+    case TaskStatus::kSetupAshDirMigrateLevelDBForLocalStateFailed:
+    case TaskStatus::kSetupAshDirMigrateLevelDBForStateFailed:
+    case TaskStatus::kSetupAshDirMigratePreferencesFailed:
+    case TaskStatus::kMoveLacrosItemsToNewDirNoWritePerm:
+    case TaskStatus::kMoveLacrosItemsToNewDirMoveFailed:
+    case TaskStatus::kMoveSplitItemsToOriginalDirMoveSplitItemsFailed:
+    case TaskStatus::kMoveSplitItemsToOriginalDirCreateDirFailed:
+    case TaskStatus::kMoveSplitItemsToOriginalDirMoveExtensionsFailed:
+    case TaskStatus::kMoveSplitItemsToOriginalDirMoveIndexedDBFailed:
+    case TaskStatus::kMoveTmpDirToLacrosDirMoveFailed:
+      return {BrowserDataMigratorImpl::DataWipeResult::kSucceeded,
+              {BrowserDataMigratorImpl::ResultKind::kFailed}};
+  }
+}
+
+// static
+void MoveMigrator::RecordPosixErrnoUMA(TaskStatus task_status,
+                                       const int posix_errno) {
+  if (posix_errno == 0)
+    return;
+
+  std::string uma_name =
+      kMoveMigratorPosixErrnoUMA + TaskStatusToString(task_status);
+  base::UmaHistogramSparse(uma_name, posix_errno);
+}
+
+// static
+std::string MoveMigrator::TaskStatusToString(TaskStatus task_status) {
+  switch (task_status) {
+#define MAPPING(name)       \
+  case TaskStatus::k##name: \
+    return #name
+    MAPPING(Succeeded);
+    MAPPING(Cancelled);
+    MAPPING(PreMigrationCleanUpDeleteLacrosDirFailed);
+    MAPPING(PreMigrationCleanUpDeleteTmpDirFailed);
+    MAPPING(PreMigrationCleanUpDeleteTmpSplitDirFailed);
+    MAPPING(PreMigrationCleanUpNotEnoughSpace);
+    MAPPING(SetupLacrosDirCreateTmpDirFailed);
+    MAPPING(SetupLacrosDirCreateTmpProfileDirFailed);
+    MAPPING(SetupLacrosDirCopyTargetItemsFailed);
+    MAPPING(SetupLacrosDirWriteFirstRunSentinelFileFailed);
+    MAPPING(SetupAshDirCreateSplitDirFailed);
+    MAPPING(SetupAshDirMigrateLevelDBForLocalStateFailed);
+    MAPPING(SetupAshDirMigrateLevelDBForStateFailed);
+    MAPPING(SetupAshDirMigratePreferencesFailed);
+    MAPPING(MoveLacrosItemsToNewDirNoWritePerm);
+    MAPPING(MoveLacrosItemsToNewDirMoveFailed);
+    MAPPING(MoveSplitItemsToOriginalDirMoveSplitItemsFailed);
+    MAPPING(MoveSplitItemsToOriginalDirCreateDirFailed);
+    MAPPING(MoveSplitItemsToOriginalDirMoveExtensionsFailed);
+    MAPPING(MoveSplitItemsToOriginalDirMoveIndexedDBFailed);
+    MAPPING(MoveTmpDirToLacrosDirMoveFailed);
+#undef MAPPING
+  }
 }
 
 }  // namespace ash

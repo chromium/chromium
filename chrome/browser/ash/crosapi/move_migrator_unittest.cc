@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/crosapi/move_migrator.h"
 
+#include <errno.h>
+
 #include <map>
 #include <memory>
 #include <string>
@@ -19,6 +21,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
@@ -281,10 +284,10 @@ TEST(MoveMigratorTest, PreMigrationCleanUp) {
   const base::FilePath original_profile_dir_1 =
       scoped_temp_dir.GetPath().Append("user1");
   EXPECT_TRUE(base::CreateDirectory(original_profile_dir_1));
-  MoveMigrator::PreMigrationCleanUpResult result_1 =
+  MoveMigrator::TaskResult result_1 =
       MoveMigrator::PreMigrationCleanUp(original_profile_dir_1);
-  ASSERT_TRUE(result_1.success);
-  EXPECT_EQ(result_1.extra_bytes_required_to_be_freed, 0u);
+  ASSERT_EQ(result_1.status, MoveMigrator::TaskStatus::kSucceeded);
+  EXPECT_FALSE(result_1.extra_bytes_required_to_be_freed.has_value());
 
   // `PreMigrationCleanUp()` deletes any `.../lacros/` directory and returns
   // true.
@@ -298,10 +301,10 @@ TEST(MoveMigratorTest, PreMigrationCleanUp) {
                                 .Append(chrome::kFirstRunSentinel),
                             "", 0),
             0);
-  MoveMigrator::PreMigrationCleanUpResult result_2 =
+  MoveMigrator::TaskResult result_2 =
       MoveMigrator::PreMigrationCleanUp(original_profile_dir_2);
-  ASSERT_TRUE(result_2.success);
-  EXPECT_EQ(result_2.extra_bytes_required_to_be_freed, 0u);
+  ASSERT_EQ(result_2.status, MoveMigrator::TaskStatus::kSucceeded);
+  EXPECT_FALSE(result_2.extra_bytes_required_to_be_freed.has_value());
   EXPECT_FALSE(base::PathExists(
       original_profile_dir_2.Append(browser_data_migrator_util::kLacrosDir)));
 
@@ -312,10 +315,10 @@ TEST(MoveMigratorTest, PreMigrationCleanUp) {
   ASSERT_EQ(base::WriteFile(original_profile_dir_3.Append(kCacheFilePath),
                             kDataContent, kDataSize),
             kDataSize);
-  MoveMigrator::PreMigrationCleanUpResult result_3 =
+  MoveMigrator::TaskResult result_3 =
       MoveMigrator::PreMigrationCleanUp(original_profile_dir_3);
-  ASSERT_TRUE(result_3.success);
-  EXPECT_EQ(result_3.extra_bytes_required_to_be_freed, 0u);
+  ASSERT_EQ(result_3.status, MoveMigrator::TaskStatus::kSucceeded);
+  EXPECT_FALSE(result_3.extra_bytes_required_to_be_freed.has_value());
   EXPECT_FALSE(base::PathExists(
       original_profile_dir_3.Append(browser_data_migrator_util::kLacrosDir)));
   EXPECT_FALSE(base::PathExists(original_profile_dir_3.Append(kCacheFilePath)));
@@ -333,10 +336,10 @@ TEST(MoveMigratorTest, PreMigrationCleanUp) {
                           .Append("TestFile"),
                       kDataContent, kDataSize),
       kDataSize);
-  MoveMigrator::PreMigrationCleanUpResult result_4 =
+  MoveMigrator::TaskResult result_4 =
       MoveMigrator::PreMigrationCleanUp(original_profile_dir_4);
-  ASSERT_TRUE(result_4.success);
-  EXPECT_EQ(result_4.extra_bytes_required_to_be_freed, 0u);
+  ASSERT_EQ(result_4.status, MoveMigrator::TaskStatus::kSucceeded);
+  EXPECT_FALSE(result_4.extra_bytes_required_to_be_freed.has_value());
   EXPECT_FALSE(base::PathExists(
       original_profile_dir_4.Append(browser_data_migrator_util::kSplitTmpDir)));
 }
@@ -352,8 +355,9 @@ TEST(MoveMigratorTest, SetupLacrosDir) {
   scoped_refptr<browser_data_migrator_util::CancelFlag> cancel_flag =
       base::MakeRefCounted<browser_data_migrator_util::CancelFlag>();
 
-  EXPECT_TRUE(MoveMigrator::SetupLacrosDir(
-      original_profile_dir, std::move(progress_tracker), cancel_flag));
+  MoveMigrator::TaskResult result = MoveMigrator::SetupLacrosDir(
+      original_profile_dir, std::move(progress_tracker), cancel_flag);
+  ASSERT_EQ(result.status, MoveMigrator::TaskStatus::kSucceeded);
 
   const base::FilePath tmp_user_dir =
       original_profile_dir.Append(browser_data_migrator_util::kMoveTmpDir);
@@ -377,7 +381,8 @@ TEST(MoveMigratorTest, MoveLacrosItemsToNewDir) {
           .Append(browser_data_migrator_util::kLacrosProfilePath);
 
   ASSERT_TRUE(base::CreateDirectory(tmp_profile_dir));
-  EXPECT_TRUE(MoveMigrator::MoveLacrosItemsToNewDir(original_profile_dir));
+  ASSERT_EQ(MoveMigrator::MoveLacrosItemsToNewDir(original_profile_dir).status,
+            MoveMigrator::TaskStatus::kSucceeded);
 
   EXPECT_FALSE(
       base::PathExists(original_profile_dir.Append(kBookmarksFilePath)));
@@ -400,7 +405,12 @@ TEST(MoveMigratorTest, MoveLacrosItemsToNewDirFailIfNoWritePermForLacrosItem) {
   base::SetPosixFilePermissions(original_profile_dir.Append(kBookmarksFilePath),
                                 0500);
 
-  EXPECT_FALSE(MoveMigrator::MoveLacrosItemsToNewDir(original_profile_dir));
+  MoveMigrator::TaskResult result =
+      MoveMigrator::MoveLacrosItemsToNewDir(original_profile_dir);
+  ASSERT_EQ(result.status,
+            MoveMigrator::TaskStatus::kMoveLacrosItemsToNewDirNoWritePerm);
+  ASSERT_TRUE(result.posix_errno.has_value());
+  ASSERT_EQ(result.posix_errno.value(), EACCES);
 }
 
 TEST(MoveMigratorTest, SetupAshSplitDir) {
@@ -418,7 +428,8 @@ TEST(MoveMigratorTest, SetupAshSplitDir) {
   ASSERT_TRUE(base::CreateDirectory(tmp_user_dir));
   ASSERT_TRUE(base::CreateDirectory(tmp_profile_dir));
 
-  EXPECT_TRUE(MoveMigrator::SetupAshSplitDir(original_profile_dir));
+  EXPECT_EQ(MoveMigrator::SetupAshSplitDir(original_profile_dir).status,
+            MoveMigrator::TaskStatus::kSucceeded);
 
   const base::FilePath tmp_split_dir =
       original_profile_dir.Append(browser_data_migrator_util::kSplitTmpDir);
@@ -478,6 +489,18 @@ TEST(MoveMigratorTest, ResumeRequired) {
   MoveMigrator::SetResumeStep(&pref_service, user_id_hash,
                               MoveMigrator::ResumeStep::kCompleted);
   EXPECT_FALSE(MoveMigrator::ResumeRequired(&pref_service, user_id_hash));
+}
+
+TEST(MoveMigratorTest, RecordPosixErrnoUMA) {
+  base::HistogramTester histogram_tester;
+
+  MoveMigrator::RecordPosixErrnoUMA(
+      MoveMigrator::TaskStatus::kMoveLacrosItemsToNewDirNoWritePerm, EPERM);
+
+  std::string uma_name =
+      "Ash.BrowserDataMigrator.MoveMigrator.PosixErrno."
+      "MoveLacrosItemsToNewDirNoWritePerm";
+  histogram_tester.ExpectBucketCount(uma_name, EPERM, 1);
 }
 
 class MoveMigratorMigrateTest : public ::testing::Test {
@@ -903,7 +926,7 @@ TEST_F(MoveMigratorMigrateTest, MigrateOutOfDisk) {
   run_loop_->Run();
 
   EXPECT_EQ(data_wipe_result_,
-            BrowserDataMigratorImpl::DataWipeResult::kFailed);
+            BrowserDataMigratorImpl::DataWipeResult::kSucceeded);
   EXPECT_EQ(data_migration_result_.kind,
             BrowserDataMigrator::ResultKind::kFailed);
   EXPECT_EQ(100u, data_migration_result_.required_size);

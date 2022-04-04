@@ -13,6 +13,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 #include "chrome/browser/ash/crosapi/migration_progress_tracker.h"
@@ -40,6 +41,28 @@ constexpr char kMoveMigrationResumeCountPref[] =
 // completing the migration.
 constexpr int kMoveMigrationResumeCountLimit = 5;
 
+// The following are UMA names.
+constexpr char kMoveMigratorResumeCount[] =
+    "Ash.BrowserDataMigrator.MoveMigrator.ResumeCount";
+constexpr char kMoveMigratorResumeStepUMA[] =
+    "Ash.BrowserDataMigrator.MoveMigrator.ResumeStep";
+constexpr char kMoveMigratorTaskStatusUMA[] =
+    "Ash.BrowserDataMigrator.MoveMigrator.TaskStatus";
+constexpr char kMoveMigratorExtraSpaceRequiredMB[] =
+    "Ash.BrowserDataMigrator.MoveMigrator.ExtraSpaceRequiredMB";
+constexpr char kMoveMigratorPreMigrationCleanUpTimeUMA[] =
+    "Ash.BrowserDataMigrator.MoveMigrator.PreMigrationCleanUpTimeMS";
+constexpr char kMoveMigratorSetupLacrosDirCopyTargetItemsTimeUMA[] =
+    "Ash.BrowserDataMigrator.MoveMigrator.SetupLacrosDirCopyTargetItemsTimeMS";
+constexpr char kMoveMigratorCancelledMigrationTimeUMA[] =
+    "Ash.BrowserDataMigrator.MoveMigrator.CancelledMigrationTimeMS";
+constexpr char kMoveMigratorSuccessfulMigrationTimeUMA[] =
+    "Ash.BrowserDataMigrator.MoveMigrator.SuccessfulMigrationTimeMS";
+constexpr char kMoveMigratorMoveLacrosItemsTimeUMA[] =
+    "Ash.BrowserDataMigrator.MoveMigrator.MoveLacrosItemsTimeMS";
+constexpr char kMoveMigratorPosixErrnoUMA[] =
+    "Ash.BrowserDataMigrator.MoveMigrator.PosixErrno.";
+
 // This class "moves" Lacros data from Ash to Lacros. It migrates user data from
 // `original_profile_dir` (/home/user/<hash>/), denoted as <Ash PDD> from here
 // forward, to the new profile data directory
@@ -56,6 +79,9 @@ constexpr int kMoveMigrationResumeCountLimit = 5;
 // 6) Rename <Ash PDD>/<kMoveTmpDir>/ as <Ash PDD>/lacros/.
 class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
   // Indicate which step the migration should be resumed from if left unfinished
   // in the previous attempt.
   enum class ResumeStep {
@@ -64,17 +90,7 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
     kMoveSplitItems = 2,
     kMoveTmpDir = 3,
     kCompleted = 4,
-  };
-
-  // Return value of `PreMigrationCleanUp()`.
-  struct PreMigrationCleanUpResult {
-    // Whether cleanup has succeeded or not.
-    bool success;
-
-    // Extra bytes required to be freed if the migrator requires more space to
-    // be carried out. Only set if `success` is true. This value is set to 0 if
-    // no freeing up of disk is required.
-    absl::optional<uint64_t> extra_bytes_required_to_be_freed;
+    kMaxValue = kCompleted,
   };
 
   MoveMigrator(
@@ -116,6 +132,7 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
       MoveMigratorTest,
       MoveLacrosItemsToNewDirFailIfNoWritePermForLacrosItem);
   FRIEND_TEST_ALL_PREFIXES(MoveMigratorTest, MoveLacrosItemsToNewDir);
+  FRIEND_TEST_ALL_PREFIXES(MoveMigratorTest, RecordPosixErrnoUMA);
   FRIEND_TEST_ALL_PREFIXES(MoveMigratorMigrateTest,
                            MigrateResumeFromMoveLacrosItems);
   FRIEND_TEST_ALL_PREFIXES(MoveMigratorMigrateTest,
@@ -124,6 +141,48 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
                            MigrateResumeFromMoveTmpDir);
   friend class BrowserDataMigratorResumeOnSignInTest;
   friend class BrowserDataMigratorResumeRestartInSession;
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // This enum corresponds to MoveMigratorTaskStatus in histograms.xml
+  // and enums.xml.
+  enum class TaskStatus {
+    kSucceeded = 0,
+    kCancelled = 1,
+    kPreMigrationCleanUpDeleteLacrosDirFailed = 2,
+    kPreMigrationCleanUpDeleteTmpDirFailed = 3,
+    kPreMigrationCleanUpDeleteTmpSplitDirFailed = 4,
+    kPreMigrationCleanUpNotEnoughSpace = 5,
+    kSetupLacrosDirCreateTmpDirFailed = 6,
+    kSetupLacrosDirCreateTmpProfileDirFailed = 7,
+    kSetupLacrosDirCopyTargetItemsFailed = 8,
+    kSetupLacrosDirWriteFirstRunSentinelFileFailed = 9,
+    kSetupAshDirCreateSplitDirFailed = 10,
+    kSetupAshDirMigrateLevelDBForLocalStateFailed = 11,
+    kSetupAshDirMigrateLevelDBForStateFailed = 12,
+    kSetupAshDirMigratePreferencesFailed = 13,
+    kMoveLacrosItemsToNewDirNoWritePerm = 14,
+    kMoveLacrosItemsToNewDirMoveFailed = 15,
+    kMoveSplitItemsToOriginalDirMoveSplitItemsFailed = 16,
+    kMoveSplitItemsToOriginalDirCreateDirFailed = 17,
+    kMoveSplitItemsToOriginalDirMoveExtensionsFailed = 18,
+    kMoveSplitItemsToOriginalDirMoveIndexedDBFailed = 19,
+    kMoveTmpDirToLacrosDirMoveFailed = 20,
+    kMaxValue = kMoveTmpDirToLacrosDirMoveFailed,
+  };
+
+  struct TaskResult {
+    TaskStatus status;
+
+    // Value of `errno` set after a task has failed.
+    absl::optional<int> posix_errno;
+
+    // Extra bytes required to be freed if the migrator requires more space to
+    // be carried out. Only set if `status` is
+    // `kPreMigrationCleanUpNotEnoughSpace`.
+    absl::optional<uint64_t> extra_bytes_required_to_be_freed;
+  };
 
   // Called to determine where to start the migration. Returns
   // `ResumeStep::kStart` unless there is a step recorded in `Local State` from
@@ -155,53 +214,73 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
   // `PreMigrationCleanUpResult::extra_bytes_required_to_be_freed`. It also
   // deletes `ItemType::kDeletable` items to free up extra space but this does
   // not affect `PreMigrationCleanUpResult::success`.
-  static PreMigrationCleanUpResult PreMigrationCleanUp(
+  static TaskResult PreMigrationCleanUp(
       const base::FilePath& original_profile_dir);
 
   // Called as a reply to `PreMigrationCleanUp()`.  Posts
   // `SetupLacrosRemoveHardLinksFromAshDir()` as the next step.
-  void OnPreMigrationCleanUp(PreMigrationCleanUpResult);
+  void OnPreMigrationCleanUp(TaskResult);
 
   // Set up lacros user directory by copying `ItemType::kNeedCopy` items
   // and also creating `First Run` file in Lacros user data dir.
-  static bool SetupLacrosDir(
+  static TaskResult SetupLacrosDir(
       const base::FilePath& original_profile_dir,
       std::unique_ptr<MigrationProgressTracker> progress_tracker,
       scoped_refptr<browser_data_migrator_util::CancelFlag> cancel_flag);
 
   // Called as a reply to `SetupLacrosDir()`. Posts
   // `SetupAshSplitDir()` as the next step.
-  void OnSetupLacrosDir(bool success);
+  void OnSetupLacrosDir(TaskResult);
 
   // Set up a temporary directory to hold items that need to be split between
   // ash and lacros. This folder will hold ash's version of the items.
-  static bool SetupAshSplitDir(const base::FilePath& original_profile_dir);
+  static TaskResult SetupAshSplitDir(
+      const base::FilePath& original_profile_dir);
 
   // Called as a reply to `SetupAshSplitDir()`. Posts `MoveLacrosItemsToNewDir`
   // as the next step.
-  void OnSetupAshSplitDir(bool success);
+  void OnSetupAshSplitDir(TaskResult);
 
   // Move `ItemType::kLacros` in the original profile
   // directory to the temp dir.
-  static bool MoveLacrosItemsToNewDir(
+  static TaskResult MoveLacrosItemsToNewDir(
       const base::FilePath& original_profile_dir);
 
   // Called as a reply to `MoveLacrosItemsToNewDir()`.
-  void OnMoveLacrosItemsToNewDir(bool success);
+  void OnMoveLacrosItemsToNewDir(TaskResult);
 
   // Moves newly created split items to the original profile directory.
-  static bool MoveSplitItemsToOriginalDir(
+  static TaskResult MoveSplitItemsToOriginalDir(
       const base::FilePath& original_profile_dir);
 
   // Called as a reply to `MoveSplitItemsToOriginalDir`.
-  void OnMoveSplitItemsToOriginalDir(bool success);
+  void OnMoveSplitItemsToOriginalDir(TaskResult);
 
   // Moves newly created `kMoveTmpDir` to `kLacrosDir`.
   // Completes the migration.
-  static bool MoveTmpDirToLacrosDir(const base::FilePath& original_profile_dir);
+  static TaskResult MoveTmpDirToLacrosDir(
+      const base::FilePath& original_profile_dir);
 
   // Called as a reply to `MoveTmpDirToLacrosDir()`.
-  void OnMoveTmpDirToLacrosDir(bool success);
+  void OnMoveTmpDirToLacrosDir(TaskResult);
+
+  // Records the final status of the migration in `kMoveMigratorTaskStatusUMA`
+  // and calls `finished_callback_`. This function gets called once regardless
+  // of whether the migration succeeded or not.
+  void InvokeCallback(TaskResult);
+
+  // Converts `TaskResult` to `BrowserDataMigratorImpl::MigrationResult`.
+  BrowserDataMigratorImpl::MigrationResult ToBrowserDataMigratorMigrationResult(
+      TaskResult result);
+
+  // Record UMA of the form
+  // "Ash.BrowserDataMigrator.MoveMigrator.PosixErrno.{task_status}" with the
+  // value of `errno`.
+  static void RecordPosixErrnoUMA(TaskStatus task_status,
+                                  const int posix_errno);
+
+  // Convert `TaskStatus` to string.
+  static std::string TaskStatusToString(TaskStatus task_status);
 
   // Path to the original profile data directory, which is directly under the
   // user data directory.
@@ -223,6 +302,10 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
   // `finished_callback_` should be called once migration is completed/failed.
   // Call this on UI thread.
   MigrationFinishedCallback finished_callback_;
+
+  // Timer to count time since the initialization of the class. Used to get UMA
+  // data on how long the migration takes.
+  const base::ElapsedTimer timer_;
 
   base::WeakPtrFactory<MoveMigrator> weak_factory_{this};
 };
