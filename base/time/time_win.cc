@@ -686,8 +686,14 @@ ThreadTicks ThreadTicks::GetForThread(
 
 // static
 bool ThreadTicks::IsSupportedWin() {
+#if defined(ARCH_CPU_ARM64)
+  // The Arm implementation does not use QueryThreadCycleTime and therefore does
+  // not care about the time stamp counter.
+  return true;
+#else
   static bool is_supported = CPU().has_non_stop_time_stamp_counter();
   return is_supported;
+#endif
 }
 
 // static
