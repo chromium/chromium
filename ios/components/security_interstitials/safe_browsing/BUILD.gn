@@ -8,6 +8,8 @@ source_set("safe_browsing") {
   sources = [
     "pending_unsafe_resource_storage.h",
     "pending_unsafe_resource_storage.mm",
+    "safe_browsing_error.h",
+    "safe_browsing_error.mm",
     "safe_browsing_unsafe_resource_container.h",
     "safe_browsing_unsafe_resource_container.mm",
   ]

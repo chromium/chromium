@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SAFE_BROWSING_SAFE_BROWSING_ERROR_H_
-#define IOS_CHROME_BROWSER_SAFE_BROWSING_SAFE_BROWSING_ERROR_H_
+#ifndef IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_SAFE_BROWSING_ERROR_H_
+#define IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_SAFE_BROWSING_ERROR_H_
 
 #import <Foundation/Foundation.h>
 
@@ -13,4 +13,4 @@ extern const NSErrorDomain kSafeBrowsingErrorDomain;
 // Error code for navigations to unsafe resources
 extern const NSInteger kUnsafeResourceErrorCode;
 
-#endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_SAFE_BROWSING_ERROR_H_
+#endif  // IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_SAFE_BROWSING_ERROR_H_
