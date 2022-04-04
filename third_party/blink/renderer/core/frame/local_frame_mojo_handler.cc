@@ -192,13 +192,13 @@ v8::MaybeLocal<v8::Value> GetProperty(v8::Local<v8::Context> context,
 v8::MaybeLocal<v8::Value> CallMethodOnFrame(LocalFrame* local_frame,
                                             const String& object_name,
                                             const String& method_name,
-                                            base::Value arguments,
+                                            base::Value::List arguments,
                                             WebV8ValueConverter* converter) {
   v8::Local<v8::Context> context = MainWorldScriptContext(local_frame);
 
   v8::Context::Scope context_scope(context);
   WTF::Vector<v8::Local<v8::Value>> args;
-  for (auto const& argument : arguments.GetListDeprecated()) {
+  for (const auto& argument : arguments) {
     args.push_back(converter->ToV8Value(&argument, context));
   }
 
@@ -836,7 +836,7 @@ void LocalFrameMojoHandler::PostMessageEvent(
 void LocalFrameMojoHandler::JavaScriptMethodExecuteRequest(
     const String& object_name,
     const String& method_name,
-    base::Value arguments,
+    base::Value::List arguments,
     bool wants_result,
     JavaScriptMethodExecuteRequestCallback callback) {
   TRACE_EVENT_INSTANT0("test_tracing", "JavaScriptMethodExecuteRequest",

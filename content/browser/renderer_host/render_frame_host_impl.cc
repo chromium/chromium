@@ -2447,7 +2447,7 @@ void RenderFrameHostImpl::ExecuteJavaScriptMethod(
 
   const bool wants_result = !callback.is_null();
   GetAssociatedLocalFrame()->JavaScriptMethodExecuteRequest(
-      object_name, method_name, std::move(arguments), wants_result,
+      object_name, method_name, std::move(arguments.GetList()), wants_result,
       std::move(callback));
 }
 

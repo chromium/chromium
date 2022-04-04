@@ -143,7 +143,7 @@ class LocalFrameMojoHandler
   void JavaScriptMethodExecuteRequest(
       const String& object_name,
       const String& method_name,
-      base::Value arguments,
+      base::Value::List arguments,
       bool wants_result,
       JavaScriptMethodExecuteRequestCallback callback) final;
   void JavaScriptExecuteRequest(

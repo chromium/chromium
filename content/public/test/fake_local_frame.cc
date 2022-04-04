@@ -122,7 +122,7 @@ void FakeLocalFrame::PostMessageEvent(
 void FakeLocalFrame::JavaScriptMethodExecuteRequest(
     const std::u16string& object_name,
     const std::u16string& method_name,
-    base::Value arguments,
+    base::Value::List arguments,
     bool wants_result,
     JavaScriptMethodExecuteRequestCallback callback) {}
 
