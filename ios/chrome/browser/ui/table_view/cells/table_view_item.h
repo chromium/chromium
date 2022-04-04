@@ -18,6 +18,10 @@
 // The accessory type to display on the trailing edge of the cell.
 @property(nonatomic, assign) UITableViewCellAccessoryType accessoryType;
 
+// The accessory view to display on the trailing edge of the cell. Overrides
+// the value of the |accessoryType| property.
+@property(nonatomic, strong) UIView* accessoryView;
+
 // Whether custom separator should be used. The separator can replace the
 // separator provided by UITableViewCell. It is a 0.5pt high line. Default is
 // NO.

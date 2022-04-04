@@ -28,6 +28,7 @@
   DCHECK([cell class] == self.cellClass);
   DCHECK([cell isKindOfClass:[TableViewCell class]]);
   cell.accessoryType = self.accessoryType;
+  cell.accessoryView = self.accessoryView;
   cell.useCustomSeparator = self.useCustomSeparator;
   cell.accessibilityTraits = self.accessibilityTraits;
   cell.accessibilityIdentifier = self.accessibilityIdentifier;

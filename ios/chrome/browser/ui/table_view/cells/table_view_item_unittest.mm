@@ -48,4 +48,20 @@ TEST_F(TableViewItemTest, NoBackgroundColorIfBackgroundViewIsPresent) {
   EXPECT_FALSE([testColor isEqual:cell.backgroundColor]);
 }
 
+TEST_F(TableViewItemTest, ConfigureCellAccessoryViewProperties) {
+  UIImageView* expectedImage = [[UIImageView alloc]
+      initWithImage:[UIImage systemImageNamed:@"arrow.up.forward.square"]];
+  TableViewItem* item = [[TableViewItem alloc] initWithType:0];
+  item.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  item.accessoryView = expectedImage;
+
+  TableViewCell* cell = [[[item cellClass] alloc] init];
+  ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
+  [item configureCell:cell withStyler:styler];
+  // Internally in UITableViewCell, accessoryView takes precedence over
+  // accessoryType property.
+  EXPECT_EQ(cell.accessoryType, UITableViewCellAccessoryDisclosureIndicator);
+  EXPECT_EQ(cell.accessoryView, expectedImage);
+}
+
 }  // namespace
