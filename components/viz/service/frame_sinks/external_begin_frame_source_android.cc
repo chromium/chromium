@@ -6,6 +6,7 @@
 
 #include <dlfcn.h>
 #include <sys/types.h>
+#include <utility>
 
 #include "base/android/build_info.h"
 #include "base/android/jni_android.h"
@@ -25,6 +26,28 @@ using pAChoreographer_registerRefreshRateCallback =
     void (*)(AChoreographer*, AChoreographer_refreshRateCallback, void*);
 using pAChoreographer_unregisterRefreshRateCallback =
     void (*)(AChoreographer*, AChoreographer_refreshRateCallback, void*);
+
+typedef struct AChoreographerFrameCallbackData AChoreographerFrameCallbackData;
+typedef void (*AChoreographer_vsyncCallback)(
+    const AChoreographerFrameCallbackData*,
+    void*);
+
+using pAChoreographer_postVsyncCallback =
+    void (*)(AChoreographer* choreographer,
+             AChoreographer_vsyncCallback callback,
+             void* data);
+using pAChoreographerFrameCallbackData_getFrameTimeNanos =
+    int64_t (*)(const AChoreographerFrameCallbackData*);
+using pAChoreographerFrameCallbackData_getFrameTimelinesLength =
+    size_t (*)(const AChoreographerFrameCallbackData*);
+using pAChoreographerFrameCallbackData_getPreferredFrameTimelineIndex =
+    size_t (*)(const AChoreographerFrameCallbackData*);
+using pAChoreographerFrameCallbackData_getFrameTimelineVsyncId =
+    int64_t (*)(const AChoreographerFrameCallbackData*, size_t);
+using pAChoreographerFrameCallbackData_getFrameTimelineExpectedPresentationTimeNanos =
+    int64_t (*)(const AChoreographerFrameCallbackData*, size_t);
+using pAChoreographerFrameCallbackData_getFrameTimelineDeadlineNanos =
+    int64_t (*)(const AChoreographerFrameCallbackData*, size_t);
 }
 
 namespace {
@@ -45,12 +68,13 @@ struct AChoreographerMethods {
   }
 
   bool supported = true;
-  pAChoreographer_getInstance AChoreographer_getInstanceFn;
-  pAChoreographer_postFrameCallback64 AChoreographer_postFrameCallback64Fn;
+  pAChoreographer_getInstance AChoreographer_getInstanceFn = nullptr;
+  pAChoreographer_postFrameCallback64 AChoreographer_postFrameCallback64Fn =
+      nullptr;
   pAChoreographer_registerRefreshRateCallback
-      AChoreographer_registerRefreshRateCallbackFn;
+      AChoreographer_registerRefreshRateCallbackFn = nullptr;
   pAChoreographer_unregisterRefreshRateCallback
-      AChoreographer_unregisterRefreshRateCallbackFn;
+      AChoreographer_unregisterRefreshRateCallbackFn = nullptr;
 
  private:
   AChoreographerMethods() {
@@ -68,6 +92,69 @@ struct AChoreographerMethods {
   }
   ~AChoreographerMethods() = default;
 };
+
+struct AChoreographerMethods33 {
+  static const AChoreographerMethods33& Get() {
+    static AChoreographerMethods33 instance;
+    return instance;
+  }
+
+  bool supported = true;
+  pAChoreographer_postVsyncCallback AChoreographer_postVsyncCallbackFn =
+      nullptr;
+  pAChoreographerFrameCallbackData_getFrameTimeNanos
+      AChoreographerFrameCallbackData_getFrameTimeNanosFn = nullptr;
+  pAChoreographerFrameCallbackData_getFrameTimelinesLength
+      AChoreographerFrameCallbackData_getFrameTimelinesLengthFn = nullptr;
+  pAChoreographerFrameCallbackData_getPreferredFrameTimelineIndex
+      AChoreographerFrameCallbackData_getPreferredFrameTimelineIndexFn =
+          nullptr;
+  pAChoreographerFrameCallbackData_getFrameTimelineVsyncId
+      AChoreographerFrameCallbackData_getFrameTimelineVsyncIdFn = nullptr;
+  pAChoreographerFrameCallbackData_getFrameTimelineExpectedPresentationTimeNanos
+      AChoreographerFrameCallbackData_getFrameTimelineExpectedPresentationTimeNanosFn =
+          nullptr;
+  pAChoreographerFrameCallbackData_getFrameTimelineDeadlineNanos
+      AChoreographerFrameCallbackData_getFrameTimelineDeadlineNanosFn = nullptr;
+
+ private:
+  AChoreographerMethods33() {
+    void* main_dl_handle = dlopen("libandroid.so", RTLD_NOW);
+    if (!main_dl_handle) {
+      LOG(ERROR) << "Couldnt load libandroid.so";
+      supported = false;
+      return;
+    }
+
+    LOAD_FUNCTION(main_dl_handle, AChoreographer_postVsyncCallback);
+    LOAD_FUNCTION(main_dl_handle,
+                  AChoreographerFrameCallbackData_getFrameTimeNanos);
+    LOAD_FUNCTION(main_dl_handle,
+                  AChoreographerFrameCallbackData_getFrameTimelinesLength);
+    LOAD_FUNCTION(
+        main_dl_handle,
+        AChoreographerFrameCallbackData_getPreferredFrameTimelineIndex);
+    LOAD_FUNCTION(main_dl_handle,
+                  AChoreographerFrameCallbackData_getFrameTimelineVsyncId);
+    LOAD_FUNCTION(
+        main_dl_handle,
+        AChoreographerFrameCallbackData_getFrameTimelineExpectedPresentationTimeNanos);
+    LOAD_FUNCTION(
+        main_dl_handle,
+        AChoreographerFrameCallbackData_getFrameTimelineDeadlineNanos);
+  }
+  ~AChoreographerMethods33() = default;
+};
+
+base::TimeTicks ToTimeTicks(int64_t time_nanos) {
+  // Warning: It is generally unsafe to manufacture TimeTicks values. The
+  // following assumption is being made, AND COULD EASILY BREAK AT ANY TIME:
+  // Upstream, Java code is providing "System.nanos() / 1000," and this is the
+  // same timestamp that would be provided by the CLOCK_MONOTONIC POSIX clock.
+  DCHECK_EQ(base::TimeTicks::GetClock(),
+            base::TimeTicks::Clock::LINUX_CLOCK_MONOTONIC);
+  return base::TimeTicks() + base::Nanoseconds(time_nanos);
+}
 
 }  // namespace
 
@@ -87,8 +174,12 @@ class ExternalBeginFrameSourceAndroid::AChoreographerImpl {
  private:
   static void FrameCallback64(int64_t frame_time_nanos, void* data);
   static void RefershRateCallback(int64_t vsync_period_nanos, void* data);
+  static void VsyncCallback(
+      const AChoreographerFrameCallbackData* callback_data,
+      void* data);
 
   void OnVSync(int64_t frame_time_nanos,
+               absl::optional<PossibleDeadlines> possible_deadlines,
                base::WeakPtr<AChoreographerImpl>* self);
   void SetVsyncPeriod(int64_t vsync_period_nanos);
   void RequestVsyncIfNeeded();
@@ -165,7 +256,53 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::FrameCallback64(
     delete self;
     return;
   }
-  (*self)->OnVSync(frame_time_nanos, self);
+  (*self)->OnVSync(frame_time_nanos, /*possible_deadlines=*/absl::nullopt,
+                   self);
+}
+
+// static
+void ExternalBeginFrameSourceAndroid::AChoreographerImpl::VsyncCallback(
+    const AChoreographerFrameCallbackData* callback_data,
+    void* data) {
+  TRACE_EVENT0("toplevel", "Extend_VSync");
+  auto* self = static_cast<base::WeakPtr<AChoreographerImpl>*>(data);
+  if (!(*self)) {
+    delete self;
+    return;
+  }
+  DCHECK(AChoreographerMethods33::Get().supported);
+  int64_t frame_time_nanos =
+      AChoreographerMethods33::Get()
+          .AChoreographerFrameCallbackData_getFrameTimeNanosFn(callback_data);
+  size_t preferred_index =
+      AChoreographerMethods33::Get()
+          .AChoreographerFrameCallbackData_getPreferredFrameTimelineIndexFn(
+              callback_data);
+  size_t size = AChoreographerMethods33::Get()
+                    .AChoreographerFrameCallbackData_getFrameTimelinesLengthFn(
+                        callback_data);
+  CHECK_LT(preferred_index, size);
+
+  PossibleDeadlines possible_deadlines(preferred_index);
+  for (size_t i = 0; i < size; ++i) {
+    int64_t vsync_id =
+        AChoreographerMethods33::Get()
+            .AChoreographerFrameCallbackData_getFrameTimelineVsyncIdFn(
+                callback_data, i);
+    int64_t deadline =
+        AChoreographerMethods33::Get()
+            .AChoreographerFrameCallbackData_getFrameTimelineDeadlineNanosFn(
+                callback_data, i);
+    int64_t present_time =
+        AChoreographerMethods33::Get()
+            .AChoreographerFrameCallbackData_getFrameTimelineExpectedPresentationTimeNanosFn(
+                callback_data, i);
+    possible_deadlines.deadlines.emplace_back(
+        vsync_id, base::Nanoseconds(deadline - frame_time_nanos),
+        base::Nanoseconds(present_time - frame_time_nanos));
+  }
+
+  (*self)->OnVSync(frame_time_nanos, std::move(possible_deadlines), self);
 }
 
 // static
@@ -177,12 +314,18 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::RefershRateCallback(
 
 void ExternalBeginFrameSourceAndroid::AChoreographerImpl::OnVSync(
     int64_t frame_time_nanos,
+    absl::optional<PossibleDeadlines> possible_deadlines,
     base::WeakPtr<AChoreographerImpl>* self) {
   DCHECK(!self_for_frame_callback_);
   DCHECK(self);
   self_for_frame_callback_.reset(self);
   if (vsync_notification_enabled_) {
-    client_->OnVSyncImpl(frame_time_nanos, vsync_period_);
+    // TODO(crbug.com/1308459): If `possible_deadlines` is present, should
+    // really pick a deadline from `possible_deadlines`. However some code
+    // still assume the deadline is a multiple of interval from frame time.
+    int64_t deadline = frame_time_nanos + vsync_period_.InNanoseconds();
+    client_->OnVSyncImpl(frame_time_nanos, deadline, vsync_period_,
+                         std::move(possible_deadlines));
     RequestVsyncIfNeeded();
   }
 }
@@ -196,8 +339,13 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::
     RequestVsyncIfNeeded() {
   if (!vsync_notification_enabled_ || !self_for_frame_callback_)
     return;
-  AChoreographerMethods::Get().AChoreographer_postFrameCallback64Fn(
-      achoreographer_, &FrameCallback64, self_for_frame_callback_.release());
+  if (AChoreographerMethods33::Get().supported) {
+    AChoreographerMethods33::Get().AChoreographer_postVsyncCallbackFn(
+        achoreographer_, &VsyncCallback, self_for_frame_callback_.release());
+  } else {
+    AChoreographerMethods::Get().AChoreographer_postFrameCallback64Fn(
+        achoreographer_, &FrameCallback64, self_for_frame_callback_.release());
+  }
 }
 
 // ============================================================================
@@ -231,25 +379,24 @@ void ExternalBeginFrameSourceAndroid::OnVSync(
     const base::android::JavaParamRef<jobject>& obj,
     jlong time_micros,
     jlong period_micros) {
-  OnVSyncImpl(time_micros * 1000, base::Microseconds(period_micros));
+  OnVSyncImpl(time_micros * 1000, (time_micros + period_micros) * 1000,
+              base::Microseconds(period_micros),
+              /*possible_deadlines=*/absl::nullopt);
 }
 
 void ExternalBeginFrameSourceAndroid::OnVSyncImpl(
     int64_t time_nanos,
-    base::TimeDelta vsync_period) {
-  // Warning: It is generally unsafe to manufacture TimeTicks values. The
-  // following assumption is being made, AND COULD EASILY BREAK AT ANY TIME:
-  // Upstream, Java code is providing "System.nanos() / 1000," and this is the
-  // same timestamp that would be provided by the CLOCK_MONOTONIC POSIX clock.
+    int64_t deadline_nanos,
+    base::TimeDelta vsync_period,
+    absl::optional<PossibleDeadlines> possible_deadlines) {
   DCHECK_EQ(base::TimeTicks::GetClock(),
             base::TimeTicks::Clock::LINUX_CLOCK_MONOTONIC);
-  base::TimeTicks frame_time =
-      base::TimeTicks() + base::Nanoseconds(time_nanos);
-  // Calculate the next frame deadline:
-  base::TimeTicks deadline = frame_time + vsync_period;
+  base::TimeTicks frame_time = ToTimeTicks(time_nanos);
+  base::TimeTicks deadline = ToTimeTicks(deadline_nanos);
 
   auto begin_frame_args = begin_frame_args_generator_.GenerateBeginFrameArgs(
       source_id(), frame_time, deadline, vsync_period);
+  begin_frame_args.possible_deadlines = std::move(possible_deadlines);
   OnBeginFrame(begin_frame_args);
 }
 

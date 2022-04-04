@@ -9,11 +9,13 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/viz/common/viz_common_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace perfetto {
 class EventContext;
@@ -71,6 +73,47 @@ struct VIZ_COMMON_EXPORT BeginFrameId {
   std::string ToString() const;
 };
 
+struct VIZ_COMMON_EXPORT PossibleDeadline {
+  PossibleDeadline(int64_t vsync_id,
+                   base::TimeDelta latch_delta,
+                   base::TimeDelta present_delta);
+  ~PossibleDeadline();
+
+  // Out-of-line copy and assignment operators.
+  PossibleDeadline(const PossibleDeadline& other);
+  PossibleDeadline(PossibleDeadline&& other);
+  PossibleDeadline& operator=(const PossibleDeadline& other);
+  PossibleDeadline& operator=(PossibleDeadline&& other);
+
+  // Passed during swap to select the deadline.
+  int64_t vsync_id;
+  // Time delta from `BeginFrameArgs::frame_time` when the receiving pipeline
+  // stage starts to do its work. All viz CPU and GPU work need to be complete
+  // by this time to not miss a frame.
+  base::TimeDelta latch_delta;
+  // Time delta from `BeginFrameArgs::frame_time` when the frame is expected to
+  // be presented to the user. This would be the present time if viz finished
+  // its work before `latch_delta` and subsequent stages were also on time.
+  base::TimeDelta present_delta;
+};
+
+struct VIZ_COMMON_EXPORT PossibleDeadlines {
+  explicit PossibleDeadlines(size_t preferred_index);
+  ~PossibleDeadlines();
+
+  // Out-of-line copy and assignment operators.
+  PossibleDeadlines(const PossibleDeadlines& other);
+  PossibleDeadlines(PossibleDeadlines&& other);
+  PossibleDeadlines& operator=(const PossibleDeadlines& other);
+  PossibleDeadlines& operator=(PossibleDeadlines&& other);
+
+  const PossibleDeadline& GetPreferredDeadline() const;
+
+  // Index into to `deadlines` vector picked by the OS as the default.
+  size_t preferred_index;
+  std::vector<PossibleDeadline> deadlines;
+};
+
 struct VIZ_COMMON_EXPORT BeginFrameArgs {
   enum BeginFrameArgsType {
     INVALID,
@@ -90,6 +133,7 @@ struct VIZ_COMMON_EXPORT BeginFrameArgs {
 
   // Creates an invalid set of values.
   BeginFrameArgs();
+  ~BeginFrameArgs();
 
   BeginFrameArgs(const BeginFrameArgs& args);
   BeginFrameArgs& operator=(const BeginFrameArgs& args);
@@ -188,6 +232,12 @@ struct VIZ_COMMON_EXPORT BeginFrameArgs {
   // Number of frames being skipped during throttling since last BeginFrame
   // sent.
   uint64_t frames_throttled_since_last = 0;
+
+  // This is not serialized for mojo as it should only be used internal to viz.
+  // Note `deadline` is not yet updated to one of these deadline since some
+  // code still assumes `deadline` is a multiple of `interval` from
+  // `frame_time`.
+  absl::optional<PossibleDeadlines> possible_deadlines;
 
  private:
   BeginFrameArgs(uint64_t source_id,

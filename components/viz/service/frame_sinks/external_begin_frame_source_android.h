@@ -10,8 +10,10 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/time/time.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/service/viz_service_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 
@@ -50,7 +52,10 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceAndroid
   void OnNeedsBeginFrames(bool needs_begin_frames) override;
 
   void SetEnabled(bool enabled);
-  void OnVSyncImpl(int64_t time_nanos, base::TimeDelta vsync_period);
+  void OnVSyncImpl(int64_t time_nanos,
+                   int64_t deadline_nanos,
+                   base::TimeDelta vsync_period,
+                   absl::optional<PossibleDeadlines> possible_deadlines);
 
   std::unique_ptr<AChoreographerImpl> achoreographer_;
   base::android::ScopedJavaGlobalRef<jobject> j_object_;
