@@ -16,7 +16,6 @@ namespace blink {
 
 class CallbackFunctionBase;
 class CallbackInterfaceBase;
-class IDLDictionaryBase;
 class ScriptWrappable;
 
 namespace bindings {
@@ -281,21 +280,6 @@ struct ToV8Traits<
   }
 };
 
-// Old implementation of Dictionary
-template <typename T>
-struct ToV8Traits<
-    T,
-    std::enable_if_t<std::is_base_of<IDLDictionaryBase, T>::value>> {
-  [[nodiscard]] static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                                      const T* dictionary) {
-    // TODO(crbug.com/1185018): Change this if-branch to DCHECK(dictionary).
-    if (!dictionary)
-      return v8::Null(script_state->GetIsolate());
-    return dictionary->ToV8Impl(script_state->GetContext()->Global(),
-                                script_state->GetIsolate());
-  }
-};
-
 // Callback function
 template <typename T>
 struct ToV8Traits<
@@ -531,48 +515,6 @@ struct ToV8Traits<
 template <typename T>
 struct ToV8Traits<
     IDLSequence<T>,
-    std::enable_if_t<std::is_base_of<IDLDictionaryBase, T>::value>> {
-  [[nodiscard]] static v8::MaybeLocal<v8::Value> ToV8(
-      ScriptState* script_state,
-      const HeapVector<Member<T>>& value) {
-    return bindings::ToV8HelperSequenceWithMemberUpcast<IDLDictionaryBase>(
-        script_state, &value);
-  }
-
-  [[nodiscard]] static v8::MaybeLocal<v8::Value> ToV8(
-      ScriptState* script_state,
-      const HeapVector<Member<const T>>& value) {
-    return bindings::ToV8HelperSequenceWithMemberUpcast<IDLDictionaryBase>(
-        script_state, &value);
-  }
-
-  [[nodiscard]] static v8::MaybeLocal<v8::Value> ToV8(
-      ScriptState* script_state,
-      const HeapVector<Member<T>>* value) {
-    DCHECK(value);
-    return bindings::ToV8HelperSequenceWithMemberUpcast<IDLDictionaryBase>(
-        script_state, value);
-  }
-
-  [[nodiscard]] static v8::MaybeLocal<v8::Value> ToV8(
-      ScriptState* script_state,
-      const HeapVector<Member<const T>>* value) {
-    DCHECK(value);
-    return bindings::ToV8HelperSequenceWithMemberUpcast<IDLDictionaryBase>(
-        script_state, value);
-  }
-
-  // TODO(crbug.com/1185046): Remove this overload.
-  [[nodiscard]] static v8::MaybeLocal<v8::Value> ToV8(
-      ScriptState* script_state,
-      const Vector<v8::Local<v8::Value>>& value) {
-    return bindings::ToV8HelperSequence<IDLAny>(script_state, value);
-  }
-};
-
-template <typename T>
-struct ToV8Traits<
-    IDLSequence<T>,
     std::enable_if_t<std::is_base_of<ScriptWrappable, T>::value>> {
   [[nodiscard]] static v8::MaybeLocal<v8::Value> ToV8(
       ScriptState* script_state,
@@ -644,7 +586,6 @@ template <typename T>
 struct ToV8Traits<
     IDLSequence<T>,
     std::enable_if_t<!std::is_base_of<bindings::DictionaryBase, T>::value &&
-                     !std::is_base_of<IDLDictionaryBase, T>::value &&
                      !std::is_base_of<ScriptWrappable, T>::value &&
                      !std::is_base_of<bindings::UnionBase, T>::value>> {
   template <typename VectorType>
@@ -844,19 +785,6 @@ template <typename T>
 struct ToV8Traits<
     IDLNullable<T>,
     std::enable_if_t<std::is_base_of<bindings::DictionaryBase, T>::value>> {
-  [[nodiscard]] static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                                      const T* dictionary) {
-    if (!dictionary)
-      return v8::Null(script_state->GetIsolate());
-    return ToV8Traits<T>::ToV8(script_state, dictionary);
-  }
-};
-
-// Nullable Dictionary (Old implementation)
-template <typename T>
-struct ToV8Traits<
-    IDLNullable<T>,
-    std::enable_if_t<std::is_base_of<IDLDictionaryBase, T>::value>> {
   [[nodiscard]] static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
                                                       const T* dictionary) {
     if (!dictionary)

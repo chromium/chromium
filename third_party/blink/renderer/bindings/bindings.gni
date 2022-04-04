@@ -36,8 +36,6 @@ blink_core_sources_bindings =
                     "core/v8/dictionary_helper_for_core.cc",
                     "core/v8/generated_code_helper.cc",
                     "core/v8/generated_code_helper.h",
-                    "core/v8/idl_dictionary_base.cc",
-                    "core/v8/idl_dictionary_base.h",
                     "core/v8/idl_types.h",
                     "core/v8/idl_types_base.h",
                     "core/v8/isolated_world_csp.cc",

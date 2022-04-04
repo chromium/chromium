@@ -522,7 +522,6 @@ TEST(ToV8TraitsTest, NullableDictionary) {
   // bindings::DictionaryBase
   TEST_TOV8_TRAITS(scope, IDLNullable<bindings::DictionaryBase>, "null",
                    nullptr);
-  // IDLDictionaryBase
   DOMPointInit* dom_point_init = DOMPointInit::Create();
   TEST_TOV8_TRAITS(scope, IDLNullable<DOMPointInit>, "null", nullptr);
   TEST_TOV8_TRAITS(scope, IDLNullable<DOMPointInit>, "[object Object]",
