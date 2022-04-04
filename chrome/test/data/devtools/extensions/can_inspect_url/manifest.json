@@ -4,5 +4,5 @@
    "version": "0.1",
    "manifest_version": 2,
    "devtools_page": "devtools.html",
-   "permissions": ["tabs"]
+   "permissions": ["tabs", "debugger"]
 }

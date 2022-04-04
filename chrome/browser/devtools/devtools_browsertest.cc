@@ -479,6 +479,12 @@ void TimeoutCallback(const std::string& timeout_message) {
   base::RunLoop::QuitCurrentWhenIdleDeprecated();
 }
 
+constexpr char kPublicKey[] =
+    "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC8c4fBSPZ6utYoZ8NiWF/"
+    "DSaimBhihjwgOsskyleFGaurhi3TDClTVSGPxNkgCzrz0wACML7M4aNjpd05qupdbR2d294j"
+    "kDuI7caxEGUucpP7GJRRHnm8Sx+"
+    "y0ury28n8jbN0PnInKKWcxpIXXmNQyC19HBuO3QIeUq9Dqc+7YFQIDAQAB";
+
 // Base class for DevTools tests that test devtools functionality for
 // extensions and content scripts.
 class DevToolsExtensionTest : public DevToolsTest {
@@ -622,6 +628,27 @@ class DevToolsExtensionTest : public DevToolsTest {
     extensions::TestExtensionDir* dir =
         BuildExtensionForTest(name, devtools_page, panel_iframe_src);
     return LoadExtensionFromPath(dir->UnpackedPath());
+  }
+
+  std::string BuildComponentExtension() {
+    extensions::ExtensionService* extension_service =
+        extensions::ExtensionSystem::Get(browser()->profile())
+            ->extension_service();
+    extensions::ComponentLoader* component_loader =
+        extension_service->component_loader();
+    extensions::ExtensionRegistry* extension_registry =
+        extensions::ExtensionRegistry::Get(browser()->profile());
+
+    extensions::TestExtensionDir* extension_dir =
+        BuildExtensionForTest("Component extension", "" /* devtools_page */,
+                              "" /* panel_iframe_src */);
+    std::string manifest = BuildExtensionManifest(
+        "Component extension", "" /* devtools_page */, kPublicKey);
+    component_loader->set_ignore_allowlist_for_testing(true);
+    std::string extension_id =
+        component_loader->Add(manifest, extension_dir->UnpackedPath());
+    EXPECT_TRUE(extension_registry->enabled_extensions().GetByID(extension_id));
+    return extension_id;
   }
 
  private:
@@ -1649,13 +1676,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   RunTest("testConsoleContextNames", kPageWithContentScript);
 }
 
-constexpr char kExtensionId[] = "ldnnhddmnhbkjipkidpdiheffobcpfmf";
-constexpr char kPublicKey[] =
-    "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC8c4fBSPZ6utYoZ8NiWF/"
-    "DSaimBhihjwgOsskyleFGaurhi3TDClTVSGPxNkgCzrz0wACML7M4aNjpd05qupdbR2d294j"
-    "kDuI7caxEGUucpP7GJRRHnm8Sx+"
-    "y0ury28n8jbN0PnInKKWcxpIXXmNQyC19HBuO3QIeUq9Dqc+7YFQIDAQAB";
-
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, CantInspectChromeScheme) {
   LoadExtension("can_inspect_url");
   RunTest("waitForTestResultsAsMessage",
@@ -1670,28 +1690,30 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, CantInspectDevtoolsScheme) {
                     "#devtools://devtools/bundled/devtools_compatibility.js"}));
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, CantInspectComponentExtension) {
-  extensions::ExtensionService* extension_service =
-      extensions::ExtensionSystem::Get(browser()->profile())
-          ->extension_service();
-  extensions::ComponentLoader* component_loader =
-      extension_service->component_loader();
-  extensions::ExtensionRegistry* extension_registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
-
-  extensions::TestExtensionDir* extension_dir = BuildExtensionForTest(
-      "Component extension", "" /* devtools_page */, "" /* panel_iframe_src */);
-  std::string manifest = BuildExtensionManifest(
-      "Component extension", "" /* devtools_page */, kPublicKey);
-  component_loader->set_ignore_allowlist_for_testing(true);
-  std::string extension_id =
-      component_loader->Add(manifest, extension_dir->UnpackedPath());
-  ASSERT_TRUE(extension_registry->enabled_extensions().GetByID(extension_id));
-
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
+                       CantInspectViewSourceDevtoolsScheme) {
   LoadExtension("can_inspect_url");
   RunTest("waitForTestResultsAsMessage",
-          base::StrCat({kArbitraryPage, "#chrome-extension://", kExtensionId,
+          base::StrCat({kArbitraryPage,
+                        "#view-source:devtools://devtools/bundled/"
+                        "devtools_compatibility.js"}));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, CantInspectComponentExtension) {
+  std::string extension_id = BuildComponentExtension();
+  LoadExtension("can_inspect_url");
+  RunTest("waitForTestResultsAsMessage",
+          base::StrCat({kArbitraryPage, "#chrome-extension://", extension_id,
                         "/simple_test_page.html"}));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
+                       CantInspectViewSourceComponentExtension) {
+  std::string extension_id = BuildComponentExtension();
+  LoadExtension("can_inspect_url");
+  RunTest("waitForTestResultsAsMessage",
+          base::StrCat({kArbitraryPage, "#view-source:chrome-extension://",
+                        extension_id, "/simple_test_page.html"}));
 }
 
 // Tests that scripts are not duplicated after Scripts Panel switch.

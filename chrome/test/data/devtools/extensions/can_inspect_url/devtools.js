@@ -19,7 +19,12 @@ async function test() {
         });
   });
   const inspectedTabId = chrome.devtools.inspectedWindow.tabId;
-  chrome.tabs.update(inspectedTabId, {url: newPageURL});
+  chrome.debugger.attach(
+      {tabId: inspectedTabId}, '1.3',
+      () => chrome.debugger.sendCommand(
+          {tabId: inspectedTabId}, 'Page.navigate', {url: newPageURL}));
+
+  // chrome.tabs.update(inspectedTabId, {url: newPageURL});
   await new Promise(
       resolve => chrome.tabs.onUpdated.addListener((tabId, changedProps) => {
         if (inspectedTabId !== tabId || changedProps.url !== newPageURL)
