@@ -95,7 +95,7 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
   void UpdatePageInfo();
   void Record(LayoutBlock*);
   void Record(LayoutText*);
-  void Destroy(LayoutBlock*);
+  void Destroy(LayoutObject*);
 
   bool PageNeedsAutosizing() const;
 

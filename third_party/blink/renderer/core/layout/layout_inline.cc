@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_outline_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
 #include "third_party/blink/renderer/core/paint/inline_painter.h"
@@ -116,6 +117,9 @@ void LayoutInline::WillBeDestroyed() {
     continuation->Destroy();
     SetContinuation(nullptr);
   }
+
+  if (TextAutosizer* text_autosizer = GetDocument().GetTextAutosizer())
+    text_autosizer->Destroy(this);
 
   if (!DocumentBeingDestroyed()) {
     if (FirstLineBox()) {
