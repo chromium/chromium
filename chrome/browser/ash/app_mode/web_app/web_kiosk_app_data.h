@@ -56,7 +56,7 @@ class WebKioskAppData : public KioskAppDataBase {
   // update.
   void SetStatus(Status status, bool notify = true);
 
-  void UpdateFromWebAppInfo(std::unique_ptr<WebAppInstallInfo> app_info);
+  void UpdateFromWebAppInfo(const WebAppInstallInfo& app_info);
 
   void SetOnLoadedCallbackForTesting(base::OnceClosure callback);
 

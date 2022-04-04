@@ -237,9 +237,9 @@ IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest, LaunchableUrl) {
   EXPECT_EQ(app_data.GetLaunchableUrl(), GURL(kAppUrl));
 
   // `start_url` is treated as launchable URL if the app has been installed.
-  auto app_info = std::make_unique<WebAppInstallInfo>();
-  app_info->start_url = GURL(kStartUrl);
-  app_data.UpdateFromWebAppInfo(std::move(app_info));
+  WebAppInstallInfo app_info;
+  app_info.start_url = GURL(kStartUrl);
+  app_data.UpdateFromWebAppInfo(app_info);
   app_data.LoadFromCache();
   WaitForAppDataChange(1);
   EXPECT_EQ(app_data.status(), WebKioskAppData::Status::kInstalled);

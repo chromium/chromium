@@ -93,10 +93,10 @@ const WebKioskAppData* WebKioskAppManager::GetAppByAccountId(
 
 void WebKioskAppManager::UpdateAppByAccountId(
     const AccountId& account_id,
-    std::unique_ptr<WebAppInstallInfo> app_info) {
+    const WebAppInstallInfo& app_info) {
   for (auto& web_app : apps_) {
     if (web_app->account_id() == account_id) {
-      web_app->UpdateFromWebAppInfo(std::move(app_info));
+      web_app->UpdateFromWebAppInfo(app_info);
       return;
     }
   }

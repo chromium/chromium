@@ -6536,6 +6536,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Kiosk.WebApp.InstallError" enum="WebAppInstallResultCode"
+    expires_after="2022-10-01">
+  <owner>yixie@chromium.org</owner>
+  <owner>chromeos-kiosk-eng@google.com</owner>
+  <summary>
+    Records the reason for Web App install error in a Web Kiosk.
+  </summary>
+</histogram>
+
 <histogram name="Launch.FlagsAtStartup" enum="LoginCustomFlags"
     expires_after="never">
 <!-- expires-never: monitors use of all flags. -->

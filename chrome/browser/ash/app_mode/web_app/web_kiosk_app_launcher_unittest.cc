@@ -23,6 +23,7 @@
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/wm_helper_chromeos.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -130,10 +131,10 @@ class WebKioskAppLauncherTest : public BrowserWithTestWindowTest {
     app_manager_->AddAppForTesting(account_id_, GURL(kAppInstallUrl));
 
     if (installed) {
-      auto info = std::make_unique<WebAppInstallInfo>();
-      info->start_url = GURL(kAppLaunchUrl);
-      info->title = kAppTitle;
-      app_manager_->UpdateAppByAccountId(account_id_, std::move(info));
+      WebAppInstallInfo info;
+      info.start_url = GURL(kAppLaunchUrl);
+      info.title = kAppTitle;
+      app_manager_->UpdateAppByAccountId(account_id_, info);
     }
   }
 
@@ -302,6 +303,8 @@ TEST_F(WebKioskAppLauncherTest, InstallationRestarted) {
 }
 
 TEST_F(WebKioskAppLauncherTest, UrlNotLoaded) {
+  base::HistogramTester histogram;
+
   SetupAppData(/*installed*/ false);
 
   base::RunLoop loop1;
@@ -322,6 +325,11 @@ TEST_F(WebKioskAppLauncherTest, UrlNotLoaded) {
   loop2.Run();
 
   EXPECT_NE(app_data()->status(), WebKioskAppData::Status::kInstalled);
+
+  content::FetchHistogramsFromChildProcesses();
+  histogram.ExpectUniqueSample(
+      "Kiosk.WebApp.InstallError",
+      webapps::InstallResultCode::kInstallURLLoadTimeOut, 1);
 }
 
 TEST_F(WebKioskAppLauncherTest, SkipInstallation) {

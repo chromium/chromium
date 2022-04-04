@@ -174,9 +174,21 @@ struct WebAppInstallInfo {
   };
 
   WebAppInstallInfo();
+
+  // TODO(b/227755254): Delete copy constructors and migrate to move assignment.
   WebAppInstallInfo(const WebAppInstallInfo& other);
+
+  // Deleted to prevent accidental copying. Use Clone() to deep copy explicitly.
+  WebAppInstallInfo& operator=(const WebAppInstallInfo&) = delete;
+
+  WebAppInstallInfo(WebAppInstallInfo&&);
+  WebAppInstallInfo& operator=(WebAppInstallInfo&&);
+
   explicit WebAppInstallInfo(const webapps::mojom::WebPageMetadata& metadata);
   ~WebAppInstallInfo();
+
+  // Creates a deep copy of this struct.
+  WebAppInstallInfo Clone() const;
 
   // Id specified in the manifest.
   absl::optional<std::string> manifest_id;

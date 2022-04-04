@@ -89,11 +89,10 @@ class WebKioskTest : public OobeBaseTest {
   }
 
   void MakeAppAlreadyInstalled() {
-    auto info = std::make_unique<WebAppInstallInfo>();
-    info->start_url = GURL(kAppLaunchUrl);
-    info->title = kAppTitle;
-    WebKioskAppManager::Get()->UpdateAppByAccountId(account_id(),
-                                                    std::move(info));
+    WebAppInstallInfo info;
+    info.start_url = GURL(kAppLaunchUrl);
+    info.title = kAppTitle;
+    WebKioskAppManager::Get()->UpdateAppByAccountId(account_id(), info);
   }
 
   bool LaunchApp() {

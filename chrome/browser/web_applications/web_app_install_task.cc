@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -481,7 +482,12 @@ void WebAppInstallTask::CallInstallCallback(const AppId& app_id,
 
   if (only_retrieve_web_application_info_) {
     DCHECK(retrieve_info_callback_);
-    std::move(retrieve_info_callback_).Run(std::move(web_application_info_));
+    if (web_application_info_) {
+      std::move(retrieve_info_callback_).Run(std::move(*web_application_info_));
+      web_application_info_ = absl::nullopt;
+    } else {
+      std::move(retrieve_info_callback_).Run(code);
+    }
     return;
   }
 
@@ -909,7 +915,10 @@ void WebAppInstallTask::OnDialogCompleted(
   }
 
   if (only_retrieve_web_application_info_) {
-    web_application_info_ = std::move(web_app_info);
+    if (web_app_info) {
+      web_application_info_ = std::move(*web_app_info);
+      web_app_info.reset();
+    }
     CallInstallCallback(AppId(),
                         webapps::InstallResultCode::kSuccessNewInstall);
     return;

@@ -59,7 +59,7 @@ class FakeWebPageMetadataAgent
 
   // Set |web_app_info| to respond on |GetWebAppInstallInfo|.
   void SetWebAppInstallInfo(const WebAppInstallInfo& web_app_info) {
-    web_app_info_ = web_app_info;
+    web_app_info_ = WebAppInstallInfo(web_app_info);
   }
 
   void GetWebPageMetadata(GetWebPageMetadataCallback callback) override {

@@ -9,6 +9,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,11 +22,20 @@
 #include "chrome/common/chrome_features.h"
 #include "chromeos/ui/base/window_pin_type.h"
 #include "components/account_id/account_id.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "ui/aura/window.h"
 #include "ui/base/page_transition_types.h"
 #include "url/origin.h"
 
 namespace ash {
+
+namespace {
+
+void RecordKioskWebAppInstallError(webapps::InstallResultCode code) {
+  base::UmaHistogramEnumeration("Kiosk.WebApp.InstallError", code);
+}
+
+}  // namespace
 
 // The delay time of closing the splash window when a lacros-browser window is
 // launched.
@@ -80,24 +90,27 @@ const WebKioskAppData* WebKioskAppLauncher::GetCurrentApp() const {
 }
 
 void WebKioskAppLauncher::OnAppDataObtained(
-    std::unique_ptr<WebAppInstallInfo> app_info) {
-  if (!app_info) {
+    web_app::WebAppInstallTask::WebAppInstallInfoOrErrorCode info) {
+  if (absl::holds_alternative<webapps::InstallResultCode>(info)) {
+    RecordKioskWebAppInstallError(absl::get<webapps::InstallResultCode>(info));
     // Notify about failed installation, let the controller decide what to do.
     delegate_->OnLaunchFailed(KioskAppLaunchError::Error::kUnableToInstall);
     return;
   }
 
-  // When received |app_info->start_url| origin does not match the origin of
+  DCHECK(absl::holds_alternative<WebAppInstallInfo>(info));
+  const auto& app_info = absl::get<WebAppInstallInfo>(info);
+
+  // When received |app_info.start_url| origin does not match the origin of
   // |install_url|, fail.
   if (url::Origin::Create(GetCurrentApp()->install_url()) !=
-      url::Origin::Create(app_info->start_url)) {
+      url::Origin::Create(app_info.start_url)) {
     VLOG(1) << "Origin of the app does not match the origin of install url";
     delegate_->OnLaunchFailed(KioskAppLaunchError::Error::kUnableToLaunch);
     return;
   }
 
-  WebKioskAppManager::Get()->UpdateAppByAccountId(account_id_,
-                                                  std::move(app_info));
+  WebKioskAppManager::Get()->UpdateAppByAccountId(account_id_, app_info);
   delegate_->OnAppPrepared();
 }
 

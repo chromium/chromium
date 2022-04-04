@@ -297,15 +297,15 @@ class WebAppInstallTaskTest : public WebAppTest {
     return result;
   }
 
-  std::unique_ptr<WebAppInstallInfo> LoadAndRetrieveWebAppInstallInfoWithIcons(
-      const GURL& url) {
-    std::unique_ptr<WebAppInstallInfo> result;
+  WebAppInstallTask::WebAppInstallInfoOrErrorCode
+  LoadAndRetrieveWebAppInstallInfoWithIcons(const GURL& url) {
+    WebAppInstallTask::WebAppInstallInfoOrErrorCode result;
     base::RunLoop run_loop;
     install_task_->LoadAndRetrieveWebAppInstallInfoWithIcons(
         url, &url_loader(),
         base::BindLambdaForTesting(
-            [&](std::unique_ptr<WebAppInstallInfo> web_app_info) {
-              result = std::move(web_app_info);
+            [&](WebAppInstallTask::WebAppInstallInfoOrErrorCode info_or_error) {
+              result = std::move(info_or_error);
               run_loop.Quit();
             }));
     run_loop.Run();
@@ -1325,9 +1325,11 @@ TEST_F(WebAppInstallTaskTest, LoadAndRetrieveWebAppInstallInfoWithIcons) {
     url_loader().SetNextLoadUrlResult(
         url, WebAppUrlLoader::Result::kRedirectedUrlLoaded);
 
-    std::unique_ptr<WebAppInstallInfo> result =
+    WebAppInstallTask::WebAppInstallInfoOrErrorCode result =
         LoadAndRetrieveWebAppInstallInfoWithIcons(url);
-    EXPECT_FALSE(result);
+    ASSERT_TRUE(absl::holds_alternative<webapps::InstallResultCode>(result));
+    EXPECT_EQ(absl::get<webapps::InstallResultCode>(result),
+              webapps::InstallResultCode::kInstallURLRedirected);
   }
   ResetInstallTask();
   {
@@ -1335,9 +1337,11 @@ TEST_F(WebAppInstallTaskTest, LoadAndRetrieveWebAppInstallInfoWithIcons) {
     url_loader().SetNextLoadUrlResult(
         url, WebAppUrlLoader::Result::kFailedPageTookTooLong);
 
-    std::unique_ptr<WebAppInstallInfo> result =
+    WebAppInstallTask::WebAppInstallInfoOrErrorCode result =
         LoadAndRetrieveWebAppInstallInfoWithIcons(url);
-    EXPECT_FALSE(result);
+    ASSERT_TRUE(absl::holds_alternative<webapps::InstallResultCode>(result));
+    EXPECT_EQ(absl::get<webapps::InstallResultCode>(result),
+              webapps::InstallResultCode::kInstallURLLoadTimeOut);
   }
   ResetInstallTask();
   {
@@ -1345,12 +1349,13 @@ TEST_F(WebAppInstallTaskTest, LoadAndRetrieveWebAppInstallInfoWithIcons) {
     CreateRendererAppInfo(url, name, description);
     url_loader().SetNextLoadUrlResult(url, WebAppUrlLoader::Result::kUrlLoaded);
 
-    std::unique_ptr<WebAppInstallInfo> result =
+    WebAppInstallTask::WebAppInstallInfoOrErrorCode result =
         LoadAndRetrieveWebAppInstallInfoWithIcons(url);
-    EXPECT_TRUE(result);
-    EXPECT_EQ(result->start_url, start_url);
-    EXPECT_TRUE(result->manifest_icons.empty());
-    EXPECT_FALSE(result->icon_bitmaps.any.empty());
+    ASSERT_TRUE(absl::holds_alternative<WebAppInstallInfo>(result));
+    const auto& info = absl::get<WebAppInstallInfo>(result);
+    EXPECT_EQ(info.start_url, start_url);
+    EXPECT_TRUE(info.manifest_icons.empty());
+    EXPECT_FALSE(info.icon_bitmaps.any.empty());
   }
   ResetInstallTask();
   {
@@ -1364,12 +1369,10 @@ TEST_F(WebAppInstallTaskTest, LoadAndRetrieveWebAppInstallInfoWithIcons) {
         profile(), &install_manager(), install_finalizer_.get(),
         std::move(data_retriever), &registrar());
 
-    std::unique_ptr<WebAppInstallInfo> info;
     task->LoadAndRetrieveWebAppInstallInfoWithIcons(
         url, &url_loader(),
         base::BindLambdaForTesting(
-            [&](std::unique_ptr<WebAppInstallInfo> app_info) {
-              info = std::move(app_info);
+            [&](WebAppInstallTask::WebAppInstallInfoOrErrorCode info_or_error) {
               run_loop.Quit();
             }));
     task.reset();

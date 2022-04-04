@@ -212,16 +212,14 @@ GURL WebKioskAppData::GetLaunchableUrl() const {
                                                          : install_url();
 }
 
-void WebKioskAppData::UpdateFromWebAppInfo(
-    std::unique_ptr<WebAppInstallInfo> app_info) {
-  DCHECK(app_info);
-  name_ = base::UTF16ToUTF8(app_info->title);
+void WebKioskAppData::UpdateFromWebAppInfo(const WebAppInstallInfo& app_info) {
+  name_ = base::UTF16ToUTF8(app_info.title);
   base::FilePath cache_dir;
   if (delegate_)
     delegate_->GetKioskAppIconCacheDir(&cache_dir);
 
-  auto it = app_info->icon_bitmaps.any.find(kIconSize);
-  if (it != app_info->icon_bitmaps.any.end()) {
+  auto it = app_info.icon_bitmaps.any.find(kIconSize);
+  if (it != app_info.icon_bitmaps.any.end()) {
     const SkBitmap& bitmap = it->second;
     icon_ = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
     icon_.MakeThreadSafe();
@@ -232,7 +230,7 @@ void WebKioskAppData::UpdateFromWebAppInfo(
   DictionaryPrefUpdate dict_update(local_state, dictionary_name());
   SaveToDictionary(dict_update);
 
-  launch_url_ = GURL(app_info->start_url);
+  launch_url_ = GURL(app_info.start_url);
   dict_update->FindDictKey(KioskAppDataBase::kKeyApps)
       ->FindDictKey(app_id())
       ->SetStringKey(kKeyLaunchUrl, launch_url_.spec());

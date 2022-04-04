@@ -52,8 +52,10 @@ class WebAppRegistrar;
 // WebAppInstallTask is an implementation detail of WebAppInstallManager.
 class WebAppInstallTask : content::WebContentsObserver {
  public:
+  using WebAppInstallInfoOrErrorCode =
+      absl::variant<WebAppInstallInfo, webapps::InstallResultCode>;
   using RetrieveWebAppInstallInfoWithIconsCallback =
-      base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)>;
+      base::OnceCallback<void(WebAppInstallInfoOrErrorCode)>;
 
   using WebAppInstallFlow = WebAppInstallManager::WebAppInstallFlow;
 
@@ -320,7 +322,7 @@ class WebAppInstallTask : content::WebContentsObserver {
   webapps::WebappInstallSource install_source_ = kNoInstallSource;
 
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
-  std::unique_ptr<WebAppInstallInfo> web_application_info_;
+  absl::optional<WebAppInstallInfo> web_application_info_;
   std::unique_ptr<content::WebContents> web_contents_;
 
   raw_ptr<WebAppInstallManager> install_manager_;
