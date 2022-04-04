@@ -5063,8 +5063,7 @@ crbug.com/849978 http/tests/devtools/elements/styles-4/stylesheet-source-url-com
 crbug.com/854538 [ Win7 ] http/tests/security/contentSecurityPolicy/1.1/form-action-src-default-ignored-with-redirect.html [ Skip ]
 
 # User Activation
-crbug.com/736415 crbug.com/1066190 external/wpt/html/user-activation/navigation-state-reset-crossorigin.sub.tentative.html [ Failure Timeout ]
-crbug.com/736415 external/wpt/html/user-activation/navigation-state-reset-sameorigin.tentative.html [ Failure ]
+crbug.com/1066190 external/wpt/html/user-activation/navigation-state-reset-crossorigin.sub.tentative.html [ Failure Timeout ]
 
 # Sheriff 2018-07-05
 crbug.com/861682 [ Win ] external/wpt/css/mediaqueries/device-aspect-ratio-003.html [ Failure Pass ]
