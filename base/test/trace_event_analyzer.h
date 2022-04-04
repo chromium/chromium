@@ -152,8 +152,6 @@ struct TraceEvent {
   bool GetArgAsNumber(const std::string& arg_name, double* arg) const;
   // Return the argument value if it exists and is a dictionary.
   bool GetArgAsDict(const std::string& arg_name, base::Value::Dict* arg) const;
-  // Return the argument value if it exists.
-  bool GetArgAsValue(const std::string& arg_name, base::Value* arg) const;
 
   // Check if argument exists and is string.
   bool HasStringArg(const std::string& arg_name) const;
@@ -161,8 +159,6 @@ struct TraceEvent {
   bool HasNumberArg(const std::string& arg_name) const;
   // Check if argument exists and is a dictionary.
   bool HasDictArg(const std::string& arg_name) const;
-  // Check if argument exists.
-  bool HasArg(const std::string& arg_name) const;
 
   // Get known existing arguments as specific types.
   // Useful when you have already queried the argument with
@@ -172,7 +168,6 @@ struct TraceEvent {
   int GetKnownArgAsInt(const std::string& arg_name) const;
   bool GetKnownArgAsBool(const std::string& arg_name) const;
   base::Value::Dict GetKnownArgAsDict(const std::string& arg_name) const;
-  base::Value GetKnownArgAsValue(const std::string& arg_name) const;
 
   // Process ID and Thread ID.
   ProcessThreadID thread;
@@ -198,7 +193,7 @@ struct TraceEvent {
   // bool becomes 1.0 (true) or 0.0 (false).
   std::map<std::string, double> arg_numbers;
   std::map<std::string, std::string> arg_strings;
-  std::map<std::string, base::Value> arg_values;
+  std::map<std::string, base::Value::Dict> arg_dicts;
 
   // The other event associated with this event (or NULL).
   raw_ptr<const TraceEvent> other_event = nullptr;

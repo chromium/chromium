@@ -144,17 +144,17 @@ TEST_F(BlameContextTest, TakeSnapshot) {
   EXPECT_EQ(kTestBlameContextCategory, events[0]->category);
   EXPECT_EQ(kTestBlameContextType, events[0]->name);
   EXPECT_EQ("0x5678", events[0]->id);
-  EXPECT_TRUE(events[0]->HasArg("snapshot"));
+  EXPECT_TRUE(events[0]->HasDictArg("snapshot"));
 
   EXPECT_EQ(kTestBlameContextCategory, events[1]->category);
   EXPECT_EQ(kTestBlameContextType, events[1]->name);
   EXPECT_EQ("0x1234", events[1]->id);
-  EXPECT_TRUE(events[0]->HasArg("snapshot"));
+  EXPECT_TRUE(events[0]->HasDictArg("snapshot"));
 
   EXPECT_EQ(kTestBlameContextCategory, events[2]->category);
   EXPECT_EQ(kTestBlameContextType, events[2]->name);
   EXPECT_EQ("0x1234", events[2]->id);
-  EXPECT_TRUE(events[0]->HasArg("snapshot"));
+  EXPECT_TRUE(events[0]->HasDictArg("snapshot"));
 
   const char kExpectedSnapshotJson[] =
       "{"
@@ -166,7 +166,7 @@ TEST_F(BlameContextTest, TakeSnapshot) {
       "}";
 
   std::string snapshot_json;
-  JSONWriter::Write(events[2]->GetKnownArgAsValue("snapshot"), &snapshot_json);
+  JSONWriter::Write(events[2]->GetKnownArgAsDict("snapshot"), &snapshot_json);
   EXPECT_EQ(kExpectedSnapshotJson, snapshot_json);
 }
 

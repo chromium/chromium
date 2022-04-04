@@ -174,6 +174,7 @@ bool TraceEvent::SetFromJSON(const base::Value* event_value) {
   }
 
   // For each argument, copy the type and create a trace_analyzer::TraceValue.
+  // TODO(crbug.com/1303874): Add BINARY and LIST arg types if needed.
   if (maybe_args) {
     for (auto pair : maybe_args->DictItems()) {
       switch (pair.second.type()) {
@@ -193,12 +194,13 @@ bool TraceEvent::SetFromJSON(const base::Value* event_value) {
           arg_numbers[pair.first] = pair.second.GetDouble();
           break;
 
+        case base::Value::Type::DICT:
+          arg_dicts[pair.first] = pair.second.GetDict().Clone();
+          break;
+
         default:
           break;
       }
-
-      // Record all arguments as values.
-      arg_values[pair.first] = pair.second.Clone();
     }
   }
 
@@ -231,18 +233,8 @@ bool TraceEvent::GetArgAsNumber(const std::string& arg_name,
 
 bool TraceEvent::GetArgAsDict(const std::string& arg_name,
                               base::Value::Dict* arg) const {
-  const auto it = arg_values.find(arg_name);
-  if (it != arg_values.end() && it->second.is_dict()) {
-    *arg = it->second.GetDict().Clone();
-    return true;
-  }
-  return false;
-}
-
-bool TraceEvent::GetArgAsValue(const std::string& arg_name,
-                               base::Value* arg) const {
-  const auto it = arg_values.find(arg_name);
-  if (it != arg_values.end()) {
+  const auto it = arg_dicts.find(arg_name);
+  if (it != arg_dicts.end()) {
     *arg = it->second.Clone();
     return true;
   }
@@ -258,12 +250,7 @@ bool TraceEvent::HasNumberArg(const std::string& arg_name) const {
 }
 
 bool TraceEvent::HasDictArg(const std::string& arg_name) const {
-  const auto it = arg_values.find(arg_name);
-  return (it != arg_values.end() && it->second.is_dict());
-}
-
-bool TraceEvent::HasArg(const std::string& arg_name) const {
-  return (arg_values.find(arg_name) != arg_values.end());
+  return (arg_dicts.find(arg_name) != arg_dicts.end());
 }
 
 std::string TraceEvent::GetKnownArgAsString(const std::string& arg_name) const {
@@ -300,13 +287,6 @@ base::Value::Dict TraceEvent::GetKnownArgAsDict(
   bool result = GetArgAsDict(arg_name, &arg_dict);
   DCHECK(result);
   return arg_dict;
-}
-
-base::Value TraceEvent::GetKnownArgAsValue(const std::string& arg_name) const {
-  base::Value arg_value;
-  bool result = GetArgAsValue(arg_name, &arg_value);
-  DCHECK(result);
-  return arg_value;
 }
 
 // QueryNode

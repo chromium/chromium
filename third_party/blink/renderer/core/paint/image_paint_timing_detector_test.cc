@@ -366,7 +366,7 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_TraceEvent_Candidate) {
   EXPECT_EQ(1u, events.size());
   EXPECT_EQ("loading", events[0]->category);
 
-  EXPECT_TRUE(events[0]->HasArg("frame"));
+  EXPECT_TRUE(events[0]->HasStringArg("frame"));
 
   ASSERT_TRUE(events[0]->HasDictArg("data"));
   base::Value::Dict arg_dict = events[0]->GetKnownArgAsDict("data");
@@ -415,7 +415,7 @@ TEST_P(ImagePaintTimingDetectorTest,
   EXPECT_EQ(1u, events.size());
   EXPECT_EQ("loading", events[0]->category);
 
-  EXPECT_TRUE(events[0]->HasArg("frame"));
+  EXPECT_TRUE(events[0]->HasStringArg("frame"));
 
   ASSERT_TRUE(events[0]->HasDictArg("data"));
   base::Value::Dict arg_dict = events[0]->GetKnownArgAsDict("data");
@@ -459,7 +459,7 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_TraceEvent_NoCandidate) {
   EXPECT_EQ(1u, events.size());
 
   EXPECT_EQ("loading", events[0]->category);
-  EXPECT_TRUE(events[0]->HasArg("frame"));
+  EXPECT_TRUE(events[0]->HasStringArg("frame"));
   ASSERT_TRUE(events[0]->HasDictArg("data"));
   base::Value::Dict arg_dict = events[0]->GetKnownArgAsDict("data");
   EXPECT_EQ(arg_dict.FindInt("candidateIndex").value_or(-1), 1);

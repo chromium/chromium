@@ -909,7 +909,7 @@ TEST_F(WindowPerformanceTest, ElementTimingTraceEvent) {
   analyzer->FindEvents(q, &events);
   EXPECT_EQ(1u, events.size());
   EXPECT_EQ("loading", events[0]->category);
-  EXPECT_TRUE(events[0]->HasArg("frame"));
+  EXPECT_TRUE(events[0]->HasStringArg("frame"));
 
   ASSERT_TRUE(events[0]->HasDictArg("data"));
   base::Value::Dict arg_dict = events[0]->GetKnownArgAsDict("data");

@@ -105,7 +105,7 @@ TEST_F(TraceEventAnalyzerTest, TraceEvent) {
   event.arg_numbers["int"] = static_cast<double>(int_num);
   event.arg_numbers["double"] = double_num;
   event.arg_strings["string"] = str;
-  event.arg_values["dict"] = base::Value(dict.Clone());
+  event.arg_dicts["dict"] = dict.Clone();
 
   ASSERT_TRUE(event.HasNumberArg("false"));
   ASSERT_TRUE(event.HasNumberArg("true"));
@@ -115,7 +115,6 @@ TEST_F(TraceEventAnalyzerTest, TraceEvent) {
   ASSERT_FALSE(event.HasNumberArg("notfound"));
   ASSERT_FALSE(event.HasStringArg("notfound"));
   ASSERT_TRUE(event.HasDictArg("dict"));
-  ASSERT_FALSE(event.HasArg("notfound"));
 
   EXPECT_FALSE(event.GetKnownArgAsBool("false"));
   EXPECT_TRUE(event.GetKnownArgAsBool("true"));
@@ -123,59 +122,6 @@ TEST_F(TraceEventAnalyzerTest, TraceEvent) {
   EXPECT_EQ(double_num, event.GetKnownArgAsDouble("double"));
   EXPECT_STREQ(str, event.GetKnownArgAsString("string").c_str());
   EXPECT_EQ(dict, event.GetKnownArgAsDict("dict"));
-}
-
-TEST_F(TraceEventAnalyzerTest, TraceEventArgsAsValues) {
-  ManualSetUp();
-
-  int int_num = 2;
-  double double_num = 3.5;
-  const char str[] = "the string";
-
-  base::Value::Dict dict;
-  dict.Set("the key", "the value");
-
-  BeginTracing();
-  {
-    TRACE_EVENT_INSTANT1("cat", "name", TRACE_EVENT_SCOPE_THREAD, "int",
-                         int_num);
-    TRACE_EVENT_INSTANT1("cat", "name", TRACE_EVENT_SCOPE_THREAD, "double",
-                         double_num);
-    TRACE_EVENT_INSTANT1("cat", "name", TRACE_EVENT_SCOPE_THREAD, "true", true);
-    TRACE_EVENT_INSTANT1("cat", "name", TRACE_EVENT_SCOPE_THREAD, "string",
-                         str);
-
-    std::unique_ptr<base::trace_event::TracedValue> value(
-        new base::trace_event::TracedValue);
-    value->SetString("the key", "the value");
-    TRACE_EVENT_INSTANT1("cat", "name", TRACE_EVENT_SCOPE_THREAD, "dict",
-                         std::move(value));
-  }
-  EndTracing();
-
-  std::unique_ptr<TraceAnalyzer> analyzer(
-      TraceAnalyzer::Create(output_.json_output));
-  ASSERT_TRUE(analyzer.get());
-
-  TraceEventVector events;
-  analyzer->FindEvents(Query::EventName() == Query::String("name"), &events);
-
-  ASSERT_EQ(5u, events.size());
-  ASSERT_TRUE(events[0]->HasArg("int"));
-  EXPECT_EQ(base::Value(int_num), events[0]->GetKnownArgAsValue("int"));
-
-  ASSERT_TRUE(events[1]->HasArg("double"));
-  EXPECT_EQ(base::Value(double_num), events[1]->GetKnownArgAsValue("double"));
-
-  ASSERT_TRUE(events[2]->HasArg("true"));
-  EXPECT_EQ(base::Value(true), events[2]->GetKnownArgAsValue("true"));
-
-  ASSERT_TRUE(events[3]->HasArg("string"));
-  EXPECT_EQ(base::Value(str), events[3]->GetKnownArgAsValue("string"));
-
-  ASSERT_TRUE(events[4]->HasArg("dict"));
-  EXPECT_EQ(base::Value(std::move(dict)),
-            events[4]->GetKnownArgAsValue("dict"));
 }
 
 TEST_F(TraceEventAnalyzerTest, QueryEventMember) {
