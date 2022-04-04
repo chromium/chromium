@@ -12,20 +12,9 @@
 #include "chrome/browser/lacros/launcher_search/search_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/lacros/lacros_service.h"
-#include "components/omnibox/browser/autocomplete_classifier.h"
+#include "components/keyed_service/core/service_access_type.h"
 
 namespace crosapi {
-namespace {
-
-int ProviderTypes() {
-  // We use all the default providers except for the document provider, which
-  // suggests Drive files on enterprise devices. This is disabled to avoid
-  // duplication with search results from DriveFS.
-  return AutocompleteClassifier::DefaultOmniboxProviders() &
-         ~AutocompleteProvider::TYPE_DOCUMENT;
-}
-
-}  // namespace
 
 SearchControllerLacros::SearchControllerLacros()
     : profile_(g_browser_process->profile_manager()->GetProfileByPath(
@@ -93,6 +82,8 @@ void SearchControllerLacros::Search(const std::u16string& query,
   if (input.text().empty())
     input.set_focus_type(OmniboxFocusType::ON_FOCUS);
 
+  query_ = query;
+  input_ = input;
   autocomplete_controller_->Start(input);
 }
 
@@ -102,13 +93,12 @@ void SearchControllerLacros::OnResultChanged(AutocompleteController* controller,
 
   std::vector<mojom::SearchResultPtr> results;
   for (AutocompleteMatch match : autocomplete_controller_->result()) {
-    if (match.search_terms_args) {
-      match.search_terms_args->request_source = TemplateURLRef::CROS_APP_LIST;
-      autocomplete_controller_->SetMatchDestinationURL(&match);
-    }
+    auto result =
+        match.answer.has_value()
+            ? CreateAnswerResult(match, autocomplete_controller_.get(), input_)
+            : CreateResult(match, autocomplete_controller_.get(), query_,
+                           input_);
 
-    auto result = match.answer.has_value() ? CreateAnswerResult(match)
-                                           : CreateResult(match);
     results.push_back(std::move(result));
   }
 

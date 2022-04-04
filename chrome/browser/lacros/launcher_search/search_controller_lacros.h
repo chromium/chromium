@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_input.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -41,6 +42,9 @@ class SearchControllerLacros : public mojom::SearchController,
 
   Profile* profile_;
   std::unique_ptr<AutocompleteController> autocomplete_controller_;
+
+  std::u16string query_;
+  AutocompleteInput input_;
 
   mojo::AssociatedRemote<mojom::SearchResultsPublisher> publisher_;
   mojo::Receiver<mojom::SearchController> receiver_{this};

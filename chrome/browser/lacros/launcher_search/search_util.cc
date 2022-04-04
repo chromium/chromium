@@ -4,37 +4,45 @@
 
 #include "chrome/browser/lacros/launcher_search/search_util.h"
 
+#include "base/callback_helpers.h"
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/omnibox/browser/autocomplete_classifier.h"
+#include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/browser/autocomplete_provider_client.h"
+#include "components/omnibox/browser/favicon_cache.h"
 #include "components/omnibox/browser/suggestion_answer.h"
+#include "ui/base/page_transition_types.h"
 
 namespace crosapi {
 namespace {
 
-using AnswerType = mojom::SearchResult::AnswerType;
-using OmniboxType = mojom::SearchResult::OmniboxType;
+using mojom::SearchResult;
+using mojom::SearchResultPtr;
 
-AnswerType MatchTypeToAnswerType(const int type) {
+SearchResult::AnswerType MatchTypeToAnswerType(const int type) {
   switch (static_cast<SuggestionAnswer::AnswerType>(type)) {
     case SuggestionAnswer::ANSWER_TYPE_WEATHER:
-      return AnswerType::kWeather;
+      return SearchResult::AnswerType::kWeather;
     case SuggestionAnswer::ANSWER_TYPE_CURRENCY:
-      return AnswerType::kCurrency;
+      return SearchResult::AnswerType::kCurrency;
     case SuggestionAnswer::ANSWER_TYPE_DICTIONARY:
-      return AnswerType::kDictionary;
+      return SearchResult::AnswerType::kDictionary;
     case SuggestionAnswer::ANSWER_TYPE_FINANCE:
-      return AnswerType::kFinance;
+      return SearchResult::AnswerType::kFinance;
     case SuggestionAnswer::ANSWER_TYPE_SUNRISE:
-      return AnswerType::kSunrise;
+      return SearchResult::AnswerType::kSunrise;
     case SuggestionAnswer::ANSWER_TYPE_TRANSLATION:
-      return AnswerType::kTranslation;
+      return SearchResult::AnswerType::kTranslation;
     case SuggestionAnswer::ANSWER_TYPE_WHEN_IS:
-      return AnswerType::kWhenIs;
+      return SearchResult::AnswerType::kWhenIs;
     default:
-      return AnswerType::kDefaultAnswer;
+      return SearchResult::AnswerType::kDefaultAnswer;
   }
 }
 
-OmniboxType MatchTypeToOmniboxType(const AutocompleteMatchType::Type type) {
+SearchResult::OmniboxType MatchTypeToOmniboxType(
+    const AutocompleteMatchType::Type type) {
   switch (type) {
     case AutocompleteMatchType::URL_WHAT_YOU_TYPED:
     case AutocompleteMatchType::HISTORY_URL:
@@ -50,7 +58,7 @@ OmniboxType MatchTypeToOmniboxType(const AutocompleteMatchType::Type type) {
     case AutocompleteMatchType::TAB_SEARCH_DEPRECATED:
     case AutocompleteMatchType::DOCUMENT_SUGGESTION:
     case AutocompleteMatchType::PEDAL_DEPRECATED:
-      return OmniboxType::kDomain;
+      return SearchResult::OmniboxType::kDomain;
 
     case AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED:
     case AutocompleteMatchType::SEARCH_SUGGEST:
@@ -62,103 +70,167 @@ OmniboxType MatchTypeToOmniboxType(const AutocompleteMatchType::Type type) {
     case AutocompleteMatchType::VOICE_SUGGEST:
     case AutocompleteMatchType::CLIPBOARD_TEXT:
     case AutocompleteMatchType::CLIPBOARD_IMAGE:
-      return OmniboxType::kSearch;
+      return SearchResult::OmniboxType::kSearch;
 
     case AutocompleteMatchType::SEARCH_HISTORY:
     case AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED:
-      return OmniboxType::kHistory;
+      return SearchResult::OmniboxType::kHistory;
 
     case AutocompleteMatchType::CALCULATOR:
-      return OmniboxType::kCalculator;
+      return SearchResult::OmniboxType::kCalculator;
 
     case AutocompleteMatchType::OPEN_TAB:
-      return OmniboxType::kOpenTab;
+      return SearchResult::OmniboxType::kOpenTab;
 
     case AutocompleteMatchType::EXTENSION_APP_DEPRECATED:
     case AutocompleteMatchType::TILE_SUGGESTION:
     case AutocompleteMatchType::TILE_NAVSUGGEST:
     case AutocompleteMatchType::NUM_TYPES:
       // Not reached.
-      return OmniboxType::kDomain;
+      return SearchResult::OmniboxType::kDomain;
   }
 }
 
-// Returns the first text field from the given ImageLine.
-std::u16string GetFirstText(const SuggestionAnswer::ImageLine& line) {
-  return line.text_fields().empty() ? std::u16string()
-                                    : line.text_fields()[0].text();
-}
-
-std::u16string GetAdditionalText(const SuggestionAnswer::ImageLine& line) {
-  return line.additional_text() ? line.additional_text()->text()
-                                : std::u16string();
-}
-
-mojom::SearchResult::TextType GetAdditionalTextType(
-    const SuggestionAnswer::ImageLine& line) {
-  if (!line.additional_text())
-    return mojom::SearchResult::TextType::kUnset;
-
-  switch (line.additional_text()->style()) {
+SearchResult::TextType TextStyleToType(
+    const SuggestionAnswer::TextStyle style) {
+  switch (style) {
     case SuggestionAnswer::TextStyle::POSITIVE:
-      return mojom::SearchResult::TextType::kPositive;
+      return SearchResult::TextType::kPositive;
     case SuggestionAnswer::TextStyle::NEGATIVE:
-      return mojom::SearchResult::TextType::kNegative;
+      return SearchResult::TextType::kNegative;
     default:
-      return mojom::SearchResult::TextType::kUnset;
+      return SearchResult::TextType::kUnset;
   }
 }
 
-mojom::SearchResultPtr CreateBaseResult(const AutocompleteMatch& match) {
-  mojom::SearchResultPtr result = mojom::SearchResult::New();
+SearchResult::TextType ClassesToType(
+    const ACMatchClassifications& text_classes) {
+  // Only retain the URL class, other classes are either ignored. Tag indices
+  // are also ignored since they will apply to the entire text.
+  for (const auto& text_class : text_classes) {
+    if (text_class.style & ACMatchClassification::URL) {
+      return SearchResult::TextType::kUrl;
+    }
+  }
+
+  return SearchResult::TextType::kUnset;
+}
+
+SearchResultPtr CreateBaseResult(AutocompleteMatch& match,
+                                 AutocompleteController* controller,
+                                 const AutocompleteInput& input) {
+  SearchResultPtr result = SearchResult::New();
+
+  if (controller && match.search_terms_args) {
+    match.search_terms_args->request_source = TemplateURLRef::CROS_APP_LIST;
+    controller->SetMatchDestinationURL(&match);
+  }
 
   result->type = mojom::SearchResultType::kOmniboxResult;
   result->relevance = match.relevance;
   result->destination_url = match.destination_url;
+
+  if (controller && match.stripped_destination_url.spec().empty()) {
+    match.ComputeStrippedDestinationURL(
+        input,
+        controller->autocomplete_provider_client()->GetTemplateURLService());
+  }
+  result->stripped_destination_url = match.stripped_destination_url;
+
+  if (ui::PageTransitionCoreTypeIs(
+          match.transition, ui::PageTransition::PAGE_TRANSITION_GENERATED)) {
+    result->page_transition = SearchResult::PageTransition::kGenerated;
+  } else {
+    result->page_transition = SearchResult::PageTransition::kTyped;
+  }
+
   result->is_omnibox_search = AutocompleteMatch::IsSearchType(match.type)
-                                  ? mojom::SearchResult::OptionalBool::kTrue
-                                  : mojom::SearchResult::OptionalBool::kFalse;
+                                  ? SearchResult::OptionalBool::kTrue
+                                  : SearchResult::OptionalBool::kFalse;
   return result;
 }
 
 }  // namespace
 
-mojom::SearchResultPtr CreateAnswerResult(const AutocompleteMatch& match) {
-  mojom::SearchResultPtr result = CreateBaseResult(match);
+int ProviderTypes() {
+  // We use all the default providers except for the document provider, which
+  // suggests Drive files on enterprise devices. This is disabled to avoid
+  // duplication with search results from DriveFS.
+  int providers = AutocompleteClassifier::DefaultOmniboxProviders() &
+                  ~AutocompleteProvider::TYPE_DOCUMENT;
 
-  result->is_answer = mojom::SearchResult::OptionalBool::kTrue;
+  return providers;
+}
+
+SearchResultPtr CreateAnswerResult(AutocompleteMatch& match,
+                                   AutocompleteController* controller,
+                                   const AutocompleteInput& input) {
+  SearchResultPtr result = CreateBaseResult(match, controller, input);
+
+  result->is_answer = SearchResult::OptionalBool::kTrue;
   result->answer_type = MatchTypeToAnswerType(match.answer->type());
 
-  if (result->answer_type == AnswerType::kWeather)
+  if (result->answer_type == SearchResult::AnswerType::kWeather)
     result->image_url = match.answer->image_url();
 
   result->contents = match.contents;
-  result->additional_contents = GetAdditionalText(match.answer->first_line());
 
-  const auto& second_line = match.answer->second_line();
-  result->description = GetFirstText(second_line);
-  result->additional_description = GetAdditionalText(second_line);
-  result->additional_description_type = GetAdditionalTextType(second_line);
+  const auto& first = match.answer->first_line();
+  if (first.additional_text()) {
+    result->additional_contents = first.additional_text()->text();
+    result->additional_contents_type =
+        TextStyleToType(first.additional_text()->style());
+  }
+
+  const auto& second = match.answer->second_line();
+  if (!second.text_fields().empty()) {
+    // Only extract the first text field.
+    result->description = second.text_fields()[0].text();
+    result->description_type = TextStyleToType(second.text_fields()[0].style());
+  }
+  if (second.additional_text()) {
+    result->additional_description = second.additional_text()->text();
+    result->additional_description_type =
+        TextStyleToType(second.additional_text()->style());
+  }
 
   return result;
 }
 
-mojom::SearchResultPtr CreateResult(const AutocompleteMatch& match) {
-  mojom::SearchResultPtr result = CreateBaseResult(match);
+SearchResultPtr CreateResult(AutocompleteMatch& match,
+                             AutocompleteController* controller,
+                             const std::u16string& query,
+                             const AutocompleteInput& input) {
+  SearchResultPtr result = CreateBaseResult(match, controller, input);
 
-  result->is_answer = mojom::SearchResult::OptionalBool::kFalse;
+  result->is_answer = SearchResult::OptionalBool::kFalse;
 
   if (match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY &&
       !match.image_url.is_empty()) {
-    result->omnibox_type = OmniboxType::kRichImage;
+    result->omnibox_type = SearchResult::OmniboxType::kRichImage;
     result->image_url = match.image_url;
   } else {
-    // TODO(crbug.com/1228687): Implement favicon logic.
+    // This may not be the final type. Favicons and bookmarks take precedence.
     result->omnibox_type = MatchTypeToOmniboxType(match.type);
+
+    // TODO(crbug.com/1228587): Implement favicon and bookmark logic.
   }
 
-  result->contents = match.contents;
-  result->description = match.description;
+  // Calculator results come in two forms:
+  // 1) Answer in |contents|, empty |description|,
+  // 2) Query in |contents|, answer in |description|.
+  // For case 1, we should manually populate the query.
+  if (result->omnibox_type == SearchResult::OmniboxType::kCalculator &&
+      match.description.empty()) {
+    result->contents = query;
+    result->description = match.contents;
+    result->description_type = ClassesToType(match.contents_class);
+  } else {
+    result->contents = match.contents;
+    result->contents_type = ClassesToType(match.contents_class);
+    result->description = match.description;
+    result->description_type = ClassesToType(match.description_class);
+  }
 
   return result;
 }

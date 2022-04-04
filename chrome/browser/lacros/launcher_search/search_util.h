@@ -6,15 +6,30 @@
 #define CHROME_BROWSER_LACROS_LAUNCHER_SEARCH_SEARCH_UTIL_H_
 
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
+#include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+
+class AutocompleteController;
 
 namespace crosapi {
 
+// TODO(crbug.com/1228587): This code will be shared with ash. Move this file
+// into an appropriate location.
+
+// Returns a bitmask of the AutocompleteProvider types to be used by Launcher
+// search.
+int ProviderTypes();
+
 // Creates an Omnibox answer card result from the AutocompleteMatch.
-mojom::SearchResultPtr CreateAnswerResult(const AutocompleteMatch& match);
+mojom::SearchResultPtr CreateAnswerResult(AutocompleteMatch& match,
+                                          AutocompleteController* controller,
+                                          const AutocompleteInput& input);
 
 // Creates an Omnibox search result from the AutocompleteMatch.
-mojom::SearchResultPtr CreateResult(const AutocompleteMatch& match);
+mojom::SearchResultPtr CreateResult(AutocompleteMatch& match,
+                                    AutocompleteController* controller,
+                                    const std::u16string& query,
+                                    const AutocompleteInput& input);
 
 }  // namespace crosapi
 

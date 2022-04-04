@@ -8,7 +8,9 @@
 
 #include "base/json/json_reader.h"
 #include "base/values.h"
+#include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -16,6 +18,11 @@
 
 namespace crosapi {
 namespace {
+
+TEST(SearchUtilTest, ProviderTypes) {
+  const int types = ProviderTypes();
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_DOCUMENT);
+}
 
 // Tests result conversion for a default answer result.
 TEST(SearchUtilTest, CreateAnswerResult) {
@@ -39,7 +46,7 @@ TEST(SearchUtilTest, CreateAnswerResult) {
   ASSERT_TRUE(SuggestionAnswer::ParseAnswer(value->GetDict(), u"-1", &answer));
   match.answer = answer;
 
-  const auto result = CreateAnswerResult(match);
+  const auto result = CreateAnswerResult(match, nullptr, AutocompleteInput());
   EXPECT_EQ(result->type, mojom::SearchResultType::kOmniboxResult);
   EXPECT_EQ(result->relevance, 1248);
   ASSERT_TRUE(result->destination_url.has_value());
@@ -65,10 +72,16 @@ TEST(SearchUtilTest, CreateResult) {
   match.destination_url = GURL("http://www.example.com/");
   match.type = AutocompleteMatchType::Type::SEARCH_SUGGEST_ENTITY;
   match.image_url = GURL("http://www.example.com/image.jpeg");
+
   match.contents = u"contents";
   match.description = u"description";
+  match.contents_class = {
+      ACMatchClassification(0, ACMatchClassification::Style::URL)};
+  match.description_class = {
+      ACMatchClassification(0, ACMatchClassification::Style::MATCH)};
 
-  const auto result = CreateResult(match);
+  const auto result =
+      CreateResult(match, nullptr, u"query", AutocompleteInput());
   EXPECT_EQ(result->type, mojom::SearchResultType::kOmniboxResult);
   EXPECT_EQ(result->relevance, 300);
   ASSERT_TRUE(result->destination_url.has_value());
@@ -80,10 +93,15 @@ TEST(SearchUtilTest, CreateResult) {
   ASSERT_TRUE(result->image_url.has_value());
   EXPECT_EQ(result->image_url.value(),
             GURL("http://www.example.com/image.jpeg"));
+
   ASSERT_TRUE(result->contents.has_value());
   EXPECT_EQ(result->contents.value(), u"contents");
   ASSERT_TRUE(result->description.has_value());
   EXPECT_EQ(result->description.value(), u"description");
+
+  // The URL text class should be retained, but MATCH should be ignored.
+  EXPECT_EQ(result->contents_type, mojom::SearchResult::TextType::kUrl);
+  EXPECT_EQ(result->description_type, mojom::SearchResult::TextType::kUnset);
 }
 
 }  // namespace

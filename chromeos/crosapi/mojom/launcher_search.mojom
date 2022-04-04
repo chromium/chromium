@@ -36,7 +36,7 @@ enum SearchResultType {
 };
 
 // Struct represents search result.
-// Next min ID: 15
+// Next min ID: 19
 [Stable]
 struct SearchResult {
   // Type of the result. Used to distinguish between different types of result.
@@ -45,6 +45,12 @@ struct SearchResult {
   double relevance@1;
   // Destination URL of the result. Used for opening the result.
   url.mojom.Url? destination_url@2;
+  // Stripped destination URL of the result. This is computed from
+  // |destination_url| by performing processing such as stripping off "www.",
+  // converting https protocol to http, and stripping excess query parameters.
+  // The stripped URL is used for unique identification and not as an actual
+  // URL.
+  [MinVersion=2] url.mojom.Url? stripped_destination_url@14;
 
   // The following fields represent additional information about search
   // results. These are optional and will be filled depending on the result.
@@ -62,6 +68,9 @@ struct SearchResult {
   // This defaults to kUnset.
   AnswerType answer_type@6;
 
+  // The page transition type of this result. Used for opening a result.
+  [MinVersion=2] PageTransition page_transition@15;
+
   // The image url of the result, if any. Used to download the result image.
   url.mojom.Url? image_url@7;
   // Favicon of the result.
@@ -69,13 +78,19 @@ struct SearchResult {
 
   // The contents of the result. Used to display the result.
   mojo_base.mojom.String16? contents@9;
+  // Text type of the contents, if any.
+  [MinVersion=2] TextType contents_type@16;
   // Additional contents for the result. Used to display the result.
   mojo_base.mojom.String16? additional_contents@10;
+  // Text type of the additional contents, if any.
+  [MinVersion=2] TextType additional_contents_type@17;
   // Description of the result. Used to display the result.
   mojo_base.mojom.String16? description@11;
+  // Text type of the description, if any.
+  [MinVersion=2] TextType description_type@18;
   // Additional description for the result. Used to display the result.
   mojo_base.mojom.String16? additional_description@12;
-  // Text type of the additional description, if any. Defaults to kUnset.
+  // Text type of the additional description, if any.
   TextType additional_description_type@13;
 
   [Stable, Extensible]
@@ -119,6 +134,15 @@ struct SearchResult {
     [Default] kUnset = 0,
     kPositive = 1,
     kNegative = 2,
+    [MinVersion=2] kUrl = 3,
+  };
+
+  // Enum representing the page transition types.
+  [Stable, Extensible]
+  enum PageTransition {
+    [Default] kUnset = 0,
+    kTyped = 1,
+    kGenerated = 2,
   };
 };
 
