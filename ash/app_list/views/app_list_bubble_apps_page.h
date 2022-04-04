@@ -9,6 +9,7 @@
 
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/views/app_list_nudge_controller.h"
+#include "ash/app_list/views/app_list_toast_container_view.h"
 #include "ash/app_list/views/apps_grid_view_focus_delegate.h"
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/ash_export.h"
@@ -37,7 +38,6 @@ class ApplicationDragAndDropHost;
 class AppListA11yAnnouncer;
 class AppListFolderController;
 class AppListNudgeController;
-class AppListToastContainerView;
 class AppListViewDelegate;
 class ContinueSectionView;
 class RecentAppsView;
@@ -50,11 +50,13 @@ class ScrollViewGradientHelper;
 // - Continue section with recent tasks and recent apps
 // - Grid of all apps
 // Does not include the search box, which is owned by a parent view.
-class ASH_EXPORT AppListBubbleAppsPage : public views::View,
-                                         public views::ViewObserver,
-                                         public AppListModelProvider::Observer,
-                                         public RecentAppsView::Delegate,
-                                         public AppsGridViewFocusDelegate {
+class ASH_EXPORT AppListBubbleAppsPage
+    : public views::View,
+      public views::ViewObserver,
+      public AppListModelProvider::Observer,
+      public RecentAppsView::Delegate,
+      public AppListToastContainerView::Delegate,
+      public AppsGridViewFocusDelegate {
  public:
   METADATA_HEADER(AppListBubbleAppsPage);
 
@@ -122,8 +124,16 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
   void MoveFocusUpFromRecents() override;
   void MoveFocusDownFromRecents(int column) override;
 
+  // AppListToastContainerView::Delegate:
+  void MoveFocusUpFromToast(int column) override;
+  void MoveFocusDownFromToast(int column) override;
+
   // AppsGridViewFocusDelegate:
   bool MoveFocusUpFromAppsGrid(int column) override;
+
+  // Helper functions to move the focus to RecentAppsView/AppsGridView.
+  bool HandleMovingFocusToRecents(int column);
+  void HandleMovingFocusToAppsGrid(int column);
 
   views::ScrollView* scroll_view() { return scroll_view_; }
   ScrollableAppsGridView* scrollable_apps_grid_view() {

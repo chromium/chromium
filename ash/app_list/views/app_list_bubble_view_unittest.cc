@@ -51,6 +51,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -873,6 +874,32 @@ TEST_F(AppListBubbleViewTest, DownArrowFromRecentsSelectsSameColumnInAppsGrid) {
   }
 }
 
+TEST_F(AppListBubbleViewTest, DownArrowFromToastKeepsSameColumnInAppsGrid) {
+  AddRecentApps(5);
+  AddAppItems(5);
+  ShowAppList();
+
+  AppListController::Get()->UpdateAppListWithNewTemporarySortOrder(
+      AppListSortOrder::kColor,
+      /*animate=*/false, /*update_position_closure=*/base::OnceClosure());
+  ASSERT_TRUE(GetToastContainerView()->GetToastDismissButton());
+
+  for (int column = 0; column < 5; column++) {
+    // Pressing down arrow from an item in recent apps selects the app in the
+    // same column in the apps grid.
+    AppListItemView* recent_app = GetRecentAppsView()->GetItemViewAt(column);
+    recent_app->RequestFocus();
+    ASSERT_TRUE(recent_app->HasFocus());
+
+    PressAndReleaseKey(ui::VKEY_DOWN);
+    EXPECT_TRUE(GetToastContainerView()->GetToastDismissButton()->HasFocus());
+
+    PressAndReleaseKey(ui::VKEY_DOWN);
+    AppListItemView* app = GetAppsGridView()->GetItemViewAt(column);
+    EXPECT_TRUE(app->HasFocus()) << "Focus mismatch for column " << column;
+  }
+}
+
 TEST_F(AppListBubbleViewTest, DownArrowFromRecentsSelectsLastColumnInAppsGrid) {
   AddRecentApps(5);
   AddFolderWithApps(2);
@@ -932,6 +959,32 @@ TEST_F(AppListBubbleViewTest, UpArrowFromAppsGridSelectsSameColumnInRecents) {
 
     PressAndReleaseKey(ui::VKEY_UP);
 
+    EXPECT_TRUE(GetRecentAppsView()->GetItemViewAt(column)->HasFocus())
+        << "Focus mismatch for column " << column;
+  }
+}
+
+TEST_F(AppListBubbleViewTest, UpArrowFromToastKeepsSameColumnInAppsGrid) {
+  AddRecentApps(5);
+  AddAppItems(5);
+  ShowAppList();
+
+  AppListController::Get()->UpdateAppListWithNewTemporarySortOrder(
+      AppListSortOrder::kColor,
+      /*animate=*/false, /*update_position_closure=*/base::OnceClosure());
+  ASSERT_TRUE(GetToastContainerView()->GetToastDismissButton());
+
+  for (int column = 0; column < 5; column++) {
+    // Pressing up arrow from an item in the apps grid selects the app in the
+    // same column in the recents list.
+    AppListItemView* app = GetAppsGridView()->GetItemViewAt(column);
+    app->RequestFocus();
+    ASSERT_TRUE(app->HasFocus());
+
+    PressAndReleaseKey(ui::VKEY_UP);
+    EXPECT_TRUE(GetToastContainerView()->GetToastDismissButton()->HasFocus());
+
+    PressAndReleaseKey(ui::VKEY_UP);
     EXPECT_TRUE(GetRecentAppsView()->GetItemViewAt(column)->HasFocus())
         << "Focus mismatch for column " << column;
   }

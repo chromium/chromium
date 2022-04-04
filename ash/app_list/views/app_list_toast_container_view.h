@@ -49,13 +49,38 @@ class AppListToastContainerView : public views::View {
     kReorderUndo,
   };
 
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Requests that focus move up and out (usually to the recent apps).
+    // `column` is the column of the item (could be from the recent apps or apps
+    // grid) that was focused before moving focus on this toast container. The
+    // delegate should choose an appropriate item to focus.
+    virtual void MoveFocusUpFromToast(int column) = 0;
+
+    // Requests that focus move down and out (usually to the apps grid).
+    // `column` is the column of the item (could be from the recent apps or apps
+    // grid) that was focused before moving focus on this toast container. The
+    // delegate should choose an appropriate item to focus.
+    virtual void MoveFocusDownFromToast(int column) = 0;
+  };
+
   AppListToastContainerView(AppListNudgeController* nudge_controller_,
                             AppListA11yAnnouncer* a11y_announcer,
+                            Delegate* delegate,
                             bool tablet_mode);
   AppListToastContainerView(const AppListToastContainerView&) = delete;
   AppListToastContainerView& operator=(const AppListToastContainerView&) =
       delete;
   ~AppListToastContainerView() override;
+
+  // views::View:
+  bool OnKeyPressed(const ui::KeyEvent& event) override;
+
+  // Handle focus passed from the app on column `column` in AppsGridView or
+  // RecentAppsView.
+  bool HandleFocus(int column);
 
   // Updates the toast container to show/hide the reorder nudge if needed.
   void MaybeUpdateReorderNudgeView();
@@ -86,7 +111,7 @@ class AppListToastContainerView : public views::View {
   void AnnounceSortOrder(AppListSortOrder new_order);
 
   // This function expects that `toast_view_` exists.
-  views::LabelButton* GetToastDismissButtonForTest();
+  views::LabelButton* GetToastDismissButton();
 
   bool is_toast_visible() const { return toast_view_; }
   ToastType current_toast() const { return current_toast_; }
@@ -112,6 +137,7 @@ class AppListToastContainerView : public views::View {
 
   AppListToastView* toast_view_ = nullptr;
 
+  Delegate* const delegate_;
   AppListNudgeController* const nudge_controller_;
 
   // Caches the current visibility state which is used to help tracking the
@@ -120,6 +146,10 @@ class AppListToastContainerView : public views::View {
 
   // Caches the current toast type.
   ToastType current_toast_ = ToastType::kNone;
+
+  // Caches the column of previously focused app. Used when passing focus
+  // between apps grid view and recent apps.
+  int focused_app_column_ = 0;
 };
 
 }  // namespace ash

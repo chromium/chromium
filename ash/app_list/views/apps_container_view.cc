@@ -273,7 +273,7 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
       toast_container_ = scrollable_container_->AddChildView(
           std::make_unique<AppListToastContainerView>(
               app_list_nudge_controller_.get(), a11y_announcer,
-              /*tablet_mode=*/true));
+              /*delegate=*/nullptr, /*tablet_mode=*/true));
       toast_container_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
     }
   } else {

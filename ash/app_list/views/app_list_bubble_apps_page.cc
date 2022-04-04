@@ -26,12 +26,14 @@
 #include "ash/controls/scroll_view_gradient_helper.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
@@ -179,7 +181,7 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   if (features::IsLauncherAppSortEnabled()) {
     toast_container_ = scroll_contents->AddChildView(
         std::make_unique<AppListToastContainerView>(
-            app_list_nudge_controller_.get(), a11y_announcer,
+            app_list_nudge_controller_.get(), a11y_announcer, /*delegate=*/this,
             /*tablet_mode=*/false));
   }
 
@@ -525,48 +527,37 @@ void AppListBubbleAppsPage::MoveFocusUpFromRecents() {
 }
 
 void AppListBubbleAppsPage::MoveFocusDownFromRecents(int column) {
-  // When showing the sort undo toast, default to the default behavior that
-  // moves focus to the toast.
-  if (toast_container_ && toast_container_->is_toast_visible() &&
-      toast_container_->current_toast() ==
-          AppListToastContainerView::ToastType::kReorderUndo) {
-    views::View* last_recent =
-        recent_apps_->GetItemViewAt(recent_apps_->GetItemViewCount() - 1);
-    views::View* next_view = GetFocusManager()->GetNextFocusableView(
-        last_recent, GetWidget(), /*reverse=*/false, /*dont_loop=*/false);
-    DCHECK(next_view);
-    next_view->RequestFocus();
+  // Check if the `toast_container_` can handle the focus.
+  if (toast_container_ && toast_container_->HandleFocus(column))
     return;
-  }
 
-  int top_level_item_count =
-      scrollable_apps_grid_view_->view_model()->view_size();
-  if (top_level_item_count <= 0)
-    return;
-  // Attempt to focus the item at `column` in the first row, or the last item if
-  // there aren't enough items. This could happen if the user's apps are in a
-  // small number of folders.
-  int index = std::min(column, top_level_item_count - 1);
-  AppListItemView* item = scrollable_apps_grid_view_->GetItemViewAt(index);
-  DCHECK(item);
-  item->RequestFocus();
+  HandleMovingFocusToAppsGrid(column);
+}
+
+void AppListBubbleAppsPage::MoveFocusUpFromToast(int column) {
+  HandleMovingFocusToRecents(column);
+}
+
+void AppListBubbleAppsPage::MoveFocusDownFromToast(int column) {
+  HandleMovingFocusToAppsGrid(column);
 }
 
 bool AppListBubbleAppsPage::MoveFocusUpFromAppsGrid(int column) {
   DVLOG(1) << __FUNCTION__;
-  // When showing the sort undo toast, default to the default behavior that
-  // moves focus to the toast.
-  if (toast_container_ && toast_container_->is_toast_visible() &&
-      toast_container_->current_toast() ==
-          AppListToastContainerView::ToastType::kReorderUndo) {
-    return false;
-  }
+  // Check if the `toast_container_` can handle the focus.
+  if (toast_container_ && toast_container_->HandleFocus(column))
+    return true;
 
+  return HandleMovingFocusToRecents(column);
+}
+
+bool AppListBubbleAppsPage::HandleMovingFocusToRecents(int column) {
   const int recent_app_count = recent_apps_->GetItemViewCount();
   // If there aren't any recent apps, don't change focus here. Fall back to the
   // app grid's default behavior.
   if (!recent_apps_->GetVisible() || recent_app_count <= 0)
     return false;
+
   // Attempt to focus the item at `column`, or the last item if there aren't
   // enough items.
   int index = std::min(column, recent_app_count - 1);
@@ -574,6 +565,21 @@ bool AppListBubbleAppsPage::MoveFocusUpFromAppsGrid(int column) {
   DCHECK(item);
   item->RequestFocus();
   return true;
+}
+
+void AppListBubbleAppsPage::HandleMovingFocusToAppsGrid(int column) {
+  int top_level_item_count =
+      scrollable_apps_grid_view_->view_model()->view_size();
+  if (top_level_item_count <= 0)
+    return;
+
+  // Attempt to focus the item at `column` in the first row, or the last item if
+  // there aren't enough items. This could happen if the user's apps are in a
+  // small number of folders.
+  int index = std::min(column, top_level_item_count - 1);
+  AppListItemView* item = scrollable_apps_grid_view_->GetItemViewAt(index);
+  DCHECK(item);
+  item->RequestFocus();
 }
 
 ui::Layer* AppListBubbleAppsPage::GetPageAnimationLayerForTest() {

@@ -151,7 +151,7 @@ RecentAppsView::RecentAppsView(Delegate* delegate,
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kGroup);
   // TODO(https://crbug.com/1298211): This needs a designated string resource.
   GetViewAccessibility().OverrideName(
-      l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_RECENT_APPS_TITLE));
+      l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_RECENT_APPS_A11Y_NAME));
   SetVisible(false);
 }
 

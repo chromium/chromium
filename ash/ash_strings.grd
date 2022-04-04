@@ -4739,6 +4739,12 @@ New install
       <message name="IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER" desc="Placeholder text for the search box shown in the app list UI.">
         Search your device, apps, settings, web...
       </message>
+      <message name="IDS_ASH_LAUNCHER_RECENT_APPS_A11Y_NAME" desc="Accessible name of the recent apps section in launcher UI. The recent apps section shows a list of recent apps that the user can continue using.">
+        Recent Apps, navigate with left arrow to access all recent apps
+      </message>
+      <message name="IDS_ASH_LAUNCHER_APPS_GRID_A11Y_NAME" desc="Accessible name of the apps grid that contains all apps in launcher UI.">
+        All Apps, navigate with left or down arrow to access all apps
+      </message>
 
       <!-- WM -->
       <message name="IDS_ENTER_PIP_A11Y_NOTIFICATION" is_accessibility_with_no_ui="true" desc="Accessibility text read by chromevox when a window starts picture-in-picture mode.">

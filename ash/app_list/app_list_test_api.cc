@@ -399,12 +399,11 @@ bool AppListTestApi::IsFolderViewAnimating() const {
 }
 
 views::View* AppListTestApi::GetBubbleReorderUndoButton() {
-  return GetToastContainerViewFromBubble()->GetToastDismissButtonForTest();
+  return GetToastContainerViewFromBubble()->GetToastDismissButton();
 }
 
 views::View* AppListTestApi::GetFullscreenReorderUndoButton() {
-  return GetToastContainerViewFromFullscreenAppList()
-      ->GetToastDismissButtonForTest();
+  return GetToastContainerViewFromFullscreenAppList()->GetToastDismissButton();
 }
 
 bool AppListTestApi::GetBubbleReorderUndoToastVisibility() const {

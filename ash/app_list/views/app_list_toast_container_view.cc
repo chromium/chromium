@@ -16,6 +16,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view_class_properties.h"
@@ -44,9 +45,11 @@ constexpr auto kReorderUndoInteriorMargin = gfx::Insets::TLBR(8, 16, 8, 8);
 AppListToastContainerView::AppListToastContainerView(
     AppListNudgeController* nudge_controller,
     AppListA11yAnnouncer* a11y_announcer,
+    Delegate* delegate,
     bool tablet_mode)
     : a11y_announcer_(a11y_announcer),
       tablet_mode_(tablet_mode),
+      delegate_(delegate),
       nudge_controller_(nudge_controller) {
   DCHECK(a11y_announcer_);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -68,6 +71,33 @@ AppListToastContainerView::AppListToastContainerView(
 
 AppListToastContainerView::~AppListToastContainerView() {
   toast_view_ = nullptr;
+}
+
+bool AppListToastContainerView::OnKeyPressed(const ui::KeyEvent& event) {
+  if (!delegate_)
+    return false;
+
+  if (event.key_code() == ui::VKEY_UP) {
+    delegate_->MoveFocusUpFromToast(focused_app_column_);
+    return true;
+  }
+
+  if (event.key_code() == ui::VKEY_DOWN) {
+    delegate_->MoveFocusDownFromToast(focused_app_column_);
+    return true;
+  }
+  return false;
+}
+
+bool AppListToastContainerView::HandleFocus(int column) {
+  // Only handle the focus if the button on the toast exists.
+  views::LabelButton* dismiss_button = GetToastDismissButton();
+  if (!dismiss_button)
+    return false;
+
+  focused_app_column_ = column;
+  dismiss_button->RequestFocus();
+  return true;
 }
 
 void AppListToastContainerView::MaybeUpdateReorderNudgeView() {
@@ -207,7 +237,7 @@ void AppListToastContainerView::AnnounceSortOrder(AppListSortOrder new_order) {
   a11y_announcer_->Announce(CalculateToastTextFromOrder(new_order));
 }
 
-views::LabelButton* AppListToastContainerView::GetToastDismissButtonForTest() {
+views::LabelButton* AppListToastContainerView::GetToastDismissButton() {
   if (!toast_view_ || current_toast_ != ToastType::kReorderUndo)
     return nullptr;
 
