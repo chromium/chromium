@@ -55,7 +55,7 @@ class SaveSubmittedPasswordActionTest : public testing::Test {
 TEST_F(SaveSubmittedPasswordActionTest, SaveSubmittedPasswordSuccess) {
   user_data_.selected_login_.emplace(GURL(kOrigin), kUsername);
 
-  EXPECT_CALL(mock_website_login_manager_, ReadyToCommitSubmittedPassword)
+  EXPECT_CALL(mock_website_login_manager_, ReadyToSaveSubmittedPassword)
       .WillOnce(Return(true));
   EXPECT_CALL(mock_website_login_manager_, SubmittedPasswordIsSame)
       .WillOnce(Return(false));
@@ -79,7 +79,7 @@ TEST_F(SaveSubmittedPasswordActionTest, SaveSubmittedPasswordSuccess) {
 TEST_F(SaveSubmittedPasswordActionTest, AttemptToSaveSameSubmittedPassword) {
   user_data_.selected_login_.emplace(GURL(kOrigin), kUsername);
 
-  EXPECT_CALL(mock_website_login_manager_, ReadyToCommitSubmittedPassword)
+  EXPECT_CALL(mock_website_login_manager_, ReadyToSaveSubmittedPassword)
       .WillOnce(Return(true));
   EXPECT_CALL(mock_website_login_manager_, SubmittedPasswordIsSame)
       .WillOnce(Return(true));
@@ -101,8 +101,8 @@ TEST_F(SaveSubmittedPasswordActionTest, AttemptToSaveSameSubmittedPassword) {
 }
 
 TEST_F(SaveSubmittedPasswordActionTest,
-       ReadyToCommitSubmittedPasswordPreconditionFails) {
-  EXPECT_CALL(mock_website_login_manager_, ReadyToCommitSubmittedPassword)
+       ReadyToSaveSubmittedPasswordPreconditionFails) {
+  EXPECT_CALL(mock_website_login_manager_, ReadyToSaveSubmittedPassword)
       .WillOnce(Return(false));
   EXPECT_CALL(mock_website_login_manager_, SaveSubmittedPassword).Times(0);
   EXPECT_CALL(callback_, Run(Pointee(Property(&ProcessedActionProto::status,

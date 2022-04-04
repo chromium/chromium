@@ -337,7 +337,7 @@ class WebsiteLoginManagerImpl::UpdatePasswordRequest
     form_fetcher_->AddConsumer(this);
   }
 
-  void CommitGeneratedPassword() {
+  void SaveGeneratedPassword() {
     password_save_manager_->Save(&form_data_ /* observed_form */,
                                  password_form_);
   }
@@ -483,14 +483,14 @@ void WebsiteLoginManagerImpl::PresaveGeneratedPassword(
   update_password_request_->FetchAndPresave();
 }
 
-bool WebsiteLoginManagerImpl::ReadyToCommitGeneratedPassword() {
+bool WebsiteLoginManagerImpl::ReadyToSaveGeneratedPassword() {
   return update_password_request_ != nullptr;
 }
 
-void WebsiteLoginManagerImpl::CommitGeneratedPassword() {
+void WebsiteLoginManagerImpl::SaveGeneratedPassword() {
   DCHECK(update_password_request_);
 
-  update_password_request_->CommitGeneratedPassword();
+  update_password_request_->SaveGeneratedPassword();
 
   update_password_request_.reset();
 }
@@ -499,7 +499,7 @@ void WebsiteLoginManagerImpl::ResetPendingCredentials() {
   client_->GetPasswordManager()->ResetPendingCredentials();
 }
 
-bool WebsiteLoginManagerImpl::ReadyToCommitSubmittedPassword() {
+bool WebsiteLoginManagerImpl::ReadyToSaveSubmittedPassword() {
   return client_->GetPasswordManager()->HasSubmittedManager();
 }
 
@@ -508,7 +508,7 @@ bool WebsiteLoginManagerImpl::SubmittedPasswordIsSame() {
 }
 
 bool WebsiteLoginManagerImpl::SaveSubmittedPassword() {
-  if (!ReadyToCommitSubmittedPassword()) {
+  if (!ReadyToSaveSubmittedPassword()) {
     return false;
   }
   client_->GetPasswordManager()->SaveSubmittedManager();

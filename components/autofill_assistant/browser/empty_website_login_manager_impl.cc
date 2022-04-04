@@ -63,15 +63,15 @@ void EmptyWebsiteLoginManagerImpl::PresaveGeneratedPassword(
   std::move(callback).Run();
 }
 
-bool EmptyWebsiteLoginManagerImpl::ReadyToCommitGeneratedPassword() {
+bool EmptyWebsiteLoginManagerImpl::ReadyToSaveGeneratedPassword() {
   return false;
 }
 
-void EmptyWebsiteLoginManagerImpl::CommitGeneratedPassword() {}
+void EmptyWebsiteLoginManagerImpl::SaveGeneratedPassword() {}
 
 void EmptyWebsiteLoginManagerImpl::ResetPendingCredentials() {}
 
-bool EmptyWebsiteLoginManagerImpl::ReadyToCommitSubmittedPassword() {
+bool EmptyWebsiteLoginManagerImpl::ReadyToSaveSubmittedPassword() {
   return false;
 }
 

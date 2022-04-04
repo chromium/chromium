@@ -69,13 +69,13 @@ class MockWebsiteLoginManager : public WebsiteLoginManager {
   MOCK_METHOD2(OnDeletePasswordForLogin,
                void(const Login& login, base::OnceCallback<void(bool)>&));
 
-  MOCK_METHOD(bool, ReadyToCommitGeneratedPassword, (), (override));
+  MOCK_METHOD(bool, ReadyToSaveGeneratedPassword, (), (override));
 
-  MOCK_METHOD(void, CommitGeneratedPassword, (), (override));
+  MOCK_METHOD(void, SaveGeneratedPassword, (), (override));
 
   MOCK_METHOD(void, ResetPendingCredentials, (), (override));
 
-  MOCK_METHOD(bool, ReadyToCommitSubmittedPassword, (), (override));
+  MOCK_METHOD(bool, ReadyToSaveSubmittedPassword, (), (override));
 
   MOCK_METHOD(bool, SubmittedPasswordIsSame, (), (override));
 

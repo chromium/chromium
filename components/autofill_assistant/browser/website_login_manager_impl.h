@@ -56,13 +56,13 @@ class WebsiteLoginManagerImpl : public WebsiteLoginManager {
                                 const autofill::FormData& form_data,
                                 base::OnceCallback<void()> callback) override;
 
-  bool ReadyToCommitGeneratedPassword() override;
+  bool ReadyToSaveGeneratedPassword() override;
 
-  void CommitGeneratedPassword() override;
+  void SaveGeneratedPassword() override;
 
   void ResetPendingCredentials() override;
 
-  bool ReadyToCommitSubmittedPassword() override;
+  bool ReadyToSaveSubmittedPassword() override;
 
   bool SubmittedPasswordIsSame() override;
 

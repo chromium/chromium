@@ -47,10 +47,10 @@ class EmptyWebsiteLoginManagerImpl : public WebsiteLoginManager {
                                 const std::string& password,
                                 const autofill::FormData& form_data,
                                 base::OnceCallback<void()> callback) override;
-  bool ReadyToCommitGeneratedPassword() override;
-  void CommitGeneratedPassword() override;
+  bool ReadyToSaveGeneratedPassword() override;
+  void SaveGeneratedPassword() override;
   void ResetPendingCredentials() override;
-  bool ReadyToCommitSubmittedPassword() override;
+  bool ReadyToSaveSubmittedPassword() override;
   bool SubmittedPasswordIsSame() override;
   bool SaveSubmittedPassword() override;
 };

@@ -243,13 +243,13 @@ TEST_F(WebsiteLoginManagerImplTest, SaveGeneratedPassword) {
       {GURL(kFakeUrl), kFakeUsername}, kFakeNewPassword,
       MakeFormDataWithPasswordField(), base::OnceClosure());
 
-  // Commit generated password.
-  EXPECT_TRUE(manager_->ReadyToCommitGeneratedPassword());
+  // Save generated password.
+  EXPECT_TRUE(manager_->ReadyToSaveGeneratedPassword());
   PasswordForm new_form = MakeSimplePasswordForm();
   new_form.password_value = kFakeNewPassword16;
   // Check that additional data is populated correctly from matched form.
   EXPECT_CALL(*store(), UpdateLoginWithPrimaryKey(FormMatches(new_form), _));
-  manager_->CommitGeneratedPassword();
+  manager_->SaveGeneratedPassword();
   WaitForPasswordStore();
 }
 
@@ -361,7 +361,7 @@ TEST_F(WebsiteLoginManagerImplTest, SaveSubmittedPasswordUpdate) {
   password_manager_->OnInformAboutUserInput(&driver_, updated_data);
   password_manager_->OnPasswordFormSubmitted(&driver_, updated_data);
   EXPECT_TRUE(password_manager_->GetSubmittedManagerForTest());
-  EXPECT_TRUE(manager_->ReadyToCommitSubmittedPassword());
+  EXPECT_TRUE(manager_->ReadyToSaveSubmittedPassword());
   EXPECT_FALSE(manager_->SubmittedPasswordIsSame());
 
   PasswordForm expected_form(form);
@@ -383,7 +383,7 @@ TEST_F(WebsiteLoginManagerImplTest, SaveSubmittedPasswordEqualPassword) {
   password_manager_->OnInformAboutUserInput(&driver_, non_updated_data);
   password_manager_->OnPasswordFormSubmitted(&driver_, non_updated_data);
   EXPECT_TRUE(password_manager_->GetSubmittedManagerForTest());
-  EXPECT_TRUE(manager_->ReadyToCommitSubmittedPassword());
+  EXPECT_TRUE(manager_->ReadyToSaveSubmittedPassword());
   EXPECT_TRUE(manager_->SubmittedPasswordIsSame());
 
   // The expected form with the same password.
@@ -405,7 +405,7 @@ TEST_F(WebsiteLoginManagerImplTest, SaveSubmittedPasswordNewLogin) {
   password_manager_->OnPasswordFormsRendered(&driver_, {form.form_data}, true);
   password_manager_->OnPasswordFormSubmitted(&driver_, form.form_data);
   EXPECT_TRUE(password_manager_->GetSubmittedManagerForTest());
-  EXPECT_TRUE(manager_->ReadyToCommitSubmittedPassword());
+  EXPECT_TRUE(manager_->ReadyToSaveSubmittedPassword());
   EXPECT_FALSE(manager_->SubmittedPasswordIsSame());
 
   // Expect the password to get saved.
@@ -419,7 +419,7 @@ TEST_F(WebsiteLoginManagerImplTest, SaveSubmittedPasswordFailure) {
                                            {MakeFormDataWithPasswordField()});
   // No user updates to this point.
   EXPECT_FALSE(password_manager_->GetSubmittedManagerForTest());
-  EXPECT_FALSE(manager_->ReadyToCommitSubmittedPassword());
+  EXPECT_FALSE(manager_->ReadyToSaveSubmittedPassword());
   EXPECT_FALSE(manager_->SubmittedPasswordIsSame());
   EXPECT_FALSE(manager_->SaveSubmittedPassword());
 }

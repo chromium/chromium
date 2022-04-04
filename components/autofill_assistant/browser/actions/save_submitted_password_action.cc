@@ -27,7 +27,7 @@ void SaveSubmittedPasswordAction::InternalProcessAction(
   callback_ = std::move(callback);
 
   // If no password form has been submitted, fail.
-  if (!delegate_->GetWebsiteLoginManager()->ReadyToCommitSubmittedPassword()) {
+  if (!delegate_->GetWebsiteLoginManager()->ReadyToSaveSubmittedPassword()) {
     VLOG(1) << "SaveSubmittedPasswordAction: no submitted password to save.";
     EndAction(ClientStatus(PRECONDITION_FAILED));
     return;

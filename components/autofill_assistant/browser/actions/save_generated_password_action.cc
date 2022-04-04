@@ -50,13 +50,13 @@ void SaveGeneratedPasswordAction::InternalProcessAction(
     return;
   }
 
-  if (!delegate_->GetWebsiteLoginManager()->ReadyToCommitGeneratedPassword()) {
+  if (!delegate_->GetWebsiteLoginManager()->ReadyToSaveGeneratedPassword()) {
     VLOG(1) << "SaveGeneratedPasswordAction: no generated password to save.";
     EndAction(ClientStatus(PRECONDITION_FAILED));
     return;
   }
 
-  delegate_->GetWebsiteLoginManager()->CommitGeneratedPassword();
+  delegate_->GetWebsiteLoginManager()->SaveGeneratedPassword();
 
   delegate_->GetPasswordChangeSuccessTracker()->OnChangePasswordFlowCompleted(
       delegate_->GetUserData()->selected_login_->origin,
