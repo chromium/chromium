@@ -144,4 +144,21 @@ export function FeedbackFlowTestSuite() {
     activePage = page.shadowRoot.querySelector('.iron-selected');
     assertEquals('shareDataPage', activePage.id);
   });
+
+  // Test the navigation from share data page back to search page when click
+  // the back button.
+  test('NavigateFromShareDataPageToSearchPage', async () => {
+    await initializePage();
+    page.currentState_ = FeedbackFlowState.SHARE_DATA;
+
+    let activePage = page.shadowRoot.querySelector('.iron-selected');
+    assertEquals('shareDataPage', activePage.id);
+
+    activePage.shadowRoot.querySelector('#buttonBack').click();
+    await flushTasks();
+    // Should go back to share data page.
+    activePage = page.shadowRoot.querySelector('.iron-selected');
+    assertTrue(!!activePage);
+    assertEquals('searchPage', activePage.id);
+  });
 }

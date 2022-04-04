@@ -7,6 +7,8 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {FeedbackFlowState} from './feedback_flow.js';
+
 /**
  * @fileoverview
  * 'share-data-page' is the second page of the feedback tool. It allows users to
@@ -19,5 +21,20 @@ export class ShareDataPageElement extends PolymerElement {
   static get template() {
     return html`{__html_template__}`;
   }
+
+  /**
+   * @param {!Event} e
+   * @protected
+   */
+  handleBackButtonClicked_(e) {
+    e.stopPropagation();
+
+    this.dispatchEvent(new CustomEvent('go-back-click', {
+      composed: true,
+      bubbles: true,
+      detail: {currentState: FeedbackFlowState.SHARE_DATA}
+    }));
+  }
 }
+
 customElements.define(ShareDataPageElement.is, ShareDataPageElement);

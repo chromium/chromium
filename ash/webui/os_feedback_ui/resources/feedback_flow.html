@@ -2,7 +2,8 @@
   <iron-pages attr-for-selected="id" selected="[[currentState_]]">
     <search-page id="searchPage" on-continue-click="handleContinueClick_">
     </search-page>
-    <share-data-page id="shareDataPage"></share-data-page>
+    <share-data-page id="shareDataPage" on-go-back-click="handleGoBackClick_">
+    </share-data-page>
     <confirmation-page id="confirmationPage"></confirmation-page>
   </iron-pages>
 </div>
