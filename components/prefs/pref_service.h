@@ -27,6 +27,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_value_store.h"
 #include "components/prefs/prefs_export.h"

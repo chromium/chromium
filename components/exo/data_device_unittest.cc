@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "build/chromeos_buildflags.h"
 #include "components/exo/data_device_delegate.h"
 #include "components/exo/data_exchange_delegate.h"
 #include "components/exo/data_offer.h"

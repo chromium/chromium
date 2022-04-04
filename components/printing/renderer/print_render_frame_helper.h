@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/paint/paint_canvas.h"
 #include "components/printing/common/print.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"

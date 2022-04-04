@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "build/chromeos_buildflags.h"
 #include "components/exo/wayland/server_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
