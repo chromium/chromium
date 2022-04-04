@@ -61,7 +61,7 @@ class AssistiveSuggester : public SuggestionsSource {
   // Called when a surrounding text is changed.
   // Returns true if it changes the surrounding text, e.g. a suggestion is
   // generated or dismissed.
-  bool OnSurroundingTextChanged(const std::u16string& text,
+  void OnSurroundingTextChanged(const std::u16string& text,
                                 int cursor_pos,
                                 int anchor_pos);
 
@@ -84,11 +84,20 @@ class AssistiveSuggester : public SuggestionsSource {
   }
 
  private:
+  // Callback that is run after enabled_suggestions is received.
+  void ProcessOnSurroundingTextChanged(
+      const std::u16string& text,
+      int cursor_pos,
+      int anchor_pos,
+      const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);
+
   // Returns if any suggestion text should be displayed according to the
   // surrounding text information.
-  bool TrySuggestWithSurroundingText(const std::u16string& text,
-                                     int cursor_pos,
-                                     int anchor_pos);
+  bool TrySuggestWithSurroundingText(
+      const std::u16string& text,
+      int cursor_pos,
+      int anchor_pos,
+      const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);
 
   void DismissSuggestion();
 

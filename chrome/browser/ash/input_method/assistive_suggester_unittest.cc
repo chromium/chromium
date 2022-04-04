@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,6 +30,7 @@ namespace {
 using ime::TextSuggestion;
 using ime::TextSuggestionMode;
 using ime::TextSuggestionType;
+using EnabledSuggestions = AssistiveSuggesterSwitch::EnabledSuggestions;
 
 const char kUsEnglishEngineId[] = "xkb:us::eng";
 const char kSpainSpanishEngineId[] = "xkb:es::spa";
@@ -273,10 +275,9 @@ TEST_F(AssistiveSuggesterTest,
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
       suggestion_handler_.get(), profile_.get(),
       std::make_unique<FakeSuggesterSwitch>(
-          FakeSuggesterSwitch::EnabledSuggestions{
-              .emoji_suggestions = true,
-              .multi_word_suggestions = true,
-              .personal_info_suggestions = true}));
+          EnabledSuggestions{.emoji_suggestions = true,
+                             .multi_word_suggestions = true,
+                             .personal_info_suggestions = true}));
 
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
 
@@ -295,8 +296,7 @@ TEST_F(AssistiveSuggesterTest, RecordPredictiveWritingPrefOnActivate) {
       /*disabled_features=*/{});
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
       suggestion_handler_.get(), profile_.get(),
-      std::make_unique<FakeSuggesterSwitch>(
-          FakeSuggesterSwitch::EnabledSuggestions{}));
+      std::make_unique<FakeSuggesterSwitch>(EnabledSuggestions{}));
 
   SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/true);
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
@@ -312,8 +312,7 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsNotAllowed) {
       /*disabled_features=*/{});
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
       suggestion_handler_.get(), profile_.get(),
-      std::make_unique<FakeSuggesterSwitch>(
-          FakeSuggesterSwitch::EnabledSuggestions{}));
+      std::make_unique<FakeSuggesterSwitch>(EnabledSuggestions{}));
 
   SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/true);
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
@@ -334,8 +333,7 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsDisabledByUser) {
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
       suggestion_handler_.get(), profile_.get(),
       std::make_unique<FakeSuggesterSwitch>(
-          FakeSuggesterSwitch::EnabledSuggestions{.multi_word_suggestions =
-                                                      true}));
+          EnabledSuggestions{.multi_word_suggestions = true}));
 
   SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false);
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
@@ -357,8 +355,7 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsDisabledByLacros) {
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
       suggestion_handler_.get(), profile_.get(),
       std::make_unique<FakeSuggesterSwitch>(
-          FakeSuggesterSwitch::EnabledSuggestions{.multi_word_suggestions =
-                                                      true}));
+          EnabledSuggestions{.multi_word_suggestions = true}));
 
   SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/true);
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
@@ -380,8 +377,7 @@ TEST_F(AssistiveSuggesterTest,
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
       suggestion_handler_.get(), profile_.get(),
       std::make_unique<FakeSuggesterSwitch>(
-          FakeSuggesterSwitch::EnabledSuggestions{.multi_word_suggestions =
-                                                      true}));
+          EnabledSuggestions{.multi_word_suggestions = true}));
 
   SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/true);
   assistive_suggester_->OnActivate(kSpainSpanishEngineId);
@@ -402,8 +398,7 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsEnabled) {
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
       suggestion_handler_.get(), profile_.get(),
       std::make_unique<FakeSuggesterSwitch>(
-          FakeSuggesterSwitch::EnabledSuggestions{.multi_word_suggestions =
-                                                      true}));
+          EnabledSuggestions{.multi_word_suggestions = true}));
 
   SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/true);
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
@@ -416,6 +411,82 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsEnabled) {
       AssistiveTextInputState::kFeatureEnabled, 1);
 }
 
+class AssistiveSuggesterPersonalInfoTest : public testing::Test {
+ protected:
+  AssistiveSuggesterPersonalInfoTest() {
+    profile_ = std::make_unique<TestingProfile>();
+  }
+
+  void SetUp() override {
+    suggestion_handler_ = std::make_unique<FakeSuggestionHandler>();
+    assistive_suggester_ = std::make_unique<AssistiveSuggester>(
+        suggestion_handler_.get(), profile_.get(),
+        std::make_unique<FakeSuggesterSwitch>(EnabledSuggestions{
+            .personal_info_suggestions = true,
+        }));
+    personal_data_ = std::make_unique<autofill::TestPersonalDataManager>();
+    personal_data_->SetPrefService(profile_->GetPrefs());
+
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kAssistPersonalInfo,
+                              features::kAssistPersonalInfoEmail},
+        /*disabled_features=*/{});
+
+    profile_->GetPrefs()->SetBoolean(prefs::kAssistPersonalInfoEnabled, true);
+    SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/true);
+    profile_->set_profile_name(base::UTF16ToUTF8(email_));
+    chrome_keyboard_controller_client_ =
+        ChromeKeyboardControllerClient::CreateForTest();
+    chrome_keyboard_controller_client_->set_keyboard_visible_for_test(false);
+  }
+
+  content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<AssistiveSuggester> assistive_suggester_;
+  std::unique_ptr<FakeSuggestionHandler> suggestion_handler_;
+  std::unique_ptr<autofill::TestPersonalDataManager> personal_data_;
+  base::HistogramTester histogram_tester_;
+  std::unique_ptr<ChromeKeyboardControllerClient>
+      chrome_keyboard_controller_client_;
+
+  const std::u16string email_ = u"johnwayne@me.xyz";
+};
+
+TEST_F(AssistiveSuggesterPersonalInfoTest, ShouldNotSuggestWhenPrefDisabled) {
+  profile_->GetPrefs()->SetBoolean(prefs::kAssistPersonalInfoEnabled, false);
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+  assistive_suggester_->OnFocus(5);
+
+  assistive_suggester_->OnSurroundingTextChanged(u"my email is ", 12, 12);
+
+  EXPECT_FALSE(suggestion_handler_->GetShowingSuggestion());
+}
+
+TEST_F(AssistiveSuggesterPersonalInfoTest, ShouldNotSuggestWhenSwitchDisabled) {
+  assistive_suggester_ = std::make_unique<AssistiveSuggester>(
+      suggestion_handler_.get(), profile_.get(),
+      std::make_unique<FakeSuggesterSwitch>(EnabledSuggestions{
+          .personal_info_suggestions = false,
+      }));
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+  assistive_suggester_->OnFocus(5);
+
+  assistive_suggester_->OnSurroundingTextChanged(u"my email is ", 12, 12);
+
+  EXPECT_FALSE(suggestion_handler_->GetShowingSuggestion());
+}
+
+TEST_F(AssistiveSuggesterPersonalInfoTest, ShouldReturnPrefixBasedSuggestions) {
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+  assistive_suggester_->OnFocus(5);
+
+  assistive_suggester_->OnSurroundingTextChanged(u"my email is ", 12, 12);
+
+  EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
+  EXPECT_EQ(suggestion_handler_->GetSuggestionText(), u"johnwayne@me.xyz");
+}
+
 class AssistiveSuggesterMultiWordTest : public testing::Test {
  protected:
   AssistiveSuggesterMultiWordTest() {
@@ -426,10 +497,9 @@ class AssistiveSuggesterMultiWordTest : public testing::Test {
     suggestion_handler_ = std::make_unique<FakeSuggestionHandler>();
     assistive_suggester_ = std::make_unique<AssistiveSuggester>(
         suggestion_handler_.get(), profile_.get(),
-        std::make_unique<FakeSuggesterSwitch>(
-            FakeSuggesterSwitch::EnabledSuggestions{
-                .multi_word_suggestions = true,
-            }));
+        std::make_unique<FakeSuggesterSwitch>(EnabledSuggestions{
+            .multi_word_suggestions = true,
+        }));
 
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kAssistMultiWord},
@@ -486,6 +556,25 @@ TEST_F(AssistiveSuggesterMultiWordTest, OnDisabledFlagShouldNotShowSuggestion) {
   EXPECT_FALSE(suggestion_handler_->GetShowingSuggestion());
 }
 
+TEST_F(AssistiveSuggesterMultiWordTest, ShouldNotSuggestWhenSwitchDisabled) {
+  assistive_suggester_ = std::make_unique<AssistiveSuggester>(
+      suggestion_handler_.get(), profile_.get(),
+      std::make_unique<FakeSuggesterSwitch>(EnabledSuggestions{
+          .multi_word_suggestions = false,
+      }));
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "hello there"}};
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+  assistive_suggester_->OnFocus(5);
+  assistive_suggester_->OnSurroundingTextChanged(u"", 0, 0);
+
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+
+  EXPECT_FALSE(suggestion_handler_->GetShowingSuggestion());
+}
+
 TEST_F(AssistiveSuggesterMultiWordTest,
        MatchMetricRecordedWhenOneOrMoreSuggestions) {
   std::vector<TextSuggestion> suggestions = {
@@ -526,8 +615,7 @@ TEST_F(AssistiveSuggesterMultiWordTest,
        DisableMetricNotRecordedWhenNoSuggestionAndMultiWordBlocked) {
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
       suggestion_handler_.get(), profile_.get(),
-      std::make_unique<FakeSuggesterSwitch>(
-          FakeSuggesterSwitch::EnabledSuggestions{}));
+      std::make_unique<FakeSuggesterSwitch>(EnabledSuggestions{}));
 
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5);
@@ -542,8 +630,7 @@ TEST_F(AssistiveSuggesterMultiWordTest,
        DisableMetricRecordedWhenGivenSuggestionAndMultiWordBlocked) {
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
       suggestion_handler_.get(), profile_.get(),
-      std::make_unique<FakeSuggesterSwitch>(
-          FakeSuggesterSwitch::EnabledSuggestions{}));
+      std::make_unique<FakeSuggesterSwitch>(EnabledSuggestions{}));
   std::vector<TextSuggestion> suggestions = {
       TextSuggestion{.mode = TextSuggestionMode::kPrediction,
                      .type = TextSuggestionType::kMultiWord,
@@ -708,10 +795,9 @@ class AssistiveSuggesterEmojiTest : public testing::Test {
     suggestion_handler_ = std::make_unique<FakeSuggestionHandler>();
     assistive_suggester_ = std::make_unique<AssistiveSuggester>(
         suggestion_handler_.get(), profile_.get(),
-        std::make_unique<FakeSuggesterSwitch>(
-            FakeSuggesterSwitch::EnabledSuggestions{
-                .emoji_suggestions = true,
-            }));
+        std::make_unique<FakeSuggesterSwitch>(EnabledSuggestions{
+            .emoji_suggestions = true,
+        }));
     assistive_suggester_->get_emoji_suggester_for_testing()
         ->LoadEmojiMapForTesting(kEmojiData);
 
@@ -744,16 +830,29 @@ TEST_F(AssistiveSuggesterEmojiTest, ShouldNotSuggestWhenEmojiDisabled) {
 
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5);
+  assistive_suggester_->OnSurroundingTextChanged(u"arrow ", 6, 6);
 
-  EXPECT_FALSE(assistive_suggester_->OnSurroundingTextChanged(u"arrow ", 6, 6));
+  EXPECT_FALSE(suggestion_handler_->GetShowingSuggestion());
+}
+
+TEST_F(AssistiveSuggesterEmojiTest, ShouldNotSuggestWhenSwitchDisabled) {
+  assistive_suggester_ = std::make_unique<AssistiveSuggester>(
+      suggestion_handler_.get(), profile_.get(),
+      std::make_unique<FakeSuggesterSwitch>(EnabledSuggestions{
+          .emoji_suggestions = false,
+      }));
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+  assistive_suggester_->OnFocus(5);
+  assistive_suggester_->OnSurroundingTextChanged(u"arrow ", 6, 6);
+
   EXPECT_FALSE(suggestion_handler_->GetShowingSuggestion());
 }
 
 TEST_F(AssistiveSuggesterEmojiTest, ShouldReturnPrefixBasedEmojiSuggestions) {
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5);
+  assistive_suggester_->OnSurroundingTextChanged(u"arrow ", 6, 6);
 
-  EXPECT_TRUE(assistive_suggester_->OnSurroundingTextChanged(u"arrow ", 6, 6));
   EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), u"←");
 }

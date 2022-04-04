@@ -14,6 +14,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_prefs.h"
+#include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
 #include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -430,12 +431,24 @@ bool AssistiveSuggester::WithinGrammarFragment(int cursor_pos, int anchor_pos) {
   return grammar_fragment_opt != absl::nullopt;
 }
 
-bool AssistiveSuggester::OnSurroundingTextChanged(const std::u16string& text,
+void AssistiveSuggester::OnSurroundingTextChanged(const std::u16string& text,
                                                   int cursor_pos,
                                                   int anchor_pos) {
+  suggester_switch_->GetEnabledSuggestions(base::BindOnce(
+      &AssistiveSuggester::ProcessOnSurroundingTextChanged,
+      weak_ptr_factory_.GetWeakPtr(), text, cursor_pos, anchor_pos));
+}
+
+void AssistiveSuggester::ProcessOnSurroundingTextChanged(
+    const std::u16string& text,
+    int cursor_pos,
+    int anchor_pos,
+    const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
+  // TODO(b/225988020): Make record assistive match metrics take enabled
+  // suggestions.
   RecordAssistiveMatchMetrics(text, cursor_pos, anchor_pos);
   if (!IsAssistiveFeatureEnabled() || context_id_ == -1)
-    return false;
+    return;
 
   if (IsMultiWordSuggestEnabled()) {
     // Only multi word cares about tracking the current state of the text field
@@ -444,16 +457,17 @@ bool AssistiveSuggester::OnSurroundingTextChanged(const std::u16string& text,
   }
 
   if (WithinGrammarFragment(cursor_pos, anchor_pos) ||
-      !TrySuggestWithSurroundingText(text, cursor_pos, anchor_pos)) {
+      !TrySuggestWithSurroundingText(text, cursor_pos, anchor_pos,
+                                     enabled_suggestions)) {
     DismissSuggestion();
   }
-  return IsSuggestionShown();
 }
 
 bool AssistiveSuggester::TrySuggestWithSurroundingText(
     const std::u16string& text,
     int cursor_pos,
-    int anchor_pos) {
+    int anchor_pos,
+    const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
   int len = static_cast<int>(text.length());
   if (cursor_pos > 0 && cursor_pos <= len && cursor_pos == anchor_pos &&
       (cursor_pos == len || base::IsAsciiWhitespace(text[cursor_pos])) &&
@@ -463,7 +477,7 @@ bool AssistiveSuggester::TrySuggestWithSurroundingText(
                                                                cursor_pos);
     }
     if (IsAssistPersonalInfoEnabled() &&
-        suggester_switch_->IsPersonalInfoSuggestionAllowed() &&
+        enabled_suggestions.personal_info_suggestions &&
         personal_info_suggester_.TrySuggestWithSurroundingText(text,
                                                                cursor_pos)) {
       current_suggester_ = &personal_info_suggester_;
@@ -473,7 +487,7 @@ bool AssistiveSuggester::TrySuggestWithSurroundingText(
       return true;
     } else if (IsEmojiSuggestAdditionEnabled() &&
                !IsEnhancedEmojiSuggestEnabled() &&
-               suggester_switch_->IsEmojiSuggestionAllowed() &&
+               enabled_suggestions.emoji_suggestions &&
                emoji_suggester_.TrySuggestWithSurroundingText(text,
                                                               cursor_pos)) {
       current_suggester_ = &emoji_suggester_;
