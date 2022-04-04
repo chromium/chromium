@@ -29,7 +29,6 @@ import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.TestFileUtil;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
@@ -269,7 +268,6 @@ public class AwContentsClientShouldInterceptRequestTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "https://crbug.com/1312394")
     public void testDoesNotCrashOnInvalidData_NullInputStream() throws Throwable {
         final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
 
@@ -278,10 +276,6 @@ public class AwContentsClientShouldInterceptRequestTest {
         int callCount = mShouldInterceptRequestHelper.getCallCount();
         mActivityTestRule.loadUrlAsync(mAwContents, aboutPageUrl);
         mShouldInterceptRequestHelper.waitForCallback(callCount);
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "Android.WebView.ShouldInterceptRequest.InterceptionType2",
-                        InterceptionType.HTTP));
     }
 
     @Test
@@ -617,6 +611,10 @@ public class AwContentsClientShouldInterceptRequestTest {
 
         Assert.assertEquals(expectedTitle, mActivityTestRule.getTitleOnUiThread(mAwContents));
         Assert.assertEquals(0, mWebServer.getRequestCount("/" + CommonResources.ABOUT_FILENAME));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Android.WebView.ShouldInterceptRequest.InterceptionType2",
+                        InterceptionType.HTTP));
     }
 
     @Test
