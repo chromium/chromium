@@ -7726,22 +7726,6 @@
                     "min_os_version": "10.0.0"
                 }
             ]
-        },
-        {
-            "platforms": [
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Vulkan",
-                    "enable_features": [
-                        "DefaultANGLEVulkan",
-                        "Vulkan",
-                        "VulkanFromANGLE"
-                    ],
-                    "min_os_version": "5.10.0"
-                }
-            ]
         }
     ],
     "WebFeedsMVP": [
