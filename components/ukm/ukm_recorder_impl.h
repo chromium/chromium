@@ -124,6 +124,8 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
     *const_cast<uint32_t*>(&sampling_seed_) = seed;
   }
 
+  bool recording_enabled() const { return recording_enabled_; }
+
  protected:
   // Calculates sampled in/out for a specific source/event based on internal
   // configuration. This function is guaranteed to always return the same
