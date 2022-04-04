@@ -5574,6 +5574,20 @@
           'all'
         ],
       },
+      'Simple Chrome Builder reclient staging': {
+        # Copied from
+        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=1567;drc=e8a03fce50115b247a6032f8ed922b6db62f11f6
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+      },
+      'Simple Chrome Builder reclient test': {
+        # Copied from
+        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=1567;drc=e8a03fce50115b247a6032f8ed922b6db62f11f6
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+      },
     },
   },
   {
