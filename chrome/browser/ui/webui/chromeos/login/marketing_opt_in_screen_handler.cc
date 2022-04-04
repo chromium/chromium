@@ -72,7 +72,7 @@ void MarketingOptInScreenHandler::DeclareLocalizedValues(
 
 void MarketingOptInScreenHandler::Bind(MarketingOptInScreen* screen) {
   screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen);
 }
 
 void MarketingOptInScreenHandler::Show(bool opt_in_visible,

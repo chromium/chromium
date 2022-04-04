@@ -41,12 +41,12 @@ void HWDataCollectionScreenHandler::Hide() {
 
 void HWDataCollectionScreenHandler::Bind(ash::HWDataCollectionScreen* screen) {
   screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen_);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
 }
 
 void HWDataCollectionScreenHandler::Unbind() {
   screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreen(nullptr);
+  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
 }
 
 void HWDataCollectionScreenHandler::ShowHWDataUsageLearnMore() {

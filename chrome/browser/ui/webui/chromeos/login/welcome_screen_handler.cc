@@ -98,12 +98,12 @@ void WelcomeScreenHandler::Hide() {}
 
 void WelcomeScreenHandler::Bind(WelcomeScreen* screen) {
   screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen_);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
 }
 
 void WelcomeScreenHandler::Unbind() {
   screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreen(nullptr);
+  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
 }
 
 void WelcomeScreenHandler::ReloadLocalizedContent() {

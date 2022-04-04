@@ -55,6 +55,7 @@
 #include "chrome/browser/ash/login/hwid_checker.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/login_wizard.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/screens/active_directory_login_screen.h"
 #include "chrome/browser/ash/login/screens/active_directory_password_change_screen.h"
@@ -529,13 +530,14 @@ void WizardController::SetSharedURLLoaderFactoryForTesting(
   testing_factory = std::move(factory);
 }
 
-std::vector<std::unique_ptr<BaseScreen>> WizardController::CreateScreens() {
+std::vector<std::pair<OobeScreenId, std::unique_ptr<BaseScreen>>>
+WizardController::CreateScreens() {
   OobeUI* oobe_ui = GetOobeUI();
 
-  std::vector<std::unique_ptr<BaseScreen>> result;
+  std::vector<std::pair<OobeScreenId, std::unique_ptr<BaseScreen>>> result;
 
   auto append = [&](std::unique_ptr<BaseScreen> screen) {
-    result.emplace_back(std::move(screen));
+    result.emplace_back(screen->screen_id(), std::move(screen));
   };
 
   if (oobe_ui->display_type() == OobeUI::kOobeDisplay) {

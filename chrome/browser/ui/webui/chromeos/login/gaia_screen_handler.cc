@@ -1171,11 +1171,11 @@ void GaiaScreenHandler::Hide() {
 }
 
 void GaiaScreenHandler::Bind(GaiaScreen* screen) {
-  BaseScreenHandler::SetBaseScreen(screen);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen);
 }
 
 void GaiaScreenHandler::Unbind() {
-  BaseScreenHandler::SetBaseScreen(nullptr);
+  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
 }
 
 void GaiaScreenHandler::SetGaiaPath(GaiaScreenHandler::GaiaPath gaia_path) {

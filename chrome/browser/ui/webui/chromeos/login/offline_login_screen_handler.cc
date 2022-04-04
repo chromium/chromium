@@ -72,12 +72,12 @@ void OfflineLoginScreenHandler::Hide() {
 
 void OfflineLoginScreenHandler::Bind(OfflineLoginScreen* screen) {
   screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen_);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
 }
 
 void OfflineLoginScreenHandler::Unbind() {
   screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreen(nullptr);
+  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
 }
 
 void OfflineLoginScreenHandler::Reset() {

@@ -32,12 +32,12 @@ void PackagedLicenseScreenHandler::Hide() {}
 
 void PackagedLicenseScreenHandler::Bind(PackagedLicenseScreen* screen) {
   screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen_);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
 }
 
 void PackagedLicenseScreenHandler::Unbind() {
   screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreen(nullptr);
+  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
 }
 
 void PackagedLicenseScreenHandler::DeclareLocalizedValues(

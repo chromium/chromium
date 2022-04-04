@@ -58,7 +58,7 @@ void AppDownloadingScreenHandler::RegisterMessages() {
 
 void AppDownloadingScreenHandler::Bind(AppDownloadingScreen* screen) {
   screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen);
 }
 
 void AppDownloadingScreenHandler::Show() {

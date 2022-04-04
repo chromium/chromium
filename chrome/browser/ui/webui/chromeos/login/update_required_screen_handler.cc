@@ -111,12 +111,12 @@ void UpdateRequiredScreenHandler::Hide() {}
 
 void UpdateRequiredScreenHandler::Bind(UpdateRequiredScreen* screen) {
   screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen_);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
 }
 
 void UpdateRequiredScreenHandler::Unbind() {
   screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreen(nullptr);
+  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
 }
 
 void UpdateRequiredScreenHandler::SetIsConnected(bool connected) {

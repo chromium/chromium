@@ -28,7 +28,7 @@ void MultiDeviceSetupScreenHandler::DeclareLocalizedValues(
 }
 
 void MultiDeviceSetupScreenHandler::Bind(MultiDeviceSetupScreen* screen) {
-  BaseScreenHandler::SetBaseScreen(screen);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen);
 }
 
 void MultiDeviceSetupScreenHandler::Show() {

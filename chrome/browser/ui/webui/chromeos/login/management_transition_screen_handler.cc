@@ -72,7 +72,7 @@ void ManagementTransitionScreenHandler::RegisterMessages() {
 
 void ManagementTransitionScreenHandler::Bind(
     ManagementTransitionScreen* screen) {
-  BaseScreenHandler::SetBaseScreen(screen);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen);
   screen_ = screen;
   if (page_is_ready())
     Initialize();
@@ -80,7 +80,7 @@ void ManagementTransitionScreenHandler::Bind(
 
 void ManagementTransitionScreenHandler::Unbind() {
   screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreen(nullptr);
+  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
   timer_.Stop();
 }
 

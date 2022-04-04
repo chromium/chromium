@@ -166,12 +166,12 @@ void ConsolidatedConsentScreenHandler::Show(const ScreenConfig& config) {
 
 void ConsolidatedConsentScreenHandler::Bind(ConsolidatedConsentScreen* screen) {
   screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen_);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
 }
 
 void ConsolidatedConsentScreenHandler::Unbind() {
   screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreen(nullptr);
+  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
 }
 
 void ConsolidatedConsentScreenHandler::RegisterMessages() {

@@ -59,12 +59,12 @@ void SignInFatalErrorScreenHandler::Show(SignInFatalErrorScreen::Error error,
 
 void SignInFatalErrorScreenHandler::Bind(SignInFatalErrorScreen* screen) {
   screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen_);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
 }
 
 void SignInFatalErrorScreenHandler::Unbind() {
   screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreen(nullptr);
+  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
 }
 
 }  // namespace chromeos

@@ -102,7 +102,7 @@ void RecommendAppsScreenHandler::RegisterMessages() {
 
 void RecommendAppsScreenHandler::Bind(RecommendAppsScreen* screen) {
   screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen);
 }
 
 void RecommendAppsScreenHandler::Show() {

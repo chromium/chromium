@@ -63,12 +63,12 @@ void UpdateScreenHandler::Hide() {}
 
 void UpdateScreenHandler::Bind(UpdateScreen* screen) {
   screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen_);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
 }
 
 void UpdateScreenHandler::Unbind() {
   screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreen(nullptr);
+  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
 }
 
 void UpdateScreenHandler::SetUpdateState(UpdateView::UIState value) {

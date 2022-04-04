@@ -33,12 +33,12 @@ ResetScreenHandler::~ResetScreenHandler() {
 
 void ResetScreenHandler::Bind(ResetScreen* screen) {
   screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen_);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
 }
 
 void ResetScreenHandler::Unbind() {
   screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreen(nullptr);
+  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
 }
 
 void ResetScreenHandler::Show() {

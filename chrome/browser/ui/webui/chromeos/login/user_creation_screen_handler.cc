@@ -71,12 +71,12 @@ void UserCreationScreenHandler::Show() {
 
 void UserCreationScreenHandler::Bind(UserCreationScreen* screen) {
   screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen_);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
 }
 
 void UserCreationScreenHandler::Unbind() {
   screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreen(nullptr);
+  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
 }
 
 void UserCreationScreenHandler::SetIsBackButtonVisible(bool value) {

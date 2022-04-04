@@ -76,12 +76,12 @@ void ActiveDirectoryLoginScreenHandler::Show() {
 void ActiveDirectoryLoginScreenHandler::Bind(
     ActiveDirectoryLoginScreen* screen) {
   screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen_);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
 }
 
 void ActiveDirectoryLoginScreenHandler::Unbind() {
   screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreen(nullptr);
+  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
 }
 
 void ActiveDirectoryLoginScreenHandler::Reset() {

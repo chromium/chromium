@@ -133,7 +133,7 @@ void FingerprintSetupScreenHandler::RegisterMessages() {
 
 void FingerprintSetupScreenHandler::Bind(FingerprintSetupScreen* screen) {
   screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen);
 }
 
 void FingerprintSetupScreenHandler::Show() {

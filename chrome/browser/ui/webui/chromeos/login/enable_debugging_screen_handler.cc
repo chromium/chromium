@@ -46,7 +46,7 @@ void EnableDebuggingScreenHandler::Hide() {}
 
 void EnableDebuggingScreenHandler::SetDelegate(EnableDebuggingScreen* screen) {
   screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen_);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
   if (page_is_ready())
     Initialize();
 }

@@ -41,7 +41,7 @@ void EncryptionMigrationScreenHandler::Hide() {
 void EncryptionMigrationScreenHandler::SetDelegate(
     EncryptionMigrationScreen* delegate) {
   delegate_ = delegate;
-  BaseScreenHandler::SetBaseScreen(delegate);
+  BaseScreenHandler::SetBaseScreenDeprecated(delegate);
   if (page_is_ready())
     Initialize();
 }

@@ -204,7 +204,7 @@ void AssistantOptInFlowScreenHandler::GetAdditionalParameters(
 }
 
 void AssistantOptInFlowScreenHandler::Bind(AssistantOptInFlowScreen* screen) {
-  BaseScreenHandler::SetBaseScreen(screen);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen);
   screen_ = screen;
   if (page_is_ready())
     Initialize();
@@ -212,7 +212,7 @@ void AssistantOptInFlowScreenHandler::Bind(AssistantOptInFlowScreen* screen) {
 
 void AssistantOptInFlowScreenHandler::Unbind() {
   screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreen(nullptr);
+  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
 }
 
 void AssistantOptInFlowScreenHandler::Show() {

@@ -38,7 +38,7 @@ void KioskEnableScreenHandler::Show() {
 }
 
 void KioskEnableScreenHandler::SetScreen(KioskEnableScreen* screen) {
-  BaseScreenHandler::SetBaseScreen(screen);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen);
   screen_ = screen;
   if (page_is_ready() && screen_)
     Initialize();

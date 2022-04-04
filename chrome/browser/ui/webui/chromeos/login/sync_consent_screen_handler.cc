@@ -170,7 +170,7 @@ void SyncConsentScreenHandler::DeclareLocalizedValues(
 
 void SyncConsentScreenHandler::Bind(SyncConsentScreen* screen) {
   screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen);
 }
 
 void SyncConsentScreenHandler::Show(bool is_arc_restricted) {

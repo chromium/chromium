@@ -31,7 +31,7 @@ void GestureNavigationScreenHandler::Show() {
 
 void GestureNavigationScreenHandler::Bind(GestureNavigationScreen* screen) {
   screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen);
 }
 
 void GestureNavigationScreenHandler::Hide() {}

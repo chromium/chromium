@@ -52,14 +52,14 @@ void EulaScreenHandler::Hide() {
 
 void EulaScreenHandler::Bind(EulaScreen* screen) {
   screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen_);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
   if (page_is_ready())
     Initialize();
 }
 
 void EulaScreenHandler::Unbind() {
   screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreen(nullptr);
+  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
 }
 
 std::string EulaScreenHandler::GetEulaOnlineUrl() {

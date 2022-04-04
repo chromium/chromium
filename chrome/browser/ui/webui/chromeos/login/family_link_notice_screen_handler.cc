@@ -49,12 +49,12 @@ void FamilyLinkNoticeScreenHandler::Show() {
 
 void FamilyLinkNoticeScreenHandler::Bind(FamilyLinkNoticeScreen* screen) {
   screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen_);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
 }
 
 void FamilyLinkNoticeScreenHandler::Unbind() {
   screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreen(nullptr);
+  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
 }
 
 void FamilyLinkNoticeScreenHandler::SetIsNewGaiaAccount(bool value) {

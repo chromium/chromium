@@ -60,7 +60,7 @@ void TermsOfServiceScreenHandler::DeclareLocalizedValues(
 }
 
 void TermsOfServiceScreenHandler::SetScreen(TermsOfServiceScreen* screen) {
-  BaseScreenHandler::SetBaseScreen(screen);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen);
   screen_ = screen;
 }
 

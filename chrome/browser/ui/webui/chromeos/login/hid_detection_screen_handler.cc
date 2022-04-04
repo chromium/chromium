@@ -45,14 +45,14 @@ void HIDDetectionScreenHandler::Hide() {
 
 void HIDDetectionScreenHandler::Bind(HIDDetectionScreen* screen) {
   screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen_);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
   if (page_is_ready())
     Initialize();
 }
 
 void HIDDetectionScreenHandler::Unbind() {
   screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreen(nullptr);
+  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
 }
 
 void HIDDetectionScreenHandler::SetKeyboardState(const std::string& value) {

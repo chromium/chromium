@@ -2453,13 +2453,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerEnableAdbSideloadingTest,
   SkipToScreen(EnableAdbSideloadingScreenView::kScreenId,
                mock_enable_adb_sideloading_screen_);
   CheckCurrentScreen(EnableAdbSideloadingScreenView::kScreenId);
-
-  test::OobeJS().ClickOnPath(
-      {"adb-sideloading", "enable-adb-sideloading-cancel-button"});
-
-  base::RunLoop().RunUntilIdle();
-
-  CheckCurrentScreen(EnableAdbSideloadingScreenView::kScreenId);
   EXPECT_CALL(*mock_enable_adb_sideloading_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_welcome_screen_, ShowImpl()).Times(1);
 

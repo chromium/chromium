@@ -81,7 +81,7 @@ void PinSetupScreenHandler::GetAdditionalParameters(
 
 void PinSetupScreenHandler::Bind(PinSetupScreen* screen) {
   screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen);
 }
 
 void PinSetupScreenHandler::Hide() {}

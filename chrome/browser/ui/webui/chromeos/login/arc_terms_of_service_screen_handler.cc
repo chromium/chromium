@@ -296,7 +296,7 @@ void ArcTermsOfServiceScreenHandler::Hide() {
 }
 
 void ArcTermsOfServiceScreenHandler::Bind(ArcTermsOfServiceScreen* screen) {
-  BaseScreenHandler::SetBaseScreen(screen);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen);
 }
 
 void ArcTermsOfServiceScreenHandler::StartNetworkAndTimeZoneObserving() {

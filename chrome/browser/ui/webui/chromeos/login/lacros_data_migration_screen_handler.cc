@@ -50,12 +50,12 @@ void LacrosDataMigrationScreenHandler::DeclareLocalizedValues(
 }
 
 void LacrosDataMigrationScreenHandler::Bind(LacrosDataMigrationScreen* screen) {
-  BaseScreenHandler::SetBaseScreen(screen);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen);
   screen_ = screen;
 }
 
 void LacrosDataMigrationScreenHandler::Unbind() {
-  BaseScreenHandler::SetBaseScreen(nullptr);
+  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
   screen_ = nullptr;
 }
 

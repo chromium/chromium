@@ -25,12 +25,12 @@ LocaleSwitchScreenHandler::~LocaleSwitchScreenHandler() {
 }
 
 void LocaleSwitchScreenHandler::Bind(LocaleSwitchScreen* screen) {
-  BaseScreenHandler::SetBaseScreen(screen);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen);
   screen_ = screen;
 }
 
 void LocaleSwitchScreenHandler::Unbind() {
-  BaseScreenHandler::SetBaseScreen(nullptr);
+  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
   screen_ = nullptr;
 }
 

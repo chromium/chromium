@@ -63,12 +63,12 @@ void GuestTosScreenHandler::Show(const std::string& google_eula_url,
 
 void GuestTosScreenHandler::Bind(GuestTosScreen* screen) {
   screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen_);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
 }
 
 void GuestTosScreenHandler::Unbind() {
   screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreen(nullptr);
+  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
 }
 
 void GuestTosScreenHandler::RegisterMessages() {

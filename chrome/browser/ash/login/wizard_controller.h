@@ -243,7 +243,8 @@ class WizardController : public OobeUI::Observer {
 
  private:
   // Create BaseScreen instances. These are owned by `screen_manager_`.
-  std::vector<std::unique_ptr<BaseScreen>> CreateScreens();
+  std::vector<std::pair<OobeScreenId, std::unique_ptr<BaseScreen>>>
+  CreateScreens();
 
   // Show specific screen.
   void ShowWelcomeScreen();

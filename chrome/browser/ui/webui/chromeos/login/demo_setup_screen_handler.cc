@@ -37,7 +37,7 @@ void DemoSetupScreenHandler::Hide() {}
 
 void DemoSetupScreenHandler::Bind(DemoSetupScreen* screen) {
   screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen);
 }
 
 void DemoSetupScreenHandler::OnSetupFailed(

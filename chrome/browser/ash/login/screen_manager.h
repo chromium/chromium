@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREEN_MANAGER_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREEN_MANAGER_H_
 
-#include <map>
 #include <memory>
+#include <vector>
 
-#include "base/gtest_prod_util.h"
+#include "base/containers/flat_map.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 
 namespace ash {
@@ -25,7 +25,8 @@ class ScreenManager {
   ~ScreenManager();
 
   // Initialize all screen instances.
-  void Init(std::vector<std::unique_ptr<BaseScreen>> screens);
+  void Init(std::vector<std::pair<OobeScreenId, std::unique_ptr<BaseScreen>>>
+                screens);
 
   // Destroys all screen instances.
   void Shutdown();
@@ -40,7 +41,7 @@ class ScreenManager {
 
  private:
   // Created screens.
-  std::map<OobeScreenId, std::unique_ptr<BaseScreen>> screens_;
+  base::flat_map<OobeScreenId, std::unique_ptr<BaseScreen>> screens_;
 };
 
 }  // namespace ash

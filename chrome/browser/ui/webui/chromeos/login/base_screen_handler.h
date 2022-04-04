@@ -27,7 +27,8 @@ class BaseScreenHandler : public BaseWebUIHandler {
 
   OobeScreenId oobe_screen() const { return oobe_screen_; }
 
-  void SetBaseScreen(BaseScreen* base_screen);
+  // DEPRECATED: To be removed.
+  void SetBaseScreenDeprecated(BaseScreen* base_screen);
 
   // BaseWebUIHandler:
   void RegisterMessages() override;
@@ -60,7 +61,9 @@ class BaseScreenHandler : public BaseWebUIHandler {
   // OobeScreen that this handler corresponds to.
   const OobeScreenId oobe_screen_;
 
+#if DCHECK_IS_ON()
   BaseScreen* base_screen_ = nullptr;
+#endif
 };
 
 }  // namespace chromeos

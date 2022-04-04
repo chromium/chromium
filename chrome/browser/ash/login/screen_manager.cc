@@ -7,7 +7,9 @@
 #include <iostream>
 #include <utility>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 
 namespace ash {
@@ -16,9 +18,9 @@ ScreenManager::ScreenManager() = default;
 
 ScreenManager::~ScreenManager() = default;
 
-void ScreenManager::Init(std::vector<std::unique_ptr<BaseScreen>> screens) {
-  for (auto&& screen : screens)
-    screens_[screen->screen_id()] = std::move(screen);
+void ScreenManager::Init(
+    std::vector<std::pair<OobeScreenId, std::unique_ptr<BaseScreen>>> screens) {
+  screens_ = decltype(screens_)(std::move(screens));
 }
 
 BaseScreen* ScreenManager::GetScreen(OobeScreenId screen) {

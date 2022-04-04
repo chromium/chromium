@@ -34,11 +34,11 @@ void EnableAdbSideloadingScreenHandler::Hide() {}
 
 void EnableAdbSideloadingScreenHandler::Bind(
     EnableAdbSideloadingScreen* screen) {
-  BaseScreenHandler::SetBaseScreen(screen);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen);
 }
 
 void EnableAdbSideloadingScreenHandler::Unbind() {
-  BaseScreenHandler::SetBaseScreen(nullptr);
+  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
 }
 
 void EnableAdbSideloadingScreenHandler::SetScreenState(UIState value) {

@@ -34,7 +34,7 @@ void DemoPreferencesScreenHandler::Hide() {}
 
 void DemoPreferencesScreenHandler::Bind(DemoPreferencesScreen* screen) {
   screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen);
 }
 
 void DemoPreferencesScreenHandler::SetInputMethodId(

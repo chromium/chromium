@@ -32,14 +32,14 @@ void QuickStartScreenHandler::Show() {
 
 void QuickStartScreenHandler::Bind(QuickStartScreen* screen) {
   screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen_);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
   if (page_is_ready())
     Initialize();
 }
 
 void QuickStartScreenHandler::Unbind() {
   screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreen(nullptr);
+  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
 }
 
 std::vector<base::Value> ToValue(const ash::quick_start::ShapeList& list) {
