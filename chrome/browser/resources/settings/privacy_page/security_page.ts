@@ -28,6 +28,7 @@ import {OpenWindowProxyImpl} from '../open_window_proxy.js';
 // </if>
 
 import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
+import {CrSettingsPrefs} from '../prefs/prefs_types.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
@@ -197,14 +198,16 @@ export class SettingsSecurityPageElement extends
   override ready() {
     super.ready();
 
-    // Expand initial pref value manually because automatic
-    // expanding is disabled.
-    const prefValue = this.getPref('generated.safe_browsing').value;
-    if (prefValue === SafeBrowsingSetting.ENHANCED) {
-      this.$.safeBrowsingEnhanced.expanded = true;
-    } else if (prefValue === SafeBrowsingSetting.STANDARD) {
-      this.$.safeBrowsingStandard.expanded = true;
-    }
+    CrSettingsPrefs.initialized.then(() => {
+      // Expand initial pref value manually because automatic
+      // expanding is disabled.
+      const prefValue = this.getPref('generated.safe_browsing').value;
+      if (prefValue === SafeBrowsingSetting.ENHANCED) {
+        this.$.safeBrowsingEnhanced.expanded = true;
+      } else if (prefValue === SafeBrowsingSetting.STANDARD) {
+        this.$.safeBrowsingStandard.expanded = true;
+      }
+    });
   }
 
   /**
