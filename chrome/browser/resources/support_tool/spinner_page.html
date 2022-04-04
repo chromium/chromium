@@ -2,9 +2,17 @@
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file. -->
 
-<style include="support-tool-shared"></style>
+<style include="support-tool-shared">
+  paper-spinner-lite {
+    display: flex;
+    margin: 0 auto;
+    margin-top: 30px;
+  }
+</style>
 
 <h2>Collecting diagnostic data</h2>
+<paper-spinner-lite active>
+</paper-spinner-lite>
 <div class="navigation-buttons">
   <cr-button id="cancelButton" on-click="onCancelClick_">Cancel</cr-button>
 </div>
