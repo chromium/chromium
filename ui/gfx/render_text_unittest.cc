@@ -8562,7 +8562,7 @@ TEST_F(RenderTextTest, StringSizeUpdatedWhenDeviceScaleFactorChanges) {
 #endif
 
 // This test case is a unit test version of the clusterfuzz issue found in
-// crbug.com/1298286. It fixes removes integer-overflow undefined behavior.
+// crbug.com/1298286, an integer-overflow undefined behavior.
 TEST_F(RenderTextTest, Clusterfuzz_Issue_1298286) {
   gfx::FontList::SetDefaultFontDescription("Arial, Times New Roman, 15px");
 
@@ -8589,6 +8589,31 @@ TEST_F(RenderTextTest, Clusterfuzz_Issue_1298286) {
   // Before the fix in crbug.com/1298286, this rect's x member would be -1
   // because of undefined behavior due to integer overflow.
   EXPECT_EQ(0, substring_bounds[0].x());
+}
+
+// This test case is a unit test version of the clusterfuzz issue found in
+// crbug.com/1299054, an integer-overflow undefined behavior.
+TEST_F(RenderTextTest, Clusterfuzz_Issue_1299054) {
+  gfx::FontList::SetDefaultFontDescription("Arial, Times New Roman, 15px");
+
+  gfx::FontList font_list;
+  gfx::Rect field(-1334808765, font_list.GetHeight());
+
+  std::unique_ptr<gfx::RenderText> render_text =
+      gfx::RenderText::CreateRenderText();
+  render_text->SetFontList(font_list);
+  render_text->SetHorizontalAlignment(ALIGN_CENTER);
+  render_text->SetDirectionalityMode(DIRECTIONALITY_FROM_TEXT);
+  render_text->SetText(u"s:");
+  render_text->SetDisplayRect(field);
+  render_text->SetCursorEnabled(false);
+
+  gfx::test::RenderTextTestApi render_text_test_api(render_text.get());
+  render_text_test_api.SetGlyphWidth(1778384896);
+
+  const Vector2d& offset = render_text->GetUpdatedDisplayOffset();
+  EXPECT_EQ(0, offset.x());
+  EXPECT_EQ(0, offset.y());
 }
 
 }  // namespace gfx

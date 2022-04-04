@@ -1238,7 +1238,11 @@ void RenderText::SetDisplayOffset(int horizontal_offset) {
 }
 
 void RenderText::SetDisplayOffset(Vector2d offset) {
-  const int extra_content = GetContentWidth() - display_rect_.width();
+  // Use ClampedNumeric for extra content, as it can otherwise overflow during
+  // later operations if GetContentWidth() returns INT_MAX and
+  // display_rect_.width() is 0.
+  const base::ClampedNumeric<int> extra_content =
+      base::ClampedNumeric<int>(GetContentWidth()) - display_rect_.width();
   const int cursor_width = cursor_enabled_ ? 1 : 0;
 
   int min_offset = 0;
