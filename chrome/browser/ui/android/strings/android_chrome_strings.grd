@@ -991,12 +991,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
       <message name="IDS_PRIVACY_SANDBOX_REMOVED_TOPICS_EMPTY_STATE" desc="Summary shown when no interests for ad personlization were removed from the Topics API of the Privacy Sandbox.">
         Interests you removed will appear here
       </message>
-      <message name="IDS_PRIVACY_SANDBOX_FLEDGE_INTERESTS_CATEGORY" desc="FLEDGE API. A sub title that describes the second of 2 ways a site can get info from Chrome in order to target ads to the user.">
-        Sites you visit that define your interests
-      </message>
-       <message name="IDS_PRIVACY_SANDBOX_FLEDGE_UNDER_DEVELOPMENT_NOTICE" desc="Text to explain that a feature for ad personalization in the Privacy Sandbox is not implemented yet.">
-        This feature is currently under development
-      </message>
 
       <!-- Privacy Sandbox dialog. -->
       <message name="IDS_PRIVACY_SANDBOX_DIALOG_NO_BUTTON" desc="A button that allows the user to decline joining the Privacy Sandbox trials. If the user chooses “No thanks” this consent page disappears and the flow is complete.">
