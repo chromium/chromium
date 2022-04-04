@@ -1855,7 +1855,7 @@
   {
     "name": "enable-desks-trackpad-swipe-improvements",
     "owners": [ "fanafan", "sammiequon", "tclaiborne" ],
-    "expiry_milestone": 101
+    "expiry_milestone": 110
   },
   {
     "name": "enable-desktop-capture-lacros-v2",
