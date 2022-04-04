@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "content/common/content_export.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
 
@@ -21,7 +22,7 @@ class RenderFrameImpl;
 //  A class that creates and stores a distilled AXTree for a particular render
 //  frame.
 //
-class AXTreeDistiller {
+class CONTENT_EXPORT AXTreeDistiller {
  public:
   explicit AXTreeDistiller(RenderFrameImpl* render_frame);
   ~AXTreeDistiller();

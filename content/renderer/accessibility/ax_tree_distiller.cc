@@ -4,6 +4,7 @@
 
 #include "content/renderer/accessibility/ax_tree_distiller.h"
 
+#include <memory>
 #include <queue>
 #include <vector>
 
