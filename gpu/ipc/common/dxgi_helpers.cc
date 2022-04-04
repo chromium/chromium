@@ -68,7 +68,7 @@ DXGIScopedReleaseKeyedMutex::~DXGIScopedReleaseKeyedMutex() {
 
 bool CopyDXGIBufferToShMem(
     HANDLE dxgi_handle,
-    base::UnsafeSharedMemoryRegion shared_memory,
+    base::span<uint8_t> shared_memory,
     ID3D11Device* d3d11_device,
     Microsoft::WRL::ComPtr<ID3D11Texture2D>* staging_texture) {
   DCHECK(d3d11_device);
@@ -149,12 +149,11 @@ bool CopyDXGIBufferToShMem(
 
   // Copy mapped texture to shared memory region for client
   size_t buffer_size = texture_desc.Height * texture_desc.Width * 3 / 2;
-  if (shared_memory.GetSize() < buffer_size)
+  if (shared_memory.size() < buffer_size)
     return false;
 
-  base::WritableSharedMemoryMapping mapping = shared_memory.Map();
   const uint8_t* source_buffer = static_cast<uint8_t*>(mapped_resource.pData);
-  uint8_t* dest_buffer = mapping.GetMemoryAsSpan<uint8_t>().data();
+  uint8_t* dest_buffer = shared_memory.data();
 
   const uint32_t source_stride = mapped_resource.RowPitch;
   const uint32_t dest_stride = texture_desc.Width;

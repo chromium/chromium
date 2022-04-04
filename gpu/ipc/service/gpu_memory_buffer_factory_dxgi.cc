@@ -168,9 +168,13 @@ bool GpuMemoryBufferFactoryDXGI::FillSharedMemoryRegionWithBufferContents(
   if (!d3d11_device)
     return false;
 
+  base::WritableSharedMemoryMapping mapping = shared_memory.Map();
+  if (!mapping.IsValid())
+    return false;
+
   return CopyDXGIBufferToShMem(buffer_handle.dxgi_handle.Get(),
-                               std::move(shared_memory), d3d11_device.Get(),
-                               &staging_texture_);
+                               mapping.GetMemoryAsSpan<uint8_t>(),
+                               d3d11_device.Get(), &staging_texture_);
 }
 
 ImageFactory* GpuMemoryBufferFactoryDXGI::AsImageFactory() {
