@@ -228,7 +228,8 @@ def CreateBuildConfig(output_directory, source_directory, url=None, title=None):
   if output_directory:
     gn_args = _ParseGnArgs(os.path.join(output_directory, 'args.gn'))
     build_config[models.BUILD_CONFIG_GN_ARGS] = gn_args
-
+    build_config[models.BUILD_CONFIG_OUT_DIRECTORY] = os.path.relpath(
+        output_directory, start=source_directory)
   git_rev = _DetectGitRevision(source_directory)
   if git_rev:
     build_config[models.BUILD_CONFIG_GIT_REVISION] = git_rev

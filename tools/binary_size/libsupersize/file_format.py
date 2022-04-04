@@ -48,10 +48,9 @@ _SECTION_SORT_ORDER = {
 }
 
 # Keys in build config for old .size files.
-_LEGACY_METADATA_BUILD_CONFIG_KEYS = (
-    models.BUILD_CONFIG_GIT_REVISION,
-    models.BUILD_CONFIG_GN_ARGS,
-)
+_LEGACY_METADATA_BUILD_CONFIG_KEYS = (models.BUILD_CONFIG_GIT_REVISION,
+                                      models.BUILD_CONFIG_GN_ARGS,
+                                      models.BUILD_CONFIG_OUT_DIRECTORY)
 
 # Ensure each |models.SECTION_*| (except |SECTION_MULTIPLE|) has an entry.
 assert len(_SECTION_SORT_ORDER) + 1 == len(models.SECTION_NAME_TO_SECTION)

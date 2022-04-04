@@ -1,6 +1,7 @@
 BuildConfig:
 git_revision=abc123
 gn_args=var1=true var2="foo"
+out_directory=out/Release
 Metadata:
 Container1:
 apk_file_name=test.apk

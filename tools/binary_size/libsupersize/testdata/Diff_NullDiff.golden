@@ -8,6 +8,7 @@ Common Metadata:
     git_revision=abc123
     gn_args=var1=true var2="foo"
     map_file_name=../../../test.map
+    out_directory=out/Release
 Old Metadata:
 New Metadata:
 

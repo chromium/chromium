@@ -8,6 +8,7 @@ Metadata:
     git_revision=abc123
     gn_args=var1=true var2="foo"
     map_file_name=../../../test.map
+    out_directory=out/Release
 
 Section Sizes (Total=128.0mb (134218045 bytes)):
     .bss: 1.24mb (1300456 bytes) (not included in totals)

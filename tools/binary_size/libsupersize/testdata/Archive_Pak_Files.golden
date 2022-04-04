@@ -7,6 +7,7 @@ elf_relocations_count=394087
 git_revision=abc123
 gn_args=var1=true var2="foo"
 map_file_name=../../../test.map
+out_directory=out/Release
 Section .text: has 100.0% of 35982248 bytes accounted for from 22 symbols. 0 bytes are unaccounted for.
 * Padding accounts for 13808 bytes (0.0%)
 * 16 have source paths. Accounts for 73986 bytes (0.2%).
