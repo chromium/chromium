@@ -244,10 +244,10 @@ class WebContentsObserverProxy extends WebContentsObserver {
 
     @Override
     @CalledByNative
-    public void documentAvailableInMainFrame() {
+    public void primaryMainDocumentElementAvailable() {
         handleObserverCall();
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
-            mObserversIterator.next().documentAvailableInMainFrame();
+            mObserversIterator.next().primaryMainDocumentElementAvailable();
         }
         finishObserverCall();
     }

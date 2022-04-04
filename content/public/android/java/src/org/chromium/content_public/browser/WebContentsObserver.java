@@ -135,7 +135,7 @@ public abstract class WebContentsObserver {
     /**
      * Called once the window.document object of the main frame was created.
      */
-    public void documentAvailableInMainFrame() {}
+    public void primaryMainDocumentElementAvailable() {}
 
     /**
      * Notifies that a load has finished for a given frame.
