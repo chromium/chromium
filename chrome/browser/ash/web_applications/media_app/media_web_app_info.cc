@@ -196,7 +196,7 @@ base::FilePath MediaSystemAppDelegate::GetLaunchDirectory(
 }
 
 bool MediaSystemAppDelegate::ShouldShowInLauncher() const {
-  return false;
+  return base::FeatureList::IsEnabled(chromeos::features::kMediaAppHandlesPdf);
 }
 
 bool MediaSystemAppDelegate::ShouldCaptureNavigations() const {
@@ -204,7 +204,7 @@ bool MediaSystemAppDelegate::ShouldCaptureNavigations() const {
 }
 
 bool MediaSystemAppDelegate::ShouldShowInSearch() const {
-  return false;
+  return ShouldShowInLauncher();
 }
 
 bool MediaSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
