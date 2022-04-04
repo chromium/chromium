@@ -20,6 +20,7 @@ source_set("quick_answers") {
     "//chromeos/components/quick_answers",
     "//chromeos/components/quick_answers/public/cpp:cpp",
     "//chromeos/components/quick_answers/public/cpp:prefs",
+    "//content/public/browser",
     "//ui/views/controls/webview",
   ]
 

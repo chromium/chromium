@@ -24,6 +24,7 @@ class QuickAnswersPreTargetHandler;
 
 namespace quick_answers {
 struct QuickAnswer;
+struct PhoneticsInfo;
 }  // namespace quick_answers
 
 // A bubble style view to show QuickAnswer.
@@ -62,7 +63,9 @@ class QuickAnswersView : public views::View {
   void InitWidget();
   void AddContentView();
   void AddSettingsButton();
-  void AddPhoneticsAudioButton(const GURL& phonetics_audio, View* container);
+  void AddPhoneticsAudioButton(
+      const quick_answers::PhoneticsInfo& phonetics_info,
+      View* container);
   void AddAssistantIcon();
   void AddGoogleIcon();
   void ResetContentView();
@@ -74,7 +77,8 @@ class QuickAnswersView : public views::View {
   std::vector<views::View*> GetFocusableViews();
 
   // Invoked when user clicks the phonetics audio button.
-  void OnPhoneticsAudioButtonPressed(const GURL& phonetics_audio);
+  void OnPhoneticsAudioButtonPressed(
+      const quick_answers::PhoneticsInfo& phonetics_info);
 
   gfx::Rect anchor_view_bounds_;
   base::WeakPtr<QuickAnswersUiController> controller_;

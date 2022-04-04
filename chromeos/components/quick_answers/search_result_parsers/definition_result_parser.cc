@@ -21,9 +21,11 @@ constexpr char kHttpsPrefix[] = "https:";
 constexpr char kDictionaryEntriesPath[] = "dictionaryResult.entries";
 constexpr char kDefinitionPathUnderSense[] = "definition.text";
 constexpr char kHeadwordKey[] = "headword";
+constexpr char kLocaleKey[] = "locale";
 constexpr char kPhoneticsKey[] = "phonetics";
 constexpr char kPhoneticsTextKey[] = "text";
 constexpr char kPhoneticsAudioKey[] = "oxfordAudio";
+constexpr char kPhoneticsTtsAudioEnabledKey[] = "ttsAudioEnabled";
 constexpr char kSenseFamiliesKey[] = "senseFamilies";
 constexpr char kSensesKey[] = "senses";
 constexpr char kQueryTermPath[] = "dictionaryResult.queryTerm";
@@ -64,7 +66,7 @@ bool DefinitionResultParser::Parse(const Value* result,
       std::make_unique<QuickAnswerText>(secondary_answer));
   quick_answer->first_answer_row.push_back(
       std::make_unique<QuickAnswerResultText>(*definition));
-  quick_answer->phonetics_audio = ExtractPhoneticsAudio(first_entry);
+  ExtractPhoneticsInfo(&quick_answer->phonetics_info, first_entry);
   return true;
 }
 
@@ -122,17 +124,31 @@ const std::string* DefinitionResultParser::ExtractPhoneticsText(
   return first_phonetics->FindStringPath(kPhoneticsTextKey);
 }
 
-GURL DefinitionResultParser::ExtractPhoneticsAudio(
+void DefinitionResultParser::ExtractPhoneticsInfo(
+    PhoneticsInfo* phonetics_info,
     const base::Value* definition_entry) {
-  const Value* first_phonetics = ExtractFirstPhonetics(definition_entry);
-  // Sometimes the phonetics has no audio URL.
-  if (!first_phonetics ||
-      !first_phonetics->FindStringPath(kPhoneticsAudioKey)) {
-    return GURL();
-  }
+  // Check for the query text used for tts audio.
+  if (definition_entry->FindStringPath(kHeadwordKey))
+    phonetics_info->query_text =
+        *definition_entry->FindStringPath(kHeadwordKey);
 
-  return GURL(kHttpsPrefix +
-              *first_phonetics->FindStringPath(kPhoneticsAudioKey));
+  // Check for the locale used for tts audio.
+  if (definition_entry->FindStringPath(kLocaleKey))
+    phonetics_info->locale = *definition_entry->FindStringPath(kLocaleKey);
+
+  const Value* first_phonetics = ExtractFirstPhonetics(definition_entry);
+
+  if (!first_phonetics)
+    return;
+
+  // Check if the phonetics has an audio URL.
+  if (first_phonetics->FindStringPath(kPhoneticsAudioKey))
+    phonetics_info->phonetics_audio = GURL(
+        kHttpsPrefix + *first_phonetics->FindStringPath(kPhoneticsAudioKey));
+
+  // Check if tts audio is enabled for the query.
+  if (first_phonetics->FindBoolPath(kPhoneticsTtsAudioEnabledKey))
+    phonetics_info->tts_audio_enabled = true;
 }
 
 }  // namespace quick_answers

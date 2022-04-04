@@ -25,7 +25,8 @@ class DefinitionResultParser : public ResultParser {
   const base::Value* ExtractFirstPhonetics(const base::Value* definition_entry);
   const std::string* ExtractDefinition(const base::Value* definition_entry);
   const std::string* ExtractPhoneticsText(const base::Value* definition_entry);
-  GURL ExtractPhoneticsAudio(const base::Value* definition_entry);
+  void ExtractPhoneticsInfo(PhoneticsInfo* phonetics_info,
+                            const base::Value* definition_entry);
 };
 
 }  // namespace quick_answers

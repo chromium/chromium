@@ -92,7 +92,7 @@ struct QuickAnswerUiElement {
   QuickAnswerUiElementType type = QuickAnswerUiElementType::kUnknown;
 };
 
-// class to describe an answer text.
+// Class to describe an answer text.
 struct QuickAnswerText : public QuickAnswerUiElement {
   explicit QuickAnswerText(const std::string& text,
                            ui::ColorId color_id = ui::kColorLabelForeground)
@@ -121,6 +121,25 @@ struct QuickAnswerImage : public QuickAnswerUiElement {
   gfx::Image image;
 };
 
+// Class to describe quick answers phonetics info.
+struct PhoneticsInfo {
+  PhoneticsInfo();
+  PhoneticsInfo(const PhoneticsInfo&);
+  ~PhoneticsInfo();
+
+  // Phonetics audio URL for playing pronunciation of dictionary results.
+  // For other type of results the URL will be empty.
+  GURL phonetics_audio = GURL();
+
+  // Whether or not to use tts audio if phonetics audio is not available.
+  bool tts_audio_enabled = false;
+
+  // Query text and locale which will be used for tts if enabled and
+  // there is no phonetics audio available.
+  std::string query_text = std::string();
+  std::string locale = std::string();
+};
+
 // Structure to describe a quick answer.
 struct QuickAnswer {
   QuickAnswer();
@@ -132,9 +151,7 @@ struct QuickAnswer {
   std::vector<std::unique_ptr<QuickAnswerUiElement>> second_answer_row;
   std::unique_ptr<QuickAnswerImage> image;
 
-  // Phonetics audio URL for playing pronunciation of dictionary results.
-  // For other type of results the URL will be empty.
-  GURL phonetics_audio;
+  PhoneticsInfo phonetics_info;
 };
 
 // Information of the device that used by the user to send the request.

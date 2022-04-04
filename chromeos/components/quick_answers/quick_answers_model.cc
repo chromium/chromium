@@ -6,6 +6,10 @@
 
 namespace quick_answers {
 
+PhoneticsInfo::PhoneticsInfo() = default;
+PhoneticsInfo::PhoneticsInfo(const PhoneticsInfo&) = default;
+PhoneticsInfo::~PhoneticsInfo() = default;
+
 QuickAnswer::QuickAnswer() = default;
 QuickAnswer::~QuickAnswer() = default;
 
