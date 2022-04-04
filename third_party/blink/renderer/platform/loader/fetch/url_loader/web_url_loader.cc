@@ -482,7 +482,7 @@ void WebURLLoader::Context::Start(
   }
 
   if (sync_load_response) {
-    DCHECK(freeze_mode_ == WebLoaderFreezeMode::kNone);
+    DCHECK_EQ(freeze_mode_, WebLoaderFreezeMode::kNone);
 
     loader_options |= network::mojom::kURLLoadOptionSynchronous;
     request->load_flags |= net::LOAD_IGNORE_LIMITS;
@@ -499,8 +499,7 @@ void WebURLLoader::Context::Start(
         url_loader_factory_, std::move(throttles), timeout_interval,
         cors_exempt_header_list_, terminate_sync_load_event_,
         std::move(download_to_blob_registry), base::WrapRefCounted(this),
-        std::move(resource_load_info_notifier_wrapper),
-        back_forward_cache_loader_helper_);
+        std::move(resource_load_info_notifier_wrapper));
     return;
   }
 

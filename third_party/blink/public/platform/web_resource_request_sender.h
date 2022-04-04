@@ -103,8 +103,7 @@ class BLINK_PLATFORM_EXPORT WebResourceRequestSender {
       mojo::PendingRemote<mojom::BlobRegistry> download_to_blob_registry,
       scoped_refptr<WebRequestPeer> peer,
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
-          resource_load_info_notifier_wrapper,
-      WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper);
+          resource_load_info_notifier_wrapper);
 
   // Call this method to initiate the request. If this method succeeds, then
   // the peer's methods will be called asynchronously to report various events.

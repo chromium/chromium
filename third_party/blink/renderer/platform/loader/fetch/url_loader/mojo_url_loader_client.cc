@@ -294,8 +294,12 @@ MojoURLLoaderClient::~MojoURLLoaderClient() = default;
 
 void MojoURLLoaderClient::Freeze(WebLoaderFreezeMode mode) {
   freeze_mode_ = mode;
-  if (mode == WebLoaderFreezeMode::kNone) {
+  if (mode != WebLoaderFreezeMode::kBufferIncoming) {
+    // Back/forward cache eviction should only be triggered when `freeze_mode_`
+    // is kBufferIncoming.
     StopBackForwardCacheEvictionTimer();
+  }
+  if (mode == WebLoaderFreezeMode::kNone) {
     task_runner_->PostTask(
         FROM_HERE, WTF::Bind(&MojoURLLoaderClient::FlushDeferredMessages,
                              weak_factory_.GetWeakPtr()));
@@ -345,6 +349,7 @@ MojoURLLoaderClient::GetBackForwardCacheLoaderHelper() {
 
 void MojoURLLoaderClient::EvictFromBackForwardCache(
     blink::mojom::RendererEvictionReason reason) {
+  DCHECK_EQ(freeze_mode_, WebLoaderFreezeMode::kBufferIncoming);
   StopBackForwardCacheEvictionTimer();
   auto* back_forward_cache_loader_helper = GetBackForwardCacheLoaderHelper();
   if (!back_forward_cache_loader_helper)

@@ -86,9 +86,7 @@ class MockResourceRequestSender : public WebResourceRequestSender {
       mojo::PendingRemote<mojom::BlobRegistry> download_to_blob_registry,
       scoped_refptr<WebRequestPeer> peer,
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
-          resource_load_info_notifier_wrapper,
-      WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
-      override {
+          resource_load_info_notifier_wrapper) override {
     *response = std::move(sync_load_response_);
   }
 

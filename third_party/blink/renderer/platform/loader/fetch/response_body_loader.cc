@@ -456,6 +456,7 @@ void ResponseBodyLoader::EvictFromBackForwardCache(
     mojom::blink::RendererEvictionReason reason) {
   if (!back_forward_cache_loader_helper_)
     return;
+  DCHECK(IsSuspendedForBackForwardCache());
   back_forward_cache_loader_helper_->EvictFromBackForwardCache(reason);
 }
 
