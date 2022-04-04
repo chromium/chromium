@@ -21,7 +21,7 @@
       "use_remoteexec": true
     }
   },
-  "Simple Chrome reclient staging": {
+  "Simple Chrome Builder reclient staging": {
     "args_file": "//build/args/chromeos/arm-generic.gni",
     "gn_args": {
       "dcheck_always_on": false,
@@ -31,7 +31,7 @@
       "use_remoteexec": true
     }
   },
-  "Simple Chrome reclient test": {
+  "Simple Chrome Builder reclient test": {
     "args_file": "//build/args/chromeos/arm-generic.gni",
     "gn_args": {
       "dcheck_always_on": false,
