@@ -44,28 +44,6 @@
         [[i18nDynamic(locale, 'demoPreferencesScreenTitle')]]
       </h1>
       <div slot="content" class="landscape-header-aligned">
-        <div id="languageDropdownContainer" class="flex layout center horizontal
-            justified language-selection-entry">
-          <div class="language-selection-title layout vertical
-              center-justified">
-            [[i18nDynamic(locale, 'languageDropdownTitle')]]
-          </div>
-          <oobe-i18n-dropdown id="languageSelect" items="[[languages]]"
-              label-for-aria="[[i18nDynamic(locale, 'languageDropdownLabel')]]"
-              on-select-item="onLanguageSelected_" class="focus-on-show">
-          </oobe-i18n-dropdown>
-        </div>
-        <div id="keyboardDropdownContainer" class="flex layout center horizontal
-            justified language-selection-entry">
-          <div class="language-selection-title layout vertical
-              center-justified">
-            [[i18nDynamic(locale, 'keyboardDropdownTitle')]]
-          </div>
-          <oobe-i18n-dropdown id="keyboardSelect" items="[[keyboards]]"
-              label-for-aria="[[i18nDynamic(locale, 'keyboardDropdownLabel')]]"
-              on-select-item="onKeyboardSelected_">
-          </oobe-i18n-dropdown>
-        </div>
         <div id="countryDropdownContainer" class="flex layout center horizontal
             justified language-selection-entry">
           <div class="language-selection-title layout vertical
@@ -82,7 +60,7 @@
         <oobe-back-button on-click="onBackClicked_"></oobe-back-button>
       </div>
       <div slot="bottom-buttons">
-        <oobe-text-button id="nextButton" inverse on-click="onNextClicked_" 
+        <oobe-text-button id="nextButton" inverse on-click="onNextClicked_"
             disabled="[[!is_country_selected_]]"
             text-key="demoPreferencesNextButtonLabel">
         </oobe-text-button>

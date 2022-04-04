@@ -191,26 +191,6 @@ class DemoPreferencesScreen extends DemoPreferencesScreenBase {
   }
 
   /**
-   * Handle language selection.
-   * @param {!CustomEvent<!OobeTypes.LanguageDsc>} event
-   * @private
-   */
-  onLanguageSelected_(event) {
-    const languageId = event.detail.value;
-    chrome.send('DemoPreferencesScreen.setLocaleId', [languageId]);
-  }
-
-  /**
-   * Handle keyboard layout selection.
-   * @param {!CustomEvent<!OobeTypes.IMEDsc>} event
-   * @private
-   */
-  onKeyboardSelected_(event) {
-    const inputMethodId = event.detail.value;
-    chrome.send('DemoPreferencesScreen.setInputMethodId', [inputMethodId]);
-  }
-
-  /**
    * Handle country selection.
    * @param {!CustomEvent<!OobeTypes.DemoCountryDsc>} event
    * @private

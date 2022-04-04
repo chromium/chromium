@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/login/screens/demo_preferences_screen.h"
 
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
-#include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/chromeos/login/demo_preferences_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
@@ -18,22 +18,6 @@ namespace {
 
 constexpr char kUserActionContinue[] = "continue-setup";
 constexpr char kUserActionClose[] = "close-setup";
-
-WelcomeScreen* GetWelcomeScreen() {
-  const WizardController* wizard_controller =
-      WizardController::default_controller();
-  DCHECK(wizard_controller);
-  return wizard_controller->GetScreen<WelcomeScreen>();
-}
-
-// Sets locale and input method. If `locale` or `input_method` is empty then
-// they will not be changed.
-void SetApplicationLocaleAndInputMethod(const std::string& locale,
-                                        const std::string& input_method) {
-  WelcomeScreen* welcome_screen = GetWelcomeScreen();
-  DCHECK(welcome_screen);
-  welcome_screen->SetApplicationLocaleAndInputMethod(locale, input_method);
-}
 
 }  // namespace
 
@@ -71,34 +55,17 @@ DemoPreferencesScreen::~DemoPreferencesScreen() {
     view_->Bind(nullptr);
 }
 
-void DemoPreferencesScreen::SetLocale(const std::string& locale) {
-  SetApplicationLocaleAndInputMethod(locale, std::string());
-}
-
-void DemoPreferencesScreen::SetInputMethod(const std::string& input_method) {
-  SetApplicationLocaleAndInputMethod(std::string(), input_method);
-}
-
 void DemoPreferencesScreen::SetDemoModeCountry(const std::string& country_id) {
   g_browser_process->local_state()->SetString(prefs::kDemoModeCountry,
                                               country_id);
 }
 
 void DemoPreferencesScreen::ShowImpl() {
-  WelcomeScreen* welcome_screen = GetWelcomeScreen();
-  if (welcome_screen) {
-    initial_locale_ = welcome_screen->GetApplicationLocale();
-    initial_input_method_ = welcome_screen->GetInputMethod();
-  }
-
   if (view_)
     view_->Show();
 }
 
 void DemoPreferencesScreen::HideImpl() {
-  initial_locale_.clear();
-  initial_input_method_.clear();
-
   if (view_)
     view_->Hide();
 }
@@ -112,8 +79,6 @@ void DemoPreferencesScreen::OnUserAction(const std::string& action_id) {
     }
     exit_callback_.Run(Result::COMPLETED);
   } else if (action_id == kUserActionClose) {
-    // Restore initial locale and input method if the user pressed back button.
-    SetApplicationLocaleAndInputMethod(initial_locale_, initial_input_method_);
     exit_callback_.Run(Result::CANCELED);
   } else {
     BaseScreen::OnUserAction(action_id);

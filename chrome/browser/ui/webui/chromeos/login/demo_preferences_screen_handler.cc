@@ -50,34 +50,14 @@ void DemoPreferencesScreenHandler::DeclareLocalizedValues(
                IDS_OOBE_DEMO_SETUP_PREFERENCES_SCREEN_TITLE);
   builder->Add("demoPreferencesNextButtonLabel",
                IDS_OOBE_DEMO_SETUP_PREFERENCES_SCREEN_NEXT_BUTTON_LABEL);
-  builder->Add("languageDropdownTitle", IDS_LANGUAGE_DROPDOWN_TITLE);
-  builder->Add("languageDropdownLabel", IDS_LANGUAGE_DROPDOWN_LABEL);
-  builder->Add("keyboardDropdownTitle", IDS_KEYBOARD_DROPDOWN_TITLE);
-  builder->Add("keyboardDropdownLabel", IDS_KEYBOARD_DROPDOWN_LABEL);
   builder->Add("countryDropdownTitle", IDS_COUNTRY_DROPDOWN_TITLE);
   builder->Add("countryDropdownLabel", IDS_COUNTRY_DROPDOWN_LABEL);
 }
 
 void DemoPreferencesScreenHandler::RegisterMessages() {
   BaseScreenHandler::RegisterMessages();
-  AddCallback("DemoPreferencesScreen.setLocaleId",
-              &DemoPreferencesScreenHandler::HandleSetLocaleId);
-  AddCallback("DemoPreferencesScreen.setInputMethodId",
-              &DemoPreferencesScreenHandler::HandleSetInputMethodId);
   AddCallback("DemoPreferencesScreen.setDemoModeCountry",
               &DemoPreferencesScreenHandler::HandleSetDemoModeCountry);
-}
-
-void DemoPreferencesScreenHandler::HandleSetLocaleId(
-    const std::string& language_id) {
-  if (screen_)
-    screen_->SetLocale(language_id);
-}
-
-void DemoPreferencesScreenHandler::HandleSetInputMethodId(
-    const std::string& input_method_id) {
-  if (screen_)
-    screen_->SetInputMethod(input_method_id);
 }
 
 void DemoPreferencesScreenHandler::HandleSetDemoModeCountry(

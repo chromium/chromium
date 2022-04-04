@@ -35,8 +35,6 @@ class DemoPreferencesScreen
 
   ~DemoPreferencesScreen() override;
 
-  void SetLocale(const std::string& locale);
-  void SetInputMethod(const std::string& input_method);
   void SetDemoModeCountry(const std::string& country_id);
 
   // Called when view is being destroyed. If Screen is destroyed earlier
@@ -59,14 +57,6 @@ class DemoPreferencesScreen
 
   // Passes current input method to the context, so it can be shown in the UI.
   void UpdateInputMethod(input_method::InputMethodManager* input_manager);
-
-  // Initial locale that was set when the screen was shown. It will be restored
-  // if user presses back button.
-  std::string initial_locale_;
-
-  // Initial input method that was set when the screen was shown. It will be
-  // restored if user presses back button.
-  std::string initial_input_method_;
 
   base::ScopedObservation<input_method::InputMethodManager,
                           input_method::InputMethodManager::Observer>
