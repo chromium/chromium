@@ -174,9 +174,6 @@ void ValidationMessageOverlayDelegate::CreatePage(const FrameOverlay& overlay) {
   WriteDocument(data.get());
   float zoom_factor = anchor_->GetDocument().GetFrame()->PageZoomFactor();
   frame->SetPageZoomFactor(zoom_factor);
-  // Propagate deprecated DSF for platforms without use-zoom-for-dsf.
-  page_->SetDeviceScaleFactorDeprecated(
-      main_page_->DeviceScaleFactorDeprecated());
   frame->ForceSynchronousDocumentInstall("text/html", data);
 
   Element& main_message = GetElementById("main-message");

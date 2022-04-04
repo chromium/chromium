@@ -66,7 +66,6 @@ class CORE_EXPORT PageScaleConstraintsSet
                                     const Length& legacy_fallback_width);
   void AdjustForAndroidWebViewQuirks(const ViewportDescription&,
                                      int layout_fallback_width,
-                                     float device_scale_factor,
                                      bool support_target_density_dpi,
                                      bool wide_viewport_quirk_enabled,
                                      bool use_wide_viewport,

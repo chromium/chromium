@@ -27,11 +27,10 @@ class MockCSSPaintImageGenerator : public CSSPaintImageGenerator {
         .WillByDefault(ReturnRef(input_argument_types_));
   }
 
-  MOCK_METHOD4(Paint,
+  MOCK_METHOD3(Paint,
                scoped_refptr<Image>(const ImageResourceObserver&,
                                     const gfx::SizeF& container_size,
-                                    const CSSStyleValueVector*,
-                                    float device_scale_factor));
+                                    const CSSStyleValueVector*));
   MOCK_CONST_METHOD0(NativeInvalidationProperties, Vector<CSSPropertyID>&());
   MOCK_CONST_METHOD0(CustomInvalidationProperties, Vector<AtomicString>&());
   MOCK_CONST_METHOD0(HasAlpha, bool());

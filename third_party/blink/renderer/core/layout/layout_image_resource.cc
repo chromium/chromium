@@ -137,10 +137,6 @@ gfx::SizeF LayoutImageResource::ImageSizeWithDefaultSize(
   return ImageSize(multiplier);
 }
 
-float LayoutImageResource::DeviceScaleFactor() const {
-  return DeviceScaleFactorDeprecated(layout_object_->GetFrame());
-}
-
 Image* LayoutImageResource::BrokenImage(float device_scale_factor) {
   // TODO(schenney): Replace static resources with dynamically
   // generated ones, to support a wider range of device scale factors.
@@ -157,8 +153,7 @@ Image* LayoutImageResource::BrokenImage(float device_scale_factor) {
 }
 
 void LayoutImageResource::UseBrokenImage() {
-  SetImageResource(
-      ImageResourceContent::CreateLoaded(BrokenImage(DeviceScaleFactor())));
+  SetImageResource(ImageResourceContent::CreateLoaded(BrokenImage(1)));
 }
 
 scoped_refptr<Image> LayoutImageResource::GetImage(
@@ -171,8 +166,9 @@ scoped_refptr<Image> LayoutImageResource::GetImage(
   if (!cached_image_)
     return Image::NullImage();
 
+  // TODO(crbug.com/1313054): Fix this code to work in high-DPI modes.
   if (cached_image_->ErrorOccurred())
-    return BrokenImage(DeviceScaleFactor());
+    return BrokenImage(1);
 
   if (!cached_image_->HasImage())
     return Image::NullImage();

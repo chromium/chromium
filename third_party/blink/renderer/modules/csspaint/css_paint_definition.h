@@ -64,8 +64,7 @@ class MODULES_EXPORT CSSPaintDefinition final
   sk_sp<PaintRecord> Paint(const gfx::SizeF& container_size,
                            float zoom,
                            StylePropertyMapReadOnly*,
-                           const CSSStyleValueVector*,
-                           float device_scale_factor);
+                           const CSSStyleValueVector*);
   const Vector<CSSPropertyID>& NativeInvalidationProperties() const {
     return native_invalidation_properties_;
   }

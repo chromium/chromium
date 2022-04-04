@@ -67,16 +67,9 @@ gfx::SizeF ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(
     LayoutSize box_size,
     LayoutObject* layout_object,
     const ComputedStyle& style) {
-  // Get Device Scale Factor for cases where use-zoom-for-dsf is
-  // disabled. This is 1 if use-zoom-for-dsf is enabled.
-  float device_scale_factor =
-      layout_object->GetFrame()->GetPage()->DeviceScaleFactorDeprecated();
   LayoutSize paint_offset = ComputePaintOffset(layout_object, style);
-  return gfx::SizeF(
-      SnapSizeToPixel(LayoutUnit(box_size.Width()), paint_offset.Width()) *
-          device_scale_factor,
-      SnapSizeToPixel(LayoutUnit(box_size.Height()), paint_offset.Height()) *
-          device_scale_factor);
+  return gfx::SizeF(SnapSizeToPixel(box_size.Width(), paint_offset.Width()),
+                    SnapSizeToPixel(box_size.Height(), paint_offset.Height()));
 }
 
 DOMRectReadOnly* ResizeObserverUtilities::ZoomAdjustedLayoutRect(

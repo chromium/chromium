@@ -74,8 +74,6 @@ class CORE_EXPORT LayoutImageResource
   virtual WrappedImagePtr ImagePtr() const { return cached_image_.Get(); }
 
  protected:
-  // Device scale factor for the associated LayoutObject.
-  float DeviceScaleFactor() const;
   // Returns an image based on the passed device scale factor.
   static Image* BrokenImage(float device_scale_factor);
 

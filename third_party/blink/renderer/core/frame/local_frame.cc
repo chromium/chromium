@@ -1384,7 +1384,7 @@ double LocalFrame::DevicePixelRatio() const {
   if (!page_)
     return 0;
 
-  double ratio = page_->DeviceScaleFactorDeprecated();
+  double ratio = page_->InspectorDeviceScaleFactorOverride();
   ratio *= PageZoomFactor();
   return ratio;
 }

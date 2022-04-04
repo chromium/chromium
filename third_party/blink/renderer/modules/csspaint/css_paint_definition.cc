@@ -74,9 +74,8 @@ sk_sp<PaintRecord> CSSPaintDefinition::Paint(
 
   ApplyAnimatedPropertyOverrides(style_map, animated_property_values);
 
-  sk_sp<PaintRecord> result =
-      Paint(input->GetSize(), input->EffectiveZoom(), style_map,
-            &paint_arguments, input->DeviceScaleFactor());
+  sk_sp<PaintRecord> result = Paint(input->GetSize(), input->EffectiveZoom(),
+                                    style_map, &paint_arguments);
 
   // Return empty record if paint fails.
   if (!result)
@@ -88,8 +87,7 @@ sk_sp<PaintRecord> CSSPaintDefinition::Paint(
     const gfx::SizeF& container_size,
     float zoom,
     StylePropertyMapReadOnly* style_map,
-    const CSSStyleValueVector* paint_arguments,
-    float device_scale_factor) {
+    const CSSStyleValueVector* paint_arguments) {
   const gfx::SizeF specified_size = GetSpecifiedSize(container_size, zoom);
   ScriptState::Scope scope(script_state_);
 
@@ -103,8 +101,7 @@ sk_sp<PaintRecord> CSSPaintDefinition::Paint(
 
   // Do subpixel snapping for the |container_size|.
   auto* rendering_context = MakeGarbageCollected<PaintRenderingContext2D>(
-      ToRoundedSize(container_size), context_settings_, zoom,
-      device_scale_factor, global_scope_);
+      ToRoundedSize(container_size), context_settings_, zoom, 1, global_scope_);
   PaintSize* paint_size = MakeGarbageCollected<PaintSize>(specified_size);
 
   CSSStyleValueVector empty_paint_arguments;

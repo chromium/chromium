@@ -543,10 +543,6 @@ LayoutSize GetHitTestRectForAdjustment(LocalFrame& frame,
   ChromeClient& chrome_client = frame.GetChromeClient();
   float device_scale_factor =
       chrome_client.GetScreenInfo(frame).device_scale_factor;
-  // Check if zoom-for-dsf is enabled. If not, touch_area is in dip, so we don't
-  // need to convert max_size_in_dip to physical pixel.
-  if (frame.GetPage()->DeviceScaleFactorDeprecated() != 1)
-    device_scale_factor = 1;
 
   float page_scale_factor = frame.GetPage()->PageScaleFactor();
   const LayoutSize max_size_in_dip(touch_adjustment::kMaxAdjustmentSizeDip,

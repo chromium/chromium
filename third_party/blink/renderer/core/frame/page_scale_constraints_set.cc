@@ -137,11 +137,10 @@ void PageScaleConstraintsSet::DidChangeContentsSize(
 }
 
 static float ComputeDeprecatedTargetDensityDPIFactor(
-    const ViewportDescription& description,
-    float device_scale_factor) {
+    const ViewportDescription& description) {
   if (description.deprecated_target_density_dpi ==
       ViewportDescription::kValueDeviceDPI)
-    return 1.0f / device_scale_factor;
+    return 1.0f;
 
   float target_dpi = -1.0f;
   if (description.deprecated_target_density_dpi ==
@@ -186,7 +185,6 @@ gfx::Size PageScaleConstraintsSet::GetLayoutSize() const {
 void PageScaleConstraintsSet::AdjustForAndroidWebViewQuirks(
     const ViewportDescription& description,
     int layout_fallback_width,
-    float device_scale_factor,
     bool support_target_density_dpi,
     bool wide_viewport_quirk_enabled,
     bool use_wide_viewport,
@@ -217,8 +215,8 @@ void PageScaleConstraintsSet::AdjustForAndroidWebViewQuirks(
   float target_density_dpi_factor = 1.0f;
 
   if (support_target_density_dpi) {
-    target_density_dpi_factor = ComputeDeprecatedTargetDensityDPIFactor(
-        description, device_scale_factor);
+    target_density_dpi_factor =
+        ComputeDeprecatedTargetDensityDPIFactor(description);
     if (page_defined_constraints_.initial_scale != -1)
       page_defined_constraints_.initial_scale *= target_density_dpi_factor;
     if (page_defined_constraints_.minimum_scale != -1)

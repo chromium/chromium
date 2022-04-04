@@ -216,7 +216,7 @@ TEST_F(WebFrameSerializerSanitizationTest, ImageLoadedFromSrcsetForHiDPI) {
                             "frameserialization/2x.png");
 
   // Set high DPR in order to load image from srcset, instead of src.
-  WebView()->SetDeviceScaleFactor(2.0f);
+  WebView()->SetZoomFactorForDeviceScaleFactor(2.0f);
 
   String mhtml =
       GenerateMHTMLFromHtml("http://www.test.com", "img_srcset.html");

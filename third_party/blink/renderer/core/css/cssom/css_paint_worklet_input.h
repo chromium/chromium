@@ -40,7 +40,6 @@ class CORE_EXPORT CSSPaintWorkletInput : public PaintWorkletInput {
       const String& name,
       const gfx::SizeF& container_size,
       float effective_zoom,
-      float device_scale_factor,
       int worklet_id,
       PaintWorkletStylePropertyMap::CrossThreadData values,
       Vector<std::unique_ptr<CrossThreadStyleValue>> parsed_input_args,
@@ -50,7 +49,6 @@ class CORE_EXPORT CSSPaintWorkletInput : public PaintWorkletInput {
 
   // These accessors are safe on any thread.
   float EffectiveZoom() const { return effective_zoom_; }
-  float DeviceScaleFactor() const { return device_scale_factor_; }
   const Vector<std::unique_ptr<CrossThreadStyleValue>>& ParsedInputArguments()
       const {
     return parsed_input_arguments_;
@@ -69,7 +67,6 @@ class CORE_EXPORT CSSPaintWorkletInput : public PaintWorkletInput {
  private:
   const String name_;
   const float effective_zoom_;
-  const float device_scale_factor_;
   PaintWorkletStylePropertyMap::CrossThreadData style_map_data_;
   Vector<std::unique_ptr<CrossThreadStyleValue>> parsed_input_arguments_;
 };

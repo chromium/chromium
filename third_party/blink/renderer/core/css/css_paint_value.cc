@@ -121,17 +121,6 @@ scoped_refptr<Image> CSSPaintValue::GetImage(
   // TODO(crbug.com/946515): Break dependency on LayoutObject.
   const LayoutObject& layout_object = static_cast<const LayoutObject&>(client);
 
-  // TODO(crbug.com/716231): Remove this hack once zoom_for_dsf is enabled on
-  // all platforms (currently not enabled on Mac).
-  float device_scale_factor = 1;
-  if (layout_object.GetFrame() && layout_object.GetFrame()->GetPage()) {
-    // The value of DeviceScaleFactorDeprecated would be 1 on a platform where
-    // zoom_for_dsf is enabled, even if we run chrome with
-    // --force-device-scale-factor with a value that is not 1.
-    device_scale_factor =
-        layout_object.GetFrame()->GetPage()->DeviceScaleFactorDeprecated();
-  }
-
   // For Off-Thread PaintWorklet, we just collect the necessary inputs together
   // and defer the actual JavaScript call until much later (during cc Raster).
   //
@@ -166,16 +155,15 @@ scoped_refptr<Image> CSSPaintValue::GetImage(
       BuildInputArgumentValues(cross_thread_input_arguments);
       scoped_refptr<CSSPaintWorkletInput> input =
           base::MakeRefCounted<CSSPaintWorkletInput>(
-              GetName(), target_size, zoom, device_scale_factor,
-              generator.WorkletId(), std::move(style_data.value()),
+              GetName(), target_size, zoom, generator.WorkletId(),
+              std::move(style_data.value()),
               std::move(cross_thread_input_arguments),
               std::move(input_property_keys));
       return PaintWorkletDeferredImage::Create(std::move(input), target_size);
     }
   }
 
-  return generator.Paint(client, target_size, parsed_input_arguments_,
-                         device_scale_factor);
+  return generator.Paint(client, target_size, parsed_input_arguments_);
 }
 
 void CSSPaintValue::BuildInputArgumentValues(

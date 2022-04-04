@@ -333,13 +333,6 @@ void WebPluginContainerImpl::ReportFindInPageSelection(int identifier,
       identifier, index, gfx::Rect(), false /* final_update */);
 }
 
-float WebPluginContainerImpl::DeviceScaleFactor() {
-  Page* page = element_->GetDocument().GetPage();
-  if (!page)
-    return 1.0;
-  return page->DeviceScaleFactorDeprecated();
-}
-
 float WebPluginContainerImpl::PageScaleFactor() {
   Page* page = element_->GetDocument().GetPage();
   if (!page)

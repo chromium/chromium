@@ -138,7 +138,6 @@ class CORE_EXPORT WebPluginContainerImpl final
                                   int total,
                                   bool final_update) override;
   void ReportFindInPageSelection(int identifier, int index) override;
-  float DeviceScaleFactor() override;
   float PageScaleFactor() override;
   float PageZoomFactor() override;
   void SetCcLayer(cc::Layer*) override;

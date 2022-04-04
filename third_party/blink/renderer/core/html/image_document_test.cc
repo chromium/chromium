@@ -391,7 +391,7 @@ TEST_F(ImageDocumentViewportTest, HidingURLBarDoesntChangeImageLocation) {
   EXPECT_EQ(125, rect->y());
 }
 
-TEST_F(ImageDocumentViewportTest, ZoomForDSFScaleImage) {
+TEST_F(ImageDocumentViewportTest, ScaleImage) {
   v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
   SimRequest request("https://example.com/test.jpg", "image/jpeg");
   LoadURL("https://example.com/test.jpg");
@@ -431,7 +431,7 @@ TEST_F(ImageDocumentViewportTest, ZoomForDSFScaleImage) {
 
 // Tests that with zoom factor for device scale factor, image with different
 // size fit in the viewport correctly.
-TEST_F(ImageDocumentViewportTest, DivWidthWithZoomForDSF) {
+TEST_F(ImageDocumentViewportTest, DivWidth) {
   v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
   SimRequest request("https://example.com/test.jpg", "image/jpeg");
   LoadURL("https://example.com/test.jpg");

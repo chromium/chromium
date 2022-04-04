@@ -52,8 +52,7 @@ class CORE_EXPORT CSSPaintImageGenerator
   // The |container_size| is the container size with subpixel snapping.
   virtual scoped_refptr<Image> Paint(const ImageResourceObserver&,
                                      const gfx::SizeF& container_size,
-                                     const CSSStyleValueVector*,
-                                     float device_scale_factor) = 0;
+                                     const CSSStyleValueVector*) = 0;
 
   virtual const Vector<CSSPropertyID>& NativeInvalidationProperties() const = 0;
   virtual const Vector<AtomicString>& CustomInvalidationProperties() const = 0;

@@ -1151,7 +1151,8 @@ void PepperPluginInstanceImpl::ViewChanged(
 
   view_data_.rect = PP_FromGfxRect(window);
   view_data_.clip_rect = PP_FromGfxRect(new_clip);
-  view_data_.device_scale = container_->DeviceScaleFactor();
+  // TODO(chrishtr): remove device_scale
+  view_data_.device_scale = 1;
   view_data_.css_scale =
       container_->PageZoomFactor() * container_->PageScaleFactor();
   WebWidget* widget = render_frame()->GetLocalRootWebFrameWidget();

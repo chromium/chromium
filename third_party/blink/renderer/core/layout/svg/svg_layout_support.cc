@@ -421,8 +421,6 @@ float SVGLayoutSupport::CalculateScreenFontSizeScalingFactor(
   AffineTransform ctm =
       DeprecatedCalculateTransformToLayer(layout_object) *
       SubtreeContentTransformScope::CurrentContentTransformation();
-  ctm.Scale(
-      layout_object->GetDocument().GetPage()->DeviceScaleFactorDeprecated());
 
   return ClampTo<float>(sqrt((ctm.XScaleSquared() + ctm.YScaleSquared()) / 2));
 }

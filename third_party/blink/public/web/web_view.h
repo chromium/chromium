@@ -279,11 +279,6 @@ class WebView {
   // Indicates that view's preferred size changes will be sent to the browser.
   virtual void EnablePreferredSizeChangedMode() = 0;
 
-  // Sets the ratio as computed by computePageScaleConstraints.
-  // TODO(oshima): Remove this once the device scale factor implementation is
-  // fully migrated to use zooming mechanism.
-  virtual void SetDeviceScaleFactor(float) = 0;
-
   // Sets the additional zoom factor used for device scale factor. This is used
   // to scale the content by the device scale factor, without affecting zoom
   // level.

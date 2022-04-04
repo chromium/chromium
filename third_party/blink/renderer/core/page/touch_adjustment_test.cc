@@ -96,13 +96,6 @@ TEST_F(TouchAdjustmentTest, AdjustmentRangeUpperboundScale) {
   SetZoomAndScale(0.5 /* dsf */, 1 /* browser_zoom */, 1 /* page_scale */);
   result = GetHitTestRectForAdjustment(GetFrame(), touch_area);
   EXPECT_EQ(result, max_touch_area_dip_unscaled * 0.5f);
-
-  // When DeviceScaleFactorDeprecated() is not 1, zoom-for-dsf is disabled,
-  // touch_area should be in dip.
-  SetZoomAndScale(2 /* dsf */, 1 /* browser_zoom */, 1 /* page_scale */);
-  GetPage().SetDeviceScaleFactorDeprecated(0.5);
-  result = GetHitTestRectForAdjustment(GetFrame(), touch_area);
-  EXPECT_EQ(result, max_touch_area_dip_unscaled);
 }
 
 TEST_F(TouchAdjustmentTest, AdjustmentRangeLowerboundScale) {

@@ -389,8 +389,7 @@ std::unique_ptr<DragImage> DataTransfer::CreateDragImageForFrame(
     const gfx::Vector2dF& paint_offset,
     PaintRecordBuilder& builder,
     const PropertyTreeState& property_tree_state) {
-  float layout_to_device_scale = frame.GetPage()->GetVisualViewport().Scale() *
-                                 frame.GetPage()->DeviceScaleFactorDeprecated();
+  float layout_to_device_scale = frame.GetPage()->GetVisualViewport().Scale();
 
   gfx::SizeF device_size = gfx::ScaleSize(layout_size, layout_to_device_scale);
   AffineTransform transform;

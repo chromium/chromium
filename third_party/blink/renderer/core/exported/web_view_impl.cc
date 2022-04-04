@@ -2199,14 +2199,13 @@ double WebViewImpl::SetZoomLevel(double zoom_level) {
           : static_cast<float>(PageZoomLevelToZoomFactor(zoom_level_));
   if (zoom_factor_for_device_scale_factor_) {
     if (compositor_device_scale_factor_override_) {
-      // Adjust the page's DSF so that DevicePixelRatio becomes
-      // |zoom_factor_for_device_scale_factor_|.
-      page_->SetDeviceScaleFactorDeprecated(
+      page_->SetInspectorDeviceScaleFactorOverride(
           zoom_factor_for_device_scale_factor_ /
           compositor_device_scale_factor_override_);
+
       zoom_factor *= compositor_device_scale_factor_override_;
     } else {
-      page_->SetDeviceScaleFactorDeprecated(1.f);
+      page_->SetInspectorDeviceScaleFactorOverride(1.0f);
       zoom_factor *= zoom_factor_for_device_scale_factor_;
     }
   }
@@ -2263,16 +2262,6 @@ void WebViewImpl::SetPageScaleFactor(float scale_factor) {
   DCHECK(MainFrameImpl());
 
   MainFrameImpl()->GetFrame()->SetScaleFactor(scale_factor);
-}
-
-void WebViewImpl::SetDeviceScaleFactor(float scale_factor) {
-  if (!GetPage())
-    return;
-
-  if (GetPage()->DeviceScaleFactorDeprecated() == scale_factor)
-    return;
-
-  GetPage()->SetDeviceScaleFactorDeprecated(scale_factor);
 }
 
 void WebViewImpl::SetZoomFactorForDeviceScaleFactor(
@@ -2697,9 +2686,7 @@ void WebViewImpl::UpdatePageDefinedViewportConstraints(
 
   if (SettingsImpl()->ClobberUserAgentInitialScaleQuirk() &&
       GetPageScaleConstraintsSet().UserAgentConstraints().initial_scale != -1 &&
-      GetPageScaleConstraintsSet().UserAgentConstraints().initial_scale *
-              DeviceScaleFactor() <=
-          1) {
+      GetPageScaleConstraintsSet().UserAgentConstraints().initial_scale <= 1) {
     if (description.max_width == Length::DeviceWidth() ||
         (description.max_width.IsAuto() &&
          GetPageScaleConstraintsSet().PageDefinedConstraints().initial_scale ==
@@ -2709,7 +2696,7 @@ void WebViewImpl::UpdatePageDefinedViewportConstraints(
 
   Settings& page_settings = GetPage()->GetSettings();
   GetPageScaleConstraintsSet().AdjustForAndroidWebViewQuirks(
-      description, default_min_width.IntValue(), DeviceScaleFactor(),
+      description, default_min_width.IntValue(),
       SettingsImpl()->SupportDeprecatedTargetDensityDPI(),
       page_settings.GetWideViewportQuirkEnabled(),
       page_settings.GetUseWideViewport(),
@@ -3693,16 +3680,6 @@ void WebViewImpl::SetVisibilityState(
 mojom::blink::PageVisibilityState WebViewImpl::GetVisibilityState() {
   DCHECK(GetPage());
   return GetPage()->GetVisibilityState();
-}
-
-float WebViewImpl::DeviceScaleFactor() const {
-  // TODO(oshima): Investigate if this should return the ScreenInfo's scale
-  // factor rather than page's scale factor, which can be 1 in use-zoom-for-dsf
-  // mode.
-  if (!GetPage())
-    return 1;
-
-  return GetPage()->DeviceScaleFactorDeprecated();
 }
 
 LocalFrame* WebViewImpl::FocusedLocalFrameInWidget() const {

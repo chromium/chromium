@@ -129,7 +129,6 @@ class FrameFetchContextTest : public testing::Test {
       const String& permissions_policy_header = String()) {
     dummy_page_holder = nullptr;
     dummy_page_holder = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
-    dummy_page_holder->GetPage().SetDeviceScaleFactorDeprecated(1.0);
     if (url.IsValid()) {
       auto params = WebNavigationParams::CreateWithHTMLBufferForTesting(
           SharedBuffer::Create(), url);
@@ -255,7 +254,6 @@ class FrameFetchContextMockedLocalFrameClientTest
         testing::NiceMock<FrameFetchContextMockLocalFrameClient>>();
     dummy_page_holder =
         std::make_unique<DummyPageHolder>(gfx::Size(500, 500), nullptr, client);
-    dummy_page_holder->GetPage().SetDeviceScaleFactorDeprecated(1.0);
     Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
     document = &dummy_page_holder->GetDocument();
     document->SetURL(main_resource_url);
@@ -719,7 +717,7 @@ TEST_F(FrameFetchContextHintsTest, MonitorDPRHints) {
   document->GetFrame()->GetClientHintsPreferences().UpdateFrom(preferences);
   ExpectHeader("https://www.example.com/1.gif", "DPR", true, "1");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-DPR", true, "1");
-  dummy_page_holder->GetPage().SetDeviceScaleFactorDeprecated(2.5);
+  document->GetFrame()->SetPageZoomFactor(2.5);
   ExpectHeader("https://www.example.com/1.gif", "DPR", true, "2.5");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-DPR", true, "2.5");
   ExpectHeader("https://www.example.com/1.gif", "Width", false, "");
@@ -732,7 +730,7 @@ TEST_F(FrameFetchContextHintsTest, MonitorDPRHints) {
 TEST_F(FrameFetchContextHintsTest, MonitorDPRHintsInsecureTransport) {
     ExpectHeader("http://www.example.com/1.gif", "DPR", false, "");
     ExpectHeader("http://www.example.com/1.gif", "Sec-CH-DPR", false, "");
-    dummy_page_holder->GetPage().SetDeviceScaleFactorDeprecated(2.5);
+    document->GetFrame()->SetPageZoomFactor(2.5);
     ExpectHeader("http://www.example.com/1.gif", "DPR", false, "  ");
     ExpectHeader("http://www.example.com/1.gif", "Sec-CH-DPR", false, "  ");
     ExpectHeader("http://www.example.com/1.gif", "Width", false, "");
@@ -757,7 +755,8 @@ TEST_F(FrameFetchContextHintsTest, MonitorResourceWidthHints) {
                666.6666);
   ExpectHeader("https://www.example.com/1.gif", "DPR", false, "");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-DPR", false, "");
-  dummy_page_holder->GetPage().SetDeviceScaleFactorDeprecated(2.5);
+
+  document->GetFrame()->SetPageZoomFactor(2.5);
   ExpectHeader("https://www.example.com/1.gif", "Width", true, "1250", 500);
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Width", true, "1250",
                500);

@@ -491,8 +491,7 @@ void HTMLCanvasElement::DidDraw(const SkIRect& rect) {
   canvas_is_clear_ = false;
   if (GetLayoutObject() && !LowLatencyEnabled())
     GetLayoutObject()->SetShouldCheckForPaintInvalidation();
-  if (IsRenderingContext2D() && context_->ShouldAntialias() && GetPage() &&
-      GetPage()->DeviceScaleFactorDeprecated() > 1.0f) {
+  if (IsRenderingContext2D() && context_->ShouldAntialias() && GetPage()) {
     gfx::RectF inflated_rect(gfx::SkIRectToRect(rect));
     inflated_rect.Outset(1);
     dirty_rect_.Union(inflated_rect);
@@ -800,10 +799,9 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
                               bool flatten_composited_layers) {
   if (context_creation_was_blocked_ ||
       (context_ && context_->isContextLost())) {
-    float device_scale_factor =
-        blink::DeviceScaleFactorDeprecated(GetDocument().GetFrame());
+    // TODO(crbug.com/1313054): Fix this code to work in high-DPI modes.
     std::pair<Image*, float> broken_canvas_and_image_scale_factor =
-        BrokenCanvas(device_scale_factor);
+        BrokenCanvas(1);
     Image* broken_canvas = broken_canvas_and_image_scale_factor.first;
     context.Save();
     context.FillRect(

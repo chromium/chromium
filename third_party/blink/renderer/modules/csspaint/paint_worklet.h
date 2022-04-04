@@ -43,8 +43,7 @@ class MODULES_EXPORT PaintWorklet : public Worklet,
   scoped_refptr<Image> Paint(const String& name,
                              const ImageResourceObserver&,
                              const gfx::SizeF& container_size,
-                             const CSSStyleValueVector*,
-                             float device_scale_factor);
+                             const CSSStyleValueVector*);
 
   int WorkletId() const { return worklet_id_; }
   void Trace(Visitor*) const override;

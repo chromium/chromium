@@ -143,15 +143,6 @@ HeapVector<Member<Page>> Page::RelatedPages() {
   return result;
 }
 
-float DeviceScaleFactorDeprecated(LocalFrame* frame) {
-  if (!frame)
-    return 1;
-  Page* page = frame->GetPage();
-  if (!page)
-    return 1;
-  return page->DeviceScaleFactorDeprecated();
-}
-
 Page* Page::CreateNonOrdinary(
     ChromeClient& chrome_client,
     scheduler::WebAgentGroupScheduler& agent_group_scheduler) {
@@ -218,7 +209,7 @@ Page::Page(base::PassKey<Page>,
           MakeGarbageCollected<ValidationMessageClientImpl>(*this)),
       opened_by_dom_(false),
       tab_key_cycles_through_elements_(true),
-      device_scale_factor_(1),
+      inspector_device_scale_factor_override_(1),
       lifecycle_state_(mojom::blink::PageLifecycleState::New()),
       is_ordinary_(is_ordinary),
       is_cursor_visible_(true),
@@ -507,16 +498,6 @@ void Page::SetPageScaleFactor(float scale) {
 
 float Page::PageScaleFactor() const {
   return GetVisualViewport().Scale();
-}
-
-void Page::SetDeviceScaleFactorDeprecated(float scale_factor) {
-  if (device_scale_factor_ == scale_factor)
-    return;
-
-  device_scale_factor_ = scale_factor;
-
-  if (MainFrame() && MainFrame()->IsLocalFrame())
-    DeprecatedLocalMainFrame()->DeviceScaleFactorChanged();
 }
 
 void Page::AllVisitedStateChanged(bool invalidate_visited_link_hashes) {

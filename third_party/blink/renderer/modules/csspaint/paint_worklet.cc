@@ -100,8 +100,7 @@ wtf_size_t PaintWorklet::SelectNewGlobalScope() {
 scoped_refptr<Image> PaintWorklet::Paint(const String& name,
                                          const ImageResourceObserver& observer,
                                          const gfx::SizeF& container_size,
-                                         const CSSStyleValueVector* data,
-                                         float device_scale_factor) {
+                                         const CSSStyleValueVector* data) {
   if (!document_definition_map_.Contains(name))
     return nullptr;
 
@@ -126,8 +125,8 @@ scoped_refptr<Image> PaintWorklet::Paint(const String& name,
           layout_object.GetDocument(), layout_object.StyleRef(),
           paint_definition->NativeInvalidationProperties(),
           paint_definition->CustomInvalidationProperties());
-  sk_sp<PaintRecord> paint_record = paint_definition->Paint(
-      container_size, zoom, style_map, data, device_scale_factor);
+  sk_sp<PaintRecord> paint_record =
+      paint_definition->Paint(container_size, zoom, style_map, data);
   if (!paint_record)
     return nullptr;
   return PaintGeneratedImage::Create(paint_record, container_size);

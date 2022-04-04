@@ -200,7 +200,7 @@ sk_sp<PaintRecord> PaintWorkletProxyClient::Paint(
 
   const CSSPaintWorkletInput* input =
       To<CSSPaintWorkletInput>(compositor_input);
-  device_pixel_ratio_ = input->DeviceScaleFactor() * input->EffectiveZoom();
+  device_pixel_ratio_ = input->EffectiveZoom();
   definition = global_scope->FindDefinition(input->NameCopy());
   return definition->Paint(compositor_input, animated_property_values);
 }

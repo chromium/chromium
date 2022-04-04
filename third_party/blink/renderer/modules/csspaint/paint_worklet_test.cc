@@ -139,8 +139,7 @@ TEST_F(PaintWorkletTest, PaintWithNullPaintArguments) {
           definition->NativeInvalidationProperties(),
           definition->CustomInvalidationProperties());
   scoped_refptr<Image> image = PaintGeneratedImage::Create(
-      definition->Paint(container_size, zoom, style_map, nullptr,
-                        1.0 /* device_scale_factor */),
+      definition->Paint(container_size, zoom, style_map, nullptr),
       container_size);
   EXPECT_NE(image, nullptr);
 }

@@ -1251,8 +1251,7 @@ bool DragController::StartDrag(LocalFrame* src,
       // TODO(oshima): Remove this scaling and simply pass imageRect to
       // dragImageForImage once all platforms are migrated to use zoom for dsf.
       gfx::Size image_size_in_pixels = gfx::ScaleToFlooredSize(
-          image_rect.size(), src->GetPage()->DeviceScaleFactorDeprecated() *
-                                 src->GetPage()->GetVisualViewport().Scale());
+          image_rect.size(), src->GetPage()->GetVisualViewport().Scale());
 
       float screen_device_scale_factor =
           src->GetChromeClient().GetScreenInfo(*src).device_scale_factor;

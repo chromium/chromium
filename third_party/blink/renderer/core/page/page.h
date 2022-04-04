@@ -89,8 +89,6 @@ class VisualViewport;
 
 typedef uint64_t LinkHash;
 
-float DeviceScaleFactorDeprecated(LocalFrame*);
-
 // A Page roughly corresponds to a tab or popup window in a browser. It owns a
 // tree of frames (a blink::FrameTree). The root frame is called the main frame.
 //
@@ -257,18 +255,12 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   void SetPageScaleFactor(float);
   float PageScaleFactor() const;
 
-  // Corresponds to pixel density of the device where this Page is
-  // being displayed. In multi-monitor setups this can vary between pages.
-  // This value does not account for Page zoom, use LocalFrame::devicePixelRatio
-  // instead.  This is to be deprecated. Use this with caution.
-  // 1) If you need to scale the content per device scale factor, this is still
-  //    valid.  In use-zoom-for-dsf mode, this is always 1, and will be remove
-  //    when transition is complete.
-  // 2) If you want to compute the device related measure (such as device pixel
-  //    height, or the scale factor for drag image), use
-  //    ChromeClient::screenInfo() instead.
-  float DeviceScaleFactorDeprecated() const { return device_scale_factor_; }
-  void SetDeviceScaleFactorDeprecated(float);
+  float InspectorDeviceScaleFactorOverride() const {
+    return inspector_device_scale_factor_override_;
+  }
+  void SetInspectorDeviceScaleFactorOverride(float override) {
+    inspector_device_scale_factor_override_ = override;
+  }
 
   static void AllVisitedStateChanged(bool invalidate_visited_link_hashes);
   static void VisitedStateChanged(LinkHash visited_hash);
@@ -461,7 +453,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   bool tab_key_cycles_through_elements_;
 
-  float device_scale_factor_;
+  float inspector_device_scale_factor_override_;
 
   mojom::blink::PageLifecycleStatePtr lifecycle_state_;
 

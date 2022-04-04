@@ -86,10 +86,6 @@ void FramePainter::Paint(GraphicsContext& context, PaintFlags paint_flags) {
 
   PaintLayerPainter layer_painter(*root_layer);
 
-  float device_scale_factor = blink::DeviceScaleFactorDeprecated(
-      root_layer->GetLayoutObject().GetFrame());
-  context.SetDeviceScaleFactor(device_scale_factor);
-
   layer_painter.Paint(context, paint_flags);
 
   // Regions may have changed as a result of the visibility/z-index of element

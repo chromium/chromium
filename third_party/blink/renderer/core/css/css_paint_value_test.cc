@@ -94,7 +94,7 @@ TEST_P(CSSPaintValueTest, ReportingCompositedUMA) {
   // Mark the generator as ready - GetImage should succeed when
   // OffMainThreadCSSPaint is enabled.
   ON_CALL(*mock_generator, IsImageGeneratorReady()).WillByDefault(Return(true));
-  ON_CALL(*mock_generator, Paint(_, _, _, _))
+  ON_CALL(*mock_generator, Paint(_, _, _))
       .WillByDefault(Return(PaintGeneratedImage::Create(nullptr, target_size)));
   ASSERT_TRUE(
       paint_value->GetImage(*target, GetDocument(), style, target_size));
@@ -142,7 +142,7 @@ TEST_P(CSSPaintValueTest, ReportingNonCompositedUMA) {
   style->SetBorderImageSource(style_image);
 
   ON_CALL(*mock_generator, IsImageGeneratorReady()).WillByDefault(Return(true));
-  EXPECT_CALL(*mock_generator, Paint(_, _, _, _))
+  EXPECT_CALL(*mock_generator, Paint(_, _, _))
       .WillRepeatedly(
           Return(PaintGeneratedImage::Create(nullptr, target_size)));
   // The paint worklet is not composited, and falls back to the main thread
@@ -192,7 +192,7 @@ TEST_P(CSSPaintValueTest, DelayPaintUntilGeneratorReady) {
 
   // Initially the generator is not ready, so GetImage should fail (and no paint
   // should happen).
-  EXPECT_CALL(*mock_generator, Paint(_, _, _, _)).Times(0);
+  EXPECT_CALL(*mock_generator, Paint(_, _, _)).Times(0);
   EXPECT_FALSE(
       paint_value->GetImage(*target, GetDocument(), style, target_size));
 
@@ -201,7 +201,7 @@ TEST_P(CSSPaintValueTest, DelayPaintUntilGeneratorReady) {
   // In off-thread CSS Paint, the actual paint call is deferred and so will
   // never happen.
   if (!RuntimeEnabledFeatures::OffMainThreadCSSPaintEnabled()) {
-    EXPECT_CALL(*mock_generator, Paint(_, _, _, _))
+    EXPECT_CALL(*mock_generator, Paint(_, _, _))
         .WillRepeatedly(
             Return(PaintGeneratedImage::Create(nullptr, target_size)));
   }
@@ -284,7 +284,7 @@ TEST_P(CSSPaintValueTest, PrintingMustFallbackToMainThread) {
   ON_CALL(*mock_generator, IsImageGeneratorReady()).WillByDefault(Return(true));
   // This PW can be composited, so we should only fall back to main once, in
   // the case where we are printing.
-  EXPECT_CALL(*mock_generator, Paint(_, _, _, _))
+  EXPECT_CALL(*mock_generator, Paint(_, _, _))
       .Times(1)
       .WillOnce(Return(PaintGeneratedImage::Create(nullptr, target_size)));
 
