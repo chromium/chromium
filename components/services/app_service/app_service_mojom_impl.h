@@ -127,10 +127,8 @@ class AppServiceMojomImpl : public apps::mojom::AppService {
       const std::string& app_id,
       apps::mojom::RunOnOsLoginMode run_on_os_login_mode) override;
 
-  // Retern the preferred_apps_ for testing.
-  PreferredAppsList& GetPreferredAppsForTesting();
-
-  void SetWriteCompletedCallbackForTesting(base::OnceClosure testing_callback);
+  // Retern the preferred_apps_list_ for testing.
+  PreferredAppsList& GetPreferredAppsListForTesting();
 
  private:
   void OnPublisherDisconnected(apps::mojom::AppType app_type);
@@ -180,7 +178,7 @@ class AppServiceMojomImpl : public apps::mojom::AppService {
   // destroyed first, closing the connection to avoid dangling callbacks.
   mojo::ReceiverSet<apps::mojom::AppService> receivers_;
 
-  PreferredAppsList preferred_apps_;
+  PreferredAppsList preferred_apps_list_;
 
   base::FilePath profile_dir_;
 

@@ -149,8 +149,8 @@ void AppServiceMojomImpl::RegisterSubscriber(
   // TODO: store the opts somewhere.
 
   // Initialise the Preferred Apps in the Subscribers on register.
-  if (preferred_apps_.IsInitialized()) {
-    subscriber->InitializePreferredApps(preferred_apps_.GetValue());
+  if (preferred_apps_list_.IsInitialized()) {
+    subscriber->InitializePreferredApps(preferred_apps_list_.GetValue());
   }
 
   // Add the new subscriber to the set.
@@ -390,8 +390,8 @@ void AppServiceMojomImpl::SetRunOnOsLoginMode(
   iter->second->SetRunOnOsLoginMode(app_id, run_on_os_login_mode);
 }
 
-PreferredAppsList& AppServiceMojomImpl::GetPreferredAppsForTesting() {
-  return preferred_apps_;
+PreferredAppsList& AppServiceMojomImpl::GetPreferredAppsListForTesting() {
+  return preferred_apps_list_;
 }
 
 void AppServiceMojomImpl::OnPublisherDisconnected(
@@ -444,7 +444,7 @@ void AppServiceMojomImpl::WriteCompleted() {
   // If need to perform another write, write the most up to date preferred apps
   // from memory to file.
   should_write_preferred_apps_to_file_ = false;
-  WriteToJSON(profile_dir_, preferred_apps_);
+  WriteToJSON(profile_dir_, preferred_apps_list_);
 }
 
 void AppServiceMojomImpl::ReadFromJSON(const base::FilePath& profile_dir) {
@@ -461,7 +461,7 @@ void AppServiceMojomImpl::ReadCompleted(std::string preferred_apps_string) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   bool preferred_apps_upgraded = false;
   if (preferred_apps_string.empty()) {
-    preferred_apps_.Init();
+    preferred_apps_list_.Init();
   } else {
     std::string json_string;
     JSONStringValueDeserializer deserializer(preferred_apps_string);
@@ -473,7 +473,7 @@ void AppServiceMojomImpl::ReadCompleted(std::string preferred_apps_string) {
     if (!preferred_apps_value) {
       DVLOG(0) << "Fail to deserialize json value from string with error code: "
                << error_code << " and error message: " << error_message;
-      preferred_apps_.Init();
+      preferred_apps_list_.Init();
     } else {
       preferred_apps_upgraded = IsUpgradedForSharing(*preferred_apps_value);
       auto preferred_apps =
@@ -481,18 +481,18 @@ void AppServiceMojomImpl::ReadCompleted(std::string preferred_apps_string) {
       if (!preferred_apps_upgraded) {
         UpgradePreferredApps(preferred_apps);
       }
-      preferred_apps_.Init(preferred_apps);
+      preferred_apps_list_.Init(preferred_apps);
     }
   }
   if (!preferred_apps_upgraded) {
-    WriteToJSON(profile_dir_, preferred_apps_);
+    WriteToJSON(profile_dir_, preferred_apps_list_);
   }
 
   for (auto& subscriber : subscribers_) {
-    subscriber->InitializePreferredApps(preferred_apps_.GetValue());
+    subscriber->InitializePreferredApps(preferred_apps_list_.GetValue());
   }
 
-  LogPreferredAppEntryCount(preferred_apps_.GetEntrySize());
+  LogPreferredAppEntryCount(preferred_apps_list_.GetEntrySize());
 
   while (!pending_preferred_apps_tasks_.empty()) {
     std::move(pending_preferred_apps_tasks_.front()).Run();
@@ -505,7 +505,7 @@ void AppServiceMojomImpl::ReadCompleted(std::string preferred_apps_string) {
 }
 
 void AppServiceMojomImpl::RunAfterPreferredAppsReady(base::OnceClosure task) {
-  if (preferred_apps_.IsInitialized()) {
+  if (preferred_apps_list_.IsInitialized()) {
     std::move(task).Run();
   } else {
     pending_preferred_apps_tasks_.push(std::move(task));
@@ -526,9 +526,9 @@ void AppServiceMojomImpl::AddPreferredAppImpl(
   }
 
   apps::mojom::ReplacedAppPreferencesPtr replaced_apps =
-      preferred_apps_.AddPreferredApp(app_id, intent_filter);
+      preferred_apps_list_.AddPreferredApp(app_id, intent_filter);
 
-  WriteToJSON(profile_dir_, preferred_apps_);
+  WriteToJSON(profile_dir_, preferred_apps_list_);
 
   auto changes = apps::mojom::PreferredAppChanges::New();
 
@@ -558,9 +558,9 @@ void AppServiceMojomImpl::AddPreferredAppImpl(
 void AppServiceMojomImpl::RemovePreferredAppImpl(apps::mojom::AppType app_type,
                                                  const std::string& app_id) {
   std::vector<apps::mojom::IntentFilterPtr> removed_filters =
-      preferred_apps_.DeleteAppId(app_id);
+      preferred_apps_list_.DeleteAppId(app_id);
   if (!removed_filters.empty()) {
-    WriteToJSON(profile_dir_, preferred_apps_);
+    WriteToJSON(profile_dir_, preferred_apps_list_);
 
     auto changes = apps::mojom::PreferredAppChanges::New();
     changes->removed_filters.emplace(app_id, std::move(removed_filters));
@@ -575,10 +575,10 @@ void AppServiceMojomImpl::RemovePreferredAppForFilterImpl(
     const std::string& app_id,
     apps::mojom::IntentFilterPtr intent_filter) {
   std::vector<apps::mojom::IntentFilterPtr> removed_filters =
-      preferred_apps_.DeletePreferredApp(app_id, intent_filter);
+      preferred_apps_list_.DeletePreferredApp(app_id, intent_filter);
 
   if (!removed_filters.empty()) {
-    WriteToJSON(profile_dir_, preferred_apps_);
+    WriteToJSON(profile_dir_, preferred_apps_list_);
 
     auto changes = apps::mojom::PreferredAppChanges::New();
     changes->removed_filters.emplace(app_id, std::move(removed_filters));
@@ -598,7 +598,7 @@ void AppServiceMojomImpl::SetSupportedLinksPreferenceImpl(
 
   for (auto& filter : all_link_filters) {
     apps::mojom::ReplacedAppPreferencesPtr replaced_apps =
-        preferred_apps_.AddPreferredApp(app_id, filter);
+        preferred_apps_list_.AddPreferredApp(app_id, filter);
     added[app_id].push_back(std::move(filter));
 
     // If we removed overlapping supported links when adding the new app, those
@@ -625,7 +625,7 @@ void AppServiceMojomImpl::SetSupportedLinksPreferenceImpl(
       // We only need to remove other supported links once per app.
       if (first_removal_for_app && did_replace_supported_link) {
         std::vector<apps::mojom::IntentFilterPtr> removed_filters =
-            preferred_apps_.DeleteSupportedLinks(removed_app_id);
+            preferred_apps_list_.DeleteSupportedLinks(removed_app_id);
         removed_filters_for_app.insert(
             removed_filters_for_app.end(),
             std::make_move_iterator(removed_filters.begin()),
@@ -634,7 +634,7 @@ void AppServiceMojomImpl::SetSupportedLinksPreferenceImpl(
     }
   }
 
-  WriteToJSON(profile_dir_, preferred_apps_);
+  WriteToJSON(profile_dir_, preferred_apps_list_);
 
   for (auto& subscriber : subscribers_) {
     subscriber->OnPreferredAppsChanged(changes->Clone());
@@ -666,10 +666,10 @@ void AppServiceMojomImpl::RemoveSupportedLinksPreferenceImpl(
   }
 
   std::vector<apps::mojom::IntentFilterPtr> removed_filters =
-      preferred_apps_.DeleteSupportedLinks(app_id);
+      preferred_apps_list_.DeleteSupportedLinks(app_id);
 
   if (!removed_filters.empty()) {
-    WriteToJSON(profile_dir_, preferred_apps_);
+    WriteToJSON(profile_dir_, preferred_apps_list_);
 
     auto changes = apps::mojom::PreferredAppChanges::New();
     changes->removed_filters.emplace(app_id, std::move(removed_filters));
