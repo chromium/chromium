@@ -29,10 +29,13 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
@@ -56,6 +59,24 @@ std::u16string FormatDate(const base::Time& time) {
 std::u16string FormatDayOfWeek(const base::Time& time) {
   // Use 'short' day of week format (e.g., "Wed").
   return base::TimeFormatWithPattern(time, "EEE");
+}
+
+// Helper function for getting ContentLayerColor.
+inline SkColor GetContentLayerColor(ContentLayerType type) {
+  return ash::AshColorProvider::Get()->GetContentLayerColor(type);
+}
+
+// Helper function for configuring label in BatteryInfoView.
+void ConfigureLabel(views::Label* label, SkColor color) {
+  label->SetAutoColorReadabilityEnabled(false);
+  label->SetSubpixelRenderingEnabled(false);
+  label->SetEnabledColor(color);
+  label->GetViewAccessibility().OverrideIsIgnored(true);
+}
+
+// Returns whether SmartChargingUI should be used.
+bool UseSmartChargingUI() {
+  return ash::features::IsAdaptiveChargingEnabled();
 }
 
 // A view that shows current date in short format e.g. "Mon, Mar 12". It updates
@@ -167,114 +188,186 @@ void DateView::Refresh() {
   Update();
 }
 
-// A view that shows battery status. It updates by observing PowerStatus.
-class BatteryView : public views::Button, public PowerStatus::Observer {
+// A base class for both BatteryLabelView and BatteryIconView. It updates by
+// observing PowerStatus.
+class BatteryInfoViewBase : public views::Button, public PowerStatus::Observer {
  public:
-  explicit BatteryView(UnifiedSystemTrayController* controller);
+  METADATA_HEADER(BatteryInfoViewBase);
+  explicit BatteryInfoViewBase(UnifiedSystemTrayController* controller)
+      : Button(base::BindRepeating(&BatteryInfoViewBase::OnButtonPressed,
+                                   base::Unretained(this))),
+        controller_(controller) {
+    power_status_observation_.Observe(PowerStatus::Get());
+  }
 
-  BatteryView(const BatteryView&) = delete;
-  BatteryView& operator=(const BatteryView&) = delete;
+  BatteryInfoViewBase(const BatteryInfoViewBase&) = delete;
+  BatteryInfoViewBase& operator=(const BatteryInfoViewBase&) = delete;
 
-  ~BatteryView() override;
+  ~BatteryInfoViewBase() override = default;
 
   // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void ChildPreferredSizeChanged(views::View* child) override;
-  void ChildVisibilityChanged(views::View* child) override;
-  const char* GetClassName() const override { return "BatteryView"; }
-  void OnThemeChanged() override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+    node_data->role = ax::mojom::Role::kLabelText;
+    node_data->SetName(PowerStatus::Get()->GetAccessibleNameString(true));
+  }
+
+  void ChildPreferredSizeChanged(views::View* child) override {
+    PreferredSizeChanged();
+  }
+
+  void ChildVisibilityChanged(views::View* child) override {
+    PreferredSizeChanged();
+  }
 
   // PowerStatus::Observer:
-  void OnPowerStatusChanged() override;
+  void OnPowerStatusChanged() override { Update(); }
+
+  // Should be override by subclass.
+  virtual void Update() = 0;
 
  private:
-  void Update();
-
-  void ConfigureLabel(views::Label* label);
-
   // Callback called when this is pressed.
-  void OnButtonPressed(const ui::Event& event);
-
-  views::Label* percentage_;
-  views::Label* separator_;
-  views::Label* status_;
+  void OnButtonPressed(const ui::Event& event) {
+    controller_->HandleOpenPowerSettingsAction();
+  }
 
   // Unowned.
   ash::UnifiedSystemTrayController* const controller_;
+
+  base::ScopedObservation<PowerStatus, PowerStatus::Observer>
+      power_status_observation_{this};
 };
+BEGIN_METADATA(BatteryInfoViewBase, views::Button)
+END_METADATA
 
-BatteryView::BatteryView(UnifiedSystemTrayController* controller)
-    : Button(base::BindRepeating(&BatteryView::OnButtonPressed,
-                                 base::Unretained(this))),
-      controller_(controller) {
-  PowerStatus::Get()->AddObserver(this);
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal));
+// A view that shows battery status.
+class BatteryLabelView : public BatteryInfoViewBase {
+ public:
+  METADATA_HEADER(BatteryLabelView);
+  explicit BatteryLabelView(UnifiedSystemTrayController* controller)
+      : BatteryInfoViewBase(controller) {
+    SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kHorizontal));
 
-  percentage_ = AddChildView(std::make_unique<views::Label>());
-  separator_ = AddChildView(std::make_unique<views::Label>());
-  status_ = AddChildView(std::make_unique<views::Label>());
-  separator_->SetText(
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BATTERY_STATUS_SEPARATOR));
-  Update();
-}
+    percentage_ = AddChildView(std::make_unique<views::Label>());
+    auto seperator = std::make_unique<views::Label>();
+    seperator->SetText(l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_BATTERY_STATUS_SEPARATOR));
+    separator_ = AddChildView(std::move(seperator));
+    status_ = AddChildView(std::make_unique<views::Label>());
+    Update();
+  }
 
-BatteryView::~BatteryView() {
-  PowerStatus::Get()->RemoveObserver(this);
-}
+  BatteryLabelView(const BatteryLabelView&) = delete;
+  BatteryLabelView& operator=(const BatteryLabelView&) = delete;
+  ~BatteryLabelView() override = default;
 
-void BatteryView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kLabelText;
-  node_data->SetName(PowerStatus::Get()->GetAccessibleNameString(true));
-}
+  // views::View:
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    const auto color =
+        GetContentLayerColor(ContentLayerType::kTextColorSecondary);
+    ConfigureLabel(percentage_, color);
+    ConfigureLabel(separator_, color);
+    ConfigureLabel(status_, color);
+  }
 
-void BatteryView::ChildPreferredSizeChanged(views::View* child) {
-  PreferredSizeChanged();
-}
+ private:
+  void Update() override {
+    std::u16string percentage_text;
+    std::u16string status_text;
+    std::tie(percentage_text, status_text) =
+        PowerStatus::Get()->GetStatusStrings();
 
-void BatteryView::ChildVisibilityChanged(views::View* child) {
-  PreferredSizeChanged();
-}
+    percentage_->SetText(percentage_text);
+    status_->SetText(status_text);
 
-void BatteryView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  ConfigureLabel(percentage_);
-  ConfigureLabel(separator_);
-  ConfigureLabel(status_);
-}
+    percentage_->SetVisible(!percentage_text.empty() && !UseSmartChargingUI());
+    separator_->SetVisible(!percentage_text.empty() && !UseSmartChargingUI() &&
+                           !status_text.empty());
+    status_->SetVisible(!status_text.empty());
 
-void BatteryView::OnPowerStatusChanged() {
-  Update();
-}
+    percentage_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
+    status_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
+  }
 
-void BatteryView::Update() {
-  std::u16string percentage_text;
-  std::u16string status_text;
-  std::tie(percentage_text, status_text) =
-      PowerStatus::Get()->GetStatusStrings();
+  views::Label* percentage_ = nullptr;
+  views::Label* separator_ = nullptr;
+  views::Label* status_ = nullptr;
+};
+BEGIN_METADATA(BatteryLabelView, BatteryInfoViewBase)
+END_METADATA
 
-  percentage_->SetText(percentage_text);
-  status_->SetText(status_text);
+// A view that shows battery icon and charging state when smart charging is
+// enabled.
+class BatteryIconView : public BatteryInfoViewBase {
+ public:
+  METADATA_HEADER(BatteryIconView);
+  explicit BatteryIconView(UnifiedSystemTrayController* controller)
+      : BatteryInfoViewBase(controller) {
+    auto layout = std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kHorizontal);
+    layout->set_inside_border_insets(kUnifiedSystemInfoBatteryIconPadding);
+    SetLayoutManager(std::move(layout));
 
-  percentage_->SetVisible(!percentage_text.empty());
-  separator_->SetVisible(!percentage_text.empty() && !status_text.empty());
-  status_->SetVisible(!status_text.empty());
+    battery_image_ = AddChildView(std::make_unique<views::ImageView>());
+    ConfigureIcon();
 
-  percentage_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
-  status_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
-}
+    percentage_ = AddChildView(std::make_unique<views::Label>());
 
-void BatteryView::ConfigureLabel(views::Label* label) {
-  label->SetAutoColorReadabilityEnabled(false);
-  label->SetSubpixelRenderingEnabled(false);
-  label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kTextColorSecondary));
-  label->GetViewAccessibility().OverrideIsIgnored(true);
-}
+    SetBackground(views::CreateRoundedRectBackground(
+        GetContentLayerColor(AshColorProvider::ContentLayerType::
+                                 kBatterySystemInfoBackgroundColor),
+        GetPreferredSize().height() / 2));
 
-void BatteryView::OnButtonPressed(const ui::Event& event) {
-  controller_->HandleOpenPowerSettingsAction();
-}
+    Update();
+  }
+
+  BatteryIconView(const BatteryIconView&) = delete;
+  BatteryIconView& operator=(const BatteryIconView&) = delete;
+  ~BatteryIconView() override = default;
+
+  // views::View:
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    const auto color =
+        GetContentLayerColor(ContentLayerType::kButtonLabelColorPrimary);
+    ConfigureLabel(percentage_, color);
+    ConfigureIcon();
+  }
+
+ private:
+  void Update() override {
+    const std::u16string percentage_text =
+        PowerStatus::Get()->GetStatusStrings().first;
+
+    percentage_->SetText(percentage_text);
+    percentage_->SetVisible(!percentage_text.empty());
+    percentage_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
+
+    ConfigureIcon();
+  }
+
+  void ConfigureIcon() {
+    const SkColor battery_icon_color = GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kBatterySystemInfoIconColor);
+
+    const SkColor badge_color = GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kBatterySystemInfoBackgroundColor);
+
+    PowerStatus::BatteryImageInfo info =
+        PowerStatus::Get()->GetBatteryImageInfo();
+    info.alert_if_low = false;
+    battery_image_->SetImage(PowerStatus::GetBatteryImage(
+        info, kUnifiedTrayBatteryIconSize, battery_icon_color,
+        battery_icon_color, badge_color));
+  }
+
+  views::Label* percentage_ = nullptr;
+  views::ImageView* battery_image_ = nullptr;
+};
+BEGIN_METADATA(BatteryIconView, BatteryInfoViewBase)
+END_METADATA
 
 // A base class of the views showing device management state.
 class ManagedStateView : public views::Button {
@@ -490,7 +583,10 @@ UnifiedSystemInfoView::UnifiedSystemInfoView(
   if (PowerStatus::Get()->IsBatteryPresent()) {
     separator_ = AddChildView(std::make_unique<views::Separator>());
     separator_->SetPreferredHeight(kUnifiedSystemInfoHeight);
-    AddChildView(std::make_unique<BatteryView>(controller));
+    if (UseSmartChargingUI()) {
+      AddChildView(std::make_unique<BatteryIconView>(controller));
+    }
+    AddChildView(std::make_unique<BatteryLabelView>(controller));
   }
 
   auto* spacing = AddChildView(std::make_unique<views::View>());
@@ -518,8 +614,8 @@ const char* UnifiedSystemInfoView::GetClassName() const {
 void UnifiedSystemInfoView::OnThemeChanged() {
   views::View::OnThemeChanged();
   if (separator_) {
-    separator_->SetColor(AshColorProvider::Get()->GetContentLayerColor(
-        ContentLayerType::kSeparatorColor));
+    separator_->SetColor(
+        GetContentLayerColor(ContentLayerType::kSeparatorColor));
   }
 }
 

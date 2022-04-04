@@ -197,10 +197,12 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
   void CalculateBatteryImageInfo(BatteryImageInfo* info) const;
 
   // Creates a new image that should be shown for the battery's current state.
-  static gfx::ImageSkia GetBatteryImage(const BatteryImageInfo& info,
-                                        int height,
-                                        SkColor bg_color,
-                                        SkColor fg_color);
+  static gfx::ImageSkia GetBatteryImage(
+      const BatteryImageInfo& info,
+      int height,
+      SkColor bg_color,
+      SkColor fg_color,
+      absl::optional<SkColor> badge_color = absl::nullopt);
 
   // Returns a string describing the current state for accessibility.
   std::u16string GetAccessibleNameString(bool full_description) const;

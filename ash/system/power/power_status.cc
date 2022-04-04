@@ -275,11 +275,14 @@ void PowerStatus::CalculateBatteryImageInfo(BatteryImageInfo* info) const {
 }
 
 // static
-gfx::ImageSkia PowerStatus::GetBatteryImage(const BatteryImageInfo& info,
-                                            int height,
-                                            SkColor bg_color,
-                                            SkColor fg_color) {
-  auto* source = new BatteryImageSource(info, height, bg_color, fg_color);
+gfx::ImageSkia PowerStatus::GetBatteryImage(
+    const BatteryImageInfo& info,
+    int height,
+    SkColor bg_color,
+    SkColor fg_color,
+    absl::optional<SkColor> badge_color) {
+  auto* source = new BatteryImageSource(info, height, bg_color, fg_color,
+                                        std::move(badge_color));
   return gfx::ImageSkia(base::WrapUnique(source), source->size());
 }
 

@@ -133,7 +133,13 @@ class ASH_PUBLIC_EXPORT ColorProvider {
     kProgressBarColorBackground,
 
     // Color used to highlight a hovered view.
-    kHighlightColorHover
+    kHighlightColorHover,
+
+    // Color for the background of battery system info view.
+    kBatterySystemInfoBackgroundColor,
+
+    // Color for the battery icon in the system info view.
+    kBatterySystemInfoIconColor
   };
 
   static ColorProvider* Get();

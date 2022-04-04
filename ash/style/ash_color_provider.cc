@@ -430,6 +430,10 @@ SkColor AshColorProvider::GetContentLayerColorImpl(ContentLayerType type,
     case ContentLayerType::kButtonIconColor:
     case ContentLayerType::kButtonLabelColor:
       return use_dark_color ? gfx::kGoogleGrey200 : gfx::kGoogleGrey900;
+    case ContentLayerType::kBatterySystemInfoBackgroundColor:
+      return use_dark_color ? gfx::kGoogleGreen300 : gfx::kGoogleGreen600;
+    case ContentLayerType::kBatterySystemInfoIconColor:
+      return use_dark_color ? gfx::kGoogleGrey900 : gfx::kGoogleGrey200;
     default:
       return ResolveColor(type, use_dark_color);
   }
