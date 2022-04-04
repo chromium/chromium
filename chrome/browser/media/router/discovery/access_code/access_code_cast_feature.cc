@@ -23,6 +23,9 @@ void RegisterAccessCodeProfilePrefs(PrefRegistrySimple* registry) {
                                 PrefRegistry::PUBLIC);
   registry->RegisterIntegerPref(prefs::kAccessCodeCastDeviceDuration, 0,
                                 PrefRegistry::PUBLIC);
+  registry->RegisterDictionaryPref(prefs::kAccessCodeCastDevices);
+  registry->RegisterDictionaryPref(prefs::kAccessCodeCastDiscoveredNetworks);
+  registry->RegisterDictionaryPref(prefs::kAccessCodeCastDeviceAdditionTime);
 }
 
 bool GetAccessCodeCastEnabledPref(PrefService* pref_service) {
@@ -36,6 +39,7 @@ base::TimeDelta GetAccessCodeDeviceDurationPref(PrefService* pref_service) {
   return base::Seconds(
       pref_service->GetInteger(prefs::kAccessCodeCastDeviceDuration));
 }
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace media_router

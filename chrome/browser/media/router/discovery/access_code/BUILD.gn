@@ -28,6 +28,8 @@ if (!is_android) {
     sources = [
       "access_code_cast_discovery_interface.cc",
       "access_code_cast_discovery_interface.h",
+      "access_code_cast_pref_updater.cc",
+      "access_code_cast_pref_updater.h",
       "access_code_cast_sink_service.cc",
       "access_code_cast_sink_service.h",
       "access_code_cast_sink_service_factory.cc",
@@ -55,10 +57,12 @@ if (!is_android) {
       "//components/cast_channel:cast_channel",
       "//components/keyed_service/content:content",
       "//components/leveldb_proto:leveldb_proto",
+      "//components/prefs:prefs",
       "//components/signin/public/base:base",
       "//components/signin/public/identity_manager:identity_manager",
       "//components/user_manager:user_manager",
       "//components/version_info:channel",
+      "//services/preferences/public/cpp:cpp",
     ]
   }
 }

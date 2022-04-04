@@ -259,6 +259,7 @@ void AccessCodeCastHandler::CheckForDiscoveryCompletion() {
   }
 
   // Sink has been completely added so caller can be alerted.
+  access_code_sink_service_->StoreSinkInPrefsById(sink_id_.value());
   std::move(add_sink_callback_).Run(AddSinkResultCode::OK);
 }
 

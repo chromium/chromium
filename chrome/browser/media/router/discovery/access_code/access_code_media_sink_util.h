@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_ACCESS_CODE_ACCESS_CODE_MEDIA_SINK_UTIL_H_
 #define CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_ACCESS_CODE_ACCESS_CODE_MEDIA_SINK_UTIL_H_
 
+#include "base/values.h"
 #include "chrome/browser/media/router/discovery/access_code/discovery_resources.pb.h"
 #include "chrome/browser/media/router/discovery/mdns/media_sink_util.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
@@ -18,6 +19,10 @@ using NetworkInfo = chrome_browser_media::proto::NetworkInfo;
 // valid if the returned result is |kOk|.
 std::pair<absl::optional<MediaSinkInternal>, CreateCastMediaSinkResult>
 CreateAccessCodeMediaSink(const DiscoveryDevice& discovery_device);
+
+base::Value CreateValueDictFromMediaSinkInternal(const MediaSinkInternal& sink);
+absl::optional<MediaSinkInternal> ParseValueDictIntoMediaSinkInternal(
+    const base::Value::Dict& value_dict);
 
 }  // namespace media_router
 

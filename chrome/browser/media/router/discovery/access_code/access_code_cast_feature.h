@@ -24,10 +24,34 @@ namespace prefs {
 // shown.
 constexpr char kAccessCodeCastEnabled[] =
     "media_router.access_code_cast.enabled";
+
 // Pref name for the pref that determines how long a scanned receiver remains in
 // the receiver list. Duration is measured in seconds.
 constexpr char kAccessCodeCastDeviceDuration[] =
     "media_router.access_code_cast.device_duration";
+
+// Pref that keeps track of cast devices added on a user's profile. It is
+// registered as a dictionary pref with each key being a
+// MediaSink::Id(std::string) and value being a MediaSinkInternal object stores
+// as a base::Value::Dict.
+// Whenever a cast device is discovered via access code, a new entry will be
+// added to this dictionary (or updated if the MediaSink::Id already exists).
+constexpr char kAccessCodeCastDevices[] =
+    "media_router.access_code_cast.devices";
+
+// Pref that keeps track of which cast devices were discovered on which
+// networks. It is registered as a dictionary pref with each key being a
+// std::string network_id and value being a list of MediaSink::Id. Whenever a
+// device is added or updated, this dictionary will be updated with that device.
+// If the device expires it will be removed from that network list.
+constexpr char kAccessCodeCastDiscoveredNetworks[] =
+    "media_router.access_code_cast.discovered_networks";
+
+// Pref that keeps track of when a cast device is added. It is be registered
+// as a dictionary pref with each key being a MediaSink::Id and value being a
+// base::Time.
+constexpr char kAccessCodeCastDeviceAdditionTime[] =
+    "media_router.access_code_cast.addition_time";
 }  // namespace prefs
 
 // Registers Access Code Cast related preferences with per-profile pref

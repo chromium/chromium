@@ -184,4 +184,14 @@ TEST_F(AccessCodeMediaSinkUtilTest, MediaSinkCreatedCorrectly) {
   EXPECT_EQ(constructed_pair.first.value(), expected_sink_internal);
 }
 
+TEST_F(AccessCodeMediaSinkUtilTest, ParsedMediaSinkInternalEqualToOriginal) {
+  DiscoveryDevice discovery_device_proto = BuildDiscoveryDeviceProto();
+  auto cast_sink =
+      CreateAccessCodeMediaSink(discovery_device_proto).first.value();
+
+  auto value_dict =
+      std::move(*CreateValueDictFromMediaSinkInternal(cast_sink).GetIfDict());
+  EXPECT_EQ(ParseValueDictIntoMediaSinkInternal(value_dict).value(), cast_sink);
+}
+
 }  // namespace media_router

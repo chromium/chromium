@@ -10,6 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_discovery_interface.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_pref_updater.h"
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom.h"
@@ -56,6 +57,9 @@ class AccessCodeCastSinkService : public KeyedService {
   // the given media sink.
   virtual void AddSinkToMediaRouter(const MediaSinkInternal& sink,
                                     AddSinkResultCallback add_sink_callback);
+
+  void StoreSinkInPrefs(const MediaSinkInternal* sink);
+  void StoreSinkInPrefsById(const MediaSink::Id sink_id);
 
  private:
   class AccessCodeMediaRoutesObserver : public MediaRoutesObserver {
@@ -109,6 +113,8 @@ class AccessCodeCastSinkService : public KeyedService {
                            OnChannelOpenedSuccess);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            OnChannelOpenedFailure);
+  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
+                           SinkDoesntExistForPrefs);
 
   // Constructor used for testing.
   AccessCodeCastSinkService(
@@ -170,6 +176,12 @@ class AccessCodeCastSinkService : public KeyedService {
   std::map<MediaSink::Id, AddSinkResultCallback> pending_callbacks_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  // Raw pointer to DiscoveryNetworkMonitor, which is a global leaky singleton
+  // and manages network change notifications.
+  const raw_ptr<DiscoveryNetworkMonitor> network_monitor_;
+
+  std::unique_ptr<AccessCodeCastPrefUpdater> pref_updater_;
 
   base::WeakPtrFactory<AccessCodeCastSinkService> weak_ptr_factory_{this};
 };

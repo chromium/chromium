@@ -11,6 +11,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/values.h"
 #include "components/cast_channel/cast_socket.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
@@ -22,6 +23,14 @@
 namespace media_router {
 
 namespace {
+
+constexpr char kSinkDictKey[] = "sink";
+constexpr char kSinkIdKey[] = "sink_id";
+constexpr char kDisplayNameKey[] = "display_name";
+constexpr char kExtraDataDictKey[] = "extra_data";
+constexpr char kCapabilitiesKey[] = "capabilities";
+constexpr char kPortKey[] = "port";
+constexpr char kIpAddressKey[] = "ip_address";
 
 uint8_t ConvertDeviceCapabilitiesToInt(
     chrome_browser_media::proto::DeviceCapabilities proto) {
@@ -122,4 +131,86 @@ CreateAccessCodeMediaSink(const DiscoveryDevice& discovery_device) {
 
   return std::make_pair(cast_sink, CreateCastMediaSinkResult::kOk);
 }
+
+base::Value CreateValueDictFromMediaSinkInternal(
+    const MediaSinkInternal& sink) {
+  const CastSinkExtraData& extra_data = sink.cast_data();
+
+  base::Value::Dict extra_data_dict;
+  extra_data_dict.Set(kCapabilitiesKey, extra_data.capabilities);
+  extra_data_dict.Set(kPortKey, extra_data.ip_endpoint.port());
+  extra_data_dict.Set(kIpAddressKey,
+                      extra_data.ip_endpoint.address().ToString());
+
+  base::Value::Dict sink_dict;
+  sink_dict.Set(kSinkIdKey, sink.id());
+  sink_dict.Set(kDisplayNameKey, sink.sink().name());
+
+  base::Value::Dict value_dict;
+  value_dict.Set(kSinkDictKey, std::move(sink_dict));
+  value_dict.Set(kExtraDataDictKey, std::move(extra_data_dict));
+
+  return base::Value(std::move(value_dict));
+}
+
+// This stored dict looks like:
+//   "<cast1>:1234234": {
+//     "sink": {
+//       "sink_id": "<cast1>:1234234",
+//       "display_name": "Karls Cast Device",
+//     },
+//     "extra_data": {
+//       "capabilities": 4,
+//       "port": 666,
+//       "ip_address": ""192.0.2.146"",
+//     },
+//   }
+absl::optional<MediaSinkInternal> ParseValueDictIntoMediaSinkInternal(
+    const base::Value::Dict& value_dict) {
+  const auto* extra_data_dict = value_dict.FindDict(kExtraDataDictKey);
+  if (!extra_data_dict)
+    return absl::nullopt;
+
+  net::IPAddress ip_address;
+  const std::string* ip_address_string =
+      extra_data_dict->FindString(kIpAddressKey);
+  if (!ip_address_string)
+    return absl::nullopt;
+  if (!ip_address.AssignFromIPLiteral(*ip_address_string))
+    return absl::nullopt;
+
+  absl::optional<int> port = extra_data_dict->FindInt(kPortKey);
+  if (!port.has_value())
+    return absl::nullopt;
+
+  absl::optional<int> capabilities = extra_data_dict->FindInt(kCapabilitiesKey);
+  if (!capabilities.has_value())
+    return absl::nullopt;
+
+  CastSinkExtraData extra_data;
+  extra_data.ip_endpoint = net::IPEndPoint(ip_address, port.value());
+  extra_data.capabilities = capabilities.value();
+  extra_data.discovered_by_access_code = true;
+
+  const auto* sink_dict = value_dict.FindDict(kSinkDictKey);
+  if (!sink_dict)
+    return absl::nullopt;
+  const std::string* sink_id = sink_dict->FindString(kSinkIdKey);
+  if (!sink_id)
+    return absl::nullopt;
+  const std::string* display_name = sink_dict->FindString(kDisplayNameKey);
+  if (!display_name)
+    return absl::nullopt;
+
+  MediaSink sink(*sink_id, *display_name,
+                 GetCastSinkIconType(extra_data.capabilities),
+                 mojom::MediaRouteProviderId::CAST);
+
+  MediaSinkInternal cast_sink;
+  cast_sink.set_sink(sink);
+  cast_sink.set_cast_data(extra_data);
+
+  return cast_sink;
+}
+
 }  // namespace media_router

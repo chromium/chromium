@@ -351,4 +351,12 @@ TEST_F(AccessCodeCastSinkServiceTest, OnChannelOpenedFailure) {
                                                         "123456", false);
 }
 
+TEST_F(AccessCodeCastSinkServiceTest, SinkDoesntExistForPrefs) {
+  // Ensure that the StoreSinkInPrefs() function returns if no sink exists in
+  // the media router and no tasks are posted.
+  mock_time_task_runner()->FastForwardUntilNoTasksRemain();
+  access_code_cast_sink_service_->StoreSinkInPrefs(nullptr);
+  EXPECT_FALSE(mock_time_task_runner()->GetPendingTaskCount());
+}
+
 }  // namespace media_router
