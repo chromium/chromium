@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -764,12 +765,18 @@ void BidderWorklet::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
   DCHECK(!paused_);
 
+  base::UmaHistogramCounts100000(
+      "Ads.InterestGroup.Net.RequestUrlSizeBytes.BiddingScriptJS",
+      script_source_url_.spec().size());
   worklet_loader_ = std::make_unique<WorkletLoader>(
       url_loader_factory_.get(), script_source_url_, v8_helper_, debug_id_,
       base::BindOnce(&BidderWorklet::OnScriptDownloaded,
                      base::Unretained(this)));
 
   if (wasm_helper_url_.has_value()) {
+    base::UmaHistogramCounts100000(
+        "Ads.InterestGroup.Net.RequestUrlSizeBytes.BiddingScriptWasm",
+        wasm_helper_url_->spec().size());
     wasm_loader_ = std::make_unique<WorkletWasmLoader>(
         url_loader_factory_.get(), wasm_helper_url_.value(), v8_helper_,
         debug_id_,
@@ -781,7 +788,9 @@ void BidderWorklet::Start() {
 void BidderWorklet::OnScriptDownloaded(WorkletLoader::Result worklet_script,
                                        absl::optional<std::string> error_msg) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
-
+  base::UmaHistogramCounts10M(
+      "Ads.InterestGroup.Net.ResponseSizeBytes.BiddingScriptJS",
+      worklet_script.original_size_bytes());
   worklet_loader_.reset();
 
   // On failure, close pipe and delete `this`, as it can't do anything without a
@@ -807,7 +816,9 @@ void BidderWorklet::OnScriptDownloaded(WorkletLoader::Result worklet_script,
 void BidderWorklet::OnWasmDownloaded(WorkletWasmLoader::Result wasm_helper,
                                      absl::optional<std::string> error_msg) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
-
+  base::UmaHistogramCounts10M(
+      "Ads.InterestGroup.Net.ResponseSizeBytes.BiddingScriptWasm",
+      wasm_helper.original_size_bytes());
   wasm_loader_.reset();
 
   // If the WASM helper is actually requested, delete `this` and inform the

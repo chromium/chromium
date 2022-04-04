@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -335,6 +336,9 @@ void InterestGroupUpdateManager::DidUpdateInterestGroupsOfOwnerDbLoad(
     if (!storage_group.interest_group.update_url)
       continue;
     ++num_in_flight_updates_;
+    base::UmaHistogramCounts100000(
+        "Ads.InterestGroup.Net.RequestUrlSizeBytes.Update",
+        storage_group.interest_group.update_url->spec().size());
     auto resource_request = std::make_unique<network::ResourceRequest>();
     resource_request->url =
         std::move(storage_group.interest_group.update_url).value();
@@ -384,6 +388,8 @@ void InterestGroupUpdateManager::DidUpdateInterestGroupsOfOwnerNetFetch(
                            : UpdateDelayType::kNetFailure);
     return;
   }
+  base::UmaHistogramCounts100000(
+      "Ads.InterestGroup.Net.ResponseSizeBytes.Update", fetch_body->size());
   data_decoder::DataDecoder::ParseJsonIsolated(
       *fetch_body,
       base::BindOnce(

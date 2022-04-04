@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "content/services/auction_worklet/auction_downloader.h"
@@ -220,6 +221,9 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadBiddingSignals(
       CreateQueryParam("keys", *trusted_signals->bidding_signals_keys_);
   GURL full_signals_url =
       SetQueryParam(trusted_bidding_signals_url, query_params);
+  base::UmaHistogramCounts100000(
+      "Ads.InterestGroup.Net.RequestUrlSizeBytes.TrustedBidding",
+      full_signals_url.spec().size());
   trusted_signals->StartDownload(url_loader_factory, full_signals_url);
 
   return trusted_signals;
@@ -248,6 +252,9 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadScoringSignals(
                        *trusted_signals->ad_component_render_urls_);
   GURL full_signals_url =
       SetQueryParam(trusted_scoring_signals_url, query_params);
+  base::UmaHistogramCounts100000(
+      "Ads.InterestGroup.Net.RequestUrlSizeBytes.TrustedScoring",
+      full_signals_url.spec().size());
   trusted_signals->StartDownload(url_loader_factory, full_signals_url);
 
   return trusted_signals;
@@ -362,11 +369,15 @@ void TrustedSignals::HandleDownloadResultOnV8Thread(
 
   if (bidding_signals_keys) {
     // Handle bidding signals case.
+    base::UmaHistogramCounts10M(
+        "Ads.InterestGroup.Net.ResponseSizeBytes.TrustedBidding", body->size());
     result = base::MakeRefCounted<Result>(
         ParseKeyValueMap(v8_helper.get(), v8_object, *bidding_signals_keys),
         maybe_data_version);
   } else {
     // Handle scoring signals case.
+    base::UmaHistogramCounts10M(
+        "Ads.InterestGroup.Net.ResponseSizeBytes.TrustedScoring", body->size());
     result = base::MakeRefCounted<Result>(
         ParseChildKeyValueMap(v8_helper.get(), v8_object, "renderUrls",
                               *render_urls),

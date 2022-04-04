@@ -4,6 +4,8 @@
 
 #include "content/services/auction_worklet/worklet_loader.h"
 
+#include <stddef.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -26,16 +28,20 @@ WorkletLoaderBase::Result::Result()
     : state_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {}
 
 WorkletLoaderBase::Result::Result(scoped_refptr<AuctionV8Helper> v8_helper,
-                                  v8::Global<v8::UnboundScript> script)
+                                  v8::Global<v8::UnboundScript> script,
+                                  size_t original_size_bytes)
     : state_(new V8Data(v8_helper, std::move(script)),
-             base::OnTaskRunnerDeleter(v8_helper->v8_runner())) {
+             base::OnTaskRunnerDeleter(v8_helper->v8_runner())),
+      original_size_bytes_(original_size_bytes) {
   DCHECK(v8_helper->v8_runner()->RunsTasksInCurrentSequence());
 }
 
 WorkletLoaderBase::Result::Result(scoped_refptr<AuctionV8Helper> v8_helper,
-                                  v8::Global<v8::WasmModuleObject> module)
+                                  v8::Global<v8::WasmModuleObject> module,
+                                  size_t original_size_bytes)
     : state_(new V8Data(v8_helper, std::move(module)),
-             base::OnTaskRunnerDeleter(v8_helper->v8_runner())) {
+             base::OnTaskRunnerDeleter(v8_helper->v8_runner())),
+      original_size_bytes_(original_size_bytes) {
   DCHECK(v8_helper->v8_runner()->RunsTasksInCurrentSequence());
 }
 
@@ -162,7 +168,8 @@ WorkletLoaderBase::Result WorkletLoaderBase::CompileJs(
 
   v8::Isolate* isolate = v8_helper->isolate();
   return Result(std::move(v8_helper),
-                v8::Global<v8::UnboundScript>(isolate, local_script));
+                v8::Global<v8::UnboundScript>(isolate, local_script),
+                body.size());
 }
 
 // static
@@ -182,7 +189,8 @@ WorkletLoaderBase::Result WorkletLoaderBase::CompileWasm(
   }
   v8::Isolate* isolate = v8_helper->isolate();
   return Result(std::move(v8_helper),
-                v8::Global<v8::WasmModuleObject>(isolate, wasm_result));
+                v8::Global<v8::WasmModuleObject>(isolate, wasm_result),
+                body.size());
 }
 
 void WorkletLoaderBase::DeliverCallbackOnUserThread(
