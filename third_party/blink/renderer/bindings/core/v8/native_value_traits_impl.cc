@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/custom/v8_custom_xpath_ns_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_xpath_ns_resolver.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "v8/include/v8-fast-api-calls.h"
 

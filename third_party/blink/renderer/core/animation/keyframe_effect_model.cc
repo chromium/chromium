@@ -35,6 +35,7 @@
 
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_equality.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"

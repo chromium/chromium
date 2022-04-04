@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_keyframeeffectoptions_unrestricteddouble.h"
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/animation/animation_input_helpers.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {

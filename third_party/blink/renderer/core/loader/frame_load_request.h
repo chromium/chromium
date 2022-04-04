@@ -39,6 +39,7 @@
 #include "third_party/blink/public/web/web_picture_in_picture_window_options.h"
 #include "third_party/blink/public/web/web_window_features.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/frame_types.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
 #include "third_party/blink/renderer/core/loader/navigation_policy.h"

@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
 
 #include <unicode/utf16.h>
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"

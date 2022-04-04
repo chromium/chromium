@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_PAINT_ORDER_ITERATOR_H_
 
 #include "base/dcheck_is_on.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 

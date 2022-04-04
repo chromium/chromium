@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_NG_NG_BOX_FRAGMENT_PAINTER_H_
 
 #include "base/dcheck_is_on.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/api/hit_test_action.h"
 #include "third_party/blink/renderer/core/layout/background_bleed_avoidance.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"

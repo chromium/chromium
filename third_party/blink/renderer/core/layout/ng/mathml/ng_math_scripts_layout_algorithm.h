@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_MATHML_NG_MATH_SCRIPTS_LAYOUT_ALGORITHM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_MATHML_NG_MATH_SCRIPTS_LAYOUT_ALGORITHM_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_algorithm.h"
 #include "third_party/blink/renderer/core/mathml/mathml_scripts_element.h"

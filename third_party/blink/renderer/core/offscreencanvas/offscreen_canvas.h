@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/event_target_names.h"

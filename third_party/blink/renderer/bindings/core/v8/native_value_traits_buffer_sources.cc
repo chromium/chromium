@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/typed_arrays/typed_flexible_array_buffer_view.h"
 
 namespace blink {

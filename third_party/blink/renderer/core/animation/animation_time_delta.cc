@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/animation/animation_time_delta.h"
+#include "third_party/blink/renderer/core/core_export.h"
 
 namespace blink {
 

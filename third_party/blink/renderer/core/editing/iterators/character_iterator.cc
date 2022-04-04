@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/editing/iterators/character_iterator.h"
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 
 namespace blink {

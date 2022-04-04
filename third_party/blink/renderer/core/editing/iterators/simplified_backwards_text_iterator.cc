@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/editing/iterators/simplified_backwards_text_iterator.h"
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"

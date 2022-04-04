@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/editing/editing_strategy.h"
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/html/html_element.h"

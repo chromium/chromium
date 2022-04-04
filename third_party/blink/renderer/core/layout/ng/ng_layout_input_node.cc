@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_input_node.h"
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_utils.h"
 #include "third_party/blink/renderer/core/input_type_names.h"

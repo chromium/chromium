@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_MODULESCRIPT_WORKER_MODULE_SCRIPT_FETCHER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_MODULESCRIPT_WORKER_MODULE_SCRIPT_FETCHER_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/worker_main_script_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/worker_main_script_loader_client.h"

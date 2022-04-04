@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/editing/iterators/fully_clipped_state_stack.h"
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"

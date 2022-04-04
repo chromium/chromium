@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/fragment_directive/same_block_word_iterator.h"
 
+#include "third_party/blink/renderer/core/core_export.h"
+
 namespace blink {
 
 template <typename Direction>

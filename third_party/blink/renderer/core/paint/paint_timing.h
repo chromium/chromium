@@ -10,6 +10,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/web/web_performance.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/paint/first_meaningful_paint_detector.h"
 #include "third_party/blink/renderer/core/paint/paint_event.h"

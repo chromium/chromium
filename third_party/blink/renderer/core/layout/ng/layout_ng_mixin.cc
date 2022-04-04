@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_box_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block.h"

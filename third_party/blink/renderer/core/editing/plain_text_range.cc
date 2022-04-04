@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/editing/plain_text_range.h"
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/range.h"

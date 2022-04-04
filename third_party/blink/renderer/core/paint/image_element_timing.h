@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/time/time.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"

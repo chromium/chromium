@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/image_element_timing.h"
 
 #include "base/time/time.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
