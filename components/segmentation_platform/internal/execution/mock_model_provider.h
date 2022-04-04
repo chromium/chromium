@@ -7,10 +7,14 @@
 
 #include <map>
 #include <memory>
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using optimization_guide::proto::OptimizationTarget;
 
 namespace segmentation_platform {
 
@@ -54,11 +58,19 @@ class TestModelProviderFactory : public ModelProviderFactory {
     // list is not cleared when providers are destroyed.
     std::map<optimization_guide::proto::OptimizationTarget, MockModelProvider*>
         model_providers;
+
+    // Map of targets to default model providers, added when provider is
+    // created. The list is not cleared when providers are destroyed.
+    std::map<optimization_guide::proto::OptimizationTarget, MockModelProvider*>
+        default_model_providers;
+
     // Map from target to updated callback, recorded when InitAndFetchModel()
     // was called on any provider.
     std::map<optimization_guide::proto::OptimizationTarget,
              ModelProvider::ModelUpdatedCallback>
         model_providers_callbacks;
+
+    std::vector<OptimizationTarget> segments_supporting_default_model;
   };
 
   // Records requests to `data`. `data` is not owned, and the caller must ensure

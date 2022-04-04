@@ -47,6 +47,7 @@ class SignalStorageConfigs;
 
 struct Config;
 class DatabaseMaintenanceImpl;
+class DefaultModelManager;
 class FeatureListQueryProcessor;
 class HistogramSignalHandler;
 class HistoryServiceObserver;
@@ -154,6 +155,9 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   std::vector<std::unique_ptr<Config>> configs_;
   base::flat_set<optimization_guide::proto::OptimizationTarget>
       all_segment_ids_;
+
+  // Default models.
+  std::unique_ptr<DefaultModelManager> default_model_manager_;
 
   // Databases.
   std::unique_ptr<SegmentInfoDatabase> segment_info_database_;

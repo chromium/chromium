@@ -7,8 +7,11 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
+#include "components/segmentation_platform/internal/execution/default_model_manager.h"
+#include "components/segmentation_platform/internal/execution/mock_model_provider.h"
 #include "components/segmentation_platform/internal/mock_ukm_data_manager.h"
 #include "components/segmentation_platform/internal/proto/aggregation.pb.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
@@ -42,6 +45,32 @@ class MockUserActionSignalHandler : public UserActionSignalHandler {
   MOCK_METHOD(void, EnableMetrics, (bool));
 };
 
+// Noop version. For database calls, just passes the calls to the DB.
+class TestDefaultModelManager : public DefaultModelManager {
+ public:
+  TestDefaultModelManager()
+      : DefaultModelManager(nullptr, std::vector<OptimizationTarget>()) {}
+  ~TestDefaultModelManager() override = default;
+
+  void GetAllSegmentInfoFromDefaultModel(
+      const std::vector<OptimizationTarget>& segment_ids,
+      MultipleSegmentInfoCallback callback) override {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback),
+            std::make_unique<DefaultModelManager::SegmentInfoList>()));
+  }
+
+  void GetAllSegmentInfoFromBothModels(
+      const std::vector<OptimizationTarget>& segment_ids,
+      SegmentInfoDatabase* segment_database,
+      MultipleSegmentInfoCallback callback) override {
+    segment_database->GetSegmentInfoForSegments(segment_ids,
+                                                std::move(callback));
+  }
+};
+
 class SignalFilterProcessorTest : public testing::Test {
  public:
   SignalFilterProcessorTest() = default;
@@ -50,20 +79,27 @@ class SignalFilterProcessorTest : public testing::Test {
   void SetUp() override {
     base::SetRecordActionTaskRunner(
         task_environment_.GetMainThreadTaskRunner());
+
+    std::vector<OptimizationTarget> segment_ids(
+        {OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+         OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE});
     segment_database_ = std::make_unique<test::TestSegmentInfoDatabase>();
     user_action_signal_handler_ =
         std::make_unique<MockUserActionSignalHandler>();
     histogram_signal_handler_ = std::make_unique<MockHistogramSignalHandler>();
     ukm_data_manager_ = std::make_unique<MockUkmDataManager>();
+    default_model_manager_ = std::make_unique<TestDefaultModelManager>();
     signal_filter_processor_ = std::make_unique<SignalFilterProcessor>(
         segment_database_.get(), user_action_signal_handler_.get(),
-        histogram_signal_handler_.get(), ukm_data_manager_.get());
+        histogram_signal_handler_.get(), ukm_data_manager_.get(),
+        default_model_manager_.get(), segment_ids);
   }
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_database_;
   std::unique_ptr<MockUserActionSignalHandler> user_action_signal_handler_;
   std::unique_ptr<MockHistogramSignalHandler> histogram_signal_handler_;
+  std::unique_ptr<TestDefaultModelManager> default_model_manager_;
   std::unique_ptr<SignalFilterProcessor> signal_filter_processor_;
   std::unique_ptr<MockUkmDataManager> ukm_data_manager_;
 };

@@ -24,6 +24,7 @@
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_database_impl.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
+#include "components/segmentation_platform/internal/execution/default_model_manager.h"
 #include "components/segmentation_platform/internal/execution/feature_aggregator_impl.h"
 #include "components/segmentation_platform/internal/execution/feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
@@ -107,6 +108,16 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
       platform_options_(PlatformOptions::CreateDefault()),
       configs_(std::move(configs)),
       ukm_data_manager_(ukm_data_manager) {
+  for (const auto& config : configs_) {
+    for (const auto& segment_id : config->segment_ids)
+      all_segment_ids_.insert(segment_id);
+  }
+
+  std::vector<OptimizationTarget> segment_id_vec(all_segment_ids_.begin(),
+                                                 all_segment_ids_.end());
+  default_model_manager_ = std::make_unique<DefaultModelManager>(
+      model_provider_factory_.get(), segment_id_vec);
+
   // Construct databases.
   segment_info_database_ =
       std::make_unique<SegmentInfoDatabase>(std::move(segment_db));
@@ -125,7 +136,8 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
       std::make_unique<HistogramSignalHandler>(signal_database_.get());
   signal_filter_processor_ = std::make_unique<SignalFilterProcessor>(
       segment_info_database_.get(), user_action_signal_handler_.get(),
-      histogram_signal_handler_.get(), ukm_data_manager_);
+      histogram_signal_handler_.get(), ukm_data_manager_,
+      default_model_manager_.get(), segment_id_vec);
 
   if (ukm_data_manager_->IsUkmEngineEnabled() && history_service) {
     // If UKM engine is enabled and history service is not available, then we
@@ -145,17 +157,13 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
   proxy_ = std::make_unique<ServiceProxyImpl>(segment_info_database_.get(),
                                               signal_storage_config_.get(),
                                               &configs_, &segment_selectors_);
-  for (const auto& config : configs_) {
-    for (const auto& segment_id : config->segment_ids)
-      all_segment_ids_.insert(segment_id);
-  }
-
   segment_score_provider_ =
       SegmentScoreProvider::Create(segment_info_database_.get());
 
   database_maintenance_ = std::make_unique<DatabaseMaintenanceImpl>(
       all_segment_ids_, clock, segment_info_database_.get(),
-      signal_database_.get(), signal_storage_config_.get());
+      signal_database_.get(), signal_storage_config_.get(),
+      default_model_manager_.get());
 
   // Kick off initialization of all databases. Internal operations will be
   // delayed until they are all complete.

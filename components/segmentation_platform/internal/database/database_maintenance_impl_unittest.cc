@@ -13,12 +13,14 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/mock_signal_database.h"
 #include "components/segmentation_platform/internal/database/mock_signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
+#include "components/segmentation_platform/internal/execution/default_model_manager.h"
 #include "components/segmentation_platform/internal/proto/aggregation.pb.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
 #include "components/segmentation_platform/public/config.h"
@@ -57,6 +59,33 @@ struct SignalData {
 
 }  // namespace
 
+// Noop version. For database calls, just passes the calls to the DB.
+// TODO(shaktisahu): Move this class to its own file.
+class TestDefaultModelManager : public DefaultModelManager {
+ public:
+  TestDefaultModelManager()
+      : DefaultModelManager(nullptr, std::vector<OptimizationTarget>()) {}
+  ~TestDefaultModelManager() override = default;
+
+  void GetAllSegmentInfoFromDefaultModel(
+      const std::vector<OptimizationTarget>& segment_ids,
+      MultipleSegmentInfoCallback callback) override {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback),
+            std::make_unique<DefaultModelManager::SegmentInfoList>()));
+  }
+
+  void GetAllSegmentInfoFromBothModels(
+      const std::vector<OptimizationTarget>& segment_ids,
+      SegmentInfoDatabase* segment_database,
+      MultipleSegmentInfoCallback callback) override {
+    segment_database->GetSegmentInfoForSegments(segment_ids,
+                                                std::move(callback));
+  }
+};
+
 class DatabaseMaintenanceImplTest : public testing::Test {
  public:
   DatabaseMaintenanceImplTest() = default;
@@ -69,9 +98,11 @@ class DatabaseMaintenanceImplTest : public testing::Test {
     base::flat_set<OptimizationTarget> segment_ids = {
         OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
         OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE};
+    default_model_manager_ = std::make_unique<TestDefaultModelManager>();
     database_maintenance_ = std::make_unique<DatabaseMaintenanceImpl>(
         segment_ids, &clock_, segment_info_database_.get(),
-        signal_database_.get(), signal_storage_config_.get());
+        signal_database_.get(), signal_storage_config_.get(),
+        default_model_manager_.get());
 
     clock_.SetNow(base::Time::Now());
   }
@@ -113,6 +144,7 @@ class DatabaseMaintenanceImplTest : public testing::Test {
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_info_database_;
   std::unique_ptr<MockSignalDatabase> signal_database_;
   std::unique_ptr<MockSignalStorageConfig> signal_storage_config_;
+  std::unique_ptr<TestDefaultModelManager> default_model_manager_;
 
   std::unique_ptr<DatabaseMaintenanceImpl> database_maintenance_;
 };
