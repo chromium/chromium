@@ -803,18 +803,22 @@ void RootWindowController::ShowContextMenu(const gfx::Point& location_in_screen,
         REORDER_BY_NAME_ALPHABETICAL,
         l10n_util::GetStringUTF16(
             IDS_ASH_LAUNCHER_APPS_GRID_CONTEXT_MENU_REORDER_BY_NAME),
-        ui::ImageModel::FromVectorIcon(kSortAlphabeticalIcon));
+        ui::ImageModel::FromVectorIcon(kSortAlphabeticalIcon,
+                                       ui::kColorAshSystemUIMenuIcon));
     sort_apps_submenu_->AddItemWithIcon(
         REORDER_BY_COLOR,
         l10n_util::GetStringUTF16(
             IDS_ASH_LAUNCHER_APPS_GRID_CONTEXT_MENU_REORDER_BY_COLOR),
-        ui::ImageModel::FromVectorIcon(kSortColorIcon));
+        ui::ImageModel::FromVectorIcon(kSortColorIcon,
+                                       ui::kColorAshSystemUIMenuIcon));
     menu_model->AddSeparator(ui::NORMAL_SEPARATOR);
     menu_model->AddSubMenuWithIcon(
         REORDER_SUBMENU,
         l10n_util::GetStringUTF16(
             IDS_ASH_LAUNCHER_APPS_GRID_CONTEXT_MENU_REORDER_TITLE),
-        sort_apps_submenu_.get(), ui::ImageModel::FromVectorIcon(kReorderIcon));
+        sort_apps_submenu_.get(),
+        ui::ImageModel::FromVectorIcon(kReorderIcon,
+                                       ui::kColorAshSystemUIMenuIcon));
   }
 
   root_window_menu_model_adapter_->Run(
