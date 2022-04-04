@@ -87,15 +87,6 @@ class ProcessedLocalAudioSourceTest : public SimTest,
 
   ~ProcessedLocalAudioSourceTest() override = default;
 
-  void SetUp() override {
-    SimTest::SetUp();
-    audio_source_ = MakeGarbageCollected<MediaStreamSource>(
-        String::FromUTF8("audio_label"), MediaStreamSource::kTypeAudio,
-        String::FromUTF8("audio_track"), false /* remote */);
-    audio_component_ = MakeGarbageCollected<MediaStreamComponent>(
-        audio_source_->Id(), audio_source_);
-  }
-
   void TearDown() override {
     SimTest::TearDown();
     audio_source_ = nullptr;
@@ -117,7 +108,11 @@ class ProcessedLocalAudioSourceTest : public SimTest,
             base::DoNothing(),
             scheduler::GetSingleThreadTaskRunnerForTesting());
     source->SetAllowInvalidRenderFrameIdForTesting(true);
-    audio_source_->SetPlatformSource(std::move(source));
+    audio_source_ = MakeGarbageCollected<MediaStreamSource>(
+        String::FromUTF8("audio_label"), MediaStreamSource::kTypeAudio,
+        String::FromUTF8("audio_track"), false /* remote */, std::move(source));
+    audio_component_ = MakeGarbageCollected<MediaStreamComponent>(
+        audio_source_->Id(), audio_source_);
   }
 
   void CheckSourceFormatMatches(const media::AudioParameters& params) {

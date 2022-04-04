@@ -49,8 +49,7 @@ class MediaStreamVideoSourceTest : public testing::Test {
     mock_stream_video_source_->DisableStopForRestart();
     stream_source_ = MakeGarbageCollected<MediaStreamSource>(
         String::FromUTF8("dummy_source_id"), MediaStreamSource::kTypeVideo,
-        String::FromUTF8("dummy_source_name"), false /* remote */);
-    stream_source_->SetPlatformSource(
+        String::FromUTF8("dummy_source_name"), false /* remote */,
         base::WrapUnique(mock_stream_video_source_));
     ON_CALL(*mock_stream_video_source_, SetCanDiscardAlpha)
         .WillByDefault(Return());

@@ -30,8 +30,7 @@ BrowserCaptureMediaStreamTrack* MakeTrack(
     std::unique_ptr<MockMediaStreamVideoSource> media_stream_video_source) {
   MediaStreamSource* const source = MakeGarbageCollected<MediaStreamSource>(
       "id", MediaStreamSource::StreamType::kTypeVideo, "name",
-      /*remote=*/false);
-  source->SetPlatformSource(std::move(media_stream_video_source));
+      /*remote=*/false, std::move(media_stream_video_source));
 
   MediaStreamComponent* const component =
       MakeGarbageCollected<MediaStreamComponent>(source);

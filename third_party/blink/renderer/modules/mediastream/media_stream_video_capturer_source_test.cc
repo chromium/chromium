@@ -113,17 +113,18 @@ class MediaStreamVideoCapturerSourceTest : public testing::Test {
     auto delegate = std::make_unique<MockVideoCapturerSource>();
     delegate_ = delegate.get();
     EXPECT_CALL(*delegate_, GetPreferredFormats());
-    video_capturer_source_ = new MediaStreamVideoCapturerSource(
-        /*LocalFrame =*/nullptr,
-        WTF::Bind(&MediaStreamVideoCapturerSourceTest::OnSourceStopped,
-                  WTF::Unretained(this)),
-        std::move(delegate));
+    auto video_capturer_source =
+        std::make_unique<MediaStreamVideoCapturerSource>(
+            /*LocalFrame =*/nullptr,
+            WTF::Bind(&MediaStreamVideoCapturerSourceTest::OnSourceStopped,
+                      WTF::Unretained(this)),
+            std::move(delegate));
+    video_capturer_source_ = video_capturer_source.get();
     video_capturer_source_->SetMediaStreamDispatcherHostForTesting(
         mock_dispatcher_host_.CreatePendingRemoteAndBind());
     stream_source_ = MakeGarbageCollected<MediaStreamSource>(
         "dummy_source_id", MediaStreamSource::kTypeVideo, "dummy_source_name",
-        false /* remote */);
-    stream_source_->SetPlatformSource(base::WrapUnique(video_capturer_source_));
+        false /* remote */, std::move(video_capturer_source));
     stream_source_id_ = stream_source_->Id();
 
     MediaStreamVideoCapturerSource::DeviceCapturerFactoryCallback callback =
