@@ -63,6 +63,10 @@ export class PrivacyGuideCookiesFragmentElement extends
     this.addEventListener('view-exit-finish', this.onViewExitFinish_);
   }
 
+  override focus() {
+    this.shadowRoot!.querySelector<HTMLElement>('.header')!.focus();
+  }
+
   private onViewEnterStart_() {
     this.startStateBlock3PIncognito_ =
         this.getPref('generated.cookie_primary_setting').value ===

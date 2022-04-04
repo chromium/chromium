@@ -101,6 +101,10 @@ export class PrivacyGuideHistorySyncFragmentElement extends
     this.addEventListener('view-exit-finish', this.onViewExitFinish_);
   }
 
+  override focus() {
+    this.shadowRoot!.querySelector<HTMLElement>('.header')!.focus();
+  }
+
   private onViewExitFinish_() {
     const endStateHistorySyncOn = this.syncPrefs_.typedUrlsSynced;
     let state: PrivacyGuideSettingsStates|null = null;

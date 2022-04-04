@@ -59,6 +59,10 @@ export class PrivacyGuideCompletionFragmentElement extends
         (event: UpdateSyncStateEvent) => this.updateWaaLink_(event.signedIn));
   }
 
+  override focus() {
+    this.shadowRoot!.querySelector<HTMLElement>('.headline-container')!.focus();
+  }
+
   /**
    * Updates the completion card waa link depending on the signin state.
    */

@@ -53,6 +53,10 @@ export class PrivacyGuideMsbbFragmentElement extends
     this.addEventListener('view-exit-finish', this.onViewExitFinish_);
   }
 
+  override focus() {
+    this.shadowRoot!.querySelector<HTMLElement>('.header')!.focus();
+  }
+
   private onViewEnterStart_() {
     this.startStateMsbbOn_ =
         this.getPref('url_keyed_anonymized_data_collection.enabled').value;

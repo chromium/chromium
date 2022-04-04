@@ -417,12 +417,9 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       }
 
       // On navigations within privacy guide, put the focus on the newly shown
-      // fragment. Every fragment has a [focus-element] element that is focused
-      // programmatically when the fragment is navigated to.
-      const elementToFocus =
-          assert(this.shadowRoot!.querySelector<HTMLElement>(
-                     '#' + this.privacyGuideStep_)!)
-              .shadowRoot!.querySelector<HTMLElement>('[focus-element]');
+      // fragment.
+      const elementToFocus = assert(this.shadowRoot!.querySelector<HTMLElement>(
+          '#' + this.privacyGuideStep_)!);
       afterNextRender(this, () => elementToFocus!.focus());
     }
   }

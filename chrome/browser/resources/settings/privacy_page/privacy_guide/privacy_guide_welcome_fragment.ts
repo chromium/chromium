@@ -28,6 +28,10 @@ export class PrivacyGuideWelcomeFragmentElement extends PolymerElement {
     return getTemplate();
   }
 
+  override focus() {
+    this.shadowRoot!.querySelector<HTMLElement>('.headline-container')!.focus();
+  }
+
   private onStartButtonClick_(e: Event) {
     e.stopPropagation();
     this.dispatchEvent(

@@ -35,6 +35,10 @@ export class PrivacyGuideClearOnExitFragmentElement extends PolymerElement {
       },
     };
   }
+
+  override focus() {
+    this.shadowRoot!.querySelector<HTMLElement>('.header')!.focus();
+  }
 }
 
 customElements.define(
