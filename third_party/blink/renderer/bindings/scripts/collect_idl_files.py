@@ -11,9 +11,11 @@ a label of Blink component.
 
 import optparse
 
-import blink_idl_parser
 import utilities
 import web_idl
+
+from idl_parser import idl_parser
+from idl_parser import idl_lexer
 
 _VALID_COMPONENTS = ('core', 'modules', 'extensions_chromeos')
 
@@ -52,12 +54,13 @@ def main():
     options, _ = parse_options()
 
     filepaths = utilities.read_idl_files_list_from_file(options.idl_list_file)
-    parser = blink_idl_parser.BlinkIDLParser()
+    lexer = idl_lexer.IDLLexer()
+    parser = idl_parser.IDLParser(lexer)
     ast_group = web_idl.AstGroup(
         component=web_idl.Component(options.component),
         for_testing=bool(options.for_testing))
     for filepath in filepaths:
-        ast_group.add_ast_node(blink_idl_parser.parse_file(parser, filepath))
+        ast_group.add_ast_node(idl_parser.ParseFile(parser, filepath))
     ast_group.write_to_file(options.output)
 
 

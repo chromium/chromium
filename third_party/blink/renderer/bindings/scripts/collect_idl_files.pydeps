@@ -13,8 +13,6 @@
 ../../../../pyjson5/src/json5/version.py
 ../../build/scripts/blinkbuild/__init__.py
 ../../build/scripts/blinkbuild/name_style_converter.py
-blink_idl_lexer.py
-blink_idl_parser.py
 collect_idl_files.py
 utilities.py
 web_idl/__init__.py

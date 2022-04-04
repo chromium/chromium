@@ -251,8 +251,6 @@ class IDLLexer(object):
     return self.tokens
 
   def Lexer(self):
-    if not self._lexobj:
-      self._lexobj = lex.lex(object=self, lextab=None, optimize=0)
     return self._lexobj
 
   def _AddToken(self, token):
@@ -275,7 +273,7 @@ class IDLLexer(object):
       self.tokens.remove(key.upper())
       del self.keywords[key]
 
-  def __init__(self):
+  def __init__(self, optimize=True):
     self.index = [0]
     self._lex_errors = 0
     self.linex = []
@@ -284,7 +282,7 @@ class IDLLexer(object):
     self.tokens = []
     self._AddTokens(IDLLexer.tokens)
     self._AddKeywords(IDLLexer.keywords)
-    self._lexobj = None
+    self._lexobj = lex.lex(object=self, lextab=None, optimize=optimize)
     self.last = None
     self.lines = None
 
