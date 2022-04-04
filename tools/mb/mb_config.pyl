@@ -67,7 +67,7 @@
       'mac-official': 'official_optimize_goma',
       'win32-official': 'x86_official_optimize_goma',
       'win32-archive-rel': 'release_bot_x86_minimal_symbols_enable_archive_compression',
-      'win32-archive-dbg': 'debug_bot_x86',
+      'win32-archive-dbg': 'debug_bot_x86_reclient',
       'win32-archive-tagged': 'x86_official_optimize_goma',
       'win-archive-rel': 'release_bot_minimal_symbols_enable_archive_compression_reclient',
       'win-archive-dbg': 'debug_bot_reclient',
@@ -394,9 +394,9 @@
       'mac-upload-perfetto': 'release_bot_perfetto_zlib',
       'Win ASan Release Media (reclient shadow)': 'asan_fuzzer_v8_heap_chrome_with_codecs_release_bot_reclient',
       'Win ASan Release (reclient shadow)': 'asan_fuzzer_v8_heap_release_bot_reclient',
-      'win-annotator-rel': 'release_bot',
+      'win-annotator-rel': 'release_bot_reclient',
       'win-celab-builder-rel': 'release_bot_minimal_symbols',
-      'win-backuprefptr-x86-fyi-rel': 'release_trybot_backuprefptr_x86',
+      'win-backuprefptr-x86-fyi-rel': 'release_trybot_backuprefptr_x86_reclient',
       'win-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64',
       'win-pixel-builder-rel': 'release_bot',
       'win-upload-perfetto': 'release_bot_perfetto_zlib',
@@ -577,7 +577,7 @@
       'WebKit Linux MSAN': 'msan_release_bot_blink_reclient',
       'android-asan': 'android_clang_asan_release_bot_reclient',
       'linux-ubsan-vptr': 'ubsan_vptr_release_bot_reclient',
-      'win-asan': 'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release',
+      'win-asan': 'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release_reclient',
     },
 
     'chromium.mojo': {
@@ -717,9 +717,9 @@
       'mac-updater-builder-dbg': 'updater_debug_bot',
       'mac-updater-builder-rel': 'updater_release_bot',
       'win-updater-builder-dbg': 'updater_debug_bot',
-      'win-updater-builder-rel': 'updater_release_bot',
+      'win-updater-builder-rel': 'updater_release_bot_reclient',
       'win32-updater-builder-dbg': 'updater_debug_bot_x86',
-      'win32-updater-builder-rel': 'updater_release_bot_x86',
+      'win32-updater-builder-rel': 'updater_release_bot_x86_reclient',
     },
 
     # TODO(crbug.com/818301): This group is going away.
@@ -756,7 +756,7 @@
       # Windows bots take too long to link w/ full symbols and time out.
       'Win Builder': 'gpu_tests_release_bot_x86_no_symbols_reclient',
       'Win Builder (dbg)': 'gpu_tests_debug_bot_x86_no_symbols_reclient',
-      'Win x64 Builder': 'gpu_tests_release_bot_minimal_symbols',
+      'Win x64 Builder': 'gpu_tests_release_bot_minimal_symbols_reclient',
       'Win x64 Builder Code Coverage': 'gpu_tests_release_bot_minimal_symbols_code_coverage',
       'Win x64 Builder (dbg)': 'gpu_tests_debug_bot_reclient',
       'Windows deterministic': 'release_bot_x86_minimal_symbols',
@@ -1778,6 +1778,10 @@
       'asan', 'fuzzer', 'static', 'v8_heap', 'minimal_symbols', 'release_bot',
     ],
 
+    'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release_reclient': [
+      'asan', 'fuzzer', 'static', 'v8_heap', 'minimal_symbols', 'release_bot_reclient',
+    ],
+
     'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release_tot': [
       'asan', 'clang_tot', 'fuzzer', 'static', 'v8_heap', 'minimal_symbols', 'release',
     ],
@@ -2338,6 +2342,10 @@
 
     'debug_bot_x86': [
       'debug_bot', 'x86',
+    ],
+
+    'debug_bot_x86_reclient': [
+      'debug_bot_reclient', 'x86',
     ],
 
     'debug_bot_x86_no_com_init_hooks_with_codecs': [
@@ -3065,8 +3073,12 @@
       'updater_on_win_mac', 'release_bot',
     ],
 
-    'updater_release_bot_x86': [
-      'updater_on_win_mac', 'release_bot', 'x86',
+    'updater_release_bot_reclient': [
+      'updater_on_win_mac', 'release_bot_reclient',
+    ],
+
+    'updater_release_bot_x86_reclient': [
+      'updater_on_win_mac', 'release_bot_reclient', 'x86',
     ],
 
     'updater_release_trybot': [
@@ -3240,8 +3252,8 @@
       'release_trybot', 'disable_nacl',
     ],
 
-    'release_trybot_backuprefptr_x86': [
-      'release_trybot_minimal_symbols', 'backuprefptr', 'x86',
+    'release_trybot_backuprefptr_x86_reclient': [
+      'release_trybot_minimal_symbols_reclient', 'backuprefptr', 'x86',
     ],
 
     'release_trybot_backuprefptr_x64': [

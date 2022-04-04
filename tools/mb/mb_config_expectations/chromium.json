@@ -164,7 +164,8 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_cpu": "x86",
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "win32-archive-rel": {

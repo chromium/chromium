@@ -665,6 +665,9 @@ ci.builder(
     ),
     notifies = ["chrome-memory-safety"],
     os = os.WINDOWS_ANY,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -1417,4 +1420,7 @@ ci.builder(
     execution_timeout = 16 * time.hour,
     notifies = ["annotator-rel"],
     os = os.WINDOWS_DEFAULT,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )

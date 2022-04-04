@@ -290,4 +290,7 @@ ci.builder(
     execution_timeout = 5 * time.hour,
     builderless = True,
     os = os.WINDOWS_DEFAULT,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )

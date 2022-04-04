@@ -467,6 +467,9 @@ ci.builder(
     cores = 32,
     os = os.WINDOWS_DEFAULT,
     sheriff_rotations = args.ignore_default(None),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
