@@ -493,6 +493,15 @@ void InputMethodAsh::ConfirmCompositionText(bool reset_engine,
     // Only a pending commit, so confirming the composition is a no-op.
     return;
   }
+  // TODO(b/225723475): Similar to the comment above, this is a quick fix to
+  // solve the autocorrect issue outlined in the linked bug. This is due to the
+  // pending composition being reset before it could be applied to the current
+  // text. Again we need to fix this properly by removing the pending mechanism.
+  if (pending_composition_ && !pending_commit_ && !pending_composition_range_) {
+    GetTextInputClient()->SetCompositionText(*pending_composition_);
+    pending_composition_ = absl::nullopt;
+    composition_changed_ = false;
+  }
   if (client && client->HasCompositionText()) {
     const uint32_t characters_committed =
         client->ConfirmCompositionText(keep_selection);
