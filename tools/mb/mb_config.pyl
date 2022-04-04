@@ -228,9 +228,9 @@
       'Dawn Mac x64 Builder': 'dawn_tests_release_bot_dcheck_always_on_alloc_none',
       'Dawn Mac x64 DEPS Builder': 'dawn_tests_release_bot_dcheck_always_on_alloc_none',
 
-      'Dawn Win10 x86 Builder': 'dawn_tests_release_bot_dcheck_always_on_x86',
+      'Dawn Win10 x86 Builder': 'dawn_tests_release_bot_dcheck_always_on_x86_reclient',
       'Dawn Win10 x64 Builder': 'dawn_tests_release_bot_dcheck_always_on_reclient',
-      'Dawn Win10 x86 DEPS Builder': 'dawn_tests_release_bot_dcheck_always_on_x86',
+      'Dawn Win10 x86 DEPS Builder': 'dawn_tests_release_bot_dcheck_always_on_x86_reclient',
       'Dawn Win10 x64 DEPS Builder': 'dawn_tests_release_bot_dcheck_always_on_reclient',
 
       'Dawn Win10 x64 ASAN Release': 'dawn_tests_asan_release_bot_dcheck_always_on_reclient',
@@ -501,7 +501,7 @@
       'GPU FYI Mac Builder (asan)': 'gpu_fyi_tests_release_trybot_asan',
       'GPU FYI Mac Builder (dbg)': 'gpu_fyi_tests_debug_trybot',
       'GPU FYI Mac arm64 Builder': 'gpu_fyi_tests_release_trybot_arm64',
-      'GPU FYI Win Builder': 'gpu_fyi_tests_release_trybot_x86',
+      'GPU FYI Win Builder': 'gpu_fyi_tests_release_trybot_x86_reclient',
       'GPU FYI Win x64 Builder': 'gpu_fyi_tests_release_trybot_reclient',
       'GPU FYI Win x64 Builder (reclient shadow)': 'gpu_fyi_tests_release_trybot_reclient',
       'GPU FYI Win x64 Builder (dbg)': 'gpu_fyi_tests_debug_trybot_reclient',
@@ -2253,8 +2253,8 @@
       'dawn_tests', 'release_trybot_minimal_symbols_reclient',
     ],
 
-    'dawn_tests_release_bot_dcheck_always_on_x86': [
-      'dawn_tests', 'release_trybot_minimal_symbols', 'x86',
+    'dawn_tests_release_bot_dcheck_always_on_x86_reclient': [
+      'dawn_tests', 'release_trybot_minimal_symbols_reclient', 'x86',
     ],
 
     'dawn_tests_release_trybot': [
@@ -2431,6 +2431,10 @@
 
     'gpu_fyi_tests_release_trybot_x86': [
       'gpu_fyi_tests', 'release_trybot_minimal_symbols', 'x86', 'disable_nacl',
+    ],
+
+    'gpu_fyi_tests_release_trybot_x86_reclient': [
+      'gpu_fyi_tests', 'release_trybot_minimal_symbols_reclient', 'x86', 'disable_nacl',
     ],
 
     'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild': [
