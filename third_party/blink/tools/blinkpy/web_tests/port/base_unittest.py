@@ -1769,7 +1769,7 @@ class VirtualTestSuiteTest(unittest.TestCase):
                                  bases=['base/foo', 'base/bar'],
                                  args=['--args'])
         self.assertEqual(suite.full_prefix, 'virtual/suite/')
-        self.assertEqual(suite.platforms, ['Linux', 'Mac', 'Win'])
+        self.assertEqual(suite.platforms, ['linux', 'mac', 'win'])
         self.assertEqual(suite.bases, ['base/foo', 'base/bar'])
         self.assertEqual(suite.args, ['--args'])
 
@@ -1779,7 +1779,7 @@ class VirtualTestSuiteTest(unittest.TestCase):
                                  bases=[],
                                  args=['--args'])
         self.assertEqual(suite.full_prefix, 'virtual/suite/')
-        self.assertEqual(suite.platforms, ['Linux', 'Mac', 'Win'])
+        self.assertEqual(suite.platforms, ['linux', 'mac', 'win'])
         self.assertEqual(suite.bases, [])
         self.assertEqual(suite.args, ['--args'])
 

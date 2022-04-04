@@ -65,7 +65,8 @@ class CopyExistingBaselines(AbstractRebaseliningCommand):
                     test_name).results:
                 _log.debug('%s is skipped on %s.', test_name, port.name())
                 continue
-            if port.skipped_due_to_smoke_tests(test_name):
+            if (port.skipped_due_to_smoke_tests(test_name) or
+                    port.virtual_test_skipped_due_to_platform_config(test_name)):
                 _log.debug('%s is skipped on %s.', test_name, port.name())
                 continue
 

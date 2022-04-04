@@ -1257,11 +1257,13 @@ class Port(object):
         """Checks whether the given test is skipped for this port.
 
         Returns True if the test is skipped because the port runs smoke tests
-        only or because the test is marked as Skip in NeverFixTest (otherwise
+        only or because the test is marked as Skip in NeverFixTest or because
+        it is a virtual test not intended to run on this platform (otherwise
         the test is only marked as Skip indicating a temporary skip).
         """
         return self.skipped_due_to_smoke_tests(
-            test) or self.skipped_in_never_fix_tests(test)
+            test) or self.skipped_in_never_fix_tests(
+            test) or self.virtual_test_skipped_due_to_platform_config(test)
 
     @memoized
     def _tests_from_file(self, filename):
@@ -1312,6 +1314,17 @@ class Port(object):
 
     def path_to_never_fix_tests_file(self):
         return self._filesystem.join(self.web_tests_dir(), 'NeverFixTests')
+
+    def virtual_test_skipped_due_to_platform_config(self, test):
+        """Checks if the virtual test is skipped based on the platform config.
+
+        Returns True if the virtual test is not intend to run on this port, due
+        to the platform config in VirtualTestSuites; returns False otherwise.
+        """
+        suite = self._lookup_virtual_suite(test)
+        if suite is not None:
+            return self.operating_system() not in suite.platforms
+        return False
 
     def name(self):
         """Returns a name that uniquely identifies this particular type of port.
@@ -2048,8 +2061,7 @@ class Port(object):
                         raise ValueError(
                             '{} contains entries with the same prefix: {!r}. Please combine them'
                             .format(path_to_virtual_test_suites, json_config))
-                    if self.operating_system() in [x.lower() for x in vts.platforms]:
-                        self._virtual_test_suites.append(vts)
+                    self._virtual_test_suites.append(vts)
             except ValueError as error:
                 raise ValueError('{} is not a valid JSON file: {}'.format(
                     path_to_virtual_test_suites, error))
@@ -2380,10 +2392,11 @@ class VirtualTestSuite(object):
         assert args
         assert isinstance(args, list)
         self.full_prefix = 'virtual/' + prefix + '/'
-        self.platforms = platforms
+        self.platforms = [x.lower() for x in platforms]
         self.bases = bases
         self.args = args
 
     def __repr__(self):
-        return "VirtualTestSuite('%s', %s, %s)" % (self.full_prefix,
-                                                   self.bases, self.args)
+        return "VirtualTestSuite('%s', %s, %s, %s)" % (self.full_prefix,
+                                                       self.platforms,
+                                                       self.bases, self.args)
