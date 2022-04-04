@@ -21,7 +21,6 @@ class ChromeKioskAppInstaller : private extensions::InstallObserver {
   enum class InstallResult {
     kSuccess,
     kUnableToInstall,
-    kUnableToLaunch,
     kNotKioskEnabled,
     kNetworkMissing,
   };
@@ -42,8 +41,7 @@ class ChromeKioskAppInstaller : private extensions::InstallObserver {
 
   ChromeKioskAppInstaller(Profile* profile,
                           const AppInstallData& install_data,
-                          KioskAppLauncher::Delegate* delegate,
-                          bool finalize_only);
+                          KioskAppLauncher::Delegate* delegate);
   ChromeKioskAppInstaller(const ChromeKioskAppInstaller&) = delete;
   ChromeKioskAppInstaller& operator=(const ChromeKioskAppInstaller&) = delete;
   ~ChromeKioskAppInstaller() override;
@@ -55,7 +53,6 @@ class ChromeKioskAppInstaller : private extensions::InstallObserver {
   void MaybeCheckExtensionUpdate();
   void OnExtensionUpdateCheckFinished(bool update_found);
   void FinalizeAppInstall();
-  void MaybeUpdateAppData();
 
   // extensions::InstallObserver overrides.
   void OnFinishCrxInstall(const std::string& extension_id,
@@ -84,14 +81,9 @@ class ChromeKioskAppInstaller : private extensions::InstallObserver {
   bool DidPrimaryOrSecondaryAppFailedToInstall(bool success,
                                                const std::string& id) const;
 
-  void SetSecondaryAppsEnabledState(const extensions::Extension* primary_app);
-  void SetAppEnabledState(const extensions::ExtensionId& id,
-                          bool should_be_enabled);
-
   Profile* const profile_;
   const AppInstallData primary_app_install_data_;
   KioskAppLauncher::Delegate* delegate_;
-  bool finalize_only_;
 
   InstallCallback on_ready_callback_;
 

@@ -14,17 +14,14 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/net/delay_network_call.h"
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_installer.h"
+#include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_launcher.h"
 #include "chrome/browser/chromeos/app_mode/startup_app_launcher_update_checker.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/install_tracker_factory.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -55,7 +52,6 @@ StartupAppLauncher::StartupAppLauncher(Profile* profile,
     : KioskAppLauncher(delegate), profile_(profile), app_id_(app_id) {
   DCHECK(profile_);
   DCHECK(crx_file::id_util::IdIsValid(app_id_));
-  kiosk_app_manager_observation_.Observe(KioskAppManager::Get());
 }
 
 StartupAppLauncher::~StartupAppLauncher() {
@@ -77,7 +73,7 @@ void StartupAppLauncher::ContinueWithNetworkReady() {
     return;
 
   if (delegate_->ShouldSkipAppInstallation()) {
-    FinalizeAppInstall();
+    OnInstallSuccess();
     return;
   }
 
@@ -85,6 +81,7 @@ void StartupAppLauncher::ContinueWithNetworkReady() {
   // external cache initially. Update the external cache now that the network
   // is ready for sure.
   state_ = LaunchState::kWaitingForCache;
+  kiosk_app_manager_observation_.Observe(KioskAppManager::Get());
   KioskAppManager::Get()->UpdateExternalCache();
 }
 
@@ -135,7 +132,7 @@ void StartupAppLauncher::MaybeInitializeNetwork() {
   }
 
   if (delegate_->ShouldSkipAppInstallation()) {
-    FinalizeAppInstall();
+    OnInstallSuccess();
     return;
   }
 
@@ -187,33 +184,79 @@ const extensions::Extension* StartupAppLauncher::GetPrimaryAppExtension()
       app_id_);
 }
 
+void StartupAppLauncher::BeginInstall() {
+  state_ = LaunchState::kInstallingApp;
+  delegate_->OnAppInstalling();
+  installer_ = std::make_unique<ChromeKioskAppInstaller>(
+      profile_, KioskAppManager::Get()->CreatePrimaryAppInstallData(app_id_),
+      delegate_);
+  installer_->BeginInstall(base::BindOnce(
+      &StartupAppLauncher::OnInstallComplete, weak_ptr_factory_.GetWeakPtr()));
+}
+
+void StartupAppLauncher::OnInstallComplete(
+    ChromeKioskAppInstaller::InstallResult result) {
+  DCHECK(state_ == LaunchState::kInstallingApp);
+
+  installer_.reset();
+
+  switch (result) {
+    case ChromeKioskAppInstaller::InstallResult::kSuccess:
+      OnInstallSuccess();
+      return;
+    case ChromeKioskAppInstaller::InstallResult::kUnableToInstall:
+      OnLaunchFailure(KioskAppLaunchError::Error::kUnableToInstall);
+      return;
+    case ChromeKioskAppInstaller::InstallResult::kNotKioskEnabled:
+      OnLaunchFailure(KioskAppLaunchError::Error::kNotKioskEnabled);
+      return;
+    case ChromeKioskAppInstaller::InstallResult::kNetworkMissing:
+      if (!RetryWhenNetworkIsAvailable())
+        OnLaunchFailure(KioskAppLaunchError::Error::kUnableToLaunch);
+      return;
+  }
+}
+
+void StartupAppLauncher::OnInstallSuccess() {
+  state_ = LaunchState::kReadyToLaunch;
+  // Updates to cached primary app crx will be ignored after this point, so
+  // there is no need to observe the kiosk app manager any longer.
+  kiosk_app_manager_observation_.Reset();
+  delegate_->OnAppPrepared();
+}
+
 void StartupAppLauncher::LaunchApp() {
   if (state_ != LaunchState::kReadyToLaunch) {
     NOTREACHED();
     SYSLOG(ERROR) << "LaunchApp() called but launcher is not initialized.";
   }
 
-  const Extension* extension = GetPrimaryAppExtension();
-  CHECK(extension);
+  launcher_ = std::make_unique<ChromeKioskAppLauncher>(
+      profile_, app_id_, delegate_->IsNetworkReady());
 
-  if (!extensions::KioskModeInfo::IsKioskEnabled(extension)) {
-    OnLaunchFailure(KioskAppLaunchError::Error::kNotKioskEnabled);
-    return;
+  launcher_->LaunchApp(base::BindOnce(&StartupAppLauncher::OnLaunchComplete,
+                                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void StartupAppLauncher::OnLaunchComplete(
+    ChromeKioskAppLauncher::LaunchResult result) {
+  DCHECK(state_ == LaunchState::kReadyToLaunch);
+
+  launcher_.reset();
+
+  switch (result) {
+    case ChromeKioskAppLauncher::LaunchResult::kSuccess:
+      KioskAppManager::Get()->InitSession(profile_, app_id_);
+      OnLaunchSuccess();
+      return;
+    case ChromeKioskAppLauncher::LaunchResult::kUnableToLaunch:
+      OnLaunchFailure(KioskAppLaunchError::Error::kUnableToLaunch);
+      return;
+    case ChromeKioskAppLauncher::LaunchResult::kNetworkMissing:
+      if (!RetryWhenNetworkIsAvailable())
+        OnLaunchFailure(KioskAppLaunchError::Error::kUnableToLaunch);
+      return;
   }
-
-  SYSLOG(INFO) << "Attempt to launch app.";
-
-  // Always open the app in a window.
-  ::OpenApplication(
-      profile_,
-      apps::AppLaunchParams(
-          extension->id(), apps::mojom::LaunchContainer::kLaunchContainerWindow,
-          WindowOpenDisposition::NEW_WINDOW,
-          apps::mojom::LaunchSource::kFromKiosk));
-
-  KioskAppManager::Get()->InitSession(profile_, app_id_);
-
-  OnLaunchSuccess();
 }
 
 void StartupAppLauncher::OnLaunchSuccess() {
@@ -244,50 +287,6 @@ void StartupAppLauncher::OnLaunchFailure(KioskAppLaunchError::Error error) {
   DCHECK_NE(KioskAppLaunchError::Error::kNone, error);
 
   delegate_->OnLaunchFailed(error);
-}
-
-void StartupAppLauncher::FinalizeAppInstall() {
-  BeginInstall(/*finalize_only=*/true);
-}
-
-void StartupAppLauncher::BeginInstall(bool finalize_only) {
-  state_ = LaunchState::kInstallingApp;
-  if (!finalize_only) {
-    delegate_->OnAppInstalling();
-  }
-  installer_ = std::make_unique<ChromeKioskAppInstaller>(
-      profile_, KioskAppManager::Get()->CreatePrimaryAppInstallData(app_id_),
-      delegate_, finalize_only);
-  installer_->BeginInstall(base::BindOnce(
-      &StartupAppLauncher::OnInstallComplete, weak_ptr_factory_.GetWeakPtr()));
-}
-
-void StartupAppLauncher::OnInstallComplete(
-    ChromeKioskAppInstaller::InstallResult result) {
-  DCHECK(state_ == LaunchState::kInstallingApp);
-
-  switch (result) {
-    case ChromeKioskAppInstaller::InstallResult::kSuccess:
-      state_ = LaunchState::kReadyToLaunch;
-      // Updates to cached primary app crx will be ignored after this point,
-      // so there is no need to observe the kiosk app manager any longer.
-      kiosk_app_manager_observation_.Reset();
-      delegate_->OnAppPrepared();
-      return;
-    case ChromeKioskAppInstaller::InstallResult::kUnableToInstall:
-      OnLaunchFailure(KioskAppLaunchError::Error::kUnableToInstall);
-      return;
-    case ChromeKioskAppInstaller::InstallResult::kNotKioskEnabled:
-      OnLaunchFailure(KioskAppLaunchError::Error::kNotKioskEnabled);
-      return;
-    case ChromeKioskAppInstaller::InstallResult::kUnableToLaunch:
-      OnLaunchFailure(KioskAppLaunchError::Error::kUnableToLaunch);
-      return;
-    case ChromeKioskAppInstaller::InstallResult::kNetworkMissing:
-      if (!RetryWhenNetworkIsAvailable())
-        OnLaunchFailure(KioskAppLaunchError::Error::kUnableToLaunch);
-      return;
-  }
 }
 
 }  // namespace ash

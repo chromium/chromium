@@ -20,6 +20,7 @@ namespace ash {
 
 // Wrapper around extensions::ExtensionBuilder for creating extension::Extension
 // instances for usage in kiosk app tests.
+// TODO(b/227985497): Turn this into a proper builder
 class TestKioskExtensionBuilder {
  public:
   TestKioskExtensionBuilder(extensions::Manifest::Type type,

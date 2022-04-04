@@ -55,6 +55,7 @@ using extensions::mojom::ManifestLocation;
 using ::testing::AssertionFailure;
 using ::testing::AssertionResult;
 using ::testing::AssertionSuccess;
+using ::testing::ElementsAre;
 
 namespace ash {
 
@@ -847,14 +848,14 @@ TEST_F(StartupAppLauncherTest, LaunchWithSecondaryApps) {
 
   EXPECT_FALSE(kiosk_app_session_initialized_);
 
+  startup_app_launcher_->LaunchApp();
+
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kTestPrimaryAppId));
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kSecondaryAppId));
   EXPECT_TRUE(registry()->disabled_extensions().Contains(kExtraSecondaryAppId));
   EXPECT_EQ(extensions::disable_reason::DISABLE_USER_ACTION,
             extensions::ExtensionPrefs::Get(browser_context())
                 ->GetDisableReasons(kExtraSecondaryAppId));
-
-  startup_app_launcher_->LaunchApp();
 
   EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchSucceeded}),
             startup_launch_delegate_.launch_state_changes());
@@ -999,13 +1000,19 @@ TEST_F(StartupAppLauncherTest,
 
   startup_app_launcher_->Initialize();
 
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kInstallingApp}),
-            startup_launch_delegate_.launch_state_changes());
+  EXPECT_THAT(startup_launch_delegate_.launch_state_changes(),
+              ElementsAre(LaunchState::kInstallingApp));
   startup_launch_delegate_.ClearLaunchStateChanges();
 
   ASSERT_TRUE(FinishPrimaryAppInstall(primary_app_builder));
 
-  // After install is complete we should realize that the app is not offline
+  EXPECT_THAT(startup_launch_delegate_.launch_state_changes(),
+              ElementsAre(LaunchState::kReadyToLaunch));
+  startup_launch_delegate_.ClearLaunchStateChanges();
+
+  startup_app_launcher_->LaunchApp();
+
+  // When trying to launch app we should realize that the app is not offline
   // enabled and request a network connection.
   startup_launch_delegate_.WaitForLaunchStates(
       {LaunchState::kInitializingNetwork});

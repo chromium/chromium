@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_installer.h"
+#include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_launcher.h"
 #include "chrome/browser/extensions/install_observer.h"
 #include "chrome/browser/extensions/install_tracker.h"
 #include "extensions/browser/app_window/app_window_registry.h"
@@ -60,15 +61,17 @@ class StartupAppLauncher : public KioskAppLauncher,
   // KioskAppLauncher:
   void Initialize() override;
   void ContinueWithNetworkReady() override;
-  void LaunchApp() override;
   void RestartLauncher() override;
+  void LaunchApp() override;
+
+  void BeginInstall();
+  void OnInstallComplete(ChromeKioskAppInstaller::InstallResult result);
+  void OnInstallSuccess();
+
+  void OnLaunchComplete(ChromeKioskAppLauncher::LaunchResult result);
 
   void OnLaunchSuccess();
   void OnLaunchFailure(KioskAppLaunchError::Error error);
-
-  void FinalizeAppInstall();
-  void BeginInstall(bool finalize_only = false);
-  void OnInstallComplete(ChromeKioskAppInstaller::InstallResult result);
 
   void MaybeInitializeNetwork();
   bool RetryWhenNetworkIsAvailable();
@@ -89,6 +92,7 @@ class StartupAppLauncher : public KioskAppLauncher,
   LaunchState state_ = LaunchState::kNotStarted;
 
   std::unique_ptr<ChromeKioskAppInstaller> installer_;
+  std::unique_ptr<ChromeKioskAppLauncher> launcher_;
 
   extensions::AppWindowRegistry* window_registry_;
 
