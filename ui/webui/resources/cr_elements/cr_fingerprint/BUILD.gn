@@ -11,7 +11,10 @@ js_type_check("closure_compile") {
 }
 
 js_library("cr_fingerprint_progress_arc") {
-  deps = [ "../cr_lottie:cr_lottie" ]
+  deps = [
+    "../cr_lottie:cr_lottie",
+    "//third_party/polymer/v1_0/components-chromium/iron-icon:iron-icon-extracted",
+  ]
 }
 
 group("polymer3_elements") {
@@ -42,6 +45,7 @@ js_library("cr_fingerprint_progress_arc.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.m.js" ]
   deps = [
     "../cr_lottie:cr_lottie.m",
+    "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":cr_fingerprint_progress_arc_module" ]

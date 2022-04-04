@@ -1,3 +1,4 @@
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-media-query/iron-media-query.html">
 <link rel="import" href="../../html/polymer.html">
 <link rel="import" href="cr_fingerprint_icon.html">
@@ -26,7 +27,7 @@
         position: absolute;
       }
 
-      #enrollmentDone {
+      #fingerprintScanned {
         position: absolute;
       }
     </style>
@@ -39,9 +40,7 @@
       <cr-lottie id="scanningAnimation" aria-hidden="true"
           autoplay="[[autoplay]]">
       </cr-lottie>
-      <iron-icon id="enrollmentDone" icon="cr-fingerprint-icon:enrollment-done"
-          hidden>
-      </iron-icon>
+      <iron-icon id="fingerprintScanned" hidden></iron-icon>
     </div>
   </template>
   <script src="cr_fingerprint_progress_arc.js"></script>

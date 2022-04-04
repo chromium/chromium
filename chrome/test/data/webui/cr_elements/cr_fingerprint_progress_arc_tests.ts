@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.m.js';
 
-import {CrFingerprintProgressArcElement, FINGERPRINT_TICK_DARK_URL, FINGERPRINT_TICK_LIGHT_URL, PROGRESS_CIRCLE_BACKGROUND_COLOR_DARK, PROGRESS_CIRCLE_BACKGROUND_COLOR_LIGHT, PROGRESS_CIRCLE_FILL_COLOR_DARK, PROGRESS_CIRCLE_FILL_COLOR_LIGHT} from 'chrome://resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.m.js';
+import {CrFingerprintProgressArcElement, FINGERPRINT_SCANNED_ICON_DARK, FINGERPRINT_SCANNED_ICON_LIGHT, FINGERPRINT_TICK_DARK_URL, FINGERPRINT_TICK_LIGHT_URL, PROGRESS_CIRCLE_BACKGROUND_COLOR_DARK, PROGRESS_CIRCLE_BACKGROUND_COLOR_LIGHT, PROGRESS_CIRCLE_FILL_COLOR_DARK, PROGRESS_CIRCLE_FILL_COLOR_LIGHT} from 'chrome://resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {MockController} from 'chrome://webui-test/mock_controller.js';
@@ -249,11 +249,15 @@ suite('cr_fingerprint_progress_arc_test', function() {
   });
 
   test('TestSwitchToDarkMode', function() {
+    const fingerprintScanned = progressArc.$.fingerprintScanned;
     const scanningAnimation = progressArc.$.scanningAnimation;
+
     progressArc.setProgress(0, 1, true);
+    assertEquals(FINGERPRINT_SCANNED_ICON_LIGHT, fingerprintScanned.icon);
     assertEquals(FINGERPRINT_TICK_LIGHT_URL, scanningAnimation.animationUrl);
 
     fakeMediaQueryList.matches = true;
+    assertEquals(FINGERPRINT_SCANNED_ICON_DARK, fingerprintScanned.icon);
     assertEquals(FINGERPRINT_TICK_DARK_URL, scanningAnimation.animationUrl);
   });
 });
