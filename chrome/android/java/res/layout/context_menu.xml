@@ -24,6 +24,7 @@
         android:layout_width="@dimen/context_menu_max_width"
         android:layout_height="wrap_content"
         android:paddingBottom="@dimen/context_menu_bottom_padding"
+        android:fadeScrollbars="false"
         android:divider="@null"
         android:listSelector="@android:color/transparent"
         android:clipToPadding="false" />
