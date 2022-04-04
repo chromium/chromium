@@ -286,9 +286,14 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
                 public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
                         int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
                     if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
-                        setTopMargin(topControlsMinHeightOffset);
+                        // Set the top margin to the top controls min height (indicator height if
+                        // it's shown) since the toolbar height as extra margin is handled by top
+                        // toolbar placeholder.
+                        setTopMargin(mBrowserControlsStateProvider.getTopControlsMinHeightOffset());
                     } else if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER) {
-                        setTopMargin(topOffset);
+                        // Set the top margin to the top controls offset (toolbar height + indicator
+                        // height).
+                        setTopMargin(mBrowserControlsStateProvider.getContentOffset());
                     } else {
                         setTopMargin(0);
                     }
@@ -542,7 +547,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
                     /* isVisible= */ true, /* skipUpdateController = */ false);
             setExploreSurfaceVisibility(false);
             setTopToolbarPlaceholderHeight(0);
-            // Set the top margin to the top controls height.
+            // Set the top margin to the top controls height (toolbar height + indicator height).
             setTopMargin(mBrowserControlsStateProvider.getTopControlsHeight());
             setBottomMargin(0);
         } else if (mStartSurfaceState == StartSurfaceState.NOT_SHOWN) {

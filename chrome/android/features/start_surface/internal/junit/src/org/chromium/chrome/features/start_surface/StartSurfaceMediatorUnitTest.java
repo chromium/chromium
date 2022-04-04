@@ -1084,6 +1084,10 @@ public class StartSurfaceMediatorUnitTest {
                 .addObserver(mBrowserControlsStateProviderCaptor.capture());
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true, false);
+
+        // The top margin of homepage should be consistent with top controls min height/offset
+        // (indicator height).
+        doReturn(10).when(mBrowserControlsStateProvider).getTopControlsMinHeight();
         // Sets the current StartSurfaceState to SHOWING_START before calling the
         // {@link StartSurfaceMediator#showOverview()}. This is because if the current
         // StartSurfaceState is NOT_SHOWN, the state will be set default to SHOWING_TABSWITCHER in
@@ -1092,33 +1096,28 @@ public class StartSurfaceMediatorUnitTest {
         mediator.showOverview(false);
 
         verify(mBrowserControlsStateProvider).addObserver(ArgumentMatchers.any());
+        assertEquals("Wrong top content offset on homepage.", 10, mPropertyModel.get(TOP_MARGIN));
 
-        doReturn(100).when(mBrowserControlsStateProvider).getTopControlsHeight();
-        doReturn(20).when(mBrowserControlsStateProvider).getTopControlsMinHeight();
-        mBrowserControlsStateProviderCaptor.getValue().onControlsOffsetChanged(
-                100, 20, 0, 0, false);
+        onControlsOffsetChanged(/*topOffset=*/100, /*topControlsMinHeightOffset=*/20);
         assertEquals("Wrong top content offset on homepage.", 20, mPropertyModel.get(TOP_MARGIN));
 
-        doReturn(130).when(mBrowserControlsStateProvider).getTopControlsHeight();
-        doReturn(50).when(mBrowserControlsStateProvider).getTopControlsMinHeight();
-        mBrowserControlsStateProviderCaptor.getValue().onControlsOffsetChanged(
-                130, 50, 0, 0, false);
+        onControlsOffsetChanged(/*topOffset=*/130, /*topControlsMinHeightOffset=*/50);
         assertEquals("Wrong top content offset on homepage.", 50, mPropertyModel.get(TOP_MARGIN));
 
+        // The top margin of tab switcher surface should be consistent with top controls
+        // height/offset.
+        doReturn(15).when(mBrowserControlsStateProvider).getTopControlsHeight();
         mediator.setOverviewState(StartSurfaceState.SHOWING_TABSWITCHER);
         mediator.showOverview(false);
 
-        doReturn(100).when(mBrowserControlsStateProvider).getTopControlsHeight();
-        doReturn(20).when(mBrowserControlsStateProvider).getTopControlsMinHeight();
-        mBrowserControlsStateProviderCaptor.getValue().onControlsOffsetChanged(
-                100, 20, 0, 0, false);
+        assertEquals("Wrong top content offset on tab switcher surface.", 15,
+                mPropertyModel.get(TOP_MARGIN));
+
+        onControlsOffsetChanged(/*topOffset=*/100, /*topControlsMinHeightOffset=*/20);
         assertEquals("Wrong top content offset on tab switcher surface.", 100,
                 mPropertyModel.get(TOP_MARGIN));
 
-        doReturn(130).when(mBrowserControlsStateProvider).getTopControlsHeight();
-        doReturn(50).when(mBrowserControlsStateProvider).getTopControlsMinHeight();
-        mBrowserControlsStateProviderCaptor.getValue().onControlsOffsetChanged(
-                130, 50, 0, 0, false);
+        onControlsOffsetChanged(/*topOffset=*/130, /*topControlsMinHeightOffset=*/50);
         assertEquals("Wrong top content offset on tab switcher surface.", 130,
                 mPropertyModel.get(TOP_MARGIN));
     }
@@ -1307,5 +1306,14 @@ public class StartSurfaceMediatorUnitTest {
                         true /* excludeQueryTiles */, mStartSurfaceSupplier, hadWarmStart,
                         new DummyJankTracker(), mInitializeMVTilesRunnable);
         return mediator;
+    }
+
+    private void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset) {
+        doReturn(topOffset).when(mBrowserControlsStateProvider).getContentOffset();
+        doReturn(topControlsMinHeightOffset)
+                .when(mBrowserControlsStateProvider)
+                .getTopControlsMinHeightOffset();
+        mBrowserControlsStateProviderCaptor.getValue().onControlsOffsetChanged(
+                topOffset, topControlsMinHeightOffset, 0, 0, false);
     }
 }
