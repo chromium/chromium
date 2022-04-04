@@ -2325,6 +2325,7 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="Browser"/>
   <int value="2" label="Renderer"/>
   <int value="3" label="Gpu"/>
+  <int value="4" label="Utility"/>
 </enum>
 
 <enum name="AndroidProcessExitReason">
