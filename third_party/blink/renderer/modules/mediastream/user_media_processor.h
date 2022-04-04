@@ -147,7 +147,7 @@ class MODULES_EXPORT UserMediaProcessor
   class RequestInfo;
   using LocalStreamSources = HeapVector<Member<MediaStreamSource>>;
 
-  void OnStreamGenerated(int request_id,
+  void OnStreamGenerated(int32_t request_id,
                          blink::mojom::blink::MediaStreamRequestResult result,
                          const String& label,
                          const Vector<blink::MediaStreamDevice>& audio_devices,
@@ -163,17 +163,17 @@ class MODULES_EXPORT UserMediaProcessor
   gfx::Size GetScreenSize();
 
   void OnStreamGenerationFailed(
-      int request_id,
+      int32_t request_id,
       blink::mojom::blink::MediaStreamRequestResult result);
 
-  bool IsCurrentRequestInfo(int request_id) const;
+  bool IsCurrentRequestInfo(int32_t request_id) const;
   bool IsCurrentRequestInfo(UserMediaRequest* user_media_request) const;
   void DelayedGetUserMediaRequestSucceeded(
-      int request_id,
+      int32_t request_id,
       MediaStreamDescriptor* descriptor,
       UserMediaRequest* user_media_request);
   void DelayedGetUserMediaRequestFailed(
-      int request_id,
+      int32_t request_id,
       UserMediaRequest* user_media_request,
       blink::mojom::blink::MediaStreamRequestResult result,
       const String& constraint_name);

@@ -27,7 +27,7 @@
 namespace blink {
 namespace {
 
-static int g_next_request_id = 0;
+static int32_t g_next_request_id = 0;
 
 // The histogram counts the number of calls to the JS APIs
 // getUserMedia() and getDisplayMedia().
@@ -140,7 +140,7 @@ void UserMediaClient::RequestUserMedia(UserMediaRequest* user_media_request) {
   // Save histogram data so we can see how much GetUserMedia is used.
   UpdateAPICount(user_media_request->MediaRequestType());
 
-  int request_id = g_next_request_id++;
+  int32_t request_id = g_next_request_id++;
   blink::WebRtcLogMessage(base::StringPrintf(
       "UMCI::RequestUserMedia({request_id=%d}, {audio constraints=%s}, "
       "{video constraints=%s})",

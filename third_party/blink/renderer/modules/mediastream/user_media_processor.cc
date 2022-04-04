@@ -339,7 +339,7 @@ class UserMediaProcessor::RequestInfo final
                             const String& result_name);
 
   UserMediaRequest* request() { return request_; }
-  int request_id() const { return request_->request_id(); }
+  int32_t request_id() const { return request_->request_id(); }
 
   State state() const { return state_; }
   void set_state(State state) { state_ = state; }
@@ -969,7 +969,7 @@ UserMediaProcessor::GetMediaStreamDeviceObserver() {
 }
 
 void UserMediaProcessor::OnStreamGenerated(
-    int request_id,
+    int32_t request_id,
     MediaStreamRequestResult result,
     const String& label,
     const Vector<MediaStreamDevice>& audio_devices,
@@ -1144,7 +1144,7 @@ void UserMediaProcessor::NotifyCurrentRequestInfoOfAudioSourceStarted(
 }
 
 void UserMediaProcessor::OnStreamGenerationFailed(
-    int request_id,
+    int32_t request_id,
     MediaStreamRequestResult result) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!IsCurrentRequestInfo(request_id)) {
@@ -1571,7 +1571,7 @@ void UserMediaProcessor::OnCreateNativeTracksCompleted(
     const String& constraint_name) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   SendLogMessage(base::StringPrintf(
-      "UMP::OnCreateNativeTracksCompleted({request_id = %d}, {label=%s})",
+      "UMP::OnCreateNativeTracksCompleted({request_id=%d}, {label=%s})",
       request_info->request_id(), label.Utf8().c_str()));
   if (result == MediaStreamRequestResult::OK) {
     GetUserMediaRequestSucceeded(request_info->descriptor(),
@@ -1620,7 +1620,7 @@ void UserMediaProcessor::GetUserMediaRequestSucceeded(
 }
 
 void UserMediaProcessor::DelayedGetUserMediaRequestSucceeded(
-    int request_id,
+    int32_t request_id,
     MediaStreamDescriptor* component,
     UserMediaRequest* user_media_request) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -1655,7 +1655,7 @@ void UserMediaProcessor::GetUserMediaRequestFailed(
 }
 
 void UserMediaProcessor::DelayedGetUserMediaRequestFailed(
-    int request_id,
+    int32_t request_id,
     UserMediaRequest* user_media_request,
     MediaStreamRequestResult result,
     const String& constraint_name) {
@@ -1818,7 +1818,7 @@ bool UserMediaProcessor::RemoveLocalSource(MediaStreamSource* source) {
   return false;
 }
 
-bool UserMediaProcessor::IsCurrentRequestInfo(int request_id) const {
+bool UserMediaProcessor::IsCurrentRequestInfo(int32_t request_id) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return current_request_info_ &&
          current_request_info_->request_id() == request_id;

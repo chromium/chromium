@@ -141,8 +141,8 @@ class MODULES_EXPORT UserMediaRequest final
   // ExecutionContextLifecycleObserver
   void ContextDestroyed() override;
 
-  void set_request_id(int id) { request_id_ = id; }
-  int request_id() { return request_id_; }
+  void set_request_id(int32_t id) { request_id_ = id; }
+  int32_t request_id() { return request_id_; }
 
   void set_has_transient_user_activation(bool value) {
     has_transient_user_activation_ = value;
@@ -162,7 +162,7 @@ class MODULES_EXPORT UserMediaRequest final
   const bool should_prefer_current_tab_ = false;
   bool should_disable_hardware_noise_suppression_;
   bool has_transient_user_activation_ = false;
-  int request_id_ = -1;
+  int32_t request_id_ = -1;
 
   Member<UserMediaController> controller_;
 
