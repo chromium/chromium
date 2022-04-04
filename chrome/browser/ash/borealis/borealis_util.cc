@@ -205,15 +205,7 @@ bool GetCompatToolInfo(const std::string& owner_id, std::string* output) {
   std::vector<std::string> command = {"/usr/bin/vsh", "--owner_id=" + owner_id,
                                       "--vm_name=borealis", "--",
                                       "/usr/bin/get_compat_tool_versions.py"};
-  bool success = base::GetAppOutput(command, output);
-  if (!success) {
-    // Re-run with stderr capture. It is not done initially since
-    // GetAppOutputAndError intermixes stdout and stderr and stderr commonly
-    // includes informational messages about Linux game sessions that would
-    // complicate the parsing of `output`.
-    base::GetAppOutputAndError(command, output);
-  }
-  return success;
+  return base::GetAppOutputAndError(command, output);
 }
 
 CompatToolInfo ParseCompatToolInfo(absl::optional<int> game_id,

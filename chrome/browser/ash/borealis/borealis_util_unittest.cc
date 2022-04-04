@@ -22,6 +22,7 @@ namespace {
 class BorealisUtilTest : public testing::Test {
  public:
   BorealisUtilTest() { display::Screen::SetScreenInstance(&test_screen_); }
+  ~BorealisUtilTest() override { display::Screen::SetScreenInstance(nullptr); }
 
  protected:
   GURL GetFeedbackFormUrl(TestingProfile* profile,
@@ -228,7 +229,9 @@ TEST_F(BorealisUtilTest, SLRTitleKnownBorealisAppId) {
 
 TEST_F(BorealisUtilTest, LinuxTitleUnknownBorealisAppId) {
   absl::optional<int> game_id;
-  std::string output = "";
+  std::string output =
+      "INFO: Found a session for a non-SLR Linux game at"
+      "timestamp: 2021-01-01 00:00:00";
   borealis::CompatToolInfo info =
       borealis::ParseCompatToolInfo(game_id, output);
   EXPECT_FALSE(info.game_id.has_value());
@@ -238,7 +241,23 @@ TEST_F(BorealisUtilTest, LinuxTitleUnknownBorealisAppId) {
 
 TEST_F(BorealisUtilTest, LinuxTitleKnownBorealisAppId) {
   absl::optional<int> game_id = 123;
-  std::string output = "";
+  std::string output =
+      "INFO: Found a session for a non-SLR Linux game at"
+      "timestamp: 2021-01-01 00:00:00";
+  borealis::CompatToolInfo info =
+      borealis::ParseCompatToolInfo(game_id, output);
+  EXPECT_FALSE(info.game_id.has_value());
+  EXPECT_EQ(info.proton, "None");
+  EXPECT_EQ(info.slr, "None");
+}
+
+TEST_F(BorealisUtilTest, LinuxTitleAfterProtonTitle) {
+  absl::optional<int> game_id;
+  std::string output =
+      "INFO: Found a session for a non-SLR Linux game at"
+      "timestamp: 2021-01-01 00:00:00\n"
+      "GameID: 123, Proton: Proton 1.2-3, SLR: SLR - Name, "
+      "Timestamp: 2021-01-01 00:00:00";
   borealis::CompatToolInfo info =
       borealis::ParseCompatToolInfo(game_id, output);
   EXPECT_FALSE(info.game_id.has_value());
