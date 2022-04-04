@@ -7304,6 +7304,7 @@ const FeatureEntry kFeatureEntries[] = {
      SINGLE_VALUE_TYPE_AND_VALUE(switches::kEnableFeatures,
                                  "PrivacySandboxAdsAPIsOverride,"
                                  "InterestGroupStorage,Fledge,"
+                                 "BiddingAndScoringDebugReportingAPI,"
                                  "AllowURNsInIframes,BrowsingTopics,"
                                  "ConversionMeasurement,"
                                  "OverridePrivacySandboxSettingsLocalTesting")},
