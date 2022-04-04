@@ -589,7 +589,7 @@ void WebPagePopupImpl::SetWindowRect(const gfx::Rect& rect_in_screen) {
                         WebFeature::kPopupDoesNotExceedOwnerWindowBounds);
     } else {
       WebFeature feature =
-          document.GetFrame()->IsMainFrame()
+          document.GetFrame()->IsOutermostMainFrame()
               ? WebFeature::kPopupExceedsOwnerWindowBounds
               : WebFeature::kPopupExceedsOwnerWindowBoundsForIframe;
       UseCounter::Count(document, feature);
