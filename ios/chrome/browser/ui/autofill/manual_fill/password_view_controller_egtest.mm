@@ -95,15 +95,6 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
 
 @implementation PasswordViewControllerTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  if ([self isRunningTest:@selector(testPasswordGenerationOnManualFallback)]) {
-    config.features_enabled.push_back(
-        password_manager::features::kEnableManualPasswordGeneration);
-  }
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");

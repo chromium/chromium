@@ -2345,11 +2345,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "enable-manual-password-generation",
-    "owners": [ "kazinova@google.com" ],
-    "expiry_milestone": 96
-  },
-  {
     "name": "enable-media-foundation-clear",
     "owners": [
       "wicarr@microsoft.com"

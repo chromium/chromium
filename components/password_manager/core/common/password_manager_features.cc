@@ -29,12 +29,6 @@ const base::Feature kDetectFormSubmissionOnFormClear = {
 const base::Feature kEnableFaviconForPasswords{
     "EnableFaviconForPasswords", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables UI that allows the user to create a strong password even if the field
-// wasn't parsed as a new password field.
-// TODO(crbug/1181254): Remove once it's launched.
-const base::Feature kEnableManualPasswordGeneration = {
-    "EnableManualPasswordGeneration", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables the overwriting of prefilled username fields if the server predicted
 // the field to contain a placeholder value.
 const base::Feature kEnableOverwritingPlaceholderUsernames{

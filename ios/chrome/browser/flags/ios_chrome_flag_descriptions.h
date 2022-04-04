@@ -204,12 +204,6 @@ extern const char kEnableFullscreenAPIDescription[];
 extern const char kEnableLongMessageDurationName[];
 extern const char kEnableLongMessageDurationDescription[];
 
-// Title and description for the flag to enable UI that allows the user to
-// create a strong password even if the field wasn't parsed as a new password
-// field.
-extern const char kEnableManualPasswordGenerationName[];
-extern const char kEnableManualPasswordGenerationDescription[];
-
 // Title and description for the flag to enable the new download API.
 extern const char kEnableNewDownloadAPIName[];
 extern const char kEnableNewDownloadAPIDescription[];

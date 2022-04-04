@@ -242,9 +242,7 @@ BOOL AreCredentialsAtIndexesConnected(
         _webState ? PasswordTabHelper::FromWebState(_webState)
                         ->GetPasswordManagerClient()
                   : nullptr;
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::kEnableManualPasswordGeneration) &&
-        _syncService && _syncService->CanSyncFeatureStart() &&
+    if (_syncService && _syncService->CanSyncFeatureStart() &&
         passwordManagerClient &&
         passwordManagerClient->IsSavingAndFillingEnabled(_URL) &&
         _activeFieldIsPassword) {

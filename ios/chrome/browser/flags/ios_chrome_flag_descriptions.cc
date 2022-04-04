@@ -222,12 +222,6 @@ const char kEnableLongMessageDurationName[] = "Enable long message duration";
 const char kEnableLongMessageDurationDescription[] =
     "Enables a long duration when an overlay message is shown.";
 
-const char kEnableManualPasswordGenerationName[] =
-    "Enable manual password generation.";
-const char kEnableManualPasswordGenerationDescription[] =
-    "Enable UI that allows to generate a strong password for any password "
-    "field";
-
 const char kEnableNewDownloadAPIName[] = "Enable new download API";
 const char kEnableNewDownloadAPIDescription[] =
     "Enable new download API (restricted to iOS 15.0+).";
