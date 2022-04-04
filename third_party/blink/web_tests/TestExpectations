@@ -2032,8 +2032,6 @@ crbug.com/520188 [ Win ] http/tests/local/fileapi/file-last-modified-after-delet
 crbug.com/520611 [ Debug ] fast/filesystem/workers/file-writer-events-shared-worker.html [ Failure Pass ]
 crbug.com/520194 http/tests/xmlhttprequest/timeout/xmlhttprequest-timeout-worker-overridesexpires.html [ Failure Pass ]
 
-crbug.com/892032 fast/events/wheel/wheel-latched-scroll-node-removed.html [ Failure Pass ]
-
 crbug.com/1051136 fast/forms/select/listbox-overlay-scrollbar.html [ Failure ]
 
 # These performance-sensitive user-timing tests are flaky in debug on all platforms, and flaky on all configurations of windows.
@@ -7699,6 +7697,15 @@ crbug.com/1311128 external/wpt/paint-timing/fcp-only/fcp-document-opacity-text.h
 # Navigation API incorrectly leaves promises forever unsettled (crbug.com/1311786)
 crbug.com/1311786 external/wpt/navigation-api/navigation-methods/sandboxing-back-parent.html [ Skip ]
 crbug.com/1311786 external/wpt/navigation-api/navigation-methods/sandboxing-back-sibling.html [ Skip ]
+
+# Scroll Unification known issues (go/su-web-tests) for enabling in test:
+crbug.com/1311431 [ Mac ] fast/scroll-behavior/overscroll-behavior.html [ Failure Pass ]
+crbug.com/1248231 fast/events/touch/touch-latched-scroll-node-removed.html [ Failure Pass ]
+crbug.com/1248231 fast/events/wheel/wheel-latched-scroll-node-removed.html [ Failure Timeout Pass ]
+crbug.com/1311731 [ Linux ] fast/events/touch/gesture/touch-gesture-scroll-input-field.html [ Failure Pass ]
+crbug.com/1311731 [ Win ] fast/events/touch/gesture/touch-gesture-scroll-input-field.html [ Failure Pass ]
+crbug.com/1248581 fast/scrolling/resize-corner-tracking-touch.html [ Failure Pass ]
+crbug.com/1312036 virtual/hidpi/fast/scrolling/scrollbars/dsf-ready/mouse-interactions-dsf-2.html [ Failure Pass ]
 
 # Sheriff 2022-03-29
 crbug.com/1311138 [ Mac10.13 ] virtual/document-transition/wpt_internal/document-transition/one-element-two-targets.html [ Skip ]
