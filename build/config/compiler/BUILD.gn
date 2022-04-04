@@ -1552,7 +1552,7 @@ config("default_warnings") {
         cflags += [ "-Wmax-tokens" ]
       }
 
-      if (llvm_force_head_revision) {
+      if (is_mac) {
         # TODO(https://crbug.com/1309955) Clean up and enable.
         cflags += [ "-Wno-unused-but-set-variable" ]
       }
