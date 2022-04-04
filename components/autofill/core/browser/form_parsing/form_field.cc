@@ -186,13 +186,16 @@ bool FormField::ParseFieldSpecificsWithNewPatterns(
     AutofillScanner* scanner,
     const std::vector<MatchingPattern>& patterns,
     AutofillField** match,
-    const RegExLogging& logging) {
+    const RegExLogging& logging,
+    MatchingPattern (*projection)(const MatchingPattern&)) {
   if (scanner->IsEnd())
     return false;
 
   const AutofillField* field = scanner->Cursor();
 
-  for (const auto& pattern : patterns) {
+  for (auto pattern : patterns) {
+    if (projection)
+      pattern = (*projection)(pattern);
     if (!MatchesFormControlType(field->form_control_type,
                                 pattern.match_field_input_types)) {
       continue;
@@ -234,10 +237,11 @@ bool FormField::ParseFieldSpecifics(
     const MatchParams& match_type,
     const std::vector<MatchingPattern>& patterns,
     AutofillField** match,
-    const RegExLogging& logging) {
+    const RegExLogging& logging,
+    MatchingPattern (*projection)(const MatchingPattern&)) {
   return base::FeatureList::IsEnabled(features::kAutofillParsingPatternProvider)
              ? ParseFieldSpecificsWithNewPatterns(scanner, patterns, match,
-                                                  logging)
+                                                  logging, projection)
              : ParseFieldSpecificsWithLegacyPattern(scanner, pattern,
                                                     match_type, match, logging);
 }
@@ -247,7 +251,8 @@ bool FormField::ParseEmptyLabel(AutofillScanner* scanner,
                                 AutofillField** match) {
   return ParseFieldSpecificsWithLegacyPattern(
       scanner, u"^$",
-      MatchParams({MatchAttribute::kLabel}, kAllMatchFieldTypes), match);
+      MatchParams({MatchAttribute::kLabel}, kAllMatchFieldTypes), match,
+      /*logging=*/{});
 }
 
 // static

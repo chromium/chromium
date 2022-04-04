@@ -94,12 +94,15 @@ class FormField {
                          AutofillField** match,
                          const RegExLogging& logging = {});
 
-  static bool ParseFieldSpecifics(AutofillScanner* scanner,
-                                  base::StringPiece16 pattern,
-                                  const MatchParams& match_type,
-                                  const std::vector<MatchingPattern>& patterns,
-                                  AutofillField** match,
-                                  const RegExLogging& logging);
+  // TODO(crbug/1142936): Remove `projection` if it's not needed anymore.
+  static bool ParseFieldSpecifics(
+      AutofillScanner* scanner,
+      base::StringPiece16 pattern,
+      const MatchParams& match_type,
+      const std::vector<MatchingPattern>& patterns,
+      AutofillField** match,
+      const RegExLogging& logging,
+      MatchingPattern (*projection)(const MatchingPattern&) = nullptr);
 
   // Attempts to parse a field with an empty label.  Returns true
   // on success and fills |match| with a pointer to the field.
@@ -139,19 +142,19 @@ class FormField {
       AutofillScanner* scanner,
       const std::vector<MatchingPattern>& patterns,
       AutofillField** match,
-      const RegExLogging& logging = {});
+      const RegExLogging& logging,
+      MatchingPattern (*projection)(const MatchingPattern&));
 
   // Parses the stream of fields in |scanner| with regular expression |pattern|
   // as specified in |match_type|. If |match| is non-NULL and the pattern
   // matches, |match| will be set to the matched field, and the scanner would
   // advance by one step. A |true| result is returned in the case of a
   // successful match, false otherwise.
-  static bool ParseFieldSpecificsWithLegacyPattern(
-      AutofillScanner* scanner,
-      base::StringPiece16 pattern,
-      MatchParams match_type,
-      AutofillField** match,
-      const RegExLogging& logging = {});
+  static bool ParseFieldSpecificsWithLegacyPattern(AutofillScanner* scanner,
+                                                   base::StringPiece16 pattern,
+                                                   MatchParams match_type,
+                                                   AutofillField** match,
+                                                   const RegExLogging& logging);
 
   // Removes checkable fields and returns fields to be processed for field
   // detection.
