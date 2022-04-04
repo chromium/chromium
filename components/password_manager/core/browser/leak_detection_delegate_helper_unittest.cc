@@ -358,6 +358,10 @@ class FakePasswordScriptsFetcher : public PasswordScriptsFetcher {
     std::move(callback_).Run(is_script_available);
   }
 
+  base::Value::Dict GetDebugInformationForInternals() const override {
+    return base::Value::Dict();
+  }
+
  private:
   ResponseCallback callback_;
 };

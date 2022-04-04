@@ -108,10 +108,11 @@ class SavedPasswordsCapabilitiesFetcherTest : public ::testing::Test {
     auto capabilities_service =
         std::make_unique<NiceMock<MockCapabilitiesService>>();
     mock_capabilities_service_ = capabilities_service.get();
-
     fetcher_ = std::make_unique<SavedPasswordsCapabilitiesFetcher>(
         std::move(capabilities_service), store_);
+    FillPasswordStore();
   }
+
   ~SavedPasswordsCapabilitiesFetcherTest() override {
     store_->ShutdownOnUIThread();
     task_env_.RunUntilIdle();
@@ -181,7 +182,6 @@ class SavedPasswordsCapabilitiesFetcherTest : public ::testing::Test {
 };
 
 TEST_F(SavedPasswordsCapabilitiesFetcherTest, ServerError) {
-  FillPasswordStore();
   // Simulate server error empty response.
   EXPECT_CALL(*mock_capabilities_service_,
               QueryPasswordChangeScriptAvailability)
@@ -194,8 +194,6 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest, ServerError) {
 }
 
 TEST_F(SavedPasswordsCapabilitiesFetcherTest, PrewarmCache) {
-  FillPasswordStore();
-
   base::HistogramTester histogram_tester;
   ExpectCacheRefresh();
   fetcher_->PrewarmCache();
@@ -230,8 +228,6 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest, PrewarmCache) {
 }
 
 TEST_F(SavedPasswordsCapabilitiesFetcherTest, NoPrewarmCache) {
-  FillPasswordStore();
-
   base::HistogramTester histogram_tester;
   // Run bulk check with no cache prewarming. Expect necessary full refresh.
   ExpectCacheRefresh();
@@ -249,7 +245,6 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest, NoPrewarmCache) {
 
 TEST_F(SavedPasswordsCapabilitiesFetcherTest,
        StartBulkCheckBeforePrewarmingResponse) {
-  FillPasswordStore();
   base::HistogramTester histogram_tester;
 
   CapabilitiesService::ResponseCallback callback;
@@ -284,7 +279,6 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest,
 }
 
 TEST_F(SavedPasswordsCapabilitiesFetcherTest, IsScriptAvailable) {
-  FillPasswordStore();
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_capabilities_service_,
               QueryPasswordChangeScriptAvailability)
@@ -324,8 +318,6 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest, IsScriptAvailable) {
 }
 
 TEST_F(SavedPasswordsCapabilitiesFetcherTest, PasswordStoreUpdate) {
-  FillPasswordStore();
-
   ExpectCacheRefresh();
   fetcher_->PrewarmCache();
 
@@ -359,7 +351,6 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest, PasswordStoreUpdate) {
 
 TEST_F(SavedPasswordsCapabilitiesFetcherTest,
        FetchScriptAvailabilityDuringRequest) {
-  FillPasswordStore();
   base::HistogramTester histogram_tester;
 
   CapabilitiesService::ResponseCallback callback;
@@ -402,7 +393,6 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest,
 
 TEST_F(SavedPasswordsCapabilitiesFetcherTest,
        FetchScriptAvailabilityAfterRefreshRequest) {
-  FillPasswordStore();
   base::HistogramTester histogram_tester;
 
   ExpectCacheRefresh();
@@ -449,7 +439,6 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest,
 
 TEST_F(SavedPasswordsCapabilitiesFetcherTest,
        FetchScriptAvailabilityAfterStaleCache) {
-  FillPasswordStore();
   base::HistogramTester histogram_tester;
 
   // FetchScriptAvailability without any refresh should trigger single origin
@@ -507,6 +496,55 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest,
       "PasswordManager.SavedPasswordsCapabilitiesFetcher."
       "SingleOriginResponseTime",
       3u);
+}
+
+TEST_F(SavedPasswordsCapabilitiesFetcherTest, DebugInformationForInternals) {
+  base::Value::Dict debug_info = fetcher_->GetDebugInformationForInternals();
+  const std::string* engine = debug_info.FindString("engine");
+  EXPECT_TRUE(engine);
+  EXPECT_EQ("hash-prefix-based lookup", *engine);
+
+  const std::string* cache_state = debug_info.FindString("cache state");
+  EXPECT_TRUE(cache_state);
+  // Cache is already stale instead of never set due to a call during SetUp().
+  EXPECT_EQ("stale", *cache_state);
+
+  ExpectCacheRefresh();
+  fetcher_->PrewarmCache();
+
+  debug_info = fetcher_->GetDebugInformationForInternals();
+  cache_state = debug_info.FindString("cache state");
+  EXPECT_TRUE(cache_state);
+  EXPECT_EQ("ready", *cache_state);
+
+  // Make cache stale again.
+  RunUntilIdle();
+  task_env_.AdvanceClock(base::Minutes(10));
+
+  debug_info = fetcher_->GetDebugInformationForInternals();
+  cache_state = debug_info.FindString("cache state");
+  EXPECT_TRUE(cache_state);
+  EXPECT_EQ("stale", *cache_state);
+
+  // Create a state in which the fetcher is waiting for a response.
+  CapabilitiesService::ResponseCallback callback;
+  EXPECT_CALL(*mock_capabilities_service_,
+              QueryPasswordChangeScriptAvailability(
+                  UnorderedElementsAre(
+                      GetOriginWithScript1(), GetOriginWithScript2(),
+                      GetOriginWithScript3(), GetOriginWithoutScript()),
+                  _))
+      .WillOnce(MoveArg<1>(&callback));
+
+  fetcher_->PrewarmCache();
+  debug_info = fetcher_->GetDebugInformationForInternals();
+  cache_state = debug_info.FindString("cache state");
+  EXPECT_TRUE(cache_state);
+  EXPECT_EQ("waiting", *cache_state);
+
+  std::move(callback).Run(std::set<url::Origin>{
+      GetOriginWithScript1(), GetOriginWithScript2(), GetOriginWithScript3()});
+  CheckScriptAvailabilityDefaultResults();
 }
 
 }  // namespace password_manager

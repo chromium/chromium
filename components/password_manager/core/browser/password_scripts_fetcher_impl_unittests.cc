@@ -384,4 +384,18 @@ TEST_F(PasswordScriptsFetcherImplTest, DifferentVersions) {
   EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithScript3()));
 }
 
+TEST_F(PasswordScriptsFetcherImplTest, DebugInformationForInternals) {
+  base::Value::Dict debug_info = fetcher()->GetDebugInformationForInternals();
+
+  const std::string* engine = debug_info.FindString("engine");
+  EXPECT_TRUE(engine);
+  EXPECT_EQ("gstatic lookup", *engine);
+
+  const std::string* script_list_url = debug_info.FindString("script_list_url");
+  EXPECT_TRUE(script_list_url);
+  EXPECT_EQ(
+      "https://www.gstatic.com/chrome/duplex/change_password_scripts.json",
+      *script_list_url);
+}
+
 }  // namespace password_manager

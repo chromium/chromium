@@ -6,6 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_SCRIPTS_FETCHER_H_
 
 #include "base/callback_forward.h"
+#include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace url {
@@ -57,6 +58,10 @@ class PasswordScriptsFetcher : public KeyedService {
   // use |FetchScriptAvailability| instead because |IsScriptAvailable| may
   // return stale data.
   virtual bool IsScriptAvailable(const url::Origin& origin) const = 0;
+
+  // Return high-level state summary of the PasswordScriptsFetcher in form
+  // of a `base::Value::Dict` for display on chrome://apc-internals.
+  virtual base::Value::Dict GetDebugInformationForInternals() const = 0;
 };
 
 }  // namespace password_manager

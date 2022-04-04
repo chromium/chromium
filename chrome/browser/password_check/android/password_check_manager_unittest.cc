@@ -100,6 +100,11 @@ class MockPasswordScriptsFetcher
               (override));
 
   MOCK_METHOD(bool, IsScriptAvailable, (const url::Origin&), (const override));
+
+  MOCK_METHOD(base::Value::Dict,
+              GetDebugInformationForInternals,
+              (),
+              (const override));
 };
 
 BulkLeakCheckService* CreateAndUseBulkLeakCheckService(

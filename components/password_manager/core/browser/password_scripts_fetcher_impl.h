@@ -67,6 +67,7 @@ class PasswordScriptsFetcherImpl
   void FetchScriptAvailability(const url::Origin& origin,
                                ResponseCallback callback) override;
   bool IsScriptAvailable(const url::Origin& origin) const override;
+  base::Value::Dict GetDebugInformationForInternals() const override;
 
 #if defined(UNIT_TEST)
   void make_cache_stale_for_testing() {

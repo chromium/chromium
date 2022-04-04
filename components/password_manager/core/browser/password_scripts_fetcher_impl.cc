@@ -286,4 +286,12 @@ void PasswordScriptsFetcherImpl::RunResponseCallback(
   std::move(callback).Run(IsScriptAvailable(origin));
 }
 
+base::Value::Dict PasswordScriptsFetcherImpl::GetDebugInformationForInternals()
+    const {
+  base::Value::Dict result;
+  result.Set("engine", "gstatic lookup");
+  result.Set("script_list_url", scripts_list_url_);
+  return result;
+}
+
 }  // namespace password_manager
