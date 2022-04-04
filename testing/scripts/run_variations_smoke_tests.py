@@ -255,7 +255,10 @@ def _run_tests(work_dir, session_manager, *args):
     if not _confirm_new_seed_downloaded(user_data_dir, path_chromedriver,
                                         chrome_options):
       logging.error('Failed to fetch variations seed on initial run')
-      return 1
+      # For MacOS, there is sometime the test fail to download seed on initial
+      # run (crbug/1312393)
+      if _get_platform() != 'mac':
+        return 1
 
     # Inject the test seed.
     # This is a path as fallback when |seed_helper.load_test_seed_from_file()|

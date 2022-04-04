@@ -3216,11 +3216,6 @@
       },
     },
   },
-  'variations_smoke_tests': {
-    'remove_from': [
-      'mac-chrome', # https://crbug.com/1312393
-    ],
-  },
   'video_decode_accelerator_gl_unittest': {
     'remove_from': [
       # Windows Intel doesn't have the GL extensions to support this test.
