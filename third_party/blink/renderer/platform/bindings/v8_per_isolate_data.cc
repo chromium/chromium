@@ -33,6 +33,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
+#include "components/crash/core/common/crash_key.h"
 #include "gin/public/v8_idle_task_runner.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/blink.h"
@@ -422,6 +423,11 @@ void ReportV8FatalError(const char* location, const char* message) {
 }
 
 void ReportV8OOMError(const char* location, bool is_js_heap) {
+  if (location) {
+    static crash_reporter::CrashKeyString<64> location_key("v8-oom-location");
+    location_key.Set(location);
+  }
+
   LOG(ERROR) << "V8 " << (is_js_heap ? "javascript" : "process") << " OOM: ("
              << location << ").";
   OOM_CRASH(0);
