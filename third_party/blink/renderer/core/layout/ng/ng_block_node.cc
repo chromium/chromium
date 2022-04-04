@@ -543,11 +543,14 @@ const NGLayoutResult* NGBlockNode::Layout(
   // - A child changed scrollbars causing our size to change (shrink-to-fit).
   //
   // Skip this part if side-effects aren't allowed, though. Calling
-  // ClearLayoutResults() when in this state is forbidden.
+  // ClearLayoutResults() when in this state is forbidden. Also skip it if we
+  // are resuming layout after a fragmentainer break. Changing the intrinsic
+  // inline-size halfway through layout of a node doesn't make sense.
   NGBoxStrut scrollbars_after = ComputeScrollbars(constraint_space, *this);
   if ((scrollbars_before != scrollbars_after ||
        inline_size_before != fragment_geometry->border_box_size.inline_size) &&
-      !NGDisableSideEffectsScope::IsDisabled()) {
+      !NGDisableSideEffectsScope::IsDisabled() &&
+      !IsResumingLayout(break_token)) {
     bool freeze_horizontal = false, freeze_vertical = false;
     // If we're in a measure pass, freeze both scrollbars right away, to avoid
     // quadratic time complexity for deeply nested flexboxes.
