@@ -103,6 +103,24 @@ ci.gpu.mac_builder(
 ci.gpu.windows_builder(
     name = "GPU Win x64 Builder",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "use_clang_coverage",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+        build_gs_bucket = "chromium-gpu-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Windows",
     ),
@@ -218,6 +236,25 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Win10 x64 Release (NVIDIA)",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "use_clang_coverage",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+        build_gs_bucket = "chromium-gpu-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Windows",
     ),
