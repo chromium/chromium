@@ -42,12 +42,21 @@ class BrowserManagerFake : public BrowserManager {
                      component_updater::ComponentUpdateService* update_service)
       : BrowserManager(std::move(browser_loader), update_service) {}
   ~BrowserManagerFake() override = default;
+
+  // BrowserManager:
   void Start(
       browser_util::InitialBrowserAction initial_browser_action) override {
     ++start_count_;
+    initial_browser_action_ = initial_browser_action.action;
     SetState(State::STARTING);
   }
-  int start_count() { return start_count_; }
+
+  int start_count() const { return start_count_; }
+
+  mojom::InitialBrowserAction initial_browser_action() const {
+    return initial_browser_action_;
+  }
+
   void SetStatePublic(State state) { SetState(state); }
 
   // Make the State enum publicly available.
@@ -55,6 +64,7 @@ class BrowserManagerFake : public BrowserManager {
 
  private:
   int start_count_ = 0;
+  mojom::InitialBrowserAction initial_browser_action_;
 };
 
 }  // namespace
@@ -248,6 +258,71 @@ TEST_F(BrowserManagerTest, NewWindowReloadsWhenUpdateAvailable) {
       });
   fake_browser_manager_->NewWindow(/*incongnito=*/false,
                                    /*should_trigger_session_restore=*/false);
+}
+
+TEST_F(BrowserManagerTest, LacrosKeepAliveDoesNotBlockRestart) {
+  AddRegularUser("user@test.com");
+  browser_util::SetProfileMigrationCompletedForUser(
+      local_state_.Get(), ash::ProfileHelper::Get()
+                              ->GetUserByProfile(&testing_profile_)
+                              ->username_hash());
+  EXPECT_TRUE(browser_util::IsLacrosEnabled());
+  EXPECT_TRUE(browser_util::IsLacrosAllowedToLaunch());
+
+  using State = BrowserManagerFake::State;
+  EXPECT_EQ(fake_browser_manager_->start_count(), 0);
+
+  // Attempt to mount the Lacros image. Will not start as it does not meet the
+  // automatic start criteria.
+  EXPECT_CALL(*browser_loader_, Load(_))
+      .WillOnce([](BrowserLoader::LoadCompletionCallback callback) {
+        std::move(callback).Run(base::FilePath("/run/lacros"),
+                                browser_util::LacrosSelection::kRootfs);
+      });
+  fake_browser_manager_->InitializeAndStart();
+  EXPECT_EQ(fake_browser_manager_->start_count(), 0);
+
+  fake_browser_manager_->SetStatePublic(State::UNAVAILABLE);
+  EXPECT_EQ(fake_browser_manager_->start_count(), 0);
+
+  // Creating a ScopedKeepAlive does not start Lacros.
+  std::unique_ptr<BrowserManager::ScopedKeepAlive> keep_alive =
+      fake_browser_manager_->KeepAlive(BrowserManager::Feature::kTestOnly);
+  EXPECT_EQ(fake_browser_manager_->start_count(), 0);
+
+  // Simulate a Lacros termination, keep alive should launch Lacros in a
+  // windowless state.
+  auto simulate_lacros_termination = [&]() {
+    fake_browser_manager_->SetStatePublic(State::TERMINATING);
+    fake_browser_manager_->OnLacrosChromeTerminated();
+  };
+  simulate_lacros_termination();
+  EXPECT_EQ(fake_browser_manager_->start_count(), 1);
+  EXPECT_EQ(fake_browser_manager_->initial_browser_action(),
+            mojom::InitialBrowserAction::kDoNotOpenWindow);
+
+  // Terminating again causes keep alive to again start Lacros in a windowless
+  // state.
+  simulate_lacros_termination();
+  EXPECT_EQ(fake_browser_manager_->start_count(), 2);
+  EXPECT_EQ(fake_browser_manager_->initial_browser_action(),
+            mojom::InitialBrowserAction::kDoNotOpenWindow);
+
+  // Request a relaunch. Keep alive should not start Lacros in a windowless
+  // state but Lacros should instead start with the kRestoreLastSession action.
+  fake_browser_manager_->set_relaunch_requested_for_testing(true);
+  simulate_lacros_termination();
+  EXPECT_EQ(fake_browser_manager_->start_count(), 3);
+  EXPECT_EQ(fake_browser_manager_->initial_browser_action(),
+            mojom::InitialBrowserAction::kRestoreLastSession);
+
+  // Resetting the relaunch requested bit should cause keep alive to start
+  // Lacros in a windowless state.
+  fake_browser_manager_->set_relaunch_requested_for_testing(false);
+  simulate_lacros_termination();
+  EXPECT_EQ(fake_browser_manager_->start_count(), 4);
+  EXPECT_EQ(fake_browser_manager_->initial_browser_action(),
+            mojom::InitialBrowserAction::kDoNotOpenWindow);
 }
 
 }  // namespace crosapi
