@@ -9,13 +9,7 @@
 #include "content/public/test/browser_test_utils.h"
 
 #if defined(USE_AURA)
-// TODO(crbug.com/1311383) Fix flakiness and reenable the test.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_EventCounts DISABLED_EventCounts
-#else
-#define MAYBE_EventCounts EventCounts
-#endif
-IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, MAYBE_EventCounts) {
+IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, EventCountsForTapOnScreen) {
   LoadHTML(R"HTML(
     <p>Sample website</p>
     <script type="text/javascript">
@@ -38,15 +32,12 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, MAYBE_EventCounts) {
   content::SimulateTouchEventAt(web_contents(), ui::ET_TOUCH_RELEASED,
                                 gfx::Point(30, 60));
 
-  // Simulate clicks.
-  content::SimulateMouseClick(web_contents(), 0,
-                              blink::WebMouseEvent::Button::kLeft);
-  content::SimulateMouseClick(web_contents(), 0,
-                              blink::WebMouseEvent::Button::kLeft);
-
-  while (EvalJs(web_contents(), "window.eventCounts.click").ExtractInt() < 3 &&
-         EvalJs(web_contents(), "window.eventCounts.pointerup").ExtractInt() <
-             3) {
+  // Wait until we receive the simulated events in the event handlers to check
+  // the PerformanceObserver.
+  while (
+      EvalJs(web_contents(), "window.eventCounts.click").ExtractInt() < 1 ||
+      EvalJs(web_contents(), "window.eventCounts.pointerup").ExtractInt() < 1 ||
+      EvalJs(web_contents(), "window.eventCounts.touchend").ExtractInt() < 1) {
     base::RunLoop run_loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
@@ -77,11 +68,11 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, MAYBE_EventCounts) {
       EvalJs(web_contents(), "window.performance.eventCounts.get('touchend')")
           .ExtractInt();
 
-  EXPECT_EQ(expected_pointerdown, 3);
-  EXPECT_EQ(expected_pointerup, 3);
-  EXPECT_EQ(expected_mousedown, 3);
-  EXPECT_EQ(expected_mouseup, 3);
-  EXPECT_EQ(expected_click, 3);
+  EXPECT_EQ(expected_pointerdown, 1);
+  EXPECT_EQ(expected_pointerup, 1);
+  EXPECT_EQ(expected_mousedown, 1);
+  EXPECT_EQ(expected_mouseup, 1);
+  EXPECT_EQ(expected_click, 1);
   EXPECT_EQ(expected_touchstart, 1);
   EXPECT_EQ(expected_touchend, 1);
 }
