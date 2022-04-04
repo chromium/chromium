@@ -7,6 +7,7 @@
 #include <lib/sys/cpp/service_directory.h>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/logging.h"
 #include "fuchsia/engine/fidl/chromium/internal/cpp/fidl.h"
 
@@ -42,8 +43,10 @@ void ContextProviderImpl::Create(
     }
   }
 
-  zx_status_t result = web_instance_host_.CreateInstanceForContext(
-      std::move(params), std::move(services_request));
+  zx_status_t result =
+      web_instance_host_.CreateInstanceForContextWithCopiedArgs(
+          std::move(params), std::move(services_request),
+          *base::CommandLine::ForCurrentProcess());
 
   if (result == ZX_OK) {
     // Route the fuchsia.web.Context request to the new Component.

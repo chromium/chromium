@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/fuchsia/file_utils.h"
@@ -143,8 +144,9 @@ void WebContentRunner::EnsureWebInstanceAndContext() {
 
 void WebContentRunner::CreateWebInstanceAndContext(
     fuchsia::web::CreateContextParams params) {
-  web_instance_host_->CreateInstanceForContext(
-      std::move(params), web_instance_services_.NewRequest());
+  web_instance_host_->CreateInstanceForContextWithCopiedArgs(
+      std::move(params), web_instance_services_.NewRequest(),
+      *base::CommandLine::ForCurrentProcess());
   zx_status_t result = fdio_service_connect_at(
       web_instance_services_.channel().get(), fuchsia::web::Context::Name_,
       context_.NewRequest().TakeChannel().release());

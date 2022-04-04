@@ -75,8 +75,9 @@ class WebInstanceHostIntegrationTest : public testing::Test {
     CHECK(!context_);
 
     fuchsia::io::DirectoryHandle web_instance_services;
-    web_instance_host_.CreateInstanceForContext(
-        std::move(context_params), web_instance_services.NewRequest());
+    web_instance_host_.CreateInstanceForContextWithCopiedArgs(
+        std::move(context_params), web_instance_services.NewRequest(),
+        *base::CommandLine::ForCurrentProcess());
     web_instance_services_ = std::make_unique<sys::ServiceDirectory>(
         std::move(web_instance_services));
 

@@ -247,12 +247,14 @@ int main(int argc, char** argv) {
     }
     fidl::InterfaceRequest<fuchsia::io::Directory> services_request;
     auto services = sys::ServiceDirectory::CreateWithRequest(&services_request);
-    zx_status_t result = web_instance_host->CreateInstanceForContext(
-        std::move(create_context_params), std::move(services_request));
+    zx_status_t result =
+        web_instance_host->CreateInstanceForContextWithCopiedArgs(
+            std::move(create_context_params), std::move(services_request),
+            base::CommandLine(additional_args));
     if (result == ZX_OK) {
       services->Connect(context.NewRequest());
     } else {
-      ZX_LOG(ERROR, result) << "CreateInstanceForContext failed";
+      ZX_LOG(ERROR, result) << "CreateInstanceForContextWithCopiedArgs failed";
       return 2;
     }
   }

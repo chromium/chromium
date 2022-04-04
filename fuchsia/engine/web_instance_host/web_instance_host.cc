@@ -535,9 +535,10 @@ WebInstanceHost::WebInstanceHost() {
 
 WebInstanceHost::~WebInstanceHost() = default;
 
-zx_status_t WebInstanceHost::CreateInstanceForContext(
+zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgs(
     fuchsia::web::CreateContextParams params,
-    fidl::InterfaceRequest<fuchsia::io::Directory> services_request) {
+    fidl::InterfaceRequest<fuchsia::io::Directory> services_request,
+    base::CommandLine extra_args) {
   DCHECK(services_request);
 
   if (!params.has_service_directory()) {
@@ -553,8 +554,10 @@ zx_status_t WebInstanceHost::CreateInstanceForContext(
     return ZX_ERR_INVALID_ARGS;
   }
 
-  // Base the new Component's command-line on this process' command-line.
-  base::CommandLine launch_args(*base::CommandLine::ForCurrentProcess());
+  // Initialize with preliminary arguments.
+  base::CommandLine launch_args(std::move(extra_args));
+
+  // Remove this argument, if it's provided.
   launch_args.RemoveSwitch(switches::kContextProvider);
 
   fuchsia::sys::LaunchInfo launch_info;
