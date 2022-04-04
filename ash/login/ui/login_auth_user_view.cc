@@ -1235,74 +1235,37 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
       login_views_utils::WrapViewForPreferredSize(
           std::move(padding_below_user_view));
 
-  // Add views in tabbing order; they are rendered in a different order below.
-  views::View* wrapped_password_view_ptr =
-      AddChildView(std::move(wrapped_password_view));
-  views::View* wrapped_online_sign_in_message_view_ptr =
-      AddChildView(std::move(wrapped_online_sign_in_message_view));
-  views::View* wrapped_disabled_auth_message_view_ptr =
-      AddChildView(std::move(wrapped_disabled_auth_message_view));
-  views::View* wrapped_locked_tpm_message_view_ptr =
-      AddChildView(std::move(wrapped_locked_tpm_message_view));
-  views::View* wrapped_pin_input_view_ptr =
-      AddChildView(std::move(wrapped_pin_input_view));
-  views::View* wrapped_pin_view_ptr = AddChildView(std::move(wrapped_pin_view));
-  views::View* wrapped_pin_password_toggle_view_ptr =
-      AddChildView(std::move(wrapped_pin_password_toggle_view));
-  views::View* wrapped_fingerprint_view_ptr;
-  views::View* wrapped_auth_factors_view_ptr;
-  if (smart_lock_ui_revamp_enabled_) {
-    wrapped_auth_factors_view_ptr =
-        AddChildView(std::move(wrapped_auth_factors_view));
-  } else {
-    wrapped_fingerprint_view_ptr =
-        AddChildView(std::move(wrapped_fingerprint_view));
-  }
-  views::View* wrapped_challenge_response_view_ptr =
-      AddChildView(std::move(wrapped_challenge_response_view));
-  views::View* wrapped_user_view_ptr =
-      AddChildView(std::move(wrapped_user_view));
-  views::View* wrapped_padding_below_password_view_ptr =
-      AddChildView(std::move(wrapped_padding_below_password_view));
-  views::View* wrapped_padding_below_user_view_ptr =
-      AddChildView(std::move(wrapped_padding_below_user_view));
-
-  // Use views::GridLayout instead of views::BoxLayout because views::BoxLayout
-  // lays out children according to the view->children order.
-  views::GridLayout* grid_layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-  views::ColumnSet* column_set = grid_layout->AddColumnSet(0);
-  column_set->AddColumn(views::GridLayout::CENTER, views::GridLayout::LEADING,
-                        0 /*resize_percent*/,
-                        views::GridLayout::ColumnSize::kUsePreferred,
-                        0 /*fixed_width*/, 0 /*min_width*/);
-  auto add_view = [&](views::View* view) {
-    grid_layout->StartRow(0 /*vertical_resize*/, 0 /*column_set_id*/);
-    grid_layout->AddExistingView(view);
-  };
-  auto add_padding = [&](int amount) {
-    grid_layout->AddPaddingRow(0 /*vertical_resize*/, amount /*size*/);
-  };
+  auto* box_layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical,
+      gfx::Insets::TLBR(kDistanceFromTopOfBigUserViewToUserIconDp, 0,
+                        kDistanceFromPinKeyboardToBigUserViewBottomDp, 0)));
+  box_layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 
   // Add views in rendering order.
-  add_padding(kDistanceFromTopOfBigUserViewToUserIconDp);
-  add_view(wrapped_user_view_ptr);
-  add_view(wrapped_padding_below_user_view_ptr);
-  add_view(wrapped_locked_tpm_message_view_ptr);
-  add_view(wrapped_password_view_ptr);
-  add_view(wrapped_online_sign_in_message_view_ptr);
-  add_view(wrapped_disabled_auth_message_view_ptr);
-  add_view(wrapped_pin_input_view_ptr);
-  add_view(wrapped_padding_below_password_view_ptr);
-  add_view(wrapped_pin_view_ptr);
-  add_view(wrapped_pin_password_toggle_view_ptr);
+  auto* user_ptr = AddChildView(std::move(wrapped_user_view));
+  AddChildView(std::move(wrapped_padding_below_user_view));
+  auto* tpm_message_ptr =
+      AddChildView(std::move(wrapped_locked_tpm_message_view));
+  AddChildView(std::move(wrapped_password_view));
+  AddChildView(std::move(wrapped_online_sign_in_message_view));
+  auto* auth_message_ptr =
+      AddChildView(std::move(wrapped_disabled_auth_message_view));
+  AddChildView(std::move(wrapped_pin_input_view));
+  AddChildView(std::move(wrapped_padding_below_password_view));
+  AddChildView(std::move(wrapped_pin_view));
+  AddChildView(std::move(wrapped_pin_password_toggle_view));
   if (smart_lock_ui_revamp_enabled_) {
-    add_view(wrapped_auth_factors_view_ptr);
+    AddChildView(std::move(wrapped_auth_factors_view));
   } else {
-    add_view(wrapped_fingerprint_view_ptr);
+    AddChildView(std::move(wrapped_fingerprint_view));
   }
-  add_view(wrapped_challenge_response_view_ptr);
-  add_padding(kDistanceFromPinKeyboardToBigUserViewBottomDp);
+  auto* challenge_ptr =
+      AddChildView(std::move(wrapped_challenge_response_view));
+
+  // Set up taborder.
+  tpm_message_ptr->InsertAfterInFocusList(auth_message_ptr);
+  user_ptr->InsertAfterInFocusList(challenge_ptr);
 
   // The user needs to be set before SetAuthMethods is called.
   user_view_->UpdateForUser(user, /*animate*/ false);
