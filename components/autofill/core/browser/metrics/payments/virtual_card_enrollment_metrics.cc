@@ -115,6 +115,15 @@ void LogVirtualCardEnrollmentLinkClickedMetric(
       true);
 }
 
+void LogVirtualCardEnrollmentStrikeDatabaseEvent(
+    VirtualCardEnrollmentSource source,
+    VirtualCardEnrollmentStrikeDatabaseEvent strike_event) {
+  base::UmaHistogramEnumeration(
+      "Autofill.VirtualCardEnrollmentStrikeDatabase." +
+          VirtualCardEnrollmentSourceToMetricSuffix(source),
+      strike_event);
+}
+
 std::string VirtualCardEnrollmentBubbleSourceToMetricSuffix(
     VirtualCardEnrollmentBubbleSource source) {
   switch (source) {

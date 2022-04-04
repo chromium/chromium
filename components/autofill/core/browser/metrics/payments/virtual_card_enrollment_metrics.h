@@ -76,6 +76,18 @@ enum class VirtualCardEnrollmentLinkType {
   kMaxValue = VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK,
 };
 
+// Metrics to measure strikes logged or cleared in strike database.
+enum class VirtualCardEnrollmentStrikeDatabaseEvent {
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+
+  // Strike logged as enrollment bubble was not accepted.
+  VIRTUAL_CARD_ENROLLMENT_STRIKE_DATABASE_STRIKE_LOGGED = 0,
+  // All strikes cleared as user accepted virtual card enrollment.
+  VIRTUAL_CARD_ENROLLMENT_STRIKE_DATABASE_STRIKES_CLEARED = 1,
+  kMaxValue = VIRTUAL_CARD_ENROLLMENT_STRIKE_DATABASE_STRIKES_CLEARED,
+};
+
 // GetDetailsForEnrollmentRequest related metrics. Attempts and results should
 // be 1:1 mapping.
 void LogGetDetailsForEnrollmentRequestAttempt(
@@ -119,6 +131,11 @@ void LogVirtualCardEnrollmentBubbleShownMetric(
 void LogVirtualCardEnrollmentLinkClickedMetric(
     VirtualCardEnrollmentLinkType link_type,
     VirtualCardEnrollmentBubbleSource source);
+
+// Virtual card enrollment strike database event metrics.
+void LogVirtualCardEnrollmentStrikeDatabaseEvent(
+    VirtualCardEnrollmentSource source,
+    VirtualCardEnrollmentStrikeDatabaseEvent strike_event);
 
 // Helper function used to convert VirtualCardEnrollmentBubbleSource enum to
 // name suffix.

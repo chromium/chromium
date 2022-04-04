@@ -3624,6 +3624,21 @@ chromium-metrics-reviews@google.com.
       variants="Autofill.VirtualCardEnrollmentSource"/>
 </histogram>
 
+<histogram
+    name="Autofill.VirtualCardEnrollmentStrikeDatabase.{EnrollmentSource}"
+    enum="AutofillVirtualCardEnrollmentStrikeDatabaseEvent"
+    expires_after="2023-04-01">
+  <owner>alexandertekle@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logged when a strike is registered in the virtual card enrollment strike
+    database because a user rejects the bubble, or when strikes are cleared
+    because the user accepted enrollment.
+  </summary>
+  <token key="EnrollmentSource"
+      variants="Autofill.VirtualCardEnrollmentSource"/>
+</histogram>
+
 <histogram name="Autofill.VirtualCardManualFallbackBubble.FieldClicked"
     enum="AutofillVirtualCardManualFallbackBubbleFieldClicked"
     expires_after="2023-04-01">

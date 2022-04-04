@@ -7624,6 +7624,11 @@ others/histograms.xml -->
   <int value="5" label="User cancelled the bubble"/>
 </enum>
 
+<enum name="AutofillVirtualCardEnrollmentStrikeDatabaseEvent">
+  <int value="0" label="One strike logged"/>
+  <int value="1" label="All strikes cleared"/>
+</enum>
+
 <enum name="AutofillVirtualCardManualFallbackBubbleFieldClicked">
   <int value="0" label="Card number"/>
   <int value="1" label="Expiration month"/>
