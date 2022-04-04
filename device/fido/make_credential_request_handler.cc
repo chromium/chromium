@@ -948,8 +948,8 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
   // Only Windows cares about |authenticator_attachment| on the request.
   request->authenticator_attachment = options_.authenticator_attachment;
 
-  const absl::optional<AuthenticatorSupportedOptions>& auth_options =
-      authenticator->Options();
+  const absl::optional<AuthenticatorSupportedOptions>&
+      auth_options_empty_on_win = authenticator->Options();
   switch (options_.resident_key) {
     case ResidentKeyRequirement::kRequired:
       request->resident_key_required = true;
@@ -963,10 +963,11 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
           // Windows does not yet support rk=preferred.
           authenticator->GetType() != FidoAuthenticator::Type::kWinNative &&
 #endif
-          auth_options && auth_options->supports_resident_key &&
+          auth_options_empty_on_win &&
+          auth_options_empty_on_win->supports_resident_key &&
           !authenticator->DiscoverableCredentialStorageFull() &&
           (observer()->SupportsPIN() ||
-           auth_options->user_verification_availability ==
+           auth_options_empty_on_win->user_verification_availability ==
                AuthenticatorSupportedOptions::UserVerificationAvailability::
                    kSupportedAndConfigured);
       break;
@@ -981,9 +982,10 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
       request->large_blob_key = true;
       break;
     case LargeBlobSupport::kPreferred:
-      request->large_blob_key = auth_options &&
-                                auth_options->supports_large_blobs &&
-                                request->resident_key_required;
+      request->large_blob_key =
+          auth_options_empty_on_win &&
+          auth_options_empty_on_win->supports_large_blobs &&
+          request->resident_key_required;
       break;
     case LargeBlobSupport::kNotRequested:
       request->large_blob_key = false;
@@ -992,7 +994,7 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
 
   if (!options_.make_u2f_api_credential &&
       (request->resident_key_required ||
-       (auth_options && auth_options->always_uv))) {
+       (auth_options_empty_on_win && auth_options_empty_on_win->always_uv))) {
     request->user_verification = UserVerificationRequirement::kRequired;
   } else {
     request->user_verification = options_.user_verification;
@@ -1009,12 +1011,13 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
     request->hmac_secret = false;
   }
 
-  if (request->large_blob_key && !auth_options->supports_large_blobs) {
+  if (request->large_blob_key && auth_options_empty_on_win &&
+      !auth_options_empty_on_win->supports_large_blobs) {
     request->large_blob_key = false;
   }
 
-  if (request->min_pin_length_requested &&
-      !auth_options->supports_min_pin_length_extension) {
+  if (request->min_pin_length_requested && auth_options_empty_on_win &&
+      !auth_options_empty_on_win->supports_min_pin_length_extension) {
     request->min_pin_length_requested = false;
   }
 
