@@ -4346,62 +4346,8 @@
       'GPU FYI Win Builder' : {},
       'GPU FYI Win x64 Builder' : {},
       'GPU FYI Win x64 Builder (dbg)' : {},
-      'GPU FYI Win x64 Builder (dbg) (reclient shadow)' : {
-        'additional_compile_targets': [
-          'angle_unittests',
-          'gl_tests',
-          'gl_unittests',
-          'gles2_conform_test',
-          'gpu_unittests',
-          'swiftshader_unittests',
-          'telemetry_gpu_integration_test',
-          'vulkan_tests',
-          'xr_browser_tests'
-        ],
-      },
-      'GPU FYI Win x64 Builder (reclient shadow)' : {
-        'additional_compile_targets': [
-          'angle_unittests',
-          'browser_tests',
-          'command_buffer_perftests',
-          'gl_tests',
-          'gl_unittests',
-          'gles2_conform_test',
-          'gpu_unittests',
-          'rendering_representative_perf_tests',
-          'swiftshader_unittests',
-          'telemetry_gpu_integration_test',
-          'vulkan_tests',
-          'xr_browser_tests'
-        ],
-      },
       'GPU FYI Win x64 DX12 Vulkan Builder': {},
       'GPU FYI Win x64 DX12 Vulkan Builder (dbg)': {},
-      'GPU FYI Win x64 DX12 Vulkan Builder (dbg) (reclient shadow)': {
-        'additional_compile_targets': [
-          'telemetry_gpu_integration_test'
-        ],
-      },
-      'GPU FYI Win x64 DX12 Vulkan Builder (reclient shadow)': {
-        'additional_compile_targets': [
-          'telemetry_gpu_integration_test'
-        ],
-      },
-      'GPU FYI XR Win x64 Builder (reclient shadow)': {
-        'additional_compile_targets': [
-          'vr_perf_tests'
-        ],
-      },
-      'GPU Win x64 Builder (dbg) (reclient shadow)': {
-        'additional_compile_targets': [
-          'angle_unittests',
-          'browser_tests',
-          'gl_tests',
-          'gl_unittests',
-          'telemetry_gpu_integration_test',
-          'xr_browser_tests'
-        ],
-      },
       'Lacros FYI x64 Release (AMD)': {
         'os_type': 'lacros',
         'browser_config': 'release',
