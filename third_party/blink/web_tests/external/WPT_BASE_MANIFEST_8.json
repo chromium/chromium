@@ -1477,6 +1477,13 @@
         {}
        ]
       ],
+      "fit-content-with-spanner-and-auto-scrollbar-sibling.html": [
+       "105da399b196f701996c533530f9cae4eee98e06",
+       [
+        null,
+        {}
+       ]
+      ],
       "multicol-block-in-inline-crash.html": [
        "037b558ac0be08da6dfa6868b06e7a03e44031de",
        [
@@ -81057,7 +81064,7 @@
        ]
       ],
       "multi-line-row-flex-fragmentation-016.html": [
-       "fbd557cc3c3749b26847eefb34ce2d3e7e253452",
+       "f723663ac8d56c56e5fc632f1de4b9a3c97b4262",
        [
         null,
         [
@@ -81513,6 +81520,58 @@
       ],
       "multi-line-row-flex-fragmentation-051.html": [
        "0f826cf3c588ef0f7ab3505d149693314457b332",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multi-line-row-flex-fragmentation-052.html": [
+       "8f5a612f5d39332f4ef94c5689c63b6a15884f6b",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multi-line-row-flex-fragmentation-053.html": [
+       "f42d5784830af75fe66965567a8694ddaf2ca30c",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multi-line-row-flex-fragmentation-054.html": [
+       "9752217ba432e2879c1e532a428e84d3235a1109",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multi-line-row-flex-fragmentation-055.html": [
+       "39d2c6434d31c8cf8f3c9629120a5e058ddca4f1",
        [
         null,
         [
@@ -82436,6 +82495,19 @@
       ],
       "single-line-row-flex-fragmentation-028.html": [
        "4d0b5e52cd38e3d2a91cd9a3c865a4dc64d4556c",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "single-line-row-flex-fragmentation-029.html": [
+       "5d7e72ddf00810d7c73aa5c1d5f316138416a432",
        [
         null,
         [
@@ -231299,6 +231371,19 @@
        ]
       },
       "the-embed-element": {
+       "embed-hidden-attribute.html": [
+        "18d3897df9c041b9c3e564cbb21b8ecf3d136895",
+        [
+         null,
+         [
+          [
+           "/html/semantics/embedded-content/the-embed-element/embed-hidden-attribute-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "embed-represent-nothing-01.html": [
         "e66bd4a90698e2d9951ad32b8e8bdc8c851a508d",
         [
@@ -288729,7 +288814,7 @@
       ]
      },
      "round-function-expected.txt": [
-      "0cb255c5a60ee90fa85d0794b012a62623070277",
+      "9283f175c3735927953fd4dd7144a269d039afc6",
       []
      ],
      "round-mod-rem-computed-expected.txt": [
@@ -301173,10 +301258,6 @@
      "2747a04b34f427b4a27a536dcfcdeae800d652b0",
      []
     ],
-    "gamepad-default-feature-policy.https.sub-expected.txt": [
-     "5d94b3548a3663371ef097069e9f61a98ae44497",
-     []
-    ],
     "gamepad-secure-context-expected.txt": [
      "7a5d798d7734c280a42a57dabae0f161716b6b8f",
      []
@@ -312264,6 +312345,10 @@
        ]
       },
       "the-embed-element": {
+       "embed-hidden-attribute-ref.html": [
+        "4b3d0feceb6997d9f3230efa6ece7367455c28cc",
+        []
+       ],
        "embed-iframe.html": [
         "f9b1bfdb57f62ca83a9b7a5052769bf700725399",
         []
@@ -397810,7 +397895,7 @@
       ]
      ],
      "round-function.html": [
-      "b1e950efe7238fcc08b9423dca88e51383f8f7d3",
+      "dd4cfbea8d34e8ea7f16b32a9b69210d9a966f8e",
       [
        null,
        {}
@@ -435876,7 +435961,7 @@
    },
    "gamepad": {
     "gamepad-default-feature-policy.https.sub.html": [
-     "347f40b2a4e56ea11d743270512dadfdafe67983",
+     "f4b4d7594713aab397e622323761186d84f9007b",
      [
       null,
       {}
