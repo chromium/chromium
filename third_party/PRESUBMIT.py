@@ -65,7 +65,7 @@ def _CheckThirdPartyReadmesUpdated(input_api, output_api):
         not local_path.startswith('third_party' + input_api.os_path.sep +
                                   'feed_library' + input_api.os_path.sep) and
         not local_path.startswith('third_party' + input_api.os_path.sep +
-                                  'mojo' + input_api.os_path.sep) and
+                                  'ipcz' + input_api.os_path.sep) and
         # TODO(danakj): We should look for the README.chromium file in
         # third_party/rust/CRATE_NAME/vVERSION/.
         not local_path.startswith('third_party' + input_api.os_path.sep +

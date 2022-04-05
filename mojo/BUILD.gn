@@ -29,6 +29,7 @@ group("tests") {
     "//ipc:ipc_tests",
     "//mojo/public/tools:mojo_python_unittests",
     "//services/service_manager/tests",
+    "//third_party/ipcz/src:ipcz_tests",
   ]
 }
 

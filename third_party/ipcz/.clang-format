@@ -1,0 +1,11 @@
+BasedOnStyle: Chromium
+Standard: Cpp11
+ColumnLimit: 80
+
+MacroBlockBegin: "^\
+IPCZ_MSG_BEGIN\
+$"
+
+MacroBlockEnd: "^\
+IPCZ_MSG_END\
+$"
