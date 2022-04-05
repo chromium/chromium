@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/modules/animationworklet/worklet_animation_effect_timings.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 namespace blink {
 
