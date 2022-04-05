@@ -296,10 +296,10 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
     const size_t number_of_buffers_;
     gfx::Size frame_buffer_size_;
     // This deque should contains the incremental damage of the last N swapped
-    // frames where N is at most `capabilities_.number_of_buffers - 1`. Each
-    // rect represents from the incremental damage from the previous frame; note
-    // if there is no previous frame (eg first swap after a `Reshape`), the
-    // damage should be the full frame buffer.
+    // frames where N is at most `number_of_buffers_`. Each rect represents
+    // from the incremental damage from the previous frame; note if there is no
+    // previous frame (eg first swap after a `Reshape`), the damage should be
+    // the full frame buffer.
     base::circular_deque<gfx::Rect> damage_between_frames_;
     // Result of `GetCurrentFramebufferDamage` to optimize consecutive calls.
     mutable absl::optional<gfx::Rect> cached_current_damage_;

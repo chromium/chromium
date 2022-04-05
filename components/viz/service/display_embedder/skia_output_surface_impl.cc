@@ -118,7 +118,7 @@ void SkiaOutputSurfaceImpl::FrameBufferDamageTracker::SwappedWithDamage(
     const gfx::Rect& damage) {
   damage_between_frames_.push_back(damage);
   // Keep at most `number_of_buffers_` frames.
-  if (damage_between_frames_.size() >= number_of_buffers_) {
+  if (damage_between_frames_.size() > number_of_buffers_) {
     damage_between_frames_.pop_front();
   }
   cached_current_damage_.reset();
@@ -146,14 +146,17 @@ SkiaOutputSurfaceImpl::FrameBufferDamageTracker::GetCurrentFrameBufferDamage()
 
 gfx::Rect SkiaOutputSurfaceImpl::FrameBufferDamageTracker::
     ComputeCurrentFrameBufferDamage() const {
-  // First few frames after `FrameBuffersChanged`.
-  if (damage_between_frames_.size() < number_of_buffers_ - 1) {
+  // First `number_of_buffers_` frames has full frame damage.
+  if (damage_between_frames_.size() < number_of_buffers_) {
     return gfx::Rect(frame_buffer_size_);
   }
 
+  // Subsequent frames has `number_of_buffers_ - 1` frames of incremental
+  // damange unioned. Note index 0 is specifically skipped over its the damage
+  // that's last drawn into that's drawn into the current frame buffer.
   gfx::Rect result;
-  for (auto& damage : damage_between_frames_) {
-    result.Union(damage);
+  for (size_t i = 1; i < damage_between_frames_.size(); ++i) {
+    result.Union(damage_between_frames_[i]);
   }
   return result;
 }
