@@ -339,14 +339,9 @@ IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest, MAYBE_MouseEventCoordinates) {
 
 // Event dispatch appears to be flaky on Android and Cast Audio Linux bots.
 // SendMouseEvent succeeds but event is not consumed by anything.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMECAST)
-#define MAYBE_MouseEventCoordinatesWithZoom \
-  DISABLED_MouseEventCoordinatesWithZoom
-#else
-#define MAYBE_MouseEventCoordinatesWithZoom MouseEventCoordinatesWithZoom
-#endif
+// TODO(https://crbug.com/1313348): This is also flaky on other bots.
 IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest,
-                       MAYBE_MouseEventCoordinatesWithZoom) {
+                       DISABLED_MouseEventCoordinatesWithZoom) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL test_url = embedded_test_server()->GetURL("/devtools/zoom.html");
   NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
