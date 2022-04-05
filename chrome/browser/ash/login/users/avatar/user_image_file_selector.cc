@@ -54,6 +54,12 @@ UserImageFileSelector::~UserImageFileSelector() {
 void UserImageFileSelector::SelectFile(
     base::OnceCallback<void(const base::FilePath&)> selected_cb,
     base::OnceCallback<void(void)> canceled_cb) {
+  // Early return if the select file dialog is already active.
+  if (select_file_dialog_) {
+    std::move(canceled_cb).Run();
+    return;
+  }
+
   selected_cb_ = std::move(selected_cb);
   canceled_cb_ = std::move(canceled_cb);
   select_file_dialog_ = ui::SelectFileDialog::Create(
@@ -83,11 +89,14 @@ void UserImageFileSelector::FileSelected(const base::FilePath& path,
                                          int index,
                                          void* params) {
   std::move(selected_cb_).Run(path);
+  select_file_dialog_.reset();
 }
 
 void UserImageFileSelector::FileSelectionCanceled(void* params) {
   if (!canceled_cb_.is_null())
     std::move(canceled_cb_).Run();
+
+  select_file_dialog_.reset();
 }
 
 }  // namespace ash
