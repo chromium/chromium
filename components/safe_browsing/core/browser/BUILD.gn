@@ -123,6 +123,12 @@ source_set("referrer_chain_provider") {
   ]
 }
 
+source_set("sync_observer") {
+  sources = [ "safe_browsing_sync_observer.h" ]
+
+  deps = [ "//base" ]
+}
+
 source_set("token_fetcher") {
   sources = [
     "safe_browsing_token_fetch_tracker.cc",

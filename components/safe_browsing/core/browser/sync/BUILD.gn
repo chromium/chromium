@@ -8,12 +8,15 @@ source_set("sync") {
   sources = [
     "safe_browsing_primary_account_token_fetcher.cc",
     "safe_browsing_primary_account_token_fetcher.h",
+    "safe_browsing_sync_observer_impl.cc",
+    "safe_browsing_sync_observer_impl.h",
     "sync_utils.cc",
     "sync_utils.h",
   ]
 
   deps = [
     "//base",
+    "//components/safe_browsing/core/browser:sync_observer",
     "//components/safe_browsing/core/browser:token_fetcher",
     "//components/signin/public/identity_manager",
     "//components/sync/driver",
@@ -25,6 +28,7 @@ source_set("unittests") {
   testonly = true
   sources = [
     "safe_browsing_primary_account_token_fetcher_unittest.cc",
+    "safe_browsing_sync_observer_impl_unittest.cc",
     "sync_utils_unittest.cc",
   ]
 
