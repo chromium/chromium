@@ -96,7 +96,7 @@ void SubAppsServiceImpl::CreateIfAllowed(
     return;
   }
 
-  // The object is bound to the lifetime of |render_frame_host| and the mojo
+  // The object is bound to the lifetime of `render_frame_host` and the mojo
   // connection. See DocumentService for details.
   new SubAppsServiceImpl(render_frame_host, std::move(receiver));
 }
@@ -104,7 +104,7 @@ void SubAppsServiceImpl::CreateIfAllowed(
 void SubAppsServiceImpl::Add(const std::string& install_path,
                              AddCallback result_callback) {
   // Verify that the calling app is installed itself. This check is done here
-  // and not in |CreateIfAllowed| because of a potential race between doing the
+  // and not in `CreateIfAllowed` because of a potential race between doing the
   // check there and then running the current function, and the parent app being
   // installed/uninstalled.
   absl::optional<AppId> parent_app_id = GetAppId(render_frame_host());
@@ -122,7 +122,7 @@ void SubAppsServiceImpl::Add(const std::string& install_path,
 }
 
 void SubAppsServiceImpl::List(ListCallback result_callback) {
-  // Verify that the calling app is installed itself (cf. |Add|).
+  // Verify that the calling app is installed itself (cf. `Add`).
   absl::optional<AppId> parent_app_id = GetAppId(render_frame_host());
   if (!parent_app_id.has_value()) {
     return std::move(result_callback)
@@ -147,11 +147,9 @@ void SubAppsServiceImpl::List(ListCallback result_callback) {
 
 void SubAppsServiceImpl::Remove(const std::string& unhashed_app_id,
                                 RemoveCallback result_callback) {
-  // Verify that the calling app is installed itself (cf. |Add|).
-  // TODO(isandrk, 1310727): Rename parent_app_id to calling_app_id (here and
-  // elsewhere in the file - also in the browsertest).
-  absl::optional<AppId> parent_app_id = GetAppId(render_frame_host());
-  if (!parent_app_id.has_value()) {
+  // Verify that the calling app is installed itself (cf. `Add`).
+  absl::optional<AppId> calling_app_id = GetAppId(render_frame_host());
+  if (!calling_app_id.has_value()) {
     return std::move(result_callback).Run(SubAppsServiceResult::kFailure);
   }
 
@@ -161,19 +159,19 @@ void SubAppsServiceImpl::Remove(const std::string& unhashed_app_id,
     return std::move(result_callback).Run(SubAppsServiceResult::kFailure);
   }
 
-  AppId app_id = GenerateAppIdFromUnhashed(unhashed_app_id);
+  AppId sub_app_id = GenerateAppIdFromUnhashed(unhashed_app_id);
   WebAppProvider* provider = GetWebAppProvider(render_frame_host());
-  const WebApp* app = provider->registrar().GetAppById(app_id);
+  const WebApp* app = provider->registrar().GetAppById(sub_app_id);
 
   // Verify that the app we're trying to remove exists, that its parent_app is
   // the one doing the current call, and that the app was locally installed.
-  if (!app || parent_app_id != app->parent_app_id() ||
+  if (!app || calling_app_id != app->parent_app_id() ||
       !app->is_locally_installed()) {
     return std::move(result_callback).Run(SubAppsServiceResult::kFailure);
   }
 
   provider->install_finalizer().UninstallExternalWebApp(
-      app_id, webapps::WebappUninstallSource::kSubApp,
+      sub_app_id, webapps::WebappUninstallSource::kSubApp,
       base::BindOnce(&OnRemove, std::move(result_callback)));
 }
 
