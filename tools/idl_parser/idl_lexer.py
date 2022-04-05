@@ -282,7 +282,7 @@ class IDLLexer(object):
     self.tokens = []
     self._AddTokens(IDLLexer.tokens)
     self._AddKeywords(IDLLexer.keywords)
-    self._lexobj = lex.lex(object=self, lextab=None, optimize=optimize)
+    self._lexobj = lex.lex(object=self, lextab=False, optimize=optimize)
     self.last = None
     self.lines = None
 
