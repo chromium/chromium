@@ -1777,6 +1777,7 @@ static_library("ui") {
       "//components/services/app_service/public/mojom",
       "//components/ui_metrics",
       "//components/url_formatter",
+      "//components/user_notes:features",
       "//components/vector_icons",
       "//components/web_modal",
       "//components/webauthn/content/browser",

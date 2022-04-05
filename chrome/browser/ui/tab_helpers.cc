@@ -96,6 +96,7 @@
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
+#include "chrome/browser/user_notes/user_notes_tab_helper.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
@@ -134,6 +135,7 @@
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "components/ukm/content/source_url_recorder.h"
+#include "components/user_notes/user_notes_features.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
@@ -530,11 +532,10 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
           accuracy_tips::features::kAccuracyTipsSurveyFeature)) {
     HatsHelper::CreateForWebContents(web_contents);
   }
-#endif
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
   SharedHighlightingPromo::CreateForWebContents(web_contents);
+  if (user_notes::IsUserNotesEnabled() && !profile->IsOffTheRecord()) {
+    user_notes::UserNotesTabHelper::CreateForWebContents(web_contents);
+  }
 #endif
 
 #if BUILDFLAG(IS_WIN)

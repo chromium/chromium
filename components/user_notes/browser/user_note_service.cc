@@ -7,6 +7,7 @@
 #include "base/notreached.h"
 #include "components/user_notes/browser/user_notes_manager.h"
 #include "components/user_notes/user_notes_features.h"
+#include "content/public/browser/render_frame_host.h"
 
 namespace user_notes {
 
@@ -18,6 +19,22 @@ UserNoteService::~UserNoteService() = default;
 
 base::SafeRef<UserNoteService> UserNoteService::GetSafeRef() {
   return weak_ptr_factory_.GetSafeRef();
+}
+
+void UserNoteService::OnFrameNavigated(content::RenderFrameHost* rfh) {
+  DCHECK(IsUserNotesEnabled());
+
+  // For now, Notes are only supported in the main frame.
+  if (!rfh->IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  if (rfh->GetPage().GetMainDocument().IsErrorDocument()) {
+    return;
+  }
+
+  DCHECK(UserNotesManager::GetForPage(rfh->GetPage()));
+  NOTIMPLEMENTED();
 }
 
 void UserNoteService::OnNoteInstanceAddedToPage(

@@ -4406,6 +4406,8 @@ static_library("browser") {
       "user_notes/user_note_service_delegate_impl.h",
       "user_notes/user_note_service_factory.cc",
       "user_notes/user_note_service_factory.h",
+      "user_notes/user_notes_tab_helper.cc",
+      "user_notes/user_notes_tab_helper.h",
       "webauthn/authenticator_list_observer.h",
       "webauthn/authenticator_reference.cc",
       "webauthn/authenticator_reference.h",

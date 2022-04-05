@@ -67,4 +67,6 @@ void UserNotesManager::AddNoteInstance(std::unique_ptr<UserNoteInstance> note) {
   instance_map_.emplace(note->model().id(), std::move(note));
 }
 
+PAGE_USER_DATA_KEY_IMPL(UserNotesManager);
+
 }  // namespace user_notes
