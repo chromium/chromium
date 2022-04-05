@@ -152,8 +152,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void AcceptAppIdUpdateDialog();
   void CloseCustomToolbar();
   void ClosePwa();
-  void DisableRunOnOSLogin(const std::string& site_mode);
-  void EnableRunOnOSLogin(const std::string& site_mode);
+  void DisableRunOnOsLogin(const std::string& site_mode);
+  void EnableRunOnOsLogin(const std::string& site_mode);
   void InstallCreateShortcutTabbed(const std::string& site_mode);
   void InstallCreateShortcutWindowed(const std::string& site_mode);
   void InstallMenuOption(const std::string& site_mode);
@@ -203,7 +203,6 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckAppInListTabbed(const std::string& site_mode);
   void CheckAppNavigationIsStartUrl();
   void CheckBrowserNavigationIsAppSettings(const std::string& site_mode);
-  void CheckAppSettingsAppState(const std::string& site_mode);
   void CheckAppNotInList(const std::string& site_mode);
   void CheckAppIconSiteA(const std::string& color);
   void CheckAppTitleSiteA(const std::string& title);
@@ -220,8 +219,9 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckNoToolbar();
   void CheckPlatformShortcutAndIcon(const std::string& site_mode);
   void CheckPlatformShortcutNotExists(const std::string& site_mode);
-  void CheckRunOnOSLoginEnabled(const std::string& site_mode);
-  void CheckRunOnOSLoginDisabled(const std::string& site_mode);
+  void CheckRunOnOsLoginEnabled(const std::string& site_mode);
+  void CheckRunOnOsLoginDisabled(const std::string& site_mode);
+  void CheckUserCannotSetRunOnOsLogin(const std::string& site_mode);
   void CheckUserDisplayModeInternal(DisplayMode display_mode);
   void CheckWindowClosed();
   void CheckWindowCreated();
@@ -289,6 +289,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
                            apps::RunOnOsLoginMode login_mode);
 
   void LaunchAppStartupBrowserCreator(const AppId& app_id);
+
+  void CheckAppSettingsAppState(Profile* profile, const AppState& app_state);
 
   Browser* browser();
   const net::EmbeddedTestServer* embedded_test_server();
