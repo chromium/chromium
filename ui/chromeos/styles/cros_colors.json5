@@ -181,6 +181,7 @@
     app_shield_40: {
       light: "rgba($google_grey_300_rgb, 0.4)",
       dark: "rgba($black_rgb, 0.4)",
+      generate_per_mode: true,
     },
     app_shield_20: {
       light: "rgba($google_grey_300_rgb, 0.2)",
