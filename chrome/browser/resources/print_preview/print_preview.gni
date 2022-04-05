@@ -70,7 +70,6 @@ ts_files = [
              "print_preview.ts",
              "print_preview_utils.ts",
              "data/cdd.ts",
-             "data/cloud_parsers.ts",
              "data/coordinate2d.ts",
              "data/destination.ts",
              "data/destination_match.ts",
