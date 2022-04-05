@@ -10,6 +10,7 @@
 #include "ash/bubble/bubble_utils.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/highlight_border.h"
 #include "ash/style/pill_button.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
@@ -199,6 +200,9 @@ void AppListToastView::OnThemeChanged() {
         ColorProvider::Get()->GetBaseLayerColor(
             ColorProvider::BaseLayerType::kTransparent80),
         kCornerRadius));
+    SetBorder(std::make_unique<HighlightBorder>(
+        kCornerRadius, HighlightBorder::Type::kHighlightBorder1,
+        /*use_light_colors=*/false));
   } else {
     SetBackground(views::CreateRoundedRectBackground(
         AshColorProvider::Get()->GetControlsLayerColor(
