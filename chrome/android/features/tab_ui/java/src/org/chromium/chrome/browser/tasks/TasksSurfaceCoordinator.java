@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegateImpl;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedListCoordinator;
-import org.chromium.chrome.browser.suggestions.tile.MvTilesLayout;
 import org.chromium.chrome.browser.suggestions.tile.TileGroupDelegateImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -146,12 +145,12 @@ public class TasksSurfaceCoordinator implements TasksSurface {
                 incognitoCookieControlsManager, tabSwitcherType == TabSwitcherType.CAROUSEL);
 
         if (hasMVTiles) {
-            MvTilesLayout mvTilesLayout = mView.findViewById(R.id.mv_tiles_layout);
-            mMostVisitedCoordinator = new MostVisitedListCoordinator(activity,
-                    activityLifecycleDispatcher, mvTilesLayout, windowAndroid,
-                    TabUiFeatureUtilities.supportInstantStart(
-                            DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity),
-                            mActivity));
+            mMostVisitedCoordinator =
+                    new MostVisitedListCoordinator(activity, activityLifecycleDispatcher,
+                            mView.findViewById(R.id.mv_tiles_container), windowAndroid,
+                            TabUiFeatureUtilities.supportInstantStart(
+                                    DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity),
+                                    mActivity));
         }
 
         if (hasQueryTiles) {

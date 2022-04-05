@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.tasks;
 
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.IS_VISIBLE;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.IS_CONTAINER_VISIBLE;
 
 import android.text.TextWatcher;
 import android.view.View;
@@ -67,7 +67,8 @@ public class TasksSurfaceProperties {
     public static final PropertyModel
             .WritableObjectPropertyKey<View.OnClickListener> MORE_TABS_CLICK_LISTENER =
             new PropertyModel.WritableObjectPropertyKey<>();
-    public static final PropertyModel.WritableBooleanPropertyKey MV_TILES_VISIBLE = IS_VISIBLE;
+    public static final PropertyModel.WritableBooleanPropertyKey MV_TILES_VISIBLE =
+            IS_CONTAINER_VISIBLE;
     public static final PropertyModel.WritableBooleanPropertyKey QUERY_TILES_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel

@@ -118,8 +118,9 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
     @Nullable
     private Object mExploreSection; // Null when explore sites disabled.
 
+    // View is null if scrollable-mv-tiles flag is disabled.
     @Nullable
-    private ViewGroup mMvTilesLayout; // View is null if scrollable-mv-tiles flag is disabled.
+    private ViewGroup mMvTilesContainerLayout;
 
     // Null if scrollable-mv-tiles flag is disabled.
     @Nullable
@@ -394,14 +395,14 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
     private void initializeMostVisitedListCoordinator(
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             TileGroup.Delegate tileGroupDelegate, TouchEnabledDelegate touchEnabledDelegate) {
-        assert mMvTilesLayout != null;
+        assert mMvTilesContainerLayout != null;
         mMostVisitedListCoordinator = new MostVisitedListCoordinator(mActivity,
-                activityLifecycleDispatcher, mMvTilesLayout.findViewById(R.id.mv_tiles_layout),
-                mWindowAndroid, /*shouldShowPlaceholderPreNative=*/false);
+                activityLifecycleDispatcher, mMvTilesContainerLayout, mWindowAndroid,
+                /*shouldShowSkeletonUIPreNative=*/false);
         // Let mMvTilesLayout attached to the edge of the screen.
         int lateralPaddingsForNTP = mActivity.getResources().getDimensionPixelSize(
                 R.dimen.ntp_header_lateral_paddings_v2);
-        MarginLayoutParams params = (MarginLayoutParams) mMvTilesLayout.getLayoutParams();
+        MarginLayoutParams params = (MarginLayoutParams) mMvTilesContainerLayout.getLayoutParams();
         params.leftMargin = -lateralPaddingsForNTP;
         params.rightMargin = -lateralPaddingsForNTP;
         mMostVisitedListCoordinator.initWithNative(
@@ -478,10 +479,10 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
 
         if (isScrollableMVTEnabled()) {
             setClipToPadding(false);
-            mMvTilesLayout = (ViewGroup) LayoutInflater.from(this.getContext())
-                                     .inflate(R.layout.mv_tiles_layout, this, false);
-            mMvTilesLayout.setVisibility(View.VISIBLE);
-            addView(mMvTilesLayout, insertionPoint);
+            mMvTilesContainerLayout = (ViewGroup) LayoutInflater.from(this.getContext())
+                                              .inflate(R.layout.mv_tiles_layout, this, false);
+            mMvTilesContainerLayout.setVisibility(View.VISIBLE);
+            addView(mMvTilesContainerLayout, insertionPoint);
 
             // The page contents are initially hidden; otherwise they'll be drawn centered on the
             // page before the tiles are available and then jump upwards to make space once the
@@ -641,9 +642,9 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         if (mSiteSectionViewHolder != null) {
             mSiteSectionViewHolder.getItemView().setPadding(
                     0, paddingTop, 0, mSiteSectionViewHolder.getItemView().getPaddingBottom());
-        } else if (mMvTilesLayout != null) {
+        } else if (mMvTilesContainerLayout != null) {
             MarginLayoutParams marginLayoutParams =
-                    (MarginLayoutParams) mMvTilesLayout.getLayoutParams();
+                    (MarginLayoutParams) mMvTilesContainerLayout.getLayoutParams();
             marginLayoutParams.topMargin = paddingTop;
             marginLayoutParams.bottomMargin =
                     getResources().getDimensionPixelOffset(R.dimen.tile_grid_layout_bottom_margin);
@@ -862,7 +863,9 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
      * items and there is no search provider logo.
      */
     private void updateTileGridPlaceholderVisibility() {
-        if (mTileGroup == null) return;
+        // If scrollable MVT is enabled, the placeholder will be handled in {@link
+        // MostVisitedListMediator}.
+        if (isScrollableMVTEnabled()) return;
         boolean showPlaceholder =
                 mTileGroup.hasReceivedData() && mTileGroup.isEmpty() && !mSearchProviderHasLogo;
 
@@ -1069,7 +1072,7 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
                     getSearchBoxView(), exploreWidth, getSearchBoxView().getMeasuredHeight());
             measureExactly(mSearchProviderLogoView, exploreWidth,
                     mSearchProviderLogoView.getMeasuredHeight());
-        } else if (mMvTilesLayout != null) {
+        } else if (mMvTilesContainerLayout != null) {
             final int exploreWidth = getMeasuredWidth() - mTileGridLayoutBleed;
             measureExactly(
                     getSearchBoxView(), exploreWidth, getSearchBoxView().getMeasuredHeight());

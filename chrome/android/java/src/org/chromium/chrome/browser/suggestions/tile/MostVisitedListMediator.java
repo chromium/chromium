@@ -6,16 +6,22 @@ package org.chromium.chrome.browser.suggestions.tile;
 
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.EDGE_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.INTERVAL_PADDINGS;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.IS_MVT_LAYOUT_VISIBLE;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.PLACEHOLDER_VIEW;
 
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.view.View;
+import android.view.ViewStub;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSitesMetadataUtils;
+import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.io.IOException;
@@ -24,7 +30,7 @@ import java.util.List;
 /**
  *  Mediator for handling {@link MvTilesLayout}-related logic.
  */
-public class MostVisitedListMediator implements TileGroup.Observer {
+public class MostVisitedListMediator implements TileGroup.Observer, TemplateUrlServiceObserver {
     private static final String TAG = "TopSites";
 
     // There's a limit of 12 in {@link MostVisitedSitesBridge#setObserver}.
@@ -32,6 +38,7 @@ public class MostVisitedListMediator implements TileGroup.Observer {
 
     private final Resources mResources;
     private final MvTilesLayout mMvTilesLayout;
+    private final ViewStub mNoMvPlaceholderStub;
     private final PropertyModel mModel;
     private final boolean mIsTablet;
     private final int mTileViewLandscapePadding;
@@ -42,14 +49,15 @@ public class MostVisitedListMediator implements TileGroup.Observer {
     private TileGroup mTileGroup;
     private boolean mInitializationComplete;
 
-    public MostVisitedListMediator(Resources resources, MvTilesLayout mvTilesLayout,
+    public MostVisitedListMediator(Resources resources, View mvTilesContainerLayout,
             TileRenderer renderer, PropertyModel propertyModel,
-            boolean shouldShowPlaceholderPreNative, boolean isTablet) {
+            boolean shouldShowSkeletonUIPreNative, boolean isTablet) {
         mResources = resources;
-        mMvTilesLayout = mvTilesLayout;
         mRenderer = renderer;
         mModel = propertyModel;
         mIsTablet = isTablet;
+        mMvTilesLayout = mvTilesContainerLayout.findViewById(R.id.mv_tiles_layout);
+        mNoMvPlaceholderStub = mvTilesContainerLayout.findViewById(R.id.tile_grid_placeholder_stub);
 
         mTileViewLandscapePadding =
                 mResources.getDimensionPixelSize(R.dimen.tile_view_padding_landscape);
@@ -58,7 +66,7 @@ public class MostVisitedListMediator implements TileGroup.Observer {
 
         maybeSetPortraitIntervalPaddings();
 
-        if (shouldShowPlaceholderPreNative) maybeShowMvTilesPlaceholder();
+        if (shouldShowSkeletonUIPreNative) maybeShowMvTilesPreNative();
     }
 
     /**
@@ -71,7 +79,17 @@ public class MostVisitedListMediator implements TileGroup.Observer {
         mTileGroup = new TileGroup(renderer, suggestionsUiDelegate, contextMenuManager,
                 tileGroupDelegate, /*observer=*/this, offlinePageBridge);
         mTileGroup.startObserving(MAX_RESULTS);
+
+        updateTileGridPlaceholderVisibility();
+        TemplateUrlServiceFactory.get().addObserver(this);
+
         mInitializationComplete = true;
+    }
+
+    // TemplateUrlServiceObserver overrides
+    @Override
+    public void onTemplateURLServiceChanged() {
+        updateTileGridPlaceholderVisibility();
     }
 
     /* TileGroup.Observer implementation. */
@@ -89,7 +107,9 @@ public class MostVisitedListMediator implements TileGroup.Observer {
     }
 
     @Override
-    public void onTileCountChanged() {}
+    public void onTileCountChanged() {
+        updateTileGridPlaceholderVisibility();
+    }
 
     @Override
     public void onTileIconChanged(Tile tile) {
@@ -107,10 +127,12 @@ public class MostVisitedListMediator implements TileGroup.Observer {
     }
 
     public void destroy() {
+        if (mMvTilesLayout != null) mMvTilesLayout.destroy();
         if (mTileGroup != null) {
             mTileGroup.destroy();
             mTileGroup = null;
         }
+        TemplateUrlServiceFactory.get().removeObserver(this);
     }
 
     public boolean isMVTilesCleanedUp() {
@@ -122,9 +144,9 @@ public class MostVisitedListMediator implements TileGroup.Observer {
     }
 
     /**
-     * Maybe render MV tiles placeholder pre-native.
+     * Maybe render MV tiles skeleton icon pre-native.
      */
-    private void maybeShowMvTilesPlaceholder() {
+    private void maybeShowMvTilesPreNative() {
         if (mInitializationComplete) return;
         try {
             List<Tile> tiles =
@@ -181,5 +203,22 @@ public class MostVisitedListMediator implements TileGroup.Observer {
 
         mModel.set(EDGE_PADDINGS, mTileViewPortraitEdgePadding);
         mModel.set(INTERVAL_PADDINGS, mTileViewPortraitIntervalPadding);
+    }
+
+    /**
+     * Shows the most visited placeholder ("Nothing to see here") if there are no most visited
+     * items and there is no search provider logo.
+     */
+    private void updateTileGridPlaceholderVisibility() {
+        if (mTileGroup == null) return;
+        boolean searchProviderHasLogo =
+                TemplateUrlServiceFactory.get().doesDefaultSearchEngineHaveLogo();
+        boolean showPlaceholder =
+                mTileGroup.hasReceivedData() && mTileGroup.isEmpty() && !searchProviderHasLogo;
+
+        if (showPlaceholder && mModel.get(PLACEHOLDER_VIEW) == null) {
+            mModel.set(PLACEHOLDER_VIEW, mNoMvPlaceholderStub.inflate());
+        }
+        mModel.set(IS_MVT_LAYOUT_VISIBLE, !showPlaceholder);
     }
 }

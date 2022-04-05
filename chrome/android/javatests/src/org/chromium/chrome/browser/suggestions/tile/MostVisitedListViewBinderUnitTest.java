@@ -6,10 +6,14 @@ package org.chromium.chrome.browser.suggestions.tile;
 
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.EDGE_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.INTERVAL_PADDINGS;
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.IS_VISIBLE;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.IS_CONTAINER_VISIBLE;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.IS_MVT_LAYOUT_VISIBLE;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.PLACEHOLDER_VIEW;
 
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
+import android.view.ViewStub;
+import android.widget.LinearLayout;
 
 import androidx.test.filters.SmallTest;
 
@@ -18,6 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.UiThreadTest;
+import org.chromium.chrome.browser.suggestions.tile.MostVisitedListViewBinder.ViewHolder;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -30,7 +35,10 @@ import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public final class MostVisitedListViewBinderUnitTest extends BlankUiTestActivityTestCase {
-    private MvTilesLayout mView;
+    private ViewStub mNoMvPlaceholderStub;
+    private View mNoMvPlaceholder;
+    private LinearLayout mMvTilesContainerLayout;
+    private MvTilesLayout mMvTilesLayout;
     private TileView mFirstChildView;
     private TileView mSecondChildView;
     private TileView mThirdChildView;
@@ -42,29 +50,58 @@ public final class MostVisitedListViewBinderUnitTest extends BlankUiTestActivity
         super.setUpTest();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mView = new MvTilesLayout(getActivity(), null);
+            mMvTilesLayout = new MvTilesLayout(getActivity(), null);
+            mMvTilesLayout.setId(org.chromium.chrome.R.id.mv_tiles_layout);
             mFirstChildView = new TileView(getActivity(), null);
             mSecondChildView = new TileView(getActivity(), null);
             mThirdChildView = new TileView(getActivity(), null);
-            mView.addView(mFirstChildView);
-            mView.addView(mSecondChildView);
-            mView.addView(mThirdChildView);
-            getActivity().setContentView(mView);
+            mMvTilesLayout.addView(mFirstChildView);
+            mMvTilesLayout.addView(mSecondChildView);
+            mMvTilesLayout.addView(mThirdChildView);
+
+            mNoMvPlaceholder = new View(getActivity());
+            mNoMvPlaceholder.setId(org.chromium.chrome.R.id.tile_grid_placeholder);
+            mNoMvPlaceholderStub = new ViewStub(getActivity());
+            mNoMvPlaceholderStub.setId(org.chromium.chrome.R.id.tile_grid_placeholder_stub);
+            mNoMvPlaceholderStub.setInflatedId(org.chromium.chrome.R.id.tile_grid_placeholder);
+
+            mMvTilesContainerLayout = new LinearLayout(getActivity());
+            mMvTilesContainerLayout.addView(mMvTilesLayout);
+            mMvTilesContainerLayout.addView(mNoMvPlaceholderStub);
+            getActivity().setContentView(mMvTilesContainerLayout);
 
             mModel = new PropertyModel(MostVisitedListProperties.ALL_KEYS);
-            PropertyModelChangeProcessor.create(mModel, mView, MostVisitedListViewBinder::bind);
+            PropertyModelChangeProcessor.create(mModel,
+                    new ViewHolder(mMvTilesContainerLayout, mMvTilesLayout),
+                    MostVisitedListViewBinder::bind);
         });
     }
 
     @Test
     @UiThreadTest
     @SmallTest
-    public void testVisibilitySet() {
-        mModel.set(IS_VISIBLE, true);
-        Assert.assertEquals(View.VISIBLE, mView.getVisibility());
+    public void testContainerVisibilitySet() {
+        mModel.set(IS_CONTAINER_VISIBLE, true);
+        Assert.assertEquals(View.VISIBLE, mMvTilesContainerLayout.getVisibility());
 
-        mModel.set(IS_VISIBLE, false);
-        Assert.assertEquals(View.GONE, mView.getVisibility());
+        mModel.set(IS_CONTAINER_VISIBLE, false);
+        Assert.assertEquals(View.GONE, mMvTilesContainerLayout.getVisibility());
+    }
+
+    @Test
+    @UiThreadTest
+    @SmallTest
+    public void testMvTilesLayoutAndPlaceholderVisibilitySet() {
+        mModel.set(PLACEHOLDER_VIEW, mNoMvPlaceholder);
+        Assert.assertNotNull(mModel.get(PLACEHOLDER_VIEW));
+
+        mModel.set(IS_MVT_LAYOUT_VISIBLE, true);
+        Assert.assertEquals(View.VISIBLE, mMvTilesLayout.getVisibility());
+        Assert.assertEquals(View.GONE, mNoMvPlaceholder.getVisibility());
+
+        mModel.set(IS_MVT_LAYOUT_VISIBLE, false);
+        Assert.assertEquals(View.GONE, mMvTilesLayout.getVisibility());
+        Assert.assertEquals(View.VISIBLE, mNoMvPlaceholder.getVisibility());
     }
 
     @Test

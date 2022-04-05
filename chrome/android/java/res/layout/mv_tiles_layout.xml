@@ -4,22 +4,35 @@
      found in the LICENSE file. -->
 
 <!-- A site suggestion tile. -->
-<HorizontalScrollView
+<FrameLayout android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mv_tiles_container"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
     android:visibility="gone"
-    android:scrollbars="none"
+    android:orientation="vertical"
+    android:layout_gravity="center_horizontal"
     app:layout_scrollFlags="scroll">
 
-  <org.chromium.chrome.browser.suggestions.tile.MvTilesLayout
-      android:id="@+id/mv_tiles_layout"
-      android:layout_width="wrap_content"
-      android:layout_height="match_parent"
-      android:orientation="horizontal">
-  </org.chromium.chrome.browser.suggestions.tile.MvTilesLayout>
-</HorizontalScrollView>
+  <HorizontalScrollView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:scrollbars="none">
 
+    <org.chromium.chrome.browser.suggestions.tile.MvTilesLayout
+        android:id="@+id/mv_tiles_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+    </org.chromium.chrome.browser.suggestions.tile.MvTilesLayout>
+  </HorizontalScrollView>
+
+  <!-- Site suggestion tile grid placeholder -->
+  <ViewStub
+      android:id="@+id/tile_grid_placeholder_stub"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:inflatedId="@+id/tile_grid_placeholder"
+      android:layout="@layout/new_tab_page_tile_grid_placeholder" />
+</FrameLayout>

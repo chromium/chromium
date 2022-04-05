@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.suggestions.tile;
 
+import android.view.View;
+
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -12,8 +14,14 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 public final class MostVisitedListProperties {
     private MostVisitedListProperties() {}
 
-    public static final PropertyModel.WritableBooleanPropertyKey IS_VISIBLE =
+    public static final PropertyModel.WritableBooleanPropertyKey IS_CONTAINER_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableBooleanPropertyKey IS_MVT_LAYOUT_VISIBLE =
+            new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableBooleanPropertyKey IS_PLACEHOLDER_VISIBLE =
+            new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableObjectPropertyKey<View> PLACEHOLDER_VIEW =
+            new WritableObjectPropertyKey<>();
 
     // We need to skip the equality check here since there are some cases when the view removes all
     // child views and then adds them back with the same paddings, which could not be set without
@@ -23,6 +31,6 @@ public final class MostVisitedListProperties {
     public static final PropertyModel.WritableObjectPropertyKey<Integer> EDGE_PADDINGS =
             new WritableObjectPropertyKey<>(true);
 
-    public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {IS_VISIBLE, INTERVAL_PADDINGS, EDGE_PADDINGS};
+    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {IS_CONTAINER_VISIBLE,
+            IS_MVT_LAYOUT_VISIBLE, PLACEHOLDER_VIEW, INTERVAL_PADDINGS, EDGE_PADDINGS};
 }
