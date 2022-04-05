@@ -150,7 +150,7 @@ TEST_F(OmniboxAnswerResultTest, WeatherResult) {
       "{ \"l\": ["
       "  { \"il\": { \"t\": [{ \"t\": \"text one\", \"tt\": 8 }], "
       "              \"at\": { \"t\": \"additional one\", \"tt\": 42 } } }, "
-      "  { \"il\": { \"t\": [{ \"t\": \"text two\", \"tt\": 8 }], "
+      "  { \"il\": { \"t\": [{ \"t\": \"-5°C\", \"tt\": 8 }], "
       "              \"at\": { \"t\": \"additional two\", \"tt\": 42 } } } "
       "] }";
   absl::optional<base::Value> value = base::JSONReader::Read(json);
@@ -171,7 +171,13 @@ TEST_F(OmniboxAnswerResultTest, WeatherResult) {
   ASSERT_EQ(result.big_title_text_vector().size(), 1);
   const auto& big_title = result.big_title_text_vector()[0];
   ASSERT_EQ(big_title.GetType(), ash::SearchResultTextItemType::kString);
-  EXPECT_EQ(big_title.GetText(), u"text two");
+  EXPECT_EQ(big_title.GetText(), u"-5");
+  EXPECT_TRUE(big_title.GetTextTags().empty());
+
+  ASSERT_EQ(result.big_title_superscript_text_vector().size(), 1);
+  const auto& superscript = result.big_title_superscript_text_vector()[0];
+  ASSERT_EQ(superscript.GetType(), ash::SearchResultTextItemType::kString);
+  EXPECT_EQ(superscript.GetText(), u"°C");
   EXPECT_TRUE(big_title.GetTextTags().empty());
 
   ASSERT_EQ(result.title_text_vector().size(), 1);
