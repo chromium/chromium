@@ -36,6 +36,7 @@ extern const char kCrostiniAnsiblePlaybookFilePath[];
 extern const char kCrostiniDefaultContainerConfigured[];
 extern const char kCrostiniArcAdbSideloadingUserPref[];
 extern const char kCrostiniPortForwardingAllowedByPolicy[];
+extern const char kTerminalSshAllowedByPolicy[];
 
 extern const char kReportCrostiniUsageEnabled[];
 extern const char kCrostiniLastLaunchTerminaComponentVersion[];

@@ -29174,6 +29174,7 @@ Called by update_document_policy_enum.py.-->
   <int value="971" label="DevicePowerAdaptiveChargingEnabled"/>
   <int value="972" label="GetDisplayMediaSetSelectAllScreens"/>
   <int value="973" label="WarnBeforeQuittingEnabled"/>
+  <int value="974" label="SystemTerminalSshAllowed"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
