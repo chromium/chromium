@@ -30,7 +30,8 @@ ChromeLabsCoordinator::ChromeLabsCoordinator(
 
 ChromeLabsCoordinator::~ChromeLabsCoordinator() {
   if (BubbleExists()) {
-    chrome_labs_bubble_view_->GetWidget()->Close();
+    chrome_labs_bubble_view_->GetWidget()->CloseWithReason(
+        views::Widget::ClosedReason::kUnspecified);
     chrome_labs_bubble_view_ = nullptr;
   }
 }
@@ -88,9 +89,8 @@ void ChromeLabsCoordinator::Show(ShowUserType user_type) {
 
 void ChromeLabsCoordinator::Hide() {
   if (BubbleExists()) {
-    // TODO(elainechien): Replace Close with ClosedWithReason and add an
-    // additional enum to ClosedReason
-    chrome_labs_bubble_view_->GetWidget()->Close();
+    chrome_labs_bubble_view_->GetWidget()->CloseWithReason(
+        views::Widget::ClosedReason::kUnspecified);
     // Closing the widget will eventually result in chrome_labs_bubble_view_
     // being set to nullptr, but we also set it to nullptr here since we know
     // the widget will now be destroyed and we shouldn't be accessing
