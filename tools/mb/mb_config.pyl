@@ -478,7 +478,7 @@
       'GPU Mac Builder (dbg)': 'gpu_tests_debug_bot',
       'GPU Linux Builder': 'gpu_tests_release_trybot_minimal_symbols_reclient',
       'GPU Linux Builder (dbg)': 'gpu_tests_debug_bot_reclient',
-      'GPU Win x64 Builder': 'gpu_tests_release_bot_dcheck_always_on_resource_allowlisting',
+      'GPU Win x64 Builder': 'gpu_tests_release_bot_dcheck_always_on_resource_allowlisting_reclient',
       'GPU Win x64 Builder Code Coverage': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage',
       'GPU Win x64 Builder (dbg)': 'gpu_tests_debug_bot_reclient',
       'Android Release (Nexus 5X)': 'gpu_tests_android_release_bot_dcheck_always_on_arm64_fastbuild_reclient',
@@ -644,12 +644,12 @@
       'linux-swangle-tot-swiftshader-x64': 'angle_deqp_release_trybot_reclient',
       'linux-swangle-x64': 'angle_deqp_release_trybot_reclient',
       'mac-swangle-chromium-x64': 'gpu_tests_release_trybot_minimal_symbols',
-      'win-swangle-chromium-x86': 'gpu_tests_release_trybot_minimal_symbol_x86_resource_allowlisting',
+      'win-swangle-chromium-x86': 'gpu_tests_release_trybot_minimal_symbol_x86_resource_allowlisting_reclient',
       'win-swangle-tot-angle-x64': 'angle_deqp_release_trybot',
       'win-swangle-tot-angle-x86': 'angle_deqp_release_bot_dcheck_always_on_x86',
       'win-swangle-tot-swiftshader-x64': 'angle_deqp_release_trybot',
       'win-swangle-tot-swiftshader-x86': 'angle_deqp_release_bot_dcheck_always_on_x86',
-      'win-swangle-x64': 'angle_deqp_release_trybot',
+      'win-swangle-x64': 'angle_deqp_release_trybot_reclient',
       'win-swangle-x86': 'angle_deqp_release_bot_dcheck_always_on_x86',
     },
 
@@ -2599,8 +2599,8 @@
       'gpu_tests', 'release_trybot', 'mbi_mode_per_site_instance'
     ],
 
-    'gpu_tests_release_bot_dcheck_always_on_resource_allowlisting': [
-      'gpu_tests', 'release_trybot_minimal_symbols', 'resource_allowlisting',
+    'gpu_tests_release_bot_dcheck_always_on_resource_allowlisting_reclient': [
+      'gpu_tests', 'release_trybot_minimal_symbols_reclient', 'resource_allowlisting',
     ],
 
     'gpu_tests_release_trybot_resource_allowlisting': [
@@ -2637,6 +2637,10 @@
 
     'gpu_tests_release_trybot_minimal_symbol_x86_resource_allowlisting': [
       'gpu_tests', 'release_trybot_minimal_symbols', 'x86', 'resource_allowlisting',
+    ],
+
+    'gpu_tests_release_trybot_minimal_symbol_x86_resource_allowlisting_reclient': [
+      'gpu_tests', 'release_trybot_minimal_symbols_reclient', 'x86', 'resource_allowlisting',
     ],
 
     'gpu_tests_release_trybot_no_symbols_mac_code_coverage': [
