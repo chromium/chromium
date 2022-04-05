@@ -14,8 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/time/time.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 class PCScanScheduler;
 
@@ -66,7 +65,7 @@ class BASE_EXPORT PCScanSchedulingBackend {
 
   // Invoked by PCScan to ask for a new timeout for a scheduled PCScan task.
   // Only invoked if scheduler requests a delayed scan at some point.
-  virtual TimeDelta UpdateDelayedSchedule();
+  virtual base::TimeDelta UpdateDelayedSchedule();
 
  protected:
   inline bool SchedulingDisabled() const;
@@ -109,7 +108,7 @@ class BASE_EXPORT MUAwareTaskBasedBackend final
   bool LimitReached() final;
   size_t ScanStarted() final;
   void UpdateScheduleAfterScan(size_t, base::TimeDelta, size_t) final;
-  TimeDelta UpdateDelayedSchedule() final;
+  base::TimeDelta UpdateDelayedSchedule() final;
 
  private:
   // Limit triggering the scheduler. If `kTargetMutatorUtilizationPercent` is
@@ -129,7 +128,7 @@ class BASE_EXPORT MUAwareTaskBasedBackend final
   // Callback to schedule a delayed scan.
   const ScheduleDelayedScanFunc schedule_delayed_scan_;
 
-  PartitionLock scheduler_lock_;
+  Lock scheduler_lock_;
   size_t hard_limit_ GUARDED_BY(scheduler_lock_){0};
   base::TimeTicks earliest_next_scan_time_ GUARDED_BY(scheduler_lock_);
 
@@ -196,7 +195,16 @@ bool PCScanScheduler::AccountFreed(size_t size) {
          backend_->LimitReached();
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
+
+// TODO(crbug.com/1288247): Remove these when migration is complete.
+namespace base::internal {
+
+using ::partition_alloc::internal::LimitBackend;
+using ::partition_alloc::internal::MUAwareTaskBasedBackend;
+using ::partition_alloc::internal::PCScanScheduler;
+using ::partition_alloc::internal::QuarantineData;
+
+}  // namespace base::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_PCSCAN_SCHEDULING_H_

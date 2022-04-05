@@ -15,8 +15,7 @@
 #include "base/bind.h"
 #include "base/time/time.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 // static
 constexpr size_t QuarantineData::kQuarantineSizeMinLimit;
@@ -34,7 +33,8 @@ void PCScanSchedulingBackend::EnableScheduling() {
   scheduling_enabled_.store(true, std::memory_order_relaxed);
   // Check if *Scan needs to be run immediately.
   if (NeedsToImmediatelyScan())
-    PCScan::PerformScan(PCScan::InvocationMode::kNonBlocking);
+    base::internal::PCScan::PerformScan(
+        base::internal::PCScan::InvocationMode::kNonBlocking);
 }
 
 size_t PCScanSchedulingBackend::ScanStarted() {
@@ -43,8 +43,8 @@ size_t PCScanSchedulingBackend::ScanStarted() {
   return data.current_size.exchange(0, std::memory_order_relaxed);
 }
 
-TimeDelta PCScanSchedulingBackend::UpdateDelayedSchedule() {
-  return TimeDelta();
+base::TimeDelta PCScanSchedulingBackend::UpdateDelayedSchedule() {
+  return base::TimeDelta();
 }
 
 // static
@@ -92,7 +92,7 @@ bool MUAwareTaskBasedBackend::LimitReached() {
   bool should_reschedule = false;
   base::TimeDelta reschedule_delay;
   {
-    PartitionAutoLock guard(scheduler_lock_);
+    ScopedGuard guard(scheduler_lock_);
     // At this point we reached a limit where the schedule generally wants to
     // trigger a scan.
     if (hard_limit_) {
@@ -120,7 +120,7 @@ bool MUAwareTaskBasedBackend::LimitReached() {
       // 4. Otherwise, the soft limit would trigger a scan immediately if the
       // mutator utilization requirement is satisfied.
       reschedule_delay = earliest_next_scan_time_ - base::TimeTicks::Now();
-      if (reschedule_delay <= TimeDelta()) {
+      if (reschedule_delay <= base::TimeDelta()) {
         // May invoke scan immediately.
         return true;
       }
@@ -142,7 +142,7 @@ bool MUAwareTaskBasedBackend::LimitReached() {
 }
 
 size_t MUAwareTaskBasedBackend::ScanStarted() {
-  PartitionAutoLock guard(scheduler_lock_);
+  ScopedGuard guard(scheduler_lock_);
 
   return PCScanSchedulingBackend::ScanStarted();
 }
@@ -153,7 +153,7 @@ void MUAwareTaskBasedBackend::UpdateScheduleAfterScan(
     size_t heap_size) {
   scheduler_.AccountFreed(survived_bytes);
 
-  PartitionAutoLock guard(scheduler_lock_);
+  ScopedGuard guard(scheduler_lock_);
 
   // |heap_size| includes the current quarantine size, we intentionally leave
   // some slack till hitting the limit.
@@ -180,7 +180,7 @@ bool MUAwareTaskBasedBackend::NeedsToImmediatelyScan() {
   bool should_reschedule = false;
   base::TimeDelta reschedule_delay;
   {
-    PartitionAutoLock guard(scheduler_lock_);
+    ScopedGuard guard(scheduler_lock_);
     // If |hard_limit_| was set to zero, the soft limit was reached. Bail out if
     // it's not.
     if (hard_limit_)
@@ -188,7 +188,7 @@ bool MUAwareTaskBasedBackend::NeedsToImmediatelyScan() {
 
     // Check if mutator utilization requiremet is satisfied.
     reschedule_delay = earliest_next_scan_time_ - base::TimeTicks::Now();
-    if (reschedule_delay <= TimeDelta()) {
+    if (reschedule_delay <= base::TimeDelta()) {
       // May invoke scan immediately.
       return true;
     }
@@ -205,13 +205,12 @@ bool MUAwareTaskBasedBackend::NeedsToImmediatelyScan() {
   return false;
 }
 
-TimeDelta MUAwareTaskBasedBackend::UpdateDelayedSchedule() {
-  PartitionAutoLock guard(scheduler_lock_);
+base::TimeDelta MUAwareTaskBasedBackend::UpdateDelayedSchedule() {
+  ScopedGuard guard(scheduler_lock_);
   // TODO(1197479): Adjust schedule to current heap sizing.
   const auto delay = earliest_next_scan_time_ - base::TimeTicks::Now();
   PA_PCSCAN_VLOG(3) << "Schedule is off by " << delay.InMillisecondsF() << "ms";
-  return delay >= TimeDelta() ? delay : TimeDelta();
+  return delay >= base::TimeDelta() ? delay : base::TimeDelta();
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
