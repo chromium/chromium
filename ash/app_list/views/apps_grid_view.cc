@@ -2549,6 +2549,9 @@ void AppsGridView::OnListItemAdded(size_t index, AppListItem* item) {
 
   // Schedule a layout, since the grid items may need their bounds updated.
   ScheduleLayout(initial_grid_size);
+
+  items_container_->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
+                                             /*send_native_event=*/true);
 }
 
 void AppsGridView::OnListItemRemoved(size_t index, AppListItem* item) {
@@ -2575,6 +2578,9 @@ void AppsGridView::OnListItemRemoved(size_t index, AppListItem* item) {
 
   // Schedule a layout, since the grid items may need their bounds updated.
   ScheduleLayout(initial_grid_size);
+
+  items_container_->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
+                                             /*send_native_event=*/true);
 }
 
 void AppsGridView::OnListItemMoved(size_t from_index,
