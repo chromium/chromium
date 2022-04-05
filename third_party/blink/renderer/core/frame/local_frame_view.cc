@@ -3465,11 +3465,8 @@ gfx::Rect LocalFrameView::ConvertToContainingEmbeddedContentView(
     if (!layout_object)
       return local_rect;
 
-    gfx::Rect rect(local_rect);
-    // Add borders and padding
-    rect.Offset(
-        (layout_object->BorderLeft() + layout_object->PaddingLeft()).ToInt(),
-        (layout_object->BorderTop() + layout_object->PaddingTop()).ToInt());
+    // Add borders and padding etc.
+    gfx::Rect rect = layout_object->BorderBoxFromEmbeddedContent(local_rect);
     return ToPixelSnappedRect(
         layout_object->LocalToAbsoluteRect(PhysicalRect(rect)));
   }
@@ -3495,11 +3492,8 @@ PhysicalOffset LocalFrameView::ConvertToContainingEmbeddedContentView(
       return local_offset;
 
     PhysicalOffset point(local_offset);
-
-    // Add borders and padding
-    point += PhysicalOffset(
-        layout_object->BorderLeft() + layout_object->PaddingLeft(),
-        layout_object->BorderTop() + layout_object->PaddingTop());
+    // Add borders and padding etc.
+    point = layout_object->BorderBoxFromEmbeddedContent(point);
     return layout_object->LocalToAbsolutePoint(point);
   }
 
@@ -3514,11 +3508,9 @@ gfx::PointF LocalFrameView::ConvertToContainingEmbeddedContentView(
       return local_point;
 
     PhysicalOffset point = PhysicalOffset::FromPointFRound(local_point);
-
-    // Add borders and padding
-    point.left += layout_object->BorderLeft() + layout_object->PaddingLeft();
-    point.top += layout_object->BorderTop() + layout_object->PaddingTop();
-    return gfx::PointF(layout_object->LocalToAbsolutePoint(point));
+    // Add borders and padding etc.
+    point = layout_object->BorderBoxFromEmbeddedContent(point);
+    return static_cast<gfx::PointF>(layout_object->LocalToAbsolutePoint(point));
   }
 
   return local_point;
@@ -3539,10 +3531,8 @@ gfx::PointF LocalFrameView::ConvertFromContainingEmbeddedContentView(
       return parent_point;
 
     gfx::PointF point = layout_object->AbsoluteToLocalPoint(parent_point);
-    // Subtract borders and padding
-    point.Offset(
-        (-layout_object->BorderLeft() - layout_object->PaddingLeft()).ToFloat(),
-        (-layout_object->BorderTop() - layout_object->PaddingTop()).ToFloat());
+    // Subtract borders and padding etc.
+    point = layout_object->EmbeddedContentFromBorderBox(point);
     return point;
   }
 

@@ -100,6 +100,42 @@ const absl::optional<PhysicalSize> LayoutEmbeddedContent::FrozenFrameSize()
   return absl::nullopt;
 }
 
+PhysicalOffset LayoutEmbeddedContent::EmbeddedContentOffset() const {
+  // Use |Border*()| instead of |Client*()| or |PhysicalContentBoxRect()|
+  // because this function does not take scrollbars into account.
+  // TODO(kojii): This is to match the existing code behavior. Not sure if this
+  // is correct.
+  PhysicalOffset offset(BorderLeft() + PaddingLeft(),
+                        BorderTop() + PaddingTop());
+  // TODO(kojii): The `object-fit` behaviors is not implemented yet.
+  return offset;
+}
+
+PhysicalOffset LayoutEmbeddedContent::EmbeddedContentFromBorderBox(
+    const PhysicalOffset& offset) const {
+  return offset - EmbeddedContentOffset();
+}
+
+gfx::PointF LayoutEmbeddedContent::EmbeddedContentFromBorderBox(
+    const gfx::PointF& point) const {
+  PhysicalOffset offset = EmbeddedContentOffset();
+  return gfx::PointF(point.x() - offset.left.ToFloat(),
+                     point.y() - offset.top.ToFloat());
+}
+
+PhysicalOffset LayoutEmbeddedContent::BorderBoxFromEmbeddedContent(
+    const PhysicalOffset& offset) const {
+  return offset + EmbeddedContentOffset();
+}
+
+gfx::Rect LayoutEmbeddedContent::BorderBoxFromEmbeddedContent(
+    const gfx::Rect& rect) const {
+  const PhysicalOffset offset = EmbeddedContentOffset();
+  return gfx::Rect(gfx::Point(rect.origin().x() + offset.left.ToInt(),
+                              rect.origin().y() + offset.top.ToInt()),
+                   rect.size());
+}
+
 PaintLayerType LayoutEmbeddedContent::LayerTypeRequired() const {
   NOT_DESTROYED();
   PaintLayerType type = LayoutReplaced::LayerTypeRequired();
