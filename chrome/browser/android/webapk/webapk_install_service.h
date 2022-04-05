@@ -35,19 +35,6 @@ enum class WebApkUpdateReason;
 
 class SkBitmap;
 
-// TODO(swestphal): Remove this after clank was updated to use the enum in
-// webapk_types.h.
-// A Java counterpart will be generated for this enum.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.webapps
-enum class WebApkInstallResult {
-  SUCCESS = 0,
-  FAILURE = 1,
-  // An install was initiated but it timed out. We did not get a response from
-  // the install service so it is possible that the install will complete some
-  // time in the future.
-  PROBABLE_FAILURE = 2,
-};
-
 // Service which talks to Chrome WebAPK server and Google Play to generate a
 // WebAPK on the server, download it, and install it.
 class WebApkInstallService : public KeyedService {
