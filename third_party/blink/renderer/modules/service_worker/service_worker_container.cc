@@ -91,15 +91,16 @@ bool HasFiredDomContentLoaded(const Document& document) {
   return !document.GetTiming().DomContentLoadedEventStart().is_null();
 }
 
-mojom::ServiceWorkerUpdateViaCache ParseUpdateViaCache(const String& value) {
+mojom::blink::ServiceWorkerUpdateViaCache ParseUpdateViaCache(
+    const String& value) {
   if (value == "imports")
-    return mojom::ServiceWorkerUpdateViaCache::kImports;
+    return mojom::blink::ServiceWorkerUpdateViaCache::kImports;
   if (value == "all")
-    return mojom::ServiceWorkerUpdateViaCache::kAll;
+    return mojom::blink::ServiceWorkerUpdateViaCache::kAll;
   if (value == "none")
-    return mojom::ServiceWorkerUpdateViaCache::kNone;
+    return mojom::blink::ServiceWorkerUpdateViaCache::kNone;
   // Default value.
-  return mojom::ServiceWorkerUpdateViaCache::kImports;
+  return mojom::blink::ServiceWorkerUpdateViaCache::kImports;
 }
 
 class GetRegistrationCallback : public WebServiceWorkerProvider::
@@ -343,7 +344,7 @@ ScriptPromise ServiceWorkerContainer::registerServiceWorker(
     }
   }
 
-  mojom::ServiceWorkerUpdateViaCache update_via_cache =
+  mojom::blink::ServiceWorkerUpdateViaCache update_via_cache =
       ParseUpdateViaCache(options->updateViaCache());
   absl::optional<mojom::blink::ScriptType> script_type =
       Script::ParseScriptType(options->type());
