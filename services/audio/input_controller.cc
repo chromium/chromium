@@ -181,6 +181,7 @@ InputController::InputController(
     media::UserInputMonitor* user_input_monitor,
     InputStreamActivityMonitor* activity_monitor,
     DeviceOutputListener* device_output_listener,
+    AecdumpRecordingManager* aecdump_recording_manager,
     media::mojom::AudioProcessingConfigPtr processing_config,
     const media::AudioParameters& params,
     StreamType type)
@@ -199,7 +200,7 @@ InputController::InputController(
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   MaybeSetUpAudioProcessing(std::move(processing_config), params,
-                            device_output_listener);
+                            device_output_listener, aecdump_recording_manager);
 #endif
 
   if (!user_input_monitor_) {
@@ -212,7 +213,8 @@ InputController::InputController(
 void InputController::MaybeSetUpAudioProcessing(
     media::mojom::AudioProcessingConfigPtr processing_config,
     const media::AudioParameters& params,
-    DeviceOutputListener* device_output_listener) {
+    DeviceOutputListener* device_output_listener,
+    AecdumpRecordingManager* aecdump_recording_manager) {
   if (!device_output_listener)
     return;
 
@@ -220,24 +222,25 @@ void InputController::MaybeSetUpAudioProcessing(
         processing_config->settings.NeedAudioModification())) {
     return;
   }
-    // Unretained() is safe, since |this| and |event_handler_| outlive
-    // |audio_processor_handler_|.
-    audio_processor_handler_ = std::make_unique<AudioProcessorHandler>(
-        processing_config->settings, params,
-        base::BindRepeating(&EventHandler::OnLog,
-                            base::Unretained(event_handler_)),
-        base::BindRepeating(&InputController::DeliverProcessedAudio,
-                            base::Unretained(this)),
-        std::move(processing_config->controls_receiver));
+  // Unretained() is safe, since |this| and |event_handler_| outlive
+  // |audio_processor_handler_|.
+  audio_processor_handler_ = std::make_unique<AudioProcessorHandler>(
+      processing_config->settings, params,
+      base::BindRepeating(&EventHandler::OnLog,
+                          base::Unretained(event_handler_)),
+      base::BindRepeating(&InputController::DeliverProcessedAudio,
+                          base::Unretained(this)),
+      std::move(processing_config->controls_receiver),
+      aecdump_recording_manager);
 
-    if (!processing_config->settings.NeedPlayoutReference())
-      return;
+  if (!processing_config->settings.NeedPlayoutReference())
+    return;
 
-    // Unretained() is safe, since |event_handler_| outlives |output_tapper_|.
-    output_tapper_ = std::make_unique<OutputTapper>(
-        device_output_listener, audio_processor_handler_.get(),
-        base::BindRepeating(&EventHandler::OnLog,
-                            base::Unretained(event_handler_)));
+  // Unretained() is safe, since |event_handler_| outlives |output_tapper_|.
+  output_tapper_ = std::make_unique<OutputTapper>(
+      device_output_listener, audio_processor_handler_.get(),
+      base::BindRepeating(&EventHandler::OnLog,
+                          base::Unretained(event_handler_)));
 }
 #endif
 
@@ -256,6 +259,7 @@ std::unique_ptr<InputController> InputController::Create(
     media::UserInputMonitor* user_input_monitor,
     InputStreamActivityMonitor* activity_monitor,
     DeviceOutputListener* device_output_listener,
+    AecdumpRecordingManager* aecdump_recording_manager,
     media::mojom::AudioProcessingConfigPtr processing_config,
     const media::AudioParameters& params,
     const std::string& device_id,
@@ -276,8 +280,8 @@ std::unique_ptr<InputController> InputController::Create(
   std::unique_ptr<InputController> controller =
       base::WrapUnique(new InputController(
           event_handler, sync_writer, user_input_monitor, activity_monitor,
-          device_output_listener, std::move(processing_config), params,
-          ParamsToStreamType(params)));
+          device_output_listener, aecdump_recording_manager,
+          std::move(processing_config), params, ParamsToStreamType(params)));
 
   controller->DoCreate(audio_manager, params, device_id, enable_agc);
   return controller;

@@ -18,6 +18,7 @@
 #include "media/base/audio_processing.h"
 #include "media/base/user_input_monitor.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/audio/aecdump_recording_manager.h"
 #include "services/audio/concurrent_stream_metric_reporter.h"
 #include "services/audio/device_output_listener.h"
 #include "services/audio/reference_output.h"
@@ -101,6 +102,7 @@ class TimeSourceInputControllerTest : public ::testing::Test {
         audio_manager_(std::make_unique<media::FakeAudioManager>(
             std::make_unique<media::TestAudioThread>(false),
             &log_factory_)),
+        aecdump_recording_manager_(audio_manager_->GetTaskRunner()),
         params_(media::AudioParameters::AUDIO_FAKE,
                 kChannelLayout,
                 kSampleRate,
@@ -120,16 +122,17 @@ class TimeSourceInputControllerTest : public ::testing::Test {
     controller_ = InputController::Create(
         audio_manager_.get(), &event_handler_, &sync_writer_,
         &user_input_monitor_, &mock_stream_activity_monitor_,
-        /*device_output_listener =*/nullptr,
+        /*device_output_listener =*/nullptr, &aecdump_recording_manager_,
         /*processing_config =*/nullptr, params_,
         media::AudioDeviceDescription::kDefaultDeviceId, false);
   }
 
   base::test::TaskEnvironment task_environment_;
 
+  std::unique_ptr<media::AudioManager> audio_manager_;
+  AecdumpRecordingManager aecdump_recording_manager_;
   std::unique_ptr<InputController> controller_;
   media::FakeAudioLogFactory log_factory_;
-  std::unique_ptr<media::AudioManager> audio_manager_;
   MockInputControllerEventHandler event_handler_;
   MockSyncWriter sync_writer_;
   MockUserInputMonitor user_input_monitor_;
@@ -282,8 +285,9 @@ class TimeSourceInputControllerTestWithDeviceListener
     this->controller_ = InputController::Create(
         this->audio_manager_.get(), &this->event_handler_, &this->sync_writer_,
         &this->user_input_monitor_, &this->mock_stream_activity_monitor_,
-        &this->device_output_listener_, std::move(processing_config_),
-        this->params_, media::AudioDeviceDescription::kDefaultDeviceId, false);
+        &this->device_output_listener_, &this->aecdump_recording_manager_,
+        std::move(processing_config_), this->params_,
+        media::AudioDeviceDescription::kDefaultDeviceId, false);
   }
 
   enum class AudioProcessingType {

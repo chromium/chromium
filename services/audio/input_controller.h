@@ -39,6 +39,7 @@ class UserInputMonitor;
 
 namespace audio {
 class AudioProcessorHandler;
+class AecdumpRecordingManager;
 class AudioCallback;
 class OutputTapper;
 class DeviceOutputListener;
@@ -153,6 +154,7 @@ class InputController final : public StreamMonitor {
       media::UserInputMonitor* user_input_monitor,
       InputStreamActivityMonitor* activity_monitor,
       DeviceOutputListener* device_output_listener,
+      AecdumpRecordingManager* aecdump_recording_manager,
       media::mojom::AudioProcessingConfigPtr processing_config,
       const media::AudioParameters& params,
       const std::string& device_id,
@@ -203,6 +205,7 @@ class InputController final : public StreamMonitor {
                   media::UserInputMonitor* user_input_monitor,
                   InputStreamActivityMonitor* activity_monitor,
                   DeviceOutputListener* device_output_listener,
+                  AecdumpRecordingManager* aecdump_recording_manager,
                   media::mojom::AudioProcessingConfigPtr processing_config,
                   const media::AudioParameters& params,
                   StreamType type);
@@ -263,7 +266,8 @@ class InputController final : public StreamMonitor {
   void MaybeSetUpAudioProcessing(
       media::mojom::AudioProcessingConfigPtr processing_config,
       const media::AudioParameters& params,
-      DeviceOutputListener* device_output_listener);
+      DeviceOutputListener* device_output_listener,
+      AecdumpRecordingManager* aecdump_recording_manager);
 
   // Used as a callback for |audio_processor_handler_|.
   void DeliverProcessedAudio(const media::AudioBus& audio_bus,

@@ -7,11 +7,13 @@
 
 #include <atomic>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "media/base/audio_processing.h"
 #include "media/mojo/mojom/audio_processing.mojom.h"
 #include "media/webrtc/audio_processor.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/audio/aecdump_recording_manager.h"
 #include "services/audio/reference_output.h"
 
 namespace media {
@@ -23,7 +25,7 @@ namespace audio {
 
 // Encapsulates audio processing effects in the audio process, using a
 // media::AudioProcessor. Forwards capture audio, playout audio, and
-// AudioProcessorControls calls to the processor.
+// control calls to the processor.
 //
 // The class can be operated on by three different sequences:
 // - An owning sequence, which performs construction, destruction, getting
@@ -35,9 +37,9 @@ namespace audio {
 // specified. It is the responsibility of the owner to ensure that the playout
 // thread and capture thread stop calling into the AudioProcessorHandler before
 // destruction.
-class AudioProcessorHandler final
-    : public ReferenceOutput::Listener,
-      public media::mojom::AudioProcessorControls {
+class AudioProcessorHandler final : public ReferenceOutput::Listener,
+                                    public media::mojom::AudioProcessorControls,
+                                    public AecdumpRecordingSource {
  public:
   using DeliverProcessedAudioCallback =
       media::AudioProcessor::DeliverProcessedAudioCallback;
@@ -56,13 +58,17 @@ class AudioProcessorHandler final
   // |deliver_processed_audio_callback| is used to deliver processed audio
   // provided to ProcessCapturedAudio().
   // |controls_receiver| calls are received by the AudioProcessorHandler.
-  explicit AudioProcessorHandler(
+  // |aecdump_recording_manager| is used to register and deregister an aecdump
+  // recording source, and must outlive the AudioProcessorHandler if not null.
+  AudioProcessorHandler(
       const media::AudioProcessingSettings& settings,
       const media::AudioParameters& audio_format,
       LogCallback log_callback,
       DeliverProcessedAudioCallback deliver_processed_audio_callback,
       mojo::PendingReceiver<media::mojom::AudioProcessorControls>
-          controls_receiver);
+          controls_receiver,
+      AecdumpRecordingManager* aecdump_recording_manager);
+
   AudioProcessorHandler(const AudioProcessorHandler&) = delete;
   AudioProcessorHandler& operator=(const AudioProcessorHandler&) = delete;
   ~AudioProcessorHandler() final;
@@ -90,6 +96,10 @@ class AudioProcessorHandler final
   void GetStats(GetStatsCallback callback) final;
   void SetPreferredNumCaptureChannels(int32_t num_preferred_channels) final;
 
+  // AecdumpRecordingSource implementation.
+  void StartAecdump(base::File aecdump_file) final;
+  void StopAecdump() final;
+
   SEQUENCE_CHECKER(owning_sequence_);
 
   // The audio processor is accessed on all threads (OS capture thread, OS
@@ -98,6 +108,10 @@ class AudioProcessorHandler final
   const std::unique_ptr<media::AudioProcessor> audio_processor_;
 
   mojo::Receiver<media::mojom::AudioProcessorControls> receiver_
+      GUARDED_BY_CONTEXT(owning_sequence_);
+
+  // Used to deregister as an aecdump recording source upon destruction.
+  const raw_ptr<AecdumpRecordingManager> aecdump_recording_manager_
       GUARDED_BY_CONTEXT(owning_sequence_);
 
   // The number of channels preferred by consumers of the captured audio.

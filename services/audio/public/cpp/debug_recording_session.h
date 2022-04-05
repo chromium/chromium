@@ -49,6 +49,10 @@ class DebugRecordingSession : public media::AudioDebugRecordingSession {
                        uint32_t id,
                        CreateWavFileCallback reply_callback) override;
 
+    // Creates file with name "|file_name_base_|.|id|.aecdump".
+    void CreateAecdumpFile(uint32_t id,
+                           CreateAecdumpFileCallback reply_callback) override;
+
    private:
     mojo::Receiver<mojom::DebugRecordingFileProvider> receiver_;
     base::FilePath file_name_base_;

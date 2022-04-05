@@ -10,19 +10,23 @@
 #include "base/bind.h"
 #include "media/audio/audio_debug_recording_manager.h"
 #include "media/audio/audio_manager.h"
+#include "services/audio/aecdump_recording_manager.h"
 
 namespace audio {
 
 DebugRecording::DebugRecording(
     mojo::PendingReceiver<mojom::DebugRecording> receiver,
-    media::AudioManager* audio_manager)
-    : audio_manager_(audio_manager), receiver_(this, std::move(receiver)) {
+    media::AudioManager* audio_manager,
+    AecdumpRecordingManager* aecdump_recording_manager)
+    : audio_manager_(audio_manager),
+      aecdump_recording_manager_(aecdump_recording_manager),
+      receiver_(this, std::move(receiver)) {
   DCHECK(audio_manager_ != nullptr);
   DCHECK(audio_manager_->GetTaskRunner()->BelongsToCurrentThread());
 
-  // On connection error debug recording is disabled, but the object is not
-  // destroyed. It will be cleaned-up by service either on next bind request
-  // or when service is shut down.
+  // The remote end may disable debug recording by closing the connection. The
+  // DebugRecording object itself is not destroyed: It will be cleaned-up by
+  // service either on next bind request or when service is shut down.
   receiver_.set_disconnect_handler(
       base::BindOnce(&DebugRecording::Disable, base::Unretained(this)));
 }
@@ -37,12 +41,18 @@ void DebugRecording::Enable(
   DCHECK(audio_manager_->GetTaskRunner()->BelongsToCurrentThread());
   DCHECK(!IsEnabled());
   file_provider_.Bind(std::move(recording_file_provider));
+
   media::AudioDebugRecordingManager* debug_recording_manager =
       audio_manager_->GetAudioDebugRecordingManager();
-  if (debug_recording_manager == nullptr)
-    return;
-  debug_recording_manager->EnableDebugRecording(base::BindRepeating(
-      &DebugRecording::CreateWavFile, weak_factory_.GetWeakPtr()));
+  if (debug_recording_manager) {
+    debug_recording_manager->EnableDebugRecording(base::BindRepeating(
+        &DebugRecording::CreateWavFile, weak_factory_.GetWeakPtr()));
+  }
+
+  if (aecdump_recording_manager_) {
+    aecdump_recording_manager_->EnableDebugRecording(base::BindRepeating(
+        &DebugRecording::CreateAecdumpFile, weak_factory_.GetWeakPtr()));
+  }
 }
 
 void DebugRecording::Disable() {
@@ -54,9 +64,13 @@ void DebugRecording::Disable() {
 
   media::AudioDebugRecordingManager* debug_recording_manager =
       audio_manager_->GetAudioDebugRecordingManager();
-  if (debug_recording_manager == nullptr)
-    return;
-  debug_recording_manager->DisableDebugRecording();
+  if (debug_recording_manager) {
+    debug_recording_manager->DisableDebugRecording();
+  }
+
+  if (aecdump_recording_manager_) {
+    aecdump_recording_manager_->DisableDebugRecording();
+  }
 }
 
 void DebugRecording::CreateWavFile(
@@ -65,6 +79,14 @@ void DebugRecording::CreateWavFile(
     mojom::DebugRecordingFileProvider::CreateWavFileCallback reply_callback) {
   DCHECK(audio_manager_->GetTaskRunner()->BelongsToCurrentThread());
   file_provider_->CreateWavFile(stream_type, id, std::move(reply_callback));
+}
+
+void DebugRecording::CreateAecdumpFile(
+    uint32_t id,
+    mojom::DebugRecordingFileProvider::CreateAecdumpFileCallback
+        reply_callback) {
+  DCHECK(audio_manager_->GetTaskRunner()->BelongsToCurrentThread());
+  file_provider_->CreateAecdumpFile(id, std::move(reply_callback));
 }
 
 bool DebugRecording::IsEnabled() {

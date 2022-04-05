@@ -15,12 +15,14 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/audio/aecdump_recording_manager.h"
 #include "services/audio/public/cpp/debug_recording_session.h"
 #include "services/audio/public/mojom/debug_recording.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-    using testing::_;
+using testing::_;
 using testing::Exactly;
+using testing::Sequence;
 
 namespace audio {
 
@@ -29,7 +31,9 @@ namespace {
 const base::FilePath::CharType kBaseFileName[] =
     FILE_PATH_LITERAL("base_file_name");
 
-// Empty function bound and passed to DebugRecording::CreateWavFile.
+// Empty function bound and passed to DebugRecording::CreateWavFile and
+// DebugRecording::CreateAecdumpFile.
+
 void FileCreated(base::File file) {}
 
 }  // namespace
@@ -47,6 +51,8 @@ class MockFileProvider : public mojom::DebugRecordingFileProvider {
   MOCK_METHOD2(DoCreateWavFile,
                void(media::AudioDebugRecordingStreamType stream_type,
                     uint32_t id));
+  MOCK_METHOD1(DoCreateAecdumpFile, void(uint32_t id));
+
   void CreateWavFile(media::AudioDebugRecordingStreamType stream_type,
                      uint32_t id,
                      CreateWavFileCallback reply_callback) override {
@@ -54,8 +60,24 @@ class MockFileProvider : public mojom::DebugRecordingFileProvider {
     std::move(reply_callback).Run(base::File());
   }
 
+  void CreateAecdumpFile(uint32_t id,
+                         CreateAecdumpFileCallback reply_callback) override {
+    DoCreateAecdumpFile(id);
+    std::move(reply_callback).Run(base::File());
+  }
+
  private:
   mojo::Receiver<mojom::DebugRecordingFileProvider> receiver_;
+};
+
+class MockAecdumpRecordingManager : public AecdumpRecordingManager {
+ public:
+  explicit MockAecdumpRecordingManager(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+      : AecdumpRecordingManager(task_runner) {}
+
+  MOCK_METHOD1(EnableDebugRecording, void(CreateFileCallback));
+  MOCK_METHOD0(DisableDebugRecording, void());
 };
 
 class DebugRecordingTest : public media::AudioDebugRecordingTest {
@@ -70,6 +92,9 @@ class DebugRecordingTest : public media::AudioDebugRecordingTest {
   void SetUp() override {
     CreateAudioManager();
     InitializeAudioDebugRecordingManager();
+    mock_aecdump_recording_manager_ =
+        std::make_unique<MockAecdumpRecordingManager>(
+            mock_audio_manager_->GetTaskRunner());
   }
 
   void TearDown() override { ShutdownAudioManager(); }
@@ -80,7 +105,8 @@ class DebugRecordingTest : public media::AudioDebugRecordingTest {
       remote_debug_recording_.reset();
     debug_recording_ = std::make_unique<DebugRecording>(
         remote_debug_recording_.BindNewPipeAndPassReceiver(),
-        static_cast<media::AudioManager*>(mock_audio_manager_.get()));
+        static_cast<media::AudioManager*>(mock_audio_manager_.get()),
+        mock_aecdump_recording_manager_.get());
   }
 
   void EnableDebugRecording() {
@@ -96,36 +122,55 @@ class DebugRecordingTest : public media::AudioDebugRecordingTest {
     task_environment_.RunUntilIdle();
   }
 
+  std::unique_ptr<MockAecdumpRecordingManager> mock_aecdump_recording_manager_;
   std::unique_ptr<DebugRecording> debug_recording_;
   mojo::Remote<mojom::DebugRecording> remote_debug_recording_;
 };
 
 TEST_F(DebugRecordingTest, EnableResetEnablesDisablesDebugRecording) {
+  Sequence s1;
+  EXPECT_CALL(*mock_debug_recording_manager_, EnableDebugRecording(_))
+      .InSequence(s1);
+  EXPECT_CALL(*mock_debug_recording_manager_, DisableDebugRecording())
+      .InSequence(s1);
+  Sequence s2;
+  EXPECT_CALL(*mock_aecdump_recording_manager_, EnableDebugRecording(_))
+      .InSequence(s2);
+  EXPECT_CALL(*mock_aecdump_recording_manager_, DisableDebugRecording())
+      .InSequence(s2);
+
   CreateDebugRecording();
-
-  EXPECT_CALL(*mock_debug_recording_manager_, EnableDebugRecording(_));
   EnableDebugRecording();
-
-  EXPECT_CALL(*mock_debug_recording_manager_, DisableDebugRecording());
   DestroyDebugRecording();
 }
 
 TEST_F(DebugRecordingTest, ResetWithoutEnableDoesNotDisableDebugRecording) {
-  CreateDebugRecording();
-
   EXPECT_CALL(*mock_debug_recording_manager_, DisableDebugRecording()).Times(0);
+  EXPECT_CALL(*mock_aecdump_recording_manager_, DisableDebugRecording())
+      .Times(0);
+
+  CreateDebugRecording();
   DestroyDebugRecording();
 }
 
-TEST_F(DebugRecordingTest, CreateWavFileCallsFileProviderCreateWavFile) {
+TEST_F(DebugRecordingTest, CreateFileCallsFileProviderCreateFile) {
+  Sequence s1;
+  EXPECT_CALL(*mock_debug_recording_manager_, EnableDebugRecording(_))
+      .InSequence(s1);
+  EXPECT_CALL(*mock_debug_recording_manager_, DisableDebugRecording())
+      .InSequence(s1);
+  Sequence s2;
+  EXPECT_CALL(*mock_aecdump_recording_manager_, EnableDebugRecording(_))
+      .InSequence(s2);
+  EXPECT_CALL(*mock_aecdump_recording_manager_, DisableDebugRecording())
+      .InSequence(s2);
+
   CreateDebugRecording();
 
   mojo::PendingRemote<mojom::DebugRecordingFileProvider> remote_file_provider;
   MockFileProvider mock_file_provider(
       remote_file_provider.InitWithNewPipeAndPassReceiver(),
       base::FilePath(kBaseFileName));
-
-  EXPECT_CALL(*mock_debug_recording_manager_, EnableDebugRecording(_));
   remote_debug_recording_->Enable(std::move(remote_file_provider));
   task_environment_.RunUntilIdle();
 
@@ -133,11 +178,13 @@ TEST_F(DebugRecordingTest, CreateWavFileCallsFileProviderCreateWavFile) {
   EXPECT_CALL(
       mock_file_provider,
       DoCreateWavFile(media::AudioDebugRecordingStreamType::kInput, id));
+  EXPECT_CALL(mock_file_provider, DoCreateAecdumpFile(id));
+
   debug_recording_->CreateWavFile(media::AudioDebugRecordingStreamType::kInput,
                                   id, base::BindOnce(&FileCreated));
+  debug_recording_->CreateAecdumpFile(id, base::BindOnce(&FileCreated));
   task_environment_.RunUntilIdle();
 
-  EXPECT_CALL(*mock_debug_recording_manager_, DisableDebugRecording());
   DestroyDebugRecording();
 }
 

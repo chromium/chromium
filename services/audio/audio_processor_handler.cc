@@ -17,19 +17,29 @@ AudioProcessorHandler::AudioProcessorHandler(
     LogCallback log_callback,
     DeliverProcessedAudioCallback deliver_processed_audio_callback,
     mojo::PendingReceiver<media::mojom::AudioProcessorControls>
-        controls_receiver)
+        controls_receiver,
+    AecdumpRecordingManager* aecdump_recording_manager)
     : audio_processor_(media::AudioProcessor::Create(
           std::move(deliver_processed_audio_callback),
           std::move(log_callback),
           settings,
           /*input_format=*/audio_format,
           /*output_format=*/audio_format)),
-      receiver_(this, std::move(controls_receiver)) {
+      receiver_(this, std::move(controls_receiver)),
+      aecdump_recording_manager_(aecdump_recording_manager) {
   DCHECK(settings.NeedAudioModification());
+  if (aecdump_recording_manager_) {
+    aecdump_recording_manager->RegisterAecdumpSource(this);
+  }
 }
 
 AudioProcessorHandler::~AudioProcessorHandler() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+  if (aecdump_recording_manager_) {
+    // If an aecdump is currently ongoing, this will trigger a StopAecdump()
+    // call.
+    aecdump_recording_manager_->DeregisterAecdumpSource(this);
+  }
 }
 
 void AudioProcessorHandler::ProcessCapturedAudio(
@@ -70,5 +80,15 @@ void AudioProcessorHandler::SetPreferredNumCaptureChannels(
       num_preferred_channels, 1, audio_processor_->OutputFormat().channels());
   num_preferred_channels_.store(num_preferred_channels,
                                 std::memory_order_release);
+}
+
+void AudioProcessorHandler::StartAecdump(base::File aecdump_file) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+  audio_processor_->OnStartDump(std::move(aecdump_file));
+}
+
+void AudioProcessorHandler::StopAecdump() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+  audio_processor_->OnStopDump();
 }
 }  // namespace audio

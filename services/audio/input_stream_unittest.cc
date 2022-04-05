@@ -123,7 +123,7 @@ class AudioServiceInputStreamTest : public testing::Test {
  public:
   AudioServiceInputStreamTest()
       : audio_manager_(std::make_unique<media::TestAudioThread>(false)),
-        stream_factory_(&audio_manager_),
+        stream_factory_(&audio_manager_, /*aecdump_recording_manager=*/nullptr),
         stream_factory_receiver_(
             &stream_factory_,
             remote_stream_factory_.BindNewPipeAndPassReceiver()) {}

@@ -40,8 +40,10 @@ std::unique_ptr<OutputDeviceMixerManager> MaybeCreateOutputDeviceMixerManager(
 }  // namespace
 #endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 
-StreamFactory::StreamFactory(media::AudioManager* audio_manager)
+StreamFactory::StreamFactory(media::AudioManager* audio_manager,
+                             AecdumpRecordingManager* aecdump_recording_manager)
     : audio_manager_(audio_manager),
+      aecdump_recording_manager_(aecdump_recording_manager),
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
       output_device_mixer_manager_(
           MaybeCreateOutputDeviceMixerManager(audio_manager)),
@@ -83,7 +85,7 @@ void StreamFactory::CreateInputStream(
   input_streams_.insert(std::make_unique<InputStream>(
       std::move(created_callback), std::move(deleter_callback),
       std::move(stream_receiver), std::move(client), std::move(observer),
-      std::move(pending_log), audio_manager_,
+      std::move(pending_log), audio_manager_, aecdump_recording_manager_,
       UserInputMonitor::Create(std::move(key_press_count_buffer)),
       &stream_count_metric_reporter_,
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)

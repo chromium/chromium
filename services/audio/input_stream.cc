@@ -71,6 +71,7 @@ InputStream::InputStream(
     mojo::PendingRemote<media::mojom::AudioInputStreamObserver> observer,
     mojo::PendingRemote<media::mojom::AudioLog> log,
     media::AudioManager* audio_manager,
+    AecdumpRecordingManager* aecdump_recording_manager,
     std::unique_ptr<UserInputMonitor> user_input_monitor,
     InputStreamActivityMonitor* activity_monitor,
     DeviceOutputListener* device_output_listener,
@@ -135,8 +136,8 @@ InputStream::InputStream(
 
   controller_ = InputController::Create(
       audio_manager, this, writer_.get(), user_input_monitor_.get(),
-      activity_monitor, device_output_listener, std::move(processing_config),
-      params, device_id, enable_agc);
+      activity_monitor, device_output_listener, aecdump_recording_manager,
+      std::move(processing_config), params, device_id, enable_agc);
 }
 
 InputStream::~InputStream() {
