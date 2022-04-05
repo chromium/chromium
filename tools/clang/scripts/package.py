@@ -250,8 +250,9 @@ def main():
   ]
   if sys.platform == 'win32':
     want.extend([
-      'bin/clang-cl.exe',
-      'bin/lld-link.exe',
+        'bin/clang-cl.exe',
+        'bin/lld-link.exe',
+        'bin/llvm-ml.exe',
     ])
   else:
     want.extend([
