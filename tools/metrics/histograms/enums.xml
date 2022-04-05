@@ -79175,6 +79175,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="ConsecutivePendingBufferOverflowDuringInit"/>
 </enum>
 
+<enum name="RTCVideoEncoderShutdownReason">
+  <int value="0" label="kSuccessfulRelease"/>
+  <int value="1" label="kInvalidArgument"/>
+  <int value="2" label="kIllegalState"/>
+  <int value="3" label="kPlatformFailure"/>
+</enum>
+
 <enum name="RulesetVerificationStatus">
   <int value="0" label="Not verified"/>
   <int value="1" label="Intact"/>

@@ -4065,6 +4065,27 @@ chromium-metrics-reviews@google.com.
   <summary>Video codec profile used in RTC video encoder.</summary>
 </histogram>
 
+<histogram name="Media.RTCVideoEncoderShutdownReason.{Codecs}"
+    enum="RTCVideoEncoderShutdownReason" expires_after="never">
+<!-- expires-never: Codec and container support planning metric. -->
+
+  <owner>mcasas@chromium.org</owner>
+  <owner>sprang@chromium.org</owner>
+  <owner>chromeos-gfx@chromium.org</owner>
+  <summary>
+    Records if the {Codecs} encoder was torn down because the stream ended, or
+    if it was due to an encoder error. Recorded once when shutting down an
+    accelerated (or out of process) video encoder.
+  </summary>
+  <token key="Codecs">
+    <variant name="AV1" summary=""/>
+    <variant name="H264" summary=""/>
+    <variant name="Other" summary=""/>
+    <variant name="VP8" summary=""/>
+    <variant name="VP9" summary=""/>
+  </token>
+</histogram>
+
 <histogram name="Media.RTCVideoEncoderTimestampMatchSuccess"
     enum="BooleanSuccess" expires_after="M77">
   <owner>emircan@chromium.org</owner>
