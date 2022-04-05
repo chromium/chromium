@@ -5172,6 +5172,24 @@
             ]
         }
     ],
+    "PageInfoDiscoverabilityTimeout": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled3000_20220325",
+                    "params": {
+                        "PermissionIconTimeoutMs": "3000"
+                    },
+                    "enable_features": [
+                        "PageInfoDiscoverability"
+                    ]
+                }
+            ]
+        }
+    ],
     "PageInfoHistory": [
         {
             "platforms": [
