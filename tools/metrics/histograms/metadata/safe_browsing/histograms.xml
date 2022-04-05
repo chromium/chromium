@@ -1377,6 +1377,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.PageLoadToken.Duration" units="ms"
+    expires_after="2022-10-05">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the duration between a token is created and a token is retrieved.
+    Logged each time GetPageLoadToken is called and the token is found in the
+    token map.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.PageLoadToken.HasExpired" units="BooleanExpired"
     expires_after="2022-09-02">
   <owner>xinghuilu@chromium.org</owner>

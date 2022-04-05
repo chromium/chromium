@@ -638,6 +638,9 @@ ChromeUserPopulation::PageLoadToken VerdictCacheManager::GetPageLoadToken(
 
   ChromeUserPopulation::PageLoadToken token = page_load_token_map_[hostname];
   bool has_expired = HasPageLoadTokenExpired(token.token_time_msec());
+  base::UmaHistogramLongTimes(
+      "SafeBrowsing.PageLoadToken.Duration",
+      base::Time::Now() - base::Time::FromJavaTime(token.token_time_msec()));
   base::UmaHistogramBoolean("SafeBrowsing.PageLoadToken.HasExpired",
                             has_expired);
   return has_expired ? ChromeUserPopulation::PageLoadToken() : token;
