@@ -253,7 +253,7 @@ const base::Feature kLacrosDisableChromeApps{"LacrosDisableChromeApps",
 // When this feature is enabled, Lacros is allowed to roll out by policy to
 // Googlers.
 const base::Feature kLacrosGooglePolicyRollout{
-    "LacrosGooglePolicyRollout", base::FEATURE_DISABLED_BY_DEFAULT};
+    "LacrosGooglePolicyRollout", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Makes LaCrOS allowed for Family Link users.
 // With this feature disabled LaCrOS cannot be enabled for Family Link users.
@@ -479,8 +479,16 @@ bool IsAshWebBrowserEnabled() {
     case LacrosAvailability::kUserChoice:
       break;
     case LacrosAvailability::kLacrosDisallowed:
+      return true;
     case LacrosAvailability::kSideBySide:
     case LacrosAvailability::kLacrosPrimary:
+      // Normally, policy should override Finch. Due to complications in the
+      // Google rollout, in the short term Finch will override policy if Finch
+      // is enabling this feature.
+      if (IsGoogleInternal() &&
+          base::FeatureList::IsEnabled(chromeos::features::kLacrosOnly)) {
+        return false;
+      }
       return true;
     case LacrosAvailability::kLacrosOnly:
       return false;
