@@ -344,20 +344,13 @@ TEST_F(AudioProcessorTest, StartAecDumpDuringOngoingAecDump) {
 TEST_P(AudioProcessorTestMultichannelAndFormat, TestStereoAudio) {
   const bool use_multichannel_processing = std::get<0>(GetParam());
 
-  // Construct left and right channels, and populate each channel with
-  // different values.
-  const int size = media::AudioBus::CalculateMemorySize(params_);
-  std::unique_ptr<float, base::AlignedFreeDeleter> left_channel(
-      static_cast<float*>(base::AlignedAlloc(size, 32)));
-  std::unique_ptr<float, base::AlignedFreeDeleter> right_channel(
-      static_cast<float*>(base::AlignedAlloc(size, 32)));
-  std::unique_ptr<media::AudioBus> wrapper =
-      media::AudioBus::CreateWrapper(params_.channels());
-  wrapper->set_frames(params_.frames_per_buffer());
-  wrapper->SetChannelData(0, left_channel.get());
-  wrapper->SetChannelData(1, right_channel.get());
-  wrapper->Zero();
-  wrapper->channel(0)[0] = 1.0f;
+  // Construct a stereo audio bus and fill the left channel with content.
+  std::unique_ptr<media::AudioBus> data_bus =
+      media::AudioBus::Create(params_.channels(), params_.frames_per_buffer());
+  data_bus->Zero();
+  for (int i = 0; i < data_bus->frames(); ++i) {
+    data_bus->channel(0)[i] = (i % 11) * 0.1f - 0.5f;
+  }
 
   // Test without and with audio processing enabled.
   for (bool use_apm : {false, true}) {
@@ -396,7 +389,7 @@ TEST_P(AudioProcessorTestMultichannelAndFormat, TestStereoAudio) {
         EXPECT_CALL(mock_capture_callback_, Run(_, _, _)).Times(1);
         // Pass audio for processing.
         audio_processor->ProcessCapturedAudio(
-            *wrapper, pushed_capture_time, num_preferred_channels, 0.0, false);
+            *data_bus, pushed_capture_time, num_preferred_channels, 0.0, false);
       }
       // At this point, the audio processing algorithms have gotten past any
       // initial buffer silence generated from resamplers, FFTs, and whatnot.
@@ -409,20 +402,28 @@ TEST_P(AudioProcessorTestMultichannelAndFormat, TestStereoAudio) {
             if (!use_apm) {
               EXPECT_FALSE(new_volume.has_value());
             }
+            float left_channel_energy = 0.0f;
+            float right_channel_energy = 0.0f;
+            for (int i = 0; i < processed_audio.frames(); ++i) {
+              left_channel_energy +=
+                  processed_audio.channel(0)[i] * processed_audio.channel(0)[i];
+              right_channel_energy +=
+                  processed_audio.channel(1)[i] * processed_audio.channel(1)[i];
+            }
             if (use_apm && num_preferred_channels <= 1) {
               // Mono output. Output channels are averaged.
-              EXPECT_NE(processed_audio.channel(0)[0], 0);
-              EXPECT_NE(processed_audio.channel(1)[0], 0);
+              EXPECT_NE(left_channel_energy, 0);
+              EXPECT_NE(right_channel_energy, 0);
             } else {
               // Stereo output. Output channels are independent.
               // Note that after stereo mirroring, the _right_ channel is
               // non-zero.
-              EXPECT_EQ(processed_audio.channel(0)[0], 0);
-              EXPECT_NE(processed_audio.channel(1)[0], 0);
+              EXPECT_EQ(left_channel_energy, 0);
+              EXPECT_NE(right_channel_energy, 0);
             }
           });
       // Process one more frame of audio.
-      audio_processor->ProcessCapturedAudio(*wrapper, pushed_capture_time,
+      audio_processor->ProcessCapturedAudio(*data_bus, pushed_capture_time,
                                             num_preferred_channels, 0.0, false);
     }
   }

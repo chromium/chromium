@@ -11,8 +11,6 @@
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "media/webrtc/webrtc_features.h"
-#include "third_party/webrtc/api/audio/echo_canceller3_config.h"
-#include "third_party/webrtc/api/audio/echo_canceller3_factory.h"
 #include "third_party/webrtc/modules/audio_processing/aec_dump/aec_dump_factory.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
 
@@ -246,10 +244,6 @@ rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
     return nullptr;
 
   webrtc::AudioProcessingBuilder ap_builder;
-  if (settings.echo_cancellation) {
-    ap_builder.SetEchoControlFactory(
-        std::make_unique<webrtc::EchoCanceller3Factory>());
-  }
 
   webrtc::AudioProcessing::Config apm_config;
   apm_config.pipeline.multi_channel_render = true;
