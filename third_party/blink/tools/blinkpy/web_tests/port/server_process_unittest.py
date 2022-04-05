@@ -90,7 +90,6 @@ class FakeServerProcess(server_process.ServerProcess):
 
 
 class TestServerProcess(unittest.TestCase):
-    @unittest.skip("https://crbug.com/1309323")
     def test_basic(self):
         cmd = [
             sys.executable, '-c',

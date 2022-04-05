@@ -42,6 +42,7 @@ _quote_cmd = None
 
 if sys.platform == 'win32':
     import msvcrt
+    import pywintypes
     import win32pipe
     import win32file
     import subprocess
@@ -360,9 +361,9 @@ class ServerProcess(object):
             if avail > 0:
                 _, buf = win32file.ReadFile(handle, avail, None)
                 return buf
-        except Exception as error:  # pylint: disable=broad-except
+        except pywintypes.error as error:
             # 109 == win32 ERROR_BROKEN_PIPE
-            if error[0] not in (109, errno.ESHUTDOWN):
+            if error.args[0] not in (109, errno.ESHUTDOWN):
                 raise
         return None
 
