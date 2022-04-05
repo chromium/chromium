@@ -1,2 +1,1 @@
-#<skip -- https://crbug.com/1230894 -- locks up with popup open, only on Mac>
 AXFocusedUIElementChanged on AXMenuItem AXValue="Apple"

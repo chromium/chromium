@@ -287,10 +287,6 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
 
   absl::optional<std::vector<std::string>> expected_lines =
       test_helper_.LoadExpectationFile(expected_file);
-  if (!expected_lines) {
-    LOG(INFO) << "Skipping this test on this platform.";
-    return;
-  }
 
   // Get the test URL.
   GURL url(embedded_test_server()->GetURL("/" + std::string(file_dir) + "/" +
@@ -347,6 +343,14 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
           web_contents, ui::AXMode(), ax::mojom::Event::kNone);
       accessibility_waiter.WaitForNotification();
     }
+  }
+
+  // No expected lines indicate the test is marked to skip the expectations
+  // checks. If we reach this point, then it means no crashes during the test
+  // run and we can consider the test as succeeding.
+  if (!expected_lines) {
+    EXPECT_TRUE(true);
+    return;
   }
 
   // Validate against the expectation file.
