@@ -3820,18 +3820,6 @@ const char kOmniboxExperimentalKeywordModeDescription[] =
     "Enables various experimental features related to keyword mode, its "
     "suggestions and layout.";
 
-const char kOmniboxPedalsBatch2NonEnglishName[] =
-    "Omnibox Pedals batch 2 for non-English locales";
-const char kOmniboxPedalsBatch2NonEnglishDescription[] =
-    "Enable the second batch of Omnibox Pedals (Safety Check, etc.) for "
-    "locales other than 'en' and 'en-GB'.";
-
-const char kOmniboxPedalsTranslationConsoleName[] =
-    "Omnibox Pedals Translation Console";
-const char kOmniboxPedalsTranslationConsoleDescription[] =
-    "Use translation strings sourced from Translation Console "
-    "for triggering some omnibox Pedals (aka Chrome Actions).";
-
 const char kOmniboxShortBookmarkSuggestionsName[] =
     "Omnibox short bookmark suggestions";
 const char kOmniboxShortBookmarkSuggestionsDescription[] =

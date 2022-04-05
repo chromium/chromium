@@ -614,17 +614,8 @@ bool OmniboxFieldTrial::IsPedalsAndroidBatch1Enabled() {
   return base::FeatureList::IsEnabled(omnibox::kOmniboxPedalsAndroidBatch1);
 }
 
-bool OmniboxFieldTrial::IsPedalsBatch2NonEnglishEnabled() {
-  return base::FeatureList::IsEnabled(omnibox::kOmniboxPedalsBatch2NonEnglish);
-}
-
 bool OmniboxFieldTrial::IsPedalsBatch3NonEnglishEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kOmniboxPedalsBatch3NonEnglish);
-}
-
-bool OmniboxFieldTrial::IsPedalsTranslationConsoleEnabled() {
-  return base::FeatureList::IsEnabled(
-      omnibox::kOmniboxPedalsTranslationConsole);
 }
 
 bool OmniboxFieldTrial::IsExperimentalKeywordModeEnabled() {

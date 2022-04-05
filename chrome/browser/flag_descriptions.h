@@ -2191,12 +2191,6 @@ extern const char kOmniboxDriveSuggestionsDescriptions[];
 extern const char kOmniboxExperimentalKeywordModeName[];
 extern const char kOmniboxExperimentalKeywordModeDescription[];
 
-extern const char kOmniboxPedalsBatch2NonEnglishName[];
-extern const char kOmniboxPedalsBatch2NonEnglishDescription[];
-
-extern const char kOmniboxPedalsTranslationConsoleName[];
-extern const char kOmniboxPedalsTranslationConsoleDescription[];
-
 extern const char kScreenAIName[];
 extern const char kScreenAIDescription[];
 

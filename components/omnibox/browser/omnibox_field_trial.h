@@ -362,17 +362,9 @@ bool IsFuzzyUrlSuggestionsEnabled();
 // Returns true if the first batch of Pedals on Android is enabled.
 bool IsPedalsAndroidBatch1Enabled();
 
-// Returns true if the second batch of Pedals is enabled for non-English
-// locales.
-bool IsPedalsBatch2NonEnglishEnabled();
-
 // Returns true if the third batch of Pedals is enabled for non-English
 // locales.
 bool IsPedalsBatch3NonEnglishEnabled();
-
-// Returns true if the Pedals synonyms should be loaded from the translation
-// console.
-bool IsPedalsTranslationConsoleEnabled();
 
 // Simply a convenient wrapper for testing a flag. Used downstream for an
 // assortment of keyword mode experiments.

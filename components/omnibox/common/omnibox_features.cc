@@ -268,20 +268,10 @@ const base::Feature kOmniboxFuzzyUrlSuggestions{
 const base::Feature kOmniboxPedalsAndroidBatch1{
     "OmniboxPedalsAndroidBatch1", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Feature used to enable the second batch of Pedals (Safety Check, etc.)
-// for non-English locales (English locales are 'en' and 'en-GB').
-// This feature is only meaningful if `OmniboxPedalsBatch2` is enabled.
-const base::Feature kOmniboxPedalsBatch2NonEnglish{
-    "OmniboxPedalsBatch2NonEnglish", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Feature used to enable the third batch of Pedals (Find your phone, etc.)
 // for non-English locales (English locales are 'en' and 'en-GB').
 const base::Feature kOmniboxPedalsBatch3NonEnglish{
     "OmniboxPedalsBatch3NonEnglish", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Feature that enables loading synonyms from the translation console.
-const base::Feature kOmniboxPedalsTranslationConsole{
-    "OmniboxPedalsTranslationConsole", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // When enabled, use Assistant for omnibox voice query recognition instead of
 // Android's built-in voice recognition service. Only works on Android.

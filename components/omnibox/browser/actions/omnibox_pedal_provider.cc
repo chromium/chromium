@@ -305,39 +305,24 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
     ++token_id;
   }
 
-  if (OmniboxFieldTrial::IsPedalsTranslationConsoleEnabled()) {
-    ignore_group_ = LoadSynonymGroupString(
-        false, false,
-        l10n_util::GetStringUTF16(IDS_OMNIBOX_PEDALS_IGNORE_GROUP));
-    if (tokenize_characters_.empty()) {
-      // Translation console sourced data has lots of spaces, but in practice
-      // the ignore group doesn't include a single space sequence. Rather than
-      // burden l10n with getting this nuance in the data precisely specified,
-      // we simply hardcode to ignore spaces. This applies for all languages
-      // that don't tokenize on spaces (see `tokenize_characters_` above).
-      ignore_group_.AddSynonym(
-          OmniboxPedal::TokenSequence(std::vector<int>({dictionary_[u" "]})));
-    }
-    ignore_group_.SortSynonyms();
-  } else {
-    const base::Value* ignore_group_value =
-        concept_data->FindKey("ignore_group");
-    DCHECK_NE(ignore_group_value, nullptr);
-    ignore_group_ = LoadSynonymGroupValue(*ignore_group_value);
+  ignore_group_ = LoadSynonymGroupString(
+      false, false, l10n_util::GetStringUTF16(IDS_OMNIBOX_PEDALS_IGNORE_GROUP));
+  if (tokenize_characters_.empty()) {
+    // Translation console sourced data has lots of spaces, but in practice
+    // the ignore group doesn't include a single space sequence. Rather than
+    // burden l10n with getting this nuance in the data precisely specified,
+    // we simply hardcode to ignore spaces. This applies for all languages
+    // that don't tokenize on spaces (see `tokenize_characters_` above).
+    ignore_group_.AddSynonym(
+        OmniboxPedal::TokenSequence(std::vector<int>({dictionary_[u" "]})));
   }
+  ignore_group_.SortSynonyms();
 
   for (const auto& pedal_value :
        concept_data->FindKey("pedals")->GetListDeprecated()) {
     DCHECK(pedal_value.is_dict());
     const int id = pedal_value.FindIntKey("id").value();
     if (!locale_is_english) {
-      // These IDs are the first and last for batch 2. Skip loading if batch 2
-      // is not enabled for the current locale.
-      if (id >= static_cast<int>(OmniboxPedalId::RUN_CHROME_SAFETY_CHECK) &&
-          id <= static_cast<int>(OmniboxPedalId::CHANGE_GOOGLE_PASSWORD) &&
-          !OmniboxFieldTrial::IsPedalsBatch2NonEnglishEnabled()) {
-        continue;
-      }
       // These IDs are the first and last for batch 3. Skip loading if batch 3
       // is not enabled for the current locale.
       if (id >= static_cast<int>(OmniboxPedalId::CLOSE_INCOGNITO_WINDOWS) &&
@@ -374,8 +359,7 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
     // `specs` will be empty for any pedals not yet processed by l10n because
     // the appropriate string names won't be defined. In such cases, we fall
     // back to loading from JSON to robustly handle partial presence of data.
-    if (specs.empty() ||
-        !OmniboxFieldTrial::IsPedalsTranslationConsoleEnabled()) {
+    if (specs.empty()) {
       for (const auto& group_value :
            pedal_value.FindKey("groups")->GetListDeprecated()) {
         // Note, group JSON values are preprocessed by the data generation tool.

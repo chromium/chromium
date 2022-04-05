@@ -199,15 +199,6 @@ bool OmniboxPedal::SynonymGroup::EraseMatchesIn(
 
 void OmniboxPedal::SynonymGroup::AddSynonym(
     OmniboxPedal::TokenSequence synonym) {
-#if DCHECK_IS_ON()
-  // Note, this check is only relevant when loading data known
-  // to have been preprocessed/pre-sorted. For the translation
-  // console data flow, we sort once after all synonyms are loaded.
-  if (!OmniboxFieldTrial::IsPedalsTranslationConsoleEnabled() &&
-      synonyms_.size() > size_t{0}) {
-    DCHECK_GE(synonyms_.back().Size(), synonym.Size());
-  }
-#endif
   synonyms_.push_back(std::move(synonym));
 }
 

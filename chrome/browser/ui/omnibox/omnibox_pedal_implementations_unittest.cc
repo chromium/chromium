@@ -26,9 +26,7 @@ class OmniboxPedalImplementationsTest : public testing::Test {
             std::make_unique<TestOmniboxEditController>()) {}
 
   void SetUp() override {
-    feature_list_.InitWithFeatures({omnibox::kOmniboxPedalsBatch2NonEnglish,
-                                    omnibox::kOmniboxPedalsBatch3NonEnglish,
-                                    omnibox::kOmniboxPedalsTranslationConsole},
+    feature_list_.InitWithFeatures({omnibox::kOmniboxPedalsBatch3NonEnglish},
                                    {});
     InitPedals();
   }
@@ -18464,20 +18462,6 @@ class OmniboxPedalImplementationsTest : public testing::Test {
   MockAutocompleteProviderClient autocomplete_provider_client_;
 };
 
-class OmniboxPedalImplementationsWithoutTranslationConsoleTest
-    : public OmniboxPedalImplementationsTest {
- protected:
-  void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {
-            omnibox::kOmniboxPedalsBatch2NonEnglish,
-            omnibox::kOmniboxPedalsBatch3NonEnglish,
-        },
-        {});
-    InitPedals();
-  }
-};
-
 TEST_F(OmniboxPedalImplementationsTest, PedalClearBrowsingDataExecutes) {
   const OmniboxPedal* pedal = provider()->FindPedalMatch(u"clear browser data");
   EXPECT_EQ(OmniboxPedalId::CLEAR_BROWSING_DATA, pedal->id());
@@ -18486,15 +18470,6 @@ TEST_F(OmniboxPedalImplementationsTest, PedalClearBrowsingDataExecutes) {
             ExecuteContextAndReturnResult(pedal));
 }
 
-TEST_F(OmniboxPedalImplementationsWithoutTranslationConsoleTest,
-       PedalClearBrowsingDataExecutes) {
-  const OmniboxPedal* pedal = provider()->FindPedalMatch(u"clear browser data");
-  EXPECT_EQ(OmniboxPedalId::CLEAR_BROWSING_DATA, pedal->id());
-
-  EXPECT_EQ(GURL("chrome://settings/clearBrowserData"),
-            ExecuteContextAndReturnResult(pedal));
-}
-
 TEST_F(OmniboxPedalImplementationsTest,
        PedalIncognitoClearBrowsingDataExecutes) {
   SetOffTheRecord();
@@ -18506,23 +18481,7 @@ TEST_F(OmniboxPedalImplementationsTest,
   EXPECT_EQ(GURL(""), ExecuteContextAndReturnResult(pedal));
 }
 
-TEST_F(OmniboxPedalImplementationsWithoutTranslationConsoleTest,
-       PedalIncognitoClearBrowsingDataExecutes) {
-  SetOffTheRecord();
-  const OmniboxPedal* pedal = provider()->FindPedalMatch(u"clear browser data");
-  // Note, there is only one Pedal for clearing browser data but it behaves
-  // differently depending on incognito status. The incognito behavior does
-  // not navigate but the non-incognito behavior does navigate.
-  EXPECT_EQ(OmniboxPedalId::CLEAR_BROWSING_DATA, pedal->id());
-  EXPECT_EQ(GURL(""), ExecuteContextAndReturnResult(pedal));
-}
-
 TEST_F(OmniboxPedalImplementationsTest,
-       UnorderedSynonymExpressionsAreConceptMatches) {
-  TestLiteralConceptExpressions();
-}
-
-TEST_F(OmniboxPedalImplementationsWithoutTranslationConsoleTest,
        UnorderedSynonymExpressionsAreConceptMatches) {
   TestLiteralConceptExpressions();
 }
