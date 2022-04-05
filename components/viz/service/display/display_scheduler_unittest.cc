@@ -98,8 +98,6 @@ class FakeDisplaySchedulerClient : public DisplaySchedulerClient {
     return estimated_display_draw_time_;
   }
 
-  void OnObservingBeginFrameSourceChanged(bool observing) override {}
-
   int draw_and_swap_count() const { return draw_and_swap_count_; }
 
   void SetNextDrawAndSwapFails() { next_draw_and_swap_fails_ = true; }

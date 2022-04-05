@@ -130,9 +130,7 @@ void SkiaOutputDeviceOffscreen::DiscardBackbuffer() {
 }
 
 SkSurface* SkiaOutputDeviceOffscreen::BeginPaint(
-    bool allocate_frame_buffer,
     std::vector<GrBackendSemaphore>* end_semaphores) {
-  DCHECK(!allocate_frame_buffer);
   DCHECK(backend_texture_.isValid());
   if (!sk_surface_) {
     SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};

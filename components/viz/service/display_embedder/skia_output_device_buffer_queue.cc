@@ -678,11 +678,8 @@ void SkiaOutputDeviceBufferQueue::SetViewportSize(
 }
 
 bool SkiaOutputDeviceBufferQueue::RecreateImages() {
-  size_t existing_number_of_buffers = images_.size();
   FreeAllSurfaces();
-  size_t number_to_allocate = capabilities_.use_dynamic_frame_buffer_allocation
-                                  ? existing_number_of_buffers
-                                  : capabilities_.number_of_buffers;
+  size_t number_to_allocate = capabilities_.number_of_buffers;
   if (!number_to_allocate)
     return true;
 
@@ -726,18 +723,9 @@ void SkiaOutputDeviceBufferQueue::MaybeScheduleBackgroundImage() {
 }
 
 SkSurface* SkiaOutputDeviceBufferQueue::BeginPaint(
-    bool allocate_frame_buffer,
     std::vector<GrBackendSemaphore>* end_semaphores) {
-  if (!capabilities_.use_dynamic_frame_buffer_allocation)
-    DCHECK(!allocate_frame_buffer);
-
   primary_plane_waiting_on_paint_ = false;
 
-  if (allocate_frame_buffer) {
-    DCHECK(!current_image_);
-    if (!AllocateFrameBuffers(1u))
-      return nullptr;
-  }
   if (!current_image_) {
     current_image_ = GetNextImage();
   }
@@ -751,38 +739,6 @@ SkSurface* SkiaOutputDeviceBufferQueue::BeginPaint(
 void SkiaOutputDeviceBufferQueue::EndPaint() {
   DCHECK(current_image_);
   current_image_->EndWriteSkia();
-}
-
-bool SkiaOutputDeviceBufferQueue::AllocateFrameBuffers(size_t n) {
-  std::vector<std::unique_ptr<OutputPresenter::Image>> new_images =
-      presenter_->AllocateImages(color_space_, image_size_, n);
-  if (new_images.size() != n) {
-    LOG(ERROR) << "AllocateImages failed " << new_images.size() << " " << n;
-    CheckForLoopFailuresBufferQueue();
-    return false;
-  }
-  for (auto& image : new_images) {
-    available_images_.push_front(image.get());
-  }
-  images_.insert(images_.end(), std::make_move_iterator(new_images.begin()),
-                 std::make_move_iterator(new_images.end()));
-  return true;
-}
-
-void SkiaOutputDeviceBufferQueue::ReleaseOneFrameBuffer() {
-  DCHECK(capabilities_.use_dynamic_frame_buffer_allocation);
-  CHECK_GE(available_images_.size(), 1u);
-  OutputPresenter::Image* image_to_free = available_images_.back();
-  DCHECK_NE(image_to_free, current_image_);
-  DCHECK_NE(image_to_free, submitted_image_);
-  DCHECK_NE(image_to_free, displayed_image_);
-  available_images_.pop_back();
-  for (auto iter = images_.begin(); iter != images_.end(); ++iter) {
-    if (iter->get() == image_to_free) {
-      images_.erase(iter);
-      break;
-    }
-  }
 }
 
 bool SkiaOutputDeviceBufferQueue::OverlayDataComparator::operator()(

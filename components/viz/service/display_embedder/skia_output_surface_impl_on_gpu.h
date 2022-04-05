@@ -142,14 +142,11 @@ class SkiaOutputSurfaceImplOnGpu
                                std::vector<ImageContextImpl*> image_contexts,
                                std::vector<gpu::SyncToken> sync_tokens,
                                base::OnceClosure on_finished,
-                               absl::optional<gfx::Rect> draw_rectangle,
-                               bool allocate_frame_buffer);
+                               absl::optional<gfx::Rect> draw_rectangle);
   void ScheduleOutputSurfaceAsOverlay(
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane&
           output_surface_plane);
-  void SwapBuffers(OutputSurfaceFrame frame, bool release_frame_buffer);
-  void AllocateFrameBuffers(size_t n);
-  void ReleaseFrameBuffers(size_t n);
+  void SwapBuffers(OutputSurfaceFrame frame);
 
   void SetDependenciesResolvedTimings(base::TimeTicks task_ready);
   void SetDrawTimings(base::TimeTicks task_ready);

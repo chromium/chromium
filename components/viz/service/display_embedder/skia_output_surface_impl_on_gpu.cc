@@ -393,8 +393,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
     std::vector<ImageContextImpl*> image_contexts,
     std::vector<gpu::SyncToken> sync_tokens,
     base::OnceClosure on_finished,
-    absl::optional<gfx::Rect> draw_rectangle,
-    bool allocate_frame_buffer) {
+    absl::optional<gfx::Rect> draw_rectangle) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!scoped_output_device_paint_);
@@ -418,8 +417,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
   // We do not reset scoped_output_device_paint_ after drawing the ddl until
   // SwapBuffers() is called, because we may need access to output_sk_surface()
   // for CopyOutput().
-  scoped_output_device_paint_ =
-      output_device_->BeginScopedPaint(allocate_frame_buffer);
+  scoped_output_device_paint_ = output_device_->BeginScopedPaint();
   if (!scoped_output_device_paint_) {
     MarkContextLost(ContextLostReason::CONTEXT_LOST_BEGIN_PAINT_FAILED);
     return;
@@ -493,29 +491,11 @@ void SkiaOutputSurfaceImplOnGpu::ScheduleOutputSurfaceAsOverlay(
   output_surface_plane_ = output_surface_plane;
 }
 
-void SkiaOutputSurfaceImplOnGpu::SwapBuffers(OutputSurfaceFrame frame,
-                                             bool release_frame_buffer) {
+void SkiaOutputSurfaceImplOnGpu::SwapBuffers(OutputSurfaceFrame frame) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::SwapBuffers");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (release_frame_buffer)
-    output_device_->ReleaseOneFrameBuffer();
-
   SwapBuffersInternal(std::move(frame));
-}
-
-void SkiaOutputSurfaceImplOnGpu::AllocateFrameBuffers(size_t n) {
-  MakeCurrent(/*need_framebuffer=*/false);
-  if (!output_device_->AllocateFrameBuffers(n)) {
-    MarkContextLost(CONTEXT_LOST_ALLOCATE_FRAME_BUFFERS_FAILED);
-  }
-}
-
-void SkiaOutputSurfaceImplOnGpu::ReleaseFrameBuffers(size_t n) {
-  MakeCurrent(/*need_framebuffer=*/false);
-  for (size_t i = 0; i < n; ++i) {
-    output_device_->ReleaseOneFrameBuffer();
-  }
 }
 
 void SkiaOutputSurfaceImplOnGpu::SetDependenciesResolvedTimings(

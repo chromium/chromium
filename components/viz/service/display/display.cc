@@ -1192,11 +1192,6 @@ base::TimeDelta Display::GetEstimatedDisplayDrawTime(base::TimeDelta interval,
   return default_estimate;
 }
 
-void Display::OnObservingBeginFrameSourceChanged(bool observing) {
-  if (skia_output_surface_)
-    skia_output_surface_->OnObservingBeginFrameSourceChanged(observing);
-}
-
 const SurfaceId& Display::CurrentSurfaceId() const {
   return current_surface_id_;
 }

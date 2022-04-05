@@ -60,7 +60,6 @@ class SkiaOutputDeviceVulkan final : public SkiaOutputDevice {
                      BufferPresentedCallback feedback,
                      OutputSurfaceFrame frame) override;
   SkSurface* BeginPaint(
-      bool allocate_frame_buffer,
       std::vector<GrBackendSemaphore>* end_semaphores) override;
   void EndPaint() override;
 

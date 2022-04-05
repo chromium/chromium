@@ -278,8 +278,6 @@ void OutputPresenterGL::InitializeCapabilities(
   // Set resize_based_on_root_surface to omit platform proposed size.
   capabilities->resize_based_on_root_surface =
       gl_surface_->SupportsOverridePlatformSize();
-  capabilities->use_dynamic_frame_buffer_allocation =
-      base::FeatureList::IsEnabled(features::kDynamicBufferQueueAllocation);
 
   // TODO(https://crbug.com/1108406): only add supported formats base on
   // platform, driver, etc.

@@ -108,10 +108,7 @@ class SkiaOutputDevice {
   // cannot be initialized, but devices that don't draw to a SkSurface (i.e
   // |SkiaOutputDeviceVulkanSecondaryCB|) can override this to bypass the
   // check.
-  // `allocate_frame_buffer` indicates a new frame buffer should be allocated
-  // for this paint. Is set only when `UseDynamicFrameBufferAllocation` is set.
-  virtual std::unique_ptr<SkiaOutputDevice::ScopedPaint> BeginScopedPaint(
-      bool allocate_frame_buffer);
+  virtual std::unique_ptr<SkiaOutputDevice::ScopedPaint> BeginScopedPaint();
 
   // Changes the size of draw surface and invalidates it's contents.
   virtual bool Reshape(const SkSurfaceCharacterization& characterization,
@@ -136,12 +133,6 @@ class SkiaOutputDevice {
                              OutputSurfaceFrame frame);
   virtual void CommitOverlayPlanes(BufferPresentedCallback feedback,
                                    OutputSurfaceFrame frame);
-
-  virtual bool AllocateFrameBuffers(size_t n);
-
-  // Release one frame buffer. Only called if `UseDynamicFrameBufferAllocation`
-  // is true.
-  virtual void ReleaseOneFrameBuffer();
 
   // Set the rectangle that will be drawn into on the surface.
   virtual bool SetDrawRectangle(const gfx::Rect& draw_rectangle);
@@ -215,7 +206,6 @@ class SkiaOutputDevice {
 
   // Begin paint the back buffer.
   virtual SkSurface* BeginPaint(
-      bool allocate_frame_buffer,
       std::vector<GrBackendSemaphore>* end_semaphores) = 0;
 
   // End paint the back buffer.

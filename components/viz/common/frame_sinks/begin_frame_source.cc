@@ -236,16 +236,10 @@ BackToBackBeginFrameSource::~BackToBackBeginFrameSource() = default;
 void BackToBackBeginFrameSource::AddObserver(BeginFrameObserver* obs) {
   DCHECK(obs);
   DCHECK(!base::Contains(observers_, obs));
-  bool first_observer = observers_.empty();
   observers_.insert(obs);
   pending_begin_frame_observers_.insert(obs);
   obs->OnBeginFrameSourcePausedChanged(false);
   time_source_->SetActive(true);
-  if (first_observer) {
-    base::flat_set<BeginFrameSourceObserver*> state_observers(state_observers_);
-    for (auto* state_observer : state_observers)
-      state_observer->BeginFrameRequestedChanged(true);
-  }
 }
 
 void BackToBackBeginFrameSource::RemoveObserver(BeginFrameObserver* obs) {
@@ -255,24 +249,7 @@ void BackToBackBeginFrameSource::RemoveObserver(BeginFrameObserver* obs) {
   pending_begin_frame_observers_.erase(obs);
   if (pending_begin_frame_observers_.empty()) {
     time_source_->SetActive(false);
-    base::flat_set<BeginFrameSourceObserver*> state_observers(state_observers_);
-    for (auto* state_observer : state_observers)
-      state_observer->BeginFrameRequestedChanged(false);
   }
-}
-
-void BackToBackBeginFrameSource::AddStateObserver(
-    BeginFrameSourceObserver* obs) {
-  DCHECK(obs);
-  DCHECK(!base::Contains(state_observers_, obs));
-  state_observers_.insert(obs);
-}
-
-void BackToBackBeginFrameSource::RemoveStateObserver(
-    BeginFrameSourceObserver* obs) {
-  DCHECK(obs);
-  DCHECK(base::Contains(state_observers_, obs));
-  state_observers_.erase(obs);
 }
 
 void BackToBackBeginFrameSource::DidFinishFrame(BeginFrameObserver* obs) {
@@ -372,20 +349,6 @@ void DelayBasedBeginFrameSource::RemoveObserver(BeginFrameObserver* obs) {
     SetActive(false);
 }
 
-void DelayBasedBeginFrameSource::AddStateObserver(
-    BeginFrameSourceObserver* obs) {
-  DCHECK(obs);
-  DCHECK(!base::Contains(state_observers_, obs));
-  state_observers_.insert(obs);
-}
-
-void DelayBasedBeginFrameSource::RemoveStateObserver(
-    BeginFrameSourceObserver* obs) {
-  DCHECK(obs);
-  DCHECK(base::Contains(state_observers_, obs));
-  state_observers_.erase(obs);
-}
-
 void DelayBasedBeginFrameSource::OnGpuNoLongerBusy() {
   OnTimerTick();
 }
@@ -434,9 +397,6 @@ void DelayBasedBeginFrameSource::SetActive(bool active) {
   if (time_source_->Active() == active)
     return;
   time_source_->SetActive(active);
-  base::flat_set<BeginFrameSourceObserver*> state_observers(state_observers_);
-  for (auto* state_observer : state_observers)
-    state_observer->BeginFrameRequestedChanged(active);
 }
 
 // ExternalBeginFrameSource -----------------------------------------------
@@ -468,9 +428,6 @@ void ExternalBeginFrameSource::AddObserver(BeginFrameObserver* obs) {
 
   if (observers_.empty()) {
     client_->OnNeedsBeginFrames(true);
-    base::flat_set<BeginFrameSourceObserver*> state_observers(state_observers_);
-    for (auto* state_observer : state_observers)
-      state_observer->BeginFrameRequestedChanged(true);
   }
 
   observers_.insert(obs);
@@ -491,23 +448,7 @@ void ExternalBeginFrameSource::RemoveObserver(BeginFrameObserver* obs) {
   observers_.erase(obs);
   if (observers_.empty()) {
     client_->OnNeedsBeginFrames(false);
-    base::flat_set<BeginFrameSourceObserver*> state_observers(state_observers_);
-    for (auto* state_observer : state_observers)
-      state_observer->BeginFrameRequestedChanged(false);
   }
-}
-
-void ExternalBeginFrameSource::AddStateObserver(BeginFrameSourceObserver* obs) {
-  DCHECK(obs);
-  DCHECK(!base::Contains(state_observers_, obs));
-  state_observers_.insert(obs);
-}
-
-void ExternalBeginFrameSource::RemoveStateObserver(
-    BeginFrameSourceObserver* obs) {
-  DCHECK(obs);
-  DCHECK(base::Contains(state_observers_, obs));
-  state_observers_.erase(obs);
 }
 
 void ExternalBeginFrameSource::OnGpuNoLongerBusy() {

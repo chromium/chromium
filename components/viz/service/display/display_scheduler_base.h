@@ -37,7 +37,6 @@ class VIZ_SERVICE_EXPORT DisplaySchedulerClient {
   virtual base::TimeDelta GetEstimatedDisplayDrawTime(
       const base::TimeDelta interval,
       double percentile) const = 0;
-  virtual void OnObservingBeginFrameSourceChanged(bool observing) = 0;
 };
 
 class VIZ_SERVICE_EXPORT DisplaySchedulerBase

@@ -42,7 +42,6 @@ class SkiaOutputDeviceWebView : public SkiaOutputDevice {
                    OutputSurfaceFrame frame) override;
 
   SkSurface* BeginPaint(
-      bool allocate_frame_buffer,
       std::vector<GrBackendSemaphore>* end_semaphores) override;
   void EndPaint() override;
 

@@ -44,28 +44,12 @@ class DisplayScheduler::BeginFrameObserver : public BeginFrameObserverBase {
   const raw_ptr<DisplayScheduler> scheduler_;
 };
 
-class DisplayScheduler::BeginFrameRequestObserverImpl
-    : public BeginFrameSourceObserver {
- public:
-  explicit BeginFrameRequestObserverImpl(DisplayScheduler* scheduler)
-      : scheduler_(scheduler) {}
-
-  void BeginFrameRequestedChanged(bool requested) override {
-    scheduler_->BeginFrameRequestedChanged(requested);
-  }
-
- private:
-  const raw_ptr<DisplayScheduler> scheduler_;
-};
-
 DisplayScheduler::DisplayScheduler(BeginFrameSource* begin_frame_source,
                                    base::SingleThreadTaskRunner* task_runner,
                                    PendingSwapParams pending_swap_params,
                                    HintSessionFactory* hint_session_factory,
                                    bool wait_for_all_surfaces_before_draw)
     : begin_frame_observer_(std::make_unique<BeginFrameObserver>(this)),
-      begin_frame_state_observer_(
-          std::make_unique<BeginFrameRequestObserverImpl>(this)),
       begin_frame_source_(begin_frame_source),
       task_runner_(task_runner),
       inside_surface_damaged_(false),
@@ -87,7 +71,6 @@ DisplayScheduler::DisplayScheduler(BeginFrameSource* begin_frame_source,
   begin_frame_deadline_timer_.SetTaskRunner(task_runner);
   if (dynamic_cc_deadlines_percentile_.has_value())
     begin_frame_source_->SetDynamicBeginFrameDeadlineOffsetSource(this);
-  begin_frame_source_->AddStateObserver(begin_frame_state_observer_.get());
   begin_frame_deadline_closure_ = base::BindRepeating(
       &DisplayScheduler::OnBeginFrameDeadline, weak_ptr_factory_.GetWeakPtr());
 }
@@ -96,7 +79,6 @@ DisplayScheduler::~DisplayScheduler() {
   // It is possible for DisplayScheduler to be destroyed while there's an
   // in-flight swap. So always mark the gpu as not busy during destruction.
   begin_frame_source_->SetIsGpuBusy(false);
-  begin_frame_source_->RemoveStateObserver(begin_frame_state_observer_.get());
   StopObservingBeginFrames();
 }
 
@@ -315,12 +297,6 @@ void DisplayScheduler::StopObservingBeginFrames() {
     // A missed BeginFrame may be queued, so drop that too if we're going to
     // stop listening.
     missed_begin_frame_task_.Cancel();
-  }
-}
-
-void DisplayScheduler::BeginFrameRequestedChanged(bool requested) {
-  if (client_) {
-    client_->OnObservingBeginFrameSourceChanged(requested);
   }
 }
 
