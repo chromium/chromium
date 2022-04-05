@@ -442,13 +442,16 @@ Polymer({
    * @return {void}
    */
   updatePosition: function() {
-    if (!this._target || !this.offsetParent)
+    if (!this._target)
+      return;
+    var offsetParent = this._composedOffsetParent();
+    if (!offsetParent)
       return;
     var offset = this.offset;
     // If a marginTop has been provided by the user (pre 1.0.3), use it.
     if (this.marginTop != 14 && this.offset == 14)
       offset = this.marginTop;
-    var parentRect = this.offsetParent.getBoundingClientRect();
+    var parentRect = offsetParent.getBoundingClientRect();
     var targetRect = this._target.getBoundingClientRect();
     var thisRect = this.getBoundingClientRect();
     var horizontalCenterOffset = (targetRect.width - thisRect.width) / 2;
@@ -594,5 +597,45 @@ Polymer({
     }
     this.unlisten(this.$.tooltip, 'animationend', '_onAnimationEnd');
     this.unlisten(this, 'mouseenter', 'hide');
+  },
+
+  /**
+   * Polyfills the old offsetParent behavior from before the spec was changed:
+   * https://github.com/w3c/csswg-drafts/issues/159
+   */
+  _composedOffsetParent: function() {
+    // Do an initial walk to check for display:none ancestors.
+    for (let ancestor = this; ancestor; ancestor = flatTreeParent(ancestor)) {
+      if (!(ancestor instanceof Element))
+        continue;
+      if (getComputedStyle(ancestor).display === 'none')
+        return null;
+    }
+
+    for (let ancestor = flatTreeParent(this); ancestor; ancestor = flatTreeParent(ancestor)) {
+      if (!(ancestor instanceof Element))
+        continue;
+      const style = getComputedStyle(ancestor);
+      if (style.display === 'contents') {
+        // display:contents nodes aren't in the layout tree so they should be skipped.
+        continue;
+      }
+      if (style.position !== 'static') {
+        return ancestor;
+      }
+      if (ancestor.tagName === 'BODY')
+        return ancestor;
+    }
+    return null;
+
+    function flatTreeParent(element) {
+      if (element.assignedSlot) {
+        return element.assignedSlot;
+      }
+      if (element.parentNode instanceof ShadowRoot) {
+        return element.parentNode.host;
+      }
+      return element.parentNode;
+    }
   }
 });
