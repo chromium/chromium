@@ -190,7 +190,14 @@ struct Config {
   // in the UI. If the label doesn't exist, the UI will emphasize the top visit.
   bool should_label_clusters = false;
 
+  // Whether to assign labels to clusters from the hostnames of the cluster.
+  // Does nothing if `should_label_clusters` is false. Note that since every
+  // cluster has a hostname, this flag in conjunction with
+  // `should_label_clusters` will give every cluster a label.
+  bool labels_from_hostnames = true;
+
   // Whether to assign labels to clusters from the Entities of the cluster.
+  // Does nothing if `should_label_clusters` is false.
   bool labels_from_entities = false;
 
   // The set of hosts for which all visits belonging to that host will not be in

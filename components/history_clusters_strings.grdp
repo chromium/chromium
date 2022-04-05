@@ -18,6 +18,9 @@
   <message name="IDS_HISTORY_CLUSTERS_CLUSTER_LABEL_SEARCH_TERMS" desc="The header used for Journeys that are anchored by search terms. The header is just the search terms in locale-specific quotation marks.">
     “<ph name="SEARCH_TERMS">$1<ex>flowers</ex></ph>”
   </message>
+  <message name="IDS_HISTORY_CLUSTERS_CLUSTER_LABEL_MULTIPLE_HOSTNAMES" desc="The header used for Journeys that are anchored by multiple host names.">
+    <ph name="HOST_NAME">$1<ex>google.com</ex> and more</ph>
+  </message>
   <message name="IDS_HISTORY_CLUSTERS_LOAD_MORE_BUTTON_LABEL" desc="A label for the button that loads more history clusters at the bottom of the history clusters list.">
     Load more
   </message>

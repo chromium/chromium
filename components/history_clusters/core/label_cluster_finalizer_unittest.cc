@@ -33,8 +33,7 @@ class LabelClusterFinalizerTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(LabelClusterFinalizerTest,
-       ClusterWithNoSearchTermsTakesHighestScoringEntityIfFlagEnabled) {
+TEST_F(LabelClusterFinalizerTest, ClusterWithNoSearchTerms) {
   history::ClusterVisit visit = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(1, GURL("https://foo.com/")));
   visit.score = 0.8;
@@ -55,9 +54,10 @@ TEST_F(LabelClusterFinalizerTest,
       {"chosenlabel", 25}, {"someotherentity", 10}};
 
   {
-    // Without the flag being enabled, there should be no label.
+    // With only search term labelling active, there should be no label.
     Config config;
     config.should_label_clusters = true;
+    config.labels_from_hostnames = false;
     config.labels_from_entities = false;
     SetConfigForTesting(config);
 
@@ -68,9 +68,24 @@ TEST_F(LabelClusterFinalizerTest,
   }
 
   {
-    // With the flag being enabled, there should be an entity label.
+    // With hostname labelling and entity labelling, we should use the hostname.
     Config config;
     config.should_label_clusters = true;
+    config.labels_from_hostnames = true;
+    config.labels_from_entities = true;
+    SetConfigForTesting(config);
+
+    history::Cluster cluster;
+    cluster.visits = {visit2, visit3};
+    FinalizeCluster(cluster);
+    EXPECT_EQ(cluster.label, u"baz.com and more");
+  }
+
+  {
+    // With entity labelling active only, we should use the entity name.
+    Config config;
+    config.should_label_clusters = true;
+    config.labels_from_hostnames = false;
     config.labels_from_entities = true;
     SetConfigForTesting(config);
 
@@ -86,6 +101,7 @@ TEST_F(LabelClusterFinalizerTest, TakesHighestScoringSearchTermIfAvailable) {
   // enabled.
   Config config;
   config.should_label_clusters = true;
+  config.labels_from_hostnames = true;
   config.labels_from_entities = true;
   SetConfigForTesting(config);
 

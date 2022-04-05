@@ -962,6 +962,14 @@ const FeatureEntry::FeatureParam
         {"content_clustering_enabled", "false"},
 };
 const FeatureEntry::FeatureParam
+    kJourneysOnDeviceClusteringLabelingNoHostnamesNoContentClusteringParams[] =
+        {
+            {"should_label_clusters", "true"},
+            {"labels_from_hostnames", "false"},
+            {"labels_from_entities", "true"},
+            {"content_clustering_enabled", "false"},
+};
+const FeatureEntry::FeatureParam
     kJourneysOnDeviceClusteringNoContentClusteringParams[] = {
         {"should_label_clusters", "false"},
         {"content_clustering_enabled", "false"},
@@ -981,6 +989,11 @@ const FeatureEntry::FeatureVariation kJourneysOnDeviceClusteringVariations[] = {
     {"Label Clusters and No Content Clustering",
      kJourneysOnDeviceClusteringLabelingNoContentClusteringParams,
      std::size(kJourneysOnDeviceClusteringLabelingNoContentClusteringParams),
+     nullptr},
+    {"Label Clusters, No Hostnames, & No Content Clustering",
+     kJourneysOnDeviceClusteringLabelingNoHostnamesNoContentClusteringParams,
+     std::size(
+         kJourneysOnDeviceClusteringLabelingNoHostnamesNoContentClusteringParams),
      nullptr},
     {"No Content Clustering",
      kJourneysOnDeviceClusteringNoContentClusteringParams,

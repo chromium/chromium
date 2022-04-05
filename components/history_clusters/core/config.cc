@@ -206,6 +206,10 @@ Config::Config() {
       features::kOnDeviceClustering, "should_label_clusters",
       should_label_clusters);
 
+  labels_from_hostnames = GetFieldTrialParamByFeatureAsBool(
+      features::kOnDeviceClustering, "labels_from_hostnames",
+      labels_from_hostnames);
+
   labels_from_entities = GetFieldTrialParamByFeatureAsBool(
       features::kOnDeviceClustering, "labels_from_entities",
       labels_from_entities);
