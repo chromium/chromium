@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/signin/signin_email_confirmation_dialog.h"
 
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
@@ -13,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
+#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/signin/signin_email_confirmation_ui.h"
 #include "chrome/common/url_constants.h"
@@ -21,6 +23,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -172,21 +175,20 @@ void SigninEmailConfirmationDialog::GetDialogSize(gfx::Size* size) const {
 
 std::string SigninEmailConfirmationDialog::GetDialogArgs() const {
   std::string data;
-  base::DictionaryValue dialog_args;
-  dialog_args.SetStringKey("lastEmail", last_email_);
-  dialog_args.SetStringKey("newEmail", new_email_);
-  base::JSONWriter::Write(dialog_args, &data);
+  base::Value::Dict dialog_args;
+  dialog_args.Set("lastEmail", last_email_);
+  dialog_args.Set("newEmail", new_email_);
+  base::JSONWriter::Write(base::Value(std::move(dialog_args)), &data);
   return data;
 }
 
 void SigninEmailConfirmationDialog::OnDialogClosed(
     const std::string& json_retval) {
   Action action = CLOSE;
-  std::unique_ptr<base::DictionaryValue> ret_value(base::DictionaryValue::From(
-      base::JSONReader::ReadDeprecated(json_retval)));
-  if (ret_value) {
+  absl::optional<base::Value> ret_value = base::JSONReader::Read(json_retval);
+  if (ret_value && ret_value->is_dict()) {
     const std::string* action_string =
-        ret_value->FindStringKey(kSigninEmailConfirmationActionKey);
+        ret_value->GetDict().FindString(kSigninEmailConfirmationActionKey);
     if (action_string) {
       if (*action_string == kSigninEmailConfirmationActionCancel) {
         action = CLOSE;

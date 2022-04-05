@@ -182,11 +182,15 @@ void ParsePathAndScale(const GURL& url,
 
 void SetLoadTimeDataDefaults(const std::string& app_locale,
                              base::Value* localized_strings) {
-  localized_strings->SetStringKey("fontfamily", GetFontFamily());
-  localized_strings->SetStringKey("fontsize", GetFontSize());
-  localized_strings->SetStringKey("language",
-                                  l10n_util::GetLanguage(app_locale));
-  localized_strings->SetStringKey("textdirection", GetTextDirection());
+  SetLoadTimeDataDefaults(app_locale, localized_strings->GetIfDict());
+}
+
+void SetLoadTimeDataDefaults(const std::string& app_locale,
+                             base::Value::Dict* localized_strings) {
+  localized_strings->Set("fontfamily", GetFontFamily());
+  localized_strings->Set("fontsize", GetFontSize());
+  localized_strings->Set("language", l10n_util::GetLanguage(app_locale));
+  localized_strings->Set("textdirection", GetTextDirection());
 }
 
 void SetLoadTimeDataDefaults(const std::string& app_locale,

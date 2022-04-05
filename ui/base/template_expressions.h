@@ -13,10 +13,7 @@
 
 #include "base/component_export.h"
 #include "base/strings/string_piece.h"
-
-namespace base {
-class Value;
-}
+#include "base/values.h"
 
 namespace ui {
 
@@ -28,7 +25,7 @@ typedef std::map<const std::string, std::string> TemplateReplacements;
 // TODO(dschuyler): remove this function by using TemplateReplacements directly.
 COMPONENT_EXPORT(UI_BASE)
 void TemplateReplacementsFromDictionaryValue(
-    const base::Value& dictionary,
+    const base::Value::Dict& dictionary,
     TemplateReplacements* replacements);
 
 // Replace $i18n*{foo} in the format string with the value for the foo key in

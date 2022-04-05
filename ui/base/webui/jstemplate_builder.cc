@@ -96,7 +96,7 @@ void AppendJsTemplateProcessHtml(const base::Value* json,
 std::string GetI18nTemplateHtml(const base::StringPiece& html_template,
                                 const base::Value* json) {
   ui::TemplateReplacements replacements;
-  ui::TemplateReplacementsFromDictionaryValue(*json, &replacements);
+  ui::TemplateReplacementsFromDictionaryValue(json->GetDict(), &replacements);
   std::string output =
       ui::ReplaceTemplateExpressions(html_template, replacements);
 
@@ -110,7 +110,7 @@ std::string GetTemplatesHtml(const base::StringPiece& html_template,
                              const base::Value* json,
                              const base::StringPiece& template_id) {
   ui::TemplateReplacements replacements;
-  ui::TemplateReplacementsFromDictionaryValue(*json, &replacements);
+  ui::TemplateReplacementsFromDictionaryValue(json->GetDict(), &replacements);
   std::string output =
       ui::ReplaceTemplateExpressions(html_template, replacements);
 

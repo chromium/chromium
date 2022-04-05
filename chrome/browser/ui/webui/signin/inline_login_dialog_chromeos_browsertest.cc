@@ -101,13 +101,10 @@ IN_PROC_BROWSER_TEST_F(InlineLoginDialogChromeOSTest,
       base::JSONReader::Read(dialog->GetDialogArgs());
   ASSERT_TRUE(args.has_value());
   EXPECT_TRUE(args.value().is_dict());
-  base::DictionaryValue* dict = nullptr;
-  args.value().GetAsDictionary(&dict);
-  ASSERT_TRUE(dict != nullptr);
-  absl::optional<bool> is_available_in_arc =
-      dict->FindBoolKey("isAvailableInArc");
+  const base::Value::Dict& dict = args.value().GetDict();
+  absl::optional<bool> is_available_in_arc = dict.FindBool("isAvailableInArc");
   absl::optional<bool> show_arc_availability_picker =
-      dict->FindBoolKey("showArcAvailabilityPicker");
+      dict.FindBool("showArcAvailabilityPicker");
   ASSERT_TRUE(is_available_in_arc.has_value());
   ASSERT_TRUE(show_arc_availability_picker.has_value());
   EXPECT_EQ(is_available_in_arc.value(), options.is_available_in_arc);

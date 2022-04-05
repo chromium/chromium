@@ -8,11 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "base/values.h"
 #include "ui/base/template_expressions.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace content {
 
@@ -25,7 +22,7 @@ class TestWebUIDataSource {
 
   virtual ~TestWebUIDataSource() = default;
 
-  virtual const base::DictionaryValue* GetLocalizedStrings() = 0;
+  virtual const base::Value::Dict* GetLocalizedStrings() = 0;
 
   virtual const ui::TemplateReplacements* GetReplacements() = 0;
 

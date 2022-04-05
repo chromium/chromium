@@ -21,13 +21,13 @@ FileManagerPrivateGetStringsFunction::~FileManagerPrivateGetStringsFunction() =
     default;
 
 ExtensionFunction::ResponseAction FileManagerPrivateGetStringsFunction::Run() {
-  base::Value dict = GetFileManagerStrings();
+  base::Value::Dict dict = GetFileManagerStrings();
 
   const std::string locale = extension_l10n_util::CurrentLocaleOrDefault();
   AddFileManagerFeatureStrings(
       locale, Profile::FromBrowserContext(browser_context()), &dict);
 
-  return RespondNow(OneArgument(std::move(dict)));
+  return RespondNow(OneArgument(base::Value(std::move(dict))));
 }
 
 }  // namespace extensions

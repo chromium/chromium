@@ -10,10 +10,7 @@
 #include "base/callback.h"
 #include "base/containers/span.h"
 #include "base/supports_user_data.h"
-
-namespace base {
-class DictionaryValue;
-}
+#include "base/values.h"
 
 namespace webui {
 struct LocalizedString;
@@ -45,7 +42,7 @@ class WebUIIOSDataSource : public base::SupportsUserData {
   virtual void AddLocalizedString(const std::string& name, int ids) = 0;
 
   virtual void AddLocalizedStrings(
-      const base::DictionaryValue& localized_strings) = 0;
+      const base::Value::Dict& localized_strings) = 0;
 
   virtual void AddLocalizedStrings(
       base::span<const webui::LocalizedString> strings) = 0;

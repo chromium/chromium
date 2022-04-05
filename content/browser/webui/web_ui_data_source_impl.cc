@@ -168,20 +168,20 @@ WebUIDataSourceImpl::~WebUIDataSourceImpl() = default;
 void WebUIDataSourceImpl::AddString(base::StringPiece name,
                                     const std::u16string& value) {
   // TODO(dschuyler): Share only one copy of these strings.
-  localized_strings_.SetKey(name, base::Value(value));
+  localized_strings_.GetDict().Set(name, base::Value(value));
   replacements_[std::string(name)] = base::UTF16ToUTF8(value);
 }
 
 void WebUIDataSourceImpl::AddString(base::StringPiece name,
                                     const std::string& value) {
-  localized_strings_.SetKey(name, base::Value(value));
+  localized_strings_.GetDict().Set(name, base::Value(value));
   replacements_[std::string(name)] = value;
 }
 
 void WebUIDataSourceImpl::AddLocalizedString(base::StringPiece name, int ids) {
   std::string utf8_str =
       base::UTF16ToUTF8(GetContentClient()->GetLocalizedString(ids));
-  localized_strings_.SetKey(name, base::Value(utf8_str));
+  localized_strings_.GetDict().Set(name, base::Value(utf8_str));
   replacements_[std::string(name)] = utf8_str;
 }
 
@@ -193,13 +193,18 @@ void WebUIDataSourceImpl::AddLocalizedStrings(
 
 void WebUIDataSourceImpl::AddLocalizedStrings(
     const base::DictionaryValue& localized_strings) {
-  localized_strings_.MergeDictionary(&localized_strings);
+  AddLocalizedStrings(localized_strings.GetDict());
+}
+
+void WebUIDataSourceImpl::AddLocalizedStrings(
+    const base::Value::Dict& localized_strings) {
+  localized_strings_.GetDict().Merge(localized_strings);
   ui::TemplateReplacementsFromDictionaryValue(localized_strings,
                                               &replacements_);
 }
 
 void WebUIDataSourceImpl::AddBoolean(base::StringPiece name, bool value) {
-  localized_strings_.SetBoolean(name, value);
+  localized_strings_.GetDict().Set(name, value);
   // TODO(dschuyler): Change name of |localized_strings_| to |load_time_data_|
   // or similar. These values haven't been found as strings for
   // localization. The boolean values are not added to |replacements_|
@@ -208,11 +213,11 @@ void WebUIDataSourceImpl::AddBoolean(base::StringPiece name, bool value) {
 }
 
 void WebUIDataSourceImpl::AddInteger(base::StringPiece name, int32_t value) {
-  localized_strings_.SetInteger(name, value);
+  localized_strings_.GetDict().Set(name, value);
 }
 
 void WebUIDataSourceImpl::AddDouble(base::StringPiece name, double value) {
-  localized_strings_.SetDouble(name, value);
+  localized_strings_.GetDict().Set(name, value);
 }
 
 void WebUIDataSourceImpl::UseStringsJs() {
@@ -392,8 +397,8 @@ void WebUIDataSourceImpl::SendLocalizedStringsAsJSON(
   std::move(callback).Run(base::RefCountedString::TakeString(&template_data));
 }
 
-const base::DictionaryValue* WebUIDataSourceImpl::GetLocalizedStrings() const {
-  return &localized_strings_;
+const base::Value::Dict* WebUIDataSourceImpl::GetLocalizedStrings() const {
+  return &localized_strings_.GetDict();
 }
 
 bool WebUIDataSourceImpl::ShouldReplaceI18nInJS() const {

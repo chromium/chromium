@@ -72,26 +72,27 @@ WebUIIOSDataSourceImpl::~WebUIIOSDataSourceImpl() {}
 
 void WebUIIOSDataSourceImpl::AddString(const std::string& name,
                                        const std::u16string& value) {
-  localized_strings_.SetString(name, value);
+  localized_strings_.GetDict().Set(name, value);
   replacements_[name] = base::UTF16ToUTF8(value);
 }
 
 void WebUIIOSDataSourceImpl::AddString(const std::string& name,
                                        const std::string& value) {
-  localized_strings_.SetString(name, value);
+  localized_strings_.GetDict().Set(name, value);
   replacements_[name] = value;
 }
 
 void WebUIIOSDataSourceImpl::AddLocalizedString(const std::string& name,
                                                 int ids) {
-  localized_strings_.SetString(name, GetWebClient()->GetLocalizedString(ids));
+  localized_strings_.GetDict().Set(name,
+                                   GetWebClient()->GetLocalizedString(ids));
   replacements_[name] =
       base::UTF16ToUTF8(GetWebClient()->GetLocalizedString(ids));
 }
 
 void WebUIIOSDataSourceImpl::AddLocalizedStrings(
-    const base::DictionaryValue& localized_strings) {
-  localized_strings_.MergeDictionary(&localized_strings);
+    const base::Value::Dict& localized_strings) {
+  localized_strings_.GetDict().Merge(localized_strings);
   ui::TemplateReplacementsFromDictionaryValue(localized_strings,
                                               &replacements_);
 }
@@ -104,7 +105,7 @@ void WebUIIOSDataSourceImpl::AddLocalizedStrings(
 }
 
 void WebUIIOSDataSourceImpl::AddBoolean(const std::string& name, bool value) {
-  localized_strings_.SetBoolean(name, value);
+  localized_strings_.GetDict().Set(name, value);
 }
 
 void WebUIIOSDataSourceImpl::UseStringsJs() {
@@ -157,7 +158,7 @@ void WebUIIOSDataSourceImpl::EnsureLoadTimeDataDefaultsAdded() {
     return;
 
   load_time_data_defaults_added_ = true;
-  base::DictionaryValue defaults;
+  base::Value::Dict defaults;
   webui::SetLoadTimeDataDefaults(web::GetWebClient()->GetApplicationLocale(),
                                  &defaults);
   AddLocalizedStrings(defaults);

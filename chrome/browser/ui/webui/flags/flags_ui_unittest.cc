@@ -45,6 +45,6 @@ TEST_F(FlagsUITest, FlagsAndDeprecatedSources) {
       content::TestWebUIDataSource::Create("B");
   FlagsUI::AddStrings(flags_strings->GetWebUIDataSource());
   FlagsDeprecatedUI::AddStrings(deprecated_strings->GetWebUIDataSource());
-  EXPECT_EQ(flags_strings->GetLocalizedStrings()->DictSize(),
-            deprecated_strings->GetLocalizedStrings()->DictSize());
+  EXPECT_EQ(flags_strings->GetLocalizedStrings()->size(),
+            deprecated_strings->GetLocalizedStrings()->size());
 }

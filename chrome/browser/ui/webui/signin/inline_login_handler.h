@@ -9,12 +9,9 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "net/cookies/canonical_cookie.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace signin_metrics {
 enum class AccessPoint;
@@ -98,7 +95,7 @@ class InlineLoginHandler : public content::WebUIMessageHandler {
   // Handles the web ui message sent when the window is closed from javascript.
   virtual void HandleDialogClose(const base::ListValue* args);
 
-  virtual void SetExtraInitParams(base::DictionaryValue& params) {}
+  virtual void SetExtraInitParams(base::Value::Dict& params) {}
   virtual void CompleteLogin(const CompleteLoginParams& params) = 0;
 
   base::WeakPtrFactory<InlineLoginHandler> weak_ptr_factory_{this};

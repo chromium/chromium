@@ -62,7 +62,7 @@ class InlineLoginHandlerImpl : public InlineLoginHandler {
 
  private:
   // InlineLoginHandler overrides:
-  void SetExtraInitParams(base::DictionaryValue& params) override;
+  void SetExtraInitParams(base::Value::Dict& params) override;
   void CompleteLogin(const CompleteLoginParams& params) override;
 
   // This struct exists to pass parameters to the FinishCompleteLogin() method,

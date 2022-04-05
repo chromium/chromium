@@ -47,6 +47,8 @@ class MockWebUIDataSource : public content::WebUIDataSource {
       base::span<const webui::LocalizedString> strings) override {}
   void AddLocalizedStrings(
       const base::DictionaryValue& localized_strings) override {}
+  void AddLocalizedStrings(
+      const base::Value::Dict& localized_strings) override {}
   void AddInteger(base::StringPiece name, int32_t value) override {}
   void AddDouble(base::StringPiece name, double value) override {}
   void UseStringsJs() override {}

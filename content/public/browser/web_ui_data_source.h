@@ -14,13 +14,13 @@
 #include "base/callback.h"
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
+#include "base/values.h"
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "url/gurl.h"
 
 namespace base {
-class DictionaryValue;
 class RefCountedMemory;
 }  // namespace base
 
@@ -77,9 +77,15 @@ class WebUIDataSource {
   virtual void AddLocalizedStrings(
       base::span<const webui::LocalizedString> strings) = 0;
 
-  // Add strings from |localized_strings| to our dictionary.
+  // Add strings from |localized_strings| to our dictionary. Deprecated, please
+  // use base:Value::Dict version below.
   virtual void AddLocalizedStrings(
       const base::DictionaryValue& localized_strings) = 0;
+
+  // TODO(https://crbug.com/1187023): Remove DictionaryValue version above
+  // once all callers have been converted to use this method.
+  virtual void AddLocalizedStrings(
+      const base::Value::Dict& localized_strings) = 0;
 
   // Adds a boolean keyed to its name to our dictionary.
   virtual void AddBoolean(base::StringPiece name, bool value) = 0;

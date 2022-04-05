@@ -41,7 +41,7 @@ class TestWebUIDataSourceImpl : public TestWebUIDataSource {
 
   ~TestWebUIDataSourceImpl() override {}
 
-  const base::DictionaryValue* GetLocalizedStrings() override {
+  const base::Value::Dict* GetLocalizedStrings() override {
     return source_->GetLocalizedStrings();
   }
 
