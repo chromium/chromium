@@ -21,8 +21,8 @@ class Clock;
 namespace segmentation_platform {
 
 struct Config;
-class ModelExecutionScheduler;
-class ModelProviderFactory;
+class ModelExecutionManager;
+class DefaultModelManager;
 class SegmentationResultPrefs;
 class SignalStorageConfig;
 
@@ -34,7 +34,8 @@ class SegmentSelectorImpl : public SegmentSelector {
                       const Config* config,
                       base::Clock* clock,
                       const PlatformOptions& platform_options,
-                      ModelProviderFactory* model_provider_factory);
+                      DefaultModelManager* default_model_manager,
+                      ModelExecutionManager* execution_manager);
 
   ~SegmentSelectorImpl() override;
 
@@ -45,8 +46,6 @@ class SegmentSelectorImpl : public SegmentSelector {
   // Helper function to update the selected segment in the prefs. Auto-extends
   // the selection if the new result is unknown.
   virtual void UpdateSelectedSegment(OptimizationTarget new_selection);
-
-  // ModelExecutionScheduler::Observer overrides.
 
   // Called whenever a model eval completes. Runs segment selection to find the
   // best segment, and writes it to the pref.
@@ -96,8 +95,6 @@ class SegmentSelectorImpl : public SegmentSelector {
   raw_ptr<base::Clock> clock_;
 
   const PlatformOptions platform_options_;
-
-  const raw_ptr<ModelProviderFactory> model_provider_factory_;
 
   // Segment selection result is read from prefs on init and used for serving
   // the clients in the current session.

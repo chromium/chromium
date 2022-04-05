@@ -221,6 +221,7 @@ source_set("unit_tests") {
     "scheduler/model_execution_scheduler_unittest.cc",
     "segmentation_platform_service_impl_unittest.cc",
     "segmentation_ukm_helper_unittest.cc",
+    "selection/segment_result_provider_unittest.cc",
     "selection/segment_score_provider_unittest.cc",
     "selection/segment_selector_unittest.cc",
     "selection/segmentation_result_prefs_unittest.cc",

@@ -12,6 +12,8 @@
 #include "components/segmentation_platform/internal/database/mock_signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
+#include "components/segmentation_platform/internal/execution/default_model_manager.h"
+#include "components/segmentation_platform/internal/execution/mock_model_provider.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
 #include "components/segmentation_platform/public/config.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -61,17 +63,20 @@ class TestSegmentationResultPrefs : public SegmentationResultPrefs {
 
 class SegmentSelectorTest : public testing::Test {
  public:
-  SegmentSelectorTest() = default;
+  SegmentSelectorTest() : provider_factory_(&model_providers_) {}
   ~SegmentSelectorTest() override = default;
 
   void SetUpWithConfig(const Config& config) {
     clock_.SetNow(base::Time::Now());
     config_ = config;
+    default_manager_ = std::make_unique<DefaultModelManager>(
+        &provider_factory_, config_.segment_ids);
     segment_database_ = std::make_unique<test::TestSegmentInfoDatabase>();
     prefs_ = std::make_unique<TestSegmentationResultPrefs>();
     segment_selector_ = std::make_unique<SegmentSelectorImpl>(
         segment_database_.get(), &signal_storage_config_, prefs_.get(),
-        &config_, &clock_, PlatformOptions::CreateDefault(), nullptr);
+        &config_, &clock_, PlatformOptions::CreateDefault(),
+        default_manager_.get(), nullptr);
   }
 
   void GetSelectedSegment(const SegmentSelectionResult& expected) {
@@ -110,10 +115,13 @@ class SegmentSelectorTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
+  TestModelProviderFactory::Data model_providers_;
+  TestModelProviderFactory provider_factory_;
   Config config_;
   base::SimpleTestClock clock_;
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_database_;
   MockSignalStorageConfig signal_storage_config_;
+  std::unique_ptr<DefaultModelManager> default_manager_;
   std::unique_ptr<TestSegmentationResultPrefs> prefs_;
   std::unique_ptr<SegmentSelectorImpl> segment_selector_;
 };
@@ -299,7 +307,7 @@ TEST_F(SegmentSelectorTest,
   // Construct a segment selector. It should read result from last session.
   segment_selector_ = std::make_unique<SegmentSelectorImpl>(
       segment_database_.get(), &signal_storage_config_, prefs_.get(), &config_,
-      &clock_, PlatformOptions::CreateDefault(), nullptr);
+      &clock_, PlatformOptions::CreateDefault(), nullptr, nullptr);
 
   SegmentSelectionResult result;
   result.segment = segment_id0;

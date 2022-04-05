@@ -151,7 +151,8 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
         std::make_unique<SegmentSelectorImpl>(
             segment_info_database_.get(), signal_storage_config_.get(),
             segmentation_result_prefs_.get(), config.get(), clock,
-            platform_options_, model_provider_factory_.get());
+            platform_options_, default_model_manager_.get(),
+            model_execution_manager_.get());
   }
 
   proxy_ = std::make_unique<ServiceProxyImpl>(segment_info_database_.get(),

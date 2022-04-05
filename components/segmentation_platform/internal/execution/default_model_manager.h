@@ -52,13 +52,19 @@ class DefaultModelManager {
       SegmentInfoDatabase* segment_database,
       MultipleSegmentInfoCallback callback);
 
- private:
   // Called to get the segment info from the default model for a given set of
   // segment IDs.
   virtual void GetAllSegmentInfoFromDefaultModel(
       const std::vector<OptimizationTarget>& segment_ids,
       MultipleSegmentInfoCallback callback);
 
+  // Returns the default provider or `nulllptr` when unavailable.
+  ModelProvider* GetDefaultProvider(OptimizationTarget segment_id);
+
+  void SetDefaultProvidersForTesting(
+      std::map<OptimizationTarget, std::unique_ptr<ModelProvider>>&& providers);
+
+ private:
   void GetNextSegmentInfoFromDefaultModel(
       std::unique_ptr<SegmentInfoList> result,
       std::deque<OptimizationTarget> remaining_segment_ids,
@@ -84,6 +90,7 @@ class DefaultModelManager {
   // Default model providers.
   std::map<OptimizationTarget, std::unique_ptr<ModelProvider>>
       default_model_providers_;
+  const raw_ptr<ModelProviderFactory> model_provider_factory_;
 
   base::WeakPtrFactory<DefaultModelManager> weak_ptr_factory_{this};
 };

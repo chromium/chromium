@@ -118,6 +118,7 @@ void RecordModelExecutionSaveResult(OptimizationTarget segment_id,
                                     bool success);
 // Records the final execution status for any ML model execution.
 void RecordModelExecutionStatus(OptimizationTarget segment_id,
+                                bool default_provider,
                                 ModelExecutionStatus status);
 // Records the percent of features in a tensor that are equal to 0 when the
 // segmentation model is executed.
@@ -160,7 +161,10 @@ enum class SegmentationSelectionFailureReason {
   kInvalidSelectionResultInPrefs = 9,
   kDBInitFailure = 10,
   kAtLeastOneSegmentNotAvailable = 11,
-  kMaxValue = kAtLeastOneSegmentNotAvailable
+  kAtLeastOneSegmentDefaultSignalNotCollected = 12,
+  kAtLeastOneSegmentDefaultExecFailed = 13,
+  kAtLeastOneSegmentDefaultMissingMetadata = 14,
+  kMaxValue = kAtLeastOneSegmentDefaultMissingMetadata
 };
 
 // Records the reason for failure or success to compute a segment selection.

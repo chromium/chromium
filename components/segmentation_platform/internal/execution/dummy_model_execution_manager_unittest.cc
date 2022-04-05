@@ -35,7 +35,7 @@ class DummyModelExecutionManagerTest : public testing::Test {
   void ExecuteModel() {
     base::RunLoop loop;
     model_execution_manager_->ExecuteModel(
-        proto::SegmentInfo(),
+        proto::SegmentInfo(), nullptr,
         base::BindOnce(&DummyModelExecutionManagerTest::OnExecutionCallback,
                        base::Unretained(this), loop.QuitClosure()));
     loop.Run();

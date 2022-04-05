@@ -15,7 +15,8 @@ class Clock;
 }
 namespace segmentation_platform {
 
-class ModelProviderFactory;
+class DefaultModelManager;
+class ModelExecutionManager;
 class SignalStorageConfig;
 
 // Used for retrieving the result of a particular model.
@@ -30,6 +31,10 @@ class SegmentResultProvider {
     kSegmentNotAvailable = 2,
     kSignalsNotCollected = 3,
     kDatabaseScoreNotReady = 4,
+    kDefaultModelSignalNotCollected = 5,
+    kDefaultModelMetadataMissing = 6,
+    kDefaultModelExecutionFailed = 7,
+    kDefaultModelScoreUsed = 8,
   };
   struct SegmentResult {
     explicit SegmentResult(ResultState state);
@@ -48,7 +53,8 @@ class SegmentResultProvider {
   static std::unique_ptr<SegmentResultProvider> Create(
       SegmentInfoDatabase* segment_info_database,
       SignalStorageConfig* signal_storage_config,
-      ModelProviderFactory* model_provider_factory,
+      DefaultModelManager* default_model_manager,
+      ModelExecutionManager* execution_manager,
       base::Clock* clock,
       bool force_refresh_results);
 

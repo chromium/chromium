@@ -11,7 +11,8 @@ namespace segmentation_platform {
 
 DefaultModelManager::DefaultModelManager(
     ModelProviderFactory* model_provider_factory,
-    const std::vector<OptimizationTarget>& segment_ids) {
+    const std::vector<OptimizationTarget>& segment_ids)
+    : model_provider_factory_(model_provider_factory) {
   for (OptimizationTarget segment_id : segment_ids) {
     if (!model_provider_factory)
       continue;
@@ -25,6 +26,14 @@ DefaultModelManager::DefaultModelManager(
 }
 
 DefaultModelManager::~DefaultModelManager() = default;
+
+ModelProvider* DefaultModelManager::GetDefaultProvider(
+    OptimizationTarget segment_id) {
+  auto it = default_model_providers_.find(segment_id);
+  if (it != default_model_providers_.end())
+    return it->second.get();
+  return nullptr;
+}
 
 void DefaultModelManager::GetAllSegmentInfoFromDefaultModel(
     const std::vector<OptimizationTarget>& segment_ids,
@@ -116,6 +125,11 @@ void DefaultModelManager::OnGetAllSegmentInfoFromDefaultModel(
     merged_results->push_back(std::move(segment_info));
 
   std::move(callback).Run(std::move(merged_results));
+}
+
+void DefaultModelManager::SetDefaultProvidersForTesting(
+    std::map<OptimizationTarget, std::unique_ptr<ModelProvider>>&& providers) {
+  default_model_providers_ = std::move(providers);
 }
 
 }  // namespace segmentation_platform

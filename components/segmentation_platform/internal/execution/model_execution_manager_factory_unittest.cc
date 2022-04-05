@@ -68,7 +68,7 @@ TEST_F(ModelExecutionManagerFactoryTest, CreateModelExecutionManager) {
   segment_info.set_segment_id(
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
   model_execution_manager->ExecuteModel(
-      segment_info,
+      segment_info, nullptr,
       base::BindOnce(
           [](base::RepeatingClosure quit,
              const std::pair<float, ModelExecutionStatus>&) { quit.Run(); },

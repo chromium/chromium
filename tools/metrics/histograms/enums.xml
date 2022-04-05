@@ -80947,6 +80947,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="9" label="Invalid selection result found in prefs"/>
   <int value="10" label="Database initialization failed"/>
   <int value="11" label="At least one segment is not available"/>
+  <int value="12" label="At least one segment does not have default signals"/>
+  <int value="13" label="At least one segment default model execution failed"/>
+  <int value="14" label="At least one segment default model missing metadata"/>
 </enum>
 
 <enum name="SelectedNewTabCreationOption">
