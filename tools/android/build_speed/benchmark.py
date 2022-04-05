@@ -338,7 +338,12 @@ def _run_incremental_benchmark(*, out_dir: str, target: str, from_string: str,
     # This ensures that the only change is the one that this script makes.
     logging.info(f'Prepping incremental benchmark...')
     prep_time = _run_and_maybe_install(out_dir, target, emulator)
-    logging.info(f'Took {prep_time:.1f}s to prep this test')
+    logging.info(f'Took {prep_time:.1f}s to prep. Sleeping for 1 minute.')
+    # 60s is enough to sufficiently reduce load and improve consistency. 30s
+    # did not sufficiently lower standard deviation and 90s did not further
+    # reduce standard deviation compared to 60s.
+    time.sleep(60)
+    logging.info(f'Starting actual test...')
     change_file_path = os.path.join(_SRC_ROOT, change_file)
     with _backup_file(change_file_path):
         with open(change_file_path, 'r') as f:
