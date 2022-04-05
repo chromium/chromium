@@ -20,10 +20,6 @@
     "args": ["--enable-features=BlinkHeapConcurrentMarking"]
   },
   {
-    "name": "enable-editing-ng",
-    "args": ["--enable-blink-features=EditingNG"]
-  },
-  {
     "name": "enable-percent-based-scrolling",
     "args": ["--enable-features=PercentBasedScrolling"]
   },

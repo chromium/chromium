@@ -131,9 +131,6 @@ const base::Feature kForceSynchronousHTMLParsing{
 const base::Feature kDeferredFontShaping{"DeferredShaping",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable EditingNG by default. This feature is for a kill switch.
-const base::Feature kEditingNG{"EditingNG", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enable LayoutNG.
 const base::Feature kLayoutNG{"LayoutNG", base::FEATURE_ENABLED_BY_DEFAULT};
 
