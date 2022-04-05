@@ -4645,6 +4645,11 @@ const char kQuickAnswersAlwaysTriggerForSingleWordName[] =
 const char kQuickAnswersAlwaysTriggerForSingleWordDescription[] =
     "Enable Quick Answers always trigger for single word selection.";
 
+const char kQuickAnswersForMoreLocalesName[] =
+    "Enable Quick Answers for more locales";
+const char kQuickAnswersForMoreLocalesDescription[] =
+    "Enable Quick Answers for more locales.";
+
 const char kTrimOnMemoryPressureName[] = "Trim Working Set on memory pressure";
 const char kTrimOnMemoryPressureDescription[] =
     "Trim Working Set periodically on memory pressure";

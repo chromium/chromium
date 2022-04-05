@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -34,6 +35,9 @@ const char kQuickAnswersConsentImpression[] =
 
 bool IsQuickAnswersAllowedForLocale(const std::string& locale,
                                     const std::string& runtime_locale) {
+  if (chromeos::features::IsQuickAnswersForMoreLocalesEnabled())
+    return true;
+
   // String literals used in some cases in the array because their
   // constant equivalents don't exist in:
   // third_party/icu/source/common/unicode/uloc.h

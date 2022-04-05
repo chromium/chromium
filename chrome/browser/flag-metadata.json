@@ -4994,7 +4994,12 @@
   {
     "name": "quick-answers-always-trigger-for-single-word",
     "owners": [ "croissant-eng", "updowndota" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 120
+  },
+  {
+    "name": "quick-answers-for-more-locales",
+    "owners": [ "croissant-eng", "updowndota" ],
+    "expiry_milestone": 120
   },
   {
     "name": "quick-commands",

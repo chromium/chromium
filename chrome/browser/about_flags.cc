@@ -5855,6 +5855,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          chromeos::features::kQuickAnswersAlwaysTriggerForSingleWord)},
+
+    {"quick-answers-for-more-locales",
+     flag_descriptions::kQuickAnswersForMoreLocalesName,
+     flag_descriptions::kQuickAnswersForMoreLocalesDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kQuickAnswersForMoreLocales)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)

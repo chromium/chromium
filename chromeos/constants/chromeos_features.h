@@ -33,6 +33,8 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kQuickAnswersV2SettingsSubToggle;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kQuickAnswersAlwaysTriggerForSingleWord;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kQuickAnswersForMoreLocales;
 
 // Keep alphabetized.
 
@@ -44,6 +46,8 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsQuickAnswersV2SettingsSubToggleEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsQuickAnswersAlwaysTriggerForSingleWord();
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+bool IsQuickAnswersForMoreLocalesEnabled();
 
 }  // namespace features
 }  // namespace chromeos

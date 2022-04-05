@@ -40,6 +40,10 @@ const base::Feature kQuickAnswersAlwaysTriggerForSingleWord{
     "QuickAnswersAlwaysTriggerForSingleWord",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables Quick Answers for more locales.
+const base::Feature kQuickAnswersForMoreLocales{
+    "QuickAnswersForMoreLocales", base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsBluetoothAdvertisementMonitoringEnabled() {
   return base::FeatureList::IsEnabled(kBluetoothAdvertisementMonitoring);
 }
@@ -58,6 +62,10 @@ bool IsQuickAnswersV2SettingsSubToggleEnabled() {
 
 bool IsQuickAnswersAlwaysTriggerForSingleWord() {
   return base::FeatureList::IsEnabled(kQuickAnswersAlwaysTriggerForSingleWord);
+}
+
+bool IsQuickAnswersForMoreLocalesEnabled() {
+  return base::FeatureList::IsEnabled(kQuickAnswersForMoreLocales);
 }
 
 }  // namespace features

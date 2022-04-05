@@ -18,6 +18,7 @@ source_set("cpp") {
     "//base",
     "//chromeos/components/quick_answers/public/cpp:prefs",
     "//chromeos/components/quick_answers/public/mojom",
+    "//chromeos/constants:constants",
     "//components/language/core/browser:browser",
     "//components/pref_registry",
     "//components/prefs",
