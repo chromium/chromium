@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/layout_theme_android.h"
 
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "ui/base/ui_base_features.h"
 
 namespace blink {
