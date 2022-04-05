@@ -11,10 +11,6 @@
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source.h"
 
-namespace base {
-class Value;
-}
-
 namespace net {
 
 // Represents an event that was sent to a NetLog observer, including the

@@ -4,7 +4,14 @@
 
 #include "net/log/net_log_entry.h"
 
+#include <utility>
+
+#include "base/strings/string_piece.h"
+#include "base/time/time.h"
+#include "base/values.h"
 #include "net/log/net_log.h"
+#include "net/log/net_log_event_type.h"
+#include "net/log/net_log_source.h"
 
 namespace net {
 
