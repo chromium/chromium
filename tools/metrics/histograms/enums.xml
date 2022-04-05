@@ -56243,6 +56243,7 @@ from previous Chrome versions.
   <int value="820650704" label="disable-ntp-popular-sites"/>
   <int value="821192723" label="show-fps-counter"/>
   <int value="824961931" label="use-simple-cache-backend"/>
+  <int value="824968180" label="SimLockPolicy:enabled"/>
   <int value="826519677" label="TailoredSecurityIntegration:disabled"/>
   <int value="828092263" label="TemporaryUnexpireFlagsM78:enabled"/>
   <int value="830282555" label="DecodeJpeg420ImagesToYUV:enabled"/>
@@ -56898,6 +56899,7 @@ from previous Chrome versions.
   <int value="1271871811" label="LegacyTLSEnforced:enabled"/>
   <int value="1272699563" label="enable-hosted-mode"/>
   <int value="1272923911" label="NewMessageListView:disabled"/>
+  <int value="1274277775" label="SimLockPolicy:disabled"/>
   <int value="1274717741" label="top-chrome-touch-ui"/>
   <int value="1275507565" label="OfflinePagesRenovations:enabled"/>
   <int value="1276120671" label="AutofillEnableOfferNotification:enabled"/>
