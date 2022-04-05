@@ -15,8 +15,7 @@
   }
 </style>
 <settings-toggle-button id="autofillCreditCardToggle"
-    aria-label="$i18n{creditCards}" no-extension-indicator
-    label="$i18n{enableCreditCardsLabel}"
+    no-extension-indicator label="$i18n{enableCreditCardsLabel}"
     sub-label="$i18n{enableCreditCardsSublabel}"
     pref="{{prefs.autofill.credit_card_enabled}}">
 </settings-toggle-button>
@@ -61,7 +60,7 @@
 <div class="cr-row continuation">
   <h2 class="flex">$i18n{creditCards}</h2>
   <cr-button id="addCreditCard" class="header-aligned-button"
-      on-click="onAddCreditCardClick_"
+      on-click="onAddCreditCardClick_" aria-label="$i18n{addCreditCardTitle}"
       hidden$="[[!prefs.autofill.credit_card_enabled.value]]">
     $i18n{add}
   </cr-button>
