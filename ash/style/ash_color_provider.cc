@@ -9,18 +9,25 @@
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/login/login_screen_controller.h"
+#include "ash/login_status.h"
+#include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/style/color_mode_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/session_manager_types.h"
+#include "components/user_manager/known_user.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_utils.h"
@@ -115,8 +122,11 @@ AshColorProvider::AshColorProvider() {
   g_instance = this;
 
   // May be null in unit tests.
-  if (Shell::HasInstance())
+  if (Shell::HasInstance()) {
     Shell::Get()->session_controller()->AddObserver(this);
+    Shell::Get()->login_screen_controller()->data_dispatcher()->AddObserver(
+        this);
+  }
 
   cros_styles::SetDebugColorsEnabled(base::FeatureList::IsEnabled(
       ash::features::kSemanticColorsDebugOverride));
@@ -127,8 +137,16 @@ AshColorProvider::~AshColorProvider() {
   g_instance = nullptr;
 
   // May be null in unit tests.
-  if (Shell::HasInstance())
+  if (Shell::HasInstance()) {
     Shell::Get()->session_controller()->RemoveObserver(this);
+    if (Shell::Get()->login_screen_controller() &&
+        Shell::Get()->login_screen_controller()->data_dispatcher()) {
+      Shell::Get()
+          ->login_screen_controller()
+          ->data_dispatcher()
+          ->RemoveObserver(this);
+    }
+  }
 
   cros_styles::SetDebugColorsEnabled(false);
   cros_styles::SetDarkModeEnabled(false);
@@ -272,12 +290,19 @@ bool AshColorProvider::IsDarkModeEnabled() const {
   if (!features::IsDarkLightModeEnabled() && override_light_mode_as_default_)
     return false;
 
-  // Keep colors in OOBE as LIGHT when D/L is enabled. When the feature is
-  // disabled, lots of colors are hard coded in OOBE for now.
-  if (features::IsDarkLightModeEnabled() &&
-      Shell::Get()->session_controller()->GetSessionState() ==
-          session_manager::SessionState::OOBE) {
-    return false;
+  if (features::IsDarkLightModeEnabled()) {
+    // Always use the LIGHT theme when OOBE WebUI is show (either as out-of-box
+    // or the WebUI dialog on the login screen). Lots of colors are hard coded
+    // in OOBE WebUI for now.
+    if (is_oobe_webui_shown_)
+      return false;
+
+    // On the login screen use the preference of the focused pod's user if they
+    // had the preference stored in the known_user and the pod is focused.
+    if (!active_user_pref_service_ &&
+        is_dark_mode_enabled_for_focused_pod_.has_value()) {
+      return is_dark_mode_enabled_for_focused_pod_.value();
+    }
   }
 
   // Keep the color mode as DARK in login screen or when dark/light mode feature
@@ -292,6 +317,23 @@ void AshColorProvider::SetDarkModeEnabledForTest(bool enabled) {
   if (IsDarkModeEnabled() != enabled) {
     ToggleColorMode();
   }
+}
+
+void AshColorProvider::OnOobeDialogStateChanged(OobeDialogState state) {
+  auto closure = GetNotifyOnDarkModeChangeClosure();
+  is_oobe_webui_shown_ = state != OobeDialogState::HIDDEN;
+}
+
+void AshColorProvider::OnFocusPod(const AccountId& account_id) {
+  auto closure = GetNotifyOnDarkModeChangeClosure();
+
+  if (!account_id.is_valid()) {
+    is_dark_mode_enabled_for_focused_pod_.reset();
+    return;
+  }
+  is_dark_mode_enabled_for_focused_pod_ =
+      user_manager::KnownUser(ash::Shell::Get()->local_state())
+          .FindBoolPath(account_id, prefs::kDarkModeEnabled);
 }
 
 bool AshColorProvider::IsThemed() const {
@@ -499,6 +541,21 @@ void AshColorProvider::NotifyColorModeThemedPrefChange() {
     observer.OnColorModeThemed(is_themed);
 
   NotifyColorModeAndThemeChanges(IsDarkModeEnabled());
+}
+
+base::ScopedClosureRunner AshColorProvider::GetNotifyOnDarkModeChangeClosure() {
+  return base::ScopedClosureRunner(
+      // Unretained is safe here because GetNotifyOnDarkModeChangeClosure is a
+      // private function and callback should be called on going out of scope of
+      // the calling method.
+      base::BindOnce(&AshColorProvider::NotifyIfDarkModeChanged,
+                     base::Unretained(this), IsDarkModeEnabled()));
+}
+
+void AshColorProvider::NotifyIfDarkModeChanged(bool old_is_dark_mode_enabled) {
+  if (old_is_dark_mode_enabled == IsDarkModeEnabled())
+    return;
+  NotifyDarkModeEnabledPrefChange();
 }
 
 }  // namespace ash

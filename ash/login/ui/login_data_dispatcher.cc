@@ -5,6 +5,8 @@
 #include "ash/login/ui/login_data_dispatcher.h"
 #include "ash/constants/ash_features.h"
 
+class AccountId;
+
 namespace ash {
 
 LoginDataDispatcher::Observer::~Observer() = default;
@@ -104,6 +106,8 @@ void LoginDataDispatcher::Observer::OnFocusLeavingLockScreenApps(bool reverse) {
 
 void LoginDataDispatcher::Observer::OnOobeDialogStateChanged(
     OobeDialogState state) {}
+
+void LoginDataDispatcher::Observer::OnFocusPod(const AccountId& account_id) {}
 
 LoginDataDispatcher::LoginDataDispatcher() = default;
 
@@ -282,6 +286,11 @@ void LoginDataDispatcher::HandleFocusLeavingLockScreenApps(bool reverse) {
 void LoginDataDispatcher::NotifyOobeDialogState(OobeDialogState state) {
   for (auto& observer : observers_)
     observer.OnOobeDialogStateChanged(state);
+}
+
+void LoginDataDispatcher::NotifyFocusPod(const AccountId& account_id) {
+  for (auto& observer : observers_)
+    observer.OnFocusPod(account_id);
 }
 
 }  // namespace ash

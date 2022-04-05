@@ -36,14 +36,14 @@ namespace {
 // portion of |iso_code| is shown at the beginning of the row, and
 // |display_name| is shown in the middle. A checkmark is shown in the end if
 // |checked| is true.
-class LocaleItem : public ActionableView {
+class LocaleItemView : public ActionableView {
  public:
-  METADATA_HEADER(LocaleItem);
+  METADATA_HEADER(LocaleItemView);
 
-  LocaleItem(LocaleDetailedView* locale_detailed_view,
-             const std::string& iso_code,
-             const std::u16string& display_name,
-             bool checked)
+  LocaleItemView(LocaleDetailedView* locale_detailed_view,
+                 const std::string& iso_code,
+                 const std::u16string& display_name,
+                 bool checked)
       : ActionableView(TrayPopupInkDropStyle::FILL_BOUNDS),
         locale_detailed_view_(locale_detailed_view),
         checked_(checked) {
@@ -85,9 +85,9 @@ class LocaleItem : public ActionableView {
     }
     SetAccessibleName(display_name_view->GetText());
   }
-  LocaleItem(const LocaleItem&) = delete;
-  LocaleItem& operator=(const LocaleItem&) = delete;
-  ~LocaleItem() override = default;
+  LocaleItemView(const LocaleItemView&) = delete;
+  LocaleItemView& operator=(const LocaleItemView&) = delete;
+  ~LocaleItemView() override = default;
 
   // ActionableView:
   bool PerformAction(const ui::Event& event) override {
@@ -113,7 +113,7 @@ class LocaleItem : public ActionableView {
   const bool checked_;
 };
 
-BEGIN_METADATA(LocaleItem, ActionableView)
+BEGIN_METADATA(LocaleItemView, ActionableView)
 END_METADATA
 
 }  // namespace
@@ -136,8 +136,8 @@ void LocaleDetailedView::CreateItems() {
     const bool checked =
         entry.iso_code ==
         Shell::Get()->system_tray_model()->locale()->current_locale_iso_code();
-    LocaleItem* item =
-        new LocaleItem(this, entry.iso_code, entry.display_name, checked);
+    auto* item =
+        new LocaleItemView(this, entry.iso_code, entry.display_name, checked);
     scroll_content()->AddChildView(item);
     item->SetID(id);
     id_to_locale_[id] = entry.iso_code;

@@ -156,6 +156,8 @@ class ASH_PUBLIC_EXPORT LoginScreenModel {
   // as add user or powerwash.
   virtual void NotifyOobeDialogState(OobeDialogState state) = 0;
 
+  virtual void NotifyFocusPod(const AccountId& account_id) = 0;
+
  protected:
   virtual ~LoginScreenModel();
 };

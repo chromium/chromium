@@ -16,6 +16,8 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 
+class AccountId;
+
 namespace ash {
 
 // Provides access to data needed by the lock/login screen. The login UI will
@@ -155,6 +157,11 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
 
     // Called when the state of the OOBE dialog is changed.
     virtual void OnOobeDialogStateChanged(OobeDialogState state);
+
+    // Called when the focused pod is changed on the login screen with the
+    // corresponding `account_id`. In case all the pods lost focus the
+    // `EmptyAccountId` passed as the argument.
+    virtual void OnFocusPod(const AccountId& account_id);
   };
 
   LoginDataDispatcher();
@@ -223,6 +230,7 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
       DetachableBasePairingStatus pairing_status);
   void HandleFocusLeavingLockScreenApps(bool reverse) override;
   void NotifyOobeDialogState(OobeDialogState state) override;
+  void NotifyFocusPod(const AccountId& account_id) override;
 
  private:
   base::ObserverList<Observer>::Unchecked observers_;

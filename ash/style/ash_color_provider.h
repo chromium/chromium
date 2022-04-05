@@ -6,12 +6,15 @@
 #define ASH_STYLE_ASH_COLOR_PROVIDER_H_
 
 #include "ash/ash_export.h"
+#include "ash/login/ui/login_data_dispatcher.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "base/callback_helpers.h"
 #include "base/observer_list.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 
+class AccountId;
 class PrefChangeRegistrar;
 class PrefRegistrySimple;
 class PrefService;
@@ -30,7 +33,8 @@ class ColorModeObserver;
 // the UI elements, e.g., separator, text, icon. The color of an element in
 // system UI will be the combination of the colors of the four layers.
 class ASH_EXPORT AshColorProvider : public SessionObserver,
-                                    public ColorProvider {
+                                    public ColorProvider,
+                                    public LoginDataDispatcher::Observer {
  public:
   AshColorProvider();
   AshColorProvider(const AshColorProvider& other) = delete;
@@ -67,6 +71,10 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
   // TODO(minch): Rename to ShouldUseDarkColors.
   bool IsDarkModeEnabled() const override;
   void SetDarkModeEnabledForTest(bool enabled) override;
+
+  // LoginDataDispatcher::Observer:
+  void OnOobeDialogStateChanged(OobeDialogState state) override;
+  void OnFocusPod(const AccountId& account_id) override;
 
   // Gets the color of |type| of the corresponding layer based on the current
   // inverted color mode. For views that need LIGHT colors while DARK mode is
@@ -134,6 +142,11 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
   // Notifies all the observers on |kColorModeThemed|'s change.
   void NotifyColorModeThemedPrefChange();
 
+  // Returns a closure which calls `NotifyIfDarkModeChanged` if the dark mode
+  // changed between creation and getting out of scope.
+  base::ScopedClosureRunner GetNotifyOnDarkModeChangeClosure();
+  void NotifyIfDarkModeChanged(bool old_is_dark_mode_enabled);
+
   // The default color is DARK when the DarkLightMode feature is disabled. But
   // we can also override it to LIGHT through ScopedLightModeAsDefault. This is
   // done to help keeping some of the UI elements as LIGHT by default before
@@ -141,6 +154,12 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
   // feature is disabled. This variable will be removed once fully launched the
   // DarkLightMode feature.
   bool override_light_mode_as_default_ = false;
+
+  // True if we're in the OOBE state or OOBE WebUI dialog is open (e.g. for the
+  // "Add person" flow).
+  bool is_oobe_webui_shown_ = false;
+  // absl::nullopt in case no user pod is focused.
+  absl::optional<bool> is_dark_mode_enabled_for_focused_pod_;
 
   base::ObserverList<ColorModeObserver> observers_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

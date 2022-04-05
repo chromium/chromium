@@ -7,6 +7,8 @@
 
 #include "ash/public/cpp/login_screen_model.h"
 
+class AccountId;
+
 class TestLoginScreenModel : public ash::LoginScreenModel {
  public:
   TestLoginScreenModel();
@@ -66,6 +68,7 @@ class TestLoginScreenModel : public ash::LoginScreenModel {
       bool show_full_management_disclosure) override;
   void HandleFocusLeavingLockScreenApps(bool reverse) override;
   void NotifyOobeDialogState(ash::OobeDialogState state) override;
+  void NotifyFocusPod(const AccountId& account_id) override;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_TEST_LOGIN_SCREEN_MODEL_H_

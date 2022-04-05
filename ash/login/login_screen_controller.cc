@@ -30,6 +30,7 @@
 #include "base/debug/alias.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/session_manager/session_manager_types.h"
 
@@ -182,18 +183,21 @@ bool LoginScreenController::GetSecurityTokenPinRequestCanceled() const {
 }
 
 void LoginScreenController::HardlockPod(const AccountId& account_id) {
+  GetModel()->NotifyFocusPod(account_id);
   if (!client_)
     return;
   client_->HardlockPod(account_id);
 }
 
 void LoginScreenController::OnFocusPod(const AccountId& account_id) {
+  GetModel()->NotifyFocusPod(account_id);
   if (!client_)
     return;
   client_->OnFocusPod(account_id);
 }
 
 void LoginScreenController::OnNoPodFocused() {
+  GetModel()->NotifyFocusPod(EmptyAccountId());
   if (!client_)
     return;
   client_->OnNoPodFocused();

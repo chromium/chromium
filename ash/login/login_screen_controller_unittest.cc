@@ -21,6 +21,7 @@
 #include "base/test/bind.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/session_manager_types.h"
+#include "components/user_manager/known_user.h"
 
 using session_manager::SessionState;
 using ::testing::_;
@@ -28,7 +29,13 @@ using ::testing::_;
 namespace ash {
 
 namespace {
-using LoginScreenControllerTest = AshTestBase;
+class LoginScreenControllerTest : public AshTestBase {
+ public:
+  LoginScreenControllerTest() {
+    user_manager::KnownUser::RegisterPrefs(local_state()->registry());
+  }
+};
+
 using LoginScreenControllerNoSessionTest = NoSessionAshTestBase;
 
 // Enum instead of enum class, because it is used for indexing.

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/ash/test_login_screen_model.h"
 
+class AccountId;
+
 TestLoginScreenModel::TestLoginScreenModel() = default;
 TestLoginScreenModel::~TestLoginScreenModel() = default;
 
@@ -66,3 +68,4 @@ void TestLoginScreenModel::SetPublicSessionShowFullManagementDisclosure(
     bool show_full_management_disclosure) {}
 void TestLoginScreenModel::HandleFocusLeavingLockScreenApps(bool reverse) {}
 void TestLoginScreenModel::NotifyOobeDialogState(ash::OobeDialogState state) {}
+void TestLoginScreenModel::NotifyFocusPod(const AccountId& account_id) {}
