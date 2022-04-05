@@ -198,6 +198,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   void PreparePersistentVault(
       const ::user_data_auth::PreparePersistentVaultRequest& request,
       PreparePersistentVaultCallback callback) override;
+  void PrepareVaultForMigration(
+      const ::user_data_auth::PrepareVaultForMigrationRequest& request,
+      PrepareVaultForMigrationCallback callback) override;
   void InvalidateAuthSession(
       const ::user_data_auth::InvalidateAuthSessionRequest& request,
       InvalidateAuthSessionCallback callback) override;

@@ -275,6 +275,14 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
                     std::move(callback));
   }
 
+  void PrepareVaultForMigration(
+      const ::user_data_auth::PrepareVaultForMigrationRequest& request,
+      PrepareVaultForMigrationCallback callback) override {
+    CallProtoMethod(::user_data_auth::kPrepareVaultForMigration,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
   void InvalidateAuthSession(
       const ::user_data_auth::InvalidateAuthSessionRequest& request,
       InvalidateAuthSessionCallback callback) override {

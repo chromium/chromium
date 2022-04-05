@@ -80,6 +80,8 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
       DBusMethodCallback<::user_data_auth::CreatePersistentUserReply>;
   using PreparePersistentVaultCallback =
       DBusMethodCallback<::user_data_auth::PreparePersistentVaultReply>;
+  using PrepareVaultForMigrationCallback =
+      DBusMethodCallback<::user_data_auth::PrepareVaultForMigrationReply>;
   using InvalidateAuthSessionCallback =
       DBusMethodCallback<::user_data_auth::InvalidateAuthSessionReply>;
   using ExtendAuthSessionCallback =
@@ -243,6 +245,11 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   virtual void PreparePersistentVault(
       const ::user_data_auth::PreparePersistentVaultRequest& request,
       PreparePersistentVaultCallback callback) = 0;
+
+  // Makes user directory available for migration.
+  virtual void PrepareVaultForMigration(
+      const ::user_data_auth::PrepareVaultForMigrationRequest& request,
+      PrepareVaultForMigrationCallback callback) = 0;
 
   // This call is used to invalidate an AuthSession
   // once the need for one no longer exists.
