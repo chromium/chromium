@@ -30,13 +30,13 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowPackageManager;
 
-import org.chromium.testing.local.LocalRobolectricTestRunner;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.testing.local.TestDir;
 
 import java.net.URISyntaxException;
 
 /** Unit tests for {@link org.chromium.webapk.lib.client.WebApkValidator}. */
-@RunWith(LocalRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class WebApkValidatorTest {
     private static final String WEBAPK_PACKAGE_NAME = "org.chromium.webapk.foo";

@@ -12,8 +12,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.webapk.lib.client.WebApkVerifySignature.Error;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
 import org.chromium.testing.local.TestDir;
 
 import java.io.RandomAccessFile;
@@ -26,7 +26,7 @@ import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 
 /** Unit tests for WebApkVerifySignature for Android. */
-@RunWith(LocalRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class WebApkVerifySignatureTest {
     /** Elliptical Curves, Digital Signature Algorithm */
