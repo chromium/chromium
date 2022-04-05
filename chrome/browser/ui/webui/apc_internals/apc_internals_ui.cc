@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/autofill_and_password_manager_internals/apc_internals_ui.h"
+#include "chrome/browser/ui/webui/apc_internals/apc_internals_ui.h"
 
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/autofill_and_password_manager_internals/apc_internals_handler.h"
+#include "chrome/browser/ui/webui/apc_internals/apc_internals_handler.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/grit/dev_ui_browser_resources.h"
 #include "components/embedder_support/user_agent_utils.h"
-#include "components/grit/dev_ui_components_resources.h"
 #include "components/version_info/version_info.h"
 #include "components/version_ui/version_handler_helper.h"
 #include "components/version_ui/version_ui_constants.h"

@@ -19,8 +19,7 @@ function notifyAboutFlags(flags) {
   const addEntry = function(flag) {
     const nameLabel = flag['name'];
     const enabledLabel = flag['enabled'];
-    document.getElementById('flags_table')
-        .appendChild(createTableRow(nameLabel, enabledLabel));
+    $('flags_table').appendChild(createTableRow(nameLabel, enabledLabel));
   };
   flags.forEach(addEntry);
 }
@@ -29,7 +28,7 @@ function notifyAboutScriptFetching(scriptFetcherInfo) {
   if (!scriptFetcherInfo) {
     return;
   }
-  const table = document.getElementById('script_fetching_table');
+  const table = $('script_fetching_table');
   for (const [key, value] of Object.entries(scriptFetcherInfo)) {
     table.appendChild(createTableRow(key, value));
   }

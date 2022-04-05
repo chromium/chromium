@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/autofill_and_password_manager_internals/apc_internals_handler.h"
+#include "chrome/browser/ui/webui/apc_internals/apc_internals_handler.h"
 
 #include <string>
 
