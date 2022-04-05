@@ -123,6 +123,7 @@ class MediaGalleriesPermissionController
   void FileSelected(const base::FilePath& path,
                     int index,
                     void* params) override;
+  void FileSelectionCanceled(void* params) override;
 
   // RemovableStorageObserver implementation.
   // Used to keep dialog in sync with removable device status.
