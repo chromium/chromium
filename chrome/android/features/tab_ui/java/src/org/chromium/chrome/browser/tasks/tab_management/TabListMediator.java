@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_groups.EmptyTabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupUtils;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
@@ -978,17 +979,17 @@ class TabListMediator {
 
                 @Override
                 protected void deleteTabGroupTitle(int tabRootId) {
-                    TabGroupUtils.deleteTabGroupTitle(tabRootId);
+                    TabGroupTitleUtils.deleteTabGroupTitle(tabRootId);
                 }
 
                 @Override
                 protected String getTabGroupTitle(int tabRootId) {
-                    return TabGroupUtils.getTabGroupTitle(tabRootId);
+                    return TabGroupTitleUtils.getTabGroupTitle(tabRootId);
                 }
 
                 @Override
                 protected void storeTabGroupTitle(int tabRootId, String title) {
-                    TabGroupUtils.storeTabGroupTitle(tabRootId, title);
+                    TabGroupTitleUtils.storeTabGroupTitle(tabRootId, title);
                 }
             };
         }

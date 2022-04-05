@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupUtils;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -288,13 +289,13 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             int namedGroupCount = 0;
             for (int i = 0; i < normalFilter.getTabGroupCount(); i++) {
                 int rootId = CriticalPersistedTabData.from(normalFilter.getTabAt(i)).getRootId();
-                if (TabGroupUtils.getTabGroupTitle(rootId) != null) {
+                if (TabGroupTitleUtils.getTabGroupTitle(rootId) != null) {
                     namedGroupCount += 1;
                 }
             }
             for (int i = 0; i < incognitoFilter.getTabGroupCount(); i++) {
                 int rootId = CriticalPersistedTabData.from(incognitoFilter.getTabAt(i)).getRootId();
-                if (TabGroupUtils.getTabGroupTitle(rootId) != null) {
+                if (TabGroupTitleUtils.getTabGroupTitle(rootId) != null) {
                     namedGroupCount += 1;
                 }
             }
