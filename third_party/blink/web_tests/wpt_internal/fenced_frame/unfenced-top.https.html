@@ -12,13 +12,14 @@
 <body>
 <script>
 
-// Creates a new window and validates its opener/referrer, then creates a
-// fenced frame inside of it.
-// Returns the window and the URL of the fenced frame.
+// Creates a new window and validates its opener/referrer, then creates an
+// opaque-ads fenced frame inside of it, and an iframe nested inside of that.
+// Returns the window, the URL of the fenced frame, and the URL of the iframe.
 async function createAndValidateWindow() {
   const new_window = attachWindowContext();
 
-  const fenced_frame_url = await new_window.execute(async (original_referrer) => {
+  const [fenced_frame_url, nested_iframe_url] =
+      await new_window.execute(async (original_referrer) => {
     assert_equals(document.referrer, original_referrer,
                   "Initially, the window's referrer is the test file.");
     assert_not_equals(window.opener, null,
@@ -31,9 +32,15 @@ async function createAndValidateWindow() {
         attributes: [["mode", "opaque-ads"]]});
 
     // Wait for the fenced frame to load.
-    await window.fenced_frame.execute(() => {
+    await window.fenced_frame.execute(async () => {
       assert_false(navigator.userActivation.isActive,
                    "The fenced frame should initially be inactive.");
+
+      window.nested_iframe = attachIFrameContext();
+      await window.nested_iframe.execute(() => {
+        assert_false(navigator.userActivation.isActive,
+                     "The nested iframe should initially be inactive.");
+      });
     });
 
     // Send a click to user-activate the fenced frame.
@@ -49,68 +56,101 @@ async function createAndValidateWindow() {
     eventSender.mouseMoveTo(rect.x+rect.width/2, rect.y+rect.height/2);
     eventSender.mouseDown();
 
-    await window.fenced_frame.execute(() => {
+    const nested_iframe_url = await window.fenced_frame.execute(async () => {
       assert_true(navigator.userActivation.isActive,
                   "Now the fenced frame should be active.");
+
+      await window.nested_iframe.execute(() => {
+        assert_true(navigator.userActivation.isActive,
+                    "Now the nested iframe should be active.");
+      });
+
+      return window.nested_iframe.src;
     });
 
-    return window.fenced_frame.src;
+    return [window.fenced_frame.src, nested_iframe_url];
   }, [location.href]);
 
-  return [new_window, fenced_frame_url];
+  return [new_window, fenced_frame_url, nested_iframe_url];
 }
 
-// Test successful top-level navigation out of an opaque-ads fenced frame.
-promise_test(async () => {
-    // Create a new window, where we'll navigate the outermost frame.
-    // (We can't do it in this window, or we'd lose the testing harness.)
-    // Create a fenced frame in the window, and return its URL (which will
-    // become the document.referrer of the navigated outermost frame).
-    const [new_window, new_referrer] = await createAndValidateWindow();
+async function checkNavigationSucceeded(new_window, new_referrer) {
+  message_received = new Promise(resolve => window.onmessage = () => resolve());
 
-    // Navigate the window's top-level frame from inside the fenced frame.
-    // (Navigate to the original URL, i.e. refresh the page, so that we can
-    // still communicate via RemoteContext.)
-    // Suspend the remote executor so that the next command we send will be
-    // handled by the refreshed page, not the moribund old page.
-    await new_window.execute(() => {
-      window.executor.suspend(() => {
-        window.fenced_frame.execute((refresh_url) => {
+  // Check that the navigation happened in the correct frame.
+  await new_window.execute((expected_referrer) => {
+    assert_not_equals(window.opener, null,
+                      `The browsing context has a window.opener, because it
+                       is the top-level frame in the opened window.`);
+    window.opener.postMessage('This should reach the original opener', '*');
+    assert_equals(document.referrer, expected_referrer,
+                  `The new document.referrer should be from the frame
+                   that originated the navigation.`);
+    assert_equals(window.fenced_frame, undefined,
+                  `The browsing context has been refreshed, so old variables
+                   are gone.`);
+  }, [new_referrer]);
+
+  // Await the postMessage from inside the frame to confirm that the opener
+  // is unchanged.
+  await message_received;
+}
+
+// Test successful top-level navigation from an opaque-ads fenced frame.
+promise_test(async () => {
+  // Create a new window, where we'll navigate the outermost frame.
+  // (We can't do it in this window, or we'd lose the testing harness.)
+  // Create a fenced frame in the window, and return its URL (which will
+  // become the document.referrer of the navigated outermost frame).
+  const [new_window, new_referrer,] = await createAndValidateWindow();
+
+  // Navigate the window's top-level frame from inside the fenced frame.
+  // (Navigate to the original URL, i.e. refresh the page, so that we can
+  // still communicate via RemoteContext.)
+  // Suspend the remote executor so that the next command we send will be
+  // handled by the refreshed page, not the moribund old page.
+  await new_window.execute(() => {
+    window.executor.suspend(() => {
+      window.fenced_frame.execute((refresh_url) => {
+        const window_handle = window.open(refresh_url, '_unfencedTop');
+        assert_equals(window_handle, null,
+                      `There should be no window handle returned from
+                       navigations through _unfencedTop.`);
+      }, [location.href]);
+    });
+  });
+
+ await checkNavigationSucceeded(new_window, new_referrer);
+}, '_unfencedTop opaque-ads success case');
+
+// Test successful top-level navigation out of an iframe nested inside an
+// opaque-ads fenced frame.
+promise_test(async () => {
+  const [new_window,, new_referrer] = await createAndValidateWindow();
+
+  // Navigate the window's top-level frame from inside the fenced frame's
+  // nested iframe.
+  await new_window.execute(() => {
+    window.executor.suspend(() => {
+      window.fenced_frame.execute((refresh_url) => {
+        window.nested_iframe.execute((refresh_url) => {
           const window_handle = window.open(refresh_url, '_unfencedTop');
           assert_equals(window_handle, null,
                         `There should be no window handle returned from
                          navigations through _unfencedTop.`);
-        }, [location.href]);
-      });
+        }, [refresh_url]);
+      }, [location.href]);
     });
+  });
 
-    message_received = new Promise(resolve => window.onmessage = () => resolve());
-
-    // Check that the navigation happened in the correct frame.
-    await new_window.execute((expected_referrer) => {
-      assert_not_equals(window.opener, null,
-                        `The browsing context has a window.opener, because it
-                         is the top-level frame in the opened window.`);
-      window.opener.postMessage('This should reach the original opener', '*');
-      assert_equals(document.referrer, expected_referrer,
-                    `The new document.referrer should be from the fenced frame
-                     that originated the navigation.`);
-      assert_equals(window.fenced_frame, undefined,
-                    `The browsing context has been refreshed, so old variables
-                     are gone.`);
-    }, [new_referrer]);
-
-    // Await the postMessage from inside the frame to confirm that the opener
-    // is unchanged.
-    await message_received;
-
-}, '_unfencedTop opaque-ads success case');
+  await checkNavigationSucceeded(new_window, new_referrer);
+}, '_unfencedTop opaque-ads nested iframe success case');
 
 // Test unsuccessful navigation out of a fenced frame using _unfencedTop and
 // a javascript: URL.
 promise_test(async() => {
   // Create a new window.
-  const [new_window, _] = await createAndValidateWindow();
+  const [new_window,,] = await createAndValidateWindow();
 
   await new_window.execute(async () => {
 
