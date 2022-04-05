@@ -59,6 +59,7 @@ class AnimationTimeline;
 class Layer;
 class LayerTreeDebugState;
 class LayerTreeFrameSink;
+class LayerTreeSettings;
 class TaskGraphRunner;
 }
 
@@ -437,6 +438,8 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
 
   virtual void SetDelegatedInkPointRenderer(
       mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer> receiver);
+
+  const cc::LayerTreeSettings& GetLayerTreeSettings() const;
 
  private:
   friend class base::RefCounted<Compositor>;
