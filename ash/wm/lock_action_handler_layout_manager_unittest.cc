@@ -247,8 +247,8 @@ TEST_F(LockActionHandlerLayoutManagerTest, MaximizedWindowBounds) {
   // alignment, which matches how the shelf is aligned on the lock screen,
   gfx::Rect target_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
-  target_bounds.Inset(0 /* left */, 0 /* top */, 0 /* right */,
-                      ShelfConfig::Get()->shelf_size() /* bottom */);
+  target_bounds.Inset(
+      gfx::Insets().set_bottom(ShelfConfig::Get()->shelf_size()));
   EXPECT_EQ(target_bounds.ToString(), window->GetBoundsInScreen().ToString());
 }
 
@@ -271,8 +271,8 @@ TEST_F(LockActionHandlerLayoutManagerTest, FullscreenWindowBounds) {
   // alignment, which matches how the shelf is aligned on the lock screen,
   gfx::Rect target_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
-  target_bounds.Inset(0 /* left */, 0 /* top */, 0 /* right */,
-                      ShelfConfig::Get()->shelf_size() /* bottom */);
+  target_bounds.Inset(
+      gfx::Insets().set_bottom(ShelfConfig::Get()->shelf_size()));
   EXPECT_EQ(target_bounds.ToString(), window->GetBoundsInScreen().ToString());
 }
 
@@ -290,16 +290,16 @@ TEST_F(LockActionHandlerLayoutManagerTest, MaximizeResizableWindow) {
 
   gfx::Rect target_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
-  target_bounds.Inset(0 /* left */, 0 /* top */, 0 /* right */,
-                      ShelfConfig::Get()->shelf_size() /* bottom */);
+  target_bounds.Inset(
+      gfx::Insets().set_bottom(ShelfConfig::Get()->shelf_size()));
   EXPECT_EQ(target_bounds.ToString(), window->GetBoundsInScreen().ToString());
 }
 
 TEST_F(LockActionHandlerLayoutManagerTest, KeyboardBounds) {
   gfx::Rect initial_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
-  initial_bounds.Inset(0 /* left */, 0 /* top */, 0 /* right */,
-                       ShelfConfig::Get()->shelf_size() /* bottom */);
+  initial_bounds.Inset(
+      gfx::Insets().set_bottom(ShelfConfig::Get()->shelf_size()));
 
   SetUpTrayActionClientAndLockSession(mojom::TrayActionState::kActive);
 
@@ -321,8 +321,7 @@ TEST_F(LockActionHandlerLayoutManagerTest, KeyboardBounds) {
 
   gfx::Rect target_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
-  target_bounds.Inset(0 /* left */, 0 /* top */, 0 /* right */,
-                      keyboard_bounds.height() /* bottom */);
+  target_bounds.Inset(gfx::Insets().set_bottom(keyboard_bounds.height()));
   EXPECT_EQ(target_bounds.ToString(), window->GetBoundsInScreen().ToString());
 
   // Verify that window bounds get updated when Chromevox bounds are shown (so
@@ -336,8 +335,7 @@ TEST_F(LockActionHandlerLayoutManagerTest, KeyboardBounds) {
       CreateTestWidget(nullptr, kShellWindowId_AccessibilityPanelContainer);
   SetAccessibilityPanelHeight(kAccessibilityPanelHeight);
 
-  target_bounds.Inset(0 /* left */, kAccessibilityPanelHeight /* top */,
-                      0 /* right */, 0 /* bottom */);
+  target_bounds.Inset(gfx::Insets().set_top(kAccessibilityPanelHeight));
   EXPECT_EQ(target_bounds.ToString(), window->GetBoundsInScreen().ToString());
 
   ShowKeyboard(false);
@@ -460,8 +458,8 @@ TEST_F(LockActionHandlerLayoutManagerTest, MultipleMonitors) {
 
   gfx::Rect target_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
-  target_bounds.Inset(0 /* left */, 0 /* top */, 0 /* right */,
-                      ShelfConfig::Get()->shelf_size() /* bottom */);
+  target_bounds.Inset(
+      gfx::Insets().set_bottom(ShelfConfig::Get()->shelf_size()));
   EXPECT_EQ(target_bounds.ToString(), window->GetBoundsInScreen().ToString());
 
   EXPECT_EQ(root_windows[0], window->GetRootWindow());
@@ -474,8 +472,8 @@ TEST_F(LockActionHandlerLayoutManagerTest, MultipleMonitors) {
   // lock container windows are always on primary display.
   EXPECT_EQ(root_windows[0], window->GetRootWindow());
   target_bounds = gfx::Rect(300, 400);
-  target_bounds.Inset(0 /* left */, 0 /* top */, 0 /* right */,
-                      ShelfConfig::Get()->shelf_size() /* bottom */);
+  target_bounds.Inset(
+      gfx::Insets().set_bottom(ShelfConfig::Get()->shelf_size()));
   EXPECT_EQ(target_bounds.ToString(), window->GetBoundsInScreen().ToString());
 
   window_state->Restore();
@@ -722,8 +720,8 @@ TEST_F(LockActionHandlerLayoutManagerTestWithTestBackgroundController,
   // alignment, which matches how the shelf is aligned on the lock screen,
   gfx::Rect target_app_window_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
-  target_app_window_bounds.Inset(0 /* left */, 0 /* top */, 0 /* right */,
-                                 ShelfConfig::Get()->shelf_size() /* bottom */);
+  target_app_window_bounds.Inset(
+      gfx::Insets().set_bottom(ShelfConfig::Get()->shelf_size()));
   EXPECT_EQ(target_app_window_bounds, window->GetBoundsInScreen());
 
   EXPECT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().bounds(),

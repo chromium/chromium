@@ -363,7 +363,8 @@ class ScalerImpl : public GLHelper::ScalerInterface {
     }
     // Because the texture sampler sometimes reads between pixels, an extra one
     // must be accounted for.
-    sampling_rect->Inset(-(overscan_x + 1.0f), -(overscan_y + 1.0f));
+    sampling_rect->Inset(
+        -gfx::InsetsF::VH(overscan_y + 1.0f, overscan_x + 1.0f));
   }
 
   // Returns the given |rect| in source coordinates.

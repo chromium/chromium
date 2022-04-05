@@ -234,8 +234,8 @@ TEST_F(GLScalerOverscanPixelTest, Bilinear) {
 
     // Sanity-check that the internal math estimating the overscan is correct.
     gfx::Rect expected_input_rect = kTenByTenRect;
-    expected_input_rect.Inset(-tc.expected_overscan.x(),
-                              -tc.expected_overscan.y());
+    expected_input_rect.Inset(
+        gfx::Insets::VH(-tc.expected_overscan.y(), -tc.expected_overscan.x()));
     EXPECT_EQ(expected_input_rect, ToInputRect(kTenByTenRect));
   }
 }
@@ -277,8 +277,8 @@ TEST_F(GLScalerOverscanPixelTest, TwoTapBilinear) {
 
     // Sanity-check that the internal math estimating the overscan is correct.
     gfx::Rect expected_input_rect = kTenByTenRect;
-    expected_input_rect.Inset(-tc.expected_overscan.x(),
-                              -tc.expected_overscan.y());
+    expected_input_rect.Inset(
+        gfx::Insets::VH(-tc.expected_overscan.y(), -tc.expected_overscan.x()));
     EXPECT_EQ(expected_input_rect, ToInputRect(kTenByTenRect));
   }
 }
@@ -320,8 +320,8 @@ TEST_F(GLScalerOverscanPixelTest, ThreeTapBilinear) {
 
     // Sanity-check that the internal math estimating the overscan is correct.
     gfx::Rect expected_input_rect = kTenByTenRect;
-    expected_input_rect.Inset(-tc.expected_overscan.x(),
-                              -tc.expected_overscan.y());
+    expected_input_rect.Inset(
+        gfx::Insets::VH(-tc.expected_overscan.y(), -tc.expected_overscan.x()));
     EXPECT_EQ(expected_input_rect, ToInputRect(kTenByTenRect));
   }
 }
@@ -363,8 +363,8 @@ TEST_F(GLScalerOverscanPixelTest, FourTapBilinear) {
 
     // Sanity-check that the internal math estimating the overscan is correct.
     gfx::Rect expected_input_rect = kTenByTenRect;
-    expected_input_rect.Inset(-tc.expected_overscan.x(),
-                              -tc.expected_overscan.y());
+    expected_input_rect.Inset(
+        gfx::Insets::VH(-tc.expected_overscan.y(), -tc.expected_overscan.x()));
     EXPECT_EQ(expected_input_rect, ToInputRect(kTenByTenRect));
   }
 }
@@ -398,8 +398,8 @@ TEST_F(GLScalerOverscanPixelTest, TwoByTwoTapBilinear) {
 
     // Sanity-check that the internal math estimating the overscan is correct.
     gfx::Rect expected_input_rect = kTenByTenRect;
-    expected_input_rect.Inset(-tc.expected_overscan.x(),
-                              -tc.expected_overscan.y());
+    expected_input_rect.Inset(
+        gfx::Insets::VH(-tc.expected_overscan.y(), -tc.expected_overscan.x()));
     EXPECT_EQ(expected_input_rect, ToInputRect(kTenByTenRect));
   }
 }
@@ -452,8 +452,8 @@ TEST_F(GLScalerOverscanPixelTest, BicubicUpscale) {
 
     // Sanity-check that the internal math estimating the overscan is correct.
     gfx::Rect expected_input_rect = kTenByTenRect;
-    expected_input_rect.Inset(-tc.expected_overscan.x(),
-                              -tc.expected_overscan.y());
+    expected_input_rect.Inset(
+        gfx::Insets::VH(-tc.expected_overscan.y(), -tc.expected_overscan.x()));
     EXPECT_EQ(expected_input_rect, ToInputRect(kTenByTenRect));
   }
 }
@@ -483,8 +483,8 @@ TEST_F(GLScalerOverscanPixelTest, BicubicHalving) {
 
     // Sanity-check that the internal math estimating the overscan is correct.
     gfx::Rect expected_input_rect = kTenByTenRect;
-    expected_input_rect.Inset(-tc.expected_overscan.x(),
-                              -tc.expected_overscan.y());
+    expected_input_rect.Inset(
+        gfx::Insets::VH(-tc.expected_overscan.y(), -tc.expected_overscan.x()));
     EXPECT_EQ(expected_input_rect, ToInputRect(kTenByTenRect));
   }
 }

@@ -130,8 +130,9 @@ void IconWithBadgeImageSource::SetBadge(std::unique_ptr<Badge> badge) {
       gfx::Rect(icon_area.x() + badge_offset_x, icon_area.y() + badge_offset_y,
                 badge_width, kBadgeHeight);
   gfx::Rect badge_rect = badge_background_rect_;
-  badge_rect.Inset(std::max(kPadding, (badge_rect.width() - text_width) / 2),
-                   kBadgeHeight - base_font.GetHeight(), kPadding, 0);
+  badge_rect.Inset(gfx::Insets::TLBR(
+      kBadgeHeight - base_font.GetHeight(),
+      std::max(kPadding, (badge_rect.width() - text_width) / 2), 0, kPadding));
   badge_text_ = gfx::RenderText::CreateRenderText();
   badge_text_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   badge_text_->SetCursorEnabled(false);

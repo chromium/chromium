@@ -63,7 +63,7 @@ gfx::Point TabScrubberChromeOS::GetStartPoint(
   // opposite edges of the tab, which should be at (overlap / 2).
   gfx::Rect tab_edges = tab_bounds;
   // For odd overlap values, be conservative and inset both edges rounding up.
-  tab_edges.Inset((TabStyle::GetTabOverlap() + 1) / 2, 0);
+  tab_edges.Inset(gfx::Insets::VH(0, (TabStyle::GetTabOverlap() + 1) / 2));
   const int x = (direction == LEFT)
                     ? std::min(tab_bounds.x() + left, tab_edges.right())
                     : std::max(tab_bounds.right() - right, tab_edges.x());

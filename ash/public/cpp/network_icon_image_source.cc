@@ -127,8 +127,9 @@ void SignalStrengthImageSource::DrawArcs(gfx::Canvas* canvas) {
   oval_bounds.Inset(padding_);
   // Double the width and height. The new midpoint should be the former
   // bottom center.
-  oval_bounds.Inset(-oval_bounds.width() / 2, 0, -oval_bounds.width() / 2,
-                    -oval_bounds.height());
+  oval_bounds.Inset(gfx::InsetsF::TLBR(0, -oval_bounds.width() / 2,
+                                       -oval_bounds.height(),
+                                       -oval_bounds.width() / 2));
 
   constexpr SkScalar kAngleAboveHorizontal = 51.f;
   constexpr SkScalar kStartAngle = 180.f + kAngleAboveHorizontal;

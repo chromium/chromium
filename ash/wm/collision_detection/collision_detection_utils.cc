@@ -57,8 +57,7 @@ gfx::Rect ComputeCollisionRectFromBounds(const gfx::Rect& bounds,
   gfx::Rect collision_rect = bounds;
   ::wm::ConvertRectToScreen(parent, &collision_rect);
   if (inset) {
-    collision_rect.Inset(-kCollisionWindowWorkAreaInsetsDp,
-                         -kCollisionWindowWorkAreaInsetsDp);
+    collision_rect.Inset(-kCollisionWindowWorkAreaInsetsDp);
   }
   return collision_rect;
 }
@@ -267,8 +266,7 @@ gfx::Rect CollisionDetectionUtils::GetMovementArea(
       WorkAreaInsets::ForWindow(Shell::GetRootWindowForDisplayId(display.id()))
           ->user_work_area_bounds();
 
-  work_area.Inset(kCollisionWindowWorkAreaInsetsDp,
-                  kCollisionWindowWorkAreaInsetsDp);
+  work_area.Inset(kCollisionWindowWorkAreaInsetsDp);
   return work_area;
 }
 
@@ -370,17 +368,18 @@ gfx::Rect CollisionDetectionUtils::AvoidObstaclesInternal(
 
   // For even sized bounds, there is no 'center' integer point, so we need
   // to adjust the obstacles and work area to account for this.
-  inset_work_area.Inset(
-      bounds_in_screen.width() / 2, bounds_in_screen.height() / 2,
-      (bounds_in_screen.width() - 1) / 2, (bounds_in_screen.height() - 1) / 2);
+  inset_work_area.Inset(gfx::Insets::TLBR(
+      bounds_in_screen.height() / 2, bounds_in_screen.width() / 2,
+      (bounds_in_screen.height() - 1) / 2, (bounds_in_screen.width() - 1) / 2));
   std::vector<gfx::Rect> inset_rects(rects);
   for (auto& rect : inset_rects) {
     // Reduce the collision resolution problem from rectangles-rectangle
     // resolution to rectangles-point resolution, by expanding each obstacle
     // by |bounds_in_screen| size.
-    rect.Inset(-(bounds_in_screen.width() - 1) / 2,
-               -(bounds_in_screen.height() - 1) / 2,
-               -bounds_in_screen.width() / 2, -bounds_in_screen.height() / 2);
+    rect.Inset(gfx::Insets::TLBR(-(bounds_in_screen.height() - 1) / 2,
+                                 -(bounds_in_screen.width() - 1) / 2,
+                                 -bounds_in_screen.height() / 2,
+                                 -bounds_in_screen.width() / 2));
   }
 
   gfx::Point moved_center = ComputeBestCandidatePoint(

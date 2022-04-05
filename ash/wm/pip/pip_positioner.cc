@@ -47,9 +47,9 @@ gfx::Rect PipPositioner::GetDismissedPosition(
   // Allow the bounds to move at most |kPipDismissMovementProportion| of the
   // length of the bounds in the direction of movement.
   gfx::Rect bounds_movement_area = bounds_in_screen;
-  bounds_movement_area.Inset(
-      -bounds_in_screen.width() * kPipDismissMovementProportion,
-      -bounds_in_screen.height() * kPipDismissMovementProportion);
+  bounds_movement_area.Inset(gfx::Insets::VH(
+      -bounds_in_screen.height() * kPipDismissMovementProportion,
+      -bounds_in_screen.width() * kPipDismissMovementProportion));
   gfx::Rect dismissed_bounds =
       CollisionDetectionUtils::GetAdjustedBoundsByGravity(
           bounds_in_screen, bounds_movement_area, gravity);

@@ -77,8 +77,9 @@ bool FEMorphology::SetRadiusY(float radius_y) {
 
 gfx::RectF FEMorphology::MapEffect(const gfx::RectF& rect) const {
   gfx::RectF result = rect;
-  result.Outset(GetFilter()->ApplyHorizontalScale(radius_x_),
-                GetFilter()->ApplyVerticalScale(radius_y_));
+  result.Outset(
+      gfx::OutsetsF::VH(GetFilter()->ApplyVerticalScale(radius_y_),
+                        GetFilter()->ApplyHorizontalScale(radius_x_)));
   return result;
 }
 

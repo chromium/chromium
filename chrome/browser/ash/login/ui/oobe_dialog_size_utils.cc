@@ -62,7 +62,7 @@ void CalculateOobeDialogBounds(const gfx::Rect& host_bounds,
                                gfx::Rect* result) {
   // Area to position dialog.
   *result = host_bounds;
-  result->Inset(0, 0, 0, shelf_height);
+  result->Inset(gfx::Insets().set_bottom(shelf_height));
 
   // Center dialog within an available area.
   result->ClampToCenteredSize(

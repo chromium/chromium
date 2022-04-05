@@ -170,8 +170,9 @@ void RemoteFrameView::UpdateCompositingRect() {
   // it seems to make guttering rare with slow to medium speed wheel scrolling.
   // Can we collect UMA data to estimate how much extra rastering this causes,
   // and possibly how common guttering is?
-  compositing_rect_.Outset(ceilf(local_viewport_rect.Width() * 0.15f),
-                           ceilf(local_viewport_rect.Height() * 0.15f));
+  compositing_rect_.Outset(
+      gfx::Outsets::VH(ceilf(local_viewport_rect.Height() * 0.15f),
+                       ceilf(local_viewport_rect.Width() * 0.15f)));
   compositing_rect_.set_width(
       std::min(frame_size.width(), compositing_rect_.width()));
   compositing_rect_.set_height(

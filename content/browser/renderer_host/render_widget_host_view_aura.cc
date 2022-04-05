@@ -993,11 +993,9 @@ gfx::Rect RenderWidgetHostViewAura::GetBoundsInRootWindow() {
     // that think of a maximized window as corresponding exactly to the work
     // area.  Correct for this by subtracting the frame thickness back off.
     if (::IsZoomed(hwnd)) {
-      bounds.Inset(GetSystemMetrics(SM_CXSIZEFRAME),
-                   GetSystemMetrics(SM_CYSIZEFRAME));
-
-      bounds.Inset(GetSystemMetrics(SM_CXPADDEDBORDER),
-                   GetSystemMetrics(SM_CXPADDEDBORDER));
+      bounds.Inset(gfx::Insets::VH(GetSystemMetrics(SM_CYSIZEFRAME),
+                                   GetSystemMetrics(SM_CXSIZEFRAME)));
+      bounds.Inset(GetSystemMetrics(SM_CXPADDEDBORDER));
     }
 
     // Pixels come back from GetWindowHost, so we need to convert those back to

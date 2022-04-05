@@ -115,9 +115,10 @@ class BookmarkDragImageSource : public gfx::CanvasImageSource {
     gfx::FontList font_list = views::style::GetFont(
         views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY);
     gfx::Rect text_rect(kBookmarkDragImageSize);
-    text_rect.Inset(kContainerRadius + kIconContainerRadius + kTitlePadding,
-                    kCountContainerRadius,
-                    kContainerRadius - kIconContainerRadius, 0);
+    text_rect.Inset(gfx::Insets::TLBR(
+        kCountContainerRadius,
+        kContainerRadius + kIconContainerRadius + kTitlePadding, 0,
+        kContainerRadius - kIconContainerRadius));
     canvas->DrawStringRectWithFlags(
         title_, font_list,
         color_provider_.GetColor(kColorBookmarkDragImageForeground), text_rect,

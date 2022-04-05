@@ -1601,8 +1601,7 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
     return;
   }
 
-  region.Inset(-capture_mode::kCaptureRegionBorderStrokePx,
-               -capture_mode::kCaptureRegionBorderStrokePx);
+  region.Inset(-capture_mode::kCaptureRegionBorderStrokePx);
   canvas->FillRect(region, SK_ColorTRANSPARENT, SkBlendMode::kClear);
 
   // Draw the region border.
@@ -2706,8 +2705,8 @@ bool CaptureModeSession::IsEventInSettingsMenuBounds(
 
   gfx::Rect settings_menu_bounds(
       capture_mode_settings_widget_->GetWindowBoundsInScreen());
-  settings_menu_bounds.Inset(
-      0, 0, 0, -capture_mode::kSpaceBetweenCaptureBarAndSettingsMenu);
+  settings_menu_bounds.Inset(gfx::Insets().set_bottom(
+      -capture_mode::kSpaceBetweenCaptureBarAndSettingsMenu));
 
   return settings_menu_bounds.Contains(location_in_screen);
 }

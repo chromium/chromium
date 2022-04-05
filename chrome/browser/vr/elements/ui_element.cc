@@ -872,8 +872,11 @@ gfx::RectF UiElement::ComputeContributingChildrenBounds() {
     gfx::RectF outer_bounds(child->size());
     gfx::RectF inner_bounds(child->size());
     if (!child->bounds_contain_padding_) {
-      inner_bounds.Inset(child->left_padding_, child->bottom_padding_,
-                         child->right_padding_, child->top_padding_);
+      // TODO(crbug.com/1312352): The order of bottom_padding_ and top_padding_
+      // seems incorrect.
+      inner_bounds.Inset(
+          gfx::InsetsF::TLBR(child->bottom_padding_, child->left_padding_,
+                             child->top_padding_, child->right_padding_));
     }
     gfx::SizeF size = inner_bounds.size();
     if (size.IsEmpty())
@@ -896,8 +899,10 @@ gfx::RectF UiElement::ComputeContributingChildrenBounds() {
     bounds.Union(local_rect);
   }
 
-  bounds.Inset(-left_padding_, -bottom_padding_, -right_padding_,
-               -top_padding_);
+  // TODO(crbug.com/1312352): The order of bottom_padding_ and top_padding_
+  // seems incorrect.
+  bounds.Inset(gfx::InsetsF::TLBR(-bottom_padding_, -left_padding_,
+                                  -top_padding_, -right_padding_));
   bounds.set_origin(bounds.CenterPoint());
   if (local_origin_ != bounds.origin()) {
     world_space_transform_dirty_ = true;

@@ -418,8 +418,7 @@ void VideoRecordingWatcher::OnPaintLayer(const ui::PaintContext& context) {
   const float dsf = canvas->UndoDeviceScaleFactor();
   gfx::Rect region =
       gfx::ScaleToEnclosingRect(GetEffectivePartialRegionBounds(), dsf);
-  region.Inset(-capture_mode::kCaptureRegionBorderStrokePx,
-               -capture_mode::kCaptureRegionBorderStrokePx);
+  region.Inset(-capture_mode::kCaptureRegionBorderStrokePx);
   canvas->FillRect(region, SK_ColorTRANSPARENT, SkBlendMode::kClear);
 
   // Draw the region border.

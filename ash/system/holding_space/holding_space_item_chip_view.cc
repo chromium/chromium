@@ -72,7 +72,7 @@ base::RepeatingCallback<void(T...)> IgnoreArgs(
 }
 
 void ToCenteredSize(gfx::Rect* rect, const gfx::Size& size) {
-  rect->Outset(size.width(), size.height());
+  rect->Outset(gfx::Outsets::VH(size.height(), size.width()));
   rect->ClampToCenteredSize(size);
 }
 

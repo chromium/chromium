@@ -56,8 +56,7 @@ void AutoclickMenuBubbleController::SetEventType(AutoclickEventType type) {
           std::make_unique<AutoclickScrollBubbleController>();
     }
     gfx::Rect anchor_rect = bubble_view_->GetBoundsInScreen();
-    anchor_rect.Inset(-kCollisionWindowWorkAreaInsetsDp,
-                      -kCollisionWindowWorkAreaInsetsDp);
+    anchor_rect.Inset(-kCollisionWindowWorkAreaInsetsDp);
     scroll_bubble_controller_->ShowBubble(
         anchor_rect, GetAnchorAlignmentForFloatingMenuPosition(position_));
   } else if (scroll_bubble_controller_) {
@@ -100,9 +99,9 @@ void AutoclickMenuBubbleController::SetPosition(
 
   // Un-inset the bounds to get the widget's bounds, which includes the drop
   // shadow.
-  resting_bounds.Inset(-kCollisionWindowWorkAreaInsetsDp, 0,
-                       -kCollisionWindowWorkAreaInsetsDp,
-                       -kCollisionWindowWorkAreaInsetsDp);
+  resting_bounds.Inset(gfx::Insets::TLBR(0, -kCollisionWindowWorkAreaInsetsDp,
+                                         -kCollisionWindowWorkAreaInsetsDp,
+                                         -kCollisionWindowWorkAreaInsetsDp));
   if (bubble_widget_->GetWindowBoundsInScreen() == resting_bounds)
     return;
 

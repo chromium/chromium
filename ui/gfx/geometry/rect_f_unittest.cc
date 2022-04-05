@@ -190,16 +190,15 @@ TEST(RectFTest, CenterPoint) {
 }
 
 TEST(RectFTest, ScaleRect) {
-  constexpr gfx::RectF input(3, 3, 3, 3);
-  EXPECT_RECTF_EQ(gfx::RectF(4.5f, 4.5f, 4.5f, 4.5f), ScaleRect(input, 1.5f));
-  EXPECT_RECTF_EQ(gfx::RectF(0, 0, 0, 0), ScaleRect(input, 0));
+  constexpr RectF input(3, 3, 3, 3);
+  EXPECT_RECTF_EQ(RectF(4.5f, 4.5f, 4.5f, 4.5f), ScaleRect(input, 1.5f));
+  EXPECT_RECTF_EQ(RectF(0, 0, 0, 0), ScaleRect(input, 0));
 
   constexpr float kMaxFloat = std::numeric_limits<float>::max();
-  EXPECT_RECTF_EQ(gfx::RectF(kMaxFloat, kMaxFloat, kMaxFloat, kMaxFloat),
+  EXPECT_RECTF_EQ(RectF(kMaxFloat, kMaxFloat, kMaxFloat, kMaxFloat),
                   ScaleRect(input, kMaxFloat));
 
-  gfx::RectF nan_rect =
-      ScaleRect(input, std::numeric_limits<float>::quiet_NaN());
+  RectF nan_rect = ScaleRect(input, std::numeric_limits<float>::quiet_NaN());
   EXPECT_TRUE(std::isnan(nan_rect.x()));
   EXPECT_TRUE(std::isnan(nan_rect.y()));
   // NaN is clamped to 0 in SizeF constructor.
@@ -302,27 +301,27 @@ TEST(RectFTest, ManhattanInternalDistance) {
   RectF f(0.0f, 0.0f, 400.0f, 400.0f);
   static const float kEpsilon = std::numeric_limits<float>::epsilon();
 
+  EXPECT_FLOAT_EQ(0.0f,
+                  f.ManhattanInternalDistance(RectF(-1.0f, 0.0f, 2.0f, 1.0f)));
   EXPECT_FLOAT_EQ(
-      0.0f, f.ManhattanInternalDistance(gfx::RectF(-1.0f, 0.0f, 2.0f, 1.0f)));
-  EXPECT_FLOAT_EQ(kEpsilon, f.ManhattanInternalDistance(
-                                gfx::RectF(400.0f, 0.0f, 1.0f, 400.0f)));
-  EXPECT_FLOAT_EQ(2.0f * kEpsilon, f.ManhattanInternalDistance(gfx::RectF(
+      kEpsilon, f.ManhattanInternalDistance(RectF(400.0f, 0.0f, 1.0f, 400.0f)));
+  EXPECT_FLOAT_EQ(2.0f * kEpsilon, f.ManhattanInternalDistance(RectF(
                                        -100.0f, -100.0f, 100.0f, 100.0f)));
-  EXPECT_FLOAT_EQ(1.0f + kEpsilon, f.ManhattanInternalDistance(gfx::RectF(
-                                       -101.0f, 100.0f, 100.0f, 100.0f)));
-  EXPECT_FLOAT_EQ(2.0f + 2.0f * kEpsilon,
-                  f.ManhattanInternalDistance(
-                      gfx::RectF(-101.0f, -101.0f, 100.0f, 100.0f)));
+  EXPECT_FLOAT_EQ(1.0f + kEpsilon, f.ManhattanInternalDistance(
+                                       RectF(-101.0f, 100.0f, 100.0f, 100.0f)));
+  EXPECT_FLOAT_EQ(
+      2.0f + 2.0f * kEpsilon,
+      f.ManhattanInternalDistance(RectF(-101.0f, -101.0f, 100.0f, 100.0f)));
   EXPECT_FLOAT_EQ(
       433.0f + 2.0f * kEpsilon,
-      f.ManhattanInternalDistance(gfx::RectF(630.0f, 603.0f, 100.0f, 100.0f)));
+      f.ManhattanInternalDistance(RectF(630.0f, 603.0f, 100.0f, 100.0f)));
 
-  EXPECT_FLOAT_EQ(
-      0.0f, f.ManhattanInternalDistance(gfx::RectF(-1.0f, 0.0f, 1.1f, 1.0f)));
-  EXPECT_FLOAT_EQ(0.1f + kEpsilon, f.ManhattanInternalDistance(
-                                       gfx::RectF(-1.5f, 0.0f, 1.4f, 1.0f)));
-  EXPECT_FLOAT_EQ(kEpsilon, f.ManhattanInternalDistance(
-                                gfx::RectF(-1.5f, 0.0f, 1.5f, 1.0f)));
+  EXPECT_FLOAT_EQ(0.0f,
+                  f.ManhattanInternalDistance(RectF(-1.0f, 0.0f, 1.1f, 1.0f)));
+  EXPECT_FLOAT_EQ(0.1f + kEpsilon,
+                  f.ManhattanInternalDistance(RectF(-1.5f, 0.0f, 1.4f, 1.0f)));
+  EXPECT_FLOAT_EQ(kEpsilon,
+                  f.ManhattanInternalDistance(RectF(-1.5f, 0.0f, 1.5f, 1.0f)));
 }
 
 TEST(RectFTest, Inset) {
@@ -334,15 +333,15 @@ TEST(RectFTest, Inset) {
   r.Inset(-1.5);
   EXPECT_RECTF_EQ(RectF(10, 20, 30, 40), r);
 
-  r.Inset(gfx::InsetsF::VH(2.25, 1.5));
+  r.Inset(InsetsF::VH(2.25, 1.5));
   EXPECT_RECTF_EQ(RectF(11.5, 22.25, 27, 35.5), r);
-  r.Inset(gfx::InsetsF::VH(-2.25, -1.5));
+  r.Inset(InsetsF::VH(-2.25, -1.5));
   EXPECT_RECTF_EQ(RectF(10, 20, 30, 40), r);
 
   // The parameters are left, top, right, bottom.
-  r.Inset(gfx::InsetsF::TLBR(2.25, 1.5, 4, 3.75));
+  r.Inset(InsetsF::TLBR(2.25, 1.5, 4, 3.75));
   EXPECT_RECTF_EQ(RectF(11.5, 22.25, 24.75, 33.75), r);
-  r.Inset(gfx::InsetsF::TLBR(-2.25, -1.5, -4, -3.75));
+  r.Inset(InsetsF::TLBR(-2.25, -1.5, -4, -3.75));
   EXPECT_RECTF_EQ(RectF(10, 20, 30, 40), r);
 
   // InsetsF parameters are top, right, bottom, left.
@@ -361,14 +360,14 @@ TEST(RectFTest, Outset) {
   r.Outset(-1.5);
   EXPECT_RECTF_EQ(RectF(10, 20, 30, 40), r);
 
-  r.Outset(1.5, 2.25);
+  r.Outset(OutsetsF::VH(2.25, 1.5));
   EXPECT_RECTF_EQ(RectF(8.5, 17.75, 33, 44.5), r);
-  r.Outset(-1.5, -2.25);
+  r.Outset(OutsetsF::VH(-2.25, -1.5));
   EXPECT_RECTF_EQ(RectF(10, 20, 30, 40), r);
 
-  r.Outset(1.5, 2.25, 3.75, 4);
+  r.Outset(OutsetsF::TLBR(2.25, 1.5, 4, 3.75));
   EXPECT_RECTF_EQ(RectF(8.5, 17.75, 35.25, 46.25), r);
-  r.Outset(-1.5, -2.25, -3.75, -4);
+  r.Outset(OutsetsF::TLBR(-2.25, -1.5, -4, -3.75));
   EXPECT_RECTF_EQ(RectF(10, 20, 30, 40), r);
 }
 
@@ -379,14 +378,14 @@ TEST(RectFTest, InsetClamped) {
   r.Inset(-18);
   EXPECT_RECTF_EQ(RectF(10, 20, 36, 40), r);
 
-  r.Inset(gfx::InsetsF::VH(30, 15));
+  r.Inset(InsetsF::VH(30, 15));
   EXPECT_RECTF_EQ(RectF(25, 50, 6, 0), r);
-  r.Inset(gfx::InsetsF::VH(-30, -15));
+  r.Inset(InsetsF::VH(-30, -15));
   EXPECT_RECTF_EQ(RectF(10, 20, 36, 60), r);
 
-  r.Inset(gfx::InsetsF::TLBR(30, 20, 50, 40));
+  r.Inset(InsetsF::TLBR(30, 20, 50, 40));
   EXPECT_RECTF_EQ(RectF(30, 50, 0, 0), r);
-  r.Inset(gfx::InsetsF::TLBR(-30, -20, -50, -40));
+  r.Inset(InsetsF::TLBR(-30, -20, -50, -40));
   EXPECT_RECTF_EQ(RectF(10, 20, 60, 80), r);
 }
 

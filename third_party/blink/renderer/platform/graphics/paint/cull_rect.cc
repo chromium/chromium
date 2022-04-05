@@ -267,15 +267,15 @@ bool CullRect::ApplyPaintProperties(
     int pixel_distance_to_expand =
         LocalPixelDistanceToExpand(root.Transform(), destination.Transform());
     if (rect_.width() < pixel_distance_to_expand) {
-      rect_.Outset(pixel_distance_to_expand, 0);
+      rect_.Outset(gfx::Outsets::VH(0, pixel_distance_to_expand));
       if (expansion_bounds)
-        expansion_bounds->Outset(pixel_distance_to_expand, 0);
+        expansion_bounds->Outset(gfx::Outsets::VH(0, pixel_distance_to_expand));
       expanded = true;
     }
     if (rect_.height() < pixel_distance_to_expand) {
-      rect_.Outset(0, pixel_distance_to_expand);
+      rect_.Outset(gfx::Outsets::VH(pixel_distance_to_expand, 0));
       if (expansion_bounds)
-        expansion_bounds->Outset(0, pixel_distance_to_expand);
+        expansion_bounds->Outset(gfx::Outsets::VH(pixel_distance_to_expand, 0));
       expanded = true;
     }
   }

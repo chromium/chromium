@@ -544,8 +544,7 @@ void DefaultState::UpdateBoundsFromState(WindowState* window_state,
             bounds_in_parent.width() >= work_area_in_parent.width() &&
             bounds_in_parent.height() >= work_area_in_parent.height()) {
           bounds_in_parent = work_area_in_parent;
-          bounds_in_parent.Inset(kMaximizedWindowInset, kMaximizedWindowInset,
-                                 kMaximizedWindowInset, kMaximizedWindowInset);
+          bounds_in_parent.Inset(kMaximizedWindowInset);
         }
       } else {
         bounds_in_parent = window->bounds();

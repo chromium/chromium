@@ -252,8 +252,8 @@ TEST_F(ScreenUtilTest, FullscreenWindowBoundsWithDockedMagnifier) {
   EXPECT_NE(window->bounds(), kDisplayBounds);
 
   gfx::Rect expected_bounds = kDisplayBounds;
-  expected_bounds.Inset(
-      0, docked_magnifier_controller->GetTotalMagnifierHeight(), 0, 0);
+  expected_bounds.Inset(gfx::Insets().set_top(
+      docked_magnifier_controller->GetTotalMagnifierHeight()));
   EXPECT_EQ(expected_bounds, window->bounds());
 }
 

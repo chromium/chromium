@@ -160,9 +160,8 @@ mojom::ResultCode PrintingContext::UpdatePrintSettings(
     }
     gfx::Rect paper_rect(0, 0, paper_size.width(), paper_size.height());
     if (print_to_cloud) {
-      paper_rect.Inset(
-          kCloudPrintMarginInch * settings_->device_units_per_inch(),
-          kCloudPrintMarginInch * settings_->device_units_per_inch());
+      paper_rect.Inset(kCloudPrintMarginInch *
+                       settings_->device_units_per_inch());
     }
     settings_->SetPrinterPrintableArea(paper_size, paper_rect, true);
     return mojom::ResultCode::kSuccess;

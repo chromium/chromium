@@ -1483,8 +1483,8 @@ ClientControlledShellSurface::GetClientBoundsForWindowBoundsAndWindowState(
     // Until the next commit, the frame view is in immersive mode, and the above
     // GetClientBoundsForWindowBounds doesn't return bounds taking the caption
     // height into account.
-    client_bounds.Inset(0, GetFrameView()->NonClientTopBorderPreferredHeight(),
-                        0, 0);
+    client_bounds.Inset(gfx::Insets().set_top(
+        GetFrameView()->NonClientTopBorderPreferredHeight()));
   }
   return client_bounds;
 }

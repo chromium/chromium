@@ -456,8 +456,7 @@ gfx::Rect PictureLayerTilingSet::ComputeSkewport(
   int skewport_extrapolation_limit_in_layer_pixels =
       skewport_extrapolation_limit_in_screen_pixels_ / ideal_contents_scale;
   gfx::Rect max_skewport = skewport;
-  max_skewport.Inset(-skewport_extrapolation_limit_in_layer_pixels,
-                     -skewport_extrapolation_limit_in_layer_pixels);
+  max_skewport.Inset(-skewport_extrapolation_limit_in_layer_pixels);
 
   skewport.Inset(
       gfx::Insets::TLBR(inset_y, inset_x, inset_bottom, inset_right));
@@ -498,9 +497,8 @@ void PictureLayerTilingSet::UpdatePriorityRects(
   // We keep things as floats in here.
   if (!visible_rect_in_layer_space.IsEmpty()) {
     gfx::RectF eventually_rectf(visible_rect_in_layer_space);
-    eventually_rectf.Inset(
-        -tiling_interest_area_padding_ / ideal_contents_scale,
-        -tiling_interest_area_padding_ / ideal_contents_scale);
+    eventually_rectf.Inset(-tiling_interest_area_padding_ /
+                           ideal_contents_scale);
     if (eventually_rectf.Intersects(
             gfx::RectF(gfx::SizeF(raster_source_->GetSize())))) {
       visible_rect_in_layer_space_ = visible_rect_in_layer_space;

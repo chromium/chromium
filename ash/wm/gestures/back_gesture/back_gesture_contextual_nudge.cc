@@ -276,8 +276,8 @@ class BackGestureContextualNudge::ContextualNudgeView
       round_rect_flags.setColor(DeprecatedGetBaseLayerColor(
           AshColorProvider::BaseLayerType::kOpaque, kLabelBackgroundColor));
       gfx::Rect label_bounds(label_->GetMirroredBounds());
-      label_bounds.Inset(/*horizontal=*/-kLabelCornerRadius,
-                         /*vertical=*/-kLabelTopBottomInset);
+      label_bounds.Inset(
+          gfx::Insets::VH(-kLabelTopBottomInset, -kLabelCornerRadius));
       canvas->DrawRoundRect(label_bounds, kLabelCornerRadius, round_rect_flags);
     }
 

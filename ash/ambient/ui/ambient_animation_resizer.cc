@@ -24,7 +24,7 @@ void AmbientAnimationResizer::Resize(
       animated_image_view.animated_image()->GetOriginalSize();
   DCHECK(!animation_size.IsEmpty());
   gfx::Rect destination_bounds = animated_image_view.GetContentsBounds();
-  destination_bounds.Outset(padding_for_jitter, padding_for_jitter);
+  destination_bounds.Outset(padding_for_jitter);
   DCHECK(!destination_bounds.IsEmpty());
   gfx::Size animation_resized;
   if (destination_bounds.width() >= destination_bounds.height()) {

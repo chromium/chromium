@@ -32,8 +32,8 @@ int GetWidestPageWidth(const std::vector<gfx::Size>& page_sizes) {
 gfx::Rect InsetRect(const gfx::Rect& rect,
                     const draw_utils::PageInsetSizes& inset_sizes) {
   gfx::Rect inset_rect(rect);
-  inset_rect.Inset(inset_sizes.left, inset_sizes.top, inset_sizes.right,
-                   inset_sizes.bottom);
+  inset_rect.Inset(gfx::Insets::TLBR(inset_sizes.top, inset_sizes.left,
+                                     inset_sizes.bottom, inset_sizes.right));
   return inset_rect;
 }
 

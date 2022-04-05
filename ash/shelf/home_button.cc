@@ -319,10 +319,11 @@ bool HomeButton::DoesIntersectRect(const views::View* target,
   gfx::Rect button_bounds = target->GetLocalBounds();
   // Increase clickable area for the button to account for clicks around the
   // spacing. This will not intercept events outside of the parent widget.
-  button_bounds.Inset(-ShelfConfig::Get()->control_button_edge_spacing(
-                          shelf()->IsHorizontalAlignment()),
+  button_bounds.Inset(
+      gfx::Insets::VH(-ShelfConfig::Get()->control_button_edge_spacing(
+                          !shelf()->IsHorizontalAlignment()),
                       -ShelfConfig::Get()->control_button_edge_spacing(
-                          !shelf()->IsHorizontalAlignment()));
+                          shelf()->IsHorizontalAlignment())));
   return button_bounds.Intersects(rect);
 }
 

@@ -2686,12 +2686,12 @@ void GLRenderer::DrawYUVVideoQuad(const YUVVideoDrawQuad* quad,
 
   gfx::RectF ya_clamp_rect(ya_vertex_tex_translate_x, ya_vertex_tex_translate_y,
                            ya_vertex_tex_scale_x, ya_vertex_tex_scale_y);
-  ya_clamp_rect.Inset(0.5f * ya_tex_scale.width(),
-                      0.5f * ya_tex_scale.height());
+  ya_clamp_rect.Inset(gfx::InsetsF::VH(0.5f * ya_tex_scale.height(),
+                                       0.5f * ya_tex_scale.width()));
   gfx::RectF uv_clamp_rect(uv_vertex_tex_translate_x, uv_vertex_tex_translate_y,
                            uv_vertex_tex_scale_x, uv_vertex_tex_scale_y);
-  uv_clamp_rect.Inset(0.5f * uv_tex_scale.width(),
-                      0.5f * uv_tex_scale.height());
+  uv_clamp_rect.Inset(gfx::InsetsF::VH(0.5f * uv_tex_scale.height(),
+                                       0.5f * uv_tex_scale.width()));
   gl_->Uniform4f(current_program_->ya_clamp_rect_location(), ya_clamp_rect.x(),
                  ya_clamp_rect.y(), ya_clamp_rect.right(),
                  ya_clamp_rect.bottom());

@@ -41,8 +41,8 @@ class ShelfControlButtonHighlightPathGenerator
     visual_bounds.ClampToCenteredSize(
         gfx::SizeF(shelf_config->control_size(), shelf_config->control_size()));
     if (Shell::Get()->IsInTabletMode() && shelf_config->is_in_app()) {
-      visual_bounds.Inset(0,
-                          shelf_config->in_app_control_button_height_inset());
+      visual_bounds.Inset(gfx::InsetsF::VH(
+          shelf_config->in_app_control_button_height_inset(), 0));
     }
     return gfx::RRectF(visual_bounds, shelf_config->control_border_radius());
   }

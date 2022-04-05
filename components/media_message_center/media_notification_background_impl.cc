@@ -445,7 +445,8 @@ gfx::Rect MediaNotificationBackgroundImpl::GetFilledBackgroundBounds(
   // taken up by the artwork.
   const gfx::Rect& view_bounds = owner.GetContentsBounds();
   gfx::Rect bounds = gfx::Rect(view_bounds);
-  bounds.Inset(0, 0, GetArtworkVisibleWidth(view_bounds.size()), 0);
+  bounds.Inset(
+      gfx::Insets().set_right(GetArtworkVisibleWidth(view_bounds.size())));
   return owner.GetMirroredRect(bounds);
 }
 

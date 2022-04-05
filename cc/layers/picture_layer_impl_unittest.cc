@@ -2363,11 +2363,9 @@ TEST_F(LegacySWPictureLayerImplTest, ShareTilesOnNextFrame) {
 
   PictureLayerTiling* tiling = pending_layer()->HighResTiling();
   gfx::Rect first_invalidate = tiling->TilingDataForTesting().TileBounds(0, 0);
-  first_invalidate.Inset(tiling->TilingDataForTesting().border_texels(),
-                         tiling->TilingDataForTesting().border_texels());
+  first_invalidate.Inset(tiling->TilingDataForTesting().border_texels());
   gfx::Rect second_invalidate = tiling->TilingDataForTesting().TileBounds(1, 1);
-  second_invalidate.Inset(tiling->TilingDataForTesting().border_texels(),
-                          tiling->TilingDataForTesting().border_texels());
+  second_invalidate.Inset(tiling->TilingDataForTesting().border_texels());
 
   ActivateTree();
 

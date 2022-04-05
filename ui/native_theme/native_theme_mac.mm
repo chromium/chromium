@@ -210,7 +210,8 @@ void ConstrainedInset(gfx::Rect* rect,
 
   ConstrainInsets(rect->width(), min_size.width(), &inset_left, &inset_right);
   ConstrainInsets(rect->height(), min_size.height(), &inset_top, &inset_bottom);
-  rect->Inset(inset_left, inset_top, inset_right, inset_bottom);
+  rect->Inset(
+      gfx::Insets::TLBR(inset_top, inset_left, inset_bottom, inset_right));
 }
 
 void NativeThemeMac::PaintMacScrollBarTrackOrCorner(

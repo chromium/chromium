@@ -44,8 +44,9 @@ bool CalculateClearForOpaqueRasterRects(const gfx::Vector2dF& translation,
   // (because of bilinear filtering during draw) may not be opaque.
   outer_rect.Inset(
       gfx::Insets::TLBR(0, 0, bottom_opaque ? 0 : -1, right_opaque ? 0 : -1));
-  inner_rect.Inset(left_opaque ? 0 : 1, top_opaque ? 0 : 1,
-                   right_opaque ? 0 : 1, bottom_opaque ? 0 : 1);
+  inner_rect.Inset(gfx::Insets::TLBR(top_opaque ? 0 : 1, left_opaque ? 0 : 1,
+                                     bottom_opaque ? 0 : 1,
+                                     right_opaque ? 0 : 1));
 
   // If the playback rect is touching either edge of the content rect, extend it
   // by one to include the extra texel outside that was added to outer_rect
@@ -57,9 +58,9 @@ bool CalculateClearForOpaqueRasterRects(const gfx::Vector2dF& translation,
   bool touches_bottom_edge =
       !bottom_opaque && content_size.height() == canvas_playback_rect.bottom();
   gfx::Rect adjusted_playback_rect = canvas_playback_rect;
-  adjusted_playback_rect.Inset(
-      touches_left_edge ? -1 : 0, touches_top_edge ? -1 : 0,
-      touches_right_edge ? -1 : 0, touches_bottom_edge ? -1 : 0);
+  adjusted_playback_rect.Inset(gfx::Insets::TLBR(
+      touches_top_edge ? -1 : 0, touches_left_edge ? -1 : 0,
+      touches_bottom_edge ? -1 : 0, touches_right_edge ? -1 : 0));
 
   // No need to clear if the playback area is fully covered by the opaque
   // content.

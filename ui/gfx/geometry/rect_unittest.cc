@@ -573,12 +573,12 @@ TEST(RectTest, ManhattanDistanceToPoint) {
 
 TEST(RectTest, ManhattanInternalDistance) {
   Rect i(0, 0, 400, 400);
-  EXPECT_EQ(0, i.ManhattanInternalDistance(gfx::Rect(-1, 0, 2, 1)));
-  EXPECT_EQ(1, i.ManhattanInternalDistance(gfx::Rect(400, 0, 1, 400)));
-  EXPECT_EQ(2, i.ManhattanInternalDistance(gfx::Rect(-100, -100, 100, 100)));
-  EXPECT_EQ(2, i.ManhattanInternalDistance(gfx::Rect(-101, 100, 100, 100)));
-  EXPECT_EQ(4, i.ManhattanInternalDistance(gfx::Rect(-101, -101, 100, 100)));
-  EXPECT_EQ(435, i.ManhattanInternalDistance(gfx::Rect(630, 603, 100, 100)));
+  EXPECT_EQ(0, i.ManhattanInternalDistance(Rect(-1, 0, 2, 1)));
+  EXPECT_EQ(1, i.ManhattanInternalDistance(Rect(400, 0, 1, 400)));
+  EXPECT_EQ(2, i.ManhattanInternalDistance(Rect(-100, -100, 100, 100)));
+  EXPECT_EQ(2, i.ManhattanInternalDistance(Rect(-101, 100, 100, 100)));
+  EXPECT_EQ(4, i.ManhattanInternalDistance(Rect(-101, -101, 100, 100)));
+  EXPECT_EQ(435, i.ManhattanInternalDistance(Rect(630, 603, 100, 100)));
 }
 
 TEST(RectTest, IntegerOverflow) {
@@ -646,16 +646,16 @@ TEST(RectTest, IntegerOverflow) {
 
   // Insetting an empty rect, but the total inset (left + right) could overflow.
   Rect inset_overflow;
-  inset_overflow.Inset(gfx::Insets::TLBR(large_number, large_number, 100, 100));
+  inset_overflow.Inset(Insets::TLBR(large_number, large_number, 100, 100));
   EXPECT_EQ(large_offset, inset_overflow.origin());
-  EXPECT_EQ(gfx::Size(), inset_overflow.size());
+  EXPECT_EQ(Size(), inset_overflow.size());
 
   // Insetting where the total inset (width - left - right) could overflow.
   // Also, this insetting by the min limit in all directions cannot
   // represent width() without overflow, so that will also clamp.
   Rect inset_overflow2;
   inset_overflow2.Inset(min_limit);
-  EXPECT_EQ(inset_overflow2, gfx::Rect(min_limit, min_limit, limit, limit));
+  EXPECT_EQ(inset_overflow2, Rect(min_limit, min_limit, limit, limit));
 
   // Insetting where the width shouldn't change, but if the insets operations
   // clamped in the wrong order, e.g. ((width - left) - right) vs (width - (left
@@ -664,12 +664,12 @@ TEST(RectTest, IntegerOverflow) {
   // max int anyway.  Additionally, if left + right underflows, it cannot be
   // increased by more then max int.
   Rect inset_overflow3(0, 0, limit, limit);
-  inset_overflow3.Inset(gfx::Insets::TLBR(-100, -100, 100, 100));
-  EXPECT_EQ(inset_overflow3, gfx::Rect(-100, -100, limit, limit));
+  inset_overflow3.Inset(Insets::TLBR(-100, -100, 100, 100));
+  EXPECT_EQ(inset_overflow3, Rect(-100, -100, limit, limit));
 
   Rect inset_overflow4(-1000, -1000, limit, limit);
-  inset_overflow4.Inset(gfx::Insets::TLBR(100, 100, -100, -100));
-  EXPECT_EQ(inset_overflow4, gfx::Rect(-900, -900, limit, limit));
+  inset_overflow4.Inset(Insets::TLBR(100, 100, -100, -100));
+  EXPECT_EQ(inset_overflow4, Rect(-900, -900, limit, limit));
 
   Rect offset_overflow(0, 0, 100, 100);
   offset_overflow.Offset(large_number, large_number);
@@ -682,7 +682,7 @@ TEST(RectTest, IntegerOverflow) {
   EXPECT_EQ(expected_size, operator_overflow.size());
 
   Rect origin_maxint(limit, limit, limit, limit);
-  EXPECT_EQ(origin_maxint, Rect(gfx::Point(limit, limit), gfx::Size()));
+  EXPECT_EQ(origin_maxint, Rect(Point(limit, limit), Size()));
 
   // Expect a rect at the origin and a rect whose right/bottom is maxint
   // create a rect that extends from 0..maxint in both extents.
@@ -751,15 +751,15 @@ TEST(RectTest, Inset) {
   r.Inset(-1);
   EXPECT_EQ(Rect(10, 20, 30, 40), r);
 
-  r.Inset(gfx::Insets::VH(2, 1));
+  r.Inset(Insets::VH(2, 1));
   EXPECT_EQ(Rect(11, 22, 28, 36), r);
-  r.Inset(gfx::Insets::VH(-2, -1));
+  r.Inset(Insets::VH(-2, -1));
   EXPECT_EQ(Rect(10, 20, 30, 40), r);
 
   // The parameters are left, top, right, bottom.
-  r.Inset(gfx::Insets::TLBR(2, 1, 4, 3));
+  r.Inset(Insets::TLBR(2, 1, 4, 3));
   EXPECT_EQ(Rect(11, 22, 26, 34), r);
-  r.Inset(gfx::Insets::TLBR(-2, -1, -4, -3));
+  r.Inset(Insets::TLBR(-2, -1, -4, -3));
   EXPECT_EQ(Rect(10, 20, 30, 40), r);
 
   r.Inset(Insets::TLBR(1, 2, 3, 4));
@@ -777,14 +777,14 @@ TEST(RectTest, Outset) {
   r.Outset(-1);
   EXPECT_EQ(Rect(10, 20, 30, 40), r);
 
-  r.Outset(1, 2);
+  r.Outset(Outsets::VH(2, 1));
   EXPECT_EQ(Rect(9, 18, 32, 44), r);
-  r.Outset(-1, -2);
+  r.Outset(Outsets::VH(-2, -1));
   EXPECT_EQ(Rect(10, 20, 30, 40), r);
 
-  r.Outset(1, 2, 3, 4);
+  r.Outset(Outsets::TLBR(2, 1, 4, 3));
   EXPECT_EQ(Rect(9, 18, 34, 46), r);
-  r.Outset(-1, -2, -3, -4);
+  r.Outset(Outsets::TLBR(-2, -1, -4, -3));
   EXPECT_EQ(Rect(10, 20, 30, 40), r);
 }
 
@@ -795,23 +795,23 @@ TEST(RectTest, InsetOutsetClamped) {
   r.Inset(-18);
   EXPECT_EQ(Rect(10, 20, 36, 40), r);
 
-  r.Inset(gfx::Insets::VH(30, 15));
+  r.Inset(Insets::VH(30, 15));
   EXPECT_EQ(Rect(25, 50, 6, 0), r);
-  r.Inset(gfx::Insets::VH(-30, -15));
+  r.Inset(Insets::VH(-30, -15));
   EXPECT_EQ(Rect(10, 20, 36, 60), r);
 
-  r.Inset(gfx::Insets::TLBR(30, 20, 50, 40));
+  r.Inset(Insets::TLBR(30, 20, 50, 40));
   EXPECT_EQ(Rect(30, 50, 0, 0), r);
-  r.Inset(gfx::Insets::TLBR(-30, -20, -50, -40));
+  r.Inset(Insets::TLBR(-30, -20, -50, -40));
   EXPECT_EQ(Rect(10, 20, 60, 80), r);
 
   r.Outset(kMaxInt);
   EXPECT_EQ(Rect(10 - kMaxInt, 20 - kMaxInt, kMaxInt, kMaxInt), r);
-  r.Outset(0, kMaxInt);
+  r.Outset(Outsets().set_top_bottom(kMaxInt, kMaxInt));
   EXPECT_EQ(Rect(10 - kMaxInt, kMinInt, kMaxInt, kMaxInt), r);
-  r.Outset(0, kMaxInt, kMaxInt, 0);
+  r.Outset(Outsets().set_right(kMaxInt).set_top(kMaxInt));
   EXPECT_EQ(Rect(10 - kMaxInt, kMinInt, kMaxInt, kMaxInt), r);
-  r.Outset(kMaxInt, 0, kMaxInt, 0);
+  r.Outset(Outsets().set_left_right(kMaxInt, kMaxInt));
   EXPECT_EQ(Rect(kMinInt, kMinInt, kMaxInt, kMaxInt), r);
 }
 

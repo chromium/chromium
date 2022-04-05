@@ -60,10 +60,10 @@ bool XdgShellSurface::ShouldAutoMaximize() {
   // We rely on unit tests to guard against changes in the size of the window
   // decorations.
   if (frame_enabled()) {
-    window_bounds.Inset(0, 0, 0,
-                        -views::GetCaptionButtonLayoutSize(
-                             views::CaptionButtonLayoutSize::kNonBrowserCaption)
-                             .height());
+    window_bounds.Inset(gfx::Insets().set_bottom(
+        -views::GetCaptionButtonLayoutSize(
+             views::CaptionButtonLayoutSize::kNonBrowserCaption)
+             .height()));
   }
   return window_bounds.width() >= work_area_size.width() &&
          window_bounds.height() >= work_area_size.height();

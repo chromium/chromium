@@ -353,11 +353,8 @@ gfx::Rect AppsContainerView::CalculateAvailableBoundsForAppsGrid(
   available_bounds.Inset(
       gfx::Insets::VH(0, GetMinHorizontalMarginForAppsGrid()));
   // Reserve vertical space for search box and suggestion chips.
-  available_bounds.Inset(
-      0,
-      GetMinTopMarginForAppsGrid(
-          contents_view_->GetSearchBoxSize(AppListState::kStateApps)),
-      0, 0);
+  available_bounds.Inset(gfx::Insets().set_top(GetMinTopMarginForAppsGrid(
+      contents_view_->GetSearchBoxSize(AppListState::kStateApps))));
   // Subtracts apps grid view insets from space available for apps grid.
   available_bounds.Inset(gfx::Insets::VH(kGridVerticalMargin, 0));
 
@@ -887,8 +884,8 @@ void AppsContainerView::Layout() {
   // Set bounding box for the folder view - the folder may overlap with
   // suggestion chips, but not the search box.
   gfx::Rect folder_bounding_box = rect;
-  folder_bounding_box.Inset(kFolderMargin, chip_container_rect.y(),
-                            kFolderMargin, kFolderMargin);
+  folder_bounding_box.Inset(gfx::Insets::TLBR(
+      chip_container_rect.y(), kFolderMargin, kFolderMargin, kFolderMargin));
   app_list_folder_view_->SetBoundingBox(folder_bounding_box);
 
   // Leave the same available bounds for the apps grid view in both
@@ -905,8 +902,8 @@ void AppsContainerView::Layout() {
       GetContentsBounds(),
       contents_view_->GetSearchBoxSize(AppListState::kStateApps));
   gfx::Rect grid_rect = rect;
-  grid_rect.Inset(margins.left(), kGridVerticalMargin, margins.right(),
-                  margins.bottom());
+  grid_rect.Inset(gfx::Insets::TLBR(kGridVerticalMargin, margins.left(),
+                                    margins.bottom(), margins.right()));
   // The grid rect insets are added to calculated margins. Given that the
   // grid bounds rect should include insets, they have to be removed from
   // added margins.

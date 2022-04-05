@@ -147,11 +147,12 @@ gfx::Rect ScrollbarThemeOverlay::ForwardButtonRect(const Scrollbar&) {
 
 gfx::Rect ScrollbarThemeOverlay::TrackRect(const Scrollbar& scrollbar) {
   gfx::Rect rect = scrollbar.FrameRect();
-  EScrollbarWidth scrollbar_width = scrollbar.CSSScrollbarWidth();
+  int scrollbar_margin =
+      ScrollbarMargin(scrollbar.ScaleFromDIP(), scrollbar.CSSScrollbarWidth());
   if (scrollbar.Orientation() == kHorizontalScrollbar)
-    rect.Inset(ScrollbarMargin(scrollbar.ScaleFromDIP(), scrollbar_width), 0);
+    rect.Inset(gfx::Insets::VH(0, scrollbar_margin));
   else
-    rect.Inset(0, ScrollbarMargin(scrollbar.ScaleFromDIP(), scrollbar_width));
+    rect.Inset(gfx::Insets::VH(scrollbar_margin, 0));
   return rect;
 }
 

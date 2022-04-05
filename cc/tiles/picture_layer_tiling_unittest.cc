@@ -733,8 +733,7 @@ TEST_F(PictureLayerTilingIteratorTest, TilesExistOutsideViewport) {
 
   LayerTreeSettings settings;
   gfx::Rect eventually_rect = viewport_rect;
-  eventually_rect.Inset(-settings.tiling_interest_area_padding,
-                        -settings.tiling_interest_area_padding);
+  eventually_rect.Inset(-settings.tiling_interest_area_padding);
   tiling_->ComputeTilePriorityRects(viewport_rect, viewport_rect, viewport_rect,
                                     eventually_rect, 1.f, Occlusion());
   VerifyTiles(1.f, gfx::Rect(layer_bounds),
@@ -806,8 +805,7 @@ TEST(ComputeTilePriorityRectsTest, VisibleTiles) {
 
   LayerTreeSettings settings;
   gfx::Rect eventually_rect = viewport_in_layer_space;
-  eventually_rect.Inset(-settings.tiling_interest_area_padding,
-                        -settings.tiling_interest_area_padding);
+  eventually_rect.Inset(-settings.tiling_interest_area_padding);
   tiling->ComputeTilePriorityRects(
       viewport_in_layer_space, viewport_in_layer_space, viewport_in_layer_space,
       eventually_rect, current_layer_contents_scale, Occlusion());
@@ -864,8 +862,7 @@ TEST(ComputeTilePriorityRectsTest, OffscreenTiles) {
 
   LayerTreeSettings settings;
   gfx::Rect eventually_rect = viewport_in_layer_space;
-  eventually_rect.Inset(-settings.tiling_interest_area_padding,
-                        -settings.tiling_interest_area_padding);
+  eventually_rect.Inset(-settings.tiling_interest_area_padding);
   tiling->ComputeTilePriorityRects(
       viewport_in_layer_space, viewport_in_layer_space, viewport_in_layer_space,
       eventually_rect, current_layer_contents_scale, Occlusion());
@@ -932,8 +929,7 @@ TEST(ComputeTilePriorityRectsTest, PartiallyOffscreenLayer) {
 
   LayerTreeSettings settings;
   gfx::Rect eventually_rect = viewport_in_layer_space;
-  eventually_rect.Inset(-settings.tiling_interest_area_padding,
-                        -settings.tiling_interest_area_padding);
+  eventually_rect.Inset(-settings.tiling_interest_area_padding);
   tiling->ComputeTilePriorityRects(
       viewport_in_layer_space, viewport_in_layer_space, viewport_in_layer_space,
       eventually_rect, current_layer_contents_scale, Occlusion());

@@ -44,10 +44,9 @@ gfx::Rect GetFullscreenWindowBoundsInParent(aura::Window* window) {
   gfx::Rect result = GetDisplayBoundsInParent(window);
   const WorkAreaInsets* const work_area_insets =
       WorkAreaInsets::ForWindow(window->GetRootWindow());
-  result.Inset(0,
-               work_area_insets->accessibility_panel_height() +
-                   work_area_insets->docked_magnifier_height(),
-               0, 0);
+  result.Inset(
+      gfx::Insets().set_top(work_area_insets->accessibility_panel_height() +
+                            work_area_insets->docked_magnifier_height()));
   return result;
 }
 

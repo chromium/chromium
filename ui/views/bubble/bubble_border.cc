@@ -678,10 +678,10 @@ void BubbleBorder::PaintVisibleArrow(const View& view, gfx::Canvas* canvas) {
   gfx::ScopedCanvas scoped(canvas);
   gfx::Rect clip_rect = arrow_bounds;
   const BubbleArrowSide side = GetBubbleArrowSide(arrow_);
-  clip_rect.Inset(side == BubbleArrowSide::kRight ? 0 : -2,
-                  side == BubbleArrowSide::kBottom ? 0 : -2,
-                  side == BubbleArrowSide::kLeft ? 0 : -2,
-                  side == BubbleArrowSide::kTop ? 0 : -2);
+  clip_rect.Inset(gfx::Insets::TLBR(side == BubbleArrowSide::kBottom ? 0 : -2,
+                                    side == BubbleArrowSide::kRight ? 0 : -2,
+                                    side == BubbleArrowSide::kTop ? 0 : -2,
+                                    side == BubbleArrowSide::kLeft ? 0 : -2));
   canvas->ClipRect(clip_rect);
 
   cc::PaintFlags flags;

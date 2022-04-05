@@ -52,7 +52,8 @@ void AdjustSourceEdgeBounds(const gfx::Rect& display_bounds,
   int available_height = edge->height() - kMinimumIndicatorHeight;
   if (available_height <= 0)
     return;
-  edge->Inset(0, std::min(available_height, target_y - edge->y()), 0, 0);
+  edge->Inset(
+      gfx::Insets().set_top(std::min(available_height, target_y - edge->y())));
 }
 
 }  // namespace

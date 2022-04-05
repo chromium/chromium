@@ -98,11 +98,10 @@ bool ArcWindowHandler::LaunchArcGhostWindow(
            chromeos::WindowStateType::kDefault ||
        restore_data->window_state_type.value() ==
            chromeos::WindowStateType::kNormal)) {
-    adjust_bounds.Inset(0,
-                        views::GetCaptionButtonLayoutSize(
-                            views::CaptionButtonLayoutSize::kNonBrowserCaption)
-                            .height(),
-                        0, 0);
+    adjust_bounds.Inset(gfx::Insets().set_top(
+        views::GetCaptionButtonLayoutSize(
+            views::CaptionButtonLayoutSize::kNonBrowserCaption)
+            .height()));
   }
 
   auto shell_surface = ArcGhostWindowShellSurface::Create(

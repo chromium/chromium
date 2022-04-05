@@ -172,10 +172,11 @@ gfx::RectF GetOccludingRectForRRectF(const gfx::RRectF& bounds) {
   // Get a bounding rect that does not intersect with the rounding clip.
   // When a rect has rounded corner with radius r, then the largest rect that
   // can be inscribed inside it has an inset of |((2 - sqrt(2)) / 2) * radius|.
-  occluding_rect.Inset(std::max(top_left, lower_left) * 0.3f,
-                       std::max(top_left, top_right) * 0.3f,
-                       std::max(top_right, lower_right) * 0.3f,
-                       std::max(lower_right, lower_left) * 0.3f);
+  occluding_rect.Inset(
+      gfx::InsetsF::TLBR(std::max(top_left, top_right) * 0.3f,
+                         std::max(top_left, lower_left) * 0.3f,
+                         std::max(lower_right, lower_left) * 0.3f,
+                         std::max(top_right, lower_right) * 0.3f));
   return occluding_rect;
 }
 

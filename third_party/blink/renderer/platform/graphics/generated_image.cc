@@ -45,8 +45,7 @@ void GeneratedImage::DrawPattern(GraphicsContext& dest_context,
                                  const ImageTilingInfo& tiling_info,
                                  const ImageDrawOptions& draw_options) {
   gfx::RectF tile_rect = tiling_info.image_rect;
-  tile_rect.Outset(0, 0, tiling_info.spacing.width(),
-                   tiling_info.spacing.height());
+  tile_rect.set_size(tile_rect.size() + tiling_info.spacing);
 
   SkMatrix pattern_matrix =
       SkMatrix::Translate(tiling_info.phase.x(), tiling_info.phase.y());

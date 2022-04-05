@@ -142,10 +142,10 @@ void TouchHandleDrawableAura::SetAlpha(float alpha) {
 
 gfx::RectF TouchHandleDrawableAura::GetVisibleBounds() const {
   gfx::RectF bounds(window_->bounds());
-  bounds.Inset(kSelectionHandlePadding,
-               kSelectionHandlePadding + kSelectionHandleVerticalVisualOffset,
-               kSelectionHandlePadding,
-               kSelectionHandlePadding);
+  bounds.Inset(gfx::InsetsF::TLBR(
+      kSelectionHandlePadding + kSelectionHandleVerticalVisualOffset,
+      kSelectionHandlePadding, kSelectionHandlePadding,
+      kSelectionHandlePadding));
   return bounds;
 }
 

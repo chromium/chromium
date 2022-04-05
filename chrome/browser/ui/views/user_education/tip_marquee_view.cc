@@ -284,10 +284,11 @@ void TipMarqueeView::Layout() {
   } else {
     tip_text_label_->SetVisible(true);
     gfx::Rect text_rect = GetContentsBounds();
-    text_rect.Inset(0,
-                    std::max(0, (text_rect.height() -
-                                 tip_text_label_->GetPreferredSize().height()) /
-                                    2));
+    text_rect.Inset(gfx::Insets::VH(
+        std::max(0, (text_rect.height() -
+                     tip_text_label_->GetPreferredSize().height()) /
+                        2),
+        0));
     tip_text_label_->SetBoundsRect(text_rect);
   }
 }

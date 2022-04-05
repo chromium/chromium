@@ -3100,10 +3100,11 @@ void PDFiumEngine::InsetPage(const DocumentLayout::Options& layout_options,
                              gfx::Rect& rect) const {
   draw_utils::PageInsetSizes inset_sizes =
       GetInsetSizes(layout_options, page_index, num_of_pages);
-  rect.Inset(static_cast<int>(ceil(inset_sizes.left * multiplier)),
-             static_cast<int>(ceil(inset_sizes.top * multiplier)),
-             static_cast<int>(ceil(inset_sizes.right * multiplier)),
-             static_cast<int>(ceil(inset_sizes.bottom * multiplier)));
+  rect.Inset(gfx::Insets::TLBR(
+      static_cast<int>(ceil(inset_sizes.top * multiplier)),
+      static_cast<int>(ceil(inset_sizes.left * multiplier)),
+      static_cast<int>(ceil(inset_sizes.bottom * multiplier)),
+      static_cast<int>(ceil(inset_sizes.right * multiplier))));
 }
 
 absl::optional<size_t> PDFiumEngine::GetAdjacentPageIndexForTwoUpView(

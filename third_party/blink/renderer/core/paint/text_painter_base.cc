@@ -209,7 +209,7 @@ void TextPainterBase::DecorationsStripeIntercepts(
     // integers-equal-device pixels assumption, so vertically inflating by 1
     // pixel makes sure we're always covering. This should only be done on the
     // clipping rectangle, not when computing the glyph intersects.
-    clip_rect.Outset(dilation, 1.0);
+    clip_rect.Outset(gfx::OutsetsF::VH(1.0, dilation));
 
     if (!gfx::RectFToSkRect(clip_rect).isFinite())
       continue;

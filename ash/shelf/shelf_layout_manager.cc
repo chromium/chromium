@@ -2012,11 +2012,12 @@ ShelfLayoutManager::CalculateAutoHideStateBasedOnDragLocation() const {
     // Increase the the hit test area to prevent the shelf from disappearing
     // when the drag is over the bubble gap.
     ShelfAlignment alignment = shelf_->alignment();
-    shelf_region.Inset(
-        alignment == ShelfAlignment::kRight ? -kNotificationBubbleGapHeight : 0,
+    shelf_region.Inset(gfx::Insets::TLBR(
         shelf_->IsHorizontalAlignment() ? -kNotificationBubbleGapHeight : 0,
-        alignment == ShelfAlignment::kLeft ? -kNotificationBubbleGapHeight : 0,
-        0);
+        alignment == ShelfAlignment::kRight ? -kNotificationBubbleGapHeight : 0,
+        0,
+        alignment == ShelfAlignment::kLeft ? -kNotificationBubbleGapHeight
+                                           : 0));
   }
 
   if (shelf_region.Contains(last_drag_drop_position_in_screen_))
@@ -2055,11 +2056,12 @@ ShelfLayoutManager::CalculateAutoHideStateBasedOnCursorLocation() const {
     // Increase the the hit test area to prevent the shelf from disappearing
     // when the mouse is over the bubble gap.
     ShelfAlignment alignment = shelf_->alignment();
-    shelf_region.Inset(
-        alignment == ShelfAlignment::kRight ? -kNotificationBubbleGapHeight : 0,
+    shelf_region.Inset(gfx::Insets::TLBR(
         shelf_->IsHorizontalAlignment() ? -kNotificationBubbleGapHeight : 0,
-        alignment == ShelfAlignment::kLeft ? -kNotificationBubbleGapHeight : 0,
-        0);
+        alignment == ShelfAlignment::kRight ? -kNotificationBubbleGapHeight : 0,
+        0,
+        alignment == ShelfAlignment::kLeft ? -kNotificationBubbleGapHeight
+                                           : 0));
   }
 
   gfx::Point cursor_position_in_screen =

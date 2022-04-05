@@ -1036,8 +1036,9 @@ void TreeView::LayoutEditor() {
   row_bounds.set_width(row_bounds.width() - text_offset_);
   row_bounds.Inset(
       gfx::Insets::VH(kTextVerticalPadding, kTextHorizontalPadding));
-  row_bounds.Inset(-empty_editor_size_.width() / 2,
-                   -(empty_editor_size_.height() - font_list_.GetHeight()) / 2);
+  row_bounds.Inset(gfx::Insets::VH(
+      -(empty_editor_size_.height() - font_list_.GetHeight()) / 2,
+      -empty_editor_size_.width() / 2));
   // Give a little extra space for editing.
   row_bounds.set_width(row_bounds.width() + 50);
   // If contained within a ScrollView, make sure the editor doesn't extend past
@@ -1052,7 +1053,7 @@ void TreeView::LayoutEditor() {
   // The visible bounds should include the focus ring which is outside the
   // |row_bounds|.
   gfx::Rect outter_bounds = row_bounds;
-  outter_bounds.Inset(gfx::Insets(-GetSpaceThicknessForFocusRing()));
+  outter_bounds.Inset(-GetSpaceThicknessForFocusRing());
   // Scroll as necessary to ensure that the editor is visible.
   ScrollRectToVisible(outter_bounds);
   editor_->SetBoundsRect(row_bounds);

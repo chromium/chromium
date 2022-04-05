@@ -55,7 +55,7 @@ gfx::RectF FEConvolveMatrix::MapEffect(const gfx::RectF& rect) const {
     return rect;
   gfx::RectF result = rect;
   result.Offset(gfx::Vector2dF(-target_offset_));
-  result.Outset(0, 0, kernel_size_.width(), kernel_size_.height());
+  result.set_size(result.size() + gfx::SizeF(kernel_size_));
   return result;
 }
 

@@ -124,9 +124,9 @@ void FloatingAccessibilityController::SetMenuPosition(
           new_bounds);
   // Un-inset the bounds to get the widget's bounds, which includes the drop
   // shadow.
-  resting_bounds.Inset(-kCollisionWindowWorkAreaInsetsDp, 0,
-                       -kCollisionWindowWorkAreaInsetsDp,
-                       -kCollisionWindowWorkAreaInsetsDp);
+  resting_bounds.Inset(gfx::Insets::TLBR(0, -kCollisionWindowWorkAreaInsetsDp,
+                                         -kCollisionWindowWorkAreaInsetsDp,
+                                         -kCollisionWindowWorkAreaInsetsDp));
 
   if (bubble_widget_->GetWindowBoundsInScreen() == resting_bounds)
     return;
@@ -155,9 +155,9 @@ void FloatingAccessibilityController::OnDetailedMenuEnabled(bool enabled) {
     detailed_menu_controller_ =
         std::make_unique<FloatingAccessibilityDetailedController>(this);
     gfx::Rect anchor_rect = bubble_view_->GetBoundsInScreen();
-    anchor_rect.Inset(-kCollisionWindowWorkAreaInsetsDp, 0,
-                      -kCollisionWindowWorkAreaInsetsDp,
-                      -kCollisionWindowWorkAreaInsetsDp);
+    anchor_rect.Inset(gfx::Insets::TLBR(0, -kCollisionWindowWorkAreaInsetsDp,
+                                        -kCollisionWindowWorkAreaInsetsDp,
+                                        -kCollisionWindowWorkAreaInsetsDp));
     detailed_menu_controller_->Show(
         anchor_rect, GetAnchorAlignmentForFloatingMenuPosition(position_));
     menu_view_->SetDetailedViewShown(true);

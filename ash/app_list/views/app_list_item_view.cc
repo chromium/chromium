@@ -1201,10 +1201,11 @@ gfx::Rect AppListItemView::GetTitleBoundsForTargetViewBounds(
     const gfx::Size& title_size,
     float icon_scale) {
   gfx::Rect rect(target_bounds);
-  rect.Inset(config->grid_title_horizontal_padding() * icon_scale,
-             config->grid_title_top_padding() * icon_scale,
-             config->grid_title_horizontal_padding() * icon_scale,
-             config->grid_title_bottom_padding() * icon_scale);
+  rect.Inset(
+      gfx::Insets::TLBR(config->grid_title_top_padding() * icon_scale,
+                        config->grid_title_horizontal_padding() * icon_scale,
+                        config->grid_title_bottom_padding() * icon_scale,
+                        config->grid_title_horizontal_padding() * icon_scale));
   rect.ClampToCenteredSize(title_size);
   // Respect the title preferred height, to ensure the text does not get clipped
   // due to padding if the item view gets too small.

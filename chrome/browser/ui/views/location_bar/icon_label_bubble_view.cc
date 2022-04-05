@@ -312,7 +312,8 @@ void IconLabelBubbleView::Layout() {
   // The separator should be the same height as the icons.
   const int separator_height = GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
   gfx::Rect separator_bounds(label()->bounds());
-  separator_bounds.Inset(0, (separator_bounds.height() - separator_height) / 2);
+  separator_bounds.Inset(
+      gfx::Insets::VH((separator_bounds.height() - separator_height) / 2, 0));
 
   float separator_width =
       GetWidthBetweenIconAndSeparator() + GetEndPaddingWithSeparator();

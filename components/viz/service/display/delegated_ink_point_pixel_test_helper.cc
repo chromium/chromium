@@ -109,8 +109,7 @@ gfx::Rect DelegatedInkPointPixelTestHelper::GetDelegatedInkDamageRect(
     ink_damage_rect_f.Union(
         gfx::RectF(ink_points_[pointer_id][i].point(), gfx::SizeF(1, 1)));
   }
-  ink_damage_rect_f.Inset(-metadata().diameter() / 2.f,
-                          -metadata().diameter() / 2.f);
+  ink_damage_rect_f.Inset(-metadata().diameter() / 2.f);
 
   return gfx::ToEnclosingRect(ink_damage_rect_f);
 }

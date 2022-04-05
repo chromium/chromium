@@ -200,8 +200,7 @@ TEST_F(LockLayoutManagerTest, AccessibilityPanel) {
       display::Screen::GetScreen()->GetPrimaryDisplay();
 
   gfx::Rect target_bounds = primary_display.bounds();
-  target_bounds.Inset(0 /* left */, accessibility_panel_height /* top */,
-                      0 /* right */, 0 /* bottom */);
+  target_bounds.Inset(gfx::Insets().set_top(accessibility_panel_height));
 
   EXPECT_EQ(target_bounds, window->GetBoundsInScreen());
 
@@ -211,8 +210,7 @@ TEST_F(LockLayoutManagerTest, AccessibilityPanel) {
   SetAccessibilityPanelHeight(accessibility_panel_height);
 
   target_bounds = primary_display.bounds();
-  target_bounds.Inset(0 /* left */, accessibility_panel_height /* top */,
-                      0 /* right */, 0 /* bottom */);
+  target_bounds.Inset(gfx::Insets().set_top(accessibility_panel_height));
 
   EXPECT_EQ(target_bounds, window->GetBoundsInScreen());
 }

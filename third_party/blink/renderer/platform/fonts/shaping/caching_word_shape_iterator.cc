@@ -59,7 +59,7 @@ scoped_refptr<const ShapeResult> CachingWordShapeIterator::ShapeWord(
     // but computing it requires re-measuring bounding box of each glyph. Leave
     // it unchanged, which gives an excessive right edge but assures it covers
     // all glyphs.
-    ink_bounds.Outset(ink_bounds.x() - left, 0, 0, 0);
+    ink_bounds.Outset(gfx::OutsetsF().set_left(ink_bounds.x() - left));
   }
 
   spacing_result->SetDeprecatedInkBounds(ink_bounds);

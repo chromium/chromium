@@ -64,8 +64,9 @@ gfx::RectF FEGaussianBlur::MapEffect(const gfx::SizeF& std_deviation,
   // We take the half kernel size and multiply it by three, because we run box
   // blur three times.
   gfx::RectF result = rect;
-  result.Outset(3.0f * kernel_size.width() * 0.5f,
-                3.0f * kernel_size.height() * 0.5f);
+  result.Outset(gfx::OutsetsF::VH(3.0f * kernel_size.height() * 0.5f,
+                                  3.0f * kernel_size.width() * 0.5f));
+
   return result;
 }
 

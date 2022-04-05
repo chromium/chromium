@@ -425,9 +425,10 @@ TEST_F(DockedMagnifierTest, DisplaysWorkAreas) {
   gfx::Rect disp_1_confine_bounds(
       0, disp_1_magnifier_height, disp_1_bounds.width(),
       disp_1_bounds.height() - disp_1_magnifier_height);
-  if (::features::IsDockedMagnifierResizingEnabled())
-    disp_1_confine_bounds.Inset(0, -DockedMagnifierController::kSeparatorHeight,
-                                0, 0);
+  if (::features::IsDockedMagnifierResizingEnabled()) {
+    disp_1_confine_bounds.Inset(
+        gfx::Insets().set_top(-DockedMagnifierController::kSeparatorHeight));
+  }
   EXPECT_EQ(host1->GetLastCursorConfineBoundsInPixels(), disp_1_confine_bounds);
 
   // The second display should remain unaffected.
@@ -456,15 +457,16 @@ TEST_F(DockedMagnifierTest, DisplaysWorkAreas) {
   const int disp_2_magnifier_height =
       GetMagnifierHeight(disp_2_bounds.height());
   disp_2_workspace_with_magnifier.Inset(
-      gfx::Insets::TLBR(disp_2_magnifier_height, 0, 0, 0));
+      gfx::Insets().set_top(disp_2_magnifier_height));
   EXPECT_EQ(disp_2_workspace_with_magnifier, display_2.work_area());
   // Display 2's mouse is confined outside the viewport.
   gfx::Rect disp_2_confine_bounds(
       0, disp_2_magnifier_height, disp_2_bounds.width(),
       disp_2_bounds.height() - disp_2_magnifier_height);
-  if (::features::IsDockedMagnifierResizingEnabled())
-    disp_2_confine_bounds.Inset(0, -DockedMagnifierController::kSeparatorHeight,
-                                0, 0);
+  if (::features::IsDockedMagnifierResizingEnabled()) {
+    disp_2_confine_bounds.Inset(
+        gfx::Insets().set_top(-DockedMagnifierController::kSeparatorHeight));
+  }
   EXPECT_EQ(host2->GetLastCursorConfineBoundsInPixels(), disp_2_confine_bounds);
 
   // Now, disable the magnifier, and expect both displays to return back to

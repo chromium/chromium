@@ -742,9 +742,9 @@ void ScrollableShelfView::Layout() {
     left_arrow_bounds =
         gfx::Rect(left_arrow_start_point, arrow_button_group_size);
     left_arrow_bounds.Offset(before_padding, 0);
-    left_arrow_bounds.Inset(
-        scrollable_shelf_constants::kArrowButtonEndPadding, 0,
-        scrollable_shelf_constants::kDistanceToArrowButton, 0);
+    left_arrow_bounds.Inset(gfx::Insets::TLBR(
+        0, scrollable_shelf_constants::kArrowButtonEndPadding, 0,
+        scrollable_shelf_constants::kDistanceToArrowButton));
     left_arrow_bounds.ClampToCenteredSize(arrow_button_size);
   }
 
@@ -756,9 +756,9 @@ void ScrollableShelfView::Layout() {
         0);
     right_arrow_bounds =
         gfx::Rect(right_arrow_start_point, arrow_button_group_size);
-    right_arrow_bounds.Inset(
-        scrollable_shelf_constants::kDistanceToArrowButton, 0,
-        scrollable_shelf_constants::kArrowButtonEndPadding, 0);
+    right_arrow_bounds.Inset(gfx::Insets::TLBR(
+        0, scrollable_shelf_constants::kDistanceToArrowButton, 0,
+        scrollable_shelf_constants::kArrowButtonEndPadding));
     right_arrow_bounds.ClampToCenteredSize(arrow_button_size);
   }
 

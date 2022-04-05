@@ -558,8 +558,8 @@ void BrowserViewLayout::LayoutContentsContainerView(int top, int bottom) {
   if (webui_tab_strip_ && webui_tab_strip_->GetVisible()) {
     // The WebUI tab strip container should "push" the tab contents down without
     // resizing it.
-    contents_container_bounds.Inset(0, 0, 0,
-                                    -webui_tab_strip_->size().height());
+    contents_container_bounds.Inset(
+        gfx::Insets().set_bottom(-webui_tab_strip_->size().height()));
   }
 
   // TODO(pbos): Note that this code implicitly relies on at most one of

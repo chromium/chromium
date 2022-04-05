@@ -353,8 +353,8 @@ gfx::Size BoxLayout::GetPreferredSize(const View* host) const {
         gfx::Rect child_bounds =
             gfx::Rect(-(child_size.width() / 2), 0, child_size.width(),
                       child_size.height());
-        child_bounds.Inset(-child.margins().left(), 0, -child.margins().right(),
-                           0);
+        child_bounds.Inset(gfx::Insets::TLBR(0, -child.margins().left(), 0,
+                                             -child.margins().right()));
         child_view_area.Union(child_bounds);
         width = std::max(width, child_view_area.width());
       }
@@ -597,12 +597,13 @@ gfx::Size BoxLayout::GetPreferredSizeForChildWidth(const View* host,
         child_margins = child.margins();
 
       if (cross_axis_alignment_ == CrossAxisAlignment::kStart) {
-        child_bounds.Inset(0, -CrossAxisLeadingInset(max_margins), 0,
-                           -child_margins.bottom());
+        child_bounds.Inset(
+            gfx::Insets::TLBR(-CrossAxisLeadingInset(max_margins), 0,
+                              -child_margins.bottom(), 0));
         child_bounds.set_origin(gfx::Point(position, 0));
       } else if (cross_axis_alignment_ == CrossAxisAlignment::kEnd) {
-        child_bounds.Inset(0, -child_margins.top(), 0,
-                           -CrossAxisTrailingInset(max_margins));
+        child_bounds.Inset(gfx::Insets::TLBR(
+            -child_margins.top(), 0, -CrossAxisTrailingInset(max_margins), 0));
         child_bounds.set_origin(gfx::Point(position, 0));
       } else {
         child_bounds.set_origin(

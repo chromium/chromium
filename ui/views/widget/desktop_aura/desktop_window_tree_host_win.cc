@@ -86,7 +86,7 @@ gfx::Size GetExpandedWindowSize(bool is_translucent, gfx::Size size) {
 }
 
 void InsetBottomRight(gfx::Rect* rect, const gfx::Vector2d& vector) {
-  rect->Inset(0, 0, vector.x(), vector.y());
+  rect->Inset(gfx::Insets::TLBR(0, 0, vector.y(), vector.x()));
 }
 
 // Updates the cursor clip region. Used for mouse locking.

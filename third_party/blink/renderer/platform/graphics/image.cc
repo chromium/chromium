@@ -269,8 +269,7 @@ void Image::DrawPattern(GraphicsContext& context,
   gfx::RectF tile_rect(subset_rect);
   tile_rect.Scale(tiling_info.scale.x(), tiling_info.scale.y());
   tile_rect.Offset(tiling_info.phase.OffsetFromOrigin());
-  tile_rect.Outset(0, 0, tiling_info.spacing.width(),
-                   tiling_info.spacing.height());
+  tile_rect.set_size(tile_rect.size() + tiling_info.spacing);
 
   SkMatrix local_matrix;
   local_matrix.setTranslate(tile_rect.x(), tile_rect.y());

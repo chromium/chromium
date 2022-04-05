@@ -2143,8 +2143,7 @@ gfx::Rect TabDragController::CalculateDraggedBrowserBounds(
   if (new_bounds.size().width() >= work_area.size().width() &&
       new_bounds.size().height() >= work_area.size().height()) {
     new_bounds = work_area;
-    new_bounds.Inset(kMaximizedWindowInset, kMaximizedWindowInset,
-                     kMaximizedWindowInset, kMaximizedWindowInset);
+    new_bounds.Inset(kMaximizedWindowInset);
     // Behave as if the |source| was maximized at the start of a drag since this
     // is consistent with a browser window creation logic in case of windows
     // that are as large as the |work_area|. Note: Some platforms do not support

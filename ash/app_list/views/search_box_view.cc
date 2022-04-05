@@ -109,8 +109,7 @@ class SearchBoxView::FocusRingLayer : public ui::Layer, ui::LayerDelegate {
     // of the border outside the layer that may not be painted. Shrink the draw
     // bounds by half of the width to solve this problem.
     gfx::Rect draw_bounds(bounds().size());
-    draw_bounds.Inset(kSearchBoxFocusRingWidth / 2,
-                      kSearchBoxFocusRingWidth / 2);
+    draw_bounds.Inset(kSearchBoxFocusRingWidth / 2);
 
     cc::PaintFlags flags;
     flags.setAntiAlias(true);

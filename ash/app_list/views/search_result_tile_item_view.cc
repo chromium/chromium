@@ -538,8 +538,8 @@ void SearchResultTileItemView::Layout() {
 
   if (rating_) {
     gfx::Rect rating_rect(rect);
-    rating_rect.Inset(rating_horizontal_offset,
-                      title_->GetPreferredSize().height(), 0, 0);
+    rating_rect.Inset(gfx::Insets::TLBR(title_->GetPreferredSize().height(),
+                                        rating_horizontal_offset, 0, 0));
     rating_rect.set_size(rating_->GetPreferredSize());
     rating_rect.set_width(kSearchRatingSize);
     rating_->SetBoundsRect(rating_rect);
@@ -547,19 +547,19 @@ void SearchResultTileItemView::Layout() {
 
   if (rating_star_) {
     gfx::Rect rating_star_rect(rect);
-    rating_star_rect.Inset(
+    rating_star_rect.Inset(gfx::Insets::TLBR(
+        title_->GetPreferredSize().height() + kSearchRatingStarVerticalSpacing,
         rating_horizontal_offset + kSearchRatingSize +
             kSearchRatingStarHorizontalSpacing,
-        title_->GetPreferredSize().height() + kSearchRatingStarVerticalSpacing,
-        0, 0);
+        0, 0));
     rating_star_rect.set_size(rating_star_->GetPreferredSize());
     rating_star_->SetBoundsRect(rating_star_rect);
   }
 
   if (price_) {
     gfx::Rect price_rect(rect);
-    price_rect.Inset(rect.width() - kSearchPriceSize,
-                     title_->GetPreferredSize().height(), 0, 0);
+    price_rect.Inset(gfx::Insets::TLBR(title_->GetPreferredSize().height(),
+                                       rect.width() - kSearchPriceSize, 0, 0));
     price_rect.set_size(price_->GetPreferredSize());
     price_->SetBoundsRect(price_rect);
   }

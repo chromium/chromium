@@ -802,10 +802,11 @@ gfx::RectF MathUtil::ScaleRectProportional(const gfx::RectF& input_outer_rect,
       scale_inner_rect.origin() - scale_outer_rect.origin();
   gfx::Vector2dF bottom_right_diff =
       scale_inner_rect.bottom_right() - scale_outer_rect.bottom_right();
-  output_inner_rect.Inset(top_left_diff.x() / scale_rect_to_input_scale_x,
-                          top_left_diff.y() / scale_rect_to_input_scale_y,
-                          -bottom_right_diff.x() / scale_rect_to_input_scale_x,
-                          -bottom_right_diff.y() / scale_rect_to_input_scale_y);
+  output_inner_rect.Inset(
+      gfx::InsetsF::TLBR(top_left_diff.y() / scale_rect_to_input_scale_y,
+                         top_left_diff.x() / scale_rect_to_input_scale_x,
+                         -bottom_right_diff.y() / scale_rect_to_input_scale_y,
+                         -bottom_right_diff.x() / scale_rect_to_input_scale_x));
   return output_inner_rect;
 }
 

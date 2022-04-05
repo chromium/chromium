@@ -416,10 +416,10 @@ void ShelfWidget::DelegateView::UpdateOpaqueBackground() {
   // We can easily round only 2 corners out of 4 which means we don't need as
   // much extra shelf height.
   const int safety_margin = kShelfMaxOvershootHeight;
-  opaque_background_bounds.Inset(
-      -shelf->SelectValueForShelfAlignment(0, safety_margin, 0), 0,
-      -shelf->SelectValueForShelfAlignment(0, 0, safety_margin),
-      -shelf->SelectValueForShelfAlignment(safety_margin, 0, 0));
+  opaque_background_bounds.Inset(gfx::Insets::TLBR(
+      0, -shelf->SelectValueForShelfAlignment(0, safety_margin, 0),
+      -shelf->SelectValueForShelfAlignment(safety_margin, 0, 0),
+      -shelf->SelectValueForShelfAlignment(0, 0, safety_margin)));
 
   // Show rounded corners except in maximized (which includes split view) mode,
   // or whenever we are "in app".
@@ -498,11 +498,9 @@ void ShelfWidget::DelegateView::Layout() {
   // assume bottom shelf, given that the drag handle is only shown within the
   // bottom shelf (either in tablet mode, or on login/lock screen)
   gfx::Rect drag_handle_bounds = GetLocalBounds();
-  drag_handle_bounds.Inset(
-      0,
+  drag_handle_bounds.Inset(gfx::Insets().set_top(
       drag_handle_bounds.height() -
-          ShelfConfig::Get()->shelf_drag_handle_centering_size(),
-      0, 0);
+      ShelfConfig::Get()->shelf_drag_handle_centering_size()));
   drag_handle_bounds.ClampToCenteredSize(ShelfConfig::Get()->DragHandleSize());
 
   drag_handle_->SetBoundsRect(drag_handle_bounds);

@@ -477,7 +477,7 @@ void TextTexture::PrepareDrawStringRect(
     PrepareDrawSingleLineText(text, font_list, bounds, parameters);
 
   if (parameters.shadows_enabled) {
-    bounds->Inset(-parameters.shadow_size, -parameters.shadow_size);
+    bounds->Inset(-parameters.shadow_size);
     bounds->Offset(parameters.shadow_size, parameters.shadow_size);
   }
 }

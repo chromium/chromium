@@ -37,9 +37,9 @@ constexpr int kStrokeScaleDurationMs = 300;
 
 gfx::Rect InflateDamageRect(const gfx::Rect& r) {
   gfx::Rect inflated = r;
-  inflated.Inset(
-      -kOutsetForAntialiasing - static_cast<int>(kPenTipWidth / 2 + 1),
-      -kOutsetForAntialiasing - static_cast<int>(kPenTipHeight / 2 + 1));
+  inflated.Inset(gfx::Insets::VH(
+      -kOutsetForAntialiasing - static_cast<int>(kPenTipHeight / 2 + 1),
+      -kOutsetForAntialiasing - static_cast<int>(kPenTipWidth / 2 + 1)));
   return inflated;
 }
 

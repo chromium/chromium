@@ -102,9 +102,9 @@ void PhantomWindowController::Show(const gfx::Rect& window_bounds_in_screen) {
   int start_height = std::max(kMinHeightWithShadow,
                               static_cast<int>(start_bounds_in_screen.height() *
                                                kScrimStartBoundsRatio));
-  start_bounds_in_screen.Inset(
-      floor((start_bounds_in_screen.width() - start_width) / 2.0f),
-      floor((start_bounds_in_screen.height() - start_height) / 2.0f));
+  start_bounds_in_screen.Inset(gfx::Insets::VH(
+      floor((start_bounds_in_screen.height() - start_height) / 2.0f),
+      floor((start_bounds_in_screen.width() - start_width) / 2.0f)));
 
   // Create a phantom widget with starting size so `ShowPhantomWidget()` can
   // animate from that current size to |target_bounds_in_screen|.

@@ -438,10 +438,8 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
           GetWorkAreaBoundsNoOverlapWithShelf(root_window);
       wm::ConvertRectFromScreen(root_window, &work_area_bounds);
       preview_area_bounds.set_y(preview_area_bounds.y() - work_area_bounds.y());
-      if (!drag_ending_in_snap) {
-        preview_area_bounds.Inset(kHighlightScreenEdgePaddingDp,
-                                  kHighlightScreenEdgePaddingDp);
-      }
+      if (!drag_ending_in_snap)
+        preview_area_bounds.Inset(kHighlightScreenEdgePaddingDp);
 
       // Calculate the bounds of the other highlight, which is the one that
       // shrinks and fades away, while the other one, the preview area, expands

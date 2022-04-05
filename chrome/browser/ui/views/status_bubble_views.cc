@@ -515,8 +515,11 @@ void StatusView::OnPaint(gfx::Canvas* canvas) {
   // bubble bounds by 1 DIP minus 1 pixel. Failing to do this results in drawing
   // further and further outside the window as the scale increases.
   const int inset = shadow_thickness_pixels - 1;
-  bubble_rect.Inset(style_ == BubbleStyle::kStandardRight ? 0 : inset, 0,
-                    style_ == BubbleStyle::kStandardRight ? inset : 0, inset);
+  bubble_rect.Inset(
+      gfx::InsetsF()
+          .set_left(style_ == BubbleStyle::kStandardRight ? 0 : inset)
+          .set_right(style_ == BubbleStyle::kStandardRight ? inset : 0)
+          .set_bottom(inset));
   // Align to pixel centers now that the layout is correct.
   bubble_rect.Inset(0.5);
 

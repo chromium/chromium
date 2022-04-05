@@ -497,8 +497,8 @@ void OverviewItem::CloseWindow() {
   SetShadowBounds(absl::nullopt);
 
   gfx::RectF inset_bounds(target_bounds_);
-  inset_bounds.Inset(target_bounds_.width() * kPreCloseScale,
-                     target_bounds_.height() * kPreCloseScale);
+  inset_bounds.Inset(gfx::InsetsF::VH(target_bounds_.height() * kPreCloseScale,
+                                      target_bounds_.width() * kPreCloseScale));
   // Scale down both the window and label.
   SetBounds(inset_bounds, OVERVIEW_ANIMATION_CLOSING_OVERVIEW_ITEM);
   // First animate opacity to an intermediate value concurrently with the
@@ -632,8 +632,9 @@ gfx::Rect OverviewItem::GetBoundsOfSelectedItem() {
 
 void OverviewItem::ScaleUpSelectedItem(OverviewAnimationType animation_type) {
   gfx::RectF scaled_bounds = target_bounds();
-  scaled_bounds.Inset(-scaled_bounds.width() * kDragWindowScale,
-                      -scaled_bounds.height() * kDragWindowScale);
+  scaled_bounds.Inset(
+      gfx::InsetsF::VH(-scaled_bounds.height() * kDragWindowScale,
+                       -scaled_bounds.width() * kDragWindowScale));
   if (unclipped_size_) {
     // If a clipped item is scaled up, we need to recalculate the unclipped
     // size.
