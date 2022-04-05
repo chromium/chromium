@@ -103,7 +103,9 @@ def print_flags(flags, verbose):
   """Prints the supplied list of flags.
 
   In verbose mode, prints name, expiry, and owner list; in non-verbose mode,
-  prints just the name.
+  prints just the name. Verbose mode is actually tab-separated values, with
+  commas used as separators within individual fields - this is the format the
+  rest of the flags automation consumes most readily.
 
   >>> f1 = {'name': 'foo', 'expiry_milestone': 73, 'owners': ['bar', 'baz']}
   >>> f1['resolved_owners'] = ['bar@c.org', 'baz@c.org']
@@ -111,17 +113,17 @@ def print_flags(flags, verbose):
   >>> f2['resolved_owners'] = ['quxx@c.org']
   >>> print_flags([f1], False)
   foo
-  >>> print_flags([f1], True)
-  foo,73,bar baz,bar@c.org baz@c.org
+  >>> print_flags([f1], True) # doctest: +NORMALIZE_WHITESPACE
+  foo 73 bar,baz bar@c.org,baz@c.org
   >>> print_flags([f2], False)
   bar
-  >>> print_flags([f2], True)
-  bar,74,//quxx/OWNERS,quxx@c.org
+  >>> print_flags([f2], True) # doctest: +NORMALIZE_WHITESPACE
+  bar 74 //quxx/OWNERS quxx@c.org
   """
   for f in flags:
     if verbose:
-      print('%s,%d,%s,%s' % (f['name'], f['expiry_milestone'], ' '.join(
-          f['owners']), ' '.join(f['resolved_owners'])))
+      print('%s\t%d\t%s\t%s' % (f['name'], f['expiry_milestone'], ','.join(
+          f['owners']), ','.join(f['resolved_owners'])))
     else:
       print(f['name'])
 
