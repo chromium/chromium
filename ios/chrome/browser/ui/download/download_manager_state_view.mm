@@ -114,7 +114,8 @@ const CGFloat kInProgressScale = 0.65f;
           CATransform3DScale(CATransform3DIdentity, 0, 0, 1);
       break;
     case kDownloadManagerStateSucceeded:
-    case kDownloadManagerStateFailed: {
+    case kDownloadManagerStateFailed:
+    case kDownloadManagerStateFailedNotResumable: {
       self.badgeLayer.contents = (__bridge id)[self completionBadgeImage];
       self.iconLayer.path = self.documentPath.CGPath;
       self.iconLayer.fillColor = self.documentColor.CGColor;
@@ -133,9 +134,6 @@ const CGFloat kInProgressScale = 0.65f;
       }
       break;
     }
-    case kDownloadManagerStateFailedNotResumable:
-      NOTREACHED();
-      break;
     case kDownloadManagerStateInProgress:
       if (CGPathEqualToPath(self.iconLayer.path, self.downloadPath.CGPath)) {
         // There should be no animation when changing from downloadPath to
