@@ -3197,4 +3197,35 @@ TEST_F(LockContentsViewUnitTest, SmartLockStateHidesPasswordView) {
   EXPECT_TRUE(auth_user_view->password_view()->GetVisible());
 }
 
+TEST_F(LockContentsViewUnitTest, SmartLockStateHidesAuthErrorMessage) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kSmartLockUIRevamp);
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  ASSERT_NO_FATAL_FAILURE(ShowLockScreen());
+  LockContentsView* contents =
+      LockScreen::TestApi(LockScreen::Get()).contents_view();
+  LockContentsView::TestApi test_api(contents);
+  SetUserCount(1);
+  const AccountId account_id = test_api.users()[0].account_id;
+  SetWidget(CreateWidgetWithContent(contents));
+
+  // Submit incorrect password to show auth error bubble.
+  auto client = std::make_unique<MockLoginScreenClient>();
+  client->set_authenticate_user_callback_result(false);
+  EXPECT_CALL(*client,
+              AuthenticateUserWithPasswordOrPin_(account_id, _, false, _));
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(test_api.auth_error_bubble()->GetVisible());
+
+  // Check that the auth_error_bubble is no longer visible when the auth factor
+  // hides the password. Updating auth factor state to kAuthenticated by
+  // notifying a successful auth result will hide the password field.
+  DataDispatcher()->NotifySmartLockAuthResult(account_id, /*successful=*/true);
+  EXPECT_FALSE(test_api.auth_error_bubble()->GetVisible());
+}
+
 }  // namespace ash

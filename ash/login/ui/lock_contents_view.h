@@ -385,6 +385,9 @@ class ASH_EXPORT LockContentsView
   // Opens an error bubble to indicate authentication failure.
   void ShowAuthErrorMessage();
 
+  // Hides the error bubble indicating authentication failure if open.
+  void HideAuthErrorMessage();
+
   // Called when the easy unlock icon is hovered.
   void OnEasyUnlockIconHovered();
   // Called when the easy unlock icon is tapped.

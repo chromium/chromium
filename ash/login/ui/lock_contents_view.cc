@@ -1116,6 +1116,9 @@ void LockContentsView::OnAuthFactorIsHidingPasswordChanged(
 
   user_state->auth_factor_is_hiding_password = auth_factor_is_hiding_password;
 
+  if (auth_factor_is_hiding_password)
+    HideAuthErrorMessage();
+
   // Do not call LayoutAuth() here. This event is triggered by
   // OnSmartLockStateChanged, which calls LayoutAuth(). Calling LayoutAuth() a
   // second time will prevent animations from running properly.
@@ -1415,8 +1418,7 @@ void LockContentsView::OnDetachableBasePairingStatusChanged(
     return;
   }
 
-  if (auth_error_bubble_->GetVisible())
-    auth_error_bubble_->Hide();
+  HideAuthErrorMessage();
 
   std::u16string error_text =
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_ERROR_DETACHABLE_BASE_CHANGED);
@@ -1972,8 +1974,7 @@ void LockContentsView::SwapActiveAuthBetweenPrimaryAndSecondary(
 void LockContentsView::OnAuthenticate(bool auth_success,
                                       bool display_error_messages) {
   if (auth_success) {
-    if (auth_error_bubble_->GetVisible())
-      auth_error_bubble_->Hide();
+    HideAuthErrorMessage();
 
     if (detachable_base_error_bubble_->GetVisible())
       detachable_base_error_bubble_->Hide();
@@ -2266,6 +2267,11 @@ void LockContentsView::ShowAuthErrorMessage() {
   auth_error_bubble_->Show();
 }
 
+void LockContentsView::HideAuthErrorMessage() {
+  if (auth_error_bubble_->GetVisible())
+    auth_error_bubble_->Hide();
+}
+
 void LockContentsView::OnEasyUnlockIconHovered() {
   LoginBigUserView* big_view = CurrentBigUserView();
   if (!big_view->auth_user())
@@ -2347,7 +2353,7 @@ void LockContentsView::OnPublicAccountTapped(bool is_primary) {
 void LockContentsView::LearnMoreButtonPressed() {
   Shell::Get()->login_screen_controller()->ShowAccountAccessHelpApp(
       GetWidget()->GetNativeWindow());
-  auth_error_bubble_->Hide();
+  HideAuthErrorMessage();
 }
 
 std::unique_ptr<LoginBigUserView> LockContentsView::AllocateLoginBigUserView(
