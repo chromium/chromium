@@ -26,7 +26,8 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -34,7 +35,7 @@ namespace ash {
 namespace {
 
 // Default width of the text field.
-constexpr int kDefaultTextWidth = 200;
+constexpr int kDefaultTextWidthChars = 36;
 
 }  // namespace
 
@@ -154,58 +155,36 @@ void RequestPinView::UpdateHeaderText() {
 
 void RequestPinView::Init() {
   const views::LayoutProvider* provider = views::LayoutProvider::Get();
-  SetBorder(views::CreateEmptyBorder(provider->GetDialogInsetsForContentType(
-      views::DialogContentType::kText, views::DialogContentType::kText)));
-
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-
-  int column_view_set_id = 0;
-  views::ColumnSet* column_set = layout->AddColumnSet(column_view_set_id);
-
-  column_set->AddColumn(views::GridLayout::LEADING, views::GridLayout::FILL, 1,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  layout->StartRow(0, column_view_set_id);
+  auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
+  layout->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+      .SetInteriorMargin(provider->GetDialogInsetsForContentType(
+          views::DialogContentType::kText, views::DialogContentType::kText))
+      .SetCollapseMargins(true)
+      .SetIgnoreDefaultMainAxisMargins(true)
+      .SetDefault(views::kMarginsKey,
+                  gfx::Insets::VH(provider->GetDistanceMetric(
+                                      views::DISTANCE_RELATED_CONTROL_VERTICAL),
+                                  0));
 
   // Information label.
-  int label_text_id = IDS_REQUEST_PIN_DIALOG_HEADER;
-  std::u16string label_text = l10n_util::GetStringUTF16(label_text_id);
-  auto header_label = std::make_unique<views::Label>(label_text);
-  header_label->SetEnabled(true);
-  header_label_ = layout->AddView(std::move(header_label));
-
-  const int related_vertical_spacing =
-      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);
-  layout->AddPaddingRow(0, related_vertical_spacing);
-
-  column_view_set_id++;
-  column_set = layout->AddColumnSet(column_view_set_id);
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL, 100,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+  header_label_ = AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_REQUEST_PIN_DIALOG_HEADER)));
+  header_label_->SetEnabled(true);
+  header_label_->SetProperty(views::kCrossAxisAlignmentKey,
+                             views::LayoutAlignment::kStart);
 
   // Textfield to enter the PIN/PUK.
-  layout->StartRow(0, column_view_set_id);
-  auto textfield = std::make_unique<PassphraseTextfield>();
-  textfield->set_controller(this);
-  textfield->SetEnabled(true);
-  textfield->SetAssociatedLabel(header_label_);
-  textfield_ =
-      layout->AddView(std::move(textfield), 1, 1, views::GridLayout::LEADING,
-                      views::GridLayout::FILL, kDefaultTextWidth, 0);
-
-  layout->AddPaddingRow(0, related_vertical_spacing);
-
-  column_view_set_id++;
-  column_set = layout->AddColumnSet(column_view_set_id);
-  column_set->AddColumn(views::GridLayout::LEADING, views::GridLayout::FILL, 1,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+  textfield_ = AddChildView(std::make_unique<PassphraseTextfield>());
+  textfield_->set_controller(this);
+  textfield_->SetEnabled(true);
+  textfield_->SetAssociatedLabel(header_label_);
+  textfield_->SetDefaultWidthInChars(kDefaultTextWidthChars);
 
   // Error label.
-  layout->StartRow(0, column_view_set_id);
-  auto error_label = std::make_unique<views::Label>();
-  error_label->SetVisible(false);
-  error_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  error_label_ = layout->AddView(std::move(error_label));
+  error_label_ = AddChildView(std::make_unique<views::Label>());
+  error_label_->SetVisible(false);
+  error_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 }
 
 void RequestPinView::SetAcceptInput(bool accept_input) {
