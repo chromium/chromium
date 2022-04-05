@@ -361,7 +361,7 @@ NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
         (opportunity.rect.InlineSize() - float_margin_box_inline_size);
   }
 
-  if (!need_break_before &&
+  if (parent_space.HasBlockFragmentation() && !need_break_before &&
       exclusion_space->NeedsBreakBeforeFloat(
           unpositioned_float->ClearType(parent_space.Direction())))
     need_break_before = true;

@@ -1771,7 +1771,8 @@ void NGLineBreaker::HandleForcedLineBreak(const NGInlineItem* item,
     // the line, so that there will be a gap between the bottom of the float and
     // the content that follows). No browser engines currently get BR clearance
     // across fragmentainers right.
-    if (item->GetLayoutObject() && item->GetLayoutObject()->IsBR() &&
+    if (constraint_space_.HasBlockFragmentation() && item->GetLayoutObject() &&
+        item->GetLayoutObject()->IsBR() &&
         exclusion_space_->NeedsClearancePastFragmentainer(
             item->Style()->Clear(*current_style_))) {
       if (!line_info->Results().IsEmpty()) {

@@ -1107,7 +1107,8 @@ bool NGInlineLayoutAlgorithm::AddAnyClearanceAfterLine(
           bfc_offset.block_offset - block_end_offset_without_clearence);
     }
 
-    if (ExclusionSpace().NeedsClearancePastFragmentainer(clear_type))
+    if (ConstraintSpace().HasBlockFragmentation() &&
+        ExclusionSpace().NeedsClearancePastFragmentainer(clear_type))
       return false;
   }
   return true;
