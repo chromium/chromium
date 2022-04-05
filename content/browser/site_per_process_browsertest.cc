@@ -2560,6 +2560,42 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
                    .is_sandboxed());
 }
 
+// Test to make sure that javascript: urls don't execute in a sandboxed iframe.
+IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
+                       SandboxedIframeWithJSUrl) {
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Create sandboxed child frame with a javascript: URL.
+  std::string js_url_str("javascript:\"foo\"");
+  {
+    std::string js_str = base::StringPrintf(
+        "var frame = document.createElement('iframe'); "
+        "frame.id = 'test_frame'; "
+        "frame.sandbox = 'allow-scripts'; "
+        "frame.src = '%s'; "
+        "document.body.appendChild(frame);",
+        js_url_str.c_str());
+    EXPECT_TRUE(ExecJs(shell(), js_str));
+    ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  }
+
+  // Verify parent and child frames share a SiteInstance. A sandboxed iframe
+  // with a javascript: url shouldn't get its own process.
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child = root->child_at(0);
+  EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
+            child->current_frame_host()->GetSiteInstance());
+
+  // Verify that the javascript: url did not execute. This is expected
+  // regardless of IsolatedSandboxedIframes since sandboxed iframes get opaque
+  // origins, and javascript: urls don't execute in opaque origins.
+  EXPECT_TRUE(
+      EvalJs(child->current_frame_host(), "document.body.innerHTML == ''")
+          .ExtractBool());
+}
+
 // Test to make sure that an iframe with a data:url is appropriately sandboxed.
 IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
                        SandboxedIframeWithDataURL) {
