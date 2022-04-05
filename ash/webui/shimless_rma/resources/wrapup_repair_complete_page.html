@@ -109,11 +109,15 @@
     <div id="navigationButtonWrapper">
       <cr-button id="shutDownButton" on-click="onShutDownButtonClick_"
           disabled="[[allButtonsDisabled]]">
-          [[i18n('repairCompleteShutDownButtonText')]]
+        <iron-icon icon="shimless-icon:shutdown" class="small-icon">
+        </iron-icon>
+        [[i18n('repairCompleteShutDownButtonText')]]
       </cr-button>
       <cr-button id="rebootButton" on-click="onRebootButtonClick_"
           disabled="[[allButtonsDisabled]]">
-          [[i18n('repairCompleteRebootButtonText')]]
+        <iron-icon icon="shimless-icon:reboot" class="small-icon">
+        </iron-icon>
+        [[i18n('repairCompleteRebootButtonText')]]
       </cr-button>
     </div>
   </div>
