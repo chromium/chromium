@@ -54,6 +54,9 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
   EXPECT_CALL(
       *mock_service(),
       DialogActionOccurred(PrivacySandboxService::DialogAction::kNoticeShown));
+  EXPECT_CALL(*mock_service(),
+              DialogActionOccurred(
+                  PrivacySandboxService::DialogAction::kNoticeDismiss));
   EXPECT_CALL(
       *mock_service(),
       DialogActionOccurred(
