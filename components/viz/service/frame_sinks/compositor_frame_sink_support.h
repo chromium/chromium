@@ -107,6 +107,8 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
     return frame_timing_details_;
   }
 
+  bool needs_begin_frame() const { return needs_begin_frame_; }
+
   [[nodiscard]] FrameTimingDetailsMap TakeFrameTimingDetailsMap();
 
   // Viz hit-test setup is only called when |is_root_| is true (except on
@@ -271,6 +273,8 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   bool IsRoot() const override;
 
   void UpdateNeedsBeginFramesInternal();
+  void StartObservingBeginFrameSource();
+  void StopObservingBeginFrameSource();
 
   // For the sync API calls, if we are blocking a client callback, runs it once
   // BeginFrame and FrameAck are done.
@@ -331,6 +335,9 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
 
   // Whether a request for begin frames has been issued.
   bool client_needs_begin_frame_ = false;
+
+  // Whether the sink currently needs begin frames for any reason.
+  bool needs_begin_frame_ = false;
 
   // Whether or not a frame observer has been added.
   bool added_frame_observer_ = false;
