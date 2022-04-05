@@ -456,15 +456,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Callback to clear deferred invalidates after painting finishes.
   void ClearDeferredInvalidates();
 
-  // Sends the attachments data.
-  void SendAttachments();
-
-  // Sends the bookmarks data.
-  void SendBookmarks();
-
-  // Send document metadata data.
-  void SendMetadata();
-
   // Sends the thumbnail image data.
   void SendThumbnail(base::Value reply, Thumbnail thumbnail);
 

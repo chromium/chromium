@@ -4,6 +4,7 @@
 
 #include "pdf/pdf_view_web_plugin.h"
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <utility>
@@ -57,6 +58,7 @@ namespace chrome_pdf {
 
 namespace {
 
+using ::testing::Eq;
 using ::testing::InSequence;
 using ::testing::Invoke;
 using ::testing::MockFunction;
@@ -261,6 +263,20 @@ class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
   base::WeakPtrFactory<FakePdfViewWebPluginClient> weak_factory_{this};
 };
 
+class MockUrlLoader : public UrlLoader {
+ public:
+  MOCK_METHOD(void, GrantUniversalAccess, (), (override));
+  MOCK_METHOD(void,
+              Open,
+              (const UrlRequest&, base::OnceCallback<void(int)>),
+              (override));
+  MOCK_METHOD(void,
+              ReadResponseBody,
+              (base::span<char>, base::OnceCallback<void(int)>),
+              (override));
+  MOCK_METHOD(void, Close, (), (override));
+};
+
 }  // namespace
 
 class PdfViewWebPluginWithoutInitializeTest : public testing::Test {
@@ -311,8 +327,8 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
     wrapper_ptr_ = wrapper.get();
     auto engine = CreateEngine();
     engine_ptr_ = engine.get();
-    EXPECT_TRUE(
-        plugin_->InitializeForTesting(std::move(wrapper), std::move(engine)));
+    EXPECT_TRUE(plugin_->InitializeForTesting(
+        std::move(wrapper), std::move(engine), CreateLoader()));
   }
 
   void TearDown() override {
@@ -325,6 +341,9 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
   virtual std::unique_ptr<TestPDFiumEngine> CreateEngine() {
     return std::make_unique<NiceMock<TestPDFiumEngine>>(plugin_.get());
   }
+
+  // Allow derived test classes to create their own custom loaders.
+  virtual std::unique_ptr<UrlLoader> CreateLoader() { return nullptr; }
 
   void SetDocumentDimensions(const gfx::Size& dimensions) {
     EXPECT_CALL(*engine_ptr_, ApplyDocumentLayout)
@@ -441,8 +460,8 @@ TEST_F(PdfViewWebPluginWithoutInitializeTest, Initialize) {
               RequestTouchEventType(
                   blink::WebPluginContainer::kTouchEventRequestTypeRaw));
 
-  EXPECT_TRUE(
-      plugin_->InitializeForTesting(std::move(wrapper), std::move(engine)));
+  EXPECT_TRUE(plugin_->InitializeForTesting(
+      std::move(wrapper), std::move(engine), /*loader=*/nullptr));
 }
 
 TEST_F(PdfViewWebPluginTest, UpdateGeometrySetsPluginRect) {
@@ -865,6 +884,196 @@ TEST_F(PdfViewWebPluginTest, NotifyNumberOfFindResultsChanged) {
   EXPECT_CALL(*wrapper_ptr_, ReportFindInPageTickmarks(tickmarks));
   EXPECT_CALL(*wrapper_ptr_, ReportFindInPageMatchCount(123, 5, true));
   plugin_->NotifyNumberOfFindResultsChanged(/*total=*/5, /*final_result=*/true);
+}
+
+class PdfViewWebPluginWithoutDocInfoTest : public PdfViewWebPluginTest {
+ public:
+  std::unique_ptr<UrlLoader> CreateLoader() override {
+    return std::make_unique<NiceMock<MockUrlLoader>>();
+  }
+
+  static base::Value CreateExpectedNoMetadataResponse() {
+    base::Value metadata(base::Value::Type::DICTIONARY);
+    metadata.SetStringKey("fileSize", "0 B");
+    metadata.SetBoolKey("linearized", false);
+    metadata.SetStringKey("pageSize", "Varies");
+    metadata.SetBoolKey("canSerializeDocument", true);
+
+    base::Value message(base::Value::Type::DICTIONARY);
+    message.SetStringKey("type", "metadata");
+    message.SetKey("metadataData", std::move(metadata));
+    return message;
+  }
+};
+
+TEST_F(PdfViewWebPluginWithoutDocInfoTest, DocumentLoadCompletePostMessages) {
+  const base::Value expect_metadata = CreateExpectedNoMetadataResponse();
+  EXPECT_CALL(*wrapper_ptr_, PostMessage);
+  EXPECT_CALL(*wrapper_ptr_, PostMessage(Eq(std::ref(expect_metadata))));
+  plugin_->DocumentLoadComplete();
+}
+
+class PdfViewWebPluginWithDocInfoTest : public PdfViewWebPluginTest {
+ public:
+  class TestPDFiumEngineWithDocInfo : public TestPDFiumEngine {
+   public:
+    explicit TestPDFiumEngineWithDocInfo(PDFEngine::Client* client)
+        : TestPDFiumEngine(client) {
+      InitializeDocumentAttachments();
+      InitializeDocumentMetadata();
+    }
+
+    base::Value GetBookmarks() override {
+      // Create `bookmark1` which navigates to an in-doc position. This bookmark
+      // will be in the top-level bookmark list.
+      base::Value bookmark1(base::Value::Type::DICTIONARY);
+      bookmark1.SetStringKey("title", "Bookmark 1");
+      bookmark1.SetIntKey("page", 2);
+      bookmark1.SetIntKey("x", 10);
+      bookmark1.SetIntKey("y", 20);
+      bookmark1.SetDoubleKey("zoom", 2.0);
+
+      // Create `bookmark2` which navigates to a web page. This bookmark will be
+      // a child of `bookmark1`.
+      base::Value bookmark2(base::Value::Type::DICTIONARY);
+      bookmark2.SetStringKey("title", "Bookmark 2");
+      bookmark2.SetStringKey("uri", "test.com");
+
+      base::Value children_of_bookmark1(base::Value::Type::LIST);
+      children_of_bookmark1.Append(std::move(bookmark2));
+      bookmark1.SetKey("children", std::move(children_of_bookmark1));
+
+      // Create the top-level bookmark list.
+      base::Value bookmarks(base::Value::Type::LIST);
+      bookmarks.Append(std::move(bookmark1));
+      return bookmarks;
+    }
+
+    absl::optional<gfx::Size> GetUniformPageSizePoints() override {
+      return gfx::Size(1000, 1200);
+    }
+
+   private:
+    void InitializeDocumentAttachments() {
+      doc_attachment_info_list().resize(3);
+
+      // A regular attachment.
+      doc_attachment_info_list()[0].name = u"attachment1.txt";
+      doc_attachment_info_list()[0].creation_date = u"D:20170712214438-07'00'";
+      doc_attachment_info_list()[0].modified_date = u"D:20160115091400";
+      doc_attachment_info_list()[0].is_readable = true;
+      doc_attachment_info_list()[0].size_bytes = 13u;
+
+      // An unreadable attachment.
+      doc_attachment_info_list()[1].name = u"attachment2.pdf";
+      doc_attachment_info_list()[1].is_readable = false;
+
+      // A readable attachment that exceeds download size limit.
+      doc_attachment_info_list()[2].name = u"attachment3.mov";
+      doc_attachment_info_list()[2].is_readable = true;
+      doc_attachment_info_list()[2].size_bytes =
+          PdfViewPluginBase::kMaximumSavedFileSize + 1;
+    }
+
+    void InitializeDocumentMetadata() {
+      metadata().version = PdfVersion::k1_7;
+      metadata().size_bytes = 13u;
+      metadata().page_count = 13u;
+      metadata().linearized = true;
+      metadata().has_attachments = true;
+      metadata().tagged = true;
+      metadata().form_type = FormType::kAcroForm;
+      metadata().title = "Title";
+      metadata().author = "Author";
+      metadata().subject = "Subject";
+      metadata().keywords = "Keywords";
+      metadata().creator = "Creator";
+      metadata().producer = "Producer";
+      ASSERT_TRUE(base::Time::FromUTCString("2021-05-04 11:12:13",
+                                            &metadata().creation_date));
+      ASSERT_TRUE(base::Time::FromUTCString("2021-06-04 15:16:17",
+                                            &metadata().mod_date));
+    }
+  };
+
+  std::unique_ptr<TestPDFiumEngine> CreateEngine() override {
+    return std::make_unique<TestPDFiumEngineWithDocInfo>(plugin_.get());
+  }
+  std::unique_ptr<UrlLoader> CreateLoader() override {
+    return std::make_unique<NiceMock<MockUrlLoader>>();
+  }
+
+  static base::Value CreateExpectedAttachmentsResponse() {
+    base::Value attachments(base::Value::Type::LIST);
+    {
+      base::Value attachment(base::Value::Type::DICTIONARY);
+      attachment.SetStringKey("name", "attachment1.txt");
+      attachment.SetIntKey("size", 13);
+      attachment.SetBoolKey("readable", true);
+      attachments.Append(std::move(attachment));
+    }
+    {
+      base::Value attachment(base::Value::Type::DICTIONARY);
+      attachment.SetStringKey("name", "attachment2.pdf");
+      attachment.SetIntKey("size", 0);
+      attachment.SetBoolKey("readable", false);
+      attachments.Append(std::move(attachment));
+    }
+    {
+      base::Value attachment(base::Value::Type::DICTIONARY);
+      attachment.SetStringKey("name", "attachment3.mov");
+      attachment.SetIntKey("size", -1);
+      attachment.SetBoolKey("readable", true);
+      attachments.Append(std::move(attachment));
+    }
+
+    base::Value message(base::Value::Type::DICTIONARY);
+    message.SetStringKey("type", "attachments");
+    message.SetKey("attachmentsData", std::move(attachments));
+    return message;
+  }
+
+  static base::Value CreateExpectedBookmarksResponse(base::Value bookmarks) {
+    base::Value message(base::Value::Type::DICTIONARY);
+    message.SetStringKey("type", "bookmarks");
+    message.SetKey("bookmarksData", std::move(bookmarks));
+    return message;
+  }
+
+  static base::Value CreateExpectedMetadataResponse() {
+    base::Value metadata(base::Value::Type::DICTIONARY);
+    metadata.SetStringKey("version", "1.7");
+    metadata.SetStringKey("fileSize", "13 B");
+    metadata.SetBoolKey("linearized", true);
+
+    metadata.SetStringKey("title", "Title");
+    metadata.SetStringKey("author", "Author");
+    metadata.SetStringKey("subject", "Subject");
+    metadata.SetStringKey("keywords", "Keywords");
+    metadata.SetStringKey("creator", "Creator");
+    metadata.SetStringKey("producer", "Producer");
+    metadata.SetStringKey("creationDate", "5/4/21, 4:12:13 AM");
+    metadata.SetStringKey("modDate", "6/4/21, 8:16:17 AM");
+    metadata.SetStringKey("pageSize", "13.89 × 16.67 in (portrait)");
+    metadata.SetBoolKey("canSerializeDocument", true);
+
+    base::Value message(base::Value::Type::DICTIONARY);
+    message.SetStringKey("type", "metadata");
+    message.SetKey("metadataData", std::move(metadata));
+    return message;
+  }
+};
+
+TEST_F(PdfViewWebPluginWithDocInfoTest, DocumentLoadCompletePostMessages) {
+  const base::Value expect_attachments = CreateExpectedAttachmentsResponse();
+  const base::Value expect_bookmarks =
+      CreateExpectedBookmarksResponse(engine_ptr_->GetBookmarks());
+  const base::Value expect_metadata = CreateExpectedMetadataResponse();
+  EXPECT_CALL(*wrapper_ptr_, PostMessage);
+  EXPECT_CALL(*wrapper_ptr_, PostMessage(Eq(std::ref(expect_attachments))));
+  EXPECT_CALL(*wrapper_ptr_, PostMessage(Eq(std::ref(expect_bookmarks))));
+  EXPECT_CALL(*wrapper_ptr_, PostMessage(Eq(std::ref(expect_metadata))));
+  plugin_->DocumentLoadComplete();
 }
 
 }  // namespace chrome_pdf

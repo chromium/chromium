@@ -24,7 +24,6 @@
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
-#include "base/i18n/time_formatting.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -51,7 +50,6 @@
 #include "pdf/pdfium/pdfium_form_filler.h"
 #include "pdf/ppapi_migration/result_codes.h"
 #include "pdf/ppapi_migration/url_loader.h"
-#include "pdf/ui/document_properties.h"
 #include "pdf/ui/file_name.h"
 #include "pdf/ui/thumbnail.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -61,7 +59,6 @@
 #include "third_party/blink/public/web/web_print_preset_options.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/text/bytes_formatting.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -389,10 +386,6 @@ void PdfViewPluginBase::DocumentLoadComplete() {
 
   if (IsPrintPreview())
     OnPrintPreviewLoaded();
-
-  SendAttachments();
-  SendBookmarks();
-  SendMetadata();
 
   OnDocumentLoadComplete();
 
@@ -1475,97 +1468,6 @@ void PdfViewPluginBase::ClearDeferredInvalidates() {
   for (const gfx::Rect& rect : deferred_invalidates_)
     Invalidate(rect);
   deferred_invalidates_.clear();
-}
-
-void PdfViewPluginBase::SendAttachments() {
-  const std::vector<DocumentAttachmentInfo>& attachment_infos =
-      engine()->GetDocumentAttachmentInfoList();
-  if (attachment_infos.empty())
-    return;
-
-  base::Value attachments(base::Value::Type::LIST);
-  for (const DocumentAttachmentInfo& attachment_info : attachment_infos) {
-    // Send `size` as -1 to indicate that the attachment is too large to be
-    // downloaded.
-    const int size = attachment_info.size_bytes <= kMaximumSavedFileSize
-                         ? static_cast<int>(attachment_info.size_bytes)
-                         : -1;
-
-    base::Value attachment(base::Value::Type::DICTIONARY);
-    attachment.SetStringKey("name", attachment_info.name);
-    attachment.SetIntKey("size", size);
-    attachment.SetBoolKey("readable", attachment_info.is_readable);
-    attachments.Append(std::move(attachment));
-  }
-
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "attachments");
-  message.SetKey("attachmentsData", std::move(attachments));
-  SendMessage(std::move(message));
-}
-
-void PdfViewPluginBase::SendBookmarks() {
-  base::Value bookmarks = engine()->GetBookmarks();
-  if (bookmarks.GetListDeprecated().empty())
-    return;
-
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "bookmarks");
-  message.SetKey("bookmarksData", std::move(bookmarks));
-  SendMessage(std::move(message));
-}
-
-void PdfViewPluginBase::SendMetadata() {
-  base::Value metadata(base::Value::Type::DICTIONARY);
-  const DocumentMetadata& document_metadata = engine()->GetDocumentMetadata();
-
-  const std::string version = FormatPdfVersion(document_metadata.version);
-  if (!version.empty())
-    metadata.SetStringKey("version", version);
-
-  metadata.SetStringKey("fileSize",
-                        ui::FormatBytes(document_metadata.size_bytes));
-
-  metadata.SetBoolKey("linearized", document_metadata.linearized);
-
-  if (!document_metadata.title.empty())
-    metadata.SetStringKey("title", document_metadata.title);
-
-  if (!document_metadata.author.empty())
-    metadata.SetStringKey("author", document_metadata.author);
-
-  if (!document_metadata.subject.empty())
-    metadata.SetStringKey("subject", document_metadata.subject);
-
-  if (!document_metadata.keywords.empty())
-    metadata.SetStringKey("keywords", document_metadata.keywords);
-
-  if (!document_metadata.creator.empty())
-    metadata.SetStringKey("creator", document_metadata.creator);
-
-  if (!document_metadata.producer.empty())
-    metadata.SetStringKey("producer", document_metadata.producer);
-
-  if (!document_metadata.creation_date.is_null()) {
-    metadata.SetStringKey("creationDate", base::TimeFormatShortDateAndTime(
-                                              document_metadata.creation_date));
-  }
-
-  if (!document_metadata.mod_date.is_null()) {
-    metadata.SetStringKey("modDate", base::TimeFormatShortDateAndTime(
-                                         document_metadata.mod_date));
-  }
-
-  metadata.SetStringKey("pageSize",
-                        FormatPageSize(engine()->GetUniformPageSizePoints()));
-
-  metadata.SetBoolKey("canSerializeDocument",
-                      IsSaveDataSizeValid(engine()->GetLoadedByteSize()));
-
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "metadata");
-  message.SetKey("metadataData", std::move(metadata));
-  SendMessage(std::move(message));
 }
 
 void PdfViewPluginBase::SendThumbnail(base::Value reply, Thumbnail thumbnail) {
