@@ -18,13 +18,8 @@ using testing::ElementsAre;
 
 namespace blink {
 
-// We enable LayoutNGFragmentTraversal here, so that we get the "first/last for
-// node" bits set as appropriate.
-class NGFragmentItemTest : public NGLayoutTest,
-                           ScopedLayoutNGFragmentTraversalForTest {
+class NGFragmentItemTest : public NGLayoutTest {
  public:
-  NGFragmentItemTest() : ScopedLayoutNGFragmentTraversalForTest(true) {}
-
   void ForceLayout() { RunDocumentLifecycle(); }
 
   LayoutBlockFlow* GetLayoutBlockFlowByElementId(const char* id) {

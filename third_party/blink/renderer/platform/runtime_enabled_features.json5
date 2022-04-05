@@ -1351,20 +1351,6 @@
       status: "test",
     },
     {
-      // Traverse the fragment tree when painting and hit-testing, instead of
-      // the layout object tree.
-      name: "LayoutNGFragmentTraversal",
-      implied_by: ["LayoutNGBlockFragmentation"],
-      status: "stable",
-    },
-    {
-      // Full support for PositionForPoint in NGPhysicalFragment. Without this
-      // enabled, we'll typically fall back to legacy code for block children.
-      name: "LayoutNGFullPositionForPoint",
-      implied_by: ["LayoutNGBlockFragmentation", "LayoutNGFragmentTraversal"],
-      status: "stable",
-    },
-    {
       // Block fragmentation support in the grid layout algorithm.
       // https://drafts.csswg.org/css-grid-1/#pagination
       name: "LayoutNGGridFragmentation",

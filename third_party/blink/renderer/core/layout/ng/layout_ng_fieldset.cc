@@ -196,29 +196,6 @@ bool LayoutNGFieldset::BackgroundIsKnownToBeOpaqueInRect(
   return LayoutBlockFlow::BackgroundIsKnownToBeOpaqueInRect(local_rect);
 }
 
-bool LayoutNGFieldset::HitTestChildren(HitTestResult& result,
-                                       const HitTestLocation& hit_test_location,
-                                       const PhysicalOffset& accumulated_offset,
-                                       HitTestAction hit_test_action) {
-  if (LayoutNGBlockFlow::HitTestChildren(result, hit_test_location,
-                                         accumulated_offset, hit_test_action))
-    return true;
-
-  DCHECK(!RuntimeEnabledFeatures::LayoutNGFragmentTraversalEnabled());
-  LayoutBox* legend = LayoutFieldset::FindInFlowLegend(*this);
-  if (!legend || legend->HasSelfPaintingLayer() || legend->IsColumnSpanAll())
-    return false;
-  if (legend->NodeAtPoint(result, hit_test_location,
-                          accumulated_offset + legend->PhysicalLocation(this),
-                          hit_test_action == kHitTestChildBlockBackgrounds
-                              ? kHitTestChildBlockBackground
-                              : hit_test_action)) {
-    UpdateHitTestResult(result, hit_test_location.Point() - accumulated_offset);
-    return true;
-  }
-  return false;
-}
-
 LayoutUnit LayoutNGFieldset::ScrollWidth() const {
   if (const auto* content = FindAnonymousFieldsetContentBox())
     return content->ScrollWidth();

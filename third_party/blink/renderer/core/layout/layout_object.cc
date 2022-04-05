@@ -156,8 +156,6 @@ LayoutObject* FindAncestorByPredicate(const LayoutObject* descendant,
 }
 
 inline bool MightTraversePhysicalFragments(const LayoutObject& obj) {
-  if (!RuntimeEnabledFeatures::LayoutNGFragmentTraversalEnabled())
-    return false;
   if (!obj.IsLayoutNGObject()) {
     // Non-NG objects should be painted, hit-tested, etc. by legacy.
     if (obj.IsBox())

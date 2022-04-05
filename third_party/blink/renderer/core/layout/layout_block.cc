@@ -1516,10 +1516,8 @@ PositionWithAffinity LayoutBlock::PositionForPoint(
       return position;
   }
 
-  if (IsLayoutNGObject() && PhysicalFragmentCount() &&
-      RuntimeEnabledFeatures::LayoutNGFullPositionForPointEnabled()) {
+  if (IsLayoutNGObject() && PhysicalFragmentCount())
     return PositionForPointInFragments(point);
-  }
 
   if (IsTable())
     return LayoutBox::PositionForPoint(point);
