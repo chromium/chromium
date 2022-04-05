@@ -78,6 +78,23 @@ class AggregatableTriggerBuilder {
   mojom::blink::AttributionAggregatableTrigger trigger_;
 };
 
+template <typename T>
+class VectorBuilder {
+ public:
+  VectorBuilder() = default;
+  ~VectorBuilder() = default;
+
+  VectorBuilder<T>&& Add(T value) && {
+    vector_.push_back(std::move(value));
+    return std::move(*this);
+  }
+
+  Vector<T> Build() && { return std::move(vector_); }
+
+ private:
+  Vector<T> vector_;
+};
+
 }  // namespace
 
 TEST(AttributionResponseParsingTest, ParseAttributionAggregatableSource) {
@@ -492,12 +509,21 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
   const auto reporting_origin =
       SecurityOrigin::CreateFromString("https://r.test");
 
-  // TODO(apaseltiner): Add comprehensive test cases.
   const struct {
     String description;
     AtomicString json;
     mojom::blink::AttributionSourceDataPtr expected;
   } kTestCases[] = {
+      {
+          "invalid_json",
+          "!",
+          nullptr,
+      },
+      {
+          "root_not_object",
+          R"json([])json",
+          nullptr,
+      },
       {
           "required_fields_only",
           R"json({
@@ -513,7 +539,188 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*priority=*/0,
               /*debug_key=*/nullptr,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
-              /*aggregatable_source=*/AggregatableSourceBuilder().Build()),
+              /*aggregatable_source=*/nullptr),
+      },
+      {
+          "missing_source_event_id",
+          R"json({
+            "destination": "https://d.test"
+          })json",
+          nullptr,
+      },
+      {
+          "missing_destination",
+          R"json({
+            "source_event_id": "1"
+          })json",
+          nullptr,
+      },
+      {
+          "source_event_id_not_string",
+          R"json({
+            "source_event_id": 1,
+            "destination": "https://d.test"
+          })json",
+          nullptr,
+      },
+      {
+          "invalid_source_event_id",
+          R"json({
+            "source_event_id": "-5",
+            "destination": "https://d.test"
+          })json",
+          mojom::blink::AttributionSourceData::New(
+              /*destination=*/SecurityOrigin::CreateFromString(
+                  "https://d.test"),
+              /*reporting_origin=*/reporting_origin,
+              /*source_event_id=*/0,
+              /*expiry=*/absl::nullopt,
+              /*priority=*/0,
+              /*debug_key=*/nullptr,
+              /*filter_data=*/AttributionFilterDataBuilder().Build(),
+              /*aggregatable_source=*/nullptr),
+      },
+      {
+          "destination_not_string",
+          R"json({
+            "source_event_id": "1",
+            "destination": 4
+          })json",
+          nullptr,
+      },
+      {
+          "destination_not_potentially_trustworthy",
+          R"json({
+            "source_event_id": "1",
+            "destination": "http://d.test"
+          })json",
+          nullptr,
+      },
+      {
+          "valid_priority",
+          R"json({
+            "source_event_id": "1",
+            "destination": "https://d.test",
+            "priority": "5"
+          })json",
+          mojom::blink::AttributionSourceData::New(
+              /*destination=*/SecurityOrigin::CreateFromString(
+                  "https://d.test"),
+              /*reporting_origin=*/reporting_origin,
+              /*source_event_id=*/1,
+              /*expiry=*/absl::nullopt,
+              /*priority=*/5,
+              /*debug_key=*/nullptr,
+              /*filter_data=*/AttributionFilterDataBuilder().Build(),
+              /*aggregatable_source=*/nullptr),
+      },
+      {
+          "priority_not_string",
+          R"json({
+            "source_event_id": "1",
+            "destination": "https://d.test",
+            "priority": 5
+          })json",
+          mojom::blink::AttributionSourceData::New(
+              /*destination=*/SecurityOrigin::CreateFromString(
+                  "https://d.test"),
+              /*reporting_origin=*/reporting_origin,
+              /*source_event_id=*/1,
+              /*expiry=*/absl::nullopt,
+              /*priority=*/0,
+              /*debug_key=*/nullptr,
+              /*filter_data=*/AttributionFilterDataBuilder().Build(),
+              /*aggregatable_source=*/nullptr),
+      },
+      {
+          "invalid_priority",
+          R"json({
+            "source_event_id": "1",
+            "destination": "https://d.test",
+            "priority": "abc"
+          })json",
+          mojom::blink::AttributionSourceData::New(
+              /*destination=*/SecurityOrigin::CreateFromString(
+                  "https://d.test"),
+              /*reporting_origin=*/reporting_origin,
+              /*source_event_id=*/1,
+              /*expiry=*/absl::nullopt,
+              /*priority=*/0,
+              /*debug_key=*/nullptr,
+              /*filter_data=*/AttributionFilterDataBuilder().Build(),
+              /*aggregatable_source=*/nullptr),
+      },
+      {
+          "valid_expiry",
+          R"json({
+            "source_event_id": "1",
+            "destination": "https://d.test",
+            "expiry": "5"
+          })json",
+          mojom::blink::AttributionSourceData::New(
+              /*destination=*/SecurityOrigin::CreateFromString(
+                  "https://d.test"),
+              /*reporting_origin=*/reporting_origin,
+              /*source_event_id=*/1,
+              /*expiry=*/base::Seconds(5),
+              /*priority=*/0,
+              /*debug_key=*/nullptr,
+              /*filter_data=*/AttributionFilterDataBuilder().Build(),
+              /*aggregatable_source=*/nullptr),
+      },
+      {
+          "expiry_not_string",
+          R"json({
+            "source_event_id": "1",
+            "destination": "https://d.test",
+            "expiry": 5
+          })json",
+          mojom::blink::AttributionSourceData::New(
+              /*destination=*/SecurityOrigin::CreateFromString(
+                  "https://d.test"),
+              /*reporting_origin=*/reporting_origin,
+              /*source_event_id=*/1,
+              /*expiry=*/absl::nullopt,
+              /*priority=*/0,
+              /*debug_key=*/nullptr,
+              /*filter_data=*/AttributionFilterDataBuilder().Build(),
+              /*aggregatable_source=*/nullptr),
+      },
+      {
+          "invalid_expiry",
+          R"json({
+            "source_event_id": "1",
+            "destination": "https://d.test",
+            "expiry": "abc"
+          })json",
+          mojom::blink::AttributionSourceData::New(
+              /*destination=*/SecurityOrigin::CreateFromString(
+                  "https://d.test"),
+              /*reporting_origin=*/reporting_origin,
+              /*source_event_id=*/1,
+              /*expiry=*/absl::nullopt,
+              /*priority=*/0,
+              /*debug_key=*/nullptr,
+              /*filter_data=*/AttributionFilterDataBuilder().Build(),
+              /*aggregatable_source=*/nullptr),
+      },
+      {
+          "valid_debug_key",
+          R"json({
+            "source_event_id": "1",
+            "destination": "https://d.test",
+            "debug_key": "5"
+          })json",
+          mojom::blink::AttributionSourceData::New(
+              /*destination=*/SecurityOrigin::CreateFromString(
+                  "https://d.test"),
+              /*reporting_origin=*/reporting_origin,
+              /*source_event_id=*/1,
+              /*expiry=*/absl::nullopt,
+              /*priority=*/0,
+              /*debug_key=*/mojom::blink::AttributionDebugKey::New(5),
+              /*filter_data=*/AttributionFilterDataBuilder().Build(),
+              /*aggregatable_source=*/nullptr),
       },
       {
           "valid_filter_data",
@@ -534,7 +741,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               AttributionFilterDataBuilder()
                   .AddFilter("SOURCE_TYPE", {})
                   .Build(),
-              /*aggregatable_source=*/AggregatableSourceBuilder().Build()),
+              /*aggregatable_source=*/nullptr),
       },
       {
           "invalid_source_type_key_in_filter_data",
@@ -544,6 +751,24 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
             "filter_data": {"source_type": []}
           })json",
           nullptr,
+      },
+      {
+          "unknown_field",
+          R"json({
+            "source_event_id": "1",
+            "destination": "https://d.test",
+            "a": {"b": {"c": {"d": "e"}}}
+          })json",
+          mojom::blink::AttributionSourceData::New(
+              /*destination=*/SecurityOrigin::CreateFromString(
+                  "https://d.test"),
+              /*reporting_origin=*/reporting_origin,
+              /*source_event_id=*/1,
+              /*expiry=*/absl::nullopt,
+              /*priority=*/0,
+              /*debug_key=*/nullptr,
+              /*filter_data=*/AttributionFilterDataBuilder().Build(),
+              /*aggregatable_source=*/nullptr),
       },
   };
 
@@ -569,10 +794,23 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
                 source_data.source_event_id)
           << test_case.description;
 
+      EXPECT_EQ(test_case.expected->expiry, source_data.expiry)
+          << test_case.description;
+
+      EXPECT_EQ(test_case.expected->priority, source_data.priority)
+          << test_case.description;
+
+      EXPECT_EQ(test_case.expected->debug_key, source_data.debug_key)
+          << test_case.description;
+
       EXPECT_EQ(test_case.expected->filter_data, source_data.filter_data)
           << test_case.description;
 
-      // TODO(apaseltiner): Check remaining fields here.
+      // This field is not populated by `ParseSourceRegistrationHeader()`, but
+      // check it for equality with the test case anyway.
+      EXPECT_EQ(test_case.expected->aggregatable_source,
+                source_data.aggregatable_source)
+          << test_case.description;
     }
   }
 }
@@ -587,6 +825,273 @@ TEST(AttributionResponseParsingTest, ParseDebugKey) {
   EXPECT_EQ(ParseDebugKey("18446744073709551615"),
             mojom::blink::AttributionDebugKey::New(
                 std::numeric_limits<uint64_t>::max()));
+}
+
+TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
+  const struct {
+    String description;
+    AtomicString json;
+    bool valid;
+    Vector<mojom::blink::EventTriggerDataPtr> expected;
+  } kTestCases[] = {
+      {
+          "invalid_json",
+          "!",
+          false,
+          {},
+      },
+      {
+          "root_not_array",
+          R"json({})json",
+          false,
+          {},
+      },
+      {
+          "empty",
+          R"json([])json",
+          true,
+          {},
+      },
+      {
+          "too_many_values",
+          R"json([{},{},{},{},{},{},{},{},{},{},{}])json",
+          false,
+          {},
+      },
+      {
+          "value_not_object",
+          R"json([123])json",
+          false,
+          {},
+      },
+      {
+          "missing_trigger_data",
+          R"json([{}])json",
+          false,
+          {},
+      },
+      {
+          "trigger_data_not_string",
+          R"json([{"trigger_data": 1}])json",
+          false,
+          {},
+      },
+      {
+          "invalid_trigger_data",
+          R"json([{"trigger_data": "-5"}])json",
+          true,
+          VectorBuilder<mojom::blink::EventTriggerDataPtr>()
+              .Add(mojom::blink::EventTriggerData::New(
+                  /*data=*/0,
+                  /*priority=*/0,
+                  /*dedup_key=*/nullptr,
+                  /*filters=*/AttributionFilterDataBuilder().Build(),
+                  /*not_filters=*/AttributionFilterDataBuilder().Build()))
+              .Build(),
+      },
+      {
+          "valid_trigger_data",
+          R"json([{"trigger_data": "5"}])json",
+          true,
+          VectorBuilder<mojom::blink::EventTriggerDataPtr>()
+              .Add(mojom::blink::EventTriggerData::New(
+                  /*data=*/5,
+                  /*priority=*/0,
+                  /*dedup_key=*/nullptr,
+                  /*filters=*/AttributionFilterDataBuilder().Build(),
+                  /*not_filters=*/AttributionFilterDataBuilder().Build()))
+              .Build(),
+      },
+      {
+          "multiple",
+          R"json([
+            {"trigger_data": "5"},
+            {"trigger_data": "3"},
+            {"trigger_data": "4"}
+          ])json",
+          true,
+          VectorBuilder<mojom::blink::EventTriggerDataPtr>()
+              .Add(mojom::blink::EventTriggerData::New(
+                  /*data=*/5,
+                  /*priority=*/0,
+                  /*dedup_key=*/nullptr,
+                  /*filters=*/AttributionFilterDataBuilder().Build(),
+                  /*not_filters=*/AttributionFilterDataBuilder().Build()))
+              .Add(mojom::blink::EventTriggerData::New(
+                  /*data=*/3,
+                  /*priority=*/0,
+                  /*dedup_key=*/nullptr,
+                  /*filters=*/AttributionFilterDataBuilder().Build(),
+                  /*not_filters=*/AttributionFilterDataBuilder().Build()))
+              .Add(mojom::blink::EventTriggerData::New(
+                  /*data=*/4,
+                  /*priority=*/0,
+                  /*dedup_key=*/nullptr,
+                  /*filters=*/AttributionFilterDataBuilder().Build(),
+                  /*not_filters=*/AttributionFilterDataBuilder().Build()))
+              .Build(),
+      },
+      {
+          "valid_priority",
+          R"json([{
+            "trigger_data": "5",
+            "priority": "3"
+          }])json",
+          true,
+          VectorBuilder<mojom::blink::EventTriggerDataPtr>()
+              .Add(mojom::blink::EventTriggerData::New(
+                  /*data=*/5,
+                  /*priority=*/3,
+                  /*dedup_key=*/nullptr,
+                  /*filters=*/AttributionFilterDataBuilder().Build(),
+                  /*not_filters=*/AttributionFilterDataBuilder().Build()))
+              .Build(),
+      },
+      {
+          "priority_not_string",
+          R"json([{
+            "trigger_data": "5",
+            "priority": 3
+          }])json",
+          true,
+          VectorBuilder<mojom::blink::EventTriggerDataPtr>()
+              .Add(mojom::blink::EventTriggerData::New(
+                  /*data=*/5,
+                  /*priority=*/0,
+                  /*dedup_key=*/nullptr,
+                  /*filters=*/AttributionFilterDataBuilder().Build(),
+                  /*not_filters=*/AttributionFilterDataBuilder().Build()))
+              .Build(),
+      },
+      {
+          "invalid_priority",
+          R"json([{
+            "trigger_data": "5",
+            "priority": "abc"
+          }])json",
+          true,
+          VectorBuilder<mojom::blink::EventTriggerDataPtr>()
+              .Add(mojom::blink::EventTriggerData::New(
+                  /*data=*/5,
+                  /*priority=*/0,
+                  /*dedup_key=*/nullptr,
+                  /*filters=*/AttributionFilterDataBuilder().Build(),
+                  /*not_filters=*/AttributionFilterDataBuilder().Build()))
+              .Build(),
+      },
+      {
+          "valid_dedup_key",
+          R"json([{
+            "trigger_data": "5",
+            "deduplication_key": "3"
+          }])json",
+          true,
+          VectorBuilder<mojom::blink::EventTriggerDataPtr>()
+              .Add(mojom::blink::EventTriggerData::New(
+                  /*data=*/5,
+                  /*priority=*/0,
+                  /*dedup_key=*/
+                  mojom::blink::AttributionTriggerDedupKey::New(3),
+                  /*filters=*/AttributionFilterDataBuilder().Build(),
+                  /*not_filters=*/AttributionFilterDataBuilder().Build()))
+              .Build(),
+      },
+      {
+          "dedup_key_not_string",
+          R"json([{
+            "trigger_data": "5",
+            "deduplication_key": 3
+          }])json",
+          true,
+          VectorBuilder<mojom::blink::EventTriggerDataPtr>()
+              .Add(mojom::blink::EventTriggerData::New(
+                  /*data=*/5,
+                  /*priority=*/0,
+                  /*dedup_key=*/nullptr,
+                  /*filters=*/AttributionFilterDataBuilder().Build(),
+                  /*not_filters=*/AttributionFilterDataBuilder().Build()))
+              .Build(),
+      },
+      {
+          "invalid_dedup_Key",
+          R"json([{
+            "trigger_data": "5",
+            "deduplication_key": "abc"
+          }])json",
+          true,
+          VectorBuilder<mojom::blink::EventTriggerDataPtr>()
+              .Add(mojom::blink::EventTriggerData::New(
+                  /*data=*/5,
+                  /*priority=*/0,
+                  /*dedup_key=*/nullptr,
+                  /*filters=*/AttributionFilterDataBuilder().Build(),
+                  /*not_filters=*/AttributionFilterDataBuilder().Build()))
+              .Build(),
+      },
+      {
+          "valid_filters",
+          R"json([{
+            "trigger_data": "5",
+            "filters": {"SOURCE_TYPE": ["navigation"]}
+          }])json",
+          true,
+          VectorBuilder<mojom::blink::EventTriggerDataPtr>()
+              .Add(mojom::blink::EventTriggerData::New(
+                  /*data=*/5,
+                  /*priority=*/0,
+                  /*dedup_key=*/nullptr,
+                  /*filters=*/
+                  AttributionFilterDataBuilder()
+                      .AddFilter("SOURCE_TYPE", {"navigation"})
+                      .Build(),
+                  /*not_filters=*/AttributionFilterDataBuilder().Build()))
+              .Build(),
+      },
+      {
+          "invalid_filters",
+          R"json([{
+            "trigger_data": "5",
+            "filters": 1
+          }])json",
+          false,
+          {},
+      },
+      {
+          "valid_not_filters",
+          R"json([{
+            "trigger_data": "5",
+            "not_filters": {"SOURCE_TYPE": ["navigation"]}
+          }])json",
+          true,
+          VectorBuilder<mojom::blink::EventTriggerDataPtr>()
+              .Add(mojom::blink::EventTriggerData::New(
+                  /*data=*/5,
+                  /*priority=*/0,
+                  /*dedup_key=*/nullptr,
+                  /*filters=*/AttributionFilterDataBuilder().Build(),
+                  /*not_filters=*/
+                  AttributionFilterDataBuilder()
+                      .AddFilter("SOURCE_TYPE", {"navigation"})
+                      .Build()))
+              .Build(),
+      },
+      {
+          "invalid_not_filters",
+          R"json([{
+            "trigger_data": "5",
+            "not_filters": 1
+          }])json",
+          false,
+          {},
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    Vector<mojom::blink::EventTriggerDataPtr> actual;
+    bool valid = ParseEventTriggerData(test_case.json, actual);
+    EXPECT_EQ(valid, test_case.valid) << test_case.description;
+    EXPECT_EQ(actual, test_case.expected) << test_case.description;
+  }
 }
 
 }  // namespace blink::attribution_response_parsing

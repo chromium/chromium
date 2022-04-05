@@ -124,6 +124,7 @@ bool ParseAttributionFilterData(
 bool ParseAttributionAggregatableSource(
     const AtomicString& json_string,
     mojom::blink::AttributionAggregatableSource& source) {
+  // TODO(apaseltiner): Consider applying a max stack depth to this.
   std::unique_ptr<JSONValue> json = ParseJSON(json_string);
   if (!json)
     return false;
@@ -242,7 +243,7 @@ bool ParseSourceRegistrationHeader(
 bool ParseEventTriggerData(
     const AtomicString& json_string,
     WTF::Vector<mojom::blink::EventTriggerDataPtr>& event_trigger_data) {
-  // Populate attribution data from provided JSON.
+  // TODO(apaseltiner): Consider applying a max stack depth to this.
   std::unique_ptr<JSONValue> json = ParseJSON(json_string);
 
   // TODO(johnidel): Log a devtools issues if JSON parsing fails and on
@@ -333,6 +334,7 @@ bool ParseAttributionAggregatableTriggerData(
     const AtomicString& json_string,
     WTF::Vector<mojom::blink::AttributionAggregatableTriggerDataPtr>&
         trigger_data) {
+  // TODO(apaseltiner): Consider applying a max stack depth to this.
   std::unique_ptr<JSONValue> json = ParseJSON(json_string);
   if (!json)
     return false;
@@ -403,6 +405,7 @@ bool ParseAttributionAggregatableTriggerData(
 bool ParseAttributionAggregatableValues(
     const AtomicString& json_string,
     WTF::HashMap<String, uint32_t>& values) {
+  // TODO(apaseltiner): Consider applying a max stack depth to this.
   std::unique_ptr<JSONValue> json = ParseJSON(json_string);
   if (!json)
     return false;
