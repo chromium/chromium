@@ -87,6 +87,30 @@ std::unique_ptr<ImageProcessorBackend> VaapiImageProcessorBackend::Create(
     return nullptr;
   }
 
+  if (relative_rotation != VIDEO_ROTATION_0) {
+    // Tests to see if the platform supports rotation.
+    auto vaapi_wrapper =
+        VaapiWrapper::Create(VaapiWrapper::kVideoProcess, VAProfileNone,
+                             EncryptionScheme::kUnencrypted, base::DoNothing());
+
+    if (!vaapi_wrapper) {
+      VLOGF(2) << "Failed to create VaapiWrapper";
+      return nullptr;
+    }
+
+    // Size is irrelevant for a VPP context.
+    if (!vaapi_wrapper->CreateContext(gfx::Size())) {
+      VLOGF(2) << "Failed to create context for VPP";
+      return nullptr;
+    }
+
+    if (!vaapi_wrapper->IsRotationSupported()) {
+      VLOGF(2) << "VaapiImageProcessorBackend does not support rotation on this"
+                  "platform";
+      return nullptr;
+    }
+  }
+
   // We should restrict the acceptable PortConfig for input and output both to
   // the one returned by GetPlatformVideoFrameLayout(). However,
   // ImageProcessorFactory interface doesn't provide information about what
@@ -192,13 +216,8 @@ void VaapiImageProcessorBackend::Process(scoped_refptr<VideoFrame> input_frame,
       return;
     }
 
-    // Checks if VA-API driver supports rotation.
-    if (relative_rotation_ != VIDEO_ROTATION_0 &&
-        !vaapi_wrapper->IsRotationSupported()) {
-      VLOGF(1) << "VaapiIP doesn't support rotation";
-      error_cb_.Run();
-      return;
-    }
+    CHECK(relative_rotation_ == VIDEO_ROTATION_0 ||
+          vaapi_wrapper->IsRotationSupported());
 
     vaapi_wrapper_ = std::move(vaapi_wrapper);
   }
