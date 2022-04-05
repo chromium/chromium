@@ -2,6 +2,8 @@ include_rules = [
   "+components/grit",
   "+components/safe_browsing/ios",
   "+components/security_interstitials/core",
+  "+components/keyed_service/core",
+  "+components/keyed_service/ios",
   "+ios/components/ui_util",
   "+ios/web/common",
   "+ios/web/public",
