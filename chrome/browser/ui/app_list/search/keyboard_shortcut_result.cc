@@ -145,7 +145,6 @@ TextVector KeyboardShortcutResult::CreateTextVectorFromTemplateString(
   return text_vector;
 }
 
-// TODO(crbug.com/1290682): Complete implementation.
 KeyboardShortcutResult::KeyboardShortcutResult(Profile* profile,
                                                const KeyboardShortcutData& data,
                                                double relevance)
@@ -291,8 +290,6 @@ double KeyboardShortcutResult::CalculateRelevance(
 }
 
 void KeyboardShortcutResult::UpdateIcon() {
-  // TODO(crbug.com/1290682): Set the icon to a larger size when a
-  // KeyboardShortcutResult is promoted to an answer card.
   gfx::ImageSkia icon =
       gfx::CreateVectorIcon(chromeos::kKeyboardShortcutsIcon,
                             GetAppIconDimension(), SK_ColorTRANSPARENT);

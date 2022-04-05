@@ -51,14 +51,14 @@ class KeyboardShortcutProviderTest : public testing::Test {
 // high relevance score, and correctly set title and accessible name.
 TEST_F(KeyboardShortcutProviderTest, Search) {
   // Result format: Single Key
-  provider_->Start(u"take screenshot");
+  provider_->Start(u"overview mode");
   Wait();
 
   ASSERT_FALSE(results().empty());
-  EXPECT_EQ(results()[0]->title(), u"Take screenshot/recording");
+  EXPECT_EQ(results()[0]->title(), u"Overview mode");
   EXPECT_GT(results()[0]->relevance(), 0.8);
   EXPECT_EQ(results()[0]->accessible_name(),
-            u"Take screenshot/recording, Shortcuts, Capture mode key");
+            u"Overview mode, Shortcuts, Overview mode key");
 
   // Result format: Modifier + Key
   provider_->Start(u"lock");
@@ -101,6 +101,17 @@ TEST_F(KeyboardShortcutProviderTest, Search) {
       results()[0]->accessible_name(),
       u"Switch quickly between windows, Shortcuts, Press and hold Alt, tap Tab "
       u"until you get to the window you want to open, then release.");
+
+  // Result format: Special case result for Take screenshot/recording.
+  provider_->Start(u"take screenshot");
+  Wait();
+
+  ASSERT_FALSE(results().empty());
+  EXPECT_EQ(results()[0]->title(), u"Take screenshot/recording");
+  EXPECT_GT(results()[0]->relevance(), 0.8);
+  EXPECT_EQ(results()[0]->accessible_name(),
+            u"Take screenshot/recording, Shortcuts, Capture mode key or Ctrl+ "
+            u"Shift+ Overview mode key");
 }
 
 }  // namespace app_list

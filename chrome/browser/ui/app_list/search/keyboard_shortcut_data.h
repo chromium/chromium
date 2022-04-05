@@ -24,8 +24,6 @@ namespace app_list {
 // (3), and can provide encapsulation of processing tasks.
 //
 // To be used in the productivity launcher, and not in the old launcher.
-//
-// TODO(crbug.com/1290682): Complete implementation.
 struct KeyboardShortcutData {
   explicit KeyboardShortcutData(const ash::KeyboardShortcutItem& item);
   // For testing purposes.

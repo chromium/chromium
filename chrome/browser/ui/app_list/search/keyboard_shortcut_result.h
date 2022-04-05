@@ -12,7 +12,6 @@
 
 namespace app_list {
 
-// TODO(crbug.com/1290682): Finish implementation.
 class KeyboardShortcutResult : public ChromeSearchResult {
  public:
   explicit KeyboardShortcutResult(Profile* profile,
