@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/core/timing/event_counts.h"
 
+#include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
