@@ -95,8 +95,26 @@
     position: absolute;
   }
 
+  .navigation-button {
+    background-color: rgba(0, 0, 0, 0.06);
+    border: 0;
+    box-sizing: content-box;
+    color: var(--shimless-shutdown-buttons-text-color);
+    font-weight: var(--shimless-regular-font-weight);
+    height: 20px;
+    padding-inline-end: 8px;
+    padding-inline-start: 8px;
+  }
+
   #shutDownButton {
     margin-inline-end: 8px;
+  }
+
+  .navigation-icon {
+    fill: var(--cros-icon-color-primary);
+    height: 20px;
+    padding-inline-end: 8px;
+    width: 20px;
   }
 </style>
 
@@ -107,15 +125,15 @@
       [[i18n('repairCompletedDescriptionText')]]
     </div>
     <div id="navigationButtonWrapper">
-      <cr-button id="shutDownButton" on-click="onShutDownButtonClick_"
-          disabled="[[allButtonsDisabled]]">
-        <iron-icon icon="shimless-icon:shutdown" class="small-icon">
+      <cr-button id="shutDownButton" class="navigation-button"
+          on-click="onShutDownButtonClick_" disabled="[[allButtonsDisabled]]">
+        <iron-icon icon="shimless-icon:shutdown" class="navigation-icon">
         </iron-icon>
         [[i18n('repairCompleteShutDownButtonText')]]
       </cr-button>
-      <cr-button id="rebootButton" on-click="onRebootButtonClick_"
-          disabled="[[allButtonsDisabled]]">
-        <iron-icon icon="shimless-icon:reboot" class="small-icon">
+      <cr-button id="rebootButton" class="navigation-button"
+          on-click="onRebootButtonClick_" disabled="[[allButtonsDisabled]]">
+        <iron-icon icon="shimless-icon:reboot" class="navigation-icon">
         </iron-icon>
         [[i18n('repairCompleteRebootButtonText')]]
       </cr-button>
