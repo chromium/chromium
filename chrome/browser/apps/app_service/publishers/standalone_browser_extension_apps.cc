@@ -128,7 +128,7 @@ void StandaloneBrowserExtensionApps::Connect(
   mojo::RemoteSetElementId id = subscribers_.Add(std::move(subscriber));
 
   std::vector<apps::mojom::AppPtr> apps;
-  for (auto& it : app_ptr_cache_) {
+  for (auto& it : app_mojom_cache_) {
     apps.push_back(it.second.Clone());
   }
 
@@ -282,7 +282,7 @@ void StandaloneBrowserExtensionApps::OnApps(std::vector<AppPtr> deltas) {
   }
 
   for (const AppPtr& delta : deltas) {
-    app_ptr_cache_[delta->app_id] = ConvertAppToMojomApp(delta);
+    app_mojom_cache_[delta->app_id] = ConvertAppToMojomApp(delta);
     PublisherBase::Publish(ConvertAppToMojomApp(delta), subscribers_);
   }
 

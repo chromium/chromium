@@ -147,7 +147,7 @@ class StandaloneBrowserExtensionApps : public KeyedService,
   // The Lacros sender of OnApps events always sends full objects, not deltas.
   // Thus, this class can simply keep the latest copy, without doing any
   // merging.
-  std::map<std::string, apps::mojom::AppPtr> app_ptr_cache_;
+  std::map<std::string, apps::mojom::AppPtr> app_mojom_cache_;
 
   // Receives chrome app publisher events from Lacros.
   mojo::Receiver<crosapi::mojom::AppPublisher> receiver_{this};
