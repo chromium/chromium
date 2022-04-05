@@ -247,7 +247,8 @@ class MediaStreamAudioTest : public ::testing::Test {
   void SetUp() override {
     audio_source_ = MakeGarbageCollected<MediaStreamSource>(
         String::FromUTF8("audio_id"), MediaStreamSource::kTypeAudio,
-        String::FromUTF8("audio_track"), false /* remote */);
+        String::FromUTF8("audio_track"), false /* remote */,
+        std::make_unique<FakeMediaStreamAudioSource>());
     audio_component_ = MakeGarbageCollected<MediaStreamComponent>(
         audio_source_->Id(), audio_source_);
   }
@@ -277,9 +278,6 @@ class MediaStreamAudioTest : public ::testing::Test {
 // works.
 TEST_F(MediaStreamAudioTest, BasicUsage) {
   // Create the source, but it should not be started yet.
-  ASSERT_FALSE(source());
-  auto platform_audio_source = std::make_unique<FakeMediaStreamAudioSource>();
-  audio_source_->SetPlatformSource(std::move(platform_audio_source));
   ASSERT_TRUE(source());
   EXPECT_FALSE(source()->was_started());
   EXPECT_FALSE(source()->was_stopped());
@@ -323,8 +321,6 @@ TEST_F(MediaStreamAudioTest, BasicUsage) {
 TEST_F(MediaStreamAudioTest, ConnectTrackAfterSourceStopped) {
   // Create the source, connect one track, and stop it. This should
   // automatically stop the source.
-  auto platform_audio_source = std::make_unique<FakeMediaStreamAudioSource>();
-  audio_source_->SetPlatformSource(std::move(platform_audio_source));
   ASSERT_TRUE(source());
   EXPECT_TRUE(source()->ConnectToTrack(audio_component_));
   track()->Stop();
@@ -360,8 +356,6 @@ TEST_F(MediaStreamAudioTest, AddSinkToStoppedTrack) {
 TEST_F(MediaStreamAudioTest, FormatChangesPropagate) {
   // Create a source, connect it to track, and connect the track to a
   // sink.
-  auto platform_audio_source = std::make_unique<FakeMediaStreamAudioSource>();
-  audio_source_->SetPlatformSource(std::move(platform_audio_source));
   ASSERT_TRUE(source());
   EXPECT_TRUE(source()->ConnectToTrack(audio_component_));
   ASSERT_TRUE(track());
@@ -396,8 +390,6 @@ TEST_F(MediaStreamAudioTest, FormatChangesPropagate) {
 // OnEnabledChanged() method should be called.
 TEST_F(MediaStreamAudioTest, EnableAndDisableTracks) {
   // Create a source and connect it to track.
-  auto platform_audio_source = std::make_unique<FakeMediaStreamAudioSource>();
-  audio_source_->SetPlatformSource(std::move(platform_audio_source));
   ASSERT_TRUE(source());
   EXPECT_TRUE(source()->ConnectToTrack(audio_component_));
   ASSERT_TRUE(track());
