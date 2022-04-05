@@ -67,10 +67,6 @@ extern const char kIOSOmniboxUpdatedPopupUIVariation2[];
 // Enables the Search History Link in Clear Browsing Data for iOS.
 extern const base::Feature kSearchHistoryLinkIOS;
 
-// Feature flag to enable removing any entry points to the history UI from
-// Incognito mode.
-extern const base::Feature kUpdateHistoryEntryPointsInIncognito;
-
 // Feature flag to enable using Lens to search for images.
 extern const base::Feature kUseLensToSearchForImage;
 

@@ -54,9 +54,6 @@ const base::Feature kIOSLocationBarUseNativeContextMenu{
 const base::Feature kSearchHistoryLinkIOS{"SearchHistoryLinkIOS",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kUpdateHistoryEntryPointsInIncognito{
-    "UpdateHistoryEntryPointsInIncognito", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kUseLensToSearchForImage{"UseLensToSearchForImage",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 

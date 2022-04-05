@@ -1148,8 +1148,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
       CreateTableViewItem(IDS_IOS_TOOLS_MENU_SETTINGS, PopupMenuActionSettings,
                           @"popup_menu_settings", kToolsMenuSettingsId);
 
-  if (self.isIncognito &&
-      base::FeatureList::IsEnabled(kUpdateHistoryEntryPointsInIncognito)) {
+  if (self.isIncognito) {
     return @[ bookmarks, self.readingListItem, downloadsFolder, settings ];
   }
 
@@ -1192,8 +1191,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 // item associated with |URL|.
 - (BOOL)shouldUseIncognitoNTPResourcesForURL:(const GURL&)URL {
   return URL.DeprecatedGetOriginAsURL() == kChromeUINewTabURL &&
-         self.isIncognito &&
-         base::FeatureList::IsEnabled(kUpdateHistoryEntryPointsInIncognito);
+         self.isIncognito;
 }
 
 @end
