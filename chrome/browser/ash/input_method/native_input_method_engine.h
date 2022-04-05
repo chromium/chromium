@@ -230,11 +230,8 @@ class NativeInputMethodEngine
     std::unique_ptr<InputMethodEngineObserver> ime_base_observer_;
     mojo::Remote<ime::mojom::InputEngineManager> remote_manager_;
     mojo::Remote<ime::mojom::ConnectionFactory> connection_factory_;
-    mojo::AssociatedRemote<ime::mojom::InputMethod> associated_input_method_;
-    mojo::AssociatedReceiver<ime::mojom::InputMethodHost>
-        associated_host_receiver_{this};
-    mojo::Remote<ime::mojom::InputMethod> input_method_;
-    mojo::Receiver<ime::mojom::InputMethodHost> host_receiver_{this};
+    mojo::AssociatedRemote<ime::mojom::InputMethod> input_method_;
+    mojo::AssociatedReceiver<ime::mojom::InputMethodHost> host_receiver_{this};
 
     std::unique_ptr<AssistiveSuggester> assistive_suggester_;
     std::unique_ptr<AutocorrectManager> autocorrect_manager_;
