@@ -28,7 +28,7 @@ namespace {
 constexpr base::TimeDelta kTimeToRepeat = base::Hours(1);
 
 // General upper bound of expected Fresnel response size in bytes.
-constexpr size_t kMaxFresnelResponseSizeBytes = 1 << 20;  // 1MB;
+constexpr size_t kMaxFresnelResponseSizeBytes = 5 << 20;  // 5MB;
 
 // Timeout for each Fresnel request.
 constexpr base::TimeDelta kHealthCheckRequestTimeout = base::Seconds(10);
