@@ -64,6 +64,12 @@
         top: var(--cr-card-radio-button-checkmark-top, var(--cr-button-edge-spacing));
       }
 
+      :host-context([dir=rtl]) #checkMark {
+        left: var(--cr-card-radio-button-checkmark-right,
+                  var(--cr-button-edge-spacing));
+        right: var(--cr-card-radio-button-checkmark-left, auto);
+      }
+
       :host(:not([checked])) #checkMark {
         display: none;
       }
