@@ -3408,11 +3408,11 @@
     },
 
     'amd64-lacros': {
-      'gn_args': 'target_os="chromeos" chromeos_is_browser_only=true cros_host_sysroot="//build/linux/debian_bullseye_amd64-sysroot" cros_v8_snapshot_sysroot="//build/linux/debian_bullseye_amd64-sysroot"'
+      'gn_args': 'target_os="chromeos" chromeos_is_browser_only=true cros_host_sysroot="//build/linux/debian_sid_amd64-sysroot" cros_v8_snapshot_sysroot="//build/linux/debian_sid_amd64-sysroot"'
     },
 
     'arm-lacros': {
-      'gn_args': 'target_os="chromeos" chromeos_is_browser_only=true cros_host_sysroot="//build/linux/debian_bullseye_amd64-sysroot" cros_v8_snapshot_sysroot="//build/linux/debian_bullseye_i386-sysroot"'
+      'gn_args': 'target_os="chromeos" chromeos_is_browser_only=true cros_host_sysroot="//build/linux/debian_sid_amd64-sysroot" cros_v8_snapshot_sysroot="//build/linux/debian_sid_i386-sysroot"'
     },
 
     # We build Android with codecs on most bots to ensure maximum test

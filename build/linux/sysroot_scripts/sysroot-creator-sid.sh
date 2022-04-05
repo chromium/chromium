@@ -1,34 +1,31 @@
 #!/bin/bash
-# Copyright 2022 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 DISTRO=debian
-DIST=bullseye
+DIST=sid
 
-ARCHIVE_TIMESTAMP=20220331T153654Z
-ARCHIVE_URL="https://snapshot.debian.org/archive/debian/$ARCHIVE_TIMESTAMP/"
-APT_SOURCES_LIST=(
-  # Debian 12 (Bookworm) is needed for GTK4.  It should be kept before bullseye
-  # so that bullseye takes precedence.
-  "${ARCHIVE_URL} bookworm main"
-  "${ARCHIVE_URL} bookworm-updates main"
+# Keep the "experimental" repo before the "sid" repo.  There are some packages
+# that are currently only available in experimental like libgtk-4-1, but if it
+# were to be placed first, experimental (unreleased) versions of other packages
+# like libc6 would take precedence over the sid (released) versions.  While this
+# may be useful for certain kinds of development, the standard sysroots should
+# continue to be shipped only with released packages.
+# Also keep "stretch" before "sid".  For now, it's needed to bring back
+# libgnome-keyring-dev which has since been deprecated and removed from sid.
+# It will be needed until gnome keyring is removed (http://crbug.com/466975 and
+# http://crbug.com/355223).
+ARCHIVE_URL="https://snapshot.debian.org/archive/debian"
+ARCHIVE_TIMESTAMP=20210819T144544Z
+APT_SOURCES_LIST="${ARCHIVE_URL}/${ARCHIVE_TIMESTAMP}/ stretch main
+${ARCHIVE_URL}/${ARCHIVE_TIMESTAMP}/ experimental main
+${ARCHIVE_URL}/${ARCHIVE_TIMESTAMP}/ sid main"
 
-  # Debian 9 (Stretch) is needed for gnome-keyring.  It should be kept before
-  # bullseye so that bullseye takes precedence.
-  "${ARCHIVE_URL} stretch main"
-  "${ARCHIVE_URL} stretch-updates main"
-
-  # This mimicks a sources.list from bullseye.
-  "${ARCHIVE_URL} bullseye main contrib non-free"
-  "${ARCHIVE_URL} bullseye-updates main contrib non-free"
-  "${ARCHIVE_URL} bullseye-backports main contrib non-free"
-)
-
-# gpg keyring file generated using generate_keyring.sh
-KEYRING_FILE="${SCRIPT_DIR}/keyring.gpg"
+# gpg keyring file generated using generate_debian_archive_unstable.sh
+KEYRING_FILE="${SCRIPT_DIR}/debian_archive_unstable.gpg"
 
 HAS_ARCH_AMD64=1
 HAS_ARCH_I386=1
@@ -39,9 +36,15 @@ HAS_ARCH_MIPS=1
 HAS_ARCH_MIPS64EL=1
 
 # Sysroot packages: these are the packages needed to build chrome.
+# NOTE: When DEBIAN_PACKAGES is modified, the packagelist files must be updated
+# by running this script in GeneratePackageList mode.
 DEBIAN_PACKAGES="\
   comerr-dev
   krb5-multidev
+  libappindicator-dev
+  libappindicator1
+  libappindicator3-1
+  libappindicator3-dev
   libasound2
   libasound2-dev
   libasyncns0
@@ -79,9 +82,9 @@ DEBIAN_PACKAGES="\
   libcups2-dev
   libcupsimage2
   libcupsimage2-dev
+  libdatrie-dev
   libcurl3-gnutls
   libcurl4-gnutls-dev
-  libdatrie-dev
   libdatrie1
   libdb5.3
   libdbus-1-3
@@ -112,7 +115,9 @@ DEBIAN_PACKAGES="\
   libexpat1
   libexpat1-dev
   libffi-dev
+  libffi6
   libffi7
+  libffi8
   libflac-dev
   libflac8
   libfontconfig-dev
@@ -124,7 +129,7 @@ DEBIAN_PACKAGES="\
   libgbm-dev
   libgbm1
   libgcc-10-dev
-  libgcc-s1
+  libgcc1
   libgcrypt20
   libgcrypt20-dev
   libgdk-pixbuf-2.0-0
@@ -162,8 +167,6 @@ DEBIAN_PACKAGES="\
   libgssrpc4
   libgtk-3-0
   libgtk-3-dev
-  libgtk-4-1
-  libgtk-4-dev
   libgtk2.0-0
   libgudev-1.0-0
   libharfbuzz-dev
@@ -177,6 +180,8 @@ DEBIAN_PACKAGES="\
   libidl-2-0
   libidn11
   libidn2-0
+  libindicator3-7
+  libindicator7
   libinput-dev
   libinput10
   libjbig-dev
@@ -239,6 +244,7 @@ DEBIAN_PACKAGES="\
   libpcre2-32-0
   libpcre2-8-0
   libpcre2-dev
+  libpcre2-posix0
   libpcre2-posix2
   libpcre3
   libpcre3-dev
@@ -383,20 +389,37 @@ DEBIAN_PACKAGES="\
   shared-mime-info
   uuid-dev
   wayland-protocols
+  x11proto-composite-dev
+  x11proto-damage-dev
   x11proto-dev
+  x11proto-fixes-dev
+  x11proto-input-dev
+  x11proto-kb-dev
+  x11proto-randr-dev
+  x11proto-record-dev
+  x11proto-render-dev
+  x11proto-scrnsaver-dev
+  x11proto-xext-dev
+  x11proto-xinerama-dev
   zlib1g
   zlib1g-dev
 "
 
 DEBIAN_PACKAGES_AMD64="
-  libtsan0
+  libgtk-4-1
+  libgtk-4-dev
   liblsan0
+  libtsan0
 "
 
 DEBIAN_PACKAGES_X86="
   libasan6
+  libcilkrts5
   libdrm-intel1
+  libgtk-4-1
+  libgtk-4-dev
   libitm1
+  libmpx2
   libquadmath0
   libubsan1
   valgrind
@@ -409,6 +432,8 @@ DEBIAN_PACKAGES_ARM="
   libdrm-freedreno1
   libdrm-omap1
   libdrm-tegra0
+  libgtk-4-1
+  libgtk-4-dev
   libubsan1
   valgrind
 "
@@ -419,6 +444,8 @@ DEBIAN_PACKAGES_ARM64="
   libdrm-freedreno1
   libdrm-tegra0
   libgmp10
+  libgtk-4-1
+  libgtk-4-dev
   libitm1
   liblsan0
   libthai0
@@ -433,6 +460,8 @@ DEBIAN_PACKAGES_ARMEL="
   libdrm-freedreno1
   libdrm-omap1
   libdrm-tegra0
+  libgtk-4-1
+  libgtk-4-dev
   libubsan1
 "
 

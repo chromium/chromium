@@ -20,7 +20,7 @@
 
 # This script looks at sysroots.json next to it to find the name of a .tar.xz
 # to download and the location to extract it to. The extracted sysroot could for
-# example be in build/linux/debian_bullseye_amd64-sysroot/.
+# example be in build/linux/debian_sid_amd64-sysroot/.
 
 from __future__ import print_function
 
@@ -54,8 +54,7 @@ ARCH_TRANSLATIONS = {
     'mips64': 'mips64el',
 }
 
-DEFAULT_TARGET_PLATFORM = 'bullseye'
-
+DEFAULT_TARGET_PLATFORM = 'sid'
 
 class Error(Exception):
   pass

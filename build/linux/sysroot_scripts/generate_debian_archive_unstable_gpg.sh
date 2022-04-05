@@ -38,4 +38,4 @@ KEYS=(
 )
 
 gpg --keyserver keyserver.ubuntu.com --recv-keys ${KEYS[@]}
-gpg --output "${SCRIPT_DIR}/keyring.gpg" --export ${KEYS[@]}
+gpg --output "${SCRIPT_DIR}/debian_archive_unstable.gpg" --export ${KEYS[@]}
