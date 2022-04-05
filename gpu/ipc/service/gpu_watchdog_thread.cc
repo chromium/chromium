@@ -74,9 +74,9 @@ GpuWatchdogThread::GpuWatchdogThread(base::TimeDelta timeout,
       watchdog_restart_factor_(restart_factor),
       thread_name_(thread_name),
       thread_id_str_(base::NumberToString(base::PlatformThread::CurrentId())),
-      is_test_mode_(is_test_mode),
-      watched_gpu_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+      is_test_mode_(is_test_mode) {
   base::CurrentThread::Get()->AddTaskObserver(this);
+  DETACH_FROM_SEQUENCE(watchdog_thread_sequence_checker_);
 
 #if BUILDFLAG(IS_WIN)
   // GetCurrentThread returns a pseudo-handle that cannot be used by one thread
@@ -100,7 +100,7 @@ GpuWatchdogThread::GpuWatchdogThread(base::TimeDelta timeout,
 }
 
 GpuWatchdogThread::~GpuWatchdogThread() {
-  DCHECK(watched_gpu_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(watched_thread_sequence_checker_);
   // Stop() might take too long and the watchdog timeout is triggered.
   // Disarm first before calling Stop() to avoid a crash.
   if (IsArmed())
@@ -149,7 +149,7 @@ std::unique_ptr<GpuWatchdogThread> GpuWatchdogThread::Create(
                 kRestartFactor, /*test_mode=*/false, thread_name);
 }
 
-// Android Chrome goes to the background. Called from the gpu thread.
+// Android Chrome goes to the background. Called from the gpu io thread.
 void GpuWatchdogThread::OnBackgrounded() {
   task_runner()->PostTask(
       FROM_HERE,
@@ -157,7 +157,7 @@ void GpuWatchdogThread::OnBackgrounded() {
                      base::Unretained(this), kAndroidBackgroundForeground));
 }
 
-// Android Chrome goes to the foreground. Called from the gpu thread.
+// Android Chrome goes to the foreground. Called from the gpu io thread.
 void GpuWatchdogThread::OnForegrounded() {
   task_runner()->PostTask(
       FROM_HERE,
@@ -167,7 +167,7 @@ void GpuWatchdogThread::OnForegrounded() {
 
 // Called from the gpu thread when gpu init has completed.
 void GpuWatchdogThread::OnInitComplete() {
-  DCHECK(watched_gpu_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(watched_thread_sequence_checker_);
 
   task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&GpuWatchdogThread::UpdateInitializationFlag,
@@ -186,25 +186,25 @@ void GpuWatchdogThread::OnInitComplete() {
 // destroyed. If this destruction takes too long, the watchdog timeout
 // will be triggered.
 void GpuWatchdogThread::OnGpuProcessTearDown() {
-  DCHECK(watched_gpu_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(watched_thread_sequence_checker_);
 
   in_gpu_process_teardown_ = true;
   if (!IsArmed())
     Arm();
 }
 
-// Called from the gpu main thread.
+// Called from the watched gpu thread.
 void GpuWatchdogThread::PauseWatchdog() {
-  DCHECK(watched_gpu_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(watched_thread_sequence_checker_);
 
   task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&GpuWatchdogThread::StopWatchdogTimeoutTask,
                                 base::Unretained(this), kGeneralGpuFlow));
 }
 
-// Called from the gpu main thread.
+// Called from the watched gpu thread.
 void GpuWatchdogThread::ResumeWatchdog() {
-  DCHECK(watched_gpu_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(watched_thread_sequence_checker_);
 
   task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&GpuWatchdogThread::RestartWatchdogTimeoutTask,
@@ -216,8 +216,6 @@ void GpuWatchdogThread::ResumeWatchdog() {
 // watchdog is stopped and then restarted in StartSandboxLinux(). Everything
 // should be the same and continue after the second init().
 void GpuWatchdogThread::Init() {
-  watchdog_thread_task_runner_ = base::ThreadTaskRunnerHandle::Get();
-
   // Get and Invalidate weak_ptr should be done on the watchdog thread only.
   weak_ptr_ = weak_factory_.GetWeakPtr();
   base::TimeDelta timeout = watchdog_timeout_ * kInitFactor;
@@ -244,18 +242,18 @@ void GpuWatchdogThread::Init() {
 
 // Running on the watchdog thread.
 void GpuWatchdogThread::CleanUp() {
-  DCHECK(watchdog_thread_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(watchdog_thread_sequence_checker_);
   weak_factory_.InvalidateWeakPtrs();
 }
 
 void GpuWatchdogThread::ReportProgress() {
-  DCHECK(watched_gpu_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(watched_thread_sequence_checker_);
   InProgress();
 }
 
 void GpuWatchdogThread::WillProcessTask(const base::PendingTask& pending_task,
                                         bool was_blocked_or_low_priority) {
-  DCHECK(watched_gpu_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(watched_thread_sequence_checker_);
 
   // The watchdog is armed at the beginning of the gpu process teardown.
   // Do not call Arm() during teardown.
@@ -266,7 +264,7 @@ void GpuWatchdogThread::WillProcessTask(const base::PendingTask& pending_task,
 }
 
 void GpuWatchdogThread::DidProcessTask(const base::PendingTask& pending_task) {
-  DCHECK(watched_gpu_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(watched_thread_sequence_checker_);
 
   // Keep the watchdog armed during tear down.
   if (in_gpu_process_teardown_)
@@ -277,11 +275,13 @@ void GpuWatchdogThread::DidProcessTask(const base::PendingTask& pending_task) {
 
 // Power Suspends. Running on the watchdog thread.
 void GpuWatchdogThread::OnSuspend() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(watchdog_thread_sequence_checker_);
   StopWatchdogTimeoutTask(kPowerSuspendResume);
 }
 
 // Power Resumes. Running on the watchdog thread.
 void GpuWatchdogThread::OnResume() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(watchdog_thread_sequence_checker_);
   RestartWatchdogTimeoutTask(kPowerSuspendResume);
 }
 
@@ -289,7 +289,7 @@ void GpuWatchdogThread::OnResume() {
 // Call AddPowerSuspendObserver on the watchdog thread so that OnSuspend() and
 // OnResume() will be called on this thread.
 void GpuWatchdogThread::AddPowerObserver() {
-  DCHECK(watchdog_thread_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(watchdog_thread_sequence_checker_);
 
   // Adding the Observer to the power monitor is safe even if power monitor is
   // not yet initialized.
@@ -302,7 +302,7 @@ void GpuWatchdogThread::AddPowerObserver() {
 // Running on the watchdog thread.
 void GpuWatchdogThread::RestartWatchdogTimeoutTask(
     PauseResumeSource source_of_request) {
-  DCHECK(watchdog_thread_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(watchdog_thread_sequence_checker_);
   base::TimeDelta timeout;
 
   switch (source_of_request) {
@@ -353,7 +353,7 @@ void GpuWatchdogThread::RestartWatchdogTimeoutTask(
 
 void GpuWatchdogThread::StopWatchdogTimeoutTask(
     PauseResumeSource source_of_request) {
-  DCHECK(watchdog_thread_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(watchdog_thread_sequence_checker_);
 
   switch (source_of_request) {
     case kAndroidBackgroundForeground:
@@ -384,15 +384,15 @@ void GpuWatchdogThread::StopWatchdogTimeoutTask(
 
 // On the watchdog thread only.
 void GpuWatchdogThread::UpdateInitializationFlag() {
-  DCHECK(watchdog_thread_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(watchdog_thread_sequence_checker_);
   in_gpu_initialization_ = false;
 }
 
-// Called from the gpu main thread.
+// Called from the watched gpu thread.
 // The watchdog is armed only in these three functions -
 // GpuWatchdogThread(), WillProcessTask(), and OnGpuProcessTearDown()
 void GpuWatchdogThread::Arm() {
-  DCHECK(watched_gpu_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(watched_thread_sequence_checker_);
 
   base::subtle::NoBarrier_AtomicIncrement(&arm_disarm_counter_, 1);
 
@@ -401,7 +401,7 @@ void GpuWatchdogThread::Arm() {
 }
 
 void GpuWatchdogThread::Disarm() {
-  DCHECK(watched_gpu_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(watched_thread_sequence_checker_);
 
   base::subtle::NoBarrier_AtomicIncrement(&arm_disarm_counter_, 1);
 
@@ -410,7 +410,7 @@ void GpuWatchdogThread::Disarm() {
 }
 
 void GpuWatchdogThread::InProgress() {
-  DCHECK(watched_gpu_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(watched_thread_sequence_checker_);
 
   // Increment by 2. This is equivalent to Disarm() + Arm().
   base::subtle::NoBarrier_AtomicIncrement(&arm_disarm_counter_, 2);
@@ -430,7 +430,7 @@ base::subtle::Atomic32 GpuWatchdogThread::ReadArmDisarmCounter() {
 
 // Running on the watchdog thread.
 void GpuWatchdogThread::OnWatchdogTimeout() {
-  DCHECK(watchdog_thread_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(watchdog_thread_sequence_checker_);
   DCHECK(!is_backgrounded_);
   DCHECK(!in_power_suspension_);
   DCHECK(!is_paused_);
@@ -583,7 +583,7 @@ base::ThreadTicks GpuWatchdogThread::GetWatchedThreadTime() {
 #endif
 
 void GpuWatchdogThread::DeliberatelyTerminateToRecoverFromHang() {
-  DCHECK(watchdog_thread_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(watchdog_thread_sequence_checker_);
 
   // If this is for gpu testing, do not terminate the gpu process.
   // Just signal and quit.
