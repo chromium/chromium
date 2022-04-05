@@ -160,7 +160,6 @@ extern const base::Feature kTrustedWebActivityQualityEnforcementWarning;
 extern const base::Feature kShowExtendedPreloadingSetting;
 extern const base::Feature kStartSurfaceAndroid;
 extern const base::Feature kUmaBackgroundSessions;
-extern const base::Feature kUpdateHistoryEntryPointsInIncognito;
 extern const base::Feature
     kUpdateNotificationScheduleServiceImmediateShowOption;
 extern const base::Feature kUserMediaScreenCapturing;

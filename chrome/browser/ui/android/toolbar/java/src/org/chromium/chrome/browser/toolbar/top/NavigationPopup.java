@@ -30,7 +30,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.R;
@@ -360,9 +359,7 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
     }
 
     private boolean shouldUseIncognitoResources() {
-        return mProfile.isOffTheRecord()
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.UPDATE_HISTORY_ENTRY_POINTS_IN_INCOGNITO);
+        return mProfile.isOffTheRecord();
     }
 
     private static class EntryViewHolder {
