@@ -65,8 +65,7 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_cpu": "x86",
-      "use_rbe": true,
-      "use_remoteexec": true
+      "use_goma": true
     }
   },
   "win-swangle-tot-angle-x64": {
@@ -87,8 +86,7 @@
       "is_debug": false,
       "symbol_level": 1,
       "target_cpu": "x86",
-      "use_rbe": true,
-      "use_remoteexec": true
+      "use_goma": true
     }
   },
   "win-swangle-tot-swiftshader-x64": {
@@ -98,8 +96,7 @@
       "is_component_build": true,
       "is_debug": false,
       "symbol_level": 1,
-      "use_rbe": true,
-      "use_remoteexec": true
+      "use_goma": true
     }
   },
   "win-swangle-tot-swiftshader-x86": {
@@ -120,8 +117,7 @@
       "is_component_build": true,
       "is_debug": false,
       "symbol_level": 1,
-      "use_rbe": true,
-      "use_remoteexec": true
+      "use_goma": true
     }
   },
   "win-swangle-x86": {
