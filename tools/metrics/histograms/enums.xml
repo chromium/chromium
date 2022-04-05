@@ -54810,6 +54810,7 @@ from previous Chrome versions.
       label="ColorProviderRedirectionForThemeProvider:disabled"/>
   <int value="-162928621" label="ForceStartupSigninPromo:disabled"/>
   <int value="-161782023" label="AndroidMessagesProdEndpoint:enabled"/>
+  <int value="-161284423" label="DesktopSharePreview:enabled"/>
   <int value="-160571071" label="InterestFeedV2:enabled"/>
   <int value="-159877930" label="MaterialDesignUserManager:disabled"/>
   <int value="-158938746" label="NtpRealboxPedals:enabled"/>
@@ -57715,6 +57716,7 @@ from previous Chrome versions.
   <int value="1843088575" label="OutOfBlinkCors:enabled"/>
   <int value="1844110073" label="enable-app-view"/>
   <int value="1844222711" label="AssistantConsentV2:disabled"/>
+  <int value="1845781020" label="DesktopSharePreview:disabled"/>
   <int value="1846717591" label="CaptureMode:disabled"/>
   <int value="1847024354" label="enable-hotword-hardware"/>
   <int value="1847658464" label="MeteredShowToggle:disabled"/>

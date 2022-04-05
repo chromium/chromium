@@ -2206,6 +2206,9 @@ extern const char kScreenAIDescription[];
 extern const char kSCTAuditingName[];
 extern const char kSCTAuditingDescription[];
 
+extern const char kSharingDesktopSharePreviewName[];
+extern const char kSharingDesktopSharePreviewDescription[];
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Windows --------------------------------------------------------------------

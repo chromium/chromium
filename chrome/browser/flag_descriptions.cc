@@ -3857,6 +3857,11 @@ const char kSharingDesktopScreenshotsEditName[] =
 const char kSharingDesktopScreenshotsEditDescription[] =
     "Enables an edit flow for users who create screenshots on desktop";
 
+const char kSharingDesktopSharePreviewName[] = "Desktop share hub preview";
+const char kSharingDesktopSharePreviewDescription[] =
+    "Adds a preview section to the desktop sharing hub to make it clearer what "
+    "is about to be shared.";
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Windows ---------------------------------------------------------------------

@@ -5315,6 +5315,11 @@
     "expiry_milestone": 104
   },
   {
+    "name": "sharing-desktop-share-preview",
+    "owners": ["ellyjones", "chrome-with-friends-robots@google.com"],
+    "expiry_milestone": 104
+  },
+  {
     "name": "sharing-hub-desktop-app-menu",
     "owners": [ "kristipark", "chrome-sharing-eng@google.com" ],
     "expiry_milestone": 98
