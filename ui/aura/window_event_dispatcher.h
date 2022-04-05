@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
+#include "cc/metrics/events_metrics_manager.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/client/capture_delegate.h"
 #include "ui/aura/env_observer.h"
@@ -290,6 +291,9 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
   ui::EventDispatchDetails PreDispatchKeyEvent(Window* target,
                                                ui::KeyEvent* event);
 
+  std::unique_ptr<cc::EventsMetricsManager::ScopedMonitor>
+  CreateScropedMetricsMonitorForEvent(const ui::Event& event);
+
   raw_ptr<WindowTreeHost> host_;
 
   raw_ptr<Window> mouse_pressed_handler_ = nullptr;
@@ -331,6 +335,16 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
   // See ObserverNotifier for details. This is a queue to handle the case of
   // nested event dispatch.
   std::queue<std::unique_ptr<ObserverNotifier>> observer_notifiers_;
+
+  // Determines whether a scroll-update has been seen after the last
+  // scroll-begin. Used to determine whether a scroll-update is the first one in
+  // a scroll sequence or not.
+  bool has_seen_gesture_scroll_update_after_begin_ = false;
+
+  // A stack of scoped monitors for events to track metrics for the currently
+  // active event.
+  std::vector<std::unique_ptr<cc::EventsMetricsManager::ScopedMonitor>>
+      event_metrics_monitors_;
 
   bool in_shutdown_ = false;
 

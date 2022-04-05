@@ -30,6 +30,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/compositor/compositor.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
@@ -496,6 +497,11 @@ void WindowEventDispatcher::OnEventProcessingStarted(ui::Event* event) {
     return;
   }
 
+  if (host_->compositor()) {
+    event_metrics_monitors_.push_back(
+        CreateScropedMetricsMonitorForEvent(*event));
+  }
+
   // The held events are already in |window()|'s coordinate system. So it is
   // not necessary to apply the transform to convert from the host's
   // coordinate system to |window()|'s coordinate system.
@@ -510,6 +516,13 @@ void WindowEventDispatcher::OnEventProcessingFinished(ui::Event* event) {
     return;
 
   observer_notifiers_.pop();
+  if (host_->compositor()) {
+    std::unique_ptr<cc::EventsMetricsManager::ScopedMonitor> monitor =
+        std::move(event_metrics_monitors_.back());
+    event_metrics_monitors_.pop_back();
+    if (event->handled())
+      monitor->SetSaveMetrics();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1067,6 +1080,63 @@ DispatchDetails WindowEventDispatcher::PreDispatchKeyEvent(
   DispatchDetails details = host_->GetInputMethod()->DispatchKeyEvent(event);
   event->StopPropagation();
   return details;
+}
+
+std::unique_ptr<cc::EventsMetricsManager::ScopedMonitor>
+WindowEventDispatcher::CreateScropedMetricsMonitorForEvent(
+    const ui::Event& event) {
+  std::unique_ptr<cc::EventMetrics> metrics;
+  if (event.IsScrollGestureEvent() || event.IsPinchEvent()) {
+    const auto* gesture = event.AsGestureEvent();
+    // There are many tests that don't set the device type properly, so if the
+    // device type is not set, we'll consider it as touchpad/wheel.
+    ui::ScrollInputType input_type =
+        gesture->details().device_type() ==
+                ui::GestureDeviceType::DEVICE_TOUCHSCREEN
+            ? ui::ScrollInputType::kTouchscreen
+            : ui::ScrollInputType::kWheel;
+    if (gesture->type() == ui::ET_GESTURE_SCROLL_UPDATE) {
+      metrics = cc::ScrollUpdateEventMetrics::Create(
+          ui::ET_GESTURE_SCROLL_UPDATE, input_type, /*is_inertial=*/false,
+          has_seen_gesture_scroll_update_after_begin_
+              ? cc::ScrollUpdateEventMetrics::ScrollUpdateType::kContinued
+              : cc::ScrollUpdateEventMetrics::ScrollUpdateType::kStarted,
+          gesture->details().scroll_y(), gesture->time_stamp());
+      has_seen_gesture_scroll_update_after_begin_ = true;
+    } else if (gesture->IsScrollGestureEvent()) {
+      metrics = cc::ScrollEventMetrics::Create(gesture->type(), input_type,
+                                               /*is_inertial=*/false,
+                                               gesture->time_stamp());
+      if (gesture->type() == ui::ET_GESTURE_SCROLL_BEGIN)
+        has_seen_gesture_scroll_update_after_begin_ = false;
+    } else {
+      DCHECK(gesture->IsPinchEvent());
+      metrics = cc::PinchEventMetrics::Create(gesture->type(), input_type,
+                                              gesture->time_stamp());
+    }
+  } else {
+    metrics = cc::EventMetrics::Create(event.type(), event.time_stamp());
+  }
+  cc::EventsMetricsManager::ScopedMonitor::DoneCallback done_callback;
+  if (metrics) {
+    // TODO(crbug.com/1278417): The following breakdown has the renderer word
+    // in its name, so not the best breakdown to use in the browser. Introduce
+    // and use breakdowns specific to the browser.
+    metrics->SetDispatchStageTimestamp(
+        cc::EventMetrics::DispatchStage::kRendererMainStarted);
+    done_callback = base::BindOnce(
+        [](std::unique_ptr<cc::EventMetrics> metrics, bool handled) {
+          // TODO(crbug.com/1278417): The following breakdown has the renderer
+          // word in its name, so not the best breakdown to use in the
+          // browser. Introduce and use breakdowns specific to the browser.
+          metrics->SetDispatchStageTimestamp(
+              cc::EventMetrics::DispatchStage::kRendererMainFinished);
+          return handled ? std::move(metrics) : nullptr;
+        },
+        std::move(metrics));
+  }
+  return host_->compositor()->GetScopedEventMetricsMonitor(
+      std::move(done_callback));
 }
 
 }  // namespace aura

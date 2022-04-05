@@ -669,6 +669,12 @@ uint32_t Compositor::GetAverageThroughput() const {
   return host_->GetAverageThroughput();
 }
 
+std::unique_ptr<cc::EventsMetricsManager::ScopedMonitor>
+Compositor::GetScopedEventMetricsMonitor(
+    cc::EventsMetricsManager::ScopedMonitor::DoneCallback done_callback) {
+  return host_->GetScopedEventMetricsMonitor(std::move(done_callback));
+}
+
 void Compositor::DidUpdateLayers() {
   // Dump property trees and layers if run with:
   //   --vmodule=*ui/compositor*=3
