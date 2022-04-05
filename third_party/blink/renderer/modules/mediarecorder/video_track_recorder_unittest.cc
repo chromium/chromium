@@ -115,8 +115,8 @@ class VideoTrackRecorderTest
   VideoTrackRecorderTest() : mock_source_(new MockMediaStreamVideoSource()) {
     const String track_id("dummy");
     source_ = MakeGarbageCollected<MediaStreamSource>(
-        track_id, MediaStreamSource::kTypeVideo, track_id, false /*remote*/);
-    source_->SetPlatformSource(base::WrapUnique(mock_source_));
+        track_id, MediaStreamSource::kTypeVideo, track_id, false /*remote*/,
+        base::WrapUnique(mock_source_));
     EXPECT_CALL(*mock_source_, OnRequestRefreshFrame())
         .Times(testing::AnyNumber());
     EXPECT_CALL(*mock_source_, OnCapturingLinkSecured(_))
@@ -543,8 +543,8 @@ class VideoTrackRecorderPassthroughTest
     ON_CALL(*mock_source_, SupportsEncodedOutput).WillByDefault(Return(true));
     const String track_id("dummy");
     source_ = MakeGarbageCollected<MediaStreamSource>(
-        track_id, MediaStreamSource::kTypeVideo, track_id, false /*remote*/);
-    source_->SetPlatformSource(base::WrapUnique(mock_source_));
+        track_id, MediaStreamSource::kTypeVideo, track_id, false /*remote*/,
+        base::WrapUnique(mock_source_));
     component_ = MakeGarbageCollected<MediaStreamComponent>(source_);
 
     track_ = new MediaStreamVideoTrack(

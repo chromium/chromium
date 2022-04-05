@@ -19,12 +19,11 @@ namespace blink {
 namespace {
 
 MediaStream* CreateMediaStream(V8TestingScope* scope) {
-  auto* source = MakeGarbageCollected<MediaStreamSource>(
-      "video source id", MediaStreamSource::kTypeVideo, "video source name",
-      false /* remote */);
   auto native_source = std::make_unique<MockMediaStreamVideoSource>();
   MockMediaStreamVideoSource* native_source_ptr = native_source.get();
-  source->SetPlatformSource(std::move(native_source));
+  auto* source = MakeGarbageCollected<MediaStreamSource>(
+      "video source id", MediaStreamSource::kTypeVideo, "video source name",
+      false /* remote */, std::move(native_source));
   auto* component = MakeGarbageCollected<MediaStreamComponent>(source);
   component->SetPlatformTrack(std::make_unique<MediaStreamVideoTrack>(
       native_source_ptr, MediaStreamVideoSource::ConstraintsOnceCallback(),

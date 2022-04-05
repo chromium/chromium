@@ -259,12 +259,12 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
   // track, which can be used to capture audio data and pass it to the producer.
   // Adapted from media::WebRTCLocalAudioSourceProviderTest.
   void PrepareTrack() {
-    auto* source = MakeGarbageCollected<MediaStreamSource>(
-        String::FromUTF8("dummy_source_id"), MediaStreamSource::kTypeAudio,
-        String::FromUTF8("dummy_source_name"), false /* remote */);
     auto audio_source = std::make_unique<MediaStreamAudioSource>(
         scheduler::GetSingleThreadTaskRunnerForTesting(), true);
-    source->SetPlatformSource(std::move(audio_source));
+    auto* source = MakeGarbageCollected<MediaStreamSource>(
+        String::FromUTF8("dummy_source_id"), MediaStreamSource::kTypeAudio,
+        String::FromUTF8("dummy_source_name"), false /* remote */,
+        std::move(audio_source));
     media_stream_component_ = MakeGarbageCollected<MediaStreamComponent>(
         String::FromUTF8("audio_track"), source);
     CHECK(MediaStreamAudioSource::From(source)->ConnectToTrack(
