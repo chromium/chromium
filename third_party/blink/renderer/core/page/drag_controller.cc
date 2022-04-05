@@ -547,6 +547,8 @@ DispatchEventResult DragController::DispatchTextInputEventFor(
       *inner_frame,
       CreateVisibleSelection(
           SelectionInDOMTree::Builder().Collapse(caret_position).Build()));
+  if (!target)
+    return DispatchEventResult::kNotCanceled;
   return target->DispatchEvent(
       *TextEvent::CreateForDrop(inner_frame->DomWindow(), text));
 }
