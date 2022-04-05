@@ -1934,15 +1934,10 @@ class Port(object):
                       r'\1', config)
 
     def _apache_config_file_name_for_platform(self):
-        if self.host.platform.is_linux():
-            distribution = self.host.platform.linux_distribution()
-
-            custom_configurations = ['arch', 'debian', 'fedora', 'redhat']
-            if distribution in custom_configurations:
-                return '%s-httpd-%s.conf' % (distribution,
-                                             self._apache_version())
-
-        return 'apache2-httpd-' + self._apache_version() + '.conf'
+        # Keep the logic to use apache version even though we only have
+        # configuration file for 2.4 now, in case we will have newer version in
+        # future.
+        return 'apache2-httpd-' + self._apache_version() + '-php7.conf'
 
     def _path_to_driver(self, target=None):
         """Returns the full path to the test driver."""

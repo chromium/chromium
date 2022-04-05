@@ -1548,26 +1548,18 @@ class PortTest(LoggingTestCase):
 
     def test_apache_config_file_name_for_platform(self):
         port = self.make_port()
-        port._apache_version = lambda: '2.2'  # pylint: disable=protected-access
+        port._apache_version = lambda: '2.4'  # pylint: disable=protected-access
         self._assert_config_file_for_platform(port, 'linux',
-                                              'apache2-httpd-2.2.conf')
+                                              'apache2-httpd-2.4-php7.conf')
         self._assert_config_file_for_linux_distribution(
-            port, 'arch', 'arch-httpd-2.2.conf')
-        self._assert_config_file_for_linux_distribution(
-            port, 'debian', 'debian-httpd-2.2.conf')
-        self._assert_config_file_for_linux_distribution(
-            port, 'fedora', 'fedora-httpd-2.2.conf')
-        self._assert_config_file_for_linux_distribution(
-            port, 'slackware', 'apache2-httpd-2.2.conf')
-        self._assert_config_file_for_linux_distribution(
-            port, 'redhat', 'redhat-httpd-2.2.conf')
+            port, 'arch', 'apache2-httpd-2.4-php7.conf')
 
         self._assert_config_file_for_platform(port, 'mac',
-                                              'apache2-httpd-2.2.conf')
+                                              'apache2-httpd-2.4-php7.conf')
         self._assert_config_file_for_platform(port, 'win32',
-                                              'apache2-httpd-2.2.conf')
+                                              'apache2-httpd-2.4-php7.conf')
         self._assert_config_file_for_platform(port, 'barf',
-                                              'apache2-httpd-2.2.conf')
+                                              'apache2-httpd-2.4-php7.conf')
 
     def test_skips_test_in_smoke_tests(self):
         port = self.make_port(with_tests=True)

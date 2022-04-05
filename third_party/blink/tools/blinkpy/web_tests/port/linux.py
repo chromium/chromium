@@ -128,12 +128,6 @@ class LinuxPort(base.Port):
         _log.error('Could not find apache. Not installed or unknown path.')
         return None
 
-    def path_to_apache_config_file(self):
-        if self.host.platform.is_linux():
-            config_file_basename = 'apache2-httpd-%s-php7.conf' % (self._apache_version(),)
-            return self._filesystem.join(self.apache_config_directory(), config_file_basename)
-        return super(LinuxPort, self).path_to_apache_config_file()
-
     def setup_test_run(self):
         super(LinuxPort, self).setup_test_run()
         if self.get_option('use_xvfb'):
