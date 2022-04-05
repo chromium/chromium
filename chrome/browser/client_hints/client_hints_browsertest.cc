@@ -138,6 +138,14 @@ class ThirdPartyURLLoaderInterceptor {
 
   size_t client_hints_count_seen() const { return client_hints_count_seen_; }
 
+  size_t unique_request_count_seen() const {
+    return unique_request_count_seen_;
+  }
+
+  size_t client_hints_count_seen_on_unique_request() const {
+    return client_hints_count_seen_on_unique_request_;
+  }
+
  private:
   bool InterceptURLRequest(URLLoaderInterceptor::RequestParams* params) {
     if (intercepted_urls_.find(params->url_request.url) ==
@@ -145,11 +153,24 @@ class ThirdPartyURLLoaderInterceptor {
       return false;
     }
 
+    bool url_has_not_visited =
+        visited_urls_.insert(params->url_request.url).second;
+
     request_count_seen_++;
+
+    if (url_has_not_visited) {
+      unique_request_count_seen_++;
+    }
+
     for (const auto& elem : network::GetClientHintToNameMap()) {
       const auto& header = elem.second;
-      if (params->url_request.headers.HasHeader(header))
+      if (params->url_request.headers.HasHeader(header)) {
         client_hints_count_seen_++;
+
+        if (url_has_not_visited) {
+          client_hints_count_seen_on_unique_request_++;
+        }
+      }
     }
     return false;
   }
@@ -161,6 +182,12 @@ class ThirdPartyURLLoaderInterceptor {
   size_t client_hints_count_seen_ = 0u;
 
   URLLoaderInterceptor interceptor_;
+
+  // Count to deduplicate third-party requests since the total number of third
+  // party request can be flaky on JS injected requests.
+  std::set<GURL> visited_urls_;
+  size_t unique_request_count_seen_ = 0u;
+  size_t client_hints_count_seen_on_unique_request_ = 0u;
 };
 
 // Returns true only if `header_value` satisfies ABNF: 1*DIGIT [ "." 1*DIGIT ]
@@ -674,6 +701,14 @@ class ClientHintsBrowserTest : public policy::PolicyTest,
 
   size_t third_party_client_hints_count_seen() const {
     return request_interceptor_->client_hints_count_seen();
+  }
+
+  size_t third_party_unique_request_count_seen() const {
+    return request_interceptor_->unique_request_count_seen();
+  }
+
+  size_t third_party_client_hints_count_seen_on_unique_request() const {
+    return request_interceptor_->client_hints_count_seen_on_unique_request();
   }
 
   const std::string& main_frame_ua_observed() const {
@@ -1729,6 +1764,7 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, InjectAcceptCH_HttpEquiv) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
   EXPECT_EQ(expected_client_hints_number, count_client_hints_headers_seen());
 }
+
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, InjectAcceptCH_MetaName) {
   // Go to page where hints are injected via javascript into an named meta
   // tag. It shouldn't get hints itself (due to first visit),
@@ -1740,23 +1776,24 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, InjectAcceptCH_MetaName) {
   EXPECT_EQ(0u, count_client_hints_headers_seen());
 }
 
-// Flaky on all platforms. https://crbug.com/1285479.
-IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest,
-                       DISABLED_DelegateToFoo_HttpEquiv) {
+IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, DelegateToFoo_HttpEquiv) {
   // Go to a page which delegates hints to `foo.com`.
   GURL gurl = http_equiv_accept_ch_delegation_foo();
   SetClientHintExpectationsOnMainFrame(false);
   SetClientHintExpectationsOnSubresources(false);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
   EXPECT_EQ(0u, count_client_hints_headers_seen());
-  EXPECT_EQ(7u, third_party_request_count_seen());
-  EXPECT_EQ(expected_default_third_party_client_hints_number * 7,
-            third_party_client_hints_count_seen());
+  // Four unique requests are request to the following URLs:
+  // "https://foo.com/non-existing-image.jpg",
+  // "https://foo.com/non-existing-iframe.html",
+  // "https://bar.com/non-existing-image.jpg",
+  // "https://bar.com/non-existing-iframe.html"
+  EXPECT_EQ(4u, third_party_unique_request_count_seen());
+  EXPECT_EQ(expected_default_third_party_client_hints_number * 4,
+            third_party_client_hints_count_seen_on_unique_request());
 }
 
-// Flaky on all platforms. https://crbug.com/1285479.
-IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest,
-                       DISABLED_DelegateToFoo_MetaName) {
+IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, DelegateToFoo_MetaName) {
   // Go to a page which delegates hints to `foo.com`.
   GURL gurl = meta_name_accept_ch_delegation_foo();
   SetClientHintExpectationsOnMainFrame(false);
@@ -1764,10 +1801,10 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
   EXPECT_EQ(expected_client_hints_number * 2,
             count_client_hints_headers_seen());
-  EXPECT_EQ(7u, third_party_request_count_seen());
-  EXPECT_EQ(expected_requested_third_party_client_hints_number * 5 +
+  EXPECT_EQ(4u, third_party_unique_request_count_seen());
+  EXPECT_EQ(expected_requested_third_party_client_hints_number * 2 +
                 expected_default_third_party_client_hints_number * 2,
-            third_party_client_hints_count_seen());
+            third_party_client_hints_count_seen_on_unique_request());
 }
 
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, DelegateToBar_HttpEquiv) {
@@ -1777,9 +1814,9 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, DelegateToBar_HttpEquiv) {
   SetClientHintExpectationsOnSubresources(false);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
   EXPECT_EQ(0u, count_client_hints_headers_seen());
-  EXPECT_EQ(7u, third_party_request_count_seen());
-  EXPECT_EQ(expected_default_third_party_client_hints_number * 7,
-            third_party_client_hints_count_seen());
+  EXPECT_EQ(4u, third_party_unique_request_count_seen());
+  EXPECT_EQ(expected_default_third_party_client_hints_number * 4,
+            third_party_client_hints_count_seen_on_unique_request());
 }
 
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, DelegateToBar_MetaName) {
@@ -1790,10 +1827,10 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, DelegateToBar_MetaName) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
   EXPECT_EQ(expected_client_hints_number * 2,
             count_client_hints_headers_seen());
-  EXPECT_EQ(7u, third_party_request_count_seen());
+  EXPECT_EQ(4u, third_party_unique_request_count_seen());
   EXPECT_EQ(expected_requested_third_party_client_hints_number * 2 +
-                expected_default_third_party_client_hints_number * 5,
-            third_party_client_hints_count_seen());
+                expected_default_third_party_client_hints_number * 2,
+            third_party_client_hints_count_seen_on_unique_request());
 }
 
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, DelegateAndMerge_HttpEquiv) {
@@ -1804,10 +1841,10 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, DelegateAndMerge_HttpEquiv) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
   EXPECT_EQ(expected_client_hints_number * 2,
             count_client_hints_headers_seen());
-  EXPECT_EQ(7u, third_party_request_count_seen());
+  EXPECT_EQ(4u, third_party_unique_request_count_seen());
   EXPECT_EQ(expected_pre_merge_third_party_client_hints_number * 2 +
-                expected_requested_third_party_client_hints_number * 5,
-            third_party_client_hints_count_seen());
+                expected_requested_third_party_client_hints_number * 2,
+            third_party_client_hints_count_seen_on_unique_request());
 }
 
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, DelegateAndMerge_MetaName) {
@@ -1818,9 +1855,9 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, DelegateAndMerge_MetaName) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
   EXPECT_EQ(expected_client_hints_number * 2,
             count_client_hints_headers_seen());
-  EXPECT_EQ(7u, third_party_request_count_seen());
-  EXPECT_EQ(expected_requested_third_party_client_hints_number * 7,
-            third_party_client_hints_count_seen());
+  EXPECT_EQ(4u, third_party_unique_request_count_seen());
+  EXPECT_EQ(expected_requested_third_party_client_hints_number * 4,
+            third_party_client_hints_count_seen_on_unique_request());
 }
 
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, MergeAcceptCH_HttpEquiv) {
@@ -1833,6 +1870,7 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, MergeAcceptCH_HttpEquiv) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
   EXPECT_EQ(expected_client_hints_number, count_client_hints_headers_seen());
 }
+
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, MergeAcceptCH_MetaName) {
   // Go to page where some hints are enabled by headers, some by
   // http-equiv. It shouldn't get hints itself (due to first visit),
