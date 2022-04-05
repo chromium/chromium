@@ -1024,7 +1024,8 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWriteMoreAndFlush) {
   storage_queue_->Flush();
 }
 
-TEST_P(StorageQueueTest, ValidateVariousRecordSizes) {
+// Test flaky: crbug.com/1312731
+TEST_P(StorageQueueTest, DISABLED_ValidateVariousRecordSizes) {
   std::vector<std::string> data;
   for (size_t i = 16; i < 16 + 16; ++i) {
     data.emplace_back(i, 'R');
