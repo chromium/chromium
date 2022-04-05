@@ -33,7 +33,6 @@ GrContextForGLES2Interface::GrContextForGLES2Interface(
   options.fGlyphCacheTextureMaximumBytes = max_glyph_cache_texture_bytes;
   options.fAvoidStencilBuffers = capabilities.avoid_stencil_buffers;
   options.fAllowPathMaskCaching = false;
-  options.fSharpenMipmappedTextures = true;
   options.fShaderErrorHandler = this;
   // TODO(csmartdalton): enable internal multisampling after the related Skia
   // rolls are in.
