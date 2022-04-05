@@ -606,15 +606,21 @@ END_METADATA
 /************** AutofillPopupItemView **************/
 
 void AutofillPopupItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  base::WeakPtr<AutofillPopupController> controller =
-      popup_view()->controller();
-
-  node_data->SetName(GetVoiceOverString());
-
   // Options are selectable.
   node_data->role = ax::mojom::Role::kListBoxOption;
   node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
                               GetSelected());
+
+  // It is possible for the screen reader to request the a11y role of an
+  // AutofillPopupItemView one final time when the Autofill popup gets hidden.
+  // At this point the controller is already invalid. Therefore we skip all
+  // steps that require a controller.
+  base::WeakPtr<AutofillPopupController> controller =
+      popup_view()->controller();
+  if (!controller)
+    return;
+
+  node_data->SetName(GetVoiceOverString());
 
   // Compute set size and position in set, by checking the frontend_id of each
   // row, summing the number of interactive rows, and subtracting the number
@@ -1348,8 +1354,10 @@ bool AutofillPopupRowView::GetSelected() const {
 
 bool AutofillPopupRowView::HandleAccessibleAction(
     const ui::AXActionData& action_data) {
-  if (action_data.action == ax::mojom::Action::kFocus)
-    popup_view_->controller()->SetSelectedLine(line_number_);
+  base::WeakPtr<AutofillPopupController> controller =
+      popup_view()->controller();
+  if (controller && action_data.action == ax::mojom::Action::kFocus)
+    controller->SetSelectedLine(line_number_);
   return View::HandleAccessibleAction(action_data);
 }
 
