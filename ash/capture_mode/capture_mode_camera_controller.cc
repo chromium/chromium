@@ -22,6 +22,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
+#include "ui/aura/window_targeter.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -29,6 +30,7 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_properties.h"
 
 namespace ash {
@@ -181,6 +183,49 @@ gfx::Size GetInitialPreviewSize(bool is_camera_preview_collapsed) {
 }
 
 }  // namespace
+
+// Defines a window targeter that will be installed on the camera preview
+// widget's window so that we can allow located events outside of the camera
+// preview circle to go through and not be consumed by the camera preview. This
+// enables the user to interact with other UI components below camera preview.
+class CameraPreviewTargeter : public aura::WindowTargeter {
+ public:
+  explicit CameraPreviewTargeter(aura::Window* camera_preview_window)
+      : camera_preview_window_(camera_preview_window) {}
+  CameraPreviewTargeter(const CameraPreviewTargeter&) = delete;
+  CameraPreviewTargeter& operator=(const CameraPreviewTargeter&) = delete;
+  ~CameraPreviewTargeter() override = default;
+
+  // aura::WindowTargeter:
+  ui::EventTarget* FindTargetForEvent(ui::EventTarget* root,
+                                      ui::Event* event) override {
+    if (event->IsLocatedEvent()) {
+      auto screen_location = event->AsLocatedEvent()->root_location();
+      wm::ConvertPointToScreen(camera_preview_window_->GetRootWindow(),
+                               &screen_location);
+      const gfx::Rect camera_preview_bounds =
+          camera_preview_window_->GetBoundsInScreen();
+      const gfx::Point camera_preview_center_point =
+          camera_preview_bounds.CenterPoint();
+      const int camera_preview_radius = camera_preview_bounds.width() / 2;
+
+      // Check if events are outside of the camera preview circle by comparing
+      // if the distance between screen location and center of camera preview is
+      // larger than camera preview circle's radius. If it's larger, allow the
+      // events to go through so that they can be used by other UI components
+      // below camera preview.
+      if ((screen_location - camera_preview_center_point).LengthSquared() >
+          camera_preview_radius * camera_preview_radius) {
+        return nullptr;
+      }
+    }
+
+    return aura::WindowTargeter::FindTargetForEvent(root, event);
+  }
+
+ private:
+  aura::Window* const camera_preview_window_;
+};
 
 // -----------------------------------------------------------------------------
 // CameraId:
@@ -543,6 +588,9 @@ void CaptureModeCameraController::RefreshCameraPreview() {
     const auto preview_bounds = GetPreviewWidgetBounds();
     camera_preview_widget_ = std::make_unique<views::Widget>();
     camera_preview_widget_->Init(CreateWidgetParams(preview_bounds));
+    auto* camera_preview_window = camera_preview_widget_->GetNativeWindow();
+    camera_preview_window->SetEventTargeter(
+        std::make_unique<CameraPreviewTargeter>(camera_preview_window));
     mojo::Remote<video_capture::mojom::VideoSource> camera_video_source;
     video_source_provider_remote_->GetVideoSource(
         camera_info->device_id,

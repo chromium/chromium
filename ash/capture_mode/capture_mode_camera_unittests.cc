@@ -1956,8 +1956,65 @@ TEST_P(CaptureModeCameraPreviewTest,
             snap_position_before_drag);
 }
 
-// Tests that when mouse event is on top of camera preview, cursor type should
-// be updated accordingly.
+// Tests that dragging camera preview outside of the preview circle shouldn't
+// work even if the drag events are contained in the preview bounds.
+TEST_P(CaptureModeCameraPreviewTest, DragPreviewOutsidePreviewCircle) {
+  StartCaptureSessionWithParam();
+  auto* camera_controller = GetCameraController();
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  auto* preview_widget = camera_controller->camera_preview_widget();
+  const gfx::Point capture_bounds_center_point =
+      GetCaptureBoundsInScreen().CenterPoint();
+  const gfx::Rect preview_bounds_in_screen_before_drag =
+      preview_widget->GetWindowBoundsInScreen();
+
+  // Try to drag camera preview at its origin point, verify camera
+  // preview is not draggable and its position is not changed.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(preview_bounds_in_screen_before_drag.origin());
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(capture_bounds_center_point);
+  EXPECT_EQ(preview_widget->GetWindowBoundsInScreen(),
+            preview_bounds_in_screen_before_drag);
+}
+
+// Tests that dragging camera preview outside of the preview circle doesn't
+// work when video recording is in progress.
+TEST_P(CaptureModeCameraPreviewTest,
+       DragPreviewOutsidePreviewCircleWhileVideoRecordingInProgress) {
+  StartCaptureSessionWithParam();
+  auto* camera_controller = GetCameraController();
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  auto* preview_widget = camera_controller->camera_preview_widget();
+  const gfx::Point capture_bounds_center_point =
+      GetCaptureBoundsInScreen().CenterPoint();
+
+  const gfx::Rect preview_bounds_in_screen_before_drag =
+      preview_widget->GetWindowBoundsInScreen();
+  const auto snap_position_before_drag =
+      camera_controller->camera_preview_snap_position();
+  // Verify by default snap position is `kBottomRight`.
+  EXPECT_EQ(snap_position_before_drag, CameraPreviewSnapPosition::kBottomRight);
+
+  // Try to drag camera preview at its origin point to the top left of current
+  // capture bounds' center point, verity it's not moved.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(preview_bounds_in_screen_before_drag.origin());
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(capture_bounds_center_point);
+  EXPECT_EQ(preview_widget->GetWindowBoundsInScreen(),
+            preview_bounds_in_screen_before_drag);
+
+  // Release drag, verify snap position is not changed.
+  event_generator->ReleaseLeftButton();
+  EXPECT_EQ(camera_controller->camera_preview_snap_position(),
+            snap_position_before_drag);
+}
+
+// Tests that when mouse event is on top of camera preview circle, cursor type
+// should be updated accordingly.
 TEST_P(CaptureModeCameraPreviewTest, CursorTypeUpdates) {
   StartCaptureSessionWithParam();
   auto* camera_controller = GetCameraController();
@@ -1973,9 +2030,14 @@ TEST_P(CaptureModeCameraPreviewTest, CursorTypeUpdates) {
       preview_bounds_in_screen.origin();
   auto* event_generator = GetEventGenerator();
 
-  // Verify that moving mouse on camera preview will update the cursor type to
-  // `kPointer`.
   auto* cursor_manager = Shell::Get()->cursor_manager();
+  // Verify that moving mouse to the origin point on camera preview won't
+  // update the cursor type to `kPointer`.
+  event_generator->MoveMouseTo(preview_bounds_in_screen.origin());
+  EXPECT_NE(cursor_manager->GetCursor(), ui::mojom::CursorType::kPointer);
+
+  // Verify that moving mouse on camera preview will update the cursor type
+  // to `kPointer`.
   event_generator->MoveMouseTo(camera_preview_center_point);
   EXPECT_EQ(cursor_manager->GetCursor(), ui::mojom::CursorType::kPointer);
 

@@ -371,36 +371,40 @@ bool CameraPreviewWillBeShown(CaptureModeController* controller) {
   }
 }
 
-bool IsDragAllowedOnCameraPreview(const gfx::Point& screen_location) {
-  auto* controller = CaptureModeController::Get();
-  auto* camera_controller = controller->camera_controller();
-  if (camera_controller && !controller->is_recording_in_progress()) {
-    auto* camera_preview_widget = camera_controller->camera_preview_widget();
-    if ((camera_preview_widget && camera_preview_widget->IsVisible() &&
-         camera_preview_widget->GetWindowBoundsInScreen().Contains(
-             screen_location)) ||
-        camera_controller->is_drag_in_progress()) {
-      return true;
-    }
-  }
-  return false;
-}
-
 views::Widget* GetCameraPreviewWidget() {
   auto* camera_controller = CaptureModeController::Get()->camera_controller();
   return camera_controller ? camera_controller->camera_preview_widget()
                            : nullptr;
 }
 
-// Returns true if the given `event` is targeted on the camera preview.
-// Otherwise, returns false.
-bool IsEventTargetedOnCameraPreview(ui::LocatedEvent* event) {
+bool ShouldPassEventToCameraPreview(ui::LocatedEvent* event) {
+  auto* controller = CaptureModeController::Get();
+
+  // If there's a video recording in progress, return false immediately, since
+  // even camera preview exists, it doesn't belong to the current capture
+  // session.
+  if (controller->is_recording_in_progress())
+    return false;
+
   auto* camera_preview_widget = GetCameraPreviewWidget();
-  if (camera_preview_widget && camera_preview_widget->IsVisible()) {
-    auto* target = static_cast<aura::Window*>(event->target());
-    if (camera_preview_widget->GetNativeWindow()->Contains(target))
-      return true;
-  }
+  if (!camera_preview_widget || !camera_preview_widget->IsVisible())
+    return false;
+
+  auto* camera_controller = controller->camera_controller();
+  if (camera_controller && camera_controller->is_drag_in_progress())
+    return true;
+
+  // If the event is targeted on the camera preview, even it's not located
+  // on the camera preview, we should still pass the event to camera preview
+  // to handle it. For example, when pressing on the resize button inside camera
+  // preview, but release the press outside of camera preview, even the release
+  // event is not on the camera preview, we should still pass the event to it,
+  // otherwise camera preview will wait for the release event forever which will
+  // make the regular drag for camera preview not work.
+  auto* target = static_cast<aura::Window*>(event->target());
+  if (camera_preview_widget->GetNativeWindow()->Contains(target))
+    return true;
+
   return false;
 }
 
@@ -1248,9 +1252,9 @@ void CaptureModeSession::UpdateCursor(const gfx::Point& location_in_screen,
     return;
   }
 
-  // If the current mouse is on camera preview or camera preview drag is in
-  // progress, use the pointer cursor.
-  if (IsDragAllowedOnCameraPreview(location_in_screen)) {
+  // If the current located event should be handled by camera preview, use the
+  // pointer cursor.
+  if (should_pass_located_event_to_camera_preview_) {
     cursor_setter_->UpdateCursor(ui::mojom::CursorType::kPointer);
     return;
   }
@@ -1400,6 +1404,20 @@ void CaptureModeSession::OnCameraPreviewDragStarted() {
 void CaptureModeSession::OnCameraPreviewDragEnded(
     const gfx::Point& screen_location,
     bool is_touch) {
+  // When drag for camera preview is ended, camera preview will be snapped to
+  // one of the snap position, but cursor will leave at where the drag is
+  // released. In order to update cursor type correctly after camera preview is
+  // snapped, we should update `should_pass_located_event_to_camera_preview_` to
+  // false if cursor is not on top of camera preview, since `UpdateCursor` will
+  // rely on its value to decide whether cursor should be updated for camera
+  // preview.
+  auto* camera_preview_widget = GetCameraPreviewWidget();
+  DCHECK(camera_preview_widget);
+  if (!camera_preview_widget->GetWindowBoundsInScreen().Contains(
+          screen_location)) {
+    should_pass_located_event_to_camera_preview_ = false;
+  }
+
   // If CaptureUIs (capture bar, capture label) are overlapped with camera
   // preview and cursor is not on top of it, its opacity should be updated to
   // `kCaptureUiOverlapOpacity` instead of fully opaque.
@@ -1736,25 +1754,12 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
 
   MaybeUpdateCaptureUisOpacity(screen_location);
 
-  if (IsDragAllowedOnCameraPreview(screen_location)) {
+  // Update the value of `should_pass_located_event_to_camera_preview_` here
+  // before calling `UpdateCursor` which uses it.
+  should_pass_located_event_to_camera_preview_ =
+      ShouldPassEventToCameraPreview(event);
+  if (should_pass_located_event_to_camera_preview_) {
     DCHECK(!controller_->is_recording_in_progress());
-    // Update cursor type when the event is on top of camera preview.
-    UpdateCursor(screen_location, is_touch);
-
-    // Pass the event to camera preview to handle it if the event is on top of
-    // camera preview and there's no video recording is in progress.
-    return;
-  }
-
-  // If the event is targeted on the camera preview, even it's not located
-  // on the camera preview, we should still pass the event to camera preview
-  // to handle it. For example, when pressing on the resize button inside camera
-  // preview, but release the press outside of camera preview, even the release
-  // event is not on the camera preview, we should still pass the event to it,
-  // otherwise camera preview will wait for the release event forever which will
-  // make the regular drag for camera preview not work.
-  if (!controller_->is_recording_in_progress() &&
-      IsEventTargetedOnCameraPreview(event)) {
     UpdateCursor(screen_location, is_touch);
     return;
   }

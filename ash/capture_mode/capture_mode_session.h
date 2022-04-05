@@ -512,6 +512,9 @@ class ASH_EXPORT CaptureModeSession
   // true.
   bool located_press_event_on_settings_menu_ = false;
 
+  // True if a located event should be passed to camera preview to be handled.
+  bool should_pass_located_event_to_camera_preview_ = false;
+
   // Controls the folder selection dialog. Not null only while the dialog is
   // shown.
   std::unique_ptr<FolderSelectionDialogController>
