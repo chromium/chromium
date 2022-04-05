@@ -277,6 +277,29 @@ bool CreditCardAccessoryController::AllowedForWebContents(
   if (vr::VrTabHelper::IsInVr(web_contents)) {
     return false;  // TODO(crbug.com/902305): Re-enable if possible.
   }
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableManualFallbackForVirtualCards)) {
+    autofill::PersonalDataManager* personal_data_manager =
+        PersonalDataManagerFactory::GetForBrowserContext(
+            web_contents->GetBrowserContext());
+    if (personal_data_manager) {
+      std::vector<CreditCard*> cards =
+          personal_data_manager->GetCreditCardsToSuggest(
+              /*include_server_cards=*/true);
+      bool has_virtual_card = base::ranges::any_of(cards, [](const auto& card) {
+        return card->virtual_card_enrollment_state() ==
+               CreditCard::VirtualCardEnrollmentState::ENROLLED;
+      });
+      if (has_virtual_card) {
+        // Virtual cards are available. We should always show manual fallback
+        // for virtual cards.
+        return true;
+      }
+    }
+  }
+
+  // For non-virtual cards show the credit card accessory sheet only
+  // when both keyboard accessory and manual fallback flags are enabled.
   return features::IsAutofillManualFallbackEnabled();
 }
 

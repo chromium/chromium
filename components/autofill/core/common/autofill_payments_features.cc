@@ -64,6 +64,11 @@ const base::Feature kAutofillEnableMerchantBoundVirtualCards{
     "AutofillEnableMerchantBoundVirtualCards",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+// When enabled, enable manual falling component for virtual cards on Android.
+const base::Feature kAutofillEnableManualFallbackForVirtualCards{
+    "AutofillEnableManualFallbackForVirtualCards",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When enabled, a notification will be displayed on page navigation if the
 // domain has an eligible merchant promo code offer or reward.
 const base::Feature kAutofillEnableOfferNotificationForPromoCodes{

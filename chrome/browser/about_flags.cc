@@ -6748,6 +6748,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableVirtualCardName,
      flag_descriptions::kAutofillEnableVirtualCardDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableVirtualCard)},
+#if BUILDFLAG(IS_ANDROID)
+    {"autofill-enable-manual-fallback-for-virtual-cards",
+     flag_descriptions::kAutofillEnableManualFallbackForVirtualCardsName,
+     flag_descriptions::kAutofillEnableManualFallbackForVirtualCardsDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableManualFallbackForVirtualCards)},
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"account-id-migration", flag_descriptions::kAccountIdMigrationName,

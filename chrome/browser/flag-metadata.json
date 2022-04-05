@@ -421,6 +421,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "autofill-enable-manual-fallback-for-virtual-cards",
+    "owners": [ "siashah", "siyua" ],
+    "expiry_milestone": 106
+  },
+  {
     "name": "autofill-enable-merchant-bound-virtual-cards",
     "owners": [ "siashah", "siyua" ],
     "expiry_milestone": 105

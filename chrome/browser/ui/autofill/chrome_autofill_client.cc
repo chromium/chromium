@@ -816,10 +816,11 @@ void ChromeAutofillClient::OnVirtualCardDataAvailable(
 
   GetFormDataImporter()->CacheFetchedVirtualCard(credit_card->LastFourDigits());
 #if BUILDFLAG(IS_ANDROID)
-  // Show the virtual card snackbar only if the keyboard accessory feature is
-  // enabled. This is because the ManualFillingComponent for credit cards is
-  // only enabled when keyboard accessory is enabled.
-  if (features::IsAutofillManualFallbackEnabled()) {
+  // Show the virtual card snackbar only if the ManualFillingComponent component
+  // is enabled for credit cards.
+  if (features::IsAutofillManualFallbackEnabled() ||
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableManualFallbackForVirtualCards)) {
     (new AutofillSnackbarControllerImpl(web_contents()))->Show();
   }
 #else

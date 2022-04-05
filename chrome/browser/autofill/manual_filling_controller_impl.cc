@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/ui/accessory_sheet_data.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/credential_cache.h"
@@ -322,7 +323,9 @@ bool ManualFillingControllerImpl::ShouldShowAccessory() const {
   if (!base::FeatureList::IsEnabled(
           autofill::features::kAutofillKeyboardAccessory) &&
       !base::FeatureList::IsEnabled(
-          autofill::features::kAutofillManualFallbackAndroid)) {
+          autofill::features::kAutofillManualFallbackAndroid) &&
+      !base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableManualFallbackForVirtualCards)) {
     return last_focused_field_type_ ==
                FocusedFieldType::kFillablePasswordField ||
            last_focused_field_type_ == FocusedFieldType::kFillableUsernameField;
