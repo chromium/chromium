@@ -19,6 +19,7 @@
 #include "chrome/test/data/webui/web_ui_test.mojom.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui_browser_interface_broker_registry.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

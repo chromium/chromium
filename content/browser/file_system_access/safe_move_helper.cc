@@ -17,6 +17,7 @@
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
 #include "crypto/secure_hash.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"

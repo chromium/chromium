@@ -13,13 +13,11 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
@@ -34,8 +32,7 @@
 #include "content/public/browser/login_delegate.h"
 #include "content/public/browser/mojo_binder_policy_map.h"
 #include "content/public/browser/storage_partition_config.h"
-#include "content/public/browser/web_ui_browser_interface_broker_registry.h"
-#include "content/public/common/alternative_error_page_override_info.mojom.h"
+#include "content/public/common/alternative_error_page_override_info.mojom-forward.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/common/page_visibility_state.h"
 #include "content/public/common/window_container_type.mojom-forward.h"
@@ -52,7 +49,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
-#include "services/network/public/mojom/network_param.mojom-forward.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-forward.h"
@@ -66,9 +62,6 @@
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
-#include "url/gurl.h"
-#include "url/origin.h"
-#include "url/url_constants.h"
 
 #if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)) || BUILDFLAG(IS_FUCHSIA)
 #include "base/posix/global_descriptors.h"
@@ -95,6 +88,7 @@ namespace base {
 class CommandLine;
 class DictionaryValue;
 class FilePath;
+class Location;
 class SequencedTaskRunner;
 }  // namespace base
 
