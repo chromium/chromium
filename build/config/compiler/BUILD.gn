@@ -1551,11 +1551,6 @@ config("default_warnings") {
       if (enable_wmax_tokens) {
         cflags += [ "-Wmax-tokens" ]
       }
-
-      if (is_mac) {
-        # TODO(https://crbug.com/1309955) Clean up and enable.
-        cflags += [ "-Wno-unused-but-set-variable" ]
-      }
     }
   }
 }

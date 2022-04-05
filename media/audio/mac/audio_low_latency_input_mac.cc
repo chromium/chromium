@@ -826,7 +826,7 @@ void AUAudioInputStream::SetVolume(double volume) {
   }
 
   // There is no master volume control, try to set volume for each channel.
-  int successful_channels = 0;
+  [[maybe_unused]] int successful_channels = 0;
   for (int i = 1; i <= number_of_channels_in_frame_; ++i) {
     property_address.mElement = static_cast<UInt32>(i);
     if (IsVolumeSettableOnChannel(i)) {
