@@ -19,9 +19,13 @@
 
 namespace chrome_pdf {
 
-PostMessageSender::PostMessageSender(V8ValueConverter* v8_value_converter)
+PostMessageSender::PostMessageSender(blink::WebPluginContainer* container,
+                                     V8ValueConverter* v8_value_converter)
     : v8_value_converter_(v8_value_converter),
-      isolate_(blink::MainThreadIsolate()) {}
+      isolate_(blink::MainThreadIsolate()),
+      container_(container) {
+  DCHECK(container_);
+}
 
 PostMessageSender::~PostMessageSender() = default;
 
@@ -31,10 +35,6 @@ PostMessageSender::~PostMessageSender() = default;
 // thread as a task because that's where the Blink and V8 interactions need to
 // occur.
 void PostMessageSender::Post(base::Value message) {
-  // Drop messages if there is no container.
-  if (!container_)
-    return;
-
   v8::Isolate::Scope isolate_scope(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =

@@ -40,6 +40,7 @@
 #include "pdf/pdf_init.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/post_message_receiver.h"
+#include "pdf/post_message_sender.h"
 #include "pdf/ppapi_migration/bitmap.h"
 #include "pdf/ppapi_migration/graphics.h"
 #include "pdf/ppapi_migration/result_codes.h"
@@ -148,9 +149,12 @@ class PerProcessInitializer final {
 
 class BlinkContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
  public:
-  explicit BlinkContainerWrapper(blink::WebPluginContainer* container)
-      : container_(container) {
+  BlinkContainerWrapper(blink::WebPluginContainer* container,
+                        V8ValueConverter* v8_value_converter)
+      : container_(container),
+        post_message_sender_(container_, v8_value_converter) {
     DCHECK(container_);
+    DCHECK(v8_value_converter);
   }
   BlinkContainerWrapper(const BlinkContainerWrapper&) = delete;
   BlinkContainerWrapper& operator=(const BlinkContainerWrapper&) = delete;
@@ -195,6 +199,14 @@ class BlinkContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
     // Note that `blink::WebLocalFrame::GetScrollOffset()` actually returns a
     // scroll position (a point relative to the top-left corner).
     return GetFrame()->GetScrollOffset();
+  }
+
+  void PostMessage(base::Value message) override {
+    post_message_sender_.Post(std::move(message));
+  }
+
+  void UsePluginAsFindHandler() override {
+    container_->UsePluginAsFindHandler();
   }
 
   void SetReferrerForRequest(blink::WebURLRequest& request,
@@ -275,6 +287,7 @@ class BlinkContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
 
  private:
   const raw_ptr<blink::WebPluginContainer> container_;
+  PostMessageSender post_message_sender_;
 };
 
 }  // namespace
@@ -292,7 +305,6 @@ PdfViewWebPlugin::PdfViewWebPlugin(
     : client_(std::move(client)),
       pdf_service_remote_(std::move(pdf_service_remote)),
       initial_params_(params),
-      post_message_sender_(client_.get()),
       pdf_accessibility_data_handler_(
           client_->CreateAccessibilityDataHandler(this)) {
   auto* service = GetPdfService();
@@ -304,8 +316,9 @@ PdfViewWebPlugin::~PdfViewWebPlugin() = default;
 
 bool PdfViewWebPlugin::Initialize(blink::WebPluginContainer* container) {
   DCHECK_EQ(container->Plugin(), this);
-  return InitializeCommon(std::make_unique<BlinkContainerWrapper>(container),
-                          nullptr);
+  return InitializeCommon(
+      std::make_unique<BlinkContainerWrapper>(container, client_.get()),
+      /*engine_override=*/nullptr);
 }
 
 bool PdfViewWebPlugin::InitializeForTesting(
@@ -316,17 +329,15 @@ bool PdfViewWebPlugin::InitializeForTesting(
 
 bool PdfViewWebPlugin::InitializeCommon(
     std::unique_ptr<ContainerWrapper> container_wrapper,
-    std::unique_ptr<PDFiumEngine> engine) {
+    std::unique_ptr<PDFiumEngine> engine_override) {
   container_wrapper_ = std::move(container_wrapper);
-  post_message_sender_.set_container(Container());
 
   // Allow the plugin to handle touch events.
   container_wrapper_->RequestTouchEventType(
       blink::WebPluginContainer::kTouchEventRequestTypeRaw);
 
   // Allow the plugin to handle find requests.
-  if (Container())
-    Container()->UsePluginAsFindHandler();
+  container_wrapper_->UsePluginAsFindHandler();
 
   absl::optional<ParsedParams> params = ParseWebPluginParams(initial_params_);
 
@@ -350,8 +361,9 @@ bool PdfViewWebPlugin::InitializeCommon(
 
   PerProcessInitializer::GetInstance().Acquire();
   InitializeBase(
-      engine ? std::move(engine)
-             : std::make_unique<PDFiumEngine>(this, params->script_option),
+      engine_override
+          ? std::move(engine_override)
+          : std::make_unique<PDFiumEngine>(this, params->script_option),
       /*embedder_origin=*/container_wrapper_->GetEmbedderOriginString(),
       /*src_url=*/params->src_url,
       /*original_url=*/params->original_url,
@@ -382,7 +394,6 @@ void PdfViewWebPlugin::Destroy() {
     DestroyPreviewEngine();
     DestroyEngine();
     PerProcessInitializer::GetInstance().Release();
-    post_message_sender_.set_container(nullptr);
     container_wrapper_.reset();
   }
 
@@ -919,7 +930,7 @@ void PdfViewWebPlugin::OnDocumentLoadComplete() {
 }
 
 void PdfViewWebPlugin::SendMessage(base::Value message) {
-  post_message_sender_.Post(std::move(message));
+  container_wrapper_->PostMessage(std::move(message));
 }
 
 void PdfViewWebPlugin::SaveAs() {

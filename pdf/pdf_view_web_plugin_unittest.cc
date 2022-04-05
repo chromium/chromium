@@ -172,6 +172,10 @@ class FakeContainerWrapper : public PdfViewWebPlugin::ContainerWrapper {
 
   MOCK_METHOD(gfx::PointF, GetScrollPosition, (), (override));
 
+  MOCK_METHOD(void, PostMessage, (base::Value), (override));
+
+  MOCK_METHOD(void, UsePluginAsFindHandler, (), (override));
+
   MOCK_METHOD(void,
               SetReferrerForRequest,
               (blink::WebURLRequest&, const blink::WebURL&),
@@ -210,11 +214,10 @@ class FakeContainerWrapper : public PdfViewWebPlugin::ContainerWrapper {
     return nullptr;
   }
 
-  // TODO(https://crbug.com/1207575): Container() should not be used for testing
-  // since it doesn't have a valid blink::WebPluginContainer. Make this method
-  // fail once ContainerWrapper instead of blink::WebPluginContainer is used for
-  // initializing `PostMessageSender`.
-  blink::WebPluginContainer* Container() override { return nullptr; }
+  blink::WebPluginContainer* Container() override {
+    ADD_FAILURE();
+    return nullptr;
+  }
 
   blink::WebTextInputType widget_text_input_type() const {
     return widget_text_input_type_;
