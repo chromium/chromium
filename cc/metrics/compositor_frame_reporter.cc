@@ -5,8 +5,6 @@
 #include "cc/metrics/compositor_frame_reporter.h"
 
 #include <algorithm>
-#include <cstddef>
-#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>
@@ -22,11 +20,8 @@
 #include "cc/base/rolling_time_delta_history.h"
 #include "cc/metrics/dropped_frame_counter.h"
 #include "cc/metrics/event_latency_tracing_recorder.h"
-#include "cc/metrics/event_metrics.h"
 #include "cc/metrics/frame_sequence_tracker.h"
-#include "cc/metrics/latency_jank_tracker.h"
 #include "cc/metrics/latency_ukm_reporter.h"
-#include "services/tracing/public/cpp/perfetto/flow_event_utils.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_frame_reporter.pbzero.h"
 #include "ui/events/types/event_type.h"
@@ -291,7 +286,6 @@ CompositorFrameReporter::ProcessedVizBreakdown::ProcessedVizBreakdown(
       std::make_pair(viz_breakdown.swap_timings.swap_end,
                      viz_breakdown.presentation_feedback.timestamp);
   swap_start_ = viz_breakdown.swap_timings.swap_start;
-  swap_end_ = viz_breakdown.swap_timings.swap_end;
 
   if (viz_breakdown.presentation_feedback.ready_timestamp.is_null())
     return;
@@ -603,22 +597,6 @@ void CompositorFrameReporter::AddEventsMetrics(
                          std::make_move_iterator(events_metrics.end()));
 }
 
-void CompositorFrameReporter::ChronoSortEventMetrics() {
-  std::sort(
-      events_metrics_.begin(), events_metrics_.end(),
-      // if timestamps are different, prioritize the earlier event otherwise,
-      // prioritize having the kFirstGestureScrollUpdate in the loop
-      [](const auto& m1, const auto& m2) -> bool {
-        auto timestamp1 = m1->GetDispatchStageTimestamp(
-            EventMetrics::DispatchStage::kGenerated);
-        auto timestamp2 = m2->GetDispatchStageTimestamp(
-            EventMetrics::DispatchStage::kGenerated);
-        if (timestamp1 != timestamp2)
-          return timestamp1 < timestamp2;
-        return m1->type() == EventMetrics::EventType::kFirstGestureScrollUpdate;
-      });
-}
-
 EventMetrics::List CompositorFrameReporter::TakeEventsMetrics() {
   EventMetrics::List result = std::move(events_metrics_);
   events_metrics_.clear();
@@ -681,13 +659,6 @@ void CompositorFrameReporter::TerminateReporter() {
     // Only report event latency histograms if the frame was presented.
     if (TestReportType(FrameReportType::kNonDroppedFrame))
       ReportEventLatencyHistograms();
-  }
-
-  if (should_report_metrics_) {
-    // This is necessary as EventLatency events associated with a frame are
-    // not stored in chronological order.
-    ChronoSortEventMetrics();
-    ReportEventLatenciesToJankTracker();
   }
 
   auto* dropped_frame_counter = global_trackers_.dropped_frame_counter;
@@ -1137,40 +1108,6 @@ void CompositorFrameReporter::ReportEventLatencyTraceEvents() const {
     EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
         event_metrics.get(), frame_termination_time_, &stage_history_,
         processed_viz_breakdown_.get());
-  }
-}
-
-void CompositorFrameReporter::ReportEventLatenciesToJankTracker() {
-  if (events_metrics_.empty() || !global_trackers_.latency_jank_tracker)
-    return;
-  // TODO(crbug.com/1305153): This should check if the frame is presented or
-  // not. But the existing metrics in LatencyTracker are reported for all
-  // swapped frames, So do the same here for now.
-  // if (frame_termination_status_ != FrameTerminationStatus::kPresentedFrame) {
-  //  return;
-  //}
-  const auto end_timestamp = processed_viz_breakdown_
-                                 ? processed_viz_breakdown_->swap_end()
-                                 : base::TimeTicks();
-
-  if (end_timestamp.is_null())
-    return;
-
-  for (const auto& event : events_metrics_) {
-    if (event->type() != EventMetrics::EventType::kGestureScrollUpdate &&
-        event->type() !=
-            EventMetrics::EventType::kInertialGestureScrollUpdate &&
-        event->type() == EventMetrics::EventType::kFirstGestureScrollUpdate) {
-      continue;
-    }
-    const bool first_scroll_update =
-        event->type() == EventMetrics::EventType::kFirstGestureScrollUpdate;
-    const auto event_timestamp = event->GetDispatchStageTimestamp(
-        EventMetrics::DispatchStage::kGenerated);
-    // TODO(crbug.com/1305155): The `end_timestamp` should really be set to
-    // `frame_termination_time_`.
-    global_trackers_.latency_jank_tracker->ReportScrollTimings(
-        event_timestamp, end_timestamp, first_scroll_update);
   }
 }
 
