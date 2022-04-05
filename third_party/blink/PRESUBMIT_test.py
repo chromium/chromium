@@ -46,8 +46,9 @@ class PresubmitTest(unittest.TestCase):
         mock_input_api.files = [
             MockAffectedFile('file_blink.h', diff_file_blink_h),
             MockAffectedFile('file_chromium.h', diff_file_chromium_h),
-            MockAffectedFile('web_tests/TestExpectations',
-                             diff_file_test_expectations)
+            MockAffectedFile(
+                mock_input_api.os_path.join('web_tests', 'TestExpectations'),
+                diff_file_test_expectations)
         ]
         # Access to a protected member _CheckStyle
         # pylint: disable=W0212
@@ -56,8 +57,12 @@ class PresubmitTest(unittest.TestCase):
         # pylint: disable=E1101
         subprocess.Popen.assert_called_with(capture, stderr=-1)
         self.assertEqual(6, len(capture.value))
-        self.assertEqual('../../file_blink.h', capture.value[3])
-        self.assertEqual('../../web_tests/TestExpectations', capture.value[5])
+        self.assertEqual(
+            mock_input_api.os_path.join('..', '..', 'file_blink.h'),
+            capture.value[3])
+        self.assertEqual(
+            mock_input_api.os_path.join('..', '..', 'web_tests',
+                                        'TestExpectations'), capture.value[5])
 
     @mock.patch('subprocess.Popen')
     def testCheckChangeOnUploadWithEmptyAffectedFileList(self, _):
@@ -83,22 +88,24 @@ class PresubmitTest(unittest.TestCase):
         mock_input_api = MockInputApi()
         mock_input_api.files = [
             MockAffectedFile('file_chromium1.h', diff_file_chromium1_h),
-            MockAffectedFile('web_tests/some_tests.html', diff_web_tests_html),
-            MockAffectedFile('web_tests/TestExpectations',
-                             diff_test_expectations),
+            MockAffectedFile(
+                mock_input_api.os_path.join('web_tests', 'some_tests.html'),
+                diff_web_tests_html),
+            MockAffectedFile(
+                mock_input_api.os_path.join('web_tests', 'TestExpectations'),
+                diff_test_expectations),
+            # Note that this path must have a slash, whereas most other paths
+            # must have os-standard path separators.
             MockAffectedFile('blink/PRESUBMIT', diff_presubmit),
         ]
         # Access to a protected member _FilterPaths
         # pylint: disable=W0212
         filtered = PRESUBMIT._FilterPaths(mock_input_api)
-        self.assertEqual(2, len(filtered))
-        self.assertEqual(
+        self.assertEqual([
             mock_input_api.os_path.join('..', '..', 'file_chromium1.h'),
-            filtered[0])
-        self.assertEqual(
-            mock_input_api.os_path.join('..', '..',
-                                        'web_tests/TestExpectations'),
-            filtered[1])
+            mock_input_api.os_path.join('..', '..', 'web_tests',
+                                        'TestExpectations')
+        ], filtered)
 
     def testCheckPublicHeaderWithBlinkMojo(self):
         """This verifies that _CheckForWrongMojomIncludes detects -blink mojo
@@ -109,14 +116,16 @@ class PresubmitTest(unittest.TestCase):
         potentially_bad_content = \
             '#include "public/platform/modules/cache_storage.mojom-blink.h"'
         mock_input_api.files = [
-            MockAffectedFile('third_party/blink/public/a_header.h',
-                             [potentially_bad_content], None)
+            MockAffectedFile(
+                mock_input_api.os_path.join('third_party', 'blink', 'public',
+                                            'a_header.h'),
+                [potentially_bad_content], None)
         ]
         # Access to a protected member _CheckForWrongMojomIncludes
         # pylint: disable=W0212
         errors = PRESUBMIT._CheckForWrongMojomIncludes(mock_input_api,
                                                        MockOutputApi())
-        self.assertEquals(
+        self.assertEqual(
             'Public blink headers using Blink variant mojoms found. ' +
             'You must include .mojom-forward.h or .mojom-shared.h instead:',
             errors[0].message)
@@ -133,14 +142,16 @@ class PresubmitTest(unittest.TestCase):
         #include "public/platform/modules/cache_storage.mojom-blink-test-utils.h"
         """
         mock_input_api.files = [
-            MockAffectedFile('third_party/blink/renderer/core/a_header.h',
-                             [potentially_bad_content], None)
+            MockAffectedFile(
+                mock_input_api.os_path.join('third_party', 'blink', 'renderer',
+                                            'core', 'a_header.h'),
+                [potentially_bad_content], None)
         ]
         # Access to a protected member _CheckForWrongMojomIncludes
         # pylint: disable=W0212
         errors = PRESUBMIT._CheckForWrongMojomIncludes(mock_input_api,
                                                        MockOutputApi())
-        self.assertEquals([], errors)
+        self.assertEqual([], errors)
 
 
 class CxxDependencyTest(unittest.TestCase):
@@ -152,7 +163,6 @@ class CxxDependencyTest(unittest.TestCase):
         'gfx::ICCProfile',
         'gfx::Point',
         'gfx::Rect',
-        'gfx::ScrollOffset',
         'scoped_refptr<base::SingleThreadTaskRunner>',
     ]
     disallow_list = [
@@ -205,10 +215,9 @@ class CxxDependencyTest(unittest.TestCase):
 
         for item in self.disallow_list:
             errors = self.runCheck(filename, ['%s' % item])
-            self.assertEquals(1, len(errors))
-            self.assertRegexpMatches(
-                errors[0].message,
-                r'^[^:]+:\d+ uses disallowed identifier .+$')
+            self.assertEqual(1, len(errors))
+            self.assertRegex(errors[0].message,
+                             r'^[^:]+:\d+ uses disallowed identifier .+$')
 
     def testCheckModulesEnforcement(self):
         filename = 'third_party/blink/renderer/modules/modules_initializer.cc'
@@ -218,10 +227,9 @@ class CxxDependencyTest(unittest.TestCase):
 
         for item in self.disallow_list:
             errors = self.runCheck(filename, ['%s' % item])
-            self.assertEquals(1, len(errors))
-            self.assertRegexpMatches(
-                errors[0].message,
-                r'^[^:]+:\d+ uses disallowed identifier .+$')
+            self.assertEqual(1, len(errors))
+            self.assertRegex(errors[0].message,
+                             r'^[^:]+:\d+ uses disallowed identifier .+$')
 
     def testCheckPublicEnforcement(self):
         filename = 'third_party/blink/renderer/public/platform/web_thread.h'
@@ -231,10 +239,9 @@ class CxxDependencyTest(unittest.TestCase):
 
         for item in self.disallow_list:
             errors = self.runCheck(filename, ['%s' % item])
-            self.assertEquals(1, len(errors))
-            self.assertRegexpMatches(
-                errors[0].message,
-                r'^[^:]+:\d+ uses disallowed identifier .+$')
+            self.assertEqual(1, len(errors))
+            self.assertRegex(errors[0].message,
+                             r'^[^:]+:\d+ uses disallowed identifier .+$')
 
     # platform and controller should be opted out of enforcement, but aren't
     # currently checked because the PRESUBMIT test mocks are missing too
