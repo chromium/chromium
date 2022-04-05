@@ -539,7 +539,29 @@ VulkanSwapChain::ScopedWrite::ScopedWrite(VulkanSwapChain* swap_chain)
   }
 }
 
+VulkanSwapChain::ScopedWrite::ScopedWrite(ScopedWrite&& other) {
+  *this = std::move(other);
+}
+
 VulkanSwapChain::ScopedWrite::~ScopedWrite() {
+  Reset();
+}
+
+const VulkanSwapChain::ScopedWrite& VulkanSwapChain::ScopedWrite::operator=(
+    ScopedWrite&& other) {
+  Reset();
+  std::swap(swap_chain_, other.swap_chain_);
+  std::swap(success_, other.success_);
+  std::swap(image_, other.image_);
+  std::swap(image_index_, other.image_index_);
+  std::swap(image_layout_, other.image_layout_);
+  std::swap(image_usage_, other.image_usage_);
+  std::swap(begin_semaphore_, other.begin_semaphore_);
+  std::swap(end_semaphore_, other.end_semaphore_);
+  return *this;
+}
+
+void VulkanSwapChain::ScopedWrite::Reset() {
   if (LIKELY(success_)) {
     DCHECK(begin_semaphore_ != VK_NULL_HANDLE);
     DCHECK(end_semaphore_ != VK_NULL_HANDLE);
@@ -548,6 +570,14 @@ VulkanSwapChain::ScopedWrite::~ScopedWrite() {
     DCHECK(begin_semaphore_ == VK_NULL_HANDLE);
     DCHECK(end_semaphore_ == VK_NULL_HANDLE);
   }
+  swap_chain_ = nullptr;
+  success_ = false;
+  image_ = VK_NULL_HANDLE;
+  image_index_ = 0;
+  image_layout_ = VK_IMAGE_LAYOUT_UNDEFINED;
+  image_usage_ = 0;
+  begin_semaphore_ = VK_NULL_HANDLE;
+  end_semaphore_ = VK_NULL_HANDLE;
 }
 
 }  // namespace gpu

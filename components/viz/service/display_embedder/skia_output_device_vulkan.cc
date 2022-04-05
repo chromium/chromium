@@ -174,15 +174,14 @@ SkSurface* SkiaOutputDeviceVulkan::BeginPaint(
   DCHECK(vulkan_surface_);
   DCHECK(!scoped_write_);
 
-  scoped_write_.emplace(vulkan_surface_->swap_chain());
-  if (UNLIKELY(!scoped_write_->success())) {
+  gpu::VulkanSwapChain::ScopedWrite scoped_write(vulkan_surface_->swap_chain());
+  if (UNLIKELY(!scoped_write.success())) {
     // Return nullptr, and then the caller will make context lost.
-    scoped_write_.reset();
     return nullptr;
   }
 
   auto& sk_surface =
-      sk_surface_size_pairs_[scoped_write_->image_index()].sk_surface;
+      sk_surface_size_pairs_[scoped_write.image_index()].sk_surface;
 
   if (UNLIKELY(!sk_surface)) {
     SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
@@ -190,11 +189,11 @@ SkSurface* SkiaOutputDeviceVulkan::BeginPaint(
     DCHECK(surface_format == VK_FORMAT_B8G8R8A8_UNORM ||
            surface_format == VK_FORMAT_R8G8B8A8_UNORM);
     GrVkImageInfo vk_image_info;
-    vk_image_info.fImage = scoped_write_->image();
+    vk_image_info.fImage = scoped_write.image();
     vk_image_info.fImageTiling = VK_IMAGE_TILING_OPTIMAL;
-    vk_image_info.fImageLayout = scoped_write_->image_layout();
+    vk_image_info.fImageLayout = scoped_write.image_layout();
     vk_image_info.fFormat = surface_format;
-    vk_image_info.fImageUsageFlags = scoped_write_->image_usage();
+    vk_image_info.fImageUsageFlags = scoped_write.image_usage();
     vk_image_info.fSampleCount = 1;
     vk_image_info.fLevelCount = 1;
     vk_image_info.fCurrentQueueFamily = VK_QUEUE_FAMILY_IGNORED;
@@ -208,33 +207,38 @@ SkSurface* SkiaOutputDeviceVulkan::BeginPaint(
     vkGetImageMemoryRequirements(
         context_provider_->GetDeviceQueue()->GetVulkanDevice(),
         vk_image_info.fImage, &requirements);
-    sk_surface_size_pairs_[scoped_write_->image_index()].bytes_allocated =
+    sk_surface_size_pairs_[scoped_write.image_index()].bytes_allocated =
         requirements.size;
     memory_type_tracker_->TrackMemAlloc(requirements.size);
     sk_surface = SkSurface::MakeFromBackendTexture(
         context_provider_->GetGrContext(), backend_texture,
         kTopLeft_GrSurfaceOrigin, sample_count_, color_type_, color_space_,
         &surface_props);
-    DCHECK(sk_surface);
+    if (UNLIKELY(!sk_surface)) {
+      return nullptr;
+    }
   } else {
     auto backend = sk_surface->getBackendRenderTarget(
         SkSurface::kFlushRead_BackendHandleAccess);
-    backend.setVkImageLayout(scoped_write_->image_layout());
+    backend.setVkImageLayout(scoped_write.image_layout());
   }
 
-  VkSemaphore vk_semaphore = scoped_write_->begin_semaphore();
+  VkSemaphore vk_semaphore = scoped_write.begin_semaphore();
   DCHECK(vk_semaphore != VK_NULL_HANDLE);
   GrBackendSemaphore semaphore;
   semaphore.initVulkan(vk_semaphore);
   auto result =
       sk_surface->wait(1, &semaphore, /*deleteSemaphoresAfterWait=*/false);
-  DCHECK(result);
+  if (UNLIKELY(!result)) {
+    return nullptr;
+  }
 
-  DCHECK(scoped_write_->end_semaphore() != VK_NULL_HANDLE);
+  DCHECK(scoped_write.end_semaphore() != VK_NULL_HANDLE);
   GrBackendSemaphore end_semaphore;
-  end_semaphore.initVulkan(scoped_write_->end_semaphore());
+  end_semaphore.initVulkan(scoped_write.end_semaphore());
   end_semaphores->push_back(std::move(end_semaphore));
 
+  scoped_write_ = std::move(scoped_write);
   return sk_surface.get();
 }
 
