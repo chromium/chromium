@@ -38,12 +38,6 @@ bool HasNoSniffHeader(const network::mojom::URLResponseHead& response);
 // Returns true if |url| is a valid uuid-in-package URL.
 bool IsValidUuidInPackageURL(const GURL& url);
 
-// Returns true if |url| is a valid UUID URN, i.e. |url| is a URN (RFC 2141)
-// whose NID is "uuid" and its NSS confirms to the syntactic structure
-// described in RFC 4122, section 3.
-// TODO(https://crbug.com/1257045): Remove this when we drop urn:uuid support.
-bool IsValidUrnUuidURL(const GURL& url);
-
 }  // namespace web_package
 
 #endif  // COMPONENTS_WEB_PACKAGE_WEB_BUNDLE_UTILS_H_

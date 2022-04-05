@@ -738,15 +738,6 @@ void WebBundleURLLoaderFactory::OnMetadataParsed(
         "WebBundle format \"b1\" is deprecated. See migration guide at "
         "https://bit.ly/3rpDuEX.");
   }
-  for (auto& it : metadata_->requests) {
-    if (it.first.SchemeIs(url::kUrnScheme)) {
-      web_bundle_handle_->OnWebBundleError(
-          mojom::WebBundleErrorType::kDeprecationWarning,
-          "urn:uuid resource URL in WebBundles is deprecated. See migration "
-          "guide at https://bit.ly/3rpDuEX.");
-      break;
-    }
-  }
 
   if (data_completed_)
     MaybeReportLoadResult(SubresourceWebBundleLoadResult::kSuccess);

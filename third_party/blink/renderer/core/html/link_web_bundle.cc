@@ -181,8 +181,7 @@ bool LinkWebBundle::CanHandleRequest(const KURL& url) const {
     return false;
   if (!ResourcesOrScopesMatch(url))
     return false;
-  // TODO(https://crbug.com/1257045): Remove urn: scheme support.
-  if (url.Protocol() == "urn" || url.Protocol() == "uuid-in-package")
+  if (url.Protocol() == "uuid-in-package")
     return true;
   DCHECK(bundle_loader_);
   if (!bundle_loader_->GetSecurityOrigin()->IsSameOriginWith(
@@ -260,13 +259,11 @@ KURL LinkWebBundle::ParseResourceUrl(const AtomicString& str,
       !url.Pass().IsEmpty())
     return KURL();
 
-  // For now, we allow only http:, https:, urn: and uuid-in-package: schemes in
+  // For now, we allow only http:, https: and uuid-in-package: schemes in
   // Web Bundle URLs.
   // TODO(crbug.com/966753): Revisit this once
   // https://github.com/WICG/webpackage/issues/468 is resolved.
-  // TODO(https://crbug.com/1257045): Remove urn: scheme support.
-  if (!url.ProtocolIsInHTTPFamily() &&
-      !(url.ProtocolIs("urn") || url.ProtocolIs("uuid-in-package")))
+  if (!url.ProtocolIsInHTTPFamily() && !url.ProtocolIs("uuid-in-package"))
     return KURL();
 
   return url;

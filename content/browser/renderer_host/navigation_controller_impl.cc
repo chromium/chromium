@@ -263,11 +263,9 @@ bool DoesURLMatchOriginForNavigation(
 
   const GURL& url_for_origin =
       check_origin_against_base_url ? base_url_for_data_url : destination_url;
-  // Urn: and uuid-in-package: subframe from WebBundle has an opaque origin
-  // derived from the Bundle's origin.
-  // TODO(https://crbug.com/1257045): Remove urn: scheme support.
-  if ((url_for_origin.SchemeIs(url::kUrnScheme) ||
-       url_for_origin.SchemeIs(url::kUuidInPackageScheme)) &&
+  // Uuid-in-package: subframe from WebBundle has an opaque origin derived from
+  // the Bundle's origin.
+  if (url_for_origin.SchemeIs(url::kUuidInPackageScheme) &&
       subresource_web_bundle_navigation_info) {
     return origin->CanBeDerivedFrom(
         subresource_web_bundle_navigation_info->bundle_url());

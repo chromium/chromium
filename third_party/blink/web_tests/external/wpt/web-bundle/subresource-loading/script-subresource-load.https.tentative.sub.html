@@ -306,51 +306,6 @@
     }, "Subresource URL must be same-origin with bundle URL (for 'b1' bundles too)");
 
     promise_test(async () => {
-      const url = "urn:uuid:020111b3-437a-4c5c-ae07-adb6bbffb720";
-      const element = createWebBundleElement("../resources/wbn/urn-uuid.wbn", [
-        url,
-      ]);
-      document.body.appendChild(element);
-      assert_equals(await loadScriptAndWaitReport(url), "OK");
-      document.body.removeChild(element);
-    }, "Subresource loading with urn:uuid: URL with resources attribute");
-
-    promise_test(async () => {
-      const url = "urn:uuid:020111b3-437a-4c5c-ae07-adb6bbffb720";
-      const element = createWebBundleElement(
-        "../resources/wbn/urn-uuid.wbn",
-        [],
-        { scopes: ["urn:uuid:"] }
-      );
-      document.body.appendChild(element);
-      assert_equals(await loadScriptAndWaitReport(url), "OK");
-      document.body.removeChild(element);
-    }, "Subresource loading with urn:uuid: URL with scopes attribute");
-
-    promise_test(async () => {
-      const url = "urn:uuid:020111b3-437a-4c5c-ae07-adb6bbffb720";
-      const element = createWebBundleElement(
-        "../resources/wbn/urn-uuid-b1.wbn",
-        [url]
-      );
-      document.body.appendChild(element);
-      assert_equals(await loadScriptAndWaitReport(url), "OK");
-      document.body.removeChild(element);
-    }, "Subresource loading with urn:uuid: URL of a 'b1' bundle with resources attribute");
-
-    promise_test(async () => {
-      const url = "urn:uuid:020111b3-437a-4c5c-ae07-adb6bbffb720";
-      const element = createWebBundleElement(
-        "../resources/wbn/urn-uuid-b1.wbn",
-        [],
-        { scopes: ["urn:uuid:"] }
-      );
-      document.body.appendChild(element);
-      assert_equals(await loadScriptAndWaitReport(url), "OK");
-      document.body.removeChild(element);
-    }, "Subresource loading with urn:uuid: URL of a 'b1' bundle with scopes attribute");
-
-    promise_test(async () => {
       const url = "uuid-in-package:020111b3-437a-4c5c-ae07-adb6bbffb720";
       const element = createWebBundleElement(
         "../resources/wbn/uuid-in-package.wbn",

@@ -772,16 +772,14 @@ GURL SiteInfo::GetSiteForURLInternal(const IsolationContext& isolation_context,
                        real_url)
                  : real_url;
 
-  // Navigations to uuid-in-package: / urn: URLs served from Web Bundles [1]
-  // require special care to use the origin of the bundle rather than the
-  // uuid-in-package: / urn: URL, which lacks any origin information.
+  // Navigations to uuid-in-package: URLs served from Web Bundles [1] require
+  // special care to use the origin of the bundle rather than the
+  // uuid-in-package: URL, which lacks any origin information.
   // [1] bit.ly/subresource-web-bundles-doc
-  // TODO(https://crbug.com/1257045): Remove urn: scheme support.
   // TODO(acolwell): Update this so we can use url::Origin::Resolve() for all
   // cases.
   url::Origin origin;
-  if ((url.SchemeIs(url::kUrnScheme) ||
-       url.SchemeIs(url::kUuidInPackageScheme)) &&
+  if (url.SchemeIs(url::kUuidInPackageScheme) &&
       real_url_info.origin.opaque()) {
     auto precursor = real_url_info.origin.GetTupleOrPrecursorTupleIfOpaque();
     if (precursor.IsValid()) {

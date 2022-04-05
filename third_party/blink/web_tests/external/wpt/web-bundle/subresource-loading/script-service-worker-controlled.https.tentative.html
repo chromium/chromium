@@ -73,11 +73,11 @@
       assert_array_equals(await getRequestedUrls(worker), [iframe_url]);
 
       // Add a web bundle element in the service worker controlled iframe.
-      const frame_id = "urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae";
-      const script_id = "urn:uuid:020111b3-437a-4c5c-ae07-adb6bbffb720";
+      const frame_id = "uuid-in-package:429fcc4e-0696-4bad-b099-ee9175f023ae";
+      const script_id = "uuid-in-package:020111b3-437a-4c5c-ae07-adb6bbffb720";
 
       const element = createWebBundleElement(
-        "../../resources/wbn/urn-uuid.wbn",
+        "../../resources/wbn/uuid-in-package.wbn",
         /*resources=*/ [frame_id, script_id]
       );
 
@@ -91,8 +91,8 @@
       // The web bundle request should not be intercepted by the service worker.
       assert_array_equals(await getRequestedUrls(worker), []);
 
-      // Add an urn uuid URL script element in the service worker controlled
-      // iframe.
+      // Add a uuid-in-package URL script element in the service worker
+      // controlled iframe.
       const result_promise = new Promise((resolve) => {
         // window.report_result() method will be called by the injected script.
         iframe.contentWindow.report_result = resolve;
@@ -105,7 +105,7 @@
       // service worker.
       assert_array_equals(await getRequestedUrls(worker), []);
 
-      // Add an urn uuid URL iframe element in the service worker controlled
+      // Add a uuid-in-package URL iframe element in the service worker controlled
       // iframe.
       const inner_iframe = iframe.contentDocument.createElement("iframe");
       inner_iframe.src = frame_id;
@@ -120,7 +120,7 @@
       // worker.
       assert_array_equals(await getRequestedUrls(worker), []);
 
-      // Check if the urn uuid URL iframe element is loaded correctly.
+      // Check if the uuid-in-package URL iframe element is loaded correctly.
       const message_promise = new Promise((resolve) => {
         window.addEventListener(
           "message",
@@ -130,7 +130,7 @@
           { once: true }
         );
       });
-      // location.href is evaluated in the urn uuid URL iframe element.
+      // location.href is evaluated in the uuid-in-package URL iframe element.
       inner_iframe.contentWindow.postMessage("location.href", "*");
       assert_equals(await message_promise, frame_id);
     }, "Both Web Bundle request and Subresource fetch requests inside the Web " + "Bundle should skip the service worker.");

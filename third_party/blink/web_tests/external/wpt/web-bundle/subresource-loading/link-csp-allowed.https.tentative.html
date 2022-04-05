@@ -8,7 +8,6 @@
   http-equiv="Content-Security-Policy"
   content="
     script-src
-      https://web-platform.test:8444/web-bundle/resources/wbn/urn-uuid.wbn
       https://web-platform.test:8444/web-bundle/resources/wbn/uuid-in-package.wbn
       https://web-platform.test:8444/resources/testharness.js
       https://web-platform.test:8444/resources/testharnessreport.js
@@ -16,7 +15,6 @@
     img-src
       https://web-platform.test:8444/web-bundle/resources/wbn/pass.png;
     frame-src
-      https://web-platform.test:8444/web-bundle/resources/wbn/urn-uuid.wbn
       https://web-platform.test:8444/web-bundle/resources/wbn/uuid-in-package.wbn"
 >
 <script src="/resources/testharness.js"></script>
@@ -24,9 +22,6 @@
 <body>
 <link rel="webbundle" href="../resources/wbn/subresource.wbn"
       resources="https://web-platform.test:8444/web-bundle/resources/wbn/pass.png" />
-<link rel="webbundle" href="../resources/wbn/urn-uuid.wbn"
-      resources="urn:uuid:020111b3-437a-4c5c-ae07-adb6bbffb720
-                 urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae" />
 <link rel="webbundle" href="../resources/wbn/uuid-in-package.wbn"
       resources="uuid-in-package:020111b3-437a-4c5c-ae07-adb6bbffb720
                  uuid-in-package:429fcc4e-0696-4bad-b099-ee9175f023ae" />
@@ -47,39 +42,12 @@
       // This function will be called from the script.
       window.report_result = resolve;
       const script = document.createElement('script');
-      script.src = 'urn:uuid:020111b3-437a-4c5c-ae07-adb6bbffb720';
-      document.body.appendChild(script);
-    });
-    assert_equals(result, 'OK');
-  }, 'URL matching of script-src CSP should be done based on the bundle URL ' +
-     'when the subresource URL is urn:uuid URL.');
-
-  promise_test(async () => {
-    const result = await new Promise((resolve) => {
-      // This function will be called from the script.
-      window.report_result = resolve;
-      const script = document.createElement('script');
       script.src = 'uuid-in-package:020111b3-437a-4c5c-ae07-adb6bbffb720';
       document.body.appendChild(script);
     });
     assert_equals(result, 'OK');
   }, 'URL matching of script-src CSP should be done based on the bundle URL ' +
      'when the subresource URL is uuid-in-package: URL.');
-
-  promise_test(async () => {
-    const frame_url = 'urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae';
-    const iframe = document.createElement('iframe');
-    iframe.src = frame_url;
-    const load_promise = new Promise((resolve) => {
-      iframe.addEventListener('load', resolve);
-    });
-    document.body.appendChild(iframe);
-    await load_promise;
-    assert_equals(
-        await evalInIframe(iframe, 'location.href'),
-        frame_url);
-  }, 'URL matching of frame-src CSP should be done based on the bundle URL ' +
-     'when the frame URL is urn:uuid URL.');
 
   promise_test(async () => {
     const frame_url = 'uuid-in-package:429fcc4e-0696-4bad-b099-ee9175f023ae';

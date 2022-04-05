@@ -5572,8 +5572,7 @@ String Document::cookie(ExceptionState& exception_state) const {
     } else {
       exception_state.ThrowSecurityError("Access is denied for this document.");
       // Count cookie accesses in opaque-origin documents from WebBundles.
-      // TODO(https://crbug.com/1257045): Remove urn: scheme support.
-      if (Url().ProtocolIs("urn") || Url().ProtocolIs("uuid-in-package")) {
+      if (Url().ProtocolIs("uuid-in-package")) {
         CountUse(WebFeature::kUrnDocumentAccessedCookies);
       }
     }
@@ -5602,8 +5601,7 @@ void Document::setCookie(const String& value, ExceptionState& exception_state) {
     } else {
       exception_state.ThrowSecurityError("Access is denied for this document.");
       // Count cookie accesses in opaque-origin documents from WebBundles.
-      // TODO(https://crbug.com/1257045): Remove urn: scheme support.
-      if (Url().ProtocolIs("urn") || Url().ProtocolIs("uuid-in-package")) {
+      if (Url().ProtocolIs("uuid-in-package")) {
         CountUse(WebFeature::kUrnDocumentAccessedCookies);
       }
     }

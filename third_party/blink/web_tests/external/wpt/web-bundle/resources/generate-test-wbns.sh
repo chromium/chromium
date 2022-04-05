@@ -67,12 +67,6 @@ gen-bundle \
 
 gen-bundle \
   -version b1 \
-  -har urn-uuid.har \
-  -primaryURL urn:uuid:020111b3-437a-4c5c-ae07-adb6bbffb720 \
-  -o wbn/urn-uuid-b1.wbn
-
-gen-bundle \
-  -version b1 \
   -har cross-origin.har \
   -primaryURL $wpt_test_remote_origin/web-bundle/resources/wbn/cors/resource.cors.js \
   -o wbn/cors/cross-origin-b1.wbn
@@ -136,11 +130,6 @@ gen-bundle \
   -baseURL $wpt_test_origin/web-bundle/resources/ \
   -dir path-restriction/ \
   -o wbn/path-restriction.wbn
-
-gen-bundle \
-  -version b2 \
-  -har urn-uuid.har \
-  -o wbn/urn-uuid.wbn
 
 gen-bundle \
   -version b2 \

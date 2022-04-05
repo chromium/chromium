@@ -313,10 +313,11 @@ TEST_F(WebBundleParserTest, RequestURLHasFragment) {
   ExpectFormatError(ParseBundle(&data_source));
 }
 
-TEST_F(WebBundleParserTest, RequestURLIsValidUrnUuid) {
-  const char urn_uuid[] = "urn:uuid:f81d4fae-7dec-11d0-a765-00a0c91e6bf6";
+TEST_F(WebBundleParserTest, RequestURLIsValidUuidInPackage) {
+  const char uuid_in_package[] =
+      "uuid-in-package:f81d4fae-7dec-11d0-a765-00a0c91e6bf6";
   WebBundleBuilder builder(kFallbackUrl, kManifestUrl);
-  builder.AddExchange(urn_uuid,
+  builder.AddExchange(uuid_in_package,
                       {{":status", "200"}, {"content-type", "text/plain"}},
                       "payload");
   TestDataSource data_source(builder.CreateBundle());
@@ -324,14 +325,14 @@ TEST_F(WebBundleParserTest, RequestURLIsValidUrnUuid) {
   mojom::BundleMetadataPtr metadata = ParseBundle(&data_source).first;
   ASSERT_TRUE(metadata);
   ASSERT_EQ(metadata->requests.size(), 1u);
-  auto location = FindResponse(metadata, GURL(urn_uuid));
+  auto location = FindResponse(metadata, GURL(uuid_in_package));
   ASSERT_TRUE(location);
 }
 
-TEST_F(WebBundleParserTest, RequestURLIsInvalidUrnUuid) {
-  const char urn_uuid[] = "urn:uuid:invalid";
+TEST_F(WebBundleParserTest, RequestURLIsInvalidUuidInPackage) {
+  const char uuid_in_package[] = "uuid-in-package:invalid";
   WebBundleBuilder builder(kFallbackUrl, kManifestUrl);
-  builder.AddExchange(urn_uuid,
+  builder.AddExchange(uuid_in_package,
                       {{":status", "200"}, {"content-type", "text/plain"}},
                       "payload");
   TestDataSource data_source(builder.CreateBundle());

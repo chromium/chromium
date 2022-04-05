@@ -73,12 +73,4 @@ bool IsValidUuidInPackageURL(const GURL& url) {
              .is_valid();
 }
 
-bool IsValidUrnUuidURL(const GURL& url) {
-  std::string spec = url.spec();
-  return base::StartsWith(spec,
-                          "urn:uuid:", base::CompareCase::INSENSITIVE_ASCII) &&
-         base::GUID::ParseCaseInsensitive(base::StringPiece(spec).substr(9))
-             .is_valid();
-}
-
 }  // namespace web_package

@@ -819,11 +819,9 @@ url::Origin GetOriginForURLLoaderFactoryUnchecked(
     return parent ? parent->GetLastCommittedOrigin() : url::Origin();
   }
 
-  // Uuid-in-package: and urn: subframes from WebBundles have opaque origins
-  // derived from the Bundle's origin.
-  // TODO(https://crbug.com/1257045): Remove urn: scheme support.
-  if ((common_params.url.SchemeIs(url::kUrnScheme) ||
-       common_params.url.SchemeIs(url::kUuidInPackageScheme)) &&
+  // Uuid-in-package: subframes from WebBundles have opaque origins derived from
+  // the Bundle's origin.
+  if (common_params.url.SchemeIs(url::kUuidInPackageScheme) &&
       navigation_request->GetWebBundleURL().is_valid()) {
     return url::Origin::Resolve(
         common_params.url,
@@ -4529,12 +4527,10 @@ void NavigationRequest::CommitNavigation() {
 
   AddOldPageInfoToCommitParamsIfNeeded();
 
-  // For uuid-in-package: and urn: resources served from WebBundles, use the
-  // Bundle's origin.
-  // TODO(https://crbug.com/1257045): Remove urn: scheme support.
+  // For uuid-in-package: resources served from WebBundles, use the Bundle's
+  // origin.
   url::Origin origin =
-      ((common_params_->url.SchemeIs(url::kUrnScheme) ||
-        common_params_->url.SchemeIs(url::kUuidInPackageScheme)) &&
+      (common_params_->url.SchemeIs(url::kUuidInPackageScheme) &&
        GetWebBundleURL().is_valid())
           ? url::Origin::Create(GetWebBundleURL())
           : GetOriginToCommit();
@@ -4978,12 +4974,10 @@ bool NavigationRequest::IsAllowedByCSPDirective(
     GURL::Replacements replacements;
     replacements.SetSchemeStr(url::kHttpScheme);
     url = common_params_->url.ReplaceComponents(replacements);
-  } else if ((common_params_->url.SchemeIs(url::kUrnScheme) ||
-              common_params_->url.SchemeIs(url::kUuidInPackageScheme)) &&
+  } else if (common_params_->url.SchemeIs(url::kUuidInPackageScheme) &&
              begin_params_->web_bundle_token.has_value()) {
-    // When navigating to a uuid-in-package: / urn: resource in a web bundle, we
-    // check the bundle URL instead of the uuid-in-package: URL.
-    // TODO(https://crbug.com/1257045): Remove urn: scheme support.
+    // When navigating to a uuid-in-package: resource in a web bundle, we check
+    // the bundle URL instead of the uuid-in-package: URL.
     url = begin_params_->web_bundle_token->bundle_url;
   } else {
     url = common_params_->url;

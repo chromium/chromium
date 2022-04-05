@@ -24,14 +24,10 @@
 <body>
 <link rel="webbundle" href="../resources/wbn/subresource.wbn"
       resources="https://web-platform.test:8444/web-bundle/resources/wbn/fail.png" />
-<link rel="webbundle" href="../resources/wbn/urn-uuid.wbn"
-      resources="urn:uuid:020111b3-437a-4c5c-ae07-adb6bbffb720
-                 urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae" />
 <link rel="webbundle" href="../resources/wbn/uuid-in-package.wbn"
       resources="uuid-in-package:020111b3-437a-4c5c-ae07-adb6bbffb720
                  uuid-in-package:429fcc4e-0696-4bad-b099-ee9175f023ae" />
 <script>
-  const urn_bundle_url = 'https://web-platform.test:8444/web-bundle/resources/wbn/urn-uuid.wbn';
   const uuid_bundle_url = 'https://web-platform.test:8444/web-bundle/resources/wbn/uuid-in-package.wbn';
 
   function expect_violation() {
@@ -76,10 +72,6 @@
      'not on the bundle URL, when the subresource URL is HTTPS URL.');
 
   const testCases = [
-    {
-      prefix: 'urn:uuid:',
-      bundle_url: urn_bundle_url
-    },
     {
       prefix: 'uuid-in-package:',
       bundle_url: uuid_bundle_url
@@ -137,22 +129,18 @@
     const reports = await (await fetch(retrieve_report_url)).json();
     sortReportsByEffectiveDirective(reports);
 
-    assert_equals(reports.length, 5, "Report count.");
+    assert_equals(reports.length, 3, "Report count.");
 
-    assert_equals(reports[0].body.blockedURL, urn_bundle_url);
+    assert_equals(reports[0].body.blockedURL, uuid_bundle_url);
     assert_equals(reports[0].body.effectiveDirective, 'frame-src');
-    assert_equals(reports[1].body.blockedURL, uuid_bundle_url);
-    assert_equals(reports[1].body.effectiveDirective, 'frame-src');
 
     assert_equals(
-      reports[2].body.blockedURL,
+      reports[1].body.blockedURL,
       'https://web-platform.test:8444/web-bundle/resources/wbn/fail.png');
-    assert_equals(reports[2].body.effectiveDirective, 'img-src',);
+    assert_equals(reports[1].body.effectiveDirective, 'img-src',);
 
-    assert_equals(reports[3].body.blockedURL, urn_bundle_url);
-    assert_equals(reports[3].body.effectiveDirective, 'script-src-elem');
-    assert_equals(reports[4].body.blockedURL, uuid_bundle_url);
-    assert_equals(reports[4].body.effectiveDirective, 'script-src-elem');
+    assert_equals(reports[2].body.blockedURL, uuid_bundle_url);
+    assert_equals(reports[2].body.effectiveDirective, 'script-src-elem');
   }, 'Check the CSP violation reports.');
 </script>
 </body>
