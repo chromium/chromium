@@ -71,10 +71,6 @@ char kTSanDefaultSuppressions[] =
     // http://crbug.com/328868
     "race:PR_Lock\n"
 
-    // http://crbug.com/348984
-    "race:sctp_express_handle_sack\n"
-    "race:system_base_info\n"
-
     // False positive in libc's tzset_internal, http://crbug.com/379738.
     "race:tzset_internal\n"
 
@@ -95,9 +91,6 @@ char kTSanDefaultSuppressions[] =
 
     // https://crbug.com/459429
     "race:randomnessPid\n"
-
-    // http://crbug.com/582274
-    "race:usrsctp_close\n"
 
     // http://crbug.com/633145
     "race:third_party/libjpeg_turbo/simd/jsimd_x86_64.c\n"

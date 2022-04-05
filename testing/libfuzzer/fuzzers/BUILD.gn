@@ -71,11 +71,6 @@ fuzzer_test("url_parse_proto_fuzzer") {
   ]
 }
 
-fuzzer_test("usrsctp_fuzzer") {
-  sources = [ "usrsctp_fuzzer.cc" ]
-  deps = [ "//third_party/usrsctp" ]
-}
-
 fuzzer_test("libsrtp_fuzzer") {
   sources = [ "libsrtp_fuzzer.cc" ]
   deps = [ "//third_party/libsrtp" ]

@@ -56,7 +56,6 @@
 ./third_party/re2/src,Re2
 ./third_party/wayland/src,wayland
 ./third_party/ced/src,ced
-./third_party/usrsctp/usrsctplib,usrsctp
 ./third_party/pywebsocket3/src,PyWebsocket
 ./third_party/cld_3/src,cld
 ./third_party/libsync/src,libsync

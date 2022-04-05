@@ -1694,9 +1694,6 @@ deps = {
       'condition': 'checkout_android',
   },
 
-  'src/third_party/usrsctp/usrsctplib':
-    Var('chromium_git') + '/external/github.com/sctplab/usrsctp' + '@' + '62d7d0c928c9a040dce96aa2f16c00e7e67d59cb',
-
   'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@15f2db7e77f2e65d6d644d79d2ad03dd719b2d77',
 
   'src/third_party/vulkan_memory_allocator':
