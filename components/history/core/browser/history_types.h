@@ -877,7 +877,8 @@ struct Cluster {
 
   int64_t cluster_id = 0;
   std::vector<ClusterVisit> visits;
-  // TODO(manukh): retrieve and persist `keywords`.
+  // TODO(manukh): retrieve and persist `keywords`,
+  // `should_show_on_prominent_ui_surfaces, and `label`.
   std::vector<std::u16string> keywords;
   // Whether the cluster should be shown prominently on UI surfaces.
   bool should_show_on_prominent_ui_surfaces = true;

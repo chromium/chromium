@@ -150,7 +150,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
     virtual void NotifyFaviconsChanged(const std::set<GURL>& page_urls,
                                        const GURL& icon_url) = 0;
 
-    // Notify HistoryService that the user is visiting an URL. The event will
+    // Notify HistoryService that the user is visiting a URL. The event will
     // be forwarded to the HistoryServiceObservers in the correct thread.
     virtual void NotifyURLVisited(ui::PageTransition transition,
                                   const URLRow& row,
@@ -221,7 +221,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
             const HistoryDatabaseParams& history_database_params);
 
   // Notification that the history system is shutting down. This will break
-  // the refs owned by the delegate and any pending transaction so it will
+  // the refs owned by the delegate and any pending transaction, so it will
   // actually be deleted.
   void Closing();
 
@@ -236,7 +236,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // Clears all on-demand favicons.
   void ClearAllOnDemandFavicons();
 
-  // Gets the counts and last last time of URLs that belong to `origins` in the
+  // Gets the counts and last time of URLs that belong to `origins` in the
   // history database. Origins that are not in the history database will be in
   // the map with a count and time of 0.
   // Returns an empty map if db_ is not initialized.
@@ -456,21 +456,27 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
       VisitID visit_id,
       const VisitContextAnnotations& visit_context_annotations);
 
-  // Gets a vector of reverse-chronological `AnnotatedVisit` instances based on
-  // `options`. Uses the same de-duplication and visibility logic as
-  // `HistoryService::QueryHistory()`.
-  //
-  // If `limited_by_max_count` is non-nullptr, it will be set to true if the
-  // number of results was limited by `options.max_count`.
   std::vector<AnnotatedVisit> GetAnnotatedVisits(
       const QueryOptions& options,
       bool* limited_by_max_count = nullptr);
 
-  ClusterIdsAndAnnotatedVisitsResult GetRecentClusterIdsAndAnnotatedVisits(
-      base::Time minimum_time,
-      int max_results);
+  // Utility method to Construct `AnnotatedVisit`s.
+  std::vector<AnnotatedVisit> ToAnnotatedVisits(const VisitVector& visit_rows);
 
-  std::vector<Cluster> GetClusters(int max_results);
+  // Like above, but will first construct `visit_rows` from each `VisitID`
+  // before delegating to the overloaded `ToAnnotatedVisits()` above.
+  std::vector<AnnotatedVisit> ToAnnotatedVisits(
+      const std::vector<VisitID>& visit_ids);
+
+  void ReplaceClusters(const std::vector<int64_t>& ids_to_delete,
+                       const std::vector<Cluster>& clusters_to_add);
+
+  std::vector<Cluster> GetMostRecentClusters(base::Time inclusive_min_time,
+                                             base::Time exclusive_max_time,
+                                             int max_clusters);
+
+  // Get a `Cluster`.
+  Cluster GetCluster(int64_t cluster_id);
 
   // Finds the 1st visit in the redirect chain containing `visit`. Similar to
   // `GetRedirectsToSpecificVisit()`, except 1) only returns the 1st visit of
@@ -557,7 +563,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   // Calls ExpireHistoryBetween() once for each element in the vector.
   // The fields of `ExpireHistoryArgs` map directly to the arguments of
-  // of ExpireHistoryBetween().
+  // ExpireHistoryBetween().
   void ExpireHistory(const std::vector<ExpireHistoryArgs>& expire_list);
 
   // Expires all visits before and including the given time, updating the URLs
@@ -698,13 +704,6 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // Performs a brute force search over the database to find any host names that
   // match the `host_name` string. Returns any matches.
   URLRows GetMatchesForHost(const std::u16string& host_name);
-
-  // Clusters ------------------------------------------------------------------
-
-  // Convert `AnnotatedVisitRow`s to `AnnotatedVisit`s. Drops rows without
-  // associated URL or visit rows, though this shouldn't happen usually.
-  std::vector<AnnotatedVisit> AnnotatedVisitsFromRows(
-      const std::vector<AnnotatedVisitRow>& rows);
 
   // Committing ----------------------------------------------------------------
 

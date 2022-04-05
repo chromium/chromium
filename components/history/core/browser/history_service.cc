@@ -293,31 +293,32 @@ base::CancelableTaskTracker::TaskId HistoryService::GetAnnotatedVisits(
       std::move(callback));
 }
 
-base::CancelableTaskTracker::TaskId
-HistoryService::GetRecentClusterIdsAndAnnotatedVisits(
-    base::Time minimum_time,
-    int max_results,
-    base::OnceCallback<void(ClusterIdsAndAnnotatedVisitsResult)> callback,
+base::CancelableTaskTracker::TaskId HistoryService::ReplaceClusters(
+    const std::vector<int64_t>& ids_to_delete,
+    const std::vector<Cluster>& clusters_to_add,
+    base::OnceClosure callback,
     base::CancelableTaskTracker* tracker) {
   DCHECK(backend_task_runner_) << "History service being called after cleanup";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return tracker->PostTaskAndReplyWithResult(
+  return tracker->PostTaskAndReply(
       backend_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&HistoryBackend::GetRecentClusterIdsAndAnnotatedVisits,
-                     history_backend_, minimum_time, max_results),
+      base::BindOnce(&HistoryBackend::ReplaceClusters, history_backend_,
+                     ids_to_delete, clusters_to_add),
       std::move(callback));
 }
 
-base::CancelableTaskTracker::TaskId HistoryService::GetClusters(
-    int max_results,
+base::CancelableTaskTracker::TaskId HistoryService::GetMostRecentClusters(
+    base::Time inclusive_min_time,
+    base::Time exclusive_max_time,
+    int max_clusters,
     base::OnceCallback<void(std::vector<Cluster>)> callback,
     base::CancelableTaskTracker* tracker) {
   DCHECK(backend_task_runner_) << "History service being called after cleanup";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return tracker->PostTaskAndReplyWithResult(
       backend_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&HistoryBackend::GetClusters, history_backend_,
-                     max_results),
+      base::BindOnce(&HistoryBackend::GetMostRecentClusters, history_backend_,
+                     inclusive_min_time, exclusive_max_time, max_clusters),
       std::move(callback));
 }
 

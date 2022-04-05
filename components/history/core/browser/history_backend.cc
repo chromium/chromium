@@ -28,6 +28,7 @@
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
+#include "base/ranges/ranges.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -1545,6 +1546,14 @@ std::vector<AnnotatedVisit> HistoryBackend::GetAnnotatedVisits(
 
   DCHECK_LE(static_cast<int>(visit_rows.size()), options.EffectiveMaxCount());
 
+  return ToAnnotatedVisits(visit_rows);
+}
+
+std::vector<AnnotatedVisit> HistoryBackend::ToAnnotatedVisits(
+    const VisitVector& visit_rows) {
+  if (!db_)
+    return {};
+
   VisitSourceMap sources;
   GetVisitsSource(visit_rows, &sources);
 
@@ -1588,118 +1597,66 @@ std::vector<AnnotatedVisit> HistoryBackend::GetAnnotatedVisits(
   return annotated_visits;
 }
 
-ClusterIdsAndAnnotatedVisitsResult
-HistoryBackend::GetRecentClusterIdsAndAnnotatedVisits(base::Time minimum_time,
-                                                      int max_results) {
-  TRACE_EVENT0("browser",
-               "HistoryBackend::GetRecentClusterIdsAndAnnotatedVisits");
+std::vector<AnnotatedVisit> HistoryBackend::ToAnnotatedVisits(
+    const std::vector<VisitID>& visit_ids) {
   if (!db_)
     return {};
-
-  // Only interested in up to `max_results` unique `VisitID`s.
-  std::set<VisitID> recent_visit_ids;
-  const auto add_visit_ids = [&](std::vector<VisitID> visit_ids) {
-    for (const auto visit_id : visit_ids) {
-      if (recent_visit_ids.size() >= static_cast<size_t>(max_results))
-        break;
-      recent_visit_ids.insert(visit_id);
-    }
-  };
-
-  // Add recent visits.
-  add_visit_ids(db_->GetRecentAnnotatedVisitIds(minimum_time, max_results));
-
-  // Add visits in recent clusters.
-  std::vector<int64_t> recent_cluster_ids =
-      db_->GetRecentClusterIds(minimum_time);
-  for (const auto cluster_id : recent_cluster_ids) {
-    if (recent_visit_ids.size() >= static_cast<size_t>(max_results))
-      break;
-    // Request `max_results` visits instead of `max_results -
-    // recent_visit_ids.size()`, as some of the returned IDs may already be in
-    // `recent_visit_ids`.
-    add_visit_ids(db_->GetVisitIdsInCluster(cluster_id, max_results));
+  VisitVector visit_rows;
+  for (const auto visit_id : visit_ids) {
+    VisitRow visit_row;
+    if (db_->GetRowForVisit(visit_id, &visit_row))
+      visit_rows.push_back(visit_row);
   }
-
-  // Convert the `VisitID`s to `AnnotatedVisitRow`s.
-  std::vector<AnnotatedVisitRow> recent_annotated_visit_rows;
-  base::ranges::transform(
-      recent_visit_ids, std::back_inserter(recent_annotated_visit_rows),
-      [&](const VisitID& visit_id) {
-        AnnotatedVisitRow row;
-        row.visit_id = visit_id;
-        // Deliberately ignore the return values. It's okay if the annotations
-        // don't exist and the structs are left unchanged.
-        db_->GetContentAnnotationsForVisit(visit_id, &row.content_annotations);
-        db_->GetContextAnnotationsForVisit(visit_id, &row.context_annotations);
-        return row;
-      });
-
-  return {recent_cluster_ids,
-          AnnotatedVisitsFromRows(recent_annotated_visit_rows)};
+  return ToAnnotatedVisits(visit_rows);
 }
 
-std::vector<Cluster> HistoryBackend::GetClusters(int max_results) {
-  TRACE_EVENT0("browser", "HistoryBackend::GetClusters");
+void HistoryBackend::ReplaceClusters(
+    const std::vector<int64_t>& ids_to_delete,
+    const std::vector<Cluster>& clusters_to_add) {
+  TRACE_EVENT0("browser", "HistoryBackend::ReplaceClusters");
+  if (!db_)
+    return;
+  db_->DeleteClusters(ids_to_delete);
+  db_->AddClusters(clusters_to_add);
+  ScheduleCommit();
+}
+
+std::vector<Cluster> HistoryBackend::GetMostRecentClusters(
+    base::Time inclusive_min_time,
+    base::Time exclusive_max_time,
+    int max_clusters) {
+  TRACE_EVENT0("browser", "HistoryBackend::GetMostRecentClusters");
   if (!db_)
     return {};
-
-  std::vector<ClusterRow> cluster_rows = db_->GetClusters(max_results);
-  std::vector<AnnotatedVisitRow> annotated_visit_rows =
-      db_->GetClusteredAnnotatedVisits(max_results);
-  std::vector<AnnotatedVisit> annotated_visits =
-      AnnotatedVisitsFromRows(annotated_visit_rows);
-
+  const auto cluster_ids = db_->GetMostRecentClusterIds(
+      inclusive_min_time, exclusive_max_time, max_clusters);
   std::vector<Cluster> clusters;
-
-  for (const auto& cluster_row : cluster_rows) {
-    std::vector<ClusterVisit> current_cluster_visits;
-    for (VisitID annotated_visit_id : cluster_row.visit_ids) {
-      const auto annotated_visits_it =
-          base::ranges::find(annotated_visits, annotated_visit_id,
-                             [](const auto& annotated_visit) {
-                               return annotated_visit.visit_row.visit_id;
-                             });
-      // TODO(manukh): Add scores.
-      if (annotated_visits_it != annotated_visits.end()) {
-        ClusterVisit cluster_visit;
-        cluster_visit.annotated_visit = *annotated_visits_it;
-        current_cluster_visits.push_back(cluster_visit);
-      }
-    }
-    if (!current_cluster_visits.empty()) {
-      clusters.push_back({cluster_row.cluster_id, current_cluster_visits, {}});
-    }
-  }
+  base::ranges::transform(
+      cluster_ids, std::back_inserter(clusters),
+      [&](const auto& cluster_id) { return GetCluster(cluster_id); });
   return clusters;
 }
 
-std::vector<AnnotatedVisit> HistoryBackend::AnnotatedVisitsFromRows(
-    const std::vector<AnnotatedVisitRow>& rows) {
-  std::vector<AnnotatedVisit> annotated_visits;
-  for (const auto& annotated_visit_row : rows) {
-    URLRow url_row;
-    VisitRow visit_row;
-    if (db_->GetRowForVisit(annotated_visit_row.visit_id, &visit_row) &&
-        db_->GetURLRow(visit_row.url_id, &url_row)) {
-      VisitSource source;
-      GetVisitSource(annotated_visit_row.visit_id, &source);
-      VisitRow redirect_start = GetRedirectChainStart(visit_row);
-      annotated_visits.push_back({url_row,
-                                  visit_row,
-                                  annotated_visit_row.context_annotations,
-                                  {},
-                                  redirect_start.referring_visit,
-                                  redirect_start.opener_visit,
-                                  source});
-    } else {
-      // Ignore corrupt data but do not crash, as user DBs can be in bad states.
-      DVLOG(0) << "HistoryBackend: AnnotatedVisit found with missing associated"
-                  "URL or visit. visit_id = "
-               << annotated_visit_row.visit_id;
-    }
-  }
-  return annotated_visits;
+Cluster HistoryBackend::GetCluster(int64_t cluster_id) {
+  TRACE_EVENT0("browser", "HistoryBackend::GetCluster");
+  if (!db_)
+    return {};
+
+  // TODO(manukh): `Cluster`s and `ClusterRow`s have more fields that should be
+  //  set here once we begin persisting them to DB.
+
+  Cluster cluster;
+  cluster.cluster_id = cluster_id;
+
+  const auto visit_ids = db_->GetVisitIdsInCluster(cluster_id);
+  const auto annotated_visits = ToAnnotatedVisits(visit_ids);
+  base::ranges::transform(annotated_visits, std::back_inserter(cluster.visits),
+                          [&](const auto& annotated_visit) {
+                            ClusterVisit cluster_visit;
+                            cluster_visit.annotated_visit = annotated_visit;
+                            return cluster_visit;
+                          });
+  return cluster;
 }
 
 VisitRow HistoryBackend::GetRedirectChainStart(VisitRow visit) {

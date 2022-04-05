@@ -44,14 +44,6 @@ class VisitAnnotationsDatabaseTest : public testing::Test,
     AddClusters({CreateCluster(visit_ids)});
   }
 
-  void VerifyRecentAnnotatedVisitIds(
-      const std::vector<VisitID>& expected_visit_ids,
-      base::Time time = base::Time::Min(),
-      int max_results = 100) {
-    EXPECT_EQ(GetRecentAnnotatedVisitIds(time, max_results),
-              expected_visit_ids);
-  }
-
   void ExpectContextAnnotations(VisitContextAnnotations actual,
                                 VisitContextAnnotations expected) {
     EXPECT_EQ(actual.omnibox_url_copied, expected.omnibox_url_copied);
@@ -218,39 +210,29 @@ TEST_F(VisitAnnotationsDatabaseTest, UpdateContentAnnotationsForVisit) {
   EXPECT_EQ(final.search_terms, u"search2");
 }
 
-TEST_F(VisitAnnotationsDatabaseTest,
-       GetRecentAnnotatedVisitIds_GetRecentClusters) {
-  // Shouldn't return old unclustered visits.
-  AddVisitWithTime(IntToTime(10));
-  // Shouldn't return old clustered visits.
+TEST_F(VisitAnnotationsDatabaseTest, GetMostRecentClusterIds) {
   AddCluster(
       {AddVisitWithTime(IntToTime(11)), AddVisitWithTime(IntToTime(12))});
-  // Should return recent unclustered visits.
-  AddVisitWithTime(IntToTime(100));
-  // Should return recent clustered visits.
   AddCluster(
       {AddVisitWithTime(IntToTime(101)), AddVisitWithTime(IntToTime(102))});
-  // Shouldn't return old visits in recent clusters.
   AddCluster(
-      {AddVisitWithTime(IntToTime(13)), AddVisitWithTime(IntToTime(103))});
+      {AddVisitWithTime(IntToTime(13)), AddVisitWithTime(IntToTime(104))});
+  AddCluster(
+      {AddVisitWithTime(IntToTime(103)), AddVisitWithTime(IntToTime(50))});
 
-  // Verify `GetRecentAnnotatedVisitIds()`.
-  VerifyRecentAnnotatedVisitIds({8, 6, 5, 4}, IntToTime(100));
-  // Verify `GetRecentAnnotatedVisitIds()` with `time`.
-  VerifyRecentAnnotatedVisitIds({8, 7, 6, 5, 4, 3, 2, 1}, IntToTime(10));
-  VerifyRecentAnnotatedVisitIds({}, IntToTime(104));
-  // Verify `GetRecentAnnotatedVisitIds()` with `max_results`.
-  VerifyRecentAnnotatedVisitIds({8, 7, 6}, IntToTime(10), 3);
-
-  // Verify `GetRecentClusterIds()`.
-  EXPECT_EQ(GetRecentClusterIds(IntToTime(100)), std::vector<int64_t>({3, 2}));
-  EXPECT_EQ(GetRecentClusterIds(IntToTime(10)),
-            std::vector<int64_t>({3, 2, 1}));
-  EXPECT_EQ(GetRecentClusterIds(IntToTime(104)), std::vector<int64_t>({}));
+  // Should return clusters with at least 1 visit >= min time.
+  // Should be ordered max visit time descending.
+  EXPECT_EQ(GetMostRecentClusterIds(IntToTime(101), IntToTime(120), 10),
+            std::vector<int64_t>({3, 4, 2}));
+  // Should not return clusters with visits > max time.
+  EXPECT_EQ(GetMostRecentClusterIds(IntToTime(100), IntToTime(103), 10),
+            std::vector<int64_t>({2}));
+  // Should return at most `max_clusters`.
+  EXPECT_EQ(GetMostRecentClusterIds(IntToTime(0), IntToTime(500), 1),
+            std::vector<int64_t>({3}));
 }
 
-TEST_F(VisitAnnotationsDatabaseTest,
-       GetClusteredAnnotatedVisits_GetVisitsInCluster) {
+TEST_F(VisitAnnotationsDatabaseTest, GetVisitsInCluster) {
   // Add unclustered visits.
   AddVisitWithTime(IntToTime(0));
   AddVisitWithTime(IntToTime(2));
@@ -260,12 +242,8 @@ TEST_F(VisitAnnotationsDatabaseTest,
   AddCluster({AddVisitWithTime(IntToTime(3))});
   AddCluster({AddVisitWithTime(IntToTime(5)), AddVisitWithTime(IntToTime(7))});
 
-  EXPECT_THAT(GetVisitIds(GetClusteredAnnotatedVisits(10)),
-              ElementsAre(7, 6, 5, 4));
-  EXPECT_THAT(GetVisitIdsInCluster(1, 10), ElementsAre(4));
-  EXPECT_THAT(GetVisitIdsInCluster(2, 0), ElementsAre());
-  EXPECT_THAT(GetVisitIdsInCluster(3, 10), ElementsAre(7, 6));
-  EXPECT_THAT(GetVisitIdsInCluster(3, 1), ElementsAre(7));
+  EXPECT_THAT(GetVisitIdsInCluster(1), ElementsAre(4));
+  EXPECT_THAT(GetVisitIdsInCluster(3), ElementsAre(7, 6));
 }
 
 TEST_F(VisitAnnotationsDatabaseTest, DeleteAnnotationsForVisit) {
@@ -296,41 +274,25 @@ TEST_F(VisitAnnotationsDatabaseTest, DeleteAnnotationsForVisit) {
       GetContentAnnotationsForVisit(visit_id, &got_content_annotations));
 }
 
-TEST_F(VisitAnnotationsDatabaseTest, AddClusters_GetClusters_DeleteClusters) {
-  const auto verify_clusters =
-      [&](const std::vector<ClusterRow>& actual_clusters,
-          const std::vector<ClusterRow>& expected_clusters) {
-        ASSERT_EQ(actual_clusters.size(), expected_clusters.size());
-        for (size_t i = 0; i < actual_clusters.size(); ++i) {
-          SCOPED_TRACE(i);
-          EXPECT_EQ(actual_clusters[i].cluster_id,
-                    expected_clusters[i].cluster_id);
-          EXPECT_EQ(actual_clusters[i].visit_ids,
-                    expected_clusters[i].visit_ids);
-        }
-      };
-
+TEST_F(VisitAnnotationsDatabaseTest, AddClusters_DeleteClusters) {
   AddClusters(CreateClusters({{3, 2, 5}, {3, 2, 5}, {6}}));
 
-  {
-    SCOPED_TRACE("`GetClusters(10)`");
-    verify_clusters(GetClusters(10),
-                    {CreateClusterRow(1, {5, 3, 2}),
-                     CreateClusterRow(2, {5, 3, 2}), CreateClusterRow(3, {6})});
-  }
-  {
-    SCOPED_TRACE("`GetClusters(5)`");
-    verify_clusters(GetClusters(5), {CreateClusterRow(1, {5, 3, 2}),
-                                     CreateClusterRow(2, {5, 3})});
-  }
-  {
-    SCOPED_TRACE("`GetClusters(3)`");
-    verify_clusters(GetClusters(3), {CreateClusterRow(1, {5, 3, 2})});
-  }
-  {
-    SCOPED_TRACE("`GetClusters(1)`");
-    verify_clusters(GetClusters(1), {CreateClusterRow(1, {5})});
-  }
+  EXPECT_THAT(GetVisitIdsInCluster(1), ElementsAre(5, 3, 2));
+  EXPECT_THAT(GetVisitIdsInCluster(2), ElementsAre(5, 3, 2));
+  EXPECT_THAT(GetVisitIdsInCluster(3), ElementsAre(6));
+
+  DeleteClusters({});
+
+  EXPECT_THAT(GetVisitIdsInCluster(1), ElementsAre(5, 3, 2));
+  EXPECT_THAT(GetVisitIdsInCluster(2), ElementsAre(5, 3, 2));
+  EXPECT_THAT(GetVisitIdsInCluster(3), ElementsAre(6));
+
+  DeleteClusters({1, 3, 4});
+
+  EXPECT_THAT(GetVisitIdsInCluster(1), ElementsAre());
+  EXPECT_THAT(GetVisitIdsInCluster(2), ElementsAre(5, 3, 2));
+  EXPECT_THAT(GetVisitIdsInCluster(3), ElementsAre());
+  EXPECT_THAT(GetVisitIdsInCluster(4), ElementsAre());
 }
 
 }  // namespace history

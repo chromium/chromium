@@ -24,11 +24,14 @@ std::vector<VisitID> GetVisitIds(
 }
 
 std::vector<VisitID> GetVisitIds(
-    const std::vector<AnnotatedVisitRow>& annotated_visits) {
+    const std::vector<ClusterVisit>& cluster_visits) {
   std::vector<VisitID> visit_ids;
-  visit_ids.reserve(annotated_visits.size());
-  base::ranges::transform(annotated_visits, std::back_inserter(visit_ids),
-                          &AnnotatedVisitRow::visit_id);
+  visit_ids.reserve(cluster_visits.size());
+  base::ranges::transform(
+      cluster_visits, std::back_inserter(visit_ids),
+      [](const auto& cluster_visit) {
+        return cluster_visit.annotated_visit.visit_row.visit_id;
+      });
   return visit_ids;
 }
 

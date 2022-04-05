@@ -17,9 +17,9 @@ base::Time IntToTime(int seconds);
 std::vector<VisitID> GetVisitIds(
     const std::vector<AnnotatedVisit>& annotated_visits);
 
-// Extract `VisitID`s from `AnnotatedVisitRow`s.
+// Extract `VisitID`s from `ClusterVisit`s.
 std::vector<VisitID> GetVisitIds(
-    const std::vector<AnnotatedVisitRow>& annotated_visits);
+    const std::vector<ClusterVisit>& cluster_visits);
 
 // Construct a `Cluster` containing `visit_ids`.
 Cluster CreateCluster(const std::vector<VisitID>& visit_ids);

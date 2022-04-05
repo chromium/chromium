@@ -65,18 +65,6 @@ class VisitAnnotationsDatabase {
       VisitID visit_id,
       VisitContextAnnotations* out_context_annotations);
 
-  // Get recent `AnnotatedVisit`s' IDs. Does not return visits without
-  // annotations.
-  std::vector<VisitID> GetRecentAnnotatedVisitIds(base::Time minimum_time,
-                                                  int max_results);
-
-  // Get all `AnnotatedVisitRow`s except unclustered visits. Does not return
-  // duplicates if a visit is in multiple `Cluster`s.
-  std::vector<AnnotatedVisitRow> GetClusteredAnnotatedVisits(int max_results);
-
-  // Gets all the context annotation rows for testing.
-  std::vector<AnnotatedVisitRow> GetAllContextAnnotationsForTesting();
-
   // Deletes the content & context annotations associated with `visit_id`. This
   // will also delete any associated annotations usage data. If no annotations
   // exist for the `VisitId`, this is a no-op. Ignores failures; i.e. continues
@@ -88,15 +76,17 @@ class VisitAnnotationsDatabase {
   // entries for any `Cluster` that it failed to add.
   void AddClusters(const std::vector<Cluster>& clusters);
 
-  // Get the `max_results` most recent `ClusterRow`s.
-  std::vector<ClusterRow> GetClusters(int max_results);
+  // Get the most recent clusters within the constraints. The most recent visit
+  // of a cluster represents the cluster's time.
+  std::vector<int64_t> GetMostRecentClusterIds(base::Time inclusive_min_time,
+                                               base::Time exclusive_max_time,
+                                               int max_clusters);
 
-  // Get recent `Cluster`s' IDs newer than `minimum_time`.
-  std::vector<int64_t> GetRecentClusterIds(base::Time minimum_time);
+  // Get `VisitID`s in a cluster.
+  std::vector<VisitID> GetVisitIdsInCluster(int64_t cluster_id);
 
-  // Get the `max_results` newest `VisitID`s in a cluster.
-  std::vector<VisitID> GetVisitIdsInCluster(int64_t cluster_id,
-                                            int max_results);
+  // Delete `Cluster`s from the table.
+  void DeleteClusters(const std::vector<int64_t>& cluster_ids);
 
  protected:
   // Returns the database for the functions in this interface.

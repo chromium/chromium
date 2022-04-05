@@ -540,8 +540,11 @@ class HistoryService : public KeyedService {
       const VisitContextAnnotations& visit_context_annotations);
 
   // Gets a vector of reverse-chronological `AnnotatedVisit` instances based on
-  // `options`. Uses the same deduplication and visibility logic as
+  // `options`. Uses the same de-duplication and visibility logic as
   // `HistoryService::QueryHistory()`.
+  //
+  // If `limited_by_max_count` is non-nullptr, it will be set to true if the
+  // number of results was limited by `options.max_count`.
   using GetAnnotatedVisitsCallback =
       base::OnceCallback<void(std::vector<AnnotatedVisit>)>;
   base::CancelableTaskTracker::TaskId GetAnnotatedVisits(
@@ -549,23 +552,20 @@ class HistoryService : public KeyedService {
       GetAnnotatedVisitsCallback callback,
       base::CancelableTaskTracker* tracker) const;
 
-  // Get recent recent `Cluster`s and `AnnotatedVisit`s as a flat list without
-  // duplicates. Can include `AnnotatedVisit`s older than `minimum_time` if
-  // they're in a `Cluster` that's newer than `minimum_time`. This is used to
-  // (re)cluster; the recent visits are sent to the clustering model while the
-  // recent clusters are replaced when persisting the new clusters. Does not
-  // return duplicates if a visit is in multiple recent `Cluster`s. Order is
-  // undetermined.
-  base::CancelableTaskTracker::TaskId GetRecentClusterIdsAndAnnotatedVisits(
-      base::Time minimum_time,
-      int max_results,
-      base::OnceCallback<void(ClusterIdsAndAnnotatedVisitsResult)> callback,
+  // Delete and add 2 sets of clusters. Doing this in one call avoids an
+  // additional thread hops.
+  base::CancelableTaskTracker::TaskId ReplaceClusters(
+      const std::vector<int64_t>& ids_to_delete,
+      const std::vector<Cluster>& clusters_to_add,
+      base::OnceClosure callback,
       base::CancelableTaskTracker* tracker);
 
-  // Get all `Cluster`s. This is used to query clusters either for the webui
-  // or the omnibox.
-  base::CancelableTaskTracker::TaskId GetClusters(
-      int max_results,
+  // Get the most recent `Cluster`s within the constraints.  The most recent
+  // visit of a cluster represents the cluster's time.
+  base::CancelableTaskTracker::TaskId GetMostRecentClusters(
+      base::Time inclusive_min_time,
+      base::Time exclusive_max_time,
+      int max_clusters,
       base::OnceCallback<void(std::vector<Cluster>)> callback,
       base::CancelableTaskTracker* tracker);
 
