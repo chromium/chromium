@@ -502,6 +502,7 @@ const char kPasswordPlaceholderVerbatim[] = "${PASSWORD}";
 }  // namespace substitutes
 
 namespace global_network_config {
+const char kAllowCellularSimLock[] = "AllowCellularSimLock";
 const char kAllowOnlyPolicyCellularNetworks[] =
     "AllowOnlyPolicyCellularNetworks";
 const char kAllowOnlyPolicyNetworksToAutoconnect[] =

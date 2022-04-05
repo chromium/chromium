@@ -381,6 +381,7 @@ const OncFieldSignature network_with_state_fields[] = {
     {nullptr}};
 
 const OncFieldSignature global_network_configuration_fields[] = {
+    {::onc::global_network_config::kAllowCellularSimLock, &kBoolSignature},
     {::onc::global_network_config::kAllowOnlyPolicyCellularNetworks,
      &kBoolSignature},
     {::onc::global_network_config::kAllowOnlyPolicyNetworksToAutoconnect,

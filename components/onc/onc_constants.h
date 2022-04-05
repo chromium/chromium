@@ -513,6 +513,7 @@ COMPONENT_EXPORT(ONC) extern const char kWPAD[];
 }  // namespace proxy
 
 namespace global_network_config {
+COMPONENT_EXPORT(ONC) extern const char kAllowCellularSimLock[];
 COMPONENT_EXPORT(ONC) extern const char kAllowOnlyPolicyCellularNetworks[];
 COMPONENT_EXPORT(ONC) extern const char kAllowOnlyPolicyNetworksToAutoconnect[];
 COMPONENT_EXPORT(ONC) extern const char* const kAllowOnlyPolicyWiFiToConnect;

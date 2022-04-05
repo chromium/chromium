@@ -158,6 +158,13 @@ fetching new policy or logging in.
 A [Help Center article](https://support.google.com/chrome/a/answer/6326250)
 warns admins of the implications of mis-using this policy for Chrome OS.
 
+* **AllowCellularSimLock**
+    * (optional, defaults to true) - **boolean**
+    * When this field is present and set to false, a SIM cannot be PIM Locked on
+      a managed device. If the currently active SIM is already PIN Locked when
+      this field turns false, the managed user will be guided to PIN unlock the
+      SIM.
+
 * **AllowOnlyPolicyCellularNetworks**
     * (optional, defaults to false) - **boolean**
     * When this field is present and set to true, only cellular networks present

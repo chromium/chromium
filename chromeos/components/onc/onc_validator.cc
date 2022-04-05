@@ -1055,10 +1055,12 @@ bool Validator::ValidateGlobalNetworkConfiguration(base::Value* result) {
     }
   }
 
-  // Validate that kDisableNetworkTypes, kAllowOnlyPolicyWiFiToConnect,
-  // kAllowOnlyPolicyCellularNetworks and kBlockedHexSSIDs are only allowed in
-  // device policy.
+  // Validate that kAllowCellularSimLock, kDisableNetworkTypes,
+  // kAllowOnlyPolicyWiFiToConnect, kAllowOnlyPolicyCellularNetworks and
+  // kBlockedHexSSIDs are only allowed in device policy.
   if (!IsInDevicePolicy(result,
+                        ::onc ::global_network_config::kAllowCellularSimLock) ||
+      !IsInDevicePolicy(result,
                         ::onc::global_network_config::kDisableNetworkTypes) ||
       !IsInDevicePolicy(
           result,
