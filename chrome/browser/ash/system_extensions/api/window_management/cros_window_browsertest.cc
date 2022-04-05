@@ -8,7 +8,6 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/common/content_switches.h"
@@ -19,7 +18,7 @@ namespace {
 static constexpr char kEventListenerCode[] = R"(
   self.addEventListener('message', async (event) => {
     try {
-      await cros_test();
+      await test();
       event.source.postMessage("PASS");
     } catch (e) {
       console.log(e.message);
@@ -63,14 +62,8 @@ class CrosWindowBrowserTest : public InProcessBrowserTest {
     // Initialize embedded test server.
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
 
-    // Serve dependencies for the service worker (i.e. asserts).
-    embedded_test_server()->ServeFilesFromSourceDirectory(
-        base::FilePath("third_party/blink/web_tests/resources"));
-
-    // Register test code with listener and dependencies as .js file.
-    const std::string js_code = base::StrCat(
-        {"self.importScripts('/testharness.js', '/testharness-helpers.js');",
-         test_code, kEventListenerCode});
+    // Register test code with listener as .js file.
+    const std::string js_code = base::StrCat({test_code, kEventListenerCode});
     embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
         [js_code](const net::test_server::HttpRequest& request)
             -> std::unique_ptr<net::test_server::HttpResponse> {
@@ -85,7 +78,7 @@ class CrosWindowBrowserTest : public InProcessBrowserTest {
           return std::move(http_response);
         }));
 
-    // Register test code js as service worker.
+    // Register test code js as service worker
     embedded_test_server()->StartAcceptingConnections();
     EXPECT_TRUE(ui_test_utils::NavigateToURL(
         browser(), embedded_test_server()->GetURL(
@@ -94,7 +87,8 @@ class CrosWindowBrowserTest : public InProcessBrowserTest {
               EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                      "register('/test_service_worker.js');"));
 
-    // Post message to service worker listener to trigger test and evaluate.
+    // Post message to service worker listener to trigger test code and
+    // evaluate.
     EXPECT_EQ("PASS",
               EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                      kPostTestStart));
@@ -106,57 +100,25 @@ class CrosWindowBrowserTest : public InProcessBrowserTest {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowSetOrigin) {
-  const char test_code[] = R"(
-async function cros_test() {
-  let windows = await chromeos.windowManagement.windows();
-  const newBounds = DOMRect.fromRect(windows[0].bounds);
-  newBounds.x += 10;
-  newBounds.y += 10;
-  windows[0].setOrigin(newBounds.x, newBounds.y);
-  windows = await chromeos.windowManagement.windows();
-  const actualBounds = windows[0].bounds;
-  assert_weak_equals(actualBounds, newBounds,
-      `SetOrigin should set origin without changing bounds`);
-}
-  )";
-
-  RunTest(test_code);
-}
-
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowSetBounds) {
-  const char test_code[] = R"(
-async function cros_test() {
-  let windows = await chromeos.windowManagement.windows();
-  const newBounds = DOMRect.fromRect(windows[0].bounds);
-  newBounds.x += 10;
-  newBounds.y += 10;
-  newBounds.width -= 100;
-  newBounds.height -= 100;
-  windows[0].setBounds(newBounds.x, newBounds.y,
-      newBounds.width, newBounds.height);
-  windows = await chromeos.windowManagement.windows();
-  const actualBounds = windows[0].bounds;
- assert_weak_equals(actualBounds, newBounds, `SetBounds failed to set bounds`);
-}
-  )";
-
-  RunTest(test_code);
-}
-
 IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowSetFullscreen) {
   const char test_code[] = R"(
-async function cros_test() {
+async function test() {
   let windows = await chromeos.windowManagement.windows();
-  assert_false(windows[0].isFullscreen, "Window started in fullscreen.");
+  if (windows[0].isFullscreen) {
+    throw new Error("Window started in fullscreen.");
+  }
 
   windows[0].setFullscreen(true);
   windows = await chromeos.windowManagement.windows();
-  assert_true(windows[0].isFullscreen, "setFullscreen(true) failed");
+  if (!windows[0].isFullscreen) {
+    throw new Error("cros_window.setFullscreen(true) failed");
+  }
 
   windows[0].setFullscreen(false);
   windows = await chromeos.windowManagement.windows();
-  assert_false(windows[0].isFullscreen, "setFullscreen(false) failed");
+  if (windows[0].isFullscreen) {
+    throw new Error("cros_window.setFullscreen(false) failed");
+  }
 }
   )";
 
@@ -165,22 +127,29 @@ async function cros_test() {
 
 IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, RepeatSetFullscreen) {
   const char test_code[] = R"(
-async function cros_test() {
+async function test() {
   let windows = await chromeos.windowManagement.windows();
-  assert_false(windows[0].isFullscreen, "Window started in fullscreen.");
+  if (windows[0].isFullscreen) {
+    throw new Error("Window started in fullscreen.");
+  }
 
   windows[0].setFullscreen(false);
   windows = await chromeos.windowManagement.windows();
-  assert_false(windows[0].isFullscreen,
-      "setFullscreen(false) set window to fullscreen");
+  if (windows[0].isFullscreen) {
+    throw new Error("setFullscreen(false) set window fullscreen");
+  }
 
   windows[0].setFullscreen(true);
   windows = await chromeos.windowManagement.windows();
-  assert_true(windows[0].isFullscreen, "setFullscreen(true) failed");
+  if (!windows[0].isFullscreen) {
+    throw new Error("setFullscreen(true) failed");
+  }
 
   windows[0].setFullscreen(true);
   windows = await chromeos.windowManagement.windows();
-  assert_true(windows[0].isFullscreen, "setFullscreen(true) failed");
+  if (!windows[0].isFullscreen) {
+    throw new Error("setFullscreen(true) unset window fullscreen");
+  }
 }
   )";
 
@@ -189,56 +158,23 @@ async function cros_test() {
 
 IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, FullscreenFromMinimised) {
   const char test_code[] = R"(
-async function cros_test() {
+async function test() {
   let windows = await chromeos.windowManagement.windows();
-  assert_false(windows[0].isFullscreen, "Window started in fullscreen.");
+  if (windows[0].isFullscreen) {
+    throw new Error("Window started in fullscreen.");
+  }
 
   windows[0].minimize();
   windows = await chromeos.windowManagement.windows();
-  assert_true(windows[0].isMinimised);
-  assert_false(windows[0].isVisible);
+  if (!windows[0].isMinimised || windows[0].isVisible) {
+    throw new Error("minimize() did not minimize window");
+  }
 
   windows[0].setFullscreen(true);
   windows = await chromeos.windowManagement.windows();
-  assert_true(windows[0].isFullscreen);
-  assert_true(windows[0].isVisible);
-}
-  )";
-
-  RunTest(test_code);
-}
-
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowMinimize) {
-  const char test_code[] = R"(
-async function cros_test() {
-  let windows = await chromeos.windowManagement.windows();
-  assert_false(windows[0].isMinimised);
-  assert_true(windows[0].isVisible);
-
-  windows[0].minimize();
-  windows = await chromeos.windowManagement.windows();
-  assert_true(windows[0].isMinimised);
-  assert_false(windows[0].isVisible);
-}
-  )";
-
-  RunTest(test_code);
-}
-
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowClose) {
-  // Open browser instance to close outside of service worker.
-  chrome::NewWindow(browser());
-
-  const char test_code[] = R"(
-async function cros_test() {
-  let windows = await chromeos.windowManagement.windows();
-  assert_equals(windows.length, 2);
-
-  const window_to_close_index =
-      windows[0].title == "Chromium - create service worker" ? 1 : 0;
-  windows[window_to_close_index].close();
-  windows = await chromeos.windowManagement.windows();
-  assert_equals(windows.length, 1);
+  if (!windows[0].isFullscreen || !windows[0].isVisible) {
+    throw new Error("setFullscreen(true) did not make window visible and fs");
+  }
 }
   )";
 

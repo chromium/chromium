@@ -35,9 +35,4 @@ source_set("browser_tests") {
     ":window_management",
     "//chrome/test:test_support",
   ]
-
-  data = [
-    "//third_party/blink/web_tests/resources/testharness.js",
-    "//third_party/blink/web_tests/resources/testharness-helpers.js",
-  ]
 }
