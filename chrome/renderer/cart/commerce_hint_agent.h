@@ -60,7 +60,10 @@ class CommerceHintAgent
   void MaybeExtractProducts();
   void ExtractProducts();
   void ExtractCartFromCurrentFrame();
-
+  void ExtractCartWithUpdatedScript(
+      mojo::Remote<mojom::CommerceHintObserver> observer,
+      const std::string& product_id_json,
+      const std::string& cart_extraction_script);
   class JavaScriptRequest;
 
   JavaScriptRequest* javascript_request_{nullptr};
@@ -70,6 +73,7 @@ class CommerceHintAgent
   bool is_extraction_pending_{false};
   bool is_extraction_running_{false};
   bool should_skip_{false};
+  bool extraction_script_initialized_{false};
   base::WeakPtrFactory<CommerceHintAgent> weak_factory_{this};
 
   class JavaScriptRequest : public blink::WebScriptExecutionCallback {

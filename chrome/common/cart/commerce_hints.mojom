@@ -54,4 +54,9 @@ interface CommerceHintObserver {
   // the commerce heuristics that are applicable in this domain.
   OnNavigation(url.mojom.Url url, string version_number)
     => (bool should_skip, Heuristics heuristics);
+
+  // A cart content extraction is about to happen. Return JSON that
+  // contains product ID extraction heuristics and a JS script for cart
+  // content extraction.
+  OnCartExtraction() => (string product_id_json, string cart_extraction_script);
 };
