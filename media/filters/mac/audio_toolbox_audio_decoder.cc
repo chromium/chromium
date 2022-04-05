@@ -305,6 +305,31 @@ bool AudioToolboxAudioDecoder::CreateAACDecoder(
     return false;
   }
 
+  // macOS doesn't provide a default target loudness. Use the value recommended
+  // by Fraunhofer.
+  const Float32 kDefaultLoudness = -16.0;
+  result =
+      AudioConverterSetProperty(decoder_, kAudioCodecPropertyProgramTargetLevel,
+                                sizeof(kDefaultLoudness), &kDefaultLoudness);
+  if (result != noErr) {
+    OSSTATUS_DLOG(ERROR, result)
+        << "AudioConverterSetProperty() failed to set loudness.";
+    return false;
+  }
+
+  // Likewise set the effect type recommended by Fraunhofer. There doesn't
+  // appear to be a key name available for this yet.
+  // Values: 0=none, night=1, noisy=2, limited=3
+  const UInt32 kDefaultEffectType = 3;
+  result = AudioConverterSetProperty(decoder_, 0x64726370 /* "drcp" */,
+                                     sizeof(kDefaultEffectType),
+                                     &kDefaultEffectType);
+  if (result != noErr) {
+    OSSTATUS_DLOG(ERROR, result)
+        << "AudioConverterSetProperty() failed to set DRC effect type.";
+    return false;
+  }
+
   discard_helper_ = std::make_unique<AudioDiscardHelper>(
       sample_rate_, config.codec_delay(), false);
   discard_helper_->Reset(config.codec_delay());
