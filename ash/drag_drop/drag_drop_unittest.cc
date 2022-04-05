@@ -128,7 +128,8 @@ using DragDropTest = AshTestBase;
 
 // Test if the mouse gets moved properly to another display
 // during drag & drop operation.
-TEST_F(DragDropTest, DragDropAcrossMultiDisplay) {
+// Test flaky on ChromeOS: crbug.com/1312727
+TEST_F(DragDropTest, DISABLED_DragDropAcrossMultiDisplay) {
   ui_controls::InstallUIControlsAura(test::CreateAshUIControls());
 
   UpdateDisplay("400x300,400x300");
