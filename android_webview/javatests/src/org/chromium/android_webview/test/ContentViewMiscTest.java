@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Proxy;
+import android.os.Handler;
 import android.os.Looper;
 import android.support.test.InstrumentationRegistry;
 
@@ -68,16 +69,24 @@ public class ContentViewMiscTest {
         // Set up mock contexts to use with the listener
         final AtomicReference<BroadcastReceiver> receiverRef =
                 new AtomicReference<BroadcastReceiver>();
-        final AdvancedMockContext appContext = new AdvancedMockContext(
-                InstrumentationRegistry.getInstrumentation()
-                        .getTargetContext()
-                        .getApplicationContext()) {
-            @Override
-            public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter) {
-                receiverRef.set(receiver);
-                return null;
-            }
-        };
+        final AdvancedMockContext appContext =
+                new AdvancedMockContext(InstrumentationRegistry.getInstrumentation()
+                                                .getTargetContext()
+                                                .getApplicationContext()) {
+                    @Override
+                    public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter,
+                            String broadcastPermission, Handler scheduler) {
+                        receiverRef.set(receiver);
+                        return null;
+                    }
+
+                    @Override
+                    public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter,
+                            String broadcastPermission, Handler scheduler, int flags) {
+                        receiverRef.set(receiver);
+                        return null;
+                    }
+                };
         ContextUtils.initApplicationContextForTests(appContext);
 
         // Set up a delegate so we know when native code is about to get
