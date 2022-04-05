@@ -23,6 +23,8 @@
 #import "ios/chrome/browser/discover_feed/discover_feed_observer_bridge.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
+#import "ios/chrome/browser/discover_feed/feed_constants.h"
+#import "ios/chrome/browser/discover_feed/feed_model_configuration.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
@@ -551,6 +553,9 @@ namespace {
 }
 
 - (void)constrainDiscoverHeaderMenuButtonNamedGuide {
+  if (self.browser->GetBrowserState()->IsOffTheRecord()) {
+    return;
+  }
   NamedGuide* menuButtonGuide =
       [NamedGuide guideWithName:kDiscoverFeedHeaderMenuGuide
                            view:self.feedHeaderViewController.menuButton];
@@ -559,12 +564,20 @@ namespace {
 }
 
 - (void)ntpDidChangeVisibility:(BOOL)visible {
-  if (visible) {
-    [self.contentSuggestionsCoordinator configureStartSurfaceIfNeeded];
-    self.ntpViewController.shouldScrollIntoFeed = self.shouldScrollIntoFeed;
-    self.shouldScrollIntoFeed = NO;
-  } else if (IsSingleNtpEnabled()) {
-    [self.ntpMediator saveContentOffsetForWebState:self.webState];
+  if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
+    if (visible && self.started) {
+      [self.contentSuggestionsCoordinator configureStartSurfaceIfNeeded];
+      if (IsWebChannelsEnabled()) {
+        self.ntpViewController.shouldScrollIntoFeed = self.shouldScrollIntoFeed;
+        self.shouldScrollIntoFeed = NO;
+        // Reassign the sort type in case it changed in another tab.
+        self.feedHeaderViewController.followingFeedSortType =
+            (FollowingFeedSortType)self.prefService->GetInteger(
+                prefs::kNTPFollowingFeedSortType);
+      }
+    } else if (IsSingleNtpEnabled()) {
+      [self.ntpMediator saveContentOffsetForWebState:self.webState];
+    }
   }
   self.viewPresented = visible;
   [self updateVisible];
@@ -580,7 +593,9 @@ namespace {
 
 - (void)handleSortTypeForFollowingFeed:(FollowingFeedSortType)sortType {
   DCHECK(IsWebChannelsEnabled());
+  self.prefService->SetInteger(prefs::kNTPFollowingFeedSortType, sortType);
   self.discoverFeedService->SetFollowingFeedSortType(sortType);
+  self.feedHeaderViewController.followingFeedSortType = sortType;
 }
 
 #pragma mark - FeedMenuCommands
@@ -932,12 +947,20 @@ namespace {
 
   [self updateFeedHeaderLabelText:self.feedHeaderViewController];
 
-  // Requests a Discover feed here if the correct flags and prefs are enabled.
+  // Requests feeds here if the correct flags and prefs are enabled.
   if ([self shouldFeedBeFetched]) {
-    // TODO(crbug.com/1277974): Create models separately with default sorting.
-    self.discoverFeedService->CreateFeedModels();
+    FeedModelConfiguration* discoverFeedConfiguration =
+        [FeedModelConfiguration discoverFeedModelConfiguration];
+    self.discoverFeedService->CreateFeedModel(discoverFeedConfiguration);
 
     if (IsWebChannelsEnabled()) {
+      FeedModelConfiguration* followingFeedConfiguration =
+          [FeedModelConfiguration
+              followingModelConfigurationWithSortType:
+                  (FollowingFeedSortType)self.prefService->GetInteger(
+                      prefs::kNTPFollowingFeedSortType)];
+      self.discoverFeedService->CreateFeedModel(followingFeedConfiguration);
+
       // TODO(crbug.com/1277504): Use unique property for Following feed.
       switch (self.selectedFeed) {
         case FeedTypeDiscover:
@@ -1121,10 +1144,13 @@ namespace {
 #pragma mark - Getters
 
 - (FeedHeaderViewController*)feedHeaderViewController {
+  DCHECK(!self.browser->GetBrowserState()->IsOffTheRecord());
   if (!_feedHeaderViewController) {
     _feedHeaderViewController = [[FeedHeaderViewController alloc]
          initWithSelectedFeed:self.selectedFeed
-        followingFeedSortType:FollowingFeedSortTypeByPublisher];
+        followingFeedSortType:(FollowingFeedSortType)
+                                  self.prefService->GetInteger(
+                                      prefs::kNTPFollowingFeedSortType)];
     _feedHeaderViewController.feedControlDelegate = self;
     [_feedHeaderViewController.menuButton
                addTarget:self

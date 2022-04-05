@@ -280,6 +280,11 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Defaults to 3, which is the id of bookmarkModel_->mobile_node()
   registry->RegisterInt64Pref(prefs::kNtpShownBookmarksFolder, 3);
 
+  // The Following feed sort type comes from
+  // ios/chrome/browser/discover_feed/feed_constants.h Defaults to 1, which is
+  // grouped by publisher.
+  registry->RegisterIntegerPref(prefs::kNTPFollowingFeedSortType, 1);
+
   // Register prefs used by Clear Browsing Data UI.
   browsing_data::prefs::RegisterBrowserUserPrefs(registry);
 

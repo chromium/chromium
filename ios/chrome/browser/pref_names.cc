@@ -103,6 +103,9 @@ const char kLinkPreviewEnabled[] = "ios.link_preview_enabled";
 const char kNTPContentSuggestionsEnabled[] =
     "ios.ntp.content_suggestions_enabled";
 
+// Preference that represents the sorting order of the Following feed content.
+const char kNTPFollowingFeedSortType[] = "ios.ntp.following_feed.sort_type";
+
 // Boolean that is true when Suggest support is enabled.
 const char kSearchSuggestEnabled[] = "search.suggest_enabled";
 

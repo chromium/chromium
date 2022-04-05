@@ -78,9 +78,6 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
 // header when NTP coordinator's restart is improved.
 @property(nonatomic, assign) FeedType selectedFeed;
 
-// The currently selected sorting for the Following feed.
-@property(nonatomic, assign) FollowingFeedSortType followingFeedSortType;
-
 // The blurred background of the feed header.
 @property(nonatomic, strong) UIVisualEffectView* blurBackgroundView;
 
@@ -179,9 +176,18 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
   }
 }
 
+// Sets |followingFeedSortType| and recreates the sort menu to assign the active
+// sort type.
+- (void)setFollowingFeedSortType:(FollowingFeedSortType)followingFeedSortType {
+  _followingFeedSortType = followingFeedSortType;
+  if (self.sortButton) {
+    self.sortButton.menu = [self createSortMenu];
+  }
+}
+
 #pragma mark - Private
 
-// Creates sort menu with its content.
+// Creates sort menu with its content and active sort type.
 - (UIMenu*)createSortMenu {
   NSMutableArray<UIAction*>* sortActions = [NSMutableArray array];
 
@@ -193,8 +199,6 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
               handler:^(UIAction* action) {
                 [self.feedControlDelegate handleSortTypeForFollowingFeed:
                                               FollowingFeedSortTypeByPublisher];
-                self.followingFeedSortType = FollowingFeedSortTypeByPublisher;
-                self.sortButton.menu = [self createSortMenu];
               }];
   [sortActions addObject:sortByPublisherAction];
   UIAction* sortByLatestAction = [UIAction
@@ -204,8 +208,6 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
               handler:^(UIAction* action) {
                 [self.feedControlDelegate handleSortTypeForFollowingFeed:
                                               FollowingFeedSortTypeByLatest];
-                self.followingFeedSortType = FollowingFeedSortTypeByLatest;
-                self.sortButton.menu = [self createSortMenu];
               }];
   [sortActions addObject:sortByLatestAction];
 

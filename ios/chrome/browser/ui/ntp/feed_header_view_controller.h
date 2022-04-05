@@ -22,6 +22,9 @@
 // Delegate for controlling the presented feed.
 @property(nonatomic, weak) id<FeedControlDelegate> feedControlDelegate;
 
+// The currently selected sorting for the Following feed.
+@property(nonatomic, assign) FollowingFeedSortType followingFeedSortType;
+
 // Initializes the header with the currently selected feed and the Following
 // feed's sort type.
 - (instancetype)initWithSelectedFeed:(FeedType)selectedFeed

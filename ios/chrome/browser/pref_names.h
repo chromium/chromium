@@ -31,6 +31,7 @@ extern const char kIosSettingsPromoAlreadySeen[];
 extern const char kIosSettingsSigninPromoDisplayedCount[];
 extern const char kLinkPreviewEnabled[];
 extern const char kNTPContentSuggestionsEnabled[];
+extern const char kNTPFollowingFeedSortType[];
 extern const char kPrintingEnabled[];
 extern const char kSearchSuggestEnabled[];
 extern const char kTrackPricesOnTabsEnabled[];
