@@ -345,7 +345,7 @@ void AssistiveSuggester::OnExternalSuggestionsUpdated(
 
   suggester_switch_->GetEnabledSuggestions(
       base::BindOnce(&AssistiveSuggester::ProcessExternalSuggestions,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(suggestions)));
+                     weak_ptr_factory_.GetWeakPtr(), suggestions));
 }
 
 void AssistiveSuggester::ProcessExternalSuggestions(
@@ -357,7 +357,7 @@ void AssistiveSuggester::ProcessExternalSuggestions(
       !IsExpandedMultiWordSuggestEnabled()) {
     if (IsTopResultMultiWord(suggestions))
       RecordAssistiveDisabledReasonForMultiWord(
-          GetDisabledReasonForMultiWord(std::move(enabled_suggestions)));
+          GetDisabledReasonForMultiWord(enabled_suggestions));
     return;
   }
 
