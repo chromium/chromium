@@ -208,20 +208,6 @@ extern const char kEnableLongMessageDurationDescription[];
 extern const char kEnableNewDownloadAPIName[];
 extern const char kEnableNewDownloadAPIDescription[];
 
-// Title and description for the flag to enable optimization guide.
-extern const char kEnableOptimizationGuideName[];
-extern const char kEnableOptimizationGuideDescription[];
-
-// Title and description for the flag to enable optimization guide metadata
-// validation.
-extern const char kEnableOptimizationGuideMetadataValidationName[];
-extern const char kEnableOptimizationGuideMetadataValidationDescription[];
-
-// Title and description for the flag to enable optimization guide hints
-// fetching for MSBB users.
-extern const char kEnableOptimizationHintsFetchingMSBBName[];
-extern const char kEnableOptimizationHintsFetchingMSBBDescription[];
-
 // Title and description for the flag to enable shorted password auto-fill
 // instructions and button.
 extern const char kEnableShortenedPasswordAutoFillInstructionName[];

@@ -636,9 +636,6 @@ extern const char kEnableLensStandaloneFlagId[];
 extern const char kEnableLensStandaloneName[];
 extern const char kEnableLensStandaloneDescription[];
 
-extern const char kEnableLoginDetectionName[];
-extern const char kEnableLoginDetectionDescription[];
-
 extern const char kEnableManagedConfigurationWebApiName[];
 extern const char kEnableManagedConfigurationWebApiDescription[];
 
@@ -1054,11 +1051,8 @@ extern const char kOmniboxDynamicMaxAutocompleteDescription[];
 extern const char kOptimizationGuideDebugLogsName[];
 extern const char kOptimizationGuideDebugLogsDescription[];
 
-extern const char kOptimizationGuideModelDownloadingName[];
-extern const char kOptimizationGuideModelDownloadingDescription[];
-
-extern const char kOptimizationGuideModelPushNotificationName[];
-extern const char kOptimizationGuideModelPushNotificationDescription[];
+extern const char kOptimizationGuidePushNotificationName[];
+extern const char kOptimizationGuidePushNotificationDescription[];
 
 extern const char kOsSettingsAppNotificationsPageName[];
 extern const char kOsSettingsAppNotificationsPageDescription[];

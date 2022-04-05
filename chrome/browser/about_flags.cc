@@ -3932,9 +3932,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"isolation-by-default", flag_descriptions::kIsolationByDefaultName,
      flag_descriptions::kIsolationByDefaultDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kIsolationByDefault)},
-    {"enable-login-detection", flag_descriptions::kEnableLoginDetectionName,
-     flag_descriptions::kEnableLoginDetectionDescription, kOsAll,
-     FEATURE_VALUE_TYPE(login_detection::kLoginDetection)},
     {"enable-google-srp-isolated-prerender-probing",
      flag_descriptions::kEnableSRPIsolatedPrerenderProbingName,
      flag_descriptions::kEnableSRPIsolatedPrerenderProbingDescription, kOsAll,
@@ -7450,21 +7447,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     kTabSearchMediaTabsVariations,
                                     "TabSearchMediaTabs")},
 
-    {"enable-tflite-language-detection",
-     flag_descriptions::kTFLiteLanguageDetectionName,
-     flag_descriptions::kTFLiteLanguageDetectionDescription, kOsAll,
-     FEATURE_VALUE_TYPE(translate::kTFLiteLanguageDetectionEnabled)},
-
-    {"optimization-guide-model-downloading",
-     flag_descriptions::kOptimizationGuideModelDownloadingName,
-     flag_descriptions::kOptimizationGuideModelDownloadingDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         optimization_guide::features::kOptimizationGuideModelDownloading)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"optimization-guide-push-notifications",
-     flag_descriptions::kOptimizationGuideModelPushNotificationName,
-     flag_descriptions::kOptimizationGuideModelPushNotificationDescription,
+     flag_descriptions::kOptimizationGuidePushNotificationName,
+     flag_descriptions::kOptimizationGuidePushNotificationDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(optimization_guide::features::kPushNotifications)},
 #endif

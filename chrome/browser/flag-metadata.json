@@ -2315,11 +2315,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-login-detection",
-    "owners": [ "rajendrant", "mcrouse", "tbansal" ],
-    "expiry_milestone": 92
-  },
-  {
     "name": "enable-long-message-duration",
     "owners": [ "tinazwang", "bling-flags@google.com" ],
     "expiry_milestone": 110
@@ -2429,21 +2424,6 @@
     "name": "enable-openscreen-cast-streaming-session",
     "owners": [ "jophba@google.com", "openscreen-eng@google.com" ],
     "expiry_milestone": 105
-  },
-  {
-    "name": "enable-optimization-guide",
-    "owners": [ "rajendrant", "robertogden", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 100
-  },
-  {
-    "name": "enable-optimization-guide-metadata-validation",
-    "owners": [ "rajendrant", "robertogden", "chrome-intelligence-core@google.com"],
-    "expiry_milestone": 100
-  },
-  {
-    "name": "enable-optimization-hints-fetching-msbb",
-    "owners": [ "rajendrant", "robertogden", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 100
   },
   {
     "name": "enable-os-feedback",
@@ -2698,11 +2678,6 @@
     "expiry_milestone": 97
   },
   {
-    "name": "enable-subresource-redirect",
-    "owners": [ "rajendrant", "mcrouse", "tbansal" ],
-    "expiry_milestone": 92
-  },
-  {
     "name": "enable-suggested-files",
     "owners": [ "wrong", "tby" ],
     "expiry_milestone": 100
@@ -2796,11 +2771,6 @@
     "name": "enable-table-ng",
     "owners": [ "atotic@google.com" ],
     "expiry_milestone": 96
-  },
-  {
-    "name": "enable-tflite-language-detection",
-    "owners": [ "mcrouse@chromium.org", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 94
   },
   {
     "name": "enable-throttle-display-none-and-visibility-hidden-cross-origin-iframes",
@@ -4552,14 +4522,9 @@
     "expiry_milestone": 110
   },
   {
-    "name": "optimization-guide-model-downloading",
-    "owners": [ "mcrouse", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "optimization-guide-push-notifications",
     "owners": [ "robertogden", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 103
+    "expiry_milestone": 109
   },
   {
     "name": "origin-agent-cluster-default",

@@ -515,23 +515,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableLongMessageDurationName,
      flag_descriptions::kEnableLongMessageDurationDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableLongMessageDuration)},
-    {"enable-optimization-guide",
-     flag_descriptions::kEnableOptimizationGuideName,
-     flag_descriptions::kEnableOptimizationGuideDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(optimization_guide::features::kOptimizationHints)},
-    {"enable-optimization-guide-metadata-validation",
-     flag_descriptions::kEnableOptimizationGuideMetadataValidationName,
-     flag_descriptions::kEnableOptimizationGuideMetadataValidationDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         optimization_guide::features::kOptimizationGuideMetadataValidation)},
-    {"enable-optimization-hints-fetching-msbb",
-     flag_descriptions::kEnableOptimizationHintsFetchingMSBBName,
-     flag_descriptions::kEnableOptimizationHintsFetchingMSBBDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         optimization_guide::features::
-             kRemoteOptimizationGuideFetchingAnonymousDataConsent)},
 #if BUILDFLAG(IOS_SCREEN_TIME_ENABLED)
     {"screen-time-integration-ios",
      flag_descriptions::kScreenTimeIntegrationName,

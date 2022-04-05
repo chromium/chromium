@@ -1177,10 +1177,6 @@ const char kEnableLensStandaloneDescription[] =
     "Enables Lens image and region search to learn about the visual content "
     "you see while you browse and shop on the web.";
 
-const char kEnableLoginDetectionName[] = "Enable login detection";
-const char kEnableLoginDetectionDescription[] =
-    "Allow user sign-in to be detected based on heuristics.";
-
 const char kEnableManagedConfigurationWebApiName[] =
     "Enable Managed Configuration Web API";
 const char kEnableManagedConfigurationWebApiDescription[] =
@@ -1872,14 +1868,9 @@ const char kOptimizationGuideDebugLogsDescription[] =
     "Enables the optimization guide to log and save debug messages that can be "
     "shown in the internals page.";
 
-const char kOptimizationGuideModelDownloadingName[] =
-    "Allow optimization guide model downloads";
-const char kOptimizationGuideModelDownloadingDescription[] =
-    "Enables the optimization guide to download prediction models.";
-
-const char kOptimizationGuideModelPushNotificationName[] =
+const char kOptimizationGuidePushNotificationName[] =
     "Enable optimization guide push notifications";
-const char kOptimizationGuideModelPushNotificationDescription[] =
+const char kOptimizationGuidePushNotificationDescription[] =
     "Enables the optimization guide to receive push notifications.";
 
 const char kEnableDeJellyName[] = "Experimental de-jelly effect";
