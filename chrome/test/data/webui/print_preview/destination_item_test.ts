@@ -8,14 +8,12 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {createDestinationWithCertificateStatus} from './print_preview_test_utils.js';
 
 const destination_item_test = {
   suiteName: 'DestinationItemTest',
   TestNames: {
     Online: 'online',
     Offline: 'offline',
-    BadCertificate: 'bad certificate',
     QueryName: 'query name',
     QueryDescription: 'query description',
   },
@@ -90,30 +88,6 @@ suite(destination_item_test.suiteName, function() {
                             '.connection-status')!.textContent!.trim());
     assertTrue(item.shadowRoot!.querySelector<HTMLElement>(
                                    '.learn-more-link')!.hidden);
-    assertTrue(item.shadowRoot!
-                   .querySelector<HTMLElement>(
-                       '.extension-controlled-indicator')!.hidden);
-  });
-
-  // Test that the destination is opaque and the correct status shows up if
-  // the destination has a bad cloud print certificate.
-  test(assert(destination_item_test.TestNames.BadCertificate), function() {
-    loadTimeData.overrideValues({isEnterpriseManaged: false});
-    item.destination =
-        createDestinationWithCertificateStatus(printerId, printerName, true);
-
-    const name = item.shadowRoot!.querySelector('.name')!;
-    assertEquals(printerName, name.textContent);
-    assertEquals('0.4', window.getComputedStyle(name).opacity);
-    assertEquals(
-        '',
-        item.shadowRoot!.querySelector('.search-hint')!.textContent!.trim());
-    assertEquals(
-        loadTimeData.getString('noLongerSupported'),
-        item.shadowRoot!.querySelector(
-                            '.connection-status')!.textContent!.trim());
-    assertFalse(item.shadowRoot!.querySelector<HTMLElement>(
-                                    '.learn-more-link')!.hidden);
     assertTrue(item.shadowRoot!
                    .querySelector<HTMLElement>(
                        '.extension-controlled-indicator')!.hidden);

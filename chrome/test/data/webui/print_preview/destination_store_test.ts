@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloudPrintInterfaceEventType, Destination, DestinationConnectionStatus, DestinationErrorType, DestinationOrigin, DestinationStore, DestinationStoreEventType, DestinationType, GooglePromotedDestinationId, LocalDestinationInfo, makeRecentDestination, NativeInitialSettings, NativeLayerImpl, PrinterType} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationErrorType, DestinationOrigin, DestinationStore, DestinationStoreEventType, DestinationType, GooglePromotedDestinationId, LocalDestinationInfo, makeRecentDestination, NativeInitialSettings, NativeLayerImpl, PrinterType} from 'chrome://print/print_preview.js';
 // <if expr="not chromeos_ash and not chromeos_lacros">
 import {RecentDestination} from 'chrome://print/print_preview.js';
 // </if>
@@ -14,42 +14,32 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {CloudPrintInterfaceStub} from './cloud_print_interface_stub.js';
 // <if expr="chromeos_ash or chromeos_lacros">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 // </if>
 import {NativeLayerStub} from './native_layer_stub.js';
-import {createDestinationStore, createDestinationWithCertificateStatus, getCddTemplate, getDefaultInitialSettings, getDestinations, getSaveAsPdfDestination, setupTestListenerElement} from './print_preview_test_utils.js';
-// <if expr="not chromeos_ash and not chromeos_lacros">
-import {getGoogleDriveDestination} from './print_preview_test_utils.js';
-// </if>
+import {createDestinationStore, getCddTemplate, getDefaultInitialSettings, getDestinations, getSaveAsPdfDestination, setupTestListenerElement} from './print_preview_test_utils.js';
 
 const destination_store_test = {
   suiteName: 'DestinationStoreTest',
   TestNames: {
     SingleRecentDestination: 'single recent destination',
     MultipleRecentDestinations: 'multiple recent destinations',
+    MultipleRecentDestinationsAndCloudPrint:
+        'multiple recent destinations and cloud print',
     RecentCloudPrintFallback:
         'failure to load cloud print destination results in save as pdf',
     MultipleRecentDestinationsOneRequest:
         'multiple recent destinations one request',
-    MultipleRecentDestinationsAndCloudPrint:
-        'multiple recents and a Cloud Print destination',
     DefaultDestinationSelectionRules: 'default destination selection rules',
     // <if expr="not chromeos_ash and not chromeos_lacros">
     SystemDefaultPrinterPolicy: 'system default printer policy',
     // </if>
     KioskModeSelectsFirstPrinter: 'kiosk mode selects first printer',
     NoPrintersShowsError: 'no printers shows error',
-    UnreachableRecentCloudPrinter: 'unreachable recent cloud printer',
     RecentSaveAsPdf: 'recent save as pdf',
-    // <if expr="not chromeos_ash and not chromeos_lacros">
-    MultipleRecentDestinationsAccounts: 'multiple recent destinations accounts',
-    // </if>
     LoadAndSelectDestination: 'select loaded destination',
     // <if expr="chromeos_ash or chromeos_lacros">
-    MultipleRecentDestinationsAccountsCros:
-        'multiple recent destinations accounts for Chrome OS',
     LoadSaveToDriveCros: 'load Save to Drive Cros',
     DriveNotMounted: 'drive not mounted',
     // </if>
@@ -63,15 +53,9 @@ suite(destination_store_test.suiteName, function() {
 
   let nativeLayer: NativeLayerStub;
 
-  let cloudPrintInterface: CloudPrintInterfaceStub;
-
   let initialSettings: NativeInitialSettings;
 
-  let userAccounts: string[] = [];
-
   let localDestinations: LocalDestinationInfo[] = [];
-
-  let cloudDestinations: Destination[] = [];
 
   let destinations: Destination[] = [];
 
@@ -98,31 +82,17 @@ suite(destination_store_test.suiteName, function() {
    * Sets the initial settings to the stored value and creates the page.
    * @param opt_expectPrinterFailure Whether printer fetch is
    *     expected to fail
-   * @param opt_cloudPrintEnabled Whether the cloud print interface
-   *     should be present
    * @return Promise that resolves when initial settings and,
    *     if printer failure is not expected, printer capabilities have
    *     been returned.
    */
-  function setInitialSettings(
-      opt_expectPrinterFailure?: boolean,
-      opt_cloudPrintEnabled: boolean =
-          true): Promise<{destinationId: string, printerType: PrinterType}> {
+  function setInitialSettings(opt_expectPrinterFailure?: boolean):
+      Promise<{destinationId: string, printerType: PrinterType}> {
     // Set local print list.
     nativeLayer.setLocalDestinations(localDestinations);
 
     // Create destination store.
     destinationStore = createDestinationStore();
-
-    // Create cloud print interface if it's enabled. Otherwise, skip setting it
-    // to replicate the behavior in DestinationSettings.
-    if (opt_cloudPrintEnabled) {
-      cloudPrintInterface = new CloudPrintInterfaceStub();
-      cloudDestinations.forEach(cloudDestination => {
-        cloudPrintInterface.setPrinter(cloudDestination);
-      });
-      destinationStore.setCloudPrintInterface(cloudPrintInterface);
-    }
 
     destinationStore.addEventListener(
         DestinationStoreEventType.DESTINATION_SELECT, function() {
@@ -141,11 +111,6 @@ suite(destination_store_test.suiteName, function() {
         initialSettings.printerName,
         initialSettings.serializedDefaultDestinationSelectionRulesStr,
         recentDestinations);
-
-    if (userAccounts) {
-      destinationStore.setActiveUser(userAccounts[0]!);
-      destinationStore.reloadUserCookieBasedDestinations(userAccounts[0]!);
-    }
     return opt_expectPrinterFailure ? Promise.resolve() : Promise.race([
       nativeLayer.whenCalled('getPrinterCapabilities'), whenCapabilitiesReady
     ]);
@@ -229,9 +194,7 @@ suite(destination_store_test.suiteName, function() {
           recentDestinations: recentDestinations,
         });
 
-        // For accounts that are not allowed to use Cloud Print, they get a null
-        // interface object.
-        return setInitialSettings(false, false).then(function(args) {
+        return setInitialSettings(false).then(function(args) {
           // Should have loaded ID1 as the selected printer, since it was most
           // recent.
           assertEquals('ID1', args.destinationId);
@@ -279,9 +242,7 @@ suite(destination_store_test.suiteName, function() {
         });
         localDestinations = [];
 
-        // For accounts that are not allowed to use Cloud Print, they get a null
-        // interface object.
-        return setInitialSettings(false, false).then(() => {
+        return setInitialSettings(false).then(() => {
           assertEquals(
               GooglePromotedDestinationId.SAVE_AS_PDF,
               destinationStore.selectedDestination!.id);
@@ -444,29 +405,6 @@ suite(destination_store_test.suiteName, function() {
       });
 
   /**
-   * Tests that if the user has a recent destination that triggers a cloud
-   * print error this does not disable the dialog.
-   */
-  test(
-      assert(destination_store_test.TestNames.UnreachableRecentCloudPrinter),
-      function() {
-        const cloudPrinter = createDestinationWithCertificateStatus(
-            'BarDevice', 'BarName', false);
-        const recentDestination = makeRecentDestination(cloudPrinter);
-        initialSettings.serializedAppStateStr = JSON.stringify({
-          version: 2,
-          recentDestinations: [recentDestination],
-        });
-        userAccounts = ['foo@chromium.org'];
-
-        return setInitialSettings(false).then(function(args) {
-          assertEquals('FooDevice', args.destinationId);
-          assertEquals(PrinterType.LOCAL_PRINTER, args.printerType);
-          assertEquals('FooDevice', destinationStore.selectedDestination!.id);
-        });
-      });
-
-  /**
    * Tests that if the user has a recent destination that is already in the
    * store (PDF printer), the DestinationStore does not try to select a
    * printer again later. Regression test for https://crbug.com/927162.
@@ -493,85 +431,6 @@ suite(destination_store_test.suiteName, function() {
               destinationStore.selectedDestination!.id);
         });
   });
-
-  // <if expr="not chromeos_ash and not chromeos_lacros">
-  /**
-   * Tests that if there are recent destinations from different accounts, only
-   * destinations associated with the most recent account are fetched.
-   */
-  test(
-      assert(
-          destination_store_test.TestNames.MultipleRecentDestinationsAccounts),
-      function() {
-        const account1 = 'foo@chromium.org';
-        const account2 = 'bar@chromium.org';
-        const driveUser1 = getGoogleDriveDestination(account1);
-        const driveUser2 = getGoogleDriveDestination(account2);
-        const cloudPrintFoo = new Destination(
-            'FooCloud', DestinationType.GOOGLE, DestinationOrigin.COOKIES,
-            'FooCloudName', DestinationConnectionStatus.ONLINE,
-            {account: account1});
-        const recentDestinations = [
-          makeRecentDestination(driveUser1),
-          makeRecentDestination(driveUser2),
-          makeRecentDestination(cloudPrintFoo),
-        ];
-        cloudDestinations = [driveUser1, driveUser2, cloudPrintFoo];
-        initialSettings.serializedAppStateStr = JSON.stringify({
-          version: 2,
-          recentDestinations: recentDestinations,
-        });
-        userAccounts = [account1, account2];
-
-        const waitForPrinterDone = () => {
-          return eventToPromise(
-              CloudPrintInterfaceEventType.PRINTER_DONE,
-              cloudPrintInterface.getEventTarget());
-        };
-
-        // Wait for the first cloud printer to be fetched for selection.
-        return Promise
-            .all([
-              setInitialSettings(false),
-              waitForPrinterDone(),
-            ])
-            .then(() => {
-              // Should have loaded Google Drive as the selected printer, since
-              // it was most recent.
-              assertEquals(
-                  GooglePromotedDestinationId.DOCS,
-                  destinationStore.selectedDestination!.id);
-
-              // Since the system default is local, local destinations will also
-              // have been loaded. Should have 5 local printers + 2 cloud
-              // printers for account 1 + Save as PDF.
-              const loadedPrintersAccount1 =
-                  destinationStore.destinations(account1);
-              assertEquals(8, loadedPrintersAccount1.length);
-              cloudDestinations.forEach((destination) => {
-                assertEquals(
-                    destination.account === account1,
-                    loadedPrintersAccount1.some(
-                        p => p.key === destination.key));
-              });
-              assertEquals(1, numPrintersSelected);
-
-              // 5 local + Save as PDF for account 2. Cloud printers for this
-              // account won't be retrieved until
-              // reloadUserCookieBasedDestinations() is called when the active
-              // user changes.
-              const loadedPrintersAccount2 =
-                  destinationStore.destinations(account2);
-              assertEquals(6, loadedPrintersAccount2.length);
-              assertEquals(
-                  GooglePromotedDestinationId.SAVE_AS_PDF,
-                  loadedPrintersAccount2[0]!.id);
-              loadedPrintersAccount2.forEach(printer => {
-                assertFalse(printer.origin === DestinationOrigin.COOKIES);
-              });
-            });
-      });
-  // </if>
 
   /**
    * Tests that if the user has a single valid recent destination the
@@ -623,84 +482,6 @@ suite(destination_store_test.suiteName, function() {
       });
 
   // <if expr="chromeos_ash or chromeos_lacros">
-  /**
-   * Tests that if there are recent destinations from different accounts, only
-   * destinations associated with the most recent account are fetched.
-   */
-  test(
-      assert(destination_store_test.TestNames
-                 .MultipleRecentDestinationsAccountsCros),
-      function() {
-        const account1 = 'foo@chromium.org';
-        const account2 = 'bar@chromium.org';
-        const cloudPrintFoo = new Destination(
-            'FooCloud', DestinationType.GOOGLE, DestinationOrigin.COOKIES,
-            'FooCloudName', DestinationConnectionStatus.ONLINE,
-            {account: account1});
-        const cloudPrintBar = new Destination(
-            'BarCloud', DestinationType.GOOGLE, DestinationOrigin.COOKIES,
-            'BarCloudName', DestinationConnectionStatus.ONLINE,
-            {account: account1});
-        const cloudPrintBaz = new Destination(
-            'BazCloud', DestinationType.GOOGLE, DestinationOrigin.COOKIES,
-            'BazCloudName', DestinationConnectionStatus.ONLINE,
-            {account: account2});
-        const recentDestinations = [
-          makeRecentDestination(cloudPrintFoo),
-          makeRecentDestination(cloudPrintBar),
-          makeRecentDestination(cloudPrintBaz),
-        ];
-        cloudDestinations = [cloudPrintFoo, cloudPrintBar, cloudPrintBaz];
-        initialSettings.serializedAppStateStr = JSON.stringify({
-          version: 2,
-          recentDestinations: recentDestinations,
-        });
-        userAccounts = [account1, account2];
-
-        const waitForPrinterDone = () => {
-          return eventToPromise(
-              CloudPrintInterfaceEventType.PRINTER_DONE,
-              cloudPrintInterface.getEventTarget());
-        };
-
-        // Wait for all three cloud printers to load.
-        return Promise
-            .all([
-              setInitialSettings(false),
-              waitForPrinterDone(),
-            ])
-            .then(() => {
-              // Should have loaded FooCloud as the selected printer, since
-              // it was most recent.
-              assertEquals(
-                  'FooCloud', destinationStore.selectedDestination!.id);
-
-              // Since the system default is local, local destinations will also
-              // have been loaded. Should have 5 local printers + 2 cloud
-              // printers for account 1 + Save as PDF + Drive.
-              const loadedPrintersAccount1 =
-                  destinationStore.destinations(account1);
-              assertEquals(9, loadedPrintersAccount1.length);
-              cloudDestinations.forEach((destination) => {
-                assertEquals(
-                    destination.account === account1,
-                    loadedPrintersAccount1.some(
-                        p => p.key === destination.key));
-              });
-              assertEquals(1, numPrintersSelected);
-
-              // 5 local, Save as PDF, and Save to Drive exist
-              // when filtering for account 2 because its cloud printers are not
-              // requested at startup.
-              const loadedPrintersAccount2 =
-                  destinationStore.destinations(account2);
-              assertEquals(7, loadedPrintersAccount2.length);
-              assertEquals(
-                  GooglePromotedDestinationId.SAVE_AS_PDF,
-                  loadedPrintersAccount2[0]!.id);
-            });
-      });
-
   /** Tests that the SAVE_TO_DRIVE_CROS destination is loaded on Chrome OS. */
   test(
       assert(destination_store_test.TestNames.LoadSaveToDriveCros), function() {

@@ -6,7 +6,6 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {CloudPrintInterface, CloudPrintInterfaceEventType, CloudPrintInterfacePrinterFailedDetail, CloudPrintInterfaceSearchDoneDetail} from '../cloud_print_interface.js';
 import {DestinationSearchBucket, MetricsContext, PrintPreviewInitializationEvents} from '../metrics.js';
 import {CapabilitiesResponse, NativeLayer, NativeLayerImpl} from '../native_layer.js';
 // <if expr="chromeos_ash or chromeos_lacros">
@@ -173,11 +172,6 @@ export class DestinationStore extends EventTarget {
   private autoSelectMatchingDestination_: DestinationMatch|null = null;
 
   /**
-   * Used to fetch cloud-based print destinations.
-   */
-  private cloudPrintInterface_: CloudPrintInterface|null = null;
-
-  /**
    * Cache used for constant lookup of destinations by key.
    */
   private destinationMap_: Map<string, Destination> = new Map();
@@ -194,15 +188,7 @@ export class DestinationStore extends EventTarget {
   private destinationSearchStatus_:
       Map<PrinterType, DestinationStorePrinterSearchStatus>;
 
-  private inFlightCloudPrintRequests_: Set<string> = new Set();
-
   private initialDestinationSelected_: boolean = false;
-
-  /**
-   * Maps user account to the list of origins for which destinations are
-   * already loaded.
-   */
-  private loadedCloudOrigins_: Map<string, DestinationOrigin[]> = new Map();
 
   /**
    * Used to track metrics.
@@ -311,16 +297,8 @@ export class DestinationStore extends EventTarget {
    * @return Whether a search for print destinations is in progress.
    */
   get isPrintDestinationSearchInProgress(): boolean {
-    const isLocalDestinationSearchInProgress =
-        Array.from(this.destinationSearchStatus_.values())
-            .some(el => el === DestinationStorePrinterSearchStatus.SEARCHING);
-    if (isLocalDestinationSearchInProgress) {
-      return true;
-    }
-
-    const isCloudDestinationSearchInProgress = !!this.cloudPrintInterface_ &&
-        this.cloudPrintInterface_!.isCloudDestinationSearchInProgress();
-    return isCloudDestinationSearchInProgress;
+    return Array.from(this.destinationSearchStatus_.values())
+        .some(el => el === DestinationStorePrinterSearchStatus.SEARCHING);
   }
 
   /**
@@ -399,25 +377,16 @@ export class DestinationStore extends EventTarget {
       return;
     }
 
-    // Check for Cloud Print printers and remove them if the interface is not
-    // present. This indicates that Cloud Print is unavailable for this user.
+    // Check for Cloud Print printers and remove them. Cloud Print is no longer
+    // supported.
+    // TODO(rbpotter): Remove cloud printers from the sticky settings/auto
+    // select, similar to current handling for privet, and remove this.
     if (this.typesToSearch_.has(PrinterType.CLOUD_PRINTER)) {
-      if (this.cloudPrintInterface_ === null) {
-        this.typesToSearch_.delete(PrinterType.CLOUD_PRINTER);
-      } else {
-        // Accounts are not known on startup. Send an initial search query to
-        // get tokens and user accounts.
-        this.cloudPrintInterface_.search();
-      }
+      this.typesToSearch_.delete(PrinterType.CLOUD_PRINTER);
     }
 
-    // Load all possible printers except for Cloud Print printers since they're
-    // fetched by Javascript instead of through the native layer (which
-    // startLoadDestinations_ invokes).
     for (const printerType of this.typesToSearch_) {
-      if (printerType !== PrinterType.CLOUD_PRINTER) {
-        this.startLoadDestinations_(printerType);
-      }
+      this.startLoadDestinations_(printerType);
     }
 
     // Start a 10s timeout so that we never hang forever.
@@ -635,32 +604,6 @@ export class DestinationStore extends EventTarget {
     this.activeUser_ = activeUser;
   }
 
-  /**
-   * Sets the destination store's Google Cloud Print interface.
-   */
-  setCloudPrintInterface(cloudPrintInterface: CloudPrintInterface) {
-    assert(this.cloudPrintInterface_ === null);
-    this.cloudPrintInterface_ = cloudPrintInterface;
-    [CloudPrintInterfaceEventType.SEARCH_DONE,
-     CloudPrintInterfaceEventType.SEARCH_FAILED,
-    ].forEach(eventName => {
-      this.tracker_.add(
-          this.cloudPrintInterface_!.getEventTarget(), eventName,
-          (event: CustomEvent<CloudPrintInterfaceSearchDoneDetail>) =>
-              this.onCloudPrintSearchDone_(event));
-    });
-    this.tracker_.add(
-        this.cloudPrintInterface_!.getEventTarget(),
-        CloudPrintInterfaceEventType.PRINTER_DONE,
-        (event: CustomEvent<Destination>) =>
-            this.onCloudPrintPrinterDone_(event));
-    this.tracker_.add(
-        this.cloudPrintInterface_!.getEventTarget(),
-        CloudPrintInterfaceEventType.PRINTER_FAILED,
-        (event: CustomEvent<CloudPrintInterfacePrinterFailedDetail>) =>
-            this.onCloudPrintPrinterFailed_(event));
-  }
-
   /** @param Key identifying the destination to select */
   selectDestinationByKey(key: string) {
     assert(this.tryToSelectDestinationByKey_(key));
@@ -700,22 +643,14 @@ export class DestinationStore extends EventTarget {
     // known yet.
     if (destination.capabilities === null) {
       const type = getPrinterTypeForDestination(destination);
-      if (type !== PrinterType.CLOUD_PRINTER) {
-        this.nativeLayer_.getPrinterCapabilities(destination.id, type)
-            .then(
-                (caps) => this.onCapabilitiesSet_(
-                    destination.origin, destination.id, caps),
-                () => this.onGetCapabilitiesFail_(
-                    destination.origin, destination.id));
-        MetricsContext.getPrinterCapabilities().record(
-            PrintPreviewInitializationEvents.FUNCTION_INITIATED);
-      } else {
-        assert(
-            this.cloudPrintInterface_ !== null,
-            'Cloud destination selected, but GCP is not enabled');
-        this.cloudPrintInterface_!.printer(
-            destination.id, destination.origin, destination.account);
-      }
+      this.nativeLayer_.getPrinterCapabilities(destination.id, type)
+          .then(
+              (caps) => this.onCapabilitiesSet_(
+                  destination.origin, destination.id, caps),
+              () => this.onGetCapabilitiesFail_(
+                  destination.origin, destination.id));
+      MetricsContext.getPrinterCapabilities().record(
+          PrintPreviewInitializationEvents.FUNCTION_INITIATED);
     } else {
       this.sendSelectedDestinationUpdateEvent_();
     }
@@ -811,19 +746,6 @@ export class DestinationStore extends EventTarget {
         PrintPreviewInitializationEvents.FUNCTION_INITIATED);
   }
 
-  /**
-   * Requests load of COOKIE based cloud destinations for |account|.
-   */
-  reloadUserCookieBasedDestinations(account: string) {
-    const origins = this.loadedCloudOrigins_.get(account) || [];
-    if (origins.includes(DestinationOrigin.COOKIES)) {
-      this.dispatchEvent(
-          new CustomEvent(DestinationStoreEventType.DESTINATION_SEARCH_DONE));
-    } else {
-      this.startLoadCloudDestinations(DestinationOrigin.COOKIES);
-    }
-  }
-
   /** Initiates loading of all known destination types. */
   startLoadAllDestinations() {
     // Printer types that need to be retrieved from the handler.
@@ -832,27 +754,8 @@ export class DestinationStore extends EventTarget {
       PrinterType.LOCAL_PRINTER,
     ];
 
-    // Cloud destinations are pulled from the cloud print server instead of the
-    // NativeLayer/PrintPreviewHandler.
-    this.startLoadCloudDestinations();
-
     for (const printerType of types) {
       this.startLoadDestinations_(printerType);
-    }
-  }
-
-  /**
-   * Initiates loading of cloud destinations.
-   * @param origin Search destinations for the specified origin only.
-   */
-  startLoadCloudDestinations(origin?: DestinationOrigin) {
-    if (this.cloudPrintInterface_ === null) {
-      return;
-    }
-
-    const origins = this.loadedCloudOrigins_.get(this.activeUser_) || [];
-    if (origins.length === 0 || (origin && origins.includes(origin))) {
-      this.cloudPrintInterface_.search(this.activeUser_, origin);
     }
   }
 
@@ -1085,69 +988,6 @@ export class DestinationStore extends EventTarget {
         'Failed to get print capabilities for printer ' + destinationId);
     if (this.selectedDestination_ &&
         this.selectedDestination_.id === destinationId) {
-      this.dispatchEvent(new CustomEvent(
-          DestinationStoreEventType.ERROR,
-          {detail: DestinationErrorType.INVALID}));
-    }
-  }
-
-  /**
-   * Called when the /search call completes, either successfully or not.
-   * In case of success, stores fetched destinations.
-   * @param event Contains the request result.
-   */
-  private onCloudPrintSearchDone_(
-      event: CustomEvent<CloudPrintInterfaceSearchDoneDetail>) {
-    const payload = event.detail;
-    const searchingCloudPrintersDone =
-        this.typesToSearch_.has(PrinterType.CLOUD_PRINTER) &&
-        !this.cloudPrintInterface_!.isCloudDestinationSearchInProgress() &&
-        (!!payload.user ||
-         event.type === CloudPrintInterfaceEventType.SEARCH_FAILED);
-    if (searchingCloudPrintersDone) {
-      this.typesToSearch_.delete(PrinterType.CLOUD_PRINTER);
-    }
-    if (payload.printers && payload.printers.length > 0) {
-      this.insertDestinations_(payload.printers);
-    }
-    if (searchingCloudPrintersDone) {
-      this.tryToSelectInitialDestination_();
-    }
-    if (payload.searchDone) {
-      const origins = this.loadedCloudOrigins_.get(payload.user) || [];
-      if (!origins.includes(payload.origin)) {
-        this.loadedCloudOrigins_.set(
-            payload.user, origins.concat([payload.origin]));
-      }
-    }
-    this.dispatchEvent(
-        new CustomEvent(DestinationStoreEventType.DESTINATION_SEARCH_DONE));
-  }
-
-  /**
-   * Called when /printer call completes. Updates the specified destination's
-   * print capabilities.
-   * @param event Contains detailed information about the destination.
-   */
-  private onCloudPrintPrinterDone_(event: CustomEvent<Destination>) {
-    this.updateDestination_(event.detail);
-    this.inFlightCloudPrintRequests_.delete(event.detail.key);
-  }
-
-  /**
-   * Called when the Google Cloud Print interface fails to lookup a
-   * destination. Selects another destination if the failed destination was
-   * the initial destination.
-   * @param event Contains the ID of the destination that failed to be looked
-   *     up.
-   */
-  private onCloudPrintPrinterFailed_(
-      event: CustomEvent<CloudPrintInterfacePrinterFailedDetail>) {
-    const key = createDestinationKey(
-        event.detail.destinationId, event.detail.origin,
-        event.detail.account || '');
-    this.inFlightCloudPrintRequests_.delete(key);
-    if (this.selectedDestination_ && this.selectedDestination_.key === key) {
       this.dispatchEvent(new CustomEvent(
           DestinationStoreEventType.ERROR,
           {detail: DestinationErrorType.INVALID}));

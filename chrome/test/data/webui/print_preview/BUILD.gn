@@ -28,7 +28,6 @@ preprocessed_tests = [
   "print_preview_sidebar_test.ts",
   "print_preview_test_utils.ts",
   "restore_state_test.ts",
-  "user_manager_test.ts",
 ]
 
 if (is_mac || is_win) {
@@ -41,7 +40,6 @@ non_preprocessed_tests = [
   "advanced_dialog_test.ts",
   "advanced_item_test.ts",
   "button_strip_interactive_test.ts",
-  "cloud_print_interface_stub.ts",
   "copies_settings_test.ts",
   "custom_margins_test.ts",
   "destination_item_test.ts",

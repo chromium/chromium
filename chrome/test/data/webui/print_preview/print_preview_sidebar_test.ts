@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloudPrintInterfaceImpl, NativeLayerImpl, PrintPreviewModelElement, PrintPreviewSidebarElement} from 'chrome://print/print_preview.js';
+import {NativeLayerImpl, PrintPreviewModelElement, PrintPreviewSidebarElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/test_util.js';
 
-import {CloudPrintInterfaceStub} from './cloud_print_interface_stub.js';
 // <if expr="chromeos_ash or chromeos_lacros">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 // </if>
@@ -34,8 +33,6 @@ suite(print_preview_sidebar_test.suiteName, function() {
 
   let nativeLayer: NativeLayerStub;
 
-  let cloudPrintInterface: CloudPrintInterfaceStub;
-
   setup(function() {
     // Stub out the native layer and cloud print interface
     nativeLayer = new NativeLayerStub();
@@ -44,8 +41,6 @@ suite(print_preview_sidebar_test.suiteName, function() {
     setNativeLayerCrosInstance();
     // </if>
     nativeLayer.setLocalDestinationCapabilities(getCddTemplate('FooDevice'));
-    cloudPrintInterface = new CloudPrintInterfaceStub();
-    CloudPrintInterfaceImpl.setInstance(cloudPrintInterface);
 
     document.body.innerHTML = '';
     model = document.createElement('print-preview-model');

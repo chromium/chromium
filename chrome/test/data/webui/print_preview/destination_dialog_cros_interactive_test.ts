@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloudPrintInterfaceImpl, NativeLayerImpl, PrintPreviewDestinationDialogCrosElement, State} from 'chrome://print/print_preview.js';
+import {NativeLayerImpl, PrintPreviewDestinationDialogCrosElement, State} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, fakeDataBind} from 'chrome://webui-test/test_util.js';
 
-import {CloudPrintInterfaceStub} from './cloud_print_interface_stub.js';
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 import {NativeLayerStub} from './native_layer_stub.js';
 import {setupTestListenerElement} from './print_preview_test_utils.js';
@@ -43,9 +42,6 @@ suite(destination_dialog_cros_interactive_test.suiteName, function() {
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
     setNativeLayerCrosInstance();
-    const cloudPrintInterface = new CloudPrintInterfaceStub();
-    CloudPrintInterfaceImpl.setInstance(cloudPrintInterface);
-    cloudPrintInterface.configure();
 
     const model = document.createElement('print-preview-model');
     document.body.appendChild(model);

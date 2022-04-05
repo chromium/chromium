@@ -21,7 +21,6 @@ import './print_preview_shared_css.js';
 import './print_preview_vars_css.js';
 import './throbber_css.js';
 import './settings_section.js';
-import '../data/user_manager.js';
 import '../strings.m.js';
 
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
@@ -31,7 +30,6 @@ import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CloudPrintInterfaceImpl} from '../cloud_print_interface_impl.js';
 import {createRecentDestinationKey, Destination, DestinationOrigin, GooglePromotedDestinationId, makeRecentDestination, RecentDestination} from '../data/destination.js';
 // <if expr="chromeos_ash or chromeos_lacros">
 import {SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from '../data/destination.js';
@@ -139,11 +137,6 @@ export class PrintPreviewDestinationSettingsElement extends
         observer: 'onActiveUserChanged_',
       },
 
-      cloudPrintDisabled_: {
-        type: Boolean,
-        value: true,
-      },
-
       destinationStore_: {
         type: Object,
         value: null,
@@ -193,7 +186,6 @@ export class PrintPreviewDestinationSettingsElement extends
   firstLoad: boolean;
   state: State;
   private activeUser_: string;
-  private cloudPrintDisabled_: boolean;
   private destinationStore_: DestinationStore|null;
   private displayedDestinations_: Destination[];
 
@@ -304,7 +296,6 @@ export class PrintPreviewDestinationSettingsElement extends
       defaultPrinter: string, pdfPrinterDisabled: boolean,
       isDriveMounted: boolean,
       serializedDefaultDestinationRulesStr: string|null) {
-    const cloudPrintInterface = CloudPrintInterfaceImpl.getInstance();
     this.pdfPrinterDisabled_ = pdfPrinterDisabled;
     let recentDestinations =
         this.getSettingValue('recentDestinations') as RecentDestination[];
@@ -312,21 +303,6 @@ export class PrintPreviewDestinationSettingsElement extends
     this.driveDestinationKey_ =
         isDriveMounted ? SAVE_TO_DRIVE_CROS_DESTINATION_KEY : '';
     // </if>
-
-    if (cloudPrintInterface.isConfigured()) {
-      this.cloudPrintDisabled_ = false;
-      this.destinationStore_!.setCloudPrintInterface(cloudPrintInterface);
-      beforeNextRender(this, () => {
-        this.shadowRoot!.querySelector(
-                            'print-preview-user-manager')!.initUserAccounts();
-        recentDestinations = recentDestinations.slice(
-            0, this.getRecentDestinationsDisplayCount_(recentDestinations));
-        this.destinationStore_!.init(
-            this.pdfPrinterDisabled_, isDriveMounted, defaultPrinter,
-            serializedDefaultDestinationRulesStr, recentDestinations);
-      });
-      return;
-    }
 
     recentDestinations = recentDestinations.slice(
         0, this.getRecentDestinationsDisplayCount_(recentDestinations));
@@ -556,15 +532,6 @@ export class PrintPreviewDestinationSettingsElement extends
     } else {
       this.destinationStore_!.selectDestinationByKey(value);
     }
-  }
-
-  /**
-   * @param e Event containing the new active user account.
-   */
-  private onAccountChange_(e: CustomEvent<string>) {
-    assert(!this.cloudPrintDisabled_);
-    this.shadowRoot!.querySelector('print-preview-user-manager')!
-        .updateActiveUser(e.detail);
   }
 
   private onDialogClose_() {

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, DuplexType, GooglePromotedDestinationId, Margins, MarginsType, PrintPreviewModelElement, Size} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, DuplexType, Margins, MarginsType, PrintPreviewModelElement, Size} from 'chrome://print/print_preview.js';
 // <if expr="chromeos_ash or chromeos_lacros">
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // </if>
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {getCddTemplate, getCloudDestination, getSaveAsPdfDestination} from './print_preview_test_utils.js';
+import {getCddTemplate, getSaveAsPdfDestination} from './print_preview_test_utils.js';
 
 suite('ModelSettingsAvailabilityTest', function() {
   let model: PrintPreviewModelElement;
@@ -221,21 +221,6 @@ suite('ModelSettingsAvailabilityTest', function() {
           capabilityAndValue.expectedValue, model.settings.color.value);
       assertTrue(model.settings.color.available);
     });
-
-    // Google Drive always has an unavailableValue of true when using the cloud
-    // destination.
-    model.set(
-        'destination',
-        getCloudDestination(
-            GooglePromotedDestinationId.DOCS, GooglePromotedDestinationId.DOCS,
-            'foo@chromium.org'));
-    const capabilities =
-        getCddTemplate(GooglePromotedDestinationId.DOCS).capabilities!;
-    delete capabilities.printer!.color;
-    model.set('destination.capabilities', capabilities);
-    assertFalse(model.settings.color.available);
-    assertTrue(model.settings.color.unavailableValue as boolean);
-    assertFalse(model.settings.color.setFromUi);
   });
 
   function setSaveAsPdfDestination() {

@@ -28,8 +28,6 @@ Object.assign(window, {printer_status_test_cros: printer_status_test_cros});
 suite(printer_status_test_cros.suiteName, function() {
   let destinationSelect: PrintPreviewDestinationSelectCrosElement;
 
-  const account: string = 'foo@chromium.org';
-
   let nativeLayerCros: NativeLayerCrosStub;
 
   function setNativeLayerPrinterStatusMap() {
@@ -299,22 +297,13 @@ suite(printer_status_test_cros.suiteName, function() {
           // trigger the error text being populated.
           const destinationWithErrorStatus =
               createDestination('ID4', 'Four', DestinationOrigin.CROS);
-          const cloudPrintDestination = new Destination(
-              'ID2', DestinationType.GOOGLE, DestinationOrigin.COOKIES, 'Two',
-              DestinationConnectionStatus.OFFLINE, {account: account});
-
           destinationSelect.recentDestinationList = [
             destinationWithoutErrorStatus,
             destinationWithErrorStatus,
-            cloudPrintDestination,
           ];
 
           const destinationEulaWrapper =
               destinationSelect.$.destinationEulaWrapper;
-
-          destinationSelect.destination = cloudPrintDestination;
-          assertFalse(destinationStatus.hidden);
-          assertTrue(destinationEulaWrapper.hidden);
 
           destinationSelect.destination = destinationWithoutErrorStatus;
           assertTrue(destinationStatus.hidden);
@@ -341,19 +330,9 @@ suite(printer_status_test_cros.suiteName, function() {
           createDestination('ID1', 'One', DestinationOrigin.CROS);
       const localNonCrosPrinter =
           createDestination('ID2', 'Two', DestinationOrigin.LOCAL);
-      const cloudPrintDestination = new Destination(
-          'ID3', DestinationType.GOOGLE, DestinationOrigin.COOKIES, 'Three',
-          DestinationConnectionStatus.ONLINE, {account: account});
-      const ownedCloudPrintDestination = new Destination(
-          'ID4', DestinationType.GOOGLE, DestinationOrigin.COOKIES, 'Four',
-          DestinationConnectionStatus.ONLINE,
-          {account: account, isOwned: true});
       const crosEnterprisePrinter = new Destination(
           'ID5', DestinationType.LOCAL, DestinationOrigin.CROS, 'Five',
           DestinationConnectionStatus.ONLINE, {isEnterprisePrinter: true});
-      const mobilePrinter = new Destination(
-          'ID7', DestinationType.MOBILE, DestinationOrigin.COOKIES, 'Seven',
-          DestinationConnectionStatus.ONLINE);
       const saveToDrive = getGoogleDriveDestination('account');
       const saveAsPdf = getSaveAsPdfDestination();
 
@@ -373,23 +352,11 @@ suite(printer_status_test_cros.suiteName, function() {
       destinationSelect.updateDestination();
       assertEquals('print-preview:print', dropdown.destinationIcon);
 
-      destinationSelect.destination = cloudPrintDestination;
-      destinationSelect.updateDestination();
-      assertEquals('print-preview:printer-shared', dropdown.destinationIcon);
-
-      destinationSelect.destination = ownedCloudPrintDestination;
-      destinationSelect.updateDestination();
-      assertEquals('print-preview:print', dropdown.destinationIcon);
-
       destinationSelect.destination = crosEnterprisePrinter;
       destinationSelect.updateDestination();
       assertEquals(
           'print-preview:business-printer-status-grey',
           dropdown.destinationIcon);
-
-      destinationSelect.destination = mobilePrinter;
-      destinationSelect.updateDestination();
-      assertEquals('print-preview:smartphone', dropdown.destinationIcon);
 
       destinationSelect.destination = saveToDrive;
       destinationSelect.updateDestination();

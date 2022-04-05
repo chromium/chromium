@@ -17,8 +17,6 @@ import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CloudPrintInterface, CloudPrintInterfaceErrorEventDetail, CloudPrintInterfaceEventType} from '../cloud_print_interface.js';
-import {CloudPrintInterfaceImpl} from '../cloud_print_interface_impl.js';
 import {Destination} from '../data/destination.js';
 // <if expr="chromeos_ash or chromeos_lacros">
 import {DestinationOrigin} from '../data/destination.js';
@@ -72,10 +70,6 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
         observer: 'onStateChanged_',
       },
 
-      cloudPrintErrorMessage_: String,
-
-      cloudPrintInterface_: Object,
-
       controlsManaged_: {
         type: Boolean,
         computed: 'computeControlsManaged_(destinationsManaged_, ' +
@@ -124,8 +118,6 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
   }
 
   state: State;
-  private cloudPrintErrorMessage_: string;
-  private cloudPrintInterface_: CloudPrintInterface;
   private controlsManaged_: boolean;
   private destination_: Destination;
   private destinationsManaged_: boolean;
@@ -316,11 +308,6 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
     this.whenReady_.then(() => {
       // The cloud print interface should be initialized before initializing the
       // sidebar, so that cloud printers can be selected automatically.
-      if (settings.cloudPrintURL) {
-        this.initializeCloudPrint_(
-            settings.cloudPrintURL, settings.isInAppKioskMode,
-            settings.uiLocale);
-      }
       this.$.documentInfo.init(
           settings.previewModifiable, settings.previewIsFromArc,
           settings.documentTitle, settings.documentHasSelection);
@@ -345,26 +332,6 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
       }
       title.textContent = settings.documentTitle;
     });
-  }
-
-  /**
-   * Called when Google Cloud Print integration is enabled.
-   * @param cloudPrintUrl The URL to use for cloud print servers.
-   * @param appKioskMode Whether the browser is in app kiosk mode.
-   * @param uiLocale The UI locale.
-   */
-  private initializeCloudPrint_(
-      cloudPrintUrl: string, appKioskMode: boolean, uiLocale: string) {
-    assert(!this.cloudPrintInterface_);
-    this.cloudPrintInterface_ = CloudPrintInterfaceImpl.getInstance();
-    this.cloudPrintInterface_.configure(cloudPrintUrl, appKioskMode, uiLocale);
-    this.tracker_.add(
-        this.cloudPrintInterface_.getEventTarget(),
-        CloudPrintInterfaceEventType.SUBMIT_DONE, this.close_.bind(this));
-    this.tracker_.add(
-        this.cloudPrintInterface_.getEventTarget(),
-        CloudPrintInterfaceEventType.SUBMIT_FAILED,
-        this.onCloudPrintError_.bind(this, appKioskMode));
   }
 
   /**
@@ -452,20 +419,12 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
           this.nativeLayer_!.print(this.$.model.createPrintTicket(
               this.destination_, this.openPdfInPreview_,
               this.showSystemDialogBeforePrint_));
-      if (this.destination_.isLocal) {
-        const onError = getPrinterTypeForDestination(this.destination_) ===
-                PrinterType.PDF_PRINTER ?
-            this.onFileSelectionCancel_.bind(this) :
-            this.onPrintFailed_.bind(this);
-        whenPrintDone.then(this.close_.bind(this), onError);
-      } else {
-        // Cloud print resolves when print data is returned to submit to cloud
-        // print, or if print ticket cannot be read, no PDF data is found, or
-        // PDF is oversized.
-        whenPrintDone.then(
-            data => this.onPrintToCloud_(data!),
-            this.onPrintFailed_.bind(this));
-      }
+      assert(this.destination_.isLocal, 'Cannot print to cloud printers');
+      const onError = getPrinterTypeForDestination(this.destination_) ===
+              PrinterType.PDF_PRINTER ?
+          this.onFileSelectionCancel_.bind(this) :
+          this.onPrintFailed_.bind(this);
+      whenPrintDone.then(this.close_.bind(this), onError);
     }
   }
 
@@ -513,20 +472,6 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
     this.$.state.transitTo(State.READY);
   }
 
-  /**
-   * Called when the native layer has retrieved the data to print to Google
-   * Cloud Print.
-   * @param data The body to send in the HTTP request.
-   */
-  private onPrintToCloud_(data: string) {
-    assert(
-        this.cloudPrintInterface_ !== null,
-        'Google Cloud Print is not enabled');
-    this.cloudPrintInterface_.submit(
-        this.destination_, this.$.model.createCloudJobTicket(this.destination_),
-        this.documentSettings_.title, data);
-  }
-
   // <if expr="not chromeos_ash and not chromeos_lacros">
   private onPrintWithSystemDialog_() {
     // <if expr="is_win">
@@ -549,7 +494,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
   // </if>
 
   /**
-   * Called when printing to a cloud, or extension printer fails.
+   * Called when printing to an extension printer fails.
    * @param httpError The HTTP error code, or -1 or a string describing
    *     the error, if not an HTTP error.
    */
@@ -576,31 +521,6 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
         break;
       default:
         break;
-    }
-  }
-
-  /**
-   * Called when there was an error communicating with Google Cloud print.
-   * Displays an error message in the print header.
-   */
-  private onCloudPrintError_(
-      appKioskMode: boolean,
-      event: CustomEvent<CloudPrintInterfaceErrorEventDetail>) {
-    if (event.detail.status === 0 ||
-        (event.detail.status === 403 && !appKioskMode)) {
-      return;  // No internet connectivity or not signed in.
-    }
-    this.cloudPrintErrorMessage_ = event.detail.message;
-    this.error_ = Error.CLOUD_PRINT_ERROR;
-    this.$.state.transitTo(State.FATAL_ERROR);
-    if (event.detail.status === 200) {
-      console.warn(
-          'Google Cloud Print Error: ' +
-          `(${event.detail.errorCode}) ${event.detail.message}`);
-    } else {
-      console.warn(
-          'Google Cloud Print Error: ' +
-          `HTTP status ${event.detail.status}`);
     }
   }
 

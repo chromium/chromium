@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CapabilitiesResponse, Cdd, DEFAULT_MAX_COPIES, Destination, DestinationCertificateStatus, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, GooglePromotedDestinationId, LocalDestinationInfo, MeasurementSystemUnitType, MediaSizeCapability, MediaSizeOption, NativeInitialSettings, VendorCapabilityValueType} from 'chrome://print/print_preview.js';
+import {CapabilitiesResponse, Cdd, DEFAULT_MAX_COPIES, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, GooglePromotedDestinationId, LocalDestinationInfo, MeasurementSystemUnitType, MediaSizeCapability, MediaSizeOption, NativeInitialSettings, VendorCapabilityValueType} from 'chrome://print/print_preview.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -172,25 +172,6 @@ export function getCddTemplateWithAdvancedSettings(
 }
 
 /**
- * Creates a destination with a certificate status tag.
- * @param id Printer id
- * @param name Printer display name
- * @param invalid Whether printer has an invalid certificate.
- */
-export function createDestinationWithCertificateStatus(
-    id: string, name: string, invalid: boolean) {
-  const tags = {
-    certificateStatus: invalid ? DestinationCertificateStatus.NO :
-                                 DestinationCertificateStatus.UNKNOWN,
-    account: 'foo@chromium.org',
-  };
-  const dest = new Destination(
-      id, DestinationType.GOOGLE, DestinationOrigin.COOKIES, name,
-      DestinationConnectionStatus.ONLINE, tags);
-  return dest;
-}
-
-/**
  * @return The capabilities of the Save as PDF destination.
  */
 export function getPdfPrinter(): {capabilities: Cdd} {
@@ -344,27 +325,6 @@ export function getGoogleDriveDestination(_account: string): Destination {
       'Save to Google Drive', DestinationConnectionStatus.ONLINE);
 }
 // </if>
-// <if expr="not chromeos_ash and not chromeos_lacros">
-/**
- * @param account The user account the destination should be associated with.
- * @return The Google Drive destination.
- */
-export function getGoogleDriveDestination(account: string): Destination {
-  return getCloudDestination(
-      GooglePromotedDestinationId.DOCS, GooglePromotedDestinationId.DOCS,
-      account);
-}
-// </if>
-
-/**
- * @param account The user account the destination should be associated with.
- */
-export function getCloudDestination(
-    id: string, name: string, account: string): Destination {
-  return new Destination(
-      id, DestinationType.GOOGLE, DestinationOrigin.COOKIES, name,
-      DestinationConnectionStatus.ONLINE, {account: account});
-}
 
 /** @return The Save as PDF destination. */
 export function getSaveAsPdfDestination(): Destination {

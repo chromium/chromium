@@ -64,8 +64,6 @@ foreach(f, html_files) {
 }
 
 ts_files = [
-             "cloud_print_interface.ts",
-             "cloud_print_interface_impl.ts",
              "dark_mode_mixin.ts",
              "metrics.ts",
              "native_layer.ts",
@@ -86,7 +84,6 @@ ts_files = [
              "data/scaling.ts",
              "data/size.ts",
              "data/state.ts",
-             "data/user_manager.ts",
              "ui/highlight_utils.ts",
              "ui/input_mixin.ts",
              "ui/plugin_proxy.ts",
