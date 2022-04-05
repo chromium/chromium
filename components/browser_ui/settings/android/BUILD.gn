@@ -55,6 +55,7 @@ android_resources("java_resources") {
     "java/res/drawable-xxhdpi/ic_account_child_grey600_36dp.png",
     "java/res/drawable-xxhdpi/ic_business_small.png",
     "java/res/drawable-xxxhdpi/ic_account_child_grey600_36dp.png",
+    "java/res/drawable/list_divider.xml",
     "java/res/layout/button_preference_button.xml",
     "java/res/layout/button_preference_layout.xml",
     "java/res/layout/checkable_image_view_widget.xml",

@@ -41,7 +41,7 @@
     </style>
 
     <style name="SettingsFragment">
-        <item name="android:divider">?android:attr/listDivider</item>
+        <item name="android:divider">@drawable/list_divider</item>
     </style>
 
     <style name="SettingsFragmentList">
