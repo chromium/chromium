@@ -311,7 +311,6 @@ void XRCompositorCommon::ExitPresent() {
   presentation_receiver_.reset();
   frame_data_receiver_.reset();
   submit_client_.reset();
-  StopRuntime();
 
   pending_frame_.reset();
   delayed_get_frame_data_callback_.Reset();
@@ -324,6 +323,13 @@ void XRCompositorCommon::ExitPresent() {
   overlay_receiver_.reset();
 
   texture_helper_.SetSourceAndOverlayVisible(false, false);
+
+  // Don't call StopRuntime until this thread has finished the rest of the work.
+  // This is to prevent the OpenXrApiWrapper from being deleted before its
+  // cleanup work has finished.
+  task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&XRCompositorCommon::StopRuntime, base::Unretained(this)));
 
   if (on_presentation_ended_) {
     main_thread_task_runner_->PostTask(FROM_HERE,
