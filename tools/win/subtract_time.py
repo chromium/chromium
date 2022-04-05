@@ -17,7 +17,11 @@ def ParseTime(time_string):
   # (and there might be other variants as well)
   match = re.match("(.*):(.*):(.*)[\.,](.*)", time_string)
   hours, minutes, seconds, fraction = map(int, match.groups())
-  return hours * 3600 + minutes * 60 + seconds + fraction * .01
+  result = hours * 3600 + minutes * 60 + seconds + fraction * .01
+  if result < 0:
+    # Handle test runs that go past midnight.
+    result += 3600 * 24
+  return result
 
 
 print("%1.2f seconds elapsed time" %
