@@ -25,11 +25,13 @@ struct AggregatableAttributionReportID {
   int64 value;
 };
 
+union ReportID {
+  EventLevelReportID event_level_id;
+  AggregatableAttributionReportID aggregatable_attribution_id;
+};
+
 // Contains event-level data to be displayed.
 struct WebUIReportEventLevelData {
-  // Allows the WebUI to issue commands for individual reports.
-  // Not intended to be displayed.
-  EventLevelReportID? id;
   int64 priority;
   bool attributed_truthfully;
 };
@@ -48,9 +50,6 @@ struct AggregatableHistogramContribution {
 
 // Contains aggregatable attribution data to be displayed.
 struct WebUIReportAggregatableAttributionData {
-  // Allows the WebUI to issue commands for individual reports.
-  // Not intended to be displayed.
-  AggregatableAttributionReportID? id;
   array<AggregatableHistogramContribution> contributions;
 };
 
@@ -63,6 +62,9 @@ union WebUIReportData {
 // Struct containing stored data that will be sent in a future attribution
 // report.
 struct WebUIReport {
+  // Allows the WebUI to issue commands for individual reports.
+  // Not intended to be displayed.
+  ReportID? id;
   url.mojom.Url report_url;
   double trigger_time;
   double report_time;
@@ -173,16 +175,9 @@ interface Handler {
   // those that are actively being sent.
   GetReports(ReportType report_type) => (array<WebUIReport> reports);
 
-  // Sends the given event-level reports, ignoring delay, returning when the
-  // operation has been completed and the reports have been cleared from
-  // storage.
-  SendEventLevelReports(array<EventLevelReportID> ids) => ();
-
-  // Sends the given aggregate reports, ignoring delay, returning when the
-  // operation has been completed and the reports have been cleared from
-  // storage.
-  SendAggregatableAttributionReports(
-      array<AggregatableAttributionReportID> ids) => ();
+  // Sends the given reports, ignoring delay, returning when the operation has
+  // been completed and the reports have been cleared from storage.
+  SendReports(array<ReportID> ids) => ();
 
   // Deletes all persisted data for the attribution reporting API, returning when the
   // operation has been completed.

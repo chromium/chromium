@@ -12,6 +12,7 @@
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "mojo/public/cpp/bindings/union_traits.h"
 
 namespace mojo {
 
@@ -102,6 +103,23 @@ class StructTraits<
       attribution_internals::mojom::AggregatableAttributionReportIDDataView
           data,
       content::AttributionReport::AggregatableAttributionData::Id* out);
+};
+
+template <>
+class UnionTraits<attribution_internals::mojom::ReportIDDataView,
+                  content::AttributionReport::Id> {
+ public:
+  static content::AttributionReport::EventLevelData::Id event_level_id(
+      const content::AttributionReport::Id& id);
+
+  static content::AttributionReport::AggregatableAttributionData::Id
+  aggregatable_attribution_id(const content::AttributionReport::Id& id);
+
+  static bool Read(attribution_internals::mojom::ReportIDDataView data,
+                   content::AttributionReport::Id* out);
+
+  static attribution_internals::mojom::ReportIDDataView::Tag GetTag(
+      const content::AttributionReport::Id& id);
 };
 
 }  // namespace mojo

@@ -119,7 +119,7 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
         const AttributionReport::EventLevelData& event_level_data) {
       return attribution_internals::mojom::WebUIReportData::NewEventLevelData(
           attribution_internals::mojom::WebUIReportEventLevelData::New(
-              event_level_data.id, event_level_data.priority,
+              event_level_data.priority,
               attribution_logic ==
                   StoredSource::AttributionLogic::kTruthfully));
     }
@@ -144,7 +144,7 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
           NewAggregatableAttributionData(
               attribution_internals::mojom::
                   WebUIReportAggregatableAttributionData::New(
-                      aggregatable_data.id, std::move(contributions)));
+                      std::move(contributions)));
     }
   };
 
@@ -154,7 +154,7 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
       Visitor{.attribution_logic = attribution_info.source.attribution_logic()},
       report.data());
   return attribution_internals::mojom::WebUIReport::New(
-      report.ReportURL(is_debug_report),
+      report.ReportId(), report.ReportURL(is_debug_report),
       /*trigger_time=*/attribution_info.time.ToJsTime(),
       /*report_time=*/report.report_time().ToJsTime(),
       SerializeAttributionJson(report.ReportBody(), /*pretty_print=*/true),
@@ -226,25 +226,9 @@ void AttributionInternalsHandlerImpl::GetReports(
   }
 }
 
-void AttributionInternalsHandlerImpl::SendEventLevelReports(
-    const std::vector<AttributionReport::EventLevelData::Id>& ids,
-    attribution_internals::mojom::Handler::SendEventLevelReportsCallback
-        callback) {
-  SendReports(std::vector<AttributionReport::Id>(ids.begin(), ids.end()),
-              std::move(callback));
-}
-
-void AttributionInternalsHandlerImpl::SendAggregatableAttributionReports(
-    const std::vector<AttributionReport::AggregatableAttributionData::Id>& ids,
-    attribution_internals::mojom::Handler::
-        SendAggregatableAttributionReportsCallback callback) {
-  SendReports(std::vector<AttributionReport::Id>(ids.begin(), ids.end()),
-              std::move(callback));
-}
-
 void AttributionInternalsHandlerImpl::SendReports(
-    const std::vector<AttributionReport::Id> ids,
-    base::OnceClosure callback) {
+    const std::vector<AttributionReport::Id>& ids,
+    attribution_internals::mojom::Handler::SendReportsCallback callback) {
   if (AttributionManager* manager =
           manager_provider_->GetManager(web_ui_->GetWebContents())) {
     manager->SendReportsForWebUI(ids, std::move(callback));

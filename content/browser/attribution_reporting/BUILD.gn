@@ -26,6 +26,10 @@ mojom("mojo_bindings") {
           cpp = "::content::AttributionReport::EventLevelData::Id"
         },
         {
+          mojom = "attribution_internals.mojom.ReportID"
+          cpp = "::content::AttributionReport::Id"
+        },
+        {
           mojom = "attribution_internals.mojom.SourceType"
           cpp = "::content::AttributionSourceType"
         },

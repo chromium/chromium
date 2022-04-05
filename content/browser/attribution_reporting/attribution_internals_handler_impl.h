@@ -52,15 +52,9 @@ class AttributionInternalsHandlerImpl
   void GetReports(AttributionReport::ReportType report_type,
                   attribution_internals::mojom::Handler::GetReportsCallback
                       callback) override;
-  void SendEventLevelReports(
-      const std::vector<AttributionReport::EventLevelData::Id>& ids,
-      attribution_internals::mojom::Handler::SendEventLevelReportsCallback
-          callback) override;
-  void SendAggregatableAttributionReports(
-      const std::vector<AttributionReport::AggregatableAttributionData::Id>&
-          ids,
-      attribution_internals::mojom::Handler::
-          SendAggregatableAttributionReportsCallback callback) override;
+  void SendReports(const std::vector<AttributionReport::Id>& ids,
+                   attribution_internals::mojom::Handler::SendReportsCallback
+                       callback) override;
   void ClearStorage(attribution_internals::mojom::Handler::ClearStorageCallback
                         callback) override;
   void AddObserver(
@@ -83,9 +77,6 @@ class AttributionInternalsHandlerImpl
                     bool is_debug_report,
                     const SendResult& info) override;
   void OnTriggerHandled(const CreateReportResult& result) override;
-
-  void SendReports(const std::vector<AttributionReport::Id> ids,
-                   base::OnceClosure callback);
 
   raw_ptr<WebUI> web_ui_;
   std::unique_ptr<AttributionManagerProvider> manager_provider_;
