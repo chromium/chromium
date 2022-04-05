@@ -2856,4 +2856,16 @@ bool content::IsNSRange(id value) {
   return _owner;
 }
 
+- (BOOL)isAccessibilityElement {
+  if (![self instanceActive])
+    return NO;
+
+  if ([self internalRole] == ax::mojom::Role::kImage &&
+      _owner->HasExplicitlyEmptyName()) {
+    return NO;
+  }
+
+  return [super isAccessibilityElement];
+}
+
 @end

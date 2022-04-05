@@ -1650,9 +1650,8 @@ bool IsAXSetter(SEL selector) {
   if (![self instanceActive])
     return NO;
 
-  // Do not return false for invisible elements, otherwise no events for menus
-  // are fired.
-  return (![[self AXRole] isEqualToString:NSAccessibilityUnknownRole] &&
+  return (![[[self class] nativeRoleFromAXRole:_node->GetRole()]
+              isEqualToString:NSAccessibilityUnknownRole] &&
           !_node->GetDelegate()->IsIgnored());
 }
 
