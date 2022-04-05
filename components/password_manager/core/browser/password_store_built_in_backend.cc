@@ -112,10 +112,15 @@ void PasswordStoreBuiltInBackend::AddLoginAsync(
     PasswordStoreChangeListReply callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(helper_);
+  PasswordStoreBackendMetricsRecorder metrics_recorder =
+      PasswordStoreBackendMetricsRecorder(
+          ClassInfix("PasswordStoreBuiltInBackend"),
+          MetricInfix("AddLoginAsync"));
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&LoginDatabaseAsyncHelper::AddLogin,
-                     base::Unretained(helper_.get()), form),
+                     base::Unretained(helper_.get()), form,
+                     std::move(metrics_recorder)),
       std::move(callback));
 }
 

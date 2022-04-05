@@ -137,10 +137,12 @@ LoginsResult LoginDatabaseAsyncHelper::FillMatchingLogins(
 }
 
 PasswordStoreChangeList LoginDatabaseAsyncHelper::AddLogin(
-    const PasswordForm& form) {
+    const PasswordForm& form,
+    PasswordStoreBackendMetricsRecorder metrics_recorder) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BeginTransaction();
-  PasswordStoreChangeList changes = AddLoginSync(form, /*error=*/nullptr);
+  AddLoginError error = AddLoginError::kNone;
+  PasswordStoreChangeList changes = AddLoginSync(form, &error);
   if (sync_bridge_ && !changes.empty())
     sync_bridge_->ActOnPasswordStoreChanges(changes);
   // Sync metadata get updated in ActOnPasswordStoreChanges(). Therefore,
@@ -148,6 +150,12 @@ PasswordStoreChangeList LoginDatabaseAsyncHelper::AddLogin(
   // because sync codebase needs to update metadata atomically together with
   // the login data.
   CommitTransaction();
+  metrics_recorder.RecordMetrics(
+      /*success=*/error == AddLoginError::kNone,
+      /*error=*/error == AddLoginError::kNone
+          ? absl::nullopt
+          : absl::optional<ErrorFromPasswordStoreOrAndroidBackend>(
+                PasswordStoreBackendError::kUnrecoverable));
   return changes;
 }
 

@@ -421,12 +421,16 @@ TEST_F(PasswordStoreBuiltInBackendTest, GetAllLoginsAsyncFailsMetrics) {
 }
 
 TEST_F(PasswordStoreBuiltInBackendTest, GetAutofillableLoginsAsyncMetrics) {
-  const char kDurationMetric[] =
+  const char kDurationMetricGetLogins[] =
       "PasswordManager.PasswordStoreBuiltInBackend."
       "GetAutofillableLoginsAsync.Latency";
-  const char kSuccessMetric[] =
+  const char kSuccessMetricGetLogins[] =
       "PasswordManager.PasswordStoreBuiltInBackend."
       "GetAutofillableLoginsAsync.Success";
+  const char kDurationMetricAddLogin[] =
+      "PasswordManager.PasswordStoreBuiltInBackend.AddLoginAsync.Latency";
+  const char kSuccessMetricAddLogin[] =
+      "PasswordManager.PasswordStoreBuiltInBackend.AddLoginAsync.Success";
   base::HistogramTester histogram_tester;
 
   PasswordStoreBackend* backend = Initialize();
@@ -449,24 +453,40 @@ TEST_F(PasswordStoreBuiltInBackendTest, GetAutofillableLoginsAsyncMetrics) {
   AdvanceClock(kLatencyDelta);
   RunUntilIdle();
 
-  histogram_tester.ExpectTotalCount(kDurationMetric, 1);
-  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kLatencyDelta, 1);
-  histogram_tester.ExpectTotalCount(kSuccessMetric, 1);
-  histogram_tester.ExpectBucketCount(kSuccessMetric, true, 1);
+  // Metrics for GetAutofillableLoginsAsyncMetrics
+  histogram_tester.ExpectTotalCount(kDurationMetricGetLogins, 1);
+  histogram_tester.ExpectTimeBucketCount(kDurationMetricGetLogins,
+                                         kLatencyDelta, 1);
+  histogram_tester.ExpectTotalCount(kSuccessMetricGetLogins, 1);
+  histogram_tester.ExpectBucketCount(kSuccessMetricGetLogins, true, 1);
+  // Metrics for AddLoginAsync that also gets called in this test
+  histogram_tester.ExpectTotalCount(kDurationMetricAddLogin, 1);
+  histogram_tester.ExpectTimeBucketCount(kDurationMetricAddLogin, kLatencyDelta,
+                                         1);
+  histogram_tester.ExpectTotalCount(kSuccessMetricAddLogin, 1);
+  histogram_tester.ExpectBucketCount(kSuccessMetricAddLogin, true, 1);
 }
 
 TEST_F(PasswordStoreBuiltInBackendTest,
        GetAutofillableLoginsAsyncFailsMetrics) {
-  const char kDurationMetric[] =
+  const char kDurationMetricGetLogins[] =
       "PasswordManager.PasswordStoreBuiltInBackend."
       "GetAutofillableLoginsAsync.Latency";
-  const char kSuccessMetric[] =
+  const char kSuccessMetricGetLogins[] =
       "PasswordManager.PasswordStoreBuiltInBackend."
       "GetAutofillableLoginsAsync.Success";
+  const char kDurationMetricAddLogin[] =
+      "PasswordManager.PasswordStoreBuiltInBackend.AddLoginAsync.Latency";
+  const char kSuccessMetricAddLogin[] =
+      "PasswordManager.PasswordStoreBuiltInBackend.AddLoginAsync.Success";
   base::HistogramTester histogram_tester;
 
   PasswordStoreBackend* bad_backend =
       InitializeWithDatabase(std::make_unique<BadLoginDatabase>());
+
+  // Fill the store
+  PasswordForm form = *FillPasswordFormWithData(CreateTestPasswordFormData());
+  bad_backend->AddLoginAsync(form, base::DoNothing());
 
   // Get the logins
   bad_backend->GetAutofillableLoginsAsync(base::DoNothing());
@@ -474,10 +494,18 @@ TEST_F(PasswordStoreBuiltInBackendTest,
   AdvanceClock(kLatencyDelta);
   RunUntilIdle();
 
-  histogram_tester.ExpectTotalCount(kDurationMetric, 1);
-  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kLatencyDelta, 1);
-  histogram_tester.ExpectTotalCount(kSuccessMetric, 1);
-  histogram_tester.ExpectBucketCount(kSuccessMetric, false, 1);
+  // Metrics for GetAutofillableLoginsAsyncMetrics
+  histogram_tester.ExpectTotalCount(kDurationMetricGetLogins, 1);
+  histogram_tester.ExpectTimeBucketCount(kDurationMetricGetLogins,
+                                         kLatencyDelta, 1);
+  histogram_tester.ExpectTotalCount(kSuccessMetricGetLogins, 1);
+  histogram_tester.ExpectBucketCount(kSuccessMetricGetLogins, false, 1);
+  // Metrics for AddLoginAsync that also gets called in this test
+  histogram_tester.ExpectTotalCount(kDurationMetricAddLogin, 1);
+  histogram_tester.ExpectTimeBucketCount(kDurationMetricAddLogin, kLatencyDelta,
+                                         1);
+  histogram_tester.ExpectTotalCount(kSuccessMetricAddLogin, 1);
+  histogram_tester.ExpectBucketCount(kSuccessMetricAddLogin, false, 1);
 }
 
 }  // namespace password_manager

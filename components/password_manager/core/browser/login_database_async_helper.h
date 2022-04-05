@@ -48,7 +48,9 @@ class LoginDatabaseAsyncHelper : private PasswordStoreSync {
       PasswordStoreBackendMetricsRecorder metrics_recorder);
   LoginsResult FillMatchingLogins(const std::vector<PasswordFormDigest>& forms,
                                   bool include_psl);
-  PasswordStoreChangeList AddLogin(const PasswordForm& form);
+  PasswordStoreChangeList AddLogin(
+      const PasswordForm& form,
+      PasswordStoreBackendMetricsRecorder metrics_recorder);
   PasswordStoreChangeList UpdateLogin(const PasswordForm& form);
   PasswordStoreChangeList RemoveLogin(const PasswordForm& form);
   PasswordStoreChangeList RemoveLoginsCreatedBetween(base::Time delete_begin,
