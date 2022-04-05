@@ -25,6 +25,8 @@ static_library("public") {
 static_library("unit_test_support") {
   testonly = true
   sources = [
+    "mock_autofill_assistant.cc",
+    "mock_autofill_assistant.h",
     "mock_runtime_manager.cc",
     "mock_runtime_manager.h",
   ]

@@ -14,6 +14,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill_assistant/browser/public/autofill_assistant.h"
+#include "components/autofill_assistant/browser/public/mock_autofill_assistant.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -36,23 +37,11 @@ constexpr uint64_t kDummyurlDotComHash = 15654UL;
 
 constexpr char kPasswordChangeIntent[] = "PASSWORD_CHANGE";
 
-class MockAutofillAssistant : public autofill_assistant::AutofillAssistant {
- public:
-  MockAutofillAssistant() = default;
-  ~MockAutofillAssistant() override = default;
-
-  MOCK_METHOD4(GetCapabilitiesByHashPrefix,
-               void(uint32_t hash_prefix_length,
-                    const std::vector<uint64_t>& hash_prefix,
-                    const std::string& intent,
-                    GetCapabilitiesResponseCallback callback));
-};
-
 class CapabilitiesServiceImplTest : public ::testing::Test {
  public:
   CapabilitiesServiceImplTest() {
     auto autofill_assistant =
-        std::make_unique<NiceMock<MockAutofillAssistant>>();
+        std::make_unique<NiceMock<autofill_assistant::MockAutofillAssistant>>();
     mock_autofill_assistant_ = autofill_assistant.get();
 
     service_ = std::make_unique<CapabilitiesServiceImpl>(
@@ -61,7 +50,8 @@ class CapabilitiesServiceImplTest : public ::testing::Test {
   ~CapabilitiesServiceImplTest() override = default;
 
  protected:
-  raw_ptr<NiceMock<MockAutofillAssistant>> mock_autofill_assistant_;
+  raw_ptr<NiceMock<autofill_assistant::MockAutofillAssistant>>
+      mock_autofill_assistant_;
   std::unique_ptr<CapabilitiesServiceImpl> service_;
 };
 
