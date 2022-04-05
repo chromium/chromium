@@ -15,6 +15,7 @@
 #include "components/autofill_assistant/browser/script.h"
 #include "components/autofill_assistant/browser/script_parameters.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/service/service_request_sender.h"
 #include "components/autofill_assistant/browser/trigger_scripts/trigger_script.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -64,6 +65,7 @@ class ProtocolUtils {
       const std::string& script_payload,
       const std::vector<ProcessedActionProto>& processed_actions,
       const RoundtripTimingStats& timing_stats,
+      const RoundtripNetworkStats& network_stats,
       const ClientContextProto& client_context);
 
   // Create request to get the available trigger scripts for |url|.
@@ -130,6 +132,13 @@ class ProtocolUtils {
       int* trigger_condition_check_interval_ms,
       absl::optional<int>* trigger_condition_timeout_ms,
       absl::optional<std::unique_ptr<ScriptParameters>>* script_parameters);
+
+  // Computes network stats for a roundtrip that returned |response| and
+  // |response_info|, which were successfully parsed into |actions|.
+  static RoundtripNetworkStats ComputeNetworkStats(
+      const std::string& response,
+      const ServiceRequestSender::ResponseInfo& response_info,
+      const std::vector<std::unique_ptr<Action>>& actions);
 
  private:
   // Checks that the |trigger_condition| is well-formed (e.g. does not contain

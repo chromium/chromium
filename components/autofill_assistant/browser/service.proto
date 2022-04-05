@@ -641,6 +641,27 @@ message RoundtripTimingStats {
   optional int64 client_time_ms = 2;
 }
 
+message RoundtripNetworkStats {
+  message ActionNetworkStats {
+    // The action type.
+    optional int32 action_info_case = 1;
+    // The size of this action after decoding, in bytes.
+    optional int64 decoded_size_bytes = 2;
+  }
+  // The total size of the received HTTP response body in bytes, before
+  // decoding. This is essentially the network footprint of the received
+  // response, modulo HTTP headers.
+  optional int64 roundtrip_encoded_body_size_bytes = 1;
+  // The total size of the received HTTP response body in bytes, after
+  // decoding. This is essentially the memory footprint of the received proto,
+  // and a baseline to compare the footprint of individual actions with.
+  optional int64 roundtrip_decoded_body_size_bytes = 2;
+  // The network stats for ALL received actions. Note that this may include
+  // actions that were not executed, so this list can be longer than
+  // |processed_actions|.
+  repeated ActionNetworkStats action_stats = 3;
+}
+
 // Next request to get a script's actions.
 message NextScriptActionsRequestProto {
   // The result of processing each ActionProto from the previous response. This
@@ -652,6 +673,8 @@ message NextScriptActionsRequestProto {
   // Tracks whether the last roundtrip triggered a slow connection warning and
   // whether it was shown to the user.
   optional SlowWarningStatus slow_connection_warning = 34;
+  // Roundtrip network stats for this RPC.
+  optional RoundtripNetworkStats network_stats = 3;
 }
 
 message CUPResponseData {
