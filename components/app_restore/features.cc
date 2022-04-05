@@ -14,7 +14,7 @@ const base::Feature kArcWindowPredictor{"ArcWindowPredictor",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kFullRestoreForLacros{"FullRestoreForLacros",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool IsArcGhostWindowEnabled() {
   return base::FeatureList::IsEnabled(kArcGhostWindow);
