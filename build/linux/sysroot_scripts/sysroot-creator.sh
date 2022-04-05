@@ -3,13 +3,13 @@
 # found in the LICENSE file.
 #
 # This script should not be run directly but sourced by the other
-# scripts (e.g. sysroot-creator-sid.sh).  Its up to the parent scripts
+# scripts (e.g. sysroot-creator-bullseye.sh).  Its up to the parent scripts
 # to define certain environment variables: e.g.
 #  DISTRO=debian
-#  DIST=sid
+#  DIST=bullseye
 #  # Similar in syntax to /etc/apt/sources.list
-#  APT_SOURCES_LIST="http://ftp.us.debian.org/debian/ sid main"
-#  KEYRING_FILE=debian-archive-sid-stable.gpg
+#  APT_SOURCES_LIST=( "http://ftp.us.debian.org/debian/ bullseye main" )
+#  KEYRING_FILE=debian-archive-bullseye-stable.gpg
 #  DEBIAN_PACKAGES="gcc libz libssl"
 
 #@ This script builds Debian/Ubuntu sysroot images for building Google Chrome.
@@ -234,14 +234,13 @@ ExtractPackageXz() {
     sed "s|Filename: |Filename: ${repo}|" > "${dst_file}"
 }
 
-GeneratePackageListDist() {
+GeneratePackageListDistRepo() {
   local arch="$1"
-  set -- $2
-  local repo="$1"
-  local dist="$2"
-  local repo_name="$3"
+  local repo="$2"
+  local dist="$3"
+  local repo_name="$4"
 
-  TMP_PACKAGE_LIST="${BUILD_DIR}/Packages.${dist}_${repo_name}_${arch}"
+  local tmp_package_list="${BUILD_DIR}/Packages.${dist}_${repo_name}_${arch}"
   local repo_basedir="${repo}/dists/${dist}"
   local package_list="${BUILD_DIR}/Packages.${dist}_${repo_name}_${arch}.${PACKAGES_EXT}"
   local package_file_arch="${repo_name}/binary-${arch}/Packages.${PACKAGES_EXT}"
@@ -249,7 +248,20 @@ GeneratePackageListDist() {
 
   DownloadOrCopyNonUniqueFilename "${package_list_arch}" "${package_list}"
   VerifyPackageListing "${package_file_arch}" "${package_list}" ${repo} ${dist}
-  ExtractPackageXz "${package_list}" "${TMP_PACKAGE_LIST}" ${repo}
+  ExtractPackageXz "${package_list}" "${tmp_package_list}" ${repo}
+  cat "${tmp_package_list}" | ./merge-package-lists.py "${list_base}"
+}
+
+GeneratePackageListDist() {
+  local arch="$1"
+  set -- $2
+  local repo="$1"
+  local dist="$2"
+  shift 2
+  while (( "$#" )); do
+      GeneratePackageListDistRepo "$arch" "$repo" "$dist" "$1"
+      shift
+  done
 }
 
 GeneratePackageListCommon() {
@@ -257,13 +269,10 @@ GeneratePackageListCommon() {
   local arch="$2"
   local packages="$3"
 
-  local dists="${DIST} ${DIST_UPDATES:-}"
-
   local list_base="${BUILD_DIR}/Packages.${DIST}_${arch}"
   > "${list_base}"  # Create (or truncate) a zero-length file.
-  echo "${APT_SOURCES_LIST}" | while read source; do
+  printf '%s\n' "${APT_SOURCES_LIST[@]}" | while read source; do
     GeneratePackageListDist "${arch}" "${source}"
-    cat "${TMP_PACKAGE_LIST}" | ./merge-package-lists.py "${list_base}"
   done
 
   GeneratePackageList "${list_base}" "${output_file}" "${packages}"
@@ -497,14 +506,18 @@ CleanupJailSymlinks() {
     ln -snfv "${prefix}${target}" "${link}"
   done
 
-  find $libdirs -type l -printf '%p %l\n' | while read link target; do
+  failed=0
+  while read link target; do
     # Make sure we catch new bad links.
     if [ ! -r "${link}" ]; then
       echo "ERROR: FOUND BAD LINK ${link}"
       ls -l ${link}
-      exit 1
+      failed=1
     fi
-  done
+  done < <(find $libdirs -type l -printf '%p %l\n')
+  if [ $failed -eq 1 ]; then
+      exit 1
+  fi
   cd "$SAVEDPWD"
 }
 
@@ -879,21 +892,26 @@ GeneratePackageList() {
   /bin/rm -f "${output_file}"
   shift
   shift
+  local failed=0
   for pkg in $@ ; do
     local pkg_full=$(grep -A 1 " ${pkg}\$" "$input_file" | \
       egrep "pool/.*" | sed 's/.*Filename: //')
     if [ -z "${pkg_full}" ]; then
-        echo "ERROR: missing package: $pkg"
-        exit 1
+      echo "ERROR: missing package: $pkg"
+      local failed=1
+    else
+      local sha256sum=$(grep -A 4 " ${pkg}\$" "$input_file" | \
+        grep ^SHA256: | sed 's/^SHA256: //')
+      if [ "${#sha256sum}" -ne "64" ]; then
+        echo "Bad sha256sum from Packages"
+        local failed=1
+      fi
+      echo $pkg_full $sha256sum >> "$output_file"
     fi
-    local sha256sum=$(grep -A 4 " ${pkg}\$" "$input_file" | \
-      grep ^SHA256: | sed 's/^SHA256: //')
-    if [ "${#sha256sum}" -ne "64" ]; then
-      echo "Bad sha256sum from Packages"
-      exit 1
-    fi
-    echo $pkg_full $sha256sum >> "$output_file"
   done
+  if [ $failed -eq 1 ]; then
+    exit 1
+  fi
   # sort -o does an in-place sort of this file
   sort "$output_file" -o "$output_file"
 }

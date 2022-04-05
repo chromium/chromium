@@ -39,17 +39,17 @@ if (sysroot == "") {
     # By default build against a sysroot image downloaded from Cloud Storage
     # during gclient runhooks.
     if (current_cpu == "x64") {
-      sysroot = "$target_sysroot_dir/debian_sid_amd64-sysroot"
+      sysroot = "$target_sysroot_dir/debian_bullseye_amd64-sysroot"
     } else if (current_cpu == "x86") {
-      sysroot = "$target_sysroot_dir/debian_sid_i386-sysroot"
+      sysroot = "$target_sysroot_dir/debian_bullseye_i386-sysroot"
     } else if (current_cpu == "mipsel") {
-      sysroot = "$target_sysroot_dir/debian_sid_mips-sysroot"
+      sysroot = "$target_sysroot_dir/debian_bullseye_mips-sysroot"
     } else if (current_cpu == "mips64el") {
-      sysroot = "$target_sysroot_dir/debian_sid_mips64el-sysroot"
+      sysroot = "$target_sysroot_dir/debian_bullseye_mips64el-sysroot"
     } else if (current_cpu == "arm") {
-      sysroot = "$target_sysroot_dir/debian_sid_arm-sysroot"
+      sysroot = "$target_sysroot_dir/debian_bullseye_arm-sysroot"
     } else if (current_cpu == "arm64") {
-      sysroot = "$target_sysroot_dir/debian_sid_arm64-sysroot"
+      sysroot = "$target_sysroot_dir/debian_bullseye_arm64-sysroot"
     } else {
       assert(false, "No linux sysroot for cpu: $target_cpu")
     }

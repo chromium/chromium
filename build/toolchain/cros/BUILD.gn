@@ -197,12 +197,12 @@ if (also_build_lacros_chrome_for_architecture != "") {
       lacros_args =
           read_file("//build/args/chromeos/amd64-generic-crostoolchain.gni",
                     "scope")
-      lacros_v8_snapshot_sysroot = "//build/linux/debian_sid_amd64-sysroot"
+      lacros_v8_snapshot_sysroot = "//build/linux/debian_bullseye_amd64-sysroot"
     } else if (also_build_lacros_chrome_for_architecture == "arm") {
       lacros_args =
           read_file("//build/args/chromeos/arm-generic-crostoolchain.gni",
                     "scope")
-      lacros_v8_snapshot_sysroot = "//build/linux/debian_sid_i386-sysroot"
+      lacros_v8_snapshot_sysroot = "//build/linux/debian_bullseye_i386-sysroot"
     } else {
       assert(false,
              "also_build_lacros_chrome_for_architecture is not " +
@@ -232,7 +232,7 @@ if (also_build_lacros_chrome_for_architecture != "") {
       also_build_lacros_chrome_for_architecture = ""
       chromeos_is_browser_only = true
       use_clang_coverage = false
-      cros_host_sysroot = "//build/linux/debian_sid_amd64-sysroot"
+      cros_host_sysroot = "//build/linux/debian_bullseye_amd64-sysroot"
     }
     if (!lacros_use_chromium_toolchain) {
       # These are args for the template.

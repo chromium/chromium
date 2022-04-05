@@ -6,7 +6,7 @@
 """Merge package entries from different package lists.
 """
 
-# This is used for replacing packages in eg. sid with those in experimental.
+# This is used for replacing packages in eg. bullseye with those in bookworm.
 # The updated packages are ABI compatible, but include security patches, so we
 # should use those instead in our sysroots.
 
