@@ -27,7 +27,7 @@ namespace {
 constexpr char kUserActionSkip[] = "skip";
 constexpr char kUserActionCancel[] = "cancel";
 constexpr char kUserActionGotoFiles[] = "gotoFiles";
-constexpr base::TimeDelta kShowSkipButtonDuration = base::Seconds(20);
+constexpr base::TimeDelta kShowSkipButtonDuration = base::Seconds(10);
 
 // If the battery percent is lower than this ratio, and the charger is not
 // connected, then the low-battery warning will be displayed.
@@ -48,6 +48,20 @@ LacrosDataMigrationScreen::LacrosDataMigrationScreen(
 LacrosDataMigrationScreen::~LacrosDataMigrationScreen() {
   if (view_)
     view_->Unbind();
+}
+
+void LacrosDataMigrationScreen::OnViewVisible() {
+  // If set, do not post `ShowSkipButton()`.
+  if (skip_post_show_button_for_testing_)
+    return;
+
+  // Post a delayed task to show the skip button after
+  // `kShowSkipButtonDuration`.
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&LacrosDataMigrationScreen::ShowSkipButton,
+                     weak_factory_.GetWeakPtr()),
+      kShowSkipButtonDuration);
 }
 
 void LacrosDataMigrationScreen::OnViewDestroyed(
@@ -109,18 +123,6 @@ void LacrosDataMigrationScreen::ShowImpl() {
 
   GetWakeLock()->RequestWakeLock();
   UpdateLowBatteryStatus();
-
-  // If set, do not post `ShowSkipButton()`.
-  if (skip_post_show_button_for_testing_)
-    return;
-
-  // Post a delayed task to show the skip button after
-  // `kShowSkipButtonDuration`.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&LacrosDataMigrationScreen::ShowSkipButton,
-                     weak_factory_.GetWeakPtr()),
-      kShowSkipButtonDuration);
 }
 
 void LacrosDataMigrationScreen::OnProgressUpdate(int progress) {

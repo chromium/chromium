@@ -28,6 +28,9 @@ class LacrosDataMigrationScreen : public BaseScreen,
   LacrosDataMigrationScreen& operator=(const LacrosDataMigrationScreen&) =
       delete;
 
+  // Called when `view` gets visible.
+  void OnViewVisible();
+
   // Called when `view` has been destroyed. If this instance is destroyed before
   // the `view` it should call view->Unbind().
   void OnViewDestroyed(LacrosDataMigrationScreenView* view);

@@ -64,6 +64,7 @@ void LacrosDataMigrationScreenHandler::Show() {
     show_on_init_ = true;
     return;
   }
+  observation_.Observe(GetOobeUI());
   ShowInWebUI();
 }
 
@@ -87,6 +88,18 @@ void LacrosDataMigrationScreenHandler::SetFailureStatus(
              ? ui::FormatBytes(static_cast<int64_t>(required_size.value()))
              : std::u16string(),
          show_goto_files);
+}
+
+void LacrosDataMigrationScreenHandler::OnCurrentScreenChanged(
+    OobeScreenId current_screen,
+    OobeScreenId new_screen) {
+  if (new_screen == kScreenId && screen_)
+    screen_->OnViewVisible();
+  observation_.Reset();
+}
+
+void LacrosDataMigrationScreenHandler::OnDestroyingOobeUI() {
+  observation_.Reset();
 }
 
 void LacrosDataMigrationScreenHandler::InitializeDeprecated() {
