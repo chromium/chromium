@@ -17,13 +17,14 @@ import sys
 
 from pathlib import Path
 
-# Add Clang scripts to path so we can import them later (if running within a Chromium checkout.)
+# Add Clang scripts to path so we can import them later (if running within a
+# Chromium checkout.)
 sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'clang',
                  'scripts'))
 
-# Trunk on 3/11/2022
-RUST_REVISION = '2c6a29'
+# Trunk on 4/1/2022
+RUST_REVISION = '79f178b7'
 RUST_SUB_REVISION = 1
 
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
