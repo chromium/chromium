@@ -304,7 +304,7 @@ chromium-metrics-reviews@google.com.
     name="Nearby.Share.BackgroundScanning.DeviceNearbySharing.Notification.Flow"
     enum="NearbyShareBackgroundScanningDeviceNearbySharingNotificationFlowEvent"
     expires_after="2023-02-01">
-  <owner>cvandermerwe@google.com</owner>
+  <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records each step in the background scanning notification flow if Nearby
@@ -318,7 +318,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Nearby.Share.BackgroundScanning.DeviceNearbySharing.Notification.TimeToAction"
     units="ms" expires_after="2023-02-01">
-  <owner>cvandermerwe@google.com</owner>
+  <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records how long it takes for a user to act on a background scanning
@@ -330,7 +330,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Nearby.Share.BackgroundScanning.DevicesDetected"
     enum="NearbyShareBackgroundScanningDevicesDetectedEvent"
     expires_after="2023-02-01">
-  <owner>cvandermerwe@google.com</owner>
+  <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Logs an event when there were previously no devices nearby trying to share
@@ -344,7 +344,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.BackgroundScanning.DevicesDetected.Duration"
     units="ms" expires_after="2023-02-01">
-  <owner>cvandermerwe@google.com</owner>
+  <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records for how long nearby devices were trying to share. Emitted after the
@@ -355,7 +355,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.BackgroundScanning.SessionStarted"
     enum="BooleanSuccess" expires_after="2023-02-01">
-  <owner>cvandermerwe@google.com</owner>
+  <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records whether an attempt to start a background scanning session succeeded
@@ -368,7 +368,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Nearby.Share.BackgroundScanning.Setup.Notification.Flow"
     enum="NearbyShareBackgroundScanningSetupNotificationFlowEvent"
     expires_after="2023-02-01">
-  <owner>cvandermerwe@google.com</owner>
+  <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records each step in the background scanning notification flow if Nearby
@@ -382,7 +382,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Nearby.Share.BackgroundScanning.Setup.Notification.TimeToAction"
     units="ms" expires_after="2023-02-01">
-  <owner>cvandermerwe@google.com</owner>
+  <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records how long it takes for a user to act on a background scanning
@@ -501,7 +501,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Certificates.Storage.InitializeSuccessDuration"
     units="ms" expires_after="2023-02-01">
-  <owner>cvandermerwe@chromium.org</owner>
+  <owner>nohle@chromium.org</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the time necessary to successfully initialize the Nearby Share
@@ -870,7 +870,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Onboarding.Duration" units="ms"
     expires_after="2023-02-01">
-  <owner>cvandermerwe@chromium.org</owner>
+  <owner>pushi@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the time that it took the user to successfully complete the
@@ -880,7 +880,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Onboarding.EntryPoint"
     enum="NearbyShareOnboardingEntryPoint" expires_after="2023-02-01">
-  <owner>cvandermerwe@chromium.org</owner>
+  <owner>pushi@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records how the user entered the onboarding flow. The options are from OS
@@ -902,7 +902,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Onboarding.Result"
     enum="NearbyShareOnboardingFinalState" expires_after="2023-02-01">
-  <owner>cvandermerwe@chromium.org</owner>
+  <owner>pushi@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records how far the user made it through the onboarding flow. The user has
@@ -915,7 +915,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Payload.AttachmentType{Variation}"
     enum="NearbyShareAttachmentType" expires_after="2023-02-01">
-  <owner>cvandermerwe@google.com</owner>
+  <owner>nohle@chromium.org</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the attachment types from {Variation}. Emitted after all attachment
@@ -1095,7 +1095,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.TimeFromInitiateSendToRemoteDeviceNotification"
     units="ms" expires_after="2023-02-01">
-  <owner>cvandermerwe@google.com</owner>
+  <owner>nohle@chromium.org</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the time from initiating a send on a share target to sending the
@@ -1110,7 +1110,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.TimeFromLocalAcceptToTransferStart" units="ms"
     expires_after="2023-02-01">
-  <owner>cvandermerwe@google.com</owner>
+  <owner>nohle@chromium.org</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the time from accepting a share on the receiving device until the
