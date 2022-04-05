@@ -11,6 +11,7 @@
 #include "ash/login/ui/auth_factor_model.h"
 #include "base/callback.h"
 #include "base/timer/timer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -28,6 +29,7 @@ class ArrowButtonView;
 // login screens.
 class ASH_EXPORT LoginAuthFactorsView : public views::View {
  public:
+  METADATA_HEADER(LoginAuthFactorsView);
   using AuthFactorState = AuthFactorModel::AuthFactorState;
 
   // TestApi is used for tests to get internal implementation details.
