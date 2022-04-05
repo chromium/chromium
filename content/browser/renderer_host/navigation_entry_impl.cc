@@ -927,6 +927,7 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           blink::mojom::NavigationApiHistoryEntryArrays::New(),
           std::vector<GURL>() /* early_hints_preloaded_resources */,
           absl::nullopt /* ad_auction_components */,
+          /*fenced_frame_reporting_metadata=*/nullptr,
           // This timestamp will be populated when the commit IPC is sent.
           base::TimeTicks() /* commit_sent */, false /* anonymous */,
           std::string() /* srcdoc_value */, false /* should_load_data_url */);

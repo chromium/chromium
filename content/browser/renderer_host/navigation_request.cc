@@ -1165,6 +1165,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           blink::mojom::NavigationApiHistoryEntryArrays::New(),
           /*early_hints_preloaded_resources=*/
           std::vector<GURL>(), absl::nullopt /* ad_auction_components */,
+          /*fenced_frame_reporting_metadata=*/nullptr,
           // This timestamp will be populated when the commit IPC is sent.
           base::TimeTicks() /* commit_sent */, false /* anonymous */,
           std::string() /* srcdoc_value */, false /* should_load_data_url */);
@@ -1289,6 +1290,7 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           blink::mojom::NavigationApiHistoryEntryArrays::New(),
           std::vector<GURL>() /* early_hints_preloaded_resources */,
           absl::nullopt /* ad_auction_components */,
+          /*fenced_frame_reporting_metadata=*/nullptr,
           // This timestamp will be populated when the commit IPC is sent.
           base::TimeTicks() /* commit_sent */, false /* anonymous */,
           std::string() /* srcdoc_value */, false /* should_load_data_url */);
@@ -1937,7 +1939,8 @@ void NavigationRequest::OnFencedFrameURLMappingComplete(
     absl::optional<GURL> mapped_url,
     absl::optional<AdAuctionData> ad_auction_data,
     absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>
-        pending_ad_components_map) {
+        pending_ad_components_map,
+    ReportingMetadata& reporting_metadata) {
   is_deferred_on_fenced_frame_url_mapping_ = false;
 
   if (mapped_url) {
@@ -1946,6 +1949,10 @@ void NavigationRequest::OnFencedFrameURLMappingComplete(
     // TODO(crbug/1281643): move into commit_params_->ad_auction_components
     // directly.
     pending_ad_components_map_ = std::move(pending_ad_components_map);
+    if (!reporting_metadata.metadata.empty()) {
+      commit_params_->fenced_frame_reporting_metadata =
+          reporting_metadata.Clone();
+    }
   } else {
     if (frame_tree_node_->IsFencedFrameRoot() &&
         blink::features::IsFencedFramesMPArchBased()) {

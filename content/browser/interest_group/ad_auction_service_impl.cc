@@ -316,7 +316,8 @@ class FencedFrameURLMappingObserver
       absl::optional<GURL> mapped_url,
       absl::optional<AdAuctionData> ad_auction_data,
       absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>
-          pending_ad_components_map) override {
+          pending_ad_components_map,
+      ReportingMetadata& reporting_metadata) override {
     mapped_url_ = mapped_url;
     called_ = true;
   }

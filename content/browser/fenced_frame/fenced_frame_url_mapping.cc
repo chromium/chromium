@@ -113,20 +113,26 @@ FencedFrameURLMapping::MapInfo& FencedFrameURLMapping::MapInfo::operator=(
 FencedFrameURLMapping::FencedFrameURLMapping() = default;
 FencedFrameURLMapping::~FencedFrameURLMapping() = default;
 
-GURL FencedFrameURLMapping::AddFencedFrameURL(const GURL& url) {
+GURL FencedFrameURLMapping::AddFencedFrameURL(
+    const GURL& url,
+    const ReportingMetadata& reporting_metadata) {
   DCHECK(url.is_valid());
   DCHECK(network::IsUrlPotentiallyTrustworthy(url));
 
-  return AddMappingForUrl(url)->first;
+  UrnUuidToUrlMap::iterator it = AddMappingForUrl(url);
+  it->second.reporting_metadata = reporting_metadata;
+  return it->first;
 }
 
 GURL FencedFrameURLMapping::AddFencedFrameURLWithInterestGroupInfo(
     const GURL& url,
     AdAuctionData ad_auction_data,
-    std::vector<GURL> ad_component_urls) {
+    std::vector<GURL> ad_component_urls,
+    const ReportingMetadata& reporting_metadata) {
   UrnUuidToUrlMap::iterator it = AddMappingForUrl(url);
   it->second.ad_auction_data = std::move(ad_auction_data);
   it->second.ad_component_urls = std::move(ad_component_urls);
+  it->second.reporting_metadata = reporting_metadata;
   return it->first;
 }
 
@@ -162,6 +168,7 @@ void FencedFrameURLMapping::ConvertFencedFrameURNToURL(
   absl::optional<GURL> result_url;
   absl::optional<AdAuctionData> result_ad_auction_data;
   absl::optional<PendingAdComponentsMap> result_ad_components;
+  ReportingMetadata reporting_metadata;
 
   auto it = urn_uuid_to_url_map_.find(urn_uuid);
   if (it != urn_uuid_to_url_map_.end()) {
@@ -171,11 +178,12 @@ void FencedFrameURLMapping::ConvertFencedFrameURNToURL(
     }
     result_url = it->second.mapped_url;
     result_ad_auction_data = it->second.ad_auction_data;
+    reporting_metadata = it->second.reporting_metadata;
   }
 
-  observer->OnFencedFrameURLMappingComplete(std::move(result_url),
-                                            std::move(result_ad_auction_data),
-                                            std::move(result_ad_components));
+  observer->OnFencedFrameURLMappingComplete(
+      std::move(result_url), std::move(result_ad_auction_data),
+      std::move(result_ad_components), reporting_metadata);
 }
 
 void FencedFrameURLMapping::RemoveObserverForURN(
@@ -203,11 +211,13 @@ void FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
 
   std::set<raw_ptr<MappingResultObserver>>& observers = it->second;
 
+  ReportingMetadata metadata;
   for (raw_ptr<MappingResultObserver> observer : observers) {
     observer->OnFencedFrameURLMappingComplete(
         absl::make_optional<GURL>(mapping_result.mapped_url),
         /*ad_auction_data=*/absl::nullopt,
-        /*pending_ad_components_map=*/absl::nullopt);
+        /*pending_ad_components_map=*/absl::nullopt,
+        /*reporting_metadata=*/metadata);
   }
 
   pending_urn_uuid_to_url_map_.erase(it);
