@@ -20,10 +20,10 @@
 #include "base/time/time.h"
 
 namespace partition_alloc {
-class StatsReporter;
-}  // namespace partition_alloc
 
-namespace base::internal {
+class StatsReporter;
+
+namespace internal {
 
 #define FOR_ALL_PCSCAN_SCANNER_SCOPES(V) \
   V(Clear)                               \
@@ -74,11 +74,12 @@ class StatsCollector final {
     using PerThreadEvents =
         std::array<DeferredTraceEvent, static_cast<size_t>(IdType::kNumIds)>;
     using UnderlyingMap = std::unordered_map<
-        PlatformThreadId,
+        base::PlatformThreadId,
         PerThreadEvents,
-        std::hash<PlatformThreadId>,
+        std::hash<base::PlatformThreadId>,
         std::equal_to<>,
-        MetadataAllocator<std::pair<const PlatformThreadId, PerThreadEvents>>>;
+        MetadataAllocator<
+            std::pair<const base::PlatformThreadId, PerThreadEvents>>>;
 
     inline void RegisterBeginEventFromCurrentThread(IdType id);
     inline void RegisterEndEventFromCurrentThread(IdType id);
@@ -240,6 +241,14 @@ inline StatsCollector::MetadataString StatsCollector::ToUMAString(
 
 #undef FOR_ALL_PCSCAN_MUTATOR_SCOPES
 #undef FOR_ALL_PCSCAN_SCANNER_SCOPES
+
+}  // namespace internal
+}  // namespace partition_alloc
+
+// TODO(crbug.com/1151236): Remove this when migration is complete.
+namespace base::internal {
+
+using ::partition_alloc::internal::StatsCollector;
 
 }  // namespace base::internal
 

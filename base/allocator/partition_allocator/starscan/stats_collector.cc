@@ -8,8 +8,7 @@
 #include "base/allocator/partition_allocator/starscan/stats_reporter.h"
 #include "base/time/time.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 StatsCollector::StatsCollector(const char* process_name,
                                size_t quarantine_last_size)
@@ -53,7 +52,7 @@ void StatsCollector::ReportTracesAndHistsImpl(
       accumulated_events{};
   // First, report traces and accumulate each trace scope to report UMA hists.
   for (const auto& tid_and_events : event_map.get_underlying_map_unsafe()) {
-    const PlatformThreadId tid = tid_and_events.first;
+    const base::PlatformThreadId tid = tid_and_events.first;
     const auto& events = tid_and_events.second;
     PA_DCHECK(accumulated_events.size() == events.size());
     for (size_t id = 0; id < events.size(); ++id) {
@@ -109,5 +108,4 @@ template void StatsCollector::ReportTracesAndHistsImpl(
     partition_alloc::StatsReporter& reporter,
     const DeferredTraceEventMap<Context::kScanner>&) const;
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal

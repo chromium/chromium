@@ -16,11 +16,11 @@ namespace partition_alloc {
 // dependencies from partition allocator.
 class StatsReporter {
  public:
-  virtual void ReportTraceEvent(base::internal::StatsCollector::ScannerId id,
+  virtual void ReportTraceEvent(internal::StatsCollector::ScannerId id,
                                 const base::PlatformThreadId tid,
                                 base::TimeTicks start_time,
                                 base::TimeTicks end_time) {}
-  virtual void ReportTraceEvent(base::internal::StatsCollector::MutatorId id,
+  virtual void ReportTraceEvent(internal::StatsCollector::MutatorId id,
                                 const base::PlatformThreadId tid,
                                 base::TimeTicks start_time,
                                 base::TimeTicks end_time) {}
