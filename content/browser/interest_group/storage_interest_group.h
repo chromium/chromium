@@ -55,6 +55,8 @@ struct CONTENT_EXPORT StorageInterestGroup {
   std::vector<KAnonymityData> ads_kanon;
   // Top level page origin from when the interest group was joined.
   url::Origin joining_origin;
+  // The last time this interest group was updated.
+  base::Time last_updated;
 };
 
 // Stream operator so KAnonymityData can be used in assertion statements.

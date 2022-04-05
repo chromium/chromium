@@ -46,6 +46,11 @@ namespace {
 
 constexpr base::TimeDelta kMaxTimeout = base::Milliseconds(500);
 
+// For group freshness metrics.
+constexpr base::TimeDelta kGroupFreshnessMin = base::Minutes(1);
+constexpr base::TimeDelta kGroupFreshnessMax = base::Days(30);
+constexpr int kGroupFreshnessBuckets = 100;
+
 // All URLs received from worklets must be valid HTTPS URLs. It's up to callers
 // to call ReportBadMessage() on invalid URLs.
 bool IsUrlValid(const GURL& url) {
@@ -486,6 +491,22 @@ void AuctionRunner::Auction::OnInterestGroupRead(
     post_auction_update_owners_.push_back(
         interest_groups[0].interest_group.owner);
     ++num_owners_with_interest_groups_;
+    // Report freshness metrics.
+    for (const StorageInterestGroup& group : interest_groups) {
+      if (group.interest_group.update_url.has_value()) {
+        UMA_HISTOGRAM_CUSTOM_COUNTS(
+            "Ads.InterestGroup.Auction.GroupFreshness.WithDailyUpdates",
+            (base::Time::Now() - group.last_updated).InMinutes(),
+            kGroupFreshnessMin.InMinutes(), kGroupFreshnessMax.InMinutes(),
+            kGroupFreshnessBuckets);
+      } else {
+        UMA_HISTOGRAM_CUSTOM_COUNTS(
+            "Ads.InterestGroup.Auction.GroupFreshness.NoDailyUpdates",
+            (base::Time::Now() - group.last_updated).InMinutes(),
+            kGroupFreshnessMin.InMinutes(), kGroupFreshnessMax.InMinutes(),
+            kGroupFreshnessBuckets);
+      }
+    }
   }
   OnOneLoadCompleted();
 }

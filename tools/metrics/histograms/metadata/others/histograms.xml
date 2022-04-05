@@ -308,6 +308,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.GroupFreshness.{Type}"
+    units="minutes" expires_after="2022-08-31">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    For every interest group that participates in an auction, the time duration
+    since the last join or update of that interest group.
+
+    This metric only measures {Type}.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+  <token key="Type">
+    <variant name="NoDailyUpdates"
+        summary="interest groups that don't specify a dailyUpdateUrl"/>
+    <variant name="WithDailyUpdates"
+        summary="interest groups that specify a dailyUpdateUrl"/>
+  </token>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.NumAuctionsPerPage" units="auctions"
     expires_after="2022-08-31">
   <owner>caraitto@chromium.org</owner>
