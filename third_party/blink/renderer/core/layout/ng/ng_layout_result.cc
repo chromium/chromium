@@ -371,6 +371,8 @@ void NGLayoutResult::Trace(Visitor* visitor) const {
 
 void NGLayoutResult::RareData::Trace(Visitor* visitor) const {
   visitor->Trace(early_break);
+  // This will not cause TOCTOU issue because data_union_type is set in the
+  // constructor and never changed.
   if (const BlockData* data = GetBlockData())
     visitor->Trace(data->column_spanner);
 }

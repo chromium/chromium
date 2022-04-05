@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_link.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/platform/wtf/bit_field.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -528,6 +529,13 @@ class CORE_EXPORT NGLayoutResult final
       kTableData,
     };
 
+    using BitField = WTF::ConcurrentlyReadBitField<uint8_t>;
+    using BfcBlockOffsetIsSetFlag = BitField::DefineFirstValue<bool, 1>;
+    using LineBoxBfcBlockOffsetIsSetFlag =
+        BfcBlockOffsetIsSetFlag::DefineNextValue<bool, 1>;
+    using DataUnionTypeValue =
+        LineBoxBfcBlockOffsetIsSetFlag::DefineNextValue<uint8_t, 3>;
+
     struct BlockData {
       GC_PLUGIN_IGNORE("crbug.com/1146383")
       Member<LayoutBox> column_spanner;
@@ -567,11 +575,36 @@ class CORE_EXPORT NGLayoutResult final
       wtf_size_t table_column_count = 0;
     };
 
+    bool bfc_block_offset_is_set() const {
+      return bit_field.get<BfcBlockOffsetIsSetFlag>();
+    }
+
+    void set_bfc_block_offset_is_set(bool flag) {
+      return bit_field.set<BfcBlockOffsetIsSetFlag>(flag);
+    }
+
+    bool line_box_bfc_block_offset_is_set() const {
+      return bit_field.get<LineBoxBfcBlockOffsetIsSetFlag>();
+    }
+
+    void set_line_box_bfc_block_offset_is_set(bool flag) {
+      return bit_field.set<LineBoxBfcBlockOffsetIsSetFlag>(flag);
+    }
+
+    DataUnionType data_union_type() const {
+      return static_cast<DataUnionType>(bit_field.get<DataUnionTypeValue>());
+    }
+
+    void set_data_union_type(DataUnionType data_type) {
+      return bit_field.set<DataUnionTypeValue>(static_cast<uint8_t>(data_type));
+    }
+
     template <typename DataType>
     DataType* EnsureData(DataType* address, DataUnionType data_type) {
-      DCHECK(data_union_type == kNone || data_union_type == data_type);
-      if (data_union_type != data_type) {
-        data_union_type = data_type;
+      DataUnionType old_data_type = data_union_type();
+      DCHECK(old_data_type == kNone || old_data_type == data_type);
+      if (old_data_type != data_type) {
+        set_data_union_type(data_type);
         new (address) DataType();
       }
       return address;
@@ -579,7 +612,7 @@ class CORE_EXPORT NGLayoutResult final
     template <typename DataType>
     const DataType* GetData(const DataType* address,
                             DataUnionType data_type) const {
-      return data_union_type == data_type ? address : nullptr;
+      return data_union_type() == data_type ? address : nullptr;
     }
 
     BlockData* EnsureBlockData() {
@@ -622,8 +655,9 @@ class CORE_EXPORT NGLayoutResult final
     RareData(LayoutUnit bfc_line_offset,
              absl::optional<LayoutUnit> bfc_block_offset)
         : bfc_line_offset(bfc_line_offset),
-          line_box_bfc_block_offset_is_set(false),
-          data_union_type(kNone) {
+          bit_field(BfcBlockOffsetIsSetFlag::encode(bfc_line_offset) |
+                    LineBoxBfcBlockOffsetIsSetFlag::encode(false) |
+                    DataUnionTypeValue::encode(kNone)) {
       SetBfcBlockOffset(bfc_block_offset);
     }
     RareData(const RareData& rare_data)
@@ -641,11 +675,8 @@ class CORE_EXPORT NGLayoutResult final
           lines_until_clamp(rare_data.lines_until_clamp),
           bfc_block_offset(rare_data.bfc_block_offset),
           line_box_bfc_block_offset(rare_data.line_box_bfc_block_offset),
-          bfc_block_offset_is_set(rare_data.bfc_block_offset_is_set),
-          line_box_bfc_block_offset_is_set(
-              rare_data.line_box_bfc_block_offset_is_set),
-          data_union_type(rare_data.data_union_type) {
-      switch (data_union_type) {
+          bit_field(rare_data.bit_field) {
+      switch (data_union_type()) {
         case kNone:
           break;
         case kBlockData:
@@ -672,7 +703,7 @@ class CORE_EXPORT NGLayoutResult final
     }
 
     ~RareData() {
-      switch (data_union_type) {
+      switch (data_union_type()) {
         case kNone:
           break;
         case kBlockData:
@@ -701,23 +732,23 @@ class CORE_EXPORT NGLayoutResult final
     void SetBfcBlockOffset(absl::optional<LayoutUnit> offset) {
       if (offset) {
         bfc_block_offset = *offset;
-        bfc_block_offset_is_set = true;
+        set_bfc_block_offset_is_set(true);
       } else {
-        bfc_block_offset_is_set = false;
+        set_bfc_block_offset_is_set(false);
       }
     }
     absl::optional<LayoutUnit> BfcBlockOffset() const {
-      if (!bfc_block_offset_is_set)
+      if (!bfc_block_offset_is_set())
         return absl::nullopt;
       return bfc_block_offset;
     }
 
     void SetLineBoxBfcBlockOffset(LayoutUnit offset) {
       line_box_bfc_block_offset = offset;
-      line_box_bfc_block_offset_is_set = true;
+      set_line_box_bfc_block_offset_is_set(true);
     }
     absl::optional<LayoutUnit> LineBoxBfcBlockOffset() const {
-      if (!line_box_bfc_block_offset_is_set)
+      if (!line_box_bfc_block_offset_is_set())
         return absl::nullopt;
       return line_box_bfc_block_offset;
     }
@@ -757,13 +788,7 @@ class CORE_EXPORT NGLayoutResult final
     // Only valid if line_box_bfc_block_offset_is_set
     LayoutUnit line_box_bfc_block_offset;
 
-    // True if bfc_block_offset is valid.
-    unsigned bfc_block_offset_is_set : 1;
-
-    // True if line_box_bfc_block_offset is valid.
-    unsigned line_box_bfc_block_offset_is_set : 1;
-
-    unsigned data_union_type : 3;  // DataUnionType
+    BitField bit_field;
 
     union {
       BlockData block_data;
