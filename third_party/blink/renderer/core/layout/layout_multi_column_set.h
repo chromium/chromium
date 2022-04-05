@@ -219,6 +219,8 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
   // Reset previously calculated column height. Will mark for layout if needed.
   void ResetColumnHeight();
 
+  void ResetColumnHeightFromNG();
+
   void StoreOldPosition() {
     NOT_DESTROYED();
     old_logical_top_ = LogicalTop();

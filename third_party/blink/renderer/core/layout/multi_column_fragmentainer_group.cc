@@ -104,6 +104,11 @@ void MultiColumnFragmentainerGroup::ResetColumnHeight() {
   }
 }
 
+void MultiColumnFragmentainerGroup::ResetColumnHeightFromNG() {
+  is_logical_height_known_ = false;
+  logical_height_ = LayoutUnit();
+}
+
 bool MultiColumnFragmentainerGroup::RecalculateColumnHeight(
     LayoutMultiColumnSet& column_set) {
   LayoutUnit old_column_height = logical_height_;

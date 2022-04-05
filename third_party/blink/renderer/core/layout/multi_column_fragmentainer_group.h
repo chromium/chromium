@@ -103,6 +103,7 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
   LayoutUnit LogicalHeightInFlowThreadAt(unsigned column_index) const;
 
   void ResetColumnHeight();
+  void ResetColumnHeightFromNG();
   bool RecalculateColumnHeight(LayoutMultiColumnSet&);
 
   LayoutSize FlowThreadTranslationAtOffset(LayoutUnit,

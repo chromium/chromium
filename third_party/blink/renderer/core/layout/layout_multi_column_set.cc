@@ -428,6 +428,12 @@ void LayoutMultiColumnSet::ResetColumnHeight() {
   initial_height_calculated_ = false;
 }
 
+void LayoutMultiColumnSet::ResetColumnHeightFromNG() {
+  NOT_DESTROYED();
+  fragmentainer_groups_.DeleteExtraGroups();
+  fragmentainer_groups_.First().ResetColumnHeightFromNG();
+}
+
 void LayoutMultiColumnSet::BeginFlow(LayoutUnit offset_in_flow_thread) {
   NOT_DESTROYED();
   // At this point layout is exactly at the beginning of this set. Store block
@@ -736,7 +742,6 @@ void LayoutMultiColumnSet::FinishLayoutFromNG() {
                        /* logical_top */ LayoutUnit(), computed_values);
   SetLogicalHeight(computed_values.extent_);
   ComputeLayoutOverflow(computed_values.extent_);
-  initial_height_calculated_ = false;
 }
 
 }  // namespace blink
