@@ -1,9 +1,7 @@
 file://components/services/app_service/OWNERS
 
 # For Web Applications system:
-per-file browser_*=raymes@chromium.org
 per-file browser_*=alexbn@chromium.org
-per-file instance_registry_updater.*=raymes@chromium.org
 per-file instance_registry_updater.*=alexbn@chromium.org
 
 per-file plugin_vm*=file://chrome/browser/ash/guest_os/OWNERS

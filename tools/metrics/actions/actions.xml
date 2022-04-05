@@ -6658,7 +6658,6 @@ should be able to be added at any place in this file.
     CreateShortcut).
   </obsolete>
   <owner>alancutter@chromium.org</owner>
-  <owner>raymes@chromium.org</owner>
   <description>The sum of CreateShortcut and InstallWebAppFromMenu</description>
 </action>
 
@@ -6674,7 +6673,6 @@ should be able to be added at any place in this file.
 
 <action name="CreateShortcut">
   <owner>alancutter@chromium.org</owner>
-  <owner>raymes@chromium.org</owner>
   <description>
     Shortcut app creation triggered via &quot;Menu &gt; More Tools &gt; Create
     Shortcut...&quot;
@@ -10466,7 +10464,6 @@ should be able to be added at any place in this file.
 
 <action name="InstallWebAppFromMenu">
   <owner>alancutter@chromium.org</owner>
-  <owner>raymes@chromium.org</owner>
   <description>
     PWA install triggered via &quot;Menu &gt; Install App name...&quot;
   </description>
