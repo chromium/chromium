@@ -19,16 +19,14 @@ BaseWebUIHandler::BaseWebUIHandler() = default;
 
 BaseWebUIHandler::~BaseWebUIHandler() = default;
 
-void BaseWebUIHandler::InitializeBase() {
+void BaseWebUIHandler::OnJavascriptAllowed() {
   CHECK(!page_is_ready_);
   page_is_ready_ = true;
-  AllowJavascript();
-
   auto deferred_calls = std::exchange(deferred_calls_, {});
   for (auto& call : deferred_calls)
     std::move(call).Run();
 
-  Initialize();
+  InitAfterJavascriptAllowed();
 }
 
 void BaseWebUIHandler::GetLocalizedStrings(base::DictionaryValue* dict) {
@@ -42,6 +40,10 @@ void BaseWebUIHandler::RegisterMessages() {
 }
 
 void BaseWebUIHandler::GetAdditionalParameters(base::DictionaryValue* dict) {}
+
+void BaseWebUIHandler::InitAfterJavascriptAllowed() {
+  InitializeDeprecated();
+}
 
 void BaseWebUIHandler::ShowScreenDeprecated(OobeScreenId screen) {
   if (!GetOobeUI())

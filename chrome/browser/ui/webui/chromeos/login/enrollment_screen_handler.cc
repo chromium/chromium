@@ -621,7 +621,7 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
 
 // EnrollmentScreenHandler BaseScreenHandler implementation -----
 
-void EnrollmentScreenHandler::Initialize() {
+void EnrollmentScreenHandler::InitializeDeprecated() {
   if (show_on_init_) {
     Show();
     show_on_init_ = false;

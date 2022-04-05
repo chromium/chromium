@@ -69,7 +69,7 @@ class FingerprintSetupScreenHandler : public BaseScreenHandler,
                         int percent_complete) override;
 
   // BaseScreenHandler:
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
  private:
   ash::FingerprintSetupScreen* screen_ = nullptr;

@@ -74,7 +74,7 @@ class ResetScreenHandler : public ResetView,
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
   void DeclareJSCallbacks() override;
-  void Initialize() override;
+  void InitializeDeprecated() override;
   void SetIsRollbackAvailable(bool value) override;
   void SetIsRollbackRequested(bool value) override;
   void SetIsTpmFirmwareUpdateAvailable(bool value) override;
@@ -95,7 +95,7 @@ class ResetScreenHandler : public ResetView,
 
   ash::ResetScreen* screen_ = nullptr;
 
-  // If true, Initialize() will call Show().
+  // If true, InitializeDeprecated() will call Show().
   bool show_on_init_ = false;
 
   ResetView::State state_ = ResetView::State::kRestartRequired;

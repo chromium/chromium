@@ -99,7 +99,7 @@ class ConsolidatedConsentScreenHandler : public ConsolidatedConsentScreenView,
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
   void HandleAccept(bool enable_stats_usage,
                     bool enable_backup_restore,

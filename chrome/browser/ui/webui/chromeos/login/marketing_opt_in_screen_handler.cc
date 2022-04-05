@@ -103,7 +103,7 @@ void MarketingOptInScreenHandler::UpdateA11yShelfNavigationButtonToggle(
          enabled);
 }
 
-void MarketingOptInScreenHandler::Initialize() {}
+void MarketingOptInScreenHandler::InitializeDeprecated() {}
 
 void MarketingOptInScreenHandler::RegisterMessages() {
   AddCallback("login.MarketingOptInScreen.onGetStarted",

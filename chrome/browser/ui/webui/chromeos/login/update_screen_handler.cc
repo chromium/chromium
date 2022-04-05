@@ -154,7 +154,7 @@ void UpdateScreenHandler::DeclareLocalizedValues(
                IDS_UPDATE_OVER_CELLULAR_PROMPT_MESSAGE);
 }
 
-void UpdateScreenHandler::Initialize() {
+void UpdateScreenHandler::InitializeDeprecated() {
   if (show_on_init_) {
     Show();
     show_on_init_ = false;

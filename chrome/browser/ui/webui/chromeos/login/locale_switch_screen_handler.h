@@ -46,7 +46,7 @@ class LocaleSwitchScreenHandler : public BaseScreenHandler,
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
  private:
   ash::LocaleSwitchScreen* screen_ = nullptr;

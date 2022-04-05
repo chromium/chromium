@@ -49,7 +49,7 @@ class SignInFatalErrorScreenHandler : public SignInFatalErrorView,
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
   SignInFatalErrorScreen* screen_ = nullptr;
 };

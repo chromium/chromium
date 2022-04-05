@@ -121,7 +121,7 @@ class ArcTermsOfServiceScreenHandler
 
  private:
   // BaseScreenHandler:
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
   // Shows default terms of service screen.
   void DoShow();

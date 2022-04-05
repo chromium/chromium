@@ -62,7 +62,7 @@ void GestureNavigationScreenHandler::DeclareLocalizedValues(
                IDS_OOBE_GESTURE_NAVIGATION_OVERVIEW_DESCRIPTION);
 }
 
-void GestureNavigationScreenHandler::Initialize() {
+void GestureNavigationScreenHandler::InitializeDeprecated() {
   if (show_on_init_) {
     Show();
     show_on_init_ = false;

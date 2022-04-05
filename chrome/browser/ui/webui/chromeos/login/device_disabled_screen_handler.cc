@@ -53,8 +53,7 @@ void DeviceDisabledScreenHandler::DeclareLocalizedValues(
                IDS_DEVICE_DISABLED_EXPLANATION_WITHOUT_DOMAIN);
 }
 
-void DeviceDisabledScreenHandler::Initialize() {
-}
+void DeviceDisabledScreenHandler::InitializeDeprecated() {}
 
 void DeviceDisabledScreenHandler::RegisterMessages() {
 }

@@ -22,7 +22,7 @@ class OobeTestAPIHandler : public BaseWebUIHandler {
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
   void DeclareJSCallbacks() override;
-  void Initialize() override;
+  void InitializeDeprecated() override;
   void GetAdditionalParameters(base::DictionaryValue* dict) override;
 
  private:

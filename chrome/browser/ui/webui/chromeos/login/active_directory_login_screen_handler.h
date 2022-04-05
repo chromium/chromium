@@ -68,7 +68,7 @@ class ActiveDirectoryLoginScreenHandler : public ActiveDirectoryLoginView,
   void RegisterMessages() override;
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
   ash::ActiveDirectoryLoginScreen* screen_ = nullptr;
 

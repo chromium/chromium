@@ -73,7 +73,7 @@ class TermsOfServiceScreenHandler : public BaseScreenHandler,
 
  private:
   // BaseScreenHandler:
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
   // Update the UI to show an error message or the Terms of Service, depending
   // on whether the download of the Terms of Service was successful. Does

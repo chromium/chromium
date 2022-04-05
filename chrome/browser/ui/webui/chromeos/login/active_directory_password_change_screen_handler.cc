@@ -35,7 +35,7 @@ void ActiveDirectoryPasswordChangeScreenHandler::DeclareLocalizedValues(
   builder->Add("adPassChangeMessage", IDS_AD_PASSWORD_CHANGE_MESSAGE);
 }
 
-void ActiveDirectoryPasswordChangeScreenHandler::Initialize() {}
+void ActiveDirectoryPasswordChangeScreenHandler::InitializeDeprecated() {}
 
 void ActiveDirectoryPasswordChangeScreenHandler::RegisterMessages() {
   BaseScreenHandler::RegisterMessages();

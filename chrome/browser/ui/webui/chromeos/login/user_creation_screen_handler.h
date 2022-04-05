@@ -55,7 +55,7 @@ class UserCreationScreenHandler : public UserCreationView,
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
   ash::UserCreationScreen* screen_ = nullptr;
 };

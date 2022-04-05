@@ -69,7 +69,7 @@ void AppLaunchSplashScreenHandler::DeclareLocalizedValues(
                                           product_os_name));
 }
 
-void AppLaunchSplashScreenHandler::Initialize() {
+void AppLaunchSplashScreenHandler::InitializeDeprecated() {
   if (show_on_init_) {
     show_on_init_ = false;
     Show();

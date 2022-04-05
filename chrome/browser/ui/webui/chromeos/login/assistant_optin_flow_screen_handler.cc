@@ -207,7 +207,7 @@ void AssistantOptInFlowScreenHandler::Bind(AssistantOptInFlowScreen* screen) {
   BaseScreenHandler::SetBaseScreenDeprecated(screen);
   screen_ = screen;
   if (page_is_ready())
-    Initialize();
+    InitializeDeprecated();
 }
 
 void AssistantOptInFlowScreenHandler::Unbind() {
@@ -228,7 +228,7 @@ void AssistantOptInFlowScreenHandler::Show() {
 
 void AssistantOptInFlowScreenHandler::Hide() {}
 
-void AssistantOptInFlowScreenHandler::Initialize() {
+void AssistantOptInFlowScreenHandler::InitializeDeprecated() {
   if (!screen_ || !show_on_init_)
     return;
 

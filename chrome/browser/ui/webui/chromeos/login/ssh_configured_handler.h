@@ -27,7 +27,7 @@ class SshConfiguredHandler : public BaseWebUIHandler {
   void DeclareJSCallbacks() override;
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
+  void InitAfterJavascriptAllowed() final;
 
  private:
   void HandleGetIsSshConfigured(const std::string& callback_id);

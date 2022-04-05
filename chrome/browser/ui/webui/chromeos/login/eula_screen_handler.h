@@ -65,7 +65,7 @@ class EulaScreenHandler : public EulaView, public BaseScreenHandler {
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
   void GetAdditionalParameters(base::DictionaryValue* dict) override;
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
  private:
   // Determines the online URL to use.

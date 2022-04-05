@@ -56,7 +56,7 @@ class PackagedLicenseScreenHandler : public BaseScreenHandler,
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
   // Keeps whether screen should be shown right after initialization.
   bool show_on_init_ = false;

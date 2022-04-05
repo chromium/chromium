@@ -54,7 +54,7 @@ void EulaScreenHandler::Bind(EulaScreen* screen) {
   screen_ = screen;
   BaseScreenHandler::SetBaseScreenDeprecated(screen_);
   if (page_is_ready())
-    Initialize();
+    InitializeDeprecated();
 }
 
 void EulaScreenHandler::Unbind() {
@@ -120,7 +120,7 @@ void EulaScreenHandler::GetAdditionalParameters(base::DictionaryValue* dict) {
 #endif
 }
 
-void EulaScreenHandler::Initialize() {
+void EulaScreenHandler::InitializeDeprecated() {
   if (!page_is_ready() || !screen_)
     return;
 

@@ -65,7 +65,7 @@ void EnableAdbSideloadingScreenHandler::DeclareLocalizedValues(
                IDS_ENABLE_ARC_ADB_SIDELOADING_OK_BUTTON);
 }
 
-void EnableAdbSideloadingScreenHandler::Initialize() {
+void EnableAdbSideloadingScreenHandler::InitializeDeprecated() {
   if (!page_is_ready())
     return;
 

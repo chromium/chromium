@@ -46,7 +46,7 @@ void ActiveDirectoryLoginScreenHandler::DeclareLocalizedValues(
                 ui::GetChromeOSDeviceTypeResourceId());
 }
 
-void ActiveDirectoryLoginScreenHandler::Initialize() {
+void ActiveDirectoryLoginScreenHandler::InitializeDeprecated() {
   if (show_on_init_) {
     show_on_init_ = false;
     Show();

@@ -68,7 +68,7 @@ class RecommendAppsScreenHandler : public BaseScreenHandler,
   void OnParseResponseError() override;
 
   // BaseScreenHandler:
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
  private:
   void OnUserSkip();
@@ -86,7 +86,7 @@ class RecommendAppsScreenHandler : public BaseScreenHandler,
 
   int recommended_app_count_ = 0;
 
-  // If true, Initialize() will call Show().
+  // If true, InitializeDeprecated() will call Show().
   bool show_on_init_ = false;
 };
 

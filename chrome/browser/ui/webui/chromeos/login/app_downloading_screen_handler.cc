@@ -69,6 +69,6 @@ void AppDownloadingScreenHandler::Show() {
 
 void AppDownloadingScreenHandler::Hide() {}
 
-void AppDownloadingScreenHandler::Initialize() {}
+void AppDownloadingScreenHandler::InitializeDeprecated() {}
 
 }  // namespace chromeos

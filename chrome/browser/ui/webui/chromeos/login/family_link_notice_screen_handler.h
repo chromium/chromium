@@ -66,7 +66,7 @@ class FamilyLinkNoticeScreenHandler : public FamilyLinkNoticeView,
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
   ash::FamilyLinkNoticeScreen* screen_ = nullptr;
 };

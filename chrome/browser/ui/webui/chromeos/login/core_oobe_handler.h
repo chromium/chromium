@@ -63,7 +63,7 @@ class CoreOobeHandler : public BaseWebUIHandler,
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
   // BaseScreenHandler implementation:
   void GetAdditionalParameters(base::DictionaryValue* dict) override;

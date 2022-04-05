@@ -42,7 +42,7 @@ void ParentalHandoffScreenHandler::DeclareLocalizedValues(
                IDS_LOGIN_PARENTAL_HANDOFF_SCREEN_SUBTITLE);
 }
 
-void ParentalHandoffScreenHandler::Initialize() {}
+void ParentalHandoffScreenHandler::InitializeDeprecated() {}
 
 void ParentalHandoffScreenHandler::Show(const std::u16string& username) {
   base::Value::Dict data;

@@ -51,11 +51,16 @@ void SshConfiguredHandler::DeclareLocalizedValues(
   builder->Add("sshWarningLogin", IDS_LOGIN_SSH_WARNING);
 }
 
-void SshConfiguredHandler::Initialize() {}
+void SshConfiguredHandler::InitAfterJavascriptAllowed() {
+  if (callback_ids_.empty())
+    return;
+  if (!is_ssh_configured_.has_value())
+    return;
+  ResolveCallbacks();
+}
 
 void SshConfiguredHandler::HandleGetIsSshConfigured(
     const std::string& callback_id) {
-  AllowJavascript();
   callback_ids_.push_back(callback_id);
 
   if (is_ssh_configured_.has_value()) {
@@ -79,13 +84,12 @@ void SshConfiguredHandler::OnGetDebuggingFeatures(bool succeeded,
   is_ssh_configured_ =
       succeeded && (feature_mask &
                     debugd::DevFeatureFlag::DEV_FEATURE_SSH_SERVER_CONFIGURED);
-  if (!IsJavascriptAllowed())
-    return;
-
   ResolveCallbacks();
 }
 
 void SshConfiguredHandler::ResolveCallbacks() {
+  if (!IsJavascriptAllowed())
+    return;
   DCHECK(is_ssh_configured_.has_value());
   for (const std::string& callback_id : callback_ids_) {
     ResolveJavascriptCallback(base::Value(callback_id),

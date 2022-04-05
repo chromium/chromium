@@ -53,7 +53,7 @@ void PackagedLicenseScreenHandler::DeclareLocalizedValues(
                IDS_OOBE_PACKAGED_LICENSE_DONT_ENROLL_BUTTON_LABEL);
 }
 
-void PackagedLicenseScreenHandler::Initialize() {
+void PackagedLicenseScreenHandler::InitializeDeprecated() {
   if (show_on_init_) {
     Show();
     show_on_init_ = false;

@@ -71,7 +71,7 @@ class MarketingOptInScreenHandler : public BaseScreenHandler,
 
  private:
   // BaseScreenHandler:
-  void Initialize() override;
+  void InitializeDeprecated() override;
   void RegisterMessages() override;
   void GetAdditionalParameters(base::DictionaryValue* parameters) override;
 

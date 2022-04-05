@@ -129,7 +129,7 @@ void RecommendAppsScreenHandler::OnParseResponseError() {
   HandleSkip();
 }
 
-void RecommendAppsScreenHandler::Initialize() {
+void RecommendAppsScreenHandler::InitializeDeprecated() {
   if (show_on_init_) {
     Show();
     show_on_init_ = false;

@@ -46,7 +46,7 @@ void SignInFatalErrorScreenHandler::DeclareLocalizedValues(
                IDS_LOGIN_FATAL_ERROR_TEXT_INSECURE_URL);
 }
 
-void SignInFatalErrorScreenHandler::Initialize() {}
+void SignInFatalErrorScreenHandler::InitializeDeprecated() {}
 
 void SignInFatalErrorScreenHandler::Show(SignInFatalErrorScreen::Error error,
                                          const base::Value* params) {

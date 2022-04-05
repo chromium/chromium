@@ -39,7 +39,7 @@ void GuestTosScreenHandler::DeclareLocalizedValues(
   builder->Add("guestTosLoading", IDS_GUEST_TOS_LOADING);
 }
 
-void GuestTosScreenHandler::Initialize() {
+void GuestTosScreenHandler::InitializeDeprecated() {
   if (show_on_init_) {
     Show(google_eula_url_, cros_eula_url_);
     show_on_init_ = false;

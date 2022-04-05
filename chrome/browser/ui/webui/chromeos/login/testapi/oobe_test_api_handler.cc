@@ -49,7 +49,7 @@ void OobeTestAPIHandler::DeclareJSCallbacks() {
               &OobeTestAPIHandler::HandleGetPrimaryDisplayName);
 }
 
-void OobeTestAPIHandler::Initialize() {}
+void OobeTestAPIHandler::InitializeDeprecated() {}
 
 void OobeTestAPIHandler::GetAdditionalParameters(base::DictionaryValue* dict) {
   login::NetworkStateHelper helper_;

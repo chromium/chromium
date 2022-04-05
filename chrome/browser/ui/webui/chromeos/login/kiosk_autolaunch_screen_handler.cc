@@ -50,7 +50,7 @@ void KioskAutolaunchScreenHandler::SetDelegate(
     KioskAutolaunchScreen* delegate) {
   delegate_ = delegate;
   if (page_is_ready())
-    Initialize();
+    InitializeDeprecated();
 }
 
 void KioskAutolaunchScreenHandler::UpdateKioskApp() {
@@ -86,7 +86,7 @@ void KioskAutolaunchScreenHandler::DeclareLocalizedValues(
   builder->Add("autolaunchCancelButton", IDS_CANCEL);
 }
 
-void KioskAutolaunchScreenHandler::Initialize() {
+void KioskAutolaunchScreenHandler::InitializeDeprecated() {
   if (!page_is_ready() || !delegate_)
     return;
 

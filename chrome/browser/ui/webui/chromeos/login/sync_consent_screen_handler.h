@@ -73,7 +73,7 @@ class SyncConsentScreenHandler : public BaseScreenHandler,
 
  private:
   // BaseScreenHandler:
-  void Initialize() override;
+  void InitializeDeprecated() override;
   void RegisterMessages() override;
 
   // WebUI message handlers

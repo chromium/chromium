@@ -81,7 +81,7 @@ void UpdateRequiredScreenHandler::DeclareLocalizedValues(
                IDS_UPDATE_REQUIRED_EOL_DELETE_USERS_DATA_CANCEL);
 }
 
-void UpdateRequiredScreenHandler::Initialize() {
+void UpdateRequiredScreenHandler::InitializeDeprecated() {
   if (show_on_init_) {
     Show();
     show_on_init_ = false;

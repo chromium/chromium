@@ -98,7 +98,7 @@ bool TermsOfServiceScreenHandler::AreTermsLoaded() {
   return !load_error_ && !terms_of_service_.empty();
 }
 
-void TermsOfServiceScreenHandler::Initialize() {
+void TermsOfServiceScreenHandler::InitializeDeprecated() {
   if (show_on_init_) {
     Show(manager_);
     show_on_init_ = false;

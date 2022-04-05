@@ -47,7 +47,7 @@ void HIDDetectionScreenHandler::Bind(HIDDetectionScreen* screen) {
   screen_ = screen;
   BaseScreenHandler::SetBaseScreenDeprecated(screen_);
   if (page_is_ready())
-    Initialize();
+    InitializeDeprecated();
 }
 
 void HIDDetectionScreenHandler::Unbind() {
@@ -165,7 +165,7 @@ void HIDDetectionScreenHandler::HandleEmulateDevicesConnectedForTesting() {
   screen_->InputDeviceAddedForTesting(std::move(keyboard));  // IN-TEST
 }
 
-void HIDDetectionScreenHandler::Initialize() {
+void HIDDetectionScreenHandler::InitializeDeprecated() {
   if (show_on_init_) {
     Show();
     show_on_init_ = false;

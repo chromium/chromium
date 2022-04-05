@@ -52,7 +52,7 @@ class ParentalHandoffScreenHandler : public BaseScreenHandler,
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
   // Shows the contents of the screen.
   void Show(const std::u16string& username) override;

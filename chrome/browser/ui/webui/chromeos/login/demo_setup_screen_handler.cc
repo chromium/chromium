@@ -61,7 +61,7 @@ void DemoSetupScreenHandler::OnSetupSucceeded() {
   CallJS("login.DemoSetupScreen.onSetupSucceeded");
 }
 
-void DemoSetupScreenHandler::Initialize() {}
+void DemoSetupScreenHandler::InitializeDeprecated() {}
 
 void DemoSetupScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {

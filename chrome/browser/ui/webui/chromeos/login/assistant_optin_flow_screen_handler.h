@@ -115,7 +115,7 @@ class AssistantOptInFlowScreenHandler
 
  private:
   // BaseScreenHandler:
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
   // ash::AssistantStateObserver:
   void OnAssistantSettingsEnabled(bool enabled) override;

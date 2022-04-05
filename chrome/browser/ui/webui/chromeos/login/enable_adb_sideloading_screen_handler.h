@@ -61,7 +61,7 @@ class EnableAdbSideloadingScreenHandler : public EnableAdbSideloadingScreenView,
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
  private:
   // Keeps whether screen should be shown right after initialization.

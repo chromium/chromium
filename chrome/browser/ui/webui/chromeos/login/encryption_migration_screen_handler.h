@@ -78,7 +78,7 @@ class EncryptionMigrationScreenHandler : public EncryptionMigrationScreenView,
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
  private:
   ash::EncryptionMigrationScreen* delegate_ = nullptr;

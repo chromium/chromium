@@ -35,7 +35,7 @@ void AutoEnrollmentCheckScreenHandler::Show() {
 void AutoEnrollmentCheckScreenHandler::SetDelegate(Delegate* delegate) {
   delegate_ = delegate;
   if (page_is_ready())
-    Initialize();
+    InitializeDeprecated();
 }
 
 void AutoEnrollmentCheckScreenHandler::DeclareLocalizedValues(
@@ -46,7 +46,7 @@ void AutoEnrollmentCheckScreenHandler::DeclareLocalizedValues(
                IDS_AUTO_ENROLLMENT_CHECK_SCREEN_MESSAGE);
 }
 
-void AutoEnrollmentCheckScreenHandler::Initialize() {
+void AutoEnrollmentCheckScreenHandler::InitializeDeprecated() {
   if (!page_is_ready() || !delegate_)
     return;
 

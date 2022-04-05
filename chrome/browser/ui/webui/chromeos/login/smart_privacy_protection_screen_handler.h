@@ -55,7 +55,7 @@ class SmartPrivacyProtectionScreenHandler : public SmartPrivacyProtectionView,
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
   void GetAdditionalParameters(base::DictionaryValue* dict) override;
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
  private:
   ash::SmartPrivacyProtectionScreen* screen_ = nullptr;

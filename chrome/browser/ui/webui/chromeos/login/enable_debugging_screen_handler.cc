@@ -48,7 +48,7 @@ void EnableDebuggingScreenHandler::SetDelegate(EnableDebuggingScreen* screen) {
   screen_ = screen;
   BaseScreenHandler::SetBaseScreenDeprecated(screen_);
   if (page_is_ready())
-    Initialize();
+    InitializeDeprecated();
 }
 
 void EnableDebuggingScreenHandler::DeclareLocalizedValues(
@@ -93,7 +93,7 @@ void EnableDebuggingScreenHandler::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kDebuggingFeaturesRequested, false);
 }
 
-void EnableDebuggingScreenHandler::Initialize() {
+void EnableDebuggingScreenHandler::InitializeDeprecated() {
   if (!page_is_ready() || !screen_)
     return;
 

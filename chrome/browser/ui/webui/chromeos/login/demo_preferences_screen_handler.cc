@@ -42,7 +42,7 @@ void DemoPreferencesScreenHandler::SetInputMethodId(
   CallJS("login.DemoPreferencesScreen.setSelectedKeyboard", input_method);
 }
 
-void DemoPreferencesScreenHandler::Initialize() {}
+void DemoPreferencesScreenHandler::InitializeDeprecated() {}
 
 void DemoPreferencesScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {

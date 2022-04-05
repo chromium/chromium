@@ -53,7 +53,7 @@ class DeviceDisabledScreenHandler : public DeviceDisabledScreenView,
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
  private:
   // WebUIMessageHandler:

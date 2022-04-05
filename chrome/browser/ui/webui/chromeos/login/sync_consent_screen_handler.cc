@@ -191,7 +191,7 @@ void SyncConsentScreenHandler::SetIsMinorMode(bool value) {
   CallJS("login.SyncConsentScreen.setIsMinorMode", value);
 }
 
-void SyncConsentScreenHandler::Initialize() {}
+void SyncConsentScreenHandler::InitializeDeprecated() {}
 
 void SyncConsentScreenHandler::RegisterMessages() {
   AddCallback("login.SyncConsentScreen.nonSplitSettingsContinue",

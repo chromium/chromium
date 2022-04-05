@@ -72,7 +72,7 @@ class NetworkScreenHandler : public NetworkScreenView,
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
   void GetAdditionalParameters(base::DictionaryValue* dict) override;
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
   ash::NetworkScreen* screen_ = nullptr;
 

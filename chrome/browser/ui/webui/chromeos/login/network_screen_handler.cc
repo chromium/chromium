@@ -97,7 +97,7 @@ void NetworkScreenHandler::GetAdditionalParameters(
   cellular_setup::AddNonStringLoadTimeDataToDict(dict);
 }
 
-void NetworkScreenHandler::Initialize() {
+void NetworkScreenHandler::InitializeDeprecated() {
   if (show_on_init_) {
     show_on_init_ = false;
     Show();

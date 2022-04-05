@@ -56,7 +56,7 @@ void WrongHWIDScreenHandler::DeclareLocalizedValues(
                 IDS_WRONG_HWID_SCREEN_SKIP_LINK);
 }
 
-void WrongHWIDScreenHandler::Initialize() {
+void WrongHWIDScreenHandler::InitializeDeprecated() {
   if (show_on_init_) {
     show_on_init_ = false;
     Show();

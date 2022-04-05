@@ -55,7 +55,7 @@ class PinSetupScreenHandler : public BaseScreenHandler,
   // PinSetupScreenView:
   void Bind(ash::PinSetupScreen* screen) override;
   void Hide() override;
-  void Initialize() override;
+  void InitializeDeprecated() override;
   void Show(const std::string& token, bool is_child_account) override;
   void SetLoginSupportAvailable(bool available) override;
 

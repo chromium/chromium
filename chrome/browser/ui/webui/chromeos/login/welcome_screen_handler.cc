@@ -299,7 +299,7 @@ void WelcomeScreenHandler::GetAdditionalParameters(
   dict->SetKey("demoModeCountryList", DemoSession::GetCountryList());
 }
 
-void WelcomeScreenHandler::Initialize() {
+void WelcomeScreenHandler::InitializeDeprecated() {
   if (show_on_init_) {
     show_on_init_ = false;
     Show();

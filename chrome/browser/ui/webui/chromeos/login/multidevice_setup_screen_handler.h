@@ -52,7 +52,7 @@ class MultiDeviceSetupScreenHandler : public BaseScreenHandler,
 
  private:
   // BaseScreenHandler:
-  void Initialize() override;
+  void InitializeDeprecated() override;
 };
 
 }  // namespace chromeos

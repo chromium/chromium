@@ -89,7 +89,7 @@ void LacrosDataMigrationScreenHandler::SetFailureStatus(
          show_goto_files);
 }
 
-void LacrosDataMigrationScreenHandler::Initialize() {
+void LacrosDataMigrationScreenHandler::InitializeDeprecated() {
   if (show_on_init_) {
     Show();
     show_on_init_ = false;

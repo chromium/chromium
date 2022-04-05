@@ -41,7 +41,7 @@ void KioskEnableScreenHandler::SetScreen(KioskEnableScreen* screen) {
   BaseScreenHandler::SetBaseScreenDeprecated(screen);
   screen_ = screen;
   if (page_is_ready() && screen_)
-    Initialize();
+    InitializeDeprecated();
 }
 
 void KioskEnableScreenHandler::DeclareLocalizedValues(
@@ -57,7 +57,7 @@ void KioskEnableScreenHandler::DeclareLocalizedValues(
   builder->Add("kioskEnableErrorMsg", IDS_KIOSK_ENABLE_SCREEN_ERROR);
 }
 
-void KioskEnableScreenHandler::Initialize() {
+void KioskEnableScreenHandler::InitializeDeprecated() {
   if (!page_is_ready() || !screen_)
     return;
 

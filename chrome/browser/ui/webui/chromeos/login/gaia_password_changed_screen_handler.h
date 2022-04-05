@@ -55,7 +55,7 @@ class GaiaPasswordChangedScreenHandler : public GaiaPasswordChangedView,
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
   ash::GaiaPasswordChangedScreen* screen_ = nullptr;
 };

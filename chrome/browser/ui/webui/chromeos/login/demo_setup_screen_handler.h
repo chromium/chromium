@@ -66,7 +66,7 @@ class DemoSetupScreenHandler : public BaseScreenHandler,
   void OnSetupSucceeded() override;
 
   // BaseScreenHandler:
-  void Initialize() override;
+  void InitializeDeprecated() override;
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
 

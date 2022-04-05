@@ -715,11 +715,15 @@ void OobeUI::InitializeHandlers() {
   ready_ = true;
   ready_callbacks_.Notify();
 
-  for (BaseWebUIHandler* handler : webui_only_handlers_)
-    handler->InitializeBase();
+  for (BaseWebUIHandler* handler : webui_only_handlers_) {
+    CHECK(!handler->IsJavascriptAllowed());
+    handler->AllowJavascript();
+  }
 
-  for (BaseScreenHandler* handler : screen_handlers_)
-    handler->InitializeBase();
+  for (BaseScreenHandler* handler : screen_handlers_) {
+    CHECK(!handler->IsJavascriptAllowed());
+    handler->AllowJavascript();
+  }
 }
 
 void OobeUI::CurrentScreenChanged(OobeScreenId new_screen) {

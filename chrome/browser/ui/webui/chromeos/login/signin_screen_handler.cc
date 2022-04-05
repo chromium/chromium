@@ -222,7 +222,7 @@ void SigninScreenHandler::DeclareLocalizedValues(
                IDS_LOGIN_ACCOUNT_SETUP_CANCEL_DIALOG_YES);
 }
 
-void SigninScreenHandler::Initialize() {}
+void SigninScreenHandler::InitializeDeprecated() {}
 
 void SigninScreenHandler::RegisterMessages() {
   AddCallback("launchIncognito", &SigninScreenHandler::HandleLaunchIncognito);

@@ -90,7 +90,7 @@ void CoreOobeHandler::DeclareLocalizedValues(
   builder->Add("next", IDS_EULA_NEXT_BUTTON);
 }
 
-void CoreOobeHandler::Initialize() {
+void CoreOobeHandler::InitializeDeprecated() {
   UpdateOobeUIVisibility();
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   version_info_updater_.StartUpdate(true);
@@ -167,7 +167,6 @@ void CoreOobeHandler::SetDialogSize(int width, int height) {
 
 void CoreOobeHandler::HandleInitialized() {
   VLOG(3) << "CoreOobeHandler::HandleInitialized";
-  AllowJavascript();
   GetOobeUI()->InitializeHandlers();
 }
 

@@ -94,7 +94,7 @@ void OsInstallScreenHandler::DeclareLocalizedValues(
                IDS_OS_INSTALL_SCREEN_SHUTDOWN_BUTTON);
 }
 
-void OsInstallScreenHandler::Initialize() {}
+void OsInstallScreenHandler::InitializeDeprecated() {}
 
 void OsInstallScreenHandler::Show() {
   ShowInWebUI();

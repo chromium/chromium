@@ -76,7 +76,7 @@ class LacrosDataMigrationScreenHandler : public BaseScreenHandler,
 
  private:
   // BaseScreenHandler:
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
   ash::LacrosDataMigrationScreen* screen_ = nullptr;
 

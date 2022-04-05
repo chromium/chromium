@@ -49,10 +49,7 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
 
   // WebUIMessageHandler implementation:
   void RegisterMessages() override;
-
-  // This method is called when page is ready. It propagates to inherited class
-  // via virtual Initialize() method (see below).
-  void InitializeBase();
+  void OnJavascriptAllowed() final;
 
  protected:
   // All subclasses should implement this method to provide localized values.
@@ -66,6 +63,9 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
   // Subclasses can override these methods to pass additional parameters
   // to loadTimeData.
   virtual void GetAdditionalParameters(base::DictionaryValue* parameters);
+
+  // Can be overridden to do any initialization after javascript is ready.
+  virtual void InitAfterJavascriptAllowed();
 
   // Run a JavaScript function. If the backing webui that this handler is not
   // fully loaded, then the JS call will be deferred and executed after the
@@ -99,7 +99,8 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
   }
 
   // Called when the page is ready and handler can do initialization.
-  virtual void Initialize() = 0;
+  // DEPRECATED: Use InitAfterJavascriptAllowed if required.
+  virtual void InitializeDeprecated() {}
 
   // Show selected WebUI `screen`.
   void ShowScreenDeprecated(OobeScreenId screen);

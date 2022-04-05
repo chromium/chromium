@@ -52,7 +52,7 @@ class KioskAutolaunchScreenHandler : public KioskAutolaunchScreenView,
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
   // WebUIMessageHandler:
   void RegisterMessages() override;

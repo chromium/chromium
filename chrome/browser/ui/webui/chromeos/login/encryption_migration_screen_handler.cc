@@ -43,7 +43,7 @@ void EncryptionMigrationScreenHandler::SetDelegate(
   delegate_ = delegate;
   BaseScreenHandler::SetBaseScreenDeprecated(delegate);
   if (page_is_ready())
-    Initialize();
+    InitializeDeprecated();
 }
 
 void EncryptionMigrationScreenHandler::DeclareLocalizedValues(
@@ -94,7 +94,7 @@ void EncryptionMigrationScreenHandler::DeclareLocalizedValues(
   builder->Add("gaiaLoading", IDS_LOGIN_GAIA_LOADING_MESSAGE);
 }
 
-void EncryptionMigrationScreenHandler::Initialize() {
+void EncryptionMigrationScreenHandler::InitializeDeprecated() {
   if (!page_is_ready() || !delegate_)
     return;
 

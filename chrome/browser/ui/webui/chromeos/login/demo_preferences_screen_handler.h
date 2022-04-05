@@ -56,7 +56,7 @@ class DemoPreferencesScreenHandler : public BaseScreenHandler,
   void SetInputMethodId(const std::string& input_method) override;
 
   // BaseScreenHandler:
-  void Initialize() override;
+  void InitializeDeprecated() override;
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
 

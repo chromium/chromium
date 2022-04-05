@@ -48,7 +48,7 @@ void TpmErrorScreenHandler::DeclareLocalizedValues(
                 IDS_INSTALLED_PRODUCT_OS_NAME);
 }
 
-void TpmErrorScreenHandler::Initialize() {
+void TpmErrorScreenHandler::InitializeDeprecated() {
   if (show_on_init_) {
     show_on_init_ = false;
     Show();

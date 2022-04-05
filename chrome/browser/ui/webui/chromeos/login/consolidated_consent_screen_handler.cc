@@ -140,7 +140,7 @@ void ConsolidatedConsentScreenHandler::DeclareLocalizedValues(
   }
 }
 
-void ConsolidatedConsentScreenHandler::Initialize() {}
+void ConsolidatedConsentScreenHandler::InitializeDeprecated() {}
 
 void ConsolidatedConsentScreenHandler::Show(const ScreenConfig& config) {
   base::Value::Dict data;

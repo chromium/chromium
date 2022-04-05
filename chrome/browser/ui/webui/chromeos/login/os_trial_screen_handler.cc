@@ -40,7 +40,7 @@ void OsTrialScreenHandler::DeclareLocalizedValues(
   builder->Add("osTrialNextButton", IDS_OS_TRIAL_NEXT_BUTTON);
 }
 
-void OsTrialScreenHandler::Initialize() {}
+void OsTrialScreenHandler::InitializeDeprecated() {}
 
 void OsTrialScreenHandler::Show() {
   ShowInWebUI();

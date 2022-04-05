@@ -47,7 +47,7 @@ class GestureNavigationScreenHandler : public GestureNavigationScreenView,
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
+  void InitializeDeprecated() override;
   void RegisterMessages() override;
 
  private:
@@ -57,7 +57,7 @@ class GestureNavigationScreenHandler : public GestureNavigationScreenView,
 
   ash::GestureNavigationScreen* screen_ = nullptr;
 
-  // If true, Initialize() will call Show().
+  // If true, InitializeDeprecated() will call Show().
   bool show_on_init_ = false;
 };
 

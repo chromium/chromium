@@ -63,7 +63,7 @@ void UserCreationScreenHandler::DeclareLocalizedValues(
                IDS_OOBE_USER_CREATION_CHILD_SIGN_IN_LEARN_MORE_DIALOG_TEXT);
 }
 
-void UserCreationScreenHandler::Initialize() {}
+void UserCreationScreenHandler::InitializeDeprecated() {}
 
 void UserCreationScreenHandler::Show() {
   ShowInWebUI();

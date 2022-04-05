@@ -138,7 +138,7 @@ void ErrorScreenHandler::DeclareLocalizedValues(
   builder->Add("offlineLogin", IDS_OFFLINE_LOGIN_HTML);
 }
 
-void ErrorScreenHandler::Initialize() {
+void ErrorScreenHandler::InitializeDeprecated() {
   if (!page_is_ready())
     return;
 

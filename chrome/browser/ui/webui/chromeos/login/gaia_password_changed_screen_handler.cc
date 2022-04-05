@@ -45,7 +45,7 @@ void GaiaPasswordChangedScreenHandler::DeclareLocalizedValues(
   builder->Add("passwordChangedTryAgain", IDS_LOGIN_PASSWORD_CHANGED_TRY_AGAIN);
 }
 
-void GaiaPasswordChangedScreenHandler::Initialize() {
+void GaiaPasswordChangedScreenHandler::InitializeDeprecated() {
   AddCallback("migrateUserData",
               &GaiaPasswordChangedScreenHandler::HandleMigrateUserData);
 }

@@ -54,7 +54,7 @@ class TpmErrorScreenHandler : public TpmErrorView, public BaseScreenHandler {
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
   bool show_on_init_ = false;
 

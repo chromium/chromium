@@ -86,8 +86,7 @@ void PinSetupScreenHandler::Bind(PinSetupScreen* screen) {
 
 void PinSetupScreenHandler::Hide() {}
 
-void PinSetupScreenHandler::Initialize() {
-}
+void PinSetupScreenHandler::InitializeDeprecated() {}
 
 void PinSetupScreenHandler::Show(const std::string& token,
                                  bool is_child_account) {

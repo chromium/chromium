@@ -47,7 +47,7 @@ class GuestTosScreenHandler : public GuestTosScreenView,
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
+  void InitializeDeprecated() override;
   void RegisterMessages() override;
 
   void HandleAccept(bool enable_usage_stats);

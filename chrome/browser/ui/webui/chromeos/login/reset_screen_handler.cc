@@ -101,7 +101,7 @@ void ResetScreenHandler::DeclareJSCallbacks() {
               &ResetScreenHandler::HandleSetTpmFirmwareUpdateChecked);
 }
 
-void ResetScreenHandler::Initialize() {
+void ResetScreenHandler::InitializeDeprecated() {
   if (!page_is_ready())
     return;
 

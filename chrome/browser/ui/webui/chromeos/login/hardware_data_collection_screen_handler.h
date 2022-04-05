@@ -60,7 +60,7 @@ class HWDataCollectionScreenHandler : public HWDataCollectionView,
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
  private:
   ash::HWDataCollectionScreen* screen_ = nullptr;

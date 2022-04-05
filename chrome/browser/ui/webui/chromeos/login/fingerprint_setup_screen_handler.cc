@@ -145,7 +145,7 @@ void FingerprintSetupScreenHandler::Show() {
 
 void FingerprintSetupScreenHandler::Hide() {}
 
-void FingerprintSetupScreenHandler::Initialize() {}
+void FingerprintSetupScreenHandler::InitializeDeprecated() {}
 
 void FingerprintSetupScreenHandler::OnEnrollScanDone(
     device::mojom::ScanResult scan_result,

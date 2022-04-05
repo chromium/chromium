@@ -101,7 +101,7 @@ class EnrollmentScreenHandler
   void Shutdown() override;
 
   // Implements BaseScreenHandler:
-  void Initialize() override;
+  void InitializeDeprecated() override;
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
   void GetAdditionalParameters(base::DictionaryValue* parameters) override;

@@ -65,7 +65,7 @@ void HWDataCollectionScreenHandler::DeclareLocalizedValues(
                IDS_HW_DATA_COLLECTION_ACCEPT_AND_CONTINUE_BUTTON_TEXT);
 }
 
-void HWDataCollectionScreenHandler::Initialize() {
+void HWDataCollectionScreenHandler::InitializeDeprecated() {
   if (!page_is_ready() || !screen_)
     return;
 

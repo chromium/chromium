@@ -75,7 +75,7 @@ void ManagementTransitionScreenHandler::Bind(
   BaseScreenHandler::SetBaseScreenDeprecated(screen);
   screen_ = screen;
   if (page_is_ready())
-    Initialize();
+    InitializeDeprecated();
 }
 
 void ManagementTransitionScreenHandler::Unbind() {
@@ -129,7 +129,7 @@ base::OneShotTimer* ManagementTransitionScreenHandler::GetTimerForTesting() {
   return &timer_;
 }
 
-void ManagementTransitionScreenHandler::Initialize() {
+void ManagementTransitionScreenHandler::InitializeDeprecated() {
   if (!screen_ || !show_on_init_)
     return;
 

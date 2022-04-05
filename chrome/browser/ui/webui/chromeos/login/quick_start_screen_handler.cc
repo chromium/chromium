@@ -34,7 +34,7 @@ void QuickStartScreenHandler::Bind(QuickStartScreen* screen) {
   screen_ = screen;
   BaseScreenHandler::SetBaseScreenDeprecated(screen_);
   if (page_is_ready())
-    Initialize();
+    InitializeDeprecated();
 }
 
 void QuickStartScreenHandler::Unbind() {
@@ -59,7 +59,7 @@ void QuickStartScreenHandler::SetShapes(
   CallJS("login.QuickStartScreen.setFigures", base::Value(ToValue(shape_list)));
 }
 
-void QuickStartScreenHandler::Initialize() {
+void QuickStartScreenHandler::InitializeDeprecated() {
   if (show_on_init_) {
     Show();
     show_on_init_ = false;

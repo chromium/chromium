@@ -81,7 +81,7 @@ class OfflineLoginScreenHandler : public BaseScreenHandler,
   void RegisterMessages() override;
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
   ash::OfflineLoginScreen* screen_ = nullptr;
 

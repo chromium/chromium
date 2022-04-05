@@ -54,7 +54,7 @@ class WrongHWIDScreenHandler : public WrongHWIDScreenView,
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
   ash::WrongHWIDScreen* screen_ = nullptr;
 

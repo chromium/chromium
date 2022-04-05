@@ -70,7 +70,7 @@ class ManagementTransitionScreenHandler
 
  private:
   // BaseScreenHandler:
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
   // Shows a given step.
   void ShowStep(const char* step);

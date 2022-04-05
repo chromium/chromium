@@ -43,6 +43,6 @@ void LocaleSwitchScreenHandler::UpdateStrings() {
 void LocaleSwitchScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {}
 
-void LocaleSwitchScreenHandler::Initialize() {}
+void LocaleSwitchScreenHandler::InitializeDeprecated() {}
 
 }  // namespace chromeos

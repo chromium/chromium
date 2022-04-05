@@ -88,7 +88,7 @@ class WelcomeScreenHandler : public WelcomeView, public BaseScreenHandler {
       ::login::LocalizedValuesBuilder* builder) override;
   void DeclareJSCallbacks() override;
   void GetAdditionalParameters(base::DictionaryValue* dict) override;
-  void Initialize() override;
+  void InitializeDeprecated() override;
 
  private:
   // JS callbacks.

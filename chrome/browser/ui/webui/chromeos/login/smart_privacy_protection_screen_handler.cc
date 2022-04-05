@@ -76,7 +76,7 @@ void SmartPrivacyProtectionScreenHandler::GetAdditionalParameters(
                base::Value(ash::features::IsSnoopingProtectionEnabled()));
 }
 
-void SmartPrivacyProtectionScreenHandler::Initialize() {
+void SmartPrivacyProtectionScreenHandler::InitializeDeprecated() {
   if (!page_is_ready() || !screen_)
     return;
 

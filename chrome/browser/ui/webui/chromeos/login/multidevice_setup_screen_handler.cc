@@ -45,6 +45,6 @@ void MultiDeviceSetupScreenHandler::GetAdditionalParameters(
 
 void MultiDeviceSetupScreenHandler::Hide() {}
 
-void MultiDeviceSetupScreenHandler::Initialize() {}
+void MultiDeviceSetupScreenHandler::InitializeDeprecated() {}
 
 }  // namespace chromeos
