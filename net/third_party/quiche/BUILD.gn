@@ -40,6 +40,7 @@ source_set("quiche") {
     "overrides/quiche_platform_impl/quiche_export_impl.h",
     "overrides/quiche_platform_impl/quiche_hostname_utils_impl.cc",
     "overrides/quiche_platform_impl/quiche_hostname_utils_impl.h",
+    "overrides/quiche_platform_impl/quiche_iovec_impl.h",
     "overrides/quiche_platform_impl/quiche_logging_impl.h",
     "overrides/quiche_platform_impl/quiche_mutex_impl.cc",
     "overrides/quiche_platform_impl/quiche_mutex_impl.h",

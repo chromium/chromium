@@ -200,16 +200,16 @@ base::Value NetLogQuicConnectionCloseFrameParams(
 }
 
 base::Value NetLogQuicWindowUpdateFrameParams(
-    const quic::QuicWindowUpdateFrame* frame) {
+    const quic::QuicWindowUpdateFrame& frame) {
   base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("stream_id", frame->stream_id);
-  dict.SetKey("byte_offset", NetLogNumberValue(frame->max_data));
+  dict.SetIntKey("stream_id", frame.stream_id);
+  dict.SetKey("byte_offset", NetLogNumberValue(frame.max_data));
   return dict;
 }
 
-base::Value NetLogQuicBlockedFrameParams(const quic::QuicBlockedFrame* frame) {
+base::Value NetLogQuicBlockedFrameParams(const quic::QuicBlockedFrame& frame) {
   base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("stream_id", frame->stream_id);
+  dict.SetIntKey("stream_id", frame.stream_id);
   return dict;
 }
 
@@ -672,12 +672,12 @@ void QuicEventLogger::OnWindowUpdateFrame(
     const quic::QuicWindowUpdateFrame& frame,
     const quic::QuicTime& receive_time) {
   net_log_.AddEvent(NetLogEventType::QUIC_SESSION_WINDOW_UPDATE_FRAME_RECEIVED,
-                    [&] { return NetLogQuicWindowUpdateFrameParams(&frame); });
+                    [&] { return NetLogQuicWindowUpdateFrameParams(frame); });
 }
 
 void QuicEventLogger::OnBlockedFrame(const quic::QuicBlockedFrame& frame) {
   net_log_.AddEvent(NetLogEventType::QUIC_SESSION_BLOCKED_FRAME_RECEIVED,
-                    [&] { return NetLogQuicBlockedFrameParams(&frame); });
+                    [&] { return NetLogQuicBlockedFrameParams(frame); });
 }
 
 void QuicEventLogger::OnGoAwayFrame(const quic::QuicGoAwayFrame& frame) {

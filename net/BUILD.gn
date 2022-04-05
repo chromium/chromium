@@ -831,7 +831,6 @@ component("net") {
     "quiche/common/platform/impl/quiche_flag_utils_impl.h",
     "quiche/common/platform/impl/quiche_flags_impl.cc",
     "quiche/common/platform/impl/quiche_flags_impl.h",
-    "quiche/common/platform/impl/quiche_iovec_impl.h",
     "socket/client_socket_factory.cc",
     "socket/client_socket_factory.h",
     "socket/client_socket_handle.cc",
