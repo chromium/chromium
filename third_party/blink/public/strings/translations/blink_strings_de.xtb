@@ -15,13 +15,13 @@
 <translation id="1681022320378710418">aktuelle Uhrzeit</translation>
 <translation id="1727839386348365796">Pipette</translation>
 <translation id="1727886345390570319">Untertitelmenü ausblenden</translation>
-<translation id="1729654308190250600">Geben Sie eine E-Mail-Adresse ein.</translation>
+<translation id="1729654308190250600">Gib eine E-Mail-Adresse ein.</translation>
 <translation id="1758486001363313524">Andere...</translation>
 <translation id="1787192514241997742">Gesamtzeit: <ph name="REMAINING_TIME" /></translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">auf Remote-Gerät wiedergeben</translation>
 <translation id="1921819250265091946">tt</translation>
-<translation id="1938124657309484470">Verwenden Sie <ph name="MAXIMUM_DATE_OR_TIME" /> oder einen früheren Wert.</translation>
+<translation id="1938124657309484470">Verwende <ph name="MAXIMUM_DATE_OR_TIME" /> oder einen früheren Wert.</translation>
 <translation id="1946271899482435442">Datumsauswahl anzeigen</translation>
 <translation id="1993104285338243655">Zu 1:1-Wiedergabe gewechselt</translation>
 <translation id="2031987842108996681">Rotkanal</translation>
@@ -40,15 +40,15 @@
 <translation id="2530182415807757784">Mehrfachauswahl, nichts ausgewählt.</translation>
 <translation id="2561842179657104141">weitere Mediensteuerelemente anzeigen</translation>
 <translation id="2572483411312390101">Wiedergeben</translation>
-<translation id="2613802280814924224">Geben Sie einen gültigen Wert ein. Der nächstliegende gültige Wert ist <ph name="VALID_VALUE" />.</translation>
+<translation id="2613802280814924224">Gib einen gültigen Wert ein. Der nächstliegende gültige Wert ist <ph name="VALID_VALUE" />.</translation>
 <translation id="2634240155926812724">Grünkanal</translation>
 <translation id="2653659639078652383">Senden</translation>
 <translation id="2723001399770238859">Audio</translation>
-<translation id="2746543609216772311">Verwenden Sie <ph name="MINIMUM_DATE_OR_TIME" /> oder einen späteren Wert.</translation>
+<translation id="2746543609216772311">Verwende <ph name="MINIMUM_DATE_OR_TIME" /> oder einen späteren Wert.</translation>
 <translation id="2761667185364618470">Klicke dieses Kästchen an, wenn du fortfahren möchtest.</translation>
 <translation id="2908441821576996758">Gib eine durch Kommas getrennte Liste der E-Mail-Adressen ein.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
-<translation id="3075154866155599887">Geben Sie einen gültigen Wert ein. Das Feld ist nicht vollständig oder enthält ein ungültiges Datum.</translation>
+<translation id="3075154866155599887">Gib einen gültigen Wert ein. Das Feld ist nicht vollständig oder enthält ein ungültiges Datum.</translation>
 <translation id="310520048233152454">Gib eine URL ein.</translation>
 <translation id="3220661731597678625">aktueller Schritt</translation>
 <translation id="3321030238473337787">Wiedergabegeschwindigkeit</translation>
@@ -57,19 +57,19 @@
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Bild im Bild beenden</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
-<translation id="3822383571486410024">Verlängern Sie diesen Text auf mindestens <ph name="MIN_CHARACTERS" /> Zeichen. Derzeit verwenden Sie <ph name="CURRENT_LENGTH" /> Zeichen.</translation>
+<translation id="3822383571486410024">Verlängere diesen Text auf mindestens <ph name="MIN_CHARACTERS" /> Zeichen. Derzeit verwendest du <ph name="CURRENT_LENGTH" /> Zeichen.</translation>
 <translation id="383465348367842624">Vor dem <ph name="ATSIGN" />-Zeichen darf das Zeichen "<ph name="INVALIDCHARACTER" />" nicht verwendet werden.</translation>
 <translation id="3846214748874656680">Vollbildmodus beenden</translation>
 <translation id="4103419683916926126">Millisekunden</translation>
 <translation id="4201051445878709314">Vorherigen Monat anzeigen</translation>
-<translation id="4360991593054037559">Geben Sie einen gültigen Wert ein. Die zwei nächstliegenden gültigen Werte sind <ph name="VALID_VALUE_LOW" /> und <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4360991593054037559">Gib einen gültigen Wert ein. Die zwei nächstliegenden gültigen Werte sind <ph name="VALID_VALUE_LOW" /> und <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4371899966896349864">Menü für Wiedergabegeschwindigkeit ausblenden</translation>
 <translation id="4522570452068850558">Details</translation>
 <translation id="4664250907885839816">Nach dem <ph name="ATSIGN" />-Zeichen darf das Zeichen "<ph name="INVALIDCHARACTER" />" nicht verwendet werden.</translation>
 <translation id="4718048029184481307">Wird als Bild im Bild abgespielt</translation>
 <translation id="4748357248530471599">Vollbildmodus mit Display-Aussparung ein-/ausschalten</translation>
 <translation id="4763480195061959176">Video</translation>
-<translation id="4812940957355064477">Geben Sie eine Nummer ein.</translation>
+<translation id="4812940957355064477">Gib eine Nummer ein.</translation>
 <translation id="4912200001568447310">aktuelles Element</translation>
 <translation id="4915360478455618802">Uhrzeitauswahl anzeigen</translation>
 <translation id="4924138096460353083">Unbestimmt</translation>
@@ -77,7 +77,7 @@
 <translation id="4971739861736909480"><ph name="ACCNAME" /> ausgewählt</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> ausgewählt</translation>
 <translation id="4992066212339426712">Stummschaltung aufheben</translation>
-<translation id="49969490063480558">Geben Sie etwas nach dem <ph name="ATSIGN" />-Zeichen ein. Die Angabe "<ph name="INVALIDADDRESS" />" ist unvollständig.</translation>
+<translation id="49969490063480558">Gib etwas nach dem <ph name="ATSIGN" />-Zeichen ein. Die Angabe „<ph name="INVALIDADDRESS" />“ ist unvollständig.</translation>
 <translation id="5090250355906949916">Video-Zeitachse</translation>
 <translation id="509897012892853729">Blaukanal</translation>
 <translation id="5117590920725113268">Nächsten Monat anzeigen</translation>
@@ -85,7 +85,7 @@
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5272594226096532950">Nicht ausgewählt. Option <ph name="INDEX" /> von <ph name="COUNT" /> in der Gruppe</translation>
-<translation id="5307600278924710095">Geben Sie etwas vor dem <ph name="ATSIGN" />-Zeichen ein. Die Angabe "<ph name="INVALIDADDRESS" />" ist unvollständig.</translation>
+<translation id="5307600278924710095">Gib etwas vor dem <ph name="ATSIGN" />-Zeichen ein. Die Angabe „<ph name="INVALIDADDRESS" />“ ist unvollständig.</translation>
 <translation id="5334352251556557839">Medien können nicht abgespielt werden.</translation>
 <translation id="537648784377940524">Das Mindestdatum (<ph name="MIN_DATE_OR_TIME" />) muss vor dem Maximaldatum (<ph name="MAX_DATE_OR_TIME" />) liegen.</translation>
 <translation id="5378437566635403538">maximiert, Dialogfeld geöffnet.</translation>
@@ -95,7 +95,7 @@
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Streamen</translation>
 <translation id="5546461542133609677">Ton an</translation>
-<translation id="5630795885300617244">Tippen Sie links oder rechts doppelt, um 10 s zu überspringen</translation>
+<translation id="5630795885300617244">Tippe links oder rechts doppelt, um 10 s zu überspringen</translation>
 <translation id="5677946354068040947">weitere Optionen</translation>
 <translation id="57838592816432529">Stummschalten</translation>
 <translation id="5786442179789148008">Menü für Wiedergabegeschwindigkeit einblenden</translation>
@@ -132,7 +132,7 @@
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6941933287844615239">Medien herunterladen</translation>
 <translation id="698788488269350478">maximiert.</translation>
-<translation id="6989848892321993519">Verlängern Sie diesen Text auf mindestens <ph name="MIN_CHARACTERS" /> Zeichen. Derzeit verwenden Sie 1 Zeichen.</translation>
+<translation id="6989848892321993519">Verlängere diesen Text auf mindestens <ph name="MIN_CHARACTERS" /> Zeichen. Derzeit verwendest du 1 Zeichen.</translation>
 <translation id="709897737746224366">Deine Eingabe muss mit dem geforderten Format übereinstimmen.</translation>
 <translation id="7102274145889307184">aktueller Standort</translation>
 <translation id="7263440858009898357">Wähle ein Element in der Liste aus.</translation>

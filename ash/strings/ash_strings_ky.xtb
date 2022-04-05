@@ -167,6 +167,7 @@
 <translation id="1951012854035635156">Жардамчы</translation>
 <translation id="1954252331066828794">Экрандан видео жаздырылып алынды</translation>
 <translation id="1957958912175573503">Тилди тандаңыз</translation>
+<translation id="1961239773406905488">Камерада алдын ала көрүү жашырылган</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Кулпуланган экран</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -184,6 +185,7 @@
 <translation id="2047639699071423250">Негизги идеяны кошуу</translation>
 <translation id="2049240716062114887">Иш тактанын аталышы <ph name="DESK_NAME" /> болуп өзгөрдү</translation>
 <translation id="2050339315714019657">Тигинен</translation>
+<translation id="2064048859448024834">Камерада алдын ала көрүү күйүк</translation>
 <translation id="2066708475850724665">Лупаны токтотуу</translation>
 <translation id="2067602449040652523">Баскычтоптун жарыктыгы</translation>
 <translation id="2078034614700056995">Кийинки иш тактага которулуу үчүн экранды төрт манжаңыз менен оңго сүрүп коюңуз</translation>
@@ -440,7 +442,6 @@
 <translation id="3630697955794050612">өчүк</translation>
 <translation id="3631369015426612114">Төмөнкүдөн эскертмелерге уруксат берүү:</translation>
 <translation id="3638400994746983214">Купуялык экранын өчүрүү/күйгүзүү. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171"><ph name="NAME" /> сактоо</translation>
 <translation id="3649505501900178324">Жаңыртуунун мөөнөтү бүттү</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Башкарылган колдонуучу</translation>
 <translation id="3680908746918359504">Бардык белгилегичти тазалоо</translation>
@@ -487,6 +488,7 @@
 <translation id="3922427723338465344">{0,plural, =1{Түзмөктү 1 мүнөттүн ичинде мурунку версияга өзгөртүңүз}other{Түзмөктү # мүнөттүн ичинде мурунку версияга өзгөртүңүз}}</translation>
 <translation id="3923494859158167397">Мобилдик тармактак жөндөлгөн жок</translation>
 <translation id="3932043219784172185">Бир да түзмөк туташкан жок</translation>
+<translation id="3934456833412894880">Ыңгайлаштырылган кубаттоо күйүк. Батареяны көпкө жеткирүү үчүн батареянын деңгээли 80% сакталып, түзмөктү колдонгонуңузда ал толук кубатталат.</translation>
 <translation id="3943857333388298514">Чаптоо</translation>
 <translation id="394485226368336402">Аудио жөндөөлөрү</translation>
 <translation id="3945319193631853098">Жөндөп бүтүрүү үчүн таптаңыз</translation>
@@ -530,7 +532,6 @@
 <translation id="4215497585250573029">VPN жөндөөлөрү</translation>
 <translation id="4217571870635786043">Үн менен жазуу</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Орнотулган колдонмо, Тындырылды</translation>
-<translation id="4223947355273782392"><ph name="NAME" /> түзмөгүн <ph name="EMAIL" /> аккаунтуңузга сактап койсоңуз, башка түзмөктөр менен ыкчам туташа аласыз</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Жөндөөлөрдү ачуу</translation>
 <translation id="4250229828105606438">Скриншот</translation>
@@ -908,7 +909,6 @@
 <translation id="6625718907317144388">Көрүүдөн коргоо функциясы күйүп тургандыктан, <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> жана башка колдонмолордун билдирмелери жашырылды</translation>
 <translation id="6627638273713273709">Издөө+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> микрофонду колдонгусу келет</translation>
-<translation id="6630773993843701741">Түзмөктү кол менен байланыштыруу үчүн Bluetooth'дун жөндөөлөрүн ачыңыз</translation>
 <translation id="6637729079642709226">Убакытты өзгөртүү</translation>
 <translation id="6641720045729354415">Ыкчам коштомо жазууларды өчүрүү/күйгүзүү. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> сиз экениңизди ырастоону суранып жатат</translation>
@@ -1018,7 +1018,6 @@
 <translation id="7348093485538360975">Экрандагы баскычтоп</translation>
 <translation id="735745346212279324">VPN ажыратылды</translation>
 <translation id="7360036564632145207">Дайын-даректерге кирүүнү коргоо деңгээли өзгөрсө, перифериялык жөндөөлөр майнаптуулукту арттырат</translation>
-<translation id="7366890467478514168"><ph name="NAME" /> түзмөгүн туташтыруу</translation>
 <translation id="7371404428569700291">Терезеден видео жаздырып алуу</translation>
 <translation id="7377169924702866686">Caps Lock күйүп турат.</translation>
 <translation id="7377481913241237033">Код менен туташуу</translation>
@@ -1129,7 +1128,6 @@
 <translation id="7955885781510802139">Жогорку контраст режими</translation>
 <translation id="7968693143708939792">Папка тандоо…</translation>
 <translation id="7977927628060636163">Мобилдик тармактар изделүүдө…</translation>
-<translation id="7980780401175799550">Chrome OS'ту чабыттоонун жаңы жолдорун колдонуп көрүңүз</translation>
 <translation id="7982789257301363584">Тармак</translation>
 <translation id="7984197416080286869">Кулпуну манжа изи менен ачууга өтө көп аракет жасалды</translation>
 <translation id="7994370417837006925">Бир нече аккаунт менен кирүү</translation>

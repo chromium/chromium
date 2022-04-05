@@ -595,6 +595,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2542106216580219892">Surfovanje</translation>
 <translation id="2544546346215446551">Administrator je restartovao uređaj</translation>
 <translation id="2544644783021658368">Jedan dokument</translation>
+<translation id="254524874071906077">Postavi Chrome kao podrazumevani pregledač</translation>
 <translation id="2546283357679194313">Kolačići i podaci o sajtovima</translation>
 <translation id="2547466893236767989">Veb-dizajn i programiranje</translation>
 <translation id="254947805923345898">Vrednost smernica nije važeća.</translation>
@@ -2533,7 +2534,9 @@ Dodatni detalji:
 <translation id="7995512525968007366">Nije navedeno</translation>
 <translation id="7998269595945679889">Pritisnite dugme Otvori karticu bez arhiviranja, pa Enter da biste otvorili novu karticu bez arhiviranja i pregledali privatno</translation>
 <translation id="800218591365569300">Probajte da zatvorite druge kartice ili programe da biste oslobodili memoriju.</translation>
+<translation id="8003046808285812021">„<ph name="SEARCH_TERMS" />“</translation>
 <translation id="8004582292198964060">Pregledač</translation>
+<translation id="8009225694047762179">Upravljaj lozinkama</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Ta kartica i njena adresa za obračun će biti sačuvane. Moći ćete da je koristite kada ste prijavljeni na <ph name="USER_EMAIL" />.}one{Te kartice i njihove adrese za obračun će biti sačuvane. Moći ćete da ih koristite kada ste prijavljeni na <ph name="USER_EMAIL" />.}few{Te kartice i njihove adrese za obračun će biti sačuvane. Moći ćete da ih koristite kada ste prijavljeni na <ph name="USER_EMAIL" />.}other{Te kartice i njihove adrese za obračun će biti sačuvane. Moći ćete da ih koristite kada ste prijavljeni na <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8025119109950072390">Napadači na ovom sajtu mogu da vas prevare da biste uradili nešto opasno, na primer, da instalirate softver ili otkrijete lične podatke (poput lozinki, brojeva telefona ili brojeva kreditnih kartica).</translation>
 <translation id="8026334261755873520">Obrišite podatke pregledanja</translation>

@@ -440,7 +440,6 @@
 <translation id="3630697955794050612">ki</translation>
 <translation id="3631369015426612114">Értesítések engedélyezése a következőktől:</translation>
 <translation id="3638400994746983214">Adatvédelmi képernyő be- és kikapcsolása. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171">Mentse a(z) <ph name="NAME" /> eszközt</translation>
 <translation id="3649505501900178324">Esedékes a frissítés</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> felügyelt felhasználó</translation>
 <translation id="3680908746918359504">Az összes jelölő törlése</translation>
@@ -531,7 +530,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4215497585250573029">VPN-beállítások</translation>
 <translation id="4217571870635786043">Diktálás</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, telepített alkalmazás, szüneteltetve</translation>
-<translation id="4223947355273782392">Mentse <ph name="NAME" /> eszközét a fiókjába (<ph name="EMAIL" />) a többi eszközével való gyorsabb párosítás érdekében</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Beállítások megnyitása</translation>
 <translation id="4250229828105606438">Képernyőkép</translation>
@@ -909,7 +907,6 @@ Frissen telepítve</translation>
 <translation id="6625718907317144388">A(z) <ph name="APP_1_TITLE" />, a(z) <ph name="APP_2_TITLE" /> és további alkalmazások értesítései rejtve vannak, mert be van kapcsolva a megtekintési védelem</translation>
 <translation id="6627638273713273709">Keresés+Shift+K</translation>
 <translation id="6629480180092995136">A(z) <ph name="APP_NAME" /> szeretné használni a mikrofont</translation>
-<translation id="6630773993843701741">Az eszköz manuális párosításához nyissa meg a Bluetooth-beállításokat</translation>
 <translation id="6637729079642709226">Idő módosítása</translation>
 <translation id="6641720045729354415">Az Élő feliratozás be- és kikapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490">A(z) <ph name="ORIGIN_NAME" /> szeretne meggyőződni a személyazonosságáról</translation>
@@ -1019,7 +1016,6 @@ Frissen telepítve</translation>
 <translation id="7348093485538360975">Képernyő-billentyűzet</translation>
 <translation id="735745346212279324">A VPN nincs csatlakoztatva</translation>
 <translation id="7360036564632145207">A perifériás adathozzáférési védelemre vonatkozó beállítás módosítása optimalizálhatja a teljesítményt.</translation>
-<translation id="7366890467478514168"><ph name="NAME" /> csatlakoztatása</translation>
 <translation id="7371404428569700291">Felvétel készítése az ablakról</translation>
 <translation id="7377169924702866686">A Caps Lock be van kapcsolva.</translation>
 <translation id="7377481913241237033">Összekapcsolás kód használatával</translation>
@@ -1130,7 +1126,6 @@ Frissen telepítve</translation>
 <translation id="7955885781510802139">Nagy kontrasztú mód</translation>
 <translation id="7968693143708939792">Mappa választása…</translation>
 <translation id="7977927628060636163">Mobilhálózatok keresése…</translation>
-<translation id="7980780401175799550">Új navigációs módszerek Chrome OS rendszeren</translation>
 <translation id="7982789257301363584">Hálózat</translation>
 <translation id="7984197416080286869">Túl sok próbálkozás ujjlenyomattal</translation>
 <translation id="7994370417837006925">Többfiókos bejelentkezés</translation>

@@ -595,6 +595,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2542106216580219892">Surfing</translation>
 <translation id="2544546346215446551">Administratoren har genstartet din enhed</translation>
 <translation id="2544644783021658368">Enkelt dokument</translation>
+<translation id="254524874071906077">Angiv Chrome som standardbrowser</translation>
 <translation id="2546283357679194313">Cookies og websitedata</translation>
 <translation id="2547466893236767989">Webdesign og -udvikling</translation>
 <translation id="254947805923345898">Værdien for politikken er ikke gyldig.</translation>
@@ -2535,6 +2536,7 @@ Yderligere oplysninger:
 <translation id="7998269595945679889">Knappen Åbn inkognitofane – tryk på Enter for at åbne en ny inkognitofane, så du kan browse privat</translation>
 <translation id="800218591365569300">Prøv at lukke andre faner eller programmer for at frigøre hukommelse.</translation>
 <translation id="8004582292198964060">Browser</translation>
+<translation id="8009225694047762179">Administrer adgangskoder</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Kortet og faktureringsadressen gemmes. Du kan bruge dem, når du er logget ind på <ph name="USER_EMAIL" />.}one{Kortet og faktureringsadressen gemmes. Du kan bruge dem, når du er logget ind på <ph name="USER_EMAIL" />.}other{Kortene og faktureringsadresserne gemmes. Du kan bruge dem, når du er logget ind på <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8025119109950072390">Hackere på dette website kan narre dig til at gøre noget farligt, såsom at installere software eller afsløre dine personlige oplysninger (f.eks. adgangskoder, telefonnumre eller kreditkort).</translation>
 <translation id="8026334261755873520">Ryd browserdata</translation>

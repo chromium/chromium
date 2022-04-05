@@ -167,6 +167,7 @@
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">স্ক্ৰীন ৰেকৰ্ডিং সম্পূৰ্ণ হ'ল</translation>
 <translation id="1957958912175573503">আপোনাৰ ভাষা ছেট কৰক</translation>
+<translation id="1961239773406905488">কেমেৰাৰ পূৰ্বদৰ্শন লুকুওৱা আছে</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">লক স্ক্ৰীণ</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (ইউএছবি)</translation>
@@ -184,6 +185,7 @@
 <translation id="2047639699071423250">মুখ্য ধাৰণাটো যোগ দিয়ক</translation>
 <translation id="2049240716062114887">ডেস্কৰ নাম <ph name="DESK_NAME" />লৈ সলনি কৰা হৈছে</translation>
 <translation id="2050339315714019657">প’ৰ্ট্ৰেইট</translation>
+<translation id="2064048859448024834">কেমেৰাৰ পূৰ্বদৰ্শন অন আছে</translation>
 <translation id="2066708475850724665">বিৱৰ্ধক বন্ধ কৰক</translation>
 <translation id="2067602449040652523">কীব’ৰ্ডৰ উজ্জ্বলতা</translation>
 <translation id="2078034614700056995">পূৰ্বৱৰ্তী ডেস্কখনলৈ সলনি কৰিবলৈ চাৰিটা আঙুলিৰে সোঁফালে ছোৱাইপ কৰক</translation>
@@ -440,7 +442,6 @@
 <translation id="3630697955794050612">অফ আছে</translation>
 <translation id="3631369015426612114">এইবোৰৰ জাননীক অনুমতি দিয়ে</translation>
 <translation id="3638400994746983214">গোপনীয়তাৰ স্ক্ৰীন ট’গল কৰক। <ph name="STATE_TEXT" />।</translation>
-<translation id="3640092422335864171"><ph name="NAME" /> ছেভ কৰক</translation>
 <translation id="3649505501900178324">আপডে'ট বাকী আছে</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />এ পৰিচালনা কৰা ব্যৱহাৰকাৰী</translation>
 <translation id="3680908746918359504">আটাইবোৰ মাৰ্কাৰ মচক</translation>
@@ -487,6 +488,7 @@
 <translation id="3922427723338465344">{0,plural, =1{১ মিনিটৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}one{# মিনিটৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}other{# মিনিটৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}}</translation>
 <translation id="3923494859158167397">কোনো ম'বাইলৰ নেটৱৰ্ক ছেট আপ কৰা হোৱা নাই</translation>
 <translation id="3932043219784172185">কোনো ডিভাইচ সংযোগ কৰি থোৱা নাই</translation>
+<translation id="3934456833412894880">অভিযোজিত চাৰ্জিং অন হৈ আছে। বেটাৰীৰ জীৱনকাল বৃদ্ধি কৰিবলৈ আপোনাৰ বেটাৰীৰ চাৰ্জ ৮০% হৈ থাকিব আৰু আপোনাৰ প্ৰয়োজন হ’লে সম্পূৰ্ণৰূপে চাৰ্জ কৰে।</translation>
 <translation id="3943857333388298514">পেষ্ট কৰক</translation>
 <translation id="394485226368336402">অডিঅ’ ছেটিংসমূহ</translation>
 <translation id="3945319193631853098">ছেট আপ সম্পূৰ্ণ কৰিবলৈ টিপক</translation>
@@ -530,7 +532,6 @@
 <translation id="4215497585250573029">ভিপিএনৰ ছেটিংসমূহ</translation>
 <translation id="4217571870635786043">শ্ৰুতলিপি</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ইনষ্টল কৰা এপ্‌, পজ কৰি থোৱা</translation>
-<translation id="4223947355273782392">আপোনাৰ অন্য ডিভাইচসমূহৰ সৈতে দ্ৰুতভাৱে পেয়াৰ কৰিবলৈ <ph name="NAME" /> <ph name="EMAIL" />ত ছেভ কৰক</translation>
 <translation id="4239069858505860023">জিপিআৰএছ</translation>
 <translation id="4242533952199664413">ছেটিংসমূহ খোলক</translation>
 <translation id="4250229828105606438">স্ক্রীণশ্বট</translation>
@@ -908,7 +909,6 @@
 <translation id="6625718907317144388">চোৱাৰ সুৰক্ষাটো অন হৈ থকাৰ বাবে <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> আৰু অন্য জাননীসমূহ লুকুওৱা হৈছে</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" />এ মাইক্ৰ’ফ’নটো ব্যৱহাৰ কৰিব বিচাৰে</translation>
-<translation id="6630773993843701741">ডিভাইচটো মেনুৱেলী পেয়াৰ কৰিবলৈ ব্লুটুথ ছেটিং খোলক</translation>
 <translation id="6637729079642709226">সময় সলনি কৰক</translation>
 <translation id="6641720045729354415">লাইভ কেপশ্বন ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" />এ এয়া আপুনি বুলি নিশ্চিত কৰিবলৈ বিচাৰিছে</translation>
@@ -1018,7 +1018,6 @@
 <translation id="7348093485538360975">অন-স্ক্ৰীণ কীব’ৰ্ড</translation>
 <translation id="735745346212279324">VPNৰ সৈতে সংযোগ বিচ্ছিন্ন কৰা হৈছে</translation>
 <translation id="7360036564632145207">পৰিধীয় আহিলাৰ ছেটিঙৰ বাবে আপোনাৰ ডেটা এক্সেছৰ সুৰক্ষা সলনি কৰাটোৱে কাৰ্যক্ষমতা অপ্টিমাইজ কৰিব পাৰে</translation>
-<translation id="7366890467478514168"><ph name="NAME" />ৰ সৈতে সংযোগ কৰক</translation>
 <translation id="7371404428569700291">ৱিণ্ড’ ৰেকৰ্ড কৰক</translation>
 <translation id="7377169924702866686">Caps Lock অন আছে।</translation>
 <translation id="7377481913241237033">এটা ক'ডৰ জৰিয়তে সংযোগ কৰক</translation>
@@ -1129,7 +1128,6 @@
 <translation id="7955885781510802139">ৰঙৰ উচ্চ প্ৰভেদযুক্ত ম’ড</translation>
 <translation id="7968693143708939792">ফ’ল্ডাৰ বাছনি কৰক...</translation>
 <translation id="7977927628060636163">ম'বাইল নেটৱৰ্ক বিচাৰি থকা হৈছে...</translation>
-<translation id="7980780401175799550">Chrome OS নেভিগে’ট কৰাৰ নতুন উপায়সমূহ ব্যৱহাৰ কৰি চাওক</translation>
 <translation id="7982789257301363584">নেটৱৰ্ক</translation>
 <translation id="7984197416080286869">ফিংগাৰপ্ৰিণ্ট ব্যৱহাৰ কৰি অতি বেছি সংখ্যক বাৰ আনলক কৰিবলৈ প্ৰয়াস কৰা হৈছে</translation>
 <translation id="7994370417837006925">একাধিক ছাইন ইন</translation>

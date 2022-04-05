@@ -167,6 +167,7 @@
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ ਪੂਰੀ ਹੋਈ</translation>
 <translation id="1957958912175573503">ਆਪਣੀ ਭਾਸ਼ਾ ਸੈੱਟ ਕਰੋ</translation>
+<translation id="1961239773406905488">ਕੈਮਰਾ ਪੂਰਵ-ਝਲਕ ਲੁਕੀ ਹੋਈ ਹੈ</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">ਲੌਕ ਸਕ੍ਰੀਨ</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -184,6 +185,7 @@
 <translation id="2047639699071423250">ਮੁੱਖ ਜੁਗਤ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="2049240716062114887">ਡੈਸਕ ਦਾ ਨਾਮ ਬਦਲ ਕੇ <ph name="DESK_NAME" /> ਕਰ ਦਿੱਤਾ ਗਿਆ</translation>
 <translation id="2050339315714019657">ਪੋਰਟਰੇਟ</translation>
+<translation id="2064048859448024834">ਕੈਮਰਾ ਪੂਰਵ-ਝਲਕ ਚਾਲੂ ਹੈ</translation>
 <translation id="2066708475850724665">ਵੱਡਦਰਸ਼ੀ ਬੰਦ ਕਰੋ</translation>
 <translation id="2067602449040652523">ਕੀ-ਬੋਰਡ ਚਮਕ</translation>
 <translation id="2078034614700056995">ਅਗਲੇ ਡੈਸਕ 'ਤੇ ਜਾਣ ਲਈ ਚਾਰ ਉਂਗਲਾਂ ਨਾਲ ਸੱਜੇ ਪਾਸੇ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
@@ -440,7 +442,6 @@
 <translation id="3630697955794050612">ਬੰਦ</translation>
 <translation id="3631369015426612114">ਇਹਨਾਂ ਤੋਂ ਸੂਚਨਾਵਾਂ ਦਿਖਾਉਣ ਦਿਓ</translation>
 <translation id="3638400994746983214">ਪਰਦੇਦਾਰੀ ਸਕ੍ਰੀਨ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" />।</translation>
-<translation id="3640092422335864171"><ph name="NAME" /> ਦੀ ਬੱਚਤ ਕਰੋ</translation>
 <translation id="3649505501900178324">ਅੱਪਡੇਟ ਕਰਨਾ ਬਾਕੀ ਹੈ</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> ਪ੍ਰਬੰਧਿਤ ਵਰਤੋਂਕਾਰ</translation>
 <translation id="3680908746918359504">ਸਾਰੇ ਮਾਰਕਰਾਂ ਨੂੰ ਕਲੀਅਰ ਕਰੋ</translation>
@@ -487,6 +488,7 @@
 <translation id="3922427723338465344">{0,plural, =1{ਡੀਵਾਈਸ ਨੂੰ 1 ਮਿੰਟ ਵਿੱਚ ਹੀ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਬਦਲੋ}one{ਡੀਵਾਈਸ ਨੂੰ # ਮਿੰਟ ਵਿੱਚ ਹੀ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਬਦਲੋ}other{ਡੀਵਾਈਸ ਨੂੰ # ਮਿੰਟਾਂ ਵਿੱਚ ਹੀ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਬਦਲੋ}}</translation>
 <translation id="3923494859158167397">ਕਿਸੇ ਵੀ ਮੋਬਾਈਲ ਨੈੱਟਵਰਕ ਦਾ ਸੈੱਟਅੱਪ ਨਹੀਂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="3932043219784172185">ਕੋਈ ਡੀਵਾਈਸ ਕਨੈਕਟ ਨਹੀਂ ਹੈ</translation>
+<translation id="3934456833412894880">ਅਡੈਪਟਿਵ ਚਾਰਜਿੰਗ ਚਾਲੂ ਹੈ। ਬੈਟਰੀ ਲਾਈਫ਼ ਵਧਾਉਣ ਲਈ ਬੈਟਰੀ 80% ਤੱਕ ਰਹੇਗੀ, ਅਤੇ ਲੋੜ ਪੈਣ 'ਤੇ ਇਸਨੂੰ ਪੂਰਾ ਚਾਰਜ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="3943857333388298514">ਪੇਸਟ ਕਰੋ</translation>
 <translation id="394485226368336402">ਆਡੀਓ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="3945319193631853098">ਸੈੱਟਅੱਪ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ</translation>
@@ -530,7 +532,6 @@
 <translation id="4215497585250573029">VPN ਸੈਟਿੰਗਾਂ</translation>
 <translation id="4217571870635786043">ਬੋਲ ਅਨੁਸਾਰ ਲਿਖਤ</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ਸਥਾਪਤ ਕੀਤੀ ਗਈ ਐਪ, ਰੋਕੀ ਗਈ</translation>
-<translation id="4223947355273782392">ਤੁਹਾਡੇ ਦੂਜੇ ਡੀਵਾਈਸਾਂ ਨਾਲ ਤੇਜ਼ ਜੋੜਾਬੰਦੀ ਲਈ <ph name="NAME" /> ਨੂੰ <ph name="EMAIL" /> 'ਤੇ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="4250229828105606438">ਸਕ੍ਰੀਨਸ਼ਾਟ</translation>
@@ -909,7 +910,6 @@
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> ਅਤੇ ਹੋਰ ਸੂਚਨਾਵਾਂ ਲੁਕੀਆਂ ਹੋਈਆਂ ਹਨ ਕਿਉਂਕਿ ਦੇਖਣ ਸੰਬੰਧੀ ਸੁਰੱਖਿਆ ਚਾਲੂ ਹੈ</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ</translation>
-<translation id="6630773993843701741">ਡੀਵਾਈਸ ਨੂੰ ਹੱਥੀਂ ਜੋੜਾਬੱਧ ਕਰਨ ਲਈ ਬਲੂਟੁੱਥ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="6637729079642709226">ਸਮਾਂ ਬਦਲੋ</translation>
 <translation id="6641720045729354415">ਲਾਈਵ ਸੁਰਖੀਆਂ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ਤੁਹਾਡੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ</translation>
@@ -1019,7 +1019,6 @@
 <translation id="7348093485538360975">ਔਨ-ਸਕ੍ਰੀਨ ਕੀ-ਬੋਰਡ</translation>
 <translation id="735745346212279324">VPN ਡਿਸਕਨੈਕਟ ਹੋ ਗਿਆ</translation>
 <translation id="7360036564632145207">ਪੈਰੀਫੈਰਲ ਸੈਟਿੰਗਾਂ ਲਈ ਆਪਣੀ ਡਾਟਾ ਪਹੁੰਚ ਸੁਰੱਖਿਆ ਨੂੰ ਬਦਲਣ ਨਾਲ ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਸੁਯੋਗ ਬਣਾਇਆ ਜਾ ਸਕਦਾ ਹੈ</translation>
-<translation id="7366890467478514168"><ph name="NAME" /> ਨਾਲ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="7371404428569700291">ਰਿਕਾਰਡ ਵਿੰਡੋ</translation>
 <translation id="7377169924702866686">Caps Lock ਚਾਲੂ ਹੈ।</translation>
 <translation id="7377481913241237033">ਕੋਡ ਨਾਲ ਕਨੈਕਟ ਕਰੋ</translation>
@@ -1130,7 +1129,6 @@
 <translation id="7955885781510802139">ਉੱਚ-ਵਖਰੇਵਾਂ ਮੋਡ</translation>
 <translation id="7968693143708939792">ਫੋਲਡਰ ਚੁਣੋ...</translation>
 <translation id="7977927628060636163">ਮੋਬਾਈਲ ਨੈੱਟਵਰਕਾਂ ਦੀ ਖੋਜ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
-<translation id="7980780401175799550">Chrome OS 'ਤੇ ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ ਨਵੇਂ ਤਰੀਕੇ ਵਰਤ ਕੇ ਦੇਖੋ</translation>
 <translation id="7982789257301363584">ਨੈੱਟਵਰਕ</translation>
 <translation id="7984197416080286869">ਫਿੰਗਰਪ੍ਰਿੰਟ ਸੰਬੰਧੀ ਬਹੁਤ ਜ਼ਿਆਦਾ ਕੋਸ਼ਿਸ਼ਾਂ</translation>
 <translation id="7994370417837006925">ਬਹੁ-ਗਿਣਤੀ ਸਾਈਨ-ਇਨ</translation>

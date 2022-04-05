@@ -440,7 +440,6 @@
 <translation id="3630697955794050612">अफ छ</translation>
 <translation id="3631369015426612114">निम्न स्रोतहरूबाट सूचनाहरूलाई अनुमति दिनुहोस्</translation>
 <translation id="3638400994746983214">गोपनीयताको स्क्रिन टगल गर्नुहोस्। <ph name="STATE_TEXT" />।</translation>
-<translation id="3640092422335864171"><ph name="NAME" /> सेभ गर्नुहोस्</translation>
 <translation id="3649505501900178324">अद्यावधिक हुन बाँकी</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> व्यवस्थापन गरिएका प्रयोगकर्ता</translation>
 <translation id="3680908746918359504">सबै मार्करहरू हटाउनुहोस्</translation>
@@ -530,7 +529,6 @@
 <translation id="4215497585250573029">VPN सेटिङहरू</translation>
 <translation id="4217571870635786043">श्रुतिलेखन</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, इन्स्टल गरिएको एप, अस्थायी रूपमा रोकिएको</translation>
-<translation id="4223947355273782392">अन्य डिभाइससँग अझ चाँडो कनेक्ट गर्न सकियोस् भन्ने प्रयोजनका लागि <ph name="EMAIL" /> मा <ph name="NAME" /> सेभ गर्नुहोस्</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">सेटिङहरू खोल्नुहोस्</translation>
 <translation id="4250229828105606438">स्क्रिसट</translation>
@@ -908,7 +906,6 @@
 <translation id="6625718907317144388">सुरक्षित रूपमा हेर्ने सुविधा अन गरिएको हुनाले <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> र अन्य एपसम्बन्धी सूचनाहरू लुकाइएका छन्</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> ले माइक्रोफोन प्रयोग गर्ने अनुमति माग्दै छ</translation>
-<translation id="6630773993843701741">डिभाइस म्यानुअल रूपमा कनेक्ट गर्न ब्लुटुथका सेटिङ खोल्नुहोस्</translation>
 <translation id="6637729079642709226">समय परिवर्तन गर्नुहोस्</translation>
 <translation id="6641720045729354415">लाइभ क्याप्सन टगल गरी अन वा अफ गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> तपाईंको पहिचान पुष्टि गर्न चाहन्छ</translation>
@@ -1018,7 +1015,6 @@
 <translation id="7348093485538360975">अन्-स्क्रिन कुञ्जीपाटी</translation>
 <translation id="735745346212279324">VPN को जडान विच्छेद भयो</translation>
 <translation id="7360036564632145207">तपाईंले 'सहायक यन्त्रलाई डेटा प्रयोग गर्न रोक लगाउने सुविधा' का सेटिङ बदल्नुभयो भने ती यन्त्रहरूले अझ राम्रोसँग काम गर्न सक्छन्</translation>
-<translation id="7366890467478514168"><ph name="NAME" /> कनेक्ट गर्नुहोस्</translation>
 <translation id="7371404428569700291">विन्डोको भिडियो रेकर्ड गर्नुहोस्</translation>
 <translation id="7377169924702866686">क्याप्स लक सक्रिय छ।</translation>
 <translation id="7377481913241237033">कोड प्रयोग गरी कनेक्ट गर्नुहोस्</translation>
@@ -1129,7 +1125,6 @@
 <translation id="7955885781510802139">उच्च कन्ट्रास्ट मोड</translation>
 <translation id="7968693143708939792">फोल्डर चयन गर्नुहोस्...</translation>
 <translation id="7977927628060636163">मोबाइल नेटवर्कहरू खोज्दै...</translation>
-<translation id="7980780401175799550">Chrome OS नेभिगेसन गर्ने नयाँ तरिकाहरू प्रयोग गरी हेर्नुहोस्</translation>
 <translation id="7982789257301363584">सञ्जाल</translation>
 <translation id="7984197416080286869">फिंगरप्रिन्टमार्फत अनलक गर्ने अत्यधिक प्रयासहरू गरिए</translation>
 <translation id="7994370417837006925">बहु साइन-इन</translation>

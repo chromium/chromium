@@ -128,7 +128,7 @@
 <translation id="2307344026739914387">Aktuelles Schlüsselpaar verwenden</translation>
 <translation id="2323506179655536734">ÜBERSPRUNGEN</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
-<translation id="2338501278241028356">Aktivieren Sie Bluetooth, damit Geräte in der Nähe gefunden werden</translation>
+<translation id="2338501278241028356">Aktiviere Bluetooth, damit Geräte in der Nähe gefunden werden</translation>
 <translation id="2346474577291266260">Sehr gut (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2363636958541445404">Aktiviere die Funktion, um die Bildschirmschoner-Optionen auszuwählen</translation>
 <translation id="2364498172489649528">Bestanden</translation>
@@ -205,7 +205,7 @@
 <translation id="345898999683440380">Seite <ph name="PAGE_NUM" /> wird gescannt. <ph name="PERCENTAGE_VALUE" /> % sind abgeschlossen.</translation>
 <translation id="3459509316159669723">Drucken</translation>
 <translation id="346539236881580388">Neu aufnehmen</translation>
-<translation id="3484914941826596830">Während die Firmware aktualisiert wird, darf dieses externe Gerät nicht getrennt oder der Computer heruntergefahren werden. Sie können dieses Fenster minimieren. Die Aktualisierung dauert einige Minuten und Ihr externes Gerät funktioniert während dieser Zeit eventuell nicht.</translation>
+<translation id="3484914941826596830">Während die Firmware aktualisiert wird, darf dieses externe Gerät nicht getrennt oder der Computer heruntergefahren werden. Du kannst dieses Fenster minimieren. Die Aktualisierung dauert einige Minuten und dein externes Gerät funktioniert während dieser Zeit eventuell nicht.</translation>
 <translation id="3486220673238053218">Definition</translation>
 <translation id="3488065109653206955">Teilweise aktiviert</translation>
 <translation id="3527036260304016759">Fehlgeschlagen – Unbekannter Fehler</translation>
@@ -227,6 +227,7 @@
 <translation id="3748026146096797577">Nicht verbunden</translation>
 <translation id="3749289110408117711">Dateiname</translation>
 <translation id="3771294271822695279">Videodateien</translation>
+<translation id="3784455785234192852">Sperre</translation>
 <translation id="38114475217616659">Gesamten Verlauf löschen</translation>
 <translation id="3820172043799983114">Ungültige PIN.</translation>
 <translation id="3838338534323494292">Neues Passwort</translation>
@@ -235,7 +236,7 @@
 <translation id="3865414814144988605">Auflösung</translation>
 <translation id="387301095347517405">Wie oft der Akku vollständig aufgeladen wurde</translation>
 <translation id="3923184630988645767">Datennutzung</translation>
-<translation id="3924044641767672375">Eine Verbindung zum WLAN wird empfohlen, um den Reparaturvorgang zu vereinfachen. Ihr Netzwerk wird gespeichert.</translation>
+<translation id="3924044641767672375">Eine Verbindung zum WLAN wird empfohlen, um den Reparaturvorgang zu vereinfachen. Dein Netzwerk wird gespeichert.</translation>
 <translation id="3932043219784172185">Kein Gerät verbunden</translation>
 <translation id="3941014780699102620">Host konnte nicht aufgelöst werden</translation>
 <translation id="3942420633017001071">Diagnose</translation>
@@ -445,17 +446,17 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="604124094241169006">Automatisch</translation>
 <translation id="6048107060512778456">Fehlgeschlagen – Papierstau</translation>
 <translation id="6050189528197190982">Graustufen</translation>
-<translation id="6058625436358447366">Geben Sie zum Schluss Ihr altes und Ihr neues Passwort ein</translation>
+<translation id="6058625436358447366">Gib zum Schluss dein altes und dein neues Passwort ein</translation>
 <translation id="6061772781719867950">Fehlgeschlagene HTTPS-Anfragen</translation>
 <translation id="6075872808778243331">(Android) HTTP-Latenz</translation>
 <translation id="6104112872696127344">Scannen wurde abgebrochen</translation>
-<translation id="6106186594183574873">Geben Sie zum Schluss Ihr altes Passwort ein</translation>
+<translation id="6106186594183574873">Gib zum Schluss dein altes Passwort ein</translation>
 <translation id="6108689792487843350">Gateway nicht erreichbar</translation>
 <translation id="6113701710518389813">Aufwärtspfeil</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> weitere Alben</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6137767437444130246">Nutzerzertifikat</translation>
-<translation id="6146993107019042706">Geben Sie zum Schluss Ihr neues Passwort ein</translation>
+<translation id="6146993107019042706">Gib zum Schluss dein neues Passwort ein</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Weitere Informationen</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -519,7 +520,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="680983167891198932">Schlüssel</translation>
 <translation id="6816797338148849397">Informationen in Bezug auf deine Auswahl sind verfügbar. Verwende für Zugriff den Aufwärtspfeil.</translation>
 <translation id="6853312040151791195">Entladestrom</translation>
-<translation id="6889786074662672253">Während des Neustarts darf dieses externe Gerät nicht getrennt oder der Computer heruntergefahren werden. Sie können das Fenster aber minimieren. Der Vorgang kann einige Minuten dauern. Unter Umständen funktioniert Ihr externes Gerät während dieser Zeit nicht.</translation>
+<translation id="6889786074662672253">Während des Neustarts darf dieses externe Gerät nicht getrennt oder der Computer heruntergefahren werden. Du kannst das Fenster aber minimieren. Der Vorgang kann einige Minuten dauern. Unter Umständen funktioniert dein externes Gerät während dieser Zeit nicht.</translation>
 <translation id="6905724422583748843">Zurück zu <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Die Abdeckung des Scanners ist offen. Schließen Sie sie und versuchen Sie es noch einmal.</translation>
 <translation id="6911383237894364323">Verbindung zu Medienservern kann nicht hergestellt werden</translation>
@@ -591,7 +592,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Anzahl der Ladezyklen</translation>
 <translation id="7747039790905080783">Vorinstallierter Schlüssel</translation>
-<translation id="7762130827864645708">Sie haben Ihr Passwort geändert. Bitte verwenden Sie ab jetzt das neue Passwort.</translation>
+<translation id="7762130827864645708">Du hast dein Passwort geändert. Bitte verwende ab jetzt das neue Passwort.</translation>
 <translation id="7763470514545477072">Domain-Suffix stimmt überein</translation>
 <translation id="7769672763586021400">Modell-ID</translation>
 <translation id="7784116172884276937">Es sind keine DNS-Server eingerichtet</translation>
@@ -638,7 +639,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8302368968391049045">HTTPS-Firewall</translation>
 <translation id="8318753676953949627">Keine Bilder vorhanden</translation>
 <translation id="8347227221149377169">Druckaufträge</translation>
-<translation id="8352772353338965963">Fügen Sie ein Konto für die Mehrfachanmeldung hinzu. Sie können auf alle angemeldeten Konten zugreifen, ohne ein Passwort eingeben zu müssen. Verwenden Sie diese Funktion daher nur mit vertrauenswürdigen Konten.</translation>
+<translation id="8352772353338965963">Füge ein Konto für die Mehrfachanmeldung hinzu. Du kannst auf alle angemeldeten Konten zugreifen, ohne ein Passwort eingeben zu müssen. Verwende diese Funktion daher nur mit vertrauenswürdigen Konten.</translation>
 <translation id="8364946094152050673">Kein Nameserver</translation>
 <translation id="8372477600026034341">Zusätzliche Hosts</translation>
 <translation id="8395584934117017006">Dieses Gerät (<ph name="DEVICE_TYPE" />) wird von einem Unternehmen verwaltet</translation>

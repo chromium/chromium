@@ -82,6 +82,7 @@
 <translation id="1384704387250346179">使用「Google 智能鏡頭」翻譯圖片 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">曾於 <ph name="LAST_UPDATED" /> 天前在線</translation>
 <translation id="1397811292916898096">使用 <ph name="PRODUCT_NAME" /> 搜尋內容</translation>
+<translation id="139993653570221430">您可於 Chrome 設定中隨時改變主意。系統會同時執行試用功能和目前放送廣告的方式，因此您不會立即看到變化。</translation>
 <translation id="1406000523432664303">「不追蹤」</translation>
 <translation id="1407069428457324124">深色主題背景</translation>
 <translation id="1407135791313364759">全部開啟</translation>
@@ -94,6 +95,7 @@
 <translation id="1450753235335490080">無法分享<ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">選取 Chrome 的語言</translation>
 <translation id="147113415845704694">嘗試說「今日天氣點呀？」</translation>
+<translation id="1474893630593443211">更全面控制系統顯示的廣告</translation>
 <translation id="1477626028522505441">伺服器發生問題，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="148482509007564431">書籤儲存流程</translation>
 <translation id="1488775391433859242">您可在正在顯示此 QR 碼的電腦上使用此手機來登入。</translation>
@@ -399,6 +401,7 @@
 <translation id="3166827708714933426">分頁和視窗快速鍵</translation>
 <translation id="316694332262407393">Chrome 已在此執行中。</translation>
 <translation id="3169472444629675720">探索</translation>
+<translation id="3169523567916669830">在試用期間，您可以查看及移除網站用來向您顯示廣告的感興趣主題。Chrome 會根據您最近的瀏覽記錄，推測您感興趣的主題。</translation>
 <translation id="3187472288455401631">廣告評估</translation>
 <translation id="3207960819495026254">已加入書籤</translation>
 <translation id="3208584281581115441">立即檢查</translation>
@@ -809,7 +812,6 @@
 <translation id="5578795271662203820">透過 <ph name="SEARCH_ENGINE" /> 搜尋這張圖片</translation>
 <translation id="5581519193887989363">您隨時可在<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />中選擇要同步的資料。</translation>
 <translation id="5590372121997663538">記住此電腦</translation>
-<translation id="559871659088672663">此功能目前正在開發中</translation>
 <translation id="5599455543593328020">無痕模式</translation>
 <translation id="5599941490345670218">「Google 助理」可助您完成各網站的操作</translation>
 <translation id="5620163320393916465">沒有已儲存的密碼</translation>
@@ -1043,7 +1045,6 @@
 <translation id="6751521182688001123">快速開啟新分頁。如要編輯此捷徑，請按住捷徑按鈕。</translation>
 <translation id="6756507620369789050">提供意見</translation>
 <translation id="6767294960381293877">要共用分頁嘅裝置清單宜家顯示喺畫面下半部。</translation>
-<translation id="6770042910635026163">您所瀏覽的網站會定義您的興趣</translation>
 <translation id="6770602306803890733">為您和網絡上的所有使用者提高安全性</translation>
 <translation id="6783942555455976443">將此頁面儲存至稍後閱讀，並接收提醒</translation>
 <translation id="6795633245022906657">快速開啟新分頁。如要編輯此捷徑，請前往「設定」。</translation>
@@ -1113,12 +1114,14 @@
 <translation id="7173114856073700355">開啟設定</translation>
 <translation id="7177466738963138057">您稍後可在「設定」中作出變更</translation>
 <translation id="7177873915659574692">無法建立 QR 碼。網址超過 <ph name="CHARACTER_LIMIT" /> 個字元。</translation>
+<translation id="7177959540995930968">您可在 Chrome 設定中進一步瞭解這些功能。</translation>
 <translation id="718226107353899806">您可新增最多 <ph name="MAX_NUM_REACTIONS" /> 個反應</translation>
 <translation id="7187993566681480880">確保您登入使用 Chrome 的安全，並可提升您在其他 Google 應用程式的安全性。</translation>
 <translation id="718926126787620637">書籤資料夾清單宜家顯示喺成個畫面</translation>
 <translation id="7191430249889272776">已在背景開啟分頁。</translation>
 <translation id="7196215469483532480">私隱權指南說明宜家顯示喺成個畫面</translation>
 <translation id="7208109991155904980">已經移動咗反應</translation>
+<translation id="7222235798733126207">限制網站共用</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 項下載操作尚待處理}other{# 項下載操作尚待處理}}</translation>
 <translation id="7237045078887540010">使用 Chrome 即表示您同意《<ph name="BEGIN_TOS_LINK" />Google 服務條款<ph name="END_TOS_LINK" />》以及 <ph name="BEGIN_ATOS_LINK" />Google Chrome 和 Chrome OS 的《附加服務條款》<ph name="END_ATOS_LINK" />。須同時受《<ph name="BEGIN_PRIVACY_LINK" />私隱權政策<ph name="END_PRIVACY_LINK" />》約束。</translation>
 <translation id="7242755609445462077">風格化突顯內容 (日期：<ph name="CURRENT_DATE" />)</translation>
@@ -1338,6 +1341,7 @@
 <translation id="8410695015584479363">追蹤價格</translation>
 <translation id="8413126021676339697">顯示完整記錄</translation>
 <translation id="8414396119627470038">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 登入 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
+<translation id="8416347857511542594">前往 Chrome 進一步瞭解廣告個人化</translation>
 <translation id="8419244640277402268">加入</translation>
 <translation id="8424781820952413435">已傳送網頁。如要查看，請在<ph name="DEVICE_TYPE" />上開啟 Chrome</translation>
 <translation id="8427875596167638501">預覽分頁喺畫面下半部分顯示</translation>

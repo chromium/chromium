@@ -595,6 +595,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2542106216580219892">Brimbretti</translation>
 <translation id="2544546346215446551">Stjórnandinn endurræsti tækið þitt</translation>
 <translation id="2544644783021658368">Stakt skjal</translation>
+<translation id="254524874071906077">Nota Chrome sem sjálfgefinn vafra</translation>
 <translation id="2546283357679194313">Fótspor og gögn vefsvæða</translation>
 <translation id="2547466893236767989">Vefhönnun og -forritun</translation>
 <translation id="254947805923345898">Gildi reglunnar er ógilt.</translation>
@@ -2535,6 +2536,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7998269595945679889">Hnappurinn „Opna huliðsglugga“, ýttu á Enter til að opna nýjan huliðsglugga og fara huldu höfði</translation>
 <translation id="800218591365569300">Prófaðu að loka öðrum forritum til að losa um minni.</translation>
 <translation id="8004582292198964060">Vafri</translation>
+<translation id="8009225694047762179">Stjórna aðgangsorðum</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Þetta kort og heimilisfang greiðanda verða vistuð. Þú getur notað kortið þegar þú hefur skráð þig inn á <ph name="USER_EMAIL" />.}one{Þessi kort og heimilisföng greiðanda verða vistuð. Þú getur notað kortin þegar þú hefur skráð þig inn á <ph name="USER_EMAIL" />.}other{Þessi kort og heimilisföng greiðanda verða vistuð. Þú getur notað kortin þegar þú hefur skráð þig inn á <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8025119109950072390">Þrjótar á þessu vefsvæði gætu reynt að gabba þig til að gera eitthvað varasamt eins og að setja upp hugbúnað eða gefa upp persónuupplýsingar (til dæmis aðgangsorð, símanúmer eða kreditkortanúmer).</translation>
 <translation id="8026334261755873520">Hreinsa vafragögn</translation>

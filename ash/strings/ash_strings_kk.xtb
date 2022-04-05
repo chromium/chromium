@@ -440,7 +440,6 @@
 <translation id="3630697955794050612">өшірулі</translation>
 <translation id="3631369015426612114">Келесі көздерден алынатын хабарландыруларға рұқсат беру</translation>
 <translation id="3638400994746983214">Құпиялылық экранын қосу немесе өшіру. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171"><ph name="NAME" /> құрылғысын сақтау</translation>
 <translation id="3649505501900178324">Жаңарту мерзімі өтіп кетті</translation>
 <translation id="366222428570480733">Басқарылатын пайдаланушы: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3680908746918359504">Барлық маркерді өшіру</translation>
@@ -487,6 +486,7 @@
 <translation id="3922427723338465344">{0,plural, =1{Құрылғыны 1 минутта алдыңғы нұсқаға қайтару қажет}other{Құрылғыны # минутта алдыңғы нұсқаға қайтару қажет}}</translation>
 <translation id="3923494859158167397">Ешқандай мобильдік желі реттелмеген.</translation>
 <translation id="3932043219784172185">Жалғанған құрылғы жоқ.</translation>
+<translation id="3934456833412894880">Бейімдеп зарядтау функциясы қосулы. Батарея өз жұмысын ұзарту үшін заряд деңгейін 80% күйінде ұстап тұрады, ал керек кезде толық зарядталады.</translation>
 <translation id="3943857333388298514">Қою</translation>
 <translation id="394485226368336402">Аудио параметрлері</translation>
 <translation id="3945319193631853098">Реттеуді аяқтау үшін түртіңіз.</translation>
@@ -530,7 +530,6 @@
 <translation id="4215497585250573029">VPN параметрлері</translation>
 <translation id="4217571870635786043">Мәтінді дауыспен енгізу</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, қолданба орнатылған, кідіртілген</translation>
-<translation id="4223947355273782392">Басқа құрылғыларыңызбен жылдамырақ жұптау үшін <ph name="NAME" /> құрылғысын <ph name="EMAIL" /> аккаунтына сақтаңыз.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Параметрлерді ашу</translation>
 <translation id="4250229828105606438">Скриншот</translation>
@@ -794,6 +793,7 @@
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Сары</translation>
 <translation id="5909862606227538307">Жұмыс үстелі белсенді емес.</translation>
+<translation id="5911231045062997865">Lacros терезелеріне қазір қолдау көрсетілмейді. Басқа қолданбалар сақталады.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Қосулы</translation>
 <translation id="5920710855273935292">Микрофон дыбысы өшірулі.</translation>
@@ -907,7 +907,6 @@
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> және тағы басқа хабарландырулар жасырылған, себебі қауіпсіз қарау режимі қосулы тұр.</translation>
 <translation id="6627638273713273709">Іздеу+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> қолданбасы микрофонды пайдалануға рұқсат сұрайды</translation>
-<translation id="6630773993843701741">Құрылғыны қолмен жұптау үшін Bluetooth параметрлерін ашыңыз.</translation>
 <translation id="6637729079642709226">Уақытты өзгерту</translation>
 <translation id="6641720045729354415">Live Caption-ді қосу/өшіру. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> жеке басыңызды растағысы келеді.</translation>
@@ -1017,7 +1016,6 @@
 <translation id="7348093485538360975">Экрандық пернетақта</translation>
 <translation id="735745346212279324">VPN ажыратылды</translation>
 <translation id="7360036564632145207">Перифериялық құрылғылар үшін деректердің пайдаланылуын қорғау параметрін өзгертіп, өнімділікті арттыра аласыз.</translation>
-<translation id="7366890467478514168"><ph name="NAME" /> құрылғысын қосу</translation>
 <translation id="7371404428569700291">Терезені жазу</translation>
 <translation id="7377169924702866686">Caps Lock қосулы.</translation>
 <translation id="7377481913241237033">Код арқылы қосылу</translation>
@@ -1128,7 +1126,6 @@
 <translation id="7955885781510802139">Жоғары контраст режимі</translation>
 <translation id="7968693143708939792">Қалта таңдау…</translation>
 <translation id="7977927628060636163">Мобильдік желілер ізделуде…</translation>
-<translation id="7980780401175799550">Chrome OS жүйесінде жылжудың жаңа тәсілдері</translation>
 <translation id="7982789257301363584">Желі</translation>
 <translation id="7984197416080286869">Саусақ ізі тым көп енгізілді</translation>
 <translation id="7994370417837006925">Бірнеше профильдердің кіруі</translation>

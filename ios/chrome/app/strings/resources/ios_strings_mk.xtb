@@ -168,6 +168,7 @@
 <translation id="2421044535038393232">Продолжи со изменување</translation>
 <translation id="2434405374328098816">Веќе зачувавте лозинка за „<ph name="USERNAME" />“ на <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Прикажи ја лозинката</translation>
+<translation id="2469960372084740698">Да се исклучи „Безбедно прелистување“?</translation>
 <translation id="2473876017985765807">Веќе зачувавте лозинка за <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Не е избрано</translation>
 <translation id="2497852260688568942">Администраторот ја оневозможил синхронизацијата</translation>
@@ -582,6 +583,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6144589619057374135">Отвори ${url} во „Инкогнито“</translation>
 <translation id="6149061208933997199">Користи лозинка</translation>
 <translation id="6159839020698489198">изборно</translation>
+<translation id="6173386249456979368">Побрза и проактивна заштита од опасни веб-сајтови, преземања и екстензии. Ве предупредува за упади во лозинките. Бара да се испраќаат податоци од прелистувањето до Google</translation>
 <translation id="6177442314419606057">Пребарувајте во Chrome</translation>
 <translation id="6184086493125982861">Прикажи картички</translation>
 <translation id="6187302354554850004">Последна синхронизација: <ph name="LAST_USED_TIME" /></translation>

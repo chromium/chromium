@@ -187,7 +187,7 @@
 <translation id="3188257591659621405">הקבצים שלי</translation>
 <translation id="3192947282887913208">קובצי אודיו</translation>
 <translation id="3199982728237701504">הכנסת מסמכים (שני צדדים)</translation>
-<translation id="3226405216343213872">מתבצע חיפוש אחר סורקים</translation>
+<translation id="3226405216343213872">מתבצע חיפוש של סורקים</translation>
 <translation id="3246869037381808805">משימות הדפסה בנות יותר מיום אחד יוסרו</translation>
 <translation id="3268178239013324452">נכשלה – דלת המדפסת פתוחה</translation>
 <translation id="3283504360622356314">{0,plural, =1{עריכת הקובץ}two{עריכת הקבצים}many{עריכת הקבצים}other{עריכת הקבצים}}</translation>
@@ -227,6 +227,7 @@
 <translation id="3748026146096797577">לא מחובר</translation>
 <translation id="3749289110408117711">שם קובץ</translation>
 <translation id="3771294271822695279">קובצי וידאו</translation>
+<translation id="3784455785234192852">נעילה</translation>
 <translation id="38114475217616659">ניקוי כל ההיסטוריה</translation>
 <translation id="3820172043799983114">‏PIN לא חוקי.</translation>
 <translation id="3838338534323494292">סיסמה חדשה</translation>

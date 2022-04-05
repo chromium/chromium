@@ -135,6 +135,12 @@
             Si no completas esta opción, se usarán los tres esquemas.</translation>
 <translation id="1153306961094113710">Permitir la depuración remota</translation>
 <translation id="115699958189272121">Informar los eventos de <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /></translation>
+<translation id="1157003104143964656">Esta configuración habilita o inhabilita la intercepción de acceso.
+
+      Si habilitas o no estableces esta política, se mostrará el diálogo de la intercepción de acceso cuando se agregue una Cuenta de Google en la Web y el usuario resulte beneficiado con la migración de esta cuenta a otro perfil (nuevo o existente).
+
+      Si se inhabilita, no se mostrará el diálogo de intercepción de acceso.
+      Si se inhabilita y <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> separa los perfiles de la cuenta administrada, se seguirá mostrando el diálogo.</translation>
 <translation id="1158844608156732189">Configuración de Kerberos (una línea por cada elemento del array), consulta https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.</translation>
 <translation id="1160479894929412407">Permitir el protocolo QUIC</translation>
 <translation id="1160939557934457296">Inhabilita continuar desde la página de advertencia de Navegación segura.</translation>
@@ -3145,31 +3151,6 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 <translation id="4463675333222095358">Habilitar la conversión de unidades de Respuestas rápidas</translation>
 <translation id="4464365009416584564">Inhabilitar <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="4467952432486360968">Bloquear cookies de terceros</translation>
-<translation id="4471718219410856003">Esta política es una forma de anular la lista de conjuntos que Chrome utiliza para las funciones de los conjuntos propios.
-
-      Cuando se brinda un diccionario vacío a esta política, Chrome utiliza la lista pública de los conjuntos propios.
-
-      Cuando esta política recibe un conjunto en la lista "reemplazos", cualquier conjunto en la lista pública que
-      coincida con ella se quitará de la lista de Chrome, y el conjunto provisto se agregará a la lista.
-
-      Cuando esta política recibe un conjunto en la lista "incorporaciones", cualquier conjunto en la lista de Chrome que
-      coincida con ella se actualizará para agregar el conjunto proporcionado a la lista mientras que se mantiene que
-      la lista de Chrome de conjuntos propios no este conectada.
-
-      La lista de conjuntos propios que utiliza Chrome debe permanecer inconexa. Por lo tanto, para aplicar esta política, se requiere
-      que ambas listas de políticas de los conjuntos propios no estén conectadas entre sí ni dentro de ellas mismas.
-
-      Adicionalmente, todos los conjuntos de ambas listas deben adherir a los elementos invariables de un conjunto propio.
-      Un conjunto propio consiste de un propietario y uno o más sitios miembro. Todos los sitios de un conjunto propio deben
-      ser un dominio registrable de HTTPS, sin importar si es un sitio miembro o propietario.
-      Además, cada sitio en un conjunto propio debe ser único, lo que quiere decir que un sitio no puede ser propietario y miembro, ni
-      estar enumerado más de una vez como miembro de un conjunto propio.
-      Para obtener más información sobre los conjuntos propios, ve a https://github.com/privacycg/first-party-sets.
-
-      Los comodines (*) no se admiten como valor de la política, ni en ningún conjunto propio en estas listas.
-
-      Todos los conjuntos que brinda esta política deben ser conjuntos propios válidos. De lo contrario, se
-      producirá un error.</translation>
 <translation id="4472740647327683596">Ancho de la página (en micrómetros).</translation>
 <translation id="4474167089968829729">Habilitar el guardado de contraseñas en el administrador de contraseñas</translation>
 <translation id="4476769083125004742">Si esta política se establece como <ph name="BLOCK_GEOLOCATION_SETTING" />, las apps de Android no podrán acceder a la información de la ubicación. Si estableces esta política en cualquier valor o no la estableces, se le pedirá al usuario que autorice la app de Android que quiera acceder a la información de ubicación.</translation>
@@ -5451,11 +5432,6 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
       Es posible que el teclado en pantalla adopte un diseño compacto según el método de entrada.
 
       Si estableces la política, los usuarios no podrán cambiarla.</translation>
-<translation id="7060497964524144376">Si habilitas la política, la Navegación segura confiará en los dominios que designes. No comprobará si incluyen recursos peligrosos, como software malicioso, no deseado o de suplantación de identidad (phishing). El servicio de protección de descargas de la Navegación segura no comprobará las descargas alojadas en estos dominios. Su servicio de protección de contraseñas no comprobará que no se reutilicen contraseñas.
-
-      Si no estableces la política, se aplicará la protección predeterminada de la Navegación segura en todos los recursos.
-
-      En <ph name="MS_WIN_NAME" />, esta funcionalidad solo estará disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, están inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> o se ejecutan en Windows 10 Pro. En <ph name="MAC_OS_NAME" />, esta funcionalidad solo está disponible en instancias administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
 <translation id="7063895219334505671">Permitir ventanas emergentes en estos sitios</translation>
 <translation id="7066292150801784098">Impedir que los usuarios remotos interactúen con las ventanas con permisos elevados en sesiones de asistencia remota</translation>
 <translation id="706669471845501145">Permitir que los sitios muestren notificaciones de escritorio.</translation>
@@ -5789,7 +5765,6 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
       Nota: Si la acción es la suspensión, <ph name="PRODUCT_OS_NAME" /> se podrá configurar por separado para que la pantalla se bloquee o no antes de la suspensión.</translation>
 <translation id="7477149584454865826">Función experimental booleana que indica si se debe usar IPP Everywhere para configurar la impresora.</translation>
 <translation id="7477231245051133709">Habilita la función de accesibilidad de audio mono</translation>
-<translation id="7477239290070847560">Destinos de los protocolos basados en la no configuración (mDNS y DNS-SD)</translation>
 <translation id="7477526482439041787">Configura una lista de reglas para impedir la filtración de datos de <ph name="PRODUCT_OS_NAME" />.
       Se pueden filtrar datos cuando se copia y pega información, se transfieren archivos, se imprime contenido, se comparten pantallas, se realizan capturas de pantalla, etcétera.
 
@@ -6992,6 +6967,15 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Las impresoras de extensiones, también conocidas como destinos del proveedor de impresión, incluyen los destinos que pertenecen a las extensiones de <ph name="PRODUCT_NAME" />.
 
       Las impresoras locales, también conocidas como destinos nativos de impresión, incluyen los destinos disponibles en la máquina local y las impresoras de redes compartidas.</translation>
+<translation id="875152232570912762">
+      Si estableces esta política como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> al nivel de la máquina, todas las cuentas administradas se considerarán principales.
+      Si la estableces como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> en una cuenta, esa cuenta siempre será principal, pero podrá tener cuentas secundarias en su perfil.
+
+      Si la estableces como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> al nivel de la máquina, todas las cuentas administradas se considerarán principales.
+      Si la estableces como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> en una cuenta, esa cuenta siempre será principal y no tendrá cuentas secundarias en su perfil.
+
+      Si la estableces como <ph name="POLICY_VALUE_NONE" /> o no la estableces, las cuentas administradas no tendrán restricciones. Así, una cuenta administrada podrá ser secundaria, en cuyo caso no recibirá las políticas que establezca el administrador en la cuenta.
+    </translation>
 <translation id="8753264624162178499">La opción Imprimir como imagen está disponible para el usuario a fin de permitir la rasterización de archivos PDF antes de enviar el trabajo de impresión a destino</translation>
 <translation id="8757552286070680084">Configuración de DTC wilco</translation>
 <translation id="8758831693895931466">Habilitar la inscripción obligatoria en la administración de la nube</translation>

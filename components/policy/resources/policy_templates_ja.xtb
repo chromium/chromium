@@ -1869,6 +1869,7 @@
 <translation id="3086995894968271156"><ph name="PRODUCT_NAME" /> で Cast Receiver を設定します。</translation>
 <translation id="3087346703976541109">クロスオリジン分離コンテキスト以外で SharedArrayBuffers を使用できるかどうかを指定する</translation>
 <translation id="3088557424854005813">認証</translation>
+<translation id="3090283903269516279"><ph name="PRODUCT_OS_NAME" /> でアダプティブ充電モデルを無効にする</translation>
 <translation id="3091832372132789233">主に外部電源に接続しているデバイスのバッテリーを充電する。</translation>
 <translation id="3092059499596000593">システムのデフォルト プリンタを印刷プレビューのデフォルトの選択肢とする</translation>
 <translation id="309416443108680956">セキュリティ トークン（スマートカードなど）で認証を行っているユーザーがセッション中にトークンを取り出した場合の処理を指定します。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: 何もしない。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: ユーザーが再度認証を行うまで画面をロックする。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: セッションを終了し、ユーザーをログアウトする。このポリシーを設定しない場合、デフォルトの処理は <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" /> になります。</translation>
@@ -2655,6 +2656,13 @@
       このポリシーを無効に設定するか未設定のままにした場合、<ph name="PLUGIN_VM_NAME" /> はデバイスでオンになりません。</translation>
 <translation id="3973371701361892765">シェルフを自動的に非表示にしない</translation>
 <translation id="3977304360459208438">TLS の 3DES 暗号スイートにデフォルト設定が使用されます</translation>
+<translation id="3978606026906763896">このポリシーを無効に設定した場合、<ph name="BLANK_PAGE_NAME" /> をターゲットとするポップアップを許可して、ポップアップの表示をリクエストしたページを JavaScript を介して表示できるようにします。
+
+      このポリシーを有効に設定するか未設定のままにした場合、<ph name="WINDOW_OPENER_PROPERTY" /> プロパティは <ph name="NULL_VALUE" /> に設定されます（アンカーで <ph name="REL_OPENER_ATTRIBUTE" /> が指定されている場合は除く）。
+
+      このポリシーは、<ph name="PRODUCT_NAME" /> バージョン 102 で削除されました。
+
+      詳しくは、https://chromestatus.com/feature/6140064063029248 をご覧ください。</translation>
 <translation id="3979738908158213640">SAML 認証中にデバイス認証のためのアクセスが許可される URL</translation>
 <translation id="3984028218719007910">ログアウト後に <ph name="PRODUCT_OS_NAME" /> がローカル アカウントのデータを保持するかどうかを指定します。true に設定した場合、<ph name="PRODUCT_OS_NAME" /> は永続的アカウントを保持していないため、ユーザー セッションのすべてのデータがログアウト後に破棄されます。このポリシーを false に設定した場合または未設定の場合、デバイスは（暗号化された）ローカル ユーザー データを保持できます。</translation>
 <translation id="398884292557092447">このポリシーを True に設定するか未設定のままにした場合、ユーザーは UI でクレジット カードの自動入力候補を管理できます。
@@ -3014,24 +3022,6 @@
 <translation id="4463675333222095358">クイック アンサーの単位変換を有効にする</translation>
 <translation id="4464365009416584564"><ph name="CHROME_SYNC_NAME" /> を無効にする</translation>
 <translation id="4467952432486360968">サードパーティの Cookie をブロックする</translation>
-<translation id="4471718219410856003">このポリシーでは、Chrome が First-Party Sets 機能で使用するセットのリストをオーバーライドできます。
-
-      このポリシーで空の辞書を指定した場合、Chrome は First-Party Sets の公開リストを使用します。
-
-      このポリシーで「replacements（置換）」リストのセットを指定した場合、そのセットと重複する公開リスト内のセットはすべて Chrome のリストから削除され、指定したセットが Chrome のリストに追加されます。
-
-      このポリシーで「additions（追加）」リストのセットを指定した場合、そのセットと重複する Chrome のリスト内のセットはすべて更新され、重複しない Chrome の First-Party Sets のリストは保持したまま、指定したセットがリストに追加されます。
-
-      Chrome で使用する First-Party Sets のリストは重複しないようにする必要があります。そのため、このポリシーを適用するには、First-Party Sets の両方のポリシーリストがそれぞれのリスト内で、および相互に重複しないようにする必要があります。
-
-      また、両方のリストのセットはすべて、First-Party Set の不変条件を遵守している必要があります。
-      First-Party Set は、オーナーサイトと 1 つ以上のメンバーサイトで構成される必要があります。First-Party Set のすべてのサイトは、オーナーサイトかメンバーサイトかにかかわらず、HTTPS 経由で配信される登録可能なドメインである必要があります。
-      また、First-Party Set の各サイトは一意である必要があります。つまり、サイトはオーナーとメンバーの両方であることはできず、First-Party Set のメンバーとして複数回指定することもできません。
-      First-Party Sets の詳細については、https://github.com/privacycg/first-party-sets　をご覧ください。
-
-      ワイルドカード（*）は、ポリシーの値として使用できず、これらのリストのどの First-Party Set でも使用できません。
-
-      このポリシーで指定するすべてのセットは、有効な First-Party Sets である必要があります。そうでない場合は、該当するエラーが出力されます。</translation>
 <translation id="4472740647327683596">ページの幅（マイクロメートル）</translation>
 <translation id="4474167089968829729">パスワード マネージャーへのパスワード保存を有効にする</translation>
 <translation id="4476769083125004742">このポリシーを <ph name="BLOCK_GEOLOCATION_SETTING" /> に設定した場合、Android アプリは位置情報にアクセスできません。このポリシーを他の値に設定するか未設定のままにした場合、Android アプリで位置情報へのアクセスが必要になったときには、ユーザーに同意が求められます。</translation>
@@ -4105,6 +4095,7 @@
 <translation id="5815990343032461023">以前の動作: キオスク Chrome アプリで、拡張機能システムによる拡張機能マニフェストの更新 URL を使用した更新と、キャッシュ マネージャーによるポリシーの更新 URL を使用した更新を行う</translation>
 <translation id="582857022372205358">短辺とじの両面印刷を有効にする</translation>
 <translation id="5830196507442186669">デバイスに対して <ph name="PRODUCT_OS_NAME" /> での <ph name="BOREALIS_NAME" /> の使用を許可する</translation>
+<translation id="5831286647961890695"><ph name="PRODUCT_OS_NAME" /> でアダプティブ充電モデルを有効にする</translation>
 <translation id="5832274826894536455">非推奨ポリシー</translation>
 <translation id="5835253272509953988">このポリシーを有効に設定した場合、ユーザーは <ph name="PRODUCT_NAME" /> で入力したユーザー名とパスワードが漏洩していないかどうかを確認できます。
 
@@ -5204,11 +5195,6 @@
       入力方法によっては、画面キーボードが簡易配列に変更される場合があります。
 
       このポリシーを設定した場合、ユーザーはこの設定を変更できません。</translation>
-<translation id="7060497964524144376">このポリシーを有効に設定した場合、セーフ ブラウジングでは指定ドメインが信頼され、危険なリソース（フィッシング、不正なソフトウェア、迷惑ソフトウェアなど）の確認は行われません。セーフ ブラウジングのダウンロード保護サービスでは指定ドメインでホストされているダウンロードの確認は行われず、パスワード保護サービスでもパスワード再利用の確認は行われません。
-
-      このポリシーを未設定のままにした場合、デフォルトのセーフ ブラウジング保護がすべてのリソースに適用されます。
-
-      <ph name="MS_WIN_NAME" /> では、この機能は <ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスでのみ使用できます。<ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンスまたは MCX を介してドメインに追加されたインスタンスでのみこの機能を使用できます。</translation>
 <translation id="7063895219334505671">これらのサイトのポップアップを許可する</translation>
 <translation id="7066292150801784098">リモート ユーザーがリモート アシスタンス セッションで権限昇格ウィンドウとやり取りできないようにする</translation>
 <translation id="706669471845501145">サイトに対してデスクトップ通知の表示を許可する</translation>
@@ -5534,7 +5520,6 @@
       注: 「停止」処理を指定した場合は、<ph name="PRODUCT_OS_NAME" /> で停止前に画面をロックするかどうかを別途設定できます。</translation>
 <translation id="7477149584454865826">プリンタの設定に IPP Everywhere を使用するかどうかを示すブール値のフラグです。</translation>
 <translation id="7477231245051133709">「モノラル音声」のユーザー補助機能を有効にする</translation>
-<translation id="7477239290070847560">Zeroconf（mDNS+DNS-SD）プロトコルの送信先</translation>
 <translation id="7477526482439041787"><ph name="PRODUCT_OS_NAME" /> でデータ漏洩を防止するルールのリストを設定します。
       データ漏洩は、データのコピーと貼り付け、ファイルの転送、印刷、画面の共有、スクリーンショットの撮影などで起こる可能性があります。
 
@@ -6036,6 +6021,7 @@
 <translation id="8029607810986641704">アイドルまたは停止の状態になったときにデバイスをロック</translation>
 <translation id="8032201191311129122">このポリシーによって、特定の URL 上のクリップボードにデータをコピーすることがブロックされます。<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> と <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> の URL リストは、クリップボードへの書き込みを許可するサイトを管理します。クリップボードへの書き込みは、URL が「enable」のパターンに一致し、「disable」のパターンとは一致しない場合にブロックされます。URL がいずれのパターンとも一致しない場合、コピーはブロックされません。提供元の一致パターンは、<ph name="URL_BLOCKLIST_POLICY_NAME" /> ポリシーと同様の形式で指定します。詳しくは、http://www.chromium.org/administrators/url-blocklist-filter-format をご覧ください。<ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> は、パターンのチェックをトリガーする最小データ量（単位: バイト）を示します。つまり、ブロック対象の URL からのクリップボードへの書き込みは、コピーするデータのサイズがこのフィールドで指定された値未満である場合に許可されます。このフィールドが未設定の場合のデフォルト値は 100 バイトです。
       </translation>
+<translation id="8035570672225663428">アダプティブ充電モデルを有効にして、バッテリー寿命を延ばすため充電プロセスを保留する</translation>
 <translation id="8044493735196713914">デバイス起動モードを報告する</translation>
 <translation id="80453040817068401"><ph name="LACROS_NAME" /> ブラウザを使用可能にする</translation>
 <translation id="804619600634661088">リモート デバッグの使用を許可する</translation>
@@ -6073,6 +6059,10 @@
 <translation id="8099880303030573137">アイドル状態になるまでの時間（バッテリー電源での実行時）</translation>
 <translation id="8101381354936029836">ポリシーの最小単位グループ:</translation>
 <translation id="8102913158860568230">デフォルトのメディアストリームの設定</translation>
+<translation id="8103563905615378194">アダプティブ充電モデルを有効にして、バッテリー寿命を延ばすため充電プロセスを保留するかどうかを指定します。
+
+      アダプティブ充電モデルでは、デバイスが AC 電源に接続されている場合、バッテリー寿命を延ばすため充電プロセスを保留すべきかどうかを評価します。アダプティブ充電モデルで充電プロセスを保留する場合、バッテリーを一定の残量（80% など）に維持し、ユーザーが必要とするときは 100% まで充電します。
+      このポリシーを True に設定するか未設定のままにした場合、アダプティブ充電モデルを有効にして、バッテリー寿命を延ばすため充電プロセスを保留します。このポリシーを False に設定した場合、アダプティブ充電モデルは充電プロセスに適用されません。</translation>
 <translation id="8104962233214241919">これらのサイトのクライアント証明書を自動的に選択する</translation>
 <translation id="8114382167597081590">YouTube で制限モードを強制適用しない</translation>
 <translation id="8117921351531866504">保存されているお支払い方法の確認をウェブサイトに許可するかどうかを設定します。

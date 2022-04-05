@@ -592,6 +592,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2542106216580219892">Sörf</translation>
 <translation id="2544546346215446551">Yöneticiniz cihazınızı yeniden başlattı</translation>
 <translation id="2544644783021658368">Tek doküman</translation>
+<translation id="254524874071906077">Chrome'u Varsayılan Tarayıcı olarak ayarla</translation>
 <translation id="2546283357679194313">Çerezler ve site verileri</translation>
 <translation id="2547466893236767989">Web tasarımı ve geliştirme</translation>
 <translation id="254947805923345898">Politika değeri geçerli değil.</translation>
@@ -2527,7 +2528,9 @@ Ek ayrıntılar:
 <translation id="7995512525968007366">Belirtilmedi</translation>
 <translation id="7998269595945679889">Gizli sekme aç düğmesi: Yeni gizli pencere açıp gizli olarak göz atmak için Enter tuşuna basın</translation>
 <translation id="800218591365569300">Bellekte yer açmak için diğer sekmeleri veya programları kapatmayı deneyin.</translation>
+<translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">Tarayıcı</translation>
+<translation id="8009225694047762179">Şifreleri Yönet</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Aşağıdaki kart ve ona ait fatura adresi kaydedilecektir. Kaydettiğiniz kartı <ph name="USER_EMAIL" /> hesabında oturumunuz açıkken kullanabilirsiniz.}other{Aşağıdaki kartlar ve onlara ait fatura adresleri kaydedilecektir. Kaydettiğiniz kartları <ph name="USER_EMAIL" /> hesabında oturumunuz açıkken kullanabilirsiniz.}}</translation>
 <translation id="8025119109950072390">Bu sitedeki saldırganlar sizi kandırarak yazılım yükleme veya kişisel bilgilerinizi (örneğin şifreler, telefon numaraları veya kredi kartları) ifşa etme gibi tehlikeli şeyler yaptırabilir.</translation>
 <translation id="8026334261755873520">Tarama verilerini temizle</translation>

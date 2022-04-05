@@ -440,7 +440,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3630697955794050612">desactivado</translation>
 <translation id="3631369015426612114">Permitir notificaciones de:</translation>
 <translation id="3638400994746983214">Activar/Desactivar la pantalla de privacidad. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171">Guardar <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Actualización pendiente</translation>
 <translation id="366222428570480733">Usuario administrado (<ph name="USER_EMAIL_ADDRESS" />)</translation>
 <translation id="3680908746918359504">Eliminar todos los marcadores</translation>
@@ -531,7 +530,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4215497585250573029">Ajustes de VPN</translation>
 <translation id="4217571870635786043">Dictado</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, aplicación instalada, pausada</translation>
-<translation id="4223947355273782392">Guarda <ph name="NAME" /> en <ph name="EMAIL" /> para emparejarlo más rápido con tus otros dispositivos</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Abrir Configuración</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
@@ -909,7 +907,6 @@ Nueva instalación</translation>
 <translation id="6625718907317144388">Se han ocultado notificaciones de <ph name="APP_1_TITLE" /> y <ph name="APP_2_TITLE" />, entre otras, porque la protección contra fisgones está activada</translation>
 <translation id="6627638273713273709">Tecla de búsqueda + Mayús + K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> quiere usar el micrófono</translation>
-<translation id="6630773993843701741">Abre los ajustes de Bluetooth para emparejar manualmente</translation>
 <translation id="6637729079642709226">Cambiar hora</translation>
 <translation id="6641720045729354415">Activar/Desactivar Subtítulos automáticos. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> quiere confirmar que eres tú</translation>
@@ -1019,7 +1016,6 @@ Nueva instalación</translation>
 <translation id="7348093485538360975">Teclado en pantalla</translation>
 <translation id="735745346212279324">VPN desconectada</translation>
 <translation id="7360036564632145207">Si cambias la protección de acceso a datos desde periféricos, puedes optimizar el rendimiento</translation>
-<translation id="7366890467478514168">Conectar <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Grabar ventana</translation>
 <translation id="7377169924702866686">El bloqueo de mayúsculas está activado.</translation>
 <translation id="7377481913241237033">Conectar con un código</translation>
@@ -1130,7 +1126,6 @@ Nueva instalación</translation>
 <translation id="7955885781510802139">Modo de contraste alto</translation>
 <translation id="7968693143708939792">Seleccionar carpeta...</translation>
 <translation id="7977927628060636163">Buscando redes móviles…</translation>
-<translation id="7980780401175799550">Prueba nuevas formas de desplazarte por Chrome OS</translation>
 <translation id="7982789257301363584">Red</translation>
 <translation id="7984197416080286869">Demasiados intentos con huella digital</translation>
 <translation id="7994370417837006925">Inicio de sesión múltiple</translation>

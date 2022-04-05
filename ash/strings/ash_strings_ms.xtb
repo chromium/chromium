@@ -440,7 +440,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3630697955794050612">dimatikan</translation>
 <translation id="3631369015426612114">Benarkan pemberitahuan daripada yang berikut</translation>
 <translation id="3638400994746983214">Togol skrin privasi. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171">Simpan <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Kemas kini terlewat</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Pengguna terurus</translation>
 <translation id="3680908746918359504">Kosongkan semua penanda</translation>
@@ -488,6 +487,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Tukar peranti kepada versi sebelumnya dalam masa 1 minit}other{Tukar peranti kepada versi sebelumnya dalam masa # minit}}</translation>
 <translation id="3923494859158167397">Tiada rangkaian mudah alih disediakan</translation>
 <translation id="3932043219784172185">Tiada peranti disambungkan</translation>
+<translation id="3934456833412894880">Pengecasan mudah suai dihidupkan. Bateri anda akan kekal pada 80% untuk memanjangkan hayat bateri dan mengecas sepenuhnya apabila anda memerlukannya.</translation>
 <translation id="3943857333388298514">Tampal</translation>
 <translation id="394485226368336402">Tetapan audio</translation>
 <translation id="3945319193631853098">Ketik untuk menyelesaikan persediaan</translation>
@@ -531,7 +531,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4215497585250573029">Tetapan VPN</translation>
 <translation id="4217571870635786043">Pengimlakan</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Apl yang Dipasang, Dijeda</translation>
-<translation id="4223947355273782392">Simpan <ph name="NAME" /> pada <ph name="EMAIL" /> untuk penggandingan yang lebih pantas dengan peranti anda yang lain</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Buka tetapan</translation>
 <translation id="4250229828105606438">Tangkapan skrin</translation>
@@ -909,7 +908,6 @@ Pemasangan baharu</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> dan pemberitahuan lain disembunyikan kerana perlindungan paparan dihidupkan</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> mahu menggunakan mikrofon</translation>
-<translation id="6630773993843701741">Buka tetapan Bluetooth untuk menggandingkan peranti secara manual</translation>
 <translation id="6637729079642709226">Tukar masa</translation>
 <translation id="6641720045729354415">Togol Sari Kata Langsung. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ingin mengesahkan orang itu ialah anda</translation>
@@ -1019,7 +1017,6 @@ Pemasangan baharu</translation>
 <translation id="7348093485538360975">Papan kekunci pada skrin</translation>
 <translation id="735745346212279324">VPN diputuskan sambungan</translation>
 <translation id="7360036564632145207">Tindakan menukar perlindungan akses data anda untuk tetapan peranti persisian dapat mengoptimumkan prestasi</translation>
-<translation id="7366890467478514168">Sambungkan <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Rakam tetingkap</translation>
 <translation id="7377169924702866686">Caps Lock dihidupkan.</translation>
 <translation id="7377481913241237033">Sambung menggunakan kod</translation>
@@ -1130,7 +1127,6 @@ Pemasangan baharu</translation>
 <translation id="7955885781510802139">Mod kontras tinggi</translation>
 <translation id="7968693143708939792">Pilih folder...</translation>
 <translation id="7977927628060636163">Mencari rangkaian mudah alih...</translation>
-<translation id="7980780401175799550">Cuba cara baharu untuk menavigasi OS Chrome</translation>
 <translation id="7982789257301363584">Rangkaian</translation>
 <translation id="7984197416080286869">Terlalu banyak percubaan cap jari</translation>
 <translation id="7994370417837006925">Log masuk berbilang</translation>

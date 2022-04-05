@@ -82,6 +82,7 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="1384704387250346179">Översätta bild med Lens <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Aktiv för <ph name="LAST_UPDATED" /> dagar sedan</translation>
 <translation id="1397811292916898096">Sök med <ph name="PRODUCT_NAME" /></translation>
+<translation id="139993653570221430">Du kan när som helst ändra detta i inställningarna för Chrome. Provversionerna körs vid sidan av det sätt som annonser visas på för närvarande, så det kommer inte att märkas någon skillnad med en gång.</translation>
 <translation id="1406000523432664303">Do Not Track</translation>
 <translation id="1407069428457324124">Mörkt tema</translation>
 <translation id="1407135791313364759">Öppna alla</translation>
@@ -94,6 +95,7 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="1450753235335490080">Det gick inte att dela <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Välj språk i Chrome</translation>
 <translation id="147113415845704694">Testa ”Vad är det för väder i dag?”</translation>
+<translation id="1474893630593443211">Mer kontroll över vilka annonser som visas</translation>
 <translation id="1477626028522505441">Det gick inte att ladda ned <ph name="FILE_NAME" /> på grund av serverfel.</translation>
 <translation id="148482509007564431">Flöde för att spara bokmärken</translation>
 <translation id="1488775391433859242">Du kan logga in med telefonens hjälp på den dator där den här QR-koden visas.</translation>
@@ -399,6 +401,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="3166827708714933426">Kortkommandon för flikar och fönster</translation>
 <translation id="316694332262407393">Chrome körs redan här.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3169523567916669830">Under provperioden kan du se och ta bort ämnen som du är intresserad av och som används på webbplatser för att visa annonser. Uppskattningen av vad du är intresserad av görs utifrån den senaste webbhistoriken i Chrome.</translation>
 <translation id="3187472288455401631">Annonsmätning</translation>
 <translation id="3207960819495026254">Bokmärkt</translation>
 <translation id="3208584281581115441">Kontrollera nu</translation>
@@ -810,7 +813,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5578795271662203820">Sök på <ph name="SEARCH_ENGINE" /> efter denna bild</translation>
 <translation id="5581519193887989363">Du kan alltid välja vad som ska synkroniseras i <ph name="BEGIN_LINK1" />inställningarna<ph name="END_LINK1" />.</translation>
 <translation id="5590372121997663538">Kom ihåg den här datorn</translation>
-<translation id="559871659088672663">Den här funktionen är under utveckling.</translation>
 <translation id="5599455543593328020">Inkognitoläge</translation>
 <translation id="5599941490345670218">Google-assistenten kan utföra åtgärder åt dig på webbplatser</translation>
 <translation id="5620163320393916465">Inga sparade lösenord</translation>
@@ -1044,7 +1046,6 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="6751521182688001123">Öppna en ny flik snabbt. Tryck länge om du vill ändra genvägen.</translation>
 <translation id="6756507620369789050">Dela feedback</translation>
 <translation id="6767294960381293877">Listan över enheter som fliken kan delas med öppnades och tar upp halva skärmen.</translation>
-<translation id="6770042910635026163">Webbplatser du besöker som definierar intressen</translation>
 <translation id="6770602306803890733">Förbättrar säkerheten för dig och alla andra på webben</translation>
 <translation id="6783942555455976443">Spara den här sidan till senare och bli påmind</translation>
 <translation id="6795633245022906657">Öppna en ny flik snabbt. Öppna inställningarna om du vill ändra genvägen.</translation>
@@ -1114,12 +1115,14 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="7173114856073700355">Inställningar</translation>
 <translation id="7177466738963138057">Du kan ändra detta senare i inställningarna</translation>
 <translation id="7177873915659574692">Det gick inte att skapa QR-koden. Webbadressen är längre än <ph name="CHARACTER_LIMIT" /> tecken.</translation>
+<translation id="7177959540995930968">Du kan läsa mer om de här funktionerna i inställningarna för Chrome.</translation>
 <translation id="718226107353899806">Du kan lägga till upp till <ph name="MAX_NUM_REACTIONS" /> reaktioner</translation>
 <translation id="7187993566681480880">Skyddar dig i Chrome och kan användas för förbättrad säkerhet i andra Google-appar där du är inloggad.</translation>
 <translation id="718926126787620637">Lista över bokmärkesmappar som har öppnats över hela skärmen</translation>
 <translation id="7191430249889272776">Fliken öppnades i bakgrunden.</translation>
 <translation id="7196215469483532480">Förklaringen till integritetsguiden har öppnats över hela skärmen</translation>
 <translation id="7208109991155904980">Reaktionen har flyttats</translation>
+<translation id="7222235798733126207">Begränsad delning mellan webbplatser</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 nedladdning väntar}other{# nedladdningar väntar}}</translation>
 <translation id="7237045078887540010">Genom att använda Chrome godkänner du <ph name="BEGIN_TOS_LINK" />Googles användarvillkor<ph name="END_TOS_LINK" /> och <ph name="BEGIN_ATOS_LINK" />de ytterligare användarvillkoren för Google Chrome och Chrome OS<ph name="END_ATOS_LINK" />. <ph name="BEGIN_PRIVACY_LINK" />Integritetspolicyn<ph name="END_PRIVACY_LINK" /> gäller också.</translation>
 <translation id="7242755609445462077">Stiliserad markering <ph name="CURRENT_DATE" /></translation>
@@ -1339,6 +1342,7 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="8410695015584479363">Bevaka priser</translation>
 <translation id="8413126021676339697">Visa fullständig historik</translation>
 <translation id="8414396119627470038">Logga in på <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8416347857511542594">Läs mer om annonsanpassning i Chrome</translation>
 <translation id="8419244640277402268">Inkludera</translation>
 <translation id="8424781820952413435">Sidan har skickats. Öppna Chrome på <ph name="DEVICE_TYPE" /> för att se den</translation>
 <translation id="8427875596167638501">Fliken Förhandsgranskning visas på halva skärmen</translation>

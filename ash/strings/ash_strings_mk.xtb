@@ -440,7 +440,6 @@
 <translation id="3630697955794050612">исклучено</translation>
 <translation id="3631369015426612114">Дозволи известувања од следниве</translation>
 <translation id="3638400994746983214">Вклучете/исклучете го екранот за приватност. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171">Зачувај го <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Измина рокот за ажурирање</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />, управуван корисник</translation>
 <translation id="3680908746918359504">Исчисти ги сите означувачи</translation>
@@ -488,6 +487,7 @@
 <translation id="3922427723338465344">{0,plural, =1{Променете го уредот на претходната верзија во рок од 1 минута}one{Променете го уредот на претходната верзија во рок од # минута}other{Променете го уредот на претходната верзија во рок од # минути}}</translation>
 <translation id="3923494859158167397">Не се поставени мобилни мрежи</translation>
 <translation id="3932043219784172185">Нема поврзан уред</translation>
+<translation id="3934456833412894880">„Адаптивното полнење“ е вклучено. Батеријата ќе се задржи на 80 % за да се продолжи траењето на батеријата и да е целосно полна кога ќе ви треба.</translation>
 <translation id="3943857333388298514">Залепи</translation>
 <translation id="394485226368336402">Поставки за аудио</translation>
 <translation id="3945319193631853098">Допрете за да го завршите поставувањето</translation>
@@ -531,7 +531,6 @@
 <translation id="4215497585250573029">Поставки за VPN</translation>
 <translation id="4217571870635786043">Диктат</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, инсталирана апликација, паузирана</translation>
-<translation id="4223947355273782392">Зачувајте го <ph name="NAME" /> на <ph name="EMAIL" /> за побрзо спарување со вашите други уреди</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Отвори ги поставките</translation>
 <translation id="4250229828105606438">Слика од екран</translation>
@@ -909,7 +908,6 @@
 <translation id="6625718907317144388">Известувањата од <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> и други се сокриени бидејќи има вклучено заштита од прикажување</translation>
 <translation id="6627638273713273709">„Пребарување“+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> сака да го користи микрофонот</translation>
-<translation id="6630773993843701741">Отворете ги поставките за Bluetooth за да го спарите уредот рачно</translation>
 <translation id="6637729079642709226">Сменете го времето</translation>
 <translation id="6641720045729354415">Вклучете/исклучете „Автоматски титлови“. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> сака да потврдите дека сте вие</translation>
@@ -1019,7 +1017,6 @@
 <translation id="7348093485538360975">Тастатура на екран</translation>
 <translation id="735745346212279324">VPN е исклучен</translation>
 <translation id="7360036564632145207">Ако ја промените поставката за заштита на пристапот до податоци за перфиферните уреди, перформансите може да се оптимизираат</translation>
-<translation id="7366890467478514168">Поврзи <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Снимање прозорец</translation>
 <translation id="7377169924702866686">Вклучено е Caps Lock.</translation>
 <translation id="7377481913241237033">Поврзете со код</translation>
@@ -1130,7 +1127,6 @@
 <translation id="7955885781510802139">Режим на висок контраст</translation>
 <translation id="7968693143708939792">Изберете папка…</translation>
 <translation id="7977927628060636163">Се пребаруваат мобилни мрежи…</translation>
-<translation id="7980780401175799550">Испробајте нови начини на навигација низ Chrome OS</translation>
 <translation id="7982789257301363584">Мрежа</translation>
 <translation id="7984197416080286869">Премногу обиди за отпечаток</translation>
 <translation id="7994370417837006925">Повеќекратно пријавување</translation>

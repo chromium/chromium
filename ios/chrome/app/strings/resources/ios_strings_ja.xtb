@@ -168,6 +168,7 @@
 <translation id="2421044535038393232">編集を続ける</translation>
 <translation id="2434405374328098816"><ph name="WEBSITE" /> の「<ph name="USERNAME" />」のパスワードは保存済みです</translation>
 <translation id="2435457462613246316">パスワードを表示</translation>
+<translation id="2469960372084740698">セーフ ブラウジングをオフにしますか？</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" /> のパスワードは保存済みです</translation>
 <translation id="2476359652512522418">選択されていません</translation>
 <translation id="2497852260688568942">同期は管理者により無効にされています</translation>
@@ -528,6 +529,7 @@
 <translation id="5737974891429562743">アカウントのログイン情報が古くなっています。同期を開始するには更新してください。</translation>
 <translation id="5738887413654608789">この機能を使用すると、周囲で発信されているデータを受信して関連のあるウェブページを表示することができます。</translation>
 <translation id="5758631781033351321">リーディング リストはここに表示されます</translation>
+<translation id="5765456154762864099">メニュー → 設定 → 既定のブラウザ</translation>
 <translation id="5782227691023083829">翻訳しています...</translation>
 <translation id="5791632441210678828">フォロー中のフィードの並べ替えボタン</translation>
 <translation id="5802829331520313983">セットアップ…</translation>
@@ -582,6 +584,7 @@
 <translation id="6144589619057374135">${url} をシークレット モードで開く</translation>
 <translation id="6149061208933997199">パスワードを使用</translation>
 <translation id="6159839020698489198">任意</translation>
+<translation id="6173386249456979368">危険なウェブサイト、ダウンロード、拡張機能から予防的な方法で迅速に保護します。パスワードの侵害があった場合は警告します。Google に閲覧データを送信する必要があります</translation>
 <translation id="6177442314419606057">Chrome で検索</translation>
 <translation id="6184086493125982861">タブを表示</translation>
 <translation id="6187302354554850004">最終同期: <ph name="LAST_USED_TIME" /></translation>
@@ -768,6 +771,7 @@
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7671141431838911305">インストール</translation>
 <translation id="7701040980221191251">なし</translation>
+<translation id="7726702057919861819">メニュー → 履歴 → 閲覧履歴データの削除</translation>
 <translation id="7741325291586284254">新しいシークレット タブ ページ</translation>
 <translation id="7765158879357617694">移動</translation>
 <translation id="7772032839648071052">パスフレーズの確認</translation>
@@ -840,6 +844,7 @@
 <translation id="8386068868580335421">リセット</translation>
 <translation id="8407669440184693619">このサイト用のパスワードが見つかりません</translation>
 <translation id="842017693807136194">ログインに使用した ID プロバイダ</translation>
+<translation id="8427613705947111202">メニュー → 設定 → パスワード</translation>
 <translation id="8428045167754449968">市区町村</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8428634594422941299">OK</translation>

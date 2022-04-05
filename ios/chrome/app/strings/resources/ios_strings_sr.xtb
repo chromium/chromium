@@ -168,6 +168,7 @@
 <translation id="2421044535038393232">Настави изменe</translation>
 <translation id="2434405374328098816">Већ сте сачували лозинку за „<ph name="USERNAME" />“ на <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Прикажи лозинку</translation>
+<translation id="2469960372084740698">Желите ли да искључите Безбедносно прегледање?</translation>
 <translation id="2473876017985765807">Већ сте сачували лозинку за <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Није изабрано</translation>
 <translation id="2497852260688568942">Администратор је онемогућио синхронизацију</translation>
@@ -582,6 +583,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6144589619057374135">Отвори ${url} у режиму без архивирања</translation>
 <translation id="6149061208933997199">Користи лозинку</translation>
 <translation id="6159839020698489198">опционално</translation>
+<translation id="6173386249456979368">Бржа проактивна заштита од опасних веб-сајтова, преузимања и додатака. Упозорава вас о откривању лозинки. Захтева слање података прегледања Google-у.</translation>
 <translation id="6177442314419606057">Претражите у Chrome-у</translation>
 <translation id="6184086493125982861">Прикажи картице</translation>
 <translation id="6187302354554850004">Последња синхрон.: <ph name="LAST_USED_TIME" /></translation>

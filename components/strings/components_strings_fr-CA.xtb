@@ -591,6 +591,7 @@
 <translation id="2542106216580219892">Surf</translation>
 <translation id="2544546346215446551">Votre administrateur a redémarré votre appareil</translation>
 <translation id="2544644783021658368">Document simple</translation>
+<translation id="254524874071906077">Définir Chrome comme navigateur par défaut</translation>
 <translation id="2546283357679194313">Témoins et données de site</translation>
 <translation id="2547466893236767989">Conception et développement Web</translation>
 <translation id="254947805923345898">La valeur attribuée à la politique n'est pas valide.</translation>
@@ -2526,6 +2527,7 @@ Détails supplémentaires :
 <translation id="7998269595945679889">Ouvrez le bouton de l'onglet de navigation privée, appuyez sur Entrée pour ouvrir un nouvel onglet de navigation privée afin de naviguer en mode privé</translation>
 <translation id="800218591365569300">Essayez de fermer d'autres onglets ou programmes pour libérer de la mémoire.</translation>
 <translation id="8004582292198964060">Navigateur</translation>
+<translation id="8009225694047762179">Gérer les mots de passe</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Cette carte et l'adresse de facturation associée seront enregistrées. Vous serez en mesure de l'utiliser lorsque vous serez connecté en tant que <ph name="USER_EMAIL" />.}one{Cette carte et l'adresse de facturation associée seront enregistrées. Vous serez en mesure de l'utiliser lorsque vous serez connecté en tant que <ph name="USER_EMAIL" />.}other{Ces cartes et les adresses de facturation associées seront enregistrées. Vous serez en mesure de les utiliser lorsque vous serez connecté en tant que <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8025119109950072390">Les cyberpirates sur ce site peuvent vous inciter à faire quelque chose de dangereux comme installer un logiciel ou révéler vos renseignements personnels (par exemple vos mots de passe, votre numéro de téléphone ou les données de votre carte de crédit).</translation>
 <translation id="8026334261755873520">Effacer les données de navigation</translation>

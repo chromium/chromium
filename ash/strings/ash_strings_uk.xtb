@@ -440,7 +440,6 @@
 <translation id="3630697955794050612">вимкнено</translation>
 <translation id="3631369015426612114">Дозволити сповіщення з перелічених нижче джерел</translation>
 <translation id="3638400994746983214">Перемикає екран конфіденційності. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171">Зберегти пристрій <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Оновлення прострочено</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – керований користувач</translation>
 <translation id="3680908746918359504">Видалити всі маркери</translation>
@@ -530,7 +529,6 @@
 <translation id="4215497585250573029">Налаштування VPN</translation>
 <translation id="4217571870635786043">Диктування</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, установлений додаток, призупинено</translation>
-<translation id="4223947355273782392">Збережіть пристрій <ph name="NAME" /> в обліковому записі <ph name="EMAIL" />, щоб швидко підключати його до інших своїх пристроїв</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Відкрити налаштування</translation>
 <translation id="4250229828105606438">Знімок екрана</translation>
@@ -908,7 +906,6 @@
 <translation id="6625718907317144388">Сповіщення з додатків <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> та інших приховано, оскільки ввімкнено безпечний перегляд</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="6629480180092995136">Додаток <ph name="APP_NAME" /> хоче використовувати мікрофон</translation>
-<translation id="6630773993843701741">Відкрийте налаштування Bluetooth, щоб підключити пристрій вручну</translation>
 <translation id="6637729079642709226">Змінення часу</translation>
 <translation id="6641720045729354415">Перемкнути живі субтитри. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490">Сайт <ph name="ORIGIN_NAME" /> хоче підтвердити вашу особу</translation>
@@ -1018,7 +1015,6 @@
 <translation id="7348093485538360975">Екранна клавіатура</translation>
 <translation id="735745346212279324">VPN від’єднано</translation>
 <translation id="7360036564632145207">Щоб оптимізувати ефективність, змініть налаштування обмеження доступу до даних для периферійних пристроїв</translation>
-<translation id="7366890467478514168">Підключити пристрій <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Записувати вікно</translation>
 <translation id="7377169924702866686">Клавішу Caps Lock увімкнено.</translation>
 <translation id="7377481913241237033">Підключити за допомогою коду</translation>
@@ -1129,7 +1125,6 @@
 <translation id="7955885781510802139">Режим високого контрасту</translation>
 <translation id="7968693143708939792">Вибрати папку…</translation>
 <translation id="7977927628060636163">Пошук мобільних мереж…</translation>
-<translation id="7980780401175799550">Спробуйте нові способи навігації в ОС Chrome</translation>
 <translation id="7982789257301363584">Мережа</translation>
 <translation id="7984197416080286869">Забагато спроб розблокування відбитком</translation>
 <translation id="7994370417837006925">Паралельний вхід</translation>

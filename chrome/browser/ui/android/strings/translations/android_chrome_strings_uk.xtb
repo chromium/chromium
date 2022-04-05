@@ -82,6 +82,7 @@
 <translation id="1384704387250346179">Переклад через Об'єктив <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">У мережі <ph name="LAST_UPDATED" /> дн. тому</translation>
 <translation id="1397811292916898096">Шукати в <ph name="PRODUCT_NAME" /></translation>
+<translation id="139993653570221430">Ви можете будь-коли змінити свій вибір у налаштуваннях Chrome. Зміни не почнуть діяти відразу, оскільки одночасно з пробними версіями застосовується поточна система показу оголошень.</translation>
 <translation id="1406000523432664303">"Не відстежувати"</translation>
 <translation id="1407069428457324124">Темна тема</translation>
 <translation id="1407135791313364759">Відкрити все</translation>
@@ -94,6 +95,7 @@
 <translation id="1450753235335490080">Не вдалося надіслати: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Виберіть мову Chrome</translation>
 <translation id="147113415845704694">Спробуйте запитати "Яка сьогодні погода?"</translation>
+<translation id="1474893630593443211">Краще керування оголошеннями, які вам показуються</translation>
 <translation id="1477626028522505441">Файл <ph name="FILE_NAME" /> не завантажено через проблеми із сервером.</translation>
 <translation id="148482509007564431">Вікно зберігання закладки</translation>
 <translation id="1488775391433859242">Ви можете використовувати цей телефон, щоб входити на комп’ютері, де відображається цей QR-код.</translation>
@@ -399,6 +401,7 @@
 <translation id="3166827708714933426">Комбінації клавіш для роботи з вкладками та вікнами</translation>
 <translation id="316694332262407393">Chrome уже запущено.</translation>
 <translation id="3169472444629675720">Рекомендації</translation>
+<translation id="3169523567916669830">Коли використовуються пробні версії нових функцій, ви можете переглядати й вилучати цікаві теми, на основі яких сайти показують вам оголошення. Chrome оцінює, які теми вас цікавлять, за вашою нещодавньою історією веб-перегляду.</translation>
 <translation id="3187472288455401631">Оцінка ефективності реклами</translation>
 <translation id="3207960819495026254">Створено закладку</translation>
 <translation id="3208584281581115441">Перевірити</translation>
@@ -809,7 +812,6 @@
 <translation id="5578795271662203820">Шукати зображення в <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Ви можете будь-коли вибрати дані для синхронізації в <ph name="BEGIN_LINK1" />налаштуваннях<ph name="END_LINK1" />.</translation>
 <translation id="5590372121997663538">Запам’ятати цей комп’ютер</translation>
-<translation id="559871659088672663">Ця функція зараз перебуває на етапі розробки</translation>
 <translation id="5599455543593328020">Режим анонімного перегляду</translation>
 <translation id="5599941490345670218">Google Асистент може виконувати дії на різних веб-сайтах</translation>
 <translation id="5620163320393916465">Немає збережених паролів</translation>
@@ -1043,7 +1045,6 @@
 <translation id="6751521182688001123">Швидко відкривайте нову вкладку. Щоб змінити функцію цієї кнопки, натисніть і втримуйте її.</translation>
 <translation id="6756507620369789050">Надіслати відгук</translation>
 <translation id="6767294960381293877">Список пристроїв, з якими можна ділитися вкладкою, відкрито на половину висоти.</translation>
-<translation id="6770042910635026163">Відвідувані вами сайти, що визначають ваші інтереси</translation>
 <translation id="6770602306803890733">Покращує захист усіх користувачів в Інтернеті</translation>
 <translation id="6783942555455976443">Зберегти цю сторінку на пізніше й отримати нагадування</translation>
 <translation id="6795633245022906657">Швидко відкривайте нову вкладку. Щоб змінити функцію цієї кнопки, перейдіть у налаштування.</translation>
@@ -1113,12 +1114,14 @@
 <translation id="7173114856073700355">Відкрити налаштування</translation>
 <translation id="7177466738963138057">Це можна змінити пізніше в налаштуваннях</translation>
 <translation id="7177873915659574692">Не вдається створити QR-код. URL-адреса перевищує ліміт символів (<ph name="CHARACTER_LIMIT" />).</translation>
+<translation id="7177959540995930968">Дізнатися більше про ці функції можна в налаштуваннях Chrome.</translation>
 <translation id="718226107353899806">Можна додати до стількох реакцій: <ph name="MAX_NUM_REACTIONS" /></translation>
 <translation id="7187993566681480880">Захищає вас у Chrome і може покращувати безпеку в інших додатках Google після входу в обліковий запис.</translation>
 <translation id="718926126787620637">Список папок із закладками відкрито на всю висоту</translation>
 <translation id="7191430249889272776">Вкладку відкрито у фоновому режимі.</translation>
 <translation id="7196215469483532480">Пояснення про посібник щодо конфіденційності відкрито на всю висоту</translation>
 <translation id="7208109991155904980">Реакцію вилучено</translation>
+<translation id="7222235798733126207">Обмежений обмін даними між сайтами</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Очікується 1 завантаження}one{Очікується # завантаження}few{Очікується # завантаження}many{Очікується # завантажень}other{Очікується # завантаження}}</translation>
 <translation id="7237045078887540010">Використовуючи Chrome, ви приймаєте <ph name="BEGIN_TOS_LINK" />Загальні положення та умови Google<ph name="END_TOS_LINK" /> і <ph name="BEGIN_ATOS_LINK" />Додаткові умови використання Google Chrome та ОС Chrome<ph name="END_ATOS_LINK" />. Також застосовується <ph name="BEGIN_PRIVACY_LINK" />Політика конфіденційності<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="7242755609445462077">Стилізований виділений текст: <ph name="CURRENT_DATE" /></translation>
@@ -1338,6 +1341,7 @@
 <translation id="8410695015584479363">Відстежувати ціни</translation>
 <translation id="8413126021676339697">Показати всю історію</translation>
 <translation id="8414396119627470038">Увійдіть на сайт <ph name="SITE_ETLD_PLUS_ONE" /> з обліковими даними <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8416347857511542594">Докладніше про персоналізацію реклами в Chrome</translation>
 <translation id="8419244640277402268">Так, враховувати</translation>
 <translation id="8424781820952413435">Сторінку надіслано. Щоб переглянути її, відкрийте Chrome на <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8427875596167638501">Вкладку "Попередній перегляд" відкрито на половину висоти</translation>

@@ -3116,24 +3116,6 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
 <translation id="4463675333222095358">Einheitenumrechnung über „Schnellinfo“ aktivieren</translation>
 <translation id="4464365009416584564"><ph name="CHROME_SYNC_NAME" /> deaktivieren</translation>
 <translation id="4467952432486360968">Drittanbieter-Cookies blockieren</translation>
-<translation id="4471718219410856003">Mit dieser Richtlinie wird die Liste der Sets überschrieben, die Chrome für die Funktion „First-Party-Sets“ verwendet.
-
-      Wenn für diese Richtlinie ein leeres Wörterbuch angegeben wird, verwendet Chrome die öffentlichen First-Party-Sets.
-
-      Wenn diese Richtlinie ein Set in der Liste „Replacements“ (Ersetzungen) empfängt, werden alle Sets in der öffentlichen Liste, die sich mit diesem Set überschneiden, aus der Liste in Chrome entfernt und das angegebene Set wird der Liste hinzugefügt.
-
-      Wenn diese Richtlinie ein Set in der Liste „Additions“ (Hinzufügungen) empfängt, werden alle Sets in der Liste in Chrome, die sich mit diesem Set überschneiden, aktualisiert und das angegebene Set wird der Liste hinzugefügt. Die Liste der First-Party-Sets in Chrome wird dabei nicht mit der Liste „Additions“ verbunden.
-
-      Die Liste der von Chrome verwendeten First-Party-Sets darf nicht mit anderen Listen verbunden werden. Für die Anwendung dieser Richtlinie ist es erforderlich, dass beide Richtlinienlisten für First-Party-Sets voneinander getrennt sind.
-
-      Außerdem müssen alle Sets in beiden Listen die Invarianten eines First-Party-Sets beachten.
-      Ein First-Party-Set besteht aus einer Inhaber- und mindestens einer Mitgliedswebsite. Bei allen Websites in einem First-Party-Set muss es sich um registrierfähige Domains handeln, die über HTTPS bereitgestellt werden, unabhängig davon, ob es sich um eine Inhaber- oder eine Mitgliedswebsite handelt.
-      Außerdem müssen Websites in einem First-Party-Set eindeutig sein, d. h., dass sie nicht gleichzeitig als Inhaber und Mitglied oder mehrmals als Mitglied eines First-Party-Sets aufgeführt sein dürfen.
-      Weitere Informationen zu First-Party-Sets findest du unter https://github.com/privacycg/first-party-sets.
-
-      Platzhalter (*) sind kein gültiger Richtlinienwert und können nicht in First-Party-Sets in diesen Listen verwendet werden.
-
-      Alle in dieser Richtlinie angegebenen Sets müssen gültige First-Party-Sets sein. Andernfalls wird ein entsprechender Fehler ausgegeben.</translation>
 <translation id="4472740647327683596">Seitenbreite in Mikrometern.</translation>
 <translation id="4474167089968829729">Aktiviert das Speichern von Passwörtern im Passwortmanager</translation>
 <translation id="4476769083125004742">Wenn diese Richtlinie auf <ph name="BLOCK_GEOLOCATION_SETTING" /> gesetzt ist, haben Android-Apps keinen Zugriff auf Standortdaten. Wenn du diese Richtlinie auf einen anderen Wert setzt oder sie nicht konfigurierst, wird der Nutzer um seine Zustimmung gebeten, wenn eine Android-App auf Standortdaten zugreifen möchte.</translation>
@@ -5390,11 +5372,6 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
       In Abhängigkeit von der Eingabemethode wird die Bildschirmtastatur möglicherweise in einem kompakten Layout angezeigt.
 
       Wenn du diese Richtlinie konfigurierst, kann sie von Nutzern nicht geändert werden.</translation>
-<translation id="7060497964524144376">Wenn die Richtlinie aktiviert ist, vertraut Safe Browsing den Domains, die du festlegst. Es findet keine Prüfung auf gefährliche Ressourcen wie Phishing, Malware oder unerwünschte Software statt. Es findet keine Prüfung von in diesen Domains gehosteten Downloads durch den Downloadschutzdienst statt. Eine Wiederverwendung von Passwörtern wird nicht durch den Passwortschutzdienst geprüft.
-
-      Wenn diese Richtlinie nicht konfiguriert ist, wird der Safe Browsing-Standardschutz auf alle Ressourcen angewendet.
-
-      Unter <ph name="MS_WIN_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, auf denen Windows 10 Pro läuft oder die über <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> verwaltet werden. Unter <ph name="MAC_OS_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
 <translation id="7063895219334505671">Pop-ups auf diesen Websites zulassen</translation>
 <translation id="7066292150801784098">Nicht zulassen, dass Remote-Nutzer bei der Remote-Unterstützung mit Administratorfenstern interagieren können</translation>
 <translation id="706669471845501145">Anzeige von Desktop-Benachrichtigungen durch Websites zulassen</translation>
@@ -5728,7 +5705,6 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
       Hinweis: Falls das Gerät in den Ruhemodus versetzt werden soll, kann separat konfiguriert werden, ob <ph name="PRODUCT_OS_NAME" /> den Bildschirm vorher sperren soll oder nicht.</translation>
 <translation id="7477149584454865826">Boolescher Parameter, der angibt, ob zum Einrichten des Druckers IPP Everywhere verwendet werden soll.</translation>
 <translation id="7477231245051133709">Bedienungshilfe "Mono-Audio" aktivieren</translation>
-<translation id="7477239290070847560">Zeroconf-basierte (mDNS + DNS-SD) Protokollziele</translation>
 <translation id="7477526482439041787">Konfiguriert eine Liste mit Regeln zur Vermeidung von Datenlecks in <ph name="PRODUCT_OS_NAME" />.
       Datenlecks können unter anderem beim Kopieren und Einfügen von Daten, beim Übertragen von Dateien, beim Drucken, bei der Bildschirmfreigabe oder beim Aufnehmen von Screenshots auftreten.
 

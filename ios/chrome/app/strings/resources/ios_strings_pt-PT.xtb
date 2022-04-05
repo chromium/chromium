@@ -168,6 +168,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2421044535038393232">Continuar a editar</translation>
 <translation id="2434405374328098816">Já guardou uma palavra-passe para "<ph name="USERNAME" />" em <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Mostrar palavra-passe</translation>
+<translation id="2469960372084740698">Desativar a Navegação segura?</translation>
 <translation id="2473876017985765807">Já guardou uma palavra-passe para <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Não selecionado</translation>
 <translation id="2497852260688568942">A sincronização foi desativada pelo gestor</translation>
@@ -582,6 +583,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6144589619057374135">Abrir ${url} na Navegação anónima</translation>
 <translation id="6149061208933997199">Util. palavra-passe</translation>
 <translation id="6159839020698489198">opcional</translation>
+<translation id="6173386249456979368">Proteção proativa mais rápida contra transferências, extensões e Websites perigosos. Envia-lhe avisos sobre violações de palavras-passe. Requer o envio de dados de navegação para a Google</translation>
 <translation id="6177442314419606057">Pesquisar no Chrome</translation>
 <translation id="6184086493125982861">Mostrar Separadores</translation>
 <translation id="6187302354554850004">Última sincronização: <ph name="LAST_USED_TIME" /></translation>

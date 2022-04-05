@@ -3782,6 +3782,7 @@
 <translation id="4667027203988048332">انواع داده‌هایی که استفاده می‌شود:</translation>
 <translation id="46733273239502219">داده‌های آفلاین برنامه‌های نصب‌شده هم حذف خواهد شد</translation>
 <translation id="4673442866648850031">وقتی قلم برداشته می‌شود، ابزار قلم باز می‌شود</translation>
+<translation id="4675065861091108046">قبلاً انتخاب کرده‌اید همه افزونه‌ها در <ph name="ORIGIN" /> مجاز باشند</translation>
 <translation id="4675828034887792601">ایجاد میان‌بر برای جستجوی سایت‌ها و مدیریت موتور جستجو</translation>
 <translation id="4676595058027112862">«مرکز کنترل تلفن»، بیشتر بدانید</translation>
 <translation id="4677772697204437347">‏حافظه GPU</translation>
@@ -4127,6 +4128,7 @@
 <translation id="5036662165765606524">به هیچ سایتی اجازه داده نشود چند فایل را به‌طور خودکار بارگیری کند</translation>
 <translation id="5037676449506322593">انتخاب همه</translation>
 <translation id="5038022729081036555">می‌توانید فردا <ph name="TIME_LIMIT" /> از آن استفاده کنید.</translation>
+<translation id="5038818366306248416">قبلاً انتخاب کرده‌اید هیچ افزونه‌ای در <ph name="ORIGIN" /> مجاز نباشد</translation>
 <translation id="5039696241953571917">‏در «حساب Google» خود گذرواژه‌های ذخیره‌شده را مشاهده و مدیریت کنید</translation>
 <translation id="5039804452771397117">اجازه دادن</translation>
 <translation id="5040823038948176460">تنظیمات محتوای دیگر</translation>
@@ -4450,10 +4452,10 @@
 <translation id="5342091991439452114">پین باید حداقل <ph name="MINIMUM" /> رقم باشد</translation>
 <translation id="5344036115151554031">‏درحال بازیابی Linux</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (راست)</translation>
-<translation id="534572711507965074">گروه را نام‌گذاری کنید، رنگی را انتخاب کنید، و روی «ورود» ضربه بزنید</translation>
 <translation id="5345916423802287046">راه‌اندازی برنامه هنگام ورود به سیستم</translation>
 <translation id="5350293332385664455">‏خاموش کردن «دستیار Google»</translation>
 <translation id="535123479159372765">نوشتار از دستگاه دیگری کپی شده است</translation>
+<translation id="5351654190191249261"><ph name="EXTENSION_NAME" /> باید به‌روزرسانی شود</translation>
 <translation id="5352033265844765294">مهر زمان</translation>
 <translation id="5353252989841766347">‏صادر کردن گذرواژه‌ها از Chrome</translation>
 <translation id="5355099869024327351">به «دستیار» اجازه می‌دهد اعلان نشان دهد</translation>
@@ -5081,6 +5083,7 @@
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{برای اطمینان از اینکه همچنان می‌توانید به مرور وب بپردازید، از سرپرستتان بخواهید این برنامه را بردارد.}one{برای اطمینان از اینکه همچنان می‌توانید به مرور وب بپردازید، از سرپرستتان بخواهید این برنامه‌ها را بردارد.}other{برای اطمینان از اینکه همچنان می‌توانید به مرور وب بپردازید، از سرپرستتان بخواهید این برنامه‌ها را بردارد.}}</translation>
 <translation id="5997337190805127100">درباره دسترسی به سایت بیشتر بدانید</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> نتیجه برای «<ph name="SEARCH_TEXT" />»</translation>
+<translation id="6001839398155993679">بیایید شروع کنیم</translation>
 <translation id="6002122790816966947">دستگاه‌های شما</translation>
 <translation id="6002210667729577411">انتقال گروه به پنجره‌ای جدید</translation>
 <translation id="6002452033851752583">‏گذرواژه از «حساب Google» حذف شده است</translation>
@@ -5148,7 +5151,6 @@
 <translation id="6063847492705284550">‏<ph name="BEGIN_BOLD" />توجه:<ph name="END_BOLD" /> ممکن است صدای مشابه یا صدای ضبط‌شده هم بتواند به نتایج شخصی <ph name="SUPERVISED_USER_NAME" /> دسترسی یابد. برای صرفه‌جویی در مصرف باتری، می‌توانید در «تنظیمات دستیار» <ph name="SUPERVISED_USER_NAME" /> گزینه‌ای را انتخاب کنید تا تنها زمانی که این دستگاه به منبع نیرو متصل است، «Ok Google» روشن شود.</translation>
 <translation id="6064217302520318294">قفل صفحه</translation>
 <translation id="6065289257230303064">ویژگی‌های دایرکتوری موضوع گواهی</translation>
-<translation id="6065691521254183160">برای تغییر تمرکز بین این حبابک راهنمایی و عنصری که به آن اشاره می‌کند، |<ph name="ACCELERATOR" />| را فشار دهید.</translation>
 <translation id="6066794465984119824">درهم‌سازی تصویر تنظیم نشده است</translation>
 <translation id="6069464830445383022">‏ورود به سیستم در Chromebook با «حساب Google» انجام می‌شود</translation>
 <translation id="6069671174561668781">تنظیم کاغذدیواری</translation>
@@ -5358,6 +5360,7 @@
 <translation id="6270391203985052864">سایت‌ها می‌توانند برای ارسال اعلان درخواست دهند</translation>
 <translation id="6270770586500173387">ارسال <ph name="BEGIN_LINK1" />اطلاعات برنامه و سیستم<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />معیارها<ph name="END_LINK2" /></translation>
 <translation id="6271348838875430303">تصحیح واگرد شد</translation>
+<translation id="6271780480930459892">برای دریافت جدیدترین نسخه، با سرپرست تماس بگیرید.</translation>
 <translation id="6272643420381259437">هنگام بارگیری افزایه، خطایی (<ph name="ERROR" />) روی داد</translation>
 <translation id="6273677812470008672">کیفیت</translation>
 <translation id="6276210637549544171">پراکسی <ph name="PROXY_SERVER" /> به نام کاربری و گذرواژه نیاز دارد.</translation>
@@ -5416,7 +5419,6 @@
 <translation id="6322370287306604163">باز کردن سریع‌تر قفل با اثر انگشت</translation>
 <translation id="6324916366299863871">ویرایش میان‌بر</translation>
 <translation id="6325191661371220117">از کار انداختن اجرای خودکار</translation>
-<translation id="6325525973963619867">ناموفق بود</translation>
 <translation id="6326175484149238433">‏حذف از Chrome</translation>
 <translation id="6326855256003666642">تعداد فعالیت‌های زنده‌نگه‌داری</translation>
 <translation id="6327785803543103246">کشف خودکار پراکسی وب</translation>
@@ -5943,7 +5945,6 @@
 <translation id="6846178040388691741">«<ph name="EXTENSION_NAME" />» می‌خواهد <ph name="FILE_NAME" /> را با <ph name="PRINTER_NAME" /> چاپ کند.</translation>
 <translation id="6847125920277401289">برای ادامه، فضا خالی کنید</translation>
 <translation id="6848388270925200958">درحال‌حاضر، کارت‌هایی دارید که فقط در این دستگاه قابل استفاده‌اند</translation>
-<translation id="6848425544473873717">{NUM_APPS,plural, =1{یکی از برنامه‌های شما دیگر پشتیبانی نمی‌شود. <ph name="LEARN_MORE" />}one{# برنامه شما دیگر پشتیبانی نمی‌شود. <ph name="LEARN_MORE" />}other{# برنامه شما دیگر پشتیبانی نمی‌شود. <ph name="LEARN_MORE" />}}</translation>
 <translation id="6848716236260083778">برای راه‌اندازی اثر انگشت، از فرزندتان بخواهید حسگر اثر انگشت را لمس کند. داده‌های اثر انگشت فرزندتان به‌صورت ایمن ذخیره می‌شود و هرگز از این <ph name="DEVICE_TYPE" /> خارج نمی‌شود.</translation>
 <translation id="6850286078059909152">رنگ نوشتار</translation>
 <translation id="6851181413209322061">‏داده‌های استفاده و عیب‌یابی را ارسال کنید. این دستگاه درحال‌حاضر به‌صورت‌ خودکار داده‌های عیب‌یابی و داده‌های استفاده از دستگاه و برنامه را برای Google ارسال می‌کند. این داده‌ها برای شناسایی فرزندتان استفاده نخواهند شد و به بهبود پایداری سیستم و برنامه و موارد دیگر کمک خواهد کرد. بعضی داده‌های انبوهشی نیز به برنامه‌ها و شرکای Google (مانند «برنامه‌نویس‌های Android») کمک می‌کند. این تنظیم را مالک اعمال می‌کند. اگر «فعالیت وب و برنامه» تکمیلی برای فرزندتان روشن باشد، ممکن است این داده‌ها در «حساب Google» او ذخیره شود.</translation>
@@ -7479,6 +7480,7 @@
 <translation id="8379156816349755485">پس‌از ورود به سیستم، کد اصالت‌سنجی یکتایی ذخیره می‌شود و برای همه بارگیرهای واجدشرایط در آینده استفاده خواهد شد.</translation>
 <translation id="8379878387931047019">این دستگاه نوع کلید امنیتیِ درخواستی ازجانب این وب‌سایت را پشتیبانی نمی‌کند</translation>
 <translation id="8379991678458444070">با نشانک‌گذاری این برگه، سریع به اینجا برگردید</translation>
+<translation id="8380941800586852976">خطرناک</translation>
 <translation id="8382715499079447151">محافظت دربرابر مشاهده</translation>
 <translation id="8382913212082956454">کپی آدرس &amp;ایمیل</translation>
 <translation id="8383266303049437646">‏<ph name="BEGIN_PARAGRAPH1" />این مراحل عیب‌یابی را دنبال کنید:
@@ -7705,6 +7707,7 @@
 <translation id="8630338733867813168">حالت خواب هنگام شارژ شدن</translation>
 <translation id="8631032106121706562">گل</translation>
 <translation id="863109444997383731">گزینه درخواست نمایش اعلان‌ها به شما در سایت‌ها مسدود می‌شود. اگر سایتی درخواست اعلان کند، یک نشانگر مسدودبودن در نوار نشانی ظاهر می‌شود.</translation>
+<translation id="8632104508818855045">قبلاً انتخاب کرده‌اید هیچ افزونه‌ای در <ph name="ORIGIN" /> مجاز نباشد</translation>
 <translation id="8633025649649592204">فعالیت اخیر</translation>
 <translation id="8634348081024879304">‏دیگر نمی‌توانید از کارت مجازی‌تان در Google Pay استفاده کنید. <ph name="BEGIN_LINK" />درباره کارت‌های مجازی بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">درحال بارگیری...</translation>
@@ -7871,7 +7874,6 @@
 <translation id="8779944680596936487">سایت‌ها فقط برای دیدن فعالیت مرور شما در سایت خودشان می‌توانند از کوکی‌ها استفاده کنند</translation>
 <translation id="8780123805589053431">‏دریافت توضیحات تصویر از Google</translation>
 <translation id="8780443667474968681">جستجوی گفتاری خاموش شده است.</translation>
-<translation id="8780872768304638315">در اینجا ذخیره نشد:</translation>
 <translation id="8781834595282316166">برگه جدید در گروه</translation>
 <translation id="8782565991310229362">راه‌اندازی برنامه کاربردی کیوسک لغو شد.</translation>
 <translation id="8783526165720272136">برنامه‌های پیام‌رسانی</translation>
@@ -8095,6 +8097,7 @@
 <translation id="9004754973617721124">داده‌ها و اجازه‌های سایت <ph name="SITE_NAME" />، همه سایت‌های تحت آن، و برنامه‌های نصب‌شده‌اش پاک شود؟</translation>
 <translation id="9008201768610948239">نادیده گرفتن</translation>
 <translation id="9008201858626224558">دکمه برگشت صفحه جزئیات <ph name="SUBPAGE_TITLE" /></translation>
+<translation id="9008828754342192581">قبلاً انتخاب کرده‌اید همه افزونه‌ها در <ph name="ORIGIN" /> مجاز باشند</translation>
 <translation id="9009369504041480176">در حال بارگذاری کردن (%<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="9009708085379296446">می‌خواستید این صفحه را تغییر دهید؟</translation>
 <translation id="9011163749350026987">نماد همیشه نشان داده شود</translation>

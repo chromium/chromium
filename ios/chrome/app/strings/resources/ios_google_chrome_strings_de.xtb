@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
-<translation id="1143896152279775643">Ihr Passwort wird im Passwortmanager von Google für <ph name="EMAIL" /> gespeichert.</translation>
+<translation id="1143896152279775643">Dein Passwort wird im Passwortmanager von Google für <ph name="EMAIL" /> gespeichert.</translation>
 <translation id="1282031177488366470">Helfen, die Funktionen und die Leistung von Chrome zu verbessern</translation>
 <translation id="1479202195792305274">Chrome kann deine Passwörter prüfen, wenn du dich mit deinem Google-Konto anmeldest.</translation>
 <translation id="1493827051843127077">Du kannst Chrome als Standardbrowser festlegen, um Tabs, Passwörter und Zahlungsinformationen auf allen deinen Geräten zu synchronisieren</translation>
@@ -53,17 +53,17 @@
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> hat Chrome genutzt und Lesezeichen, Passwörter und andere Einstellungen auf diesem Gerät festgelegt.</translation>
 <translation id="424864128008805179">Von Chrome abmelden?</translation>
 <translation id="4249068189593983585">Chrome-Tipp: Wenn Sie weitere Tab-Optionen sehen möchten, berühren und halten Sie die Schaltfläche "Tabs anzeigen" in der Symbolleiste. Sie befindet sich unten oder oben auf dem Bildschirm.</translation>
-<translation id="4523886039239821078">Einige Add-ons führen zum Ausfall von Chrome. Bitte deinstallieren Sie:</translation>
+<translation id="4523886039239821078">Einige Add-ons führen zum Ausfall von Chrome. Bitte deinstalliere:</translation>
 <translation id="4633328489441962921">Chrome kann nicht nach Aktualisierungen suchen</translation>
 <translation id="4698415050768537821">Chrome konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal oder <ph name="BEGIN_LINK" />prüfe die Passwörter in deinem Google-Konto<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Wird von Chrome Beta nicht unterstützt</translation>
 <translation id="5030102366287574140">Chrome kann helfen, Sie vor Bedrohungen wie Datenpannen und schädlichen Erweiterungen zu schützen</translation>
 <translation id="5108659628347594808">Chrome verbessern</translation>
 <translation id="5119391094379141756">Wählen Sie Chrome aus</translation>
-<translation id="5162467219239570114">Chrome ist veraltet. Wenn im <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> kein Update verfügbar ist, unterstützt Ihr Gerät neuere Versionen von Chrome möglicherweise nicht mehr.</translation>
+<translation id="5162467219239570114">Chrome ist veraltet. Wenn im <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> kein Update verfügbar ist, unterstützt dein Gerät neuere Versionen von Chrome möglicherweise nicht mehr.</translation>
 <translation id="5389212809648216794">Google Chrome kann nicht auf die Kamera zugreifen, da diese gerade von einer anderen App verwendet wird</translation>
 <translation id="5460571915754665838">4. Wählen Sie Chrome aus</translation>
-<translation id="5639704535586432836">Öffnen Sie "Einstellungen" &gt; "Datenschutz" &gt; "Kamera" &gt; "Google Chrome" und aktivieren Sie die Kamera.</translation>
+<translation id="5639704535586432836">Öffne „Einstellungen“ &gt; „Datenschutz“ &gt; „Kamera“ &gt; „Google Chrome“ und aktiviere die Kamera.</translation>
 <translation id="5642200033778930880">Google Chrome kann die Kamera nicht im Modus "Geteilte Ansicht" nutzen</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Offline, Chrome kann nicht nach Aktualisierungen suchen</translation>
@@ -80,7 +80,7 @@
 <translation id="6634107063912726160">Wenn du dich abmeldest, synchronisiert Chrome keine neuen Daten mehr mit deinem Google-Konto. Daten, die bereits synchronisiert wurden, bleiben im Konto gespeichert.</translation>
 <translation id="6648150602980899529">Du meldest dich mit einem von <ph name="DOMAIN" /> verwalteten Konto an und gibst dem Administrator der Domain Kontrolle über deine Chrome-Daten. Die Daten werden diesem Konto dauerhaft zugeordnet. Wenn du dich von Chrome abmeldest, werden deine Daten auf dem Gerät gelöscht, bleiben jedoch in deinem Google-Konto erhalten.</translation>
 <translation id="6676840375528380067">Deine Chrome-Daten vom Gerät löschen?</translation>
-<translation id="6709398533399187136">Ihr Passwort wurde durch eine Datenpanne preisgegeben. Der Passwortmanager von Google empfiehlt, dieses Passwort jetzt zu ändern.</translation>
+<translation id="6709398533399187136">Dein Passwort wurde durch eine Datenpanne preisgegeben. Der Passwortmanager von Google empfiehlt, dieses Passwort jetzt zu ändern.</translation>
 <translation id="6822673484890854830">Chrome konnte nicht alle Passwörter prüfen. Versuchen Sie es später noch einmal.</translation>
 <translation id="6964931465519938134">Sie können jetzt Chrome jederzeit nutzen, wenn Sie in Nachrichten, Dokumenten und anderen Apps auf Links tippen.</translation>
 <translation id="7046845777663074840">Wenn aktiviert:
@@ -94,7 +94,7 @@ Wichtige Hinweise:
 <translation id="7124339256045485976">Chrome auf dem neuesten Stand halten</translation>
 <translation id="7161390184744336561">Google Chrome ist veraltet</translation>
 <translation id="7165736900384873061">Google Chrome QR-Scanner nutzen</translation>
-<translation id="7172660552945675509">Tipp: <ph name="BEGIN_LINK" />Ziehen Sie Chrome in Ihr Dock<ph name="END_LINK" /></translation>
+<translation id="7172660552945675509">Tipp: <ph name="BEGIN_LINK" />Ziehe Chrome in dein Dock<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome verwendet Face ID, um den autorisierten Zugriff auf deine Passwörter zu gewährleisten.</translation>
 <translation id="72119412072970160">Du kannst die im Passwortmanager von Google gespeicherten Passwörter in anderen Apps auf deinem iPad verwenden.</translation>
 <translation id="7261678641327190792">Chrome kann deine Passwörter nicht prüfen</translation>
@@ -105,7 +105,7 @@ Wichtige Hinweise:
 <translation id="756809126120519699">Gelöschte Chrome-Daten</translation>
 <translation id="7626032353295482388">Willkommen bei Chrome</translation>
 <translation id="7662994914830945754">Melde dich an und aktiviere die Synchronisierung, um deine Tabs überall dort aufzurufen, wo du Chrome verwendest</translation>
-<translation id="766361182512894255">Ihr Passwort wurde durch eine Datenpanne preisgegeben. Chrome empfiehlt, das Passwort jetzt zu ändern.</translation>
+<translation id="766361182512894255">Dein Passwort wurde durch eine Datenpanne preisgegeben. Chrome empfiehlt, das Passwort jetzt zu ändern.</translation>
 <translation id="7693590760643069321">Sie können jetzt Chrome jederzeit nutzen, wenn Sie in Nachrichten, Dokumenten und anderen Apps auf Links tippen.</translation>
 <translation id="7698568245838009292">Chrome möchte auf deine Kamera zugreifen</translation>
 <translation id="7780154209050837198">Wenn du Chrome optimal nutzen möchtest, meldest du dich mit deinem Google-Konto in Chrome an.</translation>
@@ -115,9 +115,9 @@ Wichtige Hinweise:
 <translation id="8263079278049777200">Melde dich bei dieser Website, in deinem Google-Konto und in Chrome an. Du kannst die Synchronisierung später aktivieren.</translation>
 <translation id="8357607116237445042">Möchtest du deine Chrome-Daten von diesem Gerät löschen oder sie behalten?</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle Rechte vorbehalten.</translation>
-<translation id="840168496893712993">Einige Add-ons führen zum Ausfall von Chrome. Bitte deinstallieren Sie diese Add-ons.</translation>
+<translation id="840168496893712993">Einige Add-ons führen zum Ausfall von Chrome. Bitte deinstalliere diese Add-ons.</translation>
 <translation id="8414886616817913619">Deine Organisation verlangt, dass du dich für die Verwendung von Chrome anmeldest. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
-<translation id="8459495907675268833">Die ausgewählten Daten wurden aus Chrome und von allen synchronisierten Geräten entfernt. Eventuell finden Sie unter history.google.com weitere Arten von Browserverlaufsdaten wie Suchanfragen oder Aktivitäten anderer Google-Dienste für Ihr Google-Konto.</translation>
+<translation id="8459495907675268833">Die ausgewählten Daten wurden aus Chrome und von allen synchronisierten Geräten entfernt. Eventuell findest du unter history.google.com weitere Arten von Browserverlaufsdaten wie Suchanfragen oder Aktivitäten anderer Google-Dienste für dein Google-Konto.</translation>
 <translation id="850555388806794946">So legen Sie Chrome als Standardbrowser fest:
 1. Öffnen Sie die Einstellungen
 2. Tippen Sie auf „Standard-Browser-App“

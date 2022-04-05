@@ -4452,7 +4452,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5342091991439452114">Pinkoden skal være på mindst <ph name="MINIMUM" /> cifre</translation>
 <translation id="5344036115151554031">Gendanner Linux</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (højre)</translation>
-<translation id="534572711507965074">Giv din gruppe et navn, vælg en farve, og tryk på Enter</translation>
 <translation id="5345916423802287046">Start app, når du logger ind</translation>
 <translation id="5350293332385664455">Slå Google Assistent fra</translation>
 <translation id="535123479159372765">Tekst kopieret fra en anden enhed</translation>
@@ -5083,6 +5082,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Hvis du vil være sikker på fortsat at kunne bruge internettet, skal du bede din administrator om at fjerne denne app.}one{Hvis du vil være sikker på fortsat at kunne bruge internettet, skal du bede din administrator om at fjerne denne app.}other{Hvis du vil være sikker på fortsat at kunne bruge internettet, skal du bede din administrator om at fjerne disse apps.}}</translation>
 <translation id="5997337190805127100">Få flere oplysninger om websiteadgang</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultater for "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6001839398155993679">Lad os komme i gang</translation>
 <translation id="6002122790816966947">Dine enheder</translation>
 <translation id="6002210667729577411">Flyt gruppe til nyt vindue</translation>
 <translation id="6002452033851752583">Adgangskoden blev slettet fra din Google-konto</translation>
@@ -5150,7 +5150,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Bemærk!<ph name="END_BOLD" /> En lignende stemme eller en optagelse af den kan muligvis bruges til at få adgang til det personlige indhold, der tilhører <ph name="SUPERVISED_USER_NAME" />. Du kan spare på batteriet ved at gå til Google Assistent-indstillingerne for <ph name="SUPERVISED_USER_NAME" /> og angive, at "Hey Google" kun skal aktiveres, når denne enhed er sluttet til en strømkilde.</translation>
 <translation id="6064217302520318294">Skærmlås</translation>
 <translation id="6065289257230303064">Indeksattributter for certifikatets emne</translation>
-<translation id="6065691521254183160">Tryk på |<ph name="ACCELERATOR" />| for at skifte fokus mellem denne hjælpeboble og det element, den henviser til.</translation>
 <translation id="6066794465984119824">Systembilledets hash-værdi er ikke angivet</translation>
 <translation id="6069464830445383022">Brug din Google-konto, når du logger ind på din Chromebook</translation>
 <translation id="6069671174561668781">Angiv baggrund</translation>
@@ -5418,7 +5417,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6322370287306604163">Lås op hurtigere med fingeraftryk</translation>
 <translation id="6324916366299863871">Rediger genvej</translation>
 <translation id="6325191661371220117">Deaktiver Automatisk opstart</translation>
-<translation id="6325525973963619867">Mislykket</translation>
 <translation id="6326175484149238433">Fjern fra Chrome</translation>
 <translation id="6326855256003666642">Optælling af Keepalive</translation>
 <translation id="6327785803543103246">Automatisk registrering af webproxy</translation>
@@ -5945,7 +5943,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" anmoder om at udskrive <ph name="FILE_NAME" /> via <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Frigør plads for at fortsætte</translation>
 <translation id="6848388270925200958">Lige nu har du kort, som kun kan bruges på denne enhed.</translation>
-<translation id="6848425544473873717">{NUM_APPS,plural, =1{1 af dine apps understøttes ikke længere. <ph name="LEARN_MORE" />}one{# af dine apps understøttes ikke længere. <ph name="LEARN_MORE" />}other{# af dine apps understøttes ikke længere. <ph name="LEARN_MORE" />}}</translation>
 <translation id="6848716236260083778">Du kan konfigurere et fingeraftryk ved at få dit barn til at røre fingeraftrykslæseren. Dit barns fingeraftryksdata gemmes sikkert og forlader aldrig denne <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6850286078059909152">Tekstfarve</translation>
 <translation id="6851181413209322061">Send brugs- og diagnosticeringsdata. Denne enhed sender i øjeblikket automatisk diagnosticerings- og enhedsdata samt data om brug af apps til Google. Disse data bruges ikke til at identificere dit barn. De bruges kun til forbedring af bl.a. systemets og appens stabilitet. Visse samlede data hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Denne indstilling håndhæves af ejeren. Hvis yderligere web- og appaktivitet er aktiveret for dit barn, gemmes disse data muligvis på barnets Google-konto.</translation>
@@ -7481,6 +7478,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8379156816349755485">Når du logger ind, gemmes der et unikt godkendelsestoken, som anvendes ved alle fremtidige kvalificerede downloads.</translation>
 <translation id="8379878387931047019">Denne enhed understøtter ikke den type sikkerhedsnøgle, der anmodes om på dette website</translation>
 <translation id="8379991678458444070">Tilføj denne fane som bogmærke, så du hurtigt kan vende tilbage hertil</translation>
+<translation id="8380941800586852976">Farlig</translation>
 <translation id="8382715499079447151">Visningsbeskyttelse</translation>
 <translation id="8382913212082956454">Kopier mailadress&amp;e</translation>
 <translation id="8383266303049437646"><ph name="BEGIN_PARAGRAPH1" />Prøv disse fejlfindingstrin:
@@ -7874,7 +7872,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8779944680596936487">Websites kan kun bruge cookies til at se din browseraktivitet på deres eget website</translation>
 <translation id="8780123805589053431">Hent billedbeskrivelser fra Google</translation>
 <translation id="8780443667474968681">Talesøgning er deaktiveret.</translation>
-<translation id="8780872768304638315">Elementet kunne ikke gemmes på</translation>
 <translation id="8781834595282316166">Ny fane i gruppe</translation>
 <translation id="8782565991310229362">Start af kioskapplikationen blev annulleret.</translation>
 <translation id="8783526165720272136">Beskedapps</translation>

@@ -135,6 +135,12 @@
             如果您将此选项留空，上述三种方案都可以使用。</translation>
 <translation id="1153306961094113710">允许进行远程调试</translation>
 <translation id="115699958189272121">报告 <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" />事件</translation>
+<translation id="1157003104143964656">此设置用于启用或停用登录拦截功能。
+
+      如果此政策未设置或已启用，当用户在网络上添加了 Google 帐号时，系统会触发登录拦截对话框，因而用户可将该帐号移至另一份（新的或现有的）资料中，这样做可能会对用户有好处。
+
+      如果此政策已停用，系统不会触发登录拦截对话框。
+      如果此政策已停用，而且受管理的帐号的资料是由 <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> 强制分隔，系统仍会显示一个对话框。</translation>
 <translation id="1158844608156732189">Kerberos 配置（每个数组项各占 1 行），请参阅 https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html。</translation>
 <translation id="1160479894929412407">允许使用 QUIC 协议</translation>
 <translation id="1160939557934457296">禁止从安全浏览警告页面继续访问</translation>
@@ -3084,22 +3090,6 @@
 <translation id="4463675333222095358">启用快速解答单位换算功能</translation>
 <translation id="4464365009416584564">停用 <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="4467952432486360968">阻止第三方 Cookie</translation>
-<translation id="4471718219410856003">此政策的作用是覆盖 Chrome 用于设置 First-Party Sets 功能的集合列表。
-
-      当为此政策提供一个空目录时，Chrome 会使用 First-Party Sets 的公开列表。
-
-      如果您在此政策的“replacements”列表中指定一个集合，则公开列表中与其相关的所有集合都将从 Chrome 列表中移除，而所提供的集合将添加到 Chrome 列表中。如果您在此政策的“additions”列表中指定一个集合，Chrome 列表中与其相关的所有集合都会更新，以便将提供的集合加入列表中，同时Chrome 的 First-Party Sets 列表仍将保持无交集。
-
-      Chrome 所使用的 First-Party Sets 列表不得与其他列表存在交集，两个 First-Party Sets 的政策列表在各自内部以及互相之间都应无交集，才能应用此政策。
-
-      此外，两个列表中的所有集合都必须遵守 First-Party Sets 的不变量。
-      一个 First-Party Sets 由一个所有者网站以及一个或多个成员网站组成。无论是所有者网站还是成员网站，一个 First-Party Sets 中的所有网站都必须是采用 HTTPS 协议的可注册网域。
-      此外，First-Party Sets 中的每个网站都必须是唯一的，即一个网站不能既是所有者又是成员，而且也不能重复列为 First-Party Set 的成员。
-      请参阅 https://github.com/privacycg/first-party-sets，了解有关 First-Party Sets 的详细信息。
-
-      通配符 (*) 不得用作政策值，也不得用于这些列表中的任何 First-Party Sets。
-
-      此政策提供的所有集合必须是有效的 First-Party Sets，如果所提供的集合无效，则会输出相应的错误结果。</translation>
 <translation id="4472740647327683596">页面的宽度（以微米为单位）</translation>
 <translation id="4474167089968829729">允许将密码保存到密码管理器</translation>
 <translation id="4476769083125004742">如果此政策设为 <ph name="BLOCK_GEOLOCATION_SETTING" />，Android 应用将无法使用位置信息。如果此政策设为任何其他值或未设置，那么当 Android 应用想使用位置信息时，它会询问用户是否同意。</translation>
@@ -5354,11 +5344,6 @@
       屏幕键盘可能会改用紧凑布局，具体取决于输入法。
 
       如果您设置了此政策，用户便无法更改相关设置。</translation>
-<translation id="7060497964524144376">如果此政策已启用，“安全浏览”功能将会信任您指定的网域。该功能将不会检查此类网域是否含有危险资源（例如钓鱼式攻击、恶意软件或垃圾软件）。“安全浏览”功能的下载保护服务将不会检查存放在此类网域中的下载内容。该功能的密码保护服务将不会检查密码重用情况。
-
-      如果此政策未设置，系统便会将默认开启的“安全浏览”保护功能应用于所有资源。
-
-      在 <ph name="MS_WIN_NAME" /> 上，该功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，该功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="7063895219334505671">在这些网站上允许弹出式窗口</translation>
 <translation id="7066292150801784098">禁止远程用户在远程协助会话中操控提权后的窗口</translation>
 <translation id="706669471845501145">允许网站显示桌面通知</translation>
@@ -5692,7 +5677,6 @@
       注意：如果需要执行的操作是暂停，您还可另行设置 <ph name="PRODUCT_OS_NAME" />在暂停前是否锁定屏幕。</translation>
 <translation id="7477149584454865826">一个布尔值标记，用于表明是否应该使用 IPP Everywhere 来设置打印机。</translation>
 <translation id="7477231245051133709">启用“单声道音频”无障碍功能</translation>
-<translation id="7477239290070847560">基于 Zeroconf (mDNS + DNS-SD) 的协议目的地</translation>
 <translation id="7477526482439041787">以列表形式配置一系列规则，防止 <ph name="PRODUCT_OS_NAME" />上发生数据泄露。
       复制并粘贴数据、传输文件、打印、共享屏幕或截屏等操作都可能会导致数据泄露。
 
@@ -6863,6 +6847,15 @@
       基于扩展程序的打印机也称为打印提供程序目的地，包括 <ph name="PRODUCT_NAME" /> 扩展程序名下的所有目的地。
 
       本地打印机也称为本机打印目的地，包括可供本地计算机使用的目的地以及共享的网络打印机。</translation>
+<translation id="875152232570912762">
+      如果此政策在设备级别设为<ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />，系统会强制所有受管理的帐号成为主帐号。
+      如果此政策在帐号级别设为<ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />，该帐号将始终是主帐号，但其配置文件中可设有辅助帐号。
+
+      如果此政策在设备级别设为<ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />，系统会强制所有受管理的帐号成为主帐号。
+      如果此政策在帐号级别设为<ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />，该帐号将始终是主帐号，而且其配置文件中将不会设有任何辅助帐号。
+
+      如果此政策设为<ph name="POLICY_VALUE_NONE" />或未设置，受管理的帐号将不受任何限制。这可能会导致受管理的帐号成为辅助帐号，从而使其无法接收管理员针对该帐号设定的政策。
+    </translation>
 <translation id="8753264624162178499">向用户提供“以图片形式打印”选项，以允许在将打印任务发送到目标打印机之前进行 PDF 光栅化。</translation>
 <translation id="8757552286070680084">Wilco DTC 配置</translation>
 <translation id="8758831693895931466">启用强制性云管理注册</translation>

@@ -177,6 +177,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4600710005438004015">Chrome couldn't update to the latest version, so you're missing out on new features and security fixes.</translation>
 <translation id="4627412468266359539">Optional: Help improve Chrome OS Flex features and performance by automatically sending diagnostic and usage data to Google.</translation>
 <translation id="4633000520311261472">To make Chrome safer, we disabled some extensions that aren't listed in the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> and may have been added without your knowledge.</translation>
+<translation id="469553575393225953">Extensions, apps and themes from unknown sources can harm your device. Chrome recommends only installing them from the Chrome Web Store</translation>
 <translation id="4728575227883772061">Installation failed due to unspecified error. If Google Chrome is currently running, please close it and try again.</translation>
 <translation id="4747730611090640388">Chrome can estimate your interests.  Later, a site that you visit can ask Chrome to see your interests in order to personalise the ads that you see.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -220,6 +221,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="5736850870166430177">If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing</translation>
 <translation id="573759479754913123">About Chrome OS</translation>
 <translation id="5756509061973259733">A Chrome profile with this account already exists on this device</translation>
+<translation id="5763280521700030406">Chrome blocked this file because it's too big for a security check. Try again with files up to 50 MB</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Couldn't launch Chrome. Try again.</translation>
 <translation id="5867197326698922595">Google Chrome is trying to edit passwords.</translation>
@@ -328,8 +330,10 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8394720698884623075">Checks URLs with a list of unsafe sites stored in Chrome</translation>
 <translation id="840084489713044809">Google Chrome wants to export your passwords.</translation>
 <translation id="8416347857511542594">Learn more about ad personalisation in Chrome</translation>
+<translation id="8421734018304082652">Chrome blocked this file because it's encrypted. Ask its owner to decrypt it</translation>
 <translation id="8433638294851456451">To send a number from here to your Android phone, sign in to Chrome on both devices.</translation>
 <translation id="8498858610309223613">A special security update for Google Chrome was just applied. Restart now and we'll restore your tabs.</translation>
+<translation id="8504220326736535258">Chrome blocked this file because it has malware</translation>
 <translation id="8516431725144212809">Your interests as estimated by Chrome</translation>
 <translation id="8521348052903287641">Inbound rule for Google Chrome Dev to allow mDNS traffic.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>

@@ -591,6 +591,7 @@
 <translation id="2542106216580219892">衝浪</translation>
 <translation id="2544546346215446551">管理員已重新啟動你的裝置</translation>
 <translation id="2544644783021658368">單一文件</translation>
+<translation id="254524874071906077">將 Chrome 設為預設瀏覽器</translation>
 <translation id="2546283357679194313">Cookie 和網站資料</translation>
 <translation id="2547466893236767989">網頁設計與開發</translation>
 <translation id="254947805923345898">政策的值無效。</translation>
@@ -2526,6 +2527,7 @@
 <translation id="7998269595945679889">「開啟無痕分頁」按鈕；按下 Enter 鍵即可開啟新的無痕分頁以進行私密瀏覽</translation>
 <translation id="800218591365569300">嘗試關閉其他分頁或程式，以釋出記憶體。</translation>
 <translation id="8004582292198964060">瀏覽器</translation>
+<translation id="8009225694047762179">管理密碼</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{系統會儲存這張卡片和相應的帳單地址。只要登入 <ph name="USER_EMAIL" /> 即可使用。}other{系統會儲存這些卡片和相應的帳單地址。只要登入 <ph name="USER_EMAIL" /> 即可使用。}}</translation>
 <translation id="8025119109950072390">攻擊者可能會試圖透過這個網站誘使你做一些危險的行為，例如安裝軟體或提供個人資訊 (包括密碼、電話號碼或信用卡資料)。</translation>
 <translation id="8026334261755873520">清除瀏覽資料</translation>

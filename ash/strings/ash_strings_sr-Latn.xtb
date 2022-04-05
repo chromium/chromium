@@ -167,6 +167,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1951012854035635156">Pomoćnik</translation>
 <translation id="1954252331066828794">Snimanje ekrana je dovršeno</translation>
 <translation id="1957958912175573503">Podesite jezik</translation>
+<translation id="1961239773406905488">Pregled kamere je sakriven</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Zaključaj ekran</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -184,6 +185,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2047639699071423250">Dodajte ključnu ideju</translation>
 <translation id="2049240716062114887">Ime radne površine je promenjeno u <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Vertikalno</translation>
+<translation id="2064048859448024834">Pregled kamere je uključen</translation>
 <translation id="2066708475850724665">Zaustavi lupu</translation>
 <translation id="2067602449040652523">Osvetljenost tastature</translation>
 <translation id="2078034614700056995">Prevucite udesno pomoću četiri prsta da biste prešli na sledeću radnu površinu</translation>
@@ -440,7 +442,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3630697955794050612">isključeno</translation>
 <translation id="3631369015426612114">Dozvoli obaveštenja iz sledećih izvora</translation>
 <translation id="3638400994746983214">Uključuje/isključuje ekran za privatnost. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171">Sačuvajte <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Ažurirajte isteklo</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Korisnik kojim se upravlja</translation>
 <translation id="3680908746918359504">Obriši sve markere</translation>
@@ -487,6 +488,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Promenite verziju uređaja u prethodnu verziju u roku od 1 minuta}one{Promenite verziju uređaja u prethodnu verziju u roku od # minuta}few{Promenite verziju uređaja u prethodnu verziju u roku od # minuta}other{Promenite verziju uređaja u prethodnu verziju u roku od # minuta}}</translation>
 <translation id="3923494859158167397">Nije podešena nijedna mobilna mreža</translation>
 <translation id="3932043219784172185">Nema povezanih uređaja</translation>
+<translation id="3934456833412894880">Adaptivno punjenje je uključeno. Baterija će ostati na 80% da produži trajanje baterije, a napuniće se do kraja kada vam treba.</translation>
 <translation id="3943857333388298514">Nalepi</translation>
 <translation id="394485226368336402">Podešavanja zvuka</translation>
 <translation id="3945319193631853098">Dodirnite da biste dovršili podešavanje</translation>
@@ -530,7 +532,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="4215497585250573029">Podešavanja VPN-a</translation>
 <translation id="4217571870635786043">Diktiranje</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, instalirana aplikacija, pauzirana</translation>
-<translation id="4223947355273782392">Sačuvajte uređaj <ph name="NAME" /> na <ph name="EMAIL" /> radi bržeg uparivanja sa drugim uređajima</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Otvori podešavanja</translation>
 <translation id="4250229828105606438">Snimak ekrana</translation>
@@ -908,7 +909,6 @@ Novo instaliranje</translation>
 <translation id="6625718907317144388">Obaveštenja aplikacija <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> i druga obaveštenja su skrivena jer je zaštita od pregleda uključena</translation>
 <translation id="6627638273713273709">Taster za pretragu+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> želi da koristi mikrofon</translation>
-<translation id="6630773993843701741">Otvorite podešavanja Bluetooth-a da biste ručno uparili uređaj</translation>
 <translation id="6637729079642709226">Promenite vreme</translation>
 <translation id="6641720045729354415">Uključite ili isključite titl uživo. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> želi da potvrdi da ste to vi</translation>
@@ -1018,7 +1018,6 @@ Novo instaliranje</translation>
 <translation id="7348093485538360975">Tastatura na ekranu</translation>
 <translation id="735745346212279324">Veza sa VPN-om je prekinuta</translation>
 <translation id="7360036564632145207">Ako promenite podešavanje zaštite pristupa podacima za periferne uređaje, možete da optimizujete učinak</translation>
-<translation id="7366890467478514168">Povežite <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Snimi prozor</translation>
 <translation id="7377169924702866686">Caps Lock je uključen.</translation>
 <translation id="7377481913241237033">Povežite se pomoću koda</translation>
@@ -1129,7 +1128,6 @@ Novo instaliranje</translation>
 <translation id="7955885781510802139">Režim visokog kontrasta</translation>
 <translation id="7968693143708939792">Izaberite folder…</translation>
 <translation id="7977927628060636163">Traže se mobilne mreže…</translation>
-<translation id="7980780401175799550">Isprobajte nove načine za kretanje kroz Chrome OS</translation>
 <translation id="7982789257301363584">Mreža</translation>
 <translation id="7984197416080286869">Previše pokušaja otključavanja pomoću otiska prsta</translation>
 <translation id="7994370417837006925">Višestruko prijavljivanje</translation>

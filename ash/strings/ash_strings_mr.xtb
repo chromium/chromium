@@ -167,6 +167,7 @@
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">स्क्रीन रेकॉर्डिंग पूर्ण झाले</translation>
 <translation id="1957958912175573503">तुमची भाषा सेट करा</translation>
+<translation id="1961239773406905488">कॅमेराचे पूर्वावलोकन लपवले आहे</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">लॉक स्क्रीन</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -184,6 +185,7 @@
 <translation id="2047639699071423250">मुख्य कल्पना जोडा</translation>
 <translation id="2049240716062114887">डेस्कचे नाव <ph name="DESK_NAME" /> वर बदलले होते</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
+<translation id="2064048859448024834">कॅमेराचे पूर्वावलोकन सुरू आहे</translation>
 <translation id="2066708475850724665">मॅग्निफायर बंद करा</translation>
 <translation id="2067602449040652523">कीबोर्डची चमक</translation>
 <translation id="2078034614700056995">पुढील डेस्कवर स्विच करण्यासाठी चार बोटांनी उजवीकडे स्‍वाइप करा</translation>
@@ -440,7 +442,6 @@
 <translation id="3630697955794050612">बंद</translation>
 <translation id="3631369015426612114">यांना सूचना पाठवू द्या</translation>
 <translation id="3638400994746983214">गोपनीयता स्क्रीन टॉगल करा. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171"><ph name="NAME" /> सेव्ह करा</translation>
 <translation id="3649505501900178324">अपडेटची मुदत संपली आहे</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> व्यवस्थापित वापरकर्ता</translation>
 <translation id="3680908746918359504">सर्व मार्कर साफ करा</translation>
@@ -530,7 +531,6 @@
 <translation id="4215497585250573029">VPN सेटिंग्ज</translation>
 <translation id="4217571870635786043">डिक्टेशन</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, इंस्टॉल केलेले अ‍ॅप, थांबवले आहे</translation>
-<translation id="4223947355273782392">तुमच्या इतर डिव्हाइसशी जलद पेअरिंग करण्यासाठी <ph name="NAME" /> हे <ph name="EMAIL" /> वर सेव्ह करा</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">सेटिंग्ज उघडा</translation>
 <translation id="4250229828105606438">स्क्रीनशॉट</translation>
@@ -908,7 +908,6 @@
 <translation id="6625718907317144388">पाहण्यासंबंधित संरक्षण सुरू असल्याने, <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> आणि इतर सूचना लपवल्या आहेत</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> ला मायक्रोफोन वापरायचा आहे</translation>
-<translation id="6630773993843701741">डिव्हाइस मॅन्युअली पेअर करण्यासाठी ब्लूटूथ सेटिंग्ज उघडा</translation>
 <translation id="6637729079642709226">वेळ बदला</translation>
 <translation id="6641720045729354415">लाइव्ह कॅप्शन टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490">हे तुम्हीच असल्याची <ph name="ORIGIN_NAME" /> ला खात्री करायची आहे</translation>
@@ -1018,7 +1017,6 @@
 <translation id="7348093485538360975">ऑन-स्क्रीन कीबोर्ड</translation>
 <translation id="735745346212279324">VPN डिस्कनेक्ट केले</translation>
 <translation id="7360036564632145207">पेरिफेरल सेटिंगसाठी डेटा अ‍ॅक्सेस संरक्षण बदलल्याने परफॉर्मन्स ऑप्टिमाइझ होऊ शकतो</translation>
-<translation id="7366890467478514168"><ph name="NAME" /> कनेक्ट करा</translation>
 <translation id="7371404428569700291">विंडो रेकॉर्ड करा</translation>
 <translation id="7377169924702866686">Caps Lock सुरू आहे.</translation>
 <translation id="7377481913241237033">कोड वापरून कनेक्ट करा</translation>
@@ -1129,7 +1127,6 @@
 <translation id="7955885781510802139">उच्च काँट्रास्ट मोड</translation>
 <translation id="7968693143708939792">फोल्डर निवडा…</translation>
 <translation id="7977927628060636163">मोबाइल नेटवर्क शोधत आहे...</translation>
-<translation id="7980780401175799550">Chrome OS नेव्हिगेट करण्याचे नवीन मार्ग वापरून पहा</translation>
 <translation id="7982789257301363584">नेटवर्क</translation>
 <translation id="7984197416080286869">खूप जास्त फिंगरप्रिंट प्रयत्न</translation>
 <translation id="7994370417837006925">मल्टिपल साइन इन</translation>

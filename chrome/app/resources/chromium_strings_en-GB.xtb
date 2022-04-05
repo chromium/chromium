@@ -15,6 +15,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="151962892725702025">Chromium OS could not sync your data because Sync is not available for your domain.</translation>
 <translation id="1524282610922162960">Share a Chromium tab</translation>
 <translation id="1553461853655228091">Chromium needs permission to access your camera to create a 3D map of your surroundings</translation>
+<translation id="1602421994560205104">Chromium blocked this file because it's too big for a security check. Try again with files up to 50 MB</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Your administrator requires that you relaunch Chromium to apply an update}=1{Your administrator requires that you relaunch Chromium to apply an update. Your Incognito window won't reopen.}other{Your administrator requires that you relaunch Chromium to apply an update. Your # Incognito windows won't reopen.}}</translation>
 <translation id="1625909126243026060">Review key privacy and security controls in Chromium</translation>
 <translation id="1632539827495546968">If you only want to use this account once, you can use <ph name="GUEST_LINK_BEGIN" />guest mode<ph name="GUEST_LINK_END" /> in Chromium browser. If you want to add an account for someone else, <ph name="LINK_BEGIN" />add a new person<ph name="LINK_END" /> to your <ph name="DEVICE_TYPE" />.
@@ -222,6 +223,7 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="673636774878526923">To access your Chromium stuff across all your devices, sign in, then turn on sync.</translation>
 <translation id="6774082503108938489">Your parent has turned off 'Permissions for sites, apps and extensions' for Chromium. Enabling this <ph name="EXTENSION_TYPE_PARAMETER" /> is not allowed.</translation>
 <translation id="6847869444787758381">Chromium lets you know if your passwords are ever compromised</translation>
+<translation id="6852530923436401894">Chromium blocked this file because it has malware</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copied to Chromium)</translation>
 <translation id="6873893289264747459">Chromium found that '<ph name="EXTENSION_NAME" />' contains malware</translation>
@@ -240,6 +242,7 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="7218568399872925918">Sites that you visit remember your information until you close Chromium</translation>
 <translation id="7223968959479464213">Task Manager - Chromium</translation>
 <translation id="7246575524853130370">Your interests as estimated by Chromium</translation>
+<translation id="7265671031637041256">Chromium blocked this file because it's encrypted. Ask its owner to decrypt it</translation>
 <translation id="7309928523159922338">Ad measurement allows sites that you visit to request information from Chromium that helps the site measure the performance of their ads. Ad measurement restricts cross-site tracking by transferring as little information as possible between sites.</translation>
 <translation id="731795002583552498">Updating Chromium</translation>
 <translation id="7318036098707714271">Your preferences file is corrupt or invalid.
@@ -279,6 +282,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7898472181347242998">To see if your device is up to date, go to <ph name="LINK_BEGIN" />Chromium OS Settings<ph name="LINK_END" /></translation>
 <translation id="7937630085815544518">You were signed in to Chromium as <ph name="USER_EMAIL_ADDRESS" />. Please use the same account to sign in again.</translation>
 <translation id="7975919845073681630">This is a secondary installation of Chromium, and cannot be made your default browser.</translation>
+<translation id="7997934263947464652">Extensions, apps and themes from unknown sources can harm your device. Chromium recommends only installing them from the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Once Chromium has access, websites will be able to ask you for access.</translation>
 <translation id="8045118833343856403">The following accounts are not signed into any Chromium profiles. If you want to use an account in another profile, remove that profile first.</translation>
 <translation id="8105840573057009683">Chromium needs location permission for this site</translation>

@@ -591,6 +591,7 @@
 <translation id="2542106216580219892">서핑</translation>
 <translation id="2544546346215446551">관리자가 기기를 다시 시작했습니다</translation>
 <translation id="2544644783021658368">단일 문서</translation>
+<translation id="254524874071906077">기본 브라우저로 Chrome 설정</translation>
 <translation id="2546283357679194313">쿠키 및 사이트 데이터</translation>
 <translation id="2547466893236767989">웹 디자인 및 개발</translation>
 <translation id="254947805923345898">정책 값이 유효하지 않습니다.</translation>
@@ -2524,7 +2525,9 @@
 <translation id="7995512525968007366">지정되지 않음</translation>
 <translation id="7998269595945679889">시크릿 탭 열기 버튼, 새 시크릿 탭을 열어 비공개로 탐색하려면 Enter 누르기</translation>
 <translation id="800218591365569300">다른 탭이나 프로그램을 종료하여 메모리를 확보하세요.</translation>
+<translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">브라우저</translation>
+<translation id="8009225694047762179">비밀번호 관리</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{이 카드와 청구서 수신 주소가 저장됩니다. <ph name="USER_EMAIL" /> 계정으로 로그인하면 카드를 사용할 수 있습니다.}other{이 카드와 청구서 수신 주소가 저장됩니다. <ph name="USER_EMAIL" /> 계정으로 로그인하면 카드를 사용할 수 있습니다.}}</translation>
 <translation id="8025119109950072390">이 사이트의 공격자가 소프트웨어를 설치하거나 개인정보(예: 비밀번호, 전화번호, 신용카드)를 공개하는 등의 위험한 행동을 하도록 사용자를 속일 수 있습니다.</translation>
 <translation id="8026334261755873520">인터넷 사용 기록 삭제</translation>

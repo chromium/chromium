@@ -439,7 +439,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3630697955794050612">poissa päältä</translation>
 <translation id="3631369015426612114">Salli ilmoitukset seuraavista:</translation>
 <translation id="3638400994746983214">Näytönsuoja päälle/pois. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171">Tallenna <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Päivitys myöhässä</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> ylläpidetty käyttäjä</translation>
 <translation id="3680908746918359504">Poista kaikki merkinnät</translation>
@@ -529,7 +528,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4215497585250573029">VPN-asetukset</translation>
 <translation id="4217571870635786043">Sanelu</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, asennettu sovellus, keskeytetty</translation>
-<translation id="4223947355273782392">Tallenna <ph name="NAME" /> tilille <ph name="EMAIL" />, jotta laiteparin muodostaminen muiden laitteidesi kanssa sujuu nopeammin</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Avaa asetukset</translation>
 <translation id="4250229828105606438">Kuvakaappaus</translation>
@@ -907,7 +905,6 @@ Uusi asennus</translation>
 <translation id="6625718907317144388">Ilmoitukset (<ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> ja muita) on piilotettu, koska urkinnan esto on päällä</translation>
 <translation id="6627638273713273709">Haku+Vaihto+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> haluaa käyttää mikrofonia</translation>
-<translation id="6630773993843701741">Avaa Bluetooth-asetukset ja muodosta laitepari manuaalisesti</translation>
 <translation id="6637729079642709226">Muuta aikaa</translation>
 <translation id="6641720045729354415">Livetekstitys päälle tai pois päältä. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> haluaa varmistaa henkilöllisyytesi</translation>
@@ -1017,7 +1014,6 @@ Uusi asennus</translation>
 <translation id="7348093485538360975">Näyttönäppäimistö</translation>
 <translation id="735745346212279324">VPN-yhteys katkaistu</translation>
 <translation id="7360036564632145207">Datan käyttösuoja-asetuksen muuttaminen voi optimoida lisälaitteiden toimintaa</translation>
-<translation id="7366890467478514168">Yhdistä <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Tallenna ikkuna</translation>
 <translation id="7377169924702866686">Caps Lock on päällä.</translation>
 <translation id="7377481913241237033">Muodosta yhteys koodilla</translation>
@@ -1128,7 +1124,6 @@ Uusi asennus</translation>
 <translation id="7955885781510802139">Suurikontrastinen tila</translation>
 <translation id="7968693143708939792">Valitse kansio…</translation>
 <translation id="7977927628060636163">Haetaan mobiiliverkkoja…</translation>
-<translation id="7980780401175799550">Kokeile Chrome-käyttöjärjestelmän uusia navigointitapoja</translation>
 <translation id="7982789257301363584">Verkko</translation>
 <translation id="7984197416080286869">Liian monta sormenjälkiyritystä</translation>
 <translation id="7994370417837006925">Kirjautuminen useaan tiliin</translation>

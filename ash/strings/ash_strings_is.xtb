@@ -440,7 +440,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3630697955794050612">slökkt</translation>
 <translation id="3631369015426612114">Leyfa tilkynningar frá eftirfarandi</translation>
 <translation id="3638400994746983214">Kveikja/slökkva á persónuverndarskjá. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171">Vista <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Uppfærsla er komin fram yfir á tíma</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Stýrður notandi</translation>
 <translation id="3680908746918359504">Hreinsa alla penna</translation>
@@ -530,7 +529,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4215497585250573029">VPN-stillingar</translation>
 <translation id="4217571870635786043">Upplestur</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, uppsett forrit, í bið</translation>
-<translation id="4223947355273782392">Vistaðu <ph name="NAME" /> í <ph name="EMAIL" /> til að vera fljótari að para það við önnur tæki</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Opna stillingar</translation>
 <translation id="4250229828105606438">Skjámynd</translation>
@@ -908,7 +906,6 @@ Ný uppsetning</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> og fleiri tilkynningar eru faldar vegna þess að kveikt er á gægjuvörn</translation>
 <translation id="6627638273713273709">Leit+shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> vill nota hljóðnemann</translation>
-<translation id="6630773993843701741">Opnaðu Bluetooth-stillingar til að para tækið handvirkt</translation>
 <translation id="6637729079642709226">Breyta tíma</translation>
 <translation id="6641720045729354415">Velja/afvelja skjátexta í rauntíma. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> vill staðfesta að þetta sért þú</translation>
@@ -1018,7 +1015,6 @@ Ný uppsetning</translation>
 <translation id="7348093485538360975">Skjályklaborð</translation>
 <translation id="735745346212279324">VPN ótengt</translation>
 <translation id="7360036564632145207">Hægt er að auka afköst með því að breyta stillingunni „gagnaaðgangsvörn jaðartækja“</translation>
-<translation id="7366890467478514168">Tengja <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Upptökugluggi</translation>
 <translation id="7377169924702866686">Kveikt er á hástafalás.</translation>
 <translation id="7377481913241237033">Tengjast með kóða</translation>
@@ -1129,7 +1125,6 @@ Ný uppsetning</translation>
 <translation id="7955885781510802139">Mikil birtuskil</translation>
 <translation id="7968693143708939792">Veldu möppu...</translation>
 <translation id="7977927628060636163">Leitar að farsímakerfum...</translation>
-<translation id="7980780401175799550">Prófaðu nýjar leiðir til að nota Chrome OS</translation>
 <translation id="7982789257301363584">Net</translation>
 <translation id="7984197416080286869">Of margar tilraunir til að nota fingrafar</translation>
 <translation id="7994370417837006925">Innskráning á marga reikninga</translation>

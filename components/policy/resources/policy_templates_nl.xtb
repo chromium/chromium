@@ -1925,6 +1925,7 @@ Zie https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="3086995894968271156">De Cast-receiver instellen in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3087346703976541109">Geeft aan of SharedArrayBuffers kan worden gebruikt in een context zonder cross-origin-isolatie</translation>
 <translation id="3088557424854005813">Attest</translation>
+<translation id="3090283903269516279">Het model voor aangepast opladen uitzetten op <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3091832372132789233">Batterijen opladen van apparaten die ook zijn aangesloten op een externe voedingsbron.</translation>
 <translation id="3092059499596000593">De standaardprinter van het systeem gebruiken als standaardprinter in het afdrukvoorbeeld</translation>
 <translation id="309416443108680956">Hiermee wordt aangegeven wat er gebeurt als een gebruiker die verificatie via een beveiligingstoken uitvoert (bijv. met een smartcard), die token verwijdert tijdens een sessie. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: Er gebeurt niets. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: Het scherm wordt vergrendeld tot de gebruiker de verificatie opnieuw uitvoert. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: De sessie wordt beëindigd en de gebruiker wordt uitgelogd. Als je dit beleid niet instelt, geldt de standaardwaarde <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />.</translation>
@@ -2722,6 +2723,13 @@ Als je dit beleid instelt, geef je op welke URL's moeten worden toegestaan als o
       Als je het beleid niet toepast of niet instelt, is <ph name="PLUGIN_VM_NAME" /> niet aangezet voor het apparaat.</translation>
 <translation id="3973371701361892765">Archief nooit automatisch verbergen</translation>
 <translation id="3977304360459208438">Gebruik de standaardinstellingen voor 3DES cipher suites in TLS</translation>
+<translation id="3978606026906763896">Als je het beleid niet toepast, hebben pop-ups die <ph name="BLANK_PAGE_NAME" /> targeten, toegang (via JavaScript) tot de pagina die het openen van de pop-up heeft aangevraagd.
+
+      Als je het beleid toepast of niet instelt, wordt de property <ph name="WINDOW_OPENER_PROPERTY" /> ingesteld op <ph name="NULL_VALUE" />, tenzij het anker <ph name="REL_OPENER_ATTRIBUTE" /> opgeeft.
+
+      Dit beleid is verwijderd in <ph name="PRODUCT_NAME" />-versie 102.
+
+      Zie https://chromestatus.com/feature/6140064063029248.</translation>
 <translation id="3979738908158213640">URL's die toegang krijgen om apparaatattesten uit te voeren tijdens SAML-verificatie</translation>
 <translation id="3984028218719007910">Bepaalt of <ph name="PRODUCT_OS_NAME" /> na het afmelden lokale accountgegevens bewaart. Als dit is ingesteld op 'true', bewaart <ph name="PRODUCT_OS_NAME" /> geen bestaande accounts en worden alle gegevens over de gebruikerssessie na het afmelden gewist. Als dit beleid is ingesteld op 'false' of niet is geconfigureerd, bewaart het apparaat mogelijk (gecodeerde) lokale gebruikersgegevens.</translation>
 <translation id="398884292557092447">Als je het beleid instelt op True of niet instelt, krijgen gebruikers de controle over 'Automatisch invullen' voor creditcards in de UI.
@@ -3093,24 +3101,6 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 <translation id="4463675333222095358">Eenheidsconversie van Snelle antwoorden aanzetten</translation>
 <translation id="4464365009416584564"><ph name="CHROME_SYNC_NAME" /> uitzetten</translation>
 <translation id="4467952432486360968">Cookies van derden blokkeren</translation>
-<translation id="4471718219410856003">Met dit beleid kan de lijst met reeksen worden overschreven die Chrome gebruikt voor First-Party Sets-functies.
-
-      Als het woordenboek voor dit beleid leeg is, gebruikt Chrome de publieke lijst van First-Party Sets.
-
-      Als dit beleid een reeks krijgt in de lijst 'replacements', worden alle reeksen in de publieke lijst die ermee kruisen verwijderd van de lijst van Chrome en wordt de opgegeven reeks toegevoegd aan de lijst van Chrome.
-
-      Als dit beleid een reeks krijgt in de lijst 'additions', worden alle reeksen in de lijst van Chrome die ermee kruisen geüpdatet zodat de opgegeven reeks aan de lijst wordt toegevoegd, terwijl de lijst van First-Party Sets van Chrome gescheiden blijft.
-
-      De lijst van First-Party Sets van Chrome moet gescheiden blijven, dus als je dit beleid wilt toepassen, moeten beide beleidslijsten van First-Party Sets intern en ten opzichte van elkaar gescheiden blijven.
-
-      Daarnaast moeten alle reeksen in beide lijsten voldoen aan de niet-variabelen van een First-Party Set.
-      Een First-Party Set bestaat uit een eigenaarssite en een of meer lidsites. Alle sites in een First-Party Set moeten een registreerbaar domein zijn dat via HTTPS wordt gehost, ongeacht of het een eigenaars- of lidsite is.
-      Elke site in een First-Party Set moet ook uniek zijn. Dit betekent dat een site niet zowel eigenaar als lid kan zijn en maar één keer als lid van een First-Party Set kan worden vermeld.
-      Zie https://github.com/privacycg/first-party-sets voor meer informatie over First-Party Sets.
-
-      Jokertekens (*) worden zowel in First-Party Sets als in deze lijsten niet ondersteund als beleidswaarde.
-
-      Alle reeksen die in dit beleid worden opgegeven, moeten geldige First-Party Sets zijn. Zo niet, dan krijg je de relevante foutmelding.</translation>
 <translation id="4472740647327683596">Breedte van de pagina in micrometers</translation>
 <translation id="4474167089968829729">Opslag van wachtwoorden in Wachtwoordmanager aanzetten</translation>
 <translation id="4476769083125004742">Als dit beleid wordt ingesteld op <ph name="BLOCK_GEOLOCATION_SETTING" />, hebben de Android-apps geen toegang tot locatiegegevens. Als je een andere waarde voor dit beleid instelt of het beleid niet instelt, wordt de gebruiker om toestemming gevraagd wanneer een Android-app toegang tot locatiegegevens probeert te krijgen.</translation>
@@ -4217,6 +4207,7 @@ Als je dit beleid instelt, kun je bepalen of een gebruiker mag inloggen bij <ph 
 <translation id="5815990343032461023">Verouderd gedrag: Chrome-kiosk-apps worden geüpdatet door het extensiesysteem via de update-URL uit het extensiemanifest en door de cachingmanager via de update-URL uit het beleid</translation>
 <translation id="582857022372205358">Dubbelzijdig afdrukken over korte zijde aanzetten</translation>
 <translation id="5830196507442186669">Toestaan dat apparaten <ph name="BOREALIS_NAME" /> gebruiken op <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="5831286647961890695">Het model voor aangepast opladen aanzetten op <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="5832274826894536455">Beëindigde beleidsregels</translation>
 <translation id="5835253272509953988">Als je het beleid toepast, kunnen gebruikers met <ph name="PRODUCT_NAME" /> checken of ingevoerde gebruikersnamen en wachtwoorden deel uitmaken van een datalek.
 
@@ -5361,11 +5352,6 @@ Als je dit beleid niet instelt, wordt het schermtoetsenbord getoond als de table
       Voor het schermtoetsenbord kan een compacte indeling worden gebruikt afhankelijk van de invoermethode.
 
       Als je het beleid instelt, kunnen gebruikers het niet wijzigen.</translation>
-<translation id="7060497964524144376">Als je dit beleid toepast, vertrouwt Safe Browsing de domeinen die je aangeeft. De functie checkt deze niet op gevaarlijke bronnen zoals phishing, malware of ongewenste software. De service voor downloadbeveiliging van Safe Browsing checkt downloads die worden gehost op deze domeinen niet. De service voor wachtwoordbeveiliging checkt niet of wachtwoorden opnieuw worden gebruikt.
-
-      Als je het beleid niet toepast, wordt de standaardbescherming van Safe Browsing toegepast op alle resources.
-
-      In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="7063895219334505671">Pop-ups toestaan ​​op deze sites</translation>
 <translation id="7066292150801784098">Externe gebruikers niet toestaan om vensters met verhoogde bevoegdheid te gebruiken tijdens een sessie voor support op afstand</translation>
 <translation id="706669471845501145">Sites toestaan bureaubladmeldingen te tonen</translation>
@@ -5702,7 +5688,6 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
       Opmerking: Als de actie Opschorten is, kan <ph name="PRODUCT_OS_NAME" /> afzonderlijk worden ingesteld om het scherm wel of niet te vergrendelen voordat de opschorting wordt geactiveerd.</translation>
 <translation id="7477149584454865826">Booleaanse markering die aangeeft of IPP Everywhere moet worden gebruikt om de printer in te stellen.</translation>
 <translation id="7477231245051133709">Toegankelijkheidsfunctie voor monogeluid aanzetten</translation>
-<translation id="7477239290070847560">Op zeroconf gebaseerde (mDNS + DNS-SD) protocolbestemmingen</translation>
 <translation id="7477526482439041787">Hiermee stel je een lijst op met regels om datalekken op <ph name="PRODUCT_OS_NAME" /> te voorkomen.
       Een datalek kan optreden als je gegevens kopieert en plakt, gegevens overdraagt, afdrukt, je scherm deelt of screenshots maakt, enzovoort.
 
@@ -6238,6 +6223,7 @@ De URL-lijsten <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> en <ph name="ENTE
 
       De <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> geeft de minimale hoeveelheid gegevens in bytes aan die de patrooncontrole activeert. Dit betekent dat een schrijfactie naar het klembord vanaf een geblokkeerde URL is toegestaan als de grootte van de gekopieerde gegevens kleiner is dan de waarde in dit veld. De standaardwaarde is 100 bytes als het veld niet is ingesteld.
       </translation>
+<translation id="8035570672225663428">Het model voor aangepast opladen aanzetten om het oplaadproces te onderbreken om de batterijduur te verlengen</translation>
 <translation id="8044493735196713914">Opstartmodus van apparaat melden</translation>
 <translation id="80453040817068401">De <ph name="LACROS_NAME" />-browser beschikbaar maken</translation>
 <translation id="804619600634661088">Het gebruik van foutopsporing op afstand toestaan</translation>
@@ -6275,6 +6261,10 @@ De URL-lijsten <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> en <ph name="ENTE
 <translation id="8099880303030573137">Inactieve vertraging wanneer op de batterij wordt gewerkt</translation>
 <translation id="8101381354936029836">Beleid van atomische groep:</translation>
 <translation id="8102913158860568230">Standaardinstelling voor mediastreams</translation>
+<translation id="8103563905615378194">Geeft aan of een model voor aangepast opladen het oplaadproces mag onderbreken om de batterijduur te verlengen.
+
+      Als het apparaat gebruikmaakt van wisselstroom, evalueert het model voor aangepast opladen of het oplaadproces moet worden onderbroken om de batterijduur te verlengen. Onderbreekt het model voor aangepast opladen het oplaadproces, dan wordt de batterij op een bepaald niveau gehouden (bijv. 80%) en wordt het apparaat helemaal opgeladen als de gebruiker dat nodig heeft.
+      Als je dit beleid toepast of niet instelt, wordt het model voor aangepast opladen aangezet en mag dit het oplaadproces onderbreken om de batterijduur te verlengen. Als je dit beleid niet toepast, is het model voor aangepast opladen niet van invloed op het oplaadproces.</translation>
 <translation id="8104962233214241919">Clientcertificaten automatisch selecteren voor deze sites</translation>
 <translation id="8114382167597081590">'Beperkte modus' niet afdwingen op YouTube</translation>
 <translation id="8117921351531866504">Hiermee kun je instellen of websites controleren of de gebruiker betaalmethoden heeft opgeslagen.

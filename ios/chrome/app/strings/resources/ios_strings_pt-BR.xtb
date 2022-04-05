@@ -168,6 +168,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2421044535038393232">Continuar editando</translation>
 <translation id="2434405374328098816">Você já salvou uma senha para "<ph name="USERNAME" />" em <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Mostrar senha</translation>
+<translation id="2469960372084740698">Desativar o recurso Navegação segura?</translation>
 <translation id="2473876017985765807">Você já salvou uma senha em <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Não selecionada</translation>
 <translation id="2497852260688568942">A sincronização foi desativada pelo administrador</translation>
@@ -582,6 +583,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6144589619057374135">Abrir ${url} na navegação anônima</translation>
 <translation id="6149061208933997199">Usar senha</translation>
 <translation id="6159839020698489198">opcional</translation>
+<translation id="6173386249456979368">Proteção mais rápida e proativa contra sites, extensões e downloads perigosos. Avisa você sobre violações de senha. Requer que dados de navegação sejam enviados ao Google</translation>
 <translation id="6177442314419606057">Pesquisar no Chrome</translation>
 <translation id="6184086493125982861">Mostrar guias</translation>
 <translation id="6187302354554850004">Última sincronização: <ph name="LAST_USED_TIME" /></translation>

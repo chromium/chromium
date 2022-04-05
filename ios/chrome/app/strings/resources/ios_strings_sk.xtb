@@ -168,6 +168,7 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="2421044535038393232">Ďalej upravovať</translation>
 <translation id="2434405374328098816">Heslo pre používateľské meno <ph name="USERNAME" /> ste už uložili na <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Zobraziť heslo</translation>
+<translation id="2469960372084740698">Chcete vypnúť Bezpečné prehliadanie?</translation>
 <translation id="2473876017985765807">Už ste si uložili heslo pre web <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Nevybrané</translation>
 <translation id="2497852260688568942">Synchronizácia je zakázaná správcom</translation>
@@ -582,6 +583,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6144589619057374135">Otvoriť adresu ${url} v režime inkognito</translation>
 <translation id="6149061208933997199">Použiť heslo</translation>
 <translation id="6159839020698489198">nepovinné</translation>
+<translation id="6173386249456979368">Rýchlejšia a proaktívna ochrana pred nebezpečnými webmi, stiahnutým súbormi a rozšíreniami. Upozorní vás na porušenie ochrany hesla. Vyžaduje odoslanie dát prehliadania Googlu.</translation>
 <translation id="6177442314419606057">Hľadať v Chrome</translation>
 <translation id="6184086493125982861">Zobraziť karty</translation>
 <translation id="6187302354554850004">Synchronizované <ph name="LAST_USED_TIME" /></translation>

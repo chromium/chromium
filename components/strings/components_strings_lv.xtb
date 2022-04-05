@@ -595,6 +595,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2542106216580219892">Sērfošana</translation>
 <translation id="2544546346215446551">Administrators restartēja jūsu ierīci</translation>
 <translation id="2544644783021658368">Viens dokuments</translation>
+<translation id="254524874071906077">Iestata Chrome par noklusējuma pārlūku</translation>
 <translation id="2546283357679194313">Sīkfaili un vietņu dati</translation>
 <translation id="2547466893236767989">Tīmekļa dizains un izstrāde</translation>
 <translation id="254947805923345898">Politikas vērtība nav derīga.</translation>
@@ -2534,6 +2535,7 @@ Papildu informācija:
 <translation id="7998269595945679889">Poga “Atvērt inkognito cilni”. Lai privātai pārlūkošanai atvērtu jaunu inkognito cilni, nospiediet taustiņu Enter.</translation>
 <translation id="800218591365569300">Aizveriet citas cilnes vai programmas, lai atbrīvotu vietu atmiņā.</translation>
 <translation id="8004582292198964060">Pārlūkprogramma</translation>
+<translation id="8009225694047762179">Pārvaldīt paroles</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Šī karte un tās norēķinu adrese tiks saglabāta. Jūs varēsiet to izmantot, kad būsiet pierakstījies kontā <ph name="USER_EMAIL" />.}zero{Šīs kartes un to norēķinu adreses tiks saglabātas. Jūs varēsiet tās izmantot, kad būsiet pierakstījies kontā <ph name="USER_EMAIL" />.}one{Šīs kartes un to norēķinu adreses tiks saglabātas. Jūs varēsiet tās izmantot, kad būsiet pierakstījies kontā <ph name="USER_EMAIL" />.}other{Šīs kartes un to norēķinu adreses tiks saglabātas. Jūs varēsiet tās izmantot, kad būsiet pierakstījies kontā <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8025119109950072390">Uzbrucēji šajā vietnē var mudināt jūs veikt bīstamas darbības, piemēram, instalēt programmatūru vai atklāt savu personas informāciju (piemēram, paroles, tālruņa numurus vai informāciju par kredītkartēm).</translation>
 <translation id="8026334261755873520">Notīrīt pārlūkošanas datus</translation>

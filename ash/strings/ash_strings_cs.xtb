@@ -440,7 +440,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3630697955794050612">vypnuto</translation>
 <translation id="3631369015426612114">Povolit oznámení z následujících zdrojů</translation>
 <translation id="3638400994746983214">Přepnout obrazovku ochrany soukromí. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171">Uložit zařízení <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Opožděná aktualizace</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – spravovaný uživatel</translation>
 <translation id="3680908746918359504">Vymazat všechny značky</translation>
@@ -530,7 +529,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4215497585250573029">Nastavení sítě VPN</translation>
 <translation id="4217571870635786043">Diktování</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, instalovaná aplikace, pozastaveno</translation>
-<translation id="4223947355273782392">Uložte si zařízení <ph name="NAME" /> do účtu <ph name="EMAIL" />, aby ho bylo možné rychleji spárovat s jinými zařízeními</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Otevřít Nastavení</translation>
 <translation id="4250229828105606438">Snímek obrazovky</translation>
@@ -908,7 +906,6 @@ Nová instalace</translation>
 <translation id="6625718907317144388">Oznámení aplikací <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> a další oznámení jsou skryta, protože je zapnutá ochrana před špehováním</translation>
 <translation id="6627638273713273709">Vyhledávací tlačítko + Shift + K</translation>
 <translation id="6629480180092995136">Aplikace <ph name="APP_NAME" /> chce používat mikrofon</translation>
-<translation id="6630773993843701741">Otevřete nastavení Bluetooth a spárujte zařízení ručně</translation>
 <translation id="6637729079642709226">Změnit čas</translation>
 <translation id="6641720045729354415">Přepínání živého přepisu. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490">Web <ph name="ORIGIN_NAME" /> chce ověřit, zda jste to vy</translation>
@@ -1018,7 +1015,6 @@ Nová instalace</translation>
 <translation id="7348093485538360975">Softwarová klávesnice</translation>
 <translation id="735745346212279324">Síť VPN je odpojena</translation>
 <translation id="7360036564632145207">Změnou nastavení ochrany přístupu k datům pro periferní zařízení můžete optimalizovat výkon</translation>
-<translation id="7366890467478514168">Připojit <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Zaznamenat okno</translation>
 <translation id="7377169924702866686">Caps Lock je zapnutý.</translation>
 <translation id="7377481913241237033">Připojit pomocí kódu</translation>
@@ -1129,7 +1125,6 @@ Nová instalace</translation>
 <translation id="7955885781510802139">Režim vysokého kontrastu</translation>
 <translation id="7968693143708939792">Vyberte složku…</translation>
 <translation id="7977927628060636163">Vyhledávání mobilních sítí...</translation>
-<translation id="7980780401175799550">Vyzkoušejte nové způsoby navigace v Chrome OS</translation>
 <translation id="7982789257301363584">Síť</translation>
 <translation id="7984197416080286869">Příliš mnoho pokusů o odemknutí otiskem prstu</translation>
 <translation id="7994370417837006925">Vícenásobné přihlášení</translation>

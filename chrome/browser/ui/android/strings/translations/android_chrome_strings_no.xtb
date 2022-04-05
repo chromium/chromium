@@ -212,6 +212,7 @@ Trykk på et ord for å søke. For å finstemme søket, trykk og hold inne for �
 <translation id="2141396931810938595">Basert på bruken din</translation>
 <translation id="214888715418183969">Velg hva du synes er greit å dele med Chrome. Målingene du deler, brukes til å gjøre funksjonene, ytelsen og stabiliteten til Chrome bedre.</translation>
 <translation id="2149973817440762519">Rediger bokmerke</translation>
+<translation id="2155214902713132423">Denne bekreftelsesmåten er ikke tilgjengelig for denne enheten. Velg et annet alternativ på den andre enheten.</translation>
 <translation id="2157851137955077194">For å dele noe på telefonen med en annen enhet, slå på synkronisering i Chrome-innstillingene på begge enhetene</translation>
 <translation id="2158408438301413340">Chrome kunne ikke sjekke alle passordene</translation>
 <translation id="2169830938017475061">Nå</translation>
@@ -288,6 +289,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="2561519700418191927">Videoforhåndsvisninger</translation>
 <translation id="2567385386134582609">BILDE</translation>
 <translation id="2567545343356994513">Raskere, proaktiv beskyttelse mot farlige nettsteder, nedlastinger og utvidelser</translation>
+<translation id="2569733278091928697">Med Chrome-varsler kan du enkelt administrere mediekontroller, inkognitoøkter, nedlastinger med mer</translation>
 <translation id="2571711316400087311">Tilby å sende sider på andre språk til Google Oversetter</translation>
 <translation id="2573452357057307036">Finn ut hvordan du angir Chrome som standard</translation>
 <translation id="2581165646603367611">Dette sletter informasjonskapsler, buffere og annen data fra nettsteder Chrome ikke tror er viktige.</translation>
@@ -475,6 +477,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="3568688522516854065">For å få fanene dine fra de andre enhetene du bruker, logg på og slå på synkronisering.</translation>
 <translation id="357465026686164600">Telefon som sikkerhetsnøkkel</translation>
 <translation id="3577473026931028326">Noe gikk galt. Prøv på nytt.</translation>
+<translation id="3578024735349927859">Administrer blant annet mediekontroller og inkognitofaner med varsler</translation>
 <translation id="3578874072190212775">Hjelp nettsteder med å bekjempe svindel og skille mellom roboter og mennesker</translation>
 <translation id="3587482841069643663">Alle</translation>
 <translation id="3587596251841506391">Bidra til å gjøre nettet sikrere</translation>
@@ -811,7 +814,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5578795271662203820">Søk etter dette bildet i <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Du kan når som helst velge hva du vil synkronisere, i <ph name="BEGIN_LINK1" />innstillingene<ph name="END_LINK1" />.</translation>
 <translation id="5590372121997663538">Husk denne datamaskinen</translation>
-<translation id="559871659088672663">Denne funksjonen er for tiden under utvikling</translation>
 <translation id="5599455543593328020">Inkognitomodus</translation>
 <translation id="5599941490345670218">Google-assistenten kan fullføre handlinger på nettsteder for deg</translation>
 <translation id="5620163320393916465">Ingen lagrede passord</translation>
@@ -1045,7 +1047,6 @@ Tillitstokener gir bedre personvern på nettet og kan ikke brukes til å finne u
 <translation id="6751521182688001123">Åpner raskt en ny fane. Trykk og hold for å redigere denne snarveien.</translation>
 <translation id="6756507620369789050">Gi tilbakemelding</translation>
 <translation id="6767294960381293877">Listen over enheter du kan dele faner med, er åpnet i halv høyde.</translation>
-<translation id="6770042910635026163">Nettsteder du besøker som definerer interessene dine</translation>
 <translation id="6770602306803890733">Øker sikkerheten for deg og alle andre på nettet</translation>
 <translation id="6783942555455976443">Lagre denne siden til senere, og få en påminnelse</translation>
 <translation id="6795633245022906657">Åpner raskt en ny fane. For å redigere denne snarveien, gå til Innstillinger.</translation>

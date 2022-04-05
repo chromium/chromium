@@ -595,6 +595,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2542106216580219892">Surfning</translation>
 <translation id="2544546346215446551">Administratören har startat om enheten</translation>
 <translation id="2544644783021658368">Enkelt dokument</translation>
+<translation id="254524874071906077">Ange Chrome som standardwebbläsare</translation>
 <translation id="2546283357679194313">Cookies och webbplatsdata</translation>
 <translation id="2547466893236767989">Webbdesign och webbutveckling</translation>
 <translation id="254947805923345898">Principens värde är inte giltigt.</translation>
@@ -2535,6 +2536,7 @@ Mer information.
 <translation id="7998269595945679889">Knappen Öppna en inkognitoflik. Tryck på Retur om du vill öppna en ny inkognitoflik och surfa privat</translation>
 <translation id="800218591365569300">Testa att stänga andra flikar eller program för att frigöra minne.</translation>
 <translation id="8004582292198964060">Webbläsare</translation>
+<translation id="8009225694047762179">Hantera Lösenord</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Det här kortet och dess faktureringsadress sparas. Du kan använda det när du är inloggad som <ph name="USER_EMAIL" />.}other{De här korten och deras faktureringsadresser sparas. Du kan använda dem när du är inloggad som <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8025119109950072390">Angripare på den här webbplatsen kan lura dig att göra något farligt, till exempel installera programvara eller lämna ut personliga uppgifter (som lösenord, telefonnummer eller kreditkortsuppgifter).</translation>
 <translation id="8026334261755873520">Rensa webbinformation</translation>

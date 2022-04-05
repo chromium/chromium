@@ -167,6 +167,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1951012854035635156">Asystent</translation>
 <translation id="1954252331066828794">Ukończono nagrywanie ekranu</translation>
 <translation id="1957958912175573503">Ustaw język</translation>
+<translation id="1961239773406905488">Podgląd z aparatu jest ukryty</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Zablokuj ekran</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -184,6 +185,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2047639699071423250">Dodaj kluczowy pomysł</translation>
 <translation id="2049240716062114887">Nazwa biurka została zmieniona na <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Pionowo</translation>
+<translation id="2064048859448024834">Podgląd z aparatu jest włączony</translation>
 <translation id="2066708475850724665">Wyłącz lupę</translation>
 <translation id="2067602449040652523">Jasność klawiatury</translation>
 <translation id="2078034614700056995">Aby przełączyć się na następne biurko, przesuń 4 palcami w prawo</translation>
@@ -440,7 +442,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3630697955794050612">wyłączono</translation>
 <translation id="3631369015426612114">Zezwalaj na powiadomienia z tych źródeł</translation>
 <translation id="3638400994746983214">Przełącz ekran chroniący prywatność. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171">Zapisz urządzenie <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Zaległa aktualizacja</translation>
 <translation id="366222428570480733">Użytkownik zarządzany <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3680908746918359504">Wyczyść wszystkie pisaki</translation>
@@ -487,6 +488,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu 1 minuty}few{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # minut}many{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # minut}other{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # minuty}}</translation>
 <translation id="3923494859158167397">Brak skonfigurowanych sieci komórkowych</translation>
 <translation id="3932043219784172185">Brak podłączonych urządzeń</translation>
+<translation id="3934456833412894880">Włączono ładowanie adaptacyjne. Bateria będzie się ładować do 80%, co pozwoli wydłużyć jej żywotność. Jeśli będziesz tego potrzebować, będzie mogła naładować się do pełna.</translation>
 <translation id="3943857333388298514">Wklej</translation>
 <translation id="394485226368336402">Ustawienia dźwięku</translation>
 <translation id="3945319193631853098">Kliknij, aby dokończyć konfigurację</translation>
@@ -530,7 +532,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4215497585250573029">Ustawienia sieci VPN</translation>
 <translation id="4217571870635786043">Dyktowanie</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, zainstalowana aplikacja, wstrzymana</translation>
-<translation id="4223947355273782392">Aby szybciej parować urządzenie <ph name="NAME" /> z innymi urządzeniami, zapisz je na koncie <ph name="EMAIL" /></translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Otwórz ustawienia</translation>
 <translation id="4250229828105606438">Zrzut ekranu</translation>
@@ -907,7 +908,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="6625718907317144388">Powiadomienia z aplikacji <ph name="APP_1_TITLE" /> i <ph name="APP_2_TITLE" /> oraz inne powiadomienia zostały ukryte, bo masz włączoną ochronę przeglądania</translation>
 <translation id="6627638273713273709">Szukaj + Shift + K</translation>
 <translation id="6629480180092995136">Aplikacja <ph name="APP_NAME" /> chce używać mikrofonu</translation>
-<translation id="6630773993843701741">Otwórz ustawienia Bluetooth, aby ręcznie sparować urządzenie</translation>
 <translation id="6637729079642709226">Zmień czas</translation>
 <translation id="6641720045729354415">Włącz lub wyłącz napisy na żywo. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490">Strona <ph name="ORIGIN_NAME" /> wymaga potwierdzenia, że to Ty</translation>
@@ -1017,7 +1017,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7348093485538360975">Klawiatura ekranowa</translation>
 <translation id="735745346212279324">VPN odłączona</translation>
 <translation id="7360036564632145207">Wydajność może się poprawić, jeśli zmienisz ustawienie Zabezpieczenie przed dostępem do danych przez urządzenia peryferyjne</translation>
-<translation id="7366890467478514168">Połącz z urządzeniem <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Nagraj okno</translation>
 <translation id="7377169924702866686">Caps Lock jest włączony.</translation>
 <translation id="7377481913241237033">Połącz przy użyciu kodu</translation>
@@ -1128,7 +1127,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7955885781510802139">Tryb wysokiego kontrastu</translation>
 <translation id="7968693143708939792">Wybierz folder...</translation>
 <translation id="7977927628060636163">Szukam sieci komórkowych…</translation>
-<translation id="7980780401175799550">Wypróbuj nowe metody nawigacji w Chrome OS</translation>
 <translation id="7982789257301363584">Sieć</translation>
 <translation id="7984197416080286869">Zbyt wiele prób odblokowania odciskiem palca</translation>
 <translation id="7994370417837006925">Wielokrotne logowanie</translation>

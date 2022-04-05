@@ -135,6 +135,12 @@
             Membiarkan opsi ini kosong akan memungkinkan ketiga skema digunakan.</translation>
 <translation id="1153306961094113710">Mengizinkan proses debug jarak jauh</translation>
 <translation id="115699958189272121">Laporkan peristiwa <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /></translation>
+<translation id="1157003104143964656">Setelan ini mengaktifkan atau menonaktifkan intersepsi login.
+
+      Jika kebijakan ini diaktifkan atau tidak disetel, dialog intersepsi login akan dipicu saat akun Google ditambahkan di web, dan pengguna mungkin sebaiknya memindahkan akun ini ke profil lain (profil baru atau yang sudah ada).
+
+      Jika kebijakan ini dinonaktifkan, dialog intersepsi login tidak akan dipicu.
+      Jika kebijakan dinonaktifkan, dialog akan tetap ditampilkan jika pemisahan profil akun terkelola diterapkan oleh <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />.</translation>
 <translation id="1158844608156732189">Konfigurasi Kerberos (satu baris per item array), lihat https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.</translation>
 <translation id="1160479894929412407">Izinkan protokol QUIC</translation>
 <translation id="1160939557934457296">Menonaktifkan untuk melanjutkan dari halaman peringatan Safe Browsing</translation>
@@ -3153,31 +3159,6 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 <translation id="4463675333222095358">Aktifkan Konversi Unit Jawaban Instan</translation>
 <translation id="4464365009416584564">Nonaktifkan <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="4467952432486360968">Cekal cookie pihak ketiga</translation>
-<translation id="4471718219410856003">Kebijakan ini adalah cara untuk mengganti daftar set yang digunakan Chrome untuk fitur Set Pihak Pertama.
-
-      Jika kebijakan ini disediakan dengan kamus kosong, Chrome akan menggunakan daftar Set Pihak Pertama publik.
-
-      Jika kebijakan ini menerima set dalam daftar 'replacements', setiap set dalam daftar publik yang
-      bersimpangan dengan set dalam daftar ini akan dihapus dari daftar Chrome dan set yang disediakan akan ditambahkan ke daftar Chrome.
-
-      Jika kebijakan ini menerima set dalam daftar 'additions', setiap set dalam daftar Chrome yang
-      bersimpangan dengan set dalam daftar ini akan diperbarui agar dapat menambahkan set yang disediakan ke daftar dan tetap mempertahankan
-      daftar Set Pihak Pertama Chrome yang terpisah.
-
-      Daftar Set Pihak Pertama yang digunakan Chrome harus tetap terpisah. Dengan menerapkan kebijakan ini,
-      kedua daftar kebijakan Set Pihak Pertama harus terpisah dalam daftarnya sendiri dan dalam daftar satu sama lain.
-
-      Selain itu, semua set di kedua daftar harus mematuhi invarian dari Set Pihak Pertama.
-      Set Pihak Pertama terdiri dari satu pemilik dan satu atau beberapa situs anggota. Semua situs dalam Set Pihak Pertama harus
-      berupa domain yang dapat didaftarkan yang disalurkan melalui HTTPS, terlepas dari apakah situs merupakan pemilik atau anggota.
-      Setiap situs dalam Set Pihak Pertama juga harus unik. Artinya, situs tidak boleh menjadi pemilik dan anggota secara bersamaan, ataupun
-      tercantum sebagai anggota Set Pihak Pertama lebih dari sekali.
-      Lihat https://github.com/privacycg/first-party-sets untuk mendapatkan info selengkapnya terkait Set Pihak Pertama.
-
-      Karakter pengganti (*) tidak didukung sebagai nilai kebijakan, ataupun di Set Pihak Pertama dalam daftar ini.
-
-      Semua set yang disediakan oleh kebijakan ini harus berupa Set Pihak Pertama yang valid. Jika set tidak valid,
-      error yang sesuai akan ditampilkan.</translation>
 <translation id="4472740647327683596">Lebar halaman dalam mikrometer.</translation>
 <translation id="4474167089968829729">Aktifkan penyimpanan sandi di pengelola sandi</translation>
 <translation id="4476769083125004742">Jika kebijakan ini disetel ke <ph name="BLOCK_GEOLOCATION_SETTING" />, aplikasi Android tidak dapat mengakses informasi lokasi. Jika Anda menyetel kebijakan ini ke nilai lain atau tidak menyetel kebijakan, pengguna akan dimintai persetujuan ketika aplikasi Android ingin mengakses informasi lokasi.</translation>
@@ -5466,11 +5447,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Tata letak keyboard virtual dapat berubah menjadi lebih rapat bergantung pada metode input.
 
       Jika kebijakan disetel, pengguna tidak dapat mengubahnya.</translation>
-<translation id="7060497964524144376">Jika kebijakan disetel ke Aktif, Safe Browsing akan memercayai domain yang Anda tentukan. Domain tidak akan diperiksa jika ada resource berbahaya misalnya phishing, malware, atau software yang tidak diinginkan. Layanan perlindungan download Safe Browsing tidak akan memeriksa download yang dihosting di domain ini. Layanan perlindungan sandi Safe Browsing tidak akan memeriksa penggunaan ulang sandi.
-
-      Jika kebijakan tidak disetel, perlindungan Safe Browsing default akan berlaku untuk semua resource.
-
-      Di <ph name="MS_WIN_NAME" />, fungsi ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dijalankan di Windows 10 Pro, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Di <ph name="MAC_OS_NAME" />, fungsi ini hanya tersedia di instance yang dikelola melalui MDM, atau dihubungkan ke domain melalui MCX.</translation>
 <translation id="7063895219334505671">Izinkan pop-up di situs ini</translation>
 <translation id="7066292150801784098">Cegah interaksi pengguna jarak jauh dengan jendela administrator di sesi bantuan jarak jauh</translation>
 <translation id="706669471845501145">Izinkan situs menampilkan pemberitahuan desktop</translation>
@@ -5804,7 +5780,6 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
       Catatan: Jika tindakan yang diambil adalah Penangguhan, <ph name="PRODUCT_OS_NAME" /> dapat disiapkan secara terpisah untuk mengunci atau tidak mengunci layar sebelum ditangguhkan.</translation>
 <translation id="7477149584454865826">Tanda boolean menunjukkan apakah IPP Everywhere harus digunakan untuk menyiapkan printer.</translation>
 <translation id="7477231245051133709">Mengaktifkan fitur aksesibilitas audio mono</translation>
-<translation id="7477239290070847560">Tujuan protokol berbasis Zeroconf (mDNS + DNS-SD)</translation>
 <translation id="7477526482439041787">Mengonfigurasi daftar aturan untuk mencegah kebocoran data di <ph name="PRODUCT_OS_NAME" />.
       Kebocoran data dapat terjadi dengan menyalin dan menempelkan data, mentransfer file, mencetak, berbagi layar, atau mengambil screenshot ...dll.
 
@@ -6985,6 +6960,15 @@ Kebijakan akan dihapus pada M75.</translation>
       Printer ekstensi juga disebut sebagai tujuan penyedia cetak, dan menyertakan semua tujuan yang termasuk dalam ekstensi <ph name="PRODUCT_NAME" />.
 
       Printer lokal juga disebut sebagai tujuan cetak native, dan menyertakan tujuan yang tersedia untuk mesin lokal dan printer jaringan bersama.</translation>
+<translation id="875152232570912762">
+      Jika kebijakan ini disetel ke <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> di tingkat perangkat, semua akun terkelola akan dipaksa menjadi akun utama.
+      Jika kebijakan ini disetel ke <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> untuk suatu akun, akun tersebut akan selalu menjadi akun utama, tetapi dapat memiliki akun sekunder di profilnya.
+
+      Jika kebijakan ini disetel ke <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> di tingkat perangkat, semua akun terkelola akan dipaksa menjadi akun utama.
+      Jika kebijakan ini disetel ke <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> untuk suatu akun, akun tersebut akan selalu menjadi akun utama dan tidak akan memiliki akun sekunder di profilnya.
+
+      Jika kebijakan ini disetel ke <ph name="POLICY_VALUE_NONE" /> atau tidak disetel, akun terkelola tidak akan memiliki batasan. Hal ini dapat menyebabkan akun terkelola menjadi akun sekunder, yang akan menonaktifkan kemampuannya untuk menerima kebijakan yang disetel di akun oleh admin.
+    </translation>
 <translation id="8753264624162178499">Opsi Cetak sebagai gambar tersedia bagi pengguna untuk memungkinkan rasterisasi PDF sebelum mengirim tugas pencetakan ke tujuan.</translation>
 <translation id="8757552286070680084">Konfigurasi DTC wilco</translation>
 <translation id="8758831693895931466">Aktifkan pendaftaran pengelolaan cloud wajib</translation>

@@ -591,6 +591,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2542106216580219892">Surf</translation>
 <translation id="2544546346215446551">L'administrador ha reiniciat el dispositiu</translation>
 <translation id="2544644783021658368">Document únic</translation>
+<translation id="254524874071906077">Estableix Chrome com a navegador predeterminat</translation>
 <translation id="2546283357679194313">Dades de llocs web i galetes</translation>
 <translation id="2547466893236767989">Disseny i desenvolupament web</translation>
 <translation id="254947805923345898">El valor de la política no és vàlid.</translation>
@@ -2526,6 +2527,7 @@ Detalls addicionals:
 <translation id="7998269595945679889">Botó Obre una pestanya d'incògnit. Prem Retorn per obrir una pestanya d'incògnit nova i navegar en privat.</translation>
 <translation id="800218591365569300">Prova de tancar altres pestanyes o programes per alliberar memòria.</translation>
 <translation id="8004582292198964060">Navegador</translation>
+<translation id="8009225694047762179">Gestiona les contrasenyes</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Aquesta targeta i l'adreça de facturació associada es desaran. La podràs utilitzar quan tinguis la sessió iniciada a <ph name="USER_EMAIL" />.}other{Aquestes targetes i les adreces de facturació associades es desaran. Les podràs utilitzar quan tinguis la sessió iniciada a <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8025119109950072390">Els atacants d'aquest lloc et poden enganyar perquè facis alguna acció perillosa, com ara instal·lar programari o revelar informació personal (per exemple, contrasenyes, números de telèfon o targetes de crèdit).</translation>
 <translation id="8026334261755873520">Esborra les dades de navegació</translation>

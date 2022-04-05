@@ -130,7 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Inguruko gailuak ikusteko, aktibatu Bluetooth-a</translation>
 <translation id="2346474577291266260">Bikaina (<ph name="SIGNAL_STRENGTH" />)</translation>
-<translation id="2363636958541445404">Aktibatu eginbidea pantaila-babeslearen aukera hautatzeko</translation>
+<translation id="2363636958541445404">Aktibatu eginbidea pantaila-babeslearen aukerak hautatzeko</translation>
 <translation id="2364498172489649528">Gaindituta</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Bidali zerbitzuari buruzko iritzien txostena</translation>
@@ -227,6 +227,7 @@
 <translation id="3748026146096797577">Konektatu gabe</translation>
 <translation id="3749289110408117711">Fitxategiaren izena</translation>
 <translation id="3771294271822695279">Bideo-fitxategiak</translation>
+<translation id="3784455785234192852">Blokeatu</translation>
 <translation id="38114475217616659">Garbitu historia guztia</translation>
 <translation id="3820172043799983114">PIN kodeak ez du balio.</translation>
 <translation id="3838338534323494292">Pasahitz berria</translation>

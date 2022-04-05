@@ -440,7 +440,6 @@
 <translation id="3630697955794050612">ବନ୍ଦ ଅଛି</translation>
 <translation id="3631369015426612114">ନିମ୍ନୋକ୍ତରୁ ବିଜ୍ଞପ୍ତିକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="3638400994746983214">ଗୋପନୀୟତା ସ୍କ୍ରିନ୍ ଟୋଗଲ୍ କରନ୍ତୁ। <ph name="STATE_TEXT" />।</translation>
-<translation id="3640092422335864171"><ph name="NAME" />କୁ ସେଭ କରନ୍ତୁ</translation>
 <translation id="3649505501900178324">ଅପ୍‌ଡେଟ୍ ହେବାକୁ ବାକି ଅଛି</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> ପରିଚାଳିତ ଉପଯୋଗକର୍ତ୍ତା</translation>
 <translation id="3680908746918359504">ସବୁ ମାର୍କରକୁ ଖାଲି କରନ୍ତୁ</translation>
@@ -530,7 +529,6 @@
 <translation id="4215497585250573029">VPN ସେଟିଂସ୍</translation>
 <translation id="4217571870635786043">ଶ୍ରୁତଲିଖନ</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ଇନଷ୍ଟଲ୍ କରାଯାଇଥିବା ଆପ୍, ବିରତ କରାଯାଇଛି</translation>
-<translation id="4223947355273782392">ଆପଣଙ୍କ ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକ ସହ ଶୀଘ୍ର ପେୟାର କରିବା ପାଇଁ <ph name="NAME" />କୁ <ph name="EMAIL" />ରେ ସେଭ କରନ୍ତୁ</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">ସେଟିଂସ୍‌ ଖୋଲନ୍ତୁ</translation>
 <translation id="4250229828105606438">ସ୍କ୍ରିନ୍‍ସଟ୍</translation>
@@ -907,7 +905,6 @@
 <translation id="6625718907317144388">"ଦେଖିବା ସମ୍ବନ୍ଧିତ ସୁରକ୍ଷା" ସୁବିଧା ଚାଲୁ ଥିବା ଯୋଗୁଁ <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> ଏବଂ ଅନ୍ୟ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ଲୁକ୍କାୟିତ ଅଛି</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> ମାଇକ୍ରୋଫୋନ୍ ବ୍ୟବହାର କରିବାକୁ ଚାହୁଁଛି</translation>
-<translation id="6630773993843701741">ଡିଭାଇସକୁ ମାନୁଆଲୀ ପେୟାର୍ କରିବା ପାଇଁ ବ୍ଲୁଟୁଥ୍ ସେଟିଂସ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="6637729079642709226">ସମୟ ବଦଳାନ୍ତୁ</translation>
 <translation id="6641720045729354415">ଲାଇଭ୍ କ୍ୟାପ୍ସନ୍ ଟୋଗଲ୍ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490">ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି <ph name="ORIGIN_NAME" /> ସୁନିଶ୍ଚିତ କରିବା ପାଇଁ ଚାହୁଁଛି</translation>
@@ -1017,7 +1014,6 @@
 <translation id="7348093485538360975">ଅନ୍-ସ୍କ୍ରିନ୍ କୀ'ବୋର୍ଡ</translation>
 <translation id="735745346212279324">VPN ବିଚ୍ଛିନ୍ନ ହୋଇଛି</translation>
 <translation id="7360036564632145207">ପେରିଫେରାଲଗୁଡ଼ିକ ପାଇଁ ଆପଣଙ୍କ ଡାଟା ଆକ୍ସେସ୍ ସୁରକ୍ଷା ସେଟିଂରେ ପରିବର୍ତ୍ତନ କରି ପରଫରମାନ୍ସକୁ ଅପ୍ଟିମାଇଜ୍ କରାଯାଇପାରିବ</translation>
-<translation id="7366890467478514168"><ph name="NAME" /> ସହ ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="7371404428569700291">ୱିଣ୍ଡୋ ରେକର୍ଡ କରନ୍ତୁ</translation>
 <translation id="7377169924702866686">କ୍ୟାପ୍ସ ଲକ୍ ଅନ୍ ଅଛି।</translation>
 <translation id="7377481913241237033">ଏକ କୋଡ ମାଧ୍ୟମରେ ସଂଯୋଗ କରନ୍ତୁ</translation>
@@ -1128,7 +1124,6 @@
 <translation id="7955885781510802139">ଉଚ୍ଚ କଣ୍ଟ୍ରାଷ୍ଟ ମୋଡ୍</translation>
 <translation id="7968693143708939792">ଫୋଲ୍ଡର୍ ଚୟନ କରନ୍ତୁ...</translation>
 <translation id="7977927628060636163">ମୋବାଇଲ୍ ନେଟ୍‌ୱର୍କ ଖୋଜୁଛି...</translation>
-<translation id="7980780401175799550">Chrome OSକୁ ନାଭିଗେଟ୍ କରିବା ପାଇଁ ନୂଆ ଉପାୟଗୁଡ଼ିକ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
 <translation id="7982789257301363584">ନେଟୱାର୍କ</translation>
 <translation id="7984197416080286869">ଅନେକ ଟିପଚିହ୍ନ ପ୍ରଚେଷ୍ଟା</translation>
 <translation id="7994370417837006925">ଏକାଧିକ ସାଇନ୍-ଇନ୍</translation>

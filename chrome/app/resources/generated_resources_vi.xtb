@@ -1356,7 +1356,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2285942871162473373">Không thể nhận dạng vân tay của bạn. Hãy thử lại.</translation>
 <translation id="2287944065963043964">Màn hình đăng nhập</translation>
 <translation id="2288181517385084064">Chuyển sang chế độ quay video</translation>
-<translation id="2288735659267887385">Cài đặt trợ năng</translation>
+<translation id="2288735659267887385">Cài đặt hỗ trợ tiếp cận</translation>
 <translation id="2289270750774289114">Hỏi khi một trang web muốn tìm các thiết bị Bluetooth ở gần (khuyên dùng)</translation>
 <translation id="2290615375132886363">Các nút thao tác trên máy tính bảng</translation>
 <translation id="229182044471402145">Không tìm thấy phông chữ phù hợp.</translation>
@@ -4451,7 +4451,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5342091991439452114">Mã PIN phải có ít nhất <ph name="MINIMUM" /> chữ số</translation>
 <translation id="5344036115151554031">Đang khôi phục Linux</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Phải)</translation>
-<translation id="534572711507965074">Đặt tên cho nhóm, chọn màu rồi nhấn Enter</translation>
 <translation id="5345916423802287046">Mở ứng dụng khi bạn đăng nhập</translation>
 <translation id="5350293332385664455">Tắt Trợ lý Google</translation>
 <translation id="535123479159372765">Văn bản được sao chép từ thiết bị khác</translation>
@@ -5082,6 +5081,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Để đảm bảo có thể tiếp tục duyệt web, hãy yêu cầu quản trị viên xóa ứng dụng này.}other{Để đảm bảo có thể tiếp tục duyệt web, hãy yêu cầu quản trị viên xóa những ứng dụng này.}}</translation>
 <translation id="5997337190805127100">Tìm hiểu thêm về quyền truy cập vào trang web</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> kết quả cho '<ph name="SEARCH_TEXT" />'</translation>
+<translation id="6001839398155993679">Bắt đầu</translation>
 <translation id="6002122790816966947">Thiết bị của bạn</translation>
 <translation id="6002210667729577411">Di chuyển nhóm sang cửa sổ mới</translation>
 <translation id="6002452033851752583">Đã xóa mật khẩu khỏi Tài khoản Google của bạn</translation>
@@ -5149,7 +5149,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Lưu ý:<ph name="END_BOLD" /> Một giọng nói hoặc bản ghi âm giọng nói giống với giọng nói của <ph name="SUPERVISED_USER_NAME" /> cũng có thể truy cập vào các kết quả cá nhân của con bạn. Để tiết kiệm pin, bạn có thể chọn chỉ bật tính năng "OK Google" khi thiết bị của <ph name="SUPERVISED_USER_NAME" /> được kết nối với nguồn điện trong phần cài đặt của Trợ lý.</translation>
 <translation id="6064217302520318294">Phương thức khóa màn hình</translation>
 <translation id="6065289257230303064">Các Thuộc tính Thư mục Đối tượng Chứng chỉ</translation>
-<translation id="6065691521254183160">Hãy nhấn |<ph name="ACCELERATOR" />| để chuyển đổi tâm điểm giữa bong bóng trợ giúp và nội dung mà bong bóng đang trỏ đến.</translation>
 <translation id="6066794465984119824">Chưa đặt hàm băm hình ảnh</translation>
 <translation id="6069464830445383022">Tài khoản Google của bạn chính là tài khoản để đăng nhập vào Chromebook</translation>
 <translation id="6069671174561668781">Đặt hình nền</translation>
@@ -5417,7 +5416,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6322370287306604163">Mở khóa nhanh hơn bằng vân tay</translation>
 <translation id="6324916366299863871">Chỉnh sửa phím tắt</translation>
 <translation id="6325191661371220117">Tắt tính năng tự động chạy</translation>
-<translation id="6325525973963619867">Lỗi</translation>
 <translation id="6326175484149238433">Xóa khỏi Chrome</translation>
 <translation id="6326855256003666642">Số lượng giữ kết nối</translation>
 <translation id="6327785803543103246">Tự động phát hiện proxy web</translation>
@@ -5944,7 +5942,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" muốn in <ph name="FILE_NAME" /> bằng <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Giải phóng dung lượng để tiếp tục</translation>
 <translation id="6848388270925200958">Bạn hiện có một số thẻ chỉ dùng được trên thiết bị này</translation>
-<translation id="6848425544473873717">{NUM_APPS,plural, =1{1 trong số các ứng dụng của bạn không còn được hỗ trợ. <ph name="LEARN_MORE" />}other{# trong số các ứng dụng của bạn không còn được hỗ trợ. <ph name="LEARN_MORE" />}}</translation>
 <translation id="6848716236260083778">Để thiết lập vân tay, con bạn cần chạm vào cảm biến vân tay. Dữ liệu vân tay của con bạn được lưu trữ an toàn và chỉ có trên chiếc <ph name="DEVICE_TYPE" /> này.</translation>
 <translation id="6850286078059909152">Màu văn bản</translation>
 <translation id="6851181413209322061">Gửi dữ liệu chẩn đoán và dữ liệu về mức sử dụng. Thiết bị này hiện tự động gửi dữ liệu chẩn đoán, dữ liệu về thiết bị và mức sử dụng ứng dụng cho Google. Những thông tin này sẽ không dùng để nhận dạng con bạn mà giúp tăng độ ổn định của hệ thống và ứng dụng cũng như cải thiện các mặt khác. Một số dữ liệu tổng hợp cũng sẽ hữu ích cho các ứng dụng và đối tác của Google, chẳng hạn như những nhà phát triển Android. Tùy chọn cài đặt này do chủ sở hữu thực thi. Nếu bạn bật tùy chọn cài đặt Hoạt động trên web và ứng dụng bổ sung cho con mình, thì dữ liệu này có thể được lưu vào Tài khoản Google của con.</translation>
@@ -7481,6 +7478,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8379156816349755485">Ngay khi bạn đăng nhập, sẽ có một mã xác thực duy nhất được lưu trữ và sử dụng cho mọi tệp đã tải xuống đủ điều kiện trong tương lai.</translation>
 <translation id="8379878387931047019">Thiết bị này không hỗ trợ loại khóa bảo mật mà trang web này yêu cầu</translation>
 <translation id="8379991678458444070">Đánh dấu thẻ này để quay lại đây nhanh chóng</translation>
+<translation id="8380941800586852976">Nguy hiểm</translation>
 <translation id="8382715499079447151">Chống nhìn lén</translation>
 <translation id="8382913212082956454">Sao chép địa chỉ &amp;email</translation>
 <translation id="8383266303049437646"><ph name="BEGIN_PARAGRAPH1" />Hãy thử các bước khắc phục sự cố sau:
@@ -7872,7 +7870,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8779944680596936487">Các trang web chỉ có thể dùng cookie để xem hoạt động duyệt web của bạn trên trang web của chính họ</translation>
 <translation id="8780123805589053431">Lấy nội dung mô tả hình ảnh từ Google</translation>
 <translation id="8780443667474968681">Tính năng tìm kiếm bằng giọng nói đã bị tắt.</translation>
-<translation id="8780872768304638315">Không lưu được</translation>
 <translation id="8781834595282316166">Thẻ mới trong nhóm</translation>
 <translation id="8782565991310229362">Đã hủy chạy ứng dụng kiosk.</translation>
 <translation id="8783526165720272136">Ứng dụng nhắn tin</translation>

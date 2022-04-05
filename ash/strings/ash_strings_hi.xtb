@@ -440,7 +440,6 @@
 <translation id="3630697955794050612">बंद</translation>
 <translation id="3631369015426612114">इनसे आने वाली सूचनाओं की अनुमति दें</translation>
 <translation id="3638400994746983214">निजता वाली स्क्रीन टॉगल करें. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171"><ph name="NAME" /> की जानकारी सेव करें</translation>
 <translation id="3649505501900178324">अपडेट होना बाकी है</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> प्रबंधित उपयोगकर्ता</translation>
 <translation id="3680908746918359504">सभी मार्कर मिटाएं</translation>
@@ -488,6 +487,7 @@
 <translation id="3922427723338465344">{0,plural, =1{अपने डिवाइस को 1 मिनट के अंदर पिछले वर्शन पर ले जाएं}one{अपने डिवाइस को # मिनट के अंदर पिछले वर्शन पर ले जाएं}other{अपने डिवाइस को # मिनट के अंदर पिछले वर्शन पर ले जाएं}}</translation>
 <translation id="3923494859158167397">कोई भी मोबाइल नेटवर्क सेट अप नहीं किया गया है</translation>
 <translation id="3932043219784172185">कोई भी डिवाइस कनेक्ट नहीं है</translation>
+<translation id="3934456833412894880">अडैप्टिव चार्जिंग की सुविधा चालू है. इसकी मदद से, बैटरी लाइफ़ बढ़ाने के लिए बैटरी 80% चार्ज रहती है और ज़रूरत पड़ने पर पूरी चार्ज हो जाती है.</translation>
 <translation id="3943857333388298514">चिपकाएं</translation>
 <translation id="394485226368336402">ऑडियो सेटिंग</translation>
 <translation id="3945319193631853098">सेट अप पूरा करने के लिए टैप करें</translation>
@@ -531,7 +531,6 @@
 <translation id="4215497585250573029">वीपीएन की सेटिंग</translation>
 <translation id="4217571870635786043">लिखवाना</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, इंस्टॉल किया गया ऐप्लिकेशन, कुछ देर के लिए रोका गया</translation>
-<translation id="4223947355273782392">अपने अन्य डिवाइसों को तेज़ी से जोड़ने के लिए, <ph name="EMAIL" /> पर <ph name="NAME" /> की जानकारी सेव करें</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">सेटिंग खोलें</translation>
 <translation id="4250229828105606438">स्क्रीनशॉट</translation>
@@ -795,6 +794,7 @@
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">पीला</translation>
 <translation id="5909862606227538307">यह डेस्क इस्तेमाल में नहीं है.</translation>
+<translation id="5911231045062997865">फ़िलहाल, Lacros विंडो का इस्तेमाल नहीं किया जा सकता. अन्य ऐप्लिकेशन सेव हो जाएंगे.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">चालू है</translation>
 <translation id="5920710855273935292">माइक म्यूट है.</translation>
@@ -908,7 +908,6 @@
 <translation id="6625718907317144388">व्यूइंग प्रोटेक्शन चालू होने की वजह से, <ph name="APP_1_TITLE" /> और <ph name="APP_2_TITLE" /> से मिलने वाली सूचनाओं के साथ-साथ अन्य सूचनाओं को छिपाया गया है</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" />, माइक्रोफ़ोन का इस्तेमाल करना चाहता है</translation>
-<translation id="6630773993843701741">डिवाइस को मैन्युअल तरीके से जोड़ने के लिए ब्लूटूथ सेटिंग खोलें</translation>
 <translation id="6637729079642709226">समय में बदलाव करें</translation>
 <translation id="6641720045729354415">लाइव कैप्शन की सुविधा टॉगल करें. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> आपकी पहचान की पुष्टि करना चाहता है</translation>
@@ -1018,7 +1017,6 @@
 <translation id="7348093485538360975">ऑन-स्‍क्रीन कीबोर्ड</translation>
 <translation id="735745346212279324">VPN डिसकनेक्ट है</translation>
 <translation id="7360036564632145207">सहायक डिवाइसों के लिए, डेटा ऐक्सेस का सुरक्षा सिस्टम बदलने या सेट करने से, उनकी परफ़ॉर्मेंस को बेहतर बनाया जा सकता है</translation>
-<translation id="7366890467478514168"><ph name="NAME" /> कनेक्ट करें</translation>
 <translation id="7371404428569700291">चुनी गई विंडो के लिए वीडियो रिकॉर्ड करें</translation>
 <translation id="7377169924702866686">Caps Lock चालू है.</translation>
 <translation id="7377481913241237033">कोड का इस्तेमाल करके कनेक्ट करें</translation>
@@ -1129,7 +1127,6 @@
 <translation id="7955885781510802139">हाई-कंट्रास्ट मोड</translation>
 <translation id="7968693143708939792">फ़ोल्डर को चुनें...</translation>
 <translation id="7977927628060636163">मोबाइल नेटवर्क खोजे जा रहे हैं...</translation>
-<translation id="7980780401175799550">Chrome OS पर नेविगेट करने के नए तरीके आज़माएं</translation>
 <translation id="7982789257301363584">नेटवर्क</translation>
 <translation id="7984197416080286869">फ़िंगरप्रिंट से बहुत ज़्यादा बार कोशिश की गई</translation>
 <translation id="7994370417837006925">एक से ज़्यादा साइन-इन</translation>

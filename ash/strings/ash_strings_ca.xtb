@@ -440,7 +440,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3630697955794050612">desactivat</translation>
 <translation id="3631369015426612114">Permet notificacions de les fonts següents:</translation>
 <translation id="3638400994746983214">Commuta la pantalla de privadesa. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171">Desa els <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Actualització pendent</translation>
 <translation id="366222428570480733">Usuari gestionat (<ph name="USER_EMAIL_ADDRESS" />)</translation>
 <translation id="3680908746918359504">Esborra tots els marcadors</translation>
@@ -530,7 +529,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4215497585250573029">Configuració de VPN</translation>
 <translation id="4217571870635786043">Dictat</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, aplicació instal·lada, en pausa</translation>
-<translation id="4223947355273782392">Desa els <ph name="NAME" /> a <ph name="EMAIL" /> perquè es vinculin ràpidament als teus altres dispositius</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Obre la configuració</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
@@ -908,7 +906,6 @@ Instal·lació nova</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> i altres notificacions estan amagades perquè la protecció de visualització està activada</translation>
 <translation id="6627638273713273709">Cerca+Maj+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> vol utilitzar el micròfon</translation>
-<translation id="6630773993843701741">Obre la configuració del Bluetooth per vincular el dispositiu manualment</translation>
 <translation id="6637729079642709226">Canvia l'hora</translation>
 <translation id="6641720045729354415">Commuta la funció Subtítols instantanis. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> vol confirmar que ets tu</translation>
@@ -1018,7 +1015,6 @@ Instal·lació nova</translation>
 <translation id="7348093485538360975">Teclat en pantalla</translation>
 <translation id="735745346212279324">VPN desconnectada</translation>
 <translation id="7360036564632145207">Canviar l'opció de configuració de la protecció d'accés a les dades per a perifèrics pot optimitzar el rendiment</translation>
-<translation id="7366890467478514168">Connecta <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Grava la finestra</translation>
 <translation id="7377169924702866686">Bloq Maj està activat.</translation>
 <translation id="7377481913241237033">Connecta't amb un codi</translation>
@@ -1129,7 +1125,6 @@ Instal·lació nova</translation>
 <translation id="7955885781510802139">Mode d'alt contrast</translation>
 <translation id="7968693143708939792">Selecciona una carpeta...</translation>
 <translation id="7977927628060636163">S'estan cercant xarxes mòbils…</translation>
-<translation id="7980780401175799550">Prova maneres noves de navegar per Chrome OS</translation>
 <translation id="7982789257301363584">Xarxa</translation>
 <translation id="7984197416080286869">Has intentat desbloquejar el dispositiu amb empremta digital massa vegades</translation>
 <translation id="7994370417837006925">Inici de sessió múltiple</translation>

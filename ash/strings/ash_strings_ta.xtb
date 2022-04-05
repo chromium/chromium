@@ -440,7 +440,6 @@
 <translation id="3630697955794050612">முடக்கப்பட்டுள்ளது</translation>
 <translation id="3631369015426612114">பின்வருவனவற்றிலிருந்து வரும் அறிவிப்புகளை அனுமதி:</translation>
 <translation id="3638400994746983214">தனிப்பட்ட திரையை நிலைமாற்றும். <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171"><ph name="NAME" /> சாதனத்தைச் சேமியுங்கள்</translation>
 <translation id="3649505501900178324">புதுப்பிப்பு நிலுவையில் உள்ளது</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> நிர்வகிக்கப்பட்ட பயனர்</translation>
 <translation id="3680908746918359504">மார்க்கர்கள் அனைத்தையும் அழி</translation>
@@ -530,7 +529,6 @@
 <translation id="4215497585250573029">VPN அமைப்புகள்</translation>
 <translation id="4217571870635786043">சொல்வதை எழுதுவது</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, நிறுவப்பட்ட ஆப்ஸ், இடைநிறுத்தப்பட்டுள்ளது</translation>
-<translation id="4223947355273782392">பிற சாதனங்களுடன் இனி விரைவாக இணைக்க, <ph name="NAME" /> சாதனத்தை <ph name="EMAIL" /> கணக்கில் சேமிக்கவும்</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">அமைப்புகளைத் திற</translation>
 <translation id="4250229828105606438">ஸ்கிரீன்ஷாட்</translation>
@@ -907,7 +905,6 @@
 <translation id="6625718907317144388">பார்ப்பதற்கான கட்டுப்பாடு இயக்கத்தில் உள்ளதால் <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> மற்றும் பிறவற்றின் அறிவிப்புகள் மறைக்கப்பட்டுள்ளன</translation>
 <translation id="6627638273713273709">தேடல்+Shift+K</translation>
 <translation id="6629480180092995136">உங்கள் மைக்ரோஃபோனை <ph name="APP_NAME" /> பயன்படுத்த விரும்புகிறது</translation>
-<translation id="6630773993843701741">சாதனத்தை நீங்களே இணைக்க புளூடூத் அமைப்புகளைத் திறக்கவும்</translation>
 <translation id="6637729079642709226">நேரத்தை மாற்றுக</translation>
 <translation id="6641720045729354415">'உடனடி வசனத்தை' நிலைமாற்றும். <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490">இது நீங்கள்தான் என்பதை <ph name="ORIGIN_NAME" /> உறுதிப்படுத்த விரும்புகிறது</translation>
@@ -1017,7 +1014,6 @@
 <translation id="7348093485538360975">ஸ்கிரீன் கீபோர்டு</translation>
 <translation id="735745346212279324">VPN துண்டிக்கப்பட்டது</translation>
 <translation id="7360036564632145207">சாதனங்களில் தரவு அணுகல் பாதுகாப்பு அமைப்பை மாற்றினால் செயல்திறன் மேம்படலாம்</translation>
-<translation id="7366890467478514168"><ph name="NAME" /> ஐ இணைத்திடுங்கள்</translation>
 <translation id="7371404428569700291">சாளரத்தை ரெக்கார்டு செய்யும்</translation>
 <translation id="7377169924702866686">Caps Lock இயக்கத்தில் உள்ளது.</translation>
 <translation id="7377481913241237033">குறியீடு மூலம் இணை</translation>
@@ -1128,7 +1124,6 @@
 <translation id="7955885781510802139">அதிக ஒளி மாறுபாட்டுப் பயன்முறை</translation>
 <translation id="7968693143708939792">ஃபோல்டரைத் தேர்ந்தெடு...</translation>
 <translation id="7977927628060636163">மொபைல் நெட்வொர்க்குகளைத் தேடுகிறது...</translation>
-<translation id="7980780401175799550">Chrome OSஸை வழிசெலுத்த புதிய வழிகளைப் பயன்படுத்திப் பாருங்கள்</translation>
 <translation id="7982789257301363584">நெட்வொர்க்</translation>
 <translation id="7984197416080286869">கைரேகையை அதிகபட்சம் முயன்றுவிட்டீர்கள்</translation>
 <translation id="7994370417837006925">பல உள்நுழைவு</translation>

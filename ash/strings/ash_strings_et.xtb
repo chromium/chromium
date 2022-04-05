@@ -440,7 +440,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3630697955794050612">välja</translation>
 <translation id="3631369015426612114">Luba märguanded järgmistest kohtadest</translation>
 <translation id="3638400994746983214">Privaatsuskuvale lülitamine. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171">Salvestage <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Värskendamise tähtaeg on möödas</translation>
 <translation id="366222428570480733">Kontoga <ph name="USER_EMAIL_ADDRESS" /> hallatav kasutaja</translation>
 <translation id="3680908746918359504">Kustuta kõik markeeringud</translation>
@@ -531,7 +530,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4215497585250573029">VPN-i seaded</translation>
 <translation id="4217571870635786043">Dikteerimine</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, installitud rakendus, ajutiselt peatatud</translation>
-<translation id="4223947355273782392">Salvestage seade <ph name="NAME" /> kontole <ph name="EMAIL" />, et saaksite selle oma teiste seadmetega kiiremini siduda</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Ava seaded</translation>
 <translation id="4250229828105606438">Ekraanipilt</translation>
@@ -909,7 +907,6 @@ Uus installimine</translation>
 <translation id="6625718907317144388">Rakenduste <ph name="APP_1_TITLE" /> ja <ph name="APP_2_TITLE" /> ning muud märguanded on peidetud, kuna vaatamiskaitse on sisse lülitatud</translation>
 <translation id="6627638273713273709">Otsing + Tõstuklahv + K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> soovib mikrofoni kasutada</translation>
-<translation id="6630773993843701741">Avage Bluetoothi seaded, et seade käsitsi siduda</translation>
 <translation id="6637729079642709226">Kellaaja muutmine</translation>
 <translation id="6641720045729354415">Reaalajas subtiitrite lüliti. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> soovib kinnitada, et see olete teie</translation>
@@ -1019,7 +1016,6 @@ Uus installimine</translation>
 <translation id="7348093485538360975">Ekraanil kuvatav klaviatuur</translation>
 <translation id="735745346212279324">VPN-i ühendus on katkestatud</translation>
 <translation id="7360036564632145207">Välisseadmete jaoks andmetele juurdepääsu kaitse seade muutmine võib jõudlust optimeerida</translation>
-<translation id="7366890467478514168">Ühendage seade <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Akna salvestamine</translation>
 <translation id="7377169924702866686">Suurtähelukk on sisse lülitatud.</translation>
 <translation id="7377481913241237033">Ühendamine koodiga</translation>
@@ -1130,7 +1126,6 @@ Uus installimine</translation>
 <translation id="7955885781510802139">Suure kontrastsusega režiim</translation>
 <translation id="7968693143708939792">Kausta valimine …</translation>
 <translation id="7977927628060636163">Mobiilsidevõrkude otsimine …</translation>
-<translation id="7980780401175799550">Proovige uusi võimalusi Chrome OS-is navigeerimiseks</translation>
 <translation id="7982789257301363584">Võrk</translation>
 <translation id="7984197416080286869">Liiga palju sõrmejäljega avamise katseid</translation>
 <translation id="7994370417837006925">Mitmele kontole sisselogimine</translation>

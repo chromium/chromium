@@ -440,7 +440,6 @@
 <translation id="3630697955794050612">خاموش</translation>
 <translation id="3631369015426612114">مجاز کردن اعلان‌های منابع زیر</translation>
 <translation id="3638400994746983214">روشن/خاموش کردن صفحه حریم‌خصوصی. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171">ذخیره کردن <ph name="NAME" /></translation>
 <translation id="3649505501900178324">به‌روزرسانی عقب‌افتاده</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> کاربر مدیریت‌شده</translation>
 <translation id="3680908746918359504">پاک کردن همه قلم‌های نشان‌گذاری</translation>
@@ -487,6 +486,7 @@
 <translation id="3922427723338465344">{0,plural, =1{تا یک دقیقه دیگر، دستگاه را به نسخه قبلی تغییر دهید}one{تا # دقیقه دیگر، دستگاه را به نسخه قبلی تغییر دهید}other{تا # دقیقه دیگر، دستگاه را به نسخه قبلی تغییر دهید}}</translation>
 <translation id="3923494859158167397">هیچ شبکه تلفن همراهی راه‌اندازی نشده است</translation>
 <translation id="3932043219784172185">دستگاهی متصل نیست</translation>
+<translation id="3934456833412894880">«شارژ تطبیقی» روشن است. برای افزایش طول عمر باتری، شارژ باتری روی ۸۰٪ می‌ماند و هرگاه لازم داشته باشید شارژ کامل می‌شود.</translation>
 <translation id="3943857333388298514">جاگذاری</translation>
 <translation id="394485226368336402">تنظیمات صوتی</translation>
 <translation id="3945319193631853098">برای تکمیل راه‌اندازی، ضربه بزنید</translation>
@@ -530,7 +530,6 @@
 <translation id="4215497585250573029">‏تنظیمات VPN</translation>
 <translation id="4217571870635786043">املا</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />، برنامه نصب‌شده، موقتاً متوقف‌شده</translation>
-<translation id="4223947355273782392">برای مرتبط‌سازی سریع‌تر با دستگاه‌های دیگر، <ph name="NAME" /> را در <ph name="EMAIL" /> ذخیره کنید</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">باز کردن تنظیمات</translation>
 <translation id="4250229828105606438">نماگرفت</translation>
@@ -908,7 +907,6 @@
 <translation id="6625718907317144388">اعلان‌های <ph name="APP_1_TITLE" />، <ph name="APP_2_TITLE" />، و اعلان‌های دیگر پنهان شده است، زیرا «محافظت دربرابر مشاهده» روشن است</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> می‌خواهد از میکروفون استفاده کند</translation>
-<translation id="6630773993843701741">برای مرتبط‌سازی دستی دستگاه، تنظیمات بلوتوث را باز کنید</translation>
 <translation id="6637729079642709226">تغییر زمان</translation>
 <translation id="6641720045729354415">روشن/خاموش کردن «زیرنویس ناشنوایان زنده». <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> می‌خواهد تأیید کند این فرد شما هستید</translation>
@@ -1018,7 +1016,6 @@
 <translation id="7348093485538360975">صفحه‌کلید مجازی</translation>
 <translation id="735745346212279324">‏VPN قطع است</translation>
 <translation id="7360036564632145207">تغییر تنظیم محافظت از دسترسی به داده‌ها برای لوازم جانبی ممکن است عملکرد را بهینه‌سازی کند</translation>
-<translation id="7366890467478514168">متصل کردن <ph name="NAME" /></translation>
 <translation id="7371404428569700291">پنجره ضبط</translation>
 <translation id="7377169924702866686">‏Caps Lock روشن است.</translation>
 <translation id="7377481913241237033">اتصال با کد</translation>
@@ -1129,7 +1126,6 @@
 <translation id="7955885781510802139">حالت کنتراست بالا</translation>
 <translation id="7968693143708939792">انتخاب پوشه…</translation>
 <translation id="7977927628060636163">درحال جستجوی شبکه‌های تلفن همراه…</translation>
-<translation id="7980780401175799550">‏راه‌های جدید پیمایش Chrome OS را امتحان کنید</translation>
 <translation id="7982789257301363584">شبکه</translation>
 <translation id="7984197416080286869">تلاش‌های بیش از حد برای باز کردن قفل با اثر انگشت</translation>
 <translation id="7994370417837006925">ورود چندگانه به سیستم</translation>

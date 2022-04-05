@@ -437,7 +437,6 @@
 <translation id="3630697955794050612">关闭</translation>
 <translation id="3631369015426612114">允许显示来自以下来源的通知</translation>
 <translation id="3638400994746983214">开启/关闭隐私保护屏。<ph name="STATE_TEXT" />。</translation>
-<translation id="3640092422335864171">保存“<ph name="NAME" />”</translation>
 <translation id="3649505501900178324">更新逾期</translation>
 <translation id="366222428570480733">受管用户：<ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3680908746918359504">清除所有标记</translation>
@@ -527,7 +526,6 @@
 <translation id="4215497585250573029">VPN 设置</translation>
 <translation id="4217571870635786043">语音输入</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />，已安装的应用，已暂停</translation>
-<translation id="4223947355273782392">将“<ph name="NAME" />”保存到 <ph name="EMAIL" />，即可更快速地与您的其他设备配对</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">打开“设置”</translation>
 <translation id="4250229828105606438">屏幕截图</translation>
@@ -905,7 +903,6 @@
 <translation id="6625718907317144388">由于窥探保护功能已开启，因此系统隐藏了<ph name="APP_1_TITLE" />、<ph name="APP_2_TITLE" />和其他通知</translation>
 <translation id="6627638273713273709">搜索键+Shift+K</translation>
 <translation id="6629480180092995136">“<ph name="APP_NAME" />”想使用麦克风</translation>
-<translation id="6630773993843701741">请打开蓝牙设置，手动配对此设备</translation>
 <translation id="6637729079642709226">更改时间</translation>
 <translation id="6641720045729354415">开启/关闭“实时字幕”功能。<ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> 想确认您的身份</translation>
@@ -1015,7 +1012,6 @@
 <translation id="7348093485538360975">屏幕键盘</translation>
 <translation id="735745346212279324">VPN 连接已断开</translation>
 <translation id="7360036564632145207">更改您的“外围设备数据访问保护”设置可优化外围设备的性能</translation>
-<translation id="7366890467478514168">连接“<ph name="NAME" />”</translation>
 <translation id="7371404428569700291">录制窗口</translation>
 <translation id="7377169924702866686">大写锁定已打开。</translation>
 <translation id="7377481913241237033">利用代码连接</translation>
@@ -1125,7 +1121,6 @@
 <translation id="7955885781510802139">高对比度模式</translation>
 <translation id="7968693143708939792">选择文件夹…</translation>
 <translation id="7977927628060636163">正在搜索移动网络…</translation>
-<translation id="7980780401175799550">尝试使用新方式在 Chrome 操作系统中导航</translation>
 <translation id="7982789257301363584">网络</translation>
 <translation id="7984197416080286869">指纹尝试次数过多</translation>
 <translation id="7994370417837006925">多帐号登录</translation>

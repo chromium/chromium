@@ -135,6 +135,12 @@
             Si cette option est laissée vide, ces trois méthodes peuvent être utilisées.</translation>
 <translation id="1153306961094113710">Autoriser le débogage à distance</translation>
 <translation id="115699958189272121">Signaler les événements <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /></translation>
+<translation id="1157003104143964656">Ce paramètre active ou désactive l'interception de connexion.
+
+      Si cette règle est activée, ou si elle n'est pas configurée, la boîte de dialogue d'interception de connexion s'ouvre lorsqu'un compte Google est ajouté sur le Web. L'utilisateur peut alors déplacer ce compte vers un autre profil (nouveau ou existant).
+
+      Si elle est désactivée, la boîte de dialogue d'interception de connexion ne s'ouvre pas.
+      Dans ce cas, une boîte de dialogue s'affiche néanmoins si <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> force la séparation des profils de comptes gérés.</translation>
 <translation id="1158844608156732189">Configuration Kerberos (une ligne par élément du tableau). Voir https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.</translation>
 <translation id="1160479894929412407">Autoriser le protocole QUIC</translation>
 <translation id="1160939557934457296">Désactiver l'accès au site lors de l'affichage de la page d'avertissement par le service de navigation sécurisée</translation>
@@ -3127,31 +3133,6 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 <translation id="4463675333222095358">Activer la conversion d'unités pour Réponses rapides</translation>
 <translation id="4464365009416584564">Désactiver <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="4467952432486360968">Bloquer les cookies tiers</translation>
-<translation id="4471718219410856003">Cette règle permet d'ignorer la liste des ensembles que Chrome utilise pour les fonctionnalités liées aux ensembles propriétaires.
-
-      Si elle reçoit un dictionnaire vide, Chrome utilise la liste publique des ensembles propriétaires.
-
-      Si elle reçoit un ensemble pour la liste "replacements" (remplacements), tout ensemble de la liste publique
-      qui se recoupe avec l'ensemble reçu sera supprimé de la liste de Chrome. L'ensemble reçu sera alors ajouté à la liste.
-
-      Si elle reçoit un ensemble pour la liste "additions" (ajouts), tout ensemble de la liste de Chrome
-      qui se recoupe avec l'ensemble reçu sera mis à jour de façon à ajouter l'ensemble reçu à la liste, tout en restant
-      séparé de la liste d'ensembles propriétaires de Chrome.
-
-      La liste d'ensembles propriétaires que Chrome utilise devant rester séparée, l'application de cette règle nécessite
-      que les deux listes d'ensembles propriétaires de la règle ne se recoupent ni entre elles, ni à l'intérieur d'elles-mêmes.
-
-      De plus, tous les ensembles des deux listes doivent être conformes aux constantes d'un ensemble propriétaire.
-      Un ensemble propriétaire se compose d'un propriétaire et d'un ou plusieurs sites membres. Tous les sites d'un tel ensemble doivent être
-      des domaines enregistrables diffusés sur HTTPS, qu'il s'agisse de propriétaires ou de sites membres.
-      Chaque site d'un ensemble propriétaire doit également être unique. Cela signifie qu'un site ne peut pas être à la fois un propriétaire et un membre,
-      ni être listé plusieurs fois en tant que membre d'un ensemble propriétaire.
-      Pour en savoir plus sur les ensembles propriétaires, consultez la page https://github.com/privacycg/first-party-sets.
-
-      Le caractère générique (*) ne peut pas être utilisé comme valeur de la règle, ni dans aucun ensemble propriétaire de ces listes.
-
-      Tous les ensembles fournis par cette règle doivent être des ensembles propriétaires valides. Si ce n'est pas le cas,
-      une erreur est renvoyée.</translation>
 <translation id="4472740647327683596">Largeur de la page en micromètres.</translation>
 <translation id="4474167089968829729">Activer l'enregistrement des mots de passe dans le gestionnaire de mots de passe</translation>
 <translation id="4476769083125004742">Si cette règle est définie sur "<ph name="BLOCK_GEOLOCATION_SETTING" />", les applications Android n'ont pas accès aux informations de localisation. Si vous la définissez sur une autre valeur ou si vous ne la modifiez pas, l'utilisateur est invité à donner son autorisation lorsqu'une application Android requiert ces informations.</translation>
@@ -5418,11 +5399,6 @@ Si vous sélectionnez les options suivantes :
       Le clavier à l'écran peut adopter une disposition compacte en fonction du mode de saisie.
 
       Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier.</translation>
-<translation id="7060497964524144376">Si cette règle est activée, la navigation sécurisée juge fiables les domaines que vous avez spécifiés. Autrement dit, elle ne vérifie pas si des ressources présentent un danger (hameçonnage, logiciels malveillants ou indésirables, par exemple). Le service de protection des téléchargements associé à la navigation sécurisée ne vérifie pas non plus les téléchargements hébergés sur ces domaines. Le service de protection par mot de passe ne vérifie pas si un mot de passe est réutilisé.
-
-      Si cette règle n'est pas configurée, la navigation sécurisée applique son service de protection par défaut à toutes les ressources.
-
-      Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="7063895219334505671">Autoriser les fenêtres pop-up sur ces sites</translation>
 <translation id="7066292150801784098">Désactiver les interactions des utilisateurs distants avec des fenêtres élevées dans les sessions d'assistance à distance</translation>
 <translation id="706669471845501145">Autoriser les sites à afficher des notifications sur le bureau</translation>
@@ -5758,7 +5734,6 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
       Remarque : Dans ce cas, <ph name="PRODUCT_OS_NAME" /> peut être configuré séparément pour verrouiller ou non l'écran avant l'arrêt provisoire.</translation>
 <translation id="7477149584454865826">Indicateur booléen spécifiant si IPP Everywhere doit être utilisé ou non pour configurer l'imprimante.</translation>
 <translation id="7477231245051133709">Activer la fonctionnalité d'accessibilité d'audio mono</translation>
-<translation id="7477239290070847560">Destinations des protocoles basés sur Zeroconf (mDNS + DNS-SD)</translation>
 <translation id="7477526482439041787">Configure la liste des règles visant à empêcher les fuites de données sur <ph name="PRODUCT_OS_NAME" />.
       Une fuite de données peut se produire lors d'un copier-coller de données, d'un transfert de fichiers, d'une impression, d'un partage ou d'une capture d'écran, etc.
 
@@ -6942,6 +6917,15 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
       Les extensions permettant d'imprimer depuis un navigateur, ou destinations des fournisseurs d'impression, englobent toutes les destinations appartenant à une extension <ph name="PRODUCT_NAME" />.
 
       Les imprimantes locales, ou destinations d'impression native, englobent les destinations disponibles sur l'ordinateur local et les imprimantes réseau partagées.</translation>
+<translation id="875152232570912762">
+      Si cette règle est définie sur <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> au niveau de l'ordinateur, tous les comptes gérés seront obligatoirement des comptes principaux.
+      Si elle est définie sur <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> au niveau d'un compte, ce compte sera toujours un compte principal, qui pourra avoir des comptes secondaires dans son profil.
+
+      Si elle est définie sur <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> au niveau de l'ordinateur, tous les comptes gérés seront obligatoirement des comptes principaux.
+      Si elle est définie sur <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> au niveau d'un compte, ce compte sera toujours un compte principal, sans compte secondaire dans son profil.
+
+      Si elle est définie sur <ph name="POLICY_VALUE_NONE" /> ou si elle n'est pas configurée, il n'y aura aucune restriction pour les comptes gérés. Il sera donc possible qu'un compte géré soit un compte secondaire, ce qui l'empêchera de recevoir des règles définies sur le compte par l'administrateur.
+    </translation>
 <translation id="8753264624162178499">L'option "Imprimer en tant qu'image" est proposée à l'utilisateur pour permettre la rastérisation des PDF avant l'envoi de la tâche d'impression à sa destination.</translation>
 <translation id="8757552286070680084">Configuration d'un dispositif DTC de Wilco</translation>
 <translation id="8758831693895931466">Activer l'inscription obligatoire à la gestion cloud</translation>

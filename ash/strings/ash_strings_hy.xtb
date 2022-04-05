@@ -440,7 +440,6 @@
 <translation id="3630697955794050612">անջատված է</translation>
 <translation id="3631369015426612114">Թույլ տալ ծանուցումները հետևյալ կայքերից</translation>
 <translation id="3638400994746983214">Միացնել/անջատել գաղտնիության էկրանը։ <ph name="STATE_TEXT" />:</translation>
-<translation id="3640092422335864171">Պահեք սարքը (<ph name="NAME" />)</translation>
 <translation id="3649505501900178324">Թարմացման ժամկետը լրացել է</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> կառավարվող օգտատեր</translation>
 <translation id="3680908746918359504">Ջնջել բոլոր նշիչները</translation>
@@ -530,7 +529,6 @@
 <translation id="4215497585250573029">VPN կարգավորումներ</translation>
 <translation id="4217571870635786043">Ձայնային ներածում</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, տեղադրված հավելված, դադարեցված է</translation>
-<translation id="4223947355273782392">Ավելացրեք սարքը (<ph name="NAME" />) <ph name="EMAIL" /> հաշվում, որպեսզի ավելի արագ կարողանաք զուգակցել այն ձեր մյուս սարքերի հետ։</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Բացել կարգավորումները</translation>
 <translation id="4250229828105606438">Սքրինշոթ</translation>
@@ -908,7 +906,6 @@
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> և այլ հավելվածների ծանուցումները թաքցված են, քանի որ միացված է ապահով դիտումը։</translation>
 <translation id="6627638273713273709">Որոնում+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> հավելվածը հայցում է խոսափողն օգտագործելու թույլտվություն</translation>
-<translation id="6630773993843701741">Բացեք Bluetooth-ի կարգավորումները՝ սարքը ձեռքով զուգակցելու համար</translation>
 <translation id="6637729079642709226">Փոխել ժամանակը</translation>
 <translation id="6641720045729354415">Միացնել/անջատել Կենդանի ենթագրերը։ <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> կայքին/հավելվածին անհրաժեշտ է, որ հաստատեք ձեր ինքնությունը</translation>
@@ -1018,7 +1015,6 @@
 <translation id="7348093485538360975">Էկրանի ստեղնաշար</translation>
 <translation id="735745346212279324">VPN-ն ապակապակցված է</translation>
 <translation id="7360036564632145207">Եթե արտաքին սարքերի կարգավորումներում փոխեք տվյալների հասանելիության պաշտպանության պարամետրերը, աշխատանքի արդյունավետությունը կարող է բարձրանալ</translation>
-<translation id="7366890467478514168">Զուգակցել <ph name="NAME" /> սարքը</translation>
 <translation id="7371404428569700291">Տեսագրել պատուհանը</translation>
 <translation id="7377169924702866686">Caps Lock-ը միացված է:</translation>
 <translation id="7377481913241237033">Միացում կոդով</translation>
@@ -1129,7 +1125,6 @@
 <translation id="7955885781510802139">Բարձր կոնտրաստի ռեժիմ</translation>
 <translation id="7968693143708939792">Ընտրել պանակ</translation>
 <translation id="7977927628060636163">Բջջային ցանցերի որոնում...</translation>
-<translation id="7980780401175799550">Փորձեք նավիգացիայի նոր եղանակներ Chrome OS-ում</translation>
 <translation id="7982789257301363584">Ցանց</translation>
 <translation id="7984197416080286869">Մատնահետքով ապակողպման փորձերը չափից շատ են</translation>
 <translation id="7994370417837006925">Բազմակի մուտք</translation>

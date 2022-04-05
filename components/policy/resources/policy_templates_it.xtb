@@ -2764,6 +2764,13 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
       Se il criterio viene impostato su Disattivato o se non viene configurato, il plug-in <ph name="PLUGIN_VM_NAME" /> non viene attivato per il dispositivo.</translation>
 <translation id="3973371701361892765">Non nascondere mai automaticamente la barra delle app</translation>
 <translation id="3977304360459208438">Utilizza l'impostazione predefinita per le suite di crittografia 3DES in TLS</translation>
+<translation id="3978606026906763896">Se il criterio viene impostato su Disabled, i popup che indirizzano alla pagina <ph name="BLANK_PAGE_NAME" /> possono accedere (tramite JavaScript) alla pagina che ha richiesto l'apertura del popup.
+
+      Se il criterio viene impostato su Enabled o se non viene configurato, la proprietà <ph name="WINDOW_OPENER_PROPERTY" /> viene impostata su <ph name="NULL_VALUE" />, a meno che l'ancoraggio non specifichi <ph name="REL_OPENER_ATTRIBUTE" />.
+
+      Questo criterio è stato rimosso nella versione 102 di <ph name="PRODUCT_NAME" />.
+
+      Visita la pagina https://chromestatus.com/feature/6140064063029248.</translation>
 <translation id="3979738908158213640">URL a cui verrà concesso l'accesso per eseguire l'attestazione del dispositivo durante l'autenticazione SAML</translation>
 <translation id="3984028218719007910">Consente di stabilire se tenere o meno memorizzati in <ph name="PRODUCT_OS_NAME" /> i dati degli account locali dopo l'uscita. Se la norma viene impostata su true, in <ph name="PRODUCT_OS_NAME" /> non verranno conservati gli account persistenti e tutti i dati della sessione utente verranno eliminati dopo l'uscita. Se la norma viene impostata su false o non viene configurata, il dispositivo potrebbe conservare i dati utente locali (criptati).</translation>
 <translation id="398884292557092447">Se il criterio viene impostato su true o se non viene configurato, gli utenti possono controllare i suggerimenti di compilazione automatica per le carte di credito nella UI.
@@ -3136,31 +3143,6 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 <translation id="4463675333222095358">Attiva conversione unità di Risposte rapide</translation>
 <translation id="4464365009416584564">Disattiva <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="4467952432486360968">Blocca cookie di terze parti</translation>
-<translation id="4471718219410856003">Questo criterio rappresenta un modo per eseguire l'override dell'elenco di insiemi che Chrome utilizza per le funzionalità degli insiemi First-Party.
-
-      Quando il criterio viene fornito con un dizionario vuoto, Chrome utilizza l'elenco pubblico degli insiemi First-Party.
-
-      Quando il criterio riceve un insieme nell'elenco "replacements", ogni insieme nell'elenco pubblico che
-      vi corrisponde sarà rimosso dall'elenco di Chrome e l'insieme fornito sarà aggiunto all'elenco di Chrome.
-
-      Quando il criterio riceve un insieme nell'elenco "additions", ogni insieme nell'elenco di Chrome che
-      vi corrisponde sarà aggiornato al fine di aggiungere l'insieme fornito all'elenco assicurandosi che
-      l'elenco di Chrome degli insiemi First-Party rimanga separato.
-
-      L'elenco degli insiemi First-Party che Chrome utilizza deve rimanere separato, pertanto l'applicazione di questo criterio richiede
-      che entrambi gli elenchi di insiemi First-Party siano separati tra loro e al loro interno.
-
-      Inoltre, tutti gli insiemi in entrambi gli elenchi devono rispettare gli elementi non modificati di un insieme First-Party.
-      Un insieme First-Party è composto da un sito proprietario e da uno o più siti membri. Tutti i siti di un insieme First-Party devono
-      avere un dominio registrabile pubblicato su HTTPS, a prescindere dal fatto che si tratti di un sito proprietario o membro.
-      Ciascun sito di un insieme First-Party deve anche essere univoco, ovvero non può essere sia proprietario sia membro, né
-      può essere elencato più di una volta come membro di un insieme First-Party.
-      Consulta la pagina https://github.com/privacycg/first-party-sets per maggiori informazioni sugli insiemi First-Party.
-
-      I caratteri jolly (*) non sono supportati come valore del criterio, neppure all'interno di un insieme First-Party in questi elenchi.
-
-      Tutti gli insiemi forniti da questo criterio devono essere insiemi First-Party validi. Qualora non lo fossero, verrà segnalato
-      un errore adeguato.</translation>
 <translation id="4472740647327683596">La larghezza della pagina in micron.</translation>
 <translation id="4474167089968829729">Attiva il salvataggio delle password in Gestione password</translation>
 <translation id="4476769083125004742">Se la norma viene impostata su <ph name="BLOCK_GEOLOCATION_SETTING" />, le app Android non possono accedere ai dati sulla posizione. Se la norma viene impostata su qualsiasi altro valore o non viene impostata, all'utente viene chiesta l'autorizzazione quando un'app Android vuole accedere ai dati sulla posizione.</translation>
@@ -5428,11 +5410,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Il layout della tastiera sullo schermo potrebbe cambiare diventando compatto, in base al metodo di immissione.
 
       Se il criterio viene configurato, gli utenti non possono modificarlo.</translation>
-<translation id="7060497964524144376">Se il criterio viene impostato su Attivato, Navigazione sicura considera attendibili i domini indicati. Non esegue alcun controllo su questi domini per risorse pericolose come phishing, malware o software indesiderato. Il servizio di protezione dei download di Navigazione sicura non esegue alcun controllo sui download ospitati su questi domini. Il servizio di protezione tramite password di Navigazione sicura non esegue alcun controllo per il riutilizzo delle password.
-
-      Se il criterio non viene configurato, la protezione predefinita di Navigazione sicura viene applicata a tutte le risorse.
-
-      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="7063895219334505671">Consenti popup su questi siti</translation>
 <translation id="7066292150801784098">Disattiva l'interazione degli utenti remoti con finestre con privilegi più elevati nelle sessioni di assistenza remota</translation>
 <translation id="706669471845501145">Consenti la visualizzazione di notifiche desktop da parte dei siti</translation>
@@ -5767,7 +5744,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Nota: se l'azione è la sospensione, è possibile configurare separatamente <ph name="PRODUCT_OS_NAME" /> in modo che blocchi o meno lo schermo prima della sospensione.</translation>
 <translation id="7477149584454865826">Un flag booleano che indica se deve essere usato o meno IPP Everywhere per configurare la stampante.</translation>
 <translation id="7477231245051133709">Attiva la funzione di accessibilità di audio in formato mono</translation>
-<translation id="7477239290070847560">Destinazioni protocolli (mDNS e DNS-SD) basate su configurazione automatica</translation>
 <translation id="7477526482439041787">Consente di configurare un elenco di regole per prevenire la fuga di dati su <ph name="PRODUCT_OS_NAME" />.
       La fuga di dati può verificarsi tramite le operazioni di copia e incolla dei dati, il trasferimento di file, la stampa, la condivisione schermo o l'acquisizione di screenshot.
 

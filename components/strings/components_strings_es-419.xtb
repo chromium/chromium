@@ -591,6 +591,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2542106216580219892">Surf</translation>
 <translation id="2544546346215446551">Tu administrador reinició el dispositivo</translation>
 <translation id="2544644783021658368">Documento único</translation>
+<translation id="254524874071906077">Establecer Chrome como navegador predeterminado</translation>
 <translation id="2546283357679194313">Datos de sitios y cookies</translation>
 <translation id="2547466893236767989">Diseño y desarrollo web</translation>
 <translation id="254947805923345898">El valor de la política no es válido.</translation>
@@ -2527,6 +2528,7 @@ Detalles adicionales:
 <translation id="7998269595945679889">Botón Abrir pestaña de incógnito, presiona Intro para abrir una nueva pestaña de incógnito y así navegar de forma privada</translation>
 <translation id="800218591365569300">Prueba cerrar las demás pestañas o programas para liberar memoria.</translation>
 <translation id="8004582292198964060">Navegador</translation>
+<translation id="8009225694047762179">Administrar contraseñas</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Se guardará esta tarjeta y su dirección de facturación. Podrás usarla cuando accedas a <ph name="USER_EMAIL" />.}other{Se guardarán estas tarjetas y sus direcciones de facturación. Podrás usarlas cuando accedas a <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8025119109950072390">Es posible que los atacantes de este sitio te engañen para que hagas algo peligroso, como instalar software o divulgar información personal (p. ej., contraseñas, números de teléfono o tarjetas de crédito).</translation>
 <translation id="8026334261755873520">Borrar datos de navegación</translation>

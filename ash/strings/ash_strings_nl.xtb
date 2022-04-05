@@ -164,6 +164,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1954252331066828794">Schermopname voltooid</translation>
 <translation id="1957958912175573503">Je taal instellen</translation>
+<translation id="1961239773406905488">Het cameravoorbeeld is verborgen</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Vergrendelscherm</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -181,6 +182,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2047639699071423250">Sleutelidee toevoegen</translation>
 <translation id="2049240716062114887">Bureaunaam is veranderd in <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Staand</translation>
+<translation id="2064048859448024834">Het cameravoorbeeld staat aan</translation>
 <translation id="2066708475850724665">Vergrootglas stoppen</translation>
 <translation id="2067602449040652523">Toetsenbordhelderheid</translation>
 <translation id="2078034614700056995">Swipe met 4 vingers naar rechts om naar het volgende bureau te schakelen</translation>
@@ -437,7 +439,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3630697955794050612">uit</translation>
 <translation id="3631369015426612114">Meldingen toestaan van het volgende</translation>
 <translation id="3638400994746983214">Privacyscherm aan/uit. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171"><ph name="NAME" /> opslaan</translation>
 <translation id="3649505501900178324">Update vereist</translation>
 <translation id="366222428570480733">Beheerde gebruiker <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3680908746918359504">Alle markeringen wissen</translation>
@@ -484,6 +485,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3922427723338465344">{0,plural, =1{Zet het apparaat binnen 1 minuut terug naar een oudere versie}other{Zet het apparaat binnen # minuten terug naar een oudere versie}}</translation>
 <translation id="3923494859158167397">Geen mobiele netwerken ingesteld</translation>
 <translation id="3932043219784172185">Geen apparaat aangesloten</translation>
+<translation id="3934456833412894880">Aangepast opladen staat aan. Je batterij blijft op 80% om de batterijduur te verlengen en wordt volledig opgeladen wanneer je dat nodig hebt.</translation>
 <translation id="3943857333388298514">Plak</translation>
 <translation id="394485226368336402">Audio-instellingen</translation>
 <translation id="3945319193631853098">Tik om het instellen af te ronden</translation>
@@ -527,7 +529,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4215497585250573029">VPN-instellingen</translation>
 <translation id="4217571870635786043">Dicteren</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, geïnstalleerde app, onderbroken</translation>
-<translation id="4223947355273782392">Sla <ph name="NAME" /> op in <ph name="EMAIL" /> voor sneller koppelen met je andere apparaten</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Instellingen openen</translation>
 <translation id="4250229828105606438">Screenshot</translation>
@@ -905,7 +906,6 @@ Nieuwe installatie</translation>
 <translation id="6625718907317144388">Meldingen van <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> en andere apps zijn verborgen omdat weergavebeveiliging aanstaat</translation>
 <translation id="6627638273713273709">Zoeken+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> wil de microfoon gebruiken</translation>
-<translation id="6630773993843701741">Open de bluetooth-instellingen om het apparaat handmatig te koppelen</translation>
 <translation id="6637729079642709226">Tijd wijzigen</translation>
 <translation id="6641720045729354415">Live ondertiteling aan-/uitzetten. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> wil bevestigen dat jij het bent</translation>
@@ -1015,7 +1015,6 @@ Nieuwe installatie</translation>
 <translation id="7348093485538360975">Schermtoetsenbord</translation>
 <translation id="735745346212279324">Verbinding met VPN verbroken</translation>
 <translation id="7360036564632145207">Als je de instelling 'Beveiliging voor gegevenstoegang voor randapparaten' wijzigt, kun je de prestaties optimaliseren</translation>
-<translation id="7366890467478514168"><ph name="NAME" /> koppelen</translation>
 <translation id="7371404428569700291">Opname van venster maken</translation>
 <translation id="7377169924702866686">Caps Lock staat aan.</translation>
 <translation id="7377481913241237033">Koppelen met een code</translation>
@@ -1125,7 +1124,6 @@ Nieuwe installatie</translation>
 <translation id="7955885781510802139">Modus voor hoog contrast</translation>
 <translation id="7968693143708939792">Map selecteren...</translation>
 <translation id="7977927628060636163">Mobiele netwerken zoeken…</translation>
-<translation id="7980780401175799550">Probeer nieuwe manieren om te navigeren in Chrome OS</translation>
 <translation id="7982789257301363584">Netwerk</translation>
 <translation id="7984197416080286869">Te veel vingerafdrukpogingen</translation>
 <translation id="7994370417837006925">Toegang tot meerdere accounts</translation>

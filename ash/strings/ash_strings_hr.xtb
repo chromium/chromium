@@ -440,7 +440,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3630697955794050612">isključeno</translation>
 <translation id="3631369015426612114">Omogućite obavijesti iz sljedećih izvora</translation>
 <translation id="3638400994746983214">Uključite/isključite zaslon privatnosti. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171">Spremite <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Zakašnjelo ažuriranje</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> upravljani korisnik</translation>
 <translation id="3680908746918359504">Izbriši sve markere</translation>
@@ -487,6 +486,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Vratite uređaj na prethodnu verziju u roku od 1 min}one{Vratite uređaj na prethodnu verziju u roku od # min}few{Vratite uređaj na prethodnu verziju u roku od # min}other{Vratite uređaj na prethodnu verziju u roku od # min}}</translation>
 <translation id="3923494859158167397">Nije postavljena nijedna mobilna mreža</translation>
 <translation id="3932043219784172185">Nije povezan nijedan uređaj</translation>
+<translation id="3934456833412894880">Uključeno je adaptivno punjenje. Baterija će ostati na 80% kako bi se produljilo trajanje baterije i napunjena kad vam zatreba.</translation>
 <translation id="3943857333388298514">Zalijepi</translation>
 <translation id="394485226368336402">Postavke zvuka</translation>
 <translation id="3945319193631853098">Dodirnite da biste dovršili postavljanje</translation>
@@ -530,7 +530,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="4215497585250573029">VPN postavke</translation>
 <translation id="4217571870635786043">Diktat</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, instalirana aplikacija, pauzirana</translation>
-<translation id="4223947355273782392">Spremite <ph name="NAME" /> na račun <ph name="EMAIL" /> za brže uparivanje s ostalim uređajima</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Otvori postavke</translation>
 <translation id="4250229828105606438">Snimka zaslona</translation>
@@ -908,7 +907,6 @@ Novo instaliranje</translation>
 <translation id="6625718907317144388">Obavijesti aplikacija <ph name="APP_1_TITLE" /> i <ph name="APP_2_TITLE" /> i drugih aplikacija skrivene su jer je uključena zaštita prikaza.</translation>
 <translation id="6627638273713273709">Pretraži + Shift + K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> želi koristiti mikrofon</translation>
-<translation id="6630773993843701741">Otvorite postavke Bluetootha da biste ručno uparili uređaj</translation>
 <translation id="6637729079642709226">Promijenite vrijeme</translation>
 <translation id="6641720045729354415">Uključite ili isključite automatske titlove. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> želi potvrditi da ste to vi</translation>
@@ -1018,7 +1016,6 @@ Novo instaliranje</translation>
 <translation id="7348093485538360975">Tipkovnica na zaslonu</translation>
 <translation id="735745346212279324">Veza s VPN-om prekinuta</translation>
 <translation id="7360036564632145207">Promjenom postavke zaštite pristupa podacima za periferne uređaje možete optimizirati rad</translation>
-<translation id="7366890467478514168">Povežite <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Snimanje prozora</translation>
 <translation id="7377169924702866686">Uključena je opcija Caps Lock.</translation>
 <translation id="7377481913241237033">Povezivanje pomoću koda</translation>
@@ -1129,7 +1126,6 @@ Novo instaliranje</translation>
 <translation id="7955885781510802139">Način visokog kontrasta</translation>
 <translation id="7968693143708939792">Odabir mape...</translation>
 <translation id="7977927628060636163">Traženje mobilnih mreža...</translation>
-<translation id="7980780401175799550">Isprobajte nove načine za kretanje kroz Chrome OS</translation>
 <translation id="7982789257301363584">Mreža</translation>
 <translation id="7984197416080286869">Previše pokušaja otključavanja otiskom prsta</translation>
 <translation id="7994370417837006925">Višestruka prijava</translation>

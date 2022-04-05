@@ -591,6 +591,7 @@
 <translation id="2542106216580219892">冲浪</translation>
 <translation id="2544546346215446551">您的管理员重启了您的设备</translation>
 <translation id="2544644783021658368">单一文档</translation>
+<translation id="254524874071906077">将 Chrome 浏览器设为默认浏览器</translation>
 <translation id="2546283357679194313">Cookie 和网站数据</translation>
 <translation id="2547466893236767989">网络设计与开发</translation>
 <translation id="254947805923345898">政策值无效。</translation>
@@ -2521,6 +2522,7 @@
 <translation id="7998269595945679889">“打开无痕式标签页”按钮，按一下 Enter 键即可打开新的无痕式标签页进行无痕浏览</translation>
 <translation id="800218591365569300">请尝试关闭其他标签页或程序以释放内存。</translation>
 <translation id="8004582292198964060">浏览器</translation>
+<translation id="8009225694047762179">管理密码</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{这张卡及其帐单邮寄地址将被保存。登录 <ph name="USER_EMAIL" /> 后即可使用这张卡。}other{这些卡及其帐单邮寄地址将被保存。登录 <ph name="USER_EMAIL" /> 后即可使用这些卡。}}</translation>
 <translation id="8025119109950072390">此网站上的攻击者可能会诱骗您做出一些诸如安装软件或泄露个人信息（例如：密码、电话号码或信用卡信息）之类的危险事情。</translation>
 <translation id="8026334261755873520">清除浏览数据</translation>

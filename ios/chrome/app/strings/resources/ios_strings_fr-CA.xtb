@@ -168,6 +168,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2421044535038393232">Continuer à modifier</translation>
 <translation id="2434405374328098816">Vous avez déjà enregistré un mot de passe pour l'utilisateur « <ph name="USERNAME" /> » sur le site <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Affich. mot de passe</translation>
+<translation id="2469960372084740698">Désactiver la navigation sécurisée?</translation>
 <translation id="2473876017985765807">Vous avez déjà enregistré un mot de passe pour le site <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Non sélectionné</translation>
 <translation id="2497852260688568942">La synchronisation est désactivée par votre administrateur</translation>
@@ -582,6 +583,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6144589619057374135">Ouvrir ${url} en mode de navigation privée</translation>
 <translation id="6149061208933997199">Utilis. mot de passe</translation>
 <translation id="6159839020698489198">facultatif</translation>
+<translation id="6173386249456979368">Ce mode offre une protection proactive et plus rapide contre les téléchargements, les extensions et les sites Web dangereux. Il vous avertit en cas de fuites de mots de passe. Son utilisation exige l'envoi des données de navigation à Google</translation>
 <translation id="6177442314419606057">Rechercher dans Chrome</translation>
 <translation id="6184086493125982861">Afficher les onglets</translation>
 <translation id="6187302354554850004">Dernière synchro : <ph name="LAST_USED_TIME" /></translation>

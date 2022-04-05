@@ -69,7 +69,7 @@
 <translation id="1161325031994447685">Riconnetterti alla rete Wi-Fi</translation>
 <translation id="1165039591588034296">Errore</translation>
 <translation id="1165174597379888365">Pagina visitata</translation>
-<translation id="1165852471352757509">Documentari TV e fiction</translation>
+<translation id="1165852471352757509">Non fiction e documentari TV</translation>
 <translation id="1174723505405632867">Vuoi consentire al sito <ph name="EMBEDDED_URL" /> di usare cookie e dati del sito su <ph name="TOP_LEVEL_URL" />?
 
 In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I contenuti con cui hai interagito funzioneranno correttamente, ma il sito <ph name="EMBEDDED_URL" /> potrebbe monitorare la tua attività.</translation>
@@ -595,6 +595,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2542106216580219892">Surf</translation>
 <translation id="2544546346215446551">Il tuo amministratore ha riavviato il dispositivo</translation>
 <translation id="2544644783021658368">Documento singolo</translation>
+<translation id="254524874071906077">Imposta Chrome come browser predefinito</translation>
 <translation id="2546283357679194313">Cookie e dati dei siti</translation>
 <translation id="2547466893236767989">Web design e sviluppo di siti web</translation>
 <translation id="254947805923345898">Il valore della norma non è valido.</translation>
@@ -2530,7 +2531,9 @@ Ulteriori dettagli:
 <translation id="7995512525968007366">Non specificato</translation>
 <translation id="7998269595945679889">Pulsante Apri scheda di navigazione in incognito, premi Invio per aprire una nuova scheda di navigazione in incognito per navigare in privato</translation>
 <translation id="800218591365569300">Prova a chiudere altri programmi o schede per liberare spazio in memoria.</translation>
+<translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
 <translation id="8004582292198964060">Browser</translation>
+<translation id="8009225694047762179">Gestisci password</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Questa carta e il relativo indirizzo di fatturazione verranno salvati. Potrai usarla dopo aver eseguito l'accesso all'account <ph name="USER_EMAIL" />.}other{Queste carte e i relativi indirizzi di fatturazione verranno salvati. Potrai usarle dopo aver eseguito l'accesso all'account <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8025119109950072390">I malintenzionati su questo sito potrebbero indurti con l'inganno a effettuare operazioni pericolose, come installare software o fornire i tuoi dati personali (ad esempio password, numeri di telefono o carte di credito).</translation>
 <translation id="8026334261755873520">Cancella dati di navigazione</translation>

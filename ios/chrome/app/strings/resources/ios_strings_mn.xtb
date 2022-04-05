@@ -168,6 +168,7 @@
 <translation id="2421044535038393232">Үргэлжлүүлэн засах</translation>
 <translation id="2434405374328098816">Та <ph name="WEBSITE" />-д аль хэдийн "<ph name="USERNAME" />"-н нууц үгийг хадгалсан</translation>
 <translation id="2435457462613246316">Нууц үг харуулах</translation>
+<translation id="2469960372084740698">Аюулгүй үзэхийг унтраах уу?</translation>
 <translation id="2473876017985765807">Та <ph name="WEBSITE" />-н нууц үгийг аль хэдийн хадгалсан</translation>
 <translation id="2476359652512522418">Сонгоогүй</translation>
 <translation id="2497852260688568942">Таны админ синкийг идэвхгүй болгосон байна.</translation>
@@ -527,6 +528,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5737974891429562743">Бүртгэлийн нэвтрэх мэдээлэл хуучирсан байна. Синкийг эхлүүлэхийн тулд шинэчилнэ үү.</translation>
 <translation id="5738887413654608789">Та үүгээр ойролцоох хамааралтай веб хуудсыг олох боломжтой.</translation>
 <translation id="5758631781033351321">Та унших жагсаалтаа эндээс олох болно</translation>
+<translation id="5765456154762864099">Цэс → Тохиргоо → Өгөгдмөл хөтөч</translation>
 <translation id="5782227691023083829">Орчуулж байна...</translation>
 <translation id="5791632441210678828">'Дагаж буй' хангамжийг эрэмбэлэх товчлуур.</translation>
 <translation id="5802829331520313983">Тохируулах…</translation>
@@ -581,6 +583,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6144589619057374135">${url}-г Нууцлалтай горимд нээх</translation>
 <translation id="6149061208933997199">Нууц үг ашиглах</translation>
 <translation id="6159839020698489198">заавал биш</translation>
+<translation id="6173386249456979368">Аюултай вэбсайт, татаж авсан файл болон өргөтгөлийн эсрэг илүү хурдан, идэвхтэй хамгаалалт. Танд нууц үгний зөрчлийн тухай анхааруулга өгнө. Интернэтээр үзсэн өгөгдлийг Google-д илгээхийг шаардана.</translation>
 <translation id="6177442314419606057">Chrome-с хайх</translation>
 <translation id="6184086493125982861">Цонхнуудыг харуул</translation>
 <translation id="6187302354554850004">Хамгийн сүүлд синк хийсэн: <ph name="LAST_USED_TIME" /></translation>
@@ -767,6 +770,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7658239707568436148">Болих</translation>
 <translation id="7671141431838911305">СУУЛГАХ</translation>
 <translation id="7701040980221191251">Тодорхойгүй</translation>
+<translation id="7726702057919861819">Цэс → Түүх → Интернэтээр үзсэн өгөгдлийг арилгах</translation>
 <translation id="7741325291586284254">Шинэ Нууцлалтай таб хуудас</translation>
 <translation id="7765158879357617694">Зөөх</translation>
 <translation id="7772032839648071052">Нэвтрэх үгүүдийг баталгаажуул</translation>
@@ -839,6 +843,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8386068868580335421">Шинэчлэх</translation>
 <translation id="8407669440184693619">Энэ сайтад нууц үг олдсонгүй</translation>
 <translation id="842017693807136194">Дараахаар нэвтэрсэн</translation>
+<translation id="8427613705947111202">Цэс → Тохиргоо → Нууц үг</translation>
 <translation id="8428045167754449968">Хот / Тосгон</translation>
 <translation id="8428213095426709021">Тохиргоо</translation>
 <translation id="8428634594422941299">Ойлголоо</translation>

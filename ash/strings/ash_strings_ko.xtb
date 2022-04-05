@@ -167,6 +167,7 @@
 <translation id="1951012854035635156">어시스턴트</translation>
 <translation id="1954252331066828794">화면 녹화 완료됨</translation>
 <translation id="1957958912175573503">언어 설정</translation>
+<translation id="1961239773406905488">동영상 카메라 미리보기 숨겨짐</translation>
 <translation id="1961832440516943645"><ph name="DATE" /> <ph name="TIME" /></translation>
 <translation id="1962969542251276847">화면 잠금</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" />(USB)</translation>
@@ -184,6 +185,7 @@
 <translation id="2047639699071423250">핵심 아이디어 추가</translation>
 <translation id="2049240716062114887">데스크 이름이 <ph name="DESK_NAME" />(으)로 변경되었습니다.</translation>
 <translation id="2050339315714019657">세로 방향</translation>
+<translation id="2064048859448024834">동영상 카메라 미리보기 켜짐</translation>
 <translation id="2066708475850724665">돋보기 중지</translation>
 <translation id="2067602449040652523">키보드 밝기</translation>
 <translation id="2078034614700056995">다음 데스크로 전환하려면 네 손가락을 사용해 오른쪽으로 스와이프하세요.</translation>
@@ -440,7 +442,6 @@
 <translation id="3630697955794050612">사용 안함</translation>
 <translation id="3631369015426612114">다음 항목에 알림 허용:</translation>
 <translation id="3638400994746983214">개인정보 보호 화면을 켜거나 끕니다. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171"><ph name="NAME" /> 저장</translation>
 <translation id="3649505501900178324">업데이트 지연됨</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> 관리 사용자</translation>
 <translation id="3680908746918359504">모든 마커 지우기</translation>
@@ -487,6 +488,7 @@
 <translation id="3922427723338465344">{0,plural, =1{1분 이내에 기기를 이전 버전으로 되돌리세요}other{#분 이내에 기기를 이전 버전으로 되돌리세요}}</translation>
 <translation id="3923494859158167397">설정된 모바일 네트워크 없음</translation>
 <translation id="3932043219784172185">연결된 기기 없음</translation>
+<translation id="3934456833412894880">자동 조절 충전이 사용 설정되었습니다. 배터리 수명 연장을 위해 80%까지 정상 속도로 충전 후 필요한 시점에 완충됩니다.</translation>
 <translation id="3943857333388298514">붙여넣기</translation>
 <translation id="394485226368336402">오디오 설정</translation>
 <translation id="3945319193631853098">설정을 완료하려면 탭하세요.</translation>
@@ -530,7 +532,6 @@
 <translation id="4215497585250573029">VPN 설정</translation>
 <translation id="4217571870635786043">음성기록</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, 설치된 앱, 일시중지됨</translation>
-<translation id="4223947355273782392"><ph name="NAME" /> 기기를 <ph name="EMAIL" />에 저장하여 다른 기기와 더 빠르게 페어링하세요.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">설정 열기</translation>
 <translation id="4250229828105606438">스크린샷</translation>
@@ -908,7 +909,6 @@
 <translation id="6625718907317144388">사생활 보호가 켜져 있으므로 <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> 및 기타 알림이 숨겨집니다.</translation>
 <translation id="6627638273713273709">검색+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> 앱에서 마이크를 사용하려고 합니다</translation>
-<translation id="6630773993843701741">기기를 직접 페어링하려면 블루투스 설정을 여세요.</translation>
 <translation id="6637729079642709226">시간 변경</translation>
 <translation id="6641720045729354415">실시간 자막을 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" />에서 본인 확인을 요청합니다.</translation>
@@ -1018,7 +1018,6 @@
 <translation id="7348093485538360975">터치 키보드</translation>
 <translation id="735745346212279324">VPN 연결 끊김</translation>
 <translation id="7360036564632145207">주변기기 데이터 액세스 보호 설정을 변경하면 성능을 최적화할 수 있습니다.</translation>
-<translation id="7366890467478514168"><ph name="NAME" /> 연결</translation>
 <translation id="7371404428569700291">창 녹화</translation>
 <translation id="7377169924702866686">Caps Lock이 켜져 있습니다.</translation>
 <translation id="7377481913241237033">코드를 사용한 연결</translation>
@@ -1129,7 +1128,6 @@
 <translation id="7955885781510802139">고대비 모드</translation>
 <translation id="7968693143708939792">폴더 선택...</translation>
 <translation id="7977927628060636163">모바일 네트워크 검색 중...</translation>
-<translation id="7980780401175799550">Chrome OS의 새로운 탐색 방법 사용해 보기</translation>
 <translation id="7982789257301363584">네트워크</translation>
 <translation id="7984197416080286869">지문 인식을 너무 많이 시도함</translation>
 <translation id="7994370417837006925">멀티 로그인</translation>

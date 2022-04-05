@@ -167,6 +167,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1951012854035635156">Asisten</translation>
 <translation id="1954252331066828794">Perekaman layar selesai</translation>
 <translation id="1957958912175573503">Setel bahasa Anda</translation>
+<translation id="1961239773406905488">Pratinjau kamera disembunyikan</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Kunci Layar</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -184,6 +185,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2047639699071423250">Tambahkan ide kunci</translation>
 <translation id="2049240716062114887">Nama desktop diubah menjadi <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Potret</translation>
+<translation id="2064048859448024834">Pratinjau kamera aktif</translation>
 <translation id="2066708475850724665">Hentikan kaca pembesar</translation>
 <translation id="2067602449040652523">Kecerahan keyboard</translation>
 <translation id="2078034614700056995">Geser ke kanan dengan empat jari untuk beralih ke desktop berikutnya</translation>
@@ -440,7 +442,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3630697955794050612">nonaktif</translation>
 <translation id="3631369015426612114">Izinkan notifikasi dari sumber berikut</translation>
 <translation id="3638400994746983214">Alihkan ke layar privasi. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171">Simpan <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Update melewati batas waktu</translation>
 <translation id="366222428570480733">Pengguna yang Dikelola <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3680908746918359504">Hapus semua penanda</translation>
@@ -530,7 +531,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4215497585250573029">Setelan VPN</translation>
 <translation id="4217571870635786043">Dikte</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Aplikasi Terinstal, Dijeda</translation>
-<translation id="4223947355273782392">Simpan <ph name="NAME" /> ke <ph name="EMAIL" /> untuk penyambungan yang lebih cepat ke perangkat lain</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Buka setelan</translation>
 <translation id="4250229828105606438">Screenshot</translation>
@@ -908,7 +908,6 @@ Baru diinstal</translation>
 <translation id="6625718907317144388">Notifikasi <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" />, dan lainnya disembunyikan karena perlindungan tampilan aktif</translation>
 <translation id="6627638273713273709">Tombol Penelusuran+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> ingin menggunakan mikrofon</translation>
-<translation id="6630773993843701741">Buka setelan Bluetooth untuk menyambungkan perangkat secara manual</translation>
 <translation id="6637729079642709226">Ubah waktu</translation>
 <translation id="6641720045729354415">Tombol Teks Otomatis. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ingin mengonfirmasi bahwa ini benar-benar Anda</translation>
@@ -1018,7 +1017,6 @@ Baru diinstal</translation>
 <translation id="7348093485538360975">Keyboard di layar</translation>
 <translation id="735745346212279324">VPN terputus</translation>
 <translation id="7360036564632145207">Mengubah setelan perlindungan akses data untuk periferal dapat mengoptimalkan performa</translation>
-<translation id="7366890467478514168">Hubungkan <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Rekam jendela</translation>
 <translation id="7377169924702866686">Caps Lock aktif.</translation>
 <translation id="7377481913241237033">Hubungkan dengan kode</translation>
@@ -1129,7 +1127,6 @@ Baru diinstal</translation>
 <translation id="7955885781510802139">Mode kontras tinggi</translation>
 <translation id="7968693143708939792">Pilih folder ...</translation>
 <translation id="7977927628060636163">Menelusuri jaringan seluler...</translation>
-<translation id="7980780401175799550">Coba cara baru untuk menggunakan Chrome OS</translation>
 <translation id="7982789257301363584">Jaringan</translation>
 <translation id="7984197416080286869">Terlalu banyak percobaan sidik jari</translation>
 <translation id="7994370417837006925">Fitur masuk banyak akun</translation>

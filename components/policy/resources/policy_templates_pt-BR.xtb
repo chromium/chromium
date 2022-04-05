@@ -2765,6 +2765,13 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Se a política for definida como "Desativada" ou não for definida, o <ph name="PLUGIN_VM_NAME" /> não será ativado para o dispositivo.</translation>
 <translation id="3973371701361892765">Nunca ocultar automaticamente a estante</translation>
 <translation id="3977304360459208438">Usar a configuração padrão para pacotes de criptografia 3DES em TLS</translation>
+<translation id="3978606026906763896">Se a política for desativada, os pop-ups direcionados a <ph name="BLANK_PAGE_NAME" /> vão poder acessar (via JavaScript) a página que solicitou a abertura do pop-up.
+
+      Se ela for ativada ou deixada sem definição, a propriedade <ph name="WINDOW_OPENER_PROPERTY" /> será <ph name="NULL_VALUE" />, a menos que a âncora especifique <ph name="REL_OPENER_ATTRIBUTE" />.
+
+      Esta política foi removida na versão 102 do <ph name="PRODUCT_NAME" />.
+
+      Consulte https://chromestatus.com/feature/6140064063029248.</translation>
 <translation id="3979738908158213640">URLs que terão acesso para realizar o atestado do dispositivo durante a autenticação SAML</translation>
 <translation id="3984028218719007910">Determina se o <ph name="PRODUCT_OS_NAME" /> deve manter os dados locais da conta após a saída. Se for configurada como true, nenhuma conta persistente será mantida pelo <ph name="PRODUCT_OS_NAME" /> e todos os dados da sessão do usuário serão descartados após a saída. Se esta política for configurada como false ou não for configurada, o dispositivo poderá manter os dados locais do usuário (criptografados).</translation>
 <translation id="398884292557092447">Se a política for definida como verdadeira ou não for definida, os usuários poderão controlar as sugestões de preenchimento automático para cartões de crédito na IU.
@@ -3149,31 +3156,6 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 <translation id="4463675333222095358">Ativar a conversão de unidades das Respostas rápidas</translation>
 <translation id="4464365009416584564">Desativar a <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="4467952432486360968">Bloquear cookies de terceiros</translation>
-<translation id="4471718219410856003">Essa política é uma forma de substituir a lista de conjuntos que o Chrome usa para recursos do First-Party Sets.
-
-      Quando essa política é fornecida com um dicionário vazio, o Chrome usa a lista pública de First-Party Sets.
-
-      Quando a política recebe um conjunto na lista "substituições", todos os conjuntos na lista pública que
-      se cruzam com ela são removidos da lista do Chrome e o conjunto fornecido é adicionado a ela.
-
-      Quando essa política recebe um conjunto na lista "adições", todos os conjuntos na lista do Chrome que
-      se cruzam com ela são atualizados para adicionar o conjunto fornecido à lista ao mesmo tempo em que mantêm
-      a lista do Chrome de First-Party Sets desvinculada.
-
-      A lista de First-Party Sets usada pelo Chrome precisa permanecer desvinculada. Portanto, aplicar essa política exige
-      que as duas listas de políticas de First-Party Sets estejam desvinculadas internamente e uma da outra.
-
-      Além disso, todos os conjuntos nas duas listas precisam aderir às invariantes de um First-Party Sets.
-      Um First-Party Set consiste em um site proprietário e um ou mais sites membros. Todos os sites em um First-Party Set precisam
-      ser um domínio registrável exibido por HTTPS, independentemente de ser um site proprietário ou membro.
-      Cada site em um First-Party Set também precisa ser único, o que significa que um site não pode ser proprietário e membro ao mesmo tempo, nem ser
-      listado mais de uma vez como membro de um First-Party Set.
-      Consulte https://github.com/privacycg/first-party-sets (link em inglês) para ver mais informações sobre First-Party Sets.
-
-      Caracteres curinga (*) não têm suporte como valor da política, nem dentro de qualquer First-Party Set nessas listas.
-
-      Todos os conjuntos fornecidos por essa política precisam ser First-Party Set válidos. Se não forem, será gerado
-      um erro adequado.</translation>
 <translation id="4472740647327683596">Largura da página em micrômetros.</translation>
 <translation id="4474167089968829729">Ativar salvamento de senhas no gerenciador de senhas</translation>
 <translation id="4476769083125004742">Se esta política for definida como <ph name="BLOCK_GEOLOCATION_SETTING" />, os apps Android não poderão acessar as informações de local. Se você configurar essa política para qualquer outro valor ou deixá-la sem definição, será solicitado o consentimento do usuário quando um app Android quiser acessar as informações de local.</translation>
@@ -5449,11 +5431,6 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       O teclado na tela pode mudar para um layout compacto, dependendo do método de entrada.
 
       Se você definir a política, ela não poderá ser mudada pelos usuários.</translation>
-<translation id="7060497964524144376">Se a política for ativada, o Navegação segura confiará nos domínios designados por você. Ele não verificará a presença de recursos perigosos, como phishing, malware ou software indesejado. O serviço de proteção de downloads do Navegação segura não verificará downloads hospedados nesses domínios. O serviço de proteção de senhas não verificará a reutilização delas.
-
-      Se a política não for definida, as proteções padrão do Navegação segura serão aplicadas a todos os recursos.
-
-      No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas no <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. No <ph name="MAC_OS_NAME" />, essa funcionalidade está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
 <translation id="7063895219334505671">Permitir pop-ups nestes sites</translation>
 <translation id="7066292150801784098">Desativar a interação de usuários remotos com janelas elevadas em sessões de assistência remota</translation>
 <translation id="706669471845501145">Permitir que os sites exibam notificações da área de trabalho</translation>
@@ -5786,7 +5763,6 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
       Observação: se a ação for a de suspender, o <ph name="PRODUCT_OS_NAME" /> poderá ser configurado separadamente para bloquear ou não a tela antes da suspensão.</translation>
 <translation id="7477149584454865826">Sinalização booleana indicando se o IPP Everywhere deve ser usado ou não para configurar a impressora.</translation>
 <translation id="7477231245051133709">Ativar o recurso de acessibilidade de áudio mono</translation>
-<translation id="7477239290070847560">Destinos de protocolos baseados em Zeroconf (mDNS + DNS-SD)</translation>
 <translation id="7477526482439041787">Configura uma lista de regras para prevenir vazamentos de dados no <ph name="PRODUCT_OS_NAME" />.
       Os vazamentos podem acontecer ao copiar e colar dados, transferir arquivos, imprimir, compartilhar ou capturar a tela etc.
 

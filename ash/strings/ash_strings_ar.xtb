@@ -441,7 +441,6 @@
 <translation id="3630697955794050612">غير مفعّل</translation>
 <translation id="3631369015426612114">السماح بالإشعارات من المصادر التالية</translation>
 <translation id="3638400994746983214">تبديل شاشة الخصوصية <ph name="STATE_TEXT" /></translation>
-<translation id="3640092422335864171">حفظ <ph name="NAME" /></translation>
 <translation id="3649505501900178324">يجب إجراء التحديث في أسرع وقت</translation>
 <translation id="366222428570480733">المستخدِم المُدار <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3680908746918359504">محو جميع العلامات</translation>
@@ -488,6 +487,7 @@
 <translation id="3922427723338465344">{0,plural, =1{إعادة الجهاز إلى الإصدار السابق في غضون دقيقة واحدة}zero{إعادة الجهاز إلى الإصدار السابق في غضون # دقيقة}two{إعادة الجهاز إلى الإصدار السابق في غضون دقيقتين}few{إعادة الجهاز إلى الإصدار السابق في غضون # دقائق}many{إعادة الجهاز إلى الإصدار السابق في غضون # دقيقة}other{إعادة الجهاز إلى الإصدار السابق في غضون # دقيقة}}</translation>
 <translation id="3923494859158167397">ما مِن شبكات جوّال تم إعدادها.</translation>
 <translation id="3932043219784172185">لم يتم الاتصال بأي أجهزة</translation>
+<translation id="3934456833412894880">ميزة "الشحن التكيُّفي" مفعّلة. سيظلّ مستوى شحن البطارية عند %80 لإطالة عمرها، وسيتم شحنها بالكامل عندما تحتاج إلى ذلك.</translation>
 <translation id="3943857333388298514">لصق</translation>
 <translation id="394485226368336402">إعدادات الصوت</translation>
 <translation id="3945319193631853098">انقر لاستكمال عملية الإعداد.</translation>
@@ -531,7 +531,6 @@
 <translation id="4215497585250573029">‏إعدادات الشبكة الافتراضية الخاصة (VPN)</translation>
 <translation id="4217571870635786043">إملاء</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />، تطبيق مثبّت ومتوقف مؤقتًا</translation>
-<translation id="4223947355273782392">يمكنك حفظ <ph name="NAME" /> على <ph name="EMAIL" /> لإقرانه بشكلٍ أسرع بأجهزتك الأخرى.</translation>
 <translation id="4239069858505860023">‏شبكة GPRS</translation>
 <translation id="4242533952199664413">فتح الإعدادات</translation>
 <translation id="4250229828105606438">لقطة شاشة</translation>
@@ -909,7 +908,6 @@
 <translation id="6625718907317144388">‏تم حجب إشعارات التطبيقين <ph name="APP_1_TITLE" /> و<ph name="APP_2_TITLE" /> وغيرها من الإشعارات بسبب تفعيل ميزة Viewing Protection.</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="6629480180092995136">يريد تطبيق <ph name="APP_NAME" /> استخدام الميكروفون.</translation>
-<translation id="6630773993843701741">يُرجى فتح إعدادات البلوتوث لإقران الجهاز يدويًا.</translation>
 <translation id="6637729079642709226">تغيير الوقت</translation>
 <translation id="6641720045729354415">إيقاف/تفعيل ميزة "النسخ النصي التلقائي". <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490">يريد النطاق <ph name="ORIGIN_NAME" /> تأكيد هويتك.</translation>
@@ -1019,7 +1017,6 @@
 <translation id="7348093485538360975">لوحة المفاتيح على الشاشة</translation>
 <translation id="735745346212279324">تم قطع اتصال الشبكة الافتراضية الخاصة</translation>
 <translation id="7360036564632145207">يمكن تحسين أداء الأجهزة الملحقة من خلال تغيير إعدادات الحماية من الوصول إلى البيانات.</translation>
-<translation id="7366890467478514168">ربط <ph name="NAME" /></translation>
 <translation id="7371404428569700291">تسجيل فيديو للنافذة</translation>
 <translation id="7377169924702866686">‏مفتاح Caps Lock في وضع التفعيل.</translation>
 <translation id="7377481913241237033">الربط باستخدام رمز</translation>
@@ -1130,7 +1127,6 @@
 <translation id="7955885781510802139">وضع التباين العالي</translation>
 <translation id="7968693143708939792">اختيار مجلد...</translation>
 <translation id="7977927628060636163">جارٍ البحث عن شبكات الجوّال...</translation>
-<translation id="7980780401175799550">‏تجربة طرق أخرى للتنقل في "نظام التشغيل Chrome"</translation>
 <translation id="7982789257301363584">الشبكة</translation>
 <translation id="7984197416080286869">أُجريت محاولات كثيرة جدًا لاستخدام بصمة الإصبع</translation>
 <translation id="7994370417837006925">الدخول المتعدد</translation>

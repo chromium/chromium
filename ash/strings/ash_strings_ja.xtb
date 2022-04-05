@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Bluetooth デバイス「<ph name="DEVICE_NAME" />」がペア設定の権限をリクエストしています。このデバイスに次の PIN コードを入力してください: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">スクリーンキャスト ツール</translation>
 <translation id="1024261588257374085">画面の一部のスクリーンショットを選択しました</translation>
+<translation id="1024364763893396229"><ph name="NAME" /> を保存</translation>
 <translation id="1032891413405719768">タッチペンのバッテリー残量が少なくなっています</translation>
 <translation id="1036073649888683237">通知の管理は設定アプリで行うことができす</translation>
 <translation id="1036672894875463507">私は Google アシスタント、あなたの 1 日をサポートします。
@@ -167,6 +168,7 @@
 <translation id="1951012854035635156">アシスタント</translation>
 <translation id="1954252331066828794">画面の録画が完了しました</translation>
 <translation id="1957958912175573503">言語を設定</translation>
+<translation id="1961239773406905488">カメラ プレビューが非表示になっています</translation>
 <translation id="1961832440516943645"><ph name="DATE" />、<ph name="TIME" /></translation>
 <translation id="1962969542251276847">画面をロック</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" />（USB）</translation>
@@ -184,6 +186,7 @@
 <translation id="2047639699071423250">要点を追加</translation>
 <translation id="2049240716062114887">デスクの名前を <ph name="DESK_NAME" /> に変更しました</translation>
 <translation id="2050339315714019657">縦</translation>
+<translation id="2064048859448024834">カメラ プレビューがオンになっています</translation>
 <translation id="2066708475850724665">拡大鏡を停止</translation>
 <translation id="2067602449040652523">キーボードの明るさ</translation>
 <translation id="2078034614700056995">次のデスクに切り替えるには 4 本の指で右にスワイプします</translation>
@@ -439,8 +442,8 @@
 <translation id="3626281679859535460">輝度</translation>
 <translation id="3630697955794050612">オフ</translation>
 <translation id="3631369015426612114">以下からの通知を許可</translation>
+<translation id="3633097874324966332">デバイスをペア設定するには、Bluetooth 設定を開いてください</translation>
 <translation id="3638400994746983214">プライバシー スクリーンを切り替えます。<ph name="STATE_TEXT" />。</translation>
-<translation id="3640092422335864171"><ph name="NAME" /> を保存</translation>
 <translation id="3649505501900178324">更新の期限が過ぎています</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> の管理対象ユーザー</translation>
 <translation id="3680908746918359504">すべてのマーカーを消去</translation>
@@ -487,6 +490,7 @@
 <translation id="3922427723338465344">{0,plural, =1{1 分以内にデバイスを以前のバージョンに戻してください}other{# 分以内にデバイスを以前のバージョンに戻してください}}</translation>
 <translation id="3923494859158167397">モバイル ネットワークが設定されていません</translation>
 <translation id="3932043219784172185">接続されているデバイスはありません</translation>
+<translation id="3934456833412894880">アダプティブ充電がオンになっています。バッテリー寿命を延ばすため、残量は 80% に保たれ、必要なときにフル充電します。</translation>
 <translation id="3943857333388298514">貼り付け</translation>
 <translation id="394485226368336402">音声設定</translation>
 <translation id="3945319193631853098">設定を完了するにはタップしてください</translation>
@@ -530,7 +534,6 @@
 <translation id="4215497585250573029">VPN 設定</translation>
 <translation id="4217571870635786043">音声入力</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />、インストール済みアプリ、一時停止中</translation>
-<translation id="4223947355273782392"><ph name="NAME" /> を <ph name="EMAIL" /> に保存すると、他のデバイスとすばやくペア設定できます</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">設定を開く</translation>
 <translation id="4250229828105606438">スクリーンショット</translation>
@@ -768,6 +771,7 @@
 <translation id="5744083938413354016">タップによるドラッグ</translation>
 <translation id="5745612484876805746">夜間モードは日の入り時刻に自動的にオンになります</translation>
 <translation id="5750765938512549687">Bluetooth はオフです</translation>
+<translation id="5760866832697883462"><ph name="NAME" /> を接続</translation>
 <translation id="576341972084747908">危険な <ph name="FILENAME" /> をダウンロードしています</translation>
 <translation id="5763928712329149804">シェルフ グループはオフです。</translation>
 <translation id="576453121877257266">夜間モードはオンです。</translation>
@@ -908,7 +912,6 @@
 <translation id="6625718907317144388">表示保護機能が有効になっているため、<ph name="APP_1_TITLE" />、<ph name="APP_2_TITLE" />、その他の通知は表示されません</translation>
 <translation id="6627638273713273709">検索+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> がマイクの使用を求めています</translation>
-<translation id="6630773993843701741">デバイスを手動でペア設定するには、Bluetooth 設定を開いてください</translation>
 <translation id="6637729079642709226">時間を変更</translation>
 <translation id="6641720045729354415">自動字幕起こしを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> が本人確認をリクエストしています</translation>
@@ -954,6 +957,7 @@
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> のパフォーマンスが低下する可能性があります。正規の <ph name="PREFERRED_MINIMUM_POWER" /> W 以上の USB-C 電源アダプターを使用してください。</translation>
 <translation id="688631446150864480">ウィンドウを切り替えるには、下矢印キーを押します</translation>
 <translation id="6896758677409633944">コピー</translation>
+<translation id="6901883536534621389">ジェスチャー操作をお試しください</translation>
 <translation id="6919251195245069855">スマートカードを認識できませんでした。もう一度お試しください。</translation>
 <translation id="6921188888306725546">キーボード ショートカットが改善されました</translation>
 <translation id="6931576957638141829">保存先</translation>
@@ -1018,7 +1022,6 @@
 <translation id="7348093485538360975">画面キーボード</translation>
 <translation id="735745346212279324">VPN が切断されました</translation>
 <translation id="7360036564632145207">周辺機器の設定でデータアクセスの保護を変更すると、パフォーマンスを最適化できます。</translation>
-<translation id="7366890467478514168"><ph name="NAME" /> を接続</translation>
 <translation id="7371404428569700291">ウィンドウを録画</translation>
 <translation id="7377169924702866686">CapsLock 
 がオンになっています。</translation>
@@ -1130,7 +1133,6 @@
 <translation id="7955885781510802139">ハイコントラスト モード</translation>
 <translation id="7968693143708939792">フォルダを選択...</translation>
 <translation id="7977927628060636163">モバイル ネットワークを検索しています...</translation>
-<translation id="7980780401175799550">Chrome OS の新しい操作方法をお試しください</translation>
 <translation id="7982789257301363584">ネットワーク</translation>
 <translation id="7984197416080286869">指紋認証の試行回数が上限を超えています</translation>
 <translation id="7994370417837006925">マルチログイン</translation>
@@ -1160,6 +1162,7 @@
 <translation id="813913629614996137">初期化しています...</translation>
 <translation id="8142441511840089262">ダブルクリック</translation>
 <translation id="8142699993796781067">プライベート</translation>
+<translation id="8144760705599030999"><ph name="NAME" /> を <ph name="EMAIL" /> に保存すると、他のデバイスとすばやくペア設定できます</translation>
 <translation id="8152092012181020186">閉じるには Ctrl+W キーを押します。</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />、オートコンプリート</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> この設定は管理者によって管理されています。</translation>

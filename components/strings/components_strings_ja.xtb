@@ -591,6 +591,7 @@
 <translation id="2542106216580219892">サーフィン</translation>
 <translation id="2544546346215446551">管理者がデバイスを再起動しました</translation>
 <translation id="2544644783021658368">1 つのドキュメント</translation>
+<translation id="254524874071906077">Chrome を既定のブラウザに設定する</translation>
 <translation id="2546283357679194313">Cookie とサイトデータ</translation>
 <translation id="2547466893236767989">ウェブデザイン、開発</translation>
 <translation id="254947805923345898">ポリシーの値が無効です。</translation>
@@ -2525,7 +2526,9 @@
 <translation id="7995512525968007366">指定なし</translation>
 <translation id="7998269595945679889">シークレット タブを開くボタンです。Enter キーを押すと、新しいシークレット タブを開いてシークレット モードでブラウジングします</translation>
 <translation id="800218591365569300">メモリを解放するために、他のタブやプログラムを閉じてみてください。</translation>
+<translation id="8003046808285812021">「<ph name="SEARCH_TERMS" />」</translation>
 <translation id="8004582292198964060">ブラウザ</translation>
+<translation id="8009225694047762179">パスワードを管理</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{このカードと請求先住所は保存され、<ph name="USER_EMAIL" /> にログインすると使用できます。}other{これらのカードと請求先住所は保存され、<ph name="USER_EMAIL" /> にログインすると使用できます。}}</translation>
 <translation id="8025119109950072390">このサイトを利用すると、悪意のあるユーザーによって、ソフトウェアのインストールや個人情報（例: パスワード、電話番号、クレジット カード番号）の入力などの危険な操作を行うよう誘導される可能性があります。</translation>
 <translation id="8026334261755873520">閲覧履歴データの削除</translation>

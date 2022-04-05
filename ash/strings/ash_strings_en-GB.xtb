@@ -295,6 +295,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2819276065543622893">You will be signed out now.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> doesn't support <ph name="SPECIFIED_RESOLUTION" />. The resolution was changed to <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Shelf</translation>
+<translation id="2831035692318564937">On until sunrise</translation>
 <translation id="2834813915651407382">Recently opened</translation>
 <translation id="2841907151129139818">Switched to tablet mode</translation>
 <translation id="2844169650293029770">USB-C device (left side front port)</translation>
@@ -442,7 +443,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="3630697955794050612">off</translation>
 <translation id="3631369015426612114">Allow notifications from the following</translation>
 <translation id="3638400994746983214">Toggle privacy screen. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171">Save <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Update overdue</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> managed user</translation>
 <translation id="3680908746918359504">Clear all markers</translation>
@@ -489,6 +489,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Change device to previous version within 1 minute}other{Change device to previous version within # minutes}}</translation>
 <translation id="3923494859158167397">No mobile networks set up</translation>
 <translation id="3932043219784172185">No device connected</translation>
+<translation id="3934456833412894880">Adaptive charging is on. Your battery will stay at 80% to extend battery life, and fully charge when you need it.</translation>
 <translation id="3943857333388298514">Paste</translation>
 <translation id="394485226368336402">Audio settings</translation>
 <translation id="3945319193631853098">Tap to complete setup</translation>
@@ -532,7 +533,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="4215497585250573029">VPN settings</translation>
 <translation id="4217571870635786043">Dictation</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, installed app, paused</translation>
-<translation id="4223947355273782392">Save <ph name="NAME" /> to <ph name="EMAIL" /> for faster pairing to your other devices</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Open settings</translation>
 <translation id="4250229828105606438">Screenshot</translation>
@@ -910,7 +910,6 @@ New install</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> and other notifications are hidden because viewing protection is on</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> wants to use the microphone</translation>
-<translation id="6630773993843701741">Open Bluetooth settings to pair the device manually</translation>
 <translation id="6637729079642709226">Change time</translation>
 <translation id="6641720045729354415">Toggle Live Caption. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> would like to confirm that it's you</translation>
@@ -1020,7 +1019,6 @@ New install</translation>
 <translation id="7348093485538360975">On-Screen Keyboard</translation>
 <translation id="735745346212279324">VPN disconnected</translation>
 <translation id="7360036564632145207">Changing your data access protection for peripherals setting can optimise performance</translation>
-<translation id="7366890467478514168">Connect <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Record window</translation>
 <translation id="7377169924702866686">Caps Lock is on.</translation>
 <translation id="7377481913241237033">Connect with a code</translation>
@@ -1131,9 +1129,9 @@ New install</translation>
 <translation id="7955885781510802139">High-contrast mode</translation>
 <translation id="7968693143708939792">Select folder…</translation>
 <translation id="7977927628060636163">Searching for mobile networks...</translation>
-<translation id="7980780401175799550">Try new ways to navigate Chrome OS</translation>
 <translation id="7982789257301363584">Network</translation>
 <translation id="7984197416080286869">Too many fingerprint attempts</translation>
+<translation id="798779949890829624">This setting is managed by your administrator</translation>
 <translation id="7994370417837006925">Multiple sign-in</translation>
 <translation id="7995804128062002838">Failed to capture screen</translation>
 <translation id="8000066093800657092">No network</translation>
@@ -1290,6 +1288,7 @@ New install</translation>
 <translation id="9000771174482730261">MANAGE STORAGE</translation>
 <translation id="9017320285115481645">Enter Family Link parent access code.</translation>
 <translation id="9024331582947483881">full screen</translation>
+<translation id="9030319654231318877">Off until sunset</translation>
 <translation id="9034924485347205037">Linux files</translation>
 <translation id="9047624247355796468">Open settings for <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Collapse notification</translation>
@@ -1309,6 +1308,7 @@ New install</translation>
 <translation id="9099154003160514616">Lacros update available</translation>
 <translation id="9100887602489003640">Adding profile. Wait a few minutes.</translation>
 <translation id="9105450214093926548">Signing in a second user is not supported while the Lacros browser is running. Please use a second browser profile in Lacros instead, or close Lacros and try again.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> or <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Can't record protected content</translation>
 <translation id="9161053988251441839">SUGGESTED APPS</translation>
 <translation id="9166331175924255663">Toggle Nearby Share high visibility.</translation>

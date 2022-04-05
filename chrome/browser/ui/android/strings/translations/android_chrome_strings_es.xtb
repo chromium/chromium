@@ -82,6 +82,7 @@ Si eliminas tu historial de navegación (entero o de un sitio en concreto), tamb
 <translation id="1384704387250346179">Traducir imagen con Lens <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Activo hace <ph name="LAST_UPDATED" /> días</translation>
 <translation id="1397811292916898096">Buscar con <ph name="PRODUCT_NAME" /></translation>
+<translation id="139993653570221430">Puedes cambiar de opinión en cualquier momento en la configuración de Chrome. Las pruebas se realizan de forma paralela al modo en que se publican los anuncios actualmente, por lo que no verás cambios de inmediato.</translation>
 <translation id="1406000523432664303">No hacer seguimiento</translation>
 <translation id="1407069428457324124">Tema oscuro</translation>
 <translation id="1407135791313364759">Abrir todas</translation>
@@ -94,6 +95,7 @@ Si eliminas tu historial de navegación (entero o de un sitio en concreto), tamb
 <translation id="1450753235335490080">No se ha podido compartir: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Elegir idioma de Chrome</translation>
 <translation id="147113415845704694">Di "¿Qué tiempo hace hoy?"</translation>
+<translation id="1474893630593443211">Más control sobre los anuncios que ves</translation>
 <translation id="1477626028522505441">No se ha podido descargar <ph name="FILE_NAME" /> debido a problemas con el servidor.</translation>
 <translation id="148482509007564431">Flujo para guardar marcador</translation>
 <translation id="1488775391433859242">Puedes usar este teléfono para iniciar sesión en el ordenador donde se muestra este código QR.</translation>
@@ -399,6 +401,7 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="3166827708714933426">Combinaciones de teclas de pestañas y ventanas</translation>
 <translation id="316694332262407393">Chrome ya se está ejecutando.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3169523567916669830">Durante las pruebas, puedes ver y eliminar los temas de interés que usan los sitios para mostrarte anuncios. Chrome estima tus intereses según tu historial de navegación reciente.</translation>
 <translation id="3187472288455401631">Medición de anuncios</translation>
 <translation id="3207960819495026254">Añadido a marcadores</translation>
 <translation id="3208584281581115441">Comprobar ahora</translation>
@@ -809,7 +812,6 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5578795271662203820">Buscar esta imagen en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Siempre puedes seleccionar qué contenido quieres sincronizar en los <ph name="BEGIN_LINK1" />ajustes<ph name="END_LINK1" />.</translation>
 <translation id="5590372121997663538">Recordar este ordenador</translation>
-<translation id="559871659088672663">Esta función está actualmente en desarrollo</translation>
 <translation id="5599455543593328020">Modo de incógnito</translation>
 <translation id="5599941490345670218">El Asistente de Google puede completar acciones en tu nombre en sitios web</translation>
 <translation id="5620163320393916465">No hay ninguna contraseña guardada</translation>
@@ -1043,7 +1045,6 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="6751521182688001123">Abre una pestaña nueva rápidamente. Para editar este acceso directo, mantenlo pulsado.</translation>
 <translation id="6756507620369789050">Enviar comentarios</translation>
 <translation id="6767294960381293877">La lista de dispositivos con los que puedes compartir una pestaña está abierta y ocupa la mitad inferior de la pantalla.</translation>
-<translation id="6770042910635026163">Sitios que visitas que definen tus intereses</translation>
 <translation id="6770602306803890733">Mejora tu seguridad y la de todos los usuarios en la Web</translation>
 <translation id="6783942555455976443">Guardar esta página para después y recibir un recordatorio</translation>
 <translation id="6795633245022906657">Abre una pestaña nueva rápidamente. Para editar esta combinación de teclas, ve a Configuración.</translation>
@@ -1113,12 +1114,14 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="7173114856073700355">Abrir Configuración</translation>
 <translation id="7177466738963138057">Puedes cambiar esta opción más tarde en Configuración</translation>
 <translation id="7177873915659574692">No se puede crear el código QR. La URL contiene más de <ph name="CHARACTER_LIMIT" /> caracteres.</translation>
+<translation id="7177959540995930968">Puedes obtener más información sobre estas funciones en la configuración de Chrome.</translation>
 <translation id="718226107353899806">Puedes añadir hasta <ph name="MAX_NUM_REACTIONS" /> reacciones</translation>
 <translation id="7187993566681480880">Te protege en Chrome y puede usarse para mejorar tu seguridad en otras aplicaciones de Google cuando has iniciado sesión.</translation>
 <translation id="718926126787620637">Lista con carpetas de marcadores abierta a altura completa</translation>
 <translation id="7191430249889272776">Pestaña abierta en segundo plano.</translation>
 <translation id="7196215469483532480">Explicación de la guía de privacidad abierta a altura completa</translation>
 <translation id="7208109991155904980">Reacción movida</translation>
+<translation id="7222235798733126207">Limitación de lo que se comparte entre sitios</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 descarga pendiente}other{# descargas pendientes}}</translation>
 <translation id="7237045078887540010">Al utilizar Chrome, aceptas los <ph name="BEGIN_TOS_LINK" />Términos del Servicio de Google<ph name="END_TOS_LINK" /> y los <ph name="BEGIN_ATOS_LINK" />Términos del Servicio Adicionales de Google Chrome y Chrome OS<ph name="END_ATOS_LINK" />. También se aplica la <ph name="BEGIN_PRIVACY_LINK" />Política de Privacidad<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="7242755609445462077">Estilizado resaltado el <ph name="CURRENT_DATE" /></translation>
@@ -1338,6 +1341,7 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="8410695015584479363">Seguir precios</translation>
 <translation id="8413126021676339697">Mostrar historial completo</translation>
 <translation id="8414396119627470038">Inicia sesión en <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8416347857511542594">Más información sobre la personalización de anuncios en Chrome</translation>
 <translation id="8419244640277402268">Incluir</translation>
 <translation id="8424781820952413435">Página enviada. Para verla, abre Chrome en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">La pestaña de vista previa está medio abierta</translation>

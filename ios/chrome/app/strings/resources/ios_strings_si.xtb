@@ -168,6 +168,7 @@
 <translation id="2421044535038393232">සංස්කරණ කර ගෙන යන්න</translation>
 <translation id="2434405374328098816">ඔබ දැනටමත් "<ph name="USERNAME" />" සඳහා මුරපදයක් <ph name="WEBSITE" /> හි සුරැක ඇත</translation>
 <translation id="2435457462613246316">මුරපදය පෙන්වන්න</translation>
+<translation id="2469960372084740698">සුරක්ෂිත බ්‍රවුස් කිරීම ක්‍රියාවිරහිත කරන්නද?</translation>
 <translation id="2473876017985765807">ඔබ දැනටමත් <ph name="WEBSITE" /> සඳහා මුරපදයක් සුරැක ඇත</translation>
 <translation id="2476359652512522418">තෝරා නැත</translation>
 <translation id="2497852260688568942">සමමුහුර්ත කිරීම ඔබේ පරිපාලක විසින් අබල කර ඇත</translation>
@@ -582,6 +583,7 @@
 <translation id="6144589619057374135">අප්‍රසිද්ධ තුළ ${url} විවෘත කරන්න</translation>
 <translation id="6149061208933997199">මුරපදය භාවිත කරන්න</translation>
 <translation id="6159839020698489198">විකල්පමය</translation>
+<translation id="6173386249456979368">අනතුරුදායක වෙබ් අඩවිවලට, බාගැනීම්වලට සහ දිගුවලට එරෙහි වඩා වේගවත්, ප්‍රගාමී ආරක්ෂාව මුරපද කඩ කිරීම් ගැන ඔබට අවවාද කරයි. බ්‍රවුස් කිරීමේ දත්ත Google වෙත යැවීම අවශ්‍ය වේ</translation>
 <translation id="6177442314419606057">Chrome තුළ සොයන්න</translation>
 <translation id="6184086493125982861">පටිති පෙන්වන්න</translation>
 <translation id="6187302354554850004">අවසන් වරට සමමුහුර්ත කළේ: <ph name="LAST_USED_TIME" /></translation>

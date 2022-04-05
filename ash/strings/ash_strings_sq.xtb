@@ -440,7 +440,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3630697955794050612">çaktivizuar</translation>
 <translation id="3631369015426612114">Lejo njoftimet nga më poshtë</translation>
 <translation id="3638400994746983214">Ndrysho ekranin e privatësisë. <ph name="STATE_TEXT" /></translation>
-<translation id="3640092422335864171">Ruaj <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Afati i përditësimit ka kaluar</translation>
 <translation id="366222428570480733">Përdorues i menaxhuar (<ph name="USER_EMAIL_ADDRESS" />)</translation>
 <translation id="3680908746918359504">Pastro të gjitha piketat</translation>
@@ -530,7 +529,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4215497585250573029">Cilësimet e VPN-së</translation>
 <translation id="4217571870635786043">Diktimi</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, aplikacioni i instaluar, në pauzë</translation>
-<translation id="4223947355273782392">Ruaj <ph name="NAME" /> te <ph name="EMAIL" /> për një çiftim më të shpejtë me pajisjet e tua të tjera</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Hap cilësimet</translation>
 <translation id="4250229828105606438">Pamje e ekranit</translation>
@@ -908,7 +906,6 @@ Instalim i ri</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> dhe njoftimet e tjera janë fshehur sepse është aktivizuar mbrojtja e shikimit</translation>
 <translation id="6627638273713273709">Kërko+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> dëshiron të përdorë mikrofonin</translation>
-<translation id="6630773993843701741">Hap cilësimet e Bluetooth-it për ta çiftuar pajisjen në mënyrë manuale</translation>
 <translation id="6637729079642709226">Ndrysho kohën</translation>
 <translation id="6641720045729354415">Aktivizo/çaktivizo "Titrat në çast". <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> dëshiron të konfirmojë që je ti</translation>
@@ -1018,7 +1015,6 @@ Instalim i ri</translation>
 <translation id="7348093485538360975">Tastiera në ekran</translation>
 <translation id="735745346212279324">Rrjeti VPN u shkëput</translation>
 <translation id="7360036564632145207">Ndryshimi i mbrojtjes së qasjes te të dhënat e tua për pajisjet periferike mund të optimizojë cilësinë e funksionimit</translation>
-<translation id="7366890467478514168">Lidh <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Regjistro dritaren</translation>
 <translation id="7377169924702866686">Kyçja e kapitaleve është aktive.</translation>
 <translation id="7377481913241237033">Lidhu me një kod</translation>
@@ -1129,7 +1125,6 @@ Instalim i ri</translation>
 <translation id="7955885781510802139">Modaliteti i kontrastit të lartë</translation>
 <translation id="7968693143708939792">Zgjidh dosje...</translation>
 <translation id="7977927628060636163">Po kërkon për rrjete celulare...</translation>
-<translation id="7980780401175799550">Provo mënyra të reja për të naviguar Chrome OS</translation>
 <translation id="7982789257301363584">Rrjeti</translation>
 <translation id="7984197416080286869">Shumë përpjekje të gjurmës së gishtit</translation>
 <translation id="7994370417837006925">Identifikim i shumëfishtë</translation>

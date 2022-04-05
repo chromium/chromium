@@ -167,6 +167,7 @@
 <translation id="1951012854035635156">Помоћник</translation>
 <translation id="1954252331066828794">Снимање екрана је довршено</translation>
 <translation id="1957958912175573503">Подесите језик</translation>
+<translation id="1961239773406905488">Преглед камере је сакривен</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Закључај екран</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -184,6 +185,7 @@
 <translation id="2047639699071423250">Додајте кључну идеју</translation>
 <translation id="2049240716062114887">Име радне површине је промењено у <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Вертикално</translation>
+<translation id="2064048859448024834">Преглед камере је укључен</translation>
 <translation id="2066708475850724665">Заустави лупу</translation>
 <translation id="2067602449040652523">Осветљеност тастатуре</translation>
 <translation id="2078034614700056995">Превуците удесно помоћу четири прста да бисте прешли на следећу радну површину</translation>
@@ -440,7 +442,6 @@
 <translation id="3630697955794050612">искључено</translation>
 <translation id="3631369015426612114">Дозволи обавештења из следећих извора</translation>
 <translation id="3638400994746983214">Укључује/искључује екран за приватност. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171">Сачувајте <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Ажурирајте истекло</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Корисник којим се управља</translation>
 <translation id="3680908746918359504">Обриши све маркере</translation>
@@ -487,6 +488,7 @@
 <translation id="3922427723338465344">{0,plural, =1{Промените верзију уређаја у претходну верзију у року од 1 минута}one{Промените верзију уређаја у претходну верзију у року од # минута}few{Промените верзију уређаја у претходну верзију у року од # минута}other{Промените верзију уређаја у претходну верзију у року од # минута}}</translation>
 <translation id="3923494859158167397">Није подешена ниједна мобилна мрежа</translation>
 <translation id="3932043219784172185">Нема повезаних уређаја</translation>
+<translation id="3934456833412894880">Адаптивно пуњење је укључено. Батерија ће остати на 80% да продужи трајање батерије, а напуниће се до краја када вам треба.</translation>
 <translation id="3943857333388298514">Налепи</translation>
 <translation id="394485226368336402">Подешавања звука</translation>
 <translation id="3945319193631853098">Додирните да бисте довршили подешавање</translation>
@@ -530,7 +532,6 @@
 <translation id="4215497585250573029">Подешавања VPN-а</translation>
 <translation id="4217571870635786043">Диктирање</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, инсталирана апликација, паузирана</translation>
-<translation id="4223947355273782392">Сачувајте уређај <ph name="NAME" /> на <ph name="EMAIL" /> ради бржег упаривања са другим уређајима</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Отвори подешавања</translation>
 <translation id="4250229828105606438">Снимак екрана</translation>
@@ -908,7 +909,6 @@
 <translation id="6625718907317144388">Обавештења апликација <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> и друга обавештења су скривена јер је заштита од прегледа укључена</translation>
 <translation id="6627638273713273709">Тастер за претрагу+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> жели да користи микрофон</translation>
-<translation id="6630773993843701741">Отворите подешавања Bluetooth-а да бисте ручно упарили уређај</translation>
 <translation id="6637729079642709226">Промените време</translation>
 <translation id="6641720045729354415">Укључите или искључите титл уживо. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> жели да потврди да сте то ви</translation>
@@ -1018,7 +1018,6 @@
 <translation id="7348093485538360975">Тастатура на екрану</translation>
 <translation id="735745346212279324">Веза са VPN-ом је прекинута</translation>
 <translation id="7360036564632145207">Ако промените подешавање заштите приступа подацима за периферне уређаје, можете да оптимизујете учинак</translation>
-<translation id="7366890467478514168">Повежите <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Сними прозор</translation>
 <translation id="7377169924702866686">Caps Lock је укључен.</translation>
 <translation id="7377481913241237033">Повежите се помоћу кода</translation>
@@ -1129,7 +1128,6 @@
 <translation id="7955885781510802139">Режим високог контраста</translation>
 <translation id="7968693143708939792">Изаберите фолдер…</translation>
 <translation id="7977927628060636163">Траже се мобилне мреже…</translation>
-<translation id="7980780401175799550">Испробајте нове начине за кретање кроз Chrome ОС</translation>
 <translation id="7982789257301363584">Мрежа</translation>
 <translation id="7984197416080286869">Превише покушаја откључавања помоћу отиска прста</translation>
 <translation id="7994370417837006925">Вишеструко пријављивање</translation>

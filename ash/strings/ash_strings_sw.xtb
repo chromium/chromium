@@ -167,6 +167,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1951012854035635156">Mratibu</translation>
 <translation id="1954252331066828794">Imemaliza kurekodi skrini</translation>
 <translation id="1957958912175573503">Weka lugha yako</translation>
+<translation id="1961239773406905488">Onyesho la kukagua kamera limefichwa</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Skrini Iliyofungwa</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -184,6 +185,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2047639699071423250">Weka hoja kuu</translation>
 <translation id="2049240716062114887">Jina la eneokazi limebadilishwa kuwa <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Wima</translation>
+<translation id="2064048859448024834">Onyesho la kukagua kamera limewashwa</translation>
 <translation id="2066708475850724665">Funga kikuzaji</translation>
 <translation id="2067602449040652523">Ung'avu wa kibodi</translation>
 <translation id="2078034614700056995">Telezesha vidole vinne kulia ili uende kwenye eneokazi linalofuata</translation>
@@ -440,7 +442,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3630697955794050612">imezimwa</translation>
 <translation id="3631369015426612114">Ruhusu arifa kutoka vyanzo hivi</translation>
 <translation id="3638400994746983214">Weka skrini ya faragha. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171">Hifadhi <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Muda wa sasisho umepita</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Mtumiaji anayesimamiwa</translation>
 <translation id="3680908746918359504">Futa alama zote</translation>
@@ -530,7 +531,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="4215497585250573029">Mipangilio ya VPN</translation>
 <translation id="4217571870635786043">Kuandika kwa kutamka</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Programu Iliyosakinishwa, Imesitishwa</translation>
-<translation id="4223947355273782392">Hifadhi <ph name="NAME" /> kwenye <ph name="EMAIL" /> ili uoanishe haraka zaidi kwenye vifaa vyako vingine</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Fungua mipangilio</translation>
 <translation id="4250229828105606438">Picha ya skrini</translation>
@@ -908,7 +908,6 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="6625718907317144388">Arifa za <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> na nyinginezo zimefichwa kwa sababu ulinzi wa utazamaji umewashwa</translation>
 <translation id="6627638273713273709">Tafuta+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> inataka kutumia maikrofoni</translation>
-<translation id="6630773993843701741">Fungua mipangilio ya Bluetooth ili uoanishe kifaa wewe mwenyewe</translation>
 <translation id="6637729079642709226">Badilisha wakati</translation>
 <translation id="6641720045729354415">Zima au uwashe kipengele cha Manukuu Papo Hapo. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ingependa kuthibitisha kwamba ni wewe</translation>
@@ -1018,7 +1017,6 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="7348093485538360975">Kibodi ya skrini</translation>
 <translation id="735745346212279324">VPN imekatwa muunganisho</translation>
 <translation id="7360036564632145207">Hatua ya kubadilisha mipangilio yako ya kulinda data inayoweza kufikiwa na vifaa vinavyounganishwa kwenye kompyuta inaweza kuboresha utendaji</translation>
-<translation id="7366890467478514168">Unganisha <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Rekodi dirisha</translation>
 <translation id="7377169924702866686">Caps Lock imewashwa.</translation>
 <translation id="7377481913241237033">Unganisha kwa kutumia msimbo</translation>
@@ -1130,7 +1128,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7955885781510802139">Hali ya utofautishaji wa juu</translation>
 <translation id="7968693143708939792">Chagua folda...</translation>
 <translation id="7977927628060636163">Inatafuta mitandao ya simu...</translation>
-<translation id="7980780401175799550">Jaribu njia mpya za kutumia Mfumo wa Uendeshaji wa Chrome</translation>
 <translation id="7982789257301363584">Mtandao</translation>
 <translation id="7984197416080286869">Umejaribu kuweka alama ya kidole mara nyingi mno</translation>
 <translation id="7994370417837006925">Uwezo wa kuingia katika akaunti nyingi kwa wakati mmoja</translation>

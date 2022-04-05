@@ -440,7 +440,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3630697955794050612">désactivé</translation>
 <translation id="3631369015426612114">Autoriser les notifications des éléments suivants</translation>
 <translation id="3638400994746983214">Activer/Désactiver l'écran de confidentialité. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171">Enregistrer l'appareil suivant : <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Mise à jour à effectuer</translation>
 <translation id="366222428570480733">Utilisateur géré, <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3680908746918359504">Supprimer tous les repères</translation>
@@ -530,7 +529,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4215497585250573029">Paramètres de VPN</translation>
 <translation id="4217571870635786043">Dictée</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, appli installée, en pause</translation>
-<translation id="4223947355273782392">Enregistrez "<ph name="NAME" />" avec votre compte <ph name="EMAIL" /> pour une association plus rapide avec vos autres appareils</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
 <translation id="4250229828105606438">Capture d'écran</translation>
@@ -908,7 +906,6 @@ Nouvelle installation</translation>
 <translation id="6625718907317144388">Les notifications de <ph name="APP_1_TITLE" />, de <ph name="APP_2_TITLE" /> et d'autres applications sont masquées, car la protection contre l'espionnage est activée</translation>
 <translation id="6627638273713273709">Rechercher+Maj+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> souhaite utiliser le micro</translation>
-<translation id="6630773993843701741">Ouvrez les paramètres Bluetooth pour associer l'appareil manuellement</translation>
 <translation id="6637729079642709226">Changer l'heure</translation>
 <translation id="6641720045729354415">Activer/Désactiver les Sous-titres instantanés. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> souhaite vérifier qu'il s'agit bien de vous</translation>
@@ -1018,7 +1015,6 @@ Nouvelle installation</translation>
 <translation id="7348093485538360975">Clavier virtuel</translation>
 <translation id="735745346212279324">VPN déconnecté</translation>
 <translation id="7360036564632145207">Vous pouvez optimiser les performances en modifiant le paramètre "Protection de l'accès aux données pour les périphériques"</translation>
-<translation id="7366890467478514168">Connecter l'appareil suivant : <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Enregistrer la fenêtre</translation>
 <translation id="7377169924702866686">La touche de verrouillage des majuscules est activée</translation>
 <translation id="7377481913241237033">Connecter un appareil avec un code</translation>
@@ -1129,7 +1125,6 @@ Nouvelle installation</translation>
 <translation id="7955885781510802139">Mode Contraste élevé</translation>
 <translation id="7968693143708939792">Sélectionner un dossier…</translation>
 <translation id="7977927628060636163">Recherche de réseaux mobiles…</translation>
-<translation id="7980780401175799550">Essayer de nouvelles manières de naviguer dans Chrome OS</translation>
 <translation id="7982789257301363584">Réseau</translation>
 <translation id="7984197416080286869">Trop de tentatives avec votre empreinte digitale</translation>
 <translation id="7994370417837006925">Connexion multicompte</translation>

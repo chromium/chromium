@@ -167,6 +167,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1951012854035635156">Asistan</translation>
 <translation id="1954252331066828794">Ekran kaydı tamamlandı</translation>
 <translation id="1957958912175573503">Dilinizi ayarlayın</translation>
+<translation id="1961239773406905488">Kamera önizlemesi gizlendi</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Kilit Ekranı</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -184,6 +185,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2047639699071423250">Temel fikir ekle</translation>
 <translation id="2049240716062114887">Masa adı <ph name="DESK_NAME" /> olarak değiştirildi</translation>
 <translation id="2050339315714019657">Dikey</translation>
+<translation id="2064048859448024834">Kamera önizlemesi açık</translation>
 <translation id="2066708475850724665">Büyüteci durdur</translation>
 <translation id="2067602449040652523">Klavye parlaklığı</translation>
 <translation id="2078034614700056995">Sonraki masaya geçmek için dört parmakla sağa kaydırın</translation>
@@ -440,7 +442,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3630697955794050612">kapalı</translation>
 <translation id="3631369015426612114">Şunlardan gelen bildirimlere izin ver:</translation>
 <translation id="3638400994746983214">Gizlilik ekranını aç/kapat. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171"><ph name="NAME" /> cihazını kaydet</translation>
 <translation id="3649505501900178324">Güncelleme zamanı geçti</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Yönetilen kullanıcı</translation>
 <translation id="3680908746918359504">Tüm işaretçileri temizle</translation>
@@ -487,6 +488,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Cihazı 1 dakika içinde önceki sürüme geçirin}other{Cihazı # dakika içinde önceki sürüme geçirin}}</translation>
 <translation id="3923494859158167397">Kurulu mobil ağ yok</translation>
 <translation id="3932043219784172185">Bağlı cihaz yok</translation>
+<translation id="3934456833412894880">Uyarlamalı şarj açık. Piliniz, pil ömrünü uzatmak için %80'de kalacak ve ihtiyacınız olduğunda tamamen şarj olacak.</translation>
 <translation id="3943857333388298514">Yapıştır</translation>
 <translation id="394485226368336402">Ses ayarları</translation>
 <translation id="3945319193631853098">Kuruluımu tamamlamak için dokunun</translation>
@@ -530,7 +532,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4215497585250573029">VPN Ayarları</translation>
 <translation id="4217571870635786043">Dikte</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Yüklü Uygulama, Duraklatıldı</translation>
-<translation id="4223947355273782392">Diğer cihazlarınızla daha hızlı eşlemek için <ph name="NAME" /> cihazını <ph name="EMAIL" /> adresine kaydedin</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Ayarları aç</translation>
 <translation id="4250229828105606438">Ekran görüntüsü</translation>
@@ -908,7 +909,6 @@ Yeni yüklenmiş</translation>
 <translation id="6625718907317144388">Görüntüleme koruması açık olduğundan <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> ve diğer bildirimler gösterilmiyor</translation>
 <translation id="6627638273713273709">Ara+Üst Karakter+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" />, mikrofonu kullanmak istiyor</translation>
-<translation id="6630773993843701741">Cihazı manuel olarak eşleştirmek için Bluetooth ayarlarını açın</translation>
 <translation id="6637729079642709226">Saati değiştir</translation>
 <translation id="6641720045729354415">Canlı Altyazı'yı açın/kapatın. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" />, kimliğinizi doğrulamak istiyor</translation>
@@ -1018,7 +1018,6 @@ Yeni yüklenmiş</translation>
 <translation id="7348093485538360975">Ekran klavyesi</translation>
 <translation id="735745346212279324">VPN bağlantısı kesildi</translation>
 <translation id="7360036564632145207">Çevre birimleri için veri erişimi koruma ayarınızı değiştirmek performansı optimize edebilir</translation>
-<translation id="7366890467478514168"><ph name="NAME" /> hesabını bağla</translation>
 <translation id="7371404428569700291">Pencereyi kaydet</translation>
 <translation id="7377169924702866686">Caps Lock açık.</translation>
 <translation id="7377481913241237033">Kod kullanarak bağlanma</translation>
@@ -1129,7 +1128,6 @@ Yeni yüklenmiş</translation>
 <translation id="7955885781510802139">Yüksek kontrast modu</translation>
 <translation id="7968693143708939792">Klasör seç...</translation>
 <translation id="7977927628060636163">Mobil ağlar aranıyor...</translation>
-<translation id="7980780401175799550">Chrome OS'ta gezinmenin yeni yollarını deneyin</translation>
 <translation id="7982789257301363584">Ağ</translation>
 <translation id="7984197416080286869">Çok fazla parmak izi denemesi yapıldı</translation>
 <translation id="7994370417837006925">Çoklu oturum açma</translation>

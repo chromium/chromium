@@ -594,6 +594,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2542106216580219892">Surfing</translation>
 <translation id="2544546346215446551">Your administrator restarted your device</translation>
 <translation id="2544644783021658368">Single document</translation>
+<translation id="254524874071906077">Set Chrome as Default Browser</translation>
 <translation id="2546283357679194313">Cookies and site data</translation>
 <translation id="2547466893236767989">Web design and development</translation>
 <translation id="254947805923345898">Policy value is not valid.</translation>
@@ -2535,6 +2536,7 @@ Additional details:
 <translation id="800218591365569300">Try closing other tabs or programmes to free up memory.</translation>
 <translation id="8003046808285812021">'<ph name="SEARCH_TERMS" />'</translation>
 <translation id="8004582292198964060">Browser</translation>
+<translation id="8009225694047762179">Manage Passwords</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{This card and its billing address will be saved. You'll be able to use it when signed in to <ph name="USER_EMAIL" />.}other{These cards and their billing addresses will be saved. You'll be able to use them when signed in to <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8025119109950072390">Attackers on this site may trick you into doing something dangerous like installing software or revealing your personal information (for example passwords, phone numbers or credit cards).</translation>
 <translation id="8026334261755873520">Clear browsing data</translation>

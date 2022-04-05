@@ -3770,6 +3770,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4667027203988048332">Les données qui sont utilisées :</translation>
 <translation id="46733273239502219">Les données hors ligne dans les applications installées seront également effacées</translation>
 <translation id="4673442866648850031">Ouvrir les outils de stylet lorsque le stylet est retiré</translation>
+<translation id="4675065861091108046">Vous avez précédemment choisi d'autoriser toutes les extensions sur <ph name="ORIGIN" /></translation>
 <translation id="4675828034887792601">Créez des raccourcis pour rechercher des sites et gérez votre moteur de recherche</translation>
 <translation id="4676595058027112862">Phone Hub, en savoir plus</translation>
 <translation id="4677772697204437347">Mémoire du processeur graphique</translation>
@@ -4115,6 +4116,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5036662165765606524">N'autoriser aucun site à télécharger plusieurs fichiers automatiquement</translation>
 <translation id="5037676449506322593">Tout sélectionner</translation>
 <translation id="5038022729081036555">Tu pourras l'utiliser à nouveau demain pendant <ph name="TIME_LIMIT" />.</translation>
+<translation id="5038818366306248416">Vous avez précédemment choisi de n'autoriser aucune extension sur <ph name="ORIGIN" /></translation>
 <translation id="5039696241953571917">Affichez et gérez les mots de passe enregistrés dans votre compte Google</translation>
 <translation id="5039804452771397117">Autoriser</translation>
 <translation id="5040823038948176460">Paramètres de contenu supplémentaires</translation>
@@ -4437,10 +4439,10 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5342091991439452114">Le NIP doit comporter au moins <ph name="MINIMUM" /> chiffres</translation>
 <translation id="5344036115151554031">Restauration de Linux en cours…</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (droite)</translation>
-<translation id="534572711507965074">Nommez votre groupe, choisissez une couleur et touchez Entrée</translation>
 <translation id="5345916423802287046">Démarrer l'application lorsque vous vous connectez</translation>
 <translation id="5350293332385664455">Désactiver l'Assistant Google</translation>
 <translation id="535123479159372765">Texte copié à partir d'un autre appareil</translation>
+<translation id="5351654190191249261"><ph name="EXTENSION_NAME" /> doit être mise à jour</translation>
 <translation id="5352033265844765294">Horodatage</translation>
 <translation id="5353252989841766347">Exporter les mots de passe à partir de Chrome</translation>
 <translation id="5355099869024327351">Permet à l'Assistant Google de vous montrer des notifications</translation>
@@ -5068,6 +5070,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Pour vous assurer de pouvoir continuer à naviguer sur le Web, demandez à votre administrateur de supprimer cette application.}one{Pour vous assurer de pouvoir continuer à naviguer sur le Web, demandez à votre administrateur de supprimer cette application.}other{Pour vous assurer de pouvoir continuer à naviguer sur le Web, demandez à votre administrateur de supprimer ces applications.}}</translation>
 <translation id="5997337190805127100">En savoir plus sur l'accès aux sites</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> résultats trouvés pour « <ph name="SEARCH_TEXT" /> »</translation>
+<translation id="6001839398155993679">Accéder</translation>
 <translation id="6002122790816966947">Vos appareils</translation>
 <translation id="6002210667729577411">Déplacer le groupe vers une nouvelle fenêtre</translation>
 <translation id="6002452033851752583">Le mot de passe a été supprimé de votre compte Google</translation>
@@ -5135,7 +5138,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Remarque :<ph name="END_BOLD" /> Une personne ayant une voix semblable à la sienne ou disposant d'un enregistrement de celle-ci pourrait accéder aux résultats personnalisés de <ph name="SUPERVISED_USER_NAME" />. Pour économiser la pile, dans les paramètres de l'Assistant de <ph name="SUPERVISED_USER_NAME" />, vous pouvez sélectionner d'activer « Ok Google » uniquement lorsque cet appareil est connecté à une source d'alimentation.</translation>
 <translation id="6064217302520318294">Verrouillage de l'écran</translation>
 <translation id="6065289257230303064">Attributs du répertoire de l'objet du certificat</translation>
-<translation id="6065691521254183160">Appuyez sur la touche |<ph name="ACCELERATOR" />| pour faire basculer la sélection entre cette bulle d'aide et l'élément pointé par cette dernière.</translation>
 <translation id="6066794465984119824">Le hachage de l'image n'est pas défini</translation>
 <translation id="6069464830445383022">Pour vous connecter à votre Chromebook, servez-vous de votre compte Google</translation>
 <translation id="6069671174561668781">Définir le fond d'écran</translation>
@@ -5345,6 +5347,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6270391203985052864">Les sites peuvent vous demander l'autorisation d'envoyer des notifications</translation>
 <translation id="6270770586500173387">Envoyer <ph name="BEGIN_LINK1" />des données relatives au système et aux applications<ph name="END_LINK1" /> et des <ph name="BEGIN_LINK2" />statistiques<ph name="END_LINK2" /></translation>
 <translation id="6271348838875430303">Correction annulée</translation>
+<translation id="6271780480930459892">Communiquez avec votre administrateur pour obtenir la dernière version.</translation>
 <translation id="6272643420381259437">Une erreur (<ph name="ERROR" />) s'est produite pendant le téléchargement du plugiciel</translation>
 <translation id="6273677812470008672">Qualité</translation>
 <translation id="6276210637549544171">Le serveur mandataire <ph name="PROXY_SERVER" /> requiert un nom d'utilisateur et un mot de passe.</translation>
@@ -5403,7 +5406,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6322370287306604163">Déverrouiller plus rapidement avec une empreinte digitale</translation>
 <translation id="6324916366299863871">Modifier un raccourci</translation>
 <translation id="6325191661371220117">Désactiver le lancement automatique</translation>
-<translation id="6325525973963619867">Échec</translation>
 <translation id="6326175484149238433">Supprimer de Google Chrome</translation>
 <translation id="6326855256003666642">Compte de conservation de connexion active</translation>
 <translation id="6327785803543103246">Découverte automatique de mandataire Web</translation>
@@ -5930,7 +5932,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6846178040388691741">« <ph name="EXTENSION_NAME" /> » souhaite imprimer <ph name="FILE_NAME" /> avec <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Libérez de l'espace pour continuer</translation>
 <translation id="6848388270925200958">Pour le moment, certaines de vos cartes peuvent être utilisées uniquement sur cet appareil</translation>
-<translation id="6848425544473873717">{NUM_APPS,plural, =1{Une de vos applications n'est plus prise en charge. <ph name="LEARN_MORE" />}one{# de vos applications n'est plus prise en charge. <ph name="LEARN_MORE" />}other{# de vos applications ne sont plus prises en charge. <ph name="LEARN_MORE" />}}</translation>
 <translation id="6848716236260083778">Pour configurer une empreinte digitale, demandez à votre enfant de toucher le capteur d'empreintes digitales. Les données liées à l'empreinte digitale de votre enfant sont stockées de façon sécurisée et ne quittent jamais cet appareil : <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6850286078059909152">Couleur du texte</translation>
 <translation id="6851181413209322061">Envoyer les données d'utilisation et de diagnostic. Actuellement, cet appareil envoie automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applications. L'envoi de ces données ne sera pas utilisé pour identifier votre enfant, mais pour assurer la stabilité du système et des applications, et pour apporter d'autres améliorations. Certaines données collectées contribueront également à améliorer les applications Google et aideront nos partenaires, comme les développeurs Android. Ce paramètre est appliqué par le propriétaire du compte. Si le paramètre relatif aux autres activités sur le Web et dans les applications est activé pour votre enfant, ces données peuvent être enregistrées dans son compte Google.</translation>
@@ -7466,6 +7467,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8379156816349755485">Au moment de la connexion, un jeton d'authentification unique sera stocké et utilisé pour tous les futurs téléchargements admissibles.</translation>
 <translation id="8379878387931047019">Cet appareil ne prend pas en charge le type de clé de sécurité demandé par ce site Web</translation>
 <translation id="8379991678458444070">Revenez ici rapidement en ajoutant cet onglet aux favoris</translation>
+<translation id="8380941800586852976">Dangereux</translation>
 <translation id="8382715499079447151">Protection de l'affichage</translation>
 <translation id="8382913212082956454">Copier l'adresse de courri&amp;el</translation>
 <translation id="8383266303049437646"><ph name="BEGIN_PARAGRAPH1" />Essayez les étapes de dépannage suivantes :
@@ -7692,6 +7694,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8630338733867813168">Mode veille durant la recharge</translation>
 <translation id="8631032106121706562">Pétale</translation>
 <translation id="863109444997383731">Les sites ne pourront pas demander de vous montrer des notifications. Si un site demande d'afficher des notifications, une icône indiquant qu'elles sont bloquées s'affichera dans la barre d'adresse.</translation>
+<translation id="8632104508818855045">Vous avez précédemment choisi de n'autoriser aucune extension sur <ph name="ORIGIN" /></translation>
 <translation id="8633025649649592204">Activité récente</translation>
 <translation id="8634348081024879304">Vous ne pourrez plus utiliser votre carte virtuelle avec Google Pay. <ph name="BEGIN_LINK" />En savoir plus sur les cartes virtuelles<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Actualisation en cours…</translation>
@@ -7858,7 +7861,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8779944680596936487">Les sites ont uniquement recours aux témoins pour connaître votre activité de navigation sur leurs propres pages</translation>
 <translation id="8780123805589053431">Obtenir les descriptions d'image de Google</translation>
 <translation id="8780443667474968681">La recherche vocale a été désactivée.</translation>
-<translation id="8780872768304638315">Échec de l'enregistrement dans</translation>
 <translation id="8781834595282316166">Nouvel onglet dans le groupe</translation>
 <translation id="8782565991310229362">Lancement de l'application de kiosque annulé.</translation>
 <translation id="8783526165720272136">Applications de messagerie</translation>
@@ -8082,6 +8084,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9004754973617721124">Effacer les données et les autorisations relatives aux sites pour le site <ph name="SITE_NAME" />, tous les sites qui y sont subordonnés ainsi que l'application qui y est installée?</translation>
 <translation id="9008201768610948239">OK</translation>
 <translation id="9008201858626224558">Bouton retour vers la page de détails de <ph name="SUBPAGE_TITLE" /></translation>
+<translation id="9008828754342192581">Vous avez précédemment choisi d'autoriser toutes les extensions sur <ph name="ORIGIN" /></translation>
 <translation id="9009369504041480176">Téléversement en cours (<ph name="PROGRESS_PERCENT" /> %)...</translation>
 <translation id="9009708085379296446">Vouliez-vous modifier cette page?</translation>
 <translation id="9011163749350026987">Toujours afficher l'icône</translation>

@@ -167,6 +167,7 @@
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">స్క్రీన్ రికార్డింగ్ పూర్తయింది</translation>
 <translation id="1957958912175573503">మీ భాషని సెట్ చేయండి</translation>
+<translation id="1961239773406905488">కెమెరా ప్రివ్యూ దాచబడింది</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">స్క్రీన్‌ను లాక్ చేయి</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -184,6 +185,7 @@
 <translation id="2047639699071423250">ముఖ్య ఐడియాను జోడించు</translation>
 <translation id="2049240716062114887">డెస్క్ పేరు <ph name="DESK_NAME" />గా మార్చబడింది</translation>
 <translation id="2050339315714019657">పోర్ట్రెయిట్</translation>
+<translation id="2064048859448024834">కెమెరా ప్రివ్యూ ఆన్‌లో ఉంది</translation>
 <translation id="2066708475850724665">మాగ్నిఫైయర్‌ను ఆపివేయి</translation>
 <translation id="2067602449040652523">కీబోర్డ్ ప్రకాశం</translation>
 <translation id="2078034614700056995">తర్వాతి డెస్క్‌కు మారడానికి నాలుగు వేళ్లతో కుడి వైపు స్వైప్ చేయండి</translation>
@@ -440,7 +442,6 @@
 <translation id="3630697955794050612">ఆ‌ఫ్‌లో ఉంది</translation>
 <translation id="3631369015426612114">కింది వాటి నుండి నోటిఫికేషన్‌లను అనుమతించు</translation>
 <translation id="3638400994746983214">గోప్యతా స్క్రీన్‌ను టోగుల్ చేస్తుంది. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171"><ph name="NAME" />ను సేవ్ చేయండి</translation>
 <translation id="3649505501900178324">అప్‌డేట్ పెండింగ్‌లో ఉంది</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> మేనేజ్ చేయబడిన యూజర్</translation>
 <translation id="3680908746918359504">అన్ని మార్కర్‌లను క్లియర్ చేయి</translation>
@@ -488,6 +489,7 @@
 <translation id="3922427723338465344">{0,plural, =1{1 నిమిషంలోపు పరికరాన్ని మునపటి వెర్షన్‌కు మార్చండి}other{# నిమిషాల్లోపు పరికరాన్ని మునపటి వెర్షన్‌కు మార్చండి}}</translation>
 <translation id="3923494859158167397">ఎలాంటి మొబైల్ నెట్‌వర్క్‌లు సెటప్ చేయబడలేదు</translation>
 <translation id="3932043219784172185">పరికరం ఏదీ కనెక్ట్ చేయబడలేదు</translation>
+<translation id="3934456833412894880">అనుకూల ఛార్జింగ్ ఆన్‌లో ఉంది. ఇది మీ బ్యాటరీ జీవితకాలాన్ని పొడిగించడానికి 80% వద్ద ఉంటుంది, అలాగే మీకు అవసరమైనప్పుడు పూర్తిగా ఛార్జ్ చేయబడుతుంది.</translation>
 <translation id="3943857333388298514">అతికించు</translation>
 <translation id="394485226368336402">ఆడియో సెట్టింగ్‌‍లు</translation>
 <translation id="3945319193631853098">సెటప్‌ను పూర్తి చేయడానికి ట్యాప్ చేయండి</translation>
@@ -531,7 +533,6 @@
 <translation id="4215497585250573029">VPN సెట్టింగ్‌లు</translation>
 <translation id="4217571870635786043">డిక్టేషన్</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ఇన్‌స్టాల్ చేయబడిన యాప్, పాజ్ చేయబడింది</translation>
-<translation id="4223947355273782392">మీ ఇతర పరికరాలతో ఫాస్ట్ పెయిరింగ్ కోసం <ph name="NAME" />ను <ph name="EMAIL" />కు సేవ్ చేయండి</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">సెట్టింగ్‌లను తెరువు</translation>
 <translation id="4250229828105606438">స్క్రీన్‌షాట్</translation>
@@ -909,7 +910,6 @@
 <translation id="6625718907317144388">వీక్షణ ప్రొటెక్షన్ ఆన్‌లో ఉంది కాబట్టి <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" />, ఇతర నోటిఫికేషన్‌లు దాచబడ్డాయి</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> మీ మైక్రోఫోన్‌ను ఉపయోగించాలనుకుంటోంది</translation>
-<translation id="6630773993843701741">పరికరాన్ని మాన్యువల్‌గా పెయిర్ చేయడానికి బ్లూటూత్ సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="6637729079642709226">సమయాన్ని మార్చండి</translation>
 <translation id="6641720045729354415">లైవ్ క్యాప్షన్‌ను టోగుల్ చేయి. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> అది మీరేనని నిర్ధారించాలనుకుంటుంది</translation>
@@ -1019,7 +1019,6 @@
 <translation id="7348093485538360975">ఆన్-స్క్రీన్ కీబోర్డ్</translation>
 <translation id="735745346212279324">VPN డిస్‌కనెక్ట్ చేయబడింది</translation>
 <translation id="7360036564632145207">పెరిఫెరల్‌ల సెట్టింగ్ కోసం మీ డేటా యాక్సెస్ రక్షణను మార్చడం పనితీరును ఆప్టిమైజ్ చేస్తుంది</translation>
-<translation id="7366890467478514168"><ph name="NAME" />‌ను కనెక్ట్ చేయండి</translation>
 <translation id="7371404428569700291">విండోను రికార్డ్ చేయండి</translation>
 <translation id="7377169924702866686">Caps Lock ఆన్‌లో ఉంది.</translation>
 <translation id="7377481913241237033">కోడ్ ద్వారా కనెక్ట్ అవ్వండి</translation>
@@ -1130,7 +1129,6 @@
 <translation id="7955885781510802139">అధిక-కాంట్రాస్ట్ మోడ్</translation>
 <translation id="7968693143708939792">ఫోల్డర్‌ను ఎంచుకోండి...</translation>
 <translation id="7977927628060636163">మొబైల్ నెట్‌వర్క్‌ల కోసం వెతుకుతోంది...</translation>
-<translation id="7980780401175799550">Chrome OSలో నావిగేట్ చేయడానికి కొత్త మార్గాలను ట్రై చేయండి</translation>
 <translation id="7982789257301363584">నెట్‌వర్క్</translation>
 <translation id="7984197416080286869">చాలా ఎక్కువ వేలిముద్ర ప్రయత్నాలు చేశారు</translation>
 <translation id="7994370417837006925">బహుళ సైన్-ఇన్</translation>

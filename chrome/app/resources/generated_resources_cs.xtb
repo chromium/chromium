@@ -4435,7 +4435,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5342091991439452114">Minimální počet číslic v kódu PIN: <ph name="MINIMUM" /></translation>
 <translation id="5344036115151554031">Obnovení Linuxu</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (vpravo)</translation>
-<translation id="534572711507965074">Pojmenujte skupinu, vyberte barvu a klepněte na Enter</translation>
 <translation id="5345916423802287046">Spustit aplikaci při přihlášení</translation>
 <translation id="5350293332385664455">Vypnout Asistenta Google</translation>
 <translation id="535123479159372765">Text zkopírovaný z jiného zařízení</translation>
@@ -5066,6 +5065,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Abyste mohli nadále procházet web, požádejte administrátora o odstranění této aplikace.}few{Abyste mohli nadále procházet web, požádejte administrátora o odstranění této aplikace.}many{Abyste mohli nadále procházet web, požádejte administrátora o odstranění této aplikace.}other{Abyste mohli nadále procházet web, požádejte administrátora o odstranění této aplikace.}}</translation>
 <translation id="5997337190805127100">Další informace o přístupu k webům</translation>
 <translation id="6000758707621254961">Výsledky pro dotaz <ph name="SEARCH_TEXT" /> (<ph name="RESULT_COUNT" />)</translation>
+<translation id="6001839398155993679">Jdeme na to</translation>
 <translation id="6002122790816966947">Vaše zařízení</translation>
 <translation id="6002210667729577411">Přesunout skupinu do nového okna</translation>
 <translation id="6002452033851752583">Heslo bylo smazáno z účtu Google</translation>
@@ -5133,7 +5133,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Poznámka<ph name="END_BOLD" />: K osobním výsledkům uživatele <ph name="SUPERVISED_USER_NAME" /> může získat přístup někdo s podobným hlasem nebo nahrávkou jeho hlasu. Pokud chcete šetřit baterii, můžete v nastavení Asistenta uživatele <ph name="SUPERVISED_USER_NAME" /> nastavit, aby příkaz „Ok Google“ fungoval, jen když je toto zařízení připojené ke zdroji napájení.</translation>
 <translation id="6064217302520318294">Zámek obrazovky</translation>
 <translation id="6065289257230303064">Atributy adresáře subjektu certifikátu</translation>
-<translation id="6065691521254183160">Stisknutím klávesové zkratky |<ph name="ACCELERATOR" />| můžete přepínat výběr mezi touto bublinou nápovědy a prvkem, na který odkazuje.</translation>
 <translation id="6066794465984119824">Není nastaven hash obrazu</translation>
 <translation id="6069464830445383022">K přihlašování do Chromebooku slouží účet Google</translation>
 <translation id="6069671174561668781">Nastavení tapety</translation>
@@ -5401,7 +5400,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6322370287306604163">Rychlejší odemykání otiskem prstu</translation>
 <translation id="6324916366299863871">Upravit zkratku</translation>
 <translation id="6325191661371220117">Deaktivovat automatické spouštění</translation>
-<translation id="6325525973963619867">Došlo k selhání</translation>
 <translation id="6326175484149238433">Odstranit z Chromu</translation>
 <translation id="6326855256003666642">Aktivity zabraňující ukončení</translation>
 <translation id="6327785803543103246">Automatické zjišťování webového proxy serveru</translation>
@@ -5928,7 +5926,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6846178040388691741">Rozšíření <ph name="EXTENSION_NAME" /> chce vytisknout soubor <ph name="FILE_NAME" /> pomocí tiskárny <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Chcete-li pokračovat, uvolněte místo</translation>
 <translation id="6848388270925200958">V současné době máte několik karet, které lze používat jen na tomto zařízení.</translation>
-<translation id="6848425544473873717">{NUM_APPS,plural, =1{1 z vašich aplikací již není podporována. <ph name="LEARN_MORE" />}few{# z vašich aplikací již nejsou podporovány. <ph name="LEARN_MORE" />}many{# z vašich aplikací již není podporováno. <ph name="LEARN_MORE" />}other{# z vašich aplikací již není podporováno. <ph name="LEARN_MORE" />}}</translation>
 <translation id="6848716236260083778">Pokud chcete nastavit otisk prstu, nechte dítě dotknout se snímače otisků prstů. Otisk prstu dítěte je bezpečně uložen a nikdy neopouští <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6850286078059909152">Barva textu</translation>
 <translation id="6851181413209322061">Odesílat údaje o využití a diagnostice. Toto zařízení aktuálně automaticky odesílá do Googlu diagnostické údaje a údaje o zařízení a aplikacích a jejich využití. Tyto údaje nebudou používány ke zjištění totožnosti dítěte a pomohou nám se zvyšováním stability systému a aplikací a dalšími vylepšeními. Některá souhrnná data budou moci využít také naši partneři, např. vývojáři aplikací pro Android. Toto nastavení je vyžadováno vlastníkem. Bude-li mít dítě zapnutou ještě Aktivitu na webu a v aplikacích, mohou se tato data ukládat do jeho účtu Google.</translation>
@@ -7464,6 +7461,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8379156816349755485">Po registraci bude uložen unikátní ověřovací token a využíván při všech budoucích aktivních stahováních.</translation>
 <translation id="8379878387931047019">Toto zařízení typ bezpečnostního klíče požadovaný tímto webem nepodporuje</translation>
 <translation id="8379991678458444070">Přidejte si tuto kartu do záložek, abyste se sem mohli rychle vrátit</translation>
+<translation id="8380941800586852976">Nebezpečné</translation>
 <translation id="8382715499079447151">Ochrana před špehováním</translation>
 <translation id="8382913212082956454">Kopírovat &amp;e-mailovou adresu</translation>
 <translation id="8383266303049437646"><ph name="BEGIN_PARAGRAPH1" />Zkuste problém odstranit pomocí následujících kroků:
@@ -7857,7 +7855,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8779944680596936487">Weby mohou pomocí souborů cookie sledovat pouze aktivitu prohlížení na svém vlastním webu</translation>
 <translation id="8780123805589053431">Získat popisy obrázků z Googlu</translation>
 <translation id="8780443667474968681">Hlasové vyhledávání bylo vypnuto.</translation>
-<translation id="8780872768304638315">Uložení do následujícího umístění se nezdařilo:</translation>
 <translation id="8781834595282316166">Nová karta ve skupině</translation>
 <translation id="8782565991310229362">Spouštění aplikací pro režim veřejného terminálu bylo zrušeno.</translation>
 <translation id="8783526165720272136">Aplikace na odesílání zpráv</translation>

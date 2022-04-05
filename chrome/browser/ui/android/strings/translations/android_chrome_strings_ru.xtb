@@ -82,6 +82,7 @@
 <translation id="1384704387250346179">Перевести с помощью Google Объектива <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Последние действия: <ph name="LAST_UPDATED" /> дн. назад</translation>
 <translation id="1397811292916898096">Поиск в <ph name="PRODUCT_NAME" /></translation>
+<translation id="139993653570221430">Вы можете в любое время изменить свое решение в настройках Chrome. Экспериментальные функции действуют одновременно с текущими настройками показа рекламы, поэтому вы не сразу заметите изменения.</translation>
 <translation id="1406000523432664303">Запрет отслеживания</translation>
 <translation id="1407069428457324124">Тёмная тема</translation>
 <translation id="1407135791313364759">Открыть все</translation>
@@ -94,6 +95,7 @@
 <translation id="1450753235335490080">Не удается отправить: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Выбор языка для Chrome</translation>
 <translation id="147113415845704694">Скажите, например, "Какая сейчас погода?"</translation>
+<translation id="1474893630593443211">Больше возможностей для управления рекламой</translation>
 <translation id="1477626028522505441">Не удалось скачать файл <ph name="FILE_NAME" /> из-за неполадок на сервере.</translation>
 <translation id="148482509007564431">Страница сохранения закладки</translation>
 <translation id="1488775391433859242">Вы сможете использовать этот телефон, чтобы входить в аккаунт на компьютере, где показан QR-код.</translation>
@@ -399,6 +401,7 @@
 <translation id="3166827708714933426">Работа с вкладками и окнами</translation>
 <translation id="316694332262407393">Браузер Chrome уже запущен.</translation>
 <translation id="3169472444629675720">Рекомендации</translation>
+<translation id="3169523567916669830">Во время тестирования новых функций вы сможете просматривать и удалять потенциально интересные вам темы, используемые сайтами для показа рекламы. Chrome определяет такие темы на основе вашей недавней истории браузера.</translation>
 <translation id="3187472288455401631">Оценка эффективности рекламы</translation>
 <translation id="3207960819495026254">Добавлено в закладки.</translation>
 <translation id="3208584281581115441">Выполнить проверку</translation>
@@ -809,7 +812,6 @@
 <translation id="5578795271662203820">Найти это изображение в <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Вы всегда можете выбрать, что синхронизировать, в <ph name="BEGIN_LINK1" />настройках<ph name="END_LINK1" />.</translation>
 <translation id="5590372121997663538">Запомнить этот компьютер</translation>
-<translation id="559871659088672663">Эта функция находится в разработке.</translation>
 <translation id="5599455543593328020">Режим инкогнито</translation>
 <translation id="5599941490345670218">Google Ассистент может помогать вам выполнять действия на сайтах</translation>
 <translation id="5620163320393916465">Сохраненных паролей нет.</translation>
@@ -1043,7 +1045,6 @@
 <translation id="6751521182688001123">Открыть новую вкладку. Чтобы изменить функцию кнопки, нажмите и удерживайте ее.</translation>
 <translation id="6756507620369789050">Отправить отзыв</translation>
 <translation id="6767294960381293877">Список устройств для отправки вкладки развернут на половину экрана.</translation>
-<translation id="6770042910635026163">Посещаемые вами сайты, по данным которых определяются ваши интересы</translation>
 <translation id="6770602306803890733">Делает интернет более безопасным для вас и других пользователей.</translation>
 <translation id="6783942555455976443">Сохранить эту страницу офлайн и отправить напоминание</translation>
 <translation id="6795633245022906657">Открыть новую вкладку. Чтобы изменить функцию кнопки, перейдите в настройки.</translation>
@@ -1113,12 +1114,14 @@
 <translation id="7173114856073700355">Открыть настройки</translation>
 <translation id="7177466738963138057">Вы всегда можете изменить свой выбор в настройках</translation>
 <translation id="7177873915659574692">Не удалось создать QR-код. Количество символов в URL превышает <ph name="CHARACTER_LIMIT" />.</translation>
+<translation id="7177959540995930968">Вы можете узнать больше об этих функциях в настройках Chrome.</translation>
 <translation id="718226107353899806">Превышено максимально допустимое число откликов: <ph name="MAX_NUM_REACTIONS" />.</translation>
 <translation id="7187993566681480880">Позволяет избегать угроз при работе в браузере Chrome и может использоваться для повышения уровня безопасности в других приложениях Google, когда выполнен вход в аккаунт.</translation>
 <translation id="718926126787620637">Список папок с закладками открыт на весь экран</translation>
 <translation id="7191430249889272776">Вкладка открыта в фоновом режиме</translation>
 <translation id="7196215469483532480">Пояснение для руководства по конфиденциальности открыто на весь экран</translation>
 <translation id="7208109991155904980">Отклик перемещен</translation>
+<translation id="7222235798733126207">Ограниченный обмен данными между сайтами</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Ожидание скачивания 1 файла…}one{Ожидание скачивания # файла…}few{Ожидание скачивания # файлов…}many{Ожидание скачивания # файлов…}other{Ожидание скачивания # файла…}}</translation>
 <translation id="7237045078887540010">Используя Chrome, вы принимаете <ph name="BEGIN_TOS_LINK" />Условия использования Google<ph name="END_TOS_LINK" /> и <ph name="BEGIN_ATOS_LINK" />Дополнительные условия использования Chrome и Chrome OS<ph name="END_ATOS_LINK" />. Также действует <ph name="BEGIN_PRIVACY_LINK" />Политика конфиденциальности<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="7242755609445462077">Стилизованный контент: <ph name="CURRENT_DATE" /></translation>
@@ -1338,6 +1341,7 @@
 <translation id="8410695015584479363">Отслеживать цены</translation>
 <translation id="8413126021676339697">Показать всю историю</translation>
 <translation id="8414396119627470038">Вход на сайт <ph name="SITE_ETLD_PLUS_ONE" /> с учетными данными <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8416347857511542594">О персонализации рекламы в Chrome</translation>
 <translation id="8419244640277402268">Да</translation>
 <translation id="8424781820952413435">Страница отправлена. Чтобы ее открыть, запустите Chrome на своем <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8427875596167638501">Вкладка предпросмотра открыта на половину высоты</translation>

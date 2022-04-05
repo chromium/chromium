@@ -168,6 +168,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="2421044535038393232">Tahrirlashda davom etish</translation>
 <translation id="2434405374328098816"><ph name="WEBSITE" /> saytidagi <ph name="USERNAME" /> paroli allaqachon saqlangan</translation>
 <translation id="2435457462613246316">Parolni ko‘rsatish</translation>
+<translation id="2469960372084740698">Saytlarni xavfsiz kezish faolsizlantirilsinmi?</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" /> uchun parol allaqachon saqlangan</translation>
 <translation id="2476359652512522418">Tanlanmagan.</translation>
 <translation id="2497852260688568942">Sinxronizatsiyani administrator o‘chirib qo‘ygan</translation>
@@ -582,6 +583,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6144589619057374135">${url} sahifasini Inkognito rejimida ochish</translation>
 <translation id="6149061208933997199">Paroldan foydalanish</translation>
 <translation id="6159839020698489198">ixtiyoriy</translation>
+<translation id="6173386249456979368">Zararli sayt, yuklanma va kengaytmalarga qarshi tez va mustahkam himoya. Oshkor etilgan parollar haqida ogohlantiradi. Brauzer maʼlumotlari Google serverlariga yuborilishini talab qiladi</translation>
 <translation id="6177442314419606057">Chromedan qidirish</translation>
 <translation id="6184086493125982861">Tablarni ko‘rsatish</translation>
 <translation id="6187302354554850004">Oxirgi sinxronizatsiya: <ph name="LAST_USED_TIME" /></translation>

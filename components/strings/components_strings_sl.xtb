@@ -595,6 +595,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2542106216580219892">Deskanje na vodi</translation>
 <translation id="2544546346215446551">Skrbnik je znova zagnal napravo</translation>
 <translation id="2544644783021658368">Enojni dokument</translation>
+<translation id="254524874071906077">Nastavi Chrome kot privzeti brskalnik</translation>
 <translation id="2546283357679194313">Piškotki in podatki o spletnih mestih</translation>
 <translation id="2547466893236767989">Spletno oblikovanje in razvoj</translation>
 <translation id="254947805923345898">Vrednost pravilnika ni veljavna.</translation>
@@ -2534,7 +2535,9 @@ Dodatne podrobnosti:
 <translation id="7995512525968007366">Ni navedeno</translation>
 <translation id="7998269595945679889">Gumb za odpiranje anonimnega zavihka, pritisnite Enter, če želite odpreti nov anonimni zavihek za zasebno brskanje</translation>
 <translation id="800218591365569300">Poskusite zapreti druge zavihke ali programe, da boste tako sprostili pomnilnik.</translation>
+<translation id="8003046808285812021">»<ph name="SEARCH_TERMS" />«</translation>
 <translation id="8004582292198964060">Brskalnik</translation>
+<translation id="8009225694047762179">Upravljanje gesel</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Shranjena bosta ta kartica in njen naslov za izstavitev računa. Uporabljali jo boste lahko, ko boste prijavljeni v račun <ph name="USER_EMAIL" />.}one{Shranjene bodo te kartice in njihovi naslovi za izstavitev računa. Uporabljali jih boste lahko, ko boste prijavljeni v račun <ph name="USER_EMAIL" />.}two{Shranjene bodo te kartice in njihovi naslovi za izstavitev računa. Uporabljali jih boste lahko, ko boste prijavljeni v račun <ph name="USER_EMAIL" />.}few{Shranjene bodo te kartice in njihovi naslovi za izstavitev računa. Uporabljali jih boste lahko, ko boste prijavljeni v račun <ph name="USER_EMAIL" />.}other{Shranjene bodo te kartice in njihovi naslovi za izstavitev računa. Uporabljali jih boste lahko, ko boste prijavljeni v račun <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8025119109950072390">Napadalci na tem spletnem mestu vas lahko z zavajanjem morda pripravijo do tega, da storite kaj nevarnega – denimo, da namestite programsko opremo ali razkrijete osebne podatke (na primer gesla, telefonske številke ali podatke kreditnih kartic).</translation>
 <translation id="8026334261755873520">Izbriši podatke brskanja</translation>

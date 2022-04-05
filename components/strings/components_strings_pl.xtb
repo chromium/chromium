@@ -591,6 +591,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2542106216580219892">Surfing</translation>
 <translation id="2544546346215446551">Administrator uruchomił ponownie Twoje urządzenie</translation>
 <translation id="2544644783021658368">Pojedynczy dokument</translation>
+<translation id="254524874071906077">Ustaw Chrome jako przeglądarkę domyślną</translation>
 <translation id="2546283357679194313">Pliki cookie i dane stron</translation>
 <translation id="2547466893236767989">Projektowanie i programowanie internetowe</translation>
 <translation id="254947805923345898">Wartość zasady jest nieprawidłowa.</translation>
@@ -2525,7 +2526,9 @@ Dodatkowe informacje:
 <translation id="7995512525968007366">Nie określono</translation>
 <translation id="7998269595945679889">Przycisk Otwórz kartę incognito; naciśnij Enter, aby otworzyć nową kartę incognito i przeglądać prywatnie</translation>
 <translation id="800218591365569300">Zamknij inne karty lub programy, by zwolnić pamięć.</translation>
+<translation id="8003046808285812021">„<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">Przeglądarka</translation>
+<translation id="8009225694047762179">Zarządzaj hasłami</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Ta karta i jej adres rozliczeniowy zostaną zapisane. Możesz ich używać po zalogowaniu się na konto <ph name="USER_EMAIL" />.}few{Te karty i ich adresy rozliczeniowe zostaną zapisane. Możesz ich używać po zalogowaniu się na konto <ph name="USER_EMAIL" />.}many{Te karty i ich adresy rozliczeniowe zostaną zapisane. Możesz ich używać po zalogowaniu się na konto <ph name="USER_EMAIL" />.}other{Te karty i ich adresy rozliczeniowe zostaną zapisane. Możesz ich używać po zalogowaniu się na konto <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8025119109950072390">Osoby atakujące tę stronę mogą podstępem nakłonić Cię do zrobienia czegoś niebezpiecznego, np. zainstalowania oprogramowania lub ujawnienia danych osobowych (takich jak hasła, numery telefonów czy dane kart kredytowych).</translation>
 <translation id="8026334261755873520">Wyczyść dane przeglądania</translation>

@@ -595,6 +595,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2542106216580219892">Surfanje</translation>
 <translation id="2544546346215446551">Administrator je ponovo pokrenuo vaš uređaj</translation>
 <translation id="2544644783021658368">Jedan dokument</translation>
+<translation id="254524874071906077">Postavi Chrome kao zadani preglednik</translation>
 <translation id="2546283357679194313">Kolačići i podaci o web-lokacijama</translation>
 <translation id="2547466893236767989">Web-dizajn i razvoj</translation>
 <translation id="254947805923345898">Vrijednost pravila nije važeća.</translation>
@@ -2535,6 +2536,7 @@ Dodatne pojedinosti:
 <translation id="7998269595945679889">Pritisnite gumb Otvori anonimnu karticu, pritisnite Enter da biste otvorili novu anonimnu karticu za pregledavanje u privatnosti</translation>
 <translation id="800218591365569300">Pokušajte zatvoriti ostale kartice ili programe da biste oslobodili memoriju.</translation>
 <translation id="8004582292198964060">Preglednik</translation>
+<translation id="8009225694047762179">Upravljanje zaporkama</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Ova kartica i njezina adresa za naplatu spremit će se. Moći ćete plaćati njome kada ste prijavljeni na račun <ph name="USER_EMAIL" />.}one{Ove kartice i njihove adrese za naplatu spremit će se. Moći ćete plaćati njima kada ste prijavljeni na račun <ph name="USER_EMAIL" />.}few{Ove kartice i njihove adrese za naplatu spremit će se. Moći ćete plaćati njima kada ste prijavljeni na račun <ph name="USER_EMAIL" />.}other{Ove kartice i njihove adrese za naplatu spremit će se. Moći ćete plaćati njima kada ste prijavljeni na račun <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8025119109950072390">Napadači na ovoj web-lokaciji mogu vas na prijevaru pokušati navesti da napravite nešto opasno kao što je instaliranje softvera ili otkrivanje osobnih podataka (npr. zaporki, telefonskih brojeva ili kreditnih kartica).</translation>
 <translation id="8026334261755873520">Brisanje podataka o pregledavanju</translation>

@@ -440,7 +440,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3630697955794050612">oʻchiq</translation>
 <translation id="3631369015426612114">Quyidagilardan bildirishnomalar ko‘rsatilsin</translation>
 <translation id="3638400994746983214">Maxfiylik ekraniga kirish/chiqish. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171">Qurilmani (<ph name="NAME" />) eslab qolish</translation>
 <translation id="3649505501900178324">Qayta ishga tushirish zarur</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> boshqariladigan hisob</translation>
 <translation id="3680908746918359504">Barcha markerlarni tozalash</translation>
@@ -487,6 +486,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Qurilma tizimini 1 daqiqa ichida eski versiyaga qaytaring}other{Qurilma tizimini # daqiqa ichida eski versiyaga qaytaring}}</translation>
 <translation id="3923494859158167397">Mobil tarmoqlar sozlanmagan</translation>
 <translation id="3932043219784172185">Hech qaysi qurilma ulanmagan!</translation>
+<translation id="3934456833412894880">Moslashuvchan quvvatlash yoniq. Batareyaning xizmat muddatini uzaytirish maqsadida batareya 80% gacha quvvatlang hamda zarur boʻlganda uni toʻliq quvvatlashingiz mumkin.</translation>
 <translation id="3943857333388298514">Joylash</translation>
 <translation id="394485226368336402">Audio sozlamalari</translation>
 <translation id="3945319193631853098">Sozlashni yakunlash uchun bosing</translation>
@@ -530,7 +530,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="4215497585250573029">VPN sozlamalari</translation>
 <translation id="4217571870635786043">Ovoz bilan yozish</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Oʻrnatilgan ilova, Pauzada</translation>
-<translation id="4223947355273782392">Boshqa qurilmalarga tezkor ulanish uchun qurilmani (<ph name="NAME" />) <ph name="EMAIL" /> hisobiga saqlang</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Sozlamalarni ochish</translation>
 <translation id="4250229828105606438">Skrinshot</translation>
@@ -908,7 +907,6 @@ yangi oʻrnatilgan</translation>
 <translation id="6625718907317144388">Xavfsiz koʻrish rejimi yoniqligi uchun <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> va boshqa ilovalar bildirishnomalari yashirildi</translation>
 <translation id="6627638273713273709">Qidiruv+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> mikrofondan foydalanmoqchi</translation>
-<translation id="6630773993843701741">Qurilmani ulash uchun Bluetooth sozlamalarini oching</translation>
 <translation id="6637729079642709226">Vaqtni oʻzgartirish</translation>
 <translation id="6641720045729354415">Jonli izohni yoqish/faolsizlantirish. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> shaxsingizni tasdiqlamoqchi</translation>
@@ -1018,7 +1016,6 @@ yangi oʻrnatilgan</translation>
 <translation id="7348093485538360975">Ekran klaviaturasi</translation>
 <translation id="735745346212279324">VPN aloqasi uzildi</translation>
 <translation id="7360036564632145207">Samaradorlikni oshirish uchun tashqi qurilmalarga maʼlumotlaringizga kirish huquqlarini oʻzgartiring</translation>
-<translation id="7366890467478514168"><ph name="NAME" /> qurilmasini ulang</translation>
 <translation id="7371404428569700291">Yozib olish oynasi</translation>
 <translation id="7377169924702866686">Caps Lock yoniq.</translation>
 <translation id="7377481913241237033">Kod bilan ulanish</translation>
@@ -1129,7 +1126,6 @@ yangi oʻrnatilgan</translation>
 <translation id="7955885781510802139">Yuqori kontrastli rejim</translation>
 <translation id="7968693143708939792">Jildni tanlang...</translation>
 <translation id="7977927628060636163">Mobil tarmoqlar qidirilmoqda...</translation>
-<translation id="7980780401175799550">Chrome OS tizimini yangi usulda boshqaring</translation>
 <translation id="7982789257301363584">Tarmoq</translation>
 <translation id="7984197416080286869">Siz juda koʻp marta urindingiz</translation>
 <translation id="7994370417837006925">Bir nechta hisobdan kirish</translation>

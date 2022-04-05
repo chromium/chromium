@@ -440,7 +440,6 @@
 <translation id="3630697955794050612">כבויה</translation>
 <translation id="3631369015426612114">המקורות הבאים יכולים להציג התראות</translation>
 <translation id="3638400994746983214">הפעלה וכיבוי של מסך הפרטיות. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171">שמירת <ph name="NAME" /></translation>
 <translation id="3649505501900178324">צריך לבצע עדכון</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> משתמש מנוהל</translation>
 <translation id="3680908746918359504">ניקוי כל הסימנים</translation>
@@ -530,7 +529,6 @@
 <translation id="4215497585250573029">‏הגדרות VPN</translation>
 <translation id="4217571870635786043">הכתבה</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, אפליקציה מותקנת, מושהית</translation>
-<translation id="4223947355273782392">לצורך התאמה מהירה יותר למכשירים האחרים שלך, כדאי לשמור את <ph name="NAME" /> ב-<ph name="EMAIL" />.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">פתיחת ההגדרות</translation>
 <translation id="4250229828105606438">צילום מסך</translation>
@@ -908,7 +906,6 @@
 <translation id="6625718907317144388">ההתראות מהאפליקציות <ph name="APP_1_TITLE" /> וכן <ph name="APP_2_TITLE" /> ומאפליקציות נוספות מוסתרות כי מופעלת הגנה על תצוגה</translation>
 <translation id="6627638273713273709">‏חיפוש+Shift‏+K</translation>
 <translation id="6629480180092995136">האפליקציה <ph name="APP_NAME" /> מבקשת להשתמש במיקרופון</translation>
-<translation id="6630773993843701741">‏יש לפתוח את הגדרות ה-Bluetooth כדי להתאים את המכשיר ידנית</translation>
 <translation id="6637729079642709226">שינוי הזמן</translation>
 <translation id="6641720045729354415">החלפה למצב 'כתוביות מיידיות'. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490">כדי להתחבר אל <ph name="ORIGIN_NAME" /> יש לאמת את זהותך</translation>
@@ -1018,7 +1015,6 @@
 <translation id="7348093485538360975">מקלדת על המסך</translation>
 <translation id="735745346212279324">‏VPN מנותק</translation>
 <translation id="7360036564632145207">הביצועים עשויים להשתפר אם ההגדרות של הגנת הגישה לנתונים עבור ציוד היקפי ישונו</translation>
-<translation id="7366890467478514168">חיבור <ph name="NAME" /></translation>
 <translation id="7371404428569700291">חלון ההקלטה</translation>
 <translation id="7377169924702866686">‏Caps Lock מופעל.</translation>
 <translation id="7377481913241237033">התחברות באמצעות קוד</translation>
@@ -1131,7 +1127,6 @@
 <translation id="7955885781510802139">מצב ניגודיות גבוהה</translation>
 <translation id="7968693143708939792">בחירת תיקייה…</translation>
 <translation id="7977927628060636163">המערכת מחפשת רשתות סלולריות...</translation>
-<translation id="7980780401175799550">‏דרכים חדשות לנווט ב-Chrome OS</translation>
 <translation id="7982789257301363584">רשת</translation>
 <translation id="7984197416080286869">יותר מדי ניסיונות טביעת אצבע</translation>
 <translation id="7994370417837006925">כניסה עם מספר חשבונות</translation>

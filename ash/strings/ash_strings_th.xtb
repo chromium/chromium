@@ -439,7 +439,6 @@
 <translation id="3630697955794050612">ปิดอยู่</translation>
 <translation id="3631369015426612114">อนุญาตให้มีการแจ้งเตือนจากรายการต่อไปนี้</translation>
 <translation id="3638400994746983214">สลับหน้าจอส่วนตัว <ph name="STATE_TEXT" /></translation>
-<translation id="3640092422335864171">บันทึก <ph name="NAME" /></translation>
 <translation id="3649505501900178324">พ้นกำหนดการอัปเดต</translation>
 <translation id="366222428570480733">ผู้ใช้ที่ได้รับการจัดการ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3680908746918359504">ล้างเครื่องหมายทั้งหมด</translation>
@@ -486,6 +485,7 @@
 <translation id="3922427723338465344">{0,plural, =1{เปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน 1 นาที}other{เปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน # นาที}}</translation>
 <translation id="3923494859158167397">ไม่ได้ตั้งค่าเครือข่ายมือถือ</translation>
 <translation id="3932043219784172185">ไม่มีอุปกรณ์ที่เชื่อมต่ออยู่</translation>
+<translation id="3934456833412894880">การชาร์จแบบปรับอัตโนมัติเปิดอยู่ แบตเตอรี่จะหยุดชาร์จที่ 80% เพื่อยืดอายุการใช้งาน และจะชาร์จจนเต็มเมื่อคุณต้องการ</translation>
 <translation id="3943857333388298514">วาง</translation>
 <translation id="394485226368336402">การตั้งค่าเสียง</translation>
 <translation id="3945319193631853098">แตะเพื่อตั้งค่าให้เสร็จสิ้น</translation>
@@ -529,7 +529,6 @@
 <translation id="4215497585250573029">การตั้งค่า VPN</translation>
 <translation id="4217571870635786043">การพิมพ์ตามคำบอก</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ติดตั้งแอปแล้ว, หยุดชั่วคราว</translation>
-<translation id="4223947355273782392">บันทึก <ph name="NAME" /> ลงใน <ph name="EMAIL" /> เพื่อให้จับคู่กับอุปกรณ์อื่นๆ ของคุณได้รวดเร็วยิ่งขึ้น</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">เปิดการตั้งค่า</translation>
 <translation id="4250229828105606438">ภาพหน้าจอ</translation>
@@ -907,7 +906,6 @@
 <translation id="6625718907317144388">การแจ้งเตือนของ <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> และอื่นๆ ซ่อนอยู่เนื่องจากเปิดโหมดป้องกันการดูไว้</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> ต้องการใช้ไมโครโฟน</translation>
-<translation id="6630773993843701741">เปิดการตั้งค่าบลูทูธเพื่อจับคู่อุปกรณ์ด้วยตนเอง</translation>
 <translation id="6637729079642709226">เปลี่ยนเวลา</translation>
 <translation id="6641720045729354415">เปิด/ปิดคำบรรยายสด <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ต้องการยืนยันว่าเป็นคุณ</translation>
@@ -1017,7 +1015,6 @@
 <translation id="7348093485538360975">แป้นพิมพ์บนหน้าจอ</translation>
 <translation id="735745346212279324">ยกเลิกการเชื่อมต่อ VPN แล้ว</translation>
 <translation id="7360036564632145207">การเปลี่ยนการตั้งค่าการป้องกันการเข้าถึงข้อมูลของอุปกรณ์ต่อพ่วงช่วยเพิ่มประสิทธิภาพได้</translation>
-<translation id="7366890467478514168">เชื่อมต่อ <ph name="NAME" /></translation>
 <translation id="7371404428569700291">หน้าต่างการบันทึก</translation>
 <translation id="7377169924702866686">Caps Lock เปิดอยู่</translation>
 <translation id="7377481913241237033">เชื่อมต่อด้วยรหัส</translation>
@@ -1127,7 +1124,6 @@
 <translation id="7955885781510802139">โหมดคอนทราสต์สูง</translation>
 <translation id="7968693143708939792">เลือกโฟลเดอร์...</translation>
 <translation id="7977927628060636163">กำลังค้นหาเครือข่ายมือถือ...</translation>
-<translation id="7980780401175799550">ลองใช้วิธีใหม่ในการไปยังส่วนต่างๆ ของ Chrome OS</translation>
 <translation id="7982789257301363584">เครือข่าย</translation>
 <translation id="7984197416080286869">พยายามปลดล็อกด้วยลายนิ้วมือหลายครั้งเกินไป</translation>
 <translation id="7994370417837006925">การลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี</translation>

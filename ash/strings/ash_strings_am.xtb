@@ -164,6 +164,7 @@
 <translation id="1951012854035635156">ረዳት</translation>
 <translation id="1954252331066828794">የማያ ገጽ ቀረጻ ተጠናቅቋል</translation>
 <translation id="1957958912175573503">የእርስዎን ቋንቋ ያቀናብሩ</translation>
+<translation id="1961239773406905488">የካሜራ ቅድመ እይታ ተደብቋል</translation>
 <translation id="1961832440516943645"><ph name="DATE" />፣ <ph name="TIME" /></translation>
 <translation id="1962969542251276847">የማያ ገጽ ቁልፍ</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -181,6 +182,7 @@
 <translation id="2047639699071423250">ቁልፍ ሐሳብ ያክሉ</translation>
 <translation id="2049240716062114887">የዴስክ ስም ወደ <ph name="DESK_NAME" /> ተለውጧል</translation>
 <translation id="2050339315714019657">በቁመት</translation>
+<translation id="2064048859448024834">የካሜራ ቅድመ-እይታ በርቷል</translation>
 <translation id="2066708475850724665">ማጉያ አቁም</translation>
 <translation id="2067602449040652523">የቁልፍ ሰሌዳ ብሩህነት</translation>
 <translation id="2078034614700056995">ወደ ቀጣዩ ዴስክ ለመቀየር በአራት ጣቶች ወደ ቀኝ ያንሸራትቱ</translation>
@@ -437,7 +439,6 @@
 <translation id="3630697955794050612">ጠፍቷል</translation>
 <translation id="3631369015426612114">ማሳወቂያዎች ከሚከተሉት እንዲመጡ ፍቀድ፦</translation>
 <translation id="3638400994746983214">የግላዊነት ማያ ገጽን ቀያይር። <ph name="STATE_TEXT" />።</translation>
-<translation id="3640092422335864171"><ph name="NAME" />ን ያስቀምጡ</translation>
 <translation id="3649505501900178324">ዝማኔ ጊዜው ደርሶ አልፏል</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> የሚተዳደር ተጠቃሚ</translation>
 <translation id="3680908746918359504">ሁሉንም ምልክት ማድረጊያዎች አጽዳ</translation>
@@ -484,6 +485,7 @@
 <translation id="3922427723338465344">{0,plural, =1{በ1 ደቂቃ ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ይቀይሩ}one{በ# ደቂቃዎች ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ይቀይሩ}other{በ# ደቂቃዎች ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ይቀይሩ}}</translation>
 <translation id="3923494859158167397">ምንም የተንቀሳቃሽ ስልክ አውታረ መረቦች አልተቀናበሩም</translation>
 <translation id="3932043219784172185">ምንም መሣሪያ አልተገናኘም</translation>
+<translation id="3934456833412894880">ተስማሚ ኃይል መሙላት በርቷል። የባትሪ ዕድሜን ለማራዘም ባትሪዎ 80% ላይ ይቆያል እና ሲያስፈልግዎት ሙሉ በሙሉ ይሞላል።</translation>
 <translation id="3943857333388298514">ለጥፍ</translation>
 <translation id="394485226368336402">የድምጽ ቅንብሮች</translation>
 <translation id="3945319193631853098">ቅንብርን ለማጠናቀቅ መታ ያድርጉ</translation>
@@ -527,7 +529,6 @@
 <translation id="4215497585250573029">የቪፒኤን ቅንብሮች</translation>
 <translation id="4217571870635786043">በቃል ማስጻፍ</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />፣ የተጫነ መረግበሪያ፣ ባለበት ቆሟል</translation>
-<translation id="4223947355273782392">ከሌሎች መሣሪያዎችዎ ጋር በፍጥነት ለማጣመር <ph name="NAME" />ን <ph name="EMAIL" /> ላይ ያስቀምጡ</translation>
 <translation id="4239069858505860023">ጂፒአርኤስ</translation>
 <translation id="4242533952199664413">ቅንብሮችን ክፈት</translation>
 <translation id="4250229828105606438">ቅጽበታዊ ገጽ እይታ</translation>
@@ -905,7 +906,6 @@
 <translation id="6625718907317144388">የእይታ ጥበቃ ስለበራ የ<ph name="APP_1_TITLE" />፣ <ph name="APP_2_TITLE" /> እና ሌሎች ማሳወቂያዎች ተደብቀዋል</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> ማይክሮፎኑን መጠቀም ይፈልጋል</translation>
-<translation id="6630773993843701741">መሣሪያውን በራስዎ ለማጣመር የብሉቱዝ ቅንብሮችን ይክፈቱ</translation>
 <translation id="6637729079642709226">ጊዜን ለውጥ</translation>
 <translation id="6641720045729354415">የቀጥታ መግለጫ ጽሑፍን ይቀያይሩ። <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> እርስዎ እንደሆኑ ማረጋገጥ ይፈልጋል</translation>
@@ -1015,7 +1015,6 @@
 <translation id="7348093485538360975">የታይታ የቁልፍ ሰሌዳ</translation>
 <translation id="735745346212279324">የቪ ፒ ኤን ግንኙነት ተቋርጧል</translation>
 <translation id="7360036564632145207">ለተቀጥላ ክፍሎች ቅንብሮች የውሂብ መዳረሻ ጥበቃን መለወጥ አፈጻጸሙን ሊያተባ ይችላል</translation>
-<translation id="7366890467478514168"><ph name="NAME" />ን ያገናኙ</translation>
 <translation id="7371404428569700291">መስኮትን ቅዳ</translation>
 <translation id="7377169924702866686">Caps Lock በርቷል።</translation>
 <translation id="7377481913241237033">ከኮድ ጋር ተገናኝ</translation>
@@ -1126,7 +1125,6 @@
 <translation id="7955885781510802139">ባለከፍተኛ ንፅፅር ሁነታ</translation>
 <translation id="7968693143708939792">አቃፊ ምረጥ...</translation>
 <translation id="7977927628060636163">የተንቀሳቃሽ ስልክ አውታረ መረቦችን በመፈለግ ላይ...</translation>
-<translation id="7980780401175799550">Chrome OSን የሚዳስሱበት አዲስ መንገዶችን ይሞክሩ</translation>
 <translation id="7982789257301363584">አውታረ መረብ</translation>
 <translation id="7984197416080286869">ከልክ በላይ ብዙ የጣት አሻራ ሙከራዎች</translation>
 <translation id="7994370417837006925">ባለብዙ በመለያ-መግቢያ</translation>

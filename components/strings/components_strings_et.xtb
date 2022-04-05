@@ -594,6 +594,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2542106216580219892">Surfamine</translation>
 <translation id="2544546346215446551">Administraator taaskäivitas teie seadme</translation>
 <translation id="2544644783021658368">Üks dokument</translation>
+<translation id="254524874071906077">Sea Chrome vaikebrauseriks</translation>
 <translation id="2546283357679194313">Küpsised ja saidiandmed</translation>
 <translation id="2547466893236767989">Veebidisain ja -arendus</translation>
 <translation id="254947805923345898">Reegli väärtus on kehtetu.</translation>
@@ -2534,6 +2535,7 @@ Lisateave:
 <translation id="7998269595945679889">Inkognito vahelehe avamise nupp, vajutage sisestusklahvi uue inkognito vahelehe avamiseks, et privaatselt sirvida</translation>
 <translation id="800218591365569300">Sulgege muud vahelehed või programmid, et mälu vabastada.</translation>
 <translation id="8004582292198964060">Brauser</translation>
+<translation id="8009225694047762179">Halda paroole</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{See kaart ja selle arveldusaadress salvestatakse. Saate seda kasutada, kui olete kontole <ph name="USER_EMAIL" /> sisse logitud.}other{Need kaardid ja nende arveldusaadressid salvestatakse. Saate neid kasutada, kui olete kontole <ph name="USER_EMAIL" /> sisse logitud.}}</translation>
 <translation id="8025119109950072390">Sellel saidil asuvad ründajad võivad teid meelitada ohtlikele tegevustele, nagu tarkvara installimine või isiklike andmete (nt paroolid, telefoninumbrid või krediitkaardid) avaldamine.</translation>
 <translation id="8026334261755873520">Sirvimisandmete kustutamine</translation>

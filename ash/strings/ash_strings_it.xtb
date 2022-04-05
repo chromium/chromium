@@ -164,6 +164,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1951012854035635156">Assistente</translation>
 <translation id="1954252331066828794">Registrazione dello schermo completata</translation>
 <translation id="1957958912175573503">Imposta la lingua</translation>
+<translation id="1961239773406905488">Anteprima della videocamera nascosta</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Blocco schermo</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -181,6 +182,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2047639699071423250">Aggiungi idea chiave</translation>
 <translation id="2049240716062114887">Il nome della scrivania è stato modificato in <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Verticale</translation>
+<translation id="2064048859448024834">Anteprima della videocamera attiva</translation>
 <translation id="2066708475850724665">Interrompi ingrandimento</translation>
 <translation id="2067602449040652523">Luminosità della tastiera</translation>
 <translation id="2078034614700056995">Scorri verso destra con quattro dita per passare alla scrivania successiva</translation>
@@ -437,7 +439,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3630697955794050612">off</translation>
 <translation id="3631369015426612114">Consenti notifiche da:</translation>
 <translation id="3638400994746983214">Attiva/disattiva Schermata sulla privacy. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171">Salva <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Aggiornamento scaduto</translation>
 <translation id="366222428570480733">Utente gestito <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3680908746918359504">Cancella tutti gli indicatori</translation>
@@ -485,6 +486,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Ripristina la versione precedente del dispositivo entro 1 minuto}other{Ripristina la versione precedente del dispositivo entro # minuti}}</translation>
 <translation id="3923494859158167397">Nessuna rete mobile configurata</translation>
 <translation id="3932043219784172185">Nessun dispositivo connesso</translation>
+<translation id="3934456833412894880">Ricarica adattiva attiva. La batteria rimarrà all'80% per farla durare di più e verrà ricaricata completamente quando ti servirà.</translation>
 <translation id="3943857333388298514">Incolla</translation>
 <translation id="394485226368336402">Impostazioni audio</translation>
 <translation id="3945319193631853098">Tocca per completare la configurazione</translation>
@@ -528,7 +530,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4215497585250573029">Impostazioni VPN</translation>
 <translation id="4217571870635786043">Dettatura</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, app installata, messa in pausa</translation>
-<translation id="4223947355273782392">Salva <ph name="NAME" /> nell'account <ph name="EMAIL" /> per un accoppiamento più rapido con gli altri dispositivi</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Apri le impostazioni</translation>
 <translation id="4250229828105606438">Screenshot</translation>
@@ -906,7 +907,6 @@ Nuova installazione</translation>
 <translation id="6625718907317144388">Le notifiche di <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> e altre app sono nascoste perché è attiva la protezione di visualizzazione</translation>
 <translation id="6627638273713273709">Tasto per la ricerca + MAIUSC + K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> vuole usare il microfono</translation>
-<translation id="6630773993843701741">Apri le impostazioni del Bluetooth per accoppiare il dispositivo manualmente</translation>
 <translation id="6637729079642709226">Modifica tempo</translation>
 <translation id="6641720045729354415">Attiva o disattiva Sottotitoli in tempo reale. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> vorrebbe verificare la tua identità</translation>
@@ -1016,7 +1016,6 @@ Nuova installazione</translation>
 <translation id="7348093485538360975">Tastiera sullo schermo</translation>
 <translation id="735745346212279324">VPN scollegata</translation>
 <translation id="7360036564632145207">La modifica della protezione dell'accesso ai dati per l'impostazione delle periferiche può ottimizzare le prestazioni</translation>
-<translation id="7366890467478514168">Connetti <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Finestra di registrazione</translation>
 <translation id="7377169924702866686">La funzione Bloc maiusc è attiva.</translation>
 <translation id="7377481913241237033">Connessione tramite codice</translation>
@@ -1126,7 +1125,6 @@ Nuova installazione</translation>
 <translation id="7955885781510802139">Modalità ad alto contrasto</translation>
 <translation id="7968693143708939792">Seleziona cartella…</translation>
 <translation id="7977927628060636163">Ricerca di reti mobili...</translation>
-<translation id="7980780401175799550">Prova nuove modalità di esplorazione di Chrome OS</translation>
 <translation id="7982789257301363584">Rete</translation>
 <translation id="7984197416080286869">Troppi tentativi di sblocco con l'impronta</translation>
 <translation id="7994370417837006925">Accesso simultaneo</translation>

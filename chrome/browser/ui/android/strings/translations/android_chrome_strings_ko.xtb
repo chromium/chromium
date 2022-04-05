@@ -289,6 +289,7 @@
 <translation id="2561519700418191927">동영상 미리보기</translation>
 <translation id="2567385386134582609">이미지</translation>
 <translation id="2567545343356994513">위험한 웹사이트, 다운로드 항목 및 확장 프로그램에 더 빠르게 대응하여 선제적 보호 조치를 취합니다.</translation>
+<translation id="2569733278091928697">미디어 제어, 시크릿 세션, 다운로드 등을 간편하게 관리할 수 있습니다.</translation>
 <translation id="2571711316400087311">다른 언어로 된 페이지를 Google 번역으로 전송하는 옵션 제공</translation>
 <translation id="2573452357057307036">Chrome을 기본 브라우저로 설정하는 방법을 알아보세요.</translation>
 <translation id="2581165646603367611">이를 통해 쿠키, 캐시 및 Chrome에서 중요하다고 간주하지 않는 사이트의 기타 데이터가 삭제됩니다.</translation>
@@ -476,6 +477,7 @@
 <translation id="3568688522516854065">다른 기기에서 탭을 가져오려면 로그인하고 동기화를 사용 설정하세요.</translation>
 <translation id="357465026686164600">휴대전화를 보안 키로 사용</translation>
 <translation id="3577473026931028326">문제가 발생했습니다. 다시 시도하세요.</translation>
+<translation id="3578024735349927859">알림을 받아 미디어 컨트롤, 시크릿 탭 등을 관리하세요</translation>
 <translation id="3578874072190212775">사이트에서 사기를 근절하고 사용자와 봇을 구별할 수 있도록 도움을 주세요.</translation>
 <translation id="3587482841069643663">전체</translation>
 <translation id="3587596251841506391">웹 보안 개선에 참여</translation>
@@ -812,7 +814,6 @@
 <translation id="5578795271662203820"><ph name="SEARCH_ENGINE" />에서 이 이미지 검색</translation>
 <translation id="5581519193887989363">언제든지 <ph name="BEGIN_LINK1" />설정<ph name="END_LINK1" />에서 동기화할 항목을 선택할 수 있습니다.</translation>
 <translation id="5590372121997663538">이 컴퓨터 기억하기</translation>
-<translation id="559871659088672663">현재 개발 중인 기능입니다.</translation>
 <translation id="5599455543593328020">시크릿 모드</translation>
 <translation id="5599941490345670218">Google 어시스턴트가 사용자를 위해 여러 웹사이트에서 작업을 완료할 수 있습니다.</translation>
 <translation id="5620163320393916465">저장된 비밀번호 없음</translation>
@@ -1046,7 +1047,6 @@
 <translation id="6751521182688001123">새 탭을 빠르게 엽니다. 바로가기를 수정하려면 길게 터치하세요.</translation>
 <translation id="6756507620369789050">의견 공유</translation>
 <translation id="6767294960381293877">탭을 공유할 기기 목록이 절반 높이로 열렸습니다.</translation>
-<translation id="6770042910635026163">방문한 사이트 중 관심분야를 정의하는 사이트</translation>
 <translation id="6770602306803890733">모든 웹 사용자를 위해 보안을 향상합니다.</translation>
 <translation id="6783942555455976443">나중에 읽을 수 있게 페이지를 저장하여 알림을 받으세요.</translation>
 <translation id="6795633245022906657">새 탭을 빠르게 엽니다. 바로가기를 수정하려면 설정으로 이동하세요.</translation>

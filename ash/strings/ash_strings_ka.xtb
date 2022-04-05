@@ -442,7 +442,6 @@
 <translation id="3630697955794050612">გამორთული</translation>
 <translation id="3631369015426612114">შეტყობინებების დაშვება შემდეგიდან:</translation>
 <translation id="3638400994746983214">კონფიდენციალურობის ეკრანის გადართვა. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171">შეინახეთ <ph name="NAME" /></translation>
 <translation id="3649505501900178324">განახლება დაგვიანებულია</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> — მართული მომხმარებელი</translation>
 <translation id="3680908746918359504">ყველა მარკერის გასუფთავება</translation>
@@ -489,6 +488,7 @@
 <translation id="3922427723338465344">{0,plural, =1{დააბრუნეთ მოწყობილობა წინა ვერსიაზე 1 წუთის განმავლობაში}other{დააბრუნეთ მოწყობილობა წინა ვერსიაზე # წუთის განმავლობაში}}</translation>
 <translation id="3923494859158167397">მობილური ქსელები დაყენებული არ არის</translation>
 <translation id="3932043219784172185">დაკავშირებული მოწყობილობები არ არის</translation>
+<translation id="3934456833412894880">ადაპტირებადი დატენა ჩართულია. ბატარეის ვარგისიანობის გასახანგრძლივებლად ის დარჩება 80%-ზე და სრულად დაიტენება, როცა დაგჭირდებათ.</translation>
 <translation id="3943857333388298514">ჩასმა</translation>
 <translation id="394485226368336402">აუდიოს პარამეტრები</translation>
 <translation id="3945319193631853098">შეეხეთ დაყენების დასასრულებლად</translation>
@@ -532,7 +532,6 @@
 <translation id="4215497585250573029">VPN-ის პარამეტრები</translation>
 <translation id="4217571870635786043">კარნახი</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, დაინსტალირებული აპი, დაპაუზებული</translation>
-<translation id="4223947355273782392">თქვენს სხვა მოწყობილობებთან უფრო სწრაფად დაწყვილებისთვის შეინახეთ <ph name="NAME" /> <ph name="EMAIL" />-ში</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">პარამეტრების გახსნა</translation>
 <translation id="4250229828105606438">ეკრანის ანაბეჭდი</translation>
@@ -910,7 +909,6 @@
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />-ის, <ph name="APP_2_TITLE" />-ის და სხვა შეტყობინებები დამალულია, რადგან ჩართულია ნახვის დაცვა</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> ითხოვს ამ მიკროფონის გამოყენებას</translation>
-<translation id="6630773993843701741">მოწყობილობის ხელით დასაწყვილებლად გახსენით Bluetooth-ის პარამეტრები</translation>
 <translation id="6637729079642709226">დროის შეცვლა</translation>
 <translation id="6641720045729354415">ავტოსუბტიტრების გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ითხოვს თქვენი ვინაობის დადასტურებას</translation>
@@ -1020,7 +1018,6 @@
 <translation id="7348093485538360975">ეკრანული კლავიატურა</translation>
 <translation id="735745346212279324">VPN გამორთულია</translation>
 <translation id="7360036564632145207">პერიფერიული მოწყობილობებისთვის მონაცემებზე წვდომის დაცვის პარამეტრების შეცვლით შესაძლებელია წარმადობის ოპტიმიზაცია</translation>
-<translation id="7366890467478514168">დააკავშირეთ <ph name="NAME" /></translation>
 <translation id="7371404428569700291">ფანჯრის ჩაწერა</translation>
 <translation id="7377169924702866686">Caps Lock ჩართულია.</translation>
 <translation id="7377481913241237033">კოდით დაკავშირება</translation>
@@ -1131,7 +1128,6 @@
 <translation id="7955885781510802139">მაღალკონტრასტული რეჟიმი</translation>
 <translation id="7968693143708939792">აირჩიეთ საქაღალდე...</translation>
 <translation id="7977927628060636163">მიმდინარეობს მობილური ქსელების ძიება…</translation>
-<translation id="7980780401175799550">ცადეთ Chrome OS-ში ნავიგაციის ახალი ხერხები</translation>
 <translation id="7982789257301363584">ქსელი</translation>
 <translation id="7984197416080286869">დაფიქსირდა თითის ანაბეჭდის გამოყენების მეტისმეტად ბევრი მცდელობა</translation>
 <translation id="7994370417837006925">ერთდროული შესვლა სისტემაში</translation>

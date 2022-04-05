@@ -169,6 +169,7 @@
 <translation id="2421044535038393232">متابعة التعديل</translation>
 <translation id="2434405374328098816">سبق أن حفظت كلمة مرور لاسم المستخدم "<ph name="USERNAME" />" على <ph name="WEBSITE" />.</translation>
 <translation id="2435457462613246316">عرض كلمة المرور</translation>
+<translation id="2469960372084740698">هل تريد إيقاف "التصفُّح الآمن"؟</translation>
 <translation id="2473876017985765807">سبق أن حفظت كلمة مرور للموقع الإلكتروني <ph name="WEBSITE" />.</translation>
 <translation id="2476359652512522418">غير مختارة</translation>
 <translation id="2497852260688568942">تم إيقاف المزامنة من قِبل المشرف</translation>
@@ -583,6 +584,7 @@
 <translation id="6144589619057374135">‏فتح {url}$ في وضع التصفُّح المتخفي</translation>
 <translation id="6149061208933997199">استخدام كلمة المرور</translation>
 <translation id="6159839020698489198">اختياري</translation>
+<translation id="6173386249456979368">‏يوفّر لك هذا الخيار حماية استباقية سريعة من الإضافات وعمليات التنزيل والمواقع الإلكترونية الضارة، كما يحذّرك من اختراق كلمات المرور. يتطلّب هذا الخيار إرسال بيانات التصفّح إلى Google.</translation>
 <translation id="6177442314419606057">‏البحث في Chrome</translation>
 <translation id="6184086493125982861">إظهار علامات التبويب</translation>
 <translation id="6187302354554850004">تاريخ آخر مزامنة: <ph name="LAST_USED_TIME" /></translation>

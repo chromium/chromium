@@ -168,6 +168,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2421044535038393232">Keep editing</translation>
 <translation id="2434405374328098816">You already saved a password for '<ph name="USERNAME" />' at <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Show password</translation>
+<translation id="2469960372084740698">Turn off Safe Browsing?</translation>
 <translation id="2473876017985765807">You already saved a password for <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Not selected</translation>
 <translation id="2497852260688568942">Sync is disabled by your administrator</translation>
@@ -582,6 +583,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6144589619057374135">Open ${url} in Incognito</translation>
 <translation id="6149061208933997199">Use Password</translation>
 <translation id="6159839020698489198">optional</translation>
+<translation id="6173386249456979368">Faster, proactive protection against dangerous websites, downloads and extensions. Warns you about password breaches. Requires browsing data to be sent to Google</translation>
 <translation id="6177442314419606057">Search in Chrome</translation>
 <translation id="6184086493125982861">Show Tabs</translation>
 <translation id="6187302354554850004">Last synced: <ph name="LAST_USED_TIME" /></translation>

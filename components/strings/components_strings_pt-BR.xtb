@@ -591,6 +591,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2542106216580219892">Surfe</translation>
 <translation id="2544546346215446551">Seu administrador reiniciou o dispositivo</translation>
 <translation id="2544644783021658368">Documento avulso</translation>
+<translation id="254524874071906077">Definir o Chrome como navegador padrão</translation>
 <translation id="2546283357679194313">Cookies e dados do site</translation>
 <translation id="2547466893236767989">Web design e desenvolvimento</translation>
 <translation id="254947805923345898">O valor da política não é válido.</translation>
@@ -2036,7 +2037,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6665553082534466207">Perfuração tripla no lado direito</translation>
 <translation id="6671697161687535275">Remover sugestão de formulário do Chromium?</translation>
 <translation id="6683717648675961851">Vagas de emprego</translation>
-<translation id="6685834062052613830">Saia e conclua a configuração</translation>
+<translation id="6685834062052613830">Saia e termine a configuração</translation>
 <translation id="6687335167692595844">Tamanho da fonte solicitado</translation>
 <translation id="6687696737818665306">Atuação e teatro</translation>
 <translation id="6688743156324860098">Atualizar…</translation>
@@ -2526,6 +2527,7 @@ Mais detalhes:
 <translation id="7998269595945679889">Botão "Abrir guia anônima": pressione "Enter" para abrir uma nova guia anônima e navegar com privacidade</translation>
 <translation id="800218591365569300">Tente fechar outras guias ou programas para liberar memória.</translation>
 <translation id="8004582292198964060">Navegador</translation>
+<translation id="8009225694047762179">Gerenciar senha</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Este cartão e o endereço de faturamento dele serão salvos. Você poderá usá-lo quando a conta <ph name="USER_EMAIL" /> estiver conectada.}one{Este cartão e o endereço de faturamento dele serão salvos. Você poderá usá-lo quando a conta <ph name="USER_EMAIL" /> estiver conectada.}other{Estes cartões e os endereços de faturamento deles serão salvos. Você poderá usá-los quando a conta <ph name="USER_EMAIL" /> estiver conectada.}}</translation>
 <translation id="8025119109950072390">Invasores nesse site podem induzir você a fazer algo perigoso, como instalar um software ou revelar suas informações pessoais (por exemplo, senhas, números de telefone ou cartões de crédito).</translation>
 <translation id="8026334261755873520">Limpar dados de navegação</translation>

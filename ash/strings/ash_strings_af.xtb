@@ -167,6 +167,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1954252331066828794">Skermopname is voltooi</translation>
 <translation id="1957958912175573503">Stel jou taal</translation>
+<translation id="1961239773406905488">Kameravoorskou is versteek</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Sluitskerm</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -184,6 +185,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2047639699071423250">Voeg sleutelidee by</translation>
 <translation id="2049240716062114887">Lessenaarnaam is verander na <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Portret</translation>
+<translation id="2064048859448024834">Kameravoorskou is aan</translation>
 <translation id="2066708475850724665">Stop vergrootglas</translation>
 <translation id="2067602449040652523">Sleutelbordhelderheid</translation>
 <translation id="2078034614700056995">Swiep met vier vingers regs om na die volgende lessenaar toe te wissel</translation>
@@ -440,7 +442,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3630697955794050612">af</translation>
 <translation id="3631369015426612114">Laat kennisgewings van die volgende af toe</translation>
 <translation id="3638400994746983214">Wissel privaatheidskerm. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171">Stoor <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Tyd vir 'n opdatering</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Bestuurde gebruiker</translation>
 <translation id="3680908746918359504">Vee alle merkers uit</translation>
@@ -488,6 +489,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Verander toestel binne 1 minuut na vorige weergawe}other{Verander toestel binne # minute na vorige weergawe}}</translation>
 <translation id="3923494859158167397">Geen selnetwerke is opgestel nie</translation>
 <translation id="3932043219784172185">Geen toestel is gekoppel nie</translation>
+<translation id="3934456833412894880">Aanpasbare laaiproses is aan. Jou battery sal op 80% bly om batterylewe te verleng, en heeltemal laai wanneer jy dit nodig het.</translation>
 <translation id="3943857333388298514">Plak</translation>
 <translation id="394485226368336402">Oudio-instellings</translation>
 <translation id="3945319193631853098">Tik om opstelling te voltooi</translation>
@@ -531,7 +533,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4215497585250573029">VPN-instellings</translation>
 <translation id="4217571870635786043">Diktee</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />; geïnstalleerde program; onderbreek</translation>
-<translation id="4223947355273782392">Stoor <ph name="NAME" /> in <ph name="EMAIL" /> om vinniger met jou ander toestelle saamgebind te word</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Maak instellings oop</translation>
 <translation id="4250229828105606438">Skermkiekie</translation>
@@ -909,7 +910,6 @@ Nuwe installasie</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />-, <ph name="APP_2_TITLE" />- en ander kennisgewings word versteek omdat kykbeskerming aan is</translation>
 <translation id="6627638273713273709">Soek+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> wil die mikrofoon gebruik</translation>
-<translation id="6630773993843701741">Maak Bluetooth-instellings oop om die toestel handmatig saam te bind</translation>
 <translation id="6637729079642709226">Verander tyd</translation>
 <translation id="6641720045729354415">Wissel intydse onderskrif. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> wil bevestig dat dit jy is</translation>
@@ -1019,7 +1019,6 @@ Nuwe installasie</translation>
 <translation id="7348093485538360975">Opskerm-sleutelbord</translation>
 <translation id="735745346212279324">VPN ontkoppel</translation>
 <translation id="7360036564632145207">As jy jou datatoegangbeskerming vir randtoestelle se instelling verander, kan dit werkverrigting optimeer</translation>
-<translation id="7366890467478514168">Koppel <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Neem venster op</translation>
 <translation id="7377169924702866686">Hoofletterslot is aan.</translation>
 <translation id="7377481913241237033">Koppel met 'n kode</translation>
@@ -1130,7 +1129,6 @@ Nuwe installasie</translation>
 <translation id="7955885781510802139">Hoëkontrasmodus</translation>
 <translation id="7968693143708939792">Kies vouer …</translation>
 <translation id="7977927628060636163">Soek tans selnetwerke …</translation>
-<translation id="7980780401175799550">Probeer nuwe maniere om Chrome-bedryfstelsel te gebruik</translation>
 <translation id="7982789257301363584">Netwerk</translation>
 <translation id="7984197416080286869">Te veel vingerafdrukpogings</translation>
 <translation id="7994370417837006925">Veelvuldige aanmelding</translation>

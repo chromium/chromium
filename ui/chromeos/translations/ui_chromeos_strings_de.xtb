@@ -16,7 +16,7 @@
     <ph name="LINE_BREAK1" />
     Nicht genügend Platz im lokalen Speicher. Zusätzlich <ph name="FILE_SIZE" /> erforderlich.
     <ph name="LINE_BREAK2" />
-    Wählen Sie weniger Fotos aus.</translation>
+    Wähle weniger Fotos aus.</translation>
 <translation id="1150565364351027703">Sonnenbrille</translation>
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Katalanisch</translation>
@@ -96,7 +96,7 @@
 <translation id="174937106936716857">Gesamtanzahl der Dateien</translation>
 <translation id="1773212559869067373">Lokale Ablehnung des Authentifizierungszertifikats</translation>
 <translation id="1775381402323441512">Videoinformationen</translation>
-<translation id="180035236176489073">Sie müssen online sein, um auf diese Dateien zugreifen zu können.</translation>
+<translation id="180035236176489073">Du musst online sein, um auf diese Dateien zugreifen zu können.</translation>
 <translation id="1807938677607439181">Alle Dateien</translation>
 <translation id="1810764548349082891">Keine Vorschau verfügbar</translation>
 <translation id="1812302367230252929">Amharisch (Transliteration)</translation>
@@ -131,9 +131,9 @@
 <translation id="2079545284768500474">Rückgängig machen</translation>
 <translation id="2084108471225856927">Geräteeinstellungen</translation>
 <translation id="2084809735218147718">Person, die in Zeichensprache „danke“ sagt</translation>
-<translation id="2085470240340828803">Eine Datei mit dem Namen "<ph name="FILENAME" />" existiert bereits. Was möchten Sie tun?</translation>
+<translation id="2085470240340828803">Eine Datei mit dem Namen „<ph name="FILENAME" />“ existiert bereits. Was möchtest du tun?</translation>
 <translation id="2088690981887365033">VPN-Netzwerk</translation>
-<translation id="2122305276694332719">Wenn automatisch eine Verbindung zu einem verborgenen Netzwerk hergestellt wird, können andere Ihr Gerät sowie einige Netzwerkeinstellungen sehen. Dies wird nicht empfohlen.</translation>
+<translation id="2122305276694332719">Wenn automatisch eine Verbindung zu einem verborgenen Netzwerk hergestellt wird, können andere dein Gerät sowie einige Netzwerkeinstellungen sehen. Dies wird nicht empfohlen.</translation>
 <translation id="2125607626296734455">Khmer</translation>
 <translation id="2139545522194199494">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von deinem Administrator verwaltet, Verbinden</translation>
 <translation id="2141347188420181405">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Signalstärke <ph name="SIGNAL_STRENGTH" /> %, vom Administrator blockiert, Details</translation>
@@ -157,7 +157,7 @@
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881">"<ph name="VOLUME_NAME" />" wurde ausgeworfen.</translation>
 <translation id="2307462900900812319">Netzwerk konfigurieren</translation>
-<translation id="2325650632570794183">Dieser Dateityp wird nicht unterstützt. Finden Sie im Chrome Web Store eine App, mit der Sie diesen Dateityp öffnen können.</translation>
+<translation id="2325650632570794183">Dieser Dateityp wird nicht unterstützt. Finde im Chrome Web Store eine App, mit der du diesen Dateityp öffnen kannst.</translation>
 <translation id="2326539130272988168">Bulgarisch</translation>
 <translation id="2352947182261340447">Nicht genug Platz im lokalen Speicher.</translation>
 <translation id="23721837607121582">Mobiles Profil herunterladen, Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -195,11 +195,11 @@
 <translation id="2617342710774726426">SIM-Karte ist gesperrt</translation>
 <translation id="2620090360073999360">Google Drive ist momentan nicht erreichbar.</translation>
 <translation id="2621713457727696555">Gesichert</translation>
-<translation id="2638942478653899953">Google Drive konnte nicht erreicht werden. Bitte <ph name="BEGIN_LINK" />melden Sie sich ab<ph name="END_LINK" /> und melden Sie sich dann erneut an.</translation>
+<translation id="2638942478653899953">Google Drive konnte nicht erreicht werden. Bitte <ph name="BEGIN_LINK" />melde dich ab<ph name="END_LINK" /> und melde dich dann erneut an.</translation>
 <translation id="2649120831653069427">Regenbogenfisch</translation>
 <translation id="2663066752008346276">Burmesisch (Myanmar) mit Myansan-Tastatur</translation>
 <translation id="2664412712123763093">Dateispeicherort</translation>
-<translation id="2672394958563893062">Ein Fehler ist aufgetreten. Klicken Sie, um von vorn zu beginnen.</translation>
+<translation id="2672394958563893062">Ein Fehler ist aufgetreten. Klicke, um von vorn zu beginnen.</translation>
 <translation id="2676946222714718093">Läuft gerade auf:</translation>
 <translation id="2718540689505416944">App mit Linux installieren</translation>
 <translation id="2719020180254996569">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Details</translation>
@@ -223,7 +223,7 @@
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estnisch</translation>
 <translation id="2938685643439809023">Mongolisch</translation>
-<translation id="2943503720238418293">Verwenden Sie einen kürzeren Namen</translation>
+<translation id="2943503720238418293">Verwende einen kürzeren Namen</translation>
 <translation id="2949781154072577687">"<ph name="DRIVE_NAME" />" wird formatiert...</translation>
 <translation id="2951236788251446349">Qualle</translation>
 <translation id="2984337792991268709">Heute <ph name="TODAY_DAYTIME" /></translation>
@@ -259,7 +259,7 @@
 <translation id="3248185426436836442">Ausstehend</translation>
 <translation id="3252266817569339921">Französisch</translation>
 <translation id="3253225298092156258">Nicht verfügbar</translation>
-<translation id="3254434849914415189">Wählen Sie eine Standard-App für <ph name="FILE_TYPE" />-Dateien:</translation>
+<translation id="3254434849914415189">Wähle eine Standard-App für <ph name="FILE_TYPE" />-Dateien:</translation>
 <translation id="3255159654094949700">Arabisch</translation>
 <translation id="3264582393905923483">Kontext</translation>
 <translation id="3272909651715601089">„<ph name="PATH" />“ konnte nicht geöffnet werden</translation>
@@ -318,8 +318,8 @@
 <translation id="3737576078404241332">Aus der Seitenleiste entfernen</translation>
 <translation id="3741243925913727067">Fotos und Videos des Mediengeräts auf Google Drive sichern</translation>
 <translation id="3749289110408117711">Dateiname</translation>
-<translation id="3780536599611287598">Sie sind nicht dazu berechtigt, Dateien in "<ph name="FOLDER_NAME" />" zu verschieben.</translation>
-<translation id="3786301125658655746">Sie sind offline</translation>
+<translation id="3780536599611287598">Du bist nicht dazu berechtigt, Dateien in "<ph name="FOLDER_NAME" />" zu verschieben.</translation>
+<translation id="3786301125658655746">Du bist offline</translation>
 <translation id="3789841737615482174">Installieren</translation>
 <translation id="3793469551756281394">Noch ungefähr <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
 <translation id="3798449238516105146">Version</translation>
@@ -362,7 +362,7 @@
 <translation id="4197674956721858839">Auswahl zippen</translation>
 <translation id="4202378258276439759">Spanisch (Lateinamerika)</translation>
 <translation id="4202977638116331303">Georgisch</translation>
-<translation id="421017592316736757">Sie müssen online sein, um auf diese Datei zugreifen zu können.</translation>
+<translation id="421017592316736757">Du musst online sein, um auf diese Datei zugreifen zu können.</translation>
 <translation id="4212740939091998969">Es existiert bereits ein Ordner mit dem Namen "<ph name="FOLDER_NAME" />". Wählen Sie bitte einen anderen Namen aus.</translation>
 <translation id="4215448920900139318"><ph name="FILE_COUNT" /> werden gesichert</translation>
 <translation id="4218274196133425560">Ausnahme für <ph name="HOST_NAME" /> entfernen</translation>
@@ -468,7 +468,7 @@
 <translation id="5004584466530475658"><ph name="FILE_COUNT" /> neue Fotos</translation>
 <translation id="5010406651457630570">Computer</translation>
 <translation id="5011233892417813670">Chromebook</translation>
-<translation id="5024856940085636730">Ein Vorgang dauert länger als erwartet. Möchten Sie ihn abbrechen?</translation>
+<translation id="5024856940085636730">Ein Vorgang dauert länger als erwartet. Möchtest du ihn abbrechen?</translation>
 <translation id="5036159836254554629">Freigabe für Parallels Desktop verwalten</translation>
 <translation id="5038625366300922036">Mehr...</translation>
 <translation id="5044852990838351217">Armenisch</translation>
@@ -515,7 +515,7 @@
 <translation id="5317780077021120954">Speichern</translation>
 <translation id="5318819489018851358">Mit Linux teilen</translation>
 <translation id="5323213332664049067">Lateinamerikanisch</translation>
-<translation id="5330145655348521461">Diese Dateien wurden auf einem anderen Desktop geöffnet. Wechseln Sie zu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), um sie anzusehen.</translation>
+<translation id="5330145655348521461">Diese Dateien wurden auf einem anderen Desktop geöffnet. Wechsle zu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), um sie anzusehen.</translation>
 <translation id="5330512191124428349">Informationen ansehen</translation>
 <translation id="5335458522276292100"><ph name="FILE_COUNT" /> werden auf <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> gesichert</translation>
 <translation id="535792325654997756">Person mit Katzen</translation>
@@ -551,7 +551,7 @@
 <translation id="5678784840044122290">Die Linux-Anwendung ist in deinem Terminal verfügbar. Möglicherweise siehst du auch ein Symbol in deinem Launcher.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Die Verbindung zu einem Archiv oder einem virtuellen Datenträger kann nicht getrennt werden<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
-   Schließen Sie alle Dateien in dem Archiv bzw. auf dem virtuellen Datenträger und probieren Sie es dann noch einmal.</translation>
+   Schließe alle Dateien in dem Archiv bzw. auf dem virtuellen Datenträger und probiere es dann noch einmal.</translation>
 <translation id="5691596662111998220">Hoppla, <ph name="FILE_NAME" /> existiert nicht mehr.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, Entsperren</translation>
 <translation id="5700087501958648444">Audioinformationen</translation>
@@ -604,7 +604,7 @@
 <translation id="613750717151263950">Japanisch mit US-Tastatur</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, nicht verbunden</translation>
 <translation id="6146563240635539929">Videos</translation>
-<translation id="6150853954427645995">Wenn Sie diese Datei zur Offline-Nutzung speichern möchten, gehen Sie online, klicken Sie mit der rechten Maustaste auf die Datei und wählen Sie die Option "<ph name="OFFLINE_CHECKBOX_NAME" />" aus.</translation>
+<translation id="6150853954427645995">Wenn du diese Datei zur Offline-Nutzung speichern möchtest, gehe online, klicke mit der rechten Maustaste auf die Datei und wähle die Option „<ph name="OFFLINE_CHECKBOX_NAME" />“ aus.</translation>
 <translation id="6164412158936057769">Schmetterlinge</translation>
 <translation id="6165508094623778733">Weitere Informationen</translation>
 <translation id="6170470584681422115">Sandwich</translation>
@@ -612,7 +612,7 @@
 <translation id="6189412234224385711">Öffnen mit <ph name="EXTENSION_NAME" /></translation>
 <translation id="6198252989419008588">PIN ändern</translation>
 <translation id="6199801702437275229">Speicherplatzangaben werden abgerufen...</translation>
-<translation id="6205710420833115353">Einige Vorgänge dauern länger als erwartet. Möchten Sie sie abbrechen?</translation>
+<translation id="6205710420833115353">Einige Vorgänge dauern länger als erwartet. Möchtest du sie abbrechen?</translation>
 <translation id="6220423280121890987">Punjabi</translation>
 <translation id="6224240818060029162">Dänisch</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> formatieren</translation>
@@ -633,7 +633,7 @@
 <translation id="6358884629796491903">Drache</translation>
 <translation id="636254897931573416">Ungültige Übereinstimmung für das Domain-Suffix</translation>
 <translation id="6367976544441405720">Transporter</translation>
-<translation id="637062427944097960">Diese Datei wurde auf einem anderen Desktop geöffnet. Wechseln Sie zu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), um die Datei anzusehen.</translation>
+<translation id="637062427944097960">Diese Datei wurde auf einem anderen Desktop geöffnet. Wechsle zu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), um die Datei anzusehen.</translation>
 <translation id="6394388407447716302">Schreibgeschützt</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> Elemente</translation>
 <translation id="6398765197997659313">Vollbildmodus beenden</translation>
@@ -704,7 +704,7 @@
 <translation id="6978611942794658017">Diese Datei wurde für Computer entwickelt, die mit Windows-Software betrieben werden. Die Datei ist nicht kompatibel mit deinem Chrome OS-Gerät. Suche im Chrome Web Store nach einer geeigneten Ersatz-App.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Schwedisch</translation>
-<translation id="6990081529015358884">Sie haben keinen freien Speicherplatz mehr.</translation>
+<translation id="6990081529015358884">Du hast keinen freien Speicherplatz mehr.</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> Ordner ausgewählt</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Installation fehlgeschlagen</translation>
@@ -732,7 +732,7 @@
 <translation id="7248671827512403053">App</translation>
 <translation id="7256405249507348194">Unbekannter Fehler: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Verfügbare Dienste</translation>
-<translation id="7283041136720745563">Ihr Google Drive-Kontingent ist zu klein.</translation>
+<translation id="7283041136720745563">Dein Google Drive-Kontingent ist zu klein.</translation>
 <translation id="7294063083760278948">Telugu (Transliteration)</translation>
 <translation id="7295662345261934369">Mit anderen teilen</translation>
 <translation id="7297443947353982503">Nutzername/Passwort falsch oder Fehler bei EAP-Authentifizierung</translation>
@@ -768,7 +768,7 @@
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> wird offline bereitgestellt</translation>
 <translation id="7600126690270271294">Serbisch</translation>
 <translation id="7603724359189955920">Gitter</translation>
-<translation id="7627790789328695202">Hoppla, <ph name="FILE_NAME" /> existiert bereits. Geben Sie einen anderen Namen ein und versuchen Sie es erneut.</translation>
+<translation id="7627790789328695202">Hoppla, <ph name="FILE_NAME" /> existiert bereits. Gib einen anderen Namen ein und versuche es erneut.</translation>
 <translation id="7628656427739290098">Zu <ph name="PERCENT" /> % abgeschlossen.</translation>
 <translation id="7649070708921625228">Hilfe</translation>
 <translation id="7654209398114106148"><ph name="NUMBER_OF_ITEMS" /> Elemente werden verschoben...</translation>
@@ -783,13 +783,13 @@
 <translation id="7724603315864178912">Ausschneiden</translation>
 <translation id="7730494089396812859">Details der Cloudsicherung anzeigen</translation>
 <translation id="7732111077498238432">Das Netzwerk ist richtliniengesteuert</translation>
-<translation id="7748626145866214022">Auf der Aktionsleiste sind weitere Optionen verfügbar. Drücken Sie Alt + A, um den Fokus auf die Aktionsleiste zu setzen.</translation>
+<translation id="7748626145866214022">Auf der Aktionsleiste sind weitere Optionen verfügbar. Drücke Alt + A, um den Fokus auf die Aktionsleiste zu setzen.</translation>
 <translation id="7760449188139285140">Chinesisch (Wubi)</translation>
 <translation id="7765158879357617694">Verschieben</translation>
 <translation id="7774365994322694683">Vogel</translation>
-<translation id="7788080748068240085">Wenn Sie "<ph name="FILE_NAME" />" offline speichern möchten, müssen Sie <ph name="TOTAL_FILE_SIZE" /> zusätzlichen Speicherplatz freigeben:<ph name="MARKUP_1" />
-    <ph name="MARKUP_2" />Entfernen Sie Dateien, auf die Sie nicht mehr offline zugreifen müssen.<ph name="MARKUP_3" />
-    <ph name="MARKUP_4" />Löschen Sie Dateien aus dem Ordner "Downloads".<ph name="MARKUP_5" /></translation>
+<translation id="7788080748068240085">Wenn du „<ph name="FILE_NAME" />“ offline speichern möchtest, musst du <ph name="TOTAL_FILE_SIZE" /> zusätzlichen Speicherplatz freigeben:<ph name="MARKUP_1" />
+    <ph name="MARKUP_2" />Entferne Dateien, auf die du nicht mehr offline zugreifen musst.<ph name="MARKUP_3" />
+    <ph name="MARKUP_4" />Lösche Dateien aus dem Ordner „Downloads“.<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">Gerät formatieren</translation>
 <translation id="7799329977874311193">HTML-Dokument</translation>
 <translation id="7801354353640549019">Chromebooks</translation>
@@ -798,9 +798,9 @@
 <translation id="78104721049218340">Thai mit Kedmanee-Tastatur</translation>
 <translation id="7821462174190887129"><ph name="FILE_COUNT" /> gefunden.
     <ph name="LINE_BREAK1" />
-    Ihr Google Drive-Kontingent ist zu klein. Zusätzliche <ph name="FILE_SIZE" /> sind erforderlich.
+    Dein Google Drive-Kontingent ist zu klein. Zusätzliche <ph name="FILE_SIZE" /> sind erforderlich.
     <ph name="LINE_BREAK2" />
-    Wählen Sie weniger Fotos aus.</translation>
+    Wähle weniger Fotos aus.</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Fehler bei der Netzwerkkonfiguration</translation>
 <translation id="7839804798877833423">Zum Abrufen dieser Dateien werden etwa <ph name="FILE_SIZE" /> mobile Daten benötigt.</translation>
@@ -847,7 +847,7 @@
 <translation id="8179976553408161302">Eingabetaste</translation>
 <translation id="8193175696669055101">Gerätemodell</translation>
 <translation id="8208580316430297579">Artwork</translation>
-<translation id="8223479393428528563">Wenn Sie diese Dateien zur Offline-Nutzung speichern möchten, gehen Sie online, klicken Sie mit der rechten Maustaste auf die Dateien und wählen Sie die Option "<ph name="OFFLINE_CHECKBOX_NAME" />" aus.</translation>
+<translation id="8223479393428528563">Wenn du diese Dateien zur Offline-Nutzung speichern möchtest, gehe online, klicke mit der rechten Maustaste auf die Dateien und wähle die Option „<ph name="OFFLINE_CHECKBOX_NAME" />“ aus.</translation>
 <translation id="8249296373107784235">Abbrechen</translation>
 <translation id="8261506727792406068">Löschen</translation>
 <translation id="8261561378965667560">Chinesisch (Array)</translation>
@@ -946,7 +946,7 @@
 <translation id="908378762078012445">Russisch mit phonetischer Tastatur (AATSEEL)</translation>
 <translation id="9099674669267916096">Seitenzahl</translation>
 <translation id="9100610230175265781">Passphrase erforderlich</translation>
-<translation id="9110990317705400362">Wir arbeiten stets daran, das Surfen für dich sicherer zu machen. Früher konntest du von jeder beliebigen Website aufgefordert werden, deinem Browser eine Erweiterung hinzuzufügen. In neueren Versionen von Google Chrome musst du Chrome ausdrücklich mitteilen, dass du diese Erweiterungen installieren möchtest, indem du sie über die Seite "Erweiterungen" hinzufügst. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
+<translation id="9110990317705400362">Wir arbeiten stets daran, das Surfen für dich sicherer zu machen. Früher konntest du von jeder beliebigen Website aufgefordert werden, deinem Browser eine Erweiterung hinzuzufügen. In neueren Versionen von Google Chrome musst du Chrome ausdrücklich mitteilen, dass du diese Erweiterungen installieren möchtest, indem du sie über die Seite „Erweiterungen“ hinzufügst. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Entsperren</translation>
 <translation id="912419004897138677">Codec</translation>
 <translation id="9130775360844693113">Mitglieder von "<ph name="DESTINATION_NAME" />" erhalten Zugriff auf diese Dateien.</translation>

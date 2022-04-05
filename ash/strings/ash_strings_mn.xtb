@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">"<ph name="DEVICE_NAME" />" Bluetooth төхөөрөмж өөр төхөөрөмжтэй хослох зөвшөөрөл хүсэж байна. Энэ ПИН кодыг нөгөө төхөөрөмж дээр оруулна уу. ПИН код: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">Дэлгэцийн видео бичлэгийн хэрэгсэл</translation>
 <translation id="1024261588257374085">Хэсэгчилсэн дэлгэцийн агшныг сонгосон</translation>
+<translation id="1024364763893396229">Өөрийн <ph name="NAME" />-г хадгалах уу?</translation>
 <translation id="1032891413405719768">Мэдрэгч үзэгний батерей бага байна</translation>
 <translation id="1036073649888683237">Мэдэгдлүүдийг удирдахын тулд Тохиргоо руу очно уу</translation>
 <translation id="1036672894875463507">Би танд өдрийн турш туслахад бэлэн Google Туслах тань байна!
@@ -295,6 +296,7 @@
 <translation id="2819276065543622893">Та нэвтрэх хэсгээс яг одоо гарч байна.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" />-г дэмждэггүй. Нягтралыг <ph name="FALLBACK_RESOLUTION" /> болгож өөрчилсөн.</translation>
 <translation id="2825619548187458965">Шельф</translation>
+<translation id="2831035692318564937">Нар мандах хүртэл асаалттай</translation>
 <translation id="2834813915651407382">Саяхан нээсэн</translation>
 <translation id="2841907151129139818">Таблетын горим руу сэлгэсэн</translation>
 <translation id="2844169650293029770">USB-C төхөөрөмж (урд талын портын зүүн тал)</translation>
@@ -441,8 +443,8 @@
 <translation id="3626281679859535460">Цайралт</translation>
 <translation id="3630697955794050612">унтраалттай</translation>
 <translation id="3631369015426612114">Дараахаас ирүүлсэн мэдэгдлүүдийг хүлээн зөвшөөрөх</translation>
+<translation id="3633097874324966332">Төхөөрөмжөө хослуулахын тулд Bluetooth-н тохиргоог нээнэ үү</translation>
 <translation id="3638400994746983214">Нууцлалын дэлгэцийг асаах/унтраах. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171"><ph name="NAME" />-г хадгалах</translation>
 <translation id="3649505501900178324">Шинэчлэлтийн хугацаа хэтэрсэн</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Хяналттай хэрэглэгч</translation>
 <translation id="3680908746918359504">Бүх тэмдэглэгээг арилгах</translation>
@@ -490,6 +492,7 @@
 <translation id="3922427723338465344">{0,plural, =1{Төхөөрөмжийг 1 минутын дотор өмнөх хувилбар луу нь өөрчилнө үү}other{Төхөөрөмжийг # минутын дотор өмнөх хувилбар луу нь өөрчилнө үү}}</translation>
 <translation id="3923494859158167397">Ямар ч мобайл сүлжээ тохируулаагүй</translation>
 <translation id="3932043219784172185">Холбогдсон төхөөрөмж алга</translation>
+<translation id="3934456833412894880">Орчинтой тохируулан цэнэглэх онцлог асаалттай байна. Таны батарейн ажиллах хугацааг уртасгахын тулд батарейг 80% байлгаж, шаардлагатай үед бүрэн цэнэглэнэ.</translation>
 <translation id="3943857333388298514">Хуулан буулгах</translation>
 <translation id="394485226368336402">Аудио тохиргоо</translation>
 <translation id="3945319193631853098">Тохируулгыг дуусгахын тулд товшино уу</translation>
@@ -533,7 +536,6 @@
 <translation id="4215497585250573029">VPN тохиргоо</translation>
 <translation id="4217571870635786043">Заавар</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Суулгасан апп, Түр зогсоосон</translation>
-<translation id="4223947355273782392">Бусад төхөөрөмжтэйгээ илүү хурдан холбохын тулд <ph name="NAME" />-г <ph name="EMAIL" />-д хадгална уу</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Нээлттэй тохиргоо</translation>
 <translation id="4250229828105606438">Дэлгэцийн агшин</translation>
@@ -771,6 +773,7 @@
 <translation id="5744083938413354016">Чирэлтийг товших</translation>
 <translation id="5745612484876805746">Шөнийн гэрэл нь нар жаргахад автоматаар асдаг</translation>
 <translation id="5750765938512549687">Bluetooth унтраалттай байна</translation>
+<translation id="5760866832697883462">Өөрийн <ph name="NAME" />-г холбоно уу</translation>
 <translation id="576341972084747908">Аюултай <ph name="FILENAME" />-г татах</translation>
 <translation id="5763928712329149804">Shelf Party унтраалттай байна.</translation>
 <translation id="576453121877257266">Шөнийн гэрэл асаалттай байна.</translation>
@@ -911,7 +914,6 @@
 <translation id="6625718907317144388">Үзэх хамгаалалт асаалттай тул <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> болон бусад мэдэгдлийг нуусан</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> микрофон ашиглахыг хүсэж байна</translation>
-<translation id="6630773993843701741">Төхөөрөмжийг гар аргаар хослуулахын тулд Bluetooth-н тохиргоог нээнэ үү</translation>
 <translation id="6637729079642709226">Цагийг өөрчлөх</translation>
 <translation id="6641720045729354415">Шууд тайлбарыг унтраана/асаана уу. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> таныг мөн болохыг баталгаажуулахыг хүсэж байна</translation>
@@ -957,6 +959,7 @@
 <translation id="6886172995547742638">Таны <ph name="DEVICE_TYPE" />-н гүйцэтгэл буурч болзошгүй. Баталгаажсан <ph name="PREFERRED_MINIMUM_POWER" />Вт эсвэл түүнээс дээш чадалтай USB-C тэжээлийн адаптерыг ашиглана уу.</translation>
 <translation id="688631446150864480">Цонхыг сэлгэхийн тулд Доош сум товчийг дарна уу</translation>
 <translation id="6896758677409633944">Хуулах</translation>
+<translation id="6901883536534621389">Шилжихийн тулд зангаануудыг туршиж үзнэ үү</translation>
 <translation id="6919251195245069855">Таны ухаалаг картыг таньж чадсангүй. Дахин оролдоно уу.</translation>
 <translation id="6921188888306725546">Товчлуурын шууд холбооснуудыг сайжруулсан</translation>
 <translation id="6931576957638141829">Дараахад хадгалах</translation>
@@ -1021,7 +1024,6 @@
 <translation id="7348093485538360975">Дэлгэцэн дээрх компьютерийн гар</translation>
 <translation id="735745346212279324">VPN салгагдсан</translation>
 <translation id="7360036564632145207">Та дагалдах төхөөрөмжүүдийн тохиргооны өгөгдлийн хандалтын хамгаалалтаа өөрчилснөөр гүйцэтгэлийг оновчлох боломжтой</translation>
-<translation id="7366890467478514168"><ph name="NAME" />-д холбогдох</translation>
 <translation id="7371404428569700291">Цонхыг бичих</translation>
 <translation id="7377169924702866686">Caps Lock идэвхжсэн байна.</translation>
 <translation id="7377481913241237033">Кодоор холбогдох</translation>
@@ -1132,9 +1134,9 @@
 <translation id="7955885781510802139">Өндөр ялгаралтай горим</translation>
 <translation id="7968693143708939792">Фолдер сонгох...</translation>
 <translation id="7977927628060636163">Мобайл сүлжээг хайж байна...</translation>
-<translation id="7980780401175799550">Chrome үйлдлийн системд шилжих шинэ аргуудыг туршиж үзээрэй</translation>
 <translation id="7982789257301363584">Сүлжээ</translation>
 <translation id="7984197416080286869">Хурууны хээг хэт олон удаа амжилтгүй орууллаа</translation>
+<translation id="798779949890829624">Энэ тохиргоог таны администратор удирддаг</translation>
 <translation id="7994370417837006925">Олон тооны нэвтрэлт</translation>
 <translation id="7995804128062002838">Дэлгэцийн зургийг авч чадсангүй</translation>
 <translation id="8000066093800657092">Ямар ч сүлжээ алга байна</translation>
@@ -1162,6 +1164,7 @@
 <translation id="813913629614996137">Эхлүүлж байна…</translation>
 <translation id="8142441511840089262">2 товших</translation>
 <translation id="8142699993796781067">Хувийн сүлжээ</translation>
+<translation id="8144760705599030999">Бусад төхөөрөмжтэйгээ илүү хурдан хослуулахын тулд өөрийн <ph name="NAME" />-г <ph name="EMAIL" />-д хадгална уу</translation>
 <translation id="8152092012181020186">Хаахын тулд Ctrl + W дээр дарна уу.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, Автоматаар гүйцээх</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Энэ тохиргоог таны администратор удирддаг.</translation>
@@ -1292,6 +1295,7 @@
 <translation id="9000771174482730261">ХАДГАЛАХ САНГ УДИРДАХ</translation>
 <translation id="9017320285115481645">Family Link-н эцэг эхийн нэвтрэх кодоо оруулна уу.</translation>
 <translation id="9024331582947483881">бүтэн дэлгэц</translation>
+<translation id="9030319654231318877">Нар жаргах хүртэл унтраалттай</translation>
 <translation id="9034924485347205037">Linux-н файл</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" />-н тохиргоог нээх</translation>
 <translation id="9059834730836941392">Мэдэгдлийг буулгах</translation>
@@ -1311,6 +1315,7 @@
 <translation id="9099154003160514616">Lacros-н шинэчлэлт боломжтой байна</translation>
 <translation id="9100887602489003640">Профайл нэмж байна. Цөөн хэдэн минут хүлээнэ үү.</translation>
 <translation id="9105450214093926548">Lacros хөтчийг ажиллуулж байх үед хоёр дахь хэрэглэгч нэвтрэхийг дэмждэггүй. Оронд нь Lacros-н хоёр дахь хөтчийн профайлыг ашиглах эсвэл Lacros-г хаагаад дахин оролдоно уу.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> эсвэл <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Хамгаалалттай контентыг бичих боломжгүй</translation>
 <translation id="9161053988251441839">САНАЛ БОЛГОСОН АПП</translation>
 <translation id="9166331175924255663">Ойролцоо хуваалцах онцлог өндөр харагдцыг унтраана/асаана.</translation>

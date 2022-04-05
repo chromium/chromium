@@ -440,7 +440,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3630697955794050612">desaktibatuta</translation>
 <translation id="3631369015426612114">Onartu hauen jakinarazpenak</translation>
 <translation id="3638400994746983214">Aktibatu/Desaktibatu pribatutasun-pantaila. <ph name="STATE_TEXT" />.</translation>
-<translation id="3640092422335864171">Gorde <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Eguneratze bat dago egiteke</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />, erabiltzaile kudeatua</translation>
 <translation id="3680908746918359504">Garbitu markatzaile guztiak</translation>
@@ -488,6 +487,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="3922427723338465344">{0,plural, =1{Itzuli gailuaren aurreko bertsiora minutu bat barru}other{Itzuli gailuaren aurreko bertsiora # minutu barru}}</translation>
 <translation id="3923494859158167397">Ez da konfiguratu sare mugikorrik</translation>
 <translation id="3932043219784172185">Ez dago gailurik konektatuta</translation>
+<translation id="3934456833412894880">Karga egokitua aktibatuta dago. Bateria % 80ra kargatuta mantenduko da haren iraupena luzatzeko, eta erabat kargatuko halakorik behar duzunean.</translation>
 <translation id="3943857333388298514">Itsatsi</translation>
 <translation id="394485226368336402">Audio-ezarpenak</translation>
 <translation id="3945319193631853098">Sakatu hau konfiguratzen amaitzeko</translation>
@@ -531,7 +531,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4215497585250573029">VPN ezarpenak</translation>
 <translation id="4217571870635786043">Diktaketa</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, instalatutako aplikazioa, pausatuta</translation>
-<translation id="4223947355273782392">Gainerako gailuekin bizkorrago parekatu ahal izateko, gorde <ph name="NAME" /> izeneko gailua <ph name="EMAIL" /> helbideari dagokion kontuan</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Ireki ezarpenak</translation>
 <translation id="4250229828105606438">Pantaila-argazkia</translation>
@@ -909,7 +908,6 @@ Berriki instalatu da</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> eta beste aplikazio baten jakinarazpenak ezkutatuta daude ikusteko babesa aktibatuta dagoelako</translation>
 <translation id="6627638273713273709">Bilatu + Maius + K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> aplikazioak mikrofonoa erabili nahi du</translation>
-<translation id="6630773993843701741">Ireki Bluetooth-aren ezarpenak gailua eskuz parekatzeko</translation>
 <translation id="6637729079642709226">Aldatu ordua</translation>
 <translation id="6641720045729354415">Aldatu Istanteko azpitituluak eginbidearen egoera. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> webguneak zeu zarela berretsi nahi du</translation>
@@ -1019,7 +1017,6 @@ Berriki instalatu da</translation>
 <translation id="7348093485538360975">Pantailako teklatua</translation>
 <translation id="735745346212279324">VPN deskonektatu da</translation>
 <translation id="7360036564632145207">Gailu periferikoen datuetarako sarbidea babesteko ezarpenak aldatzen badituzu, errendimendua optimizatuko duzu</translation>
-<translation id="7366890467478514168">Konektatu <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Grabatu leihoa</translation>
 <translation id="7377169924702866686">Maiuskula-blokeoa aktibatuta dago.</translation>
 <translation id="7377481913241237033">Konektatu kode bat erabilita</translation>
@@ -1130,7 +1127,6 @@ Berriki instalatu da</translation>
 <translation id="7955885781510802139">Kontraste handiko modua</translation>
 <translation id="7968693143708939792">Hautatu karpeta bat…</translation>
 <translation id="7977927628060636163">Sare mugikorren bila…</translation>
-<translation id="7980780401175799550">Probatu Chrome OS-n nabigatzeko modu berriak</translation>
 <translation id="7982789257301363584">Sarea</translation>
 <translation id="7984197416080286869">Saiakera gehiegi egin dira hatz-markarekin</translation>
 <translation id="7994370417837006925">Saio-hasiera anitza</translation>
