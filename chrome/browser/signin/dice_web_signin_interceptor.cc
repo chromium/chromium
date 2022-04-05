@@ -96,51 +96,6 @@ bool HasNoBrowser(content::WebContents* web_contents) {
   return chrome::FindBrowserWithWebContents(web_contents) == nullptr;
 }
 
-// Returns true if enterprise separation is required.
-// Returns false is enterprise separation is not required.
-// Returns no value if info is required to determine if enterprise separation is
-// required.
-// If `managed_account_profile_level_signin_restriction` is `absl::nullopt` then
-// the user cloud policy value of ManagedAccountsSigninRestriction has not yet
-// been fetched. If it is an empty string, then the value has been fetched but
-// no policy was set.
-absl::optional<bool> EnterpriseSeparationMaybeRequired(
-    Profile* profile,
-    const std::string& email,
-    signin::IdentityManager* identity_manager,
-    bool is_new_account_interception,
-    absl::optional<std::string>
-        managed_account_profile_level_signin_restriction) {
-  // No enterprise separation required for consumer accounts.
-  if (policy::BrowserPolicyConnector::IsNonEnterpriseUser(email))
-    return false;
-
-  auto intercepted_account_info =
-      identity_manager->FindExtendedAccountInfoByEmailAddress(email);
-  // If the account info is not found, we need to wait for the info to be
-  // available.
-  if (!intercepted_account_info.IsValid())
-    return absl::nullopt;
-  // If the intercepted account is not managed, no interception required.
-  if (!intercepted_account_info.IsManaged())
-    return false;
-  // If `profile` requires enterprise profile separation, return true.
-  if (signin_util::ProfileSeparationEnforcedByPolicy(
-          profile, managed_account_profile_level_signin_restriction.value_or(
-                       std::string()))) {
-    return true;
-  }
-  // If we still do not know if profile separation is required, the account
-  // level policies for the intercepted account must be fetched if possible.
-  if (is_new_account_interception &&
-      !managed_account_profile_level_signin_restriction.has_value() &&
-      g_browser_process->system_network_context_manager()) {
-    return absl::nullopt;
-  }
-
-  return false;
-}
-
 }  // namespace
 
 ScopedDiceWebSigninInterceptionBubbleHandle::
@@ -196,7 +151,7 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
   // Wait for more account info is enterprise separation is required or if more
   // info is needed.
   if (EnterpriseSeparationMaybeRequired(
-          profile_, email, identity_manager_, is_new_account,
+          email, is_new_account,
           /*managed_account_profile_level_signin_restriction=*/absl::nullopt)
           .value_or(true)) {
     return absl::nullopt;
@@ -495,6 +450,17 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
   bool force_profile_separation =
       ShouldEnforceEnterpriseProfileSeparation(info);
 
+  // This is normally checked in GetHeuristicOutcome() but that's not possible
+  // for enterprise accounts where we need to wait for policies, that is why we
+  // double check here.
+  if (!force_profile_separation && HasUserDeclinedProfileCreation(info.email)) {
+    RecordSigninInterceptionHeuristicOutcome(
+        SigninInterceptionHeuristicOutcome::
+            kAbortUserDeclinedProfileForAccount);
+    Reset();
+    return;
+  }
+
   if (switch_to_entry) {
     // Propose account switching if we skipped in GetHeuristicOutcome because we
     // returned a nullptr to get more information about forced enterprise
@@ -585,7 +551,7 @@ void DiceWebSigninInterceptor::OnExtendedAccountInfoUpdated(
   // Fetch the ManagedAccountsSigninRestriction policy value for the intercepted
   // account with a timeout.
   if (!EnterpriseSeparationMaybeRequired(
-           profile_, info.email, identity_manager_, new_account_interception_,
+           info.email, new_account_interception_,
            intercepted_account_level_policy_value_)
            .has_value()) {
     FetchAccountLevelSigninRestrictionForInterceptedAccount(
@@ -828,4 +794,41 @@ void DiceWebSigninInterceptor::
   }
   intercepted_account_level_policy_value_ = signin_restriction;
   OnInterceptionReadyToBeProcessed(account_info);
+}
+
+absl::optional<bool>
+DiceWebSigninInterceptor::EnterpriseSeparationMaybeRequired(
+    const std::string& email,
+    bool is_new_account_interception,
+    absl::optional<std::string>
+        managed_account_profile_level_signin_restriction) const {
+  // No enterprise separation required for consumer accounts.
+  if (policy::BrowserPolicyConnector::IsNonEnterpriseUser(email))
+    return false;
+
+  auto intercepted_account_info =
+      identity_manager_->FindExtendedAccountInfoByEmailAddress(email);
+  // If the account info is not found, we need to wait for the info to be
+  // available.
+  if (!intercepted_account_info.IsValid())
+    return absl::nullopt;
+  // If the intercepted account is not managed, no interception required.
+  if (!intercepted_account_info.IsManaged())
+    return false;
+  // If `profile` requires enterprise profile separation, return true.
+  if (signin_util::ProfileSeparationEnforcedByPolicy(
+          profile_, managed_account_profile_level_signin_restriction.value_or(
+                        std::string()))) {
+    return true;
+  }
+  // If we still do not know if profile separation is required, the account
+  // level policies for the intercepted account must be fetched if possible.
+  if (is_new_account_interception &&
+      !managed_account_profile_level_signin_restriction.has_value() &&
+      (g_browser_process->system_network_context_manager() ||
+       intercepted_account_level_policy_value_fetch_result_for_testing_)) {
+    return absl::nullopt;
+  }
+
+  return false;
 }
