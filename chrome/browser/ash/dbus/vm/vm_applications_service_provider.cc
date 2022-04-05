@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/dbus/vm_applications_service_provider.h"
+#include "chrome/browser/ash/dbus/vm/vm_applications_service_provider.h"
 
 #include <string>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
@@ -292,7 +293,7 @@ void VmApplicationsServiceProvider::MultiFilesSelected(
     const std::vector<base::FilePath>& files,
     void* params) {
   auto data =
-      std::unique_ptr<SelectFileData>(static_cast<SelectFileData*>(params));
+      base::WrapUnique<SelectFileData>(static_cast<SelectFileData*>(params));
 
   ui::EndpointType target = ui::EndpointType::kDefault;
   if (data->signal.vm_name() == crostini::kCrostiniDefaultVmName) {

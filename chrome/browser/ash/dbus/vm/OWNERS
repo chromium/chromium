@@ -1,0 +1,4 @@
+hollingum@google.com
+
+per-file org.chromium.*.conf=set noparent
+per-file org.chromium.*.conf=file://chromeos/SECURITY_OWNERS

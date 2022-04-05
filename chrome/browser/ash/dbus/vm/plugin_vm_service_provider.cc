@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/dbus/plugin_vm_service_provider.h"
+#include "chrome/browser/ash/dbus/vm/plugin_vm_service_provider.h"
 
 #include <memory>
 #include <utility>

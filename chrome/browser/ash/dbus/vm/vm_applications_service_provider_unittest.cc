@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-#include "chrome/browser/ash/dbus/vm_applications_service_provider.h"
+#include "chrome/browser/ash/dbus/vm/vm_applications_service_provider.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
