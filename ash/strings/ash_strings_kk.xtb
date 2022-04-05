@@ -69,7 +69,7 @@
 <translation id="1383597849754832576">Автоматты субтитр файлдары жүктеп алынбады. Кейінірек қайталап көріңіз.</translation>
 <translation id="1383876407941801731">Іздеу</translation>
 <translation id="1391102559483454063">Қосулы</translation>
-<translation id="1407069428457324124">Қараңғы тақырып</translation>
+<translation id="1407069428457324124">Қараңғы режим</translation>
 <translation id="1419738280318246476">Хабарландыруда ұсынылған әрекетті орындау үшін құрылғының құлпын ашыңыз</translation>
 <translation id="1420408895951708260">"Түнгі жарық" функциясын қосу/өшіру. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Иә</translation>
@@ -317,7 +317,7 @@
 <translation id="3378442621503952303">Профильге қосылуда. Бірнеше минут күтіңіз.</translation>
 <translation id="3386978599540877378">толық экран ұлғайтқышы</translation>
 <translation id="3400357268283240774">Қосымша параметрлер</translation>
-<translation id="3410336247007142655">Қараңғы тақырып параметрлерін көрсету</translation>
+<translation id="3410336247007142655">Қараңғы режим параметрлерін көрсету</translation>
 <translation id="3413817803639110246">Ештеңе жоқ</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> желісінен ажырату</translation>
 <translation id="3430396595145920809">Артқа оралу үшін оңнан солға қарай сырғытыңыз.</translation>
@@ -421,7 +421,7 @@
 <translation id="412298498316631026">терезе</translation>
 <translation id="4129129681837227511">Құлып экранында хабарландыруларды көру және параметрді өзгерту үшін құлыпты ашыңыз.</translation>
 <translation id="4146833061457621061">Музыка ойнату</translation>
-<translation id="4157822100366708405">Қараңғы тақырып параметрлері</translation>
+<translation id="4157822100366708405">Қараңғы режим параметрлері</translation>
 <translation id="4173958948577803258">Б</translation>
 <translation id="4181841719683918333">Тілдер</translation>
 <translation id="4195877955194704651">Автоматты басу түймесі</translation>
@@ -500,7 +500,7 @@
 <translation id="4585337515783392668">Белгісіз қабылдағышқа трансляциялауды тоқтату</translation>
 <translation id="4586483766170476230">Алдыңғы камераны өшіру</translation>
 <translation id="4587299710837179226">Микрофон өшірулі.</translation>
-<translation id="4596144739579517758">Қараңғы тақырып өшірулі.</translation>
+<translation id="4596144739579517758">Қараңғы режим өшірулі.</translation>
 <translation id="4611292653554630842">Жүйеге кіру</translation>
 <translation id="4614295562446151104">Белгілеу құралдарын жаю</translation>
 <translation id="4623167406982293031">Аккаунтты растау</translation>
@@ -599,7 +599,7 @@
 <translation id="5329548388331921293">Қосылуда…</translation>
 <translation id="5330201449517439522">Кіру үшін басыңыз.</translation>
 <translation id="5331975486040154427">USB-C құрылғысы (сол жақ артқы порты)</translation>
-<translation id="5352250171825660495">Қараңғы тақырып қосулы.</translation>
+<translation id="5352250171825660495">Қараңғы режим қосулы.</translation>
 <translation id="5379115545237091094">Тым көп әрекет жасалды</translation>
 <translation id="5397578532367286026">Бұл пайдаланушының дерек трафигі мен тарихын chrome.com мекенжайындағы басқарушысы (<ph name="MANAGER_EMAIL" />) арқылы шолуға болады.</translation>
 <translation id="5400461572260843123">Жылдам параметрлер: хабарландыру орталығына кіру үшін "Іздеу" + сол жақ көрсеткі түймесін басыңыз.</translation>
@@ -1050,7 +1050,7 @@
 <translation id="8853703225951107899">PIN кодыңыз не құпия сөзіңіз әлі расталмады. Ескертпе: құпия сөзіңізді жақында өзгерткен болсаңыз, бұрынғы құпия сөзіңізді пайдаланыңыз. Жаңа құпия сөз, аккаунттан шыққаннан кейін, күшіне енеді.</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" сөзіне қандай <ph name="INTENT" /> берілетінін тағы басқа мүмкіндіктерді көріңіз</translation>
 <translation id="8870509716567206129">Қолданба бөлінген экранды қолдамайды.</translation>
-<translation id="8871580645200179206">Қараңғы тақырыпты қосу немесе өшіру. <ph name="STATE_TEXT" /></translation>
+<translation id="8871580645200179206">Қараңғы режимді қосу немесе өшіру. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Қосылмаған</translation>
 <translation id="8876661425082386199">Интернет байланысын тексеріңіз.</translation>
 <translation id="8877788021141246043">Еске салғыш орнату</translation>

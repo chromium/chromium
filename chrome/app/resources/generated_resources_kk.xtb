@@ -379,7 +379,7 @@
 <translation id="1403222014593521787">Прокси-серверге қосылу мүмкін болмады.</translation>
 <translation id="1405779994569073824">Бұзылды.</translation>
 <translation id="1406500794671479665">Расталуда…</translation>
-<translation id="1407069428457324124">Қараңғы тақырып</translation>
+<translation id="1407069428457324124">Қараңғы режим</translation>
 <translation id="1407135791313364759">Барлығын ашу</translation>
 <translation id="140723521119632973">Ұялы байланысты іске қосу</translation>
 <translation id="1407489512183974736">Ортасы қиып алынған</translation>
@@ -781,7 +781,7 @@
 <translation id="1794791083288629568">Бұл мәселені шешуімізге көмектесу үшін пікір жіберіңіз.</translation>
 <translation id="1795214765651529549">Классикалық тақырыпты пайдалану</translation>
 <translation id="1796588414813960292">Дыбысты қажет ететін функциялар жұмыс істемейді.</translation>
-<translation id="1801418420130173017">Қараңғы тақырыпты өшіру</translation>
+<translation id="1801418420130173017">Қараңғы режимді өшіру</translation>
 <translation id="1802624026913571222">Қақпағы жабылғанда, ұйқы режиміне өту</translation>
 <translation id="1802687198411089702">Бет жауап бермеуде. Оны күтуге не жабуға болады.</translation>
 <translation id="1803531841600994172">Аударма тілі</translation>
@@ -860,7 +860,7 @@
 <translation id="1871098866036088250">Chrome браузерінде ашу</translation>
 <translation id="187145082678092583">Азырақ қолданба</translation>
 <translation id="1871534214638631766">Тінтуірдің оң жақ пернесін басқанда немесе мазмұнды ұзақ басқанда, қатысты ақпаратты көрсету</translation>
-<translation id="1871569928317311284">Қараңғы тақырыпты өшіру</translation>
+<translation id="1871569928317311284">Қараңғы режимді өшіру</translation>
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> құрылғысы әлдеқашан жаңартылған</translation>
 <translation id="1874248162548993294">Кез келген жарнаманы көрсетуге рұқсаты барлар</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{Қойындыны басқа терезеден ашу}other{Қойындыларды басқа терезеден ашу}}</translation>
@@ -1297,7 +1297,7 @@
 <translation id="2318143611928805047">Қағаз өлшемі</translation>
 <translation id="2318817390901984578">Android қолданбаларын пайдалану үшін <ph name="DEVICE_TYPE" /> құрылғысын зарядтаңыз және жаңартыңыз.</translation>
 <translation id="2319993584768066746">Кіру экранының фотосуреттері</translation>
-<translation id="2320295602967756579">Жарық тақырыпты қосу</translation>
+<translation id="2320295602967756579">Жарық режимді қосу</translation>
 <translation id="2322193970951063277">Үстіңгі және астыңғы деректеме</translation>
 <translation id="2322318151094136999">Сайт серия порттарын пайдаланғысы келгенде, рұқсат сұралсын (ұсынылады).</translation>
 <translation id="2323018538045954000">Сақталған Wi-Fi желілері</translation>
@@ -3621,7 +3621,7 @@
 <translation id="4808667324955055115">Қалқымалы терезелерге тыйым салынған</translation>
 <translation id="4809079943450490359">Құрылғы әкімшісінің нұсқаулары:</translation>
 <translation id="480990236307250886">Негізгі бетті ашу</translation>
-<translation id="4809927044794281115">Жарық тақырып</translation>
+<translation id="4809927044794281115">Жарық режим</translation>
 <translation id="4811212958317149293">Switch Access арқылы пернетақтаны автоматты түрде іздеу</translation>
 <translation id="4811503964269049987">Таңдалған қойындыны жаңа топқа енгізу</translation>
 <translation id="4813136279048157860">Суреттерім</translation>
@@ -4011,7 +4011,7 @@
 <translation id="52254442782792731">Ағымдағы көрсетілу параметрі әрі реттелмеген.</translation>
 <translation id="5225463052809312700">Камераны қосу</translation>
 <translation id="5227679487546032910">Әдепкі көгілдір түсті аватар</translation>
-<translation id="5227902338748591677">Қараңғы тақырып кестесі</translation>
+<translation id="5227902338748591677">Қараңғы режим кестесі</translation>
 <translation id="5228579091201413441">Синхрондауды қосу</translation>
 <translation id="5230516054153933099">Терезе</translation>
 <translation id="5233019165164992427">NaCl түзету порты</translation>
@@ -4983,7 +4983,7 @@
 <translation id="6283438600881103103">Қазір аккаунттан автоматты түрде шығасыз.
 <ph name="DOMAIN" /> домені смарт картаңызды салып жүруіңізді талап етеді.</translation>
 <translation id="628352644014831790">4 секунд</translation>
-<translation id="6284632978374966585">Қараңғы тақырыпты қосу</translation>
+<translation id="6284632978374966585">Қараңғы режимді қосу</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> әдетте жүктеп алынбайды және ол қауіпті болуы мүмкін.</translation>
 <translation id="6285770818046456882">Сізбен бөлісіп жатқан құрылғы тасымалдауды тоқтатты.</translation>
 <translation id="6290613030083731160">Маңайда сізбен бөлісіп жатқан ешқандай құрылғы жоқ. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
@@ -5030,7 +5030,7 @@
 <translation id="6326855256003666642">Кеңейтімдер қолданатын процестер саны</translation>
 <translation id="6327785803543103246">Вебпрокси-серверді автоматты анықтау</translation>
 <translation id="6328378651911184878"><ph name="MANAGER" /> бұл <ph name="DEVICE_TYPE" /> құрылғысын дереу жаңартуыңызды сұрайды.</translation>
-<translation id="6331191339300272798">Автоматты қараңғы тақырып</translation>
+<translation id="6331191339300272798">Автоматты қараңғы режим</translation>
 <translation id="6331566915566907158">Chrome операциялық жүйесінің функцияларын және жұмыс өнімділігін жақсартуға көмектесу</translation>
 <translation id="6331818708794917058">Сайттар MIDI құрылғыларына қосылуға рұқсат сұрайды.</translation>
 <translation id="6333064448949140209">Қатесі түзетілуі үшін файл Google қызметіне жіберіледі</translation>
@@ -5054,7 +5054,7 @@
 <translation id="635609604405270300">Құрылғыны қосулы күйде ұстаңыз</translation>
 <translation id="63566973648609420">Тек құпия фразаны білетін адам ғана шифрланған деректерді оқи алады. Құпия фраза Google қызметіне жіберілмейді және онда сақталмайды. Құпия фразаны ұмытып қалған жағдайда немесе бұл параметрді өзгерткіңіз келгенде, <ph name="BEGIN_LINK" />синхрондауды бастапқы күйіне қайтару<ph name="END_LINK" /> қажет болады.</translation>
 <translation id="6358884629796491903">Айдаһар</translation>
-<translation id="6359706544163531585">Жарық тақырыпты өшіру</translation>
+<translation id="6359706544163531585">Жарық режимді өшіру</translation>
 <translation id="6361850914223837199">Қате мәліметтері:</translation>
 <translation id="6362853299801475928">&amp;Мәселе туралы хабарлау…</translation>
 <translation id="6363786367719063276">Журналдарды көру</translation>
@@ -6008,7 +6008,7 @@
 <translation id="7395774987022469191">Бүкіл экран</translation>
 <translation id="7396017167185131589">Ортақ қалталар осы жерде көрсетіледі.</translation>
 <translation id="7396845648024431313">Жүйе қосылғанда, <ph name="APP_NAME" /> ашылады және барлық басқа <ph name="PRODUCT_NAME" /> терезелерін жапсаңыз да, фонда істеп тұра береді.</translation>
-<translation id="7397270852490618635">Жарық тақырыпты өшіру</translation>
+<translation id="7397270852490618635">Жарық режимді өшіру</translation>
 <translation id="7399045143794278225">Синхрондауды реттеу</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470"><ph name="OLD_SEARCH_PROVIDER" /> іздеу жүйесіне ораласыз ба?</translation>
@@ -6147,7 +6147,7 @@
 <translation id="7531779363494549572">"Параметрлер &gt; Қолданбалар мен хабарландырулар &gt; Хабарландырулар" тармағына өтіңіз.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> жауап бермей жатыр. Оны жабу үшін "Қолмен жабу" опциясын таңдаңыз.</translation>
 <translation id="7535730537657706072">Құрылғыдан инкогнито режиміндегі браузерді қолдану тарихын өшіру үшін барлық инкогнито қойындысын жабыңыз.</translation>
-<translation id="7535791657097741517">Жарық тақырыпты қосу</translation>
+<translation id="7535791657097741517">Жарық режимді қосу</translation>
 <translation id="7537451260744431038">Сайттар шолуды жақсарту (мысалы, аккаунттан шығармау не сатып алу себетіңіздегі нәрселерді есте сақтау) үшін cookie файлдарын пайдалана алмайды.</translation>
 <translation id="753769905878158714">Мекенжай жолағында іздегіңіз келген веб-сайтқа қатысты кілтсөзді енгізіңіз. Содан кейін жалғастыру үшін пернелер тіркесімін қолданыңыз.</translation>
 <translation id="7540972813190816353">Жаңартуларды тексеру кезінде қате пайда болды: <ph name="ERROR" /></translation>
@@ -7438,7 +7438,7 @@
 <translation id="8859402192569844210">Қызмет көрсету шарттары жүктелмеді.</translation>
 <translation id="8859662783913000679">Ата-ананың аккаунты</translation>
 <translation id="8862003515646449717">Жылдам браузерге ауысыңыз</translation>
-<translation id="8863170912498892583">Қараңғы тақырыпты қосу</translation>
+<translation id="8863170912498892583">Қараңғы режимді қосу</translation>
 <translation id="8863753581171631212">Сілтемені жаңа <ph name="APP" /> қолданбасында ашу</translation>
 <translation id="8864055848767439877">"<ph name="TAB_NAME" />" қойындысы <ph name="APP_NAME" /> қолданбасына жіберілуде.</translation>
 <translation id="8864458770072227512"><ph name="EMAIL" /> осы құрылғыдан өшірілген.</translation>

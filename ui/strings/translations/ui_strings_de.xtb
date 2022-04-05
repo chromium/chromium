@@ -13,7 +13,7 @@
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> konnte nicht geteilt werden</translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" /> in den Ordner <ph name="FOLDER_NAME" /> verschieben.</translation>
-<translation id="1291104554099683393">Bitte teilen Sie den Text in mehrere Abschnitte ein.</translation>
+<translation id="1291104554099683393">Bitte teile den Text in mehrere Abschnitte ein.</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1306549533752902673">EMPFOHLENE APPS</translation>
 <translation id="1368832886055348810">Rechtsläufig</translation>
@@ -44,7 +44,7 @@
 <translation id="1884435127456172652"><ph name="NUMBER" /> %</translation>
 <translation id="1901303067676059328">&amp;Alles auswählen</translation>
 <translation id="19085484004813472">Dies ist eine neue Funktion</translation>
-<translation id="2006524834898217237">Prüfen Sie, ob das Gerät mit dem Internet verbunden ist.</translation>
+<translation id="2006524834898217237">Prüfe, ob das Gerät mit dem Internet verbunden ist.</translation>
 <translation id="208586643495776849">Versuche es bitte noch einmal</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 Tag}other{# Tage}}</translation>
 <translation id="2148716181193084225">Heute</translation>
@@ -190,7 +190,7 @@
 <translation id="6430678249303439055">Alle Benachrichtigungen von dieser App blockieren</translation>
 <translation id="6483402905448010557">{SECONDS,plural, =1{Vor 1 Sekunde}other{Vor # Sekunden}}</translation>
 <translation id="6503257047630241175">RTF-Inhalt</translation>
-<translation id="6539092367496845964">Ein Fehler ist aufgetreten. Versuchen Sie es später noch einmal.</translation>
+<translation id="6539092367496845964">Ein Fehler ist aufgetreten. Versuche es später noch einmal.</translation>
 <translation id="654149438358937226">Alle Benachrichtigungen blockieren</translation>
 <translation id="6567071839949112727">Auf Vorgängerelement klicken</translation>
 <translation id="6578407462441924264">Unbenannt</translation>
@@ -230,7 +230,7 @@
 <translation id="7848989271541991537">Auf Seite <ph name="PAGE_NUMBER" />, Zeile <ph name="ROW_NUMBER" />, Spalte <ph name="COLUMN_NUMBER" /> verschoben.</translation>
 <translation id="7879499977785298635">Nicht blockieren</translation>
 <translation id="7907591526440419938">Datei öffnen</translation>
-<translation id="7952747673138230804">Chrome OS zeigt Vorschläge zum Entdecken neuer Inhalte. Statistiken zur Verbesserung von Vorschlägen werden nur gesendet, wenn Sie der Freigabe von Nutzungsdaten zugestimmt haben. <ph name="MANAGE_SETTINGS" /></translation>
+<translation id="7952747673138230804">Chrome OS zeigt Vorschläge zum Entdecken neuer Inhalte. Statistiken zur Verbesserung von Vorschlägen werden nur gesendet, wenn du der Freigabe von Nutzungsdaten zugestimmt hast. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7969046989155602842">Befehl</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Mehr als 1 ungelesene Benachrichtigung}other{Mehr als # ungelesene Benachrichtigungen}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{in 1 min}other{in # min}}</translation>
@@ -269,7 +269,7 @@
 <translation id="8876215549894133151">Format:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
 <translation id="8926951137623668982">Ablage immer ausgeblendet</translation>
-<translation id="8996630695507351249">Prüfen Sie, ob "<ph name="TARGET_DEVICE_NAME" />" mit dem Internet verbunden ist.</translation>
+<translation id="8996630695507351249">Prüfe, ob "<ph name="TARGET_DEVICE_NAME" />" mit dem Internet verbunden ist.</translation>
 <translation id="9002566407876343676">Öffnen</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 s}other{# s}}</translation>
 <translation id="9059834730836941392">Benachrichtigung minimieren</translation>

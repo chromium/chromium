@@ -17,7 +17,7 @@
 <translation id="1204296502688602597">DNS-Latenz</translation>
 <translation id="123124571410524056">Verdacht auf Portal</translation>
 <translation id="1238612778414822719">HTTPS-Latenz</translation>
-<translation id="1264369926465113395">Werfen Sie einen Blick auf das neue digitale Magazin von Chromebook für Kreative</translation>
+<translation id="1264369926465113395">Wirf einen Blick auf das neue digitale Magazin von Chromebook für Kreative</translation>
 <translation id="1270369111467284986">Verdacht auf Captive Portal</translation>
 <translation id="1290331692326790741">Schwaches Signal</translation>
 <translation id="1301069673413256657">GSM</translation>
@@ -47,7 +47,7 @@
 <translation id="1662989795263954667">Angehalten – Keine Tinte</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-Resolver vorhanden</translation>
-<translation id="1715359911173058521">Bei der Kommunikation mit dem Scanner ist ein Problem aufgetreten. Prüfen Sie die Netzwerk- oder USB-Verbindung und versuchen Sie es noch einmal.</translation>
+<translation id="1715359911173058521">Bei der Kommunikation mit dem Scanner ist ein Problem aufgetreten. Prüfe die Netzwerk- oder USB-Verbindung und versuche es noch einmal.</translation>
 <translation id="1717874160321062422">Verwaltet von <ph name="FIRST_MANAGER" /> und <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Nameserver</translation>
 <translation id="1731082422893354635">Bluetooth-Touchpad</translation>
@@ -75,7 +75,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">IN WARTESCHLANGE</translation>
 <translation id="2161394479394250669">Druckauftrag abbrechen</translation>
-<translation id="2180197493692062006">Es gab ein Problem. Versuchen Sie, die App wieder zu öffnen.</translation>
+<translation id="2180197493692062006">Es gab ein Problem. Versuche, die App wieder zu öffnen.</translation>
 <translation id="2209788852729124853">Traffic-Zähler zurücksetzen</translation>
 <translation id="2212733584906323460">Namensauflösung</translation>
 <translation id="2217935453350629363">Momentane Geschwindigkeit</translation>
@@ -107,7 +107,7 @@
 <translation id="2783010256799387990">BESTANDEN</translation>
 <translation id="2789486458103222910">Ok</translation>
 <translation id="2805756323405976993">Apps</translation>
-<translation id="2860473693272905224">Legen Sie eine andere Seite in den Scanner</translation>
+<translation id="2860473693272905224">Lege eine andere Seite in den Scanner</translation>
 <translation id="2872961005593481000">Herunterfahren</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> in <ph name="NUM_SECONDS" /> Sekunden entladen.</translation>
 <translation id="2927511423571448384">Verbindung von Android durch die Firewall zu HTTP-Websites (Port 80) nicht möglich</translation>
@@ -116,7 +116,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Endpunkt</translation>
 <translation id="3069085583900247081">Fehler beim Test</translation>
-<translation id="3076387335132326640">Sie verwenden ein offenes Netzwerk</translation>
+<translation id="3076387335132326640">Du verwendest ein offenes Netzwerk</translation>
 <translation id="3083667275341675831">Connectivity Diagnostics</translation>
 <translation id="3091839911843451378">Fehlgeschlagen – Angehalten</translation>
 <translation id="3102119246920354026">Cache</translation>
@@ -125,7 +125,7 @@
 <translation id="315116470104423982">Mobile Daten</translation>
 <translation id="3156846309055100599">Seite <ph name="PAGE_NUMBER" /> wird gescannt…</translation>
 <translation id="315738237743207937">Captive Portal erkannt</translation>
-<translation id="3170673040743561620">Legen Sie das Dokument in den Scanner</translation>
+<translation id="3170673040743561620">Lege das Dokument in den Scanner</translation>
 <translation id="3188257591659621405">Meine Dateien</translation>
 <translation id="3199982728237701504">Dokumenteneinzug (beidseitig)</translation>
 <translation id="3226405216343213872">Suche nach Scannern läuft</translation>
@@ -163,7 +163,7 @@
 <translation id="387301095347517405">Wie oft der Akku vollständig aufgeladen wurde</translation>
 <translation id="3941014780699102620">Host konnte nicht aufgelöst werden</translation>
 <translation id="3942420633017001071">Diagnose</translation>
-<translation id="3966286471246132217">Sie erhalten genauere Ergebnisse, wenn alle Apps während des Tests geschlossen sind.</translation>
+<translation id="3966286471246132217">Du erhältst genauere Ergebnisse, wenn alle Apps während des Tests geschlossen sind.</translation>
 <translation id="3967822245660637423">Download abgeschlossen</translation>
 <translation id="397105322502079400">Wird berechnet...</translation>
 <translation id="39823212440917567">Druckaufträge, die älter als <ph name="NUMBER_OF_DAYS" /> Tage sind, werden entfernt</translation>
@@ -207,7 +207,7 @@
 <translation id="4567024731344774461">DNS-Anfrage von Android kann nicht aufgelöst werden</translation>
 <translation id="458794348635939462">Es konnten nicht alle Hosts aufgelöst werden</translation>
 <translation id="4593212453765072419">Proxy-Authentifizierung erforderlich</translation>
-<translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> von <ph name="TOTAL_PAGE_NUMBER" />. Wenn Sie den Druckauftrag abbrechen möchten, drücken Sie die Eingabetaste.</translation>
+<translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> von <ph name="TOTAL_PAGE_NUMBER" />. Wenn du den Druckauftrag abbrechen möchtest, drücke die Eingabetaste.</translation>
 <translation id="463791356324567266">Scannen wird abgebrochen…</translation>
 <translation id="4646949265910132906">Sichere WLAN-Verbindung</translation>
 <translation id="4654549501020883054">Täglich ändern</translation>
@@ -232,7 +232,7 @@
 <translation id="4871137769558798671">Verbindung durch die Firewall zu HTTPS-Websites (Port 443) nicht möglich</translation>
 <translation id="4880328057631981605">Name des Zugangspunkts</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
-<translation id="4890353053343094602">Legen Sie so schnell wie möglich ein neues fest</translation>
+<translation id="4890353053343094602">Lege so schnell wie möglich ein neues fest</translation>
 <translation id="4891842000192098784">Belastung</translation>
 <translation id="4917385247580444890">Stark</translation>
 <translation id="4917889632206600977">Angehalten – Kein Papier</translation>
@@ -246,7 +246,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5049856988445523908">SIM-Karte gesperrt (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Gruppenname</translation>
-<translation id="5051044138948155788">Das ist die einzige Seite. Sie gelangen dann zum Startbildschirm für den Scanvorgang.</translation>
+<translation id="5051044138948155788">Das ist die einzige Seite. Du gelangst dann zum Startbildschirm für den Scanvorgang.</translation>
 <translation id="5088172560898466307">Hostname des Servers</translation>
 <translation id="5089810972385038852">Bundesstaat</translation>
 <translation id="5142961317498132443">Authentifizierung</translation>
@@ -270,7 +270,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5317780077021120954">Speichern</translation>
 <translation id="5318334351163689047">Fehlgeschlagene TCP-Anfragen</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
-<translation id="5332948983412042822">Bitte legen Sie jetzt ein neues fest</translation>
+<translation id="5332948983412042822">Bitte lege jetzt ein neues fest</translation>
 <translation id="5333530671332546086">Unbekannter Portal-Status</translation>
 <translation id="5346687412805619883">Lokales Netzwerk</translation>
 <translation id="5372659122375744710">WLAN ist nicht sicher</translation>
@@ -287,7 +287,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5502931783115429516">Android wird nicht ausgeführt</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5546352997259770619">Schwaches Signal. Versuchen Sie, sich näher am Zugangspunkt zu positionieren.</translation>
+<translation id="5546352997259770619">Schwaches Signal. Versuche, dich näher am Zugangspunkt zu positionieren.</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Neu scannen</translation>
 <translation id="5669267381087807207">Wird aktiviert</translation>
@@ -309,7 +309,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5931523347251946569">Datei nicht gefunden</translation>
 <translation id="594552776027197022">Zufälliges Schlüsselpaar generieren</translation>
 <translation id="5972388717451707488">Update Engine</translation>
-<translation id="6037291330010597344">Der Dokumenteneinzug des Scanners ist leer. Legen Sie Dokumente ein und versuchen Sie es noch einmal.</translation>
+<translation id="6037291330010597344">Der Dokumenteneinzug des Scanners ist leer. Lege Dokumente ein und versuche es noch einmal.</translation>
 <translation id="6040143037577758943">Schließen</translation>
 <translation id="6040852767465482106">Anonyme Identität</translation>
 <translation id="604124094241169006">Automatisch</translation>
@@ -338,7 +338,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6325525973963619867">Fehlgeschlagen</translation>
 <translation id="636850387210749493">Enterprise-Registrierung</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
-<translation id="6388847657025262518">Der Dokumenteneinzug des Scanners klemmt. Kontrollieren Sie den Einzug und versuchen Sie es noch einmal.</translation>
+<translation id="6388847657025262518">Der Dokumenteneinzug des Scanners klemmt. Kontrolliere den Einzug und versuche es noch einmal.</translation>
 <translation id="6395640744968320699">Keine Verbindung durch die Firewall zu HTTP-Websites (Port 80) möglich</translation>
 <translation id="641081527798843608">subject-match</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -357,7 +357,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6574762126505704998">Ausfüllen</translation>
 <translation id="6575134580692778371">Nicht konfiguriert</translation>
 <translation id="6596816719288285829">IP-Adresse</translation>
-<translation id="6603230386432466813">Sie haben Probleme beim Herstellen einer Verbindung?</translation>
+<translation id="6603230386432466813">Du hast Probleme beim Herstellen einer Verbindung?</translation>
 <translation id="6618744767048954150">Läuft</translation>
 <translation id="6620487321149975369">Druckaufträge erscheinen im Verlauf, solange sie nicht manuell gelöscht werden</translation>
 <translation id="6643016212128521049">Löschen</translation>
@@ -371,12 +371,12 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="680983167891198932">Schlüssel</translation>
 <translation id="6853312040151791195">Entladestrom</translation>
 <translation id="6905724422583748843">Zurück zu <ph name="PAGE_NAME" /></translation>
-<translation id="6910312834584889076">Die Abdeckung des Scanners ist offen. Schließen Sie sie und versuchen Sie es noch einmal.</translation>
+<translation id="6910312834584889076">Die Abdeckung des Scanners ist offen. Schließe sie und versuche es noch einmal.</translation>
 <translation id="6911383237894364323">Verbindung zu Medienservern kann nicht hergestellt werden</translation>
 <translation id="6957231940976260713">Name des Dienstes</translation>
-<translation id="6961170852793647506">Legen Sie zuerst das Dokument in den Scanner</translation>
+<translation id="6961170852793647506">Lege zuerst das Dokument in den Scanner</translation>
 <translation id="6977381486153291903">Firmware-Version</translation>
-<translation id="6982876849933694860">Wenn Sie eine neue Verbindung einrichten möchten, <ph name="BEGIN_LINK" />gehen Sie zu den Einstellungen<ph name="END_LINK" />.</translation>
+<translation id="6982876849933694860">Wenn du eine neue Verbindung einrichten möchtest, <ph name="BEGIN_LINK" />gehe zu den Einstellungen<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> verwaltet dieses Gerät und hat Zugriff auf alle Nutzeraktivitäten, einschließlich besuchter Webseiten, Passwörter und E-Mails.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7058278511608979688">Speichern und beenden</translation>
@@ -392,7 +392,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7177485034254901881">Dieses <ph name="DEVICE_TYPE" /> wird von <ph name="MANAGER" /> verwaltet. Administratoren können das Gerät per Remotezugriff konfigurieren.</translation>
 <translation id="7180611975245234373">Aktualisieren</translation>
 <translation id="7216409898977639127">Mobilfunkanbieter</translation>
-<translation id="7271040990581020067">Der Scanner wird derzeit verwendet. Versuchen Sie es später noch einmal.</translation>
+<translation id="7271040990581020067">Der Scanner wird derzeit verwendet. Versuche es später noch einmal.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Hintergrundsammlungen</translation>
 <translation id="7292680402155138244">Hohe Latenz zu HTTPS-Websites (Port 443)</translation>
@@ -444,7 +444,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7960831585769876809">Temperatur</translation>
 <translation id="7978412674231730200">Privater Schlüssel</translation>
 <translation id="7994702968232966508">EAP-Methode</translation>
-<translation id="8020238979854764615">Ein Fehler ist aufgetreten. Versuchen Sie es noch einmal mit anderen Bildern.</translation>
+<translation id="8020238979854764615">Ein Fehler ist aufgetreten. Versuche es noch einmal mit anderen Bildern.</translation>
 <translation id="802154636333426148">Downloadfehler</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="8041089156583427627">Feedback geben</translation>
@@ -459,7 +459,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8208861521865154048">Vorteile</translation>
 <translation id="8230672074305416752">Das standardmäßige Netzwerk-Gateway konnte nicht kontaktiert werden</translation>
 <translation id="8246209727385807362">Unbekannter Mobilfunkanbieter</translation>
-<translation id="8286154143153872371">Stellen Sie bitte eine Verbindung zu einem Netzwerk her und laden Sie die Seite neu, um den Hintergrund anzusehen.</translation>
+<translation id="8286154143153872371">Stelle bitte eine Verbindung zu einem Netzwerk her und lade die Seite neu, um den Hintergrund anzusehen.</translation>
 <translation id="8291967909914612644">Land des Homepageanbieters</translation>
 <translation id="829270796093605079">Neue Designtools entdecken</translation>
 <translation id="8294431847097064396">Quelle</translation>
@@ -527,7 +527,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Aktuelle Nutzung</translation>
 <translation id="9095775724867566971">PluginVM</translation>
-<translation id="910415269708673980">Aktualisieren Sie das Ticket für <ph name="PRINCIPAL_NAME" /></translation>
+<translation id="910415269708673980">Aktualisiere das Ticket für <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Seite <ph name="PAGE_NUMBER" /> wird gescannt</translation>
 <translation id="9111102763498581341">Entsperren</translation>
 <translation id="9126720536733509015">Mehrere Seiten in einem PDF speichern</translation>

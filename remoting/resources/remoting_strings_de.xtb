@@ -11,18 +11,18 @@
 <translation id="1546934824884762070">Ein unerwarteter Fehler ist aufgetreten. Bitte melde dieses Problem den Entwicklern.</translation>
 <translation id="1697532407822776718">Fertig!</translation>
 <translation id="1742469581923031760">Verbindung wird hergestellt…</translation>
-<translation id="177040763384871009">Damit Links, die auf dem Remote-Gerät angeklickt werden, im Client-Browser geöffnet werden können, müssen Sie den Webbrowser des Systems zu „<ph name="URL_FORWARDER_NAME" />“ ändern.</translation>
+<translation id="177040763384871009">Damit Links, die auf dem Remote-Gerät angeklickt werden, im Client-Browser geöffnet werden können, musst du den Webbrowser des Systems zu „<ph name="URL_FORWARDER_NAME" />“ ändern.</translation>
 <translation id="177096447311351977">Kanal-IP für Client: <ph name="CLIENT_GAIA_IDENTIFIER" /> IP="<ph name="CLIENT_IP_ADDRESS_AND_PORT" />" Host-IP="<ph name="HOST_IP_ADDRESS_AND_PORT" />" Kanal="<ph name="CHANNEL_TYPE" />" Verbindung="<ph name="CONNECTION_TYPE" />"</translation>
 <translation id="1897488610212723051">Löschen</translation>
 <translation id="2009755455353575666">Verbindung fehlgeschlagen</translation>
 <translation id="2038229918502634450">Der Host wird neu gestartet, um eine Richtlinienänderung zu übernehmen.</translation>
 <translation id="2078880767960296260">Host-Prozess</translation>
 <translation id="20876857123010370">Touchpadmodus</translation>
-<translation id="2198363917176605566">Sie müssen eine Berechtigung für die Bildschirmaufzeichnung erteilen, um <ph name="PRODUCT_NAME" /> zu verwenden. Erst dann können die Bildschirminhalte dieses Mac an den Remote-Computer gesendet werden.
+<translation id="2198363917176605566">Du musst eine Berechtigung für die Bildschirmaufzeichnung erteilen, um <ph name="PRODUCT_NAME" /> zu verwenden. Erst dann können die Bildschirminhalte dieses Mac an den Remote-Computer gesendet werden.
 
-Klicken Sie zum Erteilen dieser Berechtigung unten auf "<ph name="BUTTON_NAME" />", um die Einstellungen für Bildschirmaufzeichnungen zu öffnen. Klicken Sie dann das Kästchen neben "<ph name="SERVICE_SCRIPT_NAME" />" an.
+Klicke zum Erteilen dieser Berechtigung unten auf "<ph name="BUTTON_NAME" />", um die Einstellungen für Bildschirmaufzeichnungen zu öffnen. Klicke dann das Kästchen neben "<ph name="SERVICE_SCRIPT_NAME" />" an.
 
-Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, entfernen Sie diesen und klicken Sie noch einmal auf das Kästchen.</translation>
+Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, entferne diesen und klicke noch einmal auf das Kästchen.</translation>
 <translation id="225614027745146050">Willkommen</translation>
 <translation id="2320166752086256636">Tastatur ausblenden</translation>
 <translation id="2329392777730037872"><ph name="URL" /> konnte auf dem Client nicht geöffnet werden.</translation>
@@ -64,7 +64,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="3950820424414687140">Anmelden</translation>
 <translation id="405887016757208221">Der Remote-Computer konnte die Sitzung nicht initialisieren. Sollte das Problem weiter bestehen, versuche bitte, den Host nochmals zu konfigurieren.</translation>
 <translation id="4060747889721220580">Datei herunterladen</translation>
-<translation id="4126409073460786861">Aktualisieren Sie diese Seite nach der Einrichtung. Anschließend können Sie auf den Computer zugreifen, indem Sie das Gerät auswählen und die PIN eingeben.</translation>
+<translation id="4126409073460786861">Aktualisiere diese Seite nach der Einrichtung. Anschließend kannst du auf den Computer zugreifen, indem du das Gerät auswählst und die PIN eingibst.</translation>
 <translation id="4145029455188493639">Angemeldet als <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="4155497795971509630">Es fehlen einige erforderliche Komponenten. Überprüfe, ob du die neueste Version der Software installiert hast, und versuche es erneut.</translation>
 <translation id="4176825807642096119">Zugriffscode</translation>
@@ -79,7 +79,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="4512952200932940229">Copyright 2021 The Chromium Authors. Alle Rechte vorbehalten.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4563926062592110512">Client getrennt: <ph name="CLIENT_USERNAME" />.</translation>
-<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> ist nicht richtig konfiguriert. Bitte wählen Sie einen anderen Standardbrowser und aktivieren Sie dann die URL-Weiterleitung noch einmal.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> ist nicht richtig konfiguriert. Bitte wähle einen anderen Standardbrowser und aktiviere dann die URL-Weiterleitung noch einmal.</translation>
 <translation id="4635770493235256822">Remote-Geräte</translation>
 <translation id="4660011489602794167">Tastatur anzeigen</translation>
 <translation id="4703799847237267011">Deine Chromoting-Sitzung wurde beendet.</translation>
@@ -92,7 +92,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="4867841927763172006">Druck senden</translation>
 <translation id="4974476491460646149">Verbindung zwischen Client und <ph name="HOSTNAME" /> getrennt</translation>
 <translation id="4985296110227979402">Richte zuerst deinen Computer für den Remotezugriff ein</translation>
-<translation id="4987330545941822761">Chrome Remote Desktop kann nicht ermitteln, welcher Browser zum lokalen Öffnen der Links verwendet werden soll. Wählen Sie einen aus der folgenden Liste aus.</translation>
+<translation id="4987330545941822761">Chrome Remote Desktop kann nicht ermitteln, welcher Browser zum lokalen Öffnen der Links verwendet werden soll. Wähle einen aus der folgenden Liste aus.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (offline)</translation>
 <translation id="507204348399810022">Möchtest du die Remote-Verbindungen zu <ph name="HOSTNAME" /> wirklich deaktivieren?</translation>
 <translation id="5170982930780719864">Ungültige Host-ID</translation>
@@ -134,7 +134,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="6985691951107243942">Möchtest du die Remote-Verbindung zu <ph name="HOSTNAME" /> wirklich deaktivieren? Wenn du die Verbindung später erneut aktivieren möchtest, musst du dies von dem betreffenden Computer aus tun.</translation>
 <translation id="7019153418965365059">Nicht erkannter Hostfehler: <ph name="HOST_OFFLINE_REASON" /></translation>
 <translation id="701976023053394610">Remote-Unterstützung</translation>
-<translation id="7026930240735156896">Folgen Sie der Anleitung, um den Computer für den Remotezugriff einzurichten</translation>
+<translation id="7026930240735156896">Folge der Anleitung, um den Computer für den Remotezugriff einzurichten</translation>
 <translation id="7067321367069083429">Bildschirm funktioniert wie ein Touchscreen</translation>
 <translation id="7116737094673640201">Willkommen bei Chrome Remote Desktop</translation>
 <translation id="7144878232160441200">Wiederholen</translation>
@@ -165,11 +165,10 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="8073845705237259513">Wenn du Chrome Remote Desktop verwenden möchtest, füge deinem Gerät ein Google-Konto hinzu.</translation>
 <translation id="809687642899217504">Meine Computer</translation>
 <translation id="8116630183974937060">Ein Netzwerkfehler ist aufgetreten. Bitte überprüfe, ob das Gerät online ist, und versuche es erneut.</translation>
-<translation id="8295077433896346116">Sie müssen eine Berechtigung für die Bedienungshilfen erteilen, um <ph name="PRODUCT_NAME" /> zu verwenden. Erst dann kann dieser Mac über Eingaben vom Remote-Computer gesteuert werden.
+<translation id="8295077433896346116">Du musst eine Berechtigung für die Bedienungshilfen erteilen, um <ph name="PRODUCT_NAME" /> zu verwenden. Erst dann kann dieser Mac über Eingaben vom Remote-Computer gesteuert werden.
+Klicke zum Erteilen dieser Berechtigung auf "<ph name="BUTTON_NAME" />" unten, um die Einstellungen für die Bedienungshilfen zu öffnen. Klicke dort das Kästchen neben "<ph name="SERVICE_SCRIPT_NAME" />" an.
 
-Klicken Sie zum Erteilen dieser Berechtigung auf "<ph name="BUTTON_NAME" />" unten, um die Einstellungen für die Bedienungshilfen zu öffnen. Klicken Sie dort das Kästchen neben "<ph name="SERVICE_SCRIPT_NAME" />" an.
-
-Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, entfernen Sie ihn und klicken Sie noch einmal auf das Kästchen.</translation>
+Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, entferne ihn und klicke noch einmal auf das Kästchen.</translation>
 <translation id="8305209735512572429">Remoting-Prozess für die Web Authentication App</translation>
 <translation id="8383794970363966105">Wenn du Chromoting verwenden möchtest, füge deinem Gerät ein Google-Konto hinzu.</translation>
 <translation id="8386846956409881180">Der Host wurde mit ungültigen OAuth-Anmeldedaten konfiguriert.</translation>

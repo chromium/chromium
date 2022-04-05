@@ -115,12 +115,12 @@
 <translation id="4293574643247337246">Kopfzeile</translation>
 <translation id="4360991593054037559">Gib einen gültigen Wert ein. Die zwei nächstliegenden gültigen Werte sind <ph name="VALID_VALUE_LOW" /> und <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4371899966896349864">Menü für Wiedergabegeschwindigkeit ausblenden</translation>
-<translation id="4384249794467006333">Dieses Bild hat kein Label. Öffnen Sie oben rechts das Menü „Weitere Optionen“, um Bildbeschreibungen zu verwenden.</translation>
+<translation id="4384249794467006333">Dieses Bild hat kein Label. Öffne oben rechts das Menü „Weitere Optionen“, um Bildbeschreibungen zu verwenden.</translation>
 <translation id="4384583879834880242">Fragen und Antworten</translation>
 <translation id="4444765639179266822">Es sieht aus wie: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">Glossarreferenz</translation>
 <translation id="4522570452068850558">Details</translation>
-<translation id="4576178047100686001">Dieses Bild hat kein Label. Öffnen Sie oben links das Menü „Weitere Optionen“, um Bildbeschreibungen zu verwenden.</translation>
+<translation id="4576178047100686001">Dieses Bild hat kein Label. Öffne oben links das Menü „Weitere Optionen“, um Bildbeschreibungen zu verwenden.</translation>
 <translation id="4597532268155981612">Formular</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4664250907885839816">Nach dem <ph name="ATSIGN" />-Zeichen darf das Zeichen "<ph name="INVALIDCHARACTER" />" nicht verwendet werden.</translation>
@@ -258,7 +258,7 @@
 <translation id="7673697353781729403">Stunden</translation>
 <translation id="7681220483256441252">Index</translation>
 <translation id="7740050170769002709">HTML-Inhalte</translation>
-<translation id="7745230546936012372">Wenn Sie fehlende Bildbeschreibungen abrufen möchten, öffnen Sie das Kontextmenü.</translation>
+<translation id="7745230546936012372">Wenn du fehlende Bildbeschreibungen abrufen möchtest, öffne das Kontextmenü.</translation>
 <translation id="7750228210027921155">Bild im Bild</translation>
 <translation id="775297008183122718">Ungültiger Eintrag</translation>
 <translation id="7782515065589691344">1,25</translation>
