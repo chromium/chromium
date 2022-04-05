@@ -23,6 +23,8 @@ namespace ime {
 // Chromium implementation of ConnectionFactory (as opposed to the sharedlib
 // implementation). This impl is used to connect the RuleBasedEngine in the ime
 // service to the NativeIME when requested.
+// TODO(b/214153032): Rename to RuleBasedEngineMojoConnectionFactory to better
+// and more specifically reflect what this represents.
 class ConnectionFactory : public mojom::ConnectionFactory {
  public:
   explicit ConnectionFactory(

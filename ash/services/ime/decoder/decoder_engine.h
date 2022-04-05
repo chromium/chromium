@@ -23,6 +23,10 @@ namespace ime {
 // A Mojo wrapper around a "decoder" that converts key events and pointer events
 // to text. The built-in Chrome OS XKB extension communicates with this to
 // implement its IMEs.
+// TODO(b/214153032): Rename to ProtoModeSharedLibEngine, and maybe also unnest
+// out of "decoder" sub-directory, to better reflect what this represents. This
+// class actually wraps ProtoMode "C" API entry points of the loaded CrOS 1P IME
+// shared lib, to facilitate accessing an IME engine therein via ProtoMode.
 class DecoderEngine : public mojom::InputChannel {
  public:
   explicit DecoderEngine(ImeCrosPlatform* platform,

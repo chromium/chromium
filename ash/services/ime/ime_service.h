@@ -121,6 +121,10 @@ class ImeService : public mojom::ImeService,
   // For the duration of this ImeService's lifetime, there should be one and
   // only one of these backend connections (represented as "engine" or "factory"
   // instances) at any point in time.
+  // TODO(b/214153032): Rename to better reflect what these represent:
+  //     decoder_engine_     --> proto_mode_shared_lib_engine_
+  //     system_engine_      --> mojo_mode_shared_lib_engine_
+  //     connection_factory_ --> rule_based_engine_mojo_connection_factory_
   std::unique_ptr<DecoderEngine> decoder_engine_;
   std::unique_ptr<SystemEngine> system_engine_;
   std::unique_ptr<RuleBasedEngine> rule_based_engine_;
@@ -130,6 +134,8 @@ class ImeService : public mojom::ImeService,
   mojo::Remote<mojom::PlatformAccessProvider> platform_access_;
   mojo::ReceiverSet<mojom::InputEngineManager> manager_receivers_;
 
+  // TODO(b/214153032): Rename to better reflect what this represents:
+  //     ime_decoder_ --> ime_shared_lib_
   ImeDecoder* ime_decoder_ = nullptr;
 
   std::unique_ptr<FieldTrialParamsRetriever> field_trial_params_retriever_;

@@ -23,6 +23,10 @@ namespace ime {
 
 // An enhanced implementation of the basic InputEngine that uses a built-in
 // shared library for handling key events.
+// TODO(b/214153032): Rename to MojoModeSharedLibEngine, and maybe also unnest
+// out of "decoder" sub-directory, to better reflect what this represents. This
+// class actually wraps MojoMode "C" API entry points of the loaded CrOS 1P IME
+// shared lib, to facilitate accessing an IME engine therein via MojoMode.
 class SystemEngine {
  public:
   explicit SystemEngine(ImeCrosPlatform* platform,

@@ -60,6 +60,9 @@ typedef bool (*IsInputMethodConnectedFn)();
 
 // END: Signatures of "C" API entry points of CrOS 1P IME shared lib.
 
+// TODO(b/214153032): Rename to ImeSharedLib to better reflect what this
+// represents. This class manages the dynamic loading of CrOS 1P IME shared lib
+// .so, and facilitates access to its "C" API entry points.
 class ImeDecoder {
  public:
   virtual ~ImeDecoder() = default;
@@ -69,11 +72,22 @@ class ImeDecoder {
   struct EntryPoints {
     InitProtoModeFn init_proto_mode;
     CloseProtoModeFn close_proto_mode;
+
+    // TODO(b/214153032): Prefix the following with "proto_mode_" to better
+    // indicate they only pertain to the IME shared lib's ProtoMode. While it's
+    // "hard" to rename corresponding "C" API functions due to cross-repo
+    // backward compat requirements, these are local and rename is feasible.
     ImeDecoderSupportsFn supports;
     ImeDecoderActivateImeFn activate_ime;
     ImeDecoderProcessFn process;
+
     InitMojoModeFn init_mojo_mode;
     CloseMojoModeFn close_mojo_mode;
+
+    // TODO(b/214153032): Prefix the following with "mojo_mode_" to better
+    // indicate they only pertain to the IME shared lib's MojoMode. While it's
+    // "hard" to rename corresponding "C" API functions due to cross-repo
+    // backward compat requirements, these are local and rename is feasible.
     ConnectToInputMethodFn connect_to_input_method;
     InitializeConnectionFactoryFn initialize_connection_factory;
     IsInputMethodConnectedFn is_input_method_connected;
@@ -88,6 +102,8 @@ class ImeDecoder {
 // A proxy class for the IME decoder.
 // ImeDecoder is implemented as a singleton and is initialized before 'ime'
 // sandbox is engaged.
+// TODO(b/214153032): Rename to ImeSharedLibImpl, as soon as ImeDecoder is
+// renamed to ImeSharedLib, to better reflect what this represents.
 class ImeDecoderImpl : public ImeDecoder {
  public:
   // Gets the singleton ImeDecoderImpl.
