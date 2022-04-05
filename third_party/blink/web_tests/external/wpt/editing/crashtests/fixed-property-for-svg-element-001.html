@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html class="test-wait">
+<title>Changing designmode of SVG inline elements with contain: layout style should not crash.</title>
+<link rel="author" title="Yotam Hacohen" href="mailto:yotha@chromium.org">
+<link rel="author" title="Google" href="http://www.google.com/">
+<link rel="help" href="https://bugs.chromium.org/p/chromium/issues/detail?id=1308025">
+<meta name="assert" content="This should not crash.">
+
+<svg>
+  <text y="10">
+    <a id="texta" style="float: left; contain: layout;">
+      PASS if no crash.
+    </a>
+  </text>
+</svg>
+
+
+<script>
+requestAnimationFrame(function() {
+  requestAnimationFrame(function() {
+    document.designMode = "on";
+    requestAnimationFrame(function() {
+      document.documentElement.classList.remove("test-wait");
+    });
+  });
+});
+
+</script>

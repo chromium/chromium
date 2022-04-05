@@ -202,8 +202,8 @@ void LayoutInline::UpdateFromStyle() {
   NOT_DESTROYED();
   LayoutBoxModelObject::UpdateFromStyle();
 
-  // FIXME: Is this still needed. Was needed for run-ins, since run-in is
-  // considered a block display type.
+  // We need this here for SVG elements, as even SVG inline elements can have
+  // display property set to "block"
   SetInline(true);
 
   // FIXME: Support transforms and reflections on inline flows someday.
