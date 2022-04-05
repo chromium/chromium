@@ -24,8 +24,16 @@ namespace sandbox {
 // features. This needs an audit. https://crbug.com/739879
 class SANDBOX_EXPORT BaselinePolicyAndroid : public BaselinePolicy {
  public:
+  struct RuntimeOptions {
+    // Allows sched_setaffinity for a core selection performance experiment.
+    bool allow_sched_affinity = false;
+
+    // Allows a subset of the userfaultfd ioctls that are needed for ART GC.
+    bool allow_userfaultfd_ioctls = false;
+  };
+
   BaselinePolicyAndroid();
-  explicit BaselinePolicyAndroid(bool allow_sched_affinity);
+  explicit BaselinePolicyAndroid(const RuntimeOptions& options);
 
   BaselinePolicyAndroid(const BaselinePolicyAndroid&) = delete;
   BaselinePolicyAndroid& operator=(const BaselinePolicyAndroid&) = delete;
@@ -37,7 +45,7 @@ class SANDBOX_EXPORT BaselinePolicyAndroid : public BaselinePolicy {
       int system_call_number) const override;
 
  private:
-  bool allow_sched_affinity_ = false;
+  const RuntimeOptions options_;
 };
 
 }  // namespace sandbox

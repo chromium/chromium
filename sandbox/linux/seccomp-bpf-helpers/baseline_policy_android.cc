@@ -6,7 +6,10 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <linux/android/binder.h>
+#include <linux/ashmem.h>
 #include <linux/net.h>
+#include <linux/userfaultfd.h>
 #include <sys/socket.h>
 #include <sys/syscall.h>
 #include <sys/types.h>
@@ -25,9 +28,10 @@ using sandbox::bpf_dsl::AllOf;
 using sandbox::bpf_dsl::Allow;
 using sandbox::bpf_dsl::AnyOf;
 using sandbox::bpf_dsl::Arg;
+using sandbox::bpf_dsl::BoolConst;
 using sandbox::bpf_dsl::BoolExpr;
-using sandbox::bpf_dsl::If;
 using sandbox::bpf_dsl::Error;
+using sandbox::bpf_dsl::If;
 using sandbox::bpf_dsl::ResultExpr;
 
 namespace sandbox {
@@ -58,13 +62,61 @@ BoolExpr RestrictSocketArguments(const Arg<int>& domain,
 }
 #endif  // !defined(__i386__)
 
+ResultExpr RestrictAndroidIoctl(bool allow_userfaultfd_ioctls) {
+  const Arg<int> request(1);
+
+  // There is no way at runtime to test if the system is running with
+  // BINDER_IPC_32BIT. Instead, compute the corresponding bitness' ioctl
+  // request number, so that either are allowed in the case of mixed-bitness
+  // systems.
+#ifdef BINDER_IPC_32BIT
+  const int kBinderWriteRead32 = BINDER_WRITE_READ;
+  const int kBinderWriteRead64 =
+      (BINDER_WRITE_READ & ~IOCSIZE_MASK) |
+      ((sizeof(binder_write_read) * 2) << _IOC_SIZESHIFT);
+#else
+  const int kBinderWriteRead64 = BINDER_WRITE_READ;
+  const int kBinderWriteRead32 =
+      (BINDER_WRITE_READ & ~IOCSIZE_MASK) |
+      ((sizeof(binder_write_read) / 2) << _IOC_SIZESHIFT);
+#endif
+
+  // ANDROID_ALARM_GET_TIME(ANDROID_ALARM_ELAPSED_REALTIME), a legacy interface
+  // for getting clock information from /dev/alarm. It was removed in Android O
+  // (https://android-review.googlesource.com/c/221812), and it can be safely
+  // blocked in earlier releases because there is a fallback. Constant expanded
+  // from
+  // https://cs.android.com/android/platform/superproject/+/android-7.0.0_r1:external/kernel-headers/original/uapi/linux/android_alarm.h;l=57.
+  const int kAndroidAlarmGetTimeElapsedRealtime = 0x40086134;
+
+  return Switch(request)
+      .CASES((
+                 // Android shared memory.
+                 ASHMEM_SET_NAME, ASHMEM_GET_NAME, ASHMEM_SET_SIZE,
+                 ASHMEM_GET_SIZE, ASHMEM_SET_PROT_MASK, ASHMEM_GET_PROT_MASK,
+                 ASHMEM_PIN, ASHMEM_UNPIN, ASHMEM_GET_PIN_STATUS,
+                 // Binder.
+                 kBinderWriteRead32, kBinderWriteRead64, BINDER_SET_MAX_THREADS,
+                 BINDER_THREAD_EXIT, BINDER_VERSION,
+                 BINDER_ENABLE_ONEWAY_SPAM_DETECTION),
+             Allow())
+      .CASES((
+                 // userfaultfd ART GC (https://crbug.com/1300653).
+                 UFFDIO_REGISTER, UFFDIO_UNREGISTER, UFFDIO_WAKE, UFFDIO_COPY,
+                 UFFDIO_ZEROPAGE, UFFDIO_CONTINUE),
+             If(BoolConst(allow_userfaultfd_ioctls), Allow())
+                 .Else(RestrictIoctl()))
+      .CASES((kAndroidAlarmGetTimeElapsedRealtime), Error(EINVAL))
+      .Default(RestrictIoctl());
+}
+
 }  // namespace
 
 BaselinePolicyAndroid::BaselinePolicyAndroid()
     : BaselinePolicy() {}
 
-BaselinePolicyAndroid::BaselinePolicyAndroid(bool allow_sched_affinity)
-    : BaselinePolicy(), allow_sched_affinity_(allow_sched_affinity) {}
+BaselinePolicyAndroid::BaselinePolicyAndroid(const RuntimeOptions& options)
+    : BaselinePolicy(), options_(options) {}
 
 BaselinePolicyAndroid::~BaselinePolicyAndroid() {}
 
@@ -96,7 +148,6 @@ ResultExpr BaselinePolicyAndroid::EvaluateSyscall(int sysno) const {
 #endif
     case __NR_getdents64:
     case __NR_getpriority:
-    case __NR_ioctl:
     case __NR_membarrier:  // https://crbug.com/966433
     case __NR_mremap:
 #if defined(__i386__)
@@ -155,9 +206,13 @@ ResultExpr BaselinePolicyAndroid::EvaluateSyscall(int sysno) const {
   // (crbug.com/1111789). Should be removed or reconsidered once
   // the experiment is complete.
   if (sysno == __NR_sched_setaffinity || sysno == __NR_sched_getaffinity) {
-    if (allow_sched_affinity_)
+    if (options_.allow_sched_affinity)
       return Allow();
     return Error(EPERM);
+  }
+
+  if (sysno == __NR_ioctl) {
+    return RestrictAndroidIoctl(options_.allow_userfaultfd_ioctls);
   }
 
   // Ptrace is allowed so the crash reporter can fork in a renderer

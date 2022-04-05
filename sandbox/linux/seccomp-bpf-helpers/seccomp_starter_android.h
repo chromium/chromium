@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "sandbox/linux/bpf_dsl/policy.h"
+#include "sandbox/linux/seccomp-bpf-helpers/baseline_policy_android.h"
 #endif
 
 namespace sandbox {
@@ -43,6 +44,12 @@ class SANDBOX_EXPORT SeccompStarterAndroid {
   SeccompStarterAndroid& operator=(const SeccompStarterAndroid&) = delete;
 
   ~SeccompStarterAndroid();
+
+#if BUILDFLAG(USE_SECCOMP_BPF)
+  // Returns the default runtime-configured options for the baseline Android
+  // seccomp policy.
+  BaselinePolicyAndroid::RuntimeOptions GetDefaultBaselineOptions() const;
+#endif
 
   // Sets the BPF policy to apply. This must be called before StartSandbox()
   // if BUILDFLAG(USE_SECCOMP_BPF) is true.

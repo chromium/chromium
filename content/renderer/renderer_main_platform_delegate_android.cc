@@ -37,10 +37,11 @@ bool RendererMainPlatformDelegate::EnableSandbox() {
   sandbox::SeccompStarterAndroid starter(info->sdk_int());
   // The policy compiler is only available if USE_SECCOMP_BPF is enabled.
 #if BUILDFLAG(USE_SECCOMP_BPF)
-  bool allow_sched_affinity =
+  sandbox::BaselinePolicyAndroid::RuntimeOptions options(
+      starter.GetDefaultBaselineOptions());
+  options.allow_sched_affinity =
       base::FeatureList::IsEnabled(features::kBigLittleScheduling);
-  starter.set_policy(
-      std::make_unique<sandbox::BaselinePolicyAndroid>(allow_sched_affinity));
+  starter.set_policy(std::make_unique<sandbox::BaselinePolicyAndroid>(options));
 #endif
   starter.StartSandbox();
 

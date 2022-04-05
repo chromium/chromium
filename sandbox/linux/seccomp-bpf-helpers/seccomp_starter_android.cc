@@ -20,6 +20,19 @@ SeccompStarterAndroid::SeccompStarterAndroid(int build_sdk)
 
 SeccompStarterAndroid::~SeccompStarterAndroid() = default;
 
+#if BUILDFLAG(USE_SECCOMP_BPF)
+BaselinePolicyAndroid::RuntimeOptions
+SeccompStarterAndroid::GetDefaultBaselineOptions() const {
+  BaselinePolicyAndroid::RuntimeOptions options;
+  // On Android S+, there are CTS-enforced requirements that the kernel carries
+  // patches to userfaultfd that enforce usermode pages only (i.e.
+  // UFFD_USER_MODE_ONLY). Userfaultfd is used for a new ART garbage collector.
+  // See https://crbug.com/1300653 for details.
+  options.allow_userfaultfd_ioctls = sdk_int_ >= base::android::SDK_VERSION_S;
+  return options;
+}
+#endif
+
 bool SeccompStarterAndroid::StartSandbox() {
 #if BUILDFLAG(USE_SECCOMP_BPF)
   DCHECK(policy_);
