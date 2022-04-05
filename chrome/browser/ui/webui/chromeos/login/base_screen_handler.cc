@@ -15,12 +15,17 @@
 
 namespace chromeos {
 
+namespace {
+constexpr char kLoginPrefix[] = "login.";
+constexpr char kUserActedCallback[] = ".userActed";
+}  // namespace
+
 BaseScreenHandler::BaseScreenHandler(OobeScreenId oobe_screen)
     : oobe_screen_(oobe_screen) {
   DCHECK_NE(oobe_screen_.name, OobeScreen::SCREEN_UNKNOWN.name);
   if (!oobe_screen_.external_api_prefix.empty()) {
     user_acted_method_path_ = base::StrCat(
-        {"login.", oobe_screen_.external_api_prefix, ".userActed"});
+        {kLoginPrefix, oobe_screen_.external_api_prefix, kUserActedCallback});
   }
 }
 
@@ -68,6 +73,13 @@ void BaseScreenHandler::HandleUserAction(const std::string& action_id) {
       ->GetWizardController()
       ->GetScreen(oobe_screen_)
       ->HandleUserAction(action_id);
+}
+
+std::string BaseScreenHandler::GetFullExternalAPIFunctionName(
+    const std::string& short_name) {
+  DCHECK(!oobe_screen_.external_api_prefix.empty());
+  return base::StrCat(
+      {kLoginPrefix, oobe_screen_.external_api_prefix, ".", short_name});
 }
 
 }  // namespace chromeos

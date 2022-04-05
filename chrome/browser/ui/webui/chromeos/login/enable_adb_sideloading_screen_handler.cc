@@ -42,8 +42,7 @@ void EnableAdbSideloadingScreenHandler::Unbind() {
 }
 
 void EnableAdbSideloadingScreenHandler::SetScreenState(UIState value) {
-  CallJS("login.EnableAdbSideloadingScreen.setScreenState",
-         static_cast<int>(value));
+  CallExternalAPI("setScreenState", static_cast<int>(value));
 }
 
 void EnableAdbSideloadingScreenHandler::DeclareLocalizedValues(

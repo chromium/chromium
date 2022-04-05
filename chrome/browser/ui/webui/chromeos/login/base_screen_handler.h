@@ -38,6 +38,12 @@ class BaseScreenHandler : public BaseWebUIHandler {
   // to the `onBeforeShow` on the javascript side.
   void ShowInWebUI(absl::optional<base::Value::Dict> data = absl::nullopt);
 
+  template <typename... Args>
+  void CallExternalAPI(const std::string& api_function, Args... args) {
+    CallJS<Args...>(GetFullExternalAPIFunctionName(api_function),
+                    std::move(args)...);
+  }
+
   // Set the method identifier for a userActed callback. The actual callback
   // will be registered in RegisterMessages so this should be called in the
   // constructor. This takes the full method path, ie,
@@ -54,6 +60,10 @@ class BaseScreenHandler : public BaseWebUIHandler {
  private:
   // Handles user action.
   void HandleUserAction(const std::string& action_id);
+
+  // Generates the full function name to call an API function of the screen.
+  // `oobe_screen_.external_api_prefix` must be set.
+  std::string GetFullExternalAPIFunctionName(const std::string& short_name);
 
   // Path that is used to invoke user actions.
   std::string user_acted_method_path_;
