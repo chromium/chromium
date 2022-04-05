@@ -806,6 +806,8 @@ void CollectUserDataAction::ReloadUserData(UserData* user_data) {
   action_stopwatch_.StartActiveTime();
   if (proto_.collect_user_data().has_data_source()) {
     metrics_data_.personal_data_changed = true;
+    collect_user_data_options_->reload_data_callback = base::BindOnce(
+        &CollectUserDataAction::ReloadUserData, weak_ptr_factory_.GetWeakPtr());
     delegate_->RequestUserData(
         *collect_user_data_options_,
         base::BindOnce(&CollectUserDataAction::OnRequestUserData,

@@ -3876,9 +3876,13 @@ TEST_F(CollectUserDataActionTest, ReloadsDataIfRequested) {
   ON_CALL(mock_action_delegate_, GetPersonalDataManager)
       .WillByDefault(Return(nullptr));
   EXPECT_CALL(mock_action_delegate_, RequestUserData)
-      .Times(2)
+      .Times(3)
       .WillRepeatedly(RunOnceCallback<1>(true, GetUserDataResponseProto()));
   EXPECT_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillOnce(Invoke([=](CollectUserDataOptions* collect_user_data_options) {
+        std::move(collect_user_data_options->reload_data_callback)
+            .Run(&user_data_);
+      }))
       .WillOnce(Invoke([=](CollectUserDataOptions* collect_user_data_options) {
         std::move(collect_user_data_options->reload_data_callback)
             .Run(&user_data_);
