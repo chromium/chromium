@@ -7,7 +7,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/grid_tab_switcher_view_holder"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:visibility="gone"
+    android:background="@macro/default_bg_color">
     <ViewStub
         android:id="@+id/fullscreen_tab_switcher_toolbar_stub"
         android:layout_width="match_parent"
