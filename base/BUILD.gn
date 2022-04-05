@@ -2565,7 +2565,10 @@ buildflag_header("profiler_buildflags") {
   header = "profiler_buildflags.h"
   header_dir = "base/profiler"
 
-  flags = [ "ENABLE_ARM_CFI_TABLE=$enable_arm_cfi_table" ]
+  flags = [
+    "ENABLE_ARM_CFI_TABLE=$enable_arm_cfi_table",
+    "IOS_STACK_PROFILER_ENABLED=$ios_stack_profiler_enabled",
+  ]
 }
 
 # This is the subset of files from base that should not be used with a dynamic
