@@ -56,7 +56,11 @@
 namespace blink {
 
 MessagePort::MessagePort(ExecutionContext& execution_context)
-    : ExecutionContextLifecycleObserver(&execution_context),
+    : ExecutionContextLifecycleObserver(execution_context.IsContextDestroyed()
+                                            ? nullptr
+                                            : &execution_context),
+      // Ports in a destroyed context start out in a closed state.
+      closed_(execution_context.IsContextDestroyed()),
       task_runner_(execution_context.GetTaskRunner(TaskType::kPostedMessage)) {}
 
 MessagePort::~MessagePort() {
@@ -168,10 +172,21 @@ void MessagePort::Entangle(MessagePortDescriptor port) {
   DCHECK(port.IsValid());
   DCHECK(!connector_);
 
+  // If the context was already destroyed, there is no reason to actually
+  // entangle the port and create a Connector. No messages will ever be able to
+  // be sent or received anyway, as StartReceiving will never be called.
+  if (!GetExecutionContext())
+    return;
+
   port_ = std::move(port);
   connector_ = std::make_unique<mojo::Connector>(
       port_.TakeHandleToEntangle(GetExecutionContext()),
       mojo::Connector::SINGLE_THREADED_SEND);
+  // The raw `this` is safe despite `this` being a garbage collected object
+  // because we make sure that:
+  // 1. This object will not be garbage collected while it is connected and
+  //    the execution context is not destroyed, and
+  // 2. when the execution context is destroyed, the connector_ is reset.
   connector_->set_incoming_receiver(this);
   connector_->set_connection_error_handler(
       WTF::Bind(&MessagePort::close, WrapWeakPersistent(this)));
