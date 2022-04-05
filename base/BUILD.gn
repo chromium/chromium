@@ -320,7 +320,6 @@ mixed_component("base") {
     "files/file_error_or.h",
     "files/file_path.cc",
     "files/file_path.h",
-    "files/file_path_constants.cc",
     "files/file_path_watcher.cc",
     "files/file_path_watcher.h",
     "files/file_proxy.cc",
@@ -1310,6 +1309,7 @@ mixed_component("base") {
       sources += [
         "profiler/native_unwinder_apple.cc",
         "profiler/native_unwinder_apple.h",
+        "profiler/stack_sampler_ios.cc",
         "profiler/suspendable_thread_delegate_mac.cc",
         "profiler/suspendable_thread_delegate_mac.h",
       ]
