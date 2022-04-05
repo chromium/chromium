@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/borealis/borealis_wayland_interface.h"
+#include "chrome/browser/ash/guest_os/guest_os_launcher.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -68,6 +69,22 @@ void OnTokenChecked(Profile* profile,
                                                ss.str()));
 }
 
+void OnLaunchEnsured(dbus::MethodCall* method_call,
+                     dbus::ExportedObject::ResponseSender response_sender,
+                     guest_os::launcher::ResponseType response) {
+  if (!response) {
+    std::move(response_sender)
+        .Run(dbus::ErrorResponse::FromMethodCall(method_call, DBUS_ERROR_FAILED,
+                                                 response.Error()));
+    return;
+  }
+  std::unique_ptr<dbus::Response> dbus_response =
+      dbus::Response::FromMethodCall(method_call);
+  dbus::MessageWriter writer(dbus_response.get());
+  writer.AppendProtoAsArrayOfBytes(response.Value());
+  std::move(response_sender).Run(std::move(dbus_response));
+}
+
 }  // namespace
 
 VmLaunchServiceProvider::VmLaunchServiceProvider() = default;
@@ -94,6 +111,13 @@ void VmLaunchServiceProvider::Start(
       vm_tools::launch::kVmLaunchServiceInterface,
       vm_tools::launch::kVmLaunchServiceProvideVmTokenMethod,
       base::BindRepeating(&VmLaunchServiceProvider::ProvideVmToken,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&OnExported));
+
+  exported_object->ExportMethod(
+      vm_tools::launch::kVmLaunchServiceInterface,
+      vm_tools::launch::kVmLaunchServiceEnsureVmLaunchedMethod,
+      base::BindRepeating(&VmLaunchServiceProvider::EnsureVmLaunched,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&OnExported));
 }
@@ -206,6 +230,23 @@ void VmLaunchServiceProvider::ProvideVmToken(
   borealis::BorealisService::GetForProfile(profile)->Features().SetVmToken(
       token, base::BindOnce(&OnTokenChecked, profile, method_call,
                             std::move(response_sender), launch));
+}
+
+void VmLaunchServiceProvider::EnsureVmLaunched(
+    dbus::MethodCall* method_call,
+    dbus::ExportedObject::ResponseSender response_sender) {
+  vm_tools::launch::EnsureVmLaunchedRequest request;
+  if (!dbus::MessageReader(method_call).PopArrayOfBytesAsProto(&request)) {
+    std::move(response_sender)
+        .Run(dbus::ErrorResponse::FromMethodCall(
+            method_call, DBUS_ERROR_INVALID_ARGS,
+            "Unable to parse EnsureVmLaunchedRequest from message"));
+    return;
+  }
+
+  guest_os::launcher::EnsureLaunched(
+      request, base::BindOnce(&OnLaunchEnsured, method_call,
+                              std::move(response_sender)));
 }
 
 }  // namespace ash

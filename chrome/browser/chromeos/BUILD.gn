@@ -1666,6 +1666,8 @@ source_set("chromeos") {
     "../ash/guest_os/guest_os_diagnostics_builder.h",
     "../ash/guest_os/guest_os_external_protocol_handler.cc",
     "../ash/guest_os/guest_os_external_protocol_handler.h",
+    "../ash/guest_os/guest_os_launcher.cc",
+    "../ash/guest_os/guest_os_launcher.h",
     "../ash/guest_os/guest_os_mime_types_service.cc",
     "../ash/guest_os/guest_os_mime_types_service.h",
     "../ash/guest_os/guest_os_mime_types_service_factory.cc",

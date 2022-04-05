@@ -57,6 +57,9 @@ class VmLaunchServiceProvider
   void ProvideVmToken(dbus::MethodCall* method_call,
                       dbus::ExportedObject::ResponseSender response_sender);
 
+  void EnsureVmLaunched(dbus::MethodCall* method_call,
+                        dbus::ExportedObject::ResponseSender response_sender);
+
   base::WeakPtrFactory<VmLaunchServiceProvider> weak_ptr_factory_{this};
 };
 
