@@ -5,12 +5,12 @@
 #ifndef UI_VIEWS_TEST_FOCUS_MANAGER_TEST_H_
 #define UI_VIEWS_TEST_FOCUS_MANAGER_TEST_H_
 
-#include "base/memory/raw_ptr.h"
 #include "ui/views/focus/focus_manager.h"
 
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/focus/widget_focus_manager.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget_delegate.h"

@@ -4,6 +4,8 @@
 
 #include "ui/views/examples/examples_skia_gold_pixel_diff.h"
 
+#include <utility>
+
 #include "base/run_loop.h"
 #include "ui/snapshot/snapshot.h"
 #include "ui/views/examples/examples_window.h"

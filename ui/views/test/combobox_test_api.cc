@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include "ui/views/test/combobox_test_api.h"
-#include "base/memory/raw_ptr.h"
 
 #include <stdint.h>
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/menu/menu_runner.h"

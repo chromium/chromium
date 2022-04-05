@@ -5,9 +5,10 @@
 #ifndef UI_VIEWS_EXAMPLES_EXAMPLES_SKIA_GOLD_PIXEL_DIFF_H_
 #define UI_VIEWS_EXAMPLES_EXAMPLES_SKIA_GOLD_PIXEL_DIFF_H_
 
-#include "ui/base/test/skia_gold_pixel_diff.h"
+#include <string>
 
 #include "base/run_loop.h"
+#include "ui/base/test/skia_gold_pixel_diff.h"
 #include "ui/gfx/image/image.h"
 #include "ui/views/examples/examples_exit_code.h"
 #include "ui/views/widget/widget.h"
