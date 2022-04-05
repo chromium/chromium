@@ -66,6 +66,7 @@ The JSON for the header fields looks like:
     }, ...
   ],
   "has_components": true,
+  "has_disassembly": true,
   "has_padding": false
 }
 ```
@@ -113,6 +114,13 @@ The numeric values are:
   * `full_name`,
   * `num_aliases` (omitted when identical to previous line),
   * `flags` (omitted when 0).
+
+### Disassembly
+
+* Line 0: Space-separated list of raw_symbols indices.
+* Line 1: Line-separated list of disassembly length in bytes followed by the disassembly,
+  in the same order as the previous line.
+
 
 ## Format Details .sizediff
 

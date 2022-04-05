@@ -51,6 +51,7 @@ Each symbol contains the following fields:
        removed.
  * `component`: The team that owns this feature (optional, maybe be empty).
  * `flags`: Bitmask of flags. See `FLAG_*` constants in `models.py`.
+ * `disassembly` (optional): The disassembly code for the symbol.
 
 ### Diffs
 
