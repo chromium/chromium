@@ -5788,6 +5788,12 @@ const char kWebrtcPipeWireCapturerDescription[] =
 #endif  // #if defined(WEBRTC_USE_PIPEWIRE)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kChromeKioskEnableLacrosName[] =
+    "Enables Lacros in the chrome app Kiosk";
+const char kChromeKioskEnableLacrosDescription[] =
+    "Uses Lacros-chrome as the web browser in the chrome app Kiosk session on "
+    "Chrome OS. When disabled, the Ash-chrome will be used";
+
 const char kWebKioskEnableLacrosName[] =
     "Enables Lacros in the web (PWA) Kiosk";
 const char kWebKioskEnableLacrosDescription[] =

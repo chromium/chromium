@@ -2987,6 +2987,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kWebRtcPipeWireCapturer)},
 #endif  // defined(WEBRTC_USE_PIPEWIRE)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-lacros-in-chrome-kiosk",
+     flag_descriptions::kChromeKioskEnableLacrosName,
+     flag_descriptions::kChromeKioskEnableLacrosDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kChromeKioskEnableLacros)},
     {"enable-lacros-in-web-kiosk", flag_descriptions::kWebKioskEnableLacrosName,
      flag_descriptions::kWebKioskEnableLacrosDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kWebKioskEnableLacros)},

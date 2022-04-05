@@ -53518,6 +53518,7 @@ from previous Chrome versions.
   <int value="-1055845287" label="SensorContentSetting:enabled"/>
   <int value="-1055523523" label="ForceMinorVersion100InUserAgent:disabled"/>
   <int value="-1053496936" label="WebViewSendVariationsHeaders:disabled"/>
+  <int value="-1052831253" label="ChromeKioskEnableLacros:enabled"/>
   <int value="-1052782474" label="enable-cloud-devices"/>
   <int value="-1052415111" label="malware-interstitial-v2"/>
   <int value="-1052219252" label="disable-captive-portal-bypass-proxy"/>
@@ -55382,6 +55383,7 @@ from previous Chrome versions.
   <int value="255375615" label="stop-non-timers-in-background:enabled"/>
   <int value="255765456"
       label="ActivateMetricsReportingEnabledPolicyAndroid:disabled"/>
+  <int value="256753680" label="ChromeKioskEnableLacros:disabled"/>
   <int value="258621334"
       label="HappinessTrackingSurveysForDesktopDemo:disabled"/>
   <int value="259021228" label="OffMainThreadFetch:disabled"/>

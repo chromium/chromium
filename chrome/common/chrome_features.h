@@ -791,6 +791,9 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kWebAppsCrosapi;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kChromeKioskEnableLacros;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kWebKioskEnableLacros;
 #endif
 

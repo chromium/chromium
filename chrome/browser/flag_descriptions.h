@@ -3360,6 +3360,9 @@ extern const char kWebrtcPipeWireCapturerDescription[];
 #endif  // #if defined(WEBRTC_USE_PIPEWIRE)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+extern const char kChromeKioskEnableLacrosName[];
+extern const char kChromeKioskEnableLacrosDescription[];
+
 extern const char kWebKioskEnableLacrosName[];
 extern const char kWebKioskEnableLacrosDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

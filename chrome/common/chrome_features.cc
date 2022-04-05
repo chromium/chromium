@@ -277,7 +277,7 @@ const base::Feature kDesktopPWAsDefaultOfflinePage{
 
 // Moves the Extensions "puzzle piece" icon from the title bar into the app menu
 // for web app windows.
-const base::Feature kDesktopPWAsElidedExtensionsMenu{
+const base::Feature kDesktopPWAsElidedExtensionsMenu {
   "DesktopPWAsElidedExtensionsMenu",
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
       base::FEATURE_ENABLED_BY_DEFAULT
@@ -873,8 +873,8 @@ const base::Feature kAbusiveNotificationPermissionRevocation{
     "AbusiveOriginNotificationPermissionRevocation",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kRemoveStatusBarInWebApps{
-    "RemoveStatusBarInWebApps",
+const base::Feature kRemoveStatusBarInWebApps {
+  "RemoveStatusBarInWebApps",
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -1137,6 +1137,12 @@ const base::Feature kWebAppManifestPolicyAppIdentityUpdate{
     "WebAppManifestPolicyAppIdentityUpdate", base::FEATURE_ENABLED_BY_DEFAULT};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+// When this feature flag is enabled together with the LacrosAvailability
+// policy, the Chrome app Kiosk session uses Lacros-chrome as the web browser to
+// launch Chrome apps. When disabled, the Ash-chrome will be used instead.
+const base::Feature kChromeKioskEnableLacros{"ChromeKioskEnableLacros",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When this feature flag is enabled together with the LacrosAvailability
 // policy, the web (PWA) Kiosk session uses Lacros-chrome as the web browser to
 // launch web (PWA) applications. When disabled, the Ash-chrome will be used
