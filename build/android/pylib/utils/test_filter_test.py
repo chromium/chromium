@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 
 import argparse
+import os
 import sys
 import tempfile
 import unittest
@@ -86,6 +87,8 @@ class InitializeFilterFromArgsTest(unittest.TestCase):
     actual = test_filter.InitializeFilterFromArgs(args)
     self.assertEqual(actual, expected)
 
+  @unittest.skipIf(os.name == "nt", "Opening NamedTemporaryFile by name "
+                   "doesn't work in Windows.")
   def testFilterArgWithPositiveFilterInFilterFile(self):
     parser = argparse.ArgumentParser()
     test_filter.AddFilterOptions(parser)
@@ -100,6 +103,8 @@ class InitializeFilterFromArgsTest(unittest.TestCase):
       actual = test_filter.InitializeFilterFromArgs(args)
       self.assertEqual(actual, expected)
 
+  @unittest.skipIf(os.name == "nt", "Opening NamedTemporaryFile by name "
+                   "doesn't work in Windows.")
   def testFilterFileWithPositiveFilterInFilterArg(self):
     parser = argparse.ArgumentParser()
     test_filter.AddFilterOptions(parser)
@@ -115,6 +120,8 @@ class InitializeFilterFromArgsTest(unittest.TestCase):
       actual = test_filter.InitializeFilterFromArgs(args)
       self.assertEqual(actual, expected)
 
+  @unittest.skipIf(os.name == "nt", "Opening NamedTemporaryFile by name "
+                   "doesn't work in Windows.")
   def testPositiveFilterInBothFileAndArg(self):
     parser = argparse.ArgumentParser()
     test_filter.AddFilterOptions(parser)
@@ -129,6 +136,8 @@ class InitializeFilterFromArgsTest(unittest.TestCase):
       with self.assertRaises(test_filter.ConflictingPositiveFiltersException):
         test_filter.InitializeFilterFromArgs(args)
 
+  @unittest.skipIf(os.name == "nt", "Opening NamedTemporaryFile by name "
+                   "doesn't work in Windows.")
   def testFilterArgWithFilterFileAllNegative(self):
     parser = argparse.ArgumentParser()
     test_filter.AddFilterOptions(parser)
