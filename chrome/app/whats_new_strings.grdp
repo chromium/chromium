@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
-  <message name="IDS_WHATS_NEW_PAGE_CANT_BE_REACHED" desc="Text indicating that the site hosting What's New content cannot be reached.">
-    This page can't be reached
-  </message>
-  <message name="IDS_WHATS_NEW_RELOAD_TRY_AGAIN" desc="Text indicating that the user should reload the What's New page or try to load it again at a later time.">
-    Reload the page or try again later
+  <message name="IDS_WHATS_NEW_TITLE" desc="Title of the What's New page">
+    What's New
   </message>
 </grit-part>

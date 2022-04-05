@@ -41,9 +41,7 @@ content::WebUIDataSource* CreateWhatsNewUIHtmlSource(Profile* profile) {
       source, base::make_span(kWhatsNewResources, kWhatsNewResourcesSize),
       IDR_WHATS_NEW_WHATS_NEW_HTML);
   static constexpr webui::LocalizedString kStrings[] = {
-      {"pageCantBeReached", IDS_WHATS_NEW_PAGE_CANT_BE_REACHED},
-      {"reloadOrTryAgain", IDS_WHATS_NEW_RELOAD_TRY_AGAIN},
-      {"reloadButton", IDS_RELOAD},
+      {"title", IDS_WHATS_NEW_TITLE},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("showFeedbackButton",
