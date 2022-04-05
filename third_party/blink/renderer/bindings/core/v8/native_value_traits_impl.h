@@ -32,6 +32,9 @@ class CallbackFunctionBase;
 class CallbackInterfaceBase;
 class EventListener;
 class FlexibleArrayBufferView;
+class GPUColorTargetState;
+class GPURenderPassColorAttachment;
+class GPUVertexBufferLayout;
 class ScriptWrappable;
 class XPathNSResolver;
 struct WrapperTypeInfo;
@@ -1289,13 +1292,25 @@ struct NativeValueTraits<
   }
 };
 
-// We don't support nullable dictionary types for the time being since it's
-// quite confusing.
+// We don't support nullable dictionary types in general since it's quite
+// confusing and often misused.
 template <typename T>
 struct NativeValueTraits<
     IDLNullable<T>,
     typename std::enable_if_t<
-        std::is_base_of<bindings::DictionaryBase, T>::value>>;
+        std::is_base_of<bindings::DictionaryBase, T>::value &&
+        (std::is_same<T, GPUColorTargetState>::value ||
+         std::is_same<T, GPURenderPassColorAttachment>::value ||
+         std::is_same<T, GPUVertexBufferLayout>::value)>>
+    : public NativeValueTraitsBase<T*> {
+  static T* NativeValue(v8::Isolate* isolate,
+                        v8::Local<v8::Value> value,
+                        ExceptionState& exception_state) {
+    if (value->IsNullOrUndefined())
+      return nullptr;
+    return T::Create(isolate, value, exception_state);
+  }
+};
 
 // Enumeration types
 template <typename T>
