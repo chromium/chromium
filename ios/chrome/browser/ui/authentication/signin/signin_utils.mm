@@ -152,10 +152,6 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
     return false;
   }
 
-  // The SSO promo should not be disabled if it is force disabled.
-  if (signin::ForceDisableExtendedSyncPromos())
-    return false;
-
   // The sign-in promo should be shown twice, even if no account has been added.
   NSInteger display_count =
       [defaults integerForKey:kSigninPromoViewDisplayCountKey];

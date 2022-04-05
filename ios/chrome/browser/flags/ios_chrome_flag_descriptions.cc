@@ -273,11 +273,6 @@ const char kFillingAcrossAffiliatedWebsitesDescription[] =
     "Enables filling password on a website when there is saved "
     "password on affiliated website.";
 
-const char kForceDisableExtendedSyncPromosName[] =
-    "Disable all extended sync promos";
-const char kForceDisableExtendedSyncPromosDescription[] =
-    "When enabled, will not display any extended sync promos";
-
 const char kForceStartupSigninPromoName[] = "Display the startup sign-in promo";
 const char kForceStartupSigninPromoDescription[] =
     "When enabled, the startup sign-in promo is always displayed when starting "

@@ -3319,11 +3319,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "force-disable-extended-sync-promos",
-    "owners": ["fernandex", "msarda"],
-    "expiry_milestone": 100
-  },
-  {
     "name": "force-enable-cast-remoting-query",
     "owners": [ "rwkeane@google.com", "openscreen-eng@google.com" ],
     "expiry_milestone": 115

@@ -241,10 +241,6 @@ extern const char kExpandedTabStripDescription[];
 extern const char kFillingAcrossAffiliatedWebsitesName[];
 extern const char kFillingAcrossAffiliatedWebsitesDescription[];
 
-// Title and description for the flag to disable all extended sync promos.
-extern const char kForceDisableExtendedSyncPromosName[];
-extern const char kForceDisableExtendedSyncPromosDescription[];
-
 // Title and description for the flag to trigger the startup sign-in promo.
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];

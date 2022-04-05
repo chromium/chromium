@@ -306,20 +306,6 @@ TEST_F(SigninUtilsTest, TestSigninAllowedByPolicyPref) {
       signin::IsSigninAllowed(chrome_browser_state_.get()->GetPrefs()));
 }
 
-// Should not show the sign-in upgrade when extended sync promos are disabled.
-TEST_F(SigninUtilsTest, TestWillNotShowWhenPromosDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      switches::kForceDisableExtendedSyncPromos);
-
-  ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
-      ->AddIdentities(@[ @"foo", @"bar" ]);
-  const base::Version version_1_0("1.0");
-
-  EXPECT_FALSE(signin::ShouldPresentUserSigninUpgrade(
-      chrome_browser_state_.get(), version_1_0));
-}
-
 // signin::GetPrimaryIdentitySigninState for a signed-out user should
 // return the signed out state.
 TEST_F(SigninUtilsTest, TestGetPrimaryIdentitySigninStateSignedOut) {

@@ -12,11 +12,6 @@ bool ForceStartupSigninPromo() {
   return base::FeatureList::IsEnabled(switches::kForceStartupSigninPromo);
 }
 
-bool ForceDisableExtendedSyncPromos() {
-  return base::FeatureList::IsEnabled(
-      switches::kForceDisableExtendedSyncPromos);
-}
-
 const char kDelayThresholdMinutesToUpdateGaiaCookie[] =
     "minutes-delay-to-restore-gaia-cookies-if-deleted";
 

@@ -646,12 +646,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"reading-list-messages", flag_descriptions::kReadingListMessagesName,
      flag_descriptions::kReadingListMessagesDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kReadingListMessages)},
-    {"force-disable-extended-sync-promos",
-     flag_descriptions::kForceDisableExtendedSyncPromosName,
-     flag_descriptions::kForceDisableExtendedSyncPromosDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(switches::kForceDisableExtendedSyncPromos)},
-
     {"sync-trusted-vault-passphrase-ios-rpc",
      flag_descriptions::kSyncTrustedVaultPassphraseiOSRPCName,
      flag_descriptions::kSyncTrustedVaultPassphraseiOSRPCDescription,
