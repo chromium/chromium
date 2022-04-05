@@ -251,7 +251,8 @@ void ModelExecutionManagerImpl::RunModelExecutionCallback(
       clock_->Now() - state->total_execution_start_time);
   stats::RecordModelExecutionStatus(state->segment_id,
                                     state->is_explicit_provider, status);
-  std::move(state->callback).Run(std::make_pair(result, status));
+  std::move(state->callback)
+      .Run(std::make_pair(result, status), state->input_tensor);
 }
 
 void ModelExecutionManagerImpl::OnSegmentationModelUpdated(

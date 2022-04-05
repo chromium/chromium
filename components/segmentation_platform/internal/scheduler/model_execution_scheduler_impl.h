@@ -5,17 +5,19 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SCHEDULER_MODEL_EXECUTION_SCHEDULER_IMPL_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SCHEDULER_MODEL_EXECUTION_SCHEDULER_IMPL_H_
 
-#include "base/memory/raw_ptr.h"
-#include "components/segmentation_platform/internal/scheduler/model_execution_scheduler.h"
+#include <utility>
+#include <vector>
 
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
 #include "components/segmentation_platform/internal/platform_options.h"
+#include "components/segmentation_platform/internal/scheduler/model_execution_scheduler.h"
 
 namespace base {
 class Clock;
@@ -52,7 +54,8 @@ class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
   void RequestModelExecution(const proto::SegmentInfo& segment_info) override;
   void OnModelExecutionCompleted(
       OptimizationTarget segment_id,
-      const std::pair<float, ModelExecutionStatus>& score) override;
+      const std::pair<float, ModelExecutionStatus>& score,
+      const std::vector<float>& input_tensors) override;
 
  private:
   void FilterEligibleSegments(

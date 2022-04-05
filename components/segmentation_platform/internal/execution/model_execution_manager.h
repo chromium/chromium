@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/callback_forward.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
@@ -32,7 +33,8 @@ class ModelExecutionManager {
 
   // The float value is only valid when ModelExecutionStatus == kSuccess.
   using ModelExecutionCallback =
-      base::OnceCallback<void(const std::pair<float, ModelExecutionStatus>&)>;
+      base::OnceCallback<void(const std::pair<float, ModelExecutionStatus>&,
+                              const std::vector<float>& /*input_tensors*/)>;
 
   // Invoked whenever there are changes to the state of a segmentation model.
   // Will not be invoked unless the proto::SegmentInfo is valid.

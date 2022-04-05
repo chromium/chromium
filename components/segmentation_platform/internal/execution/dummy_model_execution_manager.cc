@@ -4,8 +4,8 @@
 
 #include "components/segmentation_platform/internal/execution/dummy_model_execution_manager.h"
 
-#include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/location.h"
@@ -24,7 +24,8 @@ namespace {
 void RunModelExecutionCallback(
     ModelExecutionManager::ModelExecutionCallback callback) {
   std::move(callback).Run(
-      std::make_pair(0, ModelExecutionStatus::kExecutionError));
+      std::make_pair(0, ModelExecutionStatus::kExecutionError),
+      std::vector<float>());
 }
 }  // namespace
 

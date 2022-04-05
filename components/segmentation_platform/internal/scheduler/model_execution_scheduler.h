@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SCHEDULER_MODEL_EXECUTION_SCHEDULER_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SCHEDULER_MODEL_EXECUTION_SCHEDULER_H_
 
+#include <utility>
+#include <vector>
+
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
 
@@ -51,11 +54,13 @@ class ModelExecutionScheduler {
   // Called after model execution completes. If the execution was successful,
   // saves the results to the DB, and notifies observers. If the execution was
   // unsuccessful, deletes the result from the DB.
+  // |input_tensors| are the inputs for the model execution.
   // TODO(shaktisahu): Do we want to store that failure reason in the DB
   // instead? We might treat different failures differently next time.
   virtual void OnModelExecutionCompleted(
       OptimizationTarget segment_id,
-      const std::pair<float, ModelExecutionStatus>& result) = 0;
+      const std::pair<float, ModelExecutionStatus>& result,
+      const std::vector<float>& input_tensors) = 0;
 };
 
 }  // namespace segmentation_platform

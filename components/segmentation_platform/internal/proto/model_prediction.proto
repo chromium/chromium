@@ -18,6 +18,10 @@ message PredictionResult {
   // The time when the prediction was made, in terms of the number of
   // microseconds since Windows epoch.
   optional int64 timestamp_us = 2;
+
+  // Input tensors when the model is executed locally. Will be reported in UKM
+  // to update the ML model.
+  repeated float input_tensors = 3;
 }
 
 // Top level message for a segment. Contains both the model metadata and

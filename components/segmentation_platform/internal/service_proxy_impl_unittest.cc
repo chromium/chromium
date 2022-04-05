@@ -53,7 +53,8 @@ class MockModelExecutionScheduler : public ModelExecutionScheduler {
   MOCK_METHOD(void,
               OnModelExecutionCompleted,
               (OptimizationTarget,
-               (const std::pair<float, ModelExecutionStatus>&)));
+               (const std::pair<float, ModelExecutionStatus>&),
+               const std::vector<float>&));
 };
 
 }  // namespace
@@ -236,13 +237,13 @@ TEST_F(ServiceProxyImplTest, OverwriteResult) {
   MockModelExecutionScheduler scheduler;
 
   // Scheduler is not set, OverwriteValue() will do nothing.
-  EXPECT_CALL(scheduler, OnModelExecutionCompleted(_, _)).Times(0);
+  EXPECT_CALL(scheduler, OnModelExecutionCompleted(_, _, _)).Times(0);
   service_proxy_impl_->OverwriteResult(
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 0.7);
 
   // Test with invalid values.
   service_proxy_impl_->SetModelExecutionScheduler(&scheduler);
-  EXPECT_CALL(scheduler, OnModelExecutionCompleted(_, _)).Times(0);
+  EXPECT_CALL(scheduler, OnModelExecutionCompleted(_, _, _)).Times(0);
   service_proxy_impl_->OverwriteResult(
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 1.1);
   service_proxy_impl_->OverwriteResult(
@@ -251,12 +252,12 @@ TEST_F(ServiceProxyImplTest, OverwriteResult) {
   EXPECT_CALL(
       scheduler,
       OnModelExecutionCompleted(
-          OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, _))
+          OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, _, _))
       .Times(1);
   service_proxy_impl_->OverwriteResult(
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 0.7);
 
-  EXPECT_CALL(scheduler, OnModelExecutionCompleted(_, _)).Times(0);
+  EXPECT_CALL(scheduler, OnModelExecutionCompleted(_, _, _)).Times(0);
   service_proxy_impl_->OverwriteResult(
       OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN, 0.7);
 }
