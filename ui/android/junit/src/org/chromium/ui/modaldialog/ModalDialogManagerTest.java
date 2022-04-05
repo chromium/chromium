@@ -86,15 +86,15 @@ public class ModalDialogManagerTest {
         verify(mObserver, times(0)).onDialogAdded(mDialogModels.get(1));
 
         verify(mObserver, times(0)).onDialogDismissed(mDialogModels.get(0));
-        mModalDialogManager.dismissDialog(mDialogModels.get(0), ModalDialogType.APP);
+        mModalDialogManager.dismissDialog(mDialogModels.get(0), DialogDismissalCause.UNKNOWN);
         verify(mObserver, times(1)).onDialogDismissed(mDialogModels.get(0));
         verify(mObserver, times(1)).onDialogAdded(mDialogModels.get(1));
 
-        mModalDialogManager.dismissDialog(mDialogModels.get(1), ModalDialogType.APP);
+        mModalDialogManager.dismissDialog(mDialogModels.get(1), DialogDismissalCause.UNKNOWN);
         // Calling the same function again, as well as dismissDialogsOfType() should not trigger
         // notifying of empty (because onLastDialogDismissed() was already called once, and a new
         // dialog wasn't added).
-        mModalDialogManager.dismissDialog(mDialogModels.get(1), ModalDialogType.APP);
+        mModalDialogManager.dismissDialog(mDialogModels.get(1), DialogDismissalCause.UNKNOWN);
         mModalDialogManager.dismissDialogsOfType(
                 ModalDialogType.APP, DialogDismissalCause.ACTIVITY_DESTROYED);
         verify(mObserver, times(1)).onLastDialogDismissed();
@@ -108,7 +108,7 @@ public class ModalDialogManagerTest {
         mModalDialogManager.showDialog(mDialogModels.get(0), ModalDialogType.APP);
         assertTrue(mModalDialogManager.isShowing());
         assertEquals(mDialogModels.get(0), mModalDialogManager.getCurrentDialogForTest());
-        assertEquals(0, mModalDialogManager.getPendingDialogsForTest(ModalDialogType.APP).size());
+        assertNull(mModalDialogManager.getPendingDialogsForTest(ModalDialogType.APP));
         assertNull(mModalDialogManager.getPendingDialogsForTest(ModalDialogType.TAB));
         verify(mAppModalPresenter, times(1)).addDialogView(mDialogModels.get(0));
         verify(mTabModalPresenter, times(0)).addDialogView(any());
@@ -159,7 +159,10 @@ public class ModalDialogManagerTest {
         // modal dialog is queued.
         mModalDialogManager.showDialog(mDialogModels.get(1), ModalDialogType.APP);
         assertEquals(mDialogModels.get(1), mModalDialogManager.getCurrentDialogForTest());
-        assertEquals(0, mModalDialogManager.getPendingDialogsForTest(ModalDialogType.APP).size());
+        // APP based dialog has a higher priority than TAB based dialog therefore it shouldn't
+        // have initialized the pending dialogs pertaining to it when it was asked to be shown after
+        // TAB based dialog.
+        assertNull(mModalDialogManager.getPendingDialogsForTest(ModalDialogType.APP));
         assertEquals(1, mModalDialogManager.getPendingDialogsForTest(ModalDialogType.TAB).size());
         verify(mAppModalPresenter, times(0)).addDialogView(mDialogModels.get(0));
         verify(mAppModalPresenter, times(1)).addDialogView(mDialogModels.get(1));
@@ -189,7 +192,7 @@ public class ModalDialogManagerTest {
         verify(mTabModalPresenter, times(0)).addDialogView(any());
 
         // Dismiss the first dialog and verify that the second dialog is shown.
-        mModalDialogManager.dismissDialog(mDialogModels.get(0), ModalDialogType.APP);
+        mModalDialogManager.dismissDialog(mDialogModels.get(0), DialogDismissalCause.UNKNOWN);
         assertOnDismissCalled(mDialogModels.get(0), 1);
         assertEquals(mDialogModels.get(1), mModalDialogManager.getCurrentDialogForTest());
         assertEquals(1, mModalDialogManager.getPendingDialogsForTest(ModalDialogType.APP).size());
@@ -227,7 +230,7 @@ public class ModalDialogManagerTest {
         verify(mTabModalPresenter, times(0)).addDialogView(any());
 
         // Dismiss the first dialog and verify that the third dialog is shown.
-        mModalDialogManager.dismissDialog(mDialogModels.get(0), ModalDialogType.APP);
+        mModalDialogManager.dismissDialog(mDialogModels.get(0), DialogDismissalCause.UNKNOWN);
         assertOnDismissCalled(mDialogModels.get(0), 1);
         assertEquals(mDialogModels.get(2), mModalDialogManager.getCurrentDialogForTest());
         assertEquals(1, mModalDialogManager.getPendingDialogsForTest(ModalDialogType.APP).size());
@@ -261,7 +264,9 @@ public class ModalDialogManagerTest {
         verify(mAppModalPresenter, times(1)).removeDialogView(mDialogModels.get(0));
 
         assertTrue(mModalDialogManager.isShowing());
-        assertEquals(0, mModalDialogManager.getPendingDialogsForTest(ModalDialogType.APP).size());
+        assertNull("Dismissing the last modal dialog of its type didn't remove the"
+                        + " corresponding pending list.",
+                mModalDialogManager.getPendingDialogsForTest(ModalDialogType.APP));
         assertEquals(1, mModalDialogManager.getPendingDialogsForTest(ModalDialogType.TAB).size());
         verify(mAppModalPresenter, times(1)).addDialogView(mDialogModels.get(2));
         verify(mTabModalPresenter, times(0)).addDialogView(any());
@@ -270,7 +275,9 @@ public class ModalDialogManagerTest {
         mModalDialogManager.dismissDialog(mDialogModels.get(0), DialogDismissalCause.UNKNOWN);
         assertOnDismissCalled(mDialogModels.get(0), 1);
         assertEquals(mDialogModels.get(2), mModalDialogManager.getCurrentDialogForTest());
-        assertEquals(0, mModalDialogManager.getPendingDialogsForTest(ModalDialogType.APP).size());
+        assertNull("Dismissing the last modal dialog of its type didn't remove the"
+                        + " corresponding pending list.",
+                mModalDialogManager.getPendingDialogsForTest(ModalDialogType.APP));
         assertEquals(1, mModalDialogManager.getPendingDialogsForTest(ModalDialogType.TAB).size());
         Mockito.verifyNoMoreInteractions(mAppModalPresenter, mTabModalPresenter);
     }
@@ -291,15 +298,17 @@ public class ModalDialogManagerTest {
         mModalDialogManager.dismissDialog(mDialogModels.get(1), DialogDismissalCause.UNKNOWN);
         assertOnDismissCalled(mDialogModels.get(1), 1);
         assertEquals(mDialogModels.get(0), mModalDialogManager.getCurrentDialogForTest());
-        assertEquals(0, mModalDialogManager.getPendingDialogsForTest(ModalDialogType.APP).size());
+        assertNull("Dismissing the last modal dialog of its type didn't remove the"
+                        + " corresponding pending list.",
+                mModalDialogManager.getPendingDialogsForTest(ModalDialogType.APP));
         assertEquals(1, mModalDialogManager.getPendingDialogsForTest(ModalDialogType.TAB).size());
 
         // Dismiss the third dialog.
         mModalDialogManager.dismissDialog(mDialogModels.get(2), DialogDismissalCause.UNKNOWN);
         assertOnDismissCalled(mDialogModels.get(2), 1);
         assertEquals(mDialogModels.get(0), mModalDialogManager.getCurrentDialogForTest());
-        assertEquals(0, mModalDialogManager.getPendingDialogsForTest(ModalDialogType.APP).size());
-        assertEquals(0, mModalDialogManager.getPendingDialogsForTest(ModalDialogType.TAB).size());
+        assertNull(mModalDialogManager.getPendingDialogsForTest(ModalDialogType.APP));
+        assertNull(mModalDialogManager.getPendingDialogsForTest(ModalDialogType.TAB));
     }
 
     /** Tests dismissing all dialogs. */
@@ -317,8 +326,8 @@ public class ModalDialogManagerTest {
         assertOnDismissCalled(mDialogModels.get(1), 1);
         assertOnDismissCalled(mDialogModels.get(2), 1);
         assertFalse(mModalDialogManager.isShowing());
-        assertEquals(0, mModalDialogManager.getPendingDialogsForTest(ModalDialogType.APP).size());
-        assertEquals(0, mModalDialogManager.getPendingDialogsForTest(ModalDialogType.TAB).size());
+        assertNull(mModalDialogManager.getPendingDialogsForTest(ModalDialogType.APP));
+        assertNull(mModalDialogManager.getPendingDialogsForTest(ModalDialogType.TAB));
     }
 
     /** Tests dismissing dialogs of a certain type. */
@@ -335,8 +344,12 @@ public class ModalDialogManagerTest {
         assertOnDismissCalled(mDialogModels.get(0), 1);
         assertOnDismissCalled(mDialogModels.get(1), 1);
         assertEquals(mDialogModels.get(2), mModalDialogManager.getCurrentDialogForTest());
-        assertEquals(0, mModalDialogManager.getPendingDialogsForTest(ModalDialogType.APP).size());
-        assertEquals(0, mModalDialogManager.getPendingDialogsForTest(ModalDialogType.TAB).size());
+        assertNull("Dismissing the last modal dialog of its type didn't remove the"
+                        + " corresponding pending list.",
+                mModalDialogManager.getPendingDialogsForTest(ModalDialogType.APP));
+        assertNull("Dismissing the last modal dialog of its type didn't remove the"
+                        + " corresponding pending list.",
+                mModalDialogManager.getPendingDialogsForTest(ModalDialogType.TAB));
     }
 
     /** Tests suspending dialogs of a certain type. */
@@ -364,7 +377,10 @@ public class ModalDialogManagerTest {
         // Show an app modal dialog, and verify that it is shown.
         mModalDialogManager.showDialog(mDialogModels.get(3), ModalDialogType.APP);
         assertEquals(mDialogModels.get(3), mModalDialogManager.getCurrentDialogForTest());
-        assertEquals(0, mModalDialogManager.getPendingDialogsForTest(ModalDialogType.APP).size());
+        // APP based dialog has a higher priority than TAB based dialog therefore it shouldn't
+        // have initialized the pending dialogs pertaining to it when it was asked to be shown after
+        // TAB based dialog.
+        assertNull(mModalDialogManager.getPendingDialogsForTest(ModalDialogType.APP));
         assertEquals(3, mModalDialogManager.getPendingDialogsForTest(ModalDialogType.TAB).size());
     }
 
