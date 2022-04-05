@@ -54,6 +54,10 @@ extern const base::Feature kU2fPermissionPrompt;
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const base::Feature kWebAuthnGoogleCorpRemoteDesktopClientPrivilege;
 
+// Enable some experimental UI changes
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const base::Feature kWebAuthPasskeysUIExperiment;
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

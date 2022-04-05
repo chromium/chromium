@@ -6,9 +6,11 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/feature_list.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
 #include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"
+#include "device/fido/features.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
@@ -49,7 +51,8 @@ class AuthenticatorQRViewCentered : public views::View {
         qrcode_generator::mojom::GenerateQRCodeRequest::New();
     request->data = qr_string;
     request->should_render = true;
-    request->render_dino = true;
+    request->render_dino =
+        !base::FeatureList::IsEnabled(device::kWebAuthPasskeysUIExperiment);
     request->render_module_style =
         qrcode_generator::mojom::ModuleStyle::CIRCLES;
     request->render_locator_style =
