@@ -7735,3 +7735,5 @@ crbug.com/1312484 [ Mac11 ] external/wpt/navigation-api/ordering-and-transition/
 
 # Sheriff 2022-04-05
 crbug.com/1313282 inspector-protocol/input/dispatchMouseEvent.js [ Failure Pass ]
+crbug.com/1313331 [ Mac10.13 ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/subpixel-overflow-mouse-drag.html [ Failure Pass ]
+crbug.com/1313331 [ Debug Linux ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/subpixel-overflow-mouse-drag.html [ Failure Pass ]
