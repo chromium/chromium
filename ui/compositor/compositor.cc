@@ -319,22 +319,17 @@ void Compositor::AddChildFrameSink(const viz::FrameSinkId& frame_sink_id) {
       frame_sink_id_, frame_sink_id);
 
   auto result = child_frame_sinks_.insert(frame_sink_id);
-
-  // TODO(crbug.com/1196413): Remove this after some investigation.
-  CHECK(result.second);
+  DCHECK(result.second);
 }
 
 void Compositor::RemoveChildFrameSink(const viz::FrameSinkId& frame_sink_id) {
   auto it = child_frame_sinks_.find(frame_sink_id);
-  if (it != child_frame_sinks_.end()) {
-    DCHECK(it->is_valid());
-    context_factory_->GetHostFrameSinkManager()->UnregisterFrameSinkHierarchy(
-        frame_sink_id_, *it);
-    child_frame_sinks_.erase(it);
-  } else {
-    // TODO(crbug.com/1196413): Remove this after some investigation.
-    NOTREACHED();
-  }
+  DCHECK(it != child_frame_sinks_.end());
+  DCHECK(it->is_valid());
+
+  context_factory_->GetHostFrameSinkManager()->UnregisterFrameSinkHierarchy(
+      frame_sink_id_, *it);
+  child_frame_sinks_.erase(it);
 }
 
 void Compositor::SetLayerTreeFrameSink(
