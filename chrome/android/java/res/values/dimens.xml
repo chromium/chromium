@@ -329,6 +329,7 @@
     <dimen name="context_menu_small_width">268dp</dimen>
     <dimen name="context_menu_small_lateral_margin">30dp</dimen>
     <dimen name="context_menu_popup_max_width">319dp</dimen>
+    <dimen name="context_menu_fading_edge_size">52dp</dimen>
 
     <dimen name="context_menu_popup_header_image_max_size">36dp</dimen>
     <dimen name="context_menu_popup_header_monogram_size">16dp</dimen>
