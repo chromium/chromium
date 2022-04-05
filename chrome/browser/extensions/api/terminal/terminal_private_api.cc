@@ -704,6 +704,7 @@ ExtensionFunction::ResponseAction TerminalPrivateGetPrefsFunction::Run() {
       crostini::prefs::kCrostiniContainers,
       crostini::prefs::kCrostiniEnabled,
       crostini::prefs::kCrostiniTerminalSettings,
+      crostini::prefs::kTerminalSshAllowedByPolicy,
   }};
 
   for (const auto& path : params->paths) {
