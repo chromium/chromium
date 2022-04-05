@@ -88,6 +88,16 @@
   .log {
     white-space: normal;
   }
+
+  #navigationButtonWrapper {
+    bottom: 6px;
+    margin-inline-start: calc(-1 * var(--page-left-margin) + 6px);
+    position: absolute;
+  }
+
+  #shutDownButton {
+    margin-inline-end: 8px;
+  }
 </style>
 
 <base-page>
@@ -96,14 +106,16 @@
     <div class="instructions">
       [[i18n('repairCompletedDescriptionText')]]
     </div>
-    <cr-button id="shutDownButton" on-click="onShutDownButtonClick_"
-        disabled="[[allButtonsDisabled]]">
-        [[i18n('repairCompleteShutDownButtonText')]]
-    </cr-button>
-    <cr-button id="rebootButton" on-click="onRebootButtonClick_"
-        disabled="[[allButtonsDisabled]]">
-        [[i18n('repairCompleteRebootButtonText')]]
-    </cr-button>
+    <div id="navigationButtonWrapper">
+      <cr-button id="shutDownButton" on-click="onShutDownButtonClick_"
+          disabled="[[allButtonsDisabled]]">
+          [[i18n('repairCompleteShutDownButtonText')]]
+      </cr-button>
+      <cr-button id="rebootButton" on-click="onRebootButtonClick_"
+          disabled="[[allButtonsDisabled]]">
+          [[i18n('repairCompleteRebootButtonText')]]
+      </cr-button>
+    </div>
   </div>
   <div slot="right-pane">
     <div id="buttonContainer">
