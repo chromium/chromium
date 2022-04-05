@@ -32998,6 +32998,7 @@ should be able to be added at any place in this file.
   <suffix name="PageInfoStoreInfo" label="For PageInfoStoreInfo feature."/>
   <suffix name="PasswordsAccountStorage"
       label="For PasswordsAccountStorage feature."/>
+  <suffix name="PasswordSuggestions" label="For PasswordSuggestions feature."/>
   <suffix name="PreviewsOmniboxUI"
       label="For the Previews UI in the Android Omnibox feature."/>
   <suffix name="ProfileSwitch"
