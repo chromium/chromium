@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_support.h"
 #include "base/memory/scoped_refptr.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_types.h"
+#include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -19,7 +19,7 @@ const UChar32 kNAryWhiteVerticalBarCodePoint = 0x2AFF;
 
 namespace blink {
 
-class OpenTypeMathSupportTest : public testing::Test {
+class OpenTypeMathSupportTest : public FontTestBase {
  protected:
   void SetUp() override {
     font_description.SetComputedSize(10.0);

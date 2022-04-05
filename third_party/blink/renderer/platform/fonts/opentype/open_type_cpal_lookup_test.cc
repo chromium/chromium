@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_cpal_lookup.h"
+
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#include "base/test/task_environment.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
+#include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -31,7 +33,7 @@ String pathToNonColrTestFont() {
 
 namespace blink {
 
-class OpenTypeCpalLookupTest : public testing::Test {
+class OpenTypeCpalLookupTest : public FontTestBase {
  protected:
   void SetUp() override {
     FontDescription::VariantLigatures ligatures;

@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
+#include "third_party/blink/renderer/platform/testing/font_test_base.h"
 
 namespace blink {
 
@@ -32,7 +33,7 @@ static scoped_refptr<SimpleFontData> CreateTestSimpleFontData(
   return SimpleFontData::Create(platform_data, nullptr);
 }
 
-class ShapeResultBloberizerTest : public testing::Test {
+class ShapeResultBloberizerTest : public FontTestBase {
  protected:
   void SetUp() override {
     font_description.SetComputedSize(12.0);

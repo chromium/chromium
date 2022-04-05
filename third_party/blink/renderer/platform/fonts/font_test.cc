@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/platform/fonts/font.h"
 
 #include "cc/paint/paint_flags.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
+#include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/text/tab_size.h"
@@ -16,7 +16,7 @@ using blink::test::CreateTestFont;
 
 namespace blink {
 
-class FontTest : public ::testing::Test {
+class FontTest : public FontTestBase {
  public:
   Vector<int> GetExpandedRange(const String& text, bool ltr, int from, int to) {
     FontDescription::VariantLigatures ligatures(

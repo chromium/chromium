@@ -30,8 +30,10 @@
 
 #include "third_party/blink/renderer/platform/fonts/font.h"
 
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/typesetting_features.h"
+#include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -39,7 +41,9 @@ using blink::test::CreateTestFont;
 
 namespace blink {
 
-TEST(FontPlatformDataTest, AhemHasNoSpaceInLigaturesOrKerning) {
+class FontPlatformDataTest : public FontTestBase {};
+
+TEST_F(FontPlatformDataTest, AhemHasNoSpaceInLigaturesOrKerning) {
   Font font =
       CreateTestFont("Ahem", test::PlatformTestDataPath("Ahem.woff"), 16);
   const FontPlatformData& platform_data = font.PrimaryFont()->PlatformData();
@@ -48,7 +52,7 @@ TEST(FontPlatformDataTest, AhemHasNoSpaceInLigaturesOrKerning) {
   EXPECT_FALSE(platform_data.HasSpaceInLigaturesOrKerning(features));
 }
 
-TEST(FontPlatformDataTest, AhemSpaceLigatureHasSpaceInLigaturesOrKerning) {
+TEST_F(FontPlatformDataTest, AhemSpaceLigatureHasSpaceInLigaturesOrKerning) {
   Font font =
       CreateTestFont("AhemSpaceLigature",
                      test::PlatformTestDataPath("AhemSpaceLigature.woff"), 16);
@@ -58,7 +62,7 @@ TEST(FontPlatformDataTest, AhemSpaceLigatureHasSpaceInLigaturesOrKerning) {
   EXPECT_TRUE(platform_data.HasSpaceInLigaturesOrKerning(features));
 }
 
-TEST(FontPlatformDataTest, AhemSpaceLigatureHasNoSpaceWithoutFontFeatures) {
+TEST_F(FontPlatformDataTest, AhemSpaceLigatureHasNoSpaceWithoutFontFeatures) {
   Font font =
       CreateTestFont("AhemSpaceLigature",
                      test::PlatformTestDataPath("AhemSpaceLigature.woff"), 16);
@@ -70,7 +74,7 @@ TEST(FontPlatformDataTest, AhemSpaceLigatureHasNoSpaceWithoutFontFeatures) {
 
 // Two Font objects using the same underlying font (the "A" character extracted
 // from Robot-Regular) but different sizes should have the same digest.
-TEST(FontPlatformDataTest, TypefaceDigestForDifferentSizes_SameDigest) {
+TEST_F(FontPlatformDataTest, TypefaceDigestForDifferentSizes_SameDigest) {
   Font size_16_font =
       CreateTestFont("robot-a", test::PlatformTestDataPath("roboto-a.ttf"), 16);
   IdentifiableToken size_16_digest =
@@ -85,7 +89,7 @@ TEST(FontPlatformDataTest, TypefaceDigestForDifferentSizes_SameDigest) {
 // Two Font objects using different underlying fonts should have different
 // digests. The second font also has the "A" from Robot-Regular, but has the
 // format 12 part of the CMAP character to glyph mapping table removed.
-TEST(FontPlatformDataTest, TypefaceDigestForDifferentFonts_DifferentDigest) {
+TEST_F(FontPlatformDataTest, TypefaceDigestForDifferentFonts_DifferentDigest) {
   Font font1 =
       CreateTestFont("robot-a", test::PlatformTestDataPath("roboto-a.ttf"), 16);
   IdentifiableToken digest1 =
@@ -99,7 +103,7 @@ TEST(FontPlatformDataTest, TypefaceDigestForDifferentFonts_DifferentDigest) {
 
 // A Font using the same underlying font should have the same digest on
 // different platforms.
-TEST(FontPlatformDataTest, TypefaceDigestCrossPlatform_SameDigest) {
+TEST_F(FontPlatformDataTest, TypefaceDigestCrossPlatform_SameDigest) {
   Font font =
       CreateTestFont("robot-a", test::PlatformTestDataPath("roboto-a.ttf"), 16);
   IdentifiableToken digest =

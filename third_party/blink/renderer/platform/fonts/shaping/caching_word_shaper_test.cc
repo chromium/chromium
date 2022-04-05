@@ -11,10 +11,11 @@
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/caching_word_shape_iterator.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_test_info.h"
+#include "third_party/blink/renderer/platform/testing/font_test_base.h"
 
 namespace blink {
 
-class CachingWordShaperTest : public testing::Test {
+class CachingWordShaperTest : public FontTestBase {
  protected:
   void SetUp() override {
     font_description.SetComputedSize(12.0);
@@ -28,7 +29,6 @@ class CachingWordShaperTest : public testing::Test {
     cache = std::make_unique<ShapeCache>();
   }
 
-  base::test::TaskEnvironment task_environment_;
   FontCachePurgePreventer font_cache_purge_preventer;
   FontDescription font_description;
   Font font;

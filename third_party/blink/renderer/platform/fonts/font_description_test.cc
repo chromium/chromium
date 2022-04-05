@@ -25,13 +25,15 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 
-#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
-TEST(FontDescriptionTest, TestHashCollision) {
+class FontDescriptionTest : public FontTestBase {};
+
+TEST_F(FontDescriptionTest, TestHashCollision) {
   FontSelectionValue weights[] = {
       FontSelectionValue(100), FontSelectionValue(200),
       FontSelectionValue(300), FontSelectionValue(400),
@@ -63,7 +65,7 @@ TEST(FontDescriptionTest, TestHashCollision) {
   }
 }
 
-TEST(FontDescriptionTest, VariationSettingsIdentical) {
+TEST_F(FontDescriptionTest, VariationSettingsIdentical) {
   FontDescription a;
   FontDescription b(a);
 
@@ -89,7 +91,7 @@ TEST(FontDescriptionTest, VariationSettingsIdentical) {
   ASSERT_EQ(cache_key_a, cache_key_b);
 }
 
-TEST(FontDescriptionTest, VariationSettingsDifferent) {
+TEST_F(FontDescriptionTest, VariationSettingsDifferent) {
   FontDescription a;
   FontDescription b(a);
 
@@ -135,7 +137,7 @@ TEST(FontDescriptionTest, VariationSettingsDifferent) {
   ASSERT_NE(second_cache_key_a, second_cache_key_b);
 }
 
-TEST(FontDescriptionTest, PaletteDifferent) {
+TEST_F(FontDescriptionTest, PaletteDifferent) {
   FontDescription a;
   FontDescription b(a);
 
@@ -160,7 +162,7 @@ TEST(FontDescriptionTest, PaletteDifferent) {
   ASSERT_NE(cache_key_a, cache_key_b);
 }
 
-TEST(FontDescriptionTest, ToString) {
+TEST_F(FontDescriptionTest, ToString) {
   FontDescription description;
 
   FontFamily family;
@@ -220,7 +222,7 @@ TEST(FontDescriptionTest, ToString) {
 }
 
 // Verifies the correctness of the default hash trait of FontDescription.
-TEST(FontDescriptionTest, DefaultHashTrait) {
+TEST_F(FontDescriptionTest, DefaultHashTrait) {
   HashMap<FontDescription, int> map;
 
   FontDescription description1;
@@ -276,7 +278,7 @@ TEST(FontDescriptionTest, DefaultHashTrait) {
 }
 
 // https://crbug.com/1081017
-TEST(FontDescriptionTest, NegativeZeroEmFontSize) {
+TEST_F(FontDescriptionTest, NegativeZeroEmFontSize) {
   // 'font-size: -0.0em' sets the following
   FontDescription description1;
   description1.SetSpecifiedSize(-0.0);

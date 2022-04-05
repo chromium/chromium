@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_types.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_inline_headers.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_test_info.h"
+#include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -28,7 +29,7 @@ ShapeResultTestInfo* TestInfo(const scoped_refptr<ShapeResult>& result) {
 
 }  // namespace
 
-class StretchyOperatorShaperTest : public testing::Test {
+class StretchyOperatorShaperTest : public FontTestBase {
  protected:
   void SetUp() override {
     font_description.SetComputedSize(10.0);
