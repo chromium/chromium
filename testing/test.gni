@@ -107,8 +107,11 @@ template("mixed_test") {
 #   use_native_activity: Test implements ANativeActivity_onCreate().
 #   use_cfv2: (Fuchsia, optional): build the test as a framework v2 component;
 #      see https://fuchsia.dev/fuchsia-src/concepts/components/v2 for details.
-#      The default value is true; set it to false explicitly to build a test as
-#      a v1 component.
+#      The default value is true; set it to false explicitly to omit a .cm
+#      manifest from the package.
+#   use_cfv1: (Fuchsia, optional): build the test as a framework v1 component.
+#      The default value is true; set it to false explicitly to omit a .cmx
+#      manifest from the package.
 #   test_runner_shard: (Fuchsia, optional): for CFv2 tests, use the given test
 #      runner shard rather than the default shard for the ELF runner. This is
 #      useful, for example, to use the elf_test_ambient_exec_runner for tests
@@ -406,16 +409,22 @@ template("test") {
   } else if (is_fuchsia) {
     assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)
 
+    # It's meaningless to omit both types of manifest from the package.
+    assert(!defined(invoker.use_cfv2) || invoker.use_cfv2 ||
+           !defined(invoker.use_cfv1) || invoker.use_cfv1)
+
     _output_name = invoker.target_name
     _pkg_target = "${_output_name}_pkg"
     _exec_target = "${_output_name}__exec"
+    _program_name = get_label_info(":${_exec_target}", "name")
+    _test_component_targets = []
 
+    # Generate a CFv2 manifest unless the target opts-out via `use_cfv2=false`.
     if (!defined(invoker.use_cfv2) || invoker.use_cfv2) {
       # Generate a CML fragment that provides the program name.
       _test_program_fragment_target = "${target_name}_program-fragment"
       _test_program_fragment =
           "${target_out_dir}/${target_name}_program.test-cml"
-      _program_name = get_label_info(":${_exec_target}", "name")
       generated_file(_test_program_fragment_target) {
         contents = "{ program: { binary: \"${_program_name}\",},}"
         outputs = [ _test_program_fragment ]
@@ -438,54 +447,92 @@ template("test") {
 
       _test_component_manifest = "${target_out_dir}/${target_name}.cml"
       _merged_manifest_name = "${_output_name}.cml"
-    } else {
+
+      if (defined(invoker.additional_manifest_fragments)) {
+        _manifest_fragments +=
+            filter_include(invoker.additional_manifest_fragments,
+                           [
+                             "*.cml",
+                             "*.test-cml",
+                           ])
+      }
+
+      # Generate the test component manifest from the specified elements.
+      _test_component_manifest_target = "${target_name}_component-manifest"
+      cmc_merge(_test_component_manifest_target) {
+        sources = _manifest_fragments
+        output_name = "${_merged_manifest_name}"
+        deps = [ ":${_test_program_fragment_target}" ]
+      }
+
+      # Define the test component, dependent on the generated manifest, and the
+      # test executable target.
+      _test_component_target = "${target_name}_component"
+      fuchsia_component(_test_component_target) {
+        deps = [ ":$_test_component_manifest_target" ]
+        data_deps = [ ":$_exec_target" ]
+        manifest = _test_component_manifest
+        visibility = [ ":*" ]
+      }
+
+      _test_component_targets += [ ":${_test_component_target}" ]
+    }
+
+    # Generate a CFv1 manifest unless the target opts-out via `use_cfv1=false`.
+    if (!defined(invoker.use_cfv1) || invoker.use_cfv1) {
       # Generate a CMX fragment that provides the program name.
-      _test_program_fragment_target = "${target_name}_program-fragment"
-      _test_program_fragment =
+      _test_program_fragment_target_v1 = "${target_name}_program-fragment_v1"
+      _test_program_fragment_v1 =
           "${target_out_dir}/${target_name}_program.test-cmx"
-      _program_name = get_label_info(":${_exec_target}", "name")
-      generated_file(_test_program_fragment_target) {
+      generated_file(_test_program_fragment_target_v1) {
         contents = "{ \"program\": { \"binary\": \"${_program_name}\"}}"
-        outputs = [ _test_program_fragment ]
+        outputs = [ _test_program_fragment_v1 ]
       }
 
       # Collate the complete set of elements to include in the test component's
       # manifest.
-      _manifest_fragments = [
+      _manifest_fragments_v1 = [
         "//build/config/fuchsia/test/minimum_capabilities.test-cmx",
-        _test_program_fragment,
+        _test_program_fragment_v1,
       ]
 
-      _test_component_manifest = "${target_out_dir}/${target_name}.cmx"
-      _merged_manifest_name = "${_output_name}.cmx"
-    }
+      _test_component_manifest_v1 = "${target_out_dir}/${target_name}.cmx"
+      _merged_manifest_name_v1 = "${_output_name}.cmx"
 
-    if (defined(invoker.additional_manifest_fragments)) {
-      _manifest_fragments += invoker.additional_manifest_fragments
-    }
+      if (defined(invoker.additional_manifest_fragments)) {
+        _manifest_fragments_v1 +=
+            filter_include(invoker.additional_manifest_fragments,
+                           [
+                             "*.cmx",
+                             "*.test-cmx",
+                           ])
+      }
 
-    # Generate the test component manifest from the specified elements.
-    _test_component_manifest_target = "${target_name}_component-manifest"
-    cmc_merge(_test_component_manifest_target) {
-      sources = _manifest_fragments
-      output_name = "${_merged_manifest_name}"
-      deps = [ ":${_test_program_fragment_target}" ]
-    }
+      # Generate the test component manifest from the specified elements.
+      _test_component_manifest_target_v1 =
+          "${target_name}_component-manifest_v1"
+      cmc_merge(_test_component_manifest_target_v1) {
+        sources = _manifest_fragments_v1
+        output_name = "${_merged_manifest_name_v1}"
+        deps = [ ":${_test_program_fragment_target_v1}" ]
+      }
 
-    # Define the test component, dependent on the generated manifest, and the
-    # test executable target.
-    _test_component_target = "${target_name}_component"
-    fuchsia_component(_test_component_target) {
-      deps = [ ":$_test_component_manifest_target" ]
-      data_deps = [ ":$_exec_target" ]
-      manifest = _test_component_manifest
-      visibility = [ ":*" ]
+      # Define the test component, dependent on the generated manifest, and the
+      # test executable target.
+      _test_component_target_v1 = "${target_name}_component_v1"
+      fuchsia_component(_test_component_target_v1) {
+        deps = [ ":$_test_component_manifest_target_v1" ]
+        data_deps = [ ":$_exec_target" ]
+        manifest = _test_component_manifest_v1
+        visibility = [ ":*" ]
+      }
+
+      _test_component_targets += [ ":${_test_component_target_v1}" ]
     }
 
     # Define components for each entry in |additional_manifests|, if any. Since
     # manifests may themselves depend-on the outputs of |deps|, these components
     # must each individually depend on |invoker.deps|.
-    _test_component_targets = [ ":${_test_component_target}" ]
     if (defined(invoker.additional_manifests)) {
       foreach(filename, invoker.additional_manifests) {
         _additional_component_target =
