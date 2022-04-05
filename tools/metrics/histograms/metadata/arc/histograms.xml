@@ -24,12 +24,11 @@ chromium-metrics-reviews@google.com.
 
 <variants name="ArcAccessibilityFeatures">
   <variant name="DockedMagnifier"/>
-  <variant name="FocusHighlight"/>
-  <variant name="FullScreenMagnifier"/>
+  <variant name="FullscreenMagnifier"/>
   <variant name="SelectToSpeak"/>
   <variant name="SpokenFeedback" summary="SpokenFeedback without Talkback"/>
   <variant name="SwitchAccess"/>
-  <variant name="Talkback"/>
+  <variant name="TalkBack"/>
 </variants>
 
 <variants name="ArcPerformanceAppCategories">
@@ -141,8 +140,21 @@ chromium-metrics-reviews@google.com.
   <token key="ArcAccessibilityFeatures" variants="ArcAccessibilityFeatures"/>
 </histogram>
 
+<histogram name="Arc.Accessibility.WindowCount" enum="ArcAccessibilityFeature"
+    expires_after="2023-04-10">
+  <owner>sahok@chromium.org</owner>
+  <owner>arc-framework@google.com</owner>
+  <summary>
+    Count the number of windows with accessibility features enabled when a
+    window is opened or an accessibility feature is enabled while windows exist.
+  </summary>
+</histogram>
+
 <histogram name="Arc.AccessibilityWithTalkBack" enum="BooleanEnabled"
     expires_after="2023-04-10">
+  <obsolete>
+    Removed 2022/03.
+  </obsolete>
   <owner>hirokisato@chromium.org</owner>
   <owner>arc-framework@google.com</owner>
   <summary>

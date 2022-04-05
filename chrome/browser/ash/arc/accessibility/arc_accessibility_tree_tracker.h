@@ -110,6 +110,10 @@ class ArcAccessibilityTreeTracker : public aura::EnvObserver {
   // Invalidates all trees (resets serializers).
   void InvalidateTrees();
 
+  int GetTrackingArcWindowCount() const;
+
+  bool IsArcFocused() const;
+
   const TreeMap& trees_for_test() const { return trees_; }
 
   bool is_native_chromevox_enabled() const { return native_chromevox_enabled_; }

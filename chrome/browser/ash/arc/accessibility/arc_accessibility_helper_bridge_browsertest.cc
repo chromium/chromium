@@ -442,28 +442,31 @@ IN_PROC_BROWSER_TEST_F(ArcAccessibilityHelperBridgeBrowserTest, Histogram) {
   // be counted.
   activation_client->ActivateWindow(
       test_window.shell_surface->GetWidget()->GetNativeWindow());
+  histogram_tester.ExpectBucketCount("Arc.Accessibility.WindowCount", 1, 0);
   ash::MagnificationManager::Get()->SetMagnifierEnabled(true);
+  histogram_tester.ExpectBucketCount("Arc.Accessibility.WindowCount", 1, 1);
   EXPECT_EQ(mojom::AccessibilityFilterType::ALL,
             fake_accessibility_helper_instance_->filter_type());
   histogram_tester.ExpectTotalCount(
-      "Arc.Accessibility.ActiveTime.FullScreenMagnifier", 0);
+      "Arc.Accessibility.ActiveTime.FullscreenMagnifier", 0);
   ash::MagnificationManager::Get()->SetMagnifierEnabled(false);
   histogram_tester.ExpectTotalCount(
-      "Arc.Accessibility.ActiveTime.FullScreenMagnifier", 1);
+      "Arc.Accessibility.ActiveTime.FullscreenMagnifier", 1);
 
   // Focus on an ARC window and focus on a non-ARC window while a feature is on
   // and then it will be counted.
   activation_client->ActivateWindow(
       non_arc_window.shell_surface->GetWidget()->GetNativeWindow());
   ash::MagnificationManager::Get()->SetMagnifierEnabled(true);
+  histogram_tester.ExpectBucketCount("Arc.Accessibility.WindowCount", 1, 2);
   activation_client->ActivateWindow(
       test_window.shell_surface->GetWidget()->GetNativeWindow());
   histogram_tester.ExpectTotalCount(
-      "Arc.Accessibility.ActiveTime.FullScreenMagnifier", 1);
+      "Arc.Accessibility.ActiveTime.FullscreenMagnifier", 1);
   activation_client->ActivateWindow(
       non_arc_window.shell_surface->GetWidget()->GetNativeWindow());
   histogram_tester.ExpectTotalCount(
-      "Arc.Accessibility.ActiveTime.FullScreenMagnifier", 2);
+      "Arc.Accessibility.ActiveTime.FullscreenMagnifier", 2);
 
   // Close the focused ARC window while a feature is on and then it will be
   // counted.
@@ -471,7 +474,9 @@ IN_PROC_BROWSER_TEST_F(ArcAccessibilityHelperBridgeBrowserTest, Histogram) {
       test_window.shell_surface->GetWidget()->GetNativeWindow());
   test_window.surface.reset();
   histogram_tester.ExpectTotalCount(
-      "Arc.Accessibility.ActiveTime.FullScreenMagnifier", 3);
+      "Arc.Accessibility.ActiveTime.FullscreenMagnifier", 3);
+
+  histogram_tester.ExpectBucketCount("Arc.Accessibility.WindowCount", 1, 2);
 }
 
 }  // namespace arc
