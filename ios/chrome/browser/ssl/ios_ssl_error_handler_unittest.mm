@@ -12,6 +12,9 @@
 #import "ios/chrome/browser/ssl/captive_portal_tab_helper_delegate.h"
 #import "ios/chrome/browser/web/chrome_web_test.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
 #include "net/http/http_status_code.h"
 #include "net/ssl/ssl_info.h"
@@ -19,6 +22,7 @@
 #include "net/test/test_data_directory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -36,26 +40,37 @@ const char kTestHostName[] = "https://chromium.test/";
 // Test fixture for IOSSSLErrorHander when used with a WebState that hasn't
 // been inserted into a WebStateList and hence doesn't have the usual set of
 // tab helpers.
-class IOSSSLErrorHandlerWithoutTabHelpersTest : public ChromeWebTest {
+class IOSSSLErrorHandlerWithoutTabHelpersTest : public PlatformTest {
  protected:
   IOSSSLErrorHandlerWithoutTabHelpersTest()
-      : ChromeWebTest(web::WebTaskEnvironment::Options::IO_MAINLOOP),
+      : task_environment_(web::WebTaskEnvironment::Options::IO_MAINLOOP),
         cert_(net::ImportCertFromFile(net::GetTestCertsDirectory(),
                                       kTestCertFileName)) {}
 
   // Returns certificate.
   scoped_refptr<net::X509Certificate> cert() { return cert_; }
 
-  // ChromeWebTest overrides:
+  // PlatformTest overrides:
   void SetUp() override {
-    ChromeWebTest::SetUp();
+    PlatformTest::SetUp();
 
-    GetBrowserState()->SetSharedURLLoaderFactory(
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+
+    web_state_->SetBrowserState(browser_state_.get());
+
+    browser_state_->SetSharedURLLoaderFactory(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_loader_factory_));
     test_loader_factory_.AddResponse("http://www.gstatic.com/generate_204", "",
                                      net::HTTP_NO_CONTENT);
   }
+
+  web::WebState* web_state() const { return web_state_.get(); }
+
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<web::FakeWebState> web_state_ =
+      std::make_unique<web::FakeWebState>();
 
  private:
   network::TestURLLoaderFactory test_loader_factory_;
@@ -102,9 +117,12 @@ class IOSSSLErrorHandlerTest : public IOSSSLErrorHandlerWithoutTabHelpersTest {
         web_state(), captive_portal_tab_helper_delegate);
     ASSERT_TRUE(cert());
 
+    std::unique_ptr<web::FakeNavigationManager> fake_navigation_manager =
+        std::make_unique<web::FakeNavigationManager>();
     // Transient item can only be added for pending non-app-specific loads.
-    AddPendingItem(GURL(kTestHostName),
-                   ui::PageTransition::PAGE_TRANSITION_TYPED);
+    fake_navigation_manager->AddItem(GURL(kTestHostName),
+                                     ui::PageTransition::PAGE_TRANSITION_TYPED);
+    web_state_->SetNavigationManager(std::move(fake_navigation_manager));
   }
 };
 
