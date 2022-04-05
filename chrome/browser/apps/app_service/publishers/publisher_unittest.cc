@@ -195,6 +195,40 @@ arc::mojom::PrivacyItemPtr CreateArcPrivacyItem(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// AppRegistryCacheObserver is used to test the OnAppTypeInitialized and
+// OnAppUpdate interfaces for AppRegistryCache::Observer.
+class AppRegistryCacheObserver : public apps::AppRegistryCache::Observer {
+ public:
+  explicit AppRegistryCacheObserver(apps::AppRegistryCache* cache) {
+    cache_ = cache;
+    Observe(cache);
+  }
+
+  ~AppRegistryCacheObserver() override = default;
+
+  // apps::AppRegistryCache::Observer overrides.
+  void OnAppUpdate(const apps::AppUpdate& update) override {
+    updated_ids_.push_back(update.AppId());
+  }
+
+  void OnAppTypeInitialized(apps::AppType app_type) override {
+    app_types_.push_back(app_type);
+  }
+
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override {
+    Observe(nullptr);
+  }
+
+  std::vector<std::string> updated_ids() const { return updated_ids_; }
+  std::vector<apps::AppType> app_types() const { return app_types_; }
+
+ private:
+  std::vector<std::string> updated_ids_;
+  std::vector<apps::AppType> app_types_;
+  apps::AppRegistryCache* cache_ = nullptr;
+};
+
 }  // namespace
 
 namespace apps {
@@ -639,8 +673,12 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
   }
 
   void ExtensionAppsOnApps() {
+    mojo::PendingReceiver<crosapi::mojom::AppController> pending_receiver;
+    mojo::PendingRemote<crosapi::mojom::AppController> pending_remote =
+        pending_receiver.InitWithNewPipeAndPassRemote();
     StandaloneBrowserExtensionApps* chrome_apps =
         StandaloneBrowserExtensionAppsFactoryForApp::GetForProfile(profile());
+    chrome_apps->RegisterAppController(std::move(pending_remote));
     std::vector<AppPtr> apps;
     auto app = MakeApp(AppType::kStandaloneBrowserChromeApp,
                        /*app_id=*/"a",
@@ -713,6 +751,121 @@ TEST_F(StandaloneBrowserPublisherTest, StandaloneBrowserExtensionAppsOnApps) {
             /*show_in_search=*/false, /*show_in_management=*/false,
             /*handles_intents=*/false, /*allow_uninstall=*/false,
             /*has_badge=*/false, /*paused=*/false);
+}
+
+// Verify the app is not updated when not register to CrosApi,
+TEST_F(StandaloneBrowserPublisherTest,
+       StandaloneBrowserExtensionAppsNotUpdated) {
+  StandaloneBrowserExtensionApps* chrome_apps =
+      StandaloneBrowserExtensionAppsFactoryForApp::GetForProfile(profile());
+
+  AppRegistryCache& cache =
+      AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache();
+  AppRegistryCacheObserver observer(&cache);
+
+  std::vector<AppPtr> apps;
+  std::string app_id = "a";
+  apps.push_back(MakeApp(AppType::kStandaloneBrowserChromeApp, app_id,
+                         /*name=*/"TestApp", Readiness::kReady));
+  chrome_apps->OnApps(std::move(apps));
+
+  AppServiceProxyFactory::GetForProfile(profile())->FlushMojoCallsForTesting();
+
+  // Verify no app updated.
+  EXPECT_EQ(AppType::kUnknown, cache.GetAppType(app_id));
+  EXPECT_TRUE(observer.app_types().empty());
+  EXPECT_TRUE(observer.updated_ids().empty());
+}
+
+// Verify apps are updated after register to CrosApi,
+TEST_F(StandaloneBrowserPublisherTest, StandaloneBrowserExtensionAppsUpdated) {
+  StandaloneBrowserExtensionApps* chrome_apps =
+      StandaloneBrowserExtensionAppsFactoryForApp::GetForProfile(profile());
+
+  AppRegistryCache& cache =
+      AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache();
+  AppRegistryCacheObserver observer(&cache);
+
+  std::vector<AppPtr> apps1;
+  std::string app_id1 = "a";
+  std::string app_id2 = "b";
+  apps1.push_back(MakeApp(AppType::kStandaloneBrowserChromeApp, app_id1,
+                          /*name=*/"TestApp", Readiness::kReady));
+  apps1.push_back(MakeApp(AppType::kStandaloneBrowserChromeApp, app_id2,
+                          /*name=*/"TestApp", Readiness::kReady));
+  chrome_apps->OnApps(std::move(apps1));
+
+  std::vector<AppPtr> apps2;
+  std::string app_id3 = "c";
+  apps2.push_back(MakeApp(AppType::kStandaloneBrowserChromeApp, app_id3,
+                          /*name=*/"TestApp", Readiness::kReady));
+  chrome_apps->OnApps(std::move(apps2));
+
+  AppServiceProxyFactory::GetForProfile(profile())->FlushMojoCallsForTesting();
+
+  // Verify no app updated, since Crosapi is not ready yet.
+  EXPECT_EQ(AppType::kUnknown, cache.GetAppType(app_id1));
+  EXPECT_EQ(AppType::kUnknown, cache.GetAppType(app_id2));
+  EXPECT_EQ(AppType::kUnknown, cache.GetAppType(app_id3));
+  EXPECT_TRUE(observer.app_types().empty());
+  EXPECT_TRUE(observer.updated_ids().empty());
+
+  // Register Crosapi, which should publish apps.
+  mojo::PendingReceiver<crosapi::mojom::AppController> pending_receiver1;
+  mojo::PendingRemote<crosapi::mojom::AppController> pending_remote1 =
+      pending_receiver1.InitWithNewPipeAndPassRemote();
+  chrome_apps->RegisterAppController(std::move(pending_remote1));
+
+  AppServiceProxyFactory::GetForProfile(profile())->FlushMojoCallsForTesting();
+
+  EXPECT_EQ(AppType::kStandaloneBrowserChromeApp, cache.GetAppType(app_id1));
+  EXPECT_EQ(AppType::kStandaloneBrowserChromeApp, cache.GetAppType(app_id2));
+  EXPECT_EQ(AppType::kStandaloneBrowserChromeApp, cache.GetAppType(app_id3));
+  ASSERT_EQ(1u, observer.app_types().size());
+  EXPECT_EQ(AppType::kStandaloneBrowserChromeApp, observer.app_types()[0]);
+  ASSERT_EQ(3u, observer.updated_ids().size());
+  EXPECT_EQ(app_id1, observer.updated_ids()[0]);
+  EXPECT_EQ(app_id2, observer.updated_ids()[1]);
+  EXPECT_EQ(app_id3, observer.updated_ids()[2]);
+
+  // Add more apps after register Crosapi.
+  std::vector<AppPtr> apps3;
+  std::string app_id4 = "d";
+  apps3.push_back(MakeApp(AppType::kStandaloneBrowserChromeApp, app_id4,
+                          /*name=*/"TestApp", Readiness::kReady));
+  chrome_apps->OnApps(std::move(apps3));
+
+  EXPECT_EQ(AppType::kStandaloneBrowserChromeApp, cache.GetAppType(app_id4));
+  ASSERT_EQ(4u, observer.updated_ids().size());
+  EXPECT_EQ(app_id4, observer.updated_ids()[3]);
+
+  // Disconnect crosapi.
+  chrome_apps->OnControllerDisconnected();
+
+  // Add more apps after Crosapi disconnect.
+  std::vector<AppPtr> apps4;
+  std::string app_id5 = "e";
+  apps4.push_back(MakeApp(AppType::kStandaloneBrowserChromeApp, app_id5,
+                          /*name=*/"TestApp", Readiness::kReady));
+  std::string app_id6 = "f";
+  apps4.push_back(MakeApp(AppType::kStandaloneBrowserChromeApp, app_id6,
+                          /*name=*/"TestApp", Readiness::kReady));
+  chrome_apps->OnApps(std::move(apps4));
+
+  // Simulate Crosapi reconnect, which should publish apps.
+  mojo::PendingReceiver<crosapi::mojom::AppController> pending_receiver2;
+  mojo::PendingRemote<crosapi::mojom::AppController> pending_remote2 =
+      pending_receiver2.InitWithNewPipeAndPassRemote();
+  chrome_apps->RegisterAppController(std::move(pending_remote2));
+
+  AppServiceProxyFactory::GetForProfile(profile())->FlushMojoCallsForTesting();
+
+  EXPECT_EQ(AppType::kStandaloneBrowserChromeApp, cache.GetAppType(app_id5));
+  EXPECT_EQ(AppType::kStandaloneBrowserChromeApp, cache.GetAppType(app_id6));
+  ASSERT_EQ(1u, observer.app_types().size());
+  ASSERT_EQ(6u, observer.updated_ids().size());
+  EXPECT_EQ(app_id5, observer.updated_ids()[4]);
+  EXPECT_EQ(app_id6, observer.updated_ids()[5]);
 }
 
 TEST_F(StandaloneBrowserPublisherTest, WebAppsCrosapiOnApps) {

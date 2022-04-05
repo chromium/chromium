@@ -41,8 +41,6 @@ StandaloneBrowserExtensionApps::~StandaloneBrowserExtensionApps() = default;
 void StandaloneBrowserExtensionApps::RegisterCrosapiHost(
     mojo::PendingReceiver<crosapi::mojom::AppPublisher> receiver) {
   RegisterPublisher(app_type_);
-  apps::AppPublisher::Publish(std::vector<AppPtr>{}, app_type_,
-                              /*should_notify_initialized=*/true);
 
   // At the moment the app service publisher will only accept one browser client
   // publishing apps to ash chrome. Any extra clients will be ignored.
@@ -281,13 +279,23 @@ void StandaloneBrowserExtensionApps::OnApps(std::vector<AppPtr> deltas) {
     return;
   }
 
-  for (const AppPtr& delta : deltas) {
-    app_mojom_cache_[delta->app_id] = ConvertAppToMojomApp(delta);
-    PublisherBase::Publish(ConvertAppToMojomApp(delta), subscribers_);
-  }
+  if (controller_.is_bound()) {
+    for (const AppPtr& delta : deltas) {
+      app_mojom_cache_[delta->app_id] = ConvertAppToMojomApp(delta);
+      PublisherBase::Publish(ConvertAppToMojomApp(delta), subscribers_);
+    }
 
-  apps::AppPublisher::Publish(std::move(deltas), app_type_,
-                              /*should_notify_initialized=*/false);
+    apps::AppPublisher::Publish(std::move(deltas), app_type_,
+                                should_notify_initialized_);
+    should_notify_initialized_ = false;
+  } else {
+    // If `controller_` is not bound, add `deltas` to `app_cache_` to wait for
+    // registering the crosapi controller to publish all deltas saved in
+    // `app_cache_`.
+    for (AppPtr& delta : deltas) {
+      app_cache_[delta->app_id] = std::move(delta);
+    }
+  }
 }
 
 void StandaloneBrowserExtensionApps::RegisterAppController(
@@ -295,10 +303,28 @@ void StandaloneBrowserExtensionApps::RegisterAppController(
   if (controller_.is_bound()) {
     return;
   }
+
   controller_.Bind(std::move(controller));
   controller_.set_disconnect_handler(
       base::BindOnce(&StandaloneBrowserExtensionApps::OnControllerDisconnected,
                      weak_factory_.GetWeakPtr()));
+  if (app_cache_.empty()) {
+    // If there is no apps saved in `app_cache_`, still publish an empty app
+    // list to initialize `app_type_`.
+    apps::AppPublisher::Publish(std::vector<AppPtr>{}, app_type_,
+                                should_notify_initialized_);
+  } else {
+    std::vector<AppPtr> deltas;
+    for (auto& it : app_cache_) {
+      app_mojom_cache_[it.first] = ConvertAppToMojomApp(it.second);
+      PublisherBase::Publish(ConvertAppToMojomApp(it.second), subscribers_);
+      deltas.push_back(std::move(it.second));
+    }
+    app_cache_.clear();
+    apps::AppPublisher::Publish(std::move(deltas), app_type_,
+                                should_notify_initialized_);
+  }
+  should_notify_initialized_ = false;
 }
 
 void StandaloneBrowserExtensionApps::OnCapabilityAccesses(

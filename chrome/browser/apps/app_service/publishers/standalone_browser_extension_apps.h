@@ -71,6 +71,10 @@ class StandaloneBrowserExtensionApps : public KeyedService,
 
  private:
   friend class StandaloneBrowserPublisherTest;
+  FRIEND_TEST_ALL_PREFIXES(StandaloneBrowserPublisherTest,
+                           StandaloneBrowserExtensionAppsNotUpdated);
+  FRIEND_TEST_ALL_PREFIXES(StandaloneBrowserPublisherTest,
+                           StandaloneBrowserExtensionAppsUpdated);
 
   // apps::AppPublisher overrides.
   void LoadIcon(const std::string& app_id,
@@ -143,11 +147,18 @@ class StandaloneBrowserExtensionApps : public KeyedService,
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 
-  // This class stores a copy of the latest app_ptr received for each app_id.
+  // This class stores a copy of the latest apps received for each app_id, which
+  // haven't been published to AppRegistryCache yet. When the crosapi is bound
+  // or changed from disconnect to bound, we need to publish all apps in this
+  // cache to AppRegistryCache.
+  //
   // The Lacros sender of OnApps events always sends full objects, not deltas.
   // Thus, this class can simply keep the latest copy, without doing any
   // merging.
+  std::map<std::string, apps::AppPtr> app_cache_;
   std::map<std::string, apps::mojom::AppPtr> app_mojom_cache_;
+
+  bool should_notify_initialized_ = true;
 
   // Receives chrome app publisher events from Lacros.
   mojo::Receiver<crosapi::mojom::AppPublisher> receiver_{this};
