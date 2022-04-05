@@ -21,6 +21,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/exo/wm_helper.h"
@@ -56,6 +57,10 @@ constexpr base::TimeDelta kRequestKillCountPeriod = base::Minutes(10);
 // Memory pressure histograms.
 const char kPSIMemoryPressureSomeARC[] = "ChromeOS.CWP.PSIMemPressure.ArcSome";
 const char kPSIMemoryPressureFullARC[] = "ChromeOS.CWP.PSIMemPressure.ArcFull";
+
+// Provisioning pre-sign-in time delta histogram.
+constexpr char kProvisioningPreSignInTimeDelta[] =
+    "Arc.Provisioning.PreSignIn.TimeDelta";
 
 // Logs UMA enum values to facilitate finding feedback reports in Xamine.
 template <typename T>
@@ -148,6 +153,7 @@ ArcMetricsService::ArcMetricsService(content::BrowserContext* context,
     exo::WMHelper::GetInstance()->AddActivationObserver(this);
   ui::GamepadProviderOzone::GetInstance()->AddGamepadObserver(this);
 
+  DCHECK(StabilityMetricsManager::Get());
   StabilityMetricsManager::Get()->SetArcNativeBridgeType(
       NativeBridgeType::UNKNOWN);
 
@@ -424,7 +430,7 @@ void ArcMetricsService::ReportDnsQueryResult(mojom::ArcDnsQuery query,
   std::string metric_name =
       base::StrCat({"Arc.Net.DnsQuery.", DnsQueryToString(query)});
   if (!success)
-      VLOG(4) << metric_name << ": " << success;
+    VLOG(4) << metric_name << ": " << success;
   base::UmaHistogramBoolean(metric_name, success);
 }
 
@@ -611,6 +617,28 @@ void ArcMetricsService::ReportMemoryPressure(
   base::UmaHistogramCustomCounts(
       kPSIMemoryPressureFullARC, metric_full, metrics::kMemPressureMin,
       metrics::kMemPressureExclusiveMax, metrics::kMemPressureHistogramBuckets);
+}
+
+void ArcMetricsService::ReportProvisioningStartTime(
+    const base::TimeTicks& start_time,
+    const std::string& account_type_suffix) {
+  arc_provisioning_start_time_.emplace(start_time);
+  arc_provisioning_account_type_suffix_.emplace(account_type_suffix);
+}
+
+void ArcMetricsService::ReportProvisioningPreSignIn() {
+  if (arc_provisioning_start_time_.has_value() &&
+      arc_provisioning_account_type_suffix_.has_value()) {
+    base::UmaHistogramCustomTimes(
+        kProvisioningPreSignInTimeDelta +
+            arc_provisioning_account_type_suffix_.value(),
+        base::TimeTicks::Now() - arc_provisioning_start_time_.value(),
+        base::Seconds(1), base::Minutes(5), 50);
+    arc_provisioning_start_time_.reset();
+    arc_provisioning_account_type_suffix_.reset();
+  } else {
+    LOG(ERROR) << "PreSignIn reported without prior starting time";
+  }
 }
 
 void ArcMetricsService::OnWindowActivated(

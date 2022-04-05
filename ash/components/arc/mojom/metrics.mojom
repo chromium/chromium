@@ -427,6 +427,10 @@ interface MetricsHost {
   // Reports raw memory pressure data, as the contents of /proc/pressure/memory.
   // This is invoked solely by ARCVM.
   [MinVersion=21] ReportMemoryPressure@23(array<uint8> psi_file_contents);
+
+  // Reports that ArcAppLauncher is about to start GMS sign-in / CloudDPC
+  // provisioning. This only happens during ARC provisioning.
+  [MinVersion=22] ReportProvisioningPreSignIn@24();
 };
 
 // Deprecated method IDs: 0

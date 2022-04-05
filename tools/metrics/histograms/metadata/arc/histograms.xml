@@ -1479,6 +1479,20 @@ chromium-metrics-reviews@google.com.
   <token key="ArcUserTypes" variants="ArcUserTypes"/>
 </histogram>
 
+<histogram name="Arc.Provisioning.PreSignIn.TimeDelta{ArcUserTypes}" units="ms"
+    expires_after="2022-10-14">
+  <owner>yaohuali@google.com</owner>
+  <owner>mhasank@google.com</owner>
+  <owner>arc-commercial@google.com</owner>
+  <summary>
+    Elapsed time from the signing in process start to right before GMS sign-in
+    or CloudDPC provisioning. {ArcUserTypes}
+  </summary>
+  <token key="ArcUserTypes" variants="ArcUserTypes">
+    <variant name=""/>
+  </token>
+</histogram>
+
 <histogram name="Arc.Provisioning.SignInError{ArcUserTypes}"
     enum="ArcProvisioningSignInError" expires_after="2022-08-01">
   <owner>mhasank@google.com</owner>

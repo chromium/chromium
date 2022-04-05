@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/metrics/arc_metrics_service.h"
+#include "ash/components/arc/metrics/stability_metrics_manager.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/fake_arc_session.h"
@@ -83,6 +85,9 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
     // Create the service (normally handled by ArcServiceLauncher).
     ArcProvisionNotificationService::GetForBrowserContext(profile());
 
+    arc::prefs::RegisterLocalStatePrefs(local_state_.registry());
+    arc::StabilityMetricsManager::Initialize(&local_state_);
+
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
         profile()->GetProfileUserName(), "1234567890"));
     GetFakeUserManager()->AddUser(account_id);
@@ -90,6 +95,7 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
   }
 
   void TearDown() override {
+    arc::StabilityMetricsManager::Shutdown();
     // The session manager has to be shutdown before the profile is destroyed so
     // it stops observing prefs, but can't be reset completely because some
     // profile keyed services call into it.
@@ -116,6 +122,7 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
 
  private:
   user_manager::ScopedUserManager user_manager_enabler_;
+  TestingPrefServiceSimple local_state_;
 };
 
 }  // namespace

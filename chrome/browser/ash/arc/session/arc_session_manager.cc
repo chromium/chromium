@@ -475,6 +475,19 @@ bool IsDlcRequired() {
       ash::switches::kEnableHoudiniDlc);
 }
 
+// Inform ArcMetricsServices about the starting time of ARC provisioning.
+void ReportProvisioningStartTime(const base::TimeTicks& start_time,
+                                 Profile* profile) {
+  ArcMetricsService* metrics_service =
+      ArcMetricsService::GetForBrowserContext(profile);
+  // metrics_service might be null in unit tests.
+  if (metrics_service) {
+    auto account_type_suffix = GetHistogramNameByUserType("", profile);
+    metrics_service->ReportProvisioningStartTime(start_time,
+                                                 account_type_suffix);
+  }
+}
+
 }  // namespace
 
 // This class is used to track statuses on OptIn flow. It is created in case ARC
@@ -1640,6 +1653,7 @@ void ArcSessionManager::MaybeStartTimer() {
 
   VLOG(1) << "Setup provisioning timer";
   sign_in_start_time_ = base::TimeTicks::Now();
+  ReportProvisioningStartTime(sign_in_start_time_, profile_);
   arc_sign_in_timer_.Start(
       FROM_HERE, GetArcSignInTimeout(),
       base::BindOnce(&ArcSessionManager::OnArcSignInTimeout,

@@ -7,6 +7,9 @@
 #include <memory>
 
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/metrics/arc_metrics_service.h"
+#include "ash/components/arc/metrics/stability_metrics_manager.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
@@ -16,6 +19,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_provisioning_result.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
@@ -74,6 +78,16 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
     arc_service_manager_->set_browser_context(profile());
 
+    arc::prefs::RegisterLocalStatePrefs(local_state_.registry());
+    arc::StabilityMetricsManager::Initialize(&local_state_);
+
+    ArcMetricsService::GetForBrowserContextForTesting(profile())
+        ->SetHistogramNamer(
+            base::BindRepeating([](const std::string& base_name) {
+              return arc::GetHistogramNameByUserTypeForPrimaryProfile(
+                  base_name);
+            }));
+
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
         profile()->GetProfileUserName(), "1234567890"));
     user_manager()->AddUser(account_id);
@@ -94,6 +108,7 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
   }
 
   void TearDown() override {
+    arc::StabilityMetricsManager::Shutdown();
     arc_bridge_service()->intent_helper()->CloseInstance(
         &intent_helper_instance_);
     arc_bridge_service()->backup_settings()->CloseInstance(

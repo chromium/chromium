@@ -145,6 +145,7 @@ class ArcMetricsService : public KeyedService,
   void ReportDataRestore(mojom::DataRestoreStatus status,
                          int64_t duration_ms) override;
   void ReportMemoryPressure(const std::vector<uint8_t>& psiFile) override;
+  void ReportProvisioningPreSignIn() override;
 
   // wm::ActivationChangeObserver overrides.
   // Records to UMA when a user has interacted with an ARC app window.
@@ -190,6 +191,10 @@ class ArcMetricsService : public KeyedService,
   void RequestLowMemoryKillCountsForTesting();
 
   void set_prefs(PrefService* prefs) { prefs_ = prefs; }
+
+  // Record the starting time of ARC provisioning, for later use.
+  void ReportProvisioningStartTime(const base::TimeTicks& start_time,
+                                   const std::string& account_type_suffix);
 
  private:
   // Adapter to be able to also observe ProcessInstance events.
@@ -319,6 +324,10 @@ class ArcMetricsService : public KeyedService,
 
   PrefService* prefs_ = nullptr;
   std::unique_ptr<ArcMetricsAnr> metrics_anr_;
+
+  // For reporting Arc.Provisioning.PreSignInTimeDelta.
+  absl::optional<base::TimeTicks> arc_provisioning_start_time_;
+  absl::optional<std::string> arc_provisioning_account_type_suffix_;
 
   // Always keep this the last member of this class to make sure it's the
   // first thing to be destructed.
