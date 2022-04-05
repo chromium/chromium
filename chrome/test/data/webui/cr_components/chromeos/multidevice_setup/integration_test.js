@@ -7,7 +7,7 @@
 // #import 'chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup.m.js';
 
 // #import {TestMultideviceSetupBrowserProxy} from './setup_succeeded_page_test.m.js';
-// #import {FakeQuickUnlockPrivate} from '../../../settings/chromeos/fake_quick_unlock_private.m.js';
+// #import {FakeQuickUnlockPrivate} from '../../../settings/chromeos/fake_quick_unlock_private.js';
 // #import {BrowserProxyImpl} from 'chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup_browser_proxy.m.js';
 // #import {FakeMojoService} from 'chrome://resources/cr_components/chromeos/multidevice_setup/fake_mojo_service.m.js';
 // #import {waitBeforeNextRender, eventToPromise} from '../../../test_util.js';

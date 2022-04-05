@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/lazy_load.js';
+import 'chrome://os-settings/chromeos/lazy_load.js';
 
-// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-// #import {CrSettingsPrefs, Router} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {flush} from'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {assertFalse, assertTrue} from '../../chai_assert.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// clang-format on
+import {CrSettingsPrefs, Router} from 'chrome://os-settings/chromeos/os_settings.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {assertFalse, assertTrue} from '../../chai_assert.js';
 
 suite('SmartPrivacySubpageTests', function() {
   /** @type {SettingsSmartPrivacyPage} */
@@ -51,7 +48,7 @@ suite('SmartPrivacySubpageTests', function() {
 
   teardown(async () => {
     smartPrivacySubpage.remove();
-    settings.Router.getInstance().resetRouteForTesting();
+    Router.getInstance().resetRouteForTesting();
   });
 
   test('Snooping radio list visibility tied to pref', async () => {
@@ -65,7 +62,7 @@ suite('SmartPrivacySubpageTests', function() {
 
     // Atomic reassign to so that Polymer notices the change.
     smartPrivacySubpage.prefs = makePrefs(true);
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(collapse.opened);
   });

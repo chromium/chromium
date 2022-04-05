@@ -10,7 +10,7 @@ import {FakeContactManager} from '../../nearby_share/shared/fake_nearby_contact_
 import {FakeNearbyShareSettings} from '../../nearby_share/shared/fake_nearby_share_settings.m.js';
 import {isChildVisible, waitAfterNextRender} from '../../test_util.js';
 
-import {FakeReceiveManager} from './fake_receive_manager.m.js';
+import {FakeReceiveManager} from './fake_receive_manager.js';
 
 suite('NearbyShare', function() {
   /** @type {!NearbyShareReceiveDialogElement} */

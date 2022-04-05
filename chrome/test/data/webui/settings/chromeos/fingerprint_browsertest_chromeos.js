@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import {FingerprintBrowserProxyImpl, FingerprintResultType, FingerprintSetupStep, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
 
-// #import {flush} from'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
-// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
-// #import {FingerprintBrowserProxyImpl, FingerprintSetupStep, FingerprintResultType, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// clang-format on
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
-/** @implements {settings.FingerprintBrowserProxy} */
+/** @implements {FingerprintBrowserProxy} */
 class TestFingerprintBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
@@ -31,13 +28,13 @@ class TestFingerprintBrowserProxy extends TestBrowserProxy {
     this.fingerprintsList_ = [];
   }
 
-  /** @ param {!Array<string>} fingerprints */
+  /** @param {!Array<string>} fingerprints */
   setFingerprints(fingerprints) {
     this.fingerprintsList_ = fingerprints.slice();
   }
 
   /**
-   * @param {settings.FingerprintResultType} result
+   * @param {FingerprintResultType} result
    * @param {boolean} complete
    * @param {number} percent
    */
@@ -54,7 +51,7 @@ class TestFingerprintBrowserProxy extends TestBrowserProxy {
   /** @override */
   getFingerprintsList() {
     this.methodCalled('getFingerprintsList');
-    /** @type {settings.FingerprintInfo} */
+    /** @type {FingerprintInfo} */
     const fingerprintInfo = {
       fingerprintsList: this.fingerprintsList_.slice(),
       isMaxed: this.fingerprintsList_.length >= 3
@@ -130,7 +127,7 @@ suite('settings-fingerprint-list', function() {
 
   function openDialog() {
     fingerprintList.$$('.action-button').click();
-    Polymer.dom.flush();
+    flush();
     dialog = fingerprintList.$$('settings-setup-fingerprint-dialog');
     addAnotherButton = dialog.$$('#addAnotherButton');
   }
@@ -144,12 +141,12 @@ suite('settings-fingerprint-list', function() {
 
   setup(function() {
     browserProxy = new TestFingerprintBrowserProxy();
-    settings.FingerprintBrowserProxyImpl.instance_ = browserProxy;
+    FingerprintBrowserProxyImpl.instance_ = browserProxy;
 
     PolymerTest.clearBody();
     fingerprintList = document.createElement('settings-fingerprint-list');
     document.body.appendChild(fingerprintList);
-    Polymer.dom.flush();
+    flush();
     return Promise
         .all([
           browserProxy.whenCalled('startAuthentication'),
@@ -169,7 +166,7 @@ suite('settings-fingerprint-list', function() {
     openDialog();
     return browserProxy.whenCalled('startEnroll').then(function() {
       assertTrue(dialog.$$('#dialog').open);
-      assertEquals(settings.FingerprintSetupStep.LOCATE_SCANNER, dialog.step_);
+      assertEquals(FingerprintSetupStep.LOCATE_SCANNER, dialog.step_);
       assertFalse(dialog.$$('#scannerLocationLottie').hidden);
     });
   });
@@ -182,7 +179,7 @@ suite('settings-fingerprint-list', function() {
     openDialog();
     return browserProxy.whenCalled('startEnroll').then(function() {
       assertTrue(dialog.$$('#dialog').open);
-      assertEquals(settings.FingerprintSetupStep.LOCATE_SCANNER, dialog.step_);
+      assertEquals(FingerprintSetupStep.LOCATE_SCANNER, dialog.step_);
       assertFalse(dialog.$$('#scannerLocation').hidden);
     });
   });
@@ -198,7 +195,7 @@ suite('settings-fingerprint-list', function() {
     return browserProxy.whenCalled('startEnroll').then(function() {
       assertTrue(dialog.$$('#dialog').open);
       assertEquals(0, dialog.percentComplete_);
-      assertEquals(settings.FingerprintSetupStep.LOCATE_SCANNER, dialog.step_);
+      assertEquals(FingerprintSetupStep.LOCATE_SCANNER, dialog.step_);
       assertFalse(dialog.$$('#scannerLocationLottie').hidden);
       assertTrue(dialog.$$('#arc').hidden);
       // Message should be shown for LOCATE_SCANNER step.
@@ -208,31 +205,31 @@ suite('settings-fingerprint-list', function() {
 
       // First tap on the sensor to start fingerprint enrollment.
       browserProxy.scanReceived(
-          settings.FingerprintResultType.SUCCESS, false, 20 /* percent */);
+          FingerprintResultType.SUCCESS, false, 20 /* percent */);
       assertEquals(20, dialog.percentComplete_);
-      assertEquals(settings.FingerprintSetupStep.MOVE_FINGER, dialog.step_);
+      assertEquals(FingerprintSetupStep.MOVE_FINGER, dialog.step_);
       assertTrue(dialog.$$('#scannerLocationLottie').hidden);
       assertFalse(dialog.$$('#arc').hidden);
 
       // Verify that by sending a scan problem, the div that contains the
       // problem message should be visible.
       browserProxy.scanReceived(
-          settings.FingerprintResultType.TOO_FAST, false, 20 /* percent */);
+          FingerprintResultType.TOO_FAST, false, 20 /* percent */);
       assertEquals(20, dialog.percentComplete_);
       assertEquals(
           'visible',
           window.getComputedStyle(dialog.$$('#messageDiv')).visibility);
       browserProxy.scanReceived(
-          settings.FingerprintResultType.SUCCESS, false, 50 /* percent */);
+          FingerprintResultType.SUCCESS, false, 50 /* percent */);
       assertEquals(
           'hidden',
           window.getComputedStyle(dialog.$$('#messageDiv')).visibility);
       assertEquals(50, dialog.percentComplete_);
       browserProxy.scanReceived(
-          settings.FingerprintResultType.SUCCESS, false, 70 /* percent */);
+          FingerprintResultType.SUCCESS, false, 70 /* percent */);
       browserProxy.scanReceived(
-          settings.FingerprintResultType.SUCCESS, true, 100 /* percent */);
-      assertEquals(settings.FingerprintSetupStep.READY, dialog.step_);
+          FingerprintResultType.SUCCESS, true, 100 /* percent */);
+      assertEquals(FingerprintSetupStep.READY, dialog.step_);
       // Message should be shown for READY step.
       assertEquals(
           'visible',
@@ -241,7 +238,7 @@ suite('settings-fingerprint-list', function() {
       // Verify that by tapping the continue button we should exit the dialog
       // and the fingerprint list should have one fingerprint registered.
       dialog.$$('#closeButton').click();
-      return test_util.flushTasks().then(function() {
+      return flushTasks().then(function() {
         Promise
             .all([
               browserProxy.whenCalled('startAuthentication'),
@@ -269,17 +266,16 @@ suite('settings-fingerprint-list', function() {
           assertTrue(dialog.$$('#dialog').open);
           assertEquals(0, dialog.percentComplete_);
           assertFalse(isVisible(addAnotherButton));
-          assertEquals(
-              settings.FingerprintSetupStep.LOCATE_SCANNER, dialog.step_);
+          assertEquals(FingerprintSetupStep.LOCATE_SCANNER, dialog.step_);
 
           // First tap on the sensor to start fingerprint enrollment.
           browserProxy.scanReceived(
-              settings.FingerprintResultType.SUCCESS, false, 20 /* percent */);
-          assertEquals(settings.FingerprintSetupStep.MOVE_FINGER, dialog.step_);
+              FingerprintResultType.SUCCESS, false, 20 /* percent */);
+          assertEquals(FingerprintSetupStep.MOVE_FINGER, dialog.step_);
 
           browserProxy.scanReceived(
-              settings.FingerprintResultType.SUCCESS, true, 100 /* percent */);
-          assertEquals(settings.FingerprintSetupStep.READY, dialog.step_);
+              FingerprintResultType.SUCCESS, true, 100 /* percent */);
+          assertEquals(FingerprintSetupStep.READY, dialog.step_);
 
           assertTrue(dialog.$$('#dialog').open);
           assertTrue(isVisible(addAnotherButton));
@@ -297,12 +293,12 @@ suite('settings-fingerprint-list', function() {
 
           assertTrue(dialog.$$('#dialog').open);
           assertFalse(isVisible(addAnotherButton));
-          assertEquals(settings.FingerprintSetupStep.MOVE_FINGER, dialog.step_);
+          assertEquals(FingerprintSetupStep.MOVE_FINGER, dialog.step_);
           assertTrue(dialog.$$('#scannerLocation').hidden);
           assertFalse(dialog.$$('#arc').hidden);
 
           browserProxy.scanReceived(
-              settings.FingerprintResultType.SUCCESS, true, 100 /* percent */);
+              FingerprintResultType.SUCCESS, true, 100 /* percent */);
 
           // Verify that by tapping the continue button we should exit the
           // dialog and the fingerprint list should have two fingerprints
@@ -329,17 +325,16 @@ suite('settings-fingerprint-list', function() {
           assertTrue(dialog.$$('#dialog').open);
           assertEquals(0, dialog.percentComplete_);
           assertFalse(isVisible(addAnotherButton));
-          assertEquals(
-              settings.FingerprintSetupStep.LOCATE_SCANNER, dialog.step_);
+          assertEquals(FingerprintSetupStep.LOCATE_SCANNER, dialog.step_);
 
           // First tap on the sensor to start fingerprint enrollment.
           browserProxy.scanReceived(
-              settings.FingerprintResultType.SUCCESS, false, 20 /* percent */);
-          assertEquals(settings.FingerprintSetupStep.MOVE_FINGER, dialog.step_);
+              FingerprintResultType.SUCCESS, false, 20 /* percent */);
+          assertEquals(FingerprintSetupStep.MOVE_FINGER, dialog.step_);
 
           browserProxy.scanReceived(
-              settings.FingerprintResultType.SUCCESS, true, 100 /* percent */);
-          assertEquals(settings.FingerprintSetupStep.READY, dialog.step_);
+              FingerprintResultType.SUCCESS, true, 100 /* percent */);
+          assertEquals(FingerprintSetupStep.READY, dialog.step_);
           return browserProxy.whenCalled('getFingerprintsList');
         })
         .then(function() {
@@ -358,17 +353,16 @@ suite('settings-fingerprint-list', function() {
         .then(function() {
           assertTrue(dialog.$$('#dialog').open);
           assertEquals(0, dialog.percentComplete_);
-          assertEquals(
-              settings.FingerprintSetupStep.LOCATE_SCANNER, dialog.step_);
+          assertEquals(FingerprintSetupStep.LOCATE_SCANNER, dialog.step_);
           // First tap on the sensor to start fingerprint enrollment.
           browserProxy.scanReceived(
-              settings.FingerprintResultType.SUCCESS, false, 20 /* percent */);
-          assertEquals(settings.FingerprintSetupStep.MOVE_FINGER, dialog.step_);
+              FingerprintResultType.SUCCESS, false, 20 /* percent */);
+          assertEquals(FingerprintSetupStep.MOVE_FINGER, dialog.step_);
 
           browserProxy.scanReceived(
-              settings.FingerprintResultType.SUCCESS, false, 30 /* percent */);
+              FingerprintResultType.SUCCESS, false, 30 /* percent */);
           assertEquals(30, dialog.percentComplete_);
-          assertEquals(settings.FingerprintSetupStep.MOVE_FINGER, dialog.step_);
+          assertEquals(FingerprintSetupStep.MOVE_FINGER, dialog.step_);
 
           // Verify that by tapping the exit button we should exit the dialog
           // and the fingerprint list should have zero fingerprints registered.
@@ -412,13 +406,12 @@ suite('settings-fingerprint-list', function() {
 
     const params = new URLSearchParams();
     params.append('settingId', settingId);
-    settings.Router.getInstance().navigateTo(
-        settings.routes.FINGERPRINT, params);
+    Router.getInstance().navigateTo(routes.FINGERPRINT, params);
 
-    Polymer.dom.flush();
+    flush();
 
     const deepLinkElement = fingerprintList.$$('#addFingerprint');
-    await test_util.waitAfterNextRender(deepLinkElement);
+    await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Add button should be focused for settingId=' + settingId);
@@ -433,14 +426,13 @@ suite('settings-fingerprint-list', function() {
 
     const params = new URLSearchParams();
     params.append('settingId', settingId);
-    settings.Router.getInstance().navigateTo(
-        settings.routes.FINGERPRINT, params);
+    Router.getInstance().navigateTo(routes.FINGERPRINT, params);
 
-    Polymer.dom.flush();
+    flush();
 
     const deepLinkElement =
         fingerprintList.root.querySelectorAll('cr-icon-button')[0];
-    await test_util.waitAfterNextRender(deepLinkElement);
+    await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Trash can button should be focused for settingId=' + settingId);

@@ -378,7 +378,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['EsimRemoveProfileDialog', 'esim_remove_profile_dialog_test.js'],
  ['EsimRenameDialog', 'esim_rename_dialog_test.js'],
  ['FilesPage', 'os_files_page_test.m.js'],
- ['FingerprintPage', 'fingerprint_browsertest_chromeos.m.js'],
+ ['FingerprintPage', 'fingerprint_browsertest_chromeos.js'],
  ['GoogleAssistantPage', 'google_assistant_page_test.js'],
  ['GuestOsSharedPaths', 'guest_os_shared_paths_test.js'],
  ['GuestOsSharedUsbDevices', 'guest_os_shared_usb_devices_test.js'],
@@ -393,7 +393,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['KerberosAccounts', 'kerberos_accounts_test.m.js'],
  ['KerberosPage', 'kerberos_page_test.m.js'],
  ['KeyboardShortcutBanner', 'keyboard_shortcut_banner_test.js'],
- ['LockScreenPage', 'lock_screen_tests.m.js'],
+ ['LockScreenPage', 'lock_screen_tests.js'],
  ['ManageAccessibilityPage', 'manage_accessibility_page_tests.js'],
  ['MultideviceCombinedSetupItem', 'multidevice_combined_setup_item_tests.js'],
  // TODO(crbug.com/1227116): Re-enable once flakiness is fixed.
@@ -450,20 +450,17 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['ParentalControlsPage', 'parental_controls_page_test.js'],
  ['PeoplePage', 'os_people_page_test.js'],
  ['PeoplePageChangePicture', 'people_page_change_picture_test.js'],
- [
-   'PeoplePageQuickUnlock',
-   'quick_unlock_authenticate_browsertest_chromeos.m.js'
- ],
+ ['PeoplePageQuickUnlock', 'quick_unlock_authenticate_browsertest_chromeos.js'],
  ['PersonalizationPage', 'personalization_page_test.js'],
  ['PrintingPage', 'os_printing_page_tests.js'],
- ['PrivacyPage', 'os_privacy_page_test.m.js'],
+ ['PrivacyPage', 'os_privacy_page_test.js'],
  ['ResetPage', 'os_reset_page_test.m.js'],
  ['SettingsSchedulerSlider', 'settings_scheduler_slider_test.m.js'],
  ['SearchSubpage', 'search_subpage_test.m.js'],
  ['SettingsTrafficCounters', 'settings_traffic_counters_test.m.js'],
  ['SmartInputsPage', 'smart_inputs_page_test.js'],
  ['SmbPage', 'smb_shares_page_tests.m.js'],
- ['SmartPrivacySubpage', 'smart_privacy_subpage_tests.m.js'],
+ ['SmartPrivacySubpage', 'smart_privacy_subpage_tests.js'],
  [
    'SwitchAccessActionAssignmentDialog',
    'switch_access_action_assignment_dialog_test.js'
