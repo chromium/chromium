@@ -109,12 +109,12 @@ void FaceDetector::OnDetectFaces(
 
 void FaceDetector::OnFaceServiceConnectionError() {
   for (const auto& request : face_service_requests_) {
-    // check if callback's resolver is still valid
+    // Check if callback's resolver is still valid.
     if (!IsInParallelAlgorithmRunnable(request->GetExecutionContext(),
                                        request->GetScriptState())) {
-      return;
+      continue;
     }
-    // enter into resolver's context to support creating DOMException
+    // Enter into resolver's context to support creating DOMException.
     ScriptState::Scope script_state_scope(request->GetScriptState());
 
     request->Reject(V8ThrowDOMException::CreateOrDie(

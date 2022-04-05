@@ -191,12 +191,12 @@ void BarcodeDetector::OnConnectionError() {
   HeapHashSet<Member<ScriptPromiseResolver>> resolvers;
   resolvers.swap(detect_requests_);
   for (const auto& resolver : resolvers) {
-    // check if callback's resolver is still valid
+    // Check if callback's resolver is still valid.
     if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
                                        resolver->GetScriptState())) {
-      return;
+      continue;
     }
-    // enter into resolver's context to support creating DOMException
+    // Enter into resolver's context to support creating DOMException.
     ScriptState::Scope script_state_scope(resolver->GetScriptState());
 
     resolver->Reject(V8ThrowDOMException::CreateOrDie(
