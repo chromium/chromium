@@ -567,7 +567,7 @@ static_library("test_support") {
     ]
   }
 
-  if (is_win || is_mac || (is_linux || is_chromeos_lacros)) {
+  if (is_win || is_mac || is_linux || is_chromeos_lacros) {
     public_deps += [ "//ui/base:pixel_diff_test_support" ]
     sources += [
       "pixel/browser_skia_gold_pixel_diff.cc",
@@ -4162,7 +4162,7 @@ if (!is_android) {
       sources -= [ "../common/time_format_browsertest.cc" ]
     }
 
-    if (is_mac || is_win || (is_linux || is_chromeos_lacros)) {
+    if (is_mac || is_win || is_linux || is_chromeos_lacros) {
       sources += [
         # Tests for non mobile and non CrOS (includes Linux, Win, Mac).
         "../browser/extensions/api/image_writer_private/image_writer_utility_client_browsertest.cc",
@@ -4176,7 +4176,7 @@ if (!is_android) {
         ]
       }
     }
-    if (((is_linux || is_chromeos_lacros) && !is_chromeos_lacros) || is_mac) {
+    if (is_linux || is_mac) {
       sources +=
           [ "../browser/first_run/first_run_internal_posix_browsertest.cc" ]
     }
@@ -5540,7 +5540,7 @@ test("unit_tests") {
     ]
   }
 
-  if (is_win || is_mac || (is_linux || is_chromeos_lacros)) {
+  if (is_win || is_mac || is_linux || is_chromeos_lacros) {
     sources += [ "../test/pixel/browser_skia_gold_pixel_diff_unittest.cc" ]
   }
 
@@ -6170,7 +6170,7 @@ test("unit_tests") {
     ]
   }
 
-  if (is_win || is_mac || (is_linux || is_chromeos_lacros)) {
+  if (is_win || is_mac || is_linux || is_chromeos_lacros) {
     sources += [
       "../browser/ui/profile_picker_unittest.cc",
       "../browser/ui/webui/signin/turn_sync_on_helper_unittest.cc",
@@ -6912,8 +6912,7 @@ test("unit_tests") {
   }
 
   if (enable_system_notifications) {
-    # TODO(crbug.com/1052397): Rename is_chromeos_lacros to is_chromeos_lacros.
-    if ((is_linux || is_chromeos_lacros) && !is_chromeos_lacros) {
+    if (is_linux) {
       sources += [ "../browser/notifications/notification_platform_bridge_linux_unittest.cc" ]
     }
 
@@ -8405,7 +8404,7 @@ test("unit_tests") {
     sources += [ "../browser/extensions/blocklist_unittest.cc" ]
   }
 
-  if (is_win || is_mac || (is_linux || is_chromeos_lacros)) {
+  if (is_win || is_mac || is_linux || is_chromeos_lacros) {
     sources += [
       "../browser/browser_switcher/alternative_browser_driver_unittest.cc",
       "../browser/browser_switcher/browser_switcher_navigation_throttle_unittest.cc",

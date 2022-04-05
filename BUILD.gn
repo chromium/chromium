@@ -615,7 +615,7 @@ group("gn_all") {
     deps += [ "//chrome/test/chromedriver:chromedriver($host_toolchain)" ]
   }
 
-  if (is_android || (is_linux || is_chromeos_lacros)) {
+  if (is_android || is_linux || is_chromeos_lacros) {
     deps += [
       "//components/network_hints/browser",
       "//content/public/app",

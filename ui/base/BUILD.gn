@@ -642,7 +642,7 @@ component("features") {
 }
 
 # TODO(crbug.com/1091985): Support CrOS.
-if (is_win || is_mac || (is_linux || is_chromeos_lacros)) {
+if (is_win || is_mac || is_linux || is_chromeos_lacros) {
   static_library("pixel_diff_test_support") {
     testonly = true
     sources = [
@@ -1037,7 +1037,7 @@ test("ui_base_unittests") {
   }
 
   # TODO(crbug.com/1091985): Support CrOS.
-  if (is_win || is_mac || (is_linux || is_chromeos_lacros)) {
+  if (is_win || is_mac || is_linux || is_chromeos_lacros) {
     sources += [
       "test/skia_gold_matching_algorithm_unittest.cc",
       "test/skia_gold_pixel_diff_unittest.cc",

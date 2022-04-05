@@ -6072,7 +6072,7 @@ static_library("browser") {
     ]
   }
 
-  if (is_win || is_mac || (is_linux || is_chromeos_lacros) || is_fuchsia) {
+  if (is_win || is_mac || is_linux || is_chromeos_lacros || is_fuchsia) {
     sources += [
       "browser_switcher/alternative_browser_driver.h",
       "browser_switcher/browser_switcher_features.cc",
@@ -6093,7 +6093,7 @@ static_library("browser") {
     if (is_win) {
       sources += [ "browser_switcher/alternative_browser_driver_win.cc" ]
     }
-    if (is_mac || (is_linux || is_chromeos_lacros)) {
+    if (is_mac || is_linux || is_chromeos_lacros) {
       sources += [ "browser_switcher/alternative_browser_driver_posix.cc" ]
     }
   }

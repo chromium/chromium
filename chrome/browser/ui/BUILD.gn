@@ -3368,7 +3368,7 @@ static_library("ui") {
     ]
   }
 
-  if (is_win || is_mac || is_fuchsia || (is_linux || is_chromeos_lacros)) {
+  if (is_win || is_mac || is_fuchsia || is_linux || is_chromeos_lacros) {
     sources += [
       "profile_picker.cc",
       "profile_picker.h",
@@ -5032,7 +5032,7 @@ static_library("ui") {
       ]
     }
 
-    if (is_win || is_fuchsia || (is_linux || is_chromeos_lacros)) {
+    if (is_win || is_fuchsia || is_linux || is_chromeos_lacros) {
       sources += [
         "views/native_widget_factory.cc",
         "views/native_widget_factory.h",

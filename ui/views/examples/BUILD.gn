@@ -167,7 +167,7 @@ source_set("views_examples_proc") {
     "//ui/views:test_support",
   ]
 
-  if (is_win || is_mac || (is_linux || is_chromeos_lacros)) {
+  if (is_win || is_mac || is_linux || is_chromeos_lacros) {
     sources += [
       "examples_skia_gold_pixel_diff.cc",
       "examples_skia_gold_pixel_diff.h",
