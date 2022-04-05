@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.android_webview.js.renderer;
+package org.chromium.android_webview.js_sandbox.service;
 
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
-import org.chromium.android_webview.js.common.IJsSandboxContext;
-import org.chromium.android_webview.js.common.IJsSandboxService;
+import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolate;
+import org.chromium.android_webview.js_sandbox.common.IJsSandboxService;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 
-/** Service that creates a context for Javascript execution. */
+/** Service that creates a Isolate for Javascript execution. */
 public class JsSandboxService extends Service {
     private static final String TAG = "JsSandboxService";
 
     private final IJsSandboxService.Stub mBinder = new IJsSandboxService.Stub() {
         @Override
-        public IJsSandboxContext createContext() {
-            return new JsSandboxContext();
+        public IJsSandboxIsolate createIsolate() {
+            return new JsSandboxIsolate();
         }
     };
 
@@ -32,7 +32,7 @@ public class JsSandboxService extends Service {
     @Override
     public void onCreate() {
         ensureNativeInitialized();
-        JsSandboxContext.initializeEnvironment();
+        JsSandboxIsolate.initializeEnvironment();
     }
 
     private void ensureNativeInitialized() {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.android_webview.js.browser;
+package org.chromium.android_webview.js_sandbox.client;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -15,8 +15,8 @@ import android.webkit.WebView;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.android_webview.js.common.IJsSandboxContext;
-import org.chromium.android_webview.js.common.IJsSandboxService;
+import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolate;
+import org.chromium.android_webview.js_sandbox.common.IJsSandboxService;
 import org.chromium.base.ContextUtils;
 
 /**
@@ -30,7 +30,7 @@ public class AwJsSandbox implements AutoCloseable {
     // connect to a different one when creating a new object.
     private static final String TAG = "AwJsSandbox";
     private static final String JS_SANDBOX_SERVICE_NAME =
-            "org.chromium.android_webview.js.renderer.JsSandboxService0";
+            "org.chromium.android_webview.js_sandbox.service.JsSandboxService0";
 
     private IJsSandboxService mJsSandboxService;
     private ConnectionSetup mConnection;
@@ -105,15 +105,15 @@ public class AwJsSandbox implements AutoCloseable {
         mJsSandboxService = jsSandboxService;
     }
 
-    /** Creates an execution context within which JS can be executed multiple times. */
-    public AwJsContext createContext() {
+    /** Creates an execution isolate within which JS can be executed multiple times. */
+    public AwJsIsolate createIsolate() {
         if (mJsSandboxService == null) {
             throw new IllegalStateException(
-                    "Attempting to createContext on a service that isn't connected");
+                    "Attempting to createIsolate on a service that isn't connected");
         }
         try {
-            IJsSandboxContext contextStub = mJsSandboxService.createContext();
-            return new AwJsContext(contextStub);
+            IJsSandboxIsolate isolateStub = mJsSandboxService.createIsolate();
+            return new AwJsIsolate(isolateStub);
         } catch (RemoteException e) {
             throw e.rethrowAsRuntimeException();
         }

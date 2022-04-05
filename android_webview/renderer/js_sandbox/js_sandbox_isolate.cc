@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "android_webview/renderer/js_sandbox/js_sandbox_context.h"
+#include "android_webview/renderer/js_sandbox/js_sandbox_isolate.h"
 
 #include <algorithm>
 #include <memory>
 #include <string>
 
-#include "android_webview/js_sandbox_jni_headers/JsSandboxContext_jni.h"
+#include "android_webview/js_sandbox_jni_headers/JsSandboxIsolate_jni.h"
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -61,23 +61,23 @@ class SandboxRunnerDelegate : public gin::ShellRunnerDelegate {
 
 namespace android_webview {
 
-JsSandboxContext::JsSandboxContext() {
+JsSandboxIsolate::JsSandboxIsolate() {
   task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
       base::SingleThreadTaskRunnerThreadMode::DEDICATED);
   task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&JsSandboxContext::InitializeIsolateOnThread,
+      FROM_HERE, base::BindOnce(&JsSandboxIsolate::InitializeIsolateOnThread,
                                 base::Unretained(this)));
 }
 
-JsSandboxContext::~JsSandboxContext() {}
+JsSandboxIsolate::~JsSandboxIsolate() {}
 
-void JsSandboxContext::DeleteSelf() {
+void JsSandboxIsolate::DeleteSelf() {
   delete this;
 }
 
-void JsSandboxContext::DestroyNative(
+void JsSandboxIsolate::DestroyNative(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
   // TODO(crbug.com/1297672): Currently this only posts the deletion task to
@@ -87,10 +87,10 @@ void JsSandboxContext::DestroyNative(
   // we'll want to forcibly abort execution in the V8 isolate.
   task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&JsSandboxContext::DeleteSelf, base::Unretained(this)));
+      base::BindOnce(&JsSandboxIsolate::DeleteSelf, base::Unretained(this)));
 }
 
-void JsSandboxContext::InitializeIsolateOnThread() {
+void JsSandboxIsolate::InitializeIsolateOnThread() {
   isolate_holder_ = std::make_unique<gin::IsolateHolder>(
       base::ThreadTaskRunnerHandle::Get(),
       gin::IsolateHolder::IsolateType::kUtility);
@@ -99,7 +99,7 @@ void JsSandboxContext::InitializeIsolateOnThread() {
   runner_ = std::make_unique<gin::ShellRunner>(delegate_.get(), isolate);
 }
 
-void JsSandboxContext::EvaluateJavascriptOnThread(
+void JsSandboxIsolate::EvaluateJavascriptOnThread(
     const std::string code,
     FinishedCallback success_callback,
     FinishedCallback error_callback) {
@@ -120,7 +120,7 @@ void JsSandboxContext::EvaluateJavascriptOnThread(
 // different threads belonging to the Binder threadpool. We push all of these
 // requests into the isolate thread pool queue and return immediately. Once the
 // result is computed, the isolate thread calls the callback.
-jboolean JsSandboxContext::EvaluateJavascript(
+jboolean JsSandboxIsolate::EvaluateJavascript(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jstring>& jcode,
@@ -129,7 +129,7 @@ jboolean JsSandboxContext::EvaluateJavascript(
   std::string code = ConvertJavaStringToUTF8(env, jcode);
   task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&JsSandboxContext::EvaluateJavascriptOnThread,
+      base::BindOnce(&JsSandboxIsolate::EvaluateJavascriptOnThread,
                      base::Unretained(this), std::move(code),
                      base::BindOnce(&base::android::RunStringCallbackAndroid,
                                     base::android::ScopedJavaGlobalRef<jobject>(
@@ -140,8 +140,8 @@ jboolean JsSandboxContext::EvaluateJavascript(
   return true;
 }
 
-static void JNI_JsSandboxContext_InitializeEnvironment(JNIEnv* env) {
-  base::ThreadPoolInstance::CreateAndStartWithDefaultParams("JsSandboxContext");
+static void JNI_JsSandboxIsolate_InitializeEnvironment(JNIEnv* env) {
+  base::ThreadPoolInstance::CreateAndStartWithDefaultParams("JsSandboxIsolate");
 #ifdef V8_USE_EXTERNAL_STARTUP_DATA
   gin::V8Initializer::LoadV8Snapshot();
 #endif
@@ -149,9 +149,9 @@ static void JNI_JsSandboxContext_InitializeEnvironment(JNIEnv* env) {
                                  gin::ArrayBufferAllocator::SharedInstance());
 }
 
-static jlong JNI_JsSandboxContext_CreateNativeJsSandboxIsolateWrapper(
+static jlong JNI_JsSandboxIsolate_CreateNativeJsSandboxIsolateWrapper(
     JNIEnv* env) {
-  JsSandboxContext* processor = new JsSandboxContext();
+  JsSandboxIsolate* processor = new JsSandboxIsolate();
   return reinterpret_cast<intptr_t>(processor);
 }
 

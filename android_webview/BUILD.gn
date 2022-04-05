@@ -733,17 +733,15 @@ android_library("common_platform_services_java") {
 }
 
 generate_jni("js_sandbox_jni_headers") {
-  sources = [
-    "java/src/org/chromium/android_webview/js/renderer/JsSandboxContext.java",
-  ]
+  sources = [ "java/src/org/chromium/android_webview/js_sandbox/service/JsSandboxIsolate.java" ]
 }
 
 android_aidl("js_sandbox_aidl") {
   import_include = [ "java/src" ]
   sources = [
-    "java/src/org/chromium/android_webview/js/common/IJsSandboxContext.aidl",
-    "java/src/org/chromium/android_webview/js/common/IJsSandboxContextCallback.aidl",
-    "java/src/org/chromium/android_webview/js/common/IJsSandboxService.aidl",
+    "java/src/org/chromium/android_webview/js_sandbox/common/IJsSandboxIsolate.aidl",
+    "java/src/org/chromium/android_webview/js_sandbox/common/IJsSandboxIsolateCallback.aidl",
+    "java/src/org/chromium/android_webview/js_sandbox/common/IJsSandboxService.aidl",
   ]
 }
 
@@ -753,9 +751,9 @@ android_library("js_sandbox_aidl_java") {
 
 android_library("js_sandbox_service_java") {
   sources = [
-    "java/src/org/chromium/android_webview/js/renderer/JsSandboxContext.java",
-    "java/src/org/chromium/android_webview/js/renderer/JsSandboxService.java",
-    "java/src/org/chromium/android_webview/js/renderer/JsSandboxService0.java",
+    "java/src/org/chromium/android_webview/js_sandbox/service/JsSandboxIsolate.java",
+    "java/src/org/chromium/android_webview/js_sandbox/service/JsSandboxService.java",
+    "java/src/org/chromium/android_webview/js_sandbox/service/JsSandboxService0.java",
   ]
 
   deps = [
@@ -772,9 +770,9 @@ android_library("js_sandbox_service_java") {
 
 android_library("js_sandbox_java") {
   sources = [
-    "java/src/org/chromium/android_webview/js/browser/AwJsContext.java",
-    "java/src/org/chromium/android_webview/js/browser/AwJsSandbox.java",
-    "java/src/org/chromium/android_webview/js/common/ExecutionErrorTypes.java",
+    "java/src/org/chromium/android_webview/js_sandbox/client/AwJsIsolate.java",
+    "java/src/org/chromium/android_webview/js_sandbox/client/AwJsSandbox.java",
+    "java/src/org/chromium/android_webview/js_sandbox/common/ExecutionErrorTypes.java",
   ]
 
   deps = [
