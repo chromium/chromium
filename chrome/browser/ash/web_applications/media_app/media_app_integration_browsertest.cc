@@ -79,6 +79,12 @@ constexpr char kFileVideoVP9[] = "world.webm";
 // A 5-second long 96kb/s Ogg-Vorbis 44.1kHz mono audio file.
 constexpr char kFileAudioOgg[] = "music.ogg";
 
+// A 1-page (8.5" x 11") PDF with some text and metadata.
+constexpr char kFilePdfTall[] = "tall.pdf";
+
+// A small square image PDF created by a camera.
+constexpr char kFilePdfImg[] = "img.pdf";
+
 constexpr char kUnhandledRejectionScript[] =
     "window.dispatchEvent("
     "new CustomEvent('simulate-unhandled-rejection-for-test'));";
@@ -94,6 +100,10 @@ constexpr char kDomExceptionScript[] =
 
 class MediaAppIntegrationTest : public SystemWebAppIntegrationTest {
  public:
+  MediaAppIntegrationTest() {
+    feature_list_.InitAndEnableFeature(ash::features::kMediaAppHandlesPdf);
+  }
+
   void MediaAppLaunchWithFile(bool audio_enabled);
   void MediaAppWithLaunchSystemWebAppAsync(bool audio_enabled);
   void MediaAppEligibleOpenTask(bool audio_enabled);
@@ -105,6 +115,7 @@ class MediaAppIntegrationTest : public SystemWebAppIntegrationTest {
   content::WebContents* LaunchWithNoFiles();
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<file_manager::test::FolderInMyFiles> launch_folder_;
 };
 
@@ -151,6 +162,18 @@ class MediaAppIntegrationDarkLightModeDisabledTest
  public:
   MediaAppIntegrationDarkLightModeDisabledTest() {
     feature_list_.InitAndDisableFeature(chromeos::features::kDarkLightMode);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class MediaAppIntegrationPdfDisabledTest : public MediaAppIntegrationTest {
+ public:
+  MediaAppIntegrationPdfDisabledTest() {
+    // This reverts the "default"-enabled state of the feature set in the
+    // base class test harness.
+    feature_list_.InitAndDisableFeature(ash::features::kMediaAppHandlesPdf);
   }
 
  private:
@@ -412,6 +435,49 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioEnabledTest,
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioDisabledTest,
                        MediaAppWithLaunchSystemWebAppAsync) {
   MediaAppWithLaunchSystemWebAppAsync(false);
+}
+
+// Test that the Media App launches a single window for images.
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchImageMulti) {
+  WaitForTestSystemAppInstall();
+  web_app::SystemAppLaunchParams image_params;
+  image_params.launch_paths = {TestFile(kFilePng800x600),
+                               TestFile(kFileJpeg640x480)};
+
+  web_app::LaunchSystemWebAppAsync(browser()->profile(),
+                                   web_app::SystemAppType::MEDIA, image_params);
+  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
+
+  const BrowserList* browser_list = BrowserList::GetInstance();
+  EXPECT_EQ(2u, browser_list->size());  // 1 extra for the browser test browser.
+
+  content::TitleWatcher watcher(
+      browser_list->get(1)->tab_strip_model()->GetActiveWebContents(),
+      u"image.png");
+  EXPECT_EQ(u"image.png", watcher.WaitAndGetTitle());
+}
+
+// Test that the Media App launches multiple windows for PDFs.
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchPdfMulti) {
+  WaitForTestSystemAppInstall();
+  web_app::SystemAppLaunchParams pdf_params;
+  pdf_params.launch_paths = {TestFile(kFilePdfTall), TestFile(kFilePdfImg)};
+
+  web_app::LaunchSystemWebAppAsync(browser()->profile(),
+                                   web_app::SystemAppType::MEDIA, pdf_params);
+  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
+
+  const BrowserList* browser_list = BrowserList::GetInstance();
+  EXPECT_EQ(3u, browser_list->size());  // 1 extra for the browser test browser.
+
+  content::TitleWatcher watcher1(
+      browser_list->get(1)->tab_strip_model()->GetActiveWebContents(),
+      u"tall.pdf");
+  content::TitleWatcher watcher2(
+      browser_list->get(2)->tab_strip_model()->GetActiveWebContents(),
+      u"img.pdf");
+  EXPECT_EQ(u"tall.pdf", watcher1.WaitAndGetTitle());
+  EXPECT_EQ(u"img.pdf", watcher2.WaitAndGetTitle());
 }
 
 // Test that the Media App appears as a handler for files in the App Service.
@@ -872,6 +938,18 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioDisabledTest,
 }
 
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAllProfilesTest,
+                       ShownInLauncherAndSearch) {
+  WaitForTestSystemAppInstall();
+
+  // Check system_web_app_manager has the correct attributes for Media App.
+  auto* system_app = GetManager().GetSystemApp(web_app::SystemAppType::MEDIA);
+  EXPECT_TRUE(system_app->ShouldShowInLauncher());
+  EXPECT_TRUE(system_app->ShouldShowInSearch());
+}
+
+// Test for the old behaviour with fewer permutations. Can be removed along with
+// features::MediaAppHandlesPdf.
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationPdfDisabledTest,
                        HiddenInLauncherAndSearch) {
   WaitForTestSystemAppInstall();
 
@@ -1412,6 +1490,9 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     MediaAppIntegrationAudioDisabledTest);
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    MediaAppIntegrationPdfDisabledTest);
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     MediaAppIntegrationDarkLightModeEnabledTest);

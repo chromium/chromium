@@ -172,6 +172,7 @@ class BacklightApp extends HTMLElement {
 
     this.replaceChild(child, this.currentMedia);
     this.currentMedia = child;
+    this.delegate.notifyCurrentFile(file.name, mimeType);
   }
 
   updateHandler() {
