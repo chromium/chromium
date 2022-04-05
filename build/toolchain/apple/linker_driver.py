@@ -239,8 +239,8 @@ class LinkerDriver(object):
         dsymutil_env['PATH'] = ':'.join(tools_paths)
 
         # Run dsymutil and redirect stdout and stderr to the same pipe.
-        process = subprocess.Popen(self._dsymutil_cmd +
-                                   ['-o', dsym_out, linker_output],
+        args = self._dsymutil_cmd + ['-o', dsym_out, linker_output]
+        process = subprocess.Popen(args,
                                    env=dsymutil_env,
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.STDOUT)
@@ -252,6 +252,10 @@ class LinkerDriver(object):
         stdout = _filter_dsym_output(stdout)
         if stdout:
             sys.stderr.write(stdout)
+
+        if process.returncode:
+            raise subprocess.CalledProcessError(process.returncode, args,
+                                                output=stdout)
 
         return [dsym_out]
 
