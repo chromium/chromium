@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"

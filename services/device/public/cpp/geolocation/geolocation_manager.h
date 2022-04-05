@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "base/observer_list_threadsafe.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #include "services/device/public/mojom/geoposition.mojom.h"

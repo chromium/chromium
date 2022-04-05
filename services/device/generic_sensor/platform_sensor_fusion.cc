@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "services/device/generic_sensor/platform_sensor_fusion_algorithm.h"

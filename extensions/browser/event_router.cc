@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "components/crx_file/id_util.h"

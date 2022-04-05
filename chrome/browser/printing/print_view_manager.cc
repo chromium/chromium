@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/lazy_instance.h"
+#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bad_message.h"

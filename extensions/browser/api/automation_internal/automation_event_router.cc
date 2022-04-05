@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/containers/cxx20_erase.h"
+#include "base/observer_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

@@ -5,6 +5,7 @@
 #include "device/bluetooth/floss/fake_floss_adapter_client.h"
 
 #include "base/logging.h"
+#include "base/observer_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace floss {

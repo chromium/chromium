@@ -15,6 +15,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"
+#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"

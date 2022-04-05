@@ -10,6 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "base/lazy_instance.h"
+#include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"

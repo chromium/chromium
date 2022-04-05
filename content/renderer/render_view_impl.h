@@ -10,7 +10,6 @@
 
 #include "base/containers/id_map.h"
 #include "base/gtest_prod_util.h"
-#include "base/observer_list.h"
 #include "base/process/process.h"
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"

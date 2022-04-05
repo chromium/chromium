@@ -12,7 +12,6 @@
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/observer_list.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
 

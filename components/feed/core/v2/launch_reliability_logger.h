@@ -6,7 +6,6 @@
 #define COMPONENTS_FEED_CORE_V2_LAUNCH_RELIABILITY_LOGGER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/observer_list.h"
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/v2/public/feed_stream_surface.h"

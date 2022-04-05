@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/observer_list.h"
 #include "base/strings/string_piece.h"
 #include "ui/base/ime/character_composer.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"

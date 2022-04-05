@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"

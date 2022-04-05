@@ -12,7 +12,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
-#include "base/observer_list.h"
 #include "components/feed/core/proto/v2/ui.pb.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/v2/enums.h"
