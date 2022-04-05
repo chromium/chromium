@@ -18,11 +18,6 @@ load("//lib/branches.star", "branches")
 load("//project.star", "settings")
 
 _NON_BRANCHED_TESTERS = {
-    # This tester is triggered by 'Win x64 Builder', but it is an FYI builder
-    # and not mirrored by any branched try builders, so we do not need to run it
-    # on the branches
-    "Win11 Tests x64": branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
-
     # These Android testers are triggered by 'Android arm Builder (dbg)', but we
     # don't have sufficient capacity of devices with older Android versions, so
     # we do not run them on the branches
