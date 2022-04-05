@@ -5,7 +5,7 @@
 /**
  * @fileoverview
  * 'cr-search-field' is a simple implementation of a polymer component that
- * uses CrSearchFieldBehavior.
+ * uses CrSearchFieldMixin.
  */
 
 import '../cr_icon_button/cr_icon_button.m.js';
@@ -16,19 +16,21 @@ import '../shared_style_css.m.js';
 import '../shared_vars_css.m.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrSearchFieldBehavior, CrSearchFieldBehaviorInterface} from './cr_search_field_behavior.js';
+import {CrInputElement} from '../cr_input/cr_input.m.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {CrSearchFieldBehaviorInterface}
- */
-const CrSearchFieldElementBase =
-    mixinBehaviors([CrSearchFieldBehavior], PolymerElement);
+import {CrSearchFieldMixin} from './cr_search_field_mixin.js';
 
-/** @polymer */
+const CrSearchFieldElementBase = CrSearchFieldMixin(PolymerElement);
+
+export interface CrSearchFieldElement {
+  $: {
+    clearSearch: HTMLElement,
+    searchInput: CrInputElement,
+  };
+}
+
 export class CrSearchFieldElement extends CrSearchFieldElementBase {
   static get is() {
     return 'cr-search-field';
@@ -47,17 +49,23 @@ export class CrSearchFieldElement extends CrSearchFieldElementBase {
     };
   }
 
-  /** @return {!HTMLInputElement} */
-  getSearchInput() {
-    return /** @type {!HTMLInputElement} */ (this.$.searchInput);
+  override autofocus: boolean;
+
+  override getSearchInput(): CrInputElement {
+    return this.$.searchInput;
   }
 
-  /** @private */
-  onTapClear_() {
+  private onTapClear_() {
     this.setValue('');
     setTimeout(() => {
       this.$.searchInput.focus();
     });
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-search-field': CrSearchFieldElement;
   }
 }
 

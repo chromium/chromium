@@ -249,8 +249,9 @@ js_library("emoji_search") {
   deps = [
     ":types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field",
   ]
+
+  externs_list = [ "//ui/webui/resources/cr_elements/cr_search_field/cr_search_field_externs.js" ]
 }
 
 js_library("emoticon_group") {
@@ -282,7 +283,7 @@ js_library("trie") {
 
 js_library("prefix_search") {
   sources = [ "./prefix_search.js" ]
-  deps = [":trie"]
+  deps = [ ":trie" ]
 }
 
 js_library("store") {

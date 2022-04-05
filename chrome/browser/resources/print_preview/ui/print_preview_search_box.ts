@@ -9,10 +9,10 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import './print_preview_shared_css.js';
 
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
-import {CrSearchFieldBehavior} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field_behavior.js';
+import {CrSearchFieldMixin} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field_mixin.js';
 import {stripDiacritics} from 'chrome://resources/js/search_highlight_utils.js';
-import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getTemplate} from './print_preview_search_box.html.js';
 
 declare global {
@@ -30,11 +30,7 @@ export interface PrintPreviewSearchBoxElement {
 }
 
 const PrintPreviewSearchBoxElementBase =
-    mixinBehaviors(
-        [CrSearchFieldBehavior], WebUIListenerMixin(PolymerElement)) as {
-      new (): PolymerElement & WebUIListenerMixinInterface &
-          CrSearchFieldBehavior,
-    };
+    CrSearchFieldMixin(WebUIListenerMixin(PolymerElement));
 
 export class PrintPreviewSearchBoxElement extends
     PrintPreviewSearchBoxElementBase {

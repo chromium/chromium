@@ -8,18 +8,18 @@
  */
 
 /** @interface */
-function CrSearchFieldBehaviorInterface() {}
+function CrSearchFieldMixinInterface() {}
 
 /**
  * @param {string} value
  * @param {boolean=} noEvent
  */
-CrSearchFieldBehaviorInterface.prototype.setValue = function(value, noEvent) {};
+CrSearchFieldMixinInterface.prototype.setValue = function(value, noEvent) {};
 
 /**
  * @constructor
  * @extends {HTMLElement}
- * @implements {CrSearchFieldBehaviorInterface}
+ * @implements {CrSearchFieldMixinInterface}
  */
 function CrToolbarSearchFieldElement() {}
 

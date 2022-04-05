@@ -9,9 +9,9 @@ import '../shared_style_css.m.js';
 import '../shared_vars_css.m.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
-import {DomIf, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomIf, html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrSearchFieldBehavior} from '../cr_search_field/cr_search_field_behavior.js';
+import {CrSearchFieldMixin} from '../cr_search_field/cr_search_field_mixin.js';
 
 export interface CrToolbarSearchFieldElement {
   $: {
@@ -20,9 +20,7 @@ export interface CrToolbarSearchFieldElement {
   };
 }
 
-const CrToolbarSearchFieldElementBase =
-    mixinBehaviors(CrSearchFieldBehavior, PolymerElement) as
-    {new (): PolymerElement & CrSearchFieldBehavior};
+const CrToolbarSearchFieldElementBase = CrSearchFieldMixin(PolymerElement);
 
 
 export class CrToolbarSearchFieldElement extends

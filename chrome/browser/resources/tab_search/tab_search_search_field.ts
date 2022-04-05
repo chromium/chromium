@@ -7,14 +7,12 @@ import 'chrome://resources/cr_elements/mwb_shared_vars.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {CrSearchFieldBehavior} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field_behavior.js';
+import {CrSearchFieldMixin} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getTemplate} from './tab_search_search_field.html.js';
 
-const TabSearchSearchFieldBase =
-    mixinBehaviors([CrSearchFieldBehavior], PolymerElement) as
-    {new (): PolymerElement & CrSearchFieldBehavior};
+const TabSearchSearchFieldBase = CrSearchFieldMixin(PolymerElement);
 
 export interface TabSearchSearchField {
   $: {
@@ -102,7 +100,7 @@ export class TabSearchSearchField extends TabSearchSearchFieldBase {
   }
 
   /**
-   * Do not schedule the timer from CrSearchFieldBehavior to make search more
+   * Do not schedule the timer from CrSearchFieldMixin to make search more
    * responsive.
    */
   override onSearchTermInput() {

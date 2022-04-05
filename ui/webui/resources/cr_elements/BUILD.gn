@@ -15,20 +15,23 @@ assert(!is_android && !is_ios)
 preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/cr_elements"
 preprocess_gen_manifest = "preprocessed_gen_manifest.json"
 preprocess_polymer2_manifest = "preprocessed_polymer2_manifest.json"
-preprocess_src_manifest = "preprocessed_src_manifest.json"
+
+if (is_chromeos_ash) {
+  preprocess_src_manifest = "preprocessed_src_manifest.json"
+}
 
 generate_grd("build_grdp") {
   grd_prefix = "cr_elements"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
   deps = [ ":preprocess" ]
-  manifest_files = [
-    "$target_gen_dir/$preprocess_gen_manifest",
-    "$target_gen_dir/$preprocess_src_manifest",
-  ]
+  manifest_files = [ "$target_gen_dir/$preprocess_gen_manifest" ]
 
-  # TODO(crbug.com/1184053): Fully remove once no longer used by CrOS.
   if (is_chromeos_ash) {
-    manifest_files += [ "$target_gen_dir/$preprocess_polymer2_manifest" ]
+    manifest_files += [
+      # TODO(crbug.com/1184053): Fully remove once no longer used by CrOS.
+      "$target_gen_dir/$preprocess_polymer2_manifest",
+      "$target_gen_dir/$preprocess_src_manifest",
+    ]
   }
   resource_path_prefix = "cr_elements"
 }
@@ -37,24 +40,25 @@ group("preprocess") {
   public_deps = [
     ":preprocess_generated",
     ":preprocess_generated_ts",
-    ":preprocess_src",
     ":preprocess_src_ts",
   ]
 
-  # TODO(crbug.com/1184053): Fully remove once no longer used by CrOS.
   if (is_chromeos_ash) {
-    public_deps += [ ":preprocess_polymer2" ]
+    public_deps += [
+      # TODO(crbug.com/1184053): Fully remove once no longer used by CrOS.
+      ":preprocess_polymer2",
+      ":preprocess_src",
+    ]
   }
 }
 
-preprocess_if_expr("preprocess_src") {
-  in_folder = "."
-  out_folder = "$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_src_manifest"
-  in_files = [ "cr_search_field/cr_search_field_behavior.js" ]
+if (is_chromeos_ash) {
+  preprocess_if_expr("preprocess_src") {
+    in_folder = "."
+    out_folder = "$preprocess_folder"
+    out_manifest = "$target_gen_dir/$preprocess_src_manifest"
 
-  if (is_chromeos_ash) {
-    in_files += [
+    in_files = [
       "chromeos/cr_picture/cr_picture_types.js",
       "chromeos/cr_picture/png.js",
       "chromeos/cr_picture/webcam_utils.js",
@@ -70,6 +74,7 @@ preprocess_if_expr("preprocess_src_ts") {
   in_files = [
     "cr_auto_img/cr_auto_img.ts",
     "cr_container_shadow_mixin.ts",
+    "cr_search_field/cr_search_field_mixin.ts",
     "cr_splitter/cr_splitter.ts",
     "find_shortcut_mixin.ts",
     "mouse_hoverable_mixin.ts",
@@ -168,7 +173,6 @@ preprocess_if_expr("preprocess_generated") {
     "cr_radio_button/cr_radio_button_style_css.m.js",
     "cr_radio_group/cr_radio_group.m.js",
     "cr_scrollable_behavior.m.js",
-    "cr_search_field/cr_search_field.js",
     "cr_toggle/cr_toggle.m.js",
     "hidden_style_css.m.js",
     "icons.m.js",
@@ -212,10 +216,11 @@ preprocess_if_expr("preprocess_generated_ts") {
     "cr_nav_menu_item_style.ts",
     "cr_profile_avatar_selector/cr_profile_avatar_selector_grid.ts",
     "cr_profile_avatar_selector/cr_profile_avatar_selector.ts",
+    "cr_search_field/cr_search_field.ts",
     "cr_slider/cr_slider.ts",
     "cr_tabs/cr_tabs.ts",
-    "cr_toast/cr_toast.ts",
     "cr_toast/cr_toast_manager.ts",
+    "cr_toast/cr_toast.ts",
     "cr_toolbar/cr_toolbar_search_field.ts",
     "cr_toolbar/cr_toolbar_selection_overlay.ts",
     "cr_toolbar/cr_toolbar.ts",
@@ -257,7 +262,6 @@ group("closure_compile") {
     "cr_lottie:closure_compile_module",
     "cr_radio_button:closure_compile_module",
     "cr_radio_group:closure_compile_module",
-    "cr_search_field:closure_compile_module",
     "cr_toggle:closure_compile_module",
     "policy:closure_compile_module",
   ]

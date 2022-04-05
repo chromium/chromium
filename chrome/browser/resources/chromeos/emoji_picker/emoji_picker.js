@@ -380,10 +380,12 @@ export class EmojiPicker extends PolymerElement {
           throw new Error('Unknown category');
       }
     }
-    const searchLength = this.$['search-container']
-                             .shadowRoot.querySelector('cr-search-field')
-                             .getSearchInput()
-                             .value.length;
+    const searchLength =
+        /** @type {!CrSearchFieldElement} */ (
+            this.$['search-container'].shadowRoot.querySelector(
+                'cr-search-field'))
+            .getSearchInput()
+            .value.length;
 
     // TODO(b/217276960): change to a more generic name
     this.apiProxy_.insertEmoji(text, isVariant, searchLength);
