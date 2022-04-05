@@ -110,6 +110,7 @@ class TaskManager:
         if line.startswith('procs_running'):
           return int(line.rstrip().split()[1])
     assert False, 'Could not read /proc/stat'
+    return 0
 
   def _maybe_start_tasks(self):
     if self._deactivated:
@@ -174,6 +175,8 @@ class Task:
       # TODO(wnwen): Use ionice to reduce resource consumption.
       TaskStats.add_process()
       log(f'STARTING {self.name}')
+      # This use of preexec_fn is sufficiently simple, just one os.nice call.
+      # pylint: disable=subprocess-popen-preexec-fn
       self._proc = subprocess.Popen(
           self.cmd,
           stdout=subprocess.PIPE,
@@ -326,6 +329,7 @@ def main():
     sock.bind(server_utils.SOCKET_ADDRESS)
     sock.listen()
     _process_requests(sock)
+  return 0
 
 
 if __name__ == '__main__':

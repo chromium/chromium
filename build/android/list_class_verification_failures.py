@@ -12,7 +12,7 @@ and accommodating API-level-specific details, such as file paths.
 
 
 import argparse
-import dataclasses
+import dataclasses  # pylint: disable=wrong-import-order
 import logging
 import os
 import re
@@ -63,12 +63,10 @@ def DetermineDeviceToUse(devices):
 
 class DeviceOSError(Exception):
   """Raised when a file is missing from the device, or something similar."""
-  pass
 
 
 class UnsupportedDeviceError(Exception):
   """Raised when the device is not supported by this script."""
-  pass
 
 
 def _GetFormattedArch(device):
@@ -156,8 +154,7 @@ def FormatJavaClassName(dex_code_name, proguard_mappings):
   obfuscated_name = dex_code_name.replace('/', '.')
   if proguard_mappings is not None:
     return _DeobfuscateJavaClassName(obfuscated_name, proguard_mappings)
-  else:
-    return obfuscated_name
+  return obfuscated_name
 
 
 def ParseOatdump(oatdump_output, proguard_mappings):
@@ -189,8 +186,7 @@ def _PrintVerificationResults(target_status, java_classes, show_summary):
     if java_class.verification_status not in d:
       raise RuntimeError('Unexpected status: {0}'.format(
           java_class.verification_status))
-    else:
-      d[java_class.verification_status] += 1
+    d[java_class.verification_status] += 1
 
   if show_summary:
     for status in d:
