@@ -1002,6 +1002,45 @@ public class LocationBarMediatorTest {
     }
 
     @Test
+    public void testLensButtonVisibility_lensDisabled_tablet() {
+        doReturn(false).when(mLensController).isLensEnabled(any());
+        verifyLensButtonVisibilityWhenFocusChanges(false, "");
+    }
+
+    @Test
+    public void testLensButtonVisibility_lensEnabled_tablet() {
+        doReturn(true).when(mLensController).isLensEnabled(any());
+        verifyLensButtonVisibilityWhenFocusChanges(true, "");
+    }
+
+    @Test
+    public void testLensButtonVisibility_lensDisabledWithInputText_tablet() {
+        doReturn(false).when(mLensController).isLensEnabled(any());
+        verifyLensButtonVisibilityWhenFocusChanges(false, "text");
+    }
+
+    @Test
+    public void testLensButtonVisibility_lensEnabledWithInputText_tablet() {
+        doReturn(true).when(mLensController).isLensEnabled(any());
+        verifyLensButtonVisibilityWhenFocusChanges(true, "text");
+    }
+
+    private void verifyLensButtonVisibilityWhenFocusChanges(
+            boolean shouldBeVisible, String inputText) {
+        mTabletMediator.resetLastCachedIsLensOnOmniboxEnabledForTesting();
+        mTabletMediator.setLensControllerForTesting(mLensController);
+        mTabletMediator.onFinishNativeInitialization();
+        mTabletMediator.setShouldShowButtonsWhenUnfocusedForTablet(true);
+        mTabletMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(true);
+        mTabletMediator.onUrlFocusChange(true);
+        doReturn(inputText).when(mUrlCoordinator).getTextWithAutocomplete();
+        Mockito.reset(mLocationBarTablet);
+
+        mTabletMediator.updateButtonVisibility();
+        verify(mLocationBarTablet).setLensButtonVisibility(shouldBeVisible);
+    }
+
+    @Test
     public void testButtonVisibility_showMicUnfocused() {
         VoiceRecognitionHandler voiceRecognitionHandler = mock(VoiceRecognitionHandler.class);
         mMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);

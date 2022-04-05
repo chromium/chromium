@@ -376,6 +376,10 @@ class LocationBarMediator
         mLensController = lensController;
     }
 
+    void resetLastCachedIsLensOnOmniboxEnabledForTesting() {
+        sLastCachedIsLensOnOmniboxEnabled = null;
+    }
+
     /* package */ OneshotSupplier<AssistantVoiceSearchService>
     getAssistantVoiceSearchServiceSupplierForTesting() {
         return mAssistantVoiceSearchServiceSupplier;
@@ -779,11 +783,20 @@ class LocationBarMediator
         if (shouldShowSaveOfflineButton()) {
             animators.add(createShowButtonAnimatorForTablet(
                     locationBarTablet.getSaveOfflineButtonForAnimation()));
-        } else if (!locationBarTablet.isMicButtonVisible()
-                || locationBarTablet.getMicButtonAlpha() != 1.f) {
-            // If the microphone button is already fully visible, don't animate its appearance.
-            animators.add(createShowButtonAnimatorForTablet(
-                    locationBarTablet.getMicButtonForAnimation()));
+        } else {
+            if (!locationBarTablet.isMicButtonVisible()
+                    || locationBarTablet.getMicButtonAlpha() != 1.f) {
+                // If the microphone button is already fully visible, don't animate its appearance.
+                animators.add(createShowButtonAnimatorForTablet(
+                        locationBarTablet.getMicButtonForAnimation()));
+            }
+            if (shouldShowLensButton()
+                    && (!locationBarTablet.isLensButtonVisible()
+                            || locationBarTablet.getLensButtonAlpha() != 1.f)) {
+                // If the Lens button is already fully visible, don't animate its appearance.
+                animators.add(createShowButtonAnimatorForTablet(
+                        locationBarTablet.getLensButtonForAnimation()));
+            }
         }
 
         return animators;
@@ -847,6 +860,10 @@ class LocationBarMediator
             // url bar is currently focused and the delete button isn't showing.
             animators.add(createHideButtonAnimatorForTablet(
                     locationBarTablet.getMicButtonForAnimation()));
+            if (shouldShowLensButton()) {
+                animators.add(createHideButtonAnimatorForTablet(
+                        locationBarTablet.getLensButtonForAnimation()));
+            }
         }
 
         return animators;
@@ -1031,11 +1048,6 @@ class LocationBarMediator
         if (!mNativeInitialized) {
             return false;
         }
-        // When this method is called after native initialized, check omnibox conditions and Lens
-        // eligibility.
-        if (mIsTablet && mShouldShowButtonsWhenUnfocused) {
-            return (mUrlHasFocus || mIsUrlFocusChangeInProgress) && isLensOnOmniboxEnabled();
-        }
 
         // Never show Lens in the old search widget page context.
         // This widget must guarantee consistent feature set regardless of search engine choice or
@@ -1044,6 +1056,12 @@ class LocationBarMediator
         if (dataProvider.getPageClassification(dataProvider.isIncognito())
                 == PageClassification.ANDROID_SEARCH_WIDGET_VALUE) {
             return false;
+        }
+
+        // When this method is called after native initialized, check omnibox conditions and Lens
+        // eligibility.
+        if (mIsTablet && mShouldShowButtonsWhenUnfocused) {
+            return (mUrlHasFocus || mIsUrlFocusChangeInProgress) && isLensOnOmniboxEnabled();
         }
 
         return !shouldShowDeleteButton()

@@ -29,6 +29,7 @@ class LocationBarTablet extends LocationBarLayout {
     // Variables needed for animating the location bar and toolbar buttons hiding/showing.
     private final int mToolbarButtonsWidth;
     private final int mMicButtonWidth;
+    private final int mLensButtonWidth;
     private boolean mAnimatingWidthChange;
     private float mWidthChangeFraction;
     private float mLayoutLeft;
@@ -43,7 +44,10 @@ class LocationBarTablet extends LocationBarLayout {
 
         mToolbarButtonsWidth = getResources().getDimensionPixelOffset(R.dimen.toolbar_button_width)
                 * HIDEABLE_BUTTON_COUNT;
-        mMicButtonWidth = getResources().getDimensionPixelOffset(R.dimen.location_bar_icon_width);
+        int locationBarIconWidth =
+                getResources().getDimensionPixelOffset(R.dimen.location_bar_icon_width);
+        mMicButtonWidth = locationBarIconWidth;
+        mLensButtonWidth = locationBarIconWidth;
     }
 
     @Override
@@ -125,6 +129,7 @@ class LocationBarTablet extends LocationBarLayout {
      */
     /* package */ void resetValuesAfterAnimation() {
         mMicButton.setTranslationX(0);
+        mLensButton.setTranslationX(0);
         mDeleteButton.setTranslationX(0);
         mBookmarkButton.setTranslationX(0);
         mSaveOfflineButton.setTranslationX(0);
@@ -132,6 +137,7 @@ class LocationBarTablet extends LocationBarLayout {
         mUrlBar.setTranslationX(0);
 
         mMicButton.setAlpha(1.f);
+        mLensButton.setAlpha(1.f);
         mDeleteButton.setAlpha(1.f);
         mBookmarkButton.setAlpha(1.f);
         mSaveOfflineButton.setAlpha(1.f);
@@ -165,6 +171,9 @@ class LocationBarTablet extends LocationBarLayout {
         // (decreases), the child views' translation X increases, keeping them visually in the same
         // location for the duration of the animation.
         int deleteOffset = (int) (mMicButtonWidth * fraction);
+        if (isLensButtonVisible()) {
+            deleteOffset += (int) (mLensButtonWidth * fraction);
+        }
         setChildTranslationsForWidthChangeAnimation((int) offset, deleteOffset);
     }
 
@@ -239,6 +248,14 @@ class LocationBarTablet extends LocationBarLayout {
         return mMicButton.getAlpha();
     }
 
+    /* package */ boolean isLensButtonVisible() {
+        return mLensButton.getVisibility() == VISIBLE;
+    }
+
+    /* package */ float getLensButtonAlpha() {
+        return mLensButton.getAlpha();
+    }
+
     /**
      * Gets the bookmark button view for the purposes of creating an animator that targets it.
      * Don't use this for any other reason, e.g. to access or modify the view's properties directly.
@@ -264,6 +281,15 @@ class LocationBarTablet extends LocationBarLayout {
     @Deprecated
     /* package */ View getMicButtonForAnimation() {
         return mMicButton;
+    }
+
+    /**
+     * Gets the Lens button view for the purposes of creating an animator that targets it. Don't use
+     * this for any other reason, e.g. to access or modify the view's properties directly.
+     */
+    @Deprecated
+    /* package */ View getLensButtonForAnimation() {
+        return mLensButton;
     }
 
     /* package */ void startAnimatingWidthChange(int toolbarStartPaddingDifference) {

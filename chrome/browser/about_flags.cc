@@ -2152,6 +2152,9 @@ const FeatureEntry::FeatureParam
     kLensCameraAssistedSkipAgsaVersionCheckDisabled[] = {
         {"skipAgsaVersionCheck", "false"}};
 
+const FeatureEntry::FeatureParam kLensCameraAssistedSearchOnTablet[] = {
+    {"enableCameraAssistedSearchOnTablet", "true"}};
+
 const FeatureEntry::FeatureVariation kLensCameraAssistedSearchVariations[] = {
     {"(Lens then Mic)", kLensCameraAssistedSearchLensButtonStart,
      std::size(kLensCameraAssistedSearchLensButtonStart), nullptr},
@@ -2162,7 +2165,9 @@ const FeatureEntry::FeatureVariation kLensCameraAssistedSearchVariations[] = {
      std::size(kLensCameraAssistedSkipAgsaVersionCheckEnabled), nullptr},
     {"(with AGSA version check )",
      kLensCameraAssistedSkipAgsaVersionCheckDisabled,
-     std::size(kLensCameraAssistedSkipAgsaVersionCheckDisabled), nullptr}};
+     std::size(kLensCameraAssistedSkipAgsaVersionCheckDisabled), nullptr},
+    {"(on Tablet)", kLensCameraAssistedSearchOnTablet,
+     std::size(kLensCameraAssistedSearchOnTablet), nullptr}};
 
 const FeatureEntry::FeatureParam kLensContextMenuTranslateHideRemoveIcon[] = {
     {"hideChipRemoveIcon", "true"}};
