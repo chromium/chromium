@@ -24,6 +24,7 @@ import androidx.annotation.StyleRes;
 
 import org.chromium.base.SysUtils;
 import org.chromium.ui.R;
+import org.chromium.ui.display.DisplayAndroid;
 
 /**
  * Toast wrapper, makes sure toasts are not HW accelerated on low-end devices and presented
@@ -114,20 +115,38 @@ public class Toast {
 
     @SuppressLint("RtlHardcoded")
     private void anchor(Context context, View anchoredView) {
-        final int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
-        final int screenHeight = context.getResources().getDisplayMetrics().heightPixels;
+        // TODO(https://crbug.com/1313565): The follow logic has several problems, especially that
+        // Toast#setGravity requires screen coordinates. Would probably be better if reworked to use
+        // something like AnchoredPopupWindow.
+
+        // Use screen coordinates/size because Toast#setGravity takes screen coordinates, not
+        // window coordinates.
+        DisplayAndroid displayAndroid = DisplayAndroid.getNonMultiDisplay(context);
+        final int screenWidth = displayAndroid.getDisplayWidth();
+        final int screenHeight = displayAndroid.getDisplayHeight();
         final int[] screenPos = new int[2];
         anchoredView.getLocationOnScreen(screenPos);
+
+        // This is incorrect to use the view size. The logic below really wants to use the toast
+        // size, but at this point it hasn't measured yet. Use the view instead as a poor proxy.
         final int width = anchoredView.getWidth();
         final int height = anchoredView.getHeight();
 
-        final int horizontalGravity =
-                (screenPos[0] < screenWidth / 2) ? Gravity.LEFT : Gravity.RIGHT;
-        final int xOffset = (screenPos[0] < screenWidth / 2)
-                ? screenPos[0] + width / 2
-                : screenWidth - screenPos[0] - width / 2;
-        final int yOffset = (screenPos[1] < screenHeight / 2) ? screenPos[1] + height / 2
-                                                              : screenPos[1] - height * 3 / 2;
+        // Depending on which size of the screen the view is closer to, use gravity on that side,
+        // and offset a little extra from that side.
+        final boolean viewOnLeftHalf = screenPos[0] < screenWidth / 2;
+        final int horizontalGravity = viewOnLeftHalf ? Gravity.LEFT : Gravity.RIGHT;
+        final int xOffset =
+                viewOnLeftHalf ? screenPos[0] + width / 2 : screenWidth - screenPos[0] - width / 2;
+        // Similar to xOffset, only always use Gravity.TOP. This seems to usually cause overlap with
+        // the anchor view on the bottom half of the screen.
+        final boolean viewOnTopHalf = screenPos[1] < screenHeight / 2;
+        final int yOffset =
+                viewOnTopHalf ? screenPos[1] + height / 2 : screenPos[1] - height * 3 / 2;
+
+        // There seems to be a host of issues that cause this to not be exactly correct. It's
+        // unclear which measurements above are taking into account bezels and status/nav bars, and
+        // which are not.
         setGravity(Gravity.TOP | horizontalGravity, xOffset, yOffset);
     }
 
