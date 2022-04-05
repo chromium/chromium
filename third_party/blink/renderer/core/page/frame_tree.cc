@@ -20,8 +20,10 @@
 
 #include "third_party/blink/renderer/core/page/frame_tree.h"
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame_client.h"
+#include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -256,10 +258,15 @@ Frame* FrameTree::FindFrameForNavigationInternal(const AtomicString& name,
   // target name in MPArch, as a stopgap for origin trial. (As a normal target
   // name, it will open an auxiliary browsing context rather than navigate the
   // top-level frame, which is an unideal but acceptable behavior.)
-  // TODO(crbug.com/1262022): Simplify check when  ShadowDOM fenced frames are
-  // eventually removed.
+  // TODO(crbug.com/1262022): Remove include of
+  // "third_party/blink/public/common/features.h"
+  // when ShadowDOM fenced frames are purged.
   if (EqualIgnoringASCIICase(name, "_unfencedTop") &&
-      this_frame_.Get()->IsInShadowDOMOpaqueAdsFencedFrameTree()) {
+      this_frame_.Get()->IsInFencedFrameTree() &&
+      blink::features::IsFencedFramesShadowDOMBased() &&
+      (this_frame_.Get()->Owner() &&
+       this_frame_.Get()->Owner()->GetFramePolicy().fenced_frame_mode ==
+           mojom::blink::FencedFrameMode::kOpaqueAds)) {
     return &Top();
   }
 
