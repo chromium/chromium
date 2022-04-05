@@ -39,6 +39,11 @@
         android:title="@string/prefs_autofill_assistant_title"
         android:summary="@string/prefs_autofill_assistant_get_help_summary"
         android:persistent="false"/>
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="price_tracking_annotations"
+        android:title="@string/track_prices_on_tabs"
+        android:summary="@string/track_prices_on_tabs_description"
+        android:persistent="false"/>
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="autofill_assistant_subsection"
         android:title="@string/prefs_autofill_assistant_title"

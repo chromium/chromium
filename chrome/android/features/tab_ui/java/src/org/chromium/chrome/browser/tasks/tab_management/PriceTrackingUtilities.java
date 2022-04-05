@@ -98,13 +98,19 @@ public class PriceTrackingUtilities {
         return getPriceTrackingEnabled() || getPriceTrackingNotificationsEnabled();
     }
 
-    /**
-     * Update SharedPreferences when users turn on/off the feature tracking prices on tabs.
-     */
+    // TODO(crbug.com/1307949): Clean up this api.
+    @Deprecated
     public static void flipTrackPricesOnTabs() {
         final boolean enableTrackPricesOnTabs = SHARED_PREFERENCES_MANAGER.readBoolean(
                 TRACK_PRICES_ON_TABS, isPriceTrackingEnabled());
         SHARED_PREFERENCES_MANAGER.writeBoolean(TRACK_PRICES_ON_TABS, !enableTrackPricesOnTabs);
+    }
+
+    /**
+     * Update SharedPreferences when users turn on/off the feature tracking prices on tabs.
+     */
+    public static void setTrackPricesOnTabsEnabled(boolean enabled) {
+        SHARED_PREFERENCES_MANAGER.writeBoolean(TRACK_PRICES_ON_TABS, enabled);
     }
 
     /**
@@ -256,20 +262,19 @@ public class PriceTrackingUtilities {
      */
     public static boolean allowUsersToDisablePriceAnnotations() {
         if (FeatureList.isInitialized()) {
-            return isPriceTrackingEnabled()
+            return isPriceTrackingEligible()
                     && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                             ChromeFeatureList.COMMERCE_PRICE_TRACKING,
                             ALLOW_DISABLE_PRICE_ANNOTATIONS_PARAM, true);
         }
-        return isPriceTrackingEnabled();
+        return isPriceTrackingEligible();
     }
 
+    // TODO(crbug.com/1307949): Clean up price tracking menu.
     /**
      * @return whether we should show the PriceTrackingSettings menu item in grid tab switcher.
      */
     public static boolean shouldShowPriceTrackingMenu() {
-        return isPriceTrackingEligible()
-                && (allowUsersToDisablePriceAnnotations()
-                        || getPriceTrackingNotificationsEnabled());
+        return false;
     }
 }
