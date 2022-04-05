@@ -66,7 +66,8 @@ void VirtualCardEnrollmentManager::OfferVirtualCardEnroll(
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableUpdateVirtualCardEnrollment) &&
       IsVirtualCardEnrollmentBlockedDueToMaxStrikes(
-          credit_card.guid(), virtual_card_enrollment_source)) {
+          base::NumberToString(credit_card.instrument_id()),
+          virtual_card_enrollment_source)) {
     return;
   }
 
@@ -135,8 +136,8 @@ void VirtualCardEnrollmentManager::Enroll() {
                      VirtualCardEnrollmentRequestType::kEnroll));
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableUpdateVirtualCardEnrollment)) {
-    RemoveAllStrikesToBlockOfferingVirtualCardEnrollment(
-        state_.virtual_card_enrollment_fields.credit_card.guid());
+    RemoveAllStrikesToBlockOfferingVirtualCardEnrollment(base::NumberToString(
+        state_.virtual_card_enrollment_fields.credit_card.instrument_id()));
   }
 }
 
@@ -170,7 +171,7 @@ void VirtualCardEnrollmentManager::Unenroll(int64_t instrument_id) {
 
 bool VirtualCardEnrollmentManager::
     IsVirtualCardEnrollmentBlockedDueToMaxStrikes(
-        const std::string& guid,
+        const std::string& instrument_id,
         VirtualCardEnrollmentSource virtual_card_enrollment_source) const {
   if (virtual_card_enrollment_source ==
       VirtualCardEnrollmentSource::kSettingsPage)
@@ -180,15 +181,16 @@ bool VirtualCardEnrollmentManager::
     return false;
 
   return GetVirtualCardEnrollmentStrikeDatabase()->IsMaxStrikesLimitReached(
-      guid);
+      instrument_id);
 }
 
 void VirtualCardEnrollmentManager::
-    AddStrikeToBlockOfferingVirtualCardEnrollment(const std::string& guid) {
+    AddStrikeToBlockOfferingVirtualCardEnrollment(
+        const std::string& instrument_id) {
   if (!GetVirtualCardEnrollmentStrikeDatabase())
     return;
 
-  GetVirtualCardEnrollmentStrikeDatabase()->AddStrike(guid);
+  GetVirtualCardEnrollmentStrikeDatabase()->AddStrike(instrument_id);
 
   // Log that a strike has been recorded.
   LogVirtualCardEnrollmentStrikeDatabaseEvent(
@@ -199,11 +201,11 @@ void VirtualCardEnrollmentManager::
 
 void VirtualCardEnrollmentManager::
     RemoveAllStrikesToBlockOfferingVirtualCardEnrollment(
-        const std::string& guid) {
+        const std::string& instrument_id) {
   if (!GetVirtualCardEnrollmentStrikeDatabase())
     return;
 
-  GetVirtualCardEnrollmentStrikeDatabase()->ClearStrikes(guid);
+  GetVirtualCardEnrollmentStrikeDatabase()->ClearStrikes(instrument_id);
 
   // Log that strikes are being cleared.
   LogVirtualCardEnrollmentStrikeDatabaseEvent(
@@ -373,8 +375,8 @@ void VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse(
 void VirtualCardEnrollmentManager::OnVirtualCardEnrollmentBubbleCancelled() {
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableUpdateVirtualCardEnrollment)) {
-    AddStrikeToBlockOfferingVirtualCardEnrollment(
-        state_.virtual_card_enrollment_fields.credit_card.guid());
+    AddStrikeToBlockOfferingVirtualCardEnrollment(base::NumberToString(
+        state_.virtual_card_enrollment_fields.credit_card.instrument_id()));
   }
   Reset();
 }

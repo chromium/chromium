@@ -526,17 +526,20 @@ TEST_F(VirtualCardEnrollmentManagerTest, StrikeDatabase_BubbleAccepted) {
   state->virtual_card_enrollment_fields.credit_card = *card_;
   personal_data_manager_->SetPaymentsCustomerData(
       std::make_unique<PaymentsCustomerData>("123456"));
-  EXPECT_FALSE(virtual_card_enrollment_manager_
-                   ->IsVirtualCardEnrollmentBlockedDueToMaxStrikes(
-                       state->virtual_card_enrollment_fields.credit_card.guid(),
-                       VirtualCardEnrollmentSource::kUpstream));
+  EXPECT_FALSE(
+      virtual_card_enrollment_manager_
+          ->IsVirtualCardEnrollmentBlockedDueToMaxStrikes(
+              base::NumberToString(state->virtual_card_enrollment_fields
+                                       .credit_card.instrument_id()),
+              VirtualCardEnrollmentSource::kUpstream));
 
   // Reject the bubble and log strike.
   virtual_card_enrollment_manager_->OnVirtualCardEnrollmentBubbleCancelled();
   EXPECT_EQ(
       virtual_card_enrollment_manager_->GetVirtualCardEnrollmentStrikeDatabase()
           ->GetStrikes(
-              state->virtual_card_enrollment_fields.credit_card.guid()),
+              base::NumberToString(state->virtual_card_enrollment_fields
+                                       .credit_card.instrument_id())),
       1);
 
   // Ensure a strike has been removed after enrollment accepted.
@@ -544,7 +547,8 @@ TEST_F(VirtualCardEnrollmentManagerTest, StrikeDatabase_BubbleAccepted) {
   EXPECT_EQ(
       virtual_card_enrollment_manager_->GetVirtualCardEnrollmentStrikeDatabase()
           ->GetStrikes(
-              state->virtual_card_enrollment_fields.credit_card.guid()),
+              base::NumberToString(state->virtual_card_enrollment_fields
+                                       .credit_card.instrument_id())),
       0);
 
   histogram_tester.ExpectBucketCount(
@@ -566,10 +570,12 @@ TEST_F(VirtualCardEnrollmentManagerTest, StrikeDatabase_BubbleCanceled) {
   state->virtual_card_enrollment_fields.credit_card = *card_;
   personal_data_manager_->SetPaymentsCustomerData(
       std::make_unique<PaymentsCustomerData>("123456"));
-  EXPECT_FALSE(virtual_card_enrollment_manager_
-                   ->IsVirtualCardEnrollmentBlockedDueToMaxStrikes(
-                       state->virtual_card_enrollment_fields.credit_card.guid(),
-                       VirtualCardEnrollmentSource::kUpstream));
+  EXPECT_FALSE(
+      virtual_card_enrollment_manager_
+          ->IsVirtualCardEnrollmentBlockedDueToMaxStrikes(
+              base::NumberToString(state->virtual_card_enrollment_fields
+                                       .credit_card.instrument_id()),
+              VirtualCardEnrollmentSource::kUpstream));
 
   // Reject the bubble and log strike.
   virtual_card_enrollment_manager_->OnVirtualCardEnrollmentBubbleCancelled();
@@ -578,7 +584,8 @@ TEST_F(VirtualCardEnrollmentManagerTest, StrikeDatabase_BubbleCanceled) {
   EXPECT_EQ(
       virtual_card_enrollment_manager_->GetVirtualCardEnrollmentStrikeDatabase()
           ->GetStrikes(
-              state->virtual_card_enrollment_fields.credit_card.guid()),
+              base::NumberToString(state->virtual_card_enrollment_fields
+                                       .credit_card.instrument_id())),
       1);
 
   histogram_tester.ExpectBucketCount(
@@ -599,14 +606,18 @@ TEST_F(VirtualCardEnrollmentManagerTest, StrikeDatabase_BubbleBlocked) {
   state->virtual_card_enrollment_fields.credit_card = *card_;
   personal_data_manager_->SetPaymentsCustomerData(
       std::make_unique<PaymentsCustomerData>("123456"));
-  EXPECT_FALSE(virtual_card_enrollment_manager_
-                   ->IsVirtualCardEnrollmentBlockedDueToMaxStrikes(
-                       state->virtual_card_enrollment_fields.credit_card.guid(),
-                       VirtualCardEnrollmentSource::kUpstream));
-  EXPECT_FALSE(virtual_card_enrollment_manager_
-                   ->IsVirtualCardEnrollmentBlockedDueToMaxStrikes(
-                       state->virtual_card_enrollment_fields.credit_card.guid(),
-                       VirtualCardEnrollmentSource::kDownstream));
+  EXPECT_FALSE(
+      virtual_card_enrollment_manager_
+          ->IsVirtualCardEnrollmentBlockedDueToMaxStrikes(
+              base::NumberToString(state->virtual_card_enrollment_fields
+                                       .credit_card.instrument_id()),
+              VirtualCardEnrollmentSource::kUpstream));
+  EXPECT_FALSE(
+      virtual_card_enrollment_manager_
+          ->IsVirtualCardEnrollmentBlockedDueToMaxStrikes(
+              base::NumberToString(state->virtual_card_enrollment_fields
+                                       .credit_card.instrument_id()),
+              VirtualCardEnrollmentSource::kDownstream));
 
   for (int i = 0; i < virtual_card_enrollment_manager_
                           ->GetVirtualCardEnrollmentStrikeDatabase()
@@ -618,11 +629,13 @@ TEST_F(VirtualCardEnrollmentManagerTest, StrikeDatabase_BubbleBlocked) {
 
   EXPECT_TRUE(virtual_card_enrollment_manager_
                   ->IsVirtualCardEnrollmentBlockedDueToMaxStrikes(
-                      state->virtual_card_enrollment_fields.credit_card.guid(),
+                      base::NumberToString(state->virtual_card_enrollment_fields
+                                               .credit_card.instrument_id()),
                       VirtualCardEnrollmentSource::kUpstream));
   EXPECT_TRUE(virtual_card_enrollment_manager_
                   ->IsVirtualCardEnrollmentBlockedDueToMaxStrikes(
-                      state->virtual_card_enrollment_fields.credit_card.guid(),
+                      base::NumberToString(state->virtual_card_enrollment_fields
+                                               .credit_card.instrument_id()),
                       VirtualCardEnrollmentSource::kDownstream));
 }
 
@@ -646,10 +659,12 @@ TEST_F(VirtualCardEnrollmentManagerTest,
   }
 
   // Make sure enrollment is not blocked through settings page.
-  EXPECT_FALSE(virtual_card_enrollment_manager_
-                   ->IsVirtualCardEnrollmentBlockedDueToMaxStrikes(
-                       state->virtual_card_enrollment_fields.credit_card.guid(),
-                       VirtualCardEnrollmentSource::kSettingsPage));
+  EXPECT_FALSE(
+      virtual_card_enrollment_manager_
+          ->IsVirtualCardEnrollmentBlockedDueToMaxStrikes(
+              base::NumberToString(state->virtual_card_enrollment_fields
+                                       .credit_card.instrument_id()),
+              VirtualCardEnrollmentSource::kSettingsPage));
 }
 #endif  // !BUILDFLAG(IS_IOS)
 
