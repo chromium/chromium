@@ -285,6 +285,12 @@ the regular `Security_Severity-*` label. If the bug is not exploitable, or is
 mitigated, the V8 team will reduce the security severity (to avoid unnecessary
 risk of merging the bug into stable branches).
 
+If an issue is found that can't affect any users running a default configuration
+of Chrome (e.g. an issue in code guarded by a command-line flag that is off by
+default), the `Security_Severity-*` label should still be set as if the issue
+is affecting users running a default configuration of Chrome (but see the next
+section about `FoundIn` and `Security_Impact-None`).
+
 #### Step 3. Set FoundIn
 
 Identify the earliest affected branch (Extended Stable, Stable, Beta or Head)
@@ -298,6 +304,13 @@ differs. If in doubt about the currently active milestones, check
 (It's fine to just check the Windows platform, via that link - there's no need
 to look at all the different platforms). There's no need to check for
 reproducibility on milestones earlier than the current Stable milestone.
+
+If an issue is found that can't affect any users running a default configuration
+of Chrome (e.g. an issue in code guarded by a command-line flag that is off by
+default), then do not set the `FoundIn` label; instead, set the impact to
+`Security_Impact-None` (but see
+[here](security-labels.md#when-to-use-security_impact_none-toc_security_impact_none)
+for additional nuances around using `Security_Impact-None`).
 
 #### Step 4. [Check other labels](security-labels.md).
 
