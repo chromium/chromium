@@ -70,17 +70,23 @@ bool is_download_warning(download::DownloadItemMode mode) {
          (mode == download::DownloadItemMode::kMalicious);
 }
 
+ui::ImageModel GetDefaultIcon() {
+  return ui::ImageModel::FromVectorIcon(
+      vector_icons::kInsertDriveFileOutlineIcon, ui::kColorIcon,
+      GetLayoutConstant(DOWNLOAD_ICON_SIZE));
+}
+
 constexpr int kDownloadButtonHeight = 24;
 constexpr int kDownloadSubpageIconMargin = 8;
 
 }  // namespace
 
-bool DownloadBubbleRowView::UpdateBubbleUIInfo() {
+void DownloadBubbleRowView::UpdateBubbleUIInfo() {
   auto mode = download::GetDesiredDownloadItemMode(model_.get());
   auto state = model_->GetState();
   bool mode_unchanged = (mode_ == mode);
   if (mode_unchanged && (state_ == state))
-    return false;
+    return;
 
   mode_ = mode;
   state_ = state;
@@ -98,7 +104,6 @@ bool DownloadBubbleRowView::UpdateBubbleUIInfo() {
     RecordDangerousDownloadWarningShown(danger_type, file_path, is_https,
                                         has_user_gesture);
   }
-  return true;
 }
 
 void DownloadBubbleRowView::AddedToWidget() {
@@ -106,6 +111,10 @@ void DownloadBubbleRowView::AddedToWidget() {
   current_scale_ = screen->GetDisplayNearestView(GetWidget()->GetNativeView())
                        .device_scale_factor();
   LoadIcon();
+}
+
+void DownloadBubbleRowView::OnThemeChanged() {
+  HoverButton::OnThemeChanged();
   secondary_label_->SetEnabledColor(
       GetColorProvider()->GetColor(ui_info_.secondary_color));
 }
@@ -118,7 +127,11 @@ void DownloadBubbleRowView::OnDeviceScaleFactorChanged(
 }
 
 void DownloadBubbleRowView::SetIconFromImageModel(ui::ImageModel icon) {
-  icon_->SetImage(icon);
+  if (icon.IsEmpty()) {
+    icon_->SetImage(GetDefaultIcon());
+  } else {
+    icon_->SetImage(icon);
+  }
 }
 
 void DownloadBubbleRowView::SetIconFromImage(gfx::Image icon) {
@@ -131,6 +144,9 @@ void DownloadBubbleRowView::LoadIcon() {
     return;
 
   if (ui_info_.icon_model_override) {
+    if (last_overriden_icon_ == ui_info_.icon_model_override)
+      return;
+    last_overriden_icon_ = ui_info_.icon_model_override;
     SetIconFromImageModel(ui::ImageModel::FromVectorIcon(
         *ui_info_.icon_model_override, ui_info_.secondary_color,
         GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
@@ -138,6 +154,21 @@ void DownloadBubbleRowView::LoadIcon() {
   }
 
   base::FilePath file_path = model_->GetTargetFilePath();
+  // Use a default icon (drive file outline icon) in case we have an empty
+  // target path, which is empty for non download offline items, and newly
+  // started in-progress downloads.
+  if (file_path.empty()) {
+    if (already_set_default_icon_)
+      return;
+    already_set_default_icon_ = true;
+    SetIconFromImageModel(GetDefaultIcon());
+    return;
+  }
+
+  // Don't try to load icon from the same file path again.
+  if (last_used_file_path_ == file_path)
+    return;
+  last_used_file_path_ = file_path;
   IconManager* const im = g_browser_process->icon_manager();
   const gfx::Image* const file_icon_image =
       im->LookupIconFromFilepath(file_path, IconLoader::SMALL, current_scale_);
@@ -212,9 +243,7 @@ DownloadBubbleRowView::DownloadBubbleRowView(
 
   icon_ = main_row_->AddChildView(std::make_unique<views::ImageView>());
   icon_->SetProperty(views::kMarginsKey, GetLayoutInsets(DOWNLOAD_ICON));
-  // Set in case icon turns out empty.
-  int icon_size = GetLayoutConstant(DOWNLOAD_ICON_SIZE);
-  icon_->SetPreferredSize(gfx::Size(icon_size, icon_size));
+
   // Make sure the icon is above the inkdrops.
   icon_->SetPaintToLayer();
   icon_->layer()->SetFillsBoundsOpaquely(false);
@@ -352,9 +381,7 @@ void DownloadBubbleRowView::OnCancelButtonPressed() {
       model_.get(), DownloadCommands::CANCEL);
 }
 
-void DownloadBubbleRowView::OnDownloadUpdated() {
-  bool invalidate_layout = UpdateBubbleUIInfo();
-
+void DownloadBubbleRowView::UpdateLabels() {
   primary_label_->SetText(model_->GetFileNameToReportUser().LossyDisplayName());
   secondary_label_->SetText(model_->GetStatusText());
 
@@ -365,15 +392,14 @@ void DownloadBubbleRowView::OnDownloadUpdated() {
     secondary_label_->SetEnabledColor(
         GetColorProvider()->GetColor(ui_info_.secondary_color));
   }
+}
 
+void DownloadBubbleRowView::OnDownloadUpdated() {
+  UpdateBubbleUIInfo();
+  UpdateLabels();
+  LoadIcon();
   UpdateUIForInProgressItems();
-
   UpdateUIForWarnings();
-
-  if (invalidate_layout) {
-    LoadIcon();
-    InvalidateLayout();
-  }
 }
 
 void DownloadBubbleRowView::OnDownloadOpened() {

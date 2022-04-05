@@ -43,8 +43,10 @@ class DownloadBubbleRowView : public HoverButton,
   DownloadBubbleRowView(const DownloadBubbleRowView&) = delete;
   DownloadBubbleRowView& operator=(const DownloadBubbleRowView&) = delete;
   ~DownloadBubbleRowView() override;
+
   // Overrides views::View:
   void AddedToWidget() override;
+  void OnThemeChanged() override;
 
   // Overrides DownloadUIModel::Observer:
   void OnDownloadOpened() override;
@@ -70,11 +72,11 @@ class DownloadBubbleRowView : public HoverButton,
   int GetHeightForWidth(int w) const override;
 
  private:
-  // If there is any change in state, update UI info, returning whether
-  // a change occurred.
-  bool UpdateBubbleUIInfo();
+  // If there is any change in state, update UI info.
+  void UpdateBubbleUIInfo();
   void UpdateUIForInProgressItems();
   void UpdateUIForWarnings();
+  void UpdateLabels();
 
   // Load the icon, from the cache or from IconManager::LoadIcon.
   void LoadIcon();
@@ -133,6 +135,10 @@ class DownloadBubbleRowView : public HoverButton,
   download::DownloadItemMode mode_;
   download::DownloadItem::DownloadState state_;
   DownloadUIModel::BubbleUIInfo ui_info_;
+
+  const gfx::VectorIcon* last_overriden_icon_ = nullptr;
+  base::FilePath last_used_file_path_;
+  bool already_set_default_icon_ = false;
 
   base::WeakPtrFactory<DownloadBubbleRowView> weak_factory_{this};
 };
