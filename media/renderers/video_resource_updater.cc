@@ -1034,6 +1034,10 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
         output_plane_resource_size.height() > max_resource_size_) {
       // This output plane has invalid geometry so return an empty external
       // resources.
+      DLOG(ERROR)
+          << "Video resource is too large to upload. Maximum dimension is "
+          << max_resource_size_ << " and resource is "
+          << output_plane_resource_size.ToString();
       return VideoFrameExternalResources();
     }
   }

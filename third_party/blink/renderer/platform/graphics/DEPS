@@ -33,6 +33,7 @@ include_rules = [
     "+gpu/command_buffer/common/shared_image_usage.h",
     "+gpu/command_buffer/common/sync_token.h",
     "+gpu/ipc/common/mailbox.mojom-blink.h",
+    "+media/base/limits.h",
     "+media/base/media_switches.h",
     "+media/base/video_frame.h",
     "+media/base/video_frame_pool.h",
