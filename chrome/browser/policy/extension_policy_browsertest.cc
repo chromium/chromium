@@ -447,16 +447,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionWildcardRemovedPolicy) {
   EXPECT_FALSE(registry->GetInstalledExtension(kGoodCrxId));
 }
 
-// Flaky on windows; http://crbug.com/307994.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ExtensionInstallBlocklistWildcard \
-  DISABLED_ExtensionInstallBlocklistWildcard
-#else
-#define MAYBE_ExtensionInstallBlocklistWildcard \
-  ExtensionInstallBlocklistWildcard
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
-                       MAYBE_ExtensionInstallBlocklistWildcard) {
+IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallBlocklistWildcard) {
   // Verify that a wildcard blocklist takes effect.
   EXPECT_TRUE(InstallExtension(kSimpleWithIconCrxName));
   extensions::ExtensionService* service = extension_service();
@@ -1925,13 +1916,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionAllowedTypes) {
 // Checks that a click on an extension CRX download triggers the extension
 // installation prompt without further user interaction when the source is
 // allowlisted by policy.
-// Flaky on windows; http://crbug.com/295729 .
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ExtensionInstallSources DISABLED_ExtensionInstallSources
-#else
-#define MAYBE_ExtensionInstallSources ExtensionInstallSources
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, MAYBE_ExtensionInstallSources) {
+IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallSources) {
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT);
   extensions::ScopedInstallVerifierBypassForTest install_verifier_bypass;
