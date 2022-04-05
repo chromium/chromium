@@ -158,11 +158,15 @@ class CrostiniExportImport : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
                            TestDeprecatedExportSuccess);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest, TestExportSuccess);
+  FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
+                           TestExportCustomVmContainerSuccess);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest, TestExportFail);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest, TestExportCancelled);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
                            TestExportDoneBeforeCancelled);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest, TestImportSuccess);
+  FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
+                           TestImportCustomVmContainerSuccess);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest, TestImportFail);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest, TestImportCancelled);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
