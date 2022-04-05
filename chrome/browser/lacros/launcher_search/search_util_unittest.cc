@@ -22,6 +22,7 @@ namespace {
 TEST(SearchUtilTest, ProviderTypes) {
   const int types = ProviderTypes();
   EXPECT_FALSE(types & AutocompleteProvider::TYPE_DOCUMENT);
+  EXPECT_TRUE(types & AutocompleteProvider::TYPE_OPEN_TAB);
 }
 
 // Tests result conversion for a default answer result.

@@ -159,6 +159,10 @@ int ProviderTypes() {
   int providers = AutocompleteClassifier::DefaultOmniboxProviders() &
                   ~AutocompleteProvider::TYPE_DOCUMENT;
 
+  // The open tab provider is not included in the default providers, so add it
+  // in manually.
+  providers |= AutocompleteProvider::TYPE_OPEN_TAB;
+
   return providers;
 }
 
