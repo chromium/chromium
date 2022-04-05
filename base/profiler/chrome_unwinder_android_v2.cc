@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "base/memory/aligned_memory.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/profiler/chrome_unwind_info_android.h"
@@ -87,6 +88,10 @@ UnwindResult ChromeUnwinderAndroidV2::TryUnwind(
     uintptr_t stack_top,
     std::vector<Frame>* stack) const {
   DCHECK(CanUnwindFrom(stack->back()));
+  uintptr_t frame_initial_sp = RegisterContextStackPointer(thread_context);
+  const uintptr_t unwind_initial_pc =
+      RegisterContextInstructionPointer(thread_context);
+
   do {
     const uintptr_t pc = RegisterContextInstructionPointer(thread_context);
     const uintptr_t instruction_byte_offset_from_text_section_start =
@@ -119,7 +124,9 @@ UnwindResult ChromeUnwinderAndroidV2::TryUnwind(
     do {
       instruction_result = ExecuteUnwindInstruction(
           current_unwind_instruction, pc_was_updated, thread_context);
-      if (RegisterContextStackPointer(thread_context) >= stack_top) {
+      const uintptr_t sp = RegisterContextStackPointer(thread_context);
+      if (sp > stack_top || sp < frame_initial_sp ||
+          !IsAligned(sp, sizeof(uintptr_t))) {
         return UnwindResult::kAborted;
       }
     } while (instruction_result ==
@@ -130,6 +137,36 @@ UnwindResult ChromeUnwinderAndroidV2::TryUnwind(
     }
 
     DCHECK_EQ(instruction_result, UnwindInstructionResult::kCompleted);
+
+    const uintptr_t new_sp = RegisterContextStackPointer(thread_context);
+    // Validate SP is properly aligned across frames.
+    // See
+    // https://community.arm.com/arm-community-blogs/b/architectures-and-processors-blog/posts/using-the-stack-in-aarch32-and-aarch64
+    // for SP alignment rules.
+    if (!IsAligned(new_sp, 2 * sizeof(uintptr_t))) {
+      return UnwindResult::kAborted;
+    }
+    // Validate that SP does not decrease across frames.
+    const bool is_leaf_frame = stack->size() == 1;
+    // Each frame unwind is expected to only pop from stack memory, which will
+    // cause sp to increase.
+    // Non-Leaf frames are expected to at least pop lr off stack, so sp is
+    // expected to strictly increase for non-leaf frames.
+    if (new_sp <= (is_leaf_frame ? frame_initial_sp - 1 : frame_initial_sp)) {
+      return UnwindResult::kAborted;
+    }
+
+    // For leaf functions, if SP does not change, PC must change, otherwise,
+    // the overall execution state will be the same before/after the frame
+    // unwind.
+    if (is_leaf_frame && new_sp == frame_initial_sp &&
+        RegisterContextInstructionPointer(thread_context) ==
+            unwind_initial_pc) {
+      return UnwindResult::kAborted;
+    }
+
+    frame_initial_sp = new_sp;
+
     stack->emplace_back(RegisterContextInstructionPointer(thread_context),
                         module_cache()->GetModuleForAddress(
                             RegisterContextInstructionPointer(thread_context)));

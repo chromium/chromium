@@ -4,6 +4,7 @@
 
 #include "base/profiler/chrome_unwinder_android_v2.h"
 
+#include "base/memory/aligned_memory.h"
 #include "base/profiler/chrome_unwind_info_android.h"
 #include "base/profiler/stack_sampling_profiler_test_util.h"
 #include "base/test/gtest_util.h"
@@ -988,17 +989,43 @@ TEST(ChromeUnwinderAndroidV2Test, CanUnwindFrom) {
   EXPECT_FALSE(unwinder.CanUnwindFrom({0x400, nullptr}));
 }
 
-void ExpectFramesEq(const std::vector<Frame>& actual,
-                    const std::vector<Frame>& expected) {
+namespace {
+void ExpectFramesEq(const std::vector<Frame>& expected,
+                    const std::vector<Frame>& actual) {
   EXPECT_EQ(actual.size(), expected.size());
   if (actual.size() != expected.size())
     return;
 
   for (size_t i = 0; i < actual.size(); i++) {
-    EXPECT_EQ(actual[i].module, expected[i].module);
-    EXPECT_EQ(actual[i].instruction_pointer, expected[i].instruction_pointer);
+    EXPECT_EQ(expected[i].module, actual[i].module);
+    EXPECT_EQ(expected[i].instruction_pointer, actual[i].instruction_pointer);
   }
 }
+
+class AlignedStackMemory {
+ public:
+  AlignedStackMemory(std::initializer_list<uintptr_t> values)
+      : size_(values.size()),
+        stack_memory_(static_cast<uintptr_t*>(
+            AlignedAlloc(size_ * sizeof(uintptr_t), 2 * sizeof(uintptr_t)))) {
+    DCHECK_EQ(size_ % 2, 0u);
+    std::copy(values.begin(), values.end(), stack_memory_.get());
+  }
+
+  uintptr_t stack_start_address() const {
+    return reinterpret_cast<uintptr_t>(stack_memory_.get());
+  }
+
+  uintptr_t stack_end_address() const {
+    return reinterpret_cast<uintptr_t>(stack_memory_.get() + size_);
+  }
+
+ private:
+  const uintptr_t size_;
+  const std::unique_ptr<uintptr_t, AlignedFreeDeleter> stack_memory_;
+};
+
+}  // namespace
 
 TEST(ChromeUnwinderAndroidV2Test, TryUnwind) {
   const uint32_t page_table[] = {0, 2};
@@ -1018,28 +1045,28 @@ TEST(ChromeUnwinderAndroidV2Test, TryUnwind) {
       0x2,
       0,
       0x0,
-      2,
+      1,
       // Function 1.
       0x7f,
       0,
       0x0,
-      2,
+      1,
       // Function 2.
       0x78,
       0,
       0x0,
-      2,
+      1,
       // Function 3.
       0x2,
       0,
       0x0,
-      2,
+      1,
   };
   const uint8_t unwind_instruction_table[] = {
-      // Offset 0: Pop r14 from stack top.
-      0b10000100,
-      0b00000000,
-      // Offset 2: COMPLETE.
+      // Offset 0: Pop r4, r14 from stack top.
+      // Need to pop 2 registers to keep SP aligned.
+      0b10101000,
+      // Offset 1: COMPLETE.
       0b10110000,
   };
 
@@ -1067,26 +1094,551 @@ TEST(ChromeUnwinderAndroidV2Test, TryUnwind) {
   // third_pc lies outside chrome_module's address range.
   uintptr_t third_pc = text_section_start_address + 3 * page_size;
 
-  const std::vector<uintptr_t> stack_memory = {
+  AlignedStackMemory stack_memory = {
+      0x0,
       third_pc,
       0xFFFF,
+      0xFFFF,
   };
-  uintptr_t stack_top =
-      reinterpret_cast<uintptr_t>(stack_memory.data() + stack_memory.size());
 
   std::vector<Frame> unwound_frames = {{first_pc, chrome_module}};
   RegisterContext context;
   RegisterContextInstructionPointer(&context) = first_pc;
-  RegisterContextStackPointer(&context) =
-      reinterpret_cast<uintptr_t>(stack_memory.data());
+  RegisterContextStackPointer(&context) = stack_memory.stack_start_address();
   context.arm_lr = second_pc;
 
   EXPECT_EQ(UnwindResult::kUnrecognizedFrame,
-            unwinder.TryUnwind(&context, stack_top, &unwound_frames));
+            unwinder.TryUnwind(&context, stack_memory.stack_end_address(),
+                               &unwound_frames));
   ExpectFramesEq(std::vector<Frame>({{first_pc, chrome_module},
                                      {second_pc, chrome_module},
                                      {third_pc, nullptr}}),
                  unwound_frames);
+}
+
+TEST(ChromeUnwinderAndroidV2Test, TryUnwindInfiniteLoopSingleFrame) {
+  const uint32_t page_table[] = {0, 2};
+  const size_t number_of_pages = std::size(page_table);
+  const size_t page_size = 1 << 17;
+
+  const FunctionTableEntry function_table[] = {
+      // Page 0.
+      {0x0, 0},   // Refuse to unwind filler function.
+      {0x10, 2},  // Function 0. The function to unwind.
+      // Page 1.
+      {0x5, 0},  // Refuse to unwind filler function.
+  };
+  const uint8_t function_offset_table[] = {
+      // Refuse to unwind filler function.
+      0x0,
+      0,
+      // Function 0.
+      0x0,
+      2,
+  };
+  const uint8_t unwind_instruction_table[] = {
+      // Offset 0: REFUSE_TO_UNWIND.
+      0b10000000,
+      0b00000000,
+      // Offset 2: COMPLETE.
+      0b10110000,
+  };
+
+  auto unwind_info = ChromeUnwindInfoAndroid{
+      make_span(unwind_instruction_table, std::size(unwind_instruction_table)),
+      make_span(function_offset_table, std::size(function_offset_table)),
+      make_span(function_table, std::size(function_table)),
+      make_span(page_table, std::size(page_table)),
+  };
+
+  ModuleCache module_cache;
+  const ModuleCache::Module* chrome_module = AddNativeModule(
+      &module_cache, std::make_unique<TestModule>(
+                         0x1000, number_of_pages * page_size, "ChromeModule"));
+
+  uintptr_t text_section_start_address = 0x1100;
+  ChromeUnwinderAndroidV2 unwinder(unwind_info, chrome_module->GetBaseAddress(),
+                                   text_section_start_address);
+
+  unwinder.Initialize(&module_cache);
+  uintptr_t pc = text_section_start_address + 0x20;
+
+  AlignedStackMemory stack_memory = {
+      0xFFFF,
+      0xFFFF,
+  };
+
+  std::vector<Frame> unwound_frames = {{pc, chrome_module}};
+  RegisterContext context;
+  RegisterContextInstructionPointer(&context) = pc;
+  RegisterContextStackPointer(&context) = stack_memory.stack_start_address();
+
+  // Set lr = pc so that both sp and pc stays the same after first round of
+  // unwind.
+  context.arm_lr = pc;
+
+  EXPECT_EQ(UnwindResult::kAborted,
+            unwinder.TryUnwind(&context, stack_memory.stack_end_address(),
+                               &unwound_frames));
+  ExpectFramesEq(std::vector<Frame>({{pc, chrome_module}}), unwound_frames);
+}
+
+TEST(ChromeUnwinderAndroidV2Test, TryUnwindInfiniteLoopMultipleFrames) {
+  // This test aims to produce a scenario, where after the unwind of a number
+  // of frames, the sp and pc get to their original state before the unwind.
+
+  // Function 1 (pc1, sp1):
+  // - set pc = lr(pc2)
+  // Function 2 (pc2, sp1):
+  // - pop r14(pc2), r15(pc1) off stack
+  // - vsp = r4 (reset vsp to frame initial vsp)
+
+  const uint32_t page_table[] = {0, 3};
+  const size_t number_of_pages = std::size(page_table);
+  const size_t page_size = 1 << 17;
+
+  const FunctionTableEntry function_table[] = {
+      // Page 0.
+      {0x0, 0},    // Refuse to unwind filler function.
+      {0x10, 2},   // Function 1. The function to unwind.
+      {0x100, 2},  // Function 2. The function to unwind.
+      // Page 1.
+      {0x5, 0},  // Refuse to unwind filler function.
+  };
+  const uint8_t function_offset_table[] = {
+      // Refuse to unwind filler function.
+      0x0,
+      0,
+      // Function 0.
+      0x0,
+      2,
+      // Function 1.
+      0x2,
+      3,
+      0x1,
+      5,
+      0x0,
+      6,
+  };
+  const uint8_t unwind_instruction_table[] = {
+      // Offset 0: REFUSE_TO_UNWIND.
+      0b10000000,
+      0b00000000,
+      // Offset 2: COMPLETE.
+      0b10110000,
+      // Offset 3: POP r14, r15 off the stack.
+      0b10001100,
+      0b00000000,
+      // Offset 5: vsp = r4.
+      0b10010100,
+      // Offset 6: COMPLETE.
+      0b10110000,
+  };
+
+  auto unwind_info = ChromeUnwindInfoAndroid{
+      make_span(unwind_instruction_table, std::size(unwind_instruction_table)),
+      make_span(function_offset_table, std::size(function_offset_table)),
+      make_span(function_table, std::size(function_table)),
+      make_span(page_table, std::size(page_table)),
+  };
+
+  ModuleCache module_cache;
+  const ModuleCache::Module* chrome_module = AddNativeModule(
+      &module_cache, std::make_unique<TestModule>(
+                         0x1000, number_of_pages * page_size, "ChromeModule"));
+
+  uintptr_t text_section_start_address = 0x1100;
+  ChromeUnwinderAndroidV2 unwinder(unwind_info, chrome_module->GetBaseAddress(),
+                                   text_section_start_address);
+
+  unwinder.Initialize(&module_cache);
+  uintptr_t first_pc = text_section_start_address + 0x20;    // Function 1.
+  uintptr_t second_pc = text_section_start_address + 0x110;  // Function 2.
+
+  AlignedStackMemory stack_memory = {
+      second_pc,
+      first_pc,
+      0xFFFF,
+      0xFFFF,
+  };
+
+  std::vector<Frame> unwound_frames = {{first_pc, chrome_module}};
+  RegisterContext context;
+  RegisterContextInstructionPointer(&context) = first_pc;
+  RegisterContextStackPointer(&context) = stack_memory.stack_start_address();
+
+  context.arm_lr = second_pc;
+  context.arm_r4 = stack_memory.stack_start_address();
+
+  EXPECT_EQ(UnwindResult::kAborted,
+            unwinder.TryUnwind(&context, stack_memory.stack_end_address(),
+                               &unwound_frames));
+  ExpectFramesEq(std::vector<Frame>(
+                     {{first_pc, chrome_module}, {second_pc, chrome_module}}),
+                 unwound_frames);
+}
+
+TEST(ChromeUnwinderAndroidV2Test, TryUnwindUnalignedSPFrameUnwind) {
+  // SP should be 2-uintptr_t aligned before/after each frame unwind.
+  const uint32_t page_table[] = {0, 2};
+  const size_t number_of_pages = std::size(page_table);
+  const size_t page_size = 1 << 17;
+
+  const FunctionTableEntry function_table[] = {
+      // Page 0.
+      {0x0, 0},   // Refuse to unwind filler function.
+      {0x10, 2},  // Function 0. The function to unwind.
+      // Page 1.
+      {0x5, 0},  // Refuse to unwind filler function.
+  };
+  const uint8_t function_offset_table[] = {
+      // Refuse to unwind filler function.
+      0x0,
+      0,
+      // Function 0.
+      0x0,
+      2,
+  };
+  const uint8_t unwind_instruction_table[] = {
+      // Offset 0: REFUSE_TO_UNWIND.
+      0b10000000,
+      0b00000000,
+      // Offset 2: COMPLETE.
+      0b10110000,
+  };
+
+  auto unwind_info = ChromeUnwindInfoAndroid{
+      make_span(unwind_instruction_table, std::size(unwind_instruction_table)),
+      make_span(function_offset_table, std::size(function_offset_table)),
+      make_span(function_table, std::size(function_table)),
+      make_span(page_table, std::size(page_table)),
+  };
+
+  ModuleCache module_cache;
+  const ModuleCache::Module* chrome_module = AddNativeModule(
+      &module_cache, std::make_unique<TestModule>(
+                         0x1000, number_of_pages * page_size, "ChromeModule"));
+
+  uintptr_t text_section_start_address = 0x1100;
+  ChromeUnwinderAndroidV2 unwinder(unwind_info, chrome_module->GetBaseAddress(),
+                                   text_section_start_address);
+
+  unwinder.Initialize(&module_cache);
+  uintptr_t pc = text_section_start_address + 0x20;
+
+  AlignedStackMemory stack_memory = {
+      0xFFFF,
+      0xFFFF,
+  };
+
+  std::vector<Frame> unwound_frames = {{pc, chrome_module}};
+  RegisterContext context;
+  RegisterContextInstructionPointer(&context) = pc;
+  // Make stack memory not aligned to 2 * sizeof(uintptr_t);
+  RegisterContextStackPointer(&context) =
+      stack_memory.stack_start_address() + sizeof(uintptr_t);
+
+  // The address is outside chrome module, which will result the unwind to
+  // stop with result kUnrecognizedFrame if SP alignment issue was not detected.
+  context.arm_lr =
+      text_section_start_address + (number_of_pages + 1) * page_size;
+
+  EXPECT_EQ(UnwindResult::kAborted,
+            unwinder.TryUnwind(&context, stack_memory.stack_end_address(),
+                               &unwound_frames));
+  ExpectFramesEq(std::vector<Frame>({{pc, chrome_module}}), unwound_frames);
+}
+
+TEST(ChromeUnwinderAndroidV2Test, TryUnwindUnalignedSPInstructionUnwind) {
+  // SP should be uintptr_t aligned before/after each unwind instruction
+  // execution.
+
+  const uint32_t page_table[] = {0, 2};
+  const size_t number_of_pages = std::size(page_table);
+  const size_t page_size = 1 << 17;
+
+  const FunctionTableEntry function_table[] = {
+      // Page 0.
+      {0x0, 0},   // Refuse to unwind filler function.
+      {0x10, 2},  // Function 0. The function to unwind.
+      // Page 1.
+      {0x5, 0},  // Refuse to unwind filler function.
+  };
+  const uint8_t function_offset_table[] = {
+      // Refuse to unwind filler function.
+      0x0,
+      0,
+      // Function 0.
+      0x0,
+      2,
+  };
+  const uint8_t unwind_instruction_table[] = {
+      // Offset 0: REFUSE_TO_UNWIND.
+      0b10000000, 0b00000000,
+      // Offset 2:
+      0b10010100,  // vsp = r4, where r4 = stack + (sizeof(uintptr_t) / 2)
+      0b10110000,  // COMPLETE.
+  };
+
+  auto unwind_info = ChromeUnwindInfoAndroid{
+      make_span(unwind_instruction_table, std::size(unwind_instruction_table)),
+      make_span(function_offset_table, std::size(function_offset_table)),
+      make_span(function_table, std::size(function_table)),
+      make_span(page_table, std::size(page_table)),
+  };
+
+  ModuleCache module_cache;
+  const ModuleCache::Module* chrome_module = AddNativeModule(
+      &module_cache, std::make_unique<TestModule>(
+                         0x1000, number_of_pages * page_size, "ChromeModule"));
+
+  uintptr_t text_section_start_address = 0x1100;
+  ChromeUnwinderAndroidV2 unwinder(unwind_info, chrome_module->GetBaseAddress(),
+                                   text_section_start_address);
+
+  unwinder.Initialize(&module_cache);
+  uintptr_t pc = text_section_start_address + 0x20;
+
+  AlignedStackMemory stack_memory = {
+      0xFFFF,
+      0xFFFF,
+  };
+
+  std::vector<Frame> unwound_frames = {{pc, chrome_module}};
+  RegisterContext context;
+  RegisterContextInstructionPointer(&context) = pc;
+  RegisterContextStackPointer(&context) = stack_memory.stack_start_address();
+
+  // The address is outside chrome module, which will result the unwind to
+  // stop with result kUnrecognizedFrame if SP alignment issue was not detected.
+  context.arm_lr =
+      text_section_start_address + (number_of_pages + 1) * page_size;
+
+  context.arm_r4 = stack_memory.stack_start_address() + sizeof(uintptr_t) / 2;
+
+  EXPECT_EQ(UnwindResult::kAborted,
+            unwinder.TryUnwind(&context, stack_memory.stack_end_address(),
+                               &unwound_frames));
+  ExpectFramesEq(std::vector<Frame>({{pc, chrome_module}}), unwound_frames);
+}
+
+TEST(ChromeUnwinderAndroidV2Test, TryUnwindSPOverflow) {
+  const uint32_t page_table[] = {0, 2};
+  const size_t number_of_pages = std::size(page_table);
+  const size_t page_size = 1 << 17;
+
+  const FunctionTableEntry function_table[] = {
+      // Page 0.
+      {0x0, 0},   // Refuse to unwind filler function.
+      {0x10, 2},  // Function 0. The function to unwind.
+      // Page 1.
+      {0x5, 0},  // Refuse to unwind filler function.
+  };
+  const uint8_t function_offset_table[] = {
+      // Refuse to unwind filler function.
+      0x0,
+      0,
+      // Function 0.
+      0x0,
+      2,
+  };
+  const uint8_t unwind_instruction_table[] = {
+      // Offset 0: REFUSE_TO_UNWIND.
+      0b10000000, 0b00000000,
+      // Offset 2.
+      0b10010100,  // vsp = r4.
+      0b10101000,  // Pop r4, r14.
+      0b10110000,  // COMPLETE.
+  };
+
+  auto unwind_info = ChromeUnwindInfoAndroid{
+      make_span(unwind_instruction_table, std::size(unwind_instruction_table)),
+      make_span(function_offset_table, std::size(function_offset_table)),
+      make_span(function_table, std::size(function_table)),
+      make_span(page_table, std::size(page_table)),
+  };
+
+  ModuleCache module_cache;
+  const ModuleCache::Module* chrome_module = AddNativeModule(
+      &module_cache, std::make_unique<TestModule>(
+                         0x1000, number_of_pages * page_size, "ChromeModule"));
+
+  uintptr_t text_section_start_address = 0x1100;
+  ChromeUnwinderAndroidV2 unwinder(unwind_info, chrome_module->GetBaseAddress(),
+                                   text_section_start_address);
+
+  unwinder.Initialize(&module_cache);
+  uintptr_t pc = text_section_start_address + 0x20;
+
+  AlignedStackMemory stack_memory = {
+      0xFFFF,
+      0xFFFF,
+  };
+  std::vector<Frame> unwound_frames = {{pc, chrome_module}};
+  RegisterContext context;
+  RegisterContextInstructionPointer(&context) = pc;
+  RegisterContextStackPointer(&context) = stack_memory.stack_start_address();
+
+  // Setting vsp = 0xffffffff should cause SP overflow.
+  context.arm_r4 = 0xffffffff;
+
+  // The address is outside chrome module, which will result the unwind to
+  // stop with result kUnrecognizedFrame if the unwinder did not abort for other
+  // reasons.
+  context.arm_lr =
+      text_section_start_address + (number_of_pages + 1) * page_size;
+
+  EXPECT_EQ(UnwindResult::kAborted,
+            unwinder.TryUnwind(&context, stack_memory.stack_end_address(),
+                               &unwound_frames));
+  ExpectFramesEq(std::vector<Frame>({{pc, chrome_module}}), unwound_frames);
+}
+
+TEST(ChromeUnwinderAndroidV2Test, TryUnwindNullSP) {
+  const uint32_t page_table[] = {0, 2};
+  const size_t number_of_pages = std::size(page_table);
+  const size_t page_size = 1 << 17;
+
+  const FunctionTableEntry function_table[] = {
+      // Page 0.
+      {0x0, 0},   // Refuse to unwind filler function.
+      {0x10, 2},  // Function 0. The function to unwind.
+      // Page 1.
+      {0x5, 0},  // Refuse to unwind filler function.
+  };
+  const uint8_t function_offset_table[] = {
+      // Refuse to unwind filler function.
+      0x0,
+      0,
+      // Function 0.
+      0x0,
+      2,
+  };
+  const uint8_t unwind_instruction_table[] = {
+      // Offset 0: REFUSE_TO_UNWIND.
+      0b10000000, 0b00000000,
+      // Offset 2.
+      0b10010100,  // vsp = r4.
+      0b10101000,  // Pop r4, r14.
+      0b10110000,  // COMPLETE.
+  };
+
+  auto unwind_info = ChromeUnwindInfoAndroid{
+      make_span(unwind_instruction_table, std::size(unwind_instruction_table)),
+      make_span(function_offset_table, std::size(function_offset_table)),
+      make_span(function_table, std::size(function_table)),
+      make_span(page_table, std::size(page_table)),
+  };
+
+  ModuleCache module_cache;
+  const ModuleCache::Module* chrome_module = AddNativeModule(
+      &module_cache, std::make_unique<TestModule>(
+                         0x1000, number_of_pages * page_size, "ChromeModule"));
+
+  uintptr_t text_section_start_address = 0x1100;
+  ChromeUnwinderAndroidV2 unwinder(unwind_info, chrome_module->GetBaseAddress(),
+                                   text_section_start_address);
+
+  unwinder.Initialize(&module_cache);
+  uintptr_t pc = text_section_start_address + 0x20;
+
+  AlignedStackMemory stack_memory = {
+      0xFFFF,
+      0xFFFF,
+  };
+  std::vector<Frame> unwound_frames = {{pc, chrome_module}};
+  RegisterContext context;
+  RegisterContextInstructionPointer(&context) = pc;
+  RegisterContextStackPointer(&context) = stack_memory.stack_start_address();
+
+  // Setting vsp = 0x0 should cause the unwinder to abort.
+  context.arm_r4 = 0x0;
+
+  // The address is outside chrome module, which will result the unwind to
+  // stop with result kUnrecognizedFrame if the unwinder did not abort for other
+  // reasons.
+  context.arm_lr =
+      text_section_start_address + (number_of_pages + 1) * page_size;
+
+  EXPECT_EQ(UnwindResult::kAborted,
+            unwinder.TryUnwind(&context, stack_memory.stack_end_address(),
+                               &unwound_frames));
+  ExpectFramesEq(std::vector<Frame>({{pc, chrome_module}}), unwound_frames);
+}
+
+TEST(ChromeUnwinderAndroidV2Test, TryUnwindInvalidSPOperation) {
+  // This test aims to verify that for each unwind instruction executed, it is
+  // always true that sp > frame initial sp.
+
+  const uint32_t page_table[] = {0, 2};
+  const size_t number_of_pages = std::size(page_table);
+  const size_t page_size = 1 << 17;
+
+  const FunctionTableEntry function_table[] = {
+      // Page 0.
+      {0x0, 0},   // Refuse to unwind filler function.
+      {0x10, 2},  // Function 0. The function to unwind.
+      // Page 1.
+      {0x5, 0},  // Refuse to unwind filler function.
+  };
+  const uint8_t function_offset_table[] = {
+      // Refuse to unwind filler function.
+      0x0,
+      0,
+      // Function 0.
+      0x0,
+      2,
+  };
+  const uint8_t unwind_instruction_table[] = {
+      // Offset 0: REFUSE_TO_UNWIND.
+      0b10000000, 0b00000000,
+      // Offset 2.
+      0b10010100,  // vsp = r4 (r4 < frame initial sp).
+      0b10010101,  // vsp = r5 (r5 > frame initial sp).
+      0b10110000,  // COMPLETE.
+  };
+
+  auto unwind_info = ChromeUnwindInfoAndroid{
+      make_span(unwind_instruction_table, std::size(unwind_instruction_table)),
+      make_span(function_offset_table, std::size(function_offset_table)),
+      make_span(function_table, std::size(function_table)),
+      make_span(page_table, std::size(page_table)),
+  };
+
+  ModuleCache module_cache;
+  const ModuleCache::Module* chrome_module = AddNativeModule(
+      &module_cache, std::make_unique<TestModule>(
+                         0x1000, number_of_pages * page_size, "ChromeModule"));
+
+  uintptr_t text_section_start_address = 0x1100;
+  ChromeUnwinderAndroidV2 unwinder(unwind_info, chrome_module->GetBaseAddress(),
+                                   text_section_start_address);
+
+  unwinder.Initialize(&module_cache);
+  uintptr_t pc = text_section_start_address + 0x20;
+
+  AlignedStackMemory stack_memory = {
+      0xFFFF,
+      0xFFFF,
+  };
+  std::vector<Frame> unwound_frames = {{pc, chrome_module}};
+  RegisterContext context;
+  RegisterContextInstructionPointer(&context) = pc;
+  RegisterContextStackPointer(&context) = stack_memory.stack_start_address();
+
+  context.arm_r4 = stack_memory.stack_start_address() - 2 * sizeof(uintptr_t);
+  context.arm_r5 = stack_memory.stack_start_address() + 2 * sizeof(uintptr_t);
+
+  // The address is outside chrome module, which will result the unwind to
+  // stop with result kUnrecognizedFrame if the unwinder did not abort for other
+  // reasons.
+  context.arm_lr =
+      text_section_start_address + (number_of_pages + 1) * page_size;
+
+  EXPECT_EQ(UnwindResult::kAborted,
+            unwinder.TryUnwind(&context, stack_memory.stack_end_address(),
+                               &unwound_frames));
+  ExpectFramesEq(std::vector<Frame>({{pc, chrome_module}}), unwound_frames);
 }
 
 }  // namespace base
