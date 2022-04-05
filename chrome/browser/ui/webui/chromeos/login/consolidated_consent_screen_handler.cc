@@ -151,9 +151,9 @@ void ConsolidatedConsentScreenHandler::Show(const ScreenConfig& config) {
   data.Set("isDemo", config.is_demo);
   // Child accounts have alternative strings for the opt-ins.
   data.Set("isChildAccount", config.is_child_account);
-  // Managed account will not be shown any terms of service, and the title
-  // string will be updated.
-  data.Set("isEnterpriseManagedAccount", config.is_enterprise_managed_account);
+  // If the user is affiliated with the device management domain, ToS should be
+  // hidden.
+  data.Set("isTosHidden", config.is_tos_hidden);
   // Country code is needed to load the ARC ToS.
   data.Set("countryCode", config.country_code);
   // URL for EULA, the URL should include the locale.

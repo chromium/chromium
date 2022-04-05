@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/consent_auditor/consent_auditor_test_utils.h"
@@ -605,7 +606,9 @@ class ConsolidatedConsentScreenManagedDeviceTest
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 };
 
-IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenManagedDeviceTest, Skip) {
+// TODO(https://crbug.com/1311968): Update test to test all skipping conditions.
+IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenManagedDeviceTest,
+                       DISABLED_Skip) {
   LoginAsRegularUser();
   WaitForScreenExit();
   EXPECT_EQ(screen_result_.value(),

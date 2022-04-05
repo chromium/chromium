@@ -63,6 +63,10 @@ found in the LICENSE file. -->
         height: 20px;
         margin-inline-end: 6px;
       }
+
+      #usageStats.first-optin-no-tos {
+        border-top: hidden;
+      }
     </style>
 
     <!-- LOADING DIALOG -->
@@ -184,32 +188,28 @@ found in the LICENSE file. -->
         read-more>
       <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">
-        [[getTitle_(locale, isEnterpriseManagedAccount_, isChildAccount_)]]
+        [[getTitle_(locale, isTosHidden_, isChildAccount_)]]
       </h1>
       <div id="subtitle" slot="subtitle">
         <div inner-h-t-m-l="[[getSubtitleArcEnabled_(locale)]]"
-            hidden="[[!shouldShowArcTos_(isEnterpriseManagedAccount_,
-                        isArcEnabled_)]]">
+            hidden="[[!shouldShowArcTos_(isTosHidden_, isArcEnabled_)]]">
         </div>
-        <div hidden="[[shouldShowArcTos_(isEnterpriseManagedAccount_,
-                        isArcEnabled_)]]">
+        <div hidden="[[shouldShowArcTos_(isTosHidden_, isArcEnabled_)]]">
           [[i18nDynamic(locale, 'consolidatedConsentSubheaderArcDisabled')]]
         </div>
       </div>
       <div id="loadedContent" slot="content">
-        <div hidden="[[!shouldShowTos_(isEnterpriseManagedAccount_)]]">
+        <div hidden="[[isTosHidden_]]">
           <div id="termsDescriptionTitle">
             [[i18nDynamic(locale, 'consolidatedConsentTermsDescriptionTitle')]]
           </div>
-          <div id="termsDescriptionArEnabled"
+          <div id="termsDescriptionArcEnabled"
               inner-h-t-m-l="[[getTermsDescriptionArcEnabled_(locale)]]"
-              hidden="[[!shouldShowArcTos_(isEnterpriseManagedAccount_,
-                          isArcEnabled_)]]">
+              hidden="[[!shouldShowArcTos_(isTosHidden_, isArcEnabled_)]]">
           </div>
           <div id="termsDescriptionArcDisabled"
               inner-h-t-m-l="[[getTermsDescriptionArcDisabled_(locale)]]"
-              hidden="[[shouldShowArcTos_(isEnterpriseManagedAccount_,
-                          isArcEnabled_)]]">
+              hidden="[[shouldShowArcTos_(isTosHidden_, isArcEnabled_)]]">
           </div>
         </div>
 
