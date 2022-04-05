@@ -2400,6 +2400,10 @@ void Element::showPopup() {
   GetDocument().AddToTopLayer(this);
   PseudoStateChanged(CSSSelector::kPseudoPopupOpen);
   SetPopupFocusOnShow();
+  // Queue the show event.
+  Event* event = Event::CreateBubble(event_type_names::kShow);
+  event->SetTarget(this);
+  GetDocument().EnqueueAnimationFrameEvent(event);
 }
 
 void Element::hidePopup() {
@@ -2419,7 +2423,7 @@ void Element::hidePopup() {
   GetDocument().RemoveFromTopLayer(this);
   PseudoStateChanged(CSSSelector::kPseudoPopupOpen);
   // Queue the hide event.
-  Event* event = Event::Create(event_type_names::kHide);
+  Event* event = Event::CreateBubble(event_type_names::kHide);
   event->SetTarget(this);
   GetDocument().EnqueueAnimationFrameEvent(event);
 }
