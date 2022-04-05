@@ -640,11 +640,15 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
 
+  GURL register_url = https_server()->GetURL(
+      "a.test", "/attribution_reporting/register_source_headers.html");
+
   // Navigate the page using window.open and set an impression, but do not give
   // a user gesture.
-  EXPECT_TRUE(ExecJs(web_contents(), R"(
-    window.open("https://a.com", "_top",
-    "attributionsourceeventid=1,attributiondestination=https://a.com");)",
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace(R"(
+    window.open("https://a.com", "_top", "attributionsrc="+$1);)",
+                               register_url),
                      EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   EXPECT_TRUE(source_observer.WaitForNavigationWithNoImpression());
