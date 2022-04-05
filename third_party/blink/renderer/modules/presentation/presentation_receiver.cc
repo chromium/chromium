@@ -19,7 +19,7 @@ PresentationReceiver::PresentationReceiver(LocalDOMWindow* window)
       presentation_receiver_receiver_(this, window),
       presentation_service_remote_(window),
       window_(window) {
-  DCHECK(window_->GetFrame()->IsMainFrame());
+  DCHECK(window_->GetFrame()->IsOutermostMainFrame());
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       window->GetTaskRunner(TaskType::kPresentation);
   window->GetBrowserInterfaceBroker().GetInterface(
