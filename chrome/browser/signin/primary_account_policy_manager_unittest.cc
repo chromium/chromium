@@ -6,8 +6,10 @@
 
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/primary_account_policy_manager_factory.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -35,6 +37,11 @@ class PrimaryAccountPolicyManagerTest : public testing::Test {
             GetIdentityTestEnvironmentFactories());
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+    PrimaryAccountPolicyManagerFactory::GetForProfile(GetProfile())
+        ->SetHideUIForTesting(true);
+#endif
   }
 
   void DestroyProfile() {
@@ -50,6 +57,8 @@ class PrimaryAccountPolicyManagerTest : public testing::Test {
     DCHECK(profile_);
     return profile_;
   }
+
+  TestingProfileManager* GetProfileManager() { return &profile_manager_; }
 
   signin::IdentityTestEnvironment* GetIdentityTestEnv() {
     DCHECK(identity_test_env_adaptor_);
@@ -100,4 +109,30 @@ TEST_F(PrimaryAccountPolicyManagerTest,
   EXPECT_FALSE(GetIdentityTestEnv()->identity_manager()->HasPrimaryAccount(
       signin::ConsentLevel::kSignin));
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+TEST_F(PrimaryAccountPolicyManagerTest,
+       ClearProfileWhenSigninAndSignoutNotAllowed) {
+  CreateTestingProfile();
+
+  GetIdentityTestEnv()->MakePrimaryAccountAvailable(
+      "test@foo.com", signin::ConsentLevel::kSync);
+
+  // Create a second profile.
+  GetProfileManager()->CreateTestingProfile(
+      "primary_account_policy_manager_test_profile_path_1",
+      IdentityTestEnvironmentProfileAdaptor::
+          GetIdentityTestEnvironmentFactories());
+  ASSERT_EQ(2u, GetProfileManager()->profile_manager()->GetNumberOfProfiles());
+
+  // Disable sign out and sign in. This should result in the initial profile
+  // being deleted.
+  signin_util::SetUserSignoutAllowedForProfile(GetProfile(), false);
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1u, GetProfileManager()->profile_manager()->GetNumberOfProfiles());
+}
+#endif  // #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)

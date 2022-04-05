@@ -10,6 +10,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
+#include "components/signin/public/base/signin_metrics.h"
 
 class Profile;
 
@@ -26,8 +27,37 @@ class PrimaryAccountPolicyManager : public KeyedService {
   void Shutdown() override;
 
  private:
+  friend class PrimaryAccountPolicyManagerTest;
+
+  // Handlers for preference changes.
   void OnSigninAllowedPrefChanged();
   void OnGoogleServicesUsernamePatternChanged();
+
+  // Ensures that the primary account for |profile| is allowed:
+  // * If profile does not have any primary account, then this is a no-op.
+  // * If |IsUserSignoutAllowedForProfile| is allowed and the primary account
+  //   is no longer allowed, then this clears the primary account.
+  // * If |IsUserSignoutAllowedForProfile| is not allowed and the primary
+  // account
+  //   is not longer allowed, then this removes the profile.
+  void EnsurePrimaryAccountAllowedForProfile(
+      Profile* profile,
+      signin_metrics::ProfileSignout clear_primary_account_source);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+  class DeleteProfileDialogManager;
+
+  // SHows the delete profile dialog.
+  void ShowDeleteProfileDialog(Profile* profile, const std::string& email);
+
+  // Called when the profile was deleted.
+  void OnUserConfirmedProfileDeletion(DeleteProfileDialogManager* manager,
+                                      base::FilePath profile_path);
+
+  void SetHideUIForTesting(bool hide_ui_for_testing) {
+    hide_ui_for_testing_ = hide_ui_for_testing;
+  }
+#endif
 
   raw_ptr<Profile> profile_;
 
@@ -37,6 +67,11 @@ class PrimaryAccountPolicyManager : public KeyedService {
   // Helper object to listen for changes to signin preferences stored in non-
   // profile-specific local prefs (like kGoogleServicesUsernamePattern).
   PrefChangeRegistrar local_state_pref_registrar_;
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+  std::unique_ptr<DeleteProfileDialogManager> delete_profile_dialog_manager_;
+  bool hide_ui_for_testing_ = false;
+#endif
 
   base::WeakPtrFactory<PrimaryAccountPolicyManager> weak_pointer_factory_{this};
 };

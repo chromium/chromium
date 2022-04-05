@@ -11,85 +11,29 @@
 #include "base/supports_user_data.h"
 #include "build/build_config.h"
 #include "components/signin/public/base/signin_metrics.h"
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-#include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/browser_list_observer.h"
-class Browser;
-#endif
+#include "components/signin/public/identity_manager/tribool.h"
 
 class Profile;
 
 namespace signin_util {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-// Manager that presents the profile will be deleted dialog on the first active
-// browser window.
-class DeleteProfileDialogManager : public BrowserListObserver {
- public:
-  class Delegate {
-   public:
-    // Called when the profile was marked for deletion. It is safe for the
-    // delegate to delete |manager| when this is called.
-    virtual void OnProfileDeleted(DeleteProfileDialogManager* manager) = 0;
-  };
 
-  DeleteProfileDialogManager(std::string primary_account_email,
-                             Delegate* delegate);
-
-  DeleteProfileDialogManager(const DeleteProfileDialogManager&) = delete;
-  DeleteProfileDialogManager& operator=(const DeleteProfileDialogManager&) =
-      delete;
-
-  ~DeleteProfileDialogManager() override;
-
-  void PresentDialogOnAllBrowserWindows(Profile* profile);
-
-  void OnBrowserSetLastActive(Browser* browser) override;
-  // Called immediately after a browser becomes not active.
-  void OnBrowserNoLongerActive(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
-
- private:
-  void ShowDeleteProfileDialog(Browser* browser);
-
-  std::string primary_account_email_;
-  raw_ptr<Delegate> delegate_;
-  base::FilePath profile_path_;
-  raw_ptr<Browser> active_browser_;
-  base::WeakPtrFactory<DeleteProfileDialogManager> weak_factory_{this};
-};
-#endif
-
-// TODO(crbug.com/1311656): Split UserSignoutSettings from
-// DeleteProfileDialogManager and move the ownership to a keyedService.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-class UserSignoutSetting : public base::SupportsUserData::Data,
-                           public DeleteProfileDialogManager::Delegate {
-#else
 class UserSignoutSetting : public base::SupportsUserData::Data {
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
  public:
-  enum class State { kUndefined, kAllowed, kDisallowed };
-
   // Fetch from Profile. Make and store if not already present.
   static UserSignoutSetting* GetForProfile(Profile* profile);
+
+  // Public as this class extends base::SupportsUserData::Data. Use
+  // |GetForProfile()| to get the instance associated with a profile.
   UserSignoutSetting();
   ~UserSignoutSetting() override;
+  UserSignoutSetting(const UserSignoutSetting&) = delete;
+  UserSignoutSetting& operator=(const UserSignoutSetting&) = delete;
 
-  State state() const { return state_; }
-  void set_state(State state) { state_ = state; }
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-  // Shows the delete profile dialog on the first browser active window.
-  void ShowDeleteProfileDialog(Profile* profile, const std::string& email);
-  void OnProfileDeleted(DeleteProfileDialogManager* dialog_manager) override;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+  signin::Tribool signout_allowed() const { return signout_allowed_; }
+  void SetSignoutAllowed(bool is_allowed);
 
  private:
-  State state_ = State::kUndefined;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-  std::unique_ptr<DeleteProfileDialogManager> delete_profile_dialog_manager_;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+  signin::Tribool signout_allowed_ = signin::Tribool::kUnknown;
 };
 
 // This class calls ResetForceSigninForTesting when destroyed, so that
@@ -98,6 +42,10 @@ class ScopedForceSigninSetterForTesting {
  public:
   explicit ScopedForceSigninSetterForTesting(bool enable);
   ~ScopedForceSigninSetterForTesting();
+  ScopedForceSigninSetterForTesting(const ScopedForceSigninSetterForTesting&) =
+      delete;
+  ScopedForceSigninSetterForTesting& operator=(
+      const ScopedForceSigninSetterForTesting&) = delete;
 };
 
 // Return whether the force sign in policy is enabled or not.
@@ -126,18 +74,6 @@ void SetUserSignoutAllowedForProfile(Profile* profile, bool is_allowed);
 // This should be called at the end of the flow to initialize a profile to
 // ensure that the signout allowed flag is updated.
 void EnsureUserSignoutAllowedIsInitializedForProfile(Profile* profile);
-
-// Ensures that the primary account for |profile| is allowed:
-// * If profile does not have any primary account, then this is a no-op.
-// * If |IsUserSignoutAllowedForProfile| is allowed and the primary account
-//   is no longer allowed, then this clears the primary account.
-// * If |IsUserSignoutAllowedForProfile| is not allowed and the primary account
-//   is not longer allowed, then this removes the profile.
-//
-// TODO(msarda): Move to |primary_account_policy_manager.h|
-void EnsurePrimaryAccountAllowedForProfile(
-    Profile* profile,
-    signin_metrics::ProfileSignout clear_primary_account_source);
 
 #if !BUILDFLAG(IS_ANDROID)
 // Returns true if profile separation is enforced by policy.
