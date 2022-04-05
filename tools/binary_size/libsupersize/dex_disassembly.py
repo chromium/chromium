@@ -233,7 +233,6 @@ def _AddUnifiedDiff(top_changed_symbols, before_directory, after_directory):
 
 
 def _GetTopChangedSymbols(delta_size_info):
-  # Currently we are restricting symbols to dex methods.
   sorted_symbols = [
       symbol for symbol in delta_size_info.raw_symbols
       if symbol.section_name.endswith('dex.method') and symbol.after_symbol
@@ -243,7 +242,7 @@ def _GetTopChangedSymbols(delta_size_info):
 
 
 def AddDisassembly(delta_size_info, before_directory, after_directory):
-  """Adds disassembly diffs to top changed symbols.
+  """Adds disassembly diffs to top changed dex symbols.
 
     Adds the unified diff on the "before" and "after" disassembly to the
     top 10 changed symbols.
@@ -255,7 +254,7 @@ def AddDisassembly(delta_size_info, before_directory, after_directory):
   """
   logging.debug('Computing top changed symbols')
   top_changed_symbols = _GetTopChangedSymbols(delta_size_info)
-  logging.debug('Adding disassembly to top 10 changed symbols')
+  logging.debug('Adding disassembly to top 10 changed dex symbols')
   _AddUnifiedDiff(top_changed_symbols, before_directory, after_directory)
 
 

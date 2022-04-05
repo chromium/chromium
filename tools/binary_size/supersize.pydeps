@@ -63,6 +63,7 @@ libsupersize/main.py
 libsupersize/match_util.py
 libsupersize/models.py
 libsupersize/native.py
+libsupersize/native_disassembly.py
 libsupersize/ninja_parser.py
 libsupersize/nm.py
 libsupersize/obj_analyzer.py

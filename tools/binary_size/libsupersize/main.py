@@ -18,6 +18,7 @@ import diff
 import dex_disassembly
 import file_format
 import models
+import native_disassembly
 import os
 
 
@@ -108,6 +109,8 @@ class _SaveDiffAction:
     if args.save_disassembly:
       dex_disassembly.AddDisassembly(delta_size_info, args.before_directory,
                                      args.after_directory)
+      native_disassembly.AddDisassembly(delta_size_info, args.before_directory,
+                                        args.after_directory)
 
     file_format.SaveDeltaSizeInfo(delta_size_info, args.output_file)
 
