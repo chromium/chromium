@@ -1292,6 +1292,7 @@ mixed_component("base") {
       "process/launch_ios.cc",
       "process/process_metrics_ios.cc",
       "profiler/module_cache_mac.cc",
+      "profiler/stack_sampler_ios.cc",
     ]
     if (is_cronet_build) {
       sources += [
@@ -1307,7 +1308,6 @@ mixed_component("base") {
 
     if (ios_stack_profiler_enabled) {
       sources += [
-        "profiler/stack_sampler_ios.cc",
         "profiler/native_unwinder_apple.cc",
         "profiler/native_unwinder_apple.h",
         "profiler/suspendable_thread_delegate_mac.cc",
