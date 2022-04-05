@@ -14,7 +14,6 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/url_constants.h"
 #include "components/app_constants/constants.h"
-#include "components/cloud_devices/common/cloud_devices_urls.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
@@ -212,14 +211,6 @@ bool AppLaunchInfo::LoadLaunchURL(Extension* extension, std::u16string* error) {
     if (!gallery_url_str.empty()) {
       GURL gallery_url(gallery_url_str);
       OverrideLaunchURL(extension, gallery_url);
-    }
-  } else if (extension->id() == extension_misc::kCloudPrintAppId) {
-    // In order for the --type=service switch to work, we must update the launch
-    // URL and web extent.
-    GURL url =
-        cloud_devices::GetCloudPrintRelativeURL("enable_chrome_connector");
-    if (!url.is_empty()) {
-      OverrideLaunchURL(extension, url);
     }
   }
 

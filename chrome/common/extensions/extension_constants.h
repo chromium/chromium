@@ -29,9 +29,6 @@ namespace extension_misc {
 // The extension id of the Calendar application.
 extern const char kCalendarAppId[];
 
-// The extension id of the Cloud Print component application.
-extern const char kCloudPrintAppId[];
-
 // The extension id of the Data Saver extension.
 extern const char kDataSaverExtensionId[];
 

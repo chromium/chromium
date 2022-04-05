@@ -21,7 +21,6 @@ const char kLaunchSourceAppListInfoDialog[] = "chrome-app-launcher-info-dialog";
 namespace extension_misc {
 
 const char kCalendarAppId[] = "ejjicmeblgpmajnghnpcppodonldlgfn";
-const char kCloudPrintAppId[] = "mfehgcgbbipciphmccgaenjidiccnmng";
 const char kDataSaverExtensionId[] = "pfmgfdlgomnbgkofeojodiodmgpgmkac";
 const char kDocsOfflineExtensionId[] = "ghbmnnjooekpmoecnnnilnnbdlolhkhi";
 const char kEnterpriseWebStoreAppId[] = "afchcafgojfnemjkcbhfekplkmjaldaa";
@@ -39,7 +38,6 @@ const char kKeyboardExtensionId[] = "mppnpdlheglhdfmldimlhpnegondlapf";
 const char* const kBuiltInFirstPartyExtensionIds[] = {
     kCalculatorAppId,
     kCalendarAppId,
-    kCloudPrintAppId,
     kDataSaverExtensionId,
     kDocsOfflineExtensionId,
     kGoogleDriveAppId,
