@@ -769,11 +769,6 @@ bool IsProfileMigrationCompletedForUser(PrefService* local_state,
   if (g_profile_migration_completed_for_test)
     return true;
 
-  if (base::FeatureList::IsEnabled(
-          ash::features::kForceProfileMigrationCompletion)) {
-    return true;
-  }
-
   const auto* pref =
       local_state->FindPreference(kProfileMigrationCompletedForUserPref);
   // Return if the pref is not registered. This can happen in browsertests. In

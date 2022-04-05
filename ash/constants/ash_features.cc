@@ -861,12 +861,6 @@ const base::Feature kLacrosPrimary{"LacrosPrimary",
 const base::Feature kLacrosSupport{"LacrosSupport",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Pretend that profile migration has been completed regardless of the actual
-// state. Enabling this will allow users to use lacros without completing
-// profile mgiration.
-const base::Feature kForceProfileMigrationCompletion{
-    "ForceProfileMigrationCompletion", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Emergency switch to turn off profile migration.
 const base::Feature kLacrosProfileMigrationForceOff{
     "LacrosProfileMigrationForceOff", base::FEATURE_DISABLED_BY_DEFAULT};

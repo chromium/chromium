@@ -332,8 +332,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kLacrosOnly;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kLacrosPrimary;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kLacrosSupport;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kForceProfileMigrationCompletion;
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kLacrosProfileMigrationForAnyUser;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kLacrosProfileMigrationForceOff;
