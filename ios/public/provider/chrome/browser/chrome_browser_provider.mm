@@ -45,6 +45,13 @@ ChromeBrowserProvider::~ChromeBrowserProvider() {
 
 void ChromeBrowserProvider::SetChromeIdentityServiceForTesting(
     std::unique_ptr<ChromeIdentityService> service) {
+  if (service && chrome_identity_service_replaced_for_testing_) {
+    // If the service for testing has already been set, there is no need to
+    // replace it again.
+    // TODO(crbug.com/1201182): cleanup.
+    return;
+  }
+  chrome_identity_service_replaced_for_testing_ = service.get() != nullptr;
   chrome_identity_service_ = std::move(service);
   FireChromeIdentityServiceDidChange(chrome_identity_service_.get());
 }

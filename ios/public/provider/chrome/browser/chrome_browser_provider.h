@@ -97,6 +97,7 @@ class ChromeBrowserProvider {
  private:
   base::ObserverList<Observer, true>::Unchecked observer_list_;
   std::unique_ptr<ios::ChromeIdentityService> chrome_identity_service_;
+  bool chrome_identity_service_replaced_for_testing_ = false;
 };
 
 }  // namespace ios

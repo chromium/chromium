@@ -312,6 +312,7 @@ void ChromeAccountManagerService::OnChromeIdentityServiceDidChange(
   default_table_view_avatar_cache_ = nil;
   small_size_avatar_cache_ = nil;
   default_large_avatar_cache_ = nil;
+  OnIdentityListChanged(false);
 }
 
 void ChromeAccountManagerService::OnChromeBrowserProviderWillBeDestroyed() {
