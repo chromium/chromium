@@ -376,6 +376,16 @@ void WebAppsCrosapi::OnApps(std::vector<AppPtr> deltas) {
   if (!web_app::IsWebAppsCrosapiEnabled())
     return;
 
+  if (!controller_.is_bound()) {
+    // If `controller_` is not bound, add `deltas` to `delta_cache_` to wait for
+    // registering the crosapi controller to publish all deltas saved in
+    // `delta_cache_`.
+    for (auto& delta : deltas) {
+      delta_cache_.push_back(std::move(delta));
+    }
+    return;
+  }
+
   std::vector<apps::mojom::AppPtr> mojom_apps;
   for (const AppPtr& delta : deltas) {
     mojom_apps.push_back(ConvertAppToMojomApp(delta));
@@ -398,6 +408,28 @@ void WebAppsCrosapi::RegisterAppController(
   controller_.Bind(std::move(controller));
   controller_.set_disconnect_handler(base::BindOnce(
       &WebAppsCrosapi::OnControllerDisconnected, base::Unretained(this)));
+
+  if (delta_cache_.empty()) {
+    // If there is no apps saved in `app_cache_`, still publish an empty app
+    // list to initialize the web app AppType for AppRegistryCache.
+    apps::AppPublisher::Publish(std::vector<AppPtr>{}, AppType::kWeb,
+                                should_notify_initialized_);
+  } else {
+    std::vector<apps::mojom::AppPtr> mojom_apps;
+    for (const auto& delta : delta_cache_) {
+      mojom_apps.push_back(ConvertAppToMojomApp(delta));
+    }
+    apps::AppPublisher::Publish(std::move(delta_cache_), AppType::kWeb,
+                                should_notify_initialized_);
+    delta_cache_.clear();
+
+    for (auto& subscriber : subscribers_) {
+      subscriber->OnApps(apps_util::CloneStructPtrVector(mojom_apps),
+                         apps::mojom::AppType::kWeb,
+                         should_notify_initialized_);
+    }
+  }
+  should_notify_initialized_ = false;
 }
 
 void WebAppsCrosapi::OnCapabilityAccesses(
