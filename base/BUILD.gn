@@ -2568,6 +2568,7 @@ buildflag_header("profiler_buildflags") {
   flags = [
     "ENABLE_ARM_CFI_TABLE=$enable_arm_cfi_table",
     "IOS_STACK_PROFILER_ENABLED=$ios_stack_profiler_enabled",
+    "USE_ANDROID_UNWINDER_V2=$use_android_unwinder_v2",
   ]
 }
 

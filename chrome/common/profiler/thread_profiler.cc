@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/android/library_loader/anchor_functions.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
@@ -34,7 +35,6 @@
 #include "base/android/apk_assets.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/profiler/arm_cfi_table.h"
-#include "base/profiler/chrome_unwinder_android.h"
 #include "chrome/android/modules/stack_unwinder/public/module.h"
 
 extern "C" {
@@ -42,6 +42,13 @@ extern "C" {
 // shared library.
 extern char __executable_start;
 }
+
+#if BUILDFLAG(USE_ANDROID_UNWINDER_V2)
+#include "base/profiler/chrome_unwinder_android_v2.h"
+#else
+#include "base/profiler/chrome_unwinder_android.h"
+#endif
+
 #endif  // BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
 
 using CallStackProfileBuilder = metrics::CallStackProfileBuilder;
@@ -75,6 +82,34 @@ bool IsCurrentProcessBackgrounded() {
 }
 
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
+#if BUILDFLAG(USE_ANDROID_UNWINDER_V2)
+class ChromeUnwinderCreator {
+ public:
+  ChromeUnwinderCreator() {
+    constexpr char kCfiFileName[] = "assets/unwind_cfi_32_v2";
+    base::MemoryMappedFile::Region cfi_region;
+    int fd = base::android::OpenApkAsset(kCfiFileName, &cfi_region);
+    DCHECK_GE(fd, 0);
+    bool mapped_file_ok =
+        chrome_cfi_file_.Initialize(base::File(fd), cfi_region);
+    DCHECK(mapped_file_ok);
+  }
+  ChromeUnwinderCreator(const ChromeUnwinderCreator&) = delete;
+  ChromeUnwinderCreator& operator=(const ChromeUnwinderCreator&) = delete;
+
+  std::unique_ptr<base::Unwinder> Create() {
+    return std::make_unique<base::ChromeUnwinderAndroidV2>(
+        base::CreateChromeUnwindInfoAndroid(
+            {chrome_cfi_file_.data(), chrome_cfi_file_.length()}),
+        /* chrome_module_base_address= */
+        reinterpret_cast<uintptr_t>(&__executable_start),
+        /* text_section_start_address= */ base::android::kStartOfText);
+  }
+
+ private:
+  base::MemoryMappedFile chrome_cfi_file_;
+};
+#else
 // Encapsulates the setup required to create the Chrome unwinder on Android.
 class ChromeUnwinderCreator {
  public:
@@ -105,6 +140,7 @@ class ChromeUnwinderCreator {
   base::MemoryMappedFile chrome_cfi_file_;
   std::unique_ptr<base::ArmCFITable> chrome_cfi_table_;
 };
+#endif
 
 // Encapsulates the setup required to create the Android native unwinder.
 class NativeUnwinderCreator {
