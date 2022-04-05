@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import json
+
 from mojom_parser_test_case import MojomParserTestCase
 
 
@@ -119,15 +121,22 @@ class MojomParserTest(MojomParserTestCase):
     c = 'c.mojom'
     c_metadata = 'out/c.build_metadata'
     self.WriteFile(a_metadata,
-                   '{"sources": ["%s"], "deps": []}\n' % self.GetPath(a))
+                   json.dumps({
+                       "sources": [self.GetPath(a)],
+                       "deps": []
+                   }))
     self.WriteFile(
         b_metadata,
-        '{"sources": ["%s"], "deps": ["%s"]}\n' % (self.GetPath(b),
-                                                   self.GetPath(a_metadata)))
+        json.dumps({
+            "sources": [self.GetPath(b)],
+            "deps": [self.GetPath(a_metadata)]
+        }))
     self.WriteFile(
         c_metadata,
-        '{"sources": ["%s"], "deps": ["%s"]}\n' % (self.GetPath(c),
-                                                   self.GetPath(b_metadata)))
+        json.dumps({
+            "sources": [self.GetPath(c)],
+            "deps": [self.GetPath(b_metadata)]
+        }))
     self.WriteFile(a, """\
         module a;
         struct Bar {};""")
@@ -154,9 +163,15 @@ class MojomParserTest(MojomParserTestCase):
     b = 'b.mojom'
     b_metadata = 'out/b.build_metadata'
     self.WriteFile(a_metadata,
-                   '{"sources": ["%s"], "deps": []}\n' % self.GetPath(a))
+                   json.dumps({
+                       "sources": [self.GetPath(a)],
+                       "deps": []
+                   }))
     self.WriteFile(b_metadata,
-                   '{"sources": ["%s"], "deps": []}\n' % self.GetPath(b))
+                   json.dumps({
+                       "sources": [self.GetPath(b)],
+                       "deps": []
+                   }))
     self.WriteFile(a, """\
         module a;
         struct Bar {};""")
