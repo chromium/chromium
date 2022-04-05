@@ -465,4 +465,18 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
   EXPECT_EQ(SubAppsServiceResult::kFailure, CallRemove(unhashed_app_id));
 }
 
+// Remove doesn't crash with an invalid unhashed_app_id.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
+                       RemoveInvalidArgDoesntCrash) {
+  InstallParentApp();
+  NavigateToParentApp();
+  BindRemote();
+
+  // Invalid because it isn't a proper URL.
+  std::string unhashed_app_id = "invalid";
+  EXPECT_EQ(SubAppsServiceResult::kFailure, CallRemove(unhashed_app_id));
+
+  // Shouldn't crash.
+}
+
 }  // namespace web_app

@@ -155,6 +155,12 @@ void SubAppsServiceImpl::Remove(const std::string& unhashed_app_id,
     return std::move(result_callback).Run(SubAppsServiceResult::kFailure);
   }
 
+  // `unhashed_app_id` should form a proper URL
+  // (https://www.w3.org/TR/appmanifest/#dfn-identity).
+  if (!GURL(unhashed_app_id).is_valid()) {
+    return std::move(result_callback).Run(SubAppsServiceResult::kFailure);
+  }
+
   AppId app_id = GenerateAppIdFromUnhashed(unhashed_app_id);
   WebAppProvider* provider = GetWebAppProvider(render_frame_host());
   const WebApp* app = provider->registrar().GetAppById(app_id);
