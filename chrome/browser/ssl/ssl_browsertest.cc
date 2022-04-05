@@ -5780,7 +5780,8 @@ class SSLUITestNoCert : public SSLUITest,
 };
 
 // Checks that a newly-added certificate authority is usable immediately.
-IN_PROC_BROWSER_TEST_F(SSLUITestNoCert, NewCertificateAuthority) {
+// Flaky on ChromeOS: crbug.com/1312981.
+IN_PROC_BROWSER_TEST_F(SSLUITestNoCert, DISABLED_NewCertificateAuthority) {
   if (!content::IsOutOfProcessNetworkService())
     return;
 
