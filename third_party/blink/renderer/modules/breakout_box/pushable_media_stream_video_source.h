@@ -36,6 +36,10 @@ class MODULES_EXPORT PushableMediaStreamVideoSource
     // StopSource() is called.
     void OnClientStopped();
     bool IsRunning();
+    // Indicates if connected sinks require the alpha channel.
+    bool CanDiscardAlpha();
+    // Indicates if connected sinks require a memory-mapped video frame.
+    bool RequireMappedFrame();
     void PushFrame(scoped_refptr<media::VideoFrame> video_frame,
                    base::TimeTicks estimated_capture_time);
     void StopSource();
@@ -51,6 +55,8 @@ class MODULES_EXPORT PushableMediaStreamVideoSource
     void OnSourceStarted(VideoCaptureDeliverFrameCB);
     void OnSourceDestroyedOrStopped();
     void StopSourceOnMain();
+    void SetCanDiscardAlpha(bool can_discard_alpha);
+    void ProcessFeedback(const media::VideoCaptureFeedback& feedback);
 
     WTF::Mutex mutex_;
     // |source_| can only change its value on |main_task_runner_|. We use
@@ -65,6 +71,9 @@ class MODULES_EXPORT PushableMediaStreamVideoSource
     VideoCaptureDeliverFrameCB frame_callback_ GUARDED_BY(mutex_);
     int num_clients_ GUARDED_BY(mutex_) = 0;
     bool muted_ GUARDED_BY(mutex_) = false;
+    bool can_discard_alpha_ GUARDED_BY(mutex_) = false;
+    media::VideoCaptureFeedback feedback_ GUARDED_BY(mutex_);
+
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   };
@@ -90,10 +99,15 @@ class MODULES_EXPORT PushableMediaStreamVideoSource
                        EncodedVideoFrameCB encoded_frame_callback) override;
   void StopSourceImpl() override;
   base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() const override;
+  void SetCanDiscardAlpha(bool can_discard_alpha) override;
+  // This function can be called on any thread.
+  media::VideoCaptureFeedbackCB GetFeedbackCallback() const override;
 
  private:
+  void ProcessFeedbackInternal(const media::VideoCaptureFeedback& feedback);
+
   scoped_refptr<Broker> broker_;
-  base::WeakPtrFactory<MediaStreamVideoSource> weak_factory_{this};
+  base::WeakPtrFactory<PushableMediaStreamVideoSource> weak_factory_{this};
 };
 
 }  // namespace blink

@@ -17,6 +17,7 @@ class Size;
 }  // namespace gfx
 
 namespace gpu {
+class GpuMemoryBufferManager;
 struct MailboxHolder;
 namespace raster {
 class RasterInterface;
@@ -37,8 +38,13 @@ class WebGraphicsContext3DProviderWrapper;
 // media::VideoFrame.
 class PLATFORM_EXPORT WebGraphicsContext3DVideoFramePool {
  public:
+  // This constructor is valid only on the main thread, as otherwise a
+  // GpuMemoryBufferManager must be provided.
   explicit WebGraphicsContext3DVideoFramePool(
       base::WeakPtr<WebGraphicsContext3DProviderWrapper> weak_context_provider);
+  WebGraphicsContext3DVideoFramePool(
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper> weak_context_provider,
+      gpu::GpuMemoryBufferManager* gmb_manager);
   ~WebGraphicsContext3DVideoFramePool();
 
   gpu::raster::RasterInterface* GetRasterInterface() const;
@@ -62,6 +68,14 @@ class PLATFORM_EXPORT WebGraphicsContext3DVideoFramePool {
                                    const gpu::MailboxHolder& src_mailbox_holder,
                                    const gfx::ColorSpace& dst_color_space,
                                    FrameReadyCallback callback);
+
+  // Same as CopyRGBATextureToVideoFrame, but obtains the arguments from
+  // src_video_frame, and applies relevant metadata to the resulting VideoFrame.
+  // Always discards alpha. DCHECKs that src_video_frame is backed by a single
+  // RGB texture.
+  bool ConvertVideoFrame(scoped_refptr<media::VideoFrame> src_video_frame,
+                         const gfx::ColorSpace& dst_color_space,
+                         FrameReadyCallback callback);
 
  private:
   base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>

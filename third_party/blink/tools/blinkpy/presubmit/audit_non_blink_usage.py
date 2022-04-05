@@ -1138,6 +1138,8 @@ _CONFIG = [
             'third_party/blink/renderer/modules/breakout_box/',
         ],
         'allowed': [
+            # Required to initialize WebGraphicsContext3DVideoFramePool.
+            'gpu::GpuMemoryBufferManager',
             'media::.+',
             # Some media APIs require std::vector.
             "std::vector",

@@ -21,16 +21,16 @@ namespace {
 class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
  public:
   explicit Context(base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>
-                       context_provider)
-      : weak_context_provider_(context_provider) {}
+                       context_provider,
+                   gpu::GpuMemoryBufferManager* gmb_manager)
+      : weak_context_provider_(context_provider), gmb_manager_(gmb_manager) {}
 
   std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage) override {
-    auto* gmb_manager = GpuMemoryBufferManager();
-    return gmb_manager
-               ? gmb_manager->CreateGpuMemoryBuffer(
+    return gmb_manager_
+               ? gmb_manager_->CreateGpuMemoryBuffer(
                      size, format, usage, gpu::kNullSurfaceHandle, nullptr)
                : nullptr;
   }
@@ -44,11 +44,10 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
                          gpu::Mailbox& mailbox,
                          gpu::SyncToken& sync_token) override {
     auto* sii = SharedImageInterface();
-    auto* gmb_manager = GpuMemoryBufferManager();
-    if (!sii || !gmb_manager)
+    if (!sii || !gmb_manager_)
       return;
     mailbox =
-        sii->CreateSharedImage(gpu_memory_buffer, gmb_manager, plane,
+        sii->CreateSharedImage(gpu_memory_buffer, gmb_manager_, plane,
                                color_space, surface_origin, alpha_type, usage);
     sync_token = sii->GenVerifiedSyncToken();
   }
@@ -71,13 +70,9 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
     return context_provider->SharedImageInterface();
   }
 
-  gpu::GpuMemoryBufferManager* GpuMemoryBufferManager() const {
-    auto* gpu_factories = Platform::Current()->GetGpuFactories();
-    return gpu_factories ? gpu_factories->GpuMemoryBufferManager() : nullptr;
-  }
-
   base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>
       weak_context_provider_;
+  gpu::GpuMemoryBufferManager* gmb_manager_;
 };
 
 }  // namespace
@@ -85,9 +80,17 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
 WebGraphicsContext3DVideoFramePool::WebGraphicsContext3DVideoFramePool(
     base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>
         weak_context_provider)
+    : WebGraphicsContext3DVideoFramePool(
+          std::move(weak_context_provider),
+          Platform::Current()->GetGpuMemoryBufferManager()) {}
+
+WebGraphicsContext3DVideoFramePool::WebGraphicsContext3DVideoFramePool(
+    base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>
+        weak_context_provider,
+    gpu::GpuMemoryBufferManager* gmb_manager)
     : weak_context_provider_(weak_context_provider),
       pool_(media::RenderableGpuMemoryBufferVideoFramePool::Create(
-          std::make_unique<Context>(weak_context_provider))) {}
+          std::make_unique<Context>(weak_context_provider, gmb_manager))) {}
 
 WebGraphicsContext3DVideoFramePool::~WebGraphicsContext3DVideoFramePool() =
     default;
@@ -144,6 +147,72 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
   raster_context_provider->ContextSupport()->SignalSyncToken(
       copy_done_sync_token, base::BindOnce(std::move(callback), dst_frame));
   return true;
+}
+
+namespace {
+
+void ApplyMetadataAndRunCallback(
+    scoped_refptr<media::VideoFrame> src_video_frame,
+    WebGraphicsContext3DVideoFramePool::FrameReadyCallback orig_callback,
+    scoped_refptr<media::VideoFrame> converted_video_frame) {
+  if (!converted_video_frame) {
+    std::move(orig_callback).Run(nullptr);
+    return;
+  }
+  // TODO(https://crbug.com/1302284): handle cropping before conversion
+  auto wrapped_format = converted_video_frame->format();
+  auto wrapped = media::VideoFrame::WrapVideoFrame(
+      std::move(converted_video_frame), wrapped_format,
+      src_video_frame->visible_rect(), src_video_frame->natural_size());
+  wrapped->set_timestamp(src_video_frame->timestamp());
+  // TODO(https://crbug.com/1302283): old metadata might not be applicable to
+  // new frame
+  wrapped->metadata().MergeMetadataFrom(src_video_frame->metadata());
+
+  std::move(orig_callback).Run(std::move(wrapped));
+}
+
+}  // namespace
+
+bool WebGraphicsContext3DVideoFramePool::ConvertVideoFrame(
+    scoped_refptr<media::VideoFrame> src_video_frame,
+    const gfx::ColorSpace& dst_color_space,
+    FrameReadyCallback callback) {
+  auto format = src_video_frame->format();
+  DCHECK(format == media::PIXEL_FORMAT_XBGR ||
+         format == media::PIXEL_FORMAT_ABGR ||
+         format == media::PIXEL_FORMAT_XRGB ||
+         format == media::PIXEL_FORMAT_ARGB)
+      << "Invalid format " << format;
+  DCHECK_EQ(src_video_frame->NumTextures(), std::size_t{1});
+  viz::ResourceFormat texture_format;
+  switch (format) {
+    case media::PIXEL_FORMAT_XBGR:
+      texture_format = viz::RGBX_8888;
+      break;
+    case media::PIXEL_FORMAT_ABGR:
+      texture_format = viz::RGBA_8888;
+      break;
+    case media::PIXEL_FORMAT_XRGB:
+      texture_format = viz::BGRX_8888;
+      break;
+    case media::PIXEL_FORMAT_ARGB:
+      texture_format = viz::BGRA_8888;
+      break;
+    default:
+      NOTREACHED();
+      return false;
+  }
+
+  return CopyRGBATextureToVideoFrame(
+      texture_format, src_video_frame->coded_size(),
+      src_video_frame->ColorSpace(),
+      src_video_frame->metadata().texture_origin_is_top_left
+          ? kTopLeft_GrSurfaceOrigin
+          : kBottomLeft_GrSurfaceOrigin,
+      src_video_frame->mailbox_holder(0), dst_color_space,
+      WTF::Bind(ApplyMetadataAndRunCallback, src_video_frame,
+                std::move(callback)));
 }
 
 }  // namespace blink

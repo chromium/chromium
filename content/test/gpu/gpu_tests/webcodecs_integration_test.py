@@ -45,6 +45,15 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
           source_type
       }))
 
+    yield ('WebCodecs_WebRTCPeerConnection_Window',
+           'webrtc-peer-connection.html', ({
+               'use_worker': False
+           }))
+    yield ('WebCodecs_WebRTCPeerConnection_Worker',
+           'webrtc-peer-connection.html', ({
+               'use_worker': True
+           }))
+
     for codec in codecs:
       yield ('WebCodecs_EncodeDecode_' + codec, 'encode-decode.html', ({
           'codec':
