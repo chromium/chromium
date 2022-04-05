@@ -1896,7 +1896,6 @@ if (!is_android) {
       "../browser/policy/test/shared_clipboard_enabled_browsertest.cc",
       "../browser/policy/test/url_blocklist_policy_browsertest.cc",
       "../browser/policy/test/url_keyed_anonymized_data_collection_enabled_browsertest.cc",
-      "../browser/policy/test/web_rtc_udp_port_range_policy_browsertest.cc",
       "../browser/portal/portal_browsertest.cc",
       "../browser/portal/portal_recently_audible_browsertest.cc",
       "../browser/predictors/loading_predictor_browsertest.cc",
