@@ -5527,7 +5527,7 @@
   {
     "name": "sync-settings-categorization",
     "owners": [ "bsazonov", "rsorokin", "cros-oac@google.com" ],
-    "expiry_milestone": 101
+    "expiry_milestone": 103
   },
   {
     "name": "sync-trusted-vault-passphrase-ios-rpc",
