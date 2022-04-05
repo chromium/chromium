@@ -135,10 +135,8 @@ bool FullscreenController::CanEnterFullscreenModeForTab(
   auto* web_contents = WebContents::FromRenderFrameHost(requesting_frame);
   DCHECK(web_contents);
 
-  if ((web_contents !=
-           exclusive_access_manager()->context()->GetActiveWebContents() ||
-       IsWindowFullscreenForTabOrPending()) &&
-      !IsAnotherScreen(web_contents, display_id))
+  if (web_contents !=
+      exclusive_access_manager()->context()->GetActiveWebContents())
     return false;
 
   return true;
@@ -163,33 +161,50 @@ void FullscreenController::EnterFullscreenModeForTab(
     return;
   }
 
+  // Keep the current state. |SetTabWithExclusiveAccess| may change the return
+  // value of |IsWindowFullscreenForTabOrPending|.
+  const bool requesting_another_screen =
+      IsAnotherScreen(web_contents, display_id);
+  const bool was_window_fullscreen_for_tab_or_pending =
+      !requesting_another_screen && IsWindowFullscreenForTabOrPending();
+
   SetTabWithExclusiveAccess(web_contents);
   requesting_origin_ =
       requesting_frame->GetLastCommittedURL().DeprecatedGetOriginAsURL();
 
-  ExclusiveAccessContext* exclusive_access_context =
-      exclusive_access_manager()->context();
-  // This is needed on Mac as entering into Tab Fullscreen might change the top
-  // UI style.
-  exclusive_access_context->UpdateUIForTabFullscreen();
+  if (was_window_fullscreen_for_tab_or_pending) {
+    // While an element is in fullscreen, requesting fullscreen for a different
+    // element in the tab is handled in the renderer process if both elements
+    // are in the same process. But the request will come to the browser when
+    // the element is in a different process, such as OOPIF, because the
+    // renderer doesn't know if an element in other renderer process is in
+    // fullscreen.
+    DCHECK(tab_fullscreen_);
+  } else {
+    ExclusiveAccessContext* exclusive_access_context =
+        exclusive_access_manager()->context();
+    // This is needed on Mac as entering into Tab Fullscreen might change the
+    // top UI style.
+    exclusive_access_context->UpdateUIForTabFullscreen();
 
-  if (!exclusive_access_context->IsFullscreen() ||
-      IsAnotherScreen(web_contents, display_id)) {
-    // Normal -> Tab Fullscreen.
-    state_prior_to_tab_fullscreen_ = STATE_NORMAL;
-    EnterFullscreenModeInternal(TAB, requesting_frame, display_id);
-    return;
+    if (!exclusive_access_context->IsFullscreen() ||
+        requesting_another_screen) {
+      // Normal -> Tab Fullscreen.
+      state_prior_to_tab_fullscreen_ = STATE_NORMAL;
+      EnterFullscreenModeInternal(TAB, requesting_frame, display_id);
+      return;
+    }
+
+    // Browser Fullscreen -> Tab Fullscreen.
+    if (exclusive_access_context->IsFullscreen())
+      state_prior_to_tab_fullscreen_ = STATE_BROWSER_FULLSCREEN;
+
+    // We need to update the fullscreen exit bubble, e.g., going from browser
+    // fullscreen to tab fullscreen will need to show different content.
+    tab_fullscreen_ = true;
+    exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
+        ExclusiveAccessBubbleHideCallback());
   }
-
-  // Browser Fullscreen -> Tab Fullscreen.
-  if (exclusive_access_context->IsFullscreen())
-    state_prior_to_tab_fullscreen_ = STATE_BROWSER_FULLSCREEN;
-
-  // We need to update the fullscreen exit bubble, e.g., going from browser
-  // fullscreen to tab fullscreen will need to show different content.
-  tab_fullscreen_ = true;
-  exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
-      ExclusiveAccessBubbleHideCallback());
 
   // This is only a change between Browser and Tab fullscreen. We generate
   // a fullscreen notification now because there is no window change.
