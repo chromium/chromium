@@ -11,6 +11,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -25,15 +26,33 @@ public class PasswordCheckupLauncher {
     }
 
     @CalledByNative
+    // TODO(crbug.com/1311952): Merge with launchLocalCheckupFromPhishGuardWarningDialog.
     private static void launchLocalCheckup(WindowAndroid windowAndroid) {
         if (windowAndroid.getContext().get() == null) return; // Window not available yet/anymore.
+        PasswordCheckupClientHelper checkupHelper =
+                PasswordCheckupClientHelperFactory.getInstance().createHelper();
+        if (checkupHelper != null && PasswordManagerHelper.usesUnifiedPasswordManagerUI()) {
+            PasswordManagerHelper.showPasswordCheckup(PasswordCheckReferrer.LEAK_DIALOG,
+                    PasswordCheckupClientHelperFactory.getInstance().createHelper(),
+                    SyncService.get());
+            return;
+        }
         PasswordCheckFactory.getOrCreate(new SettingsLauncherImpl())
                 .showUi(windowAndroid.getContext().get(), PasswordCheckReferrer.LEAK_DIALOG);
     }
 
     @CalledByNative
+    // TODO(crbug.com/1311952): Merge with launchLocalCheckup.
     private static void launchLocalCheckupFromPhishGuardWarningDialog(WindowAndroid windowAndroid) {
         if (windowAndroid.getContext().get() == null) return; // Window not available yet/anymore.
+        PasswordCheckupClientHelper checkupHelper =
+                PasswordCheckupClientHelperFactory.getInstance().createHelper();
+        if (checkupHelper != null && PasswordManagerHelper.usesUnifiedPasswordManagerUI()) {
+            PasswordManagerHelper.showPasswordCheckup(PasswordCheckReferrer.PHISHED_WARNING_DIALOG,
+                    PasswordCheckupClientHelperFactory.getInstance().createHelper(),
+                    SyncService.get());
+            return;
+        }
         PasswordCheckFactory.getOrCreate(new SettingsLauncherImpl())
                 .showUi(windowAndroid.getContext().get(),
                         PasswordCheckReferrer.PHISHED_WARNING_DIALOG);

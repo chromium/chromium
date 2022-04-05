@@ -12,6 +12,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.SystemClock;
 
+import com.google.common.base.Optional;
+
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
@@ -80,6 +82,18 @@ public class PasswordManagerHelper {
         fragmentArgs.putInt(MANAGE_PASSWORDS_REFERRER, referrer);
         context.startActivity(settingsLauncher.createSettingsActivityIntent(
                 context, PASSWORD_SETTINGS_CLASS, fragmentArgs));
+    }
+
+    public static void showPasswordCheckup(@PasswordCheckReferrer int referrer,
+            PasswordCheckupClientHelper checkupClient, SyncService syncService) {
+        assert checkupClient != null;
+        if (!usesUnifiedPasswordManagerUI()) return;
+
+        Optional<String> account = hasChosenToSyncPasswords(syncService)
+                ? Optional.of(CoreAccountInfo.getEmailFrom(syncService.getAccountInfo()))
+                : Optional.absent();
+        checkupClient.getPasswordCheckupPendingIntent(
+                referrer, account, PasswordManagerHelper::launchIntent, (error) -> {});
     }
 
     /**
@@ -175,6 +189,16 @@ public class PasswordManagerHelper {
                 kGetIntentErrorHistogram, error, CredentialManagerError.COUNT);
     }
 
+    private static boolean launchIntent(PendingIntent intent) {
+        boolean launchIntentSuccessfully = true;
+        try {
+            intent.send();
+        } catch (CanceledException e) {
+            launchIntentSuccessfully = false;
+        }
+        return launchIntentSuccessfully;
+    }
+
     private static void launchCredentialManager(
             PendingIntent intent, long startTimeMs, boolean forAccount) {
         recordSuccessMetrics(SystemClock.elapsedRealtime() - startTimeMs, forAccount);
@@ -183,12 +207,7 @@ public class PasswordManagerHelper {
             return; // The built-in settings screen has already been started at this point.
         }
 
-        boolean launchIntentSuccessfully = true;
-        try {
-            intent.send();
-        } catch (CanceledException e) {
-            launchIntentSuccessfully = false;
-        }
+        boolean launchIntentSuccessfully = launchIntent(intent);
         RecordHistogram.recordBooleanHistogram(forAccount
                         ? ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM
                         : LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM,

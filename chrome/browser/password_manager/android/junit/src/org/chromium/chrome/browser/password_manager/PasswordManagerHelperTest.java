@@ -18,6 +18,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.google.common.base.Optional;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -78,6 +80,9 @@ public class PasswordManagerHelperTest {
 
     @Mock
     private CredentialManagerLauncher mCredentialManagerLauncherMock;
+
+    @Mock
+    private PasswordCheckupClientHelper mPasswordCheckupClientHelperMock;
 
     @Mock
     private SyncService mSyncServiceMock;
@@ -348,6 +353,42 @@ public class PasswordManagerHelperTest {
         verify(mPendingIntentMock, never()).send();
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testLaunchesPasswordCheckupSync() {
+        chooseToSyncPasswordsWithoutCustomPassphrase();
+
+        PasswordManagerHelper.showPasswordCheckup(PasswordCheckReferrer.SAFETY_CHECK,
+                mPasswordCheckupClientHelperMock, mSyncServiceMock);
+
+        verify(mPasswordCheckupClientHelperMock)
+                .getPasswordCheckupPendingIntent(eq(PasswordCheckReferrer.SAFETY_CHECK),
+                        eq(Optional.of(TEST_EMAIL_ADDRESS)), any(Callback.class),
+                        any(Callback.class));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testLaunchesPasswordCheckupForLocal() {
+        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
+        PasswordManagerHelper.showPasswordCheckup(PasswordCheckReferrer.SAFETY_CHECK,
+                mPasswordCheckupClientHelperMock, mSyncServiceMock);
+
+        verify(mPasswordCheckupClientHelperMock)
+                .getPasswordCheckupPendingIntent(eq(PasswordCheckReferrer.SAFETY_CHECK),
+                        eq(Optional.absent()), any(Callback.class), any(Callback.class));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testPasswordCheckupIntentCalledIfSuccess() throws CanceledException {
+        chooseToSyncPasswordsWithoutCustomPassphrase();
+        setUpSuccessfulCheckupIntentFetching(mPendingIntentMock);
+        PasswordManagerHelper.showPasswordCheckup(PasswordCheckReferrer.SAFETY_CHECK,
+                mPasswordCheckupClientHelperMock, mSyncServiceMock);
+        verify(mPendingIntentMock).send();
+    }
+
     private void chooseToSyncPasswordsWithoutCustomPassphrase() {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
         when(mSyncServiceMock.getChosenDataTypes())
@@ -365,6 +406,18 @@ public class PasswordManagerHelperTest {
                 .when(mCredentialManagerLauncherMock)
                 .getCredentialManagerIntentForAccount(eq(ManagePasswordsReferrer.CHROME_SETTINGS),
                         eq(TEST_EMAIL_ADDRESS), any(Callback.class), any(Callback.class));
+    }
+
+    private void setUpSuccessfulCheckupIntentFetching(PendingIntent intent) {
+        doAnswer(invocation -> {
+            Callback<PendingIntent> cb = invocation.getArgument(2);
+            cb.onResult(intent);
+            return true;
+        })
+                .when(mPasswordCheckupClientHelperMock)
+                .getPasswordCheckupPendingIntent(eq(PasswordCheckReferrer.SAFETY_CHECK),
+                        eq(Optional.of(TEST_EMAIL_ADDRESS)), any(Callback.class),
+                        any(Callback.class));
     }
 
     private void setUpSuccessfulIntentFetchingForLocal() {

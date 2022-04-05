@@ -10,6 +10,13 @@ package org.chromium.chrome.browser.password_manager;
  */
 public abstract class PasswordCheckupClientHelperFactory {
     /**
+     * Creates a new instance of PasswordCheckupClientHelperFactory.
+     */
+    public static PasswordCheckupClientHelperFactory getInstance() {
+        return new PasswordCheckupClientHelperFactoryImpl();
+    }
+
+    /**
      * Returns the downstream implementation provided by subclasses.
      *
      * @return An implementation of the {@link PasswordCheckupClientHelper} if one exists.
