@@ -70,15 +70,6 @@
 #include <libxml/xmlschemastypes.h>
 #include <libxml/relaxng.h>
 #endif
-#ifdef HAVE_SYS_STAT_H
-#include <sys/stat.h>
-#endif
-#ifdef HAVE_FCNTL_H
-#include <fcntl.h>
-#endif
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
 
 #include "buf.h"
 #include "enc.h"
@@ -2182,6 +2173,9 @@ static void xmlGROW (xmlParserCtxtPtr ctxt) {
 #define COPY_BUF(l,b,i,v)						\
     if (l == 1) b[i++] = (xmlChar) v;					\
     else i += xmlCopyCharMultiByte(&b[i],v)
+
+#define CUR_CONSUMED \
+    (ctxt->input->consumed + (ctxt->input->cur - ctxt->input->base))
 
 /**
  * xmlSkipBlankChars:
@@ -6820,12 +6814,12 @@ xmlParseConditionalSections(xmlParserCtxtPtr ctxt) {
             }
             SKIP(3);
         } else {
-            const xmlChar *check = CUR_PTR;
-            unsigned int cons = ctxt->input->consumed;
+            int id = ctxt->input->id;
+            unsigned long cons = CUR_CONSUMED;
 
             xmlParseMarkupDecl(ctxt);
 
-            if ((CUR_PTR == check) && (cons == ctxt->input->consumed)) {
+            if ((id == ctxt->input->id) && (cons == CUR_CONSUMED)) {
                 xmlFatalErr(ctxt, XML_ERR_EXT_SUBSET_NOT_FINISHED, NULL);
                 xmlHaltParser(ctxt);
                 goto error;
@@ -7044,8 +7038,8 @@ xmlParseExternalSubset(xmlParserCtxtPtr ctxt, const xmlChar *ExternalID,
     while (((RAW == '<') && (NXT(1) == '?')) ||
            ((RAW == '<') && (NXT(1) == '!')) ||
 	   (RAW == '%')) {
-	const xmlChar *check = CUR_PTR;
-	unsigned int cons = ctxt->input->consumed;
+	int id = ctxt->input->id;
+	unsigned long cons = CUR_CONSUMED;
 
 	GROW;
         if ((RAW == '<') && (NXT(1) == '!') && (NXT(2) == '[')) {
@@ -7054,7 +7048,7 @@ xmlParseExternalSubset(xmlParserCtxtPtr ctxt, const xmlChar *ExternalID,
 	    xmlParseMarkupDecl(ctxt);
         SKIP_BLANKS;
 
-	if ((CUR_PTR == check) && (cons == ctxt->input->consumed)) {
+	if ((id == ctxt->input->id) && (cons == CUR_CONSUMED)) {
 	    xmlFatalErr(ctxt, XML_ERR_EXT_SUBSET_NOT_FINISHED, NULL);
 	    break;
 	}
@@ -8095,6 +8089,7 @@ xmlLoadEntityContent(xmlParserCtxtPtr ctxt, xmlEntityPtr entity) {
 	            "xmlLoadEntityContent parameter error");
         return(-1);
     }
+    xmlBufferSetAllocationScheme(buf, XML_BUFFER_ALLOC_DOUBLEIT);
 
     input = xmlNewEntityInputStream(ctxt, entity);
     if (input == NULL) {
@@ -8377,8 +8372,8 @@ xmlParseInternalSubset(xmlParserCtxtPtr ctxt) {
 	 */
 	while (((RAW != ']') || (ctxt->inputNr > baseInputNr)) &&
                (ctxt->instate != XML_PARSER_EOF)) {
-	    const xmlChar *check = CUR_PTR;
-	    unsigned int cons = ctxt->input->consumed;
+	    int id = ctxt->input->id;
+	    unsigned long cons = CUR_CONSUMED;
 
 	    SKIP_BLANKS;
 	    xmlParseMarkupDecl(ctxt);
@@ -8393,7 +8388,7 @@ xmlParseInternalSubset(xmlParserCtxtPtr ctxt) {
                 xmlParseConditionalSections(ctxt);
             }
 
-	    if ((CUR_PTR == check) && (cons == ctxt->input->consumed)) {
+	    if ((id == ctxt->input->id) && (cons == CUR_CONSUMED)) {
 		xmlFatalErr(ctxt, XML_ERR_INTERNAL_ERROR,
 	     "xmlParseInternalSubset: error detected in Markup declaration\n");
                 if (ctxt->inputNr > baseInputNr)
@@ -8572,8 +8567,8 @@ xmlParseStartTag(xmlParserCtxtPtr ctxt) {
     while (((RAW != '>') &&
 	   ((RAW != '/') || (NXT(1) != '>')) &&
 	   (IS_BYTE_CHAR(RAW))) && (ctxt->instate != XML_PARSER_EOF)) {
-	const xmlChar *q = CUR_PTR;
-	unsigned int cons = ctxt->input->consumed;
+        int id = ctxt->input->id;
+	unsigned long cons = CUR_CONSUMED;
 
 	attname = xmlParseAttribute(ctxt, &attvalue);
         if ((attname != NULL) && (attvalue != NULL)) {
@@ -8638,7 +8633,7 @@ failed:
 	    xmlFatalErrMsg(ctxt, XML_ERR_SPACE_REQUIRED,
 			   "attributes construct error\n");
 	}
-        if ((cons == ctxt->input->consumed) && (q == CUR_PTR) &&
+        if ((cons == CUR_CONSUMED) && (id == ctxt->input->id) &&
             (attname == NULL) && (attvalue == NULL)) {
 	    xmlFatalErrMsg(ctxt, XML_ERR_INTERNAL_ERROR,
 			   "xmlParseStartTag: problem parsing attributes\n");
@@ -9322,8 +9317,8 @@ xmlParseStartTag2(xmlParserCtxtPtr ctxt, const xmlChar **pref,
     while (((RAW != '>') &&
 	   ((RAW != '/') || (NXT(1) != '>')) &&
 	   (IS_BYTE_CHAR(RAW))) && (ctxt->instate != XML_PARSER_EOF)) {
-	const xmlChar *q = CUR_PTR;
-	unsigned int cons = ctxt->input->consumed;
+	int id = ctxt->input->id;
+	unsigned long cons = CUR_CONSUMED;
 	int len = -1, alloc = 0;
 
 	attname = xmlParseAttribute2(ctxt, prefix, localname,
@@ -9504,7 +9499,7 @@ next_attr:
 			   "attributes construct error\n");
 	    break;
 	}
-        if ((cons == ctxt->input->consumed) && (q == CUR_PTR) &&
+        if ((cons == CUR_CONSUMED) && (id == ctxt->input->id) &&
             (attname == NULL) && (attvalue == NULL)) {
 	    xmlFatalErr(ctxt, XML_ERR_INTERNAL_ERROR,
 	         "xmlParseStartTag: problem parsing attributes\n");
@@ -9888,8 +9883,8 @@ xmlParseContentInternal(xmlParserCtxtPtr ctxt) {
     GROW;
     while ((RAW != 0) &&
 	   (ctxt->instate != XML_PARSER_EOF)) {
-	const xmlChar *test = CUR_PTR;
-	unsigned int cons = ctxt->input->consumed;
+        int id = ctxt->input->id;
+	unsigned long cons = CUR_CONSUMED;
 	const xmlChar *cur = ctxt->input->cur;
 
 	/*
@@ -9948,7 +9943,7 @@ xmlParseContentInternal(xmlParserCtxtPtr ctxt) {
 	GROW;
 	SHRINK;
 
-	if ((cons == ctxt->input->consumed) && (test == CUR_PTR)) {
+	if ((cons == CUR_CONSUMED) && (id == ctxt->input->id)) {
 	    xmlFatalErr(ctxt, XML_ERR_INTERNAL_ERROR,
 	                "detected an error in element content\n");
 	    xmlHaltParser(ctxt);
@@ -10905,8 +10900,6 @@ xmlParseExtParsedEnt(xmlParserCtxtPtr ctxt) {
     if ((ctxt == NULL) || (ctxt->input == NULL))
         return(-1);
 
-    xmlDefaultSAXHandlerInit();
-
     xmlDetectSAX2(ctxt);
 
     GROW;
@@ -11543,15 +11536,15 @@ xmlParseTryOrFinish(xmlParserCtxtPtr ctxt, int terminate) {
                 break;
 	    }
             case XML_PARSER_CONTENT: {
-		const xmlChar *test;
-		unsigned int cons;
+		int id;
+		unsigned long cons;
 		if ((avail < 2) && (ctxt->inputNr == 1))
 		    goto done;
 		cur = ctxt->input->cur[0];
 		next = ctxt->input->cur[1];
 
-		test = CUR_PTR;
-	        cons = ctxt->input->consumed;
+		id = ctxt->input->id;
+	        cons = CUR_CONSUMED;
 		if ((cur == '<') && (next == '/')) {
 		    ctxt->instate = XML_PARSER_END_TAG;
 		    break;
@@ -11632,7 +11625,7 @@ xmlParseTryOrFinish(xmlParserCtxtPtr ctxt, int terminate) {
 		    ctxt->checkIndex = 0;
 		    xmlParseCharData(ctxt, 0);
 		}
-		if ((cons == ctxt->input->consumed) && (test == CUR_PTR)) {
+		if ((cons == CUR_CONSUMED) && (id == ctxt->input->id)) {
 		    xmlFatalErr(ctxt, XML_ERR_INTERNAL_ERROR,
 		                "detected an error in element content\n");
 		    xmlHaltParser(ctxt);

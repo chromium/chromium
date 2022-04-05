@@ -531,7 +531,6 @@ testStructuredErrorHandler(void *ctx  ATTRIBUTE_UNUSED, xmlErrorPtr err) {
 
 static void
 initializeLibxml2(void) {
-    xmlGetWarningsDefaultValue = 0;
     xmlPedanticParserDefault(0);
 
     xmlMemSetup(xmlMemFree, xmlMemMalloc, xmlMemRealloc, xmlMemoryStrdup);
@@ -611,7 +610,7 @@ static int checkTestFile(const char *filename) {
 }
 
 static int compareFiles(const char *r1 /* temp */, const char *r2 /* result */) {
-    int res1, res2;
+    int res1, res2, total;
     int fd1, fd2;
     char bytes1[4096];
     char bytes2[4096];
@@ -625,16 +624,20 @@ static int compareFiles(const char *r1 /* temp */, const char *r2 /* result */) 
             close(fd1);
             return(-1);
         }
+        total = 0;
         do {
             res1 = read(fd1, bytes1, 4096);
             if (res1 <= 0)
                 break;
+            total += res1;
             res2 = write(fd2, bytes1, res1);
             if (res2 <= 0 || res2 != res1)
                 break;
         } while (1);
         close(fd2);
         close(fd1);
+        if (total == 0)
+            unlink(r2);
         return(res1 != 0);
     }
 
@@ -642,28 +645,27 @@ static int compareFiles(const char *r1 /* temp */, const char *r2 /* result */) 
     if (fd1 < 0)
         return(-1);
     fd2 = open(r2, RD_FLAGS);
-    if (fd2 < 0) {
-        close(fd1);
-        return(-1);
-    }
     while (1) {
         res1 = read(fd1, bytes1, 4096);
-        res2 = read(fd2, bytes2, 4096);
+        res2 = fd2 >= 0 ? read(fd2, bytes2, 4096) : 0;
 	if ((res1 != res2) || (res1 < 0)) {
 	    close(fd1);
-	    close(fd2);
+            if (fd2 >= 0)
+                close(fd2);
 	    return(1);
 	}
 	if (res1 == 0)
 	    break;
 	if (memcmp(bytes1, bytes2, res1) != 0) {
 	    close(fd1);
-	    close(fd2);
+            if (fd2 >= 0)
+                close(fd2);
 	    return(1);
 	}
     }
     close(fd1);
-    close(fd2);
+    if (fd2 >= 0)
+        close(fd2);
     return(0);
 }
 
@@ -675,6 +677,10 @@ static int compareFileMem(const char *filename, const char *mem, int size) {
     struct stat info;
 
     if (update_results) {
+        if (size == 0) {
+            unlink(filename);
+            return(0);
+        }
         fd = open(filename, WR_FLAGS, 0644);
         if (fd < 0) {
 	    fprintf(stderr, "failed to open %s for writing", filename);
@@ -686,6 +692,8 @@ static int compareFileMem(const char *filename, const char *mem, int size) {
     }
 
     if (stat(filename, &info) < 0) {
+        if (size == 0)
+            return(0);
         fprintf(stderr, "failed to stat %s\n", filename);
 	return(-1);
     }
@@ -2091,10 +2099,8 @@ errParseTest(const char *filename, const char *result, const char *err,
     } else
 #endif
     {
-	xmlGetWarningsDefaultValue = 1;
 	doc = xmlReadFile(filename, NULL, options);
     }
-    xmlGetWarningsDefaultValue = 0;
     if (result) {
 	if (doc == NULL) {
 	    base = "";
@@ -2157,11 +2163,9 @@ fdParseTest(const char *filename, const char *result, const char *err,
     } else
 #endif
     {
-	xmlGetWarningsDefaultValue = 1;
 	doc = xmlReadFd(fd, filename, NULL, options);
     }
     close(fd);
-    xmlGetWarningsDefaultValue = 0;
     if (result) {
 	if (doc == NULL) {
 	    base = "";
@@ -2274,7 +2278,6 @@ streamProcessTest(const char *filename, const char *result, const char *err,
 	}
     }
 #endif
-    xmlGetWarningsDefaultValue = 1;
     ret = xmlTextReaderRead(reader);
     while (ret == 1) {
 	if ((t != NULL) && (rng == NULL))
@@ -2291,7 +2294,6 @@ streamProcessTest(const char *filename, const char *result, const char *err,
 	    testErrorHandler(NULL, "%s validates\n", filename);
 	}
     }
-    xmlGetWarningsDefaultValue = 0;
     if (t != NULL) {
         fclose(t);
 	ret = compareFiles(temp, result);
@@ -2927,7 +2929,7 @@ static int urip_rlen;
  */
 static int
 uripMatch(const char * URI) {
-    if ((URI == NULL) || (!strcmp(URI, "file:///etc/xml/catalog")))
+    if ((URI == NULL) || (!strcmp(URI, "file://" SYSCONFDIR "/xml/catalog")))
         return(0);
     /* Verify we received the escaped URL */
     if (strcmp(urip_rcvsURLs[urip_current], URI))
@@ -2946,7 +2948,7 @@ uripMatch(const char * URI) {
  */
 static void *
 uripOpen(const char * URI) {
-    if ((URI == NULL) || (!strcmp(URI, "file:///etc/xml/catalog")))
+    if ((URI == NULL) || (!strcmp(URI, "file://" SYSCONFDIR "/xml/catalog")))
         return(NULL);
     /* Verify we received the escaped URL */
     if (strcmp(urip_rcvsURLs[urip_current], URI))
@@ -3063,7 +3065,6 @@ static int
 schemasOneTest(const char *sch,
                const char *filename,
                const char *result,
-	       const char *err,
 	       int options,
 	       xmlSchemaPtr schemas) {
     xmlDocPtr doc;
@@ -3115,13 +3116,6 @@ schemasOneTest(const char *sch,
         free(temp);
     }
 
-    if ((validResult != 0) && (err != NULL)) {
-	if (compareFileMem(err, testErrors, testErrorsSize)) {
-	    fprintf(stderr, "Error for %s on %s failed\n", filename, sch);
-	    ret = 1;
-	}
-    }
-
     xmlSchemaFreeValidCtxt(ctxt);
     xmlFreeDoc(doc);
     return(ret);
@@ -3148,6 +3142,7 @@ schemasTest(const char *filename,
     xmlSchemaParserCtxtPtr ctxt;
     xmlSchemaPtr schemas;
     int res = 0, len, ret;
+    int parseErrorsSize;
     char pattern[500];
     char prefix[500];
     char result[500];
@@ -3161,6 +3156,7 @@ schemasTest(const char *filename,
     xmlSchemaSetParserErrors(ctxt, testErrorHandler, testErrorHandler, ctxt);
     schemas = xmlSchemaParse(ctxt);
     xmlSchemaFreeParserCtxt(ctxt);
+    parseErrorsSize = testErrorsSize;
 
     /*
      * most of the mess is about the output filenames generated by the Makefile
@@ -3180,7 +3176,7 @@ schemasTest(const char *filename,
     memcpy(prefix, base, len);
     prefix[len] = 0;
 
-    if (snprintf(pattern, 499, "./test/schemas/%s_?.xml", prefix) >= 499)
+    if (snprintf(pattern, 499, "./test/schemas/%s_*.xml", prefix) >= 499)
         pattern[499] = 0;
 
     if (base[len] == '_') {
@@ -3192,8 +3188,8 @@ schemasTest(const char *filename,
     globbuf.gl_offs = 0;
     glob(pattern, GLOB_DOOFFS, NULL, &globbuf);
     for (i = 0;i < globbuf.gl_pathc;i++) {
-        testErrorsSize = 0;
-	testErrors[0] = 0;
+        testErrorsSize = parseErrorsSize;
+        testErrors[parseErrorsSize] = 0;
         instance = globbuf.gl_pathv[i];
 	base2 = baseFilename(instance);
 	len = strlen(base2);
@@ -3211,14 +3207,17 @@ schemasTest(const char *filename,
 	    fprintf(stderr, "don't know how to process %s\n", instance);
 	    continue;
 	}
-	if (schemas == NULL) {
-	} else {
+	if (schemas != NULL) {
 	    nb_tests++;
-	    ret = schemasOneTest(filename, instance, result, err,
-	                         options, schemas);
+	    ret = schemasOneTest(filename, instance, result, options, schemas);
 	    if (ret != 0)
 		res = ret;
 	}
+        if (compareFileMem(err, testErrors, testErrorsSize)) {
+            fprintf(stderr, "Error for %s on %s failed\n", instance,
+                    filename);
+            res = 1;
+        }
     }
     globfree(&globbuf);
     xmlSchemaFree(schemas);
@@ -3235,7 +3234,6 @@ static int
 rngOneTest(const char *sch,
                const char *filename,
                const char *result,
-	       const char *err,
 	       int options,
 	       xmlRelaxNGPtr schemas) {
     xmlDocPtr doc;
@@ -3287,15 +3285,6 @@ rngOneTest(const char *sch,
         free(temp);
     }
 
-    if (err != NULL) {
-	if (compareFileMem(err, testErrors, testErrorsSize)) {
-	    fprintf(stderr, "Error for %s on %s failed\n", filename, sch);
-	    ret = 1;
-	    printf("%s", testErrors);
-	}
-    }
-
-
     xmlRelaxNGFreeValidCtxt(ctxt);
     xmlFreeDoc(doc);
     return(ret);
@@ -3321,6 +3310,7 @@ rngTest(const char *filename,
     xmlRelaxNGParserCtxtPtr ctxt;
     xmlRelaxNGPtr schemas;
     int res = 0, len, ret = 0;
+    int parseErrorsSize;
     char pattern[500];
     char prefix[500];
     char result[500];
@@ -3334,6 +3324,10 @@ rngTest(const char *filename,
     xmlRelaxNGSetParserErrors(ctxt, testErrorHandler, testErrorHandler, ctxt);
     schemas = xmlRelaxNGParse(ctxt);
     xmlRelaxNGFreeParserCtxt(ctxt);
+    if (schemas == NULL)
+        testErrorHandler(NULL, "Relax-NG schema %s failed to compile\n",
+                         filename);
+    parseErrorsSize = testErrorsSize;
 
     /*
      * most of the mess is about the output filenames generated by the Makefile
@@ -3353,8 +3347,8 @@ rngTest(const char *filename,
     globbuf.gl_offs = 0;
     glob(pattern, GLOB_DOOFFS, NULL, &globbuf);
     for (i = 0;i < globbuf.gl_pathc;i++) {
-        testErrorsSize = 0;
-	testErrors[0] = 0;
+        testErrorsSize = parseErrorsSize;
+        testErrors[parseErrorsSize] = 0;
         instance = globbuf.gl_pathv[i];
 	base2 = baseFilename(instance);
 	len = strlen(base2);
@@ -3372,14 +3366,17 @@ rngTest(const char *filename,
 	    fprintf(stderr, "don't know how to process %s\n", instance);
 	    continue;
 	}
-	if (schemas == NULL) {
-	} else {
+	if (schemas != NULL) {
 	    nb_tests++;
-	    res = rngOneTest(filename, instance, result, err,
-	                         options, schemas);
+	    res = rngOneTest(filename, instance, result, options, schemas);
 	    if (res != 0)
 		ret = res;
 	}
+        if (compareFileMem(err, testErrors, testErrorsSize)) {
+            fprintf(stderr, "Error for %s on %s failed\n", instance,
+                    filename);
+            res = 1;
+        }
     }
     globfree(&globbuf);
     xmlRelaxNGFree(schemas);
@@ -3589,10 +3586,6 @@ patternTest(const char *filename,
 
     if (!checkTestFile(xml) && !update_results) {
 	fprintf(stderr, "Missing xml file %s\n", xml);
-	return(-1);
-    }
-    if (!checkTestFile(result) && !update_results) {
-	fprintf(stderr, "Missing result file %s\n", result);
 	return(-1);
     }
     f = fopen(filename, "rb");
@@ -3963,10 +3956,6 @@ c14nCommonTest(const char *filename, int with_comments, int mode,
 
     if (snprintf(buf, 499, "result/c14n/%s/%s", subdir, prefix) >= 499)
         buf[499] = 0;
-    if (!checkTestFile(buf) && !update_results) {
-        fprintf(stderr, "Missing result file %s", buf);
-	return(-1);
-    }
     result = strdup(buf);
     if (snprintf(buf, 499, "test/c14n/%s/%s.xpath", subdir, prefix) >= 499)
         buf[499] = 0;
@@ -4297,6 +4286,113 @@ threadsTest(const char *filename ATTRIBUTE_UNUSED,
     return(testThread());
 }
 #endif
+
+#if defined(LIBXML_REGEXP_ENABLED)
+/************************************************************************
+ *									*
+ *			Regexp tests					*
+ *									*
+ ************************************************************************/
+
+static void testRegexp(FILE *output, xmlRegexpPtr comp, const char *value) {
+    int ret;
+
+    ret = xmlRegexpExec(comp, (const xmlChar *) value);
+    if (ret == 1)
+	fprintf(output, "%s: Ok\n", value);
+    else if (ret == 0)
+	fprintf(output, "%s: Fail\n", value);
+    else
+	fprintf(output, "%s: Error: %d\n", value, ret);
+}
+
+static int
+regexpTest(const char *filename, const char *result, const char *err,
+	   int options ATTRIBUTE_UNUSED) {
+    xmlRegexpPtr comp = NULL;
+    FILE *input, *output;
+    char *temp;
+    char expression[5000];
+    int len, ret, res = 0;
+
+    input = fopen(filename, "r");
+    if (input == NULL) {
+        xmlGenericError(xmlGenericErrorContext,
+		"Cannot open %s for reading\n", filename);
+	return(-1);
+    }
+    temp = resultFilename(filename, "", ".res");
+    if (temp == NULL) {
+        fprintf(stderr, "Out of memory\n");
+        fatalError();
+    }
+    output = fopen(temp, "wb");
+    if (output == NULL) {
+	fprintf(stderr, "failed to open output file %s\n", temp);
+        free(temp);
+	return(-1);
+    }
+    while (fgets(expression, 4500, input) != NULL) {
+	len = strlen(expression);
+	len--;
+	while ((len >= 0) &&
+	       ((expression[len] == '\n') || (expression[len] == '\t') ||
+		(expression[len] == '\r') || (expression[len] == ' '))) len--;
+	expression[len + 1] = 0;
+	if (len >= 0) {
+	    if (expression[0] == '#')
+		continue;
+	    if ((expression[0] == '=') && (expression[1] == '>')) {
+		char *pattern = &expression[2];
+
+		if (comp != NULL) {
+		    xmlRegFreeRegexp(comp);
+		    comp = NULL;
+		}
+		fprintf(output, "Regexp: %s\n", pattern) ;
+		comp = xmlRegexpCompile((const xmlChar *) pattern);
+		if (comp == NULL) {
+		    fprintf(output, "   failed to compile\n");
+		    break;
+		}
+	    } else if (comp == NULL) {
+		fprintf(output, "Regexp: %s\n", expression) ;
+		comp = xmlRegexpCompile((const xmlChar *) expression);
+		if (comp == NULL) {
+		    fprintf(output, "   failed to compile\n");
+		    break;
+		}
+	    } else if (comp != NULL) {
+		testRegexp(output, comp, expression);
+	    }
+	}
+    }
+    fclose(output);
+    fclose(input);
+    if (comp != NULL)
+	xmlRegFreeRegexp(comp);
+
+    ret = compareFiles(temp, result);
+    if (ret) {
+        fprintf(stderr, "Result for %s failed in %s\n", filename, result);
+        res = 1;
+    }
+    if (temp != NULL) {
+        unlink(temp);
+        free(temp);
+    }
+
+    ret = compareFileMem(err, testErrors, testErrorsSize);
+    if (ret != 0) {
+        fprintf(stderr, "Error for %s failed\n", filename);
+        res = 1;
+    }
+
+    return(res);
+}
+
+#endif
+
 /************************************************************************
  *									*
  *			Tests Descriptions				*
@@ -4491,6 +4587,14 @@ testDesc testDescriptions[] = {
       threadsTest, NULL, NULL, NULL, NULL,
       0 },
 #endif
+    { "SVG parsing regression tests" ,
+      oldParseTest, "./test/SVG/*.xml", "result/SVG/", "", NULL,
+      0 },
+#if defined(LIBXML_REGEXP_ENABLED)
+    { "Regexp regression tests" ,
+      regexpTest, "./test/regexp/*", "result/regexp/", "", ".err",
+      0 },
+#endif
     {NULL, NULL, NULL, NULL, NULL, NULL, 0}
 };
 
@@ -4546,35 +4650,29 @@ launchTests(testDescPtr tst) {
 	    } else {
 	        error = NULL;
 	    }
-	    if ((result) &&(!checkTestFile(result)) && !update_results) {
-	        fprintf(stderr, "Missing result file %s\n", result);
-	    } else if ((error) &&(!checkTestFile(error)) && !update_results) {
-	        fprintf(stderr, "Missing error file %s\n", error);
-	    } else {
-		mem = xmlMemUsed();
-		extraMemoryFromResolver = 0;
-		testErrorsSize = 0;
-		testErrors[0] = 0;
-		res = tst->func(globbuf.gl_pathv[i], result, error,
-		                tst->options | XML_PARSE_COMPACT);
-		xmlResetLastError();
-		if (res != 0) {
-		    fprintf(stderr, "File %s generated an error\n",
-		            globbuf.gl_pathv[i]);
-		    nb_errors++;
-		    err++;
-		}
-		else if (xmlMemUsed() != mem) {
-		    if ((xmlMemUsed() != mem) &&
-		        (extraMemoryFromResolver == 0)) {
-			fprintf(stderr, "File %s leaked %d bytes\n",
-				globbuf.gl_pathv[i], xmlMemUsed() - mem);
-			nb_leaks++;
-			err++;
-		    }
-		}
-		testErrorsSize = 0;
-	    }
+            mem = xmlMemUsed();
+            extraMemoryFromResolver = 0;
+            testErrorsSize = 0;
+            testErrors[0] = 0;
+            res = tst->func(globbuf.gl_pathv[i], result, error,
+                            tst->options | XML_PARSE_COMPACT);
+            xmlResetLastError();
+            if (res != 0) {
+                fprintf(stderr, "File %s generated an error\n",
+                        globbuf.gl_pathv[i]);
+                nb_errors++;
+                err++;
+            }
+            else if (xmlMemUsed() != mem) {
+                if ((xmlMemUsed() != mem) &&
+                    (extraMemoryFromResolver == 0)) {
+                    fprintf(stderr, "File %s leaked %d bytes\n",
+                            globbuf.gl_pathv[i], xmlMemUsed() - mem);
+                    nb_leaks++;
+                    err++;
+                }
+            }
+            testErrorsSize = 0;
 	    if (result)
 		free(result);
 	    if (error)

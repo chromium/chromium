@@ -16,7 +16,6 @@
 #include <stdlib.h>
 #include <libxml/xmlversion.h>
 #include <libxml/parser.h>
-#include <libxml/xlink.h>
 
 #ifdef LIBXML_LEGACY_ENABLED
 
@@ -193,11 +192,6 @@ XMLPUBFUN void XMLCALL
 XML_DEPRECATED
 XMLPUBFUN void XMLCALL
 		inithtmlDefaultSAXHandler	(xmlSAXHandlerV1 *hdlr);
-#endif
-#ifdef LIBXML_DOCB_ENABLED
-XML_DEPRECATED
-XMLPUBFUN void XMLCALL
-		initdocbDefaultSAXHandler	(xmlSAXHandlerV1 *hdlr);
 #endif
 #endif /* LIBXML_SAX1_ENABLED */
 

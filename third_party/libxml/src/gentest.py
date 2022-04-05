@@ -21,8 +21,6 @@ else:
 #
 skipped_modules = [ "SAX", "xlink", "threads", "globals",
   "xmlmemory", "xmlversion", "xmlexports",
-  #deprecated
-  "DOCBparser",
 ]
 
 #
@@ -43,7 +41,6 @@ modules_defines = {
     "xmlregexp" : "LIBXML_REGEXP_ENABLED",
     "xmlautomata" : "LIBXML_AUTOMATA_ENABLED",
     "xmlsave" : "LIBXML_OUTPUT_ENABLED",
-    "DOCBparser" : "LIBXML_DOCB_ENABLED",
     "xmlmodule" : "LIBXML_MODULES_ENABLED",
     "pattern" : "LIBXML_PATTERN_ENABLED",
     "schematron" : "LIBXML_SCHEMATRON_ENABLED",
@@ -94,7 +91,6 @@ function_defines = {
     "xmlSprintfElementContent": "LIBXML_OUTPUT_ENABLED",
     "xmlValidGetPotentialChildren" : "LIBXML_VALID_ENABLED",
     "xmlValidGetValidElements" : "LIBXML_VALID_ENABLED",
-    "docbDefaultSAXHandlerInit" : "LIBXML_DOCB_ENABLED",
     "xmlTextReaderPreservePattern" : "LIBXML_PATTERN_ENABLED",
 }
 

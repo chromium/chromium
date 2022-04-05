@@ -12,10 +12,6 @@
 #include <ctype.h>
 #include <time.h>
 
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-
 /* #define DEBUG_MEMORY */
 
 /**
@@ -939,6 +935,9 @@ xmlMemoryDump(void)
 /**
  * xmlInitMemory:
  *
+ * DEPRECATED: This function will be made private. Call xmlInitParser to
+ * initialize the library.
+ *
  * Initialize the memory layer.
  *
  * Returns 0 on success
@@ -977,6 +976,11 @@ xmlInitMemory(void)
 
 /**
  * xmlCleanupMemory:
+ *
+ * DEPRECATED: This function will be made private. Call xmlCleanupParser
+ * to free global state but see the warnings there. xmlCleanupParser
+ * should be only called once at program exit. In most cases, you don't
+ * have call cleanup functions at all.
  *
  * Free up all the memory allocated by the library for its own
  * use. This should not be called by user level code.

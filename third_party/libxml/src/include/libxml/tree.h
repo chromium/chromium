@@ -177,11 +177,11 @@ typedef enum {
     XML_NAMESPACE_DECL=		18,
     XML_XINCLUDE_START=		19,
     XML_XINCLUDE_END=		20
-#ifdef LIBXML_DOCB_ENABLED
-   ,XML_DOCB_DOCUMENT_NODE=	21
-#endif
+    /* XML_DOCB_DOCUMENT_NODE=	21 */ /* removed */
 } xmlElementType;
 
+/* For backward compatibility */
+#define XML_DOCB_DOCUMENT_NODE 21
 
 /**
  * xmlNotation:
@@ -659,7 +659,7 @@ struct _xmlDOMWrapCtxt {
     defined(LIBXML_SCHEMAS_ENABLED) || defined(LIBXML_DEBUG_ENABLED) || \
     defined (LIBXML_HTML_ENABLED) || defined(LIBXML_SAX1_ENABLED) || \
     defined(LIBXML_HTML_ENABLED) || defined(LIBXML_WRITER_ENABLED) || \
-    defined(LIBXML_DOCB_ENABLED) || defined(LIBXML_LEGACY_ENABLED)
+    defined(LIBXML_LEGACY_ENABLED)
 XMLPUBFUN int XMLCALL
 		xmlValidateNCName	(const xmlChar *value,
 					 int space);

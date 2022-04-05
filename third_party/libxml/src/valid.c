@@ -518,11 +518,6 @@ xmlValidPrintNode(xmlNodePtr cur) {
 	case XML_HTML_DOCUMENT_NODE:
 	    xmlGenericError(xmlGenericErrorContext, "?html? ");
 	    break;
-#ifdef LIBXML_DOCB_ENABLED
-	case XML_DOCB_DOCUMENT_NODE:
-	    xmlGenericError(xmlGenericErrorContext, "?docb? ");
-	    break;
-#endif
 	case XML_DTD_NODE:
 	    xmlGenericError(xmlGenericErrorContext, "?dtd? ");
 	    break;
@@ -5283,9 +5278,6 @@ xmlSnprintfElements(char *buf, int size, xmlNodePtr node, int glob) {
 		break;
             case XML_ATTRIBUTE_NODE:
             case XML_DOCUMENT_NODE:
-#ifdef LIBXML_DOCB_ENABLED
-	    case XML_DOCB_DOCUMENT_NODE:
-#endif
 	    case XML_HTML_DOCUMENT_NODE:
             case XML_DOCUMENT_TYPE_NODE:
             case XML_DOCUMENT_FRAG_NODE:

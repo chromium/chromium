@@ -92,10 +92,10 @@ EXTRA_PROGRAMS = genSeed$(EXEEXT) html$(EXEEXT) regexp$(EXEEXT) \
 check_PROGRAMS = testFuzzer$(EXEEXT)
 subdir = fuzz
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
-	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/acinclude.m4 $(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/m4/ac_try_compile2.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -106,11 +106,7 @@ CONFIG_CLEAN_VPATH_FILES =
 am_genSeed_OBJECTS = genSeed.$(OBJEXT) fuzz.$(OBJEXT)
 genSeed_OBJECTS = $(am_genSeed_OBJECTS)
 genSeed_LDADD = $(LDADD)
-am__DEPENDENCIES_1 =
-genSeed_DEPENDENCIES = $(top_builddir)/libxml2.la \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+genSeed_DEPENDENCIES = $(top_builddir)/libxml2.la
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -118,67 +114,46 @@ am__v_lt_1 =
 am_html_OBJECTS = html.$(OBJEXT) fuzz.$(OBJEXT)
 html_OBJECTS = $(am_html_OBJECTS)
 html_LDADD = $(LDADD)
-html_DEPENDENCIES = $(top_builddir)/libxml2.la $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+html_DEPENDENCIES = $(top_builddir)/libxml2.la
 html_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(html_LDFLAGS) $(LDFLAGS) -o $@
 am_regexp_OBJECTS = regexp.$(OBJEXT) fuzz.$(OBJEXT)
 regexp_OBJECTS = $(am_regexp_OBJECTS)
 regexp_LDADD = $(LDADD)
-regexp_DEPENDENCIES = $(top_builddir)/libxml2.la $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+regexp_DEPENDENCIES = $(top_builddir)/libxml2.la
 regexp_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(regexp_LDFLAGS) $(LDFLAGS) -o $@
 am_schema_OBJECTS = schema.$(OBJEXT) fuzz.$(OBJEXT)
 schema_OBJECTS = $(am_schema_OBJECTS)
 schema_LDADD = $(LDADD)
-schema_DEPENDENCIES = $(top_builddir)/libxml2.la $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+schema_DEPENDENCIES = $(top_builddir)/libxml2.la
 schema_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(schema_LDFLAGS) $(LDFLAGS) -o $@
 am_testFuzzer_OBJECTS = testFuzzer.$(OBJEXT) fuzz.$(OBJEXT)
 testFuzzer_OBJECTS = $(am_testFuzzer_OBJECTS)
 testFuzzer_LDADD = $(LDADD)
-testFuzzer_DEPENDENCIES = $(top_builddir)/libxml2.la \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+testFuzzer_DEPENDENCIES = $(top_builddir)/libxml2.la
 am_uri_OBJECTS = uri.$(OBJEXT) fuzz.$(OBJEXT)
 uri_OBJECTS = $(am_uri_OBJECTS)
 uri_LDADD = $(LDADD)
-uri_DEPENDENCIES = $(top_builddir)/libxml2.la $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+uri_DEPENDENCIES = $(top_builddir)/libxml2.la
 uri_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(uri_LDFLAGS) $(LDFLAGS) -o $@
 am_xml_OBJECTS = xml.$(OBJEXT) fuzz.$(OBJEXT)
 xml_OBJECTS = $(am_xml_OBJECTS)
 xml_LDADD = $(LDADD)
-xml_DEPENDENCIES = $(top_builddir)/libxml2.la $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+xml_DEPENDENCIES = $(top_builddir)/libxml2.la
 xml_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(xml_LDFLAGS) $(LDFLAGS) -o $@
 am_xpath_OBJECTS = xpath.$(OBJEXT) fuzz.$(OBJEXT)
 xpath_OBJECTS = $(am_xpath_OBJECTS)
 xpath_LDADD = $(LDADD)
-xpath_DEPENDENCIES = $(top_builddir)/libxml2.la $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+xpath_DEPENDENCIES = $(top_builddir)/libxml2.la
 xpath_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(xpath_LDFLAGS) $(LDFLAGS) -o $@
@@ -275,7 +250,6 @@ DEBUG_OBJ = @DEBUG_OBJ@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
-DOCB_OBJ = @DOCB_OBJ@
 DSYMUTIL = @DSYMUTIL@
 DUMPBIN = @DUMPBIN@
 ECHO_C = @ECHO_C@
@@ -288,11 +262,11 @@ EXTRA_CFLAGS = @EXTRA_CFLAGS@
 FGREP = @FGREP@
 FTP_OBJ = @FTP_OBJ@
 GREP = @GREP@
-HTML_DIR = @HTML_DIR@
 HTML_OBJ = @HTML_OBJ@
 HTTP_OBJ = @HTTP_OBJ@
 ICONV_LIBS = @ICONV_LIBS@
 ICU_CFLAGS = @ICU_CFLAGS@
+ICU_DEFS = @ICU_DEFS@
 ICU_LIBS = @ICU_LIBS@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
@@ -301,6 +275,7 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LD = @LD@
 LDFLAGS = @LDFLAGS@
+LIBM = @LIBM@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
@@ -324,7 +299,6 @@ MKDIR_P = @MKDIR_P@
 MODULE_EXTENSION = @MODULE_EXTENSION@
 MODULE_PLATFORM_LIBS = @MODULE_PLATFORM_LIBS@
 MV = @MV@
-M_LIBS = @M_LIBS@
 NM = @NM@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
@@ -344,39 +318,27 @@ PKG_CONFIG = @PKG_CONFIG@
 PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
 PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
 PYTHON = @PYTHON@
-PYTHON_INCLUDES = @PYTHON_INCLUDES@
+PYTHON_CFLAGS = @PYTHON_CFLAGS@
+PYTHON_EXEC_PREFIX = @PYTHON_EXEC_PREFIX@
 PYTHON_LIBS = @PYTHON_LIBS@
-PYTHON_SITE_PACKAGES = @PYTHON_SITE_PACKAGES@
-PYTHON_SUBDIR = @PYTHON_SUBDIR@
+PYTHON_PLATFORM = @PYTHON_PLATFORM@
+PYTHON_PREFIX = @PYTHON_PREFIX@
 PYTHON_TESTS = @PYTHON_TESTS@
 PYTHON_VERSION = @PYTHON_VERSION@
 RANLIB = @RANLIB@
 RDL_LIBS = @RDL_LIBS@
-READER_TEST = @READER_TEST@
 RELDATE = @RELDATE@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
 TAR = @TAR@
-TEST_C14N = @TEST_C14N@
 TEST_CATALOG = @TEST_CATALOG@
 TEST_DEBUG = @TEST_DEBUG@
-TEST_HTML = @TEST_HTML@
-TEST_MODULES = @TEST_MODULES@
-TEST_PATTERN = @TEST_PATTERN@
-TEST_PHTML = @TEST_PHTML@
-TEST_PUSH = @TEST_PUSH@
 TEST_REGEXPS = @TEST_REGEXPS@
-TEST_SAX = @TEST_SAX@
-TEST_SCHEMAS = @TEST_SCHEMAS@
 TEST_SCHEMATRON = @TEST_SCHEMATRON@
-TEST_THREADS = @TEST_THREADS@
 TEST_VALID = @TEST_VALID@
 TEST_VTIME = @TEST_VTIME@
-TEST_XINCLUDE = @TEST_XINCLUDE@
-TEST_XPATH = @TEST_XPATH@
-TEST_XPTR = @TEST_XPTR@
 THREAD_CFLAGS = @THREAD_CFLAGS@
 THREAD_LIBS = @THREAD_LIBS@
 VERSION = @VERSION@
@@ -388,7 +350,6 @@ WIN32_EXTRA_PYTHON_LIBADD = @WIN32_EXTRA_PYTHON_LIBADD@
 WITH_C14N = @WITH_C14N@
 WITH_CATALOG = @WITH_CATALOG@
 WITH_DEBUG = @WITH_DEBUG@
-WITH_DOCB = @WITH_DOCB@
 WITH_FTP = @WITH_FTP@
 WITH_HTML = @WITH_HTML@
 WITH_HTTP = @WITH_HTTP@
@@ -472,9 +433,12 @@ mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
 pdfdir = @pdfdir@
+pkgpyexecdir = @pkgpyexecdir@
+pkgpythondir = @pkgpythondir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
+pyexecdir = @pyexecdir@
 pythondir = @pythondir@
 runstatedir = @runstatedir@
 sbindir = @sbindir@
@@ -492,7 +456,7 @@ EXTRA_DIST = html.dict regexp.dict schema.dict xml.dict xpath.dict \
 CLEANFILES = $(EXTRA_PROGRAMS)
 AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_builddir)/include
 DEPENDENCIES = $(top_builddir)/libxml2.la
-LDADD = $(top_builddir)/libxml2.la $(THREAD_LIBS) $(Z_LIBS) $(LZMA_LIBS) $(ICONV_LIBS) $(M_LIBS) $(WIN32_EXTRA_LIBADD)
+LDADD = $(top_builddir)/libxml2.la
 XML_MAX_LEN = 80000
 # Single quotes to avoid wildcard expansion by the shell
 XML_SEED_CORPUS_SRC = \
@@ -500,6 +464,7 @@ XML_SEED_CORPUS_SRC = \
     '$(top_srcdir)/test/errors/*.xml' \
     '$(top_srcdir)/test/errors10/*.xml' \
     '$(top_srcdir)/test/namespaces/*' \
+    '$(top_srcdir)/test/SVG/*.xml' \
     '$(top_srcdir)/test/valid/*.xml' \
     '$(top_srcdir)/test/VC/*' \
     '$(top_srcdir)/test/VCM/*' \
@@ -732,6 +697,7 @@ distdir-am: $(DISTFILES)
 	done
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS)
+	$(MAKE) $(AM_MAKEFLAGS) check-local
 check: check-am
 all-am: Makefile
 installdirs:
@@ -853,16 +819,17 @@ uninstall-am:
 
 .MAKE: check-am install-am install-strip
 
-.PHONY: CTAGS GTAGS TAGS all all-am am--depfiles check check-am clean \
-	clean-checkPROGRAMS clean-generic clean-libtool clean-local \
-	cscopelist-am ctags ctags-am distclean distclean-compile \
-	distclean-generic distclean-libtool distclean-tags distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
+.PHONY: CTAGS GTAGS TAGS all all-am am--depfiles check check-am \
+	check-local clean clean-checkPROGRAMS clean-generic \
+	clean-libtool clean-local cscopelist-am ctags ctags-am \
+	distclean distclean-compile distclean-generic \
+	distclean-libtool distclean-tags distdir dvi dvi-am html \
+	html-am info info-am install install-am install-data \
+	install-data-am install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags tags-am uninstall uninstall-am
@@ -870,14 +837,13 @@ uninstall-am:
 .PRECIOUS: Makefile
 
 
-.PHONY: tests corpus clean-corpus
+.PHONY: corpus clean-corpus
 
 corpus: seed/html.stamp seed/regexp.stamp seed/schema.stamp seed/uri.stamp \
     seed/xml.stamp seed/xpath.stamp
 
-tests: testFuzzer$(EXEEXT) corpus
-	@echo "## Running fuzzer tests"
-	@./testFuzzer$(EXEEXT)
+check-local: corpus
+	./testFuzzer$(EXEEXT)
 
 clean-corpus:
 	rm -rf seed

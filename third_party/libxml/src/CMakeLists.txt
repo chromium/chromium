@@ -26,7 +26,6 @@ set(LIBXML2_WITH_AUTOMATA ON)
 option(LIBXML2_WITH_C14N "Add the Canonicalization support" ON)
 option(LIBXML2_WITH_CATALOG "Add the Catalog support" ON)
 option(LIBXML2_WITH_DEBUG "Add the debugging module" ON)
-option(LIBXML2_WITH_DOCB "Add Docbook SGML support" ON)
 set(LIBXML2_WITH_EXPR ON)
 option(LIBXML2_WITH_FTP "Add the FTP support" ON)
 option(LIBXML2_WITH_HTML "Add the HTML support" ON)
@@ -97,7 +96,7 @@ if(LIBXML2_WITH_ZLIB)
 	find_package(ZLIB REQUIRED)
 endif()
 
-foreach(VARIABLE IN ITEMS WITH_AUTOMATA WITH_C14N WITH_CATALOG WITH_DEBUG WITH_DOCB WITH_EXPR WITH_FTP WITH_HTML WITH_HTTP WITH_ICONV WITH_ICU WITH_ISO8859X WITH_LEGACY WITH_LZMA WITH_MEM_DEBUG WITH_MODULES WITH_OUTPUT WITH_PATTERN WITH_PUSH WITH_READER WITH_REGEXPS WITH_RUN_DEBUG WITH_SAX1 WITH_SCHEMAS WITH_SCHEMATRON WITH_THREADS WITH_THREAD_ALLOC WITH_TREE WITH_TRIO WITH_UNICODE WITH_VALID WITH_WRITER WITH_XINCLUDE WITH_XPATH WITH_XPTR WITH_ZLIB)
+foreach(VARIABLE IN ITEMS WITH_AUTOMATA WITH_C14N WITH_CATALOG WITH_DEBUG WITH_EXPR WITH_FTP WITH_HTML WITH_HTTP WITH_ICONV WITH_ICU WITH_ISO8859X WITH_LEGACY WITH_LZMA WITH_MEM_DEBUG WITH_MODULES WITH_OUTPUT WITH_PATTERN WITH_PUSH WITH_READER WITH_REGEXPS WITH_RUN_DEBUG WITH_SAX1 WITH_SCHEMAS WITH_SCHEMATRON WITH_THREADS WITH_THREAD_ALLOC WITH_TREE WITH_TRIO WITH_UNICODE WITH_VALID WITH_WRITER WITH_XINCLUDE WITH_XPATH WITH_XPTR WITH_ZLIB)
 	if(LIBXML2_${VARIABLE})
 		set(${VARIABLE} 1)
 	else()
@@ -194,23 +193,6 @@ else()
 	check_include_files(unistd.h HAVE_UNISTD_H)
 	check_function_exists(va_copy HAVE_VA_COPY)
 	check_function_exists(__va_copy HAVE___VA_COPY)
-	check_c_source_compiles("
-		#include <stdlib.h>
-		#include <iconv.h>
-		extern
-		#ifdef __cplusplus
-		\"C\"
-		#endif
-		#if defined(__STDC__) || defined(__cplusplus)
-		size_t iconv(iconv_t cd, char** inbuf, size_t* inbytesleft, char** outbuf, size_t* outbytesleft);
-		#else
-		size_t iconv();
-		#endif
-		int main() { return 0; }
-	" ICONV_CONST_TEST)
-	if(NOT ICONV_CONST_TEST)
-		set(ICONV_CONST "const")
-	endif()
 	set(LT_OBJDIR ".libs/")
 	check_c_source_compiles("
 		#include <sys/socket.h>
@@ -270,7 +252,6 @@ set(
 	include/libxml/chvalid.h
 	include/libxml/debugXML.h
 	include/libxml/dict.h
-	include/libxml/DOCBparser.h
 	include/libxml/encoding.h
 	include/libxml/entities.h
 	include/libxml/globals.h
@@ -373,16 +354,14 @@ if(WIN32)
 	)
 endif()
 
-if(LIBXML2_WITH_SAX1)
-	list(APPEND LIBXML2_SRCS DOCBparser.c)
-endif()
-
 if(LIBXML2_WITH_TRIO)
 	list(APPEND LIBXML2_SRCS trio.c triostr.c)
 endif()
 
 add_library(LibXml2 ${LIBXML2_HDRS} ${LIBXML2_SRCS})
 add_library(LibXml2::LibXml2 ALIAS LibXml2)
+
+target_compile_definitions(LibXml2 PRIVATE SYSCONFDIR="${CMAKE_INSTALL_FULL_SYSCONFDIR}")
 
 if(NOT BUILD_SHARED_LIBS)
 	target_compile_definitions(LibXml2 INTERFACE LIBXML_STATIC)
@@ -416,7 +395,7 @@ endif()
 
 if(UNIX)
 	target_link_libraries(LibXml2 PRIVATE m)
-	set(M_LIBS "-lm")
+	set(LIBM "-lm")
 endif()
 
 if(WIN32)
@@ -507,6 +486,7 @@ if(LIBXML2_WITH_PROGRAMS)
 	foreach(PROGRAM ${PROGRAMS})
 		add_executable(${PROGRAM} ${PROGRAM}.c)
 		add_executable(LibXml2::${PROGRAM} ALIAS ${PROGRAM})
+		target_compile_definitions(${PROGRAM} PRIVATE SYSCONFDIR="${CMAKE_INSTALL_FULL_SYSCONFDIR}")
 		target_link_libraries(${PROGRAM} LibXml2)
 		if(HAVE_LIBHISTORY)
 			target_link_libraries(${PROGRAM} history)
@@ -526,20 +506,11 @@ if(LIBXML2_WITH_TESTS)
 		runsuite
 		testapi
 		testAutomata
-		testC14N
 		testchar
 		testdict
-		testHTML
 		testModule
 		testlimits
-		testReader
 		testrecurse
-		testRegexp
-		testRelax
-		testSAX
-		testSchemas
-		testURI
-		testXPath
 	)
 	foreach(TEST ${TESTS})
 		add_executable(${TEST} ${TEST}.c)
@@ -562,6 +533,7 @@ if(LIBXML2_WITH_TESTS)
 		)
 		foreach(TEST ${TESTS_THREADS})
 			add_executable(${TEST} ${TEST}.c)
+			target_compile_definitions(${TEST} PRIVATE SYSCONFDIR="${CMAKE_INSTALL_FULL_SYSCONFDIR}")
 			if(WIN32)
 				target_compile_definitions(${TEST} PRIVATE HAVE_WIN32_THREADS)
 			endif()
@@ -622,10 +594,16 @@ if(LIBXML2_WITH_PYTHON)
 	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libxml2.py DESTINATION ${LIBXML2_PYTHON_INSTALL_DIR} COMPONENT runtime)
 endif()
 
-install(FILES libxml.3 DESTINATION ${CMAKE_INSTALL_MANDIR}/man3 COMPONENT documentation)
+install(FILES doc/xml2-config.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1 COMPONENT documentation)
 install(FILES doc/xmlcatalog.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1 COMPONENT documentation)
 install(FILES doc/xmllint.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1 COMPONENT documentation)
-install(DIRECTORY doc/ DESTINATION ${CMAKE_INSTALL_DATADIR}/doc/libxml2 COMPONENT documentation PATTERN Makefile.* EXCLUDE)
+install(DIRECTORY doc/ DESTINATION ${CMAKE_INSTALL_DATADIR}/doc/libxml2 COMPONENT documentation
+	PATTERN "Makefile.*" EXCLUDE
+	PATTERN "*.xsl" EXCLUDE
+	PATTERN "*.py" EXCLUDE
+	PATTERN "*.xml" EXCLUDE
+	PATTERN "examples/*" EXCLUDE)
+install(DIRECTORY doc/examples/ DESTINATION ${CMAKE_INSTALL_DATADIR}/doc/libxml2/examples COMPONENT documentation PATTERN "Makefile.*" EXCLUDE)
 
 configure_package_config_file(
 	libxml2-config.cmake.cmake.in libxml2-config.cmake
@@ -669,26 +647,30 @@ endif()
 set(XML_INCLUDEDIR "-I\${includedir}/libxml2")
 set(XML_LIBDIR "-L\${libdir}")
 set(XML_LIBS "-lxml2")
-set(XML_PRIVATE_LIBS "${Z_LIBS} ${LZMA_LIBS} ${THREAD_LIBS} ${ICONV_LIBS} ${ICU_LIBS} ${M_LIBS}")
+set(XML_PRIVATE_LIBS "${Z_LIBS} ${LZMA_LIBS} ${THREAD_LIBS} ${ICONV_LIBS} ${ICU_LIBS} ${LIBM} ${WIN32_EXTRA_LIBADD}")
 
 file(RELATIVE_PATH PACKAGE_RELATIVE_PATH "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig" "${CMAKE_INSTALL_PREFIX}")
 string(REGEX REPLACE "/$" "" PACKAGE_RELATIVE_PATH "${PACKAGE_RELATIVE_PATH}")
 
-set(prefix "\${pcfiledir}/${PACKAGE_RELATIVE_PATH}")
+if(WIN32)
+	set(prefix "\${pcfiledir}/${PACKAGE_RELATIVE_PATH}")
+else()
+	set(prefix "${CMAKE_INSTALL_PREFIX}")
+endif()
 set(exec_prefix "\${prefix}")
 set(libdir "\${prefix}/${CMAKE_INSTALL_LIBDIR}")
 set(includedir "\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}")
 configure_file(libxml-2.0.pc.in libxml-2.0.pc @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libxml-2.0.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig COMPONENT development)
 
-set(prefix "\$(cd \"\$(dirname \"\$0\")\"; pwd -P)/..")
+if(WIN32)
+	set(prefix "\$(cd \"\$(dirname \"\$0\")\"; pwd -P)/..")
+endif()
 configure_file(xml2-config.in xml2-config @ONLY)
 install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/xml2-config DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT development)
 
 set(XML_INCLUDEDIR "-I${CMAKE_INSTALL_FULL_INCLUDEDIR}/libxml2")
 set(XML_LIBDIR "-L${CMAKE_INSTALL_FULL_LIBDIR}")
-configure_file(xml2Conf.sh.in xml2Conf.sh @ONLY)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/xml2Conf.sh DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT development)
 
 set(CPACK_COMPONENT_DEVELOPMENT_DEPENDS runtime)
 set(CPACK_COMPONENT_PROGRAMS_DEPENDS runtime)

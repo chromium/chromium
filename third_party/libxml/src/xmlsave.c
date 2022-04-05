@@ -474,6 +474,7 @@ xmlBufDumpNotationTable(xmlBufPtr buf, xmlNotationTablePtr table) {
          */
         return;
     }
+    xmlBufferSetAllocationScheme(buffer, XML_BUFFER_ALLOC_DOUBLEIT);
     xmlDumpNotationTable(buffer, table);
     xmlBufMergeBuffer(buf, buffer);
 }
@@ -497,6 +498,7 @@ xmlBufDumpElementDecl(xmlBufPtr buf, xmlElementPtr elem) {
          */
         return;
     }
+    xmlBufferSetAllocationScheme(buffer, XML_BUFFER_ALLOC_DOUBLEIT);
     xmlDumpElementDecl(buffer, elem);
     xmlBufMergeBuffer(buf, buffer);
 }
@@ -520,6 +522,7 @@ xmlBufDumpAttributeDecl(xmlBufPtr buf, xmlAttributePtr attr) {
          */
         return;
     }
+    xmlBufferSetAllocationScheme(buffer, XML_BUFFER_ALLOC_DOUBLEIT);
     xmlDumpAttributeDecl(buffer, attr);
     xmlBufMergeBuffer(buf, buffer);
 }
@@ -542,6 +545,7 @@ xmlBufDumpEntityDecl(xmlBufPtr buf, xmlEntityPtr ent) {
          */
         return;
     }
+    xmlBufferSetAllocationScheme(buffer, XML_BUFFER_ALLOC_DOUBLEIT);
     xmlDumpEntityDecl(buffer, ent);
     xmlBufMergeBuffer(buf, buffer);
 }

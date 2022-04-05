@@ -153,8 +153,10 @@ extern "C" {
 /*
  * Interfaces for encoding handlers.
  */
+XML_DEPRECATED
 XMLPUBFUN void XMLCALL
 	xmlInitCharEncodingHandlers	(void);
+XML_DEPRECATED
 XMLPUBFUN void XMLCALL
 	xmlCleanupCharEncodingHandlers	(void);
 XMLPUBFUN void XMLCALL

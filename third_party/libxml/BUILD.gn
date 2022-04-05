@@ -156,7 +156,6 @@ static_library("libxml") {
   # Commented out sources are libxml2 files we do not want to include. They are
   # here to make it easy to identify files which are new.
   sources = [
-    #"src/DOCBparser.c",
     "src/HTMLparser.c",
     "src/HTMLtree.c",
 
@@ -177,7 +176,6 @@ static_library("libxml") {
     "src/error.c",
     "src/globals.c",
     "src/hash.c",
-    "src/include/libxml/DOCBparser.h",
     "src/include/libxml/HTMLparser.h",
     "src/include/libxml/HTMLtree.h",
     "src/include/libxml/SAX.h",

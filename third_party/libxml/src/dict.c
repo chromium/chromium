@@ -127,7 +127,7 @@ struct _xmlDict {
  * A mutex for modifying the reference counter for shared
  * dictionaries.
  */
-static xmlRMutexPtr xmlDictMutex = NULL;
+static xmlMutexPtr xmlDictMutex = NULL;
 
 /*
  * Whether the dictionary mutex was initialized.
@@ -146,8 +146,10 @@ static unsigned int rand_seed = 0;
 /**
  * xmlInitializeDict:
  *
+ * DEPRECATED: This function will be made private. Call xmlInitParser to
+ * initialize the library.
+ *
  * Do the dictionary mutex initialization.
- * this function is deprecated
  *
  * Returns 0 if initialization was already done, and 1 if that
  * call led to the initialization
@@ -172,9 +174,9 @@ int __xmlInitializeDict(void) {
     if (xmlDictInitialized)
         return(1);
 
-    if ((xmlDictMutex = xmlNewRMutex()) == NULL)
+    if ((xmlDictMutex = xmlNewMutex()) == NULL)
         return(0);
-    xmlRMutexLock(xmlDictMutex);
+    xmlMutexLock(xmlDictMutex);
 
 #ifdef DICT_RANDOMIZATION
 #ifdef HAVE_RAND_R
@@ -185,7 +187,7 @@ int __xmlInitializeDict(void) {
 #endif
 #endif
     xmlDictInitialized = 1;
-    xmlRMutexUnlock(xmlDictMutex);
+    xmlMutexUnlock(xmlDictMutex);
     return(1);
 }
 
@@ -196,19 +198,24 @@ int __xmlRandom(void) {
     if (xmlDictInitialized == 0)
         __xmlInitializeDict();
 
-    xmlRMutexLock(xmlDictMutex);
+    xmlMutexLock(xmlDictMutex);
 #ifdef HAVE_RAND_R
     ret = rand_r(& rand_seed);
 #else
     ret = rand();
 #endif
-    xmlRMutexUnlock(xmlDictMutex);
+    xmlMutexUnlock(xmlDictMutex);
     return(ret);
 }
 #endif
 
 /**
  * xmlDictCleanup:
+ *
+ * DEPRECATED: This function will be made private. Call xmlCleanupParser
+ * to free global state but see the warnings there. xmlCleanupParser
+ * should be only called once at program exit. In most cases, you don't
+ * have call cleanup functions at all.
  *
  * Free the dictionary mutex. Do not call unless sure the library
  * is not in use anymore !
@@ -218,7 +225,7 @@ xmlDictCleanup(void) {
     if (!xmlDictInitialized)
         return;
 
-    xmlFreeRMutex(xmlDictMutex);
+    xmlFreeMutex(xmlDictMutex);
 
     xmlDictInitialized = 0;
 }
@@ -643,9 +650,9 @@ xmlDictReference(xmlDictPtr dict) {
             return(-1);
 
     if (dict == NULL) return -1;
-    xmlRMutexLock(xmlDictMutex);
+    xmlMutexLock(xmlDictMutex);
     dict->ref_counter++;
-    xmlRMutexUnlock(xmlDictMutex);
+    xmlMutexUnlock(xmlDictMutex);
     return(0);
 }
 
@@ -807,14 +814,14 @@ xmlDictFree(xmlDictPtr dict) {
             return;
 
     /* decrement the counter, it may be shared by a parser and docs */
-    xmlRMutexLock(xmlDictMutex);
+    xmlMutexLock(xmlDictMutex);
     dict->ref_counter--;
     if (dict->ref_counter > 0) {
-        xmlRMutexUnlock(xmlDictMutex);
+        xmlMutexUnlock(xmlDictMutex);
         return;
     }
 
-    xmlRMutexUnlock(xmlDictMutex);
+    xmlMutexUnlock(xmlDictMutex);
 
     if (dict->subdict != NULL) {
         xmlDictFree(dict->subdict);

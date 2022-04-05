@@ -1408,6 +1408,9 @@ xmlNewCharEncodingHandler(const char *name,
 /**
  * xmlInitCharEncodingHandlers:
  *
+ * DEPRECATED: This function will be made private. Call xmlInitParser to
+ * initialize the library.
+ *
  * Initialize the char encoding support, it registers the default
  * encoding supported.
  * NOTE: while public, this function usually doesn't need to be called
@@ -1467,6 +1470,11 @@ xmlInitCharEncodingHandlers(void) {
 
 /**
  * xmlCleanupCharEncodingHandlers:
+ *
+ * DEPRECATED: This function will be made private. Call xmlCleanupParser
+ * to free global state but see the warnings there. xmlCleanupParser
+ * should be only called once at program exit. In most cases, you don't
+ * have call cleanup functions at all.
  *
  * Cleanup the memory allocated for the char encoding support, it
  * unregisters all the encoding handlers and the aliases.
@@ -1747,6 +1755,10 @@ xmlFindCharEncodingHandler(const char *name) {
     } else if ((icv_in != (iconv_t) -1) || icv_out != (iconv_t) -1) {
 	    xmlEncodingErr(XML_ERR_INTERNAL_ERROR,
 		    "iconv : problems with filters for '%s'\n", name);
+	    if (icv_in != (iconv_t) -1)
+		iconv_close(icv_in);
+	    else
+		iconv_close(icv_out);
     }
 #endif /* LIBXML_ICONV_ENABLED */
 #ifdef LIBXML_ICU_ENABLED
@@ -1840,7 +1852,10 @@ xmlIconvWrapper(iconv_t cd, unsigned char *out, int *outlen,
     }
     icv_inlen = *inlen;
     icv_outlen = *outlen;
-    ret = iconv(cd, (ICONV_CONST char **) &icv_in, &icv_inlen, &icv_out, &icv_outlen);
+    /*
+     * Some versions take const, other versions take non-const input.
+     */
+    ret = iconv(cd, (void *) &icv_in, &icv_inlen, &icv_out, &icv_outlen);
     *inlen -= icv_inlen;
     *outlen -= icv_outlen;
     if ((icv_inlen != 0) || (ret == (size_t) -1)) {

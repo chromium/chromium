@@ -35,7 +35,6 @@ var withHttp = true;
 var withHtml = true;
 var withC14n = true;
 var withCatalog = true;
-var withDocb = true;
 var withXpath = true;
 var withXptr = true;
 var withXinclude = true;
@@ -121,7 +120,6 @@ function usage()
 	txt += "  html:       Enable HTML processor (" + (withHtml? "yes" : "no")  + ")\n";
 	txt += "  c14n:       Enable C14N support (" + (withC14n? "yes" : "no")  + ")\n";
 	txt += "  catalog:    Enable catalog support (" + (withCatalog? "yes" : "no")  + ")\n";
-	txt += "  docb:       Enable DocBook support (" + (withDocb? "yes" : "no")  + ")\n";
 	txt += "  xpath:      Enable XPath support (" + (withXpath? "yes" : "no")  + ")\n";
 	txt += "  xptr:       Enable XPointer support (" + (withXptr? "yes" : "no")  + ")\n";
 	txt += "  xinclude:   Enable XInclude support (" + (withXinclude? "yes" : "no")  + ")\n";
@@ -218,7 +216,6 @@ function discoverVersion()
 	vf.WriteLine("WITH_HTML=" + (withHtml? "1" : "0"));
 	vf.WriteLine("WITH_C14N=" + (withC14n? "1" : "0"));
 	vf.WriteLine("WITH_CATALOG=" + (withCatalog? "1" : "0"));
-	vf.WriteLine("WITH_DOCB=" + (withDocb? "1" : "0"));
 	vf.WriteLine("WITH_XPATH=" + (withXpath? "1" : "0"));
 	vf.WriteLine("WITH_XPTR=" + (withXptr? "1" : "0"));
 	vf.WriteLine("WITH_XINCLUDE=" + (withXinclude? "1" : "0"));
@@ -315,8 +312,6 @@ function configureLibxml()
 			of.WriteLine(s.replace(/\@WITH_C14N\@/, withC14n? "1" : "0"));
 		} else if (s.search(/\@WITH_CATALOG\@/) != -1) {
 			of.WriteLine(s.replace(/\@WITH_CATALOG\@/, withCatalog? "1" : "0"));
-		} else if (s.search(/\@WITH_DOCB\@/) != -1) {
-			of.WriteLine(s.replace(/\@WITH_DOCB\@/, withDocb? "1" : "0"));
 		} else if (s.search(/\@WITH_XPATH\@/) != -1) {
 			of.WriteLine(s.replace(/\@WITH_XPATH\@/, withXpath? "1" : "0"));
 		} else if (s.search(/\@WITH_XPTR\@/) != -1) {
@@ -470,8 +465,6 @@ for (i = 0; (i < WScript.Arguments.length) && (error == 0); i++) {
 			withC14n = strToBool(arg.substring(opt.length + 1, arg.length));
 		else if (opt == "catalog")
 			withCatalog = strToBool(arg.substring(opt.length + 1, arg.length));
-		else if (opt == "docb")
-			withDocb = strToBool(arg.substring(opt.length + 1, arg.length));
 		else if (opt == "xpath")
 			withXpath = strToBool(arg.substring(opt.length + 1, arg.length));
 		else if (opt == "xptr")
@@ -661,7 +654,6 @@ txtOut += "       HTTP client: " + boolToStr(withHttp) + "\n";
 txtOut += "    HTML processor: " + boolToStr(withHtml) + "\n";
 txtOut += "      C14N support: " + boolToStr(withC14n) + "\n";
 txtOut += "   Catalog support: " + boolToStr(withCatalog) + "\n";
-txtOut += "   DocBook support: " + boolToStr(withDocb) + "\n";
 txtOut += "     XPath support: " + boolToStr(withXpath) + "\n";
 txtOut += "  XPointer support: " + boolToStr(withXptr) + "\n";
 txtOut += "  XInclude support: " + boolToStr(withXinclude) + "\n";

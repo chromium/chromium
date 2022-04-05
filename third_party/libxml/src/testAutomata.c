@@ -216,7 +216,7 @@ testRegexpFile(const char *filename) {
 
 int main(int argc, char **argv) {
 
-    xmlInitMemory();
+    xmlInitParser();
 
     if (argc == 1) {
 	int ret;

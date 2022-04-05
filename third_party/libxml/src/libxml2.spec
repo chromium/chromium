@@ -144,7 +144,6 @@ rm -fr %{buildroot}
 %doc NEWS README.md Copyright TODO
 %doc %{_mandir}/man1/xmllint.1*
 %doc %{_mandir}/man1/xmlcatalog.1*
-%doc %{_mandir}/man3/libxml.3*
 
 %{_libdir}/lib*.so.*
 %{_bindir}/xmllint
@@ -204,6 +203,6 @@ rm -fr %{buildroot}
 %endif # with_python3
 
 %changelog
-* Fri Mar  4 2022 Daniel Veillard <veillard@redhat.com>
+* Mon Apr  4 2022 Daniel Veillard <veillard@redhat.com>
 - upstream release 2.9.13
 

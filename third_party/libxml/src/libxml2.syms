@@ -76,7 +76,7 @@ LIBXML2_2.4.30 {
   comment;
 
 # SAX2
-  docbDefaultSAXHandlerInit;
+# docbDefaultSAXHandlerInit; removed in 2.10.0
 
 # SAX
   elementDecl;
@@ -100,7 +100,7 @@ LIBXML2_2.4.30 {
 
 # SAX
   ignorableWhitespace;
-  initdocbDefaultSAXHandler;
+# initdocbDefaultSAXHandler; removed in 2.10.0
   inithtmlDefaultSAXHandler;
   initxmlDefaultSAXHandler;
   internalSubset;
@@ -453,16 +453,16 @@ LIBXML2_2.4.30 {
   xmlNanoFTPUpdateURL;
 
 # DOCBparser
-  docbCreateFileParserCtxt;
-  docbCreatePushParserCtxt;
-  docbEncodeEntities;
-  docbFreeParserCtxt;
-  docbParseChunk;
-  docbParseDoc;
-  docbParseDocument;
-  docbParseFile;
-  docbSAXParseDoc;
-  docbSAXParseFile;
+# docbCreateFileParserCtxt; removed in 2.10.0
+# docbCreatePushParserCtxt; removed in 2.10.0
+# docbEncodeEntities; removed in 2.10.0
+# docbFreeParserCtxt; removed in 2.10.0
+# docbParseChunk; removed in 2.10.0
+# docbParseDoc; removed in 2.10.0
+# docbParseDocument; removed in 2.10.0
+# docbParseFile; removed in 2.10.0
+# docbSAXParseDoc; removed in 2.10.0
+# docbSAXParseFile; removed in 2.10.0
 
 # xpath
   xmlXPathCastBooleanToNumber;
@@ -818,7 +818,7 @@ LIBXML2_2.4.30 {
   xmlTextReaderXmlLang;
 
 # globals
-  docbDefaultSAXHandler; # variable
+# docbDefaultSAXHandler; removed in 2.10.0
   htmlDefaultSAXHandler; # variable
   xmlDefaultSAXHandler; # variable
   xmlDefaultSAXLocator; # variable
@@ -1503,7 +1503,7 @@ LIBXML2_2.6.0 {
   xmlSAX2HasInternalSubset;
   xmlSAX2IgnorableWhitespace;
   xmlSAX2InitDefaultSAXHandler;
-  xmlSAX2InitDocbDefaultSAXHandler;
+# xmlSAX2InitDocbDefaultSAXHandler; removed in 2.10.0
   xmlSAX2InitHtmlDefaultSAXHandler;
   xmlSAX2InternalSubset;
   xmlSAX2IsStandalone;

@@ -37,6 +37,8 @@
 #if defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <io.h>
+#include <direct.h>
 #endif
 
 #ifndef S_ISDIR
@@ -2389,10 +2391,7 @@ xmlAllocOutputBuffer(xmlCharEncodingHandlerPtr encoder) {
         xmlFree(ret);
 	return(NULL);
     }
-
-    /* try to avoid a performance problem with Windows realloc() */
-    if (xmlBufGetAllocationScheme(ret->buffer) == XML_BUFFER_ALLOC_EXACT)
-        xmlBufSetAllocationScheme(ret->buffer, XML_BUFFER_ALLOC_DOUBLEIT);
+    xmlBufSetAllocationScheme(ret->buffer, XML_BUFFER_ALLOC_DOUBLEIT);
 
     ret->encoder = encoder;
     if (encoder != NULL) {

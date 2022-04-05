@@ -40,6 +40,9 @@ static xmlMutexPtr xmlThrDefMutex = NULL;
 /**
  * xmlInitGlobals:
  *
+ * DEPRECATED: This function will be made private. Call xmlInitParser to
+ * initialize the library.
+ *
  * Additional initialisation for multi-threading
  */
 void xmlInitGlobals(void)
@@ -134,7 +137,6 @@ xmlStrdupFunc xmlMemStrdup = xmlPosixStrdup;
 #include <libxml/globals.h>
 #include <libxml/SAX.h>
 
-#undef	docbDefaultSAXHandler
 #undef	htmlDefaultSAXHandler
 #undef	oldXMLWDcompatibility
 #undef	xmlBufferAllocScheme
@@ -441,44 +443,6 @@ xmlSAXHandlerV1 htmlDefaultSAXHandler = {
 };
 #endif /* LIBXML_HTML_ENABLED */
 
-#ifdef LIBXML_DOCB_ENABLED
-/**
- * docbDefaultSAXHandler:
- *
- * Default old SAX v1 handler for SGML DocBook, builds the DOM tree
- */
-xmlSAXHandlerV1 docbDefaultSAXHandler = {
-    xmlSAX2InternalSubset,
-    xmlSAX2IsStandalone,
-    xmlSAX2HasInternalSubset,
-    xmlSAX2HasExternalSubset,
-    xmlSAX2ResolveEntity,
-    xmlSAX2GetEntity,
-    xmlSAX2EntityDecl,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    xmlSAX2SetDocumentLocator,
-    xmlSAX2StartDocument,
-    xmlSAX2EndDocument,
-    xmlSAX2StartElement,
-    xmlSAX2EndElement,
-    xmlSAX2Reference,
-    xmlSAX2Characters,
-    xmlSAX2IgnorableWhitespace,
-    NULL,
-    xmlSAX2Comment,
-    xmlParserWarning,
-    xmlParserError,
-    xmlParserError,
-    xmlSAX2GetParameterEntity,
-    NULL,
-    NULL,
-    0,
-};
-#endif /* LIBXML_DOCB_ENABLED */
-
 /**
  * xmlInitializeGlobalState:
  * @gs: a pointer to a newly allocated global state
@@ -502,9 +466,6 @@ xmlInitializeGlobalState(xmlGlobalStatePtr gs)
 
     xmlMutexLock(xmlThrDefMutex);
 
-#if defined(LIBXML_DOCB_ENABLED) && defined(LIBXML_LEGACY_ENABLED) && defined(LIBXML_SAX1_ENABLED)
-    initdocbDefaultSAXHandler(&gs->docbDefaultSAXHandler);
-#endif
 #if defined(LIBXML_HTML_ENABLED) && defined(LIBXML_LEGACY_ENABLED) && defined(LIBXML_SAX1_ENABLED)
     inithtmlDefaultSAXHandler(&gs->htmlDefaultSAXHandler);
 #endif
@@ -559,6 +520,27 @@ xmlInitializeGlobalState(xmlGlobalStatePtr gs)
     memset(&gs->xmlLastError, 0, sizeof(xmlError));
 
     xmlMutexUnlock(xmlThrDefMutex);
+}
+
+/**
+ * xmlCleanupGlobals:
+ *
+ * DEPRECATED: This function will be made private. Call xmlCleanupParser
+ * to free global state but see the warnings there. xmlCleanupParser
+ * should be only called once at program exit. In most cases, you don't
+ * have call cleanup functions at all.
+ *
+ * Additional cleanup for multi-threading
+ */
+void xmlCleanupGlobals(void)
+{
+    xmlResetError(&xmlLastError);
+
+    if (xmlThrDefMutex != NULL) {
+	xmlFreeMutex(xmlThrDefMutex);
+	xmlThrDefMutex = NULL;
+    }
+    __xmlGlobalInitMutexDestroy();
 }
 
 /**
@@ -684,17 +666,6 @@ xmlThrDefOutputBufferCreateFilenameDefault(xmlOutputBufferCreateFilenameFunc fun
 
     return(old);
 }
-
-#ifdef LIBXML_DOCB_ENABLED
-#undef	docbDefaultSAXHandler
-xmlSAXHandlerV1 *
-__docbDefaultSAXHandler(void) {
-    if (IS_MAIN_THREAD)
-	return (&docbDefaultSAXHandler);
-    else
-	return (&xmlGetGlobalState()->docbDefaultSAXHandler);
-}
-#endif
 
 #ifdef LIBXML_HTML_ENABLED
 #undef	htmlDefaultSAXHandler
@@ -1104,21 +1075,5 @@ __xmlOutputBufferCreateFilenameValue(void) {
 	return (&xmlOutputBufferCreateFilenameValue);
     else
 	return (&xmlGetGlobalState()->xmlOutputBufferCreateFilenameValue);
-}
-
-/**
- * xmlCleanupGlobals:
- *
- * Additional cleanup for multi-threading
- */
-void xmlCleanupGlobals(void)
-{
-    xmlResetError(&xmlLastError);
-
-    if (xmlThrDefMutex != NULL) {
-	xmlFreeMutex(xmlThrDefMutex);
-	xmlThrDefMutex = NULL;
-    }
-    __xmlGlobalInitMutexDestroy();
 }
 

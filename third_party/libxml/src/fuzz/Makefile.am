@@ -6,7 +6,7 @@ EXTRA_DIST = html.dict regexp.dict schema.dict xml.dict xpath.dict \
 CLEANFILES = $(EXTRA_PROGRAMS)
 AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_builddir)/include
 DEPENDENCIES = $(top_builddir)/libxml2.la
-LDADD = $(top_builddir)/libxml2.la $(THREAD_LIBS) $(Z_LIBS) $(LZMA_LIBS) $(ICONV_LIBS) $(M_LIBS) $(WIN32_EXTRA_LIBADD)
+LDADD = $(top_builddir)/libxml2.la
 
 XML_MAX_LEN = 80000
 # Single quotes to avoid wildcard expansion by the shell
@@ -15,6 +15,7 @@ XML_SEED_CORPUS_SRC = \
     '$(top_srcdir)/test/errors/*.xml' \
     '$(top_srcdir)/test/errors10/*.xml' \
     '$(top_srcdir)/test/namespaces/*' \
+    '$(top_srcdir)/test/SVG/*.xml' \
     '$(top_srcdir)/test/valid/*.xml' \
     '$(top_srcdir)/test/VC/*' \
     '$(top_srcdir)/test/VCM/*' \
@@ -23,14 +24,13 @@ XML_SEED_CORPUS_SRC = \
 
 testFuzzer_SOURCES = testFuzzer.c fuzz.c
 
-.PHONY: tests corpus clean-corpus
+.PHONY: corpus clean-corpus
 
 corpus: seed/html.stamp seed/regexp.stamp seed/schema.stamp seed/uri.stamp \
     seed/xml.stamp seed/xpath.stamp
 
-tests: testFuzzer$(EXEEXT) corpus
-	@echo "## Running fuzzer tests"
-	@./testFuzzer$(EXEEXT)
+check-local: corpus
+	./testFuzzer$(EXEEXT)
 
 clean-corpus:
 	rm -rf seed

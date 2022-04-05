@@ -147,9 +147,6 @@
 /* Whether __va_copy() is available */
 /* #undef HAVE___VA_COPY */
 
-/* Define as const if the declaration of iconv() needs const. */
-/* #undef ICONV_CONST */
-
 /* Define to the sub-directory where libtool stores uninstalled libraries. */
 #define LT_OBJDIR ".libs/"
 

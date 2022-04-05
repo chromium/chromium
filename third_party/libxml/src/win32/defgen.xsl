@@ -34,9 +34,6 @@
 			<xsl:if test="@file = 'debugXML'">
 				<xsl:text>#ifdef LIBXML_DEBUG_ENABLED&nl;</xsl:text>
 			</xsl:if>
-			<xsl:if test="@file = 'DOCBparser'">
-				<xsl:text>#ifdef LIBXML_DOCB_ENABLED&nl;</xsl:text>
-			</xsl:if>
 			<xsl:if test="(@file = 'HTMLparser') 
 					or (@file = 'HTMLtree')">
 				<xsl:text>#ifdef LIBXML_HTML_ENABLED&nl;</xsl:text>
@@ -86,10 +83,6 @@
 					or (@name = 'xmlIOHTTPClose')">
 				<xsl:text>#ifdef LIBXML_HTML_ENABLED&nl;</xsl:text>
 			</xsl:if>
-			<xsl:if test="(@name = 'docbDefaultSAXHandlerInit') 
-					or (@name = 'initdocbDefaultSAXHandler')">
-				<xsl:text>#ifdef LIBXML_DOCB_ENABLED&nl;</xsl:text>
-			</xsl:if>
 			<xsl:if test="@name = 'xmlValidBuildContentModel'">
 				<xsl:text>#ifdef LIBXML_REGEXP_ENABLED&nl;</xsl:text>
 			</xsl:if>
@@ -129,8 +122,7 @@
 					<xsl:text> DATA&nl;</xsl:text>
 					<xsl:text>#endif&nl;</xsl:text>
 				</xsl:when>
-				<xsl:when test="(@name = 'docbDefaultSAXHandler') 
-						or (@name = 'htmlDefaultSAXHandler') 
+				<xsl:when test="(@name = 'htmlDefaultSAXHandler') 
 						or (@name = 'oldXMLWDcompatibility') 
 						or (@name = 'xmlBufferAllocScheme') 
 						or (@name = 'xmlDefaultBufferSize') 
@@ -153,33 +145,21 @@
 						or (@name = 'xmlRegisterNodeDefaultValue') 
 						or (@name = 'xmlDeregisterNodeDefaultValue')">
 					<xsl:text>#ifdef LIBXML_THREAD_ENABLED&nl;</xsl:text>
-					<xsl:if test="@name = 'docbDefaultSAXHandler'">
-						<xsl:text>#ifdef LIBXML_DOCB_ENABLED&nl;</xsl:text>
-					</xsl:if>
 					<xsl:if test="@name = 'htmlDefaultSAXHandler'">
 						<xsl:text>#ifdef LIBXML_HTML_ENABLED&nl;</xsl:text>
 					</xsl:if>
 					<xsl:text>__</xsl:text>
 					<xsl:value-of select="@name"/>
 					<xsl:text>&nl;</xsl:text>
-					<xsl:if test="@name = 'docbDefaultSAXHandler'">
-						<xsl:text>#endif&nl;</xsl:text>
-					</xsl:if>
 					<xsl:if test="@name = 'htmlDefaultSAXHandler'">
 						<xsl:text>#endif&nl;</xsl:text>
 					</xsl:if>
 					<xsl:text>#else&nl;</xsl:text>
-					<xsl:if test="@name = 'docbDefaultSAXHandler'">
-						<xsl:text>#ifdef LIBXML_DOCB_ENABLED&nl;</xsl:text>
-					</xsl:if>
 					<xsl:if test="@name = 'htmlDefaultSAXHandler'">
 						<xsl:text>#ifdef LIBXML_HTML_ENABLED&nl;</xsl:text>
 					</xsl:if>
 					<xsl:value-of select="@name"/>
 					<xsl:text> DATA&nl;</xsl:text>
-					<xsl:if test="@name = 'docbDefaultSAXHandler'">
-						<xsl:text>#endif&nl;</xsl:text>
-					</xsl:if>
 					<xsl:if test="@name = 'htmlDefaultSAXHandler'">
 						<xsl:text>#endif&nl;</xsl:text>
 					</xsl:if>
@@ -201,9 +181,6 @@
 				<xsl:text>#endif&nl;</xsl:text>
 			</xsl:if>
 			<xsl:if test="@file = 'debugXML'">
-				<xsl:text>#endif&nl;</xsl:text>
-			</xsl:if>
-			<xsl:if test="@file = 'DOCBparser'">
 				<xsl:text>#endif&nl;</xsl:text>
 			</xsl:if>
 			<xsl:if test="(@file = 'HTMLparser') 
@@ -253,10 +230,6 @@
 					or (@name = 'xmlIOHTTPOpen') 
 					or (@name = 'xmlIOHTTPRead') 
 					or (@name = 'xmlIOHTTPClose')">
-				<xsl:text>#endif&nl;</xsl:text>
-			</xsl:if>
-			<xsl:if test="(@name = 'docbDefaultSAXHandlerInit') 
-					or (@name = 'initdocbDefaultSAXHandler')">
 				<xsl:text>#endif&nl;</xsl:text>
 			</xsl:if>
 			<xsl:if test="@name = 'xmlValidBuildContentModel'">
