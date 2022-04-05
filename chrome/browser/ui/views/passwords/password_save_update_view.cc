@@ -12,7 +12,6 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -29,6 +28,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/passwords/credentials_item_view.h"
 #include "chrome/browser/ui/views/passwords/password_items_view.h"
+#include "chrome/browser/ui/views/passwords/views_utils.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -244,7 +244,7 @@ std::unique_ptr<views::EditableCombobox> CreatePasswordEditableCombobox(
 }
 
 std::unique_ptr<views::Combobox> CreateDestinationCombobox(
-    std::string primary_account_email,
+    std::u16string primary_account_email,
     ui::ImageModel primary_account_avatar,
     bool is_using_account_store) {
   ui::ImageModel computer_image = ui::ImageModel::FromVectorIcon(
@@ -253,8 +253,7 @@ std::unique_ptr<views::Combobox> CreateDestinationCombobox(
   ui::SimpleComboboxModel::Item account_destination(
       /*text=*/l10n_util::GetStringUTF16(
           IDS_PASSWORD_MANAGER_DESTINATION_DROPDOWN_SAVE_TO_ACCOUNT),
-      /*dropdown_secondary_text=*/
-      base::UTF8ToUTF16(primary_account_email),
+      /*dropdown_secondary_text=*/primary_account_email,
       /*icon=*/primary_account_avatar);
 
   ui::SimpleComboboxModel::Item device_destination(
@@ -442,8 +441,21 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
 
   SetShowIcon(base::FeatureList::IsEnabled(
       password_manager::features::kUnifiedPasswordManagerDesktop));
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kUnifiedPasswordManagerDesktop)) {
+    // TODO(crbug.com/1309480): 1)Handle the signed-out case. 2) Double check
+    // the strings for non-branded builds.
+    SetFootnoteView(CreateGooglePasswordManagerFooterView(
+        controller_.GetPrimaryAccountEmail(),
+        base::BindRepeating(
+            [](PasswordSaveUpdateView* dialog) {
+              dialog->controller_.OnGooglePasswordManagerLinkClicked();
+            },
+            base::Unretained(this))));
 
-  SetFootnoteView(CreateFooterView());
+  } else {
+    SetFootnoteView(CreateFooterView());
+  }
   UpdateBubbleUIElements();
 
   Profile* profile =

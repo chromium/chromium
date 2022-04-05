@@ -203,6 +203,8 @@ GURL GetGooglePasswordManagerURL(ManagePasswordsReferrer referrer) {
         return "profile_chooser";
       case ManagePasswordsReferrer::kSafeStateBubble:
         return "safe_state";
+      case ManagePasswordsReferrer::kSaveUpdateBubble:
+        return "save_update_password_bubble";
       case ManagePasswordsReferrer::kPasswordsAccessorySheet:
       case ManagePasswordsReferrer::kTouchToFill:
       case ManagePasswordsReferrer::kPasswordBreachDialog:

@@ -59008,6 +59008,7 @@ from previous Chrome versions.
   <int value="8" label="Safe state bubble"/>
   <int value="9" label="Password Breach Dialog"/>
   <int value="10" label="Safety Check"/>
+  <int value="11" label="Save/Update Password Bubble"/>
 </enum>
 
 <enum name="ManifestFetchResultType">

@@ -49,7 +49,10 @@ enum class ManagePasswordsReferrer {
   // On Android, the Safety Check UI in settings opens the passwords page if no
   // check was performed.
   kSafetyCheck = 10,
-  kMaxValue = kSafetyCheck,
+  // On Desktop, the Google Password Manager link was clicked in the footer of
+  // Save/Update bubble.
+  kSaveUpdateBubble = 11,
+  kMaxValue = kSaveUpdateBubble,
 };
 
 }  // namespace password_manager

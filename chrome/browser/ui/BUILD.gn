@@ -4556,6 +4556,8 @@ static_library("ui") {
       "views/passwords/password_save_update_view.h",
       "views/passwords/post_save_compromised_bubble_view.cc",
       "views/passwords/post_save_compromised_bubble_view.h",
+      "views/passwords/views_utils.cc",
+      "views/passwords/views_utils.h",
       "views/payments/contact_info_editor_view_controller.cc",
       "views/payments/contact_info_editor_view_controller.h",
       "views/payments/credit_card_editor_view_controller.cc",
