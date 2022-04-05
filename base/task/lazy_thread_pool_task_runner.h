@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/atomicops.h"
+#include "base/base_export.h"
 #include "base/callback.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/sequenced_task_runner.h"

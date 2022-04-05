@@ -36,7 +36,6 @@
 // - libstdc++: captures bits/c++config.h for __GLIBCXX__
 #include <cstddef>
 
-#include "base/base_export.h"
 #include "build/build_config.h"
 
 namespace base {

@@ -13,6 +13,7 @@
 #include <string>
 
 #include "base/atomicops.h"
+#include "base/base_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 

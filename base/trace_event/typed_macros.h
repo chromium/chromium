@@ -5,7 +5,6 @@
 #ifndef BASE_TRACE_EVENT_TYPED_MACROS_H_
 #define BASE_TRACE_EVENT_TYPED_MACROS_H_
 
-#include "base/base_export.h"
 #include "base/trace_event/trace_event.h"
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"

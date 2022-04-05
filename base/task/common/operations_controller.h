@@ -8,6 +8,7 @@
 #include <atomic>
 #include <cstdint>
 
+#include "base/base_export.h"
 #include "base/synchronization/waitable_event.h"
 
 namespace base {

@@ -5,6 +5,7 @@
 #ifndef BASE_TASK_UPDATEABLE_SEQUENCED_TASK_RUNNER_H_
 #define BASE_TASK_UPDATEABLE_SEQUENCED_TASK_RUNNER_H_
 
+#include "base/base_export.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 

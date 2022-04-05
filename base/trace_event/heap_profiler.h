@@ -5,6 +5,7 @@
 #ifndef BASE_TRACE_EVENT_HEAP_PROFILER_H_
 #define BASE_TRACE_EVENT_HEAP_PROFILER_H_
 
+#include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/trace_event/heap_profiler_allocation_context_tracker.h"
 

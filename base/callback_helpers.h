@@ -16,6 +16,7 @@
 #include <utility>
 
 #include "base/atomicops.h"
+#include "base/base_export.h"
 #include "base/bind.h"
 #include "base/callback.h"
 

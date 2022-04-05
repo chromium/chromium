@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/base_export.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "build/chromeos_buildflags.h"

@@ -8,6 +8,7 @@
 #ifndef BASE_PROCESS_KILL_H_
 #define BASE_PROCESS_KILL_H_
 
+#include "base/base_export.h"
 #include "base/files/file_path.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"

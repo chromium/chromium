@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/base_export.h"
 #include "base/check_op.h"
 #include "base/debug/activity_tracker.h"
 #include "base/posix/safe_strerror.h"

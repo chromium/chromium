@@ -10,6 +10,7 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
+#include "base/base_export.h"
 #include "base/no_destructor.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"

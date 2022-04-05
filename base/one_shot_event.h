@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/base_export.h"
 #include "base/callback_forward.h"
 #include "base/check.h"
 #include "base/memory/ref_counted.h"

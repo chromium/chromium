@@ -15,6 +15,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/base_export.h"
 #include "base/containers/stack.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"

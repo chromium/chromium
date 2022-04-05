@@ -4,6 +4,7 @@
 
 #include "base/allocator/partition_alloc_features.h"
 
+#include "base/base_export.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
 

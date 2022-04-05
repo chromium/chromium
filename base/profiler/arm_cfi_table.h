@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/base_export.h"
 #include "base/containers/buffer_iterator.h"
 #include "base/containers/span.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

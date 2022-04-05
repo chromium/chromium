@@ -5,6 +5,7 @@
 #ifndef BASE_CPU_AFFINITY_POSIX_H_
 #define BASE_CPU_AFFINITY_POSIX_H_
 
+#include "base/base_export.h"
 #include "base/process/process_handle.h"
 #include "base/threading/platform_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

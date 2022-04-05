@@ -5,6 +5,7 @@
 #ifndef BASE_TASK_SIMPLE_TASK_EXECUTOR_H_
 #define BASE_TASK_SIMPLE_TASK_EXECUTOR_H_
 
+#include "base/base_export.h"
 #include "base/task/task_executor.h"
 #include "build/build_config.h"
 

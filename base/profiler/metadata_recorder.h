@@ -9,6 +9,7 @@
 #include <atomic>
 #include <utility>
 
+#include "base/base_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"

@@ -4,6 +4,7 @@
 
 #include "base/task/task_features.h"
 
+#include "base/base_export.h"
 #include "base/feature_list.h"
 
 namespace base {

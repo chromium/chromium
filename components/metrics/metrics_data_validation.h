@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_METRICS_METRICS_DATA_VALIDATION_H_
 #define COMPONENTS_METRICS_METRICS_DATA_VALIDATION_H_
 
-#include "base/base_export.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"

@@ -6,6 +6,7 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_TLS_H_
 
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
 

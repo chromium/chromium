@@ -15,6 +15,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
+#include "base/base_export.h"
 #include "build/build_config.h"
 
 #if !defined(PA_HAS_64_BITS_POINTERS)

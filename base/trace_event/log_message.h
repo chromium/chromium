@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/base_export.h"
 #include "base/strings/string_piece.h"
 #include "base/trace_event/trace_event_impl.h"
 

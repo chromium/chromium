@@ -47,7 +47,6 @@
 
 #include <utility>
 
-#include "base/base_export.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_internal.h"

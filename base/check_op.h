@@ -9,6 +9,7 @@
 #include <string>
 #include <type_traits>
 
+#include "base/base_export.h"
 #include "base/check.h"
 #include "base/template_util.h"
 

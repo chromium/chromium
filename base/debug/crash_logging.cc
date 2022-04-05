@@ -35,7 +35,7 @@ void ClearCrashKeyString(CrashKeyString* crash_key) {
   g_crash_key_impl->Clear(crash_key);
 }
 
-BASE_EXPORT void OutputCrashKeysToStream(std::ostream& out) {
+void OutputCrashKeysToStream(std::ostream& out) {
   if (!g_crash_key_impl)
     return;
 

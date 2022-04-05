@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <vector>
 
+#include "base/base_export.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 

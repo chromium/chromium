@@ -5,6 +5,7 @@
 #ifndef BASE_PROFILER_FRAME_H_
 #define BASE_PROFILER_FRAME_H_
 
+#include "base/base_export.h"
 #include "base/profiler/module_cache.h"
 
 namespace base {

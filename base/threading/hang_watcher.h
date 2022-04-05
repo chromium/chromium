@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/atomicops.h"
+#include "base/base_export.h"
 #include "base/bits.h"
 #include "base/callback.h"
 #include "base/callback_forward.h"

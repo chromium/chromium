@@ -65,7 +65,7 @@
 namespace base {
 namespace internal {
 
-[[noreturn]] BASE_EXPORT NOINLINE NOT_TAIL_CALLED void DoubleFreeAttempt() {
+[[noreturn]] NOINLINE NOT_TAIL_CALLED void DoubleFreeAttempt() {
   NO_CODE_FOLDING();
   IMMEDIATE_CRASH();
 }

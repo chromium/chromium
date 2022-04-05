@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/notreached.h"
+#include "base/base_export.h"
 
 // This is a widely included header and its size has significant impact on
 // build time. Try not to raise this limit unless absolutely necessary. See

@@ -5,6 +5,7 @@
 #ifndef BASE_TASK_SEQUENCE_MANAGER_WAKE_UP_QUEUE_H_
 #define BASE_TASK_SEQUENCE_MANAGER_WAKE_UP_QUEUE_H_
 
+#include "base/base_export.h"
 #include "base/check.h"
 #include "base/containers/intrusive_heap.h"
 #include "base/memory/raw_ptr.h"

@@ -16,6 +16,7 @@
 #include <iomanip>
 #include <memory>
 
+#include "base/base_export.h"
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"

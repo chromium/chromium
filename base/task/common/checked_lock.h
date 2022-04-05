@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/base_export.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/task/common/checked_lock_impl.h"

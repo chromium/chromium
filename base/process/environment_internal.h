@@ -10,6 +10,7 @@
 
 #include <memory>
 
+#include "base/base_export.h"
 #include "base/environment.h"
 #include "build/build_config.h"
 

@@ -5,6 +5,7 @@
 #ifndef BASE_METRICS_HISTOGRAM_FLATTENER_H_
 #define BASE_METRICS_HISTOGRAM_FLATTENER_H_
 
+#include "base/base_export.h"
 #include "base/metrics/histogram.h"
 
 namespace base {

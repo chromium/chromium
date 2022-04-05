@@ -5,6 +5,7 @@
 #ifndef BASE_MEMORY_WRITABLE_SHARED_MEMORY_REGION_H_
 #define BASE_MEMORY_WRITABLE_SHARED_MEMORY_REGION_H_
 
+#include "base/base_export.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"

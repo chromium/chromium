@@ -5,6 +5,7 @@
 #ifndef BASE_NOTREACHED_H_
 #define BASE_NOTREACHED_H_
 
+#include "base/base_export.h"
 #include "base/check.h"
 #include "base/logging_buildflags.h"
 

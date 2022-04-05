@@ -5,6 +5,7 @@
 #ifndef BASE_PROFILER_SAMPLE_METADATA_H_
 #define BASE_PROFILER_SAMPLE_METADATA_H_
 
+#include "base/base_export.h"
 #include "base/profiler/metadata_recorder.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/platform_thread.h"

@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
+#include "base/base_export.h"
 #include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/circular_deque.h"

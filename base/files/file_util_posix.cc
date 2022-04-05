@@ -20,6 +20,7 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "base/base_export.h"
 #include "base/base_switches.h"
 #include "base/bits.h"
 #include "base/command_line.h"

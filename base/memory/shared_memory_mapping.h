@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <type_traits>
 
+#include "base/base_export.h"
 #include "base/containers/span.h"
 #include "base/unguessable_token.h"
 

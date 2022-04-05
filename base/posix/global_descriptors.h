@@ -10,6 +10,7 @@
 #include <vector>
 #include <utility>
 
+#include "base/base_export.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/singleton.h"
