@@ -3353,11 +3353,17 @@ void LayoutBox::AddLayoutResult(const NGLayoutResult* result,
       // spanner, remove subsequent sibling items so that OOFs don't try to
       // access old fragments.
       //
+      // Additionally, if an outer multicol has a spanner break, we may try
+      // to access old fragments of the inner multicol if it hasn't completed
+      // layout yet. Remove subsequent multicol fragments to avoid OOFs from
+      // trying to access old fragments.
+      //
       // TODO(layout-dev): Other solutions to handling interactions between OOFs
       // and spanner breaks may need to be considered.
       if (!box_fragment.BreakToken() ||
           To<NGBlockBreakToken>(box_fragment.BreakToken())
-              ->IsCausedByColumnSpanner()) {
+              ->IsCausedByColumnSpanner() ||
+          box_fragment.IsFragmentationContextRoot()) {
         // Before forgetting any old fragments and their items, we need to clear
         // associations.
         if (box_fragment.IsInlineFormattingContext())
