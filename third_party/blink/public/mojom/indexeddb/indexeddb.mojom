@@ -33,6 +33,10 @@ const int32 kIDBWrapThreshold = 65536;
 // returned per IDBDatabaseGetAllResultSink::Receive call.
 const int32 kIDBGetAllChunkSize = 1000;
 
+// The maximum input array length of BatchGetAll.
+// Use 10000 for now as a reasonable threshold.
+const uint32 kIDBBatchGetAllMaxInputSize = 10000;
+
 enum IDBCursorDirection {
   Next,
   NextNoDuplicate,
@@ -349,6 +353,12 @@ interface IDBDatabaseGetAllResultSink {
   OnError(IDBError error);
 };
 
+// The result of BatchGetAll is a two dimensional array.
+union IDBDatabaseBatchGetAllResult {
+  IDBError error_result;
+  array<array<IDBReturnValue>> values;
+};
+
 struct IDBDatabaseOpenCursorValue {
   pending_associated_remote<IDBCursor> cursor;
   IDBKey key;
@@ -373,6 +383,14 @@ interface IDBDatabase {
                     IDBTransactionDurability durability);
   Close();
   VersionChangeIgnored();
+  // Batch several `GetAll`s together
+  // `max_count` is the maximum count of returned values of each key_range
+  BatchGetAll(int64 transaction_id,
+              int64 object_store_id,
+              int64 index_id,
+              array<IDBKeyRange> key_ranges,
+              uint32 max_count)
+    => (IDBDatabaseBatchGetAllResult result);
   Get(int64 transaction_id,
       int64 object_store_id,
       int64 index_id,

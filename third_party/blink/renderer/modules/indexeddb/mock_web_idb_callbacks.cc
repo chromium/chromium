@@ -44,4 +44,9 @@ void MockWebIDBCallbacks::SuccessArray(
   DoSuccessArray(values);
 }
 
+void MockWebIDBCallbacks::SuccessArrayArray(
+    Vector<Vector<mojom::blink::IDBReturnValuePtr>> all_values) {
+  DoSuccessArrayArray(all_values);
+}
+
 }  // namespace blink

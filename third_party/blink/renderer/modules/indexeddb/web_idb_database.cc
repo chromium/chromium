@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/modules/indexeddb/indexed_db_dispatcher.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-
 namespace blink {
 
 WebIDBDatabase::WebIDBDatabase(
@@ -95,6 +94,41 @@ void WebIDBDatabase::GetCallback(std::unique_ptr<WebIDBCallbacks> callbacks,
 
   if (result->is_value()) {
     callbacks->SuccessValue(std::move(result->get_value()));
+    callbacks.reset();
+    return;
+  }
+}
+
+void WebIDBDatabase::BatchGetAll(
+    int64_t transaction_id,
+    int64_t object_store_id,
+    int64_t index_id,
+    Vector<mojom::blink::IDBKeyRangePtr> key_range_ptrs,
+    uint32_t max_count,
+    WebIDBCallbacks* callbacks_ptr) {
+  std::unique_ptr<WebIDBCallbacks> callbacks(callbacks_ptr);
+  IndexedDBDispatcher::ResetCursorPrefetchCaches(transaction_id, nullptr);
+
+  callbacks->SetState(nullptr, transaction_id);
+  database_->BatchGetAll(
+      transaction_id, object_store_id, index_id, std::move(key_range_ptrs),
+      max_count,
+      WTF::Bind(&WebIDBDatabase::BatchGetAllCallback, WTF::Unretained(this),
+                std::move(callbacks)));
+}
+
+void WebIDBDatabase::BatchGetAllCallback(
+    std::unique_ptr<WebIDBCallbacks> callbacks,
+    mojom::blink::IDBDatabaseBatchGetAllResultPtr result) {
+  if (result->is_error_result()) {
+    callbacks->Error(result->get_error_result()->error_code,
+                     std::move(result->get_error_result()->error_message));
+    callbacks.reset();
+    return;
+  }
+
+  if (result->is_values()) {
+    callbacks->SuccessArrayArray(std::move(result->get_values()));
     callbacks.reset();
     return;
   }

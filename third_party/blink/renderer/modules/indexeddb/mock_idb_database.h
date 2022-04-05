@@ -77,6 +77,15 @@ class MockIDBDatabase : public testing::StrictMock<mojom::blink::IDBDatabase> {
                GetAllCallback),
               (override));
   MOCK_METHOD(void,
+              BatchGetAll,
+              (int64_t transaction_id,
+               int64_t object_store_id,
+               int64_t index_id,
+               Vector<mojom::blink::IDBKeyRangePtr> key_ranges,
+               uint32_t max_count,
+               BatchGetAllCallback),
+              (override));
+  MOCK_METHOD(void,
               SetIndexKeys,
               (int64_t transaction_id,
                int64_t object_store_id,

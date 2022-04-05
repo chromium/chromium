@@ -165,6 +165,11 @@ class WebIDBGetDBNamesCallbacksImpl : public WebIDBCallbacks {
     NOTREACHED();
   }
 
+  void SuccessArrayArray(
+      Vector<Vector<mojom::blink::IDBReturnValuePtr>> all_values) override {
+    NOTREACHED();
+  }
+
   void SuccessInteger(int64_t value) override { NOTREACHED(); }
 
   void Success() override { NOTREACHED(); }

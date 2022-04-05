@@ -1282,6 +1282,10 @@
       status: "experimental",
     },
     {
+      name: "IDBBatchGetAll",
+      status:"experimental",
+    },
+    {
       name: "IdleDetection",
       status: "stable",
     },

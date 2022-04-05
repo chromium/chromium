@@ -4,10 +4,14 @@
 
 #include "third_party/blink/renderer/modules/indexeddb/idb_request_queue_item.h"
 
+#include <algorithm>
+#include <cstdint>
+#include <iterator>
 #include <memory>
 #include <utility>
 
 #include "base/callback.h"
+#include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -17,6 +21,8 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value_wrapping.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_cursor.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -210,6 +216,31 @@ IDBRequestQueueItem::IDBRequestQueueItem(
 
 IDBRequestQueueItem::IDBRequestQueueItem(
     IDBRequest* request,
+    Vector<Vector<std::unique_ptr<IDBValue>>> all_values,
+    bool attach_loader,
+    base::OnceClosure on_result_load_complete)
+    : request_(request),
+      on_result_load_complete_(std::move(on_result_load_complete)),
+      response_type_(kValueArrayArray),
+      ready_(!attach_loader) {
+  DCHECK(on_result_load_complete_);
+  DCHECK_EQ(request->queue_item_, nullptr);
+  request_->queue_item_ = this;
+
+  all_values_size_info_.ReserveInitialCapacity(all_values.size());
+  for (Vector<std::unique_ptr<IDBValue>>& values : all_values) {
+    all_values_size_info_.push_back(values.size());
+    values_.AppendRange(std::make_move_iterator(values.begin()),
+                        std::make_move_iterator(values.end()));
+  }
+
+  if (attach_loader) {
+    loader_ = std::make_unique<IDBRequestLoader>(this, values_);
+  }
+}
+
+IDBRequestQueueItem::IDBRequestQueueItem(
+    IDBRequest* request,
     std::unique_ptr<IDBKey> key,
     std::unique_ptr<IDBKey> primary_key,
     std::unique_ptr<IDBValue> value,
@@ -394,6 +425,23 @@ void IDBRequestQueueItem::EnqueueResponse() {
     case kValueArray:
       request_->EnqueueResponse(std::move(values_));
       break;
+
+    case kValueArrayArray: {
+      // rebuild all_values (2d vector)
+      wtf_size_t current_value_idx = 0;
+      Vector<Vector<std::unique_ptr<IDBValue>>> all_values;
+      for (auto s : all_values_size_info_) {
+        Vector<std::unique_ptr<IDBValue>> all_value;
+        all_value.AppendRange(
+            std::make_move_iterator(values_.begin() + current_value_idx),
+            std::make_move_iterator(values_.begin() + current_value_idx + s));
+        all_values.push_back(std::move(all_value));
+        current_value_idx += s;
+      }
+
+      request_->EnqueueResponse(std::move(all_values));
+      break;
+    }
 
     case kVoid:
       DCHECK_EQ(values_.size(), 0U);

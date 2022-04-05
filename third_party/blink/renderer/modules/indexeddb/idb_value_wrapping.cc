@@ -212,6 +212,17 @@ bool IDBValueUnwrapper::IsWrapped(
 }
 
 // static
+bool IDBValueUnwrapper::IsWrapped(
+    const Vector<Vector<std::unique_ptr<IDBValue>>>& all_values) {
+  for (const auto& values : all_values) {
+    if (IsWrapped(values)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// static
 void IDBValueUnwrapper::Unwrap(
     scoped_refptr<SharedBuffer>&& wrapper_blob_content,
     IDBValue* wrapped_value) {

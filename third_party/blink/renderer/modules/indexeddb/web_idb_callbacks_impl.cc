@@ -221,6 +221,29 @@ void WebIDBCallbacksImpl::SuccessArray(
   request->HandleResponse(std::move(idb_values));
 }
 
+void WebIDBCallbacksImpl::SuccessArrayArray(
+    Vector<Vector<mojom::blink::IDBReturnValuePtr>> all_values) {
+  if (!request_)
+    return;
+
+  probe::AsyncTask async_task(request_->GetExecutionContext(),
+                              &async_task_context_, "success");
+  Vector<Vector<std::unique_ptr<IDBValue>>> all_idb_values;
+  for (const auto& values : all_values) {
+    Vector<std::unique_ptr<IDBValue>> idb_values;
+    idb_values.ReserveInitialCapacity(values.size());
+    for (const mojom::blink::IDBReturnValuePtr& value : values) {
+      std::unique_ptr<IDBValue> idb_value = IDBValue::ConvertReturnValue(value);
+      idb_value->SetIsolate(request_->GetIsolate());
+      idb_values.push_back(std::move(idb_value));
+    }
+    all_idb_values.push_back(std::move(idb_values));
+  }
+  IDBRequest* request = request_.Get();
+  Detach();
+  request->HandleResponse(std::move(all_idb_values));
+}
+
 void WebIDBCallbacksImpl::SuccessInteger(int64_t value) {
   if (!request_)
     return;

@@ -274,6 +274,7 @@ class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
                       std::unique_ptr<IDBValue>);
   void HandleResponse(std::unique_ptr<IDBValue>);
   void HandleResponse(Vector<std::unique_ptr<IDBValue>>);
+  void HandleResponse(Vector<Vector<std::unique_ptr<IDBValue>>>);
   void HandleResponse(int64_t);
   void HandleResponse();
   void HandleResponse(
@@ -387,6 +388,7 @@ class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
                        std::unique_ptr<IDBValue>);
   void EnqueueResponse(std::unique_ptr<IDBValue>);
   void EnqueueResponse(Vector<std::unique_ptr<IDBValue>>);
+  void EnqueueResponse(Vector<Vector<std::unique_ptr<IDBValue>>>);
   void EnqueueResponse();
 
   void ClearPutOperationBlobs() { transit_blob_handles_.clear(); }

@@ -402,6 +402,20 @@ void IDBRequest::HandleResponse(Vector<std::unique_ptr<IDBValue>> values) {
                 WrapPersistent(transaction_.Get()))));
 }
 
+void IDBRequest::HandleResponse(
+    Vector<Vector<std::unique_ptr<IDBValue>>> all_values) {
+  DCHECK(transit_blob_handles_.IsEmpty());
+  DCHECK(transaction_);
+
+  bool is_wrapped = IDBValueUnwrapper::IsWrapped(all_values);
+  if (!transaction_->HasQueuedResults() && !is_wrapped)
+    return EnqueueResponse(std::move(all_values));
+  transaction_->EnqueueResult(std::make_unique<IDBRequestQueueItem>(
+      this, std::move(all_values), is_wrapped,
+      WTF::Bind(&IDBTransaction::OnResultReady,
+                WrapPersistent(transaction_.Get()))));
+}
+
 void IDBRequest::HandleResponse(std::unique_ptr<IDBKey> key,
                                 std::unique_ptr<IDBKey> primary_key,
                                 std::unique_ptr<IDBValue> value) {
@@ -512,6 +526,18 @@ size_t SizeOfValues(const Vector<std::unique_ptr<IDBValue>>& values) {
     size += value->DataSize();
   return size;
 }
+
+size_t SizeOfValues(
+    const Vector<Vector<std::unique_ptr<IDBValue>>>& all_values) {
+  size_t size = 0;
+
+  for (const auto& values : all_values) {
+    for (const auto& value : values)
+      size += value->DataSize();
+  }
+
+  return size;
+}
 }  // namespace
 
 void IDBRequest::EnqueueResponse(Vector<std::unique_ptr<IDBValue>> values) {
@@ -523,6 +549,17 @@ void IDBRequest::EnqueueResponse(Vector<std::unique_ptr<IDBValue>> values) {
   }
 
   EnqueueResultInternal(MakeGarbageCollected<IDBAny>(std::move(values)));
+}
+
+void IDBRequest::EnqueueResponse(
+    Vector<Vector<std::unique_ptr<IDBValue>>> all_values) {
+  TRACE_EVENT1("IndexedDB", "IDBRequest::EnqueueResponse([[IDBValue]])", "size",
+               SizeOfValues(all_values));
+  if (!ShouldEnqueueEvent()) {
+    metrics_.RecordAndReset();
+    return;
+  }
+  EnqueueResultInternal(MakeGarbageCollected<IDBAny>(std::move(all_values)));
 }
 
 #if DCHECK_IS_ON()
