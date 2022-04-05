@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/ash/assistant/device_actions_delegate.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/device_actions.h"
+#include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -65,6 +66,9 @@ class DeviceActions : public ash::AndroidIntentHelper,
       scoped_prefs_observations_{this};
   base::ObserverList<chromeos::assistant::AppListEventSubscriber>
       app_list_subscribers_;
+
+  mojo::Remote<chromeos::bluetooth_config::mojom::CrosBluetoothConfig>
+      remote_cros_bluetooth_config_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_ASSISTANT_DEVICE_ACTIONS_H_
