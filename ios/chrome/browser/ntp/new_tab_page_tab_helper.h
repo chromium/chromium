@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/timer/timer.h"
+#include "ios/chrome/browser/discover_feed/feed_constants.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -48,6 +49,19 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   // state.
   bool IgnoreLoadRequests() const;
 
+  // Returns the initially selected feed for the next NTP and then resets it to
+  // default.
+  FeedType GetNextNTPFeedType();
+
+  // Sets the default feed for the next NTP.
+  void SetNextNTPFeedType(FeedType feed_type);
+
+  // Returns whether the next NTP should be initially scrolled to the feed.
+  bool GetNextNTPScrolledToFeed();
+
+  // Sets whether the next NTP should be initially scrolled to the feed.
+  void SetNextNTPScrolledToFeed(bool scrolled_to_feed);
+
   // Sets the NTP's NavigationItem title and virtualURL to the appropriate
   // string and chrome://newtab respectively.
   static void UpdateItem(web::NavigationItem* item);
@@ -80,6 +94,9 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   // timer.
   void DisableIgnoreLoadRequests();
 
+  // Returns the default selected feed for the NTP.
+  FeedType GetDefaultFeedType();
+
   // Used to present and dismiss the NTP.
   __weak id<NewTabPageTabHelperDelegate> delegate_ = nil;
 
@@ -91,6 +108,12 @@ class NewTabPageTabHelper : public web::WebStateObserver,
 
   // |YES| if the NTP's underlying ios/web page is still loading.
   BOOL ignore_load_requests_ = NO;
+
+  // The default feed type of the next NTP.
+  FeedType next_ntp_feed_type_;
+
+  // Whether the next NTP should be initially scrolled to the feed.
+  BOOL next_ntp_scrolled_to_feed_ = NO;
 
   // Ensure the ignore_load_requests_ flag is never set to NO for more than
   // |kMaximumIgnoreLoadRequestsTime| seconds.

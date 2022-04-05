@@ -55,8 +55,8 @@
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_commands.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp/notification_promo_whats_new.h"
@@ -340,8 +340,8 @@
 }
 
 - (void)returnToRecentTabWasAdded {
-  [self.ntpCommandHandler updateDiscoverFeedLayout];
-  [self.ntpCommandHandler setContentOffsetToTop];
+  [self.ntpDelegate updateDiscoverFeedLayout];
+  [self.ntpDelegate setContentOffsetToTop];
 }
 
 - (UIEdgeInsets)safeAreaInsetsForDiscoverFeed {
@@ -364,7 +364,7 @@
 #pragma mark - ContentSuggestionsHeaderCommands
 
 - (void)updateForHeaderSizeChange {
-  [self.ntpCommandHandler updateDiscoverFeedLayout];
+  [self.ntpDelegate updateDiscoverFeedLayout];
 }
 
 #pragma mark - Public methods

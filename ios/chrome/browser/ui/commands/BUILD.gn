@@ -23,6 +23,7 @@ source_set("commands") {
     "help_commands.h",
     "infobar_commands.h",
     "load_query_commands.h",
+    "new_tab_page_commands.h",
     "omnibox_commands.h",
     "omnibox_suggestion_commands.h",
     "open_new_tab_command.h",
@@ -65,6 +66,7 @@ source_set("commands") {
     "//components/browsing_data/core",
     "//components/password_manager/core/browser",
     "//ios/chrome/browser/browsing_data:browsing_data_remove_mask",
+    "//ios/chrome/browser/discover_feed:constants",
   ]
 }
 

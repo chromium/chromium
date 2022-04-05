@@ -76,6 +76,9 @@
 // remains YES if viewDidAppear has been called.
 @property(nonatomic, assign) BOOL viewDidAppear;
 
+// Whether the NTP should initially be scrolled into the feed.
+@property(nonatomic, assign) BOOL shouldScrollIntoFeed;
+
 // Initializes the new tab page view controller.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

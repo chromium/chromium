@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_COMMANDS_H_
-#define IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_COMMANDS_H_
+#ifndef IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_DELEGATE_H_
+#define IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_DELEGATE_H_
 
-// Commands to communicate back to the NewTabPageCoordinator
-@protocol NewTabPageCommands
-
-// Updates the NTP to take into account a new feed, or a change in feed
-// visibility.
-- (void)updateNTPForFeed;
+// Delegate to communicate back to the NewTabPageCoordinator
+@protocol NewTabPageDelegate
 
 // Called when the Discover Feed layout needs updating. e.g. An inner view like
 // ContentSuggestions height might have changed and the Feed needs to update its
@@ -23,4 +19,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_COMMANDS_H_
+#endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_DELEGATE_H_

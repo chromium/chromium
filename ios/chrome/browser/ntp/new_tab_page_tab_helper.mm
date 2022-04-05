@@ -51,6 +51,7 @@ NewTabPageTabHelper::NewTabPageTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   web_state->AddObserver(this);
   active_ = IsNTPURL(web_state_->GetVisibleURL());
+  next_ntp_feed_type_ = GetDefaultFeedType();
 }
 
 void NewTabPageTabHelper::SetDelegate(
@@ -82,6 +83,30 @@ bool NewTabPageTabHelper::IgnoreLoadRequests() const {
   return ignore_load_requests_;
 }
 
+FeedType NewTabPageTabHelper::GetNextNTPFeedType() {
+  FeedType feed_type = next_ntp_feed_type_;
+  // Resets feed type to default in case next_ntp_feed_type_ was overriden by
+  // SetNextNTPFeedType.
+  next_ntp_feed_type_ = GetDefaultFeedType();
+  return feed_type;
+}
+
+void NewTabPageTabHelper::SetNextNTPFeedType(FeedType feed_type) {
+  next_ntp_feed_type_ = feed_type;
+}
+
+bool NewTabPageTabHelper::GetNextNTPScrolledToFeed() {
+  bool scrolled_ = next_ntp_scrolled_to_feed_;
+  // Resets next_ntp_scrolled_to_feed_ in case it was overriden by
+  // SetNextNTPScrolledToFeed.
+  next_ntp_scrolled_to_feed_ = NO;
+  return scrolled_;
+}
+
+void NewTabPageTabHelper::SetNextNTPScrolledToFeed(bool scrolled_to_feed) {
+  next_ntp_scrolled_to_feed_ = scrolled_to_feed;
+}
+
 // static
 void NewTabPageTabHelper::UpdateItem(web::NavigationItem* item) {
   if (item && item->GetURL() == GURL(kChromeUIAboutNewTabURL)) {
@@ -111,6 +136,12 @@ void NewTabPageTabHelper::DisableIgnoreLoadRequests() {
     ignore_load_requests_timer_.reset();
   }
   ignore_load_requests_ = NO;
+}
+
+FeedType NewTabPageTabHelper::GetDefaultFeedType() {
+  // TODO(crbug.com/1277974): Make sure that we always want the Discover feed as
+  // default.
+  return FeedTypeDiscover;
 }
 
 #pragma mark - WebStateObserver

@@ -194,6 +194,12 @@
 
   [self.bubblePresenter presentDiscoverFeedHeaderTipBubble];
 
+  // Scrolls NTP into feed initially if |shouldScrollIntoFeed|.
+  if (self.shouldScrollIntoFeed) {
+    [self setContentOffset:[self offsetWhenScrolledIntoFeed]];
+    self.shouldScrollIntoFeed = NO;
+  }
+
   self.viewDidAppear = YES;
 }
 

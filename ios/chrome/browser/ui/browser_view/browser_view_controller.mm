@@ -28,6 +28,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
+#include "ios/chrome/browser/discover_feed/feed_constants.h"
 #include "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #include "ios/chrome/browser/feature_engagement/tracker_util.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
@@ -549,6 +550,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     [self.commandDispatcher
         startDispatchingToTarget:self
                      forProtocol:@protocol(BrowserCommands)];
+    [self.commandDispatcher
+        startDispatchingToTarget:self
+                     forProtocol:@protocol(NewTabPageCommands)];
 
     _toolbarCoordinatorAdaptor =
         [[ToolbarCoordinatorAdaptor alloc] initWithDispatcher:self.dispatcher];
@@ -3929,6 +3933,25 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self presentViewController:lensViewController animated:YES completion:nil];
 }
 
+#pragma mark - NewTabPageCommands
+
+- (void)openNTPScrolledIntoFeedType:(FeedType)feedType {
+  // Configure next NTP to be scrolled into |feedType|.
+  NewTabPageTabHelper* NTPHelper =
+      NewTabPageTabHelper::FromWebState(self.currentWebState);
+  if (NTPHelper) {
+    NTPHelper->SetNextNTPFeedType(feedType);
+    NTPHelper->SetNextNTPScrolledToFeed(YES);
+  }
+
+  // Navigate to NTP in same tab.
+  UrlLoadingBrowserAgent* urlLoadingBrowserAgent =
+      UrlLoadingBrowserAgent::FromBrowser(self.browser);
+  UrlLoadParams urlLoadParams =
+      UrlLoadParams::InCurrentTab(GURL(kChromeUINewTabURL));
+  urlLoadingBrowserAgent->Load(urlLoadParams);
+}
+
 #pragma mark - ChromeLensControllerDelegate
 // TODO(crbug.com/1272549): Move this delegate implmentation into
 // BrowserCoordinator, or into the dedicated lens coordinator.
@@ -4542,6 +4565,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     if (NTPHelper->IsActive()) {
       [self.ntpCoordinator ntpDidChangeVisibility:YES];
       self.ntpCoordinator.webState = webState;
+      self.ntpCoordinator.selectedFeed = NTPHelper->GetNextNTPFeedType();
+      self.ntpCoordinator.shouldScrollIntoFeed =
+          NTPHelper->GetNextNTPScrolledToFeed();
     } else {
       [self.ntpCoordinator ntpDidChangeVisibility:NO];
       self.ntpCoordinator.webState = nullptr;
@@ -4562,6 +4588,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       newTabPageCoordinator.toolbarDelegate = self.toolbarInterface;
       newTabPageCoordinator.webState = webState;
       newTabPageCoordinator.bubblePresenter = self.bubblePresenter;
+      newTabPageCoordinator.selectedFeed = NTPHelper->GetNextNTPFeedType();
+      newTabPageCoordinator.shouldScrollIntoFeed =
+          NTPHelper->GetNextNTPScrolledToFeed();
       _ntpCoordinatorsForWebStates[webState] = newTabPageCoordinator;
     } else {
       NewTabPageCoordinator* newTabPageCoordinator =

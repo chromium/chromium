@@ -19,6 +19,7 @@ source_set("ntp") {
     "//components/url_formatter",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/discover_feed:constants",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/components/webui:url_constants",
     "//ios/web/common:features",
