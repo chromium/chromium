@@ -30,6 +30,7 @@ enum class FileErrorCode;
 class PresentationController;
 class PresentationReceiver;
 class PresentationRequest;
+class ScriptPromiseResolver;
 class WebString;
 
 class MODULES_EXPORT PresentationConnection
