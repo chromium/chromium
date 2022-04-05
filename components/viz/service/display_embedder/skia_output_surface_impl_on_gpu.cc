@@ -1379,6 +1379,9 @@ void SkiaOutputSurfaceImplOnGpu::ScheduleOverlays(
     SkiaOutputSurface::OverlayList overlays,
     std::vector<ImageContextImpl*> image_contexts,
     base::OnceClosure on_finished) {
+  TRACE_EVENT1("viz", "SkiaOutputSurfaceImplOnGpu::ScheduleOverlays",
+               "num_overlays", overlays.size());
+
 #if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
   if (context_is_lost_)
     return;
