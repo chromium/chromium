@@ -935,7 +935,7 @@
 <translation id="18802377548000045">Өтмөктөр ири кеңдикке чейин кичирейет</translation>
 <translation id="1880905663253319515">"<ph name="CERTIFICATE_NAME" />" тастыктамасы жок кылынсынбы?</translation>
 <translation id="188114911237521550">Караңгы теманы өчүрүү</translation>
-<translation id="1881445033931614352">Баскычтоптун калыбы</translation>
+<translation id="1881445033931614352">Баскычтоп</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Нерсе}other{# нерсе}}</translation>
 <translation id="1884340228047885921">Учурдагы көрүнүү жөндөөлөрү "айрым байланыштар" деп коюлган</translation>
 <translation id="1884705339276589024">Linux дискинин өлчөмүн өзгөртүү</translation>
@@ -4332,7 +4332,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5315738755890845852">Ашыкча ийри кашаа: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Сактоо</translation>
 <translation id="5319359161174645648">Google Chrome'ду сунуштайт</translation>
-<translation id="5319712128756744240">Жаңы түзмөктү жупташтыруу</translation>
+<translation id="5319712128756744240">Жаңы түзмөк кошуу</translation>
 <translation id="5320135788267874712">Түзмөктүн жаңы аталышы</translation>
 <translation id="532247166573571973">Серверге туташуу мүмкүн эмес окшойт. Бир аздан кийин кайталап көрүңүз.</translation>
 <translation id="5324300749339591280">Колдонмолор тизмеси</translation>

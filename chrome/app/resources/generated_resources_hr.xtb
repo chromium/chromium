@@ -5813,7 +5813,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6833479554815567477">Kartica je uklonjena iz grupe <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Prijeđite na pametan i siguran preglednik</translation>
 <translation id="6833996806551876956">Proba za Privacy Sandbox</translation>
-<translation id="6834652994408928492">Tamni način rada uključit će se automatski kad sunce zađe</translation>
+<translation id="6834652994408928492">Tamni način rada uključit će se automatski kad zađe sunce</translation>
 <translation id="6835762382653651563">Povežite se s internetom da biste ažurirali svoj uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Pogreška brisanja certifikata</translation>
 <translation id="6839882458129755986">Google nije odgovoran ni za kakav gubitak podataka i <ph name="DEVICE_OS" /> možda neće funkcionirati na necertificiranim modelima. Saznajte više na stranici g.co/CR2/InstallGuide.</translation>
@@ -6110,7 +6110,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="7136694880210472378">Postavi kao zadano</translation>
 <translation id="7136993520339022828">Došlo je do pogreške. Pokušajte ponovo kasnije odabirom drugih slika.</translation>
 <translation id="7137472406312798422">Web-lokacije mogu tražiti dopuštenje za upotrebu podataka o vašim zaslonima radi otvaranja i postavljanja prozora</translation>
-<translation id="7138515695467025690">Isključena/uključuje se automatski kad sunce zađe</translation>
+<translation id="7138515695467025690">Isključena/uključuje se automatski kad zađe sunce</translation>
 <translation id="7138678301420049075">Ostalo</translation>
 <translation id="7139627972753429585">Aplikacija <ph name="APP_NAME" /> upotrebljava vaš mikrofon</translation>
 <translation id="7141105143012495934">Prijava nije uspjela jer nisu dohvaćeni podaci o vašem računu. Obratite se administratoru ili pokušajte ponovo.</translation>

@@ -5,7 +5,7 @@
 <translation id="1047956942837015229"><ph name="COUNT" /> Elemente werden gelöscht...</translation>
 <translation id="1049926623896334335">Word-Dokument</translation>
 <translation id="1056775291175587022">Keine Netzw.</translation>
-<translation id="1060368002126861100">Wenn Sie Dateien mit der App "<ph name="APP_NAME" />" öffnen möchten, verschieben Sie sie zuerst in den Ordner mit Windows-Dateien.</translation>
+<translation id="1060368002126861100">Wenn du Dateien mit der App „<ph name="APP_NAME" />“ öffnen möchtest, verschiebe sie zuerst in den Ordner mit Windows-Dateien.</translation>
 <translation id="1062407476771304334">Ersetzen</translation>
 <translation id="1119069657431255176">Bzip2-komprimiertes Tar-Archiv</translation>
 <translation id="1119447706177454957">Interner Fehler</translation>
@@ -46,7 +46,7 @@
 <translation id="1358735829858566124">Die Datei oder das Verzeichnis kann nicht verwendet werden.</translation>
 <translation id="1363028406613469049">Titel</translation>
 <translation id="1378727793141957596">Willkommen bei Google Drive!</translation>
-<translation id="1379911846207762492">Sie können Dateien offline verfügbar machen, wenn Sie keine Internetverbindung haben.</translation>
+<translation id="1379911846207762492">Du kannst Dateien offline verfügbar machen, wenn du keine Internetverbindung hast.</translation>
 <translation id="1383876407941801731">Durchsuchen</translation>
 <translation id="1395262318152388157">Schieberegler für die Suche</translation>
 <translation id="1399511500114202393">Kein Nutzerzertifikat</translation>
@@ -143,7 +143,7 @@
 <translation id="2208158072373999562">ZIP-Archiv</translation>
 <translation id="22085916256174561">Koreanisch</translation>
 <translation id="2208919847696382164">Mit Linux installieren</translation>
-<translation id="2225536596944493418">Möchten Sie wirklich <ph name="NUMBER_OF_ITEMS" /> Elemente löschen?</translation>
+<translation id="2225536596944493418">Möchtest du wirklich <ph name="NUMBER_OF_ITEMS" /> Elemente löschen?</translation>
 <translation id="2230062665678605299">Ordner "<ph name="FOLDER_NAME" />" kann nicht erstellt werden. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Person mit Kaffee</translation>
 <translation id="2251368349685848079">Aus Papierkorb wiederherstellen</translation>
@@ -234,7 +234,7 @@
 <translation id="3003189754374775221">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Verbinden</translation>
 <translation id="3003633581067744647">Zur Miniaturansicht wechseln</translation>
 <translation id="3016566519832145558">Vorsicht: Dies sind temporäre Dateien, die möglicherweise automatisch gelöscht werden, um Speicherplatz freizugeben.</translation>
-<translation id="3029114385395636667">Wenn Sie Google Docs Offline aktivieren, können Sie Dokumente, Tabellen und Präsentationen offline nutzen.</translation>
+<translation id="3029114385395636667">Wenn du Google Docs Offline aktivierst, kannst du Dokumente, Tabellen und Präsentationen offline nutzen.</translation>
 <translation id="303198083543495566">Längen- und Breitengrad</translation>
 <translation id="3047197340186497470">Chinesisch (Dayi)</translation>
 <translation id="3057861065630527966">Fotos und Videos sichern</translation>
@@ -243,8 +243,8 @@
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS-Host</translation>
 <translation id="3104793765551262433">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Signalstärke <ph name="SIGNAL_STRENGTH" /> %, vom Administrator blockiert, Details</translation>
-<translation id="3113153474486991170">„<ph name="PATH" />“ konnte an diesem Ort nicht geöffnet werden. Kopieren Sie die Datei zum Öffnen in „Meine Dateien“.</translation>
-<translation id="3113592018909187986">Sie haben noch 1 Versuch. Sie können dieses Mobilfunknetz erst verwenden, wenn Sie eine neue PIN festlegen.</translation>
+<translation id="3113153474486991170">„<ph name="PATH" />“ konnte an diesem Ort nicht geöffnet werden. Kopiere die Datei zum Öffnen in „Meine Dateien“.</translation>
+<translation id="3113592018909187986">Du hast noch 1 Versuch. Du kannst dieses Mobilfunknetz erst verwenden, wenn du eine neue PIN festlegst.</translation>
 <translation id="3124404833828281817">Person beim Tagträumen</translation>
 <translation id="3126026824346185272">Strg</translation>
 <translation id="3138624403379688522">Ungültige PIN. Du hast noch <ph name="RETRIES" /> Versuche.</translation>
@@ -296,7 +296,7 @@
 <translation id="3524311639100184459">Vorsicht: Dies sind temporäre Dateien, die möglicherweise automatisch gelöscht werden, um Speicherplatz freizugeben.  <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Ordner</translation>
 <translation id="3549797760399244642">Zu drive.google.com wechseln...</translation>
-<translation id="3553048479571901246">Wenn Sie Dateien mit der App "<ph name="APP_NAME" />" öffnen möchten, kopieren Sie sie zuerst in den Ordner mit Windows-Dateien.</translation>
+<translation id="3553048479571901246">Wenn du Dateien mit der App „<ph name="APP_NAME" />“ öffnen möchtest, kopiere sie zuerst in den Ordner mit Windows-Dateien.</translation>
 <translation id="3556731189587832921">Englisch (USA) mit internationaler PC-Tastatur</translation>
 <translation id="3567221313191587603">Wähle eine Datei aus und aktiviere <ph name="OFFLINE_CHECKBOX_NAME" />, um deine Dateien offline verfügbar zu machen.</translation>
 <translation id="357479282490346887">Litauisch</translation>
@@ -364,7 +364,7 @@
 <translation id="4202378258276439759">Spanisch (Lateinamerika)</translation>
 <translation id="4202977638116331303">Georgisch</translation>
 <translation id="421017592316736757">Du musst online sein, um auf diese Datei zugreifen zu können.</translation>
-<translation id="4212740939091998969">Es existiert bereits ein Ordner mit dem Namen "<ph name="FOLDER_NAME" />". Wählen Sie bitte einen anderen Namen aus.</translation>
+<translation id="4212740939091998969">Es existiert bereits ein Ordner mit dem Namen "<ph name="FOLDER_NAME" />". Wähle bitte einen anderen Namen aus.</translation>
 <translation id="4215448920900139318"><ph name="FILE_COUNT" /> werden gesichert</translation>
 <translation id="4218274196133425560">Ausnahme für <ph name="HOST_NAME" /> entfernen</translation>
 <translation id="4261901459838235729">Google-Präsentation</translation>
@@ -506,7 +506,7 @@
 <translation id="5275973617553375938">Wiederhergestellte Dateien von Google Drive</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
-<translation id="5299998344490869684">Möchten Sie den Papierkorb wirklich leeren?</translation>
+<translation id="5299998344490869684">Möchtest du den Papierkorb wirklich leeren?</translation>
 <translation id="5305688511332277257">Keine installiert</translation>
 <translation id="5317780077021120954">Speichern</translation>
 <translation id="5318819489018851358">Mit Linux teilen</translation>
@@ -540,7 +540,7 @@
 <translation id="5602622065581044566">Bulgarisch mit phonetischer Tastatur</translation>
 <translation id="5605830556594064952">USA – Dvorak</translation>
 <translation id="5625294776298156701">Tamil mit Tamil99-Tastatur</translation>
-<translation id="5633226425545095130">Wenn Sie dieses Element verschieben, wird es für alle Personen freigegeben, die den freigegebenen Ordner „<ph name="DESTINATION_NAME" />“ sehen können.</translation>
+<translation id="5633226425545095130">Wenn du dieses Element verschiebst, wird es für alle Personen freigegeben, die den freigegebenen Ordner „<ph name="DESTINATION_NAME" />“ sehen können.</translation>
 <translation id="5649768706273821470">Anhören</translation>
 <translation id="5669691691057771421">Neue PIN eingeben</translation>
 <translation id="5678784840044122290">Die Linux-Anwendung ist in deinem Terminal verfügbar. Möglicherweise siehst du auch ein Symbol in deinem Launcher.</translation>
@@ -585,7 +585,7 @@
 <translation id="6007237601604674381">Fehler beim Verschieben. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet-Netzwerk</translation>
 <translation id="60357267506638014">Tschechisch – QWERTY</translation>
-<translation id="603895874132768835">Sie können dieses Mobilfunknetz erst verwenden, wenn Sie eine neue PIN festlegen</translation>
+<translation id="603895874132768835">Du kannst dieses Mobilfunknetz erst verwenden, wenn du eine neue PIN festlegst</translation>
 <translation id="604001903249547235">Cloudsicherung</translation>
 <translation id="6040143037577758943">Schließen</translation>
 <translation id="6055907707645252013">Netzwerk: <ph name="NETWORK_TYPE" />, nicht verbunden</translation>
@@ -647,7 +647,7 @@
 <translation id="6594855146910089723">Dieser Ordner ist für Linux und Parallels Desktop freigegeben</translation>
 <translation id="6607272825297743757">Dateiinformationen</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> Ordner für Parallels Desktop freigegeben</translation>
-<translation id="6629518321609546825">Geben Sie mindestens 4 Ziffern ein</translation>
+<translation id="6629518321609546825">Gib mindestens 4 Ziffern ein</translation>
 <translation id="6629841649550503054">Alle Daten wurden in <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> gesichert.</translation>
 <translation id="6643016212128521049">Löschen</translation>
 <translation id="6650726141019353908">Rosa Schmetterling</translation>
@@ -755,7 +755,7 @@
 <translation id="7547780573915868306">Litauisch</translation>
 <translation id="7547811415869834682">Niederländisch</translation>
 <translation id="7551643184018910560">An Ablage anpinnen</translation>
-<translation id="7553492409867692754">Sie geben Linux-Apps die Berechtigung, auf Dateien im Ordner „<ph name="FOLDER_NAME" />“ zuzugreifen</translation>
+<translation id="7553492409867692754">Du gibst Linux-Apps die Berechtigung, auf Dateien im Ordner „<ph name="FOLDER_NAME" />“ zuzugreifen</translation>
 <translation id="7575645593344061397">„<ph name="FILENAME" />“ wird wiederhergestellt…</translation>
 <translation id="7589661784326793847">Einen Moment bitte</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> wird offline bereitgestellt</translation>
@@ -865,7 +865,7 @@
 <translation id="8437209419043462667">USA</translation>
 <translation id="8452135315243592079">Keine SIM-Karte vorhanden</translation>
 <translation id="8456681095658380701">Ungültiger Name</translation>
-<translation id="8459404855768962328">Wenn Sie dieses Element kopieren, wird es für alle Personen freigegeben, die den freigegebenen Ordner „<ph name="DESTINATION_NAME" />“ sehen können.</translation>
+<translation id="8459404855768962328">Wenn du dieses Element kopierst, wird es für alle Personen freigegeben, die den freigegebenen Ordner „<ph name="DESTINATION_NAME" />“ sehen können.</translation>
 <translation id="8461467696380332069">Klicke mit der rechten Maustaste auf eine Datei und wähle „An Ablage anpinnen“ aus, um über die Ablage schnell auf deine Dateien zugreifen zu können.</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8463494891489624050">Vietnamesisch (VIQR)</translation>
@@ -930,7 +930,7 @@
 <translation id="9034924485347205037">Linux-Dateien</translation>
 <translation id="9035012421917565900">Diese Elemente können nicht in "<ph name="DESTINATION_NAME" />" zurückverschoben werden. Diese Aktion lässt sich also nicht rückgängig machen.</translation>
 <translation id="9035689366572880647">Aktuelle PIN eingeben</translation>
-<translation id="9038620279323455325">Die Datei mit dem Namen "<ph name="FILE_NAME" />" existiert bereits. Wählen Sie einen anderen Namen aus.</translation>
+<translation id="9038620279323455325">Die Datei mit dem Namen "<ph name="FILE_NAME" />" existiert bereits. Wähle einen anderen Namen aus.</translation>
 <translation id="9046895021617826162">Verbindungsaufbau fehlgeschlagen</translation>
 <translation id="9065512565307033593">Ohne diese Bestätigung wird der Netzwerkzugriff deaktiviert.</translation>
 <translation id="908378762078012445">Russisch mit phonetischer Tastatur (AATSEEL)</translation>
@@ -958,11 +958,11 @@
 <translation id="939736085109172342">Neuer Ordner</translation>
 <translation id="943972244133411984">Geändert von</translation>
 <translation id="945522503751344254">Feedback geben</translation>
-<translation id="947144732524271678">Sie haben <ph name="ENTRY_COUNT" /> Einträge von <ph name="FROM_ENTRY_NAME" /> bis <ph name="TO_ENTRY_NAME" /> ausgewählt.</translation>
+<translation id="947144732524271678">Du hast <ph name="ENTRY_COUNT" /> Einträge von <ph name="FROM_ENTRY_NAME" /> bis <ph name="TO_ENTRY_NAME" /> ausgewählt.</translation>
 <translation id="961973045258256291">Gzip-komprimiertes Archiv</translation>
 <translation id="965477715979482472">Englisch (Südafrika)</translation>
 <translation id="981121421437150478">Offline</translation>
-<translation id="988685240266037636">Eine Datei mit dem Namen "<ph name="FILE_NAME" />" existiert bereits. Möchten Sie sie ersetzen?</translation>
-<translation id="992401651319295351">Sie haben noch <ph name="RETRIES" /> Versuche. Sie können dieses Mobilfunknetz erst verwenden, wenn Sie eine neue PIN festlegen.</translation>
+<translation id="988685240266037636">Eine Datei mit dem Namen "<ph name="FILE_NAME" />" existiert bereits. Möchtest du sie ersetzen?</translation>
+<translation id="992401651319295351">Du hast noch <ph name="RETRIES" /> Versuche. Du kannst dieses Mobilfunknetz erst verwenden, wenn du eine neue PIN festlegst.</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>
 </translationbundle>

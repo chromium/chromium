@@ -4,7 +4,7 @@
 <translation id="1018219910092211213">DNS kann nicht aufgelöst werden</translation>
 <translation id="1018656279737460067">Abgebrochen</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> Threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
-<translation id="1047773237499189053">Neue Funktion verfügbar. Verwenden Sie den Aufwärtspfeil, um mehr zu erfahren.</translation>
+<translation id="1047773237499189053">Neue Funktion verfügbar. Verwende den Aufwärtspfeil, um mehr zu erfahren.</translation>
 <translation id="1059913517121127803">Scan konnte nicht gestartet werden</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall erkannt</translation>
@@ -24,7 +24,7 @@
 <translation id="1204296502688602597">DNS-Latenz</translation>
 <translation id="123124571410524056">Verdacht auf Portal</translation>
 <translation id="1238612778414822719">HTTPS-Latenz</translation>
-<translation id="1264369926465113395">Werfen Sie einen Blick auf das neue digitale Magazin von Chromebook für Kreative</translation>
+<translation id="1264369926465113395">Wirf einen Blick auf das neue digitale Magazin von Chromebook für Kreative</translation>
 <translation id="1270369111467284986">Verdacht auf Captive Portal</translation>
 <translation id="1290331692326790741">Schwaches Signal</translation>
 <translation id="1301069673413256657">GSM</translation>
@@ -68,7 +68,7 @@
 <translation id="1668469839109562275">Integriertes VPN</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-Resolver vorhanden</translation>
-<translation id="1715359911173058521">Bei der Kommunikation mit dem Scanner ist ein Problem aufgetreten. Prüfen Sie die Netzwerk- oder USB-Verbindung und versuchen Sie es noch einmal.</translation>
+<translation id="1715359911173058521">Bei der Kommunikation mit dem Scanner ist ein Problem aufgetreten. Prüfe die Netzwerk- oder USB-Verbindung und versuche es noch einmal.</translation>
 <translation id="1717874160321062422">Verwaltet von <ph name="FIRST_MANAGER" /> und <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Nameserver</translation>
 <translation id="1731082422893354635">Bluetooth-Touchpad</translation>
@@ -102,7 +102,7 @@
 <translation id="2157959690810728433">IN WARTESCHLANGE</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Wiederholen</translation>
 <translation id="2161394479394250669">Druckauftrag abbrechen</translation>
-<translation id="2180197493692062006">Es gab ein Problem. Versuchen Sie, die App wieder zu öffnen.</translation>
+<translation id="2180197493692062006">Es gab ein Problem. Versuche, die App wieder zu öffnen.</translation>
 <translation id="2209788852729124853">Traffic-Zähler zurücksetzen</translation>
 <translation id="2212733584906323460">Namensauflösung</translation>
 <translation id="2217935453350629363">Momentane Geschwindigkeit</translation>
@@ -110,7 +110,7 @@
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Aktivierungsstatus</translation>
-<translation id="2287186687001756809">Kein Bild verfügbar. Sie können Fotos unter <ph name="LINK" /> hinzufügen.</translation>
+<translation id="2287186687001756809">Kein Bild verfügbar. Du kannst Fotos unter <ph name="LINK" /> hinzufügen.</translation>
 <translation id="2307344026739914387">Aktuelles Schlüsselpaar verwenden</translation>
 <translation id="2323506179655536734">ÜBERSPRUNGEN</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
@@ -132,7 +132,7 @@
 <translation id="253029298928638905">Wird neu gestartet…</translation>
 <translation id="2536159006530886390">Keine Verbindung zum Internet.</translation>
 <translation id="2570743873672969996">Test für <ph name="TEST_NAME" /> wird ausgeführt…</translation>
-<translation id="2584559707064218956">Gehen Sie für die Einrichtung zu den Einstellungen</translation>
+<translation id="2584559707064218956">Gehe für die Einrichtung zu den Einstellungen</translation>
 <translation id="2585245331261708204">Neues bei Chrome OS</translation>
 <translation id="2619761439309613843">Tägliche Aktualisierung</translation>
 <translation id="2620436844016719705">System</translation>
@@ -145,7 +145,7 @@
 <translation id="2805756323405976993">Apps</translation>
 <translation id="28232023175184696">Keine Verbindung zum Internet. Zum Wiederholen klicken.</translation>
 <translation id="2859243502336719778">Wichtiges Update</translation>
-<translation id="2860473693272905224">Legen Sie eine andere Seite in den Scanner</translation>
+<translation id="2860473693272905224">Lege eine andere Seite in den Scanner</translation>
 <translation id="2872961005593481000">Herunterfahren</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> in <ph name="NUM_SECONDS" /> Sekunden entladen.</translation>
 <translation id="291142119251986300">Nicht qualifizierte Komponenten</translation>
@@ -165,7 +165,7 @@
 <translation id="315116470104423982">Mobile Daten</translation>
 <translation id="3156846309055100599">Seite <ph name="PAGE_NUMBER" /> wird gescannt…</translation>
 <translation id="315738237743207937">Captive Portal erkannt</translation>
-<translation id="3170673040743561620">Legen Sie das Dokument in den Scanner</translation>
+<translation id="3170673040743561620">Lege das Dokument in den Scanner</translation>
 <translation id="3188257591659621405">Meine Dateien</translation>
 <translation id="3192947282887913208">Audiodateien</translation>
 <translation id="3199982728237701504">Dokumenteneinzug (beidseitig)</translation>
@@ -191,9 +191,9 @@
 <translation id="3527036260304016759">Fehlgeschlagen – Unbekannter Fehler</translation>
 <translation id="3532980081107202182">Noch etwa <ph name="MIN_REMAINING" /> Minuten</translation>
 <translation id="3565064564551103223">Zugelassene IPs</translation>
-<translation id="3577473026931028326">Ein Fehler ist aufgetreten. Versuchen Sie es noch einmal.</translation>
+<translation id="3577473026931028326">Ein Fehler ist aufgetreten. Versuche es noch einmal.</translation>
 <translation id="357889014807611375">Kostenpflichtiges WLAN</translation>
-<translation id="3583278742022654445">Schwaches Signal. Gehen Sie näher an die Quelle des WLAN-Signals heran.</translation>
+<translation id="3583278742022654445">Schwaches Signal. Gehe näher an die Quelle des WLAN-Signals heran.</translation>
 <translation id="3595596368722241419">Akku voll</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="360565022852130722">Das WLAN ist mit dem schwachen Protokoll WEP 802.1x gesichert</translation>
@@ -218,7 +218,7 @@
 <translation id="3941014780699102620">Host konnte nicht aufgelöst werden</translation>
 <translation id="3942420633017001071">Diagnose</translation>
 <translation id="3954678691475912818">Der Gerätetyp ist unbekannt.</translation>
-<translation id="3966286471246132217">Sie erhalten genauere Ergebnisse, wenn alle Apps während des Tests geschlossen sind.</translation>
+<translation id="3966286471246132217">Du erhältst genauere Ergebnisse, wenn alle Apps während des Tests geschlossen sind.</translation>
 <translation id="3967822245660637423">Download abgeschlossen</translation>
 <translation id="397105322502079400">Wird berechnet...</translation>
 <translation id="39823212440917567">Druckaufträge, die älter als <ph name="NUMBER_OF_DAYS" /> Tage sind, werden entfernt</translation>
@@ -262,7 +262,7 @@
 <translation id="4472575034687746823">Jetzt starten</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Das nicht standardmäßige Netzwerk-Gateway konnte nicht kontaktiert werden</translation>
-<translation id="4485626319513081846">Wählen Sie diese Option aus, wenn das Gerät in den Lagerbestand zurückkehrt oder aufgearbeitet wird, damit es an einen neuen Kunden weitergegeben werden kann.</translation>
+<translation id="4485626319513081846">Wähle diese Option aus, wenn das Gerät in den Lagerbestand zurückkehrt oder aufgearbeitet wird, damit es an einen neuen Kunden weitergegeben werden kann.</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Alternativer Name für Betreff stimmt überein</translation>
 <translation id="4536864596629708641">IP-Konfiguration</translation>
@@ -273,7 +273,7 @@
 <translation id="4562494484721939086">Dienst nicht verfügbar</translation>
 <translation id="458794348635939462">Es konnten nicht alle Hosts aufgelöst werden</translation>
 <translation id="4593212453765072419">Proxy-Authentifizierung erforderlich</translation>
-<translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> von <ph name="TOTAL_PAGE_NUMBER" />. Wenn Sie den Druckauftrag abbrechen möchten, drücken Sie die Eingabetaste.</translation>
+<translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> von <ph name="TOTAL_PAGE_NUMBER" />. Wenn du den Druckauftrag abbrechen möchtest, drücke die Eingabetaste.</translation>
 <translation id="463791356324567266">Scannen wird abgebrochen…</translation>
 <translation id="4646949265910132906">Sichere WLAN-Verbindung</translation>
 <translation id="4654549501020883054">Täglich ändern</translation>
@@ -288,7 +288,7 @@
 <translation id="4744944742468440486">Informationen in Bezug auf deine Auswahl</translation>
 <translation id="475869545581454722">Das Passwort für Chrome OS wurde aktualisiert</translation>
 <translation id="4773299976671772492">Angehalten</translation>
-<translation id="4782311465517282004">Sie können Definitionen oder Übersetzungen anzeigen oder Einheiten umrechnen lassen, indem Sie Text gedrückt halten oder mit der rechten Maustaste darauf klicken</translation>
+<translation id="4782311465517282004">Du kannst Definitionen oder Übersetzungen anzeigen oder Einheiten umrechnen lassen, indem du Text gedrückt hältst oder mit der rechten Maustaste darauf klickst</translation>
 <translation id="4793756956024303490">Komprimierungsalgorithmus</translation>
 <translation id="4794140124556169553">Der CPU-Test kann sich auf die Leistung deines Systems auswirken</translation>
 <translation id="4808449224298348341">Druckauftrag für "<ph name="DOCUMENT_TITLE" />" wurde abgebrochen</translation>
@@ -305,13 +305,13 @@
 <translation id="4873827928179867585">Authentifizierungsalgorithmus</translation>
 <translation id="4880328057631981605">Name des Zugangspunkts</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
-<translation id="4890353053343094602">Legen Sie so schnell wie möglich ein neues fest</translation>
+<translation id="4890353053343094602">Lege so schnell wie möglich ein neues fest</translation>
 <translation id="4891842000192098784">Belastung</translation>
 <translation id="4897058166682006107">Der Akkustand des linken Kopfhörers liegt bei <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="4917385247580444890">Stark</translation>
 <translation id="4917889632206600977">Angehalten – Kein Papier</translation>
 <translation id="4921665434385737356"><ph name="RATE" /> in <ph name="NUM_SECONDS" /> Sekunden aufgeladen.</translation>
-<translation id="4930320165497208503">Gehen Sie zum Einrichten oder Aktualisieren einer Verbindung zu den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" />.</translation>
+<translation id="4930320165497208503">Gehe zum Einrichten oder Aktualisieren einer Verbindung zu den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4950314376641394653">Firmware deines Geräts (<ph name="DEVICE_NAME" />) wurde auf Version <ph name="VERSION" /> aktualisiert</translation>
 <translation id="498186245079027698">Prüfe den Scanner und versuche es noch einmal. Sieh nach, ob ausreichend lokaler Speicherplatz vorhanden ist, um die gescannten Dateien zu speichern.</translation>
@@ -320,11 +320,11 @@
 <translation id="4999333166442584738">Bericht ausblenden</translation>
 <translation id="500920857929044050">Test beenden</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Wenn der Bildschirm inaktiv ist, können Sie sich Fotos, die Zeit sowie Wetter- und Medieninformationen anzeigen lassen.</translation>
+<translation id="5019310272469539976">Wenn der Bildschirm inaktiv ist, kannst du dir Fotos, die Zeit sowie Wetter- und Medieninformationen anzeigen lassen.</translation>
 <translation id="5039804452771397117">Zulassen</translation>
 <translation id="5049856988445523908">SIM-Karte gesperrt (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Gruppenname</translation>
-<translation id="5051044138948155788">Das ist die einzige Seite. Sie gelangen dann zum Startbildschirm für den Scanvorgang.</translation>
+<translation id="5051044138948155788">Das ist die einzige Seite. Du gelangst dann zum Startbildschirm für den Scanvorgang.</translation>
 <translation id="5088172560898466307">Hostname des Servers</translation>
 <translation id="5089810972385038852">Bundesstaat</translation>
 <translation id="5142961317498132443">Authentifizierung</translation>
@@ -351,10 +351,10 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5317780077021120954">Speichern</translation>
 <translation id="5318334351163689047">Fehlgeschlagene TCP-Anfragen</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
-<translation id="5332948983412042822">Bitte legen Sie jetzt ein neues fest</translation>
+<translation id="5332948983412042822">Bitte lege jetzt ein neues fest</translation>
 <translation id="5333530671332546086">Unbekannter Portal-Status</translation>
 <translation id="5346687412805619883">Lokales Netzwerk</translation>
-<translation id="5358174242040570474">Es gab ein Problem. Wählen Sie noch einmal einen Hintergrund aus oder öffnen Sie die App ein weiteres Mal.</translation>
+<translation id="5358174242040570474">Es gab ein Problem. Wähle noch einmal einen Hintergrund aus oder öffne die App ein weiteres Mal.</translation>
 <translation id="5372659122375744710">WLAN ist nicht sicher</translation>
 <translation id="5400907029458559844">Das Gerät wird verbunden.</translation>
 <translation id="5401938042319910061">Alle Abläufe ausführen</translation>
@@ -396,7 +396,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="594552776027197022">Zufälliges Schlüsselpaar generieren</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="6034694447310538551">Automatisches Zurücksetzen jeden Monat aktivieren</translation>
-<translation id="6037291330010597344">Der Dokumenteneinzug des Scanners ist leer. Legen Sie Dokumente ein und versuchen Sie es noch einmal.</translation>
+<translation id="6037291330010597344">Der Dokumenteneinzug des Scanners ist leer. Lege Dokumente ein und versuche es noch einmal.</translation>
 <translation id="6040143037577758943">Schließen</translation>
 <translation id="6040852767465482106">Anonyme Identität</translation>
 <translation id="604124094241169006">Automatisch</translation>
@@ -429,7 +429,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6340526405444716530">Personalisierung</translation>
 <translation id="636850387210749493">Enterprise-Registrierung</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
-<translation id="6388847657025262518">Der Dokumenteneinzug des Scanners klemmt. Kontrollieren Sie den Einzug und versuchen Sie es noch einmal.</translation>
+<translation id="6388847657025262518">Der Dokumenteneinzug des Scanners klemmt. Kontrolliere den Einzug und versuche es noch einmal.</translation>
 <translation id="6410257289063177456">Bilddateien</translation>
 <translation id="641081527798843608">subject-match</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -440,7 +440,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6480327114083866287">Verwaltet von <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Angehalten – Papierstau</translation>
 <translation id="6500818810472529210">Ergebnis in der Google Suche anzeigen</translation>
-<translation id="650266656685499220">Gehen Sie zu Google Fotos, um Alben zu erstellen</translation>
+<translation id="650266656685499220">Gehe zu Google Fotos, um Alben zu erstellen</translation>
 <translation id="6516990319416533844">Wenn du die Aufladegeschwindigkeit deines Akkus testen möchtest, warte zuerst, bis er ein wenig entladen ist</translation>
 <translation id="6517239166834772319">Entdecken</translation>
 <translation id="6527081081771465939">Unbekanntes WLAN-Sicherheitsprotokoll</translation>
@@ -468,14 +468,14 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6853312040151791195">Entladestrom</translation>
 <translation id="6889786074662672253">Während des Neustarts darf dieses externe Gerät nicht getrennt oder der Computer heruntergefahren werden. Du kannst das Fenster aber minimieren. Der Vorgang kann einige Minuten dauern. Unter Umständen funktioniert dein externes Gerät während dieser Zeit nicht.</translation>
 <translation id="6905724422583748843">Zurück zu <ph name="PAGE_NAME" /></translation>
-<translation id="6910312834584889076">Die Abdeckung des Scanners ist offen. Schließen Sie sie und versuchen Sie es noch einmal.</translation>
+<translation id="6910312834584889076">Die Abdeckung des Scanners ist offen. Schließe sie und versuche es noch einmal.</translation>
 <translation id="6911383237894364323">Verbindung zu Medienservern kann nicht hergestellt werden</translation>
 <translation id="6935486296377631201">Bildschirmschoner</translation>
 <translation id="6957231940976260713">Name des Dienstes</translation>
-<translation id="6961170852793647506">Legen Sie zuerst das Dokument in den Scanner</translation>
+<translation id="6961170852793647506">Lege zuerst das Dokument in den Scanner</translation>
 <translation id="6965382102122355670">Ok</translation>
 <translation id="6977381486153291903">Firmware-Version</translation>
-<translation id="6992266763844448459">Wählen Sie diese Option aus, wenn der Eigentümer des Geräts gleich bleibt. Beispielsweise, wenn das Gerät an eine andere Person innerhalb derselben Organisation weitergegeben wird.</translation>
+<translation id="6992266763844448459">Wähle diese Option aus, wenn der Eigentümer des Geräts gleich bleibt. Beispielsweise, wenn das Gerät an eine andere Person innerhalb derselben Organisation weitergegeben wird.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> verwaltet dieses Gerät und hat Zugriff auf alle Nutzeraktivitäten, einschließlich besuchter Webseiten, Passwörter und E-Mails.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7041549558901442110">Das Gerät ist nicht verbunden.</translation>
@@ -496,7 +496,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7177485034254901881">Dieses <ph name="DEVICE_TYPE" /> wird von <ph name="MANAGER" /> verwaltet. Administratoren können das Gerät per Remotezugriff konfigurieren.</translation>
 <translation id="7180611975245234373">Aktualisieren</translation>
 <translation id="7216409898977639127">Mobilfunkanbieter</translation>
-<translation id="7271040990581020067">Der Scanner wird derzeit verwendet. Versuchen Sie es später noch einmal.</translation>
+<translation id="7271040990581020067">Der Scanner wird derzeit verwendet. Versuche es später noch einmal.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Hintergrundsammlungen</translation>
 <translation id="7297226631177386107">Eine Verbindung zu HTTPS-Websites durch eine Firewall ist nicht möglich</translation>
@@ -504,7 +504,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7309920310754476121">Eigentümer des Geräts ändert sich</translation>
 <translation id="7319430975418800333">A3</translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Drücken Sie zum Anzeigen des Ergebnisses in der Google Suche die Suchtaste + Leertaste.</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Drücke zum Anzeigen des Ergebnisses in der Google Suche die Suchtaste + Leertaste.</translation>
 <translation id="7343649194310845056">Netzwerkgeräte</translation>
 <translation id="7359657277149375382">Dateityp</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -552,7 +552,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7943235353293548836">Persistentes Keepalive-Intervall</translation>
 <translation id="7955587717700691983">Bluetooth-Tastatur</translation>
 <translation id="7960831585769876809">Temperatur</translation>
-<translation id="7977800524392185497">Gehen Sie zu den Einstellungen, um eine Verbindung zu einem Netzwerk (<ph name="NETWORK_NAME" />) herzustellen</translation>
+<translation id="7977800524392185497">Gehe zu den Einstellungen, um eine Verbindung zu einem Netzwerk (<ph name="NETWORK_NAME" />) herzustellen</translation>
 <translation id="7978412674231730200">Privater Schlüssel</translation>
 <translation id="7994702968232966508">EAP-Methode</translation>
 <translation id="802154636333426148">Downloadfehler</translation>
@@ -561,7 +561,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8075838845814659848">Akkustand</translation>
 <translation id="8082366717211101304">Auflösen des DNS von Android-Apps aus nicht möglich</translation>
 <translation id="808894953321890993">Passwort ändern</translation>
-<translation id="8104083085214006426">Sie verwenden ein offenes und unsicheres Netzwerk</translation>
+<translation id="8104083085214006426">Du verwendest ein offenes und unsicheres Netzwerk</translation>
 <translation id="811820734797650957">(Android) Gateway kann kontaktiert werden</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Traffic-Zähler anfordern</translation>
@@ -574,7 +574,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8230672074305416752">Das standardmäßige Netzwerk-Gateway konnte nicht kontaktiert werden</translation>
 <translation id="8246209727385807362">Unbekannter Mobilfunkanbieter</translation>
 <translation id="8281886186245836920">Überspringen</translation>
-<translation id="8286154143153872371">Stellen Sie bitte eine Verbindung zu einem Netzwerk her und laden Sie die Seite neu, um den Hintergrund anzusehen.</translation>
+<translation id="8286154143153872371">Stelle bitte eine Verbindung zu einem Netzwerk her und lade die Seite neu, um den Hintergrund anzusehen.</translation>
 <translation id="8291967909914612644">Land des Homepageanbieters</translation>
 <translation id="8294431847097064396">Quelle</translation>
 <translation id="8297006494302853456">Schwach</translation>
@@ -607,7 +607,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8660881923941176839">Pfund</translation>
 <translation id="8662671328352114214">Mit <ph name="TYPE" /> verbinden</translation>
 <translation id="8675354002693747642">Vorinstallierter Schlüssel</translation>
-<translation id="8709616837707653427"><ph name="DESC_TEXT" /> Verwenden Sie zum Verwalten dieser Funktion den Rechts- und Linkspfeil.</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> Verwende zum Verwalten dieser Funktion den Rechts- und Linkspfeil.</translation>
 <translation id="871560550817059752">Fehlgeschlagen – Keine Tinte</translation>
 <translation id="8723108084122415655">Das nicht standardmäßige Netzwerk hat den Latenzgrenzwert überschritten</translation>
 <translation id="8726019395068607495">Angehalten – Druckerklappe offen</translation>
@@ -652,10 +652,10 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="9088306295921699330">Aktuelle Nutzung</translation>
 <translation id="9095415590198785865">Eigentümer des Geräts ändert sich nicht</translation>
 <translation id="9095775724867566971">PluginVM</translation>
-<translation id="910415269708673980">Aktualisieren Sie das Ticket für <ph name="PRINCIPAL_NAME" /></translation>
+<translation id="910415269708673980">Aktualisiere das Ticket für <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Seite <ph name="PAGE_NUMBER" /> wird gescannt</translation>
 <translation id="9111102763498581341">Entsperren</translation>
-<translation id="9122602430962285795">Gehen Sie zu den Einstellungen, um die Verbindung wiederherzustellen</translation>
+<translation id="9122602430962285795">Gehe zu den Einstellungen, um die Verbindung wiederherzustellen</translation>
 <translation id="9126720536733509015">Mehrere Seiten in einem PDF speichern</translation>
 <translation id="9137526406337347448">Google-Dienste</translation>
 <translation id="9149391708638971077">Speichertest ausführen</translation>

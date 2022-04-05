@@ -7,10 +7,10 @@
 <translation id="2515346402363002066">Deine Sitzung ist abgelaufen. Melde dich mit deinem Arbeitskonto an.</translation>
 <translation id="2549902055700841962">Anmeldung im Arbeitskonto nicht möglich. Bitte an den Administrator wenden.</translation>
 <translation id="2566603360883977759">Mit dieser E-Mail-Adresse ist eine Anmeldung nicht möglich. Bitte mit dem Arbeits- oder Schulkonto noch einmal versuchen. Wenn die Anmeldung dann immer noch nicht möglich ist, bitte den Administrator kontaktieren.</translation>
-<translation id="2844349213149998955">Die Anmeldung mit einem privaten Konto ist auf diesem Gerät nicht zulässig. Melden Sie sich bitte mit einem Arbeitskonto an.</translation>
+<translation id="2844349213149998955">Die Anmeldung mit einem privaten Konto ist auf diesem Gerät nicht zulässig. Melde dich bitte mit einem Arbeitskonto an.</translation>
 <translation id="3217145568844727893">Wenn du fortfährst, ohne dein aktuelles Windows-Passwort einzugeben, gehen möglicherweise Daten auf deinem Gerät verloren, die nicht wiederhergestellt werden können.</translation>
-<translation id="3306357053520292004">Ein Nutzer dieses Computers wurde bereits über dieses Konto hinzugefügt. Bitte melden Sie sich mit einem anderen Konto an.</translation>
-<translation id="3355053591933237049">Vergewissern Sie sich, dass das Gerät mit dem Internet verbunden ist, und versuchen Sie es noch einmal</translation>
+<translation id="3306357053520292004">Ein Nutzer dieses Computers wurde bereits über dieses Konto hinzugefügt. Bitte melde dich mit einem anderen Konto an.</translation>
+<translation id="3355053591933237049">Vergewissere dich, dass das Gerät mit dem Internet verbunden ist, und versuche es noch einmal</translation>
 <translation id="3926852373333893095">Nur G Suite Enterprise-Nutzer dürfen sich anmelden.</translation>
 <translation id="399130515869721714">Der Google-Anmeldebildschirm kann aufgrund eines Problems mit der Installation von Chrome auf diesem Gerät nicht geöffnet werden. Wende dich an deinen Administrator.</translation>
 <translation id="4057329986137569701">Ein interner Fehler ist aufgetreten.</translation>
@@ -22,8 +22,8 @@
 <translation id="6033715878377252112">Hilfsdienst für den Google-Anmeldeinformationsanbieter unter Windows</translation>
 <translation id="6149399665202317746">Google-Anmeldeinformationsanbieter für Windows</translation>
 <translation id="6243062314475217481">Das Passwort deines Arbeitskontos erfüllt nicht die Anforderungen an die Komplexität für Windows-Passwörter. Wende dich an deinen Administrator, um Hilfe zu erhalten.</translation>
-<translation id="6463752215771576050">Dieser Computer kann nicht für die Unternehmensverwaltung registriert werden.  Bitte melden Sie sich mit einem anderen Arbeitskonto an.</translation>
-<translation id="6582876473835446261">Das Windows-Passwort ist falsch. Versuchen Sie es noch einmal.</translation>
+<translation id="6463752215771576050">Dieser Computer kann nicht für die Unternehmensverwaltung registriert werden.  Bitte melde dich mit einem anderen Arbeitskonto an.</translation>
+<translation id="6582876473835446261">Das Windows-Passwort ist falsch. Versuche es noch einmal.</translation>
 <translation id="6657585470893396449">Passwort</translation>
 <translation id="6976261330898712570">Dieses Gerät ist noch nicht bei der Geräteverwaltung deiner Organisation registriert. Melde dich mit deinem Arbeitskonto an.</translation>
 <translation id="7209941495304122410">Windows-Passwort eingeben</translation>
