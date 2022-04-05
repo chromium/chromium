@@ -57,9 +57,9 @@ def _Walk(operations, continue_on_error, property_dict, variable_expander):
         property_dict: A property dictionary mapping type names to expectations.
         variable_expander: A VariableExpander.
     """
-    for type_name, expectations in property_dict.iteritems():
+    for type_name, expectations in property_dict.items():
         operation = operations[type_name]
-        for expectation_name, expectation_dict in expectations.iteritems():
+        for expectation_name, expectation_dict in expectations.items():
             # Skip over expectations with conditions that aren't satisfied.
             if 'condition' in expectation_dict:
                 condition = variable_expander.Expand(

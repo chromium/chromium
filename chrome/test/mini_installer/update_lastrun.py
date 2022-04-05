@@ -3,10 +3,10 @@
 # found in the LICENSE file.
 """Updates Chrome's "lastrun" value for the current user in HKCU."""
 
-import _winreg
 import optparse
 import sys
 import time
+import winreg
 
 
 def UpdateLastrun(client_state_key_path):
@@ -20,15 +20,15 @@ def UpdateLastrun(client_state_key_path):
     # since the Windows epoch. Adjust based on values inspired by
     # https://support.microsoft.com/en-us/kb/167296, which uses 100-nanosecond
     # ticks.
-    now_us = str(int(time.time() * 1000000 + 11644473600000000L))
+    now_us = str(int(time.time() * 1000000 + 11644473600000000))
     try:
-        with _winreg.OpenKey(_winreg.HKEY_CURRENT_USER, client_state_key_path,
-                             0, _winreg.KEY_SET_VALUE
-                             | _winreg.KEY_WOW64_32KEY) as key:
-            _winreg.SetValueEx(key, 'lastrun', 0, _winreg.REG_SZ, now_us)
-    except WindowsError:
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, client_state_key_path, 0,
+                            winreg.KEY_SET_VALUE
+                            | winreg.KEY_WOW64_32KEY) as key:
+            winreg.SetValueEx(key, 'lastrun', 0, winreg.REG_SZ, now_us)
+    except WindowsError as e:
         raise KeyError('Failed opening registry key HKEY_CURRENT_USER\\%s' %
-                       client_state_key_path)
+                       client_state_key_path) from e
     return 0
 
 

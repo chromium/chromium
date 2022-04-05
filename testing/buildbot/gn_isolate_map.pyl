@@ -1252,7 +1252,6 @@
     "type": "additional_compile_target",
   },
   "mini_installer_tests": {
-    "python3": False,
     "args": [
       "../../chrome/test/mini_installer/run_mini_installer_tests.py",
       "--output-dir=${ISOLATED_OUTDIR}",

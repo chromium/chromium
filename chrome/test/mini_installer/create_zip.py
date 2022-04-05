@@ -46,9 +46,9 @@ import zipfile
 THIS_DIR = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
 SRC_DIR = os.path.join(THIS_DIR, '..', '..', '..')
 SELENIUM_PATH = os.path.abspath(
-    os.path.join(SRC_DIR, r'third_party', 'webdriver', 'pylib'))
+    os.path.join(SRC_DIR, 'third_party', 'webdriver', 'pylib'))
 TYP_PATH = os.path.abspath(
-    os.path.join(SRC_DIR, r'third_party', 'catapult', 'third_party', 'typ'))
+    os.path.join(SRC_DIR, 'third_party', 'catapult', 'third_party', 'typ'))
 BLOCKLIST = ['', '.pyc', '.gn', '.gni', '.txt', '.bat']
 
 

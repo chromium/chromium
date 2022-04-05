@@ -2,53 +2,54 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import logging
+import winreg
+
 import win32api
 import win32con
-import logging
 import winerror
-import _winreg
 
 LOGGER = logging.getLogger('installer_test')
 
 _REGISTRY_VIEW_MAPPING = {
-    'KEY_WOW64_32KEY': _winreg.KEY_WOW64_32KEY,
-    'KEY_WOW64_64KEY': _winreg.KEY_WOW64_64KEY,
+    'KEY_WOW64_32KEY': winreg.KEY_WOW64_32KEY,
+    'KEY_WOW64_64KEY': winreg.KEY_WOW64_64KEY,
 }
 
 _ROOT_KEY_MAPPING = {
-    'HKEY_CLASSES_ROOT': _winreg.HKEY_CLASSES_ROOT,
-    'HKEY_CURRENT_USER': _winreg.HKEY_CURRENT_USER,
-    'HKEY_LOCAL_MACHINE': _winreg.HKEY_LOCAL_MACHINE,
-    'HKEY_USERS': _winreg.HKEY_USERS,
+    'HKEY_CLASSES_ROOT': winreg.HKEY_CLASSES_ROOT,
+    'HKEY_CURRENT_USER': winreg.HKEY_CURRENT_USER,
+    'HKEY_LOCAL_MACHINE': winreg.HKEY_LOCAL_MACHINE,
+    'HKEY_USERS': winreg.HKEY_USERS,
 }
 
 
 def _RootKeyConstant(root_key):
-    """Converts a root registry key string into a _winreg.HKEY_* constant."""
+    """Converts a root registry key string into a winreg.HKEY_* constant."""
     if root_key not in _ROOT_KEY_MAPPING:
         raise KeyError("Unknown root registry key '%s'" % root_key)
     return _ROOT_KEY_MAPPING[root_key]
 
 
 def _RegistryViewConstant(registry_view):
-    """Converts a registry view string into a _winreg.KEY_WOW64* constant."""
+    """Converts a registry view string into a winreg.KEY_WOW64* constant."""
     if registry_view not in _REGISTRY_VIEW_MAPPING:
         raise KeyError("Unknown registry view '%s'" % registry_view)
     return _REGISTRY_VIEW_MAPPING[registry_view]
 
 
 def _ValueTypeConstant(value_type):
-    """Converts a registry value type string into a _winreg.REG_* constant."""
+    """Converts a registry value type string into a winreg.REG_* constant."""
     value_type_mapping = {
-        'BINARY': _winreg.REG_BINARY,
-        'DWORD': _winreg.REG_DWORD,
-        'DWORD_LITTLE_ENDIAN': _winreg.REG_DWORD_LITTLE_ENDIAN,
-        'DWORD_BIG_ENDIAN': _winreg.REG_DWORD_BIG_ENDIAN,
-        'EXPAND_SZ': _winreg.REG_EXPAND_SZ,
-        'LINK': _winreg.REG_LINK,
-        'MULTI_SZ': _winreg.REG_MULTI_SZ,
-        'NONE': _winreg.REG_NONE,
-        'SZ': _winreg.REG_SZ,
+        'BINARY': winreg.REG_BINARY,
+        'DWORD': winreg.REG_DWORD,
+        'DWORD_LITTLE_ENDIAN': winreg.REG_DWORD_LITTLE_ENDIAN,
+        'DWORD_BIG_ENDIAN': winreg.REG_DWORD_BIG_ENDIAN,
+        'EXPAND_SZ': winreg.REG_EXPAND_SZ,
+        'LINK': winreg.REG_LINK,
+        'MULTI_SZ': winreg.REG_MULTI_SZ,
+        'NONE': winreg.REG_NONE,
+        'SZ': winreg.REG_SZ,
     }
     if value_type not in value_type_mapping:
         raise KeyError("Unknown registry value type '%s'" % value_type)
@@ -90,14 +91,14 @@ def VerifyRegistryEntryExpectation(expectation_name, expectation,
     try:
         # Query the Windows registry for the registry key. It will throw a
         # WindowsError if the key doesn't exist.
-        registry_view = _winreg.KEY_WOW64_32KEY
+        registry_view = winreg.KEY_WOW64_32KEY
         if 'wow_key' in expectation:
             registry_view = _RegistryViewConstant(expectation['wow_key'])
         elif variable_expander.Expand('$MINI_INSTALLER_BITNESS') == '64':
-            registry_view = _winreg.KEY_WOW64_64KEY
+            registry_view = winreg.KEY_WOW64_64KEY
 
-        key_handle = _winreg.OpenKey(_RootKeyConstant(root_key), sub_key, 0,
-                                     _winreg.KEY_QUERY_VALUE | registry_view)
+        key_handle = winreg.OpenKey(_RootKeyConstant(root_key), sub_key, 0,
+                                    winreg.KEY_QUERY_VALUE | registry_view)
     except WindowsError:
         # Key doesn't exist. See that it matches the expectation.
         assert expectation['exists'] != 'required', ('Registry key %s is '
@@ -111,12 +112,12 @@ def VerifyRegistryEntryExpectation(expectation_name, expectation,
     # Verify the expected values.
     if 'values' not in expectation:
         return
-    for value, value_expectation in expectation['values'].iteritems():
+    for value, value_expectation in expectation['values'].items():
         # Query the value. It will throw a WindowsError if the value doesn't
         # exist.
         value = variable_expander.Expand(value)
         try:
-            data, value_type = _winreg.QueryValueEx(key_handle, value)
+            data, value_type = winreg.QueryValueEx(key_handle, value)
         except WindowsError:
             # The value does not exist. See that this matches the expectation.
             assert 'type' not in value_expectation, (
@@ -139,7 +140,7 @@ def VerifyRegistryEntryExpectation(expectation_name, expectation,
 
         # Verify the associated data of the value.
         expected_data = value_expectation['data']
-        if isinstance(expected_data, basestring):
+        if isinstance(expected_data, str):
             expected_data = variable_expander.Expand(expected_data)
         assert expected_data == data, \
             ("Value '%s' of registry key %s has unexpected data.\n"
@@ -172,17 +173,17 @@ def CleanRegistryEntry(expectation_name, expectation, variable_expander):
         'property for key %s must not be \'required\'' % key)
     root_key, sub_key = key.split('\\', 1)
 
-    registry_view = _winreg.KEY_WOW64_32KEY
+    registry_view = winreg.KEY_WOW64_32KEY
     if 'wow_key' in expectation:
         registry_view = _RegistryViewConstant(expectation['wow_key'])
     elif variable_expander.Expand('$MINI_INSTALLER_BITNESS') == '64':
-        registry_view = _winreg.KEY_WOW64_64KEY
+        registry_view = winreg.KEY_WOW64_64KEY
 
     try:
         # Query the Windows registry for the registry key. It will throw a
         # WindowsError if the key doesn't exist.
-        key_handle = _winreg.OpenKey(_RootKeyConstant(root_key), sub_key, 0,
-                                     (_winreg.KEY_SET_VALUE | registry_view))
+        key_handle = winreg.OpenKey(_RootKeyConstant(root_key), sub_key, 0,
+                                    (winreg.KEY_SET_VALUE | registry_view))
     except WindowsError:
         # There is nothing to clean if the key doesn't exist.
         return
@@ -193,10 +194,10 @@ def CleanRegistryEntry(expectation_name, expectation, variable_expander):
         # its values and subkeys. Open the root of the hive with the proper
         # permissions, then delete the key by name.
         key_handle = None
-        root_handle = _winreg.OpenKey(
+        root_handle = winreg.OpenKey(
             _RootKeyConstant(root_key), None, 0,
-            (win32con.DELETE | _winreg.KEY_ENUMERATE_SUB_KEYS
-             | _winreg.KEY_QUERY_VALUE | _winreg.KEY_SET_VALUE
+            (win32con.DELETE | winreg.KEY_ENUMERATE_SUB_KEYS
+             | winreg.KEY_QUERY_VALUE | winreg.KEY_SET_VALUE
              | registry_view))
         win32api.RegDeleteTree(root_handle, sub_key)
         LOGGER.info('CleanRegistryEntry deleted key %s' % key)
@@ -205,13 +206,13 @@ def CleanRegistryEntry(expectation_name, expectation, variable_expander):
     assert 'values' in expectation and expectation['values'], (
         'Invalid expectation for CleanRegistryEntry operation: a \'values\' ' +
         'dictionary is required for optional key %s' % key)
-    for value, value_expectation in expectation['values'].iteritems():
+    for value, value_expectation in expectation['values'].items():
         value = variable_expander.Expand(value)
         assert 'type' not in value_expectation, (
             'Invalid expectation for CleanRegistryEntry operation: value ' +
             '%s\\%s must not specify a \'type\'' % (key, value))
         try:
-            _winreg.DeleteValue(key_handle, value)
+            winreg.DeleteValue(key_handle, value)
             LOGGER.info('CleanRegistryEntry deleted value %s\\%s' %
                         (key, value))
         except WindowsError as e:

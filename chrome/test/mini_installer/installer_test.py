@@ -9,7 +9,6 @@ JSON configuration file. The module is intended to be loaded by a test process
 driven by typ.
 """
 
-import argparse
 import contextlib
 import json
 import logging
@@ -19,10 +18,9 @@ import subprocess
 import sys
 import tempfile
 import traceback
-import typ
 import unittest
 import win32api
-from win32com.shell import shell, shellcon
+from win32comext.shell import shell, shellcon
 
 from argument_parser import ArgumentParser
 import property_walker
@@ -40,7 +38,7 @@ LOGGER = logging.getLogger('installer_test')
 _force_clean = not RUNNING_LOCALLY
 
 
-class Config(object):
+class Config:
     """Describes the machine states, actions, and test cases.
 
     Attributes:
@@ -73,7 +71,7 @@ class InstallerTest(unittest.TestCase):
             method_name: The name of this test.
         """
         assert InstallerTest._config, 'module _initialize() not yet called'
-        super(InstallerTest, self).__init__(method_name)
+        super().__init__(method_name)
         self._name = method_name[5:]
         self._test = InstallerTest._config.traversals[self._name]
         self._clean_on_teardown = True
@@ -166,7 +164,7 @@ class InstallerTest(unittest.TestCase):
         except AssertionError as e:
             # If an AssertionError occurs, we intercept it and add the state
             # name to the error message so that we know where the test fails.
-            raise AssertionError("In state '%s', %s" % (state, e))
+            raise AssertionError("In state '%s', %s" % (state, str(e))) from e
 
 
 def RunCommand(command, variable_expander):
@@ -195,6 +193,8 @@ def RunCommand(command, variable_expander):
         proc = subprocess.Popen(expanded_command,
                                 shell=True,
                                 cwd=script_dir,
+                                text=True,
+                                encoding='utf-8',
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)
         stdout, stderr = proc.communicate()
@@ -235,10 +235,11 @@ def RunCleanCommand(force_clean, clean_state, variable_expander):
     # Attempt to run each installed product's uninstaller.
     interactive_option = '--interactive' if not force_clean else ''
     for product_name, product_switch in data:
-        command = ('python uninstall_chrome.py '
-                   '--chrome-long-name="%s" '
-                   '--no-error-if-absent %s %s' %
-                   (product_name, product_switch, interactive_option))
+        command = (
+            '%s uninstall_chrome.py '
+            '--chrome-long-name="%s" '
+            '--no-error-if-absent %s %s' %
+            (sys.executable, product_name, product_switch, interactive_option))
         try:
             RunCommand(command, variable_expander)
         except:  # pylint: disable=bare-except
@@ -266,7 +267,7 @@ def MergePropertyDictionaries(current_property, new_property):
         current_property: The property dictionary to be modified.
         new_property: The new property dictionary.
     """
-    for key, value in new_property.iteritems():
+    for key, value in new_property.items():
         if key not in current_property:
             current_property[key] = value
         else:
@@ -274,8 +275,7 @@ def MergePropertyDictionaries(current_property, new_property):
                     and isinstance(value, dict))
             # This merges two dictionaries together. In case there are keys with
             # the same name, the latter will override the former.
-            current_property[key] = dict(current_property[key].items() +
-                                         value.items())
+            current_property[key].update(value)
 
 
 def FilterConditionalElem(elem, condition_name, variable_expander):
@@ -340,9 +340,10 @@ def ParseConfigFile(filename, variable_expander):
     config.tests = config_data['tests']
     # Drop conditional tests that should not be run in the current
     # configuration.
-    config.tests = filter(
-        lambda t: FilterConditionalElem(t, 'condition', variable_expander),
-        config.tests)
+    config.tests = list(
+        filter(
+            lambda t: FilterConditionalElem(t, 'condition', variable_expander),
+            config.tests))
     for state_name, state_property_filenames in config_data['states']:
         config.states[state_name] = ParsePropertyFiles(
             directory, state_property_filenames, variable_expander)
@@ -453,24 +454,15 @@ def GetAbsoluteConfigPath(path):
     return os.path.abspath(path)
 
 
-# Until we're using Python 3.8 or newer, we must use tearDownModule to restore
-# the tmp dir. It would be cleaner to remove _temp_dir_manager and instead do
-# something along the lines of this after __enter__():
-# unittest.addModuleCleanup(_temp_dir_manager.__exit__, None, None, None)
-_temp_dir_manager = None
-
-
 def setUpModule():
     # Make sure that TMP and Chrome's installation directory are on the same
     # drive to work around https://crbug.com/700809. (CSIDL_PROGRAM_FILESX86 is
     # valid for both 32 and 64-bit apps running on 32 or 64-bit Windows.)
     drive = os.path.splitdrive(
         shell.SHGetFolderPath(0, shellcon.CSIDL_PROGRAM_FILESX86, None, 0))[0]
-    global _temp_dir_manager
     _temp_dir_manager = ConfigureTempOnDrive(drive)
-    _temp_dir_manager.__enter__()
-    # Switch to this once we're using Python 3.8 or newer:
-    # unittest.addModuleCleanup(_temp_dir_manager.__exit__, None, None, None)
+    _temp_dir_manager.__enter__()  # pylint: disable=no-member
+    unittest.addModuleCleanup(_temp_dir_manager.__exit__, None, None, None)  # pylint: disable=no-member
 
     # The last state in any test's traversal is the "clean" state, so use it to
     # drive the initial cleanup operation.
@@ -481,16 +473,9 @@ def setUpModule():
         RunCleanCommand(_force_clean, clean_state,
                         InstallerTest._variable_expander)
     except:
-        _temp_dir_manager.__exit__(None, None, None)
+        _temp_dir_manager.__exit__(None, None, None)  # pylint: disable=no-member
         _temp_dir_manager = None
         raise
-
-
-def tearDownModule():
-    global _temp_dir_manager
-    if _temp_dir_manager:
-        _temp_dir_manager.__exit__(None, None, None)
-        _temp_dir_manager = None
 
 
 def _initialize():

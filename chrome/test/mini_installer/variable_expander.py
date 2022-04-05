@@ -6,6 +6,7 @@ import base64
 import hashlib
 import os
 import string
+import sys
 import win32api
 import win32file
 import win32com.client
@@ -57,8 +58,8 @@ def _GetUserSpecificRegistrySuffix():
     user_sid, _ = win32security.GetTokenInformation(token_handle,
                                                     win32security.TokenUser)
     user_sid_string = win32security.ConvertSidToStringSid(user_sid)
-    md5_digest = hashlib.md5(user_sid_string).digest()
-    return '.' + base64.b32encode(md5_digest).rstrip('=')
+    md5_digest = hashlib.md5(user_sid_string.encode('utf-8')).digest()
+    return '.' + base64.b32encode(md5_digest).decode('utf-8').rstrip('=')
 
 
 class VariableExpander:
@@ -111,6 +112,8 @@ class VariableExpander:
         * $PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION: the file version of
             $PREVIOUS_VERSION_MINI_INSTALLER.
         * $PROGRAM_FILES: the unquoted path to the Program Files folder.
+        * $PYTHON_INTERPRETER: the python interpreter. This is used to propagate
+            vpython VirtualEnv properly.
         * $USER_SPECIFIC_REGISTRY_SUFFIX: the output from the function
             _GetUserSpecificRegistrySuffix().
         * $VERSION_[XP/SERVER_2003/VISTA/WIN7/WIN8/WIN8_1/WIN10]: a 2-tuple
@@ -187,6 +190,8 @@ class VariableExpander:
                 0, shellcon.CSIDL_PROGRAM_FILES
                 if _GetFileBitness(mini_installer_abspath) == '64' else
                 shellcon.CSIDL_PROGRAM_FILESX86, None, 0),
+            'PYTHON_INTERPRETER':
+            sys.executable,
             'USER_SPECIFIC_REGISTRY_SUFFIX':
             _GetUserSpecificRegistrySuffix(),
             'VERSION_SERVER_2003':
