@@ -3476,7 +3476,7 @@
   {
     "name": "hardware-media-key-handling",
     "owners": [ "steimel", "media-dev" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 113
   },
   {
     "name": "hdrnet-override",
