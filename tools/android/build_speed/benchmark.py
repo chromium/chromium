@@ -498,6 +498,11 @@ def main():
         devil_chromium.Initialize()
         logging.info('Using emulator %s', args.emulator)
         gn_args.append(f'target_cpu="{_SUPPORTED_EMULATORS[args.emulator]}"')
+    else:
+        # Default to an emulator target_cpu when just building to be comparable
+        # to building and installing on an emulator. It is likely that devs are
+        # mostly using emulator builds so this is more valuable to track.
+        gn_args.append('target_cpu="x86"')
 
     if args.target:
         target = args.target
