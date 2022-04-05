@@ -240,6 +240,9 @@ tast_disabled_tests_from_chrome_all = [
   "crostini.SecureCopyPaste.paste_wayland_bullseye_stable",
   "crostini.UninstallInvalidApp.buster_stable",
   "crostini.Xattrs.buster_stable",
+
+  # https://crbug.com/1312908
+  "policy.DefaultNotificationsSetting",
 ]
 
 # To disable a specific test in lacros_all_tast_tests, add it the following
