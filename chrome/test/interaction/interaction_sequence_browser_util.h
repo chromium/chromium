@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_USER_EDUCATION_INTERACTION_SEQUENCE_BROWSER_UTIL_H_
-#define CHROME_BROWSER_UI_USER_EDUCATION_INTERACTION_SEQUENCE_BROWSER_UTIL_H_
+#ifndef CHROME_TEST_INTERACTION_INTERACTION_SEQUENCE_BROWSER_UTIL_H_
+#define CHROME_TEST_INTERACTION_INTERACTION_SEQUENCE_BROWSER_UTIL_H_
 
 #include <map>
 #include <memory>
@@ -38,10 +38,6 @@ class TrackedElementWebPage;
 //  - Wait for a condition (evaluated as a JS statement or function) to become
 //    true and then send a custom event.
 //  - Track when a WebContents is destroyed or removed from a browser window.
-//
-// The TrackedElementWebContents created to represent each page becomes
-// "visible" when the main frame finishes loading, and is "hidden" when a new
-// navigation commits or the WebContents is closed or moved out of the browser.
 class InteractionSequenceBrowserUtil : private content::WebContentsObserver,
                                        private TabStripModelObserver {
  public:
@@ -310,4 +306,4 @@ class TrackedElementWebPage : public ui::TrackedElement {
   const base::raw_ptr<InteractionSequenceBrowserUtil> owner_;
 };
 
-#endif  // CHROME_BROWSER_UI_USER_EDUCATION_INTERACTION_SEQUENCE_BROWSER_UTIL_H_
+#endif  // CHROME_TEST_INTERACTION_INTERACTION_SEQUENCE_BROWSER_UTIL_H_

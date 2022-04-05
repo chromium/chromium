@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/toolbar/app_menu_model.h"
-#include "chrome/browser/ui/user_education/interaction_sequence_browser_util.h"
+#include "chrome/test/interaction/interaction_sequence_browser_util.h"
 
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/user_education/user_education_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
