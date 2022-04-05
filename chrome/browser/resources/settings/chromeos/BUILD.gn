@@ -8,7 +8,6 @@ import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
 import("//ui/webui/webui_features.gni")
 import("../../tools/optimize_webui.gni")
 import("./os_settings.gni")
@@ -264,6 +263,8 @@ preprocess_if_expr("preprocess_v3") {
     "chromeos/search_handler.js",
     "chromeos/os_route.js",
     "chromeos/os_page_visibility.js",
+    "chromeos/os_people_page/lock_state_behavior.js",
+    "chromeos/os_people_page/os_sync_browser_proxy.js",
     "chromeos/pref_to_setting_metric_converter.js",
     "chromeos/ensure_lazy_loaded.js",
     "chromeos/lazy_load.js",
@@ -568,8 +569,6 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/os_people_page/fingerprint_list.js",
     "chromeos/os_people_page/lock_screen.js",
     "chromeos/os_people_page/lock_screen_password_prompt_dialog.js",
-    "chromeos/os_people_page/lock_state_behavior.m.js",
-    "chromeos/os_people_page/os_sync_browser_proxy.m.js",
     "chromeos/os_people_page/os_people_page.js",
     "chromeos/os_people_page/os_sync_controls.js",
     "chromeos/os_people_page/pin_autosubmit_dialog.js",
@@ -769,8 +768,6 @@ js_library("search_handler") {
   ]
 }
 
-import("//tools/polymer/polymer.gni")
-
 html_to_js("web_components") {
   js_files = [
     "os_icons.js",
@@ -805,7 +802,6 @@ group("polymer3_elements") {
     "os_bluetooth_page:web_components",
     "os_files_page:web_components",
     "os_languages_page:web_components",
-    "os_people_page:polymer3_elements",
     "os_people_page:web_components",
     "os_printing_page:web_components",
     "os_privacy_page:web_components",

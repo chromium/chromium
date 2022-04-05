@@ -197,7 +197,7 @@ js_library("multidevice_wifi_sync_item") {
     "..:os_route",
     "..:route_origin_behavior",
     "../..:router",
-    "../os_people_page:os_sync_browser_proxy.m",
+    "../os_people_page:os_sync_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
@@ -231,7 +231,7 @@ js_library("multidevice_wifi_sync_disabled_link") {
 js_library("multidevice_screen_lock_subpage") {
   deps = [
     "../os_people_page:lock_screen_password_prompt_dialog",
-    "../os_people_page:lock_state_behavior.m",
+    "../os_people_page:lock_state_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/quick_unlock:lock_screen_constants.m",
     "//ui/webui/resources/js:assert.m",

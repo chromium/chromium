@@ -21,7 +21,7 @@ import '../../controls/password_prompt_dialog.js';
 import {LockScreenProgress, recordLockScreenProgress} from '//resources/cr_components/chromeos/quick_unlock/lock_screen_constants.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LockScreenUnlockType, LockStateBehavior, LockStateBehaviorImpl} from './lock_state_behavior.m.js';
+import {LockScreenUnlockType, LockStateBehavior, LockStateBehaviorImpl} from './lock_state_behavior.js';
 
 Polymer({
   _template: html`{__html_template__}`,

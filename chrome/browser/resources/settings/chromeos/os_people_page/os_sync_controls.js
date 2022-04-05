@@ -20,7 +20,7 @@ import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 
-import {OsSyncBrowserProxy, OsSyncBrowserProxyImpl, OsSyncPrefs} from './os_sync_browser_proxy.m.js';
+import {OsSyncBrowserProxy, OsSyncBrowserProxyImpl, OsSyncPrefs} from './os_sync_browser_proxy.js';
 
 /**
  * Names of the radio buttons which allow the user to choose their data sync

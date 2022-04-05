@@ -12,7 +12,7 @@ import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.j
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SyncBrowserProxyImpl} from '../../people_page/sync_browser_proxy.js';
-import {OsSyncBrowserProxy, OsSyncBrowserProxyImpl, OsSyncPrefs} from '../os_people_page/os_sync_browser_proxy.m.js';
+import {OsSyncBrowserProxy, OsSyncBrowserProxyImpl, OsSyncPrefs} from '../os_people_page/os_sync_browser_proxy.js';
 
 import {MultiDeviceFeatureBehavior} from './multidevice_feature_behavior.js';
 

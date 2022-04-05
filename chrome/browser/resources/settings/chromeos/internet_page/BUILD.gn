@@ -93,7 +93,7 @@ js_library("internet_detail_page") {
     "//chrome/browser/resources/settings/chromeos:deep_linking_behavior",
     "//chrome/browser/resources/settings/chromeos:metrics_recorder",
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
-    "//chrome/browser/resources/settings/chromeos/os_people_page:os_sync_browser_proxy.m",
+    "//chrome/browser/resources/settings/chromeos/os_people_page:os_sync_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
     "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",

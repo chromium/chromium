@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-// #import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 
 /**
  * @fileoverview
@@ -12,7 +12,7 @@
  */
 
 /** @enum {string} */
-/* #export */ const LockScreenUnlockType = {
+export const LockScreenUnlockType = {
   VALUE_PENDING: 'value_pending',
   PASSWORD: 'password',
   PIN_PASSWORD: 'pin+password'
@@ -32,7 +32,7 @@
 let cachedHasPinLogin = undefined;
 
 /** @polymerBehavior */
-/* #export */ const LockStateBehaviorImpl = {
+export const LockStateBehaviorImpl = {
   properties: {
     /**
      * The currently selected unlock type.
@@ -148,5 +148,5 @@ let cachedHasPinLogin = undefined;
 };
 
 /** @polymerBehavior */
-/* #export */ const LockStateBehavior =
+export const LockStateBehavior =
     [I18nBehavior, WebUIListenerBehavior, LockStateBehaviorImpl];

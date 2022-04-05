@@ -43,7 +43,7 @@ import {PrefsBehavior} from '../prefs_behavior.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 
 import {FingerprintAttempt, FingerprintBrowserProxy, FingerprintBrowserProxyImpl, FingerprintInfo, FingerprintResultType, FingerprintScan} from './fingerprint_browser_proxy.js';
-import {LockScreenUnlockType, LockStateBehavior, LockStateBehaviorImpl} from './lock_state_behavior.m.js';
+import {LockScreenUnlockType, LockStateBehavior, LockStateBehaviorImpl} from './lock_state_behavior.js';
 
 Polymer({
   _template: html`{__html_template__}`,

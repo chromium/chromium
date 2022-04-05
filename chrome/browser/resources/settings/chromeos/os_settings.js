@@ -147,7 +147,7 @@ export {setAppNotificationProviderForTesting} from './os_apps_page/app_notificat
 export {osPageVisibility} from './os_page_visibility.js';
 export {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from './os_people_page/account_manager_browser_proxy.js';
 export {FingerprintBrowserProxyImpl, FingerprintResultType} from './os_people_page/fingerprint_browser_proxy.js';
-export {OsSyncBrowserProxyImpl} from './os_people_page/os_sync_browser_proxy.m.js';
+export {OsSyncBrowserProxyImpl} from './os_people_page/os_sync_browser_proxy.js';
 export {FingerprintLocation, FingerprintSetupStep} from './os_people_page/setup_fingerprint_dialog.js';
 export {MetricsConsentBrowserProxy, MetricsConsentBrowserProxyImpl, MetricsConsentState} from './os_privacy_page/metrics_consent_browser_proxy.js';
 export {DataAccessPolicyState, PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} from './os_privacy_page/peripheral_data_access_browser_proxy.js';

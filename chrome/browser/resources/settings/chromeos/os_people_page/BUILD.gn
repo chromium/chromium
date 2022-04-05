@@ -4,8 +4,6 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
-import("//tools/polymer/polymer.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
@@ -18,9 +16,9 @@ js_type_check("closure_compile_module") {
     ":fingerprint_list",
     ":lock_screen",
     ":lock_screen_password_prompt_dialog",
-    ":lock_state_behavior.m",
+    ":lock_state_behavior",
     ":os_people_page",
-    ":os_sync_browser_proxy.m",
+    ":os_sync_browser_proxy",
     ":os_sync_controls",
     ":setup_fingerprint_dialog",
     ":setup_pin_dialog",
@@ -85,7 +83,7 @@ js_library("lock_screen") {
   deps = [
     ":fingerprint_browser_proxy",
     ":lock_screen_password_prompt_dialog",
-    ":lock_state_behavior.m",
+    ":lock_state_behavior",
     "..:deep_linking_behavior",
     "..:os_route",
     "..:route_observer_behavior",
@@ -105,14 +103,13 @@ js_library("lock_screen") {
 
 js_library("lock_screen_password_prompt_dialog") {
   deps = [
-    ":lock_state_behavior.m",
+    ":lock_state_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/quick_unlock:lock_screen_constants.m",
   ]
 }
 
-js_library("lock_state_behavior.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_people_page/lock_state_behavior.m.js" ]
+js_library("lock_state_behavior") {
   deps = [
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -120,7 +117,6 @@ js_library("lock_state_behavior.m") {
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
-  extra_deps = [ ":modulize" ]
   externs_list = [ "$externs_path/quick_unlock_private.js" ]
   extra_sources = [ "$interfaces_path/quick_unlock_private_interface.js" ]
 }
@@ -129,7 +125,7 @@ js_library("os_people_page") {
   deps = [
     ":account_manager_browser_proxy",
     ":lock_screen",
-    ":lock_state_behavior.m",
+    ":lock_state_behavior",
     ":os_sync_controls",
     "..:deep_linking_behavior",
     "..:os_page_visibility",
@@ -152,19 +148,17 @@ js_library("os_people_page") {
       chrome_extension_public_externs + [ "../settings_controls_types.js" ]
 }
 
-js_library("os_sync_browser_proxy.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_people_page/os_sync_browser_proxy.m.js" ]
+js_library("os_sync_browser_proxy") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("os_sync_controls") {
   deps = [
-    ":os_sync_browser_proxy.m",
+    ":os_sync_browser_proxy",
     "..:deep_linking_behavior",
     "..:metrics_recorder",
     "..:os_route",
@@ -239,10 +233,6 @@ js_library("users_page") {
   ]
 }
 
-group("polymer3_elements") {
-  public_deps = [ ":modulize" ]
-}
-
 html_to_js("web_components") {
   js_files = [
     "account_manager.js",
@@ -258,12 +248,4 @@ html_to_js("web_components") {
     "users_add_user_dialog.js",
     "users_page.js",
   ]
-}
-
-js_modulizer("modulize") {
-  input_files = [
-    "lock_state_behavior.js",
-    "os_sync_browser_proxy.js",
-  ]
-  namespace_rewrites = os_settings_namespace_rewrites
 }

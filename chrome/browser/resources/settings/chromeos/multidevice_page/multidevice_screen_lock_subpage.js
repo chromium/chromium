@@ -14,7 +14,7 @@ import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LockScreenUnlockType, LockStateBehavior} from '../os_people_page/lock_state_behavior.m.js';
+import {LockScreenUnlockType, LockStateBehavior} from '../os_people_page/lock_state_behavior.js';
 
 /**
  * @fileoverview
