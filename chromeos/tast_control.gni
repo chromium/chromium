@@ -232,6 +232,14 @@ tast_disabled_tests_from_chrome_all = [
 
   # https://crbug.com/1312965
   "policy.AllowDinosaurEasterEggEnrolled",
+
+  # https://crbug.com/1313481
+  "crostini.Basic.buster_stable",
+  "crostini.CrashReporter.buster_stable",
+  "crostini.SSHFSMount.buster_stable",
+  "crostini.SecureCopyPaste.paste_wayland_bullseye_stable",
+  "crostini.UninstallInvalidApp.buster_stable",
+  "crostini.Xattrs.buster_stable",
 ]
 
 # To disable a specific test in lacros_all_tast_tests, add it the following
