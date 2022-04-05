@@ -5,8 +5,9 @@
 #include "services/network/public/cpp/cors/cors_error_status.h"
 
 #include <ostream>
+#include <string>
 
-#include "net/base/net_errors.h"
+#include "base/unguessable_token.h"
 #include "services/network/public/mojom/cors.mojom-shared.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 

@@ -9,9 +9,7 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
-#include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/cors.mojom-shared.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 

@@ -19,6 +19,7 @@
 
 namespace base {
 class TickClock;
+class Value;
 }  // namespace base
 
 namespace net {
