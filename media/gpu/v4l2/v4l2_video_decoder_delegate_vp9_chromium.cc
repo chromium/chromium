@@ -255,7 +255,7 @@ DecodeStatus V4L2VideoDecoderDelegateVP9Chromium::SubmitDecode(
   v4l2_frame_params.tx_mode = frame_hdr->compressed_header.tx_mode;
   v4l2_frame_params.reference_mode =
       frame_hdr->compressed_header.reference_mode;
-  for (size_t i = 0; i < V4L2_REF_ID_CNT - VP9_FRAME_LAST; i++) {
+  for (size_t i = 0; i < V4L2_REF_ID_CNT; i++) {
     v4l2_frame_params.ref_frame_sign_biases |=
         (frame_hdr->ref_frame_sign_bias[i + VP9_FRAME_LAST] ? (1 << i) : 0);
   }
