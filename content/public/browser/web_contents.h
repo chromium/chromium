@@ -1067,8 +1067,13 @@ class WebContents : public PageNavigator,
   // original owner, etc.
   virtual bool HasOriginalOpener() = 0;
 
-  // Returns the original opener if HasOriginalOpener() is true, or nullptr
-  // otherwise.
+  // Returns the original opener's main frame if HasOriginalOpener() is true, or
+  // nullptr otherwise. NOTE: This will always be the main frame of the actual
+  // original opener's frame tree, so it might be different from the actual
+  // original opener if it is a subframe. See https://crbug.com/705316 for more
+  // context.
+  // TODO(https://crbug.com/1311820): Consider renaming this function and other
+  // things related to "original openers", to make the quirk more obvious.
   virtual RenderFrameHost* GetOriginalOpener() = 0;
 
   // Returns the WakeLockContext accociated with this WebContents.

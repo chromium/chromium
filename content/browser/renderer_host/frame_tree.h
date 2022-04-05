@@ -215,7 +215,7 @@ class CONTENT_EXPORT FrameTree {
   // Initializes the main frame for this FrameTree. That is it creates the
   // initial RenderFrameHost in the root node's RenderFrameHostManager, and also
   // creates an initial NavigationEntry (if the InitialNavigationEntry feature
-  // is enabled) that potentially inherits `opener`'s origin in its
+  // is enabled) that potentially inherits `opener_for_origin`'s origin in its
   // NavigationController. This method will call back into the delegates so it
   // should only be called once they have completed their initialization. Pass
   // in frame_policy so that it can be set in the root node's replication_state.
@@ -224,7 +224,7 @@ class CONTENT_EXPORT FrameTree {
   void Init(SiteInstance* main_frame_site_instance,
             bool renderer_initiated_creation,
             const std::string& main_frame_name,
-            RenderFrameHostImpl* opener,
+            RenderFrameHostImpl* opener_for_origin,
             const blink::FramePolicy& frame_policy);
 
   Type type() const { return type_; }

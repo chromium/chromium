@@ -753,7 +753,7 @@ void FrameTree::RegisterExistingOriginToPreventOptInIsolation(
 void FrameTree::Init(SiteInstance* main_frame_site_instance,
                      bool renderer_initiated_creation,
                      const std::string& main_frame_name,
-                     RenderFrameHostImpl* opener,
+                     RenderFrameHostImpl* opener_for_origin,
                      const blink::FramePolicy& frame_policy) {
   // blink::FrameTree::SetName always keeps |unique_name| empty in case of a
   // main frame - let's do the same thing here.
@@ -765,16 +765,16 @@ void FrameTree::Init(SiteInstance* main_frame_site_instance,
 
   // The initial empty document should inherit the origin of its opener (the
   // origin may change after the first commit), except when they are in
-  // different browsing context groups (`renderer_initiated_creation` is false),
-  // where it should use a new opaque origin.
+  // different browsing context groups (`renderer_initiated_creation` will be
+  // false), where it should use a new opaque origin.
   // See also https://crbug.com/932067.
   //
   // Note that the origin of the new frame might depend on sandbox flags.
   // Checking sandbox flags of the new frame should be safe at this point,
   // because the flags should be already inherited when creating the root node.
-  DCHECK(!renderer_initiated_creation || opener);
+  DCHECK(!renderer_initiated_creation || opener_for_origin);
   root_->current_frame_host()->SetOriginDependentStateOfNewFrame(
-      renderer_initiated_creation ? opener->GetLastCommittedOrigin()
+      renderer_initiated_creation ? opener_for_origin->GetLastCommittedOrigin()
                                   : url::Origin());
 
   if (blink::features::IsInitialNavigationEntryEnabled())
