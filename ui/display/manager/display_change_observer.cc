@@ -79,10 +79,15 @@ ManagedDisplayInfo::ManagedDisplayModeList GetModeListWithAllRefreshRates(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Constructs the raster DisplayColorSpaces out of |snapshot_color_space|,
 // including the HDR ones if present and |allow_high_bit_depth| is set.
-gfx::DisplayColorSpaces FillDisplayColorSpaces(
+gfx::DisplayColorSpaces CreateDisplayColorSpaces(
     const gfx::ColorSpace& snapshot_color_space,
     bool allow_high_bit_depth,
     const absl::optional<gfx::HDRStaticMetadata>& hdr_static_metadata) {
+  if (Display::HasForceDisplayColorProfile()) {
+    return gfx::DisplayColorSpaces(Display::GetForcedDisplayColorProfile(),
+                                   DisplaySnapshot::PrimaryFormat());
+  }
+
   // ChromeOS VMs (e.g. amd64-generic or betty) have INVALID Primaries; just
   // pass the color space along.
   if (!snapshot_color_space.IsValid()) {
@@ -403,8 +408,8 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfo(
   const bool allow_high_bit_depth =
       base::FeatureList::IsEnabled(features::kUseHDRTransferFunction);
   new_info.set_display_color_spaces(
-      FillDisplayColorSpaces(snapshot->color_space(), allow_high_bit_depth,
-                             snapshot->hdr_static_metadata()));
+      CreateDisplayColorSpaces(snapshot->color_space(), allow_high_bit_depth,
+                               snapshot->hdr_static_metadata()));
   constexpr int32_t kNormalBitDepth = 8;
   new_info.set_bits_per_channel(
       allow_high_bit_depth ? snapshot->bits_per_channel() : kNormalBitDepth);
