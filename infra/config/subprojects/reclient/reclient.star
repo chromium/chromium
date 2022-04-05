@@ -173,7 +173,7 @@ fyi_reclient_test_builder(
         ),
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["chromeos", "enable_reclient", "reclient_staging"],
+            apply_configs = ["chromeos", "enable_reclient", "reclient_test"],
         ),
     ),
 )
