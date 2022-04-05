@@ -189,7 +189,7 @@ DnsConfigServiceAndroid::DnsConfigServiceAndroid()
     : DnsConfigService(kFilePathHosts, kConfigChangeDelay) {
   // Allow constructing on one thread and living on another.
   DETACH_FROM_SEQUENCE(sequence_checker_);
-  dns_server_getter_ = base::BindRepeating(&android::GetDnsServers);
+  dns_server_getter_ = base::BindRepeating(&android::GetCurrentDnsServers);
 }
 
 DnsConfigServiceAndroid::~DnsConfigServiceAndroid() {

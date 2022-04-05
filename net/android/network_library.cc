@@ -134,41 +134,71 @@ absl::optional<int32_t> GetWifiSignalLevel() {
   return signal_strength;
 }
 
-bool GetDnsServers(std::vector<IPEndPoint>* dns_servers,
-                   bool* dns_over_tls_active,
-                   std::string* dns_over_tls_hostname,
-                   std::vector<std::string>* search_suffixes) {
-  DCHECK_GE(base::android::BuildInfo::GetInstance()->sdk_int(),
-            base::android::SDK_VERSION_MARSHMALLOW);
+namespace {
 
-  JNIEnv* env = AttachCurrentThread();
-  // Get the DNS status for the active network.
-  ScopedJavaLocalRef<jobject> result =
-      Java_AndroidNetworkLibrary_getDnsStatus(env, nullptr /* network */);
-  if (result.is_null())
-    return false;
-
+bool GetDnsServersInternal(JNIEnv* env,
+                           const base::android::JavaRef<jobject>& dns_status,
+                           std::vector<IPEndPoint>* dns_servers,
+                           bool* dns_over_tls_active,
+                           std::string* dns_over_tls_hostname,
+                           std::vector<std::string>* search_suffixes) {
   // Parse the DNS servers.
   std::vector<std::vector<uint8_t>> dns_servers_data;
   base::android::JavaArrayOfByteArrayToBytesVector(
-      env, Java_DnsStatus_getDnsServers(env, result), &dns_servers_data);
+      env, Java_DnsStatus_getDnsServers(env, dns_status), &dns_servers_data);
   for (const std::vector<uint8_t>& dns_address_data : dns_servers_data) {
     IPAddress dns_address(dns_address_data.data(), dns_address_data.size());
     IPEndPoint dns_server(dns_address, dns_protocol::kDefaultPort);
     dns_servers->push_back(dns_server);
   }
 
-  *dns_over_tls_active = Java_DnsStatus_getPrivateDnsActive(env, result);
+  *dns_over_tls_active = Java_DnsStatus_getPrivateDnsActive(env, dns_status);
   *dns_over_tls_hostname = base::android::ConvertJavaStringToUTF8(
-      Java_DnsStatus_getPrivateDnsServerName(env, result));
+      Java_DnsStatus_getPrivateDnsServerName(env, dns_status));
 
   std::string search_suffixes_str = base::android::ConvertJavaStringToUTF8(
-      Java_DnsStatus_getSearchDomains(env, result));
+      Java_DnsStatus_getSearchDomains(env, dns_status));
   *search_suffixes =
       base::SplitString(search_suffixes_str, ",", base::TRIM_WHITESPACE,
                         base::SPLIT_WANT_NONEMPTY);
 
   return !dns_servers->empty();
+}
+
+}  // namespace
+
+bool GetCurrentDnsServers(std::vector<IPEndPoint>* dns_servers,
+                          bool* dns_over_tls_active,
+                          std::string* dns_over_tls_hostname,
+                          std::vector<std::string>* search_suffixes) {
+  DCHECK_GE(base::android::BuildInfo::GetInstance()->sdk_int(),
+            base::android::SDK_VERSION_MARSHMALLOW);
+
+  JNIEnv* env = AttachCurrentThread();
+  // Get the DNS status for the current default network.
+  ScopedJavaLocalRef<jobject> result =
+      Java_AndroidNetworkLibrary_getCurrentDnsStatus(env);
+  if (result.is_null())
+    return false;
+  return GetDnsServersInternal(env, result, dns_servers, dns_over_tls_active,
+                               dns_over_tls_hostname, search_suffixes);
+}
+
+bool GetDnsServersForNetwork(std::vector<IPEndPoint>* dns_servers,
+                             bool* dns_over_tls_active,
+                             std::string* dns_over_tls_hostname,
+                             std::vector<std::string>* search_suffixes,
+                             NetworkChangeNotifier::NetworkHandle network) {
+  DCHECK_GE(base::android::BuildInfo::GetInstance()->sdk_int(),
+            base::android::SDK_VERSION_P);
+
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> result =
+      Java_AndroidNetworkLibrary_getDnsStatusForNetwork(env, network);
+  if (result.is_null())
+    return false;
+  return GetDnsServersInternal(env, result, dns_servers, dns_over_tls_active,
+                               dns_over_tls_hostname, search_suffixes);
 }
 
 bool ReportBadDefaultNetwork() {

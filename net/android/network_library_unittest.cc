@@ -44,8 +44,41 @@ TEST(NetworkLibraryTest, GetDnsSearchDomains) {
   std::string dns_over_tls_hostname;
   std::vector<std::string> search_suffixes;
 
-  if (!GetDnsServers(&dns_servers, &dns_over_tls_active, &dns_over_tls_hostname,
-                     &search_suffixes)) {
+  if (!GetCurrentDnsServers(&dns_servers, &dns_over_tls_active,
+                            &dns_over_tls_hostname, &search_suffixes)) {
+    return;
+  }
+
+  for (std::string suffix : search_suffixes) {
+    EXPECT_FALSE(suffix.empty());
+  }
+}
+
+TEST(NetworkLibraryTest, GetDnsSearchDomainsForNetwork) {
+  base::test::TaskEnvironment task_environment;
+
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SDK_VERSION_P) {
+    GTEST_SKIP() << "Cannot call or test GetDnsServersForNetwork() in pre-P.";
+  }
+
+  NetworkChangeNotifierFactoryAndroid ncn_factory;
+  NetworkChangeNotifier::DisableForTest ncn_disable_for_test;
+  std::unique_ptr<NetworkChangeNotifier> ncn(ncn_factory.CreateInstance());
+  EXPECT_TRUE(NetworkChangeNotifier::AreNetworkHandlesSupported());
+
+  auto default_network_handle = NetworkChangeNotifier::GetDefaultNetwork();
+  if (default_network_handle == NetworkChangeNotifier::kInvalidNetworkHandle)
+    GTEST_SKIP() << "Could not retrieve a working active network handle.";
+
+  std::vector<IPEndPoint> dns_servers;
+  bool dns_over_tls_active;
+  std::string dns_over_tls_hostname;
+  std::vector<std::string> search_suffixes;
+
+  if (!GetDnsServersForNetwork(&dns_servers, &dns_over_tls_active,
+                               &dns_over_tls_hostname, &search_suffixes,
+                               default_network_handle)) {
     return;
   }
 

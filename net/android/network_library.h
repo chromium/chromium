@@ -87,13 +87,13 @@ NET_EXPORT_PRIVATE std::string GetWifiSSID();
 // empty value is returned.
 NET_EXPORT_PRIVATE absl::optional<int32_t> GetWifiSignalLevel();
 
-// Gets the DNS servers and puts them in |dns_servers|. Sets
-// |dns_over_tls_active| and |dns_over_tls_hostname| based on the private DNS
-// settings. |dns_over_tls_hostname| will only be non-empty if
-// |dns_over_tls_active| is true.
+// Gets the DNS servers for the current default network and puts them in
+// `dns_servers`. Sets `dns_over_tls_active` and `dns_over_tls_hostname` based
+// on the private DNS settings. `dns_over_tls_hostname` will only be non-empty
+// if `dns_over_tls_active` is true.
 // Only callable on Marshmallow and newer releases.
 // Returns false when a valid server config could not be read.
-NET_EXPORT_PRIVATE bool GetDnsServers(
+NET_EXPORT_PRIVATE bool GetCurrentDnsServers(
     std::vector<IPEndPoint>* dns_servers,
     bool* dns_over_tls_active,
     std::string* dns_over_tls_hostname,
@@ -103,6 +103,17 @@ using DnsServerGetter =
                                  bool* dns_over_tls_active,
                                  std::string* dns_over_tls_hostname,
                                  std::vector<std::string>* search_suffixes)>;
+
+// Works as GetCurrentDnsServers but gets info specific to `network` instead
+// of the current default network.
+// Only callable on Pie and newer releases.
+// Returns false when a valid server config could not be read.
+NET_EXPORT_PRIVATE bool GetDnsServersForNetwork(
+    std::vector<IPEndPoint>* dns_servers,
+    bool* dns_over_tls_active,
+    std::string* dns_over_tls_hostname,
+    std::vector<std::string>* search_suffixes,
+    NetworkChangeNotifier::NetworkHandle network);
 
 // Reports to the framework that the current default network appears to have
 // connectivity issues. This may serve as a signal for the OS to consider

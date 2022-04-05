@@ -400,10 +400,36 @@ class AndroidNetworkLibrary {
 
     /**
      * Returns object representing the DNS configuration for the provided
-     * network. If |network| is null, uses the active network.
+     * network handle.
+     */
+    @RequiresApi(Build.VERSION_CODES.P)
+    @CalledByNative
+    public static DnsStatus getDnsStatusForNetwork(long networkHandle) {
+        // In case the network handle is invalid don't crash, instead return an empty DnsStatus and
+        // let native code handle that.
+        try {
+            Network network = Network.fromNetworkHandle(networkHandle);
+            return getDnsStatus(network);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Returns object representing the DNS configuration for the current
+     * default network.
      */
     @RequiresApi(Build.VERSION_CODES.M)
     @CalledByNative
+    public static DnsStatus getCurrentDnsStatus() {
+        return getDnsStatus(null);
+    }
+
+    /**
+     * Returns object representing the DNS configuration for the provided
+     * network. If |network| is null, uses the active network.
+     */
+    @RequiresApi(Build.VERSION_CODES.M)
     public static DnsStatus getDnsStatus(Network network) {
         if (!haveAccessNetworkState()) {
             return null;
