@@ -178,8 +178,16 @@
            Currently, we show blank containers -->
       <template is="dom-if" if="[[previewAlbums_]]">
         <div id="imageContainer" class="preview-image-container" aria-hidden="true">
-          <img class="preview-image" is="cr-auto-img"
-              auto-src="[[getPreviewImage_(firstPreviewAlbum_)]]" with-cookies>
+          <template is="dom-if" if="[[clickable]]">
+            <img class="preview-image clickable" is="cr-auto-img"
+                on-click="onClickAmbientModeButton_"
+                on-keypress="onClickAmbientModeButton_"
+                auto-src="[[getPreviewImage_(firstPreviewAlbum_)]]" with-cookies>
+          </template>
+          <template is="dom-if" if="[[!clickable]]">
+            <img class="preview-image" is="cr-auto-img"
+                auto-src="[[getPreviewImage_(firstPreviewAlbum_)]]" with-cookies>
+          </template>
         </div>
         <h2 id="textContainer" class="preview-text-container album-info-mainpage album-info-subpage">
           <span id="currentlySet" class="currently-set-text" aria-hidden="true">

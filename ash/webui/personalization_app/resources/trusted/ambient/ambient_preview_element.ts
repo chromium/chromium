@@ -34,6 +34,10 @@ export class AmbientPreview extends WithPersonalizationStore {
 
   static get properties() {
     return {
+      clickable: {
+        type: Boolean,
+        value: false,
+      },
       ambientModeEnabled_: Boolean,
       albums_: {
         type: Array,
@@ -57,6 +61,8 @@ export class AmbientPreview extends WithPersonalizationStore {
       }
     };
   }
+
+  clickable: boolean;
 
   private ambientModeEnabled_: boolean|null;
   private albums_: AmbientModeAlbum[]|null;

@@ -68,7 +68,7 @@
       </template>
     </wallpaper-preview>
     <template is="dom-if" if="[[isAmbientModeAllowed_()]]">
-      <ambient-preview main-page>
+      <ambient-preview clickable="[[clickable_]]" main-page>
         <div id="ambientLabel">
           <p>$i18n{screensaverLabel}</p>
           <cr-icon-button id="ambientSubpageLink"
