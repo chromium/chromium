@@ -275,6 +275,7 @@ public class StartupLoadingMetricsTest {
     @Test
     @LargeTest
     @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
+    @DisabledTest(message = "https://crbug.com/1313210")
     public void testRecordingOfFirstNavigationCommitPreForeground() throws Exception {
         UmaUtils.skipRecordingNextForegroundStartTimeForTesting();
 
