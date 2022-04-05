@@ -210,6 +210,28 @@ TEST_F(VideoDecoderTest, ResetReleasesPressure) {
   EXPECT_FALSE(fake_decoder->IsReclamationTimerActiveForTesting());
 }
 
+TEST_F(VideoDecoderTest, isConfigureSupportedWithInvalidSWConfig) {
+  V8TestingScope v8_scope;
+
+  auto* config = MakeGarbageCollected<VideoDecoderConfig>();
+  config->setCodec("invalid video codec");
+  config->setHardwareAcceleration(V8HardwarePreference::Enum::kPreferSoftware);
+  VideoDecoder::isConfigSupported(v8_scope.GetScriptState(), config,
+                                  v8_scope.GetExceptionState());
+  ASSERT_TRUE(v8_scope.GetExceptionState().HadException());
+}
+
+TEST_F(VideoDecoderTest, isConfigureSupportedWithInvalidHWConfig) {
+  V8TestingScope v8_scope;
+
+  auto* config = MakeGarbageCollected<VideoDecoderConfig>();
+  config->setCodec("invalid video codec");
+  config->setHardwareAcceleration(V8HardwarePreference::Enum::kPreferHardware);
+  VideoDecoder::isConfigSupported(v8_scope.GetScriptState(), config,
+                                  v8_scope.GetExceptionState());
+  ASSERT_TRUE(v8_scope.GetExceptionState().HadException());
+}
+
 }  // namespace
 
 }  // namespace blink

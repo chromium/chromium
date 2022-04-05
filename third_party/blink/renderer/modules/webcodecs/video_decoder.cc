@@ -263,11 +263,6 @@ VideoDecoder* VideoDecoder::Create(ScriptState* script_state,
 ScriptPromise VideoDecoder::isConfigSupported(ScriptState* script_state,
                                               const VideoDecoderConfig* config,
                                               ExceptionState& exception_state) {
-  HardwarePreference hw_pref = GetHardwareAccelerationPreference(*config);
-
-  if (hw_pref == HardwarePreference::kPreferHardware)
-    return IsAcceleratedConfigSupported(script_state, config, exception_state);
-
   String js_error_message;
   absl::optional<media::VideoType> video_type =
       IsValidVideoDecoderConfig(*config, &js_error_message /* out */);
@@ -276,6 +271,11 @@ ScriptPromise VideoDecoder::isConfigSupported(ScriptState* script_state,
     exception_state.ThrowTypeError(js_error_message);
     return ScriptPromise();
   }
+
+  HardwarePreference hw_pref = GetHardwareAccelerationPreference(*config);
+
+  if (hw_pref == HardwarePreference::kPreferHardware)
+    return IsAcceleratedConfigSupported(script_state, config, exception_state);
 
   // Accept all supported configs if we are not requiring hardware only.
   VideoDecoderSupport* support = VideoDecoderSupport::Create();
