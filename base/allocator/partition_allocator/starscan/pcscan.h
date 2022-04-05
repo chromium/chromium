@@ -20,11 +20,13 @@
 // We currently disable it to improve the runtime.
 #define PA_STARSCAN_EAGER_DOUBLE_FREE_DETECTION_ENABLED 0
 
-namespace base {
+namespace partition_alloc {
 
 class StatsReporter;
 
-namespace internal {
+}  // namespace partition_alloc
+
+namespace base::internal {
 
 [[noreturn]] BASE_EXPORT NOINLINE NOT_TAIL_CALLED void DoubleFreeAttempt();
 
@@ -141,7 +143,7 @@ class BASE_EXPORT PCScan final {
   inline static PCScanScheduler& scheduler();
 
   // Registers reporting class.
-  static void RegisterStatsReporter(StatsReporter* reporter);
+  static void RegisterStatsReporter(partition_alloc::StatsReporter* reporter);
 
  private:
   class PCScanThread;
@@ -277,7 +279,6 @@ inline PCScanScheduler& PCScan::scheduler() {
   return instance.scheduler_;
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_PCSCAN_H_

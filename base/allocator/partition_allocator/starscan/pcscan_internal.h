@@ -27,11 +27,7 @@ class StarScanSnapshot;
 
 }  // namespace partition_alloc::internal
 
-namespace base {
-
-class StatsReporter;
-
-namespace internal {
+namespace base::internal {
 
 class PCScanTask;
 
@@ -114,8 +110,8 @@ class PCScanInternal final {
   void ReinitForTesting(PCScan::InitConfig);                 // IN-TEST
   void FinishScanForTesting();                               // IN-TEST
 
-  void RegisterStatsReporter(StatsReporter* reporter);
-  StatsReporter& GetReporter();
+  void RegisterStatsReporter(partition_alloc::StatsReporter* reporter);
+  partition_alloc::StatsReporter& GetReporter();
 
  private:
   friend base::NoDestructor<PCScanInternal>;
@@ -149,14 +145,12 @@ class PCScanInternal final {
   const SimdSupport simd_support_;
 
   std::unique_ptr<WriteProtector> write_protector_;
-  StatsReporter* stats_reporter_ = nullptr;
+  partition_alloc::StatsReporter* stats_reporter_ = nullptr;
 
   bool is_initialized_ = false;
 };
 
-}  // namespace internal
-
-}  // namespace base
+}  // namespace base::internal
 
 // TODO(crbug.com/1288247): Remove this when migration is complete.
 namespace partition_alloc::internal {

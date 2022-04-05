@@ -104,7 +104,7 @@ void PCScan::FinishScanForTesting() {
   PCScanInternal::Instance().FinishScanForTesting();  // IN-TEST
 }
 
-void PCScan::RegisterStatsReporter(StatsReporter* reporter) {
+void PCScan::RegisterStatsReporter(partition_alloc::StatsReporter* reporter) {
   PCScanInternal::Instance().RegisterStatsReporter(reporter);
 }
 

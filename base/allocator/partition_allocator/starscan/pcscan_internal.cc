@@ -1306,7 +1306,7 @@ void PCScanInternal::Initialize(PCScan::InitConfig config) {
   scannable_roots_ = RootsMap();
   nonscannable_roots_ = RootsMap();
 
-  static StatsReporter s_no_op_reporter;
+  static partition_alloc::StatsReporter s_no_op_reporter;
   PCScan::Instance().RegisterStatsReporter(&s_no_op_reporter);
 
   // Don't initialize PCScanThread::Instance() as otherwise sandbox complains
@@ -1606,12 +1606,13 @@ void PCScanInternal::FinishScanForTesting() {
   current_task->RunFromScanner();
 }
 
-void PCScanInternal::RegisterStatsReporter(StatsReporter* reporter) {
+void PCScanInternal::RegisterStatsReporter(
+    partition_alloc::StatsReporter* reporter) {
   PA_DCHECK(reporter);
   stats_reporter_ = reporter;
 }
 
-StatsReporter& PCScanInternal::GetReporter() {
+partition_alloc::StatsReporter& PCScanInternal::GetReporter() {
   PA_DCHECK(stats_reporter_);
   return *stats_reporter_;
 }

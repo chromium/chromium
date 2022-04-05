@@ -19,11 +19,11 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 
-namespace base {
-
+namespace partition_alloc {
 class StatsReporter;
+}  // namespace partition_alloc
 
-namespace internal {
+namespace base::internal {
 
 #define FOR_ALL_PCSCAN_SCANNER_SCOPES(V) \
   V(Clear)                               \
@@ -133,7 +133,7 @@ class StatsCollector final {
   }
 
   base::TimeDelta GetOverallTime() const;
-  void ReportTracesAndHists(StatsReporter& reporter) const;
+  void ReportTracesAndHists(partition_alloc::StatsReporter& reporter) const;
 
  private:
   using MetadataString =
@@ -161,10 +161,10 @@ class StatsCollector final {
 
   template <Context context>
   void ReportTracesAndHistsImpl(
-      StatsReporter& reporter,
+      partition_alloc::StatsReporter& reporter,
       const DeferredTraceEventMap<context>& event_map) const;
 
-  void ReportSurvivalRate(StatsReporter& reporter) const;
+  void ReportSurvivalRate(partition_alloc::StatsReporter& reporter) const;
 
   DeferredTraceEventMap<Context::kMutator> mutator_trace_events_;
   DeferredTraceEventMap<Context::kScanner> scanner_trace_events_;
@@ -241,7 +241,6 @@ inline StatsCollector::MetadataString StatsCollector::ToUMAString(
 #undef FOR_ALL_PCSCAN_MUTATOR_SCOPES
 #undef FOR_ALL_PCSCAN_SCANNER_SCOPES
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_STATS_COLLECTOR_H_

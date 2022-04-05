@@ -79,7 +79,7 @@ constexpr const char* MutatorIdToTracingString(
 }
 
 // Inject TRACE_EVENT_BEGIN/END, TRACE_COUNTER1, and UmaHistogramTimes.
-class StatsReporterImpl final : public StatsReporter {
+class StatsReporterImpl final : public partition_alloc::StatsReporter {
  public:
   void ReportTraceEvent(internal::StatsCollector::ScannerId id,
                         [[maybe_unused]] const PlatformThreadId tid,

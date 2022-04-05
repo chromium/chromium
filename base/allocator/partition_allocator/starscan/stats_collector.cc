@@ -25,7 +25,8 @@ base::TimeDelta StatsCollector::GetOverallTime() const {
                                         ScannerId::kOverall);
 }
 
-void StatsCollector::ReportTracesAndHists(StatsReporter& reporter) const {
+void StatsCollector::ReportTracesAndHists(
+    partition_alloc::StatsReporter& reporter) const {
   ReportTracesAndHistsImpl<Context::kMutator>(reporter, mutator_trace_events_);
   ReportTracesAndHistsImpl<Context::kScanner>(reporter, scanner_trace_events_);
   ReportSurvivalRate(reporter);
@@ -46,7 +47,7 @@ base::TimeDelta StatsCollector::GetTimeImpl(
 
 template <Context context>
 void StatsCollector::ReportTracesAndHistsImpl(
-    StatsReporter& reporter,
+    partition_alloc::StatsReporter& reporter,
     const DeferredTraceEventMap<context>& event_map) const {
   std::array<base::TimeDelta, static_cast<size_t>(IdType<context>::kNumIds)>
       accumulated_events{};
@@ -79,7 +80,8 @@ void StatsCollector::ReportTracesAndHistsImpl(
   }
 }
 
-void StatsCollector::ReportSurvivalRate(StatsReporter& reporter) const {
+void StatsCollector::ReportSurvivalRate(
+    partition_alloc::StatsReporter& reporter) const {
   const double survived_rate =
       static_cast<double>(survived_quarantine_size()) / quarantine_last_size_;
   reporter.ReportSurvivedQuarantineSize(survived_quarantine_size());
@@ -101,10 +103,10 @@ template base::TimeDelta StatsCollector::GetTimeImpl(
     IdType<Context::kScanner>) const;
 
 template void StatsCollector::ReportTracesAndHistsImpl(
-    StatsReporter& reporter,
+    partition_alloc::StatsReporter& reporter,
     const DeferredTraceEventMap<Context::kMutator>&) const;
 template void StatsCollector::ReportTracesAndHistsImpl(
-    StatsReporter& reporter,
+    partition_alloc::StatsReporter& reporter,
     const DeferredTraceEventMap<Context::kScanner>&) const;
 
 }  // namespace internal
