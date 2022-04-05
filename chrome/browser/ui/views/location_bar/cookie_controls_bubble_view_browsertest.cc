@@ -147,7 +147,8 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, BlockingDisabled) {
 // ==================== Pixel tests ====================
 
 // Test opening cookie controls bubble.
-IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, InvokeUi_CookiesBlocked) {
+// TODO(https://crbug.com/1309905):  Flakily fails on multiple platforms 
+IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, DISABLED_InvokeUi_CookiesBlocked) {
   SetThirdPartyCookieBlocking(true);
   ShowAndVerifyUi();
 }
