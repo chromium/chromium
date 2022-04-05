@@ -86,22 +86,23 @@ class MODULES_EXPORT MediaStreamTrack
   ~MediaStreamTrack() override;
 
   // MediaStreamTrack.idl
-  String kind() const;
-  String id() const;
-  String label() const;
-  bool enabled() const;
-  void setEnabled(bool);
-  bool muted() const;
-  String ContentHint() const;
-  void SetContentHint(const String&);
-  String readyState() const;
+  virtual String kind() const;
+  virtual String id() const;
+  virtual String label() const;
+  virtual bool enabled() const;
+  virtual void setEnabled(bool);
+  virtual bool muted() const;
+  virtual String ContentHint() const;
+  virtual void SetContentHint(const String&);
+  virtual String readyState() const;
   virtual MediaStreamTrack* clone(ScriptState*);
-  void stopTrack(ExecutionContext*);
-  MediaTrackCapabilities* getCapabilities() const;
-  MediaTrackConstraints* getConstraints() const;
-  MediaTrackSettings* getSettings() const;
-  CaptureHandle* getCaptureHandle() const;
-  ScriptPromise applyConstraints(ScriptState*, const MediaTrackConstraints*);
+  virtual void stopTrack(ExecutionContext*);
+  virtual MediaTrackCapabilities* getCapabilities() const;
+  virtual MediaTrackConstraints* getConstraints() const;
+  virtual MediaTrackSettings* getSettings() const;
+  virtual CaptureHandle* getCaptureHandle() const;
+  virtual ScriptPromise applyConstraints(ScriptState*,
+                                         const MediaTrackConstraints*);
 
   // This function is called when constrains have been successfully applied.
   // Called from UserMediaRequest when it succeeds. It is not IDL-exposed.

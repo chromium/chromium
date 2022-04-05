@@ -82,6 +82,8 @@ blink_modules_sources("mediastream") {
     "remote_media_stream_track_adapter.h",
     "track_audio_renderer.cc",
     "track_audio_renderer.h",
+    "transferred_media_stream_track.cc",
+    "transferred_media_stream_track.h",
     "user_media_client.cc",
     "user_media_client.h",
     "user_media_controller.cc",

@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/overconstrained_error.h"
 #include "third_party/blink/renderer/modules/mediastream/processed_local_audio_source.h"
+#include "third_party/blink/renderer/modules/mediastream/transferred_media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_controller.h"
 #include "third_party/blink/renderer/modules/mediastream/webaudio_media_stream_audio_sink.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -272,12 +273,7 @@ MediaStreamTrack* MediaStreamTrack::Create(ExecutionContext* context,
 MediaStreamTrack* MediaStreamTrack::Create(
     ExecutionContext* context,
     const base::UnguessableToken& token) {
-  MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
-      "dummy", MediaStreamSource::StreamType::kTypeVideo, "dummy",
-      false /* remote */);
-  MediaStreamComponent* component =
-      MakeGarbageCollected<MediaStreamComponent>(source);
-  return MakeGarbageCollected<MediaStreamTrack>(context, component);
+  return MakeGarbageCollected<TransferredMediaStreamTrack>(context);
 }
 
 MediaStreamTrack::MediaStreamTrack(ExecutionContext* context,
