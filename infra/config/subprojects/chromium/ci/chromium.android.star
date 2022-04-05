@@ -4,6 +4,7 @@
 """Definitions of builders in the chromium.android builder group."""
 
 load("//lib/args.star", "args")
+load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "goma", "os", "sheriff_rotations")
 load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
@@ -101,6 +102,28 @@ ci.builder(
 ci.builder(
     name = "Android arm Builder (dbg)",
     branch_selector = branches.STANDARD_MILESTONE,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "enable_reclient",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = [
+                "download_vr_test_apks",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "main_builder_mb",
+        ),
+        build_gs_bucket = "chromium-android-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "builder|arm",
         short_name = "32",
@@ -216,6 +239,29 @@ ci.builder(
 
 ci.builder(
     name = "Marshmallow Tablet Tester",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = [
+                "download_vr_test_apks",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "main_builder_mb",
+        ),
+        build_gs_bucket = "chromium-android-archive",
+        run_tests_serially = True,
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "tester|tablet",
         short_name = "M",
