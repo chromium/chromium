@@ -13,6 +13,13 @@
 
 namespace autofill {
 
+enum class PredictionSource {
+  kDefaultHeuristics,
+  kExperimentalHeuristics,
+  kNextGenHeuristics,
+  kMaxValue = kNextGenHeuristics
+};
+
 // Represents a possible type for a given field.
 struct FieldCandidate {
   FieldCandidate(ServerFieldType field_type, float field_score);
@@ -44,6 +51,13 @@ class FieldCandidates {
 
   // Determines the best type based on the current possible types.
   ServerFieldType BestHeuristicType() const;
+
+  absl::optional<ServerFieldType> GetHypotheticalType(
+      PredictionSource prediction_source) const {
+    DCHECK_NE(prediction_source, PredictionSource::kDefaultHeuristics);
+    // TODO(crbug.com/1310255): Implement experimental types.
+    return absl::nullopt;
+  }
 
  private:
   // Internal storage for all the possible types for a given field.

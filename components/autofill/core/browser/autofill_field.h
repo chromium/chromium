@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/field_candidates.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -35,11 +36,6 @@ class AutofillField : public FormFieldData {
     IGNORED = 0,
     PHONE_PREFIX = 1,
     PHONE_SUFFIX = 2,
-  };
-
-  enum class PredictionSource {
-    kDefaultHeuristics,
-    kMaxValue = kDefaultHeuristics
   };
 
   AutofillField();
