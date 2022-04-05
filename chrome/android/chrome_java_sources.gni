@@ -1226,5 +1226,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/webapps/launchpad/LaunchpadActivity.java",
   "java/src/org/chromium/chrome/browser/webapps/launchpad/LaunchpadUtils.java",
   "java/src/org/chromium/chrome/browser/webauth/authenticator/CableAuthenticatorActivity.java",
+  "java/src/org/chromium/chrome/browser/webauth/authenticator/CableAuthenticatorUSBActivity.java",
   "java/src/org/chromium/chrome/browser/webshare/ShareServiceImplementationFactory.java",
 ]
