@@ -8,7 +8,7 @@
 dictionary AuctionAdInterestGroup {
   required USVString owner;
   required USVString name;
-  unsigned short priority;
+  double priority;
   USVString biddingLogicUrl;
   USVString biddingWasmHelperUrl;
   USVString dailyUpdateUrl;
