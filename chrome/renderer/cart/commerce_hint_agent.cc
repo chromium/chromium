@@ -996,37 +996,31 @@ void CommerceHintAgent::WillSendRequest(const blink::WebURLRequest& request) {
   }
 }
 
-void CommerceHintAgent::OnNavigation(const GURL& url,
-                                     OnNavigationCallback callback) {
-  if (!commerce::kOptimizeRendererSignal.Get()) {
-    std::move(callback).Run(false);
-    return;
-  }
-  if (!navigation_observer_.is_bound() ||
-      !navigation_observer_.is_connected()) {
-    navigation_observer_ = GetObserver(render_frame());
-  }
-  navigation_observer_->OnNavigation(url, std::move(callback));
-}
-
 void CommerceHintAgent::DidStartNavigation(
     const GURL& url,
     absl::optional<blink::WebNavigationType> navigation_type) {
   if (!url.SchemeIsHTTPOrHTTPS())
     return;
   has_finished_loading_ = false;
-  OnNavigation(url,
-               base::BindOnce(&CommerceHintAgent::DidStartNavigationCallback,
-                              weak_factory_.GetWeakPtr(), url,
-                              std::move(navigation_type)));
+  starting_url_ = url;
+  mojo::Remote<mojom::CommerceHintObserver> observer =
+      GetObserver(render_frame());
+  if (!commerce::kOptimizeRendererSignal.Get()) {
+    DidStartNavigationCallback(url, std::move(observer), false);
+    return;
+  }
+  auto* observer_ptr = observer.get();
+  observer_ptr->OnNavigation(
+      url,
+      base::BindOnce(&CommerceHintAgent::DidStartNavigationCallback,
+                     weak_factory_.GetWeakPtr(), url, std::move(observer)));
 }
 
 void CommerceHintAgent::DidStartNavigationCallback(
     const GURL& url,
-    absl::optional<blink::WebNavigationType> navigation_type,
+    mojo::Remote<mojom::CommerceHintObserver> observer,
     bool should_skip) {
   should_skip_ = should_skip;
-  starting_url_ = url;
 }
 
 void CommerceHintAgent::DidCommitProvisionalLoad(
@@ -1060,18 +1054,29 @@ void CommerceHintAgent::DidFinishLoad() {
   const GURL& url(frame->GetDocument().Url());
   if (!url.SchemeIs(url::kHttpsScheme))
     return;
-  OnNavigation(url, base::BindOnce(&CommerceHintAgent::DidFinishLoadCallback,
-                                   weak_factory_.GetWeakPtr()));
+  mojo::Remote<mojom::CommerceHintObserver> observer =
+      GetObserver(render_frame());
+  if (!commerce::kOptimizeRendererSignal.Get()) {
+    DidFinishLoadCallback(url, std::move(observer), false);
+    return;
+  }
+  auto* observer_ptr = observer.get();
+  observer_ptr->OnNavigation(
+      url,
+      base::BindOnce(&CommerceHintAgent::DidFinishLoadCallback,
+                     weak_factory_.GetWeakPtr(), url, std::move(observer)));
 }
 
-void CommerceHintAgent::DidFinishLoadCallback(bool should_skip) {
+void CommerceHintAgent::DidFinishLoadCallback(
+    const GURL& url,
+    mojo::Remote<mojom::CommerceHintObserver> observer,
+    bool should_skip) {
   should_skip_ = should_skip;
   if (should_skip_) {
     return;
   }
   has_finished_loading_ = true;
   extraction_count_ = 0;
-  const GURL& url(render_frame()->GetWebFrame()->GetDocument().Url());
   // Some URLs might satisfy the patterns for both cart and checkout (e.g.
   // https://www.foo.com/cart/checkout). In those cases, cart has higher
   // priority.

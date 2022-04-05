@@ -57,8 +57,6 @@ class CommerceHintAgent
       const blink::WebFormElement& form);
 
  private:
-  using OnNavigationCallback = base::OnceCallback<void(bool)>;
-
   void MaybeExtractProducts();
   void ExtractProducts();
   void ExtractCartFromCurrentFrame();
@@ -72,7 +70,6 @@ class CommerceHintAgent
   bool is_extraction_pending_{false};
   bool is_extraction_running_{false};
   bool should_skip_{false};
-  mojo::Remote<mojom::CommerceHintObserver> navigation_observer_;
   base::WeakPtrFactory<CommerceHintAgent> weak_factory_{this};
 
   class JavaScriptRequest : public blink::WebScriptExecutionCallback {
@@ -102,18 +99,17 @@ class CommerceHintAgent
   void DidObserveLayoutShift(double score, bool after_input_or_scroll) override;
   void OnMainFrameIntersectionChanged(const gfx::Rect& intersect_rect) override;
 
-  void OnNavigation(const GURL& url, OnNavigationCallback callback);
   // Callbacks with business logics for handling navigation-related observer
   // calls. These callbacks are triggered when navigation-related signals are
   // captured and carry an extra bool |should_act| indicating whether commerce
   // hint signals should be collected on current URL or not.
   void DidStartNavigationCallback(
       const GURL& url,
-      absl::optional<blink::WebNavigationType> navigation_type,
+      mojo::Remote<mojom::CommerceHintObserver> observer,
       bool should_skip);
-  void DidCommitProvisionalLoadCallback(ui::PageTransition transition,
-                                        bool should_skip);
-  void DidFinishLoadCallback(bool should_skip);
+  void DidFinishLoadCallback(const GURL& url,
+                             mojo::Remote<mojom::CommerceHintObserver> observer,
+                             bool should_skip);
 };
 
 }  // namespace cart

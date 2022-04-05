@@ -467,6 +467,8 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByURL_XHR) {
   ExpectUKM(XHREntry::kEntryName, "IsAddToCart");
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug/1310497): This test is flaky on ChromeOS.
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, VisitCart) {
   // Cannot use dummy page with zero products, or the cart would be deleted.
   NavigateToURL("https://www.guitarcenter.com/cart.html");
@@ -474,6 +476,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, VisitCart) {
   WaitForUmaCount("Commerce.Carts.VisitCart", 1);
   WaitForCartCount(kExpectedExample);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, ExtractCart) {
   // This page has three products.
@@ -669,7 +672,43 @@ IN_PROC_BROWSER_TEST_F(CommerceHintCacaoTest, Rejected) {
   SendXHR("/add-to-cart", "product: 123");
   base::PlatformThread::Sleep(TestTimeouts::tiny_timeout() * 30);
   WaitForCartCount(kEmptyExpected);
+  WaitForUmaCount("Commerce.Carts.AddToCartByURL", 0);
+
+  NavigateToURL("https://www.guitarcenter.com/cart.html");
+  WaitForCartCount(kEmptyExpected);
+  WaitForUmaCount("Commerce.Carts.VisitCart", 0);
+}
+
+class CommerceHintOptimizeRendererDisabledTest : public CommerceHintAgentTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{ntp_features::kNtpChromeCartModule,
+          {{"optimize-renderer-signal", "false"}}},
+         {optimization_guide::features::kOptimizationHints, {{}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// If command line argument "optimization_guide_hints_override" is not given,
+// nothing is specified in AddHintForTesting(), and the real hints are not
+// downloaded, all the URLs are considered non-shopping.
+IN_PROC_BROWSER_TEST_F(CommerceHintOptimizeRendererDisabledTest, Rejected) {
+  NavigateToURL("https://www.guitarcenter.com/");
+  SendXHR("/add-to-cart", "product: 123");
+  base::PlatformThread::Sleep(TestTimeouts::tiny_timeout() * 30);
+  WaitForCartCount(kEmptyExpected);
+  // The cart won't be added on browser side because of Cacao rejection either
+  // way, but when optimize-renderer-signal is disabled, renderer will still
+  // observer and process commerce signals on this site.
   WaitForUmaCount("Commerce.Carts.AddToCartByURL", 1);
+
+  NavigateToURL("https://www.guitarcenter.com/cart.html");
+  WaitForCartCount(kEmptyExpected);
+  WaitForUmaCount("Commerce.Carts.VisitCart", 1);
 }
 
 class CommerceHintProductInfoTest : public CommerceHintAgentTest {
@@ -1200,6 +1239,8 @@ IN_PROC_BROWSER_TEST_F(CommerceHintOptimizeRendererTest,
   WaitForUmaBucketCount("Commerce.Carts.ExtractionTimedOut", 0, 2);
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug/1310497): This test is flaky on ChromeOS.
 class CommerceHintAgentFencedFrameTest : public CommerceHintAgentTest {
  public:
   CommerceHintAgentFencedFrameTest() = default;
@@ -1267,5 +1308,6 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentPortalBrowserTest, VisitCartInPortal) {
   EXPECT_EQ(true, content::EvalJs(web_contents(), "activate()"));
   WaitForUmaCount("Commerce.Carts.VisitCart", 1);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
