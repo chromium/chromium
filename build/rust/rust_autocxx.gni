@@ -169,6 +169,10 @@ template("rust_autocxx") {
       "--",
       "{{defines}}",
       "{{include_dirs}}",
+      "-fparse-all-comments",  # so rustdoc includes comments of the form
+                               # // This is what this API does
+                               # not just
+                               # /// This is what this API does
       "-std=c++17",  # Keep in sync with main Chromium build.
       "-nostdinc++",
       "-isystem" + rebase_path(libcxx_prefix + "/include"),
