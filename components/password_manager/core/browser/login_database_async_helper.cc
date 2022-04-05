@@ -105,11 +105,18 @@ LoginsResult LoginDatabaseAsyncHelper::GetAllLogins(
   return obtained_forms;
 }
 
-LoginsResult LoginDatabaseAsyncHelper::GetAutofillableLogins() {
+LoginsResult LoginDatabaseAsyncHelper::GetAutofillableLogins(
+    PasswordStoreBackendMetricsRecorder metrics_recorder) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<std::unique_ptr<PasswordForm>> results;
-  if (!login_db_ || !login_db_->GetAutofillableLogins(&results))
+  if (!login_db_ || !login_db_->GetAutofillableLogins(&results)) {
+    metrics_recorder.RecordMetrics(
+        /*success=*/false,
+        /*error=*/absl::optional<ErrorFromPasswordStoreOrAndroidBackend>(
+            PasswordStoreBackendError::kUnrecoverable));
     return {};
+  }
+  metrics_recorder.RecordMetrics(/*success=*/true, /*error=*/absl::nullopt);
   return results;
 }
 

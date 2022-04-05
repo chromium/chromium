@@ -44,7 +44,8 @@ class LoginDatabaseAsyncHelper : private PasswordStoreSync {
   // Synchronous implementation of PasswordStoreBackend interface.
   LoginsResult GetAllLogins(
       PasswordStoreBackendMetricsRecorder metrics_recorder);
-  LoginsResult GetAutofillableLogins();
+  LoginsResult GetAutofillableLogins(
+      PasswordStoreBackendMetricsRecorder metrics_recorder);
   LoginsResult FillMatchingLogins(const std::vector<PasswordFormDigest>& forms,
                                   bool include_psl);
   PasswordStoreChangeList AddLogin(const PasswordForm& form);
