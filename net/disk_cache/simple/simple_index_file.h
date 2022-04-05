@@ -161,15 +161,6 @@ class NET_EXPORT_PRIVATE SimpleIndexFile {
                           base::Time* out_cache_last_modified,
                           SimpleIndexLoadResult* out_result);
 
-  // Implemented either in simple_index_file_posix.cc or
-  // simple_index_file_win.cc. base::FileEnumerator turned out to be very
-  // expensive in terms of memory usage therefore it's used only on non-POSIX
-  // environments for convenience (for now). Returns whether the traversal
-  // succeeded.
-  static bool TraverseCacheDirectory(
-      const base::FilePath& cache_path,
-      const EntryFileCallback& entry_file_callback);
-
   // Writes the index file to disk atomically.
   static void SyncWriteToDisk(net::CacheType cache_type,
                               const base::FilePath& cache_directory,

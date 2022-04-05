@@ -515,6 +515,8 @@ component("net") {
     "disk_cache/simple/simple_entry_impl.h",
     "disk_cache/simple/simple_entry_operation.cc",
     "disk_cache/simple/simple_entry_operation.h",
+    "disk_cache/simple/simple_file_enumerator.cc",
+    "disk_cache/simple/simple_file_enumerator.h",
     "disk_cache/simple/simple_file_tracker.cc",
     "disk_cache/simple/simple_file_tracker.h",
     "disk_cache/simple/simple_histogram_macros.h",
@@ -1277,7 +1279,6 @@ component("net") {
       "disk_cache/blockfile/file_win.cc",
       "disk_cache/blockfile/mapped_file_win.cc",
       "disk_cache/cache_util_win.cc",
-      "disk_cache/simple/simple_index_file_win.cc",
       "disk_cache/simple/simple_util_win.cc",
       "http/http_auth_handler_ntlm_win.cc",
       "http/http_auth_sspi_win.cc",
@@ -1322,7 +1323,6 @@ component("net") {
       "base/network_interfaces_posix.cc",
       "base/network_interfaces_posix.h",
       "disk_cache/cache_util_posix.cc",
-      "disk_cache/simple/simple_index_file_posix.cc",
       "disk_cache/simple/simple_util_posix.cc",
       "http/url_security_manager_posix.cc",
       "socket/socket_posix.cc",
@@ -4215,6 +4215,7 @@ test("net_unittests") {
     "disk_cache/blockfile/storage_block_unittest.cc",
     "disk_cache/cache_util_unittest.cc",
     "disk_cache/entry_unittest.cc",
+    "disk_cache/simple/simple_file_enumerator_unittest.cc",
     "disk_cache/simple/simple_file_tracker_unittest.cc",
     "disk_cache/simple/simple_index_file_unittest.cc",
     "disk_cache/simple/simple_index_unittest.cc",
@@ -4711,6 +4712,7 @@ test("net_unittests") {
       "disk_cache/blockfile/block_files_unittest.cc",
 
       # Need to read input data files.
+      "disk_cache/simple/simple_file_enumerator_unittest.cc",
       "socket/ssl_server_socket_unittest.cc",
       "spdy/fuzzing/hpack_fuzz_util_test.cc",
 
