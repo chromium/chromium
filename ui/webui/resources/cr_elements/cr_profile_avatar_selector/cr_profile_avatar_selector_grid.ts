@@ -12,7 +12,6 @@ import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bun
 import {assert} from '../../js/assert.m.js';
 import {hasKeyModifiers} from '../../js/util.m.js';
 
-/** @polymer */
 export class CrProfileAvatarSelectorGridElement extends PolymerElement {
   static get is() {
     return 'cr-profile-avatar-selector-grid';
@@ -31,19 +30,15 @@ export class CrProfileAvatarSelectorGridElement extends PolymerElement {
     };
   }
 
-  /** @override */
-  ready() {
+  ignoreModifiedKeyEvents: boolean;
+
+  override ready() {
     super.ready();
-    this.addEventListener(
-        'keydown', e => this.onKeyDown_(/** @type {!KeyboardEvent} */ (e)));
+    this.addEventListener('keydown', this.onKeyDown_.bind(this));
   }
 
-  /**
-   * @param {!KeyboardEvent} e
-   * @private
-   */
-  onKeyDown_(e) {
-    const items = this.querySelectorAll('.avatar');
+  private onKeyDown_(e: KeyboardEvent) {
+    const items = this.querySelectorAll<HTMLElement>('.avatar');
     switch (e.key) {
       case 'ArrowDown':
       case 'ArrowUp':
@@ -66,12 +61,10 @@ export class CrProfileAvatarSelectorGridElement extends PolymerElement {
   /**
    * Moves focus up/down/left/right according to the given direction. Wraps
    * around as necessary.
-   * @param {!NodeList<!Element>} items
-   * @param {string} direction Must be on of 'ArrowLeft', 'ArrowRight',
-   *     'ArrowUp', 'ArrowDown'.
-   * @private
    */
-  moveFocusRow_(items, direction) {
+  private moveFocusRow_(
+      items: NodeListOf<HTMLElement>,
+      direction: 'ArrowDown'|'ArrowRight'|'ArrowUp'|'ArrowLeft') {
     let offset =
         (direction === 'ArrowDown' || direction === 'ArrowRight') ? 1 : -1;
     const style = getComputedStyle(this);
@@ -83,7 +76,7 @@ export class CrProfileAvatarSelectorGridElement extends PolymerElement {
     const gridSize = rows * rowSize;
 
     const focusIndex = Array.prototype.slice.call(items).findIndex(item => {
-      return this.parentNode.activeElement === item;
+      return (this.parentNode as ShadowRoot).activeElement === item;
     });
 
     let nextItem = null;
@@ -108,8 +101,14 @@ export class CrProfileAvatarSelectorGridElement extends PolymerElement {
       nextItem = items[nextIndex];
     }
 
-    nextItem.focus();
-    assert(this.parentNode.activeElement === nextItem);
+    nextItem!.focus();
+    assert((this.parentNode as ShadowRoot).activeElement === nextItem);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-profile-avatar-selector-grid': CrProfileAvatarSelectorGridElement;
   }
 }
 

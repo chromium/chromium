@@ -14,20 +14,18 @@ import '//resources/polymer/v3_0/paper-styles/color.js';
 import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import './cr_profile_avatar_selector_grid.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getImage} from '../../js/icon.js';
 
-/**
- * @typedef {{url: string,
- *            label: string,
- *            index: (number),
- *            isGaiaAvatar: (boolean),
- *            selected: (boolean)}}
- */
-export let AvatarIcon;
+export type AvatarIcon = {
+  url: string,
+  label: string,
+  index: number,
+  isGaiaAvatar: boolean,
+  selected: boolean,
+};
 
-/** @polymer */
 export class CrProfileAvatarSelectorElement extends PolymerElement {
   static get is() {
     return 'cr-profile-avatar-selector';
@@ -41,7 +39,6 @@ export class CrProfileAvatarSelectorElement extends PolymerElement {
     return {
       /**
        * The list of profile avatar URLs and labels.
-       * @type {!Array<!AvatarIcon>}
        */
       avatars: {
         type: Array,
@@ -52,7 +49,6 @@ export class CrProfileAvatarSelectorElement extends PolymerElement {
 
       /**
        * The currently selected profile avatar icon, if any.
-       * @type {?AvatarIcon}
        */
       selectedAvatar: {
         type: Object,
@@ -67,7 +63,6 @@ export class CrProfileAvatarSelectorElement extends PolymerElement {
       /**
        * The currently selected profile avatar icon index, or '-1' if none is
        * selected.
-       * @type {number}
        */
       tabFocusableAvatar_: {
         type: Number,
@@ -76,22 +71,16 @@ export class CrProfileAvatarSelectorElement extends PolymerElement {
     };
   }
 
-  /**
-   * @param {number} index
-   * @return {string}
-   * @private
-   */
-  getAvatarId_(index) {
+  avatars: AvatarIcon[];
+  selectedAvatar: AvatarIcon|null;
+  ignoreModifiedKeyEvents: boolean;
+  private tabFocusableAvatar_: number;
+
+  private getAvatarId_(index: number): string {
     return 'avatarId' + index;
   }
 
-  /**
-   * @param {number} index
-   * @param {!AvatarIcon} item
-   * @return {string}
-   * @private
-   */
-  getTabIndex_(index, item) {
+  private getTabIndex_(index: number, item: AvatarIcon): string {
     if (item.index === this.tabFocusableAvatar_) {
       return '0';
     }
@@ -103,38 +92,23 @@ export class CrProfileAvatarSelectorElement extends PolymerElement {
     return '-1';
   }
 
-  /**
-   * @return {number}
-   * @private
-   */
-  computeTabFocusableAvatar_() {
+  private computeTabFocusableAvatar_(): number {
     const selectedAvatar =
         this.avatars.find(avatar => this.isAvatarSelected(avatar));
     return selectedAvatar ? selectedAvatar.index : -1;
   }
 
-  /** @private */
-  getSelectedClass_(avatarItem) {
+  private getSelectedClass_(avatarItem: AvatarIcon): string {
     // TODO(dpapad): Rename 'iron-selected' to 'selected' now that this CSS
     // class is not assigned by any iron-* behavior.
     return this.isAvatarSelected(avatarItem) ? 'iron-selected' : '';
   }
 
-  /**
-   * @param {AvatarIcon} avatarItem
-   * @return {string}
-   * @private
-   */
-  getCheckedAttribute_(avatarItem) {
+  private getCheckedAttribute_(avatarItem: AvatarIcon): string {
     return this.isAvatarSelected(avatarItem) ? 'true' : 'false';
   }
 
-  /**
-   * @param {AvatarIcon} avatarItem
-   * @return {boolean}
-   * @private
-   */
-  isAvatarSelected(avatarItem) {
+  private isAvatarSelected(avatarItem: AvatarIcon): boolean {
     return !!avatarItem &&
         (avatarItem.selected ||
          (!!this.selectedAvatar &&
@@ -142,23 +116,22 @@ export class CrProfileAvatarSelectorElement extends PolymerElement {
   }
 
   /**
-   * @param {string} iconUrl
-   * @return {string} A CSS image-set for multiple scale factors.
-   * @private
+   * @return A CSS image-set for multiple scale factors.
    */
-  getIconImageSet_(iconUrl) {
+  private getIconImageSet_(iconUrl: string): string {
     return getImage(iconUrl);
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onAvatarTap_(e) {
+  private onAvatarTap_(e: DomRepeatEvent<AvatarIcon>) {
     // |selectedAvatar| is set to pass back selection to the owner of this
     // component.
-    this.selectedAvatar =
-        /** @type {!{model: {item: !AvatarIcon}}} */ (e).model.item;
+    this.selectedAvatar = e.model.item;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-profile-avatar-selector': CrProfileAvatarSelectorElement;
   }
 }
 
