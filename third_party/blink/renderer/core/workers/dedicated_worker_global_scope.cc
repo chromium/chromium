@@ -47,7 +47,6 @@
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
-#include "third_party/blink/renderer/core/workers/dedicated_worker.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker_object_proxy.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker_thread.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
@@ -497,7 +496,6 @@ void DedicatedWorkerGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(dedicated_worker_host_);
   visitor->Trace(back_forward_cache_controller_host_);
   visitor->Trace(animation_frame_provider_);
-  visitor->Trace(dedicated_workers_);
   WorkerGlobalScope::Trace(visitor);
 }
 
@@ -529,16 +527,6 @@ void DedicatedWorkerGlobalScope::SetIsInBackForwardCache(
             total_bytes_buffered_while_in_back_forward_cache_);
     total_bytes_buffered_while_in_back_forward_cache_ = 0;
   }
-}
-
-void DedicatedWorkerGlobalScope::AddDedicatedWorker(
-    DedicatedWorker* dedicated_worker) {
-  dedicated_workers_.insert(dedicated_worker);
-}
-
-void DedicatedWorkerGlobalScope::RemoveDedicatedWorker(
-    DedicatedWorker* dedicated_worker) {
-  dedicated_workers_.erase(dedicated_worker);
 }
 
 }  // namespace blink

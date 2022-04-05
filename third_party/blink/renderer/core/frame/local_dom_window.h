@@ -61,7 +61,6 @@ namespace blink {
 class BarProp;
 class CSSStyleDeclaration;
 class CustomElementRegistry;
-class DedicatedWorker;
 class Document;
 class DocumentInit;
 class DOMSelection;
@@ -458,14 +457,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // frame is in back-forward cache.
   void DidBufferLoadWhileInBackForwardCache(size_t num_bytes);
 
-  // Adds a DedicatedWorker. This is called when a DedicatedWorker is created in
-  // this ExecutionContext.
-  void AddDedicatedWorker(DedicatedWorker* dedicated_worker);
-
-  // Removes a DedicatedWorker This is called when a DedicatedWorker is
-  // destroyed in this ExecutionContext.
-  void RemoveDedicatedWorker(DedicatedWorker* dedicated_worker);
-
   // Whether the window is anonymous or not.
   bool anonymous() const { return anonymous_; }
 
@@ -589,9 +580,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // due to back-forward cache. This number gets reset when the frame gets out
   // of the back-forward cache.
   size_t total_bytes_buffered_while_in_back_forward_cache_ = 0;
-
-  // The set of DedicatedWorkers that are created in this ExecutionContext.
-  HeapHashSet<Member<DedicatedWorker>> dedicated_workers_;
 
   // Anonymous Iframe:
   // https://github.com/camillelamy/explainers/blob/main/anonymous_iframes.md

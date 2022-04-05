@@ -127,7 +127,6 @@
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_type_policy_factory.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
-#include "third_party/blink/renderer/core/workers/dedicated_worker.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_buffer_limit_tracker.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
@@ -2191,7 +2190,6 @@ void LocalDOMWindow::Trace(Visitor* visitor) const {
   visitor->Trace(text_suggestion_controller_);
   visitor->Trace(isolated_world_csp_map_);
   visitor->Trace(network_state_observer_);
-  visitor->Trace(dedicated_workers_);
   visitor->Trace(fence_);
   DOMWindow::Trace(visitor);
   ExecutionContext::Trace(visitor);
@@ -2241,14 +2239,6 @@ void LocalDOMWindow::SetIsInBackForwardCache(bool is_in_back_forward_cache) {
 void LocalDOMWindow::DidBufferLoadWhileInBackForwardCache(size_t num_bytes) {
   total_bytes_buffered_while_in_back_forward_cache_ += num_bytes;
   BackForwardCacheBufferLimitTracker::Get().DidBufferBytes(num_bytes);
-}
-
-void LocalDOMWindow::AddDedicatedWorker(DedicatedWorker* dedicated_worker) {
-  dedicated_workers_.insert(dedicated_worker);
-}
-
-void LocalDOMWindow::RemoveDedicatedWorker(DedicatedWorker* dedicated_worker) {
-  dedicated_workers_.erase(dedicated_worker);
 }
 
 Fence* LocalDOMWindow::fence() {
