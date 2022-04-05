@@ -1177,7 +1177,7 @@
   {
     "name": "device-posture",
     "owners": [ "alexis.menard@intel.com" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 112
   },
   {
     "name": "diagnostics-app-navigation",
