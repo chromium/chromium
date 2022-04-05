@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "components/metrics/metrics_provider.h"
-#import "ios/public/provider/chrome/browser/mailto/mailto_handler_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -36,8 +35,7 @@ ChromeBrowserProvider& GetChromeBrowserProvider() {
 
 // A dummy implementation of ChromeBrowserProvider.
 
-ChromeBrowserProvider::ChromeBrowserProvider()
-    : mailto_handler_provider_(std::make_unique<MailtoHandlerProvider>()) {}
+ChromeBrowserProvider::ChromeBrowserProvider() {}
 
 ChromeBrowserProvider::~ChromeBrowserProvider() {
   chrome_identity_service_.reset();
@@ -69,10 +67,6 @@ UserFeedbackProvider* ChromeBrowserProvider::GetUserFeedbackProvider() const {
 
 FollowProvider* ChromeBrowserProvider::GetFollowProvider() const {
   return nullptr;
-}
-
-MailtoHandlerProvider* ChromeBrowserProvider::GetMailtoHandlerProvider() const {
-  return mailto_handler_provider_.get();
 }
 
 void ChromeBrowserProvider::AddObserver(Observer* observer) {

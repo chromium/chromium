@@ -13,7 +13,6 @@ source_set("browser") {
   deps = [
     "//base",
     "//components/metrics",
-    "//ios/public/provider/chrome/browser/mailto",
     "//ios/public/provider/chrome/browser/signin",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
@@ -58,7 +57,6 @@ source_set("test_support") {
     "//base",
     "//ios/chrome/browser/ui/ntp:logo",
     "//ios/public/provider/chrome/browser/follow",
-    "//ios/public/provider/chrome/browser/mailto:test_support",
     "//ios/public/provider/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/signin:test_support",
     "//ios/public/provider/chrome/browser/user_feedback:test_support",

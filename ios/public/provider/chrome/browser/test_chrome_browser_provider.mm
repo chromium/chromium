@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #import "ios/public/provider/chrome/browser/follow/follow_provider.h"
-#include "ios/public/provider/chrome/browser/mailto/test_mailto_handler_provider.h"
 #include "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #include "ios/public/provider/chrome/browser/signin/fake_chrome_trusted_vault_service.h"
 #import "ios/public/provider/chrome/browser/user_feedback/test_user_feedback_provider.h"
@@ -21,7 +20,6 @@ namespace ios {
 
 TestChromeBrowserProvider::TestChromeBrowserProvider()
     : user_feedback_provider_(std::make_unique<TestUserFeedbackProvider>()),
-      mailto_handler_provider_(std::make_unique<TestMailtoHandlerProvider>()),
       follow_provider_(std::make_unique<FollowProvider>()) {}
 
 TestChromeBrowserProvider::~TestChromeBrowserProvider() {}
@@ -43,11 +41,6 @@ TestChromeBrowserProvider::GetChromeTrustedVaultService() {
 TestUserFeedbackProvider* TestChromeBrowserProvider::GetUserFeedbackProvider()
     const {
   return user_feedback_provider_.get();
-}
-
-MailtoHandlerProvider* TestChromeBrowserProvider::GetMailtoHandlerProvider()
-    const {
-  return mailto_handler_provider_.get();
 }
 
 FollowProvider* TestChromeBrowserProvider::GetFollowProvider() const {
