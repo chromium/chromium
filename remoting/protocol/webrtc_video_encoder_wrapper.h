@@ -140,6 +140,10 @@ class WebrtcVideoEncoderWrapper : public webrtc::VideoEncoder {
   base::TimeTicks latest_frame_encode_start_time_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // If a key-frame is requested, but this class needs to drop the frame, this
+  // flag remembers the request so it can be applied to the next frame.
+  bool pending_key_frame_request_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
   // TaskRunner used for notifying |video_channel_state_observer_|.
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
 
