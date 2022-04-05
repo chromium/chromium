@@ -137,4 +137,11 @@ TEST_P(HTMLCanvasElementTest, CanvasInvalidationInFrame) {
       GetDocument().GetPage()->Animator().has_canvas_invalidation_for_test());
 }
 
+TEST_P(HTMLCanvasElementTest, BrokenCanvasHighRes) {
+  EXPECT_NE(HTMLCanvasElement::BrokenCanvas(2.0).first,
+            HTMLCanvasElement::BrokenCanvas(1.0).first);
+  EXPECT_EQ(HTMLCanvasElement::BrokenCanvas(2.0).second, 2.0);
+  EXPECT_EQ(HTMLCanvasElement::BrokenCanvas(1.0).second, 1.0);
+}
+
 }  // namespace blink

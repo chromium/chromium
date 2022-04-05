@@ -764,7 +764,8 @@ void HTMLCanvasElement::NotifyListenersCanvasChanged() {
 }
 
 // Returns an image and the image's resolution scale factor.
-static std::pair<blink::Image*, float> BrokenCanvas(float device_scale_factor) {
+std::pair<blink::Image*, float> HTMLCanvasElement::BrokenCanvas(
+    float device_scale_factor) {
   if (device_scale_factor >= 2) {
     DEFINE_STATIC_REF(blink::Image, broken_canvas_hi_res,
                       (blink::Image::LoadPlatformResource(IDR_BROKENCANVAS,
@@ -800,9 +801,8 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
                               bool flatten_composited_layers) {
   if (context_creation_was_blocked_ ||
       (context_ && context_->isContextLost())) {
-    // TODO(crbug.com/1313054): Fix this code to work in high-DPI modes.
     std::pair<Image*, float> broken_canvas_and_image_scale_factor =
-        BrokenCanvas(1);
+        BrokenCanvas(GetDocument().DevicePixelRatio());
     Image* broken_canvas = broken_canvas_and_image_scale_factor.first;
     context.Save();
     context.FillRect(

@@ -371,6 +371,11 @@ class CORE_EXPORT HTMLCanvasElement final
       SourceImageStatus*,
       const AlphaDisposition alpha_disposition = kPremultiplyAlpha);
 
+  static std::pair<blink::Image*, float> BrokenCanvas(
+      float device_scale_factor);
+
+  FRIEND_TEST_ALL_PREFIXES(HTMLCanvasElementTest, BrokenCanvasHighRes);
+
   HeapHashSet<WeakMember<CanvasDrawListener>> listeners_;
 
   gfx::Size size_;
