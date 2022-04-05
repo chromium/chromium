@@ -151,7 +151,9 @@ class PixelTestPages():
                       test_rect=[0, 0, 100, 300]),
         PixelTestPage('pixel_canvas2d.html',
                       base_name + '_Canvas2DRedBox',
-                      test_rect=[0, 0, 300, 300]),
+                      test_rect=[0, 0, 300, 300],
+                      matching_algorithm=algo.FuzzyMatchingAlgorithm(
+                          max_different_pixels=130, pixel_delta_threshold=3)),
         PixelTestPage('pixel_canvas2d_untagged.html',
                       base_name + '_Canvas2DUntagged',
                       test_rect=[0, 0, 257, 257]),
