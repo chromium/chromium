@@ -53,8 +53,15 @@ suite('AppearanceFontHandler', function() {
     return fontsBrowserProxy.whenCalled('fetchFontsData');
   });
 
-  test('minimum font size preview', async () => {
-    fontsPage.prefs = {webkit: {webprefs: {minimum_font_size: {value: 0}}}};
+  test('minimum font size preview', () => {
+    fontsPage.prefs = {
+      webkit: {
+        webprefs: {
+          minimum_font_size:
+              {value: 0, type: chrome.settingsPrivate.PrefType.NUMBER}
+        }
+      }
+    };
     assertTrue(fontsPage.$.minimumSizeFontPreview.hidden);
     fontsPage.set('prefs.webkit.webprefs.minimum_font_size.value', 6);
     assertFalse(fontsPage.$.minimumSizeFontPreview.hidden);
@@ -62,7 +69,7 @@ suite('AppearanceFontHandler', function() {
     assertTrue(fontsPage.$.minimumSizeFontPreview.hidden);
   });
 
-  test('font preview size', async () => {
+  test('font preview size', () => {
     function assertFontSize(element: HTMLElement, expectedFontSize: number) {
       // Check that the font size is applied correctly.
       const {value, unit} = element.computedStyleMap().get('font-size') as
@@ -77,8 +84,10 @@ suite('AppearanceFontHandler', function() {
     fontsPage.prefs = {
       webkit: {
         webprefs: {
-          default_font_size: {value: 20},
-          default_fixed_font_size: {value: 10},
+          default_font_size:
+              {value: 20, type: chrome.settingsPrivate.PrefType.NUMBER},
+          default_fixed_font_size:
+              {value: 10, type: chrome.settingsPrivate.PrefType.NUMBER},
         }
       }
     };
@@ -87,5 +96,51 @@ suite('AppearanceFontHandler', function() {
     assertFontSize(fontsPage.$.serifFontPreview, 20);
     assertFontSize(fontsPage.$.sansSerifFontPreview, 20);
     assertFontSize(fontsPage.$.fixedFontPreview, 10);
+  });
+
+  test('font preview family', () => {
+    function assertFontFamily(element: HTMLElement, genericFamily: string) {
+      // Check that the font-family is applied correctly.
+      const family = element.computedStyleMap().get('font-family') as string;
+      assertEquals(`custom_${genericFamily}`, family.toString());
+    }
+
+    fontsPage.prefs = {
+      webkit: {
+        webprefs: {
+          fonts: {
+            standard: {
+              Zyyy: {
+                value: 'custom_standard',
+                type: chrome.settingsPrivate.PrefType.STRING
+              }
+            },
+            serif: {
+              Zyyy: {
+                value: 'custom_serif',
+                type: chrome.settingsPrivate.PrefType.STRING
+              }
+            },
+            sansserif: {
+              Zyyy: {
+                value: 'custom_sansserif',
+                type: chrome.settingsPrivate.PrefType.STRING
+              }
+            },
+            fixed: {
+              Zyyy: {
+                value: 'custom_fixed',
+                type: chrome.settingsPrivate.PrefType.STRING
+              }
+            },
+          }
+        }
+      }
+    };
+
+    assertFontFamily(fontsPage.$.standardFontPreview, 'standard');
+    assertFontFamily(fontsPage.$.serifFontPreview, 'serif');
+    assertFontFamily(fontsPage.$.sansSerifFontPreview, 'sansserif');
+    assertFontFamily(fontsPage.$.fixedFontPreview, 'fixed');
   });
 });
