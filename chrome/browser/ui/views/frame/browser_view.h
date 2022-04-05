@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/views/frame/top_controls_slide_controller.h"
 #include "chrome/browser/ui/views/frame/web_contents_close_handler.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
+#include "chrome/browser/ui/views/side_panel/user_note/user_note_ui_coordinator.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/common/buildflags.h"
@@ -203,6 +204,10 @@ class BrowserView : public BrowserWindow,
 
   SidePanelRegistry* global_side_panel_registry() {
     return global_side_panel_registry_.get();
+  }
+
+  UserNoteUICoordinator* user_note_ui_coordinator() {
+    return user_note_ui_coordinator_.get();
   }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -1008,6 +1013,8 @@ class BrowserView : public BrowserWindow,
   raw_ptr<SidePanel> lens_side_panel_ = nullptr;
 
   std::unique_ptr<SidePanelCoordinator> side_panel_coordinator_;
+
+  std::unique_ptr<UserNoteUICoordinator> user_note_ui_coordinator_;
 
   std::unique_ptr<SidePanelRegistry> global_side_panel_registry_;
 

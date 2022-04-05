@@ -63,6 +63,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "incognito.icon",
     "incognito_menu_art.icon",
     "incognito_profile.icon",
+    "ink_highlighter.icon",
     "input.icon",
     "key.icon",
     "keyboard_arrow_down.icon",

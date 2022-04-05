@@ -73,6 +73,7 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
 
   std::unique_ptr<views::View> CreateBookmarksWebView(Browser* browser);
   std::unique_ptr<views::View> CreateReadAnythingWebView(Browser* browser);
+  std::unique_ptr<views::View> CreateUserNoteView(Browser* browser);
 
   // SidePanelRegistryObserver:
   void OnEntryRegistered(SidePanelEntry* entry) override;

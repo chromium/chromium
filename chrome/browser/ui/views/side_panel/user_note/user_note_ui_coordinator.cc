@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/side_panel/user_note_ui_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/user_note/user_note_ui_coordinator.h"
 
 UserNoteUICoordinator::UserNoteUICoordinator(Browser* browser)
     : browser_(browser) {
@@ -43,4 +43,9 @@ void UserNoteUICoordinator::OnTabStripModelChanged(
     const TabStripSelectionChange& selection) {
   // TODO(cheickcisse): Implement OnTabStripModelChanged, which should call
   // Invalidate() to poll the latest list of notes to display.
+}
+
+std::unique_ptr<views::View> UserNoteUICoordinator::CreateUserNotesView() {
+  // TODO(cheickcisse): Implement scroll view with table view layout.
+  return std::make_unique<views::View>();
 }

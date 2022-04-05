@@ -27,6 +27,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_notes/user_notes_features.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -113,6 +114,15 @@ SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view,
         l10n_util::GetStringUTF16(IDS_READ_ANYTHING_TITLE),
         ui::ImageModel::FromVectorIcon(kReaderModeIcon, ui::kColorIcon),
         base::BindRepeating(&SidePanelCoordinator::CreateReadAnythingWebView,
+                            base::Unretained(this), browser_view->browser())));
+  }
+
+  if (user_notes::IsUserNotesEnabled()) {
+    global_registry->Register(std::make_unique<SidePanelEntry>(
+        SidePanelEntry::Id::kUserNote,
+        l10n_util::GetStringUTF16(IDS_USER_NOTE_TITLE),
+        ui::ImageModel::FromVectorIcon(kInkHighlighterIcon, ui::kColorIcon),
+        base::BindRepeating(&SidePanelCoordinator::CreateUserNoteView,
                             base::Unretained(this), browser_view->browser())));
   }
 }
@@ -372,6 +382,11 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateBookmarksWebView(
 std::unique_ptr<views::View> SidePanelCoordinator::CreateReadAnythingWebView(
     Browser* browser) {
   return std::make_unique<ReadAnythingContainerView>(browser);
+}
+
+std::unique_ptr<views::View> SidePanelCoordinator::CreateUserNoteView(
+    Browser* browser) {
+  return browser_view_->user_note_ui_coordinator()->CreateUserNotesView();
 }
 
 void SidePanelCoordinator::OnEntryRegistered(SidePanelEntry* entry) {
