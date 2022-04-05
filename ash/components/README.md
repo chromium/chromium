@@ -1,3 +1,6 @@
+DEPRECATED. If you're about adding new component for ash-chrome only,
+consider using //chromeos/ash/components.
+
 # About //ash/components
 
 This directory contains components that are used by //ash system UI and window
