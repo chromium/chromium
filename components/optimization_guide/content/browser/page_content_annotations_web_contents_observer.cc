@@ -238,9 +238,7 @@ PageContentAnnotationsWebContentsObserver::MaybeRequestFrameTextDump(
   DCHECK(!features::ShouldAnnotateTitleInsteadOfPageContent());
 
   DCHECK(navigation_handle->HasCommitted());
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
+
   DCHECK(navigation_handle->IsInPrimaryMainFrame());
 
   if (!navigation_handle->GetURL().SchemeIsHTTPOrHTTPS())
