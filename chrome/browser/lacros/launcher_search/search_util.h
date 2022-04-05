@@ -10,6 +10,13 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 
 class AutocompleteController;
+class FaviconCache;
+
+namespace bookmarks {
+
+class BookmarkModel;
+
+}  // namespace bookmarks
 
 namespace crosapi {
 
@@ -28,6 +35,8 @@ mojom::SearchResultPtr CreateAnswerResult(AutocompleteMatch& match,
 // Creates an Omnibox search result from the AutocompleteMatch.
 mojom::SearchResultPtr CreateResult(AutocompleteMatch& match,
                                     AutocompleteController* controller,
+                                    FaviconCache* favicon_cache,
+                                    bookmarks::BookmarkModel* bookmark_model,
                                     const std::u16string& query,
                                     const AutocompleteInput& input);
 

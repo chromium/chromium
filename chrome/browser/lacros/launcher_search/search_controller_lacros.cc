@@ -8,10 +8,14 @@
 
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/favicon/favicon_service_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/lacros/launcher_search/search_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/keyed_service/core/service_access_type.h"
 
 namespace crosapi {
@@ -31,6 +35,12 @@ SearchControllerLacros::SearchControllerLacros()
       ProviderTypes());
   autocomplete_controller_->AddObserver(this);
 
+  favicon_cache_ = std::make_unique<FaviconCache>(
+      FaviconServiceFactory::GetForProfile(profile_,
+                                           ServiceAccessType::EXPLICIT_ACCESS),
+      HistoryServiceFactory::GetForProfile(profile_,
+                                           ServiceAccessType::EXPLICIT_ACCESS));
+
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
   if (!service->IsAvailable<mojom::SearchControllerRegistry>())
     return;
@@ -48,6 +58,7 @@ void SearchControllerLacros::OnProfileWillBeDestroyed(Profile* profile) {
   // otherwise there will be a use-after-free.
   weak_ptr_factory_.InvalidateWeakPtrs();
   autocomplete_controller_.reset();
+  favicon_cache_.reset();
   profile_observation_.Reset();
   profile_ = nullptr;
 }
@@ -96,8 +107,10 @@ void SearchControllerLacros::OnResultChanged(AutocompleteController* controller,
     auto result =
         match.answer.has_value()
             ? CreateAnswerResult(match, autocomplete_controller_.get(), input_)
-            : CreateResult(match, autocomplete_controller_.get(), query_,
-                           input_);
+            : CreateResult(match, autocomplete_controller_.get(),
+                           favicon_cache_.get(),
+                           BookmarkModelFactory::GetForBrowserContext(profile_),
+                           query_, input_);
 
     results.push_back(std::move(result));
   }

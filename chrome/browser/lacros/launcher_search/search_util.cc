@@ -199,6 +199,8 @@ SearchResultPtr CreateAnswerResult(AutocompleteMatch& match,
 
 SearchResultPtr CreateResult(AutocompleteMatch& match,
                              AutocompleteController* controller,
+                             FaviconCache* favicon_cache,
+                             bookmarks::BookmarkModel* bookmark_model,
                              const std::u16string& query,
                              const AutocompleteInput& input) {
   SearchResultPtr result = CreateBaseResult(match, controller, input);
@@ -213,7 +215,24 @@ SearchResultPtr CreateResult(AutocompleteMatch& match,
     // This may not be the final type. Favicons and bookmarks take precedence.
     result->omnibox_type = MatchTypeToOmniboxType(match.type);
 
-    // TODO(crbug.com/1228587): Implement favicon and bookmark logic.
+    // Set the favicon if this result is eligible.
+    bool use_favicon =
+        result->omnibox_type == SearchResult::OmniboxType::kDomain ||
+        result->omnibox_type == SearchResult::OmniboxType::kOpenTab;
+    if (use_favicon && favicon_cache) {
+      const auto icon = favicon_cache->GetFaviconForPageUrl(
+          match.destination_url, base::DoNothing());
+      if (!icon.IsEmpty()) {
+        result->omnibox_type = SearchResult::OmniboxType::kFavicon;
+        result->favicon = icon.AsImageSkia();
+      }
+    }
+
+    // Otherwise, set the bookmark type if this result is eligible.
+    if (result->omnibox_type != SearchResult::OmniboxType::kFavicon &&
+        bookmark_model && bookmark_model->IsBookmarked(match.destination_url)) {
+      result->omnibox_type = SearchResult::OmniboxType::kBookmark;
+    }
   }
 
   // Calculator results come in two forms:
