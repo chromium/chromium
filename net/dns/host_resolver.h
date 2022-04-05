@@ -17,6 +17,7 @@
 #include "net/base/address_family.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/network_change_notifier.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/request_priority.h"
 #include "net/dns/host_cache.h"
@@ -418,6 +419,17 @@ class NET_EXPORT HostResolver {
   static std::unique_ptr<ContextHostResolver> CreateStandaloneContextResolver(
       NetLog* net_log,
       absl::optional<ManagerOptions> options = absl::nullopt,
+      bool enable_caching = true);
+  // Same, but bind the resolver to `target_network`: all lookups will be
+  // performed exclusively for `target_network`, lookups will fail if
+  // `target_network` disconnects. This can only be used by network-bound
+  // URLRequestContexts.
+  // Only implemented for Android starting from Marshmallow.
+  static std::unique_ptr<HostResolver> CreateStandaloneNetworkBoundResolver(
+      NetLog* net_log,
+      NetworkChangeNotifier::NetworkHandle network,
+      absl::optional<ManagerOptions> options = absl::nullopt,
+      base::StringPiece host_mapping_rules = "",
       bool enable_caching = true);
 
   // Helpers for interacting with HostCache and ProcResolver.

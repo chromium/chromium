@@ -101,6 +101,7 @@ class NET_EXPORT HostResolverManager
  public:
   using MdnsListener = HostResolver::MdnsListener;
   using ResolveHostParameters = HostResolver::ResolveHostParameters;
+  using PassKey = base::PassKey<HostResolverManager>;
 
   // Creates a HostResolver as specified by |options|. Blocking tasks are run in
   // ThreadPool.
@@ -125,6 +126,17 @@ class NET_EXPORT HostResolverManager
   // the host resolutions are cancelled, and the completion callbacks will not
   // be called.
   ~HostResolverManager() override;
+
+  // Same as constructor above, but binds the HostResolverManager to
+  // `target_network`: all DNS requests will be performed for `target_network`
+  // only, requests will fail if `target_network` disconnects. Only
+  // HostResolvers bound to the same network will be able to use this.
+  // Only implemented for Android.
+  static std::unique_ptr<HostResolverManager>
+  CreateNetworkBoundHostResolverManager(
+      const HostResolver::ManagerOptions& options,
+      NetworkChangeNotifier::NetworkHandle target_network,
+      NetLog* net_log);
 
   // |resolve_context| must have already been added (via
   // RegisterResolveContext()). If |optional_parameters| specifies any cache
@@ -230,6 +242,13 @@ class NET_EXPORT HostResolverManager
   size_t num_jobs_for_testing() const { return jobs_.size(); }
 
   bool check_ipv6_on_wifi_for_testing() const { return check_ipv6_on_wifi_; }
+
+  // Public to be called from std::make_unique. Not to be called directly.
+  HostResolverManager(base::PassKey<HostResolverManager>,
+                      const HostResolver::ManagerOptions& options,
+                      SystemDnsConfigChangeNotifier* system_dns_config_notifier,
+                      NetworkChangeNotifier::NetworkHandle target_network,
+                      NetLog* net_log);
 
  protected:
   // Callback from HaveOnlyLoopbackAddresses probe.
@@ -458,6 +477,12 @@ class NET_EXPORT HostResolverManager
   // by a network connection change.
   void InvalidateCaches(bool network_change = false);
 
+  void UpdateConnectionType(NetworkChangeNotifier::ConnectionType type);
+
+  bool IsBoundToNetwork() const {
+    return target_network_ != NetworkChangeNotifier::kInvalidNetworkHandle;
+  }
+
   // Returns |nullptr| if DoH probes are currently not allowed (due to
   // configuration or current connection state).
   std::unique_ptr<DnsProbeRunner> CreateDohProbeRunner(
@@ -486,6 +511,8 @@ class NET_EXPORT HostResolverManager
   std::unique_ptr<DnsClient> dns_client_;
 
   raw_ptr<SystemDnsConfigChangeNotifier> system_dns_config_notifier_;
+
+  NetworkChangeNotifier::NetworkHandle target_network_;
 
   // False if IPv6 should not be attempted and assumed unreachable when on a
   // WiFi connection. See https://crbug.com/696569 for further context.

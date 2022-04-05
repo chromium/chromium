@@ -3086,10 +3086,23 @@ HostResolverManager::HostResolverManager(
     const HostResolver::ManagerOptions& options,
     SystemDnsConfigChangeNotifier* system_dns_config_notifier,
     NetLog* net_log)
+    : HostResolverManager(PassKey(),
+                          options,
+                          system_dns_config_notifier,
+                          NetworkChangeNotifier::kInvalidNetworkHandle,
+                          net_log) {}
+
+HostResolverManager::HostResolverManager(
+    base::PassKey<HostResolverManager>,
+    const HostResolver::ManagerOptions& options,
+    SystemDnsConfigChangeNotifier* system_dns_config_notifier,
+    NetworkChangeNotifier::NetworkHandle target_network,
+    NetLog* net_log)
     : max_queued_jobs_(0),
       proc_params_(nullptr, options.max_system_retry_attempts),
       net_log_(net_log),
       system_dns_config_notifier_(system_dns_config_notifier),
+      target_network_(target_network),
       check_ipv6_on_wifi_(options.check_ipv6_on_wifi),
       last_ipv6_probe_result_(true),
       additional_resolver_flags_(0),
@@ -3113,8 +3126,11 @@ HostResolverManager::HostResolverManager(
     BUILDFLAG(IS_FUCHSIA)
   RunLoopbackProbeJob();
 #endif
-  NetworkChangeNotifier::AddIPAddressObserver(this);
-  NetworkChangeNotifier::AddConnectionTypeObserver(this);
+  // Network-bound HostResolverManagers don't need to act on network changes.
+  if (!IsBoundToNetwork()) {
+    NetworkChangeNotifier::AddIPAddressObserver(this);
+    NetworkChangeNotifier::AddConnectionTypeObserver(this);
+  }
   if (system_dns_config_notifier_)
     system_dns_config_notifier_->AddObserver(this);
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_OPENBSD) && \
@@ -3122,7 +3138,11 @@ HostResolverManager::HostResolverManager(
   EnsureDnsReloaderInit();
 #endif
 
-  OnConnectionTypeChanged(NetworkChangeNotifier::GetConnectionType());
+  auto connection_type =
+      IsBoundToNetwork()
+          ? NetworkChangeNotifier::GetNetworkConnectionType(target_network)
+          : NetworkChangeNotifier::GetConnectionType();
+  UpdateConnectionType(connection_type);
 
 #if defined(ENABLE_BUILT_IN_DNS)
   dns_client_ = DnsClient::CreateClient(net_log_);
@@ -3145,10 +3165,29 @@ HostResolverManager::~HostResolverManager() {
   // OnJobComplete will not start any new jobs.
   jobs_.clear();
 
-  NetworkChangeNotifier::RemoveIPAddressObserver(this);
-  NetworkChangeNotifier::RemoveConnectionTypeObserver(this);
+  if (target_network_ == NetworkChangeNotifier::kInvalidNetworkHandle) {
+    NetworkChangeNotifier::RemoveIPAddressObserver(this);
+    NetworkChangeNotifier::RemoveConnectionTypeObserver(this);
+  }
   if (system_dns_config_notifier_)
     system_dns_config_notifier_->RemoveObserver(this);
+}
+
+// static
+std::unique_ptr<HostResolverManager>
+HostResolverManager::CreateNetworkBoundHostResolverManager(
+    const HostResolver::ManagerOptions& options,
+    NetworkChangeNotifier::NetworkHandle target_network,
+    NetLog* net_log) {
+#if BUILDFLAG(IS_ANDROID)
+  DCHECK(NetworkChangeNotifier::AreNetworkHandlesSupported());
+  return std::make_unique<HostResolverManager>(
+      PassKey(), options, nullptr /* system_dns_config_notifier */,
+      target_network, net_log);
+#else   // !BUILDFLAG(IS_ANDROID)
+  NOTIMPLEMENTED();
+  return nullptr;
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 std::unique_ptr<HostResolver::ResolveHostRequest>
@@ -3161,6 +3200,8 @@ HostResolverManager::CreateRequest(
     HostCache* host_cache) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!invalidation_in_progress_);
+
+  DCHECK_EQ(resolve_context->GetTargetNetwork(), target_network_);
 
   // If required, ResolveContexts must register (via RegisterResolveContext())
   // before use to ensure cached data is invalidated on network and
@@ -4038,13 +4079,25 @@ void HostResolverManager::GetEffectiveParametersForRequest(
   *out_effective_types = effective_types;
 }
 
+namespace {
+
+bool RequestWillUseWiFi(NetworkChangeNotifier::NetworkHandle network) {
+  NetworkChangeNotifier::ConnectionType connection_type;
+  if (network == NetworkChangeNotifier::kInvalidNetworkHandle)
+    connection_type = NetworkChangeNotifier::GetConnectionType();
+  else
+    connection_type = NetworkChangeNotifier::GetNetworkConnectionType(network);
+
+  return connection_type == NetworkChangeNotifier::CONNECTION_WIFI;
+}
+
+}  // namespace
+
 bool HostResolverManager::IsIPv6Reachable(const NetLogWithSource& net_log) {
-  // Don't bother checking if the device is on WiFi and IPv6 is assumed to not
-  // work on WiFi.
-  if (!check_ipv6_on_wifi_ && NetworkChangeNotifier::GetConnectionType() ==
-                                  NetworkChangeNotifier::CONNECTION_WIFI) {
+  // Don't bother checking if the request will use WiFi and IPv6 is assumed to
+  // not work on WiFi.
+  if (!check_ipv6_on_wifi_ && RequestWillUseWiFi(target_network_))
     return false;
-  }
 
   // Cache the result for kIPv6ProbePeriodMs (measured from after
   // IsGloballyReachable() completes).
@@ -4192,6 +4245,7 @@ void HostResolverManager::TryServingAllJobsFromHosts() {
 }
 
 void HostResolverManager::OnIPAddressChanged() {
+  DCHECK(!IsBoundToNetwork());
   last_ipv6_probe_time_ = base::TimeTicks();
   // Abandon all ProbeJobs.
   probe_weak_ptr_factory_.InvalidateWeakPtrs();
@@ -4206,23 +4260,13 @@ void HostResolverManager::OnIPAddressChanged() {
 
 void HostResolverManager::OnConnectionTypeChanged(
     NetworkChangeNotifier::ConnectionType type) {
-  proc_params_.unresponsive_delay =
-      GetTimeDeltaForConnectionTypeFromFieldTrialOrDefault(
-          "DnsUnresponsiveDelayMsByConnectionType",
-          ProcTaskParams::kDnsDefaultUnresponsiveDelay, type);
-
-  // Note that NetworkChangeNotifier always sends a CONNECTION_NONE notification
-  // before non-NONE notifications. This check therefore just ensures each
-  // connection change notification is handled once and has nothing to do with
-  // whether the change is to offline or online.
-  if (type == NetworkChangeNotifier::CONNECTION_NONE && dns_client_) {
-    dns_client_->ReplaceCurrentSession();
-    InvalidateCaches(true /* network_change */);
-  }
+  DCHECK(!IsBoundToNetwork());
+  UpdateConnectionType(type);
 }
 
 void HostResolverManager::OnSystemDnsConfigChanged(
     absl::optional<DnsConfig> config) {
+  DCHECK(!IsBoundToNetwork());
   // If tests have provided a catch-all DNS block and then disabled it, check
   // that we are not at risk of sending queries beyond the local network.
   if (HostResolverProc::GetDefault() && system_resolver_disabled_for_testing_ &&
@@ -4328,6 +4372,23 @@ void HostResolverManager::InvalidateCaches(bool network_change) {
   DCHECK(self_ptr);
   DCHECK_EQ(num_jobs, jobs_.size());
 #endif
+}
+
+void HostResolverManager::UpdateConnectionType(
+    NetworkChangeNotifier::ConnectionType type) {
+  proc_params_.unresponsive_delay =
+      GetTimeDeltaForConnectionTypeFromFieldTrialOrDefault(
+          "DnsUnresponsiveDelayMsByConnectionType",
+          ProcTaskParams::kDnsDefaultUnresponsiveDelay, type);
+
+  // Note that NetworkChangeNotifier always sends a CONNECTION_NONE notification
+  // before non-NONE notifications. This check therefore just ensures each
+  // connection change notification is handled once and has nothing to do with
+  // whether the change is to offline or online.
+  if (type == NetworkChangeNotifier::CONNECTION_NONE && dns_client_) {
+    dns_client_->ReplaceCurrentSession();
+    InvalidateCaches(true /* network_change */);
+  }
 }
 
 std::unique_ptr<DnsProbeRunner> HostResolverManager::CreateDohProbeRunner(

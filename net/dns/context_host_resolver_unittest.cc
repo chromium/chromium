@@ -19,6 +19,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/mock_network_change_notifier.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
@@ -841,6 +842,12 @@ class NetworkAwareHostResolverProc : public HostResolverProc {
 };
 
 TEST_F(ContextHostResolverTest, ExistingNetworkBoundLookup) {
+#if BUILDFLAG(IS_ANDROID)
+  auto scoped_mock_network_change_notifier =
+      std::make_unique<test::ScopedMockNetworkChangeNotifier>();
+  scoped_mock_network_change_notifier->mock_network_change_notifier()
+      ->ForceNetworkHandlesSupported();
+
   const url::SchemeHostPort host(url::kHttpsScheme, "example.com",
                                  NetworkAwareHostResolverProc::kPort);
   scoped_refptr<NetworkAwareHostResolverProc> resolver_proc =
@@ -852,11 +859,16 @@ TEST_F(ContextHostResolverTest, ExistingNetworkBoundLookup) {
   // Resolve with `network` == context.GetTargetNetwork(). Confirm that we do
   // indeed receive the IP address associated with that network.
   for (const auto& iter : NetworkAwareHostResolverProc::kResults) {
-    auto context = CreateTestURLRequestContextBuilder()->Build();
+    auto network = iter.first;
+    auto expected_ipv4 = iter.second;
     auto resolve_context = std::make_unique<NetworkBoundResolveContext>(
-        context.get(), false /* enable_caching */, iter.first);
+        nullptr /* url_request_context */, false /* enable_caching */, network);
+    // DNS lookups originated from network-bound ResolveContexts must be
+    // resolved through a HostResolverManager bound to the same network.
+    auto manager = HostResolverManager::CreateNetworkBoundHostResolverManager(
+        HostResolver::ManagerOptions(), network, nullptr /* net_log */);
     auto resolver = std::make_unique<ContextHostResolver>(
-        manager_.get(), std::move(resolve_context));
+        manager.get(), std::move(resolve_context));
     std::unique_ptr<HostResolver::ResolveHostRequest> request =
         resolver->CreateRequest(host, NetworkIsolationKey(), NetLogWithSource(),
                                 absl::nullopt);
@@ -868,8 +880,12 @@ TEST_F(ContextHostResolverTest, ExistingNetworkBoundLookup) {
     ASSERT_EQ(1u, request->GetAddressResults()->endpoints().size());
     EXPECT_THAT(request->GetAddressResults()->endpoints(),
                 testing::ElementsAre(
-                    NetworkAwareHostResolverProc::ToIPEndPoint(iter.second)));
+                    NetworkAwareHostResolverProc::ToIPEndPoint(expected_ipv4)));
   }
+#else   // !BUILDFLAG(IS_ANDROID)
+  GTEST_SKIP()
+      << "Network-bound HostResolverManager are supported only on Android.";
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 TEST_F(ContextHostResolverTest, NotExistingNetworkBoundLookup) {
@@ -883,9 +899,8 @@ TEST_F(ContextHostResolverTest, NotExistingNetworkBoundLookup) {
   // Non-bound ResolveContexts should end up with a call to Resolve with
   // `network` == kInvalidNetwork, which NetworkAwareHostResolverProc fails to
   // resolve.
-  auto context = CreateTestURLRequestContextBuilder()->Build();
   auto resolve_context = std::make_unique<ResolveContext>(
-      context.get(), false /* enable_caching */);
+      nullptr /* url_request_context */, false /* enable_caching */);
   auto resolver = std::make_unique<ContextHostResolver>(
       manager_.get(), std::move(resolve_context));
   std::unique_ptr<HostResolver::ResolveHostRequest> request =

@@ -30,6 +30,11 @@
 #include "net/dns/resolve_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#include "net/android/network_library.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace net {
 
 namespace {
@@ -221,6 +226,36 @@ HostResolver::CreateStandaloneContextResolver(
           std::move(options).value_or(ManagerOptions()),
           NetworkChangeNotifier::GetSystemDnsConfigNotifier(), net_log),
       std::move(resolve_context));
+}
+
+// static
+std::unique_ptr<HostResolver>
+HostResolver::CreateStandaloneNetworkBoundResolver(
+    NetLog* net_log,
+    NetworkChangeNotifier::NetworkHandle target_network,
+    absl::optional<ManagerOptions> options,
+    base::StringPiece host_mapping_rules,
+    bool enable_caching) {
+#if BUILDFLAG(IS_ANDROID)
+  auto resolve_context = std::make_unique<ResolveContext>(
+      nullptr /*url_request_context */, enable_caching);
+
+  // Currently, only the system host resolver can perform lookups for a
+  // specific network.
+  // TODO(crbug.com/1309094): Remove this once the built-in resolver can also do
+  // this.
+  auto manager_options = std::move(options).value_or(ManagerOptions());
+  manager_options.insecure_dns_client_enabled = false;
+  manager_options.additional_types_via_insecure_dns_enabled = false;
+
+  return std::make_unique<ContextHostResolver>(
+      HostResolverManager::CreateNetworkBoundHostResolverManager(
+          manager_options, target_network, net_log),
+      std::move(resolve_context));
+#else   // !BUILDFLAG(IS_ANDROID)
+  NOTIMPLEMENTED();
+  return nullptr;
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // static

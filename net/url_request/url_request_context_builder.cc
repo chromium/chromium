@@ -360,6 +360,8 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
   if (bound_network_ != NetworkChangeNotifier::kInvalidNetworkHandle) {
     DCHECK(!client_socket_factory_);
     DCHECK(!host_resolver_);
+    DCHECK(!host_resolver_manager_);
+    DCHECK(!host_resolver_factory_);
 
     context->set_bound_network(bound_network_);
 
@@ -370,16 +372,8 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
     set_client_socket_factory(client_socket_factory.get());
     storage->set_client_socket_factory(std::move(client_socket_factory));
 
-    // Currently, only the system host resolver can perform lookups for a
-    // specific network.
-    // TODO(stefanoduo): Remove this once the built-in resolver can also do
-    // this.
-    net::HostResolver::ManagerOptions host_resolver_manager_options;
-    host_resolver_manager_options.insecure_dns_client_enabled = false;
-    host_resolver_manager_options.additional_types_via_insecure_dns_enabled =
-        false;
-    host_resolver_ = HostResolver::CreateStandaloneContextResolver(
-        context->net_log(), std::move(host_resolver_manager_options));
+    host_resolver_ = HostResolver::CreateStandaloneNetworkBoundResolver(
+        context->net_log(), bound_network_);
 
     if (!quic_context_)
       set_quic_context(std::make_unique<QuicContext>());
