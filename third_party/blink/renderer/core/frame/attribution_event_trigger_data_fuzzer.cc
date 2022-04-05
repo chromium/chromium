@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stddef.h>
-#include <stdint.h>
+#include <stdlib.h>
+#include <iostream>
+#include <string>
 
+#include "testing/libfuzzer/proto/json.pb.h"
+#include "testing/libfuzzer/proto/json_proto_converter.h"
+#include "testing/libfuzzer/proto/lpm_interface.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/attribution_response_parsing.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
@@ -13,18 +17,18 @@
 
 namespace blink {
 
-int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
   static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
 
-  const AtomicString input(data, static_cast<unsigned>(size));
+  json_proto::JsonProtoConverter converter;
+  std::string native_input = converter.Convert(json_value);
+
+  if (getenv("LPM_DUMP_NATIVE_INPUT"))
+    std::cout << native_input << std::endl;
+
+  const AtomicString input(native_input.c_str());
   WTF::Vector<mojom::blink::EventTriggerDataPtr> output;
   attribution_response_parsing::ParseEventTriggerData(input, output);
-
-  return 0;
 }
 
 }  // namespace blink
-
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  return blink::LLVMFuzzerTestOneInput(data, size);
-}

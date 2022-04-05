@@ -137,6 +137,9 @@ specific_include_rules = {
         "+gin",
         "+url/url_util.h"
     ],
+    ".*_fuzzer.cc" : [
+        "+testing/libfuzzer",
+    ],
     "data_object_item.cc" : [ "+ui/gfx/codec" ],
     "chrome_client.h" : [
         "+ui/gfx/delegated_ink_metadata.h",

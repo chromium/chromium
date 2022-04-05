@@ -1,0 +1,97 @@
+array_value {
+  value {
+    object_value {
+      field {
+        name: "trigger_data"
+        value {
+          string_value {
+            value: "1"
+          }
+        }
+      }
+      field {
+        name: "priority"
+        value {
+          string_value {
+            value: "2"
+          }
+        }
+      }
+      field {
+        name: "deduplication_key"
+        value {
+          string_value {
+            value: "3"
+          }
+        }
+      }
+      field {
+        name: "filters"
+        value {
+          object_value {
+            field {
+              name: "a"
+              value {
+                array_value {
+                  value {
+                    string_value {
+                      value: "x"
+                    }
+                  }
+                }
+              }
+            }
+            field {
+              name: "b"
+              value {
+                array_value {
+                  value {
+                    string_value {
+                      value: "y"
+                    }
+                  }
+                  value {
+                    string_value {
+                      value: "z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      field {
+        name: "not_filters"
+        value {
+          object_value {
+            field {
+              name: "a"
+              value {
+                array_value {
+                  value {
+                    string_value {
+                      value: "x"
+                    }
+                  }
+                }
+              }
+            }
+            field {
+              name: "c"
+              value {
+                array_value {
+                  value {
+                    string_value {
+                      value: "d"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
