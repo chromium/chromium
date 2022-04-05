@@ -679,6 +679,9 @@ ci.builder(
     ),
     notifies = ["chrome-memory-safety"],
     os = os.WINDOWS_ANY,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -687,6 +690,9 @@ ci.builder(
         category = "win10",
     ),
     os = os.WINDOWS_10,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -733,6 +739,9 @@ ci.builder(
     os = os.WINDOWS_DEFAULT,
     schedule = "with 3h interval",
     triggered_by = [],
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -1386,6 +1395,9 @@ ci.builder(
     ),
     os = os.WINDOWS_10,
     notifies = ["Win 10 Fast Ring"],
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -1425,8 +1437,10 @@ ci.builder(
         category = "win32|arm64",
     ),
     cpu = cpu.X86,
-    goma_jobs = goma.jobs.J150,
     os = os.WINDOWS_DEFAULT,
+    goma_backend = None,
+    reclient_jobs = 150,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(

@@ -66,9 +66,9 @@
       'mac-arm64-archive-tagged': 'arm64_official_optimize_goma',
       'mac-official': 'official_optimize_goma',
       'win32-official': 'x86_official_optimize_goma',
-      'win32-archive-rel': 'release_bot_x86_minimal_symbols_enable_archive_compression',
+      'win32-archive-rel': 'release_bot_x86_minimal_symbols_enable_archive_compression_reclient',
       'win32-archive-dbg': 'debug_bot_x86_reclient',
-      'win32-archive-tagged': 'x86_official_optimize_goma',
+      'win32-archive-tagged': 'x86_official_optimize_reclient',
       'win-archive-rel': 'release_bot_minimal_symbols_enable_archive_compression_reclient',
       'win-archive-dbg': 'debug_bot_reclient',
       'win-archive-tagged': 'official_optimize_reclient',
@@ -325,7 +325,7 @@
       'Mac deterministic (dbg)': 'debug_bot',
       'Site Isolation Android': 'android_release_bot_minimal_symbols_arm64_reclient',
       'VR Linux': 'vr_release_bot_reclient',
-      'Win 10 Fast Ring': 'release_trybot_minimal_symbols',
+      'Win 10 Fast Ring': 'release_trybot_minimal_symbols_reclient',
       'Win x64 Builder (reclient)': 'gpu_tests_release_bot_minimal_symbols_reclient',
       'Win x64 Builder (reclient compare)': 'gpu_tests_release_bot_minimal_symbols_reclient',
       'Win x64 Builder (reclient)(cross)': 'gpu_tests_release_bot_minimal_symbols_reclient_win_cross',
@@ -397,13 +397,13 @@
       'win-annotator-rel': 'release_bot_reclient',
       'win-celab-builder-rel': 'release_bot_minimal_symbols',
       'win-backuprefptr-x86-fyi-rel': 'release_trybot_backuprefptr_x86_reclient',
-      'win-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64',
-      'win-pixel-builder-rel': 'release_bot',
-      'win-upload-perfetto': 'release_bot_perfetto_zlib',
+      'win-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64_reclient',
+      'win-pixel-builder-rel': 'release_bot_reclient',
+      'win-upload-perfetto': 'release_bot_perfetto_zlib_reclient',
       'win10-code-coverage': 'clang_code_coverage',
       'win32-archive-rel-goma-rbe-canary': 'release_bot_x86_minimal_symbols_enable_archive_compression',
       'win32-archive-rel-goma-rbe-latest': 'release_bot_x86_minimal_symbols_enable_archive_compression',
-      'win32-arm64-rel': 'win32_arm64_release_bot',
+      'win32-arm64-rel': 'win32_arm64_release_bot_reclient',
     },
 
     'chromium.goma.fyi': {
@@ -584,7 +584,7 @@
       'Mojo Android': 'android_release_bot_minimal_symbols_arm64_reclient',
       'Mojo ChromiumOS': 'chromeos_with_codecs_release_trybot',
       'Mojo Linux': 'release_trybot_minimal_symbols_reclient',
-      'Mojo Windows': 'release_bot_x86_minimal_symbols',
+      'Mojo Windows': 'release_bot_x86_minimal_symbols_reclient',
       'mac-mojo-rel': 'release_trybot_minimal_symbols',
     },
 
@@ -716,9 +716,9 @@
     'chromium.updater': {
       'mac-updater-builder-dbg': 'updater_debug_bot',
       'mac-updater-builder-rel': 'updater_release_bot',
-      'win-updater-builder-dbg': 'updater_debug_bot',
+      'win-updater-builder-dbg': 'updater_debug_bot_reclient',
       'win-updater-builder-rel': 'updater_release_bot_reclient',
-      'win32-updater-builder-dbg': 'updater_debug_bot_x86',
+      'win32-updater-builder-dbg': 'updater_debug_bot_x86_reclient',
       'win32-updater-builder-rel': 'updater_release_bot_x86_reclient',
     },
 
@@ -3061,8 +3061,12 @@
       'updater_on_win_mac', 'debug_bot',
     ],
 
-    'updater_debug_bot_x86': [
-      'updater_on_win_mac', 'debug_bot', 'x86',
+    'updater_debug_bot_reclient': [
+      'updater_on_win_mac', 'debug_bot_reclient',
+    ],
+
+    'updater_debug_bot_x86_reclient': [
+      'updater_on_win_mac', 'debug_bot_reclient', 'x86',
     ],
 
     'updater_release_bot': [
@@ -3180,12 +3184,20 @@
       'release_bot', 'x86', 'minimal_symbols',
     ],
 
+    'release_bot_x86_minimal_symbols_reclient': [
+      'release_bot_reclient', 'x86', 'minimal_symbols',
+    ],
+
     'release_bot_minimal_symbols_enable_archive_compression_reclient': [
       'release_bot_reclient', 'minimal_symbols', 'enable_archive_compression'
     ],
 
     'release_bot_x86_minimal_symbols_enable_archive_compression': [
       'release_bot', 'x86', 'minimal_symbols', 'enable_archive_compression'
+    ],
+
+    'release_bot_x86_minimal_symbols_enable_archive_compression_reclient': [
+      'release_bot_reclient', 'x86', 'minimal_symbols', 'enable_archive_compression'
     ],
 
     'release_bot_x86_minimal_symbols_no_com_init_hooks_with_codecs': [
@@ -3250,10 +3262,6 @@
 
     'release_trybot_backuprefptr_x86_reclient': [
       'release_trybot_minimal_symbols_reclient', 'backuprefptr', 'x86',
-    ],
-
-    'release_trybot_backuprefptr_x64': [
-      'release_trybot_minimal_symbols', 'backuprefptr', 'x64',
     ],
 
     'release_trybot_backuprefptr_x64_reclient': [
@@ -3361,12 +3369,16 @@
       'vr', 'release_trybot', 'ozone',
     ],
 
-    'win32_arm64_release_bot': [
-      'arm64', 'disable_nacl', 'minimal_symbols', 'release_bot',
+    'win32_arm64_release_bot_reclient': [
+      'arm64', 'disable_nacl', 'minimal_symbols', 'release_bot_reclient',
     ],
 
     'x86_official_optimize_goma': [
       'official_optimize_goma', 'x86',
+    ],
+
+    'x86_official_optimize_reclient': [
+      'official_optimize_reclient', 'x86',
     ],
 
     'x86_official_optimize_goma_trybot': [
