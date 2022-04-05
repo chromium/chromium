@@ -1728,6 +1728,11 @@ Unknown properties are collapsed to zero. -->
       label="0x7340, Navi 14 [Radeon RX 5500/5500M / Pro 5500M]"/>
 </enum>
 
+<enum name="AnchorElementPreloaderType">
+  <int value="0" label="kUnspecified"/>
+  <int value="1" label="kPreconnect"/>
+</enum>
+
 <enum name="Android.ChildProcessBindingStateCombination">
   <int value="0" label="No waived no moderate no strong"/>
   <int value="1" label="No waived no moderate has strong"/>

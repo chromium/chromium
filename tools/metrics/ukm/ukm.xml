@@ -16160,6 +16160,23 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Preloading.AnchorInteraction">
+  <owner>jacobstanley@google.com</owner>
+  <owner>curranmax@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
+  <summary>
+    Logged once for each preconnection request sent to the browser in resopnse
+    to the user interacting with an anchor element. Associated with the Source
+    ID of the page triggering the preconnection.
+  </summary>
+  <metric name="AnchorElementPreloaderType" enum="AnchorElementPreloaderType">
+    <summary>
+      One event for each preload operation that was triggered on the current
+      page.
+    </summary>
+  </metric>
+</event>
+
 <event name="PrerenderPageLoad" singular="True">
   <owner>ksakamoto@chromium.org</owner>
   <owner>nhiroki@chromium.org</owner>

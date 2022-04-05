@@ -9372,6 +9372,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Preloading.AnchorElementPreloader.PreloadingTriggered"
+    enum="AnchorElementPreloaderType" expires_after="2022-08-28">
+  <owner>jacobstanley@google.com</owner>
+  <owner>spelchat@chromium.org</owner>
+  <owner>curranmax@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
+  <summary>
+    Logged once for each preconnection request sent to the browser. Associated
+    with the Source ID of the page triggering the preconnection.
+  </summary>
+</histogram>
+
 <histogram name="Previews.CacheControlNoTransform.BlockedPreview"
     enum="PreviewsType" expires_after="2021-08-09">
   <obsolete>
