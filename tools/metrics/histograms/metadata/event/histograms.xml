@@ -1531,7 +1531,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.MaxDragDistance.{ToolType}" units="dips"
-    expires_after="2022-03-30">
+    expires_after="never">
+<!-- expires-never: Needed for long-term tracking of dragging vs clicking behavior. -->
+
   <owner>mustaq@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
