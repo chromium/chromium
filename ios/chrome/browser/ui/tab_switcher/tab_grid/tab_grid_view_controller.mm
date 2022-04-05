@@ -491,7 +491,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)contentWillDisappearAnimated:(BOOL)animated {
   self.undoCloseAllAvailable = NO;
-  self.tabGridMode = TabGridModeNormal;
+  if (self.tabGridMode != TabGridModeSearch || !animated) {
+    // Updating the mode reset the items on the grid, in that case of search
+    // mode the animation to show the tab will start from the tab cell after the
+    // reset instead of starting from the cell that triggered the navigation.
+    self.tabGridMode = TabGridModeNormal;
+  }
   [self.regularTabsDelegate discardSavedClosedItems];
   // When the view disappears, the toolbar alpha should be set to 0; either as
   // part of the animation, or directly with -hideToolbars.
@@ -2076,14 +2081,19 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   alreadySelected = [tabsDelegate isItemWithIDSelected:itemID];
   [tabsDelegate selectItemWithID:itemID];
 
-  if (IsTabsSearchEnabled() && self.tabGridMode == TabGridModeSearch &&
-      ![tabsDelegate isItemWithIDSelected:itemID]) {
-    // That can happen when the search result that was selected is from
-    // another window. In that case don't change the active page for this
-    // window and don't close the tab grid.
-    base::RecordAction(base::UserMetricsAction(
-        "MobileTabGridOpenSearchResultInAnotherWindow"));
-    return;
+  if (IsTabsSearchEnabled() && self.tabGridMode == TabGridModeSearch) {
+    if (![tabsDelegate isItemWithIDSelected:itemID]) {
+      // That can happen when the search result that was selected is from
+      // another window. In that case don't change the active page for this
+      // window and don't close the tab grid.
+      base::RecordAction(base::UserMetricsAction(
+          "MobileTabGridOpenSearchResultInAnotherWindow"));
+      return;
+    } else {
+      // Make sure that the keyboard is dismissed before starting the transition
+      // to the selected tab.
+      [self.view endEditing:YES];
+    }
   }
   self.activePage = self.currentPage;
   // When the tab grid is peeked, selecting an item should not close the grid

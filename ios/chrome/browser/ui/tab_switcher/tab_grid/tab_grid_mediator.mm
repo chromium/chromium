@@ -433,8 +433,13 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
   // possible that this method (-selectItemWithID:) is being called as part of
   // a WebStateListObserver callback, in which case even a no-op activation
   // will cause a CHECK().
-  if (index == itemWebStateList->active_index())
+  if (index == itemWebStateList->active_index()) {
+    // In search mode the consumer doesn't have any information about the
+    // selected item. So even if the active webstate is the same as the one that
+    // is being selected, make sure that the consumer update its selected item.
+    [self.consumer selectItemWithID:itemID];
     return;
+  }
 
   // Avoid a reentrant activation. This is a fix for crbug.com/1134663, although
   // ignoring the slection at this point may do weird things.

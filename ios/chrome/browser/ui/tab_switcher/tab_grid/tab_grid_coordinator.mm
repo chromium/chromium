@@ -459,6 +459,12 @@
   // Finally, the launch mask view should be removed.
   ProceduralBlock extendedCompletion = ^{
     [self.delegate tabGridDismissTransitionDidEnd:self];
+    if (self.baseViewController.tabGridMode == TabGridModeSearch) {
+      // In search mode, the tabgrid mode is not reset before the animation so
+      // the animation can start from the correct cell. Once the animation is
+      // complete, reset the tab grid mode.
+      self.baseViewController.tabGridMode = TabGridModeNormal;
+    }
     if (!GetFirstResponder()) {
       // It is possible to already have a first responder (for example the
       // omnibox). In that case, we don't want to mark BVC as first responder.

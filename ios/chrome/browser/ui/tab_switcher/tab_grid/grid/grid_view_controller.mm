@@ -395,6 +395,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   GridTransitionActiveItem* activeItem;
   GridTransitionItem* selectionItem;
   for (NSIndexPath* path in self.collectionView.indexPathsForVisibleItems) {
+    if (path.section != kOpenTabsSectionIndex)
+      continue;
     GridCell* cell = base::mac::ObjCCastStrict<GridCell>(
         [self.collectionView cellForItemAtIndexPath:path]);
     UICollectionViewLayoutAttributes* attributes =
