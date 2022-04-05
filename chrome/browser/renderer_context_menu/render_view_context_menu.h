@@ -17,7 +17,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/renderer_context_menu/context_menu_content_type.h"
 #include "components/renderer_context_menu/render_view_context_menu_base.h"
@@ -372,10 +371,6 @@ class RenderViewContextMenu
   // embeds the MimeHandlerViewGuest. Otherwise this will be the same as
   // |source_web_contents_|.
   const raw_ptr<content::WebContents> embedder_web_contents_;
-
-  // Send tab to self submenu.
-  std::unique_ptr<send_tab_to_self::SendTabToSelfSubMenuModel>
-      send_tab_to_self_sub_menu_model_;
 
   // Click to call menu observer.
   std::unique_ptr<ClickToCallContextMenuObserver>
