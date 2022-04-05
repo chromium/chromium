@@ -137,6 +137,10 @@ void LogVirtualCardEnrollmentStrikeDatabaseEvent(
     VirtualCardEnrollmentSource source,
     VirtualCardEnrollmentStrikeDatabaseEvent strike_event);
 
+// Virtual card enrollment strike database max strikes limit reached metrics.
+void LogVirtualCardEnrollmentBubbleMaxStrikesLimitReached(
+    VirtualCardEnrollmentSource source);
+
 // Helper function used to convert VirtualCardEnrollmentBubbleSource enum to
 // name suffix.
 std::string VirtualCardEnrollmentBubbleSourceToMetricSuffix(

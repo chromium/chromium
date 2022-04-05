@@ -180,8 +180,14 @@ bool VirtualCardEnrollmentManager::
   if (!GetVirtualCardEnrollmentStrikeDatabase())
     return false;
 
-  return GetVirtualCardEnrollmentStrikeDatabase()->IsMaxStrikesLimitReached(
-      instrument_id);
+  bool max_strikes_limit_reached =
+      GetVirtualCardEnrollmentStrikeDatabase()->IsMaxStrikesLimitReached(
+          instrument_id);
+  if (max_strikes_limit_reached) {
+    LogVirtualCardEnrollmentBubbleMaxStrikesLimitReached(
+        virtual_card_enrollment_source);
+  }
+  return max_strikes_limit_reached;
 }
 
 void VirtualCardEnrollmentManager::

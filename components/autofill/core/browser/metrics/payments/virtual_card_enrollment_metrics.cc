@@ -124,6 +124,13 @@ void LogVirtualCardEnrollmentStrikeDatabaseEvent(
       strike_event);
 }
 
+void LogVirtualCardEnrollmentBubbleMaxStrikesLimitReached(
+    VirtualCardEnrollmentSource source) {
+  DCHECK_NE(source, VirtualCardEnrollmentSource::kSettingsPage);
+  base::UmaHistogramEnumeration(
+      "Autofill.VirtualCardEnrollBubble.MaxStrikesLimitReached", source);
+}
+
 std::string VirtualCardEnrollmentBubbleSourceToMetricSuffix(
     VirtualCardEnrollmentBubbleSource source) {
   switch (source) {
