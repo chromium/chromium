@@ -1071,20 +1071,6 @@ void TouchExplorationController::DispatchKeyWithFlags(
   }
 }
 
-std::unique_ptr<ui::MouseEvent>
-TouchExplorationController::CreateMouseMoveEvent(const gfx::PointF& location,
-                                                 int flags) {
-  // The "synthesized" flag should be set on all events that don't have a
-  // backing native event.
-  flags |= ui::EF_IS_SYNTHESIZED;
-
-  std::unique_ptr<ui::MouseEvent> event(new ui::MouseEvent(
-      ui::ET_MOUSE_MOVED, gfx::Point(), gfx::Point(), Now(), flags, 0));
-  event->set_location_f(location);
-  event->set_root_location_f(location);
-  return event;
-}
-
 void TouchExplorationController::EnterTouchToMouseMode() {
   aura::client::CursorClient* cursor_client =
       aura::client::GetCursorClient(root_window_);

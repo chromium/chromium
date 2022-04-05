@@ -292,10 +292,6 @@ class ASH_EXPORT TouchExplorationController
                             int flags,
                             const Continuation continuation);
 
-  std::unique_ptr<ui::MouseEvent> CreateMouseMoveEvent(
-      const gfx::PointF& location,
-      int flags);
-
   void EnterTouchToMouseMode();
 
   void PlaySoundForTimer();
