@@ -39,9 +39,8 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -70,9 +69,6 @@ const int kDateTextSizeDiff = 4;
 // Offset used to bring the minutes line closer to the hours line in the
 // vertical clock.
 const int kVerticalClockMinutesTopOffset = -2;
-
-// The Id for `vertical_view_`.
-const int kVerticalViewId = 1000;
 
 std::u16string FormatDate(const base::Time& time) {
   // Use 'short' month format (e.g., "Oct") followed by non-padded day of
@@ -340,26 +336,6 @@ void TimeView::UpdateTextInternal(const base::Time& now) {
   }
 }
 
-void TimeView::SetupVerticalSubViews() {
-  views::View* vertical_view =
-      vertical_view_ ? vertical_view_.get() : children()[0];
-  DCHECK_EQ(kVerticalViewId, vertical_view->GetID());
-  views::GridLayout* layout =
-      vertical_view->SetLayoutManager(std::make_unique<views::GridLayout>());
-  const int kColumnId = 0;
-  views::ColumnSet* columns = layout->AddColumnSet(kColumnId);
-  columns->AddPaddingColumn(0, kVerticalClockLeftPadding);
-  columns->AddColumn(views::GridLayout::TRAILING, views::GridLayout::CENTER, 0,
-                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-
-  layout->StartRow(0, kColumnId);
-  layout->AddExistingView(vertical_label_hours_);
-  layout->StartRow(0, kColumnId);
-  layout->AddExistingView(vertical_label_minutes_);
-
-  layout->AddPaddingRow(0, kVerticalClockMinutesTopOffset);
-}
-
 void TimeView::SetupDateviews(ClockLayout clock_layout) {
   DCHECK_EQ(type_, kDate);
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -394,7 +370,13 @@ void TimeView::SetupSubviews(ClockLayout clock_layout) {
   SetupLabel(horizontal_label_);
 
   vertical_view_ = std::make_unique<View>();
-  vertical_view_->SetID(kVerticalViewId);
+  vertical_view_->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kEnd)
+      .SetInteriorMargin(gfx::Insets::TLBR(0, kVerticalClockLeftPadding,
+                                           kVerticalClockMinutesTopOffset, 0));
+
   vertical_label_hours_ =
       vertical_view_->AddChildView(std::make_unique<views::Label>());
   SetupLabel(vertical_label_hours_);
@@ -404,12 +386,10 @@ void TimeView::SetupSubviews(ClockLayout clock_layout) {
   vertical_label_minutes_ =
       vertical_view_->AddChildView(std::make_unique<views::Label>());
   SetupLabel(vertical_label_minutes_);
-
   // Pull the minutes up closer to the hours by using a negative top border.
   vertical_label_minutes_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(kVerticalClockMinutesTopOffset, 0, 0,
                         kVerticalDateClockHorizontalPadding)));
-  SetupVerticalSubViews();
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
   AddChildView(clock_layout == ClockLayout::HORIZONTAL_CLOCK

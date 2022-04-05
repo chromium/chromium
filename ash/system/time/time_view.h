@@ -118,7 +118,6 @@ class ASH_EXPORT TimeView : public ActionableView, public ClockObserver {
   // Updates labels to display the current time.
   void UpdateTextInternal(const base::Time& now);
 
-  void SetupVerticalSubViews();
   void SetupDateviews(ClockLayout clock_layout);
   void SetupSubviews(ClockLayout clock_layout);
   void SetupLabel(views::Label* label);
