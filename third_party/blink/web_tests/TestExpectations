@@ -7732,3 +7732,6 @@ crbug.com/1312469 [ Mac10.12 ] virtual/fledge/http/tests/inspector-protocol/stor
 crbug.com/1312469 [ Mac10.12 ] virtual/partitioned-cookies-first-party-sets/http/tests/inspector-protocol/network/blocked-setcookie-same-site-lax.js [ Skip ]
 crbug.com/1312469 [ Mac10.12 ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/blocked-cookie-same-site-strict.js [ Skip ]
 crbug.com/1312484 [ Mac11 ] external/wpt/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Skip ]
+
+# Sheriff 2022-04-05
+crbug.com/1313282 inspector-protocol/input/dispatchMouseEvent.js [ Failure Pass ]
