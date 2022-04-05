@@ -2042,9 +2042,6 @@ extern const char kUpdateMenuTypeUnsupportedOSVersion[];
 extern const char kUseRealColorSpaceForAndroidVideoName[];
 extern const char kUseRealColorSpaceForAndroidVideoDescription[];
 
-extern const char kUserMediaScreenCapturingName[];
-extern const char kUserMediaScreenCapturingDescription[];
-
 extern const char kVideoTutorialsName[];
 extern const char kVideoTutorialsDescription[];
 extern const char kVideoTutorialsInstantFetchName[];

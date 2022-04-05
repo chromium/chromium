@@ -3586,10 +3586,6 @@ const char kUseRealColorSpaceForAndroidVideoName[] =
 const char kUseRealColorSpaceForAndroidVideoDescription[] =
     "When enabled video will use real color space instead of srgb.";
 
-const char kUserMediaScreenCapturingName[] = "Screen Capture API";
-const char kUserMediaScreenCapturingDescription[] =
-    "Allows sites to request a video stream of your screen.";
-
 const char kVideoTutorialsName[] = "Enable video tutorials";
 const char kVideoTutorialsDescription[] = "Show video tutorials in Chrome";
 const char kVideoTutorialsInstantFetchName[] =
