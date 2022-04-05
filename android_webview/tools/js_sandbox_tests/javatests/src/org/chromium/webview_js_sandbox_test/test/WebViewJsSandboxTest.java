@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.android_webview.test.services;
+package org.chromium.webview_js_sandbox_test.test;
 
 import androidx.test.filters.MediumTest;
 
@@ -12,12 +12,12 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.js.browser.AwJsContext;
 import org.chromium.android_webview.js.browser.AwJsSandbox;
-import org.chromium.android_webview.test.AwJUnit4ClassRunner;
+import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 
 /** Instrumentation test for JsSandboxService. */
-@RunWith(AwJUnit4ClassRunner.class)
-public class JsSandboxServiceTest {
+@RunWith(BaseJUnit4ClassRunner.class)
+public class WebViewJsSandboxTest {
     private class TestExecutionCallback implements AwJsContext.ExecutionCallback {
         public CallbackHelper helper = new CallbackHelper();
         public String result;
@@ -43,7 +43,7 @@ public class JsSandboxServiceTest {
         final String expected = "PASS";
         TestExecutionCallback callback = new TestExecutionCallback();
 
-        AwJsSandbox.newConnectedInstanceForTesting((AwJsSandbox jsSandbox) -> {
+        AwJsSandbox.newConnectedInstance((AwJsSandbox jsSandbox) -> {
             AwJsContext jsContext = jsSandbox.createContext();
             jsContext.evaluateJavascript(code, callback);
         });
@@ -59,7 +59,7 @@ public class JsSandboxServiceTest {
         final String expected = "PASS";
         TestExecutionCallback callback = new TestExecutionCallback();
 
-        AwJsSandbox.newConnectedInstanceForTesting((AwJsSandbox jsSandbox) -> {
+        AwJsSandbox.newConnectedInstance((AwJsSandbox jsSandbox) -> {
             AwJsContext jsContext1 = jsSandbox.createContext();
             AwJsContext jsContext2 = jsSandbox.createContext();
             jsContext1.close();
@@ -81,7 +81,7 @@ public class JsSandboxServiceTest {
         TestExecutionCallback callback1 = new TestExecutionCallback();
         TestExecutionCallback callback2 = new TestExecutionCallback();
 
-        AwJsSandbox.newConnectedInstanceForTesting((AwJsSandbox jsSandbox) -> {
+        AwJsSandbox.newConnectedInstance((AwJsSandbox jsSandbox) -> {
             AwJsContext jsContext1 = jsSandbox.createContext();
             jsContext1.evaluateJavascript(code1, callback1);
             AwJsContext jsContext2 = jsSandbox.createContext();
@@ -106,7 +106,7 @@ public class JsSandboxServiceTest {
         TestExecutionCallback callback1 = new TestExecutionCallback();
         TestExecutionCallback callback2 = new TestExecutionCallback();
 
-        AwJsSandbox.newConnectedInstanceForTesting((AwJsSandbox jsSandbox) -> {
+        AwJsSandbox.newConnectedInstance((AwJsSandbox jsSandbox) -> {
             AwJsContext jsContext1 = jsSandbox.createContext();
             jsContext1.evaluateJavascript(code1, callback1);
             AwJsContext jsContext2 = jsSandbox.createContext();
@@ -131,7 +131,7 @@ public class JsSandboxServiceTest {
         TestExecutionCallback callback1 = new TestExecutionCallback();
         TestExecutionCallback callback2 = new TestExecutionCallback();
 
-        AwJsSandbox.newConnectedInstanceForTesting((AwJsSandbox jsSandbox) -> {
+        AwJsSandbox.newConnectedInstance((AwJsSandbox jsSandbox) -> {
             AwJsContext jsContext1 = jsSandbox.createContext();
             jsContext1.evaluateJavascript(code1, callback1);
             jsContext1.evaluateJavascript(code2, callback2);
@@ -152,7 +152,7 @@ public class JsSandboxServiceTest {
         final String contains = "SyntaxError";
         TestExecutionCallback callback = new TestExecutionCallback();
 
-        AwJsSandbox.newConnectedInstanceForTesting(jsSandbox -> {
+        AwJsSandbox.newConnectedInstance(jsSandbox -> {
             AwJsContext jsContext = jsSandbox.createContext();
             jsContext.evaluateJavascript(code, callback);
         });

@@ -1,0 +1,34 @@
+# Copyright 2022 The Chromium Authors.All rights reserved.
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//testing/test.gni")
+
+group("webview_js_sandbox_test_app") {
+  testonly = true
+  deps = [
+    ":webview_js_sandbox_test_app_apk",
+    ":webview_js_sandbox_test_app_test_apk",
+  ]
+}
+
+android_apk("webview_js_sandbox_test_app_apk") {
+  apk_name = "WebViewJsSandboxTestApp"
+  android_manifest = "java/AndroidManifest.xml"
+  deps = []
+}
+
+instrumentation_test_apk("webview_js_sandbox_test_app_test_apk") {
+  apk_name = "WebViewJsSandboxTestAppTest"
+  apk_under_test = ":webview_js_sandbox_test_app_apk"
+  android_manifest = "javatests/AndroidManifest.xml"
+  sources = [ "javatests/src/org/chromium/webview_js_sandbox_test/test/WebViewJsSandboxTest.java" ]
+  deps = [
+    "//android_webview:js_sandbox_java",
+    "//base:base_java_test_support",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+  ]
+  use_webview_provider = system_webview_apk_target
+}
