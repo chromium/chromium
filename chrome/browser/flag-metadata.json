@@ -3353,7 +3353,8 @@
   {
     "name": "force-color-profile",
     "owners": [ "ccameron" ],
-    "expiry_milestone": 99
+    // Used by developers and manual testing to test custom color profiles.
+    "expiry_milestone": -1
   },
   {
     "name": "force-control-face-ae",

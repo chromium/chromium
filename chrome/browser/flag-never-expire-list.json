@@ -68,6 +68,7 @@
   "enable-webgl-draft-extensions",
   "enable-zero-copy",
   "extensions-on-chrome-urls",
+  "force-color-profile",
   "force-effective-connection-type",
   "force-show-update-menu-badge",
   "force-startup-signin-promo",
