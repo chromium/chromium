@@ -5,7 +5,9 @@
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 
 #include <iterator>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -79,10 +81,15 @@ AttributionFilterData::FromTriggerFilterValues(FilterValues&& filter_values) {
 // static
 AttributionFilterData AttributionFilterData::ForSourceType(
     AttributionSourceType source_type) {
-  return AttributionFilterData({{
-      kFilterSourceType,
-      std::vector<std::string>{AttributionSourceTypeToString(source_type)},
-  }});
+  std::vector<std::string> values;
+  values.reserve(1);
+  values.push_back(AttributionSourceTypeToString(source_type));
+
+  AttributionFilterData::FilterValues filter_values;
+  filter_values.reserve(1);
+  filter_values.emplace(kFilterSourceType, std::move(values));
+
+  return AttributionFilterData(std::move(filter_values));
 }
 
 // static

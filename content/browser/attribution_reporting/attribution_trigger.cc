@@ -5,6 +5,7 @@
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
@@ -50,27 +51,24 @@ AttributionTrigger::AttributionTrigger(
     absl::optional<uint64_t> dedup_key,
     absl::optional<uint64_t> debug_key,
     AttributionAggregatableTrigger aggregatable_trigger)
-    : AttributionTrigger(
-          std::move(destination_origin),
-          std::move(reporting_origin),
-          /*filters=*/AttributionFilterData(),
-          debug_key,
-          std::vector<EventTriggerData>(
-              {EventTriggerData(trigger_data,
-                                priority,
-                                dedup_key,
-                                /*filters=*/
-                                AttributionFilterData::ForSourceType(
-                                    AttributionSourceType::kNavigation),
-                                /*not_filters=*/AttributionFilterData()),
-               EventTriggerData(event_source_trigger_data,
-                                priority,
-                                dedup_key,
-                                /*filters=*/
-                                AttributionFilterData::ForSourceType(
-                                    AttributionSourceType::kEvent),
-                                /*not_filters=*/AttributionFilterData())}),
-          std::move(aggregatable_trigger)) {}
+    : AttributionTrigger(std::move(destination_origin),
+                         std::move(reporting_origin),
+                         /*filters=*/AttributionFilterData(),
+                         debug_key,
+                         std::vector<EventTriggerData>(),
+                         std::move(aggregatable_trigger)) {
+  event_triggers_.reserve(2);
+  event_triggers_.emplace_back(
+      trigger_data, priority, dedup_key,
+      /*filters=*/
+      AttributionFilterData::ForSourceType(AttributionSourceType::kNavigation),
+      /*not_filters=*/AttributionFilterData());
+  event_triggers_.emplace_back(
+      event_source_trigger_data, priority, dedup_key,
+      /*filters=*/
+      AttributionFilterData::ForSourceType(AttributionSourceType::kEvent),
+      /*not_filters=*/AttributionFilterData());
+}
 
 AttributionTrigger::AttributionTrigger(const AttributionTrigger& other) =
     default;
