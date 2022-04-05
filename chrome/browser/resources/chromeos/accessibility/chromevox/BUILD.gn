@@ -52,7 +52,6 @@ chromevox_modules = [
   "braille/bluetooth_braille_display_manager.js",
   "braille/bluetooth_braille_display_ui.js",
   "braille/braille_display_manager.js",
-  "braille/braille_input_handler.js",
   "braille/braille_key_types.js",
   "braille/braille_table.js",
   "braille/braille_translator_manager.js",
@@ -115,6 +114,7 @@ chromevox_es6_modules = [
   "background/prefs.js",
   "background/smart_sticky_mode.js",
   "background/logging/log.js",
+  "braille/braille_input_handler.js",
   "braille/braille_key_event_rewriter.js",
   "common/abstract_tts.js",
   "common/command_store.js",
@@ -405,7 +405,6 @@ if (is_chromeos_ash) {
       "braille/bluetooth_braille_display_manager_test.js",
       "braille/bluetooth_braille_display_ui_test.js",
       "braille/braille_display_manager_test.js",
-      "braille/braille_input_handler_test.js",
     ]
     gen_include_files = [
       "../common/testing/accessibility_test_base.js",
@@ -441,6 +440,7 @@ if (is_chromeos_ash) {
       "background/settings_test.js",
       "background/smart_sticky_mode_test.js",
       "background/user_action_monitor_test.js",
+      "braille/braille_input_handler_test.js",
       "braille/braille_table_test.js",
       "braille/braille_translator_manager_test.js",
       "braille/liblouis_test.js",

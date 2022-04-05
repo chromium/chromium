@@ -8,15 +8,7 @@
  * that is built into Chrome OS to do the actual text editing.
  */
 
-goog.provide('BrailleInputHandler');
-
-goog.require('StringUtil');
-goog.require('BrailleKeyCommand');
-goog.require('BrailleKeyEvent');
-goog.require('EventGenerator');
-goog.require('ExpandingBrailleTranslator');
-
-BrailleInputHandler = class {
+export class BrailleInputHandler {
   /**
    * @param {!BrailleTranslatorManager} translatorManager Keeps track of
    *     the current braille translator(s).
@@ -416,7 +408,7 @@ BrailleInputHandler = class {
         });
       });
     }
-};
+}
 
 /**
  * The ID of the Braille IME extension built into Chrome OS.
