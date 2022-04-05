@@ -16,14 +16,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
-import androidx.test.core.app.ApplicationProvider;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
@@ -31,21 +30,20 @@ import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowNotificationManager;
 import org.robolectric.shadows.ShadowPendingIntent;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 /**
  * Test to verify {@link NotificationIntentInterceptor} can intercept the {@link PendingIntent} and
  * track metrics correctly.
  */
-@RunWith(LocalRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowNotificationManager.class, ShadowPendingIntent.class,
                 ShadowRecordHistogram.class})
 @LooperMode(LooperMode.Mode.LEGACY)
@@ -83,8 +81,7 @@ public class NotificationIntentInterceptorTest {
     public void setUp() throws Exception {
         ShadowLog.stream = System.out;
         ShadowRecordHistogram.reset();
-        mContext = ApplicationProvider.getApplicationContext();
-        ContextUtils.initApplicationContextForTests(mContext);
+        mContext = RuntimeEnvironment.application;
         mShadowNotificationManager = shadowOf(
                 (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE));
         mContext.registerReceiver(
