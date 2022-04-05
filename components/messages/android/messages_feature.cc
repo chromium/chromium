@@ -60,6 +60,9 @@ constexpr base::FeatureParam<bool> kMessagesForAndroidSaveCard_UseGPayIcon{
 constexpr base::FeatureParam<bool> kMessagesForAndroidSaveCard_UseDialogV2{
     &kMessagesForAndroidSaveCard, "save_card_dialog_v2_enabled", false};
 
+const base::Feature kMessagesForAndroidStackingAnimation{
+    "MessagesForAndroidStackingAnimation", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kMessagesForAndroidSyncError{
     "MessagesForAndroidSyncError", base::FEATURE_ENABLED_BY_DEFAULT};
 

@@ -3286,6 +3286,11 @@ const char kMessagesForAndroidSaveCardName[] = "Save Card Messages UI";
 const char kMessagesForAndroidSaveCardDescription[] =
     "When enabled, save card prompt will use the new Messages UI.";
 
+const char kMessagesForAndroidStackingAnimationName[] =
+    "Stacking Animation of Messages UI";
+const char kMessagesForAndroidStackingAnimationDescription[] =
+    "When enabled, Messages UI will use the new stacking animation.";
+
 const char kMessagesForAndroidSyncErrorName[] = "Sync Error Messages UI";
 const char kMessagesForAndroidSyncErrorDescription[] =
     "When enabled, sync error prompt will use the new Messages UI.";
