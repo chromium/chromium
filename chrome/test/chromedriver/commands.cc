@@ -42,19 +42,20 @@ void ExecuteGetStatus(
   // ChromeDriver doesn't have a preset limit on number of active sessions,
   // so we are always ready.
   base::DictionaryValue info;
-  info.SetBoolean("ready", true);
-  info.SetString("message", base::StringPrintf("%s ready for new sessions.",
-                                               kChromeDriverProductShortName));
+  info.GetDict().Set("ready", true);
+  info.GetDict().Set("message",
+                     base::StringPrintf("%s ready for new sessions.",
+                                        kChromeDriverProductShortName));
 
   // ChromeDriver specific data:
   base::DictionaryValue build;
-  build.SetString("version", kChromeDriverVersion);
+  build.GetDict().Set("version", kChromeDriverVersion);
   info.SetKey("build", std::move(build));
 
   base::DictionaryValue os;
-  os.SetString("name", base::SysInfo::OperatingSystemName());
-  os.SetString("version", base::SysInfo::OperatingSystemVersion());
-  os.SetString("arch", base::SysInfo::OperatingSystemArchitecture());
+  os.GetDict().Set("name", base::SysInfo::OperatingSystemName());
+  os.GetDict().Set("version", base::SysInfo::OperatingSystemVersion());
+  os.GetDict().Set("arch", base::SysInfo::OperatingSystemArchitecture());
   info.SetKey("os", std::move(os));
 
   callback.Run(Status(kOk), base::Value::ToUniquePtrValue(std::move(info)),
@@ -100,9 +101,9 @@ void OnGetSession(const base::WeakPtr<size_t>& session_remaining_count,
 
   if (value) {
     std::unique_ptr<base::DictionaryValue> session(new base::DictionaryValue());
-    session->SetString("id", session_id);
-    session->SetKey("capabilities",
-                    base::Value::FromUniquePtrValue(std::move(value)));
+    session->GetDict().Set("id", session_id);
+    session->GetDict().Set("capabilities",
+                           base::Value::FromUniquePtrValue(std::move(value)));
     session_list->Append(std::move(session));
   }
 
@@ -307,7 +308,6 @@ void ExecuteSessionCommandOnSessionThread(
                   << (result.length() ? " " + result : "");
         }
       }
-
     }
   }
 

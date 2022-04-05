@@ -70,9 +70,9 @@ TEST(HttpHandlerTest, HandleNewSession) {
   handler.Handle(request, base::BindRepeating(&OnResponse, &response));
   ASSERT_EQ(net::HTTP_OK, response.status_code());
   base::DictionaryValue body;
-  body.SetInteger("status", kOk);
-  body.SetInteger("value", 1);
-  body.SetString("sessionId", "session_id");
+  body.GetDict().Set("status", kOk);
+  body.GetDict().Set("value", 1);
+  body.GetDict().Set("sessionId", "session_id");
   std::string json;
   base::JSONWriter::Write(body, &json);
   ASSERT_EQ(json, response.body());
@@ -117,9 +117,9 @@ TEST(HttpHandlerTest, HandleCommand) {
   handler.Handle(request, base::BindRepeating(&OnResponse, &response));
   ASSERT_EQ(net::HTTP_OK, response.status_code());
   base::DictionaryValue body;
-  body.SetInteger("status", kOk);
-  body.SetInteger("value", 1);
-  body.SetString("sessionId", "session_id");
+  body.GetDict().Set("status", kOk);
+  body.GetDict().Set("value", 1);
+  body.GetDict().Set("sessionId", "session_id");
   std::string json;
   base::JSONWriter::Write(body, &json);
   ASSERT_EQ(json, response.body());
@@ -176,11 +176,12 @@ TEST(MatchesCommandTest, Substitution) {
       "post", "path/1/space/2/3", command, &session_id, &params));
   ASSERT_EQ("1", session_id);
   ASSERT_EQ(2u, params.DictSize());
-  std::string param;
-  ASSERT_TRUE(params.GetString("a", &param));
-  ASSERT_EQ("2", param);
-  ASSERT_TRUE(params.GetString("b", &param));
-  ASSERT_EQ("3", param);
+  std::string* param = params.GetDict().FindString("a");
+  ASSERT_TRUE(param);
+  ASSERT_EQ("2", *param);
+  param = params.GetDict().FindString("b");
+  ASSERT_TRUE(param);
+  ASSERT_EQ("3", *param);
 }
 
 TEST(MatchesCommandTest, DecodeEscape) {
@@ -191,9 +192,9 @@ TEST(MatchesCommandTest, DecodeEscape) {
   ASSERT_TRUE(internal::MatchesCommand(
       "post", "path/123/attribute/xyz%2Furl%7Ce%3A%40v",
       command, &session_id, &params));
-  std::string param;
-  ASSERT_TRUE(params.GetString("xyz", &param));
-  ASSERT_EQ("xyz/url|e:@v", param);
+  std::string* param = params.GetDict().FindString("xyz");
+  ASSERT_TRUE(param);
+  ASSERT_EQ("xyz/url|e:@v", *param);
 }
 
 TEST(MatchesCommandTest, DecodePercent) {
@@ -203,7 +204,7 @@ TEST(MatchesCommandTest, DecodePercent) {
   base::DictionaryValue params;
   ASSERT_TRUE(internal::MatchesCommand(
       "post", "path/%40a%%b%%c%%%%", command, &session_id, &params));
-  std::string param;
-  ASSERT_TRUE(params.GetString("xyz", &param));
-  ASSERT_EQ("@a%b%c%%", param);
+  std::string* param = params.GetDict().FindString("xyz");
+  ASSERT_TRUE(param);
+  ASSERT_EQ("@a%b%c%%", *param);
 }

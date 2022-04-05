@@ -38,9 +38,9 @@ class DummyDevToolsClient : public StubDevToolsClient {
 
   Status SendAddHeapSnapshotChunkEvent() {
     base::DictionaryValue event_params;
-    event_params.SetInteger("uid", uid_);
+    event_params.GetDict().Set("uid", uid_);
     for (size_t i = 0; i < std::size(chunks); ++i) {
-      event_params.SetString("chunk", chunks[i]);
+      event_params.GetDict().Set("chunk", chunks[i]);
       Status status = listeners_.front()->OnEvent(
           this, "HeapProfiler.addHeapSnapshotChunk", event_params);
       if (status.IsError())

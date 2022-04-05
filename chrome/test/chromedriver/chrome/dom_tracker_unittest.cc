@@ -47,7 +47,8 @@ TEST(DomTracker, GetFrameIdForNode) {
       "     {\"nodeId\":102,\"frameId\":\"f\"}]"
       "}]";
   base::DictionaryValue params;
-  params.Set("nodes", base::JSONReader::ReadDeprecated(nodes));
+  params.GetDict().Set("nodes",
+                       std::move(*base::JSONReader::ReadDeprecated(nodes)));
   ASSERT_EQ(kOk, tracker.OnEvent(&client, "DOM.setChildNodes", params).code());
   ASSERT_TRUE(tracker.GetFrameIdForNode(101, &frame_id).IsError());
   ASSERT_TRUE(frame_id.empty());
@@ -74,15 +75,16 @@ TEST(DomTracker, ChildNodeInserted) {
   std::string frame_id;
 
   base::DictionaryValue params;
-  params.Set("node", base::JSONReader::ReadDeprecated("{\"nodeId\":1}"));
+  params.GetDict().Set(
+      "node", std::move(*base::JSONReader::ReadDeprecated("{\"nodeId\":1}")));
   ASSERT_EQ(kOk,
             tracker.OnEvent(&client, "DOM.childNodeInserted", params).code());
   ASSERT_TRUE(tracker.GetFrameIdForNode(1, &frame_id).IsError());
   ASSERT_TRUE(frame_id.empty());
 
   params.DictClear();
-  params.Set("node", base::JSONReader::ReadDeprecated(
-                         "{\"nodeId\":2,\"frameId\":\"f\"}"));
+  params.GetDict().Set("node", std::move(*base::JSONReader::ReadDeprecated(
+                                   "{\"nodeId\":2,\"frameId\":\"f\"}")));
   ASSERT_EQ(kOk,
             tracker.OnEvent(&client, "DOM.childNodeInserted", params).code());
   ASSERT_TRUE(tracker.GetFrameIdForNode(2, &frame_id).IsOk());

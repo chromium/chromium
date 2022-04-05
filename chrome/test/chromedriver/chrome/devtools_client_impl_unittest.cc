@@ -59,7 +59,7 @@ class MockSyncWebSocket : public SyncWebSocket {
       EXPECT_TRUE(dict->GetDictionary("params", &params));
       if (!params)
         return false;
-      int param = params->FindIntKey("param").value_or(-1);
+      int param = params->GetDict().FindInt("param").value_or(-1);
       EXPECT_EQ(1, param);
     }
     return true;
@@ -78,7 +78,7 @@ class MockSyncWebSocket : public SyncWebSocket {
     dict->reset(temp_dict->DeepCopy());
     if (!dict)
       return false;
-    absl::optional<int> maybe_id = (*dict)->FindIntKey("id");
+    absl::optional<int> maybe_id = (*dict)->GetDict().FindInt("id");
     EXPECT_TRUE(maybe_id);
     if (!maybe_id)
       return false;
@@ -103,12 +103,12 @@ class MockSyncWebSocket : public SyncWebSocket {
     if (timeout.IsExpired())
       return SyncWebSocket::StatusCode::kTimeout;
     if (ReceiveHelper(message)) {
-      base::DictionaryValue response;
-      response.SetInteger("id", id_);
-      base::DictionaryValue result;
-      result.SetInteger("param", 1);
-      response.SetKey("result", result.Clone());
-      base::JSONWriter::Write(response, message);
+      base::Value::Dict response;
+      response.Set("id", id_);
+      base::Value result{base::Value::Type::DICT};
+      result.GetDict().Set("param", 1);
+      response.Set("result", result.Clone());
+      base::JSONWriter::Write(base::Value(std::move(response)), message);
     }
     --queued_messages_;
     return SyncWebSocket::StatusCode::kOk;
@@ -124,12 +124,12 @@ class MockSyncWebSocket : public SyncWebSocket {
       connect_complete_ = true;
     }
     // Handle connectIfNecessary commands
-    base::DictionaryValue response;
-    response.SetInteger("id", id_);
-    base::DictionaryValue result;
-    result.SetInteger("param", 1);
-    response.SetKey("result", result.Clone());
-    base::JSONWriter::Write(response, message);
+    base::Value::Dict response;
+    response.Set("id", id_);
+    base::Value result{base::Value::Type::DICT};
+    result.GetDict().Set("param", 1);
+    response.Set("result", result.Clone());
+    base::JSONWriter::Write(base::Value(std::move(response)), message);
     return false;
   }
 
@@ -165,7 +165,7 @@ TEST_F(DevToolsClientImplTest, SendCommand) {
                             base::BindRepeating(&CloserFunc));
   ASSERT_EQ(kOk, client.ConnectIfNecessary().code());
   base::DictionaryValue params;
-  params.SetInteger("param", 1);
+  params.GetDict().Set("param", 1);
   ASSERT_EQ(kOk, client.SendCommand("method", params).code());
 }
 
@@ -176,7 +176,7 @@ TEST_F(DevToolsClientImplTest, SendCommandAndGetResult) {
                             base::BindRepeating(&CloserFunc));
   ASSERT_EQ(kOk, client.ConnectIfNecessary().code());
   base::DictionaryValue params;
-  params.SetInteger("param", 1);
+  params.GetDict().Set("param", 1);
   base::Value result;
   Status status = client.SendCommandAndGetResult("method", params, &result);
   ASSERT_EQ(kOk, status.code());
@@ -189,8 +189,8 @@ namespace {
 
 class MockSyncWebSocket2 : public SyncWebSocket {
  public:
-  MockSyncWebSocket2() {}
-  ~MockSyncWebSocket2() override {}
+  MockSyncWebSocket2() = default;
+  ~MockSyncWebSocket2() override = default;
 
   bool IsConnected() override { return false; }
 
@@ -226,9 +226,8 @@ namespace {
 class MockSyncWebSocket3 : public MockSyncWebSocket {
  public:
   explicit MockSyncWebSocket3(bool send_returns_after_connect)
-      : connected_(false),
-        send_returns_after_connect_(send_returns_after_connect) {}
-  ~MockSyncWebSocket3() override {}
+      : send_returns_after_connect_(send_returns_after_connect) {}
+  ~MockSyncWebSocket3() override = default;
 
   bool IsConnected() override { return connected_; }
 
@@ -259,7 +258,7 @@ class MockSyncWebSocket3 : public MockSyncWebSocket {
   bool HasNextMessage() override { return true; }
 
  private:
-  bool connected_;
+  bool connected_ = false;
   bool send_returns_after_connect_;
 };
 
@@ -294,8 +293,8 @@ namespace {
 
 class FakeSyncWebSocket : public MockSyncWebSocket {
  public:
-  FakeSyncWebSocket() : connected_(false) {}
-  ~FakeSyncWebSocket() override {}
+  FakeSyncWebSocket() = default;
+  ~FakeSyncWebSocket() override = default;
 
   bool IsConnected() override { return connected_; }
 
@@ -322,7 +321,7 @@ class FakeSyncWebSocket : public MockSyncWebSocket {
   bool HasNextMessage() override { return true; }
 
  private:
-  bool connected_;
+  bool connected_ = false;
 };
 
 bool ReturnCommand(const std::string& message,
@@ -389,7 +388,7 @@ class MockListener : public DevToolsEventListener {
                  const base::DictionaryValue& params) override {
     called_ = true;
     EXPECT_STREQ("method", method.c_str());
-    EXPECT_TRUE(params.FindKey("key"));
+    EXPECT_TRUE(params.GetDict().Find("key"));
     return Status(kOk);
   }
 
@@ -410,13 +409,13 @@ bool ReturnEventThenResponse(
     *type = internal::kEventMessageType;
     event->method = "method";
     event->params = std::make_unique<base::DictionaryValue>();
-    event->params->SetInteger("key", 1);
+    event->params->GetDict().Set("key", 1);
   } else {
     *type = internal::kCommandResponseMessageType;
     command_response->id = expected_id;
     base::DictionaryValue params;
     command_response->result = std::make_unique<base::DictionaryValue>();
-    command_response->result->SetInteger("key", 2);
+    command_response->result->GetDict().Set("key", 2);
   }
   *first = false;
   return true;
@@ -431,7 +430,7 @@ bool ReturnEvent(const std::string& message,
   *type = internal::kEventMessageType;
   event->method = "method";
   event->params = std::make_unique<base::DictionaryValue>();
-  event->params->SetInteger("key", 1);
+  event->params->GetDict().Set("key", 1);
   return true;
 }
 
@@ -446,14 +445,14 @@ bool ReturnOutOfOrderResponses(
     internal::InspectorCommandResponse* command_response) {
   int key = 0;
   base::DictionaryValue params;
-  params.SetInteger("param", 1);
+  params.GetDict().Set("param", 1);
   switch ((*recurse_count)++) {
     case 0:
       client->SendCommand("method", params);
       *type = internal::kEventMessageType;
       event->method = "method";
       event->params = std::make_unique<base::DictionaryValue>();
-      event->params->SetInteger("key", 1);
+      event->params->GetDict().Set("key", 1);
       return true;
     case 1:
       command_response->id = expected_id - 1;
@@ -466,7 +465,7 @@ bool ReturnOutOfOrderResponses(
   }
   *type = internal::kCommandResponseMessageType;
   command_response->result = std::make_unique<base::DictionaryValue>();
-  command_response->result->SetInteger("key", key);
+  command_response->result->GetDict().Set("key", key);
   return true;
 }
 
@@ -550,7 +549,7 @@ TEST_F(DevToolsClientImplTest, SendCommandEventBeforeResponse) {
   base::Value result;
   ASSERT_TRUE(client.SendCommandAndGetResult("method", params, &result).IsOk());
   ASSERT_TRUE(result.is_dict());
-  absl::optional<int> key = result.FindIntKey("key");
+  absl::optional<int> key = result.GetDict().FindInt("key");
   ASSERT_TRUE(key);
   ASSERT_EQ(2, key.value());
 }
@@ -609,7 +608,7 @@ TEST(ParseInspectorMessage, EventWithParams) {
       0, &session_id, &type, &event, &response));
   ASSERT_EQ(internal::kEventMessageType, type);
   ASSERT_STREQ("method", event.method.c_str());
-  int key = event.params->FindIntKey("key").value_or(-1);
+  int key = event.params->GetDict().FindInt("key").value_or(-1);
   ASSERT_EQ(100, key);
   EXPECT_EQ("AB3A", session_id);
 }
@@ -653,7 +652,7 @@ TEST(ParseInspectorMessage, Command) {
   ASSERT_EQ(internal::kCommandResponseMessageType, type);
   ASSERT_EQ(1, response.id);
   ASSERT_FALSE(response.error.length());
-  int key = response.result->FindIntKey("key").value_or(-1);
+  int key = response.result->GetDict().FindInt("key").value_or(-1);
   ASSERT_EQ(1, key);
 }
 
@@ -780,11 +779,11 @@ TEST_F(DevToolsClientImplTest, NestedCommandsWithOutOfOrderResults) {
   client.SetParserFuncForTesting(
       base::BindRepeating(&ReturnOutOfOrderResponses, &recurse_count, &client));
   base::DictionaryValue params;
-  params.SetInteger("param", 1);
+  params.GetDict().Set("param", 1);
   base::Value result;
   ASSERT_TRUE(client.SendCommandAndGetResult("method", params, &result).IsOk());
   ASSERT_TRUE(result.is_dict());
-  absl::optional<int> key = result.FindIntKey("key");
+  absl::optional<int> key = result.GetDict().FindInt("key");
   ASSERT_TRUE(key);
   ASSERT_EQ(2, key.value());
 }
@@ -851,19 +850,19 @@ class OnConnectedSyncWebSocket : public MockSyncWebSocket {
     std::unique_ptr<base::DictionaryValue> dict;
     std::string method;
     if (SendHelper(message, &dict, &method)) {
-      base::DictionaryValue response;
-      response.SetInteger("id", id_);
-      response.SetKey("result", base::DictionaryValue());
+      base::Value::Dict response;
+      response.Set("id", id_);
+      response.Set("result", base::DictionaryValue());
       std::string json_response;
-      base::JSONWriter::Write(response, &json_response);
+      base::JSONWriter::Write(base::Value(std::move(response)), &json_response);
       queued_response_.push_back(json_response);
 
       // Push one event.
-      base::DictionaryValue event;
-      event.SetString("method", "updateEvent");
-      event.SetKey("params", base::DictionaryValue());
+      base::Value::Dict event;
+      event.Set("method", "updateEvent");
+      event.Set("params", base::DictionaryValue());
       std::string json_event;
-      base::JSONWriter::Write(event, &json_event);
+      base::JSONWriter::Write(base::Value(std::move(event)), &json_event);
       queued_response_.push_back(json_event);
     }
     return true;
@@ -1064,7 +1063,7 @@ TEST_F(DevToolsClientImplTest, Reconnect) {
   ASSERT_EQ(kOk, client.ConnectIfNecessary().code());
   ASSERT_FALSE(is_called);
   base::DictionaryValue params;
-  params.SetInteger("param", 1);
+  params.GetDict().Set("param", 1);
   is_called = false;
   ASSERT_EQ(kDisconnected, client.SendCommand("method", params).code());
   ASSERT_FALSE(is_called);
@@ -1260,20 +1259,19 @@ class MockSyncWebSocket7 : public SyncWebSocket {
   bool Send(const std::string& message) override {
     std::unique_ptr<base::Value> value =
         base::JSONReader::ReadDeprecated(message);
-    base::DictionaryValue* dict = nullptr;
-    EXPECT_TRUE(value->GetAsDictionary(&dict));
+    base::Value::Dict* dict = value->GetIfDict();
+    EXPECT_TRUE(dict);
     if (!dict)
       return false;
-    absl::optional<int> maybe_id = dict->FindIntKey("id");
+    absl::optional<int> maybe_id = dict->FindInt("id");
     EXPECT_TRUE(maybe_id);
     if (!maybe_id)
       return false;
     id_ = *maybe_id;
-    std::string method;
-    EXPECT_TRUE(dict->GetString("method", &method));
-    EXPECT_STREQ("method", method.c_str());
-    base::DictionaryValue* params = nullptr;
-    EXPECT_TRUE(dict->GetDictionary("params", &params));
+    std::string* method = dict->FindString("method");
+    EXPECT_TRUE(method);
+    EXPECT_STREQ("method", method->c_str());
+    base::Value::Dict* params = dict->FindDict("params");
     if (!params)
       return false;
     sent_messages_++;
@@ -1285,15 +1283,12 @@ class MockSyncWebSocket7 : public SyncWebSocket {
       const Timeout& timeout) override {
     EXPECT_LE(sent_responses_, 1);
     EXPECT_EQ(sent_messages_, 2);
-    base::DictionaryValue response;
-    if (sent_responses_ == 0)
-      response.SetInteger("id", 1);
-    else
-      response.SetInteger("id", 2);
-    base::DictionaryValue result;
-    result.SetInteger("param", 1);
-    response.SetKey("result", result.Clone());
-    base::JSONWriter::Write(response, message);
+    base::Value::Dict response;
+    response.Set("id", (sent_responses_ == 0) ? 1 : 2);
+    base::Value result{base::Value::Type::DICT};
+    result.GetDict().Set("param", 1);
+    response.Set("result", result.Clone());
+    base::JSONWriter::Write(base::Value(std::move(response)), message);
     sent_responses_++;
     return SyncWebSocket::StatusCode::kOk;
   }
@@ -1315,7 +1310,7 @@ TEST_F(DevToolsClientImplTest, SendCommandAndIgnoreResponse) {
                             base::BindRepeating(&CloserFunc));
   ASSERT_EQ(kOk, client.ConnectIfNecessary().code());
   base::DictionaryValue params;
-  params.SetInteger("param", 1);
+  params.GetDict().Set("param", 1);
   ASSERT_EQ(kOk, client.SendCommandAndIgnoreResponse("method", params).code());
   ASSERT_EQ(kOk, client.SendCommand("method", params).code());
 }

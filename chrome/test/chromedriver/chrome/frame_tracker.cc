@@ -77,9 +77,10 @@ Status FrameTracker::OnConnected(DevToolsClient* client) {
   attached_frames_.clear();
   // Enable target events to allow tracking iframe targets creation.
   base::DictionaryValue params;
-  params.SetBoolean("autoAttach", true);
-  params.SetBoolean("flatten", true);
-  params.SetBoolean("waitForDebuggerOnStart", false);
+  base::Value::Dict& dict = params.GetDict();
+  dict.Set("autoAttach", true);
+  dict.Set("flatten", true);
+  dict.Set("waitForDebuggerOnStart", false);
   Status status = client->SendCommand("Target.setAutoAttach", params);
   if (status.IsError())
     return status;
@@ -104,23 +105,23 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
     std::string frame_id;
     bool is_default = true;
 
-    absl::optional<int> context_id = context->FindIntKey("id");
+    absl::optional<int> context_id = context->GetDict().FindInt("id");
     if (!context_id) {
       std::string json;
       base::JSONWriter::Write(*context, &json);
       return Status(kUnknownError, method + " has invalid 'context': " + json);
     }
 
-    if (const base::Value* auxData = context->FindDictKey("auxData")) {
+    if (const base::Value* auxData = context->GetDict().Find("auxData")) {
       if (!auxData->is_dict()) {
         return Status(kUnknownError, method + " has invalid 'auxData' value");
       }
-      if (absl::optional<bool> b = auxData->FindBoolKey("isDefault")) {
+      if (absl::optional<bool> b = auxData->GetDict().FindBool("isDefault")) {
         is_default = *b;
       } else {
         return Status(kUnknownError, method + " has invalid 'isDefault' value");
       }
-      if (const std::string* s = auxData->FindStringKey("frameId")) {
+      if (const std::string* s = auxData->GetDict().FindString("frameId")) {
         frame_id = *s;
       } else {
         return Status(kUnknownError, method + " has invalid 'frameId' value");
@@ -131,7 +132,7 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
       frame_to_context_map_[frame_id] = *context_id;
   } else if (method == "Runtime.executionContextDestroyed") {
     absl::optional<int> execution_context_id =
-        params.FindIntKey("executionContextId");
+        params.GetDict().FindInt("executionContextId");
     if (!execution_context_id)
       return Status(kUnknownError, method + " missing 'executionContextId'");
     for (auto entry : frame_to_context_map_) {
@@ -143,14 +144,14 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
   } else if (method == "Runtime.executionContextsCleared") {
     frame_to_context_map_.clear();
   } else if (method == "Page.frameAttached") {
-    if (const std::string* frame_id = params.FindStringKey("frameId")) {
+    if (const std::string* frame_id = params.GetDict().FindString("frameId")) {
       attached_frames_.insert(*frame_id);
     } else {
       return Status(kUnknownError,
                     "missing frameId in Page.frameAttached event");
     }
   } else if (method == "Page.frameDetached") {
-    if (const std::string* frame_id = params.FindStringKey("frameId")) {
+    if (const std::string* frame_id = params.GetDict().FindString("frameId")) {
       attached_frames_.erase(*frame_id);
     } else {
       return Status(kUnknownError,
@@ -170,7 +171,7 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
       if (!target_id)
         return Status(kUnknownError,
                       "missing target ID in Target.attachedToTarget event");
-      const std::string* session_id = params.FindStringKey("sessionId");
+      const std::string* session_id = params.GetDict().FindString("sessionId");
       if (!session_id)
         return Status(kUnknownError,
                       "missing session ID in Target.attachedToTarget event");
@@ -194,7 +195,7 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
       }
     }
   } else if (method == "Target.detachedFromTarget") {
-    const std::string* target_id = params.FindStringKey("targetId");
+    const std::string* target_id = params.GetDict().FindString("targetId");
     if (!target_id)
       // Some types of Target.detachedFromTarget events do not have targetId.
       // We are not interested in those types of targets.

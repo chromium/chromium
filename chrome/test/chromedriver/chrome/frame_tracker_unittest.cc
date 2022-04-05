@@ -21,7 +21,8 @@ TEST(FrameTracker, GetContextIdForFrame) {
   const char context[] =
       "{\"id\":100,\"auxData\":{\"frameId\":\"f\",\"isDefault\":true}}";
   base::DictionaryValue params;
-  params.Set("context", base::JSONReader::ReadDeprecated(context));
+  params.GetDict().Set("context",
+                       std::move(*base::JSONReader::ReadDeprecated(context)));
   ASSERT_EQ(kOk,
             tracker.OnEvent(&client, "Runtime.executionContextCreated", params)
                 .code());
@@ -32,7 +33,7 @@ TEST(FrameTracker, GetContextIdForFrame) {
   ASSERT_EQ(100, context_id);
 
   base::DictionaryValue nav_params;
-  nav_params.SetString("frame.parentId", "1");
+  nav_params.GetDict().SetByDottedPath("frame.parentId", "1");
   ASSERT_EQ(kOk,
             tracker.OnEvent(&client, "Page.frameNavigated", nav_params).code());
   ASSERT_TRUE(tracker.GetContextIdForFrame("f", &context_id).IsOk());
@@ -52,9 +53,10 @@ TEST(FrameTracker, AuxData) {
 
   const char context[] = "{\"id\":100,\"auxData\":{}}";
   base::DictionaryValue params;
-  params.Set("context", base::JSONReader::ReadDeprecated(context));
-  params.SetString("context.auxData.frameId", "f");
-  params.SetBoolean("context.auxData.isDefault", true);
+  params.GetDict().Set("context",
+                       std::move(*base::JSONReader::ReadDeprecated(context)));
+  params.GetDict().SetByDottedPath("context.auxData.frameId", "f");
+  params.GetDict().SetByDottedPath("context.auxData.isDefault", true);
   ASSERT_EQ(kOk,
             tracker.OnEvent(&client, "Runtime.executionContextCreated", params)
                 .code());
@@ -72,7 +74,8 @@ TEST(FrameTracker, CanUpdateFrameContextId) {
   const char context[] =
       "{\"id\":1,\"auxData\":{\"frameId\":\"f\",\"isDefault\":true}}";
   base::DictionaryValue params;
-  params.Set("context", base::JSONReader::ReadDeprecated(context));
+  params.GetDict().Set("context",
+                       std::move(*base::JSONReader::ReadDeprecated(context)));
   ASSERT_EQ(kOk,
             tracker.OnEvent(&client, "Runtime.executionContextCreated", params)
                 .code());
@@ -80,7 +83,7 @@ TEST(FrameTracker, CanUpdateFrameContextId) {
   ASSERT_TRUE(tracker.GetContextIdForFrame("f", &context_id).IsOk());
   ASSERT_EQ(1, context_id);
 
-  params.SetInteger("context.id", 2);
+  params.GetDict().SetByDottedPath("context.id", 2);
   ASSERT_EQ(kOk,
             tracker.OnEvent(&client, "Runtime.executionContextCreated", params)
                 .code());
@@ -95,7 +98,8 @@ TEST(FrameTracker, DontTrackContentScriptContexts) {
   const char context[] =
       "{\"id\":1,\"auxData\":{\"frameId\":\"f\",\"isDefault\":true}}";
   base::DictionaryValue params;
-  params.Set("context", base::JSONReader::ReadDeprecated(context));
+  params.GetDict().Set("context",
+                       std::move(*base::JSONReader::ReadDeprecated(context)));
   ASSERT_EQ(kOk,
             tracker.OnEvent(&client, "Runtime.executionContextCreated", params)
                 .code());
@@ -103,8 +107,8 @@ TEST(FrameTracker, DontTrackContentScriptContexts) {
   ASSERT_TRUE(tracker.GetContextIdForFrame("f", &context_id).IsOk());
   ASSERT_EQ(1, context_id);
 
-  params.SetInteger("context.id", 2);
-  params.SetBoolean("context.auxData.isDefault", false);
+  params.GetDict().SetByDottedPath("context.id", 2);
+  params.GetDict().SetByDottedPath("context.auxData.isDefault", false);
   ASSERT_EQ(kOk,
             tracker.OnEvent(&client, "Runtime.executionContextCreated", params)
                 .code());

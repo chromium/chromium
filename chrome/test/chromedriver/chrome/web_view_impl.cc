@@ -5,7 +5,9 @@
 #include "chrome/test/chromedriver/chrome/web_view_impl.h"
 
 #include <stddef.h>
+#include <algorithm>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
@@ -143,17 +145,18 @@ const char* GetAsString(PointerType type) {
 std::unique_ptr<base::DictionaryValue> GenerateTouchPoint(
     const TouchEvent& event) {
   std::unique_ptr<base::DictionaryValue> point(new base::DictionaryValue());
-  point->SetInteger("x", event.x);
-  point->SetInteger("y", event.y);
-  point->SetDoubleKey("radiusX", event.radiusX);
-  point->SetDoubleKey("radiusY", event.radiusY);
-  point->SetDoubleKey("rotationAngle", event.rotationAngle);
-  point->SetDoubleKey("force", event.force);
-  point->SetDoubleKey("tangentialPressure", event.tangentialPressure);
-  point->SetInteger("tiltX", event.tiltX);
-  point->SetInteger("tiltY", event.tiltY);
-  point->SetInteger("twist", event.twist);
-  point->SetInteger("id", event.id);
+  base::Value::Dict& dict = point->GetDict();
+  dict.Set("x", event.x);
+  dict.Set("y", event.y);
+  dict.Set("radiusX", event.radiusX);
+  dict.Set("radiusY", event.radiusY);
+  dict.Set("rotationAngle", event.rotationAngle);
+  dict.Set("force", event.force);
+  dict.Set("tangentialPressure", event.tangentialPressure);
+  dict.Set("tiltX", event.tiltX);
+  dict.Set("tiltY", event.tiltY);
+  dict.Set("twist", event.twist);
+  dict.Set("id", event.id);
   return point;
 }
 
@@ -283,20 +286,20 @@ Status WebViewImpl::GetUrl(std::string* url) {
                                                    params, &result);
   if (status.IsError())
     return status;
-  absl::optional<int> current_index = result.FindIntKey("currentIndex");
+  absl::optional<int> current_index = result.GetDict().FindInt("currentIndex");
   if (!current_index)
     return Status(kUnknownError, "navigation history missing currentIndex");
-  base::Value* entries = result.FindListKey("entries");
+  base::Value::List* entries = result.GetDict().FindList("entries");
   if (!entries)
     return Status(kUnknownError, "navigation history missing entries");
-  if (static_cast<int>(entries->GetListDeprecated().size()) <= *current_index ||
-      !entries->GetListDeprecated()[*current_index].is_dict()) {
+  if (static_cast<int>(entries->size()) <= *current_index ||
+      !(*entries)[*current_index].is_dict()) {
     return Status(kUnknownError, "navigation history missing entry");
   }
-  base::Value& entry = entries->GetListDeprecated()[*current_index];
-  if (!entry.FindStringKey("url"))
+  base::Value& entry = (*entries)[*current_index];
+  if (!entry.GetDict().FindString("url"))
     return Status(kUnknownError, "navigation history entry is missing url");
-  *url = *entry.FindStringKey("url");
+  *url = *entry.GetDict().FindString("url");
   return Status(kOk);
 }
 
@@ -307,7 +310,7 @@ Status WebViewImpl::Load(const std::string& url, const Timeout* timeout) {
                        base::CompareCase::INSENSITIVE_ASCII))
     return Status(kUnknownError, "unsupported protocol");
   base::DictionaryValue params;
-  params.SetString("url", url);
+  params.GetDict().Set("url", url);
   if (IsNonBlocking()) {
     // With non-bloakcing navigation tracker, the previous navigation might
     // still be in progress, and this can cause the new navigate command to be
@@ -321,20 +324,20 @@ Status WebViewImpl::Load(const std::string& url, const Timeout* timeout) {
 
 Status WebViewImpl::Reload(const Timeout* timeout) {
   base::DictionaryValue params;
-  params.SetBoolean("ignoreCache", false);
+  params.GetDict().Set("ignoreCache", false);
   return client_->SendCommandWithTimeout("Page.reload", params, timeout);
 }
 
 Status WebViewImpl::Freeze(const Timeout* timeout) {
   base::DictionaryValue params;
-  params.SetString("state", "frozen");
+  params.GetDict().Set("state", "frozen");
   return client_->SendCommandWithTimeout("Page.setWebLifecycleState", params,
                                          timeout);
 }
 
 Status WebViewImpl::Resume(const Timeout* timeout) {
   base::DictionaryValue params;
-  params.SetString("state", "active");
+  params.GetDict().Set("state", "active");
   return client_->SendCommandWithTimeout("Page.setWebLifecycleState", params,
                                          timeout);
 }
@@ -382,28 +385,28 @@ Status WebViewImpl::TraverseHistory(int delta, const Timeout* timeout) {
       return status;
   }
 
-  absl::optional<int> current_index = result.FindIntKey("currentIndex");
+  absl::optional<int> current_index = result.GetDict().FindInt("currentIndex");
   if (!current_index)
     return Status(kUnknownError, "DevTools didn't return currentIndex");
 
-  base::Value* entries = result.FindListKey("entries");
+  base::Value::List* entries = result.GetDict().FindList("entries");
   if (!entries)
     return Status(kUnknownError, "DevTools didn't return entries");
 
-  if ((*current_index + delta) < 0
-      || (static_cast<int>(entries->GetList().size()) <= *current_index + delta)
-      || !entries->GetList()[*current_index + delta].is_dict()) {
+  if ((*current_index + delta) < 0 ||
+      (static_cast<int>(entries->size()) <= *current_index + delta) ||
+      !(*entries)[*current_index + delta].is_dict()) {
     // The WebDriver spec says that if there are no pages left in the browser's
     // history (i.e. |current_index + delta| is out of range), then we must not
     // navigate anywhere.
     return Status(kOk);
   }
 
-  base::Value& entry = entries->GetListDeprecated()[*current_index + delta];
+  base::Value& entry = (*entries)[*current_index + delta];
   absl::optional<int> entry_id = entry.FindIntKey("id");
   if (!entry_id)
     return Status(kUnknownError, "history entry does not have an id");
-  params.SetInteger("entryId", *entry_id);
+  params.GetDict().Set("entryId", *entry_id);
 
   return client_->SendCommandWithTimeout("Page.navigateToHistoryEntry", params,
                                          timeout);
@@ -552,25 +555,25 @@ Status WebViewImpl::DispatchTouchEventsForMouseEvents(
   // on the page. Wait two frames for the compositor to sync with the main
   // thread to get consistent behavior.
   base::DictionaryValue promise_params;
-  promise_params.SetString(
+  promise_params.GetDict().Set(
       "expression",
       "new Promise(x => setTimeout(() => setTimeout(x, 20), 20))");
-  promise_params.SetBoolean("awaitPromise", true);
+  promise_params.GetDict().Set("awaitPromise", true);
   client_->SendCommand("Runtime.evaluate", promise_params);
   for (auto it = events.begin(); it != events.end(); ++it) {
     base::DictionaryValue params;
 
     switch (it->type) {
       case kPressedMouseEventType:
-        params.SetString("type", "touchStart");
+        params.GetDict().Set("type", "touchStart");
         break;
       case kReleasedMouseEventType:
-        params.SetString("type", "touchEnd");
+        params.GetDict().Set("type", "touchEnd");
         break;
       case kMovedMouseEventType:
         if (it->button == kNoneMouseButton)
           continue;
-        params.SetString("type", "touchMove");
+        params.GetDict().Set("type", "touchMove");
         break;
       default:
         break;
@@ -580,13 +583,13 @@ Status WebViewImpl::DispatchTouchEventsForMouseEvents(
     if (it->type != kReleasedMouseEventType) {
       std::unique_ptr<base::DictionaryValue> touchPoint(
           new base::DictionaryValue);
-      touchPoint->SetInteger("x", it->x);
-      touchPoint->SetInteger("y", it->y);
+      touchPoint->GetDict().Set("x", it->x);
+      touchPoint->GetDict().Set("y", it->y);
       touchPoints->Append(
           base::Value::FromUniquePtrValue(std::move(touchPoint)));
     }
     params.SetList("touchPoints", std::move(touchPoints));
-    params.SetInteger("modifiers", it->modifiers);
+    params.GetDict().Set("modifiers", it->modifiers);
     Status status = client_->SendCommand("Input.dispatchTouchEvent", params);
     if (status.IsError())
       return status;
@@ -603,23 +606,24 @@ Status WebViewImpl::DispatchMouseEvents(const std::vector<MouseEvent>& events,
   Status status(kOk);
   for (auto it = events.begin(); it != events.end(); ++it) {
     base::DictionaryValue params;
+    base::Value::Dict& dict = params.GetDict();
     std::string type = GetAsString(it->type);
-    params.SetString("type", type);
-    params.SetInteger("x", it->x);
-    params.SetInteger("y", it->y);
-    params.SetInteger("modifiers", it->modifiers);
-    params.SetString("button", GetAsString(it->button));
-    params.SetInteger("buttons", it->buttons);
-    params.SetInteger("clickCount", it->click_count);
-    params.SetDoubleKey("force", it->force);
-    params.SetDoubleKey("tangentialPressure", it->tangentialPressure);
-    params.SetInteger("tiltX", it->tiltX);
-    params.SetInteger("tiltY", it->tiltY);
-    params.SetInteger("twist", it->twist);
-    params.SetString("pointerType", GetAsString(it->pointer_type));
+    dict.Set("type", type);
+    dict.Set("x", it->x);
+    dict.Set("y", it->y);
+    dict.Set("modifiers", it->modifiers);
+    dict.Set("button", GetAsString(it->button));
+    dict.Set("buttons", it->buttons);
+    dict.Set("clickCount", it->click_count);
+    dict.Set("force", it->force);
+    dict.Set("tangentialPressure", it->tangentialPressure);
+    dict.Set("tiltX", it->tiltX);
+    dict.Set("tiltY", it->tiltY);
+    dict.Set("twist", it->twist);
+    dict.Set("pointerType", GetAsString(it->pointer_type));
     if (type == "mouseWheel") {
-      params.SetInteger("deltaX", it->delta_x);
-      params.SetInteger("deltaY", it->delta_y);
+      dict.Set("deltaX", it->delta_x);
+      dict.Set("deltaY", it->delta_y);
     }
 
     const bool last_event = (it == events.end() - 1);
@@ -640,14 +644,14 @@ Status WebViewImpl::DispatchTouchEvent(const TouchEvent& event,
                                        bool async_dispatch_events) {
   base::DictionaryValue params;
   std::string type = GetAsString(event.type);
-  params.SetString("type", type);
+  params.GetDict().Set("type", type);
   base::ListValue point_list;
   Status status(kOk);
   if (type == "touchStart" || type == "touchMove") {
     std::unique_ptr<base::DictionaryValue> point = GenerateTouchPoint(event);
     point_list.Append(base::Value::FromUniquePtrValue(std::move(point)));
   }
-  params.SetKey("touchPoints", std::move(point_list));
+  params.GetDict().Set("touchPoints", std::move(point_list));
   if (async_dispatch_events) {
     status = client_->SendCommandAndIgnoreResponse("Input.dispatchTouchEvent",
                                                    params);
@@ -682,15 +686,15 @@ Status WebViewImpl::DispatchTouchEventWithMultiPoints(
     base::ListValue point_list;
     int32_t current_time =
         (base::Time::Now() - base::Time::UnixEpoch()).InMilliseconds();
-    params.SetInteger("timestamp", current_time);
+    params.GetDict().Set("timestamp", current_time);
     std::string type = GetAsString(event.type);
-    params.SetString("type", type);
+    params.GetDict().Set("type", type);
     if (type == "touchCancel")
       continue;
 
     point_list.Append(
         base::Value::FromUniquePtrValue(GenerateTouchPoint(event)));
-    params.SetKey("touchPoints", std::move(point_list));
+    params.GetDict().Set("touchPoints", std::move(point_list));
 
     if (async_dispatch_events || touch_count < events.size()) {
       status = client_->SendCommandAndIgnoreResponse("Input.dispatchTouchEvent",
@@ -711,17 +715,17 @@ Status WebViewImpl::DispatchKeyEvents(const std::vector<KeyEvent>& events,
   Status status(kOk);
   for (auto it = events.begin(); it != events.end(); ++it) {
     base::DictionaryValue params;
-    params.SetString("type", GetAsString(it->type));
+    base::Value::Dict& dict = params.GetDict();
+    dict.Set("type", GetAsString(it->type));
     if (it->modifiers & kNumLockKeyModifierMask) {
-      params.SetBoolean("isKeypad", true);
-      params.SetInteger("modifiers",
-                        it->modifiers & ~kNumLockKeyModifierMask);
+      dict.Set("isKeypad", true);
+      dict.Set("modifiers", it->modifiers & ~kNumLockKeyModifierMask);
     } else {
-      params.SetInteger("modifiers", it->modifiers);
+      dict.Set("modifiers", it->modifiers);
     }
-    params.SetString("text", it->modified_text);
-    params.SetString("unmodifiedText", it->unmodified_text);
-    params.SetInteger("windowsVirtualKeyCode", it->key_code);
+    dict.Set("text", it->modified_text);
+    dict.Set("unmodifiedText", it->unmodified_text);
+    dict.Set("windowsVirtualKeyCode", it->key_code);
     std::string code;
     if (it->is_from_action) {
       code = it->code;
@@ -739,11 +743,11 @@ Status WebViewImpl::DispatchKeyEvents(const std::vector<KeyEvent>& events,
       is_ctrl_cmd_key_down = true;
 #endif
     if (!code.empty())
-      params.SetString("code", code);
+      dict.Set("code", code);
     if (!it->key.empty())
-      params.SetString("key", it->key);
+      dict.Set("key", it->key);
     else if (it->is_from_action)
-      params.SetString("key", it->modified_text);
+      dict.Set("key", it->modified_text);
 
     if (is_ctrl_cmd_key_down) {
       std::string command;
@@ -777,9 +781,9 @@ Status WebViewImpl::DispatchKeyEvents(const std::vector<KeyEvent>& events,
       // modifiers) and 2 (right modifiers). For location 3 (numeric keypad),
       // it is necessary to set the |isKeypad| parameter.
       if (it->location == 3)
-        params.SetBoolean("isKeypad", true);
+        dict.Set("isKeypad", true);
       else
-        params.SetInteger("location", it->location);
+        dict.Set("location", it->location);
     }
 
     const bool last_event = (it == events.end() - 1);
@@ -804,7 +808,7 @@ Status WebViewImpl::GetCookies(base::Value* cookies,
   if (browser_info_->browser_name != "webview") {
     base::ListValue url_list;
     url_list.Append(current_page_url);
-    params.SetKey("urls", url_list.Clone());
+    params.GetDict().Set("urls", url_list.Clone());
     Status status =
         client_->SendCommandAndGetResult("Network.getCookies", params, &result);
     if (status.IsError())
@@ -828,11 +832,12 @@ Status WebViewImpl::DeleteCookie(const std::string& name,
                                  const std::string& domain,
                                  const std::string& path) {
   base::DictionaryValue params;
-  params.SetString("url", url);
+  base::Value::Dict& dict = params.GetDict();
+  dict.Set("url", url);
   std::string command;
-  params.SetString("name", name);
-  params.SetString("domain", domain);
-  params.SetString("path", path);
+  dict.Set("name", name);
+  dict.Set("domain", domain);
+  dict.Set("path", path);
   command = "Network.deleteCookies";
   return client_->SendCommand(command, params);
 }
@@ -847,17 +852,18 @@ Status WebViewImpl::AddCookie(const std::string& name,
                               bool httpOnly,
                               double expiry) {
   base::DictionaryValue params;
-  params.SetString("name", name);
-  params.SetString("url", url);
-  params.SetString("value", value);
-  params.SetString("domain", domain);
-  params.SetString("path", path);
-  params.SetBoolean("secure", secure);
-  params.SetBoolean("httpOnly", httpOnly);
+  base::Value::Dict& dict = params.GetDict();
+  dict.Set("name", name);
+  dict.Set("url", url);
+  dict.Set("value", value);
+  dict.Set("domain", domain);
+  dict.Set("path", path);
+  dict.Set("secure", secure);
+  dict.Set("httpOnly", httpOnly);
   if (!sameSite.empty())
-    params.SetString("sameSite", sameSite);
+    dict.Set("sameSite", sameSite);
   if (expiry >= 0)
-    params.SetDoubleKey("expires", expiry);
+    dict.Set("expires", expiry);
 
   base::DictionaryValue result;
   Status status =
@@ -1024,7 +1030,7 @@ Status WebViewImpl::SetFileInputFiles(const std::string& frame,
     {
       base::DictionaryValue cmd_result;
       base::DictionaryValue params;
-      params.SetInteger("nodeId", node_id);
+      params.GetDict().Set("nodeId", node_id);
       status = client_->SendCommandAndGetResult("DOM.resolveNode", params,
                                                 &cmd_result);
       if (status.IsError())
@@ -1038,9 +1044,9 @@ Status WebViewImpl::SetFileInputFiles(const std::string& frame,
     {
       base::DictionaryValue cmd_result;
       base::DictionaryValue params;
-      params.SetString("functionDeclaration",
-                       "function() { return this.files.length }");
-      params.SetString("objectId", inputRemoteObjectId);
+      params.GetDict().Set("functionDeclaration",
+                           "function() { return this.files.length }");
+      params.GetDict().Set("objectId", inputRemoteObjectId);
       status = client_->SendCommandAndGetResult("Runtime.callFunctionOn",
                                                 params, &cmd_result);
       if (status.IsError())
@@ -1056,10 +1062,10 @@ Status WebViewImpl::SetFileInputFiles(const std::string& frame,
       {
         base::DictionaryValue cmd_result;
         base::DictionaryValue params;
-        params.SetString(
+        params.GetDict().Set(
             "functionDeclaration",
             "function() { return this.files[" + std::to_string(i) + "] }");
-        params.SetString("objectId", inputRemoteObjectId);
+        params.GetDict().Set("objectId", inputRemoteObjectId);
 
         status = client_->SendCommandAndGetResult("Runtime.callFunctionOn",
                                                   params, &cmd_result);
@@ -1072,7 +1078,7 @@ Status WebViewImpl::SetFileInputFiles(const std::string& frame,
       // Now convert each RemoteObject into the full path
       {
         base::DictionaryValue params;
-        params.SetString("objectId", fileObjectId);
+        params.GetDict().Set("objectId", fileObjectId);
         base::DictionaryValue getFileInfoResult;
         status = client_->SendCommandAndGetResult("DOM.getFileInfo", params,
                                                   &getFileInfoResult);
@@ -1101,8 +1107,8 @@ Status WebViewImpl::SetFileInputFiles(const std::string& frame,
   }
 
   base::DictionaryValue setFilesParams;
-  setFilesParams.SetInteger("nodeId", node_id);
-  setFilesParams.SetKey("files", file_list.Clone());
+  setFilesParams.GetDict().Set("nodeId", node_id);
+  setFilesParams.GetDict().Set("files", file_list.Clone());
   return client_->SendCommand("DOM.setFileInputFiles", setFilesParams);
 }
 
@@ -1166,11 +1172,12 @@ Status WebViewImpl::SynthesizeTapGesture(int x,
                                          int tap_count,
                                          bool is_long_press) {
   base::DictionaryValue params;
-  params.SetInteger("x", x);
-  params.SetInteger("y", y);
-  params.SetInteger("tapCount", tap_count);
+  base::Value::Dict& dict = params.GetDict();
+  dict.Set("x", x);
+  dict.Set("y", y);
+  dict.Set("tapCount", tap_count);
   if (is_long_press)
-    params.SetInteger("duration", 1500);
+    dict.Set("duration", 1500);
   return client_->SendCommand("Input.synthesizeTapGesture", params);
 }
 
@@ -1179,13 +1186,14 @@ Status WebViewImpl::SynthesizeScrollGesture(int x,
                                             int xoffset,
                                             int yoffset) {
   base::DictionaryValue params;
-  params.SetInteger("x", x);
-  params.SetInteger("y", y);
+  base::Value::Dict& dict = params.GetDict();
+  dict.Set("x", x);
+  dict.Set("y", y);
   // Chrome's synthetic scroll gesture is actually a "swipe" gesture, so the
   // direction of the swipe is opposite to the scroll (i.e. a swipe up scrolls
   // down, and a swipe left scrolls right).
-  params.SetInteger("xDistance", -xoffset);
-  params.SetInteger("yDistance", -yoffset);
+  dict.Set("xDistance", -xoffset);
+  dict.Set("yDistance", -yoffset);
   return client_->SendCommand("Input.synthesizeScrollGesture", params);
 }
 
@@ -1386,11 +1394,12 @@ Status EvaluateScript(DevToolsClient* client,
                       const bool awaitPromise,
                       std::unique_ptr<base::DictionaryValue>* result) {
   base::DictionaryValue params;
-  params.SetString("expression", expression);
+  base::Value::Dict& dict = params.GetDict();
+  dict.Set("expression", expression);
   if (context_id)
-    params.SetInteger("contextId", context_id);
-  params.SetBoolean("returnByValue", return_type == ReturnByValue);
-  params.SetBoolean("awaitPromise", awaitPromise);
+    dict.Set("contextId", context_id);
+  dict.Set("returnByValue", return_type == ReturnByValue);
+  dict.Set("awaitPromise", awaitPromise);
   base::Value cmd_result;
 
   Timeout local_timeout(timeout);
@@ -1527,14 +1536,14 @@ Status GetNodeIdFromFunction(DevToolsClient* client,
   base::DictionaryValue cmd_result;
   {
     base::DictionaryValue params;
-    params.SetString("objectId", element_id);
+    params.GetDict().Set("objectId", element_id);
     status =
         client->SendCommandAndGetResult("DOM.requestNode", params, &cmd_result);
   }
   {
     // Release the remote object before doing anything else.
     base::DictionaryValue params;
-    params.SetString("objectId", element_id);
+    params.GetDict().Set("objectId", element_id);
     Status release_status =
         client->SendCommand("Runtime.releaseObject", params);
     if (release_status.IsError()) {

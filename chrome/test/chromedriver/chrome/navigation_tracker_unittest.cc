@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <utility>
 
 #include "base/compiler_specific.h"
 #include "base/json/json_reader.h"
@@ -48,11 +49,13 @@ class DeterminingLoadStateDevToolsClient : public StubDevToolsClient {
     if (method == "DOM.getDocument") {
       base::Value result_dict(base::Value::Type::DICTIONARY);
       if (has_empty_base_url_) {
-        result_dict.SetStringPath("root.baseURL", "about:blank");
-        result_dict.SetStringPath("root.documentURL", "http://test");
+        result_dict.GetDict().SetByDottedPath("root.baseURL", "about:blank");
+        result_dict.GetDict().SetByDottedPath("root.documentURL",
+                                              "http://test");
       } else {
-        result_dict.SetStringPath("root.baseURL", "http://test");
-        result_dict.SetStringPath("root.documentURL", "http://test");
+        result_dict.GetDict().SetByDottedPath("root.baseURL", "http://test");
+        result_dict.GetDict().SetByDottedPath("root.documentURL",
+                                              "http://test");
       }
       *result = std::move(result_dict);
       return Status(kOk);
@@ -61,9 +64,9 @@ class DeterminingLoadStateDevToolsClient : public StubDevToolsClient {
       if (params.GetString("expression", &expression)) {
         base::Value result_dict(base::Value::Type::DICTIONARY);
         if (expression == "1")
-          result_dict.SetIntPath("result.value", 1);
+          result_dict.GetDict().SetByDottedPath("result.value", 1);
         else if (expression == "document.readyState")
-          result_dict.SetStringPath("result.value", "loading");
+          result_dict.GetDict().SetByDottedPath("result.value", "loading");
         *result = std::move(result_dict);
         return Status(kOk);
       }
@@ -79,7 +82,7 @@ class DeterminingLoadStateDevToolsClient : public StubDevToolsClient {
     }
 
     base::Value result_dict(base::Value::Type::DICTIONARY);
-    result_dict.SetBoolPath("result.value", is_loading_);
+    result_dict.GetDict().SetByDottedPath("result.value", is_loading_);
     *result = std::move(result_dict);
     return Status(kOk);
   }
@@ -132,7 +135,7 @@ TEST(NavigationTracker, FrameLoadStartStop) {
                             &dialog_manager);
 
   base::DictionaryValue params;
-  params.SetString("frameId", client_ptr->GetId());
+  params.GetDict().Set("frameId", client_ptr->GetId());
 
   ASSERT_EQ(
       kOk,
@@ -161,7 +164,7 @@ TEST(NavigationTracker, FrameLoadStartStartStop) {
                             &dialog_manager);
 
   base::DictionaryValue params;
-  params.SetString("frameId", client_ptr->GetId());
+  params.GetDict().Set("frameId", client_ptr->GetId());
 
   ASSERT_EQ(
       kOk,
@@ -192,7 +195,7 @@ TEST(NavigationTracker, MultipleFramesLoad) {
 
   base::DictionaryValue params;
   std::string top_frame_id = client_ptr->GetId();
-  params.SetString("frameId", top_frame_id);
+  params.GetDict().Set("frameId", top_frame_id);
 
   ASSERT_EQ(
       kOk,
@@ -205,19 +208,19 @@ TEST(NavigationTracker, MultipleFramesLoad) {
       tracker.OnEvent(client_ptr, "Page.frameStartedLoading", params).code());
 
   ASSERT_NO_FATAL_FAILURE(AssertPendingState(&tracker, true));
-  params.SetString("frameId", "2");
+  params.GetDict().Set("frameId", "2");
   ASSERT_EQ(
       kOk,
       tracker.OnEvent(client_ptr, "Page.frameStoppedLoading", params).code());
   // Inner frame stops loading. loading_state_ should remain true
   // since top frame is still loading
   ASSERT_NO_FATAL_FAILURE(AssertPendingState(&tracker, true));
-  params.SetString("frameId", top_frame_id);
+  params.GetDict().Set("frameId", top_frame_id);
   ASSERT_EQ(kOk,
             tracker.OnEvent(client_ptr, "Page.loadEventFired", params).code());
 
   ASSERT_NO_FATAL_FAILURE(AssertPendingState(&tracker, false));
-  params.SetString("frameId", "3");
+  params.GetDict().Set("frameId", "3");
   ASSERT_EQ(
       kOk,
       tracker.OnEvent(client_ptr, "Page.frameStoppedLoading", params).code());
@@ -245,8 +248,8 @@ TEST(NavigationTracker, NavigationScheduledForOtherFrame) {
                             &web_view, &browser_info, &dialog_manager);
 
   base::DictionaryValue params_scheduled;
-  params_scheduled.SetInteger("delay", 0);
-  params_scheduled.SetString("frameId", "other");
+  params_scheduled.GetDict().Set("delay", 0);
+  params_scheduled.GetDict().Set("frameId", "other");
 
   ASSERT_EQ(kOk, tracker
                      .OnEvent(client_ptr, "Page.frameScheduledNavigation",
@@ -270,7 +273,7 @@ TEST(NavigationTracker, CurrentFrameLoading) {
   base::DictionaryValue params;
   std::string top_frame_id = client_ptr->GetId();
   std::string current_frame_id = "2";
-  params.SetString("frameId", current_frame_id);
+  params.GetDict().Set("frameId", current_frame_id);
 
   // verify initial state
   ASSERT_NO_FATAL_FAILURE(AssertPendingState(&tracker, true));
@@ -297,7 +300,7 @@ TEST(NavigationTracker, CurrentFrameLoading) {
   ASSERT_NO_FATAL_FAILURE(AssertPendingState(&tracker, false));
 
   // loading state should not respond to unknown frame events
-  params.SetString("frameId", "4");
+  params.GetDict().Set("frameId", "4");
   ASSERT_EQ(
       kOk,
       tracker.OnEvent(client_ptr, "Page.frameStartedLoading", params).code());
@@ -323,7 +326,7 @@ TEST(NavigationTracker, FrameAttachDetach) {
   base::DictionaryValue params;
   std::string top_frame_id = client_ptr->GetId();
   std::string current_frame_id = "2";
-  params.SetString("frameId", current_frame_id);
+  params.GetDict().Set("frameId", current_frame_id);
 
   // verify initial state
   ASSERT_NO_FATAL_FAILURE(AssertPendingState(&tracker, true));
@@ -368,7 +371,7 @@ TEST(NavigationTracker, SetFrameNoFrame) {
   ASSERT_NO_FATAL_FAILURE(AssertPendingState(&tracker, true));
   ASSERT_NO_FATAL_FAILURE(tracker.SetFrame("2"));
   ASSERT_NO_FATAL_FAILURE(tracker.SetFrame(std::string()));
-  params.SetString("frameId", top_frame_id);
+  params.GetDict().Set("frameId", top_frame_id);
   web_view.nextEvaluateScript("complete", kOk);
   ASSERT_EQ(
       kOk,
@@ -401,7 +404,7 @@ class FailToEvalScriptDevToolsClient : public StubDevToolsClient {
     if (!is_dom_getDocument_requested_ && method == "DOM.getDocument") {
       is_dom_getDocument_requested_ = true;
       base::Value result_dict(base::Value::Type::DICTIONARY);
-      result_dict.SetStringPath("root.baseURL", "http://test");
+      result_dict.GetDict().SetByDottedPath("root.baseURL", "http://test");
       *result = std::move(result_dict);
       return Status(kOk);
     }
@@ -480,7 +483,7 @@ TEST(NavigationTracker, UnknownStateForcesStartReceivesStop) {
                             &dialog_manager);
 
   base::DictionaryValue params;
-  params.SetString("frameId", client_ptr->GetId());
+  params.GetDict().Set("frameId", client_ptr->GetId());
   ASSERT_EQ(kOk,
             tracker.OnEvent(client_ptr, "Page.loadEventFired", params).code());
   ASSERT_NO_FATAL_FAILURE(AssertPendingState(&tracker, false));
@@ -504,7 +507,7 @@ TEST(NavigationTracker, OnSuccessfulNavigate) {
 
   base::DictionaryValue params;
   base::DictionaryValue result;
-  result.SetString("frameId", client_ptr->GetId());
+  result.GetDict().Set("frameId", client_ptr->GetId());
   web_view.nextEvaluateScript("loading", kOk);
   tracker.OnCommandSuccess(client_ptr, "Page.navigate", &result, Timeout());
   ASSERT_NO_FATAL_FAILURE(AssertPendingState(&tracker, true));
@@ -532,8 +535,8 @@ TEST(NavigationTracker, OnNetworkErroredNavigate) {
 
   base::DictionaryValue params;
   base::DictionaryValue result;
-  result.SetString("frameId", client_ptr->GetId());
-  result.SetString("errorText", "net::ERR_PROXY_CONNECTION_FAILED");
+  result.GetDict().Set("frameId", client_ptr->GetId());
+  result.GetDict().Set("errorText", "net::ERR_PROXY_CONNECTION_FAILED");
   web_view.nextEvaluateScript("loading", kOk);
   ASSERT_NE(
       kOk,
@@ -561,8 +564,8 @@ TEST(NavigationTracker, OnNonNetworkErroredNavigate) {
 
   base::DictionaryValue params;
   base::DictionaryValue result;
-  result.SetString("frameId", client_ptr->GetId());
-  result.SetString("errorText", "net::ERR_CERT_COMMON_NAME_INVALID");
+  result.GetDict().Set("frameId", client_ptr->GetId());
+  result.GetDict().Set("errorText", "net::ERR_CERT_COMMON_NAME_INVALID");
   web_view.nextEvaluateScript("loading", kOk);
   tracker.OnCommandSuccess(client_ptr, "Page.navigate", &result, Timeout());
   ASSERT_NO_FATAL_FAILURE(AssertPendingState(&tracker, true));

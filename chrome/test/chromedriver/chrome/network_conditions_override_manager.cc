@@ -50,21 +50,21 @@ Status NetworkConditionsOverrideManager::ApplyOverrideIfNeeded() {
 Status NetworkConditionsOverrideManager::ApplyOverride(
     const NetworkConditions* network_conditions) {
   base::DictionaryValue params, empty_params;
-  params.SetBoolean("offline", network_conditions->offline);
-  params.SetDoubleKey("latency", network_conditions->latency);
-  params.SetDoubleKey("downloadThroughput",
-                      network_conditions->download_throughput);
-  params.SetDoubleKey("uploadThroughput",
-                      network_conditions->upload_throughput);
+  params.GetDict().Set("offline", network_conditions->offline);
+  params.GetDict().Set("latency", network_conditions->latency);
+  params.GetDict().Set("downloadThroughput",
+                       network_conditions->download_throughput);
+  params.GetDict().Set("uploadThroughput",
+                       network_conditions->upload_throughput);
 
   Status status = client_->SendCommand("Network.enable", empty_params);
   if (status.IsError())
     return status;
 
-  base::Value result;
+  base::Value result{base::Value::Type::DICT};
   status = client_->SendCommandAndGetResult(
       "Network.canEmulateNetworkConditions", empty_params, &result);
-  absl::optional<bool> can = result.FindBoolKey("result");
+  absl::optional<bool> can = result.GetDict().FindBool("result");
   if (status.IsError() || !can)
     return Status(kUnknownError,
         "unable to detect if chrome can emulate network conditions", status);

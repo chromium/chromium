@@ -755,9 +755,9 @@ Status ConvertKeyActionToKeyEvent(const base::DictionaryValue* action_object,
   }
 
   if (is_key_down)
-    pressed->SetBoolean(key, true);
+    pressed->GetDict().Set(key, true);
   else
-    pressed->RemoveKey(key);
+    pressed->GetDict().Remove(key);
 
   KeyEventBuilder builder;
   builder.SetKeyCode(key_code)
