@@ -182,6 +182,22 @@ gfx::Size GetInitialPreviewSize(bool is_camera_preview_collapsed) {
                                      : capture_mode::kCameraPreviewSize;
 }
 
+// Returns the bounds that should be used in the bounds animation of the given
+// `camera_preview_window`. If this window is parented to a window that uses
+// screen coordinates, then the given `target_bounds` are in screen coordinates,
+// and cannot be used for bounds animation (bounds animates relative to the
+// window's parent). In this case, the bounds returned are in parent
+// coordinates.
+gfx::Rect GetTargetBoundsForBoundsAnimation(
+    const gfx::Rect& target_bounds,
+    aura::Window* camera_preview_window) {
+  gfx::Rect result = target_bounds;
+  auto* parent = camera_preview_window->parent();
+  if (parent->GetProperty(wm::kUsesScreenCoordinatesKey))
+    wm::ConvertRectFromScreen(parent, &result);
+  return result;
+}
+
 }  // namespace
 
 // Defines a window targeter that will be installed on the camera preview
@@ -383,13 +399,16 @@ void CaptureModeCameraController::MaybeUpdatePreviewWidgetBounds(bool animate) {
     return;
 
   if (animate) {
-    ui::Layer* layer = camera_preview_widget_->GetLayer();
+    auto* preview_window = camera_preview_widget_->GetNativeWindow();
+    const auto target_bounds_in_parent =
+        GetTargetBoundsForBoundsAnimation(target_bounds, preview_window);
     views::AnimationBuilder()
         .SetPreemptionStrategy(
             ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
         .Once()
         .SetDuration(kCameraResizeAnimationDuration)
-        .SetBounds(layer, target_bounds, gfx::Tween::FAST_OUT_SLOW_IN_3);
+        .SetBounds(preview_window, target_bounds_in_parent,
+                   gfx::Tween::FAST_OUT_SLOW_IN_3);
   } else {
     camera_preview_widget_->SetBounds(target_bounds);
   }

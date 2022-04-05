@@ -2127,6 +2127,45 @@ TEST_P(CaptureModeCameraPreviewTest, ResizePreviewWidget) {
                      resize_button);
 }
 
+// Tests that resizing the camera preview using the resize button, which uses
+// the bounds animation, works correctly on a secondary display. Regression test
+// for https://crbug.com/1313247.
+TEST_P(CaptureModeCameraPreviewTest, MultiDisplayResize) {
+  UpdateDisplay("800x700,801+0-800x700");
+  ASSERT_EQ(2u, Shell::GetAllRootWindows().size());
+
+  auto* camera_controller = GetCameraController();
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+
+  // Put the cursor in the secondary display, and expect the session root to be
+  // there.
+  auto* event_generator = GetEventGenerator();
+  MoveMouseToAndUpdateCursorDisplay(gfx::Point(900, 500), event_generator);
+  StartCaptureSessionWithParam();
+  auto* controller = CaptureModeController::Get();
+  auto* session = controller->capture_mode_session();
+  auto* display_2_root = Shell::GetAllRootWindows()[1];
+
+  // When capturing a window, set its bounds such that it is placed on the
+  // secondary display.
+  if (GetParam() == CaptureModeSource::kWindow) {
+    views::Widget::GetWidgetForNativeWindow(window())->SetBounds(
+        {900, 10, 700, 650});
+    EXPECT_EQ(display_2_root, window()->GetRootWindow());
+    event_generator->MoveMouseToCenterOf(window());
+  }
+
+  EXPECT_EQ(display_2_root, session->current_root());
+
+  VerifyPreviewAlignment(GetCaptureBoundsInScreen());
+
+  auto* resize_button = GetPreviewResizeButton();
+  ClickOnView(resize_button, event_generator);
+
+  VerifyPreviewAlignment(GetCaptureBoundsInScreen());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          CaptureModeCameraPreviewTest,
                          testing::Values(CaptureModeSource::kFullscreen,
