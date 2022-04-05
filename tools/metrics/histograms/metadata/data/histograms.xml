@@ -128,7 +128,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DataReductionProxy.StartupState"
-    enum="DataReductionProxyStartupState" expires_after="2022-07-24">
+    enum="DataReductionProxyStartupState" expires_after="2022-10-02">
   <owner>rajendrant@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>

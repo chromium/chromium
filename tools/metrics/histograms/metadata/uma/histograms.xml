@@ -284,7 +284,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.InitSequence" enum="UmaInitSequence"
-    expires_after="2022-08-01">
+    expires_after="2022-10-02">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -377,7 +377,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UMA.LogSize.OnSuccess" units="KB" expires_after="2022-08-01">
+<histogram name="UMA.LogSize.OnSuccess" units="KB" expires_after="2022-10-02">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -390,7 +390,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.LogUpload.Canceled.CellularConstraint"
-    enum="BooleanCanceled" expires_after="2022-08-01">
+    enum="BooleanCanceled" expires_after="2022-10-02">
   <owner>holte@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -401,7 +401,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.LogUpload.ResponseOrErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-08-01">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-10-02">
   <owner>holte@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -548,7 +548,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.PersistentHistograms.InitResult"
-    enum="PersistentHistogramsInitResult" expires_after="2022-08-01">
+    enum="PersistentHistogramsInitResult" expires_after="2022-10-02">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -558,7 +558,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.PrimaryUserType" enum="UserType"
-    expires_after="2022-07-31">
+    expires_after="2022-10-02">
   <owner>michaelpg@chromium.org</owner>
   <owner>yilkal@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -595,7 +595,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.ProtoCompressionRatio" units="%"
-    expires_after="2022-08-01">
+    expires_after="2022-10-02">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>

@@ -295,7 +295,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Display.DrawToSwapUs" units="microseconds"
-    expires_after="2022-07-31">
+    expires_after="2022-10-02">
   <owner>backer@chromium.org</owner>
   <owner>rjkroege@chromium.org</owner>
   <summary>
@@ -1448,7 +1448,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Graphics.Smoothness.PerSession.MaxPercentDroppedFrames_1sWindow"
-    units="%" expires_after="2022-07-31">
+    units="%" expires_after="2022-10-02">
   <owner>sadrul@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
