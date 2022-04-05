@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/forced_signin/forced_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_screen_provider.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/first_run_signin_logger.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/upgrade_signin_logger.h"
@@ -190,13 +189,19 @@ using signin_metrics::PromoAction;
             SUPPRESSED_ALREADY_SIGNED_IN);
     return nil;
   }
-  PrefService* userPrefService = browserState->GetPrefs();
-  if (!signin::IsSigninAllowed(userPrefService)) {
-    RecordConsistencyPromoUserAction(
-        signin_metrics::AccountConsistencyPromoAction::
-            SUPPRESSED_SIGNIN_NOT_ALLOWED);
-    return nil;
+  switch (authenticationService->GetServiceStatus()) {
+    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
+    case AuthenticationService::ServiceStatus::SigninDisabledByUser:
+    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
+    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
+      RecordConsistencyPromoUserAction(
+          signin_metrics::AccountConsistencyPromoAction::
+              SUPPRESSED_SIGNIN_NOT_ALLOWED);
+      return nil;
+    case AuthenticationService::ServiceStatus::SigninAllowed:
+      break;
   }
+  PrefService* userPrefService = browserState->GetPrefs();
   const int currentDismissalCount =
       userPrefService->GetInteger(prefs::kSigninWebSignDismissalCount);
   if (currentDismissalCount >= kDefaultWebSignInDismissalCount) {
