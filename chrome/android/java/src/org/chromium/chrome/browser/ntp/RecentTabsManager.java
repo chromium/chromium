@@ -310,9 +310,9 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
     /**
      * Clears the list of recently closed tabs.
      */
-    public void clearRecentlyClosedTabs() {
+    public void clearRecentlyClosedEntries() {
         if (mIsDestroyed) return;
-        mRecentlyClosedTabManager.clearRecentlyClosedTabs();
+        mRecentlyClosedTabManager.clearRecentlyClosedEntries();
     }
 
     /**

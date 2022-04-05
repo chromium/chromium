@@ -34,6 +34,15 @@ public class FakeRecentlyClosedTabManager implements RecentlyClosedTabManager {
     }
 
     @Override
+    public List<RecentlyClosedEntry> getRecentlyClosedEntries(int maxEntryCount) {
+        List<RecentlyClosedEntry> entries = new ArrayList<>();
+        for (int i = 0; i < maxEntryCount && i < mTabs.size(); i++) {
+            entries.add(mTabs.get(i));
+        }
+        return entries;
+    }
+
+    @Override
     public boolean openRecentlyClosedTab(
             TabModel tabModel, RecentlyClosedTab recentTab, int windowOpenDisposition) {
         return false;
@@ -43,7 +52,7 @@ public class FakeRecentlyClosedTabManager implements RecentlyClosedTabManager {
     public void openMostRecentlyClosedTab(TabModel tabModel) {}
 
     @Override
-    public void clearRecentlyClosedTabs() {
+    public void clearRecentlyClosedEntries() {
         mTabs.clear();
         if (mTabsUpdatedRunnable != null) mTabsUpdatedRunnable.run();
     }

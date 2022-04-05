@@ -545,15 +545,15 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                     mActivity.getResources().getDimensionPixelSize(
                             R.dimen.recent_tabs_foreign_session_group_item_height);
             RecentlyClosedTab tab = getChild(childPosition);
-            String title = TitleUtil.getTitleForDisplay(tab.title, tab.url);
+            String title = TitleUtil.getTitleForDisplay(tab.getTitle(), tab.getUrl());
             viewHolder.textView.setText(title);
 
-            String domain = UrlUtilities.getDomainAndRegistry(tab.url.getSpec(), false);
+            String domain = UrlUtilities.getDomainAndRegistry(tab.getUrl().getSpec(), false);
             if (!TextUtils.isEmpty(domain)) {
                 viewHolder.domainView.setText(domain);
                 viewHolder.domainView.setVisibility(View.VISIBLE);
             }
-            loadFavicon(viewHolder, tab.url, FaviconLocality.LOCAL);
+            loadFavicon(viewHolder, tab.getUrl(), FaviconLocality.LOCAL);
         }
 
         @Override
@@ -594,7 +594,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
             OnMenuItemClickListener listener = item -> {
                 switch (item.getItemId()) {
                     case ID_REMOVE_ALL:
-                        mRecentTabsManager.clearRecentlyClosedTabs();
+                        mRecentTabsManager.clearRecentlyClosedEntries();
                         break;
                     case ID_OPEN_IN_NEW_TAB:
                         mRecentTabsManager.openRecentlyClosedTab(

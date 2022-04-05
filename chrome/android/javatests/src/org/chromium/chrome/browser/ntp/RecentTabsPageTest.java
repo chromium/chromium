@@ -89,7 +89,7 @@ public class RecentTabsPageTest {
         // Set a recently closed tab and confirm a view is rendered for it.
         List<RecentlyClosedTab> tabs = setRecentlyClosedTabs(1);
         Assert.assertEquals(1, mManager.getRecentlyClosedTabs(1).size());
-        String title = tabs.get(0).title;
+        String title = tabs.get(0).getTitle();
         View view = waitForView(title);
 
         // Clear the recently closed tabs with the context menu and confirm the view is gone.
@@ -137,8 +137,8 @@ public class RecentTabsPageTest {
         final List<RecentlyClosedTab> tabs = new ArrayList<>();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             for (int i = 0; i < tabCount; i++) {
-                tabs.add(new RecentlyClosedTab(i, "RecentlyClosedTab title " + i,
-                        new GURL("https://www.example.com/url" + i)));
+                tabs.add(new RecentlyClosedTab(i, 0L, "RecentlyClosedTab title " + i,
+                        new GURL("https://www.example.com/url" + i), null));
             }
             mManager.setRecentlyClosedTabs(tabs);
         });

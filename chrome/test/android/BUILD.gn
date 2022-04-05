@@ -276,6 +276,7 @@ android_library("chrome_java_test_support") {
     "javatests/src/org/chromium/chrome/test/util/OmniboxTestUtils.java",
     "javatests/src/org/chromium/chrome/test/util/RecentTabsPageTestUtils.java",
     "javatests/src/org/chromium/chrome/test/util/SadTabRule.java",
+    "javatests/src/org/chromium/chrome/test/util/TabRestoreServiceUtils.java",
     "javatests/src/org/chromium/chrome/test/util/TabStripUtils.java",
     "javatests/src/org/chromium/chrome/test/util/ToolbarTestUtils.java",
     "javatests/src/org/chromium/chrome/test/util/TranslateUtil.java",

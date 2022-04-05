@@ -77,6 +77,10 @@ class RecentlyClosedTabsBridge : public sessions::TabRestoreServiceObserver {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jtabs,
       jint max_tab_count);
+  jboolean GetRecentlyClosedEntries(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jentries,
+      jint max_entry_count);
   jboolean OpenRecentlyClosedTab(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jtab_model,
@@ -85,7 +89,7 @@ class RecentlyClosedTabsBridge : public sessions::TabRestoreServiceObserver {
   jboolean OpenMostRecentlyClosedTab(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jtab_model);
-  void ClearRecentlyClosedTabs(JNIEnv* env);
+  void ClearRecentlyClosedEntries(JNIEnv* env);
 
   // Observer callback for TabRestoreServiceObserver. Notifies the Java bridge
   // that the recently closed tabs list has changed.

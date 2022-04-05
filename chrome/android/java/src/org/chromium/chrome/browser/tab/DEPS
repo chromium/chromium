@@ -48,6 +48,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  'HistoricalTabSaverImpl\.java': [
+    "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModel.java",
+  ],
   'RedirectHandlerTabHelper\.java': [
     "+chrome/android/java/src/org/chromium/chrome/browser/IntentHandler.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/LaunchIntentDispatcher.java",

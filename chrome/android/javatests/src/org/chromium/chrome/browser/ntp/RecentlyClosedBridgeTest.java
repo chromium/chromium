@@ -62,7 +62,7 @@ public class RecentlyClosedBridgeTest {
         sActivityTestRule.waitForActivityNativeInitializationComplete();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mRecentlyClosedBridge = new RecentlyClosedBridge(Profile.getLastUsedRegularProfile());
-            mRecentlyClosedBridge.clearRecentlyClosedTabs();
+            mRecentlyClosedBridge.clearRecentlyClosedEntries();
             Assert.assertEquals(
                     0, mRecentlyClosedBridge.getRecentlyClosedTabs(MAX_ENTRY_COUNT).size());
         });
@@ -74,7 +74,7 @@ public class RecentlyClosedBridgeTest {
     @After
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mRecentlyClosedBridge.clearRecentlyClosedTabs();
+            mRecentlyClosedBridge.clearRecentlyClosedEntries();
             Assert.assertEquals(
                     0, mRecentlyClosedBridge.getRecentlyClosedTabs(MAX_ENTRY_COUNT).size());
             mRecentlyClosedBridge.destroy();
@@ -107,10 +107,10 @@ public class RecentlyClosedBridgeTest {
             final List<RecentlyClosedTab> recentTabs =
                     mRecentlyClosedBridge.getRecentlyClosedTabs(MAX_ENTRY_COUNT);
             Assert.assertEquals(2, recentTabs.size());
-            Assert.assertEquals(titles[0], recentTabs.get(0).title);
-            Assert.assertEquals(titles[1], recentTabs.get(1).title);
-            Assert.assertEquals(getUrl(TEST_PAGE_A), recentTabs.get(0).url.getSpec());
-            Assert.assertEquals(getUrl(TEST_PAGE_B), recentTabs.get(1).url.getSpec());
+            Assert.assertEquals(titles[0], recentTabs.get(0).getTitle());
+            Assert.assertEquals(titles[1], recentTabs.get(1).getTitle());
+            Assert.assertEquals(getUrl(TEST_PAGE_A), recentTabs.get(0).getUrl().getSpec());
+            Assert.assertEquals(getUrl(TEST_PAGE_B), recentTabs.get(1).getUrl().getSpec());
             mRecentlyClosedBridge.openMostRecentlyClosedTab(model);
         });
 
@@ -157,10 +157,10 @@ public class RecentlyClosedBridgeTest {
             final List<RecentlyClosedTab> recentTabs =
                     mRecentlyClosedBridge.getRecentlyClosedTabs(MAX_ENTRY_COUNT);
             Assert.assertEquals(2, recentTabs.size());
-            Assert.assertEquals(titles[0], recentTabs.get(0).title);
-            Assert.assertEquals(titles[1], recentTabs.get(1).title);
-            Assert.assertEquals(getUrl(TEST_PAGE_A), recentTabs.get(0).url.getSpec());
-            Assert.assertEquals(getUrl(TEST_PAGE_B), recentTabs.get(1).url.getSpec());
+            Assert.assertEquals(titles[0], recentTabs.get(0).getTitle());
+            Assert.assertEquals(titles[1], recentTabs.get(1).getTitle());
+            Assert.assertEquals(getUrl(TEST_PAGE_A), recentTabs.get(0).getUrl().getSpec());
+            Assert.assertEquals(getUrl(TEST_PAGE_B), recentTabs.get(1).getUrl().getSpec());
             mRecentlyClosedBridge.openRecentlyClosedTab(
                     model, recentTabs.get(1), WindowOpenDisposition.CURRENT_TAB);
         });
@@ -197,7 +197,7 @@ public class RecentlyClosedBridgeTest {
         final Tab frozenTabA = freezeTab(tabA);
         // Clear the entry created by freezing the tab.
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mRecentlyClosedBridge.clearRecentlyClosedTabs(); });
+                () -> { mRecentlyClosedBridge.clearRecentlyClosedEntries(); });
 
         String[] titles = new String[1];
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -216,8 +216,8 @@ public class RecentlyClosedBridgeTest {
             final List<RecentlyClosedTab> recentTabs =
                     mRecentlyClosedBridge.getRecentlyClosedTabs(MAX_ENTRY_COUNT);
             Assert.assertEquals(1, recentTabs.size());
-            Assert.assertEquals(titles[0], recentTabs.get(0).title);
-            Assert.assertEquals(getUrl(TEST_PAGE_A), recentTabs.get(0).url.getSpec());
+            Assert.assertEquals(titles[0], recentTabs.get(0).getTitle());
+            Assert.assertEquals(getUrl(TEST_PAGE_A), recentTabs.get(0).getUrl().getSpec());
             mRecentlyClosedBridge.openRecentlyClosedTab(
                     model, recentTabs.get(0), WindowOpenDisposition.NEW_BACKGROUND_TAB);
         });

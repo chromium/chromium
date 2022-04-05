@@ -26,6 +26,13 @@ public interface RecentlyClosedTabManager {
      */
     List<RecentlyClosedTab> getRecentlyClosedTabs(int maxTabCount);
 
+    // TODO(crbug/1307345): Replace calls to getRecentlyClosedTabs() with this method.
+    /**
+     * @param maxEntryCount The maximum number of recently closed entries to return.
+     * @return A snapshot of the list of recently closed entries, with up to maxEntryCount elements.
+     */
+    List<RecentlyClosedEntry> getRecentlyClosedEntries(int maxEntryCount);
+
     /**
      * Opens a recently closed tab in the current tab or a new tab. If opened in the current tab,
      * the current tab's entire history is replaced.
@@ -49,7 +56,7 @@ public interface RecentlyClosedTabManager {
     /**
      * Clears all recently closed tabs.
      */
-    void clearRecentlyClosedTabs();
+    void clearRecentlyClosedEntries();
 
     /**
      * To be called before this instance is abandoned to the garbage collector so it can do any
