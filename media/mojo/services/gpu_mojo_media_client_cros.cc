@@ -25,6 +25,9 @@ namespace {
 
 VideoDecoderType GetPreferredCrosDecoderImplementation(
     gpu::GpuPreferences gpu_preferences) {
+  if (gpu_preferences.disable_accelerated_video_decode)
+    return VideoDecoderType::kUnknown;
+
   if (gpu_preferences.enable_chromeos_direct_video_decoder) {
 #if BUILDFLAG(USE_VAAPI)
     return VideoDecoderType::kVaapi;
