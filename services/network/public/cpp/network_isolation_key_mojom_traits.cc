@@ -14,21 +14,20 @@ bool StructTraits<network::mojom::NetworkIsolationKeyDataView,
     Read(network::mojom::NetworkIsolationKeyDataView data,
          net::NetworkIsolationKey* out) {
   absl::optional<net::SchemefulSite> top_frame_site, frame_site;
-  bool data_top_frame_site = data.ReadTopFrameSite(&top_frame_site);
-  if (!data_top_frame_site)
-    return false;
-  if (base::FeatureList::IsEnabled(
-          net::features::kForceIsolationInfoFrameOriginToTopLevelFrame)
-          ? !data_top_frame_site
-          : !data.ReadFrameSite(&frame_site)) {
+
+  if (!data.ReadTopFrameSite(&top_frame_site) ||
+      !data.ReadFrameSite(&frame_site)) {
     return false;
   }
+
   // A key is either fully empty or fully populated.
   if (top_frame_site.has_value() != frame_site.has_value())
     return false;
+
   absl::optional<base::UnguessableToken> nonce;
   if (!data.ReadNonce(&nonce))
     return false;
+
   if (!top_frame_site.has_value()) {
     // If there is a nonce, then the sites must be populated.
     if (nonce.has_value())
