@@ -107,6 +107,22 @@ bool UsesAndroidBackendAsMainBackend(bool is_syncing) {
   return false;
 }
 
+bool IsBuiltInBackendSyncEnabled() {
+  DCHECK(
+      base::FeatureList::IsEnabled(features::kUnifiedPasswordManagerAndroid));
+
+  features::UpmExperimentVariation variation =
+      features::kUpmExperimentVariationParam.Get();
+  switch (variation) {
+    case features::UpmExperimentVariation::kEnableForSyncingUsers:
+    case features::UpmExperimentVariation::kShadowSyncingUsers:
+    case features::UpmExperimentVariation::kEnableOnlyBackendForSyncingUsers:
+      return true;
+  }
+  NOTREACHED() << "Define which backend handles sync change callbacks!";
+  return false;
+}
+
 using MethodName = base::StrongAlias<struct MethodNameTag, std::string>;
 
 struct LoginsResultImpl {
@@ -342,18 +358,32 @@ void PasswordStoreProxyBackend::InitBackend(
           /*num_callbacks=*/2, base::BindOnce(&InvokeCallbackWithCombinedStatus,
                                               std::move(completion)));
 
-  // TODO(crbug.com/1279341): Ensure that `remote_form_changes_received is
-  // always invoked by the current main backend. Same for
-  // `sync_enabled_or_disabled`.
-
   // Both backends need to be initialized, so using the helpers for main/shadow
   // backend is unnecessary and won't work since the sync status may not be
   // available yet.
-  built_in_backend_->InitBackend(std::move(remote_form_changes_received),
-                                 std::move(sync_enabled_or_disabled_cb),
-                                 base::BindOnce(pending_initialization_calls));
-  android_backend_->InitBackend(base::DoNothing(), base::DoNothing(),
-                                base::BindOnce(pending_initialization_calls));
+  built_in_backend_->InitBackend(
+      base::BindRepeating(
+          &PasswordStoreProxyBackend::OnRemoteFormChangesReceived,
+          weak_ptr_factory_.GetWeakPtr(),
+          CallbackOriginatesFromAndroidBackend(false),
+          remote_form_changes_received),
+      base::BindRepeating(&PasswordStoreProxyBackend::OnSyncEnabledOrDisabled,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          CallbackOriginatesFromAndroidBackend(false),
+                          sync_enabled_or_disabled_cb),
+      base::BindOnce(pending_initialization_calls));
+
+  android_backend_->InitBackend(
+      base::BindRepeating(
+          &PasswordStoreProxyBackend::OnRemoteFormChangesReceived,
+          weak_ptr_factory_.GetWeakPtr(),
+          CallbackOriginatesFromAndroidBackend(true),
+          std::move(remote_form_changes_received)),
+      base::BindRepeating(&PasswordStoreProxyBackend::OnSyncEnabledOrDisabled,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          CallbackOriginatesFromAndroidBackend(true),
+                          std::move(sync_enabled_or_disabled_cb)),
+      base::BindOnce(pending_initialization_calls));
 }
 
 void PasswordStoreProxyBackend::Shutdown(base::OnceClosure shutdown_completed) {
@@ -597,6 +627,34 @@ PasswordStoreBackend* PasswordStoreProxyBackend::shadow_backend() {
              sync_delegate_->IsSyncingPasswordsEnabled())
              ? built_in_backend_
              : android_backend_;
+}
+
+void PasswordStoreProxyBackend::OnRemoteFormChangesReceived(
+    CallbackOriginatesFromAndroidBackend originatesFromAndroid,
+    RemoteChangesReceived remote_form_changes_received,
+    absl::optional<PasswordStoreChangeList> changes) {
+  // `remote_form_changes_received` is used to inform observers about changes in
+  // the backend. This check guarantees observers are informed only about
+  // changes in the main backend.
+  if (originatesFromAndroid.value() ==
+      UsesAndroidBackendAsMainBackend(
+          sync_delegate_->IsSyncingPasswordsEnabled())) {
+    remote_form_changes_received.Run(std::move(changes));
+  }
+}
+
+void PasswordStoreProxyBackend::OnSyncEnabledOrDisabled(
+    CallbackOriginatesFromAndroidBackend originatesFromAndroid,
+    base::RepeatingClosure sync_enabled_or_disabled_cb) {
+  if (IsBuiltInBackendSyncEnabled()) {
+    if (!originatesFromAndroid) {
+      sync_enabled_or_disabled_cb.Run();
+    }
+    return;
+  }
+  DCHECK(UsesAndroidBackendAsMainBackend(
+      sync_delegate_->IsSyncingPasswordsEnabled()));
+  sync_enabled_or_disabled_cb.Run();
 }
 
 }  // namespace password_manager
