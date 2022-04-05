@@ -52,6 +52,7 @@ public class PrivacySandboxDialogConsent extends Dialog implements View.OnClickL
         LinearLayout dropdownElement =
                 (LinearLayout) mContentView.findViewById(R.id.dropdown_element);
         dropdownElement.setOnClickListener(this);
+        updateDropdownControlContentDescription(dropdownElement);
         mExpandArrowView = (CheckableImageView) mContentView.findViewById(R.id.expand_arrow);
         mExpandArrowView.setImageDrawable(createExpandDrawable(context));
         mExpandArrowView.setChecked(mDropdownExpanded);
@@ -95,6 +96,10 @@ public class PrivacySandboxDialogConsent extends Dialog implements View.OnClickL
             }
             mDropdownExpanded = !mDropdownExpanded;
             mExpandArrowView.setChecked(mDropdownExpanded);
+            updateDropdownControlContentDescription(view);
+            view.announceForAccessibility(getContext().getResources().getString(mDropdownExpanded
+                            ? R.string.accessibility_expanded_group
+                            : R.string.accessibility_collapsed_group));
         }
     }
 
@@ -107,6 +112,18 @@ public class PrivacySandboxDialogConsent extends Dialog implements View.OnClickL
                                 "<b>", "</b>", new StyleSpan(android.graphics.Typeface.BOLD)));
         spannableString.setSpan(new ChromeBulletSpan(getContext()), 0, spannableString.length(), 0);
         view.setText(spannableString);
+    }
+
+    private void updateDropdownControlContentDescription(View dropdownElement) {
+        // TODO(crbug.com/1286276): add CONCAT_TWO_STRINGS_WITH_PERIODS to Android strings and use
+        // that instead to avoid l10n issues.
+        String description = getContext().getResources().getString(
+                                     R.string.privacy_sandbox_consent_dropdown_button)
+                + ". "
+                + getContext().getResources().getString(mDropdownExpanded
+                                ? R.string.accessibility_expanded_group
+                                : R.string.accessibility_collapsed_group);
+        dropdownElement.setContentDescription(description);
     }
 
     private static Drawable createExpandDrawable(Context context) {
