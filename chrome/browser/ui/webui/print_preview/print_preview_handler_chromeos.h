@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_PRINT_PREVIEW_PRINT_PREVIEW_HANDLER_CHROMEOS_H_
 #define CHROME_BROWSER_UI_WEBUI_PRINT_PREVIEW_PRINT_PREVIEW_HANDLER_CHROMEOS_H_
 
-#include <memory>
 #include <string>
 
 #include "base/gtest_prod_util.h"
@@ -60,7 +59,6 @@ class PrintPreviewHandlerChromeOS : public content::WebUIMessageHandler,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   friend class TestPrintServersManager;
 #endif
-  class AccessTokenService;
 
   PrintPreviewHandler* GetPrintPreviewHandler();
 
@@ -73,15 +71,8 @@ class PrintPreviewHandlerChromeOS : public content::WebUIMessageHandler,
   // Performs printer setup. First element of |args| is the printer name.
   void HandlePrinterSetup(const base::Value::List& args);
 
-  // Generates new token and sends back to UI.
-  void HandleGetAccessToken(const base::Value::List& args);
-
   // Gets the EULA URL.
   void HandleGetEulaUrl(const base::Value::List& args);
-
-  // Send OAuth2 access token.
-  void SendAccessToken(const std::string& callback_id,
-                       const std::string& access_token);
 
   // Send the EULA URL;
   void SendEulaUrl(const std::string& callback_id, const std::string& eula_url);
@@ -113,9 +104,6 @@ class PrintPreviewHandlerChromeOS : public content::WebUIMessageHandler,
 
   // Gets the list of print servers and fetching mode.
   void HandleGetPrintServersConfig(const base::Value::List& args);
-
-  // Holds token service to get OAuth2 access tokens.
-  std::unique_ptr<AccessTokenService> token_service_;
 
   mojo::Receiver<crosapi::mojom::PrintServerObserver> receiver_{this};
 

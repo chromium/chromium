@@ -63,10 +63,6 @@ export class NativeLayerCrosStub extends TestBrowserProxy implements
         Promise.resolve(assert(this.setupPrinterResponse_!));
   }
 
-  getAccessToken() {
-    return Promise.resolve('123');
-  }
-
   grantExtensionPrinterAccess(provisionalId: string) {
     return Promise.resolve({
       extensionId: 'abc123',

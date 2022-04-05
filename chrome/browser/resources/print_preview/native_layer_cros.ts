@@ -29,11 +29,6 @@ export type PrintServersConfig = {
  */
 export interface NativeLayerCros {
   /**
-   * Requests access token for cloud print requests for DEVICE origin.
-   */
-  getAccessToken(): Promise<string>;
-
-  /**
    * Requests the destination's end user license information. Returns a promise
    * that will be resolved with the destination's EULA URL if obtained
    * successfully.
@@ -89,10 +84,6 @@ export interface NativeLayerCros {
 }
 
 export class NativeLayerCrosImpl implements NativeLayerCros {
-  getAccessToken() {
-    return sendWithPromise('getAccessToken');
-  }
-
   getEulaUrl(destinationId: string) {
     return sendWithPromise('getEulaUrl', destinationId);
   }

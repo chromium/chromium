@@ -12,9 +12,6 @@
 
 namespace cloud_devices {
 
-const char kCloudPrintAuthScope[] =
-    "https://www.googleapis.com/auth/cloudprint";
-
 namespace {
 
 // Url must not be matched by "urls" section of

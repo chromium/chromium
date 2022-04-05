@@ -20,8 +20,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/device_identity/device_oauth2_token_service.h"
-#include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_handler.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
@@ -67,49 +65,6 @@ base::Value PrintServersConfigMojomToValue(
 
 }  // namespace
 
-class PrintPreviewHandlerChromeOS::AccessTokenService
-    : public OAuth2AccessTokenManager::Consumer {
- public:
-  AccessTokenService() : OAuth2AccessTokenManager::Consumer("print_preview") {}
-  AccessTokenService(const AccessTokenService&) = delete;
-  AccessTokenService& operator=(const AccessTokenService&) = delete;
-  ~AccessTokenService() override = default;
-
-  void RequestToken(base::OnceCallback<void(const std::string&)> callback) {
-    // There can only be one pending request at a time. See
-    // cloud_print_interface_js.js.
-    const signin::ScopeSet scopes{cloud_devices::kCloudPrintAuthScope};
-    DCHECK(!device_request_callback_);
-
-    DeviceOAuth2TokenService* token_service =
-        DeviceOAuth2TokenServiceFactory::Get();
-    device_request_ = token_service->StartAccessTokenRequest(scopes, this);
-    device_request_callback_ = std::move(callback);
-  }
-
-  void OnGetTokenSuccess(
-      const OAuth2AccessTokenManager::Request* request,
-      const OAuth2AccessTokenConsumer::TokenResponse& token_response) override {
-    OnServiceResponse(request, token_response.access_token);
-  }
-
-  void OnGetTokenFailure(const OAuth2AccessTokenManager::Request* request,
-                         const GoogleServiceAuthError& error) override {
-    OnServiceResponse(request, std::string());
-  }
-
- private:
-  void OnServiceResponse(const OAuth2AccessTokenManager::Request* request,
-                         const std::string& access_token) {
-    DCHECK_EQ(request, device_request_.get());
-    std::move(device_request_callback_).Run(access_token);
-    device_request_.reset();
-  }
-
-  std::unique_ptr<OAuth2AccessTokenManager::Request> device_request_;
-  base::OnceCallback<void(const std::string&)> device_request_callback_;
-};
-
 PrintPreviewHandlerChromeOS::PrintPreviewHandlerChromeOS() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(crosapi::CrosapiManager::IsInitialized());
@@ -131,10 +86,6 @@ void PrintPreviewHandlerChromeOS::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "setupPrinter",
       base::BindRepeating(&PrintPreviewHandlerChromeOS::HandlePrinterSetup,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "getAccessToken",
-      base::BindRepeating(&PrintPreviewHandlerChromeOS::HandleGetAccessToken,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "grantExtensionPrinterAccess",
@@ -220,21 +171,6 @@ void PrintPreviewHandlerChromeOS::HandlePrinterSetup(
                      weak_factory_.GetWeakPtr(), callback_id, printer_name));
 }
 
-void PrintPreviewHandlerChromeOS::HandleGetAccessToken(
-    const base::Value::List& args) {
-  DCHECK(args[0].is_string());
-
-  std::string callback_id = args[0].GetString();
-  DCHECK(!callback_id.empty());
-  MaybeAllowJavascript();
-
-  if (!token_service_)
-    token_service_ = std::make_unique<AccessTokenService>();
-  token_service_->RequestToken(
-      base::BindOnce(&PrintPreviewHandlerChromeOS::SendAccessToken,
-                     weak_factory_.GetWeakPtr(), callback_id));
-}
-
 void PrintPreviewHandlerChromeOS::HandleGetEulaUrl(
     const base::Value::List& args) {
   CHECK_EQ(2U, args.size());
@@ -247,14 +183,6 @@ void PrintPreviewHandlerChromeOS::HandleGetEulaUrl(
   handler->StartGetEulaUrl(
       destination_id, base::BindOnce(&PrintPreviewHandlerChromeOS::SendEulaUrl,
                                      weak_factory_.GetWeakPtr(), callback_id));
-}
-
-void PrintPreviewHandlerChromeOS::SendAccessToken(
-    const std::string& callback_id,
-    const std::string& access_token) {
-  VLOG(1) << "Get getAccessToken finished";
-  ResolveJavascriptCallback(base::Value(callback_id),
-                            base::Value(access_token));
 }
 
 void PrintPreviewHandlerChromeOS::SendEulaUrl(const std::string& callback_id,

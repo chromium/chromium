@@ -11,8 +11,6 @@
 
 namespace cloud_devices {
 
-extern const char kCloudPrintAuthScope[];
-
 GURL GetCloudPrintURL();
 GURL GetCloudPrintRelativeURL(const std::string& relative_path);
 GURL GetCloudPrintAddAccountURL();
