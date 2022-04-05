@@ -1717,8 +1717,10 @@ void LocalDOMWindow::scrollTo(const ScrollToOptions* scroll_to_options) const {
 }
 
 void LocalDOMWindow::moveBy(int x, int y) const {
-  if (!GetFrame() || !GetFrame()->IsMainFrame() || document()->IsPrerendering())
+  if (!GetFrame() || !GetFrame()->IsOutermostMainFrame() ||
+      document()->IsPrerendering()) {
     return;
+  }
 
   LocalFrame* frame = GetFrame();
   Page* page = frame->GetPage();
@@ -1733,8 +1735,10 @@ void LocalDOMWindow::moveBy(int x, int y) const {
 }
 
 void LocalDOMWindow::moveTo(int x, int y) const {
-  if (!GetFrame() || !GetFrame()->IsMainFrame() || document()->IsPrerendering())
+  if (!GetFrame() || !GetFrame()->IsOutermostMainFrame() ||
+      document()->IsPrerendering()) {
     return;
+  }
 
   LocalFrame* frame = GetFrame();
   Page* page = frame->GetPage();
@@ -1749,8 +1753,10 @@ void LocalDOMWindow::moveTo(int x, int y) const {
 }
 
 void LocalDOMWindow::resizeBy(int x, int y) const {
-  if (!GetFrame() || !GetFrame()->IsMainFrame() || document()->IsPrerendering())
+  if (!GetFrame() || !GetFrame()->IsOutermostMainFrame() ||
+      document()->IsPrerendering()) {
     return;
+  }
 
   LocalFrame* frame = GetFrame();
   Page* page = frame->GetPage();
@@ -1764,8 +1770,10 @@ void LocalDOMWindow::resizeBy(int x, int y) const {
 }
 
 void LocalDOMWindow::resizeTo(int width, int height) const {
-  if (!GetFrame() || !GetFrame()->IsMainFrame() || document()->IsPrerendering())
+  if (!GetFrame() || !GetFrame()->IsOutermostMainFrame() ||
+      document()->IsPrerendering()) {
     return;
+  }
 
   LocalFrame* frame = GetFrame();
   Page* page = frame->GetPage();

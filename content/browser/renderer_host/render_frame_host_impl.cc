@@ -5138,10 +5138,14 @@ void RenderFrameHostImpl::SetWindowRect(const gfx::Rect& bounds,
         "SetWindowRect called during prerendering.");
     return;
   }
+  // Throw out SetWindowRects that are not from the outermost document.
+  if (GetParentOrOuterDocument()) {
+    local_main_frame_host_receiver_.ReportBadMessage(
+        "SetWindowRect called from child frame.");
+    return;
+  }
 
-  // Only listen to SetWindowRects from the outermost document.
-  if (!GetParentOrOuterDocument())
-    delegate_->SetWindowRect(bounds);
+  delegate_->SetWindowRect(bounds);
   std::move(callback).Run();
 }
 
