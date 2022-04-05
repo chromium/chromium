@@ -82,6 +82,7 @@
 <translation id="1384704387250346179">Թարգմանել Տեսապակու միջոցով <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Ակտիվ է եղել <ph name="LAST_UPDATED" /> օր առաջ</translation>
 <translation id="1397811292916898096">Որոնում <ph name="PRODUCT_NAME" />-ում</translation>
+<translation id="139993653570221430">Դուք ցանկացած ժամանակ Chrome-ի կարգավորումներում կարող եք փոխել ձեր ընտրությունը։ Փորձարկումներն ընթանում են գովազդի ցուցադրման ընթացիկ ռեժիմին զուգահեռ, ինչի արդյունքում փոփոխություններն անմիջապես տեսանելի չեն լինի ձեզ։</translation>
 <translation id="1406000523432664303">«Չհետևել»</translation>
 <translation id="1407069428457324124">Մուգ թեմա</translation>
 <translation id="1407135791313364759">Բացել բոլորը</translation>
@@ -94,6 +95,7 @@
 <translation id="1450753235335490080">Չհաջողվեց ուղարկել բովանդակությունը (<ph name="CONTENT_TYPE" />)</translation>
 <translation id="1466383950273130737">Ընտրեք Chrome-ի լեզուն</translation>
 <translation id="147113415845704694">Փորձեք հարցնել․ «What’s the weather today?» (Ի՞նչ եղանակ է այսօր)։</translation>
+<translation id="1474893630593443211">Ավելի շատ վերահսկողություն ձեզ ցուցադրվող գովազդի վրա</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> ֆայլի ներբեռնումը ձախողվեց՝ սերվերի հետ կապված խնդրի պատճառով:</translation>
 <translation id="148482509007564431">Էջանիշի պահման էջ</translation>
 <translation id="1488775391433859242">Դուք կարող եք օգտագործել այս հեռախոսը՝ հաշիվ մուտք գործելու համակարգչում, որում ցուցադրված է այս QR կոդը։</translation>
@@ -287,6 +289,7 @@
 <translation id="2561519700418191927">Տեսանյութերի նախադիտում</translation>
 <translation id="2567385386134582609">ՊԱՏԿԵՐ</translation>
 <translation id="2567545343356994513">Ավելի արագ և արդյունավետ պաշտպանություն վտանգավոր կայքերից, ընդլայնումներից և ներբեռնումներից</translation>
+<translation id="2569733278091928697">Դուք կկարողանաք հեշտությամբ կառավարել մեդիա բովանդակությունը, ինկոգնիտո աշխատաշրջանները, ներբեռնված ֆայլերը և այլն։</translation>
 <translation id="2571711316400087311">Առաջարկել այլ լեզուներով էջերն ուղարկել Google Translate ծառայությանը</translation>
 <translation id="2573452357057307036">Իմացեք՝ ինչպես Chrome-ը դարձնել կանխադրված դիտարկիչ</translation>
 <translation id="2581165646603367611">Բոլոր քուքիները, քեշը և այլ տվյալները, որոնք Chrome-ին անհրաժեշտ չեն, կջնջվեն:</translation>
@@ -399,6 +402,7 @@
 <translation id="3166827708714933426">Ներդիրների և պատուհանների դյուրանցումներ</translation>
 <translation id="316694332262407393">Chrome-ն արդեն գործարկված է։</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3169523567916669830">Փորձարկումների ընթացքում դուք կարող եք տեսնել և հեռացնել հետաքրքրությունները, որոնք կայքերն օգտագործում են ձեզ գովազդ ցուցադրելու համար։ Chrome-ը որոշում է ձեր հետաքրքրությունները ձեր վերջին այցելությունների պատմության հիման վրա։</translation>
 <translation id="3187472288455401631">Գովազդի արդյունավետության գնահատում</translation>
 <translation id="3207960819495026254">Էջանշված է</translation>
 <translation id="3208584281581115441">Ստուգել հիմա</translation>
@@ -473,6 +477,7 @@
 <translation id="3568688522516854065">Ձեր մյուս սարքերում եղած ներդիրներն օգտագործելու համար մտեք հաշիվ և միացրեք համաժամացումը</translation>
 <translation id="357465026686164600">Հեռախոսը՝ որպես անվտանգության բանալի</translation>
 <translation id="3577473026931028326">Սխալ առաջացավ։ Նորից փորձեք։</translation>
+<translation id="3578024735349927859">Մեդիա բովանդակության, ինկոգնիտո ներդիրների և այլ գործառույթների կառավարում ծանուցումների միջոցով</translation>
 <translation id="3578874072190212775">Օգնեք կայքերին պայքարել խարդախության դեմ և տարբերել բոտերին մարդկանցից</translation>
 <translation id="3587482841069643663">Բոլորը</translation>
 <translation id="3587596251841506391">Օգնեք բարելավել անվտանգությունը</translation>
@@ -1113,12 +1118,14 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="7173114856073700355">Բացել կարգավորումները</translation>
 <translation id="7177466738963138057">Կարող եք սա հետագայում փոխել կարգավորումներում</translation>
 <translation id="7177873915659574692">Չհաջողվեց ստեղծել QR կոդ։ URL-ը կարող է պարունակել առավելագույնը <ph name="CHARACTER_LIMIT" /> նիշ։</translation>
+<translation id="7177959540995930968">Ավելին այս գործառույթների մասին կարող եք իմանալ Chrome-ի կարգավորումներում։</translation>
 <translation id="718226107353899806">Դուք կարող եք ավելացնել առավելագույնը <ph name="MAX_NUM_REACTIONS" /> արձագանք</translation>
 <translation id="7187993566681480880">Ապահովում է ձեր անվտանգությունը Chrome-ում և Google հավելվածներում, երբ մտել եք ձեր հաշիվ։</translation>
 <translation id="718926126787620637">Էջանիշներով պանակների ցանկը բացված է ամբողջությամբ</translation>
 <translation id="7191430249889272776">Հետնաշերտում ներդիր է բացված:</translation>
 <translation id="7196215469483532480">Տվյալների պաշտպանության ուղեցույցի մասին տեղեկությունները բացված են ամբողջությամբ</translation>
 <translation id="7208109991155904980">Արձագանքը տեղափոխվել է</translation>
+<translation id="7222235798733126207">Կայքերի միջև տվյալների սահմանափակ փոխանակում</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Կնեռբեռնվի 1 ֆայլ}one{Կներբեռնվի # ֆայլ}other{Կներբեռնվի # ֆայլ}}</translation>
 <translation id="7237045078887540010">Օգտվելով Chrome-ից՝ դուք ընդունում եք <ph name="BEGIN_TOS_LINK" />Google-ի օգտագործման պայմանները<ph name="END_TOS_LINK" /> և <ph name="BEGIN_ATOS_LINK" />Google Chrome-ի և Chrome OS-ի օգտագործման լրացուցիչ պայմանները<ph name="END_ATOS_LINK" />։ Կիրառվում է նաև <ph name="BEGIN_PRIVACY_LINK" />Գաղտնիության քաղաքականությունը<ph name="END_PRIVACY_LINK" />։</translation>
 <translation id="7242755609445462077">Ոճավորված բովանդակություն՝ <ph name="CURRENT_DATE" /></translation>
@@ -1338,6 +1345,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="8410695015584479363">Հետևել գներին</translation>
 <translation id="8413126021676339697">Ցույց տալ ամբողջ պատմությունը</translation>
 <translation id="8414396119627470038">Մուտք գործեք <ph name="SITE_ETLD_PLUS_ONE" /> կայք <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերության տվյալներով</translation>
+<translation id="8416347857511542594">Իմանալ ավելին Chrome-ում գովազդի անհատականացման մասին</translation>
 <translation id="8419244640277402268">Ներառել</translation>
 <translation id="8424781820952413435">Էջն ուղարկվեց։ Այն տեսնելու համար բացեք Chrome դիտարկիչը <ph name="DEVICE_TYPE" /> հեռախոսում։</translation>
 <translation id="8427875596167638501">Նախադիտման ներդիրը կիսաբաց է</translation>

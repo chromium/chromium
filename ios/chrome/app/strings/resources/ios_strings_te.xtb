@@ -136,13 +136,13 @@
 <translation id="212623074644302906">చదవాల్సిన లిస్ట్‌కు జోడించమని అడగాలి</translation>
 <translation id="2139867232736819575">మీరు కాపీ చేసిన వచనం కోసం వెతకండి</translation>
 <translation id="214201757571129614">సైన్ ఇన్ చేయండి…</translation>
-<translation id="2149973817440762519">బుక్‌మార్క్‌ను సవరించు</translation>
+<translation id="2149973817440762519">బుక్‌మార్క్‌ను ఎడిట్ చేయండి</translation>
 <translation id="2175927920773552910">QR కోడ్</translation>
 <translation id="2218443599109088993">దూరంగా జూమ్ చేయి</translation>
 <translation id="2230173723195178503">వెబ్‌పేజీ లోడ్ అయ్యింది</translation>
 <translation id="2239626343334228536">బ్రౌజింగ్ డేటాను తీసివేస్తోంది...</translation>
 <translation id="2256933947031277845">మీ సంస్థ మిమ్మల్ని కొన్ని ఖాతాలతో మాత్రమే సైన్ ఇన్ చేయడానికి అనుమతిస్తుంది.</translation>
-<translation id="225943865679747347">లోపం కోడ్: <ph name="ERROR_CODE" /></translation>
+<translation id="225943865679747347">ఎర్రర్ కోడ్: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">ఖాతాను జోడించు</translation>
 <translation id="2268044343513325586">మరింత మెరుగుపరచండి</translation>
 <translation id="2271351792809375263">మీరు మీ పరికరంలోని ఇతర యాప్‌లలో Chromeలో సేవ్ చేసిన పాస్‌వర్డ్‌లను ఉపయోగించండి</translation>
@@ -282,7 +282,7 @@
 <translation id="345565170154308620">పాస్‌వర్డ్‌లను నిర్వహించు...</translation>
 <translation id="3469166899695866866">డౌన్‌లోడ్‌ను ఆపివేయాలా?</translation>
 <translation id="3470502288861289375">కాపీ చేస్తోంది...</translation>
-<translation id="3474624961160222204"><ph name="NAME" /> వలె కొనసాగించు</translation>
+<translation id="3474624961160222204"><ph name="NAME" /> లాగా కొనసాగించు</translation>
 <translation id="3478058380795961209">గడువు ముగింపు నెల</translation>
 <translation id="3482959374254649722">మీ ట్యాబ్‌లను సింక్ చేస్తోంది...</translation>
 <translation id="3484946776651937681">డౌన్‌లోడ్‌లలో తెరవండి</translation>
@@ -588,7 +588,7 @@
 <translation id="6232329973559504466">అజ్ఞాత సెర్చ్</translation>
 <translation id="6232736989810857397">Google Lensను ఉపయోగించి సులభంగా క్యాలెండర్ ఈవెంట్‌లను క్రియేట్ చేయడానికి ఇది మిమ్మల్ని అనుమతిస్తుంది.</translation>
 <translation id="6254066287920239840">లింక్‌లను బ్రౌజర్‌కు బదులుగా యాప్‌లో తెరవండి.</translation>
-<translation id="6255097610484507482">క్రెడిట్ కార్డ్‌ను సవరించు</translation>
+<translation id="6255097610484507482">క్రెడిట్ కార్డ్‌ను ఎడిట్ చేయండి</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" />లోకి అనువాదం అందించే సూచన</translation>
 <translation id="6293101329759844770">సురక్షిత బ్రౌజింగ్ ఆన్ చేయడానికి, <ph name="BEGIN_LINK" />Google సర్వీస్‌ల<ph name="END_LINK" />ను తెరిచి, 'సురక్షిత బ్రౌజింగ్'ను ట్యాప్ చేయండి.</translation>
 <translation id="6321526113093607004">బుక్‌మార్క్‌లకు జోడించు</translation>
@@ -650,7 +650,7 @@
 <translation id="6645899968535965230">QR కోడ్: <ph name="PAGE_TITLE" /></translation>
 <translation id="6656103420185847513">ఫోల్డర్‌ను ఎడిట్ చేయండి</translation>
 <translation id="6657585470893396449">పాస్‌వర్డ్</translation>
-<translation id="6668619169535738264">బుక్‌మార్క్‌ను సవరించు</translation>
+<translation id="6668619169535738264">బుక్‌మార్క్‌ను ఎడిట్ చేయండి</translation>
 <translation id="6672241253012342409">సైట్‌లు మీ బ్రౌజింగ్ అనుభవాన్ని మెరుగుపరచడానికి కుక్కీలను ఉపయోగిస్తాయి, ఉదాహరణకు, మిమ్మల్ని సైన్ ఇన్ చేసి ఉంచడం లేదా మీ షాపింగ్ కార్ట్‌లోని ఐటెమ్‌లను గుర్తు చేయడం లాంటివి.
 
 అజ్ఞాతంలో ఉండగా, వివిధ సైట్‌లలో మీ బ్రౌజింగ్ యాక్టివిటీని చూడటానికి సైట్‌లు మీ కుక్కీలను ఉపయోగించలేవు, ఉదాహరణకు, యాడ్‌లను వ్యక్తిగతీకరించడం.</translation>
@@ -925,6 +925,6 @@
 <translation id="981498610235328462">మీ సంస్థ మిమ్మల్ని కొన్ని ఖాతాలతో మాత్రమే సైన్ ఇన్ చేయడానికి అనుమతిస్తుంది. అనుమతించబడని ఖాతాలు దాచబడతాయి.</translation>
 <translation id="984509647832111802">సింక్ పని చేయడం లేదు.</translation>
 <translation id="988141524645182168">ఇతర పరికరాలు</translation>
-<translation id="989988560359834682">అడ్రస్‌ను సవరించు</translation>
+<translation id="989988560359834682">అడ్రస్‌ను ఎడిట్ చేయండి</translation>
 <translation id="994757059139821576">కథనం సూచనలు</translation>
 </translationbundle>

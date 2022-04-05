@@ -28,13 +28,13 @@
 <translation id="4115165561519362854">Der Administrator dieses Geräts hat festgelegt, dass für <ph name="EXTENSION_NAME" /> mindestens Version <ph name="EXTENSION_VERSION" /> installiert sein muss. Die Erweiterung kann erst aktiviert werden, nachdem sie auf diese oder eine höhere Version aktualisiert wurde.</translation>
 <translation id="4233778200880751280">Infoseite "<ph name="ABOUT_PAGE" />" konnte nicht geladen werden.</translation>
 <translation id="471800408830181311">Privater Schlüssel konnte nicht ausgegeben werden.</translation>
-<translation id="4811956658694082538">Das Paket konnte nicht installiert werden, da der Prozess eines Dienstprogramms abgestürzt ist. Starten Sie Chrome neu und versuchen Sie es erneut.</translation>
+<translation id="4811956658694082538">Das Paket konnte nicht installiert werden, da der Prozess eines Dienstprogramms abgestürzt ist. Starte Chrome neu und versuche es noch einmal.</translation>
 <translation id="4988792151665380515">Öffentlicher Schlüssel konnte nicht exportiert werden.</translation>
 <translation id="5026754133087629784">Web-Ansicht: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Der absolute Pfad zum Verzeichnis wurde nicht gefunden.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Es werden nur rechteckige Fenster unterstützt.</translation>
-<translation id="5456409301717116725">Die Erweiterung enthält die Schlüsseldatei "<ph name="KEY_PATH" />". Möchten Sie den Vorgang wirklich fortsetzen?</translation>
+<translation id="5456409301717116725">Die Erweiterung enthält die Schlüsseldatei „<ph name="KEY_PATH" />“. Möchtest du den Vorgang wirklich fortsetzen?</translation>
 <translation id="5486326529110362464">Es muss ein Eingabewert für den privaten Schlüssel vorhanden sein.</translation>
 <translation id="5972529113578162692">Der Administrator dieses Computers hat die Installation von <ph name="EXTENSION_NAME" /> vorgegeben. Eine Deinstallation ist daher nicht möglich.</translation>
 <translation id="6027032947578871493">Unbekanntes Produkt <ph name="PRODUCT_ID" /> von <ph name="VENDOR_NAME" /> (Seriennummer <ph name="SERIAL_NUMBER" />)</translation>

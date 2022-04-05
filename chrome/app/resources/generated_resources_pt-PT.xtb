@@ -490,6 +490,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1470946456740188591">Para ativar ou desativar a navegação por cursor, utilize o atalho Ctrl + Pesquisa + 7.</translation>
 <translation id="1472675084647422956">Mostrar mais</translation>
 <translation id="1474785664565228650">A alteração na definição do microfone requer que o Parallels Desktop seja reiniciado. Reinicie o Parallels Desktop para continuar.</translation>
+<translation id="1474893630593443211">Mais controlo sobre os anúncios que vê</translation>
 <translation id="1475502736924165259">Tem certificados em arquivo que não encaixam em nenhuma das restantes categorias</translation>
 <translation id="1476088332184200792">Copiar para o dispositivo</translation>
 <translation id="1476607407192946488">&amp;Definições de idioma</translation>
@@ -1544,6 +1545,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2470702053775288986">Extensões não suportadas desativadas</translation>
 <translation id="2471469610750100598">Negro (predefinição)</translation>
 <translation id="2471506181342525583">Acesso à localização permitido</translation>
+<translation id="247208220409682803">A lista de sites que definem os seus interesses é eliminada e atualizada todos os meses. Um site que visita novamente pode voltar a aparecer na lista. Em alternativa, pode remover um site se não quiser que o mesmo defina interesses para si.</translation>
 <translation id="2473195200299095979">Traduzir esta página</translation>
 <translation id="2475982808118771221">Ocorreu um erro</translation>
 <translation id="2476578072172137802">Definições de sites</translation>
@@ -2792,6 +2794,7 @@ Pretende pará-lo?</translation>
 <translation id="3707163604290651814">Atualmente com sessão iniciada como <ph name="NAME" /></translation>
 <translation id="3708684582558000260">Não permitir que os sites fechados concluam o envio ou a receção de dados</translation>
 <translation id="3709244229496787112">O navegador foi encerrado antes de a transferência estar concluída.</translation>
+<translation id="371174301504454251">Para proteger a sua privacidade, eliminamos automaticamente os sites da lista com mais de 4 semanas. Um site que visita novamente pode voltar a aparecer na lista. Em alternativa, pode remover um site se não quiser que o mesmo defina interesses para si.</translation>
 <translation id="3711931198657368127">Co&amp;lar e ir para <ph name="URL" /></translation>
 <translation id="3711945201266135623">Foram encontradas <ph name="NUM_PRINTERS" /> impressoras no servidor de impressão.</translation>
 <translation id="3712050472459130149">É necessário atualizar a conta.</translation>
@@ -6265,6 +6268,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7221869452894271364">Recarregar esta página</translation>
 <translation id="7222204278952406003">O Chrome é o seu navegador predefinido</translation>
 <translation id="7222232353993864120">Endereço de email</translation>
+<translation id="7222235798733126207">Partilha limitada entre sites</translation>
 <translation id="7225179976675429563">Tipo de rede em falta</translation>
 <translation id="7227458944009118910">As apps listadas abaixo também podem processar links de protocolo. Outras apps pedirão autorização.</translation>
 <translation id="7228523857728654909">Bloqueio de ecrã e início de sessão</translation>
@@ -7942,6 +7946,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8880054210564666174">Não é possível transferir a lista de contactos. Verifique a sua ligação de rede ou <ph name="LINK_BEGIN" />tente novamente<ph name="LINK_END" />.</translation>
 <translation id="8881020143150461183">Tente novamente. Para obter apoio técnico, contacte o operador <ph name="CARRIER_NAME" />.</translation>
 <translation id="8883273463630735858">Ativar aceleração do touchpad</translation>
+<translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Como pode gerir os seus dados:<ph name="END_BOLD" /> para proteger a sua privacidade, eliminamos automaticamente os sites da lista com mais de 4 semanas. Um site que visita novamente pode voltar a aparecer na lista. Em alternativa, pode remover um site se não quiser que o mesmo defina interesses para si.</translation>
 <translation id="8884570509232205463">Agora, o seu dispositivo será bloqueado à(s) <ph name="UNLOCK_TIME" />.</translation>
 <translation id="8888253246822647887">A aplicação será aberta quando a atualização estiver concluída. As atualizações podem demorar alguns minutos.</translation>
 <translation id="8888432776533519951">Cor:</translation>

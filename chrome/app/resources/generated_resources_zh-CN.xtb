@@ -488,6 +488,7 @@
 <translation id="1470946456740188591">如需开启或关闭光标浏览模式，请使用快捷键 Ctrl + 搜索键 + 7</translation>
 <translation id="1472675084647422956">展开</translation>
 <translation id="1474785664565228650">重新启动 Parallels Desktop 后，对麦克风设置做出的更改才能生效。请重新启动 Parallels Desktop 以继续。</translation>
+<translation id="1474893630593443211">更好地控制您看到的广告</translation>
 <translation id="1475502736924165259">您有一些证书不属于前面的任何类别</translation>
 <translation id="1476088332184200792">复制到您的设备</translation>
 <translation id="1476607407192946488">语言设置(&amp;L)</translation>
@@ -1519,7 +1520,7 @@
 <translation id="2454524890947537054">批准网站请求？</translation>
 <translation id="245650153866130664">若想自动刷新票据，请选中“记住密码”。系统便会将您的密码仅保存在您的设备上。</translation>
 <translation id="2457246892030921239">“<ph name="APP_NAME" />”想从 <ph name="VOLUME_NAME" />复制文件。</translation>
-<translation id="2457842160081795172">目前为<ph name="CHANNEL_NAME" />版本</translation>
+<translation id="2457842160081795172">目前位于<ph name="CHANNEL_NAME" />渠道</translation>
 <translation id="2458379781610688953">更新帐号，<ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">设备管理令牌无效。</translation>
 <translation id="2459703812219683497">检测到激活码</translation>
@@ -1537,6 +1538,7 @@
 <translation id="2470702053775288986">已停用不支持的扩展程序</translation>
 <translation id="2471469610750100598">黑色（默认）</translation>
 <translation id="2471506181342525583">已允许使用位置信息</translation>
+<translation id="247208220409682803">系统每月都会从用来推测您的兴趣的网站列表中删除网站以刷新列表。您再次访问的网站可能会重新出现在列表中。如果您不希望系统（再）根据某个网站来推测您的兴趣，也可自行移除相应网站。</translation>
 <translation id="2473195200299095979">翻译此页</translation>
 <translation id="2475982808118771221">出现错误</translation>
 <translation id="2476578072172137802">网站设置</translation>
@@ -2782,6 +2784,7 @@
 <translation id="3707163604290651814">目前登录的帐号是 <ph name="NAME" /></translation>
 <translation id="3708684582558000260">不允许已关闭的网站完成数据收发操作</translation>
 <translation id="3709244229496787112">浏览器已在下载完成前关闭。</translation>
+<translation id="371174301504454251">为保护您的隐私，一旦网站的保留时长超过 4 周，系统便会自动从列表中删除相应网站。您再次访问的网站可能会重新出现在列表中。如果您不希望系统（再）根据某个网站来推测您的兴趣，也可自行移除相应网站。</translation>
 <translation id="3711931198657368127">粘贴并转到 <ph name="URL" /></translation>
 <translation id="3711945201266135623">通过打印服务器找到了 <ph name="NUM_PRINTERS" /> 台打印机</translation>
 <translation id="3712050472459130149">需要进行帐号更新</translation>
@@ -6251,6 +6254,7 @@
 <translation id="7221869452894271364">重新加载此页</translation>
 <translation id="7222204278952406003">Chrome 是您的默认浏览器</translation>
 <translation id="7222232353993864120">电子邮件地址</translation>
+<translation id="7222235798733126207">受限的网站间共享</translation>
 <translation id="7225179976675429563">缺少网络类型</translation>
 <translation id="7227458944009118910">下列应用也能处理协议链接。其他应用会请求授权。</translation>
 <translation id="7228523857728654909">屏幕锁定和登录</translation>
@@ -7927,6 +7931,7 @@
 <translation id="8880054210564666174">无法下载联系人列表。请检查您的网络连接，或<ph name="LINK_BEGIN" />重试<ph name="LINK_END" />。</translation>
 <translation id="8881020143150461183">请重试。如需技术支持，请联系<ph name="CARRIER_NAME" />。</translation>
 <translation id="8883273463630735858">启用触控板加速</translation>
+<translation id="8884023684057697730"><ph name="BEGIN_BOLD" />您可如何管理自己的数据<ph name="END_BOLD" />：为保护您的隐私，一旦网站的保留时长超过 4 周，系统便会自动从列表中删除相应网站。您再次访问的网站可能会重新出现在列表中。如果您不希望系统（再）根据某个网站来推测您的兴趣，也可自行移除相应网站。</translation>
 <translation id="8884570509232205463">现在，您的设备会在<ph name="UNLOCK_TIME" /> 锁定。</translation>
 <translation id="8888253246822647887">待完成升级后，您的应用即会打开。升级过程可能会持续几分钟。</translation>
 <translation id="8888432776533519951">颜色：</translation>

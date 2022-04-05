@@ -82,6 +82,7 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="1384704387250346179">Traduire avec Google Lens <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Actif il y a <ph name="LAST_UPDATED" /> jours</translation>
 <translation id="1397811292916898096">Rechercher avec <ph name="PRODUCT_NAME" /></translation>
+<translation id="139993653570221430">Vous pouvez modifier vos options à tout moment dans les paramètres Chrome. Les tests sont menés parallèlement à la façon dont les annonces sont actuellement diffusées. Vous ne constaterez donc pas de changements dans l'immédiat.</translation>
 <translation id="1406000523432664303">Interdire le suivi</translation>
 <translation id="1407069428457324124">Thème sombre</translation>
 <translation id="1407135791313364759">Tout ouvrir</translation>
@@ -94,6 +95,7 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="1450753235335490080">Impossible de partager le contenu suivant : <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Choisissez la langue de Chrome</translation>
 <translation id="147113415845704694">Essayez "Quel temps fait-il aujourd'hui ?"</translation>
+<translation id="1474893630593443211">Meilleur contrôle sur les annonces que vous voyez</translation>
 <translation id="1477626028522505441">Échec du téléchargement du fichier "<ph name="FILE_NAME" />" en raison de problèmes liés au serveur.</translation>
 <translation id="148482509007564431">Flux d'enregistrement en tant que favori</translation>
 <translation id="1488775391433859242">Vous pouvez utiliser ce téléphone pour vous connecter sur l'ordinateur qui affiche le code QR.</translation>
@@ -287,6 +289,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="2561519700418191927">Aperçus vidéo</translation>
 <translation id="2567385386134582609">IMAGE</translation>
 <translation id="2567545343356994513">Protection proactive et plus rapide contre les téléchargements, les extensions et les sites Web dangereux</translation>
+<translation id="2569733278091928697">Vous pourrez gérer facilement les commandes multimédias, les sessions de navigation privée, les téléchargements et bien plus</translation>
 <translation id="2571711316400087311">Proposer d'envoyer les pages dans d'autres langues vers Google Traduction</translation>
 <translation id="2573452357057307036">Découvrez comment définir Chrome comme navigateur par défaut</translation>
 <translation id="2581165646603367611">Cette action aura pour effet de vider le cache et de supprimer les cookies, ainsi que d'autres données de site que Chrome ne considère pas comme importantes.</translation>
@@ -399,6 +402,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="3166827708714933426">Raccourcis liés aux onglets et aux fenêtres</translation>
 <translation id="316694332262407393">Chrome est déjà en cours d'exécution ici.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3169523567916669830">Pendant ces tests, vous pouvez afficher et supprimer les centres d'intérêt que les sites utilisent pour vous proposer des annonces. Chrome se base sur votre historique de navigation récent pour prédire les sujets qui vous intéressent.</translation>
 <translation id="3187472288455401631">Mesure des performances des annonces</translation>
 <translation id="3207960819495026254">Favori</translation>
 <translation id="3208584281581115441">Vérifier maintenant</translation>
@@ -473,6 +477,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="3568688522516854065">Connectez-vous et activez la synchronisation pour accéder à vos onglets sur vos autres appareils</translation>
 <translation id="357465026686164600">Utiliser le téléphone comme clé de sécurité</translation>
 <translation id="3577473026931028326">Un problème est survenu. Réessayez.</translation>
+<translation id="3578024735349927859">Gérer les commandes multimédias, les onglets de navigation privée et plus avec les notifications</translation>
 <translation id="3578874072190212775">Aidez les sites à lutter contre la fraude et à distinguer les robots des humains</translation>
 <translation id="3587482841069643663">Tous</translation>
 <translation id="3587596251841506391">Contribuer à sécuriser le Web</translation>
@@ -1113,12 +1118,14 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="7173114856073700355">Paramètres</translation>
 <translation id="7177466738963138057">Vous pourrez modifier le moteur de recherche plus tard dans les paramètres</translation>
 <translation id="7177873915659574692">Impossible de créer le code QR, car l'URL comporte plus de <ph name="CHARACTER_LIMIT" /> caractères.</translation>
+<translation id="7177959540995930968">Vous pouvez en savoir plus sur ces fonctionnalités dans les paramètres Chrome.</translation>
 <translation id="718226107353899806">Vous pouvez ajouter jusqu'à <ph name="MAX_NUM_REACTIONS" /> réactions</translation>
 <translation id="7187993566681480880">Ce mode vous protège dans Chrome et peut servir à renforcer votre sécurité dans d'autres applications Google lorsque vous êtes connecté.</translation>
 <translation id="718926126787620637">Liste des dossiers de favoris ouverte à pleine hauteur</translation>
 <translation id="7191430249889272776">L'onglet a été ouvert en arrière-plan.</translation>
 <translation id="7196215469483532480">Explications du Guide sur la confidentialité ouvertes à pleine hauteur</translation>
 <translation id="7208109991155904980">Réaction déplacée</translation>
+<translation id="7222235798733126207">Partage limité entre les sites</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 téléchargement en attente}one{# téléchargement en attente}other{# téléchargements en attente}}</translation>
 <translation id="7237045078887540010">En utilisant Chrome, vous acceptez les <ph name="BEGIN_TOS_LINK" />Conditions d'utilisation de Google<ph name="END_TOS_LINK" /> et les <ph name="BEGIN_ATOS_LINK" />Conditions d'utilisation supplémentaires de Google Chrome et Chrome OS<ph name="END_ATOS_LINK" />. Les <ph name="BEGIN_PRIVACY_LINK" />Règles de confidentialité<ph name="END_PRIVACY_LINK" /> s'appliquent également.</translation>
 <translation id="7242755609445462077">En surbrillance et stylisé, <ph name="CURRENT_DATE" /></translation>
@@ -1338,6 +1345,7 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="8410695015584479363">Suivre les prix</translation>
 <translation id="8413126021676339697">Afficher l'historique complet</translation>
 <translation id="8414396119627470038">Connectez-vous à <ph name="SITE_ETLD_PLUS_ONE" /> avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8416347857511542594">En savoir plus sur la personnalisation des annonces dans Chrome</translation>
 <translation id="8419244640277402268">Inclure</translation>
 <translation id="8424781820952413435">Page envoyée. Pour la voir, ouvrez Chrome sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">L'onglet "Aperçu" est ouvert à moitié</translation>

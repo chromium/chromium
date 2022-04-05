@@ -490,6 +490,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1470946456740188591">Para activar o desactivar la navegación por cursor de texto, usa la combinación de teclas Ctrl+Buscar+7</translation>
 <translation id="1472675084647422956">Mostrar más</translation>
 <translation id="1474785664565228650">Es necesario que reinicies Parallels Desktop para aplicar los cambios en la configuración del micrófono. Para continuar, reinicia Parallels Desktop.</translation>
+<translation id="1474893630593443211">Más control sobre los anuncios que ves</translation>
 <translation id="1475502736924165259">Tienes certificados archivados que no coinciden con ninguna de las demás categorías</translation>
 <translation id="1476088332184200792">Copiar a tu dispositivo</translation>
 <translation id="1476607407192946488">&amp;Configuración de idiomas</translation>
@@ -1541,6 +1542,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2470702053775288986">Extensiones no admitidas inhabilitadas</translation>
 <translation id="2471469610750100598">Negro (predeterminado)</translation>
 <translation id="2471506181342525583">Se permite el acceso a ubicaciones</translation>
+<translation id="247208220409682803">La lista de sitios que definen tus intereses se borra y actualiza todos los meses. Es posible que, si vuelves a visitar un sitio, aparezca en la lista otra vez. O bien, puedes quitar un sitio si no quieres que defina tus intereses.</translation>
 <translation id="2473195200299095979">Traducir esta página</translation>
 <translation id="2475982808118771221">Se ha producido un error</translation>
 <translation id="2476578072172137802">Configuración de sitios</translation>
@@ -2788,6 +2790,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3707163604290651814">Accediste como <ph name="NAME" /></translation>
 <translation id="3708684582558000260">No permitir que los sitios cerrados terminen de enviar o recibir datos</translation>
 <translation id="3709244229496787112">El navegador se cerró antes de que finalizara la descarga.</translation>
+<translation id="371174301504454251">Para proteger tu privacidad, borramos los sitios de la lista automáticamente luego de 4 semanas. Es posible que, si vuelves a visitar un sitio, aparezca en la lista otra vez. O bien, puedes quitar un sitio si no quieres que defina tus intereses.</translation>
 <translation id="3711931198657368127">&amp;Pegar y dirigirse a <ph name="URL" /></translation>
 <translation id="3711945201266135623">Se encontraron <ph name="NUM_PRINTERS" /> impresoras en el servidor de impresión</translation>
 <translation id="3712050472459130149">Se requiere actualizar la cuenta</translation>
@@ -6260,6 +6263,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="7221869452894271364">Volver a cargar esta página</translation>
 <translation id="7222204278952406003">Chrome es el navegador predeterminado</translation>
 <translation id="7222232353993864120">Dirección de correo electrónico</translation>
+<translation id="7222235798733126207">Limitamos el uso compartido entre sitios</translation>
 <translation id="7225179976675429563">Falta el tipo de red.</translation>
 <translation id="7227458944009118910">Las apps enumeradas a continuación también admiten los enlaces del protocolo. Otras apps solicitarán permiso.</translation>
 <translation id="7228523857728654909">Bloqueo de pantalla y acceso</translation>
@@ -7937,6 +7941,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8880054210564666174">No es posible descargar la lista de contactos. Comprueba la conexión de red y <ph name="LINK_BEGIN" />vuelve a intentarlo<ph name="LINK_END" />.</translation>
 <translation id="8881020143150461183">Vuelve a intentarlo. Si necesitas asistencia técnica, comunícate con <ph name="CARRIER_NAME" />.</translation>
 <translation id="8883273463630735858">Habilitar la aceleración del panel táctil</translation>
+<translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Cómo puedes administrar tu información:<ph name="END_BOLD" /> Para proteger tu privacidad, quitamos los sitios de la lista automáticamente luego de 4 semanas. Es posible que, si vuelves a visitar un sitio, aparezca en la lista otra vez. O bien, puedes quitar un sitio si no quieres que defina tus intereses.</translation>
 <translation id="8884570509232205463">Ahora, el dispositivo se bloqueará a la(s) <ph name="UNLOCK_TIME" />.</translation>
 <translation id="8888253246822647887">Cuando se complete la actualización, se abrirá la app. Las actualizaciones pueden tardar algunos minutos.</translation>
 <translation id="8888432776533519951">Color:</translation>

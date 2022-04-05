@@ -493,6 +493,7 @@
 <translation id="1470946456740188591">如要開啟或關閉「鍵盤瀏覽」功能，請使用快速鍵 Ctrl+Search+7</translation>
 <translation id="1472675084647422956">顯示更多</translation>
 <translation id="1474785664565228650">Parallels Desktop 需要重新啟動，麥克風設定的變更才會生效。重新啟動 Parallels Desktop 即可繼續。</translation>
+<translation id="1474893630593443211">更全面控制系統顯示的廣告</translation>
 <translation id="1475502736924165259">下列檔案上的憑證不屬於任何其他類別</translation>
 <translation id="1476088332184200792">複製至您的裝置</translation>
 <translation id="1476607407192946488">語言設定(&amp;L)</translation>
@@ -1559,6 +1560,7 @@
 <translation id="2470702053775288986">已停用不支援的擴充功能</translation>
 <translation id="2471469610750100598">黑色 (預設)</translation>
 <translation id="2471506181342525583">目前允許存取位置</translation>
+<translation id="247208220409682803">系統會每個月刪除並重新整理定義您興趣的網站清單。您再次瀏覽的網頁可能會再次在清單中顯示。如果您不想系統根據特定網站定義興趣，亦可移除網站。</translation>
 <translation id="2473195200299095979">翻譯這個網頁</translation>
 <translation id="2475982808118771221">發生錯誤</translation>
 <translation id="2476578072172137802">網站設定</translation>
@@ -2806,6 +2808,7 @@
 <translation id="3707163604290651814">目前登入的帳戶是<ph name="NAME" /></translation>
 <translation id="3708684582558000260">不允許已關閉的網站完成資料收發</translation>
 <translation id="3709244229496787112">瀏覽器在下載尚未完成時被關閉。</translation>
+<translation id="371174301504454251">為保障您的私隱，我們會自動刪除清單上超過 4 星期的網站。您再次瀏覽的網頁可能會再次在清單中顯示。如果您不想系統根據特定網站定義興趣，亦可移除網站。</translation>
 <translation id="3711931198657368127">貼上並前往 <ph name="URL" /> (&amp;S)</translation>
 <translation id="3711945201266135623">在列印伺服器中找到 <ph name="NUM_PRINTERS" /> 部打印機</translation>
 <translation id="3712050472459130149">必須更新帳戶</translation>
@@ -6280,6 +6283,7 @@
 <translation id="7221869452894271364">重新載入這個網頁</translation>
 <translation id="7222204278952406003">Chrome 是您的預設瀏覽器</translation>
 <translation id="7222232353993864120">電郵地址</translation>
+<translation id="7222235798733126207">限制網站共用</translation>
 <translation id="7225179976675429563">找不到網絡類型</translation>
 <translation id="7227458944009118910">以下應用程式亦可處理通訊協定連結。其他應用程式則會要求授權。</translation>
 <translation id="7228523857728654909">螢幕鎖定和登入</translation>
@@ -7957,6 +7961,7 @@
 <translation id="8880054210564666174">無法下載通訊錄。請檢查網絡連線，或者<ph name="LINK_BEGIN" />再試一次<ph name="LINK_END" />。</translation>
 <translation id="8881020143150461183">請再試一次。如需技術支援，請聯絡 <ph name="CARRIER_NAME" />。</translation>
 <translation id="8883273463630735858">啟用觸控板加速</translation>
+<translation id="8884023684057697730"><ph name="BEGIN_BOLD" />您可如何管理資料：<ph name="END_BOLD" />為保障您的私隱，我們會自動刪除清單上超過 4 星期的網站。您再次瀏覽的網頁可能會再次在清單中顯示。如果您不想系統根據特定網站定義興趣，亦可移除網站。</translation>
 <translation id="8884570509232205463">您的裝置會於<ph name="UNLOCK_TIME" />鎖上。</translation>
 <translation id="8888253246822647887">升級完成後，應用程式隨即啟動。升級過程可能需時幾分鐘。</translation>
 <translation id="8888432776533519951">顏色：</translation>
