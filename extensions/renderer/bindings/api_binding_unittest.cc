@@ -1973,7 +1973,7 @@ TEST_F(APIBindingUnittest, TestHooksWithCustomCallback) {
   ASSERT_TRUE(last_request());
   EXPECT_TRUE(last_request()->has_async_response_handler);
   request_handler()->CompleteRequest(last_request()->request_id,
-                                     base::ListValue(), std::string());
+                                     base::Value::List(), std::string());
 
   EXPECT_EQ("true", GetStringPropertyFromObject(context->Global(), context,
                                                 "calledCustomCallback"));
@@ -2088,9 +2088,9 @@ TEST_F(APIBindingUnittest, PromiseBasedAPIs) {
     EXPECT_EQ(v8::Promise::kPending, promise->State());
 
     ASSERT_TRUE(last_request());
-    request_handler()->CompleteRequest(
-        last_request()->request_id,
-        *DeprecatedListValueFromString(R"(["foo"])"), std::string());
+    request_handler()->CompleteRequest(last_request()->request_id,
+                                       ListValueFromString(R"(["foo"])"),
+                                       std::string());
 
     EXPECT_EQ(v8::Promise::kFulfilled, promise->State());
     EXPECT_EQ(R"("foo")", V8ToString(promise->Result(), context));
@@ -2111,9 +2111,9 @@ TEST_F(APIBindingUnittest, PromiseBasedAPIs) {
     RunFunctionOnGlobal(promise_api_call, context, std::size(args), args);
 
     ASSERT_TRUE(last_request());
-    request_handler()->CompleteRequest(
-        last_request()->request_id,
-        *DeprecatedListValueFromString(R"(["bar"])"), std::string());
+    request_handler()->CompleteRequest(last_request()->request_id,
+                                       ListValueFromString(R"(["bar"])"),
+                                       std::string());
 
     EXPECT_EQ(R"("bar")", GetStringPropertyFromObject(
                               context->Global(), context, "callbackResult"));
@@ -2152,9 +2152,9 @@ TEST_F(APIBindingUnittest, PromiseBasedAPIs) {
     RunFunctionOnGlobal(promise_api_call, context, std::size(args), args);
 
     ASSERT_TRUE(last_request());
-    request_handler()->CompleteRequest(
-        last_request()->request_id,
-        *DeprecatedListValueFromString(R"(["foo"])"), std::string());
+    request_handler()->CompleteRequest(last_request()->request_id,
+                                       ListValueFromString(R"(["foo"])"),
+                                       std::string());
 
     EXPECT_EQ(R"("foo")", GetStringPropertyFromObject(
                               context->Global(), context, "callbackResult"));
@@ -2218,9 +2218,9 @@ TEST_F(APIBindingUnittest, TestPromisesWithJSCustomCallback) {
     EXPECT_EQ(v8::Promise::kPending, promise->State());
 
     ASSERT_TRUE(last_request());
-    request_handler()->CompleteRequest(
-        last_request()->request_id,
-        *DeprecatedListValueFromString(R"(["foo"])"), std::string());
+    request_handler()->CompleteRequest(last_request()->request_id,
+                                       ListValueFromString(R"(["foo"])"),
+                                       std::string());
     // The promise should still be unfulfilled until the callback is invoked.
     EXPECT_EQ(v8::Promise::kPending, promise->State());
     v8::Local<v8::Function> resolve_callback;
@@ -2251,9 +2251,9 @@ TEST_F(APIBindingUnittest, TestPromisesWithJSCustomCallback) {
     EXPECT_EQ(v8::Promise::kPending, promise->State());
 
     ASSERT_TRUE(last_request());
-    request_handler()->CompleteRequest(
-        last_request()->request_id,
-        *DeprecatedListValueFromString(R"(["resolveNow"])"), std::string());
+    request_handler()->CompleteRequest(last_request()->request_id,
+                                       ListValueFromString(R"(["resolveNow"])"),
+                                       std::string());
     EXPECT_EQ(v8::Promise::kFulfilled, promise->State());
     EXPECT_EQ(R"("bar")", V8ToString(promise->Result(), context));
   }
@@ -2272,9 +2272,9 @@ TEST_F(APIBindingUnittest, TestPromisesWithJSCustomCallback) {
     EXPECT_EQ(v8::Promise::kPending, promise->State());
 
     ASSERT_TRUE(last_request());
-    request_handler()->CompleteRequest(
-        last_request()->request_id,
-        *DeprecatedListValueFromString(R"(["baz"])"), "Error message");
+    request_handler()->CompleteRequest(last_request()->request_id,
+                                       ListValueFromString(R"(["baz"])"),
+                                       "Error message");
     EXPECT_EQ(v8::Promise::kPending, promise->State());
     v8::Local<v8::Value> resolve_callback =
         GetPropertyFromObject(context->Global(), context, "resolveCallback");

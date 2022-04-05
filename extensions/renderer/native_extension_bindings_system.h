@@ -71,7 +71,7 @@ class NativeExtensionBindingsSystem {
   // Handles the response associated with the given |request_id|.
   void HandleResponse(int request_id,
                       bool success,
-                      const base::ListValue& response,
+                      const base::Value::List& response,
                       const std::string& error);
 
   // Returns the associated IPC message sender.

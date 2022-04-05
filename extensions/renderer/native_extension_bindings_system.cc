@@ -626,7 +626,7 @@ bool NativeExtensionBindingsSystem::HasEventListenerInContext(
 void NativeExtensionBindingsSystem::HandleResponse(
     int request_id,
     bool success,
-    const base::ListValue& response,
+    const base::Value::List& response,
     const std::string& error) {
   // Some API calls result in failure, but don't set an error. Use a generic and
   // unhelpful error string.

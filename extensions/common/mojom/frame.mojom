@@ -85,7 +85,7 @@ interface LocalFrame {
   MessageInvoke(string extension_id,
                 string module_name,
                 string function_name,
-                mojo_base.mojom.DeprecatedListValue args);
+                mojo_base.mojom.ListValue args);
 
   // Notifies the renderer that it should run some JavaScript code. The reply
   // is sent back to the browser to return the script running result. An empty
@@ -129,7 +129,7 @@ interface LocalFrameHost {
   [UnlimitedSize]
   Request(RequestParams params)
       => (bool success,
-          mojo_base.mojom.DeprecatedListValue response_wrapper,
+          mojo_base.mojom.ListValue response_wrapper,
           string error);
 
   // Notifies the browser process that a tab has started or stopped matching

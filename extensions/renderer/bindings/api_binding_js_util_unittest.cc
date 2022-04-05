@@ -190,7 +190,7 @@ TEST_F(APIBindingJSUtilUnittest, TestSendRequestWithOptions) {
   EXPECT_EQ("alpha.functionWithCallback", last_request()->method_name);
   EXPECT_EQ("[\"stringy\"]", ValueToString(*last_request()->arguments_list));
   bindings_system()->CompleteRequest(last_request()->request_id,
-                                     base::ListValue(), std::string());
+                                     base::Value::List(), std::string());
   EXPECT_EQ("true", GetStringPropertyFromObject(context->Global(), context,
                                                 "callbackCalled"));
 }

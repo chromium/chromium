@@ -21,7 +21,6 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 
 namespace base {
-class ListValue;
 class SingleThreadTaskRunner;
 }
 
@@ -171,7 +170,7 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
   void OnResponseWorker(int worker_thread_id,
                         int request_id,
                         bool succeeded,
-                        const base::ListValue& response,
+                        const base::Value::List& response,
                         const std::string& error);
   void OnValidateMessagePort(int worker_thread_id, const PortId& id);
   void OnDispatchOnConnect(int worker_thread_id,

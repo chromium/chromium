@@ -71,7 +71,7 @@ class APIBindingsSystem {
   // Responds to the request with the given |request_id|, calling the callback
   // with |response|. If |error| is non-empty, sets the last error.
   void CompleteRequest(int request_id,
-                       const base::ListValue& response,
+                       const base::Value::List& response,
                        const std::string& error);
 
   // Notifies the APIEventHandler to fire the corresponding event, notifying

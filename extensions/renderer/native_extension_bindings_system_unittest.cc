@@ -117,9 +117,9 @@ TEST_F(NativeExtensionBindingsSystemUnittest, Basic) {
   EXPECT_EQ(last_params().arguments, *DeprecatedListValueFromString("[30]"));
 
   // Respond and validate.
-  bindings_system()->HandleResponse(
-      last_params().request_id, true,
-      *DeprecatedListValueFromString("['active']"), std::string());
+  bindings_system()->HandleResponse(last_params().request_id, true,
+                                    ListValueFromString("['active']"),
+                                    std::string());
 
   std::unique_ptr<base::Value> result_value = GetBaseValuePropertyFromObject(
       context->Global(), context, "responseState");
@@ -564,7 +564,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestLastError) {
   int first_request_id = last_params().request_id;
   // Respond with an error.
   bindings_system()->HandleResponse(last_params().request_id, false,
-                                    base::ListValue(), "Some API Error");
+                                    base::Value::List(), "Some API Error");
   EXPECT_EQ("\"Some API Error\"",
             GetStringPropertyFromObject(context->Global(), context,
                                         "lastErrorMessage"));
@@ -576,7 +576,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestLastError) {
   EXPECT_NE(first_request_id, last_params().request_id);
 
   bindings_system()->HandleResponse(last_params().request_id, false,
-                                    base::ListValue(), std::string());
+                                    base::Value::List(), std::string());
   EXPECT_EQ("\"Unknown error.\"",
             GetStringPropertyFromObject(context->Global(), context,
                                         "lastErrorMessage"));
@@ -1211,9 +1211,9 @@ TEST_P(ResponseValidationNativeExtensionBindingsSystemUnittest,
 
   // Respond with a valid value. Validation should not fail.
   ASSERT_TRUE(has_last_params());
-  bindings_system()->HandleResponse(
-      last_params().request_id, true,
-      *DeprecatedListValueFromString("['active']"), std::string());
+  bindings_system()->HandleResponse(last_params().request_id, true,
+                                    ListValueFromString("['active']"),
+                                    std::string());
 
   EXPECT_FALSE(validation_failure_method_name);
   EXPECT_FALSE(validation_failure_error);
@@ -1221,9 +1221,9 @@ TEST_P(ResponseValidationNativeExtensionBindingsSystemUnittest,
   // Run the function again, and response with an invalid value.
   RunFunctionOnGlobal(call_idle_query_state, context, 0, nullptr);
   ASSERT_TRUE(has_last_params());
-  bindings_system()->HandleResponse(
-      last_params().request_id, true,
-      *DeprecatedListValueFromString("['bad enum']"), std::string());
+  bindings_system()->HandleResponse(last_params().request_id, true,
+                                    ListValueFromString("['bad enum']"),
+                                    std::string());
 
   // Validation should fail iff response validation is enabled.
   if (GetParam()) {

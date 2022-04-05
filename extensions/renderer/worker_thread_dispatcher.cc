@@ -350,7 +350,7 @@ mojom::EventRouter* WorkerThreadDispatcher::GetEventRouterOnIO() {
 void WorkerThreadDispatcher::OnResponseWorker(int worker_thread_id,
                                               int request_id,
                                               bool succeeded,
-                                              const base::ListValue& response,
+                                              const base::Value::List& response,
                                               const std::string& error) {
   ServiceWorkerData* data = g_data_tls.Pointer()->Get();
   data->bindings_system()->HandleResponse(request_id, succeeded, response,

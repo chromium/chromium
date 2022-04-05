@@ -95,7 +95,7 @@ class APIRequestHandler {
   // Warning: This can run arbitrary JS code, so the |context| may be
   // invalidated after this!
   void CompleteRequest(int request_id,
-                       const base::Value& response_list,
+                       const base::Value::List& response_list,
                        const std::string& error);
   void CompleteRequest(int request_id,
                        const std::vector<v8::Local<v8::Value>>& response,

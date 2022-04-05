@@ -61,7 +61,7 @@ void AppWindowContentsImpl::NativeWindowChanged(
     NativeAppWindow* native_app_window) {
   base::Value dictionary(base::Value::Type::DICTIONARY);
   host_->GetSerializedState(&dictionary);
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(std::move(dictionary));
 
   content::RenderFrameHost* rfh = web_contents_->GetMainFrame();

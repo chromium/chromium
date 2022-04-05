@@ -111,10 +111,7 @@ TEST_F(APIRequestHandlerTest, AddRequestAndCompleteRequestTest) {
               testing::UnorderedElementsAre(request_id));
 
   const char kArguments[] = "['foo',1,{'prop1':'bar'}]";
-  std::unique_ptr<base::ListValue> response_arguments =
-      DeprecatedListValueFromString(kArguments);
-  ASSERT_TRUE(response_arguments);
-  request_handler->CompleteRequest(request_id, *response_arguments,
+  request_handler->CompleteRequest(request_id, ListValueFromString(kArguments),
                                    std::string());
 
   EXPECT_TRUE(did_run_js());
@@ -129,7 +126,7 @@ TEST_F(APIRequestHandlerTest, AddRequestAndCompleteRequestTest) {
       v8::Local<v8::Function>());
   request_id = request_handler->last_sent_request_id();
   EXPECT_NE(-1, request_id);
-  request_handler->CompleteRequest(request_id, base::ListValue(),
+  request_handler->CompleteRequest(request_id, base::Value::List(),
                                    std::string());
 }
 
@@ -151,19 +148,15 @@ TEST_F(APIRequestHandlerTest, InvalidRequestsTest) {
   EXPECT_THAT(request_handler->GetPendingRequestIdsForTesting(),
               testing::UnorderedElementsAre(request_id));
 
-  std::unique_ptr<base::ListValue> response_arguments =
-      DeprecatedListValueFromString("['foo']");
-  ASSERT_TRUE(response_arguments);
-
   // Try running with a non-existent request id.
   int fake_request_id = 42;
-  request_handler->CompleteRequest(fake_request_id, *response_arguments,
-                                   std::string());
+  request_handler->CompleteRequest(
+      fake_request_id, ListValueFromString("['foo']"), std::string());
   EXPECT_FALSE(did_run_js());
 
   // Try running with a request from an invalidated context.
   request_handler->InvalidateContext(context);
-  request_handler->CompleteRequest(request_id, *response_arguments,
+  request_handler->CompleteRequest(request_id, ListValueFromString("['foo']"),
                                    std::string());
   EXPECT_FALSE(did_run_js());
 }
@@ -197,11 +190,8 @@ TEST_F(APIRequestHandlerTest, MultipleRequestsAndContexts) {
   EXPECT_THAT(request_handler->GetPendingRequestIdsForTesting(),
               testing::UnorderedElementsAre(request_a, request_b));
 
-  std::unique_ptr<base::ListValue> response_a =
-      DeprecatedListValueFromString("['response_a:']");
-  ASSERT_TRUE(response_a);
-
-  request_handler->CompleteRequest(request_a, *response_a, std::string());
+  request_handler->CompleteRequest(
+      request_a, ListValueFromString("['response_a:']"), std::string());
   EXPECT_TRUE(did_run_js());
   EXPECT_THAT(request_handler->GetPendingRequestIdsForTesting(),
               testing::UnorderedElementsAre(request_b));
@@ -210,11 +200,8 @@ TEST_F(APIRequestHandlerTest, MultipleRequestsAndContexts) {
       ReplaceSingleQuotes("'response_a:alpha'"),
       GetStringPropertyFromObject(context_a->Global(), context_a, "result"));
 
-  std::unique_ptr<base::ListValue> response_b =
-      DeprecatedListValueFromString("['response_b:']");
-  ASSERT_TRUE(response_b);
-
-  request_handler->CompleteRequest(request_b, *response_b, std::string());
+  request_handler->CompleteRequest(
+      request_b, ListValueFromString("['response_b:']"), std::string());
   EXPECT_TRUE(request_handler->GetPendingRequestIdsForTesting().empty());
 
   EXPECT_EQ(
@@ -242,11 +229,9 @@ TEST_F(APIRequestHandlerTest, CustomCallbackArguments) {
   EXPECT_THAT(request_handler->GetPendingRequestIdsForTesting(),
               testing::UnorderedElementsAre(request_id));
 
-  std::unique_ptr<base::ListValue> response_arguments =
-      DeprecatedListValueFromString("['response', 'arguments']");
-  ASSERT_TRUE(response_arguments);
-  request_handler->CompleteRequest(request_id, *response_arguments,
-                                   std::string());
+  request_handler->CompleteRequest(
+      request_id, ListValueFromString("['response', 'arguments']"),
+      std::string());
 
   EXPECT_TRUE(did_run_js());
   v8::Local<v8::Array> result;
@@ -320,7 +305,7 @@ TEST_F(APIRequestHandlerTest, CustomCallbackWithErrorInExtensionCallback) {
   v8::TryCatch try_catch(isolate());
   {
     TestJSRunner::AllowErrors allow_errors;
-    request_handler.CompleteRequest(request_id, base::ListValue(),
+    request_handler.CompleteRequest(request_id, base::Value::List(),
                                     std::string());
   }
 
@@ -362,11 +347,9 @@ TEST_F(APIRequestHandlerTest, CustomCallbackPromiseBased) {
   EXPECT_THAT(request_handler->GetPendingRequestIdsForTesting(),
               testing::UnorderedElementsAre(request_id));
 
-  std::unique_ptr<base::ListValue> response_arguments =
-      DeprecatedListValueFromString("['response', 'arguments']");
-  ASSERT_TRUE(response_arguments);
-  request_handler->CompleteRequest(request_id, *response_arguments,
-                                   std::string());
+  request_handler->CompleteRequest(
+      request_id, ListValueFromString("['response', 'arguments']"),
+      std::string());
 
   EXPECT_TRUE(did_run_js());
   v8::Local<v8::Array> result;
@@ -412,7 +395,7 @@ TEST_F(APIRequestHandlerTest, CustomCallbackArgumentsWithEmptyCallback) {
   EXPECT_THAT(request_handler->GetPendingRequestIdsForTesting(),
               testing::UnorderedElementsAre(request_id));
 
-  request_handler->CompleteRequest(request_id, base::ListValue(),
+  request_handler->CompleteRequest(request_id, base::Value::List(),
                                    std::string());
 
   EXPECT_TRUE(did_run_js());
@@ -452,8 +435,8 @@ TEST_F(APIRequestHandlerTest, UserGestureTest) {
                                 binding::AsyncResponseType::kCallback,
                                 v8_callback, v8::Local<v8::Function>());
   int request_id = request_handler->last_sent_request_id();
-  request_handler->CompleteRequest(
-      request_id, *DeprecatedListValueFromString("[]"), std::string());
+  request_handler->CompleteRequest(request_id, ListValueFromString("[]"),
+                                   std::string());
 
   ASSERT_TRUE(ran_with_user_gesture);
   EXPECT_FALSE(*ran_with_user_gesture);
@@ -474,8 +457,8 @@ TEST_F(APIRequestHandlerTest, UserGestureTest) {
                                 binding::AsyncResponseType::kCallback,
                                 v8_callback, v8::Local<v8::Function>());
   request_id = request_handler->last_sent_request_id();
-  request_handler->CompleteRequest(
-      request_id, *DeprecatedListValueFromString("[]"), std::string());
+  request_handler->CompleteRequest(request_id, ListValueFromString("[]"),
+                                   std::string());
   ASSERT_TRUE(ran_with_user_gesture);
   EXPECT_TRUE(*ran_with_user_gesture);
 
@@ -523,7 +506,7 @@ TEST_F(APIRequestHandlerTest, SettingLastError) {
                                  binding::AsyncResponseType::kCallback,
                                  callback, v8::Local<v8::Function>());
     int request_id = request_handler.last_sent_request_id();
-    request_handler.CompleteRequest(request_id, base::ListValue(),
+    request_handler.CompleteRequest(request_id, base::Value::List(),
                                     std::string());
     EXPECT_FALSE(logged_error);
     EXPECT_EQ("undefined", get_exposed_error());
@@ -541,7 +524,7 @@ TEST_F(APIRequestHandlerTest, SettingLastError) {
                                  binding::AsyncResponseType::kCallback,
                                  callback, v8::Local<v8::Function>());
     int request_id = request_handler.last_sent_request_id();
-    request_handler.CompleteRequest(request_id, base::ListValue(),
+    request_handler.CompleteRequest(request_id, base::Value::List(),
                                     "some error");
     EXPECT_FALSE(logged_error);
     EXPECT_EQ("\"some error\"", get_exposed_error());
@@ -558,7 +541,7 @@ TEST_F(APIRequestHandlerTest, SettingLastError) {
                                  binding::AsyncResponseType::kCallback,
                                  callback, v8::Local<v8::Function>());
     int request_id = request_handler.last_sent_request_id();
-    request_handler.CompleteRequest(request_id, base::ListValue(),
+    request_handler.CompleteRequest(request_id, base::Value::List(),
                                     "some error");
     ASSERT_TRUE(logged_error);
     EXPECT_EQ("Unchecked runtime.lastError: some error", *logged_error);
@@ -575,7 +558,7 @@ TEST_F(APIRequestHandlerTest, SettingLastError) {
                                  binding::AsyncResponseType::kNone,
                                  v8::Local<v8::Function>(), custom_callback);
     int request_id = request_handler.last_sent_request_id();
-    request_handler.CompleteRequest(request_id, base::ListValue(),
+    request_handler.CompleteRequest(request_id, base::Value::List(),
                                     "some error");
     ASSERT_TRUE(logged_error);
     EXPECT_EQ("Unchecked runtime.lastError: some error", *logged_error);
@@ -590,7 +573,7 @@ TEST_F(APIRequestHandlerTest, SettingLastError) {
         binding::AsyncResponseType::kNone, v8::Local<v8::Function>(),
         v8::Local<v8::Function>());
     int request_id = request_handler.last_sent_request_id();
-    request_handler.CompleteRequest(request_id, base::ListValue(),
+    request_handler.CompleteRequest(request_id, base::Value::List(),
                                     "some error");
     ASSERT_TRUE(logged_error);
     EXPECT_EQ("Unchecked runtime.lastError: some error", *logged_error);
@@ -629,10 +612,7 @@ TEST_F(APIRequestHandlerTest, AddPendingRequestCallback) {
   EXPECT_FALSE(dispatched_request);
 
   const char kArguments[] = "['foo',1,{'prop1':'bar'}]";
-  std::unique_ptr<base::ListValue> response_arguments =
-      DeprecatedListValueFromString(kArguments);
-  ASSERT_TRUE(response_arguments);
-  request_handler.CompleteRequest(request_id, *response_arguments,
+  request_handler.CompleteRequest(request_id, ListValueFromString(kArguments),
                                   std::string());
 
   EXPECT_EQ(ReplaceSingleQuotes(kArguments),
@@ -673,11 +653,8 @@ TEST_F(APIRequestHandlerTest, AddPendingRequestPromise) {
   // because AddPendingRequest() is intended for renderer-side implementations.
   EXPECT_FALSE(dispatched_request);
 
-  std::unique_ptr<base::ListValue> response_arguments =
-      DeprecatedListValueFromString("[{'foo': 'bar'}]");
-  ASSERT_TRUE(response_arguments);
-  request_handler.CompleteRequest(request_id, *response_arguments,
-                                  std::string());
+  request_handler.CompleteRequest(
+      request_id, ListValueFromString("[{'foo': 'bar'}]"), std::string());
 
   ASSERT_EQ(v8::Promise::kFulfilled, promise->State());
   EXPECT_EQ(R"({"foo":"bar"})", V8ToString(promise->Result(), context));
@@ -714,7 +691,7 @@ TEST_F(APIRequestHandlerTest, ThrowExceptionInCallback) {
 
   {
     TestJSRunner::AllowErrors allow_errors;
-    request_handler.CompleteRequest(request_id, base::ListValue(),
+    request_handler.CompleteRequest(request_id, base::Value::List(),
                                     std::string());
   }
   // |outer_try_catch| should not have caught an error. This is important to not
@@ -748,8 +725,8 @@ TEST_F(APIRequestHandlerTest, PromiseBasedRequests_Fulfilled) {
 
   EXPECT_EQ(v8::Promise::kPending, promise->State());
 
-  request_handler->CompleteRequest(
-      request_id, *DeprecatedListValueFromString("['foo']"), std::string());
+  request_handler->CompleteRequest(request_id, ListValueFromString("['foo']"),
+                                   std::string());
 
   ASSERT_EQ(v8::Promise::kFulfilled, promise->State());
   EXPECT_EQ(R"("foo")", V8ToString(promise->Result(), context));
@@ -779,7 +756,7 @@ TEST_F(APIRequestHandlerTest, PromiseBasedRequests_Rejected) {
   EXPECT_EQ(v8::Promise::kPending, promise->State());
 
   constexpr char kError[] = "Something went wrong!";
-  request_handler->CompleteRequest(request_id, base::ListValue(), kError);
+  request_handler->CompleteRequest(request_id, base::Value::List(), kError);
 
   ASSERT_EQ(v8::Promise::kRejected, promise->State());
   v8::Local<v8::Value> result = promise->Result();

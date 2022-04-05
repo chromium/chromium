@@ -451,14 +451,15 @@ IPC_MESSAGE_CONTROL1(ExtensionHostMsg_RequestWorker,
                      extensions::mojom::RequestParams)
 
 // The browser sends this message in response to all service worker extension
-// api calls. The response data (if any) is one of the base::Value subclasses,
-// wrapped as the first element in a ListValue.
-IPC_MESSAGE_CONTROL5(ExtensionMsg_ResponseWorker,
-                     int /* thread_id */,
-                     int /* request_id */,
-                     bool /* success */,
-                     base::ListValue /* response wrapper (see comment above) */,
-                     std::string /* error */)
+// api calls. The response data (if any) is the first element in the Value::List
+// parameter.
+IPC_MESSAGE_CONTROL5(
+    ExtensionMsg_ResponseWorker,
+    int /* thread_id */,
+    int /* request_id */,
+    bool /* success */,
+    base::Value::List /* response wrapper (see comment above) */,
+    std::string /* error */)
 
 // Asks the browser to increment the pending activity count for
 // the worker with version id |service_worker_version_id|.

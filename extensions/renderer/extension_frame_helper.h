@@ -109,7 +109,7 @@ class ExtensionFrameHelper
   void MessageInvoke(const std::string& extension_id,
                      const std::string& module_name,
                      const std::string& function_name,
-                     const base::Value args) override;
+                     base::Value::List args) override;
 
   void ExecuteCode(mojom::ExecuteCodeParamsPtr param,
                    ExecuteCodeCallback callback) override;

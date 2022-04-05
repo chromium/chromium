@@ -481,10 +481,9 @@ void ExtensionFrameHelper::NotifyRenderViewType(mojom::ViewType type) {
 void ExtensionFrameHelper::MessageInvoke(const std::string& extension_id,
                                          const std::string& module_name,
                                          const std::string& function_name,
-                                         const base::Value args) {
+                                         base::Value::List args) {
   extension_dispatcher_->InvokeModuleSystemMethod(
-      render_frame(), extension_id, module_name, function_name,
-      base::Value::AsListValue(args));
+      render_frame(), extension_id, module_name, function_name, args);
 }
 
 void ExtensionFrameHelper::ExecuteCode(mojom::ExecuteCodeParamsPtr param,

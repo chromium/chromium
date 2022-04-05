@@ -142,7 +142,7 @@ void CrashOnException(const v8::TryCatch& trycatch) {
 // ScriptContextSet::ForEach.
 void CallModuleMethod(const std::string& module_name,
                       const std::string& method_name,
-                      const base::ListValue* args,
+                      const base::Value::List* args,
                       ScriptContext* context) {
   v8::HandleScope handle_scope(context->isolate());
   v8::Context::Scope context_scope(context->v8_context());
@@ -151,7 +151,7 @@ void CallModuleMethod(const std::string& module_name,
       content::V8ValueConverter::Create();
 
   std::vector<v8::Local<v8::Value>> arguments;
-  for (const auto& arg : args->GetListDeprecated()) {
+  for (const auto& arg : *args) {
     arguments.push_back(converter->ToV8Value(&arg, context->v8_context()));
   }
 
@@ -781,7 +781,7 @@ void Dispatcher::InvokeModuleSystemMethod(content::RenderFrame* render_frame,
                                           const std::string& extension_id,
                                           const std::string& module_name,
                                           const std::string& function_name,
-                                          const base::ListValue& args) {
+                                          const base::Value::List& args) {
   script_context_set_->ForEach(
       extension_id, render_frame,
       base::BindRepeating(&CallModuleMethod, module_name, function_name,

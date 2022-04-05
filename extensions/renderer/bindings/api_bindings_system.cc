@@ -117,7 +117,7 @@ void APIBindingsSystem::InitializeType(const std::string& type_name) {
 }
 
 void APIBindingsSystem::CompleteRequest(int request_id,
-                                        const base::ListValue& response,
+                                        const base::Value::List& response,
                                         const std::string& error) {
   request_handler_.CompleteRequest(request_id, response, error);
 }

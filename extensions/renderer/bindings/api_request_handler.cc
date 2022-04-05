@@ -29,7 +29,7 @@ constexpr const char kExceptionHandlerKey[] = "exceptionHandler";
 // arguments were used in construction).
 class APIRequestHandler::ArgumentAdapter {
  public:
-  explicit ArgumentAdapter(const base::Value* base_argumements);
+  explicit ArgumentAdapter(const base::Value::List* base_argumements);
   explicit ArgumentAdapter(
       const std::vector<v8::Local<v8::Value>>& v8_arguments);
 
@@ -42,12 +42,12 @@ class APIRequestHandler::ArgumentAdapter {
       v8::Local<v8::Context> context) const;
 
  private:
-  const base::Value* base_arguments_ = nullptr;
+  const base::Value::List* base_arguments_ = nullptr;
   mutable std::vector<v8::Local<v8::Value>> v8_arguments_;
 };
 
 APIRequestHandler::ArgumentAdapter::ArgumentAdapter(
-    const base::Value* base_arguments)
+    const base::Value::List* base_arguments)
     : base_arguments_(base_arguments) {}
 APIRequestHandler::ArgumentAdapter::ArgumentAdapter(
     const std::vector<v8::Local<v8::Value>>& v8_arguments)
@@ -65,8 +65,8 @@ APIRequestHandler::ArgumentAdapter::GetArguments(
         << "GetArguments() should only be called once.";
     std::unique_ptr<content::V8ValueConverter> converter =
         content::V8ValueConverter::Create();
-    v8_arguments_.reserve(base_arguments_->GetListDeprecated().size());
-    for (const auto& arg : base_arguments_->GetListDeprecated())
+    v8_arguments_.reserve(base_arguments_->size());
+    for (const auto& arg : *base_arguments_)
       v8_arguments_.push_back(converter->ToV8Value(&arg, context));
   }
 
@@ -432,7 +432,7 @@ v8::Local<v8::Promise> APIRequestHandler::StartRequest(
 }
 
 void APIRequestHandler::CompleteRequest(int request_id,
-                                        const base::Value& response_args,
+                                        const base::Value::List& response_args,
                                         const std::string& error) {
   CompleteRequestImpl(request_id, ArgumentAdapter(&response_args), error);
 }

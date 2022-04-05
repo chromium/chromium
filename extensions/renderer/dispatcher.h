@@ -183,7 +183,7 @@ class Dispatcher : public content::RenderThreadObserver,
                                 const std::string& extension_id,
                                 const std::string& module_name,
                                 const std::string& function_name,
-                                const base::ListValue& args);
+                                const base::Value::List& args);
 
   void ExecuteDeclarativeScript(content::RenderFrame* render_frame,
                                 int tab_id,

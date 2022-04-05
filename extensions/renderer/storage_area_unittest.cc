@@ -199,10 +199,9 @@ TEST_F(StorageAreaTest, PromiseBasedFunctionsForManifestV3) {
   EXPECT_THAT(last_params().arguments,
               base::test::IsJson(R"(["local", "foo"])"));
 
-  bindings_system()->HandleResponse(
-      last_params().request_id, /*success=*/true,
-      *DeprecatedListValueFromString(R"([{"foo": 42}])"),
-      /*error=*/std::string());
+  bindings_system()->HandleResponse(last_params().request_id, /*success=*/true,
+                                    ListValueFromString(R"([{"foo": 42}])"),
+                                    /*error=*/std::string());
 
   EXPECT_EQ(v8::Promise::kFulfilled, promise->State());
   EXPECT_EQ(R"({"foo":42})", V8ToString(promise->Result(), context));

@@ -110,13 +110,15 @@ class ExtensionFunctionDispatcher::ResponseCallbackWrapper
   }
 
  private:
+  // TODO(https://crbug.com/1312686): Change |results| type to
+  // base::Value::List.
   void OnExtensionFunctionCompleted(
       mojom::LocalFrameHost::RequestCallback callback,
       ExtensionFunction::ResponseType type,
       base::Value results,
       const std::string& error) {
     std::move(callback).Run(type == ExtensionFunction::SUCCEEDED,
-                            std::move(results), error);
+                            std::move(results.GetList()), error);
   }
 
   base::WeakPtr<ExtensionFunctionDispatcher> dispatcher_;
@@ -170,6 +172,8 @@ class ExtensionFunctionDispatcher::WorkerResponseCallbackWrapper
     // Note: we are deleted here!
   }
 
+  // TODO(https://crbug.com/1312686): Change |results| type to
+  // base::Value::List.
   void OnExtensionFunctionCompleted(int request_id,
                                     int worker_thread_id,
                                     ExtensionFunction::ResponseType type,
@@ -181,7 +185,7 @@ class ExtensionFunctionDispatcher::WorkerResponseCallbackWrapper
     }
     render_process_host_->Send(new ExtensionMsg_ResponseWorker(
         worker_thread_id, request_id, type == ExtensionFunction::SUCCEEDED,
-        base::Value::AsListValue(results), error));
+        std::move(results.GetList()), error));
   }
 
   base::WeakPtr<ExtensionFunctionDispatcher> dispatcher_;
@@ -236,8 +240,8 @@ void ExtensionFunctionDispatcher::Dispatch(
     mojom::LocalFrameHost::RequestCallback callback) {
   if (!render_frame_host || IsRequestFromServiceWorker(*params)) {
     constexpr char kBadMessage[] = "LocalFrameHost::Request got a bad message.";
-    std::move(callback).Run(ExtensionFunction::FAILED,
-                            base::Value(base::Value::Type::LIST), kBadMessage);
+    std::move(callback).Run(ExtensionFunction::FAILED, base::Value::List(),
+                            kBadMessage);
     // Kill the renderer if it's an invalid request.
     mojo::ReportBadMessage(kBadMessage);
     return;

@@ -264,10 +264,9 @@ TEST_F(APIBindingsSystemTest, TestInitializationAndCallbacks) {
     ValidateLastRequest("alpha.functionWithCallback", "['foo']");
 
     const char kResponseArgsJson[] = R"(["response"])";
-    std::unique_ptr<base::ListValue> expected_args =
-        DeprecatedListValueFromString(kResponseArgsJson);
     bindings_system()->CompleteRequest(last_request()->request_id,
-                                       *expected_args, std::string());
+                                       ListValueFromString(kResponseArgsJson),
+                                       std::string());
 
     EXPECT_EQ(kResponseArgsJson,
               GetStringPropertyFromObject(context->Global(), context,
@@ -289,7 +288,7 @@ TEST_F(APIBindingsSystemTest, TestInitializationAndCallbacks) {
                         "[{'prop1':'alpha','prop2':42}]");
 
     bindings_system()->CompleteRequest(last_request()->request_id,
-                                       base::ListValue(), std::string());
+                                       base::Value::List(), std::string());
 
     EXPECT_EQ("[]", GetStringPropertyFromObject(context->Global(), context,
                                                 "callbackArguments"));
@@ -432,9 +431,8 @@ TEST_F(APIBindingsSystemTest, TestSetCustomCallback_SuccessWithCallback) {
   // potentially send the response validator to the custom callback adaptor
   // and validate the result returned from the custom callback before sending
   // it on to the original callback.
-  std::unique_ptr<base::ListValue> response =
-      DeprecatedListValueFromString(R"(["alpha","beta"])");
-  bindings_system()->CompleteRequest(last_request()->request_id, *response,
+  bindings_system()->CompleteRequest(last_request()->request_id,
+                                     ListValueFromString(R"(["alpha","beta"])"),
                                      std::string());
 
   EXPECT_EQ(R"(["alpha","beta"])",
@@ -470,10 +468,9 @@ TEST_F(APIBindingsSystemTest, TestSetCustomCallback_SuccessWithPromise) {
   ASSERT_TRUE(GetValueAs(result, &promise));
   EXPECT_EQ(v8::Promise::kPending, promise->State());
 
-  std::unique_ptr<base::ListValue> response =
-      DeprecatedListValueFromString(R"(["gamma","delta"])");
-  bindings_system()->CompleteRequest(last_request()->request_id, *response,
-                                     std::string());
+  bindings_system()->CompleteRequest(
+      last_request()->request_id, ListValueFromString(R"(["gamma","delta"])"),
+      std::string());
 
   EXPECT_EQ(R"(["gamma","delta"])",
             GetStringPropertyFromObject(context->Global(), context, "results"));
@@ -507,11 +504,10 @@ TEST_F(APIBindingsSystemTest, TestSetCustomCallback_ErrorWithCallback) {
   ValidateLastRequest("alpha.functionWithCallback", "['baz']");
   ASSERT_TRUE(console_errors().empty());
 
-  std::unique_ptr<base::ListValue> response =
-      DeprecatedListValueFromString(R"(["alpha", "beta"])");
   TestJSRunner::AllowErrors allow_errors;
-  bindings_system()->CompleteRequest(last_request()->request_id, *response,
-                                     std::string());
+  bindings_system()->CompleteRequest(
+      last_request()->request_id, ListValueFromString(R"(["alpha", "beta"])"),
+      std::string());
 
   // The callback should have never been called and there should now be a
   // console error logged.
@@ -550,11 +546,10 @@ TEST_F(APIBindingsSystemTest, TestSetCustomCallback_ErrorWithPromise) {
   EXPECT_EQ(v8::Promise::kPending, promise->State());
   ASSERT_TRUE(console_errors().empty());
 
-  std::unique_ptr<base::ListValue> response =
-      DeprecatedListValueFromString(R"(["gamma", "delta"])");
   TestJSRunner::AllowErrors allow_errors;
-  bindings_system()->CompleteRequest(last_request()->request_id, *response,
-                                     std::string());
+  bindings_system()->CompleteRequest(
+      last_request()->request_id, ListValueFromString(R"(["gamma", "delta"])"),
+      std::string());
 
   // The promise will remain pending and there should now be a console error
   // logged.
