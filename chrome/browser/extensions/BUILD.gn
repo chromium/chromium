@@ -392,6 +392,8 @@ static_library("extensions") {
     "api/tabs/windows_util.h",
     "api/top_sites/top_sites_api.cc",
     "api/top_sites/top_sites_api.h",
+    "api/web_authentication_proxy/remote_session_state_change.cc",
+    "api/web_authentication_proxy/remote_session_state_change.h",
     "api/web_authentication_proxy/value_conversions.cc",
     "api/web_authentication_proxy/value_conversions.h",
     "api/web_authentication_proxy/web_authentication_proxy_api.cc",

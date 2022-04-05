@@ -915,7 +915,8 @@
   "webAuthenticationProxy": {
     "channel": "trunk",
     "extension_types": ["extension"],
-    "min_manifest_version": 3
+    "min_manifest_version": 3,
+    "platforms": ["win", "linux", "mac"]
   },
   "webNavigation": {
     "channel": "stable",

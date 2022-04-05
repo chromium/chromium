@@ -5,9 +5,12 @@
 #include "extensions/browser/browsertest_util.h"
 
 #include "base/callback.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/service_worker_test_helpers.h"
+#include "extension_registry.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/process_manager.h"
@@ -87,6 +90,20 @@ void ExecuteScriptInServiceWorker(
   service_worker_context->ExecuteScriptForTest(  // IN-TEST
       script, worker_ids[0].version_id,
       base::BindOnce(callback_adapter, std::move(callback)));
+}
+
+void StopServiceWorkerForExtensionGlobalScope(content::BrowserContext* context,
+                                              const std::string& extension_id) {
+  const Extension* extension =
+      ExtensionRegistry::Get(context)->GetExtensionById(
+          extension_id, ExtensionRegistry::ENABLED);
+  ASSERT_TRUE(extension) << "Unknown extension ID.";
+  base::RunLoop run_loop;
+  content::ServiceWorkerContext* service_worker_context =
+      context->GetDefaultStoragePartition()->GetServiceWorkerContext();
+  content::StopServiceWorkerForScope(service_worker_context, extension->url(),
+                                     run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 }  // namespace browsertest_util

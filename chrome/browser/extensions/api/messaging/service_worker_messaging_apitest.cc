@@ -7,11 +7,10 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/version_info/version_info.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/service_worker_test_helpers.h"
 #include "extensions/browser/api/messaging/message_service.h"
+#include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
@@ -82,18 +81,11 @@ class ServiceWorkerMessagingTest : public ExtensionApiTest {
   }
 
  protected:
-  // TODO(lazyboy): Move this to a common place so it can be shared with other
-  // tests.
   void StopServiceWorker(const Extension& extension) {
-    content::StoragePartition* storage_partition =
-        browser()->profile()->GetDefaultStoragePartition();
-    content::ServiceWorkerContext* context =
-        storage_partition->GetServiceWorkerContext();
-    base::RunLoop run_loop;
-    // The service worker is registered at the root scope.
-    content::StopServiceWorkerForScope(context, extension.url(),
-                                       run_loop.QuitClosure());
-    run_loop.Run();
+    // TODO(lazyboy): Ideally we'd want to test worker shutdown on idle, do that
+    // once //content API allows to override test timeouts for Service Workers.
+    browsertest_util::StopServiceWorkerForExtensionGlobalScope(
+        browser()->profile(), extension.id());
   }
 
   extensions::ScopedTestNativeMessagingHost test_host_;

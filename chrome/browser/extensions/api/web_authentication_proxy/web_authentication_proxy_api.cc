@@ -9,6 +9,55 @@
 
 namespace extensions {
 
+BrowserContextKeyedAPIFactory<WebAuthenticationProxyAPI>*
+WebAuthenticationProxyAPI::GetFactoryInstance() {
+  static base::NoDestructor<
+      BrowserContextKeyedAPIFactory<WebAuthenticationProxyAPI>>
+      instance;
+  return instance.get();
+}
+
+WebAuthenticationProxyAPI::WebAuthenticationProxyAPI(
+    content::BrowserContext* context)
+    : context_(context) {
+  EventRouter::Get(context_)->RegisterObserver(
+      this,
+      api::web_authentication_proxy::OnRemoteSessionStateChange::kEventName);
+}
+
+WebAuthenticationProxyAPI::~WebAuthenticationProxyAPI() = default;
+
+void WebAuthenticationProxyAPI::Shutdown() {
+  EventRouter::Get(context_)->UnregisterObserver(this);
+}
+
+void WebAuthenticationProxyAPI::OnListenerAdded(
+    const EventListenerInfo& details) {
+  DCHECK_EQ(
+      details.event_name,
+      api::web_authentication_proxy::OnRemoteSessionStateChange::kEventName);
+  // This may be called multiple times for the same extension, but we only need
+  // to instantiate a notifier once.
+  session_state_change_notifiers_.try_emplace(
+      details.extension_id, EventRouter::Get(context_), details.extension_id);
+}
+
+void WebAuthenticationProxyAPI::OnListenerRemoved(
+    const EventListenerInfo& details) {
+  DCHECK_EQ(
+      details.event_name,
+      api::web_authentication_proxy::OnRemoteSessionStateChange::kEventName);
+  if (EventRouter::Get(context_)->ExtensionHasEventListener(
+          details.extension_id, api::web_authentication_proxy::
+                                    OnRemoteSessionStateChange::kEventName)) {
+    // This wasn't necessarily the last remaining listener for this extension.
+    return;
+  }
+  auto it = session_state_change_notifiers_.find(details.extension_id);
+  DCHECK(it != session_state_change_notifiers_.end());
+  session_state_change_notifiers_.erase(it);
+}
+
 WebAuthenticationProxyAttachFunction::WebAuthenticationProxyAttachFunction() =
     default;
 WebAuthenticationProxyAttachFunction::~WebAuthenticationProxyAttachFunction() =

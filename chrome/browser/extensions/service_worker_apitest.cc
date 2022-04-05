@@ -62,6 +62,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/service_worker_test_helpers.h"
+#include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 #include "extensions/browser/extension_host.h"
@@ -304,7 +305,6 @@ class ServiceWorkerBasedBackgroundTest : public ServiceWorkerTest {
     return false;
   }
 };
-
 
 class ServiceWorkerBasedBackgroundTestWithNotification
     : public ServiceWorkerBasedBackgroundTest {
@@ -1689,8 +1689,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, WebAccessibleResourcesIframeSrc) {
   // webpage.html will create an iframe pointing to a resource from |extension|.
   // Expect the resource to be served by the extension.
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents, base::StringPrintf("window.testIframe('%s', 'iframe.html')",
-                                       extension->id().c_str()),
+      web_contents,
+      base::StringPrintf("window.testIframe('%s', 'iframe.html')",
+                         extension->id().c_str()),
       &result));
   EXPECT_EQ("FROM_EXTENSION_RESOURCE", result);
 
@@ -1704,8 +1705,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, WebAccessibleResourcesIframeSrc) {
   // |extension| as before. But this time, the resource should be be served
   // from the Service Worker.
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents, base::StringPrintf("window.testIframe('%s', 'iframe.html')",
-                                       extension->id().c_str()),
+      web_contents,
+      base::StringPrintf("window.testIframe('%s', 'iframe.html')",
+                         extension->id().c_str()),
       &result));
   EXPECT_EQ("FROM_SW_RESOURCE", result);
 
@@ -2317,20 +2319,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   absl::optional<WorkerId> worker_id =
       GetUniqueRunningWorkerId(extension->id());
   ASSERT_TRUE(worker_id);
-  {
-    // Shutdown the worker.
-    // TODO(lazyboy): Ideally we'd want to test worker shutdown on idle, do that
-    // once //content API allows to override test timeouts for Service Workers.
-    base::RunLoop run_loop;
-    content::StoragePartition* storage_partition =
-        browser()->profile()->GetDefaultStoragePartition();
-    GURL scope = extension->url();
-    content::StopServiceWorkerForScope(
-        storage_partition->GetServiceWorkerContext(),
-        // The service worker is registered at the top level scope.
-        extension->url(), run_loop.QuitClosure());
-    run_loop.Run();
-  }
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(
+      browser()->profile(), extension->id());
 
   EXPECT_FALSE(ProcessManager::Get(profile())->HasServiceWorker(*worker_id));
 }

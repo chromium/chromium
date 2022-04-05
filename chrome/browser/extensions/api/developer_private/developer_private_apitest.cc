@@ -12,11 +12,11 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/service_worker_test_helpers.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/browser/browsertest_util.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/test/result_catcher.h"
 
@@ -152,16 +152,8 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   ASSERT_TRUE(result_catcher.GetNextResult());
 
   // Stop the service worker.
-  {
-    base::RunLoop run_loop;
-    content::StoragePartition* storage_partition =
-        profile()->GetDefaultStoragePartition();
-    content::ServiceWorkerContext* context =
-        storage_partition->GetServiceWorkerContext();
-    content::StopServiceWorkerForScope(context, extension->url(),
-                                       run_loop.QuitClosure());
-    run_loop.Run();
-  }
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                             extension->id());
 
   // Get the info about the extension, including the inspectable views.
   auto get_info_function =

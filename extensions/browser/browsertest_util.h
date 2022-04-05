@@ -57,6 +57,12 @@ void ExecuteScriptInServiceWorker(
     const std::string& script,
     base::OnceCallback<void(base::Value)> callback);
 
+// Synchronously stops the service worker registered by the extension with the
+// given `extension_id` at global scope. The extension must be installed and
+// enabled.
+void StopServiceWorkerForExtensionGlobalScope(content::BrowserContext* context,
+                                              const std::string& extension_id);
+
 }  // namespace browsertest_util
 }  // namespace extensions
 

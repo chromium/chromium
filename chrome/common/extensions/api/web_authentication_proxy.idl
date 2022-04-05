@@ -44,6 +44,25 @@ namespace webAuthenticationProxy {
   // request. Regular processing of WebAuthn requests in the local Chrome
   // instance is disabled when these events are subscribed to.
   interface Events {
+    // A native application associated with this extension can cause this
+    // event to be fired by writing to a file with a name equal to the
+    // extension's ID in a directory named
+    // `WebAuthenticationProxyRemoteSessionStateChange` inside the [default
+    // user data
+    // directory](https://chromium.googlesource.com/chromium/src/+/master/docs/user_data_dir.md#default-location).
+    //
+    // The contents of the file should be empty. I.e., it is not necessary to
+    // change the contents of the file in order to trigger this event.
+    //
+    // The native host application may use this event mechanism to signal a
+    // possible remote session state change (i.e. from detached to attached, or
+    // vice versa) while the extension service worker is possibly suspended. In
+    // the handler for this event, the extension can call the `attach()` or
+    // `detach()` API methods accordingly.
+    //
+    // The event listener must be registered synchronously at load time.
+    static void onRemoteSessionStateChange();
+
     // Fires when a WebAuthn navigator.credentials.create() call occurs. The
     // extension must supply a response by calling
     // completeCreateRequest() with the given requestId.
@@ -153,6 +172,10 @@ namespace webAuthenticationProxy {
     // session has ended in order to resume regular WebAuthn request
     // processing. Extensions automatically become detached if they are
     // unloaded.
+    //
+    // Refer to the `onRemoteSessionStateChange` event for signaling a change
+    // of remote session attachment from a native application to to the
+    // (possibly suspended) extension.
     [supportsPromises] static void attach(ErrorCallback callback);
 
     // Removes this extension from being the active Web Authentication API
@@ -161,6 +184,10 @@ namespace webAuthenticationProxy {
     // This method is typically called when the extension detects that a remote
     // desktop session was terminated. Once this method returns without error,
     // regular processing of WebAuthn requests continues.
+    //
+    // Refer to the `onRemoteSessionStateChange` event for signaling a change
+    // of remote session attachment from a native application to to the
+    // (possibly suspended) extension.
     [supportsPromises] static void detach(ErrorCallback callback);
   };
 };

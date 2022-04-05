@@ -2,13 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/threading/thread_restrictions.h"
+#include "chrome/browser/extensions/api/web_authentication_proxy/remote_session_state_change.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/browsertest_util.h"
+#include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "net/dns/mock_host_resolver.h"
@@ -417,6 +423,30 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, GetAssertionCancel) {
   ASSERT_TRUE(request_listener.WaitUntilSatisfied());
   request_listener.Reply("");
 
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest,
+                       RemoteSessionStateChange) {
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII(
+                        "web_authentication_proxy/remote_session_state_change"),
+                    {.wait_for_registration_stored = true});
+  ASSERT_TRUE(extension) << message_;
+
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(
+      browser()->profile(), extension->id());
+
+  // Write to the magic file to trigger the event.
+  ResultCatcher result_catcher;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::FilePath dir;
+    ASSERT_TRUE(WebAuthenticationProxyRemoteSessionStateChangeNotifier::
+                    GetSessionStateChangeDir(&dir));
+    ASSERT_TRUE(base::CreateDirectory(dir));
+    ASSERT_EQ(base::WriteFile(dir.AppendASCII(extension->id()), nullptr, 0), 0);
+  }
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
