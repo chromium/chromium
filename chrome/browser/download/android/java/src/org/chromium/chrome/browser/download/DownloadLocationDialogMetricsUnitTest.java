@@ -13,13 +13,13 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.download.DownloadLocationDialogMetrics.DownloadLocationSuggestionEvent;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 /**
  * Unit test for {@link DownloadLocationDialogMetrics}.
  */
-@RunWith(LocalRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
 public class DownloadLocationDialogMetricsUnitTest {
     private static final String EVENT_METRIC_NAME =

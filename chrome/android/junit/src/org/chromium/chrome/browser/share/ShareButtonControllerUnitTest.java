@@ -27,9 +27,11 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -47,11 +49,10 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.components.ukm.UkmRecorderJni;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** Unit tests for {@link ShareButtonController}. */
-@RunWith(LocalRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public final class ShareButtonControllerUnitTest {
     private static final int WIDTH_DELTA = 50;
@@ -61,11 +62,11 @@ public final class ShareButtonControllerUnitTest {
 
     @Rule
     public JniMocker mJniMocker = new JniMocker();
-    @Mock
-    private UkmRecorder.Natives mUkmRecorderJniMock;
+
+    private Context mContext;
 
     @Mock
-    private Context mContext;
+    private UkmRecorder.Natives mUkmRecorderJniMock;
     @Mock
     private Resources mResources;
     @Mock
@@ -93,11 +94,11 @@ public final class ShareButtonControllerUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mContext = RuntimeEnvironment.application;
         mJniMocker.mock(UkmRecorderJni.TEST_HOOKS, mUkmRecorderJniMock);
 
         doReturn(mTab).when(mTabProvider).get();
         doReturn(mContext).when(mTab).getContext();
-        doReturn(mResources).when(mContext).getResources();
         mConfiguration.screenWidthDp = ShareButtonController.MIN_WIDTH_DP + WIDTH_DELTA;
         doReturn(mConfiguration).when(mResources).getConfiguration();
 

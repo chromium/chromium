@@ -23,14 +23,14 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 /**
  * Tests the {@link RelatedSearchesStamp} class.
  */
-@RunWith(LocalRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {RelatedSearchesStampTest.ShadowChromeFeatureList.class,
                 RelatedSearchesStampTest.ShadowContextualSearchFieldTrial.class})
 public class RelatedSearchesStampTest {

@@ -17,15 +17,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchInternalStateController.InternalState;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 /**
  * Tests for the {@link ContextualSearchInternalStateController} class.
  */
-@RunWith(LocalRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 public class ContextualSearchInternalStateTest {
     private ContextualSearchInternalStateController mInternalStateController;
 
