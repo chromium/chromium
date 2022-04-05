@@ -301,7 +301,6 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=UseSkiaRenderer,Vulkan",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -340,7 +339,6 @@
           "--override-timeout=30",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -667,7 +665,6 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=UseSkiaRenderer,Vulkan",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -706,7 +703,6 @@
           "--override-timeout=30",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -1033,7 +1029,6 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=UseSkiaRenderer,Vulkan",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -1072,7 +1067,6 @@
           "--override-timeout=30",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -1399,7 +1393,6 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=UseSkiaRenderer,Vulkan",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -1438,7 +1431,6 @@
           "--override-timeout=30",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -1789,7 +1781,6 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -1831,7 +1822,6 @@
           "--override-timeout=30",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -2161,7 +2151,6 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -2201,7 +2190,6 @@
           "--override-timeout=30",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -2561,7 +2549,6 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -2604,7 +2591,6 @@
           "--override-timeout=30",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -2993,7 +2979,6 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -3035,7 +3020,6 @@
           "--override-timeout=30",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -3365,7 +3349,6 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -3405,7 +3388,6 @@
           "--override-timeout=30",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -3702,7 +3684,6 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -4028,7 +4009,6 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -4067,7 +4047,6 @@
           "--override-timeout=30",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -4386,7 +4365,6 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -4425,7 +4403,6 @@
           "--override-timeout=30",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -4744,7 +4721,6 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -4783,7 +4759,6 @@
           "--override-timeout=30",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -5102,7 +5077,6 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -5141,7 +5115,6 @@
           "--override-timeout=30",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -5460,7 +5433,6 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -5499,7 +5471,6 @@
           "--override-timeout=30",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -5816,7 +5787,6 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -5855,7 +5825,6 @@
           "--override-timeout=30",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -6172,7 +6141,6 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -6211,7 +6179,6 @@
           "--override-timeout=30",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -6528,7 +6495,6 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
@@ -6567,7 +6533,6 @@
           "--override-timeout=30",
           "--retry-limit=3"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],

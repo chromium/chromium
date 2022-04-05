@@ -2737,9 +2737,6 @@
         'swarming': {
           'shards': 4,
         },
-        # TODO(crbug.com/1297379): Remove this once we actually start running
-        # tests instead of skipping all of them.
-        'experiment_percentage': 100,
       },
     },
 
@@ -2761,9 +2758,6 @@
           'shards': 4,
         },
         'telemetry_test_name': 'webgpu_cts',
-        # TODO(crbug.com/1297379): Remove this once we actually start running
-        # tests instead of skipping all of them.
-        'experiment_percentage': 100,
       },
     },
 
@@ -2785,9 +2779,6 @@
           'shards': 4,
         },
         'telemetry_test_name': 'webgpu_cts',
-        # TODO(crbug.com/1297379): Remove this once we actually start running
-        # tests instead of skipping all of them.
-        'experiment_percentage': 100,
       },
     },
 
