@@ -318,8 +318,11 @@ void ScriptingPermissionsModifier::GrantWithheldHostPermissions() {
 }
 
 void ScriptingPermissionsModifier::WithholdHostPermissions() {
+  std::unique_ptr<const PermissionSet> revokable_permissions =
+      GetRevokablePermissions();
+  CHECK(revokable_permissions);  // For https://crbug.com/1307911
   PermissionsUpdater(browser_context_)
-      .RevokeRuntimePermissions(*extension_, *GetRevokablePermissions(),
+      .RevokeRuntimePermissions(*extension_, *revokable_permissions,
                                 base::DoNothing());
 }
 
