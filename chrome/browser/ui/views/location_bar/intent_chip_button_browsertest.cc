@@ -140,8 +140,16 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
   EXPECT_FALSE(intent_chip_button->GetVisible());
 }
 
+// TODO(crbug.com/1313274): Fix test flakiness on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_ShowsIntentPickerWhenMultipleApps \
+  DISABLED_ShowsIntentPickerWhenMultipleApps
+#else
+#define MAYBE_ShowsIntentPickerWhenMultipleApps \
+  ShowsIntentPickerWhenMultipleApps
+#endif
 IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
-                       ShowsIntentPickerWhenMultipleApps) {
+                       MAYBE_ShowsIntentPickerWhenMultipleApps) {
   if (!HasRequiredAshVersionForLacros())
     return;
 
