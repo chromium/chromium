@@ -48,15 +48,13 @@ constexpr UMAFeature kQueryTilesUMAFeatures[2] = {
                .bucket_count = 7,
                .tensor_length = 1,
                .aggregation = proto::Aggregation::COUNT,
-               .enum_ids_size = 0,
-               .accepted_enum_ids = {}},
+               .enum_ids_size = 0},
     UMAFeature{.signal_type = proto::SignalType::USER_ACTION,
                .name = "Search.QueryTiles.NTP.Tile.Clicked",
                .bucket_count = 7,
                .tensor_length = 1,
                .aggregation = proto::Aggregation::COUNT,
-               .enum_ids_size = 0,
-               .accepted_enum_ids = {}}};
+               .enum_ids_size = 0}};
 
 void AddUmaFeature(proto::SegmentationModelMetadata* metadata,
                    const UMAFeature features[],
