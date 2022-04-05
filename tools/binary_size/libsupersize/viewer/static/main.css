@@ -277,7 +277,6 @@ ul {
 .metadata {
   margin: 0 auto;
   max-width: 1200px;
-  user-select: none;
 }
 
 #metadata-view:not(.active) {
