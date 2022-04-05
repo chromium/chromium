@@ -792,12 +792,6 @@ const char kEnableRemovingAllThirdPartyCookiesDescription[] =
     "Enables UI on chrome://settings/siteData to remove all third-party "
     "cookies and site data.";
 
-const char kEnableBrowsingDataLifetimeManagerName[] =
-    "Enables the BrowsingDataLifetimeManager service to run.";
-const char kEnableBrowsingDataLifetimeManagerDescription[] =
-    "Enables the BrowsingDataLifetimeManager service to run and periodically "
-    "delete browsing data as specified by the BrowsingDataLifetime policy.";
-
 const char kColorProviderRedirectionForThemeProviderName[] =
     "Color Provider Redirection For Theme Provider";
 const char kColorProviderRedirectionForThemeProviderDescription[] =
