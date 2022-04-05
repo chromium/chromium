@@ -18,6 +18,7 @@
 #include "chrome/browser/feature_guide/notifications/feature_notification_guide_service.h"
 #include "chrome/browser/flags/android/cached_feature_flags.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/segmentation_platform/default_model/query_tiles_model.h"
 #include "chrome/browser/ui/android/start_surface/start_surface_android.h"
 #include "components/query_tiles/switches.h"
 #endif
@@ -41,6 +42,7 @@ constexpr int kChromeStartDefaultUnknownTTLDays = 7;
 
 constexpr int kChromeLowUserEngagementSelectionTTLDays = 30;
 
+constexpr char kQueryTilesDefaultModelEnabledParam[] = "enable_default_model";
 // See
 // https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/query_tiles/QueryTileUtils.java
 const char kNumDaysKeepShowingQueryTiles[] =
@@ -107,6 +109,15 @@ std::unique_ptr<Config> GetConfigForChromeStartAndroid() {
   return config;
 }
 
+std::unique_ptr<ModelProvider> GetQueryTilesDefaultModel() {
+  if (!base::GetFieldTrialParamByFeatureAsBool(
+          query_tiles::features::kQueryTilesSegmentation,
+          kQueryTilesDefaultModelEnabledParam, false)) {
+    return nullptr;
+  }
+  return std::make_unique<QueryTilesModel>();
+}
+
 std::unique_ptr<Config> GetConfigForQueryTiles() {
   auto config = std::make_unique<Config>();
   config->segmentation_key = kQueryTilesSegmentationKey;
@@ -169,6 +180,17 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
   }
 #endif
   return configs;
+}
+
+std::unique_ptr<ModelProvider> GetSegmentationDefaultModelProvider(
+    optimization_guide::proto::OptimizationTarget target) {
+#if BUILDFLAG(IS_ANDROID)
+  if (target ==
+      optimization_guide::proto::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES) {
+    return GetQueryTilesDefaultModel();
+  }
+#endif
+  return nullptr;
 }
 
 }  // namespace segmentation_platform
