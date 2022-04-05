@@ -596,6 +596,9 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
   // Big title text to be displayed prominently on an answer card.
   std::vector<SearchResultTextItem> big_title_vector;
 
+  // Superscript text for the big title on an answer card.
+  std::vector<SearchResultTextItem> big_title_superscript_vector;
+
   // Text for keyboard shortcuts displayed below the title. Only used for
   // keyboard shortcut results.
   std::vector<SearchResultTextItem> keyboard_shortcut_vector;

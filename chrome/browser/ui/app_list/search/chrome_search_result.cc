@@ -96,6 +96,12 @@ void ChromeSearchResult::SetBigTitleTextVector(const TextVector& text_vector) {
   SetSearchResultMetadata();
 }
 
+void ChromeSearchResult::SetBigTitleSuperscriptTextVector(
+    const TextVector& text_vector) {
+  metadata_->big_title_superscript_vector = text_vector;
+  SetSearchResultMetadata();
+}
+
 void ChromeSearchResult::SetKeyboardShortcutTextVector(
     const TextVector& text_vector) {
   metadata_->keyboard_shortcut_vector = text_vector;

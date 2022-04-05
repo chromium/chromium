@@ -90,6 +90,12 @@ void SearchResult::SetBigTitleTextVector(const TextVector& vector) {
     observer.OnMetadataChanged();
 }
 
+void SearchResult::SetBigTitleSuperscriptTextVector(const TextVector& vector) {
+  metadata_->big_title_superscript_vector = vector;
+  for (auto& observer : observers_)
+    observer.OnMetadataChanged();
+}
+
 void SearchResult::SetKeyboardShortcutTextVector(const TextVector& vector) {
   metadata_->keyboard_shortcut_vector = vector;
   for (auto& observer : observers_)
