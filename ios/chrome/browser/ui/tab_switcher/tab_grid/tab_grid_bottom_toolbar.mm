@@ -90,7 +90,6 @@
   // Reset the title of UIBarButtonItem to update the title in a11y modal panel.
   _newTabButtonItem.title = _largeNewTabButton.accessibilityLabel;
   [self updateLayout];
-  self.hidden = !self.subviews.count;
 }
 
 - (void)setMode:(TabGridMode)mode {
@@ -100,7 +99,6 @@
   // Reset selected tabs count when mode changes.
   self.selectedTabsCount = 0;
   [self updateLayout];
-  self.hidden = !self.subviews.count;
 }
 
 - (void)setSelectedTabsCount:(int)count {
@@ -334,6 +332,7 @@
     [NSLayoutConstraint deactivateConstraints:_floatingConstraints];
     [_toolbar removeFromSuperview];
     [_largeNewTabButton removeFromSuperview];
+    self.hidden = !self.subviews.count;
     return;
   }
   _largeNewTabButtonBottomAnchor.constant =
@@ -347,6 +346,7 @@
     ]];
     [self addSubview:_toolbar];
     [NSLayoutConstraint activateConstraints:_compactConstraints];
+    self.hidden = !self.subviews.count;
     return;
   }
   UIBarButtonItem* leadingButton = _closeAllOrUndoButton;
@@ -385,6 +385,7 @@
       [NSLayoutConstraint activateConstraints:_floatingConstraints];
     }
   }
+  self.hidden = !self.subviews.count;
 }
 
 // Returns YES if the |_largeNewTabButton| is showing on the toolbar.

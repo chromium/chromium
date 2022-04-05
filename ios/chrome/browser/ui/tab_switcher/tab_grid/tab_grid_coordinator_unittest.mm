@@ -282,13 +282,15 @@ TEST_F(TabGridCoordinatorTest, TabViewControllerAfterTabSwitcher) {
                            completion:nil];
   EXPECT_EQ(normal_tab_view_controller_, coordinator_.activeViewController);
 
-  // Showing the TabSwitcher again will make it active.
-  [coordinator_ showTabGrid];
-  bool tab_switcher_active = base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForUIElementTimeout, ^bool {
-        return GetBaseViewController() == coordinator_.activeViewController;
-      });
-  EXPECT_TRUE(tab_switcher_active);
+  if (!regular_thumbStrip_supporting_.thumbStripEnabled) {
+    // Showing the TabSwitcher again will make it active.
+    [coordinator_ showTabGrid];
+    bool tab_switcher_active = base::test::ios::WaitUntilConditionOrTimeout(
+        base::test::ios::kWaitForUIElementTimeout, ^bool {
+          return GetBaseViewController() == coordinator_.activeViewController;
+        });
+    EXPECT_TRUE(tab_switcher_active);
+  }
 }
 
 // Tests swapping between two TabViewControllers.

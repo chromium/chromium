@@ -1588,11 +1588,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     if (gridViewController) {
       self.plusSignButton.alpha =
           1 - gridViewController.fractionVisibleOfLastItem;
-      if (gridViewController.fractionVisibleOfLastItem >= 0.999) {
-        // Don't show the bottom new tab button because the plus sign cell is
-        // visible.
-        return;
-      }
     }
   }
   [self.bottomToolbar show];
