@@ -925,7 +925,6 @@ const FeatureEntry::Choice kMemlogSamplingRateChoices[] = {
      heap_profiling::kMemlogSamplingRate,
      heap_profiling::kMemlogSamplingRate5MB},
 };
-
 const FeatureEntry::FeatureParam kPageContentAnnotationsContentParams[] = {
     {"annotate_title_instead_of_page_content", "false"},
     {"extract_related_searches", "true"},
@@ -946,18 +945,35 @@ const FeatureEntry::FeatureVariation kPageContentAnnotationsVariations[] = {
      std::size(kPageContentAnnotationsTitleParams), nullptr},
 };
 const FeatureEntry::FeatureParam
+    kPageEntitiesPageContentAnnotationsAllLocalesParams[] = {
+        {"supported_locales", "*"},
+};
+const FeatureEntry::FeatureVariation
+    kPageEntitiesPageContentAnnotationsVariations[] = {
+        {"All Supported Locales",
+         kPageEntitiesPageContentAnnotationsAllLocalesParams,
+         std::size(kPageEntitiesPageContentAnnotationsAllLocalesParams),
+         nullptr},
+};
+const FeatureEntry::FeatureParam
     kJourneysSortClustersWithinBatchForQueryParams[] = {
+        {"JourneysLocaleOrLanguageAllowlist", "*"},
         {"JourneysSortClustersWithinBatchForQuery", "true"},
 };
 const FeatureEntry::FeatureParam kJourneysDropHiddenVisitsParams[] = {
+    {"JourneysLocaleOrLanguageAllowlist", "*"},
     {"drop_hidden_visits", "true"},
 };
 const FeatureEntry::FeatureParam kJourneysShowAllVisitsParams[] = {
+    {"JourneysLocaleOrLanguageAllowlist", "*"},
     // To show all visits, set the number of visits above the fold to a very
     // high number. We drop the rest above this very high number because we
     // definitely don't want to surface a Show More UI after that number.
     {"JourneysNumVisitsToAlwaysShowAboveTheFold", "200"},
     {"drop_hidden_visits", "true"},
+};
+const FeatureEntry::FeatureParam kJourneysAllLocalesParams[] = {
+    {"JourneysLocaleOrLanguageAllowlist", "*"},
 };
 const FeatureEntry::FeatureVariation kJourneysVariations[] = {
     {"Sort Clusters Within Batch for Query",
@@ -967,6 +983,8 @@ const FeatureEntry::FeatureVariation kJourneysVariations[] = {
      std::size(kJourneysDropHiddenVisitsParams), nullptr},
     {"No 'Show More' - Show all visits", kJourneysShowAllVisitsParams,
      std::size(kJourneysShowAllVisitsParams), nullptr},
+    {"All Supported Locales", kJourneysAllLocalesParams,
+     std::size(kJourneysAllLocalesParams), nullptr},
 };
 const FeatureEntry::FeatureParam
     kJourneysOnDeviceClusteringLabelingNoContentClusteringParams[] = {
@@ -5068,8 +5086,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPageEntitiesPageContentAnnotationsName,
      flag_descriptions::kPageEntitiesPageContentAnnotationsDescription,
      kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         optimization_guide::features::kPageEntitiesPageContentAnnotations)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         optimization_guide::features::kPageEntitiesPageContentAnnotations,
+         kPageEntitiesPageContentAnnotationsVariations,
+         "PageEntitiesPageContentAnnotations")},
 
     {"page-visibility-page-content-annotations",
      flag_descriptions::kPageVisibilityPageContentAnnotationsName,
