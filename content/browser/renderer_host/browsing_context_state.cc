@@ -31,17 +31,36 @@ BrowsingContextStateImplementationType GetBrowsingContextMode() {
 
 namespace content {
 
+using perfetto::protos::pbzero::ChromeTrackEvent;
+
 BrowsingContextState::BrowsingContextState(
     blink::mojom::FrameReplicationStatePtr replication_state,
     raw_ptr<RenderFrameHostImpl> parent,
     absl::optional<BrowsingInstanceId> browsing_instance_id)
     : replication_state_(std::move(replication_state)),
       parent_(parent),
-      browsing_instance_id_(browsing_instance_id) {}
+      browsing_instance_id_(browsing_instance_id) {
+  TRACE_EVENT_BEGIN("navigation", "BrowsingContextState",
+                    perfetto::Track::FromPointer(this),
+                    "browsing_context_state_when_created", this);
+}
 
-BrowsingContextState::~BrowsingContextState() = default;
+BrowsingContextState::~BrowsingContextState() {
+  TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this));
+}
 
 RenderFrameProxyHost* BrowsingContextState::GetRenderFrameProxyHost(
+    SiteInstanceGroup* site_instance_group) const {
+  TRACE_EVENT_BEGIN("navigation",
+                    "BrowsingContextState::GetRenderFrameProxyHost",
+                    ChromeTrackEvent::kBrowsingContextState, this,
+                    ChromeTrackEvent::kSiteInstanceGroup, site_instance_group);
+  auto* proxy = GetRenderFrameProxyHostImpl(site_instance_group);
+  TRACE_EVENT_END("navigation", ChromeTrackEvent::kRenderFrameProxyHost, proxy);
+  return proxy;
+}
+
+RenderFrameProxyHost* BrowsingContextState::GetRenderFrameProxyHostImpl(
     SiteInstanceGroup* site_instance_group) const {
   if (features::GetBrowsingContextMode() ==
       features::BrowsingContextStateImplementationType::
@@ -66,8 +85,9 @@ RenderFrameProxyHost* BrowsingContextState::GetRenderFrameProxyHost(
              site_instance_group->browsing_instance_id());
   }
   auto it = proxy_hosts_.find(site_instance_group->GetId());
-  if (it != proxy_hosts_.end())
+  if (it != proxy_hosts_.end()) {
     return it->second.get();
+  }
   return nullptr;
 }
 
@@ -80,6 +100,9 @@ void BrowsingContextState::DeleteRenderFrameProxyHost(
     CHECK_EQ(browsing_instance_id_.value(),
              site_instance_group->browsing_instance_id());
   }
+  TRACE_EVENT("navigation", "BrowsingContextState::DeleteRenderFrameProxyHost",
+              ChromeTrackEvent::kBrowsingContextState, this,
+              ChromeTrackEvent::kSiteInstanceGroup, site_instance_group);
   site_instance_group->RemoveObserver(this);
   proxy_hosts_.erase(site_instance_group->GetId());
 }
@@ -88,6 +111,14 @@ RenderFrameProxyHost* BrowsingContextState::CreateRenderFrameProxyHost(
     SiteInstance* site_instance,
     const scoped_refptr<RenderViewHostImpl>& rvh,
     FrameTreeNode* frame_tree_node) {
+  TRACE_EVENT_BEGIN(
+      "navigation", "BrowsingContextState::CreateRenderFrameProxyHost",
+      ChromeTrackEvent::kBrowsingContextState, this,
+      ChromeTrackEvent::kSiteInstanceGroup,
+      static_cast<SiteInstanceImpl*>(site_instance)->group(),
+      ChromeTrackEvent::kRenderViewHost, rvh ? rvh.get() : nullptr,
+      ChromeTrackEvent::kFrameTreeNodeInfo, frame_tree_node);
+
   if (features::GetBrowsingContextMode() ==
       features::BrowsingContextStateImplementationType::
           kLegacyOneToOneWithFrameTreeNode) {
@@ -112,10 +143,8 @@ RenderFrameProxyHost* BrowsingContextState::CreateRenderFrameProxyHost(
   proxy_hosts_[site_instance_group_id] = base::WrapUnique(proxy_host);
   static_cast<SiteInstanceImpl*>(site_instance)->group()->AddObserver(this);
 
-  TRACE_EVENT_INSTANT(
-      "navigation", "BrowsingContextState::CreateRenderFrameProxyHost",
-      perfetto::protos::pbzero::ChromeTrackEvent::kRenderFrameProxyHost,
-      *proxy_host);
+  TRACE_EVENT_END("navigation", ChromeTrackEvent::kRenderFrameProxyHost,
+                  proxy_host);
   return proxy_host;
 }
 
@@ -285,6 +314,11 @@ void BrowsingContextState::ActiveFrameCountIsZero(
   // don't need to maintain a proxy there anymore.
   RenderFrameProxyHost* proxy = GetRenderFrameProxyHost(site_instance_group);
   CHECK(proxy);
+
+  TRACE_EVENT_INSTANT("navigation",
+                      "BrowsingContextState::ActiveFrameCountIsZero",
+                      ChromeTrackEvent::kBrowsingContextState, this,
+                      ChromeTrackEvent::kRenderFrameProxyHost, proxy);
 
   DeleteRenderFrameProxyHost(site_instance_group);
 }

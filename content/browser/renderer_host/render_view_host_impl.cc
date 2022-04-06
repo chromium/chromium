@@ -302,6 +302,9 @@ RenderViewHostImpl::RenderViewHostImpl(
       main_browsing_context_state_(std::move(main_browsing_context_state)) {
   TRACE_EVENT("navigation", "RenderViewHostImpl::RenderViewHostImpl",
               ChromeTrackEvent::kRenderViewHost, *this);
+  TRACE_EVENT_BEGIN("navigation", "RenderViewHost",
+                    perfetto::Track::FromPointer(this),
+                    "render_view_host_when_created", this);
   DCHECK(delegate_);
   DCHECK_NE(GetRoutingID(), render_widget_host_->GetRoutingID());
 
@@ -346,6 +349,7 @@ RenderViewHostImpl::RenderViewHostImpl(
 RenderViewHostImpl::~RenderViewHostImpl() {
   TRACE_EVENT_INSTANT("navigation", "~RenderViewHostImpl()",
                       ChromeTrackEvent::kRenderViewHost, *this);
+
   // TODO(https://crbug.com/1234634): Remove this.
   // If the view is destroyed while we were are still waiting for an ack,
   // then log how long we have been waiting.
@@ -382,6 +386,9 @@ RenderViewHostImpl::~RenderViewHostImpl() {
   // the FrameTree at the time it entered the BackForwardCache.
   if (!is_in_back_forward_cache_)
     frame_tree_->UnregisterRenderViewHost(render_view_host_map_id_, this);
+
+  // Corresponds to the TRACE_EVENT_BEGIN in RenderViewHostImpl's constructor.
+  TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this));
 }
 
 RenderViewHostDelegate* RenderViewHostImpl::GetDelegate() {

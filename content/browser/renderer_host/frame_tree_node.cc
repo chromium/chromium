@@ -150,6 +150,9 @@ FrameTreeNode::FrameTreeNode(
       devtools_frame_token_(devtools_frame_token),
       frame_owner_properties_(frame_owner_properties),
       render_manager_(this, frame_tree->manager_delegate()) {
+  TRACE_EVENT_BEGIN("navigation", "FrameTreeNode",
+                    perfetto::Track::FromPointer(this),
+                    "frame_tree_node_when_created", this);
   std::pair<FrameTreeNodeIdMap::iterator, bool> result =
       g_frame_tree_node_id_map.Get().insert(
           std::make_pair(frame_tree_node_id_, this));
@@ -184,6 +187,7 @@ void FrameTreeNode::DestroyInnerFrameTreeIfExists() {
 }
 
 FrameTreeNode::~FrameTreeNode() {
+  TRACE_EVENT("navigation", "FrameTreeNode::~FrameTreeNode");
   // There should always be a current RenderFrameHost except during prerender
   // activation. Prerender activation moves the current RenderFrameHost from
   // the old FrameTree's FrameTreeNode to the new FrameTree's FrameTreeNode and
@@ -278,6 +282,9 @@ FrameTreeNode::~FrameTreeNode() {
 
   // IsLoading() requires that current_frame_host() is non-null.
   DCHECK(!current_frame_host() || !IsLoading());
+
+  // Matches the TRACE_EVENT_BEGIN in the constructor.
+  TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this));
 }
 
 void FrameTreeNode::AddObserver(Observer* observer) {
@@ -357,6 +364,8 @@ FrameType FrameTreeNode::GetFrameType() const {
 }
 
 void FrameTreeNode::SetOpener(FrameTreeNode* opener) {
+  TRACE_EVENT("navigation", "FrameTreeNode::SetOpener",
+              ChromeTrackEvent::kFrameTreeNodeInfo, opener);
   if (opener_) {
     opener_->RemoveObserver(opener_observer_.get());
     opener_observer_.reset();

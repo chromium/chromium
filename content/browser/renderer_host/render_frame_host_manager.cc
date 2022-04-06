@@ -82,10 +82,9 @@
 namespace content {
 
 using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
+using perfetto::protos::pbzero::ChromeTrackEvent;
 
 namespace {
-
-using perfetto::protos::pbzero::ChromeTrackEvent;
 
 bool IsDataOrAbout(const GURL& url) {
   return url.IsAboutSrcdoc() || url.IsAboutBlank() ||
@@ -264,7 +263,7 @@ void TraceShouldSwapBrowsingInstanceResult(int frame_tree_node_id,
       "navigation",
       "RenderFrameHostManager::GetSiteInstanceForNavigation_ShouldSwapResult",
       [&](perfetto::EventContext ctx) {
-        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* event = ctx.event<ChromeTrackEvent>();
         auto* data = event->set_should_swap_browsing_instances_result();
         data->set_frame_tree_node_id(frame_tree_node_id);
         data->set_result(ShouldSwapBrowsingInstanceToProto(result));
@@ -629,6 +628,8 @@ void RenderFrameHostManager::PrepareForCollectingPage(
     RenderFrameHostImpl* main_render_frame_host,
     std::set<RenderViewHostImpl*>* render_view_hosts,
     BrowsingContextState::RenderFrameProxyHostMap* proxy_hosts) {
+  TRACE_EVENT("navigation", "RenderFrameHostManager::PrepareForCollectingPage");
+
   // Prepare the main frame.
   (*render_view_hosts).insert(main_render_frame_host->render_view_host());
   // Prepare the proxies.
@@ -3158,7 +3159,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigationRequest(
         auto rvh = frame_tree_node_->frame_tree()->GetRenderViewHost(
             static_cast<SiteInstanceImpl*>(dest_site_instance.get())->group());
         if (rvh) {
-          auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+          auto* event = ctx.event<ChromeTrackEvent>();
           rvh->WriteIntoTrace(ctx.Wrap(event->set_render_view_host()));
         }
       });
@@ -3610,6 +3611,8 @@ void RenderFrameHostManager::CommitPending(
   // TODO(crbug.com/1270671): Make this a no-op for the non-legacy
   // implementation of BrowsingContextState.
   if (clear_proxies_on_commit) {
+    TRACE_EVENT("navigation",
+                "RenderFrameHostManager::CommitPending_ClearProxiesOnCommit");
     DCHECK(frame_tree_node_->IsMainFrame());
 
     // If this frame has opened popups, we need to clear the opened popup's
@@ -3646,6 +3649,11 @@ void RenderFrameHostManager::CommitPending(
       }
     }
 
+    TRACE_EVENT("navigation",
+                "RenderFrameHostManager::CommitPending_"
+                "DeleteProxiesFromOldBrowsingContextState",
+                ChromeTrackEvent::kBrowsingContextState,
+                old_browsing_context_state);
     for (auto* proxy : removed_proxies) {
       old_browsing_context_state->DeleteRenderFrameProxyHost(
           proxy->site_instance_group());

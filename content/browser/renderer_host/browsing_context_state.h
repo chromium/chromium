@@ -239,6 +239,9 @@ class CONTENT_EXPORT BrowsingContextState
   virtual ~BrowsingContextState();
 
  private:
+  RenderFrameProxyHost* GetRenderFrameProxyHostImpl(
+      SiteInstanceGroup* site_instance_group) const;
+
   // Proxy hosts for this browsing context in various renderer processes, keyed
   // by SiteInstanceGroup ID.
   RenderFrameProxyHostMap proxy_hosts_;

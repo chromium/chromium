@@ -115,6 +115,9 @@ RenderFrameProxyHost::RenderFrameProxyHost(
       render_frame_proxy_created_(false),
       render_view_host_(std::move(render_view_host)),
       post_message_counter_(blink::PostMessagePartition::kCrossProcess) {
+  TRACE_EVENT_BEGIN("navigation", "RenderFrameProxyHost",
+                    perfetto::Track::FromPointer(this),
+                    "render_frame_proxy_host_when_created", *this);
   GetAgentSchedulingGroup().AddRoute(routing_id_, this);
   CHECK(
       g_routing_id_frame_proxy_map.Get()
@@ -174,6 +177,7 @@ RenderFrameProxyHost::~RenderFrameProxyHost() {
   g_routing_id_frame_proxy_map.Get().erase(
       RenderFrameProxyHostID(GetProcess()->GetID(), routing_id_));
   g_token_frame_proxy_map.Get().erase(frame_token_);
+  TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this));
 }
 
 void RenderFrameProxyHost::SetChildRWHView(

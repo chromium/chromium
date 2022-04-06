@@ -1430,6 +1430,9 @@ RenderFrameHostImpl::RenderFrameHostImpl(
                      ? FencedFrameStatus::kFencedFrameRoot
                      : FencedFrameStatus::kIframeNestedWithinFencedFrame)
               : FencedFrameStatus::kNotNestedInFencedFrame) {
+  TRACE_EVENT_BEGIN("navigation", "RenderFrameHostImpl",
+                    perfetto::Track::FromPointer(this),
+                    "render_frame_host_when_created", this);
   DCHECK(delegate_);
   DCHECK(lifecycle_state_ == LifecycleStateImpl::kSpeculative ||
          lifecycle_state_ == LifecycleStateImpl::kPrerendering ||
@@ -1713,6 +1716,9 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
 
   if (prefetched_signed_exchange_cache_)
     prefetched_signed_exchange_cache_->RecordHistograms();
+
+  // Matches the TRACE_EVENT_BEGIN in the constructor.
+  TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this));
 }
 
 int RenderFrameHostImpl::GetRoutingID() const {
