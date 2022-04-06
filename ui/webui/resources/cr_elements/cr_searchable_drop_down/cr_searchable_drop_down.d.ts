@@ -3,11 +3,10 @@
 // found in the LICENSE file.
 
 import {IronDropdownElement} from 'chrome://resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
-import {LegacyElementMixin} from 'chrome://resources/polymer/v3_0/polymer/lib/legacy/legacy-element-mixin.js';
 
 import {CrInputElement} from '../cr_input/cr_input.m.js';
 
-interface CrSearchableDropDownElement extends LegacyElementMixin, HTMLElement {
+interface CrSearchableDropDownElement extends HTMLElement {
   autofocus: boolean;
   readonly: boolean;
   errorMessageAllowed: boolean;
