@@ -409,7 +409,14 @@ IN_PROC_BROWSER_TEST_F(WebTimeLimitEnforcerThrottleTest,
   EXPECT_TRUE(IsErrorPageBeingShownInWebContents(web_contents3));
 }
 
-IN_PROC_BROWSER_TEST_F(WebTimeLimitEnforcerThrottleTest, WebContentTitleSet) {
+// TODO(crbug.com/1313933): Flaky on ChromeOS
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_WebContentTitleSet DISABLED_WebContentTitleSet
+#else
+#define MAYBE_WebContentTitleSet WebContentTitleSet
+#endif
+IN_PROC_BROWSER_TEST_F(WebTimeLimitEnforcerThrottleTest,
+                       MAYBE_WebContentTitleSet) {
   GURL url = embedded_test_server()->GetURL(kExampleHost,
                                             "/supervised_user/simple.html");
   NavigateParams params(browser(), url,
