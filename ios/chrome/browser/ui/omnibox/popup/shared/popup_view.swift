@@ -46,6 +46,13 @@ struct PopupView: View {
     static let selfSizingListBottomMargin: CGFloat = 40
   }
 
+  /// Custom modifier for the background of the list.
+  struct ListBackgroundModifier: ViewModifier {
+    func body(content: Content) -> some View {
+      content.background(Color.cr_groupedPrimaryBackground.edgesIgnoringSafeArea(.all))
+    }
+  }
+
   @ObservedObject var model: PopupModel
   private let shouldSelfSize: Bool
   private let appearanceContainerType: UIAppearanceContainer.Type?
@@ -114,7 +121,7 @@ struct PopupView: View {
     )
     .concat(SimultaneousGestureModifier(DragGesture().onChanged { onDrag($0) }))
     .concat(ScrollOnChangeModifier(value: $model.sections, action: onNewMatches))
-    .concat(BlurredBackground())
+    .concat(ListBackgroundModifier())
 
     if shouldSelfSize {
       SelfSizingList(

@@ -16,6 +16,11 @@ extension Color {
     return Color(kTertiaryBackgroundColor)
   }
 
+  /// The primary grouped background color.
+  public static var cr_groupedPrimaryBackground: Color {
+    return Color(kGroupedPrimaryBackgroundColor)
+  }
+
   /// The secondary grouped background color.
   public static var cr_groupedSecondaryBackground: Color {
     return Color(kGroupedSecondaryBackgroundColor)
