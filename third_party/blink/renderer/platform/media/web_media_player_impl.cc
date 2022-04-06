@@ -46,6 +46,7 @@
 #include "media/base/media_url_demuxer.h"
 #include "media/base/memory_dump_provider_proxy.h"
 #include "media/base/routing_token_callback.h"
+#include "media/base/supported_types.h"
 #include "media/base/text_renderer.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"

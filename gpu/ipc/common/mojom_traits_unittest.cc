@@ -174,9 +174,9 @@ TEST_F(StructTraitsTest, GpuInfo) {
   const OverlaySupport nv12_overlay_support = OverlaySupport::kNone;
   const DxDiagNode dx_diagnostics;
 #endif
-  const gpu::VideoDecodeAcceleratorCapabilities
-      video_decode_accelerator_capabilities;
-  const std::vector<gpu::VideoEncodeAcceleratorSupportedProfile>
+  const VideoDecodeAcceleratorSupportedProfiles
+      video_decode_accelerator_supported_profiles;
+  const VideoEncodeAcceleratorSupportedProfiles
       video_encode_accelerator_supported_profiles;
   const bool jpeg_decode_accelerator_supported = true;
 
@@ -213,8 +213,8 @@ TEST_F(StructTraitsTest, GpuInfo) {
   input.overlay_info.nv12_overlay_support = nv12_overlay_support;
   input.dx_diagnostics = dx_diagnostics;
 #endif
-  input.video_decode_accelerator_capabilities =
-      video_decode_accelerator_capabilities;
+  input.video_decode_accelerator_supported_profiles =
+      video_decode_accelerator_supported_profiles;
   input.video_encode_accelerator_supported_profiles =
       video_encode_accelerator_supported_profiles;
   input.jpeg_decode_accelerator_supported = jpeg_decode_accelerator_supported;
@@ -276,23 +276,16 @@ TEST_F(StructTraitsTest, GpuInfo) {
   EXPECT_EQ(nv12_overlay_support, output.overlay_info.nv12_overlay_support);
   EXPECT_EQ(dx_diagnostics.values, output.dx_diagnostics.values);
 #endif
-  EXPECT_EQ(output.video_decode_accelerator_capabilities.flags,
-            video_decode_accelerator_capabilities.flags);
-  EXPECT_EQ(
-      video_decode_accelerator_capabilities.supported_profiles.size(),
-      output.video_decode_accelerator_capabilities.supported_profiles.size());
-  for (size_t i = 0;
-       i < video_decode_accelerator_capabilities.supported_profiles.size();
-       ++i) {
+  for (size_t i = 0; i < video_decode_accelerator_supported_profiles.size();
+       i++) {
     const gpu::VideoDecodeAcceleratorSupportedProfile& expected =
-        video_decode_accelerator_capabilities.supported_profiles[i];
+        video_decode_accelerator_supported_profiles[i];
     const gpu::VideoDecodeAcceleratorSupportedProfile& actual =
-        output.video_decode_accelerator_capabilities.supported_profiles[i];
+        output.video_decode_accelerator_supported_profiles[i];
     EXPECT_EQ(expected.encrypted_only, actual.encrypted_only);
   }
-  EXPECT_EQ(
-      output.video_decode_accelerator_capabilities.supported_profiles.size(),
-      video_decode_accelerator_capabilities.supported_profiles.size());
+  EXPECT_EQ(output.video_decode_accelerator_supported_profiles.size(),
+            video_decode_accelerator_supported_profiles.size());
   EXPECT_EQ(output.video_encode_accelerator_supported_profiles.size(),
             video_encode_accelerator_supported_profiles.size());
 }

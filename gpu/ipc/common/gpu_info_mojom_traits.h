@@ -381,15 +381,9 @@ struct GPU_EXPORT StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo> {
     return input.overlay_info;
   }
 #endif
-
-  static const gpu::VideoDecodeAcceleratorCapabilities&
-  video_decode_accelerator_capabilities(const gpu::GPUInfo& input) {
-    return input.video_decode_accelerator_capabilities;
-  }
-
   static const gpu::VideoDecodeAcceleratorSupportedProfiles&
-  video_decoder_capabilities(const gpu::GPUInfo& input) {
-    return input.video_decoder_capabilities;
+  video_decode_accelerator_supported_profiles(const gpu::GPUInfo& input) {
+    return input.video_decode_accelerator_supported_profiles;
   }
 
   static std::vector<gpu::VideoEncodeAcceleratorSupportedProfile>

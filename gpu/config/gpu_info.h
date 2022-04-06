@@ -422,10 +422,8 @@ struct GPU_EXPORT GPUInfo {
   // The GPU hardware overlay info.
   OverlayInfo overlay_info;
 #endif
-
-  // Video decoding uses two backends: the legacy VDA and the new VideoDecoder.
-  VideoDecodeAcceleratorCapabilities video_decode_accelerator_capabilities;
-  VideoDecodeAcceleratorSupportedProfiles video_decoder_capabilities;
+  VideoDecodeAcceleratorSupportedProfiles
+      video_decode_accelerator_supported_profiles;
 
   VideoEncodeAcceleratorSupportedProfiles
       video_encode_accelerator_supported_profiles;

@@ -5,6 +5,7 @@
 #ifndef MEDIA_BASE_SUPPORTED_TYPES_H_
 #define MEDIA_BASE_SUPPORTED_TYPES_H_
 
+#include "base/containers/flat_set.h"
 #include "media/base/media_types.h"
 
 namespace media {
@@ -20,6 +21,12 @@ MEDIA_EXPORT bool IsSupportedVideoType(const VideoType& type);
 // generally prefer the non-Default APIs above.
 MEDIA_EXPORT bool IsDefaultSupportedAudioType(const AudioType& type);
 MEDIA_EXPORT bool IsDefaultSupportedVideoType(const VideoType& type);
+
+// This function lets the caller add additional codec profiles to those
+// supported by default. Used primarily to add hardware codec profiles once
+// support is known.
+MEDIA_EXPORT void UpdateDefaultSupportedVideoProfiles(
+    const base::flat_set<VideoCodecProfile>& profiles);
 
 }  // namespace media
 

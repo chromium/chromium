@@ -601,24 +601,19 @@ base::Value GetVideoAcceleratorsInfo() {
     const gpu::VideoDecodeAcceleratorSupportedProfiles& capabilities;
     std::string name;
   } kVideoDecoderImplementations[] = {
-      {gpu_info.video_decoder_capabilities, "Decoding (VideoDecoder)"},
-      {gpu_info.video_decode_accelerator_capabilities.supported_profiles,
-       "Decoding (Legacy VideoDecodeAccelerator)"},
+      {gpu_info.video_decode_accelerator_supported_profiles, "Decoding"},
   };
 
-  for (const auto& implementation : kVideoDecoderImplementations) {
-    if (implementation.capabilities.empty())
-      continue;
-    info.Append(display::BuildGpuInfoEntry(implementation.name, ""));
-    for (const auto& profile : implementation.capabilities) {
-      std::string codec_string =
-          base::StringPrintf("Decode %s", GetProfileName(profile.profile));
-      std::string resolution_string = base::StringPrintf(
-          "%s to %s pixels%s", profile.min_resolution.ToString().c_str(),
-          profile.max_resolution.ToString().c_str(),
-          profile.encrypted_only ? " (encrypted)" : "");
-      info.Append(display::BuildGpuInfoEntry(codec_string, resolution_string));
-    }
+  info.Append(display::BuildGpuInfoEntry("Decoding", ""));
+  for (const auto& profile :
+       gpu_info.video_decode_accelerator_supported_profiles) {
+    std::string codec_string =
+        base::StringPrintf("Decode %s", GetProfileName(profile.profile));
+    std::string resolution_string = base::StringPrintf(
+        "%s to %s pixels%s", profile.min_resolution.ToString().c_str(),
+        profile.max_resolution.ToString().c_str(),
+        profile.encrypted_only ? " (encrypted)" : "");
+    info.Append(display::BuildGpuInfoEntry(codec_string, resolution_string));
   }
 
   info.Append(display::BuildGpuInfoEntry("Encoding", ""));

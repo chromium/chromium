@@ -62,6 +62,19 @@ gpu::CommandBufferStub* GetCommandBufferStub(
   return stub;
 }
 
+SupportedVideoDecoderConfigs GetVDAVideoDecoderConfigs(
+    const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds) {
+  VideoDecodeAccelerator::Capabilities capabilities =
+      GpuVideoAcceleratorUtil::ConvertGpuToMediaDecodeCapabilities(
+          GpuVideoDecodeAcceleratorFactory::GetDecoderCapabilities(
+              gpu_preferences, gpu_workarounds));
+  return ConvertFromSupportedProfiles(
+      capabilities.supported_profiles,
+      capabilities.flags &
+          VideoDecodeAccelerator::Capabilities::SUPPORTS_ENCRYPTED_STREAMS);
+}
+
 }  // namespace
 
 VideoDecoderTraits::~VideoDecoderTraits() = default;
@@ -142,26 +155,21 @@ VideoDecoderType GpuMojoMediaClient::GetDecoderImplementationType() {
 SupportedVideoDecoderConfigs
 GpuMojoMediaClient::GetSupportedVideoDecoderConfigs() {
   if (!supported_config_cache_) {
-    supported_config_cache_ = GetPlatformSupportedVideoDecoderConfigs(
-        gpu_workarounds_, gpu_preferences_, gpu_info_,
-        // GetPlatformSupportedVideoDecoderConfigs runs this callback either
-        // never or immediately, and will not store it, so |this| will outlive
-        // the bound function.
-        base::BindOnce(&GpuMojoMediaClient::GetVDAVideoDecoderConfigs,
-                       base::Unretained(this)));
+    supported_config_cache_ = GetSupportedVideoDecoderConfigsStatic(
+        gpu_preferences_, gpu_workarounds_, gpu_info_);
   }
   return supported_config_cache_.value_or(SupportedVideoDecoderConfigs{});
 }
 
-SupportedVideoDecoderConfigs GpuMojoMediaClient::GetVDAVideoDecoderConfigs() {
-  VideoDecodeAccelerator::Capabilities capabilities =
-      GpuVideoAcceleratorUtil::ConvertGpuToMediaDecodeCapabilities(
-          GpuVideoDecodeAcceleratorFactory::GetDecoderCapabilities(
-              gpu_preferences_, gpu_workarounds_));
-  return ConvertFromSupportedProfiles(
-      capabilities.supported_profiles,
-      capabilities.flags &
-          VideoDecodeAccelerator::Capabilities::SUPPORTS_ENCRYPTED_STREAMS);
+absl::optional<SupportedVideoDecoderConfigs>
+GpuMojoMediaClient::GetSupportedVideoDecoderConfigsStatic(
+    const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+    const gpu::GPUInfo& gpu_info) {
+  return GetPlatformSupportedVideoDecoderConfigs(
+      gpu_workarounds, gpu_preferences, gpu_info,
+      base::BindOnce(&GetVDAVideoDecoderConfigs, gpu_preferences,
+                     gpu_workarounds));
 }
 
 std::unique_ptr<VideoDecoder> GpuMojoMediaClient::CreateVideoDecoder(

@@ -245,7 +245,7 @@ void SendGetInfoResponse(std::unique_ptr<GetInfoCallback> callback) {
   auto decoding_profiles = std::make_unique<
       protocol::Array<SystemInfo::VideoDecodeAcceleratorCapability>>();
   for (const auto& profile :
-       gpu_info.video_decode_accelerator_capabilities.supported_profiles) {
+       gpu_info.video_decode_accelerator_supported_profiles) {
     decoding_profiles->emplace_back(
         VideoDecodeAcceleratorSupportedProfileToProtocol(profile));
   }

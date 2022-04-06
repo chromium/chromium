@@ -94,6 +94,24 @@ GpuVideoAcceleratorUtil::ConvertMediaToGpuDecodeProfiles(
 }
 
 // static
+gpu::VideoDecodeAcceleratorSupportedProfiles
+GpuVideoAcceleratorUtil::ConvertMediaConfigsToGpuDecodeProfiles(
+    const SupportedVideoDecoderConfigs& configs) {
+  gpu::VideoDecodeAcceleratorSupportedProfiles profiles;
+  for (const auto& config : configs) {
+    for (int i = config.profile_min; i <= config.profile_max; i++) {
+      gpu::VideoDecodeAcceleratorSupportedProfile profile;
+      profile.profile = static_cast<gpu::VideoCodecProfile>(i);
+      profile.min_resolution = config.coded_size_min;
+      profile.max_resolution = config.coded_size_max;
+      profile.encrypted_only = config.require_encrypted;
+      profiles.push_back(profile);
+    }
+  }
+  return profiles;
+}
+
+// static
 VideoEncodeAccelerator::SupportedProfiles
 GpuVideoAcceleratorUtil::ConvertGpuToMediaEncodeProfiles(
     const gpu::VideoEncodeAcceleratorSupportedProfiles& gpu_profiles) {

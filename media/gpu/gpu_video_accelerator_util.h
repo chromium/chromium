@@ -6,6 +6,7 @@
 #define MEDIA_GPU_GPU_VIDEO_ACCELERATOR_UTIL_H_
 
 #include "gpu/config/gpu_info.h"
+#include "media/base/supported_video_decoder_config.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/video/video_decode_accelerator.h"
 #include "media/video/video_encode_accelerator.h"
@@ -33,6 +34,10 @@ class MEDIA_GPU_EXPORT GpuVideoAcceleratorUtil {
   static gpu::VideoDecodeAcceleratorSupportedProfiles
   ConvertMediaToGpuDecodeProfiles(
       const VideoDecodeAccelerator::SupportedProfiles& media_profiles);
+
+  static gpu::VideoDecodeAcceleratorSupportedProfiles
+  ConvertMediaConfigsToGpuDecodeProfiles(
+      const SupportedVideoDecoderConfigs& configs);
 
   // Convert encoder gpu profiles to media profiles.
   static VideoEncodeAccelerator::SupportedProfiles

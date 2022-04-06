@@ -1281,15 +1281,16 @@ void GpuDataManagerImplPrivate::UpdateGpuExtraInfo(
 
 void GpuDataManagerImplPrivate::UpdateMojoMediaVideoCapabilities(
     const media::SupportedVideoDecoderConfigs& configs) {
-  gpu_info_.video_decoder_capabilities.clear();
+  gpu_info_.video_decode_accelerator_supported_profiles.clear();
   for (const auto& config : configs) {
     gpu::VideoDecodeAcceleratorSupportedProfile profile;
     profile.profile = ToGpuVideoCodecProfile(config.profile_min);
     profile.min_resolution = config.coded_size_min;
     profile.max_resolution = config.coded_size_max;
     profile.encrypted_only = config.require_encrypted;
-    gpu_info_.video_decoder_capabilities.push_back(profile);
+    gpu_info_.video_decode_accelerator_supported_profiles.push_back(profile);
   }
+
   NotifyGpuInfoUpdate();
 }
 

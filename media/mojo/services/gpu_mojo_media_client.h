@@ -107,7 +107,7 @@ VideoDecoderType GetPlatformDecoderImplementationType(
     gpu::GpuPreferences gpu_preferences,
     const gpu::GPUInfo& gpu_info);
 
-class GpuMojoMediaClient final : public MojoMediaClient {
+class MEDIA_MOJO_EXPORT GpuMojoMediaClient final : public MojoMediaClient {
  public:
   // |media_gpu_channel_manager| must only be used on |gpu_task_runner|, which
   // is expected to be the GPU main thread task runner.
@@ -145,11 +145,13 @@ class GpuMojoMediaClient final : public MojoMediaClient {
   std::unique_ptr<CdmFactory> CreateCdmFactory(
       mojom::FrameInterfaceFactory* interface_provider) final;
 
- private:
-  // These are useful to bind into callbacks for platform specific
-  // implementations that can use these defaults as fallbacks.
-  SupportedVideoDecoderConfigs GetVDAVideoDecoderConfigs();
+  static absl::optional<SupportedVideoDecoderConfigs>
+  GetSupportedVideoDecoderConfigsStatic(
+      const gpu::GpuPreferences& gpu_preferences,
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+      const gpu::GPUInfo& gpu_info);
 
+ private:
   // Cross-platform cache supported config cache.
   absl::optional<SupportedVideoDecoderConfigs> supported_config_cache_;
 

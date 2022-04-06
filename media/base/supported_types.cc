@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -35,6 +36,28 @@
 namespace media {
 
 namespace {
+
+class SupplementalProfileCache {
+ public:
+  void UpdateCache(const base::flat_set<media::VideoCodecProfile>& profiles) {
+    base::AutoLock lock(profiles_lock_);
+    DCHECK_EQ(profiles_.size(), 0u);
+    profiles_ = profiles;
+  }
+  bool IsProfileSupported(media::VideoCodecProfile profile) {
+    base::AutoLock lock(profiles_lock_);
+    return profiles_.find(profile) != profiles_.end();
+  }
+
+ private:
+  base::Lock profiles_lock_;
+  base::flat_set<media::VideoCodecProfile> profiles_ GUARDED_BY(profiles_lock_);
+};
+
+SupplementalProfileCache* GetSupplementalProfileCache() {
+  static base::NoDestructor<SupplementalProfileCache> cache;
+  return cache.get();
+}
 
 bool IsSupportedHdrMetadata(const gfx::HdrMetadataType& hdr_metadata_type) {
   switch (hdr_metadata_type) {
@@ -179,7 +202,16 @@ bool IsAudioCodecProprietary(AudioCodec codec) {
 #endif  // !BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 bool IsHevcProfileSupported(const VideoType& type) {
-#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_HEVC)
+  if (!IsColorSpaceSupported(type.color_space))
+    return false;
+
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+  return GetSupplementalProfileCache()->IsProfileSupported(type.profile);
+#else
+  return true;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#elif BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_HEVC)
   // Only encrypted HEVC content is supported, and normally MSE.isTypeSupported
   // returns false for HEVC. The kEnableClearHevcForTesting flag allows it to
   // return true to enable a wider array of test scenarios to function properly.
@@ -187,22 +219,10 @@ bool IsHevcProfileSupported(const VideoType& type) {
           switches::kEnableClearHevcForTesting)) {
     return false;
   }
-
-  // Color management required for HDR to not look terrible.
-  if (!IsColorSpaceSupported(type.color_space))
-    return false;
-
-  switch (type.profile) {
-    case HEVCPROFILE_MAIN:
-    case HEVCPROFILE_MAIN10:
-      return true;
-    case HEVCPROFILE_MAIN_STILL_PICTURE:
-      return false;
-    default:
-      NOTREACHED();
-  }
-#endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_HEVC)
+  return type.profile == HEVCPROFILE_MAIN || type.profile == HEVCPROFILE_MAIN10;
+#else
   return false;
+#endif
 }
 
 bool IsVp9ProfileSupported(const VideoType& type) {
@@ -369,6 +389,11 @@ bool IsDefaultSupportedAudioType(const AudioType& type) {
       return false;
 #endif
   }
+}
+
+void UpdateDefaultSupportedVideoProfiles(
+    const base::flat_set<media::VideoCodecProfile>& profiles) {
+  GetSupplementalProfileCache()->UpdateCache(profiles);
 }
 
 }  // namespace media
