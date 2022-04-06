@@ -220,7 +220,6 @@ bool IsPinnedToTaskbarHelper::GetResult(bool check_verbs) {
                                       base::FileEnumerator::DIRECTORIES);
   for (base::FilePath directory = directory_enum.Next(); !directory.empty();
        directory = directory_enum.Next()) {
-    current_exe.value();
     if (DirectoryContainsPinnedShortcutForProgram(
             directory, current_exe_compare, check_verbs)) {
       return true;
