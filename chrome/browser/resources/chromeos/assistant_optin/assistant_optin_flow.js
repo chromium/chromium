@@ -4,7 +4,6 @@
 
 // <include src="utils.js">
 // <include src="setting_zippy.js">
-// <include src="voice_match_entry.js">
 // <include src="browser_proxy.js">
 // <include src="assistant_loading.js">
 // <include src="assistant_related_info.js">

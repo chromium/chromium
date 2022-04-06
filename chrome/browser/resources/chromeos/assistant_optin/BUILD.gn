@@ -3,10 +3,13 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
+import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
+import("//tools/polymer/polymer.gni")
+import("./modulization_utils.gni")
 
 assert(is_chromeos_ash, "Only available in ash Chrome.")
 
@@ -101,13 +104,49 @@ preprocess_if_expr("preprocess_generated") {
   in_files = [ "browser_proxy.m.js" ]
 }
 
+#############################
+#### CLOSURE COMPILATION ####
+#############################
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = default_closure_args
+  deps = [
+    ":voice_match_entry.m",
+  ]
+}
+
+js_library("voice_match_entry.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/assistant_optin/voice_match_entry.m.js" ]
+  deps = [
+    "../login/components/behaviors:oobe_i18n_behavior.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":voice_match_entry_module" ]
+}
+
+
+
+
 ##########################
 #### POLYMER3 MODULES ####
 ##########################
 
 group("polymer3_elements") {
-  public_deps = [ ":modulize" ]
+  public_deps = [
+    ":voice_match_entry_module",
+    ":modulize"
+  ]
 }
+
+polymer_modulizer("voice_match_entry") {
+  js_file = "voice_match_entry.js"
+  html_file = "voice_match_entry.html"
+  html_type = "dom-module"
+  auto_imports = assistant_auto_imports
+  namespace_rewrites = assistant_namespace_rewrites
+}
+
 
 js_modulizer("modulize") {
   input_files = [ "browser_proxy.js" ]
