@@ -22,7 +22,7 @@ QuickStartScreenHandler::~QuickStartScreenHandler() {
 }
 
 void QuickStartScreenHandler::Show() {
-  if (!page_is_ready()) {
+  if (!IsJavascriptAllowed()) {
     show_on_init_ = true;
     return;
   }
@@ -33,7 +33,7 @@ void QuickStartScreenHandler::Show() {
 void QuickStartScreenHandler::Bind(QuickStartScreen* screen) {
   screen_ = screen;
   BaseScreenHandler::SetBaseScreenDeprecated(screen_);
-  if (page_is_ready())
+  if (IsJavascriptAllowed())
     InitializeDeprecated();
 }
 

@@ -25,7 +25,7 @@ AutoEnrollmentCheckScreenHandler::~AutoEnrollmentCheckScreenHandler() {
 }
 
 void AutoEnrollmentCheckScreenHandler::Show() {
-  if (!page_is_ready()) {
+  if (!IsJavascriptAllowed()) {
     show_on_init_ = true;
     return;
   }
@@ -34,7 +34,7 @@ void AutoEnrollmentCheckScreenHandler::Show() {
 
 void AutoEnrollmentCheckScreenHandler::SetDelegate(Delegate* delegate) {
   delegate_ = delegate;
-  if (page_is_ready())
+  if (IsJavascriptAllowed())
     InitializeDeprecated();
 }
 
@@ -47,7 +47,7 @@ void AutoEnrollmentCheckScreenHandler::DeclareLocalizedValues(
 }
 
 void AutoEnrollmentCheckScreenHandler::InitializeDeprecated() {
-  if (!page_is_ready() || !delegate_)
+  if (!IsJavascriptAllowed() || !delegate_)
     return;
 
   if (show_on_init_) {

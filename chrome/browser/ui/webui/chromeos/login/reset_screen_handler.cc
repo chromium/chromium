@@ -42,7 +42,7 @@ void ResetScreenHandler::Unbind() {
 }
 
 void ResetScreenHandler::Show() {
-  if (!page_is_ready()) {
+  if (!IsJavascriptAllowed()) {
     show_on_init_ = true;
     return;
   }
@@ -102,7 +102,7 @@ void ResetScreenHandler::DeclareJSCallbacks() {
 }
 
 void ResetScreenHandler::InitializeDeprecated() {
-  if (!page_is_ready())
+  if (!IsJavascriptAllowed())
     return;
 
   if (show_on_init_) {

@@ -32,7 +32,7 @@ HIDDetectionScreenHandler::~HIDDetectionScreenHandler() {
 }
 
 void HIDDetectionScreenHandler::Show() {
-  if (!page_is_ready()) {
+  if (!IsJavascriptAllowed()) {
     show_on_init_ = true;
     return;
   }
@@ -46,7 +46,7 @@ void HIDDetectionScreenHandler::Hide() {
 void HIDDetectionScreenHandler::Bind(HIDDetectionScreen* screen) {
   screen_ = screen;
   BaseScreenHandler::SetBaseScreenDeprecated(screen_);
-  if (page_is_ready())
+  if (IsJavascriptAllowed())
     InitializeDeprecated();
 }
 

@@ -30,7 +30,7 @@ KioskEnableScreenHandler::~KioskEnableScreenHandler() {
 }
 
 void KioskEnableScreenHandler::Show() {
-  if (!page_is_ready()) {
+  if (!IsJavascriptAllowed()) {
     show_on_init_ = true;
     return;
   }
@@ -40,7 +40,7 @@ void KioskEnableScreenHandler::Show() {
 void KioskEnableScreenHandler::SetScreen(KioskEnableScreen* screen) {
   BaseScreenHandler::SetBaseScreenDeprecated(screen);
   screen_ = screen;
-  if (page_is_ready() && screen_)
+  if (IsJavascriptAllowed() && screen_)
     InitializeDeprecated();
 }
 
@@ -58,7 +58,7 @@ void KioskEnableScreenHandler::DeclareLocalizedValues(
 }
 
 void KioskEnableScreenHandler::InitializeDeprecated() {
-  if (!page_is_ready() || !screen_)
+  if (!IsJavascriptAllowed() || !screen_)
     return;
 
   if (show_on_init_) {

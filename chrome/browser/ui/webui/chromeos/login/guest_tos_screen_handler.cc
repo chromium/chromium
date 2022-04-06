@@ -50,7 +50,7 @@ void GuestTosScreenHandler::Show(const std::string& google_eula_url,
                                  const std::string& cros_eula_url) {
   google_eula_url_ = google_eula_url;
   cros_eula_url_ = cros_eula_url;
-  if (!page_is_ready()) {
+  if (!IsJavascriptAllowed()) {
     show_on_init_ = true;
     return;
   }

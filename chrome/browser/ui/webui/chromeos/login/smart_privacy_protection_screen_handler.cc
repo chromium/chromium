@@ -26,7 +26,7 @@ SmartPrivacyProtectionScreenHandler::~SmartPrivacyProtectionScreenHandler() {
 }
 
 void SmartPrivacyProtectionScreenHandler::Show() {
-  if (!page_is_ready()) {
+  if (!IsJavascriptAllowed()) {
     show_on_init_ = true;
     return;
   }
@@ -77,7 +77,7 @@ void SmartPrivacyProtectionScreenHandler::GetAdditionalParameters(
 }
 
 void SmartPrivacyProtectionScreenHandler::InitializeDeprecated() {
-  if (!page_is_ready() || !screen_)
+  if (!IsJavascriptAllowed() || !screen_)
     return;
 
   if (show_on_init_) {

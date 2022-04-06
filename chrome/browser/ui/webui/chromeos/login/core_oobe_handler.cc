@@ -218,7 +218,7 @@ void CoreOobeHandler::ShowOobeUI(bool show) {
 
   show_oobe_ui_ = show;
 
-  if (page_is_ready())
+  if (IsJavascriptAllowed())
     UpdateOobeUIVisibility();
 }
 

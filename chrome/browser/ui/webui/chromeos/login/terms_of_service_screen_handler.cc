@@ -66,7 +66,7 @@ void TermsOfServiceScreenHandler::SetScreen(TermsOfServiceScreen* screen) {
 
 void TermsOfServiceScreenHandler::Show(const std::string& manager) {
   manager_ = manager;
-  if (!page_is_ready()) {
+  if (!IsJavascriptAllowed()) {
     show_on_init_ = true;
     return;
   }
@@ -106,7 +106,7 @@ void TermsOfServiceScreenHandler::InitializeDeprecated() {
 }
 
 void TermsOfServiceScreenHandler::UpdateTermsOfServiceInUI() {
-  if (!page_is_ready())
+  if (!IsJavascriptAllowed())
     return;
 
   // If either `load_error_` or `terms_of_service_` is set, the download of the

@@ -33,7 +33,7 @@ EnableDebuggingScreenHandler::~EnableDebuggingScreenHandler() {
 }
 
 void EnableDebuggingScreenHandler::Show() {
-  if (!page_is_ready()) {
+  if (!IsJavascriptAllowed()) {
     show_on_init_ = true;
     return;
   }
@@ -47,7 +47,7 @@ void EnableDebuggingScreenHandler::Hide() {}
 void EnableDebuggingScreenHandler::SetDelegate(EnableDebuggingScreen* screen) {
   screen_ = screen;
   BaseScreenHandler::SetBaseScreenDeprecated(screen_);
-  if (page_is_ready())
+  if (IsJavascriptAllowed())
     InitializeDeprecated();
 }
 
@@ -94,7 +94,7 @@ void EnableDebuggingScreenHandler::RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 void EnableDebuggingScreenHandler::InitializeDeprecated() {
-  if (!page_is_ready() || !screen_)
+  if (!IsJavascriptAllowed() || !screen_)
     return;
 
   if (show_on_init_) {

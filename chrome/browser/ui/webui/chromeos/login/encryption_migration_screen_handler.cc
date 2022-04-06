@@ -27,7 +27,7 @@ EncryptionMigrationScreenHandler::~EncryptionMigrationScreenHandler() {
 }
 
 void EncryptionMigrationScreenHandler::Show() {
-  if (!page_is_ready() || !delegate_) {
+  if (!IsJavascriptAllowed() || !delegate_) {
     show_on_init_ = true;
     return;
   }
@@ -42,7 +42,7 @@ void EncryptionMigrationScreenHandler::SetDelegate(
     EncryptionMigrationScreen* delegate) {
   delegate_ = delegate;
   BaseScreenHandler::SetBaseScreenDeprecated(delegate);
-  if (page_is_ready())
+  if (IsJavascriptAllowed())
     InitializeDeprecated();
 }
 
@@ -95,7 +95,7 @@ void EncryptionMigrationScreenHandler::DeclareLocalizedValues(
 }
 
 void EncryptionMigrationScreenHandler::InitializeDeprecated() {
-  if (!page_is_ready() || !delegate_)
+  if (!IsJavascriptAllowed() || !delegate_)
     return;
 
   if (show_on_init_) {

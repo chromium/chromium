@@ -734,15 +734,6 @@ void OobeUI::CurrentScreenChanged(OobeScreenId new_screen) {
     observer.OnCurrentScreenChanged(previous_screen_, new_screen);
 }
 
-bool OobeUI::IsScreenInitialized(OobeScreenId screen) {
-  for (BaseScreenHandler* handler : screen_handlers_) {
-    if (handler->oobe_screen() == screen) {
-      return handler->page_is_ready();
-    }
-  }
-  return false;
-}
-
 bool OobeUI::IsJSReady(base::OnceClosure display_is_ready_callback) {
   if (!ready_)
     ready_callbacks_.AddUnsafe(std::move(display_is_ready_callback));

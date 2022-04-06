@@ -40,7 +40,7 @@ EulaScreenHandler::~EulaScreenHandler() {
 }
 
 void EulaScreenHandler::Show() {
-  if (!page_is_ready()) {
+  if (!IsJavascriptAllowed()) {
     show_on_init_ = true;
     return;
   }
@@ -53,7 +53,7 @@ void EulaScreenHandler::Hide() {
 void EulaScreenHandler::Bind(EulaScreen* screen) {
   screen_ = screen;
   BaseScreenHandler::SetBaseScreenDeprecated(screen_);
-  if (page_is_ready())
+  if (IsJavascriptAllowed())
     InitializeDeprecated();
 }
 
@@ -121,7 +121,7 @@ void EulaScreenHandler::GetAdditionalParameters(base::DictionaryValue* dict) {
 }
 
 void EulaScreenHandler::InitializeDeprecated() {
-  if (!page_is_ready() || !screen_)
+  if (!IsJavascriptAllowed() || !screen_)
     return;
 
   CallJS("login.EulaScreen.setUsageStats", screen_->IsUsageStatsEnabled());

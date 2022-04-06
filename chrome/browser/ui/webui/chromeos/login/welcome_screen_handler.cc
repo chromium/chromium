@@ -74,7 +74,7 @@ WelcomeScreenHandler::~WelcomeScreenHandler() {
 // WelcomeScreenHandler, WelcomeScreenView implementation: ---------------------
 
 void WelcomeScreenHandler::Show() {
-  if (!page_is_ready()) {
+  if (!IsJavascriptAllowed()) {
     show_on_init_ = true;
     return;
   }

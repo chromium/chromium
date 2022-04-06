@@ -23,7 +23,7 @@ EnableAdbSideloadingScreenHandler::~EnableAdbSideloadingScreenHandler() =
     default;
 
 void EnableAdbSideloadingScreenHandler::Show() {
-  if (!page_is_ready()) {
+  if (!IsJavascriptAllowed()) {
     show_on_init_ = true;
     return;
   }
@@ -66,7 +66,7 @@ void EnableAdbSideloadingScreenHandler::DeclareLocalizedValues(
 }
 
 void EnableAdbSideloadingScreenHandler::InitializeDeprecated() {
-  if (!page_is_ready())
+  if (!IsJavascriptAllowed())
     return;
 
   if (show_on_init_) {

@@ -84,8 +84,6 @@ class OobeUI : public ui::MojoWebUIController {
   // Called when the screen has changed.
   void CurrentScreenChanged(OobeScreenId screen);
 
-  bool IsScreenInitialized(OobeScreenId screen);
-
   bool IsJSReady(base::OnceClosure display_is_ready_callback);
 
   // Shows or hides OOBE UI elements.

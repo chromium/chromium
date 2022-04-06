@@ -206,7 +206,7 @@ void AssistantOptInFlowScreenHandler::GetAdditionalParameters(
 void AssistantOptInFlowScreenHandler::Bind(AssistantOptInFlowScreen* screen) {
   BaseScreenHandler::SetBaseScreenDeprecated(screen);
   screen_ = screen;
-  if (page_is_ready())
+  if (IsJavascriptAllowed())
     InitializeDeprecated();
 }
 
@@ -216,7 +216,7 @@ void AssistantOptInFlowScreenHandler::Unbind() {
 }
 
 void AssistantOptInFlowScreenHandler::Show() {
-  if (!page_is_ready() || !screen_) {
+  if (!IsJavascriptAllowed() || !screen_) {
     show_on_init_ = true;
     return;
   }

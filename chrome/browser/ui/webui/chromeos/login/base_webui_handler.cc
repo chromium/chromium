@@ -20,8 +20,6 @@ BaseWebUIHandler::BaseWebUIHandler() = default;
 BaseWebUIHandler::~BaseWebUIHandler() = default;
 
 void BaseWebUIHandler::OnJavascriptAllowed() {
-  CHECK(!page_is_ready_);
-  page_is_ready_ = true;
   auto deferred_calls = std::exchange(deferred_calls_, {});
   for (auto& call : deferred_calls)
     std::move(call).Run();

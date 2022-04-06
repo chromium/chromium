@@ -38,7 +38,7 @@ KioskAutolaunchScreenHandler::~KioskAutolaunchScreenHandler() {
 }
 
 void KioskAutolaunchScreenHandler::Show() {
-  if (!page_is_ready()) {
+  if (!IsJavascriptAllowed()) {
     show_on_init_ = true;
     return;
   }
@@ -49,7 +49,7 @@ void KioskAutolaunchScreenHandler::Show() {
 void KioskAutolaunchScreenHandler::SetDelegate(
     KioskAutolaunchScreen* delegate) {
   delegate_ = delegate;
-  if (page_is_ready())
+  if (IsJavascriptAllowed())
     InitializeDeprecated();
 }
 
@@ -87,7 +87,7 @@ void KioskAutolaunchScreenHandler::DeclareLocalizedValues(
 }
 
 void KioskAutolaunchScreenHandler::InitializeDeprecated() {
-  if (!page_is_ready() || !delegate_)
+  if (!IsJavascriptAllowed() || !delegate_)
     return;
 
   if (show_on_init_) {

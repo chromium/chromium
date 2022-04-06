@@ -74,7 +74,7 @@ void ManagementTransitionScreenHandler::Bind(
     ManagementTransitionScreen* screen) {
   BaseScreenHandler::SetBaseScreenDeprecated(screen);
   screen_ = screen;
-  if (page_is_ready())
+  if (IsJavascriptAllowed())
     InitializeDeprecated();
 }
 
@@ -85,7 +85,7 @@ void ManagementTransitionScreenHandler::Unbind() {
 }
 
 void ManagementTransitionScreenHandler::Show() {
-  if (!page_is_ready() || !screen_) {
+  if (!IsJavascriptAllowed() || !screen_) {
     show_on_init_ = true;
     return;
   }
