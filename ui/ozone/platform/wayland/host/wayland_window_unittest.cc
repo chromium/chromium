@@ -2529,6 +2529,87 @@ TEST_P(WaylandWindowTest, WaylandPopupNestedParent) {
   }
 }
 
+// Tests that size constraints returned by the `ui::PlatformWindowDelegate` are
+// obeyed by the window when its bounds are set internally via its SetBounds()
+// implementation.
+TEST_P(WaylandWindowTest, SizeConstraintsInternal) {
+  const gfx::Rect kMinBounds{0, 0, 100, 100};
+  const gfx::Rect kMaxBounds{0, 0, 300, 300};
+
+  window_->SetBounds({0, 0, 200, 200});
+  Sync();
+
+  auto even_smaller_bounds = kMinBounds;
+  even_smaller_bounds.Inset(10);
+  even_smaller_bounds.set_origin({0, 0});
+
+  EXPECT_CALL(delegate_, GetMinimumSizeForWindow())
+      .WillOnce(Return(kMinBounds.size()));
+  EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kMinBounds)));
+
+  window_->SetBounds(even_smaller_bounds);
+  Sync();
+
+  VerifyAndClearExpectations();
+
+  auto even_greater_bounds = kMaxBounds;
+  even_greater_bounds.Outset(10);
+  even_greater_bounds.set_origin({0, 0});
+
+  EXPECT_CALL(delegate_, GetMaximumSizeForWindow())
+      .WillOnce(Return(kMaxBounds.size()));
+  EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kMaxBounds)));
+
+  window_->SetBounds(even_greater_bounds);
+  Sync();
+}
+
+// Tests that size constraints returned by the `ui::PlatformWindowDelegate` are
+// obeyed by the window when its bounds are set externally via the configure
+// event sent by the compositor.
+TEST_P(WaylandWindowTest, SizeConstraintsExternal) {
+  const gfx::Rect kMinBounds{0, 0, 100, 100};
+  const gfx::Rect kMaxBounds{0, 0, 300, 300};
+
+  EXPECT_CALL(delegate_, GetMinimumSizeForWindow())
+      .WillRepeatedly(Return(kMinBounds.size()));
+  EXPECT_CALL(delegate_, GetMaximumSizeForWindow())
+      .WillRepeatedly(Return(kMaxBounds.size()));
+
+  window_->SetBounds({0, 0, 200, 200});
+  Sync();
+
+  uint32_t serial = 0;
+  auto state = InitializeWlArrayWithActivatedState();
+
+  auto even_smaller_bounds = kMinBounds;
+  even_smaller_bounds.Inset(10);
+  even_smaller_bounds.set_origin({0, 0});
+
+  EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kMinBounds)));
+
+  SendConfigureEvent(xdg_surface_, even_smaller_bounds.width(),
+                     even_smaller_bounds.height(), ++serial, state.get());
+  Sync();
+
+  VerifyAndClearExpectations();
+
+  EXPECT_CALL(delegate_, GetMinimumSizeForWindow())
+      .WillRepeatedly(Return(kMinBounds.size()));
+  EXPECT_CALL(delegate_, GetMaximumSizeForWindow())
+      .WillRepeatedly(Return(kMaxBounds.size()));
+
+  auto even_greater_bounds = kMaxBounds;
+  even_greater_bounds.Outset(10);
+  even_greater_bounds.set_origin({0, 0});
+
+  EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kMaxBounds)));
+
+  SendConfigureEvent(xdg_surface_, even_greater_bounds.width(),
+                     even_greater_bounds.height(), ++serial, state.get());
+  Sync();
+}
+
 TEST_P(WaylandWindowTest, OnSizeConstraintsChanged) {
   const bool kBooleans[] = {false, true};
   for (bool has_min_size : kBooleans) {
