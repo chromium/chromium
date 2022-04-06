@@ -226,6 +226,16 @@ class TestTabHelperObserver : public PrefetchProxyTabHelper::Observer {
     on_nsp_finished_closure_ = std::move(closure);
   }
 
+  void SetOnCookiesChangedForPrefetchAfterInitialCheckClosure(
+      base::OnceClosure closure) {
+    on_cookies_changed_after_initial_check_ = std::move(closure);
+  }
+
+  void SetExpectedURLCookiesChangedForPrefetchAfterInitialCheck(
+      const GURL& url) {
+    expected_url_cookies_changed_after_initial_check_ = url;
+  }
+
   // PrefetchProxyTabHelper::Observer:
   void OnDecoyPrefetchCompleted(const GURL& url) override {
     if (on_decoy_prefetch_closure_) {
@@ -270,6 +280,16 @@ class TestTabHelperObserver : public PrefetchProxyTabHelper::Observer {
     }
   }
 
+  void OnCookiesChangedForPrefetchAfterInitialCheck(const GURL& url) override {
+    if (url != expected_url_cookies_changed_after_initial_check_)
+      return;
+
+    if (!on_cookies_changed_after_initial_check_)
+      return;
+
+    std::move(on_cookies_changed_after_initial_check_).Run();
+  }
+
  private:
   raw_ptr<PrefetchProxyTabHelper> tab_helper_;
 
@@ -282,6 +302,9 @@ class TestTabHelperObserver : public PrefetchProxyTabHelper::Observer {
   std::set<std::pair<GURL, int>> expected_prefetch_errors_;
 
   base::OnceClosure on_nsp_finished_closure_;
+
+  base::OnceClosure on_cookies_changed_after_initial_check_;
+  GURL expected_url_cookies_changed_after_initial_check_;
 };
 
 // A stub ClientCertStore that returns a FakeClientCertIdentity.
@@ -1273,22 +1296,29 @@ IN_PROC_BROWSER_TEST_F(
 
   TestTabHelperObserver tab_helper_observer(tab_helper);
   tab_helper_observer.SetExpectedSuccessfulURLs({prefetch_url});
+  tab_helper_observer.SetExpectedURLCookiesChangedForPrefetchAfterInitialCheck(
+      prefetch_url);
 
-  base::RunLoop run_loop;
-  tab_helper_observer.SetOnPrefetchSuccessfulClosure(run_loop.QuitClosure());
+  base::RunLoop prefetch_run_loop;
+  tab_helper_observer.SetOnPrefetchSuccessfulClosure(
+      prefetch_run_loop.QuitClosure());
 
   GURL doc_url("https://www.google.com/search?q=test");
   MakeNavigationPrediction(doc_url, {prefetch_url});
 
-  run_loop.Run();
+  prefetch_run_loop.Run();
 
   EXPECT_EQ(1U, tab_helper->srp_metrics().predicted_urls_count_);
   EXPECT_EQ(1U, tab_helper->srp_metrics().prefetch_eligible_count_);
   EXPECT_EQ(1U, tab_helper->srp_metrics().prefetch_successful_count_);
 
+  base::RunLoop cookie_run_loop;
+  tab_helper_observer.SetOnCookiesChangedForPrefetchAfterInitialCheckClosure(
+      cookie_run_loop.QuitClosure());
+
   ASSERT_TRUE(content::SetCookie(browser()->profile(), GetOriginServerURL("/"),
                                  "cookietype=Oatmeal"));
-  base::RunLoop().RunUntilIdle();
+  cookie_run_loop.Run();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
 

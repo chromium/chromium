@@ -51,9 +51,10 @@ PrefetchProxyPrefetchStatus PrefetchContainer::GetPrefetchStatus() const {
 }
 
 void PrefetchContainer::RegisterCookieListener(
+    base::OnceCallback<void(const GURL&)> on_cookie_change_callback,
     network::mojom::CookieManager* cookie_manager) {
-  cookie_listener_ =
-      PrefetchProxyCookieListener::MakeAndRegister(url_, cookie_manager);
+  cookie_listener_ = PrefetchProxyCookieListener::MakeAndRegister(
+      url_, std::move(on_cookie_change_callback), cookie_manager);
 }
 
 void PrefetchContainer::StopCookieListener() {

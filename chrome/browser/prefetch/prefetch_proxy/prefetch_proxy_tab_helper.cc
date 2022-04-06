@@ -1593,6 +1593,9 @@ void PrefetchProxyTabHelper::OnGotEligibilityResult(
   if (prefetch_container->GetPrefetchType()
           .IsIsolatedNetworkContextRequired()) {
     prefetch_container->RegisterCookieListener(
+        base::BindOnce(
+            &PrefetchProxyTabHelper::OnCookiesChangedAfterInitialCheck,
+            weak_factory_.GetWeakPtr()),
         profile_->GetDefaultStoragePartition()
             ->GetCookieManagerForBrowserProcess());
   }
@@ -1710,6 +1713,13 @@ bool PrefetchProxyTabHelper::HaveCookiesChanged(const GURL& url) const {
   if (prefetch_container_iter == page_->prefetch_containers_.end())
     return false;
   return prefetch_container_iter->second->HaveCookiesChanged();
+}
+
+void PrefetchProxyTabHelper::OnCookiesChangedAfterInitialCheck(
+    const GURL& url) {
+  for (auto& observer : observer_list_) {
+    observer.OnCookiesChangedForPrefetchAfterInitialCheck(url);
+  }
 }
 
 void PrefetchProxyTabHelper::CurrentPageLoad::CreateNetworkContextForUrl(

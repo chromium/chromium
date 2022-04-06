@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "url/gurl.h"
@@ -20,9 +21,12 @@ class PrefetchProxyCookieListener
  public:
   static std::unique_ptr<PrefetchProxyCookieListener> MakeAndRegister(
       const GURL& url,
+      base::OnceCallback<void(const GURL&)> on_cookie_change_callback,
       network::mojom::CookieManager* cookie_manager);
 
-  explicit PrefetchProxyCookieListener(const GURL& url);
+  PrefetchProxyCookieListener(
+      const GURL& url,
+      base::OnceCallback<void(const GURL&)> on_cookie_change_callback);
   ~PrefetchProxyCookieListener() override;
 
   PrefetchProxyCookieListener(const PrefetchProxyCookieListener&) = delete;
@@ -45,6 +49,8 @@ class PrefetchProxyCookieListener
 
   bool have_cookies_changed_ = false;
   GURL url_;
+
+  base::OnceCallback<void(const GURL&)> on_cookie_change_callback_;
 
   mojo::Receiver<network::mojom::CookieChangeListener>
       cookie_listener_receiver_{this};

@@ -28,8 +28,11 @@ class PrefetchProxyCookieListenerTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<PrefetchProxyCookieListener> MakeCookieListener(
       const GURL& url) {
     std::unique_ptr<PrefetchProxyCookieListener> cookie_listener =
-        PrefetchProxyCookieListener::MakeAndRegister(url,
-                                                     cookie_manager_.get());
+        PrefetchProxyCookieListener::MakeAndRegister(
+            url,
+            base::BindOnce(&PrefetchProxyCookieListenerTest::OnCookiesChanged,
+                           base::Unretained(this)),
+            cookie_manager_.get());
     EXPECT_TRUE(cookie_listener);
     return cookie_listener;
   }
@@ -67,6 +70,12 @@ class PrefetchProxyCookieListenerTest : public ChromeRenderViewHostTestHarness {
     return SetCookie(*cookie.get(), url);
   }
 
+  void SetExpectedURL(const GURL& url) { expected_url_ = url; }
+
+  void SetOnCookiesChangedClosure(base::OnceClosure closure) {
+    on_cookies_changed_closure_ = std::move(closure);
+  }
+
  private:
   bool SetCookie(const net::CanonicalCookie& cookie, const GURL& url) {
     bool result = false;
@@ -90,8 +99,21 @@ class PrefetchProxyCookieListenerTest : public ChromeRenderViewHostTestHarness {
     return result;
   }
 
+  void OnCookiesChanged(const GURL& url) {
+    if (url != expected_url_)
+      return;
+
+    if (!on_cookies_changed_closure_)
+      return;
+
+    std::move(on_cookies_changed_closure_).Run();
+  }
+
   // Cookie manager for all tests
   mojo::Remote<network::mojom::CookieManager> cookie_manager_;
+
+  GURL expected_url_;
+  base::OnceClosure on_cookies_changed_closure_;
 };
 
 // Create a cookie listener and make no changes to any cookie. Check that the
@@ -121,8 +143,12 @@ TEST_F(PrefetchProxyCookieListenerTest, ChangeHostCookiesForSameUrl) {
   std::unique_ptr<PrefetchProxyCookieListener> cookie_listener =
       MakeCookieListener(GURL("https://www.example.com/"));
 
+  base::RunLoop run_loop;
+  SetExpectedURL(GURL("https://www.example.com/"));
+  SetOnCookiesChangedClosure(run_loop.QuitClosure());
+
   EXPECT_TRUE(SetHostCookie(GURL("https://www.example.com/"), "testing"));
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 
   EXPECT_TRUE(cookie_listener->HaveCookiesChanged());
 }
@@ -158,10 +184,14 @@ TEST_F(PrefetchProxyCookieListenerTest, ChangeDomainCookiesForSameUrl) {
   std::unique_ptr<PrefetchProxyCookieListener> cookie_listener =
       MakeCookieListener(GURL("https://specificdomain.generaldomain.com/"));
 
+  base::RunLoop run_loop;
+  SetExpectedURL(GURL("https://specificdomain.generaldomain.com/"));
+  SetOnCookiesChangedClosure(run_loop.QuitClosure());
+
   EXPECT_TRUE(SetDomainCookie(GURL("https://specificdomain.generaldomain.com/"),
                               "testing", "testing",
                               "specificdomain.generaldomain.com"));
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 
   EXPECT_TRUE(cookie_listener->HaveCookiesChanged());
 }
@@ -172,9 +202,13 @@ TEST_F(PrefetchProxyCookieListenerTest, ChangeDomainCookiesForSubdomain) {
   std::unique_ptr<PrefetchProxyCookieListener> cookie_listener =
       MakeCookieListener(GURL("https://specificdomain.generaldomain.com/"));
 
+  base::RunLoop run_loop;
+  SetExpectedURL(GURL("https://specificdomain.generaldomain.com/"));
+  SetOnCookiesChangedClosure(run_loop.QuitClosure());
+
   EXPECT_TRUE(SetDomainCookie(GURL("https://generaldomain.com/"), "testing",
                               "testing", "generaldomain.com"));
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 
   EXPECT_TRUE(cookie_listener->HaveCookiesChanged());
 }
@@ -209,6 +243,8 @@ TEST_F(PrefetchProxyCookieListenerTest, StopListening) {
   EXPECT_TRUE(SetHostCookie(test_url, "testing"));
   base::RunLoop().RunUntilIdle();
 
+  // The listener that was stopped, will not catch the added cookie, but the
+  // other listener will.
   EXPECT_FALSE(cookie_listener->HaveCookiesChanged());
 }
 

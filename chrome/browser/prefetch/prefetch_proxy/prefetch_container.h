@@ -81,7 +81,9 @@ class PrefetchContainer {
   // |PrefetchProxyCookieListener| listens for any changes to the cookies
   // associated with |url_|. If these cookies change, then no prefetched
   // resources will be served.
-  void RegisterCookieListener(network::mojom::CookieManager* cookie_manager);
+  void RegisterCookieListener(
+      base::OnceCallback<void(const GURL&)> on_cookie_changed_callback,
+      network::mojom::CookieManager* cookie_manager);
   void StopCookieListener();
   bool HaveCookiesChanged() const;
 

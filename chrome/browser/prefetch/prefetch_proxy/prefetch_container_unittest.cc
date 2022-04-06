@@ -121,11 +121,24 @@ TEST_F(PrefetchContainerTest, CookieListener) {
 
   EXPECT_FALSE(prefetch_container.HaveCookiesChanged());
 
-  prefetch_container.RegisterCookieListener(cookie_manager());
+  base::RunLoop run_loop;
+
+  prefetch_container.RegisterCookieListener(
+      base::BindOnce(
+          [](base::RunLoop* run_loop, const GURL& expected_url,
+             const GURL& cookie_changed_url) {
+            if (expected_url != cookie_changed_url)
+              return;
+
+            run_loop->Quit();
+          },
+          &run_loop, test_url),
+      cookie_manager());
 
   EXPECT_FALSE(prefetch_container.HaveCookiesChanged());
 
   EXPECT_TRUE(SetCookie(test_url, "testing"));
+  run_loop.Run();
 
   EXPECT_TRUE(prefetch_container.HaveCookiesChanged());
 }

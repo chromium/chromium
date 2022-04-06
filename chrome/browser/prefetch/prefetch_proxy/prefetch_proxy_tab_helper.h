@@ -81,6 +81,11 @@ class PrefetchProxyTabHelper
 
     // Called when a url's eligiblity checks are done and fully processed.
     virtual void OnNewEligiblePrefetchStarted() {}
+
+    // Called when the cookies associated with a prefetch are changed after the
+    // initial eligiblity check.
+    virtual void OnCookiesChangedForPrefetchAfterInitialCheck(const GURL& url) {
+    }
   };
 
   // Container for several metrics which pertain to prefetching actions
@@ -457,6 +462,10 @@ class PrefetchProxyTabHelper
   // isolated network context to the default context, and notifies the
   // |PrefetchProxySubresourceManager| associated with |url|.
   void PrepareToServe(const GURL& url);
+
+  // Called when the cookies of a prefetch have changed at some point after the
+  // initial check.
+  void OnCookiesChangedAfterInitialCheck(const GURL& url);
 
   raw_ptr<Profile> profile_;
 
