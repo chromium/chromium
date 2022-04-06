@@ -397,7 +397,7 @@ If you run (2) in a terminal, the output of the checks will be displayed there.
 Alternatively, you can set up the server as a Linux service, so it runs on the
 background and starts on boot. If you're using systemd:
 
-Save the following as /etc/systemd/system/fast-local-dev-server.service.
+Save the following as /etc/systemd/user/fast-local-dev-server.service.
 ```
 [Unit]
 Description=Chrome server for android build static analysis
@@ -408,19 +408,19 @@ ExecStart=<path to fast_local_dev_server.py>
 Restart=always
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target
 ```
 
 Then
 ```bash
-sudo systemctl daemon-reload
-sudo systemctl enable fast-local-dev-server
-sudo systemctl start fast-local-dev-server
+systemctl --user daemon-reload
+systemctl --user enable fast-local-dev-server
+systemctl --user start fast-local-dev-server
 ```
 
 The output can be inspected with
 ```
-journalctl -e -u fast-local-dev-server
+journalctl --user -e -u fast-local-dev-server
 ```
 
 **Note**: Since the build completes before the analysis checks finish, the build
