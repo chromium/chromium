@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/test/interaction/interaction_sequence_browser_util.h"
 
 #include "base/test/bind.h"
@@ -22,12 +23,15 @@
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/views/controls/webview/webview.h"
+#include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/view_utils.h"
 #include "url/gurl.h"
 
 namespace {
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kInteractionSequenceBrowserUtilTestId);
-DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(
-    kInteractionSequenceBrowserUtilCustomEventId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTabPageElementId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabSearchPageElementId);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kDownloadsMoreActionsVisibleEventType);
 }  // namespace
 
 class InteractionSequenceBrowserUtilInteractiveUiTest
@@ -63,8 +67,8 @@ IN_PROC_BROWSER_TEST_F(
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
-  InteractionSequenceBrowserUtil util(browser(),
-                                      kInteractionSequenceBrowserUtilTestId);
+  auto download_page = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kPrimaryTabPageElementId);
   auto test_util = CreateInteractionTestUtil();
   const ui::ElementContext context = browser()->window()->GetElementContext();
   const InteractionSequenceBrowserUtil::DeepQuery kButtonQuery = {
@@ -81,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(
           .SetContext(context)
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
-                       .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                       .SetElementID(kPrimaryTabPageElementId)
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
@@ -103,11 +107,11 @@ IN_PROC_BROWSER_TEST_F(
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kHidden)
-                       .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                       .SetElementID(kPrimaryTabPageElementId)
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
-                       .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                       .SetElementID(kPrimaryTabPageElementId)
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence*,
                                ui::TrackedElement* element) {
@@ -119,21 +123,88 @@ IN_PROC_BROWSER_TEST_F(
                                        contents->GetURL());
                              ASSERT_NE(nullptr, contents->GetWebUI());
                              EXPECT_FALSE(
-                                 util.EvaluateAt(kDialogQuery, "el => el.open")
+                                 download_page
+                                     ->EvaluateAt(kDialogQuery, "el => el.open")
                                      .GetBool());
-                             util.EvaluateAt(kButtonQuery, "el => el.click()");
+                             download_page->EvaluateAt(kButtonQuery,
+                                                       "el => el.click()");
                              InteractionSequenceBrowserUtil::StateChange change;
                              change.where = kDialogQuery;
                              change.event =
-                                 kInteractionSequenceBrowserUtilCustomEventId;
+                                 kDownloadsMoreActionsVisibleEventType;
                              change.test_function = "el => el.open";
-                             util.SendEventOnStateChange(change);
+                             download_page->SendEventOnStateChange(change);
                            }))
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kCustomEvent,
-                                kInteractionSequenceBrowserUtilCustomEventId)
-                       .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                                kDownloadsMoreActionsVisibleEventType)
+                       .SetElementID(kPrimaryTabPageElementId)
+                       .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+}
+
+// This test checks that we can attach to a WebUI that isn't embedded in a tab.
+IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilInteractiveUiTest,
+                       OpenTabSearchMenuAndAccessWebUI) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  std::unique_ptr<InteractionSequenceBrowserUtil> tab_search_page;
+  auto test_util = CreateInteractionTestUtil();
+  const ui::ElementContext context = browser()->window()->GetElementContext();
+
+  // Poke into the doc to find something that's not at the top level, just to
+  // verify we can.
+  const InteractionSequenceBrowserUtil::DeepQuery kTabSearchListQuery = {
+      "tab-search-app", "#tabsList"};
+
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(context)
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kTabSearchButtonElementId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence*,
+                               ui::TrackedElement* element) {
+                             test_util->PressButton(element);
+                           }))
+                       .Build())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kTabSearchBubbleElementId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence*,
+                               ui::TrackedElement* element) {
+                             auto* const contents =
+                                 views::AsViewClass<WebUIBubbleDialogView>(
+                                     element->AsA<views::TrackedElementViews>()
+                                         ->view())
+                                     ->web_view()
+                                     ->web_contents();
+                             DCHECK(contents);
+                             tab_search_page =
+                                 InteractionSequenceBrowserUtil::ForWebContents(
+                                     contents, kTabSearchPageElementId,
+                                     browser());
+                           }))
+                       .Build())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kTabSearchPageElementId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence*,
+                               ui::TrackedElement* element) {
+                             std::string not_found;
+                             EXPECT_TRUE(tab_search_page->Exists(
+                                 kTabSearchListQuery, &not_found))
+                                 << "Not found: " << not_found;
+                           }))
                        .Build())
           .Build();
 

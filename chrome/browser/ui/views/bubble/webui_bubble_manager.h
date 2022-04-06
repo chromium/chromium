@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper_service_factory.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/close_bubble_on_tab_activation_helper.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -32,7 +33,8 @@ class WebUIBubbleManager : public views::WidgetObserver {
   const WebUIBubbleManager& operator=(const WebUIBubbleManager&) = delete;
   ~WebUIBubbleManager() override;
 
-  bool ShowBubble(const absl::optional<gfx::Rect>& anchor = absl::nullopt);
+  bool ShowBubble(const absl::optional<gfx::Rect>& anchor = absl::nullopt,
+                  ui::ElementIdentifier identifier = ui::ElementIdentifier());
   void CloseBubble();
   views::Widget* GetBubbleWidget() const;
   bool bubble_using_cached_web_contents() const {

@@ -99,26 +99,41 @@ class InteractionSequenceBrowserUtil : private content::WebContentsObserver,
     ui::CustomElementEventType timeout_event;
   };
 
+  // As above, but with a specific WebContents.
+  // InteractionSequenceBrowserUtil(content::WebContents* web_contents,
+  //                                ui::ElementIdentifier page_identifier);
+
+  ~InteractionSequenceBrowserUtil() override;
+
   // Creates an object associated with a WebContents in the Browser associated
   // with `context`. The TrackedElementWebContents associated with loaded pages
   // will be created with identifier `page_identifier` but you can later change
   // this by calling set_page_identifier(). If `tab_index` is specified, a
   // particular tab will be used, but if it is not, the active tab is used
   // instead.
-  InteractionSequenceBrowserUtil(ui::ElementContext context,
-                                 ui::ElementIdentifier page_identifier,
-                                 absl::optional<int> tab_index = absl::nullopt);
+  static std::unique_ptr<InteractionSequenceBrowserUtil>
+  ForExistingTabInContext(ui::ElementContext context,
+                          ui::ElementIdentifier page_identifier,
+                          absl::optional<int> tab_index = absl::nullopt);
 
   // As above, but you may directly specify the Browser to use.
-  InteractionSequenceBrowserUtil(Browser* browser,
-                                 ui::ElementIdentifier page_identifier,
-                                 absl::optional<int> tab_index = absl::nullopt);
+  static std::unique_ptr<InteractionSequenceBrowserUtil>
+  ForExistingTabInBrowser(Browser* browser,
+                          ui::ElementIdentifier page_identifier,
+                          absl::optional<int> tab_index = absl::nullopt);
 
-  // As above, but with a specific WebContents.
-  InteractionSequenceBrowserUtil(content::WebContents* web_contents,
-                                 ui::ElementIdentifier page_identifier);
-
-  ~InteractionSequenceBrowserUtil() override;
+  // Creates a util object associated with a WebContents, which may be in a tab
+  // or a non-tab WebView (such as tab search, touch tabstrip, etc.). The
+  // associated TrackedElementWebContents will be assigned `page_identifier` and
+  // context from `browser` if specified.
+  //
+  // The `browser` parameter need only be supplied if `web_contents` is not in a
+  // tab. If it is, and you do specify it, then the browser must contain the tab
+  // or an error will be generated.
+  static std::unique_ptr<InteractionSequenceBrowserUtil> ForWebContents(
+      content::WebContents* web_contents,
+      ui::ElementIdentifier page_identifier,
+      Browser* browser = nullptr);
 
   // Creates a util object that becomes valid (and creates an element with
   // identifier `page_identifier`) when the next tab is created in the Browser
@@ -254,10 +269,9 @@ class InteractionSequenceBrowserUtil : private content::WebContentsObserver,
   class Poller;
   struct PollerData;
 
-  InteractionSequenceBrowserUtil(
-      content::WebContents* web_contents,
-      ui::ElementIdentifier page_identifier,
-      absl::optional<Browser*> wait_for_new_tab_target);
+  InteractionSequenceBrowserUtil(content::WebContents* web_contents,
+                                 ui::ElementIdentifier page_identifier,
+                                 absl::optional<Browser*> browser);
 
   void MaybeCreateElement(bool force = false);
   void DiscardCurrentElement();
@@ -275,6 +289,9 @@ class InteractionSequenceBrowserUtil : private content::WebContentsObserver,
   // When we force a page load, we might still get events for the old page.
   // We'll ignore those events.
   GURL navigating_away_from_;
+
+  // Specifies that context to use for WebUI that are not tabs.
+  ui::ElementContext force_context_;
 
   // Virtual element representing the currently-loaded webpage; null if none.
   std::unique_ptr<TrackedElementWebPage> current_element_;

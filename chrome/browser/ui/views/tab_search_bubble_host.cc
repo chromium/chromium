@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
@@ -123,7 +124,7 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
   }
 
   bubble_created_time_ = base::TimeTicks::Now();
-  webui_bubble_manager_.ShowBubble(anchor);
+  webui_bubble_manager_.ShowBubble(anchor, kTabSearchBubbleElementId);
 
   auto* tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(profile_);

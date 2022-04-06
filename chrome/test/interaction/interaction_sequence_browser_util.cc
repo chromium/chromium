@@ -268,28 +268,6 @@ struct InteractionSequenceBrowserUtil::PollerData {
 constexpr base::TimeDelta
     InteractionSequenceBrowserUtil::kDefaultPollingInterval;
 
-InteractionSequenceBrowserUtil::InteractionSequenceBrowserUtil(
-    ui::ElementContext context,
-    ui::ElementIdentifier page_identifier,
-    absl::optional<int> tab_index)
-    : InteractionSequenceBrowserUtil(GetBrowserFromContext(context),
-                                     page_identifier,
-                                     tab_index) {}
-
-InteractionSequenceBrowserUtil::InteractionSequenceBrowserUtil(
-    Browser* browser,
-    ui::ElementIdentifier page_identifier,
-    absl::optional<int> tab_index)
-    : InteractionSequenceBrowserUtil(GetWebContents(browser, tab_index),
-                                     page_identifier) {}
-
-InteractionSequenceBrowserUtil::InteractionSequenceBrowserUtil(
-    content::WebContents* web_contents,
-    ui::ElementIdentifier page_identifier)
-    : InteractionSequenceBrowserUtil(web_contents,
-                                     page_identifier,
-                                     absl::nullopt) {}
-
 InteractionSequenceBrowserUtil::~InteractionSequenceBrowserUtil() {
   // Stop observing before eliminating the element, as a callback could cascade
   // into additional events.
@@ -323,6 +301,38 @@ bool InteractionSequenceBrowserUtil::IsTruthy(const base::Value& value) {
   }
 }
 
+// static
+std::unique_ptr<InteractionSequenceBrowserUtil>
+InteractionSequenceBrowserUtil::ForExistingTabInContext(
+    ui::ElementContext context,
+    ui::ElementIdentifier page_identifier,
+    absl::optional<int> tab_index) {
+  return ForExistingTabInBrowser(GetBrowserFromContext(context),
+                                 page_identifier, tab_index);
+}
+
+// static
+std::unique_ptr<InteractionSequenceBrowserUtil>
+InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+    Browser* browser,
+    ui::ElementIdentifier page_identifier,
+    absl::optional<int> tab_index) {
+  return ForWebContents(GetWebContents(browser, tab_index), page_identifier,
+                        nullptr);
+}
+
+// static
+std::unique_ptr<InteractionSequenceBrowserUtil>
+InteractionSequenceBrowserUtil::ForWebContents(
+    content::WebContents* web_contents,
+    ui::ElementIdentifier page_identifier,
+    Browser* browser) {
+  return base::WrapUnique(new InteractionSequenceBrowserUtil(
+      web_contents, page_identifier,
+      browser ? absl::make_optional(browser) : absl::nullopt));
+}
+
+// static
 std::unique_ptr<InteractionSequenceBrowserUtil>
 InteractionSequenceBrowserUtil::ForNextTabInContext(
     ui::ElementContext context,
@@ -511,15 +521,30 @@ void InteractionSequenceBrowserUtil::OnTabStripModelChanged(
 InteractionSequenceBrowserUtil::InteractionSequenceBrowserUtil(
     content::WebContents* web_contents,
     ui::ElementIdentifier page_identifier,
-    absl::optional<Browser*> wait_for_new_tab_target)
+    absl::optional<Browser*> browser)
     : WebContentsObserver(web_contents), page_identifier_(page_identifier) {
   CHECK(page_identifier);
 
-  if (wait_for_new_tab_target.has_value()) {
-    DCHECK(!web_contents);
-    new_tab_watcher_ =
-        std::make_unique<NewTabWatcher>(this, wait_for_new_tab_target.value());
+  if (browser.has_value()) {
+    // Are we watching for a new tab, or are we just specifying the browser?
+    if (!web_contents) {
+      // Watching for a new tab.
+      new_tab_watcher_ = std::make_unique<NewTabWatcher>(this, browser.value());
+    } else {
+      // See if we redundantly specified a tab and its browser.
+      Browser* const found = chrome::FindBrowserWithWebContents(web_contents);
+      if (found == browser.value()) {
+        // Yes, this is a tab. Watch it as normal.
+        StartWatchingWebContents(web_contents);
+      } else {
+        // No this is not a tab. Remember the context so we can properly create
+        // elements.
+        force_context_ = browser.value()->window()->GetElementContext();
+        MaybeCreateElement();
+      }
+    }
   } else {
+    // This has to be a tab, so use standard watching logic.
     StartWatchingWebContents(web_contents);
   }
 }
@@ -531,16 +556,19 @@ void InteractionSequenceBrowserUtil::MaybeCreateElement(bool force) {
   if (!force && !web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame())
     return;
 
-  Browser* const browser = chrome::FindBrowserWithWebContents(web_contents());
-  if (!browser)
-    return;
+  ui::ElementContext context = force_context_;
+  if (!context) {
+    Browser* const browser = chrome::FindBrowserWithWebContents(web_contents());
+    if (!browser)
+      return;
+    context = browser->window()->GetElementContext();
+  }
 
   // Ignore events on a page we're navigating away from.
   if (navigating_away_from_.EqualsIgnoringRef(web_contents()->GetURL()))
     return;
   navigating_away_from_ = GURL();
 
-  const ui::ElementContext context = browser->window()->GetElementContext();
   current_element_ =
       std::make_unique<TrackedElementWebPage>(page_identifier_, context, this);
 

@@ -77,8 +77,9 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
 
   // Using this constructor hits all of the rest of the constructors, saving us
   // the hassle of writing three identical tests.
-  InteractionSequenceBrowserUtil util(browser()->window()->GetElementContext(),
-                                      kInteractionSequenceBrowserUtilTestId);
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInContext(
+      browser()->window()->GetElementContext(),
+      kInteractionSequenceBrowserUtilTestId);
   auto sequence =
       ui::InteractionSequence::Builder()
           .SetCompletedCallback(completed.Get())
@@ -93,7 +94,73 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                           ui::TrackedElement* element) {
                         EXPECT_TRUE(element->IsA<TrackedElementWebPage>());
                         EXPECT_EQ(
-                            &util,
+                            util.get(),
+                            element->AsA<TrackedElementWebPage>()->owner());
+                      }))
+                  .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
+                       ElementCreatedForExistingWebContentsWithoutBrowser) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  // Using this constructor hits all of the rest of the constructors, saving us
+  // the hassle of writing three identical tests.
+  auto util = InteractionSequenceBrowserUtil::ForWebContents(
+      browser()->tab_strip_model()->GetWebContentsAt(0),
+      kInteractionSequenceBrowserUtilTestId);
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(browser()->window()->GetElementContext())
+          .AddStep(
+              ui::InteractionSequence::StepBuilder()
+                  .SetType(ui::InteractionSequence::StepType::kShown)
+                  .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                  .SetStartCallback(base::BindLambdaForTesting(
+                      [&](ui::InteractionSequence* sequence,
+                          ui::TrackedElement* element) {
+                        EXPECT_TRUE(element->IsA<TrackedElementWebPage>());
+                        EXPECT_EQ(
+                            util.get(),
+                            element->AsA<TrackedElementWebPage>()->owner());
+                      }))
+                  .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
+                       ElementCreatedForExistingWebContentsWithBrowser) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  // Using this constructor hits all of the rest of the constructors, saving us
+  // the hassle of writing three identical tests.
+  auto util = InteractionSequenceBrowserUtil::ForWebContents(
+      browser()->tab_strip_model()->GetWebContentsAt(0),
+      kInteractionSequenceBrowserUtilTestId, browser());
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(browser()->window()->GetElementContext())
+          .AddStep(
+              ui::InteractionSequence::StepBuilder()
+                  .SetType(ui::InteractionSequence::StepType::kShown)
+                  .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                  .SetStartCallback(base::BindLambdaForTesting(
+                      [&](ui::InteractionSequence* sequence,
+                          ui::TrackedElement* element) {
+                        EXPECT_TRUE(element->IsA<TrackedElementWebPage>());
+                        EXPECT_EQ(
+                            util.get(),
                             element->AsA<TrackedElementWebPage>()->owner());
                       }))
                   .Build())
@@ -109,8 +176,8 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
 
   const GURL url = embedded_test_server()->GetURL("/empty.html");
 
-  InteractionSequenceBrowserUtil util(browser(),
-                                      kInteractionSequenceBrowserUtilTestId);
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
   auto sequence =
       ui::InteractionSequence::Builder()
           .SetCompletedCallback(completed.Get())
@@ -146,21 +213,22 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest, LoadPage) {
 
   const GURL url = embedded_test_server()->GetURL("/empty.html");
 
-  InteractionSequenceBrowserUtil util(browser(),
-                                      kInteractionSequenceBrowserUtilTestId);
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
   auto sequence =
       ui::InteractionSequence::Builder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
           .SetContext(browser()->window()->GetElementContext())
-          .AddStep(
-              ui::InteractionSequence::StepBuilder()
-                  .SetType(ui::InteractionSequence::StepType::kShown)
-                  .SetElementID(kInteractionSequenceBrowserUtilTestId)
-                  .SetStartCallback(base::BindLambdaForTesting(
-                      [&](ui::InteractionSequence* sequence,
-                          ui::TrackedElement* element) { util.LoadPage(url); }))
-                  .Build())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence* sequence,
+                               ui::TrackedElement* element) {
+                             util->LoadPage(url);
+                           }))
+                       .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kHidden)
                        .SetElementID(kInteractionSequenceBrowserUtilTestId)
@@ -172,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest, LoadPage) {
           .Build();
 
   EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
-  DCHECK_EQ(url, util.web_contents()->GetURL());
+  DCHECK_EQ(url, util->web_contents()->GetURL());
 }
 
 IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest, IsPageLoaded) {
@@ -181,8 +249,8 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest, IsPageLoaded) {
 
   const GURL url = embedded_test_server()->GetURL("/empty.html");
 
-  InteractionSequenceBrowserUtil util(browser(),
-                                      kInteractionSequenceBrowserUtilTestId);
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
   auto sequence =
       ui::InteractionSequence::Builder()
           .SetCompletedCallback(completed.Get())
@@ -194,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest, IsPageLoaded) {
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
-                             EXPECT_TRUE(util.is_page_loaded());
+                             EXPECT_TRUE(util->is_page_loaded());
                              NavigateParams navigate_params(
                                  browser(), url, ui::PAGE_TRANSITION_TYPED);
                              Navigate(&navigate_params);
@@ -206,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest, IsPageLoaded) {
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
-                             EXPECT_FALSE(util.is_page_loaded());
+                             EXPECT_FALSE(util->is_page_loaded());
                            }))
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
@@ -215,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest, IsPageLoaded) {
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
-                             EXPECT_TRUE(util.is_page_loaded());
+                             EXPECT_TRUE(util->is_page_loaded());
                            }))
                        .Build())
           .Build();
@@ -230,8 +298,8 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
 
   const GURL url = embedded_test_server()->GetURL("/empty.html");
 
-  InteractionSequenceBrowserUtil util(browser(),
-                                      kInteractionSequenceBrowserUtilTestId);
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
   auto sequence =
       ui::InteractionSequence::Builder()
           .SetCompletedCallback(completed.Get())
@@ -243,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
-                             util.set_page_identifier(
+                             util->set_page_identifier(
                                  kInteractionSequenceBrowserUtilTestId2);
                              NavigateParams navigate_params(
                                  browser(), url, ui::PAGE_TRANSITION_TYPED);
@@ -272,11 +340,11 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
   const GURL url = embedded_test_server()->GetURL("/title1.html");
   const GURL url2 = embedded_test_server()->GetURL("/title2.html");
 
-  InteractionSequenceBrowserUtil util(browser(),
-                                      kInteractionSequenceBrowserUtilTestId);
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
 
   // Load the first page and make sure we wait for the page transition.
-  util.LoadPage(url);
+  util->LoadPage(url);
 
   auto sequence =
       ui::InteractionSequence::Builder()
@@ -290,12 +358,12 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
-                             EXPECT_EQ(url, util.web_contents()->GetURL());
+                             EXPECT_EQ(url, util->web_contents()->GetURL());
                              // Load the second page and wait for it to finish
                              // loading.
-                             util.set_page_identifier(
+                             util->set_page_identifier(
                                  kInteractionSequenceBrowserUtilTestId2);
-                             util.LoadPage(url2);
+                             util->LoadPage(url2);
                            }))
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
@@ -305,9 +373,9 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
-                             EXPECT_EQ(url2, util.web_contents()->GetURL());
+                             EXPECT_EQ(url2, util->web_contents()->GetURL());
                              EXPECT_TRUE(chrome::CanGoBack(browser()));
-                             util.set_page_identifier(
+                             util->set_page_identifier(
                                  kInteractionSequenceBrowserUtilTestId);
                              chrome::GoBack(browser(),
                                             WindowOpenDisposition::CURRENT_TAB);
@@ -320,9 +388,9 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
-                             EXPECT_EQ(url, util.web_contents()->GetURL());
+                             EXPECT_EQ(url, util->web_contents()->GetURL());
                              EXPECT_TRUE(chrome::CanGoForward(browser()));
-                             util.set_page_identifier(
+                             util->set_page_identifier(
                                  kInteractionSequenceBrowserUtilTestId2);
                              chrome::GoForward(
                                  browser(), WindowOpenDisposition::CURRENT_TAB);
@@ -335,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
-                             EXPECT_EQ(url2, util.web_contents()->GetURL());
+                             EXPECT_EQ(url2, util->web_contents()->GetURL());
                            }))
                        .Build())
           .Build();
@@ -347,8 +415,8 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest, EvaluateInt) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
-  InteractionSequenceBrowserUtil util(browser(),
-                                      kInteractionSequenceBrowserUtilTestId);
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
   auto sequence =
       ui::InteractionSequence::Builder()
           .SetCompletedCallback(completed.Get())
@@ -360,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest, EvaluateInt) {
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
-                             EXPECT_EQ(1, util.Evaluate("() => 1").GetInt());
+                             EXPECT_EQ(1, util->Evaluate("() => 1").GetInt());
                            }))
                        .Build())
           .Build();
@@ -372,8 +440,8 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest, EvaluateString) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
-  InteractionSequenceBrowserUtil util(browser(),
-                                      kInteractionSequenceBrowserUtilTestId);
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
   auto sequence =
       ui::InteractionSequence::Builder()
           .SetCompletedCallback(completed.Get())
@@ -387,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest, EvaluateString) {
                                ui::TrackedElement* element) {
                              EXPECT_EQ(
                                  std::string("The quick brown fox"),
-                                 util.Evaluate("() => 'The quick brown fox'")
+                                 util->Evaluate("() => 'The quick brown fox'")
                                      .GetString());
                            }))
                        .Build())
@@ -400,8 +468,8 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest, EvaluatePromise) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
-  InteractionSequenceBrowserUtil util(browser(),
-                                      kInteractionSequenceBrowserUtilTestId);
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
   constexpr char kPromiseScript[] =
       "() => new Promise((resolve) => setTimeout(resolve(123), 300))";
   auto sequence =
@@ -416,7 +484,7 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest, EvaluatePromise) {
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
                              EXPECT_EQ(123,
-                                       util.Evaluate(kPromiseScript).GetInt());
+                                       util->Evaluate(kPromiseScript).GetInt());
                            }))
                        .Build())
           .Build();
@@ -429,8 +497,8 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
-  InteractionSequenceBrowserUtil util(browser(),
-                                      kInteractionSequenceBrowserUtilTestId);
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
   auto sequence =
       ui::InteractionSequence::Builder()
           .SetCompletedCallback(completed.Get())
@@ -442,13 +510,13 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
-                             util.Evaluate("function() { window.value = 1; }");
+                             util->Evaluate("function() { window.value = 1; }");
                              InteractionSequenceBrowserUtil::StateChange
                                  state_change;
                              state_change.test_function = "() => window.value";
                              state_change.event =
                                  kInteractionTestUtilCustomEventType;
-                             util.SendEventOnStateChange(state_change);
+                             util->SendEventOnStateChange(state_change);
                            }))
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
@@ -466,8 +534,8 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
-  InteractionSequenceBrowserUtil util(browser(),
-                                      kInteractionSequenceBrowserUtilTestId);
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
   auto sequence =
       ui::InteractionSequence::Builder()
           .SetCompletedCallback(completed.Get())
@@ -479,7 +547,7 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
-                             util.Evaluate(
+                             util->Evaluate(
                                  R"(function () {
                                       window.value = 0;
                                       setTimeout(
@@ -491,7 +559,7 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                              state_change.test_function = "() => window.value";
                              state_change.event =
                                  kInteractionTestUtilCustomEventType;
-                             util.SendEventOnStateChange(state_change);
+                             util->SendEventOnStateChange(state_change);
                            }))
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
@@ -509,8 +577,8 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
-  InteractionSequenceBrowserUtil util(browser(),
-                                      kInteractionSequenceBrowserUtilTestId);
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
   auto sequence =
       ui::InteractionSequence::Builder()
           .SetCompletedCallback(completed.Get())
@@ -522,7 +590,7 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
-                             util.Evaluate(
+                             util->Evaluate(
                                  R"(function () {
                                       window.value = 0;
                                       setTimeout(
@@ -537,7 +605,7 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                              state_change.timeout = base::Milliseconds(300);
                              state_change.timeout_event =
                                  kInteractionTestUtilCustomEventType2;
-                             util.SendEventOnStateChange(state_change);
+                             util->SendEventOnStateChange(state_change);
                            }))
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
@@ -555,8 +623,8 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
-  InteractionSequenceBrowserUtil util(browser(),
-                                      kInteractionSequenceBrowserUtilTestId);
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
 
   // Poll significantly faster than the value in the page is expected to
   // change; this allows us to verify that the value changes after a non-zero
@@ -576,12 +644,12 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
              setTimeout(function() { window.value = $2; }, $3);
            })",
         std::move(initial), std::move(final), kScriptDelayMs);
-    util.Evaluate(script);
+    util->Evaluate(script);
     InteractionSequenceBrowserUtil::StateChange state_change;
     state_change.test_function = "() => window.value";
     state_change.event = kInteractionTestUtilCustomEventType;
     state_change.polling_interval = kPollTime;
-    util.SendEventOnStateChange(state_change);
+    util->SendEventOnStateChange(state_change);
   };
 
   // Verifies that multiple polling intervals have passed before the condition
@@ -696,8 +764,8 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
 
   const GURL url = embedded_test_server()->GetURL("/empty.html");
 
-  InteractionSequenceBrowserUtil util(browser(),
-                                      kInteractionSequenceBrowserUtilTestId);
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
   auto sequence =
       ui::InteractionSequence::Builder()
           .SetCompletedCallback(completed.Get())
@@ -709,7 +777,7 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
-                             util.Evaluate(content::JsReplace(
+                             util->Evaluate(content::JsReplace(
                                  "function() { window.location = $1; }",
                                  url.spec()));
                            }))
@@ -734,8 +802,8 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
 
   Browser* const other_browser = CreateBrowser(browser()->profile());
 
-  InteractionSequenceBrowserUtil util(browser(),
-                                      kInteractionSequenceBrowserUtilTestId);
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
   auto sequence =
       ui::InteractionSequence::Builder()
           .SetCompletedCallback(completed.Get())
@@ -771,8 +839,8 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
-  InteractionSequenceBrowserUtil util(browser(),
-                                      kInteractionSequenceBrowserUtilTestId);
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
   auto sequence =
       ui::InteractionSequence::Builder()
           .SetCompletedCallback(completed.Get())
@@ -800,12 +868,12 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                        OpenPageInNewTabInactive) {
   const GURL url = embedded_test_server()->GetURL("/empty.html");
 
-  InteractionSequenceBrowserUtil util(browser(),
-                                      kInteractionSequenceBrowserUtilTestId);
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
   auto* const model = browser()->tab_strip_model();
   const int count = model->GetTabCount();
   const int index = model->active_index();
-  util.LoadPageInNewTab(url, false);
+  util->LoadPageInNewTab(url, false);
   EXPECT_EQ(count + 1, model->GetTabCount());
   EXPECT_EQ(index, model->active_index());
 }
@@ -814,12 +882,12 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                        OpenPageInNewTabActive) {
   const GURL url = embedded_test_server()->GetURL("/empty.html");
 
-  InteractionSequenceBrowserUtil util(browser(),
-                                      kInteractionSequenceBrowserUtilTestId);
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
   auto* const model = browser()->tab_strip_model();
   const int count = model->GetTabCount();
   const int index = model->active_index();
-  util.LoadPageInNewTab(url, true);
+  util->LoadPageInNewTab(url, true);
   EXPECT_EQ(count + 1, model->GetTabCount());
   EXPECT_EQ(index + 1, model->active_index());
 }
@@ -831,8 +899,8 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
 
   const GURL url = embedded_test_server()->GetURL("/empty.html");
 
-  InteractionSequenceBrowserUtil util(browser(),
-                                      kInteractionSequenceBrowserUtilTestId);
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
   auto util2 = InteractionSequenceBrowserUtil::ForNextTabInContext(
       browser()->window()->GetElementContext(),
       kInteractionSequenceBrowserUtilTestId2);
@@ -848,7 +916,7 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
-                             util.LoadPageInNewTab(url, false);
+                             util->LoadPageInNewTab(url, false);
                            }))
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
@@ -869,8 +937,8 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
   const GURL url = embedded_test_server()->GetURL("/empty.html");
   Browser* const browser2 = CreateBrowser(browser()->profile());
 
-  InteractionSequenceBrowserUtil util(browser(),
-                                      kInteractionSequenceBrowserUtilTestId);
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
   auto util2 = InteractionSequenceBrowserUtil::ForNextTabInBrowser(
       browser2, kInteractionSequenceBrowserUtilTestId2);
 
@@ -924,8 +992,8 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
   const GURL url = embedded_test_server()->GetURL("/empty.html");
   Browser* browser2 = nullptr;
 
-  InteractionSequenceBrowserUtil util(browser(),
-                                      kInteractionSequenceBrowserUtilTestId);
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
   auto util2 = InteractionSequenceBrowserUtil::ForNextTabInAnyBrowser(
       kInteractionSequenceBrowserUtilTestId2);
 
@@ -979,8 +1047,8 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
 
   const GURL url = embedded_test_server()->GetURL("/empty.html");
 
-  InteractionSequenceBrowserUtil util(browser(),
-                                      kInteractionSequenceBrowserUtilTestId);
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
   auto util2 = InteractionSequenceBrowserUtil::ForNextTabInAnyBrowser(
       kInteractionSequenceBrowserUtilTestId2);
 
@@ -995,7 +1063,7 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
-                             util.LoadPageInNewTab(url, false);
+                             util->LoadPageInNewTab(url, false);
                            }))
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
@@ -1015,8 +1083,8 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
 
   Browser* const other_browser = CreateBrowser(browser()->profile());
 
-  InteractionSequenceBrowserUtil util(browser(),
-                                      kInteractionSequenceBrowserUtilTestId);
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
   auto util2 = InteractionSequenceBrowserUtil::ForNextTabInAnyBrowser(
       kInteractionSequenceBrowserUtilTestId2);
 
@@ -1064,8 +1132,8 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
 
   Browser* const other_browser = CreateBrowser(browser()->profile());
 
-  InteractionSequenceBrowserUtil util(browser(),
-                                      kInteractionSequenceBrowserUtilTestId);
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
   auto util2 = InteractionSequenceBrowserUtil::ForNextTabInBrowser(
       other_browser, kInteractionSequenceBrowserUtilTestId2);
 
@@ -1115,9 +1183,9 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest, ExistsInWebUIPage) {
   const InteractionSequenceBrowserUtil::DeepQuery kQuery2{
       "settings-ui", "settings-main#foo", "div#noSearchResults"};
 
-  InteractionSequenceBrowserUtil util(browser(),
-                                      kInteractionSequenceBrowserUtilTestId);
-  util.LoadPage(GURL("chrome://settings"));
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
+  util->LoadPage(GURL("chrome://settings"));
 
   auto sequence =
       ui::InteractionSequence::Builder()
@@ -1131,9 +1199,9 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest, ExistsInWebUIPage) {
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
-                             EXPECT_TRUE(util.Exists(kQuery1));
+                             EXPECT_TRUE(util->Exists(kQuery1));
                              std::string failed;
-                             EXPECT_FALSE(util.Exists(kQuery2, &failed));
+                             EXPECT_FALSE(util->Exists(kQuery2, &failed));
                              EXPECT_EQ(kQuery2[1], failed);
                            }))
                        .Build())
@@ -1150,9 +1218,9 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
   const InteractionSequenceBrowserUtil::DeepQuery kQuery{
       "settings-ui", "settings-main#main", "div#noSearchResults"};
 
-  InteractionSequenceBrowserUtil util(browser(),
-                                      kInteractionSequenceBrowserUtilTestId);
-  util.LoadPage(GURL("chrome://settings"));
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
+  util->LoadPage(GURL("chrome://settings"));
 
   auto sequence =
       ui::InteractionSequence::Builder()
@@ -1166,7 +1234,7 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
                              const auto result =
-                                 util.EvaluateAt(kQuery, "el => el.innerText");
+                                 util->EvaluateAt(kQuery, "el => el.innerText");
                              EXPECT_TRUE(result.is_string());
                              EXPECT_FALSE(result.GetString().empty());
                            }))
@@ -1193,10 +1261,10 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
       "[id=\"not-present\"]"};
   const InteractionSequenceBrowserUtil::DeepQuery kQuery6{"[id='not-present']"};
 
-  InteractionSequenceBrowserUtil util(browser(),
-                                      kInteractionSequenceBrowserUtilTestId);
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
   const GURL url = embedded_test_server()->GetURL("/links.html");
-  util.LoadPage(url);
+  util->LoadPage(url);
 
   auto sequence =
       ui::InteractionSequence::Builder()
@@ -1210,24 +1278,24 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
                              // Using DeepQuery.
-                             EXPECT_TRUE(util.Exists(kQuery1));
+                             EXPECT_TRUE(util->Exists(kQuery1));
                              std::string failed;
-                             EXPECT_FALSE(util.Exists(kQuery2, &failed));
+                             EXPECT_FALSE(util->Exists(kQuery2, &failed));
                              EXPECT_EQ(kQuery2[0], failed);
-                             EXPECT_TRUE(util.Exists(kQuery3));
-                             EXPECT_TRUE(util.Exists(kQuery4));
-                             EXPECT_FALSE(util.Exists(kQuery5, &failed));
+                             EXPECT_TRUE(util->Exists(kQuery3));
+                             EXPECT_TRUE(util->Exists(kQuery4));
+                             EXPECT_FALSE(util->Exists(kQuery5, &failed));
                              EXPECT_EQ(kQuery5[0], failed);
-                             EXPECT_FALSE(util.Exists(kQuery6, &failed));
+                             EXPECT_FALSE(util->Exists(kQuery6, &failed));
                              EXPECT_EQ(kQuery6[0], failed);
 
                              // Using the simple string selector version.
-                             EXPECT_TRUE(util.Exists(kQuery1[0]));
-                             EXPECT_FALSE(util.Exists(kQuery2[0]));
-                             EXPECT_TRUE(util.Exists(kQuery3[0]));
-                             EXPECT_TRUE(util.Exists(kQuery4[0]));
-                             EXPECT_FALSE(util.Exists(kQuery5[0]));
-                             EXPECT_FALSE(util.Exists(kQuery6[0]));
+                             EXPECT_TRUE(util->Exists(kQuery1[0]));
+                             EXPECT_FALSE(util->Exists(kQuery2[0]));
+                             EXPECT_TRUE(util->Exists(kQuery3[0]));
+                             EXPECT_TRUE(util->Exists(kQuery4[0]));
+                             EXPECT_FALSE(util->Exists(kQuery5[0]));
+                             EXPECT_FALSE(util->Exists(kQuery6[0]));
                            }))
                        .Build())
           .Build();
@@ -1241,10 +1309,10 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
   const InteractionSequenceBrowserUtil::DeepQuery kQuery{"#ref"};
-  InteractionSequenceBrowserUtil util(browser(),
-                                      kInteractionSequenceBrowserUtilTestId);
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
   const GURL url = embedded_test_server()->GetURL("/links.html");
-  util.LoadPage(url);
+  util->LoadPage(url);
 
   auto sequence =
       ui::InteractionSequence::Builder()
@@ -1259,13 +1327,13 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                                ui::TrackedElement* element) {
                              // Test evaluate at with a DeepQuery.
                              auto result =
-                                 util.EvaluateAt(kQuery, "el => el.innerText");
+                                 util->EvaluateAt(kQuery, "el => el.innerText");
                              EXPECT_TRUE(result.is_string());
                              EXPECT_EQ("ref link", result.GetString());
 
                              // Test evaluate at with a plain string selector.
-                             result = util.EvaluateAt(kQuery[0],
-                                                      "el => el.innerText");
+                             result = util->EvaluateAt(kQuery[0],
+                                                       "el => el.innerText");
                              EXPECT_TRUE(result.is_string());
                              EXPECT_EQ("ref link", result.GetString());
                            }))
@@ -1281,10 +1349,10 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
   const InteractionSequenceBrowserUtil::DeepQuery kQuery{"#ref"};
-  InteractionSequenceBrowserUtil util(browser(),
-                                      kInteractionSequenceBrowserUtilTestId);
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
   const GURL url = embedded_test_server()->GetURL("/links.html");
-  util.LoadPage(url);
+  util->LoadPage(url);
 
   auto sequence =
       ui::InteractionSequence::Builder()
@@ -1297,8 +1365,8 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
-                             util.EvaluateAt(kQuery,
-                                             R"(el => {
+                             util->EvaluateAt(kQuery,
+                                              R"(el => {
                                       el.innerText = '';
                                       setTimeout(() => el.innerText = 'foo',
                                                  300);
@@ -1307,7 +1375,7 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                              change.test_function = "el => el.innerText";
                              change.where = kQuery;
                              change.event = kInteractionTestUtilCustomEventType;
-                             util.SendEventOnStateChange(change);
+                             util->SendEventOnStateChange(change);
                            }))
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
@@ -1327,10 +1395,10 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
 
   const InteractionSequenceBrowserUtil::DeepQuery kQuery1{"#ref"};
   const InteractionSequenceBrowserUtil::DeepQuery kQuery2{"#ref", "p#pp"};
-  InteractionSequenceBrowserUtil util(browser(),
-                                      kInteractionSequenceBrowserUtilTestId);
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
   const GURL url = embedded_test_server()->GetURL("/links.html");
-  util.LoadPage(url);
+  util->LoadPage(url);
 
   auto sequence =
       ui::InteractionSequence::Builder()
@@ -1343,8 +1411,8 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
-                             util.EvaluateAt(kQuery1,
-                                             R"(el => {
+                             util->EvaluateAt(kQuery1,
+                                              R"(el => {
                                                 el.innerText = '';
                                                 setTimeout(() =>
                                                     el.innerHTML =
@@ -1354,7 +1422,7 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                              InteractionSequenceBrowserUtil::StateChange change;
                              change.where = kQuery2;
                              change.event = kInteractionTestUtilCustomEventType;
-                             util.SendEventOnStateChange(change);
+                             util->SendEventOnStateChange(change);
                            }))
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()

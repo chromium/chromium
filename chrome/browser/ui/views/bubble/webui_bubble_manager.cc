@@ -6,7 +6,9 @@
 
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -24,7 +26,8 @@ WebUIBubbleManager::WebUIBubbleManager()
 
 WebUIBubbleManager::~WebUIBubbleManager() = default;
 
-bool WebUIBubbleManager::ShowBubble(const absl::optional<gfx::Rect>& anchor) {
+bool WebUIBubbleManager::ShowBubble(const absl::optional<gfx::Rect>& anchor,
+                                    ui::ElementIdentifier identifier) {
   if (bubble_view_)
     return false;
 
@@ -41,6 +44,10 @@ bool WebUIBubbleManager::ShowBubble(const absl::optional<gfx::Rect>& anchor) {
     close_bubble_helper_ = std::make_unique<CloseBubbleOnTabActivationHelper>(
         bubble_view_.get(), BrowserList::GetInstance()->GetLastActive());
   }
+
+  if (identifier)
+    bubble_view_->SetProperty(views::kElementIdentifierKey, identifier);
+
   return true;
 }
 
