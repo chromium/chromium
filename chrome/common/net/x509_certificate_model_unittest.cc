@@ -90,6 +90,9 @@ TEST_P(X509CertificateModel, GetGoogleCertFields) {
   // Dec 18 23:59:59 2011 GMT
   const double kGoogleParseValidTo = 1324252799;
   EXPECT_EQ(kGoogleParseValidTo, not_after.ToDoubleT());
+
+  auto extensions = model.GetExtensions("critical", "notcrit");
+  ASSERT_EQ(4U, extensions.size());
 }
 
 TEST_P(X509CertificateModel, GetNDNCertFields) {
@@ -137,6 +140,9 @@ TEST_P(X509CertificateModel, GetNDNCertFields) {
   EXPECT_TRUE(model.GetTimes(&not_before, &not_after));
   EXPECT_EQ(12800754778, not_before.ToDeltaSinceWindowsEpoch().InSeconds());
   EXPECT_EQ(13116114778, not_after.ToDeltaSinceWindowsEpoch().InSeconds());
+
+  auto extensions = model.GetExtensions("critical", "notcrit");
+  EXPECT_EQ(0U, extensions.size());
 }
 
 TEST_P(X509CertificateModel, PunyCodeCert) {
@@ -145,6 +151,7 @@ TEST_P(X509CertificateModel, PunyCodeCert) {
   ASSERT_TRUE(cert);
   x509_certificate_model::X509CertificateModel model(
       bssl::UpRef(cert->cert_buffer()), GetParam());
+  ASSERT_TRUE(model.is_valid());
   if (GetParam().empty())
     EXPECT_EQ("xn--wgv71a119e.com", model.GetTitle());
   else
@@ -157,6 +164,28 @@ TEST_P(X509CertificateModel, PunyCodeCert) {
             model.GetIssuerName());
   EXPECT_EQ(OptionalStringOrError("CN = xn--wgv71a119e.com (日本語.com)\n"),
             model.GetSubjectName());
+}
+
+TEST_P(X509CertificateModel, GlobalsignComCert) {
+  auto cert = net::ImportCertFromFile(net::GetTestCertsDirectory(),
+                                      "2029_globalsign_com_cert.pem");
+  ASSERT_TRUE(cert.get());
+  x509_certificate_model::X509CertificateModel model(
+      bssl::UpRef(cert->cert_buffer()), GetParam());
+  ASSERT_TRUE(model.is_valid());
+
+  auto extensions = model.GetExtensions("critical", "notcrit");
+  ASSERT_EQ(9U, extensions.size());
+
+  EXPECT_EQ("Certificate Key Usage", extensions[5].name);
+  EXPECT_EQ(
+      "critical\nSigning\nNon-repudiation\nKey Encipherment\n"
+      "Data Encipherment",
+      extensions[5].value);
+
+  EXPECT_EQ("Netscape Certificate Type", extensions[8].name);
+  EXPECT_EQ("notcrit\nSSL Client Certificate\nSSL Server Certificate",
+            extensions[8].value);
 }
 
 TEST_P(X509CertificateModel, SubjectIA5StringInvalidCharacters) {

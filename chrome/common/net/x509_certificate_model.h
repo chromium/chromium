@@ -18,6 +18,11 @@
 // X509 certificates.
 namespace x509_certificate_model {
 
+struct Extension {
+  std::string name;
+  std::string value;
+};
+
 struct NotPresent : absl::monostate {};
 struct Error : absl::monostate {};
 using OptionalStringOrError = absl::variant<Error, NotPresent, std::string>;
@@ -88,8 +93,21 @@ class X509CertificateModel {
   OptionalStringOrError GetIssuerName() const;
   OptionalStringOrError GetSubjectName() const;
 
+  // Returns textual representations of the certificate's extensions, if any.
+  // |critical_label| and |non_critical_label| will be used in the returned
+  // extension.value fields to describe extensions that are critical or
+  // non-critical.
+  std::vector<Extension> GetExtensions(
+      base::StringPiece critical_label,
+      base::StringPiece non_critical_label) const;
+
  private:
   bool ParseExtensions(const net::der::Input& extensions_tlv);
+  std::string ProcessExtension(base::StringPiece critical_label,
+                               base::StringPiece non_critical_label,
+                               const net::ParsedExtension& extension) const;
+  absl::optional<std::string> ProcessExtensionData(
+      const net::ParsedExtension& extension) const;
 
   // Externally provided "nickname" for the cert.
   std::string nickname_;

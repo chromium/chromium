@@ -20,6 +20,7 @@ static_library("net") {
     "//chrome:resources",
     "//chrome:strings",
     "//components/google/core/common",
+    "//components/strings:components_strings_grit",
     "//components/url_formatter",
     "//crypto",
     "//net",

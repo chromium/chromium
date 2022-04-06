@@ -8,10 +8,12 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/hash/sha1.h"
 #include "base/i18n/number_formatting.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
 #include "crypto/sha2.h"
 #include "net/cert/internal/cert_errors.h"
@@ -19,6 +21,8 @@
 #include "net/cert/x509_util.h"
 #include "net/der/encode_values.h"
 #include "net/der/input.h"
+#include "net/der/parse_values.h"
+#include "net/der/tag.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -60,10 +64,32 @@ constexpr uint8_t kEVJurisdictionStateOrProvinceName[] = {
 constexpr uint8_t kEVJurisdictionCountryName[] = {
     0x2b, 0x06, 0x01, 0x04, 0x01, 0x82, 0x37, 0x3c, 0x02, 0x01, 0x03};
 
+// From RFC 5280:
+//     id-ce-issuerAltName OBJECT IDENTIFIER ::=  { id-ce 18 }
+// In dotted notation: 2.5.29.18
+constexpr uint8_t kIssuerAltNameOid[] = {0x55, 0x1d, 0x12};
+// From RFC 5280:
+//     id-ce-subjectDirectoryAttributes OBJECT IDENTIFIER ::=  { id-ce 9 }
+// In dotted notation: 2.5.29.9
+constexpr uint8_t kSubjectDirectoryAttributesOid[] = {0x55, 0x1d, 0x09};
+
+// Old Netscape OIDs. Do we still need all these?
+// #define NETSCAPE_OID 0x60, 0x86, 0x48, 0x01, 0x86, 0xf8, 0x42
+// #define NETSCAPE_CERT_EXT NETSCAPE_OID, 0x01
+//
+// CONST_OID nsExtCertType[] = { NETSCAPE_CERT_EXT, 0x01 };
+constexpr uint8_t kNetscapeCertificateTypeOid[] = {0x60, 0x86, 0x48, 0x01, 0x86,
+                                                   0xf8, 0x42, 0x01, 0x01};
+
 // The certificate viewer may be used to view client certificates, so use the
 // relaxed parsing mode. See crbug.com/770323 and crbug.com/788655.
 constexpr auto kNameStringHandling =
     net::X509NameAttribute::PrintableStringHandling::kAsUTF8Hack;
+
+std::string ProcessRawBytes(net::der::Input data) {
+  return x509_certificate_model::ProcessRawBytes(data.UnsafeData(),
+                                                 data.Length());
+}
 
 OptionalStringOrError FindAttributeOfType(
     net::der::Input oid,
@@ -149,6 +175,33 @@ constexpr auto kOidStringMap = base::MakeFixedFlatMap<net::der::Input, int>({
     {net::der::Input(net::kTypeStreetAddressOid),
      IDS_CERT_OID_AVA_STREET_ADDRESS},
     {net::der::Input(kTypePostalCode), IDS_CERT_OID_AVA_POSTAL_CODE},
+
+    // Extension fields (including details of extensions):
+    {net::der::Input(kNetscapeCertificateTypeOid), IDS_CERT_EXT_NS_CERT_TYPE},
+    {net::der::Input(kSubjectDirectoryAttributesOid),
+     IDS_CERT_X509_SUBJECT_DIRECTORY_ATTR},
+    {net::der::Input(net::kSubjectKeyIdentifierOid),
+     IDS_CERT_X509_SUBJECT_KEYID},
+    {net::der::Input(net::kAuthorityKeyIdentifierOid),
+     IDS_CERT_X509_AUTH_KEYID},
+    {net::der::Input(net::kKeyUsageOid), IDS_CERT_X509_KEY_USAGE},
+    {net::der::Input(net::kSubjectAltNameOid), IDS_CERT_X509_SUBJECT_ALT_NAME},
+    {net::der::Input(kIssuerAltNameOid), IDS_CERT_X509_ISSUER_ALT_NAME},
+    {net::der::Input(net::kBasicConstraintsOid),
+     IDS_CERT_X509_BASIC_CONSTRAINTS},
+    {net::der::Input(net::kNameConstraintsOid), IDS_CERT_X509_NAME_CONSTRAINTS},
+    {net::der::Input(net::kCrlDistributionPointsOid),
+     IDS_CERT_X509_CRL_DIST_POINTS},
+    {net::der::Input(net::kCertificatePoliciesOid),
+     IDS_CERT_X509_CERT_POLICIES},
+    {net::der::Input(net::kPolicyMappingsOid), IDS_CERT_X509_POLICY_MAPPINGS},
+    {net::der::Input(net::kPolicyConstraintsOid),
+     IDS_CERT_X509_POLICY_CONSTRAINTS},
+    {net::der::Input(net::kExtKeyUsageOid), IDS_CERT_X509_EXT_KEY_USAGE},
+    {net::der::Input(net::kAuthorityInfoAccessOid),
+     IDS_CERT_X509_AUTH_INFO_ACCESS},
+    {net::der::Input(net::kCpsPointerId), IDS_CERT_PKIX_CPS_POINTER_QUALIFIER},
+    {net::der::Input(net::kUserNoticeId), IDS_CERT_PKIX_USER_NOTICE_QUALIFIER},
 });
 
 std::string GetOidText(net::der::Input oid) {
@@ -202,6 +255,84 @@ OptionalStringOrError RDNSequenceToStringMultiLine(
     if (rdn_value.empty())
       return Error();
     rv += rdn_value;
+  }
+  return rv;
+}
+
+// Returns a comma-separated string of the strings in |string_map| for the bits
+// in |bitfield| that are set.
+// string_map may contain -1 for reserved positions that should not be set.
+absl::optional<std::string> ProcessBitField(net::der::BitString bitfield,
+                                            base::span<const int> string_map,
+                                            char separator) {
+  std::string rv;
+  for (size_t i = 0; i < string_map.size(); ++i) {
+    if (bitfield.AssertsBit(i)) {
+      int string_id = string_map[i];
+      // TODO(mattm): is returning an error here correct? Or should it encode
+      // some generic string like "reserved bit N set"?
+      if (string_id < 0)
+        return absl::nullopt;
+      if (!rv.empty())
+        rv += separator;
+      rv += l10n_util::GetStringUTF8(string_id);
+    }
+  }
+  // TODO(mattm): should it be an error if bitfield asserts bits beyond |len|?
+  // Or encode them with some generic string like "bit N set"?
+  return rv;
+}
+
+// Returns nullopt on error, or empty string if no bits were set.
+absl::optional<std::string> ProcessBitStringExtension(
+    net::der::Input extension_data,
+    base::span<const int> string_map,
+    char separator) {
+  net::der::BitString decoded;
+  net::der::Input value;
+  net::der::Parser parser(extension_data);
+  if (!parser.ReadTag(net::der::kBitString, &value) || parser.HasMore() ||
+      !net::der::ParseBitString(value, &decoded)) {
+    return absl::nullopt;
+  }
+  return ProcessBitField(decoded, string_map, separator);
+}
+
+absl::optional<std::string> ProcessNSCertTypeExtension(
+    net::der::Input extension_data) {
+  static const int usage_strings[] = {
+      IDS_CERT_USAGE_SSL_CLIENT,
+      IDS_CERT_USAGE_SSL_SERVER,
+      IDS_CERT_EXT_NS_CERT_TYPE_EMAIL,
+      IDS_CERT_USAGE_OBJECT_SIGNER,
+      -1,  // reserved
+      IDS_CERT_USAGE_SSL_CA,
+      IDS_CERT_EXT_NS_CERT_TYPE_EMAIL_CA,
+      IDS_CERT_USAGE_OBJECT_SIGNER,
+  };
+  return ProcessBitStringExtension(extension_data, usage_strings, '\n');
+}
+
+absl::optional<std::string> ProcessKeyUsageExtension(
+    net::der::Input extension_data) {
+  static const int usage_strings[] = {
+      IDS_CERT_X509_KEY_USAGE_SIGNING,
+      IDS_CERT_X509_KEY_USAGE_NONREP,
+      IDS_CERT_X509_KEY_USAGE_ENCIPHERMENT,
+      IDS_CERT_X509_KEY_USAGE_DATA_ENCIPHERMENT,
+      IDS_CERT_X509_KEY_USAGE_KEY_AGREEMENT,
+      IDS_CERT_X509_KEY_USAGE_CERT_SIGNER,
+      IDS_CERT_X509_KEY_USAGE_CRL_SIGNER,
+      IDS_CERT_X509_KEY_USAGE_ENCIPHER_ONLY,
+      IDS_CERT_X509_KEY_USAGE_DECIPHER_ONLY,
+  };
+  absl::optional<std::string> rv =
+      ProcessBitStringExtension(extension_data, usage_strings, '\n');
+  if (rv && rv->empty()) {
+    // RFC 5280 4.2.1.3:
+    // When the keyUsage extension appears in a certificate, at least one of
+    // the bits MUST be set to 1.
+    return absl::nullopt;
   }
   return rv;
 }
@@ -367,6 +498,21 @@ OptionalStringOrError X509CertificateModel::GetSubjectName() const {
   return RDNSequenceToStringMultiLine(subject_rdns_);
 }
 
+std::vector<Extension> X509CertificateModel::GetExtensions(
+    base::StringPiece critical_label,
+    base::StringPiece non_critical_label) const {
+  DCHECK(parsed_successfully_);
+  std::vector<Extension> extensions;
+  for (const auto& extension : extensions_) {
+    Extension processed_extension;
+    processed_extension.name = GetOidText(extension.oid);
+    processed_extension.value =
+        ProcessExtension(critical_label, non_critical_label, extension);
+    extensions.push_back(processed_extension);
+  }
+  return extensions;
+}
+
 bool X509CertificateModel::ParseExtensions(
     const net::der::Input& extensions_tlv) {
   net::CertErrors unused_errors;
@@ -408,6 +554,30 @@ bool X509CertificateModel::ParseExtensions(
     return false;
 
   return true;
+}
+
+std::string X509CertificateModel::ProcessExtension(
+    base::StringPiece critical_label,
+    base::StringPiece non_critical_label,
+    const net::ParsedExtension& extension) const {
+  base::StringPiece criticality =
+      extension.critical ? critical_label : non_critical_label;
+  absl::optional<std::string> processed_extension =
+      ProcessExtensionData(extension);
+  return base::StrCat(
+      {criticality, "\n",
+       (processed_extension
+            ? *processed_extension
+            : l10n_util::GetStringUTF8(IDS_CERT_EXTENSION_DUMP_ERROR))});
+}
+
+absl::optional<std::string> X509CertificateModel::ProcessExtensionData(
+    const net::ParsedExtension& extension) const {
+  if (extension.oid == net::der::Input(kNetscapeCertificateTypeOid))
+    return ProcessNSCertTypeExtension(extension.value);
+  if (extension.oid == net::der::Input(net::kKeyUsageOid))
+    return ProcessKeyUsageExtension(extension.value);
+  return ProcessRawBytes(extension.value);
 }
 
 // TODO(https://crbug.com/953425): move to anonymous namespace once

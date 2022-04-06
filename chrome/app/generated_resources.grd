@@ -3573,6 +3573,9 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_CERT_X509_KEY_USAGE_ENCIPHER_ONLY" desc="description of certificate usage Encipher Only">
           Encipher Only
         </message>
+        <message name="IDS_CERT_X509_KEY_USAGE_DECIPHER_ONLY" desc="description of certificate usage Decipher Only">
+          Decipher Only
+        </message>
         <message name="IDS_CERT_X509_BASIC_CONSTRAINT_IS_CA" desc="description of certificate constraint Is a Certification Authority">
           Is a Certification Authority
         </message>

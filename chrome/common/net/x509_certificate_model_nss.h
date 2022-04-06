@@ -63,11 +63,6 @@ std::string GetTitle(CERTCertificate* cert_handle);
 std::string GetIssuerName(CERTCertificate* cert_handle);
 std::string GetSubjectName(CERTCertificate* cert_handle);
 
-struct Extension {
-  std::string name;
-  std::string value;
-};
-
 typedef std::vector<Extension> Extensions;
 
 void GetExtensions(const std::string& critical_label,
