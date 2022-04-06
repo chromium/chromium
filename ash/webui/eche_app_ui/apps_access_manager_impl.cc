@@ -70,7 +70,7 @@ AccessStatus AppsAccessManagerImpl::GetAccessStatus() const {
 void AppsAccessManagerImpl::OnSetupRequested() {
   current_feature_status_ = feature_status_provider_->GetStatus();
 
-  if (!IsEligibleForOnboarding())
+  if (!IsEligibleForOnboarding(current_feature_status_))
     return;
 
   switch (connection_manager_->GetStatus()) {
@@ -159,10 +159,14 @@ void AppsAccessManagerImpl::AttemptAppsAccessStateRequest() {
       current_connection_status_ == new_connection_status)
     return;
 
+  if (!IsEligibleForOnboarding(new_feature_status))
+    return;
+
   if (new_connection_status == ConnectionStatus::kDisconnected) {
     eche_connector_->AttemptNearbyConnection();
     return;
   }
+
   if (new_connection_status == ConnectionStatus::kConnected ||
       new_connection_status == ConnectionStatus::kConnecting) {
     GetAppsAccessStateRequest();
@@ -281,7 +285,7 @@ void AppsAccessManagerImpl::UpdateSetupOperationState() {
   // send a timeout state.
   if (previous_connection_status == ConnectionStatus::kConnecting &&
       (current_connection_status_ != ConnectionStatus::kConnected ||
-       !IsEligibleForOnboarding())) {
+       !IsEligibleForOnboarding(current_feature_status_))) {
     SetAppsSetupOperationStatus(
         AppsAccessSetupOperation::Status::kTimedOutConnecting);
     return;
@@ -291,13 +295,13 @@ void AppsAccessManagerImpl::UpdateSetupOperationState() {
   // connection disconnected state.
   if (previous_connection_status == ConnectionStatus::kConnected &&
       (current_connection_status_ != ConnectionStatus::kConnected ||
-       !IsEligibleForOnboarding())) {
+       !IsEligibleForOnboarding(current_feature_status_))) {
     SetAppsSetupOperationStatus(
         AppsAccessSetupOperation::Status::kConnectionDisconnected);
     return;
   }
 
-  if (!IsEligibleForOnboarding())
+  if (!IsEligibleForOnboarding(current_feature_status_))
     return;
 
   if (current_connection_status_ == ConnectionStatus::kConnected) {
@@ -305,11 +309,12 @@ void AppsAccessManagerImpl::UpdateSetupOperationState() {
   }
 }
 
-bool AppsAccessManagerImpl::IsEligibleForOnboarding() const {
-  return current_feature_status_ == FeatureStatus::kConnected ||
-         current_feature_status_ == FeatureStatus::kConnecting ||
-         current_feature_status_ == FeatureStatus::kDisconnected ||
-         current_feature_status_ == FeatureStatus::kDisabled;
+bool AppsAccessManagerImpl::IsEligibleForOnboarding(
+    FeatureStatus feature_status) const {
+  return feature_status == FeatureStatus::kConnected ||
+         feature_status == FeatureStatus::kConnecting ||
+         feature_status == FeatureStatus::kDisconnected ||
+         feature_status == FeatureStatus::kDisabled;
 }
 }  // namespace eche_app
 }  // namespace ash

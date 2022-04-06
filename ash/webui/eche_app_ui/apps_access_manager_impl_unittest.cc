@@ -194,7 +194,15 @@ TEST_F(AppsAccessManagerImplTest, OnFeatureStatusChanged) {
   Initialize(AccessStatus::kAvailableButNotGranted);
   VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
 
-  // Set initial state to disconnected.
+  // Set initial state to kIneligible.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kDisconnected);
+  SetFeatureStatus(FeatureStatus::kIneligible);
+  EXPECT_EQ(0u, GetAttemptNearbyConnectionCount());
+  EXPECT_EQ(0u, GetAppsAccessStateRequestCount());
+  EXPECT_EQ(AppsAccessSetupOperation::Status::kConnecting,
+            GetAppsAccessSetupOperationStatus());
+
+  //  Simulate feature status to be enabled and disconnected.
   SetConnectionStatus(secure_channel::ConnectionManager::Status::kDisconnected);
   SetFeatureStatus(FeatureStatus::kDisconnected);
   EXPECT_EQ(1u, GetAttemptNearbyConnectionCount());
