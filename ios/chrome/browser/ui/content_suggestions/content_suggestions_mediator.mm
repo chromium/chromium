@@ -348,11 +348,16 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 - (void)mostRecentTabFaviconUpdatedWithImage:(UIImage*)image {
   if (self.returnToRecentTabItem) {
     self.returnToRecentTabItem.icon = image;
-    if (IsSingleCellContentSuggestionsEnabled()) {
-      self.parentItem.returnToRecentItem = self.returnToRecentTabItem;
-      [self.collectionConsumer itemHasChanged:self.parentItem];
+    if (IsContentSuggestionsUIViewControllerMigrationEnabled()) {
+      [self.consumer
+          updateReturnToRecentTabTileWithConfig:self.returnToRecentTabItem];
     } else {
-      [self.collectionConsumer itemHasChanged:self.returnToRecentTabItem];
+      if (IsSingleCellContentSuggestionsEnabled()) {
+        self.parentItem.returnToRecentItem = self.returnToRecentTabItem;
+        [self.collectionConsumer itemHasChanged:self.parentItem];
+      } else {
+        [self.collectionConsumer itemHasChanged:self.returnToRecentTabItem];
+      }
     }
   }
 }

@@ -25,6 +25,11 @@
 - (void)showReturnToRecentTabTileWithConfig:
     (ContentSuggestionsReturnToRecentTabItem*)config;
 
+// Indicates to the consumer to update the Return to Recent Tab tile with
+// |config|.
+- (void)updateReturnToRecentTabTileWithConfig:
+    (ContentSuggestionsReturnToRecentTabItem*)config;
+
 // Indicates to the consumer to hide the Return to Recent Tab tile.
 - (void)hideReturnToRecentTabTile;
 
