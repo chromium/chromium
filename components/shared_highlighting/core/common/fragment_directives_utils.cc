@@ -77,7 +77,7 @@ std::vector<std::string> ExtractTextFragments(std::string ref_string) {
 
     // A & indicates the end of the fragment (and the start of the next).
     // Save everything up to this point, and then consume it (including the &).
-    size_t ampersand_pos = ref_string.find("&");
+    size_t ampersand_pos = ref_string.find(kSelectorJoinDelimeter);
     if (ampersand_pos != 0)
       fragment_strings.push_back(ref_string.substr(0, ampersand_pos));
     if (ampersand_pos == std::string::npos)
@@ -103,8 +103,8 @@ GURL RemoveFragmentSelectorDirectives(const GURL& url) {
   // one of the directive_parameter_names
   std::vector<std::string> should_keep_directives;
   for (const std::string& directive :
-       base::SplitString(fragment_directive, "&", base::TRIM_WHITESPACE,
-                         base::SPLIT_WANT_ALL)) {
+       base::SplitString(fragment_directive, kSelectorJoinDelimeter,
+                         base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
     if (std::none_of(
             directive_parameter_names.begin(), directive_parameter_names.end(),
             [&directive](const base::StringPiece& directive_parameter_name) {
@@ -119,7 +119,8 @@ GURL RemoveFragmentSelectorDirectives(const GURL& url) {
       should_keep_directives.empty()
           ? fragment_prefix
           : base::StrCat({fragment_prefix, kFragmentsUrlDelimiter,
-                          base::JoinString(should_keep_directives, "&")});
+                          base::JoinString(should_keep_directives,
+                                           kSelectorJoinDelimeter)});
 
   GURL::Replacements replacements;
   if (new_fragment.empty())
@@ -162,20 +163,19 @@ GURL AppendSelectors(const GURL& base_url, std::vector<std::string> selectors) {
 
 GURL AppendFragmentDirectives(const GURL& base_url,
                               std::vector<std::string> directives) {
-  std::string fragments_string = base::JoinString(directives, "&");
+  std::string fragments_string =
+      base::JoinString(directives, kSelectorJoinDelimeter);
 
   if (fragments_string.empty()) {
     return base_url;
   }
 
-  std::string new_ref = base_url.ref();
+  GURL url = RemoveFragmentSelectorDirectives(base_url);
+  std::string new_ref = url.ref();
   if (new_ref.find(kFragmentsUrlDelimiter) == std::string::npos) {
     new_ref += kFragmentsUrlDelimiter;
   } else {
-    // The URL already had the :~: delimiter, so remove what comes after before
-    // adding the new fragment(s).
-    new_ref = new_ref.substr(
-        0, new_ref.find(kFragmentsUrlDelimiter) + kFragmentsUrlDelimiterLength);
+    new_ref += kSelectorJoinDelimeter;
   }
 
   new_ref += fragments_string;
@@ -183,7 +183,7 @@ GURL AppendFragmentDirectives(const GURL& base_url,
   GURL::Replacements replacements;
   replacements.SetRefStr(new_ref);
 
-  return base_url.ReplaceComponents(replacements);
+  return url.ReplaceComponents(replacements);
 }
 
 }  // namespace shared_highlighting

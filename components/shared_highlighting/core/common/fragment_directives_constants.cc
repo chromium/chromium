@@ -30,6 +30,9 @@ const char kSelectorDirectiveTypePrefix[] = "type=";
 const int kSelectorDirectiveTypePrefixLength =
     strlen(kSelectorDirectiveTypePrefix);
 
+const char kSelectorJoinDelimeter[] = "&";
+const int kSelectorJoinDelimeterLength = strlen(kSelectorJoinDelimeter);
+
 const char kTypeCssSelector[] = "CssSelector";
 
 const char kFragmentPrefixKey[] = "prefix";

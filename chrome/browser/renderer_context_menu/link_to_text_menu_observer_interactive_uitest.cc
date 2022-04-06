@@ -442,3 +442,79 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
   histogram_tester.ExpectTotalCount(
       "SharedHighlights.LinkGenerated.RequestedAfterReady", 0);
 }
+
+IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
+                       CopiesLinkToTextWithExistingFragments) {
+  content::BrowserTestClipboardScope test_clipboard_scope;
+  content::ContextMenuParams params;
+  params.page_url = GURL("http://foo.com/#bar");
+  params.selection_text = u"hello world";
+  observer()->SetGenerationResults(
+      "hello%20world", shared_highlighting::LinkGenerationError::kNone,
+      shared_highlighting::LinkGenerationReadyStatus::kRequestedAfterReady);
+  InitMenu(params);
+  menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
+
+  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+  std::u16string text;
+  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
+  EXPECT_EQ(u"http://foo.com/#bar:~:text=hello%20world", text);
+}
+
+IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
+                       CopiesLinkToTextWithExistingFragmentsWithTextSelection) {
+  content::BrowserTestClipboardScope test_clipboard_scope;
+  content::ContextMenuParams params;
+  params.page_url = GURL("http://foo.com/#bar:~:text=baz");
+  params.selection_text = u"hello world";
+  observer()->SetGenerationResults(
+      "hello%20world", shared_highlighting::LinkGenerationError::kNone,
+      shared_highlighting::LinkGenerationReadyStatus::kRequestedAfterReady);
+  InitMenu(params);
+  menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
+
+  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+  std::u16string text;
+  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
+  EXPECT_EQ(u"http://foo.com/#bar:~:text=hello%20world", text);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LinkToTextMenuObserverTest,
+    CopiesLinkToTextWithExistingFragmentsWithMultipleTextSelections) {
+  content::BrowserTestClipboardScope test_clipboard_scope;
+  content::ContextMenuParams params;
+  params.page_url = GURL("http://foo.com/#bar:~:text=baz&text=qux");
+  params.selection_text = u"hello world";
+  observer()->SetGenerationResults(
+      "hello%20world", shared_highlighting::LinkGenerationError::kNone,
+      shared_highlighting::LinkGenerationReadyStatus::kRequestedAfterReady);
+  InitMenu(params);
+  menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
+
+  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+  std::u16string text;
+  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
+  EXPECT_EQ(u"http://foo.com/#bar:~:text=hello%20world", text);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LinkToTextMenuObserverTest,
+    CopiesLinkToTextWithExistingFragmentsWithExistingRefAndTextSelections) {
+  content::BrowserTestClipboardScope test_clipboard_scope;
+  content::ContextMenuParams params;
+  params.page_url =
+      GURL("http://foo.com/#bar:~:baz=keep&text=remove&baz=keep2");
+  params.selection_text = u"hello world";
+  observer()->SetGenerationResults(
+      "hello%20world", shared_highlighting::LinkGenerationError::kNone,
+      shared_highlighting::LinkGenerationReadyStatus::kRequestedAfterReady);
+  InitMenu(params);
+  menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
+
+  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+  std::u16string text;
+  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
+  EXPECT_EQ(u"http://foo.com/#bar:~:baz=keep&baz=keep2&text=hello%20world",
+            text);
+}

@@ -33,6 +33,9 @@ extern const int kSelectorDirectiveValuePrefixLength;
 extern const char kSelectorDirectiveTypePrefix[];
 extern const int kSelectorDirectiveTypePrefixLength;
 
+extern const char kSelectorJoinDelimeter[];
+extern const int kSelectorJoinDelimeterLength;
+
 extern const char kTypeCssSelector[];
 
 // These values correspond to the keys used to store text fragment's values
