@@ -1261,7 +1261,7 @@ void SkiaRenderer::PreparePaintOrCanvasForRPDQ(
 void SkiaRenderer::PrepareColorOrCanvasForRPDQ(
     const DrawRPDQParams& rpdq_params,
     DrawQuadParams* params,
-    SkColor* content_color) {
+    SkColor4f* content_color) {
   // When the draw call only takes a color and not an SkPaint, rpdq params
   // with just a color filter can be handled directly. Otherwise, the rpdq
   // params must use a layer on the canvas.
@@ -1276,7 +1276,9 @@ void SkiaRenderer::PrepareColorOrCanvasForRPDQ(
   } else if (rpdq_params.color_filter) {
     // At this point, the RPDQ effect is at most a color filter, so it can
     // modify |content_color| directly.
-    *content_color = rpdq_params.color_filter->filterColor(*content_color);
+    SkColorSpace* cs = nullptr;
+    *content_color =
+        rpdq_params.color_filter->filterColor4f(*content_color, cs, cs);
   }
 
   // Even if the color filter image filter was applied to the content color
@@ -1784,7 +1786,7 @@ void SkiaRenderer::FlushBatchedQuads() {
   batched_cdt_matrices_.clear();
 }
 
-void SkiaRenderer::DrawColoredQuad(SkColor color,
+void SkiaRenderer::DrawColoredQuad(SkColor4f color,
                                    const DrawRPDQParams* rpdq_params,
                                    DrawQuadParams* params) {
   TRACE_EVENT0("viz", "SkiaRenderer::DrawColoredQuad");
@@ -1806,11 +1808,10 @@ void SkiaRenderer::DrawColoredQuad(SkColor color,
   }
 
   sk_sp<SkColorFilter> content_color_filter = GetContentColorFilter();
-  SkColor4f color_f = SkColor4f::FromColor(color);
   if (content_color_filter) {
     SkColorSpace* color_space = current_canvas_->imageInfo().colorSpace();
-    color_f = content_color_filter->filterColor4f(
-        color_f, SkColorSpace::MakeSRGB().get(), color_space);
+    color = content_color_filter->filterColor4f(
+        color, SkColorSpace::MakeSRGB().get(), color_space);
     // DrawEdgeAAQuad lacks color filter support via SkPaint, so we apply the
     // color filter to the quad color directly. When applying a color filter
     // via drawRect or drawImage, Skia will first transform the src into the
@@ -1820,22 +1821,22 @@ void SkiaRenderer::DrawColoredQuad(SkColor color,
     //    (C * Xfrm * CF * Xfrm_inv)[in Viz] * Xfrm[in Skia] = C * Xfrm * CF
     if (color_space && !color_space->isSRGB()) {
       SkPaint paint;
-      paint.setColor(color_f, color_space);
-      color_f = paint.getColor4f();
+      paint.setColor(color, color_space);
+      color = paint.getColor4f();
     }
   }
   // PrepareCanvasForRPDQ will have updated params->opacity and blend_mode to
   // account for the layer applying those effects. We need to truncate to an
   // integral value of [0, 255] to match the explicit floor workaround in
   // blink::ConversionContext::StartEffect.
-  color_f.fA = floor(params->opacity * color_f.fA * 255.f) / 255.f;
+  color.fA = floor(params->opacity * color.fA * 255.f) / 255.f;
 
   const SkPoint* draw_region =
       params->draw_region ? params->draw_region->points : nullptr;
 
   current_canvas_->experimental_DrawEdgeAAQuad(
       gfx::RectFToSkRect(params->visible_rect), draw_region,
-      static_cast<SkCanvas::QuadAAFlags>(params->aa_flags), color_f,
+      static_cast<SkCanvas::QuadAAFlags>(params->aa_flags), color,
       params->blend_mode);
 }
 
@@ -2022,7 +2023,7 @@ void SkiaRenderer::DrawPictureQuad(const PictureDrawQuad* quad,
 void SkiaRenderer::DrawSolidColorQuad(const SolidColorDrawQuad* quad,
                                       const DrawRPDQParams* rpdq_params,
                                       DrawQuadParams* params) {
-  DrawColoredQuad(quad->color, rpdq_params, params);
+  DrawColoredQuad(SkColor4f::FromColor(quad->color), rpdq_params, params);
 }
 
 void SkiaRenderer::DrawStreamVideoQuad(const StreamVideoDrawQuad* quad,
@@ -2375,9 +2376,9 @@ void SkiaRenderer::DrawUnsupportedQuad(const DrawQuad* quad,
                                        const DrawRPDQParams* rpdq_params,
                                        DrawQuadParams* params) {
 #ifdef NDEBUG
-  DrawColoredQuad(SK_ColorWHITE, rpdq_params, params);
+  DrawColoredQuad(SkColors::kWhite, rpdq_params, params);
 #else
-  DrawColoredQuad(SK_ColorMAGENTA, rpdq_params, params);
+  DrawColoredQuad(SkColors::kMagenta, rpdq_params, params);
 #endif
 }
 
@@ -2749,7 +2750,7 @@ void SkiaRenderer::DrawRenderPassQuad(const AggregatedRenderPassDrawQuad* quad,
       // batching.
       if (!batched_quads_.empty())
         FlushBatchedQuads();
-      DrawColoredQuad(SK_ColorTRANSPARENT, &rpdq_params, params);
+      DrawColoredQuad(SkColors::kTransparent, &rpdq_params, params);
     } else if (mode == BypassMode::kDrawBypassQuad) {
       DrawQuadInternal(bypass->second, &rpdq_params, params);
     }  // else mode == kSkip
@@ -3117,7 +3118,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
   // When Render Pass has a single quad inside we would draw that directly.
   if (bypass != render_pass_bypass_quads_.end()) {
     if (bypass_mode == BypassMode::kDrawTransparentQuad) {
-      DrawColoredQuad(SK_ColorTRANSPARENT, &rpdq_params, &params);
+      DrawColoredQuad(SkColors::kTransparent, &rpdq_params, &params);
     } else if (bypass_mode == BypassMode::kDrawBypassQuad) {
       DrawQuadInternal(bypass->second, &rpdq_params, &params);
     } else {

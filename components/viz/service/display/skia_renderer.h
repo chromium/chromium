@@ -137,7 +137,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   // the quad; otherwise modify the current canvas as a fallback.
   void PrepareColorOrCanvasForRPDQ(const DrawRPDQParams& rpdq_params,
                                    DrawQuadParams* params,
-                                   SkColor* color);
+                                   SkColor4f* color);
 
   // The returned DrawQuadParams can be modified by the DrawX calls that accept
   // params so that they can apply explicit data transforms before sending to
@@ -182,7 +182,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
 
   // Utility to draw a single quad as a filled color, and optionally apply the
   // effects defined in |rpdq_params| when the quad is bypassing the render pass
-  void DrawColoredQuad(SkColor color,
+  void DrawColoredQuad(SkColor4f color,
                        const DrawRPDQParams* rpdq_params,
                        DrawQuadParams* params);
   // Utility to make a single ImageSetEntry and draw it with the complex paint,
