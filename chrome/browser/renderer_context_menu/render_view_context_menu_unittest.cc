@@ -24,6 +24,7 @@
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -736,6 +737,34 @@ TEST_F(RenderViewContextMenuPrefsTest,
   local_state()->SetBoolean(prefs::kAllowFileSelectionDialogs, false);
 
   EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVELINKAS));
+}
+
+// Verify that item "Search web for" on password Manager is not present
+TEST_F(RenderViewContextMenuPrefsTest,
+       SearchWebForOptionOnPasswordsManagerIsDisabled) {
+  content::ContextMenuParams params =
+      CreateParams(MenuItem::SELECTION | MenuItem::EDITABLE);
+  params.page_url = chrome::GetSettingsUrl(chrome::kPasswordManagerSubPage);
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents()->GetMainFrame(), params);
+  menu->set_selection_navigation_url(GURL("https://www.foo.com/"));
+  menu->Init();
+
+  EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFOR));
+}
+
+// Verify that item "Search web for" on password check is not present
+TEST_F(RenderViewContextMenuPrefsTest,
+       SearchWebForOptionOnPasswordCheckIsDisabled) {
+  content::ContextMenuParams params =
+      CreateParams(MenuItem::SELECTION | MenuItem::EDITABLE);
+  params.page_url = chrome::GetSettingsUrl(chrome::kPasswordCheckSubPage);
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents()->GetMainFrame(), params);
+  menu->set_selection_navigation_url(GURL("https://www.foo.com/"));
+  menu->Init();
+
+  EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFOR));
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
