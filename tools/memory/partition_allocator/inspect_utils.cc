@@ -32,8 +32,8 @@ bool ReadMemory(int fd, unsigned long address, size_t size, char* buffer) {
 }
 
 char* CreateMappingAtAddress(uintptr_t address, size_t size) {
-  CHECK_EQ(0u, address % base::SystemPageSize());
-  CHECK_EQ(0u, size % base::SystemPageSize());
+  CHECK_EQ(0u, address % internal::SystemPageSize());
+  CHECK_EQ(0u, size % internal::SystemPageSize());
   // Not using MAP_FIXED since it would *overwrite* an existing
   // mapping. Instead, just provide a hint address, which will be used if
   // possible.
