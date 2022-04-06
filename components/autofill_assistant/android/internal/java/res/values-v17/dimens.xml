@@ -3,6 +3,7 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 <resources>
+    <dimen name="autofill_assistant_backgroundless_privacy_notice_padding_start">40dp</dimen>
     <dimen name="autofill_assistant_bottombar_horizontal_spacing">24dp</dimen>
     <dimen name="autofill_assistant_bottombar_vertical_spacing">20dp</dimen>
     <dimen name="autofill_assistant_details_image_size">60dp</dimen>

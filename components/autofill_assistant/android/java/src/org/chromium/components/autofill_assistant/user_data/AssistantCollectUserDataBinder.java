@@ -341,6 +341,10 @@ class AssistantCollectUserDataBinder
             view.mDataOriginNotice.setAccountEmail(
                     model.get(AssistantCollectUserDataModel.ACCOUNT_EMAIL));
             return true;
+        } else if (model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)) {
+            view.mTermsAsCheckboxSection.useBackgroundlessPrivacyNotice();
+            view.mTermsSection.useBackgroundlessPrivacyNotice();
+            return true;
         }
 
         return false;

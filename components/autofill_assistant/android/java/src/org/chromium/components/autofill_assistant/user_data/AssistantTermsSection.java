@@ -30,6 +30,7 @@ public class AssistantTermsSection {
         void onLinkClicked(int link);
     }
 
+    private final Context mContext;
     private final View mView;
     private final AssistantChoiceList mTermsList;
     private final TextView mTermsAgree;
@@ -40,6 +41,7 @@ public class AssistantTermsSection {
     private Delegate mDelegate;
 
     AssistantTermsSection(Context context, ViewGroup parent, boolean showAsSingleCheckbox) {
+        mContext = context;
         mView = LayoutUtils.createInflater(context).inflate(
                 R.layout.autofill_assistant_payment_request_terms_and_conditions, parent, false);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
@@ -135,6 +137,15 @@ public class AssistantTermsSection {
         AssistantTextUtils.applyVisualAppearanceTags(
                 mPrivacyNotice, text, /* linkCallback= */ null);
         mPrivacyNotice.setVisibility(TextUtils.isEmpty(text) ? View.GONE : View.VISIBLE);
+    }
+
+    void useBackgroundlessPrivacyNotice() {
+        int paddingStart = mContext.getResources().getDimensionPixelSize(
+                R.dimen.autofill_assistant_backgroundless_privacy_notice_padding_start);
+        mPrivacyNotice.setPaddingRelative(paddingStart, mPrivacyNotice.getPaddingTop(),
+                mPrivacyNotice.getPaddingEnd(), mPrivacyNotice.getPaddingBottom());
+        mPrivacyNotice.setTextAppearance(R.style.TextAppearance_TextSmall_Secondary);
+        mPrivacyNotice.setBackgroundResource(0);
     }
 
     View getView() {
