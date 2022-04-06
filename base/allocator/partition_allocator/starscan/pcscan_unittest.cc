@@ -20,9 +20,7 @@
 
 #if defined(PA_ALLOW_PCSCAN)
 
-namespace base {
-
-namespace internal {
+namespace partition_alloc::internal {
 
 namespace {
 struct DisableStackScanningScope final {
@@ -41,6 +39,10 @@ struct DisableStackScanningScope final {
   bool changed_ = false;
 };
 }  // namespace
+
+// TODO(crbug.com/1288247): Remove these when migration is complete.
+using ::base::PartitionAllocGlobalInit;
+using ::base::PartitionAllocGlobalUninitForTesting;
 
 class PartitionAllocPCScanTestBase : public testing::Test {
  public:
@@ -97,7 +99,7 @@ class PartitionAllocPCScanTestBase : public testing::Test {
   const ThreadSafePartitionRoot& root() const { return *allocator_.root(); }
 
  private:
-  PartitionAllocator<ThreadSafe> allocator_;
+  PartitionAllocator allocator_;
 };
 
 // The test that expects free() being quarantined only when tag overflow occurs.
@@ -812,7 +814,7 @@ TEST_F(PartitionAllocPCScanTest, DanglingPointerOutsideUsablePart) {
 TEST_F(PartitionAllocPCScanWithMTETest, QuarantineOnlyOnTagOverflow) {
   using ListType = List<64>;
 
-  if (!CPU::GetInstanceNoAllocation().has_mte())
+  if (!base::CPU::GetInstanceNoAllocation().has_mte())
     return;
 
   {
@@ -852,8 +854,7 @@ TEST_F(PartitionAllocPCScanWithMTETest, QuarantineOnlyOnTagOverflow) {
 }
 #endif  // defined(PA_HAS_MEMORY_TAGGING)
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
 
 #endif  // defined(PA_ALLOW_PCSCAN)
 #endif  // defined(MEMORY_TOOL_REPLACES_ALLOCATOR)

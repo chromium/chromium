@@ -25,10 +25,6 @@ namespace partition_alloc::internal {
 
 class StarScanSnapshot;
 
-}  // namespace partition_alloc::internal
-
-namespace base::internal {
-
 class PCScanTask;
 
 // Internal PCScan singleton. The separation between frontend and backend is
@@ -64,7 +60,7 @@ class PCScanInternal final {
 
   void PerformScan(PCScan::InvocationMode);
   void PerformScanIfNeeded(PCScan::InvocationMode);
-  void PerformDelayedScan(TimeDelta delay);
+  void PerformDelayedScan(base::TimeDelta delay);
   void JoinScan();
 
   TaskHandle CurrentPCScanTask() const;
@@ -118,11 +114,11 @@ class PCScanInternal final {
   friend class partition_alloc::internal::StarScanSnapshot;
 
   using StackTops = std::unordered_map<
-      PlatformThreadId,
+      base::PlatformThreadId,
       void*,
-      std::hash<PlatformThreadId>,
+      std::hash<base::PlatformThreadId>,
       std::equal_to<>,
-      MetadataAllocator<std::pair<const PlatformThreadId, void*>>>;
+      MetadataAllocator<std::pair<const base::PlatformThreadId, void*>>>;
 
   PCScanInternal();
 
@@ -150,13 +146,13 @@ class PCScanInternal final {
   bool is_initialized_ = false;
 };
 
-}  // namespace base::internal
+}  // namespace partition_alloc::internal
 
 // TODO(crbug.com/1288247): Remove this when migration is complete.
-namespace partition_alloc::internal {
+namespace base::internal {
 
-using ::base::internal::PCScanInternal;
+using ::partition_alloc::internal::PCScanInternal;
 
-}
+}  // namespace base::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_PCSCAN_INTERNAL_H_

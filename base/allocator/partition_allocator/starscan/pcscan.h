@@ -24,9 +24,7 @@ namespace partition_alloc {
 
 class StatsReporter;
 
-}  // namespace partition_alloc
-
-namespace base::internal {
+namespace internal {
 
 [[noreturn]] BASE_EXPORT NOINLINE NOT_TAIL_CALLED void DoubleFreeAttempt();
 
@@ -279,6 +277,13 @@ inline PCScanScheduler& PCScan::scheduler() {
   return instance.scheduler_;
 }
 
-}  // namespace base::internal
+}  // namespace internal
+}  // namespace partition_alloc
 
+// TODO(crbug.com/1288247): Remove this when migration is complete.
+namespace base::internal {
+
+using ::partition_alloc::internal::PCScan;
+
+}  // namespace base::internal
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_PCSCAN_H_

@@ -62,8 +62,7 @@
 #define PA_SCAN_INLINE ALWAYS_INLINE
 #endif
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 [[noreturn]] NOINLINE NOT_TAIL_CALLED void DoubleFreeAttempt() {
   NO_CODE_FOLDING();
@@ -984,9 +983,9 @@ void UnmarkInCardTable(uintptr_t slot_start,
     const size_t slot_size = slot_span->bucket->slot_size;
     if (slot_size >= SystemPageSize()) {
       const uintptr_t discard_end =
-          bits::AlignDown(slot_start + slot_size, SystemPageSize());
+          base::bits::AlignDown(slot_start + slot_size, SystemPageSize());
       const uintptr_t discard_begin =
-          bits::AlignUp(slot_start, SystemPageSize());
+          base::bits::AlignUp(slot_start, SystemPageSize());
       const intptr_t discard_size = discard_end - discard_begin;
       if (discard_size > 0) {
         DiscardSystemPages(discard_begin, discard_size);
@@ -1187,12 +1186,12 @@ class PCScan::PCScanThread final {
       std::lock_guard<std::mutex> lock(mutex_);
       PA_DCHECK(!posted_task_.get());
       posted_task_ = std::move(task);
-      wanted_delay_ = TimeDelta();
+      wanted_delay_ = base::TimeDelta();
     }
     condvar_.notify_one();
   }
 
-  void PostDelayedTask(TimeDelta delay) {
+  void PostDelayedTask(base::TimeDelta delay) {
     {
       std::lock_guard<std::mutex> lock(mutex_);
       if (posted_task_.get()) {
@@ -1256,7 +1255,7 @@ class PCScan::PCScanThread final {
         // Differentiate between a posted task and a delayed task schedule.
         if (posted_task_.get()) {
           std::swap(current_task, posted_task_);
-          wanted_delay_ = TimeDelta();
+          wanted_delay_ = base::TimeDelta();
         } else {
           PA_DCHECK(wanted_delay_.is_zero());
         }
@@ -1275,7 +1274,7 @@ class PCScan::PCScanThread final {
   std::mutex mutex_;
   std::condition_variable condvar_;
   TaskHandle posted_task_;
-  TimeDelta wanted_delay_;
+  base::TimeDelta wanted_delay_;
 };
 
 PCScanInternal::PCScanInternal() : simd_support_(DetectSimdSupport()) {}
@@ -1373,7 +1372,7 @@ void PCScanInternal::PerformScanIfNeeded(
     PerformScan(invocation_mode);
 }
 
-void PCScanInternal::PerformDelayedScan(TimeDelta delay) {
+void PCScanInternal::PerformDelayedScan(base::TimeDelta delay) {
   PCScan::PCScanThread::Instance().PostDelayedTask(delay);
 }
 
@@ -1617,5 +1616,4 @@ partition_alloc::StatsReporter& PCScanInternal::GetReporter() {
   return *stats_reporter_;
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
