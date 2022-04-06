@@ -7,6 +7,7 @@
 #include "base/notreached.h"
 #include "content/public/android/content_jni_headers/ContentFeatureListImpl_jni.h"
 #include "content/public/common/content_features.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/accessibility/accessibility_features.h"
 
 using base::android::ConvertJavaStringToUTF8;
@@ -21,6 +22,7 @@ namespace {
 // this array may either refer to features defined in the header of this file or
 // in other locations in the code base (e.g. content_features.h).
 const base::Feature* const kFeaturesExposedToJava[] = {
+    &blink::features::kPrefetchAndroidFonts,
     &features::kAutoDisableAccessibility,
     &features::kAccessibilityPageZoom,
     &features::kBackgroundMediaRendererHasModerateBinding,
