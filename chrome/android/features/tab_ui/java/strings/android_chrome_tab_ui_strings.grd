@@ -440,7 +440,7 @@
         Visit site
       </message>
       <message name="IDS_PRICE_DROP_NOTIFICATION_ACTION_TURN_OFF_ALERT" desc="This text shows when users swipe down the price drop notification. When users click this button, we won't send price drop notifications on this product to them any more.">
-        Turn off alert
+        Stop tracking product
       </message>
 
       <!-- Merchant Viewer strings -->

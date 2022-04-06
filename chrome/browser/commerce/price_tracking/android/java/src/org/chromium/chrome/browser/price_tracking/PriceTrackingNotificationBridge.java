@@ -208,7 +208,7 @@ public class PriceTrackingNotificationBridge {
             if (!action.hasActionId() || !action.hasText()) continue;
             String actionText = getActionText(action.getActionId());
             if (TextUtils.isEmpty(actionText)) continue;
-            actions.add(new ActionData(action.getActionId(), action.getText()));
+            actions.add(new ActionData(action.getActionId(), actionText));
         }
         return actions;
     }
