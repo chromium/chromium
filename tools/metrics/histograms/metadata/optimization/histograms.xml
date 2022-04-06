@@ -818,6 +818,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="OptimizationGuide.PredictionManager.FirstModelFetchSinceServiceInit"
+    units="ms" expires_after="M106">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the time duration it took for the first model fetch to start from
+    the time the optimization guide service was initialized. Recorded once at
+    startup when the first model fetch happens.
+  </summary>
+</histogram>
+
 <histogram name="OptimizationGuide.PredictionManager.HostModelFeaturesMapSize"
     units="total host count" expires_after="2022-01-28">
   <obsolete>
@@ -889,19 +901,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="OptimizationGuide.PredictionModel.FirstModelFetchSinceServiceInit"
-    units="ms" expires_after="M106">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>chrome-intelligence-core@google.com</owner>
-  <summary>
-    Records the time duration it took for the first model fetch to start from
-    the time the optimization guide service was initialized. Recorded once at
-    startup when the first model fetch happens.
-  </summary>
-</histogram>
-
-<histogram
-    name="OptimizationGuide.PredictionModel.RegistrationTimeSinceServiceInit.{OptimizationTarget}"
+    name="OptimizationGuide.PredictionManager.RegistrationTimeSinceServiceInit.{OptimizationTarget}"
     units="ms" expires_after="M106">
   <owner>rajendrant@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
