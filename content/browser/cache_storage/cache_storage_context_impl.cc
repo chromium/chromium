@@ -17,8 +17,8 @@
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "content/browser/cache_storage/blob_storage_context_wrapper.h"
 #include "content/browser/cache_storage/cache_storage_dispatcher_host.h"
+#include "content/browser/cache_storage/cache_storage_manager.h"
 #include "content/browser/cache_storage/cache_storage_quota_client.h"
-#include "content/browser/cache_storage/legacy/legacy_cache_storage_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -79,7 +79,7 @@ void CacheStorageContextImpl::Init(
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
   DCHECK(!cache_manager_);
-  cache_manager_ = LegacyCacheStorageManager::Create(
+  cache_manager_ = CacheStorageManager::Create(
       user_data_directory, std::move(cache_task_runner),
       base::SequencedTaskRunnerHandle::Get(), quota_manager_proxy_,
       base::MakeRefCounted<BlobStorageContextWrapper>(

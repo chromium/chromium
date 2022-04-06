@@ -34,13 +34,13 @@
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
+#include "content/browser/cache_storage/cache_storage.h"
 #include "content/browser/cache_storage/cache_storage.pb.h"
 #include "content/browser/cache_storage/cache_storage_cache_handle.h"
 #include "content/browser/cache_storage/cache_storage_context_impl.h"
+#include "content/browser/cache_storage/cache_storage_manager.h"
 #include "content/browser/cache_storage/cache_storage_quota_client.h"
 #include "content/browser/cache_storage/cache_storage_scheduler.h"
-#include "content/browser/cache_storage/legacy/legacy_cache_storage.h"
-#include "content/browser/cache_storage/legacy/legacy_cache_storage_manager.h"
 #include "content/common/background_fetch/background_fetch_types.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -183,7 +183,7 @@ class MockCacheStorageQuotaManagerProxy
 bool IsIndexFileCurrent(const base::FilePath& cache_dir) {
   base::File::Info info;
   const base::FilePath index_path =
-      cache_dir.AppendASCII(LegacyCacheStorage::kIndexFileName);
+      cache_dir.AppendASCII(CacheStorage::kIndexFileName);
   if (!GetFileInfo(index_path, &info))
     return false;
   base::Time index_last_modified = info.last_modified;
@@ -364,7 +364,7 @@ class CacheStorageManagerTest : public testing::Test {
             mock_quota_manager_.get(),
             base::ThreadTaskRunnerHandle::Get().get());
 
-    cache_manager_ = LegacyCacheStorageManager::Create(
+    cache_manager_ = CacheStorageManager::Create(
         temp_dir_path, base::ThreadTaskRunnerHandle::Get(),
         base::ThreadTaskRunnerHandle::Get(), quota_manager_proxy_,
         blob_storage_context_);
@@ -373,15 +373,14 @@ class CacheStorageManagerTest : public testing::Test {
   void RecreateStorageManager() {
     DCHECK(cache_manager_);
     auto* legacy_manager =
-        static_cast<LegacyCacheStorageManager*>(cache_manager_.get());
-    cache_manager_ =
-        LegacyCacheStorageManager::CreateForTesting(legacy_manager);
+        static_cast<CacheStorageManager*>(cache_manager_.get());
+    cache_manager_ = CacheStorageManager::CreateForTesting(legacy_manager);
   }
 
   bool FlushCacheStorageIndex(const blink::StorageKey& storage_key) {
     callback_bool_ = false;
     base::RunLoop loop;
-    auto* impl = LegacyCacheStorage::From(CacheStorageForKey(storage_key));
+    auto* impl = CacheStorage::From(CacheStorageForKey(storage_key));
     bool write_was_scheduled = impl->InitiateScheduledIndexWriteForTest(
         base::BindOnce(&CacheStorageManagerTest::BoolCallback,
                        base::Unretained(this), &loop));
@@ -739,7 +738,7 @@ class CacheStorageManagerTest : public testing::Test {
   int64_t GetSizeThenCloseAllCaches(const blink::StorageKey& storage_key) {
     base::RunLoop loop;
     CacheStorageHandle cache_storage = CacheStorageForKey(storage_key);
-    LegacyCacheStorage::From(cache_storage)
+    CacheStorage::From(cache_storage)
         ->GetSizeThenCloseAllCaches(
             base::BindOnce(&CacheStorageManagerTest::UsageCallback,
                            base::Unretained(this), &loop));
@@ -750,7 +749,7 @@ class CacheStorageManagerTest : public testing::Test {
   int64_t Size(const blink::StorageKey& storage_key) {
     base::RunLoop loop;
     CacheStorageHandle cache_storage = CacheStorageForKey(storage_key);
-    LegacyCacheStorage::From(cache_storage)
+    CacheStorage::From(cache_storage)
         ->Size(base::BindOnce(&CacheStorageManagerTest::UsageCallback,
                               base::Unretained(this), &loop));
     loop.Run();
@@ -1178,8 +1177,8 @@ TEST_F(CacheStorageManagerTest, DropReference) {
   CacheStorageHandle cache_storage = CacheStorageForKey(storage_key1_);
 
   EXPECT_TRUE(Open(storage_key1_, "foo"));
-  base::WeakPtr<LegacyCacheStorageCache> cache =
-      LegacyCacheStorageCache::From(callback_cache_handle_)->AsWeakPtr();
+  base::WeakPtr<CacheStorageCache> cache =
+      CacheStorageCache::From(callback_cache_handle_)->AsWeakPtr();
   // Run a cache operation to ensure that the cache has finished initializing so
   // that when the handle is dropped it could possibly close immediately.
   EXPECT_FALSE(CacheMatch(callback_cache_handle_.value(),
@@ -1202,8 +1201,8 @@ TEST_F(CacheStorageManagerTest, DropReferenceAndDelete) {
   CacheStorageHandle cache_storage = CacheStorageForKey(storage_key1_);
 
   EXPECT_TRUE(Open(storage_key1_, "foo"));
-  base::WeakPtr<LegacyCacheStorageCache> cache =
-      LegacyCacheStorageCache::From(callback_cache_handle_)->AsWeakPtr();
+  base::WeakPtr<CacheStorageCache> cache =
+      CacheStorageCache::From(callback_cache_handle_)->AsWeakPtr();
   // Run a cache operation to ensure that the cache has finished initializing so
   // that when the handle is dropped it could possibly close immediately.
   EXPECT_FALSE(CacheMatch(callback_cache_handle_.value(),
@@ -1229,8 +1228,8 @@ TEST_F(CacheStorageManagerTest, DropReferenceAndMemoryPressure) {
   CacheStorageHandle cache_storage = CacheStorageForKey(storage_key1_);
 
   EXPECT_TRUE(Open(storage_key1_, "foo"));
-  base::WeakPtr<LegacyCacheStorageCache> cache =
-      LegacyCacheStorageCache::From(callback_cache_handle_)->AsWeakPtr();
+  base::WeakPtr<CacheStorageCache> cache =
+      CacheStorageCache::From(callback_cache_handle_)->AsWeakPtr();
   // Run a cache operation to ensure that the cache has finished initializing so
   // that when the handle is dropped it could possibly close immediately.
   EXPECT_FALSE(CacheMatch(callback_cache_handle_.value(),
@@ -1262,8 +1261,8 @@ TEST_F(CacheStorageManagerTest, DropReferenceDuringQuery) {
   // Setup the cache and execute an operation to make sure all initialization
   // is complete.
   EXPECT_TRUE(Open(storage_key1_, "foo"));
-  base::WeakPtr<LegacyCacheStorageCache> cache =
-      LegacyCacheStorageCache::From(callback_cache_handle_)->AsWeakPtr();
+  base::WeakPtr<CacheStorageCache> cache =
+      CacheStorageCache::From(callback_cache_handle_)->AsWeakPtr();
   EXPECT_FALSE(CacheMatch(callback_cache_handle_.value(),
                           GURL("http://example.com/foo")));
 
@@ -1375,9 +1374,8 @@ TEST_F(CacheStorageManagerTest, TestErrorInitializingCache) {
 
   CacheStorageHandle cache_storage = CacheStorageForKey(storage_key1_);
   auto cache_handle =
-      LegacyCacheStorage::From(cache_storage)->GetLoadedCache(kCacheName);
-  base::FilePath cache_path =
-      LegacyCacheStorageCache::From(cache_handle)->path();
+      CacheStorage::From(cache_storage)->GetLoadedCache(kCacheName);
+  base::FilePath cache_path = CacheStorageCache::From(cache_handle)->path();
   base::FilePath storage_path = cache_path.DirName();
   base::FilePath index_path = cache_path.AppendASCII("index");
   cache_handle = CacheStorageCacheHandle();
@@ -1402,7 +1400,7 @@ TEST_F(CacheStorageManagerTest, TestErrorInitializingCache) {
   // cache_storage index to have a much older time to ensure that it is not used
   // in the following Size() call.
   base::FilePath cache_index_path =
-      storage_path.AppendASCII(LegacyCacheStorage::kIndexFileName);
+      storage_path.AppendASCII(CacheStorage::kIndexFileName);
   base::Time t = base::Time::Now() + base::Hours(-1);
   EXPECT_TRUE(base::TouchFile(cache_index_path, t, t));
   EXPECT_FALSE(IsIndexFileCurrent(storage_path));
@@ -1450,7 +1448,7 @@ TEST_F(CacheStorageManagerTest, CacheSizePaddedAfterReopen) {
       CachePut(original_handle.value(), kFooURL, FetchResponseType::kOpaque));
   int64_t cache_size_before_close = Size(storage_key1_);
   base::FilePath storage_dir =
-      LegacyCacheStorageCache::From(original_handle)->path().DirName();
+      CacheStorageCache::From(original_handle)->path().DirName();
   original_handle = CacheStorageCacheHandle();
   EXPECT_GT(cache_size_before_close, 0);
 
@@ -1522,8 +1520,8 @@ TEST_F(CacheStorageManagerTest, QuotaCorrectAfterReopen) {
 // calls delete.
 TEST_F(CacheStorageManagerMemoryOnlyTest, MemoryLosesReferenceOnlyAfterDelete) {
   EXPECT_TRUE(Open(storage_key1_, "foo"));
-  base::WeakPtr<LegacyCacheStorageCache> cache =
-      LegacyCacheStorageCache::From(callback_cache_handle_)->AsWeakPtr();
+  base::WeakPtr<CacheStorageCache> cache =
+      CacheStorageCache::From(callback_cache_handle_)->AsWeakPtr();
   callback_cache_handle_ = CacheStorageCacheHandle();
   EXPECT_TRUE(cache);
   EXPECT_TRUE(Delete(storage_key1_, "foo"));
@@ -1540,7 +1538,7 @@ TEST_P(CacheStorageManagerTestP, DeleteBeforeRelease) {
 TEST_P(CacheStorageManagerTestP, OpenRunsSerially) {
   EXPECT_FALSE(Delete(storage_key1_, "tmp"));  // Init storage.
   CacheStorageHandle cache_storage = CacheStorageForKey(storage_key1_);
-  auto* impl = LegacyCacheStorage::From(cache_storage);
+  auto* impl = CacheStorage::From(cache_storage);
   auto id = impl->StartAsyncOperationForTesting();
 
   base::RunLoop open_loop;
@@ -1616,7 +1614,7 @@ TEST_F(CacheStorageManagerTest, GetAllStorageKeysUsageWithPadding) {
 
   EXPECT_TRUE(Open(storage_key1_, "foo"));
   base::FilePath storage_dir =
-      LegacyCacheStorageCache::From(callback_cache_handle_)->path().DirName();
+      CacheStorageCache::From(callback_cache_handle_)->path().DirName();
   base::FilePath index_path = storage_dir.AppendASCII("index.txt");
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
@@ -1714,7 +1712,7 @@ TEST_F(CacheStorageManagerTest, GetAllStorageKeysUsageWithOldIndex) {
   EXPECT_TRUE(CachePut(original_handle.value(), kFooURL));
   int64_t cache_size_v1 = Size(storage_key1_);
   base::FilePath storage_dir =
-      LegacyCacheStorageCache::From(original_handle)->path().DirName();
+      CacheStorageCache::From(original_handle)->path().DirName();
   original_handle = CacheStorageCacheHandle();
   EXPECT_GE(cache_size_v1, 0);
 
@@ -1791,7 +1789,7 @@ TEST_F(CacheStorageManagerTest, GetKeySizeWithOldIndex) {
   EXPECT_TRUE(CachePut(original_handle.value(), kFooURL));
   int64_t cache_size_v1 = Size(storage_key1_);
   base::FilePath storage_dir =
-      LegacyCacheStorageCache::From(original_handle)->path().DirName();
+      CacheStorageCache::From(original_handle)->path().DirName();
   original_handle = CacheStorageCacheHandle();
   EXPECT_GE(cache_size_v1, 0);
 
@@ -1903,11 +1901,10 @@ TEST_F(CacheStorageManagerTest, DeleteUnreferencedCacheDirectories) {
 
   // Create an unreferenced directory next to the referenced one.
   auto* legacy_manager =
-      static_cast<LegacyCacheStorageManager*>(cache_manager_.get());
-  base::FilePath origin_path =
-      LegacyCacheStorageManager::ConstructStorageKeyPath(
-          legacy_manager->root_path(), storage_key1_,
-          storage::mojom::CacheStorageOwner::kCacheAPI);
+      static_cast<CacheStorageManager*>(cache_manager_.get());
+  base::FilePath origin_path = CacheStorageManager::ConstructStorageKeyPath(
+      legacy_manager->root_path(), storage_key1_,
+      storage::mojom::CacheStorageOwner::kCacheAPI);
   base::FilePath unreferenced_path = origin_path.AppendASCII("bar");
   EXPECT_TRUE(CreateDirectory(unreferenced_path));
   EXPECT_TRUE(base::DirectoryExists(unreferenced_path));
@@ -2503,7 +2500,7 @@ TEST_F(CacheStorageQuotaClientDiskOnlyTest, QuotaDeleteUnloadedKeyData) {
 
   // Close the cache backend so that it writes out its index to disk.
   base::RunLoop run_loop;
-  LegacyCacheStorageCache::From(callback_cache_handle_)
+  CacheStorageCache::From(callback_cache_handle_)
       ->Close(run_loop.QuitClosure());
   run_loop.Run();
 
@@ -2519,12 +2516,10 @@ TEST_F(CacheStorageQuotaClientDiskOnlyTest, QuotaDeleteUnloadedKeyData) {
 TEST_F(CacheStorageManagerTest, UpgradePaddingVersion) {
   // Create an empty directory for the cache_storage files.
   auto* legacy_manager =
-      static_cast<LegacyCacheStorageManager*>(cache_manager_.get());
+      static_cast<CacheStorageManager*>(cache_manager_.get());
   base::FilePath manager_dir = legacy_manager->root_path();
-  base::FilePath storage_dir =
-      LegacyCacheStorageManager::ConstructStorageKeyPath(
-          manager_dir, storage_key1_,
-          storage::mojom::CacheStorageOwner::kCacheAPI);
+  base::FilePath storage_dir = CacheStorageManager::ConstructStorageKeyPath(
+      manager_dir, storage_key1_, storage::mojom::CacheStorageOwner::kCacheAPI);
   EXPECT_TRUE(base::CreateDirectory(manager_dir));
 
   // Destroy the manager while we operate on the underlying files.
