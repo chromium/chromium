@@ -152,20 +152,6 @@ class GEOMETRY_EXPORT Rect {
   // Expand the rectangle by the given |outsets|.
   void Outset(const Outsets& outsets) { Inset(outsets.ToInsets()); }
 
-  // TODO(crbug.com/1302500): Remove these functions in favor of the above
-  // functions, because these functions are error-prone about the order of the
-  // parameters.
-  void Inset(int horizontal, int vertical) {
-    Inset(Insets::VH(vertical, horizontal));
-  }
-  void Outset(int horizontal, int vertical) { Inset(-horizontal, -vertical); }
-  void Inset(int left, int top, int right, int bottom) {
-    Inset(Insets::TLBR(top, left, bottom, right));
-  }
-  void Outset(int left, int top, int right, int bottom) {
-    Inset(-left, -top, -right, -bottom);
-  }
-
   // Move the rectangle by a horizontal and vertical distance.
   void Offset(int horizontal, int vertical) {
     Offset(Vector2d(horizontal, vertical));
