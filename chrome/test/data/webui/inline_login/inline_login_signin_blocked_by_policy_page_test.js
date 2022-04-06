@@ -12,6 +12,7 @@ import 'chrome://chrome-signin/inline_login_app.js';
 
 import {InlineLoginBrowserProxyImpl} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
 import {AccountAdditionOptions} from 'chrome://chrome-signin/inline_login_util.js';
+import {SigninBlockedByPolicyPageElement} from 'chrome://chrome-signin/signin_blocked_by_policy_page.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -66,7 +67,8 @@ suite(inline_login_signin_blocked_by_policy_page_test.suiteName, () => {
     inlineLoginComponent.setAuthExtHostForTest(testAuthenticator);
     flush();
     signinBlockedByPolicyPageComponent =
-        inlineLoginComponent.$$('signin-blocked-by-policy-page');
+        /** @type {SigninBlockedByPolicyPageElement}*/
+        (inlineLoginComponent.$$('signin-blocked-by-policy-page'));
   }
 
   test(

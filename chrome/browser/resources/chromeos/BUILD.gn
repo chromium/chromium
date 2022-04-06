@@ -14,6 +14,7 @@ group("resources") {
     ":app_icon_resources",
     ":multidevice_setup_resources",
     "accessibility:build",
+    "arc_account_picker:resources",
     "assistant_optin:resources",
     "audio:resources",
     "emoji_picker:resources",

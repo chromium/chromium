@@ -16,7 +16,7 @@ import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behav
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 // <if expr="chromeos_ash">
-import './arc_account_picker_app.js';
+import './arc_account_picker/arc_account_picker_app.js';
 import './gaia_action_buttons.js';
 import './signin_blocked_by_policy_page.js';
 import './welcome_page_app.js';
