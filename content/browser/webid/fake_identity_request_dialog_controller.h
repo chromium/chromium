@@ -19,7 +19,7 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
     : public IdentityRequestDialogController {
  public:
   explicit FakeIdentityRequestDialogController(
-      absl::optional<std::string> selected_account = absl::nullopt);
+      absl::optional<std::string> selected_account);
   ~FakeIdentityRequestDialogController() override;
 
   void ShowAccountsDialog(content::WebContents* rp_web_contents,
