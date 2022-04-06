@@ -81,6 +81,8 @@ class ServerThread(threading.Thread):
   def run(self):
     try:
       asyncio.run(StartWebsocketServer())
+    except asyncio.CancelledError:
+      pass
     except Exception as e:  # pylint:disable=broad-except
       sys.stdout.write('Server thread had exception: %s\n' % e)
 
@@ -183,8 +185,16 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def TearDownWebsocketServer(cls):
     if cls.connection_stopper:
       cls.connection_stopper.cancel()
+      try:
+        cls.connection_stopper.exception()
+      except asyncio.CancelledError:
+        pass
     if cls.server_stopper:
       cls.server_stopper.cancel()
+      try:
+        cls.server_stopper.exception()
+      except asyncio.CancelledError:
+        pass
     cls.server_stopper = None
     cls.connection_stopper = None
     cls.server_port = None
@@ -259,6 +269,10 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def CleanUpExistingWebsocket(cls):
     if cls.connection_stopper:
       cls.connection_stopper.cancel()
+      try:
+        cls.connection_stopper.exception()
+      except asyncio.CancelledError:
+        pass
     cls.connection_stopper = None
     cls.websocket = None
     cls.connection_received_event.clear()
