@@ -117,6 +117,7 @@
     <file path="strings/components_chromium_strings_bs.xtb" lang="bs" />
     <file path="strings/components_chromium_strings_ca.xtb" lang="ca" />
     <file path="strings/components_chromium_strings_cs.xtb" lang="cs" />
+    <file path="strings/components_chromium_strings_cy.xtb" lang="cy" />
     <file path="strings/components_chromium_strings_da.xtb" lang="da" />
     <file path="strings/components_chromium_strings_de.xtb" lang="de" />
     <file path="strings/components_chromium_strings_el.xtb" lang="el" />

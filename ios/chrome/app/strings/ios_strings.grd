@@ -70,6 +70,7 @@ locale.  The strings in this file are specific to iOS.
     <file path="resources/ios_strings_bs.xtb" lang="bs" />
     <file path="resources/ios_strings_ca.xtb" lang="ca" />
     <file path="resources/ios_strings_cs.xtb" lang="cs" />
+    <file path="resources/ios_strings_cy.xtb" lang="cy" />
     <file path="resources/ios_strings_da.xtb" lang="da" />
     <file path="resources/ios_strings_de.xtb" lang="de" />
     <file path="resources/ios_strings_el.xtb" lang="el" />

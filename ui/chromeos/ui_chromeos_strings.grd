@@ -105,6 +105,7 @@
     <file path="translations/ui_chromeos_strings_bs.xtb" lang="bs" />
     <file path="translations/ui_chromeos_strings_ca.xtb" lang="ca" />
     <file path="translations/ui_chromeos_strings_cs.xtb" lang="cs" />
+    <file path="translations/ui_chromeos_strings_cy.xtb" lang="cy" />
     <file path="translations/ui_chromeos_strings_da.xtb" lang="da" />
     <file path="translations/ui_chromeos_strings_de.xtb" lang="de" />
     <file path="translations/ui_chromeos_strings_el.xtb" lang="el" />

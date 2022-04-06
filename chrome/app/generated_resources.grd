@@ -201,6 +201,7 @@ are declared in tools/grit/grit_rule.gni.
     <file path="resources/generated_resources_bs.xtb" lang="bs" />
     <file path="resources/generated_resources_ca.xtb" lang="ca" />
     <file path="resources/generated_resources_cs.xtb" lang="cs" />
+    <file path="resources/generated_resources_cy.xtb" lang="cy" />
     <file path="resources/generated_resources_da.xtb" lang="da" />
     <file path="resources/generated_resources_de.xtb" lang="de" />
     <file path="resources/generated_resources_el.xtb" lang="el" />

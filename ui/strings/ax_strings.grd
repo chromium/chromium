@@ -121,6 +121,7 @@ need to be translated for each locale.-->
     <file path="translations/ax_strings_bs.xtb" lang="bs" />
     <file path="translations/ax_strings_ca.xtb" lang="ca" />
     <file path="translations/ax_strings_cs.xtb" lang="cs" />
+    <file path="translations/ax_strings_cy.xtb" lang="cy" />
     <file path="translations/ax_strings_da.xtb" lang="da" />
     <file path="translations/ax_strings_de.xtb" lang="de" />
     <file path="translations/ax_strings_el.xtb" lang="el" />

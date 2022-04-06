@@ -109,6 +109,7 @@ need to be translated for each locale. Note that some accessibility strings rema
     <file path="translations/blink_accessibility_strings_bs.xtb" lang="bs" />
     <file path="translations/blink_accessibility_strings_ca.xtb" lang="ca" />
     <file path="translations/blink_accessibility_strings_cs.xtb" lang="cs" />
+    <file path="translations/blink_accessibility_strings_cy.xtb" lang="cy" />
     <file path="translations/blink_accessibility_strings_da.xtb" lang="da" />
     <file path="translations/blink_accessibility_strings_de.xtb" lang="de" />
     <file path="translations/blink_accessibility_strings_el.xtb" lang="el" />

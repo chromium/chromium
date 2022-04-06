@@ -196,6 +196,7 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
     <file path="resources/chromium_strings_bs.xtb" lang="bs" />
     <file path="resources/chromium_strings_ca.xtb" lang="ca" />
     <file path="resources/chromium_strings_cs.xtb" lang="cs" />
+    <file path="resources/chromium_strings_cy.xtb" lang="cy" />
     <file path="resources/chromium_strings_da.xtb" lang="da" />
     <file path="resources/chromium_strings_de.xtb" lang="de" />
     <file path="resources/chromium_strings_el.xtb" lang="el" />
