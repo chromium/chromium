@@ -297,16 +297,6 @@ class ClipboardHistoryBrowserTest : public ash::LoginManagerTest {
     Release(key, modifiers);
   }
 
-  // TODO(crbug.com/1304484): Check whether this currently unused function
-  // should have been used or if it can be deleted.
-  void WaitUntilItemDeletionCompletes() {
-    auto* context_menu = GetContextMenu();
-    DCHECK(context_menu);
-    base::RunLoop run_loop;
-    context_menu->set_item_removal_callback_for_test(run_loop.QuitClosure());
-    run_loop.Run();
-  }
-
   void ShowContextMenuViaAccelerator(bool wait_for_selection) {
     PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
     if (!wait_for_selection)
@@ -320,14 +310,6 @@ class ClipboardHistoryBrowserTest : public ash::LoginManagerTest {
 
   const views::MenuItemView* GetMenuItemViewForIndex(int index) const {
     return GetContextMenu()->GetMenuItemViewAtForTest(index);
-  }
-
-  // TODO(crbug.com/1304484): Check whether this currently unused function
-  // should have been used or if it can be deleted.
-  views::MenuItemView* GetMenuItemViewForTest(int index) {
-    return const_cast<views::MenuItemView*>(
-        const_cast<const ClipboardHistoryBrowserTest*>(this)
-            ->GetMenuItemViewForIndex(index));
   }
 
   const ash::ClipboardHistoryItemView* GetHistoryItemViewForIndex(

@@ -92,10 +92,6 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
   const views::MenuItemView* GetMenuItemViewAtForTest(int index) const;
   views::MenuItemView* GetMenuItemViewAtForTest(int index);
 
-  void set_item_removal_callback_for_test(base::RepeatingClosure new_callback) {
-    item_removal_callback_for_test_ = std::move(new_callback);
-  }
-
  private:
   class ScopedA11yIgnore;
 
@@ -159,9 +155,6 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
 
   // Indicates whether `Run()` has been called before.
   bool run_before_ = false;
-
-  // Called when an item view is removed from the root menu.
-  base::RepeatingClosure item_removal_callback_for_test_;
 
   base::WeakPtrFactory<ClipboardHistoryMenuModelAdapter> weak_ptr_factory_{
       this};

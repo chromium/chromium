@@ -378,9 +378,6 @@ void ClipboardHistoryMenuModelAdapter::RemoveItemView(int command_id) {
   // `ChildrenChanged()` clears the selection. So restore the selection.
   if (original_selected_command_id.has_value())
     SelectMenuItemWithCommandId(*original_selected_command_id);
-
-  if (item_removal_callback_for_test_)
-    item_removal_callback_for_test_.Run();
 }
 
 views::MenuItemView* ClipboardHistoryMenuModelAdapter::AppendMenuItem(
