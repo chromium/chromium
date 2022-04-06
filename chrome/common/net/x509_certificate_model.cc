@@ -17,6 +17,7 @@
 #include "components/url_formatter/url_formatter.h"
 #include "crypto/sha2.h"
 #include "net/cert/internal/cert_errors.h"
+#include "net/cert/internal/extended_key_usage.h"
 #include "net/cert/internal/parse_name.h"
 #include "net/cert/x509_util.h"
 #include "net/der/encode_values.h"
@@ -202,17 +203,34 @@ constexpr auto kOidStringMap = base::MakeFixedFlatMap<net::der::Input, int>({
      IDS_CERT_X509_AUTH_INFO_ACCESS},
     {net::der::Input(net::kCpsPointerId), IDS_CERT_PKIX_CPS_POINTER_QUALIFIER},
     {net::der::Input(net::kUserNoticeId), IDS_CERT_PKIX_USER_NOTICE_QUALIFIER},
+
+    // Extended Key Usages:
+    {net::der::Input(net::kAnyEKU), IDS_CERT_EKU_ANY_EKU},
+    {net::der::Input(net::kServerAuth),
+     IDS_CERT_EKU_TLS_WEB_SERVER_AUTHENTICATION},
+    {net::der::Input(net::kClientAuth),
+     IDS_CERT_EKU_TLS_WEB_CLIENT_AUTHENTICATION},
+    {net::der::Input(net::kCodeSigning), IDS_CERT_EKU_CODE_SIGNING},
+    {net::der::Input(net::kEmailProtection), IDS_CERT_EKU_EMAIL_PROTECTION},
+    {net::der::Input(net::kTimeStamping), IDS_CERT_EKU_TIME_STAMPING},
+    {net::der::Input(net::kOCSPSigning), IDS_CERT_EKU_OCSP_SIGNING},
+    {net::der::Input(net::kNetscapeServerGatedCrypto),
+     IDS_CERT_EKU_NETSCAPE_INTERNATIONAL_STEP_UP},
 });
 
-std::string GetOidText(net::der::Input oid) {
+absl::optional<std::string> GetOidText(net::der::Input oid) {
   // TODO(crbug.com/1311404): this should be "const auto i" since it's an
   // iterator, but fixed_flat_map iterators are raw pointers and the
   // chromium-style plugin complains.
   const auto* i = kOidStringMap.find(oid);
   if (i != kOidStringMap.end())
     return l10n_util::GetStringUTF8(i->second);
+  return absl::nullopt;
+}
 
-  return OidToNumericString(oid);
+std::string GetOidTextOrNumeric(net::der::Input oid) {
+  absl::optional<std::string> oid_text = GetOidText(oid);
+  return oid_text ? *oid_text : OidToNumericString(oid);
 }
 
 std::string ProcessRDN(const net::RelativeDistinguishedName& rdn) {
@@ -221,7 +239,7 @@ std::string ProcessRDN(const net::RelativeDistinguishedName& rdn) {
   // and generally only has one element anyway.  Just traverse in encoded
   // order.
   for (const net::X509NameAttribute& name_attribute : rdn) {
-    std::string oid_text = GetOidText(name_attribute.type);
+    std::string oid_text = GetOidTextOrNumeric(name_attribute.type);
     if (oid_text.empty())
       return std::string();
     rv += oid_text;
@@ -359,6 +377,31 @@ absl::optional<std::string> ProcessBasicConstraints(
     }
     rv += l10n_util::GetStringFUTF8(IDS_CERT_X509_BASIC_CONSTRAINT_PATH_LEN,
                                     depth);
+  }
+  return rv;
+}
+
+absl::optional<std::string> ProcessExtKeyUsage(net::der::Input extension_data) {
+  std::vector<net::der::Input> extended_key_usage;
+  if (!net::ParseEKUExtension(extension_data, &extended_key_usage))
+    return absl::nullopt;
+
+  std::string rv;
+  for (const auto& oid : extended_key_usage) {
+    std::string numeric_oid = OidToNumericString(oid);
+    absl::optional<std::string> oid_text = GetOidText(oid);
+
+    // If oid is one that is recognized, display the text description along
+    // with the numeric_oid. If we don't recognize the OID just display the
+    // numeric OID alone.
+    if (!oid_text) {
+      rv += numeric_oid;
+    } else {
+      rv += l10n_util::GetStringFUTF8(IDS_CERT_EXT_KEY_USAGE_FORMAT,
+                                      base::UTF8ToUTF16(*oid_text),
+                                      base::UTF8ToUTF16(numeric_oid));
+    }
+    rv += '\n';
   }
   return rv;
 }
@@ -531,7 +574,7 @@ std::vector<Extension> X509CertificateModel::GetExtensions(
   std::vector<Extension> extensions;
   for (const auto& extension : extensions_) {
     Extension processed_extension;
-    processed_extension.name = GetOidText(extension.oid);
+    processed_extension.name = GetOidTextOrNumeric(extension.oid);
     processed_extension.value =
         ProcessExtension(critical_label, non_critical_label, extension);
     extensions.push_back(processed_extension);
@@ -605,6 +648,8 @@ absl::optional<std::string> X509CertificateModel::ProcessExtensionData(
     return ProcessKeyUsageExtension(extension.value);
   if (extension.oid == net::der::Input(net::kBasicConstraintsOid))
     return ProcessBasicConstraints(extension.value);
+  if (extension.oid == net::der::Input(net::kExtKeyUsageOid))
+    return ProcessExtKeyUsage(extension.value);
   return ProcessRawBytes(extension.value);
 }
 

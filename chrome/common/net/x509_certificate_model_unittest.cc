@@ -96,6 +96,13 @@ TEST_P(X509CertificateModel, GetGoogleCertFields) {
   EXPECT_EQ("Certificate Basic Constraints", extensions[0].name);
   EXPECT_EQ("critical\nIs not a Certification Authority\n",
             extensions[0].value);
+  EXPECT_EQ("Extended Key Usage", extensions[2].name);
+  EXPECT_EQ(
+      "notcrit\nTLS WWW Server Authentication (OID.1.3.6.1.5.5.7.3.1)\nTLS WWW "
+      "Client Authentication (OID.1.3.6.1.5.5.7.3.2)\nNetscape International "
+      "Step-Up (OID.2.16.840.1.113730.4.1)\n",
+      extensions[2].value);
+  EXPECT_EQ("Authority Information Access", extensions[3].name);
 }
 
 TEST_P(X509CertificateModel, GetNDNCertFields) {
@@ -188,6 +195,12 @@ TEST_P(X509CertificateModel, GlobalsignComCert) {
       "critical\nSigning\nNon-repudiation\nKey Encipherment\n"
       "Data Encipherment",
       extensions[5].value);
+
+  EXPECT_EQ("Extended Key Usage", extensions[6].name);
+  EXPECT_EQ(
+      "notcrit\nTLS WWW Server Authentication (OID.1.3.6.1.5.5.7.3.1)\n"
+      "TLS WWW Client Authentication (OID.1.3.6.1.5.5.7.3.2)\n",
+      extensions[6].value);
 
   EXPECT_EQ("Netscape Certificate Type", extensions[8].name);
   EXPECT_EQ("notcrit\nSSL Client Certificate\nSSL Server Certificate",

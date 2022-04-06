@@ -3679,6 +3679,9 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_CERT_EXT_MS_NTDS_REPLICATION" desc="description of extension Microsoft Domain GUID">
           Microsoft Domain GUID
         </message>
+        <message name="IDS_CERT_EKU_ANY_EKU" desc="description of extended key usage anyExtendedKeyUsage">
+          Any Extended Key Usage
+        </message>
         <message name="IDS_CERT_EKU_TLS_WEB_SERVER_AUTHENTICATION" desc="description of extended key usage TLS WWW Server Authentication">
           TLS WWW Server Authentication
         </message>
