@@ -7,6 +7,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//components/nacl/features.gni")
+import("//components/optimization_guide/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
@@ -234,6 +235,13 @@ test("components_unittests") {
     "//components/webdata/common:unit_tests",
     "//components/webdata_services:unit_tests",
   ]
+
+  if (build_with_internal_optimization_guide && is_android) {
+    loadable_module_deps = [
+      "//components/optimization_guide/internal:optimization_guide_internal",
+    ]
+    loadable_modules = [ "$root_out_dir/liboptimization_guide_internal.so" ]
+  }
 
   data_deps = [ "//testing/buildbot/filters:components_unittests_filters" ]
 

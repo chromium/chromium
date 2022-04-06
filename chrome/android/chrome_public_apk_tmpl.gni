@@ -15,6 +15,7 @@ import("//chrome/android/chrome_common_shared_library.gni")
 import("//chrome/android/features/dev_ui/dev_ui_module.gni")
 import("//chrome/android/modules/chrome_bundle_tmpl.gni")
 import("//chrome/common/features.gni")
+import("//components/optimization_guide/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//weblayer/variables.gni")
 import("channel.gni")
@@ -293,6 +294,23 @@ template("chrome_public_common_apk_or_module_tmpl") {
 
       if (!defined(load_library_from_apk)) {
         load_library_from_apk = chromium_linker_supported
+      }
+    }
+    if (build_with_internal_optimization_guide) {
+      _is_trichrome_3264 =
+          !_is_trichrome || !android_64bit_target_cpu || _is_64_bit_browser
+
+      if (_is_trichrome_3264) {
+        deps += [ "//components/optimization_guide/internal:optimization_guide_internal" ]
+        loadable_modules +=
+            [ "$root_out_dir/liboptimization_guide_internal.so" ]
+      } else {
+        _secondary_optimization_guide = "//components/optimization_guide/internal:optimization_guide_internal($android_secondary_abi_toolchain)"
+        deps += [ _secondary_optimization_guide ]
+        _secondary_out_dir =
+            get_label_info(_secondary_optimization_guide, "root_out_dir")
+        secondary_abi_loadable_modules +=
+            [ "$_secondary_out_dir/liboptimization_guide_internal.so" ]
       }
     }
     if (_target_type == "android_apk") {

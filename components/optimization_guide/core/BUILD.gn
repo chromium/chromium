@@ -232,7 +232,8 @@ static_library("core") {
     "//services/network/public/cpp",
     "//url:url",
   ]
-  if (build_with_tflite_lib && build_with_internal_optimization_guide) {
+  if (!is_android && build_with_tflite_lib &&
+      build_with_internal_optimization_guide) {
     data_deps = [
       "//components/optimization_guide/internal:optimization_guide_internal",
     ]

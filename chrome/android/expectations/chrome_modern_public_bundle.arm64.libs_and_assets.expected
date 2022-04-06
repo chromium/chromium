@@ -1,6 +1,7 @@
 apk_path=lib/arm64-v8a/crazy.libchrome.so, compress=False, alignment=4096
 apk_path=lib/arm64-v8a/libchrome_crashpad_handler.so, compress=True, alignment=0
 apk_path=lib/arm64-v8a/libchromium_android_linker.so, compress=True, alignment=0
+apk_path=lib/arm64-v8a/liboptimization_guide_internal.so, compress=False, alignment=4096
 apk_path=assets/chrome_100_percent.pak, compress=False, alignment=4
 apk_path=assets/icudtl.dat, compress=False, alignment=4
 apk_path=assets/locales/af.pak, compress=False, alignment=4

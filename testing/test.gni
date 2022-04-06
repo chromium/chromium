@@ -254,6 +254,8 @@ template("test") {
         "enable_multidex",
         "generate_final_jni",
         "product_config_java_packages",
+        "loadable_modules",
+        "loadable_module_deps",
         "min_sdk_version",
         "proguard_configs",
         "proguard_enabled",
@@ -329,6 +331,9 @@ template("test") {
           deps = invoker.deps
         } else {
           deps = []
+        }
+        if (defined(loadable_module_deps)) {
+          deps += loadable_module_deps
         }
 
         # Add the Java classes so that each target does not have to do it.

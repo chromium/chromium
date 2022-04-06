@@ -4,6 +4,7 @@
 
 import("//build/config/features.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+import("//components/optimization_guide/features.gni")
 import("//ui/gl/features.gni")
 
 # The monochrome_static_initializers target will cause release bots to fail if
@@ -37,6 +38,12 @@ if (current_toolchain == default_toolchain &&
   # This one is from //third_party/gvr-android-sdk
   # base_logging.cc (initializer offset 0x9a4b0c size 0x48)
   expected_static_initializer_count += 1
+
+  if (build_with_internal_optimization_guide) {
+    # 000081d1 t _GLOBAL__I_000101
+    # 000081dd t _GLOBAL__sub_I_iostream.cpp
+    expected_static_initializer_count += 2
+  }
 
   if (use_static_angle && !is_official_build &&
       (is_debug || dcheck_always_on)) {
