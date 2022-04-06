@@ -78,6 +78,17 @@ constexpr int kAnswerCardFocusBarHeight = 32;
 // Corner radius for downloaded image icons.
 constexpr int kImageIconCornerRadius = 4;
 
+// Flex layout orders detailing how container views are prioritized.
+constexpr int kSeparatorOrder = 1;
+constexpr int kRatingOrder = 1;
+constexpr int kTitleDetailsContainerOrderNoElide = 2;
+constexpr int kTitleDetailsContainerOrderElide = 3;
+// Non-elidable labels are of order 1 to prioritize them.
+constexpr int kNonElideLabelOrder = 1;
+// Elidable labels are assigned monotonically increasing orders to prioritize
+// items that appear close to the front of the TextVector.
+constexpr int kElidableLabelOrderStart = 2;
+
 constexpr int kSearchRatingStarPadding = 4;
 constexpr int kSearchRatingStarSize = 16;
 constexpr int kKeyboardShortcutTopMargin = 6;
@@ -85,6 +96,10 @@ constexpr int kAnswerCardBorderMargin = 12;
 constexpr gfx::Insets kAnswerCardBorder(kAnswerCardBorderMargin);
 constexpr auto kBigTitleBorder =
     gfx::Insets::TLBR(0, 0, 0, kAnswerCardBorderMargin);
+
+// The fraction of total text space allocated to the details label when both the
+// title and the details label need to be elided.
+constexpr float kDetailsElideRatio = 0.25f;
 
 views::ImageView* SetupChildImageView(views::FlexLayoutView* parent) {
   views::ImageView* image_view =
@@ -99,7 +114,9 @@ views::ImageView* SetupChildImageView(views::FlexLayoutView* parent) {
 views::Label* SetupChildLabelView(
     views::FlexLayoutView* parent,
     SearchResultView::SearchResultViewType view_type,
-    SearchResultView::LabelType label_type) {
+    SearchResultView::LabelType label_type,
+    int flex_order,
+    bool elidable) {
   // Create and setup label.
   views::Label* label = parent->AddChildView(std::make_unique<views::Label>());
   // Ignore labels for accessibility - the result accessible name is defined on
@@ -107,11 +124,13 @@ views::Label* SetupChildLabelView(
   label->GetViewAccessibility().OverrideIsIgnored(true);
   label->SetBackgroundColor(SK_ColorTRANSPARENT);
   label->SetVisible(false);
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  label->SetElideBehavior(elidable ? gfx::ELIDE_TAIL : gfx::NO_ELIDE);
+  label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   label->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kScaleToMaximum));
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kPreferred)
+          .WithOrder(flex_order));
 
   // Apply label text styling.
   label->SetTextContext(label_type == SearchResultView::LabelType::kBigTitle
@@ -137,8 +156,8 @@ SearchResultInlineIconView* SetupChildInlineIconView(
   inline_icon_view->SetVisible(false);
   inline_icon_view->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kScaleToMaximum));
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kPreferred));
   return inline_icon_view;
 }
 
@@ -254,6 +273,10 @@ SearchResultView::SearchResultView(
   text_container_ = AddChildView(std::make_unique<views::FlexLayoutView>());
   text_container_->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
   text_container_->SetOrientation(views::LayoutOrientation::kHorizontal);
+  text_container_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kPreferred));
 
   big_title_container_ =
       text_container_->AddChildView(std::make_unique<views::FlexLayoutView>());
@@ -264,11 +287,19 @@ SearchResultView::SearchResultView(
       text_container_->AddChildView(std::make_unique<views::FlexLayoutView>());
   body_text_container_->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
   body_text_container_->SetOrientation(views::LayoutOrientation::kVertical);
+  body_text_container_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kPreferred));
 
   title_and_details_container_ = body_text_container_->AddChildView(
       std::make_unique<views::FlexLayoutView>());
   title_and_details_container_->SetCrossAxisAlignment(
       views::LayoutAlignment::kStretch);
+  title_and_details_container_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kPreferred));
   SetSearchResultViewType(view_type_);
 
   keyboard_shortcut_container_ = body_text_container_->AddChildView(
@@ -282,9 +313,18 @@ SearchResultView::SearchResultView(
       std::make_unique<views::FlexLayoutView>());
   title_container_->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
   title_container_->SetOrientation(views::LayoutOrientation::kHorizontal);
+  title_container_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kPreferred)
+          .WithOrder(kTitleDetailsContainerOrderNoElide)
+          .WithWeight(1));
+  title_container_->SetFlexAllocationOrder(
+      views::FlexAllocationOrder::kReverse);
 
-  separator_label_ = SetupChildLabelView(title_and_details_container_,
-                                         view_type_, LabelType::kDetails);
+  separator_label_ =
+      SetupChildLabelView(title_and_details_container_, view_type_,
+                          LabelType::kDetails, kSeparatorOrder, false);
   separator_label_->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_SEARCH_RESULT_SEPARATOR));
   separator_label_->GetViewAccessibility().OverrideIsIgnored(true);
@@ -293,9 +333,15 @@ SearchResultView::SearchResultView(
       std::make_unique<views::FlexLayoutView>());
   details_container_->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
   details_container_->SetOrientation(views::LayoutOrientation::kHorizontal);
+  details_container_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kPreferred)
+          .WithOrder(kTitleDetailsContainerOrderNoElide)
+          .WithWeight(1));
 
   rating_ = SetupChildLabelView(title_and_details_container_, view_type_,
-                                LabelType::kDetails);
+                                LabelType::kDetails, kRatingOrder, false);
 
   rating_star_ = SetupChildImageView(title_and_details_container_);
   rating_star_->SetImage(gfx::CreateVectorIcon(
@@ -334,7 +380,6 @@ void SearchResultView::SetSearchResultViewType(SearchResultViewType type) {
       big_title_container_->RemoveAllChildViews();
       big_title_label_tags_.clear();
       big_title_container_->SetVisible(false);
-
       break;
     case SearchResultViewType::kClassic:
       title_and_details_container_->SetOrientation(
@@ -343,7 +388,6 @@ void SearchResultView::SetSearchResultViewType(SearchResultViewType type) {
       big_title_container_->RemoveAllChildViews();
       big_title_label_tags_.clear();
       big_title_container_->SetVisible(false);
-
       break;
     case SearchResultViewType::kAnswerCard:
       title_and_details_container_->SetOrientation(
@@ -405,17 +449,138 @@ bool SearchResultView::GetAndResetResultChanged() {
   return result_changed;
 }
 
+// static
+int SearchResultView::GetTargetTitleWidth(int total_width,
+                                          int separator_width,
+                                          int target_details_width) {
+  // Allocate all remaining space to the title container.
+  const int target_title_width =
+      total_width - separator_width - target_details_width;
+  DCHECK_GT(target_title_width, 0);
+  return target_title_width;
+}
+
+// static
+int SearchResultView::GetMinimumDetailsWidth(int total_width,
+                                             int details_width,
+                                             int details_no_elide_width) {
+  // Calculate the minimum width for the title and details containers
+  // assuming both will need eliding.
+  // We must allocate enough space to show the no_elide text. Otherwise
+  // show the entire details text up to total_width*kDetailsElideRatio.
+  const int target_details_width =
+      std::max(details_no_elide_width,
+               std::min(static_cast<int>(total_width * kDetailsElideRatio),
+                        details_width));
+  DCHECK_GT(target_details_width, 0);
+  return target_details_width;
+}
+
+// static
+void SearchResultView::SetFlexBehaviorForTextContents(
+    int total_width,
+    int separator_width,
+    int non_elided_details_width,
+    views::FlexLayoutView* title_container,
+    views::FlexLayoutView* details_container) {
+  const int title_width = title_container->GetPreferredSize().width();
+  const int details_width = details_container->GetPreferredSize().width();
+
+  // If the result view has enough space to accommodate text contents at their
+  // preferred size, we don't need to elide either view. Set their weights to 1
+  // and order to `kTitleDetailsContainerOrderNoElide`.
+  if (title_width + details_width + separator_width <= total_width) {
+    title_container->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                                 views::MaximumFlexSizeRule::kPreferred)
+            .WithOrder(kTitleDetailsContainerOrderNoElide)
+            .WithWeight(1));
+    details_container->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                                 views::MaximumFlexSizeRule::kPreferred)
+            .WithOrder(kTitleDetailsContainerOrderNoElide)
+            .WithWeight(1));
+    return;
+  }
+
+  const int min_details_width = GetMinimumDetailsWidth(
+      total_width, details_width, non_elided_details_width);
+
+  // If the result view has enough space to layout details to it's minimum size
+  // after laying out the title, we should only take away space from the details
+  // view. We do this by setting the details view to a lower order
+  // `kTitleDetailsContainerOrderElide`.
+  if (total_width - separator_width - title_width >= min_details_width) {
+    title_container->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                                 views::MaximumFlexSizeRule::kPreferred)
+            .WithOrder(kTitleDetailsContainerOrderNoElide)
+            .WithWeight(1));
+    details_container->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                                 views::MaximumFlexSizeRule::kPreferred)
+            .WithOrder(kTitleDetailsContainerOrderElide)
+            .WithWeight(1));
+    return;
+  }
+
+  // If excess space needs to be taken from both the title and details view
+  // to accommodate the minimum details view width, set flex weights to properly
+  // take away space from the title and details view.
+  const int target_title_width =
+      GetTargetTitleWidth(total_width, separator_width, min_details_width);
+
+  // Flex weights are set based on the amount of space that needs to be removed
+  // from an associated view because flex layout *takes space away* based on
+  // weight when it is unable to accommodate the view's preferred size.
+  // calculate the number of px we need to take away from the title/details
+  // text.
+  const int detail_extra_space = details_width - min_details_width;
+  const int title_extra_space = title_width - target_title_width;
+  title_container->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kPreferred)
+          .WithOrder(kTitleDetailsContainerOrderElide)
+          .WithWeight(std::max(title_extra_space, 0)));
+  details_container->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kPreferred)
+          .WithOrder(kTitleDetailsContainerOrderElide)
+          .WithWeight(std::max(detail_extra_space, 0)));
+}
+
 std::vector<SearchResultView::LabelAndTag>
 SearchResultView::SetupContainerViewForTextVector(
     views::FlexLayoutView* parent,
     const std::vector<SearchResult::TextItem>& text_vector,
     LabelType label_type) {
   std::vector<LabelAndTag> label_tags;
+  // Updating the details label should reset our pointer to the last seen
+  // `non_elide_label_`. `non_elide_label_` can only be found in the details
+  // text and should be reset when refreshing the details text.
+  if (label_type == LabelType::kDetails) {
+    non_elided_label_.reset();
+  }
+  int label_count = 0;
   for (auto& span : text_vector) {
     switch (span.GetType()) {
       case SearchResultTextItemType::kString: {
-        views::Label* label =
-            SetupChildLabelView(parent, view_type_, label_type);
+        const bool elidable = span.GetElidable();
+        views::Label* label = SetupChildLabelView(
+            parent, view_type_, label_type,
+            elidable ? kElidableLabelOrderStart + label_count
+                     : kNonElideLabelOrder,
+            elidable);
+        // Elidable label orders are monotonically increasing. Adjust the order
+        // of the label by the number of labels in this container.
+        if (elidable)
+          ++label_count;
         if (label_type == LabelType::kDetails) {
           // We should only show a separator label when the details container
           // has valid contents.
@@ -424,6 +589,14 @@ SearchResultView::SetupContainerViewForTextVector(
         }
         label->SetText(span.GetText());
         label->SetVisible(true);
+        if (!elidable) {
+          // Each search result can have up to one non-elided label in its
+          // details text.
+          DCHECK_EQ(label_type, LabelType::kDetails);
+          DCHECK(!non_elided_label_);
+          non_elided_label_ = label;
+        }
+
         label_tags.push_back(LabelAndTag(label, span.GetTextTags()));
       } break;
       case SearchResultTextItemType::kIconifiedText: {
@@ -720,6 +893,7 @@ gfx::Size SearchResultView::CalculatePreferredSize() const {
 }
 
 void SearchResultView::Layout() {
+  // TODO(crbug/1311101) add test coverage for search result view layout.
   gfx::Rect rect(GetContentsBounds());
   if (rect.IsEmpty())
     return;
@@ -788,8 +962,21 @@ void SearchResultView::Layout() {
         gfx::Rect centered_text_bounds(text_bounds);
         centered_text_bounds.ClampToCenteredSize(label_size);
         text_container_->SetBoundsRect(centered_text_bounds);
+
+        int details_no_elide_width = 0;
+        if (non_elided_label_.has_value()) {
+          details_no_elide_width =
+              non_elided_label_.value()->GetPreferredSize().width();
+        }
+
+        SetFlexBehaviorForTextContents(
+            centered_text_bounds.width(),
+            separator_label_->GetPreferredSize().width(),
+            details_no_elide_width, title_container_, details_container_);
+
         break;
       }
+
       case SearchResultViewType::kClassic:
       case SearchResultViewType::kAnswerCard: {
         gfx::Size label_size(

@@ -53,6 +53,10 @@ class ProductivityLauncherSearchViewTest
         tablet_mode_(GetParam()) {
     scoped_feature_list_.InitAndEnableFeature(features::kProductivityLauncher);
   }
+  ProductivityLauncherSearchViewTest(
+      const ProductivityLauncherSearchViewTest&) = delete;
+  ProductivityLauncherSearchViewTest& operator=(
+      const ProductivityLauncherSearchViewTest&) = delete;
   ~ProductivityLauncherSearchViewTest() override = default;
 
   void SetUp() override {

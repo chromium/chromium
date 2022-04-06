@@ -47,7 +47,6 @@ constexpr int num_list_types_not_used_for_categorical_search = 1;
 }  // namespace
 
 class SearchResultListViewTest : public views::test::WidgetTest,
-
                                  public testing::WithParamInterface<bool> {
  public:
   SearchResultListViewTest() = default;

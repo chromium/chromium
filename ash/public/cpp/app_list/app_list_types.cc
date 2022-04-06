@@ -219,23 +219,11 @@ SearchResultTextItem::SearchResultTextItem(SearchResultTextItemType type) {
   item_type = type;
 }
 
-SearchResultTextItem::SearchResultTextItem(const SearchResultTextItem& other) {
-  item_type = other.item_type;
-  raw_text = other.raw_text;
-  text_tags = other.text_tags;
-  icon_code = other.icon_code;
-  raw_image = other.raw_image;
-}
+SearchResultTextItem::SearchResultTextItem(const SearchResultTextItem& other) =
+    default;
 
 SearchResultTextItem& SearchResultTextItem::operator=(
-    const SearchResultTextItem& other) {
-  item_type = other.item_type;
-  raw_text = other.raw_text;
-  text_tags = other.text_tags;
-  icon_code = other.icon_code;
-  raw_image = other.raw_image;
-  return *this;
-}
+    const SearchResultTextItem& other) = default;
 
 SearchResultTextItem::~SearchResultTextItem() = default;
 

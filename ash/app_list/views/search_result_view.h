@@ -122,6 +122,25 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   // list changes.
   bool GetAndResetResultChanged();
 
+  // Calculates the width of the `title_container_` and 'details_container_'
+  // for SearchResultView's custom eliding behavior.
+  // total_width is the total width allocated to `title_and_details_container_`
+  static int GetTargetTitleWidth(int total_width,
+                                 int separator_width,
+                                 int target_details_width);
+  static int GetMinimumDetailsWidth(int total_width,
+                                    int details_width,
+                                    int details_no_elide_width);
+
+  // Set flex layout weights for title and details containers to support custom
+  // eliding behavior.
+  static void SetFlexBehaviorForTextContents(
+      int total_width,
+      int separator_width,
+      int non_elided_details_width,
+      views::FlexLayoutView* title_container,
+      views::FlexLayoutView* details_container);
+
  private:
   friend class test::SearchResultListViewTest;
   friend class SearchResultListView;
@@ -230,6 +249,9 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   bool has_keyboard_shortcut_contents_ = false;
 
   SearchResultViewType view_type_;
+
+  // Search result view can have one non-elided label.
+  absl::optional<views::Label*> non_elided_label_;
 
   base::WeakPtrFactory<SearchResultView> weak_ptr_factory_{this};
 };

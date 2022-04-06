@@ -301,6 +301,7 @@ source_set("unit_tests") {
     "views/search_result_list_view_unittest.cc",
     "views/search_result_page_view_unittest.cc",
     "views/search_result_tile_item_list_view_unittest.cc",
+    "views/search_result_view_unittest.cc",
   ]
 
   deps = [
