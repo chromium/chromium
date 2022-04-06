@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/extensions/extension_localization_peer.h"
+#include "extensions/renderer/localization_peer.h"
 
 #include <stdint.h>
 
@@ -30,8 +30,8 @@ namespace {
 using testing::_;
 using testing::DoAll;
 using testing::Invoke;
-using testing::StrEq;
 using testing::Return;
+using testing::StrEq;
 
 static const char* const kExtensionUrl_1 =
     "chrome-extension://some_id/popup.css";
@@ -194,7 +194,9 @@ TEST_F(ExtensionLocalizationPeerTest, CreateWithValidInput) {
   EXPECT_TRUE(NULL != filter_peer_.get());
 }
 
-MATCHER_P(IsURLRequestEqual, status, "") { return arg.status() == status; }
+MATCHER_P(IsURLRequestEqual, status, "") {
+  return arg.status() == status;
+}
 
 TEST_F(ExtensionLocalizationPeerTest, OnCompletedRequestBadURLLoaderStatus) {
   SetUpExtensionLocalizationPeer("text/css", GURL(kExtensionUrl_1));

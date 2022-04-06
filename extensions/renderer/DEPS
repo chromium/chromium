@@ -43,6 +43,17 @@ specific_include_rules = {
   "extension_throttle_unittest.cc": [
     "+net/url_request/redirect_info.h",
   ],
+
+  # The following could be hoisted up (they don't violate any conceptual
+  # layering), but they're really only needed here, and localization_peer is
+  # a bit unique.
+  "localization_peer.cc": [
+    "+net/http/http_response_headers.h",
+  ],
+  "localization_peer_unittest.cc": [
+    "+net/url_request/redirect_info.h",
+  ],
+
   # Temporarily allow crash_key; see https://crbug.com/1034755
   "automation_ax_tree_wrapper.cc": [
     "+components/crash/core/common/crash_key.h",

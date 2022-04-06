@@ -58,7 +58,7 @@
 #include "third_party/blink/public/web/web_view.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/renderer/extensions/extension_localization_peer.h"
+#include "extensions/renderer/localization_peer.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

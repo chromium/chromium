@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/extensions/extension_localization_peer.h"
+#include "extensions/renderer/localization_peer.h"
 
 #include <memory>
 #include <utility>
@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
-#include "chrome/common/url_constants.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/message_bundle.h"
@@ -34,8 +33,7 @@ ExtensionLocalizationPeer::ExtensionLocalizationPeer(
       message_sender_(message_sender),
       request_url_(request_url) {}
 
-ExtensionLocalizationPeer::~ExtensionLocalizationPeer() {
-}
+ExtensionLocalizationPeer::~ExtensionLocalizationPeer() {}
 
 // static
 scoped_refptr<blink::WebRequestPeer>
