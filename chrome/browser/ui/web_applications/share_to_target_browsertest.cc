@@ -32,13 +32,20 @@ content::EvalJsResult ReadTextContent(content::WebContents* web_contents,
   return content::EvalJs(web_contents, script);
 }
 
-}  // namespace
-
-namespace web_app {
-
-class ShareToTargetBrowserTest : public WebAppControllerBrowserTest {
+class ScopedSharesheetAppSelection {
  public:
-  void SetSelectedSharesheetApp(const AppId& app_id) {
+  explicit ScopedSharesheetAppSelection(const std::string& app_id) {
+    SetSelectedSharesheetApp(app_id);
+  }
+
+  ScopedSharesheetAppSelection(const ScopedSharesheetAppSelection&) = delete;
+  ScopedSharesheetAppSelection& operator=(const ScopedSharesheetAppSelection&) =
+      delete;
+
+  ~ScopedSharesheetAppSelection() { SetSelectedSharesheetApp(std::string()); }
+
+ private:
+  static void SetSelectedSharesheetApp(const std::string& app_id) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     base::RunLoop run_loop;
     chromeos::LacrosService::Get()
@@ -50,7 +57,14 @@ class ShareToTargetBrowserTest : public WebAppControllerBrowserTest {
         base::UTF8ToUTF16(app_id));
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
+};
 
+}  // namespace
+
+namespace web_app {
+
+class ShareToTargetBrowserTest : public WebAppControllerBrowserTest {
+ public:
   std::string ExecuteShare(const std::string& script) {
     const GURL url = https_server()->GetURL("/webshare/index.html");
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -93,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(ShareToTargetBrowserTest, ShareToPosterWebApp) {
 
   const GURL app_url = https_server()->GetURL("/web_share_target/poster.html");
   const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
-  SetSelectedSharesheetApp(app_id);
+  ScopedSharesheetAppSelection selection(app_id);
 
   // Poster web app does not accept image shares.
   EXPECT_EQ("share failed: AbortError: Share canceled",
@@ -112,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(ShareToTargetBrowserTest, ShareToChartsWebApp) {
 
   const GURL app_url = https_server()->GetURL("/web_share_target/charts.html");
   const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
-  SetSelectedSharesheetApp(app_id);
+  ScopedSharesheetAppSelection selection(app_id);
 
   content::WebContents* web_contents = ShareToTarget("share_single_file()");
   EXPECT_EQ("************", ReadTextContent(web_contents, "notes"));
@@ -128,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(ShareToTargetBrowserTest, ShareImage) {
   const GURL app_url =
       https_server()->GetURL("/web_share_target/multimedia.html");
   const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
-  SetSelectedSharesheetApp(app_id);
+  ScopedSharesheetAppSelection selection(app_id);
 
   content::WebContents* web_contents = ShareToTarget("share_single_file()");
   EXPECT_EQ(std::string(12, '*'), ReadTextContent(web_contents, "image"));
@@ -142,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(ShareToTargetBrowserTest, ShareMultimedia) {
   const GURL app_url =
       https_server()->GetURL("/web_share_target/multimedia.html");
   const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
-  SetSelectedSharesheetApp(app_id);
+  ScopedSharesheetAppSelection selection(app_id);
 
   content::WebContents* web_contents = ShareToTarget("share_multiple_files()");
   EXPECT_EQ(std::string(345, '*'), ReadTextContent(web_contents, "audio"));
@@ -160,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(ShareToTargetBrowserTest, ShareToPartialWild) {
   const GURL app_url =
       https_server()->GetURL("/web_share_target/partial-wild.html");
   const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
-  SetSelectedSharesheetApp(app_id);
+  ScopedSharesheetAppSelection selection(app_id);
 
   // Partial Wild does not accept text shares.
   EXPECT_EQ("share failed: AbortError: Share canceled",
