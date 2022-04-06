@@ -19,7 +19,14 @@ function notifyAboutFlags(flags) {
   const addEntry = function(flag) {
     const nameLabel = flag['name'];
     const enabledLabel = flag['enabled'];
-    $('flags_table').appendChild(createTableRow(nameLabel, enabledLabel));
+    const table = $('flags_table');
+    table.appendChild(createTableRow(nameLabel, enabledLabel));
+    // If they exist, also list feature parameters.
+    if ('parameters' in flag) {
+      for (const [parameter, value] of Object.entries(flag['parameters'])) {
+        table.appendChild(createTableRow('* ' + parameter, value));
+      }
+    }
   };
   flags.forEach(addEntry);
 }

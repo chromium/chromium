@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/values.h"
 #include "chrome/browser/password_manager/password_scripts_fetcher_factory.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -34,8 +35,6 @@ void APCInternalsHandler::OnLoaded(const base::Value::List& args) {
 // Returns a list of dictionaries that contain the name and the state of
 // each APC-related feature.
 base::Value::List APCInternalsHandler::GetAPCRelatedFlags() const {
-  // TODO (crbug.com/1311324): Add state of feature params.
-
   // We must use pointers to the features instead of copying the features,
   // because base::FeatureList::CheckFeatureIdentity (asserted, e.g., in
   // base::FeatureList::IsEnabled) checks that there is only one memory address
@@ -52,7 +51,20 @@ base::Value::List APCInternalsHandler::GetAPCRelatedFlags() const {
   for (const base::Feature* const feature : apc_features) {
     base::Value::Dict feature_entry;
     feature_entry.Set("name", feature->name);
-    feature_entry.Set("enabled", base::FeatureList::IsEnabled(*feature));
+    bool is_enabled = base::FeatureList::IsEnabled(*feature);
+    feature_entry.Set("enabled", is_enabled);
+    if (is_enabled) {
+      // Obtain feature parameters
+      base::FieldTrialParams params;
+      if (base::GetFieldTrialParamsByFeature(*feature, &params)) {
+        // Convert to dictionary.
+        base::Value::Dict feature_params;
+        for (const auto& [param_name, param_state] : params)
+          feature_params.Set(param_name, param_state);
+
+        feature_entry.Set("parameters", base::Value(std::move(feature_params)));
+      }
+    }
     relevant_features.Append(base::Value(std::move(feature_entry)));
   }
   return relevant_features;
