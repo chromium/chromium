@@ -30,6 +30,8 @@
 
 namespace blink {
 
+class BaseAudioContext;
+
 // AudioBasicInspectorNode is an AudioNode with one input and possibly one
 // output where the output might not necessarily connect to another node's
 // input.  (It is up to the subclasses to create the output, if needed.)  If the
@@ -37,30 +39,9 @@ namespace blink {
 // processIfNecessary() function will be called automatically by
 // BaseAudioContext before the end of each render quantum so that it can inspect
 // the audio stream.
-class AudioBasicInspectorHandler : public AudioHandler {
- public:
-  AudioBasicInspectorHandler(NodeType, AudioNode&, float sample_rate);
-
-  // AudioHandler
-  void PullInputs(uint32_t frames_to_process) override;
-  void CheckNumberOfChannelsForInput(AudioNodeInput*) override;
-
-  // AudioNode
-  double TailTime() const override { return 0; }
-  double LatencyTime() const override { return 0; }
-
-  void UpdatePullStatusIfNeeded() override;
-
- protected:
-  // When setting to true, AudioBasicInspectorHandler will be pulled
-  // automaticlly by BaseAudioContext before the end of each render quantum.
-  bool need_automatic_pull_;
-};
-
 class AudioBasicInspectorNode : public AudioNode {
  protected:
-  explicit AudioBasicInspectorNode(BaseAudioContext& context)
-      : AudioNode(context) {}
+  explicit AudioBasicInspectorNode(BaseAudioContext& context);
 };
 
 }  // namespace blink

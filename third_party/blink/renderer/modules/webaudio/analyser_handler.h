@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_ANALYSER_HANDLER_H_
 
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
-#include "third_party/blink/renderer/modules/webaudio/audio_basic_inspector_node.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_basic_inspector_handler.h"
 #include "third_party/blink/renderer/modules/webaudio/realtime_analyser.h"
 
 namespace blink {

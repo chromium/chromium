@@ -28,6 +28,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_basic_inspector_handler.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_basic_inspector_node.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 
