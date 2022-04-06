@@ -149,8 +149,9 @@ void LocalWindowProxy::DisposeContext(Lifecycle next_status,
 }
 
 void LocalWindowProxy::Initialize() {
-  TRACE_EVENT1("v8", "LocalWindowProxy::Initialize", "IsMainFrame",
-               GetFrame()->IsMainFrame());
+  TRACE_EVENT2("v8", "LocalWindowProxy::Initialize", "IsMainFrame",
+               GetFrame()->IsMainFrame(), "IsOutermostMainFrame",
+               GetFrame()->IsOutermostMainFrame());
   CHECK(!GetFrame()->IsProvisional());
 
   ScriptForbiddenScope::AllowUserAgentScript allow_script;
@@ -197,8 +198,9 @@ void LocalWindowProxy::Initialize() {
   }
 
   {
-    TRACE_EVENT1("v8", "ContextCreatedNotification", "IsMainFrame",
-                 GetFrame()->IsMainFrame());
+    TRACE_EVENT2("v8", "ContextCreatedNotification", "IsMainFrame",
+                 GetFrame()->IsMainFrame(), "IsOutermostMainFrame",
+                 GetFrame()->IsOutermostMainFrame());
     MainThreadDebugger::Instance()->ContextCreated(script_state_, GetFrame(),
                                                    origin.get());
     GetFrame()->Client()->DidCreateScriptContext(context, world_->GetWorldId());
@@ -212,8 +214,9 @@ void LocalWindowProxy::Initialize() {
 }
 
 void LocalWindowProxy::CreateContext() {
-  TRACE_EVENT1("v8", "LocalWindowProxy::CreateContext", "IsMainFrame",
-               GetFrame()->IsMainFrame());
+  TRACE_EVENT2("v8", "LocalWindowProxy::CreateContext", "IsMainFrame",
+               GetFrame()->IsMainFrame(), "IsOutermostMainFrame",
+               GetFrame()->IsOutermostMainFrame());
 
   // TODO(yukishiino): Remove this CHECK once crbug.com/713699 gets fixed.
   CHECK(IsMainThread());
@@ -264,8 +267,9 @@ void LocalWindowProxy::CreateContext() {
 }
 
 void LocalWindowProxy::InstallConditionalFeatures() {
-  TRACE_EVENT1("v8", "InstallConditionalFeatures", "IsMainFrame",
-               GetFrame()->IsMainFrame());
+  TRACE_EVENT2("v8", "InstallConditionalFeatures", "IsMainFrame",
+               GetFrame()->IsMainFrame(), "IsOutermostMainFrame",
+               GetFrame()->IsOutermostMainFrame());
 
   if (context_was_created_from_snapshot_) {
     V8ContextSnapshot::InstallContextIndependentProps(script_state_);
@@ -282,8 +286,9 @@ void LocalWindowProxy::InstallConditionalFeatures() {
 }
 
 void LocalWindowProxy::SetupWindowPrototypeChain() {
-  TRACE_EVENT1("v8", "LocalWindowProxy::SetupWindowPrototypeChain",
-               "IsMainFrame", GetFrame()->IsMainFrame());
+  TRACE_EVENT2("v8", "LocalWindowProxy::SetupWindowPrototypeChain",
+               "IsMainFrame", GetFrame()->IsMainFrame(), "IsOutermostMainFrame",
+               GetFrame()->IsOutermostMainFrame());
 
   // Associate the window wrapper object and its prototype chain with the
   // corresponding native DOMWindow object.
@@ -331,8 +336,9 @@ void LocalWindowProxy::SetupWindowPrototypeChain() {
 
 void LocalWindowProxy::UpdateDocumentProperty() {
   DCHECK(world_->IsMainWorld());
-  TRACE_EVENT1("v8", "LocalWindowProxy::UpdateDocumentProperty", "IsMainFrame",
-               GetFrame()->IsMainFrame());
+  TRACE_EVENT2("v8", "LocalWindowProxy::UpdateDocumentProperty", "IsMainFrame",
+               GetFrame()->IsMainFrame(), "IsOutermostMainFrame",
+               GetFrame()->IsOutermostMainFrame());
 
   ScriptState::Scope scope(script_state_);
   v8::Local<v8::Context> context = script_state_->GetContext();
