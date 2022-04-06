@@ -817,8 +817,6 @@ class WebLocalFrame : public WebFrame {
   // True iff a script tagged as an ad was on the v8 stack when the frame was
   // created and the frame is a subframe. This is not currently propagated when
   // a frame navigates cross-origin.
-  // TODO(crbug.com/1145634): propagate this bit for a frame that navigates
-  // cross-origin.
   virtual bool IsSubframeCreatedByAdScript() = 0;
 
   // User activation -----------------------------------------------------------

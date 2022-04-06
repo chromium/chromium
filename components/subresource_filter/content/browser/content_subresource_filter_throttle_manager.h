@@ -312,8 +312,6 @@ class ContentSubresourceFilterThrottleManager
   void OnFrameIsAdSubframe(content::RenderFrameHost* render_frame_host);
 
   // Registers `frame_host` as a frame that was created by ad script.
-  // TODO(crbug.com/1145634): Propagate this bit for a frame that navigates
-  // cross-origin.
   void OnChildFrameWasCreatedByAdScript(content::RenderFrameHost* frame_host);
 
   // mojom::SubresourceFilterHost:
