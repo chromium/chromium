@@ -3641,16 +3641,6 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
       file_path = "$root_build_dir/apks/${_minimal_apks_filename}"
       data_deps = [ ":monochrome_public_minimal_apks" ]
     }
-
-    android_size_bot_config(
-        "resource_size_config_monochrome_public_minimal_apks") {
-      name = "MonochromePublic"
-      mapping_files = [ "apks/MonochromePublic.aab.mapping" ]
-      to_resource_sizes_py = {
-        apk_name = "apks/$_minimal_apks_filename"
-      }
-      supersize_input_file = "apks/$_minimal_apks_filename"
-    }
   }
 
   monochrome_or_trichrome_public_bundle_tmpl("trichrome_chrome_bundle") {
