@@ -17,25 +17,17 @@ namespace send_tab_to_self {
 bool ShouldOfferFeature(content::WebContents* web_contents) {
   if (!web_contents)
     return false;
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  send_tab_to_self::SendTabToSelfSyncService* service =
-      SendTabToSelfSyncServiceFactory::GetForProfile(profile);
 
-  GURL page_url = web_contents->GetURL();
-  content::NavigationEntry* navigation_entry =
-      web_contents->GetController().GetLastCommittedEntry();
-  bool has_last_entry = (navigation_entry != nullptr);
-
-  return ShouldOfferToShareUrl(service, page_url) && has_last_entry;
-}
-
-bool ShouldOfferToShareUrl(
-    SendTabToSelfSyncService* send_tab_to_self_sync_service,
-    const GURL& url) {
-  if (!url.SchemeIsHTTPOrHTTPS())
+  if (!web_contents->GetURL().SchemeIsHTTPOrHTTPS())
     return false;
 
+  if (!web_contents->GetController().GetLastCommittedEntry())
+    return false;
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  send_tab_to_self::SendTabToSelfSyncService* send_tab_to_self_sync_service =
+      SendTabToSelfSyncServiceFactory::GetForProfile(profile);
   if (!send_tab_to_self_sync_service) {
     // Can happen in incognito or guest profile.
     return false;
