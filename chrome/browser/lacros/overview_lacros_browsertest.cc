@@ -13,6 +13,23 @@
 #include "content/public/test/browser_test.h"
 #include "ui/aura/window.h"
 
+namespace {
+
+// If ash does not contain the relevant test controller functionality, then
+// there's nothing to do for this test.
+bool IsServiceAvailable() {
+  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
+          crosapi::mojom::TestController::Uuid_) <
+      static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
+                           kEnterOverviewModeMinVersion)) {
+    LOG(WARNING) << "Unsupported ash version.";
+    return false;
+  }
+  return true;
+}
+
+}  // namespace
+
 using OverviewBrowserTest = InProcessBrowserTest;
 
 // We enter overview mode with a single window. When we close the window,
@@ -20,6 +37,9 @@ using OverviewBrowserTest = InProcessBrowserTest;
 // TODO(https://crbug.com/1157314): This test is not safe to run in parallel
 // with other lacros tests as overview mode applies to all processes.
 IN_PROC_BROWSER_TEST_F(OverviewBrowserTest, NoCrashWithSingleWindow) {
+  if (!IsServiceAvailable())
+    return;
+
   // Wait for the window to be visible.
   aura::Window* window = browser()->window()->GetNativeWindow();
   std::string id = browser_test_util::GetWindowId(window->GetRootWindow());
@@ -27,7 +47,6 @@ IN_PROC_BROWSER_TEST_F(OverviewBrowserTest, NoCrashWithSingleWindow) {
 
   // Enter overview mode.
   auto* lacros_service = chromeos::LacrosService::Get();
-  CHECK(lacros_service->IsAvailable<crosapi::mojom::TestController>());
   crosapi::mojom::TestControllerAsyncWaiter waiter(
       lacros_service->GetRemote<crosapi::mojom::TestController>().get());
   waiter.EnterOverviewMode();
@@ -43,6 +62,9 @@ IN_PROC_BROWSER_TEST_F(OverviewBrowserTest, NoCrashWithSingleWindow) {
 // TODO(https://crbug.com/1157314): This test is not safe to run in parallel
 // with other lacros tests as overview mode applies to all processes.
 IN_PROC_BROWSER_TEST_F(OverviewBrowserTest, NoCrashTwoWindows) {
+  if (!IsServiceAvailable())
+    return;
+
   // Wait for the window to be visible.
   aura::Window* main_window = browser()->window()->GetNativeWindow();
   std::string main_id =
@@ -62,7 +84,6 @@ IN_PROC_BROWSER_TEST_F(OverviewBrowserTest, NoCrashTwoWindows) {
 
   // Enter overview mode.
   auto* lacros_service = chromeos::LacrosService::Get();
-  CHECK(lacros_service->IsAvailable<crosapi::mojom::TestController>());
   crosapi::mojom::TestControllerAsyncWaiter waiter(
       lacros_service->GetRemote<crosapi::mojom::TestController>().get());
   waiter.EnterOverviewMode();

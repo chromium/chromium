@@ -26,7 +26,9 @@ IN_PROC_BROWSER_TEST_F(TabletModeBrowserTest, Smoke) {
   ASSERT_TRUE(lacros_service->IsAvailable<crosapi::mojom::TestController>());
   // This test requires the tablet mode API.
   if (lacros_service->GetInterfaceVersion(
-          crosapi::mojom::TestController::Uuid_) < 2) {
+          crosapi::mojom::TestController::Uuid_) <
+      static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
+                           kEnterTabletModeMinVersion)) {
     LOG(WARNING) << "Unsupported ash version.";
     return;
   }
