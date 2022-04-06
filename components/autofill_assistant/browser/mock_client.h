@@ -49,6 +49,7 @@ class MockClient : public Client {
   MOCK_METHOD1(RecordDropOut, void(Metrics::DropOutReason reason));
   MOCK_METHOD0(AttachUI, void());
   MOCK_METHOD0(DestroyUI, void());
+  MOCK_METHOD0(DestroyUISoon, void());
   MOCK_CONST_METHOD0(HasHadUI, bool());
   MOCK_CONST_METHOD0(IsFirstTimeTriggerScriptUser, bool());
   MOCK_METHOD1(FetchPaymentsClientToken,
