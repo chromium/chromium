@@ -13,8 +13,6 @@ extern NSString* const kConfirmationAlertTitleAccessibilityIdentifier;
 extern NSString* const kConfirmationAlertSubtitleAccessibilityIdentifier;
 extern NSString* const kConfirmationAlertPrimaryActionAccessibilityIdentifier;
 extern NSString* const kConfirmationAlertSecondaryActionAccessibilityIdentifier;
-extern NSString* const
-    kConfirmationAlertBarPrimaryActionAccessibilityIdentifier;
 
 @protocol ConfirmationAlertActionHandler;
 

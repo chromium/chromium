@@ -31,21 +31,18 @@ NSString* const kConfirmationAlertSecondaryActionAccessibilityIdentifier =
     @"kConfirmationAlertSecondaryActionAccessibilityIdentifier";
 NSString* const kConfirmationAlertTertiaryActionAccessibilityIdentifier =
     @"kConfirmationAlertTertiaryActionAccessibilityIdentifier";
-NSString* const kConfirmationAlertBarPrimaryActionAccessibilityIdentifier =
-    @"kConfirmationAlertBarPrimaryActionAccessibilityIdentifier";
 
 namespace {
 
+constexpr CGFloat kActionsBottomMargin = 10;
 // Gradient height.
-const CGFloat kGradientHeight = 40.;
-
+constexpr CGFloat kGradientHeight = 40.;
 constexpr CGFloat kScrollViewBottomInsets = 20;
 constexpr CGFloat kStackViewSpacing = 8;
 constexpr CGFloat kStackViewSpacingAfterIllustration = 27;
 // The multiplier used when in regular horizontal size class.
-constexpr CGFloat kSafeAreaMultiplier = 0.8;
-constexpr CGFloat kButtonMaxWidth = 327;
-constexpr CGFloat kContentMaxWidth = 500;
+constexpr CGFloat kSafeAreaMultiplier = 0.65;
+constexpr CGFloat kContentOptimalWidth = 327;
 
 }  // namespace
 
@@ -58,10 +55,6 @@ constexpr CGFloat kContentMaxWidth = 500;
 @property(nonatomic, strong) UIButton* tertiaryActionButton;
 @property(nonatomic, strong) UIToolbar* topToolbar;
 @property(nonatomic, strong) UIImageView* imageView;
-// Constraints.
-@property(nonatomic, strong) NSLayoutConstraint* regularWidthConstraints;
-@property(nonatomic, strong)
-    NSLayoutConstraint* buttonStackViewBottomVerticalConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* imageViewAspectRatioConstraint;
 @end
 
@@ -140,20 +133,23 @@ constexpr CGFloat kContentMaxWidth = 500;
   heightConstraint.active = YES;
 
   [NSLayoutConstraint activateConstraints:@[
-    [stackView.widthAnchor
-        constraintLessThanOrEqualToConstant:kContentMaxWidth],
     [stackView.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor],
-
+    // Width Scroll View constraint for regular mode.
+    [stackView.widthAnchor
+        constraintGreaterThanOrEqualToAnchor:margins.widthAnchor
+                                  multiplier:kSafeAreaMultiplier],
     // Disable horizontal scrolling.
     [stackView.widthAnchor
         constraintLessThanOrEqualToAnchor:margins.widthAnchor],
-
   ]];
 
-  // Width Scroll View constraint for regular mode.
-  self.regularWidthConstraints = [stackView.widthAnchor
-      constraintLessThanOrEqualToAnchor:margins.widthAnchor
-                             multiplier:kSafeAreaMultiplier];
+  // This constraint is added to enforce that the content width should be as
+  // close to the optimal width as possible, within the range already activated
+  // for "stackView.widthAnchor" previously, with a higher priority.
+  NSLayoutConstraint* contentLayoutGuideWidthConstraint =
+      [stackView.widthAnchor constraintEqualToConstant:kContentOptimalWidth];
+  contentLayoutGuideWidthConstraint.priority = UILayoutPriorityRequired - 1;
+  contentLayoutGuideWidthConstraint.active = YES;
 
   // The bottom anchor for the scroll view.
   NSLayoutYAxisAnchor* scrollViewBottomAnchor =
@@ -164,26 +160,41 @@ constexpr CGFloat kContentMaxWidth = 500;
                          self.tertiaryActionString;
   if (hasActionButton) {
     UIView* actionStackView = [self createActionStackView];
-
     [self.view addSubview:actionStackView];
-    self.buttonStackViewBottomVerticalConstraint = [actionStackView.bottomAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor];
+
     // Add a low priority width constraints to make sure that the buttons are
     // taking as much width as they can.
+    CGFloat extraBottomMargin =
+        self.secondaryActionString ? 0 : kActionsBottomMargin;
     NSLayoutConstraint* lowPriorityWidthConstraint =
-        [actionStackView.widthAnchor constraintEqualToConstant:kButtonMaxWidth];
+        [actionStackView.widthAnchor
+            constraintEqualToConstant:kContentOptimalWidth];
     lowPriorityWidthConstraint.priority = UILayoutPriorityDefaultHigh + 1;
+    // Also constrain the bottom of the action stack view to the bottom of the
+    // safe area, but with a lower priority, so that the action stack view is
+    // put as close to the bottom as possible.
+    NSLayoutConstraint* actionBottomConstraint = [actionStackView.bottomAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor];
+    actionBottomConstraint.priority = UILayoutPriorityDefaultLow;
+    actionBottomConstraint.active = YES;
 
     [NSLayoutConstraint activateConstraints:@[
       [actionStackView.leadingAnchor
           constraintGreaterThanOrEqualToAnchor:scrollView.leadingAnchor],
       [actionStackView.trailingAnchor
           constraintLessThanOrEqualToAnchor:scrollView.trailingAnchor],
-      self.buttonStackViewBottomVerticalConstraint,
       [actionStackView.centerXAnchor
           constraintEqualToAnchor:self.view.centerXAnchor],
       [actionStackView.widthAnchor
-          constraintLessThanOrEqualToConstant:kButtonMaxWidth],
+          constraintEqualToAnchor:stackView.widthAnchor],
+      [actionStackView.bottomAnchor
+          constraintLessThanOrEqualToAnchor:self.view.bottomAnchor
+                                   constant:-kActionsBottomMargin -
+                                            extraBottomMargin],
+      [actionStackView.bottomAnchor
+          constraintLessThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
+                                                .bottomAnchor
+                                   constant:-extraBottomMargin],
       lowPriorityWidthConstraint
     ]];
     scrollViewBottomAnchor = actionStackView.topAnchor;
@@ -294,23 +305,6 @@ constexpr CGFloat kContentMaxWidth = 500;
 }
 
 - (void)updateViewConstraints {
-  CGFloat marginValue =
-      self.view.layoutMargins.left - self.view.safeAreaInsets.left;
-  if (!self.secondaryActionString) {
-    // Do not add margin padding between the bottom button and the containing
-    // view if the primary button is the bottom button to allow for more visual
-    // spacing between the content and the button. The secondary button has a
-    // transparent background so the visual spacing already exists.
-    self.buttonStackViewBottomVerticalConstraint.constant = -marginValue;
-  }
-
-  if (self.traitCollection.horizontalSizeClass ==
-      UIUserInterfaceSizeClassCompact) {
-    self.regularWidthConstraints.active = NO;
-  } else {
-    self.regularWidthConstraints.active = YES;
-  }
-
   BOOL isVerticalCompact =
       self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
 
