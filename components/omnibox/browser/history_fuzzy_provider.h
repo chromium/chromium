@@ -45,7 +45,7 @@ struct Correction {
   // A short chain of additional related corrections to apply with this one.
   std::unique_ptr<Correction> next;
 
-  Correction(Correction&);
+  Correction(const Correction&);
   Correction(Correction&&);
   Correction& operator=(Correction&&) = default;
   Correction(Kind kind, size_t at, char16_t new_char);

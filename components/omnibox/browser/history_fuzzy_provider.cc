@@ -8,6 +8,7 @@
 #include <functional>
 #include <memory>
 #include <ostream>
+#include <queue>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -23,7 +24,7 @@
 
 namespace fuzzy {
 
-Correction::Correction(Correction& other) {
+Correction::Correction(const Correction& other) {
   kind = other.kind;
   at = other.at;
   new_char = other.new_char;
@@ -137,13 +138,6 @@ bool Node::FindCorrections(const std::u16string& text,
   DVLOG(1) << "FindCorrections(" << text << ", " << tolerance << ")";
   DCHECK(corrections.empty());
 
-  // TODO(orinj): Use priority_queue; prioritize minimum distance and use index
-  //  to break ties. Then there's no need to compare with best, as the first
-  //  found solution is best (and fastest in common cases near input on trie).
-  //  Algorithm can then return all equally-best results as soon as distance
-  //  increases beyond that of found results. Length also needs to be
-  //  considered to avoid producing shorter substring texts.
-
   if (text.length() == 0) {
     return true;
   }
@@ -171,45 +165,65 @@ bool Node::FindCorrections(const std::u16string& text,
     // TODO(orinj): This should be optimized in final algorithm; stop copying.
     Correction correction;
 
+    Step(const Step&) = default;
     Step(Step&&) = default;
     Step& operator=(Step&&) = default;
+
+    // std::priority_queue keeps the greatest element on top, so we want this
+    // operator implementation to make bad steps less than good steps.
+    // Prioritize minimum distance, with index and length to break ties.
+    // The first found solutions are best, and fastest in common cases
+    // near input on trie.
+    bool operator<(const Step& rhs) const {
+      if (distance > rhs.distance) {
+        return true;
+      } else if (distance == rhs.distance) {
+        if (index < rhs.index) {
+          return true;
+        } else if (index == rhs.index) {
+          return length < rhs.length;
+        }
+      }
+      return false;
+    }
   };
-  // TODO(orinj): Don't need to keep full best anymore, only best distance.
+
+  std::priority_queue<Step> pq;
+  pq.push({this, 0, 0, 0, {Correction::Kind::KEEP, 0, '_'}});
+
   Step best{
       nullptr, INT_MAX, SIZE_MAX, INT_MAX, {Correction::Kind::KEEP, 0, '_'}};
-  std::queue<Step> q;
-  q.push({this, 0, 0, 0, {Correction::Kind::KEEP, 0, '_'}});
   int i = 0;
-  while (!q.empty()) {
+  // Find and return all equally-distant results as soon as distance increases
+  // beyond that of first found results. Length is also considered to
+  // avoid producing shorter substring texts.
+  while (!pq.empty() && pq.top().distance <= best.distance) {
     i++;
-    Step step = std::move(q.front());
-    q.pop();
+    Step step = pq.top();
+    pq.pop();
     DVLOG(1) << i << "(" << step.distance << "," << step.index << ","
              << step.length << "," << step.correction << ")";
     // TODO(orinj): Enforce a tolerance schedule with index versus distance;
     //  this would allow more errors for longer inputs and prevents searching
     //  through long corrections near start of input.
-    if (step.distance > best.distance) {
-      // Prune early. This won't be needed once driven by priority_queue.
-      DVLOG(1) << "skipped";
-      continue;
-    }
     // Strictly greater should not be possible for this comparison.
     if (step.index >= text.length()) {
       if (step.distance == 0) {
         // Ideal common case, full input on trie with no correction required.
-        // Note, we won't need to clear when search is directed; this is a
-        // temporary hack while the bare queue bumbles around the search space.
-        corrections.clear();
+        // Because search is directed by priority_queue, we get here before
+        // generating any corrections (straight line to goal is shortest path).
+        DCHECK(corrections.empty());
         return true;
       }
       // Check `length` to keep longer results. Without this, we could end up
       // with shorter substring corrections (e.g. both "was" and "wash").
       // It may not be necessary to do this if priority_queue keeps results
       // optimal or returns a first best result immediately.
+      DCHECK(best.distance == INT_MAX || step.distance == best.distance);
       if (step.distance < best.distance || step.length > best.length) {
+        DVLOG(1) << "new best by "
+                 << (step.distance < best.distance ? "distance" : "length");
         best = std::move(step);
-        DVLOG(1) << "new best";
         corrections.clear();
         // Dereference is safe because nonzero distance implies presence of
         // nontrivial correction.
@@ -233,39 +247,42 @@ bool Node::FindCorrections(const std::u16string& text,
     }
     if (step.distance < tolerance) {
       // Delete
-      q.push({step.node,
-              step.distance + 1,
-              step.index + 1,
-              step.length,
-              {Correction::Kind::DELETE, step.index, '_',
-               step.correction.GetApplicableCorrection()}});
+      pq.push({step.node,
+               step.distance + 1,
+               step.index + 1,
+               step.length,
+               {Correction::Kind::DELETE, step.index, '_',
+                step.correction.GetApplicableCorrection()}});
     }
     for (const auto& entry : step.node->next) {
       if (entry.first == text[step.index]) {
         // Keep
-        q.push({entry.second.get(),
-                step.distance,
-                step.index + 1,
-                step.length + 1,
-                {Correction::Kind::KEEP, step.index, '_',
-                 step.correction.GetApplicableCorrection()}});
+        pq.push({entry.second.get(),
+                 step.distance,
+                 step.index + 1,
+                 step.length + 1,
+                 {Correction::Kind::KEEP, step.index, '_',
+                  step.correction.GetApplicableCorrection()}});
       } else if (step.distance < tolerance) {
         // Insert
-        q.push({entry.second.get(),
-                step.distance + 1,
-                step.index,
-                step.length + 1,
-                {Correction::Kind::INSERT, step.index, entry.first,
-                 step.correction.GetApplicableCorrection()}});
+        pq.push({entry.second.get(),
+                 step.distance + 1,
+                 step.index,
+                 step.length + 1,
+                 {Correction::Kind::INSERT, step.index, entry.first,
+                  step.correction.GetApplicableCorrection()}});
         // Replace
-        q.push({entry.second.get(),
-                step.distance + 1,
-                step.index + 1,
-                step.length + 1,
-                {Correction::Kind::REPLACE, step.index, entry.first,
-                 step.correction.GetApplicableCorrection()}});
+        pq.push({entry.second.get(),
+                 step.distance + 1,
+                 step.index + 1,
+                 step.length + 1,
+                 {Correction::Kind::REPLACE, step.index, entry.first,
+                  step.correction.GetApplicableCorrection()}});
       }
     }
+  }
+  if (!pq.empty()) {
+    DVLOG(1) << "quit early on step with distance " << pq.top().distance;
   }
   return false;
 }
