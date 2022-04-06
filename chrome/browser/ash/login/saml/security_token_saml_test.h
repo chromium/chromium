@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/certificate_provider/test_certificate_provider_extension.h"
 #include "chrome/browser/ash/certificate_provider/test_certificate_provider_extension_mixin.h"
@@ -121,6 +122,7 @@ class SecurityTokenSamlTest : public OobeBaseTest {
           &mixin_host_, &extension_force_install_mixin_};
   int pin_dialog_shown_count_ = 0;
   base::RunLoop* pin_dialog_shown_run_loop_ = nullptr;
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::WeakPtrFactory<SecurityTokenSamlTest> weak_factory_{this};
 };
 

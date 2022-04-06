@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/force_installed_affiliated_extension_apitest.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
@@ -31,13 +32,27 @@ base::FilePath GetTestDataDir() {
 namespace extensions {
 
 ForceInstalledAffiliatedExtensionApiTest::
-    ForceInstalledAffiliatedExtensionApiTest(bool is_affiliated)
+    ForceInstalledAffiliatedExtensionApiTest(bool is_affiliated,
+                                             bool is_auth_session_enabled)
     : test_install_attributes_(
           ash::StubInstallAttributes::CreateCloudManaged("fake-domain",
                                                          "fake-id")) {
+  // TODO(crbug.com/1311355): This test is run with the feature
+  // kUseAuthsessionAuthentication enabled and disabled because of a
+  // transitive dependency of AffiliationTestHelper on that feature. Remove
+  // the parameter when kUseAuthsessionAuthentication is removed.
+  if (is_auth_session_enabled) {
+    feature_list_.InitAndEnableFeature(
+        ash::features::kUseAuthsessionAuthentication);
+  } else {
+    feature_list_.InitAndDisableFeature(
+        ash::features::kUseAuthsessionAuthentication);
+  }
+
   set_exit_when_last_browser_closes(false);
   set_chromeos_user_ = false;
   affiliation_mixin_.set_affiliated(is_affiliated);
+  cryptohome_mixin_.MarkUserAsExisting(affiliation_mixin_.account_id());
 }
 
 ForceInstalledAffiliatedExtensionApiTest::

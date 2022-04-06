@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -292,13 +293,29 @@ struct UnmanagedPlatformKeysTestParams {
 
 class UnmanagedPlatformKeysTest
     : public PlatformKeysTest,
-      public ::testing::WithParamInterface<UnmanagedPlatformKeysTestParams> {
+      public ::testing::WithParamInterface<
+          std::tuple<UnmanagedPlatformKeysTestParams, bool>> {
  public:
   UnmanagedPlatformKeysTest()
-      : PlatformKeysTest(GetParam().enrollment_status_,
+      : PlatformKeysTest(std::get<0>(GetParam()).enrollment_status_,
                          UserStatus::UNMANAGED,
                          false /* unused */,
-                         GetParam().user_client_cert_slot_) {}
+                         std::get<0>(GetParam()).user_client_cert_slot_) {
+    // TODO(crbug.com/1311355): This test is run with the feature
+    // kUseAuthsessionAuthentication enabled and disabled because of a
+    // transitive dependency of AffiliationTestHelper on that feature. Remove
+    // the parameter when kUseAuthsessionAuthentication is removed.
+    if (std::get<1>(GetParam())) {
+      feature_list_.InitAndEnableFeature(
+          ash::features::kUseAuthsessionAuthentication);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          ash::features::kUseAuthsessionAuthentication);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 struct ManagedPlatformKeysTestParams {
@@ -313,24 +330,56 @@ struct ManagedPlatformKeysTestParams {
 
 class ManagedWithPermissionPlatformKeysTest
     : public PlatformKeysTest,
-      public ::testing::WithParamInterface<ManagedPlatformKeysTestParams> {
+      public ::testing::WithParamInterface<
+          std::tuple<ManagedPlatformKeysTestParams, bool>> {
  public:
   ManagedWithPermissionPlatformKeysTest()
-      : PlatformKeysTest(GetParam().enrollment_status_,
-                         GetParam().user_status_,
+      : PlatformKeysTest(std::get<0>(GetParam()).enrollment_status_,
+                         std::get<0>(GetParam()).user_status_,
                          true /* grant the extension key permission */,
-                         UserClientCertSlot::kPrivateSlot) {}
+                         UserClientCertSlot::kPrivateSlot) {
+    // TODO(crbug.com/1311355): This test is run with the feature
+    // kUseAuthsessionAuthentication enabled and disabled because of a
+    // transitive dependency of AffiliationTestHelper on that feature. Remove
+    // the parameter when kUseAuthsessionAuthentication is removed.
+    if (std::get<1>(GetParam())) {
+      feature_list_.InitAndEnableFeature(
+          ash::features::kUseAuthsessionAuthentication);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          ash::features::kUseAuthsessionAuthentication);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class ManagedWithoutPermissionPlatformKeysTest
     : public PlatformKeysTest,
-      public ::testing::WithParamInterface<ManagedPlatformKeysTestParams> {
+      public ::testing::WithParamInterface<
+          std::tuple<ManagedPlatformKeysTestParams, bool>> {
  public:
   ManagedWithoutPermissionPlatformKeysTest()
-      : PlatformKeysTest(GetParam().enrollment_status_,
-                         GetParam().user_status_,
+      : PlatformKeysTest(std::get<0>(GetParam()).enrollment_status_,
+                         std::get<0>(GetParam()).user_status_,
                          false /* do not grant key permission */,
-                         UserClientCertSlot::kPrivateSlot) {}
+                         UserClientCertSlot::kPrivateSlot) {
+    // TODO(crbug.com/1311355): This test is run with the feature
+    // kUseAuthsessionAuthentication enabled and disabled because of a
+    // transitive dependency of AffiliationTestHelper on that feature. Remove
+    // the parameter when kUseAuthsessionAuthentication is removed.
+    if (std::get<1>(GetParam())) {
+      feature_list_.InitAndEnableFeature(
+          ash::features::kUseAuthsessionAuthentication);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          ash::features::kUseAuthsessionAuthentication);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 }  // namespace
@@ -375,18 +424,21 @@ IN_PROC_BROWSER_TEST_P(UnmanagedPlatformKeysTest, Permissions) {
 INSTANTIATE_TEST_SUITE_P(
     Unmanaged,
     UnmanagedPlatformKeysTest,
-    ::testing::Values(UnmanagedPlatformKeysTestParams(
-                          PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
-                          PlatformKeysTest::UserClientCertSlot::kPrivateSlot),
-                      UnmanagedPlatformKeysTestParams(
-                          PlatformKeysTestBase::EnrollmentStatus::NOT_ENROLLED,
-                          PlatformKeysTest::UserClientCertSlot::kPrivateSlot),
-                      UnmanagedPlatformKeysTestParams(
-                          PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
-                          PlatformKeysTest::UserClientCertSlot::kPublicSlot),
-                      UnmanagedPlatformKeysTestParams(
-                          PlatformKeysTestBase::EnrollmentStatus::NOT_ENROLLED,
-                          PlatformKeysTest::UserClientCertSlot::kPublicSlot)));
+    ::testing::Combine(
+        ::testing::Values(
+            UnmanagedPlatformKeysTestParams(
+                PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
+                PlatformKeysTest::UserClientCertSlot::kPrivateSlot),
+            UnmanagedPlatformKeysTestParams(
+                PlatformKeysTestBase::EnrollmentStatus::NOT_ENROLLED,
+                PlatformKeysTest::UserClientCertSlot::kPrivateSlot),
+            UnmanagedPlatformKeysTestParams(
+                PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
+                PlatformKeysTest::UserClientCertSlot::kPublicSlot),
+            UnmanagedPlatformKeysTestParams(
+                PlatformKeysTestBase::EnrollmentStatus::NOT_ENROLLED,
+                PlatformKeysTest::UserClientCertSlot::kPublicSlot)),
+        ::testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(ManagedWithoutPermissionPlatformKeysTest,
                        PRE_UserPermissionsBlocked) {
@@ -425,16 +477,18 @@ IN_PROC_BROWSER_TEST_P(ManagedWithoutPermissionPlatformKeysTest,
 INSTANTIATE_TEST_SUITE_P(
     ManagedWithoutPermission,
     ManagedWithoutPermissionPlatformKeysTest,
-    ::testing::Values(
-        ManagedPlatformKeysTestParams(
-            PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
-            PlatformKeysTestBase::UserStatus::MANAGED_AFFILIATED_DOMAIN),
-        ManagedPlatformKeysTestParams(
-            PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
-            PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN),
-        ManagedPlatformKeysTestParams(
-            PlatformKeysTestBase::EnrollmentStatus::NOT_ENROLLED,
-            PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN)));
+    ::testing::Combine(
+        ::testing::Values(
+            ManagedPlatformKeysTestParams(
+                PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
+                PlatformKeysTestBase::UserStatus::MANAGED_AFFILIATED_DOMAIN),
+            ManagedPlatformKeysTestParams(
+                PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
+                PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN),
+            ManagedPlatformKeysTestParams(
+                PlatformKeysTestBase::EnrollmentStatus::NOT_ENROLLED,
+                PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN)),
+        ::testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(ManagedWithPermissionPlatformKeysTest,
                        PRE_PolicyGrantsAccessToCorporateKey) {
@@ -484,13 +538,15 @@ IN_PROC_BROWSER_TEST_P(ManagedWithPermissionPlatformKeysTest,
 INSTANTIATE_TEST_SUITE_P(
     ManagedWithPermission,
     ManagedWithPermissionPlatformKeysTest,
-    ::testing::Values(
-        ManagedPlatformKeysTestParams(
-            PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
-            PlatformKeysTestBase::UserStatus::MANAGED_AFFILIATED_DOMAIN),
-        ManagedPlatformKeysTestParams(
-            PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
-            PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN),
-        ManagedPlatformKeysTestParams(
-            PlatformKeysTestBase::EnrollmentStatus::NOT_ENROLLED,
-            PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN)));
+    ::testing::Combine(
+        ::testing::Values(
+            ManagedPlatformKeysTestParams(
+                PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
+                PlatformKeysTestBase::UserStatus::MANAGED_AFFILIATED_DOMAIN),
+            ManagedPlatformKeysTestParams(
+                PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
+                PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN),
+            ManagedPlatformKeysTestParams(
+                PlatformKeysTestBase::EnrollmentStatus::NOT_ENROLLED,
+                PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN)),
+        ::testing::Bool()));

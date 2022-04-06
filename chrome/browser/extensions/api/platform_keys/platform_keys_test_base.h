@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/components/tpm/stub_install_attributes.h"
+#include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/extensions/mixin_based_extension_apitest.h"
 #include "components/account_id/account_id.h"
@@ -108,6 +109,7 @@ class PlatformKeysTestBase : public extensions::MixinBasedExtensionApiTest {
   FakeGaia fake_gaia_;
   net::EmbeddedTestServer gaia_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   ash::ScopedStubInstallAttributes install_attributes_;
+  ash::CryptohomeMixin cryptohome_mixin_{&mixin_host_};
 };
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_PLATFORM_KEYS_PLATFORM_KEYS_TEST_BASE_H_

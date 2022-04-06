@@ -50,6 +50,7 @@ PlatformKeysTestBase::PlatformKeysTestBase(
   set_chromeos_user_ = false;
   // We log in without running browser.
   set_exit_when_last_browser_closes(false);
+  cryptohome_mixin_.MarkUserAsExisting(account_id_);
 }
 
 PlatformKeysTestBase::~PlatformKeysTestBase() {}

@@ -29,8 +29,9 @@ void CryptohomeMixin::MarkUserAsExisting(const AccountId& user) {
 
 void CryptohomeMixin::SetUpOnMainThread() {
   while (!pending_users_.empty()) {
-    chromeos::FakeUserDataAuthClient::Get()->AddExistingUser(
-        pending_users_.front());
+    auto user = pending_users_.front();
+    chromeos::FakeUserDataAuthClient::Get()->AddExistingUser(user);
+    chromeos::FakeUserDataAuthClient::Get()->CreateUserProfileDir(user);
     pending_users_.pop();
   }
 }

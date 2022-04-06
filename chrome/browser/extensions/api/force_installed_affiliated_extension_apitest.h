@@ -9,6 +9,7 @@
 
 #include "ash/components/tpm/stub_install_attributes.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/extensions/mixin_based_extension_apitest.h"
@@ -33,7 +34,9 @@ class Extension;
 class ForceInstalledAffiliatedExtensionApiTest
     : public MixinBasedExtensionApiTest {
  public:
-  explicit ForceInstalledAffiliatedExtensionApiTest(bool is_affiliated);
+  explicit ForceInstalledAffiliatedExtensionApiTest(
+      bool is_affiliated,
+      bool is_auth_session_enabled);
   ~ForceInstalledAffiliatedExtensionApiTest() override;
 
  protected:
@@ -57,6 +60,10 @@ class ForceInstalledAffiliatedExtensionApiTest
   policy::DevicePolicyCrosTestHelper test_helper_;
   policy::AffiliationMixin affiliation_mixin_{&mixin_host_, &test_helper_};
   ExtensionForceInstallMixin force_install_mixin_{&mixin_host_};
+  ash::CryptohomeMixin cryptohome_mixin_{&mixin_host_};
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 }  //  namespace extensions

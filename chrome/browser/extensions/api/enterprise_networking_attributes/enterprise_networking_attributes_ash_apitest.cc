@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/extensions/api/force_installed_affiliated_extension_apitest.h"
@@ -69,10 +70,11 @@ namespace extensions {
 
 class EnterpriseNetworkingAttributesTest
     : public ForceInstalledAffiliatedExtensionApiTest,
-      public ::testing::WithParamInterface<bool> {
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   EnterpriseNetworkingAttributesTest()
-      : ForceInstalledAffiliatedExtensionApiTest(GetParam()) {}
+      : ForceInstalledAffiliatedExtensionApiTest(std::get<0>(GetParam()),
+                                                 std::get<1>(GetParam())) {}
 
   void SetupDisconnectedNetwork() {
     chromeos::ShillDeviceClient::TestInterface* shill_device_client =
@@ -146,6 +148,9 @@ class EnterpriseNetworkingAttributesTest
                                              base::Value(shill::kStateOnline));
     base::RunLoop().RunUntilIdle();
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(EnterpriseNetworkingAttributesTest,
@@ -154,7 +159,7 @@ IN_PROC_BROWSER_TEST_P(EnterpriseNetworkingAttributesTest,
 }
 
 IN_PROC_BROWSER_TEST_P(EnterpriseNetworkingAttributesTest, GetNetworkDetails) {
-  const bool is_affiliated = GetParam();
+  const bool is_affiliated = std::get<0>(GetParam());
   EXPECT_EQ(is_affiliated, user_manager::UserManager::Get()
                                ->FindUser(affiliation_mixin_.account_id())
                                ->IsAffiliated());
@@ -184,7 +189,8 @@ IN_PROC_BROWSER_TEST_P(EnterpriseNetworkingAttributesTest, GetNetworkDetails) {
 // Both cases of affiliated and non-affiliated users are tested.
 INSTANTIATE_TEST_SUITE_P(AffiliationCheck,
                          EnterpriseNetworkingAttributesTest,
-                         ::testing::Bool());
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));
 
 // Ensure that extensions that are not pre-installed by policy throw an install
 // warning if they request the enterprise.networkingAttributes permission in the

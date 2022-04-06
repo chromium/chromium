@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
@@ -632,6 +633,11 @@ FakeUserDataAuthClient::FindKey(
 
   // Specific label
   return keys.find(label);
+}
+
+void FakeUserDataAuthClient::CreateUserProfileDir(
+    const cryptohome::AccountIdentifier& account_id) {
+  base::CreateDirectory(GetUserProfileDir(account_id));
 }
 
 base::FilePath FakeUserDataAuthClient::GetUserProfileDir(

@@ -279,6 +279,8 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
 
   void set_user_data_dir(base::FilePath path) { user_data_dir_ = path; }
 
+  void CreateUserProfileDir(const cryptohome::AccountIdentifier& account_id);
+
  private:
   // Helper that returns the protobuf reply.
   template <typename ReplyType>
