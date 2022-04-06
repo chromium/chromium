@@ -15,6 +15,7 @@
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_script_execution_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -174,11 +175,11 @@ Vector<v8::Local<v8::Value>> WebScriptExecutor::Execute(
     // a foreign world.
     ClassicScript* classic_script = ClassicScript::CreateUnspecifiedScript(
         source, SanitizeScriptErrors::kDoNotSanitize);
-    v8::Local<v8::Value> script_value =
+    ScriptEvaluationResult result =
         world_id_ ? classic_script->RunScriptInIsolatedWorldAndReturnValue(
                         window, world_id_)
                   : classic_script->RunScriptAndReturnValue(window);
-    results.push_back(script_value);
+    results.push_back(result.GetSuccessValueOrEmpty());
   }
 
   return results;

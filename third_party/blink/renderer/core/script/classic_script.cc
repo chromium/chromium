@@ -190,18 +190,14 @@ void ClassicScript::RunScript(LocalDOMWindow* window,
   RunScriptAndReturnValue(window, policy);
 }
 
-v8::Local<v8::Value> ClassicScript::RunScriptAndReturnValue(
+ScriptEvaluationResult ClassicScript::RunScriptAndReturnValue(
     LocalDOMWindow* window,
     ExecuteScriptPolicy policy) {
-  ScriptEvaluationResult result = RunScriptOnScriptStateAndReturnValue(
+  return RunScriptOnScriptStateAndReturnValue(
       ToScriptStateForMainWorld(window->GetFrame()), policy);
-
-  if (result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess)
-    return result.GetSuccessValue();
-  return v8::Local<v8::Value>();
 }
 
-v8::Local<v8::Value> ClassicScript::RunScriptInIsolatedWorldAndReturnValue(
+ScriptEvaluationResult ClassicScript::RunScriptInIsolatedWorldAndReturnValue(
     LocalDOMWindow* window,
     int32_t world_id) {
   DCHECK_GT(world_id, 0);
@@ -215,12 +211,8 @@ v8::Local<v8::Value> ClassicScript::RunScriptInIsolatedWorldAndReturnValue(
                                  *DOMWrapperWorld::EnsureIsolatedWorld(
                                      ToIsolate(window->GetFrame()), world_id));
   }
-  ScriptEvaluationResult result = RunScriptOnScriptStateAndReturnValue(
+  return RunScriptOnScriptStateAndReturnValue(
       script_state, ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
-
-  if (result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess)
-    return result.GetSuccessValue();
-  return v8::Local<v8::Value>();
 }
 
 bool ClassicScript::RunScriptOnWorkerOrWorklet(

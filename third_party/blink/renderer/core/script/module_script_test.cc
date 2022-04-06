@@ -8,6 +8,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
@@ -106,7 +107,8 @@ class ModuleScriptTest : public ::testing::Test, public ModuleTestBase {
   static void TestFoo(V8TestingScope& scope) {
     v8::Local<v8::Value> value =
         ClassicScript::CreateUnspecifiedScript("window.foo")
-            ->RunScriptAndReturnValue(&scope.GetWindow());
+            ->RunScriptAndReturnValue(&scope.GetWindow())
+            .GetSuccessValueOrEmpty();
     EXPECT_TRUE(value->IsNumber());
     EXPECT_EQ(kScriptRepeatLength,
               value->NumberValue(scope.GetContext()).ToChecked());

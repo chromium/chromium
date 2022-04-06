@@ -109,20 +109,19 @@ class CORE_EXPORT ClassicScript final : public Script {
 
   // Unlike RunScript() and RunScriptOnWorkerOrWorklet(), callers of the
   // following methods must enter a v8::HandleScope before calling.
-  // TODO(crbug.com/1129743): Use ScriptEvaluationResult instead of
-  // v8::Local<v8::Value> as the return type.
   ScriptEvaluationResult RunScriptOnScriptStateAndReturnValue(
       ScriptState*,
       ExecuteScriptPolicy =
           ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled,
       V8ScriptRunner::RethrowErrorsOption =
           V8ScriptRunner::RethrowErrorsOption::DoNotRethrow());
-  v8::Local<v8::Value> RunScriptAndReturnValue(
+  ScriptEvaluationResult RunScriptAndReturnValue(
       LocalDOMWindow*,
       ExecuteScriptPolicy =
           ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled);
-  v8::Local<v8::Value> RunScriptInIsolatedWorldAndReturnValue(LocalDOMWindow*,
-                                                              int32_t world_id);
+  ScriptEvaluationResult RunScriptInIsolatedWorldAndReturnValue(
+      LocalDOMWindow*,
+      int32_t world_id);
 
  private:
   mojom::blink::ScriptType GetScriptType() const override {

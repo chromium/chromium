@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -37,7 +38,8 @@ class V8ElementTest : public BindingTestSupportingGC {
 
 v8::Local<v8::Value> Eval(const String& source, V8TestingScope& scope) {
   return ClassicScript::CreateUnspecifiedScript(source)
-      ->RunScriptAndReturnValue(&scope.GetWindow());
+      ->RunScriptAndReturnValue(&scope.GetWindow())
+      .GetSuccessValueOrEmpty();
 }
 
 TEST_F(V8ElementTest, SetAttributeOperationCallback) {

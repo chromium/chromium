@@ -12,6 +12,7 @@
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
@@ -64,7 +65,8 @@ class DOMTimerTest : public RenderingTest {
 
   v8::Local<v8::Value> EvalExpression(const char* expr) {
     return ClassicScript::CreateUnspecifiedScript(expr)
-        ->RunScriptAndReturnValue(GetDocument().domWindow());
+        ->RunScriptAndReturnValue(GetDocument().domWindow())
+        .GetSuccessValueOrEmpty();
   }
 
   Vector<double> ToDoubleArray(v8::Local<v8::Value> value,

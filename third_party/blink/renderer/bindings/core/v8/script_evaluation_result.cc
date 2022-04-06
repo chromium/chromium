@@ -86,6 +86,12 @@ v8::Local<v8::Value> ScriptEvaluationResult::GetSuccessValue() const {
   return value_;
 }
 
+v8::Local<v8::Value> ScriptEvaluationResult::GetSuccessValueOrEmpty() const {
+  if (GetResultType() == ResultType::kSuccess)
+    return GetSuccessValue();
+  return v8::Local<v8::Value>();
+}
+
 v8::Local<v8::Value> ScriptEvaluationResult::GetExceptionForModule() const {
 #if DCHECK_IS_ON()
   DCHECK_EQ(script_type_, mojom::blink::ScriptType::kModule);

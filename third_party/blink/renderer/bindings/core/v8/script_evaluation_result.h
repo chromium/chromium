@@ -105,6 +105,9 @@ class CORE_EXPORT ScriptEvaluationResult final {
   // promise for modules.
   v8::Local<v8::Value> GetSuccessValue() const;
 
+  // Returns the value when GetResultType() == kSuccess, or empty otherwise.
+  v8::Local<v8::Value> GetSuccessValueOrEmpty() const;
+
   // Returns the exception thrown.
   // Can be called only when GetResultType() == kException.
   v8::Local<v8::Value> GetExceptionForModule() const;

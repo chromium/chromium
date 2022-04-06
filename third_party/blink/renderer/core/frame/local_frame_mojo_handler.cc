@@ -23,6 +23,7 @@
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/ignore_opens_during_unload_count_incrementer.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -280,8 +281,9 @@ Vector<v8::Local<v8::Value>> JavaScriptIsolatedWorldRequest::Execute(
   ClassicScript* classic_script = ClassicScript::CreateUnspecifiedScript(
       script_, ScriptSourceLocationType::kInternal,
       SanitizeScriptErrors::kDoNotSanitize);
-  return {classic_script->RunScriptInIsolatedWorldAndReturnValue(window,
-                                                                 world_id_)};
+  return {
+      classic_script->RunScriptInIsolatedWorldAndReturnValue(window, world_id_)
+          .GetSuccessValueOrEmpty()};
 }
 
 void JavaScriptIsolatedWorldRequest::Completed(
@@ -879,7 +881,8 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequest(
   v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
   v8::Local<v8::Value> result =
       ClassicScript::CreateUnspecifiedScript(javascript)
-          ->RunScriptAndReturnValue(DomWindow());
+          ->RunScriptAndReturnValue(DomWindow())
+          .GetSuccessValueOrEmpty();
 
   if (wants_result) {
     std::unique_ptr<WebV8ValueConverter> converter =
@@ -921,12 +924,14 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestForTests(
       SanitizeScriptErrors::kDoNotSanitize);
 
   if (world_id == DOMWrapperWorld::kMainWorldId) {
-    result = script->RunScriptAndReturnValue(DomWindow());
+    result =
+        script->RunScriptAndReturnValue(DomWindow()).GetSuccessValueOrEmpty();
   } else {
     CHECK_GT(world_id, DOMWrapperWorld::kMainWorldId);
     CHECK_LT(world_id, DOMWrapperWorld::kDOMWrapperWorldEmbedderWorldIdLimit);
     result =
-        script->RunScriptInIsolatedWorldAndReturnValue(DomWindow(), world_id);
+        script->RunScriptInIsolatedWorldAndReturnValue(DomWindow(), world_id)
+            .GetSuccessValueOrEmpty();
   }
 
   if (wants_result) {

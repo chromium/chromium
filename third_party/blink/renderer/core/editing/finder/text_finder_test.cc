@@ -9,6 +9,7 @@
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/web_document.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/dom/comment.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -74,7 +75,8 @@ class TextFinderSimTest : public SimTest {
 
 v8::Local<v8::Value> TextFinderTest::EvalJs(const std::string& script) {
   return ClassicScript::CreateUnspecifiedScript(script.c_str())
-      ->RunScriptAndReturnValue(GetDocument().domWindow());
+      ->RunScriptAndReturnValue(GetDocument().domWindow())
+      .GetSuccessValueOrEmpty();
 }
 
 Document& TextFinderTest::GetDocument() const {
