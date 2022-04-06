@@ -1,10 +1,112 @@
 <style include="os-feedback-shared">
+
+  #privacy-note {
+    font-size: 12px;
+    line-height: 20px;
+    margin-bottom: 0;
+    margin-top: 20px;
+    text-align: justify;
+    text-justify: inter-word;
+  }
+
+  #attach-files {
+    display: flex;
+    flex-direction: column;
+    height: 96px;
+    margin-bottom: 24px;
+  }
+
+  #attach-files-container {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .card-frame {
+    align-items: center;
+    border: 1px solid var(--google-grey-200);
+    border-radius: 4px;
+    display: flex;
+  }
+
+  #screenshot-container {
+    align-items: center;
+    height: 48px;
+    margin-inline-end: 12px;
+    width: 50%;
+  }
+
+  #add-file {
+    align-items: center;
+    height: 48px;
+    margin-inline-start: 12px;
+    width: 50%;
+  }
+
+  #user-email {
+    height: 72px;
+    margin-bottom: 24px;
+  }
+
+  #share-diagnostic-data {
+    height: 96px;
+    margin-bottom: 24px;
+  }
+
 </style>
 <div id="container">
   <div id="header">
     <h1 id="title">Send feedback</h1>
   </div>
   <div id="content">
+    <!-- Attach files -->
+    <div id="attach-files">
+      <p>Attach files</p>
+      <div id="attach-files-container">
+        <!-- Attach a screenshot -->
+        <div id="screenshot-container" class="card-frame">
+          <input id="screenshot-checkbox" type="checkbox"
+              aria-labelledby="screenshot-check-label">
+          <label id="screenshot-check-label">Screenshot</label>
+          <img id="screenshot-image" aria-label="$i18n{screenshotA11y}">
+        </div>
+        <!-- Attach a file -->
+        <!-- TODO(xiangdongkong): Create a polymer element.-->
+        <div id="add-file" class="card-frame">Add file</div>
+      </div>
+    </div>
+    <!-- User e-mail -->
+    <div id="user-email" class="text-field-container">
+      <label id="user-email-label">Email</label>
+      <select id="user-email-drop-down" aria-labelledby="user-email-label">
+        <option value="test.user@google.com">test.user@google.com</option>
+        <option value="">Don't include email address</option>
+      </select>
+    </div>
+    <!-- Diagnostic data -->
+    <div id="share-diagnostic-data">
+      <p>Share diagnostic data</p>
+      <!-- URL -->
+      <div id="page-url" class="checkbox-field-container">
+        <input id="page-url-checkbox" type="checkbox"
+            aria-labelledby="page-url-label" checked>
+        <label id="page-url-label">share url:</label>
+        <input id="page-url-text" aria-labelledby="page-url-label" type="text"
+            dir="ltr">
+      </div>
+      <!-- System Information -->
+      <div id="sys-info-container" class="checkbox-field-container">
+        <input id="sys-info-checkbox" type="checkbox"
+            aria-labelledby="sys-info-label" checked>
+        <label id="sys-info-label">Send system and app info and metrics</label>
+      </div>
+    </div>
+    <!-- Privacy note -->
+    <div id="privacy-note">
+      Go to the Legal Help page to request content changes for legal reasons. Some
+      account and system information may be sent to Google. We
+      will use the information you give us to help address technical issues and to
+      improve our services, subject to our Privacy Policy and Terms of Service.
+    </div>
   </div>
   <div id="navButtons">
     <cr-button id="buttonBack" class="cancel-button"

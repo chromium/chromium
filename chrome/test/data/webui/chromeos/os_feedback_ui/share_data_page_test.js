@@ -29,22 +29,58 @@ export function shareDataPageTestSuite() {
     return flushTasks();
   }
 
+  /**
+   * @param {string} selector
+   * @returns {Element|null}
+   */
+  function getElement(selector) {
+    const element = page.shadowRoot.querySelector(selector);
+    return element;
+  }
+
+  /**
+   * @param {string} selector
+   * @returns {string}
+   */
+  function getElementContent(selector) {
+    const element = getElement(selector);
+    assertTrue(!!element);
+    return element.textContent.trim();
+  }
+
   // Test the page is loaded with expected HTML elements.
   test('shareDataPageLoaded', async () => {
     await initializePage();
     // Verify the title is in the page.
-    const title = page.shadowRoot.querySelector('#title');
-    assertTrue(!!title);
-    assertEquals('Send feedback', title.textContent);
+    assertEquals('Send feedback', getElementContent('#title'));
 
     // Verify the back button is in the page.
-    const buttonBack = page.shadowRoot.querySelector('#buttonBack');
-    assertTrue(!!buttonBack);
-    assertEquals('Back', buttonBack.textContent.trim());
+    assertEquals('Back', getElementContent('#buttonBack'));
 
     // Verify the send button is in the page.
-    const buttonSend = page.shadowRoot.querySelector('#buttonSend');
-    assertTrue(!!buttonSend);
-    assertEquals('Send', buttonSend.textContent.trim());
+    assertEquals('Send', getElementContent('#buttonSend'));
+
+    // Screenshot elements.
+    assertTrue(!!getElement('#screenshot-checkbox'));
+    assertEquals('Screenshot', getElementContent('#screenshot-check-label'));
+    assertTrue(!!getElement('#screenshot-image'));
+
+    // Add file element.
+    assertEquals('Add file', getElementContent('#add-file'));
+
+    // Email elements.
+    assertEquals('Email', getElementContent('#user-email-label'));
+    assertTrue(!!getElement('#user-email-drop-down'));
+
+    // URL elements.
+    assertEquals('share url:', getElementContent('#page-url-label'));
+    assertTrue(!!getElement('#page-url-checkbox'));
+    assertTrue(!!getElement('#page-url-text'));
+
+    // System info label is a localized string in HTML format.
+    assertTrue(getElementContent('#sys-info-label').length > 0);
+
+    // Privacy note is a long localized string in HTML format.
+    assertTrue(getElementContent('#privacy-note').length > 0);
   });
 }
