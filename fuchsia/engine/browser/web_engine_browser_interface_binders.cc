@@ -4,16 +4,12 @@
 
 #include "fuchsia/engine/browser/web_engine_browser_interface_binders.h"
 
-#include "fuchsia/engine/browser/cdm_provider_service.h"
 #include "fuchsia/engine/browser/frame_impl.h"
 #include "fuchsia/engine/browser/web_engine_media_resource_provider_impl.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 void PopulateFuchsiaFrameBinders(
-    mojo::BinderMapWithContext<content::RenderFrameHost*>* map,
-    CdmProviderService* cdm_provider_service) {
+    mojo::BinderMapWithContext<content::RenderFrameHost*>* map) {
   map->Add<mojom::WebEngineMediaResourceProvider>(
       base::BindRepeating(&WebEngineMediaResourceProviderImpl::Bind));
-  map->Add<media::mojom::FuchsiaCdmProvider>(base::BindRepeating(
-      &CdmProviderService::Bind, base::Unretained(cdm_provider_service)));
 }

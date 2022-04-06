@@ -2462,9 +2462,13 @@ source_set("browser") {
       "font_access/font_enumeration_data_source_fuchsia.cc",
       "font_access/font_enumeration_data_source_fuchsia.h",
       "memory/swap_metrics_driver_impl_fuchsia.cc",
+      "renderer_host/media/media_resource_provider_fuchsia.cc",
+      "renderer_host/media/media_resource_provider_fuchsia.h",
       "speech/tts_fuchsia.cc",
     ]
     deps += [
+      "//media/fuchsia/cdm/service",
+      "//media/fuchsia/mojom:fuchsia_media_resource_provider",
       "//third_party/abseil-cpp:absl",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
       "//third_party/fuchsia-sdk/sdk/pkg/inspect",

@@ -78,7 +78,7 @@ WebEngineAudioDeviceFactory::CreateAudioRendererSink(
   auto* render_frame = GetRenderFrameForToken(frame_token);
   CHECK(render_frame);
 
-  // Connect FuchsiaMediaResourceProvider.
+  // Connect WebEngineMediaResourceProvider.
   mojo::Remote<mojom::WebEngineMediaResourceProvider> media_resource_provider;
   render_frame->GetBrowserInterfaceBroker()->GetInterface(
       media_resource_provider.BindNewPipeAndPassReceiver());

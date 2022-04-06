@@ -148,9 +148,7 @@ void WebEngineContentBrowserClient::OverrideWebkitPrefs(
 void WebEngineContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
     content::RenderFrameHost* render_frame_host,
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map) {
-  CdmProviderService* const provider = main_parts_->cdm_provider_service();
-  DCHECK(provider);
-  PopulateFuchsiaFrameBinders(map, provider);
+  PopulateFuchsiaFrameBinders(map);
 }
 
 void WebEngineContentBrowserClient::

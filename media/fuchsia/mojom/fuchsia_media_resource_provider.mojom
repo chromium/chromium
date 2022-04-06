@@ -10,9 +10,9 @@ struct CdmRequest {
   handle<platform> request;
 };
 
-// Interface used by the render to connect
-// fuchsia::media::drm::ContentDecryptionModule. Instances are document-scoped.
-interface FuchsiaCdmProvider {
+// Interface used by the renderer to connect to CDM and mediacodec resources.
+// Instances are document-scoped.
+interface FuchsiaMediaResourceProvider {
   // Create connection to fuchsia::media::drm::ContentDecryptionModule for
   // |key_system|. Implementation should make sure the persistent storage is
   // isolated per web origin.

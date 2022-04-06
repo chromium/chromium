@@ -193,7 +193,12 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "content/browser/lock_screen/lock_screen_service_impl.h"
 #include "third_party/blink/public/mojom/lock_screen/lock_screen.mojom.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif
+
+#if BUILDFLAG(IS_FUCHSIA)
+#include "content/browser/renderer_host/media/media_resource_provider_fuchsia.h"
+#include "media/fuchsia/mojom/fuchsia_media_resource_provider.mojom.h"
+#endif
 
 namespace blink {
 class StorageKey;
@@ -1169,6 +1174,11 @@ void PopulateBinderMapWithContext(
     map->Add<blink::mojom::LockScreenService>(
         base::BindRepeating(&LockScreenServiceImpl::Create));
   }
+#endif
+
+#if BUILDFLAG(IS_FUCHSIA)
+  map->Add<media::mojom::FuchsiaMediaResourceProvider>(
+      base::BindRepeating(&MediaResourceProviderFuchsia::Bind));
 #endif
 }
 

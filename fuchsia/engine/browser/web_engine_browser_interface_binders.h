@@ -11,14 +11,11 @@ namespace content {
 class RenderFrameHost;
 }  // namespace content
 
-class CdmProviderService;
-
 // PopulateFuchsiaFrameBinders() registers BrowserInterfaceBroker's
 // GetInterface() handler callbacks for Fuchsia-specific RenferFrame-scoped
 // interfaces. This mechanism will replace interface registries and binders used
 // for handling InterfaceProvider's GetInterface() calls (see crbug.com/718652).
 void PopulateFuchsiaFrameBinders(
-    mojo::BinderMapWithContext<content::RenderFrameHost*>* map,
-    CdmProviderService* cdm_provider_service);
+    mojo::BinderMapWithContext<content::RenderFrameHost*>* map);
 
 #endif  // FUCHSIA_ENGINE_BROWSER_WEB_ENGINE_BROWSER_INTERFACE_BINDERS_H_

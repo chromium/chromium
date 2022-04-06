@@ -34,11 +34,14 @@ namespace cr_fuchsia {
 class LegacyMetricsClient;
 }
 
+namespace media {
+class FuchsiaCdmManager;
+}
+
 namespace sys {
 class ComponentInspector;
 }
 
-class CdmProviderService;
 class WebEngineMemoryInspector;
 
 class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
@@ -55,9 +58,6 @@ class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
   std::vector<content::BrowserContext*> browser_contexts() const;
   WebEngineDevToolsController* devtools_controller() const {
     return devtools_controller_.get();
-  }
-  CdmProviderService* cdm_provider_service() const {
-    return cdm_provider_service_.get();
   }
 
   // content::BrowserMainParts overrides.
@@ -107,7 +107,7 @@ class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
 
   std::unique_ptr<WebEngineDevToolsController> devtools_controller_;
   std::unique_ptr<cr_fuchsia::LegacyMetricsClient> legacy_metrics_client_;
-  std::unique_ptr<CdmProviderService> cdm_provider_service_;
+  std::unique_ptr<media::FuchsiaCdmManager> cdm_manager_;
 
   // Used to respond to changes to the system's current locale.
   std::unique_ptr<base::FuchsiaIntlProfileWatcher> intl_profile_watcher_;

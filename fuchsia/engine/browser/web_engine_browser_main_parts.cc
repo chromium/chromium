@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/files/important_file_writer_cleaner.h"
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
@@ -40,7 +41,6 @@
 #include "content/public/common/result_codes.h"
 #include "fuchsia/base/inspect.h"
 #include "fuchsia/base/legacymetrics_client.h"
-#include "fuchsia/engine/browser/cdm_provider_service.h"
 #include "fuchsia/engine/browser/context_impl.h"
 #include "fuchsia/engine/browser/web_engine_browser_context.h"
 #include "fuchsia/engine/browser/web_engine_devtools_controller.h"
@@ -48,9 +48,11 @@
 #include "fuchsia/engine/common/cast_streaming.h"
 #include "fuchsia/engine/switches.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
+#include "media/fuchsia/cdm/service/fuchsia_cdm_manager.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/widevine/cdm/widevine_cdm_common.h"
 #include "ui/aura/screen_ozone.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/switches.h"
@@ -76,6 +78,58 @@ void FetchHistogramsFromChildProcesses(
       base::BindOnce(std::move(done_cb),
                      std::vector<fuchsia::legacymetrics::Event>()),
       kChildProcessHistogramFetchTimeout);
+}
+
+template <typename KeySystemInterface>
+fidl::InterfaceHandle<fuchsia::media::drm::KeySystem> ConnectToKeySystem() {
+  static_assert(
+      (std::is_same<KeySystemInterface, fuchsia::media::drm::Widevine>::value ||
+       std::is_same<KeySystemInterface, fuchsia::media::drm::PlayReady>::value),
+      "KeySystemInterface must be either fuchsia::media::drm::Widevine or "
+      "fuchsia::media::drm::PlayReady");
+
+  fidl::InterfaceHandle<fuchsia::media::drm::KeySystem> key_system;
+  base::ComponentContextForProcess()->svc()->Connect(key_system.NewRequest(),
+                                                     KeySystemInterface::Name_);
+  return key_system;
+}
+
+std::unique_ptr<media::FuchsiaCdmManager> CreateCdmManager() {
+  media::FuchsiaCdmManager::CreateKeySystemCallbackMap
+      create_key_system_callbacks;
+
+  const auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kEnableWidevine)) {
+    create_key_system_callbacks.emplace(
+        kWidevineKeySystem,
+        base::BindRepeating(
+            &ConnectToKeySystem<fuchsia::media::drm::Widevine>));
+  }
+
+  std::string playready_key_system =
+      command_line->GetSwitchValueASCII(switches::kPlayreadyKeySystem);
+  if (!playready_key_system.empty()) {
+    create_key_system_callbacks.emplace(
+        playready_key_system,
+        base::BindRepeating(
+            &ConnectToKeySystem<fuchsia::media::drm::PlayReady>));
+  }
+
+  std::string cdm_data_directory =
+      command_line->GetSwitchValueASCII(switches::kCdmDataDirectory);
+
+  absl::optional<uint64_t> cdm_data_quota_bytes;
+  if (command_line->HasSwitch(switches::kCdmDataQuotaBytes)) {
+    uint64_t value = 0;
+    CHECK(base::StringToUint64(
+        command_line->GetSwitchValueASCII(switches::kCdmDataQuotaBytes),
+        &value));
+    cdm_data_quota_bytes = value;
+  }
+
+  return std::make_unique<media::FuchsiaCdmManager>(
+      std::move(create_key_system_callbacks),
+      base::FilePath(cdm_data_directory), cdm_data_quota_bytes);
 }
 
 // Implements the fuchsia.web.FrameHost protocol using a ContextImpl with
@@ -226,10 +280,9 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
   screen_ = std::move(screen_ozone);
   display::Screen::SetScreenInstance(screen_.get());
 
-  // Create the CdmProviderService at startup rather than on-demand,
-  // to allow it to perform potentially expensive startup work in the
-  // background.
-  cdm_provider_service_ = std::make_unique<CdmProviderService>();
+  // Create the FuchsiaCdmManager at startup rather than on-demand, to allow it
+  // to perform potentially expensive startup work in the background.
+  cdm_manager_ = CreateCdmManager();
 
   // Disable RenderFrameHost's Javascript injection restrictions so that the
   // Context and Frames can implement their own JS injection policy at a higher

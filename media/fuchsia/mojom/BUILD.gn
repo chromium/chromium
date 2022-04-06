@@ -4,8 +4,8 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
-mojom("cdm_provider") {
-  sources = [ "fuchsia_cdm_provider.mojom" ]
+mojom("fuchsia_media_resource_provider") {
+  sources = [ "fuchsia_media_resource_provider.mojom" ]
 
   export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
   export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
@@ -19,7 +19,7 @@ mojom("cdm_provider") {
         move_only = true
       },
     ]
-    traits_headers = [ "fuchsia_cdm_provider_mojom_traits.h" ]
+    traits_headers = [ "fuchsia_media_resource_provider_mojom_traits.h" ]
     traits_public_deps = [
       "//fuchsia/mojom:traits",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media.drm",
