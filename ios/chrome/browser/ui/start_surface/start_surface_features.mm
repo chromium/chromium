@@ -36,10 +36,10 @@ bool ShouldHideShortcutsForStartSurface() {
 
 bool ShouldShrinkLogoForStartSurface() {
   return base::GetFieldTrialParamByFeatureAsBool(
-      kStartSurface, kStartSurfaceShrinkLogoParam, true);
+      kStartSurface, kStartSurfaceShrinkLogoParam, false);
 }
 
 bool ShouldShowReturnToMostRecentTabForStartSurface() {
   return base::GetFieldTrialParamByFeatureAsBool(
-      kStartSurface, kStartSurfaceReturnToRecentTabParam, true);
+      kStartSurface, kStartSurfaceReturnToRecentTabParam, false);
 }
