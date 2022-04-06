@@ -475,6 +475,8 @@ void MouseEvent::ComputeRelativePosition() {
       layer_location_ = view->DocumentToFrame(layer_location_);
 
     PaintLayer* layer = n->GetLayoutObject()->EnclosingLayer();
+    if (RuntimeEnabledFeatures::EventLayerInteropEnabled())
+      layer = layer->EnclosingSelfPaintingLayer();
 
     PhysicalOffset physical_offset;
     layer->ConvertToLayerCoords(nullptr, physical_offset);

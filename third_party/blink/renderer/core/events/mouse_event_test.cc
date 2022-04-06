@@ -9,6 +9,8 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mouse_event_init.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace blink {
@@ -91,4 +93,43 @@ INSTANTIATE_TEST_SUITE_P(
                         std::numeric_limits<int>::max()),
         std::make_tuple(std::numeric_limits<double>::max() - 1.45,
                         std::numeric_limits<int>::max())));
+
+class MouseEventTest : public RenderingTest {};
+
+TEST_F(MouseEventTest, LayerXY) {
+  ScopedEventLayerInteropForTest scoped(false);
+  SetBodyInnerHTML(R"HTML(
+        <div style='overflow:scroll; width: 100px; height: 100px'>
+          <div id=target></div>
+        </div>
+        )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Node* target = GetDocument().getElementById("target");
+
+  MouseEventInit& mouse_event_init = *MouseEventInit::Create();
+  MouseEvent mouse_event("mousedown", &mouse_event_init);
+  mouse_event.SetTarget(target);
+  EXPECT_EQ(mouse_event.layerX(), -8);
+  EXPECT_EQ(mouse_event.layerY(), -8);
+}
+
+TEST_F(MouseEventTest, LayerXYWithInterop) {
+  ScopedEventLayerInteropForTest scoped(true);
+  SetBodyInnerHTML(R"HTML(
+        <div style='overflow:scroll; width: 100px; height: 100px'>
+          <div id=target></div>
+        </div>
+        )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Node* target = GetDocument().getElementById("target");
+
+  MouseEventInit& mouse_event_init = *MouseEventInit::Create();
+  MouseEvent mouse_event("mousedown", &mouse_event_init);
+  mouse_event.SetTarget(target);
+  EXPECT_EQ(mouse_event.layerX(), 0);
+  EXPECT_EQ(mouse_event.layerY(), 0);
+}
+
 }  // namespace blink
