@@ -185,10 +185,6 @@ preprocess_if_expr("preprocess_generated") {
     "shared_vars_css.m.js",
   ]
 
-  if (is_chromeos) {
-    in_files += [ "cr_searchable_drop_down/cr_searchable_drop_down.js" ]
-  }
-
   if (is_chromeos_ash) {
     in_files += [
       "chromeos/cros_color_overrides.m.js",
@@ -231,6 +227,10 @@ preprocess_if_expr("preprocess_generated_ts") {
     "mwb_shared_vars.ts",
     "search_highlight_style_css.ts",
   ]
+
+  if (is_chromeos) {
+    in_files += [ "cr_searchable_drop_down/cr_searchable_drop_down.ts" ]
+  }
 }
 
 group("closure_compile") {
@@ -267,13 +267,7 @@ group("closure_compile") {
   ]
 
   if (is_chromeos) {
-    deps += [
-      "chromeos:closure_compile",
-
-      # cr-searchable-drop-down is only used in smb and cups dialogs, both of
-      # which are chromeos only.
-      "cr_searchable_drop_down:closure_compile_module",
-    ]
+    deps += [ "chromeos:closure_compile" ]
   }
 }
 

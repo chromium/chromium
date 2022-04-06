@@ -23,16 +23,21 @@ import '//resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {IronDropdownElement} from '//resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
+import {DomRepeatEvent, html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @polymer */
-class CrSearchableDropDownElement extends PolymerElement {
+import {CrInputElement} from '../cr_input/cr_input.m.js';
+
+export interface CrSearchableDropDownElement {
+  $: {
+    search: CrInputElement,
+    dropdown: IronDropdownElement,
+  };
+}
+
+export class CrSearchableDropDownElement extends PolymerElement {
   static get is() {
     return 'cr-searchable-drop-down';
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 
   static get properties() {
@@ -85,44 +90,36 @@ class CrSearchableDropDownElement extends PolymerElement {
         notify: true,
       },
 
-      /** @type {!Array<string>} */
       items: {
         type: Array,
         observer: 'onItemsChanged_',
       },
 
-      /** @type {string} */
       value: {
         type: String,
         notify: true,
         observer: 'updateInvalid_',
       },
 
-      /** @type {string} */
       label: {
         type: String,
         value: '',
       },
 
-      /** @type {boolean} */
       updateValueOnInput: Boolean,
 
-      /** @type {boolean} */
       showLoading: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {string} */
       searchTerm_: String,
 
-      /** @private {boolean} */
       dropdownRefitPending_: Boolean,
 
       /**
        * Whether the dropdown is currently open. Should only be used by CSS
        * privately.
-       * @private {boolean}
        */
       opened_: {
         type: Boolean,
@@ -132,21 +129,27 @@ class CrSearchableDropDownElement extends PolymerElement {
     };
   }
 
-  constructor() {
-    super();
+  override autofocus: boolean;
+  readonly: boolean;
+  errorMessageAllowed: boolean;
+  errorMessage: string;
+  loadingMessage: string;
+  placeholder: string;
+  invalid: boolean;
+  items: string[];
+  value: string;
+  label: string;
+  updateValueOnInput: boolean;
+  showLoading: boolean;
 
-    /** @private {number} */
-    this.openDropdownTimeoutId_ = 0;
+  private searchTerm_: string;
+  private dropdownRefitPending_: boolean;
+  private opened_: boolean;
+  private openDropdownTimeoutId_: number = 0;
+  private resizeObserver_: ResizeObserver|null = null;
+  private pointerDownListener_: (e: Event) => void;
 
-    /** @private {?ResizeObserver} */
-    this.resizeObserver_ = null;
-
-    /** @private {!Function} */
-    this.pointerDownListener_;
-  }
-
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.pointerDownListener_ = this.onPointerDown_.bind(this);
@@ -157,26 +160,23 @@ class CrSearchableDropDownElement extends PolymerElement {
     this.resizeObserver_.observe(this.$.search);
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener('mousemove', this.onMouseMove_.bind(this));
   }
 
-  /** @override */
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     document.removeEventListener('pointerdown', this.pointerDownListener_);
-    this.resizeObserver_.unobserve(this.$.search);
+    this.resizeObserver_!.unobserve(this.$.search);
   }
 
   /**
    * Enqueues a task to refit the iron-dropdown if it is open.
-   * @private
    */
-  enqueueDropdownRefit_() {
-    const dropdown = this.shadowRoot.querySelector('iron-dropdown');
+  private enqueueDropdownRefit_() {
+    const dropdown = this.$.dropdown;
     if (!this.dropdownRefitPending_ && dropdown.opened) {
       this.dropdownRefitPending_ = true;
       setTimeout(() => {
@@ -189,39 +189,34 @@ class CrSearchableDropDownElement extends PolymerElement {
   /**
    * Keeps the dropdown from expanding beyond the width of the search input when
    * its width is specified as a percentage.
-   * @private
    */
-  resizeDropdown_() {
-    const dropdown =
-        this.shadowRoot.querySelector('iron-dropdown').containedElement;
+  private resizeDropdown_() {
+    const dropdown = this.$.dropdown.containedElement;
     const dropdownWidth =
         Math.max(dropdown.offsetWidth, this.$.search.offsetWidth);
     dropdown.style.width = `${dropdownWidth}px`;
     this.enqueueDropdownRefit_();
   }
 
-  /** @private */
-  openDropdown_() {
-    this.shadowRoot.querySelector('iron-dropdown').open();
+  private openDropdown_() {
+    this.$.dropdown.open();
     this.opened_ = true;
   }
 
-  /** @private */
-  closeDropdown_() {
+  private closeDropdown_() {
     if (this.openDropdownTimeoutId_) {
       clearTimeout(this.openDropdownTimeoutId_);
     }
 
-    this.shadowRoot.querySelector('iron-dropdown').close();
+    this.$.dropdown.close();
     this.opened_ = false;
   }
 
   /**
    * Enqueues a task to open the iron-dropdown. Any pending task is canceled and
    * a new task is enqueued.
-   * @private
    */
-  enqueueOpenDropdown_() {
+  private enqueueOpenDropdown_() {
     if (this.opened_) {
       return;
     }
@@ -231,33 +226,27 @@ class CrSearchableDropDownElement extends PolymerElement {
     this.openDropdownTimeoutId_ = setTimeout(this.openDropdown_.bind(this));
   }
 
-  /**
-   * @param {!Array<string>} oldValue
-   * @param {!Array<string>} newValue
-   * @private
-   */
-  onItemsChanged_(oldValue, newValue) {
+  private onItemsChanged_() {
     // Refit the iron-dropdown so that it can expand as neccessary to
     // accommodate new items. Refitting is done on a new task because the change
     // notification might not yet have propagated to the iron-dropdown.
     this.enqueueDropdownRefit_();
   }
 
-  /** @private */
-  onFocus_() {
+  private onFocus_() {
     if (this.readonly) {
       return;
     }
     this.openDropdown_();
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onMouseMove_(event) {
-    const item = event.composedPath().find(
-        elm => elm.classList && elm.classList.contains('list-item'));
+  private onMouseMove_(event: Event) {
+    const item = event.composedPath().find(elm => {
+      const element = elm as HTMLElement;
+      return element.classList && element.classList.contains('list-item');
+    }) as HTMLElement |
+        undefined;
+
     if (!item) {
       return;
     }
@@ -276,20 +265,14 @@ class CrSearchableDropDownElement extends PolymerElement {
     item.setAttribute('selected_', '');
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onPointerDown_(event) {
+  private onPointerDown_(event: Event) {
     if (this.readonly) {
       return;
     }
 
     const paths = event.composedPath();
     const searchInput = this.$.search.inputElement;
-    const dropdown = /** @type {!Element} */ (
-        this.shadowRoot.querySelector('iron-dropdown'));
-    if (paths.includes(dropdown)) {
+    if (paths.includes(this.$.dropdown)) {
       // At this point, the search input field has lost focus. Since the user
       // is still interacting with this element, give the search field focus.
       searchInput.focus();
@@ -309,14 +292,8 @@ class CrSearchableDropDownElement extends PolymerElement {
     }
   }
 
-  /**
-   * @param {!Event} event
-   * @suppress {missingProperties} Property modelForElement never defined on
-   *   Element
-   * @private
-   */
-  onKeyDown_(event) {
-    const dropdown = this.shadowRoot.querySelector('iron-dropdown');
+  private onKeyDown_(event: KeyboardEvent) {
+    const dropdown = this.$.dropdown;
     if (!dropdown.opened) {
       if (this.readonly) {
         return;
@@ -339,7 +316,7 @@ class CrSearchableDropDownElement extends PolymerElement {
       case 'ArrowUp':
       case 'ArrowDown': {
         const selected = this.findSelectedItemIndex_();
-        const items = dropdown.getElementsByClassName('list-item');
+        const items = dropdown.querySelectorAll<HTMLElement>('.list-item');
         if (items.length === 0) {
           break;
         }
@@ -352,8 +329,10 @@ class CrSearchableDropDownElement extends PolymerElement {
           break;
         }
         selected.removeAttribute('selected_');
-        this.value =
-            dropdown.querySelector('dom-repeat').modelForElement(selected).item;
+        this.value = (dropdown.querySelector('dom-repeat')!.modelForElement(
+                          selected) as unknown as {
+                       item: string,
+                     }).item;
         this.searchTerm_ = '';
         this.closeDropdown_();
         // Stop the default submit action.
@@ -365,36 +344,31 @@ class CrSearchableDropDownElement extends PolymerElement {
 
   /**
    * Finds the currently selected dropdown item.
-   * @return {Element|undefined} Currently selected dropdown item, or undefined
-   *   if no item is selected.
-   * @private
+   * @return Currently selected dropdown item, or undefined if no item is
+   *     selected.
    */
-  findSelectedItem_() {
-    const dropdown = this.shadowRoot.querySelector('iron-dropdown');
-    const items = Array.from(dropdown.getElementsByClassName('list-item'));
+  private findSelectedItem_(): HTMLElement|undefined {
+    const items =
+        Array.from(this.$.dropdown.querySelectorAll<HTMLElement>('.list-item'));
     return items.find(item => item.hasAttribute('selected_'));
   }
 
   /**
    * Finds the index of currently selected dropdown item.
-   * @return {number} Index of the currently selected dropdown item, or -1 if
-   *   no item is selected.
-   * @private
+   * @return Index of the currently selected dropdown item, or -1 if no item is
+   *     selected.
    */
-  findSelectedItemIndex_() {
-    const dropdown = this.shadowRoot.querySelector('iron-dropdown');
-    const items = Array.from(dropdown.getElementsByClassName('list-item'));
+  private findSelectedItemIndex_(): number {
+    const items =
+        Array.from(this.$.dropdown.querySelectorAll<HTMLElement>('.list-item'));
     return items.findIndex(item => item.hasAttribute('selected_'));
   }
 
   /**
    * Updates the currently selected element based on keyboard up/down movement.
-   * @param {!HTMLCollection} items
-   * @param {number} currentIndex
-   * @param {boolean} moveDown
-   * @private
    */
-  updateSelected_(items, currentIndex, moveDown) {
+  private updateSelected_(
+      items: NodeListOf<HTMLElement>, currentIndex: number, moveDown: boolean) {
     const numItems = items.length;
     let nextIndex = 0;
     if (currentIndex === -1) {
@@ -402,16 +376,15 @@ class CrSearchableDropDownElement extends PolymerElement {
     } else {
       const delta = moveDown ? 1 : -1;
       nextIndex = (numItems + currentIndex + delta) % numItems;
-      items[currentIndex].removeAttribute('selected_');
+      items[currentIndex]!.removeAttribute('selected_');
     }
-    items[nextIndex].setAttribute('selected_', '');
+    items[nextIndex]!.setAttribute('selected_', '');
     // The newly selected item might not be visible because the dropdown needs
     // to be scrolled. So scroll the dropdown if necessary.
-    items[nextIndex].scrollIntoViewIfNeeded();
+    items[nextIndex]!.scrollIntoViewIfNeeded();
   }
 
-  /** @private */
-  onInput_() {
+  private onInput_() {
     this.searchTerm_ = this.$.search.value;
 
     if (this.updateValueOnInput) {
@@ -437,11 +410,7 @@ class CrSearchableDropDownElement extends PolymerElement {
     this.updateInvalid_();
   }
 
-  /*
-   * @param {{model:Object}} event
-   * @private
-   */
-  onSelect_(event) {
+  private onSelect_(event: DomRepeatEvent<string>) {
     this.closeDropdown_();
 
     this.value = event.model.item;
@@ -454,8 +423,7 @@ class CrSearchableDropDownElement extends PolymerElement {
     }
   }
 
-  /** @private */
-  filterItems_(searchTerm) {
+  private filterItems_(searchTerm: string): ((s: string) => boolean)|null {
     if (!searchTerm) {
       return null;
     }
@@ -464,23 +432,13 @@ class CrSearchableDropDownElement extends PolymerElement {
     };
   }
 
-  /**
-   * @param {string} errorMessage
-   * @param {boolean} errorMessageAllowed
-   * @return {boolean}
-   * @private
-   */
-  shouldShowErrorMessage_(errorMessage, errorMessageAllowed) {
+  private shouldShowErrorMessage_(
+      errorMessage: string, errorMessageAllowed: boolean): boolean {
     return !!this.getErrorMessage_(errorMessage, errorMessageAllowed);
   }
 
-  /**
-   * @param {string} errorMessage
-   * @param {boolean} errorMessageAllowed
-   * @return {string}
-   * @private
-   */
-  getErrorMessage_(errorMessage, errorMessageAllowed) {
+  private getErrorMessage_(errorMessage: string, errorMessageAllowed: boolean):
+      string {
     if (!errorMessageAllowed) {
       return '';
     }
@@ -493,9 +451,8 @@ class CrSearchableDropDownElement extends PolymerElement {
    * option then changes focus from the dropdown. This behavior is only for when
    * updateValueOnInput is false. When updateValueOnInput is true, it is ok to
    * leave the user's text in the dropdown search bar when focus is changed.
-   * @private
    */
-  onBlur_() {
+  private onBlur_() {
     if (!this.updateValueOnInput) {
       this.$.search.value = this.value;
     }
@@ -507,11 +464,20 @@ class CrSearchableDropDownElement extends PolymerElement {
   /**
    * If |updateValueOnInput| is true then any value is allowable so always set
    * |invalid| to false.
-   * @private
    */
-  updateInvalid_() {
+  private updateInvalid_() {
     this.invalid =
         !this.updateValueOnInput && (this.value !== this.$.search.value);
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-searchable-drop-down': CrSearchableDropDownElement;
   }
 }
 
