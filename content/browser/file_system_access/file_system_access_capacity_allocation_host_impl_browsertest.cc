@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
     runOnWorkerAndWaitForResult(`
       let root = await navigator.storage.getDirectory();
       let fh = await root.getFileHandle('test_closing', {create: false});
-      let ah = await fh.createSyncAccessHandle({mode: 'in-place'});
+      let ah = await fh.createSyncAccessHandle();
       await ah.truncate(100);
       await ah.truncate(10);
       await ah.close();
@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
     runOnWorkerAndWaitForResult(`
       let root = await navigator.storage.getDirectory();
       let fh = await root.getFileHandle('test_existing', {create: true});
-      let ah =  await fh.createSyncAccessHandle({mode: 'in-place'});
+      let ah =  await fh.createSyncAccessHandle();
       await ah.truncate(100);
       await ah.close();
       return true;
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
     runOnWorkerAndWaitForResult(`
       let root = await navigator.storage.getDirectory();
       let fh = await root.getFileHandle('test_existing', {create: false});
-      let ah = await fh.createSyncAccessHandle({mode: 'in-place'});
+      let ah = await fh.createSyncAccessHandle();
       await ah.truncate(0);
       await ah.close();
       return true;
@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
     runOnWorkerAndWaitForResult(`
       let root = await navigator.storage.getDirectory();
       let fh = await root.getFileHandle('test_file_small', {create: true});
-      let ah =  await fh.createSyncAccessHandle({mode: 'in-place'});
+      let ah =  await fh.createSyncAccessHandle();
       let storage_manager = await navigator.storage.estimate();
       let usage_before_operation = storage_manager.usageDetails.fileSystem;
       await ah.truncate(100);
@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessCapacityAllocationHostImplBrowserTest,
     runOnWorkerAndWaitForResult(`
       let root = await navigator.storage.getDirectory();
       let fh = await root.getFileHandle('test_file_medium', {create: true});
-      let ah =  await fh.createSyncAccessHandle({mode: 'in-place'});
+      let ah =  await fh.createSyncAccessHandle();
       let storage_manager = await navigator.storage.estimate();
       let usage_before_operation = storage_manager.usageDetails.fileSystem;
       let new_file_size = 3*1024*1024;

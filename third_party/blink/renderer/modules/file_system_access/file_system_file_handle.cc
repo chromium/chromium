@@ -9,7 +9,6 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_writer.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_create_access_handle_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_create_writable_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
@@ -106,8 +105,8 @@ ScriptPromise FileSystemFileHandle::getFile(ScriptState* script_state,
 
 ScriptPromise FileSystemFileHandle::createSyncAccessHandle(
     ScriptState* script_state,
-    const FileSystemCreateAccessHandleOptions* /*options*/,
     ExceptionState& exception_state) {
+  // TODO(fivedots): Check if storage access is allowed.
   if (!mojo_ptr_.is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError, "");
     return ScriptPromise();

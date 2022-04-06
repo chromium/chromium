@@ -10,8 +10,7 @@ function sync_access_handle_test(test, description) {
     await cleanupSandboxedFileSystem();
     const dir = await navigator.storage.getDirectory();
     const fileHandle = await dir.getFileHandle('OPFS.test', {create: true});
-    const syncHandle = await fileHandle
-                         .createSyncAccessHandle({mode: "in-place"});
+    const syncHandle = await fileHandle.createSyncAccessHandle();
     await test(t, syncHandle);
     await syncHandle.close();
   }, description);
