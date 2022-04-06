@@ -272,7 +272,7 @@ class ChromePasswordProtectionServiceTest
         /*store_last_modified=*/false, /*restore_session=*/false);
 
     cache_manager_ = std::make_unique<VerdictCacheManager>(
-        nullptr, content_setting_map_.get(), &test_pref_service_);
+        nullptr, content_setting_map_.get(), &test_pref_service_, nullptr);
 
     service_ = NewMockPasswordProtectionService();
     fake_user_event_service_ = static_cast<syncer::FakeUserEventService*>(

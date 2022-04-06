@@ -429,6 +429,7 @@ source_set("verdict_cache_manager_factory") {
     "//components/keyed_service/content",
     "//components/prefs",
     "//components/safe_browsing/core/browser:verdict_cache_manager",
+    "//components/safe_browsing/core/browser/sync",
     "//content/public/browser",
   ]
 }

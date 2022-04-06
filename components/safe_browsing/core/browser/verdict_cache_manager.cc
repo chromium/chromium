@@ -387,11 +387,13 @@ bool HasPageLoadTokenExpired(int64_t token_time_msec) {
 VerdictCacheManager::VerdictCacheManager(
     history::HistoryService* history_service,
     scoped_refptr<HostContentSettingsMap> content_settings,
-    PrefService* pref_service)
+    PrefService* pref_service,
+    std::unique_ptr<SafeBrowsingSyncObserver> sync_observer)
     : stored_verdict_count_password_on_focus_(absl::nullopt),
       stored_verdict_count_password_entry_(absl::nullopt),
       stored_verdict_count_real_time_url_check_(absl::nullopt),
-      content_settings_(content_settings) {
+      content_settings_(content_settings),
+      sync_observer_(std::move(sync_observer)) {
   if (history_service)
     history_service_observation_.Observe(history_service);
   if (!content_settings->IsOffTheRecord()) {
@@ -411,6 +413,12 @@ VerdictCacheManager::VerdictCacheManager(
                             weak_factory_.GetWeakPtr(),
                             ClearReason::kSafeBrowsingStateChanged));
   }
+  // sync_observer_ can be null in some embedders that don't support sync.
+  if (sync_observer_) {
+    sync_observer_->ObserveSyncStateChanged(base::BindRepeating(
+        &VerdictCacheManager::CleanUpAllPageLoadTokens,
+        weak_factory_.GetWeakPtr(), ClearReason::kSyncStateChanged));
+  }
   CacheArtificialRealTimeUrlVerdict();
   CacheArtificialPhishGuardVerdict();
 }
@@ -419,6 +427,7 @@ void VerdictCacheManager::Shutdown() {
   CleanUpExpiredVerdicts();
   history_service_observation_.Reset();
   pref_change_registrar_.RemoveAll();
+  sync_observer_.reset();
   weak_factory_.InvalidateWeakPtrs();
 }
 

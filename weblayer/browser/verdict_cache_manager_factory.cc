@@ -37,9 +37,9 @@ KeyedService* VerdictCacheManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   BrowserContextImpl* context_impl = static_cast<BrowserContextImpl*>(context);
   return new safe_browsing::VerdictCacheManager(
-      nullptr /* history service */,
+      /*history_service=*/nullptr,
       HostContentSettingsMapFactory::GetForBrowserContext(context),
-      context_impl->pref_service());
+      context_impl->pref_service(), /*sync_observer=*/nullptr);
 }
 
 }  // namespace weblayer

@@ -79319,6 +79319,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 <enum name="SafeBrowsingPageLoadTokenClearReason">
   <int value="0" label="Safe Browsing state changed"/>
   <int value="1" label="Cookies deleted"/>
+  <int value="2" label="Sync state changed"/>
 </enum>
 
 <enum name="SafeBrowsingParseV4HashResult">

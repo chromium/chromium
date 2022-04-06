@@ -188,9 +188,10 @@ class TestPasswordProtectionService : public MockPasswordProtectionService {
                                       try_token_fetch,
                                       nullptr),
         cache_manager_(
-            std::make_unique<VerdictCacheManager>(nullptr,
+            std::make_unique<VerdictCacheManager>(/*history_service=*/nullptr,
                                                   content_setting_map.get(),
-                                                  pref_service)) {
+                                                  pref_service,
+                                                  /*sync_observer=*/nullptr)) {
     cache_manager_->StopCleanUpTimerForTesting();
   }
   TestPasswordProtectionService(const TestPasswordProtectionService&) = delete;
