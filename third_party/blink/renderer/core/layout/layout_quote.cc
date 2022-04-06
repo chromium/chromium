@@ -360,8 +360,18 @@ void LayoutQuote::AttachQuote() {
     return;
   }
 
+  // TODO(crbug.com/882385): Implement style containment for quotes. For now,
+  // make sure we don't crash for container queries. If we are inside a size
+  // query container, don't connect to previous quote, and don't set it as the
+  // LayoutQuoteHead for the LayoutView.
+  bool found_container_root = false;
+
   for (LayoutObject* predecessor = PreviousInPreOrder(); predecessor;
        predecessor = predecessor->PreviousInPreOrder()) {
+    if (predecessor->CanMatchSizeContainerQueries()) {
+      found_container_root = true;
+      break;
+    }
     // Skip unattached predecessors to avoid having stale m_previous pointers
     // if the previous node is never attached and is then destroyed.
     if (!predecessor->IsQuote() || !To<LayoutQuote>(predecessor)->IsAttached())
@@ -374,7 +384,7 @@ void LayoutQuote::AttachQuote() {
     break;
   }
 
-  if (!previous_) {
+  if (!previous_ && !found_container_root) {
     next_ = View()->LayoutQuoteHead();
     View()->SetLayoutQuoteHead(this);
     if (next_)
