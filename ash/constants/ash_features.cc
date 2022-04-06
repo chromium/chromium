@@ -1103,7 +1103,7 @@ const base::Feature kProjectorManagedUser{"ProjectorManagedUser",
 // The marker tools are older and based on fast ink.
 // We are deprecating the old marker tools in favor of the annotator tools.
 const base::Feature kProjectorAnnotator{"ProjectorAnnotator",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether the Projector app launches in debug mode, with more detailed
 // error messages.
@@ -1112,7 +1112,7 @@ const base::Feature kProjectorAppDebug{"ProjectorAppDebug",
 
 // Controls whether the Projector exclude transcript feature is enabled.
 const base::Feature kProjectorExcludeTranscript{
-    "ProjectorExcludeTranscript", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ProjectorExcludeTranscript", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether Projector's tutorial videos are displayed.
 const base::Feature kProjectorTutorialVideoView(
