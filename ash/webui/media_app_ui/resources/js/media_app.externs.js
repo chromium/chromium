@@ -162,11 +162,11 @@ mediaApp.AbstractFileList.prototype.openFile = function() {};
  * will be added to the last received file list.
  * TODO(b/203466987): Remove the undefined here once we can ensure all file
  * lists implement a openFilesWithFilePicker function.
- * @type {function(!Array<string>, ?mediaApp.AbstractFile):
+ * @type {function(!Array<string>, ?mediaApp.AbstractFile, ?boolean):
  *     !Promise<undefined>|undefined}
  */
 mediaApp.AbstractFileList.prototype.openFilesWithFilePicker = function(
-    acceptTypeKeys, startInFolder) {};
+    acceptTypeKeys, startInFolder, isSingleFile) {};
 
 /**
  * The delegate which exposes open source privileged WebUi functions to

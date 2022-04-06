@@ -225,9 +225,10 @@ export class ReceivedFileList {
    * @override
    * @param {!Array<string>} acceptTypeKeys
    * @param {?mediaApp.AbstractFile} startInFolder
+   * @param {?boolean} isSingleFile
    * @return {!Promise<undefined>}
    */
-  async openFilesWithFilePicker(acceptTypeKeys, startInFolder) {
+  async openFilesWithFilePicker(acceptTypeKeys, startInFolder, isSingleFile) {
     // AbstractFile doesn't guarantee tokens. Use one from a ReceivedFile if
     // there is one, after ensuring it is valid.
     const fileRep = /** @type {{token: (number|undefined)}} */ (startInFolder);
@@ -236,6 +237,7 @@ export class ReceivedFileList {
     const msg = {
       startInToken: startInToken > 0 ? startInToken : 0,
       accept: acceptTypeKeys,
+      isSingleFile,
     };
     await parentMessagePipe.sendMessage(Message.OPEN_FILES_WITH_PICKER, msg);
   }

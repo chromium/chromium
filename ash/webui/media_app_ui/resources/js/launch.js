@@ -26,6 +26,7 @@ const VIDEO_EXTENSIONS = [
   '.3gp', '.avi', '.m4v', '.mkv', '.mov', '.mp4', '.mpeg', '.mpeg4', '.mpg',
   '.mpg4', '.ogv', '.ogx', '.ogm', '.webm'
 ];
+const PDF_EXTENSIONS = ['.pdf'];
 const OPEN_ACCEPT_ARGS = {
   'AUDIO': {
     description: loadTimeData.getString('fileFilterAudio'),
@@ -39,7 +40,19 @@ const OPEN_ACCEPT_ARGS = {
     description: loadTimeData.getString('fileFilterVideo'),
     accept: {'video/*': VIDEO_EXTENSIONS}
   },
-  'PDF': {description: 'PDF', accept: {'application/pdf': '.pdf'}},
+  'PDF': {description: 'PDF', accept: {'application/pdf': PDF_EXTENSIONS}},
+  // All supported file types, excluding text files (see b/183150750).
+  'ALL_EX_TEXT': {
+    description: 'All',
+    accept: {
+      '*/*': [
+        ...AUDIO_EXTENSIONS,
+        ...IMAGE_EXTENSIONS,
+        ...VIDEO_EXTENSIONS,
+        ...PDF_EXTENSIONS,
+      ]
+    }
+  },
 };
 
 /**
@@ -401,11 +414,12 @@ guestMessagePipe.registerHandler(Message.OPEN_FILE, async () => {
 });
 
 guestMessagePipe.registerHandler(Message.OPEN_FILES_WITH_PICKER, async (m) => {
-  const {startInToken, accept} = /** @type {!OpenFilesWithPickerMessage} */ (m);
+  const {startInToken, accept, isSingleFile} =
+      /** @type {!OpenFilesWithPickerMessage} */ (m);
   const acceptTypes = accept.map(k => OPEN_ACCEPT_ARGS[k]).filter(a => !!a);
 
   /** @type {!FilePickerOptions|DraftFilePickerOptions} */
-  const options = {multiple: true};
+  const options = {multiple: !isSingleFile};
 
   if (startInToken) {
     options.startIn = fileHandleForToken(startInToken);

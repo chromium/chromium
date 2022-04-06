@@ -149,9 +149,11 @@ export let RequestSaveFileMessage;
  * The `accept` array contains keys of preconfigured file filters to include on
  * the file picker file type dropdown. These are keys such as "AUDIO", "IMAGE",
  * "PDF", etc. that are known on both sides of API boundary.
+ * `isSingleFile` prevents a user selecting more than one file.
  * @typedef {{
  *   startInToken: number,
- *   accept: !Array<string>
+ *   accept: !Array<string>,
+ *   isSingleFile: ?boolean,
  * }}
  */
 export let OpenFilesWithPickerMessage;

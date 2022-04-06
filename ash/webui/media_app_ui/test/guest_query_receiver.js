@@ -134,7 +134,8 @@ const SIMPLE_TEST_QUERIES = {
     /**
      * @typedef {{
      *   acceptTypeKeys: !Array<string>,
-     *   explicitToken: (number|undefined)
+     *   explicitToken: (number|undefined),
+     *   singleFile: ?boolean,
      * }}
      */
     let Args;
@@ -144,7 +145,7 @@ const SIMPLE_TEST_QUERIES = {
       existingFile = {token: args.explicitToken};
     }
     await assertLastReceivedFileList().openFilesWithFilePicker(
-        args.acceptTypeKeys, existingFile);
+        args.acceptTypeKeys, existingFile, args.singleFile);
     return 'openFilesWithFilePicker resolved';
   },
 };
