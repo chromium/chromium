@@ -188,8 +188,7 @@ void DefaultState::HandleWorkspaceEvents(WindowState* window_state,
       AdjustBoundsToEnsureWindowVisibility(display_area, min_width, min_height,
                                            &bounds);
       window_state->AdjustSnappedBounds(&bounds);
-      if (window->bounds() != bounds)
-        window_state->SetBoundsConstrained(bounds);
+      window_state->SetBoundsConstrained(bounds);
       return;
     }
     case WM_EVENT_DISPLAY_BOUNDS_CHANGED: {

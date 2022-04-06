@@ -139,7 +139,8 @@ class BoundsSetter : public aura::LayoutManager {
                       const gfx::Rect& requested_bounds) override {}
 
   void SetBounds(aura::Window* window, const gfx::Rect& bounds) {
-    SetChildBoundsDirect(window, bounds);
+    if (window->GetTargetBounds() != bounds)
+      SetChildBoundsDirect(window, bounds);
   }
 };
 
@@ -829,6 +830,9 @@ void WindowState::SetBoundsDirect(const gfx::Rect& bounds) {
     gfx::Size min_size = window_->delegate()
                              ? window_->delegate()->GetMinimumSize()
                              : gfx::Size();
+    gfx::Size max_size = window_->delegate()
+                             ? window_->delegate()->GetMaximumSize()
+                             : gfx::Size();
     const display::Display display =
         display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
     min_size.SetToMin(display.work_area().size());
@@ -837,6 +841,14 @@ void WindowState::SetBoundsDirect(const gfx::Rect& bounds) {
         std::max(min_size.width(), actual_new_bounds.width()));
     actual_new_bounds.set_height(
         std::max(min_size.height(), actual_new_bounds.height()));
+    if (!max_size.IsEmpty()) {
+      DCHECK_LE(min_size.width(), max_size.width());
+      DCHECK_LE(min_size.height(), max_size.height());
+      actual_new_bounds.set_width(
+          std::min(max_size.width(), actual_new_bounds.width()));
+      actual_new_bounds.set_height(
+          std::min(max_size.height(), actual_new_bounds.height()));
+    }
 
     // Changing the size of the PIP window can detach it from one of the edges
     // of the screen, which makes the snap fraction logic fail. Ensure to snap

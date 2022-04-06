@@ -435,6 +435,28 @@ TEST_F(WindowStateTest, TestIgnoreTooBigMinimumSize) {
   EXPECT_EQ(work_area_size.ToString(), window->bounds().size().ToString());
 }
 
+// Test that the maximum size specified by aura::WindowDelegate gets respected.
+TEST_F(WindowStateTest, TestRespectMaximumSize) {
+  aura::test::TestWindowDelegate delegate;
+  constexpr gfx::Size max_size(300, 250);
+  constexpr gfx::Size smaller_size(100, 100);
+  constexpr gfx::Size larger_size(500, 400);
+
+  delegate.set_maximum_size(max_size);
+
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
+      &delegate, -1, gfx::Rect(larger_size)));
+
+  // Check that the window has the correct maximum size.
+  EXPECT_EQ(max_size, window->bounds().size());
+
+  window->SetBounds(gfx::Rect(smaller_size));
+  EXPECT_EQ(smaller_size, window->bounds().size());
+
+  window->SetBounds(gfx::Rect(larger_size));
+  EXPECT_EQ(max_size, window->bounds().size());
+}
+
 // Tests UpdateSnapRatio. (1) It should have ratio reset when window
 // enters snapped state; (2) it should update ratio on bounds event when
 // snapped.

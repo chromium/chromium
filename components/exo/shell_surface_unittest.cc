@@ -373,9 +373,7 @@ TEST_F(ShellSurfaceTest, RestoreFromFullscreen) {
 
 TEST_F(ShellSurfaceTest, RestoreExitsFullscreen) {
   std::unique_ptr<ShellSurface> shell_surface =
-      test::ShellSurfaceBuilder({256, 256})
-          .SetMaximumSize(gfx::Size(10, 10))
-          .BuildShellSurface();
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
 
   // Act: Set window property kRestoreOrMaximizeExitsFullscreen
   // then restore after fullscreen
@@ -435,10 +433,7 @@ TEST_F(ShellSurfaceTest, SetFullscreen) {
 
 TEST_F(ShellSurfaceTest, PreWidgetUnfullscreen) {
   std::unique_ptr<ShellSurface> shell_surface =
-      test::ShellSurfaceBuilder({256, 256})
-          .SetNoCommit()
-          .SetMaximumSize(gfx::Size(10, 10))
-          .BuildShellSurface();
+      test::ShellSurfaceBuilder({256, 256}).SetNoCommit().BuildShellSurface();
   shell_surface->Maximize();
   shell_surface->SetFullscreen(false);
   EXPECT_EQ(shell_surface->GetWidget(), nullptr);
