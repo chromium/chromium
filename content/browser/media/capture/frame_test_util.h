@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_MEDIA_CAPTURE_FRAME_TEST_UTIL_H_
 #define CONTENT_BROWSER_MEDIA_CAPTURE_FRAME_TEST_UTIL_H_
 
+#include <cmath>
 #include <ostream>
 
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -27,6 +28,10 @@ class FrameTestUtil {
     double r;
     double g;
     double b;
+
+    bool is_valid() const {
+      return !std::isnan(r) && !std::isnan(g) && !std::isnan(b);
+    }
   };
 
   // Converts the image data in the given |frame| to a new SkBitmap. The result

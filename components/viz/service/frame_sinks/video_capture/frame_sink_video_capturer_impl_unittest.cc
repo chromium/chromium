@@ -24,6 +24,7 @@
 #include "components/viz/common/surfaces/video_capture_target.h"
 #include "components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_manager.h"
 #include "media/base/limits.h"
+#include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
@@ -433,43 +434,47 @@ class InstrumentedVideoCaptureOracle : public media::VideoCaptureOracle {
   absl::optional<gfx::Size> forced_capture_size_;
 };
 
-// Matcher that returns true if the content region of a letterboxed VideoFrame
-// is filled with the given color, and black everywhere else.
-MATCHER_P2(IsLetterboxedFrame, color, content_rect, "") {
+// Matcher that returns true if the visible rectangle of a VideoFrame is filled
+// with the given color.
+MATCHER_P2(IsVisibleRectMatching, color, content_rect, "") {
   if (!arg) {
     return false;
   }
 
   const VideoFrame& frame = *arg;
-  const gfx::Rect kContentRect = content_rect;
-  const auto IsLetterboxedPlane = [&frame, kContentRect](int plane,
-                                                         uint8_t component) {
-    gfx::Rect content_rect_copy = kContentRect;
-    if (plane != VideoFrame::kYPlane) {
-      content_rect_copy = gfx::Rect(
-          content_rect_copy.x() / 2, content_rect_copy.y() / 2,
-          content_rect_copy.width() / 2, content_rect_copy.height() / 2);
-    }
-    for (int row = 0; row < frame.rows(plane); ++row) {
+
+  if (frame.visible_rect() != content_rect) {
+    *result_listener << "where argument's visible_rect() is "
+                     << frame.visible_rect().ToString()
+                     << " and content_rect is " << content_rect.ToString();
+    return false;
+  }
+
+  const gfx::Rect& kContentRect = content_rect;
+
+  const auto MatchesPlane = [&frame, &kContentRect](int plane,
+                                                    uint8_t color_component) {
+    const gfx::Rect content_rect =
+        plane == VideoFrame::kYPlane
+            ? kContentRect
+            : gfx::Rect(kContentRect.x() / 2, kContentRect.y() / 2,
+                        kContentRect.width() / 2, kContentRect.height() / 2);
+
+    for (int row = 0; row < content_rect.height(); ++row) {
       const uint8_t* p = frame.visible_data(plane) + row * frame.stride(plane);
-      for (int col = 0; col < frame.row_bytes(plane); ++col) {
-        if (content_rect_copy.Contains(gfx::Point(col, row))) {
-          if (p[col] != component) {
-            return false;
-          }
-        } else {  // Letterbox border around content.
-          if (plane == VideoFrame::kYPlane && p[col] != 0x00) {
-            return false;
-          }
+      for (int col = 0; col < content_rect.width(); ++col) {
+        if (p[col] != color_component) {
+          return false;
         }
       }
     }
+
     return true;
   };
 
-  return IsLetterboxedPlane(VideoFrame::kYPlane, color.y) &&
-         IsLetterboxedPlane(VideoFrame::kUPlane, color.u) &&
-         IsLetterboxedPlane(VideoFrame::kVPlane, color.v);
+  return MatchesPlane(VideoFrame::kYPlane, color.y) &&
+         MatchesPlane(VideoFrame::kUPlane, color.u) &&
+         MatchesPlane(VideoFrame::kVPlane, color.v);
 }
 
 }  // namespace
@@ -703,8 +708,8 @@ TEST_F(FrameSinkVideoCapturerTest, CapturesCompositedFrames) {
   frame_sink_.SendCopyOutputResult(0);
   ASSERT_EQ(num_refresh_frames, consumer.num_frames_received());
   EXPECT_THAT(consumer.TakeFrame(0),
-              IsLetterboxedFrame(YUVColor{0x80, 0x80, 0x80},
-                                 size_set().expected_content_rect));
+              IsVisibleRectMatching(YUVColor{0x80, 0x80, 0x80},
+                                    size_set().expected_content_rect));
   consumer.SendDoneNotification(0);
 
   // Drive the capturer pipeline for a series of frame composites.
@@ -742,9 +747,8 @@ TEST_F(FrameSinkVideoCapturerTest, CapturesCompositedFrames) {
     // required metadata set.
     const scoped_refptr<VideoFrame> frame = consumer.TakeFrame(i);
     EXPECT_THAT(frame,
-                IsLetterboxedFrame(color, size_set().expected_content_rect));
+                IsVisibleRectMatching(color, size_set().expected_content_rect));
     EXPECT_EQ(size_set().capture_size, frame->coded_size());
-    EXPECT_EQ(gfx::Rect(size_set().capture_size), frame->visible_rect());
     EXPECT_LT(last_timestamp, frame->timestamp());
     last_timestamp = frame->timestamp();
     const VideoFrameMetadata& metadata = frame->metadata();
@@ -922,24 +926,29 @@ TEST_F(FrameSinkVideoCapturerTest, DeliversFramesInOrder) {
   // each video frame is correct.
   frame_sink_.SendCopyOutputResult(0);
   ASSERT_EQ(1, consumer.num_frames_received());
-  EXPECT_THAT(consumer.TakeFrame(0),
-              IsLetterboxedFrame(colors[0], size_set().expected_content_rect));
+  EXPECT_THAT(
+      consumer.TakeFrame(0),
+      IsVisibleRectMatching(colors[0], size_set().expected_content_rect));
   frame_sink_.SendCopyOutputResult(2);
   ASSERT_EQ(1, consumer.num_frames_received());  // Waiting for frame 1.
   frame_sink_.SendCopyOutputResult(3);
   ASSERT_EQ(1, consumer.num_frames_received());  // Still waiting for frame 1.
   frame_sink_.SendCopyOutputResult(1);
   ASSERT_EQ(4, consumer.num_frames_received());  // Sent frames 1, 2, and 3.
-  EXPECT_THAT(consumer.TakeFrame(1),
-              IsLetterboxedFrame(colors[1], size_set().expected_content_rect));
-  EXPECT_THAT(consumer.TakeFrame(2),
-              IsLetterboxedFrame(colors[2], size_set().expected_content_rect));
-  EXPECT_THAT(consumer.TakeFrame(3),
-              IsLetterboxedFrame(colors[3], size_set().expected_content_rect));
+  EXPECT_THAT(
+      consumer.TakeFrame(1),
+      IsVisibleRectMatching(colors[1], size_set().expected_content_rect));
+  EXPECT_THAT(
+      consumer.TakeFrame(2),
+      IsVisibleRectMatching(colors[2], size_set().expected_content_rect));
+  EXPECT_THAT(
+      consumer.TakeFrame(3),
+      IsVisibleRectMatching(colors[3], size_set().expected_content_rect));
   frame_sink_.SendCopyOutputResult(4);
   ASSERT_EQ(5, consumer.num_frames_received());
-  EXPECT_THAT(consumer.TakeFrame(4),
-              IsLetterboxedFrame(colors[4], size_set().expected_content_rect));
+  EXPECT_THAT(
+      consumer.TakeFrame(4),
+      IsVisibleRectMatching(colors[4], size_set().expected_content_rect));
 
   StopCapture();
 }
@@ -980,8 +989,9 @@ TEST_F(FrameSinkVideoCapturerTest, CancelsInFlightCapturesOnStop) {
     SCOPED_TRACE(testing::Message() << "frame #" << i);
     frame_sink_.SendCopyOutputResult(i);
     ASSERT_EQ(i + 1, consumer.num_frames_received());
-    EXPECT_THAT(consumer.TakeFrame(i),
-                IsLetterboxedFrame(color1, size_set().expected_content_rect));
+    EXPECT_THAT(
+        consumer.TakeFrame(i),
+        IsVisibleRectMatching(color1, size_set().expected_content_rect));
   }
 
   // Stopping capture should cancel the remaning copy requests.
@@ -1026,8 +1036,9 @@ TEST_F(FrameSinkVideoCapturerTest, CancelsInFlightCapturesOnStop) {
     frame_sink_.SendCopyOutputResult(frame_sink_.num_copy_results() - 1);
     ++num_completed_captures;
     ASSERT_EQ(num_completed_captures, consumer2.num_frames_received());
-    EXPECT_THAT(consumer2.TakeFrame(consumer2.num_frames_received() - 1),
-                IsLetterboxedFrame(color2, size_set().expected_content_rect));
+    EXPECT_THAT(
+        consumer2.TakeFrame(consumer2.num_frames_received() - 1),
+        IsVisibleRectMatching(color2, size_set().expected_content_rect));
   }
 
   StopCapture();

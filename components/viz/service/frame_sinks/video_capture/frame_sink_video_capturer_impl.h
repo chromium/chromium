@@ -14,6 +14,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/tick_clock.h"
@@ -289,19 +290,25 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
 
   // Places the frame in the |delivery_queue_| and calls MaybeDeliverFrame(),
   // one frame at a time, in-order. |frame| may be null to indicate a
-  // completed, but unsuccessful capture.
+  // completed, but unsuccessful capture. If the |frame| wraps a frame returned
+  // from a |frame_pool_|, |wrapped_frame| will be non-null and will point to
+  // the frame originally returned from the pool.
   void OnFrameReadyForDelivery(int64_t capture_frame_number,
                                OracleFrameNumber oracle_frame_number,
                                const gfx::Rect& content_rect,
-                               scoped_refptr<media::VideoFrame> frame);
+                               scoped_refptr<media::VideoFrame> frame,
+                               scoped_refptr<media::VideoFrame> wrapped_frame);
 
   // Delivers a |frame| to the consumer, if the VideoCaptureOracle allows
   // it. |frame| can be null to indicate a completed, but unsuccessful capture.
   // In this case, some state will be updated, but nothing will be sent to the
-  // consumer.
+  // consumer. If the |frame| wraps a frame returned from a |frame_pool_|,
+  // |wrapped_frame| will be non-null and will point to the frame originally
+  // returned from the pool.
   void MaybeDeliverFrame(OracleFrameNumber oracle_frame_number,
                          const gfx::Rect& content_rect,
-                         scoped_refptr<media::VideoFrame> frame);
+                         scoped_refptr<media::VideoFrame> frame,
+                         scoped_refptr<media::VideoFrame> wrapped_frame);
 
   // For ARGB format, ensures that every dimension of |size| is positive. For
   // I420 format, ensures that every dimension is even and at least 2.
@@ -434,18 +441,37 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
 
   // A queue of captured frames pending delivery. This queue is used to re-order
   // frames, if they should happen to be captured out-of-order.
-  struct CapturedFrame {
-    int64_t capture_frame_number;
-    OracleFrameNumber oracle_frame_number;
-    gfx::Rect content_rect;
-    scoped_refptr<media::VideoFrame> frame;
+  class CapturedFrame {
+   public:
     CapturedFrame(int64_t capture_frame_number,
                   OracleFrameNumber oracle_frame_number,
                   const gfx::Rect& content_rect,
-                  scoped_refptr<media::VideoFrame> frame);
+                  scoped_refptr<media::VideoFrame> frame,
+                  scoped_refptr<media::VideoFrame> wrapped_frame);
     CapturedFrame(const CapturedFrame& other);
     ~CapturedFrame();
     bool operator<(const CapturedFrame& other) const;
+
+    int64_t capture_frame_number() const { return capture_frame_number_; }
+    OracleFrameNumber oracle_frame_number() const {
+      return oracle_frame_number_;
+    }
+    const gfx::Rect& content_rect() const { return content_rect_; }
+
+    scoped_refptr<media::VideoFrame> frame() const { return frame_; }
+    scoped_refptr<media::VideoFrame> wrapped_frame() const {
+      return wrapped_frame_;
+    }
+
+   private:
+    int64_t capture_frame_number_;
+    OracleFrameNumber oracle_frame_number_;
+    gfx::Rect content_rect_;
+    scoped_refptr<media::VideoFrame> frame_;
+    // If the |frame_| wraps the frame returned by the pool, |wrapped_frame_|
+    // will be non-null and will point to the frame that can be used when
+    // interacting with the pool.
+    scoped_refptr<media::VideoFrame> wrapped_frame_;
   };
   std::priority_queue<CapturedFrame> delivery_queue_;
 

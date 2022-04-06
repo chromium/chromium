@@ -109,7 +109,6 @@ class WebContentsVideoCaptureDeviceBrowserTest
         const auto average_letterbox_rgb =
             ComputeAverageColor(rgb_frame, gfx::Rect(frame_size),
                                 ToSafeExcludeRect(content_in_frame_rect_f));
-
         VLOG(1)
             << "Video frame analysis: size=" << frame_size.ToString()
             << ", captured upper-left quadrant of content should be bound by "
@@ -122,10 +121,13 @@ class WebContentsVideoCaptureDeviceBrowserTest
             << " and has average color " << average_mainframe_rgb
             << ", letterbox region has average color " << average_letterbox_rgb;
 
-        // The letterboxed region should always be black.
+        // The letterboxed region should always be black, or invalid color (in
+        // case the letterboxed area was empty).
         if (IsFixedAspectRatioTest()) {
-          EXPECT_TRUE(IsApproximatelySameColor(
-              SK_ColorBLACK, average_letterbox_rgb, max_color_diff));
+          EXPECT_TRUE(!average_letterbox_rgb.is_valid() ||
+                      IsApproximatelySameColor(SK_ColorBLACK,
+                                               average_letterbox_rgb,
+                                               max_color_diff));
         }
 
         if (testing::Test::HasFailure()) {

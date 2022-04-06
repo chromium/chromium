@@ -37,6 +37,9 @@ GpuMemoryBufferVideoFramePool::ReserveVideoFrame(media::VideoPixelFormat format,
                                                gfx::ColorSpace::CreateREC709());
 
   if (result) {
+    result->GetGpuMemoryBuffer()->SetColorSpace(
+        gfx::ColorSpace::CreateREC709());
+
     num_reserved_frames_++;
     result->AddDestructionObserver(base::BindOnce(
         &GpuMemoryBufferVideoFramePool::OnVideoFrameDestroyed,
