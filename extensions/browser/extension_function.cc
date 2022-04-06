@@ -39,11 +39,13 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/kiosk/kiosk_delegate.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_messages.h"
+#include "extensions/common/manifest_handlers/kiosk_mode_info.h"
 #include "extensions/common/mojom/renderer.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-forward.h"
 
@@ -141,9 +143,17 @@ void EnsureMemoryDumpProviderExists() {
   std::ignore = ExtensionFunctionMemoryDumpProvider::GetInstance();
 }
 
+// Adds Kiosk. prefix to uma histograms if running in a kiosk extension.
+std::string WrapUma(const std::string& uma, bool is_kiosk_enabled) {
+  if (is_kiosk_enabled)
+    return uma + ".Kiosk";
+  return uma;
+}
+
 // Logs UMA about the performance for a given extension function run.
 void LogUma(bool success,
             base::TimeDelta elapsed_time,
+            bool is_kiosk_enabled,
             extensions::functions::HistogramValue histogram_value) {
   // Note: Certain functions perform actions that are inherently slow - such as
   // anything waiting on user action. As such, we can't always assume that a
@@ -178,24 +188,36 @@ void LogUma(bool success,
       base::UmaHistogramSparse("Extensions.Functions.FailedTime.Over10ms",
                                histogram_value);
     }
-    UMA_HISTOGRAM_TIMES("Extensions.Functions.FailedTotalExecutionTime",
-                        elapsed_time);
+    base::UmaHistogramTimes(
+        WrapUma("Extensions.Functions.FailedTotalExecutionTime",
+                is_kiosk_enabled),
+        elapsed_time);
   }
 }
 
-void LogBadMessage(extensions::functions::HistogramValue histogram_value) {
+void LogBadMessage(bool is_kiosk_enabled,
+                   extensions::functions::HistogramValue histogram_value) {
   base::RecordAction(base::UserMetricsAction("BadMessageTerminate_EFD"));
   // Track the specific function's |histogram_value|, as this may indicate a
   // bug in that API's implementation.
-  base::UmaHistogramSparse("Extensions.BadMessageFunctionName",
-                           histogram_value);
+  base::UmaHistogramSparse(
+      WrapUma("Extensions.BadMessageFunctionName", is_kiosk_enabled),
+      histogram_value);
+}
+
+bool IsKiosk(const extensions::Extension* extension) {
+  extensions::KioskDelegate* const kiosk_delegate =
+      extensions::ExtensionsBrowserClient::Get()->GetKioskDelegate();
+  return kiosk_delegate && extension &&
+         kiosk_delegate->IsAutoLaunchedKioskApp(extension->id());
 }
 
 template <class T>
 void ReceivedBadMessage(T* bad_message_sender,
                         extensions::bad_message::BadMessageReason reason,
+                        bool is_kiosk_enabled,
                         extensions::functions::HistogramValue histogram_value) {
-  LogBadMessage(histogram_value);
+  LogBadMessage(is_kiosk_enabled, histogram_value);
   // The renderer has done validation before sending extension api requests.
   // Therefore, we should never receive a request that is invalid in a way
   // that JSON validation in the renderer should have caught. It could be an
@@ -552,7 +574,7 @@ void ExtensionFunction::SetBadMessage() {
                        is_from_service_worker()
                            ? extensions::bad_message::EFD_BAD_MESSAGE_WORKER
                            : extensions::bad_message::EFD_BAD_MESSAGE,
-                       histogram_value());
+                       IsKiosk(extension_.get()), histogram_value());
   }
 }
 
@@ -804,7 +826,8 @@ void ExtensionFunction::SendResponseImpl(bool success) {
   }
 
   std::move(response_callback_).Run(response, std::move(results), GetError());
-  LogUma(success, timer_.Elapsed(), histogram_value_);
+  LogUma(success, timer_.Elapsed(), IsKiosk(extension_.get()),
+         histogram_value_);
 
   OnResponded();
 }

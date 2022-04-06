@@ -244,8 +244,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.BadMessageFunctionName" enum="ExtensionFunctions"
-    expires_after="never">
+<histogram name="Extensions.BadMessageFunctionName{IsKiosk}"
+    enum="ExtensionFunctions" expires_after="never">
 <!-- expires-never: Monitoring core extension system health. -->
 
   <owner>rdevlin.cronin@chromium.org</owner>
@@ -254,8 +254,14 @@ chromium-metrics-reviews@google.com.
     The number of times each Extension function call sends a bad message,
     killing the renderer. This may indicate a bug in that API's implementation
     on the renderer. Note a similar, aggregate metric is BadMessageTerminate_EFD
-    which counts the number of bad messages that are sent overall.
+    which counts the number of bad messages that are sent overall. In M-102 this
+    histogram was split and events from kiosk extensions are recorded in the
+    separate Extensions.BadMessageFunctionName.Kiosk histogram.
   </summary>
+  <token key="IsKiosk">
+    <variant name="" summary="from non-kiosk extension"/>
+    <variant name=".Kiosk" summary="from kiosk extension"/>
+  </token>
 </histogram>
 
 <histogram name="Extensions.BadSyncDataReason" enum="BadSyncDataReason"
@@ -1859,8 +1865,8 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Extensions.Functions.FailedTotalExecutionTime" units="ms"
-    expires_after="2022-08-21">
+<histogram name="Extensions.Functions.FailedTotalExecutionTime{IsKiosk}"
+    units="ms" expires_after="2022-08-21">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -1868,8 +1874,14 @@ chromium-metrics-reviews@google.com.
     failed from the time the extension function is called to the time the
     function responds. Note that since some extension functions are inherently
     slow (anything that requires user interaction, for instance), this is not a
-    definitive source for function performance.
+    definitive source for function performance. In M-102 this histogram was
+    split and events from kiosk extensions are recorded in the separate
+    Extensions.Functions.FailedTotalExecutionTime.Kiosk histogram.
   </summary>
+  <token key="IsKiosk">
+    <variant name="" summary="from non-kiosk extension"/>
+    <variant name=".Kiosk" summary="from kiosk extension"/>
+  </token>
 </histogram>
 
 <histogram name="Extensions.Functions.HandleResponseElapsedTime" units="ms"
