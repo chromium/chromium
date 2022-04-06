@@ -6,10 +6,14 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/numerics/safe_conversions.h"
+#include "ios/chrome/common/app_group/app_group_constants.h"
 #include "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/common/credential_provider/credential.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/highlight_button.h"
+#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
+#import "ios/chrome/common/ui/favicon/favicon_view.h"
+#import "ios/chrome/common/ui/table_view/favicon_table_view_cell.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_global_header_view.h"
@@ -37,10 +41,29 @@ UIColor* BackgroundColor() {
 }
 
 // This cell just adds a simple hover pointer interaction to the TableViewCell.
-@interface CredentialListCell : UITableViewCell
+@interface CredentialListCell : FaviconTableViewCell
 @end
 
 @implementation CredentialListCell
+
+- (instancetype)initWithStyle:(UITableViewCellStyle)style
+              reuseIdentifier:(NSString*)reuseIdentifier {
+  self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+  if (self) {
+    [self addInteraction:[[ViewPointerInteraction alloc] init]];
+  }
+  return self;
+}
+
+@end
+
+// This cell just adds a simple hover pointer interaction to the TableViewCell.
+// TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag is
+// removed.
+@interface LegacyCredentialListCell : UITableViewCell
+@end
+
+@implementation LegacyCredentialListCell
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString*)reuseIdentifier {
@@ -67,6 +90,9 @@ UIColor* BackgroundColor() {
 
 // Indicates if the option to create a new password should be presented.
 @property(nonatomic, assign) BOOL showNewPasswordOption;
+
+// FaviconAttributes object with the default world icon as fallback.
+@property(nonatomic, strong) FaviconAttributes* defaultWorldIconAttributes;
 
 @end
 
@@ -201,25 +227,101 @@ UIColor* BackgroundColor() {
     return cell;
   }
 
+  id<Credential> credential = [self credentialForIndexPath:indexPath];
+
   UITableViewCell* cell =
       [tableView dequeueReusableCellWithIdentifier:kCredentialCellIdentifier];
-  if (!cell) {
-    cell =
-        [[CredentialListCell alloc] initWithStyle:UITableViewCellStyleSubtitle
-                                  reuseIdentifier:kCredentialCellIdentifier];
-    cell.accessoryView = [self infoIconButton];
+
+  if (IsFaviconEnabled()) {
+    if (!cell) {
+      cell =
+          [[CredentialListCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                    reuseIdentifier:kCredentialCellIdentifier];
+      cell.accessoryView = [self infoIconButton];
+    }
+
+    CredentialListCell* credentialCell =
+        base::mac::ObjCCastStrict<CredentialListCell>(cell);
+
+    credentialCell.textLabel.text = credential.serviceName;
+    credentialCell.detailTextLabel.text = credential.user;
+    credentialCell.uniqueIdentifier = credential.serviceIdentifier;
+    credentialCell.selectionStyle = UITableViewCellSelectionStyleDefault;
+    credentialCell.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+    credentialCell.accessibilityTraits |= UIAccessibilityTraitButton;
+
+    // Load favicon.
+    if (credential.favicon) {
+      // Load the favicon from disk.
+      [self loadFaviconAtIndexPath:indexPath forCell:cell];
+    }
+
+    // Use the default world icon as fallback.
+    if (!self.defaultWorldIconAttributes) {
+      self.defaultWorldIconAttributes = [FaviconAttributes
+          attributesWithImage:
+              [[UIImage imageNamed:@"default_world_favicon"]
+                  imageWithTintColor:[UIColor colorNamed:kTextQuaternaryColor]
+                       renderingMode:UIImageRenderingModeAlwaysOriginal]];
+    }
+    [credentialCell.faviconView
+        configureWithAttributes:self.defaultWorldIconAttributes];
+    return credentialCell;
+  } else {
+    if (!cell) {
+      cell = [[LegacyCredentialListCell alloc]
+            initWithStyle:UITableViewCellStyleSubtitle
+          reuseIdentifier:kCredentialCellIdentifier];
+      cell.accessoryView = [self infoIconButton];
+    }
+
+    cell.textLabel.text = credential.serviceName;
+    cell.textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+    cell.detailTextLabel.text = credential.user;
+    cell.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+    cell.selectionStyle = UITableViewCellSelectionStyleDefault;
+    cell.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+    cell.accessibilityTraits |= UIAccessibilityTraitButton;
+    return cell;
   }
+}
 
+// Asynchronously loads favicon for given index path. The loads are cancelled
+// upon cell reuse automatically.
+- (void)loadFaviconAtIndexPath:(NSIndexPath*)indexPath
+                       forCell:(UITableViewCell*)cell {
   id<Credential> credential = [self credentialForIndexPath:indexPath];
-  cell.textLabel.text = credential.serviceName;
-  cell.textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
-  cell.detailTextLabel.text = credential.user;
-  cell.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  cell.selectionStyle = UITableViewCellSelectionStyleDefault;
-  cell.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-  cell.accessibilityTraits |= UIAccessibilityTraitButton;
+  DCHECK(credential);
+  DCHECK(cell);
+  CredentialListCell* credentialCell =
+      base::mac::ObjCCastStrict<CredentialListCell>(cell);
+  NSString* serviceIdentifier = credential.serviceIdentifier;
 
-  return cell;
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+    NSURL* filePath = [app_group::SharedFaviconAttributesFolder()
+        URLByAppendingPathComponent:credential.favicon
+                        isDirectory:NO];
+    NSError* error = nil;
+    NSData* data = [NSData dataWithContentsOfURL:filePath
+                                         options:0
+                                           error:&error];
+    if (data && !error) {
+      NSKeyedUnarchiver* unarchiver =
+          [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:nil];
+      unarchiver.requiresSecureCoding = NO;
+      FaviconAttributes* attributes =
+          [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
+      // Only set favicon if the cell hasn't been reused.
+      if ([credentialCell.uniqueIdentifier isEqualToString:serviceIdentifier]) {
+        // Update the UI on the main thread.
+        dispatch_async(dispatch_get_main_queue(), ^{
+          if (attributes) {
+            [credentialCell.faviconView configureWithAttributes:attributes];
+          }
+        });
+      }
+    }
+  });
 }
 
 #pragma mark - UITableViewDelegate

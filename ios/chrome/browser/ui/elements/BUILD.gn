@@ -9,8 +9,6 @@ source_set("elements") {
     "extended_touch_target_button.mm",
     "fade_truncating_label.h",
     "fade_truncating_label.mm",
-    "favicon_container_view.h",
-    "favicon_container_view.mm",
     "gray_highlight_button.h",
     "gray_highlight_button.mm",
     "home_waiting_view.h",
@@ -41,7 +39,6 @@ source_set("elements") {
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/common/ui/util:dynamic_type_util",
   ]

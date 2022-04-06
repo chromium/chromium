@@ -203,10 +203,12 @@ const char kEnableFREDefaultBrowserScreenTestingDescription[] =
     "browser promo depending on experiment.";
 
 const char kEnableFaviconForPasswordsName[] =
-    "Enable favicons in the Password Manager";
+    "Enable favicons for the Password Manager and for the Credential Provider "
+    "Extension";
 const char kEnableFaviconForPasswordsDescription[] =
     "Show favicons in the Password Manager settings for the Saved Passwords "
-    "and Never Saved sections.";
+    "and Never Saved sections and also for the AutoFill Passwords for the "
+    "Credential Provider.";
 
 const char kEnableFREUIModuleIOSName[] = "Enable FRE UI module with options";
 const char kEnableFREUIModuleIOSDescription[] =

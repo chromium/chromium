@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/table_view/cells/table_view_url_cell_favicon_badge_view.h"
+#import "ios/chrome/common/ui/table_view/table_view_url_cell_favicon_badge_view.h"
 
-#import "ios/chrome/browser/ui/reading_list/reading_list_constants.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

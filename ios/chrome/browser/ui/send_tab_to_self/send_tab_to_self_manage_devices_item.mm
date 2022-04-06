@@ -8,10 +8,10 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_modal_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cell.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 

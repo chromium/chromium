@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/ui/reading_list/reading_list_constants.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_features.h"
 #import "ios/chrome/browser/ui/table_view/table_view_constants.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"

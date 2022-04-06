@@ -8,15 +8,15 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/net/crurl.h"
-#import "ios/chrome/browser/ui/elements/favicon_container_view.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_url_cell_favicon_badge_view.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/favicon/favicon_container_view.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
+#import "ios/chrome/common/ui/table_view/table_view_url_cell_favicon_badge_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

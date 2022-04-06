@@ -33,8 +33,8 @@ source_set("uma_ui") {
     "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:utils",
-    "//ios/chrome/browser/ui/table_view/cells:cells_constants",
     "//ios/chrome/common",
+    "//ios/chrome/common/ui/table_view:cells_constants",
     "//ui/base",
   ]
 }

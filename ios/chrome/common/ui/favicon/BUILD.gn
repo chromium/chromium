@@ -6,12 +6,15 @@ source_set("favicon") {
   sources = [
     "favicon_attributes.h",
     "favicon_attributes.mm",
+    "favicon_container_view.h",
+    "favicon_container_view.mm",
     "favicon_view.h",
     "favicon_view.mm",
   ]
   deps = [
     ":favicon_constants",
     "//base",
+    "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]

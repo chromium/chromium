@@ -29,4 +29,8 @@ extern const int kCredentialProviderExtensionPromoFeatureVersion;
 // branding update feature.
 extern const int kPasswordManagerBrandingUpdateFeatureVersion;
 
+// The current version of the credential provider extension's favicon display
+// feature.
+extern const int kCredentialProviderExtensionFaviconsFeatureVersion;
+
 #endif  // IOS_CHROME_COMMON_APP_GROUP_APP_GROUP_FIELD_TRIAL_VERSION_H_

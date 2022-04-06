@@ -10,9 +10,6 @@
 
 NSString* const kReadingListViewID = @"ReadingListTableView";
 
-NSString* const kTableViewURLCellFaviconBadgeViewID =
-    @"TableViewURLCellFaviconBadgeView";
-
 NSString* const kReadingListToolbarEditButtonID =
     @"ReadingListToolbarEditButtonID";
 NSString* const kReadingListToolbarDeleteButtonID =

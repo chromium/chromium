@@ -57,7 +57,6 @@ source_set("context_menu_ui") {
   deps = [
     "//base",
     "//components/url_formatter",
-    "//ios/chrome/browser/ui/elements",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
     "//ios/web/common:features",

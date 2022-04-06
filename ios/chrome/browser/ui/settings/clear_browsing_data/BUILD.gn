@@ -62,9 +62,9 @@ source_set("clear_browsing_data") {
     "//ios/chrome/browser/ui/table_view:styler",
     "//ios/chrome/browser/ui/table_view:utils",
     "//ios/chrome/browser/ui/table_view/cells",
-    "//ios/chrome/browser/ui/table_view/cells:cells_constants",
     "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
     "//ui/base",
   ]

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_TABLE_VIEW_CELLS_TABLE_VIEW_CELLS_CONSTANTS_H_
-#define IOS_CHROME_BROWSER_UI_TABLE_VIEW_CELLS_TABLE_VIEW_CELLS_CONSTANTS_H_
+#ifndef IOS_CHROME_COMMON_UI_TABLE_VIEW_TABLE_VIEW_CELLS_CONSTANTS_H_
+#define IOS_CHROME_COMMON_UI_TABLE_VIEW_TABLE_VIEW_CELLS_CONSTANTS_H_
 
 #import <UIKit/UIKit.h>
 
@@ -67,7 +67,10 @@ extern NSString* const kTableViewCellInfoButtonViewId;
 // The accessibility identifier of the TableViewTabsSearchSuggestedHistoryItem.
 extern NSString* const kTableViewTabsSearchSuggestedHistoryItemId;
 
+// Accessibility identifier for the badge icon.
+extern NSString* const kTableViewURLCellFaviconBadgeViewID;
+
 // Returns a padding according to the width of the current device.
 extern CGFloat HorizontalPadding();
 
-#endif  // IOS_CHROME_BROWSER_UI_TABLE_VIEW_CELLS_TABLE_VIEW_CELLS_CONSTANTS_H_
+#endif  // IOS_CHROME_COMMON_UI_TABLE_VIEW_TABLE_VIEW_CELLS_CONSTANTS_H_

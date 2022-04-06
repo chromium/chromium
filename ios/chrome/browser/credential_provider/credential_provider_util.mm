@@ -52,25 +52,27 @@ void SaveFaviconToSharedAppContainer(FaviconAttributes* attributes,
     return;
   }
 
-  // Create shared folder if it doesn't exist.
-  NSURL* shared_favicon_attributes_folder_url =
-      app_group::SharedFaviconAttributesFolder();
-  if (![[NSFileManager defaultManager]
-          fileExistsAtPath:[shared_favicon_attributes_folder_url path]]) {
-    [[NSFileManager defaultManager]
-              createDirectoryAtPath:[shared_favicon_attributes_folder_url path]
-        withIntermediateDirectories:YES
-                         attributes:nil
-                              error:nil];
-  }
-
-  // Write to file.
-  NSURL* file_url =
-      [shared_favicon_attributes_folder_url URLByAppendingPathComponent:filename
-                                                            isDirectory:NO];
   base::OnceCallback<void()> write_image = base::BindOnce(^{
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::WILL_BLOCK);
+    NSURL* shared_favicon_attributes_folder_url =
+        app_group::SharedFaviconAttributesFolder();
+    NSURL* file_url = [shared_favicon_attributes_folder_url
+        URLByAppendingPathComponent:filename
+                        isDirectory:NO];
+
+    // Create shared folder if it doesn't exist.
+    if (![[NSFileManager defaultManager]
+            fileExistsAtPath:[shared_favicon_attributes_folder_url path]]) {
+      [[NSFileManager defaultManager]
+                createDirectoryAtPath:[shared_favicon_attributes_folder_url
+                                          path]
+          withIntermediateDirectories:YES
+                           attributes:nil
+                                error:nil];
+    }
+
+    // Write to file.
     [data writeToURL:file_url atomically:YES];
   });
   base::ThreadPool::PostTask(

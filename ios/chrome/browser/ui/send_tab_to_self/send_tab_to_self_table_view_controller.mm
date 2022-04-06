@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_manage_devices_item.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_modal_delegate.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_button_item.h"
@@ -26,6 +25,7 @@
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 

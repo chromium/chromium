@@ -7,12 +7,12 @@
 #import "base/check_op.h"
 #import "base/containers/contains.h"
 #import "ios/chrome/browser/net/crurl.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "net/base/mac/url_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

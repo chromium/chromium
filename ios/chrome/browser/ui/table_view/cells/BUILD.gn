@@ -49,14 +49,11 @@ source_set("cells") {
     "table_view_text_item.mm",
     "table_view_text_link_item.h",
     "table_view_text_link_item.mm",
-    "table_view_url_cell_favicon_badge_view.h",
-    "table_view_url_cell_favicon_badge_view.mm",
     "table_view_url_item.h",
     "table_view_url_item.mm",
   ]
 
   deps = [
-    ":cells_constants",
     "resources:table_view_cell_chevron",
     "resources:table_view_cell_edit_icon",
     "resources:table_view_cell_error_icon",
@@ -71,7 +68,6 @@ source_set("cells") {
     "//ios/chrome/browser/ui/colors:colors",
     "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/list_model",
-    "//ios/chrome/browser/ui/reading_list:reading_list_constants",
     "//ios/chrome/browser/ui/settings/cells:public",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/resources",
     "//ios/chrome/browser/ui/table_view:styler",
@@ -79,23 +75,12 @@ source_set("cells") {
     "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/table_view",
+    "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
     "//ios/third_party/material_components_ios",
     "//net",
     "//ui/base",
-  ]
-  configs += [ "//build/config/compiler:enable_arc" ]
-}
-
-source_set("cells_constants") {
-  sources = [
-    "table_view_cells_constants.h",
-    "table_view_cells_constants.mm",
-  ]
-  deps = [
-    "//base",
-    "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/common/ui/util",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
@@ -118,7 +103,6 @@ source_set("unit_tests") {
 
   deps = [
     ":cells",
-    ":cells_constants",
     "//base",
     "//base/test:test_support",
     "//components/url_formatter",
@@ -126,6 +110,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/icons",
     "//ios/chrome/browser/ui/table_view:styler",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/table_view:cells_constants",
     "//net:net",
     "//testing/gtest",
     "//third_party/ocmock:ocmock",

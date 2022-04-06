@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/elements/favicon_container_view.h"
+#import "ios/chrome/common/ui/favicon/favicon_container_view.h"
 
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"

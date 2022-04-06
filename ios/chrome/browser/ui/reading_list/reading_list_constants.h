@@ -10,9 +10,6 @@
 // Accessibility identifier for reading list view.
 extern NSString* const kReadingListViewID;
 
-// Accessibility identifier for the badge icon.
-extern NSString* const kTableViewURLCellFaviconBadgeViewID;
-
 // Accessibility identifiers for reading list toolbar buttons.
 extern NSString* const kReadingListToolbarEditButtonID;
 extern NSString* const kReadingListToolbarDeleteButtonID;

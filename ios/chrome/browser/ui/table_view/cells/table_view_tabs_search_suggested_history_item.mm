@@ -6,7 +6,7 @@
 
 #include "base/format_macros.h"
 #include "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 

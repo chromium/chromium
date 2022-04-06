@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/context_menu/link_no_preview_view.h"
 
-#import "ios/chrome/browser/ui/elements/favicon_container_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/favicon/favicon_container_view.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

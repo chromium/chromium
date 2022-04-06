@@ -961,6 +961,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 // NSUserDefaults here.
 - (void)saveFieldTrialValuesForExtensions {
   using password_manager::features::kIOSEnablePasswordManagerBrandingUpdate;
+  using password_manager::features::kEnableFaviconForPasswords;
 
   NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
 
@@ -974,6 +975,11 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       @(base::FeatureList::IsEnabled(kIOSEnablePasswordManagerBrandingUpdate));
   NSNumber* passwordManagerBrandingUpdateVersion =
       [NSNumber numberWithInt:kPasswordManagerBrandingUpdateFeatureVersion];
+
+  NSNumber* faviconsForCredentialProviderValue =
+      @(base::FeatureList::IsEnabled(kEnableFaviconForPasswords));
+  NSNumber* faviconsForCredentialProviderVersion = [NSNumber
+      numberWithInt:kCredentialProviderExtensionFaviconsFeatureVersion];
 
   // Add other field trial values here if they are needed by extensions.
   // The general format is
@@ -991,7 +997,11 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
     base::SysUTF8ToNSString(kIOSEnablePasswordManagerBrandingUpdate.name) : @{
       kFieldTrialValueKey : passwordManagerBrandingUpdateValue,
       kFieldTrialVersionKey : passwordManagerBrandingUpdateVersion,
-    }
+    },
+    base::SysUTF8ToNSString(kEnableFaviconForPasswords.name) : @{
+      kFieldTrialValueKey : faviconsForCredentialProviderValue,
+      kFieldTrialVersionKey : faviconsForCredentialProviderVersion,
+    },
   };
   [sharedDefaults setObject:fieldTrialValues
                      forKey:app_group::kChromeExtensionFieldTrialPreference];
