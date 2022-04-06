@@ -49,6 +49,13 @@ class AuthorizationServerSession {
   // Returns true <=> the scope contains all elements from `scope`.
   bool ContainsAll(const base::flat_set<std::string>& scope) const;
 
+  // Adds `callback` to the end of the waiting list. These callbacks are not
+  // called internally. Instead, they can be retrieved with TakeWaitingList().
+  void AddToWaitingList(StatusCallback callback);
+  // Returns the waiting list by moving it. After calling this method
+  // the waiting list is empty.
+  std::vector<StatusCallback> TakeWaitingList();
+
   // Prepares and sends First Token Request. Results are returned by `callback`.
   // If the request is successful, the callback returns StatusCode::kOK and the
   // access token as the second parameter. Otherwise, the error code with
@@ -84,6 +91,9 @@ class AuthorizationServerSession {
   std::string access_token_;
   // Refresh token of the current OAuth2 session.
   std::string refresh_token_;
+
+  // The waiting list - a vector of waiting callbacks.
+  std::vector<StatusCallback> callbacks_;
 
   // The object used for communication with the Authorization Server.
   HttpExchange http_exchange_;

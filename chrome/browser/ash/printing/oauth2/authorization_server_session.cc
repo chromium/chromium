@@ -44,6 +44,16 @@ bool AuthorizationServerSession::ContainsAll(
                        scope.end());
 }
 
+void AuthorizationServerSession::AddToWaitingList(StatusCallback callback) {
+  callbacks_.push_back(std::move(callback));
+}
+
+std::vector<StatusCallback> AuthorizationServerSession::TakeWaitingList() {
+  std::vector<StatusCallback> waitlist;
+  waitlist.swap(callbacks_);
+  return waitlist;
+}
+
 void AuthorizationServerSession::SendFirstTokenRequest(
     const std::string& client_id,
     const std::string& authorization_code,

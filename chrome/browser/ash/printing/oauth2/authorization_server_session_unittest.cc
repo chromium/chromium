@@ -73,6 +73,28 @@ TEST_F(PrintingOAuth2AuthorizationServerSessionTest, InitialState) {
   EXPECT_FALSE(session_->ContainsAll({"psa", "ma"}));
 }
 
+TEST_F(PrintingOAuth2AuthorizationServerSessionTest, WaitingList) {
+  CreateSession({});
+  CallbackResult cr1;
+  CallbackResult cr2;
+  CallbackResult cr3;
+  session_->AddToWaitingList(BindResult(cr1));
+  session_->AddToWaitingList(BindResult(cr2));
+  session_->AddToWaitingList(BindResult(cr3));
+  auto callbacks = session_->TakeWaitingList();
+  ASSERT_EQ(callbacks.size(), 3);
+  EXPECT_TRUE(session_->TakeWaitingList().empty());
+  std::move(callbacks[0]).Run(StatusCode::kOK, "1");
+  std::move(callbacks[1]).Run(StatusCode::kAccessDenied, "2");
+  std::move(callbacks[2]).Run(StatusCode::kServerError, "3");
+  EXPECT_EQ(cr1.status, StatusCode::kOK);
+  EXPECT_EQ(cr1.data, "1");
+  EXPECT_EQ(cr2.status, StatusCode::kAccessDenied);
+  EXPECT_EQ(cr2.data, "2");
+  EXPECT_EQ(cr3.status, StatusCode::kServerError);
+  EXPECT_EQ(cr3.data, "3");
+}
+
 TEST_F(PrintingOAuth2AuthorizationServerSessionTest, FirstTokenRequest) {
   CreateSession({"xxx"});
   CallbackResult cr;
