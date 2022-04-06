@@ -13,11 +13,19 @@
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
 #include "chromeos/crosapi/mojom/sharesheet_mojom_traits.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
 gfx::NativeWindow GetNativeWindowFromId(const std::string& window_id) {
   return crosapi::GetShellSurfaceWindow(window_id);
+}
+
+void OnClosedCallbackWrapper(
+    crosapi::SharesheetAsh::ShowBubbleWithOnClosedCallback callback,
+    views::Widget::ClosedReason reason) {
+  if (callback)
+    std::move(callback).Run();
 }
 
 }  // namespace
@@ -46,7 +54,8 @@ void SharesheetAsh::ShowBubble(const std::string& window_id,
                                crosapi::mojom::IntentPtr intent,
                                ShowBubbleCallback callback) {
   DCHECK(profile_);
-  DCHECK_NE(source, sharesheet::LaunchSource::kUnknown);
+  if (source == sharesheet::LaunchSource::kUnknown)
+    return;
 
   sharesheet::SharesheetService* const sharesheet_service =
       sharesheet::SharesheetServiceFactory::GetForProfile(profile_);
@@ -54,6 +63,39 @@ void SharesheetAsh::ShowBubble(const std::string& window_id,
       apps_util::ConvertCrosapiToAppServiceIntent(intent, profile_),
       /*contains_hosted_document=*/false, source,
       base::BindOnce(&GetNativeWindowFromId, window_id), std::move(callback));
+}
+
+void SharesheetAsh::ShowBubbleWithOnClosed(
+    const std::string& window_id,
+    sharesheet::LaunchSource source,
+    crosapi::mojom::IntentPtr intent,
+    ShowBubbleWithOnClosedCallback callback) {
+  DCHECK(profile_);
+  if (source == sharesheet::LaunchSource::kUnknown)
+    return;
+
+  sharesheet::SharesheetService* const sharesheet_service =
+      sharesheet::SharesheetServiceFactory::GetForProfile(profile_);
+  sharesheet_service->ShowBubble(
+      apps_util::ConvertCrosapiToAppServiceIntent(intent, profile_),
+      /*contains_hosted_document=*/false, source,
+      base::BindOnce(&GetNativeWindowFromId, window_id), base::NullCallback(),
+      base::BindOnce(&OnClosedCallbackWrapper, std::move(callback)));
+}
+
+void SharesheetAsh::CloseBubble(const std::string& window_id) {
+  gfx::NativeWindow window = crosapi::GetShellSurfaceWindow(window_id);
+  if (!window)
+    return;
+
+  sharesheet::SharesheetService* const sharesheet_service =
+      sharesheet::SharesheetServiceFactory::GetForProfile(profile_);
+  sharesheet::SharesheetController* sharesheet_controller =
+      sharesheet_service->GetSharesheetController(window);
+  if (!sharesheet_controller)
+    return;
+
+  sharesheet_controller->CloseBubble(sharesheet::SharesheetResult::kCancel);
 }
 
 }  // namespace crosapi
