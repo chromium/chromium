@@ -557,7 +557,8 @@ void NativeInputMethodEngine::Initialize(
           this, profile,
           suggester_switch_
               ? std::move(suggester_switch_)
-              : std::make_unique<AssistiveSuggesterClientFilter>());
+              : std::make_unique<AssistiveSuggesterClientFilter>(),
+          nullptr);
   assistive_suggester_ = assistive_suggester.get();
   std::unique_ptr<AutocorrectManager> autocorrect_manager =
       std::make_unique<AutocorrectManager>(this);

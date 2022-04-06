@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
 #include "chrome/browser/ash/input_method/suggestions_source.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
 
 namespace ash {
 namespace input_method {
@@ -27,16 +28,21 @@ namespace input_method {
 // dismiss the suggestion according to the user action.
 class AssistiveSuggester : public SuggestionsSource {
  public:
-  enum AssistiveFeature {
+  // Features handled by assistive suggester.
+  enum class AssistiveFeature {
+    kUnknown,  // Includes features not handled by assistive suggester.
     kEmojiSuggestion,
     kMultiWordSuggestion,
     kPersonalInfoSuggestion,
   };
 
-  AssistiveSuggester(
-      SuggestionHandlerInterface* suggestion_handler,
-      Profile* profile,
-      std::unique_ptr<AssistiveSuggesterSwitch> suggester_switch);
+  // personal_data_manager is only used for testing to override the default
+  // autofill data for PersonalInfoSuggester.
+  AssistiveSuggester(SuggestionHandlerInterface* suggestion_handler,
+                     Profile* profile,
+                     std::unique_ptr<AssistiveSuggesterSwitch> suggester_switch,
+                     autofill::PersonalDataManager*
+                         personal_data_manager_for_testing = nullptr);
 
   ~AssistiveSuggester() override;
 
@@ -73,7 +79,8 @@ class AssistiveSuggester : public SuggestionsSource {
   void OnExternalSuggestionsUpdated(
       const std::vector<ime::TextSuggestion>& suggestions);
 
-  // Accepts the suggestion at a given index if a suggester is currently active.
+  // Accepts the suggestion at a given index if a suggester is currently
+  // active.
   void AcceptSuggestion(size_t index);
 
   // Check if suggestion is being shown.
@@ -117,7 +124,7 @@ class AssistiveSuggester : public SuggestionsSource {
                                    int cursor_pos,
                                    int anchor_pos);
 
-  void RecordAssistiveMatchMetricsForAction(AssistiveType action);
+  void RecordAssistiveMatchMetricsForAssistiveType(AssistiveType type);
 
   // Only the first applicable reason in DisabledReason enum is returned.
   DisabledReason GetDisabledReasonForEmoji();
@@ -129,7 +136,11 @@ class AssistiveSuggester : public SuggestionsSource {
   DisabledReason GetDisabledReasonForMultiWord(
       const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);
 
-  bool IsActionEnabled(AssistiveType action);
+  AssistiveFeature GetAssistiveFeatureForType(AssistiveType type);
+
+  bool IsAssistiveTypeEnabled(AssistiveType type);
+
+  bool IsAssistiveTypeAllowedInBrowserContext(AssistiveType type);
 
   bool WithinGrammarFragment(int cursor_pos, int anchor_pos);
 
