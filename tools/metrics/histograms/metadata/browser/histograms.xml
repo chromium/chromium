@@ -87,6 +87,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".Ent"/>
     <variant name=".General"/>
     <variant name=".OnboardingExperience"/>
+    <variant name=".Performance"/>
     <variant name=".PersonalizationAvatar"/>
     <variant name=".PersonalizationScreensaver"/>
     <variant name=".PersonalizationWallpaper"/>

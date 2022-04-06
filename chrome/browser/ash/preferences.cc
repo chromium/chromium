@@ -433,6 +433,11 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(::prefs::kHatsStabilityDeviceIsSelected, false);
 
+  registry->RegisterInt64Pref(::prefs::kHatsPerformanceSurveyCycleEndTs, 0);
+
+  registry->RegisterBooleanPref(::prefs::kHatsPerformanceDeviceIsSelected,
+                                false);
+
   // Personalization HaTS survey prefs for avatar, screensaver, and wallpaper
   // features.
   registry->RegisterInt64Pref(
