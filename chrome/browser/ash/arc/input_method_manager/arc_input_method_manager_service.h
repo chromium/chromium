@@ -43,6 +43,15 @@ class ArcInputMethodManagerService
     virtual void OnAndroidVirtualKeyboardVisibilityChanged(bool visible) = 0;
   };
 
+  // The delegate class to access to the global window tree state.
+  // This class separates ash dependency from ArcInputMethodManagerService.
+  class WindowDelegate {
+   public:
+    virtual ~WindowDelegate() = default;
+    virtual aura::Window* GetFocusedWindow() const = 0;
+    virtual aura::Window* GetActiveWindow() const = 0;
+  };
+
   // Returns the instance for the given BrowserContext, or nullptr if the
   // browser |context| is not allowed to use ARC.
   static ArcInputMethodManagerService* GetForBrowserContext(
@@ -65,6 +74,7 @@ class ArcInputMethodManagerService
 
   void SetInputMethodManagerBridgeForTesting(
       std::unique_ptr<ArcInputMethodManagerBridge> test_bridge);
+  void SetWindowDelegateForTesting(std::unique_ptr<WindowDelegate> delegate);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -168,6 +178,8 @@ class ArcInputMethodManagerService
   std::unique_ptr<ArcInputMethodBoundsObserver> input_method_bounds_observer_;
 
   base::CallbackListSubscription accessibility_status_subscription_;
+
+  std::unique_ptr<WindowDelegate> window_delegate_;
 
   base::ObserverList<Observer> observers_;
 };

@@ -11,6 +11,7 @@
 
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/test_browser_context.h"
+#include "ash/constants/app_types.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/keyboard/arc/arc_input_method_bounds_tracker.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
@@ -30,6 +31,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/client/aura_constants.h"
+#include "ui/aura/test/test_windows.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/mock_ime_input_context_handler.h"
@@ -242,6 +245,27 @@ class TestIMEInputContextHandler : public ui::MockIMEInputContextHandler {
   ui::InputMethod* const input_method_;
 };
 
+class TestWindowDelegate : public ArcInputMethodManagerService::WindowDelegate {
+ public:
+  TestWindowDelegate() = default;
+  ~TestWindowDelegate() override = default;
+
+  aura::Window* GetFocusedWindow() const override {
+    return focused_;
+    ;
+  }
+
+  aura::Window* GetActiveWindow() const override { return active_; }
+
+  void SetFocusedWindow(aura::Window* window) { focused_ = window; }
+
+  void SetActiveWindow(aura::Window* window) { active_ = window; }
+
+ private:
+  aura::Window* focused_ = nullptr;
+  aura::Window* active_ = nullptr;
+};
+
 class ArcInputMethodManagerServiceTest : public testing::Test {
  protected:
   ArcInputMethodManagerServiceTest()
@@ -262,6 +286,8 @@ class ArcInputMethodManagerServiceTest : public testing::Test {
 
   TestingProfile* profile() { return profile_.get(); }
 
+  TestWindowDelegate* window_delegate() { return window_delegate_; }
+
   void ToggleTabletMode(bool enabled) {
     tablet_mode_controller_->SetEnabledForTest(enabled);
   }
@@ -274,6 +300,14 @@ class ArcInputMethodManagerServiceTest : public testing::Test {
     return base::SplitString(
         profile()->GetPrefs()->GetString(prefs::kLanguageEnabledImes), ",",
         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  }
+
+  aura::Window* CreateTestArcWindow() {
+    auto* window = aura::test::CreateTestWindowWithId(1, nullptr);
+    window->SetProperty(aura::client::kSkipImeProcessing, true);
+    window->SetProperty(aura::client::kAppType,
+                        static_cast<int>(ash::AppType::ARC_APP));
+    return window;
   }
 
   void SetUp() override {
@@ -294,6 +328,8 @@ class ArcInputMethodManagerServiceTest : public testing::Test {
     test_bridge_ = new TestInputMethodManagerBridge();
     service_->SetInputMethodManagerBridgeForTesting(
         base::WrapUnique(test_bridge_));
+    window_delegate_ = new TestWindowDelegate();
+    service_->SetWindowDelegateForTesting(base::WrapUnique(window_delegate_));
   }
 
   void TearDown() override {
@@ -319,6 +355,7 @@ class ArcInputMethodManagerServiceTest : public testing::Test {
   TestInputMethodManager* input_method_manager_ = nullptr;
   TestInputMethodManagerBridge* test_bridge_ = nullptr;  // Owned by |service_|
   ArcInputMethodManagerService* service_ = nullptr;
+  TestWindowDelegate* window_delegate_ = nullptr;
 };
 
 }  // anonymous namespace
@@ -925,6 +962,17 @@ TEST_F(ArcInputMethodManagerServiceTest, FocusAndBlur) {
   mock_input_method.SetFocusedTextInputClient(&dummy_text_input_client);
 
   ASSERT_EQ(0, bridge()->focus_calls_count_);
+
+  engine_handler->FocusIn(test_context);
+  EXPECT_EQ(1, bridge()->focus_calls_count_);
+
+  engine_handler->FocusOut();
+  EXPECT_EQ(1, bridge()->focus_calls_count_);
+
+  // If an ARC window is focused, FocusIn doesn't call the bridge's Focus().
+  auto window = base::WrapUnique(CreateTestArcWindow());
+  window_delegate()->SetFocusedWindow(window.get());
+  window_delegate()->SetActiveWindow(window.get());
 
   engine_handler->FocusIn(test_context);
   EXPECT_EQ(1, bridge()->focus_calls_count_);
