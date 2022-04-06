@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/modules/direct_sockets/stream_wrapper.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
@@ -22,44 +23,26 @@ class Isolate;
 
 namespace blink {
 
-class ScriptState;
-class WritableStream;
-class WritableStreamDefaultController;
-
 // Helper class to write to a mojo producer handle
-class MODULES_EXPORT TCPWritableStreamWrapper final
+class MODULES_EXPORT TCPWritableStreamWrapper
     : public GarbageCollected<TCPWritableStreamWrapper>,
-      public ExecutionContextClient {
+      public WritableStreamWrapper {
   USING_PRE_FINALIZER(TCPWritableStreamWrapper, Dispose);
 
  public:
-  enum class State {
-    kOpen,
-    kAborted,
-    kClosed,
-  };
-
   TCPWritableStreamWrapper(ScriptState*,
-                           base::OnceClosure on_abort,
+                           base::OnceCallback<void(bool)> on_close,
                            mojo::ScopedDataPipeProducerHandle);
-  ~TCPWritableStreamWrapper();
 
-  WritableStream* Writable() const {
-    DVLOG(1) << "TCPWritableStreamWrapper::writable() called";
+  void CloseStream(bool error) override;
+  void CloseSocket(bool error) override;
 
-    return writable_;
-  }
-
-  void Close(bool error = false);
-
-  State GetState() const { return state_; }
-
-  bool IsActive() const;
+  bool HasPendingWrite() const override;
 
   void Trace(Visitor*) const override;
 
  private:
-  class UnderlyingSink;
+  class TCPUnderlyingSink;
 
   // Called when |data_pipe_| becomes writable or errored.
   void OnHandleReady(MojoResult, const mojo::HandleSignalsState&);
@@ -68,11 +51,11 @@ class MODULES_EXPORT TCPWritableStreamWrapper final
   void OnPeerClosed(MojoResult, const mojo::HandleSignalsState&);
 
   // Implements UnderlyingSink::write().
-  ScriptPromise SinkWrite(ScriptState*, ScriptValue chunk, ExceptionState&);
+  ScriptPromise Write(ScriptValue chunk, ExceptionState&) override;
 
   // Writes |data| to |data_pipe_|, possible saving unwritten data to
   // |cached_data_|.
-  ScriptPromise WriteOrCacheData(ScriptState*, base::span<const uint8_t> data);
+  ScriptPromise WriteOrCacheData(base::span<const uint8_t> data);
 
   // Attempts to write some more of |cached_data_| to |data_pipe_|.
   void WriteCachedData();
@@ -80,11 +63,6 @@ class MODULES_EXPORT TCPWritableStreamWrapper final
   // Writes zero or more bytes of |data| synchronously to |data_pipe_|,
   // returning the number of bytes that were written.
   size_t WriteDataSynchronously(base::span<const uint8_t> data);
-
-  // Creates a DOMException.
-  static ScriptValue CreateException(ScriptState*,
-                                     DOMExceptionCode,
-                                     const String& message);
 
   // Errors |writable_|, resolves |writing_aborted_| and resets |data_pipe_|.
   void ErrorStreamAbortAndReset(bool error);
@@ -119,9 +97,7 @@ class MODULES_EXPORT TCPWritableStreamWrapper final
     std::unique_ptr<uint8_t[], OnFree> buffer_;
   };
 
-  const Member<ScriptState> script_state_;
-
-  base::OnceClosure on_abort_;
+  base::OnceCallback<void(bool)> on_close_;
 
   mojo::ScopedDataPipeProducerHandle data_pipe_;
 
@@ -141,14 +117,9 @@ class MODULES_EXPORT TCPWritableStreamWrapper final
   // written.
   size_t offset_ = 0;
 
-  Member<WritableStream> writable_;
-  Member<WritableStreamDefaultController> controller_;
-
   // If an asynchronous write() on the underlying sink object is pending, this
   // will be non-null.
   Member<ScriptPromiseResolver> write_promise_resolver_;
-
-  State state_ = State::kOpen;
 };
 
 }  // namespace blink

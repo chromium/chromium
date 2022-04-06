@@ -51,49 +51,49 @@ class FakeDirectUDPSocket : public blink::mojom::blink::DirectUDPSocket {
   Vector<uint8_t> data_;
 };
 
-class StreamCreator {
-  STACK_ALLOCATED();
-
+class StreamCreator : public GarbageCollected<StreamCreator> {
  public:
-  explicit StreamCreator(const V8TestingScope& scope,
-                         FakeDirectUDPSocket* fake_udp_socket)
-      : scope_(scope), receiver_{fake_udp_socket} {}
-
+  StreamCreator() : receiver_{&fake_udp_socket_} {}
   ~StreamCreator() { test::RunPendingTasks(); }
 
-  UDPWritableStreamWrapper* Create() {
+  UDPWritableStreamWrapper* Create(const V8TestingScope& scope) {
     auto* udp_socket =
-        MakeGarbageCollected<UDPSocketMojoRemote>(scope_.GetExecutionContext());
+        MakeGarbageCollected<UDPSocketMojoRemote>(scope.GetExecutionContext());
     udp_socket->get().Bind(
         receiver_.BindNewPipeAndPassRemote(),
-        scope_.GetExecutionContext()->GetTaskRunner(TaskType::kNetworking));
+        scope.GetExecutionContext()->GetTaskRunner(TaskType::kNetworking));
 
-    auto* script_state = scope_.GetScriptState();
-    auto* udp_writable_stream_wrapper =
-        MakeGarbageCollected<UDPWritableStreamWrapper>(script_state,
-                                                       udp_socket);
-    return udp_writable_stream_wrapper;
+    auto* script_state = scope.GetScriptState();
+    stream_wrapper_ = MakeGarbageCollected<UDPWritableStreamWrapper>(
+        script_state, udp_socket);
+    return stream_wrapper_;
   }
 
+  void Trace(Visitor* visitor) const { visitor->Trace(stream_wrapper_); }
+
+  FakeDirectUDPSocket& fake_udp_socket() { return fake_udp_socket_; }
+
  private:
-  const V8TestingScope& scope_;
+  FakeDirectUDPSocket fake_udp_socket_;
   mojo::Receiver<blink::mojom::blink::DirectUDPSocket> receiver_;
+  Member<UDPWritableStreamWrapper> stream_wrapper_;
 };
 
 TEST(UDPWritableStreamWrapperTest, Create) {
   V8TestingScope scope;
-  FakeDirectUDPSocket fake_udp_socket;
-  StreamCreator stream_creator{scope, &fake_udp_socket};
-  auto* udp_writable_stream_wrapper = stream_creator.Create();
+
+  auto* stream_creator = MakeGarbageCollected<StreamCreator>();
+  auto* udp_writable_stream_wrapper = stream_creator->Create(scope);
+
   EXPECT_TRUE(udp_writable_stream_wrapper->Writable());
 }
 
 TEST(UDPWritableStreamWrapperTest, WriteUdpMessage) {
   V8TestingScope scope;
-  FakeDirectUDPSocket fake_udp_socket;
-  StreamCreator stream_creator{scope, &fake_udp_socket};
 
-  auto* udp_writable_stream_wrapper = stream_creator.Create();
+  auto* stream_creator = MakeGarbageCollected<StreamCreator>();
+  auto* udp_writable_stream_wrapper = stream_creator->Create(scope);
+
   auto* script_state = scope.GetScriptState();
 
   auto* writer = udp_writable_stream_wrapper->Writable()->getWriter(
@@ -113,15 +113,16 @@ TEST(UDPWritableStreamWrapperTest, WriteUdpMessage) {
 
   ASSERT_TRUE(tester.IsFulfilled());
 
+  auto& fake_udp_socket = stream_creator->fake_udp_socket();
   EXPECT_THAT(fake_udp_socket.GetReceivedData(), ::testing::ElementsAre('A'));
 }
 
 TEST(UDPWritableStreamWrapperTest, WriteUdpMessageFromTypedArray) {
   V8TestingScope scope;
-  FakeDirectUDPSocket fake_udp_socket;
-  StreamCreator stream_creator{scope, &fake_udp_socket};
 
-  auto* udp_writable_stream_wrapper = stream_creator.Create();
+  auto* stream_creator = MakeGarbageCollected<StreamCreator>();
+  auto* udp_writable_stream_wrapper = stream_creator->Create(scope);
+
   auto* script_state = scope.GetScriptState();
 
   auto* writer = udp_writable_stream_wrapper->Writable()->getWriter(
@@ -143,16 +144,17 @@ TEST(UDPWritableStreamWrapperTest, WriteUdpMessageFromTypedArray) {
 
   ASSERT_TRUE(tester.IsFulfilled());
 
+  auto& fake_udp_socket = stream_creator->fake_udp_socket();
   EXPECT_THAT(fake_udp_socket.GetReceivedData(),
               ::testing::ElementsAre('A', 'B', 'C'));
 }
 
 TEST(UDPWritableStreamWrapperTest, WriteUdpMessageWithEmptyDataField) {
   V8TestingScope scope;
-  FakeDirectUDPSocket fake_udp_socket;
-  StreamCreator stream_creator{scope, &fake_udp_socket};
 
-  auto* udp_writable_stream_wrapper = stream_creator.Create();
+  auto* stream_creator = MakeGarbageCollected<StreamCreator>();
+  auto* udp_writable_stream_wrapper = stream_creator->Create(scope);
+
   auto* script_state = scope.GetScriptState();
 
   auto* writer = udp_writable_stream_wrapper->Writable()->getWriter(
@@ -175,14 +177,16 @@ TEST(UDPWritableStreamWrapperTest, WriteUdpMessageWithEmptyDataField) {
   ASSERT_TRUE(tester.IsFulfilled());
 
   // Nothing should have been written from the empty DOMArrayBuffer.
+  auto& fake_udp_socket = stream_creator->fake_udp_socket();
   EXPECT_THAT(fake_udp_socket.GetReceivedData(), ::testing::ElementsAre());
 }
 
 TEST(UDPWritableStreamWrapperTest, WriteUdpMessageWithoutDataField) {
   V8TestingScope scope;
-  FakeDirectUDPSocket fake_udp_socket;
-  StreamCreator stream_creator{scope, &fake_udp_socket};
-  auto* udp_writable_stream_wrapper = stream_creator.Create();
+
+  auto* stream_creator = MakeGarbageCollected<StreamCreator>();
+  auto* udp_writable_stream_wrapper = stream_creator->Create(scope);
+
   auto* script_state = scope.GetScriptState();
 
   auto* writer = udp_writable_stream_wrapper->Writable()->getWriter(
@@ -206,16 +210,15 @@ TEST(UDPWritableStreamWrapperTest, WriteUdpMessageWithoutDataField) {
 
   ASSERT_TRUE(exception);
   ASSERT_EQ(exception->name(), "DataError");
-  ASSERT_EQ(exception->message(),
-            "Failed to execute 'write' on 'UnderlyingSinkBase': UDPMessage: "
-            "missing 'data' field.");
+  ASSERT_TRUE(exception->message().Contains("missing 'data' field"));
 }
 
 TEST(UDPWritableStreamWrapperTest, WriteAfterFinishedWrite) {
   V8TestingScope scope;
-  FakeDirectUDPSocket fake_udp_socket;
-  StreamCreator stream_creator{scope, &fake_udp_socket};
-  auto* udp_writable_stream_wrapper = stream_creator.Create();
+
+  auto* stream_creator = MakeGarbageCollected<StreamCreator>();
+  auto* udp_writable_stream_wrapper = stream_creator->Create(scope);
+
   auto* script_state = scope.GetScriptState();
 
   auto* writer = udp_writable_stream_wrapper->Writable()->getWriter(
@@ -237,15 +240,17 @@ TEST(UDPWritableStreamWrapperTest, WriteAfterFinishedWrite) {
     ASSERT_TRUE(tester.IsFulfilled());
   }
 
+  auto& fake_udp_socket = stream_creator->fake_udp_socket();
   EXPECT_THAT(fake_udp_socket.GetReceivedData(),
               ::testing::ElementsAre('A', 'B'));
 }
 
 TEST(UDPWritableStreamWrapperTest, WriteAfterClose) {
   V8TestingScope scope;
-  FakeDirectUDPSocket fake_udp_socket;
-  StreamCreator stream_creator{scope, &fake_udp_socket};
-  auto* udp_writable_stream_wrapper = stream_creator.Create();
+
+  auto* stream_creator = MakeGarbageCollected<StreamCreator>();
+  auto* udp_writable_stream_wrapper = stream_creator->Create(scope);
+
   auto* script_state = scope.GetScriptState();
 
   auto* writer = udp_writable_stream_wrapper->Writable()->getWriter(
@@ -269,6 +274,9 @@ TEST(UDPWritableStreamWrapperTest, WriteAfterClose) {
   close_tester.WaitUntilSettled();
 
   ASSERT_TRUE(write_tester.IsFulfilled());
+
+  ASSERT_EQ(udp_writable_stream_wrapper->GetState(),
+            StreamWrapper::State::kClosed);
 
   ScriptPromise write_after_close_result =
       writer->write(script_state, ScriptValue::From(script_state, message),

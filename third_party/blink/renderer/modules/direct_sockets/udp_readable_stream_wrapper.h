@@ -8,6 +8,7 @@
 #include "base/callback_forward.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/renderer/modules/direct_sockets/stream_wrapper.h"
 #include "third_party/blink/renderer/modules/direct_sockets/udp_socket_mojo_remote.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -18,47 +19,32 @@
 
 namespace blink {
 
-class ReadableStream;
-
-class MODULES_EXPORT UDPReadableStreamWrapper final
-    : public GarbageCollected<UDPReadableStreamWrapper> {
+class MODULES_EXPORT UDPReadableStreamWrapper
+    : public GarbageCollected<UDPReadableStreamWrapper>,
+      public ReadableStreamWrapper {
  public:
   UDPReadableStreamWrapper(ScriptState* script_state,
                            const Member<UDPSocketMojoRemote> udp_socket,
-                           base::OnceCallback<void(bool)> on_close);
-  ~UDPReadableStreamWrapper();
+                           base::OnceCallback<void(bool)> on_close,
+                           uint32_t high_water_mark);
 
-  ReadableStream* Readable() const { return readable_; }
+  void Pull() override;
 
-  // Forwards incoming datagrams to UnderlyingSource::AcceptDatagram.
-  void AcceptDatagram(base::span<const uint8_t> data,
-                      const absl::optional<net::IPEndPoint>& src_addr);
+  bool Push(base::span<const uint8_t> data,
+            const absl::optional<net::IPEndPoint>& src_addr) override;
 
-  // Called by UDPSocket::DoClose(). Forwards close request to
-  // UnderlyingSource::Close().
-  void Close(bool error = false);
+  void CloseStream(bool error) override;
+  void CloseSocket(bool error) override;
 
-  void Trace(Visitor* visitor) const;
+  void Trace(Visitor* visitor) const override;
 
  private:
-  class UnderlyingSource;
-  friend class UnderlyingSource;
-
-  // Called by UnderlyingSource::Close() or UnderlyingSource::cancel()
-  // (depending on whether the close request came from the reader or from the
-  // socket itself). Executes close callback (on_close_).
-  void CloseInternal(bool error);
-
-  // Fetch kNumAdditionalDiagrams on every AcceptDatagram call.
-  constexpr static const uint32_t kNumAdditionalDatagrams = 5;
-
-  const Member<ScriptState> script_state_;
+  class UDPUnderlyingSource;
 
   const Member<UDPSocketMojoRemote> udp_socket_;
   base::OnceCallback<void(bool)> on_close_;
 
-  Member<UDPReadableStreamWrapper::UnderlyingSource> source_;
-  Member<ReadableStream> readable_;
+  int32_t pending_receive_requests_ = 0;
 };
 
 }  // namespace blink

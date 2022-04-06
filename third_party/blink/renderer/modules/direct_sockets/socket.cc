@@ -14,6 +14,8 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/streams/readable_stream.h"
+#include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -138,6 +140,15 @@ bool Socket::Closed() const {
   return !closed_resolver_;
 }
 
+bool Socket::Initialized() const {
+  return readable_stream_wrapper_ && writable_stream_wrapper_;
+}
+
+bool Socket::HasPendingActivity() const {
+  return writable_stream_wrapper_ &&
+         writable_stream_wrapper_->HasPendingWrite();
+}
+
 void Socket::ResolveOrRejectClosed(bool error) {
   if (error) {
     closed_resolver_->Reject();
@@ -163,6 +174,9 @@ void Socket::Trace(Visitor* visitor) const {
 
   visitor->Trace(closed_resolver_);
   visitor->Trace(closed_);
+
+  visitor->Trace(readable_stream_wrapper_);
+  visitor->Trace(writable_stream_wrapper_);
 
   ExecutionContextLifecycleStateObserver::Trace(visitor);
 }

@@ -159,23 +159,19 @@ void TCPSocket::Init(int32_t result,
                      mojo::ScopedDataPipeConsumerHandle receive_stream,
                      mojo::ScopedDataPipeProducerHandle send_stream) {
   if (result == net::OK && peer_addr) {
-    tcp_readable_stream_wrapper_ =
-        MakeGarbageCollected<TCPReadableStreamWrapper>(
-            script_state_,
-            WTF::Bind(&TCPSocket::OnReadableStreamAbort,
-                      WrapWeakPersistent(this)),
-            std::move(receive_stream));
-    tcp_writable_stream_wrapper_ =
-        MakeGarbageCollected<TCPWritableStreamWrapper>(
-            script_state_,
-            WTF::Bind(&TCPSocket::OnWritableStreamAbort,
-                      WrapWeakPersistent(this)),
-            std::move(send_stream));
+    readable_stream_wrapper_ = MakeGarbageCollected<TCPReadableStreamWrapper>(
+        script_state_,
+        WTF::Bind(&TCPSocket::CloseInternal, WrapWeakPersistent(this)),
+        std::move(receive_stream));
+    writable_stream_wrapper_ = MakeGarbageCollected<TCPWritableStreamWrapper>(
+        script_state_,
+        WTF::Bind(&TCPSocket::CloseInternal, WrapWeakPersistent(this)),
+        std::move(send_stream));
 
     auto* connection = TCPSocketConnection::Create();
 
-    connection->setReadable(tcp_readable_stream_wrapper_->Readable());
-    connection->setWritable(tcp_writable_stream_wrapper_->Writable());
+    connection->setReadable(readable_stream_wrapper_->Readable());
+    connection->setWritable(writable_stream_wrapper_->Writable());
 
     connection->setRemoteAddress(String{peer_addr->ToStringWithoutPort()});
     connection->setRemotePort(peer_addr->port());
@@ -213,10 +209,6 @@ TCPSocket::GetTCPSocketObserver() {
   return pending_remote;
 }
 
-bool TCPSocket::Initialized() const {
-  return tcp_readable_stream_wrapper_ && tcp_writable_stream_wrapper_;
-}
-
 void TCPSocket::OnSocketConnectionError() {
   if (Initialized()) {
     CloseInternal(/*error=*/true);
@@ -236,7 +228,7 @@ void TCPSocket::OnReadError(int32_t net_error) {
     return;
   }
 
-  tcp_readable_stream_wrapper_->Close(/*error=*/true);
+  readable_stream_wrapper_->CloseStream(/*error=*/true);
 }
 
 void TCPSocket::OnWriteError(int32_t net_error) {
@@ -244,13 +236,10 @@ void TCPSocket::OnWriteError(int32_t net_error) {
     return;
   }
 
-  tcp_writable_stream_wrapper_->Close(/*error=*/true);
+  writable_stream_wrapper_->CloseStream(/*error=*/true);
 }
 
 void TCPSocket::Trace(Visitor* visitor) const {
-  visitor->Trace(tcp_readable_stream_wrapper_);
-  visitor->Trace(tcp_writable_stream_wrapper_);
-
   visitor->Trace(tcp_socket_);
   visitor->Trace(socket_observer_);
 
@@ -260,15 +249,7 @@ void TCPSocket::Trace(Visitor* visitor) const {
 }
 
 bool TCPSocket::HasPendingActivity() const {
-  return Initialized() && tcp_writable_stream_wrapper_->IsActive();
-}
-
-void TCPSocket::OnReadableStreamAbort() {
-  tcp_writable_stream_wrapper_->Close(/*error=*/true);
-}
-
-void TCPSocket::OnWritableStreamAbort() {
-  tcp_readable_stream_wrapper_->Close(/*error=*/true);
+  return Socket::HasPendingActivity();
 }
 
 void TCPSocket::Close(const SocketCloseOptions* options,
@@ -286,18 +267,16 @@ void TCPSocket::Close(const SocketCloseOptions* options,
   }
 
   if (!options->hasForce() || !options->force()) {
-    if (ReadableStream::IsLocked(tcp_readable_stream_wrapper_->Readable())) {
+    if (readable_stream_wrapper_->Locked() ||
+        writable_stream_wrapper_->Locked()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "Close called on locked Readable.");
-      return;
-    }
-    if (WritableStream::IsLocked(tcp_writable_stream_wrapper_->Writable())) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "Close called on locked Writable.");
+                                        "Close called on locked streams.");
       return;
     }
   }
+
   CloseInternal(/*error=*/false);
+  DCHECK(Closed());
 }
 
 void TCPSocket::CloseInternal(bool error) {
@@ -307,8 +286,8 @@ void TCPSocket::CloseInternal(bool error) {
   CloseServiceAndResetFeatureHandle();
   ResolveOrRejectClosed(error);
 
-  tcp_readable_stream_wrapper_->Close(error);
-  tcp_writable_stream_wrapper_->Close(error);
+  readable_stream_wrapper_->CloseStream(error);
+  writable_stream_wrapper_->CloseStream(error);
 }
 
 }  // namespace blink

@@ -36,6 +36,8 @@ namespace {
 constexpr char kUDPNetworkFailuresHistogramName[] =
     "DirectSockets.UDPNetworkFailures";
 
+constexpr uint32_t readableStreamDefaultBufferSize = 32;
+
 mojom::blink::DirectSocketOptionsPtr CreateUDPSocketOptions(
     const String& address,
     const uint16_t port,
@@ -45,6 +47,13 @@ mojom::blink::DirectSocketOptionsPtr CreateUDPSocketOptions(
 
   socket_options->remote_hostname = address;
   socket_options->remote_port = port;
+
+  if (options->hasReadableStreamBufferSize() &&
+      options->readableStreamBufferSize() == 0) {
+    exception_state.ThrowTypeError(
+        "readableStreamBufferSize must be greater than zero.");
+    return {};
+  }
 
   if (options->hasSendBufferSize()) {
     socket_options->send_buffer_size = options->sendBufferSize();
@@ -94,6 +103,10 @@ bool UDPSocket::Open(const String& address,
     return false;
   }
 
+  if (options->hasReadableStreamBufferSize()) {
+    readable_stream_buffer_size_ = options->readableStreamBufferSize();
+  }
+
   ConnectService();
 
   service_->get()->OpenUdpSocket(
@@ -108,18 +121,17 @@ void UDPSocket::Init(int32_t result,
                      const absl::optional<net::IPEndPoint>& local_addr,
                      const absl::optional<net::IPEndPoint>& peer_addr) {
   if (result == net::OK && peer_addr) {
-    udp_readable_stream_wrapper_ =
-        MakeGarbageCollected<UDPReadableStreamWrapper>(
-            script_state_, udp_socket_,
-            WTF::Bind(&UDPSocket::CloseInternal, WrapWeakPersistent(this)));
-    udp_writable_stream_wrapper_ =
-        MakeGarbageCollected<UDPWritableStreamWrapper>(script_state_,
-                                                       udp_socket_);
+    readable_stream_wrapper_ = MakeGarbageCollected<UDPReadableStreamWrapper>(
+        script_state_, udp_socket_,
+        WTF::Bind(&UDPSocket::CloseInternal, WrapWeakPersistent(this)),
+        readable_stream_buffer_size_.value_or(readableStreamDefaultBufferSize));
+    writable_stream_wrapper_ = MakeGarbageCollected<UDPWritableStreamWrapper>(
+        script_state_, udp_socket_);
 
     auto* connection = UDPSocketConnection::Create();
 
-    connection->setReadable(udp_readable_stream_wrapper_->Readable());
-    connection->setWritable(udp_writable_stream_wrapper_->Writable());
+    connection->setReadable(readable_stream_wrapper_->Readable());
+    connection->setWritable(writable_stream_wrapper_->Writable());
 
     connection->setRemoteAddress(String{peer_addr->ToStringWithoutPort()});
     connection->setRemotePort(peer_addr->port());
@@ -182,21 +194,14 @@ void UDPSocket::OnReceived(int32_t result,
     return;
   }
 
-  udp_readable_stream_wrapper_->AcceptDatagram(*data, src_addr);
-}
-
-bool UDPSocket::Initialized() const {
-  return udp_readable_stream_wrapper_ && udp_writable_stream_wrapper_;
+  readable_stream_wrapper_->Push(*data, src_addr);
 }
 
 bool UDPSocket::HasPendingActivity() const {
-  return Initialized() && udp_writable_stream_wrapper_->IsActive();
+  return Socket::HasPendingActivity();
 }
 
 void UDPSocket::Trace(Visitor* visitor) const {
-  visitor->Trace(udp_readable_stream_wrapper_);
-  visitor->Trace(udp_writable_stream_wrapper_);
-
   visitor->Trace(udp_socket_);
   visitor->Trace(socket_listener_);
 
@@ -217,7 +222,7 @@ void UDPSocket::OnSocketConnectionError() {
 
 void UDPSocket::CloseOnError() {
   if (Initialized()) {
-    udp_readable_stream_wrapper_->Close(/*error=*/true);
+    CloseInternal(/*error=*/true);
     DCHECK(Closed());
   }
 }
@@ -237,19 +242,15 @@ void UDPSocket::Close(const SocketCloseOptions* options,
   }
 
   if (!options->hasForce() || !options->force()) {
-    if (ReadableStream::IsLocked(udp_readable_stream_wrapper_->Readable())) {
+    if (readable_stream_wrapper_->Locked() ||
+        writable_stream_wrapper_->Locked()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "Close called on locked Readable.");
-      return;
-    }
-    if (WritableStream::IsLocked(udp_writable_stream_wrapper_->Writable())) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "Close called on locked Writable.");
+                                        "Close called on locked streams.");
       return;
     }
   }
 
-  udp_readable_stream_wrapper_->Close(/*error=*/false);
+  CloseInternal(/*error=*/false);
   DCHECK(Closed());
 }
 
@@ -259,8 +260,9 @@ void UDPSocket::CloseInternal(bool error) {
 
   socket_listener_.reset();
 
-  // Reject pending write promises.
-  udp_writable_stream_wrapper_->Close(error);
+  // Reject pending read/write promises.
+  readable_stream_wrapper_->CloseStream(error);
+  writable_stream_wrapper_->CloseStream(error);
 
   // Close the socket.
   udp_socket_->Close();

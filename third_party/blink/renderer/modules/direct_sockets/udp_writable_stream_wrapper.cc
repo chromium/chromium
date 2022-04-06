@@ -19,130 +19,59 @@
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
+#include "third_party/blink/renderer/modules/direct_sockets/stream_wrapper.h"
 #include "third_party/blink/renderer/modules/direct_sockets/udp_socket_mojo_remote.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
 // UDPWritableStreamWrapper::UnderlyingSink declaration
 
-class UDPWritableStreamWrapper::UnderlyingSink final
-    : public UnderlyingSinkBase {
+class UDPWritableStreamWrapper::UDPUnderlyingSink final
+    : public WritableStreamWrapper::UnderlyingSink {
  public:
-  explicit UnderlyingSink(UDPWritableStreamWrapper* udp_writable_stream_wrapper)
-      : udp_writable_stream_wrapper_(udp_writable_stream_wrapper) {}
+  explicit UDPUnderlyingSink(UDPWritableStreamWrapper* writable_stream_wrapper)
+      : WritableStreamWrapper::UnderlyingSink(writable_stream_wrapper) {}
 
-  ScriptPromise start(ScriptState* script_state,
-                      WritableStreamDefaultController* controller,
-                      ExceptionState&) override;
-  ScriptPromise write(ScriptState* script_state,
-                      ScriptValue chunk,
-                      WritableStreamDefaultController*,
-                      ExceptionState& exception_state) override;
-  ScriptPromise close(ScriptState* script_state, ExceptionState&) override;
-  ScriptPromise abort(ScriptState* script_state,
-                      ScriptValue reason,
-                      ExceptionState& exception_state) override;
-
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(udp_writable_stream_wrapper_);
-    UnderlyingSinkBase::Trace(visitor);
+  ScriptPromise close(ScriptState* script_state, ExceptionState&) override {
+    GetWritableStreamWrapper()->CloseStream(/*error=*/false);
+    return ScriptPromise::CastUndefined(script_state);
   }
 
- private:
-  const Member<UDPWritableStreamWrapper> udp_writable_stream_wrapper_;
+  void Trace(Visitor* visitor) const override {
+    WritableStreamWrapper::UnderlyingSink::Trace(visitor);
+  }
 };
-
-// UDPWritableStreamWrapper::UnderlyingSink definition
-
-ScriptPromise UDPWritableStreamWrapper::UnderlyingSink::start(
-    ScriptState* script_state,
-    WritableStreamDefaultController* controller,
-    ExceptionState&) {
-  udp_writable_stream_wrapper_->controller_ = controller;
-  return ScriptPromise::CastUndefined(script_state);
-}
-
-ScriptPromise UDPWritableStreamWrapper::UnderlyingSink::write(
-    ScriptState* script_state,
-    ScriptValue chunk,
-    WritableStreamDefaultController*,
-    ExceptionState& exception_state) {
-  return udp_writable_stream_wrapper_->SinkWrite(script_state, chunk,
-                                                 exception_state);
-}
-
-ScriptPromise UDPWritableStreamWrapper::UnderlyingSink::close(
-    ScriptState* script_state,
-    ExceptionState&) {
-  // The specification guarantees that this will only be called after all
-  // pending writes have been completed.
-  DCHECK(!udp_writable_stream_wrapper_->send_resolver_);
-
-  // It's not possible to close the writable side of the UDP socket, therefore
-  // no action is taken.
-  return ScriptPromise::CastUndefined(script_state);
-}
-
-ScriptPromise UDPWritableStreamWrapper::UnderlyingSink::abort(
-    ScriptState* script_state,
-    ScriptValue reason,
-    ExceptionState& exception_state) {
-  // The specification guarantees that this will only be called after all
-  // pending writes have been completed.
-  DCHECK(!udp_writable_stream_wrapper_->send_resolver_);
-
-  // It's not possible to close the writable side of the UDP socket, therefore
-  // no action is taken.
-  return ScriptPromise::CastUndefined(script_state);
-}
 
 // UDPWritableStreamWrapper definition
 
 UDPWritableStreamWrapper::UDPWritableStreamWrapper(
     ScriptState* script_state,
     const Member<UDPSocketMojoRemote> udp_socket)
-    : ExecutionContextClient(ExecutionContext::From(script_state)),
-      script_state_(script_state),
-      udp_socket_(udp_socket) {
-  ScriptState::Scope scope(script_state);
-  writable_ = WritableStream::CreateWithCountQueueingStrategy(
-      script_state_,
-      MakeGarbageCollected<UDPWritableStreamWrapper::UnderlyingSink>(this), 1);
+    : WritableStreamWrapper(script_state), udp_socket_(udp_socket) {
+  InitSinkAndWritable(/*sink=*/MakeGarbageCollected<UDPUnderlyingSink>(this),
+                      /*high_water_mark=*/1);
 }
 
-UDPWritableStreamWrapper::~UDPWritableStreamWrapper() = default;
-
-bool UDPWritableStreamWrapper::IsActive() const {
+bool UDPWritableStreamWrapper::HasPendingWrite() const {
   return !!send_resolver_;
 }
 
 void UDPWritableStreamWrapper::Trace(Visitor* visitor) const {
-  visitor->Trace(script_state_);
   visitor->Trace(udp_socket_);
   visitor->Trace(send_resolver_);
-  visitor->Trace(writable_);
-  visitor->Trace(controller_);
-  ExecutionContextClient::Trace(visitor);
+  WritableStreamWrapper::Trace(visitor);
 }
 
-ScriptPromise UDPWritableStreamWrapper::SinkWrite(
-    ScriptState* script_state,
-    ScriptValue chunk,
-    ExceptionState& exception_state) {
-  // If socket has been closed.
-  if (!udp_socket_->get().is_bound()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Socket is disconnected.");
-    return ScriptPromise();
-  }
+ScriptPromise UDPWritableStreamWrapper::Write(ScriptValue chunk,
+                                              ExceptionState& exception_state) {
+  DCHECK(udp_socket_->get().is_bound());
 
-  UDPMessage* message = UDPMessage::Create(script_state->GetIsolate(),
+  UDPMessage* message = UDPMessage::Create(GetScriptState()->GetIsolate(),
                                            chunk.V8Value(), exception_state);
   if (exception_state.HadException()) {
     return ScriptPromise();
@@ -158,7 +87,8 @@ ScriptPromise UDPWritableStreamWrapper::SinkWrite(
   base::span<const uint8_t> data{array_piece.Bytes(), array_piece.ByteLength()};
 
   DCHECK(!send_resolver_);
-  send_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  send_resolver_ =
+      MakeGarbageCollected<ScriptPromiseResolver>(GetScriptState());
 
   // Why not just return send_resolver_->Promise()?
   // In view of the async nature of the write handler, the callback might get
@@ -186,30 +116,27 @@ void UDPWritableStreamWrapper::OnSend(int32_t result) {
   }
 }
 
-ScriptValue UDPWritableStreamWrapper::CreateException(ScriptState* script_state,
-                                                      DOMExceptionCode code,
-                                                      const String& message) {
-  return ScriptValue(script_state->GetIsolate(),
-                     V8ThrowDOMException::CreateOrEmpty(
-                         script_state->GetIsolate(), code, message));
-}
+void UDPWritableStreamWrapper::CloseStream(bool error) {
+  if (GetState() != State::kOpen) {
+    return;
+  }
+  SetState(error ? State::kAborted : State::kClosed);
 
-void UDPWritableStreamWrapper::Close(bool error) {
-  ScriptState::Scope scope(script_state_);
+  ScriptState::Scope scope(GetScriptState());
 
   ScriptValue exception =
-      error
-          ? CreateException(script_state_, DOMExceptionCode::kNetworkError,
-                            "Connection aborted by remote")
-          : CreateException(script_state_, DOMExceptionCode::kInvalidStateError,
-                            "Stream closed.");
+      error ? CreateException(GetScriptState(), DOMExceptionCode::kNetworkError,
+                              "Connection aborted by remote")
+            : CreateException(GetScriptState(),
+                              DOMExceptionCode::kInvalidStateError,
+                              "Stream closed.");
 
   if (send_resolver_) {
     send_resolver_->Reject(exception);
     send_resolver_ = nullptr;
   }
 
-  controller_->error(script_state_, exception);
+  Controller()->error(GetScriptState(), exception);
 }
 
 }  // namespace blink

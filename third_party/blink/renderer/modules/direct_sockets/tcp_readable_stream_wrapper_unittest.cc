@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -22,14 +23,10 @@ using ::testing::StrictMock;
 // The purpose of this class is to ensure that the data pipe is reset before the
 // V8TestingScope is destroyed, so that the TCPReadableStreamWrapper object
 // doesn't try to create a DOMException after the ScriptState has gone away.
-class StreamCreator {
-  STACK_ALLOCATED();
-
+class StreamCreator : public GarbageCollected<StreamCreator> {
  public:
   StreamCreator() = default;
   ~StreamCreator() {
-    ClosePipe();
-
     // Let the TCPReadableStreamWrapper object respond to the closure if it
     // needs to.
     test::RunPendingTasks();
@@ -52,12 +49,11 @@ class StreamCreator {
     }
 
     auto* script_state = scope.GetScriptState();
-    auto* tcp_readable_stream_wrapper =
-        MakeGarbageCollected<TCPReadableStreamWrapper>(
-            script_state,
-            base::BindOnce(&StreamCreator::OnAbort, base::Unretained(this)),
-            std::move(data_pipe_consumer));
-    return tcp_readable_stream_wrapper;
+    stream_wrapper_ = MakeGarbageCollected<TCPReadableStreamWrapper>(
+        script_state,
+        base::BindOnce(&StreamCreator::Close, base::Unretained(this)),
+        std::move(data_pipe_consumer));
+    return stream_wrapper_;
   }
 
   void WriteToPipe(Vector<uint8_t> data) {
@@ -125,42 +121,47 @@ class StreamCreator {
     return ret;
   }
 
-  void OnAbort() { on_abort_called_ = true; }
-  bool HasAborted() const { return on_abort_called_; }
+  void Close(bool error) { stream_wrapper_->CloseStream(error); }
+
+  void Trace(Visitor* visitor) const { visitor->Trace(stream_wrapper_); }
 
  private:
-  bool on_abort_called_ = false;
   mojo::ScopedDataPipeProducerHandle data_pipe_producer_;
+  Member<TCPReadableStreamWrapper> stream_wrapper_;
 };
 
 TEST(TCPReadableStreamWrapperTest, Create) {
   V8TestingScope scope;
-  StreamCreator stream_creator;
-  auto* tcp_readable_stream_wrapper = stream_creator.Create(scope);
+
+  auto* stream_creator = MakeGarbageCollected<StreamCreator>();
+  auto* tcp_readable_stream_wrapper = stream_creator->Create(scope);
+
   EXPECT_TRUE(tcp_readable_stream_wrapper->Readable());
 }
 
 TEST(TCPReadableStreamWrapperTest, ReadArrayBuffer) {
   V8TestingScope scope;
-  StreamCreator stream_creator;
 
-  auto* tcp_readable_stream_wrapper = stream_creator.Create(scope);
+  auto* stream_creator = MakeGarbageCollected<StreamCreator>();
+  auto* tcp_readable_stream_wrapper = stream_creator->Create(scope);
+
   auto* script_state = scope.GetScriptState();
   auto* reader =
       tcp_readable_stream_wrapper->Readable()->GetDefaultReaderForTesting(
           script_state, ASSERT_NO_EXCEPTION);
-  stream_creator.WriteToPipe({'A'});
+  stream_creator->WriteToPipe({'A'});
 
-  StreamCreator::Iterator result = stream_creator.Read(scope, reader);
+  StreamCreator::Iterator result = stream_creator->Read(scope, reader);
   EXPECT_FALSE(result.done);
   EXPECT_THAT(result.value, ElementsAre('A'));
 }
 
 TEST(TCPReadableStreamWrapperTest, WriteToPipeWithPendingRead) {
   V8TestingScope scope;
-  StreamCreator stream_creator;
 
-  auto* tcp_readable_stream_wrapper = stream_creator.Create(scope);
+  auto* stream_creator = MakeGarbageCollected<StreamCreator>();
+  auto* tcp_readable_stream_wrapper = stream_creator->Create(scope);
+
   auto* script_state = scope.GetScriptState();
   auto* reader =
       tcp_readable_stream_wrapper->Readable()->GetDefaultReaderForTesting(
@@ -170,23 +171,23 @@ TEST(TCPReadableStreamWrapperTest, WriteToPipeWithPendingRead) {
 
   test::RunPendingTasks();
 
-  stream_creator.WriteToPipe({'A'});
+  stream_creator->WriteToPipe({'A'});
 
   tester.WaitUntilSettled();
   ASSERT_TRUE(tester.IsFulfilled());
 
   StreamCreator::Iterator result =
-      stream_creator.IteratorFromReadResult(scope, tester.Value().V8Value());
+      stream_creator->IteratorFromReadResult(scope, tester.Value().V8Value());
   EXPECT_FALSE(result.done);
   EXPECT_THAT(result.value, ElementsAre('A'));
 }
 
 TEST(TCPReadableStreamWrapperTest, TriggerOnAborted) {
   V8TestingScope scope;
-  StreamCreator stream_creator;
-  EXPECT_FALSE(stream_creator.HasAborted());
 
-  auto* tcp_readable_stream_wrapper = stream_creator.Create(scope);
+  auto* stream_creator = MakeGarbageCollected<StreamCreator>();
+  auto* tcp_readable_stream_wrapper = stream_creator->Create(scope);
+
   auto* script_state = scope.GetScriptState();
   auto* reader =
       tcp_readable_stream_wrapper->Readable()->GetDefaultReaderForTesting(
@@ -195,13 +196,14 @@ TEST(TCPReadableStreamWrapperTest, TriggerOnAborted) {
   ScriptPromiseTester tester(script_state, read_promise);
 
   test::RunPendingTasks();
-  stream_creator.WriteToPipe({'A'});
+  stream_creator->WriteToPipe({'A'});
   // Trigger OnAborted() on purpose.
-  stream_creator.ClosePipe();
+  stream_creator->ClosePipe();
   tester.WaitUntilSettled();
 
   ASSERT_TRUE(tester.IsFulfilled());
-  EXPECT_TRUE(stream_creator.HasAborted());
+  ASSERT_EQ(tcp_readable_stream_wrapper->GetState(),
+            StreamWrapper::State::kAborted);
 }
 
 }  // namespace

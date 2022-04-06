@@ -10,6 +10,8 @@ blink_modules_sources("direct_sockets") {
     "direct_sockets_service_mojo_remote.h",
     "socket.cc",
     "socket.h",
+    "stream_wrapper.cc",
+    "stream_wrapper.h",
     "tcp_readable_stream_wrapper.cc",
     "tcp_readable_stream_wrapper.h",
     "tcp_socket.cc",

@@ -104,8 +104,6 @@ class MODULES_EXPORT TCPSocket final
   mojo::PendingRemote<network::mojom::blink::SocketObserver>
   GetTCPSocketObserver();
 
-  bool Initialized() const;
-
   void OnServiceConnectionError() override;
   void OnSocketConnectionError();
 
@@ -113,18 +111,12 @@ class MODULES_EXPORT TCPSocket final
   void OnReadError(int32_t net_error) override;
   void OnWriteError(int32_t net_error) override;
 
-  void OnReadableStreamAbort();
-  void OnWritableStreamAbort();
-
   void Close(const SocketCloseOptions*, ExceptionState&) override;
   void CloseInternal(bool error);
 
   HeapMojoRemote<network::mojom::blink::TCPConnectedSocket> tcp_socket_;
   HeapMojoReceiver<network::mojom::blink::SocketObserver, TCPSocket>
       socket_observer_;
-
-  Member<TCPReadableStreamWrapper> tcp_readable_stream_wrapper_;
-  Member<TCPWritableStreamWrapper> tcp_writable_stream_wrapper_;
 
   FRIEND_TEST_ALL_PREFIXES(TCPSocketTest, OnSocketObserverConnectionError);
   FRIEND_TEST_ALL_PREFIXES(TCPSocketTest, OnReadError);

@@ -147,8 +147,8 @@ TEST(TCPSocketTest, OnReadError) {
 
   tcp_socket->OnReadError(net::ERR_UNEXPECTED);
 
-  ASSERT_EQ(tcp_socket->tcp_readable_stream_wrapper_->GetState(),
-            TCPReadableStreamWrapper::State::kAborted);
+  ASSERT_EQ(tcp_socket->readable_stream_wrapper_->GetState(),
+            StreamWrapper::State::kAborted);
 }
 
 }  // namespace blink

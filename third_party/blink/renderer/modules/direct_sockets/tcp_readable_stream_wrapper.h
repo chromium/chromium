@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/modules/direct_sockets/stream_wrapper.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
@@ -18,62 +19,34 @@
 
 namespace blink {
 
-class ScriptState;
-class ReadableStream;
-class ReadableStreamDefaultControllerWithScriptScope;
-
 // Helper class to read from a mojo consumer handle
-class MODULES_EXPORT TCPReadableStreamWrapper final
-    : public GarbageCollected<TCPReadableStreamWrapper> {
+class MODULES_EXPORT TCPReadableStreamWrapper
+    : public GarbageCollected<TCPReadableStreamWrapper>,
+      public ReadableStreamWrapper {
   USING_PRE_FINALIZER(TCPReadableStreamWrapper, Dispose);
 
  public:
-  enum class State {
-    kOpen,
-    kAborted,
-    kClosed,
-  };
-
   TCPReadableStreamWrapper(ScriptState*,
-                           base::OnceClosure on_abort,
+                           base::OnceCallback<void(bool)> on_close,
                            mojo::ScopedDataPipeConsumerHandle);
-  ~TCPReadableStreamWrapper();
 
-  ReadableStream* Readable() const {
-    DVLOG(1) << "TCPReadableStreamWrapper::readable() called";
+  void CloseSocket(bool error) override;
+  void CloseStream(bool error) override;
 
-    return readable_;
-  }
+  void Pull() override;
+  bool Push(base::span<const uint8_t> data,
+            const absl::optional<net::IPEndPoint>&) override;
 
-  ScriptState* GetScriptState() { return script_state_; }
-
-  void Close(bool error = false);
-
-  State GetState() const { return state_; }
-
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
  private:
-  class UnderlyingSource;
+  class TCPUnderlyingSource;
 
   // Called when |data_pipe_| becomes readable or errored.
   void OnHandleReady(MojoResult, const mojo::HandleSignalsState&);
 
   // Called when |data_pipe_| is closed.
   void OnPeerClosed(MojoResult, const mojo::HandleSignalsState&);
-
-  // Reads all the data currently in the pipe and enqueues it. If no data is
-  // currently available, triggers the |read_watcher_| and enqueues when data
-  // becomes available.
-  void ReadFromPipeAndEnqueue();
-
-  // Copies a sequence of bytes into an ArrayBuffer and enqueues it.
-  void EnqueueBytes(const void* source, uint32_t byte_length);
-
-  // Creates a DOMException.
-  static ScriptValue CreateException(ScriptState*,
-                                     DOMExceptionCode,
-                                     const String& message);
 
   // Errors or closes |readable_| and resets |data_pipe_|.
   void CloseOrErrorStreamAbortAndReset(bool error);
@@ -84,9 +57,7 @@ class MODULES_EXPORT TCPReadableStreamWrapper final
   // Prepares the object for destruction.
   void Dispose();
 
-  const Member<ScriptState> script_state_;
-
-  base::OnceClosure on_abort_;
+  base::OnceCallback<void(bool)> on_close_;
 
   mojo::ScopedDataPipeConsumerHandle data_pipe_;
 
@@ -95,11 +66,6 @@ class MODULES_EXPORT TCPReadableStreamWrapper final
 
   // Always armed to detect close.
   mojo::SimpleWatcher close_watcher_;
-
-  Member<ReadableStream> readable_;
-  Member<ReadableStreamDefaultControllerWithScriptScope> controller_;
-
-  State state_ = State::kOpen;
 
   // Indicates if we are currently performing a two-phase read from the pipe and
   // so can't start another read.

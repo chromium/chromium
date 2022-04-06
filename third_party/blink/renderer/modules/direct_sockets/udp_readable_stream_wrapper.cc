@@ -11,135 +11,75 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_udp_message.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/events/event_target_impl.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
+#include "third_party/blink/renderer/modules/direct_sockets/stream_wrapper.h"
+#include "third_party/blink/renderer/modules/direct_sockets/udp_writable_stream_wrapper.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+
 namespace blink {
 
-// UDPReadableStreamWrapper::UnderlyingSource declaration
-
-class UDPReadableStreamWrapper::UnderlyingSource final
-    : public UnderlyingSourceBase {
+class UDPReadableStreamWrapper::UDPUnderlyingSource
+    : public ReadableStreamWrapper::UnderlyingSource {
  public:
-  UnderlyingSource(ScriptState* script_state, UDPReadableStreamWrapper* stream)
-      : UnderlyingSourceBase(script_state),
-        udp_readable_stream_wrapper_(stream) {}
+  UDPUnderlyingSource(ScriptState* script_state,
+                      UDPReadableStreamWrapper* readable_stream_wrapper)
+      : ReadableStreamWrapper::UnderlyingSource(script_state,
+                                                readable_stream_wrapper) {}
 
-  // UnderlyingSourceBase overrides.
-  ScriptPromise Start(ScriptState* script_state) override;
-  ScriptPromise pull(ScriptState* script_state) override;
-  // Clears the queue and forwards the request to
-  // UDPReadableStreamWrapper::CloseInternal().
-  // Called from the reader side.
-  ScriptPromise Cancel(ScriptState* script_state, ScriptValue reason) override;
-
-  // Clears the queue and forwards the request to
-  // UDPReadableStreamWrapper::CloseInternal().
-  // Called from the socket side.
-  void Close(bool error);
-
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(udp_readable_stream_wrapper_);
-    visitor->Trace(queue_);
-    UnderlyingSourceBase::Trace(visitor);
-  }
-
-  // Implementation of UDPReadableStreamWrapper::AcceptDatagram.
-  void AcceptDatagram(base::span<const uint8_t> data,
-                      const absl::optional<net::IPEndPoint>& src_addr);
-
- private:
-  struct QueueEntry : GarbageCollected<QueueEntry> {
-    QueueEntry(UDPMessage* message, base::TimeTicks received_at)
-        : message(message), received_at(std::move(received_at)) {}
-
-    void Trace(Visitor* visitor) const { visitor->Trace(message); }
-
-    const Member<UDPMessage> message;
-    const base::TimeTicks received_at;
-  };
-
-  // Performs local cleanup: clears the queue and sets closed_ to true.
-  void Cleanup();
-
-  // Pops stale datagrams from the front of the queue (that have been
-  // received more than kQueueDatagramAge time ago).
-  // ensure_free_slot guarantees the following condition after the call:
-  // |queue_| <= kQueueSizeLimit - 1.
-  void DiscardStaleDatagrams(const base::TimeTicks& now, bool ensure_free_slot);
-
-  constexpr static const uint32_t kQueueSizeLimit = 10;
-  constexpr static const base::TimeDelta kQueueDatagramAgeLimit =
-      base::Seconds(60);
-
-  const Member<UDPReadableStreamWrapper> udp_readable_stream_wrapper_;
-  HeapDeque<Member<const QueueEntry>> queue_;
-  bool pending_read_ = false;
-};
-
-// UDPReadableStreamWrapper::UnderlyingSource definition
-
-ScriptPromise UDPReadableStreamWrapper::UnderlyingSource::Start(
-    ScriptState* script_state) {
-  return ScriptPromise::CastUndefined(script_state);
-}
-
-ScriptPromise UDPReadableStreamWrapper::UnderlyingSource::pull(
-    ScriptState* script_state) {
-  if (pending_read_) {
-    DCHECK(queue_.empty());
+  ScriptPromise Cancel(ScriptState* script_state, ScriptValue reason) override {
+    GetReadableStreamWrapper()->CloseSocket(/*error=*/false);
     return ScriptPromise::CastUndefined(script_state);
   }
 
-  DiscardStaleDatagrams(base::TimeTicks::Now(),
-                        /*ensure_free_slot=*/false);
-
-  if (!queue_.empty()) {
-    const QueueEntry* entry = queue_.TakeFirst();
-    Controller()->Enqueue(entry->message);
-  } else {
-    pending_read_ = true;
+  void Trace(Visitor* visitor) const override {
+    ReadableStreamWrapper::UnderlyingSource::Trace(visitor);
   }
+};
 
-  return ScriptPromise::CastUndefined(script_state);
-}
+// UDPReadableStreamWrapper definition
 
-ScriptPromise UDPReadableStreamWrapper::UnderlyingSource::Cancel(
+UDPReadableStreamWrapper::UDPReadableStreamWrapper(
     ScriptState* script_state,
-    ScriptValue reason) {
-  Cleanup();
-  udp_readable_stream_wrapper_->CloseInternal(/*error=*/false);
-  return ScriptPromise::CastUndefined(script_state);
+    const Member<UDPSocketMojoRemote> udp_socket,
+    base::OnceCallback<void(bool)> on_close,
+    uint32_t high_water_mark)
+    : ReadableStreamWrapper(script_state),
+      udp_socket_(udp_socket),
+      on_close_(std::move(on_close)) {
+  InitSourceAndReadable(
+      /*source=*/MakeGarbageCollected<UDPUnderlyingSource>(GetScriptState(),
+                                                           this),
+      high_water_mark);
 }
 
-void UDPReadableStreamWrapper::UnderlyingSource::Close(bool error) {
-  if (error) {
-    Controller()->Error(
-        MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError));
-  } else {
-    Controller()->Close();
+void UDPReadableStreamWrapper::Pull() {
+  // Keep pending_receive_requests_ equal to desired_size.
+  DCHECK(udp_socket_->get().is_bound());
+  int32_t desired_size = static_cast<int32_t>(Controller()->DesiredSize());
+  if (desired_size > pending_receive_requests_) {
+    uint32_t receive_more = desired_size - pending_receive_requests_;
+    udp_socket_->get()->ReceiveMore(receive_more);
+    pending_receive_requests_ += receive_more;
   }
-  Cleanup();
-  udp_readable_stream_wrapper_->CloseInternal(error);
 }
 
-void UDPReadableStreamWrapper::UnderlyingSource::Cleanup() {
-  queue_.clear();
-}
-
-void UDPReadableStreamWrapper::UnderlyingSource::AcceptDatagram(
+bool UDPReadableStreamWrapper::Push(
     base::span<const uint8_t> data,
     const absl::optional<net::IPEndPoint>& src_addr) {
-  // Copies |data|.
+  DCHECK_GT(pending_receive_requests_, 0);
+  pending_receive_requests_--;
+
   auto* buffer = DOMUint8Array::Create(data.data(), data.size_bytes());
 
   auto* message = UDPMessage::Create();
-
   message->setData(MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
       NotShared<DOMUint8Array>(buffer)));
   if (src_addr) {
@@ -147,78 +87,36 @@ void UDPReadableStreamWrapper::UnderlyingSource::AcceptDatagram(
     message->setRemotePort(src_addr->port());
   }
 
-  if (pending_read_) {
-    pending_read_ = false;
-    Controller()->Enqueue(message);
-    return;
-  }
+  Controller()->Enqueue(message);
 
-  const auto now = base::TimeTicks::Now();
-
-  DiscardStaleDatagrams(now, /*ensure_free_slot=*/
-                        true);
-  queue_.push_back(
-      MakeGarbageCollected<const QueueEntry>(message, std::move(now)));
+  return true;
 }
-
-void UDPReadableStreamWrapper::UnderlyingSource::DiscardStaleDatagrams(
-    const base::TimeTicks& now,
-    bool ensure_free_slot) {
-  while (!queue_.empty() &&
-         (queue_.size() > kQueueSizeLimit ||
-          now - queue_.front()->received_at > kQueueDatagramAgeLimit)) {
-    queue_.pop_front();
-  }
-
-  if (ensure_free_slot && !queue_.empty() && queue_.size() == kQueueSizeLimit) {
-    queue_.pop_front();
-  }
-}
-
-// UDPReadableStreamWrapper definition
-
-UDPReadableStreamWrapper::UDPReadableStreamWrapper(
-    ScriptState* script_state,
-    const Member<UDPSocketMojoRemote> udp_socket,
-    base::OnceCallback<void(bool)> on_close)
-    : script_state_(script_state),
-      udp_socket_(udp_socket),
-      on_close_(std::move(on_close)) {
-  if (udp_socket_->get().is_bound()) {
-    udp_socket_->get()->ReceiveMore(kNumAdditionalDatagrams);
-  }
-  ScriptState::Scope scope(script_state_);
-  source_ = MakeGarbageCollected<UDPReadableStreamWrapper::UnderlyingSource>(
-      script_state_, this);
-  readable_ = ReadableStream::CreateWithCountQueueingStrategy(script_state_,
-                                                              source_, 1);
-}
-
-UDPReadableStreamWrapper::~UDPReadableStreamWrapper() = default;
 
 void UDPReadableStreamWrapper::Trace(Visitor* visitor) const {
-  visitor->Trace(script_state_);
   visitor->Trace(udp_socket_);
-  visitor->Trace(source_);
-  visitor->Trace(readable_);
+  ReadableStreamWrapper::Trace(visitor);
 }
 
-void UDPReadableStreamWrapper::Close(bool error) {
-  source_->Close(error);
-}
-
-void UDPReadableStreamWrapper::CloseInternal(bool error) {
-  // Only called once.
+void UDPReadableStreamWrapper::CloseSocket(bool error) {
+  DCHECK_EQ(GetState(), State::kOpen);
   std::move(on_close_).Run(error);
+  DCHECK_NE(GetState(), State::kOpen);
 }
 
-void UDPReadableStreamWrapper::AcceptDatagram(
-    base::span<const uint8_t> data,
-    const absl::optional<net::IPEndPoint>& src_addr) {
-  source_->AcceptDatagram(data, src_addr);
-  if (udp_socket_->get().is_bound()) {
-    udp_socket_->get()->ReceiveMore(kNumAdditionalDatagrams);
+void UDPReadableStreamWrapper::CloseStream(bool error) {
+  if (GetState() != State::kOpen) {
+    return;
   }
+  SetState(error ? State::kAborted : State::kClosed);
+
+  if (error) {
+    Controller()->Error(
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError));
+  } else {
+    Controller()->Close();
+  }
+
+  on_close_.Reset();
 }
 
 }  // namespace blink

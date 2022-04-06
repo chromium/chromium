@@ -107,8 +107,6 @@ class MODULES_EXPORT UDPSocket final
                   const absl::optional<::net::IPEndPoint>& src_addr,
                   absl::optional<::base::span<const ::uint8_t>> data) override;
 
-  bool Initialized() const;
-
   void OnServiceConnectionError() override;
   void OnSocketConnectionError();
 
@@ -120,8 +118,7 @@ class MODULES_EXPORT UDPSocket final
   HeapMojoReceiver<network::mojom::blink::UDPSocketListener, UDPSocket>
       socket_listener_;
 
-  Member<UDPReadableStreamWrapper> udp_readable_stream_wrapper_;
-  Member<UDPWritableStreamWrapper> udp_writable_stream_wrapper_;
+  absl::optional<uint32_t> readable_stream_buffer_size_;
 };
 
 }  // namespace blink
