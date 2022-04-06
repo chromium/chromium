@@ -215,6 +215,18 @@ class SyntheticMouseEventTest : public DevToolsProtocolTest {
     SendCommand("Input.dispatchMouseEvent", std::move(params), wait);
   }
 
+  void InitMouseDownLog() {
+    ASSERT_TRUE(
+        content::ExecJs(shell()->web_contents(),
+                        "logs = []; window.addEventListener('mousedown', e => "
+                        "logs.push(`${e.type},${e.clientX},${e.clientY}`));"));
+  }
+
+  std::string GetMouseDownLog() {
+    return content::EvalJs(shell()->web_contents(), "window.logs.join(';')")
+        .ExtractString();
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -313,56 +325,42 @@ IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest, DISABLED_MouseEventAck) {
   EXPECT_EQ(3u, result_ids_.size());
 }
 
-// Event dispatch appears to be flaky on Android and Cast Audio Linux bots.
-// SendMouseEvent succeeds but event is not consumed by anything.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMECAST)
-#define MAYBE_MouseEventCoordinates DISABLED_MouseEventCoordinates
-#else
-#define MAYBE_MouseEventCoordinates MouseEventCoordinates
-#endif
-IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest, MAYBE_MouseEventCoordinates) {
+IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest, MouseEventCoordinates) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL test_url = embedded_test_server()->GetURL("/devtools/zoom.html");
   NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
   Attach();
-  ASSERT_TRUE(
-      content::ExecJs(shell()->web_contents(),
-                      "logs = []; window.addEventListener('mousedown', e => "
-                      "logs.push(`${e.type},${e.clientX},${e.clientY}`));"));
-
-  SendMouseEvent("mousePressed", 15, 15, "left", true);
-
-  ASSERT_EQ("mousedown,15,15",
-            content::EvalJs(shell()->web_contents(), "window.logs.join(';')")
-                .ExtractString());
+  InitMouseDownLog();
+  // In about 1 out of 1000 runs, the event gets lost on the way to the
+  // renderer. We repeat the event dispatch until it succeeds since we want to
+  // test event coordinates.
+  while (GetMouseDownLog() == "") {
+    SendMouseEvent("mousePressed", 15, 15, "left", true);
+  }
+  ASSERT_EQ("mousedown,15,15", GetMouseDownLog());
 }
 
-// Event dispatch appears to be flaky on Android and Cast Audio Linux bots.
-// SendMouseEvent succeeds but event is not consumed by anything.
-// TODO(https://crbug.com/1313348): This is also flaky on other bots.
-IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest,
-                       DISABLED_MouseEventCoordinatesWithZoom) {
+IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest, MouseEventCoordinatesWithZoom) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL test_url = embedded_test_server()->GetURL("/devtools/zoom.html");
   NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
   Attach();
+  SendCommand("Page.enable", nullptr, true);
+  InitMouseDownLog();
 
-  SendCommand("Page.enable", nullptr);
-
-  ASSERT_TRUE(
-      content::ExecJs(shell()->web_contents(),
-                      "logs = []; window.addEventListener('mousedown', e => "
-                      "logs.push(`${e.type},${e.clientX},${e.clientY}`));"));
   HostZoomMap* host_zoom_map =
       HostZoomMap::GetForWebContents(shell()->web_contents());
   host_zoom_map->SetZoomLevelForHost(test_url.host(),
                                      blink::PageZoomFactorToZoomLevel(2.5));
   ASSERT_TRUE(WaitForNotification("Page.frameResized", true));
-  SendMouseEvent("mousePressed", 15, 15, "left", true);
 
-  ASSERT_EQ("mousedown,15,15",
-            content::EvalJs(shell()->web_contents(), "window.logs.join(';')")
-                .ExtractString());
+  // In about 1 out of 1000 runs, the event gets lost on the way to the
+  // renderer. We repeat the event dispatch until it succeeds since we want to
+  // test event coordinates.
+  while (GetMouseDownLog() == "") {
+    SendMouseEvent("mousePressed", 15, 15, "left", true);
+  }
+  ASSERT_EQ("mousedown,15,15", GetMouseDownLog());
 }
 
 namespace {
