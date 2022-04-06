@@ -176,7 +176,7 @@ void OfflinePageTabHelper::NotifyMhtmlPageLoadAttempted(
 void OfflinePageTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   // Skips non-main frame.
-  if (!navigation_handle->IsInMainFrame())
+  if (!navigation_handle->IsInPrimaryMainFrame())
     return;
 
   // The provisional offline info can be cleared no matter how.
@@ -192,7 +192,7 @@ void OfflinePageTabHelper::DidStartNavigation(
 void OfflinePageTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   // Skips non-main frame.
-  if (!navigation_handle->IsInMainFrame())
+  if (!navigation_handle->IsInPrimaryMainFrame())
     return;
 
   if (!navigation_handle->HasCommitted())
