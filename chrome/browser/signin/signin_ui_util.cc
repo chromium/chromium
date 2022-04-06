@@ -57,9 +57,8 @@
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #endif
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
-#include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #endif
 
 namespace {
@@ -117,7 +116,7 @@ class AvatarButtonUserData : public base::SupportsUserData::Data {
   base::TimeTicks animated_identity_last_shown_;
 };
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void CreateTurnSyncOnHelper(
     Profile* profile,
     Browser* browser,
@@ -342,7 +341,7 @@ void EnableSyncFromMultiAccountPromo(Browser* browser,
                                      const AccountInfo& account,
                                      signin_metrics::AccessPoint access_point,
                                      bool is_default_promo_account) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
   internal::EnableSyncFromPromo(browser, account, access_point,
                                 is_default_promo_account,
                                 base::BindOnce(&CreateTurnSyncOnHelper));
@@ -382,7 +381,7 @@ std::vector<AccountInfo> GetOrderedAccountsForDisplay(
   return accounts;
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 namespace internal {
 void EnableSyncFromPromo(
     Browser* browser,
@@ -410,14 +409,20 @@ void EnableSyncFromPromo(
   }
 
   if (account.IsEmpty()) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // TODO(https://crbug.com/1260291): add support for signed out profiles.
+    NOTREACHED();
+#else
     chrome::ShowBrowserSignin(browser, access_point,
                               signin::ConsentLevel::kSync);
+#endif
     return;
   }
 
   DCHECK(!account.account_id.empty());
   DCHECK(!account.email.empty());
-  DCHECK(AccountConsistencyModeManager::IsDiceEnabledForProfile(profile));
+  DCHECK(AccountConsistencyModeManager::IsDiceEnabledForProfile(profile) ||
+         AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile));
 
   signin_metrics::PromoAction promo_action =
       is_default_promo_account
@@ -431,8 +436,13 @@ void EnableSyncFromPromo(
       identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
           account.account_id);
   if (needs_reauth_before_enable_sync) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // TODO(https://crbug.com/1260291): add support for signed out profiles.
+    NOTREACHED();
+#else
     browser->signin_view_controller()->ShowDiceEnableSyncTab(
         access_point, promo_action, account.email);
+#endif
     return;
   }
 
@@ -445,6 +455,9 @@ void EnableSyncFromPromo(
            TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
 }
 }  // namespace internal
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 AccountInfo GetSingleAccountForDicePromos(Profile* profile) {
   std::vector<AccountInfo> accounts = GetOrderedAccountsForDisplay(

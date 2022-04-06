@@ -131,7 +131,6 @@ class TurnSyncOnHelper : public SyncStartupTracker::Observer,
                    std::unique_ptr<Delegate> delegate,
                    base::OnceClosure callback);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Convenience constructor using the default delegate and empty callback.
   TurnSyncOnHelper(Profile* profile,
                    Browser* browser,
@@ -140,7 +139,6 @@ class TurnSyncOnHelper : public SyncStartupTracker::Observer,
                    signin_metrics::Reason signin_reason,
                    const CoreAccountId& account_id,
                    SigninAbortedMode signin_aborted_mode);
-#endif
 
   TurnSyncOnHelper(const TurnSyncOnHelper&) = delete;
   TurnSyncOnHelper& operator=(const TurnSyncOnHelper&) = delete;

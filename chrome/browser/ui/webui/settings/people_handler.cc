@@ -66,7 +66,7 @@
 #include "chrome/browser/ui/webui/profile_helper.h"
 #endif
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #endif
 
@@ -470,8 +470,9 @@ base::Value PeopleHandler::GetStoredAccountsList() {
 }
 
 void PeopleHandler::HandleStartSyncingWithEmail(const base::Value::List& args) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  DCHECK(AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_));
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  DCHECK(AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_) ||
+         AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile_));
   const base::Value& email = args[0];
   const base::Value& is_default_promo_account = args[1];
 
@@ -487,7 +488,6 @@ void PeopleHandler::HandleStartSyncingWithEmail(const base::Value::List& args) {
       signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
       is_default_promo_account.GetBool());
 #else
-  // TODO(jamescook): Enable sync on non-DICE platforms (e.g. Chrome OS).
   NOTIMPLEMENTED();
 #endif
 }

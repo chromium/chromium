@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
+#include "chrome/browser/ui/webui/signin/turn_sync_on_helper_delegate_impl.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
@@ -56,7 +57,6 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/signin/dice_signed_in_profile_creator.h"
-#include "chrome/browser/ui/webui/signin/turn_sync_on_helper_delegate_impl.h"
 #endif
 
 namespace {
@@ -228,7 +228,6 @@ TurnSyncOnHelper::TurnSyncOnHelper(
                      weak_pointer_factory_.GetWeakPtr()));
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TurnSyncOnHelper::TurnSyncOnHelper(
     Profile* profile,
     Browser* browser,
@@ -245,7 +244,6 @@ TurnSyncOnHelper::TurnSyncOnHelper(
                        signin_aborted_mode,
                        std::make_unique<TurnSyncOnHelperDelegateImpl>(browser),
                        base::OnceClosure()) {}
-#endif
 
 TurnSyncOnHelper::~TurnSyncOnHelper() {
   DCHECK_EQ(this, GetCurrentTurnSyncOnHelper(profile_));

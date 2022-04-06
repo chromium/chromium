@@ -16,7 +16,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #endif
 
@@ -134,7 +134,7 @@ std::u16string GetShortProfileIdentityToDisplay(
 // Also, the parser does not validate the policy value.
 std::string GetAllowedDomain(std::string signin_pattern);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 namespace internal {
 // Same as |EnableSyncFromPromo| but with a callback that creates a
 // TurnSyncOnHelper so that it can be unit tested.

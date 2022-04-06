@@ -3439,6 +3439,8 @@ static_library("ui") {
       "webui/signin/signin_utils_desktop.h",
       "webui/signin/turn_sync_on_helper.cc",
       "webui/signin/turn_sync_on_helper.h",
+      "webui/signin/turn_sync_on_helper_delegate_impl.cc",
+      "webui/signin/turn_sync_on_helper_delegate_impl.h",
     ]
 
     deps += [
@@ -3478,8 +3480,6 @@ static_library("ui") {
         "webui/signin/signin_reauth_handler.h",
         "webui/signin/signin_reauth_ui.cc",
         "webui/signin/signin_reauth_ui.h",
-        "webui/signin/turn_sync_on_helper_delegate_impl.cc",
-        "webui/signin/turn_sync_on_helper_delegate_impl.h",
         "webui/welcome/bookmark_handler.cc",
         "webui/welcome/bookmark_handler.h",
         "webui/welcome/bookmark_item.cc",

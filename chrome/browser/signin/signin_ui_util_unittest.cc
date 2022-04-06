@@ -71,7 +71,7 @@ TEST_F(GetAllowedDomainTest, WithValidPattern) {
   EXPECT_EQ("example-1.com", GetAllowedDomain("email@example-1.com"));
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
 
@@ -91,9 +91,14 @@ class SigninUiUtilTestBrowserWindow : public TestBrowserWindow {
       signin_metrics::AccessPoint access_point,
       bool is_source_keyboard) override {
     ASSERT_TRUE(browser_);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // TODO(https://crbug.com/1260291): add support for signed out profiles.
+    NOTREACHED();
+#else
     // Simulate what |BrowserView| does for a regular Chrome sign-in flow.
     browser_->signin_view_controller()->ShowSignin(
         profiles::BubbleViewMode::BUBBLE_VIEW_MODE_GAIA_SIGNIN, access_point);
+#endif
   }
 
  private:
@@ -102,10 +107,10 @@ class SigninUiUtilTestBrowserWindow : public TestBrowserWindow {
 
 }  // namespace
 
-class DiceSigninUiUtilTest : public BrowserWithTestWindowTest {
+class SigninUiUtilTest : public BrowserWithTestWindowTest {
  public:
-  DiceSigninUiUtilTest() = default;
-  ~DiceSigninUiUtilTest() override = default;
+  SigninUiUtilTest() = default;
+  ~SigninUiUtilTest() override = default;
 
   struct CreateTurnSyncOnHelperParams {
    public:
@@ -171,7 +176,7 @@ class DiceSigninUiUtilTest : public BrowserWithTestWindowTest {
                   bool is_default_promo_account) {
     signin_ui_util::internal::EnableSyncFromPromo(
         browser(), account_info, access_point_, is_default_promo_account,
-        base::BindOnce(&DiceSigninUiUtilTest::CreateTurnSyncOnHelper,
+        base::BindOnce(&SigninUiUtilTest::CreateTurnSyncOnHelper,
                        base::Unretained(this)));
   }
 
@@ -258,7 +263,7 @@ class DiceSigninUiUtilTest : public BrowserWithTestWindowTest {
   CreateTurnSyncOnHelperParams create_turn_sync_on_helper_params_;
 };
 
-TEST_F(DiceSigninUiUtilTest, EnableSyncWithExistingAccount) {
+TEST_F(SigninUiUtilTest, EnableSyncWithExistingAccount) {
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
           kMainGaiaID, kMainEmail, "refresh_token", false,
@@ -308,7 +313,10 @@ TEST_F(DiceSigninUiUtilTest, EnableSyncWithExistingAccount) {
   }
 }
 
-TEST_F(DiceSigninUiUtilTest, EnableSyncWithAccountThatNeedsReauth) {
+// TODO(https://crbug.com/1260291): add support for signed out profiles.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+
+TEST_F(SigninUiUtilTest, EnableSyncWithAccountThatNeedsReauth) {
   AddTab(browser(), GURL("http://example.com"));
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
@@ -363,7 +371,7 @@ TEST_F(DiceSigninUiUtilTest, EnableSyncWithAccountThatNeedsReauth) {
   }
 }
 
-TEST_F(DiceSigninUiUtilTest, EnableSyncForNewAccountWithNoTab) {
+TEST_F(SigninUiUtilTest, EnableSyncForNewAccountWithNoTab) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
 
@@ -392,7 +400,7 @@ TEST_F(DiceSigninUiUtilTest, EnableSyncForNewAccountWithNoTab) {
       active_contents->GetVisibleURL());
 }
 
-TEST_F(DiceSigninUiUtilTest, EnableSyncForNewAccountWithNoTabWithExisting) {
+TEST_F(SigninUiUtilTest, EnableSyncForNewAccountWithNoTabWithExisting) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
 
@@ -417,7 +425,7 @@ TEST_F(DiceSigninUiUtilTest, EnableSyncForNewAccountWithNoTabWithExisting) {
                 "Signin_SigninNewAccountExistingAccount_FromBookmarkBubble"));
 }
 
-TEST_F(DiceSigninUiUtilTest, EnableSyncForNewAccountWithOneTab) {
+TEST_F(SigninUiUtilTest, EnableSyncForNewAccountWithOneTab) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
   AddTab(browser(), GURL("http://foo/1"));
@@ -447,7 +455,7 @@ TEST_F(DiceSigninUiUtilTest, EnableSyncForNewAccountWithOneTab) {
       active_contents->GetVisibleURL());
 }
 
-TEST_F(DiceSigninUiUtilTest, GetOrderedAccountsForDisplay) {
+TEST_F(SigninUiUtilTest, GetOrderedAccountsForDisplay) {
   // Should start off with no accounts.
   std::vector<AccountInfo> accounts = GetOrderedAccountsForDisplay(
       profile(), /*restrict_to_accounts_eligible_for_sync=*/true);
@@ -456,7 +464,7 @@ TEST_F(DiceSigninUiUtilTest, GetOrderedAccountsForDisplay) {
   // TODO(tangltom): Flesh out this test.
 }
 
-TEST_F(DiceSigninUiUtilTest, MergeDiceSigninTab) {
+TEST_F(SigninUiUtilTest, MergeDiceSigninTab) {
   base::UserActionTester user_action_tester;
   EnableSync(AccountInfo(), false);
   EXPECT_EQ(
@@ -491,7 +499,7 @@ TEST_F(DiceSigninUiUtilTest, MergeDiceSigninTab) {
   EXPECT_EQ(1, tab_strip->active_index());
 }
 
-TEST_F(DiceSigninUiUtilTest, ShowReauthTab) {
+TEST_F(SigninUiUtilTest, ShowReauthTab) {
   AddTab(browser(), GURL("http://example.com"));
   AccountInfo account_info = signin::MakePrimaryAccountAvailable(
       GetIdentityManager(), "foo@example.com", signin::ConsentLevel::kSync);
@@ -515,7 +523,7 @@ TEST_F(DiceSigninUiUtilTest, ShowReauthTab) {
             active_contents->GetVisibleURL());
 }
 
-TEST_F(DiceSigninUiUtilTest,
+TEST_F(SigninUiUtilTest,
        ShouldShowAnimatedIdentityOnOpeningWindow_ReturnsTrueForMultiProfiles) {
   const char kSecondProfile[] = "SecondProfile";
   const char16_t kSecondProfile16[] = u"SecondProfile";
@@ -531,7 +539,7 @@ TEST_F(DiceSigninUiUtilTest,
       *profile_manager()->profile_attributes_storage(), profile()));
 }
 
-TEST_F(DiceSigninUiUtilTest,
+TEST_F(SigninUiUtilTest,
        ShouldShowAnimatedIdentityOnOpeningWindow_ReturnsTrueForMultiSignin) {
   GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
       kMainGaiaID, kMainEmail, "refresh_token", false,
@@ -551,7 +559,7 @@ TEST_F(DiceSigninUiUtilTest,
 }
 
 TEST_F(
-    DiceSigninUiUtilTest,
+    SigninUiUtilTest,
     ShouldShowAnimatedIdentityOnOpeningWindow_ReturnsFalseForSingleProfileSingleSignin) {
   GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
       kMainGaiaID, kMainEmail, "refresh_token", false,
@@ -561,7 +569,7 @@ TEST_F(
       *profile_manager()->profile_attributes_storage(), profile()));
 }
 
-TEST_F(DiceSigninUiUtilTest, ShowExtensionSigninPrompt) {
+TEST_F(SigninUiUtilTest, ShowExtensionSigninPrompt) {
   Profile* profile = browser()->profile();
   TabStripModel* tab_strip = browser()->tab_strip_model();
   ShowExtensionSigninPrompt(profile, /*enable_sync=*/true,
@@ -595,7 +603,7 @@ TEST_F(DiceSigninUiUtilTest, ShowExtensionSigninPrompt) {
                        base::CompareCase::INSENSITIVE_ASCII));
 }
 
-TEST_F(DiceSigninUiUtilTest, ShowExtensionSigninPrompt_AsLockedProfile) {
+TEST_F(SigninUiUtilTest, ShowExtensionSigninPrompt_AsLockedProfile) {
   signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
   Profile* profile = browser()->profile();
   ProfileAttributesEntry* entry =
@@ -612,7 +620,8 @@ TEST_F(DiceSigninUiUtilTest, ShowExtensionSigninPrompt_AsLockedProfile) {
                             /*email_hint=*/std::string());
   EXPECT_EQ(0, tab_strip->count());
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 class MirrorSigninUiUtilTest : public BrowserWithTestWindowTest {
@@ -693,7 +702,7 @@ TEST_F(MirrorSigninUiUtilTest, ShowExtensionSigninPrompt_AsLockedProfile) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-// This test does not use the DiceSigninUiUtilTest test fixture, because it
+// This test does not use the SigninUiUtilTest test fixture, because it
 // needs a mock time environment, and BrowserWithTestWindowTest may be flaky
 // when used with mock time (see https://crbug.com/1014790).
 TEST(ShouldShowAnimatedIdentityOnOpeningWindow, ReturnsFalseForNewWindow) {
