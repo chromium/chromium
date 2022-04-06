@@ -2053,6 +2053,37 @@ TEST_F(DesksTemplatesTest, WindowActivatableAfterSaveAndDeleteTemplate) {
   EXPECT_EQ(test_window.get(), window_util::GetActiveWindow());
 }
 
+TEST_F(DesksTemplatesTest, TemplateNameBounds) {
+  AddEntry(base::GUID::GenerateRandomV4(), "template name", base::Time::Now());
+
+  OpenOverviewAndShowTemplatesGrid();
+  DesksTemplatesItemView* item_view = GetItemViewFromTemplatesGrid(0);
+  DesksTemplatesNameView* name_view = item_view->name_view();
+  const views::Label* time_view =
+      DesksTemplatesItemViewTestApi(item_view).time_view();
+
+  // Tests that the contents of the two views are the aligned. We use contents
+  // bounds here since the name view has a background which is larger than the
+  // text.
+  gfx::Point name_contents_in_screen = name_view->GetContentsBounds().origin();
+  views::View::ConvertPointToScreen(name_view, &name_contents_in_screen);
+  gfx::Point time_contents_in_screen = time_view->GetContentsBounds().origin();
+  views::View::ConvertPointToScreen(time_view, &time_contents_in_screen);
+  EXPECT_EQ(name_contents_in_screen.x(), time_contents_in_screen.x());
+
+  // Add a long name which will cause `name_view` to reach its max width. Test
+  // that the distance from `item_view` is the same on both sides.
+  ClickOnView(name_view);
+  for (int i = 0; i < 200; ++i)
+    SendKey(ui::VKEY_A);
+  SendKey(ui::VKEY_RETURN);
+  WaitForDesksTemplatesUI();
+  EXPECT_EQ(
+      name_view->GetBoundsInScreen().x() - item_view->GetBoundsInScreen().x(),
+      item_view->GetBoundsInScreen().right() -
+          name_view->GetBoundsInScreen().right());
+}
+
 // Tests that we are able to edit the template name.
 TEST_F(DesksTemplatesTest, EditTemplateName) {
   auto test_window = CreateAppWindow();

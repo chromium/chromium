@@ -48,6 +48,7 @@
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 namespace {
@@ -55,11 +56,6 @@ namespace {
 // The padding values of the DesksTemplatesItemView.
 constexpr int kHorizontalPaddingDp = 24;
 constexpr int kVerticalPaddingDp = 16;
-
-// Shift the name view by 2dp so that the text is aligned with the date view.
-// The name view itself has a background, which shows on hover or focus, is not
-// aligned with the date view.
-constexpr auto kNameExtraInsets = gfx::Insets::TLBR(0, -2, 0, 0);
 
 // The preferred size of the whole DesksTemplatesItemView.
 constexpr gfx::Size kPreferredSize(220, 120);
@@ -84,6 +80,10 @@ constexpr int kTimeViewHeight = 24;
 // The spacing between the textfield and the managed status icon.
 constexpr int kManagedStatusIndicatorSpacing = 8;
 constexpr int kManagedStatusIndicatorSize = 20;
+
+// There is a gap between the background of the name view and the name view's
+// actual text.
+constexpr auto kTemplateNameInsets = gfx::Insets::VH(0, 2);
 
 std::u16string GetTimeStr(base::Time timestamp) {
   std::u16string date, time, time_str;
@@ -150,7 +150,6 @@ DesksTemplatesItemView::DesksTemplatesItemView(
                       .SetPreferredSize(gfx::Size(
                           kTemplateNameAndTimePreferredWidth,
                           DesksTemplatesNameView::kTemplateNameViewHeight))
-                      .SetProperty(views::kMarginsKey, kNameExtraInsets)
                       .AddChildren(
                           views::Builder<DesksTemplatesNameView>()
                               .CopyAddressTo(&name_view_)
@@ -226,6 +225,13 @@ DesksTemplatesItemView::DesksTemplatesItemView(
         AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
   }
 
+  // Use a border to create spacing between `name_view_`s background (set in
+  // `DesksTextfield`) and the actual text. Shift the parent by the same amount
+  // so that the text stays aligned with the text in `time_view`. We shift the
+  // parent here and not `name_view_` itself otherwise its bounds will be
+  // outside the parent bounds and the background will get clipped.
+  name_view_->SetBorder(views::CreateEmptyBorder(kTemplateNameInsets));
+  name_view_->parent()->SetProperty(views::kMarginsKey, -kTemplateNameInsets);
   name_view_observation_.Observe(name_view_);
 
   StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),

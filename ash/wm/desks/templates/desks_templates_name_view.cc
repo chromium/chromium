@@ -12,6 +12,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -49,9 +50,6 @@ bool IsDesksTemplatesGridWidget(const views::Widget* widget) {
 DesksTemplatesNameView::DesksTemplatesNameView() {
   SetFontList(GetFontList().Derive(kNameFontSizeDeltaDp, gfx::Font::NORMAL,
                                    gfx::Font::Weight::MEDIUM));
-  // This creates a 2dp gap between the text and the background set in
-  // `DesksTextfield`.
-  SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(0, 2, 0, 2)));
 
   // The focus ring is created in `DesksTextfield`'s constructor.
   views::FocusRing* focus_ring = views::FocusRing::Get(this);
@@ -103,8 +101,8 @@ void DesksTemplatesNameView::SetViewName(const std::u16string& name) {
 int DesksTemplatesNameView::GetAvailableWidth() const {
   auto* parent_view = static_cast<const views::BoxLayoutView*>(parent());
   int available_width = parent_view->width() -
-                        parent_view->GetInsideBorderInsets().width() -
-                        GetInsets().width();
+                        parent_view->GetProperty(views::kMarginsKey)->width() -
+                        parent_view->GetInsideBorderInsets().width();
   const int between_child_spacing = parent_view->GetBetweenChildSpacing();
   for (auto* child : parent_view->children()) {
     if (child == this || !child->GetVisible())
