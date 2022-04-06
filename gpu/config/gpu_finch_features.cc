@@ -78,6 +78,11 @@ const base::FeatureParam<std::string> kAndroidSurfaceControlModelBlocklist{
 const base::Feature kWebViewSurfaceControl{"WebViewSurfaceControl",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Same as kWebViewSurfaceControl, but affects only Android T+, used for
+// targeting pre-release version.
+const base::Feature kWebViewSurfaceControlForT{
+    "WebViewSurfaceControlForT", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Use thread-safe media path on WebView.
 const base::Feature kWebViewThreadSafeMedia{"WebViewThreadSafeMedia",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
@@ -404,9 +409,19 @@ bool IsAndroidSurfaceControlEnabled() {
 
   // On WebView we also require zero copy or thread-safe media to use
   // SurfaceControl
-  if ((IsWebViewZeroCopyVideoEnabled() || IsUsingThreadSafeMediaForWebView()) &&
-      base::FeatureList::IsEnabled(kWebViewSurfaceControl))
-    return true;
+  if (IsWebViewZeroCopyVideoEnabled() || IsUsingThreadSafeMediaForWebView()) {
+    // If main feature is not overridden from command line and we're running T+
+    // use kWebViewSurfaceControlForT to decide feature status instead so we
+    // can target pre-release android to fish out platform side bugs.
+    base::FeatureList* feature_list = base::FeatureList::GetInstance();
+    if ((!feature_list || !feature_list->IsFeatureOverriddenFromCommandLine(
+                              features::kWebViewSurfaceControl.name)) &&
+        build_info->is_at_least_t()) {
+      return base::FeatureList::IsEnabled(kWebViewSurfaceControlForT);
+    }
+
+    return base::FeatureList::IsEnabled(kWebViewSurfaceControl);
+  }
 
   return base::FeatureList::IsEnabled(kAndroidSurfaceControl);
 }

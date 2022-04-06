@@ -95,6 +95,7 @@ public class BuildInfo {
                 buildInfo.isTV ? "1" : "0",
                 Build.VERSION.INCREMENTAL,
                 Build.HARDWARE,
+                isAtLeastT() ? "1" : "0",
         };
     }
 
