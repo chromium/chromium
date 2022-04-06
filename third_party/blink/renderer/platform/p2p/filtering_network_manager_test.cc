@@ -82,6 +82,9 @@ class MockNetworkManager : public rtc::NetworkManagerBase {
   void GetNetworks(NetworkList* networks) const override {
     networks->push_back(network_.get());
   }
+  std::vector<const rtc::Network*> GetNetworks() const override {
+    return {network_.get()};
+  }
 
   void SendNetworksChanged() {
     sent_first_update_ = true;
@@ -241,9 +244,8 @@ class FilteringNetworkManagerTest : public testing::Test,
   }
 
  protected:
-  const NetworkList& GetP2PNetworkList() {
-    network_list_.clear();
-    network_manager_->GetNetworks(&network_list_);
+  const std::vector<const rtc::Network*>& GetP2PNetworkList() {
+    network_list_ = network_manager_->GetNetworks();
     return network_list_;
   }
 
@@ -261,7 +263,7 @@ class FilteringNetworkManagerTest : public testing::Test,
   std::vector<rtc::Network> networks_;
   int next_new_network_id_ = 0;
 
-  NetworkList network_list_;
+  std::vector<const rtc::Network*> network_list_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::ThreadTaskRunnerHandle task_runner_handle_;
 };
@@ -460,15 +462,13 @@ TEST_F(FilteringNetworkManagerTest, NullMdnsResponderAfterPermissionGranted) {
   };
   RunTests(setup_steps, std::size(setup_steps));
 
-  NetworkList networks;
-  network_manager_->GetNetworks(&networks);
+  std::vector<const rtc::Network*> networks = network_manager_->GetNetworks();
   EXPECT_THAT(networks, SizeIs(1u));
   for (const rtc::Network* network : networks) {
     EXPECT_EQ(nullptr, network->GetMdnsResponder());
   }
 
-  networks.clear();
-  network_manager_->GetAnyAddressNetworks(&networks);
+  networks = network_manager_->GetAnyAddressNetworks();
   EXPECT_THAT(networks, SizeIs(2u));
   for (const rtc::Network* network : networks) {
     EXPECT_EQ(nullptr, network->GetMdnsResponder());
@@ -485,11 +485,10 @@ TEST_F(FilteringNetworkManagerTest,
   EXPECT_EQ(rtc::NetworkManager::ENUMERATION_BLOCKED,
             network_manager_->enumeration_permission());
 
-  NetworkList networks;
-  network_manager_->GetNetworks(&networks);
+  std::vector<const rtc::Network*> networks = network_manager_->GetNetworks();
   EXPECT_TRUE(networks.empty());
 
-  network_manager_->GetAnyAddressNetworks(&networks);
+  networks = network_manager_->GetAnyAddressNetworks();
   EXPECT_THAT(networks, SizeIs(2u));
   EXPECT_NE(nullptr, network_manager_->GetMdnsResponder());
   for (const rtc::Network* network : networks) {
@@ -509,11 +508,10 @@ TEST_F(FilteringNetworkManagerTest,
   EXPECT_EQ(rtc::NetworkManager::ENUMERATION_BLOCKED,
             network_manager_->enumeration_permission());
 
-  NetworkList networks;
-  network_manager_->GetNetworks(&networks);
+  std::vector<const rtc::Network*> networks = network_manager_->GetNetworks();
   EXPECT_TRUE(networks.empty());
 
-  network_manager_->GetAnyAddressNetworks(&networks);
+  networks = network_manager_->GetAnyAddressNetworks();
   EXPECT_THAT(networks, SizeIs(2u));
   for (const rtc::Network* network : networks) {
     EXPECT_EQ(nullptr, network->GetMdnsResponder());

@@ -38,6 +38,7 @@ class EmptyNetworkManager : public rtc::NetworkManagerBase,
   void StartUpdating() override;
   void StopUpdating() override;
   void GetNetworks(NetworkList* networks) const override;
+  std::vector<const rtc::Network*> GetNetworks() const override;
   bool GetDefaultLocalAddress(int family,
                               rtc::IPAddress* ipaddress) const override;
 

@@ -75,7 +75,6 @@ class IpcNetworkManagerTest : public testing::Test {
 TEST_F(IpcNetworkManagerTest, TestMergeNetworkList) {
   net::NetworkInterfaceList list;
   net::IPAddress ip;
-  std::vector<rtc::Network*> networks;
   rtc::IPAddress ip_address;
 
   // Add 2 networks with the same prefix and prefix length.
@@ -91,13 +90,12 @@ TEST_F(IpcNetworkManagerTest, TestMergeNetworkList) {
 
   network_manager_->OnNetworkListChanged(list, net::IPAddress(),
                                          net::IPAddress());
-  network_manager_->GetNetworks(&networks);
+  std::vector<const rtc::Network*> networks = network_manager_->GetNetworks();
   EXPECT_EQ(1uL, networks.size());
   EXPECT_EQ(2uL, networks[0]->GetIPs().size());
 
   // Add another network with different prefix length, should result in
   // a different network.
-  networks.clear();
   list.push_back(net::NetworkInterface(
       "em1", "em1", 0, net::NetworkChangeNotifier::CONNECTION_UNKNOWN, ip, 48,
       net::IP_ADDRESS_ATTRIBUTE_NONE));
@@ -109,14 +107,15 @@ TEST_F(IpcNetworkManagerTest, TestMergeNetworkList) {
   // The unknown default address should be ignored.
   EXPECT_FALSE(network_manager_->GetDefaultLocalAddress(AF_INET6, &ip_address));
 
-  network_manager_->GetNetworks(&networks);
+  networks = network_manager_->GetNetworks();
 
   // Verify we have 2 networks now.
   EXPECT_EQ(2uL, networks.size());
   // Verify the network with prefix length of 64 has 2 IP addresses.
   auto network_with_two_ips = std::find_if(
-      networks.begin(), networks.end(),
-      [](rtc::Network* network) { return network->prefix_length() == 64; });
+      networks.begin(), networks.end(), [](const rtc::Network* network) {
+        return network->prefix_length() == 64;
+      });
   ASSERT_NE(networks.end(), network_with_two_ips);
   EXPECT_EQ(2uL, (*network_with_two_ips)->GetIPs().size());
   // IPs should be in the same order as the list passed into
@@ -129,8 +128,9 @@ TEST_F(IpcNetworkManagerTest, TestMergeNetworkList) {
             rtc::InterfaceAddress(ip_address));
   // Verify the network with prefix length of 48 has 1 IP address.
   auto network_with_one_ip = std::find_if(
-      networks.begin(), networks.end(),
-      [](rtc::Network* network) { return network->prefix_length() == 48; });
+      networks.begin(), networks.end(), [](const rtc::Network* network) {
+        return network->prefix_length() == 48;
+      });
   ASSERT_NE(networks.end(), network_with_one_ip);
   EXPECT_EQ(1uL, (*network_with_one_ip)->GetIPs().size());
   EXPECT_TRUE(rtc::IPFromString(kIPv6PublicAddrString2, &ip_address));
@@ -143,7 +143,6 @@ TEST_F(IpcNetworkManagerTest, TestMergeNetworkList) {
 TEST_F(IpcNetworkManagerTest, DeterminesNetworkTypeFromNameIfUnknown) {
   net::NetworkInterfaceList list;
   net::IPAddress ip;
-  std::vector<rtc::Network*> networks;
   rtc::IPAddress ip_address;
 
   // Add a "tun1" entry of type "unknown" and "tun2" entry of type Wi-Fi. The
@@ -161,16 +160,16 @@ TEST_F(IpcNetworkManagerTest, DeterminesNetworkTypeFromNameIfUnknown) {
 
   network_manager_->OnNetworkListChanged(list, net::IPAddress(),
                                          net::IPAddress());
-  network_manager_->GetNetworks(&networks);
+  std::vector<const rtc::Network*> networks = network_manager_->GetNetworks();
   EXPECT_EQ(2uL, networks.size());
 
   auto tun1 = std::find_if(
       networks.begin(), networks.end(),
-      [](rtc::Network* network) { return network->name() == "tun1"; });
+      [](const rtc::Network* network) { return network->name() == "tun1"; });
   ASSERT_NE(networks.end(), tun1);
   auto tun2 = std::find_if(
       networks.begin(), networks.end(),
-      [](rtc::Network* network) { return network->name() == "tun2"; });
+      [](const rtc::Network* network) { return network->name() == "tun2"; });
   ASSERT_NE(networks.end(), tun1);
 
   EXPECT_EQ(rtc::ADAPTER_TYPE_VPN, (*tun1)->type());
@@ -191,15 +190,13 @@ TEST_F(IpcNetworkManagerTest,
 
   network_manager_->OnNetworkListChanged(list, net::IPAddress(),
                                          net::IPAddress());
-  std::vector<rtc::Network*> networks;
-  network_manager_->GetNetworks(&networks);
+  std::vector<const rtc::Network*> networks = network_manager_->GetNetworks();
 
   ASSERT_EQ(1u, networks.size());
   webrtc::MdnsResponderInterface* const mdns_responder =
       network_manager_->GetMdnsResponder();
   EXPECT_EQ(mdns_responder, networks[0]->GetMdnsResponder());
-  networks.clear();
-  network_manager_->GetAnyAddressNetworks(&networks);
+  networks = network_manager_->GetAnyAddressNetworks();
   ASSERT_EQ(2u, networks.size());
   EXPECT_EQ(mdns_responder, networks[0]->GetMdnsResponder());
   EXPECT_EQ(mdns_responder, networks[1]->GetMdnsResponder());

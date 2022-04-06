@@ -58,6 +58,11 @@ void EmptyNetworkManager::GetNetworks(NetworkList* networks) const {
   networks->clear();
 }
 
+std::vector<const rtc::Network*> EmptyNetworkManager::GetNetworks() const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return {};
+}
+
 bool EmptyNetworkManager::GetDefaultLocalAddress(
     int family,
     rtc::IPAddress* ipaddress) const {

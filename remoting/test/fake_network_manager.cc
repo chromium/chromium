@@ -40,6 +40,14 @@ void FakeNetworkManager::GetNetworks(NetworkList* networks) const {
   networks->push_back(network_.get());
 }
 
+std::vector<const rtc::Network*> FakeNetworkManager::GetNetworks() const {
+  return {network_.get()};
+}
+
+std::vector<const rtc::Network*> FakeNetworkManager::GetAnyAddressNetworks() {
+  return {};
+}
+
 void FakeNetworkManager::SendNetworksChangedSignal() {
   SignalNetworksChanged();
 }
