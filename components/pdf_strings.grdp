@@ -113,9 +113,6 @@
       Yes
     </message>
 
-    <message name="IDS_PDF_TOOLTIP_ROTATE_CW" desc="Button tooltip for the button which rotates a PDF document clockwise">
-      Rotate clockwise
-    </message>
     <message name="IDS_PDF_TOOLTIP_ROTATE_CCW" desc="Button tooltip for the button which rotates a PDF document counterclockwise">
       Rotate counterclockwise
     </message>

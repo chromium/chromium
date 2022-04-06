@@ -89,7 +89,6 @@ void AddPdfViewerStrings(base::Value* dict) {
     {"tooltipDownload", IDS_PDF_TOOLTIP_DOWNLOAD},
     {"tooltipPrint", IDS_PDF_TOOLTIP_PRINT},
     {"tooltipRotateCCW", IDS_PDF_TOOLTIP_ROTATE_CCW},
-    {"tooltipRotateCW", IDS_PDF_TOOLTIP_ROTATE_CW},
     {"tooltipThumbnails", IDS_PDF_TOOLTIP_THUMBNAILS},
     {"zoomTextInputAriaLabel", IDS_PDF_ZOOM_TEXT_INPUT_ARIA_LABEL},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
