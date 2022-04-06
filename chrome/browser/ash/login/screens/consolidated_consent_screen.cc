@@ -25,6 +25,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
+#include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -119,18 +120,31 @@ bool ConsolidatedConsentScreen::MaybeSkip(WizardContext* context) {
   if (arc::IsArcDemoModeSetupFlow())
     return false;
 
-  // For managed devices, admins are required to accept ToS on the server side.
-  // So, if the device is managed and no arc negotiation is needed, skip the
-  // screen.
-  policy::BrowserPolicyConnectorAsh* connector =
+  policy::BrowserPolicyConnectorAsh* policy_connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
-  bool is_device_managed = connector->IsDeviceEnterpriseManaged();
-
-  if ((is_device_managed && !arc::IsArcTermsOfServiceOobeNegotiationNeeded()) ||
-      !context->is_branded_build) {
+  if (!context->is_branded_build ||
+      policy_connector->IsActiveDirectoryManaged() ||
+      user_manager::UserManager::Get()->IsLoggedInAsPublicAccount()) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }
+
+  // Admins are required to accept ToS on the server side.
+  // So, if the profile is affiliated and arc negotiation is needed, skip the
+  // screen.
+
+  // Do not skip the screen if ARC negotiaition is needed.
+  if (arc::IsArcTermsOfServiceOobeNegotiationNeeded())
+    return false;
+
+  // Skip the screen if the user is affiliated.
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  CHECK(profile);
+  if (chrome::enterprise_util::IsProfileAffiliated(profile)) {
+    exit_callback_.Run(Result::NOT_APPLICABLE);
+    return true;
+  }
+
   return false;
 }
 
@@ -142,8 +156,6 @@ void ConsolidatedConsentScreen::ShowImpl() {
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
   CHECK(profile);
-  is_enterprise_managed_account_ =
-      profile->GetProfilePolicyConnector()->IsManaged() && !is_child_account_;
 
   DeviceSettingsService::Get()->GetOwnershipStatusAsync(
       base::BindOnce(&ConsolidatedConsentScreen::OnOwnershipStatusCheckDone,
@@ -152,7 +164,7 @@ void ConsolidatedConsentScreen::ShowImpl() {
   ConsolidatedConsentScreenView::ScreenConfig config;
   config.is_arc_enabled = arc::IsArcTermsOfServiceOobeNegotiationNeeded();
   config.is_demo = arc::IsArcDemoModeSetupFlow();
-  config.is_enterprise_managed_account = is_enterprise_managed_account_;
+  config.is_tos_hidden = chrome::enterprise_util::IsProfileAffiliated(profile);
   config.is_child_account = is_child_account_;
   config.country_code = base::CountryCodeForCurrentTimezone();
   config.google_eula_url = GetGoogleEulaOnlineUrl();
@@ -181,10 +193,7 @@ void ConsolidatedConsentScreen::RemoveObserver(Observer* observer) {
 
 void ConsolidatedConsentScreen::OnMetricsModeChanged(bool enabled,
                                                      bool managed) {
-  // When the usage opt-in is not managed, override the enabled value
-  // with `true` to encourage users to consent with it during OptIn flow.
-  if (view_)
-    view_->SetUsageMode(/*enabled=*/!managed || enabled, managed);
+  UpdateMetricsMode(enabled, managed);
 }
 
 void ConsolidatedConsentScreen::OnBackupAndRestoreModeChanged(bool enabled,
@@ -201,6 +210,13 @@ void ConsolidatedConsentScreen::OnLocationServicesModeChanged(bool enabled,
     view_->SetLocationMode(enabled, managed);
 }
 
+void ConsolidatedConsentScreen::UpdateMetricsMode(bool enabled, bool managed) {
+  // When the usage opt-in is not managed, override the enabled value
+  // with `true` to encourage users to consent with it during OptIn flow.
+  if (view_)
+    view_->SetUsageMode(/*enabled=*/!managed || enabled, managed);
+}
+
 void ConsolidatedConsentScreen::OnOwnershipStatusCheckDone(
     DeviceSettingsService::OwnershipStatus status) {
   // If no ownership is established yet, then the current user is the first
@@ -210,25 +226,17 @@ void ConsolidatedConsentScreen::OnOwnershipStatusCheckDone(
   else if (status == DeviceSettingsService::OWNERSHIP_TAKEN)
     is_owner_ = user_manager::UserManager::Get()->IsCurrentUserOwner();
 
-  const bool is_negotiation_needed =
-      arc::IsArcTermsOfServiceOobeNegotiationNeeded();
   // If the user is not the owner and the owner disabled metrics, the user
   // is not allowed to update the usage opt-in.
-  if (!is_owner_.value()) {
-    const bool is_metrics_enabled =
-        ash::StatsReportingController::Get()->IsEnabled();
-
-    if (!is_negotiation_needed && !is_metrics_enabled) {
-      exit_callback_.Run(Result::NOT_APPLICABLE);
-      return;
-    }
-
-    if (!is_metrics_enabled) {
-      view_->HideUsageOptin();
-    }
+  if (!is_owner_.value_or(false) &&
+      !ash::StatsReportingController::Get()->IsEnabled()) {
+    view_->HideUsageOptin();
   }
 
   const bool is_demo = arc::IsArcDemoModeSetupFlow();
+  const bool is_negotiation_needed =
+      arc::IsArcTermsOfServiceOobeNegotiationNeeded();
+
   if (!is_demo && is_negotiation_needed) {
     // Enable ARC to match ArcSessionManager logic. ArcSessionManager expects
     // that ARC is enabled (prefs::kArcEnabled = true) on showing Terms of
@@ -243,6 +251,25 @@ void ConsolidatedConsentScreen::OnOwnershipStatusCheckDone(
     pref_handler_ = std::make_unique<arc::ArcOptInPreferenceHandler>(
         this, profile->GetPrefs());
     pref_handler_->Start();
+  } else if (!is_demo) {
+    // Since ARC OOBE Negotiation is not needed, we should avoid using
+    // ArcOptInPreferenceHandler, so, we should update the usage opt-in here
+    // since OnMetricsModeChanged() will not be called.
+    policy::BrowserPolicyConnectorAsh* policy_connector =
+        g_browser_process->platform_part()->browser_policy_connector_ash();
+    bool is_managed = policy_connector->IsDeviceEnterpriseManaged();
+
+    auto* metrics_service = g_browser_process->metrics_service();
+    bool is_enabled = false;
+    if (metrics_service &&
+        metrics_service->GetCurrentUserMetricsConsent().has_value()) {
+      is_enabled = *metrics_service->GetCurrentUserMetricsConsent();
+    } else {
+      DCHECK(g_browser_process->local_state());
+      is_enabled = ash::StatsReportingController::Get()->IsEnabled();
+    }
+
+    UpdateMetricsMode(is_enabled, is_managed);
   }
 
   if (view_)
@@ -346,7 +373,12 @@ void ConsolidatedConsentScreen::OnAccept(bool enable_stats_usage,
 
   ConsentsParameters consents;
   consents.tos_content = tos_content;
-  consents.record_arc_tos_consent = !is_enterprise_managed_account_;
+
+  // If the profile is affiliated, we don't show any ToS to the user.
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  CHECK(profile);
+  consents.record_arc_tos_consent =
+      !chrome::enterprise_util::IsProfileAffiliated(profile);
   consents.record_backup_consent = !backup_restore_managed_;
   consents.backup_accepted = enable_backup_restore;
   consents.record_location_consent = !location_services_managed_;
