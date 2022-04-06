@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -147,14 +147,17 @@ export const PasswordCheckMixin = dedupingMixin(
         override disconnectedCallback() {
           super.disconnectedCallback();
 
+          assert(this.statusChangedListener_);
           this.passwordManager!.removePasswordCheckStatusListener(
-              assert(this.statusChangedListener_!));
+              this.statusChangedListener_);
           this.statusChangedListener_ = null;
+          assert(this.leakedCredentialsListener_);
           this.passwordManager!.removeCompromisedCredentialsListener(
-              assert(this.leakedCredentialsListener_!));
+              this.leakedCredentialsListener_);
           this.leakedCredentialsListener_ = null;
+          assert(this.weakCredentialsListener_);
           this.passwordManager!.removeWeakCredentialsListener(
-              assert(this.weakCredentialsListener_!));
+              this.weakCredentialsListener_);
           this.weakCredentialsListener_ = null;
         }
 

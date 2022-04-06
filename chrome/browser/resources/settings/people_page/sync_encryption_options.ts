@@ -15,7 +15,7 @@ import {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.m.js';
 import {CrRadioGroupElement} from '//resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
 // </if>
 
-import {assert} from '//resources/js/assert.m.js';
+import {assert} from '//resources/js/assert_ts.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from './sync_browser_proxy.js';

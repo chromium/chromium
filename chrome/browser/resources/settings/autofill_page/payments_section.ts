@@ -23,7 +23,7 @@ import './virtual_card_unenroll_dialog.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -254,7 +254,8 @@ export class SettingsPaymentsSectionElement extends
 
   private onCreditCardDialogClose_() {
     this.showCreditCardDialog_ = false;
-    focusWithoutInk(assert(this.activeDialogAnchor_!));
+    assert(this.activeDialogAnchor_);
+    focusWithoutInk(this.activeDialogAnchor_);
     this.activeDialogAnchor_ = null;
     this.activeCreditCard_ = null;
   }
@@ -311,7 +312,8 @@ export class SettingsPaymentsSectionElement extends
 
   private onVirtualCardUnenrollDialogClose_() {
     this.showVirtualCardUnenrollDialog_ = false;
-    focusWithoutInk(assert(this.activeDialogAnchor_!));
+    assert(this.activeDialogAnchor_);
+    focusWithoutInk(this.activeDialogAnchor_);
     this.activeDialogAnchor_ = null;
     this.activeCreditCard_ = null;
   }

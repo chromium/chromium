@@ -19,7 +19,7 @@ import '../prefs/prefs.js';
 import '../settings_shared_css.js';
 
 import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.m.js';
-import {assert} from '//resources/js/assert.m.js';
+import {assert} from '//resources/js/assert_ts.js';
 import {WebUIListenerMixin} from '//resources/js/web_ui_listener_mixin.js';
 import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -416,9 +416,12 @@ export class SettingsSyncAccountControlElement extends
   }
 
   private onMenuButtonTap_() {
-    const actionMenu = this.shadowRoot!.querySelector('cr-action-menu')!;
-    actionMenu.showAt(
-        assert(this.shadowRoot!.querySelector('#dropdown-arrow')!));
+    const actionMenu = this.shadowRoot!.querySelector('cr-action-menu');
+    assert(actionMenu);
+    const anchor =
+        this.shadowRoot!.querySelector<HTMLElement>('#dropdown-arrow');
+    assert(anchor);
+    actionMenu.showAt(anchor);
   }
 
   private onShouldShowAvatarRowChange_() {

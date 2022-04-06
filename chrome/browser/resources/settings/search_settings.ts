@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {createEmptySearchBubble, findAndRemoveHighlights, highlight, removeHighlights, stripDiacritics} from 'chrome://resources/js/search_highlight_utils.js';
@@ -171,7 +171,7 @@ import {SettingsSubpageElement} from './settings_page/settings_subpage.js';
    */
   function revealParentSection_(
       node: Node, numResults: number, bubbles: Map<Node, number>) {
-    let associatedControl = null;
+    let associatedControl: HTMLElement|null = null;
 
     // Find corresponding SETTINGS-SECTION parent and make it visible.
     let parent = node;
@@ -185,10 +185,11 @@ import {SettingsSubpageElement} from './settings_page/settings_subpage.js';
       }
       if (parent.nodeName === 'SETTINGS-SUBPAGE') {
         const subpage = parent as SettingsSubpageElement;
-        associatedControl = assert(
+        assert(
             subpage.associatedControl,
             'An associated control was expected for SETTINGS-SUBPAGE ' +
                 subpage.pageTitle + ', but was not found.');
+        associatedControl = subpage.associatedControl;
       }
     }
     (parent as SettingsSectionElement).hiddenBySearch = false;
@@ -249,10 +250,11 @@ import {SettingsSubpageElement} from './settings_page/settings_subpage.js';
         microTask.run(() => {
           const renderedNode =
               parent.querySelector('[route-path="' + routePath + '"]');
+          assert(renderedNode);
           // Register a SearchAndHighlightTask for the part of the DOM that was
           // just rendered.
           this.request.queue.addSearchAndHighlightTask(
-              new SearchAndHighlightTask(this.request, assert(renderedNode!)));
+              new SearchAndHighlightTask(this.request, renderedNode));
           resolve();
         });
       });

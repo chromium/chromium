@@ -7,7 +7,7 @@
  * MultiStoreIdHandler to deal with ids from different stores.
  */
 
-import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
 export class MultiStoreIdHandler {
   private deviceId_: number|null = null;
@@ -25,7 +25,6 @@ export class MultiStoreIdHandler {
       return this.accountId_;
     }
     assertNotReached();
-    return 0;
   }
 
   /**

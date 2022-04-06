@@ -13,7 +13,7 @@ import '../settings_shared_css.js';
 import '../site_favicon.js';
 
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -68,10 +68,11 @@ export class SettingsOmniboxExtensionEntryElement extends
   }
 
   private onDotsTap_() {
-    this.shadowRoot!.querySelector('cr-action-menu')!.showAt(
-        assert(this.shadowRoot!.querySelector('cr-icon-button')!), {
-          anchorAlignmentY: AnchorAlignment.AFTER_END,
-        });
+    const dots = this.shadowRoot!.querySelector('cr-icon-button');
+    assert(dots);
+    this.shadowRoot!.querySelector('cr-action-menu')!.showAt(dots, {
+      anchorAlignmentY: AnchorAlignment.AFTER_END,
+    });
   }
 }
 

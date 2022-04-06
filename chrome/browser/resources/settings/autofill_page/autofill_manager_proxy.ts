@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-
 export type PersonalDataChangedListener =
     (addresses: Array<chrome.autofillPrivate.AddressEntry>,
      creditCards: Array<chrome.autofillPrivate.CreditCardEntry>) => void;
@@ -61,7 +59,7 @@ export class AutofillManagerImpl implements AutofillManagerProxy {
   }
 
   removeAddress(guid: string) {
-    chrome.autofillPrivate.removeEntry(assert(guid));
+    chrome.autofillPrivate.removeEntry(guid);
   }
 
   static getInstance(): AutofillManagerProxy {

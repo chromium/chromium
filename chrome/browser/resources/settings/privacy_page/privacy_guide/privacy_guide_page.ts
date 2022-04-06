@@ -22,7 +22,7 @@ import './privacy_guide_welcome_fragment.js';
 import './step_indicator.js';
 
 import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -418,9 +418,10 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
 
       // On navigations within privacy guide, put the focus on the newly shown
       // fragment.
-      const elementToFocus = assert(this.shadowRoot!.querySelector<HTMLElement>(
-          '#' + this.privacyGuideStep_)!);
-      afterNextRender(this, () => elementToFocus!.focus());
+      const elementToFocus = this.shadowRoot!.querySelector<HTMLElement>(
+          '#' + this.privacyGuideStep_);
+      assert(elementToFocus);
+      afterNextRender(this, () => elementToFocus.focus());
     }
   }
 

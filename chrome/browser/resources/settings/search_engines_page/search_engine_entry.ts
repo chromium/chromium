@@ -14,7 +14,7 @@ import '../settings_shared_css.js';
 import '../site_favicon.js';
 
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getTemplate} from './search_engine_entry.html.js';
 
@@ -92,36 +92,40 @@ export class SettingsSearchEngineEntryElement extends PolymerElement {
       return;
     }
 
+    const dots =
+        this.shadowRoot!.querySelector('cr-icon-button.icon-more-vert');
+    assert(dots);
+
     this.dispatchEvent(new CustomEvent('delete-search-engine', {
       bubbles: true,
       composed: true,
       detail: {
         engine: this.engine,
-        anchorElement: assert(
-            this.shadowRoot!.querySelector('cr-icon-button.icon-more-vert')!),
+        anchorElement: dots,
       },
     }));
   }
 
   private onDotsTap_() {
-    this.shadowRoot!.querySelector('cr-action-menu')!.showAt(
-        assert(this.shadowRoot!.querySelector('cr-icon-button.icon-more-vert')!
-               ),
-        {
-          anchorAlignmentY: AnchorAlignment.AFTER_END,
-        });
+    const dots = this.shadowRoot!.querySelector<HTMLElement>(
+        'cr-icon-button.icon-more-vert');
+    assert(dots);
+    this.shadowRoot!.querySelector('cr-action-menu')!.showAt(dots, {
+      anchorAlignmentY: AnchorAlignment.AFTER_END,
+    });
   }
 
   private onEditTap_(e: Event) {
     e.preventDefault();
     this.closePopupMenu_();
+    const anchor = this.shadowRoot!.querySelector('cr-icon-button');
+    assert(anchor);
     this.dispatchEvent(new CustomEvent('edit-search-engine', {
       bubbles: true,
       composed: true,
       detail: {
         engine: this.engine,
-        anchorElement:
-            assert(this.shadowRoot!.querySelector('cr-icon-button')!),
+        anchorElement: anchor,
       },
     }));
   }

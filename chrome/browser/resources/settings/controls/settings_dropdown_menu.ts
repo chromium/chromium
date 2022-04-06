@@ -16,7 +16,7 @@ import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 
-import {assert} from '//resources/js/assert.m.js';
+import {assert} from '//resources/js/assert_ts.js';
 import {microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {prefToString, stringToPrefValue} from '../prefs/pref_util.js';
@@ -118,11 +118,11 @@ export class SettingsDropdownMenuElement extends
       return;
     }
 
+    assert(this.pref);
     if (this.prefKey) {
-      assert(this.pref);
       this.set(`pref.value.${this.prefKey}`, selected);
     } else {
-      const prefValue = stringToPrefValue(selected, assert(this.pref!));
+      const prefValue = stringToPrefValue(selected, this.pref);
       if (prefValue !== undefined) {
         this.set('pref.value', prefValue);
       }
@@ -168,7 +168,8 @@ export class SettingsDropdownMenuElement extends
       // Dictionary pref, values are always strings.
       return this.pref!.value[this.prefKey];
     } else {
-      return prefToString(assert(this.pref!));
+      assert(this.pref);
+      return prefToString(this.pref);
     }
   }
 

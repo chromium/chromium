@@ -13,7 +13,7 @@ import './security_keys_bio_enroll_dialog.js';
 import './security_keys_set_pin_dialog.js';
 import './security_keys_reset_dialog.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -116,8 +116,10 @@ class SecurityKeysSubpageElement extends PolymerElement {
 
   private onCredentialManagementDialogClosed_() {
     this.showCredentialManagementDialog_ = false;
-    focusWithoutInk(
-        assert(this.shadowRoot!.querySelector('#credentialManagementButton')!));
+    const toFocus =
+        this.shadowRoot!.querySelector('#credentialManagementButton');
+    assert(toFocus);
+    focusWithoutInk(toFocus);
   }
 
   private onReset_() {
@@ -135,8 +137,9 @@ class SecurityKeysSubpageElement extends PolymerElement {
 
   private onBioEnrollDialogClosed_() {
     this.showBioEnrollDialog_ = false;
-    focusWithoutInk(
-        assert(this.shadowRoot!.querySelector('#bioEnrollButton')!));
+    const toFocus = this.shadowRoot!.querySelector('#bioEnrollButton');
+    assert(toFocus);
+    focusWithoutInk(toFocus);
   }
 }
 

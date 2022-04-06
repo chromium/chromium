@@ -24,7 +24,7 @@ import './privacy_guide/privacy_guide_dialog.js';
 
 import {IPHBubbleElement} from 'chrome://resources/cr_components/iph_bubble/iph_bubble.js';
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
@@ -351,19 +351,21 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   }
 
   private onCbdDialogClosed_() {
-    Router.getInstance().navigateTo(assert(routes.CLEAR_BROWSER_DATA.parent!));
+    Router.getInstance().navigateTo(routes.CLEAR_BROWSER_DATA.parent!);
     setTimeout(() => {
       // Focus after a timeout to ensure any a11y messages get read before
       // screen readers read out the newly focused element.
-      focusWithoutInk(
-          assert(this.shadowRoot!.querySelector('#clearBrowsingData')!));
+      const toFocus = this.shadowRoot!.querySelector('#clearBrowsingData');
+      assert(toFocus);
+      focusWithoutInk(toFocus);
     });
   }
 
   private onPrivacyGuideDialogClosed_() {
-    Router.getInstance().navigateTo(assert(routes.PRIVACY_GUIDE.parent!));
-    focusWithoutInk(
-        assert(this.shadowRoot!.querySelector('#privacyGuideLinkRow')!));
+    Router.getInstance().navigateTo(routes.PRIVACY_GUIDE.parent!);
+    const toFocus = this.shadowRoot!.querySelector('#privacyGuideLinkRow');
+    assert(toFocus);
+    focusWithoutInk(toFocus);
   }
 
   private onPermissionsPageClick_() {

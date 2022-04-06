@@ -4,7 +4,7 @@
 
 /** @fileoverview Utility functions to help use prefs in Polymer controls. */
 
-import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
 /**
  * Converts a string value to a type corresponding to the given preference.
@@ -29,7 +29,6 @@ export function stringToPrefValue(
       return value;
     default:
       assertNotReached('No conversion from string to ' + pref.type + ' pref');
-      return undefined;
   }
 }
 
@@ -46,6 +45,5 @@ export function prefToString(pref: chrome.settingsPrivate.PrefObject): string {
       return pref.value;
     default:
       assertNotReached('No conversion from ' + pref.type + ' pref to string');
-      return '';
   }
 }

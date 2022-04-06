@@ -21,7 +21,7 @@ import './do_not_track_toggle.js';
 import '../controls/settings_radio_group.js';
 
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
@@ -176,8 +176,9 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
             routes.SITE_SETTINGS_ALL :
             routes.SITE_SETTINGS_SITE_DATA);
     const selectSiteDataLinkRow = () => {
-      focusWithoutInk(
-          assert(this.shadowRoot!.querySelector('#site-data-trigger')!));
+      const toFocus = this.shadowRoot!.querySelector('#site-data-trigger');
+      assert(toFocus);
+      focusWithoutInk(toFocus);
     };
     if (this.enableConsolidatedSiteStorageControls_) {
       this.focusConfig.set(

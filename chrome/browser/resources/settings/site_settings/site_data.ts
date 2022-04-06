@@ -19,7 +19,7 @@ import '../settings_shared_css.js';
 import './site_data_entry.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/js/list_property_update_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
@@ -193,8 +193,9 @@ export class SiteDataElement extends SiteDataElementBase {
     const siteToSelect = this.sites[index].site.replace(/[.]/g, '\\.');
     const button =
         this.$$(`#siteItem_${siteToSelect}`)!.shadowRoot!.querySelector(
-            '.subpage-arrow')!;
-    focusWithoutInk(assert(button));
+            '.subpage-arrow');
+    assert(button);
+    focusWithoutInk(button);
   }
 
   private onFilterChanged_(_current: string, previous?: string) {
@@ -241,11 +242,11 @@ export class SiteDataElement extends SiteDataElementBase {
   }
 
   private onConfirmDeleteDialogClosed_() {
-    focusWithoutInk(assert(this.$.removeShowingSites));
+    focusWithoutInk(this.$.removeShowingSites);
   }
 
   private onConfirmDeleteThirdPartyDialogClosed_() {
-    focusWithoutInk(assert(this.$.removeAllThirdPartyCookies));
+    focusWithoutInk(this.$.removeAllThirdPartyCookies);
   }
 
   /**

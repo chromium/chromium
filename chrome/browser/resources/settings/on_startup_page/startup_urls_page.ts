@@ -16,7 +16,6 @@ import '../settings_shared_css.js';
 import './startup_url_dialog.js';
 
 import {CrScrollableBehavior} from 'chrome://resources/cr_elements/cr_scrollable_behavior.m.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -115,7 +114,7 @@ export class SettingsStartupUrlsPageElement extends
     this.showStartupUrlDialog_ = false;
     this.startupUrlDialogModel_ = null;
     if (this.startupUrlDialogAnchor_) {
-      focusWithoutInk(assert(this.startupUrlDialogAnchor_));
+      focusWithoutInk(this.startupUrlDialogAnchor_);
       this.startupUrlDialogAnchor_ = null;
     }
   }

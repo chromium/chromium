@@ -8,7 +8,7 @@ import '//resources/polymer/v3_0/iron-a11y-keys-behavior/iron-a11y-keys-behavior
 import '../settings_shared_css.js';
 
 import {CrRadioButtonBehavior} from '//resources/cr_elements/cr_radio_button/cr_radio_button_behavior.m.js';
-import {assert} from '//resources/js/assert.m.js';
+import {assert} from '//resources/js/assert_ts.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {prefToString} from '../prefs/pref_util.js';
@@ -45,7 +45,12 @@ export class ControlledRadioButtonElement extends
   }
 
   private showIndicator_(): boolean {
-    return this.disabled && this.name === prefToString(assert(this.pref!));
+    if (!this.disabled) {
+      return false;
+    }
+
+    assert(this.pref);
+    return this.name === prefToString(this.pref);
   }
 
   private onIndicatorTap_(e: Event) {

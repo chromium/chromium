@@ -20,7 +20,7 @@ import './add_site_dialog.js';
 import './edit_exception_dialog.js';
 import './site_list_entry.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/js/list_property_update_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
@@ -304,7 +304,7 @@ export class SiteListElement extends SiteListElementBase {
 
   private onAddSiteDialogClosed_() {
     this.showAddSiteDialog_ = false;
-    focusWithoutInk(assert(this.$.addSite));
+    focusWithoutInk(this.$.addSite);
   }
 
   /**
@@ -466,9 +466,10 @@ export class SiteListElement extends SiteListElementBase {
   }
 
   private onResetTap_() {
-    const site = assert(this.actionMenuSite_!);
+    assert(this.actionMenuSite_);
     this.browserProxy.resetCategoryPermissionForPattern(
-        site!.origin, site!.embeddingOrigin, this.category, site!.incognito);
+        this.actionMenuSite_.origin, this.actionMenuSite_.embeddingOrigin,
+        this.category, this.actionMenuSite_.incognito);
     this.closeActionMenu_();
   }
 

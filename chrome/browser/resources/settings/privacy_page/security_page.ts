@@ -14,7 +14,7 @@ import '../prefs/prefs.js';
 import '../settings_shared_css.js';
 import './disable_safebrowsing_dialog.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -181,16 +181,19 @@ export class SettingsSecurityPageElement extends
     // <if expr="use_nss_certs">
     if (routes.CERTIFICATES) {
       this.focusConfig.set(routes.CERTIFICATES.path, () => {
-        focusWithoutInk(
-            assert(this.shadowRoot!.querySelector('#manageCertificates')!));
+        const toFocus = this.shadowRoot!.querySelector('#manageCertificates');
+        assert(toFocus);
+        focusWithoutInk(toFocus);
       });
     }
     // </if>
 
     if (routes.SECURITY_KEYS) {
       this.focusConfig.set(routes.SECURITY_KEYS.path, () => {
-        focusWithoutInk(assert(
-            this.shadowRoot!.querySelector('#security-keys-subpage-trigger')!));
+        const toFocus =
+            this.shadowRoot!.querySelector('#security-keys-subpage-trigger');
+        assert(toFocus);
+        focusWithoutInk(toFocus);
       });
     }
   }
@@ -329,7 +332,7 @@ export class SettingsSecurityPageElement extends
 
     // Set focus back to the no protection button regardless of user interaction
     // with the dialog, as it was the entry point to the dialog.
-    focusWithoutInk(assert(this.$.safeBrowsingDisabled));
+    focusWithoutInk(this.$.safeBrowsingDisabled);
   }
 
   private onEnhancedProtectionExpandButtonClicked_() {

@@ -15,7 +15,7 @@ import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import '../settings_shared_css.js';
 import './recent_site_permissions.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -420,7 +420,9 @@ export class SettingsSiteSettingsPageElement extends PolymerElement {
     // only fire once.
     assert(!oldConfig);
     this.focusConfig.set(routes.SITE_SETTINGS_ALL.path, () => {
-      focusWithoutInk(assert(this.shadowRoot!.querySelector('#allSites')!));
+      const allSites = this.shadowRoot!.querySelector('#allSites');
+      assert(!!allSites);
+      focusWithoutInk(allSites);
     });
   }
 

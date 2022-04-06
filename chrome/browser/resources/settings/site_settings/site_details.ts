@@ -24,7 +24,7 @@ import './clear_storage_dialog_css.js';
 import './site_details_permission.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
@@ -319,12 +319,15 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
   }
 
   private onResetSettingsDialogClosed_() {
-    focusWithoutInk(
-        assert(this.shadowRoot!.querySelector('#resetSettingsButton')!));
+    const toFocus = this.shadowRoot!.querySelector('#resetSettingsButton');
+    assert(toFocus);
+    focusWithoutInk(toFocus);
   }
 
   private onClearStorageDialogClosed_() {
-    focusWithoutInk(assert(this.shadowRoot!.querySelector('#clearStorage')!));
+    const toFocus = this.shadowRoot!.querySelector('#clearStorage');
+    assert(toFocus);
+    focusWithoutInk(toFocus);
   }
 }
 

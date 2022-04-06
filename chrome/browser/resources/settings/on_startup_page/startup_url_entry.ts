@@ -17,7 +17,7 @@ import '../site_favicon.js';
 
 import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getTemplate} from './startup_url_entry.html.js';
@@ -78,10 +78,13 @@ export class SettingsStartupUrlEntryElement extends
   }
 
   private onDotsTap_() {
-    const actionMenu = (this.shadowRoot!.querySelector('#menu') as
-                        CrLazyRenderElement<CrActionMenuElement>)
-                           .get();
-    actionMenu.showAt(assert(this.shadowRoot!.querySelector('#dots')!));
+    const actionMenu =
+        this.shadowRoot!
+            .querySelector<CrLazyRenderElement<CrActionMenuElement>>(
+                '#menu')!.get();
+    const dots = this.shadowRoot!.querySelector<HTMLElement>('#dots');
+    assert(dots);
+    actionMenu.showAt(dots);
   }
 }
 

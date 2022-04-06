@@ -26,7 +26,7 @@ import '//resources/cr_elements/cr_toast/cr_toast.js';
 
 import {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.m.js';
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {assert, assertNotReached} from '//resources/js/assert_ts.js';
 import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from '//resources/js/web_ui_listener_mixin.js';
 import {IronCollapseElement} from '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
@@ -368,8 +368,9 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
 
   private onFocusConfigChange_() {
     this.focusConfig.set(this.getSyncAdvancedPageRoute_().path, () => {
-      focusWithoutInk(
-          assert(this.shadowRoot!.querySelector('#sync-advanced-row')!));
+      const toFocus = this.shadowRoot!.querySelector('#sync-advanced-row');
+      assert(toFocus);
+      focusWithoutInk(toFocus);
     });
   }
 

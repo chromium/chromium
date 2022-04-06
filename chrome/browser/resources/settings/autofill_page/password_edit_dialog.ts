@@ -21,7 +21,7 @@ import './passwords_shared_css.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -469,7 +469,6 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
         return '';
       default:
         assertNotReached();
-        return '';
     }
   }
 
@@ -628,7 +627,6 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
         return this.existingEntry!.urls.shown;
       default:
         assertNotReached();
-        return '';
     }
   }
 

@@ -6,7 +6,7 @@ import '//resources/cr_elements/cr_button/cr_button.m.js';
 import '../i18n_setup.js';
 import '../settings_shared_css.js';
 
-import {assert} from '//resources/js/assert.m.js';
+import {assert} from '//resources/js/assert_ts.js';
 import {I18nMixin} from '//resources/js/i18n_mixin.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -54,7 +54,7 @@ export class ExtensionControlledIndicatorElement extends
   private onDisableTap_() {
     assert(this.extensionCanBeDisabled);
     ExtensionControlBrowserProxyImpl.getInstance().disableExtension(
-        assert(this.extensionId));
+        this.extensionId);
     this.dispatchEvent(
         new CustomEvent('extension-disable', {bubbles: true, composed: true}));
   }

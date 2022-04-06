@@ -34,7 +34,7 @@ import '../settings_vars_css.js';
 import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {isWindows} from 'chrome://resources/js/cr.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
@@ -168,7 +168,10 @@ export class SettingsLanguagesSubpageElement extends
   private onAddLanguagesDialogClose_() {
     this.showAddLanguagesDialog_ = false;
     this.addLanguagesDialogLanguages_ = null;
-    focusWithoutInk(assert(this.shadowRoot!.querySelector('#addLanguages')!));
+    const toFocus =
+        this.shadowRoot!.querySelector<HTMLElement>('#addLanguages');
+    assert(toFocus);
+    focusWithoutInk(toFocus);
   }
 
   private onLanguagesAdded_(e: CustomEvent<Array<string>>) {
@@ -196,8 +199,9 @@ export class SettingsLanguagesSubpageElement extends
   private onAlwaysTranslateDialogClose_() {
     this.showAddAlwaysTranslateDialog_ = false;
     this.addLanguagesDialogLanguages_ = null;
-    focusWithoutInk(
-        assert(this.shadowRoot!.querySelector('#addAlwaysTranslate')!));
+    const toFocus = this.shadowRoot!.querySelector('#addAlwaysTranslate');
+    assert(toFocus);
+    focusWithoutInk(toFocus);
   }
 
   /**
@@ -246,8 +250,9 @@ export class SettingsLanguagesSubpageElement extends
   private onNeverTranslateDialogClose_() {
     this.showAddNeverTranslateDialog_ = false;
     this.addLanguagesDialogLanguages_ = null;
-    focusWithoutInk(
-        assert(this.shadowRoot!.querySelector('#addNeverTranslate')!));
+    const toFocus = this.shadowRoot!.querySelector('#addNeverTranslate');
+    assert(toFocus);
+    focusWithoutInk(toFocus);
   }
 
   private onNeverTranslateLanguagesAdded_(e: CustomEvent<Array<string>>) {
@@ -290,7 +295,7 @@ export class SettingsLanguagesSubpageElement extends
       return false;
     }
 
-    const compareLanguage = assert(this.languages.enabled[n]);
+    const compareLanguage = this.languages.enabled[n]!;
     return this.detailLanguage_.language === compareLanguage.language;
   }
 

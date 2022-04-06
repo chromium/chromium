@@ -13,7 +13,7 @@ import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 import '../i18n_setup.js';
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -194,7 +194,6 @@ export class SiteDetailsPermissionElement extends
     }
     assertNotReached(
         `No string for ${this.category}'s default of ${defaultSetting}`);
-    return '';
   }
 
   /**
@@ -407,7 +406,6 @@ export class SiteDetailsPermissionElement extends
       return '';
     }
     assertNotReached(`No string for ${category} setting source '${source}'`);
-    return '';
   }
 }
 

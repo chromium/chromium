@@ -16,7 +16,7 @@
 
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 
-import {assert} from '//resources/js/assert.m.js';
+import {assert} from '//resources/js/assert_ts.js';
 import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
 // <if expr="chromeos_ash">
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
@@ -154,7 +154,9 @@ class SettingsAnimatedPagesElement extends SettingsAnimatedPagesElementBase {
       } else {
         handler = () => {
           if (typeof pathConfig === 'string') {
-            pathConfig = assert(this.querySelector(pathConfig)!);
+            const element = this.querySelector(pathConfig);
+            assert(element);
+            pathConfig = element;
           }
           focusWithoutInk(pathConfig as Element);
         };

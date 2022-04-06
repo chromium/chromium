@@ -15,7 +15,7 @@ import '../site_favicon.js';
 import './passwords_shared_css.js';
 
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -128,7 +128,6 @@ export class PasswordCheckListItemElement extends
     assertNotReached(
         'Can\'t find a string for type: ' +
         this.item.compromisedInfo!.compromiseType);
-    return '';
   }
 
   private fire_(eventName: string, detail?: any) {
@@ -139,8 +138,8 @@ export class PasswordCheckListItemElement extends
   private onChangePasswordClick_() {
     this.fire_('change-password-clicked', {id: this.item.id});
 
-    const url = assert(this.item.changePasswordUrl!);
-    OpenWindowProxyImpl.getInstance().openURL(url);
+    assert(this.item.changePasswordUrl);
+    OpenWindowProxyImpl.getInstance().openURL(this.item.changePasswordUrl);
 
     PasswordManagerImpl.getInstance().recordPasswordCheckInteraction(
         PasswordCheckInteraction.CHANGE_PASSWORD);
@@ -189,7 +188,7 @@ export class PasswordCheckListItemElement extends
     this.passwordManager_.recordPasswordCheckInteraction(
         PasswordCheckInteraction.SHOW_PASSWORD);
     this.getPlaintextInsecurePassword(
-            assert(this.item), chrome.passwordsPrivate.PlaintextReason.VIEW)
+            this.item, chrome.passwordsPrivate.PlaintextReason.VIEW)
         .then(insecureCredential => this.item = insecureCredential);
   }
 

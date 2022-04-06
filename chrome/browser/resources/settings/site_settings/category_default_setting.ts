@@ -37,7 +37,7 @@
 import '../controls/settings_toggle_button.js';
 import '../settings_shared_css.js';
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -158,7 +158,8 @@ export class CategoryDefaultSettingElement extends
   }
 
   get categoryEnabled(): boolean {
-    return !!assert(this.controlParams_).value;
+    assert(this.controlParams_);
+    return !!this.controlParams_.value;
   }
 
   /**

@@ -12,7 +12,7 @@
 
 import '../prefs/prefs.js';
 
-import {assert} from '//resources/js/assert.m.js';
+import {assert} from '//resources/js/assert_ts.js';
 import {PromiseResolver} from '//resources/js/promise_resolver.m.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

@@ -32,7 +32,7 @@ import './avatar_icon.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
@@ -435,8 +435,9 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   override disconnectedCallback() {
     super.disconnectedCallback();
 
+    assert(this.setIsOptedInForAccountStorageListener_);
     this.passwordManager_.removeAccountStorageOptInStateListener(
-        assert(this.setIsOptedInForAccountStorageListener_!));
+        this.setIsOptedInForAccountStorageListener_);
     this.setIsOptedInForAccountStorageListener_ = null;
   }
 
@@ -573,7 +574,9 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
   private onPasswordPromptClosed_() {
     this.showPasswordPromptDialog_ = false;
-    focusWithoutInk(assert(this.activeDialogAnchorStack_.pop()!));
+    const toFocus = this.activeDialogAnchorStack_.pop();
+    assert(toFocus);
+    focusWithoutInk(toFocus);
   }
 
   private openPasswordPromptDialog_() {
@@ -656,7 +659,9 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
   private onPasswordsExportDialogClosed_() {
     this.showPasswordsExportDialog_ = false;
-    focusWithoutInk(assert(this.activeDialogAnchorStack_.pop()!));
+    const toFocus = this.activeDialogAnchorStack_.pop();
+    assert(toFocus);
+    focusWithoutInk(toFocus);
   }
 
   private onAddPasswordTap_() {
@@ -675,7 +680,9 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
         AddCredentialFromSettingsUserInteractions.ADD_DIALOG_CLOSED,
         AddCredentialFromSettingsUserInteractions.COUNT);
     this.showAddPasswordDialog_ = false;
-    focusWithoutInk(assert(this.activeDialogAnchorStack_.pop()!));
+    const toFocus = this.activeDialogAnchorStack_.pop();
+    assert(toFocus);
+    focusWithoutInk(toFocus);
   }
 
   private onOptIn_() {
@@ -710,8 +717,10 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     // Populate the |focusConfig| map of the parent <settings-autofill-page>
     // element, with additional entries that correspond to subpage trigger
     // elements residing in this element's Shadow DOM.
-    this.focusConfig.set(assert(routes.CHECK_PASSWORDS).path, () => {
-      focusWithoutInk(assert(this.shadowRoot!.querySelector('#icon')!));
+    this.focusConfig.set(routes.CHECK_PASSWORDS.path, () => {
+      const toFocus = this.shadowRoot!.querySelector<HTMLElement>('#icon');
+      assert(toFocus);
+      focusWithoutInk(toFocus);
     });
   }
 
@@ -754,7 +763,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
         return '';
       default:
         assertNotReached();
-        return '';
     }
   }
 

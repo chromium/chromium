@@ -26,7 +26,6 @@ import '../settings_shared_css.js';
 import {convertImageSequenceToPng} from 'chrome://resources/cr_elements/chromeos/cr_picture/png.js';
 // </if>
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {getImage} from 'chrome://resources/js/icon.js';
@@ -268,8 +267,8 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
 
   private getEditPersonAssocControl_(): Element {
     return this.signinAllowed_ ?
-        assert(this.shadowRoot!.querySelector('#edit-profile')!) :
-        assert(this.shadowRoot!.querySelector('#profile-row')!);
+        this.shadowRoot!.querySelector('#edit-profile')! :
+        this.shadowRoot!.querySelector('#profile-row')!;
   }
 
   private getSyncAndGoogleServicesSubtext_(): string {
@@ -376,7 +375,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
 
   private onImportDataDialogClosed_() {
     Router.getInstance().navigateToPreviousRoute();
-    focusWithoutInk(assert(this.$.importDataDialogTrigger));
+    focusWithoutInk(this.$.importDataDialogTrigger);
   }
   // </if>
 
