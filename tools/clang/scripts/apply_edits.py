@@ -52,6 +52,7 @@ def _GetFilesFromGit(paths=None):
     args.extend(paths)
   command = subprocess.Popen(args, stdout=subprocess.PIPE)
   output, _ = command.communicate()
+  output = output.decode('utf-8')
   return [os.path.realpath(p) for p in output.splitlines()]
 
 
@@ -224,7 +225,7 @@ def _InsertNonSystemIncludeHeader(filepath, header_line_to_add, contents):
   # Don't add the header if it is already present.
   replacement_text = header_line_to_add
   if replacement_text in contents:
-    return
+    return contents
   replacement_text += '\n'
 
   # Find the right insertion point.
@@ -246,7 +247,8 @@ def _InsertNonSystemIncludeHeader(filepath, header_line_to_add, contents):
     replacement_text += '\n'
 
   # Make the edit.
-  contents[insertion_point:insertion_point] = replacement_text
+  return contents[:insertion_point] + replacement_text + \
+      contents[insertion_point:]
 
 
 def _ApplyReplacement(filepath, contents, edit, last_edit):
@@ -269,24 +271,28 @@ def _ApplyReplacement(filepath, contents, edit, last_edit):
           (filepath, edit.offset, edit.length, edit.replacement,
            last_edit.offset, last_edit.length, last_edit.replacement))
 
-  contents[edit.offset:edit.offset + edit.length] = edit.replacement
+  start = edit.offset
+  end = edit.offset + edit.length
+  contents = contents[:start] + edit.replacement + contents[end:]
   if not edit.replacement:
-    _ExtendDeletionIfElementIsInList(contents, edit.offset)
+    contents = _ExtendDeletionIfElementIsInList(contents, edit.offset)
+  return contents
 
 
 def _ApplyIncludeHeader(filepath, contents, edit, last_edit):
   header_line_to_add = '#include "%s"' % edit.replacement
-  _InsertNonSystemIncludeHeader(filepath, header_line_to_add, contents)
+  return _InsertNonSystemIncludeHeader(filepath, header_line_to_add, contents)
 
 
 def _ApplySingleEdit(filepath, contents, edit, last_edit):
   if edit.edit_type == 'r':
-    _ApplyReplacement(filepath, contents, edit, last_edit)
+    return _ApplyReplacement(filepath, contents, edit, last_edit)
   elif edit.edit_type == 'include-user-header':
-    _ApplyIncludeHeader(filepath, contents, edit, last_edit)
+    return _ApplyIncludeHeader(filepath, contents, edit, last_edit)
   else:
     raise ValueError('Unrecognized edit directive "%s": %s\n' %
                      (edit.edit_type, filepath))
+    return contents
 
 
 def _ApplyEditsToSingleFileContents(filepath, contents, edits):
@@ -306,25 +312,25 @@ def _ApplyEditsToSingleFileContents(filepath, contents, edits):
     if edit == last_edit:
       continue
     try:
-      _ApplySingleEdit(filepath, contents, edit, last_edit)
+      contents = _ApplySingleEdit(filepath, contents, edit, last_edit)
       last_edit = edit
       edit_count += 1
     except ValueError as err:
       sys.stderr.write(str(err) + '\n')
       error_count += 1
 
-  return (edit_count, error_count)
+  return (contents, edit_count, error_count)
 
 
 def _ApplyEditsToSingleFile(filepath, edits):
-  with open(filepath, 'rb+') as f:
-    contents = bytearray(f.read())
-    edit_and_error_counts = _ApplyEditsToSingleFileContents(
-        filepath, contents, edits)
+  with open(filepath, 'r+') as f:
+    contents = f.read()
+    (contents, edit_count,
+     error_count) = _ApplyEditsToSingleFileContents(filepath, contents, edits)
     f.seek(0)
     f.truncate()
     f.write(contents)
-  return edit_and_error_counts
+  return (edit_count, error_count)
 
 
 def _ApplyEdits(edits):
@@ -336,7 +342,7 @@ def _ApplyEdits(edits):
   edit_count = 0
   error_count = 0
   done_files = 0
-  for k, v in edits.iteritems():
+  for k, v in edits.items():
     tmp_edit_count, tmp_error_count = _ApplyEditsToSingleFile(k, v)
     edit_count += tmp_edit_count
     error_count += tmp_error_count
@@ -389,9 +395,10 @@ def _ExtendDeletionIfElementIsInList(contents, offset):
 
   if char_before:
     if char_after:
-      del contents[offset:offset + right_trim_count]
+      return contents[:offset] + contents[offset + right_trim_count:]
     elif char_before in (',', ':'):
-      del contents[offset - left_trim_count:offset]
+      return contents[:offset - left_trim_count] + contents[offset:]
+  return contents
 
 
 def main():
@@ -409,8 +416,8 @@ def main():
   filenames = set(_GetFilesFromGit(args.path_filter))
   edits = _ParseEditsFromStdin(args.p)
   return _ApplyEdits(
-      {k: v for k, v in edits.iteritems()
-            if os.path.realpath(k) in filenames})
+      {k: v
+       for k, v in edits.items() if os.path.realpath(k) in filenames})
 
 
 if __name__ == '__main__':
