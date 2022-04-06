@@ -34,9 +34,9 @@
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/style/color_provider.h"
-#include "ash/public/cpp/view_shadow.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/highlight_border.h"
+#include "ash/style/system_shadow.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/check.h"
@@ -79,8 +79,6 @@ constexpr int kOnscreenKeyboardTopPadding = 16;
 
 constexpr int kTileSpacingInFolder = 8;
 
-constexpr int kShadowElevation = 3;
-
 // Insets for the vertical scroll bar. The top is pushed down slightly to align
 // with the icons, which keeps the scroll bar out of the rounded corner area.
 constexpr auto kVerticalScrollInsets =
@@ -108,7 +106,8 @@ void SetBackgroundViewColor(views::View* background_view,
 // folder's background when opening the folder. Transit the other way when
 // closing the folder.
 class BackgroundAnimation : public AppListFolderView::Animation,
-                            public ui::ImplicitAnimationObserver {
+                            public ui::ImplicitAnimationObserver,
+                            public views::ViewObserver {
  public:
   BackgroundAnimation(bool is_productivity_launcher_enabled,
                       bool show,
@@ -117,12 +116,19 @@ class BackgroundAnimation : public AppListFolderView::Animation,
       : is_productivity_launcher_enabled_(is_productivity_launcher_enabled),
         show_(show),
         folder_view_(folder_view),
-        background_view_(background_view) {}
+        background_view_(background_view),
+        shadow_(folder_view->shadow()) {
+    background_view_observer_.Observe(background_view_);
+    shadow_->shadow_layer()->SetVisible(true);
+  }
 
   BackgroundAnimation(const BackgroundAnimation&) = delete;
   BackgroundAnimation& operator=(const BackgroundAnimation&) = delete;
 
-  ~BackgroundAnimation() override = default;
+  ~BackgroundAnimation() override {
+    if (!show_)
+      shadow_->shadow_layer()->SetVisible(false);
+  }
 
  private:
   // AppListFolderView::Animation:
@@ -173,22 +179,44 @@ class BackgroundAnimation : public AppListFolderView::Animation,
 
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsScheduled() override {
-    // Remove the border and shadow at the start of the closing animation.
+    // Remove the highlight border at the start of the closing animation.
     if (is_productivity_launcher_enabled_ && !show_)
-      folder_view_->UpdateBorderAndShadow(false);
+      folder_view_->UpdateHighlightBorder(false);
   }
 
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override {
-    // Add the border and shadow when the showing animation is completed.
+    // Add the highlight border when the showing animation is completed.
     if (is_productivity_launcher_enabled_ && show_)
-      folder_view_->UpdateBorderAndShadow(true);
+      folder_view_->UpdateHighlightBorder(true);
 
     is_animating_ = false;
     folder_view_->RecordAnimationSmoothness();
 
     if (completion_callback_)
       std::move(completion_callback_).Run();
+  }
+
+  // views::ViewObserver:
+  void OnViewLayerClipRectChanged(views::View* observed_view) override {
+    // Shadow is painted on the nine patch layer according to its owner's shape,
+    // so the shadow cannot be animated with the change of shadow layer's
+    // attributes. We need to use the intermediate clip rect shape from
+    // background animation to update shadow's contents bounds and corner
+    // radius.
+    DCHECK_EQ(observed_view, background_view_);
+
+    // If layer clip rect is not empty, we use the clip rect to update the
+    // shadow's contents bounds. Otherwise, we use the layer bounds.
+    const auto* background_layer = background_view_->layer();
+    const gfx::Rect& background_bounds = background_layer->bounds();
+    const gfx::Rect& clip_rect = background_layer->clip_rect();
+    const gfx::Rect& content_bounds =
+        clip_rect.IsEmpty() ? background_bounds
+                            : clip_rect + background_bounds.OffsetFromOrigin();
+    shadow_->SetContentBounds(content_bounds);
+    shadow_->SetRoundedCornerRadius(
+        background_layer->rounded_corner_radii().upper_left());
   }
 
   // Caches the productivity launcher feature flag.
@@ -200,6 +228,11 @@ class BackgroundAnimation : public AppListFolderView::Animation,
 
   AppListFolderView* const folder_view_;  // Not owned.
   views::View* const background_view_;    // Not owned.
+  SystemShadow* const shadow_;            // Not owned.
+
+  // Observes the rect clip change of background view.
+  base::ScopedObservation<views::View, views::ViewObserver>
+      background_view_observer_{this};
 
   base::OnceClosure completion_callback_;
 };
@@ -661,6 +694,11 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
   else
     CreatePagedAppsGrid(contents_view);
 
+  // Create a shadow under `background_view_`.
+  shadow_ = std::make_unique<SystemShadow>(SystemShadow::Type::kElevation8);
+  background_view_->AddLayerBeneathView(shadow_->layer());
+  shadow_->shadow_layer()->SetVisible(false);
+
   AppListModelProvider::Get()->AddObserver(this);
 }
 
@@ -894,6 +932,7 @@ void AppListFolderView::Layout() {
     // The folder view can change size due to app install/uninstall. Ensure the
     // rounded corners have the correct position. https://crbug.com/993282
     background_view_->layer()->SetClipRect(background_view_->GetLocalBounds());
+    shadow_->SetContentBounds(background_view_->layer()->bounds());
   }
 }
 
@@ -1007,18 +1046,12 @@ void AppListFolderView::OnHideAnimationDone(bool hide_for_reparent) {
     std::move(animation_done_test_callback_).Run();
 }
 
-void AppListFolderView::UpdateBorderAndShadow(bool show) {
+void AppListFolderView::UpdateHighlightBorder(bool show) {
   if (!show) {
-    view_shadow_.reset();
     background_view_->SetBorder(nullptr);
     return;
   }
 
-  // Add a shadow to the folder view.
-  view_shadow_ =
-      std::make_unique<ViewShadow>(background_view_, kShadowElevation);
-  view_shadow_->SetRoundedCornerRadius(
-      GetAppListConfig()->folder_background_radius());
   background_view_->SetBorder(std::make_unique<HighlightBorder>(
       GetAppListConfig()->folder_background_radius(),
       HighlightBorder::Type::kHighlightBorder1,

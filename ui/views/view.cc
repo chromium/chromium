@@ -2156,6 +2156,12 @@ void View::OnLayerTransformed(const gfx::Transform& old_transform,
     observer.OnViewLayerTransformed(this);
 }
 
+void View::OnLayerClipRectChanged(const gfx::Rect& old_rect,
+                                  ui::PropertyChangeReason reason) {
+  for (ViewObserver& observer : observers_)
+    observer.OnViewLayerClipRectChanged(this);
+}
+
 void View::OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                       float new_device_scale_factor) {
   snap_layer_to_pixel_boundary_ =

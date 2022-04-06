@@ -1519,7 +1519,13 @@ void Layer::SetColorFromAnimation(SkColor color, PropertyChangeReason reason) {
 
 void Layer::SetClipRectFromAnimation(const gfx::Rect& clip_rect,
                                      PropertyChangeReason reason) {
+  const gfx::Rect old_rect = cc_layer_->clip_rect();
+  if (old_rect == clip_rect)
+    return;
   cc_layer_->SetClipRect(clip_rect);
+
+  if (delegate_)
+    delegate_->OnLayerClipRectChanged(old_rect, reason);
 }
 
 void Layer::SetRoundedCornersFromAnimation(

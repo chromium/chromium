@@ -43,6 +43,9 @@ class VIEWS_EXPORT ViewObserver {
   // migrate this method (and possibly others) into callbacks.
   virtual void OnViewLayerTransformed(View* observed_view) {}
 
+  // Called when `observed_view`'s layer clip rect changes.
+  virtual void OnViewLayerClipRectChanged(View* observed_view) {}
+
   // Called when View::ViewHierarchyChanged() is called.
   virtual void OnViewHierarchyChanged(
       View* observed_view,

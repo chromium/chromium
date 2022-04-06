@@ -38,7 +38,7 @@ class AppsGridView;
 class FolderHeaderView;
 class PageSwitcher;
 class ScrollViewGradientHelper;
-class ViewShadow;
+class SystemShadow;
 
 // Displays folder contents via an AppsGridView. App items can be dragged out
 // of the folder to the main apps grid.
@@ -145,9 +145,9 @@ class ASH_EXPORT AppListFolderView
   // to be in the parent view's coordinate system.
   void SetBoundingBox(const gfx::Rect& bounding_box);
 
-  // Updates the border and shadow of the folder view according to the folder
+  // Updates the highlight border of the folder view according to the folder
   // animation.
-  void UpdateBorderAndShadow(bool show);
+  void UpdateHighlightBorder(bool show);
 
   // Sets the callback that runs when the folder animation ends.
   void SetAnimationDoneTestCallback(base::OnceClosure animation_done_callback);
@@ -167,6 +167,8 @@ class ASH_EXPORT AppListFolderView
   }
 
   const gfx::Rect& preferred_bounds() const { return preferred_bounds_; }
+
+  SystemShadow* shadow() { return shadow_.get(); }
 
   // Records the smoothness of folder show/hide animations mixed with the
   // BackgroundAnimation, FolderItemTitleAnimation, TopIconAnimation, and
@@ -279,6 +281,8 @@ class ASH_EXPORT AppListFolderView
   // Only used for ProductivityLauncher. Owned by views hierarchy.
   views::ScrollView* scroll_view_ = nullptr;
 
+  std::unique_ptr<SystemShadow> shadow_;
+
   // Adds fade in/out gradients to `scroll_view_`.
   // Only used for ProductivityLauncher.
   std::unique_ptr<ScrollViewGradientHelper> gradient_helper_;
@@ -295,8 +299,6 @@ class ASH_EXPORT AppListFolderView
 
   // The folder item in the root apps grid associated with this folder.
   AppListItemView* folder_item_view_ = nullptr;
-
-  std::unique_ptr<ViewShadow> view_shadow_;
 
   // The bounds of the activated folder item icon relative to this view.
   gfx::Rect folder_item_icon_bounds_;

@@ -48,6 +48,12 @@ class COMPOSITOR_EXPORT LayerDelegate {
   // animation.
   virtual void OnLayerFillsBoundsOpaquelyChanged(PropertyChangeReason reason);
 
+  // Invoked when the clip rect is set. |reason| indicates whether the clip rect
+  // was set directly or by an animation. This will be called at every step of a
+  // clip rect animation.
+  virtual void OnLayerClipRectChanged(const gfx::Rect& old_rect,
+                                      PropertyChangeReason reason);
+
   // Called when it is a good opportunity for the delegate to update any visual
   // state or schedule any additional regions to be painted. Soon after this is
   // called OnPaintLayer() is called.

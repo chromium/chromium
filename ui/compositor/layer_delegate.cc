@@ -19,6 +19,9 @@ void LayerDelegate::OnLayerAlphaShapeChanged() {}
 void LayerDelegate::OnLayerFillsBoundsOpaquelyChanged(
     PropertyChangeReason reason) {}
 
+void LayerDelegate::OnLayerClipRectChanged(const gfx::Rect& old_rect,
+                                           PropertyChangeReason reason) {}
+
 void LayerDelegate::UpdateVisualState() {}
 
 }  // namespace ui
