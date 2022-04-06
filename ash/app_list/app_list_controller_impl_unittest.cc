@@ -33,6 +33,7 @@
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
+#include "ash/public/cpp/session/session_types.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -42,6 +43,7 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/test/test_shelf_item_delegate.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shelf/shelf_view.h"
@@ -62,6 +64,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
+#include "components/session_manager/session_manager_types.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/presentation_time_recorder.h"
@@ -1304,6 +1307,100 @@ TEST_F(AppListControllerImplAppListBubbleTest,
   // Simulate synced wallpaper update while bubble is open.
   controller->OnWallpaperColorsChanged();
   // No crash.
+}
+
+// Kiosk tests with the bubble launcher enabled.
+class AppListControllerImplKioskTest
+    : public AppListControllerImplAppListBubbleTest {
+ public:
+  AppListControllerImplKioskTest() = default;
+  ~AppListControllerImplKioskTest() override = default;
+
+  void SetUp() override {
+    AppListControllerImplAppListBubbleTest::SetUp();
+    SessionInfo info;
+    info.is_running_in_app_mode = true;
+    info.state = session_manager::SessionState::ACTIVE;
+    Shell::Get()->session_controller()->SetSessionInfo(info);
+  }
+};
+
+TEST_F(AppListControllerImplKioskTest, ShouldNotShowLauncherInTabletMode) {
+  EnableTabletMode();
+  auto* controller = Shell::Get()->app_list_controller();
+
+  EXPECT_FALSE(controller->ShouldHomeLauncherBeVisible());
+}
+
+TEST_F(AppListControllerImplKioskTest,
+       DoNotShowAnyAppListInClamshellModeWhenShowAppListCalled) {
+  auto* controller = Shell::Get()->app_list_controller();
+
+  controller->ShowAppList();
+
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->IsVisible());
+}
+
+TEST_F(AppListControllerImplKioskTest,
+       DoNotShowAnyAppListInTabletModeWhenShowAppListCalled) {
+  EnableTabletMode();
+  auto* controller = Shell::Get()->app_list_controller();
+
+  controller->ShowAppList();
+
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->IsVisible());
+}
+
+TEST_F(AppListControllerImplKioskTest,
+       DoNotShowHomeLauncherInTabletModeWhenOnSessionStateChangedCalled) {
+  EnableTabletMode();
+  auto* controller = Shell::Get()->app_list_controller();
+
+  controller->OnSessionStateChanged(session_manager::SessionState::ACTIVE);
+
+  EXPECT_FALSE(controller->ShouldHomeLauncherBeVisible());
+}
+
+TEST_F(AppListControllerImplKioskTest,
+       DoNotMinimizeAppWindowInTabletModeWhenGoHomeCalled) {
+  // Emulation of a Kiosk app window.
+  std::unique_ptr<aura::Window> w(CreateTestWindow(gfx::Rect(0, 0, 400, 400)));
+  EnableTabletMode();
+
+  Shell::Get()->app_list_controller()->GoHome(GetPrimaryDisplay().id());
+
+  EXPECT_FALSE(WindowState::Get(w.get())->IsMinimized());
+  EXPECT_TRUE(w->IsVisible());
+}
+
+TEST_F(AppListControllerImplKioskTest,
+       DoNotShowAppListInTabletModeWhenPressHomeButton) {
+  // Emulation of a Kiosk app window.
+  std::unique_ptr<aura::Window> w(CreateTestWindow(gfx::Rect(0, 0, 400, 400)));
+  EnableTabletMode();
+
+  PressHomeButton();
+
+  EXPECT_FALSE(WindowState::Get(w.get())->IsMinimized());
+  EXPECT_TRUE(w->IsVisible());
+  EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible());
+}
+
+TEST_F(AppListControllerImplKioskTest,
+       DoNotOpenAnyAppListAfterSwitchingFromTabletMode) {
+  auto* controller = Shell::Get()->app_list_controller();
+  EnableTabletMode();
+
+  controller->OnTabletModeStarted();
+  EXPECT_FALSE(controller->IsVisible());
+
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  controller->OnTabletModeEnded();
+
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->IsVisible());
 }
 
 // App list assistant tests, parameterized by ProductivityLauncher.
