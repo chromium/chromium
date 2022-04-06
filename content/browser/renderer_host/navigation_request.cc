@@ -6159,9 +6159,6 @@ NavigationRequest::GetOriginForURLLoaderFactoryWithFinalFrameHost() {
   // to make network request on behalf of the real origin.
   DCHECK(!IsMhtmlOrSubframe() || origin.opaque());
 
-  // https://crbug.com/1041376) of the origin that will be committed because of
-  // |this| NavigationRequest.
-
   // Note that GetRenderFrameHost() only allows to retrieve the RenderFrameHost
   // once it has been set for this navigation.  This will happens either at
   // WillProcessResponse time for regular navigations or at WillFailRequest time
