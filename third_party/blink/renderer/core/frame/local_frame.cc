@@ -512,10 +512,8 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
   IgnoreOpensDuringUnloadCountIncrementer ignore_opens_during_unload(
       GetDocument());
 
-  // If the frame is detached for a frame swap, the new document that is being
-  // swapped in might need the unload info of the old document.
-  bool need_unload_info_for_new_document = (type == FrameDetachType::kSwap);
-  loader_.DispatchUnloadEvent(need_unload_info_for_new_document);
+  loader_.DispatchUnloadEventAndFillOldDocumentInfoIfNeeded(
+      type == FrameDetachType::kSwap);
   if (evict_cached_session_storage_on_freeze_or_unload_) {
     // Evicts the cached data of Session Storage to avoid reusing old data in
     // the cache after the session storage has been modified by another renderer

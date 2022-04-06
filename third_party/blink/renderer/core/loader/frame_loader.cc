@@ -175,9 +175,14 @@ ResourceRequest FrameLoader::ResourceRequestForReload(
   return request;
 }
 
-FrameLoader::OldDocumentInfoForCommit*
-    FrameLoader::ScopedOldDocumentInfoForCommitCapturer::g_current_info_ =
+FrameLoader::ScopedOldDocumentInfoForCommitCapturer*
+    FrameLoader::ScopedOldDocumentInfoForCommitCapturer::current_capturer_ =
         nullptr;
+
+FrameLoader::ScopedOldDocumentInfoForCommitCapturer::
+    ~ScopedOldDocumentInfoForCommitCapturer() {
+  current_capturer_ = previous_capturer_;
+}
 
 FrameLoader::FrameLoader(LocalFrame* frame)
     : frame_(frame),
@@ -372,26 +377,31 @@ void FrameLoader::SaveScrollState() {
   Client()->DidUpdateCurrentHistoryItem();
 }
 
-void FrameLoader::DispatchUnloadEvent(bool need_unload_info_for_new_document) {
+void FrameLoader::DispatchUnloadEventAndFillOldDocumentInfoIfNeeded(
+    bool will_commit_new_document_in_this_frame) {
   FrameNavigationDisabler navigation_disabler(*frame_);
   SaveScrollState();
 
   if (SVGImage::IsInSVGImage(frame_->GetDocument()))
     return;
+
+  // Only fill in the info of the unloading document if it is needed for a new
+  // document committing in this frame (either due to frame swap or committing
+  // a new document in the same FrameLoader). This avoids overwriting the info
+  // saved of a parent frame that's already saved in
+  // ScopedOldDocumentInfoForCommitCapturer when a child frame is being
+  // destroyed due to the parent frame committing. In that case, only the parent
+  // frame needs should fill in the info.
   OldDocumentInfoForCommit* old_document_info =
       ScopedOldDocumentInfoForCommitCapturer::CurrentInfo();
-  if (old_document_info && need_unload_info_for_new_document) {
-    // Only fill in the unload timing info if it is needed for a new document
-    // (due to frame swap or committing a new document in the same FrameLoader).
-    // This avoids overwriting the unload timing value of a parent frame that's
-    // already saved in ScopedOldDocumentInfoForCommitCapturer when a child
-    // frame is being destroyed due to the parent frame committing. In that
-    // case, only the parent frame needs should fill in the unload timing info.
-    frame_->GetDocument()->DispatchUnloadEvents(
-        &old_document_info->unload_timing_info);
-  } else {
+  if (!old_document_info || !will_commit_new_document_in_this_frame) {
     frame_->GetDocument()->DispatchUnloadEvents(nullptr);
+    return;
   }
+  old_document_info->history_item = GetDocumentLoader()->GetHistoryItem();
+
+  frame_->GetDocument()->DispatchUnloadEvents(
+      &old_document_info->unload_timing_info);
 }
 
 void FrameLoader::DidExplicitOpen() {
@@ -1034,12 +1044,6 @@ void FrameLoader::CommitNavigation(
   FillStaticResponseIfNeeded(navigation_params.get(), frame_);
   AssertCanNavigate(navigation_params.get(), frame_);
 
-  // Keep track of the current Document HistoryItem as the new DocumentLoader
-  // might need to copy state from it. Note that the current DocumentLoader
-  // should always exist, as the initial empty document is committed through
-  // FrameLoader::Init.
-  HistoryItem* previous_history_item = GetDocumentLoader()->GetHistoryItem();
-
   // If this is a javascript: URL or XSLT commit, we must copy the ExtraData
   // from the previous DocumentLoader to ensure the new DocumentLoader behaves
   // the same way as the previous one.
@@ -1052,11 +1056,13 @@ void FrameLoader::CommitNavigation(
     }
   }
 
-  // Create the OldDocumentInfoForCommit for the old document, and save it in
-  // ScopedOldDocumentInfoForCommitCapturer, so that the old document can access
-  // it and fill in the information.
+  // Create the OldDocumentInfoForCommit for the old document (that might be in
+  // another FrameLoader) and save it in ScopedOldDocumentInfoForCommitCapturer,
+  // so that the old document can access it and fill in the information as it
+  // is being unloaded/swapped out.
   ScopedOldDocumentInfoForCommitCapturer scoped_old_document_info(
-      OldDocumentInfoForCommit(SecurityOrigin::Create(navigation_params->url)));
+      MakeGarbageCollected<OldDocumentInfoForCommit>(
+          SecurityOrigin::Create(navigation_params->url)));
 
   FrameSwapScope frame_swap_scope(frame_owner);
   {
@@ -1147,8 +1153,10 @@ void FrameLoader::CommitNavigation(
       frame_, navigation_type, std::move(navigation_params),
       std::move(policy_container), std::move(extra_data));
 
-  CommitDocumentLoader(new_document_loader, previous_history_item,
-                       commit_reason);
+  CommitDocumentLoader(
+      new_document_loader,
+      ScopedOldDocumentInfoForCommitCapturer::CurrentInfo()->history_item,
+      commit_reason);
 
   RestoreScrollPositionAndViewState();
 
@@ -1221,7 +1229,7 @@ bool FrameLoader::DetachDocument() {
   // Don't allow this frame to navigate anymore. This line is needed for
   // navigation triggered from children's unload handlers. Blocking navigations
   // triggered from this frame's unload handler is already covered in
-  // DispatchUnloadEvent().
+  // DispatchUnloadEventAndFillOldDocumentInfoIfNeeded().
   FrameNavigationDisabler navigation_disabler(*frame_);
   // Don't allow any new child frames to load in this frame: attaching a new
   // child frame during or after detaching children results in an attached frame
@@ -1232,12 +1240,13 @@ bool FrameLoader::DetachDocument() {
   // both when unloading itself and when unloading its descendants.
   IgnoreOpensDuringUnloadCountIncrementer ignore_opens_during_unload(
       frame_->GetDocument());
-  DispatchUnloadEvent(true /* need_unload_info_for_new_document */);
+  DispatchUnloadEventAndFillOldDocumentInfoIfNeeded(
+      true /* will_commit_new_document_in_this_frame */);
   frame_->DetachChildren();
-  // The previous calls to dispatchUnloadEvent() and detachChildren() can
-  // execute arbitrary script via things like unload events. If the executed
-  // script causes the current frame to be detached, we need to abandon the
-  // current load.
+  // The previous calls to DispatchUnloadEventAndFillOldDocumentInfoIfNeeded()
+  // and detachChildren() can execute arbitrary script via things like unload
+  // events. If the executed script causes the current frame to be detached, we
+  // need to abandon the current load.
   if (!frame_->Client())
     return false;
   // FrameNavigationDisabler should prevent another load from starting.
@@ -1810,5 +1819,9 @@ FrameLoader::OldDocumentInfoForCommit::OldDocumentInfoForCommit(
     scoped_refptr<SecurityOrigin> new_document_origin)
     : unload_timing_info(
           UnloadEventTimingInfo(std::move(new_document_origin))) {}
+
+void FrameLoader::OldDocumentInfoForCommit::Trace(Visitor* visitor) const {
+  visitor->Trace(history_item);
+}
 
 }  // namespace blink

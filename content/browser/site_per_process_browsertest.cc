@@ -1406,14 +1406,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, NavigateRemoteAfterError) {
 // TODO(creis): Make the net error page show in the correct process as well,
 // per https://crbug.com/588314.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ProcessTransferAfterError) {
-  // This test doesn't yet work properly with RenderDocument for subframes,
-  // because it does not correctly identify the repeated navigation to the same
-  // URL as same-page, and fails to reuse the same NavigationEntry in this
-  // case. See https://crbug.com/1068965.
-  // TODO(fergal,alexmos): Re-enable once this is fixed.
-  if (ShouldCreateNewHostForSameSiteSubframe())
-    return;
-
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(a)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));

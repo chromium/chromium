@@ -38,7 +38,8 @@ KURL NavigationHistoryEntry::url() {
 bool NavigationHistoryEntry::sameDocument() const {
   if (!DomWindow())
     return false;
-  auto* current_item = DomWindow()->document()->Loader()->GetHistoryItem();
+  HistoryItem* current_item =
+      DomWindow()->document()->Loader()->GetHistoryItem();
   return current_item->DocumentSequenceNumber() ==
          item_->DocumentSequenceNumber();
 }

@@ -192,13 +192,13 @@ class CORE_EXPORT FrameLoader final {
 
   bool ShouldClose(bool is_reload = false);
 
-  // Dispatches the Unload event for the current document. If this is due to the
-  // commit of a navigation, `need_unload_info_for_new_document` will be true.
-  // If the new document is allowed to access the unload timings of the current
-  // document (i.e. it's same-origin), the unload timing info in the current
-  // OldDocumentInfoForCommit (from ScopedOldDocumentInfoForCommitCapturer)
-  // will be modified to reflect the unload timing of this document.
-  void DispatchUnloadEvent(bool need_unload_info_for_new_document);
+  // Dispatches the Unload event for the current document and fills in this
+  // document's info in OldDocumentInfoForCommit if
+  // `will_commit_new_document_in_this_frame` is true (which will only be
+  // the case when the current document in this frame is being unloaded for
+  // committing a new document).
+  void DispatchUnloadEventAndFillOldDocumentInfoIfNeeded(
+      bool will_commit_new_document_in_this_frame);
 
   bool AllowPlugins();
 
@@ -257,6 +257,25 @@ class CORE_EXPORT FrameLoader final {
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
   mojo::PendingRemote<blink::mojom::CodeCacheHost> CreateWorkerCodeCacheHost();
+
+  // Contains information related to the previous document in the frame, to be
+  // given to the next document that is going to commit in this FrameLoader.
+  // Note that the "previous document" might not necessarily use the same
+  // FrameLoader as this one, e.g. in case of local RenderFrame swap.
+  struct OldDocumentInfoForCommit : GarbageCollected<OldDocumentInfoForCommit> {
+    explicit OldDocumentInfoForCommit(
+        scoped_refptr<SecurityOrigin> new_document_origin);
+    void Trace(Visitor* visitor) const;
+    // The unload timing info of the previous document in the frame. The new
+    // document can access this information if it is a same-origin, to be
+    // exposed through the Navigation Timing API.
+    UnloadEventTimingInfo unload_timing_info;
+    // The HistoryItem of the previous document in the frame. Some of the state
+    // from the old document's HistoryItem will be copied to the new document
+    // e.g. history.state will be copied on same-URL navigations. See also
+    // https://github.com/whatwg/html/issues/6213.
+    Member<HistoryItem> history_item;
+  };
 
  private:
   bool AllowRequestForThisFrame(const FrameLoadRequest&);
@@ -350,41 +369,31 @@ class CORE_EXPORT FrameLoader final {
   // size of this set is capped, after which no more warnings are printed.
   HashSet<String> tls_version_warning_origins_;
 
-  // Contains information related to the previous document in the frame, to be
-  // given to the next document that is going to commit in this FrameLoader.
-  // Note that the "previous document" might not necessarily use the same
-  // FrameLoader as this one, e.g. in case of local RenderFrame swap.
-  struct OldDocumentInfoForCommit {
-    explicit OldDocumentInfoForCommit(
-        scoped_refptr<SecurityOrigin> new_document_origin);
-    // The unload timing info of the previous document in the frame.
-    UnloadEventTimingInfo unload_timing_info;
-  };
-
-  // Owns the OldDocumentInfoForCommit and exposes it through `g_current_info_`
+  // Owns the OldDocumentInfoForCommit and exposes it through `info_`
   // so that both the unloading old document and the committing new document
   // can access and modify the value, without explicitly passing it between
   // them on unload/commit time.
   class ScopedOldDocumentInfoForCommitCapturer {
+    STACK_ALLOCATED();
+
    public:
     explicit ScopedOldDocumentInfoForCommitCapturer(
-        const OldDocumentInfoForCommit& info)
-        : info_(info), previous_info_(g_current_info_) {
-      g_current_info_ = &info_;
+        OldDocumentInfoForCommit* info)
+        : info_(info), previous_capturer_(current_capturer_) {
+      current_capturer_ = this;
     }
 
-    ~ScopedOldDocumentInfoForCommitCapturer() {
-      g_current_info_ = previous_info_;
-    }
+    ~ScopedOldDocumentInfoForCommitCapturer();
 
     // The last OldDocumentInfoForCommit set for `info_` that is still in scope.
-    static OldDocumentInfoForCommit* CurrentInfo() { return g_current_info_; }
+    static OldDocumentInfoForCommit* CurrentInfo() {
+      return current_capturer_ ? current_capturer_->info_ : nullptr;
+    }
 
    private:
-    OldDocumentInfoForCommit info_;
-    OldDocumentInfoForCommit* previous_info_;
-
-    static OldDocumentInfoForCommit* g_current_info_;
+    OldDocumentInfoForCommit* info_;
+    ScopedOldDocumentInfoForCommitCapturer* previous_capturer_;
+    static ScopedOldDocumentInfoForCommitCapturer* current_capturer_;
   };
 };
 

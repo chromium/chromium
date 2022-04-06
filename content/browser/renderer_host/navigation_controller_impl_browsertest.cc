@@ -19315,15 +19315,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
               controller.GetLastCommittedEntry()->GetFrameEntry(child));
     EXPECT_TRUE(capturer.did_replace_entry());
 
-    // We keep the same history.state value (except when RenderDocument
-    // subframe is on).
-    // TODO(http://crbug.com/1068965): Keep the history.state even with
-    // RenderDocument.
-    if (ShouldCreateNewHostForSameSiteSubframe()) {
-      EXPECT_EQ(nullptr, EvalJs(child, "history.state"));
-    } else {
-      EXPECT_EQ("foo", EvalJs(child, "history.state"));
-    }
+    // We keep the same history.state value.
+    EXPECT_EQ("foo", EvalJs(child, "history.state"));
   }
 
   {
@@ -19349,15 +19342,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
               controller.GetLastCommittedEntry()->GetFrameEntry(child));
     EXPECT_FALSE(capturer.did_replace_entry());
 
-    // We keep the same history.state value (except when RenderDocument
-    // subframe is on).
-    // TODO(http://crbug.com/1068965): Keep the history.state even with
-    // RenderDocument.
-    if (ShouldCreateNewHostForSameSiteSubframe()) {
-      EXPECT_EQ(nullptr, EvalJs(child, "history.state"));
-    } else {
-      EXPECT_EQ("foo", EvalJs(child, "history.state"));
-    }
+    // We keep the same history.state value.
+    EXPECT_EQ("foo", EvalJs(child, "history.state"));
   }
 
   // 3) Test navigating the subframe to the same URL, but it ends up in an error
@@ -19419,15 +19405,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
               controller.GetLastCommittedEntry()->GetFrameEntry(child));
     EXPECT_FALSE(capturer.did_replace_entry());
 
-    // We keep the history.state value from before the failed navigation (except
-    // when RenderDocument subframe is on).
-    // TODO(http://crbug.com/1068965): Keep the history.state even with
-    // RenderDocument.
-    if (ShouldCreateNewHostForSameSiteSubframe()) {
-      EXPECT_EQ(nullptr, EvalJs(child, "history.state"));
-    } else {
-      EXPECT_EQ("foo", EvalJs(child, "history.state"));
-    }
+    // We keep the same history.state value.
+    EXPECT_EQ("foo", EvalJs(child, "history.state"));
   }
 }
 
@@ -19485,15 +19464,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
               controller.GetLastCommittedEntry()->GetFrameEntry(child));
     EXPECT_EQ(2, controller.GetEntryCount());
 
-    // We keep the same history.state value (except when RenderDocument
-    // subframe is on).
-    // TODO(http://crbug.com/1068965): Keep the history.state even with
-    // RenderDocument.
-    if (ShouldCreateNewHostForSameSiteSubframe()) {
-      EXPECT_EQ(nullptr, EvalJs(child, "history.state"));
-    } else {
-      EXPECT_EQ("foo", EvalJs(child, "history.state"));
-    }
+    // We keep the same history.state value.
+    EXPECT_EQ("foo", EvalJs(child, "history.state"));
   }
 
   {
@@ -19567,15 +19539,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
               controller.GetLastCommittedEntry()->GetFrameEntry(child));
     EXPECT_EQ(1, controller.GetEntryCount());
 
-    // We keep the same history.state value (except when RenderDocument
-    // subframe is on).
-    // TODO(http://crbug.com/1068965): Keep the history.state even with
-    // RenderDocument.
-    if (ShouldCreateNewHostForSameSiteSubframe()) {
-      EXPECT_EQ(nullptr, EvalJs(child, "history.state"));
-    } else {
-      EXPECT_EQ("foo", EvalJs(child, "history.state"));
-    }
+    // We keep the same history.state value.
+    EXPECT_EQ("foo", EvalJs(child, "history.state"));
   }
 
   {
@@ -19602,15 +19567,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
               controller.GetLastCommittedEntry()->GetFrameEntry(child));
     EXPECT_EQ(1, controller.GetEntryCount());
 
-    // We keep the same history.state value (except when RenderDocument
-    // subframe is on).
-    // TODO(http://crbug.com/1068965): Keep the history.state even with
-    // RenderDocument.
-    if (ShouldCreateNewHostForSameSiteSubframe()) {
-      EXPECT_EQ(nullptr, EvalJs(child, "history.state"));
-    } else {
-      EXPECT_EQ("foo", EvalJs(child, "history.state"));
-    }
+    // We keep the same history.state value.
+    EXPECT_EQ("foo", EvalJs(child, "history.state"));
   }
 
   {
@@ -19676,14 +19634,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
               controller.GetLastCommittedEntry()->GetFrameEntry(child));
     EXPECT_EQ(1, controller.GetEntryCount());
 
-    // We keep the history.state value from before the failed navigation (except
-    // when RenderDocument subframe is on).
-    // TODO(http://crbug.com/1068965): Keep the history.state even with
-    // RenderDocument.
+    // We keep the history.state value from before the failed navigation.
     // TODO(http://crbug.com/1188956): Ensure error page isolation correctly
     // maintains history.state as well.
-    if (ShouldCreateNewHostForSameSiteSubframe() ||
-        SiteIsolationPolicy::IsErrorPageIsolationEnabled(false)) {
+    if (SiteIsolationPolicy::IsErrorPageIsolationEnabled(false)) {
       EXPECT_EQ(nullptr, EvalJs(child, "history.state"));
     } else {
       EXPECT_EQ("foo", EvalJs(child, "history.state"));
@@ -20496,10 +20450,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ReloadFrame) {
   EXPECT_EQ(network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin,
             frame_entry_2->referrer().policy);
 
-  // TODO(http://crbug.com/1068965): Remove this when test passes.
-  if (ShouldCreateNewHostForSameSiteSubframe())
-    return;
-
   int item_sequence_number_2 = frame_entry_1->item_sequence_number();
   int document_sequence_number_2 = frame_entry_1->document_sequence_number();
   EXPECT_EQ(item_sequence_number_1, item_sequence_number_2);
@@ -21265,6 +21215,57 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, UnloadTiming) {
   ASSERT_EQ(1, EvalJs(root, "navigationTiming.length"));
   EXPECT_EQ(0, EvalJs(root, "navigationTiming[0].unloadEventStart"));
   EXPECT_EQ(0, EvalJs(root, "navigationTiming[0].unloadEventEnd"));
+}
+
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       SameURLNavigationRetainsHistoryState) {
+  GURL main_frame_url(embedded_test_server()->GetURL("/page_with_iframe.html"));
+  GURL subframe_url(embedded_test_server()->GetURL("/title1.html"));
+  GURL other_url(embedded_test_server()->GetURL("/title2.html"));
+  // Navigate to a page with an iframe.
+  EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
+  FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
+  ASSERT_EQ(1u, root->child_count());
+  FrameTreeNode* child = root->child_at(0u);
+  EXPECT_EQ(main_frame_url, root->current_url());
+  EXPECT_EQ(subframe_url, child->current_url());
+
+  // Do a replaceState on the subframe to set the history.state to "foo".
+  ReplaceState(child, "foo");
+
+  // Navigate the subframe to the same URL it is currently on.
+  {
+    FrameNavigateParamsCapturer capturer(child);
+    ASSERT_TRUE(NavigateFrameToURL(child, subframe_url));
+    capturer.Wait();
+    EXPECT_EQ(subframe_url, child->current_url());
+  }
+  // Check that the history.state is retained after the navigation.
+  EXPECT_EQ("foo", EvalJs(child, "history.state"));
+
+  // Navigate the subframe to a different URL.
+  {
+    FrameNavigateParamsCapturer capturer(child);
+    ASSERT_TRUE(NavigateFrameToURL(child, other_url));
+    capturer.Wait();
+    EXPECT_EQ(other_url, child->current_url());
+  }
+  // Check that the history.state is not retained after the navigation.
+  EXPECT_EQ(nullptr, EvalJs(child, "history.state"));
+
+  // Do a replaceState on the main frame to set the history.state to "bar".
+  ReplaceState(root, "bar");
+  EXPECT_EQ("bar", EvalJs(root, "history.state"));
+
+  // Navigate the main frame to the same URL it's currently on.
+  ASSERT_TRUE(NavigateToURL(shell(), root->current_url()));
+  // Check that the history.state is retained after the navigation.
+  EXPECT_EQ("bar", EvalJs(root, "history.state"));
+
+  // Navigate the main frame to a different URL.
+  ASSERT_TRUE(NavigateToURL(shell(), other_url));
+  // Check that the history.state is not retained after the navigation.
+  EXPECT_EQ(nullptr, EvalJs(root, "history.state"));
 }
 
 INSTANTIATE_TEST_SUITE_P(
