@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/sharing_hub/preview_view.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_action_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -116,7 +117,17 @@ const views::View* SharingHubBubbleViewImpl::GetButtonContainerForTesting()
 void SharingHubBubbleViewImpl::Init() {
   const int kPadding = 8;
   set_margins(gfx::Insets::TLBR(kPadding, 0, kPadding, 0));
-  SetLayoutManager(std::make_unique<views::FillLayout>());
+  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
+  layout->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  if (controller_->ShouldUsePreview()) {
+    auto* preview = AddChildView(std::make_unique<PreviewView>(
+        controller_->GetPreviewTitle(), controller_->GetPreviewUrl(),
+        controller_->GetPreviewImage()));
+    preview->TakeCallbackSubscription(
+        controller_->RegisterPreviewImageChangedCallback(base::BindRepeating(
+            &PreviewView::OnImageChanged, base::Unretained(preview))));
+    AddChildView(std::make_unique<views::Separator>());
+  }
 
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
   scroll_view_->ClipHeightTo(0, kActionButtonHeight * kMaximumButtons);

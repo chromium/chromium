@@ -10,6 +10,7 @@
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/models/image_model.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 
@@ -44,6 +45,9 @@ class SharingHubBubbleController
     : public content::WebContentsObserver,
       public content::WebContentsUserData<SharingHubBubbleController> {
  public:
+  using PreviewImageChangedCallback =
+      base::RepeatingCallback<void(ui::ImageModel)>;
+
   SharingHubBubbleController(const SharingHubBubbleController&) = delete;
   SharingHubBubbleController& operator=(const SharingHubBubbleController&) =
       delete;
@@ -71,6 +75,14 @@ class SharingHubBubbleController
   virtual std::vector<SharingHubAction> GetFirstPartyActions();
   // Returns the list of Sharing Hub third party actions.
   virtual std::vector<SharingHubAction> GetThirdPartyActions();
+
+  virtual bool ShouldUsePreview();
+  virtual std::u16string GetPreviewTitle();
+  virtual GURL GetPreviewUrl();
+  virtual ui::ImageModel GetPreviewImage();
+
+  base::CallbackListSubscription RegisterPreviewImageChangedCallback(
+      PreviewImageChangedCallback callback);
 
   // Handles when the user clicks on a Sharing Hub action. If this is a first
   // party action, executes the appropriate browser command. If this is a third
@@ -113,6 +125,9 @@ class SharingHubBubbleController
   raw_ptr<SharingHubBubbleView> sharing_hub_bubble_view_ = nullptr;
   // Cached reference to the model.
   raw_ptr<SharingHubModel> sharing_hub_model_ = nullptr;
+
+  base::RepeatingCallbackList<void(ui::ImageModel)>
+      preview_image_changed_callbacks_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

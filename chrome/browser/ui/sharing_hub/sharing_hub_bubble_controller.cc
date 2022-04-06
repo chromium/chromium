@@ -9,7 +9,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/share/share_features.h"
 #include "chrome/browser/share/share_metrics.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/sharing_hub/sharing_hub_model.h"
@@ -166,6 +168,33 @@ SharingHubBubbleController::GetThirdPartyActions() {
     model->GetThirdPartyActionList(&actions);
 
   return actions;
+}
+
+bool SharingHubBubbleController::ShouldUsePreview() {
+  return share::GetDesktopSharePreviewVariant() !=
+         share::DesktopSharePreviewVariant::kDisabled;
+}
+
+std::u16string SharingHubBubbleController::GetPreviewTitle() {
+  // TODO(https://crbug.com/1312524): get passed this state from the omnibox
+  // instead.
+  return GetWebContents().GetTitle();
+}
+
+GURL SharingHubBubbleController::GetPreviewUrl() {
+  // TODO(https://crbug.com/1312524): get passed this state from the omnibox
+  // instead.
+  return GetWebContents().GetVisibleURL();
+}
+
+ui::ImageModel SharingHubBubbleController::GetPreviewImage() {
+  return ui::ImageModel::FromImage(favicon::GetDefaultFavicon());
+}
+
+base::CallbackListSubscription
+SharingHubBubbleController::RegisterPreviewImageChangedCallback(
+    PreviewImageChangedCallback callback) {
+  return preview_image_changed_callbacks_.Add(callback);
 }
 
 void SharingHubBubbleController::OnActionSelected(

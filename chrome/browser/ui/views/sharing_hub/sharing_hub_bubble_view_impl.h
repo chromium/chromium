@@ -25,7 +25,8 @@ class SharingHubBubbleActionButton;
 struct SharingHubAction;
 
 // View component of the Sharing Hub bubble that allows users to share/save the
-// current page.
+// current page. The sharing hub bubble also optionally contains a preview of
+// the content being shared.
 class SharingHubBubbleViewImpl : public SharingHubBubbleView,
                                  public LocationBarBubbleDelegateView {
  public:
