@@ -213,7 +213,11 @@ PlatformWindowState FlatlandWindow::GetPlatformWindowState() const {
     return PlatformWindowState::kFullScreen;
   if (!is_view_attached_)
     return PlatformWindowState::kMinimized;
-  return PlatformWindowState::kNormal;
+
+  // TODO(crbug.com/1241868): We cannot tell what portion of the screen is
+  // occupied by the View, so report is as maximized to reduce the space used
+  // by any browser chrome.
+  return PlatformWindowState::kMaximized;
 }
 
 void FlatlandWindow::Activate() {
