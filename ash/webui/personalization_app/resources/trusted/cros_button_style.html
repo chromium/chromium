@@ -31,6 +31,15 @@
       color: var(--cros-button-label-color-primary) !important;
     }
 
+    cr-button[aria-pressed=true] iron-icon,
+    cr-button[aria-selected=true] iron-icon {
+      --iron-icon-fill-color: var(--cros-button-label-color-primary) !important;
+    }
+
+    cr-button:focus-visible {
+      outline: 2px solid var(--cros-focus-ring-color);
+    }
+
     iron-icon {
       --iron-icon-height: 20px;
       --iron-icon-width: 20px;

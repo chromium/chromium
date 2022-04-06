@@ -16,25 +16,26 @@
     --ink-color: rgba(var(--cros-ripple-color-rgb), 1);
     --paper-ripple-opacity: var(--cros-button-primary-ripple-opacity);
   }
-  cr-button .text {
+
+  /* These cr-button styles are added here instead of cros-button-style because
+  the specs for these buttons are different from others in the app. */
+  cr-button .text,
+  cr-button:hover .text  {
     color: var(--cros-text-color-secondary);
     font: var(--cros-body-1-font);
     padding-top: 4px;
   }
+
+  cr-button iron-icon,
+  cr-button:hover iron-icon {
+    --iron-icon-fill-color: var(--cros-text-color-secondary);
+  }
+
   cr-button:hover {
     background-color: rgba(var(--cros-ripple-color-rgb),
         var(--cros-button-primary-ripple-opacity));
   }
-  cr-button:hover .text {
-    color: var(--cros-text-color-secondary);
-  }
-  cr-button:focus-visible {
-    outline: 2px solid var(--cros-focus-ring-color);
-  }
-  cr-button[disabled] iron-icon,
-  cr-button[disabled] .text {
-    opacity: var(--cros-disabled-opacity);
-  }
+
   #buttonContainer {
     display: grid;
     gap: 8px;
