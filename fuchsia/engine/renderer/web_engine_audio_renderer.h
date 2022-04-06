@@ -101,6 +101,8 @@ class WEB_ENGINE_EXPORT WebEngineAudioRenderer final
   // |volume_|.
   void UpdateVolume();
 
+  void InitializeStream();
+
   // Callback for input_buffer_collection_.AcquireBuffers().
   void OnBuffersAcquired(
       std::vector<media::VmoBuffer> buffers,
@@ -170,6 +172,7 @@ class WEB_ENGINE_EXPORT WebEngineAudioRenderer final
 
   float volume_ = 1.0;
 
+  media::CdmContext* cdm_context_ = nullptr;
   media::DemuxerStream* demuxer_stream_ = nullptr;
   bool is_demuxer_read_pending_ = false;
   bool drop_next_demuxer_read_result_ = false;
