@@ -94,7 +94,7 @@ class SupervisedUserService : public KeyedService,
   enum class DenylistSource {
     kNoSource = 0,
     kDenylist = 1,
-    kOldDenylist = 2,
+    kOldDenylist = 2,  // Deprecated.
     // Used for UMA. Update kMaxValue to the last value. Add future entries
     // above this comment. Sync with enums.xml.
     kMaxValue = kOldDenylist,
@@ -121,7 +121,7 @@ class SupervisedUserService : public KeyedService,
 
   static const char* GetDenylistSourceHistogramForTesting();
 
-  static base::FilePath GetDenylistPathForTesting(bool isOldPath);
+  static base::FilePath GetDenylistPathForTesting();
 
   WebApprovalsManager& web_approvals_manager() {
     return web_approvals_manager_;
