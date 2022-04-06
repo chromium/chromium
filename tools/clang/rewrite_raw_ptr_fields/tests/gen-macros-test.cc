@@ -13,7 +13,7 @@
 // To run the test use tools/clang/rewrite_raw_ptr_fields/tests/run_all_tests.py
 
 //////////////////////////////////////////////////////////////////////////////
-// Based on build/linux/debian_sid_amd64-sysroot/usr/include/link.h
+// Based on build/linux/debian_bullseye_amd64-sysroot/usr/include/link.h
 //
 // We expect that |ptr_field| will be emitted as a candidate for
 // --field-filter-file.

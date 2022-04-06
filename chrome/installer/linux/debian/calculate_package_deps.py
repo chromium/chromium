@@ -80,7 +80,23 @@ deps = deps_str.split(', ')
 interval_sets = []
 if deps_str != '':
   for dep in deps:
-    interval_sets.append(package_version_interval.parse_interval_set(dep))
+    interval_set = package_version_interval.parse_interval_set(dep)
+    # Chrome depends on libgcc_s, is from the package libgcc1.  However, in
+    # Bullseye, the package was renamed to libgcc-s1.  To avoid adding a dep
+    # on the newer package, this hack skips the dep.  This is safe because
+    # libgcc-s1 is a dependency of libc6.  This hack can be removed once
+    # support for Debian Buster and Ubuntu Bionic are dropped.
+    if interval_set.intervals[0].package == 'libgcc-s1':
+      assert len(interval_set.intervals) == 1
+      interval = interval_set.intervals[0]
+      # Ensure there's not a maximum version.
+      assert interval.end == (
+          package_version_interval.PackageVersionIntervalEndpoint(
+              True, None, None))
+      # The GCC version in Ubuntu Trusty is 4.8, so use that as the minimum.
+      assert interval.contains(deb_version.DebVersion('4.8'))
+      continue
+    interval_sets.append(interval_set)
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 deps_file = os.path.join(script_dir, 'dist_package_versions.json')
