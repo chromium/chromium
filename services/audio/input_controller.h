@@ -44,6 +44,7 @@ class AudioCallback;
 class OutputTapper;
 class DeviceOutputListener;
 class InputStreamActivityMonitor;
+class ProcessingAudioFifo;
 
 // Only do power monitoring for non-mobile platforms to save resources.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -180,6 +181,8 @@ class InputController final : public StreamMonitor {
   void OnStreamInactive(Snoopable* snoopable) override;
 
  private:
+  friend class InputControllerTestHelper;
+
   // Used to log the result of capture startup.
   // This was previously logged as a boolean with only the no callback and OK
   // options. The enum order is kept to ensure backwards compatibility.
@@ -299,6 +302,11 @@ class InputController final : public StreamMonitor {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   // Handles audio processing effects applied to the microphone capture audio.
   std::unique_ptr<AudioProcessorHandler> audio_processor_handler_;
+
+  // Offloads processing captured data to its own real time thread.
+  // Note: Ordering is important, as |processing_fifo_| must be destroyed before
+  // |audio_processing_handler_|.
+  std::unique_ptr<ProcessingAudioFifo> processing_fifo_;
 
   // Manages the |audio_processor_handler_| subscription to output audio.
   std::unique_ptr<OutputTapper> output_tapper_;

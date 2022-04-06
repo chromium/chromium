@@ -29,11 +29,13 @@
 #include "media/audio/audio_manager.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_processing.h"
+#include "media/base/media_switches.h"
 #include "media/base/user_input_monitor.h"
 #include "services/audio/audio_processor_handler.h"
 #include "services/audio/concurrent_stream_metric_reporter.h"
 #include "services/audio/device_output_listener.h"
 #include "services/audio/output_tapper.h"
+#include "services/audio/processing_audio_fifo.h"
 #include "services/audio/reference_output.h"
 
 namespace audio {
@@ -116,6 +118,12 @@ float AveragePower(const media::AudioBus& buffer) {
 #endif  // AUDIO_POWER_MONITORING
 
 }  // namespace
+
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+// Interpret a size of "0" as disabling the FIFO.
+const base::FeatureParam<int> kProcessingFifoSize{
+    &media::kChromeWideEchoCancellation, "processing_fifo_size", 0};
+#endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 
 // This class implements the AudioInputCallback interface in place of the
 // InputController (AIC), so that
@@ -233,8 +241,23 @@ void InputController::MaybeSetUpAudioProcessing(
       std::move(processing_config->controls_receiver),
       aecdump_recording_manager);
 
+  // If the required processing is lightweight, there is no need to offload work
+  // to a new thread.
   if (!processing_config->settings.NeedPlayoutReference())
     return;
+
+  int fifo_size = kProcessingFifoSize.Get();
+
+  // Only use the FIFO/new thread if its size is explicitly set.
+  if (fifo_size) {
+    // base::Unretained() is safe here since |this| owns
+    // |audio_processor_handler_|, and it gets destroyed after
+    // |processing_fifo_|.
+    processing_fifo_ = std::make_unique<ProcessingAudioFifo>(
+        params, fifo_size,
+        base::BindRepeating(&AudioProcessorHandler::ProcessCapturedAudio,
+                            base::Unretained(audio_processor_handler_.get())));
+  }
 
   // Unretained() is safe, since |event_handler_| outlives |output_tapper_|.
   output_tapper_ = std::make_unique<OutputTapper>(
@@ -320,6 +343,9 @@ void InputController::Record() {
           base::BindRepeating(&InputController::DoReportError, weak_this_)));
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  if (processing_fifo_)
+    processing_fifo_->Start();
+
   if (output_tapper_)
     output_tapper_->Start();
 #endif
@@ -343,11 +369,22 @@ void InputController::Close() {
 
   // Allow calling unconditionally and bail if we don't have a stream to close.
   if (audio_callback_) {
+    // Calls to DeliverDataToSyncWriter() should stop beyond this point.
+    stream_->Stop();
+
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
     if (output_tapper_)
       output_tapper_->Stop();
+
+    if (processing_fifo_) {
+      // Stop the FIFO after |stream_| is stopped, to guarantee there are no
+      // more calls to DeliverDataToSyncWriter().
+      // Note: destroying the FIFO will synchronously wait for the processing
+      // thread to stop.
+      processing_fifo_.reset();
+    }
 #endif
-    stream_->Stop();
+
     activity_monitor_->OnInputStreamInactive();
 
     // Sometimes a stream (and accompanying audio track) is created and
@@ -707,7 +744,10 @@ void InputController::DeliverDataToSyncWriter(const media::AudioBus* source,
                                               double volume) {
   const bool key_pressed = CheckForKeyboardInput();
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  if (audio_processor_handler_) {
+  if (processing_fifo_) {
+    DCHECK(audio_processor_handler_);
+    processing_fifo_->PushData(source, capture_time, volume, key_pressed);
+  } else if (audio_processor_handler_) {
     audio_processor_handler_->ProcessCapturedAudio(*source, capture_time,
                                                    volume, key_pressed);
   } else

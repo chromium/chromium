@@ -16,6 +16,7 @@
 #include "media/audio/fake_audio_manager.h"
 #include "media/audio/test_audio_thread.h"
 #include "media/base/audio_processing.h"
+#include "media/base/media_switches.h"
 #include "media/base/user_input_monitor.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/aecdump_recording_manager.h"
@@ -264,6 +265,25 @@ TEST_F(InputControllerTest, TestOnmutedCallbackInitiallyMuted) {
 }
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+const std::string kFifoSizeParameter = "processing_fifo_size";
+const std::map<std::string, std::string> kDisabledFifoParam{
+    {kFifoSizeParameter, "0"}};
+const std::map<std::string, std::string> kEnabledFifoParam{
+    {kFifoSizeParameter, "110"}};
+
+class InputControllerTestHelper {
+ public:
+  explicit InputControllerTestHelper(InputController* controller)
+      : controller_(controller) {}
+
+  bool IsUsingProcessingThread() {
+    return !!controller_->processing_fifo_.get();
+  }
+
+ private:
+  raw_ptr<InputController> controller_;
+};
+
 class MockDeviceOutputListener : public DeviceOutputListener {
  public:
   MockDeviceOutputListener() = default;
@@ -288,6 +308,9 @@ class TimeSourceInputControllerTestWithDeviceListener
         &this->device_output_listener_, &this->aecdump_recording_manager_,
         std::move(processing_config_), this->params_,
         media::AudioDeviceDescription::kDefaultDeviceId, false);
+
+    helper_ =
+        std::make_unique<InputControllerTestHelper>(this->controller_.get());
   }
 
   enum class AudioProcessingType {
@@ -327,6 +350,7 @@ class TimeSourceInputControllerTestWithDeviceListener
   NiceMock<MockDeviceOutputListener> device_output_listener_;
   media::mojom::AudioProcessingConfigPtr processing_config_;
   mojo::Remote<media::mojom::AudioProcessorControls> remote_controls_;
+  std::unique_ptr<InputControllerTestHelper> helper_;
 };
 
 using SystemTimeInputControllerTestWithDeviceListener =
@@ -337,6 +361,10 @@ using InputControllerTestWithDeviceListener =
 
 TEST_F(InputControllerTestWithDeviceListener,
        CreateWithAudioProcessingConfig_WithSomeEffectsEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      media::kChromeWideEchoCancellation, kEnabledFifoParam);
+
   SetupProcessingConfig(AudioProcessingType::kWithoutPlayoutReference);
 
   CreateAudioController();
@@ -352,12 +380,20 @@ TEST_F(InputControllerTestWithDeviceListener,
   // receiver it received through its ctor.
   EXPECT_TRUE(remote_controls_.is_connected());
 
+  // InputController shouldn't offload processing work when there is no playout
+  // reference.
+  EXPECT_FALSE(helper_->IsUsingProcessingThread());
+
   // Test cleanup.
   controller_->Close();
 }
 
 TEST_F(InputControllerTestWithDeviceListener,
        CreateWithAudioProcessingConfig_WithoutEnablingEffects) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      media::kChromeWideEchoCancellation, kEnabledFifoParam);
+
   SetupProcessingConfig(AudioProcessingType::kNone);
 
   CreateAudioController();
@@ -373,6 +409,64 @@ TEST_F(InputControllerTestWithDeviceListener,
   // ignore the pending AudioProcessorControls Receiver it received in its ctor.
   EXPECT_FALSE(remote_controls_.is_connected());
 
+  // InputController spin up a processing thread if it's not needed.
+  EXPECT_FALSE(helper_->IsUsingProcessingThread());
+
+  // Test cleanup.
+  controller_->Close();
+}
+
+TEST_F(InputControllerTestWithDeviceListener,
+       CreateWithAudioProcessingConfig_ProcessingThreadOffByDefault) {
+  SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
+
+  CreateAudioController();
+
+  ASSERT_TRUE(controller_.get());
+
+  // The processing thread shouldn't be used unless params are explicitly set.
+  EXPECT_FALSE(helper_->IsUsingProcessingThread());
+
+  // Test cleanup.
+  controller_->Close();
+}
+
+TEST_F(InputControllerTestWithDeviceListener,
+       CreateWithAudioProcessingConfig_ProcessingThreadExplicitlyOff) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      media::kChromeWideEchoCancellation, kDisabledFifoParam);
+
+  SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
+
+  CreateAudioController();
+
+  ASSERT_TRUE(controller_.get());
+
+  // The processing thread shouldn't be used if we explicitly set a
+  // processing FIFO size of 0.
+  EXPECT_FALSE(helper_->IsUsingProcessingThread());
+
+  // Test cleanup.
+  controller_->Close();
+}
+
+TEST_F(InputControllerTestWithDeviceListener,
+       CreateWithAudioProcessingConfig_ProcessingThreadExplicitlyOn) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      media::kChromeWideEchoCancellation, kEnabledFifoParam);
+
+  SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
+
+  CreateAudioController();
+
+  ASSERT_TRUE(controller_.get());
+
+  // The processing thread should be used if we explicitly set a processing FIFO
+  // size.
+  EXPECT_TRUE(helper_->IsUsingProcessingThread());
+
   // Test cleanup.
   controller_->Close();
 }
@@ -380,6 +474,10 @@ TEST_F(InputControllerTestWithDeviceListener,
 TEST_F(
     InputControllerTestWithDeviceListener,
     CreateWithAudioProcessingConfig_DoesNotListenForPlayoutReferenceIfNotRequired) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      media::kChromeWideEchoCancellation, kEnabledFifoParam);
+
   const std::string kOutputDeviceId = "0x123";
   EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamActive()).Times(1);
   EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamInactive()).Times(1);
@@ -394,10 +492,20 @@ TEST_F(
 
   controller_->Record();
   controller_->SetOutputDeviceForAec(kOutputDeviceId);
+
+  // InputController spin up a processing thread if it's not needed.
+  EXPECT_FALSE(helper_->IsUsingProcessingThread());
+
   controller_->Close();
+
+  EXPECT_FALSE(helper_->IsUsingProcessingThread());
 }
 
 TEST_F(InputControllerTestWithDeviceListener, RecordBeforeSetOutputForAec) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      media::kChromeWideEchoCancellation, kEnabledFifoParam);
+
   const std::string kOutputDeviceId = "0x123";
   EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamActive()).Times(1);
   EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamInactive()).Times(1);
@@ -415,10 +523,21 @@ TEST_F(InputControllerTestWithDeviceListener, RecordBeforeSetOutputForAec) {
 
   controller_->Record();
   controller_->SetOutputDeviceForAec(kOutputDeviceId);
+
+  // InputController should offload processing to its own thread.
+  EXPECT_TRUE(helper_->IsUsingProcessingThread());
+
   controller_->Close();
+
+  // The processing thread should be stopped after controller has closed.
+  EXPECT_FALSE(helper_->IsUsingProcessingThread());
 }
 
 TEST_F(InputControllerTestWithDeviceListener, RecordAfterSetOutputForAec) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      media::kChromeWideEchoCancellation, kEnabledFifoParam);
+
   const std::string kOutputDeviceId = "0x123";
   EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamActive()).Times(1);
   EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamInactive()).Times(1);
@@ -433,7 +552,14 @@ TEST_F(InputControllerTestWithDeviceListener, RecordAfterSetOutputForAec) {
 
   controller_->SetOutputDeviceForAec(kOutputDeviceId);
   controller_->Record();
+
+  // InputController should offload processing to its own thread.
+  EXPECT_TRUE(helper_->IsUsingProcessingThread());
+
   controller_->Close();
+
+  // The processing thread should be stopped after controller has closed.
+  EXPECT_FALSE(helper_->IsUsingProcessingThread());
 }
 
 TEST_F(InputControllerTestWithDeviceListener, ChangeOutputForAec) {
@@ -468,6 +594,10 @@ TEST_F(InputControllerTestWithDeviceListener, ChangeOutputForAec) {
 // by the FakeAudioInputStream. The callbacks to sync_writer_.Write() are on
 // that thread, and thus we must use SYSTEM_TIME.
 TEST_F(SystemTimeInputControllerTestWithDeviceListener, CreateRecordAndClose) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      media::kChromeWideEchoCancellation, kEnabledFifoParam);
+
   EXPECT_CALL(event_handler_, OnCreated(_));
   EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamActive()).Times(1);
   EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamInactive()).Times(1);
@@ -487,6 +617,10 @@ TEST_F(SystemTimeInputControllerTestWithDeviceListener, CreateRecordAndClose) {
         .WillOnce(InvokeWithoutArgs([&]() { loop.Quit(); }));
   }
   controller_->Record();
+
+  // InputController should offload processing to its own thread.
+  EXPECT_TRUE(helper_->IsUsingProcessingThread());
+
   loop.Run();
 
   testing::Mock::VerifyAndClearExpectations(&user_input_monitor_);
@@ -495,6 +629,9 @@ TEST_F(SystemTimeInputControllerTestWithDeviceListener, CreateRecordAndClose) {
   EXPECT_CALL(sync_writer_, Close());
   EXPECT_CALL(user_input_monitor_, DisableKeyPressMonitoring());
   controller_->Close();
+
+  // The processing thread should be stopped after controller has closed.
+  EXPECT_FALSE(helper_->IsUsingProcessingThread());
 
   task_environment_.RunUntilIdle();
 }
