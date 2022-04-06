@@ -180,8 +180,8 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
   }
 
   Vector<std::unique_ptr<RTCRtpSource>> GetSources() {
-    // The webrtc_recever_ is a proxy, so this is a blocking call to the webrtc
-    // signalling thread.
+    // The `webrtc_recever_` is a PROXY and GetSources block-invokes to its
+    // secondary thread, which is the WebRTC worker thread.
     auto webrtc_sources = webrtc_receiver_->GetSources();
     Vector<std::unique_ptr<RTCRtpSource>> sources(
         static_cast<WTF::wtf_size_t>(webrtc_sources.size()));

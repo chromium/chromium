@@ -39,6 +39,7 @@
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -828,16 +829,16 @@ RTCPeerConnection::RTCPeerConnection(
   }
 
   // Tests might need a custom RtcPeerConnectionHandler implementation.
+  PeerConnectionDependencyFactory& dependency_factory =
+      PeerConnectionDependencyFactory::From(*context);
   if (!g_create_rpc_peer_connection_handler_callback_.Get().is_null()) {
     peer_handler_ =
         std::move(g_create_rpc_peer_connection_handler_callback_.Get()).Run();
   } else {
-    peer_handler_ =
-        PeerConnectionDependencyFactory::From(*context)
-            .CreateRTCPeerConnectionHandler(
-                this, window->GetTaskRunner(TaskType::kInternalMedia),
-                force_encoded_audio_insertable_streams_,
-                force_encoded_video_insertable_streams_);
+    peer_handler_ = dependency_factory.CreateRTCPeerConnectionHandler(
+        this, window->GetTaskRunner(TaskType::kInternalMedia),
+        force_encoded_audio_insertable_streams_,
+        force_encoded_video_insertable_streams_);
   }
 
   if (!peer_handler_) {
@@ -854,6 +855,16 @@ RTCPeerConnection::RTCPeerConnection(
     DCHECK(exception_state.HadException());
     return;
   }
+  // After Initialize() with a real `peer_handler_`, WebRTC threads exist.
+  scoped_refptr<base::SingleThreadTaskRunner> worker_thread =
+      dependency_factory.GetWebRtcWorkerTaskRunner();
+  if (!worker_thread) {
+    // This path is only used in some unit test environments with a fake
+    // `peer_handler_` that does not ensure WebRTC threads exist.
+    worker_thread =
+        base::ThreadPool::CreateSingleThreadTaskRunner({base::MayBlock()});
+  }
+  rtp_contributing_source_cache_.emplace(this, std::move(worker_thread));
   // The RTCPeerConnection was successfully constructed.
   closed_ = false;
   peer_handler_unregistered_ = false;
@@ -2371,6 +2382,11 @@ const HeapVector<Member<RTCRtpSender>>& RTCPeerConnection::getSenders() const {
 const HeapVector<Member<RTCRtpReceiver>>& RTCPeerConnection::getReceivers()
     const {
   return rtp_receivers_;
+}
+
+RtpContributingSourceCache& RTCPeerConnection::GetRtpContributingSourceCache() {
+  DCHECK(rtp_contributing_source_cache_.has_value());
+  return rtp_contributing_source_cache_.value();
 }
 
 RTCRtpTransceiver* RTCPeerConnection::addTransceiver(

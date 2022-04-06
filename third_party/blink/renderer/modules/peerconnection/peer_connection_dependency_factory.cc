@@ -207,6 +207,7 @@ class PeerConnectionStaticDeps {
   rtc::Thread* GetWorkerThread() { return worker_thread_; }
   rtc::Thread* GetNetworkThread() { return network_thread_; }
   base::Thread& GetChromeSignalingThread() { return chrome_signaling_thread_; }
+  base::Thread& GetChromeWorkerThread() { return chrome_worker_thread_; }
   base::Thread& GetChromeNetworkThread() { return chrome_network_thread_; }
 
  private:
@@ -295,6 +296,9 @@ rtc::Thread* GetNetworkThread() {
 }
 base::Thread& GetChromeSignalingThread() {
   return StaticDeps().GetChromeSignalingThread();
+}
+base::Thread& GetChromeWorkerThread() {
+  return StaticDeps().GetChromeWorkerThread();
 }
 base::Thread& GetChromeNetworkThread() {
   return StaticDeps().GetChromeNetworkThread();
@@ -921,6 +925,14 @@ PeerConnectionDependencyFactory::GetWebRtcNetworkTaskRunner() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return GetChromeNetworkThread().IsRunning()
              ? GetChromeNetworkThread().task_runner()
+             : nullptr;
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
+PeerConnectionDependencyFactory::GetWebRtcWorkerTaskRunner() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return GetChromeWorkerThread().IsRunning()
+             ? GetChromeWorkerThread().task_runner()
              : nullptr;
 }
 

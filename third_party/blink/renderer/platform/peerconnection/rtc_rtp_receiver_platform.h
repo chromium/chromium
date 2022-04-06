@@ -42,6 +42,8 @@ class PLATFORM_EXPORT RTCRtpReceiverPlatform {
   virtual webrtc::DtlsTransportInformation DtlsTransportInformation() = 0;
   virtual MediaStreamComponent* Track() const = 0;
   virtual Vector<String> StreamIds() const = 0;
+  // If called from any other thread than the WebRTC worker thread, this causes
+  // a block-invoke by the PROXY.
   virtual Vector<std::unique_ptr<RTCRtpSource>> GetSources() = 0;
   virtual void GetStats(RTCStatsReportCallback,
                         const Vector<webrtc::NonStandardGroupId>&) = 0;
