@@ -508,4 +508,58 @@ TEST_F(PasswordStoreBuiltInBackendTest,
   histogram_tester.ExpectBucketCount(kSuccessMetricAddLogin, false, 1);
 }
 
+TEST_F(PasswordStoreBuiltInBackendTest, UpdateLoginAsyncMetrics) {
+  const char kDurationMetric[] =
+      "PasswordManager.PasswordStoreBuiltInBackend.UpdateLoginAsync.Latency";
+  const char kSuccessMetric[] =
+      "PasswordManager.PasswordStoreBuiltInBackend.UpdateLoginAsync.Success";
+  base::HistogramTester histogram_tester;
+
+  PasswordStoreBackend* backend = Initialize();
+  PasswordForm form = *FillPasswordFormWithData(CreateTestPasswordFormData());
+
+  backend->AddLoginAsync(form, base::DoNothing());
+  RunUntilIdle();
+
+  form.password_value = u"a different password";
+  const PasswordStoreChange update_change =
+      PasswordStoreChange(PasswordStoreChange::UPDATE, form);
+
+  testing::StrictMock<MockPasswordStoreBackendTester> tester;
+  EXPECT_CALL(tester, HandleChanges(Optional(ElementsAre(update_change))));
+  backend->UpdateLoginAsync(
+      form, base::BindOnce(&MockPasswordStoreBackendTester::HandleChanges,
+                           base::Unretained(&tester)));
+
+  AdvanceClock(kLatencyDelta);
+  RunUntilIdle();
+
+  histogram_tester.ExpectTotalCount(kDurationMetric, 1);
+  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kLatencyDelta, 1);
+  histogram_tester.ExpectTotalCount(kSuccessMetric, 1);
+  histogram_tester.ExpectBucketCount(kSuccessMetric, true, 1);
+}
+
+TEST_F(PasswordStoreBuiltInBackendTest, UpdateLoginAsyncFailsMetrics) {
+  const char kDurationMetric[] =
+      "PasswordManager.PasswordStoreBuiltInBackend.UpdateLoginAsync.Latency";
+  const char kSuccessMetric[] =
+      "PasswordManager.PasswordStoreBuiltInBackend.UpdateLoginAsync.Success";
+  base::HistogramTester histogram_tester;
+
+  PasswordStoreBackend* bad_backend =
+      InitializeWithDatabase(std::make_unique<BadLoginDatabase>());
+  PasswordForm form = *FillPasswordFormWithData(CreateTestPasswordFormData());
+
+  bad_backend->UpdateLoginAsync(form, base::DoNothing());
+
+  AdvanceClock(kLatencyDelta);
+  RunUntilIdle();
+
+  histogram_tester.ExpectTotalCount(kDurationMetric, 1);
+  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kLatencyDelta, 1);
+  histogram_tester.ExpectTotalCount(kSuccessMetric, 1);
+  histogram_tester.ExpectBucketCount(kSuccessMetric, false, 1);
+}
+
 }  // namespace password_manager
