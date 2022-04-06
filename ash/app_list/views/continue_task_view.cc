@@ -345,14 +345,21 @@ void ContinueTaskView::UpdateStyleForTabletMode() {
 }
 
 void ContinueTaskView::LogMetricsOnResultRemoved() {
-  if (result()->result_type() == AppListSearchResultType::kFileChip) {
-    base::UmaHistogramEnumeration("Apps.AppList.ContinueResultRemoved",
-                                  TaskResultType::kLocalFile,
-                                  TaskResultType::kMaxValue);
-  } else if (result()->result_type() == AppListSearchResultType::kFileChip) {
-    base::UmaHistogramEnumeration("Apps.AppList.ContinueResultRemoved",
-                                  TaskResultType::kDriveFile,
-                                  TaskResultType::kMaxValue);
+  switch (result()->result_type()) {
+    case AppListSearchResultType::kFileChip:
+    case AppListSearchResultType::kZeroStateFile:
+      base::UmaHistogramEnumeration("Apps.AppList.Search.ContinueResultRemoved",
+                                    TaskResultType::kLocalFile,
+                                    TaskResultType::kMaxValue);
+      break;
+    case AppListSearchResultType::kDriveChip:
+    case AppListSearchResultType::kZeroStateDrive:
+      base::UmaHistogramEnumeration("Apps.AppList.Search.ContinueResultRemoved",
+                                    TaskResultType::kDriveFile,
+                                    TaskResultType::kMaxValue);
+      break;
+    default:
+      NOTREACHED();
   }
 }
 

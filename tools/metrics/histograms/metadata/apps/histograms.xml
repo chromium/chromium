@@ -383,6 +383,22 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Apps.AppList.ContinueResultRemoved"
+    enum="LauncherContinueSectionResultType" expires_after="2023-02-14">
+  <obsolete>
+    Deprecated April 2022 in favor of
+    Apps.AppList.Search.ContinueResultRemoved.Type. This histogram was recorded
+    wrongly with the missing Search prefic. It is missing data for drive backed
+    files.
+  </obsolete>
+  <owner>anasalazar@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Records the type of a zero-state result when it is removed from the Continue
+    section. Recorded once every time a result is removed. Chrome OS only.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppList.DriveSearchProvider.Latency" units="ms"
     expires_after="2022-11-30">
   <owner>wrong@chromium.org</owner>
@@ -719,7 +735,7 @@ chromium-metrics-reviews@google.com.
   <owner>tbarzic@chromium.org</owner>
   <summary>
     Records the type of a zero-state result when it is removed from the Continue
-    section. Recorded once every time a result is removed.
+    section. Recorded once every time a result is removed. Chrome OS only.
   </summary>
 </histogram>
 
