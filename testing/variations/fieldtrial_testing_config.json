@@ -757,6 +757,21 @@
             ]
         }
     ],
+    "AutofillEnableManualFallbackForVirtualCards": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableManualFallbackForVirtualCards"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableProfileDeduplication": [
         {
             "platforms": [
