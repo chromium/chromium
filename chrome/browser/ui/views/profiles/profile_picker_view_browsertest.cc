@@ -9,6 +9,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/callback_helpers.h"
+#include "base/cfi_buildflags.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -854,8 +855,15 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
+// TODO(crbug.com/1289326) Test is flaky on Linux CFI
+#if BUILDFLAG(CFI_ICALL_CHECK) && BUILDFLAG(IS_LINUX)
+#define MAYBE_CreateSignedInProfileSettings \
+  DISABLED_CreateSignedInProfileSettings
+#else
+#define MAYBE_CreateSignedInProfileSettings CreateSignedInProfileSettings
+#endif
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
-                       CreateSignedInProfileSettings) {
+                       MAYBE_CreateSignedInProfileSettings) {
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
   // flow, resulting in sync confirmation screen getting displayed.
@@ -1179,8 +1187,14 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
       metrics::StartupProfilingFinishReason::kDone, 1);
 }
 
+// TODO(crbug.com/1289326) Test is flaky on Linux CFI
+#if BUILDFLAG(CFI_ICALL_CHECK) && BUILDFLAG(IS_LINUX)
+#define MAYBE_OpenProfile_Settings DISABLED_OpenProfile_Settings
+#else
+#define MAYBE_OpenProfile_Settings OpenProfile_Settings
+#endif
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
-                       OpenProfile_Settings) {
+                       MAYBE_OpenProfile_Settings) {
   AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(base::Seconds(0));
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   // Create a second profile.
@@ -1390,8 +1404,16 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
+// TODO(crbug.com/1289326) Test is flaky on Linux CFI
+#if BUILDFLAG(CFI_ICALL_CHECK) && BUILDFLAG(IS_LINUX)
+#define MAYBE_CreateSignedInEnterpriseProfileSettings \
+  DISABLED_CreateSignedInEnterpriseProfileSettings
+#else
+#define MAYBE_CreateSignedInEnterpriseProfileSettings \
+  CreateSignedInEnterpriseProfileSettings
+#endif
 IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
-                       CreateSignedInProfileSettings) {
+                       MAYBE_CreateSignedInEnterpriseProfileSettings) {
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
   // flow, resulting in enterprise welcome screen getting displayed.
