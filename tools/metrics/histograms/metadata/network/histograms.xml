@@ -1210,7 +1210,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.Cellular.ServiceErrors"
     enum="NetworkServiceError" expires_after="2023-01-01">
-  <owner>kuabhs@chromium.org</owner>
+  <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS connection manager service errors for cellular interface. NOTE:
@@ -1402,16 +1402,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Shill.DeviceRemovedEvent" enum="DeviceTechnologyType"
-    expires_after="2021-12-01">
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network metric that tracks the network device removed events for
-    each device type.
-  </summary>
-</histogram>
-
 <histogram name="Network.Shill.Ethernet.DevicePresenceStatus"
     enum="BooleanPresent" expires_after="2022-12-31">
   <owner>hugobenichi@google.com</owner>
@@ -1560,7 +1550,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.PortalDetectionMultiProbeResult"
-    enum="PortalDetectionMultiProbeResult" expires_after="2022-05-01">
+    enum="PortalDetectionMultiProbeResult" expires_after="2022-12-31">
   <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1571,13 +1561,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.PPPMTUValue" units="bytes"
-    expires_after="2022-04-24">
-  <owner>akhouderchah@chromium.org</owner>
+    expires_after="2022-12-31">
+  <owner>jiejiang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network diagnostic metric sampling the MTU value provided by the
-    upstream PPP peer. A sample is emitted each time the client successfully
-    negotiates an MTU value via PPP.
+    upstream PPP peer for L2TP VPN connections. A sample is emitted each time
+    the client successfully negotiates an MTU value via PPP.
   </summary>
 </histogram>
 
@@ -1616,28 +1606,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Shill.TerminationActionResult"
-    enum="ShillSuspendTerminationDarkResumeActionResult"
-    expires_after="2021-12-01">
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network diagnostic metric sampling the number of termination
-    actions that successfully complete or fail when shill terminates. Previously
-    deprecated in 10/2012 and brought back in 10/2014.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.TerminationActionsTimeTaken" units="ms"
-    expires_after="2021-12-01">
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network diagnostic metric sampling the time in milliseconds it
-    takes termination actions to complete when shill terminates.
-  </summary>
-</histogram>
-
 <histogram name="Network.Shill.TimeToDrop" units="seconds"
     expires_after="2021-12-01">
   <owner>stevenjb@chromium.org</owner>
@@ -1647,15 +1615,6 @@ chromium-metrics-reviews@google.com.
     networking going online to going offline. Offline events due to device
     shutdown or suspend are ignored (along with the online time before that
     offline event).
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.UserInitiatedEvents" enum="UserInitiatedEvent"
-    expires_after="2021-12-01">
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network metric that tracks the number of user-initiated events.
   </summary>
 </histogram>
 
@@ -2211,7 +2170,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.HiddenSSIDEverConnected"
-    enum="BooleanEverConnected" expires_after="2022-04-27">
+    enum="BooleanEverConnected" expires_after="2022-12-31">
   <owner>tnagel@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <owner>cros-privacy-core@google.com</owner>
@@ -2224,7 +2183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.HiddenSSIDNetworkCount" units="units"
-    expires_after="2022-04-17">
+    expires_after="2022-12-31">
   <owner>tnagel@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <owner>cros-privacy-core@google.com</owner>
