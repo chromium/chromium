@@ -85,6 +85,7 @@ constexpr struct {
     {0x17ef, 0x60e4},  // Lenovo Legion M300 RGB Gaming Mouse
                        // (which can send keystrokes as part of macros.)
     {0x17ef, 0x6123},  // Lenovo USB-C Wired Compact Mouse
+    {0x1b1c, 0x1b7a},  // Corsair Sabre Pro Champion Gaming Mouse
     {0x1b1c, 0x1b94},  // Corsair Katar Pro Wireless (USB dongle)
     {0x1bae, 0x1b1c},  // Corsair Katar Pro Wireless (Bluetooth)
     {0x1bcf, 0x08a0},  // Kensington Pro Fit Full-size
