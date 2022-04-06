@@ -75,6 +75,8 @@ blink_modules_sources("webaudio") {
     "channel_merger_handler.h",
     "channel_merger_node.cc",
     "channel_merger_node.h",
+    "channel_splitter_handler.cc",
+    "channel_splitter_handler.h",
     "channel_splitter_node.cc",
     "channel_splitter_node.h",
     "constant_source_node.cc",
