@@ -18,6 +18,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -881,14 +882,13 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // When an iframe is detached, check that unload handlers execute in all of its
 // child frames. Start from A(B1(C(B2))) and delete B1 from A.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-// TODO(crbug.com/1311985): Re-enable this test
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_DetachedIframeUnloadHandlerABCB \
-  DISABLED_DetachedIframeUnloadHandlerABCB
-#else
-#define MAYBE_DetachedIframeUnloadHandlerABCB DetachedIframeUnloadHandlerABCB
-#endif
-                       MAYBE_DetachedIframeUnloadHandlerABCB) {
+                       DetachedIframeUnloadHandlerABCB) {
+  // This test takes longer to run, because multiple processes are waiting on
+  // each other's documents to execute unload handler before destroying their
+  // documents. https://crbug.com/1311985
+  base::test::ScopedRunLoopTimeout increase_timeout(
+      FROM_HERE, TestTimeouts::action_max_timeout());
+
   GURL initial_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(c(b)))"));
 
