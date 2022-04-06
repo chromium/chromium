@@ -224,8 +224,17 @@ void V8MetricsRecorder::AddMainThreadEvent(
   UMA_HISTOGRAM_TIMES_ALL_GC_PHASES("V8.GC.Cycle.MainThread.Full.Atomic", "",
                                     event.main_thread_atomic);
 
+  // Report incremental marking/sweeping metrics:
+  UMA_HISTOGRAM_TIMES(
+      "V8.GC.Cycle.MainThread.Full.Incremental.Mark",
+      base::Microseconds(
+          event.main_thread_incremental.mark_wall_clock_duration_in_us));
+  UMA_HISTOGRAM_TIMES(
+      "V8.GC.Cycle.MainThread.Full.Incremental.Sweep",
+      base::Microseconds(
+          event.main_thread_incremental.sweep_wall_clock_duration_in_us));
+
   // TODO(chromium:1154636): emit the following when they are populated:
-  // - event.main_thread_incremental
   // - event.objects
   // - event.memory
 
@@ -259,6 +268,16 @@ void V8MetricsRecorder::AddMainThreadEvent(
     // Report atomic pause metrics:
     UMA_HISTOGRAM_TIMES_ALL_GC_PHASES("V8.GC.Cycle.MainThread.Full.Atomic",
                                       ".Cpp", event.main_thread_atomic_cpp);
+
+    // Report incremental marking/sweeping metrics:
+    UMA_HISTOGRAM_TIMES(
+        "V8.GC.Cycle.MainThread.Full.Incremental.Mark.Cpp",
+        base::Microseconds(
+            event.main_thread_incremental_cpp.mark_wall_clock_duration_in_us));
+    UMA_HISTOGRAM_TIMES(
+        "V8.GC.Cycle.MainThread.Full.Incremental.Sweep.Cpp",
+        base::Microseconds(
+            event.main_thread_incremental_cpp.sweep_wall_clock_duration_in_us));
 
     // Report size metrics:
     DEFINE_THREAD_SAFE_STATIC_LOCAL(CustomCountHistogram,
