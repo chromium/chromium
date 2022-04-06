@@ -34,6 +34,15 @@ struct PopupMatchTrailingButton: View {
         )
     }
     .buttonStyle(.plain)
+    // The button shouldn't be an actual accessibility element for
+    // VoiceOver.
+    .accessibilityHidden(true)
+    // TODO(crbug.com/1312110): This should be `children: .contain` so the
+    // new accessibility element isn't accessible. However, EG currently can't
+    // tap on a non-accessible SwiftUI view in a test.
+    // Create a new accessibility element that is non-accessible so tests
+    // can find the button.
+    .accessibilityElement(children: .ignore)
     .accessibilityIdentifier(
       match.isTabMatch
         ? kOmniboxPopupRowSwitchTabAccessibilityIdentifier

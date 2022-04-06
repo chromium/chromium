@@ -125,12 +125,23 @@ struct PopupMatchRowView: View {
         .onPreferenceChange(PressedPreferenceKey.self) { isPressed in
           self.isPressed = isPressed
         }
+        .accessibilityElement()
+        .accessibilityLabel(match.text)
+        .accessibilityValue(match.detailText ?? "")
+        .accessibilityAction(
+          named: match.isTabMatch
+            ? L10NUtils.string(forMessageId: IDS_IOS_OMNIBOX_POPUP_SWITCH_TO_OPEN_TAB)
+            : L10NUtils.string(forMessageId: IDS_IOS_OMNIBOX_POPUP_APPEND), trailingButtonHandler)
+        .accessibilityRemoveTraits(.isButton)
 
       // The content is in front of the button, for proper hit testing.
       HStack(alignment: .center, spacing: 0) {
         HStack(alignment: .center, spacing: 0) {
           Spacer()
-          match.image.map { image in PopupMatchImageView(image: image) }
+          match.image.map { image in
+            PopupMatchImageView(image: image)
+              .accessibilityHidden(true)
+          }
           Spacer()
         }.frame(width: Dimensions.leadingSpacing)
         VStack(alignment: .leading, spacing: 0) {
@@ -138,6 +149,7 @@ struct PopupMatchRowView: View {
             Text(match.text)
               .lineLimit(1)
               .truncatedWithGradient()
+              .accessibilityHidden(true)
 
             if let subtitle = match.detailText, !subtitle.isEmpty {
               Text(subtitle)
@@ -145,6 +157,7 @@ struct PopupMatchRowView: View {
                 .foregroundColor(Color.gray)
                 .lineLimit(1)
                 .truncatedWithGradient()
+                .accessibilityHidden(true)
             }
           }
           .frame(height: Dimensions.textHeight)
@@ -154,6 +167,7 @@ struct PopupMatchRowView: View {
             PopupMatchRowActionButton(pedal: pedal)
               .padding(Dimensions.actionButtonOuterPadding)
               .offset(Dimensions.actionButtonOffset)
+              .accessibilityHidden(true)
           }
         }
         Spacer()

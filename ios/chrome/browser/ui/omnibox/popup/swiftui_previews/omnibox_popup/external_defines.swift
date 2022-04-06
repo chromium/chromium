@@ -23,3 +23,23 @@ public class OmniboxPopupAccessibilityIdentifierHelper {
     return "omnibox suggestion \(indexPath.section) \(indexPath.row)"
   }
 }
+
+let IDS_IOS_OMNIBOX_POPUP_SWITCH_TO_OPEN_TAB = 1
+let IDS_IOS_OMNIBOX_POPUP_APPEND = 2
+
+public class L10NUtils {
+  public static func string(forMessageId: Int) -> String {
+    switch forMessageId {
+    case IDS_IOS_OMNIBOX_POPUP_SWITCH_TO_OPEN_TAB:
+      return "Open tab"
+
+    case IDS_IOS_OMNIBOX_POPUP_APPEND:
+      return "Append"
+
+    default:
+      return "STRING_NOT_DEFINED"
+
+    }
+  }
+
+}

@@ -27,11 +27,14 @@ namespace {
 
 // Returns the popup row containing the |url| as suggestion.
 id<GREYMatcher> PopupRowWithUrl(GURL url) {
-  return grey_allOf(
-      chrome_test_util::OmniboxPopupRow(),
-      grey_descendant(chrome_test_util::StaticTextWithAccessibilityLabel(
-          base::SysUTF8ToNSString(url.GetContent()))),
-      grey_sufficientlyVisible(), nil);
+  NSString* urlString = base::SysUTF8ToNSString(url.GetContent());
+  id<GREYMatcher> URLMatcher =
+      [ChromeEarlGrey isNewOmniboxPopupEnabled]
+          ? grey_descendant(grey_accessibilityValue(urlString))
+          : grey_descendant(
+                chrome_test_util::StaticTextWithAccessibilityLabel(urlString));
+  return grey_allOf(chrome_test_util::OmniboxPopupRow(), URLMatcher,
+                    grey_sufficientlyVisible(), nil);
 }
 
 // Returns the switch to open tab element for the |url|.
@@ -445,11 +448,14 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       performAction:grey_typeText(@"hello")];
 
   // Matcher for a URL-what-you-typed suggestion.
-  id<GREYMatcher> row = grey_allOf(
-      chrome_test_util::OmniboxPopupRow(),
-      grey_descendant(
-          chrome_test_util::StaticTextWithAccessibilityLabel(@"hello")),
-      grey_sufficientlyVisible(), nil);
+  id<GREYMatcher> textMatcher =
+      [ChromeEarlGrey isNewOmniboxPopupEnabled]
+          ? grey_accessibilityLabel(@"hello")
+          : grey_descendant(
+                chrome_test_util::StaticTextWithAccessibilityLabel(@"hello"));
+  id<GREYMatcher> row =
+      grey_allOf(chrome_test_util::OmniboxPopupRow(), textMatcher,
+                 grey_sufficientlyVisible(), nil);
 
   // Omnibox can reorder itself in multiple animations, so add an extra wait
   // here.

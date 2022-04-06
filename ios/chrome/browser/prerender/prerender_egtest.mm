@@ -168,18 +168,20 @@ GREYElementInteraction* RequestDesktopButton() {
 
   // Open the suggestion. The suggestion needs to be the first suggestion to
   // have the prerenderer activated.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityLabel(pageString),
-                                   [ChromeEarlGrey isNewOmniboxPopupEnabled]
-                                       ? grey_accessibilityTrait(
-                                             UIAccessibilityTraitStaticText)
-                                       : grey_kindOfClassName(
-                                             @"FadeTruncatingLabel"),
-                                   grey_ancestor(grey_accessibilityID(
-                                       @"omnibox suggestion 0 0")),
-                                   grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
+  id<GREYMatcher> rowMatcher =
+      [ChromeEarlGrey isNewOmniboxPopupEnabled]
+          ? grey_allOf(
+                grey_accessibilityValue(pageString),
+                grey_ancestor(grey_accessibilityID(@"omnibox suggestion 0 0")),
+                chrome_test_util::OmniboxPopupRow(), grey_sufficientlyVisible(),
+                nil)
+          : grey_allOf(grey_descendant(
+                           chrome_test_util::StaticTextWithAccessibilityLabel(
+                               pageString)),
+                       grey_accessibilityID(@"omnibox suggestion 0 0"),
+                       chrome_test_util::OmniboxPopupRow(),
+                       grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:rowMatcher] performAction:grey_tap()];
 
   [ChromeEarlGrey waitForWebStateContainingText:kPageLoadedString];
   GREYAssertEqual(visitCountBeforePrerender + 1, _visitCounter,

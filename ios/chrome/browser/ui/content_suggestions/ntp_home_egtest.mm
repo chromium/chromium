@@ -249,17 +249,20 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
       performAction:grey_typeText(URL)];
 
   // The first suggestion is a search, the second suggestion is the URL.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(
-              [ChromeEarlGrey isNewOmniboxPopupEnabled]
-                  ? grey_descendant(
-                        grey_accessibilityID(@"omnibox suggestion 0 1"))
-                  : grey_accessibilityID(@"omnibox suggestion 0 1"),
-              chrome_test_util::OmniboxPopupRow(),
-              grey_descendant(
-                  chrome_test_util::StaticTextWithAccessibilityLabel(URL)),
-              grey_sufficientlyVisible(), nil)] performAction:grey_tap()];
+  id<GREYMatcher> rowMatcher =
+      [ChromeEarlGrey isNewOmniboxPopupEnabled]
+          ? grey_allOf(
+                grey_ancestor(grey_accessibilityID(@"omnibox suggestion 0 1")),
+                chrome_test_util::OmniboxPopupRow(),
+                grey_accessibilityValue(URL), grey_sufficientlyVisible(), nil)
+          : grey_allOf(
+                grey_accessibilityID(@"omnibox suggestion 0 1"),
+                chrome_test_util::OmniboxPopupRow(),
+                grey_descendant(
+                    chrome_test_util::StaticTextWithAccessibilityLabel(URL)),
+                grey_sufficientlyVisible(), nil);
+
+  [[EarlGrey selectElementWithMatcher:rowMatcher] performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       assertWithMatcher:grey_sufficientlyVisible()];

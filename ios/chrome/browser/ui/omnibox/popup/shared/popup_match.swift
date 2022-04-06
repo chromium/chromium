@@ -97,7 +97,8 @@ extension PopupMatch {
       text: "clear browsing data",
       pedal: OmniboxPedalData(
         title: "Click here", subtitle: "PAR → NYC",
-        accessibilityHint: "a11y hint", imageName: "pedal_dino", action: {})))
+        accessibilityHint: "a11y hint", imageName: "pedal_dino",
+        action: { print("dino pedal clicked") })))
   static let appendable = PopupMatch(
     suggestion: FakeAutocompleteSuggestion(
       text: "is appendable",

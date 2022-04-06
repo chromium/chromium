@@ -559,38 +559,14 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   if (!base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI)) {
     return grey_kindOfClassName(@"OmniboxPopupRowCell");
   } else {
-    if (@available(iOS 15, *)) {
-      return grey_allOf(
-          grey_kindOfClassName(@"SwiftUI.ListTableViewCell"),
-          grey_ancestor(grey_kindOfClassName(@"OmniboxPopupContainerView")),
-          nil);
-    } else {
-      return grey_allOf(
-          grey_kindOfClassName(@"SwiftUI.ListCoreCellHost"),
-          grey_ancestor(grey_kindOfClassName(@"OmniboxPopupContainerView")),
-          nil);
-    }
+    return grey_allOf(
+        grey_kindOfClassName(@"SwiftUI.AccessibilityNode"),
+        grey_ancestor(grey_kindOfClassName(@"OmniboxPopupContainerView")), nil);
   }
 }
 
 + (id<GREYMatcher>)omniboxPopupList {
-  if (!base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI)) {
-    return grey_accessibilityID(kOmniboxPopupTableViewAccessibilityIdentifier);
-  } else {
-    if (@available(iOS 15, *)) {
-      return grey_accessibilityID(
-          kOmniboxPopupTableViewAccessibilityIdentifier);
-    } else {
-      // Implementation detail: the list is the closest ancestor of all popup.
-      // rows. It is the unique element with popup rows as descendants but no
-      // descendant having popup rows as descendants.
-      return grey_allOf(
-          grey_descendant([ChromeMatchersAppInterface omniboxPopupRow]),
-          grey_not(grey_descendant(
-              grey_descendant([ChromeMatchersAppInterface omniboxPopupRow]))),
-          nil);
-    }
-  }
+  return grey_accessibilityID(kOmniboxPopupTableViewAccessibilityIdentifier);
 }
 
 + (id<GREYMatcher>)OKButton {
