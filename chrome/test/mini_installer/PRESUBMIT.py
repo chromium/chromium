@@ -11,9 +11,7 @@ USE_PYTHON3 = True
 
 
 def CommonChecks(input_api, output_api):
-    return input_api.canned_checks.RunPylint(input_api,
-                                             output_api,
-                                             version='2.7')
+    return input_api.canned_checks.RunPylint(input_api, output_api)
 
 
 def CheckChangeOnUpload(input_api, output_api):
