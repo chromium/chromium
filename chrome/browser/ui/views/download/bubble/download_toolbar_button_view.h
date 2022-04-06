@@ -11,6 +11,7 @@
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/animation/throb_animation.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 class Browser;
@@ -83,6 +84,8 @@ class DownloadToolbarButtonView : public ToolbarButton,
   std::unique_ptr<DownloadBubbleUIController> bubble_controller_;
   raw_ptr<views::BubbleDialogDelegate> bubble_delegate_ = nullptr;
   raw_ptr<View> switcher_view_ = nullptr;
+
+  gfx::SlideAnimation scanning_animation_{this};
 
   base::WeakPtrFactory<DownloadToolbarButtonView> weak_factory_{this};
 };

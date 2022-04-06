@@ -22,6 +22,16 @@ VIEWS_EXPORT void DrawProgressRing(gfx::Canvas* canvas,
                                    SkScalar start_angle,
                                    SkScalar sweep_angle);
 
+// Helper function that draws a spinning ring on `canvas`. The spinning ring
+// consists a background full ring and three arches distributed evenly on the
+// ring. `start_angle` is used to indicate the start angle of the first arch.
+VIEWS_EXPORT void DrawSpinningRing(gfx::Canvas* canvas,
+                                   const SkRect& bounds,
+                                   SkColor background_color,
+                                   SkColor progress_color,
+                                   float stroke_width,
+                                   SkScalar start_angle);
+
 }  // namespace views
 
 #endif  // UI_VIEWS_CONTROLS_PROGRESS_RING_UTILS_H_

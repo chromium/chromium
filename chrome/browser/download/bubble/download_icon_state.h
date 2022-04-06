@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_ICON_STATE_H_
 
 namespace download {
-enum class DownloadIconState { kFailed, kProgress, kComplete };
+enum class DownloadIconState { kFailed, kProgress, kComplete, kDeepScanning };
 }  // namespace download
 
 #endif  // CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_ICON_STATE_H_

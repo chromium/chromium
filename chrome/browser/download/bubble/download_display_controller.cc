@@ -11,6 +11,7 @@
 #include "chrome/browser/download/bubble/download_icon_state.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/ui/download/download_item_mode.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/offline_items_collection/core/offline_item_state.h"
 
@@ -101,7 +102,6 @@ void DownloadDisplayController::UpdateToolbarButtonState() {
     ShowToolbarButton();
     icon_info_.icon_state = DownloadIconState::kProgress;
     icon_info_.is_active = true;
-    display_->UpdateDownloadIcon();
   } else {
     icon_info_.icon_state = DownloadIconState::kComplete;
     if (HasRecentCompleteDownload(kToolbarIconActiveTimeInterval,
@@ -111,8 +111,22 @@ void DownloadDisplayController::UpdateToolbarButtonState() {
     } else {
       icon_info_.is_active = false;
     }
-    display_->UpdateDownloadIcon();
   }
+
+  // Check for deep scanning state. Only check for downloads because deep
+  // scanning is not supported for offline items.
+  content::DownloadManager::DownloadVector items;
+  download_manager_->GetAllDownloads(&items);
+  for (auto* item : items) {
+    if (item->GetDangerType() ==
+            download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING &&
+        item->GetState() != download::DownloadItem::CANCELLED) {
+      icon_info_.icon_state = DownloadIconState::kDeepScanning;
+      break;
+    }
+  }
+
+  display_->UpdateDownloadIcon();
 }
 
 void DownloadDisplayController::UpdateDownloadIconToInactive() {

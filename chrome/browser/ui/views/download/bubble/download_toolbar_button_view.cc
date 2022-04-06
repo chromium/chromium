@@ -55,6 +55,9 @@ DownloadToolbarButtonView::DownloadToolbarButtonView(BrowserView* browser_view)
   Profile* profile = browser_->profile();
   SetVisible(false);
 
+  scanning_animation_.SetSlideDuration(base::Milliseconds(2500));
+  scanning_animation_.SetTweenType(gfx::Tween::LINEAR);
+
   bubble_controller_ = std::make_unique<DownloadBubbleUIController>(profile);
   // Wait until we're done with everything else before creating `controller_`
   // since it can call `Show()` synchronously.
@@ -70,8 +73,12 @@ DownloadToolbarButtonView::~DownloadToolbarButtonView() {
 void DownloadToolbarButtonView::PaintButtonContents(gfx::Canvas* canvas) {
   DownloadDisplayController::ProgressInfo progress_info =
       controller_->GetProgress();
+  DownloadDisplayController::IconInfo icon_info = controller_->GetIconInfo();
   // Do not show the progress ring when there is no in progress download.
   if (progress_info.download_count == 0) {
+    if (scanning_animation_.is_animating()) {
+      scanning_animation_.End();
+    }
     return;
   }
 
@@ -79,6 +86,21 @@ void DownloadToolbarButtonView::PaintButtonContents(gfx::Canvas* canvas) {
   int y = height() / 2 - kProgressRingRadius;
   int diameter = 2 * kProgressRingRadius;
   gfx::RectF ring_bounds(x, y, /*width=*/diameter, /*height=*/diameter);
+
+  if (icon_info.icon_state == download::DownloadIconState::kDeepScanning) {
+    if (!scanning_animation_.is_animating()) {
+      scanning_animation_.Reset();
+      scanning_animation_.Show();
+    }
+    views::DrawSpinningRing(
+        canvas, gfx::RectFToSkRect(ring_bounds),
+        GetColorProvider()->GetColor(kColorDownloadToolbarButtonRingBackground),
+        GetColorProvider()->GetColor(kColorDownloadToolbarButtonActive),
+        kProgressRingStrokeWidth, /*start_angle=*/
+        gfx::Tween::IntValueBetween(scanning_animation_.GetCurrentValue(), 0,
+                                    360));
+    return;
+  }
 
   views::DrawProgressRing(
       canvas, gfx::RectFToSkRect(ring_bounds),
@@ -137,7 +159,8 @@ void DownloadToolbarButtonView::UpdateIcon() {
       icon_info.is_active
           ? GetColorProvider()->GetColor(kColorDownloadToolbarButtonActive)
           : GetColorProvider()->GetColor(kColorDownloadToolbarButtonInactive);
-  if (icon_info.icon_state == download::DownloadIconState::kProgress) {
+  if (icon_info.icon_state == download::DownloadIconState::kProgress ||
+      icon_info.icon_state == download::DownloadIconState::kDeepScanning) {
     new_icon = &kDownloadInProgressIcon;
   } else {
     new_icon = &kDownloadToolbarButtonIcon;

@@ -13,6 +13,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "content/public/test/browser_task_environment.h"
@@ -153,6 +154,8 @@ class DownloadDisplayControllerTest : public testing::Test {
     EXPECT_CALL(item(index), GetId())
         .WillRepeatedly(Return(static_cast<uint32_t>(items_.size() + 1)));
     EXPECT_CALL(item(index), GetState()).WillRepeatedly(Return(state));
+    EXPECT_CALL(item(index), GetDangerType())
+        .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
     int received_bytes =
         state == download::DownloadItem::IN_PROGRESS ? 50 : 100;
     EXPECT_CALL(item(index), GetReceivedBytes())
@@ -189,10 +192,15 @@ class DownloadDisplayControllerTest : public testing::Test {
     controller().OnUpdatedItem(state == OfflineItemState::COMPLETE);
   }
 
-  void UpdateDownloadItem(int item_index, DownloadState state) {
+  void UpdateDownloadItem(int item_index,
+                          DownloadState state,
+                          download::DownloadDangerType danger_type =
+                              download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS) {
     DCHECK_GT(items_.size(), static_cast<size_t>(item_index));
 
     EXPECT_CALL(item(item_index), GetState()).WillRepeatedly(Return(state));
+    EXPECT_CALL(item(item_index), GetDangerType())
+        .WillRepeatedly(Return(danger_type));
     if (state == DownloadState::COMPLETE) {
       EXPECT_CALL(item(item_index), IsDone()).WillRepeatedly(Return(true));
       in_progress_count_--;
@@ -392,6 +400,30 @@ TEST_F(DownloadDisplayControllerTest,
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/false, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kComplete,
                                  /*is_active=*/false));
+}
+
+TEST_F(DownloadDisplayControllerTest, UpdateToolbarButtonState_DeepScanning) {
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/false, /*detail_shown=*/false,
+                                 /*icon_state=*/DownloadIconState::kComplete,
+                                 /*is_active=*/false));
+
+  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
+                   download::DownloadItem::IN_PROGRESS);
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+                                 /*icon_state=*/DownloadIconState::kProgress,
+                                 /*is_active=*/true));
+
+  UpdateDownloadItem(/*item_index=*/0, DownloadState::IN_PROGRESS,
+                     download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING);
+  EXPECT_TRUE(
+      VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+                         /*icon_state=*/DownloadIconState::kDeepScanning,
+                         /*is_active=*/true));
+
+  UpdateDownloadItem(/*item_index=*/0, DownloadState::COMPLETE);
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+                                 /*icon_state=*/DownloadIconState::kComplete,
+                                 /*is_active=*/true));
 }
 
 TEST_F(DownloadDisplayControllerTest, InitialState_OldLastDownload) {
