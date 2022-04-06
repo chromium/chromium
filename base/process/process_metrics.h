@@ -267,12 +267,6 @@ class BASE_EXPORT ProcessMetrics {
   TimeDelta last_cumulative_cpu_;
 #endif
 
-  // Used to store the previous times and disk usage counts so we can
-  // compute the disk usage between calls.
-  TimeTicks last_disk_usage_time_;
-  // Number of bytes transferred to/from disk in bytes.
-  uint64_t last_cumulative_disk_usage_ = 0;
-
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_AIX)
   // Same thing for idle wakeups.
