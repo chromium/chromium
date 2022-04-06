@@ -10,6 +10,8 @@
 
 namespace media::hls {
 
+namespace {
+
 template <typename T>
 void ErrorTest(base::StringPiece content,
                ParseStatusCode expected_status,
@@ -23,11 +25,37 @@ void ErrorTest(base::StringPiece content,
 }
 
 template <typename T>
+void ErrorTest(base::StringPiece content,
+               const VariableDictionary& variable_dict,
+               VariableDictionary::SubstitutionBuffer& sub_buffer,
+               ParseStatusCode expected_status,
+               const base::Location& from = base::Location::Current()) {
+  auto tag = TagItem{.name = ToTagName(T::kName),
+                     .content = SourceString::CreateForTesting(content)};
+  auto result = T::Parse(tag, variable_dict, sub_buffer);
+  ASSERT_TRUE(result.has_error()) << from.ToString();
+  auto error = std::move(result).error();
+  EXPECT_EQ(error.code(), expected_status);
+}
+
+template <typename T>
 T OkTest(base::StringPiece content,
          const base::Location& from = base::Location::Current()) {
   auto tag = TagItem{.name = ToTagName(T::kName),
                      .content = SourceString::CreateForTesting(content)};
   auto result = T::Parse(tag);
+  EXPECT_TRUE(result.has_value()) << from.ToString();
+  return std::move(result).value();
+}
+
+template <typename T>
+T OkTest(base::StringPiece content,
+         const VariableDictionary& variable_dict,
+         VariableDictionary::SubstitutionBuffer& sub_buffer,
+         const base::Location& from = base::Location::Current()) {
+  auto tag = TagItem{.name = ToTagName(T::kName),
+                     .content = SourceString::CreateForTesting(content)};
+  auto result = T::Parse(tag, variable_dict, sub_buffer);
   EXPECT_TRUE(result.has_value()) << from.ToString();
   return std::move(result).value();
 }
@@ -64,6 +92,22 @@ void RunEmptyTagTest() {
   ErrorTest<T>("1234", ParseStatusCode::kMalformedTag);
   ErrorTest<T>("\t", ParseStatusCode::kMalformedTag);
 }
+
+types::VariableName CreateVarName(base::StringPiece name) {
+  return types::VariableName::Parse(SourceString::CreateForTesting(name))
+      .value();
+}
+
+VariableDictionary CreateBasicDictionary(
+    const base::Location& from = base::Location::Current()) {
+  VariableDictionary dict;
+  EXPECT_TRUE(dict.Insert(CreateVarName("FOO"), "bar")) << from.ToString();
+  EXPECT_TRUE(dict.Insert(CreateVarName("BAR"), "baz")) << from.ToString();
+
+  return dict;
+}
+
+}  // namespace
 
 TEST(HlsFormatParserTest, ParseM3uTagTest) {
   RunTagIdenficationTest<M3uTag>("#EXTM3U\n", "");
@@ -241,6 +285,76 @@ TEST(HlsFormatParserTest, ParseXPlaylistTypeTagTest) {
   ErrorTest<XPlaylistTypeTag>(" EVENT", ParseStatusCode::kUnknownPlaylistType);
   ErrorTest<XPlaylistTypeTag>("EVENT ", ParseStatusCode::kUnknownPlaylistType);
   ErrorTest<XPlaylistTypeTag>("", ParseStatusCode::kMalformedTag);
+}
+
+TEST(HlsFormatParserTest, ParseXStreamInfTest) {
+  RunTagIdenficationTest<XStreamInfTag>(
+      "#EXT-X-STREAM-INF:BANDWIDTH=1010,CODECS=\"foo,bar\"\n",
+      "BANDWIDTH=1010,CODECS=\"foo,bar\"");
+
+  VariableDictionary variable_dict = CreateBasicDictionary();
+  VariableDictionary::SubstitutionBuffer sub_buffer;
+
+  auto tag = OkTest<XStreamInfTag>(
+      R"(BANDWIDTH=1010,AVERAGE-BANDWIDTH=1000,CODECS="foo,bar",SCORE=12.2)",
+      variable_dict, sub_buffer);
+  EXPECT_EQ(tag.bandwidth, 1010u);
+  EXPECT_EQ(tag.average_bandwidth, 1000u);
+  EXPECT_DOUBLE_EQ(tag.score.value(), 12.2);
+  EXPECT_EQ(tag.codecs, "foo,bar");
+
+  // "BANDWIDTH" is the only required attribute
+  tag = OkTest<XStreamInfTag>(R"(BANDWIDTH=5050)", variable_dict, sub_buffer);
+  EXPECT_EQ(tag.bandwidth, 5050u);
+  EXPECT_EQ(tag.average_bandwidth, absl::nullopt);
+  EXPECT_EQ(tag.score, absl::nullopt);
+  EXPECT_EQ(tag.codecs, absl::nullopt);
+
+  ErrorTest<XStreamInfTag>(R"(CODECS="foo,bar")", variable_dict, sub_buffer,
+                           ParseStatusCode::kMalformedTag);
+
+  // "BANDWIDTH" must be a valid DecimalInteger (non-negative)
+  ErrorTest<XStreamInfTag>(R"(BANDWIDTH="111")", variable_dict, sub_buffer,
+                           ParseStatusCode::kMalformedTag);
+  ErrorTest<XStreamInfTag>(R"(BANDWIDTH=-1)", variable_dict, sub_buffer,
+                           ParseStatusCode::kMalformedTag);
+  ErrorTest<XStreamInfTag>(R"(BANDWIDTH=1.5)", variable_dict, sub_buffer,
+                           ParseStatusCode::kMalformedTag);
+
+  // "AVERAGE-BANDWIDTH" must be a valid DecimalInteger (non-negative)
+  ErrorTest<XStreamInfTag>(R"(BANDWIDTH=1010,AVERAGE-BANDWIDTH="111")",
+                           variable_dict, sub_buffer,
+                           ParseStatusCode::kMalformedTag);
+  ErrorTest<XStreamInfTag>(R"(BANDWIDTH=1010,AVERAGE-BANDWIDTH=-1)",
+                           variable_dict, sub_buffer,
+                           ParseStatusCode::kMalformedTag);
+  ErrorTest<XStreamInfTag>(R"(BANDWIDTH=1010,AVERAGE-BANDWIDTH=1.5)",
+                           variable_dict, sub_buffer,
+                           ParseStatusCode::kMalformedTag);
+
+  // "SCORE" must be a valid DecimalFloatingPoint (non-negative)
+  ErrorTest<XStreamInfTag>(R"(BANDWIDTH=1010,SCORE="1")", variable_dict,
+                           sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XStreamInfTag>(R"(BANDWIDTH=1010,SCORE=-1)", variable_dict,
+                           sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XStreamInfTag>(R"(BANDWIDTH=1010,SCORE=ONE)", variable_dict,
+                           sub_buffer, ParseStatusCode::kMalformedTag);
+
+  // "CODECS" must be a valid string
+  ErrorTest<XStreamInfTag>(R"(BANDWIDTH=1010,CODECS=abc,123)", variable_dict,
+                           sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XStreamInfTag>(R"(BANDWIDTH=1010,CODECS=abc)", variable_dict,
+                           sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XStreamInfTag>(R"(BANDWIDTH=1010,CODECS=123)", variable_dict,
+                           sub_buffer, ParseStatusCode::kMalformedTag);
+
+  // "CODECS" is subject to variable substitution
+  tag = OkTest<XStreamInfTag>(R"(BANDWIDTH=1010,CODECS="{$FOO},{$BAR}")",
+                              variable_dict, sub_buffer);
+  EXPECT_EQ(tag.bandwidth, 1010u);
+  EXPECT_EQ(tag.average_bandwidth, absl::nullopt);
+  EXPECT_EQ(tag.score, absl::nullopt);
+  EXPECT_EQ(tag.codecs, "bar,baz");
 }
 
 }  // namespace media::hls

@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "media/formats/hls/items.h"
 #include "media/formats/hls/parse_status.h"
+#include "media/formats/hls/variable_dictionary.h"
 
 namespace media::hls {
 
@@ -42,6 +43,35 @@ constexpr base::StringPiece GetAttributeName(XDefineTagAttribute attribute) {
       return "NAME";
     case XDefineTagAttribute::kValue:
       return "VALUE";
+  }
+
+  NOTREACHED();
+  return "";
+}
+
+// Attributes expected in `EXT-X-STREAM-INF` tag contents.
+// These must remain sorted alphabetically.
+enum class XStreamInfTagAttribute {
+  kAverageBandwidth,
+  kBandwidth,
+  kCodecs,
+  kProgramId,  // Ignored for backwards compatibility
+  kScore,
+  kMaxValue = kScore,
+};
+
+constexpr base::StringPiece GetAttributeName(XStreamInfTagAttribute attribute) {
+  switch (attribute) {
+    case XStreamInfTagAttribute::kAverageBandwidth:
+      return "AVERAGE-BANDWIDTH";
+    case XStreamInfTagAttribute::kBandwidth:
+      return "BANDWIDTH";
+    case XStreamInfTagAttribute::kCodecs:
+      return "CODECS";
+    case XStreamInfTagAttribute::kProgramId:
+      return "PROGRAM-ID";
+    case XStreamInfTagAttribute::kScore:
+      return "SCORE";
   }
 
   NOTREACHED();
@@ -270,6 +300,88 @@ ParseStatus::Or<XPlaylistTypeTag> XPlaylistTypeTag::Parse(TagItem tag) {
   }
 
   return ParseStatusCode::kUnknownPlaylistType;
+}
+
+XStreamInfTag::XStreamInfTag() = default;
+
+XStreamInfTag::~XStreamInfTag() = default;
+
+XStreamInfTag::XStreamInfTag(const XStreamInfTag&) = default;
+
+XStreamInfTag::XStreamInfTag(XStreamInfTag&&) = default;
+
+XStreamInfTag& XStreamInfTag::operator=(const XStreamInfTag&) = default;
+
+XStreamInfTag& XStreamInfTag::operator=(XStreamInfTag&&) = default;
+
+ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
+    TagItem tag,
+    const VariableDictionary& variable_dict,
+    VariableDictionary::SubstitutionBuffer& sub_buffer) {
+  DCHECK(tag.name == ToTagName(XStreamInfTag::kName));
+  XStreamInfTag out;
+
+  // Parse the attribute-list
+  TypedAttributeMap<XStreamInfTagAttribute> map;
+  types::AttributeListIterator iter(tag.content);
+  auto map_result = map.FillUntilError(&iter);
+
+  if (map_result.code() != ParseStatusCode::kReachedEOF) {
+    return ParseStatus(ParseStatusCode::kMalformedTag)
+        .AddCause(std::move(map_result));
+  }
+
+  // Extract the 'BANDWIDTH' attribute
+  if (map.HasValue(XStreamInfTagAttribute::kBandwidth)) {
+    auto bandwidth = types::ParseDecimalInteger(
+        map.GetValue(XStreamInfTagAttribute::kBandwidth));
+    if (bandwidth.has_error()) {
+      return ParseStatus(ParseStatusCode::kMalformedTag)
+          .AddCause(std::move(bandwidth).error());
+    }
+
+    out.bandwidth = std::move(bandwidth).value();
+  } else {
+    return ParseStatusCode::kMalformedTag;
+  }
+
+  // Extract the 'AVERAGE-BANDWIDTH' attribute
+  if (map.HasValue(XStreamInfTagAttribute::kAverageBandwidth)) {
+    auto average_bandwidth = types::ParseDecimalInteger(
+        map.GetValue(XStreamInfTagAttribute::kAverageBandwidth));
+    if (average_bandwidth.has_error()) {
+      return ParseStatus(ParseStatusCode::kMalformedTag)
+          .AddCause(std::move(average_bandwidth).error());
+    }
+
+    out.average_bandwidth = std::move(average_bandwidth).value();
+  }
+
+  // Extract the 'SCORE' attribute
+  if (map.HasValue(XStreamInfTagAttribute::kScore)) {
+    auto score = types::ParseDecimalFloatingPoint(
+        map.GetValue(XStreamInfTagAttribute::kScore));
+    if (score.has_error()) {
+      return ParseStatus(ParseStatusCode::kMalformedTag)
+          .AddCause(std::move(score).error());
+    }
+
+    out.score = std::move(score).value();
+  }
+
+  // Extract the 'CODECS' attribute
+  if (map.HasValue(XStreamInfTagAttribute::kCodecs)) {
+    auto codecs =
+        types::ParseQuotedString(map.GetValue(XStreamInfTagAttribute::kCodecs),
+                                 variable_dict, sub_buffer);
+    if (codecs.has_error()) {
+      return ParseStatus(ParseStatusCode::kMalformedTag)
+          .AddCause(std::move(codecs).error());
+    }
+    out.codecs = std::string{std::move(codecs).value()};
+  }
+
+  return out;
 }
 
 }  // namespace media::hls

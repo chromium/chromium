@@ -9,6 +9,7 @@
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/tag_name.h"
 #include "media/formats/hls/types.h"
+#include "media/formats/hls/variable_dictionary.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media::hls {
@@ -107,6 +108,43 @@ struct XPlaylistTypeTag {
   static MEDIA_EXPORT ParseStatus::Or<XPlaylistTypeTag> Parse(TagItem);
 
   PlaylistType type;
+};
+
+// Represents the contents of the #EXT-X-STREAM-INF tag
+struct MEDIA_EXPORT XStreamInfTag {
+  static constexpr auto kName = MultivariantPlaylistTagName::kXStreamInf;
+  static ParseStatus::Or<XStreamInfTag> Parse(
+      TagItem,
+      const VariableDictionary& variable_dict,
+      VariableDictionary::SubstitutionBuffer& sub_buffer);
+
+  XStreamInfTag();
+  ~XStreamInfTag();
+  XStreamInfTag(const XStreamInfTag&);
+  XStreamInfTag(XStreamInfTag&&);
+  XStreamInfTag& operator=(const XStreamInfTag&);
+  XStreamInfTag& operator=(XStreamInfTag&&);
+
+  // The peak segment bitrate of the stream this tag applies to, in bits per
+  // second.
+  types::DecimalInteger bandwidth = 0;
+
+  // The average segment bitrate of the stream this tag applies to, in bits per
+  // second.
+  absl::optional<types::DecimalInteger> average_bandwidth;
+
+  // An abstract, relative measure of the quality-of-experience of the stream
+  // this tag applies to. The determination of this number is up to the playlist
+  // author, however higher scores must indicate a better playback experience.
+  absl::optional<types::DecimalFloatingPoint> score;
+
+  // A comma-separated list of formats, where each format specifies a media
+  // sample type that is present is one or more renditions of the variant stream
+  // this tag applies to. According to the spec this *should* be present on
+  // every instance of this tag, but in practice it's not. It's represented as
+  // optional here so that the caller may decide how they wish to handle its
+  // absence.
+  absl::optional<std::string> codecs;
 };
 
 }  // namespace media::hls

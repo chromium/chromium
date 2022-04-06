@@ -43,6 +43,7 @@ absl::optional<TagItem> GetTagItem(SourceString line) {
       TagNameEntry("-X-INDEPENDENT-SEGMENTS",
                    CommonTagName::kXIndependentSegments),
       TagNameEntry("-X-PLAYLIST-TYPE:", MediaPlaylistTagName::kXPlaylistType),
+      TagNameEntry("-X-STREAM-INF:", MultivariantPlaylistTagName::kXStreamInf),
       TagNameEntry("-X-VERSION:", CommonTagName::kXVersion),
       TagNameEntry("INF:", MediaPlaylistTagName::kInf),
       TagNameEntry("M3U", CommonTagName::kM3u),
