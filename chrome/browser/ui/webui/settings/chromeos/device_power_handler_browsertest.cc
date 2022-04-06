@@ -75,6 +75,7 @@ class PowerHandlerTest : public InProcessBrowserTest {
         PowerPolicyController::ACTION_SUSPEND;
     bool lid_closed_controlled = false;
     bool has_lid = true;
+    bool adaptive_charging = false;
   };
 
   PowerHandlerTest() = default;
@@ -157,6 +158,8 @@ class PowerHandlerTest : public InProcessBrowserTest {
     dict.SetBoolKey(PowerHandler::kLidClosedControlledKey,
                     settings.lid_closed_controlled);
     dict.SetBoolKey(PowerHandler::kHasLidKey, settings.has_lid);
+    dict.SetBoolKey(PowerHandler::kAdaptiveChargingKey,
+                    settings.adaptive_charging);
     std::string out;
     EXPECT_TRUE(base::JSONWriter::Write(dict, &out));
     return out;
@@ -351,6 +354,17 @@ IN_PROC_BROWSER_TEST_F(PowerHandlerTest, SendLidSettingForPrefChanges) {
   EXPECT_EQ(ToString(settings), GetLastSettingsChangedMessage());
 }
 
+// Verifies that the adaptive charging pref's value is sent directly to WebUI.
+IN_PROC_BROWSER_TEST_F(PowerHandlerTest, SendAdaptiveCharging) {
+  GetPrefs()->Set(ash::prefs::kPowerAdaptiveChargingEnabled, base::Value(true));
+
+  // Current AC idle behavior should be DISPLAY_OFF.
+  DevicePowerSettings settings;
+  settings.adaptive_charging = true;
+
+  EXPECT_EQ(ToString(settings), GetLastSettingsChangedMessage());
+}
+
 // Verifies that requests from WebUI to update the idle behavior update prefs
 // appropriately.
 IN_PROC_BROWSER_TEST_F(PowerHandlerTest, SetIdleBehavior) {
@@ -411,6 +425,18 @@ IN_PROC_BROWSER_TEST_F(PowerHandlerTest, SetLidBehavior) {
   // Selecting the "suspend" setting should just clear the pref.
   test_api_->SetLidClosedBehavior(PowerPolicyController::ACTION_SUSPEND);
   EXPECT_EQ(-1, GetIntPref(ash::prefs::kPowerLidClosedAction));
+}
+
+// Verifies that requests from WebUI to enable / disable the adaptive charging
+// feature updates prefs appropriately.
+IN_PROC_BROWSER_TEST_F(PowerHandlerTest, SetAdaptiveCharging) {
+  const PrefService::Preference* pref =
+      GetPrefs()->FindPreference(ash::prefs::kPowerAdaptiveChargingEnabled);
+  ASSERT_NE(nullptr, pref);
+
+  EXPECT_EQ(false, pref->GetValue()->GetBool());
+  test_api_->SetAdaptiveCharging(true);
+  EXPECT_EQ(true, pref->GetValue()->GetBool());
 }
 
 }  // namespace settings

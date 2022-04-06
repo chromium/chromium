@@ -128,8 +128,24 @@ Polymer({
       computed: 'hasSingleOption_(batteryIdleOptions_)',
     },
 
+    /** @private {boolean} */
+    adaptiveChargingEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isAdaptiveChargingEnabled');
+      },
+    },
+
     /** @private {!chrome.settingsPrivate.PrefObject} */
     lidClosedPref_: {
+      type: Object,
+      value() {
+        return /** @type {!chrome.settingsPrivate.PrefObject} */ ({});
+      },
+    },
+
+    /** @private {!chrome.settingsPrivate.PrefObject} */
+    adaptiveChargingPref_: {
       type: Object,
       value() {
         return /** @type {!chrome.settingsPrivate.PrefObject} */ ({});
@@ -289,6 +305,15 @@ Polymer({
     recordSettingChange();
   },
 
+  /** @private */
+  onAdaptiveChargingToggleChange_() {
+    this.browserProxy_.setAdaptiveCharging(
+        this.$.adaptiveChargingToggle.checked);
+    // TODO(b/216035280): use two-arg version of this function once the adaptive
+    // charging setting has been defined.
+    recordSettingChange();
+  },
+
   /**
    * @param {!Array<PowerSource>} sources External power sources.
    * @param {string} selectedId The ID of the currently used power source.
@@ -418,15 +443,38 @@ Polymer({
     this.updateLidClosedLabelAndPref_(
         powerManagementSettings.lidClosedBehavior,
         powerManagementSettings.lidClosedControlled);
+    // Use an atomic assign to trigger UI change.
+    this.adaptiveChargingPref_ = {
+      key: '',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: powerManagementSettings.adaptiveCharging,
+    };
   },
 
   /**
+   * Returns the row class for the given settings row
    * @param {boolean} batteryPresent if battery is present
-   * @return {string} 'first' if idle/lid settings are first visible div
+   * @param {string} element the name of the row being queried
+   * @return {string} the class for the given row
    * @private
    */
-  getFirst_(batteryPresent) {
-    return !batteryPresent ? 'first' : '';
+  getClassForRow_(batteryPresent, element) {
+    let c = 'cr-row';
+
+    switch (element) {
+      case 'adaptiveCharging':
+        if (!batteryPresent) {
+          c += ' first';
+        }
+        break;
+      case 'idle':
+        if (!batteryPresent && !this.adaptiveChargingEnabled_) {
+          c += ' first';
+        }
+        break;
+    }
+
+    return c;
   },
 
   /**

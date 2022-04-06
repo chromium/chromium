@@ -811,6 +811,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_DICTIONARY;
   (*s_allowlist)[arc::prefs::kArcVisibleExternalStorages] =
       settings_api::PrefType::PREF_TYPE_LIST;
+  (*s_allowlist)[ash::prefs::kPowerAdaptiveChargingEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
   // Native Printing settings.
   (*s_allowlist)[::prefs::kUserPrintersAllowed] =

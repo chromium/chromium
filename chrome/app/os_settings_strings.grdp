@@ -3546,6 +3546,12 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_POWER_IDLE_WHILE_ON_BATTERY_ARIA_LABEL" desc="In Device Settings > Power, aria label for behavior when device is idle.">
     Idle action while on battery
   </message>
+  <message name="IDS_SETTINGS_POWER_ADAPTIVE_CHARGING_LABEL" desc="In Device Settings > Power, the title of the settings row of the adaptive charging feature, which saves battery life by deferring battery charging.">
+    Adaptive charging
+  </message>
+  <message name="IDS_SETTINGS_POWER_ADAPTIVE_CHARGING_SUBTEXT" desc="In Device Settings > Power, description of the behavior of the adaptive charging feature.">
+    Extends battery life by keeping your battery around 80%. Battery will fully charge before you typically disconnect from power.
+  </message>
   <message name="IDS_SETTINGS_POWER_IDLE_DISPLAY_OFF_SLEEP" desc="In Device Settings > Power, menu item for idle behavior that turns the screen off and later puts the device to sleep. String must be short enough to fit in a drop-down menu.">
     Sleep
   </message>

@@ -85,6 +85,7 @@ export const LidClosedBehavior = {
  *   lidClosedBehavior: LidClosedBehavior,
  *   lidClosedControlled: boolean,
  *   hasLid: boolean,
+ *   adaptiveCharging: boolean,
  * }}
  */
 export let PowerManagementSettings;
@@ -165,6 +166,12 @@ export class DevicePageBrowserProxy {
    * @param {LidClosedBehavior} behavior Lid-closed behavior.
    */
   setLidClosedBehavior(behavior) {}
+
+  /**
+   * Sets adaptive charging on or off.
+   * @param {boolean} enabled whether to set adaptive charging to on or off.
+   */
+  setAdaptiveCharging(enabled) {}
 
   /**
    * |callback| is run when there is new note-taking app information
@@ -283,6 +290,11 @@ export class DevicePageBrowserProxyImpl {
   /** @override */
   setIdleBehavior(behavior, whenOnAc) {
     chrome.send('setIdleBehavior', [behavior, whenOnAc]);
+  }
+
+  /** @override */
+  setAdaptiveCharging(enabled) {
+    chrome.send('setAdaptiveCharging', [enabled]);
   }
 
   /** @override */

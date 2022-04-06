@@ -51,6 +51,7 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
   static const char kLidClosedBehaviorKey[];
   static const char kLidClosedControlledKey[];
   static const char kHasLidKey[];
+  static const char kAdaptiveChargingKey[];
 
   // Class used by tests to interact with PowerHandler internals.
   class TestAPI {
@@ -67,6 +68,7 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
     // sets battery idle behavior to |behavior|.
     void SetIdleBehavior(IdleBehavior behavior, bool when_on_ac);
     void SetLidClosedBehavior(PowerPolicyController::Action behavior);
+    void SetAdaptiveCharging(bool enabled);
 
    private:
     PowerHandler* handler_;  // Not owned.
@@ -132,6 +134,9 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
   void HandleSetIdleBehavior(const base::Value::List& args);
   void HandleSetLidClosedBehavior(const base::Value::List& args);
 
+  // Handler to toggle adaptive charging behavior.
+  void HandleSetAdaptiveCharging(const base::Value::List& args);
+
   // Updates the UI with the current battery status.
   void SendBatteryStatus();
 
@@ -176,6 +181,7 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
       PowerPolicyController::ACTION_SUSPEND;
   bool last_lid_closed_controlled_ = false;
   bool last_has_lid_ = true;
+  bool last_adaptive_charging_ = false;
 
   base::WeakPtrFactory<PowerHandler> weak_ptr_factory_{this};
 };

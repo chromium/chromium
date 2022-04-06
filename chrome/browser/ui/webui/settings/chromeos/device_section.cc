@@ -765,11 +765,19 @@ void AddDevicePowerStrings(content::WebUIDataSource* html_source) {
       {"powerIdleDisplayOn", IDS_SETTINGS_POWER_IDLE_DISPLAY_ON},
       {"powerIdleDisplayShutDown", IDS_SETTINGS_POWER_IDLE_SHUT_DOWN},
       {"powerIdleDisplayStopSession", IDS_SETTINGS_POWER_IDLE_STOP_SESSION},
+      {"powerAdaptiveChargingLabel",
+       IDS_SETTINGS_POWER_ADAPTIVE_CHARGING_LABEL},
+      {"powerAdaptiveChargingSubtext",
+       IDS_SETTINGS_POWER_ADAPTIVE_CHARGING_SUBTEXT},
+      {"powerIdleDisplayShutDown", IDS_SETTINGS_POWER_IDLE_SHUT_DOWN},
       {"powerLidSleepLabel", IDS_SETTINGS_POWER_LID_CLOSED_SLEEP_LABEL},
       {"powerLidSignOutLabel", IDS_SETTINGS_POWER_LID_CLOSED_SIGN_OUT_LABEL},
       {"powerLidShutDownLabel", IDS_SETTINGS_POWER_LID_CLOSED_SHUT_DOWN_LABEL},
   };
   html_source->AddLocalizedStrings(kPowerStrings);
+
+  // TODO(b:216035280): create and link to real "learn more" webpage.
+  html_source->AddString("powerAdaptiveChargingLearnMoreUrl", u"about://blank");
 }
 
 // Mirrors enum of the same name in enums.xml.
@@ -868,6 +876,9 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   AddDeviceStorageStrings(
       html_source, features::ShouldShowExternalStorageSettings(profile()));
   AddDevicePowerStrings(html_source);
+
+  html_source->AddBoolean("isAdaptiveChargingEnabled",
+                          ash::features::IsAdaptiveChargingEnabled());
 }
 
 void DeviceSection::AddHandlers(content::WebUI* web_ui) {
