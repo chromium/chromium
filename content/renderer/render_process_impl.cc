@@ -226,6 +226,8 @@ RenderProcessImpl::RenderProcessImpl()
 
   SetV8FlagIfFeature(features::kWebAssemblyDynamicTiering,
                      "--wasm-dynamic-tiering");
+  SetV8FlagIfNotFeature(features::kWebAssemblyDynamicTiering,
+                        "--no-wasm-dynamic-tiering");
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(ARCH_CPU_X86_64)
   if (base::FeatureList::IsEnabled(features::kWebAssemblyTrapHandler)) {

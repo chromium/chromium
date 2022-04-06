@@ -1058,7 +1058,7 @@ const base::Feature kWebAssemblyCodeProtectionPku{
 
 // Enable WebAssembly dynamic tiering (only tier up hot functions).
 const base::Feature kWebAssemblyDynamicTiering{
-    "WebAssemblyDynamicTiering", base::FEATURE_DISABLED_BY_DEFAULT};
+    "WebAssemblyDynamicTiering", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable WebAssembly lazy compilation (JIT on first call).
 const base::Feature kWebAssemblyLazyCompilation{
