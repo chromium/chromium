@@ -32,50 +32,6 @@ Profiling should always be done on a Release build, which has very similar perfo
     blink_symbol_level = 2
     symbol_level = 2
 
-    # Needed for built-in profiling only
-    enable_profiling = true
-
-#### Preparing your environment
-
-By default, the profiler will take a sample 100 times per second. You can adjust this rate by setting the `CPUPROFILE_FREQUENCY` environment variable before launching chromium:
-
-    $ export CPUPROFILE_FREQUENCY=1000
-    
-The maximum supported rate is 4000 samples per second.
-
-#### Profiling a process over its entire lifetime
-
-To profile the main browser process, add the following argument to your chrome invocation:
-
-    --enable-profiling --profiling-at-start
-
-To profile, e.g., every renderer process, add the following argument to your chrome invocation:
-
-    --enable-profiling --profiling-at-start=renderer --no-sandbox
-
-To profile the gpu process, add the following argument to your chrome invocation:
-
-    --enable-profiling --profiling-at-start=gpu-process --no-sandbox --profiling-flush
-
-The gpu process does not shut down cleanly and so requires periodic flushing to
-write the profile to disk.
-
-*** promo
-The --no-sandbox argument is required to allow the renderer process to write the profiling output to the file system.
-***
-
-When the process being profiled ends, you should see one or more `chrome-profile-{process type}-{process ID}` files in your `$PWD`. Run `pprof` to view the results, e.g.:
-
-    $ pprof -web chrome-profile-renderer-12345
-    
-*** promo
-`pprof` is packed with useful features for visualizing profiling data. Try `pprof --help` for more info.
-***
-
-*** promo
-Tip for Googlers: running `prodaccess` first will make `pprof` run faster, and eliminate some useless spew to the terminal.
-***
-
 ## Profiling a process or thread for a defined period of time using perf
 
 First, make sure you have the `linux-perf` package installed:
@@ -89,7 +45,7 @@ Run the perf tool like this:
     $ perf record -g -p <Process ID> -o <output file>
     
 *** promo
-`perf` does not honor the `CPUPROFILE_FREQUENCY` env var. To adjust the sampling frequency, use the `-F` argument, e.g., `-F 1000`.
+To adjust the sampling frequency, use the `-F` argument, e.g., `-F 1000`.
 ***
 
 To stop profiling, press `Control-c` in the terminal window where `perf` is running. Run `pprof` to view the results, providing the path to the browser executable; e.g.:
@@ -98,6 +54,10 @@ To stop profiling, press `Control-c` in the terminal window where `perf` is runn
 
 *** promo
 `pprof` is packed with useful features for visualizing profiling data. Try `pprof --help` for more info.
+***
+
+*** promo
+Tip for Googlers: running `gcert` first will make `pprof` run faster, and eliminate some useless spew to the terminal.
 ***
 
 If you want to limit the profile to a single thread, run:
