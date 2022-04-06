@@ -67,38 +67,31 @@ export function inputCardTestSuite() {
     return flushTasks();
   }
 
-  test('KeyboardsListedCorrectly', () => {
-    return initializeInputCard(InputCardType.kKeyboard, keyboards).then(() => {
-      assertEquals(2, inputCardElement.$$('dom-repeat').items.length);
-      const elements = inputCardElement.root.querySelectorAll('.device');
-      assertEquals(
-          keyboards[0].name,
-          elements[0].querySelector('.device-name').innerText);
-      assertEquals(
-          'Internal keyboard',
-          elements[0].querySelector('.device-description').innerText);
-      assertEquals(
-          keyboards[1].name,
-          elements[1].querySelector('.device-name').innerText);
-      assertEquals(
-          'Bluetooth keyboard',
-          elements[1].querySelector('.device-description').innerText);
-    });
+  test('KeyboardsListedCorrectly', async () => {
+    await initializeInputCard(InputCardType.kKeyboard, keyboards);
+    assertEquals(2, inputCardElement.$$('dom-repeat').items.length);
+    const elements = inputCardElement.root.querySelectorAll('.device');
+    assertEquals(
+        keyboards[0].name, elements[0].querySelector('.device-name').innerText);
+    assertEquals(
+        'Internal keyboard',
+        elements[0].querySelector('.device-description').innerText);
+    assertEquals(
+        keyboards[1].name, elements[1].querySelector('.device-name').innerText);
+    assertEquals(
+        'Bluetooth keyboard',
+        elements[1].querySelector('.device-description').innerText);
   });
 
-  test('TestButtonClickEvent', () => {
+  test('TestButtonClickEvent', async () => {
+    await initializeInputCard(InputCardType.kKeyboard, keyboards);
     let listenerCalled = false;
-    return initializeInputCard(InputCardType.kKeyboard, keyboards)
-        .then(() => {
-          inputCardElement.addEventListener('test-button-click', (e) => {
-            listenerCalled = true;
-            assertEquals(10, e.detail.evdevId);
-          });
-          inputCardElement.$$('.device[data-evdev-id="10"] cr-button').click();
-          return flushTasks();
-        })
-        .then(() => {
-          assertTrue(listenerCalled);
-        });
+    inputCardElement.addEventListener('test-button-click', (e) => {
+      listenerCalled = true;
+      assertEquals(10, e.detail.evdevId);
+    });
+    inputCardElement.$$('.device[data-evdev-id="10"] cr-button').click();
+    await flushTasks();
+    assertTrue(listenerCalled);
   });
 }

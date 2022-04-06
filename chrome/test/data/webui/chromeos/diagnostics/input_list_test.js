@@ -63,21 +63,19 @@ export function inputListTestSuite() {
     return !!element && element.style.display !== 'none';
   }
 
-  test('InputListPopulated', () => {
-    return initializeInputList().then(() => {
-      assertEquals(
-          fakeKeyboards[0].name,
-          getCardByDeviceType('keyboard').devices[0].name);
-      assertEquals(
-          fakeTouchDevices[0].name,
-          getCardByDeviceType('touchpad').devices[0].name);
-      assertEquals(
-          fakeTouchDevices[1].name,
-          getCardByDeviceType('touchscreen').devices[0].name);
-    });
+  test('InputListPopulated', async () => {
+    await initializeInputList();
+    assertEquals(
+        fakeKeyboards[0].name, getCardByDeviceType('keyboard').devices[0].name);
+    assertEquals(
+        fakeTouchDevices[0].name,
+        getCardByDeviceType('touchpad').devices[0].name);
+    assertEquals(
+        fakeTouchDevices[1].name,
+        getCardByDeviceType('touchscreen').devices[0].name);
   });
 
-  test('KeyboardAddAndRemove', () => {
+  test('KeyboardAddAndRemove', async () => {
     /** @type {!KeyboardInfo} */
     const fakeKeyboard = {
       id: 4,
@@ -95,41 +93,33 @@ export function inputListTestSuite() {
       ],
       topRightKey: TopRightKey.kUnknown,
     };
-    let keyboardCard;
-    return initializeInputList()
-        .then(() => {
-          keyboardCard = getCardByDeviceType('keyboard');
-          provider.addFakeConnectedKeyboard(fakeKeyboard);
-          return flushTasks();
-        })
-        .then(() => {
-          assertEquals(2, keyboardCard.devices.length);
-          assertEquals(fakeKeyboards[0].name, keyboardCard.devices[0].name);
-          assertEquals(fakeKeyboard.name, keyboardCard.devices[1].name);
-          provider.removeFakeConnectedKeyboardById(fakeKeyboard.id);
-          return flushTasks();
-        })
-        .then(() => {
-          assertEquals(1, keyboardCard.devices.length);
-          assertEquals(fakeKeyboards[0].name, keyboardCard.devices[0].name);
-        });
+    await initializeInputList();
+    const keyboardCard = getCardByDeviceType('keyboard');
+
+    provider.addFakeConnectedKeyboard(fakeKeyboard);
+    await flushTasks();
+    assertEquals(2, keyboardCard.devices.length);
+    assertEquals(fakeKeyboards[0].name, keyboardCard.devices[0].name);
+    assertEquals(fakeKeyboard.name, keyboardCard.devices[1].name);
+
+    provider.removeFakeConnectedKeyboardById(fakeKeyboard.id);
+    await flushTasks();
+    assertEquals(1, keyboardCard.devices.length);
+    assertEquals(fakeKeyboards[0].name, keyboardCard.devices[0].name);
   });
 
-  test('KeyboardTesterShow', () => {
-    return initializeInputList([fakeKeyboards[0]], [])
-        .then(() => {
-          const testButton = getCardByDeviceType('keyboard').$$('cr-button');
-          assertTrue(!!testButton);
-          testButton.click();
-          return flushTasks();
-        })
-        .then(() => {
-          const keyboardTester = inputListElement.$$('keyboard-tester');
-          assertTrue(keyboardTester.isOpen());
-        });
+  test('KeyboardTesterShow', async () => {
+    await initializeInputList([fakeKeyboards[0]], []);
+    const testButton = getCardByDeviceType('keyboard').$$('cr-button');
+    assertTrue(!!testButton);
+    testButton.click();
+    await flushTasks();
+
+    const keyboardTester = inputListElement.$$('keyboard-tester');
+    assertTrue(keyboardTester.isOpen());
   });
 
-  test('TouchpadAddAndRemove', () => {
+  test('TouchpadAddAndRemove', async () => {
     /** @type {!TouchDeviceInfo} */
     const fakeTouchpad = {
       id: 4,
@@ -137,27 +127,22 @@ export function inputListTestSuite() {
       type: TouchDeviceType.kPointer,
       name: 'Sample USB touchpad',
     };
-    let touchpadCard;
-    return initializeInputList()
-        .then(() => {
-          touchpadCard = getCardByDeviceType('touchpad');
-          provider.addFakeConnectedTouchDevice(fakeTouchpad);
-          return flushTasks();
-        })
-        .then(() => {
-          assertEquals(2, touchpadCard.devices.length);
-          assertEquals(fakeTouchDevices[0].name, touchpadCard.devices[0].name);
-          assertEquals(fakeTouchpad.name, touchpadCard.devices[1].name);
-          provider.removeFakeConnectedTouchDeviceById(fakeTouchpad.id);
-          return flushTasks();
-        })
-        .then(() => {
-          assertEquals(1, touchpadCard.devices.length);
-          assertEquals(fakeTouchDevices[0].name, touchpadCard.devices[0].name);
-        });
+    await initializeInputList();
+    const touchpadCard = getCardByDeviceType('touchpad');
+
+    provider.addFakeConnectedTouchDevice(fakeTouchpad);
+    await flushTasks();
+    assertEquals(2, touchpadCard.devices.length);
+    assertEquals(fakeTouchDevices[0].name, touchpadCard.devices[0].name);
+    assertEquals(fakeTouchpad.name, touchpadCard.devices[1].name);
+
+    provider.removeFakeConnectedTouchDeviceById(fakeTouchpad.id);
+    await flushTasks();
+    assertEquals(1, touchpadCard.devices.length);
+    assertEquals(fakeTouchDevices[0].name, touchpadCard.devices[0].name);
   });
 
-  test('TouchscreenAddAndRemove', () => {
+  test('TouchscreenAddAndRemove', async () => {
     /** @type {!TouchDeviceInfo} */
     const fakeTouchscreen = {
       id: 4,
@@ -165,26 +150,19 @@ export function inputListTestSuite() {
       type: TouchDeviceType.kDirect,
       name: 'Sample USB touchscreen',
     };
-    let touchscreenCard;
-    return initializeInputList()
-        .then(() => {
-          touchscreenCard = getCardByDeviceType('touchscreen');
-          provider.addFakeConnectedTouchDevice(fakeTouchscreen);
-          return flushTasks();
-        })
-        .then(() => {
-          assertEquals(2, touchscreenCard.devices.length);
-          assertEquals(
-              fakeTouchDevices[1].name, touchscreenCard.devices[0].name);
-          assertEquals(fakeTouchscreen.name, touchscreenCard.devices[1].name);
-          provider.removeFakeConnectedTouchDeviceById(fakeTouchscreen.id);
-          return flushTasks();
-        })
-        .then(() => {
-          assertEquals(1, touchscreenCard.devices.length);
-          assertEquals(
-              fakeTouchDevices[1].name, touchscreenCard.devices[0].name);
-        });
+    await initializeInputList();
+    const touchscreenCard = getCardByDeviceType('touchscreen');
+
+    provider.addFakeConnectedTouchDevice(fakeTouchscreen);
+    await flushTasks();
+    assertEquals(2, touchscreenCard.devices.length);
+    assertEquals(fakeTouchDevices[1].name, touchscreenCard.devices[0].name);
+    assertEquals(fakeTouchscreen.name, touchscreenCard.devices[1].name);
+
+    provider.removeFakeConnectedTouchDeviceById(fakeTouchscreen.id);
+    await flushTasks();
+    assertEquals(1, touchscreenCard.devices.length);
+    assertEquals(fakeTouchDevices[1].name, touchscreenCard.devices[0].name);
   });
 
   test('EmptySectionsHidden', async () => {
