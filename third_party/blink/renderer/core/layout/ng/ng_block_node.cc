@@ -1474,7 +1474,7 @@ void NGBlockNode::PlaceChildrenInFlowThread(
 
       pending_column_set->SetLocation(point);
       pending_column_set->SetLogicalWidth(column_row_inline_size);
-      pending_column_set->ResetColumnHeightFromNG();
+      pending_column_set->ResetColumnHeight();
       pending_column_set = nullptr;
     } else if (should_append_fragmentainer_group) {
       // Resuming column layout from the previous outer fragmentainer into the

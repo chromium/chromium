@@ -71,10 +71,16 @@ LayoutUnit MultiColumnFragmentainerGroup::LogicalHeightInFlowThreadAt(
 }
 
 void MultiColumnFragmentainerGroup::ResetColumnHeight() {
-  max_logical_height_ = CalculateMaxColumnHeight();
-
   LayoutMultiColumnFlowThread* flow_thread =
       column_set_->MultiColumnFlowThread();
+  if (flow_thread->IsNGMulticol()) {
+    is_logical_height_known_ = false;
+    logical_height_ = LayoutUnit();
+    return;
+  }
+
+  max_logical_height_ = CalculateMaxColumnHeight();
+
   if (column_set_->HeightIsAuto()) {
     FragmentationContext* enclosing_fragmentation_context =
         flow_thread->EnclosingFragmentationContext();
@@ -102,11 +108,6 @@ void MultiColumnFragmentainerGroup::ResetColumnHeight() {
     is_logical_height_known_ = false;
     logical_height_ = LayoutUnit();
   }
-}
-
-void MultiColumnFragmentainerGroup::ResetColumnHeightFromNG() {
-  is_logical_height_known_ = false;
-  logical_height_ = LayoutUnit();
 }
 
 bool MultiColumnFragmentainerGroup::RecalculateColumnHeight(
