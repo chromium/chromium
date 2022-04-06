@@ -89,20 +89,24 @@ void FakeAmbientBackendControllerImpl::FetchScreenUpdateInfo(
     OnScreenUpdateInfoFetchedCallback callback) {
   ash::ScreenUpdate update;
 
-  int num_topics_to_return =
-      custom_num_topics_to_return_.has_value()
-          ? std::min(custom_num_topics_to_return_.value(), num_topics)
-          : num_topics;
-  for (int i = 0; i < num_topics_to_return; i++) {
-    ash::AmbientModeTopic topic;
-    topic.url = kFakeUrl;
-    topic.details = kFakeDetails;
-    topic.is_portrait = is_portrait_;
-    if (has_related_image_)
-      topic.related_image_url = kFakeUrl;
-    topic.topic_type = topic_type_;
+  if (custom_topic_generator_) {
+    update.next_topics = custom_topic_generator_.Run(num_topics, screen_size);
+  } else {
+    int num_topics_to_return =
+        custom_num_topics_to_return_.has_value()
+            ? std::min(custom_num_topics_to_return_.value(), num_topics)
+            : num_topics;
+    for (int i = 0; i < num_topics_to_return; ++i) {
+      ash::AmbientModeTopic topic;
+      topic.url = kFakeUrl;
+      topic.details = kFakeDetails;
+      topic.is_portrait = is_portrait_;
+      if (has_related_image_)
+        topic.related_image_url = kFakeUrl;
+      topic.topic_type = topic_type_;
 
-    update.next_topics.emplace_back(topic);
+      update.next_topics.emplace_back(topic);
+    }
   }
 
   // Only respond weather info when there is no active weather testing.

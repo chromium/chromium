@@ -2391,6 +2391,7 @@ test("ash_unittests") {
     "ambient/model/ambient_animation_photo_config_unittest.cc",
     "ambient/model/ambient_animation_photo_provider_unittest.cc",
     "ambient/model/ambient_backend_model_unittest.cc",
+    "ambient/model/ambient_topic_queue_unittest.cc",
     "ambient/ui/ambient_animation_resizer_unittest.cc",
     "ambient/ui/ambient_animation_shield_controller_unittest.cc",
     "ambient/ui/ambient_animation_view_unittest.cc",
