@@ -138,6 +138,8 @@ blink_modules_sources("webaudio") {
     "stereo_panner_node.h",
     "wave_shaper_dsp_kernel.cc",
     "wave_shaper_dsp_kernel.h",
+    "wave_shaper_handler.cc",
+    "wave_shaper_handler.h",
     "wave_shaper_node.cc",
     "wave_shaper_node.h",
     "wave_shaper_processor.cc",
