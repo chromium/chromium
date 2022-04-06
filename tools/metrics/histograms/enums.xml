@@ -130,6 +130,12 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="7" label="html lang value matches primary Accept-Language"/>
 </enum>
 
+<enum name="AccessCodeCastDialogOpenLocation">
+  <int value="0" label="Browser cast menu"/>
+  <int value="1" label="ChromeOS quick settings feature pod"/>
+  <int value="2" label="ChromeOS quick settings cast menu"/>
+</enum>
+
 <enum name="AccessibilityAndroidAnimationsEnabled">
   <obsolete>
     Removed from code 2020/10.

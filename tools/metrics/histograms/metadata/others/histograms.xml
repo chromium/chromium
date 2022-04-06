@@ -153,6 +153,16 @@ chromium-metrics-reviews@google.com.
   <variant name="TitleWasSet"/>
 </variants>
 
+<histogram name="AccessCodeCast.Ui.DialogOpenLocation"
+    enum="AccessCodeCastDialogOpenLocation" expires_after="2023-01-01">
+  <owner>bzielinski@google.com</owner>
+  <owner>cros-edu-team@google.com</owner>
+  <summary>
+    The location from which the AccessCodeCast dialog is opened. Recorded after
+    the dialog opens. Only logged on desktop platforms.
+  </summary>
+</histogram>
+
 <histogram name="ActivityTracker.Collect.AnalyzerCreationError"
     enum="ActivityTrackerAnalyzerCreationError" expires_after="M90">
   <owner>siggi@chromium.org</owner>
