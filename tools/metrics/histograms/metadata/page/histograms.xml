@@ -616,6 +616,115 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.FencedFrames.InteractiveTiming.FirstInputDelay4"
+    units="ms" expires_after="2022-10-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>mparch-dev@chromium.org</owner>
+  <summary>
+    Measures First Input Delay, the duration between the hardware timestamp and
+    the start of event processing on the main thread for the first meaningful
+    input per navigation. Recorded on first FencedFrames' page interaction. See
+    https://goo.gl/tr1oTZ for a detailed explanation. Excludes scrolls.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.FencedFrames.LayoutInstability.CumulativeShiftScore"
+    units="scorex10" expires_after="2022-10-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>mparch-dev@chromium.org</owner>
+  <summary>
+    Measures the cumulative layout shift score (bit.ly/lsm-explainer) that has
+    occurred on the FencedFrames page (including all subframes). Higher values
+    correspond to greater instability, which is bad. Recorded at the end of the
+    page lifetime, such as when the page is being navigated away from or when a
+    tab is being closed. On Android it's done when the browser is backgrounded.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.FencedFrames.LayoutInstability.CumulativeShiftScore.MainFrame"
+    units="scorex10" expires_after="2022-10-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>mparch-dev@chromium.org</owner>
+  <summary>
+    Measures the cumulative layout shift score (bit.ly/lsm-explainer) that has
+    occurred in the FencedFrames page's main frame. Recorded at the end of the
+    page lifetime, such as when the page is being navigated away from or when a
+    tab is being closed. On Android, it's done when the browser is backgrounded.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.FencedFrames.PaintTiming.NavigationToFirstContentfulPaint"
+    units="ms" expires_after="2022-10-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>mparch-dev@chromium.org</owner>
+  <summary>
+    The time from navigation start to first &quot;contentful&quot; paint. This
+    metric does not include all FencedFrames' page loads. Recorded iff the page
+    loads and the event happens in the foreground.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.FencedFrames.PaintTiming.NavigationToFirstContentfulPaint.Background"
+    units="ms" expires_after="2022-10-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>mparch-dev@chromium.org</owner>
+  <summary>
+    The time from navigation start to first &quot;contentful&quot; paint. This
+    metric include FencedFrames' page loads that haven't kept running in
+    foreground. Recorded iff the page loads or the event happens in the
+    background.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.FencedFrames.PaintTiming.NavigationToFirstImagePaint"
+    units="ms" expires_after="2022-10-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>mparch-dev@chromium.org</owner>
+  <summary>
+    Measures the time from navigation timing's navigation start to the time the
+    first image is painted, for FencedFrames' main frame documents. For images
+    that render progressively, this is recorded as soon as any image pixels have
+    been drawn iff the page loads and the event happens in the foreground.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.FencedFrames.PaintTiming.NavigationToFirstPaint"
+    units="ms" expires_after="2022-10-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>mparch-dev@chromium.org</owner>
+  <summary>
+    Measures the time from navigation timing's navigation start to the time the
+    first paint is performed, for FencedFrames' main frame documents. Recorded
+    iff the page loads and the event happens in the foreground.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.FencedFrames.PaintTiming.NavigationToLargestContentfulPaint2"
+    units="ms" expires_after="2022-10-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>mparch-dev@chromium.org</owner>
+  <summary>
+    Measures the time from navigation timing's navigation start to the time the
+    largest content (text or image) is first painted, across all frames under
+    the FencedFrames root. Excludes any content painted after user input.
+    Includes content that has been removed from the page. See web.dev/lcp for
+    more details.
+
+    The value is recorded at the end of each page load or the latest time when
+    we can reliably record: when the page is navigated away, the browser is
+    closed, or on Android when the browser is backgrounded, iff the page loads
+    and the event happens in the foreground.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.Prerender.InteractiveTiming.FirstInputDelay4{PrerenderTriggerType}"
     units="ms" expires_after="2022-06-27">
   <owner>ksakamoto@chromium.org</owner>
