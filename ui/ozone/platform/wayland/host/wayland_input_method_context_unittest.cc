@@ -389,7 +389,7 @@ TEST_P(WaylandInputMethodContextTest, SetContentType) {
       .Times(1);
   input_method_context_->SetContentType(TEXT_INPUT_TYPE_URL,
                                         TEXT_INPUT_FLAG_AUTOCOMPLETE_ON,
-                                        /*should_do_learning=*/false);
+                                        /*should_do_learning=*/true);
   connection_->ScheduleFlush();
   Sync();
 }
@@ -402,7 +402,7 @@ TEST_P(WaylandInputMethodContextTest, SetContentTypeWithoutLearning) {
       .Times(1);
   input_method_context_->SetContentType(TEXT_INPUT_TYPE_URL,
                                         TEXT_INPUT_FLAG_AUTOCOMPLETE_ON,
-                                        /*should_do_learning=*/true);
+                                        /*should_do_learning=*/false);
   connection_->ScheduleFlush();
   Sync();
 }
