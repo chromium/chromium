@@ -950,10 +950,24 @@ const FeatureEntry::FeatureParam
     kJourneysSortClustersWithinBatchForQueryParams[] = {
         {"JourneysSortClustersWithinBatchForQuery", "true"},
 };
+const FeatureEntry::FeatureParam kJourneysDropHiddenVisitsParams[] = {
+    {"drop_hidden_visits", "true"},
+};
+const FeatureEntry::FeatureParam kJourneysShowAllVisitsParams[] = {
+    // To show all visits, set the number of visits above the fold to a very
+    // high number. We drop the rest above this very high number because we
+    // definitely don't want to surface a Show More UI after that number.
+    {"JourneysNumVisitsToAlwaysShowAboveTheFold", "200"},
+    {"drop_hidden_visits", "true"},
+};
 const FeatureEntry::FeatureVariation kJourneysVariations[] = {
     {"Sort Clusters Within Batch for Query",
      kJourneysSortClustersWithinBatchForQueryParams,
      std::size(kJourneysSortClustersWithinBatchForQueryParams), nullptr},
+    {"No 'Show More' - Drop hidden visits", kJourneysDropHiddenVisitsParams,
+     std::size(kJourneysDropHiddenVisitsParams), nullptr},
+    {"No 'Show More' - Show all visits", kJourneysShowAllVisitsParams,
+     std::size(kJourneysShowAllVisitsParams), nullptr},
 };
 const FeatureEntry::FeatureParam
     kJourneysOnDeviceClusteringLabelingNoContentClusteringParams[] = {

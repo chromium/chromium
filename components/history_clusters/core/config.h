@@ -56,6 +56,10 @@ struct Config {
   // one "top visit" and three subordinate looking visits will be always shown.
   size_t num_visits_to_always_show_above_the_fold = 4;
 
+  // If enabled, hidden visits are dropped entirely, instead of being gated
+  // behind a "Show More" UI control.
+  bool drop_hidden_visits = false;
+
   // If enabled, when there is a Journeys search query, the backend re-scores
   // visits within a cluster to account for whether or not that visit matches.
   bool rescore_visits_within_clusters_for_query = true;

@@ -148,10 +148,17 @@ mojom::QueryResultPtr QueryClustersResultToMojom(
       // Even a 0.0 visit shouldn't be hidden if this is the first visit we
       // encounter. The assumption is that the visits are always ranked by score
       // in a descending order.
+      // TODO(crbug.com/1313631): Simplify this after removing "Show More" UI.
       if ((visit.score == 0.0 && !cluster_mojom->visits.empty()) ||
           (visit.score < GetConfig().min_score_to_always_show_above_the_fold &&
            cluster_mojom->visits.size() >=
                GetConfig().num_visits_to_always_show_above_the_fold)) {
+        // If the visit is dropped entirely, also skip coalescing its related
+        // searches by continuing the loop.
+        if (GetConfig().drop_hidden_visits) {
+          continue;
+        }
+
         visit_mojom->hidden = true;
       }
 
