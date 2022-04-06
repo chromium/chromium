@@ -3015,7 +3015,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionAllGroupsLimited) {
       /*expiry=*/base::Time(),
       /*owner=*/test_origin,
       /*name=*/"cars",
-      /*priority=*/3,
+      /*priority=*/2.3,
       /*bidding_url=*/
       https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
       /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -3029,7 +3029,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionAllGroupsLimited) {
       /*expiry=*/base::Time(),
       /*owner=*/test_origin,
       /*name=*/"bikes",
-      /*priority=*/2,
+      /*priority=*/2.2,
       /*bidding_url=*/
       https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
       /*bidding_wasm_helper_url=*/absl::nullopt,
@@ -3045,7 +3045,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionAllGroupsLimited) {
       /*expiry=*/base::Time(),
       /*owner=*/test_origin,
       /*name=*/"shoes",
-      /*priority=*/1,
+      /*priority=*/2.1,
       /*bidding_url=*/
       https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
       /*bidding_wasm_helper_url=*/absl::nullopt,
