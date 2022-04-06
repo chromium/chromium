@@ -8,8 +8,6 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
 static_library("backend") {
   sources = [
-    "async_log.cc",
-    "async_log.h",
     "cpu_usage_data.cc",
     "cpu_usage_data.h",
     "cros_healthd_helpers.cc",
@@ -24,16 +22,10 @@ static_library("backend") {
     "input_data_provider_keyboard.h",
     "input_data_provider_touch.cc",
     "input_data_provider_touch.h",
-    "log_test_helpers.cc",
-    "log_test_helpers.h",
     "network_health_provider.cc",
     "network_health_provider.h",
-    "networking_log.cc",
-    "networking_log.h",
     "power_manager_client_conversions.cc",
     "power_manager_client_conversions.h",
-    "routine_log.cc",
-    "routine_log.h",
     "routine_properties.cc",
     "routine_properties.h",
     "session_log_handler.cc",
@@ -42,8 +34,6 @@ static_library("backend") {
     "system_data_provider.h",
     "system_routine_controller.cc",
     "system_routine_controller.h",
-    "telemetry_log.cc",
-    "telemetry_log.h",
   ]
 
   deps = [
@@ -82,23 +72,20 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "async_log_unittest.cc",
     "cpu_usage_data_unittest.cc",
     "input_data_provider_unittest.cc",
-    "log_test_helpers_unittest.cc",
     "network_health_provider_unittest.cc",
-    "networking_log_unittest.cc",
     "power_manager_client_conversions_unittest.cc",
-    "routine_log_unittest.cc",
     "routine_properties_unittest.cc",
     "session_log_handler_unittest.cc",
     "system_data_provider_unittest.cc",
     "system_routine_controller_unittest.cc",
-    "telemetry_log_unittest.cc",
   ]
 
   deps = [
     ":backend",
+    "//ash",
+    "//ash:test_support",
     "//ash/public/cpp",
     "//ash/public/cpp/holding_space:test_support",
     "//ash/webui/diagnostics_ui/mojom",

@@ -4,9 +4,9 @@
 
 #include "ash/webui/diagnostics_ui/backend/system_routine_controller.h"
 
+#include "ash/system/diagnostics/routine_log.h"
 #include "ash/webui/diagnostics_ui/backend/cros_healthd_helpers.h"
 #include "ash/webui/diagnostics_ui/backend/histogram_util.h"
-#include "ash/webui/diagnostics_ui/backend/routine_log.h"
 #include "ash/webui/diagnostics_ui/backend/routine_properties.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"

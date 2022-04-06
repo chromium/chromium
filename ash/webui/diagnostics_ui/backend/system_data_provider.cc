@@ -8,9 +8,9 @@
 #include <utility>
 #include <vector>
 
+#include "ash/system/diagnostics/telemetry_log.h"
 #include "ash/webui/diagnostics_ui/backend/cros_healthd_helpers.h"
 #include "ash/webui/diagnostics_ui/backend/power_manager_client_conversions.h"
-#include "ash/webui/diagnostics_ui/backend/telemetry_log.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/i18n/time_formatting.h"

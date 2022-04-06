@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/diagnostics_ui/backend/routine_log.h"
+#include "ash/system/diagnostics/routine_log.h"
 
 #include <string>
 #include <vector>
 
-#include "ash/webui/diagnostics_ui/backend/log_test_helpers.h"
+#include "ash/system/diagnostics/log_test_helpers.h"
 #include "ash/webui/diagnostics_ui/mojom/system_routine_controller.mojom.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"

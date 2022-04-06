@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/diagnostics_ui/backend/async_log.h"
+#include "ash/system/diagnostics/async_log.h"
 
 #include "base/files/file_util.h"
 #include "base/logging.h"

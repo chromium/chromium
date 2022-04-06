@@ -5,7 +5,7 @@
 #include "ash/webui/diagnostics_ui/backend/network_health_provider.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/webui/diagnostics_ui/backend/networking_log.h"
+#include "ash/system/diagnostics/networking_log.h"
 #include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"

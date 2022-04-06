@@ -9,10 +9,10 @@
 #include <utility>
 
 #include "ash/public/cpp/holding_space/mock_holding_space_client.h"
-#include "ash/webui/diagnostics_ui/backend/log_test_helpers.h"
-#include "ash/webui/diagnostics_ui/backend/networking_log.h"
-#include "ash/webui/diagnostics_ui/backend/routine_log.h"
-#include "ash/webui/diagnostics_ui/backend/telemetry_log.h"
+#include "ash/system/diagnostics/log_test_helpers.h"
+#include "ash/system/diagnostics/networking_log.h"
+#include "ash/system/diagnostics/routine_log.h"
+#include "ash/system/diagnostics/telemetry_log.h"
 #include "ash/webui/diagnostics_ui/mojom/system_data_provider.mojom.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"

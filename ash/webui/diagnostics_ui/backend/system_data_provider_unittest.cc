@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
+#include "ash/system/diagnostics/telemetry_log.h"
 #include "ash/webui/diagnostics_ui/backend/cpu_usage_data.h"
 #include "ash/webui/diagnostics_ui/backend/power_manager_client_conversions.h"
-#include "ash/webui/diagnostics_ui/backend/telemetry_log.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"

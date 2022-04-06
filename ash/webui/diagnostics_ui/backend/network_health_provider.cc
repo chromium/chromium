@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "ash/webui/diagnostics_ui/backend/networking_log.h"
+#include "ash/system/diagnostics/networking_log.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"

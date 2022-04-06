@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_ASYNC_LOG_H_
-#define ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_ASYNC_LOG_H_
+#ifndef ASH_SYSTEM_DIAGNOSTICS_ASYNC_LOG_H_
+#define ASH_SYSTEM_DIAGNOSTICS_ASYNC_LOG_H_
 
 #include <string>
 
+#include "ash/ash_export.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -17,7 +18,7 @@ namespace diagnostics {
 // `AsyncLog` is a simple test logger that appends lines/strings to the end of
 // a file. The file is created on first write, and all IO operations occur
 // on a `SequencedTaskRunner`.
-class AsyncLog {
+class ASH_EXPORT AsyncLog {
  public:
   explicit AsyncLog(const base::FilePath& file_path);
   AsyncLog(const AsyncLog&) = delete;
@@ -47,4 +48,4 @@ class AsyncLog {
 }  // namespace diagnostics
 }  // namespace ash
 
-#endif  // ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_ASYNC_LOG_H_
+#endif  // ASH_SYSTEM_DIAGNOSTICS_ASYNC_LOG_H_

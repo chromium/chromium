@@ -4,7 +4,7 @@
 
 #include "ash/webui/diagnostics_ui/backend/system_routine_controller.h"
 
-#include "ash/webui/diagnostics_ui/backend/routine_log.h"
+#include "ash/system/diagnostics/routine_log.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"

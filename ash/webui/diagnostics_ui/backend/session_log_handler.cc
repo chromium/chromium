@@ -6,9 +6,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
-#include "ash/webui/diagnostics_ui/backend/networking_log.h"
-#include "ash/webui/diagnostics_ui/backend/routine_log.h"
-#include "ash/webui/diagnostics_ui/backend/telemetry_log.h"
+#include "ash/system/diagnostics/networking_log.h"
+#include "ash/system/diagnostics/routine_log.h"
+#include "ash/system/diagnostics/telemetry_log.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_util.h"

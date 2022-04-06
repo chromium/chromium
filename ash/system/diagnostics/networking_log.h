@@ -2,19 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_NETWORKING_LOG_H_
-#define ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_NETWORKING_LOG_H_
+#ifndef ASH_SYSTEM_DIAGNOSTICS_NETWORKING_LOG_H_
+#define ASH_SYSTEM_DIAGNOSTICS_NETWORKING_LOG_H_
 
 #include <string>
 #include <vector>
 
-#include "ash/webui/diagnostics_ui/backend/async_log.h"
+#include "ash/ash_export.h"
+#include "ash/system/diagnostics/async_log.h"
 #include "ash/webui/diagnostics_ui/mojom/network_health_provider.mojom.h"
 
 namespace ash {
 namespace diagnostics {
 
-class NetworkingLog {
+class ASH_EXPORT NetworkingLog {
  public:
   explicit NetworkingLog(const base::FilePath& log_base_path);
 

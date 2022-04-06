@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/diagnostics_ui/backend/routine_log.h"
+#include "ash/system/diagnostics/routine_log.h"
 
 #include <sstream>
 #include <string>

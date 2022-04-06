@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_TELEMETRY_LOG_H_
-#define ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_TELEMETRY_LOG_H_
+#ifndef ASH_SYSTEM_DIAGNOSTICS_TELEMETRY_LOG_H_
+#define ASH_SYSTEM_DIAGNOSTICS_TELEMETRY_LOG_H_
 
 #include <string>
 
+#include "ash/ash_export.h"
 #include "ash/webui/diagnostics_ui/mojom/system_data_provider.mojom.h"
 
 namespace ash {
 namespace diagnostics {
 
-class TelemetryLog {
+class ASH_EXPORT TelemetryLog {
  public:
   TelemetryLog();
   ~TelemetryLog();
@@ -41,4 +42,4 @@ class TelemetryLog {
 }  // namespace diagnostics
 }  // namespace ash
 
-#endif  // ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_TELEMETRY_LOG_H_
+#endif  // ASH_SYSTEM_DIAGNOSTICS_TELEMETRY_LOG_H_

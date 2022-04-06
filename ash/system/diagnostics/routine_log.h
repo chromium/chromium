@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_ROUTINE_LOG_H_
-#define ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_ROUTINE_LOG_H_
+#ifndef ASH_SYSTEM_DIAGNOSTICS_ROUTINE_LOG_H_
+#define ASH_SYSTEM_DIAGNOSTICS_ROUTINE_LOG_H_
 
 #include <memory>
 #include <string>
 
-#include "ash/webui/diagnostics_ui/backend/async_log.h"
+#include "ash/ash_export.h"
+#include "ash/system/diagnostics/async_log.h"
 #include "ash/webui/diagnostics_ui/mojom/system_routine_controller.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
@@ -21,7 +22,7 @@ namespace diagnostics {
 // line is add to the log for the routine's category. `log_base_path`
 // is the directory used to write the category logs which have the name
 // "diagnostics_routines_{category_name}.log".
-class RoutineLog {
+class ASH_EXPORT RoutineLog {
  public:
   explicit RoutineLog(const base::FilePath& log_base_path);
   ~RoutineLog();
@@ -57,4 +58,4 @@ class RoutineLog {
 }  // namespace diagnostics
 }  // namespace ash
 
-#endif  // ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_ROUTINE_LOG_H_
+#endif  // ASH_SYSTEM_DIAGNOSTICS_ROUTINE_LOG_H_

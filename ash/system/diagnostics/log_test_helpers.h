@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_LOG_TEST_HELPERS_H_
-#define ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_LOG_TEST_HELPERS_H_
+#ifndef ASH_SYSTEM_DIAGNOSTICS_LOG_TEST_HELPERS_H_
+#define ASH_SYSTEM_DIAGNOSTICS_LOG_TEST_HELPERS_H_
 
 #include <string>
 #include <vector>
@@ -23,4 +23,4 @@ std::vector<std::string> GetLogLineContents(const std::string& log_line);
 }  // namespace diagnostics
 }  // namespace ash
 
-#endif  // ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_LOG_TEST_HELPERS_H_
+#endif  // ASH_SYSTEM_DIAGNOSTICS_LOG_TEST_HELPERS_H_
