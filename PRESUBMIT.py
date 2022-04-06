@@ -3072,13 +3072,14 @@ def CheckSetNoParent(input_api, output_api):
         # Check that every set noparent line has a corresponding file:// line
         # listed in build/OWNERS.setnoparent. An exception is made for top level
         # directories since src/OWNERS shouldn't review them.
-        if (f.LocalPath().count('/') != 1
-                and (not f.LocalPath() in _EXCLUDED_SET_NO_PARENT_PATHS)):
+        linux_path = f.LocalPath().replace(input_api.os_path.sep, '/')
+        if (linux_path.count('/') != 1
+                and (not linux_path in _EXCLUDED_SET_NO_PARENT_PATHS)):
             for set_noparent_line in found_set_noparent_lines:
                 if set_noparent_line in found_owners_files:
                     continue
                 errors.append('  %s:%d' %
-                              (f.LocalPath(),
+                              (linux_path,
                                found_set_noparent_lines[set_noparent_line]))
 
     results = []
