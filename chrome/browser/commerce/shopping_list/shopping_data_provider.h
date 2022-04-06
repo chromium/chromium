@@ -9,7 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
+#include "components/optimization_guide/core/new_optimization_guide_decider.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "services/data_decoder/public/cpp/json_sanitizer.h"
@@ -23,7 +23,7 @@ class BuyableProduct;
 }  // namespace commerce
 
 namespace content {
-class NavigationHandle;
+class Page;
 class RenderFrameHost;
 class WebContents;
 }  // namespace content
@@ -64,8 +64,7 @@ class ShoppingDataProvider
   // Provides a copy of the metadata held by this provider.
   std::unique_ptr<power_bookmarks::PowerBookmarkMeta> GetCurrentMetadata();
 
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
@@ -75,7 +74,7 @@ class ShoppingDataProvider
 
   ShoppingDataProvider(
       content::WebContents* contents,
-      optimization_guide::OptimizationGuideDecider* optimization_guide);
+      optimization_guide::NewOptimizationGuideDecider* optimization_guide);
 
   void OnOptimizationGuideDecision(
       optimization_guide::OptimizationGuideDecision decision,
@@ -94,7 +93,7 @@ class ShoppingDataProvider
   // The metadata for the last navigation in the associated web contents.
   std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta_for_navigation_;
 
-  raw_ptr<optimization_guide::OptimizationGuideDecider> optimization_guide_;
+  raw_ptr<optimization_guide::NewOptimizationGuideDecider> optimization_guide_;
 
   base::WeakPtrFactory<ShoppingDataProvider> weak_ptr_factory_;
 

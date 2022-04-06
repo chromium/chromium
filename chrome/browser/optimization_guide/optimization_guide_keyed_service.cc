@@ -349,6 +349,17 @@ OptimizationGuideKeyedService::CanApplyOptimization(
           optimization_type_decision);
 }
 
+// WARNING: This API is not quite ready for general use. Use
+// CanApplyOptimizationAsync or CanApplyOptimization using NavigationHandle
+// instead.
+void OptimizationGuideKeyedService::CanApplyOptimization(
+    const GURL& url,
+    optimization_guide::proto::OptimizationType optimization_type,
+    optimization_guide::OptimizationGuideDecisionCallback callback) {
+  hints_manager_->CanApplyOptimization(url, optimization_type,
+                                       std::move(callback));
+}
+
 void OptimizationGuideKeyedService::CanApplyOptimizationAsync(
     content::NavigationHandle* navigation_handle,
     optimization_guide::proto::OptimizationType optimization_type,

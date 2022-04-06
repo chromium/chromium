@@ -108,6 +108,14 @@ class HintsManager : public OptimizationHintsComponentObserver,
       proto::OptimizationType optimization_type,
       OptimizationMetadata* optimization_metadata);
 
+  // Invokes |callback| with the decision for the URL contained in |url| and
+  // |optimization_type|, when sufficient information has been collected to
+  // make the decision.
+  virtual void CanApplyOptimization(
+      const GURL& url,
+      optimization_guide::proto::OptimizationType optimization_type,
+      optimization_guide::OptimizationGuideDecisionCallback callback);
+
   // Invokes |callback| with the decision for |navigation_url| and
   // |optimization_type|, when sufficient information has been collected by
   // |this| to make the decision. Virtual for testing.

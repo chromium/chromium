@@ -122,6 +122,17 @@ void OptimizationGuideService::RegisterOptimizationTypes(
   hints_manager_->RegisterOptimizationTypes(optimization_types);
 }
 
+// WARNING: This API is not quite ready for general use. Use
+// CanApplyOptimizationAsync or CanApplyOptimization using NavigationHandle
+// instead.
+void OptimizationGuideService::CanApplyOptimization(
+    const GURL& url,
+    optimization_guide::proto::OptimizationType optimization_type,
+    optimization_guide::OptimizationGuideDecisionCallback callback) {
+  hints_manager_->CanApplyOptimization(url, optimization_type,
+                                       std::move(callback));
+}
+
 optimization_guide::OptimizationGuideDecision
 OptimizationGuideService::CanApplyOptimization(
     const GURL& url,

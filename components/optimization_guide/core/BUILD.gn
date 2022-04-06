@@ -136,6 +136,7 @@ static_library("core") {
     "memory_hint.cc",
     "memory_hint.h",
     "model_handler.h",
+    "new_optimization_guide_decider.h",
     "noisy_metrics_recorder.cc",
     "noisy_metrics_recorder.h",
     "optimization_filter.cc",

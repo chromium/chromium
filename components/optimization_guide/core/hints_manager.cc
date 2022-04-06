@@ -31,6 +31,7 @@
 #include "components/optimization_guide/core/insertion_ordered_set.h"
 #include "components/optimization_guide/core/optimization_filter.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
+#include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
@@ -1062,6 +1063,33 @@ void HintsManager::CanApplyOptimizationOnDemand(
                      request_id_and_fetcher.first, request_context,
                      hosts_to_fetch.set(), urls_to_fetch.set(),
                      urls_with_pending_callback, optimization_types, callback));
+}
+
+// TODO(1313521): Improve metrics coverage between all of these apis.
+void HintsManager::CanApplyOptimization(
+    const GURL& url,
+    proto::OptimizationType optimization_type,
+    OptimizationGuideDecisionCallback callback) {
+  // Check if there is a pending fetcher for the specified URL. If there is, use
+  // the async API, otherwise use the synchronous one.
+  // TODO(1312035): We should record instances of this API being used prior to a
+  //                fetch for the URL being initiated.
+  if (IsHintBeingFetchedForNavigation(url)) {
+    CanApplyOptimizationAsync(url, optimization_type, std::move(callback));
+  } else {
+    OptimizationMetadata meta;
+    OptimizationGuideDecision decision =
+        GetOptimizationGuideDecisionFromOptimizationTypeDecision(
+            CanApplyOptimization(url, optimization_type, &meta));
+
+    base::UmaHistogramEnumeration(
+        "OptimizationGuide.ApplyDecision." +
+            optimization_guide::GetStringNameForOptimizationType(
+                optimization_type),
+        decision);
+
+    std::move(callback).Run(decision, meta);
+  }
 }
 
 void HintsManager::OnBatchUpdateHintsFetched(

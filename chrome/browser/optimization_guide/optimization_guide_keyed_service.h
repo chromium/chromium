@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
+#include "components/optimization_guide/core/new_optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -59,6 +60,7 @@ class Profile;
 // and no information will be retrieved.
 class OptimizationGuideKeyedService
     : public KeyedService,
+      public optimization_guide::NewOptimizationGuideDecider,
       public optimization_guide::OptimizationGuideDecider,
       public optimization_guide::OptimizationGuideModelProvider {
  public:
@@ -70,6 +72,15 @@ class OptimizationGuideKeyedService
       const OptimizationGuideKeyedService&) = delete;
 
   ~OptimizationGuideKeyedService() override;
+
+  // optimization_guide::NewOptimizationGuideDecider implementation:
+  // WARNING: This API is not quite ready for general use. Use
+  // CanApplyOptimizationAsync or CanApplyOptimization using NavigationHandle
+  // instead.
+  void CanApplyOptimization(
+      const GURL& url,
+      optimization_guide::proto::OptimizationType optimization_type,
+      optimization_guide::OptimizationGuideDecisionCallback callback) override;
 
   // optimization_guide::OptimizationGuideDecider implementation:
   void RegisterOptimizationTypes(

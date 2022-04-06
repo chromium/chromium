@@ -35,7 +35,7 @@ const long kToMicroCurrency = 1e6;
 
 ShoppingDataProvider::ShoppingDataProvider(
     content::WebContents* content,
-    optimization_guide::OptimizationGuideDecider* optimization_guide)
+    optimization_guide::NewOptimizationGuideDecider* optimization_guide)
     : content::WebContentsObserver(content),
       content::WebContentsUserData<ShoppingDataProvider>(*content),
       run_javascript_on_load_(false),
@@ -48,12 +48,9 @@ ShoppingDataProvider::ShoppingDataProvider(
 
 ShoppingDataProvider::~ShoppingDataProvider() = default;
 
-void ShoppingDataProvider::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->HasCommitted() ||
-      !navigation_handle->IsInPrimaryMainFrame() || !optimization_guide_) {
+void ShoppingDataProvider::PrimaryPageChanged(content::Page& page) {
+  if (!optimization_guide_)
     return;
-  }
 
   run_javascript_on_load_ = false;
   meta_for_navigation_.reset();
@@ -61,8 +58,8 @@ void ShoppingDataProvider::DidFinishNavigation(
   // they do not conflict with the new ones for this navigation.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  optimization_guide_->CanApplyOptimizationAsync(
-      navigation_handle,
+  optimization_guide_->CanApplyOptimization(
+      web_contents()->GetURL(),
       optimization_guide::proto::OptimizationType::PRICE_TRACKING,
       base::BindOnce(&ShoppingDataProvider::OnOptimizationGuideDecision,
                      weak_ptr_factory_.GetWeakPtr()));

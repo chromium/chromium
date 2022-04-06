@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/core/new_optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/optimization_guide/proto/hints.pb.h"
@@ -49,7 +50,9 @@ class NavigationContext;
 // NavigationContext vs NavigationHandle, BrowserState vs Profile, etc.
 // TODO(crbug.com/1240907): Add support for clearing the hints when browsing
 // data is cleared.
-class OptimizationGuideService : public KeyedService {
+class OptimizationGuideService
+    : public KeyedService,
+      public optimization_guide::NewOptimizationGuideDecider {
  public:
   OptimizationGuideService(
       leveldb_proto::ProtoDatabaseProvider* proto_db_provider,
@@ -74,7 +77,16 @@ class OptimizationGuideService : public KeyedService {
   // been initialized.
   void RegisterOptimizationTypes(
       const std::vector<optimization_guide::proto::OptimizationType>&
-          optimization_types);
+          optimization_types) override;
+
+  // optimization_guide::NewOptimizationGuideDecider implementation:
+  // WARNING: This API is not quite ready for general use. Use
+  // CanApplyOptimizationAsync or CanApplyOptimization using NavigationHandle
+  // instead.
+  void CanApplyOptimization(
+      const GURL& url,
+      optimization_guide::proto::OptimizationType optimization_type,
+      optimization_guide::OptimizationGuideDecisionCallback callback) override;
 
   // Returns whether |optimization_type| can be applied for |url|. This should
   // only be called for main frame navigations or future main frame navigations.
