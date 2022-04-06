@@ -79,9 +79,9 @@ class DocumentTransitionStyleTracker
       PseudoId pseudo_id,
       const AtomicString& document_transition_tag);
 
-  // Dispatched after the layout lifecycle stage after each rendering lifecycle
-  // update when a transition is in progress.
-  void RunPostLayoutSteps();
+  // Dispatched after the pre-paint lifecycle stage after each rendering
+  // lifecycle update when a transition is in progress.
+  void RunPostPrePaintSteps();
 
   // Provides a UA stylesheet applied to ::transition* pseudo elements.
   const String& UAStyleSheet();

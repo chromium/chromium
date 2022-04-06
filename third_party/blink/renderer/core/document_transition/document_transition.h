@@ -99,7 +99,7 @@ class CORE_EXPORT DocumentTransition
   void VerifySharedElements();
 
   // Dispatched during a lifecycle update after clean layout.
-  void RunPostLayoutSteps();
+  void RunPostPrePaintSteps();
 
   // Creates a pseudo element for the given |pseudo_id|.
   PseudoElement* CreatePseudoElement(

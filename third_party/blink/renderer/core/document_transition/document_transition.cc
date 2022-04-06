@@ -398,18 +398,18 @@ void DocumentTransition::VerifySharedElements() {
     style_tracker_->VerifySharedElements();
 }
 
-void DocumentTransition::RunPostLayoutSteps() {
+void DocumentTransition::RunPostPrePaintSteps() {
   DCHECK(document_->Lifecycle().GetState() >=
-         DocumentLifecycle::LifecycleState::kLayoutClean);
+         DocumentLifecycle::LifecycleState::kPrePaintClean);
 
   if (style_tracker_) {
-    style_tracker_->RunPostLayoutSteps();
+    style_tracker_->RunPostPrePaintSteps();
     // If we don't have active animations, schedule a frame to end the
     // transition. Note that if we don't have start_promise_resolver_ we don't
     // need to finish the animation, since it should already be done. See the
     // DCHECK below.
     //
-    // TODO(vmpstr): Note that RunPostLayoutSteps can happen multiple times
+    // TODO(vmpstr): Note that RunPostPrePaintSteps can happen multiple times
     // during a lifecycle update. These checks don't have to happen here, and
     // could perhaps be moved to DidFinishLifecycleUpdate.
     //

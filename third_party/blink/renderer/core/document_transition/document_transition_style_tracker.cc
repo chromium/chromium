@@ -540,11 +540,7 @@ PseudoElement* DocumentTransitionStyleTracker::CreatePseudoElement(
   return nullptr;
 }
 
-void DocumentTransitionStyleTracker::RunPostLayoutSteps() {
-  // TODO(khushalsagar) : This callback needs to be switched to PostPrepaint or
-  // PostPaint since we need to paint the pseudo elements in the same order in
-  // which they appear in the DOM. See crbug.com/1275740.
-
+void DocumentTransitionStyleTracker::RunPostPrePaintSteps() {
   bool needs_style_invalidation = false;
 
   for (auto& entry : element_data_map_) {

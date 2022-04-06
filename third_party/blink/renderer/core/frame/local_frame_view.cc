@@ -2545,7 +2545,7 @@ bool LocalFrameView::RunDocumentTransitionSteps(
   if (!document_transition_supplement)
     return false;
 
-  document_transition_supplement->GetTransition()->RunPostLayoutSteps();
+  document_transition_supplement->GetTransition()->RunPostPrePaintSteps();
   return Lifecycle().GetState() < DocumentLifecycle::kPrePaintClean;
 }
 
