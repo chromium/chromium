@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_util.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -23,6 +24,17 @@ class AppDiscoveryService : public KeyedService {
   AppDiscoveryService(const AppDiscoveryService&) = delete;
   AppDiscoveryService& operator=(const AppDiscoveryService&) = delete;
   ~AppDiscoveryService() override;
+
+  // Returns a valid CallbackListSubscription if the supplied |result_type| can
+  // handle app updates. After successful registration, each time updates to
+  // data of |result_type| occurs, |callback| will be called.
+  //
+  // Clients should check the returned callback is alive and
+  // save the returned value as a member variable to ensure correct lifecycle
+  // management.
+  base::CallbackListSubscription RegisterForAppUpdates(
+      ResultType result_type,
+      RepeatingResultCallback callback);
 
   // Queries for apps of the requested |result_type|.
   // |callback| is called when a response to the request is ready.

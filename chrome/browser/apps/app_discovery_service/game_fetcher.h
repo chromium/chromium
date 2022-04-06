@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_APPS_APP_DISCOVERY_SERVICE_GAME_FETCHER_H_
 #define CHROME_BROWSER_APPS_APP_DISCOVERY_SERVICE_GAME_FETCHER_H_
 
+#include "base/callback_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_util.h"
 #include "chrome/browser/apps/app_discovery_service/app_fetcher_manager.h"
@@ -24,12 +25,17 @@ class GameFetcher : public AppFetcher,
 
   // AppFetcher:
   void GetApps(ResultCallback callback) override;
+  base::CallbackListSubscription RegisterForAppUpdates(
+      RepeatingResultCallback callback) override;
 
   // AppProvisioningDataManager::Observer:
   void OnAppDataUpdated(std::unique_ptr<proto::AppData> app_data) override;
 
  private:
   ResultCallback callback_;
+
+  ResultCallbackList result_callback_list_;
+
   base::ScopedObservation<AppProvisioningDataManager,
                           AppProvisioningDataManager::Observer>
       app_provisioning_data_observeration_{this};

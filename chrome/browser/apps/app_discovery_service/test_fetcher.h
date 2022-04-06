@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_APPS_APP_DISCOVERY_SERVICE_TEST_FETCHER_H_
 #define CHROME_BROWSER_APPS_APP_DISCOVERY_SERVICE_TEST_FETCHER_H_
 
+#include "base/callback_list.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_util.h"
 #include "chrome/browser/apps/app_discovery_service/app_fetcher_manager.h"
 
@@ -23,8 +24,11 @@ class TestFetcher : public AppFetcher {
 
   // AppFetcher:
   void GetApps(ResultCallback callback) override;
+  base::CallbackListSubscription RegisterForAppUpdates(
+      RepeatingResultCallback callback) override;
 
  private:
+  ResultCallbackList result_callback_list_;
   std::vector<apps::Result> results_;
 };
 

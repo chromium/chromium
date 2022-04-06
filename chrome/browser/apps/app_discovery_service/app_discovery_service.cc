@@ -20,4 +20,11 @@ void AppDiscoveryService::GetApps(ResultType result_type,
   app_fetcher_manager_->GetApps(result_type, std::move(callback));
 }
 
+base::CallbackListSubscription AppDiscoveryService::RegisterForAppUpdates(
+    ResultType result_type,
+    RepeatingResultCallback callback) {
+  return app_fetcher_manager_->RegisterForAppUpdates(result_type,
+                                                     std::move(callback));
+}
+
 }  // namespace apps

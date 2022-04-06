@@ -16,6 +16,8 @@ TestFetcher::~TestFetcher() = default;
 
 void TestFetcher::SetResults(std::vector<Result> results) {
   results_ = std::move(results);
+
+  result_callback_list_.Notify(results_);
 }
 
 void TestFetcher::GetApps(ResultCallback callback) {
@@ -23,6 +25,11 @@ void TestFetcher::GetApps(ResultCallback callback) {
     std::move(callback).Run(std::move(results_), DiscoveryError::kSuccess);
     return;
   }
+}
+
+base::CallbackListSubscription TestFetcher::RegisterForAppUpdates(
+    RepeatingResultCallback callback) {
+  return result_callback_list_.Add(std::move(callback));
 }
 
 }  // namespace apps

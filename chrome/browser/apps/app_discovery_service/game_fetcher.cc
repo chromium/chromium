@@ -23,6 +23,11 @@ void GameFetcher::GetApps(ResultCallback callback) {
   std::move(callback).Run({}, DiscoveryError::kErrorRequestFailed);
 }
 
+base::CallbackListSubscription GameFetcher::RegisterForAppUpdates(
+    RepeatingResultCallback callback) {
+  return result_callback_list_.Add(std::move(callback));
+}
+
 void GameFetcher::OnAppDataUpdated(std::unique_ptr<proto::AppData> app_data) {
   // TODO(melzhang): Implement.
 }

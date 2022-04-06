@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/callback_list.h"
 #include "chrome/browser/apps/app_discovery_service/result.h"
 
 namespace apps {
@@ -30,9 +31,15 @@ enum class DiscoveryError {
   kErrorMalformedData   // Failed to parse received data.
 };
 
+// TODO(melzhang) : |results| can be made const ref.
 using ResultCallback =
     base::OnceCallback<void(const std::vector<Result>& results,
                             DiscoveryError error)>;
+
+using RepeatingResultCallback =
+    base::RepeatingCallback<void(const std::vector<Result>& results)>;
+using ResultCallbackList =
+    base::RepeatingCallbackList<void(const std::vector<Result>& results)>;
 
 }  // namespace apps
 

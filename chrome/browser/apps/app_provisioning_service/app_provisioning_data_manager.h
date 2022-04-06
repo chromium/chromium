@@ -23,7 +23,7 @@ class AppProvisioningDataManager {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnAppDataUpdated(std::unique_ptr<proto::AppData> app_data);
+    virtual void OnAppDataUpdated(std::unique_ptr<proto::AppData> app_data) {}
   };
 
   static AppProvisioningDataManager* Get();
