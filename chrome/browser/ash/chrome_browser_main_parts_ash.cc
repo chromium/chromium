@@ -34,6 +34,7 @@
 #include "ash/public/cpp/event_rewriter_controller.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/shell.h"
+#include "ash/system/diagnostics/diagnostics_log_controller.h"
 #include "ash/system/firmware_update/firmware_update_notification_controller.h"
 #include "ash/system/pcie_peripheral/pcie_peripheral_notification_controller.h"
 #include "ash/system/usb_peripheral/usb_peripheral_notification_controller.h"
@@ -97,6 +98,7 @@
 #include "chrome/browser/ash/dbus/vm/vm_permission_service_provider.h"
 #include "chrome/browser/ash/dbus/vm/vm_sk_forwarding_service_provider.h"
 #include "chrome/browser/ash/device_name/device_name_store.h"
+#include "chrome/browser/ash/diagnostics/diagnostics_browser_delegate_impl.h"
 #include "chrome/browser/ash/display/quirks_manager_delegate_impl.h"
 #include "chrome/browser/ash/events/event_rewriter_delegate_impl.h"
 #include "chrome/browser/ash/external_metrics.h"
@@ -1325,6 +1327,14 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
       wake_lock_provider.InitWithNewPipeAndPassReceiver());
   dark_resume_controller_ = std::make_unique<system::DarkResumeController>(
       std::move(wake_lock_provider));
+
+  if (features::IsLogControllerForDiagnosticsAppEnabled()) {
+    // DiagnosticsBrowserDelegate has to be initialized after ProfilerHelper and
+    // UserManager. Initializing in PostProfileInit to ensure Profile data is
+    // available and shell has been initialized.
+    diagnostics::DiagnosticsLogController::Initialize(
+        std::make_unique<diagnostics::DiagnosticsBrowserDelegateImpl>());
+  }
 
   ChromeBrowserMainPartsLinux::PostBrowserStart();
 }
