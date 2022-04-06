@@ -32,7 +32,7 @@ AtomicString FontSelector::FamilyNameFromSettings(
       generic_family_name != font_family_names::kWebkitStandard)
     return g_empty_atom;
 
-  if (font_description.GenericFamily() == FontDescription::kWebkitBodyFamily) {
+  if (IsWebkitBodyFamily(font_description)) {
     // TODO(crbug.com/1065468): Remove this counter when it's no longer
     // necessary.
     UseCounter::Count(use_counter,
@@ -87,6 +87,11 @@ AtomicString FontSelector::FamilyNameFromSettings(
     return "Latin Modern Math";
 #endif  // BUILDFLAG(IS_ANDROID)
   return g_empty_atom;
+}
+
+// static
+bool FontSelector::IsWebkitBodyFamily(const FontDescription& font_description) {
+  return font_description.GenericFamily() == FontDescription::kWebkitBodyFamily;
 }
 
 void FontSelector::Trace(Visitor* visitor) const {

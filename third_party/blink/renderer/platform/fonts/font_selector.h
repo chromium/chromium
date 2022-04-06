@@ -148,6 +148,8 @@ class PLATFORM_EXPORT FontSelector : public FontCacheClient {
       const FontFamily& generic_family_name,
       UseCounter*);
 
+  static bool IsWebkitBodyFamily(const FontDescription& font_description);
+
  private:
   Member<FontFallbackMap> font_fallback_map_;
 };

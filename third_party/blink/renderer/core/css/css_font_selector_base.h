@@ -15,7 +15,12 @@ namespace blink {
 
 class FontDescription;
 class FontFamily;
+class FontMatchingMetrics;
 
+// `CSSFontSelectorBase` is the base class of CSS related font selectors:
+//  * `CSSFontSelector` for `StyleEngine`
+//  * `PopupMenuCSSFontSelector` derived from `CSSFontSelector`
+//  * `OffscreenFontSelector` for `WorkerGlobalScope`.
 class CORE_EXPORT CSSFontSelectorBase : public FontSelector {
  public:
   bool IsPlatformFamilyMatchAvailable(const FontDescription&,
@@ -28,13 +33,59 @@ class CORE_EXPORT CSSFontSelectorBase : public FontSelector {
                     const AtomicString& family_name,
                     const FontDataForRangeSet&) override;
 
+  void ReportSuccessfulFontFamilyMatch(
+      const AtomicString& font_family_name) override;
+
+  void ReportFailedFontFamilyMatch(
+      const AtomicString& font_family_name) override;
+
+  void ReportSuccessfulLocalFontMatch(const AtomicString& font_name) override;
+
+  void ReportFailedLocalFontMatch(const AtomicString& font_name) override;
+
+  void ReportFontLookupByUniqueOrFamilyName(
+      const AtomicString& name,
+      const FontDescription& font_description,
+      SimpleFontData* resulting_font_data) override;
+
+  void ReportFontLookupByUniqueNameOnly(
+      const AtomicString& name,
+      const FontDescription& font_description,
+      SimpleFontData* resulting_font_data,
+      bool is_loading_fallback = false) override;
+
+  void ReportFontLookupByFallbackCharacter(
+      UChar32 fallback_character,
+      FontFallbackPriority fallback_priority,
+      const FontDescription& font_description,
+      SimpleFontData* resulting_font_data) override;
+
+  void ReportLastResortFallbackFontLookup(
+      const FontDescription& font_description,
+      SimpleFontData* resulting_font_data) override;
+
+  void ReportFontFamilyLookupByGenericFamily(
+      const AtomicString& generic_font_family_name,
+      UScriptCode script,
+      FontDescription::GenericFamilyType generic_family_type,
+      const AtomicString& resulting_font_name);
+
+  void ReportNotDefGlyph() const override;
+
+  void ReportEmojiSegmentGlyphCoverage(unsigned num_clusters,
+                                       unsigned num_broken_clusters) override;
+
   void Trace(Visitor*) const override;
 
  protected:
-  virtual UseCounter* GetUseCounter() = 0;
+  virtual FontMatchingMetrics* GetFontMatchingMetrics() const = 0;
+  virtual UseCounter* GetUseCounter() const = 0;
+
+  void CountUse(WebFeature feature) const;
   AtomicString FamilyNameFromSettings(const FontDescription&,
                                       const FontFamily& generic_family_name);
-  using FontSelector::FamilyNameFromSettings;
+  void ReportSystemFontFamily(const AtomicString& font_family_name);
+  void ReportWebFontFamily(const AtomicString& font_family_name);
 
   Member<FontFaceCache> font_face_cache_;
   GenericFontFamilySettings generic_font_family_settings_;

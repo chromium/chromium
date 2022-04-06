@@ -6,17 +6,27 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/css/css_segmented_font_face.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
+#include "third_party/blink/renderer/platform/fonts/font_matching_metrics.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
+
+void CSSFontSelectorBase::CountUse(WebFeature feature) const {
+  return UseCounter::Count(GetUseCounter(), feature);
+}
 
 AtomicString CSSFontSelectorBase::FamilyNameFromSettings(
     const FontDescription& font_description,
     const FontFamily& generic_family_name) {
-  return FamilyNameFromSettings(generic_font_family_settings_, font_description,
-                                generic_family_name, GetUseCounter());
+  return FontSelector::FamilyNameFromSettings(
+      generic_font_family_settings_, font_description, generic_family_name,
+      GetUseCounter());
 }
-
 bool CSSFontSelectorBase::IsPlatformFamilyMatchAvailable(
     const FontDescription& font_description,
     const FontFamily& passed_family) {
@@ -25,6 +35,91 @@ bool CSSFontSelectorBase::IsPlatformFamilyMatchAvailable(
     family = passed_family.FamilyName();
   return FontCache::Get().IsPlatformFamilyMatchAvailable(font_description,
                                                          family);
+}
+
+void CSSFontSelectorBase::ReportEmojiSegmentGlyphCoverage(
+    unsigned num_clusters,
+    unsigned num_broken_clusters) {
+  GetFontMatchingMetrics()->ReportEmojiSegmentGlyphCoverage(
+      num_clusters, num_broken_clusters);
+}
+
+void CSSFontSelectorBase::ReportFontFamilyLookupByGenericFamily(
+    const AtomicString& generic_font_family_name,
+    UScriptCode script,
+    FontDescription::GenericFamilyType generic_family_type,
+    const AtomicString& resulting_font_name) {
+  GetFontMatchingMetrics()->ReportFontFamilyLookupByGenericFamily(
+      generic_font_family_name, script, generic_family_type,
+      resulting_font_name);
+}
+
+void CSSFontSelectorBase::ReportSuccessfulFontFamilyMatch(
+    const AtomicString& font_family_name) {
+  GetFontMatchingMetrics()->ReportSuccessfulFontFamilyMatch(font_family_name);
+}
+
+void CSSFontSelectorBase::ReportFailedFontFamilyMatch(
+    const AtomicString& font_family_name) {
+  GetFontMatchingMetrics()->ReportFailedFontFamilyMatch(font_family_name);
+}
+
+void CSSFontSelectorBase::ReportSuccessfulLocalFontMatch(
+    const AtomicString& font_name) {
+  GetFontMatchingMetrics()->ReportSuccessfulLocalFontMatch(font_name);
+}
+
+void CSSFontSelectorBase::ReportFailedLocalFontMatch(
+    const AtomicString& font_name) {
+  GetFontMatchingMetrics()->ReportFailedLocalFontMatch(font_name);
+}
+
+void CSSFontSelectorBase::ReportFontLookupByUniqueOrFamilyName(
+    const AtomicString& name,
+    const FontDescription& font_description,
+    SimpleFontData* resulting_font_data) {
+  GetFontMatchingMetrics()->ReportFontLookupByUniqueOrFamilyName(
+      name, font_description, resulting_font_data);
+}
+
+void CSSFontSelectorBase::ReportFontLookupByUniqueNameOnly(
+    const AtomicString& name,
+    const FontDescription& font_description,
+    SimpleFontData* resulting_font_data,
+    bool is_loading_fallback) {
+  GetFontMatchingMetrics()->ReportFontLookupByUniqueNameOnly(
+      name, font_description, resulting_font_data, is_loading_fallback);
+}
+
+void CSSFontSelectorBase::ReportFontLookupByFallbackCharacter(
+    UChar32 fallback_character,
+    FontFallbackPriority fallback_priority,
+    const FontDescription& font_description,
+    SimpleFontData* resulting_font_data) {
+  GetFontMatchingMetrics()->ReportFontLookupByFallbackCharacter(
+      fallback_character, fallback_priority, font_description,
+      resulting_font_data);
+}
+
+void CSSFontSelectorBase::ReportLastResortFallbackFontLookup(
+    const FontDescription& font_description,
+    SimpleFontData* resulting_font_data) {
+  GetFontMatchingMetrics()->ReportLastResortFallbackFontLookup(
+      font_description, resulting_font_data);
+}
+
+void CSSFontSelectorBase::ReportNotDefGlyph() const {
+  CountUse(WebFeature::kFontShapingNotDefGlyphObserved);
+}
+
+void CSSFontSelectorBase::ReportSystemFontFamily(
+    const AtomicString& font_family_name) {
+  GetFontMatchingMetrics()->ReportSystemFontFamily(font_family_name);
+}
+
+void CSSFontSelectorBase::ReportWebFontFamily(
+    const AtomicString& font_family_name) {
+  GetFontMatchingMetrics()->ReportWebFontFamily(font_family_name);
 }
 
 void CSSFontSelectorBase::WillUseFontData(
