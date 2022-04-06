@@ -160,8 +160,10 @@ class InProcessContextFactory::PerCompositorData
 
 InProcessContextFactory::InProcessContextFactory(
     viz::HostFrameSinkManager* host_frame_sink_manager,
-    viz::FrameSinkManagerImpl* frame_sink_manager)
+    viz::FrameSinkManagerImpl* frame_sink_manager,
+    bool output_to_window)
     : frame_sink_id_allocator_(kDefaultClientId),
+      output_to_window_(output_to_window),
       disable_vsync_(base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableVsyncForTests)),
       host_frame_sink_manager_(host_frame_sink_manager),
@@ -211,7 +213,7 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
 
   auto skia_deps = std::make_unique<viz::SkiaOutputSurfaceDependencyImpl>(
       viz::TestGpuServiceHolder::GetInstance()->gpu_service(),
-      gpu::kNullSurfaceHandle);
+      output_to_window_ ? data->surface_handle() : gpu::kNullSurfaceHandle);
   auto display_dependency =
       std::make_unique<viz::DisplayCompositorMemoryAndTaskController>(
           std::move(skia_deps));

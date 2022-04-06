@@ -188,7 +188,7 @@ int DemoMain() {
   host_frame_sink_manager.SetLocalManager(&frame_sink_manager);
   frame_sink_manager.SetLocalClient(&host_frame_sink_manager);
   auto context_factory = std::make_unique<ui::InProcessContextFactory>(
-      &host_frame_sink_manager, &frame_sink_manager);
+      &host_frame_sink_manager, &frame_sink_manager, /*output_to_window=*/true);
 
   base::PowerMonitor::Initialize(
       std::make_unique<base::PowerMonitorDeviceSource>());

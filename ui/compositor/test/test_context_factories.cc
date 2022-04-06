@@ -15,7 +15,8 @@
 
 namespace ui {
 
-TestContextFactories::TestContextFactories(bool enable_pixel_output) {
+TestContextFactories::TestContextFactories(bool enable_pixel_output,
+                                           bool output_to_window) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kEnablePixelOutputInTests))
     enable_pixel_output = true;
@@ -26,7 +27,8 @@ TestContextFactories::TestContextFactories(bool enable_pixel_output) {
       viz::FrameSinkManagerImpl::InitParams(shared_bitmap_manager_.get()));
   host_frame_sink_manager_ = std::make_unique<viz::HostFrameSinkManager>();
   implicit_factory_ = std::make_unique<InProcessContextFactory>(
-      host_frame_sink_manager_.get(), frame_sink_manager_.get());
+      host_frame_sink_manager_.get(), frame_sink_manager_.get(),
+      output_to_window);
   implicit_factory_->SetUseFastRefreshRateForTests();
 
   // Directly connect without using Mojo.

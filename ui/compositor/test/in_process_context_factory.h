@@ -36,8 +36,11 @@ class InProcessContextFactory : public ContextFactory {
   // ContextFactory.
   // TODO(crbug.com/657959): |frame_sink_manager| should go away and we should
   // use the LayerTreeFrameSink from the HostFrameSinkManager.
+  // The default for |output_to_window| will create an OutputSurface that does
+  // not display anything. Set to true if you want to see results on the screen.
   InProcessContextFactory(viz::HostFrameSinkManager* host_frame_sink_manager,
-                          viz::FrameSinkManagerImpl* frame_sink_manager);
+                          viz::FrameSinkManagerImpl* frame_sink_manager,
+                          bool output_to_window = false);
 
   InProcessContextFactory(const InProcessContextFactory&) = delete;
   InProcessContextFactory& operator=(const InProcessContextFactory&) = delete;
@@ -86,6 +89,7 @@ class InProcessContextFactory : public ContextFactory {
   cc::TestTaskGraphRunner task_graph_runner_;
   viz::FrameSinkIdAllocator frame_sink_id_allocator_;
   viz::SubtreeCaptureIdAllocator subtree_capture_id_allocator_;
+  bool output_to_window_ = false;
   bool disable_vsync_ = false;
   double refresh_rate_ = 60.0;
   const raw_ptr<viz::HostFrameSinkManager> host_frame_sink_manager_;

@@ -28,7 +28,10 @@ class ContextFactory;
 // |enable_pixel_output|. Most unit tests should pass false.
 class TestContextFactories {
  public:
-  explicit TestContextFactories(bool enable_pixel_output);
+  // The default for |output_to_window| will create an OutputSurface that does
+  // not display anything. Set to true if you want to see results on the screen.
+  explicit TestContextFactories(bool enable_pixel_output,
+                                bool output_to_window = false);
   ~TestContextFactories();
 
   TestContextFactories(const TestContextFactories&) = delete;
