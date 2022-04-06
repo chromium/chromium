@@ -33,4 +33,12 @@ const cryptohome::KeyDefinition* AuthFactorsData::FindOnlinePasswordKey()
   return nullptr;
 }
 
+const cryptohome::KeyDefinition* AuthFactorsData::FindKioskKey() const {
+  for (const cryptohome::KeyDefinition& key_def : keys_) {
+    if (key_def.type == cryptohome::KeyDefinition::TYPE_PUBLIC_MOUNT)
+      return &key_def;
+  }
+  return nullptr;
+}
+
 }  // namespace ash

@@ -33,6 +33,10 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthFactorsData {
   // further operations.
   const cryptohome::KeyDefinition* FindOnlinePasswordKey() const;
 
+  // Returns metadata for the Kiosk key, so that it can be identified for
+  // further operations.
+  const cryptohome::KeyDefinition* FindKioskKey() const;
+
  private:
   std::vector<cryptohome::KeyDefinition> keys_;
 };
