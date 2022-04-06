@@ -159,6 +159,7 @@
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
+#include "third_party/blink/renderer/platform/fonts/generic_font_family_settings.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
@@ -1787,6 +1788,30 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
 
   RuntimeEnabledFeatures::SetTranslateServiceEnabled(
       prefs.translate_service_available);
+
+#if BUILDFLAG(IS_WIN)
+  if (web_view_impl->GetPage() &&
+      base::FeatureList::IsEnabled(features::kPrewarmDefaultFontFamilies)) {
+    if (auto* prewarmer = WebFontRendering::GetFontPrewarmer()) {
+      GenericFontFamilySettings& font_settings =
+          web_view_impl->GetPage()
+              ->GetSettings()
+              .GetGenericFontFamilySettings();
+      if (features::kPrewarmStandard.Get())
+        prewarmer->PrewarmFamily(font_settings.Standard());
+      if (features::kPrewarmFixed.Get())
+        prewarmer->PrewarmFamily(font_settings.Fixed());
+      if (features::kPrewarmSerif.Get())
+        prewarmer->PrewarmFamily(font_settings.Serif());
+      if (features::kPrewarmSansSerif.Get())
+        prewarmer->PrewarmFamily(font_settings.SansSerif());
+      if (features::kPrewarmCursive.Get())
+        prewarmer->PrewarmFamily(font_settings.Cursive());
+      if (features::kPrewarmFantasy.Get())
+        prewarmer->PrewarmFamily(font_settings.Fantasy());
+    }
+  }
+#endif
 }
 
 void WebViewImpl::ThemeChanged() {

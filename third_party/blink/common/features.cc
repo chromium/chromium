@@ -1387,5 +1387,22 @@ const base::Feature kWebSQLAccess{"kWebSQLAccess",
 const base::Feature kUACHOverrideBlank{"UACHOverrideBlank",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
+#if BUILDFLAG(IS_WIN)
+const base::Feature kPrewarmDefaultFontFamilies{
+    "PrewarmDefaultFontFamilies", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<bool> kPrewarmStandard = {&kPrewarmDefaultFontFamilies,
+                                                   "prewarm_standard", true};
+const base::FeatureParam<bool> kPrewarmFixed = {&kPrewarmDefaultFontFamilies,
+                                                "prewarm_fixed", true};
+const base::FeatureParam<bool> kPrewarmSerif = {&kPrewarmDefaultFontFamilies,
+                                                "prewarm_serif", true};
+const base::FeatureParam<bool> kPrewarmSansSerif = {
+    &kPrewarmDefaultFontFamilies, "prewarm_sans_serif", true};
+const base::FeatureParam<bool> kPrewarmCursive = {&kPrewarmDefaultFontFamilies,
+                                                  "prewarm_cursive", true};
+const base::FeatureParam<bool> kPrewarmFantasy = {&kPrewarmDefaultFontFamilies,
+                                                  "prewarm_fantasy", true};
+#endif
+
 }  // namespace features
 }  // namespace blink
