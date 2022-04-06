@@ -30,6 +30,9 @@ dev_ui_components_resources.grd.
       <if expr="is_android">
         <part file="android_system_error_page_resources.grdp" />
       </if>
+      <if expr="not is_android">
+        <part file="commerce_heuristics.grdp" />
+      </if>
     </includes>
   </release>
 </grit>

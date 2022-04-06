@@ -103,6 +103,24 @@ if (!is_android) {
       "//third_party/re2:re2",
     ]
   }
+
+  source_set("heuristics_provider") {
+    sources = [
+      "heuristics/commerce_heuristics_provider.cc",
+      "heuristics/commerce_heuristics_provider.h",
+    ]
+
+    deps = [
+      ":commerce_heuristics_data",
+      ":feature_list",
+      "//base",
+      "//components/resources:components_resources_grit",
+      "//net",
+      "//third_party/re2:re2",
+      "//ui/base",
+      "//url:url",
+    ]
+  }
 }
 
 static_library("shopping_service") {

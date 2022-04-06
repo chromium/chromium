@@ -210,15 +210,12 @@ static_library("renderer") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   if (enable_nacl) {
-    deps += [
-      "//components/nacl/renderer",
-    ]
+    deps += [ "//components/nacl/renderer" ]
+
     # TODO(https://crbug.com/1299021): Implement building this NaCl target as
     # ARM32 when Chrome is built for ARM64 (for Linux/Chrome OS).
     if (target_cpu != "arm64") {
-      deps += [
-        "//components/nacl/loader",
-      ]
+      deps += [ "//components/nacl/loader" ]
     }
   }
   if (enable_plugins) {
@@ -390,6 +387,7 @@ static_library("renderer") {
       "//chrome/common/cart:mojo_bindings",
       "//components/commerce/core:commerce_heuristics_data",
       "//components/commerce/core:feature_list",
+      "//components/commerce/core:heuristics_provider",
       "//components/crx_file",
       "//components/search:search",
     ]

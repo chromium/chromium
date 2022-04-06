@@ -51,6 +51,7 @@ include_rules = [
   "+components/printing/renderer",
   "+components/search/ntp_features.h",
   "+components/commerce/core/commerce_heuristics_data.h",
+  "+components/commerce/core/heuristics/commerce_heuristics_provider.h",
   "+components/commerce/core/commerce_feature_list.h",
   "+components/safe_browsing/buildflags.h",
   "+components/safe_browsing/content/renderer",

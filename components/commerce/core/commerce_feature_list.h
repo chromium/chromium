@@ -94,6 +94,57 @@ constexpr base::FeatureParam<base::TimeDelta> kDiscountFetchDelayParam(
 constexpr base::FeatureParam<base::TimeDelta> kCouponDisplayInterval{
     &commerce::kRetailCoupons, "coupon_display_interval", base::Hours(18)};
 
+// The heuristics of cart pages are from top 100 US shopping domains.
+// https://colab.corp.google.com/drive/1fTGE_SQw_8OG4ubzQvWcBuyHEhlQ-pwQ?usp=sharing
+constexpr base::FeatureParam<std::string> kCartPattern{
+    &ntp_features::kNtpChromeCartModule, "cart-pattern",
+    // clang-format off
+    "(^https?://cart\\.)"
+    "|"
+    "(/("
+      "(((my|co|shopping|view)[-_]?)?(cart|bag)(view|display)?)"
+      "|"
+      "(checkout/([^/]+/)?(basket|bag))"
+      "|"
+      "(checkoutcart(display)?view)"
+      "|"
+      "(bundles/shop)"
+      "|"
+      "((ajax)?orderitemdisplay(view)?)"
+      "|"
+      "(cart-show)"
+    ")(/|\\.|$))"
+    // clang-format on
+};
+
+constexpr base::FeatureParam<std::string> kCartPatternMapping{
+    &ntp_features::kNtpChromeCartModule, "cart-pattern-mapping",
+    // Empty JSON string.
+    ""};
+
+constexpr base::FeatureParam<std::string> kCheckoutPattern{
+    &ntp_features::kNtpChromeCartModule, "checkout-pattern",
+    // clang-format off
+    "/("
+    "("
+      "("
+        "(begin|billing|cart|payment|start|review|final|order|secure|new)"
+        "[-_]?"
+      ")?"
+      "(checkout|chkout)(s)?"
+      "([-_]?(begin|billing|cart|payment|start|review))?"
+    ")"
+    "|"
+    "(\\w+(checkout|chkout)(s)?)"
+    ")(/|\\.|$|\\?)"
+    // clang-format on
+};
+
+constexpr base::FeatureParam<std::string> kCheckoutPatternMapping{
+    &ntp_features::kNtpChromeCartModule, "checkout-pattern-mapping",
+    // Empty JSON string.
+    ""};
+
 // The following are Feature params for Discount user consent v2.
 // This indicates the Discount Consent v2 variation on the NTP Cart module.
 enum class DiscountConsentNtpVariation {

@@ -18,6 +18,7 @@
 #include "chrome/grit/renderer_resources.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_heuristics_data.h"
+#include "components/commerce/core/heuristics/commerce_heuristics_provider.h"
 #include "components/search/ntp_features.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
@@ -68,57 +69,6 @@ constexpr base::FeatureParam<std::string> kAddToCartPattern{
 
 constexpr base::FeatureParam<std::string> kSkipAddToCartMapping{
     &ntp_features::kNtpChromeCartModule, "skip-add-to-cart-mapping",
-    // Empty JSON string.
-    ""};
-
-// The heuristics of cart pages are from top 100 US shopping domains.
-// https://colab.corp.google.com/drive/1fTGE_SQw_8OG4ubzQvWcBuyHEhlQ-pwQ?usp=sharing
-constexpr base::FeatureParam<std::string> kCartPattern{
-    &ntp_features::kNtpChromeCartModule, "cart-pattern",
-    // clang-format off
-    "(^https?://cart\\.)"
-    "|"
-    "(/("
-      "(((my|co|shopping|view)[-_]?)?(cart|bag)(view|display)?)"
-      "|"
-      "(checkout/([^/]+/)?(basket|bag))"
-      "|"
-      "(checkoutcart(display)?view)"
-      "|"
-      "(bundles/shop)"
-      "|"
-      "((ajax)?orderitemdisplay(view)?)"
-      "|"
-      "(cart-show)"
-    ")(/|\\.|$))"
-    // clang-format on
-};
-
-constexpr base::FeatureParam<std::string> kCartPatternMapping{
-    &ntp_features::kNtpChromeCartModule, "cart-pattern-mapping",
-    // Empty JSON string.
-    ""};
-
-constexpr base::FeatureParam<std::string> kCheckoutPattern{
-    &ntp_features::kNtpChromeCartModule, "checkout-pattern",
-    // clang-format off
-    "/("
-    "("
-      "("
-        "(begin|billing|cart|payment|start|review|final|order|secure|new)"
-        "[-_]?"
-      ")?"
-      "(checkout|chkout)(s)?"
-      "([-_]?(begin|billing|cart|payment|start|review))?"
-    ")"
-    "|"
-    "(\\w+(checkout|chkout)(s)?)"
-    ")(/|\\.|$|\\?)"
-    // clang-format on
-};
-
-constexpr base::FeatureParam<std::string> kCheckoutPatternMapping{
-    &ntp_features::kNtpChromeCartModule, "checkout-pattern-mapping",
     // Empty JSON string.
     ""};
 
@@ -332,44 +282,6 @@ const re2::RE2& GetAddToCartPattern() {
   return *instance;
 }
 
-const std::map<std::string, std::string>& GetCartPatternMapping() {
-  static base::NoDestructor<std::map<std::string, std::string>> pattern_map([] {
-    const base::Value json(
-        base::JSONReader::Read(
-            kCartPatternMapping.Get().empty()
-                ? ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
-                      IDR_CART_DOMAIN_CART_URL_REGEX_JSON)
-                : kCartPatternMapping.Get())
-            .value());
-    DCHECK(json.is_dict());
-    std::map<std::string, std::string> map;
-    for (auto item : json.DictItems()) {
-      map.insert({std::move(item.first), std::move(item.second.GetString())});
-    }
-    return map;
-  }());
-  return *pattern_map;
-}
-
-const std::map<std::string, std::string>& GetCheckoutPatternMapping() {
-  static base::NoDestructor<std::map<std::string, std::string>> pattern_map([] {
-    const base::Value json(
-        base::JSONReader::Read(
-            kCheckoutPatternMapping.Get().empty()
-                ? ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
-                      IDR_CHECKOUT_URL_REGEX_DOMAIN_MAPPING_JSON)
-                : kCheckoutPatternMapping.Get())
-            .value());
-    DCHECK(json.is_dict());
-    std::map<std::string, std::string> map;
-    for (const auto item : json.DictItems()) {
-      map.insert({std::move(item.first), std::move(item.second.GetString())});
-    }
-    return map;
-  }());
-  return *pattern_map;
-}
-
 const std::map<std::string, std::string>& GetPurchaseURLPatternMapping() {
   static base::NoDestructor<std::map<std::string, std::string>> pattern_map([] {
     const base::Value json(
@@ -401,78 +313,6 @@ const std::map<std::string, std::string>& GetPurchaseButtonPatternMapping() {
     return map;
   }());
   return *pattern_map;
-}
-
-// TODO(crbug.com/1189786): Using per-site pattern and full URL matching could
-// be unnecessary. Improve this later by using general pattern if possible and
-// more flexible matching.
-const re2::RE2* GetVisitCartPattern(const GURL& url) {
-  std::string domain = eTLDPlusOne(url);
-  auto* pattern_from_component =
-      commerce_heuristics::CommerceHeuristicsData::GetInstance()
-          .GetCartPageURLPatternForDomain(domain);
-  if (pattern_from_component &&
-      kCartPatternMapping.Get() == kCartPatternMapping.default_value) {
-    return pattern_from_component;
-  }
-  const std::map<std::string, std::string>& cart_string_map =
-      GetCartPatternMapping();
-  static base::NoDestructor<std::map<std::string, std::unique_ptr<re2::RE2>>>
-      cart_regex_map;
-  static re2::RE2::Options options;
-  options.set_case_sensitive(false);
-  if (cart_string_map.find(domain) == cart_string_map.end()) {
-    auto* global_pattern_from_component =
-        commerce_heuristics::CommerceHeuristicsData::GetInstance()
-            .GetCartPageURLPattern();
-    if (global_pattern_from_component &&
-        kCartPattern.Get() == kCartPattern.default_value) {
-      return global_pattern_from_component;
-    }
-    static base::NoDestructor<re2::RE2> instance(kCartPattern.Get(), options);
-    return instance.get();
-  }
-  if (cart_regex_map->find(domain) == cart_regex_map->end()) {
-    cart_regex_map->insert({domain, std::make_unique<re2::RE2>(
-                                        cart_string_map.at(domain), options)});
-  }
-  return cart_regex_map->at(domain).get();
-}
-
-// TODO(crbug/1164236): cover more shopping sites.
-const re2::RE2* GetVisitCheckoutPattern(const GURL& url) {
-  std::string domain = eTLDPlusOne(url);
-  auto* pattern_from_component =
-      commerce_heuristics::CommerceHeuristicsData::GetInstance()
-          .GetCheckoutPageURLPatternForDomain(domain);
-  if (pattern_from_component &&
-      kCheckoutPatternMapping.Get() == kCheckoutPatternMapping.default_value) {
-    return pattern_from_component;
-  }
-  const std::map<std::string, std::string>& checkout_string_map =
-      GetCheckoutPatternMapping();
-  static base::NoDestructor<std::map<std::string, std::unique_ptr<re2::RE2>>>
-      checkout_regex_map;
-  static re2::RE2::Options options;
-  options.set_case_sensitive(false);
-  if (checkout_string_map.find(domain) == checkout_string_map.end()) {
-    auto* global_pattern_from_component =
-        commerce_heuristics::CommerceHeuristicsData::GetInstance()
-            .GetCheckoutPageURLPattern();
-    if (global_pattern_from_component &&
-        kCheckoutPattern.Get() == kCheckoutPattern.default_value) {
-      return global_pattern_from_component;
-    }
-    static base::NoDestructor<re2::RE2> instance(kCheckoutPattern.Get(),
-                                                 options);
-    return instance.get();
-  }
-  if (checkout_regex_map->find(domain) == checkout_regex_map->end()) {
-    checkout_regex_map->insert(
-        {domain,
-         std::make_unique<re2::RE2>(checkout_string_map.at(domain), options)});
-  }
-  return checkout_regex_map->at(domain).get();
 }
 
 const re2::RE2* GetVisitPurchasePattern(const GURL& url) {
@@ -758,18 +598,14 @@ bool CommerceHintAgent::IsAddToCart(base::StringPiece str,
                       GetAddToCartPattern());
 }
 
+// TODO(crbug.com/1310422): Remove below two APIs and move all related unit
+// tests to component.
 bool CommerceHintAgent::IsVisitCart(const GURL& url) {
-  auto* pattern = GetVisitCartPattern(url);
-  if (!pattern)
-    return false;
-  return PartialMatch(CanonicalURL(url).substr(0, kLengthLimit), *pattern);
+  return commerce_heuristics::IsVisitCart(url);
 }
 
 bool CommerceHintAgent::IsVisitCheckout(const GURL& url) {
-  auto* pattern = GetVisitCheckoutPattern(url);
-  if (!pattern)
-    return false;
-  return PartialMatch(CanonicalURL(url).substr(0, kLengthLimit), *pattern);
+  return commerce_heuristics::IsVisitCheckout(url);
 }
 
 bool CommerceHintAgent::IsPurchase(const GURL& url) {
