@@ -75,10 +75,13 @@ class MockAccessCodeCastSinkService : public AccessCodeCastSinkService {
   MockAccessCodeCastSinkService(
       Profile* profile,
       MediaRouter* media_router,
-      CastMediaSinkServiceImpl* cast_media_sink_service_impl)
+      CastMediaSinkServiceImpl* cast_media_sink_service_impl,
+      DiscoveryNetworkMonitor* network_monitor)
       : AccessCodeCastSinkService(profile,
                                   media_router,
-                                  cast_media_sink_service_impl) {}
+                                  cast_media_sink_service_impl,
+                                  network_monitor,
+                                  profile->GetPrefs()) {}
   ~MockAccessCodeCastSinkService() override = default;
 
   MOCK_METHOD(void,
@@ -148,7 +151,8 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
 
     access_code_cast_sink_service_ =
         std::make_unique<MockAccessCodeCastSinkService>(
-            profile_, router_, mock_cast_media_sink_service_impl_.get());
+            profile_, router_, mock_cast_media_sink_service_impl_.get(),
+            discovery_network_monitor_.get());
     access_code_cast_sink_service_->SetTaskRunnerForTest(
         mock_time_task_runner_);
 

@@ -72,6 +72,7 @@ class DiscoveryNetworkMonitor
  private:
   friend class CastMediaSinkServiceImplTest;
   friend class DiscoveryNetworkMonitorTest;
+  friend class AccessCodeCastSinkServiceTest;
   friend struct std::default_delete<DiscoveryNetworkMonitor>;
   friend struct base::LazyInstanceTraitsBase<DiscoveryNetworkMonitor>;
 
