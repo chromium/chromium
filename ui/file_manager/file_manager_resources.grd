@@ -45,7 +45,7 @@
       <include name="IDR_AUDIO_PLAYER_ICON_256" file="audio_player/icons/audio-player-256.png" type="BINDATA" />
 
       <!-- Image loader extension manifest and scripts. -->
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <include name="IDR_IMAGE_LOADER_MANIFEST" file="image_loader/manifest.json" type="BINDATA" />
         <include name="IDR_IMAGE_LOADER_BACKGROUND_HTML" file="image_loader/background.html" type="BINDATA" />
         <include name="IDR_IMAGE_LOADER_PIEX_WASM_JS" file="image_loader/piex/piex.js.wasm" type="BINDATA" />

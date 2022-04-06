@@ -43,7 +43,7 @@
   <message name="IDS_VERSION_UI_COMMAND_LINE" desc="label for the command line on the about:version page">
     Command Line
   </message>
-  <if expr="chromeos">
+  <if expr="chromeos_ash">
     <message name="IDS_VERSION_UI_BUILD_DATE" desc="label for build date on the about:version page">
       Build Date
     </message>
@@ -74,7 +74,7 @@
       (cohort: <ph name="UPDATE_COHORT_NAME">$1<ex>Stable</ex></ph>)
     </message>
   </if>
-  <if expr="chromeos">
+  <if expr="chromeos_ash">
     <message name="IDS_VERSION_UI_OS_TEXT1_LABEL" desc="Begin label text on the os://version page from ChromeOS which directs a user to a dialog showing Chrome browser specific version - enclosing url link.">
       Looking for browser version? Visit
     </message>
@@ -85,7 +85,7 @@
       chrome://version
     </message>
   </if>
-  <if expr="lacros">
+  <if expr="chromeos_lacros">
     <message name="IDS_VERSION_UI_OS_TEXT1_LABEL" desc="Begin label text on the chrome://version page from ChromeOS which directs a user to a dialog showing OS specific version - enclosing url link.">
       Looking for system version? Visit
     </message>

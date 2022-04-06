@@ -498,17 +498,17 @@
     Include Ctrl, Alt, or ⌘
   </message>
 </if>
-<if expr="chromeos">
+<if expr="chromeos_ash">
   <message name="IDS_EXTENSIONS_INCLUDE_START_MODIFIER" desc="Error message explaining that shortcuts must start with either the Control, Alt, or Search key.">
     Include Ctrl, Alt, or Search
   </message>
 </if>
-<if expr="is_macosx or chromeos">
+<if expr="is_macosx or chromeos_ash">
   <message name="IDS_EXTENSIONS_TOO_MANY_MODIFIERS" desc="Error message explaining not to use so many modifiers in a shortcut.">
     Invalid combination
   </message>
 </if>
-<if expr="not is_macosx and not chromeos">
+<if expr="not is_macosx and not chromeos_ash">
   <message name="IDS_EXTENSIONS_INCLUDE_START_MODIFIER" desc="Error message explaining that shortcuts must start with either the Control key or the Alt key.">
     Include either Ctrl or Alt
   </message>
@@ -520,7 +520,7 @@
   Type a letter
 </message>
 
-<if expr="chromeos">
+<if expr="chromeos_ash">
   <!-- Extensions Kiosk apps -->
   <message name="IDS_EXTENSIONS_MANAGE_KIOSK_APP" desc="Label of the button to bring up kiosk management overlay on chrome extensions page.">
     Manage kiosk applications

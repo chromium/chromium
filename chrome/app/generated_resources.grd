@@ -297,7 +297,7 @@ are declared in tools/grit/grit_rule.gni.
       <if expr="chromeos_ash or chromeos_lacros">
         <part file="chromeos_shared_strings.grdp" />
       </if>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <part file="chromeos_strings.grdp" />
         <part file="os_settings_strings.grdp" />
         <part file="os_settings_search_tag_strings.grdp" />
@@ -321,7 +321,7 @@ are declared in tools/grit/grit_rule.gni.
       </if>
 
       <!-- Welcome strings -->
-      <if expr="not chromeos and not is_android">
+      <if expr="not chromeos_ash and not is_android">
         <part file="welcome_strings.grdp" />
       </if>
 
@@ -345,7 +345,7 @@ are declared in tools/grit/grit_rule.gni.
         <part file="supervised_user_error_page_strings.grdp" />
       </if>
 
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <part file="web_time_limit_error_page_strings.grdp" />
       </if>
 
@@ -382,7 +382,7 @@ are declared in tools/grit/grit_rule.gni.
         </message>
       </if>
 
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_PERMISSIONS_REQUESTED_SCREENREADER_ANNOUNCEMENT" desc="Announcement to screen readers on ChromeOS when permission is requested to inform users of how to focus the permission UI.">
           Permission requested, press Ctrl + Forward to respond
         </message>
@@ -1272,7 +1272,7 @@ are declared in tools/grit/grit_rule.gni.
         </if>
       </if>
 
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_VISIT_DESKTOP_OF_LRU_USER" desc="The text label of the menu item which allows the user to move a window from one users desktop to another.">
           Move window to <ph name="USER_NAME">$1<ex>User name</ex></ph> (<ph name="USER_EMAIL">$2<ex>john@google.com</ex></ph>)
         </message>
@@ -4116,7 +4116,7 @@ are declared in tools/grit/grit_rule.gni.
         </message>
       </if>
 
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_UTILITY_PROCESS_IPP_PARSER_SERVICE_NAME" desc="The name of the utility process used for parsing IPP requests out-of-process.">
           IPP Parser
         </message>
@@ -4726,7 +4726,7 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_APP_CANT_DOWNGRADE_VERSION" desc="Error message when a user tries to install an app with a lower version than a version that it already installed.">
         Attempted to downgrade app.
       </message>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_EXTENSION_CANT_INSTALL_IN_DEVICE_LOCAL_ACCOUNT" desc="Error message when a user tries to install or the administrator tries to force-install through policy an extension that is not allowed in a device-local account.">
           <ph name="EXTENSION_NAME">$1<ex>Google Talk</ex></ph> (extension ID "<ph name="EXTENSION_ID">$2<ex>nckgahadagoaajjgafhacjanaoiihapd</ex></ph>") is not allowed in this type of session.
         </message>
@@ -4784,7 +4784,7 @@ are declared in tools/grit/grit_rule.gni.
         Could not load '<ph name="IMAGE_PATH">$1<ex>/path/to/file</ex></ph>' for theme.
       </message>
 
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_EXTENSION_NOTIFICATION_INSTALLED" desc="Toast message shown when an application is successfully installed.">
           <ph name="APP">$1<ex>Google Keep</ex></ph> installed
         </message>
@@ -4813,12 +4813,12 @@ are declared in tools/grit/grit_rule.gni.
           To use this extension, type "<ph name="EXTENSION_KEYWORD">$1<ex>search</ex></ph>", then TAB, then your command or search.
         </message>
 
-        <if expr="not chromeos and not is_macosx">
+        <if expr="not chromeos_ash and not is_macosx">
           <message name="IDS_EXTENSION_INSTALLED_MANAGE_INFO" desc="Text displayed in the InfoBubble with instructions on how to find the chrome://extensions/ management page">
             Manage your extensions by clicking Extensions in the Tools menu.
           </message>
         </if>
-        <if expr="chromeos">
+        <if expr="chromeos_ash">
           <message name="IDS_EXTENSION_INSTALLED_MANAGE_INFO" desc="Text displayed in the InfoBubble with instructions on how to find the chrome://extensions/ management page on Chrome OS">
             Manage your extensions by clicking Extensions in the "More tools" menu.
           </message>
@@ -5535,7 +5535,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Checking for status...
       </message>
 
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_COMPONENTS_OS_TEXT1_LABEL" desc="Begin label text on the os://components page from ChromeOS which directs a user to a dialog showing Chrome browser specific components - enclosing url link.">
           Looking for browser components? Visit
         </message>
@@ -5546,7 +5546,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
           chrome://components
         </message>
       </if>
-      <if expr="lacros">
+      <if expr="chromeos_lacros">
         <message name="IDS_COMPONENTS_OS_TEXT1_LABEL" desc="Begin label text on the chrome://components page from ChromeOS which directs a user to a dialog showing OS specific components - enclosing url link.">
           Looking for system components? Visit
         </message>
@@ -5793,7 +5793,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_PLUGIN_BLOCKED_NO_LOADING" desc="The placeholder text for a blocked plugin that cannot be manually loaded by the user.">
         <ph name="PLUGIN_NAME">$1<ex>Flash</ex></ph> is blocked
       </message>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_NACL_PLUGIN_BLOCKED" desc="The placeholder text for a blocked plugin.">
           This plugin is not supported on this device
         </message>
@@ -5932,7 +5932,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </if>
 
       <!-- chrome://browser-switch strings -->
-      <if expr="is_win or is_macosx or is_fuchsia or (is_linux and not chromeos)">
+      <if expr="is_win or is_macosx or is_fuchsia or (is_linux and not chromeos_ash)">
         <message name="IDS_ABOUT_BROWSER_SWITCH_TITLE" desc="about:browser-switch page title">
           Legacy Browser Support
         </message>
@@ -6057,7 +6057,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </message>
       </if>
 
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_ABOUT_OS_TEXT1_LABEL" desc="Begin label text on the os://about page from ChromeOS which directs a user to a dialog showing Chrome browser specific about page - enclosing url link.">
           Looking for the browser about page? Visit
         </message>
@@ -6068,7 +6068,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
           chrome://about
         </message>
       </if>
-      <if expr="lacros">
+      <if expr="chromeos_lacros">
         <message name="IDS_ABOUT_OS_TEXT1_LABEL" desc="Begin label text on the chrome://about page from ChromeOS which directs a user to a dialog showing system specific about page - enclosing url link.">
           Looking for the system about page? Visit
         </message>
@@ -7651,12 +7651,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_FEEDBACK_OFFLINE_DIALOG_TEXT" desc="The content of the message box displayed when the user attempts to send a report while offline">
           Thank you for your feedback. You are offline now, and your report will be sent later.
         </message>
-        <if expr="not chromeos">
+        <if expr="not chromeos_ash">
           <message name="IDS_FEEDBACK_INCLUDE_SYSTEM_INFORMATION_CHKBOX" desc="Checkbox for including system information on the bug report dialog box">
             Send <ph name="BEGIN_LINK1">&lt;a href="#" id="sys-info-url"&gt;</ph>system information<ph name="END_LINK1">&lt;/a&gt;</ph>
           </message>
         </if>
-        <if expr="chromeos">
+        <if expr="chromeos_ash">
           <message name="IDS_FEEDBACK_INCLUDE_SYSTEM_INFORMATION_AND_METRICS_CHKBOX" desc="Checkbox for including system information and metrics on the bug report dialog box">
             Send <ph name="BEGIN_LINK1">&lt;a href="#" id="sys-info-url"&gt;</ph>system information<ph name="END_LINK1">&lt;/a&gt;</ph> and <ph name="BEGIN_LINK2">&lt;a href="#" id="histograms-url"&gt;</ph>metrics<ph name="END_LINK2">&lt;/a&gt;</ph>
           </message>
@@ -7769,7 +7769,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
           Error details:
         </message>
       </if>
-      <if expr="is_win or chromeos">
+      <if expr="is_win or chromeos_ash">
         <message name="IDS_UPGRADE_DISABLED_BY_POLICY" desc="Status label: Upgrades disabled by policy">
           Updates are disabled by your administrator.
         </message>
@@ -8462,36 +8462,36 @@ Keep your key file in a safe place. You will need it to create new versions of y
 
       <!-- chrome://help -->
       <if expr="not is_android">
-        <if expr="not chromeos and use_titlecase">
+        <if expr="not chromeos_ash and use_titlecase">
           <message name="IDS_RELAUNCH_BUTTON" desc="Titlecase: The label for the relaunch button that relaunches the browser once update is complete">
             Relaunch
           </message>
         </if>
-        <if expr="not chromeos and not use_titlecase">
+        <if expr="not chromeos_ash and not use_titlecase">
           <message name="IDS_RELAUNCH_BUTTON" desc="The label for the relaunch button that relaunches the browser once update is complete">
             Relaunch
           </message>
         </if>
-        <if expr="chromeos and use_titlecase">
+        <if expr="chromeos_ash and use_titlecase">
           <message name="IDS_RELAUNCH_BUTTON" desc="Titlecase: The label for the relaunch button that relaunches the browser once update is complete">
             Restart
           </message>
         </if>
-        <if expr="chromeos and not use_titlecase">
+        <if expr="chromeos_ash and not use_titlecase">
           <message name="IDS_RELAUNCH_BUTTON" desc="The label for the relaunch button that relaunches the browser once update is complete">
             Restart
           </message>
         </if>
       </if> <!-- not is_android -->
 
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_ARC_LABEL" desc="Label for ARC">
           ARC
         </message>
         <message name="IDS_PLATFORM_LABEL" desc="Label for Platform">
           Platform
         </message>
-      </if> <!-- chromeos -->
+      </if> <!-- chromeos_ash -->
 
       <!-- Settings related strings not specific to chrome://settings.
            (Settings specific strings are in settings_strings.grdp).
@@ -8636,7 +8636,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Google Pay
       </message>
 
-      <if expr="is_linux and not chromeos and not lacros">
+      <if expr="is_linux and not chromeos_ash and not chromeos_lacros">
         <message name="IDS_SHOW_WINDOW_DECORATIONS" desc="The label of a radio button in the options dialog for using the system title bar and borders.">
           Use system title bar and borders
         </message>
@@ -9087,7 +9087,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 
       <!-- Managed UI on pages like chrome://settings and chrome://downloads -->
       <if expr="not is_android">
-        <if expr="chromeos">
+        <if expr="chromeos_ash">
           <message name="IDS_DEVICE_MANAGED_WITH_HYPERLINK" desc="Message to end users in Enterprise/EDU, with a link for more info (ChromeOS)">
             Your <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph><ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> is managed<ph name="END_LINK">&lt;/a&gt;</ph> by your organization
           </message>
@@ -9214,13 +9214,13 @@ Keep your key file in a safe place. You will need it to create new versions of y
               desc="Heading used when a person enters Guest Session">
           You're browsing as a Guest
         </message>
-        <if expr="chromeos">
+        <if expr="chromeos_ash">
           <message name="IDS_NEW_TAB_GUEST_SESSION_DESCRIPTION"
               desc="Used when a person enters Guest Session">
             Pages you view in this window won't appear in the browser history and they won't leave other traces, like cookies, on the computer after you sign out. Files you download and bookmarks you create won't be preserved.
           </message>
         </if>
-        <if expr="not chromeos">
+        <if expr="not chromeos_ash">
           <message name="IDS_NEW_TAB_GUEST_SESSION_DESCRIPTION"
               desc="Used when a person enters Guest Session">
             Pages you view in this window won't appear in the browser history and they won't leave other traces, like cookies, on the computer after you close all open Guest windows. Any files you download will be preserved, however.
@@ -9366,7 +9366,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
                  desc="Text for the button that opens the app in a tab. (In sentence case.)">
           Open in a tab
         </message>
-        <if expr="chromeos">
+        <if expr="chromeos_ash">
           <message name="IDS_APP_CONTEXT_MENU_ACTIVATE_ARC"
                    desc="Text for the button that activates Android App. (In sentence case.)">
             Open
@@ -9443,7 +9443,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
                  desc="Text for the button that opens the app in a tab. (In title case.)">
           Open in a Tab
         </message>
-        <if expr="chromeos">
+        <if expr="chromeos_ash">
           <message name="IDS_APP_CONTEXT_MENU_ACTIVATE_ARC"
                    desc="Text for the button that activates Android App. (In title case.)">
             Open
@@ -9493,7 +9493,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_SYNC_CONFIRMATION_REFRESHED_SETTINGS_BUTTON_LABEL" desc="Label of the button in the sync confirmation screen to open sync settings">
         Sync settings
       </message>
-      <if expr="lacros">
+      <if expr="chromeos_lacros">
         <message name="IDS_SYNC_CONFIRMATION_TITLE_LACROS" desc="Title of the sync confirmation dialog/screen on lacros.">
           Chrome browser sync is on
         </message>
@@ -9522,7 +9522,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
 
       <!-- Dice Web Signin Interception Bubble-->
-      <if expr="not chromeos and not is_android and not lacros">
+      <if expr="not chromeos_ash and not is_android and not chromeos_lacros">
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_NEW_PROFILE_BUTTON_LABEL" desc="Label of the confirmation button in the web signin interception bubble">
           Ok
         </message>
@@ -9552,7 +9552,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </message>
       </if>
 
-      <if expr="not chromeos and not is_android">
+      <if expr="not chromeos_ash and not is_android">
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_PROFILE_NAME" desc="Default name for work profiles created after signin interception">
           Work
         </message>
@@ -9666,7 +9666,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_EXTERNAL_PROTOCOL_CHECKBOX_PER_ORIGIN_TEXT" desc="The External Protocol Dialog is shown when a navigation is started from a webpage, such as https://google.com, to a URL where the protocol indicates that a different software application on the machine should be opened, external to the browser. For example, 'skype:' may indicate that the Skype application be opened. This string describes a checkbox that allows the user to opt out of seeing this confirmation dialog in the future from pages with the same origin as the current page, when trying to launch the same protocol currently being launched">
         Always allow <ph name="ORIGIN">$1<ex>https://google.com</ex></ph> to open links of this type in the associated app
       </message>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_EXTERNAL_PROTOCOL_CLOSE_BUTTON_TEXT" desc="Button in External Protocol Dialog that closes the dialog">
           Close
         </message>
@@ -9781,7 +9781,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_DEFAULT_DOWNLOAD_FILENAME" desc="Default name for downloaded files when we have no idea what they could be.">
         download
       </message>
-      <if expr="is_macosx or chromeos">
+      <if expr="is_macosx or chromeos_ash">
         <message name="IDS_BROWSER_WINDOW_MAC_TAB_UNTITLED" desc="Tabs and windows on MacOS with no title use this string.">
           Untitled
         </message>
@@ -9791,7 +9791,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Set as default
       </message>
 
-      <if expr="is_linux and not chromeos and not lacros">
+      <if expr="is_linux and not chromeos_ash and not chromeos_lacros">
         <message name="IDS_MINIMIZE_WINDOW_MENU" desc="The Linux browser window menu item text for minimizing the window.">
           Minimize
         </message>
@@ -9885,7 +9885,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Open settings
       </message>
 
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_SYNC_PASSPHRASE_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sync error bubble view when the user needs to enter their sync passphrase.">
           To start sync, enter your passphrase
         </message>
@@ -9907,7 +9907,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_SYNC_UNAVAILABLE_ERROR_BUBBLE_VIEW_ACCEPT" desc="The accept button in the sync error bubble view when sync is not available for their domain.">
           OK...
         </message>
-        <if expr="chromeos">
+        <if expr="chromeos_ash">
           <message name="IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_ACCEPT" desc="The accept button in the sync error bubble view/notification when the user needs to sign out and sign in again to Chrome OS.">
             Sign out then sign in again...
           </message>
@@ -9915,7 +9915,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
             Sign out then sign in again...
           </message>
         </if>
-        <if expr="not chromeos">
+        <if expr="not chromeos_ash">
           <message name="IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_ACCEPT" desc="The accept button in the sync error bubble view when the user needs to sign in again.">
             Sign in again...
           </message>
@@ -9939,7 +9939,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <!-- Android uses native UI to handle Sync settings -->
       <if expr="not is_android">
         <!-- Sync options dialog strings -->
-        <if expr="not chromeos">
+        <if expr="not chromeos_ash">
           <message name="IDS_SYNC_OVERVIEW" desc="The message that appears in the options dialog when sync has not been set up by the user.">
             Sign in to get your bookmarks, history, passwords and other settings on all your devices. You'll also automatically be signed in to your Google services.
           </message>
@@ -9978,22 +9978,22 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_SYNC_SERVER_IS_UNREACHABLE" desc="The message to display in the New Tab Page and Settings Page sync section when the server is unreachable.">
           Couldn't connect to the sync server. Retrying...
         </message>
-        <if expr="not chromeos">
+        <if expr="not chromeos_ash">
           <message name="IDS_SYNC_RELOGIN_ERROR" desc="The text to display on in the hyperlink when the user needs to sign in again to use sync.">
             Sign in again to resume sync
           </message>
         </if>
-        <if expr="chromeos">
+        <if expr="chromeos_ash">
           <message name="IDS_SYNC_RELOGIN_ERROR" desc="The text to display on in the hyperlink when the user needs to sign out and sign in again to use sync on Chrome OS.">
             Sign out then sign in again to start sync
           </message>
         </if>
-        <if expr="not chromeos">
+        <if expr="not chromeos_ash">
           <message name="IDS_SYNC_RELOGIN_BUTTON" desc="The text to display on the button when the user needs to sign in again to use sync.">
             Sign in again
           </message>
         </if>
-        <if expr="chromeos">
+        <if expr="chromeos_ash">
           <message name="IDS_SYNC_RELOGIN_BUTTON" desc="The text to display on the button when the user needs to sign out and sign in again to use sync on Chrome OS.">
             Sign out
           </message>
@@ -10014,7 +10014,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
           Advanced settings
         </message>
 
-        <if expr="chromeos">
+        <if expr="chromeos_ash">
           <!-- Spinner dialog for waiting sync backend to start up -->
           <message name="IDS_SYNC_SETUP_SPINNER_TITLE" desc="The title of the sync setup dialog showing spinner.">
             Please wait...
@@ -10180,12 +10180,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_NOTIFICATION_REPLY_PLACEHOLDER" desc="Placeholder text shown in the text box before any text is entered when replying directly to a notification.">
         Send message
       </message>
-      <if expr="not chromeos">
+      <if expr="not chromeos_ash">
         <message name="IDS_NOTIFICATION_MUTED_MESSAGE" desc="Informative message describing that notification content is currently hidden while the screen is being shared. Shown as the body of a notification." meaning="Not on Chrome OS.">
           Details are hidden while you share your screen
         </message>
       </if>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_NOTIFICATION_MUTED_MESSAGE" desc="Informative message describing that notification content is currently hidden while the screen is being shared. Shown as the body of a notification." meaning="On Chrome OS only.">
           Details are hidden while you share your screen
         </message>
@@ -11044,7 +11044,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
 
       <!-- Shelf strings -->
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_SHELF_CONTEXT_MENU_CLOSE" desc="Title text for the 'close' context menu item of the shelf">
           Close
         </message>
@@ -11074,12 +11074,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
 
       <!-- Caret browsing. -->
-      <if expr="not chromeos">
+      <if expr="not chromeos_ash">
         <message name="IDS_ENABLE_CARET_BROWSING_INFO" desc="Information in the confirmation dialog for enabling caret browsing">
           You can navigate pages with a text cursor. Press F7 to turn off.
         </message>
       </if>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_ENABLE_CARET_BROWSING_INFO" desc="Information in the confirmation dialog for enabling caret browsing">
           You can navigate pages with a text cursor. Press Ctrl+Search+7 to turn off.
         </message>
@@ -11157,7 +11157,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </if>
 
       <!-- App List. -->
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_APP_ACTION_SHORTCUT_ACCESSIBILITY_NAME" desc="Hint text for the search result that performs a specific action with an app.">
           <ph name="ACTION_NAME">$1<ex>Compose</ex></ph> with <ph name="APP_NAME">$2<ex>GMail</ex></ph> App
         </message>
@@ -11381,7 +11381,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_TAB_AX_LABEL_NAMED_GROUP_FORMAT" desc="Accessibility label text for a tab, when it is in a group that has been named by the user. Example: 'Google Search - Part of group MyGroupName'">
         <ph name="WINDOW_TITLE">$1<ex>Google Search</ex></ph> - Part of group <ph name="GROUP_NAME">$2</ph>
       </message>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_TAB_AX_LABEL_PERMISSION_REQUESTED_FORMAT" desc="Accessibility label text for ChromeOS, when a tab has a pending request. Example: 'Google Search - Permission requested, press F6 to respond'.">
           <ph name="WINDOW_TITLE">$1<ex>Google Search</ex></ph> - Permission requested, press Ctrl + Forward to respond
         </message>
@@ -11445,7 +11445,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
 
       <!-- Accessibility alerts -->
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_A11Y_ALERT_CAPS_OFF" desc="Alert sent to the accessibility api when caps lock is turned off.">
           caps lock off
         </message>
@@ -11582,7 +11582,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <ph name="USB_DEVICE_NAME">$1<ex>Nexus 5</ex></ph> detected
     </message>
 
-    <if expr="chromeos">
+    <if expr="chromeos_ash">
       <!-- CrOSUsb Notification -->
       <message name="IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION" desc="Content for notification shown to the user when a USB device gets plugged in.">
           Open Settings to connect <ph name="USB_DEVICE_NAME">$1<ex>Nexus 5</ex></ph> to <ph name="USB_VM_NAME">$2<ex>Linux</ex></ph>
@@ -12093,12 +12093,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
 
     <!-- Relaunch notification bubble and dialog. -->
     <if expr="not is_android">
-      <if expr="not chromeos">
+      <if expr="not chromeos_ash">
         <message name="IDS_RELAUNCH_ACCEPT_BUTTON" desc="The text in the accept button of a dialog that causes the browser to be relaunched immediately.">
           Relaunch now
         </message>
       </if>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_RELAUNCH_ACCEPT_BUTTON" desc="The text in the accept button of a dialog that causes the device to be restarted immediately.">
           Restart now
         </message>
@@ -12109,7 +12109,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </if>
 
     <!-- Web-modal dialog shown during Web Authenticaton API requests. -->
-    <if expr="is_win or is_macosx or desktop_linux or chromeos or is_fuchsia">
+    <if expr="is_win or is_macosx or desktop_linux or chromeos_ash or is_fuchsia">
       <message name="IDS_WEBAUTHN_GENERIC_TITLE" desc="Title of most dialogs shown while the user is authenticating on a web site using a security key.">
         Use your security key with <ph name="APP_NAME">$1<ex>google.com</ex></ph>
       </message>
@@ -12379,7 +12379,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
    </if>
 
    <!-- WebAuthn strings that are used on both Android and Desktop -->
-   <if expr="is_win or is_macosx or desktop_linux or chromeos or is_android or is_fuchsia">
+   <if expr="is_win or is_macosx or desktop_linux or chromeos_ash or is_android or is_fuchsia">
       <message name="IDS_CABLEV2_MAKE_CREDENTIAL_NOTIFICATION_TITLE" desc="The title of a notification shown on Android that informs the user that a website wishes to register their phone for signing into that website." formatter_data="android_java">
         Verify with this phone
       </message>

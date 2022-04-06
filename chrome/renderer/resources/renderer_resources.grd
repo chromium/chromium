@@ -57,7 +57,7 @@
           <include name="IDR_PLATFORM_KEYS_SUBTLE_CRYPTO_JS" file="extensions\platform_keys\subtle_crypto.js" type="BINDATA" />
           <include name="IDR_PLATFORM_KEYS_UTILS_JS" file="extensions\platform_keys\utils.js" type="BINDATA" />
         </if>
-        <if expr="chromeos">
+        <if expr="chromeos_ash">
           <include name="IDR_CERTIFICATE_PROVIDER_CUSTOM_BINDINGS_JS" file="extensions\certificate_provider_custom_bindings.js" type="BINDATA" />
           <include name="IDR_FILE_MANAGER_PRIVATE_CUSTOM_BINDINGS_JS" file="extensions\file_manager_private_custom_bindings.js" type="BINDATA" />
           <include name="IDR_FILE_SYSTEM_PROVIDER_CUSTOM_BINDINGS_JS" file="extensions\file_system_provider_custom_bindings.js" type="BINDATA" />

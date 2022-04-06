@@ -300,7 +300,7 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
           Welcome to Chromium
         </message>
       </if>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_PRODUCT_OS_NAME" desc="The Chrome OS application name">
           Chromium OS
         </message>
@@ -319,12 +319,12 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
           New window
         </message>
       </if>
-      <if expr="is_macosx or chromeos">
+      <if expr="is_macosx or chromeos_ash">
         <message name="IDS_TASK_MANAGER_TITLE" desc="The title of the Task Manager window">
           Task Manager
         </message>
       </if>
-      <if expr="not is_macosx and not chromeos">
+      <if expr="not is_macosx and not chromeos_ash">
         <message name="IDS_TASK_MANAGER_TITLE" desc="The title of the Task Manager window">
           Task Manager - Chromium
         </message>
@@ -332,25 +332,25 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
       <message name="IDS_SESSION_CRASHED_VIEW_UMA_OPTIN" desc="Text besides the checkbox to let users optin to UMA in the restore from previous crash bubble.">
         Help make Chromium better by sending crash reports and <ph name="UMA_LINK">$1<ex>usage statistics</ex></ph> to Google
       </message>
-      <if expr="not chromeos">
+      <if expr="not chromeos_ash">
         <!-- Browser Window Title Format -->
         <message name="IDS_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for titles displayed in tabs and popup windows">
           <ph name="PAGE_TITLE">$1<ex>Google</ex></ph> - Chromium
         </message>
       </if>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <!-- Browser Window Title Format -->
         <message name="IDS_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for titles displayed in tabbed browser windows">
           Chromium - <ph name="PAGE_TITLE">$1<ex>Google</ex></ph>
         </message>
       </if>
-      <if expr="not chromeos and not is_macosx">
+      <if expr="not chromeos_ash and not is_macosx">
         <!-- Captive Portal Browser Window Title Format -->
         <message name="IDS_CAPTIVE_PORTAL_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for titles displayed in captive portal popup windows">
           <ph name="PAGE_TITLE">$1<ex>Google</ex></ph> - Network Sign-in - Chromium
         </message>
       </if>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <!-- Captive Portal Browser Window Title Format -->
         <message name="IDS_CAPTIVE_PORTAL_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for titles displayed in captive portal popup windows">
           Chromium - Network Sign-in - <ph name="PAGE_TITLE">$1<ex>Google</ex></ph>
@@ -382,7 +382,7 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
       <message name="IDS_ABOUT_VERSION_COPYRIGHT" desc="Copyright information on the about pages">
         Copyright <ph name="YEAR">{0,date,y}<ex>2016</ex></ph> The Chromium Authors. All rights reserved.
       </message>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_ABOUT_CROS_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for Chrome OS.">
           Chromium OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>.
         </message>
@@ -455,7 +455,7 @@ Chromium cannot read and write to its data directory:
 
 <ph name="USER_DATA_DIRECTORY">$1<ex>C:\Documents and Settings\devint\Local Settings\Application Data\Google\Chrome</ex></ph>
       </message>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_EULA_CHECKBOX_ENABLE_LOGGING" desc="The label of the checkbox to enable/disable crash and user metrics logging">
           Optional: Help improve Chromium OS features and performance by automatically sending diagnostic and usage data to Google.
         </message>
@@ -476,7 +476,7 @@ Your preferences file is corrupt or invalid.
 Chromium is unable to recover your settings.
       </message>
       <!-- Add account dialog -->
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2" desc="Text body for the Welcome screen in Chromium OS 'Add account' dialog.">
 If you want to use this account one-time only, you can use Guest mode in Chromium browser. If you want to add an account for someone else, <ph name="LINK_BEGIN">&lt;a target="_blank" id="newPersonLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>add a new person<ph name="LINK_END">&lt;/a&gt;</ph> to your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>.
 
@@ -758,7 +758,7 @@ Permissions you've already given to websites and apps may apply to this account.
         &amp;Open in Chromium
       </message>
 
-      <if expr="use_titlecase and not chromeos">
+      <if expr="use_titlecase and not chromeos_ash">
         <message name="IDS_ABOUT" desc="In Title Case: The text label of the About Chrome menu item">
           About &amp;Chromium
         </message>
@@ -766,7 +766,7 @@ Permissions you've already given to websites and apps may apply to this account.
           Relaunch to Update &amp;Chromium
         </message>
       </if>
-      <if expr="not use_titlecase and not chromeos">
+      <if expr="not use_titlecase and not chromeos_ash">
         <message name="IDS_ABOUT" desc="The text label of the About Chrome menu item">
           About &amp;Chromium
         </message>
@@ -774,7 +774,7 @@ Permissions you've already given to websites and apps may apply to this account.
           Relaunch to update &amp;Chromium
         </message>
       </if>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_ABOUT" desc="The text label of the About Chrome menu item">
           About &amp;Chromium
         </message>
@@ -806,7 +806,7 @@ Permissions you've already given to websites and apps may apply to this account.
       </message>
 
       <!-- One click sign-in infobar -->
-      <if expr="not chromeos">
+      <if expr="not chromeos_ash">
         <!-- New one-click sign-in dialog contents for SAML support -->
         <message name="IDS_ONE_CLICK_SIGNIN_DIALOG_TITLE_NEW" desc="The title of the modal dialog window that opens when the user chooses to use one click sign-in.">
           You're signed in to Chromium!
@@ -848,7 +848,7 @@ Permissions you've already given to websites and apps may apply to this account.
       </if>
 
       <!-- about:browser-switch strings -->
-      <if expr="is_win or is_macosx or is_fuchsia or (is_linux and not chromeos)">
+      <if expr="is_win or is_macosx or is_fuchsia or (is_linux and not chromeos_ash)">
         <message name="IDS_ABOUT_BROWSER_SWITCH_DESCRIPTION_UNKNOWN_BROWSER" desc="Description shown while waiting for an alternative browser to open, when the browser name is not auto-detected">
           Your system administrator has configured Chromium to open an alternative browser to access <ph name="TARGET_URL_HOSTNAME">$1<ex>example.com</ex></ph>.
         </message>
@@ -863,13 +863,13 @@ Permissions you've already given to websites and apps may apply to this account.
       </message>
 
       <!-- Signin Email Confirmation tab modal dialog -->
-      <if expr="not chromeos">
+      <if expr="not chromeos_ash">
         <message name="IDS_SIGNIN_EMAIL_CONFIRMATION_TITLE" desc="Title of the signin email confirmation tab modal dialog.">
           <ph name="USER_EMAIL_ADDRESS">$1<ex>foo@gmail.com</ex></ph> was previously using Chromium
         </message>
       </if>
 
-      <if expr="not chromeos and not is_android and not lacros">
+      <if expr="not chromeos_ash and not is_android and not chromeos_lacros">
         <!-- Dice Web Signin Interception Bubble-->
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE" desc="Title of the web signin interception bubble">
           Continue in a new Chromium profile?
@@ -891,7 +891,7 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
       </if>
 
-      <if expr="not chromeos and not is_android">
+      <if expr="not chromeos_ash and not is_android">
         <!-- Profile Customization Bubble-->
         <message name="IDS_PROFILE_CUSTOMIZATION_TEXT" desc="Text of the profile customization bubble">
           Customize your new Chromium profile
@@ -908,7 +908,7 @@ Permissions you've already given to websites and apps may apply to this account.
       </if>
 
       <!-- Sync/sign-in error messages -->
-      <if expr="not chromeos">
+      <if expr="not chromeos_ash">
         <message name="IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error bubble view when the user's sign-in credentials are out of date.">
           Chromium could not sync your data because your account sign-in details are out of date.
         </message>
@@ -919,7 +919,7 @@ Permissions you've already given to websites and apps may apply to this account.
           Chromium could not sync your data due to an error signing in.
         </message>
       </if>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_DISPLAY_SOURCE" desc="Context title shown in the notification header of sign-in error notification for Chromium OS Secondary Accounts.">
           Chromium OS System
         </message>
@@ -935,7 +935,7 @@ Permissions you've already given to websites and apps may apply to this account.
       </if>
 
       <!-- App list -->
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_APP_LIST_EXTENSIONS_UNINSTALL" desc="Title text for the context menu item of a non-platform-app app list item that removes the app.">
           Remove from Chromium...
         </message>
@@ -956,7 +956,7 @@ Permissions you've already given to websites and apps may apply to this account.
       </if>
 
       <!-- Chrome OS OOBE Terms of Service screen-->
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_TERMS_OF_SERVICE_SCREEN_SUBHEADING" desc="Subheading at the top of the Terms of Service screen. MANAGER can be a domain or an email address.">
           <ph name="MANAGER">$1<ex>example.com</ex></ph> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Chromium OS Terms.
         </message>
@@ -988,7 +988,7 @@ Permissions you've already given to websites and apps may apply to this account.
       </if>
 
       <!-- Material Design User Manager -->
-      <if expr="not is_android and not chromeos">
+      <if expr="not is_android and not chromeos_ash">
         <!-- User pod remove sync warning text -->
         <message name="IDS_LOGIN_POD_USER_REMOVE_WARNING_SYNC" desc="Main text shown as a warning when attempting to remove an user.">
           This person's browsing data will be deleted from this device. To recover the data, sign in to Chromium as <ph name="USER_EMAIL">$2<ex>foo@example.com</ex></ph>.
@@ -1094,7 +1094,7 @@ Permissions you've already given to websites and apps may apply to this account.
       </if>
 
       <!-- Update Recommended dialog -->
-      <if expr="not chromeos">
+      <if expr="not chromeos_ash">
         <message name="IDS_UPDATE_RECOMMENDED_DIALOG_TITLE" desc="The window title for the Update Recommended dialog.">
           Relaunch Chromium
         </message>
@@ -1108,7 +1108,7 @@ Permissions you've already given to websites and apps may apply to this account.
           Relaunch
         </message>
       </if>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_UPDATE_RECOMMENDED_DIALOG_TITLE" desc="The window title for the Update Recommended dialog.">
           Restart Chromium OS
         </message>
@@ -1240,7 +1240,7 @@ Permissions you've already given to websites and apps may apply to this account.
       </if>
 
       <!-- OOBE -->
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_INSTALLING_UPDATE" desc="Label shown on the updates installation screen during OOBE">
           Please wait while Chromium installs the latest system updates.
         </message>
@@ -1250,7 +1250,7 @@ Permissions you've already given to websites and apps may apply to this account.
       </if>
 
       <!-- Welcome page (chrome://welcome) strings -->
-      <if expr="not chromeos and not is_android">
+      <if expr="not chromeos_ash and not is_android">
         <message name="IDS_WELCOME_HEADER" desc="A message which will appear as the header on the Welcome UI if the user has never run Chromium before.">
           Welcome to Chromium
         </message>
@@ -1264,7 +1264,7 @@ Permissions you've already given to websites and apps may apply to this account.
       </if>
       <!-- Relaunch notification bubble and dialog. -->
       <if expr="not is_android">
-        <if expr="not chromeos">
+        <if expr="not chromeos_ash">
           <message name="IDS_RELAUNCH_RECOMMENDED_TITLE" desc="The title of a dialog that tells users that a browser relaunch is recommended for an update available for some number of days.">
             {0, plural,
               =0 {A Chromium update is available}
@@ -1307,7 +1307,7 @@ Permissions you've already given to websites and apps may apply to this account.
         </if>
       </if>
       <!-- Chromium launch blocking dialog. -->
-      <if expr="not is_android and not chromeos">
+      <if expr="not is_android and not chromeos_ash">
          <message name="IDS_ENTERPRISE_STARTUP_CLOUD_POLICY_ENROLLMENT_TOOLTIP" desc="The information message of Chromium launch blocking dialog for machine level user cloud policy enrollment.">
           Launching Chromium...
         </message>
@@ -1337,9 +1337,9 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
       </if>
 
-      <if expr="not chromeos and not is_android">
+      <if expr="not chromeos_ash and not is_android">
         <!-- Profile Picker -->
-        <if expr="lacros">
+        <if expr="chromeos_lacros">
           <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_LACROS" desc="Profile picker main view subtitle">
             With Chromium profiles you can separate all of your Chromium stuff. This makes it easier to split between work and fun.
           </message>
@@ -1350,7 +1350,7 @@ Permissions you've already given to websites and apps may apply to this account.
             The following accounts are not signed into any Chromium profiles. If you want to use an account in another profile, remove that profile first.
           </message>
         </if>
-        <if expr="not lacros">
+        <if expr="not chromeos_lacros">
           <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE" desc="Profile picker main view title">
             Welcome to Chromium profiles
           </message>
@@ -1393,7 +1393,7 @@ Permissions you've already given to websites and apps may apply to this account.
       </if>
 
       <!-- Strings for full restore notifications -->
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_RESTORE_NOTIFICATION_DISPLAY_SOURCE" desc="This is the string shown as the display source of the notification for the user to select restore or not on startup.">
           Chromium OS system
         </message>

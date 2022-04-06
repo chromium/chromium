@@ -463,7 +463,7 @@
         Sign out
       </message>
     </if>
-    <if expr="chromeos">
+    <if expr="chromeos_ash">
       <message name="IDS_LAUNCH_APP_BUTTON" desc="Text shown on the button that launches kiosk app from Chrome OS login UI">
         Launch app
       </message>
@@ -485,7 +485,7 @@
     </if>
   </if>
 
-  <if expr="not chromeos and not is_android">
+  <if expr="not chromeos_ash and not is_android">
     <!-- Profile customization bubble -->
     <message name="IDS_PROFILE_CUSTOMIZATION_DONE_BUTTON_LABEL" desc="Text for the Done button on the profile customization bubble">
       Done
@@ -639,7 +639,7 @@
       Switch
     </message>
 
-    <if expr="not lacros">
+    <if expr="not chromeos_lacros">
       <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_DEVICE_MANAGED_BY_DESCRIPTION" desc="Disclaimer on the first profile creation screen, informing that the device is managed by an administrator.">
         Your device is managed by <ph name="PROFILE_NAME">$1<ex>example.com</ex></ph>. Administrators can access the data in any profile on this device.
       </message>
@@ -657,7 +657,7 @@
       </message>
     </if>
 
-    <if expr="lacros">
+    <if expr="chromeos_lacros">
       <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SESSION_MANAGED_BY_DESCRIPTION" desc="Disclaimer on the first profile creation screen, informing that the session is managed by an administrator.">
         Your session is managed by <ph name="MANAGER_NAME">$1<ex>example.com</ex></ph>. Administrators can delete your profile and also monitor your network traffic.
       </message>

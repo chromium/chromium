@@ -17,7 +17,7 @@
         <structure name="IDR_NEW_TAB_4_THEME_CSS" file="resources\ntp4\new_tab_theme.css" flattenhtml="true" type="chrome_html" />
 
       </if>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <structure name="IDR_KEYBOARD_UTILS_JS" file="resources\chromeos\keyboard\keyboard_utils.js" flattenhtml="true" type="chrome_html" />
       </if>
     </structures>
@@ -42,7 +42,7 @@
         <include name="IDR_CERTIFICATE_VIEWER_JS" file="resources\certificate_viewer\certificate_viewer.js" type="BINDATA" />
         <include name="IDR_CERTIFICATE_VIEWER_CSS" file="resources\certificate_viewer\certificate_viewer.css" type="BINDATA" />
       </if>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <include name="IDR_CHROME_APP_MANIFEST" file="resources\chrome_app\manifest.json" type="BINDATA" />
       </if>
       <include name="IDR_FEEDBACK_MANIFEST" file="resources\feedback\manifest.json" type="BINDATA" />
@@ -65,7 +65,7 @@
         <part file="resources/supervised_user_error_page_resources.grdp" />
       </if>
 
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <part file="resources/web_time_limit_error_page_resources.grdp" />
       </if>
 
@@ -89,7 +89,7 @@
         <include name="IDR_CHROME_URLS_DISABLED_PAGE_HTML" file="resources\chromeos\chrome_urls_disabled_page\app.html" type="BINDATA" />
       </if>
 
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <!-- In-session login flow -->
         <include name="IDR_INLINE_LOGIN_WELCOME_PAGE_APP_JS" file="${root_gen_dir}\chrome\browser\resources\inline_login\welcome_page_app.js" use_base_dir="false" type ="BINDATA" preprocess="true" />
         <include name="IDR_INLINE_LOGIN_SIGNIN_BLOCKED_BY_POLICY_PAGE_JS" file="${root_gen_dir}\chrome\browser\resources\inline_login\signin_blocked_by_policy_page.js" use_base_dir="false" type ="BINDATA" preprocess="true" />
@@ -115,7 +115,7 @@
       <if expr="is_macosx">
         <include name="IDR_PLUGIN_DB_JSON" file="resources\plugin_metadata\plugins_mac.json" type="BINDATA" />
       </if>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <include name="IDR_PLUGIN_DB_JSON" file="resources\plugin_metadata\plugins_chromeos.json" type="BINDATA" />
       </if>
       <if expr="desktop_linux">
@@ -131,7 +131,7 @@
       <include name="IDR_USB_DEVICE_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\services\device\public\mojom\usb_device.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_WEBSTORE_MANIFEST" file="resources\webstore_app\manifest.json" type="BINDATA" />
       <include name="IDR_CRYPTOTOKEN_MANIFEST" file="resources\cryptotoken\manifest.json" type="BINDATA" />
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <!-- Shared images for ChromeOS WebUIs -->
         <include name="IDR_CHROME_OS_AN_ERROR_OCCURRED_SVG" file="resources\chromeos\images\an_error_occurred.svg" type="BINDATA" />
         <include name="IDR_CHROME_OS_NO_NETWORK_SVG" file="resources\chromeos\images\no_network.svg" type="BINDATA" />
@@ -221,7 +221,7 @@
         <include name="IDR_VM_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\chrome\browser\ui\webui\chromeos\vm\vm.mojom-webui.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_GUEST_OS_DIAGNOSTICS_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\chrome\browser\ash\guest_os\guest_os_diagnostics.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       </if>
-      <if expr="chromeos and _google_chrome">
+      <if expr="chromeos_ash and _google_chrome">
         <include name="IDR_HELP_MANIFEST" file="resources\help_app\manifest.json" type="BINDATA" />
         <include name="IDR_QUICKOFFICE_MANIFEST" file="resources\chromeos\quickoffice\manifest.json" type="BINDATA" />
         <include name="IDR_PRODUCT_CHROMEOS_SYNC_CONSENT_SCREEN_ICONS" file="internal\resources\chromeos-sync-consent-icons.html" type="BINDATA" />
@@ -236,7 +236,7 @@
         <include name="IDR_PREF_HASH_SEED_BIN" file="resources\settings_internal\pref_hash_seed.bin" type="BINDATA" />
         <include name="IDR_ADDITIONAL_MODULE_IDS" file="${additional_modules_list_file}" use_base_dir="false" type="BINDATA" />
       </if>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <if expr="_google_chrome">
           <then>
             <include name="IDR_SOUND_STARTUP_WAV" file="internal\resources\chromeos\sounds\startup.wav" type="BINDATA" />
@@ -263,7 +263,7 @@
         <include name="IDR_SOUND_DICTATION_START_WAV" file="resources\chromeos\sounds\earcons\audio_initiate.wav" type="BINDATA" />
         <include name="IDR_SOUND_DICTATION_CANCEL_WAV" file="resources\chromeos\sounds\earcons\null_selection.wav" type="BINDATA" />
       </if>
-     <if expr="chromeos">
+     <if expr="chromeos_ash">
         <include name="IDR_ABOUT_POWER_HTML" file="resources\chromeos\power.html" type="BINDATA" />
         <include name="IDR_ABOUT_POWER_JS" file="resources\chromeos\power.js" type="BINDATA" />
         <include name="IDR_ABOUT_POWER_CSS" file="resources\chromeos\power.css" type="BINDATA" />
@@ -277,12 +277,12 @@
         <include name="IDR_DEVICE_EMULATOR_PAGES_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\emulator\device_emulator_pages.js" use_base_dir="false"  type="BINDATA" />
         <include name="IDR_DEVICE_EMULATOR_SHARED_STYLES_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\emulator\shared_styles.js" use_base_dir="false"  type="BINDATA" />
       </if>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <include name="IDR_SET_TIME_HTML" file="resources\chromeos\set_time_dialog\set_time.html" type="BINDATA" />
         <include name="IDR_SET_TIME_DIALOG_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\set_time_dialog\set_time_dialog.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_SET_TIME_BROWSER_PROXY_JS" file="resources\chromeos\set_time_dialog\set_time_browser_proxy.js" type="BINDATA" />
       </if>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <if expr="_google_chrome">
           <then>
             <include name="IDR_GOOGLE_XKB_MANIFEST" file="resources\chromeos\input_method\google_xkb_manifest.json" type="BINDATA" />
@@ -309,7 +309,7 @@
         <include name="IDR_IME_WINDOW_CLOSE_C" file="resources\input_ime\ime_window_close_click.png" type="BINDATA" />
         <include name="IDR_IME_WINDOW_CLOSE_H" file="resources\input_ime\ime_window_close_hover.png" type="BINDATA" />
       </if>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <include name="IDR_SMB_SHARES_DIALOG_CONTAINER_HTML" file="resources\chromeos\smb_shares\smb_share_dialog_container.html" type="chrome_html" />
         <include name="IDR_SMB_SHARES_DIALOG_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\smb_shares\smb_share_dialog.js" use_base_dir="false" type="chrome_html" />
         <include name="IDR_SMB_CREDENTIALS_DIALOG_CONTAINER_HTML" file="resources\chromeos\smb_shares\smb_credentials_dialog_container.html" type="chrome_html" />
@@ -356,11 +356,11 @@
         <include name="IDR_TAB_RANKER_EXAMPLE_PREPROCESSOR_CONFIG_PB" file="resource_coordinator\tab_ranker\example_preprocessor_config.pb" type="BINDATA" />
         <include name="IDR_TAB_RANKER_PAIRWISE_EXAMPLE_PREPROCESSOR_CONFIG_PB" file="resource_coordinator\tab_ranker\pairwise_preprocessor_config.pb" type="BINDATA" />
       </if>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <include name="IDR_SMART_DIM_20190521_EXAMPLE_PREPROCESSOR_CONFIG_PB" file="ash\power\ml\smart_dim\20190521_example_preprocessor_config.pb" type="BINDATA" />
         <include name="IDR_SEARCH_RANKER_20190923_EXAMPLE_PREPROCESSOR_CONFIG_PB" file="ui\app_list\search\search_result_ranker\search_ranker_assets\20190923_example_preprocessor_config.pb" type="BINDATA" />
       </if>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <include name="IDR_ARC_GRAPHICS_TRACING_HTML" file="resources\chromeos\arc_graphics_tracing\arc_graphics_tracing.html" type="BINDATA"/>
         <include name="IDR_ARC_GRAPHICS_TRACING_JS" file="resources\chromeos\arc_graphics_tracing\arc_graphics_tracing.js" type="BINDATA" />
         <include name="IDR_ARC_GRAPHICS_TRACING_UI_JS" file="resources\chromeos\arc_graphics_tracing\arc_graphics_tracing_ui.js" type="BINDATA" />

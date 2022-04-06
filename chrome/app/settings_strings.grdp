@@ -11,7 +11,7 @@
     More actions
   </message>
 
-  <if expr="not chromeos">
+  <if expr="not chromeos_ash">
     <message name="IDS_RELAUNCH_CONFIRMATION_DIALOG_BODY" desc="The body of the modal dialog that we show when users click on relaunch and they have open Incognito windows. The dialog serves to warn the users about losing their Incognito windows if they proceed with the relaunch.">
       {COUNT, plural,
       =1 {Your Incognito window won't open after you relaunch}
@@ -23,7 +23,7 @@
   <message name="IDS_SETTINGS_ABOUT_PAGE_BROWSER_VERSION" desc="The text label describing the version of the browser, example: Version 57.0.2937.0 (Developer Build) unknown (64-bit)">
     Version <ph name="PRODUCT_VERSION">$1<ex>15.0.865.0</ex></ph> (<ph name="PRODUCT_CHANNEL">$2<ex>Developer Build</ex></ph>) <ph name="PRODUCT_MODIFIER">$3</ph> <ph name="PRODUCT_VERSION_BITS">$4</ph>
   </message>
-  <if expr="not chromeos">
+  <if expr="not chromeos_ash">
     <message name="IDS_SETTINGS_ABOUT_PAGE_RELAUNCH" desc="The label for the relaunch button that relaunches the browser once update is complete">
       Relaunch
     </message>
@@ -64,7 +64,7 @@
   <message name="IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_TITLE" desc="Name of the setting to enable Live Caption feature.">
     Live Caption
   </message>
-  <if expr="chromeos">
+  <if expr="chromeos_ash">
     <message name="IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE_ENGLISH_ONLY" desc="Description text for Live Caption feature. When audio or video is playing, the user will see captions on the screen. Only works in Chrome browser initially. Currently only works for English media.">
       Automatically creates captions for media in Chrome browser (currently available in English). Audio and captions are processed locally and never leave the device.
     </message>
@@ -72,7 +72,7 @@
       Automatically creates captions for media in Chrome browser. Audio and captions are processed locally and never leave the device.
     </message>
   </if>
-  <if expr="not chromeos">
+  <if expr="not chromeos_ash">
     <message name="IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE_ENGLISH_ONLY" desc="Description text for Live Caption feature. When audio or video is playing, the user will see captions on the screen. Currently only works for English media.">
       Automatically creates captions for English audio and video. Audio and captions never leave your device.
     </message>
@@ -92,17 +92,17 @@
   <message name="IDS_SETTINGS_ENABLE_CARET_BROWSING_TITLE" desc="Name of the setting to enable Caret Browsing, which allows you to move around any web page using a text caret.">
     Navigate pages with a text cursor
   </message>
-  <if expr="not chromeos">
+  <if expr="not chromeos_ash">
     <message name="IDS_SETTINGS_ENABLE_CARET_BROWSING_SUBTITLE" desc="Subtitle of the setting to enable Caret Browsing, which allows you to move around any web page using a text caret.">
       To turn caret browsing on or off, use the shortcut F7
     </message>
   </if>
-  <if expr="chromeos">
+  <if expr="chromeos_ash">
     <message name="IDS_SETTINGS_ENABLE_CARET_BROWSING_SUBTITLE" desc="Subtitle of the setting to enable Caret Browsing, which allows you to move around any web page using a text caret.">
       To turn caret browsing on or off, use the shortcut Ctrl+Search+7
     </message>
   </if>
-  <if expr="not chromeos">
+  <if expr="not chromeos_ash">
     <message name="IDS_SETTINGS_ACCESSIBILITY_FOCUS_HIGHLIGHT_DESCRIPTION" desc="In the settings tab, the text next to the checkbox to highlight the focused object to make it easier to see.">
       Show a quick highlight on the focused object
     </message>
@@ -126,12 +126,12 @@
       Browser themes
     </message>
   </if>
-  <if expr="not chromeos and not lacros">
+  <if expr="not chromeos_ash and not chromeos_lacros">
     <message name="IDS_SETTINGS_THEMES" desc="Name of the control which allows the user to get a theme for the browser.">
       Theme
     </message>
   </if>
-  <if expr="is_linux and not chromeos and not lacros">
+  <if expr="is_linux and not chromeos_ash and not chromeos_lacros">
     <message name="IDS_SETTINGS_SYSTEM_THEME" desc="Text of the label describing the system (GTK+) browser theme on Linux">
       GTK+
     </message>
@@ -211,12 +211,12 @@
   <message name="IDS_SETTINGS_SUBPAGE_BUTTON" desc="Accessibility description for a button navigating the user from a settings page to one of the settings subpages.">
     Subpage button
   </message>
-  <if expr="not chromeos">
+  <if expr="not chromeos_ash">
     <message name="IDS_SETTINGS_RESTART" desc="Text for a button that will restart Chrome.">
       Relaunch
     </message>
   </if>
-  <if expr="chromeos">
+  <if expr="chromeos_ash">
     <message name="IDS_SETTINGS_RESTART" desc="Text for a button that will restart ChromeOS.">
       Restart
     </message>
@@ -794,7 +794,7 @@
   </message>
 
   <!-- Default Browser Page -->
-  <if expr="not chromeos and not lacros">
+  <if expr="not chromeos_ash and not chromeos_lacros">
     <message name="IDS_SETTINGS_DEFAULT_BROWSER" desc="Name of the Default Browser page, which allows users to set which browser will open .html files within the OS.">
       Default browser
     </message>
@@ -984,7 +984,7 @@
     <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_WRITE_ERROR_FORMAT" desc="The text in the error dialog for PKCS #12 file write errors.">
       There was an error while trying to write the file: <ph name="ERROR_TEXT">$1<ex>Permission denied.</ex></ph>.
     </message>
-    <if expr="chromeos">
+    <if expr="chromeos_ash">
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_LIST_HEADER" desc="Header that lists the certificate provisioning processes.">
         Certificates are being provisioned for these certificate profiles
       </message>
@@ -1231,7 +1231,7 @@
   <message name="IDS_SETTINGS_LANGUAGES_MANAGE_LANGUAGES_TITLE" desc="Name of the settings dialog which allows enabling additional languages.">
     Add languages
   </message>
-  <if expr="not chromeos">
+  <if expr="not chromeos_ash">
     <message name="IDS_SETTINGS_LANGUAGES_LANGUAGES_LIST_TITLE" desc="Title for the currently used language in the header for the collapsible list of languages.">
       Language
     </message>
@@ -1319,7 +1319,7 @@
       </message>
     </if>
   </if>
-  <if expr="chromeos">
+  <if expr="chromeos_ash">
     <if expr="reven">
       <message name="IDS_SETTINGS_LANGUAGES_OPEN_CHROME_OS_SETTINGS_LABEL" desc="Label for the section that allow users to open languages settings in ChromeOS Flex.">
         Manage languages in ChromeOS Flex settings
@@ -2610,7 +2610,7 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_BLOCKED_SUB_LABEL" desc="Sub label for the disabled option of the protected content content setting.">
     Media with a copyright might not play
   </message>
-  <if expr="chromeos or is_win">
+  <if expr="chromeos_ash or is_win">
     <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_IDENTIFIERS_EXPLANATION" desc="Text that is displayed on the Protected Content section of Content Settings. This text explains that enabling protected content may require using a uniquely identifiable machine identifier.">
       Sites may also need to recognize your device using an identifier
     </message>
@@ -3367,7 +3367,7 @@
   <message name="IDS_SETTINGS_ADD_SITE" desc="The label for the input box for adding a site">
     Site
   </message>
-  <if expr="chromeos">
+  <if expr="chromeos_ash">
     <message name="IDS_SETTINGS_ANDROID_SMS_NOTE" desc="Special note shown below Messages for Android entry in notification permissions to indicate use in ChromeOS Multidevice features.">
       Allows Android Messages to relay texts from your phone to your Chromebook
     </message>
@@ -3473,7 +3473,7 @@
     Settings saved. Sync started.
   </message>
 
-  <if expr="not chromeos">
+  <if expr="not chromeos_ash">
     <message name="IDS_SETTINGS_PROFILE_NAME_INPUT_LABEL" desc="Aria label of the input field where the user can edit the name associated with the profile." meaning="Name of a person">
       Name
     </message>
@@ -3540,7 +3540,7 @@
     Control how your browsing history is used to personalize Search and more
   </message>
 
-  <if expr="not chromeos and not lacros">
+  <if expr="not chromeos_ash and not chromeos_lacros">
     <!-- Import Settings Dialog -->
     <message name="IDS_SETTINGS_IMPORT_SETTINGS_TITLE" desc="Dialog title for import dialog.">
       Import bookmarks and settings
@@ -3639,12 +3639,12 @@
   </message>
 
   <!-- System Page -->
-  <if expr="not chromeos">
+  <if expr="not chromeos_ash">
     <message name="IDS_SETTINGS_SYSTEM" desc="Title of the system settings.">
       System
     </message>
   </if>
-  <if expr="not chromeos and not lacros">
+  <if expr="not chromeos_ash and not chromeos_lacros">
     <message name="IDS_SETTINGS_SYSTEM_HARDWARE_ACCELERATION_LABEL" desc="Label for the checkbox that forces Chrome to render via hardware acceleration (GPU) when available.">
       Use hardware acceleration when available
     </message>
@@ -3658,7 +3658,7 @@
       <ph name="IDS_SHORT_PRODUCT_NAME">$1<ex>Chrome</ex></ph> is using proxy settings from your administrator
     </message>
   </if>
-  <if expr="lacros">
+  <if expr="chromeos_lacros">
     <message name="IDS_SETTINGS_SYSTEM_USE_ASH_PROXY_LABEL" desc="Label for the checkbox that enables using the ash proxy for the Lacros browser.">
       Use Chrome OS proxy settings for this profile.
     </message>

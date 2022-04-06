@@ -165,7 +165,7 @@
     <message name="IDS_PDF_THUMBNAIL_PAGE_ARIA_LABEL" desc="aria-label describing a thumbnail by its corresponding PDF page number">
       Thumbnail for page <ph name="THUMBNAIL_PAGE"><ex>1</ex>$1</ph>
     </message>
-    <if expr="chromeos">
+    <if expr="chromeos_ash">
       <message name="IDS_PDF_ANNOTATION_ANNOTATE" desc="Button tooltip for entering the 'Annotation mode' which allows writing, drawing and highlighting of the PDF document">
         Annotate
       </message>

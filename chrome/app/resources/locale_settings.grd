@@ -180,7 +180,7 @@
         81
       </message>
 
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_FACTORY_RESET_HELP_URL" translateable="false">
           https://support.google.com/chromebook/answer/183084?hl=[GRITLANGCODE]
         </message>

@@ -2,7 +2,7 @@
 <!-- Settings-specific Chromium strings (included from chromium_strings.grd). -->
 <grit-part>
   <!-- Shared across multiple page -->
-  <if expr="not chromeos">
+  <if expr="not chromeos_ash">
     <message name="IDS_RELAUNCH_CONFIRMATION_DIALOG_TITLE" desc="The title of the modal dialog that we show when users click on relaunch and they have open Incognito windows. The dialog serves to warn the users about losing their Incognito windows if they proceed with the relaunch.">
       Relaunch Chromium?
     </message>
@@ -14,7 +14,7 @@
   <message name="IDS_SETTINGS_GET_HELP_USING_CHROME" desc="Text of the button which takes the user to the Chrome help page.">
     Get help with Chromium
   </message>
-  <if expr="not chromeos">
+  <if expr="not chromeos_ash">
     <message name="IDS_SETTINGS_UPGRADE_UPDATING" desc="Status label: Updating Chromium">
       Updating Chromium
     </message>
@@ -28,7 +28,7 @@
       Chromium is up to date
     </message>
   </if>
-  <if expr="chromeos">
+  <if expr="chromeos_ash">
     <message name="IDS_SETTINGS_ABOUT_OS" desc="Menu title for the About Chromium OS page.">
       About Chromium OS
     </message>
@@ -81,7 +81,7 @@
     If so, please edit your saved password in Chromium so it matches your new password.
   </message>
   <!-- Default Browser Page -->
-  <if expr="not chromeos">
+  <if expr="not chromeos_ash">
     <message name="IDS_SETTINGS_DEFAULT_BROWSER_DEFAULT" desc="The text displayed when Chrome is the default browser">
       Chromium is your default browser
     </message>
@@ -113,7 +113,7 @@
     To apply your changes, relaunch Chromium
   </message>
 
-  <if expr="not chromeos and not lacros">
+  <if expr="not chromeos_ash and not chromeos_lacros">
     <message name="IDS_SETTINGS_SIGNIN_ALLOWED" desc="The title of the preference to allow to sign-in to Chrome">
     Allow Chromium sign-in
     </message>
@@ -244,7 +244,7 @@
   <message name="IDS_SETTINGS_SYNC_DISCONNECT_DELETE_PROFILE_WARNING_WITHOUT_COUNTS" desc="Warning message displayed in the Sign out of Chrome dialog that indicates profile browsing data will be removed from the device.">
     This will delete your browsing data from this device. To retrieve your data later, sign in to Chromium as <ph name="USER_EMAIL">$1<ex>foo@example.com</ex></ph>.
   </message>
-<if expr="not chromeos">
+<if expr="not chromeos_ash">
   <message name="IDS_SETTINGS_CUSTOMIZE_YOUR_CHROME_PROFILE" desc="Label of the link that takes you to the page to customize your chrome profile.">
     Customize your Chromium profile
   </message>
@@ -255,7 +255,7 @@
   <message name="IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT" desc="The secondary text displayed to prompt users to enable sync for an account that is alredy present in Chromium.">
     Sync and personalize Chromium across your devices
   </message>
-<if expr="chromeos">
+<if expr="chromeos_ash">
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_DESCRIPTION_V2" desc="Description of the Account Manager Settings page. Shown just below the title of the page.">
     You can manage your signed-in Google Accounts. Your Google Accounts are used for Chromium browser, Play Store, Gmail, and more. If you want to add an account for someone else, like a family member, add a new person to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> instead. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
@@ -286,7 +286,7 @@
   </if>
 
   <!-- System Page -->
-  <if expr="not chromeos">
+  <if expr="not chromeos_ash">
     <message name="IDS_SETTINGS_SYSTEM_BACKGROUND_APPS_LABEL" desc="Label for the checkbox to allow apps to run in the background, when Chrome is closed.">
       Continue running background apps when Chromium is closed
     </message>

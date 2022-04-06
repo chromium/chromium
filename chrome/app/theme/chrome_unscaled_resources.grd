@@ -29,7 +29,7 @@
         </if>
         <include name="IDR_PRODUCT_LOGO_24PX_1X" file="google_chrome/chrome_24px_1x.svg" type="BINDATA" />
         <include name="IDR_PRODUCT_LOGO_128PX_SVG" file="google_chrome/chrome_128px.svg" type="BINDATA" />
-        <if expr="chromeos">
+        <if expr="chromeos_ash">
           <include name="IDR_PRODUCT_LOGO_24PX_2X" file="google_chrome/chrome_24px_2x.svg" type="BINDATA" />
           <!-- Used by lacros. -->
           <include name="IDR_PRODUCT_LOGO_256_CANARY" file="google_chrome/product_logo_256_canary.png" type="BINDATA" />
@@ -45,7 +45,7 @@
         <if expr="is_macosx">
           <include name="IDR_STATUS_TRAY_ICON" file="google_chrome/product_logo_22_mono.png" type="BINDATA" />
         </if>
-        <if expr="chromeos">
+        <if expr="chromeos_ash">
           <include name="IDR_CHROME_APP_ICON_32" file="google_chrome/chromeos/chrome_app_icon_32.png" type="BINDATA" />
           <include name="IDR_CHROME_APP_ICON_192" file="google_chrome/chromeos/chrome_app_icon_192.png" type="BINDATA" />
           <include name="IDR_WEBSTORE_APP_ICON_16" file="google_chrome/chromeos/webstore_app_icon_16.png" type="BINDATA" />
@@ -69,7 +69,7 @@
         <if expr="is_macosx">
           <include name="IDR_STATUS_TRAY_ICON" file="chromium/product_logo_22_mono.png" type="BINDATA" />
         </if>
-        <if expr="chromeos">
+        <if expr="chromeos_ash">
           <include name="IDR_CHROME_APP_ICON_32" file="chromium/chromeos/chrome_app_icon_32.png" type="BINDATA" />
           <include name="IDR_CHROME_APP_ICON_192" file="chromium/chromeos/chrome_app_icon_192.png" type="BINDATA" />
           <include name="IDR_WEBSTORE_APP_ICON_16" file="chromium/chromeos/webstore_app_icon_16.png" type="BINDATA" />
@@ -115,7 +115,7 @@
         <include name="IDR_APPS_FOLDER_OVERLAY_128" file="mac/apps_folder_overlay_128.png" type="BINDATA" />
         <include name="IDR_APPS_FOLDER_OVERLAY_512" file="mac/apps_folder_overlay_512.png" type="BINDATA" />
       </if>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <include name="IDR_LOGO_CROSH" file="chromium/chromeos/crosh_app_icon_256.png" type="BINDATA" />
         <!-- Borealis icons -->
         <include name="IDR_LOGO_BOREALIS_DEFAULT_192" file="borealis/logo_borealis_default_192.png" type="BINDATA" />

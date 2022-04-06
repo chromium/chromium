@@ -12,14 +12,14 @@
   </outputs>
   <release seq="1">
     <structures>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <structure name="IDR_WALLPAPER_MANAGER_MAIN" file="chromeos/wallpaper_manager/main.html" flattenhtml="true" allowexternalscript="true" type="chrome_html" />
       </if>
     </structures>
     <includes>
       <include name="IDR_NETWORK_SPEECH_SYNTHESIS_JS" file="network_speech_synthesis/tts_extension.js" type="BINDATA" />
 
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <include name="IDR_BRAILLE_IME_JS" file="chromeos/accessibility/braille_ime/braille_ime.js" type="BINDATA" />
         <include name="IDR_BRAILLE_IME_MAIN_JS" file="chromeos/accessibility/braille_ime/main.js" type="BINDATA" />
       </if>
@@ -65,7 +65,7 @@
       <include name="IDR_IDENTITY_API_SCOPE_APPROVAL_DIALOG" file="identity_scope_approval_dialog/scope_approval_dialog.html" type="BINDATA" />
       <include name="IDR_IDENTITY_API_SCOPE_APPROVAL_DIALOG_JS" file="identity_scope_approval_dialog/scope_approval_dialog.js" type="BINDATA" />
       <include name="IDR_IDENTITY_API_SCOPE_APPROVAL_INJECT_JS" file="identity_scope_approval_dialog/inject.js" type="BINDATA" />
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <include name="IDR_WALLPAPER_MANAGER_CONSTANTS_JS" file="chromeos/wallpaper_manager/js/constants.js" type="BINDATA" />
         <include name="IDR_WALLPAPER_MANAGER_EVENT_JS" file="chromeos/wallpaper_manager/js/event_page.js" type="BINDATA" />
         <include name="IDR_WALLPAPER_MANAGER_ICON_48" file="chromeos/wallpaper_manager/images/icon48.png" type="BINDATA" />
