@@ -73,6 +73,17 @@ class CORE_EXPORT CascadeMap {
       Node(CascadePriority priority, wtf_size_t next_index)
           : priority(priority), next_index(next_index) {}
 
+      // This terrible sequence convinces the compiler to use 32-bit loads and
+      // stores for copying a Node into the BackingStore, instead of coalescing
+      // them into 64-bit, which would cause a store-to-load forwarding stall.
+      // See crbug.com/1313148 (remove when it has been fixed).
+      Node(Node&& other) {
+        priority = other.priority;
+        next_index = other.next_index + 1;
+        other.next_index = next_index;
+        --next_index;
+      }
+
       CascadePriority priority;
       // 0 for null; Otherwise, next_index - 1 is index in the backing vector.
       wtf_size_t next_index;
