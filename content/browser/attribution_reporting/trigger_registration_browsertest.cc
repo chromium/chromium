@@ -573,7 +573,7 @@ IN_PROC_BROWSER_TEST_F(
             url::Origin::Create(register_url));
   EXPECT_THAT(
       trigger_data2.front()->event_triggers,
-      ElementsAre(Pointee(Field(&blink::mojom::EventTriggerData::data, 10))));
+      ElementsAre(Pointee(Field(&blink::mojom::EventTriggerData::data, 7))));
 }
 
 }  // namespace content

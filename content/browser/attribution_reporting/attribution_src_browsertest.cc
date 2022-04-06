@@ -516,7 +516,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_THAT(trigger_data.front()->filters->filter_values, IsEmpty());
   EXPECT_FALSE(trigger_data.front()->debug_key);
   EXPECT_EQ(trigger_data.front()->event_triggers.size(), 1u);
-  EXPECT_EQ(trigger_data.front()->event_triggers.front()->data, 10u);
+  EXPECT_EQ(trigger_data.front()->event_triggers.front()->data, 7u);
   EXPECT_THAT(
       trigger_data.front()->event_triggers.front()->filters->filter_values,
       IsEmpty());
@@ -696,7 +696,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_EQ(trigger_data.front()->reporting_origin,
             url::Origin::Create(register_url));
   EXPECT_EQ(trigger_data.front()->event_triggers.size(), 1u);
-  EXPECT_EQ(trigger_data.front()->event_triggers.front()->data, 10u);
+  EXPECT_EQ(trigger_data.front()->event_triggers.front()->data, 7u);
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -788,7 +788,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   // Both triggers should be processed.
   EXPECT_EQ(trigger_data.front()->event_triggers.front()->data, 5u);
-  EXPECT_EQ(trigger_data.back()->event_triggers.front()->data, 10u);
+  EXPECT_EQ(trigger_data.back()->event_triggers.front()->data, 7u);
 
   // Middle redirect source should be ignored.
   EXPECT_EQ(data_host->source_data().size(), 0u);
@@ -1087,7 +1087,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcInvalidFiltersBrowserTest,
   // Only the second trigger is registered.
   EXPECT_EQ(trigger_data.size(), 1u);
   EXPECT_EQ(trigger_data.front()->event_triggers.size(), 1u);
-  EXPECT_EQ(trigger_data.front()->event_triggers.front()->data, 10u);
+  EXPECT_EQ(trigger_data.front()->event_triggers.front()->data, 7u);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1252,7 +1252,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcFilterSizeBrowserTest,
 
   EXPECT_EQ(trigger_data.size(), expected_triggers);
   EXPECT_EQ(trigger_data.back()->event_triggers.size(), 1u);
-  EXPECT_EQ(trigger_data.back()->event_triggers.front()->data, 10u);
+  EXPECT_EQ(trigger_data.back()->event_triggers.front()->data, 7u);
 }
 
 INSTANTIATE_TEST_SUITE_P(

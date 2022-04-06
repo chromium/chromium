@@ -1,0 +1,2 @@
+HTTP/1.1 200 OK
+Attribution-Reporting-Register-Event-Trigger:[{"trigger_data": "1", "deduplication_key":"123"}]
