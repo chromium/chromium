@@ -613,8 +613,7 @@ class URLLoaderTest : public testing::Test {
     net::URLRequestFailedJob::AddUrlHandler();
 
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAcceptCHFrame,
-                              net::features::kRecordRadioWakeupTrigger},
+        /*enabled_features=*/{net::features::kRecordRadioWakeupTrigger},
         /*disabled_features=*/{});
   }
   ~URLLoaderTest() override {
