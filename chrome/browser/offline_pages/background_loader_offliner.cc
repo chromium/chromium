@@ -289,7 +289,7 @@ void BackgroundLoaderOffliner::WebContentsDestroyed() {
 
 void BackgroundLoaderOffliner::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame())
+  if (!navigation_handle->IsInPrimaryMainFrame())
     return;
   // If there was an error of any kind (certificate, client, DNS, etc),
   // Mark as error page. Resetting here causes RecordNavigationMetrics to crash.

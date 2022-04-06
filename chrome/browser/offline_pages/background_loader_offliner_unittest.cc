@@ -921,4 +921,33 @@ TEST_F(BackgroundLoaderOfflinerTest, SignalCollectionDisabled) {
   EXPECT_EQ(extra_parts->size(), 0);
 }
 
+TEST_F(BackgroundLoaderOfflinerTest,
+       DoNotRecordErrorMetricInNonPrimaryMainframe) {
+  base::Time creation_time = base::Time::Now();
+  SavePageRequest request(kRequestId, GURL(kHttpUrl), kClientId, creation_time,
+                          kUserRequested);
+  EXPECT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
+                                      progress_callback()));
+
+  // Simulate that DidFinishNavigation method is called with an error in a
+  // non-primary mainframe.
+  content::MockNavigationHandle handle(
+      GURL(kHttpUrl), offliner()->web_contents()->GetMainFrame());
+  handle.set_has_committed(true);
+  handle.set_is_error_page(true);
+  handle.set_net_error_code(net::Error::ERR_NAME_NOT_RESOLVED);
+  handle.set_is_in_primary_main_frame(false);
+  offliner()->DidFinishNavigation(&handle);
+
+  // The error histogram should be 0.
+  histograms().ExpectBucketCount(
+      "OfflinePages.Background.LoadingErrorStatusCode.async_loading",
+      -105,  // ERR_NAME_NOT_RESOLVED
+      0);
+  CompleteLoading();
+  PumpLoop();
+
+  EXPECT_FALSE(completion_callback_called());
+}
+
 }  // namespace offline_pages
