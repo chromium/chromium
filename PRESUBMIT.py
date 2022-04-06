@@ -5704,10 +5704,14 @@ def CheckMPArchApiUsage(input_api, output_api):
         'GetMainFrame',
         'GetFrameTreeNodeId',
     ]
+    concerning_ftn_methods = [
+        'IsMainFrame',
+    ]
     concerning_method_pattern = input_api.re.compile(r'(' + r'|'.join(
         item for sublist in [
             concerning_wco_methods, concerning_nav_handle_methods,
-            concerning_web_contents_methods, concerning_rfh_methods
+            concerning_web_contents_methods, concerning_rfh_methods,
+            concerning_ftn_methods,
         ] for item in sublist) + r')\(')
 
     used_apis = set()
