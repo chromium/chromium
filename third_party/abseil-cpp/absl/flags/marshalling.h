@@ -162,14 +162,27 @@
 #ifndef ABSL_FLAGS_MARSHALLING_H_
 #define ABSL_FLAGS_MARSHALLING_H_
 
+#include "absl/base/config.h"
+
+#if defined(ABSL_HAVE_STD_OPTIONAL) && !defined(ABSL_USES_STD_OPTIONAL)
+#include <optional>
+#endif
 #include <string>
 #include <vector>
 
-#include "absl/base/config.h"
 #include "absl/strings/string_view.h"
+#include "absl/types/optional.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
+
+// Forward declaration to be used inside composable flag parse/unparse
+// implementations
+template <typename T>
+inline bool ParseFlag(absl::string_view input, T* dst, std::string* error);
+template <typename T>
+inline std::string UnparseFlag(const T& v);
+
 namespace flags_internal {
 
 // Overloads of `AbslParseFlag()` and `AbslUnparseFlag()` for fundamental types.
@@ -189,6 +202,36 @@ bool AbslParseFlag(absl::string_view, std::string*, std::string*);
 bool AbslParseFlag(absl::string_view, std::vector<std::string>*, std::string*);
 
 template <typename T>
+bool AbslParseFlag(absl::string_view text, absl::optional<T>* f,
+                   std::string* err) {
+  if (text.empty()) {
+    *f = absl::nullopt;
+    return true;
+  }
+  T value;
+  if (!absl::ParseFlag(text, &value, err)) return false;
+
+  *f = std::move(value);
+  return true;
+}
+
+#if defined(ABSL_HAVE_STD_OPTIONAL) && !defined(ABSL_USES_STD_OPTIONAL)
+template <typename T>
+bool AbslParseFlag(absl::string_view text, std::optional<T>* f,
+                   std::string* err) {
+  if (text.empty()) {
+    *f = std::nullopt;
+    return true;
+  }
+  T value;
+  if (!absl::ParseFlag(text, &value, err)) return false;
+
+  *f = std::move(value);
+  return true;
+}
+#endif
+
+template <typename T>
 bool InvokeParseFlag(absl::string_view input, T* dst, std::string* err) {
   // Comment on next line provides a good compiler error message if T
   // does not have AbslParseFlag(absl::string_view, T*, std::string*).
@@ -200,6 +243,18 @@ bool InvokeParseFlag(absl::string_view input, T* dst, std::string* err) {
 // can avoid the need for additional specializations of Unparse (below).
 std::string AbslUnparseFlag(absl::string_view v);
 std::string AbslUnparseFlag(const std::vector<std::string>&);
+
+template <typename T>
+std::string AbslUnparseFlag(const absl::optional<T>& f) {
+  return f.has_value() ? absl::UnparseFlag(*f) : "";
+}
+
+#if defined(ABSL_HAVE_STD_OPTIONAL) && !defined(ABSL_USES_STD_OPTIONAL)
+template <typename T>
+std::string AbslUnparseFlag(const std::optional<T>& f) {
+  return f.has_value() ? absl::UnparseFlag(*f) : "";
+}
+#endif
 
 template <typename T>
 std::string Unparse(const T& v) {

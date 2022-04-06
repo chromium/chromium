@@ -100,6 +100,7 @@ cc_library(
         "//absl/base:log_severity",
         "//absl/strings",
         "//absl/strings:str_format",
+        "//absl/types:optional",
     ],
 )
 
@@ -113,6 +114,9 @@ cc_library(
     ],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = [
+        "//visibility:private",
+    ],
     deps = [
         "//absl/base:config",
         "//absl/base:fast_type_id",

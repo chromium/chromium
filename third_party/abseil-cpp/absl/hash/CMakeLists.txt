@@ -80,6 +80,7 @@ absl_cc_test(
     GTest::gmock_main
 )
 
+# Internal-only target, do not depend on directly.
 absl_cc_library(
   NAME
     spy_hash_state
@@ -94,6 +95,7 @@ absl_cc_library(
   TESTONLY
 )
 
+# Internal-only target, do not depend on directly.
 absl_cc_library(
   NAME
     city
@@ -121,6 +123,7 @@ absl_cc_test(
     GTest::gmock_main
 )
 
+# Internal-only target, do not depend on directly.
 absl_cc_library(
   NAME
     low_level_hash

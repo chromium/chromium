@@ -87,6 +87,7 @@ absl_cc_library(
     absl::config
     absl::core_headers
     absl::log_severity
+    absl::optional
     absl::strings
     absl::str_format
 )

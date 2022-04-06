@@ -34,7 +34,9 @@ cc_library(
     hdrs = [
         "internal/graphcycles.h",
     ],
-    copts = ABSL_DEFAULT_COPTS,
+    copts = ABSL_DEFAULT_COPTS + select({
+        "//conditions:default": [],
+    }),
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
         "//absl:__subpackages__",

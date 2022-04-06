@@ -156,7 +156,7 @@ class RefcountAndFlags {
   // used for the StringConstant constructor to avoid collecting immutable
   // constant cords.
   // kReservedFlag is reserved for future use.
-  enum {
+  enum Flags {
     kNumFlags = 2,
 
     kImmortalFlag = 0x1,

@@ -59,10 +59,12 @@ absl_source_set("marshalling") {
     "//third_party/abseil-cpp/absl/base:log_severity",
     "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/strings:str_format",
+    "//third_party/abseil-cpp/absl/types:optional",
   ]
 }
 
 absl_source_set("commandlineflag_internal") {
+  visibility = [":*"]
   public = [ "internal/commandlineflag.h" ]
   sources = [ "internal/commandlineflag.cc" ]
   deps = [

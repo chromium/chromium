@@ -319,6 +319,27 @@ TEST_P(CordRepBtreeNavigatorTest, ReadBeyondLengthOfTree) {
   ASSERT_THAT(result.tree, Eq(nullptr));
 }
 
+TEST(CordRepBtreeNavigatorTest, NavigateMaximumTreeDepth) {
+  CordRepFlat* flat1 = MakeFlat("Hello world");
+  CordRepFlat* flat2 = MakeFlat("World Hello");
+
+  CordRepBtree* node = CordRepBtree::Create(flat1);
+  node = CordRepBtree::Append(node, flat2);
+  while (node->height() < CordRepBtree::kMaxHeight) {
+    node = CordRepBtree::New(node);
+  }
+
+  CordRepBtreeNavigator nav;
+  CordRep* edge = nav.InitFirst(node);
+  EXPECT_THAT(edge, Eq(flat1));
+  EXPECT_THAT(nav.Next(), Eq(flat2));
+  EXPECT_THAT(nav.Next(), Eq(nullptr));
+  EXPECT_THAT(nav.Previous(), Eq(flat1));
+  EXPECT_THAT(nav.Previous(), Eq(nullptr));
+
+  CordRep::Unref(node);
+}
+
 }  // namespace
 }  // namespace cord_internal
 ABSL_NAMESPACE_END

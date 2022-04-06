@@ -33,7 +33,7 @@
 #endif
 #include <unistd.h>
 
-#if defined(__GLIBC__) && \
+#if !defined(__UCLIBC__) && defined(__GLIBC__) && \
     (__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 16))
 #define ABSL_HAVE_GETAUXVAL
 #endif

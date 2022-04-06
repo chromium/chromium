@@ -93,6 +93,7 @@ absl_cc_test(
     GTest::gmock
 )
 
+# Internal-only target, do not depend on directly.
 absl_cc_library(
   NAME
     examine_stack
@@ -147,6 +148,7 @@ absl_cc_test(
     GTest::gmock
 )
 
+# Internal-only target, do not depend on directly.
 absl_cc_library(
   NAME
     debugging_internal
@@ -168,6 +170,7 @@ absl_cc_library(
     absl::raw_logging_internal
 )
 
+# Internal-only target, do not depend on directly.
 absl_cc_library(
   NAME
     demangle_internal
@@ -298,6 +301,7 @@ absl_cc_test(
     GTest::gmock_main
 )
 
+# Internal-only target, do not depend on directly.
 absl_cc_library(
   NAME
     stack_consumption

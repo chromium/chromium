@@ -1189,7 +1189,7 @@ TEST(ComparisonOpsTest, StringCompareNotAmbiguous) {
   EXPECT_LT("hello", std::string("world"));
 }
 
-TEST(ComparisonOpsTest, HeterogenousStringViewEquals) {
+TEST(ComparisonOpsTest, HeterogeneousStringViewEquals) {
   EXPECT_EQ(absl::string_view("hello"), std::string("hello"));
   EXPECT_EQ("hello", absl::string_view("hello"));
 }

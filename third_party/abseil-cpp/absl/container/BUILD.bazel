@@ -217,19 +217,12 @@ cc_test(
     ],
 )
 
-NOTEST_TAGS_NONMOBILE = [
-    "no_test_darwin_x86_64",
-    "no_test_loonix",
-]
-
 NOTEST_TAGS_MOBILE = [
     "no_test_android_arm",
     "no_test_android_arm64",
     "no_test_android_x86",
     "no_test_ios_x86_64",
 ]
-
-NOTEST_TAGS = NOTEST_TAGS_MOBILE + NOTEST_TAGS_NONMOBILE
 
 cc_library(
     name = "flat_hash_map",
@@ -251,7 +244,7 @@ cc_test(
     srcs = ["flat_hash_map_test.cc"],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
-    tags = NOTEST_TAGS_NONMOBILE,
+    tags = ["no_test_loonix"],
     deps = [
         ":flat_hash_map",
         ":hash_generator_testing",
@@ -285,7 +278,7 @@ cc_test(
     srcs = ["flat_hash_set_test.cc"],
     copts = ABSL_TEST_COPTS + ["-DUNORDERED_SET_CXX17"],
     linkopts = ABSL_DEFAULT_LINKOPTS,
-    tags = NOTEST_TAGS_NONMOBILE,
+    tags = ["no_test_loonix"],
     deps = [
         ":flat_hash_set",
         ":hash_generator_testing",
@@ -321,7 +314,7 @@ cc_test(
     srcs = ["node_hash_map_test.cc"],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
-    tags = NOTEST_TAGS_NONMOBILE,
+    tags = ["no_test_loonix"],
     deps = [
         ":hash_generator_testing",
         ":node_hash_map",
@@ -354,7 +347,7 @@ cc_test(
     srcs = ["node_hash_set_test.cc"],
     copts = ABSL_TEST_COPTS + ["-DUNORDERED_SET_CXX17"],
     linkopts = ABSL_DEFAULT_LINKOPTS,
-    tags = NOTEST_TAGS_NONMOBILE,
+    tags = ["no_test_loonix"],
     deps = [
         ":node_hash_set",
         ":unordered_set_constructor_test",
@@ -383,7 +376,7 @@ cc_test(
     srcs = ["internal/container_memory_test.cc"],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
-    tags = NOTEST_TAGS_NONMOBILE,
+    tags = ["no_test_loonix"],
     deps = [
         ":container_memory",
         ":test_instance_tracker",
@@ -410,7 +403,7 @@ cc_test(
     srcs = ["internal/hash_function_defaults_test.cc"],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
-    tags = NOTEST_TAGS,
+    tags = NOTEST_TAGS_MOBILE + ["no_test_loonix"],
     deps = [
         ":hash_function_defaults",
         "//absl/hash",
@@ -608,7 +601,7 @@ cc_test(
     srcs = ["internal/raw_hash_set_test.cc"],
     copts = ABSL_TEST_COPTS,
     linkstatic = 1,
-    tags = NOTEST_TAGS,
+    tags = NOTEST_TAGS_MOBILE + ["no_test_loonix"],
     deps = [
         ":container_memory",
         ":hash_function_defaults",
@@ -698,7 +691,7 @@ cc_test(
     srcs = ["internal/layout_test.cc"],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
-    tags = NOTEST_TAGS,
+    tags = NOTEST_TAGS_MOBILE + ["no_test_loonix"],
     visibility = ["//visibility:private"],
     deps = [
         ":layout",
@@ -845,7 +838,7 @@ cc_test(
     srcs = ["internal/unordered_set_test.cc"],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
-    tags = NOTEST_TAGS_NONMOBILE,
+    tags = ["no_test_loonix"],
     deps = [
         ":unordered_set_constructor_test",
         ":unordered_set_lookup_test",
@@ -860,7 +853,7 @@ cc_test(
     srcs = ["internal/unordered_map_test.cc"],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
-    tags = NOTEST_TAGS_NONMOBILE,
+    tags = ["no_test_loonix"],
     deps = [
         ":unordered_map_constructor_test",
         ":unordered_map_lookup_test",
@@ -875,7 +868,7 @@ cc_test(
     srcs = ["sample_element_size_test.cc"],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
-    tags = NOTEST_TAGS_NONMOBILE,
+    tags = ["no_test_loonix"],
     visibility = ["//visibility:private"],
     deps = [
         ":flat_hash_map",
