@@ -233,6 +233,7 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
 
   void OnBookmarkIconLoaded(const BookmarkNode* drag_node,
                             const ui::ImageModel& icon) {
+    auto weak_this = GetWeakPtr();
     if (web_contents_) {
       const auto& color_provider = web_contents_->GetColorProvider();
       gfx::ImageSkia drag_image(
@@ -255,7 +256,10 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
                start_point_, operation_);
     }
 
-    delete this;
+    // The Run() call above could have spun a nested message loop resulting in
+    // our deletion.  Be sure to avoid double-free.
+    if (weak_this)
+      delete this;
   }
 
   base::WeakPtr<BookmarkDragHelper> GetWeakPtr() {
