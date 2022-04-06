@@ -5125,96 +5125,81 @@ void WebGLRenderingContextBase::TexImageImpl(
     GLenum type,
     Image* image,
     WebGLImageConversion::ImageHtmlDomSource dom_source,
-    bool flip_y,
-    bool premultiply_alpha,
+    bool source_has_flip_y,
     const absl::optional<gfx::Rect>& source_image_rect,
     GLsizei depth,
     GLint unpack_image_height) {
-  const char* func_name = GetTexImageFunctionName(function_id);
+  TexImageParams params = {
+      .function_id = function_id,
+      .target = target,
+      .level = level,
+      .internalformat = internalformat,
+      .xoffset = xoffset,
+      .yoffset = yoffset,
+      .zoffset = zoffset,
+      .depth = depth,
+      .format = format,
+      .type = type,
+  };
+  if (source_image_rect) {
+    params.width = source_image_rect->width();
+    params.height = source_image_rect->height();
+    params.depth = depth;
+  }
+  GetCurrentUnpackState(params);
+  TexImageImpl(params, image, dom_source, source_has_flip_y);
+}
+
+void WebGLRenderingContextBase::TexImageImpl(
+    TexImageParams params,
+    Image* image,
+    WebGLImageConversion::ImageHtmlDomSource dom_source,
+    bool image_has_flip_y) {
   // All calling functions check isContextLost, so a duplicate check is not
   // needed here.
-  if (type == GL_UNSIGNED_INT_10F_11F_11F_REV) {
-    // The UNSIGNED_INT_10F_11F_11F_REV type pack/unpack isn't implemented.
-    type = GL_FLOAT;
-  }
-  Vector<uint8_t> data;
+  const char* func_name = GetTexImageFunctionName(params.function_id);
 
-  gfx::Rect sub_rect = source_image_rect.value_or(
-      // Fall back to the rect based on the size of the Image.
-      SafeGetImageSize(image));
-
-  bool selecting_sub_rectangle = false;
-  if (!ValidateTexImageSubRectangle(func_name, function_id, image, sub_rect,
-                                    depth, unpack_image_height,
-                                    &selecting_sub_rectangle)) {
-    return;
+  if (!params.width || !params.height) {
+    auto image_size = SafeGetImageSize(image);
+    params.width = image_size.width();
+    params.height = image_size.height();
   }
-
-  // Adjust the source image rectangle if doing a y-flip.
-  gfx::Rect adjusted_source_image_rect = sub_rect;
-  if (flip_y) {
-    adjusted_source_image_rect.set_y(image->height() -
-                                     adjusted_source_image_rect.bottom());
-  }
+  if (!params.depth)
+    params.depth = 1;
 
   WebGLImageConversion::ImageExtractor image_extractor(
-      image, dom_source, premultiply_alpha,
+      image, dom_source, params.unpack_premultiply_alpha,
       unpack_colorspace_conversion_ == GL_NONE);
-  if (!image_extractor.ImagePixelData()) {
+  const SkPixmap* const image_extractor_pixmap = image_extractor.GetSkPixmap();
+  if (!image_extractor_pixmap) {
     SynthesizeGLError(GL_INVALID_VALUE, func_name, "bad image data");
     return;
   }
+  DCHECK_EQ(image_extractor_pixmap->width(), image->width());
+  DCHECK_EQ(image_extractor_pixmap->height(), image->height());
 
-  WebGLImageConversion::DataFormat source_data_format =
-      image_extractor.ImageSourceFormat();
+  // ImageExtractor indicates a specific AlphaOp. Ensure that `params` and
+  // `pixmap`'s alpha type are configured to ensure operation be performed.
+  SkPixmap pixmap = *image_extractor_pixmap;
   WebGLImageConversion::AlphaOp alpha_op = image_extractor.ImageAlphaOp();
-  const void* image_pixel_data = image_extractor.ImagePixelData();
-
-  bool need_conversion = true;
-  if (type == GL_UNSIGNED_BYTE &&
-      source_data_format == WebGLImageConversion::kDataFormatRGBA8 &&
-      format == GL_RGBA && alpha_op == WebGLImageConversion::kAlphaDoNothing &&
-      !flip_y && !selecting_sub_rectangle && depth == 1) {
-    need_conversion = false;
-  } else {
-    if (!WebGLImageConversion::PackImageData(
-            image, image_pixel_data, format, type, flip_y, alpha_op,
-            source_data_format, image_extractor.ImageWidth(),
-            image_extractor.ImageHeight(), adjusted_source_image_rect, depth,
-            image_extractor.ImageSourceUnpackAlignment(), unpack_image_height,
-            data)) {
-      SynthesizeGLError(GL_INVALID_VALUE, func_name, "packImage error");
-      return;
-    }
+  switch (alpha_op) {
+    case WebGLImageConversion::kAlphaDoNothing:
+      params.unpack_premultiply_alpha =
+          pixmap.alphaType() == kPremul_SkAlphaType;
+      break;
+    case WebGLImageConversion::kAlphaDoPremultiply:
+      params.unpack_premultiply_alpha = true;
+      pixmap.reset(pixmap.info().makeAlphaType(kUnpremul_SkAlphaType),
+                   pixmap.addr(), pixmap.rowBytes());
+      break;
+    case WebGLImageConversion::kAlphaDoUnmultiply:
+      params.unpack_premultiply_alpha = false;
+      pixmap.reset(pixmap.info().makeAlphaType(kPremul_SkAlphaType),
+                   pixmap.addr(), pixmap.rowBytes());
+      break;
   }
 
-  ScopedUnpackParametersResetRestore temporary_reset_unpack(this);
-  if (function_id == kTexImage2D) {
-    TexImage2DBase(target, level, internalformat,
-                   adjusted_source_image_rect.width(),
-                   adjusted_source_image_rect.height(), 0, format, type,
-                   need_conversion ? data.data() : image_pixel_data);
-  } else if (function_id == kTexSubImage2D) {
-    ContextGL()->TexSubImage2D(
-        target, level, xoffset, yoffset, adjusted_source_image_rect.width(),
-        adjusted_source_image_rect.height(), format, type,
-        need_conversion ? data.data() : image_pixel_data);
-  } else {
-    // 3D functions.
-    if (function_id == kTexImage3D) {
-      ContextGL()->TexImage3D(
-          target, level, internalformat, adjusted_source_image_rect.width(),
-          adjusted_source_image_rect.height(), depth, 0, format, type,
-          need_conversion ? data.data() : image_pixel_data);
-    } else {
-      DCHECK_EQ(function_id, kTexSubImage3D);
-      ContextGL()->TexSubImage3D(
-          target, level, xoffset, yoffset, zoffset,
-          adjusted_source_image_rect.width(),
-          adjusted_source_image_rect.height(), depth, format, type,
-          need_conversion ? data.data() : image_pixel_data);
-    }
-  }
+  TexImageSkPixmap(params, &pixmap, image_has_flip_y);
 }
 
 bool WebGLRenderingContextBase::ValidateTexFunc(
@@ -5654,9 +5639,8 @@ void WebGLRenderingContextBase::TexImageHelperHTMLImageElement(
 
   TexImageImpl(function_id, target, level, internalformat, xoffset, yoffset,
                zoffset, format, type, image_for_render.get(),
-               WebGLImageConversion::kHtmlDomImage, unpack_flip_y_,
-               unpack_premultiply_alpha_, source_image_rect, depth,
-               unpack_image_height);
+               WebGLImageConversion::kHtmlDomImage, /*source_has_flip_y=*/false,
+               source_image_rect, depth, unpack_image_height);
 }
 
 void WebGLRenderingContextBase::texImage2D(ExecutionContext* execution_context,
@@ -5932,15 +5916,11 @@ void WebGLRenderingContextBase::TexImageHelperCanvasRenderingContextHost(
     // TODO(crbug.com/612542): Implement GPU-to-GPU copy path for more
     // cases, like copying to layers of 3D textures, and elements of
     // 2D texture arrays.
-    bool flip_y = unpack_flip_y_;
-    if (is_origin_top_left_ && is_webgl_canvas)
-      flip_y = !flip_y;
-
+    const bool source_has_flip_y = is_origin_top_left_ && is_webgl_canvas;
     TexImageImpl(function_id, target, level, internalformat, xoffset, yoffset,
                  zoffset, format, type, image.get(),
-                 WebGLImageConversion::kHtmlDomCanvas, flip_y,
-                 unpack_premultiply_alpha_, source_sub_rectangle, depth,
-                 unpack_image_height);
+                 WebGLImageConversion::kHtmlDomCanvas, source_has_flip_y,
+                 source_sub_rectangle, depth, unpack_image_height);
   }
 }
 
@@ -6089,8 +6069,8 @@ void WebGLRenderingContextBase::TexImageHelperVideoFrame(
     TexImageImpl(function_id, target, level, adjusted_internalformat, xoffset,
                  yoffset, zoffset, format, type, image.get(),
                  // Note: kHtmlDomVideo means alpha won't be unmultiplied.
-                 WebGLImageConversion::kHtmlDomVideo, unpack_flip_y_,
-                 unpack_premultiply_alpha_, source_image_rect, depth,
+                 WebGLImageConversion::kHtmlDomVideo,
+                 /*source_has_flip_y=*/false, source_image_rect, depth,
                  unpack_image_height);
     texture->UpdateLastUploadedFrame(metadata);
     return;
@@ -6319,8 +6299,8 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
     TexImageImpl(function_id, target, level, adjusted_internalformat, xoffset,
                  yoffset, zoffset, format, type, image.get(),
                  // Note: kHtmlDomVideo means alpha won't be unmultiplied.
-                 WebGLImageConversion::kHtmlDomVideo, unpack_flip_y_,
-                 unpack_premultiply_alpha_, source_image_rect, depth,
+                 WebGLImageConversion::kHtmlDomVideo,
+                 /*source_has_flip_y=*/false, source_image_rect, depth,
                  unpack_image_height);
   }
 

@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 class SkImage;
@@ -24,12 +25,16 @@ class ImagePixelLocker final {
   ImagePixelLocker(const ImagePixelLocker&) = delete;
   ImagePixelLocker& operator=(const ImagePixelLocker&) = delete;
 
-  const void* Pixels() const { return pixels_; }
+  const SkPixmap* GetSkPixmap() const {
+    return pixmap_valid_ ? &pixmap_ : nullptr;
+  }
 
  private:
   const sk_sp<const SkImage> image_;
-  const void* pixels_;
   Vector<char> pixel_storage_;
+  // `pixmap_` will either point to `image_`'s storage, or `pixel_storage_`.
+  bool pixmap_valid_ = false;
+  SkPixmap pixmap_;
 };
 
 }  // namespace blink

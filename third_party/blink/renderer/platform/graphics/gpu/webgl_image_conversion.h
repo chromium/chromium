@@ -141,16 +141,10 @@ class PLATFORM_EXPORT WebGLImageConversion final {
     ImageExtractor(const ImageExtractor&) = delete;
     ImageExtractor& operator=(const ImageExtractor&) = delete;
 
-    const void* ImagePixelData() {
-      return image_pixel_locker_ ? image_pixel_locker_->Pixels() : nullptr;
+    const SkPixmap* GetSkPixmap() {
+      return image_pixel_locker_ ? image_pixel_locker_->GetSkPixmap() : nullptr;
     }
-    unsigned ImageWidth() { return image_width_; }
-    unsigned ImageHeight() { return image_height_; }
-    DataFormat ImageSourceFormat() { return image_source_format_; }
     AlphaOp ImageAlphaOp() { return alpha_op_; }
-    unsigned ImageSourceUnpackAlignment() {
-      return image_source_unpack_alignment_;
-    }
 
    private:
     // Extracts the image and keeps track of its status, such as width, height,
@@ -161,11 +155,7 @@ class PLATFORM_EXPORT WebGLImageConversion final {
     Image* image_;
     absl::optional<ImagePixelLocker> image_pixel_locker_;
     ImageHtmlDomSource image_html_dom_source_;
-    unsigned image_width_;
-    unsigned image_height_;
-    DataFormat image_source_format_;
     AlphaOp alpha_op_;
-    unsigned image_source_unpack_alignment_;
   };
 
   // Convert an SkColorType to the most appropriate DataFormat.

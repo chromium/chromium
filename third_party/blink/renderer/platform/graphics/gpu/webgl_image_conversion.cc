@@ -3807,23 +3807,14 @@ void WebGLImageConversion::ImageExtractor::ExtractImage(
   if (!skia_image)
     return;
 
-#if SK_B32_SHIFT
-  image_source_format_ = kDataFormatRGBA8;
-#else
-  image_source_format_ = kDataFormatBGRA8;
-#endif
-  image_source_unpack_alignment_ =
-      0;  // FIXME: this seems to always be zero - why use at all?
-
   DCHECK(skia_image->width());
   DCHECK(skia_image->height());
-  image_width_ = skia_image->width();
-  image_height_ = skia_image->height();
 
   // Fail if the image was downsampled because of memory limits.
-  if (image_width_ != (unsigned)image_->width() ||
-      image_height_ != (unsigned)image_->height())
+  if (skia_image->width() != image_->width() ||
+      skia_image->height() != image_->height()) {
     return;
+  }
 
   image_pixel_locker_.emplace(std::move(skia_image), info.alphaType(),
                               kN32_SkColorType);
