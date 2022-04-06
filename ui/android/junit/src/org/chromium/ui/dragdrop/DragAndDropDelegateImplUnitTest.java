@@ -49,6 +49,8 @@ public class DragAndDropDelegateImplUnitTest {
     private static final int WINDOW_WIDTH = 1000;
     private static final int WINDOW_HEIGHT = 600;
 
+    private static final String IMAGE_FILENAME = "image.png";
+
     /** Helper shadow class to make sure #startDragAndDrop is accepted by Android. */
     @Implements(ApiHelperForN.class)
     static class ShadowApiHelperForN {
@@ -88,7 +90,7 @@ public class DragAndDropDelegateImplUnitTest {
     @Test
     public void testStartDragAndDrop_Text() {
         final Bitmap shadowImage = Bitmap.createBitmap(100, 200, Bitmap.Config.ALPHA_8);
-        final DropDataAndroid dropData = DropDataAndroid.create("text", null, null, null);
+        final DropDataAndroid dropData = DropDataAndroid.create("text", null, null, null, null);
 
         mDragAndDropDelegateImpl.startDragAndDrop(mContainerView, shadowImage, dropData);
 
@@ -115,7 +117,7 @@ public class DragAndDropDelegateImplUnitTest {
         final Bitmap shadowImage = Bitmap.createBitmap(100, 200, Bitmap.Config.ALPHA_8);
 
         final DropDataAndroid imageDropData =
-                DropDataAndroid.create("", null, new byte[] {1, 2, 3, 4}, "png");
+                DropDataAndroid.create("", null, new byte[] {1, 2, 3, 4}, "png", IMAGE_FILENAME);
         mDragAndDropDelegateImpl.startDragAndDrop(mContainerView, shadowImage, imageDropData);
         Assert.assertEquals("Drag shadow width not match. Should do resize for image.", 60,
                 mDragAndDropDelegateImpl.getDragShadowWidth());
@@ -137,7 +139,7 @@ public class DragAndDropDelegateImplUnitTest {
     public void testStartDragAndDrop_TextLink() {
         final Bitmap shadowImage = Bitmap.createBitmap(100, 200, Bitmap.Config.ALPHA_8);
         final DropDataAndroid dropData = DropDataAndroid.create(
-                "text", JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), null, null);
+                "text", JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), null, null, null);
 
         mDragAndDropDelegateImpl.startDragAndDrop(mContainerView, shadowImage, dropData);
 
@@ -163,7 +165,7 @@ public class DragAndDropDelegateImplUnitTest {
     @Config(shadows = {ShadowApiHelperForN.class, ShadowAccessibilityManager.class})
     public void testStartDragAndDrop_NotSupportedForA11y() {
         final Bitmap shadowImage = Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8);
-        final DropDataAndroid dropData = DropDataAndroid.create("text", null, null, null);
+        final DropDataAndroid dropData = DropDataAndroid.create("text", null, null, null, null);
 
         Assert.assertTrue("Drag and drop should start.",
                 mDragAndDropDelegateImpl.startDragAndDrop(mContainerView, shadowImage, dropData));
@@ -183,7 +185,7 @@ public class DragAndDropDelegateImplUnitTest {
     public void testDragImage_ShadowPlaceholder() {
         final Bitmap shadowImage = Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8);
         final DropDataAndroid imageDropData =
-                DropDataAndroid.create("", null, new byte[] {1, 2, 3, 4}, "png");
+                DropDataAndroid.create("", null, new byte[] {1, 2, 3, 4}, "png", IMAGE_FILENAME);
         mDragAndDropDelegateImpl.startDragAndDrop(mContainerView, shadowImage, imageDropData);
 
         Assert.assertNotNull(
@@ -200,7 +202,7 @@ public class DragAndDropDelegateImplUnitTest {
     public void testDragImage_DragHandled() {
         final Bitmap shadowImage = Bitmap.createBitmap(100, 200, Bitmap.Config.ALPHA_8);
         final DropDataAndroid imageDropData =
-                DropDataAndroid.create("", null, new byte[] {1, 2, 3, 4}, "png");
+                DropDataAndroid.create("", null, new byte[] {1, 2, 3, 4}, "png", IMAGE_FILENAME);
         mDragAndDropDelegateImpl.startDragAndDrop(mContainerView, shadowImage, imageDropData);
 
         final DragEvent dragEndEvent = mockDragEvent(DragEvent.ACTION_DRAG_ENDED);
@@ -217,7 +219,7 @@ public class DragAndDropDelegateImplUnitTest {
     public void testDragImage_ReceivedDropBeforeDragEnds() {
         final Bitmap shadowImage = Bitmap.createBitmap(100, 200, Bitmap.Config.ALPHA_8);
         final DropDataAndroid imageDropData =
-                DropDataAndroid.create("", null, new byte[] {1, 2, 3, 4}, "png");
+                DropDataAndroid.create("", null, new byte[] {1, 2, 3, 4}, "png", IMAGE_FILENAME);
         mDragAndDropDelegateImpl.startDragAndDrop(mContainerView, shadowImage, imageDropData);
 
         mDragAndDropDelegateImpl.onDrag(mContainerView, mockDragEvent(DragEvent.ACTION_DROP));
@@ -302,7 +304,7 @@ public class DragAndDropDelegateImplUnitTest {
     @Test
     public void testTextForLinkData_UrlWithNoTitle() {
         final DropDataAndroid dropData = DropDataAndroid.create(
-                "", JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), null, null);
+                "", JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), null, null, null);
 
         String text = DragAndDropDelegateImpl.getTextForLinkData(dropData);
         Assert.assertEquals("Text should match.", JUnitTestGURLs.EXAMPLE_URL, text);
@@ -312,7 +314,7 @@ public class DragAndDropDelegateImplUnitTest {
     public void testTextForLinkData_UrlWithTitle() {
         String linkTitle = "Link text";
         final DropDataAndroid dropData = DropDataAndroid.create(
-                linkTitle, JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), null, null);
+                linkTitle, JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), null, null, null);
 
         String text = DragAndDropDelegateImpl.getTextForLinkData(dropData);
         Assert.assertEquals(
@@ -322,8 +324,9 @@ public class DragAndDropDelegateImplUnitTest {
     @Test
     @Config(sdk = VERSION_CODES.O)
     public void testClipData_ImageWithUrl() {
-        final DropDataAndroid dropData = DropDataAndroid.create("",
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), new byte[] {1, 2, 3, 4}, "png");
+        final DropDataAndroid dropData =
+                DropDataAndroid.create("", JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL),
+                        new byte[] {1, 2, 3, 4}, "png", IMAGE_FILENAME);
 
         ClipData clipData = mDragAndDropDelegateImpl.buildClipData(dropData);
         Assert.assertEquals(

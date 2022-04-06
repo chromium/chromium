@@ -15,10 +15,12 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit test for {@link DropDataAndroid}. */
 @RunWith(RobolectricTestRunner.class)
 public class DropDataAndroidUnitTest {
+    private static final String IMAGE_FILENAME = "image.webp";
+
     @Test
     public void testPlainText() {
         final String text = "text";
-        final DropDataAndroid data = DropDataAndroid.create(text, null, null, null);
+        final DropDataAndroid data = DropDataAndroid.create(text, null, null, null, null);
 
         assertDragData(data, /*isPlainText=*/true, /*hasLink=*/false, /*hasImage=*/false);
         Assert.assertEquals("Text does not match.", text, data.text);
@@ -28,7 +30,7 @@ public class DropDataAndroidUnitTest {
     public void testLink() {
         final String text = "text";
         final GURL gurl = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
-        final DropDataAndroid data = DropDataAndroid.create(text, gurl, null, null);
+        final DropDataAndroid data = DropDataAndroid.create(text, gurl, null, null, null);
 
         assertDragData(data, /*isPlainText=*/false, /*hasLink=*/true, /*hasImage=*/false);
         Assert.assertEquals("Link does not match.", gurl, data.gurl);
@@ -38,12 +40,14 @@ public class DropDataAndroidUnitTest {
     public void testImage() {
         final byte[] img = new byte[] {1, 2};
         final String imageExtension = "webp";
-        final DropDataAndroid data = DropDataAndroid.create("", null, img, imageExtension);
+        final DropDataAndroid data =
+                DropDataAndroid.create("", null, img, imageExtension, IMAGE_FILENAME);
 
         assertDragData(data, /*isPlainText=*/false, /*hasLink=*/false, /*hasImage=*/true);
         Assert.assertEquals("Image content does not match.", img, data.imageContent);
         Assert.assertEquals(
                 "Image extension does not match.", imageExtension, data.imageContentExtension);
+        Assert.assertEquals("Image filename does not match.", IMAGE_FILENAME, data.imageFilename);
     }
 
     @Test
@@ -51,13 +55,15 @@ public class DropDataAndroidUnitTest {
         final GURL gurl = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
         final byte[] img = new byte[] {1, 2};
         final String imageExtension = "webp";
-        final DropDataAndroid data = DropDataAndroid.create("", gurl, img, imageExtension);
+        final DropDataAndroid data =
+                DropDataAndroid.create("", gurl, img, imageExtension, IMAGE_FILENAME);
 
         assertDragData(data, /*isPlainText=*/false, /*hasLink=*/true, /*hasImage=*/true);
         Assert.assertEquals("Link does not match.", gurl, data.gurl);
         Assert.assertEquals("Image content does not match.", img, data.imageContent);
         Assert.assertEquals(
                 "Image extension does not match.", imageExtension, data.imageContentExtension);
+        Assert.assertEquals("Image filename does not match.", IMAGE_FILENAME, data.imageFilename);
     }
 
     private void assertDragData(

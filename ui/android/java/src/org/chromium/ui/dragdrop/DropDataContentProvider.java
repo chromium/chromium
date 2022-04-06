@@ -61,10 +61,10 @@ public class DropDataContentProvider extends ContentProvider {
     private static int sClearCachedDataIntervalMs = DEFAULT_CLEAR_CACHED_DATA_INTERVAL_MS;
     private static byte[] sImageBytes;
     private static String sEncodingFormat;
+    private static String sImageFilename;
     private static String sMimeType;
     /** The URI handled by this content provider. */
     private static Uri sContentProviderUri;
-    private static String sTimestamp;
     private static Handler sHandler;
     private static long sDragEndTime;
     private static long sOpenFileLastAccessTime;
@@ -85,14 +85,13 @@ public class DropDataContentProvider extends ContentProvider {
     }
 
     /**
-     * Cache the passed-in image data of Drag and Drop.
+     * Cache the passed-in image data of Drag and Drop. It is expected for filename to be non-empty.
      */
-    static Uri cache(byte[] imageBytes, String encodingFormat) {
+    static Uri cache(byte[] imageBytes, String encodingFormat, String filename) {
         long elapsedRealtime = SystemClock.elapsedRealtime();
         long lastUriCreatedTimestamp = sLastUriCreatedTimestamp;
         String timestamp = String.valueOf(System.currentTimeMillis());
         String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(encodingFormat);
-        // TODO(crbug.com/1296795): Replace path with filename with extension
         Uri newUri = new Uri.Builder()
                              .scheme(ContentResolver.SCHEME_CONTENT)
                              .authority(ContextUtils.getApplicationContext().getPackageName()
@@ -107,8 +106,8 @@ public class DropDataContentProvider extends ContentProvider {
             sLastUriCreatedTimestamp = elapsedRealtime;
             sImageBytes = imageBytes;
             sEncodingFormat = encodingFormat;
+            sImageFilename = filename;
             sMimeType = mimeType;
-            sTimestamp = timestamp;
             sDragEndTime = 0;
             sOpenFileLastAccessTime = 0;
             sContentProviderUri = newUri;
@@ -169,6 +168,7 @@ public class DropDataContentProvider extends ContentProvider {
     private static void clearCacheData() {
         sImageBytes = null;
         sEncodingFormat = null;
+        sImageFilename = null;
         sMimeType = null;
         if (sContentProviderUri != null) {
             sLastUri = sContentProviderUri;
@@ -176,7 +176,6 @@ public class DropDataContentProvider extends ContentProvider {
             sLastUriRecorded = false;
         }
         sContentProviderUri = null;
-        sTimestamp = null;
         if (sHandler != null) {
             sHandler.removeCallbacksAndMessages(null);
             sHandler = null;
@@ -279,16 +278,14 @@ public class DropDataContentProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
             String sortOrder) {
-        String timestamp;
-        String encodingFormat;
         byte[] imageBytes;
+        String imageFilename;
         synchronized (LOCK) {
             if (uri == null || !uri.equals(sContentProviderUri)) {
                 return new MatrixCursor(COLUMNS, 0);
             }
-            timestamp = sTimestamp;
-            encodingFormat = sEncodingFormat;
             imageBytes = sImageBytes;
+            imageFilename = sImageFilename;
         }
         if (projection == null) {
             projection = COLUMNS;
@@ -312,8 +309,7 @@ public class DropDataContentProvider extends ContentProvider {
         int index = 0;
         if (hasDisplayName) {
             cols[index] = OpenableColumns.DISPLAY_NAME;
-            // TODO(crbug.com/1296795): Use the real file name from DropDataAndroid
-            values[index] = timestamp + "." + encodingFormat;
+            values[index] = imageFilename;
             index++;
         }
         if (hasSize) {

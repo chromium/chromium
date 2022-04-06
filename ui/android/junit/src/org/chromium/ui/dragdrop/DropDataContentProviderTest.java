@@ -39,6 +39,9 @@ public class DropDataContentProviderTest {
     private static final String EXTENSION_A = "jpg";
     private static final String EXTENSION_B = "gif";
     private static final String EXTENSION_C = "png";
+    private static final String IMAGE_FILENAME_A = "image.jpg";
+    private static final String IMAGE_FILENAME_B = "image.gif";
+    private static final String IMAGE_FILENAME_C = "image.png";
     private static final int CLEAR_CACHED_DATA_INTERVAL_MS = 10_000;
 
     private DropDataContentProvider mDropDataContentProvider;
@@ -62,20 +65,20 @@ public class DropDataContentProviderTest {
     @Test
     @SmallTest
     public void testCache() {
-        Uri uri = DropDataContentProvider.cache(IMAGE_DATA_A, EXTENSION_A);
+        Uri uri = DropDataContentProvider.cache(IMAGE_DATA_A, EXTENSION_A, IMAGE_FILENAME_A);
         Assert.assertEquals("The MIME type for jpg file should be image/jpeg", "image/jpeg",
                 mDropDataContentProvider.getType(uri));
         assertImageSizeRecorded(/*expectedCnt*/ 1);
         // Android.DragDrop.Image.UriCreatedInterval is not recorded for the first created Uri.
         assertImageUriCreatedIntervalRecorded(/*expectedCnt*/ 0);
 
-        uri = DropDataContentProvider.cache(IMAGE_DATA_B, EXTENSION_B);
+        uri = DropDataContentProvider.cache(IMAGE_DATA_B, EXTENSION_B, IMAGE_FILENAME_B);
         Assert.assertEquals("The MIME type for gif file should be image/gif", "image/gif",
                 mDropDataContentProvider.getType(uri));
         assertImageSizeRecorded(/*expectedCnt*/ 2);
         assertImageUriCreatedIntervalRecorded(/*expectedCnt*/ 1);
 
-        uri = DropDataContentProvider.cache(IMAGE_DATA_C, EXTENSION_C);
+        uri = DropDataContentProvider.cache(IMAGE_DATA_C, EXTENSION_C, IMAGE_FILENAME_C);
         Assert.assertEquals("The MIME type for png file should be image/png", "image/png",
                 mDropDataContentProvider.getType(uri));
         assertImageSizeRecorded(/*expectedCnt*/ 3);
@@ -85,7 +88,7 @@ public class DropDataContentProviderTest {
     @Test
     @SmallTest
     public void testGetStreamTypes() {
-        Uri uri = DropDataContentProvider.cache(IMAGE_DATA_A, EXTENSION_A);
+        Uri uri = DropDataContentProvider.cache(IMAGE_DATA_A, EXTENSION_A, IMAGE_FILENAME_A);
         String[] res = mDropDataContentProvider.getStreamTypes(uri, "image/*");
         Assert.assertEquals("res length should be 1 when uri matches the filter", 1, res.length);
         Assert.assertEquals(
@@ -98,20 +101,23 @@ public class DropDataContentProviderTest {
     @Test
     @SmallTest
     public void testQuery() {
-        Uri uri = DropDataContentProvider.cache(IMAGE_DATA_A, EXTENSION_A);
+        Uri uri = DropDataContentProvider.cache(IMAGE_DATA_A, EXTENSION_A, IMAGE_FILENAME_A);
         Cursor cursor = mDropDataContentProvider.query(uri, null, null, null, null);
         Assert.assertEquals("The number of rows in the cursor should be 1", 1, cursor.getCount());
         Assert.assertEquals("The number of columns should be 2", 2, cursor.getColumnCount());
         cursor.moveToNext();
-        int colIdx = cursor.getColumnIndex(OpenableColumns.SIZE);
-        Assert.assertEquals("The file size should be 100", 100, cursor.getInt(colIdx));
+        int sizeIdx = cursor.getColumnIndex(OpenableColumns.SIZE);
+        Assert.assertEquals("The file size should be 100", 100, cursor.getInt(sizeIdx));
+        int displayNameIdx = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+        Assert.assertEquals(
+                "The file name should match.", IMAGE_FILENAME_A, cursor.getString(displayNameIdx));
         cursor.close();
     }
 
     @Test
     @SmallTest
     public void testClearCache() {
-        Uri uri = DropDataContentProvider.cache(IMAGE_DATA_A, EXTENSION_A);
+        Uri uri = DropDataContentProvider.cache(IMAGE_DATA_A, EXTENSION_A, IMAGE_FILENAME_A);
         DropDataContentProvider.onDragEnd(false);
         Assert.assertNull("Image bytes should be null after clearing cache.",
                 DropDataContentProvider.getImageBytesForTesting());
@@ -124,7 +130,7 @@ public class DropDataContentProviderTest {
     @Test
     @SmallTest
     public void testClearCacheWithDelay() throws FileNotFoundException {
-        Uri uri = DropDataContentProvider.cache(IMAGE_DATA_A, EXTENSION_A);
+        Uri uri = DropDataContentProvider.cache(IMAGE_DATA_A, EXTENSION_A, IMAGE_FILENAME_A);
         DropDataContentProvider.setClearCachedDataIntervalMs(CLEAR_CACHED_DATA_INTERVAL_MS);
         ShadowLooper.idleMainLooper(1, TimeUnit.MILLISECONDS);
         // #openFile could be called before or after the Android Drag End event.
@@ -152,7 +158,7 @@ public class DropDataContentProviderTest {
     @Test
     @SmallTest
     public void testClearCacheWithDelayCancelled() throws FileNotFoundException {
-        Uri uri = DropDataContentProvider.cache(IMAGE_DATA_A, EXTENSION_A);
+        Uri uri = DropDataContentProvider.cache(IMAGE_DATA_A, EXTENSION_A, IMAGE_FILENAME_A);
         DropDataContentProvider.setClearCachedDataIntervalMs(CLEAR_CACHED_DATA_INTERVAL_MS);
         DropDataContentProvider.onDragEnd(true);
         ShadowLooper.idleMainLooper(1, TimeUnit.MILLISECONDS);
@@ -161,7 +167,7 @@ public class DropDataContentProviderTest {
         assertImageUriCreatedIntervalRecorded(/*expectedCnt*/ 0);
 
         // Next image drag starts before the previous image expires.
-        DropDataContentProvider.cache(IMAGE_DATA_B, EXTENSION_B);
+        DropDataContentProvider.cache(IMAGE_DATA_B, EXTENSION_B, IMAGE_FILENAME_B);
         assertImageUriCreatedIntervalRecorded(/*expectedCnt*/ 1);
         assertImageFirstExpiredOpenFileRecorded(/*expectedCnt*/ 0);
         assertImageAllExpiredOpenFileRecorded(/*expectedCnt*/ 0);

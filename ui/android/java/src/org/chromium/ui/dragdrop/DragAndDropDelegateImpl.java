@@ -164,8 +164,8 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
             case DragTargetType.TEXT:
                 return ClipData.newPlainText(null, dropData.text);
             case DragTargetType.IMAGE:
-                Uri uri = DropDataContentProvider.cache(
-                        dropData.imageContent, dropData.imageContentExtension);
+                Uri uri = DropDataContentProvider.cache(dropData.imageContent,
+                        dropData.imageContentExtension, dropData.imageFilename);
                 ClipData clipData = ClipData.newUri(
                         ContextUtils.getApplicationContext().getContentResolver(), null, uri);
                 // Add image link URL to the ClipData if present. Since the ClipData MIME types for

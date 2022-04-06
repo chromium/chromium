@@ -8,6 +8,8 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/files/file_path.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -47,14 +49,28 @@ ScopedJavaLocalRef<jobject> ToJavaDropData(const DropData& drop_data) {
   // the image clip data.
   ScopedJavaLocalRef<jbyteArray> jimage_bytes;
   ScopedJavaLocalRef<jstring> jimage_extension;
+  ScopedJavaLocalRef<jstring> jimage_filename;
   if (!drop_data.file_contents.empty()) {
     jimage_bytes = ToJavaByteArray(env, drop_data.file_contents);
     jimage_extension = ConvertUTF8ToJavaString(
         env, drop_data.file_contents_filename_extension);
+    absl::optional<base::FilePath> filename =
+        drop_data.GetSafeFilenameForImageFileContents();
+    if (filename) {
+      jimage_filename =
+          ConvertUTF16ToJavaString(env, filename->LossyDisplayName());
+    } else {
+      // Use the current timestamp as the image file name in case the file name
+      // is not retrieved from the source.
+      jimage_filename = ConvertUTF8ToJavaString(
+          env, base::NumberToString(
+                   base::Time::Now().since_origin().InMilliseconds()) +
+                   "." + drop_data.file_contents_filename_extension);
+    }
   }
 
   return ui::Java_DropDataAndroid_create(env, jtext, jgurl, jimage_bytes,
-                                         jimage_extension);
+                                         jimage_extension, jimage_filename);
 }  // ToJavaDropData
 
 }  // namespace content

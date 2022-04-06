@@ -21,21 +21,23 @@ public class DropDataAndroid {
     public final GURL gurl;
     public final byte[] imageContent;
     public final String imageContentExtension;
+    public final String imageFilename;
 
     /** Not generated from java */
-    private DropDataAndroid(
-            String text, GURL gurl, byte[] imageContent, String imageContentExtension) {
+    private DropDataAndroid(String text, GURL gurl, byte[] imageContent,
+            String imageContentExtension, String imageFilename) {
         this.text = text;
         this.gurl = gurl;
         this.imageContent = imageContent;
         this.imageContentExtension = imageContentExtension;
+        this.imageFilename = imageFilename;
     }
 
     @VisibleForTesting
     @CalledByNative
-    static DropDataAndroid create(
-            String text, GURL gurl, byte[] imageContent, String imageContentExtension) {
-        return new DropDataAndroid(text, gurl, imageContent, imageContentExtension);
+    static DropDataAndroid create(String text, GURL gurl, byte[] imageContent,
+            String imageContentExtension, String imageFilename) {
+        return new DropDataAndroid(text, gurl, imageContent, imageContentExtension, imageFilename);
     }
 
     /** Return whether this data presents a plain of text. */
@@ -50,6 +52,7 @@ public class DropDataAndroid {
 
     /** Return whether this data presents an image. */
     public boolean hasImage() {
-        return imageContent != null && !TextUtils.isEmpty(imageContentExtension);
+        return imageContent != null && !TextUtils.isEmpty(imageContentExtension)
+                && !TextUtils.isEmpty(imageFilename);
     }
 }
