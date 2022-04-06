@@ -20,6 +20,7 @@
 #include "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
 #import "ios/chrome/browser/policy/policy_util.h"
+#import "ios/chrome/browser/reading_list/offline_page_tab_helper.h"
 #include "ios/chrome/browser/reading_list/offline_url_utils.h"
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/ui/activity_services/activity_params.h"
@@ -49,6 +50,7 @@
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/window_activities/window_activity_helpers.h"
 #include "ios/chrome/grit/ios_strings.h"
+#include "ios/web/common/features.h"
 #include "ios/web/public/navigation/referrer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -204,9 +206,10 @@
     return;
   }
   [self loadEntryURL:entry->URL()
-      withOfflineURL:GURL::EmptyGURL()
-            inNewTab:NO
-           incognito:NO];
+          withOfflineURL:GURL::EmptyGURL()
+      loadOfflineVersion:NO
+                inNewTab:NO
+               incognito:NO];
 }
 
 - (void)readingListListViewController:(UIViewController*)viewController
@@ -219,9 +222,10 @@
     return;
   }
   [self loadEntryURL:entry->URL()
-      withOfflineURL:GURL::EmptyGURL()
-            inNewTab:YES
-           incognito:incognito];
+          withOfflineURL:GURL::EmptyGURL()
+      loadOfflineVersion:NO
+                inNewTab:YES
+               incognito:incognito];
 }
 
 - (void)readingListListViewController:(UIViewController*)viewController
@@ -273,14 +277,19 @@ animationControllerForDismissedController:(UIViewController*)dismissed {
 
 #pragma mark - URL Loading Helpers
 
-// Loads reading list URLs.  If |offlineURL| is valid, the item will be loaded
-// offline; otherwise |entryURL| is loaded.  |newTab| and |incognito| can be
-// used to optionally open the URL in a new tab or in incognito.  The
-// coordinator is also stopped after the load is requested.
+// Loads reading list URLs. If |offlineURL| is valid and |loadOfflineVersion| is
+// true, the item will be loaded offline; otherwise |entryURL| is loaded.
+// |newTab| and |incognito| can be used to optionally open the URL in a new tab
+// or in incognito.  The coordinator is also stopped after the load is
+// requested.
+// NOTE: |loadOfflineVersion| may not be used with |inNewTab|.
+// TODO(crbug.com/1313458):  Remove |inNewTab| and |withOfflineURL| when
+// migration is complete.
 - (void)loadEntryURL:(const GURL&)entryURL
-      withOfflineURL:(const GURL&)offlineURL
-            inNewTab:(BOOL)newTab
-           incognito:(BOOL)incognito {
+        withOfflineURL:(const GURL&)offlineURL
+    loadOfflineVersion:(BOOL)loadOfflineVersion
+              inNewTab:(BOOL)newTab
+             incognito:(BOOL)incognito {
   // Override incognito opening using enterprise policy.
   incognito = incognito || self.isIncognitoForced;
   incognito = incognito && self.isIncognitoAvailable;
@@ -300,6 +309,7 @@ animationControllerForDismissedController:(UIViewController*)dismissed {
             if (success) {
               [weakSelf loadEntryURL:copyEntryURL
                       withOfflineURL:copyOfflineURL
+                  loadOfflineVersion:YES
                             inNewTab:newTab
                            incognito:incognito];
             }
@@ -318,7 +328,7 @@ animationControllerForDismissedController:(UIViewController*)dismissed {
 
   // Load the offline URL if available.
   GURL loadURL = entryURL;
-  if (offlineURL.is_valid()) {
+  if (offlineURL.is_valid() && !loadOfflineVersion) {
     loadURL = offlineURL;
     // Offline URLs should always be opened in new tabs.
     newTab = YES;
@@ -329,9 +339,19 @@ animationControllerForDismissedController:(UIViewController*)dismissed {
   // Prepare the table for dismissal.
   [self.tableViewController willBeDismissed];
 
-  // Use a referrer with a specific URL to signal that this entry should not be
-  // taken into account for the Most Visited tiles.
-  if (newTab) {
+  if (loadOfflineVersion) {
+    DCHECK(!newTab);
+    web::WebState* activeWebState =
+        self.browser->GetWebStateList()->GetActiveWebState();
+    OfflinePageTabHelper* offlinePageTabHelper =
+        OfflinePageTabHelper::FromWebState(activeWebState);
+    if (offlinePageTabHelper &&
+        offlinePageTabHelper->CanHandleErrorLoadingURL(entryURL)) {
+      offlinePageTabHelper->LoadOfflinePage(entryURL);
+    }
+    // Use a referrer with a specific URL to signal that this entry should not
+    // be taken into account for the Most Visited tiles.
+  } else if (newTab) {
     UrlLoadParams params = UrlLoadParams::InNewTab(loadURL, entryURL);
     params.in_incognito = incognito;
     params.web_params.referrer = web::Referrer(GURL(kReadingListReferrerURL),
@@ -359,10 +379,20 @@ animationControllerForDismissedController:(UIViewController*)dismissed {
     const GURL entryURL = entry->URL();
     GURL offlineURL = reading_list::OfflineURLForPath(
         entry->DistilledPath(), entryURL, entry->DistilledURL());
-    [self loadEntryURL:entry->URL()
-        withOfflineURL:offlineURL
-              inNewTab:YES
-             incognito:offTheRecord];
+
+    if (web::features::IsLoadSimulatedRequestAPIEnabled()) {
+      [self loadEntryURL:entryURL
+              withOfflineURL:entryURL
+          loadOfflineVersion:YES
+                    inNewTab:NO
+                   incognito:offTheRecord];
+    } else {
+      [self loadEntryURL:entryURL
+              withOfflineURL:offlineURL
+          loadOfflineVersion:NO
+                    inNewTab:YES
+                   incognito:offTheRecord];
+    }
   }
 }
 
@@ -400,6 +430,7 @@ animationControllerForDismissedController:(UIViewController*)dismissed {
 
           [weakSelf loadEntryURL:item.entryURL
                   withOfflineURL:GURL::EmptyGURL()
+              loadOfflineVersion:NO
                         inNewTab:YES
                        incognito:NO];
         }];
@@ -415,6 +446,7 @@ animationControllerForDismissedController:(UIViewController*)dismissed {
 
               [weakSelf loadEntryURL:item.entryURL
                       withOfflineURL:GURL::EmptyGURL()
+                  loadOfflineVersion:NO
                             inNewTab:YES
                            incognito:YES];
             }];

@@ -49,6 +49,10 @@ class OfflinePageTabHelper : public web::WebStateUserData<OfflinePageTabHelper>,
   // Returns true if offline page can handle this url loading.
   bool CanHandleErrorLoadingURL(const GURL& url) const;
 
+  // Presents distilled version of the page if reading list model has processed
+  // entry for the given url.
+  void LoadOfflinePage(const GURL& url);
+
  private:
   friend class web::WebStateUserData<OfflinePageTabHelper>;
 
@@ -63,6 +67,13 @@ class OfflinePageTabHelper : public web::WebStateUserData<OfflinePageTabHelper>,
                           web::NavigationContext* context) override;
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) override;
+
+  // Makes a simulated request to |url| by loading |data| as HTML or PDF,
+  // depending on |is_pdf|.
+  void LoadOfflineData(web::WebState* web_state,
+                       const GURL& url,
+                       bool is_pdf,
+                       const std::string& data) API_AVAILABLE(ios(15.0));
   void PageLoaded(
       web::WebState* web_state,
       web::PageLoadCompletionStatus load_completion_status) override;

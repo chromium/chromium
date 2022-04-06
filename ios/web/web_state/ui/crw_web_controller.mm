@@ -691,6 +691,30 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   [_requestController loadData:data MIMEType:MIMEType forURL:URL];
 }
 
+- (void)loadSimulatedRequest:(const GURL&)URL
+          responseHTMLString:(NSString*)responseHTMLString {
+  NSURLRequest* request =
+      [[NSURLRequest alloc] initWithURL:net::NSURLWithGURL(URL)];
+  [self.webView loadSimulatedRequest:request
+                  responseHTMLString:responseHTMLString];
+}
+
+- (void)loadSimulatedRequest:(const GURL&)URL
+                responseData:(NSData*)responseData
+                    MIMEType:(NSString*)MIMEType {
+  NSURL* url = net::NSURLWithGURL(URL);
+  NSURLRequest* request = [[NSURLRequest alloc] initWithURL:url];
+  NSURLResponse* response =
+      [[NSURLResponse alloc] initWithURL:url
+                                MIMEType:MIMEType
+                   expectedContentLength:responseData.length
+                        textEncodingName:nil];
+
+  [self.webView loadSimulatedRequest:request
+                            response:response
+                        responseData:responseData];
+}
+
 // Loads the HTML into the page at the given URL. Only for testing purpose.
 - (void)loadHTML:(NSString*)HTML forURL:(const GURL&)URL {
   [_requestController loadHTML:HTML forURL:URL];
@@ -1134,6 +1158,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
     GURL committedURL =
         committedItem ? committedItem->GetURL() : GURL::EmptyGURL();
     GURL committedOrigin = committedURL.DeprecatedGetOriginAsURL();
+
     DCHECK_EQ(documentOrigin, committedOrigin)
         << "Old and new URL detection system have a mismatch";
 

@@ -68,6 +68,7 @@ source_set("reading_list") {
     "//ios/chrome/common/ui/favicon:favicon_constants",
     "//ios/chrome/common/ui/table_view",
     "//ios/web",
+    "//ios/web/common",
     "//ios/web/public",
     "//ui/base",
     "//ui/strings",

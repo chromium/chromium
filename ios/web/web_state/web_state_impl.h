@@ -268,6 +268,12 @@ class WebStateImpl final : public WebState {
   BrowserState* GetBrowserState() const final;
   base::WeakPtr<WebState> GetWeakPtr() final;
   void OpenURL(const WebState::OpenURLParams& params) final;
+  void LoadSimulatedRequest(const GURL& url,
+                            NSString* response_html_string) final
+      API_AVAILABLE(ios(15.0));
+  void LoadSimulatedRequest(const GURL& url,
+                            NSData* response_data,
+                            NSString* mime_type) final API_AVAILABLE(ios(15.0));
   void Stop() final;
   const NavigationManager* GetNavigationManager() const final;
   NavigationManager* GetNavigationManager() final;

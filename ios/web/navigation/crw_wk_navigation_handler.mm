@@ -1784,20 +1784,18 @@ const web::CertVerificationErrorsCacheType::size_type kMaxCertErrorsCount = 100;
                 [NSString stringWithContentsOfFile:path
                                           encoding:NSUTF8StringEncoding
                                              error:nil];
-
-            NSURLRequest* URL = [NSURLRequest
-                requestWithURL:[NSURL URLWithString:failingURLString]];
+            NSURL* URL = [NSURL URLWithString:failingURLString];
+            NSURLRequest* URLRequest = [NSURLRequest requestWithURL:URL];
             WKNavigation* errorNavigation = nil;
 
             if (errorHTML) {
               NSString* injectedHTML =
-                  [errorHTML stringByAppendingString:reloadPageHTMLTemplate];
-              errorNavigation = [webView loadSimulatedRequest:URL
+                  [reloadPageHTMLTemplate stringByAppendingString:errorHTML];
+              errorNavigation = [webView loadSimulatedRequest:URLRequest
                                            responseHTMLString:injectedHTML];
             } else {
-              errorNavigation =
-                  [webView loadSimulatedRequest:URL
-                             responseHTMLString:reloadPageHTMLTemplate];
+              errorNavigation = [webView loadSimulatedRequest:URLRequest
+                                           responseHTMLString:@""];
             }
 
             std::unique_ptr<web::NavigationContextImpl> originalContext =

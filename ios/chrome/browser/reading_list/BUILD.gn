@@ -48,6 +48,7 @@ source_set("reading_list") {
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common",
     "//ios/components/webui:url_constants",
+    "//ios/web/common",
     "//ios/web/public",
     "//ios/web/public/js_messaging:js_messaging",
     "//ios/web/public/security",

@@ -80,6 +80,13 @@ base::WeakPtr<WebState> FakeWebState::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+void FakeWebState::LoadSimulatedRequest(const GURL& url,
+                                        NSString* response_html_string) {}
+
+void FakeWebState::LoadSimulatedRequest(const GURL& url,
+                                        NSData* response_data,
+                                        NSString* mime_type) {}
+
 bool FakeWebState::IsWebUsageEnabled() const {
   return web_usage_enabled_;
 }

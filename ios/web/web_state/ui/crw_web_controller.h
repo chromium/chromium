@@ -144,6 +144,22 @@ class WebStateImpl;
         MIMEType:(NSString*)MIMEType
           forURL:(const GURL&)URL;
 
+// Loads the web content from the HTML you provide as if the HTML were the
+// response to the request. This method does not create a new navigation entry
+// if |URL| matches the current page's URL. This method creates a new navigation
+// entry if |URL| differs from the current page's URL.
+- (void)loadSimulatedRequest:(const GURL&)URL
+          responseHTMLString:(NSString*)responseHTMLString
+    API_AVAILABLE(ios(15.0));
+
+// Loads the web content from the data you provide as if the data were the
+// response to the request. This method does not create a new navigation entry
+// if |URL| matches the current page's URL. This method creates a new navigation
+// entry if |URL| differs from the current page's URL.
+- (void)loadSimulatedRequest:(const GURL&)URL
+                responseData:(NSData*)responseData
+                    MIMEType:(NSString*)MIMEType API_AVAILABLE(ios(15.0));
+
 // Stops loading the page.
 - (void)stopLoading;
 
