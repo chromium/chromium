@@ -9,6 +9,7 @@
 #include "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
+#import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_constants.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_cell.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
@@ -20,8 +21,7 @@
 #error "This file requires ARC support."
 #endif
 
-NSString* const kSafeBrowsingEnhancedProtectionTableViewId =
-    @"kSafeBrowsingEnhancedProtectionTableViewId";
+typedef NSArray<TableViewItem*>* ItemArray;
 
 namespace {
 // List of sections.
@@ -29,6 +29,13 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSafeBrowsingEnhancedProtection = kSectionIdentifierEnumZero,
 };
 }  // namespace
+
+@interface SafeBrowsingEnhancedProtectionViewController ()
+
+// All the items for the enhanced safe browsing section.
+@property(nonatomic, strong) ItemArray safeBrowsingEnhancedProtectionItems;
+
+@end
 
 @implementation SafeBrowsingEnhancedProtectionViewController
 
@@ -55,6 +62,14 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 - (void)loadModel {
   [super loadModel];
+  TableViewModel* model = self.tableViewModel;
+  [model
+      addSectionWithIdentifier:SectionIdentifierSafeBrowsingEnhancedProtection];
+  for (TableViewItem* item in self.safeBrowsingEnhancedProtectionItems) {
+    [model addItem:item
+        toSectionWithIdentifier:
+            SectionIdentifierSafeBrowsingEnhancedProtection];
+  }
 }
 
 #pragma mark - UIViewController
