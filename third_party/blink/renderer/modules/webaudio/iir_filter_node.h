@@ -5,48 +5,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_IIR_FILTER_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_IIR_FILTER_NODE_H_
 
-#include "base/memory/weak_ptr.h"
-#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
-#include "third_party/blink/renderer/modules/webaudio/audio_basic_processor_handler.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
-#include "third_party/blink/renderer/modules/webaudio/iir_processor.h"
 
 namespace blink {
 
 class BaseAudioContext;
 class ExceptionState;
 class IIRFilterOptions;
-
-class IIRFilterHandler : public AudioBasicProcessorHandler,
-                         public base::SupportsWeakPtr<IIRFilterHandler> {
- public:
-  static scoped_refptr<IIRFilterHandler> Create(
-      AudioNode&,
-      float sample_rate,
-      const Vector<double>& feedforward_coef,
-      const Vector<double>& feedback_coef,
-      bool is_filter_stable);
-
-  void Process(uint32_t frames_to_process) override;
-
- private:
-  IIRFilterHandler(AudioNode&,
-                   float sample_rate,
-                   const Vector<double>& feedforward_coef,
-                   const Vector<double>& feedback_coef,
-                   bool is_filter_stable);
-
-  void NotifyBadState() const;
-
-  // Only notify the user of the once.  No need to spam the console with
-  // messages, because once we're in a bad state, it usually stays that way
-  // forever.  Only accessed from audio thread.
-  bool did_warn_bad_filter_state_ = false;
-
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-};
+class IIRProcessor;
 
 class IIRFilterNode : public AudioNode {
   DEFINE_WRAPPERTYPEINFO();

@@ -94,6 +94,8 @@ blink_modules_sources("webaudio") {
     "gain_node.h",
     "iir_dsp_kernel.cc",
     "iir_dsp_kernel.h",
+    "iir_filter_handler.cc",
+    "iir_filter_handler.h",
     "iir_filter_node.cc",
     "iir_filter_node.h",
     "iir_processor.cc",
