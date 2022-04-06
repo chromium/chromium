@@ -71,6 +71,8 @@ blink_modules_sources("webaudio") {
     "biquad_filter_node.h",
     "biquad_processor.cc",
     "biquad_processor.h",
+    "channel_merger_handler.cc",
+    "channel_merger_handler.h",
     "channel_merger_node.cc",
     "channel_merger_node.h",
     "channel_splitter_node.cc",
