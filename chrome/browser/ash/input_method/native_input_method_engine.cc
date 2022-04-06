@@ -190,11 +190,9 @@ mojom::InputFieldType TextInputTypeToMojoType(ui::TextInputType type) {
   }
 }
 
-mojom::AutocorrectMode AutocorrectFlagsToMojoType(int flags,
-                                                  bool is_normal_screen) {
+mojom::AutocorrectMode AutocorrectFlagsToMojoType(int flags) {
   if (((flags & ui::TEXT_INPUT_FLAG_AUTOCORRECT_OFF) ||
-       (flags & ui::TEXT_INPUT_FLAG_SPELLCHECK_OFF)) ||
-      !is_normal_screen) {
+       (flags & ui::TEXT_INPUT_FLAG_SPELLCHECK_OFF))) {
     return mojom::AutocorrectMode::kDisabled;
   }
   return mojom::AutocorrectMode::kEnabled;
@@ -478,6 +476,14 @@ InputFieldContext CreateInputFieldContext(AssistiveSuggester* suggester) {
   };
 }
 
+mojom::TextPredictionMode GetTextPredictionMode(AssistiveSuggester* suggester) {
+  return suggester &&
+                 suggester->IsAssistiveFeatureAllowed(
+                     AssistiveSuggester::AssistiveFeature::kMultiWordSuggestion)
+             ? mojom::TextPredictionMode::kEnabled
+             : mojom::TextPredictionMode::kDisabled;
+}
+
 std::string MojomLayoutToXkbLayout(mojom::PinyinLayout layout) {
   switch (layout) {
     case mojom::PinyinLayout::kUsQwerty:
@@ -487,6 +493,29 @@ std::string MojomLayoutToXkbLayout(mojom::PinyinLayout layout) {
     case mojom::PinyinLayout::kColemak:
       return "us(colemak)";
   }
+}
+
+mojom::InputFieldInfoPtr CreateInputFieldInfo(
+    const ui::IMEEngineHandlerInterface::InputContext& context,
+    AssistiveSuggester* suggester,
+    bool is_normal_screen) {
+  // Disable most features on the login screen.
+  if (!is_normal_screen) {
+    return mojom::InputFieldInfo::New(
+        context.type == ui::TEXT_INPUT_TYPE_PASSWORD
+            ? mojom::InputFieldType::kPassword
+            : mojom::InputFieldType::kNoIME,
+        mojom::AutocorrectMode::kDisabled,
+        mojom::PersonalizationMode::kDisabled,
+        mojom::TextPredictionMode::kDisabled);
+  }
+
+  return mojom::InputFieldInfo::New(TextInputTypeToMojoType(context.type),
+                                    AutocorrectFlagsToMojoType(context.flags),
+                                    context.should_do_learning
+                                        ? mojom::PersonalizationMode::kEnabled
+                                        : mojom::PersonalizationMode::kDisabled,
+                                    GetTextPredictionMode(suggester));
 }
 
 void OverrideXkbLayoutIfNeeded(ImeKeyboard* keyboard,
@@ -756,15 +785,8 @@ void NativeInputMethodEngine::ImeObserver::OnFocus(
       const bool is_normal_screen =
           InputMethodManager::Get()->GetActiveIMEState()->GetUIStyle() ==
           InputMethodManager::UIStyle::kNormal;
-      auto input_field_info = mojom::InputFieldInfo::New(
-          is_normal_screen ? TextInputTypeToMojoType(context.type)
-                           : (context.type == ui::TEXT_INPUT_TYPE_PASSWORD
-                                  ? mojom::InputFieldType::kPassword
-                                  : mojom::InputFieldType::kNoIME),
-          AutocorrectFlagsToMojoType(context.flags, is_normal_screen),
-          context.should_do_learning && is_normal_screen
-              ? mojom::PersonalizationMode::kEnabled
-              : mojom::PersonalizationMode::kDisabled);
+      auto input_field_info = CreateInputFieldInfo(
+          context, assistive_suggester_.get(), is_normal_screen);
       auto on_focus_callback = base::BindOnce(
           &NativeInputMethodEngine::ImeObserver::ActivateTextClient,
           weak_ptr_factory_.GetWeakPtr(), text_client_->context_id);

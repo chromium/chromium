@@ -471,7 +471,8 @@ TEST_F(NativeInputMethodEngineTest, FocusCallsRightMojoFunctions) {
                 OnFocus(MojoEq(ime::mojom::InputFieldInfo(
                             ime::mojom::InputFieldType::kText,
                             ime::mojom::AutocorrectMode::kEnabled,
-                            ime::mojom::PersonalizationMode::kEnabled)),
+                            ime::mojom::PersonalizationMode::kEnabled,
+                            ime::mojom::TextPredictionMode::kDisabled)),
                         _, _))
         .WillOnce(
             ::testing::Invoke([](ime::mojom::InputFieldInfoPtr info,
@@ -598,7 +599,8 @@ TEST_F(NativeInputMethodEngineTest,
                 OnFocus(MojoEq(ime::mojom::InputFieldInfo(
                             ime::mojom::InputFieldType::kText,
                             ime::mojom::AutocorrectMode::kEnabled,
-                            ime::mojom::PersonalizationMode::kEnabled)),
+                            ime::mojom::PersonalizationMode::kEnabled,
+                            ime::mojom::TextPredictionMode::kEnabled)),
                         _, _))
         .WillOnce(
             ::testing::Invoke([](ime::mojom::InputFieldInfoPtr info,

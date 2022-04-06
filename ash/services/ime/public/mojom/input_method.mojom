@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 10
+// Next MinVersion: 11
 
 module ash.ime.mojom;
 
@@ -238,12 +238,24 @@ enum PersonalizationMode {
   kEnabled = 1,
 };
 
-// Next ordinal: 3
+// Next ordinal: 2
+[Stable, Extensible]
+enum TextPredictionMode {
+  // The IME must not display text predictions.
+  [Default] kDisabled = 0,
+  // The IME may display text predictions as the user is typing, but not
+  // guaranteed to (e.g. if the user disabled text predictions in the IME
+  // settings).
+  kEnabled = 1,
+};
+
+// Next ordinal: 4
 [Stable, RenamedFrom="chromeos.ime.mojom.InputFieldInfo"]
 struct InputFieldInfo {
   InputFieldType type@0;
   AutocorrectMode autocorrect@1;
   PersonalizationMode personalization@2;
+  [MinVersion=10] TextPredictionMode text_prediction@3;
 };
 
 // Next ordinal: 4
