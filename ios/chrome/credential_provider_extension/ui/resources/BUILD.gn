@@ -7,7 +7,6 @@ import("//build/config/ios/rules.gni")
 
 group("resources") {
   deps = [
-    ":consent_illustration",
     ":consent_view_controller",
     ":empty_credentials_illustration",
     ":info_icon",
@@ -24,16 +23,6 @@ imageset("consent_view_controller") {
     "consent_view_controller.imageset/promo_passwords_in_other_apps@3x.png",
     "consent_view_controller.imageset/promo_passwords_in_other_apps_dark@2x.png",
     "consent_view_controller.imageset/promo_passwords_in_other_apps_dark@3x.png",
-  ]
-}
-
-imageset("consent_illustration") {
-  sources = [
-    "consent_illustration.imageset/Contents.json",
-    "consent_illustration.imageset/illustration_dark@2x.png",
-    "consent_illustration.imageset/illustration_dark@3x.png",
-    "consent_illustration.imageset/illustration_light@2x.png",
-    "consent_illustration.imageset/illustration_light@3x.png",
   ]
 }
 
