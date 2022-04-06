@@ -1792,20 +1792,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                                         DOMArrayBufferView*,
                                         NullDisposition,
                                         GLuint src_offset);
-  void TexImageHelperImageData(TexImageFunctionID,
-                               GLenum,
-                               GLint,
-                               GLint,
-                               GLint,
-                               GLenum,
-                               GLenum,
-                               GLsizei,
-                               GLint,
-                               GLint,
-                               GLint,
-                               ImageData*,
-                               const gfx::Rect&,
-                               GLint);
+  void TexImageHelperImageData(TexImageParams, ImageData*);
 
   void TexImageHelperHTMLImageElement(const SecurityOrigin*,
                                       TexImageFunctionID,

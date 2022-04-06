@@ -1188,9 +1188,20 @@ void WebGL2RenderingContextBase::texImage2D(GLenum target,
                       "a buffer is bound to PIXEL_UNPACK_BUFFER");
     return;
   }
-  TexImageHelperImageData(kTexImage2D, target, level, internalformat, 0, format,
-                          type, 1, 0, 0, 0, pixels,
-                          GetTextureSourceSubRectangle(width, height), 0);
+  TexImageParams params = {
+      .function_id = kTexImage2D,
+      .target = target,
+      .level = level,
+      .internalformat = internalformat,
+      .width = width,
+      .height = height,
+      .depth = 1,
+      .border = 0,  // See https://crbug.com/1313604
+      .format = format,
+      .type = type,
+  };
+  GetCurrentUnpackState(params);
+  TexImageHelperImageData(params, pixels);
 }
 
 void WebGL2RenderingContextBase::texImage2D(ExecutionContext* execution_context,
@@ -1497,9 +1508,20 @@ void WebGL2RenderingContextBase::texSubImage2D(GLenum target,
                       "a buffer is bound to PIXEL_UNPACK_BUFFER");
     return;
   }
-  TexImageHelperImageData(kTexSubImage2D, target, level, 0, 0, format, type, 1,
-                          xoffset, yoffset, 0, pixels,
-                          GetTextureSourceSubRectangle(width, height), 0);
+  TexImageParams params = {
+      .function_id = kTexSubImage2D,
+      .target = target,
+      .level = level,
+      .xoffset = xoffset,
+      .yoffset = yoffset,
+      .width = width,
+      .height = height,
+      .depth = 1,
+      .format = format,
+      .type = type,
+  };
+  GetCurrentUnpackState(params);
+  TexImageHelperImageData(params, pixels);
 }
 
 void WebGL2RenderingContextBase::texSubImage2D(
@@ -1871,11 +1893,20 @@ void WebGL2RenderingContextBase::texImage3D(GLenum target,
                                             GLenum type,
                                             ImageData* pixels) {
   DCHECK(pixels);
-  gfx::Rect source_image_rect(unpack_skip_pixels_, unpack_skip_rows_, width,
-                              height);
-  TexImageHelperImageData(kTexImage3D, target, level, internalformat, 0, format,
-                          type, depth, 0, 0, 0, pixels, source_image_rect,
-                          unpack_image_height_);
+  TexImageParams params = {
+      .function_id = kTexImage3D,
+      .target = target,
+      .level = level,
+      .internalformat = internalformat,
+      .width = width,
+      .height = height,
+      .depth = depth,
+      .border = 0,  // See https://crbug.com/1313604
+      .format = format,
+      .type = type,
+  };
+  GetCurrentUnpackState(params);
+  TexImageHelperImageData(params, pixels);
 }
 
 void WebGL2RenderingContextBase::texImage3D(ExecutionContext* execution_context,
@@ -2099,10 +2130,21 @@ void WebGL2RenderingContextBase::texSubImage3D(GLenum target,
                       "a buffer is bound to PIXEL_UNPACK_BUFFER");
     return;
   }
-  TexImageHelperImageData(kTexSubImage3D, target, level, 0, 0, format, type,
-                          depth, xoffset, yoffset, zoffset, pixels,
-                          GetTextureSourceSubRectangle(width, height),
-                          unpack_image_height_);
+  TexImageParams params = {
+      .function_id = kTexSubImage3D,
+      .target = target,
+      .level = level,
+      .xoffset = xoffset,
+      .yoffset = yoffset,
+      .zoffset = zoffset,
+      .width = width,
+      .height = height,
+      .depth = depth,
+      .format = format,
+      .type = type,
+  };
+  GetCurrentUnpackState(params);
+  TexImageHelperImageData(params, pixels);
 }
 
 void WebGL2RenderingContextBase::texSubImage3D(
