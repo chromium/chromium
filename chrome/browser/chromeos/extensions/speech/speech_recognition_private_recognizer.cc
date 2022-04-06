@@ -15,6 +15,8 @@
 
 namespace {
 const char kSpeechRecognitionError[] = "A speech recognition error occurred";
+const char kSpeechRecognitionNeverStartedError[] =
+    "Speech recognition never started";
 const char kSpeechRecognitionStartError[] =
     "Speech recognition already started";
 const char kSpeechRecognitionStopError[] = "Speech recognition already stopped";
@@ -119,15 +121,29 @@ void SpeechRecognitionPrivateRecognizer::HandleStart(
 }
 
 void SpeechRecognitionPrivateRecognizer::HandleStop(OnStopCallback callback) {
-  if (current_state_ == SPEECH_RECOGNIZER_OFF) {
-    // If speech recognition is already off, trigger the callback with an error
-    // message.
+  bool has_error = false;
+  if (!on_start_callback_.is_null()) {
+    // If speech recognition never successfully started, then run the necessary
+    // callbacks with an error to avoid dangling callbacks (Chrome
+    // will crash if an extension function is destroyed and hasn't responded).
+    has_error = true;
+    std::move(on_start_callback_)
+        .Run(/*type=*/type_, /*error=*/absl::optional<std::string>(
+                 kSpeechRecognitionNeverStartedError));
     std::move(callback).Run(
         /*error=*/absl::optional<std::string>(kSpeechRecognitionStopError));
-    return;
+  } else if (current_state_ == SPEECH_RECOGNIZER_OFF) {
+    // If speech recognition is already off, run `callback` with an error
+    // message.
+    has_error = true;
+    std::move(callback).Run(
+        /*error=*/absl::optional<std::string>(kSpeechRecognitionStopError));
   }
 
   RecognizerOff();
+  if (has_error)
+    return;
+
   delegate_->HandleSpeechRecognitionStopped(id_);
   DCHECK(!callback.is_null());
   std::move(callback).Run(/*error=*/absl::optional<std::string>());
