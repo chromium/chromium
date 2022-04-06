@@ -308,6 +308,12 @@ AXAuraObjWrapper* AXAuraObjCache::CreateInternal(
 
   auto wrapper = std::make_unique<AuraViewWrapper>(this, aura_view);
   ui::AXNodeID id = wrapper->GetUniqueId();
+
+  // Ensure this |AuraView| is not already in the cache. This must happen after
+  // |GetUniqueId|, as that can alter the cache such that the |find| call above
+  // may have missed.
+  DCHECK(aura_view_to_id_map->find(aura_view) == aura_view_to_id_map->end());
+
   (*aura_view_to_id_map)[aura_view] = id;
   cache_[id] = std::move(wrapper);
   return cache_[id].get();
