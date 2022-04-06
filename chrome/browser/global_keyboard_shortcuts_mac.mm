@@ -110,12 +110,14 @@ bool MatchesEventForKeyboardShortcut(const KeyboardShortcutData& shortcut,
 
 const std::vector<KeyboardShortcutData>&
 GetDelayedShortcutsNotPresentInMainMenu() {
+  // clang-format off
   static base::NoDestructor<std::vector<KeyboardShortcutData>> keys({
-      // cmd   shift  cntrl  option vkeycode               command
-      //---   -----  -----  ------ --------               -------
-      {true, false, false, false, kVK_LeftArrow, IDC_BACK},
-      {true, false, false, false, kVK_RightArrow, IDC_FORWARD},
+    // cmd    shift  cntrl  option vkeycode               command
+    // ---    -----  -----  ------ --------               -------
+      {true,  false, false, false, kVK_LeftArrow,         IDC_BACK},
+      {true,  false, false, false, kVK_RightArrow,        IDC_FORWARD},
   });
+  // clang-format on
   return *keys;
 }
 
@@ -131,73 +133,72 @@ CommandForKeyEventResult ShortcutCommand(int cmd) {
   return {cmd, /*from_main_menu=*/false};
 }
 
+}  // namespace
+
 // Returns a vector of hidden keyboard shortcuts (i.e. ones that arent present
 // in the menus). Note that the hidden "Cmd =" shortcut is somehow enabled by
 // the ui::VKEY_OEM_PLUS entry in accelerators_cocoa.mm.
-std::vector<KeyboardShortcutData> CreateKeyboardShortcutVector() {
-  // clang-format off
-  std::vector<KeyboardShortcutData> keys({
-  // cmd    shift  cntrl  option vkeycode               command
-  // ---    -----  -----  ------ --------               -------
-    {true,  true,  false, false, kVK_ANSI_RightBracket, IDC_SELECT_NEXT_TAB},
-    {true,  true,  false, false, kVK_ANSI_LeftBracket,  IDC_SELECT_PREVIOUS_TAB},
-    {false, false, true,  false, kVK_PageDown,          IDC_SELECT_NEXT_TAB},
-    {false, false, true,  false, kVK_PageUp,            IDC_SELECT_PREVIOUS_TAB},
-    {true,  false, false, true,  kVK_RightArrow,        IDC_SELECT_NEXT_TAB},
-    {true,  false, false, true,  kVK_LeftArrow,         IDC_SELECT_PREVIOUS_TAB},
-
-    // Cmd-0..8 select the nth tab, with cmd-9 being "last tab".
-    {true,  false, false, false, kVK_ANSI_1,            IDC_SELECT_TAB_0},
-    {true,  false, false, false, kVK_ANSI_Keypad1,      IDC_SELECT_TAB_0},
-    {true,  false, false, false, kVK_ANSI_2,            IDC_SELECT_TAB_1},
-    {true,  false, false, false, kVK_ANSI_Keypad2,      IDC_SELECT_TAB_1},
-    {true,  false, false, false, kVK_ANSI_3,            IDC_SELECT_TAB_2},
-    {true,  false, false, false, kVK_ANSI_Keypad3,      IDC_SELECT_TAB_2},
-    {true,  false, false, false, kVK_ANSI_4,            IDC_SELECT_TAB_3},
-    {true,  false, false, false, kVK_ANSI_Keypad4,      IDC_SELECT_TAB_3},
-    {true,  false, false, false, kVK_ANSI_5,            IDC_SELECT_TAB_4},
-    {true,  false, false, false, kVK_ANSI_Keypad5,      IDC_SELECT_TAB_4},
-    {true,  false, false, false, kVK_ANSI_6,            IDC_SELECT_TAB_5},
-    {true,  false, false, false, kVK_ANSI_Keypad6,      IDC_SELECT_TAB_5},
-    {true,  false, false, false, kVK_ANSI_7,            IDC_SELECT_TAB_6},
-    {true,  false, false, false, kVK_ANSI_Keypad7,      IDC_SELECT_TAB_6},
-    {true,  false, false, false, kVK_ANSI_8,            IDC_SELECT_TAB_7},
-    {true,  false, false, false, kVK_ANSI_Keypad8,      IDC_SELECT_TAB_7},
-    {true,  false, false, false, kVK_ANSI_9,            IDC_SELECT_LAST_TAB},
-    {true,  false, false, false, kVK_ANSI_Keypad9,      IDC_SELECT_LAST_TAB},
-
-    {true,  true,  false, false, kVK_ANSI_M,            IDC_SHOW_AVATAR_MENU},
-    {true,  false, false, true,  kVK_ANSI_L,            IDC_SHOW_DOWNLOADS},
-    {true,  true,  false, false, kVK_ANSI_C,            IDC_DEV_TOOLS_INSPECT},
-    {true,  false, false, true,  kVK_ANSI_C,            IDC_DEV_TOOLS_INSPECT},
-    {true,  false, false, true,  kVK_DownArrow,         IDC_FOCUS_NEXT_PANE},
-    {true,  false, false, true,  kVK_UpArrow,           IDC_FOCUS_PREVIOUS_PANE},
-    {true,  true,  false, true,  kVK_ANSI_A,            IDC_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY},
-  });
-  // clang-format on
-
-  if (base::FeatureList::IsEnabled(features::kUIDebugTools)) {
-    keys.push_back(
-        {false, true, true, true, kVK_ANSI_T, IDC_DEBUG_TOGGLE_TABLET_MODE});
-    keys.push_back(
-        {false, true, true, true, kVK_ANSI_V, IDC_DEBUG_PRINT_VIEW_TREE});
-    keys.push_back({false, true, true, true, kVK_ANSI_M,
-                    IDC_DEBUG_PRINT_VIEW_TREE_DETAILS});
-  }
-  return keys;
-}
-
-}  // namespace
-
 const std::vector<KeyboardShortcutData>& GetShortcutsNotPresentInMainMenu() {
-  static const base::NoDestructor<std::vector<KeyboardShortcutData>> keys(
-      CreateKeyboardShortcutVector());
+  static const base::NoDestructor<std::vector<KeyboardShortcutData>> keys([]() {
+    // clang-format off
+    std::vector<KeyboardShortcutData> keys({
+    // cmd    shift  cntrl  option vkeycode               command
+    // ---    -----  -----  ------ --------               -------
+      {true,  true,  false, false, kVK_ANSI_RightBracket, IDC_SELECT_NEXT_TAB},
+      {true,  true,  false, false, kVK_ANSI_LeftBracket,  IDC_SELECT_PREVIOUS_TAB},
+      {false, false, true,  false, kVK_PageDown,          IDC_SELECT_NEXT_TAB},
+      {false, false, true,  false, kVK_PageUp,            IDC_SELECT_PREVIOUS_TAB},
+      {true,  false, false, true,  kVK_RightArrow,        IDC_SELECT_NEXT_TAB},
+      {true,  false, false, true,  kVK_LeftArrow,         IDC_SELECT_PREVIOUS_TAB},
+      {false, true,  true,  false, kVK_PageDown,          IDC_MOVE_TAB_NEXT},
+      {false, true,  true,  false, kVK_PageUp,            IDC_MOVE_TAB_PREVIOUS},
+
+      // Cmd-0..8 select the nth tab, with cmd-9 being "last tab".
+      {true,  false, false, false, kVK_ANSI_1,            IDC_SELECT_TAB_0},
+      {true,  false, false, false, kVK_ANSI_Keypad1,      IDC_SELECT_TAB_0},
+      {true,  false, false, false, kVK_ANSI_2,            IDC_SELECT_TAB_1},
+      {true,  false, false, false, kVK_ANSI_Keypad2,      IDC_SELECT_TAB_1},
+      {true,  false, false, false, kVK_ANSI_3,            IDC_SELECT_TAB_2},
+      {true,  false, false, false, kVK_ANSI_Keypad3,      IDC_SELECT_TAB_2},
+      {true,  false, false, false, kVK_ANSI_4,            IDC_SELECT_TAB_3},
+      {true,  false, false, false, kVK_ANSI_Keypad4,      IDC_SELECT_TAB_3},
+      {true,  false, false, false, kVK_ANSI_5,            IDC_SELECT_TAB_4},
+      {true,  false, false, false, kVK_ANSI_Keypad5,      IDC_SELECT_TAB_4},
+      {true,  false, false, false, kVK_ANSI_6,            IDC_SELECT_TAB_5},
+      {true,  false, false, false, kVK_ANSI_Keypad6,      IDC_SELECT_TAB_5},
+      {true,  false, false, false, kVK_ANSI_7,            IDC_SELECT_TAB_6},
+      {true,  false, false, false, kVK_ANSI_Keypad7,      IDC_SELECT_TAB_6},
+      {true,  false, false, false, kVK_ANSI_8,            IDC_SELECT_TAB_7},
+      {true,  false, false, false, kVK_ANSI_Keypad8,      IDC_SELECT_TAB_7},
+      {true,  false, false, false, kVK_ANSI_9,            IDC_SELECT_LAST_TAB},
+      {true,  false, false, false, kVK_ANSI_Keypad9,      IDC_SELECT_LAST_TAB},
+
+      {true,  true,  false, false, kVK_ANSI_M,            IDC_SHOW_AVATAR_MENU},
+      {true,  false, false, true,  kVK_ANSI_L,            IDC_SHOW_DOWNLOADS},
+      {true,  true,  false, false, kVK_ANSI_C,            IDC_DEV_TOOLS_INSPECT},
+      {true,  false, false, true,  kVK_ANSI_C,            IDC_DEV_TOOLS_INSPECT},
+      {true,  false, false, true,  kVK_DownArrow,         IDC_FOCUS_NEXT_PANE},
+      {true,  false, false, true,  kVK_UpArrow,           IDC_FOCUS_PREVIOUS_PANE},
+      {true,  true,  false, true,  kVK_ANSI_A,            IDC_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY},
+    });
+    // clang-format on
+
+    if (base::FeatureList::IsEnabled(features::kUIDebugTools)) {
+      keys.push_back(
+          {false, true, true, true, kVK_ANSI_T, IDC_DEBUG_TOGGLE_TABLET_MODE});
+      keys.push_back(
+          {false, true, true, true, kVK_ANSI_V, IDC_DEBUG_PRINT_VIEW_TREE});
+      keys.push_back({false, true, true, true, kVK_ANSI_M,
+                      IDC_DEBUG_PRINT_VIEW_TREE_DETAILS});
+    }
+    return keys;
+  }());
   return *keys;
 }
 
 const std::vector<NSMenuItem*>& GetMenuItemsNotPresentInMainMenu() {
-  static base::NoDestructor<std::vector<NSMenuItem*>> menu_items;
-  if (menu_items->empty()) {
+  static base::NoDestructor<std::vector<NSMenuItem*>> menu_items([]() {
+    std::vector<NSMenuItem*> menu_items;
     for (const auto& shortcut : GetShortcutsNotPresentInMainMenu()) {
       ui::Accelerator accelerator = AcceleratorFromShortcut(shortcut);
       NSString* key_equivalent = nil;
@@ -207,15 +208,16 @@ const std::vector<NSMenuItem*>& GetMenuItemsNotPresentInMainMenu() {
 
       // Intentionally leaked!
       NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:@""
-                                                    action:NULL
+                                                    action:nullptr
                                              keyEquivalent:key_equivalent];
       item.keyEquivalentModifierMask = modifier_mask;
 
       // We store the command in the tag.
       item.tag = shortcut.chrome_command;
-      menu_items->push_back(item);
+      menu_items.push_back(item);
     }
-  }
+    return menu_items;
+  }());
   return *menu_items;
 }
 
