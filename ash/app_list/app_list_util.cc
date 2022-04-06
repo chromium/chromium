@@ -152,8 +152,9 @@ void PaintFocusBar(gfx::Canvas* canvas,
   flags.setColor(AppListColorProvider::Get()->GetFocusRingColor());
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeWidth(kFocusBarThickness);
-  gfx::Point top_point = content_origin;
-  gfx::Point bottom_point = content_origin + gfx::Vector2d(0, height);
+  gfx::Point top_point = content_origin + gfx::Vector2d(kFocusBarThickness, 0);
+  gfx::Point bottom_point =
+      content_origin + gfx::Vector2d(kFocusBarThickness, height);
   canvas->DrawLine(top_point, bottom_point, flags);
 }
 

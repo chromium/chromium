@@ -71,7 +71,8 @@ constexpr int kPrimaryTextHeight = 20;
 constexpr int kAnswerCardDetailsLineHeight = 18;
 
 constexpr int kAnswerCardCardBackgroundCornerRadius = 12;
-constexpr int kAnswerCardFocusBarOffset = 24;
+constexpr int kAnswerCardFocusBarHorizontalOffset = 12;
+constexpr int kAnswerCardFocusBarVerticalOffset = 24;
 constexpr int kAnswerCardFocusBarHeight = 32;
 
 // Corner radius for downloaded image icons.
@@ -860,7 +861,9 @@ void SearchResultView::PaintButtonContents(gfx::Canvas* canvas) {
         canvas->DrawRoundRect(content_rect,
                               kAnswerCardCardBackgroundCornerRadius, flags);
         if (selected()) {
-          PaintFocusBar(canvas, gfx::Point(0, kAnswerCardFocusBarOffset),
+          PaintFocusBar(canvas,
+                        gfx::Point(kAnswerCardFocusBarHorizontalOffset,
+                                   kAnswerCardFocusBarVerticalOffset),
                         kAnswerCardFocusBarHeight);
         }
       } break;
