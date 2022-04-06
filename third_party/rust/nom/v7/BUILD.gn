@@ -22,7 +22,7 @@ cargo_crate("lib") {
     "//third_party/rust/memchr/v2:lib",
     "//third_party/rust/minimal_lexical/v0_2:lib",
   ]
-  build_deps = [ "//third_party/rust/version_check/v0_9:lib" ]
+  build_deps = [ "//third_party/rust/version_check/v0_9:buildrs_support" ]
   features = [
     "alloc",
     "std",

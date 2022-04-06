@@ -23,6 +23,7 @@ cargo_crate("lib") {
     "//third_party/rust/libc/v0_2:lib",
     "//third_party/rust/libloading/v0_7:lib",
   ]
+  build_deps = [ "//third_party/rust/glob/v0_3:buildrs_support" ]
   features = [
     "clang_3_5",
     "clang_3_6",
@@ -37,7 +38,6 @@ cargo_crate("lib") {
   ]
   build_root = "crate/build.rs"
   build_sources = [ "crate/build.rs" ]
-  build_deps = [ "//third_party/rust/glob/v0_3:lib" ]
 
   # TODO(crbug.com/1304251): The following line arranges for dependent targets
   # to link against clang's static libraries.

@@ -19,3 +19,16 @@ cargo_crate("lib") {
   sources = [ "crate/src/lib.rs" ]
   edition = "2015"
 }
+cargo_crate("buildrs_support") {
+  crate_name = "glob"
+  epoch = "0.3"
+  crate_type = "rlib"
+
+  # Only for usage from third-party crates. Add the crate to
+  # third_party.toml to use it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+  crate_root = "crate/src/lib.rs"
+  build_native_rust_unit_tests = false
+  sources = [ "crate/src/lib.rs" ]
+  edition = "2015"
+}
