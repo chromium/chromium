@@ -167,8 +167,6 @@ import java.util.concurrent.atomic.AtomicReference;
 @EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
 @Restriction(
         {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-@DisableIf.Build(message = "Flaky on emulators; see https://crbug.com/1130830",
-        supported_abis_includes = "x86")
 public class StartSurfaceLayoutTest {
     // clang-format on
     private static final String BASE_PARAMS = "force-fieldtrial-params="
@@ -241,6 +239,8 @@ public class StartSurfaceLayoutTest {
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS})
+    @DisableIf.Build(message = "Flaky on emulators; see https://crbug.com/1313747",
+        supported_abis_includes = "x86")
     public void testRenderGrid_3WebTabs() throws IOException {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -343,6 +343,8 @@ public class StartSurfaceLayoutTest {
     @DisableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS})
+    @DisableIf.Build(message = "Flaky on emulators; see https://crbug.com/1313747",
+        supported_abis_includes = "x86")
     public void testRenderGrid_3NativeTabs() throws IOException {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
