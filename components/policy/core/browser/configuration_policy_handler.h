@@ -51,6 +51,9 @@ class POLICY_EXPORT ConfigurationPolicyHandler {
 
   // Processes the policies handled by this ConfigurationPolicyHandler and sets
   // the appropriate preferences in |prefs|.
+  //
+  // This method should only be called after |CheckPolicySettings()| returns
+  // true.
   virtual void ApplyPolicySettingsWithParameters(
       const PolicyMap& policies,
       const PolicyHandlerParameters& parameters,

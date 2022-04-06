@@ -19,48 +19,6 @@ namespace first_party_sets {
 
 namespace {
 
-// Create a base::Value::Dict representation of a First-Party Set that has
-// an owner field equal to |owner| and members field equal to |members|.
-base::Value::Dict MakeFirstPartySetDict(
-    const std::string& owner,
-    const base::flat_set<std::string>& members) {
-  base::Value::Dict dict;
-  base::Value::List member_list;
-
-  dict.Set("owner", owner);
-  for (const std::string& member : members) {
-    member_list.Append(member);
-  }
-  dict.Set("members", std::move(member_list));
-  return dict;
-}
-
-// Converts a map of (owner->members) into a base::Value::List of First-Party
-// Sets, each represented as a base::Value::Dict for ease of testing.
-base::Value::List MakeFirstPartySetsList(
-    const base::flat_map<std::string, base::flat_set<std::string>>&
-        owners_to_members) {
-  base::Value::List set_list;
-  for (auto& [owner, members] : owners_to_members) {
-    set_list.Append(MakeFirstPartySetDict(owner, members));
-  }
-  return set_list;
-}
-
-// Creates a base::Value::Dict representing a policy input JSON with a
-// 'replacements' field equal to |replacements| and an 'additions' field equal
-// to |additions|.
-base::Value::Dict CreatePolicyDict(
-    absl::optional<base::Value::List> replacements,
-    absl::optional<base::Value::List> additions) {
-  base::Value::Dict result;
-  if (replacements.has_value())
-    result.Set("replacements", base::Value(std::move(replacements.value())));
-  if (additions.has_value())
-    result.Set("additions", base::Value(std::move(additions.value())));
-  return result;
-}
-
 class FirstPartySetsOverridesPolicyHandlerTest
     : public policy::ConfigurationPolicyPrefStoreTest {
  public:
@@ -398,7 +356,6 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
 
 TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
        CheckPolicySettings_Handler_RejectsInvalidOriginOwner) {
-  policy::PolicyMap policy;
   policy::PolicyErrorMap errors;
   std::string input = R"(
       {
@@ -421,7 +378,6 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
 
 TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
        CheckPolicySettings_Handler_RejectsInvalidOriginMember) {
-  policy::PolicyMap policy;
   policy::PolicyErrorMap errors;
   std::string input = R"(
       {
@@ -444,7 +400,6 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
 
 TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
        CheckPolicySettings_Handler_RejectsSingletonSet) {
-  policy::PolicyMap policy;
   policy::PolicyErrorMap errors;
   std::string input = R"(
               {
@@ -468,7 +423,6 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
 
 TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
        CheckPolicySettings_Handler_RejectsNonDisjointSetsSameList) {
-  policy::PolicyMap policy;
   policy::PolicyErrorMap errors;
   std::string input = R"(
               {
@@ -494,7 +448,6 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
 
 TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
        CheckPolicySettings_Handler_RejectsNonDisjointSetsCrossList) {
-  policy::PolicyMap policy;
   policy::PolicyErrorMap errors;
   std::string input = R"(
               {
@@ -521,7 +474,6 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
 
 TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
        CheckPolicySettings_Handler_RejectsRepeatedDomainInReplacements) {
-  policy::PolicyMap policy;
   policy::PolicyErrorMap errors;
   std::string input = R"(
               {
@@ -548,7 +500,6 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
 
 TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
        CheckPolicySettings_Handler_RejectsRepeatedDomainInAdditions) {
-  policy::PolicyMap policy;
   policy::PolicyErrorMap errors;
   std::string input = R"(
               {
@@ -575,7 +526,6 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
 
 TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
        CheckPolicySettings_Handler_AcceptsAndOutputsLists_JustAdditions) {
-  policy::PolicyMap policy;
   policy::PolicyErrorMap errors;
   std::string input = R"(
               {
@@ -590,16 +540,10 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
   EXPECT_TRUE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
   EXPECT_TRUE(errors.empty());
-
-  EXPECT_EQ(handler()->GetValidatedDictForTesting(),
-            CreatePolicyDict(absl::nullopt, MakeFirstPartySetsList(
-                                                {{"https://owner1.test",
-                                                  {"https://member1.test"}}})));
 }
 
 TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
        CheckPolicySettings_Handler_AcceptsAndOutputsLists_JustReplacements) {
-  policy::PolicyMap policy;
   policy::PolicyErrorMap errors;
   std::string input = R"(
               {
@@ -615,18 +559,11 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
   EXPECT_TRUE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
   EXPECT_TRUE(errors.empty());
-
-  EXPECT_EQ(
-      handler()->GetValidatedDictForTesting(),
-      CreatePolicyDict(MakeFirstPartySetsList(
-                           {{"https://owner1.test", {"https://member1.test"}}}),
-                       absl::nullopt));
 }
 
 TEST_F(
     FirstPartySetsOverridesPolicyHandlerTest,
     CheckPolicySettings_Handler_AcceptsAndOutputsLists_AdditionsAndReplacements) {
-  policy::PolicyMap policy;
   policy::PolicyErrorMap errors;
   std::string input = R"(
               {
@@ -647,13 +584,6 @@ TEST_F(
   EXPECT_TRUE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
   EXPECT_TRUE(errors.empty());
-
-  EXPECT_EQ(handler()->GetValidatedDictForTesting(),
-            CreatePolicyDict(
-                MakeFirstPartySetsList(
-                    {{"https://owner1.test", {"https://member1.test"}}}),
-                MakeFirstPartySetsList(
-                    {{"https://owner2.test", {"https://member2.test"}}})));
 }
 
 }  // namespace

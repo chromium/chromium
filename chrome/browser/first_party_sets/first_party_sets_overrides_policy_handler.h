@@ -19,7 +19,6 @@ namespace first_party_sets {
 
 // A schema policy handler for First-Party Sets which validates that all sets
 // provided by the policy adhere to the required First-Party Sets invariants.
-// The policy sets are then used to override the public list of sets.
 class FirstPartySetsOverridesPolicyHandler
     : public policy::SchemaValidatingPolicyHandler {
  public:
@@ -35,19 +34,6 @@ class FirstPartySetsOverridesPolicyHandler
                            policy::PolicyErrorMap* errors) override;
   void ApplyPolicySettings(const policy::PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
-  // Returns the validated policy, which is stored in the 'validated_dict_'
-  // member variable.
-  //
-  // This method must only be called after CheckPolicySettings returns true,
-  // which indicates that validating the policy was successful and the member
-  // variable was populated.
-  base::Value::Dict GetValidatedDictForTesting();
-
- private:
-  // Result of validating the policy sets, stored for future use in
-  // ApplyPolicySettings
-  absl::optional<base::Value::Dict> validated_dict_;
 };
 
 }  // namespace first_party_sets

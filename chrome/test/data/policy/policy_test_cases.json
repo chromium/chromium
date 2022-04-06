@@ -17769,6 +17769,16 @@
     "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros", "android"],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set)",
+        "prefs": {
+          "first_party_sets.overrides": {
+            "default_value": {},
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "note": "Empty policy.",
         "policies": {},
         "prefs": {
           "first_party_sets.overrides": {
@@ -17778,6 +17788,47 @@
         }
       },
       {
+        "note": "Invalid policy, violates policy schema.",
+        "policies": {
+          "FirstPartySetsOverrides": {
+            "replacements": "clearly not a list",
+            "additions": 123
+          }
+        },
+        "prefs": {
+          "first_party_sets.overrides": {
+            "default_value": {},
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "note": "Invalid policy, violates First-Party Sets invariants.",
+        "policies": {
+          "FirstPartySetsOverrides": {
+            "replacements": [
+              {
+                "owner": "https://owner1.test",
+                "members": ["https://member1.test"]
+              }
+             ],
+             "additions": [
+              {
+                "owner": "https://owner1.test",
+                "members": ["https://member2.test"]
+              }
+             ]
+          }
+        },
+        "prefs": {
+          "first_party_sets.overrides": {
+            "default_value": {},
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "note": "Properly formatted replacements and additions policy set lists.",
         "policies": {
           "FirstPartySetsOverrides": {
             "replacements": [

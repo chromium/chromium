@@ -6,6 +6,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
@@ -88,19 +89,17 @@ bool FirstPartySetsOverridesPolicyHandler::CheckPolicySettings(
     return false;
   }
 
-  validated_dict_ = std::move(policy_value->GetDict());
   return true;
 }
 
 void FirstPartySetsOverridesPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
-  NOTIMPLEMENTED();
-}
-
-base::Value::Dict
-FirstPartySetsOverridesPolicyHandler::GetValidatedDictForTesting() {
-  return validated_dict_.value().Clone();
+  std::unique_ptr<base::Value> value;
+  policy::SchemaValidatingPolicyHandler::CheckAndGetValue(policies, nullptr,
+                                                          &value);
+  prefs->SetValue(first_party_sets::kFirstPartySetsOverrides,
+                  base::Value::FromUniquePtrValue(std::move(value)));
 }
 
 }  // namespace first_party_sets
