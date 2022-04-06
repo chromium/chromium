@@ -2,6 +2,8 @@
 
 This is a list of changes to [First Contentful Paint](https://web.dev/fcp).
 
+* Chrome 99
+  * Implementation optimizations: [Navigation optimizations and timeOrigin changes](2022_03_lcp_fcp_fid.md)
 * Chrome 94
   * Metric definition improvement: [Paint timing is only reported when the painted content
   is not under opacity:0](2021_07_fcp.md)
