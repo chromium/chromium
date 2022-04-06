@@ -31,6 +31,18 @@ void ResetUnloadWebContent() {
   is_web_content_unloaded_ = false;
 }
 
+SkBitmap TestBitmap() {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(30, 30);
+  return bitmap;
+}
+
+gfx::Image CreateTestImage() {
+  gfx::ImageSkia image_skia = gfx::ImageSkia::CreateFrom1xBitmap(TestBitmap());
+  image_skia.MakeThreadSafe();
+  return gfx::Image(image_skia);
+}
+
 }  // namespace
 
 class EcheTrayTest : public AshTestBase {
@@ -101,7 +113,8 @@ TEST_F(EcheTrayTest, EcheTrayShowBubbleAndTapTwice) {
   EXPECT_FALSE(eche_tray()->GetVisible());
 
   eche_tray()->SetVisiblePreferred(true);
-  eche_tray()->LoadBubble(GURL("http://google.com"), gfx::Image(), u"app 1");
+  eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
+                          u"app 1");
   eche_tray()->ShowBubble();
 
   EXPECT_TRUE(eche_tray()->is_active());
@@ -135,6 +148,27 @@ TEST_F(EcheTrayTest, EcheTrayShowBubbleAndTapTwice) {
   EXPECT_TRUE(eche_tray()->GetVisible());
 }
 
+TEST_F(EcheTrayTest, EcheTrayIconResize) {
+  eche_tray()->SetVisiblePreferred(true);
+  eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
+                          u"app 1");
+  eche_tray()->ShowBubble();
+
+  int image_width = phone_hub_tray()
+                        ->eche_icon_view()
+                        ->GetImage(views::ImageButton::STATE_NORMAL)
+                        .width();
+
+  eche_tray()->ResizeIcon(2);
+
+  int new_image_width = phone_hub_tray()
+                            ->eche_icon_view()
+                            ->GetImage(views::ImageButton::STATE_NORMAL)
+                            .width();
+
+  EXPECT_EQ(image_width, new_image_width + 2);
+}
+
 TEST_F(EcheTrayTest, EcheTrayCreatesBubbleButHideFirst) {
   // Verify the eche tray button is not active, and the eche tray bubble
   // is not shown initially.
@@ -143,7 +177,8 @@ TEST_F(EcheTrayTest, EcheTrayCreatesBubbleButHideFirst) {
 
   // Allow us to create the bubble but it is not visible until we need this
   // bubble to show up.
-  eche_tray()->LoadBubble(GURL("http://google.com"), gfx::Image(), u"app 1");
+  eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
+                          u"app 1");
 
   EXPECT_FALSE(eche_tray()->is_active());
   EXPECT_TRUE(eche_tray()->get_bubble_wrapper_for_test());
@@ -170,7 +205,8 @@ TEST_F(EcheTrayTest, EcheTrayCreatesBubbleButStreamStatusChanged) {
 
   // Allow us to create the bubble but it is not visible until we need this
   // bubble to show up.
-  eche_tray()->LoadBubble(GURL("http://google.com"), gfx::Image(), u"app 1");
+  eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
+                          u"app 1");
 
   EXPECT_FALSE(eche_tray()->is_active());
   EXPECT_TRUE(eche_tray()->get_bubble_wrapper_for_test());
@@ -197,7 +233,8 @@ TEST_F(EcheTrayTest, EcheTrayCreatesBubbleButStreamStatusChanged) {
 }
 
 TEST_F(EcheTrayTest, EcheTrayMinimizeButtonClicked) {
-  eche_tray()->LoadBubble(GURL("http://google.com"), gfx::Image(), u"app 1");
+  eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
+                          u"app 1");
   eche_tray()->ShowBubble();
 
   EXPECT_TRUE(
@@ -213,7 +250,8 @@ TEST_F(EcheTrayTest, EcheTrayMinimizeButtonClicked) {
 TEST_F(EcheTrayTest, EcheTrayCloseButtonClicked) {
   ResetUnloadWebContent();
   eche_tray()->SetGracefulCloseCallback(base::BindOnce(&UnloadWebContent));
-  eche_tray()->LoadBubble(GURL("http://google.com"), gfx::Image(), u"app 1");
+  eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
+                          u"app 1");
   eche_tray()->ShowBubble();
 
   ClickButton(eche_tray()->GetCloseButtonForTesting());

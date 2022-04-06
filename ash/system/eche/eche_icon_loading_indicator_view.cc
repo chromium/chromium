@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/system/eche/eche_icon_loading_indicator_view.h"
+#include <algorithm>
 
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -24,7 +25,7 @@ namespace ash {
 
 namespace {
 
-constexpr int kThrobberStrokeWidth = 2;
+constexpr int kThrobberStrokeWidth = 3;
 
 }  // namespace
 
@@ -59,10 +60,12 @@ void EcheIconLoadingIndicatorView::OnPaint(gfx::Canvas* canvas) {
   if (!throbber_start_time_)
     return;
 
-  // The image covers the container horizontally and is centered vertically.
+  // The image covers the container on the main axiz and is centered on the
+  // other axis. So we get the minimum of the height and width.
+  int spinner_size_dip =
+      std::min(GetLocalBounds().width(), GetLocalBounds().height());
   gfx::Rect bounds = GetLocalBounds();
-  bounds.ClampToCenteredSize(
-      gfx::Size(GetLocalBounds().width(), GetLocalBounds().width()));
+  bounds.ClampToCenteredSize(gfx::Size(spinner_size_dip, spinner_size_dip));
   gfx::PaintThrobberSpinning(
       canvas, bounds,
       TrayIconColor(Shell::Get()->session_controller()->GetSessionState()),

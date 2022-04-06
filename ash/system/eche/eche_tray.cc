@@ -62,6 +62,10 @@ namespace {
 // padding becoming negative.
 constexpr int kIconSize = 22;
 
+// This is how much the icon shrinks to give space for the spinner to go
+// around it.
+constexpr int kIconShrinkSizeForSpinner = 4;
+
 constexpr int kHeaderHeight = 40;
 constexpr int kHeaderHorizontalInteriorMargins = 0;
 constexpr auto kHeaderDefaultSpacing = gfx::Insets::VH(0, 6);
@@ -440,7 +444,21 @@ views::ImageButton* EcheTray::GetIcon() {
   return phone_hub_tray->eche_icon_view();
 }
 
+void EcheTray::ResizeIcon(int offset_dip) {
+  views::ImageButton* icon_view = GetIcon();
+  if (icon_view) {
+    auto icon = icon_view->GetImage(views::ImageButton::STATE_NORMAL);
+    icon_view->SetImage(
+        views::ImageButton::STATE_NORMAL,
+        gfx::ImageSkiaOperations::CreateResizedImage(
+            icon, skia::ImageOperations::RESIZE_BEST,
+            gfx::Size(kIconSize - offset_dip, kIconSize - offset_dip)));
+    GetPhoneHubTray()->tray_container()->UpdateLayout();
+  }
+}
+
 void EcheTray::StopLoadingAnimation() {
+  ResizeIcon(0);
   auto* loading_indicator = GetLoadingIndicator();
   if (loading_indicator && loading_indicator->GetAnimating()) {
     loading_indicator->SetAnimating(false);
@@ -448,6 +466,7 @@ void EcheTray::StopLoadingAnimation() {
 }
 
 void EcheTray::StartLoadingAnimation() {
+  ResizeIcon(kIconShrinkSizeForSpinner);
   auto* loading_indicator = GetLoadingIndicator();
   if (loading_indicator) {
     loading_indicator->SetAnimating(true);

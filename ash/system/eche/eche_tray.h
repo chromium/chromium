@@ -101,6 +101,10 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   // Sets the icon that will be used on the tray.
   void SetIcon(const gfx::Image& icon, const std::u16string& tooltip_text);
 
+  // Reduces the size of the original icon by the `offset`. Passing a zero
+  // `offset` will bring the icon back to its original size.
+  void ResizeIcon(int offset_dip);
+
   // Sets graceful close callback functiion. When close Eche Bubble, it will
   // notify to Eche Web to release connection resource.  Be aware that once this
   // is set, close button will not call PurgeAndClose() but rely on Eche Web to
