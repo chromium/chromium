@@ -25,6 +25,22 @@ Result::Result(AppSource app_source,
       app_title_(app_title),
       source_extras_(std::move(source_extras)) {}
 
+Result::Result(const Result& other)
+    : app_source_(other.app_source_),
+      app_id_(other.app_id_),
+      app_title_(other.app_title_),
+      source_extras_(other.source_extras_ ? other.source_extras_->Clone()
+                                          : nullptr) {}
+
+Result& Result::operator=(const Result& other) {
+  app_source_ = other.app_source_;
+  app_id_ = other.app_id_;
+  app_title_ = other.app_title_;
+  source_extras_ =
+      other.source_extras_ ? other.source_extras_->Clone() : nullptr;
+  return *this;
+}
+
 Result::Result(Result&&) = default;
 
 Result& Result::operator=(Result&&) = default;

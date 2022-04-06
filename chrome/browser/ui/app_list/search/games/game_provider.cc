@@ -98,10 +98,11 @@ void GameProvider::UpdateIndex() {
                                                  weak_factory_.GetWeakPtr()));
 }
 
-void GameProvider::OnIndexUpdated(GameIndex index, apps::DiscoveryError error) {
+void GameProvider::OnIndexUpdated(const GameIndex& index,
+                                  apps::DiscoveryError error) {
   // TODO(crbug.com/1305880): Report the error to UMA.
   if (!index.empty())
-    game_index_ = std::move(index);
+    game_index_ = index;
 }
 
 void GameProvider::Start(const std::u16string& query) {

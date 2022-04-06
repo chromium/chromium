@@ -24,7 +24,7 @@ class PlayExtras : public SourceExtras {
              const bool previously_installed,
              const bool contains_ads,
              const bool optimized_for_chrome);
-  PlayExtras(const PlayExtras&) = delete;
+  PlayExtras(const PlayExtras&);
   PlayExtras& operator=(const PlayExtras&) = delete;
   ~PlayExtras() override;
 
@@ -42,6 +42,7 @@ class PlayExtras : public SourceExtras {
   bool GetOptimizedForChrome() const;
 
   // Result::SourceExtras:
+  std::unique_ptr<SourceExtras> Clone() override;
   PlayExtras* AsPlayExtras() override;
 
  private:

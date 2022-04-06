@@ -24,9 +24,11 @@ class GameExtras : public SourceExtras {
   GameExtras(const absl::optional<std::vector<std::u16string>>& platforms,
              Source source,
              const GURL& icon_url);
-  GameExtras(const GameExtras&) = delete;
+  GameExtras(const GameExtras&);
   GameExtras& operator=(const GameExtras&) = delete;
   ~GameExtras() override;
+
+  std::unique_ptr<SourceExtras> Clone() override;
 
   const absl::optional<std::vector<std::u16string>>& GetPlatforms() const;
   Source GetSource() const;

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/apps/app_discovery_service/play_extras.h"
 
+#include <memory>
+
 namespace apps {
 
 PlayExtras::PlayExtras(const std::string& package_name,
@@ -27,7 +29,13 @@ PlayExtras::PlayExtras(const std::string& package_name,
       contains_ads_(contains_ads),
       optimized_for_chrome_(optimized_for_chrome) {}
 
+PlayExtras::PlayExtras(const PlayExtras&) = default;
+
 PlayExtras::~PlayExtras() = default;
+
+std::unique_ptr<SourceExtras> PlayExtras::Clone() {
+  return std::make_unique<PlayExtras>(*this);
+}
 
 const std::string& PlayExtras::GetPackageName() const {
   return package_name_;

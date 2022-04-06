@@ -23,6 +23,8 @@ class SourceExtras {
   // add a safe downcast here like so:
   // virtual FooExtras* AsFooExtras { return nullptr; }
 
+  virtual std::unique_ptr<SourceExtras> Clone() = 0;
+
   // Safe downcasts:
   virtual GameExtras* AsGameExtras();
   virtual PlayExtras* AsPlayExtras();
@@ -34,6 +36,8 @@ class Result {
          const std::string& app_id,
          const std::u16string& app_title,
          std::unique_ptr<SourceExtras> source_extras);
+  Result(const Result&);
+  Result& operator=(const Result&);
   Result(Result&&);
   Result& operator=(Result&&);
   ~Result();

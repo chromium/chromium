@@ -74,7 +74,7 @@ TEST_F(AppDiscoveryServiceTest, GetAppsFromFetcherNoExtras) {
 
   app_discovery_service->GetApps(
       ResultType::kTestType,
-      base::BindLambdaForTesting([this](std::vector<Result> results,
+      base::BindLambdaForTesting([this](const std::vector<Result>& results,
                                         DiscoveryError error) {
         EXPECT_EQ(error, DiscoveryError::kSuccess);
         EXPECT_EQ(results.size(), 1u);
@@ -101,7 +101,7 @@ TEST_F(AppDiscoveryServiceTest, GetArcAppsFromFetcher) {
 
   app_discovery_service->GetApps(
       ResultType::kTestType,
-      base::BindLambdaForTesting([this](std::vector<Result> results,
+      base::BindLambdaForTesting([this](const std::vector<Result>& results,
                                         DiscoveryError error) {
         EXPECT_EQ(error, DiscoveryError::kSuccess);
         GURL kTestIconUrl(kTestPlayAppIconUrl);

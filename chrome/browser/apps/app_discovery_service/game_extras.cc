@@ -4,6 +4,8 @@
 
 #include "chrome/browser/apps/app_discovery_service/game_extras.h"
 
+#include <memory>
+
 namespace apps {
 
 GameExtras::GameExtras(
@@ -12,7 +14,13 @@ GameExtras::GameExtras(
     const GURL& icon_url)
     : platforms_(platforms), source_(source), icon_url_(icon_url) {}
 
+GameExtras::GameExtras(const GameExtras&) = default;
+
 GameExtras::~GameExtras() = default;
+
+std::unique_ptr<SourceExtras> GameExtras::Clone() {
+  return std::make_unique<GameExtras>(*this);
+}
 
 const absl::optional<std::vector<std::u16string>>& GameExtras::GetPlatforms()
     const {

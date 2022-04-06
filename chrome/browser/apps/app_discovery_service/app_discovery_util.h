@@ -31,7 +31,8 @@ enum class DiscoveryError {
 };
 
 using ResultCallback =
-    base::OnceCallback<void(std::vector<Result> results, DiscoveryError error)>;
+    base::OnceCallback<void(const std::vector<Result>& results,
+                            DiscoveryError error)>;
 
 }  // namespace apps
 

@@ -47,7 +47,7 @@ class GameProvider : public SearchProvider {
 
  private:
   void UpdateIndex();
-  void OnIndexUpdated(GameIndex index, apps::DiscoveryError error);
+  void OnIndexUpdated(const GameIndex& index, apps::DiscoveryError error);
   void OnSearchComplete(
       std::u16string query,
       std::vector<std::pair<const apps::Result*, double>> matches);
