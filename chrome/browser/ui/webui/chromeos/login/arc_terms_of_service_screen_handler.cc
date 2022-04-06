@@ -60,9 +60,13 @@ ArcTermsOfServiceScreenHandler::~ArcTermsOfServiceScreenHandler() {
   OobeUI* oobe_ui = GetOobeUI();
   if (oobe_ui)
     oobe_ui->RemoveObserver(this);
-  chromeos::NetworkHandler::Get()->network_state_handler()->RemoveObserver(
-      this, FROM_HERE);
-  system::TimezoneSettings::GetInstance()->RemoveObserver(this);
+  if (network_time_zone_observing_) {
+    network_time_zone_observing_ = false;
+    chromeos::NetworkHandler::Get()->network_state_handler()->RemoveObserver(
+        this, FROM_HERE);
+    system::TimezoneSettings::GetInstance()->RemoveObserver(this);
+  }
+
   for (auto& observer : observer_list_)
     observer.OnViewDestroyed(this);
 }
@@ -291,7 +295,12 @@ void ArcTermsOfServiceScreenHandler::Show() {
 }
 
 void ArcTermsOfServiceScreenHandler::Hide() {
-  system::TimezoneSettings::GetInstance()->RemoveObserver(this);
+  if (network_time_zone_observing_) {
+    network_time_zone_observing_ = false;
+    chromeos::NetworkHandler::Get()->network_state_handler()->RemoveObserver(
+        this, FROM_HERE);
+    system::TimezoneSettings::GetInstance()->RemoveObserver(this);
+  }
   pref_handler_.reset();
 }
 
@@ -300,7 +309,6 @@ void ArcTermsOfServiceScreenHandler::Bind(ArcTermsOfServiceScreen* screen) {
 }
 
 void ArcTermsOfServiceScreenHandler::StartNetworkAndTimeZoneObserving() {
-  // TODO(crbug.com/1180291) - Clean up work. Fix this logic.
   if (network_time_zone_observing_)
     return;
 
