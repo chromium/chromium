@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/base/bitstream_buffer.h"
 #include "media/base/media_log.h"
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/video_frame.h"

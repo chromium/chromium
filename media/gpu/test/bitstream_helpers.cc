@@ -4,6 +4,8 @@
 
 #include "media/gpu/test/bitstream_helpers.h"
 
+#include "media/base/decoder_buffer.h"
+
 namespace media {
 namespace test {
 

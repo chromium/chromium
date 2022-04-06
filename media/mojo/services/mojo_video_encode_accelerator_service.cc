@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/base/bitstream_buffer.h"
 #include "media/base/limits.h"
 #include "media/mojo/mojom/video_encoder_info.mojom.h"
 #include "media/mojo/services/mojo_media_log.h"

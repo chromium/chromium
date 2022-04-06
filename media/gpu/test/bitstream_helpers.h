@@ -5,12 +5,15 @@
 #ifndef MEDIA_GPU_TEST_BITSTREAM_HELPERS_H_
 #define MEDIA_GPU_TEST_BITSTREAM_HELPERS_H_
 
-#include "base/callback_forward.h"
+#include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "media/video/video_encode_accelerator.h"
 
 namespace media {
+
+class DecoderBuffer;
+
 namespace test {
 
 // This class defines an abstract interface for classes that are interested in

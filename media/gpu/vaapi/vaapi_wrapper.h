@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include <va/va.h>
 
+#include <map>
 #include <memory>
 #include <set>
 #include <vector>

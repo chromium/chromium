@@ -12,18 +12,14 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "media/base/bitrate.h"
-#include "media/base/bitstream_buffer.h"
 #include "media/base/media_export.h"
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/base/video_codecs.h"
-#include "media/base/video_frame.h"
-#include "media/video/h264_parser.h"
+#include "media/base/video_types.h"
 #include "media/video/video_encoder_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

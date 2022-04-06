@@ -11,10 +11,12 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "media/base/bitstream_buffer.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/gpu/test/bitstream_helpers.h"
 #include "media/gpu/test/video_encoder/video_encoder.h"

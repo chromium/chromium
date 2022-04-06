@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/media_log.h"
+#include "media/base/video_frame.h"
 
 namespace media {
 

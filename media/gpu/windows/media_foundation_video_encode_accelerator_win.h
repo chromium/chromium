@@ -24,6 +24,7 @@
 #include "media/base/video_codecs.h"
 #include "media/base/win/dxgi_device_manager.h"
 #include "media/gpu/media_gpu_export.h"
+#include "media/video/h264_parser.h"
 #include "media/video/video_encode_accelerator.h"
 
 namespace media {
