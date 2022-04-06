@@ -1,0 +1,42 @@
+array_value {
+  value {
+    object_value {
+      field {
+        name: "id"
+        value {
+          string_value {
+            value: "a"
+          }
+        }
+      }
+      field {
+        name: "key_piece"
+        value {
+          string_value {
+            value: "0x1"
+          }
+        }
+      }
+    }
+  }
+  value {
+    object_value {
+      field {
+        name: "id"
+        value {
+          string_value {
+            value: "b"
+          }
+        }
+      }
+      field {
+        name: "key_piece"
+        value {
+          string_value {
+            value: "0x11"
+          }
+        }
+      }
+    }
+  }
+}

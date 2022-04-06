@@ -1874,3 +1874,15 @@ fuzzer_test("attribution_event_trigger_data_fuzzer") {
   ]
   seed_corpus = "//third_party/blink/renderer/core/frame/attribution_src/attribution_event_trigger_data_corpus"
 }
+
+fuzzer_test("attribution_aggregatable_source_registration_fuzzer") {
+  sources = [ "frame/attribution_aggregatable_source_registration_fuzzer.cc" ]
+  deps = [
+    ":core",
+    "//testing/libfuzzer/proto:json_proto",
+    "//testing/libfuzzer/proto:json_proto_converter",
+    "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
+    "//third_party/libprotobuf-mutator",
+  ]
+  seed_corpus = "//third_party/blink/renderer/core/frame/attribution_src/attribution_aggregatable_source_registration_corpus"
+}
