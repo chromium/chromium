@@ -539,7 +539,7 @@ int ZEXPORT deflateResetKeep (strm)
 #ifdef GZIP
         s->wrap == 2 ? GZIP_STATE :
 #endif
-        s->wrap ? INIT_STATE : BUSY_STATE;
+        INIT_STATE;
     strm->adler =
 #ifdef GZIP
         s->wrap == 2 ? crc32(0L, Z_NULL, 0) :
@@ -600,7 +600,8 @@ int ZEXPORT deflatePrime (strm, bits, value)
 
     if (deflateStateCheck(strm)) return Z_STREAM_ERROR;
     s = strm->state;
-    if (s->sym_buf < s->pending_out + ((Buf_size + 7) >> 3))
+    if (bits < 0 || bits > 16 ||
+        s->sym_buf < s->pending_out + ((Buf_size + 7) >> 3))
         return Z_BUF_ERROR;
     do {
         put = Buf_size - s->bi_valid;
@@ -862,6 +863,8 @@ int ZEXPORT deflate (strm, flush)
     }
 
     /* Write the header */
+    if (s->status == INIT_STATE && s->wrap == 0)
+        s->status = BUSY_STATE;
     if (s->status == INIT_STATE) {
         /* zlib header */
         uInt header = (Z_DEFLATED + ((s->w_bits-8)<<4)) << 8;
