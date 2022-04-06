@@ -9,6 +9,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -56,12 +57,15 @@
 #import "ios/public/provider/chrome/browser/follow/follow_provider.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
 #include "ios/web/common/user_agent.h"
+#include "ios/web/public/js_messaging/web_frame.h"
+#include "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #include "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -597,6 +601,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                     .GetFollowProvider()
                                     ->GetFollowStatus(siteInfo);
             if (!siteFollowed) {
+              std::string domainName =
+                  web::GetMainFrame(self.webState)->GetSecurityOrigin().host();
+              domainName = domainName.substr(4, domainName.length());
+              strongSelf.followAction.name = l10n_util::GetNSStringF(
+                  IDS_IOS_TOOLS_MENU_FOLLOW, base::UTF8ToUTF16(domainName));
               strongSelf.pageActionsGroup.actions =
                   [@[ strongSelf.followAction ]
                       arrayByAddingObjectsFromArray:strongSelf.pageActionsGroup
