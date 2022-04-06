@@ -9,6 +9,8 @@
 
 goog.provide('PanStrategy');
 
+goog.require('CURSOR_DOTS');
+
 PanStrategy = class {
   constructor() {
     /**
@@ -160,9 +162,9 @@ PanStrategy = class {
         while (startIndex < endIndex) {
           let value = dataView.getUint8(startIndex);
           if (opt_showCursor) {
-            value |= BrailleDisplayManager.CURSOR_DOTS;
+            value |= CURSOR_DOTS;
           } else {
-            value &= ~BrailleDisplayManager.CURSOR_DOTS;
+            value &= ~CURSOR_DOTS;
           }
           dataView.setUint8(startIndex, value);
           startIndex++;

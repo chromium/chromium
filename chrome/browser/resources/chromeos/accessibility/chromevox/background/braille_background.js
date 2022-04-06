@@ -5,6 +5,7 @@
 /**
  * @fileoverview Sends Braille commands to the Braille API.
  */
+import {BrailleDisplayManager} from '../braille/braille_display_manager.js';
 import {BrailleInputHandler} from '../braille/braille_input_handler.js';
 import {BrailleKeyEventRewriter} from '../braille/braille_key_event_rewriter.js';
 

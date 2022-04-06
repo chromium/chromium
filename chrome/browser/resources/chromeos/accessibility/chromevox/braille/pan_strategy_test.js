@@ -13,6 +13,7 @@ ChromeVoxPanStrategyUnitTest = class extends AccessibilityTestBase {};
 ChromeVoxPanStrategyUnitTest.prototype.extraLibraries = [
   '../../common/testing/assert_additions.js',
   '../testing/fake_dom.js',
+  'cursor_dots.js',
   'pan_strategy.js',
 ];
 

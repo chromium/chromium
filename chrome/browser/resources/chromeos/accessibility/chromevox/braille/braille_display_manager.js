@@ -4,21 +4,9 @@
 
 /**
  * @fileoverview Puts text on a braille display.
- *
  */
 
-goog.provide('BrailleDisplayManager');
-
-goog.require('BrailleCaptionsBackground');
-goog.require('BrailleDisplayState');
-goog.require('BrailleTranslatorManager');
-goog.require('ExpandingBrailleTranslator');
-goog.require('LibLouis');
-goog.require('NavBraille');
-goog.require('PanStrategy');
-
-
-BrailleDisplayManager = class {
+export class BrailleDisplayManager {
   /**
    * @param {!BrailleTranslatorManager} translatorManager Keeps track
    *     of the current translator to use.
@@ -500,15 +488,7 @@ BrailleDisplayManager = class {
     this.panStrategy_.setPanStrategy(wordWrap);
     this.refresh_();
   }
-};
-
-
-/**
- * Dots representing a cursor.
- * @const
- */
-BrailleDisplayManager.CURSOR_DOTS = 1 << 6 | 1 << 7;
-
+}
 
 /**
  * Alpha threshold for a pixel to be possibly displayed as a raised dot when
