@@ -181,11 +181,6 @@ class MetricsWebContentsObserver
   // otherwise.
   PageLoadTracker* GetPageLoadTracker(content::RenderFrameHost* rfh);
 
-  // Get the PageLoadTracker associated with `global_request_id` if it exists in
-  // `active_pages_, or nullptr otherwise.
-  PageLoadTracker* GetActivePageLoadTrackerForRequest(
-      const content::GlobalRequestID& global_request_id);
-
   // Gets the memory tracker for the BrowserContext if it exists, or nullptr
   // otherwise. The tracker measures per-frame memory usage by V8.
   PageLoadMetricsMemoryTracker* GetMemoryTracker() const;

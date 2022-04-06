@@ -340,9 +340,6 @@ PageLoadTracker* MetricsWebContentsObserver::GetTrackerOrNullForRequest(
         primary_page_->HasMatchingNavigationRequestID(request_id)) {
       return primary_page_.get();
     }
-  } else if (request_destination ==
-             network::mojom::RequestDestination::kFencedframe) {
-    return GetActivePageLoadTrackerForRequest(request_id);
   } else {
     // Non main resources are always associated with the currently committed
     // load, `primary_page_` or `active_pages_`. If the resource
@@ -573,8 +570,8 @@ void MetricsWebContentsObserver::DidFinishNavigation(
         primary_page_->DidCommitSameDocumentNavigation(navigation_handle);
     } else {
       // Handle the event for non-primary main frames, i.e., FencedFrames.
-      PageLoadTracker* tracker = GetActivePageLoadTrackerForRequest(
-          navigation_handle->GetGlobalRequestID());
+      PageLoadTracker* tracker =
+          GetPageLoadTracker(navigation_handle->GetRenderFrameHost());
       if (tracker)
         tracker->DidCommitSameDocumentNavigation(navigation_handle);
     }
@@ -1183,25 +1180,6 @@ PageLoadTracker* MetricsWebContentsObserver::GetPageLoadTracker(
   if (it != inactive_pages_.end())
     return it->second.get();
 
-  return nullptr;
-}
-
-PageLoadTracker* MetricsWebContentsObserver::GetActivePageLoadTrackerForRequest(
-    const content::GlobalRequestID& global_request_id) {
-  // TODO(https://crbug.com/1301880): We will see a invalid request ID on
-  // DidFinishNavigation when we modified fencedframe tag's src attribute by
-  // JavaScript. This should be fixed to record metrics correctly.
-  if (global_request_id == content::GlobalRequestID())
-    return nullptr;
-
-  // Runs a liner search here as we expect N is small enough. Let's consider
-  // optimizations once this assumtion gets incorrect.
-  for (const auto& kv : active_pages_) {
-    PageLoadTracker* candidate = kv.second.get();
-    DCHECK(candidate);
-    if (candidate->HasMatchingNavigationRequestID(global_request_id))
-      return candidate;
-  }
   return nullptr;
 }
 
