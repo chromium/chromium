@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
-#include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/editing/suggestion/text_suggestion_controller.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -71,6 +70,7 @@ class Fence;
 class FrameConsole;
 class History;
 class IdleRequestOptions;
+class InputMethodController;
 class LocalFrame;
 class MediaQueryList;
 class MessageEvent;

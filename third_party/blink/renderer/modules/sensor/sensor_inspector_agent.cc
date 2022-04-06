@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/modules/sensor/sensor_proxy_inspector_impl.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
 
