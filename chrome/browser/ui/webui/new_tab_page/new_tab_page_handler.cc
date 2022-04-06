@@ -412,8 +412,6 @@ void NewTabPageHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kNtpModulesShownCount, 0);
   registry->RegisterTimePref(prefs::kNtpModulesFirstShownTime, base::Time());
   registry->RegisterBooleanPref(prefs::kNtpModulesFreVisible, true);
-  registry->RegisterIntegerPref(prefs::kNtpModulesFreShownCount, 0);
-  registry->RegisterTimePref(prefs::kNtpModulesFreFirstShownTime, base::Time());
 }
 
 void NewTabPageHandler::SetMostVisitedSettings(bool custom_links_enabled,
@@ -679,41 +677,29 @@ void NewTabPageHandler::IncrementModulesShownCount() {
                                    ntp_modules_shown_count + 1);
 }
 
+void NewTabPageHandler::SetModulesFreVisible(bool visible) {
+  profile_->GetPrefs()->SetBoolean(prefs::kNtpModulesFreVisible, visible);
+  page_->SetModulesFreVisibility(visible);
+}
+
 void NewTabPageHandler::UpdateModulesFreVisibility() {
-  const auto ntp_modules_fre_first_shown_time =
-      profile_->GetPrefs()->GetTime(prefs::kNtpModulesFreFirstShownTime);
-  const auto ntp_modules_fre_shown_count =
-      profile_->GetPrefs()->GetInteger(prefs::kNtpModulesFreShownCount);
-  const auto ntp_modules_fre_visible =
+  const auto ntp_modules_shown_count =
+      profile_->GetPrefs()->GetInteger(prefs::kNtpModulesShownCount);
+  const auto ntp_modules_first_shown_time =
+      profile_->GetPrefs()->GetTime(prefs::kNtpModulesFirstShownTime);
+  auto ntp_modules_fre_visible =
       profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesFreVisible);
 
   // Hide Modular NTP Desktop v1 First Run Experience after 8 impressions or 1
   // day, whichever comes first.
-  if (ntp_modules_fre_shown_count >= 8 ||
-      (!ntp_modules_fre_first_shown_time.is_null() &&
-       (base::Time::Now() - ntp_modules_fre_first_shown_time) >
-           base::Days(1))) {
-    profile_->GetPrefs()->SetBoolean(prefs::kNtpModulesFreVisible, false);
-    page_->SetModulesFreVisibility(false);
+  if (ntp_modules_shown_count >= 8 ||
+      (!ntp_modules_first_shown_time.is_null() &&
+       (base::Time::Now() - ntp_modules_first_shown_time) > base::Days(1))) {
+    ntp_modules_fre_visible = false;
+    SetModulesFreVisible(ntp_modules_fre_visible);
   } else {
     page_->SetModulesFreVisibility(ntp_modules_fre_visible);
   }
-
-  // Count the number of times the user has seen the FRE.
-  if (ntp_modules_fre_visible == true) {
-    // Record time user first sees Modular NTP Desktop v1 First Run Experience
-    if (ntp_modules_fre_shown_count == 0) {
-      profile_->GetPrefs()->SetTime(prefs::kNtpModulesFreFirstShownTime,
-                                    base::Time::Now());
-    }
-    profile_->GetPrefs()->SetInteger(prefs::kNtpModulesFreShownCount,
-                                     ntp_modules_fre_shown_count + 1);
-  }
-}
-
-void NewTabPageHandler::SetModulesFreVisible(bool visible) {
-  profile_->GetPrefs()->SetBoolean(prefs::kNtpModulesFreVisible, visible);
-  UpdateModulesFreVisibility();
 }
 
 void NewTabPageHandler::OnPromoDataUpdated() {

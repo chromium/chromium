@@ -107,8 +107,8 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void SetModulesOrder(const std::vector<std::string>& module_ids) override;
   void GetModulesOrder(GetModulesOrderCallback callback) override;
   void IncrementModulesShownCount() override;
-  void UpdateModulesFreVisibility() override;
   void SetModulesFreVisible(bool visible) override;
+  void UpdateModulesFreVisibility() override;
   void OnAppRendered(double time) override;
   void OnOneGoogleBarRendered(double time) override;
   void OnPromoRendered(double time,

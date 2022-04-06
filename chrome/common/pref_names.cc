@@ -1965,13 +1965,8 @@ const char kNtpModulesVisible[] = "NewTabPage.ModulesVisible";
 const char kNtpModulesShownCount[] = "NewTabPage.ModulesShownCount";
 // Time modules were first shown to user.
 const char kNtpModulesFirstShownTime[] = "NewTabPage.ModulesFirstShownTime";
-// Time Modular NTP Desktop v1 First Run Experience was first shown to user.
-const char kNtpModulesFreFirstShownTime[] =
-    "NewTabPage.ModulesFreFirstShownTime";
 // Whether Modular NTP Desktop v1 First Run Experience is visible.
 const char kNtpModulesFreVisible[] = "NewTabPage.ModulesFreVisible";
-// Number of times Modular NTP Desktop v1 First Run Experience has been visible.
-const char kNtpModulesFreShownCount[] = "NewTabPage.ModulesFreShownCount";
 // List of promos that the user has dismissed while on the NTP.
 const char kNtpPromoBlocklist[] = "ntp.promo_blocklist";
 // Whether the promo is visible.

@@ -696,46 +696,6 @@ TEST_F(NewTabPageHandlerTest, UpdateNtpModulesFreVisibility) {
   mock_page_.FlushForTesting();
 }
 
-TEST_F(NewTabPageHandlerTest, NtpModulesFreShownCount) {
-  handler_->SetModulesFreVisible(true);
-  profile_->GetPrefs()->SetInteger(prefs::kNtpModulesFreShownCount, 7);
-
-  handler_->UpdateModulesFreVisibility();
-
-  EXPECT_EQ(profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesFreVisible),
-            true);
-
-  profile_->GetPrefs()->SetInteger(prefs::kNtpModulesFreShownCount, 9);
-
-  handler_->UpdateModulesFreVisibility();
-
-  EXPECT_EQ(profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesFreVisible),
-            false);
-
-  mock_page_.FlushForTesting();
-}
-
-TEST_F(NewTabPageHandlerTest, NtpModulesFreFirstShownTime) {
-  handler_->SetModulesFreVisible(true);
-  profile_->GetPrefs()->SetTime(prefs::kNtpModulesFreFirstShownTime,
-                                base::Time::Now());
-
-  handler_->UpdateModulesFreVisibility();
-
-  EXPECT_EQ(profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesFreVisible),
-            true);
-
-  profile_->GetPrefs()->SetTime(prefs::kNtpModulesFreFirstShownTime,
-                                base::Time::Now() - base::Days(2));
-
-  handler_->UpdateModulesFreVisibility();
-
-  EXPECT_EQ(profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesFreVisible),
-            false);
-
-  mock_page_.FlushForTesting();
-}
-
 TEST_F(NewTabPageHandlerTest, IncrementModulesShownCount) {
   EXPECT_EQ(profile_->GetPrefs()->GetInteger(prefs::kNtpModulesShownCount), 0);
   EXPECT_EQ(profile_->GetPrefs()->GetTime(prefs::kNtpModulesFirstShownTime),
@@ -746,6 +706,48 @@ TEST_F(NewTabPageHandlerTest, IncrementModulesShownCount) {
   EXPECT_EQ(profile_->GetPrefs()->GetInteger(prefs::kNtpModulesShownCount), 1);
   EXPECT_NE(profile_->GetPrefs()->GetTime(prefs::kNtpModulesFirstShownTime),
             base::Time());
+
+  mock_page_.FlushForTesting();
+}
+
+TEST_F(NewTabPageHandlerTest,
+       UpdateModulesFreVisibilityUsingModulesShownCount) {
+  handler_->SetModulesFreVisible(true);
+  profile_->GetPrefs()->SetInteger(prefs::kNtpModulesShownCount, 7);
+
+  handler_->UpdateModulesFreVisibility();
+
+  EXPECT_EQ(profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesFreVisible),
+            true);
+
+  profile_->GetPrefs()->SetInteger(prefs::kNtpModulesShownCount, 8);
+
+  handler_->UpdateModulesFreVisibility();
+
+  EXPECT_EQ(profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesFreVisible),
+            false);
+
+  mock_page_.FlushForTesting();
+}
+
+TEST_F(NewTabPageHandlerTest,
+       UpdateModulesFreVisibilityUsingModulesFirstShownTime) {
+  handler_->SetModulesFreVisible(true);
+  profile_->GetPrefs()->SetTime(prefs::kNtpModulesFirstShownTime,
+                                base::Time::Now());
+
+  handler_->UpdateModulesFreVisibility();
+
+  EXPECT_EQ(profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesFreVisible),
+            true);
+
+  profile_->GetPrefs()->SetTime(prefs::kNtpModulesFirstShownTime,
+                                base::Time::Now() - base::Days(2));
+
+  handler_->UpdateModulesFreVisibility();
+
+  EXPECT_EQ(profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesFreVisible),
+            false);
 
   mock_page_.FlushForTesting();
 }
