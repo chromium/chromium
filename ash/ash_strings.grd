@@ -4643,6 +4643,9 @@ New install
       <message name="IDS_REMOVE_ZERO_STATE_SUGGESTION_DETAILS" desc="Detailed explanation message for removing removing an omnibox search result from launcher search results UI. This is a text in the dialog shown to the user when they try to remove a suggested omnibox search result from list of results shown in the launcher search - the omnibox search result may appear if the search query in launcher search matches a previous user search. The dialog asks the user to confirm the result removal.">
         You searched for this query before. Deleting this search from your history will permanently remove it from your Google Account across all of your devices.
       </message>
+      <message name="IDS_REMOVE_SUGGESTION_ANNOUNCEMENT" desc="Announcement confirming the removal of an omnibox suggestion from the launcher search results UI.">
+        Search history result deleted
+      </message>
       <message name="IDS_REMOVE_SUGGESTION_BUTTON_LABEL" desc="Remove suggestion button label">
         Delete
       </message>
