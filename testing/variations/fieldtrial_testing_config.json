@@ -5264,6 +5264,31 @@
             ]
         }
     ],
+    "PalmRejectionAdaptiveHold": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "NeuralPalmRejectionAdaptiveHold_20220207",
+                    "enable_features": [
+                        "EnableNeuralPalmAdaptiveHold",
+                        "EnableNeuralPalmRejectionModelV2"
+                    ]
+                },
+                {
+                    "name": "NeuralPalmRejectionModelV2_20220207",
+                    "enable_features": [
+                        "EnableNeuralPalmRejectionModelV2"
+                    ],
+                    "disable_features": [
+                        "EnableNeuralPalmAdaptiveHold"
+                    ]
+                }
+            ]
+        }
+    ],
     "ParkableImages": [
         {
             "platforms": [
