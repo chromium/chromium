@@ -432,6 +432,12 @@ void C::Trace(Visitor* visitor) const {
 }
 ```
 
+Generally, a `Trace()` method would be just a sequence of delegations of the form `visitor->Trace(object);` for fields or `BaseClass::Trace(visitor)` for base classes.
+It should avoid more complex logic such as branches or iterations.
+In case a branch is unavoidable, the branch condition should depend only on const fields of the object.
+In case an iteration is unavoidable, the number of iterations and the location of the buffer that is iterated should also depend only on const fields of the object.
+Using non-const fields in `Trace()` methods may cause data races and other issues in the GC.
+
 ## Heap collections
 
 Oilpan, like any other managed runtime library, provides basic support for collections that integrate its managed types `Member<T>` and `WeakMember<T>`.
