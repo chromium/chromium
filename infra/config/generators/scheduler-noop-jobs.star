@@ -18,11 +18,6 @@ load("//lib/branches.star", "branches")
 load("//project.star", "settings")
 
 _NON_BRANCHED_TESTERS = {
-    # These Android testers are triggered by 'Android arm Builder (dbg)', but we
-    # don't have sufficient capacity of devices with older Android versions, so
-    # we do not run them on the branches
-    "Marshmallow Tablet Tester": branches.STANDARD_MILESTONE,
-
     # These Android testers are triggered by 'Android x64 Builder (dbg)', but
     # they are FYI testers so we do not run them on the branches
     "android-12-x64-dbg-tests": branches.STANDARD_MILESTONE,
