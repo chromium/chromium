@@ -133,7 +133,10 @@ public class PlayerFrameBitmapState {
      * @param viewportRect The rect of the viewport for which bitmaps are needed.
      */
     void requestBitmapForRect(Rect viewportRect) {
-        if (mRequiredBitmaps == null || mBitmapMatrix == null) return;
+        if (mRequiredBitmaps == null || mBitmapMatrix == null || mRequiredBitmaps.length == 0
+                || mRequiredBitmaps[0].length == 0) {
+            return;
+        }
         TraceEvent.begin("PlayerFrameBitmapState.requestBitmapForRect");
         clearBeforeRequest();
 
