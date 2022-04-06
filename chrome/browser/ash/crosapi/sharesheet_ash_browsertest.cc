@@ -115,6 +115,7 @@ class SharesheetAshBrowserTest : public SystemWebAppIntegrationTest {
   SharesheetAshBrowserTest() = default;
   ~SharesheetAshBrowserTest() override = default;
 
+  // SystemWebAppIntegrationTest:
   void SetUpOnMainThread() override {
     SystemWebAppIntegrationTest::SetUpOnMainThread();
     WaitForTestSystemAppInstall();
@@ -123,6 +124,9 @@ class SharesheetAshBrowserTest : public SystemWebAppIntegrationTest {
     // Sharesheet bubble.
     sharesheet::SharesheetService::SetSelectedAppForTesting(
         base::UTF8ToUTF16(web_app::kSampleSystemWebAppId));
+  }
+  void TearDownOnMainThread() override {
+    sharesheet::SharesheetService::SetSelectedAppForTesting(std::u16string());
   }
 };
 

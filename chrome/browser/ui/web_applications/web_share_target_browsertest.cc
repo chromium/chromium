@@ -201,15 +201,6 @@ class WebShareTargetBrowserTest : public WebAppControllerBrowserTest {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
-  void SetSelectedSharesheetApp(const AppId& app_id) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    service_.set_selected_app_id(app_id);
-#else
-    sharesheet::SharesheetService::SetSelectedAppForTesting(
-        base::UTF8ToUTF16(app_id));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  }
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void SetUpOnMainThread() override {
     WebAppControllerBrowserTest::SetUpOnMainThread();
