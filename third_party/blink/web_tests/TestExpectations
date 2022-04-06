@@ -5762,14 +5762,6 @@ crbug.com/1058244 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/scr
 # Sheriff 2020-03-08
 crbug.com/1059645 external/wpt/pointerevents/pointerevent_coalesced_events_attributes.html [ Failure Pass ]
 
-# Failing on Fuchsia due to dependency on FuchsiaMediaResourceProvider, which is not implemented in content_shell.
-crbug.com/1061226 [ Fuchsia ] fast/mediastream/MediaStream-onactive-oninactive.html [ Skip ]
-crbug.com/1061226 [ Fuchsia ] external/wpt/html/cross-origin-embedder-policy/credentialless/video.https.window.html [ Skip ]
-crbug.com/1061226 [ Fuchsia ] external/wpt/mediacapture-streams/MediaStream-idl.https.html [ Skip ]
-crbug.com/1061226 [ Fuchsia ] external/wpt/webaudio/the-audio-api/the-audioworklet-interface/baseaudiocontext-audioworklet.https.html [ Skip ]
-crbug.com/1061226 [ Fuchsia ] external/wpt/webaudio/the-audio-api/the-pannernode-interface/panner-equalpower-stereo.html [ Skip ]
-crbug.com/1061226 [ Fuchsia ] wpt_internal/speech/scripted/speechrecognition-restart-onend.html [ Skip ]
-
 # Sheriff 2020-03-13
 crbug.com/1061131 [ Mac ] editing/selection/replaced-boundaries-1.html [ Failure Pass ]
 
