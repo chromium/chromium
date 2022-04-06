@@ -7,12 +7,9 @@
  * by the user.
  */
 
-
 goog.provide('KeySequence');
 
-goog.require('ChromeVox');
 goog.require('KeyCode');
-
 
 /**
  * A class to represent a sequence of keys entered by a user or affiliated with
@@ -218,7 +215,7 @@ KeySequence = class {
 
     // TODO (rshearer): This is a hack. When the modifier key becomes
     // customizable then we will not have to deal with strings here.
-    const modifierKeyCombo = ChromeVox.modKeyStr.split(/\+/g);
+    const modifierKeyCombo = KeySequence.modKeyStr.split(/\+/g);
 
     const index = this.keys.keyCode.length - 1;
     // For each modifier that is part of the CVox modifier, remove it from keys.
@@ -311,7 +308,7 @@ KeySequence = class {
    */
   isCVoxModifierActive(keyEvent) {
     // TODO (rshearer): Update this when the modifier key becomes customizable
-    let modifierKeyCombo = ChromeVox.modKeyStr.split(/\+/g);
+    let modifierKeyCombo = KeySequence.modKeyStr.split(/\+/g);
 
     // For each modifier that is held down, remove it from the combo.
     // If the combo string becomes empty, then the user has activated the combo.
@@ -420,7 +417,7 @@ KeySequence = class {
         sequenceObject.doubleTap, skipStripping,
         sequenceObject.requireStickyMode);
     if (secondKeyPressed) {
-      ChromeVox.sequenceSwitchKeyCodes.push(
+      KeySequence.sequenceSwitchKeyCodes.push(
           new KeySequence(firstSequenceEvent, sequenceObject.cvoxModifier));
       keySeq.addKeyEvent(secondSequenceEvent);
     }
@@ -555,3 +552,14 @@ KeySequence.KEY_PRESS_CODE = {
  * @type {!Array<KeySequence>}
  */
 KeySequence.doubleTapCache = [];
+
+/**
+ * If any of these keys is pressed with the modifier key, we go in sequence mode
+ * where the subsequent independent key downs (while modifier keys are down)
+ * are a part of the same shortcut.
+ * @public {!Array<KeySequence>}
+ */
+KeySequence.sequenceSwitchKeyCodes = [];
+
+/** @public {string} */
+KeySequence.modKeyStr = 'Search';

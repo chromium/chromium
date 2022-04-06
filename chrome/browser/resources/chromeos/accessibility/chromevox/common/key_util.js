@@ -145,7 +145,7 @@ export class KeyUtil {
    * @return {Array<number>} Array of key codes.
    */
   static cvoxModKeyCodes() {
-    const modKeyCombo = ChromeVox.modKeyStr.split(/\+/g);
+    const modKeyCombo = KeySequence.modKeyStr.split(/\+/g);
     const modKeyCodes = modKeyCombo.map(function(keyString) {
       return KeyUtil.modStringToKeyCode(keyString);
     });
@@ -155,14 +155,14 @@ export class KeyUtil {
   /**
    * Checks if the specified key code is a key used for switching into a
    * sequence mode. Sequence switch keys are specified in
-   * KeyUtil.sequenceSwitchKeyCodes
+   * KeySequence.sequenceSwitchKeyCodes
    *
    * @param {!KeySequence} rhKeySeq The key sequence to check.
    * @return {boolean} true if it is a sequence switch keycode, false otherwise.
    */
   static isSequenceSwitchKeyCode(rhKeySeq) {
-    for (let i = 0; i < ChromeVox.sequenceSwitchKeyCodes.length; i++) {
-      const lhKeySeq = ChromeVox.sequenceSwitchKeyCodes[i];
+    for (let i = 0; i < KeySequence.sequenceSwitchKeyCodes.length; i++) {
+      const lhKeySeq = KeySequence.sequenceSwitchKeyCodes[i];
       if (lhKeySeq.equals(rhKeySeq)) {
         return true;
       }

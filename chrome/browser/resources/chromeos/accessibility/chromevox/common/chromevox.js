@@ -21,8 +21,6 @@ goog.require('TtsInterface');
 goog.require('constants');
 
 ChromeVox = class {
-  constructor() {}
-
   /**
    * Returns whether sticky mode is on, taking both the global sticky mode
    * pref and the temporary sticky mode override into account.
@@ -101,18 +99,6 @@ ChromeVox.keyEcho = {};
  * @type {Object<string, constants.Point>}
  */
 ChromeVox.position = {};
-/**
- * @type {string}
- */
-ChromeVox.modKeyStr = 'Search';
-/**
- * If any of these keys is pressed with the modifier key, we go in sequence mode
- * where the subsequent independent key downs (while modifier keys are down)
- * are a part of the same shortcut.
- * @type {!Array<KeySequence>}
- */
-ChromeVox.sequenceSwitchKeyCodes = [];
-
 
 /**
  * Shortcut for document.getElementById.
