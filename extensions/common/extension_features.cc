@@ -36,10 +36,6 @@ const base::Feature kAllowWithholdingExtensionPermissionsOnInstall{
 const base::Feature kContentScriptsMatchOriginAsFallback{
     "ContentScriptsMatchOriginAsFallback", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Whether Manifest Version 3-based extensions are supported.
-const base::Feature kMv3ExtensionsSupported{"Mv3ExtensionsSupported",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Reports Extensions.WebRequest.KeepaliveRequestFinished when enabled.
 const base::Feature kReportKeepaliveUkm{"ReportKeepaliveUkm",
                                         base::FEATURE_ENABLED_BY_DEFAULT};

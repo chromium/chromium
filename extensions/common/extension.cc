@@ -14,7 +14,6 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
 #include "base/json/json_writer.h"
@@ -31,8 +30,6 @@
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
-#include "extensions/common/extension_features.h"
-#include "extensions/common/feature_switch.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handler.h"
@@ -90,14 +87,6 @@ bool IsManifestSupported(int manifest_version,
                          ManifestLocation location,
                          int creation_flags,
                          std::string* warning) {
-  // The ultimate short-circuit: If the feature for MV3 is disabled, it's not
-  // supported.
-  if (manifest_version == 3 &&
-      !base::FeatureList::IsEnabled(
-          extensions_features::kMv3ExtensionsSupported)) {
-    return false;
-  }
-
   // Supported versions are always safe.
   if (manifest_version >= kMinimumSupportedManifestVersion &&
       manifest_version <= kMaximumSupportedManifestVersion) {

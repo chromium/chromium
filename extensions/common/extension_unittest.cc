@@ -148,15 +148,6 @@ TEST(ExtensionTest, ExtensionManifestVersions) {
     EXPECT_TRUE(
         RunManifestVersionSuccess(get_manifest(absl::nullopt), kType, 1));
   }
-
-  {
-    // If the requisite feature is disabled, Manifest V3 extensions should
-    // fail to load.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(
-        extensions_features::kMv3ExtensionsSupported);
-    EXPECT_TRUE(RunManifestVersionFailure(get_manifest(3)));
-  }
 }
 
 TEST(ExtensionTest, PlatformAppManifestVersions) {
