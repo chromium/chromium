@@ -55,19 +55,16 @@
 
 namespace blink {
 
-const float kSmallCapsFontSizeMultiplier = 0.7f;
-const float kEmphasisMarkFontSizeMultiplier = 0.5f;
+constexpr float kSmallCapsFontSizeMultiplier = 0.7f;
+constexpr float kEmphasisMarkFontSizeMultiplier = 0.5f;
 
 SimpleFontData::SimpleFontData(const FontPlatformData& platform_data,
                                scoped_refptr<CustomFontData> custom_data,
                                bool subpixel_ascent_descent,
                                const FontMetricsOverride& metrics_override)
-    : max_char_width_(-1),
-      avg_char_width_(-1),
-      platform_data_(platform_data),
-      custom_font_data_(std::move(custom_data)),
-      visual_overflow_inflation_for_ascent_(0),
-      visual_overflow_inflation_for_descent_(0) {
+    : platform_data_(platform_data),
+      font_(platform_data_.size() ? platform_data.CreateSkFont() : SkFont()),
+      custom_font_data_(std::move(custom_data)) {
   PlatformInit(subpixel_ascent_descent, metrics_override);
   PlatformGlyphInit();
 }
@@ -83,7 +80,6 @@ void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
 
   SkFontMetrics metrics;
 
-  font_ = platform_data_.CreateSkFont();
   font_.getMetrics(&metrics);
 
   float ascent;
@@ -227,9 +223,10 @@ scoped_refptr<SimpleFontData> SimpleFontData::SmallCapsFontData(
     const FontDescription& font_description) const {
   if (!derived_font_data_)
     derived_font_data_ = std::make_unique<DerivedFontData>();
-  if (!derived_font_data_->small_caps)
+  if (!derived_font_data_->small_caps) {
     derived_font_data_->small_caps =
         CreateScaledFontData(font_description, kSmallCapsFontSizeMultiplier);
+  }
 
   return derived_font_data_->small_caps;
 }
@@ -238,9 +235,10 @@ scoped_refptr<SimpleFontData> SimpleFontData::EmphasisMarkFontData(
     const FontDescription& font_description) const {
   if (!derived_font_data_)
     derived_font_data_ = std::make_unique<DerivedFontData>();
-  if (!derived_font_data_->emphasis_mark)
+  if (!derived_font_data_->emphasis_mark) {
     derived_font_data_->emphasis_mark =
         CreateScaledFontData(font_description, kEmphasisMarkFontSizeMultiplier);
+  }
 
   return derived_font_data_->emphasis_mark;
 }
