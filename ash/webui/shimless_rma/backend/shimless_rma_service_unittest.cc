@@ -2625,6 +2625,31 @@ TEST_F(ShimlessRmaServiceTest, GetLogWrongStateEmpty) {
   run_loop.RunUntilIdle();
 }
 
+TEST_F(ShimlessRmaServiceTest, GetPowerwashRequired) {
+  rmad::GetStateReply repair_complete_state =
+      CreateStateReply(rmad::RmadState::kRepairComplete, rmad::RMAD_ERROR_OK);
+  repair_complete_state.mutable_state()
+      ->mutable_repair_complete()
+      ->set_powerwash_required(true);
+  const std::vector<rmad::GetStateReply> fake_states = {repair_complete_state};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kRepairComplete);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->GetPowerwashRequired(
+      base::BindLambdaForTesting([&](const bool powerwash_required) {
+        EXPECT_EQ(powerwash_required, true);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
 TEST_F(ShimlessRmaServiceTest, EndRmaAndReboot) {
   const std::vector<rmad::GetStateReply> fake_states = {
       CreateStateReply(rmad::RmadState::kRepairComplete, rmad::RMAD_ERROR_OK),

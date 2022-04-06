@@ -831,6 +831,18 @@ void ShimlessRmaService::OnGetLog(GetLogCallback callback,
   std::move(callback).Run(response->log(), response->error());
 }
 
+void ShimlessRmaService::GetPowerwashRequired(
+    GetPowerwashRequiredCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kRepairComplete) {
+    LOG(ERROR) << "GetPowerwashRequired called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(false);
+    return;
+  }
+
+  std::move(callback).Run(state_proto_.repair_complete().powerwash_required());
+}
+
 void ShimlessRmaService::LaunchDiagnostics() {
   if (state_proto_.state_case() != rmad::RmadState::kRepairComplete) {
     LOG(ERROR) << "LaunchDiagnostics called from incorrect state "

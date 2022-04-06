@@ -706,6 +706,18 @@ export class FakeShimlessRmaService {
     this.methods_.setResult('getLog', {log: log, error: RmadErrorCode.kOk});
   }
 
+  /** @return {!Promise<{powerwashRequired: boolean, error: !RmadErrorCode}>} */
+  getPowerwashRequired() {
+    return this.methods_.resolveMethod('getPowerwashRequired');
+  }
+
+  /** @param {boolean} powerwashRequired */
+  setGetPowerwashRequiredResult(powerwashRequired) {
+    this.methods_.setResult(
+        'getPowerwashRequired',
+        {powerwashRequired: powerwashRequired, error: RmadErrorCode.kOk});
+  }
+
   launchDiagnostics() {
     console.log('(Fake) Launching diagnostics...');
   }
@@ -1270,6 +1282,7 @@ export class FakeShimlessRmaService {
     this.methods_.register('writeProtectManuallyEnabled');
 
     this.methods_.register('getLog');
+    this.methods_.register('getPowerwashRequired');
     this.methods_.register('endRmaAndReboot');
     this.methods_.register('endRmaAndShutdown');
     this.methods_.register('endRmaAndCutoffBattery');

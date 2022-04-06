@@ -130,6 +130,7 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
       WriteProtectManuallyEnabledCallback callback) override;
 
   void GetLog(GetLogCallback callback) override;
+  void GetPowerwashRequired(GetPowerwashRequiredCallback callback) override;
   void LaunchDiagnostics() override;
   void EndRmaAndReboot(EndRmaAndRebootCallback callback) override;
   void EndRmaAndShutdown(EndRmaAndShutdownCallback callback) override;

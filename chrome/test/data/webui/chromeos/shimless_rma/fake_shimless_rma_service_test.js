@@ -682,6 +682,22 @@ export function fakeShimlessRmaServiceTestSuite() {
     });
   });
 
+  test('SetGetPowerwashRequiredResultTrueUpdatesResult', () => {
+    service.setGetPowerwashRequiredResult(true);
+
+    return service.getPowerwashRequired().then((result) => {
+      assertEquals(true, result.powerwashRequired);
+    });
+  });
+
+  test('SetGetPowerwashRequiredResultFalseUpdatesResult', () => {
+    service.setGetPowerwashRequiredResult(false);
+
+    return service.getPowerwashRequired().then((result) => {
+      assertEquals(false, result.powerwashRequired);
+    });
+  });
+
   test('EndRmaAndRebootOk', () => {
     let states = [
       {state: State.kRepairComplete, error: RmadErrorCode.kOk},

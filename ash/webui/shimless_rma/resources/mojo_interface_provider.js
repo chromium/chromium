@@ -86,6 +86,7 @@ function setupFakeShimlessRmaService_() {
 
   service.automaticallyTriggerPowerCableStateObservation();
   service.setGetLogResult(fakeLog);
+  service.setGetPowerwashRequiredResult(true);
 
   // Set the fake service.
   setShimlessRmaServiceForTesting(service);
