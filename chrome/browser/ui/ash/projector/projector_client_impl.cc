@@ -155,8 +155,9 @@ void ProjectorClientImpl::MinimizeProjectorApp() const {
 
 void ProjectorClientImpl::OnNewScreencastPreconditionChanged(
     const ash::NewScreencastPrecondition& precondition) const {
-  ash::ProjectorAppClient::Get()->OnNewScreencastPreconditionChanged(
-      precondition);
+  ash::ProjectorAppClient* app_client = ash::ProjectorAppClient::Get();
+  if (app_client)
+    app_client->OnNewScreencastPreconditionChanged(precondition);
 }
 
 void ProjectorClientImpl::SetAnnotatorMessageHandler(
