@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import android.media.MediaCodecInfo.CodecCapabilities;
 import android.media.MediaFormat;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -63,6 +64,11 @@ public class MediaFormatBuilderTest {
     @Before
     public void setUp() {
         ContextUtils.initApplicationContextForTests(RuntimeEnvironment.application);
+    }
+
+    @After
+    public void tearDown() {
+        ContextUtils.clearApplicationContextForTests();
     }
 
     @Test
