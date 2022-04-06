@@ -61,6 +61,41 @@ MATCHER_P(HasAppId, app_id, "Has the correct app id") {
   return arg.AppId() == app_id;
 }
 
+// RemoveObserver is used to test OnAppUpdate for the removed app.
+class RemoveObserver : public apps::AppRegistryCache::Observer {
+ public:
+  explicit RemoveObserver(apps::AppRegistryCache* cache) {
+    cache_ = cache;
+    Observe(cache);
+  }
+
+  ~RemoveObserver() override = default;
+
+  // apps::AppRegistryCache::Observer overrides.
+  void OnAppUpdate(const apps::AppUpdate& update) override {
+    updated_ids_.push_back(update.AppId());
+    readinesses_.push_back(update.Readiness());
+  }
+
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override {
+    Observe(nullptr);
+  }
+
+  void Clear() {
+    updated_ids_.clear();
+    readinesses_.clear();
+  }
+
+  std::vector<std::string> updated_ids() const { return updated_ids_; }
+  std::vector<apps::Readiness> readinesses() const { return readinesses_; }
+
+ private:
+  std::vector<std::string> updated_ids_;
+  std::vector<apps::Readiness> readinesses_;
+  apps::AppRegistryCache* cache_ = nullptr;
+};
+
 // Responds to a cache's OnAppUpdate to call back into the cache, checking that
 // the cache presents a self-consistent snapshot. For example, the app names
 // should match for the outer and inner AppUpdate.
@@ -588,6 +623,165 @@ TEST_P(AppRegistryCacheTest, Removed) {
   cache.RemoveObserver(&observer);
 
   EXPECT_TRUE(cache.GetAllApps().empty());
+}
+
+TEST_P(AppRegistryCacheTest, RemovedAndAdded) {
+  AppRegistryCache cache;
+  RemoveObserver observer(&cache);
+  cache.SetAccountId(account_id());
+
+  // We add the app, and expect to be notified.
+  std::vector<AppPtr> apps;
+  apps.push_back(MakeApp("app", "app", AppType::kArc, Readiness::kReady));
+  cache.OnApps(std::move(apps), AppType::kUnknown,
+               false /* should_notify_initialized */);
+
+  std::vector<apps::mojom::AppPtr> mojom_apps;
+  mojom_apps.push_back(MakeMojomApp("app", "app", apps::mojom::AppType::kArc,
+                                    apps::mojom::Readiness::kReady));
+  cache.OnApps(std::move(mojom_apps), apps::mojom::AppType::kUnknown,
+               false /* should_notify_initialized */);
+
+  // Verify "app" is notified via OnAppUpdate.
+  CallForAllApps(cache);
+  EXPECT_EQ(1u, updated_ids_.size());
+  EXPECT_EQ(1u, updated_names_.size());
+  EXPECT_NE(updated_ids_.end(), updated_ids_.find("app"));
+  EXPECT_NE(updated_names_.end(), updated_names_.find("app"));
+  Clear();
+
+  // Verify "app" is notified via OnAppUpdate as the kReady status.
+  ASSERT_EQ(1u, observer.updated_ids().size());
+  ASSERT_EQ(1u, observer.readinesses().size());
+  EXPECT_EQ("app", observer.updated_ids()[0]);
+  EXPECT_EQ(Readiness::kReady, observer.readinesses()[0]);
+  observer.Clear();
+
+  // Uninstall the app, then remove it, and add it back again.
+  apps.clear();
+  apps.push_back(
+      MakeApp("app", "app", AppType::kArc, Readiness::kUninstalledByUser));
+  apps.push_back(MakeApp("app", "app", AppType::kArc, Readiness::kRemoved));
+  apps.push_back(MakeApp("app", "app", AppType::kArc, Readiness::kReady));
+
+  mojom_apps.clear();
+  mojom_apps.push_back(
+      MakeMojomApp("app", "app", apps::mojom::AppType::kArc,
+                   apps::mojom::Readiness::kUninstalledByUser));
+  mojom_apps.push_back(MakeMojomApp("app", "app", apps::mojom::AppType::kArc,
+                                    apps::mojom::Readiness::kRemoved));
+  mojom_apps.push_back(MakeMojomApp("app", "app", apps::mojom::AppType::kArc,
+                                    apps::mojom::Readiness::kReady));
+
+  cache.OnApps(std::move(apps), AppType::kUnknown,
+               false /* should_notify_initialized */);
+
+  cache.OnApps(std::move(mojom_apps), apps::mojom::AppType::kUnknown,
+               false /* should_notify_initialized */);
+
+  // The cache is not empty, "app" is still saved in the cache.
+  EXPECT_EQ(1, AppCount(cache));
+  CallForAllApps(cache);
+  EXPECT_EQ(1u, updated_ids_.size());
+  EXPECT_EQ(1u, updated_names_.size());
+  EXPECT_NE(updated_ids_.end(), updated_ids_.find("app"));
+  EXPECT_NE(updated_names_.end(), updated_names_.find("app"));
+  Clear();
+
+  // Verify OnAppUpdate notifies the update for "app" as:
+  // 1: kUninstalledByUser status
+  // 2: kReady status
+  ASSERT_EQ(2u, observer.updated_ids().size());
+  ASSERT_EQ(2u, observer.readinesses().size());
+  EXPECT_EQ("app", observer.updated_ids()[0]);
+  EXPECT_EQ(Readiness::kUninstalledByUser, observer.readinesses()[0]);
+  EXPECT_EQ("app", observer.updated_ids()[1]);
+  EXPECT_EQ(Readiness::kReady, observer.readinesses()[1]);
+}
+
+TEST_P(AppRegistryCacheTest, RemovedAndAddMultipleApps) {
+  AppRegistryCache cache;
+  RemoveObserver observer(&cache);
+  cache.SetAccountId(account_id());
+
+  // We add the app, and expect to be notified.
+  std::vector<AppPtr> apps;
+  apps.push_back(MakeApp("app1", "app1", AppType::kArc, Readiness::kReady));
+  cache.OnApps(std::move(apps), AppType::kUnknown,
+               false /* should_notify_initialized */);
+
+  std::vector<apps::mojom::AppPtr> mojom_apps;
+  mojom_apps.push_back(MakeMojomApp("app1", "app1", apps::mojom::AppType::kArc,
+                                    apps::mojom::Readiness::kReady));
+  cache.OnApps(std::move(mojom_apps), apps::mojom::AppType::kUnknown,
+               false /* should_notify_initialized */);
+
+  // Verify "app1" is added to the cache and is notified via OnAppUpdate.
+  CallForAllApps(cache);
+  EXPECT_EQ(1u, updated_ids_.size());
+  EXPECT_EQ(1u, updated_names_.size());
+  EXPECT_NE(updated_ids_.end(), updated_ids_.find("app1"));
+  EXPECT_NE(updated_names_.end(), updated_names_.find("app1"));
+  Clear();
+
+  // Verify "app1" is notified via OnAppUpdate as the kReady status.
+  ASSERT_EQ(1u, observer.updated_ids().size());
+  ASSERT_EQ(1u, observer.readinesses().size());
+  EXPECT_EQ("app1", observer.updated_ids()[0]);
+  EXPECT_EQ(Readiness::kReady, observer.readinesses()[0]);
+  observer.Clear();
+
+  // Add multiple app updates for 1 OnApps call:
+  // 1. Uninstall "app1", then remove it, and add it back again.
+  // 2. Add "app2" as the kDisabledByPolicy status.
+  apps.clear();
+  apps.push_back(
+      MakeApp("app1", "app1", AppType::kArc, Readiness::kUninstalledByUser));
+  apps.push_back(MakeApp("app1", "app1", AppType::kArc, Readiness::kRemoved));
+  apps.push_back(MakeApp("app1", "app1", AppType::kArc, Readiness::kReady));
+  apps.push_back(
+      MakeApp("app2", "app2", AppType::kArc, Readiness::kDisabledByPolicy));
+
+  mojom_apps.clear();
+  mojom_apps.push_back(
+      MakeMojomApp("app1", "app1", apps::mojom::AppType::kArc,
+                   apps::mojom::Readiness::kUninstalledByUser));
+  mojom_apps.push_back(MakeMojomApp("app1", "app1", apps::mojom::AppType::kArc,
+                                    apps::mojom::Readiness::kRemoved));
+  mojom_apps.push_back(MakeMojomApp("app1", "app1", apps::mojom::AppType::kArc,
+                                    apps::mojom::Readiness::kReady));
+  mojom_apps.push_back(MakeMojomApp("app2", "app2", apps::mojom::AppType::kArc,
+                                    apps::mojom::Readiness::kDisabledByPolicy));
+
+  cache.OnApps(std::move(apps), AppType::kUnknown,
+               false /* should_notify_initialized */);
+
+  cache.OnApps(std::move(mojom_apps), apps::mojom::AppType::kUnknown,
+               false /* should_notify_initialized */);
+
+  // The cache is not empty. Verify both "app1" and "app2" exist in the cache.
+  EXPECT_EQ(2, AppCount(cache));
+  CallForAllApps(cache);
+  EXPECT_EQ(2u, updated_ids_.size());
+  EXPECT_EQ(2u, updated_names_.size());
+  EXPECT_NE(updated_ids_.end(), updated_ids_.find("app1"));
+  EXPECT_NE(updated_names_.end(), updated_names_.find("app1"));
+  EXPECT_NE(updated_ids_.end(), updated_ids_.find("app2"));
+  EXPECT_NE(updated_names_.end(), updated_names_.find("app2"));
+  Clear();
+
+  // Verify the OnAppUpdate result:
+  // 1. {app1: kUninstalledByUser}.
+  // 2. {app1: kReady}.
+  // 3. {app2: kDisabledByPolicy}.
+  ASSERT_EQ(3u, observer.updated_ids().size());
+  ASSERT_EQ(3u, observer.readinesses().size());
+  EXPECT_EQ("app1", observer.updated_ids()[0]);
+  EXPECT_EQ(Readiness::kUninstalledByUser, observer.readinesses()[0]);
+  EXPECT_EQ("app1", observer.updated_ids()[1]);
+  EXPECT_EQ(Readiness::kReady, observer.readinesses()[1]);
+  EXPECT_EQ("app2", observer.updated_ids()[2]);
+  EXPECT_EQ(Readiness::kDisabledByPolicy, observer.readinesses()[2]);
 }
 
 TEST_P(AppRegistryCacheTest, Observer) {

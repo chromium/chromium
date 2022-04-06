@@ -119,7 +119,19 @@ void AppRegistryCache::DoOnApps(std::vector<apps::mojom::AppPtr> deltas) {
   // Merge any deltas elements that have the same app_id. If an observer's
   // OnAppUpdate calls back into this AppRegistryCache then we can therefore
   // present a single delta for any given app_id.
+  bool is_pending = false;
   for (auto& delta : deltas) {
+    if (is_pending) {
+      mojom_deltas_pending_.push_back(std::move(delta));
+      continue;
+    }
+    // As soon as we see a removed update, we need to defer future merges to
+    // avoid cases where a removed update is merged with a future non-removed
+    // update.
+    if (delta->readiness == mojom::Readiness::kRemoved) {
+      is_pending = true;
+    }
+
     auto d_iter = mojom_deltas_in_progress_.find(delta->app_id);
     if (d_iter != mojom_deltas_in_progress_.end()) {
       if (delta->readiness == mojom::Readiness::kRemoved) {
@@ -181,7 +193,31 @@ void AppRegistryCache::DoOnApps(std::vector<AppPtr> deltas) {
   // Merge any deltas elements that have the same app_id. If an observer's
   // OnAppUpdate calls back into this AppRegistryCache then we can therefore
   // present a single delta for any given app_id.
+  bool is_pending = false;
   for (auto& delta : deltas) {
+    if (is_pending) {
+      deltas_pending_.push_back(std::move(delta));
+      continue;
+    }
+    if (delta->readiness == Readiness::kRemoved) {
+      // As soon as we see a removed update, we need to defer future merges to
+      // avoid cases where a removed update is merged with a future non-removed
+      // update.
+      //
+      // For example, for below apps deltas:
+      // 1. {App1: ready}
+      // 2. {App1: uninstalled, App1: removed}
+      // 3. {App1: disabled by policy, App2: ready}
+      //
+      // The expected result for OnAppUpdate is:
+      // {App1: ready}
+      // {App1: uninstalled}
+      // Then App1 is removed in AppRegistry, GetAppType returns kUnknown.
+      // {App1: is added as disabled by policy}
+      // {App2: ready}
+      is_pending = true;
+    }
+
     auto d_iter = deltas_in_progress_.find(delta->app_id);
     if (d_iter != deltas_in_progress_.end()) {
       if (delta->readiness == Readiness::kRemoved) {
