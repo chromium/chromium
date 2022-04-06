@@ -10,10 +10,11 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/supports_user_data.h"
 #include "components/content_capture/browser/content_capture_frame.h"
 #include "components/content_capture/common/content_capture.mojom.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
 class WebContents;
@@ -31,12 +32,11 @@ class ContentCaptureConsumer;
 // the ContentCaptureReceiver and associates it with RenderFrameHost, it also
 // binds ContentCaptureReceiver with its peer ContentCaptureSender in renderer.
 // The ContentSession here is used to specify which frame the message came from.
-class OnscreenContentProvider : public content::WebContentsObserver,
-                                public base::SupportsUserData::Data {
+class OnscreenContentProvider
+    : public content::WebContentsObserver,
+      public content::WebContentsUserData<OnscreenContentProvider> {
  public:
   ~OnscreenContentProvider() override;
-  static OnscreenContentProvider* FromWebContents(
-      content::WebContents* contents);
   static OnscreenContentProvider* Create(content::WebContents* web_contents);
 
   // Binds the |request| with the |render_frame_host| associated
@@ -94,6 +94,11 @@ class OnscreenContentProvider : public content::WebContentsObserver,
 #endif
 
  private:
+  friend class content::WebContentsUserData<OnscreenContentProvider>;
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  using content::WebContentsUserData<
+      OnscreenContentProvider>::CreateForWebContents;
+
   explicit OnscreenContentProvider(content::WebContents* web_contents);
 
   ContentCaptureReceiver* ContentCaptureReceiverForFrame(
@@ -121,7 +126,8 @@ class OnscreenContentProvider : public content::WebContentsObserver,
       content::RenderFrameHost* render_frame_host,
       const std::vector<blink::mojom::FaviconURLPtr>& candidates);
 
-  std::map<content::RenderFrameHost*, std::unique_ptr<ContentCaptureReceiver>>
+  std::map<content::GlobalRenderFrameHostId,
+           std::unique_ptr<ContentCaptureReceiver>>
       frame_map_;
 
   std::vector<ContentCaptureConsumer*> consumers_;
