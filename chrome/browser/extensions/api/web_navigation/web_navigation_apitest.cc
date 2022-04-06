@@ -357,7 +357,14 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, ForwardBack) {
   ASSERT_TRUE(RunTest("webnavigation/forwardBack")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(WebNavigationApiBackForwardCacheTest, ForwardBack) {
+// TODO(crbug.com/1313923): Flaky on Mac10.14
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ForwardBack DISABLED_ForwardBack
+#else
+#define MAYBE_ForwardBack ForwardBack
+#endif
+IN_PROC_BROWSER_TEST_F(WebNavigationApiBackForwardCacheTest,
+                       MAYBE_ForwardBack) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webnavigation/backForwardCache")) << message_;
 }
