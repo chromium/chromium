@@ -103,12 +103,6 @@ void OpensPasswordsInOtherApps() {
   _passwordAutoFillStatusSwizzler.reset();
 }
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(kCredentialProviderExtensionPromo);
-  return config;
-}
-
 #pragma mark - helper functions
 
 // Tests that the banner image, title and subtitle are visible.

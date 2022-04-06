@@ -6,10 +6,6 @@ source_set("ui") {
   sources = [
     "consent_coordinator.h",
     "consent_coordinator.mm",
-    "consent_legacy_coordinator.h",
-    "consent_legacy_coordinator.mm",
-    "consent_legacy_view_controller.h",
-    "consent_legacy_view_controller.mm",
     "consent_view_controller.h",
     "consent_view_controller.mm",
     "credential_details_consumer.h",

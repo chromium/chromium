@@ -92,11 +92,6 @@ extern const char kContentSuggestionsUIViewControllerMigrationDescription[];
 extern const char kCrashpadIOSName[];
 extern const char kCrashpadIOSDescription[];
 
-// Title and description for the flag to trigger credentials provider extension
-// promo.
-extern const char kCredentialProviderExtensionPromoName[];
-extern const char kCredentialProviderExtensionPromoDescription[];
-
 #if defined(DCHECK_IS_CONFIGURABLE)
 // Title and description for the flag to enable configurable DCHECKs.
 extern const char kDcheckIsFatalName[];

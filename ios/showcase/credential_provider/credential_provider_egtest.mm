@@ -75,22 +75,6 @@ id<GREYMatcher> PromoStyleMoreInfoButtonMatcher() {
   showcase_utils::Close();
 }
 
-// Tests ConsentLegacyViewController.
-- (void)testLegacyConsentScreen {
-  showcase_utils::Open(@"ConsentLegacyViewController");
-  [[EarlGrey selectElementWithMatcher:ConfirmationAlertTitleMatcher()]
-      assertWithMatcher:grey_interactable()];
-  [[EarlGrey selectElementWithMatcher:ConfirmationAlertSubtitleMatcher()]
-      assertWithMatcher:grey_interactable()];
-  [[EarlGrey
-      selectElementWithMatcher:ConfirmationAlertPrimaryActionButtonMatcher()]
-      assertWithMatcher:grey_interactable()];
-  [[EarlGrey selectElementWithMatcher:ConfirmationAlertMoreInfoButtonMatcher()]
-      assertWithMatcher:grey_interactable()];
-
-  showcase_utils::Close();
-}
-
 // Tests ConsentViewController.
 - (void)testEmptyCredentialsScreen {
   showcase_utils::Open(@"EmptyCredentialsViewController");

@@ -29,7 +29,6 @@
 #import "ios/chrome/browser/ui/settings/password/passwords_settings_commands.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_controller_presentation_delegate.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -151,11 +150,9 @@
   self.passwordDetailsCoordinator.delegate = nil;
   self.passwordDetailsCoordinator = nil;
 
-  if (base::FeatureList::IsEnabled(kCredentialProviderExtensionPromo)) {
-    [self.passwordsInOtherAppsCoordinator stop];
-    self.passwordsInOtherAppsCoordinator.delegate = nil;
-    self.passwordsInOtherAppsCoordinator = nil;
-  }
+  [self.passwordsInOtherAppsCoordinator stop];
+  self.passwordsInOtherAppsCoordinator.delegate = nil;
+  self.passwordsInOtherAppsCoordinator = nil;
 
   [self.mediator disconnect];
 }

@@ -965,12 +965,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
   NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
 
-  NSNumber* credentialProviderExtensionPromoValue =
-      [NSNumber numberWithBool:base::FeatureList::IsEnabled(
-                                   kCredentialProviderExtensionPromo)];
-  NSNumber* credentialProviderExtensionPromoVersion =
-      [NSNumber numberWithInt:kCredentialProviderExtensionPromoFeatureVersion];
-
   NSNumber* passwordManagerBrandingUpdateValue =
       @(base::FeatureList::IsEnabled(kIOSEnablePasswordManagerBrandingUpdate));
   NSNumber* passwordManagerBrandingUpdateVersion =
@@ -990,10 +984,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   //   }
   // }
   NSDictionary* fieldTrialValues = @{
-    base::SysUTF8ToNSString(kCredentialProviderExtensionPromo.name) : @{
-      kFieldTrialValueKey : credentialProviderExtensionPromoValue,
-      kFieldTrialVersionKey : credentialProviderExtensionPromoVersion,
-    },
     base::SysUTF8ToNSString(kIOSEnablePasswordManagerBrandingUpdate.name) : @{
       kFieldTrialValueKey : passwordManagerBrandingUpdateValue,
       kFieldTrialVersionKey : passwordManagerBrandingUpdateVersion,

@@ -10,8 +10,6 @@
 // Whether password creation is enabled for this user by preference.
 BOOL IsPasswordCreationUserEnabled();
 
-BOOL IsCredentialProviderExtensionPromoEnabled();
-
 // Whether the password manager branding UI update feature is enabled.
 BOOL IsPasswordManagerBrandingUpdateEnable();
 

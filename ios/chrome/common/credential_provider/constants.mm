@@ -110,6 +110,3 @@ NSString* const kUserDefaultsCredentialProviderASIdentityStoreSyncCompleted =
 
 NSString* const kUserDefaultsCredentialProviderFirstTimeSyncCompleted =
     @"UserDefaultsCredentialProviderFirstTimeSyncCompleted.V1";
-
-NSString* const kUserDefaultsCredentialProviderConsentVerified =
-    @"UserDefaultsCredentialProviderConsentVerified";

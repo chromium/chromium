@@ -39,10 +39,6 @@ extern NSString* const
 // to be sync once Chrome is updated.
 extern NSString* const kUserDefaultsCredentialProviderFirstTimeSyncCompleted;
 
-// Key for the app group user defaults indicating if the user has enabled and
-// given consent for the credential provider extension.
-extern NSString* const kUserDefaultsCredentialProviderConsentVerified;
-
 // Values of the UMA IOS.CredentialExtension.PasswordCreated. Must be kept up to
 // date with IOSCredentialProviderPasswordCreated in enums.xml. These values are
 // persisted to logs. Entries should not be renumbered and numeric values should

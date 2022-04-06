@@ -106,13 +106,6 @@ const char kCrashpadIOSDescription[] =
     "When enabled use Crashpad to generate crash reports crash collection. "
     "When disabled use Breakpad. This flag takes two restarts to take effect";
 
-const char kCredentialProviderExtensionPromoName[] =
-    "Enable the credential provider extension promo";
-const char kCredentialProviderExtensionPromoDescription[] =
-    "When enabled, a new item 'Passwords In Other Apps' item will be available "
-    "Chrome passwords settings, containing promotional instructions to enable"
-    "password autofill using Chrome.";
-
 #if defined(DCHECK_IS_CONFIGURABLE)
 const char kDcheckIsFatalName[] = "DCHECKs are fatal";
 const char kDcheckIsFatalDescription[] =

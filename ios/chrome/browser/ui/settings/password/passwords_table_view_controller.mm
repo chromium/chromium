@@ -62,7 +62,6 @@
 #import "ios/chrome/browser/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
@@ -580,14 +579,12 @@ bool IsFaviconEnabled() {
   }
 
   // Passwords in other apps.
-  if (base::FeatureList::IsEnabled(kCredentialProviderExtensionPromo)) {
-    [model addSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps];
-    if (!_passwordsInOtherAppsItem) {
-      _passwordsInOtherAppsItem = [self passwordsInOtherAppsItem];
-    }
-    [model addItem:_passwordsInOtherAppsItem
-        toSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps];
+  [model addSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps];
+  if (!_passwordsInOtherAppsItem) {
+    _passwordsInOtherAppsItem = [self passwordsInOtherAppsItem];
   }
+  [model addItem:_passwordsInOtherAppsItem
+      toSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps];
 
   // Password check.
   [model addSectionWithIdentifier:SectionIdentifierPasswordCheck];
