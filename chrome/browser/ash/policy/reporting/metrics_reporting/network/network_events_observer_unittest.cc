@@ -11,12 +11,24 @@
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
 #include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace reporting {
 namespace {
+
+constexpr int kSignalStrength = 10;
+// Guids.
+constexpr char kWifiGuid[] = "wifi-guid";
+constexpr char kWifiIdleGuid[] = "wifi-idle-guid";
+constexpr char kCellularGuid[] = "cellular-guid";
+// Service paths.
+constexpr char kWifiServicePath[] = "/service/wlan";
+constexpr char kWifiIdleServicePath[] = "/service/wifi-idle";
+constexpr char kCellularServicePath[] = "/service/cellular";
 
 struct NetworkConnectionStateTestCase {
   std::string test_name;
@@ -35,29 +47,54 @@ class NetworkEventsObserverTest
 
   ~NetworkEventsObserverTest() override = default;
 
-  void SetUp() override { ::chromeos::CrosHealthdClient::InitializeFake(); }
+  void SetUp() override {
+    ::chromeos::CrosHealthdClient::InitializeFake();
+    auto* const service_client = network_handler_test_helper_.service_test();
+    auto* const device_client = network_handler_test_helper_.device_test();
+
+    task_environment_.RunUntilIdle();
+    service_client->ClearServices();
+    device_client->ClearDevices();
+    task_environment_.RunUntilIdle();
+
+    service_client->AddService(kWifiServicePath, kWifiGuid, "wifi-name",
+                               shill::kTypeWifi, shill::kStateReady, true);
+
+    service_client->AddService(kWifiIdleServicePath, kWifiIdleGuid,
+                               "wifi-idle-name", shill::kTypeWifi,
+                               shill::kStateIdle, true);
+
+    service_client->AddService(kCellularServicePath, kCellularGuid,
+                               "cellular-network-name", shill::kTypeCellular,
+                               shill::kStateReady, true);
+    service_client->SetServiceProperty(
+        kCellularServicePath, shill::kIccidProperty, base::Value("test_iccid"));
+    task_environment_.RunUntilIdle();
+  }
 
   void TearDown() override { ::chromeos::CrosHealthdClient::Shutdown(); }
 
  private:
   base::test::TaskEnvironment task_environment_;
+
+  ::ash::NetworkHandlerTestHelper network_handler_test_helper_;
 };
 
-TEST_F(NetworkEventsObserverTest, SignalStrength) {
-  const std::string kGuid = "guid";
-  const int kSignalStrength = 10;
-
+TEST_F(NetworkEventsObserverTest, WifiSignalStrength) {
   NetworkEventsObserver network_events_observer;
   MetricData result_metric_data;
+  bool event_reported = false;
   auto cb = base::BindLambdaForTesting([&](MetricData metric_data) {
+    event_reported = true;
     result_metric_data = std::move(metric_data);
   });
 
   network_events_observer.SetOnEventObservedCallback(std::move(cb));
   network_events_observer.OnSignalStrengthChanged(
-      kGuid,
+      kWifiGuid,
       ::chromeos::network_health::mojom::UInt32Value::New(kSignalStrength));
 
+  ASSERT_TRUE(event_reported);
   ASSERT_TRUE(result_metric_data.has_event_data());
   EXPECT_EQ(result_metric_data.event_data().type(),
             MetricEventType::NETWORK_SIGNAL_STRENGTH_CHANGE);
@@ -71,7 +108,7 @@ TEST_F(NetworkEventsObserverTest, SignalStrength) {
                 .networks_telemetry()
                 .network_telemetry(0)
                 .guid(),
-            kGuid);
+            kWifiGuid);
   EXPECT_EQ(result_metric_data.telemetry_data()
                 .networks_telemetry()
                 .network_telemetry(0)
@@ -79,9 +116,36 @@ TEST_F(NetworkEventsObserverTest, SignalStrength) {
             kSignalStrength);
 }
 
+TEST_F(NetworkEventsObserverTest, WifiSignalStrength_NotConnected) {
+  NetworkEventsObserver network_events_observer;
+  bool event_reported = false;
+  auto cb =
+      base::BindLambdaForTesting([&](MetricData) { event_reported = true; });
+
+  network_events_observer.SetOnEventObservedCallback(std::move(cb));
+  network_events_observer.OnSignalStrengthChanged(
+      kWifiIdleGuid,
+      ::chromeos::network_health::mojom::UInt32Value::New(kSignalStrength));
+
+  ASSERT_FALSE(event_reported);
+}
+
+TEST_F(NetworkEventsObserverTest, CellularSignalStrength) {
+  NetworkEventsObserver network_events_observer;
+  bool event_reported = false;
+  auto cb =
+      base::BindLambdaForTesting([&](MetricData) { event_reported = true; });
+
+  network_events_observer.SetOnEventObservedCallback(std::move(cb));
+  network_events_observer.OnSignalStrengthChanged(
+      kCellularGuid,
+      ::chromeos::network_health::mojom::UInt32Value::New(kSignalStrength));
+
+  ASSERT_FALSE(event_reported);
+}
+
 TEST_P(NetworkEventsObserverTest, ConnectionState) {
   const NetworkConnectionStateTestCase& test_case = GetParam();
-  const std::string kGuid = "guid";
 
   NetworkEventsObserver network_events_observer;
   MetricData result_metric_data;
@@ -90,7 +154,7 @@ TEST_P(NetworkEventsObserverTest, ConnectionState) {
   });
 
   network_events_observer.SetOnEventObservedCallback(std::move(cb));
-  network_events_observer.OnConnectionStateChanged(kGuid,
+  network_events_observer.OnConnectionStateChanged(kWifiGuid,
                                                    test_case.input_state);
 
   ASSERT_TRUE(result_metric_data.has_event_data());
@@ -106,7 +170,7 @@ TEST_P(NetworkEventsObserverTest, ConnectionState) {
                 .networks_telemetry()
                 .network_telemetry(0)
                 .guid(),
-            kGuid);
+            kWifiGuid);
   EXPECT_EQ(result_metric_data.telemetry_data()
                 .networks_telemetry()
                 .network_telemetry(0)

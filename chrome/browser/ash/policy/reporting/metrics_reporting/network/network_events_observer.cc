@@ -6,10 +6,28 @@
 
 #include <utility>
 
+#include "chromeos/network/network_state_handler.h"
+#include "chromeos/network/network_type_pattern.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 
 namespace reporting {
+namespace {
+
+bool IsConnectedWifiNetwork(const std::string& guid) {
+  const auto* network_state = ::ash::NetworkHandler::Get()
+                                  ->network_state_handler()
+                                  ->GetNetworkStateFromGuid(guid);
+  if (!network_state) {
+    return false;
+  }
+  const auto network_type =
+      ::ash::NetworkTypePattern::Primitive(network_state->type());
+  return network_state->IsConnectedState() &&
+         network_type.Equals(::ash::NetworkTypePattern::WiFi());
+}
+
+}  // namespace
 
 NetworkEventsObserver::NetworkEventsObserver()
     : CrosHealthdEventsObserverBase<
@@ -57,6 +75,10 @@ void NetworkEventsObserver::OnConnectionStateChanged(
 void NetworkEventsObserver::OnSignalStrengthChanged(
     const std::string& guid,
     chromeos::network_health::mojom::UInt32ValuePtr signal_strength) {
+  if (!IsConnectedWifiNetwork(guid)) {
+    return;
+  }
+
   MetricData metric_data;
   metric_data.mutable_event_data()->set_type(
       MetricEventType::NETWORK_SIGNAL_STRENGTH_CHANGE);
