@@ -145,6 +145,23 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
 
   MinMaxSizes ComputeIntrinsicLogicalWidths() const final;
 
+  // Represents a transform for the CSS `object-fit` property. Similar to
+  // |AffineTransform| but this guarantees no rotation and therefore safe to
+  // apply to rectangles.
+  // TODO(kojii): scale not implemented yet.
+  class ObjectFit {
+   public:
+    explicit ObjectFit(PhysicalOffset offset) : offset_(offset) {}
+
+    PhysicalOffset Apply(const PhysicalOffset& offset) const;
+    gfx::Rect Apply(const gfx::Rect& rect) const;
+    PhysicalOffset ApplyInverse(const PhysicalOffset& offset) const;
+    gfx::PointF ApplyInverse(const gfx::PointF& point) const;
+
+   private:
+    PhysicalOffset offset_;
+  };
+
   // This function calculates the placement of the replaced contents. It takes
   // intrinsic size of the replaced contents, stretch to fit CSS content box
   // according to object-fit, object-position and object-view-box.
