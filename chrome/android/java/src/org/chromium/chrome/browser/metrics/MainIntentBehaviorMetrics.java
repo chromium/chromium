@@ -101,7 +101,7 @@ public class MainIntentBehaviorMetrics {
         if (current - timestamp > DateUtils.DAY_IN_MILLIS) {
             // Log count if it's not first launch of Chrome.
             if (timestamp != 0) {
-                RecordHistogram.recordCountHistogram("MobileStartup.DailyLaunchCount", count);
+                RecordHistogram.recordCount1MHistogram("MobileStartup.DailyLaunchCount", count);
             }
             count = 0;
             prefs.writeLong(ChromePreferenceKeys.METRICS_MAIN_INTENT_LAUNCH_TIMESTAMP, current);

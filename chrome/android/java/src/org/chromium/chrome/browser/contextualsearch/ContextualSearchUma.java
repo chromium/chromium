@@ -608,8 +608,8 @@ public class ContextualSearchUma {
      */
     public static void logPromoTapsRemaining(int promoTapsRemaining) {
         if (promoTapsRemaining >= 0) {
-            RecordHistogram.recordCountHistogram("Search.ContextualSearchPromoTapsRemaining",
-                    promoTapsRemaining);
+            RecordHistogram.recordCount1MHistogram(
+                    "Search.ContextualSearchPromoTapsRemaining", promoTapsRemaining);
         }
     }
 
@@ -621,8 +621,8 @@ public class ContextualSearchUma {
      *        for users that have never opened the panel.
      */
     public static void logPromoTapsForNeverOpened(int promoTaps) {
-        RecordHistogram.recordCountHistogram("Search.ContextualSearchPromoTapsForNeverOpened",
-                promoTaps);
+        RecordHistogram.recordCount1MHistogram(
+                "Search.ContextualSearchPromoTapsForNeverOpened", promoTaps);
     }
 
     /**
@@ -632,8 +632,8 @@ public class ContextualSearchUma {
      *        before the first open of the panel, for all users that have ever opened the panel.
      */
     public static void logPromoTapsBeforeFirstOpen(int promoTaps) {
-        RecordHistogram.recordCountHistogram("Search.ContextualSearchPromoTapsBeforeFirstOpen",
-                promoTaps);
+        RecordHistogram.recordCount1MHistogram(
+                "Search.ContextualSearchPromoTapsBeforeFirstOpen", promoTaps);
     }
 
     /**
@@ -643,7 +643,7 @@ public class ContextualSearchUma {
      *        current user.
      */
     public static void logPromoOpenCount(int count) {
-        RecordHistogram.recordCountHistogram("Search.ContextualSearchPromoOpenCount", count);
+        RecordHistogram.recordCount1MHistogram("Search.ContextualSearchPromoOpenCount", count);
     }
 
     /**
@@ -652,7 +652,7 @@ public class ContextualSearchUma {
      * @param count The total historic count of times the revised promo card ever been shown.
      */
     public static void logRevisedPromoOpenCount(int count) {
-        RecordHistogram.recordCountHistogram("Search.ContextualSearchPromoOpenCount2", count);
+        RecordHistogram.recordCount1MHistogram("Search.ContextualSearchPromoOpenCount2", count);
     }
 
     /**
@@ -661,8 +661,8 @@ public class ContextualSearchUma {
      * @param tapsSinceOpen The number of taps to log.
      */
     public static void logTapsSinceOpenForUndecided(int tapsSinceOpen) {
-        RecordHistogram.recordCountHistogram("Search.ContextualSearchTapsSinceOpenUndecided",
-                tapsSinceOpen);
+        RecordHistogram.recordCount1MHistogram(
+                "Search.ContextualSearchTapsSinceOpenUndecided", tapsSinceOpen);
     }
 
     /**
@@ -671,8 +671,8 @@ public class ContextualSearchUma {
      * @param tapsSinceOpen The number of taps to log.
      */
     public static void logTapsSinceOpenForDecided(int tapsSinceOpen) {
-        RecordHistogram.recordCountHistogram("Search.ContextualSearchTapsSinceOpenDecided",
-                tapsSinceOpen);
+        RecordHistogram.recordCount1MHistogram(
+                "Search.ContextualSearchTapsSinceOpenDecided", tapsSinceOpen);
     }
 
     /**
@@ -1437,7 +1437,7 @@ public class ContextualSearchUma {
      * @param previousWeekCtr The CTR expressed as a percentage.
      */
     public static void logPreviousWeekCtr(int previousWeekImpressions, int previousWeekCtr) {
-        RecordHistogram.recordCountHistogram(
+        RecordHistogram.recordCount1MHistogram(
                 "Search.ContextualSearchPreviousWeekImpressions", previousWeekImpressions);
         RecordHistogram.recordPercentageHistogram(
                 "Search.ContextualSearchPreviousWeekCtr", previousWeekCtr);
@@ -1449,7 +1449,7 @@ public class ContextualSearchUma {
      * @param previous28DayCtr The CTR expressed as a percentage.
      */
     public static void logPrevious28DayCtr(int previous28DayImpressions, int previous28DayCtr) {
-        RecordHistogram.recordCountHistogram(
+        RecordHistogram.recordCount1MHistogram(
                 "Search.ContextualSearchPrevious28DayImpressions", previous28DayImpressions);
         RecordHistogram.recordPercentageHistogram(
                 "Search.ContextualSearchPrevious28DayCtr", previous28DayCtr);

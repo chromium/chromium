@@ -284,7 +284,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
         TabGroupModelFilter incognitoFilter =
                 (TabGroupModelFilter) provider.getTabModelFilter(true);
         int groupCount = normalFilter.getTabGroupCount() + incognitoFilter.getTabGroupCount();
-        RecordHistogram.recordCountHistogram("TabGroups.UserGroupCount", groupCount);
+        RecordHistogram.recordCount1MHistogram("TabGroups.UserGroupCount", groupCount);
         if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
             int namedGroupCount = 0;
             for (int i = 0; i < normalFilter.getTabGroupCount(); i++) {
@@ -299,7 +299,8 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                     namedGroupCount += 1;
                 }
             }
-            RecordHistogram.recordCountHistogram("TabGroups.UserNamedGroupCount", namedGroupCount);
+            RecordHistogram.recordCount1MHistogram(
+                    "TabGroups.UserNamedGroupCount", namedGroupCount);
         }
     }
 

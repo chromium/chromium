@@ -182,7 +182,7 @@ class BindingManager implements ComponentCallbacks2 {
                 // Tests may not load the native library which is required for
                 // recording histograms.
                 if (LibraryLoader.getInstance().isInitialized()) {
-                    RecordHistogram.recordCountHistogram(
+                    RecordHistogram.recordCount1MHistogram(
                             "Android.ModerateBindingCount", mConnections.size());
                 }
                 removeAllConnections();

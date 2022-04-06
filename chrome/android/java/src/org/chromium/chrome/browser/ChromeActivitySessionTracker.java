@@ -198,8 +198,7 @@ public class ChromeActivitySessionTracker {
             if (tabModelSelectorSupplier == null || !tabModelSelectorSupplier.hasValue()) continue;
             totalTabCount += tabModelSelectorSupplier.get().getTotalTabCount();
         }
-        RecordHistogram.recordCountHistogram(
-                "Tab.TotalTabCount.BeforeLeavingApp", totalTabCount);
+        RecordHistogram.recordCount1MHistogram("Tab.TotalTabCount.BeforeLeavingApp", totalTabCount);
 
         Tracker tracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
         tracker.notifyEvent(EventConstants.FOREGROUND_SESSION_DESTROYED);

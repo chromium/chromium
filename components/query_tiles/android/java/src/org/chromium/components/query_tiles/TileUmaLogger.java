@@ -34,7 +34,7 @@ public class TileUmaLogger {
         if (mTopLevelTiles != null) return;
         mTopLevelTiles = tiles;
 
-        RecordHistogram.recordCountHistogram(
+        RecordHistogram.recordCount1MHistogram(
                 "Search." + mHistogramPrefix + ".TileCount", mTopLevelTiles.size());
     }
 

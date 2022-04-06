@@ -112,11 +112,11 @@ class ReadingListSectionHeader {
             }
         }
         RecordUserAction.record("Android.BookmarkPage.ReadingList.OpenReadingList");
-        RecordHistogram.recordCountHistogram(
+        RecordHistogram.recordCount1MHistogram(
                 "Bookmarks.ReadingList.NumberOfReadItems", numReadItems);
-        RecordHistogram.recordCountHistogram(
+        RecordHistogram.recordCount1MHistogram(
                 "Bookmarks.ReadingList.NumberOfUnreadItems", numUnreadItems);
-        RecordHistogram.recordCountHistogram(
+        RecordHistogram.recordCount1MHistogram(
                 "Bookmarks.ReadingList.NumberOfItems", numReadItems + numUnreadItems);
     }
 }

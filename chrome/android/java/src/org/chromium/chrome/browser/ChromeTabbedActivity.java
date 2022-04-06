@@ -1138,7 +1138,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         if (shouldRefreshAndShowOverview(isOverviewVisible)) {
             if (getCurrentTabModel() != null) {
-                RecordHistogram.recordCountHistogram(
+                RecordHistogram.recordCount1MHistogram(
                         TAB_COUNT_ON_RETURN, getCurrentTabModel().getCount());
             }
             if (TabUiFeatureUtilities.isGridTabSwitcherEnabled(this)) {

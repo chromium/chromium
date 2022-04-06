@@ -52,7 +52,7 @@ public class RecordHistogram {
      * @param name name of the histogram
      * @param sample sample to be recorded, at least 1 and at most 999999
      */
-    public static void recordCountHistogram(String name, int sample) {
+    public static void recordCount1MHistogram(String name, int sample) {
         UmaRecorderHolder.get().recordExponentialHistogram(name, sample, 1, 1_000_000, 50);
     }
 

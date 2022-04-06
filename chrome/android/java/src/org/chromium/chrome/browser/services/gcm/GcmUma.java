@@ -43,7 +43,7 @@ public class GcmUma {
         // registrations, or only gives us messages that have one, but in either case we
         // should log true here.
         RecordHistogram.recordBooleanHistogram("GCM.DataMessageReceivedHasRegisteredApp", true);
-        RecordHistogram.recordCountHistogram("GCM.DataMessageReceived", 1);
+        RecordHistogram.recordCount1MHistogram("GCM.DataMessageReceived", 1);
         RecordHistogram.recordBooleanHistogram(
                 "GCM.DataMessageReceivedHasCollapseKey", hasCollapseKey);
     }

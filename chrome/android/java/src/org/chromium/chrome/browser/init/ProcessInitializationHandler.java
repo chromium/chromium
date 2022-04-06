@@ -708,7 +708,7 @@ public class ProcessInitializationHandler {
                 }
             }
         }
-        RecordHistogram.recordCountHistogram("InputMethod.ActiveCount", uniqueLanguages.size());
+        RecordHistogram.recordCount1MHistogram("InputMethod.ActiveCount", uniqueLanguages.size());
 
         InputMethodSubtype currentSubtype = imm.getCurrentInputMethodSubtype();
         Locale systemLocale = Locale.getDefault();

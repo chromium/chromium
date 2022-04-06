@@ -110,8 +110,8 @@ public class TabUma extends EmptyTabObserver implements UserData {
         if (errorCode == NetError.OK) {
             RecordHistogram.recordEnumeratedHistogram(
                     "Tab.RestoreResult", TAB_RESTORE_RESULT_SUCCESS, TAB_RESTORE_RESULT_COUNT);
-            RecordHistogram.recordCountHistogram("Tab.RestoreTime", (int) time);
-            RecordHistogram.recordCountHistogram("Tab.PerceivedRestoreTime", (int) perceivedTime);
+            RecordHistogram.recordCount1MHistogram("Tab.RestoreTime", (int) time);
+            RecordHistogram.recordCount1MHistogram("Tab.PerceivedRestoreTime", (int) perceivedTime);
         } else {
             switch (errorCode) {
                 case NetError.ERR_INTERNET_DISCONNECTED:
@@ -173,7 +173,7 @@ public class TabUma extends EmptyTabObserver implements UserData {
         // incognito tab and the current normal mode tab is shown).
         if (mLastShownTimestamp != -1 && selectionType == TabSelectionType.FROM_USER) {
             long age = now - mLastShownTimestamp;
-            RecordHistogram.recordCountHistogram("Tab.SwitchedToForegroundAge", (int) age);
+            RecordHistogram.recordCount1MHistogram("Tab.SwitchedToForegroundAge", (int) age);
         }
 
         increaseTabShowCount();
@@ -216,10 +216,10 @@ public class TabUma extends EmptyTabObserver implements UserData {
         if (mLastShownTimestamp == -1 && previousTimestampMillis > 0) {
             long duration = System.currentTimeMillis() - previousTimestampMillis;
             if (isOnBrowserStartup) {
-                RecordHistogram.recordCountHistogram("Tabs.ForegroundTabAgeAtStartup",
+                RecordHistogram.recordCount1MHistogram("Tabs.ForegroundTabAgeAtStartup",
                         (int) (duration / DateUtils.MINUTE_IN_MILLIS));
             } else if (selectionType == TabSelectionType.FROM_USER) {
-                RecordHistogram.recordCountHistogram("Tab.AgeUponRestoreFromColdStart",
+                RecordHistogram.recordCount1MHistogram("Tab.AgeUponRestoreFromColdStart",
                         (int) (duration / DateUtils.MINUTE_IN_MILLIS));
             }
         }

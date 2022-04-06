@@ -145,7 +145,7 @@ public abstract class FirstRunFlowSequencer  {
         AccountManagerFacadeProvider.getInstance().getAccounts().then(accounts -> {
             AccountUtils.checkChildAccountStatus(
                     AccountManagerFacadeProvider.getInstance(), accounts, (isChild, account) -> {
-                        RecordHistogram.recordCountHistogram(
+                        RecordHistogram.recordCount1MHistogram(
                                 "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE",
                                 Math.min(accounts.size(), 2));
                         RecordHistogram.recordTimesHistogram("MobileFre.ChildAccountStatusDuration",

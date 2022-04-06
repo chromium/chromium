@@ -266,9 +266,9 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void onSiteStorageSizeCalculated(long totalSize, long unimportantSize) {
-        RecordHistogram.recordCountHistogram("Android.ManageSpace.TotalDiskUsageMB",
+        RecordHistogram.recordCount1MHistogram("Android.ManageSpace.TotalDiskUsageMB",
                 (int) ConversionUtils.bytesToMegabytes(totalSize));
-        RecordHistogram.recordCountHistogram("Android.ManageSpace.UnimportantDiskUsageMB",
+        RecordHistogram.recordCount1MHistogram("Android.ManageSpace.UnimportantDiskUsageMB",
                 (int) ConversionUtils.bytesToMegabytes(unimportantSize));
         mSiteDataSizeText.setText(Formatter.formatFileSize(this, totalSize));
         mUnimportantSiteDataSizeText.setText(Formatter.formatFileSize(this, unimportantSize));

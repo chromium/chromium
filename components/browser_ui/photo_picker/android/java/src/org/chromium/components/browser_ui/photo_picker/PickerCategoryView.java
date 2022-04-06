@@ -657,9 +657,9 @@ public class PickerCategoryView extends RelativeLayout
     private void recordFinalUmaStats(int action) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.PhotoPicker.DialogAction", action, ACTION_BOUNDARY);
-        RecordHistogram.recordCountHistogram(
+        RecordHistogram.recordCount1MHistogram(
                 "Android.PhotoPicker.DecodeRequests", mPickerAdapter.getDecodeRequestCount());
-        RecordHistogram.recordCountHistogram(
+        RecordHistogram.recordCount1MHistogram(
                 "Android.PhotoPicker.CacheHits", mPickerAdapter.getCacheHitCount());
     }
 

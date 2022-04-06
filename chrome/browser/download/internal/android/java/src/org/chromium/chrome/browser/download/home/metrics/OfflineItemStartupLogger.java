@@ -75,19 +75,19 @@ public class OfflineItemStartupLogger implements OfflineItemFilterObserver {
             }
         }
 
-        RecordHistogram.recordCountHistogram(
+        RecordHistogram.recordCount1MHistogram(
                 "Android.DownloadManager.InitialCount.Total", mSource.getItems().size());
 
         for (Entry<Integer /* Filters.FilterType */, Integer /* Count */> count :
                 counts.entrySet()) {
-            RecordHistogram.recordCountHistogram("Android.DownloadManager.InitialCount."
+            RecordHistogram.recordCount1MHistogram("Android.DownloadManager.InitialCount."
                             + UmaUtils.getSuffixForFilter(count.getKey()),
                     count.getValue());
         }
 
         for (Entry<Integer /* Filters.FilterType */, Integer /* Count */> count :
                 viewedCounts.entrySet()) {
-            RecordHistogram.recordCountHistogram("Android.DownloadManager.InitialCount.Viewed."
+            RecordHistogram.recordCount1MHistogram("Android.DownloadManager.InitialCount.Viewed."
                             + UmaUtils.getSuffixForFilter(count.getKey()),
                     count.getValue());
         }

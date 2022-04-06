@@ -125,7 +125,7 @@ public class StartupPaintPreviewMetrics {
         }
 
         RecordUserAction.record("PaintPreview.TabbedPlayer.Removed");
-        RecordHistogram.recordCountHistogram(
+        RecordHistogram.recordCount1MHistogram(
                 "Browser.PaintPreview.TabbedPlayer.SnackbarCount", snackbarShownCount);
         RecordHistogram.recordEnumeratedHistogram(
                 "Browser.PaintPreview.TabbedPlayer.ExitCause", exitCause, ExitCause.COUNT);

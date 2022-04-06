@@ -109,7 +109,7 @@ public class ScreenshotTabObserver extends EmptyTabObserver implements UserData 
     /** Before leaving a page, report screenshot related UMA and reset screenshot counter. */
     private void reportScreenshotUMA(Tab tab) {
         if (mScreenshotsTaken > 0) {
-            RecordHistogram.recordCountHistogram(
+            RecordHistogram.recordCount1MHistogram(
                     "Tab.Screenshot.ScreenshotsPerPage", mScreenshotsTaken);
             RecordHistogram.recordEnumeratedHistogram(
                     "Tab.Screenshot.Action", mScreenshotAction, SCREENSHOT_ACTION_COUNT);

@@ -51,7 +51,7 @@ public class ShadowRecordHistogram {
     }
 
     @Implementation
-    protected static void recordCountHistogram(String name, int sample) {
+    protected static void recordCount1MHistogram(String name, int sample) {
         Pair<String, Integer> key = Pair.create(name, sample);
         recordSample(key);
     }

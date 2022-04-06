@@ -296,7 +296,7 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
                 int numTabs = listOfTabs.size();
                 // This is set to zero because the UI is hidden.
                 if (!mIsTabGroupUiVisible || numTabs == 1) numTabs = 0;
-                RecordHistogram.recordCountHistogram("TabStrip.TabCountOnPageLoad", numTabs);
+                RecordHistogram.recordCount1MHistogram("TabStrip.TabCountOnPageLoad", numTabs);
             }
 
             @Override

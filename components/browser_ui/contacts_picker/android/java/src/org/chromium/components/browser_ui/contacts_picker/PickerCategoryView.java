@@ -457,8 +457,8 @@ public class PickerCategoryView extends OptimizedFrameLayout
             int percentageShared, int propertiesRequested) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.ContactsPicker.DialogAction", action, ACTION_BOUNDARY);
-        RecordHistogram.recordCountHistogram("Android.ContactsPicker.ContactCount", contactCount);
-        RecordHistogram.recordCountHistogram("Android.ContactsPicker.SelectCount", selectCount);
+        RecordHistogram.recordCount1MHistogram("Android.ContactsPicker.ContactCount", contactCount);
+        RecordHistogram.recordCount1MHistogram("Android.ContactsPicker.SelectCount", selectCount);
         RecordHistogram.recordPercentageHistogram(
                 "Android.ContactsPicker.SelectPercentage", percentageShared);
         RecordHistogram.recordEnumeratedHistogram("Android.ContactsPicker.PropertiesRequested",

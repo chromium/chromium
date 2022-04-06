@@ -96,7 +96,7 @@ public class RelatedSearchesUma {
      *    UI does not show the default selection search in position 0.
      */
     public static void logSelectedSuggestionIndex(int position) {
-        RecordHistogram.recordCountHistogram(
+        RecordHistogram.recordCount1MHistogram(
                 "Search.RelatedSearches.SelectedSuggestionIndex", position);
     }
 
@@ -107,7 +107,7 @@ public class RelatedSearchesUma {
      * @param position The 0-based position in the carousel.
      */
     public static void logSelectedCarouselIndex(int position) {
-        RecordHistogram.recordCountHistogram(
+        RecordHistogram.recordCount1MHistogram(
                 "Search.RelatedSearches.SelectedCarouselIndex", position);
     }
 
@@ -128,7 +128,7 @@ public class RelatedSearchesUma {
      */
     public static void logNumberOfSuggestionsClicked(int numberOfSuggestionsClicked) {
         if (numberOfSuggestionsClicked > 0) {
-            RecordHistogram.recordCountHistogram(
+            RecordHistogram.recordCount1MHistogram(
                     "Search.RelatedSearches.NumberOfSuggestionsClicked2",
                     numberOfSuggestionsClicked);
         }
@@ -139,7 +139,7 @@ public class RelatedSearchesUma {
      * @param position The last visible item position in the carousel.
      */
     public static void logCarouselLastVisibleItemPosition(int position) {
-        RecordHistogram.recordCountHistogram(
+        RecordHistogram.recordCount1MHistogram(
                 "Search.RelatedSearches.CarouselLastVisibleItemPosition", position);
     }
 

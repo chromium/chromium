@@ -241,7 +241,7 @@ public class TabGroupModelFilter extends TabModelFilter {
 
         AsyncTask.THREAD_POOL_EXECUTOR.execute(() -> {
             int sessionsCount = updateAndGetSessionsCount(groupId);
-            RecordHistogram.recordCountHistogram("TabGroups.SessionsPerGroup", sessionsCount);
+            RecordHistogram.recordCount1MHistogram("TabGroups.SessionsPerGroup", sessionsCount);
         });
     }
 

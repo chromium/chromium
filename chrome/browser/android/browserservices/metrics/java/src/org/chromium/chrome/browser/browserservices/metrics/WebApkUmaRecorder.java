@@ -213,7 +213,7 @@ public class WebApkUmaRecorder {
 
     /** Records to UMA the count of old "WebAPK update request" files. */
     public static void recordNumberOfStaleWebApkUpdateRequestFiles(int count) {
-        RecordHistogram.recordCountHistogram("WebApk.Update.NumStaleUpdateRequestFiles", count);
+        RecordHistogram.recordCount1MHistogram("WebApk.Update.NumStaleUpdateRequestFiles", count);
     }
 
     /** Records whether Chrome could bind to the WebAPK service. */
