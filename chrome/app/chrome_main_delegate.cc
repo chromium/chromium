@@ -87,6 +87,7 @@
 
 #include "base/debug/close_handle_hook_win.h"
 #include "base/files/important_file_writer_cleaner.h"
+#include "base/threading/platform_thread_win.h"
 #include "base/win/atl.h"
 #include "chrome/child/v8_crashpad_support_win.h"
 #include "chrome/chrome_elf/chrome_elf_main.h"
@@ -704,6 +705,7 @@ void ChromeMainDelegate::PostFieldTrialInitialization() {
   SetUpExtendedCrashReporting(is_browser_process);
   base::sequence_manager::internal::ThreadControllerPowerMonitor::
       InitializeOnMainThread();
+  base::InitializePlatformThreadFeatures();
 #endif
 
   // Initialize the HangWatcher.

@@ -11,6 +11,7 @@
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/profiler.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -35,7 +36,14 @@
 
 namespace base {
 
+const Feature kUseThreadPriorityLowest = {"UseThreadPriorityLowest",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 namespace {
+
+// Flag used to set thread priority to |THREAD_PRIORITY_LOWEST| for
+// |kUseThreadPriorityLowest| Feature.
+std::atomic<bool> g_use_thread_priority_lowest;
 
 // The most common value returned by ::GetThreadPriority() after background
 // thread mode is enabled on Windows 7.
@@ -363,7 +371,7 @@ void PlatformThread::SetCurrentThreadPriorityImpl(ThreadPriority priority) {
   PlatformThreadHandle::Handle thread_handle =
       PlatformThread::CurrentHandle().platform_handle();
 
-  if (priority != ThreadPriority::BACKGROUND) {
+  if (!g_use_thread_priority_lowest && priority != ThreadPriority::BACKGROUND) {
     // Exit background mode if the new priority is not BACKGROUND. This is a
     // no-op if not in background mode.
     ::SetThreadPriority(thread_handle, THREAD_MODE_BACKGROUND_END);
@@ -380,7 +388,10 @@ void PlatformThread::SetCurrentThreadPriorityImpl(ThreadPriority priority) {
       // MSDN recommends THREAD_MODE_BACKGROUND_BEGIN for threads that perform
       // background work, as it reduces disk and memory priority in addition to
       // CPU priority.
-      desired_priority = THREAD_MODE_BACKGROUND_BEGIN;
+      desired_priority =
+          g_use_thread_priority_lowest.load(std::memory_order_relaxed)
+              ? THREAD_PRIORITY_LOWEST
+              : THREAD_MODE_BACKGROUND_BEGIN;
       break;
     case ThreadPriority::NORMAL:
       desired_priority = THREAD_PRIORITY_NORMAL;
@@ -404,7 +415,7 @@ void PlatformThread::SetCurrentThreadPriorityImpl(ThreadPriority priority) {
   DPLOG_IF(ERROR, !success) << "Failed to set thread priority to "
                             << desired_priority;
 
-  if (priority == ThreadPriority::BACKGROUND) {
+  if (!g_use_thread_priority_lowest && priority == ThreadPriority::BACKGROUND) {
     // In a background process, THREAD_MODE_BACKGROUND_BEGIN lowers the memory
     // and I/O priorities but not the CPU priority (kernel bug?). Use
     // THREAD_PRIORITY_LOWEST to also lower the CPU priority.
@@ -481,6 +492,12 @@ ThreadPriority PlatformThread::GetCurrentThreadPriority() {
 
   NOTREACHED() << "::GetThreadPriority returned " << priority << ".";
   return ThreadPriority::NORMAL;
+}
+
+void InitializePlatformThreadFeatures() {
+  g_use_thread_priority_lowest.store(
+      FeatureList::IsEnabled(kUseThreadPriorityLowest),
+      std::memory_order_relaxed);
 }
 
 // static
