@@ -61,18 +61,6 @@ class AURA_EXPORT DragDropDelegate {
   // when the drag session was canceled and the mouse was over the window.
   virtual void OnDragExited() = 0;
 
-  // Invoked during a drag and drop session when OnDragUpdated returns a valid
-  // operation and the user release the mouse. This function gets the ownership
-  // of underlying OSExchangeData. A reference to this same OSExchangeData is
-  // also stored in the DropTargetEvent. Implementor of this function should be
-  // aware of keeping the OSExchageData alive until it wants to access it
-  // through the parameter or the stored reference in DropTargetEvent.
-  // TODO(crbug.com/1175682): Remove OnPerformDrop and switch to GetDropCallback
-  // instead.
-  virtual ui::mojom::DragOperation OnPerformDrop(
-      const ui::DropTargetEvent& event,
-      std::unique_ptr<ui::OSExchangeData> data);
-
   // Invoked during a drag and drop session when the user release the mouse, but
   // the drop is held because of the DataTransferPolicyController.
   // The returned callback may be NullCallback if there's nothing to do and the

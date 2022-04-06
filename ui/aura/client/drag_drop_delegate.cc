@@ -25,12 +25,6 @@ DragUpdateInfo& DragUpdateInfo::operator=(const DragUpdateInfo& update_info) =
 
 DEFINE_UI_CLASS_PROPERTY_KEY(DragDropDelegate*, kDragDropDelegateKey, nullptr)
 
-ui::mojom::DragOperation DragDropDelegate::OnPerformDrop(
-    const ui::DropTargetEvent& event,
-    std::unique_ptr<ui::OSExchangeData> data) {
-  return ui::mojom::DragOperation::kNone;
-}
-
 void SetDragDropDelegate(Window* window, DragDropDelegate* delegate) {
   window->SetProperty(kDragDropDelegateKey, delegate);
 }

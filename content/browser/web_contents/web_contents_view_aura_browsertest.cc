@@ -633,7 +633,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, DragDropOnOopif) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, OnPerformDrop_DeepScanOK) {
+IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, Drop_DeepScanOK) {
   StartTestWithPage("/simple_page.html");
   WebContentsImpl* contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
@@ -680,7 +680,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, OnPerformDrop_DeepScanOK) {
 
   // The user can drag something in and drop it.
   view->OnDragEntered(new_event);
-  view->OnPerformDrop(new_event, std::move(new_data));
+  drop_cb = view->GetDropCallback(new_event);
+  output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(std::move(new_data), output_drag_op);
   EXPECT_FALSE(drag_dest_delegate_.GetOnDropCalled());
 
   delegate->FinishScan();
@@ -690,7 +692,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, OnPerformDrop_DeepScanOK) {
   EXPECT_FALSE(drag_dest_delegate_.GetOnDragLeaveCalled());
 }
 
-IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, OnPerformDrop_DeepScanBad) {
+IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, Drop_DeepScanBad) {
   StartTestWithPage("/simple_page.html");
   WebContentsImpl* contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
@@ -737,7 +739,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, OnPerformDrop_DeepScanBad) {
 
   // The user can drag something in and drop it.
   view->OnDragEntered(new_event);
-  view->OnPerformDrop(new_event, std::move(new_data));
+  drop_cb = view->GetDropCallback(new_event);
+  output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(std::move(new_data), output_drag_op);
   EXPECT_FALSE(drag_dest_delegate_.GetOnDropCalled());
 
   delegate->FinishScan();

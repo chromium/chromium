@@ -113,13 +113,6 @@ aura::client::DragUpdateInfo CastWMHelper::OnDragUpdated(
 
 void CastWMHelper::OnDragExited() {}
 
-ui::mojom::DragOperation CastWMHelper::OnPerformDrop(
-    const ui::DropTargetEvent& event,
-    std::unique_ptr<ui::OSExchangeData> data) {
-  NOTIMPLEMENTED();
-  return ui::mojom::DragOperation::kMove;
-}
-
 WMHelper::DropCallback CastWMHelper::GetDropCallback(
     const ui::DropTargetEvent& event) {
   NOTIMPLEMENTED();
