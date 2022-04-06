@@ -505,7 +505,7 @@ TEST_F(NativeInputMethodEngineTest, FocusCallsRightMojoFunctions) {
 }
 
 TEST_F(NativeInputMethodEngineTest,
-       DisablesAutocorrectAndLearningAtLockScreen) {
+       DisablesAutocorrectAndLearningAndIMEAtLockScreen) {
   TestingProfile testing_profile;
   SetInputMethodOptions(testing_profile, /*autocorrect_enabled=*/true,
                         /*predictive_writing_enabled=*/false);
@@ -523,7 +523,7 @@ TEST_F(NativeInputMethodEngineTest,
     testing::InSequence seq;
     EXPECT_CALL(mock_input_method,
                 OnFocus(MojoEq(ime::mojom::InputFieldInfo(
-                            ime::mojom::InputFieldType::kText,
+                            ime::mojom::InputFieldType::kNoIME,
                             ime::mojom::AutocorrectMode::kDisabled,
                             ime::mojom::PersonalizationMode::kDisabled)),
                         _, _))
