@@ -3180,8 +3180,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Measures how often aggregatable reports are stored successfully or rejected
     and why. Recorded once for each trigger event processed by the attribution
-    storage layer. `kNoHistograms` will be logged if the trigger doesn't declare
-    aggregatable trigger data.
+    storage layer. `kNotRegistered` will be logged if the source or trigger
+    doesn't declare aggregatable data.
   </summary>
 </histogram>
 
