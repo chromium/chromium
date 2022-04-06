@@ -2,40 +2,51 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-Polymer({
-  is: 'setting-zippy',
+/* #js_imports_placeholder */
 
-  properties: {
-    iconSrc: {
-      type: String,
-      value: null,
-    },
+/**
+ * @polymer
+ */
+class SettingZippy extends Polymer.Element {
+  static get is() {
+    return 'setting-zippy';
+  }
 
-    hideLine: {
-      type: Boolean,
-      value: false,
-    },
+  /* #html_template_placeholder */
 
-    expandStyle: {
-      type: Boolean,
-      value: false,
-    },
+  static get properties() {
+    return {
+      iconSrc: {
+        type: String,
+        value: null,
+      },
 
-    toggleStyle: {
-      type: Boolean,
-      value: false,
-    },
+      hideLine: {
+        type: Boolean,
+        value: false,
+      },
 
-    popupStyle: {
-      type: Boolean,
-      value: false,
-    },
+      expandStyle: {
+        type: Boolean,
+        value: false,
+      },
 
-    cardStyle: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      toggleStyle: {
+        type: Boolean,
+        value: false,
+      },
+
+      popupStyle: {
+        type: Boolean,
+        value: false,
+      },
+
+      cardStyle: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
   /**
    * Wrap the icon as a image into a html snippet.
@@ -65,5 +76,7 @@ Polymer({
       </style>
     <body><img id="icon" aria-label="` +
         imageLabel + `" src="` + iconUri + '"></body></html>';
-  },
-});
+  }
+}
+
+customElements.define(SettingZippy.is, SettingZippy);
