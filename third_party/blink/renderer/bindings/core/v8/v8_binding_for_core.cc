@@ -753,8 +753,10 @@ v8::Local<v8::Context> ToV8Context(ExecutionContext* context,
       return ToV8Context(frame, world);
   } else if (auto* scope = DynamicTo<WorkerOrWorkletGlobalScope>(context)) {
     if (WorkerOrWorkletScriptController* script = scope->ScriptController()) {
-      if (script->GetScriptState()->ContextIsValid())
-        return script->GetScriptState()->GetContext();
+      if (ScriptState* script_state = script->GetScriptState()) {
+        if (script_state->ContextIsValid())
+          return script_state->GetContext();
+      }
     }
   }
   return v8::Local<v8::Context>();
@@ -808,8 +810,12 @@ ScriptState* ToScriptState(ExecutionContext* context, DOMWrapperWorld& world) {
   if (LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(context)) {
     return ToScriptState(window->GetFrame(), world);
   } else if (auto* scope = DynamicTo<WorkerOrWorkletGlobalScope>(context)) {
-    if (WorkerOrWorkletScriptController* script = scope->ScriptController())
-      return script->GetScriptState();
+    if (WorkerOrWorkletScriptController* script = scope->ScriptController()) {
+      if (ScriptState* script_state = script->GetScriptState()) {
+        if (script_state->ContextIsValid())
+          return script_state;
+      }
+    }
   }
   return nullptr;
 }
