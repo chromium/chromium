@@ -1661,6 +1661,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_SEARCH_KEY" desc="Name of [Search] key name. This name should be lower case.">
         search
       </message>
+      <message name="IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_ACCESSIBLE_NAME" desc="Template for the accessible name for categorized search result lists that are shown in launcher search. The placeholder will be replaced with the name of a category of search results.">
+        <ph name="CATEGORY">$1<ex>Best Match</ex></ph> , search result category
+      </message>
       <message name="IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_BEST_MATCH" desc="Category title for the list of search result shown in launcher search that are a best match for the query in the search box.">
         Best Match
       </message>

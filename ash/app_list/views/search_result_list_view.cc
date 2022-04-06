@@ -244,7 +244,9 @@ void SearchResultListView::SetListType(SearchResultListType list_type) {
       break;
   }
 
-  GetViewAccessibility().OverrideName(title_label_->GetText());
+  GetViewAccessibility().OverrideName(l10n_util::GetStringFUTF16(
+      IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_ACCESSIBLE_NAME,
+      title_label_->GetText()));
 
 #if DCHECK_IS_ON()
   switch (list_type_.value()) {
