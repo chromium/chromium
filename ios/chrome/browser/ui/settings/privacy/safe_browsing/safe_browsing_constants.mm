@@ -13,3 +13,15 @@ NSString* const kSafeBrowsingEnhancedProtectionTableViewId =
 
 NSString* const kSafeBrowsingEnhancedProtectionShieldCellId =
     @"kSafeBrowsingEnhancedProtectionShieldCellId";
+
+NSString* const kSafeBrowsingEnhancedProtectionGIconCellId =
+    @"kSafeBrowsingEnhancedProtectionGIconCellId";
+
+NSString* const kSafeBrowsingEnhancedProtectionGlobeCellId =
+    @"kSafeBrowsingEnhancedProtectionGlobeCellId";
+
+NSString* const kSafeBrowsingEnhancedProtectionKeyCellId =
+    @"kSafeBrowsingEnhancedProtectionKeyCellId";
+
+NSString* const kSafeBrowsingEnhancedProtectionMetricCellId =
+    @"kSafeBrowsingEnhancedProtectionMetricCellId";

@@ -15,4 +15,20 @@ extern NSString* const kSafeBrowsingEnhancedProtectionTableViewId;
 // cell.
 extern NSString* const kSafeBrowsingEnhancedProtectionShieldCellId;
 
+// The accessibility identifier of the Safe Browsing Enhanced Protection shield
+// cell.
+extern NSString* const kSafeBrowsingEnhancedProtectionGIconCellId;
+
+// The accessibility identifier of the Safe Browsing Enhanced Protection G Icon
+// cell.
+extern NSString* const kSafeBrowsingEnhancedProtectionGlobeCellId;
+
+// The accessibility identifier of the Safe Browsing Enhanced Protection key
+// cell.
+extern NSString* const kSafeBrowsingEnhancedProtectionKeyCellId;
+
+// The accessibility identifier of the Safe Browsing Enhanced Protection metric
+// cell.
+extern NSString* const kSafeBrowsingEnhancedProtectionMetricCellId;
+
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PRIVACY_SAFE_BROWSING_SAFE_BROWSING_CONSTANTS_H_

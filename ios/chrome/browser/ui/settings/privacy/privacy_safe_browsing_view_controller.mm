@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/ui/settings/privacy/privacy_constants.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
-#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "net/base/mac/url_conversions.h"

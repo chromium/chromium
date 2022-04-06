@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_constants.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_cell.h"
+#import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "net/base/mac/url_conversions.h"
@@ -45,6 +47,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
       kSafeBrowsingEnhancedProtectionTableViewId;
   self.title =
       l10n_util::GetNSString(IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_TITLE);
+  self.styler.cellBackgroundColor = UIColor.clearColor;
   [self loadModel];
 }
 
@@ -56,6 +59,13 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 - (void)reportBackUserAction {
   // TODO(crbug.com/1307428): Add UMA recording
+}
+
+#pragma mark - SafeBrowsingEnhancedProtectionConsumer
+
+- (void)setSafeBrowsingEnhancedProtectionItems:
+    (ItemArray)safeBrowsingEnhancedProtectionItems {
+  _safeBrowsingEnhancedProtectionItems = safeBrowsingEnhancedProtectionItems;
 }
 
 #pragma mark - CollectionViewController

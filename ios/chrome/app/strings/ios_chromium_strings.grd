@@ -412,6 +412,9 @@ Things to consider:
       <message name="IDS_IOS_REMOVE_ACCOUNT_CONFIRMATION_MESSAGE" desc="Dialog message to emphasize the effects of removing an account.">
         This account and any unsaved data will be removed from Chromium.
       </message>
+      <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_TWO" desc="Second bullet point under the Safe Browsing enhanced protection mode">
+        Keeps you safe on Chromium and may be used to improve your security in other Google apps when you are signed in.
+      </message>
       <message name="IDS_IOS_SAFE_MODE_NAMED_TWEAKS_FOUND" desc="The message indicating a 3rd party tweak has been found that is known to crash Chromium.  After the ':', we will list the names of the libraries. [Length: 140em]">
         Some add-ons cause Chromium to crash. Please uninstall:
       </message>
