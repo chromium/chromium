@@ -10,7 +10,9 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "cc/paint/skottie_wrapper.h"
@@ -308,7 +310,9 @@ END_METADATA
 
 DictationBubbleView::DictationBubbleView() {
   SetButtons(ui::DIALOG_BUTTON_NONE);
-  set_has_parent(false);
+  set_parent_window(
+      Shell::GetContainer(Shell::GetPrimaryRootWindow(),
+                          kShellWindowId_AccessibilityBubbleContainer));
 }
 
 DictationBubbleView::~DictationBubbleView() = default;
