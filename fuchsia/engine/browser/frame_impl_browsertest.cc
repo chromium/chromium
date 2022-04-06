@@ -106,15 +106,9 @@ std::string GetDocumentVisibilityState(fuchsia::web::Frame* frame) {
 // Verifies that Frames are initially "hidden", changes to "visible" once the
 // View is attached to a Presenter and back to "hidden" when the View is
 // detached from the Presenter.
-// TODO(crbug.com/1058247): Re-enable this test on Arm64 when femu is available
-// for that architecture. This test requires Vulkan and Scenic to properly
-// signal the Views visibility.
-#if defined(ARCH_CPU_ARM_FAMILY)
-#define MAYBE_VisibilityState DISABLED_VisibilityState
-#else
-#define MAYBE_VisibilityState VisibilityState
-#endif
-IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_VisibilityState) {
+// TODO(https://crbug.com/1314086): Re-enable this test when we can make it work
+// with the fake hardware display controller provider used for tests.
+IN_PROC_BROWSER_TEST_F(FrameImplTest, DISABLED_VisibilityState) {
   net::test_server::EmbeddedTestServerHandle test_server_handle;
   ASSERT_TRUE(test_server_handle =
                   embedded_test_server()->StartAndReturnHandle());
