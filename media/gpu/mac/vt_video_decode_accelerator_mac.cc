@@ -81,7 +81,7 @@ constexpr VideoCodecProfile kSupportedProfiles[] = {
     // These are only supported on macOS 11+.
     VP9PROFILE_PROFILE0, VP9PROFILE_PROFILE2,
 
-    // These are only supported on macOS 10.13+.
+    // These are only supported on macOS 11+.
     // TODO(crbug.com/1300786): add HEVCPROFILE_MAIN_STILL_PICTURE,
     // and HEVCPROFILE_REXT since VT has already supported these profiles
     HEVCPROFILE_MAIN, HEVCPROFILE_MAIN10,
@@ -193,9 +193,13 @@ base::ScopedCFTypeRef<CMFormatDescriptionRef> CreateVideoFormatHEVC(
   nalu_data_ptrs.push_back(&pps.front());
   nalu_data_sizes.push_back(pps.size());
 
-  // Construct a new format description from the parameter sets.
+  // For some unknown reason, even if apple has claimed that this API is
+  // available after macOS 10.13, however base on the result on macOS 10.15.7,
+  // we could get an OSStatus=-12906 kVTCouldNotFindVideoDecoderErr after
+  // calling VTDecompressionSessionCreate(), so macOS 11+ is necessary
+  // (https://crbug.com/1300444#c9)
   base::ScopedCFTypeRef<CMFormatDescriptionRef> format;
-  if (__builtin_available(macOS 10.13, *)) {
+  if (__builtin_available(macOS 11.0, *)) {
     OSStatus status = CMVideoFormatDescriptionCreateFromHEVCParameterSets(
         kCFAllocatorDefault,
         nalu_data_ptrs.size(),     // parameter_set_count
@@ -392,8 +396,10 @@ bool InitializeVideoToolboxInternal() {
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
   if (base::FeatureList::IsEnabled(media::kVideoToolboxHEVCDecoding)) {
-    // Only macOS >= 10.13 will support hevc
-    if (__builtin_available(macOS 10.13, *)) {
+    // Only macOS >= 11.0 will support hevc if we use
+    // CMVideoFormatDescriptionCreateFromHEVCParameterSets
+    // API to create video format
+    if (__builtin_available(macOS 11.0, *)) {
       session.reset();
 
       // Create a hevc hardware decoding session.
@@ -2336,7 +2342,7 @@ VTVideoDecodeAccelerator::GetSupportedProfiles(
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
       if (!workarounds.disable_accelerated_hevc_decode &&
           base::FeatureList::IsEnabled(kVideoToolboxHEVCDecoding)) {
-        if (__builtin_available(macOS 10.13, *)) {
+        if (__builtin_available(macOS 11.0, *)) {
           // Success! We have HEVC hardware decoding (or software
           // decoding if the hardware is not good enough) support too.
           SupportedProfile profile;
