@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 73 tests; 67 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 75 tests; 69 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Same-origin script with correct sha256 hash.
 PASS Same-origin script with correct sha384 hash.
 PASS Same-origin script with correct sha512 hash.
@@ -20,6 +20,7 @@ PASS Cross-origin script, empty integrity
 PASS Same-origin script with correct hash, options.
 PASS Same-origin script with unknown algorithm only.
 PASS Same-origin script with matching digest re-uses preload with matching digest.
+PASS Same-origin script with matching digest re-uses preload with matching digest and options.
 PASS Same-origin script with non-matching digest does not re-use preload with matching digest.
 PASS Same-origin script with matching digest does not re-use preload with non-matching digest.
 PASS Same-origin script with non-matching digest does not re-use preload with non-matching digest.
@@ -47,6 +48,7 @@ PASS Cross-origin style, empty integrity
 PASS Same-origin style with correct hash, options.
 PASS Same-origin style with unknown algorithm only.
 PASS Same-origin style with matching digest re-uses preload with matching digest.
+PASS Same-origin style with matching digest re-uses preload with matching digest and options.
 PASS Same-origin style with non-matching digest does not re-use preload with matching digest.
 PASS Same-origin style with matching digest does not re-use preload with non-matching digest.
 PASS Same-origin style with non-matching digest does not re-use preload with non-matching digest.

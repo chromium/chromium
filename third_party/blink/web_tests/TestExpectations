@@ -3329,6 +3329,14 @@ crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/preren
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-contain/content-visibility/content-visibility-canvas.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-contain/content-visibility/content-visibility-video.html [ Failure ]
+crbug.com/626703 [ Mac ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/direction-inherit-rtl.html [ Failure ]
+crbug.com/626703 [ Mac ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/direction-rtl.html [ Failure ]
+crbug.com/626703 [ Mac ] virtual/no-alloc-direct-call/external/wpt/html/canvas/element/drawing-text-to-the-canvas/direction-inherit-rtl.html [ Failure ]
+crbug.com/626703 [ Mac ] virtual/no-alloc-direct-call/external/wpt/html/canvas/element/drawing-text-to-the-canvas/direction-rtl.html [ Failure ]
+crbug.com/626703 virtual/offsetparent-old-behavior/external/wpt/css/css-contain/content-visibility/content-visibility-canvas.html [ Failure ]
+crbug.com/626703 virtual/offsetparent-old-behavior/external/wpt/css/css-contain/content-visibility/content-visibility-video.html [ Failure ]
 crbug.com/626703 external/wpt/css/motion/offset-path-shape.html [ Failure ]
 crbug.com/626703 external/wpt/css/motion/offset-path-url.html [ Failure ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/private-network-access/nested-worker.https.window.html [ Timeout ]

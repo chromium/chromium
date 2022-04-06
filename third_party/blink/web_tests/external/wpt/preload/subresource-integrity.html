@@ -278,6 +278,17 @@
 
       SRIPreloadTest(
         true,
+        true,
+        `Same-origin ${destination} with matching digest re-uses preload with matching digest and options.`,
+        1,
+        destination,
+        same_origin_prefix + destination + ext + `?${token()}`,
+        {integrity: `${sha256}?dummy-option=value`},
+        {integrity: sha256}
+      )
+
+      SRIPreloadTest(
+        true,
         false,
         `Same-origin ${destination} with non-matching digest does not re-use preload with matching digest.`,
         2,
