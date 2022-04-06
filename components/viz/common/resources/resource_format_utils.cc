@@ -604,6 +604,8 @@ wgpu::TextureFormat ToDawnFormat(ResourceFormat format) {
       return wgpu::TextureFormat::RGBA16Float;
     case RGBA_1010102:
       return wgpu::TextureFormat::RGB10A2Unorm;
+    case YUV_420_BIPLANAR:
+      return wgpu::TextureFormat::R8BG8Biplanar420Unorm;
     case RGBA_4444:
     case RGB_565:
     case BGR_565:
@@ -611,7 +613,6 @@ wgpu::TextureFormat ToDawnFormat(ResourceFormat format) {
     case RG16_EXT:
     case BGRA_1010102:
     case YVU_420:
-    case YUV_420_BIPLANAR:
     case ETC1:
     case LUMINANCE_F16:
     case P010:

@@ -60,6 +60,12 @@ size_t NativePixmapDmaBuf::GetNumberOfPlanes() const {
   return handle_.planes.size();
 }
 
+bool NativePixmapDmaBuf::SupportsZeroCopyWebGPUImport() const {
+  // TODO(crbug.com/1258986): Figure out how to import multi-planar pixmap into
+  // WebGPU without copy.
+  return false;
+}
+
 gfx::Size NativePixmapDmaBuf::GetBufferSize() const {
   return size_;
 }

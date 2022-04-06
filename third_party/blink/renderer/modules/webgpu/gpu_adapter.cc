@@ -154,6 +154,9 @@ void GPUAdapter::InitializeFeatureNameList() {
   if (adapter_properties_.depth32FloatStencil8) {
     features_->AddFeatureName("depth32float-stencil8");
   }
+  if (adapter_properties_.multiPlanarFormats) {
+    features_->AddFeatureName("multi-planar-formats");
+  }
 }
 
 ScriptPromise GPUAdapter::requestDevice(ScriptState* script_state,

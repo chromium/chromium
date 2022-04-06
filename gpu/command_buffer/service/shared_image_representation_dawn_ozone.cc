@@ -51,11 +51,19 @@ WGPUTexture SharedImageRepresentationDawnOzone::BeginAccess(
   if (texture_) {
     return nullptr;
   }
+
+  // For multi-planar formats, Mesa is yet to support to allocate and bind
+  // vkmemory for each plane respectively.
+  // https://gitlab.freedesktop.org/mesa/mesa/-/blob/main/src/intel/vulkan/anv_formats.c#L765
+  // For now we assume all plane handles are same, and we don't use the
+  // VK_IMAGE_CREATE_DISJOINT_BIT when creating the vkimage for the pixmap.
+  DCHECK(pixmap_->SupportsZeroCopyWebGPUImport() ||
+         pixmap_->GetNumberOfPlanes() == 1)
+      << "Disjoint Multi-plane importing is not supported.";
+
   if (!ozone_backing()->VaSync()) {
     return nullptr;
   }
-  DCHECK(pixmap_->GetNumberOfPlanes() == 1)
-      << "Multi-plane formats are not supported.";
 
   std::vector<gfx::GpuFenceHandle> fences;
   bool need_end_fence;
@@ -94,6 +102,7 @@ WGPUTexture SharedImageRepresentationDawnOzone::BeginAccess(
   // closed twice (once by ScopedFD and once by the Vulkan implementation).
   int fd = dup(pixmap_->GetDmaBufFd(0));
   descriptor.memoryFD = fd;
+  // stride is not required for multi-planar formats.
   descriptor.stride = pixmap_->GetDmaBufPitch(0);
   descriptor.drmModifier = pixmap_->GetBufferFormatModifier();
   descriptor.waitFDs = {};

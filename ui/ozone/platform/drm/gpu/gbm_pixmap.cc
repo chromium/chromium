@@ -52,6 +52,10 @@ size_t GbmPixmap::GetNumberOfPlanes() const {
   return buffer_->GetNumPlanes();
 }
 
+bool GbmPixmap::SupportsZeroCopyWebGPUImport() const {
+  return buffer_->SupportsZeroCopyWebGPUImport();
+}
+
 uint64_t GbmPixmap::GetBufferFormatModifier() const {
   return buffer_->GetFormatModifier();
 }

@@ -141,6 +141,12 @@ size_t GbmPixmapWayland::GetNumberOfPlanes() const {
   return gbm_bo_->GetNumPlanes();
 }
 
+bool GbmPixmapWayland::SupportsZeroCopyWebGPUImport() const {
+  // TODO(crbug.com/1258986): Figure out how to import multi-planar pixmap into
+  // WebGPU without copy.
+  return false;
+}
+
 uint64_t GbmPixmapWayland::GetBufferFormatModifier() const {
   return gbm_bo_->GetFormatModifier();
 }

@@ -72,6 +72,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, EmptyMetadata) {
   EXPECT_FALSE(metadata_out.wants_promotion_hint);
   EXPECT_FALSE(metadata_out.protected_video);
   EXPECT_FALSE(metadata_out.hw_protected);
+  EXPECT_FALSE(metadata_out.is_webgpu_compatible);
   EXPECT_FALSE(metadata_out.power_efficient);
   EXPECT_FALSE(metadata_out.read_lock_fences_enabled);
   EXPECT_FALSE(metadata_out.interactive_content);
@@ -118,6 +119,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
   metadata_in.wants_promotion_hint = true;
   metadata_in.protected_video = true;
   metadata_in.hw_protected = true;
+  metadata_in.is_webgpu_compatible = true;
   metadata_in.power_efficient = true;
   metadata_in.read_lock_fences_enabled = true;
   metadata_in.interactive_content = true;
@@ -163,6 +165,8 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
             metadata_out.wants_promotion_hint);
   EXPECT_EQ(metadata_in.protected_video, metadata_out.protected_video);
   EXPECT_EQ(metadata_in.hw_protected, metadata_out.hw_protected);
+  EXPECT_EQ(metadata_in.is_webgpu_compatible,
+            metadata_out.is_webgpu_compatible);
   EXPECT_EQ(metadata_in.power_efficient, metadata_out.power_efficient);
   EXPECT_EQ(metadata_in.read_lock_fences_enabled,
             metadata_out.read_lock_fences_enabled);

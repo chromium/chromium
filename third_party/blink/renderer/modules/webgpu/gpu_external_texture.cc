@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_external_texture.h"
 
 #include "media/base/video_frame.h"
+#include "media/base/wait_and_replace_sync_token_client.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_external_texture_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_view_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_htmlvideoelement_videoframe.h"
@@ -85,6 +86,49 @@ GPUExternalTexture* GPUExternalTexture::Create(
     return nullptr;
   }
 
+  // TODO(crbug.com/1306753): Use SharedImageProducer and CompositeSharedImage
+  // rather than check 'is_webgpu_compatible'.
+  if (media_video_frame->HasTextures() &&
+      (media_video_frame->format() == media::PIXEL_FORMAT_NV12) &&
+      media_video_frame->metadata().is_webgpu_compatible) {
+    scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
+        WebGPUMailboxTexture::FromVideoFrame(
+            device->GetDawnControlClient(), device->GetHandle(),
+            WGPUTextureUsage::WGPUTextureUsage_TextureBinding,
+            media_video_frame);
+
+    WGPUTextureViewDescriptor view_desc = {
+        .format = WGPUTextureFormat_R8Unorm,
+        .mipLevelCount = WGPU_MIP_LEVEL_COUNT_UNDEFINED,
+        .arrayLayerCount = WGPU_ARRAY_LAYER_COUNT_UNDEFINED,
+        .aspect = WGPUTextureAspect_Plane0Only};
+    WGPUTextureView plane0 = device->GetProcs().textureCreateView(
+        mailbox_texture->GetTexture(), &view_desc);
+    view_desc.format = WGPUTextureFormat_RG8Unorm;
+    view_desc.aspect = WGPUTextureAspect_Plane1Only;
+    WGPUTextureView plane1 = device->GetProcs().textureCreateView(
+        mailbox_texture->GetTexture(), &view_desc);
+
+    WGPUExternalTextureDescriptor external_texture_desc = {};
+    external_texture_desc.plane0 = plane0;
+    external_texture_desc.plane1 = plane1;
+    external_texture_desc.colorSpace = WGPUPredefinedColorSpace_Srgb;
+
+    GPUExternalTexture* external_texture =
+        MakeGarbageCollected<GPUExternalTexture>(
+            device,
+            device->GetProcs().deviceCreateExternalTexture(
+                device->GetHandle(), &external_texture_desc),
+            std::move(mailbox_texture));
+
+    // The texture view will be referenced during external texture creation, so
+    // by calling release here we ensure this texture view will be destructed
+    // when the external texture is destructed.
+    device->GetProcs().textureViewRelease(plane0);
+    device->GetProcs().textureViewRelease(plane1);
+
+    return external_texture;
+  }
   // If the context is lost, the resource provider would be invalid.
   auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
   if (!context_provider_wrapper ||
@@ -135,16 +179,16 @@ GPUExternalTexture* GPUExternalTexture::Create(
           WGPUTextureUsage::WGPUTextureUsage_TextureBinding,
           std::move(recyclable_canvas_resource));
 
-  WGPUTextureViewDescriptor viewDesc = {};
-  viewDesc.arrayLayerCount = WGPU_ARRAY_LAYER_COUNT_UNDEFINED;
-  viewDesc.mipLevelCount = WGPU_MIP_LEVEL_COUNT_UNDEFINED;
+  WGPUTextureViewDescriptor view_desc = {};
+  view_desc.arrayLayerCount = WGPU_ARRAY_LAYER_COUNT_UNDEFINED;
+  view_desc.mipLevelCount = WGPU_MIP_LEVEL_COUNT_UNDEFINED;
   WGPUTextureView plane0 = device->GetProcs().textureCreateView(
-      mailbox_texture->GetTexture(), &viewDesc);
+      mailbox_texture->GetTexture(), &view_desc);
 
   WGPUExternalTextureDescriptor dawn_desc = {};
   dawn_desc.plane0 = plane0;
 
-  GPUExternalTexture* externalTexture =
+  GPUExternalTexture* external_texture =
       MakeGarbageCollected<GPUExternalTexture>(
           device,
           device->GetProcs().deviceCreateExternalTexture(device->GetHandle(),
@@ -156,14 +200,14 @@ GPUExternalTexture* GPUExternalTexture::Create(
   // the external texture is destructed.
   device->GetProcs().textureViewRelease(plane0);
 
-  return externalTexture;
+  return external_texture;
 }
 
 GPUExternalTexture::GPUExternalTexture(
     GPUDevice* device,
-    WGPUExternalTexture externalTexture,
+    WGPUExternalTexture external_texture,
     scoped_refptr<WebGPUMailboxTexture> mailbox_texture)
-    : DawnObject<WGPUExternalTexture>(device, externalTexture),
+    : DawnObject<WGPUExternalTexture>(device, external_texture),
       mailbox_texture_(mailbox_texture) {}
 
 void GPUExternalTexture::Destroy() {

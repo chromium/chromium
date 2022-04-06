@@ -226,6 +226,9 @@ scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
   if (gmb_handle.is_null() || gmb_handle.type != gfx::NATIVE_PIXMAP)
     return nullptr;
 
+  const bool supports_zero_copy_webgpu_import =
+      gmb_handle.native_pixmap_handle.supports_zero_copy_webgpu_import;
+
   auto buffer_format = VideoPixelFormatToGfxBufferFormat(pixel_format);
   DCHECK(buffer_format);
   gpu::GpuMemoryBufferSupport support;
@@ -244,6 +247,11 @@ scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
 
   if (frame)
     frame->AddDestructionObserver(destroy_cb.Release());
+
+  // We only support importing non-DISJOINT multi-planar GbmBuffer right now.
+  // TODO(crbug.com/1258986): Add DISJOINT support.
+  frame->metadata().is_webgpu_compatible = supports_zero_copy_webgpu_import;
+
   return frame;
 }
 

@@ -164,6 +164,7 @@ class TestPixmap : public gfx::NativePixmap {
   size_t GetNumberOfPlanes() const override {
     return gfx::NumberOfPlanesForLinearBufferFormat(format_);
   }
+  bool SupportsZeroCopyWebGPUImport() const override { return false; }
   gfx::Size GetBufferSize() const override { return gfx::Size(); }
   uint32_t GetUniqueId() const override { return 0; }
   bool ScheduleOverlayPlane(

@@ -32,7 +32,8 @@ class MailboxVideoFrameConverterTest : public testing::Test {
       : converter_(new MailboxVideoFrameConverter(
             base::BindRepeating(&UnwrapVideoFrame),
             base::ThreadTaskRunnerHandle::Get(),
-            base::BindRepeating(&GetGpuChannel))) {}
+            base::BindRepeating(&GetGpuChannel),
+            /*enable_unsafe_webgpu=*/false)) {}
 
   MailboxVideoFrameConverterTest(const MailboxVideoFrameConverterTest&) =
       delete;

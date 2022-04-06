@@ -148,6 +148,10 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // PROTECTED_VIDEO is also set to true.
   bool hw_protected = false;
 
+  // This video frame's shared image backing can support zero-copy WebGPU
+  // import.
+  bool is_webgpu_compatible = false;
+
 #if BUILDFLAG(USE_VAAPI)
   // The ID of the VA-API protected session used to decode this frame, if
   // applicable. The proper type is VAProtectedSessionID. However, in order to

@@ -24,7 +24,7 @@ class GPUExternalTexture : public DawnObject<WGPUExternalTexture> {
       ExceptionState& exception_state);
   explicit GPUExternalTexture(
       GPUDevice* device,
-      WGPUExternalTexture externalTexture,
+      WGPUExternalTexture external_texture,
       scoped_refptr<WebGPUMailboxTexture> mailbox_texture);
 
   GPUExternalTexture(const GPUExternalTexture&) = delete;

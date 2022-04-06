@@ -111,7 +111,8 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
       auto frame_converter = MailboxVideoFrameConverter::Create(
           base::BindRepeating(&PlatformVideoFramePool::UnwrapFrame,
                               base::Unretained(frame_pool.get())),
-          traits.gpu_task_runner, traits.get_command_buffer_stub_cb);
+          traits.gpu_task_runner, traits.get_command_buffer_stub_cb,
+          traits.gpu_preferences.enable_unsafe_webgpu);
       return VideoDecoderPipeline::Create(
           traits.task_runner, std::move(frame_pool), std::move(frame_converter),
           traits.media_log->Clone());

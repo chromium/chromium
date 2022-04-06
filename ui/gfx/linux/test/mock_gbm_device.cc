@@ -73,6 +73,12 @@ class MockGbmBuffer final : public ui::GbmBuffer {
   int GetPlaneFd(size_t plane) const override {
     return planes_[plane].fd.get();
   }
+
+  bool SupportsZeroCopyWebGPUImport() const override {
+    NOTIMPLEMENTED();
+    return false;
+  }
+
   uint32_t GetPlaneStride(size_t plane) const override {
     DCHECK_LT(plane, planes_.size());
     return planes_[plane].stride;

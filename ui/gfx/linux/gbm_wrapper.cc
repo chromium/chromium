@@ -153,7 +153,9 @@ class Buffer final : public ui::GbmBuffer {
         format_modifier_(modifier),
         flags_(flags),
         size_(size),
-        handle_(std::move(handle)) {}
+        handle_(std::move(handle)) {
+    handle_.supports_zero_copy_webgpu_import = SupportsZeroCopyWebGPUImport();
+  }
 
   Buffer(const Buffer&) = delete;
   Buffer& operator=(const Buffer&) = delete;
@@ -187,6 +189,21 @@ class Buffer final : public ui::GbmBuffer {
     DCHECK_LT(plane, handle_.planes.size());
     return handle_.planes[plane].fd.get();
   }
+
+  bool SupportsZeroCopyWebGPUImport() const override {
+    // NOT supported if the buffer is multi-planar and its planes are disjoint.
+    size_t plane_count = GetNumPlanes();
+    if (plane_count > 1) {
+      uint32_t handle = GetPlaneHandle(0);
+      for (size_t plane = 1; plane < plane_count; ++plane) {
+        if (GetPlaneHandle(plane) != handle) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   uint32_t GetPlaneStride(size_t plane) const override {
     DCHECK_LT(plane, handle_.planes.size());
     return handle_.planes[plane].stride;
@@ -248,7 +265,7 @@ class Buffer final : public ui::GbmBuffer {
 
   const gfx::Size size_;
 
-  const gfx::NativePixmapHandle handle_;
+  gfx::NativePixmapHandle handle_;
 };
 
 std::unique_ptr<Buffer> CreateBufferForBO(struct gbm_bo* bo,

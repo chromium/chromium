@@ -59,6 +59,11 @@ size_t SysmemNativePixmap::GetNumberOfPlanes() const {
   return 0;
 }
 
+bool SysmemNativePixmap::SupportsZeroCopyWebGPUImport() const {
+  NOTREACHED();
+  return false;
+}
+
 uint64_t SysmemNativePixmap::GetBufferFormatModifier() const {
   NOTREACHED();
   return 0;

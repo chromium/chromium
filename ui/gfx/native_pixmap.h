@@ -31,6 +31,7 @@ class NativePixmap : public base::RefCountedThreadSafe<NativePixmap> {
   virtual size_t GetDmaBufPlaneSize(size_t plane) const = 0;
   // Return the number of non-interleaved "color" planes.
   virtual size_t GetNumberOfPlanes() const = 0;
+  virtual bool SupportsZeroCopyWebGPUImport() const = 0;
 
   // The following methods return format, modifier and size of the buffer,
   // respectively.

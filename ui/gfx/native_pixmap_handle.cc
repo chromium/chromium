@@ -101,6 +101,8 @@ NativePixmapHandle CloneHandleForIPC(const NativePixmapHandle& handle) {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   clone.modifier = handle.modifier;
+  clone.supports_zero_copy_webgpu_import =
+      handle.supports_zero_copy_webgpu_import;
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)

@@ -87,6 +87,9 @@ struct GFX_EXPORT NativePixmapHandle {
   // Generally it's platform specific, and we don't need to modify it in
   // Chromium code. Also one per plane per entry.
   uint64_t modifier = kNoModifier;
+
+  // WebGPU can directly import the handle to create texture from it.
+  bool supports_zero_copy_webgpu_import = false;
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)

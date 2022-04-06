@@ -68,6 +68,7 @@ class FakeNativePixmap : public gfx::NativePixmap {
   uint64_t GetBufferFormatModifier() const override { return 0; }
   gfx::BufferFormat GetBufferFormat() const override { return format_; }
   size_t GetNumberOfPlanes() const override { return 0; }
+  bool SupportsZeroCopyWebGPUImport() const override { return false; }
   gfx::Size GetBufferSize() const override { return size_; }
   uint32_t GetUniqueId() const override { return 0; }
   bool ScheduleOverlayPlane(

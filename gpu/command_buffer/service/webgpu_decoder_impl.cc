@@ -1099,6 +1099,14 @@ void WebGPUDecoderImpl::DoRequestDevice(
     // Pass something invalid.
     required_features.push_back(static_cast<WGPUFeatureName>(-1));
   }
+
+  // Always enable "multi-planar-formats" as long as available.
+  if (dawn_adapters_[requested_adapter_index]
+          .GetAdapterProperties()
+          .multiPlanarFormats) {
+    required_features.push_back(WGPUFeatureName_DawnMultiPlanarFormats);
+  }
+
   device_descriptor.requiredFeatures = required_features.data();
   device_descriptor.requiredFeaturesCount = required_features.size();
 

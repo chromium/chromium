@@ -10,6 +10,7 @@ include_rules = [
     "+gpu/command_buffer/client/shared_image_interface.h",
     "+gpu/command_buffer/client/webgpu_interface.h",
     "+media/base/video_frame.h",
+    "+media/base/wait_and_replace_sync_token_client.h",
     "+media/renderers/paint_canvas_video_renderer.h",
     "+services/metrics/public/cpp/ukm_builders.h",
 ]
