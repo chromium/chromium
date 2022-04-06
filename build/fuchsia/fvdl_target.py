@@ -86,8 +86,17 @@ class FvdlTarget(emu_target.EmuTarget):
                            default=False,
                            help='Run emulator with emulated nic via tun/tap.')
     fvdl_args.add_argument('--custom-image',
-                           help='Specify an image used for booting up the '
-                           'emulator.')
+                           help='Specify an image used for booting up the '\
+                                'emulator.')
+    fvdl_args.add_argument('--enable-graphics',
+                           action='store_true',
+                           default=False,
+                           help='Start emulator with graphics instead of '\
+                                'headless.')
+    fvdl_args.add_argument('--hardware-gpu',
+                           action='store_true',
+                           default=False,
+                           help='Use local GPU hardware instead Swiftshader.')
 
   def _BuildCommand(self):
     boot_data.ProvisionSSH()

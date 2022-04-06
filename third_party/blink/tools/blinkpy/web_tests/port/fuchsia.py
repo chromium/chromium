@@ -62,8 +62,6 @@ def _import_fuchsia_runner():
     # pylint: disable=import-error
     # pylint: disable=invalid-name
     # pylint: disable=redefined-outer-name
-    global aemu_target
-    import aemu_target
     global ConnectPortForwardingTask
     from common import ConnectPortForwardingTask
     global _GetPathToBuiltinTarget, _LoadTargetClass, InitializeTargetArgs

@@ -12,7 +12,6 @@ import os
 import time
 import subprocess
 
-from aemu_target import AemuTarget
 from exit_on_sig_term import ExitOnSigTerm
 from fvdl_target import FvdlTarget
 
@@ -23,7 +22,6 @@ def main():
       'be re-used for multiple test runs.')
   AddLongRunningArgs(parser)
   FvdlTarget.RegisterArgs(parser)
-  AemuTarget.RegisterArgs(parser)
   common_args.AddCommonArgs(parser)
   args = parser.parse_args()
   args.out_dir = None
