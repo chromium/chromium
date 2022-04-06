@@ -32,13 +32,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_FORM_SUBMISSION_H_
 
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/frame/policy_container.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
-#include "third_party/blink/renderer/core/loader/frame_load_request.h"
+#include "third_party/blink/renderer/core/loader/frame_loader_types.h"
 #include "third_party/blink/renderer/core/loader/navigation_policy.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/weborigin/referrer.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -48,6 +49,9 @@ class Event;
 class Frame;
 class HTMLFormControlElement;
 class HTMLFormElement;
+class LocalDOMWindow;
+class ResourceRequest;
+class SourceLocation;
 
 class FormSubmission final : public GarbageCollected<FormSubmission> {
  public:
