@@ -327,10 +327,10 @@ base::Value NetLogQuicCryptoFrameParams(const quic::QuicCryptoFrame* frame,
 }
 
 base::Value NetLogQuicStopSendingFrameParams(
-    const quic::QuicStopSendingFrame* frame) {
+    const quic::QuicStopSendingFrame& frame) {
   base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("stream_id", frame->stream_id);
-  dict.SetIntKey("quic_rst_stream_error", frame->error_code);
+  dict.SetIntKey("stream_id", frame.stream_id);
+  dict.SetIntKey("quic_rst_stream_error", frame.error_code);
   return dict;
 }
 
@@ -634,7 +634,7 @@ void QuicEventLogger::OnCryptoFrame(const quic::QuicCryptoFrame& frame) {
 void QuicEventLogger::OnStopSendingFrame(
     const quic::QuicStopSendingFrame& frame) {
   net_log_.AddEvent(NetLogEventType::QUIC_SESSION_STOP_SENDING_FRAME_RECEIVED,
-                    [&] { return NetLogQuicStopSendingFrameParams(&frame); });
+                    [&] { return NetLogQuicStopSendingFrameParams(frame); });
 }
 
 void QuicEventLogger::OnStreamsBlockedFrame(

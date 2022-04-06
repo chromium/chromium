@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/quiche/common/platform/impl/quiche_command_line_flags_impl.h"
+#include "quiche_platform_impl/quiche_command_line_flags_impl.h"
 
 #include <initializer_list>
 #include <iostream>

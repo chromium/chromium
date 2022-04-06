@@ -302,9 +302,10 @@ int64_t Http2Connection::OnReadyToSend(absl::string_view serialized) {
   return serialized.size();
 }
 
-void Http2Connection::OnCloseStream(StreamId stream_id,
+bool Http2Connection::OnCloseStream(StreamId stream_id,
                                     http2::adapter::Http2ErrorCode error_code) {
   response_map_.erase(stream_id);
+  return true;
 }
 
 void Http2Connection::SendInternal() {

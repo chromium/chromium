@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_QUICHE_COMMON_PLATFORM_IMPL_QUICHE_TEST_HELPERS_IMPL_H_
-#define NET_QUICHE_COMMON_PLATFORM_IMPL_QUICHE_TEST_HELPERS_IMPL_H_
+#ifndef NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_TEST_HELPERS_IMPL_H_
+#define NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_TEST_HELPERS_IMPL_H_
 
 #include <iosfwd>
 #include <sstream>
@@ -163,4 +163,4 @@ HasSubstr(const std::string& substring) {
     return ::testing::AssertionSuccess();     \
   }
 
-#endif  // NET_QUICHE_COMMON_PLATFORM_IMPL_QUICHE_TEST_HELPERS_IMPL_H_
+#endif  // NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_TEST_HELPERS_IMPL_H_

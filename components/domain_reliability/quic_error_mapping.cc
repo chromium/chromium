@@ -78,7 +78,7 @@ const struct QuicErrorMapping {
     {quic::QUIC_TOO_MANY_AVAILABLE_STREAMS, "quic.too_many_available_streams"},
     // Received public reset for this connection.
     {quic::QUIC_PUBLIC_RESET, "quic.public_reset"},
-    // Invalid protocol version.
+    // Version selected by client is not acceptable to the server.
     {quic::QUIC_INVALID_VERSION, "quic.invalid_version"},
 
     // The Header ID for a stream was too far from the previous.
@@ -463,6 +463,9 @@ const struct QuicErrorMapping {
      "quic::quic_tls_keying_material_export_not_available"},
     {quic::QUIC_UNEXPECTED_DATA_BEFORE_ENCRYPTION_ESTABLISHED,
      "quic::quic_unexpected_data_before_encryption_established"},
+
+    // Received packet indicates version that does not match connection version.
+    {quic::QUIC_PACKET_WRONG_VERSION, "quic.packet_wrong_version"},
 
     // No error. Used as bound while iterating.
     {quic::QUIC_LAST_ERROR, "quic.last_error"}};

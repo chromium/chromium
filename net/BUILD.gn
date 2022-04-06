@@ -828,8 +828,6 @@ component("net") {
     "quic/web_transport_client.h",
     "quic/web_transport_error.cc",
     "quic/web_transport_error.h",
-    "quiche/common/platform/impl/quiche_command_line_flags_impl.cc",
-    "quiche/common/platform/impl/quiche_command_line_flags_impl.h",
     "quiche/common/platform/impl/quiche_flag_utils_impl.h",
     "quiche/common/platform/impl/quiche_flags_impl.cc",
     "quiche/common/platform/impl/quiche_flags_impl.h",
@@ -2462,14 +2460,7 @@ if (is_linux || is_chromeos || is_mac) {
 
 if (is_linux || is_chromeos) {
   static_library("epoll_server") {
-    sources = [
-      "tools/epoll_server/platform/impl/epoll_bug_impl.h",
-      "tools/epoll_server/platform/impl/epoll_export_impl.h",
-      "tools/epoll_server/platform/impl/epoll_logging_impl.h",
-      "tools/epoll_server/platform/impl/epoll_ptr_util_impl.h",
-      "tools/epoll_server/platform/impl/epoll_thread_impl.h",
-      "tools/epoll_server/platform/impl/epoll_time_impl.h",
-    ]
+    sources = []
     deps = [
       ":net",
       "//base",
@@ -2544,11 +2535,7 @@ if (is_android || is_linux || is_chromeos) {
 
 source_set("epoll_server_test_tools") {
   testonly = true
-  sources = [
-    "tools/epoll_server/platform/impl/epoll_address_test_utils_impl.h",
-    "tools/epoll_server/platform/impl/epoll_expect_bug_impl.h",
-    "tools/epoll_server/platform/impl/epoll_test_impl.h",
-  ]
+  sources = []
   deps = [
     ":net",
     ":test_support",
@@ -2577,12 +2564,7 @@ source_set("spdy_test_tools") {
 
 source_set("quiche_test_tools") {
   testonly = true
-  sources = [
-    "quiche/common/platform/impl/quiche_test_helpers_impl.cc",
-    "quiche/common/platform/impl/quiche_test_helpers_impl.h",
-    "quiche/common/platform/impl/quiche_test_impl.cc",
-    "quiche/common/platform/impl/quiche_test_impl.h",
-  ]
+  sources = []
   deps = [
     ":net",
     ":quic_test_flags_utils",

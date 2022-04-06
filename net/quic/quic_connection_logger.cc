@@ -162,7 +162,7 @@ void QuicConnectionLogger::OnFrameAddedToPacket(const quic::QuicFrame& frame) {
       break;
     case quic::STOP_SENDING_FRAME:
       base::UmaHistogramSparse("Net.QuicSession.StopSendingErrorCodeClient",
-                               frame.stop_sending_frame->error_code);
+                               frame.stop_sending_frame.error_code);
       break;
     case quic::MESSAGE_FRAME:
       break;

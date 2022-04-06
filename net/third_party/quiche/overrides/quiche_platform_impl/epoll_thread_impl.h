@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_TOOLS_EPOLL_SERVER_PLATFORM_IMPL_EPOLL_THREAD_IMPL_H_
-#define NET_TOOLS_EPOLL_SERVER_PLATFORM_IMPL_EPOLL_THREAD_IMPL_H_
+#ifndef NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_EPOLL_THREAD_IMPL_H_
+#define NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_EPOLL_THREAD_IMPL_H_
 
 #include "base/threading/simple_thread.h"
 
@@ -19,4 +19,4 @@ class EpollThreadImpl : public base::SimpleThread {
 
 }  // namespace epoll_server
 
-#endif  // NET_TOOLS_EPOLL_SERVER_PLATFORM_IMPL_EPOLL_THREAD_IMPL_H_
+#endif  // NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_EPOLL_THREAD_IMPL_H_

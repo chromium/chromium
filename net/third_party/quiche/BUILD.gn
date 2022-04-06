@@ -35,6 +35,8 @@ source_set("quiche") {
     "overrides/quiche_platform_impl/quic_flags_impl.h",
     "overrides/quiche_platform_impl/quiche_bug_tracker_impl.h",
     "overrides/quiche_platform_impl/quiche_client_stats_impl.h",
+    "overrides/quiche_platform_impl/quiche_command_line_flags_impl.cc",
+    "overrides/quiche_platform_impl/quiche_command_line_flags_impl.h",
     "overrides/quiche_platform_impl/quiche_containers_impl.h",
     "overrides/quiche_platform_impl/quiche_error_code_wrappers_impl.h",
     "overrides/quiche_platform_impl/quiche_export_impl.h",
@@ -717,6 +719,12 @@ proto_library("net_quic_test_tools_proto") {
 if (is_linux || is_chromeos) {
   source_set("epoll_server_core") {
     sources = [
+      "overrides/quiche_platform_impl/epoll_bug_impl.h",
+      "overrides/quiche_platform_impl/epoll_export_impl.h",
+      "overrides/quiche_platform_impl/epoll_logging_impl.h",
+      "overrides/quiche_platform_impl/epoll_ptr_util_impl.h",
+      "overrides/quiche_platform_impl/epoll_thread_impl.h",
+      "overrides/quiche_platform_impl/epoll_time_impl.h",
       "src/epoll_server/platform/api/epoll_bug.h",
       "src/epoll_server/platform/api/epoll_export.h",
       "src/epoll_server/platform/api/epoll_logging.h",
@@ -884,6 +892,9 @@ if (is_linux || is_chromeos) {
 source_set("epoll_server_test_tools_core") {
   testonly = true
   sources = [
+    "overrides/quiche_platform_impl/epoll_address_test_utils_impl.h",
+    "overrides/quiche_platform_impl/epoll_expect_bug_impl.h",
+    "overrides/quiche_platform_impl/epoll_test_impl.h",
     "src/epoll_server/platform/api/epoll_address_test_utils.h",
     "src/epoll_server/platform/api/epoll_expect_bug.h",
     "src/epoll_server/platform/api/epoll_test.h",
@@ -900,6 +911,10 @@ source_set("epoll_server_test_tools_core") {
 source_set("quiche_test_tools_core") {
   testonly = true
   sources = [
+    "overrides/quiche_platform_impl/quiche_test_helpers_impl.cc",
+    "overrides/quiche_platform_impl/quiche_test_helpers_impl.h",
+    "overrides/quiche_platform_impl/quiche_test_impl.cc",
+    "overrides/quiche_platform_impl/quiche_test_impl.h",
     "src/common/platform/api/quiche_test.h",
     "src/common/platform/api/quiche_test_helpers.h",
     "src/common/test_tools/quiche_test_utils.cc",
@@ -907,6 +922,8 @@ source_set("quiche_test_tools_core") {
   ]
   deps = [
     "//net",
+    "//net:quic_test_flags_utils",
+    "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
