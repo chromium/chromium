@@ -16,9 +16,6 @@ namespace ash {
 class ASH_PUBLIC_EXPORT AmbientBackendModelObserver
     : public base::CheckedObserver {
  public:
-  // Invoked when |topics| has been changed.
-  virtual void OnTopicsChanged() {}
-
   // Invoked when a new image is added.
   virtual void OnImageAdded() {}
 

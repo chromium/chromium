@@ -24,6 +24,9 @@ class ASH_EXPORT AmbientViewDelegateObserver : public base::CheckedObserver {
 class AmbientViewEventHandler {
  public:
   virtual void OnMarkerHit(AmbientPhotoConfig::Marker marker) = 0;
+
+ protected:
+  virtual ~AmbientViewEventHandler() = default;
 };
 
 class ASH_EXPORT AmbientViewDelegate {

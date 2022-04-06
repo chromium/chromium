@@ -204,21 +204,22 @@ class AmbientPhotoControllerAnimationTest : public AmbientPhotoControllerTest {
 
 // Test that topics are downloaded when starting screen update.
 TEST_F(AmbientPhotoControllerTest, ShouldStartToDownloadTopics) {
-  auto topics = photo_controller()->ambient_backend_model()->topics();
+  auto topics =
+      photo_controller()->ambient_backend_model()->all_decoded_topics();
   EXPECT_TRUE(topics.empty());
 
   // Start to refresh images.
   photo_controller()->StartScreenUpdate();
-  topics = photo_controller()->ambient_backend_model()->topics();
+  topics = photo_controller()->ambient_backend_model()->all_decoded_topics();
   EXPECT_TRUE(topics.empty());
 
   RunUntilImagesReady();
-  topics = photo_controller()->ambient_backend_model()->topics();
+  topics = photo_controller()->ambient_backend_model()->all_decoded_topics();
   EXPECT_FALSE(topics.empty());
 
   // Stop to refresh images.
   photo_controller()->StopScreenUpdate();
-  topics = photo_controller()->ambient_backend_model()->topics();
+  topics = photo_controller()->ambient_backend_model()->all_decoded_topics();
   EXPECT_TRUE(topics.empty());
 }
 
@@ -381,6 +382,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldNotDeleteImagesOnDisk) {
 
 // Test that image is read from disk when no more topics.
 TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenNoMoreTopics) {
+  Init();
   FetchImage();
   FastForwardToNextImage();
   // Topics is empty. Will read from cache, which is empty.
@@ -407,6 +409,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenNoMoreTopics) {
 // Test that will try 100 times to read image from disk when no more topics.
 TEST_F(AmbientPhotoControllerTest,
        ShouldTry100TimesToReadCacheWhenNoMoreTopics) {
+  Init();
   FetchImage();
   FastForwardToNextImage();
   // Topics is empty. Will read from cache, which is empty.
@@ -434,6 +437,7 @@ TEST_F(AmbientPhotoControllerTest,
 // Test that image is read from disk when image downloading failed.
 TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenImageDownloadingFailed) {
   SetDownloadPhotoData("");
+  Init();
   FetchTopics();
   // Forward a little bit time. FetchTopics() will succeed. Downloading should
   // fail. Will read from cache, which is empty.
@@ -462,6 +466,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenImageDownloadingFailed) {
 
 // Test that image details is read from disk.
 TEST_F(AmbientPhotoControllerTest, ShouldPopulateDetailsWhenReadFromCache) {
+  Init();
   FetchImage();
   FastForwardToNextImage();
   // Topics is empty. Will read from cache, which is empty.

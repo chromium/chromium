@@ -25,88 +25,6 @@ namespace {
 // AmbientPhotoConfig is reached.
 constexpr base::TimeDelta kImagesReadyTimeout = base::Seconds(10);
 
-int TypeToIndex(::ambient::TopicType topic_type) {
-  int index = static_cast<int>(topic_type);
-  DCHECK_GE(index, 0);
-  return index;
-}
-
-::ambient::TopicType IndexToType(int index) {
-  ::ambient::TopicType topic_type = static_cast<::ambient::TopicType>(index);
-  return topic_type;
-}
-
-std::vector<AmbientModeTopic> CreatePairedTopics(
-    const std::vector<AmbientModeTopic>& topics) {
-  // We pair two topics if:
-  // 1. They are in the landscape orientation.
-  // 2. They are in the same category.
-  // 3. They are not Geo photos.
-  base::flat_map<int, std::vector<int>> topics_by_type;
-  std::vector<AmbientModeTopic> paired_topics;
-  int topic_idx = -1;
-  for (const auto& topic : topics) {
-    topic_idx++;
-
-    // Do not pair Geo photos, which will be rotate to fill the screen.
-    // If a photo is portrait, it is from Google Photos and should have a paired
-    // photo already.
-    if (topic.topic_type == ::ambient::TopicType::kGeo || topic.is_portrait) {
-      paired_topics.emplace_back(topic);
-      continue;
-    }
-
-    int type_index = TypeToIndex(topic.topic_type);
-    auto it = topics_by_type.find(type_index);
-    if (it == topics_by_type.end()) {
-      topics_by_type.insert({type_index, {topic_idx}});
-    } else {
-      it->second.emplace_back(topic_idx);
-    }
-  }
-
-  // We merge two unpaired topics to create a new topic with related images.
-  for (auto it = topics_by_type.begin(); it < topics_by_type.end(); ++it) {
-    size_t idx = 0;
-    while (idx < it->second.size() - 1) {
-      AmbientModeTopic paired_topic;
-      const auto& topic_1 = topics[it->second[idx]];
-      const auto& topic_2 = topics[it->second[idx + 1]];
-      paired_topic.url = topic_1.url;
-      paired_topic.related_image_url = topic_2.url;
-
-      paired_topic.details = topic_1.details;
-      paired_topic.related_details = topic_2.details;
-      paired_topic.topic_type = IndexToType(it->first);
-      paired_topic.is_portrait = topic_1.is_portrait;
-      paired_topics.emplace_back(paired_topic);
-
-      idx += 2;
-    }
-  }
-
-  std::shuffle(paired_topics.begin(), paired_topics.end(),
-               std::default_random_engine());
-  return paired_topics;
-}
-
-std::pair<AmbientModeTopic, AmbientModeTopic> SplitTopic(
-    const AmbientModeTopic& paired_topic) {
-  const auto clear_related_fields_from_topic = [](AmbientModeTopic& topic) {
-    topic.related_image_url.clear();
-    topic.related_details.clear();
-  };
-
-  AmbientModeTopic topic_with_primary(paired_topic);
-  clear_related_fields_from_topic(topic_with_primary);
-
-  AmbientModeTopic topic_with_related(paired_topic);
-  topic_with_related.url = std::move(topic_with_related.related_image_url);
-  topic_with_related.details = std::move(topic_with_related.related_details);
-  clear_related_fields_from_topic(topic_with_related);
-  return std::make_pair(topic_with_primary, topic_with_related);
-}
-
 }  // namespace
 
 // PhotoWithDetails------------------------------------------------------------
@@ -149,29 +67,6 @@ void AmbientBackendModel::AddObserver(AmbientBackendModelObserver* observer) {
 void AmbientBackendModel::RemoveObserver(
     AmbientBackendModelObserver* observer) {
   observers_.RemoveObserver(observer);
-}
-
-void AmbientBackendModel::AppendTopics(
-    const std::vector<AmbientModeTopic>& topics_in) {
-  if (photo_config_.should_split_topics) {
-    static constexpr int kMaxImagesPerTopic = 2;
-    topics_.reserve(topics_.size() + kMaxImagesPerTopic * topics_in.size());
-    for (const AmbientModeTopic& topic : topics_in) {
-      if (topic.related_image_url.empty()) {
-        topics_.push_back(topic);
-      } else {
-        std::pair<AmbientModeTopic, AmbientModeTopic> split_topic =
-            SplitTopic(topic);
-        topics_.push_back(std::move(split_topic.first));
-        topics_.push_back(std::move(split_topic.second));
-      }
-    }
-  } else {
-    std::vector<AmbientModeTopic> related_topics =
-        CreatePairedTopics(topics_in);
-    topics_.insert(topics_.end(), related_topics.begin(), related_topics.end());
-  }
-  NotifyTopicsChanged();
 }
 
 bool AmbientBackendModel::ImagesReady() const {
@@ -268,7 +163,6 @@ void AmbientBackendModel::SetPhotoConfig(AmbientPhotoConfig photo_config) {
 }
 
 void AmbientBackendModel::Clear() {
-  topics_.clear();
   all_decoded_topics_.clear();
   images_ready_timeout_timer_.Stop();
   images_ready_timed_out_ = false;
@@ -304,11 +198,6 @@ void AmbientBackendModel::UpdateWeatherInfo(
 
   if (!weather_condition_icon.isNull())
     NotifyWeatherInfoUpdated();
-}
-
-void AmbientBackendModel::NotifyTopicsChanged() {
-  for (auto& observer : observers_)
-    observer.OnTopicsChanged();
 }
 
 void AmbientBackendModel::NotifyImageAdded() {

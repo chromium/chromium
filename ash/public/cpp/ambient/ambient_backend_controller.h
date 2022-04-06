@@ -24,6 +24,8 @@ struct ASH_PUBLIC_EXPORT AmbientModeTopic {
   AmbientModeTopic();
   AmbientModeTopic(const AmbientModeTopic&);
   AmbientModeTopic& operator=(const AmbientModeTopic&);
+  AmbientModeTopic(AmbientModeTopic&&);
+  AmbientModeTopic& operator=(AmbientModeTopic&&);
   ~AmbientModeTopic();
 
   // Details, i.e. the attribution, to be displayed for the current photo on

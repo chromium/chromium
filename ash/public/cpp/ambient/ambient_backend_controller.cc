@@ -29,6 +29,10 @@ AmbientModeTopic::AmbientModeTopic(const AmbientModeTopic&) = default;
 AmbientModeTopic& AmbientModeTopic::operator=(const AmbientModeTopic&) =
     default;
 
+AmbientModeTopic::AmbientModeTopic(AmbientModeTopic&&) = default;
+
+AmbientModeTopic& AmbientModeTopic::operator=(AmbientModeTopic&&) = default;
+
 AmbientModeTopic::~AmbientModeTopic() = default;
 
 // WeatherInfo------------------------------------------------------------------

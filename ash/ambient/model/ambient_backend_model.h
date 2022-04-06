@@ -60,9 +60,6 @@ class ASH_EXPORT AmbientBackendModel {
   void AddObserver(AmbientBackendModelObserver* observer);
   void RemoveObserver(AmbientBackendModelObserver* observer);
 
-  void AppendTopics(const std::vector<AmbientModeTopic>& topics);
-  const std::vector<AmbientModeTopic>& topics() const { return topics_; }
-
   // If enough images are loaded to start ambient mode.
   bool ImagesReady() const;
 
@@ -139,7 +136,6 @@ class ASH_EXPORT AmbientBackendModel {
   friend class AmbientBackendModelTest;
   friend class AmbientAshTestBase;
 
-  void NotifyTopicsChanged();
   void NotifyImageAdded();
   void NotifyImagesReady();
   void NotifyWeatherInfoUpdated();

@@ -16,7 +16,7 @@ class MockAmbientViewEventHandler : public AmbientViewEventHandler {
   MockAmbientViewEventHandler(const MockAmbientViewEventHandler&) = delete;
   MockAmbientViewEventHandler& operator=(const MockAmbientViewEventHandler&) =
       delete;
-  ~MockAmbientViewEventHandler();
+  ~MockAmbientViewEventHandler() override;
 
   MOCK_METHOD(void,
               OnMarkerHit,
