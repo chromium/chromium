@@ -100,13 +100,6 @@ bool FormContainsFieldWithName(const FormData& form,
   return false;
 }
 
-// Returns whether reparsing server predictions following a form change is
-// enabled.
-bool IsReparsingServerPredictionsEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kReparseServerPredictionsFollowingFormChange);
-}
-
 bool IsUsernameFirstFlowFeatureEnabled() {
   return base::FeatureList::IsEnabled(features::kUsernameFirstFlow);
 }
@@ -883,8 +876,7 @@ void PasswordFormManager::FillForm(
   bool new_predictions_available = false;
   if (differences_bitmask) {
     UpdateFormManagerWithFormChanges(observed_form_data, predictions);
-    new_predictions_available =
-        parser_.predictions() && IsReparsingServerPredictionsEnabled();
+    new_predictions_available = parser_.predictions().has_value();
   }
   // Fill the form if relevant form predictions were found or if the
   // manager is not waiting for new server predictions.
@@ -1108,8 +1100,6 @@ void PasswordFormManager::UpdateFormManagerWithFormChanges(
     const FormData& observed_form_data,
     const std::map<FormSignature, FormPredictions>& predictions) {
   *mutable_observed_form() = observed_form_data;
-  if (!IsReparsingServerPredictionsEnabled())
-    return;
 
   // If the observed form has changed, it might be autofilled again.
   autofills_left_ = kMaxTimesAutofill;

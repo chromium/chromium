@@ -3902,12 +3902,6 @@ TEST_P(PasswordManagerTest,
 }
 
 TEST_P(PasswordManagerTest, GenerationOnChangedForm) {
-  const bool kIsReparsingEnabled = GetParam();
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(
-      features::kReparseServerPredictionsFollowingFormChange,
-      kIsReparsingEnabled);
-
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(_))
       .WillRepeatedly(Return(true));
   EXPECT_CALL(*store_, GetLogins(_, _))
@@ -3950,16 +3944,12 @@ TEST_P(PasswordManagerTest, GenerationOnChangedForm) {
   manager()->ProcessAutofillPredictions(&driver_, {&form_structure});
 
   autofill::PasswordFormGenerationData form_generation_data;
-  if (kIsReparsingEnabled) {
-    EXPECT_CALL(driver_, FormEligibleForGenerationFound)
-        .WillOnce(SaveArg<0>(&form_generation_data));
-    // The change is discovered by PasswordManager.
-    manager()->OnPasswordFormsParsed(&driver_, {form_data});
-    EXPECT_EQ(new_password_field.unique_renderer_id,
-              form_generation_data.new_password_renderer_id);
-  } else {
-    EXPECT_CALL(driver_, FormEligibleForGenerationFound).Times(0);
-  }
+  EXPECT_CALL(driver_, FormEligibleForGenerationFound)
+      .WillOnce(SaveArg<0>(&form_generation_data));
+  // The change is discovered by PasswordManager.
+  manager()->OnPasswordFormsParsed(&driver_, {form_data});
+  EXPECT_EQ(new_password_field.unique_renderer_id,
+            form_generation_data.new_password_renderer_id);
 }
 
 TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedForm) {
