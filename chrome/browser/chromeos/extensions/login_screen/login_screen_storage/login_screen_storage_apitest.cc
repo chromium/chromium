@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/mixin_based_extension_apitest.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -15,7 +13,6 @@
 #include "content/public/test/test_launcher.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -62,14 +59,6 @@ class LoginScreenStorageExtensionApiTest
     listener_.reset();
   }
 
-  void SetUp() override {
-    base::FilePath test_data_dir;
-    base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
-    embedded_test_server()->ServeFilesFromDirectory(test_data_dir);
-
-    extensions::MixinBasedExtensionApiTest::SetUp();
-  }
-
   void SetUpInProcessBrowserTestFixture() override {
     extensions::MixinBasedExtensionApiTest::SetUpInProcessBrowserTestFixture();
 
@@ -82,22 +71,10 @@ class LoginScreenStorageExtensionApiTest
   }
 
   void SetUpOnMainThread() override {
-    ASSERT_TRUE(embedded_test_server()->Start());
-
-    policy::ProfilePolicyConnector* const connector =
-        profile()->GetProfilePolicyConnector();
-    connector->OverrideIsManagedForTesting(true);
-
     extension_force_install_mixin_.InitWithMockPolicyProvider(
         profile(), &mock_policy_provider_);
 
     extensions::MixinBasedExtensionApiTest::SetUpOnMainThread();
-  }
-
-  void TearDownOnMainThread() override {
-    extensions::MixinBasedExtensionApiTest::TearDownOnMainThread();
-
-    EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
   }
 
   void RunTest(const std::string& test_name) {
@@ -106,15 +83,16 @@ class LoginScreenStorageExtensionApiTest
         std::make_unique<ExtensionTestMessageListener>(kListenerMessage,
                                                        /* will_reply= */ true);
 
-    base::FilePath extension_dir =
-        base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
-            .Append(FILE_PATH_LITERAL(kInSessionExtensionCrxPath));
-
     extensions::ExtensionId extension_id;
-    ASSERT_TRUE(extension_force_install_mixin_.ForceInstallFromCrx(
-        extension_dir, ExtensionForceInstallMixin::WaitMode::kLoad,
-        &extension_id));
-    ASSERT_EQ(kInSessionExtensionId, extension_id);
+    EXPECT_TRUE(extension_force_install_mixin_.ForceInstallFromCrx(
+        base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+            .Append(FILE_PATH_LITERAL(kInSessionExtensionCrxPath)),
+        ExtensionForceInstallMixin::WaitMode::kLoad, &extension_id));
+
+    const extensions::Extension* extension =
+        extension_force_install_mixin_.GetEnabledExtension(extension_id);
+    ASSERT_TRUE(extension);
+    ASSERT_EQ(extension_id, kInSessionExtensionId);
 
     ASSERT_TRUE(listener_->WaitUntilSatisfied());
     listener_->Reply(test_name);
