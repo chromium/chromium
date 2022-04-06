@@ -88,8 +88,7 @@ std::vector<uint8_t> MakeJsonVector(const base::ValueView& value);
 
 // Reads "//components/test/data/webcrypto/" + test_file_name as a JSON
 // file, asserts that the contained JSON is a list, and returns that list.
-::testing::AssertionResult ReadJsonTestFileAsList(const char* test_file_name,
-                                                  base::Value* list);
+base::Value::List ReadJsonTestFileAsList(const char* test_file_name);
 
 // Reads a string property from the dictionary |dict| with path |property_name|
 // (which can include periods for nested dictionaries). Interprets the

@@ -201,18 +201,14 @@ TEST_F(WebCryptoRsaSsaTest, ImportRsaPrivateKeyJwkToPkcs8RoundTrip) {
 // be imported correctly, however every key after that would actually import
 // the first key.
 TEST_F(WebCryptoRsaSsaTest, ImportMultipleRSAPrivateKeysJwk) {
-  base::Value key_list;
-  ASSERT_TRUE(ReadJsonTestFileAsList("rsa_private_keys.json", &key_list));
-
   // For this test to be meaningful the keys MUST be kept alive before importing
   // new keys.
   std::vector<blink::WebCryptoKey> live_keys;
 
-  for (size_t key_index = 0; key_index < key_list.GetListDeprecated().size();
-       ++key_index) {
-    SCOPED_TRACE(key_index);
+  base::Value::List keys = ReadJsonTestFileAsList("rsa_private_keys.json");
+  for (const auto& key_values : keys) {
+    SCOPED_TRACE(&key_values - &keys[0]);
 
-    const base::Value& key_values = key_list.GetListDeprecated()[key_index];
     ASSERT_TRUE(key_values.is_dict());
     const base::DictionaryValue* key_values_dict =
         &base::Value::AsDictionaryValue(key_values);
@@ -263,11 +259,10 @@ TEST_F(WebCryptoRsaSsaTest, ImportMultipleRSAPrivateKeysJwk) {
 // that the second import retrieves the first key. See http://crbug.com/378315
 // for how that could happen.
 TEST_F(WebCryptoRsaSsaTest, ImportJwkExistingModulusAndInvalid) {
-  base::Value key_list;
-  ASSERT_TRUE(ReadJsonTestFileAsList("rsa_private_keys.json", &key_list));
+  base::Value::List key_list = ReadJsonTestFileAsList("rsa_private_keys.json");
 
   // Import a 1024-bit private key.
-  const base::Value& key1_props_value = key_list.GetListDeprecated()[1];
+  const base::Value& key1_props_value = key_list[1];
   ASSERT_TRUE(key1_props_value.is_dict());
   const base::DictionaryValue* key1_props =
       &base::Value::AsDictionaryValue(key1_props_value);
@@ -287,7 +282,7 @@ TEST_F(WebCryptoRsaSsaTest, ImportJwkExistingModulusAndInvalid) {
 
   // Construct a JWK using the modulus of key1, but all the other fields from
   // another key (also a 1024-bit private key).
-  base::Value& key2_props_value = key_list.GetListDeprecated()[5];
+  base::Value& key2_props_value = key_list[5];
   ASSERT_TRUE(key2_props_value.is_dict());
   base::DictionaryValue* key2_props = const_cast<base::DictionaryValue*>(
       &base::Value::AsDictionaryValue(key2_props_value));
@@ -638,9 +633,6 @@ TEST_F(WebCryptoRsaSsaTest, SignVerifyFailures) {
 }
 
 TEST_F(WebCryptoRsaSsaTest, SignVerifyKnownAnswer) {
-  base::Value tests;
-  ASSERT_TRUE(ReadJsonTestFileAsList("pkcs1v15_sign.json", &tests));
-
   // Import the key pair.
   blink::WebCryptoAlgorithm import_algorithm = CreateRsaHashedImportAlgorithm(
       blink::kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5,
@@ -657,12 +649,12 @@ TEST_F(WebCryptoRsaSsaTest, SignVerifyKnownAnswer) {
       CreateAlgorithm(blink::kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5);
 
   // Validate the signatures are computed and verified as expected.
-  std::vector<uint8_t> signature;
-  for (size_t test_index = 0; test_index < tests.GetListDeprecated().size();
-       ++test_index) {
-    SCOPED_TRACE(test_index);
+  base::Value::List tests = ReadJsonTestFileAsList("pkcs1v15_sign.json");
 
-    const base::Value& test_value = tests.GetListDeprecated()[test_index];
+  std::vector<uint8_t> signature;
+  for (const auto& test_value : tests) {
+    SCOPED_TRACE(&test_value - &tests[0]);
+
     ASSERT_TRUE(test_value.is_dict());
     const base::DictionaryValue* test =
         &base::Value::AsDictionaryValue(test_value);
@@ -996,14 +988,10 @@ TEST_F(WebCryptoRsaSsaTest, ImportRsaSsaJwkBadUsageAndData) {
 
 // Imports invalid JWK/SPKI/PKCS8 data and verifies that it fails as expected.
 TEST_F(WebCryptoRsaSsaTest, ImportInvalidKeyData) {
-  base::Value tests;
-  ASSERT_TRUE(ReadJsonTestFileAsList("bad_rsa_keys.json", &tests));
+  base::Value::List tests = ReadJsonTestFileAsList("bad_rsa_keys.json");
+  for (const auto& test_value : tests) {
+    SCOPED_TRACE(&test_value - &tests[0]);
 
-  for (size_t test_index = 0; test_index < tests.GetListDeprecated().size();
-       ++test_index) {
-    SCOPED_TRACE(test_index);
-
-    const base::Value& test_value = tests.GetListDeprecated()[test_index];
     ASSERT_TRUE(test_value.is_dict());
     const base::DictionaryValue* test =
         &base::Value::AsDictionaryValue(test_value);

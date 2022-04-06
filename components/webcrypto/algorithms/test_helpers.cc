@@ -162,17 +162,12 @@ std::vector<uint8_t> MakeJsonVector(const base::ValueView& value) {
   return std::vector<uint8_t>(json.begin(), json.end());
 }
 
-::testing::AssertionResult ReadJsonTestFileAsList(const char* test_file_name,
-                                                  base::Value* value) {
+base::Value::List ReadJsonTestFileAsList(const char* test_file_name) {
   absl::optional<base::Value> result = ReadJsonTestFile(test_file_name);
-  if (!result)
-    return ::testing::AssertionFailure() << "Couldn't load JSON";
+  CHECK(result.has_value());
+  CHECK(result->is_list());
 
-  if (!result->is_list())
-    return ::testing::AssertionFailure() << "The JSON was not a list";
-
-  *value = std::move(*result);
-  return ::testing::AssertionSuccess();
+  return std::move(result->GetList());
 }
 
 std::vector<uint8_t> GetBytesFromHexString(const base::Value* dict,
