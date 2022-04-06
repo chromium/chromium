@@ -75,9 +75,32 @@ StyleRuleFontPaletteValues::GetOverrideColorsAsVector() const {
   if (!override_colors_ || !override_colors_->IsValueList())
     return {};
 
-  const CSSValueList& overrides_list = To<CSSValueList>(*override_colors_);
+  // Note: This function should not allocate Oilpan object, e.g. `CSSValue`,
+  // because this function is called in font threads to determine primary
+  // font data via `CSSFontSelector::GetFontData()`.
+  // The test[1] reaches here.
+  // [1] https://wpt.live/css/css-fonts/font-palette-35.html
+  // TODO(yosin): Should we use ` ThreadState::NoAllocationScope` for main
+  // thread? Font threads hit `DCHECK` because they don't have `ThreadState'.
+
+  auto ConvertToSkColor = [](const CSSValuePair& override_pair) -> SkColor {
+    if (override_pair.Second().IsIdentifierValue()) {
+      const CSSIdentifierValue& color_identifier =
+          To<CSSIdentifierValue>(override_pair.Second());
+      // The value won't be a system color according to parsing, so we can pass
+      // a fixed color scheme here.
+      return static_cast<SkColor>(
+          StyleColor::ColorFromKeyword(color_identifier.GetValueID(),
+                                       mojom::blink::ColorScheme::kLight)
+              .Rgb());
+    }
+    const cssvalue::CSSColor& css_color =
+        To<cssvalue::CSSColor>(override_pair.Second());
+    return static_cast<SkColor>(css_color.Value());
+  };
 
   Vector<FontPalette::FontPaletteOverride> return_overrides;
+  const CSSValueList& overrides_list = To<CSSValueList>(*override_colors_);
   for (auto& item : overrides_list) {
     const CSSValuePair& override_pair = To<CSSValuePair>(*item);
 
@@ -85,24 +108,10 @@ StyleRuleFontPaletteValues::GetOverrideColorsAsVector() const {
         To<CSSPrimitiveValue>(override_pair.First());
     DCHECK(palette_index.IsInteger());
 
-    const cssvalue::CSSColor* override_color;
-    if (override_pair.Second().IsIdentifierValue()) {
-      const CSSIdentifierValue& color_identifier =
-          To<CSSIdentifierValue>(override_pair.Second());
-      // The value won't be a system color according to parsing, so we can pass
-      // a fixed color scheme here.
-      override_color = cssvalue::CSSColor::Create(
-          StyleColor::ColorFromKeyword(color_identifier.GetValueID(),
-                                       mojom::blink::ColorScheme::kLight)
-              .Rgb());
-    } else {
-      override_color = DynamicTo<cssvalue::CSSColor>(override_pair.Second());
-      DCHECK(override_color);
-    }
+    const SkColor override_color = ConvertToSkColor(override_pair);
 
     FontPalette::FontPaletteOverride palette_override{
-        palette_index.GetIntValue(),
-        static_cast<SkColor>(override_color->Value())};
+        palette_index.GetIntValue(), override_color};
     return_overrides.push_back(palette_override);
   }
 
