@@ -90,6 +90,19 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
         function_name, std::move(args)...));
   }
 
+  template <typename... Args>
+  void FireWebUIListenerWhenAllowed(const std::string& event_name,
+                                    Args... args) {
+    if (IsJavascriptAllowed()) {
+      FireWebUIListener(event_name, args...);
+      return;
+    }
+
+    deferred_calls_.push_back(
+        base::BindOnce(&BaseWebUIHandler::FireWebUIListenerWhenAllowed<Args...>,
+                       base::Unretained(this), event_name, std::move(args)...));
+  }
+
   template <typename T, typename... Args>
   void AddCallback(const std::string& function_name,
                    void (T::*method)(Args...)) {

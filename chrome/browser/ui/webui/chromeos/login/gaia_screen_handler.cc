@@ -645,8 +645,6 @@ void GaiaScreenHandler::GetAdditionalParameters(base::DictionaryValue* dict) {
 
 void GaiaScreenHandler::InitializeDeprecated() {
   initialized_ = true;
-  // This should be called only once on page load.
-  AllowJavascript();
   if (show_on_init_) {
     show_on_init_ = false;
     ShowGaiaScreenIfReady();
