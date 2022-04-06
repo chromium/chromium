@@ -38,6 +38,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/utility/haptics_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -68,6 +69,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/scoped_display_for_new_windows.h"
+#include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/event_utils.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point.h"
@@ -1521,6 +1523,12 @@ void ShelfView::PrepareForDrag(Pointer pointer, const ui::LocatedEvent& event) {
         root_window, drag_view_->GetImage(), screen_location, gfx::Vector2d(),
         /*scale_factor=*/1.0f,
         /*use_blurred_background=*/false);
+
+    if (pointer == MOUSE) {
+      haptics_util::PlayHapticTouchpadEffect(
+          ui::HapticTouchpadEffect::kTick,
+          ui::HapticTouchpadEffectStrength::kMedium);
+    }
   }
 }
 

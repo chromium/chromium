@@ -8,6 +8,7 @@
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/utility/haptics_tracking_test_input_controller.h"
 #include "ash/wm/desks/desk_animation_impl.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
@@ -22,125 +23,22 @@
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/workspace/workspace_window_resizer.h"
-#include "base/containers/flat_map.h"
 #include "ui/aura/window.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
-#include "ui/events/devices/stylus_state.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/ozone/public/input_controller.h"
-#include "ui/ozone/public/ozone_platform.h"
 
 namespace ash {
 
 using ui::HapticTouchpadEffect;
 using ui::HapticTouchpadEffectStrength;
 
-class InputControllerForTesting : public ui::InputController {
- public:
-  InputControllerForTesting() {
-    haptics_util::SetInputControllerForTesting(this);
-  }
-  ~InputControllerForTesting() override {
-    haptics_util::SetInputControllerForTesting(nullptr);
-  }
-  InputControllerForTesting(const InputControllerForTesting&) = delete;
-  InputControllerForTesting& operator=(const InputControllerForTesting&) =
-      delete;
-
-  // ui::InputController:
-  bool HasMouse() override { return false; }
-  bool HasPointingStick() override { return false; }
-  bool HasTouchpad() override { return false; }
-  bool HasHapticTouchpad() override { return true; }
-  bool IsCapsLockEnabled() override { return false; }
-  void SetCapsLockEnabled(bool enabled) override {}
-  void SetNumLockEnabled(bool enabled) override {}
-  bool IsAutoRepeatEnabled() override { return true; }
-  void SetAutoRepeatEnabled(bool enabled) override {}
-  void SetAutoRepeatRate(const base::TimeDelta& delay,
-                         const base::TimeDelta& interval) override {}
-  void GetAutoRepeatRate(base::TimeDelta* delay,
-                         base::TimeDelta* interval) override {}
-  void SetCurrentLayoutByName(const std::string& layout_name) override {}
-  void SetTouchpadSensitivity(int value) override {}
-  void SetTouchpadScrollSensitivity(int value) override {}
-  void SetTapToClick(bool enabled) override {}
-  void SetThreeFingerClick(bool enabled) override {}
-  void SetTapDragging(bool enabled) override {}
-  void SetNaturalScroll(bool enabled) override {}
-  void SetTouchpadAcceleration(bool enabled) override {}
-  void SetTouchpadScrollAcceleration(bool enabled) override {}
-  void SetTouchpadHapticFeedback(bool enabled) override {}
-  void SetTouchpadHapticClickSensitivity(int value) override {}
-  void SetMouseSensitivity(int value) override {}
-  void SetMouseScrollSensitivity(int value) override {}
-  void SetPrimaryButtonRight(bool right) override {}
-  void SetMouseReverseScroll(bool enabled) override {}
-  void SetMouseAcceleration(bool enabled) override {}
-  void SuspendMouseAcceleration() override {}
-  void EndMouseAccelerationSuspension() override {}
-  void SetMouseScrollAcceleration(bool enabled) override {}
-  void SetPointingStickSensitivity(int value) override {}
-  void SetPointingStickPrimaryButtonRight(bool right) override {}
-  void SetPointingStickAcceleration(bool enabled) override {}
-  void GetTouchDeviceStatus(GetTouchDeviceStatusReply reply) override {
-    std::move(reply).Run(std::string());
-  }
-  void GetTouchEventLog(const base::FilePath& out_dir,
-                        GetTouchEventLogReply reply) override {
-    std::move(reply).Run(std::vector<base::FilePath>());
-  }
-  void SetTouchEventLoggingEnabled(bool enabled) override {
-    NOTIMPLEMENTED_LOG_ONCE();
-  }
-  void SetTapToClickPaused(bool state) override {}
-  void SetInternalTouchpadEnabled(bool enabled) override {}
-  bool IsInternalTouchpadEnabled() const override { return false; }
-  void SetTouchscreensEnabled(bool enabled) override {}
-  void GetStylusSwitchState(GetStylusSwitchStateReply reply) override {
-    // Return that there is no stylus in the garage; this test class
-    // does not need to trigger stylus charging behaviours.
-    std::move(reply).Run(ui::StylusState::REMOVED);
-  }
-  void PlayVibrationEffect(int id,
-                           uint8_t amplitude,
-                           uint16_t duration_millis) override {}
-  void StopVibration(int id) override {}
-  void PlayHapticTouchpadEffect(
-      HapticTouchpadEffect effect,
-      HapticTouchpadEffectStrength strength) override {
-    send_haptic_count_[effect][strength]++;
-  }
-  void SetHapticTouchpadEffectForNextButtonRelease(
-      HapticTouchpadEffect effect,
-      HapticTouchpadEffectStrength strength) override {}
-  void SetInternalKeyboardFilter(
-      bool enable_filter,
-      std::vector<ui::DomCode> allowed_keys) override {}
-  void GetGesturePropertiesService(
-      mojo::PendingReceiver<ui::ozone::mojom::GesturePropertiesService>
-          receiver) override {}
-
-  // Return haptic count for effect/strength combination for testing.
-  int GetSendHapticCount(HapticTouchpadEffect effect,
-                         HapticTouchpadEffectStrength strength) {
-    return send_haptic_count_[effect][strength];
-  }
-
- private:
-  // A map of map that stores counts for given haptic effect/strength.
-  // This is used for testing only.
-  base::flat_map<HapticTouchpadEffect,
-                 base::flat_map<HapticTouchpadEffectStrength, int>>
-      send_haptic_count_;
-};
-
 using HapticsUtilTest = AshTestBase;
 
 // Test haptic feedback with all effect/strength combinations.
 TEST_F(HapticsUtilTest, HapticFeedbackBasic) {
-  auto input_controller = std::make_unique<InputControllerForTesting>();
+  auto input_controller =
+      std::make_unique<HapticsTrackingTestInputController>();
 
   std::vector<HapticTouchpadEffect> effects = {
       HapticTouchpadEffect::kSnap,    HapticTouchpadEffect::kKnock,
@@ -158,7 +56,7 @@ TEST_F(HapticsUtilTest, HapticFeedbackBasic) {
       for (int count = 0; count < 16; count++) {
         haptics_util::PlayHapticTouchpadEffect(effect, strength);
         EXPECT_EQ(count + 1,
-                  input_controller->GetSendHapticCount(effect, strength));
+                  input_controller->GetSentHapticCount(effect, strength));
       }
     }
   }
@@ -167,7 +65,8 @@ TEST_F(HapticsUtilTest, HapticFeedbackBasic) {
 // Test haptic feedback for normal window snapping. This covers drag to snap
 // primary/secondary/maximize.
 TEST_F(HapticsUtilTest, HapticFeedbackForNormalWindowSnap) {
-  auto input_controller = std::make_unique<InputControllerForTesting>();
+  auto input_controller =
+      std::make_unique<HapticsTrackingTestInputController>();
 
   UpdateDisplay("800x600");
   gfx::Rect bounds(200, 200, 300, 300);
@@ -192,7 +91,7 @@ TEST_F(HapticsUtilTest, HapticFeedbackForNormalWindowSnap) {
     event_generator->set_current_screen_location(start);
     event_generator->PressTouch();
     event_generator->MoveTouch(test_case.first);
-    EXPECT_EQ(0, input_controller->GetSendHapticCount(
+    EXPECT_EQ(0, input_controller->GetSentHapticCount(
                      HapticTouchpadEffect::kSnap,
                      HapticTouchpadEffectStrength::kMedium));
     event_generator->ReleaseTouch();
@@ -212,7 +111,7 @@ TEST_F(HapticsUtilTest, HapticFeedbackForNormalWindowSnap) {
         WorkspaceWindowResizer::GetInstanceForTest();
     if (workspace_resizer->dwell_countdown_timer_.IsRunning())
       workspace_resizer->dwell_countdown_timer_.FireNow();
-    EXPECT_EQ((int)i + 1, input_controller->GetSendHapticCount(
+    EXPECT_EQ((int)i + 1, input_controller->GetSentHapticCount(
                               HapticTouchpadEffect::kSnap,
                               HapticTouchpadEffectStrength::kMedium));
     event_generator->ReleaseLeftButton();
@@ -223,7 +122,8 @@ TEST_F(HapticsUtilTest, HapticFeedbackForNormalWindowSnap) {
 // Test haptic feedback for overview window snapping. This covers drag to split
 // in overview.
 TEST_F(HapticsUtilTest, HapticFeedbackForOverviewWindowSnap) {
-  auto input_controller = std::make_unique<InputControllerForTesting>();
+  auto input_controller =
+      std::make_unique<HapticsTrackingTestInputController>();
   OverviewController* overview_controller = Shell::Get()->overview_controller();
 
   UpdateDisplay("800x600");
@@ -252,7 +152,7 @@ TEST_F(HapticsUtilTest, HapticFeedbackForOverviewWindowSnap) {
     event_generator->PressTouch();
     event_generator->MoveTouch(test_case.first);
     EXPECT_TRUE(overview_controller->InOverviewSession());
-    EXPECT_EQ(0, input_controller->GetSendHapticCount(
+    EXPECT_EQ(0, input_controller->GetSentHapticCount(
                      HapticTouchpadEffect::kSnap,
                      HapticTouchpadEffectStrength::kMedium));
     event_generator->ReleaseTouch();
@@ -273,7 +173,7 @@ TEST_F(HapticsUtilTest, HapticFeedbackForOverviewWindowSnap) {
     event_generator->PressLeftButton();
     event_generator->MoveMouseTo(test_case.first);
     EXPECT_TRUE(overview_controller->InOverviewSession());
-    EXPECT_EQ((int)i + 1, input_controller->GetSendHapticCount(
+    EXPECT_EQ((int)i + 1, input_controller->GetSentHapticCount(
                               HapticTouchpadEffect::kSnap,
                               HapticTouchpadEffectStrength::kMedium));
     event_generator->ReleaseLeftButton();
@@ -285,7 +185,8 @@ TEST_F(HapticsUtilTest, HapticFeedbackForOverviewWindowSnap) {
 // Test haptic feedback for off limits desk switching, e.g. swiping left from
 // the first desk and swiping right from the last desk.
 TEST_F(HapticsUtilTest, HapticFeedbackForDeskSwitchingOffLimits) {
-  auto input_controller = std::make_unique<InputControllerForTesting>();
+  auto input_controller =
+      std::make_unique<HapticsTrackingTestInputController>();
   auto* desk_controller = DesksController::Get();
 
   // Make sure to start with two desks.
@@ -293,14 +194,14 @@ TEST_F(HapticsUtilTest, HapticFeedbackForDeskSwitchingOffLimits) {
   EXPECT_EQ(2u, desk_controller->desks().size());
   EXPECT_EQ(0, desk_controller->GetActiveDeskIndex());
   EXPECT_EQ(
-      input_controller->GetSendHapticCount(
+      input_controller->GetSentHapticCount(
           HapticTouchpadEffect::kKnock, HapticTouchpadEffectStrength::kMedium),
       0);
 
   // Swipe from `desk 0` to `desk 1` should not trigger `kKnock` effect.
   ScrollToSwitchDesks(/*scroll_left=*/false, GetEventGenerator());
   EXPECT_EQ(1, desk_controller->GetActiveDeskIndex());
-  EXPECT_EQ(0, input_controller->GetSendHapticCount(
+  EXPECT_EQ(0, input_controller->GetSentHapticCount(
                    HapticTouchpadEffect::kKnock,
                    HapticTouchpadEffectStrength::kMedium));
 
@@ -308,7 +209,7 @@ TEST_F(HapticsUtilTest, HapticFeedbackForDeskSwitchingOffLimits) {
   ScrollToSwitchDesks(/*scroll_left=*/false,
                       /*event_generator=*/GetEventGenerator());
   EXPECT_EQ(1, desk_controller->GetActiveDeskIndex());
-  EXPECT_EQ(1, input_controller->GetSendHapticCount(
+  EXPECT_EQ(1, input_controller->GetSentHapticCount(
                    HapticTouchpadEffect::kKnock,
                    HapticTouchpadEffectStrength::kMedium));
 }
@@ -317,7 +218,8 @@ TEST_F(HapticsUtilTest, HapticFeedbackForDeskSwitchingOffLimits) {
 // switch desks. They are expected to be sent if we hit the edge, or when the
 // visible desk changes.
 TEST_F(HapticsUtilTest, HapticFeedbackForContinuousDesksSwitching) {
-  auto input_controller = std::make_unique<InputControllerForTesting>();
+  auto input_controller =
+      std::make_unique<HapticsTrackingTestInputController>();
 
   // Add three desks for a total of four.
   auto* desks_controller = DesksController::Get();
@@ -338,10 +240,10 @@ TEST_F(HapticsUtilTest, HapticFeedbackForContinuousDesksSwitching) {
   // Wait for the ending screenshot to be taken.
   WaitUntilEndingScreenshotTaken(&animation);
 
-  EXPECT_EQ(0, input_controller->GetSendHapticCount(
+  EXPECT_EQ(0, input_controller->GetSentHapticCount(
                    HapticTouchpadEffect::kKnock,
                    HapticTouchpadEffectStrength::kMedium));
-  EXPECT_EQ(0, input_controller->GetSendHapticCount(
+  EXPECT_EQ(0, input_controller->GetSentHapticCount(
                    HapticTouchpadEffect::kTick,
                    HapticTouchpadEffectStrength::kMedium));
 
@@ -355,14 +257,14 @@ TEST_F(HapticsUtilTest, HapticFeedbackForContinuousDesksSwitching) {
   WaitUntilEndingScreenshotTaken(&animation);
 
   animation.UpdateSwipeAnimation(-kTouchpadSwipeLengthForDeskChange);
-  EXPECT_EQ(3, input_controller->GetSendHapticCount(
+  EXPECT_EQ(3, input_controller->GetSentHapticCount(
                    HapticTouchpadEffect::kTick,
                    HapticTouchpadEffectStrength::kMedium));
 
   // Try doing a full swipe to the right. Test that a knock haptic event is sent
   // because we are at the edge.
   animation.UpdateSwipeAnimation(-kTouchpadSwipeLengthForDeskChange);
-  EXPECT_EQ(1, input_controller->GetSendHapticCount(
+  EXPECT_EQ(1, input_controller->GetSentHapticCount(
                    HapticTouchpadEffect::kKnock,
                    HapticTouchpadEffectStrength::kMedium));
 
@@ -371,21 +273,22 @@ TEST_F(HapticsUtilTest, HapticFeedbackForContinuousDesksSwitching) {
   animation.UpdateSwipeAnimation(kTouchpadSwipeLengthForDeskChange);
   animation.UpdateSwipeAnimation(kTouchpadSwipeLengthForDeskChange);
   animation.UpdateSwipeAnimation(kTouchpadSwipeLengthForDeskChange);
-  EXPECT_EQ(6, input_controller->GetSendHapticCount(
+  EXPECT_EQ(6, input_controller->GetSentHapticCount(
                    HapticTouchpadEffect::kTick,
                    HapticTouchpadEffectStrength::kMedium));
 
   // Swipe to the left while at the first desk. Tests that another haptic event
   // is sent because we are at the edge.
   animation.UpdateSwipeAnimation(kTouchpadSwipeLengthForDeskChange);
-  EXPECT_EQ(2, input_controller->GetSendHapticCount(
+  EXPECT_EQ(2, input_controller->GetSentHapticCount(
                    HapticTouchpadEffect::kKnock,
                    HapticTouchpadEffectStrength::kMedium));
 }
 
 // Tests that haptics are sent when dragging a window/desk in overview.
 TEST_F(HapticsUtilTest, HapticFeedbackForDragAndDrop) {
-  auto input_controller = std::make_unique<InputControllerForTesting>();
+  auto input_controller =
+      std::make_unique<HapticsTrackingTestInputController>();
   OverviewController* overview_controller = Shell::Get()->overview_controller();
 
   std::unique_ptr<aura::Window> window = CreateTestWindow();
@@ -405,7 +308,7 @@ TEST_F(HapticsUtilTest, HapticFeedbackForDragAndDrop) {
       gfx::ToRoundedPoint(bounds_f.CenterPoint()));
   event_generator->PressLeftButton();
   event_generator->MoveMouseTo(gfx::ToRoundedPoint(bounds_f.right_center()));
-  EXPECT_EQ(1, input_controller->GetSendHapticCount(
+  EXPECT_EQ(1, input_controller->GetSentHapticCount(
                    HapticTouchpadEffect::kTick,
                    HapticTouchpadEffectStrength::kMedium));
   event_generator->ReleaseLeftButton();
@@ -422,7 +325,7 @@ TEST_F(HapticsUtilTest, HapticFeedbackForDragAndDrop) {
   event_generator->set_current_screen_location(bounds.CenterPoint());
   event_generator->PressLeftButton();
   event_generator->MoveMouseTo(bounds.right_center());
-  EXPECT_EQ(2, input_controller->GetSendHapticCount(
+  EXPECT_EQ(2, input_controller->GetSentHapticCount(
                    HapticTouchpadEffect::kTick,
                    HapticTouchpadEffectStrength::kMedium));
   event_generator->ReleaseLeftButton();

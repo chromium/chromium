@@ -3166,6 +3166,8 @@ static_library("test_support") {
     "system/geolocation/test_geolocation_url_loader_factory.h",
     "test/layer_animation_stopped_waiter.cc",
     "test/layer_animation_stopped_waiter.h",
+    "utility/haptics_tracking_test_input_controller.cc",
+    "utility/haptics_tracking_test_input_controller.h",
 
     # These headers declare functions that are implemented inside of //ash, so
     # they cannot live in //ash/public/cpp/BUILD.gn.
@@ -3351,6 +3353,7 @@ static_library("test_support") {
     "//ui/gl:test_support",
     "//ui/message_center",
     "//ui/message_center/public/cpp",
+    "//ui/ozone",
     "//ui/platform_window/common",
     "//ui/shell_dialogs",
     "//ui/views",

@@ -207,6 +207,7 @@ source_set("app_list") {
     "//ui/display",
     "//ui/display/manager",
     "//ui/events",
+    "//ui/events/devices",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/native_theme",

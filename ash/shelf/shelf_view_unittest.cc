@@ -44,6 +44,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/ui_controls_factory_ash.h"
+#include "ash/utility/haptics_tracking_test_input_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -350,6 +351,7 @@ class ShelfViewTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
+    haptics_tracker_ = std::make_unique<HapticsTrackingTestInputController>();
     model_ = ShelfModel::Get();
     shelf_view_ = GetPrimaryShelf()->GetShelfViewForTesting();
     navigation_view_ = GetPrimaryShelf()
@@ -378,6 +380,7 @@ class ShelfViewTest : public AshTestBase {
 
   void TearDown() override {
     test_api_.reset();
+    haptics_tracker_.reset();
     AshTestBase::TearDown();
   }
 
@@ -606,6 +609,12 @@ class ShelfViewTest : public AshTestBase {
     return button->GetBoundsInScreen().CenterPoint();
   }
 
+  int GetHapticTickEventsCount() const {
+    return haptics_tracker_->GetSentHapticCount(
+        ui::HapticTouchpadEffect::kTick,
+        ui::HapticTouchpadEffectStrength::kMedium);
+  }
+
   ShelfModel* model_ = nullptr;
   ShelfView* shelf_view_ = nullptr;
   views::View* navigation_view_ = nullptr;
@@ -613,6 +622,8 @@ class ShelfViewTest : public AshTestBase {
 
   int id_ = 0;
 
+  // Used to track haptics events sent during drag.
+  std::unique_ptr<HapticsTrackingTestInputController> haptics_tracker_;
   std::unique_ptr<ShelfViewTestAPI> test_api_;
 };
 
@@ -698,25 +709,37 @@ TEST_P(LtrRtlShelfViewTest, ModelChangesWhileDragging) {
   // Dragging browser shortcut at index 1.
   EXPECT_TRUE(model_->items()[0].type == TYPE_BROWSER_SHORTCUT);
   views::View* dragged_button = SimulateDrag(ShelfView::MOUSE, 0, 2, false);
+  EXPECT_EQ(1, GetHapticTickEventsCount());
   std::rotate(id_map.begin(), id_map.begin() + 1, id_map.begin() + 3);
   ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
   shelf_view_->PointerReleasedOnButton(dragged_button, ShelfView::MOUSE, false);
+  EXPECT_EQ(1, GetHapticTickEventsCount());
   EXPECT_TRUE(model_->items()[2].type == TYPE_BROWSER_SHORTCUT);
+  test_api_->RunMessageLoopUntilAnimationsDone();
 
   // Dragging changes model order.
   dragged_button = SimulateDrag(ShelfView::MOUSE, 0, 2, false);
+  EXPECT_EQ(2, GetHapticTickEventsCount());
   std::rotate(id_map.begin(), id_map.begin() + 1, id_map.begin() + 3);
   ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
 
   // Cancelling the drag operation restores previous order.
   shelf_view_->PointerReleasedOnButton(dragged_button, ShelfView::MOUSE, true);
+  test_api_->RunMessageLoopUntilAnimationsDone();
+  EXPECT_EQ(2, GetHapticTickEventsCount());
   std::rotate(id_map.begin(), id_map.begin() + 2, id_map.begin() + 3);
   ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
 
   // Deleting an item keeps the remaining intact.
   dragged_button = SimulateDrag(ShelfView::MOUSE, 0, 2, false);
-  model_->RemoveItemAt(0);
-  id_map.erase(id_map.begin());
+  EXPECT_EQ(3, GetHapticTickEventsCount());
+
+  // The dragged view has been moved to index 2 during drag.
+  std::rotate(id_map.begin(), id_map.begin() + 1, id_map.begin() + 3);
+  ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
+
+  model_->RemoveItemAt(2);
+  id_map.erase(id_map.begin() + 2);
   ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
   shelf_view_->PointerReleasedOnButton(dragged_button, ShelfView::MOUSE, false);
 
@@ -725,11 +748,13 @@ TEST_P(LtrRtlShelfViewTest, ModelChangesWhileDragging) {
 
   // Adding a shelf item cancels the drag and respects the order.
   dragged_button = SimulateDrag(ShelfView::MOUSE, 0, 2, false);
+  EXPECT_EQ(4, GetHapticTickEventsCount());
   ShelfID new_id = AddAppShortcut();
   id_map.insert(id_map.begin() + 5,
                 std::make_pair(new_id, GetButtonByID(new_id)));
   ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
   shelf_view_->PointerReleasedOnButton(dragged_button, ShelfView::MOUSE, false);
+  EXPECT_EQ(4, GetHapticTickEventsCount());
 }
 
 // Check that 2nd drag from the other pointer would be ignored.
@@ -740,11 +765,13 @@ TEST_P(LtrRtlShelfViewTest, SimultaneousDrag) {
   // Start a mouse drag.
   views::View* dragged_button_mouse =
       SimulateDrag(ShelfView::MOUSE, 2, 4, false);
+  EXPECT_EQ(1, GetHapticTickEventsCount());
   std::rotate(id_map.begin() + 2, id_map.begin() + 3, id_map.begin() + 5);
   ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
   // Attempt a touch drag before the mouse drag finishes.
   views::View* dragged_button_touch =
       SimulateDrag(ShelfView::TOUCH, 5, 3, false);
+  EXPECT_EQ(1, GetHapticTickEventsCount());
 
   // Nothing changes since 2nd drag is ignored.
   ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
@@ -768,6 +795,7 @@ TEST_P(LtrRtlShelfViewTest, SimultaneousDrag) {
   shelf_view_->PointerReleasedOnButton(dragged_button_touch, ShelfView::TOUCH,
                                        false);
   ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
+  EXPECT_EQ(1, GetHapticTickEventsCount());
 }
 
 // Ensure that the behavior of pinning and unpinning by dragging works as
@@ -799,9 +827,12 @@ TEST_F(ShelfViewDragToPinTest, DragAppsToPinAndUnpin) {
   // app should be unpinned and moved to the released position.
   views::View* dragged_button =
       SimulateDrag(ShelfView::MOUSE, 1, id_map.size() - 1, false);
+  EXPECT_EQ(1, GetHapticTickEventsCount());
   std::rotate(id_map.begin() + 1, id_map.begin() + 2, id_map.end());
   ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
   shelf_view_->PointerReleasedOnButton(dragged_button, ShelfView::MOUSE, false);
+  test_api_->RunMessageLoopUntilAnimationsDone();
+  EXPECT_EQ(1, GetHapticTickEventsCount());
   EXPECT_FALSE(IsAppPinned(id_map.back().first));
   --pinned_apps_size;
 
@@ -809,19 +840,24 @@ TEST_F(ShelfViewDragToPinTest, DragAppsToPinAndUnpin) {
   // available and the app is dragged to the unpinned app side, the dragged app
   // with no running instance should be unpinned and removed from shelf.
   dragged_button = SimulateDrag(ShelfView::MOUSE, 2, id_map.size() - 1, false);
+  EXPECT_EQ(2, GetHapticTickEventsCount());
   shelf_view_->PointerReleasedOnButton(dragged_button, ShelfView::MOUSE, false);
   id_map.erase(id_map.begin() + 2);
   EXPECT_EQ(id_map.size(), model_->items().size());
   ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
   --pinned_apps_size;
+  EXPECT_EQ(2, GetHapticTickEventsCount());
 
   // Drag an app in unpinned app side and move it to the beginning of the shelf.
   // With separator available and the app is dragged to the pinned app side, the
   // dragged app should be pinned and moved to the released position.
   dragged_button = SimulateDrag(ShelfView::MOUSE, id_map.size() - 2, 0, false);
+  EXPECT_EQ(3, GetHapticTickEventsCount());
   std::rotate(id_map.rbegin() + 1, id_map.rbegin() + 2, id_map.rend());
   ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
   shelf_view_->PointerReleasedOnButton(dragged_button, ShelfView::MOUSE, false);
+  test_api_->RunMessageLoopUntilAnimationsDone();
+  EXPECT_EQ(3, GetHapticTickEventsCount());
   EXPECT_TRUE(IsAppPinned(id_map[0].first));
   ++pinned_apps_size;
 
@@ -845,6 +881,7 @@ TEST_F(ShelfViewDragToPinTest, BlockBrowserShortcutFromUnpinningByDragging) {
   // unpinned.
   views::View* dragged_button =
       SimulateDrag(ShelfView::MOUSE, 0, id_map.size() - 1, false);
+  EXPECT_EQ(1, GetHapticTickEventsCount());
   std::rotate(id_map.begin(), id_map.begin() + 1,
               id_map.begin() + pinned_apps_size);
   ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
@@ -853,6 +890,7 @@ TEST_F(ShelfViewDragToPinTest, BlockBrowserShortcutFromUnpinningByDragging) {
   // the pinned app side.
   shelf_view_->PointerReleasedOnButton(dragged_button, ShelfView::MOUSE, false);
   EXPECT_EQ(model_->items()[pinned_apps_size - 1].type, TYPE_BROWSER_SHORTCUT);
+  EXPECT_EQ(1, GetHapticTickEventsCount());
 }
 
 // Check that separator index updates as expected when a drag view is dragged
@@ -884,6 +922,7 @@ TEST_F(ShelfViewDragToPinTest, DragAppAroundSeparator) {
   // Drag the mouse slightly to the left. The dragged app will stay at the same
   // index but the separator will move to the right.
   generator->MoveMouseBy(-button_width / 4, 0);
+  EXPECT_EQ(1, GetHapticTickEventsCount());
   // In this case, the separator is moved to the end of the shelf so it is set
   // invisible and the |separator_index_| will be updated to -1.
   EXPECT_FALSE(test_api_->IsSeparatorVisible());
@@ -895,6 +934,7 @@ TEST_F(ShelfViewDragToPinTest, DragAppAroundSeparator) {
   // dragging it back to its original place will show the separator again.
   EXPECT_EQ(test_api_->GetSeparatorIndex(), pinned_apps_size - 1);
   generator->ReleaseLeftButton();
+  EXPECT_EQ(1, GetHapticTickEventsCount());
 
   // Drag an pinned app that is beside the separator around and check that the
   // separator is correctly placed. Check that the dragged app is not a browser
@@ -909,12 +949,14 @@ TEST_F(ShelfViewDragToPinTest, DragAppAroundSeparator) {
   // Drag the mouse slightly to the right. The dragged app will stay at the same
   // index but the separator will move to the left.
   generator->MoveMouseBy(button_width / 4, 0);
+  EXPECT_EQ(2, GetHapticTickEventsCount());
   EXPECT_EQ(test_api_->GetSeparatorIndex(), pinned_apps_size - 2);
   // Drag the mouse slightly to the left. The dragged app will stay at the same
   // index but the separator will move to the right.
   generator->MoveMouseBy(-button_width / 2, 0);
   EXPECT_EQ(test_api_->GetSeparatorIndex(), pinned_apps_size - 1);
   generator->ReleaseLeftButton();
+  EXPECT_EQ(2, GetHapticTickEventsCount());
 }
 
 // Ensure that clicking on one item and then dragging another works as expected.
@@ -928,10 +970,12 @@ TEST_P(LtrRtlShelfViewTest, ClickOneDragAnother) {
   // Dragging the browser item at index 0 should change the model order.
   EXPECT_TRUE(model_->items()[0].type == TYPE_BROWSER_SHORTCUT);
   views::View* dragged_button = SimulateDrag(ShelfView::MOUSE, 0, 2, false);
+  EXPECT_EQ(1, GetHapticTickEventsCount());
   std::rotate(id_map.begin(), id_map.begin() + 1, id_map.begin() + 3);
   ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
   shelf_view_->PointerReleasedOnButton(dragged_button, ShelfView::MOUSE, false);
   EXPECT_TRUE(model_->items()[2].type == TYPE_BROWSER_SHORTCUT);
+  EXPECT_EQ(1, GetHapticTickEventsCount());
 }
 
 // Tests that double-clicking an item does not activate it twice.
@@ -947,6 +991,7 @@ TEST_P(LtrRtlShelfViewTest, ClickingTwiceActivatesOnce) {
   EXPECT_EQ(1u, selection_tracker->item_selected_count());
   SimulateDoubleClick(0);
   EXPECT_EQ(1u, selection_tracker->item_selected_count());
+  EXPECT_EQ(0, GetHapticTickEventsCount());
 }
 
 // Check that very small mouse drags do not prevent shelf item selection.
@@ -991,6 +1036,7 @@ TEST_P(LtrRtlShelfViewTest, ClickAndMoveSlightly) {
       ui::EF_LEFT_MOUSE_BUTTON, 0);
   button->OnMouseReleased(release_event);
   EXPECT_EQ(1u, selection_tracker->item_selected_count());
+  EXPECT_EQ(0, GetHapticTickEventsCount());
 }
 
 // Confirm that item status changes are reflected in the buttons.
@@ -1030,6 +1076,7 @@ TEST_P(LtrRtlShelfViewTest, ShelfRipOff) {
   generator->PressLeftButton();
   // Drag the mouse to just off the shelf.
   generator->MoveMouseBy(0, -ShelfConfig::Get()->shelf_size() / 2 - 1);
+  EXPECT_EQ(1, GetHapticTickEventsCount());
   EXPECT_FALSE(test_api_->IsRippedOffFromShelf());
   // Drag the mouse past the rip off threshold.
   generator->MoveMouseBy(0, -kRipOffDistance);
@@ -1038,6 +1085,7 @@ TEST_P(LtrRtlShelfViewTest, ShelfRipOff) {
   // deleted.
   generator->MoveMouseTo(first_app_location);
   generator->ReleaseLeftButton();
+  EXPECT_EQ(1, GetHapticTickEventsCount());
   EXPECT_FALSE(test_api_->IsRippedOffFromShelf());
 }
 
@@ -1072,6 +1120,7 @@ TEST_P(LtrRtlShelfViewTest, ShelfRipOffCancel) {
 
   // Drag the mouse to just off the shelf.
   generator->MoveMouseBy(0, -ShelfConfig::Get()->shelf_size() / 2 - 1);
+  EXPECT_EQ(1, GetHapticTickEventsCount());
   EXPECT_FALSE(test_api_->IsRippedOffFromShelf());
 
   // Drag the mouse past the rip off threshold.
@@ -1080,6 +1129,7 @@ TEST_P(LtrRtlShelfViewTest, ShelfRipOffCancel) {
 
   shelf_view_->PointerReleasedOnButton(dragged_button, ShelfView::MOUSE, true);
   generator->ReleaseLeftButton();
+  EXPECT_EQ(1, GetHapticTickEventsCount());
 
   EXPECT_FALSE(test_api_->IsRippedOffFromShelf());
   ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
@@ -1108,11 +1158,13 @@ TEST_P(LtrRtlShelfViewTest, DragAndDropPinnedRunningApp) {
   generator->set_current_screen_location(app_location);
   generator->PressLeftButton();
   generator->MoveMouseBy(0, -ShelfConfig::Get()->shelf_size() / 2 - 1);
+  EXPECT_EQ(1, GetHapticTickEventsCount());
   EXPECT_FALSE(test_api_->IsRippedOffFromShelf());
   generator->MoveMouseBy(0, -kRipOffDistance);
   EXPECT_TRUE(test_api_->IsRippedOffFromShelf());
   generator->ReleaseLeftButton();
   EXPECT_FALSE(IsAppPinned(GetItemId(index)));
+  EXPECT_EQ(1, GetHapticTickEventsCount());
 }
 
 // Double click an app while animating drag icon drop.
@@ -1140,12 +1192,15 @@ TEST_P(LtrRtlShelfViewTest, ActivateAppButtonDuringDropAnimation) {
       GetButtonCenter(GetButtonByID(drag_item_id)));
   generator->PressLeftButton();
   generator->MoveMouseBy(0, -ShelfConfig::Get()->shelf_size() / 2 - 1);
+  EXPECT_EQ(1, GetHapticTickEventsCount());
   generator->ReleaseLeftButton();
+  EXPECT_EQ(1, GetHapticTickEventsCount());
 
   generator->set_current_screen_location(
       GetButtonCenter(GetButtonByID(activated_item_id)));
   generator->DoubleClickLeftButton();
 
+  EXPECT_EQ(1, GetHapticTickEventsCount());
   EXPECT_EQ(1u, selection_tracker->item_selected_count());
   VerifyShelfItemBoundsAreValid();
 }
@@ -1677,6 +1732,8 @@ TEST_P(LtrRtlShelfViewTest, ShelfDragViewAndContextMenu) {
   EXPECT_EQ(shelf_view_->drag_view(), button);
   generator->ReleaseLeftButton();
   EXPECT_FALSE(shelf_view_->drag_view());
+
+  EXPECT_EQ(0, GetHapticTickEventsCount());
 }
 
 // Tests that context menu show is cancelled if item drag starts during context
@@ -1870,6 +1927,7 @@ TEST_P(LtrRtlShelfViewTest, DragAppAfterContextMenuIsShownInAlwaysShownShelf) {
 
   generator->GestureScrollSequence(start, end, base::Milliseconds(100), 3);
   generator->ReleaseTouch();
+  EXPECT_EQ(0, GetHapticTickEventsCount());
 
   // |first_add_id| has been moved to the end of the items in the shelf.
   EXPECT_EQ(first_app_id, model_->items()[last_index].id);
@@ -1942,6 +2000,7 @@ TEST_P(LtrRtlShelfViewTest, DragAppAfterContextMenuIsShownInAutoHideShelf) {
 
   generator->GestureScrollSequence(start, end, base::Milliseconds(100), 3);
   generator->ReleaseTouch();
+  EXPECT_EQ(0, GetHapticTickEventsCount());
 
   // |first_add_id| has been moved to the end of the items in the shelf.
   EXPECT_EQ(first_app_id, model_->items()[last_index].id);
@@ -2014,6 +2073,7 @@ TEST_P(LtrRtlShelfViewTest,
 
   // Releasing the original touch should not show another menu.
   generator->ReleaseTouch();
+  EXPECT_EQ(0, GetHapticTickEventsCount());
 
   EXPECT_FALSE(shelf_view_->IsShowingMenu());
   EXPECT_FALSE(shelf_view_->GetShelfItemViewWithContextMenu());
@@ -2227,6 +2287,7 @@ TEST_P(LtrRtlShelfViewTest, ClickItemInFullscreen) {
   // Shelf gets hidden when the app list is dismissed.
   GetAppListTestHelper()->DismissAndRunLoop();
   EXPECT_EQ(SHELF_HIDDEN, shelf->GetVisibilityState());
+  EXPECT_EQ(0, GetHapticTickEventsCount());
 }
 
 // Verifies that shelf is shown with the app list in fullscreen mode, and that
@@ -2263,6 +2324,7 @@ TEST_P(LtrRtlShelfViewTest, TapInFullscreen) {
   // Shelf gets hidden when the app list is dismissed.
   GetAppListTestHelper()->DismissAndRunLoop();
   EXPECT_EQ(SHELF_HIDDEN, shelf->GetVisibilityState());
+  EXPECT_EQ(0, GetHapticTickEventsCount());
 }
 
 // Verifies that partying items are hidden from the shelf.
@@ -2388,6 +2450,7 @@ TEST_F(GhostImageShelfViewTest, ShowGhostImageOnDrag) {
   ShelfAppButton* first_app = GetButtonByID(id_map[0].first);
 
   StartDrag(first_app);
+  EXPECT_EQ(0, GetHapticTickEventsCount());
 
   EXPECT_TRUE(first_app->state() & ShelfAppButton::STATE_DRAGGING);
   EXPECT_FALSE(shelf_view_->drag_view());
@@ -2401,6 +2464,7 @@ TEST_F(GhostImageShelfViewTest, ShowGhostImageOnDrag) {
   EXPECT_EQ(1, shelf_view_->current_ghost_view_index());
 
   GetEventGenerator()->ReleaseTouch();
+  EXPECT_EQ(0, GetHapticTickEventsCount());
 
   EXPECT_FALSE(first_app->state() & ShelfAppButton::STATE_DRAGGING);
   EXPECT_FALSE(shelf_view_->drag_view());
@@ -2415,6 +2479,7 @@ TEST_F(GhostImageShelfViewTest, RemoveGhostImageForRipOffDrag) {
   ShelfAppButton* first_app = GetButtonByID(id_map[0].first);
 
   StartDrag(first_app);
+  EXPECT_EQ(0, GetHapticTickEventsCount());
 
   EXPECT_TRUE(first_app->state() & ShelfAppButton::STATE_DRAGGING);
   EXPECT_FALSE(shelf_view_->drag_view());
@@ -2438,6 +2503,7 @@ TEST_F(GhostImageShelfViewTest, RemoveGhostImageForRipOffDrag) {
   EXPECT_EQ(-1, shelf_view_->current_ghost_view_index());
 
   GetEventGenerator()->ReleaseTouch();
+  EXPECT_EQ(0, GetHapticTickEventsCount());
 
   EXPECT_FALSE(first_app->state() & ShelfAppButton::STATE_DRAGGING);
   EXPECT_FALSE(shelf_view_->drag_view());
@@ -2452,6 +2518,7 @@ TEST_F(GhostImageShelfViewTest, ReinsertGhostImageAfterRipOffDrag) {
   ShelfAppButton* first_app = GetButtonByID(id_map[0].first);
 
   StartDrag(first_app);
+  EXPECT_EQ(0, GetHapticTickEventsCount());
 
   EXPECT_TRUE(first_app->state() & ShelfAppButton::STATE_DRAGGING);
   EXPECT_FALSE(shelf_view_->drag_view());
@@ -2481,6 +2548,7 @@ TEST_F(GhostImageShelfViewTest, ReinsertGhostImageAfterRipOffDrag) {
   EXPECT_EQ(1, shelf_view_->current_ghost_view_index());
 
   GetEventGenerator()->ReleaseTouch();
+  EXPECT_EQ(0, GetHapticTickEventsCount());
 
   EXPECT_FALSE(first_app->state() & ShelfAppButton::STATE_DRAGGING);
   EXPECT_FALSE(shelf_view_->drag_view());

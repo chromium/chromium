@@ -37,6 +37,7 @@
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/utility/haptics_util.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
@@ -54,6 +55,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/event.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -590,8 +592,15 @@ void AppsGridView::TryStartDragAndDropHostDrag(Pointer pointer) {
 
   drag_pointer_ = pointer;
 
-  if (!dragging_for_reparent_item_)
+  if (!dragging_for_reparent_item_) {
     StartDragAndDropHostDrag();
+
+    if (pointer == MOUSE) {
+      haptics_util::PlayHapticTouchpadEffect(
+          ui::HapticTouchpadEffect::kTick,
+          ui::HapticTouchpadEffectStrength::kMedium);
+    }
+  }
 
   if (drag_start_callback_)
     std::move(drag_start_callback_).Run();
