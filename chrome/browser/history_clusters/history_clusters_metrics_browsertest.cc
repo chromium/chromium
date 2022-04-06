@@ -295,7 +295,8 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Assumed to be flaky since the above tests are flaky.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
 #define MAYBE_IndirectNavigation DISABLED_IndirectNavigation
 #else
 #define MAYBE_IndirectNavigation IndirectNavigation

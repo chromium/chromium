@@ -997,10 +997,6 @@ void LayerTreeTest::RealEndTest() {
   base::RunLoop::QuitCurrentWhenIdleDeprecated();
 }
 
-bool LayerTreeTest::use_swangle() const {
-  return gl::GetGLImplementationParts() == gl::GetSoftwareGLImplementation();
-}
-
 void LayerTreeTest::DispatchAddNoDamageAnimation(
     Animation* animation_to_receive_animation,
     double animation_duration) {

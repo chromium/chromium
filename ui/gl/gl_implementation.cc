@@ -272,7 +272,7 @@ GLImplementationParts GetSoftwareGLImplementation() {
 
 GLImplementationParts GetSoftwareGLImplementationForPlatform() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_FUCHSIA)
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
   return GetSoftwareGLImplementation();
 #else
   return GetLegacySoftwareGLImplementation();
