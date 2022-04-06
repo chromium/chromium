@@ -12,7 +12,7 @@ import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {Events, EventType, kMaximumGooglePhotosPreviews, kMaximumLocalImagePreviews} from '../common/constants.js';
-import {getCountText, getLoadingPlaceholderAnimationDelay, getNumberOfGridItemsPerRow, isNonEmptyArray, isNullOrArray, isNullOrNumber, isSelectionEvent} from '../common/utils.js';
+import {getCountText, getLoadingPlaceholderAnimationDelay, getLoadingPlaceholders, isNonEmptyArray, isNullOrArray, isNullOrNumber, isSelectionEvent} from '../common/utils.js';
 import {GooglePhotosEnablementState, WallpaperCollection} from '../trusted/personalization_app.mojom-webui.js';
 import {selectCollection, selectGooglePhotosCollection, selectLocalCollection, validateReceivedData} from '../untrusted/iframe_api.js';
 
@@ -25,9 +25,6 @@ import {getTemplate} from './collections_grid.html.js';
 
 const kGooglePhotosCollectionId = 'google_photos_';
 const kLocalCollectionId = 'local_';
-
-/** Height in pixels of a tile. */
-const kTileHeightPx = 136;
 
 enum TileType {
   LOADING = 'loading',
@@ -188,9 +185,7 @@ export class CollectionsGrid extends PolymerElement {
         value() {
           // Fill the view with loading tiles. Will be adjusted to the correct
           // number of tiles when collections are received.
-          const x = getNumberOfGridItemsPerRow();
-          const y = Math.floor(window.innerHeight / kTileHeightPx);
-          return Array.from({length: x * y}, () => ({type: TileType.LOADING}));
+          return getLoadingPlaceholders(() => ({type: TileType.LOADING}));
         }
       },
     };

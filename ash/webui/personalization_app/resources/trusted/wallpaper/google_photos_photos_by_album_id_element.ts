@@ -18,7 +18,7 @@ import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-li
 import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isSelectionEvent} from '../../common/utils.js';
+import {getLoadingPlaceholders, isSelectionEvent} from '../../common/utils.js';
 import {CurrentWallpaper, GooglePhotosAlbum, GooglePhotosPhoto, WallpaperImage, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isGooglePhotosPhoto} from '../utils.js';
@@ -26,6 +26,17 @@ import {isGooglePhotosPhoto} from '../utils.js';
 import {getTemplate} from './google_photos_photos_by_album_id_element.html.js';
 import {fetchGooglePhotosAlbum, selectWallpaper} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
+
+const PLACEHOLDER_ID = 'placeholder';
+
+/** Returns placeholders to show while Google Photos are loading. */
+function getPlaceholders(): GooglePhotosPhoto[] {
+  return getLoadingPlaceholders(() => {
+    const photo = new GooglePhotosPhoto();
+    photo.id = PLACEHOLDER_ID;
+    return photo;
+  });
+}
 
 export interface GooglePhotosPhotosByAlbumId {
   $: {grid: IronListElement, gridScrollThreshold: IronScrollThresholdElement};
@@ -53,7 +64,7 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
 
       album_: {
         type: Array,
-        value: [],
+        value: getPlaceholders,
       },
 
       albums: Array,
@@ -177,19 +188,20 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
     }
 
     // If the album associated with |albumId| or |photosByAlbumId| have not yet
-    // been set, there is nothing to display. This occurs if the user refreshes
-    // the wallpaper app while its navigated to a Google Photos album.
+    // been set, there is nothing to display except placeholders. This occurs
+    // if the user refreshes the wallpaper app while its navigated to a Google
+    // Photos album.
     if (!Array.isArray(albums) || !albums.some(album => album.id === albumId) ||
         !photosByAlbumId) {
-      this.album_ = [];
+      this.album_ = getPlaceholders();
       return;
     }
 
     // If the currently selected album has not already been fetched, do so
-    // though there is still nothing to display.
+    // though there is still nothing to display except placeholders.
     if (!photosByAlbumId.hasOwnProperty(albumId)) {
       fetchGooglePhotosAlbum(this.wallpaperProvider_, this.getStore(), albumId);
-      this.album_ = [];
+      this.album_ = getPlaceholders();
       return;
     }
 
@@ -216,9 +228,14 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
   /** Invoked on selection of a photo. */
   private onPhotoSelected_(e: Event&{model: {photo: GooglePhotosPhoto}}) {
     assert(e.model.photo);
-    if (isSelectionEvent(e)) {
+    if (!this.isPhotoPlaceholder_(e.model.photo) && isSelectionEvent(e)) {
       selectWallpaper(e.model.photo, this.wallpaperProvider_, this.getStore());
     }
+  }
+
+  /** Returns whether the specified |photo| is a placeholder. */
+  private isPhotoPlaceholder_(photo: GooglePhotosPhoto|null): boolean {
+    return !!photo && photo.id === PLACEHOLDER_ID;
   }
 
   // Returns whether the specified |photo| is currently selected.

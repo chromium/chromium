@@ -99,11 +99,21 @@ export function getLoadingPlaceholderAnimationDelay(index: number): string {
 }
 
 /**
+ * Returns loading placeholders to render given the current inner width of the
+ * |window|. Placeholders are constructed using the specified |factory|.
+ */
+export function getLoadingPlaceholders<T>(factory: () => T): T[] {
+  const x = getNumberOfGridItemsPerRow();
+  const y = Math.floor(window.innerHeight / /*tileHeightPx=*/ 136);
+  return Array.from({length: x * y}, factory);
+}
+
+/**
  * Returns the number of grid items to render per row given the current inner
  * width of the |window|.
  */
 export function getNumberOfGridItemsPerRow(): number {
-  return window.innerWidth > 688 ? 4 : 3;
+  return window.innerWidth > 720 ? 4 : 3;
 }
 
 /**
