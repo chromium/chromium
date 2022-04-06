@@ -776,6 +776,11 @@ gfx::RectF BrowserAccessibility::GetInlineTextRect(const int start_offset,
 
 BrowserAccessibility* BrowserAccessibility::ApproximateHitTest(
     const gfx::Point& blink_screen_point) {
+  // TODO(accessibility): propagate this to all tree traversal methods and
+  // remove here. This keeps things equivalent for now.
+  if (IsLeaf())
+    return this;
+
   // The best result found that's a child of this object.
   BrowserAccessibility* child_result = nullptr;
   // The best result that's an indirect descendant like grandchild, etc.
@@ -785,9 +790,8 @@ BrowserAccessibility* BrowserAccessibility::ApproximateHitTest(
   // most tightly encloses the specified point. Walk backwards so that in
   // the absence of any other information, we assume the object that occurs
   // later in the tree is on top of one that comes before it.
-  for (int i = static_cast<int>(PlatformChildCount()) - 1; i >= 0; --i) {
-    BrowserAccessibility* child = PlatformGetChild(i);
-
+  for (BrowserAccessibility* child = PlatformGetLastChild(); child != nullptr;
+       child = child->PlatformGetPreviousSibling()) {
     // Skip table columns because cells are only contained in rows,
     // not columns.
     if (child->GetRole() == ax::mojom::Role::kColumn)
