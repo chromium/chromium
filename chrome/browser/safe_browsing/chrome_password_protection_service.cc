@@ -1472,6 +1472,9 @@ RequestOutcome ChromePasswordProtectionService::GetPingNotSentReason(
   if (IsInPasswordAlertMode(password_type)) {
     return RequestOutcome::PASSWORD_ALERT_MODE;
   }
+  if (url != GURL("about:blank") && !CanGetReputationOfURL(url)) {
+    return RequestOutcome::URL_NOT_VALID_FOR_REPUTATION_COMPUTING;
+  }
   return RequestOutcome::DISABLED_DUE_TO_USER_POPULATION;
 }
 
