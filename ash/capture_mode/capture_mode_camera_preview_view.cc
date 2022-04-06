@@ -11,6 +11,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -18,6 +19,7 @@
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/widget/widget.h"
@@ -25,6 +27,12 @@
 namespace ash {
 
 namespace {
+
+// The duration for the resize button fading in process.
+constexpr base::TimeDelta kResizeButtonFadeInDuration = base::Milliseconds(150);
+
+// The duration for the reize button fading out process.
+constexpr base::TimeDelta kResizeButtonFadeOutDuration = base::Milliseconds(50);
 
 gfx::PointF GetEventScreenLocation(const ui::LocatedEvent& event) {
   return event.target()->GetScreenLocationF(event);
@@ -62,6 +70,14 @@ CameraPreviewView::CameraPreviewView(
       AshColorProvider::Get()->GetBaseLayerColor(
           AshColorProvider::BaseLayerType::kTransparent80),
       resize_button_->GetPreferredSize().height() / 2.f));
+
+  // Ensure that when `FadeInResizeButton` was called first time, it animates
+  // from 0 to 1.
+  resize_button_->layer()->SetOpacity(0);
+
+  // The resize button should be hidden by default so that it doesn't hanld
+  // events.
+  resize_button_->SetVisible(false);
   UpdateResizeButtonTooltip();
 }
 
@@ -113,9 +129,15 @@ void CameraPreviewView::OnGestureEvent(ui::GestureEvent* event) {
                                              /*is_touch=*/true);
       break;
     case ui::ET_GESTURE_END:
-      if (camera_controller_->is_drag_in_progress())
+      if (camera_controller_->is_drag_in_progress()) {
         camera_controller_->EndDraggingPreview(screen_location,
                                                /*is_touch=*/true);
+      }
+      break;
+    case ui::ET_GESTURE_TAP:
+      resize_button_hide_timer_.Stop();
+      FadeInResizeButton();
+      ScheduleRefreshResizeButtonVisibility();
       break;
     default:
       break;
@@ -123,6 +145,16 @@ void CameraPreviewView::OnGestureEvent(ui::GestureEvent* event) {
 
   event->StopPropagation();
   event->SetHandled();
+}
+
+void CameraPreviewView::OnMouseEntered(const ui::MouseEvent& event) {
+  resize_button_hide_timer_.Stop();
+  FadeInResizeButton();
+}
+
+void CameraPreviewView::OnMouseExited(const ui::MouseEvent& event) {
+  if (!resize_button_->IsMouseHovered())
+    ScheduleRefreshResizeButtonVisibility();
 }
 
 void CameraPreviewView::Layout() {
@@ -190,6 +222,48 @@ void CameraPreviewView::DisableEventHandlingInCameraVideoHostHierarchy() {
        window = window->parent()) {
     window->SetEventTargetingPolicy(aura::EventTargetingPolicy::kNone);
   }
+}
+
+void CameraPreviewView::RefreshResizeButtonVisibility() {
+  if (IsMouseHovered() || resize_button_->IsMouseHovered()) {
+    DCHECK(resize_button_->GetVisible());
+    DCHECK_EQ(1.0f, resize_button_->layer()->GetTargetOpacity());
+    return;
+  }
+
+  FadeOutResizeButton();
+}
+
+void CameraPreviewView::FadeInResizeButton() {
+  resize_button_->SetVisible(true);
+
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetDuration(kResizeButtonFadeInDuration)
+      .SetOpacity(resize_button_->layer(), 1.0f);
+}
+
+void CameraPreviewView::FadeOutResizeButton() {
+  views::AnimationBuilder()
+      .OnEnded(base::BindOnce(
+          [](base::WeakPtr<CameraPreviewView> camera_preview_view) {
+            if (camera_preview_view)
+              camera_preview_view->resize_button()->SetVisible(false);
+          },
+          weak_ptr_factory_.GetWeakPtr()))
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetDuration(kResizeButtonFadeOutDuration)
+      .SetOpacity(resize_button_->layer(), 0.0f);
+}
+
+void CameraPreviewView::ScheduleRefreshResizeButtonVisibility() {
+  resize_button_hide_timer_.Start(
+      FROM_HERE, capture_mode::kResizeButtonShowDuration, this,
+      &CameraPreviewView::RefreshResizeButtonVisibility);
 }
 
 BEGIN_METADATA(CameraPreviewView, views::View)
