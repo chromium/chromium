@@ -520,14 +520,14 @@ are declared in tools/grit/grit_rule.gni.
           </message>
         </if>
         <message name="IDS_FOCUS_HELP_BUBBLE_DESCRIPTION" is_accessibility_with_no_ui="true" desc="Message announced to screen reader users when a general help bubble is shown.">
-          Press |<ph name="ACCELERATOR">$1<ex>F6</ex></ph>| to focus this help bubble.
+          Press |<ph name="ACCELERATOR">$1<ex>F6</ex></ph>| to focus this bubble.
         </message>
         <message name="IDS_FOCUS_HELP_BUBBLE_TOGGLE_DESCRIPTION" is_accessibility_with_no_ui="true" desc="Message announced to screen reader when a help bubble pointing to a specific element is shown.">
-          Press |<ph name="ACCELERATOR">$1<ex>F6</ex></ph>| to focus this help bubble, then again to focus the element it is pointing to.
+          Press |<ph name="ACCELERATOR">$1<ex>F6</ex></ph>| to focus this bubble, then again to focus the element it is pointing to.
         </message>
         <message name="IDS_FOCUS_HELP_BUBBLE_TUTORIAL_DESCRIPTION" is_accessibility_with_no_ui="true" desc="Message announced to screen reader when a help bubble that can start a tutorial is shown.">
-          A series of help bubbles with instructions will be displayed.
-          Press |<ph name="ACCELERATOR">$1<ex>F6</ex></ph>| to focus a help bubble, then again to focus the element it is pointing to.
+          A series of tutorial bubbles with instructions will be displayed.
+          Press |<ph name="ACCELERATOR">$1<ex>F6</ex></ph>| to focus a bubble, then again to focus the element it is pointing to.
         </message>
       </if>
 
@@ -7210,7 +7210,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </message>
       </if>
       <message name="IDS_TUTORIAL_TAB_GROUP_EDIT_BUBBLE" desc="The description of the editor bubble step in the tab group tutorial">
-        Name your group, choose a color, then press Escape to dismiss the editor
+        Name your group, choose a color, then press Esc
       </message>
       <message name="IDS_TUTORIAL_TAB_GROUP_DRAG_TAB" desc="The description of the drag step in the tab group tutorial">
         Try dragging other open tabs to your group
