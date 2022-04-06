@@ -53,6 +53,15 @@ public class PasswordManagerHelper {
     private static final String LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM =
             "PasswordManager.CredentialManager.LocalProfile.Launch.Success";
 
+    private static final String PASSWORD_CHECKUP_GET_INTENT_LATENCY_HISTOGRAM =
+            "PasswordManager.PasswordCheckup.GetIntent.Latency";
+    private static final String PASSWORD_CHECKUP_GET_INTENT_SUCCESS_HISTOGRAM =
+            "PasswordManager.PasswordCheckup.GetIntent.Success";
+    private static final String PASSWORD_CHECKUP_GET_INTENT_ERROR_HISTOGRAM =
+            "PasswordManager.PasswordCheckup.GetIntent.Error";
+    private static final String PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM =
+            "PasswordManager.PasswordCheckup.Launch.Success";
+
     /**
      * Launches the password settings or, if available, the credential manager from Google Play
      * Services.
@@ -92,8 +101,17 @@ public class PasswordManagerHelper {
         Optional<String> account = hasChosenToSyncPasswords(syncService)
                 ? Optional.of(CoreAccountInfo.getEmailFrom(syncService.getAccountInfo()))
                 : Optional.absent();
-        checkupClient.getPasswordCheckupPendingIntent(
-                referrer, account, PasswordManagerHelper::launchIntent, (error) -> {});
+        long startTimeMs = SystemClock.elapsedRealtime();
+        checkupClient.getPasswordCheckupPendingIntent(referrer, account,
+                (intent)
+                        -> PasswordManagerHelper.launchPasswordCheckup(intent, startTimeMs),
+                (error) -> {
+                    RecordHistogram.recordBooleanHistogram(
+                            PASSWORD_CHECKUP_GET_INTENT_SUCCESS_HISTOGRAM, false);
+                    RecordHistogram.recordEnumeratedHistogram(
+                            PASSWORD_CHECKUP_GET_INTENT_ERROR_HISTOGRAM, error,
+                            CredentialManagerError.COUNT);
+                });
     }
 
     /**
@@ -211,6 +229,17 @@ public class PasswordManagerHelper {
         RecordHistogram.recordBooleanHistogram(forAccount
                         ? ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM
                         : LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM,
+                launchIntentSuccessfully);
+    }
+
+    private static void launchPasswordCheckup(PendingIntent intent, long startTimeMs) {
+        RecordHistogram.recordTimesHistogram(PASSWORD_CHECKUP_GET_INTENT_LATENCY_HISTOGRAM,
+                SystemClock.elapsedRealtime() - startTimeMs);
+        RecordHistogram.recordBooleanHistogram(PASSWORD_CHECKUP_GET_INTENT_SUCCESS_HISTOGRAM, true);
+
+        boolean launchIntentSuccessfully = launchIntent(intent);
+        RecordHistogram.recordBooleanHistogram(
+                PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM,
                 launchIntentSuccessfully);
     }
 

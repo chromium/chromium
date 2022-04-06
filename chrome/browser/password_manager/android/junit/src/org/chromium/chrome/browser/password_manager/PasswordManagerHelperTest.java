@@ -75,6 +75,15 @@ public class PasswordManagerHelperTest {
     private static final String LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM =
             "PasswordManager.CredentialManager.LocalProfile.Launch.Success";
 
+    private static final String PASSWORD_CHECKUP_GET_INTENT_LATENCY_HISTOGRAM =
+            "PasswordManager.PasswordCheckup.GetIntent.Latency";
+    private static final String PASSWORD_CHECKUP_GET_INTENT_SUCCESS_HISTOGRAM =
+            "PasswordManager.PasswordCheckup.GetIntent.Success";
+    private static final String PASSWORD_CHECKUP_GET_INTENT_ERROR_HISTOGRAM =
+            "PasswordManager.PasswordCheckup.GetIntent.Error";
+    private static final String PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM =
+            "PasswordManager.PasswordCheckup.Launch.Success";
+
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
 
@@ -389,6 +398,74 @@ public class PasswordManagerHelperTest {
         verify(mPendingIntentMock).send();
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testRecordsSuccessMetricsForPasswordCheckupIntent() {
+        chooseToSyncPasswordsWithoutCustomPassphrase();
+        setUpSuccessfulCheckupIntentFetching(mPendingIntentMock);
+
+        PasswordManagerHelper.showPasswordCheckup(PasswordCheckReferrer.SAFETY_CHECK,
+                mPasswordCheckupClientHelperMock, mSyncServiceMock);
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        PASSWORD_CHECKUP_GET_INTENT_LATENCY_HISTOGRAM, 0));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        PASSWORD_CHECKUP_GET_INTENT_SUCCESS_HISTOGRAM, 1));
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PASSWORD_CHECKUP_GET_INTENT_ERROR_HISTOGRAM));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM, 1));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testRecordsErrorMetricsForPasswordCheckupIntent() {
+        chooseToSyncPasswordsWithoutCustomPassphrase();
+        returnErrorWhenFetchingIntentForPasswordCheckup(CredentialManagerError.API_ERROR);
+
+        PasswordManagerHelper.showPasswordCheckup(PasswordCheckReferrer.SAFETY_CHECK,
+                mPasswordCheckupClientHelperMock, mSyncServiceMock);
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        PASSWORD_CHECKUP_GET_INTENT_ERROR_HISTOGRAM,
+                        CredentialManagerError.API_ERROR));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        PASSWORD_CHECKUP_GET_INTENT_SUCCESS_HISTOGRAM, 0));
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PASSWORD_CHECKUP_GET_INTENT_LATENCY_HISTOGRAM));
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testRecordsMetricsWhenPasswordCheckupIntentFails() throws CanceledException {
+        chooseToSyncPasswordsWithoutCustomPassphrase();
+        setUpSuccessfulCheckupIntentFetching(mPendingIntentMock);
+        doThrow(CanceledException.class).when(mPendingIntentMock).send();
+
+        PasswordManagerHelper.showPasswordCheckup(PasswordCheckReferrer.SAFETY_CHECK,
+                mPasswordCheckupClientHelperMock, mSyncServiceMock);
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        PASSWORD_CHECKUP_GET_INTENT_LATENCY_HISTOGRAM, 0));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        PASSWORD_CHECKUP_GET_INTENT_SUCCESS_HISTOGRAM, 1));
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PASSWORD_CHECKUP_GET_INTENT_ERROR_HISTOGRAM));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM, 0));
+    }
+
     private void chooseToSyncPasswordsWithoutCustomPassphrase() {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
         when(mSyncServiceMock.getChosenDataTypes())
@@ -451,5 +528,18 @@ public class PasswordManagerHelperTest {
                 .when(mCredentialManagerLauncherMock)
                 .getCredentialManagerIntentForLocal(eq(ManagePasswordsReferrer.CHROME_SETTINGS),
                         any(Callback.class), any(Callback.class));
+    }
+
+    private void returnErrorWhenFetchingIntentForPasswordCheckup(
+            @CredentialManagerError int error) {
+        doAnswer(invocation -> {
+            Callback<Integer> cb = invocation.getArgument(3);
+            cb.onResult(error);
+            return true;
+        })
+                .when(mPasswordCheckupClientHelperMock)
+                .getPasswordCheckupPendingIntent(eq(PasswordCheckReferrer.SAFETY_CHECK),
+                        eq(Optional.of(TEST_EMAIL_ADDRESS)), any(Callback.class),
+                        any(Callback.class));
     }
 }
