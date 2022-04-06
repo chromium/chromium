@@ -111,6 +111,31 @@ class SkiaGoldProperties(object):
             'Automatically determined that test is running on a bot')
     return self._local_pixel_tests
 
+  @staticmethod
+  def AddCommandLineArguments(parser):
+    """ Add command line arguments to an ArgumentParser instance
+
+    Args:
+      parser: ArgumentParser instance
+
+    Returns:
+      None
+    """
+    parser.add_argument('--git-revision', type=str, help='Git revision')
+    parser.add_argument('--gerrit-issue', type=int, help='Gerrit issue number')
+    parser.add_argument('--gerrit-patchset',
+                        type=int,
+                        help='Gerrit patchset number')
+    parser.add_argument('--buildbucket-id',
+                        type=int,
+                        help='Buildbucket ID of builder')
+    parser.add_argument('--code-review-system',
+                        type=str,
+                        help='Code review system')
+    parser.add_argument('--continuous-integration-system',
+                        type=str,
+                        help='Continuous integration system')
+
   def _InitializeProperties(self, args):
     if hasattr(args, 'local_pixel_tests'):
       # If not set, will be automatically determined later if needed.

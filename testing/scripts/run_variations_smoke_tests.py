@@ -18,7 +18,7 @@ import time
 from functools import partial
 from http.server import SimpleHTTPRequestHandler
 from threading import Thread
-from skia_gold_infra import finch_skia_gold_properties
+from skia_gold_infra.finch_skia_gold_properties import FinchSkiaGoldProperties
 from skia_gold_infra import finch_skia_gold_session_manager
 
 import common
@@ -358,16 +358,13 @@ def main_run(args):
   logging.basicConfig(level=logging.INFO)
   parser = argparse.ArgumentParser()
   parser.add_argument('--isolated-script-test-output', type=str)
-  parser.add_argument('--git-revision', type=str)
-  parser.add_argument('--gerrit-issue', type=int)
-  parser.add_argument('--gerrit-patchset', type=int)
-  parser.add_argument('--buildbucket-id', type=int)
+  FinchSkiaGoldProperties.AddCommandLineArguments(parser)
   args, rest = parser.parse_known_args()
 
   temp_dir = tempfile.mkdtemp()
   httpd = _start_local_http_server()
   manager = finch_skia_gold_session_manager.FinchSkiaGoldSessionManager(
-      temp_dir, finch_skia_gold_properties.FinchSkiaGoldProperties(args))
+      temp_dir, FinchSkiaGoldProperties(args))
   try:
     rc = _run_tests(temp_dir, manager, *rest)
     if args.isolated_script_test_output:

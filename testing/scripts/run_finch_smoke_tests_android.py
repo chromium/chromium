@@ -63,10 +63,9 @@ from devil.android.tools import script_common
 from devil.android.tools import system_app
 from devil.android.tools import webview_app
 from devil.utils import logging_common
-
 from pylib.local.emulator import avd
 from py_utils.tempfile_ext import NamedTemporaryDirectory
-
+from skia_gold_infra.finch_skia_gold_properties import FinchSkiaGoldProperties
 from wpt_android_lib import add_emulator_args, get_device
 
 LOGCAT_FILTERS = [
@@ -251,7 +250,8 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
                         default='stable',
                         choices=['dev', 'canary', 'beta', 'stable'],
                         help='Finch seed release channel')
-
+    # Add arguments used by Skia Gold.
+    FinchSkiaGoldProperties.AddCommandLineArguments(parser)
     add_emulator_args(parser)
     script_common.AddDeviceArguments(parser)
     script_common.AddEnvironmentArguments(parser)
