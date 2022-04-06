@@ -11,7 +11,6 @@
 #define WEBKIT_WEBPREFS_FONTS_CURSIVE "webkit.webprefs.fonts.cursive"
 #define WEBKIT_WEBPREFS_FONTS_FANTASY "webkit.webprefs.fonts.fantasy"
 #define WEBKIT_WEBPREFS_FONTS_FIXED "webkit.webprefs.fonts.fixed"
-#define WEBKIT_WEBPREFS_FONTS_PICTOGRAPH "webkit.webprefs.fonts.pictograph"
 #define WEBKIT_WEBPREFS_FONTS_SANSERIF "webkit.webprefs.fonts.sansserif"
 #define WEBKIT_WEBPREFS_FONTS_SERIF "webkit.webprefs.fonts.serif"
 #define WEBKIT_WEBPREFS_FONTS_STANDARD "webkit.webprefs.fonts.standard"

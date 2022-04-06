@@ -162,11 +162,6 @@
         Impact
       </message>
 
-      <!-- The default value for |WebPreference::pictograph_font_family| -->
-      <message name="IDS_PICTOGRAPH_FONT_FAMILY" use_name_for_id="true">
-        Segoe UI Symbol
-      </message>
-
       <!-- The default value for |WebPreference::standard_font_family_map| for
            Cyrillic script. -->
       <message name="IDS_STANDARD_FONT_FAMILY_CYRILLIC" use_name_for_id="true">
