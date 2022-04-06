@@ -6,7 +6,6 @@
 
 #include "build/build_config.h"
 #include "crypto/crypto_buildflags.h"
-#include "net/net_buildflags.h"
 
 #if BUILDFLAG(USE_NSS_CERTS)
 #include "net/cert/internal/system_trust_store_nss.h"
@@ -101,6 +100,14 @@ class SystemTrustStoreChrome : public SystemTrustStore {
   std::unique_ptr<TrustStore> trust_store_system_;
   TrustStoreCollection trust_store_collection_;
 };
+
+std::unique_ptr<SystemTrustStore> CreateSystemTrustStoreChromeForTesting(
+    std::unique_ptr<TrustStoreChrome> trust_store_chrome,
+    std::unique_ptr<TrustStore> trust_store_system) {
+  return std::make_unique<SystemTrustStoreChrome>(
+      std::move(trust_store_chrome), std::move(trust_store_system));
+}
+
 #endif  // CHROME_ROOT_STORE_SUPPORTED
 
 #if BUILDFLAG(USE_NSS_CERTS)

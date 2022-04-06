@@ -4168,6 +4168,7 @@ test("net_unittests") {
     "cert/internal/revocation_util_unittest.cc",
     "cert/internal/signature_algorithm_unittest.cc",
     "cert/internal/simple_path_builder_delegate_unittest.cc",
+    "cert/internal/system_trust_store_unittest.cc",
     "cert/internal/test_helpers.cc",
     "cert/internal/test_helpers.h",
     "cert/internal/trust_store_collection_unittest.cc",
