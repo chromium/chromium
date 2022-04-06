@@ -296,6 +296,8 @@ static_library("ui") {
     "webui/predictors/predictors_ui.h",
     "webui/prefs_internals_source.cc",
     "webui/prefs_internals_source.h",
+    "webui/profiles/profile_internals_ui.cc",
+    "webui/profiles/profile_internals_ui.h",
     "webui/segmentation_internals/segmentation_internals_page_handler_impl.cc",
     "webui/segmentation_internals/segmentation_internals_page_handler_impl.h",
     "webui/segmentation_internals/segmentation_internals_ui.cc",

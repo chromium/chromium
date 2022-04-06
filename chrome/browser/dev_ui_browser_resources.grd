@@ -47,6 +47,7 @@ This file specifies browser resources for developer-facing chrome:// pages
       <include name="IDR_PREDICTORS_HTML" file="resources\predictors\predictors.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
       <include name="IDR_PREDICTORS_JS" file="resources\predictors\predictors.js" type="BINDATA" />
       <include name="IDR_PREDICTORS_RESOURCE_PREFETCH_PREDICTOR_JS" file="resources\predictors\resource_prefetch_predictor.js" type="BINDATA" />
+      <include name="IDR_PROFILE_INTERNALS_HTML" file="resources\profiles\profile_internals.html" type="BINDATA" />
       <include name="IDR_MEDIA_SESSION_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\services\media_session\public\mojom\media_session.mojom-webui.js" use_base_dir="false" type="BINDATA" />
 
       <if expr="is_android or is_linux">
