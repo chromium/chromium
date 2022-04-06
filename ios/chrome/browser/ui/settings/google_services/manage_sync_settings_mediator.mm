@@ -51,6 +51,11 @@ namespace {
 NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 // Sync error icon.
 NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
+// External link SF symbol.
+NSString* const kExternalLinkSystemImage = @"arrow.up.forward.square";
+// Chevron SF symbol.
+NSString* const kChevronForwardSystemImage = @"chevron.forward";
+
 // Ordered list of all sync switches. If a new switch is added, a new entry
 // must be added in |kSyncableItemTypes| below.
 const std::vector<SyncSetupService::SyncableDatatype> kSyncSwitchItems = {
@@ -288,9 +293,15 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
   BOOL hasDisclosureIndicator =
       self.syncSetupService->GetSyncServiceState() !=
       SyncSetupService::kSyncServiceNeedsTrustedVaultKey;
-  self.encryptionItem.accessoryType =
-      hasDisclosureIndicator ? UITableViewCellAccessoryDisclosureIndicator
-                             : UITableViewCellAccessoryNone;
+  if (hasDisclosureIndicator) {
+    self.encryptionItem.accessoryView = [[UIImageView alloc]
+        initWithImage:[UIImage systemImageNamed:kChevronForwardSystemImage]];
+    self.encryptionItem.accessoryView.tintColor =
+        [UIColor colorNamed:kTextQuaternaryColor];
+  } else {
+    self.encryptionItem.accessoryView = nil;
+  }
+  self.encryptionItem.accessibilityTraits |= UIAccessibilityTraitButton;
   [self updateEncryptionItem:NO];
   [model addItem:self.encryptionItem
       toSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
@@ -298,6 +309,10 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
   // GoogleActivityControlsItemType.
   TableViewImageItem* googleActivityControlsItem =
       [[TableViewImageItem alloc] initWithType:GoogleActivityControlsItemType];
+  googleActivityControlsItem.accessoryView = [[UIImageView alloc]
+      initWithImage:[UIImage systemImageNamed:kExternalLinkSystemImage]];
+  googleActivityControlsItem.accessoryView.tintColor =
+      [UIColor colorNamed:kTextQuaternaryColor];
   googleActivityControlsItem.title =
       GetNSString(IDS_IOS_MANAGE_SYNC_GOOGLE_ACTIVITY_CONTROLS_TITLE);
   googleActivityControlsItem.detailText =
@@ -309,6 +324,10 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
   // AdvancedSettingsSectionIdentifier.
   TableViewImageItem* dataFromChromeSyncItem =
       [[TableViewImageItem alloc] initWithType:DataFromChromeSync];
+  dataFromChromeSyncItem.accessoryView = [[UIImageView alloc]
+      initWithImage:[UIImage systemImageNamed:kExternalLinkSystemImage]];
+  dataFromChromeSyncItem.accessoryView.tintColor =
+      [UIColor colorNamed:kTextQuaternaryColor];
   dataFromChromeSyncItem.title =
       GetNSString(IDS_IOS_MANAGE_SYNC_DATA_FROM_CHROME_SYNC_TITLE);
   dataFromChromeSyncItem.detailText =
