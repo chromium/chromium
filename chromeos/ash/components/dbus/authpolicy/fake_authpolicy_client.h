@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_AUTHPOLICY_FAKE_AUTHPOLICY_CLIENT_H_
-#define CHROMEOS_DBUS_AUTHPOLICY_FAKE_AUTHPOLICY_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_AUTHPOLICY_FAKE_AUTHPOLICY_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_AUTHPOLICY_FAKE_AUTHPOLICY_CLIENT_H_
 
 #include <set>
 #include <string>
@@ -12,7 +12,7 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/authpolicy/authpolicy_client.h"
+#include "chromeos/ash/components/dbus/authpolicy/authpolicy_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -196,4 +196,4 @@ namespace ash {
 using ::chromeos::FakeAuthPolicyClient;
 }
 
-#endif  // CHROMEOS_DBUS_AUTHPOLICY_FAKE_AUTHPOLICY_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_AUTHPOLICY_FAKE_AUTHPOLICY_CLIENT_H_

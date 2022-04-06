@@ -2,15 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_chromeos, "Non-Chrome-OS builds cannot depend on //chromeos")
+import("//build/config/ui.gni")
+
+assert(is_chromeos_ash, "Non Chrome OS builds cannot depend on //chromeos/ash")
 
 component("upstart") {
   defines = [ "IS_UPSTART_CLIENT_IMPL" ]
 
   deps = [
     "//base",
-    "//chromeos/dbus/authpolicy",
-    "//chromeos/dbus/authpolicy:authpolicy_proto",
+    "//chromeos/ash/components/dbus/authpolicy",
+    "//chromeos/ash/components/dbus/authpolicy:authpolicy_proto",
     "//chromeos/dbus/common",
     "//chromeos/dbus/kerberos",
     "//chromeos/dbus/media_analytics",

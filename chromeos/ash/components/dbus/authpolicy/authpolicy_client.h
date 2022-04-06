@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_AUTHPOLICY_AUTHPOLICY_CLIENT_H_
-#define CHROMEOS_DBUS_AUTHPOLICY_AUTHPOLICY_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_AUTHPOLICY_AUTHPOLICY_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_AUTHPOLICY_AUTHPOLICY_CLIENT_H_
 
 #include <string>
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "chromeos/dbus/authpolicy/active_directory_info.pb.h"
+#include "chromeos/ash/components/dbus/authpolicy/active_directory_info.pb.h"
 #include "dbus/object_proxy.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -111,4 +111,4 @@ namespace ash {
 using ::chromeos::AuthPolicyClient;
 }  // namespace ash
 
-#endif  // CHROMEOS_DBUS_AUTHPOLICY_AUTHPOLICY_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_AUTHPOLICY_AUTHPOLICY_CLIENT_H_

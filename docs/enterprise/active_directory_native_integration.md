@@ -52,12 +52,12 @@ is necessary to get the latest policies.
 
 ## Chrome Architecture
 The following Chrome classes are most relevant for the AD integration:
-[AuthPolicyClient](https://cs.chromium.org/chromium/src/chromeos/dbus/authpolicy/authpolicy_client.h)
+[AuthPolicyClient](https://cs.chromium.org/chromium/src/chromeos/ash/components/dbus/authpolicy/authpolicy_client.h)
 is the D-Bus client for the authpolicy daemon. All authpolicy D-Bus calls are
 routed through it. The
 [AuthPolicyHelper](https://cs.chromium.org/chromium/src/chrome/browser/ash/authpolicy/authpolicy_helper.h)
 is a thin abstraction layer on top of the
-[AuthPolicyClient](https://cs.chromium.org/chromium/src/chromeos/dbus/authpolicy/authpolicy_client.h)
+[AuthPolicyClient](https://cs.chromium.org/chromium/src/chromeos/ash/components/dbus/authpolicy/authpolicy_client.h)
 to handle cancellation and other stuff. The
 [AuthPolicyCredentialsManager](https://cs.chromium.org/chromium/src/chrome/browser/ash/authpolicy/authpolicy_credentials_manager.h)
 keeps track of user credential status, shows notifications if the Kerberos

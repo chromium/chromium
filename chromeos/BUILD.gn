@@ -111,6 +111,7 @@ test("chromeos_unittests") {
   if (is_chromeos_ash) {
     deps += [
       ":test_support",
+      "//chromeos/ash/components/dbus:unit_tests",
       "//chromeos/crosapi/cpp:unit_tests",
       "//chromeos/crosapi/mojom:unit_tests",
       "//chromeos/dbus:test_support",

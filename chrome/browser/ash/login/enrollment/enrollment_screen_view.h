@@ -9,7 +9,7 @@
 
 #include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chromeos/dbus/authpolicy/active_directory_info.pb.h"
+#include "chromeos/ash/components/dbus/authpolicy/active_directory_info.pb.h"
 
 class GoogleServiceAuthError;
 

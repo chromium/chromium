@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/dbus/authpolicy/authpolicy_client.h"
+#include "chromeos/ash/components/dbus/authpolicy/authpolicy_client.h"
 
 namespace ash {
 

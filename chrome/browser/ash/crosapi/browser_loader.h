@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
-#include "chromeos/dbus/upstart/upstart_client.h"
+#include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "components/component_updater/component_updater_service.h"
 
 namespace crosapi {

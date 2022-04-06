@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "chromeos/dbus/upstart/upstart_client.h"
+#include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 
 namespace arc {
 

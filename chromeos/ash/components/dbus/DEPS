@@ -3,13 +3,13 @@ noparent = True
 include_rules = [
   "+base",
   # Please do not add any chromeos/ dependencies here: https://crbug.com/863439
-  "+components/device_event_log",
+  "+components/account_id/account_id.h",
   "+components/policy/proto",
-  "+crypto",
   "+dbus",
-  "+net",
   "+testing",
   "+third_party/abseil-cpp/absl",
   "+third_party/cros_system_api",
-  "+url",
+
+  # TODO(crbug.com/1164001): Remove after chromeos/dbus migration is done.
+  "+chromeos/dbus"
 ]
