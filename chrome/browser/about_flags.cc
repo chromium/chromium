@@ -5369,7 +5369,8 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
     {"chrome-wide-echo-cancellation",
      flag_descriptions::kChromeWideEchoCancellationName,
-     flag_descriptions::kChromeWideEchoCancellationDescription, kOsWin | kOsMac,
+     flag_descriptions::kChromeWideEchoCancellationDescription,
+     kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(media::kChromeWideEchoCancellation)},
 #endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 
