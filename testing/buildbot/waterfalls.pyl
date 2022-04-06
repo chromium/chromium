@@ -3136,6 +3136,19 @@
           'isolated_scripts': 'ios_m1_simulator_tests'
         },
       },
+      'ios-m1-simulator-cronet': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'mac_11_arm64',
+          'mac_toolchain',
+          'out_dir_arg',
+          'xcode_13_main',
+          'xctest',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'ios_simulator_cronet_tests'
+        },
+      },
       # TODO(crbug.com/1254986): remove this after the migration.
       'ios-reclient': {
         'additional_compile_targets': [
