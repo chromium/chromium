@@ -174,6 +174,9 @@ tast_disabled_tests_from_chrome_all = [
   "crostini.GPUEnabled.gpu_bullseye_stable",
   "crostini.Basic.bullseye_stable",
   "crostini.CrashReporter.bullseye_stable",
+  "crostini.LaunchBrowser.bullseye_stable",
+  "crostini.LaunchTerminal.bullseye_stable",
+  "crostini.HomeDirectoryCreateFile.bullseye_stable",
 
   # https://crbug.com/1307671
   "policy.SafeBrowsingProtectionLevel",
