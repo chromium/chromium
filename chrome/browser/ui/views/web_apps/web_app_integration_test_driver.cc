@@ -511,6 +511,7 @@ void WebAppIntegrationTestDriver::SetUpOnMainThread() {
 }
 
 void WebAppIntegrationTestDriver::TearDownOnMainThread() {
+  LOG(INFO) << "TearDownOnMainThread: Start.";
   observation_.Reset();
   if (delegate_->IsSyncTest())
     SyncTurnOff();
@@ -519,6 +520,7 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
     base::RunLoop run_loop;
     std::vector<AppId> app_ids = provider->registrar().GetAppIds();
     for (auto& app_id : app_ids) {
+      LOG(INFO) << "TearDownOnMainThread: Uninstalling " << app_id << ".";
       const WebApp* app = provider->registrar().GetAppById(app_id);
       if (app->IsPolicyInstalledApp())
         UninstallPolicyAppById(app_id);
@@ -532,11 +534,13 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
             }));
         run_loop.Run();
       }
+      LOG(INFO) << "TearDownOnMainThread: Uninstall complete.";
     }
     // TODO(crbug.com/1273568): Investigate the true source of flakiness instead
     // of papering over it here.
     FlushShortcutTasks();
   }
+  LOG(INFO) << "TearDownOnMainThread: Deleting dangling shortcuts.";
 // TODO(crbug.com/1273568): Investigate the true source of flakiness instead of
 // papering over it here.
 #if BUILDFLAG(IS_WIN)
@@ -551,6 +555,7 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
   if (shortcut_override_->desktop.IsValid())
     ASSERT_TRUE(shortcut_override_->desktop.Delete());
 #endif
+  LOG(INFO) << "TearDownOnMainThread: Complete.";
 }
 
 void WebAppIntegrationTestDriver::AcceptAppIdUpdateDialog() {
