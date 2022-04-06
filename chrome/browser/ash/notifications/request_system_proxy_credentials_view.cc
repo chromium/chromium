@@ -30,7 +30,10 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/table_layout_view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -111,89 +114,83 @@ void RequestSystemProxyCredentialsView::Init() {
       ui::DIALOG_BUTTON_OK,
       l10n_util::GetStringUTF16(IDS_SYSTEM_PROXY_AUTH_DIALOG_OK_BUTTON));
 
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical);
 
-  int column_view_set_id = 0;
-  views::ColumnSet* column_set = layout->AddColumnSet(column_view_set_id);
-
-  column_set->AddColumn(views::GridLayout::LEADING, views::GridLayout::FILL,
-                        100, views::GridLayout::ColumnSize::kUsePreferred, 0,
-                        0);
-
-  layout->StartRow(0, column_view_set_id);
-  auto info_label = std::make_unique<views::Label>(l10n_util::GetStringFUTF16(
-      IDS_SYSTEM_PROXY_AUTH_DIALOG_TEXT, base::ASCIIToUTF16(GetProxyServer())));
+  auto* info_label = AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringFUTF16(IDS_SYSTEM_PROXY_AUTH_DIALOG_TEXT,
+                                 base::ASCIIToUTF16(GetProxyServer()))));
   info_label->SetEnabled(true);
   info_label->SetTextStyle(views::style::STYLE_PRIMARY);
-  layout->AddView(std::move(info_label));
+  info_label->SetProperty(views::kCrossAxisAlignmentKey,
+                          views::LayoutAlignment::kStart);
 
-  layout->StartRow(0, column_view_set_id);
-  auto info_label_privacy = std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_SYSTEM_PROXY_AUTH_DIALOG_PRIVACY_WARNING));
+  auto* info_label_privacy = AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_SYSTEM_PROXY_AUTH_DIALOG_PRIVACY_WARNING)));
   info_label_privacy->SetEnabled(true);
   info_label_privacy->SetTextStyle(views::style::STYLE_SECONDARY);
-  layout->AddView(std::move(info_label_privacy));
+  info_label_privacy->SetProperty(views::kCrossAxisAlignmentKey,
+                                  views::LayoutAlignment::kStart);
 
-  column_view_set_id++;
-  column_set = layout->AddColumnSet(column_view_set_id);
-  column_set->AddColumn(views::GridLayout::LEADING, views::GridLayout::FILL,
-                        views::GridLayout::kFixedSize,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+  auto* auth_container =
+      AddChildView(std::make_unique<views::TableLayoutView>());
+  auth_container->AddColumn(
+      views::LayoutAlignment::kStart, views::LayoutAlignment::kStretch,
+      views::TableLayout::kFixedSize,
+      views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
   const int label_padding =
       provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL);
-  column_set->AddPaddingColumn(0, label_padding);
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL, 1.0,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+  auth_container->AddPaddingColumn(views::TableLayout::kFixedSize,
+                                   label_padding);
+  auth_container->AddColumn(
+      views::LayoutAlignment::kStretch, views::LayoutAlignment::kStretch, 1.0f,
+      views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
 
   const int unrelated_vertical_spacing =
       provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL);
-  layout->StartRowWithPadding(1.0, column_view_set_id, 0,
-                              unrelated_vertical_spacing);
-  auto username_label = std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_SYSTEM_PROXY_AUTH_DIALOG_USERNAME_LABEL));
+  auth_container->AddPaddingRow(views::TableLayout::kFixedSize,
+                                unrelated_vertical_spacing);
+  auth_container->AddRows(1, views::TableLayout::kFixedSize);
+  auto* username_label = auth_container->AddChildView(
+      std::make_unique<views::Label>(l10n_util::GetStringUTF16(
+          IDS_SYSTEM_PROXY_AUTH_DIALOG_USERNAME_LABEL)));
   username_label->SetEnabled(true);
 
-  auto username_textfield = std::make_unique<views::Textfield>();
-  username_textfield->SetEnabled(true);
-  username_textfield->SetAssociatedLabel(
-      layout->AddView(std::move(username_label)));
-  username_textfield_ = layout->AddView(std::move(username_textfield));
+  username_textfield_ =
+      auth_container->AddChildView(std::make_unique<views::Textfield>());
+  username_textfield_->SetEnabled(true);
+  username_textfield_->SetAssociatedLabel(username_label);
 
   const int related_vertical_spacing =
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);
-  layout->StartRowWithPadding(1.0, column_view_set_id, 0,
-                              related_vertical_spacing);
-  auto password_label = std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_SYSTEM_PROXY_AUTH_DIALOG_PASSWORD_LABEL));
+  auth_container->AddPaddingRow(views::TableLayout::kFixedSize,
+                                related_vertical_spacing);
+  auth_container->AddRows(1, views::TableLayout::kFixedSize);
+  auto* password_label = auth_container->AddChildView(
+      std::make_unique<views::Label>(l10n_util::GetStringUTF16(
+          IDS_SYSTEM_PROXY_AUTH_DIALOG_PASSWORD_LABEL)));
   password_label->SetEnabled(true);
-  auto password_textfield = std::make_unique<PassphraseTextfield>();
-  password_textfield->SetEnabled(true);
-  password_textfield->SetAssociatedLabel(
-      layout->AddView(std::move(password_label)));
-  password_textfield_ = layout->AddView(std::move(password_textfield));
+  password_textfield_ =
+      auth_container->AddChildView(std::make_unique<PassphraseTextfield>());
+  password_textfield_->SetEnabled(true);
+  password_textfield_->SetAssociatedLabel(password_label);
+  auth_container->AddPaddingRow(views::TableLayout::kFixedSize,
+                                related_vertical_spacing);
 
-  column_view_set_id++;
-  column_set = layout->AddColumnSet(column_view_set_id);
-  column_set->AddColumn(views::GridLayout::LEADING, views::GridLayout::FILL,
-                        views::GridLayout::kFixedSize,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  column_set->AddPaddingColumn(0, label_padding);
-  column_set->AddColumn(views::GridLayout::LEADING, views::GridLayout::FILL,
-                        1.0, views::GridLayout::ColumnSize::kUsePreferred, 0,
-                        0);
-  layout->StartRowWithPadding(1.0, column_view_set_id, 0,
-                              related_vertical_spacing);
-  auto error_icon = std::make_unique<views::ImageView>();
-  const int kIconSize = 18;
+  auto* error_container =
+      AddChildView(std::make_unique<views::BoxLayoutView>());
+  error_container->SetBetweenChildSpacing(label_padding);
+  auto* error_icon =
+      error_container->AddChildView(std::make_unique<views::ImageView>());
+  constexpr int kIconSize = 18;
   error_icon->SetImage(ui::ImageModel::FromVectorIcon(
       vector_icons::kInfoOutlineIcon, ui::kColorAlertHighSeverity, kIconSize));
   error_icon->SetImageSize(gfx::Size(kIconSize, kIconSize));
   error_icon->SetVisible(show_error_label_);
-  layout->AddView(std::move(error_icon));
 
-  error_label_ =
-      layout->AddView(std::make_unique<ErrorLabelView>(show_error_label_));
+  error_label_ = error_container->AddChildView(
+      std::make_unique<ErrorLabelView>(show_error_label_));
+  error_container->SetFlexForView(error_label_, 1);
 }
 
 BEGIN_METADATA(RequestSystemProxyCredentialsView, views::DialogDelegateView)
