@@ -777,8 +777,12 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
         // if that fails, there's no way it's going to fit), by checking
         // TallestUnbreakableBlockSize() from the layout results.
         if (NGBoxFragment(ConstraintSpace().GetWritingDirection(), column)
-                .HasBlockLayoutOverflow())
+                .HasBlockLayoutOverflow()) {
+          if (ConstraintSpace().IsInsideBalancedColumns() &&
+              !container_builder_.IsInitialColumnBalancingPass())
+            container_builder_.PropagateSpaceShortage(minimal_space_shortage);
           return nullptr;
+        }
       }
       allow_discard_start_margin = true;
     } while (column_break_token);

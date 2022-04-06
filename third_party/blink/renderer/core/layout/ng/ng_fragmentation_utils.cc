@@ -851,10 +851,11 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
       }
     }
   } else {
+    LayoutUnit block_size =
+        BlockSizeForFragmentation(layout_result, space.GetWritingDirection());
     bool move_past = refuse_break_before;
     if (!move_past) {
-      if (BlockSizeForFragmentation(
-              layout_result, space.GetWritingDirection()) <= space_left) {
+      if (block_size <= space_left) {
         // The fragment fits! We can move past.
         move_past = true;
       } else if (appeal_before == kBreakAppealLastResort && builder &&
@@ -879,6 +880,15 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
                                      layout_result, appeal_before, builder,
                                      flex_column_break_info);
       }
+
+      if (block_size > space_left && builder) {
+        // We're moving past the breakpoint even if the child doesn't fit. This
+        // may happen with monolithic content at the beginning of the
+        // fragmentainer. Report space shortage.
+        PropagateSpaceShortage(space, &layout_result,
+                               fragmentainer_block_offset, builder);
+      }
+
       return true;
     }
   }

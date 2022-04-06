@@ -491,6 +491,7 @@ crbug.com/829028 external/wpt/css/css-multicol/multicol-fill-balance-012.html [ 
 crbug.com/829028 external/wpt/css/css-multicol/multicol-fill-balance-013.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-multicol/multicol-fill-balance-014.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-multicol/multicol-fill-balance-021.html [ Failure ]
+crbug.com/829028 external/wpt/css/css-multicol/multicol-fill-balance-022.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-multicol/multicol-nested-007.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-multicol/multicol-nested-008.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-multicol/multicol-nested-009.html [ Failure ]
