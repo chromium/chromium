@@ -21,6 +21,7 @@ extern const struct wl_data_device_interface kTestDataDeviceImpl;
 
 class TestDataOffer;
 class TestDataSource;
+class TestDataDeviceManager;
 
 class TestDataDevice : public TestSelectionDevice {
  public:
@@ -30,7 +31,9 @@ class TestDataDevice : public TestSelectionDevice {
                            uint32_t serial) = 0;
   };
 
-  TestDataDevice(wl_resource* resource, wl_client* client);
+  TestDataDevice(wl_resource* resource,
+                 wl_client* client,
+                 TestDataDeviceManager* manager);
 
   TestDataDevice(const TestDataDevice&) = delete;
   TestDataDevice& operator=(const TestDataDevice&) = delete;
@@ -59,6 +62,8 @@ class TestDataDevice : public TestSelectionDevice {
  private:
   wl_client* client_ = nullptr;
   DragDelegate* drag_delegate_ = nullptr;
+
+  TestDataDeviceManager* const manager_;
 };
 
 }  // namespace wl

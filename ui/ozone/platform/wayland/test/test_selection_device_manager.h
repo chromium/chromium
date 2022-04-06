@@ -167,6 +167,8 @@ class TestSelectionDevice : public ServerObject {
   TestSelectionOffer* OnDataOffer();
   void OnSelection(TestSelectionOffer* offer);
 
+  void set_manager(TestSelectionDeviceManager* manager) { manager_ = manager; }
+
   // Protocol object requests:
   static void SetSelection(struct wl_client* client,
                            struct wl_resource* resource,
@@ -179,6 +181,8 @@ class TestSelectionDevice : public ServerObject {
   Delegate* const delegate_;
 
   uint32_t selection_serial_ = 0;
+
+  TestSelectionDeviceManager* manager_ = nullptr;
 };
 
 }  // namespace wl

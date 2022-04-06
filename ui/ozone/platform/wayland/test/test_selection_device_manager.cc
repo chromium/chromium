@@ -154,6 +154,8 @@ void TestSelectionDevice::SetSelection(struct wl_client* client,
   auto* src = source ? GetUserDataAs<TestSelectionSource>(source) : nullptr;
   self->selection_serial_ = serial;
   self->delegate_->HandleSetSelection(src, serial);
+  if (self->manager_)
+    self->manager_->set_source(src);
 }
 
 TestSelectionDeviceManager::TestSelectionDeviceManager(
@@ -171,7 +173,7 @@ void TestSelectionDeviceManager::CreateSource(wl_client* client,
                                               uint32_t id) {
   CHECK(GetUserDataAs<TestSelectionDeviceManager>(manager_resource));
   auto* manager = GetUserDataAs<TestSelectionDeviceManager>(manager_resource);
-  manager->source_ = manager->delegate_->CreateSource(client, id);
+  manager->delegate_->CreateSource(client, id);
 }
 
 void TestSelectionDeviceManager::GetDevice(wl_client* client,
@@ -180,7 +182,9 @@ void TestSelectionDeviceManager::GetDevice(wl_client* client,
                                            wl_resource* seat_resource) {
   CHECK(GetUserDataAs<TestSelectionDeviceManager>(manager_resource));
   auto* manager = GetUserDataAs<TestSelectionDeviceManager>(manager_resource);
-  manager->device_ = manager->delegate_->CreateDevice(client, id);
+  auto* new_device = manager->delegate_->CreateDevice(client, id);
+  new_device->set_manager(manager);
+  manager->device_ = new_device;
 }
 
 }  // namespace wl
