@@ -10,15 +10,6 @@
     width: calc(100% / 3 - 0.34px);
   }
 
-  @media(min-width: 720px) {
-    :host {
-      /* Subtract 0.25px to fix subpixel rounding issues with iron-list. This
-       * ensures all grid items in a row add up to at least 1px smaller than the
-       * parent width. */
-      width: calc(100% / 4 - 0.25px) !important;
-    }
-  }
-
   :host([disabled]) {
     cursor: initial;
     opacity: var(--cros-disabled-opacity);
@@ -37,7 +28,7 @@
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    height: 156px;
+    height: 120px;
     justify-content: center;
     overflow: hidden;
     position: relative;
