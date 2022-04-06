@@ -1183,16 +1183,15 @@ TEST(V8ScriptValueSerializerForModulesTest, ClosedAudioDataThrows) {
 TEST(V8ScriptValueSerializerForModulesTest, TransferMediaStreamTrack) {
   V8TestingScope scope;
 
-  MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
-      "test_id", MediaStreamSource::StreamType::kTypeVideo, "test_name",
-      false /* remote */);
   std::unique_ptr<MockMediaStreamVideoSource> mock_source(
       base::WrapUnique(new MockMediaStreamVideoSource()));
   MediaStreamDevice device;
   base::UnguessableToken token = base::UnguessableToken::Create();
   device.set_session_id(token);
   mock_source->SetDevice(device);
-  source->SetPlatformSource(std::move(mock_source));
+  MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
+      "test_id", MediaStreamSource::StreamType::kTypeVideo, "test_name",
+      false /* remote */, std::move(mock_source));
   MediaStreamComponent* component =
       MakeGarbageCollected<MediaStreamComponent>(source);
   MediaStreamTrack* blink_track = MakeGarbageCollected<MediaStreamTrack>(
