@@ -128,6 +128,12 @@ const std::u16string& TestWebContents::GetTitle() {
   return WebContentsImpl::GetTitle();
 }
 
+void TestWebContents::SetTabSwitchStartTime(base::TimeTicks start_time,
+                                            bool destination_is_loaded) {
+  tab_switch_start_time_ = start_time;
+  WebContentsImpl::SetTabSwitchStartTime(start_time, destination_is_loaded);
+}
+
 const std::string& TestWebContents::GetSaveFrameHeaders() {
   return save_frame_headers_;
 }
@@ -450,6 +456,10 @@ TestWebContents::AddPrerenderAndStartNavigation(const GURL& url) {
 
   return NavigationSimulatorImpl::CreateFromPendingInFrame(
       FrameTreeNode::GloballyFindByID(host->frame_tree_node_id()));
+}
+
+base::TimeTicks TestWebContents::GetTabSwitchStartTime() {
+  return tab_switch_start_time_;
 }
 
 }  // namespace content

@@ -2051,17 +2051,18 @@ TabStripSelectionChange TabStripModel::SetSelection(
 
   if (!triggered_by_other_operation &&
       (selection.active_tab_changed() || selection.selection_changed())) {
-    // Show the in-product help dialog pointing users to the tab mute button if
-    // the user backgrounds an audible tab.
-    if (selection.active_tab_changed() &&
-        base::FeatureList::IsEnabled(media::kEnableTabMuting)) {
-      if (selection.old_contents &&
-          selection.old_contents->IsCurrentlyAudible()) {
-        Browser* browser =
-            chrome::FindBrowserWithWebContents(selection.old_contents);
-        DCHECK(browser);
-        browser->window()->MaybeShowFeaturePromo(
-            feature_engagement::kIPHTabAudioMutingFeature);
+    if (selection.active_tab_changed()) {
+      if (base::FeatureList::IsEnabled(media::kEnableTabMuting)) {
+        // Show the in-product help dialog pointing users to the tab mute button
+        // if the user backgrounds an audible tab.
+        if (selection.old_contents &&
+            selection.old_contents->IsCurrentlyAudible()) {
+          Browser* browser =
+              chrome::FindBrowserWithWebContents(selection.old_contents);
+          DCHECK(browser);
+          browser->window()->MaybeShowFeaturePromo(
+              feature_engagement::kIPHTabAudioMutingFeature);
+        }
       }
 
       auto now = base::TimeTicks::Now();

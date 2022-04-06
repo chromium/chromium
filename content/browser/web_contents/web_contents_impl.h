@@ -569,7 +569,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                                   cc::BrowserControlsState current,
                                   bool animate) override;
   void SetTabSwitchStartTime(base::TimeTicks start_time,
-                             bool destination_is_loaded) final;
+                             bool destination_is_loaded) override;
 
   // Implementation of PageNavigator.
   WebContents* OpenURL(const OpenURLParams& params) override;

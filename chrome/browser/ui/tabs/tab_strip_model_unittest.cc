@@ -21,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
@@ -4194,4 +4195,32 @@ TEST_F(TabStripModelTest, SurroundingGroupAtIndex) {
   EXPECT_EQ(absl::nullopt, strip.GetSurroundingTabGroup(4));
 
   strip.CloseAllTabs();
+}
+
+TEST_F(TabStripModelTest, ActivateRecordsStartTime) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel strip(&delegate, profile());
+  PrepareTabs(&strip, 2);
+
+  auto has_tab_switch_start_time = [&strip](int index) -> bool {
+    return !content::WebContentsTester::For(strip.GetWebContentsAt(index))
+                ->GetTabSwitchStartTime()
+                .is_null();
+  };
+
+  // PrepareTabs should leave the last tab active.
+  ASSERT_EQ(strip.GetActiveWebContents(), strip.GetWebContentsAt(1));
+  ASSERT_FALSE(has_tab_switch_start_time(0));
+  ASSERT_FALSE(has_tab_switch_start_time(1));
+
+  // ActivateTabAt should only update the start time if the active tab changes.
+  strip.ActivateTabAt(1, {TabStripModel::GestureType::kOther});
+  EXPECT_FALSE(has_tab_switch_start_time(0));
+  EXPECT_FALSE(has_tab_switch_start_time(1));
+  strip.ActivateTabAt(0, {TabStripModel::GestureType::kOther});
+  EXPECT_TRUE(has_tab_switch_start_time(0));
+  EXPECT_FALSE(has_tab_switch_start_time(1));
+  strip.ActivateTabAt(1, {TabStripModel::GestureType::kOther});
+  EXPECT_TRUE(has_tab_switch_start_time(0));
+  EXPECT_TRUE(has_tab_switch_start_time(1));
 }

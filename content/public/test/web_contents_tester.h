@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -176,6 +177,10 @@ class WebContentsTester {
   // frame and returns the simulator after the navigation is started.
   virtual std::unique_ptr<NavigationSimulator> AddPrerenderAndStartNavigation(
       const GURL& url) = 0;
+
+  // Returns the time that was set with SetTabSwitchStartTime, or a null
+  // TimeTicks if it was never called.
+  virtual base::TimeTicks GetTabSwitchStartTime() = 0;
 };
 
 }  // namespace content

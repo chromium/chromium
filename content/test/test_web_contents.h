@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -64,6 +65,11 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
                     ImageDownloadCallback callback) override;
   const GURL& GetLastCommittedURL() override;
   const std::u16string& GetTitle() override;
+
+  // Override to cache the tab switch start time without going through
+  // VisibleTimeRequestTrigger.
+  void SetTabSwitchStartTime(base::TimeTicks start_time,
+                             bool destination_is_loaded) final;
 
   // WebContentsTester implementation.
   void CommitPendingNavigation() override;
@@ -151,6 +157,8 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   std::unique_ptr<NavigationSimulator> AddPrerenderAndStartNavigation(
       const GURL& url) override;
 
+  base::TimeTicks GetTabSwitchStartTime() final;
+
  protected:
   // The deprecated WebContentsTester still needs to subclass this.
   explicit TestWebContents(BrowserContext* browser_context);
@@ -205,6 +213,7 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   base::UnguessableToken audio_group_id_;
   bool is_page_frozen_;
   bool back_forward_cache_supported_ = true;
+  base::TimeTicks tab_switch_start_time_;
 };
 
 }  // namespace content
