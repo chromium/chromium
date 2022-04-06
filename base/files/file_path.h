@@ -102,9 +102,7 @@
 #ifndef BASE_FILES_FILE_PATH_H_
 #define BASE_FILES_FILE_PATH_H_
 
-#include <stddef.h>
-
-#include <functional>
+#include <cstddef>
 #include <iosfwd>
 #include <string>
 #include <vector>
@@ -163,23 +161,28 @@ class BASE_EXPORT FilePath {
   typedef StringType::value_type CharType;
   typedef BasicStringPiece<CharType> StringPieceType;
 
-  // Null-terminated array of separators used to separate components in
-  // hierarchical paths.  Each character in this array is a valid separator,
-  // but kSeparators[0] is treated as the canonical separator and will be used
-  // when composing pathnames.
-  static const CharType kSeparators[];
+  // Null-terminated array of separators used to separate components in paths.
+  // Each character in this array is a valid separator, but kSeparators[0] is
+  // treated as the canonical separator and is used when composing pathnames.
+  static constexpr CharType kSeparators[] =
+#if defined(FILE_PATH_USES_WIN_SEPARATORS)
+      FILE_PATH_LITERAL("\\/");
+#else   // FILE_PATH_USES_WIN_SEPARATORS
+      FILE_PATH_LITERAL("/");
+#endif  // FILE_PATH_USES_WIN_SEPARATORS
 
-  // std::size(kSeparators).
-  static const size_t kSeparatorsLength;
+  // std::size(kSeparators), i.e., the number of separators in kSeparators plus
+  // one (the null terminator at the end of kSeparators).
+  static constexpr size_t kSeparatorsLength = std::size(kSeparators);
 
-  // A special path component meaning "this directory."
-  static const CharType kCurrentDirectory[];
+  // The special path component meaning "this directory."
+  static constexpr CharType kCurrentDirectory[] = FILE_PATH_LITERAL(".");
 
-  // A special path component meaning "the parent directory."
-  static const CharType kParentDirectory[];
+  // The special path component meaning "the parent directory."
+  static constexpr CharType kParentDirectory[] = FILE_PATH_LITERAL("..");
 
   // The character used to identify a file extension.
-  static const CharType kExtensionSeparator;
+  static constexpr CharType kExtensionSeparator = FILE_PATH_LITERAL('.');
 
   FilePath();
   FilePath(const FilePath& that);
