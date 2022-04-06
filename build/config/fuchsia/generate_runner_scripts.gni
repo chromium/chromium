@@ -203,25 +203,16 @@ template("fuchsia_test_runner") {
     testonly = true
 
     _test_runner_py = "//build/fuchsia/test_runner.py"
+    executable = rebase_path(_test_runner_py)
 
     if (defined(invoker.is_test_exe) && invoker.is_test_exe) {
-      executable = "//testing/test_env.py"
-      executable_args =
-          [ "@WrappedPath(" + rebase_path(_test_runner_py, root_out_dir) + ")" ]
-      data += [
-        _test_runner_py,
-        "//.vpython3",
-      ]
-      data_deps += [ "//testing:test_scripts_shared" ]
-    } else {
-      executable = rebase_path(_test_runner_py)
-      executable_args = []
+      data += [ "//.vpython3" ]
     }
     output_name_format = "run_%package%"
     executable_wrapper = invoker.target_name
 
     # Populate the arguments used by the test runner, defined at build-time.
-    executable_args += [
+    executable_args = [
       "--out-dir",
       "@WrappedPath(.)",
       "--target-cpu",

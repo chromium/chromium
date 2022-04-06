@@ -1769,7 +1769,16 @@ class MetaBuildWrapper(object):
       if clang_coverage or java_coverage:
         cmdline += ['--coverage-dir', '${ISOLATED_OUTDIR}']
     elif is_fuchsia and test_type != 'script':
+      # On Fuchsia, the generated bin/run_* test scripts are used both in
+      # infrastructure and by developers. test_env.py is intended to establish a
+      # predictable environment for automated testing. In particular, it adds
+      # CHROME_HEADLESS=1 to the environment for child processes. This variable
+      # is a signal to both test and production code that it is running in the
+      # context of automated an testing environment, and should not be present
+      # for normal developer workflows.
       cmdline += [
+          vpython_exe,
+          '../../testing/test_env.py',
           os.path.join('bin', 'run_%s' % target),
           '--test-launcher-bot-mode',
           '--logs-dir=${ISOLATED_OUTDIR}',
