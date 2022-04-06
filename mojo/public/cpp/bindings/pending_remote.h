@@ -12,7 +12,12 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
+#include "mojo/public/c/system/types.h"
+#include "mojo/public/cpp/bindings/disconnect_reason.h"
+#include "mojo/public/cpp/bindings/interface_id.h"
 #include "mojo/public/cpp/bindings/lib/pending_remote_state.h"
+#include "mojo/public/cpp/bindings/message.h"
+#include "mojo/public/cpp/bindings/pipe_control_message_proxy.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
 namespace mojo {
@@ -91,6 +96,21 @@ class PendingRemote {
   // Receiver or PendingReceiver, that object remains in a valid state and will
   // eventually detect that its remote caller is gone.
   void reset() { state_.reset(); }
+
+  // Like above but provides a reason for the disconnection.
+  void ResetWithReason(uint32_t reason, const std::string& description) {
+    CHECK(is_valid()) << "Cannot send reset reason to an invalid handle.";
+
+    Message message =
+        PipeControlMessageProxy::ConstructPeerEndpointClosedMessage(
+            kPrimaryInterfaceId, DisconnectReason(reason, description));
+    MojoResult result =
+        WriteMessageNew(state_.pipe.get(), message.TakeMojoMessage(),
+                        MOJO_WRITE_MESSAGE_FLAG_NONE);
+    DCHECK_EQ(MOJO_RESULT_OK, result);
+
+    reset();
+  }
 
   // Takes ownership of this PendingRemote's message pipe handle. After this
   // call, the PendingRemote is no longer in a valid state and can no longer be

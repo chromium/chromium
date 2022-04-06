@@ -468,6 +468,24 @@ TEST_P(ReceiverTest, DisconnectWithReason) {
   run_loop.Run();
 }
 
+TEST_P(ReceiverTest, PendingRemoteResetWithReason) {
+  ServiceImpl impl;
+  Receiver<sample::Service> receiver(&impl);
+  PendingRemote<sample::Service> pending_remote =
+      receiver.BindNewPipeAndPassRemote();
+
+  base::RunLoop run_loop;
+  receiver.set_disconnect_with_reason_handler(base::BindLambdaForTesting(
+      [&](uint32_t custom_reason, const std::string& description) {
+        EXPECT_EQ(1234u, custom_reason);
+        EXPECT_EQ("hello", description);
+        run_loop.Quit();
+      }));
+
+  pending_remote.ResetWithReason(1234u, "hello");
+  run_loop.Run();
+}
+
 template <typename T>
 struct WeakPtrImplRefTraits {
   using PointerType = base::WeakPtr<T>;
