@@ -190,6 +190,13 @@ const smartLockRegEx: RegExp = new RegExp('(smart|easy)[ ]?(un)?lock', 'i');
 const nearbyShareRegEx: RegExp = new RegExp('nearby|phone', 'i');
 
 /**
+ * Regular expression to check for keywords related to Fast Pair like
+ * "fast pair".
+ * Case insensitive matching.
+ */
+const fastPairRegEx: RegExp = new RegExp('fast[ ]?pair', 'i');
+
+/**
  * Reads the selected file when the user selects a file.
  * @param fileSelectedEvent The onChanged event for the file input box.
  */
@@ -280,7 +287,8 @@ function checkForSendBluetoothLogs(inputEvent: Event) {
   const value = (inputEvent.target as HTMLInputElement).value;
   const isRelatedToBluetooth = btRegEx.test(value) ||
       cantConnectRegEx.test(value) || tetherRegEx.test(value) ||
-      smartLockRegEx.test(value) || nearbyShareRegEx.test(value);
+      smartLockRegEx.test(value) || nearbyShareRegEx.test(value) ||
+      fastPairRegEx.test(value);
   $('bluetooth-checkbox-container').hidden = !isRelatedToBluetooth;
 }
 
