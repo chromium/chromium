@@ -10,7 +10,6 @@
     "types": [
       {
         "id": "AccessLevel",
-        "nodoc": true,
         "type": "string",
         "enum": ["TRUSTED_CONTEXTS", "TRUSTED_AND_UNTRUSTED_CONTEXTS"],
         "description": "The storage area's access level."
@@ -154,7 +153,6 @@
             }
           }, {
             "name": "setAccessLevel",
-            "nodoc": true,
             "type": "function",
             "description": "Sets the desired access level for the storage area. The default will be only trusted contexts.",
             "parameters": [
@@ -265,7 +263,6 @@
       "session" : {
         "$ref": "StorageArea",
         "description": "Items in the <code>session</code> storage area are stored in-memory and will not be persisted to disk.",
-        "nodoc": true,
         "value": ["session"],
         "properties": {
           "QUOTA_BYTES": {
