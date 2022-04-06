@@ -46,6 +46,22 @@ class MockDownloadDisplayController : public DownloadDisplayController {
   MOCK_METHOD0(OnRemovedItem, void());
 };
 
+struct DownloadSortingState {
+  std::string id;
+  base::TimeDelta offset;
+  DownloadState state;
+  bool is_paused;
+  DownloadSortingState(const std::string& id,
+                       base::TimeDelta offset,
+                       DownloadState state,
+                       bool is_paused) {
+    this->id = id;
+    this->offset = offset;
+    this->state = state;
+    this->is_paused = is_paused;
+  }
+};
+
 }  // namespace
 
 class DownloadBubbleUIControllerTest : public testing::Test {
@@ -126,6 +142,7 @@ class DownloadBubbleUIControllerTest : public testing::Test {
     EXPECT_CALL(item(index), GetDownloadCreationType())
         .WillRepeatedly(Return(download::DownloadItem::DownloadCreationType::
                                    TYPE_ACTIVE_DOWNLOAD));
+    EXPECT_CALL(item(index), IsPaused()).WillRepeatedly(Return(false));
     std::vector<download::DownloadItem*> items;
     for (size_t i = 0; i < items_.size(); ++i) {
       items.push_back(&item(i));
@@ -138,9 +155,10 @@ class DownloadBubbleUIControllerTest : public testing::Test {
     controller().OnDownloadCreated(&manager(), &item(index));
   }
 
-  void UpdateDownloadItem(int item_index, DownloadState state) {
+  void UpdateDownloadItem(int item_index,
+                          DownloadState state,
+                          bool is_paused = false) {
     DCHECK_GT(items_.size(), static_cast<size_t>(item_index));
-
     EXPECT_CALL(item(item_index), GetState()).WillRepeatedly(Return(state));
     if (state == DownloadState::COMPLETE) {
       EXPECT_CALL(item(item_index), IsDone()).WillRepeatedly(Return(true));
@@ -149,6 +167,7 @@ class DownloadBubbleUIControllerTest : public testing::Test {
     } else {
       EXPECT_CALL(item(item_index), IsDone()).WillRepeatedly(Return(false));
     }
+    EXPECT_CALL(item(item_index), IsPaused()).WillRepeatedly(Return(is_paused));
     item(item_index).NotifyObserversDownloadUpdated();
   }
 
@@ -225,25 +244,38 @@ TEST_F(DownloadBubbleUIControllerTest, TransientDownloadShouldNotShow) {
 }
 
 TEST_F(DownloadBubbleUIControllerTest, ListIsSorted) {
-  std::vector<std::string> ids = {"Download 1", "Download 2", "Download 3",
-                                  "Offline 1"};
-  std::vector<base::TimeDelta> start_time_offsets = {
-      base::Hours(1), base::Hours(4), base::Hours(2)};
-  std::vector<std::string> sorted_ids = {"Offline 1", "Download 1",
-                                         "Download 3", "Download 2"};
+  std::vector<DownloadSortingState> sort_states = {
+      DownloadSortingState("Download 1", base::Hours(2),
+                           DownloadState::IN_PROGRESS, /*is_paused=*/false),
+      DownloadSortingState("Download 2", base::Hours(4),
+                           DownloadState::IN_PROGRESS, /*is_paused=*/true),
+      DownloadSortingState("Download 3", base::Hours(3),
+                           DownloadState::COMPLETE, /*is_paused=*/false),
+      DownloadSortingState("Download 4", base::Hours(0),
+                           DownloadState::IN_PROGRESS, /*is_paused=*/false),
+      DownloadSortingState("Download 5", base::Hours(1),
+                           DownloadState::COMPLETE, /*is_paused=*/false)};
+
+  // Offline item will be in-progress. Non in-progress offline items do not
+  // surface.
+  std::string offline_item = "Offline 1";
+  // First non-paused in-progress, then paused in-progress, then completed,
+  // sub-sorted by starting times.
+  std::vector<std::string> sorted_ids = {"Download 4", "Download 1",
+                                         "Offline 1",  "Download 2",
+                                         "Download 5", "Download 3"};
   base::Time now = base::Time::Now();
-  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
-                   download::DownloadItem::IN_PROGRESS, ids[0],
-                   /*is_transient=*/false, now - start_time_offsets[0]);
-  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar2.pdf"),
-                   download::DownloadItem::IN_PROGRESS, ids[1],
-                   /*is_transient=*/false, now - start_time_offsets[1]);
-  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar3.pdf"),
-                   download::DownloadItem::IN_PROGRESS, ids[2],
-                   /*is_transient=*/false, now - start_time_offsets[2]);
-  InitOfflineItem(OfflineItemState::IN_PROGRESS, ids[3]);
+  for (unsigned long i = 0; i < sort_states.size(); i++) {
+    InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
+                     DownloadState::IN_PROGRESS, sort_states[i].id,
+                     /*is_transient=*/false, now - sort_states[i].offset);
+    UpdateDownloadItem(/*item_index=*/i, sort_states[i].state,
+                       sort_states[i].is_paused);
+  }
+  InitOfflineItem(OfflineItemState::IN_PROGRESS, offline_item);
+
   std::vector<DownloadUIModelPtr> models = controller().GetMainView();
-  EXPECT_EQ(models.size(), 4ul);
+  EXPECT_EQ(models.size(), sorted_ids.size());
   for (unsigned long i = 0; i < models.size(); i++) {
     EXPECT_EQ(models[i]->GetContentId().id, sorted_ids[i]);
   }
@@ -254,8 +286,8 @@ TEST_F(DownloadBubbleUIControllerTest, ListIsRecent) {
                                   "Offline 1"};
   std::vector<base::TimeDelta> start_time_offsets = {
       base::Hours(1), base::Hours(25), base::Hours(2)};
-  std::vector<std::string> sorted_ids = {"Offline 1", "Download 1",
-                                         "Download 3"};
+  std::vector<std::string> sorted_ids = {"Download 1", "Download 3",
+                                         "Offline 1"};
   base::Time now = base::Time::Now();
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
                    download::DownloadItem::IN_PROGRESS, ids[0],
@@ -268,7 +300,7 @@ TEST_F(DownloadBubbleUIControllerTest, ListIsRecent) {
                    /*is_transient=*/false, now - start_time_offsets[2]);
   InitOfflineItem(OfflineItemState::IN_PROGRESS, ids[3]);
   std::vector<DownloadUIModelPtr> models = controller().GetMainView();
-  EXPECT_EQ(models.size(), 3ul);
+  EXPECT_EQ(models.size(), sorted_ids.size());
   for (unsigned long i = 0; i < models.size(); i++) {
     EXPECT_EQ(models[i]->GetContentId().id, sorted_ids[i]);
   }

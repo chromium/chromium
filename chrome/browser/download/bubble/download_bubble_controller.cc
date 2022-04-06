@@ -37,19 +37,31 @@ bool DownloadUIModelIsRecent(const DownloadUIModelPtr& model,
 }
 
 using DownloadUIModelPtrList = std::list<DownloadUIModelPtr>;
+
+// Sorting order is 1) Active in-progress downloads, 2) Paused in-progress
+// downloads, 3) Other downloads
+int GetSortOrder(DownloadUIModel* a) {
+  if (a->GetState() == download::DownloadItem::IN_PROGRESS) {
+    return a->IsPaused() ? 2 : 1;
+  }
+  return 3;
+}
+
 struct StartTimeComparator {
   bool operator()(const DownloadUIModelPtrList::iterator& a_iter,
                   const DownloadUIModelPtrList::iterator& b_iter) const {
     DownloadUIModel* a = (*a_iter).get();
     DownloadUIModel* b = (*b_iter).get();
-    // Offline items have start time not populated, so display only not finished
-    // ones.
-    bool is_a_active_offline = (a->GetStartTime().is_null() && !a->IsDone());
-    bool is_b_active_offline = (b->GetStartTime().is_null() && !b->IsDone());
-    // a definitely shown before b if, 1) b is not an active offline item, and
-    // 2) Either a is active offline item, or a is more recent
-    return (!is_b_active_offline &&
-            (is_a_active_offline || (a->GetStartTime() > b->GetStartTime())));
+    int a_sort_order = GetSortOrder(a);
+    int b_sort_order = GetSortOrder(b);
+    if (a_sort_order < b_sort_order) {
+      return true;
+    } else if (a_sort_order > b_sort_order) {
+      return false;
+    } else {
+      // For the same sort order, sub-order by reverse chronological order.
+      return (a->GetStartTime() > b->GetStartTime());
+    }
   }
 };
 using SortedDownloadUIModelSet =
