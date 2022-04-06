@@ -363,7 +363,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.ImportController.DeviceYanked" enum="Boolean"
-    expires_after="M102">
+    expires_after="M108">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -373,7 +373,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.ImportController.ImportCancelled"
-    enum="BooleanCanceled" expires_after="M102">
+    enum="BooleanCanceled" expires_after="M108">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
