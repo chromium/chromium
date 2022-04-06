@@ -1593,6 +1593,18 @@ LayoutObject* LayoutObject::NearestAncestorForElement() const {
   return ancestor;
 }
 
+bool LayoutObject::IsAnonymousNGMulticolInlineWrapper() const {
+  NOT_DESTROYED();
+  if (!IsLayoutNGBlockFlow() || !IsAnonymousBlock())
+    return false;
+
+  const LayoutBlock* containing_block = ContainingNGBlock();
+  if (!containing_block)
+    return false;
+
+  return containing_block->IsFragmentationContextRoot();
+}
+
 LayoutBlock* LayoutObject::FindNonAnonymousContainingBlock(
     LayoutObject* container,
     AncestorSkipInfo* skip_info) {
