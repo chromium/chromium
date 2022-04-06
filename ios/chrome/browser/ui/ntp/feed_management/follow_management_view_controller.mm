@@ -98,6 +98,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     item.followedWebChannel = followedWebChannel;
     [model addItem:item toSectionWithIdentifier:DefaultSectionIdentifier];
   }
+  [self showOrHideEmptyTableViewBackground];
 }
 
 #pragma mark - UITableViewDelegate
@@ -189,6 +190,22 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark - Helpers
 
+- (void)showOrHideEmptyTableViewBackground {
+  TableViewModel* model = self.tableViewModel;
+  NSInteger section =
+      [model sectionForSectionIdentifier:DefaultSectionIdentifier];
+  NSInteger itemCount = [model numberOfItemsInSection:section];
+  if (itemCount == 0) {
+    [self addEmptyTableViewWithImage:nil
+                               title:l10n_util::GetNSString(
+                                         IDS_IOS_FOLLOW_MANAGEMENT_EMPTY_TITLE)
+                            subtitle:l10n_util::GetNSString(
+                                         IDS_IOS_FOLLOW_MANAGEMENT_EMPTY_TEXT)];
+  } else {
+    [self removeEmptyTableView];
+  }
+}
+
 // Deletes item at |indexPath| from both model and UI.
 - (void)deleteItemAtIndexPath:(NSIndexPath*)indexPath {
   TableViewModel* model = self.tableViewModel;
@@ -201,6 +218,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                         atIndex:index];
   [self.tableView deleteRowsAtIndexPaths:@[ indexPath ]
                         withRowAnimation:UITableViewRowAnimationAutomatic];
+  [self showOrHideEmptyTableViewBackground];
 }
 
 // Reinserts last unfollowed item into both model and UI.
@@ -219,6 +237,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                         withRowAnimation:UITableViewRowAnimationAutomatic];
   self.lastUnfollowedWebChannelItem = nil;
   self.indexPathOfLastUnfollowAttempt = nil;
+  [self showOrHideEmptyTableViewBackground];
 }
 
 @end
