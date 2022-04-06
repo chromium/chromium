@@ -10,4 +10,10 @@
 // Feature to download Vcard files.
 extern const base::Feature kDownloadVcard;
 
+// Kill switch for Vcard support.
+extern const base::Feature kVCardKillSwitch;
+
+// Kill switch for AR support.
+extern const base::Feature kARKillSwitch;
+
 #endif  // IOS_CHROME_BROWSER_UI_DOWNLOAD_FEATURES_H_

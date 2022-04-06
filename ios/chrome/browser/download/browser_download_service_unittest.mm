@@ -9,11 +9,14 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/download/ar_quick_look_tab_helper.h"
 #import "ios/chrome/browser/download/download_manager_tab_helper.h"
 #include "ios/chrome/browser/download/mime_type_util.h"
 #import "ios/chrome/browser/download/pass_kit_tab_helper.h"
+#import "ios/chrome/browser/download/vcard_tab_helper.h"
+#import "ios/chrome/browser/ui/download/features.h"
 #import "ios/web/public/download/download_controller.h"
 #import "ios/web/public/download/download_task.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
@@ -65,6 +68,7 @@ class BrowserDownloadServiceTest : public PlatformTest {
       : browser_state_(TestChromeBrowserState::Builder().Build()) {
     StubTabHelper<PassKitTabHelper>::CreateForWebState(&web_state_);
     StubTabHelper<ARQuickLookTabHelper>::CreateForWebState(&web_state_);
+    StubTabHelper<VcardTabHelper>::CreateForWebState(&web_state_);
     StubTabHelper<DownloadManagerTabHelper>::CreateForWebState(&web_state_);
     web_state_.SetBrowserState(browser_state_.get());
   }
@@ -81,6 +85,11 @@ class BrowserDownloadServiceTest : public PlatformTest {
   StubTabHelper<ARQuickLookTabHelper>* ar_quick_look_tab_helper() {
     return static_cast<StubTabHelper<ARQuickLookTabHelper>*>(
         ARQuickLookTabHelper::FromWebState(&web_state_));
+  }
+
+  StubTabHelper<VcardTabHelper>* vcard_tab_helper() {
+    return static_cast<StubTabHelper<VcardTabHelper>*>(
+        VcardTabHelper::FromWebState(&web_state_));
   }
 
   StubTabHelper<DownloadManagerTabHelper>* download_manager_tab_helper() {
@@ -289,4 +298,30 @@ TEST_F(BrowserDownloadServiceTest, NoDownloadManager) {
   download_controller()->GetDelegate()->OnDownloadCreated(
       download_controller(), &fake_web_state, std::move(task));
   ASSERT_EQ(0U, download_manager_tab_helper()->tasks().size());
+}
+
+// Tests downloading a valid vcard file while the kill switch is enabled.
+TEST_F(BrowserDownloadServiceTest, VCardKillSwitch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kDownloadVcard, kVCardKillSwitch}, {});
+
+  ASSERT_TRUE(download_controller()->GetDelegate());
+  auto task =
+      std::make_unique<web::FakeDownloadTask>(GURL(kUrl), kVcardMimeType);
+  download_controller()->GetDelegate()->OnDownloadCreated(
+      download_controller(), &web_state_, std::move(task));
+  ASSERT_EQ(0U, vcard_tab_helper()->tasks().size());
+}
+
+// Tests downloading a valid AR file while the kill switch is enabled.
+TEST_F(BrowserDownloadServiceTest, ARKillSwitch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kARKillSwitch);
+
+  ASSERT_TRUE(download_controller()->GetDelegate());
+  auto task =
+      std::make_unique<web::FakeDownloadTask>(GURL(kUrl), kUsdzMimeType);
+  download_controller()->GetDelegate()->OnDownloadCreated(
+      download_controller(), &web_state_, std::move(task));
+  ASSERT_EQ(0U, ar_quick_look_tab_helper()->tasks().size());
 }

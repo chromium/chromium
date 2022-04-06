@@ -10,3 +10,9 @@
 
 const base::Feature kDownloadVcard{"DownloadVcardFile",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kARKillSwitch{"DownloadKillSwitchAR",
+                                  base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kVCardKillSwitch{"DownloadKillSwitchVcard",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
