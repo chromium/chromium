@@ -91,6 +91,24 @@ struct XGapTag {
   static MEDIA_EXPORT ParseStatus::Or<XGapTag> Parse(TagItem);
 };
 
+enum class PlaylistType {
+  // Indicates that this playlist may have segments appended upon reloading
+  // (until the #EXT-X-ENDLIST tag appears), but segments will not be removed.
+  kEvent,
+
+  // Indicates that this playlist is static, and will not have segments appended
+  // or removed.
+  kVOD,
+};
+
+// Represents the contents of the #EXT-X-PLAYLIST-TYPE tag
+struct XPlaylistTypeTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXPlaylistType;
+  static MEDIA_EXPORT ParseStatus::Or<XPlaylistTypeTag> Parse(TagItem);
+
+  PlaylistType type;
+};
+
 }  // namespace media::hls
 
 #endif  // MEDIA_FORMATS_HLS_TAGS_H_

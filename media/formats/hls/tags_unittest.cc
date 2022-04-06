@@ -226,4 +226,21 @@ TEST(HlsFormatParserTest, ParseXDefineTagTest) {
                         ParseStatusCode::kMalformedTag);
 }
 
+TEST(HlsFormatParserTest, ParseXPlaylistTypeTagTest) {
+  RunTagIdenficationTest<XPlaylistTypeTag>("#EXT-X-PLAYLIST-TYPE:VOD\n", "VOD");
+  RunTagIdenficationTest<XPlaylistTypeTag>("#EXT-X-PLAYLIST-TYPE:EVENT\n",
+                                           "EVENT");
+
+  auto tag = OkTest<XPlaylistTypeTag>("EVENT");
+  EXPECT_EQ(tag.type, PlaylistType::kEvent);
+  tag = OkTest<XPlaylistTypeTag>("VOD");
+  EXPECT_EQ(tag.type, PlaylistType::kVOD);
+
+  ErrorTest<XPlaylistTypeTag>("FOOBAR", ParseStatusCode::kUnknownPlaylistType);
+  ErrorTest<XPlaylistTypeTag>("EEVENT", ParseStatusCode::kUnknownPlaylistType);
+  ErrorTest<XPlaylistTypeTag>(" EVENT", ParseStatusCode::kUnknownPlaylistType);
+  ErrorTest<XPlaylistTypeTag>("EVENT ", ParseStatusCode::kUnknownPlaylistType);
+  ErrorTest<XPlaylistTypeTag>("", ParseStatusCode::kMalformedTag);
+}
+
 }  // namespace media::hls

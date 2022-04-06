@@ -112,6 +112,12 @@ void HasVersion(types::DecimalInteger version,
   EXPECT_EQ(playlist.GetVersion(), version) << from.ToString();
 }
 
+void HasType(absl::optional<PlaylistType> type,
+             const base::Location& from,
+             const MediaPlaylist& playlist) {
+  EXPECT_EQ(playlist.GetPlaylistType(), type) << from.ToString();
+}
+
 void HasDuration(types::DecimalFloatingPoint duration,
                  const base::Location& from,
                  const MediaSegment& segment) {
@@ -386,6 +392,58 @@ TEST(HlsFormatParserTest, ParseMediaPlaylist_Define) {
   builder.ExpectSegment(HasUri, GURL("http://{$BAR}.com/video"));
 
   builder.ExpectOk();
+}
+
+TEST(HlsFormatParserTest, ParseMediaPlaylist_PlaylistType) {
+  TestBuilder builder;
+  builder.AppendLine("#EXTM3U");
+
+  // Without the EXT-X-PLAYLIST-TYPE tag, the playlist has no type.
+  {
+    auto fork = builder;
+    fork.ExpectPlaylist(HasType, absl::nullopt);
+    fork.ExpectOk();
+  }
+
+  {
+    auto fork = builder;
+    fork.AppendLine("#EXT-X-PLAYLIST-TYPE:VOD");
+    fork.ExpectPlaylist(HasType, PlaylistType::kVOD);
+    fork.ExpectOk();
+  }
+
+  {
+    auto fork = builder;
+    fork.AppendLine("#EXT-X-PLAYLIST-TYPE:EVENT");
+    fork.ExpectPlaylist(HasType, PlaylistType::kEvent);
+    fork.ExpectOk();
+  }
+
+  // This tag may not be specified twice
+  {
+    auto fork = builder;
+    fork.AppendLine("#EXT-X-PLAYLIST-TYPE:VOD");
+    fork.AppendLine("#EXT-X-PLAYLIST-TYPE:EVENT");
+    fork.ExpectError(ParseStatusCode::kPlaylistHasDuplicateTags);
+  }
+  {
+    auto fork = builder;
+    fork.AppendLine("#EXT-X-PLAYLIST-TYPE:VOD");
+    fork.AppendLine("#EXT-X-PLAYLIST-TYPE:VOD");
+    fork.ExpectError(ParseStatusCode::kPlaylistHasDuplicateTags);
+  }
+
+  // Unknown or invalid playlist types should trigger an error
+  {
+    auto fork = builder;
+    fork.AppendLine("#EXT-X-PLAYLIST-TYPE:FOOBAR");
+    fork.ExpectError(ParseStatusCode::kUnknownPlaylistType);
+  }
+  {
+    auto fork = builder;
+    fork.AppendLine("#EXT-X-PLAYLIST-TYPE:");
+    fork.ExpectError(ParseStatusCode::kMalformedTag);
+  }
 }
 
 }  // namespace media::hls

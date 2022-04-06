@@ -39,6 +39,7 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(base::StringPiece source,
   absl::optional<InfTag> inf_tag;
   absl::optional<XGapTag> gap_tag;
   absl::optional<XDiscontinuityTag> discontinuity_tag;
+  absl::optional<XPlaylistTypeTag> playlist_type_tag;
   std::vector<MediaSegment> segments;
 
   // Get segments out of the playlist
@@ -105,6 +106,13 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(base::StringPiece source,
         case MediaPlaylistTagName::kXIFramesOnly:
           // TODO(crbug.com/1266991): Implement the #EXT-X-I-FRAMES-ONLY tag
           break;
+        case MediaPlaylistTagName::kXPlaylistType: {
+          auto error = ParseUniqueTag(*tag, playlist_type_tag);
+          if (error.has_value()) {
+            return std::move(error).value();
+          }
+          break;
+        }
       }
 
       continue;
@@ -136,17 +144,24 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(base::StringPiece source,
     discontinuity_tag.reset();
   }
 
+  absl::optional<PlaylistType> playlist_type;
+  if (playlist_type_tag) {
+    playlist_type = playlist_type_tag->type;
+  }
+
   return MediaPlaylist(std::move(uri), common_state.GetVersion(),
                        common_state.independent_segments_tag.has_value(),
-                       std::move(segments));
+                       std::move(segments), playlist_type);
 }
 
 MediaPlaylist::MediaPlaylist(GURL uri,
                              types::DecimalInteger version,
                              bool independent_segments,
-                             std::vector<MediaSegment> segments)
+                             std::vector<MediaSegment> segments,
+                             absl::optional<PlaylistType> playlist_type)
     : Playlist(std::move(uri), version, independent_segments),
-      segments_(std::move(segments)) {
+      segments_(std::move(segments)),
+      playlist_type_(playlist_type) {
   base::TimeDelta duration;
   for (const auto& segment : segments_) {
     duration += base::Seconds(segment.GetDuration());

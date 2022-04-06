@@ -254,4 +254,22 @@ ParseStatus::Or<XDefineTag> XDefineTag::Parse(TagItem tag) {
   return ParseStatusCode::kMalformedTag;
 }
 
+ParseStatus::Or<XPlaylistTypeTag> XPlaylistTypeTag::Parse(TagItem tag) {
+  DCHECK(tag.name == ToTagName(XPlaylistTypeTag::kName));
+
+  // This tag requires content
+  if (tag.content.Empty()) {
+    return ParseStatusCode::kMalformedTag;
+  }
+
+  if (tag.content.Str() == "EVENT") {
+    return XPlaylistTypeTag{.type = PlaylistType::kEvent};
+  }
+  if (tag.content.Str() == "VOD") {
+    return XPlaylistTypeTag{.type = PlaylistType::kVOD};
+  }
+
+  return ParseStatusCode::kUnknownPlaylistType;
+}
+
 }  // namespace media::hls

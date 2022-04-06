@@ -9,6 +9,8 @@
 #include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "media/formats/hls/playlist.h"
+#include "media/formats/hls/tags.h"
+#include "media/formats/hls/types.h"
 
 namespace media::hls {
 
@@ -31,6 +33,16 @@ class MEDIA_EXPORT MediaPlaylist final : public Playlist {
   // actual duration.
   base::TimeDelta GetComputedDuration() const { return computed_duration_; }
 
+  // Returns the type of this playlist (as specified by the
+  // 'EXT-X-PLAYLIST-TYPE' tag). If this is present, then the server must follow
+  // the constraints detailed on `PlaylistType` when the playlist is reloaded.
+  // If this property is absent, that implies that the server may append new
+  // segments to the end or remove old segments from the beginning of this
+  // playlist upon reloading.
+  absl::optional<PlaylistType> GetPlaylistType() const {
+    return playlist_type_;
+  }
+
   // Attempts to parse the playlist represented by `source`. `uri` must be a
   // valid, non-empty GURL referring to the URI of this playlist. If the
   // playlist is invalid, returns an error. Otherwise, returns the parsed
@@ -42,10 +54,12 @@ class MEDIA_EXPORT MediaPlaylist final : public Playlist {
   MediaPlaylist(GURL uri,
                 types::DecimalInteger version,
                 bool independent_segments,
-                std::vector<MediaSegment> segments);
+                std::vector<MediaSegment> segments,
+                absl::optional<PlaylistType> playlist_type);
 
   std::vector<MediaSegment> segments_;
   base::TimeDelta computed_duration_;
+  absl::optional<PlaylistType> playlist_type_;
 };
 
 }  // namespace media::hls
