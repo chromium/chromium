@@ -99,6 +99,8 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   static constexpr char kManifestFilePath[] = "fedcm.json";
 
   using AccountList = std::vector<content::IdentityRequestAccount>;
+  using FetchManifestListCallback =
+      base::OnceCallback<void(FetchStatus, const std::vector<std::string>&)>;
   using FetchManifestCallback = base::OnceCallback<
       void(FetchStatus, Endpoints, IdentityProviderMetadata)>;
   using FetchClientMetadataCallback =
@@ -124,6 +126,11 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
 
   IdpNetworkRequestManager(const IdpNetworkRequestManager&) = delete;
   IdpNetworkRequestManager& operator=(const IdpNetworkRequestManager&) = delete;
+
+  // Fetch the manifest list. This is the /.well-known/fedcm.json file on
+  // the eTLD+1 calculated from the provider URL, used to check that the
+  // provider URL is valid for this eTLD+1.
+  virtual void FetchManifestList(FetchManifestListCallback);
 
   // Attempt to fetch the IDP's FedCM parameters from the fedcm.json manifest.
   virtual void FetchManifest(absl::optional<int> idp_brand_icon_ideal_size,
@@ -157,6 +164,8 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   virtual bool IsMockIdpNetworkRequestManager() const;
 
  private:
+  void OnManifestListLoaded(std::unique_ptr<std::string> response_body);
+  void OnManifestListParsed(data_decoder::DataDecoder::ValueOrError result);
   void OnManifestLoaded(absl::optional<int> idp_brand_icon_ideal_size,
                         absl::optional<int> idp_brand_icon_minimum_size,
                         std::unique_ptr<std::string> response_body);
@@ -178,7 +187,8 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
 
   std::unique_ptr<network::SimpleURLLoader> CreateUncredentialedUrlLoader(
       const GURL& url,
-      bool send_referrer) const;
+      bool send_referrer,
+      bool follow_redirects = false) const;
   std::unique_ptr<network::SimpleURLLoader> CreateCredentialedUrlLoader(
       const GURL& url,
       bool send_referrer,
@@ -191,13 +201,20 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
 
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
 
+  FetchManifestListCallback manifest_list_callback_;
   FetchManifestCallback idp_manifest_callback_;
   FetchClientMetadataCallback client_metadata_callback_;
   TokenRequestCallback token_request_callback_;
   RevokeCallback revoke_callback_;
   LogoutCallback logout_callback_;
 
+  // url_loader_ is used for all loads except for the manifest list, which uses
+  // manifest_list_url_loader_. This is so we can fetch the manifest list in
+  // parallel with the other requests.
+  // TODO(cbiesinger): Also allow fetching the client metadata file in
+  // parallel with the account list.
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
+  std::unique_ptr<network::SimpleURLLoader> manifest_list_url_loader_;
   network::mojom::ClientSecurityStatePtr client_security_state_;
 
   base::WeakPtrFactory<IdpNetworkRequestManager> weak_ptr_factory_{this};

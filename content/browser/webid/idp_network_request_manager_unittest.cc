@@ -43,6 +43,7 @@ const int kTestIdpBrandIconIdealSize = 32;
 
 const char kTestIdpUrl[] = "https://idp.test";
 const char kTestRpUrl[] = "https://rp.test";
+const char kTestManifestListUrl[] = "https://idp.test/.well-known/fedcm.json";
 const char kTestManifestUrl[] = "https://idp.test/fedcm.json";
 const char kTestAccountsEndpoint[] = "https://idp.test/accounts_endpoint";
 const char kTestTokenEndpoint[] = "https://idp.test/token_endpoint";
@@ -61,6 +62,26 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
   }
 
   void TearDown() override { manager_.reset(); }
+
+  std::tuple<FetchStatus, std::vector<std::string>>
+  SendManifestListRequestAndWaitForResponse(const char* test_data) {
+    GURL manifest_list_url(kTestManifestListUrl);
+    test_url_loader_factory().AddResponse(manifest_list_url.spec(), test_data);
+
+    base::RunLoop run_loop;
+    FetchStatus parsed_fetch_status;
+    std::vector<std::string> parsed_urls;
+    auto callback = base::BindLambdaForTesting(
+        [&](FetchStatus fetch_status, const std::vector<std::string>& urls) {
+          parsed_fetch_status = fetch_status;
+          parsed_urls = urls;
+          run_loop.Quit();
+        });
+    manager().FetchManifestList(std::move(callback));
+    run_loop.Run();
+
+    return {parsed_fetch_status, parsed_urls};
+  }
 
   std::tuple<FetchStatus, IdentityProviderMetadata>
   SendManifestRequestAndWaitForResponse(const char* test_data) {
@@ -399,23 +420,39 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountMalformed) {
   EXPECT_TRUE(accounts.empty());
 }
 
-TEST_F(IdpNetworkRequestManagerTest, ParseManifestBranding) {
-  const char test_json[] = R"({
-  "branding" : {
-    "color": "blue",
-    "background_color": "#f0e0d0"
-  }
-  })";
-
+TEST_F(IdpNetworkRequestManagerTest, ParseManifestList) {
   FetchStatus fetch_status;
-  IdentityProviderMetadata idp_metadata;
-  std::tie(fetch_status, idp_metadata) =
-      SendManifestRequestAndWaitForResponse(test_json);
+  std::vector<std::string> urls;
 
+  std::tie(fetch_status, urls) = SendManifestListRequestAndWaitForResponse(R"({
+  "provider_urls": ["https://idp.test/fedcm.json"]
+  })");
   EXPECT_EQ(FetchStatus::kSuccess, fetch_status);
-  EXPECT_EQ(SK_ColorBLUE, idp_metadata.brand_text_color);
-  EXPECT_EQ(SkColorSetRGB(0xf0, 0xe0, 0xd0),
-            idp_metadata.brand_background_color);
+  EXPECT_EQ(std::vector<std::string>{kTestManifestUrl}, urls);
+
+  // Value not a list
+  std::tie(fetch_status, urls) = SendManifestListRequestAndWaitForResponse(R"({
+  "provider_urls": "https://idp.test/fedcm.json"
+  })");
+  EXPECT_EQ(FetchStatus::kInvalidResponseError, fetch_status);
+
+  // Toplevel not a dictionary
+  std::tie(fetch_status, urls) = SendManifestListRequestAndWaitForResponse(R"(
+  ["https://idp.test/fedcm.json"]
+  )");
+  EXPECT_EQ(FetchStatus::kInvalidResponseError, fetch_status);
+
+  // Incorrect key
+  std::tie(fetch_status, urls) = SendManifestListRequestAndWaitForResponse(R"({
+  "providers": ["https://idp.test/fedcm.json"]
+  })");
+  EXPECT_EQ(FetchStatus::kInvalidResponseError, fetch_status);
+
+  // Array entry not a string
+  std::tie(fetch_status, urls) = SendManifestListRequestAndWaitForResponse(R"({
+  "provider_urls": [1]
+  })");
+  EXPECT_EQ(FetchStatus::kInvalidResponseError, fetch_status);
 }
 
 // Test that the "alpha" value in the "branding" JSON is ignored.

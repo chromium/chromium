@@ -22,6 +22,7 @@ class MockIdpNetworkRequestManager : public IdpNetworkRequestManager {
 
   bool IsMockIdpNetworkRequestManager() const override { return true; }
 
+  MOCK_METHOD1(FetchManifestList, void(FetchManifestListCallback));
   MOCK_METHOD3(FetchManifest,
                void(absl::optional<int>,
                     absl::optional<int>,
