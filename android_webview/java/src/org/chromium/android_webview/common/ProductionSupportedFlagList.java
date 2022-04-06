@@ -286,6 +286,9 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.UACH_OVERRIDE_BLANK,
                     "Changes behavior of User-Agent Client Hints to send blank headers "
                             + "when the User-Agent string is overriden"),
+            Flag.baseFeature(BlinkFeatures.MAX_UNTHROTTLED_TIMEOUT_NESTING_LEVEL,
+                    "Increases the nesting threshold before which "
+                            + "setTimeout(..., <4ms) starts being clamped to 4 ms."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
