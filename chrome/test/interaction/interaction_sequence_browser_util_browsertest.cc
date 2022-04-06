@@ -286,7 +286,6 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kInteractionSequenceBrowserUtilTestId)
-                       .SetTransitionOnlyOnEvent(true)
                        .SetMustRemainVisible(false)
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
@@ -1128,7 +1127,6 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest, ExistsInWebUIPage) {
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kInteractionSequenceBrowserUtilTestId)
-                       .SetTransitionOnlyOnEvent(true)
                        .SetMustRemainVisible(false)
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
@@ -1164,7 +1162,6 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kInteractionSequenceBrowserUtilTestId)
-                       .SetTransitionOnlyOnEvent(true)
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
@@ -1187,6 +1184,15 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
   const InteractionSequenceBrowserUtil::DeepQuery kQuery1{"#ref"};
   const InteractionSequenceBrowserUtil::DeepQuery kQuery2{"#not-present"};
 
+  // These queries check that we can properly escape quotes:
+  const InteractionSequenceBrowserUtil::DeepQuery kQuery3{"[id=\"ref\"]"};
+  const InteractionSequenceBrowserUtil::DeepQuery kQuery4{"[id='ref']"};
+
+  // These queries check that we can return strings with quotes on failure:
+  const InteractionSequenceBrowserUtil::DeepQuery kQuery5{
+      "[id=\"not-present\"]"};
+  const InteractionSequenceBrowserUtil::DeepQuery kQuery6{"[id='not-present']"};
+
   InteractionSequenceBrowserUtil util(browser(),
                                       kInteractionSequenceBrowserUtilTestId);
   const GURL url = embedded_test_server()->GetURL("/links.html");
@@ -1200,7 +1206,6 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kInteractionSequenceBrowserUtilTestId)
-                       .SetTransitionOnlyOnEvent(true)
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
@@ -1209,10 +1214,20 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                              std::string failed;
                              EXPECT_FALSE(util.Exists(kQuery2, &failed));
                              EXPECT_EQ(kQuery2[0], failed);
+                             EXPECT_TRUE(util.Exists(kQuery3));
+                             EXPECT_TRUE(util.Exists(kQuery4));
+                             EXPECT_FALSE(util.Exists(kQuery5, &failed));
+                             EXPECT_EQ(kQuery5[0], failed);
+                             EXPECT_FALSE(util.Exists(kQuery6, &failed));
+                             EXPECT_EQ(kQuery6[0], failed);
 
                              // Using the simple string selector version.
                              EXPECT_TRUE(util.Exists(kQuery1[0]));
                              EXPECT_FALSE(util.Exists(kQuery2[0]));
+                             EXPECT_TRUE(util.Exists(kQuery3[0]));
+                             EXPECT_TRUE(util.Exists(kQuery4[0]));
+                             EXPECT_FALSE(util.Exists(kQuery5[0]));
+                             EXPECT_FALSE(util.Exists(kQuery6[0]));
                            }))
                        .Build())
           .Build();
@@ -1239,7 +1254,6 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kInteractionSequenceBrowserUtilTestId)
-                       .SetTransitionOnlyOnEvent(true)
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
@@ -1280,7 +1294,6 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kInteractionSequenceBrowserUtilTestId)
-                       .SetTransitionOnlyOnEvent(true)
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
@@ -1327,7 +1340,6 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kInteractionSequenceBrowserUtilTestId)
-                       .SetTransitionOnlyOnEvent(true)
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {

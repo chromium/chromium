@@ -272,6 +272,10 @@ class InteractionSequenceBrowserUtil : private content::WebContentsObserver,
   // load.
   ui::ElementIdentifier page_identifier_;
 
+  // When we force a page load, we might still get events for the old page.
+  // We'll ignore those events.
+  GURL navigating_away_from_;
+
   // Virtual element representing the currently-loaded webpage; null if none.
   std::unique_ptr<TrackedElementWebPage> current_element_;
 

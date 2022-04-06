@@ -9,6 +9,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -126,13 +127,12 @@ std::string CreateDeepQuery(
   const std::string final_return_expression =
       is_exists ? "el" : "(" + function + ")(el)";
 
-  std::ostringstream selector_list;
-  bool first = true;
-  for (const auto& selector : where) {
-    if (!std::exchange(first, false))
-      selector_list << ", ";
-    selector_list << "'" << selector << "'";
-  }
+  // Safely convert the selector list in `where` to a JSON/JS list.
+  base::Value::List selector_list;
+  for (const auto& selector : where)
+    selector_list.Append(selector);
+  std::string selectors;
+  CHECK(base::JSONWriter::Write(selector_list, &selectors));
 
   return base::StringPrintf(
       R"(function() {
@@ -150,11 +150,11 @@ std::string CreateDeepQuery(
            return %s;
          }
 
-         let el = deepQuery([%s]);
+         let el = deepQuery(%s);
          return %s;
        })",
       not_found_action.c_str(), deepquery_return_expression.c_str(),
-      selector_list.str().c_str(), final_return_expression.c_str());
+      selectors.c_str(), final_return_expression.c_str());
 }
 
 }  // namespace
@@ -362,6 +362,10 @@ Browser* InteractionSequenceBrowserUtil::GetBrowserFromContext(
 
 void InteractionSequenceBrowserUtil::LoadPage(const GURL& url) {
   CHECK(web_contents());
+  if (!web_contents()->GetURL().EqualsIgnoringRef(url)) {
+    navigating_away_from_ = web_contents()->GetURL();
+    DiscardCurrentElement();
+  }
   if (url.SchemeIs("chrome")) {
     Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
     CHECK(browser);
@@ -530,6 +534,11 @@ void InteractionSequenceBrowserUtil::MaybeCreateElement(bool force) {
   Browser* const browser = chrome::FindBrowserWithWebContents(web_contents());
   if (!browser)
     return;
+
+  // Ignore events on a page we're navigating away from.
+  if (navigating_away_from_.EqualsIgnoringRef(web_contents()->GetURL()))
+    return;
+  navigating_away_from_ = GURL();
 
   const ui::ElementContext context = browser->window()->GetElementContext();
   current_element_ =
