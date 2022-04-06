@@ -50,6 +50,12 @@ static constexpr size_t kFontDataTableMaxSize = 250;
 
 namespace blink {
 
+// static
+CSSSegmentedFontFace* CSSSegmentedFontFace::Create(
+    FontSelectionCapabilities capabilities) {
+  return MakeGarbageCollected<CSSSegmentedFontFace>(capabilities);
+}
+
 CSSSegmentedFontFace::CSSSegmentedFontFace(
     FontSelectionCapabilities font_selection_capabilities)
     : font_selection_capabilities_(font_selection_capabilities),

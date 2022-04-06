@@ -89,7 +89,9 @@ class FontFaceList : public GarbageCollected<FontFaceList> {
 class CSSSegmentedFontFace final
     : public GarbageCollected<CSSSegmentedFontFace> {
  public:
-  CSSSegmentedFontFace(FontSelectionCapabilities);
+  static CSSSegmentedFontFace* Create(FontSelectionCapabilities);
+
+  explicit CSSSegmentedFontFace(FontSelectionCapabilities);
   ~CSSSegmentedFontFace();
 
   FontSelectionCapabilities GetFontSelectionCapabilities() const {

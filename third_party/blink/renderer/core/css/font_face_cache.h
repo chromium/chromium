@@ -80,17 +80,87 @@ class CORE_EXPORT FontFaceCache final : public GarbageCollected<FontFaceCache> {
   // A second lookup table caches the previously received FontSelectionRequest
   // queries, which is: HeapHashMap <String, HeapHashMap<FontSelectionRequest,
   // CSSSegmentedFontFace>>
-  using CapabilitiesSet =
-      HeapHashMap<FontSelectionCapabilities, Member<CSSSegmentedFontFace>>;
-  using SegmentedFacesByFamily =
-      HeapHashMap<String, Member<CapabilitiesSet>, CaseFoldingHash>;
-  using FontSelectionQueryResult =
-      HeapHashMap<FontSelectionRequestKey,
-                  Member<CSSSegmentedFontFace>,
-                  FontSelectionRequestKeyHash,
-                  WTF::SimpleClassHashTraits<FontSelectionRequestKey>>;
-  using FontSelectionQueryCache =
-      HeapHashMap<String, Member<FontSelectionQueryResult>, CaseFoldingHash>;
+  class CapabilitiesSet final : public GarbageCollected<CapabilitiesSet> {
+    using Map =
+        HeapHashMap<FontSelectionCapabilities, Member<CSSSegmentedFontFace>>;
+
+   public:
+    Map::const_iterator begin() const { return map_.begin(); }
+    Map::const_iterator end() const { return map_.end(); }
+    wtf_size_t size() const { return map_.size(); }
+
+    void AddFontFace(FontFace* font_face, bool css_connected);
+    bool IsEmpty() const { return map_.IsEmpty(); }
+
+    // Returns true if associated |CSSSegmentedFontFace| is empty.
+    bool RemoveFontFace(FontFace* font_face);
+
+    void Trace(Visitor*) const;
+
+   private:
+    Map map_;
+  };
+
+  // The map from |FontSelectionRequestKey| to |CSSSegmentedFontFace|.
+  class FontSelectionQueryResult final
+      : public GarbageCollected<FontSelectionQueryResult> {
+    using Map =
+        HeapHashMap<FontSelectionRequestKey,
+                    Member<CSSSegmentedFontFace>,
+                    FontSelectionRequestKeyHash,
+                    WTF::SimpleClassHashTraits<FontSelectionRequestKey>>;
+
+   public:
+    CSSSegmentedFontFace* GetOrCreate(const FontSelectionRequest& request,
+                                      const CapabilitiesSet& family_faces);
+
+    void Trace(Visitor*) const;
+
+   private:
+    Map map_;
+  };
+
+  // The map from font family name to |FontSelectionQueryResult|.
+  class FontSelectionQueryCache final {
+    DISALLOW_NEW();
+
+    using Map =
+        HeapHashMap<String, Member<FontSelectionQueryResult>, CaseFoldingHash>;
+
+   public:
+    void Clear();
+    CSSSegmentedFontFace* GetOrCreate(const FontSelectionRequest& request,
+                                      const AtomicString& family,
+                                      CapabilitiesSet* family_faces);
+    void Remove(const AtomicString& family);
+
+    void Trace(Visitor*) const;
+
+   private:
+    Map map_;
+  };
+
+  // The map from font family name to |CapabilitiesSet|.
+  class SegmentedFacesByFamily final {
+    DISALLOW_NEW();
+
+   public:
+    void AddFontFace(FontFace* font_face, bool css_connected);
+    void Clear() { map_.clear(); }
+    CapabilitiesSet* Find(const AtomicString& family) const;
+    bool IsEmpty() const { return map_.IsEmpty(); }
+    // Returns true if |font_face| is removed from |map_|.
+    bool RemoveFontFace(FontFace* font_face);
+
+    size_t GetNumSegmentedFacesForTesting() const;
+
+    void Trace(Visitor*) const;
+
+   private:
+    using Map = HeapHashMap<String, Member<CapabilitiesSet>, CaseFoldingHash>;
+
+    Map map_;
+  };
 
   // All incoming faces added from JS or CSS, bucketed per family.
   SegmentedFacesByFamily segmented_faces_;
