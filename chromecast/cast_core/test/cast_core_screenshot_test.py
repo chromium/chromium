@@ -23,7 +23,7 @@ class ScreenshotTest(
 
   @classmethod
   def SetUpProcess(cls):
-    super(cls, InfoCollectionTest).SetUpProcess()
+    super(cls, ScreenshotTest).SetUpProcess()
     cls.SetBrowserOptions(cls._finder_options)
     cls.StartBrowser()
     cls.tab = cls.browser.tabs[0]
