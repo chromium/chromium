@@ -7733,3 +7733,4 @@ crbug.com/1244896 fast/mediacapturefromelement/CanvasCaptureMediaStream-set-size
 
 # Sheriff 2022-04-06
 crbug.com/1290670 [ Mac10.14 ] external/wpt/webrtc/RTCPeerConnection-mandatory-getStats.https.html [ Failure Pass ]
+crbug.com/1313894 [ Mac10.14 ] rootscroller/root-scroller-paint-order.html [ Failure Pass ]
