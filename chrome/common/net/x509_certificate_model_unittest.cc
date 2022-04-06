@@ -93,6 +93,9 @@ TEST_P(X509CertificateModel, GetGoogleCertFields) {
 
   auto extensions = model.GetExtensions("critical", "notcrit");
   ASSERT_EQ(4U, extensions.size());
+  EXPECT_EQ("Certificate Basic Constraints", extensions[0].name);
+  EXPECT_EQ("critical\nIs not a Certification Authority\n",
+            extensions[0].value);
 }
 
 TEST_P(X509CertificateModel, GetNDNCertFields) {
@@ -177,6 +180,9 @@ TEST_P(X509CertificateModel, GlobalsignComCert) {
   auto extensions = model.GetExtensions("critical", "notcrit");
   ASSERT_EQ(9U, extensions.size());
 
+  EXPECT_EQ("Certificate Basic Constraints", extensions[4].name);
+  EXPECT_EQ("notcrit\nIs not a Certification Authority\n", extensions[4].value);
+
   EXPECT_EQ("Certificate Key Usage", extensions[5].name);
   EXPECT_EQ(
       "critical\nSigning\nNon-repudiation\nKey Encipherment\n"
@@ -186,6 +192,24 @@ TEST_P(X509CertificateModel, GlobalsignComCert) {
   EXPECT_EQ("Netscape Certificate Type", extensions[8].name);
   EXPECT_EQ("notcrit\nSSL Client Certificate\nSSL Server Certificate",
             extensions[8].value);
+}
+
+TEST_P(X509CertificateModel, DiginotarCert) {
+  auto cert = net::ImportCertFromFile(net::GetTestCertsDirectory(),
+                                      "diginotar_public_ca_2025.pem");
+  ASSERT_TRUE(cert.get());
+  x509_certificate_model::X509CertificateModel model(
+      bssl::UpRef(cert->cert_buffer()), GetParam());
+  ASSERT_TRUE(model.is_valid());
+
+  auto extensions = model.GetExtensions("critical", "notcrit");
+  ASSERT_EQ(7U, extensions.size());
+
+  EXPECT_EQ("Certificate Basic Constraints", extensions[2].name);
+  EXPECT_EQ(
+      "critical\nIs a Certification Authority\n"
+      "Maximum number of intermediate CAs: 0",
+      extensions[2].value);
 }
 
 TEST_P(X509CertificateModel, SubjectIA5StringInvalidCharacters) {

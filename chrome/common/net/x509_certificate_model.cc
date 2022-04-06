@@ -337,6 +337,32 @@ absl::optional<std::string> ProcessKeyUsageExtension(
   return rv;
 }
 
+absl::optional<std::string> ProcessBasicConstraints(
+    net::der::Input extension_data) {
+  net::ParsedBasicConstraints basic_constraints;
+  if (!net::ParseBasicConstraints(extension_data, &basic_constraints))
+    return absl::nullopt;
+
+  std::string rv;
+  if (basic_constraints.is_ca)
+    rv = l10n_util::GetStringUTF8(IDS_CERT_X509_BASIC_CONSTRAINT_IS_CA);
+  else
+    rv = l10n_util::GetStringUTF8(IDS_CERT_X509_BASIC_CONSTRAINT_IS_NOT_CA);
+  rv += '\n';
+  if (basic_constraints.is_ca) {
+    std::u16string depth;
+    if (!basic_constraints.has_path_len) {
+      depth = l10n_util::GetStringUTF16(
+          IDS_CERT_X509_BASIC_CONSTRAINT_PATH_LEN_UNLIMITED);
+    } else {
+      depth = base::FormatNumber(basic_constraints.path_len);
+    }
+    rv += l10n_util::GetStringFUTF8(IDS_CERT_X509_BASIC_CONSTRAINT_PATH_LEN,
+                                    depth);
+  }
+  return rv;
+}
+
 }  // namespace
 
 X509CertificateModel::X509CertificateModel(
@@ -577,6 +603,8 @@ absl::optional<std::string> X509CertificateModel::ProcessExtensionData(
     return ProcessNSCertTypeExtension(extension.value);
   if (extension.oid == net::der::Input(net::kKeyUsageOid))
     return ProcessKeyUsageExtension(extension.value);
+  if (extension.oid == net::der::Input(net::kBasicConstraintsOid))
+    return ProcessBasicConstraints(extension.value);
   return ProcessRawBytes(extension.value);
 }
 
