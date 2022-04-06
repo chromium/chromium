@@ -2,19 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import {Router, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from 'chrome://os-settings/chromeos/os_settings.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// #import {CrSettingsPrefs} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {GoogleAssistantBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {SearchEnginesInfo, SearchEngine} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {waitAfterNextRender} from 'chrome://test/test_util.js';
-// clang-format on
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
 suite('SearchEngine', function() {
   /** @type {?SettingsSearchEngineElement} */
@@ -29,7 +21,7 @@ suite('SearchEngine', function() {
    * for allowing tests to know when a method was called, as well as
    * specifying mock responses.
    *
-   * @implements {settings.SearchEnginesBrowserProxy}
+   * @implements {SearchEnginesBrowserProxy}
    */
   class TestSearchEnginesBrowserProxy extends TestBrowserProxy {
     constructor() {
@@ -138,7 +130,7 @@ suite('SearchEngine', function() {
     browserProxy = new TestSearchEnginesBrowserProxy();
     searchEngineInfo = generateSearchEngineInfo();
     browserProxy.setSearchEnginesInfo(searchEngineInfo);
-    settings.SearchEnginesBrowserProxyImpl.instance_ = browserProxy;
+    SearchEnginesBrowserProxyImpl.instance_ = browserProxy;
     PolymerTest.clearBody();
     page = document.createElement('settings-search-engine');
     page.prefs = {
@@ -151,7 +143,7 @@ suite('SearchEngine', function() {
 
   teardown(function() {
     page.remove();
-    settings.Router.getInstance().resetRouteForTesting();
+    Router.getInstance().resetRouteForTesting();
   });
 
   // Tests that the page is querying and displaying search engine info on
@@ -161,7 +153,7 @@ suite('SearchEngine', function() {
     assertFalse(!!page.$$('os-settings-search-selection-dialog'));
 
     await browserProxy.whenCalled('getSearchEnginesList');
-    Polymer.dom.flush();
+    flush();
 
     // Sublabel should initially display the first search engine's name.
     const searchEngineSubLabel = page.$$('#currentSearchEngine');
@@ -174,10 +166,10 @@ suite('SearchEngine', function() {
     const dialogButton = page.$$('#searchSelectionDialogButton');
     assertTrue(!!dialogButton);
     dialogButton.click();
-    Polymer.dom.flush();
+    flush();
 
     await browserProxy.whenCalled('getSearchEnginesList');
-    Polymer.dom.flush();
+    flush();
 
     // Dialog should now be showing.
     const dialog = page.$$('os-settings-search-selection-dialog');
@@ -199,7 +191,7 @@ suite('SearchEngine', function() {
     searchEngineInfo.defaults[2].default = false;
     await browserProxy.whenCalled('setDefaultSearchEngine');
     cr.webUIListenerCallback('search-engines-changed', searchEngineInfo);
-    Polymer.dom.flush();
+    flush();
 
     // The sublabel should now be updated to the new search engine.
     assertEquals(
@@ -213,7 +205,7 @@ suite('SearchEngine', function() {
 
     browserProxy.resetResolver('setDefaultSearchEngine');
     cr.webUIListenerCallback('search-engines-changed', searchEngineInfo);
-    Polymer.dom.flush();
+    flush();
     assertEquals(
         searchEngineInfo.defaults[2].name,
         searchEngineSubLabel.innerHTML.trim());
@@ -239,7 +231,7 @@ suite('SearchEngine', function() {
       extensionCanBeDisabled: true,
       value: {},
     });
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(dialogButton.disabled);
     assertTrue(!!page.$$('extension-controlled-indicator'));
@@ -257,7 +249,7 @@ suite('SearchEngine', function() {
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
       value: {},
     });
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(dialogButton.disabled);
     assertFalse(!!page.$$('extension-controlled-indicator'));

@@ -16,7 +16,7 @@ import {TestLifetimeBrowserProxy} from './test_os_lifetime_browser_proxy.m.js';
 suite('AboutPageTest', function() {
   let page = null;
 
-  /** @type {?settings.TestAboutPageBrowserProxyChromeOS} */
+  /** @type {?TestAboutPageBrowserProxyChromeOS} */
   let aboutBrowserProxy = null;
 
   /** @type {?TestLifetimeBrowserProxy} */

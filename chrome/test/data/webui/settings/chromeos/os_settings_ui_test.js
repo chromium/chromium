@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import {CrSettingsPrefs} from 'chrome://os-settings/chromeos/os_settings.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {eventToPromise, flushTasks} from 'chrome://test/test_util.js';
 
-// #import {CrSettingsPrefs} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {flush} from'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {eventToPromise, flushTasks} from 'chrome://test/test_util.js';
-// clang-format on
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
 /** @fileoverview Suite of tests for the OS Settings ui and main page. */
 
@@ -23,7 +20,7 @@ suite('OSSettingsUi', function() {
     document.body.innerHTML = '';
     ui = document.createElement('os-settings-ui');
     document.body.appendChild(ui);
-    Polymer.dom.flush();
+    flush();
 
     await CrSettingsPrefs.initialized;
     settingsMain =
@@ -43,7 +40,7 @@ suite('OSSettingsUi', function() {
         settingsMain.$$('os-settings-page').$$('settings-idle-load');
     assert(!!idleRender);
     await idleRender.get();
-    Polymer.dom.flush();
+    flush();
   });
 
   /**
@@ -105,8 +102,8 @@ suite('OSSettingsUi', function() {
   test('AdvancedSections', async function() {
     // Open the Advanced section.
     settingsMain.advancedToggleExpanded = true;
-    Polymer.dom.flush();
-    await test_util.flushTasks();
+    flush();
+    await flushTasks();
 
     const sectionNames = [
       'osPrivacy', 'osLanguages', 'files', 'osReset', 'dateTime',
@@ -127,8 +124,8 @@ suite('OSSettingsUi', function() {
 
     // Ensure Advanced is open.
     settingsMain.advancedToggleExpanded = true;
-    Polymer.dom.flush();
-    await test_util.flushTasks();
+    flush();
+    await flushTasks();
 
     const hiddenSections = ['multidevice', 'osPeople', 'personalization'];
     for (const name of hiddenSections) {
@@ -150,24 +147,24 @@ suite('OSSettingsUi', function() {
   });
 
   test('Update required end of life banner visibility', function() {
-    Polymer.dom.flush();
+    flush();
     assertFalse(settingsPage.showUpdateRequiredEolBanner_);
     assertFalse(!!settingsPage.$$('#updateRequiredEolBanner'));
 
     settingsPage.showUpdateRequiredEolBanner_ = true;
-    Polymer.dom.flush();
+    flush();
     assertTrue(!!settingsPage.$$('#updateRequiredEolBanner'));
   });
 
   test('Update required end of life banner close button click', function() {
     settingsPage.showUpdateRequiredEolBanner_ = true;
-    Polymer.dom.flush();
+    flush();
     const banner = settingsPage.$$('#updateRequiredEolBanner');
     assertTrue(!!banner);
 
     const closeButton = assert(settingsPage.$$('#closeUpdateRequiredEol'));
     closeButton.click();
-    Polymer.dom.flush();
+    flush();
     assertFalse(settingsPage.showUpdateRequiredEolBanner_);
     assertEquals('none', banner.style.display);
   });

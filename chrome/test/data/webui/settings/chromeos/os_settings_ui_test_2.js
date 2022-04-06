@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import {CrSettingsPrefs, Router, routes, setContactManagerForTesting, setNearbyShareSettingsForTesting, setUserActionRecorderForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// #import {CrSettingsPrefs, Router, routes, setUserActionRecorderForTesting, setNearbyShareSettingsForTesting, setContactManagerForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {FakeUserActionRecorder} from './fake_user_action_recorder.js';
-// #import {eventToPromise, waitBeforeNextRender} from '../../../test_util.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {FakeNearbyShareSettings} from '../../nearby_share/shared/fake_nearby_share_settings.m.js';
-// #import {FakeContactManager} from '../../nearby_share/shared/fake_nearby_contact_manager.m.js';
-// clang-format on
+import {eventToPromise, waitBeforeNextRender} from '../../../test_util.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {FakeContactManager} from '../../nearby_share/shared/fake_nearby_contact_manager.m.js';
+import {FakeNearbyShareSettings} from '../../nearby_share/shared/fake_nearby_share_settings.m.js';
+
+import {FakeUserActionRecorder} from './fake_user_action_recorder.js';
 
 /**
  * Checks whether a given element is visible to the user.
@@ -27,34 +25,34 @@ function isVisible(element) {
 suite('os-settings-ui', () => {
   let ui;
   let userActionRecorder;
-  /** @type {!nearby_share.FakeContactManager} */
+  /** @type {!FakeContactManager} */
   let fakeContactManager = null;
-  /** @type {!nearby_share.FakeNearbyShareSettings} */
+  /** @type {!FakeNearbyShareSettings} */
   let fakeSettings = null;
 
   setup(async () => {
     PolymerTest.clearBody();
 
-    fakeContactManager = new nearby_share.FakeContactManager();
-    nearby_share.setContactManagerForTesting(fakeContactManager);
+    fakeContactManager = new FakeContactManager();
+    setContactManagerForTesting(fakeContactManager);
     fakeContactManager.setupContactRecords();
 
-    fakeSettings = new nearby_share.FakeNearbyShareSettings();
-    nearby_share.setNearbyShareSettingsForTesting(fakeSettings);
+    fakeSettings = new FakeNearbyShareSettings();
+    setNearbyShareSettingsForTesting(fakeSettings);
 
     ui = document.createElement('os-settings-ui');
     document.body.appendChild(ui);
     await CrSettingsPrefs.initialized;
-    userActionRecorder = new settings.FakeUserActionRecorder();
-    settings.setUserActionRecorderForTesting(userActionRecorder);
+    userActionRecorder = new FakeUserActionRecorder();
+    setUserActionRecorderForTesting(userActionRecorder);
     ui.$$('#drawerTemplate').if = false;
-    Polymer.dom.flush();
+    flush();
   });
 
   teardown(() => {
     ui.remove();
-    settings.setUserActionRecorderForTesting(null);
-    settings.Router.getInstance().resetRouteForTesting();
+    setUserActionRecorderForTesting(null);
+    Router.getInstance().resetRouteForTesting();
   });
 
   test('top container shadow always shows for sub-pages', () => {
@@ -65,8 +63,8 @@ suite('os-settings-ui', () => {
         element.classList.contains('has-shadow'),
         'Main page should not show shadow ' + element.className);
 
-    settings.Router.getInstance().navigateTo(settings.routes.POWER);
-    Polymer.dom.flush();
+    Router.getInstance().navigateTo(routes.POWER);
+    flush();
     assertTrue(
         element.classList.contains('has-shadow'),
         'Sub-page should show shadow ' + element.className);
@@ -87,8 +85,8 @@ suite('os-settings-ui', () => {
     assertFalse(drawer.open);
 
     drawer.openDrawer();
-    Polymer.dom.flush();
-    await test_util.eventToPromise('cr-drawer-opened', drawer);
+    flush();
+    await eventToPromise('cr-drawer-opened', drawer);
 
     // Validate that dialog is open and menu is shown so it will animate.
     assertTrue(drawer.open);
@@ -107,12 +105,12 @@ suite('os-settings-ui', () => {
     // Mimic narrow mode and open the drawer.
     ui.isNarrow = true;
     drawer.openDrawer();
-    Polymer.dom.flush();
-    await test_util.eventToPromise('cr-drawer-opened', drawer);
+    flush();
+    await eventToPromise('cr-drawer-opened', drawer);
 
     ui.isNarrow = false;
-    Polymer.dom.flush();
-    await test_util.eventToPromise('close', drawer);
+    flush();
+    await eventToPromise('close', drawer);
     assertFalse(drawer.open);
   });
 
@@ -129,7 +127,7 @@ suite('os-settings-ui', () => {
     assertFalse(main.advancedToggleExpanded);
 
     main.advancedToggleExpanded = true;
-    Polymer.dom.flush();
+    flush();
 
     assertFalse(!!ui.$$('cr-drawer os-settings-menu'));
     assertTrue(ui.advancedOpenedInMain_);
@@ -138,7 +136,7 @@ suite('os-settings-ui', () => {
     assertTrue(main.advancedToggleExpanded);
 
     ui.$$('#drawerTemplate').if = true;
-    Polymer.dom.flush();
+    flush();
 
     const drawerMenu = ui.$$('cr-drawer os-settings-menu');
     assertTrue(!!drawerMenu);
@@ -147,7 +145,7 @@ suite('os-settings-ui', () => {
 
     // Collapse 'Advanced' in the menu.
     drawerMenu.$.advancedButton.click();
-    Polymer.dom.flush();
+    flush();
 
     // Collapsing it in the menu should not collapse it in the main area.
     assertFalse(drawerMenu.advancedOpened);
@@ -161,7 +159,7 @@ suite('os-settings-ui', () => {
 
     // Collapse 'Advanced' in the main area.
     main.advancedToggleExpanded = false;
-    Polymer.dom.flush();
+    flush();
 
     // Collapsing it in the main area should not collapse it in the menu.
     assertFalse(ui.advancedOpenedInMain_);
@@ -181,17 +179,16 @@ suite('os-settings-ui', () => {
     ironSelector.forceSynchronousItemUpdate();
 
     const urlParams = new URLSearchParams('search=foo');
-    settings.Router.getInstance().navigateTo(settings.routes.BASIC, urlParams);
+    Router.getInstance().navigateTo(routes.BASIC, urlParams);
     assertEquals(
         urlParams.toString(),
-        settings.Router.getInstance().getQueryParameters().toString());
+        Router.getInstance().getQueryParameters().toString());
     settingsMenu.$.osPeople.click();
-    assertEquals(
-        '', settings.Router.getInstance().getQueryParameters().toString());
+    assertEquals('', Router.getInstance().getQueryParameters().toString());
   });
 
   test('Clicking About menu item should focus About section', async () => {
-    const router = settings.Router.getInstance();
+    const router = Router.getInstance();
     const settingsMenu = ui.$$('os-settings-menu');
 
     // As of iron-selector 2.x, need to force iron-selector to update before
@@ -202,8 +199,8 @@ suite('os-settings-ui', () => {
     const {aboutItem} = settingsMenu.$;
     aboutItem.click();
 
-    Polymer.dom.flush();
-    assertEquals(settings.routes.ABOUT_ABOUT, router.getCurrentRoute());
+    flush();
+    assertEquals(routes.ABOUT_ABOUT, router.getCurrentRoute());
     assertNotEquals(aboutItem, settingsMenu.shadowRoot.activeElement);
 
     const settingsMain = ui.$$('os-settings-main');
@@ -215,11 +212,11 @@ suite('os-settings-ui', () => {
 
   test('userActionRouteChange', function() {
     assertEquals(userActionRecorder.navigationCount, 0);
-    settings.Router.getInstance().navigateTo(settings.routes.BASIC);
-    Polymer.dom.flush();
+    Router.getInstance().navigateTo(routes.BASIC);
+    flush();
     assertEquals(userActionRecorder.navigationCount, 1);
-    settings.Router.getInstance().navigateTo(settings.routes.BASIC);
-    Polymer.dom.flush();
+    Router.getInstance().navigateTo(routes.BASIC);
+    flush();
     assertEquals(userActionRecorder.navigationCount, 1);
   });
 
@@ -255,11 +252,11 @@ suite('os-settings-ui', () => {
     });
 
     ui.remove();
-    settings.Router.getInstance().resetRouteForTesting();
+    Router.getInstance().resetRouteForTesting();
     PolymerTest.clearBody();
     ui = document.createElement('os-settings-ui');
     document.body.appendChild(ui);
-    Polymer.dom.flush();
+    flush();
 
     // Toolbar should be hidden.
     assertFalse(isVisible(ui.$$('os-toolbar')));

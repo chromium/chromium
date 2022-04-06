@@ -119,7 +119,7 @@ TEST_F('OSSettingsNearbyShareSubPageV3Test', 'All', () => mocha.run());
 var OSSettingsPeoplePageOsSyncV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_sync_controls_test.m.js';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_sync_controls_test.js';
   }
 
   /** @override */
@@ -140,7 +140,7 @@ TEST_F('OSSettingsPeoplePageOsSyncV3Test', 'AllJsTests', () => {
 var OSSettingsOsSettingsPageV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_settings_page_test.m.js';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_settings_page_test.js';
   }
 
   /** @override */
@@ -251,7 +251,7 @@ TEST_F('OSSettingsOsBluetoothTrueWirelessImagesV3Test', 'AllJsTests', () => {
 var OSSettingsSearchEngineV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/search_engine_test.m.js';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/search_engine_test.js';
   }
 
   /** @override */
@@ -377,7 +377,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['EsimInstallErrorDialog', 'esim_install_error_dialog_test.js'],
  ['EsimRemoveProfileDialog', 'esim_remove_profile_dialog_test.js'],
  ['EsimRenameDialog', 'esim_rename_dialog_test.js'],
- ['FilesPage', 'os_files_page_test.m.js'],
+ ['FilesPage', 'os_files_page_test.js'],
  ['FingerprintPage', 'fingerprint_browsertest_chromeos.js'],
  ['GoogleAssistantPage', 'google_assistant_page_test.js'],
  ['GuestOsSharedPaths', 'guest_os_shared_paths_test.js'],
@@ -441,12 +441,12 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['OsEditDictionaryPage', 'os_edit_dictionary_page_test.js'],
  ['OsLanguagesPageV2', 'os_languages_page_v2_tests.js'],
  ['OsPairedBluetoothList', 'os_paired_bluetooth_list_tests.js'],
- ['OsSettingsUi', 'os_settings_ui_test.m.js'],
- ['OsSettingsUi2', 'os_settings_ui_test_2.m.js'],
- ['OsSettingsMain', 'os_settings_main_test.m.js'],
- ['OsSearchPage', 'os_search_page_test.m.js'],
- ['OsSettingsSearchBox', 'os_settings_search_box_test.m.js'],
- ['OSSettingsMenu', 'os_settings_menu_test.m.js'],
+ ['OsSettingsUi', 'os_settings_ui_test.js'],
+ ['OsSettingsUi2', 'os_settings_ui_test_2.js'],
+ ['OsSettingsMain', 'os_settings_main_test.js'],
+ ['OsSearchPage', 'os_search_page_test.js'],
+ ['OsSettingsSearchBox', 'os_settings_search_box_test.js'],
+ ['OSSettingsMenu', 'os_settings_menu_test.js'],
  ['ParentalControlsPage', 'parental_controls_page_test.js'],
  ['PeoplePage', 'os_people_page_test.js'],
  ['PeoplePageChangePicture', 'people_page_change_picture_test.js'],
@@ -454,10 +454,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['PersonalizationPage', 'personalization_page_test.js'],
  ['PrintingPage', 'os_printing_page_tests.js'],
  ['PrivacyPage', 'os_privacy_page_test.js'],
- ['ResetPage', 'os_reset_page_test.m.js'],
- ['SettingsSchedulerSlider', 'settings_scheduler_slider_test.m.js'],
- ['SearchSubpage', 'search_subpage_test.m.js'],
- ['SettingsTrafficCounters', 'settings_traffic_counters_test.m.js'],
+ ['ResetPage', 'os_reset_page_test.js'],
+ ['SettingsSchedulerSlider', 'settings_scheduler_slider_test.js'],
+ ['SearchSubpage', 'search_subpage_test.js'],
+ ['SettingsTrafficCounters', 'settings_traffic_counters_test.js'],
  ['SmartInputsPage', 'smart_inputs_page_test.js'],
  ['SmbPage', 'smb_shares_page_tests.m.js'],
  ['SmartPrivacySubpage', 'smart_privacy_subpage_tests.js'],

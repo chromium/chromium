@@ -2,18 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import {OsSyncBrowserProxyImpl, Router, StatusAction, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {flush} from'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
-// #import {OsSyncBrowserProxyImpl, Router, StatusAction, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {flush} from'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-// #import {waitAfterNextRender} from 'chrome://test/test_util.js';
-// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
-// clang-format on
-
-/** @implements {settings.OsSyncBrowserProxy} */
+/** @implements {OsSyncBrowserProxy} */
 class TestOsSyncBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
@@ -42,7 +36,7 @@ class TestOsSyncBrowserProxy extends TestBrowserProxy {
 /**
  * Returns a sync prefs dictionary with either all or nothing syncing.
  * @param {boolean} syncAll
- * @return {!settings.OsSyncPrefs}
+ * @return {!OsSyncPrefs}
  */
 function getOsSyncPrefs(syncAll) {
   return {
@@ -72,13 +66,13 @@ function getDefaultSyncStatus() {
     hasError: false,
     hasUnrecoverableError: false,
     signedIn: true,
-    statusAction: settings.StatusAction.NO_ACTION,
+    statusAction: StatusAction.NO_ACTION,
   };
 }
 
 function setupSync() {
   cr.webUIListenerCallback('os-sync-prefs-changed', getSyncAllPrefs());
-  Polymer.dom.flush();
+  flush();
 }
 
 suite('OsSyncControlsTest', function() {
@@ -89,7 +83,7 @@ suite('OsSyncControlsTest', function() {
 
   setup(function() {
     browserProxy = new TestOsSyncBrowserProxy();
-    settings.OsSyncBrowserProxyImpl.instance_ = browserProxy;
+    OsSyncBrowserProxyImpl.instance_ = browserProxy;
 
     PolymerTest.clearBody();
     syncControls = document.createElement('os-sync-controls');
@@ -105,7 +99,7 @@ suite('OsSyncControlsTest', function() {
 
   teardown(function() {
     syncControls.remove();
-    settings.Router.getInstance().resetRouteForTesting();
+    Router.getInstance().resetRouteForTesting();
   });
 
   test('ControlsHiddenUntilInitialUpdateSent', function() {
@@ -176,12 +170,12 @@ suite('OsSyncControlsTest', function() {
 suite('OsSyncControlsNavigationTest', function() {
   test('DidNavigateEvents', async function() {
     const browserProxy = new TestOsSyncBrowserProxy();
-    settings.OsSyncBrowserProxyImpl.instance_ = browserProxy;
+    OsSyncBrowserProxyImpl.instance_ = browserProxy;
 
-    settings.Router.getInstance().navigateTo(settings.routes.OS_SYNC);
+    Router.getInstance().navigateTo(routes.OS_SYNC);
     await browserProxy.methodCalled('didNavigateToOsSyncPage');
 
-    settings.Router.getInstance().navigateTo(settings.routes.OS_PEOPLE);
+    Router.getInstance().navigateTo(routes.OS_PEOPLE);
     await browserProxy.methodCalled('didNavigateAwayFromOsSyncPage');
   });
 });

@@ -2,24 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import {OpenWindowProxyImpl, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {setSearchHandlerForTesting, setUserActionRecorderForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {eventToPromise} from 'chrome://test/test_util.js';
 
-// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-// #import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
-// #import {flush} from'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {OpenWindowProxyImpl, Router, Route, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {eventToPromise} from 'chrome://test/test_util.js';
-// #import {FakeUserActionRecorder} from './fake_user_action_recorder.js';
-// #import {FakeSettingsSearchHandler} from './fake_settings_search_handler.m.js';
-// #import {setSearchHandlerForTesting, setUserActionRecorderForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
-// clang-format on
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
+
+import {FakeSettingsSearchHandler} from './fake_settings_search_handler.js';
+import {FakeUserActionRecorder} from './fake_user_action_recorder.js';
 
 /** @fileoverview Runs tests for the OS settings search box. */
 
 /**
- * @implements {settings.OpenWindowProxy}
+ * @implements {OpenWindowProxy}
  */
 class TestOpenWindowProxy extends TestBrowserProxy {
   constructor() {
@@ -92,19 +90,19 @@ suite('OSSettingsSearchBox', () => {
     field.onSearchTermInput();
     field.onSearchTermSearch();
     await settingsSearchHandler.search;
-    Polymer.dom.flush();
+    flush();
   }
 
   async function waitForListUpdate() {
     // Wait for iron-list to complete resizing.
-    await test_util.eventToPromise('iron-resize', resultList);
-    Polymer.dom.flush();
+    await eventToPromise('iron-resize', resultList);
+    flush();
   }
 
   async function waitForResultsFetched() {
     // Wait for search results to be fetched.
-    await test_util.eventToPromise('search-results-fetched', searchBox);
-    Polymer.dom.flush();
+    await eventToPromise('search-results-fetched', searchBox);
+    flush();
   }
 
   /**
@@ -139,16 +137,16 @@ suite('OSSettingsSearchBox', () => {
 
   function setupSearchBox() {
     chrome.metricsPrivate = new MockMetricsPrivate();
-    settingsSearchHandler = new settings.FakeSettingsSearchHandler();
-    settings.setSearchHandlerForTesting(settingsSearchHandler);
+    settingsSearchHandler = new FakeSettingsSearchHandler();
+    setSearchHandlerForTesting(settingsSearchHandler);
 
-    userActionRecorder = new settings.FakeUserActionRecorder();
-    settings.setUserActionRecorderForTesting(userActionRecorder);
+    userActionRecorder = new FakeUserActionRecorder();
+    setUserActionRecorderForTesting(userActionRecorder);
 
     toolbar = document.createElement('os-toolbar');
     assertTrue(!!toolbar);
     document.body.appendChild(toolbar);
-    Polymer.dom.flush();
+    flush();
 
     searchBox = toolbar.$$('os-settings-search-box');
     assertTrue(!!searchBox);
@@ -164,7 +162,7 @@ suite('OSSettingsSearchBox', () => {
 
   setup(function() {
     setupSearchBox();
-    settings.Router.getInstance().navigateTo(settings.routes.BASIC);
+    Router.getInstance().navigateTo(routes.BASIC);
 
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
@@ -173,8 +171,8 @@ suite('OSSettingsSearchBox', () => {
   teardown(async () => {
     // Clear search field for next test.
     await simulateSearch('');
-    settings.setUserActionRecorderForTesting(null);
-    settings.setSearchHandlerForTesting(null);
+    setUserActionRecorderForTesting(null);
+    setSearchHandlerForTesting(null);
   });
 
   test('Search availability changed', async () => {
@@ -359,9 +357,9 @@ suite('OSSettingsSearchBox', () => {
     // Keydown with Enter key on the searchBox causes navigation to selected
     // row's route.
     searchBox.dispatchEvent(enterEvent);
-    Polymer.dom.flush();
+    flush();
     assertFalse(dropDown.opened);
-    const router = settings.Router.getInstance();
+    const router = Router.getInstance();
     assertEquals(router.getQueryParameters().get('search'), 'fake query');
     assertEquals(router.getCurrentRoute().path, '/networks');
     assertEquals(router.getQueryParameters().get('type'), 'WiFi');
@@ -390,7 +388,7 @@ suite('OSSettingsSearchBox', () => {
         selectedOsRow.$.searchResultContainer.click();
         assertFalse(dropDown.opened);
         assertEquals(0, openWindowProxy.getCallCount('openURL'));
-        const router = settings.Router.getInstance();
+        const router = Router.getInstance();
         assertEquals(router.getQueryParameters().get('search'), 'fake query 2');
         assertEquals(router.getCurrentRoute().path, '/personalization');
         assertEquals(router.getQueryParameters().get('settingId'), '500');
@@ -411,7 +409,7 @@ suite('OSSettingsSearchBox', () => {
         'keypress', {cancelable: true, key: 'Enter', keyCode: 13});
     selectedOsRow.$.searchResultContainer.dispatchEvent(enterEvent);
     assertFalse(dropDown.opened);
-    const router = settings.Router.getInstance();
+    const router = Router.getInstance();
     assertEquals(router.getQueryParameters().get('search'), 'fake query 1');
     assertEquals(router.getCurrentRoute().path, '/networks');
     assertEquals(router.getQueryParameters().get('type'), 'WiFi');
@@ -430,7 +428,7 @@ suite('OSSettingsSearchBox', () => {
     searchResultRow.$.searchResultContainer.click();
 
     assertFalse(dropDown.opened);
-    const router = settings.Router.getInstance();
+    const router = Router.getInstance();
     assertEquals(router.getQueryParameters().get('search'), 'fake query 2');
     assertEquals(router.getCurrentRoute().path, '/networks');
     assertEquals(router.getQueryParameters().get('type'), 'WiFi');
@@ -604,12 +602,12 @@ suite('OSSettingsSearchBox', () => {
 
   test('Focus search input behavior on attached', async () => {
     PolymerTest.clearBody();
-    settings.Router.getInstance().navigateTo(settings.routes.BASIC);
+    Router.getInstance().navigateTo(routes.BASIC);
     setupSearchBox();
     assertEquals(field.root.activeElement, field.$.searchInput);
 
     PolymerTest.clearBody();
-    settings.Router.getInstance().navigateTo(settings.routes.KEYBOARD);
+    Router.getInstance().navigateTo(routes.KEYBOARD);
     assertEquals(field.root.activeElement, null);
   });
 });

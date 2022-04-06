@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/lazy_load.js';
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/chromeos/lazy_load.js';
 
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {CrSettingsPrefs, Router, routes, setNearbyShareSettingsForTesting, setContactManagerForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {FakeBluetoothConfig} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
-// #import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
-// #import {flushTasks} from 'chrome://test/test_util.js';
-// #import {FakeNearbyShareSettings} from '../../nearby_share/shared/fake_nearby_share_settings.m.js';
-// #import {FakeContactManager} from '../../nearby_share/shared/fake_nearby_contact_manager.m.js';
-// clang-format on
+import {CrSettingsPrefs, Router, routes, setContactManagerForTesting, setNearbyShareSettingsForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
+import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {FakeBluetoothConfig} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
+
+import {FakeContactManager} from '../../nearby_share/shared/fake_nearby_contact_manager.m.js';
+import {FakeNearbyShareSettings} from '../../nearby_share/shared/fake_nearby_share_settings.m.js';
 
 suite('OsSettingsPageTests', function() {
   /** @type {?OsSettingsPageElement} */
@@ -23,9 +20,9 @@ suite('OsSettingsPageTests', function() {
   /** @type {?SettingsPrefsElement} */
   let prefElement = null;
 
-  /** @type {!nearby_share.FakeContactManager} */
+  /** @type {!FakeContactManager} */
   let fakeContactManager = null;
-  /** @type {!nearby_share.FakeNearbyShareSettings} */
+  /** @type {!FakeNearbyShareSettings} */
   let fakeSettings = null;
 
   suiteSetup(async function() {
@@ -33,14 +30,14 @@ suite('OsSettingsPageTests', function() {
       enableBluetoothRevamp: false,
     });
 
-    fakeContactManager = new nearby_share.FakeContactManager();
-    nearby_share.setContactManagerForTesting(fakeContactManager);
+    fakeContactManager = new FakeContactManager();
+    setContactManagerForTesting(fakeContactManager);
     fakeContactManager.setupContactRecords();
 
-    fakeSettings = new nearby_share.FakeNearbyShareSettings();
-    nearby_share.setNearbyShareSettingsForTesting(fakeSettings);
+    fakeSettings = new FakeNearbyShareSettings();
+    setNearbyShareSettingsForTesting(fakeSettings);
 
-    settings.Router.getInstance().navigateTo(settings.routes.BASIC);
+    Router.getInstance().navigateTo(routes.BASIC);
     PolymerTest.clearBody();
 
     prefElement = document.createElement('settings-prefs');
@@ -52,14 +49,14 @@ suite('OsSettingsPageTests', function() {
   teardown(function() {
     settingsPage.remove();
     CrSettingsPrefs.resetForTesting();
-    settings.Router.getInstance().resetRouteForTesting();
+    Router.getInstance().resetRouteForTesting();
   });
 
   function init() {
     settingsPage = document.createElement('os-settings-page');
     settingsPage.prefs = prefElement.prefs;
     document.body.appendChild(settingsPage);
-    Polymer.dom.flush();
+    flush();
   }
 
   test('Os Settings Page created', async () => {
@@ -77,7 +74,7 @@ suite('OsSettingsPageTests', function() {
     init();
     const idleRender = settingsPage.$$('settings-idle-load');
     await idleRender.get();
-    Polymer.dom.flush();
+    flush();
     const osSettingsPrintingPage = settingsPage.$$('os-settings-printing-page');
     assert(!!osSettingsPrintingPage);
   });
@@ -123,7 +120,7 @@ suite('OsSettingsPageTests', function() {
     init();
     const osSettingsPrivacyPage = settingsPage.$$('os-settings-privacy-page');
     assert(!!osSettingsPrivacyPage);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('Check settings-multidevice-page exists', async () => {
@@ -143,7 +140,7 @@ suite('OsSettingsPageTests', function() {
     init();
     const idleRender = settingsPage.$$('settings-idle-load');
     await idleRender.get();
-    Polymer.dom.flush();
+    flush();
     const settingsDateTimePage = settingsPage.$$('settings-date-time-page');
     assert(!!settingsDateTimePage);
   });
@@ -153,7 +150,7 @@ suite('OsSettingsPageTests', function() {
     const idleRender = settingsPage.$$('settings-idle-load');
     assert(!!idleRender);
     await idleRender.get();
-    Polymer.dom.flush();
+    flush();
     const osSettingsLangagesSection =
         settingsPage.$$('os-settings-languages-section');
     assert(!!osSettingsLangagesSection);
@@ -164,7 +161,7 @@ suite('OsSettingsPageTests', function() {
     const idleRender = settingsPage.$$('settings-idle-load');
     assert(!!idleRender);
     await idleRender.get();
-    Polymer.dom.flush();
+    flush();
     const osSettingsA11yPage = settingsPage.$$('os-settings-a11y-page');
     assert(!!osSettingsA11yPage);
   });
@@ -175,11 +172,11 @@ suite('OsSettingsPageTests', function() {
     const idleRender = settingsPage.$$('settings-idle-load');
     assert(!!idleRender);
     await idleRender.get();
-    Polymer.dom.flush();
+    flush();
 
     const settingsKerberosPage = settingsPage.$$('settings-kerberos-page');
     assert(!!settingsKerberosPage);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('Check settings-device-page exists', async () => {
@@ -188,7 +185,7 @@ suite('OsSettingsPageTests', function() {
     settingsPage.allowCrostini_ = true;
     const settingsDevicePage = settingsPage.$$('settings-device-page');
     assert(!!settingsDevicePage);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('Check os-settings-files-page exists', async () => {
@@ -196,7 +193,7 @@ suite('OsSettingsPageTests', function() {
     settingsPage.isGuestMode_ = false;
     const idleRender = settingsPage.$$('settings-idle-load');
     await idleRender.get();
-    Polymer.dom.flush();
+    flush();
     const settingsFilesPage = settingsPage.$$('os-settings-files-page');
     assert(!!settingsFilesPage);
   });
@@ -219,7 +216,7 @@ suite('OsSettingsPageTests', function() {
     settingsPage.showAndroidApps = true;
     settingsPage.showPluginVm = true;
     settingsPage.havePlayStoreApp = true;
-    Polymer.dom.flush();
+    flush();
     const osSettingsAppsPage = settingsPage.$$('os-settings-apps-page');
     assert(!!osSettingsAppsPage);
   });
@@ -229,7 +226,7 @@ suite('OsSettingsPageTests', function() {
     settingsPage.showCrostini = true;
     const idleRender = settingsPage.$$('settings-idle-load');
     await idleRender.get();
-    Polymer.dom.flush();
+    flush();
     const osSettingsCrostiniPage = settingsPage.$$('settings-crostini-page');
     assert(!!osSettingsCrostiniPage);
   });
@@ -241,7 +238,7 @@ suite('OsSettingsPageTests', function() {
     await idleRender.get();
 
     settingsPage.showReset = true;
-    Polymer.dom.flush();
+    flush();
     const osSettingsResetPage = settingsPage.$$('os-settings-reset-page');
     assert(!!osSettingsResetPage);
   });

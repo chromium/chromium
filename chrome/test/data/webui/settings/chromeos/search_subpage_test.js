@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {waitAfterNextRender} from 'chrome://test/test_util.js';
 
-// #import {CrSettingsPrefs} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {waitAfterNextRender} from 'chrome://test/test_util.js';
-// clang-format on
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
 suite('SearchSubpage', function() {
   /** @type {SearchSubpageElement} */
@@ -34,7 +30,7 @@ suite('SearchSubpage', function() {
       page = document.createElement('settings-search-subpage');
       page.prefs = prefElement.prefs;
       document.body.appendChild(page);
-      Polymer.dom.flush();
+      flush();
     });
   });
 
@@ -48,7 +44,7 @@ suite('SearchSubpage', function() {
     assertFalse(!!button);
 
     page.setPrefValue('settings.quick_answers.enabled', true);
-    Polymer.dom.flush();
+    flush();
 
     button = page.$$('#quick-answers-definition-enable');
     assertTrue(!!button);
@@ -59,7 +55,7 @@ suite('SearchSubpage', function() {
     assertFalse(!!button);
 
     page.setPrefValue('settings.quick_answers.enabled', true);
-    Polymer.dom.flush();
+    flush();
 
     button = page.$$('#quick-answers-translation-enable');
     assertTrue(!!button);
@@ -70,14 +66,14 @@ suite('SearchSubpage', function() {
     assertFalse(!!button);
 
     page.setPrefValue('settings.quick_answers.enabled', true);
-    Polymer.dom.flush();
+    flush();
 
     button = page.$$('#quick-answers-unit-conversion-enable');
     assertTrue(!!button);
   });
 
   test('toggleQuickAnswers', function() {
-    Polymer.dom.flush();
+    flush();
     const button = page.$$('#quick-answers-enable');
     assertTrue(!!button);
     assertFalse(button.disabled);
@@ -93,7 +89,7 @@ suite('SearchSubpage', function() {
 
     // Tap the enable toggle button and ensure the state becomes enabled.
     button.click();
-    Polymer.dom.flush();
+    flush();
     assertTrue(button.checked);
 
     definition_button = page.$$('#quick-answers-definition-enable');
@@ -109,7 +105,7 @@ suite('SearchSubpage', function() {
     assertFalse(!!button);
     page.setPrefValue('settings.quick_answers.enabled', true);
     page.setPrefValue('settings.quick_answers.definition.enabled', false);
-    Polymer.dom.flush();
+    flush();
 
     button = page.$$('#quick-answers-definition-enable');
     assertTrue(!!button);
@@ -117,7 +113,7 @@ suite('SearchSubpage', function() {
     assertFalse(button.checked);
 
     button.click();
-    Polymer.dom.flush();
+    flush();
     assertTrue(button.checked);
     assertTrue(page.getPref('settings.quick_answers.definition.enabled.value'));
   });
@@ -127,7 +123,7 @@ suite('SearchSubpage', function() {
     assertFalse(!!button);
     page.setPrefValue('settings.quick_answers.enabled', true);
     page.setPrefValue('settings.quick_answers.translation.enabled', false);
-    Polymer.dom.flush();
+    flush();
 
     button = page.$$('#quick-answers-translation-enable');
     assertTrue(!!button);
@@ -135,7 +131,7 @@ suite('SearchSubpage', function() {
     assertFalse(button.checked);
 
     button.click();
-    Polymer.dom.flush();
+    flush();
     assertTrue(button.checked);
     assertTrue(
         page.getPref('settings.quick_answers.translation.enabled.value'));
@@ -165,8 +161,7 @@ suite('SearchSubpage', function() {
         page.getPref('settings.quick_answers.translation.enabled.value'));
 
     assertEquals(
-        settings.routes.OS_LANGUAGES_LANGUAGES,
-        settings.Router.getInstance().getCurrentRoute());
+        routes.OS_LANGUAGES_LANGUAGES, Router.getInstance().getCurrentRoute());
   });
 
   test('toggleQuickAnswersUnitConversion', function() {
@@ -174,7 +169,7 @@ suite('SearchSubpage', function() {
     assertFalse(!!button);
     page.setPrefValue('settings.quick_answers.enabled', true);
     page.setPrefValue('settings.quick_answers.unit_conversion.enabled', false);
-    Polymer.dom.flush();
+    flush();
 
     button = page.$$('#quick-answers-unit-conversion-enable');
     assertTrue(!!button);
@@ -182,7 +177,7 @@ suite('SearchSubpage', function() {
     assertFalse(button.checked);
 
     button.click();
-    Polymer.dom.flush();
+    flush();
     assertTrue(button.checked);
     assertTrue(
         page.getPref('settings.quick_answers.unit_conversion.enabled.value'));
@@ -191,8 +186,7 @@ suite('SearchSubpage', function() {
   test('Deep link to Preferred Search Engine', async () => {
     const params = new URLSearchParams();
     params.append('settingId', '600');
-    settings.Router.getInstance().navigateTo(
-        settings.routes.SEARCH_SUBPAGE, params);
+    Router.getInstance().navigateTo(routes.SEARCH_SUBPAGE, params);
 
     let deepLinkElement;
     if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
@@ -205,7 +199,7 @@ suite('SearchSubpage', function() {
           page.$$('settings-search-engine').$$('#searchSelectionDialogButton');
     }
     assertTrue(!!deepLinkElement);
-    await test_util.waitAfterNextRender(deepLinkElement);
+    await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Preferred Search Engine button should be focused for settingId=600.');
@@ -214,13 +208,12 @@ suite('SearchSubpage', function() {
   test('Deep link to Quick Answers On/Off', async () => {
     const params = new URLSearchParams();
     params.append('settingId', '608');
-    settings.Router.getInstance().navigateTo(
-        settings.routes.SEARCH_SUBPAGE, params);
+    Router.getInstance().navigateTo(routes.SEARCH_SUBPAGE, params);
 
     const deepLinkElement =
         page.$$('#quick-answers-enable').shadowRoot.querySelector('cr-toggle');
     assertTrue(!!deepLinkElement);
-    await test_util.waitAfterNextRender(deepLinkElement);
+    await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Quick Answer On/Off toggle should be focused for settingId=608.');
@@ -228,17 +221,16 @@ suite('SearchSubpage', function() {
 
   test('Deep link to Quick Answers Definition', async () => {
     page.setPrefValue('settings.quick_answers.enabled', true);
-    Polymer.dom.flush();
+    flush();
 
     const params = new URLSearchParams();
     params.append('settingId', '609');
-    settings.Router.getInstance().navigateTo(
-        settings.routes.SEARCH_SUBPAGE, params);
+    Router.getInstance().navigateTo(routes.SEARCH_SUBPAGE, params);
 
     const deepLinkElement = page.$$('#quick-answers-definition-enable')
                                 .shadowRoot.querySelector('cr-toggle');
     assertTrue(!!deepLinkElement);
-    await test_util.waitAfterNextRender(deepLinkElement);
+    await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Quick Answer definition toggle should be focused for settingId=609.');
@@ -246,17 +238,16 @@ suite('SearchSubpage', function() {
 
   test('Deep link to Quick Answers Translation', async () => {
     page.setPrefValue('settings.quick_answers.enabled', true);
-    Polymer.dom.flush();
+    flush();
 
     const params = new URLSearchParams();
     params.append('settingId', '610');
-    settings.Router.getInstance().navigateTo(
-        settings.routes.SEARCH_SUBPAGE, params);
+    Router.getInstance().navigateTo(routes.SEARCH_SUBPAGE, params);
 
     const deepLinkElement = page.$$('#quick-answers-translation-enable')
                                 .shadowRoot.querySelector('cr-toggle');
     assertTrue(!!deepLinkElement);
-    await test_util.waitAfterNextRender(deepLinkElement);
+    await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Quick Answer translation toggle should be focused for settingId=610.');
@@ -264,17 +255,16 @@ suite('SearchSubpage', function() {
 
   test('Deep link to Quick Answers Unit Conversion', async () => {
     page.setPrefValue('settings.quick_answers.enabled', true);
-    Polymer.dom.flush();
+    flush();
 
     const params = new URLSearchParams();
     params.append('settingId', '611');
-    settings.Router.getInstance().navigateTo(
-        settings.routes.SEARCH_SUBPAGE, params);
+    Router.getInstance().navigateTo(routes.SEARCH_SUBPAGE, params);
 
     const deepLinkElement = page.$$('#quick-answers-unit-conversion-enable')
                                 .shadowRoot.querySelector('cr-toggle');
     assertTrue(!!deepLinkElement);
-    await test_util.waitAfterNextRender(deepLinkElement);
+    await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Quick Answer unit conversion toggle should be focused for settingId=611.');
