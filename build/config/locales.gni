@@ -36,6 +36,7 @@ all_chrome_locales =
       "bs",
       "ca",
       "cs",
+      "cy",
       "da",
       "de",
       "el",
@@ -151,7 +152,9 @@ extended_locales = [
 ]
 
 # Setup |platform_pak_locales| for each platform.
-platform_pak_locales = all_chrome_locales
+# Welsh is currently excluded as it is not included in any platform's build.
+# TODO(b/192306364): Add Welsh to CrOS only.
+platform_pak_locales = all_chrome_locales - [ "cy" ]
 if (!is_android) {
   platform_pak_locales -= extended_locales
 }

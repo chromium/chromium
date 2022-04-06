@@ -24,6 +24,7 @@ are declared in tools/grit/grit_rule.gni.
     <output filename="generated_resources_bs.pak" type="data_package" lang="bs" />
     <output filename="generated_resources_ca.pak" type="data_package" lang="ca" />
     <output filename="generated_resources_cs.pak" type="data_package" lang="cs" />
+    <output filename="generated_resources_cy.pak" type="data_package" lang="cy" />
     <output filename="generated_resources_da.pak" type="data_package" lang="da" />
     <output filename="generated_resources_de.pak" type="data_package" lang="de" />
     <output filename="generated_resources_el.pak" type="data_package" lang="el" />

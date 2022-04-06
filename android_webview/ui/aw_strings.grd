@@ -15,6 +15,7 @@
     <output filename="aw_strings_bs.pak" type="data_package" lang="bs" />
     <output filename="aw_strings_ca.pak" type="data_package" lang="ca" />
     <output filename="aw_strings_cs.pak" type="data_package" lang="cs" />
+    <output filename="aw_strings_cy.pak" type="data_package" lang="cy" />
     <output filename="aw_strings_da.pak" type="data_package" lang="da" />
     <output filename="aw_strings_de.pak" type="data_package" lang="de" />
     <output filename="aw_strings_el.pak" type="data_package" lang="el" />

@@ -19,6 +19,7 @@
     <output filename="omnibox_resources_bs.pak" type="data_package" lang="bs" />
     <output filename="omnibox_resources_ca.pak" type="data_package" lang="ca" />
     <output filename="omnibox_resources_cs.pak" type="data_package" lang="cs" />
+    <output filename="omnibox_resources_cy.pak" type="data_package" lang="cy" />
     <output filename="omnibox_resources_da.pak" type="data_package" lang="da" />
     <output filename="omnibox_resources_de.pak" type="data_package" lang="de" />
     <output filename="omnibox_resources_el.pak" type="data_package" lang="el" />

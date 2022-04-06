@@ -18,6 +18,7 @@
     <output filename="omnibox_pedal_synonyms_bs.pak" type="data_package" lang="bs" />
     <output filename="omnibox_pedal_synonyms_ca.pak" type="data_package" lang="ca" />
     <output filename="omnibox_pedal_synonyms_cs.pak" type="data_package" lang="cs" />
+    <output filename="omnibox_pedal_synonyms_cy.pak" type="data_package" lang="cy" />
     <output filename="omnibox_pedal_synonyms_da.pak" type="data_package" lang="da" />
     <output filename="omnibox_pedal_synonyms_de.pak" type="data_package" lang="de" />
     <output filename="omnibox_pedal_synonyms_el.pak" type="data_package" lang="el" />

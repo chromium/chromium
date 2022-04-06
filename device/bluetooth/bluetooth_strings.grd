@@ -21,6 +21,7 @@ This file contains the strings for bluetooth.
     <output filename="bluetooth_strings_bs.pak" type="data_package" lang="bs" />
     <output filename="bluetooth_strings_ca.pak" type="data_package" lang="ca" />
     <output filename="bluetooth_strings_cs.pak" type="data_package" lang="cs" />
+    <output filename="bluetooth_strings_cy.pak" type="data_package" lang="cy" />
     <output filename="bluetooth_strings_da.pak" type="data_package" lang="da" />
     <output filename="bluetooth_strings_de.pak" type="data_package" lang="de" />
     <output filename="bluetooth_strings_el.pak" type="data_package" lang="el" />

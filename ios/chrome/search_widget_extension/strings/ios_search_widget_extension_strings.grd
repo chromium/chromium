@@ -27,6 +27,7 @@ all other OS specific variables will be false.
     <output filename="ios_search_widget_extension_strings_bs.pak" type="data_package" lang="bs" />
     <output filename="ios_search_widget_extension_strings_ca.pak" type="data_package" lang="ca" />
     <output filename="ios_search_widget_extension_strings_cs.pak" type="data_package" lang="cs" />
+    <output filename="ios_search_widget_extension_strings_cy.pak" type="data_package" lang="cy" />
     <output filename="ios_search_widget_extension_strings_da.pak" type="data_package" lang="da" />
     <output filename="ios_search_widget_extension_strings_de.pak" type="data_package" lang="de" />
     <output filename="ios_search_widget_extension_strings_el.pak" type="data_package" lang="el" />

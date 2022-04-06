@@ -15,6 +15,7 @@
     <output filename="app_locale_settings_bs.pak" type="data_package" lang="bs" />
     <output filename="app_locale_settings_ca.pak" type="data_package" lang="ca" />
     <output filename="app_locale_settings_cs.pak" type="data_package" lang="cs" />
+    <output filename="app_locale_settings_cy.pak" type="data_package" lang="cy" />
     <output filename="app_locale_settings_da.pak" type="data_package" lang="da" />
     <output filename="app_locale_settings_de.pak" type="data_package" lang="de" />
     <output filename="app_locale_settings_el.pak" type="data_package" lang="el" />

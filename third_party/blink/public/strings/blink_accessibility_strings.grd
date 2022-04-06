@@ -21,6 +21,7 @@ need to be translated for each locale. Note that some accessibility strings rema
     <output filename="blink_accessibility_strings_bs.pak" type="data_package" lang="bs" />
     <output filename="blink_accessibility_strings_ca.pak" type="data_package" lang="ca" />
     <output filename="blink_accessibility_strings_cs.pak" type="data_package" lang="cs" />
+    <output filename="blink_accessibility_strings_cy.pak" type="data_package" lang="cy" />
     <output filename="blink_accessibility_strings_da.pak" type="data_package" lang="da" />
     <output filename="blink_accessibility_strings_de.pak" type="data_package" lang="de" />
     <output filename="blink_accessibility_strings_el.pak" type="data_package" lang="el" />

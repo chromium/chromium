@@ -59,14 +59,6 @@ default_embedded_i18_locales = all_chrome_locales - [
                                [
                                  "iw",
                                  "no",
-
-                                 # TODO(b/192306364): Welsh is temporarily added
-                                 # in as a XTB translation without any outputs.
-                                 # This should be moved to all_chrome_locales,
-                                 # but doing so will be non-trivial as it is the
-                                 # first locale in all_chrome_locale which is
-                                 # not built for Android.
-                                 "cy",
                                ] - pseudolocales
 
 template("generate_embedded_i18n") {
