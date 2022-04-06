@@ -372,7 +372,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Files) {
   safe_browsing::EventReportValidator validator(client());
   validator.ExpectDangerousDeepScanningResult(
       /*url*/ "about:blank",
-      /*filename*/ created_file_paths()[1].AsUTF8Unsafe(),
+      /*filename*/ "bad.exe",
       // printf "bad file content" | sha256sum |  tr '[:lower:]' '[:upper:]'
       /*sha*/
       "77AE96C38386429D28E53F5005C46C7B4D8D39BE73D757CE61E0AE65CC1A5A5D",
@@ -542,9 +542,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Throttled) {
   validator.ExpectUnscannedFileEvents(
       /*url*/ "about:blank",
       {
-          created_file_paths()[0].AsUTF8Unsafe(),
-          created_file_paths()[1].AsUTF8Unsafe(),
-          created_file_paths()[2].AsUTF8Unsafe(),
+          created_file_paths()[0].BaseName().AsUTF8Unsafe(),
+          created_file_paths()[1].BaseName().AsUTF8Unsafe(),
+          created_file_paths()[2].BaseName().AsUTF8Unsafe(),
       },
       {
           // printf "a content" | sha256sum | tr '[:lower:]' '[:upper:]'
@@ -676,7 +676,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   safe_browsing::EventReportValidator validator(client());
   validator.ExpectUnscannedFileEvent(
       /*url*/ "about:blank",
-      /*filename*/ test_zip.AsUTF8Unsafe(),
+      /*filename*/ "encrypted.zip",
       // sha256sum < chrome/test/data/safe_browsing/download_protection/\
       // encrypted.zip |  tr '[:lower:]' '[:upper:]'
       /*sha*/
@@ -750,7 +750,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   safe_browsing::EventReportValidator validator(client());
   validator.ExpectUnscannedFileEvent(
       /*url*/ "about:blank",
-      /*filename*/ created_file_paths()[0].AsUTF8Unsafe(),
+      /*filename*/ "a.png",
       // printf "\x89PNG\x0D\x0A\x1A\x0A" | sha256sum |  tr '[:lower:]' \
       // '[:upper:]'
       "4C4B6A3BE1314AB86138BEF4314DDE022E600960D8689A2C8F8631802D20DAB6",
@@ -838,7 +838,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   safe_browsing::EventReportValidator validator(client());
   validator.ExpectUnscannedFileEvent(
       /*url*/ "about:blank",
-      /*filename*/ created_file_paths()[0].AsUTF8Unsafe(),
+      /*filename*/ "large.doc",
       // python3 -c "print('a' * (42 * 50 * 1024 * 1024), end='')" |\
       // sha256sum |  tr '[:lower:]' '[:upper:]'
       /*sha*/
@@ -935,7 +935,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
       BinaryUploadService::Result::SUCCESS, response);
   validator.ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
       /*url*/ "about:blank",
-      /*filename*/ created_file_paths()[0].AsUTF8Unsafe(),
+      /*filename*/ "foo.doc",
       // printf "foo content" | sha256sum  |  tr '[:lower:]' '[:upper:]'
       /*sha*/
       "B3A2E2EDBAA3C798B4FC267792B1641B94793DE02D870124E5CBE663750B4CFC",

@@ -318,6 +318,9 @@ class SafeBrowsingPrivateEventRouter
   // Determines if real-time reporting is available based on platform and user.
   static bool IsRealtimeReportingAvailable();
 
+  // Removes any path information and returns just the basename.
+  static std::string GetBaseName(const std::string& filename);
+
   // Returns the Gaia email address of the account signed in to the profile or
   // an empty string if the profile is not signed in.
   std::string GetProfileUserName() const;

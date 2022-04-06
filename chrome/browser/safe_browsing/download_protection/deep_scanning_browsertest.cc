@@ -786,8 +786,7 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest, MultipleFCMResponses) {
   EventReportValidator validator(client());
   validator.ExpectDangerousDeepScanningResult(
       /*url*/ url.spec(),
-      /*filename*/
-      (*download_items().begin())->GetTargetFilePath().AsUTF8Unsafe(),
+      /*filename*/ "zipfile_two_archives.zip",
       // sha256sum chrome/test/data/safe_browsing/download_protection/\
       // zipfile_two_archives.zip |  tr '[:lower:]' '[:upper:]'
       /*sha*/
@@ -880,8 +879,7 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   EventReportValidator validator(client());
   validator.ExpectSensitiveDataEventAndDangerousDeepScanningResult(
       /*url*/ url.spec(),
-      /*filename*/
-      (*download_items().begin())->GetTargetFilePath().AsUTF8Unsafe(),
+      /*filename*/ "zipfile_two_archives.zip",
       // sha256sum chrome/test/data/safe_browsing/download_protection/\
       // zipfile_two_archives.zip |  tr '[:lower:]' '[:upper:]'
       /*sha*/
@@ -975,7 +973,10 @@ IN_PROC_BROWSER_TEST_P(DownloadRestrictionsDeepScanningBrowserTest,
                                      "application/x-zip-compressed"};
   validator.ExpectDangerousDownloadEvent(
       /*url*/ url.spec(),
-      (*download_items().begin())->GetTargetFilePath().AsUTF8Unsafe(),
+      (*download_items().begin())
+          ->GetTargetFilePath()
+          .BaseName()
+          .AsUTF8Unsafe(),
       // sha256sum chrome/test/data/safe_browsing/download_protection/\
       // zipfile_two_archives.zip |  tr '[:lower:]' '[:upper:]'
       /*sha*/
@@ -1260,8 +1261,7 @@ IN_PROC_BROWSER_TEST_P(MetadataCheckAndDeepScanningBrowserTest, Test) {
 
     validator.ExpectDangerousDeepScanningResult(
         /*url*/ url.spec(),
-        /*filename*/
-        (*download_items().begin())->GetTargetFilePath().AsUTF8Unsafe(),
+        /*filename*/ "zipfile_two_archives.zip",
         // sha256sum chrome/test/data/safe_browsing/download_protection/\
         // zipfile_two_archives.zip |  tr '[:lower:]' '[:upper:]'
         /*sha*/
@@ -1593,7 +1593,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, Blocked) {
   std::set<std::string> mimetypes = {"text/plain"};
   validator.ExpectSensitiveDataEvent(
       /*url*/ url.spec(),
-      /*filename*/ main_file.AsUTF8Unsafe(),
+      /*filename*/ "text.htm",
       // sha256sum chrome/test/data/save_page/text.txt | tr a-f A-F
       "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD",
       /*trigger*/
@@ -1657,7 +1657,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
   std::set<std::string> mimetypes = {"text/plain"};
   validator.ExpectSensitiveDataEvent(
       /*url*/ url.spec(),
-      /*filename*/ main_file.AsUTF8Unsafe(),
+      /*filename*/ "text.htm",
       // sha256sum chrome/test/data/save_page/text.txt | tr a-f A-F
       "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD",
       /*trigger*/
@@ -1690,7 +1690,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
   // download and move the file to its final destination.
   validator.ExpectSensitiveDataEvent(
       /*url*/ url.spec(),
-      /*filename*/ main_file.AsUTF8Unsafe(),
+      /*filename*/ "text.htm",
       // sha256sum chrome/test/data/save_page/text.txt | tr a-f A-F
       "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD",
       /*trigger*/
@@ -1754,7 +1754,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest,
   std::set<std::string> mimetypes = {"text/plain"};
   validator.ExpectSensitiveDataEvent(
       /*url*/ url.spec(),
-      /*filename*/ main_file.AsUTF8Unsafe(),
+      /*filename*/ "text.htm",
       // sha256sum chrome/test/data/save_page/text.txt | tr a-f A-F
       "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD",
       /*trigger*/
@@ -1849,7 +1849,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, OpenNow) {
   std::set<std::string> mimetypes = {"text/plain"};
   validator.ExpectSensitiveDataEvent(
       /*url*/ url.spec(),
-      /*filename*/ main_file.AsUTF8Unsafe(),
+      /*filename*/ "text.htm",
       // sha256sum chrome/test/data/save_page/text.txt | tr a-f A-F
       "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD",
       /*trigger*/

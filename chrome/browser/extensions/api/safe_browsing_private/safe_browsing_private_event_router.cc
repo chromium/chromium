@@ -9,9 +9,11 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/files/file_path.h"
 #include "base/json/values_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -274,6 +276,18 @@ SafeBrowsingPrivateEventRouter::~SafeBrowsingPrivateEventRouter() {
     profile_client_->RemoveObserver(this);
 }
 
+// static
+std::string SafeBrowsingPrivateEventRouter::GetBaseName(
+    const std::string& filename) {
+  base::FilePath::StringType os_filename;
+#if BUILDFLAG(IS_WIN)
+  os_filename = base::UTF8ToWide(filename);
+#else
+  os_filename = filename;
+#endif
+  return base::FilePath(os_filename).BaseName().AsUTF8Unsafe();
+}
+
 void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordReuseDetected(
     const GURL& url,
     const std::string& user_name,
@@ -383,7 +397,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadOpened(
 
   base::Value::Dict event;
   event.Set(kKeyUrl, params.url);
-  event.Set(kKeyFileName, params.file_name);
+  event.Set(kKeyFileName, GetBaseName(params.file_name));
   event.Set(kKeyDownloadDigestSha256, params.download_digest_sha256);
   event.Set(kKeyProfileUserName, params.user_name);
   event.Set(kKeyContentType, mime_type);
@@ -546,7 +560,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDeepScanningResult(
 
   base::Value::Dict event;
   event.Set(kKeyUrl, url.spec());
-  event.Set(kKeyFileName, file_name);
+  event.Set(kKeyFileName, GetBaseName(file_name));
   event.Set(kKeyDownloadDigestSha256, download_digest_sha256);
   event.Set(kKeyProfileUserName, GetProfileUserName());
   event.Set(kKeyThreatType, threat_type);
@@ -598,7 +612,7 @@ void SafeBrowsingPrivateEventRouter::OnSensitiveDataEvent(
 
   base::Value::Dict event;
   event.Set(kKeyUrl, url.spec());
-  event.Set(kKeyFileName, file_name);
+  event.Set(kKeyFileName, GetBaseName(file_name));
   event.Set(kKeyDownloadDigestSha256, download_digest_sha256);
   event.Set(kKeyProfileUserName, GetProfileUserName());
   event.Set(kKeyContentType, mime_type);
@@ -642,7 +656,7 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
 
   base::Value::Dict event;
   event.Set(kKeyUrl, url.spec());
-  event.Set(kKeyFileName, file_name);
+  event.Set(kKeyFileName, GetBaseName(file_name));
   event.Set(kKeyDownloadDigestSha256, download_digest_sha256);
   event.Set(kKeyProfileUserName, GetProfileUserName());
   event.Set(kKeyContentType, mime_type);
@@ -688,7 +702,7 @@ void SafeBrowsingPrivateEventRouter::OnUnscannedFileEvent(
 
   base::Value::Dict event;
   event.Set(kKeyUrl, url.spec());
-  event.Set(kKeyFileName, file_name);
+  event.Set(kKeyFileName, GetBaseName(file_name));
   event.Set(kKeyDownloadDigestSha256, download_digest_sha256);
   event.Set(kKeyProfileUserName, GetProfileUserName());
   event.Set(kKeyContentType, mime_type);
@@ -739,7 +753,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
 
   base::Value::Dict event;
   event.Set(kKeyUrl, url.spec());
-  event.Set(kKeyFileName, file_name);
+  event.Set(kKeyFileName, GetBaseName(file_name));
   event.Set(kKeyDownloadDigestSha256, download_digest_sha256);
   event.Set(kKeyProfileUserName, GetProfileUserName());
   event.Set(kKeyThreatType, threat_type);
@@ -793,7 +807,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
 
   base::Value::Dict event;
   event.Set(kKeyUrl, url.spec());
-  event.Set(kKeyFileName, file_name);
+  event.Set(kKeyFileName, GetBaseName(file_name));
   event.Set(kKeyDownloadDigestSha256, download_digest_sha256);
   event.Set(kKeyProfileUserName, GetProfileUserName());
   event.Set(kKeyThreatType, threat_type);

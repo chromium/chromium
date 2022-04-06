@@ -660,7 +660,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
     EventReportValidator validator(client_.get());
     validator.ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
         /*url*/ "https://example.com/download.exe",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
+        /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]'
         // '[:upper:]'
         /*sha256*/
@@ -725,7 +725,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
     EventReportValidator validator(client_.get());
     validator.ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
         /*url*/ "https://example.com/download.exe",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
+        /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]'
         // '[:upper:]'
         /*sha256*/
@@ -782,7 +782,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
     EventReportValidator validator(client_.get());
     validator.ExpectSensitiveDataEvent(
         /*url*/ "https://example.com/download.exe",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
+        /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
         /*sha256*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
@@ -837,7 +837,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
     EventReportValidator validator(client_.get());
     validator.ExpectSensitiveDataEvent(
         /*url*/ "https://example.com/download.exe",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
+        /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
         /*sha256*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
@@ -896,7 +896,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
     EventReportValidator validator(client_.get());
     validator.ExpectSensitiveDataEvent(
         /*url*/ "https://example.com/download.exe",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
+        /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
         /*sha256*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
@@ -945,7 +945,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
     EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
+        /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
         /*sha256*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
@@ -995,7 +995,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
     EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
+        /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
         /*sha256*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
@@ -1050,7 +1050,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
     EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
+        /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
         /*sha256*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
@@ -1178,7 +1178,7 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
-        /*filename*/ secondary_files_targets_[0].AsUTF8Unsafe(),
+        /*filename*/ secondary_files_targets_[0].BaseName().AsUTF8Unsafe(),
         // printf "foo.txt" | sha256sum |  tr '[:lower:]' '[:upper:]'
         /*sha256*/
         "DDAB29FF2C393EE52855D21A240EB05F775DF88E3CE347DF759F0C4B80356C35",
@@ -1264,8 +1264,8 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     validator.ExpectSensitiveDataEvents(
         /*url*/ "https://example.com/download.exe",
         {
-            secondary_files_targets_[0].AsUTF8Unsafe(),
-            secondary_files_targets_[1].AsUTF8Unsafe(),
+            secondary_files_targets_[0].BaseName().AsUTF8Unsafe(),
+            secondary_files_targets_[1].BaseName().AsUTF8Unsafe(),
         },
         // printf "foo.txt" | sha256sum |  tr '[:lower:]' '[:upper:]'
         // printf "bar.txt" | sha256sum |  tr '[:lower:]' '[:upper:]'
@@ -1323,7 +1323,7 @@ TEST_F(DeepScanningReportingTest, Timeout) {
   EventReportValidator validator(client_.get());
   validator.ExpectUnscannedFileEvent(
       /*url*/ "https://example.com/download.exe",
-      /*filename*/ download_path_.AsUTF8Unsafe(),
+      /*filename*/ "download.exe",
       // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
       /*sha256*/
       "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
@@ -1430,7 +1430,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
     EventReportValidator validator(client_.get());
     validator.ExpectDangerousDownloadEvent(
         /*url*/ "https://example.com/download.exe",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
+        /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]'
         // '[:upper:]'
         /*sha256*/
@@ -1484,7 +1484,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
     EventReportValidator validator(client_.get());
     validator.ExpectDangerousDownloadEvent(
         /*url*/ "https://example.com/download.exe",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
+        /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]'
         // '[:upper:]'
         /*sha256*/
@@ -1530,7 +1530,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
     EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
+        /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
         /*sha256*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
@@ -1582,7 +1582,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
     EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
-        /*filename*/ download_path_.AsUTF8Unsafe(),
+        /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
         /*sha256*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",

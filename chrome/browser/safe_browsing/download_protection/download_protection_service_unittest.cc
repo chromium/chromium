@@ -2795,10 +2795,10 @@ TEST_F(DownloadProtectionServiceTest,
   std::set<std::string> expected_mimetypes{""};
   EventReportValidator validator(client_.get());
   validator.ExpectDangerousDownloadEvent(
-      "",                          // URL, not set in this test
-      final_path_.AsUTF8Unsafe(),  // Full path, including the directory
-      "68617368",                  // SHA256 of the fake download
-      "DANGEROUS_FILE_TYPE",       // expected_threat_type
+      "",                     // URL, not set in this test
+      "a.exe",                // Simple filename without the directory
+      "68617368",             // SHA256 of the fake download
+      "DANGEROUS_FILE_TYPE",  // expected_threat_type
       extensions::SafeBrowsingPrivateEventRouter::
           kTriggerFileDownload,  // expected_trigger
       &expected_mimetypes,
@@ -2856,9 +2856,9 @@ TEST_F(DownloadProtectionServiceTest,
   std::set<std::string> expected_mimetypes{"fake/mimetype"};
   EventReportValidator validator(client_.get());
   validator.ExpectSensitiveDataEvent(
-      "",                          // URL, not set in this test
-      final_path_.AsUTF8Unsafe(),  // Full path, including the directory
-      "68617368",                  // SHA256 of the fake download
+      "",          // URL, not set in this test
+      "a.exe",     // Simple filename without the directory
+      "68617368",  // SHA256 of the fake download
       extensions::SafeBrowsingPrivateEventRouter::
           kTriggerFileDownload,  // expected_trigger
       response.results()[0], &expected_mimetypes,
@@ -2903,10 +2903,10 @@ TEST_F(DownloadProtectionServiceTest,
   std::set<std::string> expected_mimetypes{""};
   EventReportValidator validator(client_.get());
   validator.ExpectDangerousDownloadEvent(
-      "",                          // URL, not set in this test
-      final_path_.AsUTF8Unsafe(),  // Full path, including the directory
-      "68617368",                  // SHA256 of the fake download
-      "DANGEROUS_FILE_TYPE",       // expected_threat_type
+      "",                     // URL, not set in this test
+      "a.exe",                // Simple filename without the directory
+      "68617368",             // SHA256 of the fake download
+      "DANGEROUS_FILE_TYPE",  // expected_threat_type
       extensions::SafeBrowsingPrivateEventRouter::
           kTriggerFileDownload,  // expected_trigger
       &expected_mimetypes,
@@ -2960,9 +2960,9 @@ TEST_F(DownloadProtectionServiceTest,
   std::set<std::string> expected_mimetypes{"fake/mimetype"};
   EventReportValidator validator(client_.get());
   validator.ExpectSensitiveDataEvent(
-      "",                          // URL, not set in this test
-      final_path_.AsUTF8Unsafe(),  // Full path, including the directory
-      "68617368",                  // SHA256 of the fake download
+      "",          // URL, not set in this test
+      "a.exe",     // Simple filename without the directory
+      "68617368",  // SHA256 of the fake download
       extensions::SafeBrowsingPrivateEventRouter::
           kTriggerFileDownload,  // expected_trigger
       response.results()[0], &expected_mimetypes,
@@ -3016,9 +3016,9 @@ TEST_F(DownloadProtectionServiceTest,
   std::set<std::string> expected_mimetypes{"fake/mimetype"};
   EventReportValidator validator(client_.get());
   validator.ExpectSensitiveDataEvent(
-      "",                          // URL, not set in this test
-      final_path_.AsUTF8Unsafe(),  // Full path, including the directory
-      "68617368",                  // SHA256 of the fake download
+      "",          // URL, not set in this test
+      "a.exe",     // Simple filename without the directory
+      "68617368",  // SHA256 of the fake download
       extensions::SafeBrowsingPrivateEventRouter::
           kTriggerFileDownload,  // expected_trigger
       response.results()[0], &expected_mimetypes,
