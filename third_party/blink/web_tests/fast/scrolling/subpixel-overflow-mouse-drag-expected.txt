@@ -1,6 +1,0 @@
-PASS container.scrollTop is within 0.02 of 0.57
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-Tests scroll behavior when a subpixel scrollbar thumb is dragged by mouse.
