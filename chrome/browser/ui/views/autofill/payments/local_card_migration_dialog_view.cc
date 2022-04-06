@@ -375,9 +375,8 @@ ADD_READONLY_PROPERTY_METADATA(std::vector<std::string>, SelectedCardGuids)
 END_METADATA
 
 LocalCardMigrationDialogView::LocalCardMigrationDialogView(
-    LocalCardMigrationDialogController* controller,
-    content::WebContents* web_contents)
-    : controller_(controller), web_contents_(web_contents->GetWeakPtr()) {
+    LocalCardMigrationDialogController* controller)
+    : controller_(controller) {
   SetButtons(controller_->AllCardsInvalid()
                  ? ui::DIALOG_BUTTON_OK
                  : ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
@@ -405,17 +404,11 @@ LocalCardMigrationDialogView::~LocalCardMigrationDialogView() {
   }
 }
 
-void LocalCardMigrationDialogView::ShowDialog() {
-  if (!web_contents_) {
-    // If web_contents does not exist, delete this because at this step this
-    // View is not owned by any class.
-    delete this;
-    return;
-  }
-
+void LocalCardMigrationDialogView::ShowDialog(
+    content::WebContents& web_contents) {
   ConstructView();
   constrained_window::CreateBrowserModalDialogViews(
-      this, web_contents_->GetTopLevelNativeWindow())
+      this, web_contents.GetTopLevelNativeWindow())
       ->Show();
 }
 
@@ -531,9 +524,8 @@ std::u16string LocalCardMigrationDialogView::GetCancelButtonLabel() const {
 }
 
 LocalCardMigrationDialog* CreateLocalCardMigrationDialogView(
-    LocalCardMigrationDialogController* controller,
-    content::WebContents* web_contents) {
-  return new LocalCardMigrationDialogView(controller, web_contents);
+    LocalCardMigrationDialogController* controller) {
+  return new LocalCardMigrationDialogView(controller);
 }
 
 BEGIN_METADATA(LocalCardMigrationDialogView, views::BubbleDialogDelegateView)

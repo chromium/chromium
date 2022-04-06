@@ -5,22 +5,16 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_LOCAL_CARD_MIGRATION_DIALOG_FACTORY_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_LOCAL_CARD_MIGRATION_DIALOG_FACTORY_H_
 
-namespace content {
-class WebContents;
-}
-
 namespace autofill {
 
 class LocalCardMigrationDialogController;
 class LocalCardMigrationDialog;
 
 LocalCardMigrationDialog* CreateLocalCardMigrationDialogView(
-    LocalCardMigrationDialogController* controller,
-    content::WebContents* web_contents);
+    LocalCardMigrationDialogController* controller);
 
 LocalCardMigrationDialog* CreateLocalCardMigrationErrorDialogView(
-    LocalCardMigrationDialogController* controller,
-    content::WebContents* web_contents);
+    LocalCardMigrationDialogController* controller);
 
 }  // namespace autofill
 

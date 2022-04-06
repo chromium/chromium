@@ -35,9 +35,8 @@
 namespace autofill {
 
 LocalCardMigrationErrorDialogView::LocalCardMigrationErrorDialogView(
-    LocalCardMigrationDialogController* controller,
-    content::WebContents* web_contents)
-    : controller_(controller), web_contents_(web_contents) {
+    LocalCardMigrationDialogController* controller)
+    : controller_(controller) {
   SetButtons(ui::DIALOG_BUTTON_CANCEL);
   SetCancelCallback(
       base::BindOnce(&LocalCardMigrationDialogController::OnDoneButtonClicked,
@@ -55,12 +54,14 @@ LocalCardMigrationErrorDialogView::LocalCardMigrationErrorDialogView(
   set_margins(gfx::Insets());
 }
 
-LocalCardMigrationErrorDialogView::~LocalCardMigrationErrorDialogView() {}
+LocalCardMigrationErrorDialogView::~LocalCardMigrationErrorDialogView() =
+    default;
 
-void LocalCardMigrationErrorDialogView::ShowDialog() {
+void LocalCardMigrationErrorDialogView::ShowDialog(
+    content::WebContents& web_contents) {
   Init();
   constrained_window::CreateBrowserModalDialogViews(
-      this, web_contents_->GetTopLevelNativeWindow())
+      this, web_contents.GetTopLevelNativeWindow())
       ->Show();
 }
 
@@ -123,9 +124,8 @@ void LocalCardMigrationErrorDialogView::Init() {
 }
 
 LocalCardMigrationDialog* CreateLocalCardMigrationErrorDialogView(
-    LocalCardMigrationDialogController* controller,
-    content::WebContents* web_contents) {
-  return new LocalCardMigrationErrorDialogView(controller, web_contents);
+    LocalCardMigrationDialogController* controller) {
+  return new LocalCardMigrationErrorDialogView(controller);
 }
 
 BEGIN_METADATA(LocalCardMigrationErrorDialogView,

@@ -7,6 +7,10 @@
 
 #include "base/callback.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace autofill {
 
 // The cross-platform UI interface which displays all the local card migration
@@ -15,7 +19,7 @@ class LocalCardMigrationDialog {
  public:
   LocalCardMigrationDialog(const LocalCardMigrationDialog&) = delete;
   LocalCardMigrationDialog& operator=(const LocalCardMigrationDialog&) = delete;
-  virtual void ShowDialog() = 0;
+  virtual void ShowDialog(content::WebContents& web_contents) = 0;
   virtual void CloseDialog() = 0;
 
  protected:
