@@ -198,13 +198,18 @@
                     mostVisitedSite:std::move(mostVisitedFactory)
                    readingListModel:readingListModel
                         prefService:prefs
-      isGoogleDefaultSearchProvider:isGoogleDefaultSearchProvider];
-  self.contentSuggestionsMediator.commandHandler = self.ntpMediator;
-  self.contentSuggestionsMediator.headerProvider = self.headerController;
+      isGoogleDefaultSearchProvider:isGoogleDefaultSearchProvider
+                            browser:self.browser];
   self.contentSuggestionsMediator.discoverFeedDelegate =
       self.discoverFeedDelegate;
+  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
+  // clean up.
+  self.contentSuggestionsMediator.dispatcher =
+      static_cast<id<ApplicationCommands, BrowserCommands, OmniboxCommands,
+                     SnackbarCommands>>(self.browser->GetCommandDispatcher());
   self.contentSuggestionsMediator.webStateList =
       self.browser->GetWebStateList();
+  self.contentSuggestionsMediator.webState = self.webState;
   [self configureStartSurfaceIfNeeded];
 
   if (!IsContentSuggestionsHeaderMigrationEnabled()) {
@@ -216,14 +221,15 @@
     self.contentSuggestionsViewController =
         [[ContentSuggestionsViewController alloc] init];
     self.contentSuggestionsViewController.suggestionCommandHandler =
-        self.ntpMediator;
+        self.contentSuggestionsMediator;
     self.contentSuggestionsViewController.audience = self;
     self.contentSuggestionsViewController.menuProvider = self;
   } else {
     self.collectionViewController =
         [[ContentSuggestionsCollectionViewController alloc]
             initWithStyle:CollectionViewControllerStyleDefault];
-    self.collectionViewController.suggestionCommandHandler = self.ntpMediator;
+    self.collectionViewController.suggestionCommandHandler =
+        self.contentSuggestionsMediator;
     self.collectionViewController.audience = self;
     self.collectionViewController.contentSuggestionsEnabled =
         self.contentSuggestionsEnabled;
@@ -243,11 +249,6 @@
   if (!IsContentSuggestionsHeaderMigrationEnabled()) {
     self.ntpMediator.consumer = self.headerController;
   }
-  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
-  // clean up.
-  self.ntpMediator.dispatcher =
-      static_cast<id<ApplicationCommands, BrowserCommands, OmniboxCommands,
-                     SnackbarCommands>>(self.browser->GetCommandDispatcher());
   // IsContentSuggestionsUIViewControllerMigrationEnabled() doesn't need to set
   // the suggestionsViewController since it won't be retrieving an item's index
   // from the CollectionView model.
@@ -324,6 +325,13 @@
   return self.collectionViewController;
 }
 
+#pragma mark - Setters
+
+- (void)setWebState:(web::WebState*)webState {
+  _webState = webState;
+  self.contentSuggestionsMediator.webState = webState;
+}
+
 #pragma mark - ContentSuggestionsViewControllerAudience
 
 - (void)promoShown {
@@ -334,6 +342,9 @@
 }
 
 - (void)viewDidDisappear {
+  // Start no longer showing
+  self.contentSuggestionsMediator.showingStartSurface = NO;
+  // Update DiscoverFeedService to NO
   if (ShouldShowReturnToMostRecentTabForStartSurface()) {
     [self.contentSuggestionsMediator hideRecentTabTile];
   }
@@ -444,7 +455,7 @@
                                                     toView:nil];
 
         [menuElements addObject:[actionFactory actionToOpenInNewTabWithBlock:^{
-                        [weakSelf.ntpMediator
+                        [weakSelf.contentSuggestionsMediator
                             openNewTabWithMostVisitedItem:item
                                                 incognito:NO
                                                   atIndex:index
@@ -453,10 +464,11 @@
 
         UIAction* incognitoAction =
             [actionFactory actionToOpenInNewIncognitoTabWithBlock:^{
-              [weakSelf.ntpMediator openNewTabWithMostVisitedItem:item
-                                                        incognito:YES
-                                                          atIndex:index
-                                                        fromPoint:centerPoint];
+              [weakSelf.contentSuggestionsMediator
+                  openNewTabWithMostVisitedItem:item
+                                      incognito:YES
+                                        atIndex:index
+                                      fromPoint:centerPoint];
             }];
 
         if (IsIncognitoModeDisabled(
@@ -485,7 +497,8 @@
                       }]];
 
         [menuElements addObject:[actionFactory actionToRemoveWithBlock:^{
-                        [weakSelf.ntpMediator removeMostVisited:item];
+                        [weakSelf.contentSuggestionsMediator
+                            removeMostVisited:item];
                       }]];
 
         return [UIMenu menuWithTitle:@"" children:menuElements];
@@ -504,6 +517,8 @@
   if (!scene.modifytVisibleNTPForStartSurface)
     return;
 
+  // Update Mediator property to signal the NTP is currently showing Start.
+  self.contentSuggestionsMediator.showingStartSurface = YES;
   if (ShouldShowReturnToMostRecentTabForStartSurface()) {
     base::RecordAction(
         base::UserMetricsAction("IOS.StartSurface.ShowReturnToRecentTabTile"));

@@ -503,6 +503,7 @@ namespace {
   if (_webState == webState) {
     return;
   }
+  self.contentSuggestionsCoordinator.webState = webState;
   self.ntpMediator.webState = webState;
   _webState = webState;
 }
@@ -1074,9 +1075,6 @@ namespace {
   ntpMediator.browser = self.browser;
   ntpMediator.ntpViewController = self.ntpViewController;
   ntpMediator.headerCollectionInteractionHandler = self.headerSynchronizer;
-  ntpMediator.NTPMetrics = [[NTPHomeMetrics alloc]
-      initWithBrowserState:self.browser->GetBrowserState()];
-  ntpMediator.NTPMetrics.webState = self.webState;
   return ntpMediator;
 }
 

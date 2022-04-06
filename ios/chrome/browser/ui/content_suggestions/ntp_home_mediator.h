@@ -7,8 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_gesture_commands.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller_delegate.h"
 
 namespace signin {
@@ -19,10 +17,8 @@ namespace web {
 class WebState;
 }
 
-@protocol ApplicationCommands;
 class AuthenticationService;
 class Browser;
-@protocol BrowserCommands;
 class ChromeAccountManagerService;
 @protocol ContentSuggestionsCollectionControlling;
 @class ContentSuggestionsHeaderSynchronizer;
@@ -33,18 +29,14 @@ class ChromeAccountManagerService;
 @protocol NTPHomeConsumer;
 @class NTPHomeMetrics;
 @class FeedMetricsRecorder;
-@protocol OmniboxCommands;
 class TemplateURLService;
-@protocol SnackbarCommands;
 class UrlLoadingBrowserAgent;
 class VoiceSearchAvailability;
 
 // Mediator for the NTP Home panel, handling the interactions with the
 // suggestions.
 @interface NTPHomeMediator
-    : NSObject<ContentSuggestionsCommands,
-               ContentSuggestionsGestureCommands,
-               ContentSuggestionsHeaderViewControllerDelegate>
+    : NSObject <ContentSuggestionsHeaderViewControllerDelegate>
 
 - (instancetype)
            initWithWebState:(web::WebState*)webState
@@ -59,10 +51,6 @@ class VoiceSearchAvailability;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Dispatcher.
-@property(nonatomic, weak)
-    id<ApplicationCommands, BrowserCommands, OmniboxCommands, SnackbarCommands>
-        dispatcher;
 // Recorder for the metrics related to the NTP.
 @property(nonatomic, strong) NTPHomeMetrics* NTPMetrics;
 // Recorder for the metrics related to the feed.
@@ -104,6 +92,18 @@ class VoiceSearchAvailability;
 // Save the NTP scroll offset into the last committed navigation item for the
 // before navigating away.
 - (void)saveContentOffsetForWebState:(web::WebState*)webState;
+
+// Handles the actions following a tap on the "Manage Activity" item in the
+// Discover feed menu.
+- (void)handleFeedManageActivityTapped;
+
+// Handles the actions following a tap on the "Manage Interests" item in the
+// Discover feed menu.
+- (void)handleFeedManageInterestsTapped;
+
+// Handles the actions following a tap on the "Learn More" item in the Discover
+// feed menu.
+- (void)handleFeedLearnMoreTapped;
 
 @end
 

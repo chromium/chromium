@@ -6,8 +6,6 @@
 
 #include <memory>
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #include "base/mac/foundation_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -26,14 +24,8 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
-#import "ios/chrome/browser/ui/commands/application_commands.h"
-#import "ios/chrome/browser/ui/commands/browser_commands.h"
-#import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
-#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_view_controller.h"
@@ -42,16 +34,13 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_consumer.h"
-#import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
-#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/logo_vendor.h"
 #include "ios/chrome/browser/ui/ntp/metrics.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
-#import "ios/chrome/browser/ui/ntp/notification_promo_whats_new.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -247,6 +236,31 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   item->SetPageDisplayState(displayState);
 }
 
+// Opens web page for a menu item in the NTP.
+- (void)openMenuItemWebPage:(GURL)URL {
+  NewTabPageTabHelper* NTPHelper =
+      NewTabPageTabHelper::FromWebState(self.webState);
+  if (NTPHelper && NTPHelper->IgnoreLoadRequests())
+    return;
+  _URLLoader->Load(UrlLoadParams::InCurrentTab(URL));
+  // TODO(crbug.com/1085419): Add metrics.
+}
+
+- (void)handleFeedManageActivityTapped {
+  [self openMenuItemWebPage:GURL(kFeedManageActivityURL)];
+  [self.feedMetricsRecorder recordHeaderMenuManageActivityTapped];
+}
+
+- (void)handleFeedManageInterestsTapped {
+  [self openMenuItemWebPage:GURL(kFeedManageInterestsURL)];
+  [self.feedMetricsRecorder recordHeaderMenuManageInterestsTapped];
+}
+
+- (void)handleFeedLearnMoreTapped {
+  [self openMenuItemWebPage:GURL(kFeedLearnMoreURL)];
+  [self.feedMetricsRecorder recordHeaderMenuLearnMoreTapped];
+}
+
 #pragma mark - Properties.
 
 - (void)setWebState:(web::WebState*)webState {
@@ -254,7 +268,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     _webState->RemoveObserver(_webStateObserver.get());
   }
   _webState = webState;
-  self.NTPMetrics.webState = webState;
   if (IsSingleNtpEnabled()) {
     [self.logoVendor setWebState:webState];
   }
@@ -281,189 +294,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 - (void)webStateDestroyed:(web::WebState*)webState {
   DCHECK_EQ(self.webState, webState);
   self.webState = nullptr;
-}
-
-#pragma mark - ContentSuggestionsCommands
-
-- (void)openReadingList {
-  [self.dispatcher showReadingList];
-}
-
-- (void)openMostVisitedItem:(CollectionViewItem*)item
-                    atIndex:(NSInteger)mostVisitedIndex {
-  NewTabPageTabHelper* NTPHelper =
-      NewTabPageTabHelper::FromWebState(self.webState);
-  if (NTPHelper && NTPHelper->IgnoreLoadRequests())
-    return;
-
-  if ([item isKindOfClass:[ContentSuggestionsMostVisitedActionItem class]]) {
-    ContentSuggestionsMostVisitedActionItem* mostVisitedItem =
-        base::mac::ObjCCastStrict<ContentSuggestionsMostVisitedActionItem>(
-            item);
-    switch (mostVisitedItem.collectionShortcutType) {
-      case NTPCollectionShortcutTypeBookmark:
-        base::RecordAction(base::UserMetricsAction("MobileNTPShowBookmarks"));
-        LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
-        [self.dispatcher showBookmarksManager];
-        break;
-      case NTPCollectionShortcutTypeReadingList:
-        base::RecordAction(base::UserMetricsAction("MobileNTPShowReadingList"));
-        [self.dispatcher showReadingList];
-        break;
-      case NTPCollectionShortcutTypeRecentTabs:
-        base::RecordAction(base::UserMetricsAction("MobileNTPShowRecentTabs"));
-        [self.dispatcher showRecentTabs];
-        break;
-      case NTPCollectionShortcutTypeHistory:
-        base::RecordAction(base::UserMetricsAction("MobileNTPShowHistory"));
-        [self.dispatcher showHistory];
-        break;
-      case NTPCollectionShortcutTypeCount:
-        NOTREACHED();
-        break;
-    }
-    return;
-  }
-
-  ContentSuggestionsMostVisitedItem* mostVisitedItem =
-      base::mac::ObjCCastStrict<ContentSuggestionsMostVisitedItem>(item);
-
-  [self logMostVisitedOpening:mostVisitedItem atIndex:mostVisitedIndex];
-
-  UrlLoadParams params = UrlLoadParams::InCurrentTab(mostVisitedItem.URL);
-  params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
-  _URLLoader->Load(params);
-}
-
-// TODO(crbug.com/761096) : Promo handling should be tested.
-- (void)handlePromoTapped {
-  NotificationPromoWhatsNew* notificationPromo =
-      [self.suggestionsMediator notificationPromo];
-  DCHECK(notificationPromo);
-  notificationPromo->HandleClosed();
-  [self.NTPMetrics recordAction:new_tab_page_uma::ACTION_OPENED_PROMO];
-  if (IsSingleCellContentSuggestionsEnabled()) {
-    [self.suggestionsMediator hidePromo];
-  }
-
-  if (notificationPromo->IsURLPromo()) {
-    UrlLoadParams params = UrlLoadParams::InNewTab(notificationPromo->url());
-    params.append_to = kCurrentTab;
-    _URLLoader->Load(params);
-    return;
-  }
-
-  if (notificationPromo->IsChromeCommandPromo()) {
-    // "What's New" promo that runs a command can be added here by calling
-    // self.dispatcher.
-    if (notificationPromo->command() == kSetDefaultBrowserCommand) {
-      base::RecordAction(
-          base::UserMetricsAction("IOS.DefaultBrowserNTPPromoTapped"));
-      [[UIApplication sharedApplication]
-                    openURL:
-                        [NSURL URLWithString:UIApplicationOpenSettingsURLString]
-                    options:{}
-          completionHandler:nil];
-      return;
-    }
-
-    DCHECK_EQ(kTestWhatsNewCommand, notificationPromo->command())
-        << "Promo command is not valid.";
-    return;
-  }
-  NOTREACHED() << "Promo type is neither URL or command.";
-}
-
-// Opens web page for a menu item in the NTP.
-- (void)openMenuItemWebPage:(GURL)URL {
-  NewTabPageTabHelper* NTPHelper =
-      NewTabPageTabHelper::FromWebState(self.webState);
-  if (NTPHelper && NTPHelper->IgnoreLoadRequests())
-    return;
-  _URLLoader->Load(UrlLoadParams::InCurrentTab(URL));
-  // TODO(crbug.com/1085419): Add metrics.
-}
-
-- (void)handleFeedManageActivityTapped {
-  [self openMenuItemWebPage:GURL(kFeedManageActivityURL)];
-  [self.feedMetricsRecorder recordHeaderMenuManageActivityTapped];
-}
-
-- (void)handleFeedManageInterestsTapped {
-  [self openMenuItemWebPage:GURL(kFeedManageInterestsURL)];
-  [self.feedMetricsRecorder recordHeaderMenuManageInterestsTapped];
-}
-
-- (void)handleFeedLearnMoreTapped {
-  [self openMenuItemWebPage:GURL(kFeedLearnMoreURL)];
-  [self.feedMetricsRecorder recordHeaderMenuLearnMoreTapped];
-}
-
-- (void)openMostRecentTab {
-  base::RecordAction(
-      base::UserMetricsAction("IOS.StartSurface.OpenMostRecentTab"));
-  [self.suggestionsMediator hideRecentTabTile];
-  WebStateList* web_state_list = self.browser->GetWebStateList();
-  web::WebState* web_state =
-      StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)
-          ->most_recent_tab();
-  DCHECK(web_state);
-  int index = web_state_list->GetIndexOfWebState(web_state);
-  web_state_list->ActivateWebStateAt(index);
-}
-
-- (void)hideMostRecentTab {
-  [self.suggestionsMediator hideRecentTabTile];
-}
-
-#pragma mark - ContentSuggestionsGestureCommands
-
-- (void)openNewTabWithMostVisitedItem:(ContentSuggestionsMostVisitedItem*)item
-                            incognito:(BOOL)incognito
-                              atIndex:(NSInteger)index
-                            fromPoint:(CGPoint)point {
-  if (incognito &&
-      IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs())) {
-    // This should only happen when the policy changes while the option is
-    // presented.
-    return;
-  }
-  [self logMostVisitedOpening:item atIndex:index];
-  [self openNewTabWithURL:item.URL incognito:incognito originPoint:point];
-}
-
-- (void)openNewTabWithMostVisitedItem:(ContentSuggestionsMostVisitedItem*)item
-                            incognito:(BOOL)incognito
-                              atIndex:(NSInteger)index {
-  if (incognito &&
-      IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs())) {
-    // This should only happen when the policy changes while the option is
-    // presented.
-    return;
-  }
-  [self logMostVisitedOpening:item atIndex:index];
-  // This is called in response to accessibility custom actions which don't
-  // need to animate the new tab from the Most Visited Tile.
-  CGPoint cellCenter = IsContentSuggestionsUIViewControllerMigrationEnabled()
-                           ? CGPointZero
-                           : [self cellCenterForItem:item];
-  [self openNewTabWithURL:item.URL incognito:incognito originPoint:cellCenter];
-}
-
-- (void)openNewTabWithMostVisitedItem:(ContentSuggestionsMostVisitedItem*)item
-                            incognito:(BOOL)incognito {
-  NSInteger index = IsContentSuggestionsUIViewControllerMigrationEnabled()
-                        ? item.index
-                        : [self.suggestionsViewController.collectionViewModel
-                              indexPathForItem:item]
-                              .item;
-  [self openNewTabWithMostVisitedItem:item incognito:incognito atIndex:index];
-}
-
-- (void)removeMostVisited:(ContentSuggestionsMostVisitedItem*)item {
-  base::RecordAction(base::UserMetricsAction("MostVisited_UrlBlacklisted"));
-  [self.suggestionsMediator blockMostVisitedURL:item.URL];
-  [self showMostVisitedUndoForURL:item.URL];
 }
 
 #pragma mark - ChromeAccountManagerServiceObserver
@@ -528,70 +358,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 }
 
 #pragma mark - Private
-
-// Returns the center of the cell associated with |item| in the window
-// coordinates. Returns CGPointZero if the cell isn't visible.
-- (CGPoint)cellCenterForItem:(ContentSuggestionsMostVisitedItem*)item {
-  NSIndexPath* indexPath = [self.suggestionsViewController.collectionViewModel
-      indexPathForItem:item];
-  if (!indexPath)
-    return CGPointZero;
-
-  UIView* cell = [self.suggestionsViewController.collectionView
-      cellForItemAtIndexPath:indexPath];
-  return [cell.superview convertPoint:cell.center toView:nil];
-}
-
-// Opens the |URL| in a new tab |incognito| or not. |originPoint| is the origin
-// of the new tab animation if the tab is opened in background, in window
-// coordinates.
-- (void)openNewTabWithURL:(const GURL&)URL
-                incognito:(BOOL)incognito
-              originPoint:(CGPoint)originPoint {
-  // Open the tab in background if it is non-incognito only.
-  UrlLoadParams params = UrlLoadParams::InNewTab(URL);
-  params.SetInBackground(!incognito);
-  params.in_incognito = incognito;
-  params.append_to = kCurrentTab;
-  params.origin_point = originPoint;
-  _URLLoader->Load(params);
-}
-
-// Logs a histogram due to a Most Visited item being opened.
-- (void)logMostVisitedOpening:(ContentSuggestionsMostVisitedItem*)item
-                      atIndex:(NSInteger)mostVisitedIndex {
-  [self.NTPMetrics
-      recordAction:new_tab_page_uma::ACTION_OPENED_MOST_VISITED_ENTRY];
-  base::RecordAction(base::UserMetricsAction("MobileNTPMostVisited"));
-
-  RecordNTPTileClick(mostVisitedIndex, item.source, item.titleSource,
-                     item.attributes, GURL());
-}
-
-// Shows a snackbar with an action to undo the removal of the most visited item
-// with a |URL|.
-- (void)showMostVisitedUndoForURL:(GURL)URL {
-  GURL copiedURL = URL;
-
-  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
-  __weak NTPHomeMediator* weakSelf = self;
-  action.handler = ^{
-    NTPHomeMediator* strongSelf = weakSelf;
-    if (!strongSelf)
-      return;
-    [strongSelf.suggestionsMediator allowMostVisitedURL:copiedURL];
-  };
-  action.title = l10n_util::GetNSString(IDS_NEW_TAB_UNDO_THUMBNAIL_REMOVE);
-  action.accessibilityIdentifier = @"Undo";
-
-  TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  MDCSnackbarMessage* message = [MDCSnackbarMessage
-      messageWithText:l10n_util::GetNSString(
-                          IDS_IOS_NEW_TAB_MOST_VISITED_ITEM_REMOVED)];
-  message.action = action;
-  message.category = @"MostVisitedUndo";
-  [self.dispatcher showSnackbarMessage:message];
-}
 
 // Set the NTP scroll offset for the current navigation item.
 - (void)setContentOffsetForWebState:(web::WebState*)webState {
