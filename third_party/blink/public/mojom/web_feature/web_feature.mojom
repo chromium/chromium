@@ -3515,6 +3515,10 @@ enum WebFeature {
   kNavigatorUAData_Mobile = 4194,
   kNavigatorUAData_Platform = 4195,
   kNavigatorUAData_Brands = 4196,
+  kOldConstraintsParsed = 4197,
+  kOldConstraintNotReported = 4198,
+  kOldConstraintRejected = 4199,
+  kOldConstraintIgnored = 4200,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

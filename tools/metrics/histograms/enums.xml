@@ -37786,6 +37786,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4194" label="NavigatorUAData_Mobile"/>
   <int value="4195" label="NavigatorUAData_Platform"/>
   <int value="4196" label="NavigatorUAData_Brands"/>
+  <int value="4197" label="OldConstraintsParsed"/>
+  <int value="4198" label="OldConstraintNotReported"/>
+  <int value="4199" label="OldConstraintRejected"/>
+  <int value="4200" label="OldConstraintIgnored"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

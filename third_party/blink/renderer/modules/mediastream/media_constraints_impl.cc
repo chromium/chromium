@@ -279,6 +279,9 @@ static void ParseOldStyleNames(
     bool report_unknown_names,
     MediaTrackConstraintSetPlatform& result,
     MediaErrorState& error_state) {
+  if (old_names.size() > 0) {
+    UseCounter::Count(context, WebFeature::kOldConstraintsParsed);
+  }
   for (const NameValueStringConstraint& constraint : old_names) {
     if (constraint.name_.Equals(kMinAspectRatio)) {
       result.aspect_ratio.SetMin(atof(constraint.value_.Utf8().c_str()));
@@ -374,9 +377,11 @@ static void ParseOldStyleNames(
             context, WebFeature::kRTCConstraintEnableDtlsSrtpFalse);
       }
 #if BUILDFLAG(IS_FUCHSIA)
-      // Special dispensation for Fuchsia to run SDES in 2002
+      // Special dispensation for Fuchsia to run SDES in 2022
       // TODO(crbug.com/804275): Delete when Fuchsia no longer depends on it.
       result.enable_dtls_srtp.SetExact(ToBoolean(constraint.value_));
+#else
+      UseCounter::Count(context, WebFeature::kOldConstraintIgnored);
 #endif
     } else if (constraint.name_.Equals(kEnableRtpDataChannels)) {
       // This constraint does not turn on RTP data channels, but we do not
@@ -389,6 +394,7 @@ static void ParseOldStyleNames(
         Deprecation::CountDeprecation(
             context, WebFeature::kRTCConstraintEnableRtpDataChannelsFalse);
       }
+      UseCounter::Count(context, WebFeature::kOldConstraintIgnored);
     } else if (constraint.name_.Equals(kEnableDscp)) {
       result.enable_dscp.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_.Equals(kEnableIPv6)) {
@@ -432,6 +438,7 @@ static void ParseOldStyleNames(
           mojom::ConsoleMessageLevel::kWarning,
           "Obsolete constraint named " + String(constraint.name_) +
               " is ignored. Please stop using it."));
+      UseCounter::Count(context, WebFeature::kOldConstraintIgnored);
     } else if (constraint.name_.Equals(kTestConstraint1) ||
                constraint.name_.Equals(kTestConstraint2)) {
       // These constraints are only for testing parsing.
@@ -442,16 +449,16 @@ static void ParseOldStyleNames(
       }
     } else {
       if (report_unknown_names) {
-        // TODO(hta): UMA stats for unknown constraints passed.
-        // https://crbug.com/576613
+        UseCounter::Count(context, WebFeature::kOldConstraintRejected);
         context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kDeprecation,
             mojom::ConsoleMessageLevel::kWarning,
             "Unknown constraint named " + String(constraint.name_) +
                 " rejected"));
-        // TODO(crbug.com/856176): Don't throw an error.
         error_state.ThrowConstraintError("Unknown name of constraint detected",
                                          constraint.name_);
+      } else {
+        UseCounter::Count(context, WebFeature::kOldConstraintNotReported);
       }
     }
   }
