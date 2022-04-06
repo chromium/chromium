@@ -26,32 +26,77 @@ FakeDevicePairingHandler::~FakeDevicePairingHandler() {
   NotifyFinished();
 }
 
-void FakeDevicePairingHandler::SetDeviceList(
-    std::vector<device::BluetoothDevice*> device_list) {
-  device_list_ = std::move(device_list);
+void FakeDevicePairingHandler::SimulatePairDeviceFinished(
+    absl::optional<device::ConnectionFailureReason> failure_reason) {
+  DCHECK(!current_pairing_device_id().empty());
+  FinishCurrentPairingRequest(failure_reason);
+
+  // If the pairing was a success, notify owner of this class pairing has
+  // finished.
+  if (!failure_reason.has_value())
+    NotifyFinished();
+}
+
+void FakeDevicePairingHandler::SimulateFetchDeviceFinished(
+    mojom::BluetoothDevicePropertiesPtr device) {
+  std::move(fetch_device_callback_).Run(std::move(device));
+}
+
+void FakeDevicePairingHandler::SimulateRequestPinCode() {
+  DCHECK(!current_pairing_device_id().empty());
+  SendRequestPinCode();
+}
+
+void FakeDevicePairingHandler::SimulateRequestPasskey() {
+  DCHECK(!current_pairing_device_id().empty());
+  SendRequestPasskey();
+}
+
+void FakeDevicePairingHandler::SimulateDisplayPinCode(
+    const std::string& pin_code) {
+  DCHECK(!current_pairing_device_id().empty());
+  SendDisplayPinCode(pin_code);
+}
+
+void FakeDevicePairingHandler::SimulateDisplayPasskey(uint32_t passkey) {
+  DCHECK(!current_pairing_device_id().empty());
+  SendDisplayPasskey(passkey);
+}
+
+void FakeDevicePairingHandler::SimulateKeysEntered(uint32_t entered) {
+  DCHECK(!current_pairing_device_id().empty());
+  SendKeysEntered(entered);
+}
+
+void FakeDevicePairingHandler::SimulateConfirmPasskey(uint32_t passkey) {
+  DCHECK(!current_pairing_device_id().empty());
+  SendConfirmPasskey(passkey);
+}
+
+void FakeDevicePairingHandler::SimulateAuthorizePairing() {
+  DCHECK(!current_pairing_device_id().empty());
+  SendAuthorizePairing();
 }
 
 void FakeDevicePairingHandler::FetchDevice(const std::string& device_address,
                                            FetchDeviceCallback callback) {
-  for (auto* device : device_list_) {
-    if (device->GetAddress() != device_address)
-      continue;
-    std::move(callback).Run(GenerateBluetoothDeviceMojoProperties(
-        device, /*fast_pair_delegate_=*/nullptr));
-    return;
-  }
-  std::move(callback).Run(std::move(nullptr));
+  fetch_device_callback_ = std::move(callback);
 }
 
-device::BluetoothDevice* FakeDevicePairingHandler::FindDevice(
-    const std::string& device_id) const {
-  for (auto* device : device_list_) {
-    if (device->GetIdentifier() != device_id)
-      continue;
-    return device;
-  }
-  return nullptr;
+void FakeDevicePairingHandler::PerformPairDevice(const std::string& device_id) {
 }
+
+void FakeDevicePairingHandler::PerformFinishCurrentPairingRequest(
+    absl::optional<device::ConnectionFailureReason> failure_reason,
+    base::TimeDelta duration) {}
+
+void FakeDevicePairingHandler::CancelPairing() {}
+
+void FakeDevicePairingHandler::OnRequestPinCode(const std::string& pin_code) {}
+
+void FakeDevicePairingHandler::OnRequestPasskey(const std::string& passkey) {}
+
+void FakeDevicePairingHandler::OnConfirmPairing(bool confirmed) {}
 
 }  // namespace bluetooth_config
 }  // namespace chromeos

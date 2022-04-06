@@ -217,7 +217,7 @@ class DevicePairingHandlerImplTest : public testing::Test {
   }
 
   base::TimeDelta GetPairingFailureDelay() {
-    return DevicePairingHandler::kPairingFailureDelay;
+    return DevicePairingHandlerImpl::kPairingFailureDelay;
   }
 
   void FastForwardOperation(base::TimeDelta time) {

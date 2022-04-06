@@ -152,12 +152,6 @@ class DiscoverySessionManagerImplTest : public testing::Test {
             mock_adapter_.get(), kTestBluetoothClass, kTestBluetoothName,
             address, /*paired=*/false,
             /*connected=*/false);
-    ON_CALL(*mock_device, Connect_(testing::_, testing::_))
-        .WillByDefault(testing::Invoke(
-            [this](device::BluetoothDevice::PairingDelegate* pairing_delegate,
-                   device::BluetoothDevice::ConnectCallback& callback) {
-              connect_callback_ = std::move(callback);
-            }));
     mock_devices_.push_back(std::move(mock_device));
 
     // Add the device to the discovered devices provider's discovered devices.
@@ -168,17 +162,7 @@ class DiscoverySessionManagerImplTest : public testing::Test {
     }
     fake_discovered_devices_provider_.SetDiscoveredDevices(
         std::move(discovered_devices));
-    fake_device_pairing_handler_factory_.UpdateActiveHandlerDeviceLists();
     discovery_session_manager_->FlushForTesting();
-  }
-
-  bool HasPendingConnectCallback() const {
-    return !connect_callback_.is_null();
-  }
-
-  void InvokePendingConnectCallback() {
-    std::move(connect_callback_).Run(absl::nullopt);
-    base::RunLoop().RunUntilIdle();
   }
 
   void SetShouldSynchronouslyInvokeStartScanCallback(bool should) {
@@ -193,24 +177,19 @@ class DiscoverySessionManagerImplTest : public testing::Test {
     return observer;
   }
 
+  std::vector<FakeDevicePairingHandler*>& GetDevicePairingHandlers() {
+    return fake_device_pairing_handler_factory_.device_pairing_handlers();
+  }
+
  private:
   class FakeDevicePairingHandlerFactory
       : public DevicePairingHandlerImpl::Factory {
    public:
-    explicit FakeDevicePairingHandlerFactory(
-        const DiscoverySessionManagerImplTest& test)
-        : test_(test) {}
-
+    FakeDevicePairingHandlerFactory() = default;
     ~FakeDevicePairingHandlerFactory() override = default;
 
-    // Sets the device list of each handler to |test_.mock_devices_|.
-    void UpdateActiveHandlerDeviceLists() {
-      for (auto entry : id_to_fake_handler_map_) {
-        std::vector<device::BluetoothDevice*> unpaired_devices;
-        for (auto& device : test_.mock_devices_)
-          unpaired_devices.push_back(device.get());
-        entry.second->SetDeviceList(std::move(unpaired_devices));
-      }
+    std::vector<FakeDevicePairingHandler*>& device_pairing_handlers() {
+      return device_pairing_handlers_;
     }
 
    private:
@@ -225,31 +204,15 @@ class DiscoverySessionManagerImplTest : public testing::Test {
       EXPECT_TRUE(bluetooth_adapter);
       EXPECT_TRUE(finished_pairing_callback);
 
-      HandlerId id;
-      auto fake_device_pairing_handler = std::make_unique<
-          FakeDevicePairingHandler>(
-          std::move(pending_receiver), adapter_state_controller,
-          base::BindOnce(
-              &FakeDevicePairingHandlerFactory::OnFakeHandlerFinishedPairing,
-              base::Unretained(this), id,
-              std::move(finished_pairing_callback)));
-      id_to_fake_handler_map_[id] = fake_device_pairing_handler.get();
-
-      // Initialize the handler with mock_devices_. This will redundantly set
-      // the device lists for all handlers.
-      UpdateActiveHandlerDeviceLists();
+      auto fake_device_pairing_handler =
+          std::make_unique<FakeDevicePairingHandler>(
+              std::move(pending_receiver), adapter_state_controller,
+              std::move(finished_pairing_callback));
+      device_pairing_handlers_.push_back(fake_device_pairing_handler.get());
       return fake_device_pairing_handler;
     }
 
-    void OnFakeHandlerFinishedPairing(
-        const HandlerId& id,
-        base::OnceClosure finished_pairing_callback) {
-      id_to_fake_handler_map_.erase(id);
-      std::move(finished_pairing_callback).Run();
-    }
-
-    std::map<HandlerId, FakeDevicePairingHandler*> id_to_fake_handler_map_;
-    const DiscoverySessionManagerImplTest& test_;
+    std::vector<FakeDevicePairingHandler*> device_pairing_handlers_;
   };
 
   base::test::TaskEnvironment task_environment_;
@@ -265,7 +228,7 @@ class DiscoverySessionManagerImplTest : public testing::Test {
   FakeAdapterStateController fake_adapter_state_controller_;
   FakeDiscoveredDevicesProvider fake_discovered_devices_provider_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
-  FakeDevicePairingHandlerFactory fake_device_pairing_handler_factory_{*this};
+  FakeDevicePairingHandlerFactory fake_device_pairing_handler_factory_;
 
   std::unique_ptr<DiscoverySessionManager> discovery_session_manager_;
 };
@@ -453,16 +416,26 @@ TEST_F(DiscoverySessionManagerImplTest, MultipleClientsAttemptPairing) {
   EXPECT_EQ(1, observer->num_discovery_session_changed_calls());
 
   // Simulate first client attempting to pair with an unknown device_id.
+  EXPECT_EQ(2u, GetDevicePairingHandlers().size());
+  FakeDevicePairingHandler* device_pairing_handler1 =
+      GetDevicePairingHandlers()[0];
+  EXPECT_TRUE(device_pairing_handler1->current_pairing_device_id().empty());
   absl::optional<mojom::PairingResult> result;
   auto pairing_delegate1 = std::make_unique<FakeDevicePairingDelegate>();
+  const std::string device_id = "device_id";
   delegate1->pairing_handler()->PairDevice(
-      "device_id", pairing_delegate1->GeneratePendingRemote(),
+      device_id, pairing_delegate1->GeneratePendingRemote(),
       base::BindLambdaForTesting(
           [&result](mojom::PairingResult pairing_result) {
             result = pairing_result;
           }));
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(HasPendingConnectCallback());
+  EXPECT_EQ(device_id, device_pairing_handler1->current_pairing_device_id());
+
+  // Finish the pairing with failure.
+  device_pairing_handler1->SimulatePairDeviceFinished(
+      device::ConnectionFailureReason::kFailed);
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(result, mojom::PairingResult::kNonAuthFailure);
 
   // First client's pairing handler should still be alive because we can retry
@@ -472,6 +445,7 @@ TEST_F(DiscoverySessionManagerImplTest, MultipleClientsAttemptPairing) {
   EXPECT_TRUE(pairing_delegate1->IsMojoPipeConnected());
 
   // First client pairs with a known device_id.
+  EXPECT_TRUE(device_pairing_handler1->current_pairing_device_id().empty());
   std::string device_id1;
   AddDevice(&device_id1);
   auto pairing_delegate2 = std::make_unique<FakeDevicePairingDelegate>();
@@ -482,8 +456,12 @@ TEST_F(DiscoverySessionManagerImplTest, MultipleClientsAttemptPairing) {
             result = pairing_result;
           }));
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(HasPendingConnectCallback());
-  InvokePendingConnectCallback();
+  EXPECT_EQ(device_id1, device_pairing_handler1->current_pairing_device_id());
+
+  // Finish the pairing with success.
+  device_pairing_handler1->SimulatePairDeviceFinished(
+      /*failure_reason=*/absl::nullopt);
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(result, mojom::PairingResult::kSuccess);
 
   // First client's Mojo pipes should be disconnected.
@@ -495,6 +473,10 @@ TEST_F(DiscoverySessionManagerImplTest, MultipleClientsAttemptPairing) {
   EXPECT_EQ(1, observer->num_discovery_session_changed_calls());
 
   // Simulate second client pairing with a known device_id.
+  EXPECT_EQ(2u, GetDevicePairingHandlers().size());
+  FakeDevicePairingHandler* device_pairing_handler2 =
+      GetDevicePairingHandlers()[1];
+  EXPECT_TRUE(device_pairing_handler2->current_pairing_device_id().empty());
   std::string device_id2;
   AddDevice(&device_id2);
   auto pairing_delegate3 = std::make_unique<FakeDevicePairingDelegate>();
@@ -505,8 +487,12 @@ TEST_F(DiscoverySessionManagerImplTest, MultipleClientsAttemptPairing) {
             result = pairing_result;
           }));
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(HasPendingConnectCallback());
-  InvokePendingConnectCallback();
+  EXPECT_EQ(device_id2, device_pairing_handler2->current_pairing_device_id());
+
+  // Finish the pairing with success.
+  device_pairing_handler2->SimulatePairDeviceFinished(
+      /*failure_reason=*/absl::nullopt);
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(result, mojom::PairingResult::kSuccess);
 
   // Second client's Mojo pipes should be disconnected and discovery stopped.
@@ -566,6 +552,10 @@ TEST_F(DiscoverySessionManagerImplTest, AdapterDiscoveringStopsDuringPairing) {
   EXPECT_TRUE(delegate->pairing_handler().is_connected());
 
   // Simulate client pairing with a device.
+  EXPECT_EQ(1u, GetDevicePairingHandlers().size());
+  FakeDevicePairingHandler* device_pairing_handler =
+      GetDevicePairingHandlers()[0];
+  EXPECT_TRUE(device_pairing_handler->current_pairing_device_id().empty());
   std::string device_id;
   AddDevice(&device_id);
   absl::optional<mojom::PairingResult> result;
@@ -577,7 +567,7 @@ TEST_F(DiscoverySessionManagerImplTest, AdapterDiscoveringStopsDuringPairing) {
             result = pairing_result;
           }));
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(HasPendingConnectCallback());
+  EXPECT_EQ(device_id, device_pairing_handler->current_pairing_device_id());
 
   // Simulate the discovery session stopping unexpectedly before pairing
   // completes. Discovery should stop and the discovery delegate, pairing
@@ -604,6 +594,10 @@ TEST_F(DiscoverySessionManagerImplTest,
   EXPECT_TRUE(delegate->pairing_handler().is_connected());
 
   // Simulate client pairing with a device.
+  EXPECT_EQ(1u, GetDevicePairingHandlers().size());
+  FakeDevicePairingHandler* device_pairing_handler =
+      GetDevicePairingHandlers()[0];
+  EXPECT_TRUE(device_pairing_handler->current_pairing_device_id().empty());
   std::string device_id;
   AddDevice(&device_id);
   absl::optional<mojom::PairingResult> result;
@@ -615,7 +609,7 @@ TEST_F(DiscoverySessionManagerImplTest,
             result = pairing_result;
           }));
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(HasPendingConnectCallback());
+  EXPECT_EQ(device_id, device_pairing_handler->current_pairing_device_id());
 
   // Simulate the discovery session stopping before pairing
   // completes. This can happen with Floss enabled, but the device pairing
@@ -628,7 +622,9 @@ TEST_F(DiscoverySessionManagerImplTest,
   EXPECT_TRUE(delegate->pairing_handler().is_connected());
   EXPECT_TRUE(pairing_delegate->IsMojoPipeConnected());
 
-  InvokePendingConnectCallback();
+  device_pairing_handler->SimulatePairDeviceFinished(
+      /*failure_reason=*/absl::nullopt);
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(result, mojom::PairingResult::kSuccess);
 
   // The client's Mojo pipes should now be disconnected and discovery stopped.
