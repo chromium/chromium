@@ -298,7 +298,8 @@ LoginScreenModel* LoginScreenController::GetModel() {
 void LoginScreenController::ShowKioskAppError(const std::string& message) {
   ToastData toast_data("KioskAppError", ToastCatalogName::kKioskAppError,
                        base::UTF8ToUTF16(message), ToastData::kInfiniteDuration,
-                       /*visible_on_lock_screen=*/true);
+                       /*visible_on_lock_screen=*/true,
+                       /*dismiss_text=*/std::u16string());
   Shell::Get()->toast_manager()->Show(toast_data);
 }
 
