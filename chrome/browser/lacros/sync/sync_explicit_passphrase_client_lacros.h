@@ -14,7 +14,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace syncer {
-class Nigori;
 class SyncService;
 }  // namespace syncer
 
@@ -112,8 +111,5 @@ class SyncExplicitPassphraseClientLacros {
       ash_explicit_passphrase_client_observer_;
   mojo::Remote<crosapi::mojom::SyncExplicitPassphraseClient> remote_;
 };
-
-crosapi::mojom::NigoriKeyPtr NigoriToMojoForTesting(
-    const syncer::Nigori& nigori);
 
 #endif  // CHROME_BROWSER_LACROS_SYNC_SYNC_EXPLICIT_PASSPHRASE_CLIENT_LACROS_H_

@@ -12,6 +12,7 @@
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_util.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/chromeos/explicit_passphrase_mojo_utils.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/engine/nigori/nigori.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -20,40 +21,12 @@ namespace ash {
 
 namespace {
 
-crosapi::mojom::NigoriKeyPtr NigoriToMojo(const syncer::Nigori& nigori) {
-  std::string deprecated_user_key;
-  std::string encryption_key;
-  std::string mac_key;
-  nigori.ExportKeys(&deprecated_user_key, &encryption_key, &mac_key);
-
-  crosapi::mojom::NigoriKeyPtr mojo_result = crosapi::mojom::NigoriKey::New();
-  mojo_result->encryption_key =
-      std::vector<uint8_t>(encryption_key.begin(), encryption_key.end());
-  mojo_result->mac_key = std::vector<uint8_t>(mac_key.begin(), mac_key.end());
-  return mojo_result;
-}
-
-std::unique_ptr<syncer::Nigori> NigoriFromMojo(
-    const crosapi::mojom::NigoriKey& mojo_key) {
-  const std::string encryption_key(mojo_key.encryption_key.begin(),
-                                   mojo_key.encryption_key.end());
-  const std::string mac_key(mojo_key.mac_key.begin(), mojo_key.mac_key.end());
-  // |user_key| is deprecated, it's safe to pass empty string.
-  return syncer::Nigori::CreateByImport(
-      /*user_key=*/std::string(), encryption_key, mac_key);
-}
-
 bool IsPassphraseAvailable(const syncer::SyncService& sync_service) {
   return sync_service.GetUserSettings()->IsUsingExplicitPassphrase() &&
          !sync_service.GetUserSettings()->IsPassphraseRequired();
 }
 
 }  // namespace
-
-crosapi::mojom::NigoriKeyPtr NigoriToMojoForTesting(  // IN-TEST
-    const syncer::Nigori& nigori) {
-  return NigoriToMojo(nigori);
-}
 
 SyncExplicitPassphraseClientAsh::SyncExplicitPassphraseClientAsh(
     syncer::SyncService* sync_service)
@@ -104,7 +77,7 @@ void SyncExplicitPassphraseClientAsh::GetDecryptionNigoriKey(
     return;
   }
 
-  std::move(callback).Run(NigoriToMojo(*decryption_key));
+  std::move(callback).Run(syncer::NigoriToMojo(*decryption_key));
 }
 
 void SyncExplicitPassphraseClientAsh::SetDecryptionNigoriKey(
@@ -114,7 +87,8 @@ void SyncExplicitPassphraseClientAsh::SetDecryptionNigoriKey(
     return;
   }
 
-  std::unique_ptr<syncer::Nigori> nigori_key = NigoriFromMojo(*mojo_nigori_key);
+  std::unique_ptr<syncer::Nigori> nigori_key =
+      syncer::NigoriFromMojo(*mojo_nigori_key);
   if (!nigori_key) {
     // Deserialization failed, |mojo_nigori_key| doesn't represent an actual
     // Nigori key.

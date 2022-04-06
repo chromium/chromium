@@ -14,10 +14,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-namespace syncer {
-class Nigori;
-}
-
 namespace ash {
 
 class SyncExplicitPassphraseClientAsh
@@ -68,9 +64,6 @@ class SyncExplicitPassphraseClientAsh
   mojo::RemoteSet<crosapi::mojom::SyncExplicitPassphraseClientObserver>
       observers_;
 };
-
-crosapi::mojom::NigoriKeyPtr NigoriToMojoForTesting(
-    const syncer::Nigori& nigori);
 
 }  // namespace ash
 

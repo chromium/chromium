@@ -9,42 +9,17 @@
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_util.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/chromeos/explicit_passphrase_mojo_utils.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/engine/nigori/nigori.h"
 
 namespace {
 
-// TODO(crbug.com/1233545): Move common parts of Ash and Lacros implementation
-// somewhere under components/ and reuse them (mojo utils, test helpers, maybe
-// observer of the sync service).
 crosapi::mojom::AccountKeyPtr GetMojoAccountKey(
     const syncer::SyncService& sync_service) {
   return account_manager::ToMojoAccountKey(account_manager::AccountKey(
       sync_service.GetAccountInfo().gaia, account_manager::AccountType::kGaia));
-}
-
-crosapi::mojom::NigoriKeyPtr NigoriToMojo(const syncer::Nigori& nigori) {
-  std::string deprecated_user_key;
-  std::string encryption_key;
-  std::string mac_key;
-  nigori.ExportKeys(&deprecated_user_key, &encryption_key, &mac_key);
-
-  crosapi::mojom::NigoriKeyPtr mojo_result = crosapi::mojom::NigoriKey::New();
-  mojo_result->encryption_key =
-      std::vector<uint8_t>(encryption_key.begin(), encryption_key.end());
-  mojo_result->mac_key = std::vector<uint8_t>(mac_key.begin(), mac_key.end());
-  return mojo_result;
-}
-
-std::unique_ptr<syncer::Nigori> NigoriFromMojo(
-    const crosapi::mojom::NigoriKey& mojo_key) {
-  const std::string encryption_key(mojo_key.encryption_key.begin(),
-                                   mojo_key.encryption_key.end());
-  const std::string mac_key(mojo_key.mac_key.begin(), mojo_key.mac_key.end());
-  // |user_key| is deprecated, it's safe to pass empty string.
-  return syncer::Nigori::CreateByImport(
-      /*user_key=*/std::string(), encryption_key, mac_key);
 }
 
 bool IsPassphraseAvailable(const syncer::SyncService& sync_service) {
@@ -54,11 +29,8 @@ bool IsPassphraseAvailable(const syncer::SyncService& sync_service) {
 
 }  // namespace
 
-crosapi::mojom::NigoriKeyPtr NigoriToMojoForTesting(  // IN-TEST
-    const syncer::Nigori& nigori) {
-  return NigoriToMojo(nigori);
-}
-
+// TODO(crbug.com/1233545): Consider sharing sync service observer logic between
+// Ash and Lacros.
 SyncExplicitPassphraseClientLacros::LacrosSyncServiceObserver::
     LacrosSyncServiceObserver(
         syncer::SyncService* sync_service,
@@ -208,7 +180,7 @@ void SyncExplicitPassphraseClientLacros::SendDecryptionKeyToAsh() {
     return;
   }
   remote_->SetDecryptionNigoriKey(GetMojoAccountKey(*sync_service_),
-                                  NigoriToMojo(*decryption_key));
+                                  syncer::NigoriToMojo(*decryption_key));
 }
 
 void SyncExplicitPassphraseClientLacros::OnQueryDecryptionKeyFromAshCompleted(
@@ -218,7 +190,8 @@ void SyncExplicitPassphraseClientLacros::OnQueryDecryptionKeyFromAshCompleted(
     return;
   }
 
-  std::unique_ptr<syncer::Nigori> nigori_key = NigoriFromMojo(*mojo_nigori_key);
+  std::unique_ptr<syncer::Nigori> nigori_key =
+      syncer::NigoriFromMojo(*mojo_nigori_key);
   if (!nigori_key) {
     // Deserialization failed, |mojo_nigori_key| doesn't represent an actual
     // Nigori key.

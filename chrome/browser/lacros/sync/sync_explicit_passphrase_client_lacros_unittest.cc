@@ -10,6 +10,7 @@
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_util.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/chromeos/explicit_passphrase_mojo_utils.h"
 #include "components/sync/driver/mock_sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
 #include "components/sync/driver/sync_user_settings_mock.h"
@@ -33,7 +34,7 @@ std::unique_ptr<syncer::Nigori> MakeTestNigoriKey() {
 
 crosapi::mojom::NigoriKeyPtr MakeTestMojoNigoriKey() {
   std::unique_ptr<syncer::Nigori> nigori_key = MakeTestNigoriKey();
-  return NigoriToMojoForTesting(*nigori_key);
+  return syncer::NigoriToMojo(*nigori_key);
 }
 
 crosapi::mojom::AccountKeyPtr MakeMojoAccountKey(

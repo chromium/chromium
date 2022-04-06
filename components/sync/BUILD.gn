@@ -16,6 +16,9 @@ group("sync") {
   if (!is_android) {
     public_deps += [ "//components/sync/trusted_vault" ]
   }
+  if (is_chromeos) {
+    public_deps += [ "//components/sync/chromeos" ]
+  }
 }
 
 group("test_support") {
@@ -217,6 +220,10 @@ source_set("unit_tests") {
       "trusted_vault/trusted_vault_crypto_unittest.cc",
       "trusted_vault/trusted_vault_request_unittest.cc",
     ]
+  }
+
+  if (is_chromeos) {
+    sources += [ "chromeos/explicit_passphrase_mojo_utils_unittest.cc" ]
   }
 
   configs += [ "//build/config:precompiled_headers" ]
