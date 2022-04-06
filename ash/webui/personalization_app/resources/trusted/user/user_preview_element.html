@@ -49,6 +49,11 @@
     display: flex;
     flex-flow: row nowrap;
     padding-top: 4px;
+    width: fit-content;
+  }
+
+  #emailContainer:focus-visible {
+    outline: 2px solid var(--cros-focus-ring-color);
   }
 
   #emailContainer > p {
@@ -90,6 +95,7 @@
       <template is="dom-if" if="[[clickable]]">
         <paper-ripple class="circle"></paper-ripple>
         <img tabindex="0" id="avatar" src$="[[imageUrl_.url]]"
+            role="button" aria-label="$i18n{ariaLabelChangeAvatar}"
             on-click="onClickUserSubpageLink_"
             on-keypress="onClickUserSubpageLink_">
       </template>
@@ -102,7 +108,9 @@
   <div id="infoContainer">
     <template is="dom-if" if="[[info_]]">
       <p id="name">[[info_.name]]</p>
-      <div id="emailContainer" on-click="onClickUserEmail_">
+      <div id="emailContainer" tabindex="0" on-click="onClickUserEmail_"
+          on-keypress="onClickUserEmail_" role="link"
+          aria-label="$i18n{ariaLabelGoToAccountSettings}">
         <p id="email">[[info_.email]]</p>
         <iron-icon icon="cr:open-in-new"></iron-icon>
       </div>

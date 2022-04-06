@@ -51,22 +51,25 @@
     </div>
     <div id="buttonContainer">
       <cr-button id="lightMode" data-color-mode="LIGHT"
-          on-click="onClickColorModeButton_"
-          aria-pressed$="[[getLightAriaPressed_(colorModeAutoScheduleEnabled_, darkModeEnabled_)]]">
+          on-click="onClickColorModeButton_" role="button"
+          aria-pressed$="[[getLightAriaPressed_(colorModeAutoScheduleEnabled_, darkModeEnabled_)]]"
+          aria-label="$i18n{ariaLabelEnableLightColorMode}">
         <iron-icon icon="personalization:light" aria-hidden="true"></iron-icon>
         <div class="text">$i18n{lightColorMode}</div>
       </cr-button>
       <cr-button id="darkMode" data-color-mode="DARK"
           on-click="onClickColorModeButton_"
           on-keypress="onClickColorModeButton_"
-          aria-pressed$="[[getDarkAriaPressed_(colorModeAutoScheduleEnabled_, darkModeEnabled_)]]">
+          aria-pressed$="[[getDarkAriaPressed_(colorModeAutoScheduleEnabled_, darkModeEnabled_)]]"
+          aria-label="$i18n{ariaLabelEnableDarkColorMode}">
         <iron-icon icon="personalization:dark" aria-hidden="true"></iron-icon>
         <div class="text">$i18n{darkColorMode}</div>
       </cr-button>
       <cr-button id="autoMode"
           on-click="onClickAutoModeButton_"
           on-keypress="onClickAutoModeButton_"
-          aria-pressed$="[[getAutoAriaPressed_(colorModeAutoScheduleEnabled_)]]">
+          aria-pressed$="[[getAutoAriaPressed_(colorModeAutoScheduleEnabled_)]]"
+          aria-label="$i18n{ariaLabelEnableAutoColorMode}">
         <iron-icon icon="personalization:auto" aria-hidden="true"></iron-icon>
         <div class="text">$i18n{autoColorMode}</div>
       </cr-button>

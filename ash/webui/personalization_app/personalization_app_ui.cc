@@ -86,14 +86,24 @@ void AddStrings(content::WebUIDataSource* source) {
       {"ariaLabelExitFullscreen",
        IDS_PERSONALIZATION_APP_ARIA_LABEL_EXIT_FULL_SCREEN},
       {"setAsWallpaper", IDS_PERSONALIZATION_APP_SET_AS_WALLPAPER},
-      {"themeLabel", IDS_PERSONALIZATION_APP_THEME_LABEL},
-      {"darkColorMode", IDS_PERSONALIZATION_APP_THEME_DARK_COLOR_MODE},
-      {"lightColorMode", IDS_PERSONALIZATION_APP_THEME_LIGHT_COLOR_MODE},
-      {"autoColorMode", IDS_PERSONALIZATION_APP_THEME_AUTO_COLOR_MODE},
       {"zeroImages", IDS_PERSONALIZATION_APP_NO_IMAGES},
       {"oneImage", IDS_PERSONALIZATION_APP_ONE_IMAGE},
       {"multipleImages", IDS_PERSONALIZATION_APP_MULTIPLE_IMAGES},
       {"managedSetting", IDS_PERSONALIZATION_APP_MANAGED_SETTING},
+      {"ariaLabelChangeWallpaper",
+       IDS_PERSONALIZATION_APP_ARIA_LABEL_CHANGE_WALLPAPER},
+
+      // Theme related strings.
+      {"themeLabel", IDS_PERSONALIZATION_APP_THEME_LABEL},
+      {"darkColorMode", IDS_PERSONALIZATION_APP_THEME_DARK_COLOR_MODE},
+      {"lightColorMode", IDS_PERSONALIZATION_APP_THEME_LIGHT_COLOR_MODE},
+      {"autoColorMode", IDS_PERSONALIZATION_APP_THEME_AUTO_COLOR_MODE},
+      {"ariaLabelEnableDarkColorMode",
+       IDS_PERSONALIZATION_APP_ARIA_LABEL_ENABLE_DARK_COLOR_MODE},
+      {"ariaLabelEnableLightColorMode",
+       IDS_PERSONALIZATION_APP_ARIA_LABEL_ENABLE_LIGHT_COLOR_MODE},
+      {"ariaLabelEnableAutoColorMode",
+       IDS_PERSONALIZATION_APP_ARIA_LABEL_ENABLE_AUTO_COLOR_MODE},
 
       // User/avatar related strings.
       {"avatarLabel", IDS_PERSONALIZATION_APP_AVATAR_LABEL},
@@ -102,6 +112,10 @@ void AddStrings(content::WebUIDataSource* source) {
       {"confirmWebcamPhoto", IDS_PERSONALIZATION_APP_AVATAR_CONFIRM_PHOTO},
       {"confirmWebcamVideo", IDS_PERSONALIZATION_APP_AVATAR_CONFIRM_VIDEO},
       {"rejectWebcamPhoto", IDS_PERSONALIZATION_APP_AVATAR_REJECT_PHOTO},
+      {"ariaLabelChangeAvatar",
+       IDS_PERSONALIZATION_APP_ARIA_LABEL_CHANGE_AVATAR},
+      {"ariaLabelGoToAccountSettings",
+       IDS_PERSONALIZATION_APP_ARIA_LABEL_GO_TO_ACCOUNT_SETTINGS},
 
       // Ambient mode related string.
       {"screensaverLabel", IDS_PERSONALIZATION_APP_SCREENSAVER_LABEL},
@@ -161,6 +175,8 @@ void AddStrings(content::WebUIDataSource* source) {
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_MAIN_PAGE_ZERO_STATE_MESSAGE},
       {"ambientModeTurnOnLabel",
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_TURN_ON_LABEL},
+      {"ariaLabelChangeScreensaver",
+       IDS_PERSONALIZATION_APP_ARIA_LABEL_CHANGE_SCREENSAVER},
 
       // Google Photos strings
       {"googlePhotosLabel", IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS},
