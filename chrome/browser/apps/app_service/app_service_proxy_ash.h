@@ -82,6 +82,12 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   void Uninstall(const std::string& app_id,
                  apps::mojom::UninstallSource uninstall_source,
                  gfx::NativeWindow parent_window) override;
+  void OnApps(std::vector<AppPtr> deltas,
+              AppType app_type,
+              bool should_notify_initialized) override;
+  void OnApps(std::vector<apps::mojom::AppPtr> deltas,
+              apps::mojom::AppType app_type,
+              bool should_notify_initialized) override;
 
   // Pauses apps. |pause_data|'s key is the app_id. |pause_data|'s PauseData
   // is the time limit setting for the app, which is shown in the pause app

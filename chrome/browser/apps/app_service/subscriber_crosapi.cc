@@ -23,17 +23,16 @@
 
 namespace {
 
-bool Accepts(apps::mojom::AppType app_type) {
-  return app_type == apps::mojom::AppType::kUnknown ||
-         app_type == apps::mojom::AppType::kArc ||
-         app_type == apps::mojom::AppType::kWeb ||
-         app_type == apps::mojom::AppType::kSystemWeb ||
-         app_type == apps::mojom::AppType::kStandaloneBrowserChromeApp;
+bool Accepts(apps::AppType app_type) {
+  return app_type == apps::AppType::kUnknown ||
+         app_type == apps::AppType::kArc || app_type == apps::AppType::kWeb ||
+         app_type == apps::AppType::kSystemWeb ||
+         app_type == apps::AppType::kStandaloneBrowserChromeApp;
 }
 
 bool Accepts(const std::vector<apps::mojom::AppPtr>& deltas) {
   for (const auto& delta : deltas) {
-    if (!Accepts(delta->app_type)) {
+    if (!Accepts(apps::ConvertMojomAppTypToAppType(delta->app_type))) {
       return false;
     }
   }
@@ -63,9 +62,32 @@ void SubscriberCrosapi::RegisterAppServiceProxyFromCrosapi(
       &SubscriberCrosapi::OnCrosapiDisconnected, base::Unretained(this)));
 }
 
+void SubscriberCrosapi::OnApps(const std::vector<apps::AppPtr>& deltas) {
+  if (!subscriber_.is_bound()) {
+    return;
+  }
+
+  std::vector<AppPtr> apps;
+  for (const auto& delta : deltas) {
+    if (Accepts(delta->app_type)) {
+      apps.push_back(delta->Clone());
+    }
+  }
+
+  // Apps are sent to Lacros side for preferred apps only, so we don't need to
+  // set initialized status.
+  subscriber_->OnApps(std::move(apps), AppType::kUnknown,
+                      /*should_notify_initialized=*/false);
+}
+
 void SubscriberCrosapi::OnApps(std::vector<apps::mojom::AppPtr> deltas,
-                               apps::mojom::AppType app_type,
+                               apps::mojom::AppType mojom_app_type,
                                bool should_notify_initialized) {
+  if (base::FeatureList::IsEnabled(AppServiceCrosApiOnAppsWithoutMojom)) {
+    return;
+  }
+
+  auto app_type = ConvertMojomAppTypToAppType(mojom_app_type);
   if (Accepts(app_type) && Accepts(deltas) && subscriber_.is_bound()) {
     std::vector<AppPtr> apps;
     for (const auto& mojom_app : deltas) {
@@ -73,8 +95,7 @@ void SubscriberCrosapi::OnApps(std::vector<apps::mojom::AppPtr> deltas,
         apps.push_back(ConvertMojomAppToApp(mojom_app));
       }
     }
-    subscriber_->OnApps(std::move(apps), ConvertMojomAppTypToAppType(app_type),
-                        should_notify_initialized);
+    subscriber_->OnApps(std::move(apps), app_type, should_notify_initialized);
   }
 }
 

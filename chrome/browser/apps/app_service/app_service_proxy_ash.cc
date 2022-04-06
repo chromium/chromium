@@ -146,8 +146,10 @@ AppServiceProxyAsh::BrowserAppInstanceRegistry() {
 
 void AppServiceProxyAsh::RegisterCrosApiSubScriber(
     SubscriberCrosapi* subscriber) {
-  crosapi_subscriber_ = subscriber;
-  // TODO(crbug.com/1253250): Init apps and preferred apps.
+  if (base::FeatureList::IsEnabled(AppServiceCrosApiOnAppsWithoutMojom)) {
+    crosapi_subscriber_ = subscriber;
+    crosapi_subscriber_->OnApps(app_registry_cache_.GetAllApps());
+  }
 }
 
 void AppServiceProxyAsh::Uninstall(
@@ -155,6 +157,24 @@ void AppServiceProxyAsh::Uninstall(
     apps::mojom::UninstallSource uninstall_source,
     gfx::NativeWindow parent_window) {
   UninstallImpl(app_id, uninstall_source, parent_window, base::DoNothing());
+}
+
+void AppServiceProxyAsh::OnApps(std::vector<AppPtr> deltas,
+                                AppType app_type,
+                                bool should_notify_initialized) {
+  if (crosapi_subscriber_) {
+    crosapi_subscriber_->OnApps(deltas);
+  }
+
+  AppServiceProxyBase::OnApps(std::move(deltas), app_type,
+                              should_notify_initialized);
+}
+
+void AppServiceProxyAsh::OnApps(std::vector<apps::mojom::AppPtr> deltas,
+                                apps::mojom::AppType app_type,
+                                bool should_notify_initialized) {
+  AppServiceProxyBase::OnApps(std::move(deltas), app_type,
+                              should_notify_initialized);
 }
 
 void AppServiceProxyAsh::PauseApps(

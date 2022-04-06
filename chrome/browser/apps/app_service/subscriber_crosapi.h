@@ -28,6 +28,8 @@ namespace apps {
 // crosapi and App Service.
 //
 // See components/services/app_service/README.md.
+//
+// TODO(crbug.com/1253250): Remove dependency on apps::mojom::Subscriber.
 class SubscriberCrosapi : public KeyedService,
                           public apps::mojom::Subscriber,
                           public crosapi::mojom::AppServiceProxy {
@@ -40,10 +42,12 @@ class SubscriberCrosapi : public KeyedService,
   void RegisterAppServiceProxyFromCrosapi(
       mojo::PendingReceiver<crosapi::mojom::AppServiceProxy> receiver);
 
+  void OnApps(const std::vector<apps::AppPtr>& deltas);
+
  protected:
   // apps::mojom::Subscriber overrides.
   void OnApps(std::vector<apps::mojom::AppPtr> deltas,
-              apps::mojom::AppType app_type,
+              apps::mojom::AppType mojom_app_type,
               bool should_notify_initialized) override;
   void OnCapabilityAccesses(
       std::vector<apps::mojom::CapabilityAccessPtr> deltas) override;

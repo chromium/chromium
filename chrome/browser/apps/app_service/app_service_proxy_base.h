@@ -255,9 +255,9 @@ class AppServiceProxyBase : public KeyedService,
                      apps::mojom::WindowMode window_mode);
 
   // Called by an app publisher to inform the proxy of a change in app state.
-  void OnApps(std::vector<AppPtr> deltas,
-              AppType app_type,
-              bool should_notify_initialized);
+  virtual void OnApps(std::vector<AppPtr> deltas,
+                      AppType app_type,
+                      bool should_notify_initialized);
 
  protected:
   // An adapter, presenting an IconLoader interface based on the underlying
