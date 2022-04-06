@@ -290,11 +290,6 @@
       status: "stable",
     },
     {
-      name: "BiddingAndScoringDebugReportingAPI",
-      origin_trial_feature_name: "BiddingAndScoringDebugReportingAPI",
-      implied_by: ["Fledge", "Parakeet"],
-    },
-    {
       name: "BidiCaretAffinity",
     },
     {

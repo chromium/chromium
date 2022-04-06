@@ -334,8 +334,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"AutofillShadowDOM", blink::features::kAutofillShadowDOM},
           {"AndroidDownloadableFontsMatching",
            features::kAndroidDownloadableFontsMatching},
-          {"BiddingAndScoringDebugReportingAPI",
-           blink::features::kBiddingAndScoringDebugReportingAPI},
           {"ClipboardCustomFormats", blink::features::kClipboardCustomFormats},
           {"CSSContainerQueries", blink::features::kCSSContainerQueries},
           {"ComputePressure", blink::features::kComputePressure,
