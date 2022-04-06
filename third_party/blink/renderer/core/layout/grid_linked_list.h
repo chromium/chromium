@@ -102,6 +102,7 @@ class GridLinkedList : public GarbageCollected<GridLinkedList<NodeType>> {
   NodeType* Tail() const { return tail_; }
 
   bool IsEmpty() { return !head_; }
+  void Clear();
 
   // Returns the size of the list. O(n).
   int Size();
@@ -155,6 +156,12 @@ class GridLinkedList : public GarbageCollected<GridLinkedList<NodeType>> {
   Member<NodeType> head_;
   Member<NodeType> tail_;
 };
+
+template <typename NodeType>
+void GridLinkedList<NodeType>::Clear() {
+  head_.Clear();
+  tail_.Clear();
+}
 
 template <typename NodeType>
 int GridLinkedList<NodeType>::Size() {

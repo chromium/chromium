@@ -231,7 +231,7 @@ GridLinkedList<ListGrid::GridCell>::AddResult ListGrid::GridTrack::InsertAfter(
 const GridItemList& ListGrid::Cell(wtf_size_t row_index,
                                    wtf_size_t column_index) const {
   DEFINE_STATIC_LOCAL(const GridItemList, empty_vector, ());
-  for (auto* row = rows_.Head(); row; row = row->Next()) {
+  for (auto* row = rows_->Head(); row; row = row->Next()) {
     if (row->Index() == row_index) {
       GridCell* cell = row->Find(column_index);
       return cell ? cell->Items() : empty_vector;
@@ -243,7 +243,7 @@ const GridItemList& ListGrid::Cell(wtf_size_t row_index,
 }
 
 ListGrid::GridTrack* ListGrid::InsertTracks(
-    DoublyLinkedList<GridTrack>& tracks,
+    GridLinkedList<GridTrack>& tracks,
     const GridSpan& span,
     GridTrackSizingDirection direction) {
   auto compare_tracks = [](ListGrid::GridTrack* first,
@@ -254,8 +254,8 @@ ListGrid::GridTrack* ListGrid::InsertTracks(
   wtf_size_t start_line = span.StartLine();
   wtf_size_t end_line = span.EndLine();
 
-  DoublyLinkedList<ListGrid::GridTrack>::AddResult result = tracks.Insert(
-      base::WrapUnique(new GridTrack(start_line, direction)), compare_tracks);
+  GridLinkedList<ListGrid::GridTrack>::AddResult result = tracks.Insert(
+      MakeGarbageCollected<GridTrack>(start_line, direction), compare_tracks);
   auto* track = result.node;
   DCHECK(track);
 
@@ -264,7 +264,7 @@ ListGrid::GridTrack* ListGrid::InsertTracks(
        ++track_index) {
     if (!iter->Next() || track_index < iter->Next()->Index()) {
       tracks.InsertAfter(
-          base::WrapUnique(new GridTrack(track_index, direction)), iter);
+          MakeGarbageCollected<GridTrack>(track_index, direction), iter);
     }
     iter = iter->Next();
   }
@@ -277,9 +277,9 @@ void ListGrid::Insert(LayoutBox& item, const GridArea& area) {
          area.columns.IsTranslatedDefinite());
   EnsureGridSize(area.rows.EndLine(), area.columns.EndLine());
 
-  GridTrack* first_row = InsertTracks(rows_, area.rows, kForRows);
+  GridTrack* first_row = InsertTracks(*rows_, area.rows, kForRows);
   DCHECK(first_row);
-  GridTrack* first_column = InsertTracks(columns_, area.columns, kForColumns);
+  GridTrack* first_column = InsertTracks(*columns_, area.columns, kForColumns);
   DCHECK(first_column);
 
   GridCell* above_cell = nullptr;
@@ -319,16 +319,8 @@ void ListGrid::EnsureGridSize(wtf_size_t maximum_row_size,
 
 void ListGrid::ClearGridDataStructure() {
   num_rows_ = num_columns_ = 0;
-  while (!rows_.IsEmpty())
-    delete rows_.RemoveHead();
-  DCHECK(rows_.IsEmpty());
-  while (!columns_.IsEmpty())
-    delete columns_.RemoveHead();
-  DCHECK(columns_.IsEmpty());
-}
-
-ListGrid::~ListGrid() {
-  ClearGridDataStructure();
+  rows_->Clear();
+  columns_->Clear();
 }
 
 void ListGrid::GridCell::SetTraversalMode(GridTrackSizingDirection direction) {
@@ -369,7 +361,7 @@ LayoutBox* ListGridIterator::NextGridItem() {
 
   bool is_row_axis = direction_ == kForColumns;
   if (!cell_node_) {
-    auto* track = is_row_axis ? grid_.columns_.Head() : grid_.rows_.Head();
+    auto* track = is_row_axis ? grid_.columns_->Head() : grid_.rows_->Head();
     DCHECK(track);
     const wtf_size_t fixed_index = is_row_axis ? column_index_ : row_index_;
     while (track && track->Index() != fixed_index)

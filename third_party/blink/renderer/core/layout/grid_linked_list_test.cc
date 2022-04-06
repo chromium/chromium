@@ -152,6 +152,11 @@ TEST_F(GridLinkedListTest, Insert) {
   EXPECT_FALSE(gll->Insert(num2_again, IntNode::Compare));
   EXPECT_EQ(gll->Insert(num2_again, IntNode::Compare).node, num2);
   EXPECT_TRUE(IsSorted(gll, IntNode::Compare));
+
+  gll->Clear();
+  DCHECK(gll->IsEmpty());
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_EQ(4, IntNode::destructor_calls);
 }
 
 }  // namespace blink
