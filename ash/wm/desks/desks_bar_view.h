@@ -89,10 +89,6 @@ class ASH_EXPORT DesksBarView : public views::View,
 
   OverviewGrid* overview_grid() const { return overview_grid_; }
 
-  void set_should_name_nudge(bool should_name_nudge) {
-    should_name_nudge_ = should_name_nudge;
-  }
-
   // Initializes and creates mini_views for any pre-existing desks, before the
   // bar was created. This should only be called after this view has been added
   // to a widget, as it needs to call `GetWidget()` when it's performing a
@@ -211,6 +207,9 @@ class ASH_EXPORT DesksBarView : public views::View,
   // Animates the bar from expanded state to zero state. Clears `mini_views_`.
   void SwitchToZeroState();
 
+  // Bring focus to the name view of the desk with `desk_index`.
+  void NudgeDeskName(int desk_index);
+
  private:
   friend class DesksBarScrollViewLayout;
   friend class DesksTestApi;
@@ -287,11 +286,6 @@ class ASH_EXPORT DesksBarView : public views::View,
   // `expanded_state_new_desk_button_` and optionally
   // `expanded_state_desks_templates_button_` currently.
   views::View* scroll_view_contents_ = nullptr;
-
-  // If this is true, when `UpdateNewMiniViews()` is called, the newly created
-  // mini view's name view will be focused and |should_name_nudge_| will be
-  // reset.
-  bool should_name_nudge_ = false;
 
   // True if the `DesksBarBoundsAnimation` is started and hasn't finished yet.
   // It will be used to hold `Layout` until the bounds animation is completed.

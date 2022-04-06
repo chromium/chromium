@@ -59,7 +59,8 @@ void OnNewDeskCreatedForTemplate(std::unique_ptr<DeskTemplate> desk_template,
 
   // Copy the index of the newly created desk to the template. This ensures that
   // apps appear on the right desk even if the user switches to another.
-  desk_template->SetDeskIndex(DesksController::Get()->GetDeskIndex(new_desk));
+  const int desk_index = DesksController::Get()->GetDeskIndex(new_desk);
+  desk_template->SetDeskIndex(desk_index);
 
   Shell::Get()->desks_templates_delegate()->LaunchAppsFromTemplate(
       std::move(desk_template), time_launch_started, delay);
@@ -69,10 +70,7 @@ void OnNewDeskCreatedForTemplate(std::unique_ptr<DeskTemplate> desk_template,
   DCHECK(overview_session);
   DesksBarView* desks_bar_view = const_cast<DesksBarView*>(
       overview_session->GetGridWithRootWindow(root_window)->desks_bar_view());
-  desks_bar_view->set_should_name_nudge(true);
-  desks_bar_view->UpdateNewMiniViews(
-      /*initializing_bar_view=*/false,
-      /*is_expanding_bar_view*/ true);
+  desks_bar_view->NudgeDeskName(desk_index);
 }
 
 }  // namespace

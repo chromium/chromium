@@ -890,32 +890,6 @@ void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view,
     }
   }
 
-  // If we're not initializing the desk bar and |should_name_nudge_| is true,
-  // focus on the newly created name view to encourage users to rename their
-  // desks.
-  if (!initializing_bar_view && should_name_nudge_) {
-    auto* newly_added_name_view = mini_views_.back()->desk_name_view();
-    newly_added_name_view->RequestFocus();
-
-    // Set |newly_added_name_view|'s accessible name to the default desk name
-    // since its text is cleared.
-    newly_added_name_view->SetAccessibleName(
-        DesksController::GetDeskDefaultName(desks.size() - 1));
-
-    auto* highlight_controller = GetHighlightController();
-    if (highlight_controller->IsFocusHighlightVisible())
-      highlight_controller->MoveHighlightToView(newly_added_name_view);
-
-    // If we're in tablet mode and there are no external keyboards, open up the
-    // virtual keyboard.
-    if (Shell::Get()->tablet_mode_controller()->InTabletMode() &&
-        !HasExternalKeyboard()) {
-      keyboard::KeyboardUIController::Get()->ShowKeyboard(/*lock=*/false);
-    }
-
-    should_name_nudge_ = false;
-  }
-
   if (expanding_bar_view) {
     UpdateDeskButtonsVisibility();
     PerformZeroStateToExpandedStateMiniViewAnimation(this);
@@ -952,10 +926,10 @@ void DesksBarView::OnNewDeskButtonPressed(
   auto* controller = DesksController::Get();
   if (!controller->CanCreateDesks())
     return;
-  set_should_name_nudge(true);
   controller->NewDesk(desks_creation_removal_source);
   if (!controller->CanCreateDesks())
     expanded_state_new_desk_button_->SetButtonState(/*enabled=*/false);
+  NudgeDeskName(mini_views_.size() - 1);
 }
 
 void DesksBarView::UpdateButtonsForDesksTemplatesGrid() {
@@ -1247,6 +1221,24 @@ void DesksBarView::OnContentsScrollEnded() {
                                    adjusted_position);
   }
   UpdateGradientZone();
+}
+
+void DesksBarView::NudgeDeskName(int desk_index) {
+  DCHECK_LT(desk_index, static_cast<int>(mini_views_.size()));
+
+  auto* name_view = mini_views_[desk_index]->desk_name_view();
+  name_view->RequestFocus();
+
+  // Set `name_view`'s accessible name to the default desk name since its text
+  // is cleared.
+  name_view->SetAccessibleName(DesksController::GetDeskDefaultName(desk_index));
+
+  // If we're in tablet mode and there are no external keyboards, open up the
+  // virtual keyboard.
+  if (Shell::Get()->tablet_mode_controller()->InTabletMode() &&
+      !HasExternalKeyboard()) {
+    keyboard::KeyboardUIController::Get()->ShowKeyboard(/*lock=*/false);
+  }
 }
 
 }  // namespace ash
