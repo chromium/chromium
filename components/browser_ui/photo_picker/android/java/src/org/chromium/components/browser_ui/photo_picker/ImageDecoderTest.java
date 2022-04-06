@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.UrlUtils;
 
 import java.io.File;
@@ -126,6 +127,7 @@ public class ImageDecoderTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "https://crbug.com/1313903")
     public void testServiceDecodeSimple() throws Exception {
         startDecoderService();
 
