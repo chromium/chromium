@@ -5,8 +5,8 @@
     grid-template-areas:
       '. .     . .'
       '. image . text';
-    grid-template-columns: 8px 84px 16px minmax(0, 1fr);
-    grid-template-rows: 12px 84px;
+    grid-template-columns: 8px 82px 16px minmax(0, 1fr);
+    grid-template-rows: 12px 82px;
     height: 100%;
   }
 
@@ -15,12 +15,12 @@
     position: relative;
   }
 
-  #imageContainer img:hover {
-    background-color: var(--cros-highlight-color-focus);
+  :host([clickable]) #imageContainer:hover {
+    filter: brightness(0.94);
   }
 
   #imageContainer img {
-    border: 2px solid rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 50%;
     height: 80px;
     width: 80px;

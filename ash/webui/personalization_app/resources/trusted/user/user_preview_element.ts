@@ -36,6 +36,7 @@ export class UserPreview extends WithPersonalizationStore {
       clickable: {
         type: Boolean,
         value: false,
+        reflectToAttribute: true,
       },
       info_: Object,
       imageUrl_: {

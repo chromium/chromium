@@ -12,6 +12,9 @@
     position: relative;
     width: 64px;
   }
+  .image-container:hover {
+    filter: brightness(0.94);
+  }
   .image-container img {
     border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 50%;
@@ -20,9 +23,6 @@
   }
   .image-container img:focus-visible {
     outline: 2px solid var(--cros-focus-ring-color);
-  }
-  .image-container img:hover {
-    background-color: var(--cros-highlight-color-focus);
   }
   paper-ripple {
     color: rgba(var(--cros-ripple-color-rgb), 1);
