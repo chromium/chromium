@@ -727,6 +727,10 @@ bool RenderFrameDevToolsAgentHost::CanAccessOpener() {
 }
 
 std::string RenderFrameDevToolsAgentHost::GetType() {
+  if (IsChildFrame())
+    return kTypeFrame;
+  if (frame_tree_node_ && frame_tree_node_->IsFencedFrameRoot())
+    return kTypePage;
   if (web_contents() &&
       static_cast<WebContentsImpl*>(web_contents())->IsPortal()) {
     return kTypePage;
@@ -735,8 +739,6 @@ std::string RenderFrameDevToolsAgentHost::GetType() {
       static_cast<WebContentsImpl*>(web_contents())->GetOuterWebContents()) {
     return kTypeGuest;
   }
-  if (IsChildFrame())
-    return kTypeFrame;
   DevToolsManager* manager = DevToolsManager::GetInstance();
   if (manager->delegate() && web_contents()) {
     std::string type = manager->delegate()->GetTargetType(web_contents());
