@@ -136,8 +136,6 @@
         'testOverriddenToString(new Function, false)',
         'testOverriddenToString(/^regex$/, true)',
         'testOverriddenToString(/^regex$/, false)',
-        'testOverriddenToString(new Date, true)',
-        'testOverriddenToString(new Date, false)',
         'testOverriddenToString({}, true)',
         'testOverriddenToString({}, false)',
         'testOverriddenToString(new Number(1), true)',
