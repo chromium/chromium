@@ -95,6 +95,10 @@ void AssistantCardElement::Process(ProcessingCallback callback) {
   processor_->Process();
 }
 
+bool AssistantCardElement::has_contents_view() const {
+  return !!contents_view_;
+}
+
 bool AssistantCardElement::Compare(const AssistantUiElement& other) const {
   return other.type() == AssistantUiElementType::kCard &&
          static_cast<const AssistantCardElement&>(other).html() == html_;
