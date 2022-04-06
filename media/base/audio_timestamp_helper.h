@@ -59,10 +59,9 @@ class MEDIA_EXPORT AudioTimestampHelper {
   // and the number of sample frames that have been added so far.
   base::TimeDelta GetTimestamp() const;
 
-  // Gets the duration if |frame_count| frames were added to the current
-  // timestamp reported by GetTimestamp(). This method ensures that
-  // (GetTimestamp() + GetFrameDuration(n)) will equal the timestamp that
-  // GetTimestamp() will return if AddFrames(n) is called.
+  // Gets the duration of |frame_count| frames by calculating the difference
+  // between the current timestamp and what the timestamp would be if
+  // |frame_count| frames were added.
   base::TimeDelta GetFrameDuration(int frame_count) const;
 
   // Returns the number of frames needed to reach the target timestamp.

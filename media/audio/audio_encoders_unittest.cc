@@ -27,6 +27,15 @@
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_version.h"
 #include "media/gpu/windows/mf_audio_encoder.h"
+#include "media/media_buildflags.h"
+
+#if BUILDFLAG(ENABLE_FFMPEG)
+#include "media/base/audio_decoder.h"
+#include "media/base/channel_layout.h"
+#include "media/base/decoder_status.h"
+#include "media/base/mock_media_log.h"
+#include "media/filters/ffmpeg_audio_decoder.h"
+#endif  // BUILDFLAG(ENABLE_FFMPEG)
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace media {
@@ -120,6 +129,9 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
     options_.codec = GetParam().codec;
     options_.sample_rate = GetParam().sample_rate;
     options_.channels = GetParam().channels;
+    expected_duration_helper_ =
+        std::make_unique<AudioTimestampHelper>(options_.sample_rate);
+    expected_duration_helper_->SetBaseTimestamp(base::Microseconds(0));
   }
   AudioEncodersTest(const AudioEncodersTest&) = delete;
   AudioEncodersTest& operator=(const AudioEncodersTest&) = delete;
@@ -225,7 +237,8 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
 
     encoder_->Encode(std::move(audio_bus), timestamp, std::move(done_cb));
     expected_output_duration_ +=
-        AudioTimestampHelper::FramesToTime(num_frames, options_.sample_rate);
+        expected_duration_helper_->GetFrameDuration(num_frames);
+    expected_duration_helper_->AddFrames(num_frames);
   }
 
   void FlushAndVerifyStatus(
@@ -250,9 +263,15 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
   }
 
   void ValidateOutputDuration() {
-    base::TimeDelta delta =
-        (expected_output_duration_ - observed_output_duration_).magnitude();
-    EXPECT_LE(delta, base::Microseconds(10));
+    int64_t amount_of_padding =
+        frames_per_buffer_ -
+        (expected_duration_helper_->frame_count() % frames_per_buffer_);
+    int64_t duration_of_padding_us =
+        (amount_of_padding * base::Time::kMicrosecondsPerSecond) /
+        options_.sample_rate;
+    int64_t acceptable_diff = duration_of_padding_us + 10;
+    EXPECT_NEAR(expected_output_duration_.InMicroseconds(),
+                observed_output_duration_.InMicroseconds(), acceptable_diff);
   }
 
   void RunLoop() { run_loop_.RunUntilIdle(); }
@@ -276,6 +295,7 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
   base::TimeDelta buffer_duration_;
   int frames_per_buffer_;
 
+  std::unique_ptr<AudioTimestampHelper> expected_duration_helper_;
   base::TimeDelta expected_output_duration_;
   base::TimeDelta observed_output_duration_;
 
@@ -425,6 +445,22 @@ TEST_P(AudioEncodersTest, ProvideInputAfterDoneCb) {
 
   FlushAndVerifyStatus();
 
+  ValidateOutputDuration();
+}
+
+TEST_P(AudioEncodersTest, ManySmallInputs) {
+  if (EncoderHasDelay())
+    return;
+
+  InitializeEncoder();
+  base::TimeTicks timestamp = base::TimeTicks::Now();
+  int frame_count = frames_per_buffer_ / 10;
+  for (int i = 0; i < 100; i++)
+    ProduceAudioAndEncode(timestamp, frame_count);
+
+  FlushAndVerifyStatus();
+
+  ValidateDoneCallbacksRun();
   ValidateOutputDuration();
 }
 
@@ -707,6 +743,47 @@ class MFAudioEncoderTest : public AudioEncodersTest {
   MFAudioEncoderTest(const MFAudioEncoderTest&) = delete;
   MFAudioEncoderTest& operator=(const MFAudioEncoderTest&) = delete;
   ~MFAudioEncoderTest() override = default;
+
+#if BUILDFLAG(ENABLE_FFMPEG) && BUILDFLAG(USE_PROPRIETARY_CODECS)
+  void InitializeDecoder() {
+    decoder_ = std::make_unique<FFmpegAudioDecoder>(
+        base::SequencedTaskRunnerHandle::Get(), &media_log);
+    ChannelLayout channel_layout = CHANNEL_LAYOUT_NONE;
+    switch (options_.channels) {
+      case 1:
+        channel_layout = CHANNEL_LAYOUT_MONO;
+        break;
+      case 2:
+        channel_layout = CHANNEL_LAYOUT_STEREO;
+        break;
+      case 6:
+        channel_layout = CHANNEL_LAYOUT_5_1_BACK;
+        break;
+      default:
+        NOTREACHED();
+    }
+    AudioDecoderConfig config(AudioCodec::kAAC, SampleFormat::kSampleFormatS16,
+                              channel_layout, options_.sample_rate,
+                              /*extra_data=*/std::vector<uint8_t>(),
+                              EncryptionScheme::kUnencrypted);
+    auto init_cb = [](DecoderStatus decoder_status) {
+      EXPECT_EQ(decoder_status, DecoderStatus::Codes::kOk);
+    };
+    auto output_cb = [&](scoped_refptr<AudioBuffer> decoded_buffer) {
+      ++decoder_output_callback_count;
+      EXPECT_EQ(decoded_buffer->frame_count(), frames_per_buffer_);
+    };
+    decoder_->Initialize(config, /*cdm_context=*/nullptr,
+                         base::BindLambdaForTesting(init_cb),
+                         base::BindLambdaForTesting(output_cb),
+                         /*waiting_cb=*/base::DoNothing());
+  }
+
+ protected:
+  MockMediaLog media_log;
+  std::unique_ptr<FFmpegAudioDecoder> decoder_;
+  int decoder_output_callback_count = 0;
+#endif  // BUILDFLAG(ENABLE_FFMPEG) && BUILDFLAG(USE_PROPRIETARY_CODECS)
 };
 
 // `MFAudioEncoder` requires `kMinSamplesForOutput` before `Flush` can be called
@@ -719,6 +796,41 @@ TEST_P(MFAudioEncoderTest, FlushWithTooLittleInput) {
 
   ValidateDoneCallbacksRun();
 }
+
+#if BUILDFLAG(ENABLE_FFMPEG) && BUILDFLAG(USE_PROPRIETARY_CODECS)
+TEST_P(MFAudioEncoderTest, FullCycleEncodeDecode) {
+  InitializeDecoder();
+
+  int encode_output_callback_count = 0;
+  int decode_status_callback_count = 0;
+  auto encode_output_cb = [&](EncodedAudioBuffer output, MaybeDesc) {
+    ++encode_output_callback_count;
+
+    auto decode_cb = [&](DecoderStatus status) {
+      ++decode_status_callback_count;
+      EXPECT_EQ(status, DecoderStatus::Codes::kOk);
+    };
+    scoped_refptr<DecoderBuffer> decoder_buffer = DecoderBuffer::FromArray(
+        std::move(output.encoded_data), output.encoded_data_size);
+    decoder_->Decode(decoder_buffer, base::BindLambdaForTesting(decode_cb));
+  };
+
+  InitializeEncoder(base::BindLambdaForTesting(encode_output_cb));
+
+  ProduceAudioAndEncode();
+  ProduceAudioAndEncode();
+  ProduceAudioAndEncode();
+
+  FlushAndVerifyStatus();
+
+  // The encoder should produce three pieces of output.
+  EXPECT_EQ(3, encode_output_callback_count);
+  // We should get three status messages from the decoder.
+  EXPECT_EQ(3, decode_status_callback_count);
+  // The decoder should produce three pieces of output.
+  EXPECT_EQ(3, decoder_output_callback_count);
+}
+#endif  // BUILDFLAG(ENABLE_FFMPEG) && BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 INSTANTIATE_TEST_SUITE_P(AAC,
                          MFAudioEncoderTest,

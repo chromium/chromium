@@ -145,6 +145,11 @@ class MEDIA_GPU_EXPORT MFAudioEncoder : public AudioEncoder {
   // `flush_cb`.
   void TryProcessInput(FlushCB flush_cb = base::NullCallback());
 
+  // Resets `have_queued_input_task_` and is only used when posting tasks. This
+  // helps us avoid posting duplicate tasks when the consumer of this class
+  // calls `Encode()` synchronously.
+  void RunTryProcessInput(FlushCB flush_cb = base::NullCallback());
+
   // Attempts to retrieve output data from `mf_encoder_`. It will process all
   // available output data, invoking `output_cb_` each time, until the encoder
   // reports `MF_E_TRANSFORM_NEED_MORE_INPUT`. If `input_queue_` is not empty,
@@ -152,6 +157,12 @@ class MEDIA_GPU_EXPORT MFAudioEncoder : public AudioEncoder {
   // flushing (no input or output remain), this will run `flush_cb` and return.
   // Otherwise, sets `state_` to `kIdle` while we wait for more input.
   void TryProcessOutput(FlushCB flush_cb = base::NullCallback());
+
+  // Resets `have_queued_output_task_` and is only used when posting tasks. This
+  // helps us avoid posting duplicate tasks when the consumer of this class
+  // calls `Encode()` synchronously.
+  void RunTryProcessOutput(FlushCB flush_cb = base::NullCallback());
+
   HRESULT ProcessOutput(EncodedAudioBuffer& encoded_audio);
 
   // Run when flushing is complete. This runs the original `done_cb` provided by
@@ -177,9 +188,17 @@ class MEDIA_GPU_EXPORT MFAudioEncoder : public AudioEncoder {
   bool initialized_ = false;
 
   // We can't produce output until at least `kMinSamplesForOutput` have been
-  // provided. Until then, `output_cb_` will not be run and calls to `Flush()`
-  // will fail.
+  // provided. Until then, `output_cb_` will not be run.
   bool can_produce_output_ = false;
+
+  // Calls to `Flush()` will fail until at least `kMinSamplesForFlush` have been
+  // provided.
+  bool can_flush_ = false;
+
+  // Prevents us from queuing unnecessary input/output tasks, which can happen
+  // if the caller treats us as a synchronous encoder.
+  bool have_queued_input_task_ = false;
+  bool have_queued_output_task_ = false;
 
   // This is a handle to the same sequence that callers invoke the public
   // functions of this class on.
@@ -196,7 +215,9 @@ class MEDIA_GPU_EXPORT MFAudioEncoder : public AudioEncoder {
   std::unique_ptr<AudioTimestampHelper> output_timestamp_tracker_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // The count of samples currently in the `mf_encoder_`.
+  // The count of samples currently in the `mf_encoder_`. Because the
+  // `mf_encoder_` pads its input to produce the final output frame when
+  // flushing, samples_in_encoder_ may be negative.
   int samples_in_encoder_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
   // A second queue for input received while we are flushing. The encoder will
