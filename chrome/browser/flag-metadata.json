@@ -3265,7 +3265,7 @@
   {
     "name": "filling-across-affiliated-websites",
     "owners": [ "vsemeniuk", "vasilii" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 102
   },
   {
     "name": "focus-follows-cursor",
