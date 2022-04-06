@@ -33,7 +33,7 @@ class CORE_EXPORT NGFlexItemIterator {
  public:
   NGFlexItemIterator(const HeapVector<NGFlexLine>& flex_lines,
                      const NGBlockBreakToken* break_token,
-                     bool is_horizontal_flow);
+                     bool is_column);
 
   // Returns the next flex item which should be laid out, along with its
   // respective break token. |broke_before_row| will be true if the current
@@ -55,9 +55,7 @@ class CORE_EXPORT NGFlexItemIterator {
   NGFlexItem* next_unstarted_item_ = nullptr;
   const HeapVector<NGFlexLine>& flex_lines_;
   const NGBlockBreakToken* break_token_;
-  // TODO(almaher): This likely won't be the right check once writing mode roots
-  // are no longer treated as monolithic.
-  bool is_horizontal_flow_ = false;
+  bool is_column_ = false;
 
   // An index into break_token_'s ChildBreakTokens() vector. Used for keeping
   // track of the next child break token to inspect.
