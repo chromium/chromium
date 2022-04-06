@@ -372,6 +372,9 @@ bool HintCache::ProcessAndCacheHints(
         }
         break;
       case proto::HOST_SUFFIX:
+        // Old component versions if not updated could potentially have
+        // HOST_SUFFIX hints. Just skip over them.
+        break;
       case proto::REPRESENTATION_UNSPECIFIED:
         NOTREACHED();
         break;
