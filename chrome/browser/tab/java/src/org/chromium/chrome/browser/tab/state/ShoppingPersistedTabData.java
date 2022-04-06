@@ -473,9 +473,11 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                         -> {
                     PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
                         ShoppingPersistedTabData shoppingPersistedTabData =
-                                ShoppingPersistedTabData.from(tab);
+                                tab.isDestroyed() ? null : ShoppingPersistedTabData.from(tab);
                         PostTask.postTask(TaskTraits.USER_BLOCKING_MAY_BLOCK, () -> {
-                            shoppingPersistedTabData.deserializeAndLog(data);
+                            if (shoppingPersistedTabData != null) {
+                                shoppingPersistedTabData.deserializeAndLog(data);
+                            }
                             PostTask.postTask(UiThreadTaskTraits.DEFAULT,
                                     () -> { factoryCallback.onResult(shoppingPersistedTabData); });
                         });
