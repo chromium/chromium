@@ -4220,6 +4220,10 @@ const char kDefaultLinkCapturingInBrowserDescription[] =
     "When enabled, newly installed apps will not capture links clicked in the "
     "browser.";
 
+const char kDesksCloseAllName[] = "Desks Close All";
+const char kDesksCloseAllDescription[] =
+    "Close a desk along with all of its windows and tabs.";
+
 const char kDesksTemplatesName[] = "Desk Templates";
 const char kDesksTemplatesDescription[] =
     "Streamline workflows by saving a group of applications and windows as a "

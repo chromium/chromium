@@ -2418,6 +2418,9 @@ extern const char kCaptureSelfieCamDescription[];
 extern const char kDefaultLinkCapturingInBrowserName[];
 extern const char kDefaultLinkCapturingInBrowserDescription[];
 
+extern const char kDesksCloseAllName[];
+extern const char kDesksCloseAllDescription[];
+
 extern const char kDesksTemplatesName[];
 extern const char kDesksTemplatesDescription[];
 

@@ -8318,6 +8318,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"always-enable-hdcp", flag_descriptions::kAlwaysEnableHdcpName,
      flag_descriptions::kAlwaysEnableHdcpDescription, kOsCrOS,
      MULTI_VALUE_TYPE(kAlwaysEnableHdcpChoices)},
+    {"enable-desks-close-all", flag_descriptions::kDesksCloseAllName,
+     flag_descriptions::kDesksCloseAllDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kDesksCloseAll)},
 #endif
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
