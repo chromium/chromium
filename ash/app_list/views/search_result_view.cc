@@ -96,6 +96,8 @@ constexpr int kAnswerCardBorderMargin = 12;
 constexpr gfx::Insets kAnswerCardBorder(kAnswerCardBorderMargin);
 constexpr auto kBigTitleBorder =
     gfx::Insets::TLBR(0, 0, 0, kAnswerCardBorderMargin);
+// The superscript container has a 4px left margin and 3px top margin.
+constexpr auto kBigTitleSuperscriptBorder = gfx::Insets::TLBR(3, 4, 0, 0);
 
 // The fraction of total text space allocated to the details label when both the
 // title and the details label need to be elided.
@@ -116,7 +118,8 @@ views::Label* SetupChildLabelView(
     SearchResultView::SearchResultViewType view_type,
     SearchResultView::LabelType label_type,
     int flex_order,
-    bool elidable) {
+    bool elidable,
+    bool has_keyboard_shortcut_contents) {
   // Create and setup label.
   views::Label* label = parent->AddChildView(std::make_unique<views::Label>());
   // Ignore labels for accessibility - the result accessible name is defined on
@@ -133,9 +136,34 @@ views::Label* SetupChildLabelView(
           .WithOrder(flex_order));
 
   // Apply label text styling.
-  label->SetTextContext(label_type == SearchResultView::LabelType::kBigTitle
-                            ? CONTEXT_SEARCH_RESULT_BIG_TITLE
-                            : CONTEXT_SEARCH_RESULT_VIEW);
+  ash::AshTextContext text_context;
+  switch (label_type) {
+    case SearchResultView::LabelType::kBigTitle:
+      text_context = CONTEXT_SEARCH_RESULT_BIG_TITLE;
+      break;
+    case SearchResultView::LabelType::kBigTitleSuperscript:
+      // kBigTitleSuperscript labels are top-aligned to support superscripting.
+      label->SetVerticalAlignment(gfx::ALIGN_TOP);
+      text_context = CONTEXT_SEARCH_RESULT_BIG_TITLE_SUPERSCRIPT;
+      break;
+    case SearchResultView::LabelType::kTitle:
+      text_context = CONTEXT_SEARCH_RESULT_VIEW;
+      break;
+    case SearchResultView::LabelType::kDetails:
+      // has_keyboard_shortcut_contents forces inline title and details text for
+      // answer cards so title and details text should use the same context.
+      if (view_type == SearchResultView::SearchResultViewType::kAnswerCard &&
+          !has_keyboard_shortcut_contents) {
+        text_context = CONTEXT_SEARCH_RESULT_VIEW_INLINE_ANSWER_DETAILS;
+      } else {
+        text_context = CONTEXT_SEARCH_RESULT_VIEW;
+      }
+      break;
+    case SearchResultView::LabelType::kKeyboardShortcut:
+      text_context = CONTEXT_SEARCH_RESULT_VIEW;
+      break;
+  }
+  label->SetTextContext(text_context);
   switch (view_type) {
     case SearchResultView::SearchResultViewType::kClassic:
       label->SetTextStyle(STYLE_CLASSIC_LAUNCHER);
@@ -282,6 +310,23 @@ SearchResultView::SearchResultView(
       text_container_->AddChildView(std::make_unique<views::FlexLayoutView>());
   big_title_container_->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
   big_title_container_->SetBorder(views::CreateEmptyBorder(kBigTitleBorder));
+  big_title_container_->SetOrientation(views::LayoutOrientation::kHorizontal);
+
+  big_title_main_text_container_ = big_title_container_->AddChildView(
+      std::make_unique<views::FlexLayoutView>());
+  big_title_main_text_container_->SetCrossAxisAlignment(
+      views::LayoutAlignment::kStretch);
+  big_title_main_text_container_->SetOrientation(
+      views::LayoutOrientation::kHorizontal);
+
+  big_title_superscript_container_ = big_title_container_->AddChildView(
+      std::make_unique<views::FlexLayoutView>());
+  big_title_superscript_container_->SetCrossAxisAlignment(
+      views::LayoutAlignment::kStretch);
+  big_title_superscript_container_->SetBorder(
+      views::CreateEmptyBorder(kBigTitleSuperscriptBorder));
+  big_title_superscript_container_->SetOrientation(
+      views::LayoutOrientation::kHorizontal);
 
   body_text_container_ =
       text_container_->AddChildView(std::make_unique<views::FlexLayoutView>());
@@ -302,13 +347,6 @@ SearchResultView::SearchResultView(
                                views::MaximumFlexSizeRule::kPreferred));
   SetSearchResultViewType(view_type_);
 
-  keyboard_shortcut_container_ = body_text_container_->AddChildView(
-      std::make_unique<views::FlexLayoutView>());
-  keyboard_shortcut_container_->SetCrossAxisAlignment(
-      views::LayoutAlignment::kStretch);
-  keyboard_shortcut_container_->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(kKeyboardShortcutTopMargin, 0, 0, 0)));
-
   title_container_ = title_and_details_container_->AddChildView(
       std::make_unique<views::FlexLayoutView>());
   title_container_->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
@@ -322,9 +360,9 @@ SearchResultView::SearchResultView(
   title_container_->SetFlexAllocationOrder(
       views::FlexAllocationOrder::kReverse);
 
-  separator_label_ =
-      SetupChildLabelView(title_and_details_container_, view_type_,
-                          LabelType::kDetails, kSeparatorOrder, false);
+  separator_label_ = SetupChildLabelView(
+      title_and_details_container_, view_type_, LabelType::kDetails,
+      kSeparatorOrder, /*elidable=*/false, has_keyboard_shortcut_contents_);
   separator_label_->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_SEARCH_RESULT_SEPARATOR));
   separator_label_->GetViewAccessibility().OverrideIsIgnored(true);
@@ -340,8 +378,9 @@ SearchResultView::SearchResultView(
           .WithOrder(kTitleDetailsContainerOrderNoElide)
           .WithWeight(1));
 
-  rating_ = SetupChildLabelView(title_and_details_container_, view_type_,
-                                LabelType::kDetails, kRatingOrder, false);
+  rating_ = SetupChildLabelView(
+      title_and_details_container_, view_type_, LabelType::kDetails,
+      kRatingOrder, /*elidable=*/false, has_keyboard_shortcut_contents_);
 
   rating_star_ = SetupChildImageView(title_and_details_container_);
   rating_star_->SetImage(gfx::CreateVectorIcon(
@@ -350,6 +389,13 @@ SearchResultView::SearchResultView(
           kDeprecatedSearchBoxTextDefaultColor)));
   rating_star_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(0, kSearchRatingStarPadding, 0, 0)));
+
+  keyboard_shortcut_container_ = body_text_container_->AddChildView(
+      std::make_unique<views::FlexLayoutView>());
+  keyboard_shortcut_container_->SetCrossAxisAlignment(
+      views::LayoutAlignment::kStretch);
+  keyboard_shortcut_container_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kKeyboardShortcutTopMargin, 0, 0, 0)));
 }
 
 SearchResultView::~SearchResultView() = default;
@@ -371,23 +417,16 @@ void SearchResultView::OnResultChanged() {
 
 void SearchResultView::SetSearchResultViewType(SearchResultViewType type) {
   view_type_ = type;
-
   switch (view_type_) {
     case SearchResultViewType::kDefault:
       title_and_details_container_->SetOrientation(
           views::LayoutOrientation::kHorizontal);
-      SetBorder(views::CreateEmptyBorder(0));
-      big_title_container_->RemoveAllChildViews();
-      big_title_label_tags_.clear();
-      big_title_container_->SetVisible(false);
+      ClearBigTitleContainer();
       break;
     case SearchResultViewType::kClassic:
       title_and_details_container_->SetOrientation(
           views::LayoutOrientation::kVertical);
-      SetBorder(views::CreateEmptyBorder(0));
-      big_title_container_->RemoveAllChildViews();
-      big_title_label_tags_.clear();
-      big_title_container_->SetVisible(false);
+      ClearBigTitleContainer();
       break;
     case SearchResultViewType::kAnswerCard:
       title_and_details_container_->SetOrientation(
@@ -395,6 +434,16 @@ void SearchResultView::SetSearchResultViewType(SearchResultViewType type) {
       SetBorder(views::CreateEmptyBorder(kAnswerCardBorder));
       break;
   }
+}
+
+void SearchResultView::ClearBigTitleContainer() {
+  SetBorder(views::CreateEmptyBorder(0));
+  big_title_main_text_container_->RemoveAllChildViews();
+  big_title_label_tags_.clear();
+  big_title_main_text_container_->SetVisible(false);
+  big_title_superscript_container_->RemoveAllChildViews();
+  big_title_superscript_label_tags_.clear();
+  big_title_superscript_container_->SetVisible(false);
 }
 
 views::LayoutOrientation SearchResultView::TitleAndDetailsOrientationForTest() {
@@ -559,7 +608,8 @@ std::vector<SearchResultView::LabelAndTag>
 SearchResultView::SetupContainerViewForTextVector(
     views::FlexLayoutView* parent,
     const std::vector<SearchResult::TextItem>& text_vector,
-    LabelType label_type) {
+    LabelType label_type,
+    bool has_keyboard_shortcut_contents) {
   std::vector<LabelAndTag> label_tags;
   // Updating the details label should reset our pointer to the last seen
   // `non_elide_label_`. `non_elide_label_` can only be found in the details
@@ -576,7 +626,7 @@ SearchResultView::SetupContainerViewForTextVector(
             parent, view_type_, label_type,
             elidable ? kElidableLabelOrderStart + label_count
                      : kNonElideLabelOrder,
-            elidable);
+            elidable, has_keyboard_shortcut_contents);
         // Elidable label orders are monotonically increasing. Adjust the order
         // of the label by the number of labels in this container.
         if (elidable)
@@ -652,17 +702,35 @@ void SearchResultView::UpdateBadgeIcon() {
 void SearchResultView::UpdateBigTitleContainer() {
   DCHECK_EQ(view_type_, SearchResultViewType::kAnswerCard);
   // Big title is only shown for answer card views.
-  big_title_container_->RemoveAllChildViews();
+  big_title_main_text_container_->RemoveAllChildViews();
   big_title_label_tags_.clear();
   if (!result() || result()->big_title_text_vector().empty()) {
-    big_title_container_->SetVisible(false);
+    big_title_main_text_container_->SetVisible(false);
   } else {
-    // Create title labels from text vector metadata.
+    // Create big title labels from text vector metadata.
     big_title_label_tags_ = SetupContainerViewForTextVector(
-        big_title_container_, result()->big_title_text_vector(),
-        LabelType::kBigTitle);
+        big_title_main_text_container_, result()->big_title_text_vector(),
+        LabelType::kBigTitle, has_keyboard_shortcut_contents_);
     StyleBigTitleContainer();
-    big_title_container_->SetVisible(true);
+    big_title_main_text_container_->SetVisible(true);
+  }
+}
+
+void SearchResultView::UpdateBigTitleSuperscriptContainer() {
+  DCHECK_EQ(view_type_, SearchResultViewType::kAnswerCard);
+  // Big title superscript is only shown for answer card views.
+  big_title_superscript_container_->RemoveAllChildViews();
+  big_title_superscript_label_tags_.clear();
+  if (!result() || result()->big_title_superscript_text_vector().empty()) {
+    big_title_superscript_container_->SetVisible(false);
+  } else {
+    // Create big title superscript labels from text vector metadata.
+    big_title_superscript_label_tags_ = SetupContainerViewForTextVector(
+        big_title_superscript_container_,
+        result()->big_title_superscript_text_vector(),
+        LabelType::kBigTitleSuperscript, has_keyboard_shortcut_contents_);
+    StyleBigTitleSuperscriptContainer();
+    big_title_superscript_container_->SetVisible(true);
   }
 }
 
@@ -677,7 +745,8 @@ void SearchResultView::UpdateTitleContainer() {
   } else {
     // Create title labels from text vector metadata.
     title_label_tags_ = SetupContainerViewForTextVector(
-        title_container_, result()->title_text_vector(), LabelType::kTitle);
+        title_container_, result()->title_text_vector(), LabelType::kTitle,
+        has_keyboard_shortcut_contents_);
     StyleTitleContainer();
     text_container_->SetVisible(true);
     title_and_details_container_->SetVisible(true);
@@ -696,7 +765,7 @@ void SearchResultView::UpdateDetailsContainer() {
     // Create details labels from text vector metadata.
     details_label_tags_ = SetupContainerViewForTextVector(
         details_container_, result()->details_text_vector(),
-        LabelType::kDetails);
+        LabelType::kDetails, has_keyboard_shortcut_contents_);
     StyleDetailsContainer();
     details_container_->SetVisible(true);
     switch (view_type_) {
@@ -740,12 +809,12 @@ void SearchResultView::UpdateKeyboardShortcutContainer() {
         break;
     }
   } else {
+    has_keyboard_shortcut_contents_ = true;
     keyboard_shortcut_container_tags_ = SetupContainerViewForTextVector(
         keyboard_shortcut_container_, result()->keyboard_shortcut_text_vector(),
-        LabelType::kKeyboardShortcut);
+        LabelType::kKeyboardShortcut, has_keyboard_shortcut_contents_);
     StyleKeyboardShortcutContainer();
     keyboard_shortcut_container_->SetVisible(true);
-    has_keyboard_shortcut_contents_ = true;
     // Override `title_and_details_container_` orientation if the keyboard
     // shortcut text vector has valid contents.
     title_and_details_container_->SetOrientation(
@@ -835,6 +904,12 @@ void SearchResultView::StyleLabel(views::Label* label,
 
 void SearchResultView::StyleBigTitleContainer() {
   for (auto& span : big_title_label_tags_) {
+    StyleLabel(span.GetLabel(), true /*is_title_label*/, span.GetTags());
+  }
+}
+
+void SearchResultView::StyleBigTitleSuperscriptContainer() {
+  for (auto& span : big_title_superscript_label_tags_) {
     StyleLabel(span.GetLabel(), true /*is_title_label*/, span.GetTags());
   }
 }
@@ -1124,8 +1199,10 @@ void SearchResultView::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void SearchResultView::OnMetadataChanged() {
-  if (view_type_ == SearchResultViewType::kAnswerCard)
+  if (view_type_ == SearchResultViewType::kAnswerCard) {
     UpdateBigTitleContainer();
+    UpdateBigTitleSuperscriptContainer();
+  }
   if (view_type_ != SearchResultViewType::kClassic &&
       app_list_features::IsSearchResultInlineIconEnabled()) {
     UpdateKeyboardShortcutContainer();

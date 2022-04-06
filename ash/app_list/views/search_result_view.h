@@ -48,6 +48,13 @@ class SearchResultPageDialogController;
 // | +----------------------+ +----------------------------------+ |
 // +---------------------------------------------------------------+
 //
+// +-------------------------------------------------------------------------+
+// |`big_title_container_`                                                   |
+// | +--------------------------------+ +----------------------------------+ |
+// | |'big_title_main_text_container_'| |`big_title_superscript_container_`| |
+// | +--------------------------------+ +----------------------------------+ |
+// +-------------------------------------------------------------------------+
+//
 // The `title_and_details_container_` has two possible layouts depending on
 // `view_type_` and whether `keyboard_shortcut_container_` has results
 //
@@ -90,6 +97,7 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
 
   enum class LabelType {
     kBigTitle,
+    kBigTitleSuperscript,
     kTitle,
     kDetails,
     kKeyboardShortcut,
@@ -113,6 +121,7 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   void OnResultChanged() override;
 
   void SetSearchResultViewType(SearchResultViewType type);
+  void ClearBigTitleContainer();
   SearchResultViewType view_type() { return view_type_; }
 
   views::LayoutOrientation TitleAndDetailsOrientationForTest();
@@ -153,9 +162,11 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   std::vector<LabelAndTag> SetupContainerViewForTextVector(
       views::FlexLayoutView* parent,
       const std::vector<SearchResult::TextItem>& text_vector,
-      LabelType label_type);
+      LabelType label_type,
+      bool has_keyboard_shortcut_contents);
   void UpdateBadgeIcon();
   void UpdateBigTitleContainer();
+  void UpdateBigTitleSuperscriptContainer();
   void UpdateTitleContainer();
   void UpdateDetailsContainer();
   void UpdateKeyboardShortcutContainer();
@@ -165,6 +176,7 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
                   bool is_title_label,
                   const SearchResult::Tags& tags);
   void StyleBigTitleContainer();
+  void StyleBigTitleSuperscriptContainer();
   void StyleTitleContainer();
   void StyleDetailsContainer();
   void StyleKeyboardShortcutContainer();
@@ -214,6 +226,10 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
       nullptr;  // Owned by views hierarchy.
   views::FlexLayoutView* big_title_container_ =
       nullptr;  // Owned by views hierarchy.
+  views::FlexLayoutView* big_title_main_text_container_ =
+      nullptr;  // Owned by views hierarchy.
+  views::FlexLayoutView* big_title_superscript_container_ =
+      nullptr;  // Owned by views hierarchy.
   views::FlexLayoutView* body_text_container_ =
       nullptr;  // Owned by views hierarchy.
   views::FlexLayoutView* title_and_details_container_ =
@@ -225,6 +241,8 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   views::FlexLayoutView* keyboard_shortcut_container_ =
       nullptr;                                     // Owned by views hierarchy.
   std::vector<LabelAndTag> big_title_label_tags_;  // Owned by views hierarchy.
+  std::vector<LabelAndTag>
+      big_title_superscript_label_tags_;         // Owned by views hierarchy.
   std::vector<LabelAndTag> title_label_tags_;    // Owned by views hierarchy.
   std::vector<LabelAndTag> details_label_tags_;  // Owned by views hierarchy.
   std::vector<LabelAndTag>

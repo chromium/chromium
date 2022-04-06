@@ -42,6 +42,9 @@ void ApplyAshFontStyles(int context,
       break;
     case CONTEXT_SEARCH_RESULT_BIG_TITLE:
       details.size_delta = 24;
+      break;
+    case CONTEXT_SEARCH_RESULT_BIG_TITLE_SUPERSCRIPT:
+      details.size_delta = 6;
   }
 
   switch (style) {
