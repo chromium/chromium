@@ -45,6 +45,7 @@ aggregate_vector_icons("components_vector_icons") {
     "extension.icon",
     "feed.icon",
     "file_download.icon",
+    "file_download_off.icon",
     "folder.icon",
     "folder_managed.icon",
     "folder_managed_touch.icon",

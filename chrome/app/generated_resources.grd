@@ -2578,6 +2578,14 @@ are declared in tools/grit/grit_rule.gni.
                desc="Label for the Delete button on the blocked download bubble subpage.">
         Delete
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SCAN"
+               desc="Label for the button prompting for Deep Scanning">
+        Scan
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_OPEN"
+               desc="Label for the button prompting to bypass Deep Scanning">
+        Open
+      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_STATUS_DISK_FULL"
                desc="Status text for a download item that was interrupted because there is not enough room on the disk to download this file.">
         Out of storage space
@@ -2701,6 +2709,10 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_DOWNLOAD_BUBBLE_TRY_AGAIN"
                desc="Retry button when a download is failed">
         Try again
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNING_PROMPT"
+               desc="Prompt for Deep Scanning of a download">
+        Scan before opening
       </message>
 
       <!-- Desktop omnibox PWA install icon -->

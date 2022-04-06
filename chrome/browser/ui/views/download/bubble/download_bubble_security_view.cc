@@ -25,6 +25,7 @@
 
 namespace {
 constexpr int kCheckboxHeight = 32;
+constexpr int kBuffer = 40;
 }  // namespace
 
 void DownloadBubbleSecurityView::AddHeader() {
@@ -133,9 +134,10 @@ void DownloadBubbleSecurityView::AddIconAndText() {
   // The label defaults to a single line, which would force the dialog wider;
   // instead give it a width that's the minimum we want it to have. Then the
   // Layout will stretch it back out into any additional space available.
+  // Reduce by extra buffer so it has space for word wrapping.
   const int min_label_width =
       bubble_width - side_margin * 4 - icon->GetImageModel().Size().width() -
-      2 * GetLayoutInsets(DOWNLOAD_ICON).width() - icon_label_spacing;
+      2 * GetLayoutInsets(DOWNLOAD_ICON).width() - icon_label_spacing - kBuffer;
   styled_label->SizeToFit(min_label_width);
 
   if (info_.has_checkbox) {

@@ -633,6 +633,10 @@ Permissions you've already given to websites and apps may apply to this account.
                desc="Subpage summary of warning for a file blocked for being too large.">
         Chromium blocked this file because it's too big for a security check. Try again with files up to 50 MB
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_DEEP_SCANNING_PROMPT"
+               desc="Subpage summary of warning for Deep Scanning.">
+        Chromium recommends scanning this file because it may be dangerous
+      </message>
 
       <!-- Download Shelf Items -->
       <message name="IDS_DOWNLOAD_STATUS_CRX_INSTALL_RUNNING"
