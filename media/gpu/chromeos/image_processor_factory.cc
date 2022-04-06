@@ -9,7 +9,9 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_types.h"
 #include "media/gpu/buildflags.h"
 #include "media/gpu/chromeos/image_processor.h"
@@ -246,17 +248,19 @@ ImageProcessorFactory::CreateWithInputCandidates(
   if (processor)
     return processor;
 #elif BUILDFLAG(USE_V4L2_CODEC)
+  if (base::FeatureList::IsEnabled(media::kPreferLibYuvImageProcessor)) {
+    auto processor = CreateLibYUVImageProcessorWithInputCandidates(
+        input_candidates, input_visible_rect, output_size, num_buffers,
+        client_task_runner, out_format_picker, error_cb);
+    if (processor)
+      return processor;
+  }
   auto processor = CreateV4L2ImageProcessorWithInputCandidates(
       input_candidates, input_visible_rect, num_buffers, client_task_runner,
       out_format_picker, error_cb);
   if (processor)
     return processor;
 
-  processor = CreateLibYUVImageProcessorWithInputCandidates(
-      input_candidates, input_visible_rect, output_size, num_buffers,
-      client_task_runner, out_format_picker, error_cb);
-  if (processor)
-    return processor;
 #endif  // BUILDFLAG(USE_V4L2_CODEC)
 
   // TODO(crbug.com/1004727): Implement LibYUVImageProcessorBackend. When doing

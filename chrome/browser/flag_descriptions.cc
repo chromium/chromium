@@ -5559,6 +5559,12 @@ const char kChromeOSDirectVideoDecoderDescription[] =
     "which is added for platforms where said direct VideoDecoder does not work "
     "or is not well tested (see the disable_cros_video_decoder USE flag in "
     "Chrome OS)";
+#if defined(ARCH_CPU_ARM_FAMILY)
+const char kPreferLibYuvImageProcessorName[] = "Prefer libYUV image processor";
+const char kPreferLibYuvImageProcessorDescription[] =
+    "Prefers the libYUV image processor for format conversion of video frames "
+    "over the hardware implementation";
+#endif  // defined(ARCH_CPU_ARM_FAMILY)
 #endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

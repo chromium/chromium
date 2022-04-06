@@ -3198,6 +3198,10 @@ extern const char kVaapiVP9kSVCEncoderDescription[];
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 extern const char kChromeOSDirectVideoDecoderName[];
 extern const char kChromeOSDirectVideoDecoderDescription[];
+#if defined(ARCH_CPU_ARM_FAMILY)
+extern const char kPreferLibYuvImageProcessorName[];
+extern const char kPreferLibYuvImageProcessorDescription[];
+#endif  // defined(ARCH_CPU_ARM_FAMILY
 #endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

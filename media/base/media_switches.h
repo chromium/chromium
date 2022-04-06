@@ -228,7 +228,9 @@ MEDIA_EXPORT extern const base::Feature kUseRealColorSpaceForAndroidVideo;
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 MEDIA_EXPORT extern const base::Feature kUseChromeOSDirectVideoDecoder;
-
+#if defined(ARCH_CPU_ARM_FAMILY)
+MEDIA_EXPORT extern const base::Feature kPreferLibYuvImageProcessor;
+#endif  // defined(ARCH_CPU_ARM_FAMILY)
 #if BUILDFLAG(IS_CHROMEOS)
 MEDIA_EXPORT extern const base::Feature kUseAlternateVideoDecoderImplementation;
 #endif  // BUILDFLAG(IS_CHROMEOS)

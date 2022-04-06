@@ -740,6 +740,14 @@ const base::Feature kUseRealColorSpaceForAndroidVideo{
 const base::Feature kUseChromeOSDirectVideoDecoder{
     "UseChromeOSDirectVideoDecoder", base::FEATURE_ENABLED_BY_DEFAULT};
 
+#if defined(ARCH_CPU_ARM_FAMILY)
+// Some architectures have separate image processor hardware that
+// can be used by Chromium's ImageProcessor to color convert/crop/etc.
+// video buffers.  Sometimes it is more efficient/performant/correct
+// to use libYUV instead of the hardware to do this processing.
+const base::Feature kPreferLibYuvImageProcessor{
+    "prefer-libyuv-image-processor", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // defined(ARCH_CPU_ARM_FAMILY)
 #if BUILDFLAG(IS_CHROMEOS)
 // ChromeOS has one of two VideoDecoder implementations active based on
 // SoC/board specific configurations that are sent via command line flags. This

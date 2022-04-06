@@ -40,8 +40,9 @@ constexpr const char* usage_msg =
 )";
 
 // Video decoder perf tests help message.
-constexpr const char* help_msg =
-    R"""(Run the video decode accelerator performance tests on the video
+const std::string help_msg =
+    std::string(
+        R"""(Run the video decode accelerator performance tests on the video
 specified by <video path>. If no <video path> is given the default
 "test-25fps.h264" video will be used.
 
@@ -72,8 +73,13 @@ The following arguments are supported:
                         backend that's known to be thread-safe and only in
                         portions of the Chrome stack that should be able to
                         deal with the absence of the lock
-                        (not the VaapiVideoDecodeAccelerator).
-
+                        (not the VaapiVideoDecodeAccelerator).)""") +
+#if defined(ARCH_CPU_ARM_FAMILY)
+    R"""(
+  --use-libyuv          use libYUV instead of hw format conversion.
+                        Disabled by default.)""" +
+#endif  // defined(ARCH_CPU_ARM_FAMILY)
+    R"""(
   --gtest_help          display the gtest help and exit.
   --help                display this help and exit.
 )""";
@@ -462,6 +468,7 @@ int main(int argc, char** argv) {
   bool use_vd_vda = false;
   bool linear_output = false;
   std::vector<base::Feature> disabled_features;
+  std::vector<base::Feature> enabled_features;
   media::test::DecoderImplementation implementation =
       media::test::DecoderImplementation::kVD;
   base::CommandLine::SwitchMap switches = cmd_line->GetSwitches();
@@ -484,6 +491,10 @@ int main(int argc, char** argv) {
       linear_output = true;
     } else if (it->first == "disable_vaapi_lock") {
       disabled_features.push_back(media::kGlobalVaapiLock);
+#if defined(ARCH_CPU_ARM_FAMILY)
+    } else if (it->first == "use-libyuv") {
+      enabled_features.push_back(media::kPreferLibYuvImageProcessor);
+#endif  // defined(ARCH_CPU_ARM_FAMILY)
     } else {
       std::cout << "unknown option: --" << it->first << "\n"
                 << media::test::usage_msg;
@@ -515,8 +526,8 @@ int main(int argc, char** argv) {
           video_path, video_metadata_path, /*validator_type=*/
           media::test::VideoPlayerTestEnvironment::ValidatorType::kNone,
           implementation, linear_output, base::FilePath(output_folder),
-          media::test::FrameOutputConfig(),
-          /*enabled_features=*/{}, disabled_features);
+          media::test::FrameOutputConfig(), enabled_features,
+          disabled_features);
   if (!test_environment)
     return EXIT_FAILURE;
 

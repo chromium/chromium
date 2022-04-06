@@ -5976,7 +5976,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kChromeOSDirectVideoDecoderDescription,
      kOsCrOS | kOsLinux,
      FEATURE_VALUE_TYPE(media::kUseChromeOSDirectVideoDecoder)},
-#endif
+#if defined(ARCH_CPU_ARM_FAMILY)
+    {"prefer-libyuv-image-processor",
+     flag_descriptions::kPreferLibYuvImageProcessorName,
+     flag_descriptions::kPreferLibYuvImageProcessorDescription,
+     kOsCrOS | kOsLinux,
+     FEATURE_VALUE_TYPE(media::kPreferLibYuvImageProcessor)},
+#endif  // defined(ARCH_CPU_ARM_FAMILY)
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
 #if BUILDFLAG(IS_ANDROID)
     {"force-startup-signin-promo",
