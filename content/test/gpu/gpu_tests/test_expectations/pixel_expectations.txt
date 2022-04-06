@@ -177,6 +177,9 @@ crbug.com/852089 [ chromeos ] Pixel_WebGPU* [ Skip ]
 crbug.com/852089 [ fuchsia ] Pixel_WebGPU* [ Skip ]
 crbug.com/852089 [ win7 ] Pixel_WebGPU* [ Skip ]
 
+# WebGPU's copyExternalImage is broken on mac10.12
+crbug.com/1311710 [ mac-10.12 ] Pixel_WebGPUCopyExternalImage* [ Failure ]
+
 ###############################
 # Temporary Skip Expectations #
 ###############################
