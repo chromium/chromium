@@ -1145,6 +1145,69 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   };
 
   enum TexImageDimension { kTex2D, kTex3D };
+
+  // Parameters for all TexImage functions.
+  struct TexImageParams {
+    TexImageFunctionID function_id = kTexImage2D;
+    GLenum target = 0;
+    GLint level = 0;
+
+    // The internal format for the texture to create, only applies to
+    // TexImage calls.
+    GLint internalformat = 0;
+
+    // The offset into the destination in which to do the copy, only applies
+    // to TexSubImage calls.
+    GLint xoffset = 0;
+    GLint yoffset = 0;
+    GLint zoffset = 0;
+
+    // The volume to copy. This is always specified by TexSubImage calls, and
+    // is sometimes specified by TexImage calls. For TexImage calls where this
+    // is not specified, it must be populated with the native size of the source
+    // of the texture upload.
+    absl::optional<GLsizei> width;
+    absl::optional<GLsizei> height;
+    absl::optional<GLsizei> depth;
+
+    // The border parameter, only applies to TexImage calls.
+    GLint border = 0;
+
+    // The format and type of the source texel data.
+    GLenum format = 0;
+    GLenum type = 0;
+
+    // If true, then the input should be converted to premultiplied before
+    // being uploaded (and if false, then the input should be converted to
+    // unpremultiplied). For ImageBitmap sources, this must be set in such a way
+    // that it will have no effect.
+    bool unpack_premultiply_alpha = false;
+
+    // If true, then the input should be flipped vertically before being
+    // uploaded. For ImageBitmap sources, this must be set in such a way that it
+    // will have no effect.
+    bool unpack_flip_y = false;
+
+    // The offset into the source from which to do the copy (the terminology
+    // used here is pixels,rows,images instead of x,y,z).
+    GLint unpack_skip_pixels = 0;
+    GLint unpack_skip_rows = 0;
+    GLint unpack_skip_images = 0;
+
+    // The source's height for 3D copies. If we are doing a 3D copy, then we
+    // interpret the 2D source as 3D by treating it as vertical sequence of
+    // images with this height.
+    GLint unpack_image_height = 0;
+  };
+
+  // Populate the unpack state based on the context's current state. This is
+  // virtual because some state is only tracked in WebGL 2.
+  virtual void GetCurrentUnpackState(TexImageParams& params);
+
+  void TexImageSkPixmap(TexImageParams params,
+                        const SkPixmap* pixmap,
+                        bool pixmap_has_flip_y);
+
   void TexImage2DBase(GLenum target,
                       GLint level,
                       GLint internalformat,

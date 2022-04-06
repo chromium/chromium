@@ -3754,6 +3754,14 @@ bool WebGL2RenderingContextBase::ValidateClearBuffer(const char* function_name,
   return true;
 }
 
+void WebGL2RenderingContextBase::GetCurrentUnpackState(TexImageParams& params) {
+  WebGLRenderingContextBase::GetCurrentUnpackState(params);
+  params.unpack_skip_pixels = unpack_skip_pixels_;
+  params.unpack_skip_rows = unpack_skip_rows_;
+  params.unpack_skip_images = unpack_skip_images_;
+  params.unpack_image_height = unpack_image_height_;
+}
+
 WebGLTexture* WebGL2RenderingContextBase::ValidateTexImageBinding(
     const char* func_name,
     TexImageFunctionID function_id,

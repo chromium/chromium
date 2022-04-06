@@ -4997,6 +4997,105 @@ GLenum WebGLRenderingContextBase::ConvertTexInternalFormat(
   return internalformat;
 }
 
+void WebGLRenderingContextBase::GetCurrentUnpackState(TexImageParams& params) {
+  params.unpack_premultiply_alpha = unpack_premultiply_alpha_;
+  params.unpack_flip_y = unpack_flip_y_;
+}
+
+void WebGLRenderingContextBase::TexImageSkPixmap(TexImageParams params,
+                                                 const SkPixmap* pixmap,
+                                                 bool pixmap_has_flip_y) {
+  DCHECK(params.width && params.height && params.depth);
+  const char* func_name = GetTexImageFunctionName(params.function_id);
+  const gfx::Rect source_rect(params.unpack_skip_pixels,
+                              params.unpack_skip_rows, *params.width,
+                              *params.height);
+  bool selecting_sub_rectangle = false;
+  if (!ValidateTexImageSubRectangle(
+          func_name, params.function_id, pixmap, source_rect, *params.depth,
+          params.unpack_image_height, &selecting_sub_rectangle)) {
+    return;
+  }
+
+  // Let `gl_data` be the data that is passed to the GL upload function.
+  const void* gl_data = pixmap->addr();
+
+  // We will need to flip vertically if the unpack state for flip Y does not
+  // match the source state for flip Y.
+  const bool do_flip_y = pixmap_has_flip_y != params.unpack_flip_y;
+
+  // We will premultiply or unpremultiply only if there is a mismatch between
+  // the source and the requested premultiplication format.
+  WebGLImageConversion::AlphaOp alpha_op =
+      WebGLImageConversion::kAlphaDoNothing;
+  if (params.unpack_premultiply_alpha &&
+      pixmap->alphaType() == kUnpremul_SkAlphaType) {
+    alpha_op = WebGLImageConversion::kAlphaDoPremultiply;
+  }
+  if (!params.unpack_premultiply_alpha &&
+      pixmap->alphaType() == kPremul_SkAlphaType) {
+    alpha_op = WebGLImageConversion::kAlphaDoUnmultiply;
+  }
+
+  // Use WebGLImageConversion to convert the data, if needed, and point
+  // `gl_data` at the temporary buffer `image_conversion_data`.
+  Vector<uint8_t> image_conversion_data;
+  if (params.type != GL_UNSIGNED_BYTE ||
+      WebGLImageConversion::SkColorTypeToDataFormat(pixmap->colorType()) !=
+          WebGLImageConversion::kDataFormatRGBA8 ||
+      params.format != GL_RGBA ||
+      alpha_op != WebGLImageConversion::kAlphaDoNothing || do_flip_y ||
+      selecting_sub_rectangle || params.depth != 1) {
+    // The UNSIGNED_INT_10F_11F_11F_REV type pack/unpack isn't implemented,
+    // use GL_FLOAT instead.
+    if (params.type == GL_UNSIGNED_INT_10F_11F_11F_REV)
+      params.type = GL_FLOAT;
+
+    // Adjust the source image rectangle if doing a y-flip.
+    gfx::Rect adjusted_source_rect = source_rect;
+    if (do_flip_y) {
+      adjusted_source_rect.set_y(pixmap->height() -
+                                 adjusted_source_rect.bottom());
+    }
+    if (!WebGLImageConversion::PackSkPixmap(
+            pixmap, params.format, params.type, do_flip_y, alpha_op,
+            adjusted_source_rect, *params.depth,
+            /*source_unpack_alignment=*/0, params.unpack_image_height,
+            image_conversion_data)) {
+      SynthesizeGLError(GL_INVALID_VALUE, func_name, "packImage error");
+      return;
+    }
+    gl_data = image_conversion_data.data();
+  }
+
+  // Upload using GL.
+  ScopedUnpackParametersResetRestore temporary_reset_unpack(this);
+  switch (params.function_id) {
+    case kTexImage2D:
+      TexImage2DBase(params.target, params.level, params.internalformat,
+                     *params.width, *params.height, params.border,
+                     params.format, params.type, gl_data);
+      break;
+    case kTexSubImage2D:
+      ContextGL()->TexSubImage2D(params.target, params.level, params.xoffset,
+                                 params.yoffset, *params.width, *params.height,
+                                 params.format, params.type, gl_data);
+      break;
+    case kTexImage3D:
+      ContextGL()->TexImage3D(params.target, params.level,
+                              params.internalformat, *params.width,
+                              *params.height, *params.depth, params.border,
+                              params.format, params.type, gl_data);
+      break;
+    case kTexSubImage3D:
+      ContextGL()->TexSubImage3D(params.target, params.level, params.xoffset,
+                                 params.yoffset, params.zoffset, *params.width,
+                                 *params.height, *params.depth, params.format,
+                                 params.type, gl_data);
+      break;
+  }
+}
+
 void WebGLRenderingContextBase::TexImage2DBase(GLenum target,
                                                GLint level,
                                                GLint internalformat,

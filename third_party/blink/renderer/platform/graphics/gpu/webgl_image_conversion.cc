@@ -3519,6 +3519,25 @@ WebGLImageConversion::PixelStoreParams::PixelStoreParams()
       skip_rows(0),
       skip_images(0) {}
 
+WebGLImageConversion::DataFormat WebGLImageConversion::SkColorTypeToDataFormat(
+    SkColorType color_type) {
+  switch (color_type) {
+    case kRGBA_8888_SkColorType:
+      return kDataFormatRGBA8;
+    case kBGRA_8888_SkColorType:
+      return kDataFormatBGRA8;
+    case kR16G16B16A16_unorm_SkColorType:
+      return kDataFormatRGBA16;
+    case kRGBA_F16_SkColorType:
+      return kDataFormatRGBA16F;
+    case kRGBA_F32_SkColorType:
+      return kDataFormatRGBA32F;
+    default:
+      NOTREACHED();
+      return kDataFormatNumFormats;
+  }
+}
+
 bool WebGLImageConversion::ComputeFormatAndTypeParameters(
     GLenum format,
     GLenum type,
@@ -3896,6 +3915,46 @@ unsigned WebGLImageConversion::GetChannelBitsByFormat(GLenum format) {
     default:
       return 0;
   }
+}
+
+bool WebGLImageConversion::PackSkPixmap(
+    const SkPixmap* pixmap,
+    GLenum format,
+    GLenum type,
+    bool flip_y,
+    AlphaOp alpha_op,
+    const gfx::Rect& source_image_sub_rectangle,
+    int depth,
+    unsigned source_unpack_alignment,
+    int unpack_image_height,
+    Vector<uint8_t>& data) {
+  DCHECK(pixmap);
+  const void* const pixels = pixmap->addr();
+  DCHECK(pixels);
+  const unsigned source_image_width = pixmap->width();
+  DCHECK(source_image_width);
+  const unsigned source_image_height = pixmap->height();
+  DCHECK(source_image_height);
+  const DataFormat source_format = SkColorTypeToDataFormat(pixmap->colorType());
+  DCHECK_NE(source_format, kDataFormatNumFormats);
+
+  unsigned packed_size;
+  // Output data is tightly packed (alignment == 1).
+  PixelStoreParams params;
+  params.alignment = 1;
+  if (ComputeImageSizeInBytes(format, type, source_image_sub_rectangle.width(),
+                              source_image_sub_rectangle.height(), depth,
+                              params, &packed_size, nullptr,
+                              nullptr) != GL_NO_ERROR) {
+    return false;
+  }
+  data.resize(packed_size);
+
+  return PackPixels(reinterpret_cast<const uint8_t*>(pixels), source_format,
+                    source_image_width, source_image_height,
+                    source_image_sub_rectangle, depth, source_unpack_alignment,
+                    unpack_image_height, format, type, alpha_op, data.data(),
+                    flip_y);
 }
 
 bool WebGLImageConversion::PackImageData(

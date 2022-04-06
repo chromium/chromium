@@ -168,6 +168,9 @@ class PLATFORM_EXPORT WebGLImageConversion final {
     unsigned image_source_unpack_alignment_;
   };
 
+  // Convert an SkColorType to the most appropriate DataFormat.
+  static DataFormat SkColorTypeToDataFormat(SkColorType color_type);
+
   // Computes the components per pixel and bytes per component
   // for the given format and type combination. Returns false if
   // either was an invalid enum.
@@ -211,6 +214,20 @@ class PLATFORM_EXPORT WebGLImageConversion final {
 
   // The Following functions are implemented in
   // GraphicsContext3DImagePacking.cpp.
+
+  // Packs the contents of the given SkPixmap into the passed Vector according
+  // to the given format and type, and obeying the flipY and AlphaOp flags.
+  // Returns true upon success.
+  static bool PackSkPixmap(const SkPixmap* source,
+                           GLenum format,
+                           GLenum type,
+                           bool flip_y,
+                           AlphaOp,
+                           const gfx::Rect& source_image_sub_rectangle,
+                           int depth,
+                           unsigned source_unpack_alignment,
+                           int unpack_image_height,
+                           Vector<uint8_t>& data);
 
   // Packs the contents of the given Image, which is passed in |pixels|, into
   // the passed Vector according to the given format and type, and obeying the

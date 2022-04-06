@@ -1130,6 +1130,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                                GLsizei height,
                                const char* function_name) override;
 
+  void GetCurrentUnpackState(TexImageParams& params) override;
   WebGLTexture* ValidateTexImageBinding(const char*,
                                         TexImageFunctionID,
                                         GLenum) override;
