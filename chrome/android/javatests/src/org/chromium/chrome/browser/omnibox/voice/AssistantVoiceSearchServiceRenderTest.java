@@ -119,6 +119,7 @@ public class AssistantVoiceSearchServiceRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/1221496")
     public void testAssistantMic() throws IOException {
         setAssistantVoiceSearchEnabled(true);
         setColorfulMicEnabled(false);
