@@ -324,6 +324,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   const PaintLayer* EnclosingCompositedScrollingLayerUnderPagination(
       IncludeSelfOrNot) const;
 
+  bool HasAncestorWithFilterThatMovesPixels() const;
+
   void ConvertToLayerCoords(const PaintLayer* ancestor_layer,
                             PhysicalOffset&) const;
   void ConvertToLayerCoords(const PaintLayer* ancestor_layer,

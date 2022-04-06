@@ -1361,6 +1361,12 @@ const base::Feature kWindowPlacementFullscreenOnScreensChange{
 // TODO(crbug.com/1277431): This flag should be eventually disabled.
 const base::Feature kEventPath{"EventPath", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Removes a paint invalidation of viewport constrained objects (sticky or
+// fixed) after scrolling.
+const base::Feature kOptimizeViewportConstrainedPaintInvalidation{
+    "OptimizeViewportConstrainedPaintInvalidation",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
 const base::Feature kReduceUserAgentMinorVersion{
     "ReduceUserAgentMinorVersion", base::FEATURE_DISABLED_BY_DEFAULT};
 
