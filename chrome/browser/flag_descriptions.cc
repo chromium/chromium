@@ -5540,6 +5540,11 @@ const char kLinkCapturingUiUpdateDescription[] =
 const char kMessagesPreinstallName[] = "Preinstall  Messages PWA";
 const char kMessagesPreinstallDescription[] =
     "Enables preinstallation of the Messages for Web PWA for unmanaged users.";
+
+const char kSyncChromeOSExplicitPassphraseSharingName[] =
+    "Sync passphrase sharing";
+const char kSyncChromeOSExplicitPassphraseSharingDescription[] =
+    "Allows sharing custom sync passphrase between OS and Browser on ChromeOS";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)

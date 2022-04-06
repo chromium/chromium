@@ -8322,6 +8322,14 @@ const FeatureEntry kFeatureEntries[] = {
     {"intent-chip-app-icon", flag_descriptions::kIntentChipAppIconName,
      flag_descriptions::kIntentChipAppIconDescription, kOsCrOS | kOsLinux,
      FEATURE_VALUE_TYPE(apps::features::kIntentChipAppIcon)},
+
+    // TODO(crbug.com/1313512): Replace kOsLinux with Lacros for sync custom
+    // passphrase flag.
+    {"sync-chromeos-explicit-passphrase-sharing",
+     flag_descriptions::kSyncChromeOSExplicitPassphraseSharingName,
+     flag_descriptions::kSyncChromeOSExplicitPassphraseSharingDescription,
+     kOsCrOS | kOsLinux,
+     FEATURE_VALUE_TYPE(syncer::kSyncChromeOSExplicitPassphraseSharing)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

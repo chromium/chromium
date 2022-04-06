@@ -53095,6 +53095,8 @@ from previous Chrome versions.
   <int value="-1346722635" label="gesture-selection"/>
   <int value="-1345931804" label="TabbedAppOverflowMenuIcons:disabled"/>
   <int value="-1345471133" label="JourneysOmniboxAction:enabled"/>
+  <int value="-1344775211"
+      label="SyncChromeOSExplicitPassphraseSharing:disabled"/>
   <int value="-1344375439" label="ServiceWorkerPaymentApps:disabled"/>
   <int value="-1343259222" label="RegionalLocalesAsDisplayUI:disabled"/>
   <int value="-1342961844" label="InlineUpdateFlow:disabled"/>
@@ -56770,6 +56772,8 @@ from previous Chrome versions.
   <int value="1179407596" label="PreemptiveLinkToTextGeneration:enabled"/>
   <int value="1179587141" label="CommerceMerchantViewer:enabled"/>
   <int value="1179936481" label="enable-android-pay-integration-v1"/>
+  <int value="1180692900"
+      label="SyncChromeOSExplicitPassphraseSharing:enabled"/>
   <int value="1180722846" label="OculusVR:disabled"/>
   <int value="1181056275" label="enable-cloud-backup"/>
   <int value="1181825084" label="NewDragSpecInLauncher:enabled"/>

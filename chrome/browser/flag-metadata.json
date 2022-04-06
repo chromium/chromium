@@ -5500,6 +5500,11 @@
     "expiry_milestone": 103
   },
   {
+    "name": "sync-chromeos-explicit-passphrase-sharing",
+    "owners": ["mmoskvitin@google.com", "chrome-sync-dev@google.com"],
+    "expiry_milestone": 104
+  },
+  {
     "name": "sync-settings-categorization",
     "owners": [ "bsazonov", "rsorokin", "cros-oac@google.com" ],
     "expiry_milestone": 103
