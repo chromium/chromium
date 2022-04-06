@@ -98,6 +98,10 @@ class ManagedSessionService
   // chromeos::PowerManagerClient::Observer
   void SuspendDone(base::TimeDelta sleep_duration) override;
 
+  void OnPasswordChangeDetected(const ash::UserContext& user_context) override {
+  }
+  void OnOldEncryptionDetected(const ash::UserContext& user_context,
+                               bool has_incomplete_migration) override {}
   void OnAuthSuccess(const ash::UserContext& user_context) override {}
 
   void OnAuthFailure(const ash::AuthFailure& error) override;
