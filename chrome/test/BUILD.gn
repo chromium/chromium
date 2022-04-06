@@ -2689,15 +2689,10 @@ if (!is_android) {
         ]
         deps += [ "//chrome/browser/chromeos" ]
         data_deps += [
+          "//components/nacl/loader:nacl_helper",
           "//ppapi/native_client:irt",
           "//third_party/liblouis:liblouis_test_data",
         ]
-
-        # TODO(https://crbug.com/1299021): Implement building this NaCl target
-        # as ARM32 when Chrome is built for ARM64 (for Linux/Chrome OS).
-        if (target_cpu != "arm64") {
-          data_deps += [ "//components/nacl/loader:nacl_helper" ]
-        }
       }
 
       if (is_win || is_linux || is_chromeos) {
@@ -2709,10 +2704,7 @@ if (!is_android) {
         # browser process as needed by this test. See http://crbug.com/157312.
         sources -= [ "../browser/nacl_host/test/gdb_debug_stub_browsertest.cc" ]
       }
-
-      # TODO(https://crbug.com/1299021): Implement building this NaCl target
-      # as ARM32 when Chrome is built for ARM64 (for Linux/Chrome OS).
-      if ((is_linux || is_chromeos) && target_cpu != "arm64") {
+      if (is_linux || is_chromeos) {
         data_deps += [ "//components/nacl/loader:nacl_helper" ]
       }
     }

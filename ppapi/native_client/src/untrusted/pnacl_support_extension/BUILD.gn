@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//components/nacl/features.gni")
+import("//components/nacl/target_cpu.gni")
 
 assert(enable_nacl)
 
@@ -28,9 +29,10 @@ action("pnacl_support_extension") {
   # flags (so IRT compiler flags should be fine).
   shim_toolchain_base = "//build/toolchain/nacl:irt_"
 
-  shim_target_tc_label = "$shim_target_label($shim_toolchain_base$target_cpu)"
+  shim_target_tc_label =
+      "$shim_target_label($shim_toolchain_base$nacl_target_cpu)"
   deps = [ shim_target_tc_label ]
-  shim_cpu = target_cpu
+  shim_cpu = nacl_target_cpu
 
   output_prefix = "$root_out_dir/pnacl/pnacl_public_"
   outputs = [ "${output_prefix}pnacl_json" ]
@@ -47,16 +49,16 @@ action("pnacl_support_extension") {
     "pnacl_sz_nexe",
   ]
 
-  if (target_cpu == "arm") {
+  if (nacl_target_cpu == "arm") {
     output_cpu = "arm"
-  } else if (target_cpu == "mipsel") {
+  } else if (nacl_target_cpu == "mipsel") {
     output_cpu = "mips32"
-  } else if (target_cpu == "x64") {
+  } else if (nacl_target_cpu == "x64") {
     output_cpu = "x86_64"
-  } else if (target_cpu == "x86") {
+  } else if (nacl_target_cpu == "x86") {
     output_cpu = "x86_32"
   } else {
-    assert(false, "unhandled target_cpu")
+    assert(false, "unhandled nacl_target_cpu")
   }
 
   foreach(output_elem, outputs_from_toolchain) {
@@ -114,7 +116,7 @@ action("pnacl_support_extension") {
     rebase_path("$root_out_dir/pnacl", root_build_dir),
 
     "--target_arch",
-    target_cpu,
+    nacl_target_cpu,
 
     "--info_template_path",
     rebase_path("//native_client/pnacl/driver/pnacl_info_template.json",
