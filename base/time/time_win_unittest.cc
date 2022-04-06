@@ -18,6 +18,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/win/registry.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -249,7 +250,7 @@ TEST(TimeTicks, TimerPerformance) {
 // only used in Chromium for QueryThreadCycleTime, and QueryThreadCycleTime
 // doesn't use a constant-rate timer on ARM64.
 TEST(TimeTicks, TSCTicksPerSecond) {
-  if (ThreadTicks::IsSupported()) {
+  if (time_internal::HasConstantRateTSC()) {
     ThreadTicks::WaitUntilInitialized();
 
     // Read the CPU frequency from the registry.
@@ -263,7 +264,7 @@ TEST(TimeTicks, TSCTicksPerSecond) {
 
     // Expect the measured TSC frequency to be similar to the processor
     // frequency from the registry (0.5% error).
-    double tsc_mhz_measured = ThreadTicks::TSCTicksPerSecond() / 1e6;
+    double tsc_mhz_measured = time_internal::TSCTicksPerSecond() / 1e6;
     EXPECT_NEAR(tsc_mhz_measured, processor_mhz_from_registry,
                 0.005 * processor_mhz_from_registry);
   }

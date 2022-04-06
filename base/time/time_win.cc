@@ -671,7 +671,7 @@ ThreadTicks ThreadTicks::GetForThread(
   ::QueryThreadCycleTime(thread_handle.platform_handle(), &thread_cycle_time);
 
   // Get the frequency of the TSC.
-  const double tsc_ticks_per_second = TSCTicksPerSecond();
+  const double tsc_ticks_per_second = time_internal::TSCTicksPerSecond();
   if (tsc_ticks_per_second == 0)
     return ThreadTicks();
 
@@ -691,22 +691,57 @@ bool ThreadTicks::IsSupportedWin() {
   // not care about the time stamp counter.
   return true;
 #else
-  static bool is_supported = CPU().has_non_stop_time_stamp_counter();
-  return is_supported;
+  return time_internal::HasConstantRateTSC();
 #endif
 }
 
 // static
 void ThreadTicks::WaitUntilInitializedWin() {
 #if !defined(ARCH_CPU_ARM64)
-  while (TSCTicksPerSecond() == 0)
+  while (time_internal::TSCTicksPerSecond() == 0)
     ::Sleep(10);
 #endif
 }
 
+// static
+TimeTicks TimeTicks::FromQPCValue(LONGLONG qpc_value) {
+  return TimeTicks() + QPCValueToTimeDelta(qpc_value);
+}
+
+// TimeDelta ------------------------------------------------------------------
+
+// static
+TimeDelta TimeDelta::FromQPCValue(LONGLONG qpc_value) {
+  return QPCValueToTimeDelta(qpc_value);
+}
+
+// static
+TimeDelta TimeDelta::FromFileTime(FILETIME ft) {
+  return Microseconds(FileTimeToMicroseconds(ft));
+}
+
+// static
+TimeDelta TimeDelta::FromWinrtDateTime(ABI::Windows::Foundation::DateTime dt) {
+  // UniversalTime is 100 ns intervals since January 1, 1601 (UTC)
+  return Microseconds(dt.UniversalTime / 10);
+}
+
+ABI::Windows::Foundation::DateTime TimeDelta::ToWinrtDateTime() const {
+  ABI::Windows::Foundation::DateTime date_time;
+  date_time.UniversalTime = InMicroseconds() * 10;
+  return date_time;
+}
+
 #if !defined(ARCH_CPU_ARM64)
-double ThreadTicks::TSCTicksPerSecond() {
-  DCHECK(IsSupported());
+namespace time_internal {
+
+bool HasConstantRateTSC() {
+  static bool is_supported = CPU().has_non_stop_time_stamp_counter();
+  return is_supported;
+}
+
+double TSCTicksPerSecond() {
+  DCHECK(HasConstantRateTSC());
   // The value returned by QueryPerformanceFrequency() cannot be used as the TSC
   // frequency, because there is no guarantee that the TSC frequency is equal to
   // the performance counter frequency.
@@ -762,35 +797,8 @@ double ThreadTicks::TSCTicksPerSecond() {
 
   return tsc_ticks_per_second;
 }
+
+}  // namespace time_internal
 #endif  // defined(ARCH_CPU_ARM64)
-
-// static
-TimeTicks TimeTicks::FromQPCValue(LONGLONG qpc_value) {
-  return TimeTicks() + QPCValueToTimeDelta(qpc_value);
-}
-
-// TimeDelta ------------------------------------------------------------------
-
-// static
-TimeDelta TimeDelta::FromQPCValue(LONGLONG qpc_value) {
-  return QPCValueToTimeDelta(qpc_value);
-}
-
-// static
-TimeDelta TimeDelta::FromFileTime(FILETIME ft) {
-  return Microseconds(FileTimeToMicroseconds(ft));
-}
-
-// static
-TimeDelta TimeDelta::FromWinrtDateTime(ABI::Windows::Foundation::DateTime dt) {
-  // UniversalTime is 100 ns intervals since January 1, 1601 (UTC)
-  return Microseconds(dt.UniversalTime / 10);
-}
-
-ABI::Windows::Foundation::DateTime TimeDelta::ToWinrtDateTime() const {
-  ABI::Windows::Foundation::DateTime date_time;
-  date_time.UniversalTime = InMicroseconds() * 10;
-  return date_time;
-}
 
 }  // namespace base
