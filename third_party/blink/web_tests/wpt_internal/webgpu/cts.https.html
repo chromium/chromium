@@ -2023,6 +2023,7 @@
 <meta name=variant content='?q=webgpu:api,validation,createRenderPipeline:pipeline_output_targets,blend_min_max:isAsync=true;component="alpha";*'>
 <meta name=variant content='?q=webgpu:api,validation,createRenderPipeline:pipeline_layout,device_mismatch:*'>
 <meta name=variant content='?q=webgpu:api,validation,createRenderPipeline:shader_module,device_mismatch:*'>
+<meta name=variant content='?q=webgpu:api,validation,createRenderPipeline:entry_point_name_must_match:*'>
 <meta name=variant content='?q=webgpu:api,validation,createSampler:lodMinAndMaxClamp:*'>
 <meta name=variant content='?q=webgpu:api,validation,createSampler:maxAnisotropy:*'>
 <meta name=variant content='?q=webgpu:api,validation,createTexture:zero_size:*'>
@@ -2059,7 +2060,7 @@
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,buffer_texture_copies:depth_stencil_format,copy_usage_and_aspect:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,buffer_texture_copies:depth_stencil_format,copy_buffer_size:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,buffer_texture_copies:depth_stencil_format,copy_buffer_offset:*'>
-<meta name=variant content='?q=webgpu:api,validation,encoding,cmds,clearBuffer:invalid_buffer:*'>
+<meta name=variant content='?q=webgpu:api,validation,encoding,cmds,clearBuffer:buffer_state:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,clearBuffer:buffer,device_mismatch:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,clearBuffer:default_args:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,clearBuffer:buffer_usage:*'>
@@ -2070,9 +2071,9 @@
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,compute_pass:set_pipeline:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,compute_pass:pipeline,device_mismatch:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,compute_pass:dispatch_sizes:*'>
-<meta name=variant content='?q=webgpu:api,validation,encoding,cmds,compute_pass:indirect_dispatch_buffer:*'>
+<meta name=variant content='?q=webgpu:api,validation,encoding,cmds,compute_pass:indirect_dispatch_buffer_state:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,compute_pass:indirect_dispatch_buffer,device_mismatch:*'>
-<meta name=variant content='?q=webgpu:api,validation,encoding,cmds,copyBufferToBuffer:copy_with_invalid_buffer:*'>
+<meta name=variant content='?q=webgpu:api,validation,encoding,cmds,copyBufferToBuffer:buffer_state:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,copyBufferToBuffer:buffer,device_mismatch:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,copyBufferToBuffer:buffer_usage:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,copyBufferToBuffer:copy_size_alignment:*'>
@@ -2160,12 +2161,12 @@
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,dynamic_state:setScissorRect,xy_rect_contained_in_attachment:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,dynamic_state:setBlendConstant:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,dynamic_state:setStencilReference:*'>
-<meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,indirect_draw:indirect_buffer:*'>
+<meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,indirect_draw:indirect_buffer_state:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,indirect_draw:indirect_buffer,device_mismatch:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,indirect_draw:indirect_buffer_usage:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,indirect_draw:indirect_offset_alignment:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,indirect_draw:indirect_offset_oob:*'>
-<meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,setIndexBuffer:index_buffer:*'>
+<meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,setIndexBuffer:index_buffer_state:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,setIndexBuffer:index_buffer,device_mismatch:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,setIndexBuffer:index_buffer_usage:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,setIndexBuffer:offset_alignment:*'>
@@ -2173,7 +2174,7 @@
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,setPipeline:invalid_pipeline:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,setPipeline:pipeline,device_mismatch:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,setVertexBuffer:slot:*'>
-<meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,setVertexBuffer:vertex_buffer:*'>
+<meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,setVertexBuffer:vertex_buffer_state:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,setVertexBuffer:vertex_buffer,device_mismatch:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,setVertexBuffer:vertex_buffer_usage:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,setVertexBuffer:offset_alignment:*'>
@@ -2207,7 +2208,7 @@
 <meta name=variant content='?q=webgpu:api,validation,encoding,queries,general:timestamp_query,query_type_and_index:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,queries,general:timestamp_query,invalid_query_set:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,queries,general:timestamp_query,device_mismatch:*'>
-<meta name=variant content='?q=webgpu:api,validation,encoding,queries,resolveQuerySet:invalid_queryset_and_destination_buffer:*'>
+<meta name=variant content='?q=webgpu:api,validation,encoding,queries,resolveQuerySet:queryset_and_destination_buffer_state:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,queries,resolveQuerySet:first_query_and_query_count:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,queries,resolveQuerySet:destination_buffer_usage:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,queries,resolveQuerySet:destination_offset_alignment:*'>
@@ -2225,7 +2226,7 @@
 <meta name=variant content='?q=webgpu:api,validation,error_scope:if_no_error_scope_handles_an_error_it_fires_an_uncapturederror_event:*'>
 <meta name=variant content='?q=webgpu:api,validation,error_scope:push,popping_sibling_error_scopes_must_be_balanced:*'>
 <meta name=variant content='?q=webgpu:api,validation,error_scope:push,popping_nested_error_scopes_must_be_balanced:*'>
-<meta name=variant content='?q=webgpu:api,validation,image_copy,buffer_related:valid:*'>
+<meta name=variant content='?q=webgpu:api,validation,image_copy,buffer_related:buffer_state:*'>
 <meta name=variant content='?q=webgpu:api,validation,image_copy,buffer_related:buffer,device_mismatch:*'>
 <meta name=variant content='?q=webgpu:api,validation,image_copy,buffer_related:usage:*'>
 <meta name=variant content='?q=webgpu:api,validation,image_copy,buffer_related:bytes_per_row_alignment:*'>
@@ -2544,11 +2545,11 @@
 <meta name=variant content='?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:destination_texture,format:*'>
 <meta name=variant content='?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:OOB,source:*'>
 <meta name=variant content='?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:OOB,destination:*'>
-<meta name=variant content='?q=webgpu:api,validation,queue,destroyed,buffer:resolveQuerySet:*'>
 <meta name=variant content='?q=webgpu:api,validation,queue,destroyed,query_set:beginOcclusionQuery:*'>
 <meta name=variant content='?q=webgpu:api,validation,queue,destroyed,query_set:writeTimestamp:*'>
 <meta name=variant content='?q=webgpu:api,validation,queue,destroyed,query_set:resolveQuerySet:*'>
 <meta name=variant content='?q=webgpu:api,validation,queue,submit:command_buffer,device_mismatch:*'>
+<meta name=variant content='?q=webgpu:api,validation,queue,writeBuffer:buffer_state:*'>
 <meta name=variant content='?q=webgpu:api,validation,queue,writeBuffer:ranges:*'>
 <meta name=variant content='?q=webgpu:api,validation,queue,writeBuffer:usages:*'>
 <meta name=variant content='?q=webgpu:api,validation,queue,writeBuffer:buffer,device_mismatch:*'>
