@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PASSWORDS_VIEWS_UTILS_H_
 #define CHROME_BROWSER_UI_VIEWS_PASSWORDS_VIEWS_UTILS_H_
 
+#include <memory>
 #include <string>
 
 #include "base/callback_forward.h"
