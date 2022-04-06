@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Synchronized screenshot test with canvas</title>
+<style>
+  html, body { margin: 0; }
+</style>
+</head>
+<body>
+  <canvas id="canvas" width="256" height="256" style="position: absolute; left; 0px; top: 0px;"></canvas>
+  <div id="text"></div>
+
+  <script>
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+    var text = document.getElementById("text");
+    function draw(r, g, b) {
+      var rgb = "RGB(" + r + "," + g + "," + b + ")";
+      text.textContent = rgb;
+      ctx.fillStyle = rgb;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+  </script>
+ </body>
+</html>
