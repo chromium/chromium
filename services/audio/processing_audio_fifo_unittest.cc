@@ -445,6 +445,9 @@ TEST_F(ProcessingAudioFifoTest, StopDuringBatchProcess) {
   // The remaining buffers in the FIFO should not be processed.
   EXPECT_FALSE(any_buffer_processed.TimedWait(base::Milliseconds(10)));
   EXPECT_EQ(1, number_of_calls);
+
+  // Explicitly destroy the FIFO, to avoid TSAN failures.
+  TearDownFifo();
 }
 
 }  // namespace audio
