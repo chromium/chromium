@@ -195,6 +195,9 @@ if (enable_java_templates) {
         if (use_hashed_jni_names) {
           args += [ "--use_proxy_hash" ]
         }
+        if (enable_jni_multiplexing) {
+          args += [ "--enable_jni_multiplexing" ]
+        }
         if (defined(invoker.namespace)) {
           args += [ "-n ${invoker.namespace}" ]
         }
@@ -308,6 +311,8 @@ if (enable_java_templates) {
   # Variables
   #   targets: List of .build_config.json supported targets to provide java sources.
   #   header_output: Path to the generated .h file (optional).
+  #   manual_jni_registration: Manually do JNI registration - required for
+  #     crazy linker. (optional)
   #   sources_exclusions: List of .java files that should be skipped. (optional)
   #   namespace: Registration functions will be wrapped into this. (optional)
   #   require_native_mocks: Enforce that any native calls using
@@ -324,6 +329,7 @@ if (enable_java_templates) {
   #   generate_jni_registration("chrome_jni_registration") {
   #     targets = [ ":chrome_public_apk" ]
   #     header_output = "$target_gen_dir/$target_name.h"
+  #     manual_jni_registration = false
   #     sources_exclusions = [
   #       "//path/to/Exception.java",
   #     ]
@@ -368,6 +374,10 @@ if (enable_java_templates) {
         args += [ "--use_proxy_hash" ]
       }
 
+      if (enable_jni_multiplexing) {
+        args += [ "--enable_jni_multiplexing" ]
+      }
+
       if (defined(invoker.enable_native_mocks) && invoker.enable_native_mocks) {
         args += [ "--enable_proxy_mocks" ]
 
@@ -383,6 +393,11 @@ if (enable_java_templates) {
           "--header-path",
           rebase_path(invoker.header_output, root_build_dir),
         ]
+
+        if (!defined(invoker.manual_jni_registration) ||
+            invoker.manual_jni_registration) {
+          args += [ "--manual_jni_registration" ]
+        }
       }
 
       if (defined(invoker.sources_exclusions)) {
@@ -2758,6 +2773,7 @@ if (enable_java_templates) {
         }
         if (defined(invoker.jni_registration_header)) {
           header_output = invoker.jni_registration_header
+          manual_jni_registration = true
         }
         if (defined(invoker.jni_sources_exclusions)) {
           sources_exclusions = invoker.jni_sources_exclusions

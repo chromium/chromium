@@ -13,6 +13,7 @@ file.
 
 from __future__ import print_function
 
+import collections
 import difflib
 import inspect
 import optparse
@@ -59,6 +60,7 @@ class TestOptions(object):
     self.enable_profiling = False
     self.enable_tracing = False
     self.use_proxy_hash = False
+    self.enable_jni_multiplexing = False
     self.always_mangle = False
     self.unchecked_exceptions = False
     self.split_name = None
@@ -69,7 +71,8 @@ class BaseTest(unittest.TestCase):
   @staticmethod
   def _MergeRegistrationForTests(results,
                                  header_guard='HEADER_GUARD',
-                                 namespace='test'):
+                                 namespace='test',
+                                 enable_jni_multiplexing=False):
 
     results.sort(key=lambda d: d['FULL_CLASS_NAME'])
 
@@ -79,6 +82,27 @@ class BaseTest(unittest.TestCase):
 
     combined_dict['HEADER_GUARD'] = header_guard
     combined_dict['NAMESPACE'] = namespace
+
+    if enable_jni_multiplexing:
+      proxy_signatures_list = sorted(
+          set(combined_dict['PROXY_NATIVE_SIGNATURES'].split('\n')))
+      combined_dict['PROXY_NATIVE_SIGNATURES'] = '\n'.join(
+          signature for signature in proxy_signatures_list)
+
+      proxy_native_array_list = sorted(
+          set(combined_dict['PROXY_NATIVE_METHOD_ARRAY_MAIN_DEX'].split(
+              '},\n')))
+      combined_dict['PROXY_NATIVE_METHOD_ARRAY_MAIN_DEX'] = '},\n'.join(
+          p for p in proxy_native_array_list if p != '') + '}'
+
+      signature_to_cases = collections.defaultdict(list)
+      for d in results:
+        for signature, cases in d['SIGNATURE_TO_CASES'].items():
+          signature_to_cases[signature].extend(cases)
+      combined_dict[
+          'FORWARDING_CALLS'] = jni_registration_generator._AddForwardingCalls(
+              signature_to_cases, namespace)
+
     return combined_dict
 
   def _JoinScriptDir(self, path):
@@ -356,18 +380,18 @@ class TestGenerator(BaseTest):
                                               natives, [], [], jni_params,
                                               TestOptions())
     self.AssertGoldenTextEquals(h1.GetContent())
-    h2 = jni_registration_generator.HeaderGenerator(
-        '',
-        'org/chromium/TestJni',
-        natives,
-        jni_params,
-        True,
-        use_proxy_hash=False)
+    h2 = jni_registration_generator.HeaderGenerator('',
+                                                    '',
+                                                    'org/chromium/TestJni',
+                                                    natives,
+                                                    jni_params,
+                                                    True,
+                                                    use_proxy_hash=False)
     content = TestGenerator._MergeRegistrationForTests([h2.Generate()])
 
-    self.AssertGoldenTextEquals(
-        jni_registration_generator.CreateFromDict(content, use_hash=False),
-        suffix='Registrations')
+    self.AssertGoldenTextEquals(jni_registration_generator.CreateFromDict(
+        content, use_hash=False, manual_jni_registration=True),
+                                suffix='Registrations')
 
   def testInnerClassNatives(self):
     test_data = """
@@ -457,18 +481,18 @@ class TestGenerator(BaseTest):
                                              TestOptions())
     self.AssertGoldenTextEquals(h.GetContent())
 
-    h2 = jni_registration_generator.HeaderGenerator(
-        '',
-        'org/chromium/TestJni',
-        natives,
-        jni_params,
-        True,
-        use_proxy_hash=False)
+    h2 = jni_registration_generator.HeaderGenerator('',
+                                                    '',
+                                                    'org/chromium/TestJni',
+                                                    natives,
+                                                    jni_params,
+                                                    True,
+                                                    use_proxy_hash=False)
     content = TestGenerator._MergeRegistrationForTests([h2.Generate()])
 
-    self.AssertGoldenTextEquals(
-        jni_registration_generator.CreateFromDict(content, use_hash=False),
-        suffix='Registrations')
+    self.AssertGoldenTextEquals(jni_registration_generator.CreateFromDict(
+        content, use_hash=False, manual_jni_registration=True),
+                                suffix='Registrations')
 
   def testCalledByNatives(self):
     test_data = """"
@@ -1409,6 +1433,7 @@ class ProxyTestGenerator(BaseTest):
     jni_params = jni_generator.JniParams(qualified_clazz)
     main_dex_header = jni_registration_generator.HeaderGenerator(
         '',
+        '',
         qualified_clazz,
         natives,
         jni_params,
@@ -1417,7 +1442,9 @@ class ProxyTestGenerator(BaseTest):
     content = TestGenerator._MergeRegistrationForTests([main_dex_header])
 
     self.AssertGoldenTextEquals(
-        jni_registration_generator.CreateFromDict(content, use_hash=False))
+        jni_registration_generator.CreateFromDict(content,
+                                                  use_hash=False,
+                                                  manual_jni_registration=True))
 
     other_qualified_clazz = 'test/foo/Bar'
     other_natives = jni_generator.ProxyHelpers.ExtractStaticProxyNatives(
@@ -1425,6 +1452,7 @@ class ProxyTestGenerator(BaseTest):
 
     jni_params = jni_generator.JniParams(other_qualified_clazz)
     non_main_dex_header = jni_registration_generator.HeaderGenerator(
+        '',
         '',
         other_qualified_clazz,
         other_natives,
@@ -1436,7 +1464,9 @@ class ProxyTestGenerator(BaseTest):
                                                        [non_main_dex_header])
 
     self.AssertGoldenTextEquals(
-        jni_registration_generator.CreateFromDict(content, use_hash=False),
+        jni_registration_generator.CreateFromDict(content,
+                                                  use_hash=False,
+                                                  manual_jni_registration=True),
         'AndNonMainDex')
 
   def testProxyNatives(self):
@@ -1522,18 +1552,26 @@ class ProxyTestGenerator(BaseTest):
     h1 = jni_generator.InlHeaderFileGenerator('', qualified_clazz, natives, [],
                                               [], jni_params, TestOptions())
     self.AssertGoldenTextEquals(h1.GetContent())
-    h2 = jni_registration_generator.HeaderGenerator(
-        '', qualified_clazz, natives, jni_params, False, use_proxy_hash=False)
+    h2 = jni_registration_generator.HeaderGenerator('',
+                                                    '',
+                                                    qualified_clazz,
+                                                    natives,
+                                                    jni_params,
+                                                    False,
+                                                    use_proxy_hash=False)
     content = TestGenerator._MergeRegistrationForTests([h2.Generate()])
 
-    proxy_opts = jni_registration_generator.ProxyOptions()
+    proxy_opts = jni_registration_generator.ProxyOptions(
+        manual_jni_registration=True)
     self.AssertGoldenTextEquals(
         jni_registration_generator.CreateProxyJavaFromDict(content, proxy_opts),
         suffix='Java')
 
-    self.AssertGoldenTextEquals(
-        jni_registration_generator.CreateFromDict(content, proxy_opts.use_hash),
-        suffix='Registrations')
+    self.AssertGoldenTextEquals(jni_registration_generator.CreateFromDict(
+        content,
+        proxy_opts.use_hash,
+        manual_jni_registration=proxy_opts.manual_jni_registration),
+                                suffix='Registrations')
 
   def testProxyHashedExample(self):
     opts = TestOptions()
@@ -1649,6 +1687,66 @@ class ProxyTestGenerator(BaseTest):
             ptr_type='long')
     ]
     self.AssertListEquals(golden_natives, _RemoveHashedNames(natives))
+
+
+class MultiplexTestGenerator(BaseTest):
+  def testProxyMultiplexGenJni(self):
+    path = os.path.join(_JAVA_SRC_DIR, 'SampleForAnnotationProcessor.java')
+    reg_dict = jni_registration_generator._DictForPath(
+        self._JoinScriptDir(path),
+        enable_jni_multiplexing=True,
+        namespace='test')
+    reg_dict = self._MergeRegistrationForTests([reg_dict],
+                                               enable_jni_multiplexing=True)
+
+    proxy_opts = jni_registration_generator.ProxyOptions(
+        enable_jni_multiplexing=True)
+    self.AssertGoldenTextEquals(
+        jni_registration_generator.CreateProxyJavaFromDict(
+            reg_dict, proxy_opts),
+        golden_file='testProxyMultiplexGenJni.golden')
+
+    self.AssertGoldenTextEquals(
+        jni_registration_generator.CreateProxyJavaFromDict(reg_dict,
+                                                           proxy_opts,
+                                                           forwarding=True),
+        golden_file='testProxyMultiplexGenJni.2.golden')
+
+  def testProxyMultiplexNatives(self):
+    path = os.path.join(_JAVA_SRC_DIR, 'SampleForAnnotationProcessor.java')
+    reg_dict = jni_registration_generator._DictForPath(
+        self._JoinScriptDir(path),
+        enable_jni_multiplexing=True,
+        namespace='test')
+    reg_dict = self._MergeRegistrationForTests([reg_dict],
+                                               enable_jni_multiplexing=True)
+
+    proxy_opts = jni_registration_generator.ProxyOptions(
+        enable_jni_multiplexing=True)
+    self.AssertGoldenTextEquals(jni_registration_generator.CreateFromDict(
+        reg_dict,
+        proxy_opts.use_hash,
+        enable_jni_multiplexing=proxy_opts.enable_jni_multiplexing),
+                                golden_file='testProxyMultiplexNatives.golden')
+
+  def testProxyMultiplexNativesRegistration(self):
+    path = os.path.join(_JAVA_SRC_DIR, 'SampleForAnnotationProcessor.java')
+    reg_dict_for_registration = jni_registration_generator._DictForPath(
+        self._JoinScriptDir(path),
+        enable_jni_multiplexing=True,
+        namespace='test')
+    reg_dict_for_registration = self._MergeRegistrationForTests(
+        [reg_dict_for_registration], enable_jni_multiplexing=True)
+
+    proxy_opts = jni_registration_generator.ProxyOptions(
+        enable_jni_multiplexing=True)
+    self.AssertGoldenTextEquals(
+        jni_registration_generator.CreateFromDict(
+            reg_dict_for_registration,
+            proxy_opts.use_hash,
+            enable_jni_multiplexing=proxy_opts.enable_jni_multiplexing,
+            manual_jni_registration=True),
+        golden_file='testProxyMultiplexNativesRegistration.golden')
 
 
 def TouchStamp(stamp_path):
