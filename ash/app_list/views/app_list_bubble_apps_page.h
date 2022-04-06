@@ -42,6 +42,7 @@ class AppListViewDelegate;
 class ContinueSectionView;
 class RecentAppsView;
 class SearchResultPageDialogController;
+class SearchBoxView;
 class ScrollableAppsGridView;
 class ScrollViewGradientHelper;
 
@@ -65,7 +66,8 @@ class ASH_EXPORT AppListBubbleAppsPage
                         AppListConfig* app_list_config,
                         AppListA11yAnnouncer* a11y_announcer,
                         SearchResultPageDialogController* dialog_controller,
-                        AppListFolderController* folder_controller);
+                        AppListFolderController* folder_controller,
+                        SearchBoxView* search_box);
   AppListBubbleAppsPage(const AppListBubbleAppsPage&) = delete;
   AppListBubbleAppsPage& operator=(const AppListBubbleAppsPage&) = delete;
   ~AppListBubbleAppsPage() override;
@@ -169,9 +171,12 @@ class ASH_EXPORT AppListBubbleAppsPage
   // Callback for when the apps grid view animation ends.
   void OnAppsGridViewAnimationEnded();
 
+  // Called after sort to handle focus.
+  void HandleFocusAfterSort();
+
   // Called when the animation to fade out app list items is completed.
   // `aborted` indicates whether the fade out animation is aborted.
-  void OnAppsGridViewFadeOutAnimationEneded(
+  void OnAppsGridViewFadeOutAnimationEnded(
       const absl::optional<AppListSortOrder>& new_order,
       bool aborted);
 
@@ -192,12 +197,16 @@ class ASH_EXPORT AppListBubbleAppsPage
                              int vertical_offset,
                              base::TimeDelta duration);
 
+  AppListViewDelegate* view_delegate_ = nullptr;
   views::ScrollView* scroll_view_ = nullptr;
   ContinueSectionView* continue_section_ = nullptr;
   RecentAppsView* recent_apps_ = nullptr;
   views::Separator* separator_ = nullptr;
   AppListToastContainerView* toast_container_ = nullptr;
   ScrollableAppsGridView* scrollable_apps_grid_view_ = nullptr;
+
+  // The search box owned by AppListBubbleView.
+  SearchBoxView* search_box_ = nullptr;
 
   std::unique_ptr<AppListNudgeController> app_list_nudge_controller_;
 

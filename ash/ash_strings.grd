@@ -4544,6 +4544,15 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_LAUNCHER_UNDO_SORT_TOAST_ACTION_BUTTON" desc="The label for the action button for a toast shown within the launcher UI that appears after the user sorts their apps, either aplhabetically or by icon color. The action button reverts the order of apps in the launcher to the one from before the user requested sort.">
        Undo
       </message>
+      <message name="IDS_ASH_LAUNCHER_UNDO_NAME_SORT_TOAST_SPOKEN_TEXT" desc="Accessibility text read by chromevox when focusing on the undo button shown in a toast that gets shown in the launcher UI after the user sorts apps in the launcher by name. This undo button reverts the order of apps in launcher to the one before sort actions.">
+       Undo sort order by name
+      </message>
+      <message name="IDS_ASH_LAUNCHER_UNDO_COLOR_SORT_TOAST_SPOKEN_TEXT" desc="Accessibility text read by chromevox when focusing on the undo button shown in a toast that gets shown in the launcher UI after the user sorts apps in the launcher by color. This undo button reverts the order of apps in launcher to the one before sort actions.">
+       Undo sort order by color
+      </message>
+      <message name="IDS_ASH_LAUNCHER_UNDO_SORT_DONE_SPOKEN_TEXT" desc="Accessibility text read by chromevox after successfully undoing/reverting the sorting action on apps in launcher.">
+       Sort undo successful
+      </message>
       <message name="IDS_ASH_LAUNCHER_APP_LIST_REORDER_NUDGE_TITLE" desc="Title of a nudge shown in the Chrome OS launcher UI above the list of apps that informs users that they can sort their apps by name or color.">
         Sort your apps by name or color
       </message>

@@ -28,6 +28,7 @@
 #include "ui/compositor/test/test_utils.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 
@@ -46,7 +47,7 @@ class AppListBubbleAppsPageTest : public AshTestBase {
 
   // Sorts app list with the specified order. If `wait` is true, wait for the
   // reorder animation to complete.
-  void SortAppList(AppListSortOrder order, bool wait) {
+  void SortAppList(const absl::optional<AppListSortOrder>& order, bool wait) {
     AppListController::Get()->UpdateAppListWithNewTemporarySortOrder(
         order,
         /*animate=*/true, /*update_position_closure=*/base::DoNothing());
@@ -256,14 +257,40 @@ TEST_F(AppListBubbleAppsPageTest, SortAppsMakesA11yAnnouncement) {
 
   // An alert fired with a message.
   EXPECT_EQ(event, ax::mojom::Event::kAlert);
-  ui::AXNodeData node_data;
-  announcement_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
-  EXPECT_EQ(node_data.GetStringAttribute(ax::mojom::StringAttribute::kName),
+  ui::AXNodeData sort_data, button_data;
+  announcement_view->GetViewAccessibility().GetAccessibleNodeData(&sort_data);
+  EXPECT_EQ(sort_data.GetStringAttribute(ax::mojom::StringAttribute::kName),
             "Apps are sorted by name");
+
+  views::LabelButton* undo_button =
+      apps_page->toast_container_for_test()->GetToastDismissButton();
+  undo_button->GetViewAccessibility().GetAccessibleNodeData(&button_data);
+  EXPECT_EQ(button_data.GetStringAttribute(ax::mojom::StringAttribute::kName),
+            "Undo sort order by name");
+
+  // Test the announcement that is announced after reverting the sort.
+  base::RunLoop undo_run_loop;
+  announcement_view->GetViewAccessibility().set_accessibility_events_callback(
+      base::BindLambdaForTesting([&](const ui::AXPlatformNodeDelegate* unused,
+                                     const ax::mojom::Event event_in) {
+        event = event_in;
+        undo_run_loop.Quit();
+      }));
+
+  // Simulate the sort undo by setting the new order to nullopt.
+  SortAppList(absl::nullopt, /*wait=*/false);
+  undo_run_loop.Run();
+
+  EXPECT_EQ(event, ax::mojom::Event::kAlert);
+  ui::AXNodeData undo_data;
+  announcement_view->GetViewAccessibility().GetAccessibleNodeData(&undo_data);
+  EXPECT_EQ(undo_data.GetStringAttribute(ax::mojom::StringAttribute::kName),
+            "Sort undo successful");
 }
 
-// Verify that after sorting app list with animation the search box should
-// have focus.
+// Verify that after sorting app list with animation, the undo sort toast in app
+// list should have focus. In addition, the focus should move to the search box
+// after reverting the sort.
 TEST_F(AppListBubbleAppsPageTest, SortAppsWithItemFocused) {
   ui::ScopedAnimationDurationScaleMode scope_duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
@@ -281,10 +308,20 @@ TEST_F(AppListBubbleAppsPageTest, SortAppsWithItemFocused) {
       helper->GetScrollableAppsGridView()->GetFocusManager());
   SortAppList(AppListSortOrder::kNameAlphabetical, /*wait=*/true);
 
-  // Verify that focus only changes once from `first_item` to the search box.
-  EXPECT_EQ(1, listener.focus_change_count());
+  // Verify that the focus moves twice. It first goes to the search box during
+  // the animation and then the undo button on the undo toast after the end of
+  // animation.
+  EXPECT_EQ(2, listener.focus_change_count());
   EXPECT_FALSE(first_item->HasFocus());
-  EXPECT_TRUE(helper->GetSearchBoxView()->search_box()->HasFocus());
+  EXPECT_TRUE(helper->GetBubbleAppsPage()
+                  ->toast_container_for_test()
+                  ->GetToastDismissButton()
+                  ->HasFocus());
+
+  // Simulate the sort undo by setting the new order to nullopt. The focus
+  // should be on the search box after undoing the sort.
+  SortAppList(absl::nullopt, /*wait=*/true);
+  EXPECT_TRUE(helper->GetBubbleSearchBoxView()->search_box()->HasFocus());
 }
 
 class AppListBubbleAppsReorderTest

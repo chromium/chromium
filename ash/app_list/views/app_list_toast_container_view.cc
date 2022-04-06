@@ -16,6 +16,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -205,12 +206,16 @@ void AppListToastContainerView::OnTemporarySortOrderChanged(
 
   const std::u16string toast_text = CalculateToastTextFromOrder(*new_order);
   const gfx::VectorIcon* toast_icon = GetToastIconForOrder(*new_order);
+  const std::u16string a11y_text_on_undo_button =
+      GetA11yTextOnUndoButtonFromOrder(*new_order);
 
   if (toast_view_) {
     // If the reorder undo toast is showing, updates the title and icon of the
     // toast.
     toast_view_->SetTitle(toast_text);
     toast_view_->SetIcon(toast_icon);
+    toast_view_->toast_button()->GetViewAccessibility().OverrideName(
+        a11y_text_on_undo_button);
     return;
   }
 
@@ -224,6 +229,9 @@ void AppListToastContainerView::OnTemporarySortOrderChanged(
                          &AppListToastContainerView::OnReorderUndoButtonClicked,
                          base::Unretained(this)))
           .Build());
+  toast_view_->toast_button()->GetViewAccessibility().OverrideName(
+      a11y_text_on_undo_button);
+
   toast_view_->UpdateInteriorMargins(kReorderUndoInteriorMargin);
   current_toast_ = ToastType::kReorderUndo;
 }
@@ -235,6 +243,11 @@ bool AppListToastContainerView::GetVisibilityForSortOrder(
 
 void AppListToastContainerView::AnnounceSortOrder(AppListSortOrder new_order) {
   a11y_announcer_->Announce(CalculateToastTextFromOrder(new_order));
+}
+
+void AppListToastContainerView::AnnounceUndoSort() {
+  a11y_announcer_->Announce(
+      l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_UNDO_SORT_DONE_SPOKEN_TEXT));
 }
 
 views::LabelButton* AppListToastContainerView::GetToastDismissButton() {
@@ -258,6 +271,22 @@ std::u16string AppListToastContainerView::CalculateToastTextFromOrder(
     case AppListSortOrder::kColor:
       return l10n_util::GetStringUTF16(
           IDS_ASH_LAUNCHER_UNDO_SORT_TOAST_FOR_COLOR_SORT);
+    case AppListSortOrder::kCustom:
+      NOTREACHED();
+      return u"";
+  }
+}
+
+std::u16string AppListToastContainerView::GetA11yTextOnUndoButtonFromOrder(
+    AppListSortOrder order) const {
+  switch (order) {
+    case AppListSortOrder::kNameAlphabetical:
+    case AppListSortOrder::kNameReverseAlphabetical:
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_LAUNCHER_UNDO_NAME_SORT_TOAST_SPOKEN_TEXT);
+    case AppListSortOrder::kColor:
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_LAUNCHER_UNDO_COLOR_SORT_TOAST_SPOKEN_TEXT);
     case AppListSortOrder::kCustom:
       NOTREACHED();
       return u"";

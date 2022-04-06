@@ -265,7 +265,7 @@ void AppListBubbleView::InitContentsView(
       pages_container->AddChildView(std::make_unique<AppListBubbleAppsPage>(
           view_delegate_, drag_and_drop_host, GetAppListConfig(),
           a11y_announcer_.get(), search_page_dialog_controller_.get(),
-          /*folder_controller=*/this));
+          /*folder_controller=*/this, /*search_box=*/search_box_view_));
 
   search_page_ =
       pages_container->AddChildView(std::make_unique<AppListBubbleSearchPage>(

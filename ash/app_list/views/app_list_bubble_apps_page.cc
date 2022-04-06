@@ -15,10 +15,12 @@
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/views/app_list_nudge_controller.h"
 #include "ash/app_list/views/app_list_toast_container_view.h"
+#include "ash/app_list/views/app_list_toast_view.h"
 #include "ash/app_list/views/app_list_view_util.h"
 #include "ash/app_list/views/continue_section_view.h"
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
+#include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_page_dialog_controller.h"
 #include "ash/bubble/bubble_utils.h"
 #include "ash/constants/ash_features.h"
@@ -26,14 +28,12 @@
 #include "ash/controls/scroll_view_gradient_helper.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/style/color_provider.h"
-#include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
@@ -44,6 +44,7 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
@@ -106,8 +107,11 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
     AppListConfig* app_list_config,
     AppListA11yAnnouncer* a11y_announcer,
     SearchResultPageDialogController* dialog_controller,
-    AppListFolderController* folder_controller)
-    : app_list_nudge_controller_(std::make_unique<AppListNudgeController>()),
+    AppListFolderController* folder_controller,
+    SearchBoxView* search_box)
+    : view_delegate_(view_delegate),
+      search_box_(search_box),
+      app_list_nudge_controller_(std::make_unique<AppListNudgeController>()),
       dialog_controller_(dialog_controller) {
   DCHECK(view_delegate);
   DCHECK(drag_and_drop_host);
@@ -412,15 +416,21 @@ void AppListBubbleAppsPage::UpdateForNewSortingOrder(
   DCHECK_EQ(animate, !update_position_closure.is_null());
   DCHECK(!animation_done_closure || animate);
 
-  // A11y announcements must happen before animations, otherwise "Search your
-  // apps..." is spoken first because focus moves immediately to the search box.
-  if (new_order)
+  // A11y announcements must happen before animations, otherwise the undo
+  // guidance is spoken first because focus moves immediately to the undo button
+  // on the toast. Note that when `new_order` is null, `animate` was set to true
+  // only if the sort was reverted.
+  if (new_order) {
     toast_container_->AnnounceSortOrder(*new_order);
+  } else if (animate) {
+    toast_container_->AnnounceUndoSort();
+  }
 
   if (!animate) {
     // Reordering is not required so update the undo toast and return early.
     app_list_nudge_controller_->OnTemporarySortOrderChanged(new_order);
     toast_container_->OnTemporarySortOrderChanged(new_order);
+    HandleFocusAfterSort();
     return;
   }
 
@@ -435,7 +445,7 @@ void AppListBubbleAppsPage::UpdateForNewSortingOrder(
   views::AnimationBuilder animation_builder =
       scrollable_apps_grid_view_->FadeOutVisibleItemsForReorder(
           base::BindRepeating(
-              &AppListBubbleAppsPage::OnAppsGridViewFadeOutAnimationEneded,
+              &AppListBubbleAppsPage::OnAppsGridViewFadeOutAnimationEnded,
               weak_factory_.GetWeakPtr(), new_order));
 
   // Configure the toast fade out animation if the toast is going to be hidden.
@@ -609,7 +619,23 @@ void AppListBubbleAppsPage::OnAppsGridViewAnimationEnded() {
   gradient_helper_->UpdateGradientZone();
 }
 
-void AppListBubbleAppsPage::OnAppsGridViewFadeOutAnimationEneded(
+void AppListBubbleAppsPage::HandleFocusAfterSort() {
+  // As the sort update on AppListBubbleAppsPage can be called in both clamshell
+  // mode and tablet mode, return early if it's currently in tablet mode because
+  // the AppListBubbleAppsPage isn't visible.
+  if (view_delegate_->IsInTabletMode())
+    return;
+
+  // If the sort is done and the toast is visible, request the focus on the
+  // undo button on the toast. Otherwise request the focus on the search box.
+  if (toast_container_->is_toast_visible()) {
+    toast_container_->toast_view()->toast_button()->RequestFocus();
+  } else {
+    search_box_->search_box()->RequestFocus();
+  }
+}
+
+void AppListBubbleAppsPage::OnAppsGridViewFadeOutAnimationEnded(
     const absl::optional<AppListSortOrder>& new_order,
     bool aborted) {
   // Update item positions after the fade out animation but before the fade in
@@ -632,6 +658,7 @@ void AppListBubbleAppsPage::OnAppsGridViewFadeOutAnimationEneded(
   const bool old_toast_visible = toast_container_->is_toast_visible();
 
   toast_container_->OnTemporarySortOrderChanged(new_order);
+  HandleFocusAfterSort();
   const bool target_toast_visible = toast_container_->is_toast_visible();
 
   // If there is a layer created for fading out `toast_container_`, destroy

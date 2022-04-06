@@ -6,6 +6,7 @@
 #define ASH_APP_LIST_VIEWS_APP_LIST_TOAST_CONTAINER_VIEW_H_
 
 #include <memory>
+#include <string>
 
 #include "ash/app_list/views/app_list_nudge_controller.h"
 #include "ui/views/view.h"
@@ -110,9 +111,13 @@ class AppListToastContainerView : public views::View {
   // Fires an accessibility alert with the text of the sort order toast.
   void AnnounceSortOrder(AppListSortOrder new_order);
 
+  // Fires an accessibility alert to notify the users that the sort is reverted.
+  void AnnounceUndoSort();
+
   // This function expects that `toast_view_` exists.
   views::LabelButton* GetToastDismissButton();
 
+  AppListToastView* toast_view() { return toast_view_; }
   bool is_toast_visible() const { return toast_view_; }
   ToastType current_toast() const { return current_toast_; }
 
@@ -125,6 +130,8 @@ class AppListToastContainerView : public views::View {
   // Calculates the toast text based on the temporary sorting order.
   [[nodiscard]] std::u16string CalculateToastTextFromOrder(
       AppListSortOrder order) const;
+
+  std::u16string GetA11yTextOnUndoButtonFromOrder(AppListSortOrder order) const;
 
   AppListA11yAnnouncer* const a11y_announcer_;
 

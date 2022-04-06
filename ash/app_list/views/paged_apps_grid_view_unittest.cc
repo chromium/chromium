@@ -29,6 +29,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 
 namespace ash {
@@ -108,7 +109,7 @@ class PagedAppsGridViewTest : public PagedAppsGridViewTestBase {
 
   // Sorts app list with the specified order. If `wait` is true, wait for the
   // reorder animation to complete.
-  void SortAppList(AppListSortOrder order, bool wait) {
+  void SortAppList(const absl::optional<AppListSortOrder>& order, bool wait) {
     AppListController::Get()->UpdateAppListWithNewTemporarySortOrder(
         order,
         /*animate=*/true, /*update_position_closure=*/base::DoNothing());
@@ -551,9 +552,17 @@ TEST_F(PagedAppsGridViewTest, SortAppsWithItemFocused) {
   // Verify that the reorder undo toast's layer opacity does not change.
   EXPECT_EQ(1.f, reorder_undo_toast_container->layer()->opacity());
 
-  // Verify that focus only changes once from `first_item` to the search box.
-  EXPECT_EQ(1, listener.focus_change_count());
+  // Verify that the focus moves twice. It first goes to the search box during
+  // the animation and then the undo button on the undo toast after the end of
+  // animation.
+  EXPECT_EQ(2, listener.focus_change_count());
   EXPECT_FALSE(first_item->HasFocus());
+  EXPECT_TRUE(
+      reorder_undo_toast_container->GetToastDismissButton()->HasFocus());
+
+  // Simulate the sort undo by setting the new order to nullopt. The focus
+  // should be on the search box after undoing the sort.
+  SortAppList(absl::nullopt, /*wait=*/true);
   EXPECT_TRUE(helper->GetSearchBoxView()->search_box()->HasFocus());
 }
 

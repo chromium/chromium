@@ -17,6 +17,7 @@
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/app_list_nudge_controller.h"
 #include "ash/app_list/views/app_list_toast_container_view.h"
+#include "ash/app_list/views/app_list_toast_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/continue_section_view.h"
@@ -51,6 +52,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/flex_layout.h"
@@ -718,13 +720,20 @@ void AppsContainerView::UpdateForNewSortingOrder(
   DCHECK_EQ(animate, !update_position_closure.is_null());
   DCHECK(!animation_done_closure || animate);
 
-  if (new_order)
+  // A11y announcements must happen before animations, otherwise the undo
+  // guidance is spoken first because focus moves immediately to the undo button
+  // on the toast.
+  if (new_order) {
     toast_container_->AnnounceSortOrder(*new_order);
+  } else if (animate) {
+    toast_container_->AnnounceUndoSort();
+  }
 
   if (!animate) {
     // Reordering is not required so update the undo toast and return early.
     app_list_nudge_controller_->OnTemporarySortOrderChanged(new_order);
     toast_container_->OnTemporarySortOrderChanged(new_order);
+    HandleFocusAfterSort();
     return;
   }
 
@@ -751,7 +760,7 @@ void AppsContainerView::UpdateForNewSortingOrder(
 
   views::AnimationBuilder animation_builder =
       apps_grid_view_->FadeOutVisibleItemsForReorder(base::BindRepeating(
-          &AppsContainerView::OnAppsGridViewFadeOutAnimationEneded,
+          &AppsContainerView::OnAppsGridViewFadeOutAnimationEnded,
           weak_ptr_factory_.GetWeakPtr(), new_order));
 
   // Configure the toast fade out animation if the toast is going to be hidden.
@@ -1540,7 +1549,7 @@ void AppsContainerView::UpdateGradientMaskBounds() {
   gradient_layer_delegate_->layer()->SetBounds(container_bounds);
 }
 
-void AppsContainerView::OnAppsGridViewFadeOutAnimationEneded(
+void AppsContainerView::OnAppsGridViewFadeOutAnimationEnded(
     const absl::optional<AppListSortOrder>& new_order,
     bool abort) {
   // Update item positions after the fade out animation but before the fade in
@@ -1563,6 +1572,7 @@ void AppsContainerView::OnAppsGridViewFadeOutAnimationEneded(
   const bool old_toast_visible = toast_container_->is_toast_visible();
 
   toast_container_->OnTemporarySortOrderChanged(new_order);
+  HandleFocusAfterSort();
 
   // Skip the fade in animation if the fade out animation is aborted.
   if (abort) {
@@ -1631,6 +1641,22 @@ void AppsContainerView::OnReorderAnimationEnded() {
 
   if (reorder_animation_done_closure_)
     std::move(reorder_animation_done_closure_).Run();
+}
+
+void AppsContainerView::HandleFocusAfterSort() {
+  // As the sort update on AppsContainerView can be called in both clamshell
+  // mode and tablet mode, return early if it's currently in clamshell mode
+  // because the AppsContainerView isn't visible.
+  if (!contents_view_->app_list_view()->is_tablet_mode())
+    return;
+
+  // If the sort is done and the toast is visible, request the focus on the
+  // undo button on the toast. Otherwise request the focus on the search box.
+  if (toast_container_->is_toast_visible()) {
+    toast_container_->toast_view()->toast_button()->RequestFocus();
+  } else {
+    contents_view_->GetSearchBoxView()->search_box()->RequestFocus();
+  }
 }
 
 int AppsContainerView::GetSeparatorHeight() {

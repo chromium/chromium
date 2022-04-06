@@ -317,7 +317,7 @@ class ASH_EXPORT AppsContainerView
 
   // Called when the animation to fade out app list items is completed.
   // `aborted` indicates whether the fade out animation is aborted.
-  void OnAppsGridViewFadeOutAnimationEneded(
+  void OnAppsGridViewFadeOutAnimationEnded(
       const absl::optional<AppListSortOrder>& new_order,
       bool aborted);
 
@@ -330,6 +330,9 @@ class ASH_EXPORT AppsContainerView
   // (1) At the end of the fade out animation when the fade out is aborted, or
   // (2) At the end of the fade in animation.
   void OnReorderAnimationEnded();
+
+  // Called after sort to handle focus.
+  void HandleFocusAfterSort();
 
   // While true, the gradient mask will not be removed as a mask layer until
   // cardified state ends.
