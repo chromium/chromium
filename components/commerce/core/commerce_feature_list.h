@@ -253,6 +253,8 @@ bool IsCartDiscountFeatureEnabled();
 bool IsCouponWithCodeEnabled();
 // Check if the variation with fake data is enabled.
 bool IsFakeDataEnabled();
+// Check if the contextual consent for discount is enabled.
+bool isContextualConsentEnabled();
 }  // namespace commerce
 
 #endif  // COMPONENTS_COMMERCE_CORE_COMMERCE_FEATURE_LIST_H_

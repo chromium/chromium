@@ -228,4 +228,9 @@ bool IsFakeDataEnabled() {
              ntp_features::kNtpChromeCartModuleDataParam) == "fake";
 }
 
+bool isContextualConsentEnabled() {
+  return kContextualConsentShowOnCartAndCheckoutPage.Get() ||
+         kContextualConsentShowOnSRP.Get();
+}
+
 }  // namespace commerce

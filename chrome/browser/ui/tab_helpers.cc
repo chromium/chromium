@@ -167,6 +167,8 @@
 #include "chrome/browser/ui/sync/browser_synced_tab_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "components/accuracy_tips/accuracy_web_contents_observer.h"
+#include "components/commerce/content/hint/commerce_hint_tab_helper.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/zoom/zoom_controller.h"
@@ -493,6 +495,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   web_modal::WebContentsModalDialogManager::CreateForWebContents(web_contents);
   if (base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching)) {
     ZeroSuggestPrefetchTabHelper::CreateForWebContents(web_contents);
+  }
+  if (commerce::isContextualConsentEnabled()) {
+    commerce_hint::CommerceHintTabHelper::CreateForWebContents(web_contents);
   }
 #endif
 
