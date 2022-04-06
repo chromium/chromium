@@ -115,16 +115,12 @@ void AssistantUiControllerImpl::ShowUi(AssistantEntryPoint entry_point) {
   // TODO(dmblack): Show a more helpful message to the user.
   if (assistant_state->assistant_status() ==
       chromeos::assistant::AssistantStatus::NOT_READY) {
-    ShowToast(kUnboundServiceToastId,
-              ToastCatalogName::kAssistantUnboundService,
-              IDS_ASH_ASSISTANT_ERROR_GENERIC);
+    ShowUnboundErrorToast();
     return;
   }
 
   if (!assistant_) {
-    ShowToast(kUnboundServiceToastId,
-              ToastCatalogName::kAssistantUnboundService,
-              IDS_ASH_ASSISTANT_ERROR_GENERIC);
+    ShowUnboundErrorToast();
     return;
   }
 
@@ -270,6 +266,11 @@ void AssistantUiControllerImpl::OnHighlighterEnabledChanged(
 void AssistantUiControllerImpl::OnOverviewModeWillStart() {
   // Close Assistant UI before entering overview mode.
   CloseUi(AssistantExitPoint::kOverviewMode);
+}
+
+void AssistantUiControllerImpl::ShowUnboundErrorToast() {
+  ShowToast(kUnboundServiceToastId, ToastCatalogName::kAssistantUnboundService,
+            IDS_ASH_ASSISTANT_ERROR_GENERIC);
 }
 
 void AssistantUiControllerImpl::UpdateUiMode(
