@@ -2468,10 +2468,6 @@ const char kTabToGTSAnimationAndroidDescription[] =
     "Allows users to see an animation when entering or leaving the "
     "Grid Tab Switcher on phones.";
 
-const char kAppsShortcutDefaultOffName[] = "Apps Shortcut Default Off";
-const char kAppsShortcutDefaultOffDescription[] =
-    "Changes the apps shortcut on the bookmarks bar to default to off.";
-
 const char kTabGroupsNewBadgePromoName[] = "Tab Groups 'New' Badge Promo";
 const char kTabGroupsNewBadgePromoDescription[] =
     "Causes a 'New' badge to appear on the entry point for creating a tab "

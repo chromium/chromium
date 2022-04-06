@@ -73,7 +73,6 @@
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill_assistant/browser/features.h"
-#include "components/bookmarks/browser/features.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/browsing_data/core/features.h"
 #include "components/certificate_transparency/ct_features.h"
@@ -5167,11 +5166,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBookmarkBottomSheetDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kBookmarkBottomSheet)},
 #endif
-
-    {"apps-shortcut-default-off",
-     flag_descriptions::kAppsShortcutDefaultOffName,
-     flag_descriptions::kAppsShortcutDefaultOffDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(bookmarks::features::kAppsShortcutDefaultOff)},
 
     {"tab-groups-new-badge-promo",
      flag_descriptions::kTabGroupsNewBadgePromoName,
