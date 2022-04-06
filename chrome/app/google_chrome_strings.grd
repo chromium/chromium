@@ -543,6 +543,12 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_PASSWORD_MANAGER_TITLE_BRAND" desc="The product name used in the title of the password bubble.">
         Google Chrome
       </message>
+      <message name="IDS_PASSWORD_MANAGER_SAVE_PASSWORD_SIGNED_OUT_MESSAGE_DESCRIPTION" desc="The description of the Google Password Manager's save password message when the user is signed out.">
+        To Google Password Manager on this device
+      </message>
+      <message name="IDS_PASSWORD_MANAGER_UPDATE_PASSWORD_SIGNED_OUT_MESSAGE_DESCRIPTION" desc="The description of the Google Password Manager's update password message when the user is signed out.">
+        In Google Password Manager on this device
+      </message>
       <if expr="is_macosx">
         <message name="IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT" desc="Text for the dialog box that prompts the user for their OS account password before revealing plaintext passwords on the password page.">
           Google Chrome is trying to show passwords.
