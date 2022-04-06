@@ -1931,6 +1931,26 @@ TEST_P(LayoutBoxTest, SetNeedsOverflowRecalcFlexBox) {
   EXPECT_TRUE(target->PaintingLayer()->NeedsVisualOverflowRecalc());
 }
 
+TEST_P(LayoutBoxTest, ScrollsWithViewportRelativePosition) {
+  SetBodyInnerHTML("<div id='target' style='position: relative'></div>");
+  EXPECT_FALSE(GetLayoutBoxByElementId("target")->IsFixedToView());
+}
+
+TEST_P(LayoutBoxTest, ScrollsWithViewportFixedPosition) {
+  SetBodyInnerHTML("<div id='target' style='position: fixed'></div>");
+  EXPECT_TRUE(GetLayoutBoxByElementId("target")->IsFixedToView());
+}
+
+TEST_P(LayoutBoxTest, ScrollsWithViewportFixedPositionInsideTransform) {
+  SetBodyInnerHTML(R"HTML(
+    <div style='transform: translateZ(0)'>
+      <div id='target' style='position: fixed'></div>
+    </div>
+    <div style='width: 10px; height: 1000px'></div>
+  )HTML");
+  EXPECT_FALSE(GetLayoutBoxByElementId("target")->IsFixedToView());
+}
+
 class LayoutBoxBackgroundPaintLocationTest : public RenderingTest,
                                              public PaintTestConfigurations {
  protected:

@@ -1861,8 +1861,7 @@ LayoutBox* LayoutBox::FindAutoscrollable(LayoutObject* layout_object,
     // Do not start selection-based autoscroll when the node is inside a
     // fixed-position element.
     if (!is_middle_click_autoscroll && layout_object->IsBox() &&
-        To<LayoutBox>(layout_object)->HasLayer() &&
-        To<LayoutBox>(layout_object)->Layer()->FixedToViewport()) {
+        To<LayoutBox>(layout_object)->IsFixedToView()) {
       return nullptr;
     }
 
@@ -8630,6 +8629,10 @@ BackgroundPaintLocation LayoutBox::ComputeBackgroundPaintLocationIfComposited()
   }
 
   return paint_location;
+}
+
+bool LayoutBox::IsFixedToView() const {
+  return IsFixedPositioned() && Container() == View();
 }
 
 }  // namespace blink

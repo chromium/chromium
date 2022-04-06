@@ -354,12 +354,6 @@ bool PaintLayer::SticksToScroller() const {
   return AncestorScrollContainerLayer()->GetScrollableArea();
 }
 
-bool PaintLayer::FixedToViewport() const {
-  if (GetLayoutObject().StyleRef().GetPosition() != EPosition::kFixed)
-    return false;
-  return GetLayoutObject().Container() == GetLayoutObject().View();
-}
-
 void PaintLayer::UpdateTransformationMatrix() {
   if (TransformationMatrix* transform = Transform()) {
     LayoutBox* box = GetLayoutBox();

@@ -495,10 +495,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // ancestor overflow layer.
   bool SticksToScroller() const;
 
-  // Returns true if the layer is fixed position and will not move with
-  // scrolling.
-  bool FixedToViewport() const;
-
   // FIXME: This should probably return a ScrollableArea but a lot of internal
   // methods are mistakenly exposed.
   PaintLayerScrollableArea* GetScrollableArea() const {

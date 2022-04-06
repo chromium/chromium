@@ -174,21 +174,20 @@ static CompositingReasons CompositingReasonsForViewportScrollEffect(
           controller.GlobalRootScroller())
     return CompositingReason::kNone;
 
+  if (!To<LayoutBox>(layout_object).IsFixedToView())
+    return CompositingReason::kNone;
+
   CompositingReasons reasons = CompositingReason::kNone;
-  if (layout_object.StyleRef().GetPosition() == EPosition::kFixed) {
-    // This ensures that the scroll_translation_for_fixed will be initialized in
-    // FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation which in
-    // turn ensures that a TransformNode is created (for fixed elements) in cc.
-    if (RuntimeEnabledFeatures::FixedElementsDontOverscrollEnabled())
-      reasons |= CompositingReason::kFixedToViewport;
+  // This ensures that the scroll_translation_for_fixed will be initialized in
+  // FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation which in
+  // turn ensures that a TransformNode is created (for fixed elements) in cc.
+  if (RuntimeEnabledFeatures::FixedElementsDontOverscrollEnabled())
+    reasons |= CompositingReason::kFixedToViewport;
+  
+  if (layout_object.StyleRef().IsFixedToBottom())
+    reasons |= CompositingReason::kAffectedByOuterViewportBoundsDelta;
 
-    if (layout_object.StyleRef().IsFixedToBottom())
-      reasons |= CompositingReason::kAffectedByOuterViewportBoundsDelta;
-  }
-
-  // It's affected by viewport only if the container is the LayoutView.
-  return IsA<LayoutView>(layout_object.Container()) ? reasons
-                                                    : CompositingReason::kNone;
+  return reasons;
 }
 
 CompositingReasons
@@ -377,13 +376,15 @@ CompositingReasonFinder::CompositingReasonsForScrollDependentPosition(
   // Don't promote fixed position elements that are descendants of a non-view
   // container, e.g. transformed elements.  They will stay fixed wrt the
   // container rather than the enclosing frame.
-  if (layer.FixedToViewport()) {
-    // We check for |HasOverflow| instead of |ScrollsOverflow| to ensure fixed
-    // position elements are composited under overflow: hidden, which can still
-    // have smooth scroll animations.
-    LocalFrameView* frame_view = layer.GetLayoutObject().GetFrameView();
-    if (frame_view->LayoutViewport()->HasOverflow())
-      reasons |= CompositingReason::kFixedPosition;
+  if (const auto* box = layer.GetLayoutBox()) {
+    if (box->IsFixedToView()) {
+      // We check for |HasOverflow| instead of |ScrollsOverflow| to ensure fixed
+      // position elements are composited under overflow: hidden, which can
+      // still have smooth scroll animations.
+      LocalFrameView* frame_view = layer.GetLayoutObject().GetFrameView();
+      if (frame_view->LayoutViewport()->HasOverflow())
+        reasons |= CompositingReason::kFixedPosition;
+    }
   }
 
   // Don't promote sticky position elements that cannot move with scrolls.

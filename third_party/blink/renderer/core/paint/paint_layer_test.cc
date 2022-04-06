@@ -65,32 +65,6 @@ TEST_P(PaintLayerTest, RootLayerScrollBounds) {
             plsa->VisibleContentRect(kIncludeScrollbars));
 }
 
-
-TEST_P(PaintLayerTest, ScrollsWithViewportRelativePosition) {
-  SetBodyInnerHTML("<div id='target' style='position: relative'></div>");
-
-  PaintLayer* layer = GetPaintLayerByElementId("target");
-  EXPECT_FALSE(layer->FixedToViewport());
-}
-
-TEST_P(PaintLayerTest, ScrollsWithViewportFixedPosition) {
-  SetBodyInnerHTML("<div id='target' style='position: fixed'></div>");
-
-  PaintLayer* layer = GetPaintLayerByElementId("target");
-  EXPECT_TRUE(layer->FixedToViewport());
-}
-
-TEST_P(PaintLayerTest, ScrollsWithViewportFixedPositionInsideTransform) {
-  SetBodyInnerHTML(R"HTML(
-    <div style='transform: translateZ(0)'>
-      <div id='target' style='position: fixed'></div>
-    </div>
-    <div style='width: 10px; height: 1000px'></div>
-  )HTML");
-  PaintLayer* layer = GetPaintLayerByElementId("target");
-  EXPECT_FALSE(layer->FixedToViewport());
-}
-
 TEST_P(PaintLayerTest, SticksToScrollerStickyPosition) {
   SetBodyInnerHTML(R"HTML(
     <div style='transform: translateZ(0)'>

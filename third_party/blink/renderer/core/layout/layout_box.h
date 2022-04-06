@@ -2092,6 +2092,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return ChildrenInline() && PhysicalFragments().HasFragmentItems();
   }
 
+  // Returns true if this box is fixed position and will not move with
+  // scrolling.
+  bool IsFixedToView() const;
+
  protected:
   ~LayoutBox() override;
 
