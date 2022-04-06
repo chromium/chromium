@@ -9,6 +9,7 @@
 #include "base/hash/hash.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "build/chromeos_buildflags.h"
 
 namespace base::i18n {
 
