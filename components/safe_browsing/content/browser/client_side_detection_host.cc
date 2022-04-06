@@ -545,24 +545,11 @@ void ClientSideDetectionHost::PhishingDetectionDone(
   if (csd_service_ && verdict->ParseFromString(verdict_str) &&
       verdict->IsInitialized()) {
     VLOG(2) << "Phishing classification score: " << verdict->client_score();
-    for (auto& match : verdict->vision_match()) {
-      VLOG(2) << "Target Digest: " << match.matched_target_digest();
-      VLOG(2) << "Phash Score: " << match.vision_matched_phash_score();
-      VLOG(2) << "EMD Score: " << match.vision_matched_emd_score();
-    }
 
     if (HasDebugFeatureDirectory()) {
       base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
                                  base::BindOnce(&WriteFeaturesToDisk, *verdict,
                                                 GetDebugFeatureDirectory()));
-    }
-
-    if (!IsExtendedReportingEnabled(*delegate_->GetPrefs()) &&
-        !IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
-      // These fields should only be set for SBER users.
-      verdict->clear_screenshot_digest();
-      verdict->clear_screenshot_phash();
-      verdict->clear_phash_dimension_size();
     }
 
     if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&

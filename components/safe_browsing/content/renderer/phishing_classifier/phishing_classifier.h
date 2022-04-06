@@ -130,10 +130,6 @@ class PhishingClassifier {
   // non-phishy verdict.
   void VisualExtractionFinished(bool success);
 
-  // Callback when visual features have been scored and compared against the
-  // model.
-  void OnVisualTargetsMatched(std::unique_ptr<ClientPhishingRequest> verdict);
-
   // Callback when the visual TFLite model has been applied, and returned a list
   // of scores.
   void OnVisualTfLiteModelDone(std::unique_ptr<ClientPhishingRequest> verdict,

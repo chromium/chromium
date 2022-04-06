@@ -175,15 +175,6 @@ double FlatBufferModelScorer::ComputeScore(const FeatureMap& features) const {
   return LogOdds2Prob(logodds);
 }
 
-// Only DOM model implemented for FlatBuffer.
-void FlatBufferModelScorer::GetMatchingVisualTargets(
-    const SkBitmap& bitmap,
-    std::unique_ptr<ClientPhishingRequest> request,
-    base::OnceCallback<void(std::unique_ptr<ClientPhishingRequest>)> callback)
-    const {
-  NOTIMPLEMENTED();
-}
-
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void FlatBufferModelScorer::ApplyVisualTfLiteModel(
     const SkBitmap& bitmap,

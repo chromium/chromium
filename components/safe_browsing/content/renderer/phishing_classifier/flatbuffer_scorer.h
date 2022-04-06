@@ -48,12 +48,6 @@ class FlatBufferModelScorer : public Scorer {
 
   double ComputeScore(const FeatureMap& features) const override;
 
-  void GetMatchingVisualTargets(
-      const SkBitmap& bitmap,
-      std::unique_ptr<ClientPhishingRequest> request,
-      base::OnceCallback<void(std::unique_ptr<ClientPhishingRequest>)> callback)
-      const override;
-
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   void ApplyVisualTfLiteModel(
       const SkBitmap& bitmap,

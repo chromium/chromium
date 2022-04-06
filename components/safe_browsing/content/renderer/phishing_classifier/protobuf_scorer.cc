@@ -29,44 +29,6 @@
 namespace safe_browsing {
 
 namespace {
-std::unique_ptr<ClientPhishingRequest> GetMatchingVisualTargetsHelper(
-    const SkBitmap& bitmap,
-    const ClientSideModel& model,
-    std::unique_ptr<ClientPhishingRequest> request) {
-  DCHECK(!content::RenderThread::IsMainThread());
-
-  TRACE_EVENT0("safe_browsing", "GetMatchingVisualTargets");
-
-  VisualFeatures::BlurredImage blurred_image;
-  // Obtaining a blurred image is essential for both adding a vision match or
-  // populating telemetry.
-  if (!visual_utils::GetBlurredImage(bitmap, &blurred_image)) {
-    return request;
-  }
-  const std::string blurred_image_hash =
-      visual_utils::GetHashFromBlurredImage(blurred_image);
-
-  VisualFeatures::ColorHistogram histogram;
-  if (visual_utils::GetHistogramForImage(bitmap, &histogram)) {
-    for (const VisualTarget& target : model.vision_model().targets()) {
-      absl::optional<VisionMatchResult> result = visual_utils::IsVisualMatch(
-          bitmap, blurred_image_hash, histogram, target);
-      if (result.has_value()) {
-        *request->add_vision_match() = result.value();
-      }
-    }
-  }
-
-  // Populate these fields for telemetry purposes. They will be filtered in
-  // the browser process if they are not needed.
-  std::string raw_digest = crypto::SHA256HashString(blurred_image.data());
-  request->set_screenshot_digest(
-      base::HexEncode(raw_digest.data(), raw_digest.size()));
-  request->set_screenshot_phash(blurred_image_hash);
-  request->set_phash_dimension_size(48);
-
-  return request;
-}
 
 void RecordScorerCreationStatus(ScorerCreationStatus status) {
   UMA_HISTOGRAM_ENUMERATION("SBClientPhishing.ProtobufScorer.CreationStatus",
@@ -133,21 +95,6 @@ double ProtobufModelScorer::ComputeScore(const FeatureMap& features) const {
     logodds += ComputeRuleScore(model_.rule(i), features);
   }
   return LogOdds2Prob(logodds);
-}
-
-void ProtobufModelScorer::GetMatchingVisualTargets(
-    const SkBitmap& bitmap,
-    std::unique_ptr<ClientPhishingRequest> request,
-    base::OnceCallback<void(std::unique_ptr<ClientPhishingRequest>)> callback)
-    const {
-  DCHECK(content::RenderThread::IsMainThread());
-
-  // Perform scoring off the main thread to avoid blocking.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::WithBaseSyncPrimitives()},
-      base::BindOnce(&GetMatchingVisualTargetsHelper, bitmap, model_,
-                     std::move(request)),
-      std::move(callback));
 }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)

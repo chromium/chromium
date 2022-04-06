@@ -45,7 +45,6 @@ source_set("password_protection") {
       "//components/url_formatter",
       "//content/public/browser:browser",
       "//net:net",
-      "//third_party/opencv:emd",
       "//third_party/protobuf:protobuf_lite",
       "//ui/gfx:color_utils",
     ]

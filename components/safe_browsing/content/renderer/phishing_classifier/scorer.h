@@ -68,16 +68,6 @@ class Scorer {
   // (range is inclusive on both ends).
   virtual double ComputeScore(const FeatureMap& features) const = 0;
 
-  // This method matches the given |bitmap| against the visual model. It
-  // modifies |request| appropriately, and returns the new request. This expects
-  // to be called on the renderer main thread, but will perform scoring
-  // asynchronously on a worker thread.
-  virtual void GetMatchingVisualTargets(
-      const SkBitmap& bitmap,
-      std::unique_ptr<ClientPhishingRequest> request,
-      base::OnceCallback<void(std::unique_ptr<ClientPhishingRequest>)> callback)
-      const = 0;
-
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // This method applies the TfLite visual model to the given bitmap. It
   // asynchronously returns the list of scores for each category, in the same

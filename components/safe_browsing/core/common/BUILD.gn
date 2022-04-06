@@ -105,7 +105,6 @@ source_set("common") {
     ]
     deps += [
       "//components/safe_browsing/core/common/proto:client_model_proto",
-      "//third_party/opencv:emd",
       "//ui/gfx:color_utils",
     ]
   }

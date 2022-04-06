@@ -16,7 +16,6 @@
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/opencv/src/emd_wrapper.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorPriv.h"
 #include "third_party/skia/include/core/SkPixmap.h"
@@ -37,93 +36,6 @@ const int kPHashDownsampleWidth = 288;
 const int kPHashDownsampleHeight = 288;
 #endif
 const int kPHashBlockSize = 6;
-
-// Constants for computing Earth Movers Distance (EMD) between ColorHistograms.
-const float kMaxCentroidDistance = 1.414;
-const float kMaxColorDistance = 14;
-
-size_t GetBitCount(uint8_t byte) {
-  size_t count = 0;
-  for (; byte > 0; byte >>= 1) {
-    if (byte & 1)
-      count++;
-  }
-
-  return count;
-}
-
-bool GetHashDistance(const std::string& hash1,
-                     const std::string& hash2,
-                     size_t* out) {
-  // The beginning of the hash is a Varint representing the stride. For values
-  // at most 127, this is just the value of the first char. Chrome only
-  // generates strides less than 128, so we can simply extract the first char.
-  if (hash1[0] != hash2[0])
-    return false;
-  if (hash1[0] & 0x80)
-    return false;
-
-  size_t count = std::min(hash1.size(), hash2.size());
-  size_t distance = 8 * (std::max(hash1.size(), hash2.size()) - count);
-  for (size_t i = 1; i < count; i++) {
-    distance += GetBitCount(hash1[i] ^ hash2[i]);
-  }
-
-  *out = distance;
-  return true;
-}
-
-opencv::PointDistribution HistogramBinsToPointDistribution(
-    const google::protobuf::RepeatedPtrField<VisualFeatures::ColorHistogramBin>&
-        bins) {
-  opencv::PointDistribution distribution;
-  distribution.dimensions = 5;
-  distribution.positions.reserve(bins.size());
-  for (const VisualFeatures::ColorHistogramBin& bin : bins) {
-    distribution.weights.push_back(bin.weight());
-    std::vector<float> position(5);
-    position[0] = bin.centroid_x() / kMaxCentroidDistance;
-    position[1] = bin.centroid_y() / kMaxCentroidDistance;
-    position[2] = bin.quantized_r() / kMaxColorDistance;
-    position[3] = bin.quantized_g() / kMaxColorDistance;
-    position[4] = bin.quantized_b() / kMaxColorDistance;
-    distribution.positions.push_back(std::move(position));
-  }
-
-  return distribution;
-}
-
-// TODO(https://crbug.com/1196450): Remove this function once we are no longer
-// using regular ColorRanges.
-bool ImageHasColorInRange(const SkBitmap& image,
-                          const MatchRule::ColorRange& color_range) {
-  for (int i = 0; i < image.width(); i++) {
-    for (int j = 0; j < image.height(); j++) {
-      SkScalar hsv[3];
-      SkColorToHSV(image.getColor(i, j), hsv);
-      if (color_range.low() <= hsv[0] && hsv[0] <= color_range.high())
-        return true;
-    }
-  }
-
-  return false;
-}
-
-bool ImageHasColorInRange(const SkBitmap& image,
-                          const MatchRule::FloatColorRange& color_range) {
-  TRACE_EVENT0("safe_browsing", "ImageHasColorInRange");
-  for (int i = 0; i < image.width(); i++) {
-    for (int j = 0; j < image.height(); j++) {
-      SkScalar hsv[3];
-      SkColorToHSV(image.getColor(i, j), hsv);
-      if (color_range.low() <= hsv[0] && hsv[0] <= color_range.high()) {
-        return true;
-      }
-    }
-  }
-
-  return false;
-}
 
 uint8_t GetMedian(const std::vector<uint8_t>& data) {
   std::vector<uint8_t> buffer;
@@ -393,61 +305,6 @@ std::string GetHashFromBlurredImage(
   }
 
   return output;
-}
-
-absl::optional<VisionMatchResult> IsVisualMatch(
-    const SkBitmap& image,
-    const std::string& blurred_image_hash,
-    const VisualFeatures::ColorHistogram& histogram,
-    const VisualTarget& target) {
-  TRACE_EVENT0("safe_browsing", "IsVisualMatch");
-
-  TRACE_EVENT_BEGIN0("safe_browsing", "IsVisualMatch_ComputeHashDistance");
-  size_t hash_distance;
-  bool has_hash_distance =
-      GetHashDistance(blurred_image_hash, target.hash(), &hash_distance);
-  TRACE_EVENT_END0("safe_browsing", "IsVisualMatch_ComputeHashDistance");
-
-  TRACE_EVENT_BEGIN0("safe_browsing", "IsVisualMatch_ComputeEMD");
-  opencv::PointDistribution point_distribution =
-      HistogramBinsToPointDistribution(histogram.bins());
-  absl::optional<double> color_distance = opencv::EMD(
-      point_distribution, HistogramBinsToPointDistribution(target.bins()));
-  TRACE_EVENT_END0("safe_browsing", "IsVisualMatch_ComputeEMD");
-
-  for (const MatchRule& match_rule : target.match_config().match_rule()) {
-    bool is_match = true;
-    if (match_rule.has_hash_distance()) {
-      is_match &=
-          (has_hash_distance && hash_distance <= match_rule.hash_distance());
-    }
-
-    if (match_rule.has_color_distance()) {
-      is_match &= (color_distance.has_value() &&
-                   color_distance.value() <= match_rule.color_distance());
-    }
-
-    for (const MatchRule::ColorRange& color_range : match_rule.color_range()) {
-      is_match &= ImageHasColorInRange(image, color_range);
-    }
-
-    for (const MatchRule::FloatColorRange& color_range :
-         match_rule.float_color_range()) {
-      is_match &= ImageHasColorInRange(image, color_range);
-    }
-
-    if (is_match) {
-      VisionMatchResult result;
-      result.set_matched_target_digest(target.digest());
-      if (has_hash_distance)
-        result.set_vision_matched_phash_score(hash_distance);
-      if (color_distance.has_value())
-        result.set_vision_matched_emd_score(color_distance.value());
-      return result;
-    }
-  }
-
-  return absl::nullopt;
 }
 
 }  // namespace visual_utils

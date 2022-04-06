@@ -858,9 +858,6 @@ group("gn_all") {
     "//third_party/pffft:pffft_unittest",
   ]
 
-  # OpenCV
-  deps += [ "//third_party/opencv:opencv_emd_fuzzer" ]
-
   # Minimal binaries to exercise Rust toolchain.
   deps += [ ":rust_build_tests" ]
 

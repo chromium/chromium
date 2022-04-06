@@ -180,15 +180,11 @@ message ClientPhishingRequest {
   reserved 15;
   reserved 16;
 
-  // Basic visual information of the URL.
-  // This section will be filled for SBER users only.
-  optional bytes screenshot_digest = 17;
-  optional bytes screenshot_phash = 18;
-  optional int32 phash_dimension_size = 19;
-
-  // The visual feature match results.
-  // Allow multiple results if there are more than one matched target.
-  repeated VisionMatchResult vision_match = 20;
+  // Deprecated fields
+  reserved 17;
+  reserved 18;
+  reserved 19;
+  reserved 20;
 
   // Indicates whether the request is due to a match on the DOM features.
   optional bool is_dom_match = 21;
@@ -216,13 +212,6 @@ message ClientPhishingRequest {
   optional bool is_tflite_match = 25;
 
   // next available tag number: 26.
-}
-
-// Vision match result for one target image.
-message VisionMatchResult {
-  optional bytes matched_target_digest = 1;
-  optional double vision_matched_phash_score = 2;
-  optional double vision_matched_emd_score = 3;
 }
 
 message ClientPhishingResponse {

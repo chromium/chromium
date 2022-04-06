@@ -18,8 +18,6 @@ option optimize_for = LITE_RUNTIME;
 
 package safe_browsing;
 
-import "components/safe_browsing/core/common/proto/csd.proto";
-
 // This protocol buffer represents a machine learning model that is used in
 // client-side phishing detection (in Chrome).  The client extracts a set
 // of features from every website the user visits.  Extracted features map
@@ -100,10 +98,8 @@ message ClientSideModel {
   // The threshold probability that causes this model to send a ping.
   optional float threshold_probability = 11 [default = 0.5];
 
-  // The vision model.
-  optional VisionModel vision_model = 12;
-
   // Reserved tag numbers holding deprecated fields.
+  reserved 12;
   reserved 13;
   reserved 14;
   reserved 15;
@@ -134,62 +130,4 @@ message TfLiteModelMetadata {
   // The width and height of the input tensor to the corresponding TFLite model.
   optional int32 input_width = 3;
   optional int32 input_height = 4;
-}
-
-// Wrapper of the vision model for the similarity check target images.
-message VisionModel {
-  repeated VisualTarget targets = 1;
-}
-
-// Visual information of one target image.
-// Screenshots with high similarity to the target indicate possible phishing.
-// Common target examples are Google GAIA login page, Microsoft login page, etc.
-message VisualTarget {
-  // Target image digest, with which we can identify the original image in
-  // server side database.
-  optional bytes digest = 1;
-  // Creation time of the visual info in microseconds.
-  // The hash size or trigger config may change over time on a same image.
-  optional int64 timestamp_usec = 2;
-
-  // The computed perceptual hash of the image and the used dimension size.
-  optional bytes hash = 3;
-  optional int32 dimension_size = 4;
-  // Color distribution of the image.
-  // Reuse the ColorHistogramBin pb definition in current PhishGuard focus ping.
-  repeated VisualFeatures.ColorHistogramBin bins = 5;
-
-  // The configuration of checking the matched result to trigger a csd ping.
-  optional MatchConfig match_config = 6;
-}
-
-message MatchConfig {
-  // Any one of the rules be hold will trigger a CSD ping.
-  repeated MatchRule match_rule = 1;
-}
-
-// All of the requirement need to be hold to match a rule.
-message MatchRule {
-  optional double hash_distance = 1;
-  optional double color_distance = 2;
-
-  // 360 degree based hue range of HSV color encoding.
-  // This could be changed. The purpose is to check whether the page contains
-  // some key color for example Google blue to avoid FPs.
-  // TODO(https://crbug.com/1196450): Remove color_range in favor of
-  // float_color_range.
-  message ColorRange {
-    optional int32 low = 1;
-    optional int32 high = 2;
-  }
-  repeated ColorRange color_range = 3;
-
-  // FloatColorRange allows for much finer granularity. As hues are between 0
-  // and 360, integer ranges allow for only restricting to 1/360th of the color
-  // space.
-  message FloatColorRange {
-    optional float low = 1;
-    optional float high = 2;
-  }
-  repeated FloatColorRange float_color_range = 4;
 }

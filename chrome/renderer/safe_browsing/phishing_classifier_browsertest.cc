@@ -203,9 +203,6 @@ class PhishingClassifierTest : public ChromeRenderViewTest,
     model.set_max_shingles_per_page(100);
     model.set_shingle_size(3);
 
-    // Add an empty visual target to ensure visual detection runs.
-    model.mutable_vision_model()->add_targets();
-
     scorer_.reset(
         ProtobufModelScorer::Create(model.SerializeAsString(), base::File()));
     ASSERT_TRUE(scorer_.get());
@@ -241,9 +238,6 @@ class PhishingClassifierTest : public ChromeRenderViewTest,
     }
     is_phishing_ = verdict.is_phishing();
     is_dom_match_ = verdict.is_dom_match();
-    screenshot_digest_ = verdict.screenshot_digest();
-    screenshot_phash_ = verdict.screenshot_phash();
-    phash_dimension_size_ = verdict.phash_dimension_size();
 
     run_loop_.Quit();
   }
@@ -274,9 +268,6 @@ class PhishingClassifierTest : public ChromeRenderViewTest,
   FeatureMap feature_map_;
   float phishy_score_;
   bool is_phishing_;
-  std::string screenshot_digest_;
-  std::string screenshot_phash_;
-  int phash_dimension_size_;
   bool is_dom_match_;
 
   // A DiscardableMemoryAllocator is needed for certain Skia operations.
@@ -376,25 +367,6 @@ TEST_P(PhishingClassifierTest, DisableDetection) {
   classifier_->set_phishing_scorer(NULL);
   EXPECT_FALSE(classifier_->is_ready());
 }
-
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-TEST_P(PhishingClassifierTest, TestSendsVisualHash) {
-  LoadHtml(GURL("https://host.net"),
-           "<html><body><a href=\"http://safe.com/\">login</a></body></html>");
-  RunPhishingClassifier(&page_text_);
-
-  EXPECT_EQ(phash_dimension_size_, 48);
-  EXPECT_FALSE(screenshot_phash_.empty());
-}
-
-TEST_P(PhishingClassifierTest, TestSendsVisualDigest) {
-  LoadHtml(GURL("https://host.net"),
-           "<html><body><a href=\"http://safe.com/\">login</a></body></html>");
-  RunPhishingClassifier(&page_text_);
-
-  EXPECT_FALSE(screenshot_digest_.empty());
-}
-#endif
 
 TEST_P(PhishingClassifierTest, TestPhishingPagesAreDomMatches) {
   LoadHtml(
