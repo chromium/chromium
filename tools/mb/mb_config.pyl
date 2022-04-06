@@ -866,6 +866,7 @@
       'android-weblayer-pie-x86-wpt-smoketest': 'android_release_trybot_x86_fastbuild_webview_monochrome',
       'android-webview-pie-arm64-fyi-rel': 'android_release_trybot_arm64_webview_monochrome',
       'android-10-arm64-rel': 'android_release_trybot_arm64_fastbuild_webview_trichrome',
+      'android-10-x86-fyi-rel-tests': 'android_release_trybot_x86_fastbuild_webview_trichrome',
       'android-11-x86-rel': 'android_release_trybot_x86_fastbuild_webview_trichrome',
       'android-12-x64-dbg': 'android_debug_trybot_x64_webview_trichrome_webview_shell',
       'android-12-x64-rel': 'android_release_trybot_x64_fastbuild_webview_trichrome',
