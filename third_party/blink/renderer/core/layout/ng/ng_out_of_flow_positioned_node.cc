@@ -26,6 +26,7 @@ void NGPhysicalOOFNodeForFragmentation::TraceAfterDispatch(
   NGPhysicalOutOfFlowPositionedNode::TraceAfterDispatch(visitor);
   visitor->Trace(containing_block);
   visitor->Trace(fixedpos_containing_block);
+  visitor->Trace(fixedpos_inline_container);
 }
 
 }  // namespace blink

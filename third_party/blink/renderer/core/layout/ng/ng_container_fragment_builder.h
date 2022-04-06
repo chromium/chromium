@@ -246,6 +246,8 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
       LayoutUnit containing_block_adjustment = LayoutUnit(),
       const NGContainingBlock<LogicalOffset>* fixedpos_containing_block =
           nullptr,
+      const NGInlineContainer<LogicalOffset>* fixedpos_inline_container =
+          nullptr,
       LogicalOffset additional_fixedpos_offset = LogicalOffset());
 
   void SetIsSelfCollapsing() { is_self_collapsing_ = true; }
@@ -357,6 +359,13 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
       absl::optional<LayoutUnit> adjustment_for_oof_propagation = LayoutUnit());
 
   void AddChildInternal(const NGPhysicalFragment*, const LogicalOffset&);
+
+  // Set the fixedpos inline container and containing block based on the current
+  // |box_fragment|.
+  void AdjustFixedposContainerInfo(
+      const NGPhysicalFragment* box_fragment,
+      NGInlineContainer<LogicalOffset>* fixedpos_inline_container,
+      const NGPhysicalFragment** fixedpos_containing_block_fragment) const;
 
   NGLayoutInputNode node_;
   const NGConstraintSpace* space_;

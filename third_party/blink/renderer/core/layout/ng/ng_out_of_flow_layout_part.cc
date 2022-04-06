@@ -956,6 +956,12 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
           converter.ToLogical(descendant.inline_container.relative_offset,
                               PhysicalSize()));
 
+      NGInlineContainer<LogicalOffset> fixedpos_inline_container(
+          descendant.fixedpos_inline_container.container,
+          converter.ToLogical(
+              descendant.fixedpos_inline_container.relative_offset,
+              PhysicalSize()));
+
       // The static position should remain relative to its containing block
       // fragment.
       const WritingModeConverter containing_block_converter(
@@ -977,7 +983,8 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
               fixedpos_containing_block_offset,
               fixedpos_containing_block_rel_offset,
               fixedpos_containing_block_fragment,
-              descendant.fixedpos_containing_block.IsInsideColumnSpanner())};
+              descendant.fixedpos_containing_block.IsInsideColumnSpanner()),
+          fixedpos_inline_container};
       oof_nodes_to_layout.push_back(node);
     }
     previous_multicol_break_token = break_token;
@@ -1277,6 +1284,7 @@ NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
                   default_writing_direction_,
                   /* is_fragmentainer_descendant */ containing_block_fragment,
                   oof_node.fixedpos_containing_block,
+                  oof_node.fixedpos_inline_container,
                   oof_node.inline_container.container);
 }
 
@@ -1753,6 +1761,7 @@ void NGOutOfFlowLayoutPart::AddOOFToFragmentainer(
         offset_adjustment,
         /* inline_container */ nullptr, containing_block_adjustment,
         &descendant.node_info.fixedpos_containing_block,
+        &descendant.node_info.fixedpos_inline_container,
         additional_fixedpos_offset);
   }
   algorithm->AppendOutOfFlowResult(result);

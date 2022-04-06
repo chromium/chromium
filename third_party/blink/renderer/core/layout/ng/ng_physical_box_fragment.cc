@@ -471,14 +471,19 @@ NGPhysicalFragment::FragmentedOutOfFlowDataFromBuilder(
   fragmented_data->oof_positioned_fragmentainer_descendants.ReserveCapacity(
       builder->oof_positioned_fragmentainer_descendants_.size());
   const PhysicalSize& size = Size();
+  WritingDirectionMode writing_direction = builder->GetWritingDirection();
+  const WritingModeConverter converter(writing_direction, size);
   for (const auto& descendant :
        builder->oof_positioned_fragmentainer_descendants_) {
-    WritingDirectionMode writing_direction = builder->GetWritingDirection();
-    const WritingModeConverter converter(writing_direction, size);
     NGInlineContainer<PhysicalOffset> inline_container(
         descendant.inline_container.container,
         converter.ToPhysical(descendant.inline_container.relative_offset,
                              PhysicalSize()));
+    NGInlineContainer<PhysicalOffset> fixedpos_inline_container(
+        descendant.fixedpos_inline_container.container,
+        converter.ToPhysical(
+            descendant.fixedpos_inline_container.relative_offset,
+            PhysicalSize()));
 
     // The static position should remain relative to the containing block.
     PhysicalSize containing_block_size =
@@ -496,17 +501,23 @@ NGPhysicalFragment::FragmentedOutOfFlowDataFromBuilder(
         PhysicalContainingBlock(builder, size, containing_block_size,
                                 descendant.containing_block),
         PhysicalContainingBlock(builder, size,
-                                descendant.fixedpos_containing_block));
+                                descendant.fixedpos_containing_block),
+        fixedpos_inline_container);
   }
   for (const auto& multicol : builder->multicols_with_pending_oofs_) {
     auto& value = multicol.value;
+    NGInlineContainer<PhysicalOffset> fixedpos_inline_container(
+        value->fixedpos_inline_container.container,
+        converter.ToPhysical(value->fixedpos_inline_container.relative_offset,
+                             PhysicalSize()));
     fragmented_data->multicols_with_pending_oofs.insert(
         multicol.key,
         MakeGarbageCollected<NGMulticolWithPendingOOFs<PhysicalOffset>>(
             value->multicol_offset.ConvertToPhysical(
                 builder->Style().GetWritingDirection(), size, PhysicalSize()),
             PhysicalContainingBlock(builder, size,
-                                    value->fixedpos_containing_block)));
+                                    value->fixedpos_containing_block),
+            fixedpos_inline_container));
   }
   return fragmented_data;
 }

@@ -135,6 +135,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
     const ContainingBlockInfo container_info;
     const WritingDirectionMode default_writing_direction;
     const NGContainingBlock<LogicalOffset>& fixedpos_containing_block;
+    const NGInlineContainer<LogicalOffset>& fixedpos_inline_container;
     bool inline_container = false;
 
     NodeInfo(NGBlockNode node,
@@ -145,6 +146,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
              const WritingDirectionMode default_writing_direction,
              bool is_fragmentainer_descendant,
              const NGContainingBlock<LogicalOffset>& fixedpos_containing_block,
+             const NGInlineContainer<LogicalOffset>& fixedpos_inline_container,
              bool inline_container)
         : node(node),
           constraint_space(constraint_space),
@@ -153,6 +155,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
           container_info(container_info),
           default_writing_direction(default_writing_direction),
           fixedpos_containing_block(fixedpos_containing_block),
+          fixedpos_inline_container(fixedpos_inline_container),
           inline_container(inline_container) {}
 
     void Trace(Visitor* visitor) const;

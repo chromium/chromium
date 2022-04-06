@@ -96,19 +96,23 @@ struct NGMulticolWithPendingOOFs
   // If an OOF node in a nested fragmentation context has fixedpos descendants,
   // those descendants will not find their containing block if the containing
   // block lives inside an outer fragmentation context. Thus, we also need to
-  // store information on the containing block for any fixedpos descendants, if
-  // one exists.
+  // store information on the containing block and inline container for any
+  // fixedpos descendants, if one exists.
   NGContainingBlock<OffsetType> fixedpos_containing_block;
+  NGInlineContainer<OffsetType> fixedpos_inline_container;
 
   NGMulticolWithPendingOOFs() = default;
   NGMulticolWithPendingOOFs(
       OffsetType multicol_offset,
-      NGContainingBlock<OffsetType> fixedpos_containing_block)
+      NGContainingBlock<OffsetType> fixedpos_containing_block,
+      NGInlineContainer<OffsetType> fixedpos_inline_container)
       : multicol_offset(multicol_offset),
-        fixedpos_containing_block(fixedpos_containing_block) {}
+        fixedpos_containing_block(fixedpos_containing_block),
+        fixedpos_inline_container(fixedpos_inline_container) {}
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(fixedpos_containing_block);
+    visitor->Trace(fixedpos_inline_container);
   }
 };
 
@@ -186,8 +190,8 @@ struct CORE_EXPORT NGPhysicalOutOfFlowPositionedNode {
 // If an OOF node in a fragmentation context has fixedpos descendants, those
 // descendants will not find their containing block if the containing block
 // lives inside the fragmentation context root. Thus, we also need to store
-// information on the containing block for any fixedpos descendants, if one
-// exists.
+// information on the containing block and inline container for any fixedpos
+// descendants, if one exists.
 //
 // This is struct is allowed to be stored/persisted.
 struct CORE_EXPORT NGPhysicalOOFNodeForFragmentation final
@@ -197,6 +201,7 @@ struct CORE_EXPORT NGPhysicalOOFNodeForFragmentation final
  public:
   NGContainingBlock<PhysicalOffset> containing_block;
   NGContainingBlock<PhysicalOffset> fixedpos_containing_block;
+  NGInlineContainer<PhysicalOffset> fixedpos_inline_container;
 
   NGPhysicalOOFNodeForFragmentation(
       NGBlockNode node,
@@ -206,12 +211,15 @@ struct CORE_EXPORT NGPhysicalOOFNodeForFragmentation final
       NGContainingBlock<PhysicalOffset> containing_block =
           NGContainingBlock<PhysicalOffset>(),
       NGContainingBlock<PhysicalOffset> fixedpos_containing_block =
-          NGContainingBlock<PhysicalOffset>())
+          NGContainingBlock<PhysicalOffset>(),
+      NGInlineContainer<PhysicalOffset> fixedpos_inline_container =
+          NGInlineContainer<PhysicalOffset>())
       : NGPhysicalOutOfFlowPositionedNode(node,
                                           static_position,
                                           inline_container),
         containing_block(containing_block),
-        fixedpos_containing_block(fixedpos_containing_block) {
+        fixedpos_containing_block(fixedpos_containing_block),
+        fixedpos_inline_container(fixedpos_inline_container) {
     is_for_fragmentation = true;
   }
 
@@ -235,6 +243,7 @@ struct NGLogicalOutOfFlowPositionedNode final {
   const LayoutUnit fragmentainer_consumed_block_size;
   NGContainingBlock<LogicalOffset> containing_block;
   NGContainingBlock<LogicalOffset> fixedpos_containing_block;
+  NGInlineContainer<LogicalOffset> fixedpos_inline_container;
 
   NGLogicalOutOfFlowPositionedNode(
       NGBlockNode node,
@@ -245,13 +254,16 @@ struct NGLogicalOutOfFlowPositionedNode final {
       NGContainingBlock<LogicalOffset> containing_block =
           NGContainingBlock<LogicalOffset>(),
       NGContainingBlock<LogicalOffset> fixedpos_containing_block =
-          NGContainingBlock<LogicalOffset>())
+          NGContainingBlock<LogicalOffset>(),
+      NGInlineContainer<LogicalOffset> fixedpos_inline_container =
+          NGInlineContainer<LogicalOffset>())
       : box(node.GetLayoutBox()),
         static_position(static_position),
         inline_container(inline_container),
         needs_block_offset_adjustment(needs_block_offset_adjustment),
         containing_block(containing_block),
-        fixedpos_containing_block(fixedpos_containing_block) {
+        fixedpos_containing_block(fixedpos_containing_block),
+        fixedpos_inline_container(fixedpos_inline_container) {
     DCHECK(!inline_container.container ||
            inline_container.container ==
                inline_container.container->ContinuationRoot());
@@ -265,6 +277,7 @@ struct NGLogicalOutOfFlowPositionedNode final {
     visitor->Trace(inline_container);
     visitor->Trace(containing_block);
     visitor->Trace(fixedpos_containing_block);
+    visitor->Trace(fixedpos_inline_container);
   }
 };
 
