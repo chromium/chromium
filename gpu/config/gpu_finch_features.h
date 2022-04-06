@@ -24,6 +24,7 @@ GPU_EXPORT extern const base::Feature kAImageReader;
 GPU_EXPORT extern const base::Feature kWebViewVulkan;
 GPU_EXPORT extern const base::Feature kLimitAImageReaderMaxSizeToOne;
 GPU_EXPORT extern const base::Feature kWebViewZeroCopyVideo;
+GPU_EXPORT extern const base::Feature kWebViewThreadSafeMediaDefault;
 GPU_EXPORT extern const base::Feature kIncreaseBufferCountForHighFrameRate;
 #endif  // BUILDFLAG(IS_ANDROID)
 

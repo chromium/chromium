@@ -80,7 +80,12 @@ const base::Feature kWebViewSurfaceControl{"WebViewSurfaceControl",
 
 // Use thread-safe media path on WebView.
 const base::Feature kWebViewThreadSafeMedia{"WebViewThreadSafeMedia",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
+// This is used as default state because it's different for webview and chrome.
+// WebView hardcodes this as enabled in AwMainDelegate.
+const base::Feature kWebViewThreadSafeMediaDefault{
+    "WebViewThreadSafeMediaDefault", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Use AImageReader for MediaCodec and MediaPlyer on android.
 const base::Feature kAImageReader{"AImageReader",
@@ -345,7 +350,15 @@ bool IsUsingThreadSafeMediaForWebView() {
   if (!IsAImageReaderEnabled() || LimitAImageReaderMaxSizeToOne())
     return false;
 
-  return base::FeatureList::IsEnabled(kWebViewThreadSafeMedia);
+  // If the feature is overridden from command line or finch we will use its
+  // value. If not we use kWebViewThreadSafeMediaDefault which is set in
+  // AwMainDelegate for WebView.
+  base::FeatureList* feature_list = base::FeatureList::GetInstance();
+  if (feature_list &&
+      feature_list->IsFeatureOverridden(kWebViewThreadSafeMedia.name))
+    return base::FeatureList::IsEnabled(kWebViewThreadSafeMedia);
+
+  return base::FeatureList::IsEnabled(kWebViewThreadSafeMediaDefault);
 #else
   return false;
 #endif

@@ -268,6 +268,9 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
     // Disabled until viz scheduling can be improved.
     features.DisableIfNotSet(::features::kUseSurfaceLayerForVideoDefault);
 
+    // Enabled by default for webview.
+    features.EnableIfNotSet(::features::kWebViewThreadSafeMediaDefault);
+
     // Disable dr-dc on webview.
     features.DisableIfNotSet(::features::kEnableDrDc);
 
