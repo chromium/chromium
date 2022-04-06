@@ -123,6 +123,8 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
 
   AppType GetAppType(const std::string& app_id);
 
+  std::vector<AppPtr> GetAllApps();
+
   void SetAccountId(const AccountId& account_id);
 
   // Calls f, a void-returning function whose arguments are (const

@@ -440,6 +440,12 @@ TEST_P(AppRegistryCacheTest, OnApps) {
   EXPECT_NE(updated_names_.end(), updated_names_.find("cherry"));
   Clear();
 
+  auto all_apps = cache.GetAllApps();
+  ASSERT_EQ(3u, all_apps.size());
+  EXPECT_EQ("a", all_apps[0]->app_id);
+  EXPECT_EQ("b", all_apps[1]->app_id);
+  EXPECT_EQ("c", all_apps[2]->app_id);
+
   mojom_deltas.clear();
   mojom_deltas.push_back(MakeMojomApp("a", "apricot",
                                       apps::mojom::AppType::kArc,
@@ -467,6 +473,13 @@ TEST_P(AppRegistryCacheTest, OnApps) {
   EXPECT_NE(updated_ids_.end(), updated_ids_.find("a"));
   EXPECT_NE(updated_names_.end(), updated_names_.find("apricot"));
   Clear();
+
+  all_apps = cache.GetAllApps();
+  ASSERT_EQ(4u, all_apps.size());
+  EXPECT_EQ("a", all_apps[0]->app_id);
+  EXPECT_EQ("b", all_apps[1]->app_id);
+  EXPECT_EQ("c", all_apps[2]->app_id);
+  EXPECT_EQ("d", all_apps[3]->app_id);
 
   // Test that ForOneApp succeeds for "c" and fails for "e".
 
@@ -516,6 +529,10 @@ TEST_P(AppRegistryCacheTest, Removed) {
   EXPECT_NE(updated_ids_.end(), updated_ids_.find("app"));
   EXPECT_NE(updated_names_.end(), updated_names_.find("app"));
   Clear();
+
+  auto all_apps = cache.GetAllApps();
+  ASSERT_EQ(1u, all_apps.size());
+  EXPECT_EQ("app", all_apps[0]->app_id);
 
   // Uninstall the app, then remove it.
   apps.clear();
@@ -569,6 +586,8 @@ TEST_P(AppRegistryCacheTest, Removed) {
   EXPECT_TRUE(updated_names_.empty());
   Clear();
   cache.RemoveObserver(&observer);
+
+  EXPECT_TRUE(cache.GetAllApps().empty());
 }
 
 TEST_P(AppRegistryCacheTest, Observer) {
@@ -612,6 +631,12 @@ TEST_P(AppRegistryCacheTest, Observer) {
     EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kArc));
   }
 
+  auto all_apps = cache.GetAllApps();
+  ASSERT_EQ(3u, all_apps.size());
+  EXPECT_EQ("a", all_apps[0]->app_id);
+  EXPECT_EQ("c", all_apps[1]->app_id);
+  EXPECT_EQ("e", all_apps[2]->app_id);
+
   SetAppType(AppType::kUnknown);
   num_freshly_installed_ = 0;
   updated_ids_.clear();
@@ -638,6 +663,13 @@ TEST_P(AppRegistryCacheTest, Observer) {
   EXPECT_NE(updated_ids_.end(), updated_ids_.find("c"));
   EXPECT_EQ(AppType::kUnknown, app_type());
 
+  all_apps = cache.GetAllApps();
+  ASSERT_EQ(4u, all_apps.size());
+  EXPECT_EQ("a", all_apps[0]->app_id);
+  EXPECT_EQ("b", all_apps[1]->app_id);
+  EXPECT_EQ("c", all_apps[2]->app_id);
+  EXPECT_EQ("e", all_apps[3]->app_id);
+
   cache.RemoveObserver(this);
 
   num_freshly_installed_ = 0;
@@ -659,6 +691,14 @@ TEST_P(AppRegistryCacheTest, Observer) {
   if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
     EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kArc));
   }
+
+  all_apps = cache.GetAllApps();
+  ASSERT_EQ(5u, all_apps.size());
+  EXPECT_EQ("a", all_apps[0]->app_id);
+  EXPECT_EQ("b", all_apps[1]->app_id);
+  EXPECT_EQ("c", all_apps[2]->app_id);
+  EXPECT_EQ("e", all_apps[3]->app_id);
+  EXPECT_EQ("f", all_apps[4]->app_id);
 }
 
 TEST_P(AppRegistryCacheTest, Recursive) {
@@ -723,6 +763,12 @@ TEST_P(AppRegistryCacheTest, Recursive) {
   EXPECT_EQ(1, observer.NumAppsSeenOnAppUpdate());
   EXPECT_EQ(AppType::kArc, observer.app_type());
   EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kArc));
+
+  auto all_apps = cache.GetAllApps();
+  ASSERT_EQ(3u, all_apps.size());
+  EXPECT_EQ("o", all_apps[0]->app_id);
+  EXPECT_EQ("p", all_apps[1]->app_id);
+  EXPECT_EQ("q", all_apps[2]->app_id);
 }
 
 TEST_P(AppRegistryCacheTest, SuperRecursive) {
@@ -784,6 +830,12 @@ TEST_P(AppRegistryCacheTest, SuperRecursive) {
   EXPECT_EQ("coconut", GetName(cache, "c"));
   EXPECT_EQ(AppType::kArc, observer.app_type());
   EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kArc));
+
+  auto all_apps = cache.GetAllApps();
+  ASSERT_EQ(3u, all_apps.size());
+  EXPECT_EQ("a", all_apps[0]->app_id);
+  EXPECT_EQ("b", all_apps[1]->app_id);
+  EXPECT_EQ("c", all_apps[2]->app_id);
 }
 
 // Verify the OnAppTypeInitialized callback when OnApps is called for the non

@@ -264,6 +264,27 @@ AppType AppRegistryCache::GetAppType(const std::string& app_id) {
   return AppType::kUnknown;
 }
 
+std::vector<AppPtr> AppRegistryCache::GetAllApps() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
+
+  std::vector<AppPtr> apps;
+  for (const auto& s_iter : states_) {
+    const App* state = s_iter.second.get();
+    apps.push_back(state->Clone());
+
+    auto d_iter = deltas_in_progress_.find(s_iter.first);
+    const App* delta =
+        (d_iter != deltas_in_progress_.end()) ? d_iter->second : nullptr;
+    AppUpdate::Merge(apps[apps.size() - 1].get(), delta);
+  }
+  for (const auto& d_iter : deltas_in_progress_) {
+    if (!base::Contains(states_, d_iter.first)) {
+      apps.push_back(d_iter.second->Clone());
+    }
+  }
+  return apps;
+}
+
 void AppRegistryCache::SetAccountId(const AccountId& account_id) {
   account_id_ = account_id;
 }
