@@ -16,7 +16,7 @@ component("shared") {
     "utils.h",
   ]
 
-  if (enable_cros_libassistant) {
+  if (is_chromeos && is_chrome_branded) {
     sources += [ "//chromeos/assistant/internal/constants.cc" ]
   } else {
     sources += [ "constants.cc" ]
