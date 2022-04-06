@@ -78,11 +78,11 @@ NSString* const kMetricsConsentCheckboxAccessibilityIdentifier =
 
   self.metricsConsentButton = [self createMetricsConsentButton];
   UIView* footerTopAnchor = nil;
-  BOOL showUMAReportingLink =
+  BOOL showUMAReportingCheckBox =
       fre_field_trial::GetNewMobileIdentityConsistencyFRE() ==
       NewMobileIdentityConsistencyFRE::kOld;
   self.footerTextView =
-      [self createFooterTextViewForOldFRE:showUMAReportingLink];
+      [self createFooterTextViewWithUMAReportingLink:!showUMAReportingCheckBox];
   [self.specificContentView addSubview:self.footerTextView];
 
   [NSLayoutConstraint activateConstraints:@[
@@ -94,7 +94,7 @@ NSString* const kMetricsConsentCheckboxAccessibilityIdentifier =
         constraintEqualToAnchor:self.specificContentView.bottomAnchor],
   ]];
 
-  if (!showUMAReportingLink) {
+  if (!showUMAReportingCheckBox) {
     footerTopAnchor = self.footerTextView;
   } else {
     self.metricsConsentButton = [self createMetricsConsentButton];
@@ -242,11 +242,12 @@ NSString* const kMetricsConsentCheckboxAccessibilityIdentifier =
 
 // Creates and configures the text view for the terms of service, with a
 // formatted link to the full text of the terms of service.
-- (UITextView*)createFooterTextViewForOldFRE:(BOOL)showUMAReportingLink {
+- (UITextView*)createFooterTextViewWithUMAReportingLink:
+    (BOOL)UMAReportingLink {
   NSAttributedString* termsOfServiceString = [self createTermsOfServiceString];
   NSMutableAttributedString* footerString = [[NSMutableAttributedString alloc]
       initWithAttributedString:termsOfServiceString];
-  if (!showUMAReportingLink) {
+  if (UMAReportingLink) {
     NSAttributedString* manageMetricsReported =
         [self createManageMetricsReportedString];
     [footerString appendAttributedString:manageMetricsReported];
@@ -261,7 +262,7 @@ NSString* const kMetricsConsentCheckboxAccessibilityIdentifier =
   textView.linkTextAttributes =
       @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]};
   textView.translatesAutoresizingMaskIntoConstraints = NO;
-  textView.attributedText = [self createTermsOfServiceString];
+  textView.attributedText = footerString;
   return textView;
 }
 
