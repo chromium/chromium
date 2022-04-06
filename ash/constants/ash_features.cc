@@ -1353,7 +1353,7 @@ const base::Feature kVirtualKeyboardBorderedKey{
 
 // Enable or disable multitouch for virtual keyboard on Chrome OS.
 const base::Feature kVirtualKeyboardMultitouch{
-    "kVirtualKeyboardMultitouch", base::FEATURE_DISABLED_BY_DEFAULT};
+    "VirtualKeyboardMultitouch", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls whether to allow enabling wake on WiFi features in shill.
 const base::Feature kWakeOnWifiAllowed{"WakeOnWifiAllowed",
