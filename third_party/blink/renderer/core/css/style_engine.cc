@@ -3179,7 +3179,6 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(vtt_originating_element_);
   visitor->Trace(parent_for_detached_subtree_);
   visitor->Trace(ua_document_transition_style_);
-  visitor->Trace(style_image_cache_);
   FontSelectorClient::Trace(visitor);
 }
 

@@ -47,7 +47,6 @@
 #include "third_party/blink/renderer/core/css/layout_tree_rebuild_root.h"
 #include "third_party/blink/renderer/core/css/pending_sheet_type.h"
 #include "third_party/blink/renderer/core/css/rule_feature_set.h"
-#include "third_party/blink/renderer/core/css/style_image_cache.h"
 #include "third_party/blink/renderer/core/css/style_invalidation_root.h"
 #include "third_party/blink/renderer/core/css/style_recalc_root.h"
 #include "third_party/blink/renderer/core/css/vision_deficiency.h"
@@ -555,13 +554,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
     return document_transition_tags_;
   }
 
-  StyleFetchedImage* CacheStyleImage(FetchParameters& params,
-                                     OriginClean origin_clean,
-                                     bool is_ad_related) {
-    return style_image_cache_.CacheStyleImage(GetDocument(), params,
-                                              origin_clean, is_ad_related);
-  }
-
   void Trace(Visitor*) const override;
   const char* NameInHeapSnapshot() const override { return "StyleEngine"; }
 
@@ -894,7 +886,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   friend class StyleEngineTest;
   friend class WhitespaceAttacherTest;
   friend class StyleCascadeTest;
-  friend class StyleImageCacheTest;
 
   HeapHashSet<Member<TextTrack>> text_tracks_;
   Member<Element> vtt_originating_element_;
@@ -908,10 +899,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // The set of IDs for which ::page-transition-container pseudo elements are
   // generated during a DocumentTransition.
   Vector<AtomicString> document_transition_tags_;
-
-  // Cache for sharing StyleFetchedImage between CSSValues referencing the same
-  // URL.
-  StyleImageCache style_image_cache_;
 };
 
 }  // namespace blink
