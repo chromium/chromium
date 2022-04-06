@@ -293,7 +293,11 @@ void TrayDetailedView::CreateTitleRow(int string_id) {
   tri_view_->AddView(TriView::Container::START, back_button_);
 
   AddChildViewAt(tri_view_, 0);
-  AddChildViewAt(delegate_->CreateTitleSeparator(), kTitleRowSeparatorIndex);
+
+  // Do not add a separator below the calendar title.
+  if (string_id != IDS_ASH_CALENDAR_TITLE) {
+    AddChildViewAt(delegate_->CreateTitleSeparator(), kTitleRowSeparatorIndex);
+  }
 
   CreateExtraTitleRowButtons();
   Layout();
