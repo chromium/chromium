@@ -588,6 +588,12 @@ namespace {
 
 - (void)handleFeedSelected:(FeedType)feedType {
   DCHECK(IsWebChannelsEnabled());
+  if (feedType == FeedTypeFollowing) {
+    // Clears dot and notifies service that the Following feed content has been
+    // seen.
+    self.feedHeaderViewController.followingSegmentDotVisible = NO;
+    self.discoverFeedService->SetFollowingFeedContentSeen();
+  }
   self.selectedFeed = feedType;
   [self updateNTPForFeed];
 }
@@ -1145,10 +1151,12 @@ namespace {
   DCHECK(!self.browser->GetBrowserState()->IsOffTheRecord());
   if (!_feedHeaderViewController) {
     _feedHeaderViewController = [[FeedHeaderViewController alloc]
-         initWithSelectedFeed:self.selectedFeed
-        followingFeedSortType:(FollowingFeedSortType)
-                                  self.prefService->GetInteger(
-                                      prefs::kNTPFollowingFeedSortType)];
+              initWithSelectedFeed:self.selectedFeed
+             followingFeedSortType:(FollowingFeedSortType)
+                                       self.prefService->GetInteger(
+                                           prefs::kNTPFollowingFeedSortType)
+        followingSegmentDotVisible:self.discoverFeedService
+                                       ->GetFollowingFeedHasUnseenContent()];
     _feedHeaderViewController.feedControlDelegate = self;
     [_feedHeaderViewController.menuButton
                addTarget:self

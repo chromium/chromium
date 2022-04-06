@@ -66,6 +66,12 @@ class DiscoverFeedService : public KeyedService {
   // update all ViewControllers returned by NewFeedViewController.
   virtual void RefreshFeed() = 0;
 
+  // Returns whether the Following feed model has unseen content.
+  virtual BOOL GetFollowingFeedHasUnseenContent();
+
+  // Informs the service that the Following content has been seen.
+  virtual void SetFollowingFeedContentSeen();
+
   // Methods to register or remove observers.
   void AddObserver(DiscoverFeedObserver* observer);
   void RemoveObserver(DiscoverFeedObserver* observer);

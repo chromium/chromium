@@ -25,10 +25,15 @@
 // The currently selected sorting for the Following feed.
 @property(nonatomic, assign) FollowingFeedSortType followingFeedSortType;
 
+// Whether the Following segment dot should currently be visible.
+@property(nonatomic, assign) BOOL followingSegmentDotVisible;
+
 // Initializes the header with the currently selected feed and the Following
 // feed's sort type.
 - (instancetype)initWithSelectedFeed:(FeedType)selectedFeed
-               followingFeedSortType:(FollowingFeedSortType)sortType
+               followingFeedSortType:
+                   (FollowingFeedSortType)followingFeedSortType
+          followingSegmentDotVisible:(BOOL)followingSegmentDotVisible
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

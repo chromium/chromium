@@ -33,6 +33,8 @@ class ChromiumDiscoverFeedService final : public DiscoverFeedService {
   void UpdateTheme() final {}
   void RefreshFeedIfNeeded() final {}
   void RefreshFeed() final {}
+  BOOL GetFollowingFeedHasUnseenContent() final { return NO; }
+  void SetFollowingFeedContentSeen() final {}
 };
 
 }  // anonymous namespace

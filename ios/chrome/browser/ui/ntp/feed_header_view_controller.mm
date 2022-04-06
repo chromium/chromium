@@ -45,8 +45,13 @@ const CGFloat kHeaderSegmentWidth = 300;
 // The height and width of the header menu button. Based on the default
 // UISegmentedControl height.
 const CGFloat kButtonSize = 28;
-// Duration of the fade animation when the sort button appears/disappears.
-const CGFloat kSortButtonAnimationDuration = 0.3;
+// The radius of the dot indicating that there is new content in the Following
+// feed.
+const CGFloat kFollowingSegmentDotRadius = 3;
+// The distance between the Following segment dot and the Following label.
+const CGFloat kFollowingSegmentDotMargin = 8;
+// Duration of the fade animation for elements that toggle when switching feeds.
+const CGFloat kSegmentAnimationDuration = 0.3;
 
 // Image names for feed header icons.
 NSString* kMenuIcon = @"ellipsis";
@@ -73,9 +78,11 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
 // Segmented control for toggling between the two feeds.
 @property(nonatomic, strong) UISegmentedControl* segmentedControl;
 
+// The dot in the Following segment indicating new content in the Following
+// feed.
+@property(nonatomic, strong) UIView* followingSegmentDot;
+
 // Currently selected feed.
-// TODO(crbug.com/1277974): Reassign this value instead of recreating feed
-// header when NTP coordinator's restart is improved.
 @property(nonatomic, assign) FeedType selectedFeed;
 
 // The blurred background of the feed header.
@@ -86,11 +93,14 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
 @implementation FeedHeaderViewController
 
 - (instancetype)initWithSelectedFeed:(FeedType)selectedFeed
-               followingFeedSortType:(FollowingFeedSortType)sortType {
+               followingFeedSortType:
+                   (FollowingFeedSortType)followingFeedSortType
+          followingSegmentDotVisible:(BOOL)followingSegmentDotVisible {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _selectedFeed = selectedFeed;
-    _followingFeedSortType = sortType;
+    _followingFeedSortType = followingFeedSortType;
+    _followingSegmentDotVisible = followingSegmentDotVisible;
 
     // The menu button is created early so that it can be assigned a tap action
     // before the view loads.
@@ -127,6 +137,10 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
     self.sortButton = [self createSortButton];
     self.sortButton.menu = [self createSortMenu];
     [self.container addSubview:self.sortButton];
+
+    self.followingSegmentDot = [self createFollowingSegmentDot];
+    self.followingSegmentDot.hidden = !self.followingSegmentDotVisible;
+    [self.segmentedControl addSubview:self.followingSegmentDot];
 
     if (!UIAccessibilityIsReduceTransparencyEnabled()) {
       self.blurBackgroundView = [self createBlurBackground];
@@ -183,6 +197,18 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
   if (self.sortButton) {
     self.sortButton.menu = [self createSortMenu];
   }
+}
+
+// Sets |followingSegmentDotVisible| and animates |followingSegmentDot|'s
+// visibility accordingly.
+- (void)setFollowingSegmentDotVisible:(BOOL)followingSegmentDotVisible {
+  DCHECK(IsWebChannelsEnabled());
+  _followingSegmentDotVisible = followingSegmentDotVisible;
+  [UIView animateWithDuration:kSegmentAnimationDuration
+                   animations:^{
+                     self.followingSegmentDot.alpha =
+                         followingSegmentDotVisible ? 1 : 0;
+                   }];
 }
 
 #pragma mark - Private
@@ -315,6 +341,16 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
   return segmentedControl;
 }
 
+// Configures and returns the dot indicating that there is new content in the
+// Following feed.
+- (UIView*)createFollowingSegmentDot {
+  UIView* followingSegmentDot = [[UIView alloc] init];
+  followingSegmentDot.layer.cornerRadius = kFollowingSegmentDotRadius;
+  followingSegmentDot.backgroundColor = [UIColor colorNamed:kBlue500Color];
+  followingSegmentDot.translatesAutoresizingMaskIntoConstraints = NO;
+  return followingSegmentDot;
+}
+
 // Configures and returns the blurred background of the feed header.
 - (UIVisualEffectView*)createBlurBackground {
   UIBlurEffect* blurEffect =
@@ -371,7 +407,47 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
                          constant:kButtonHorizontalMargin],
       [self.sortButton.centerYAnchor
           constraintEqualToAnchor:self.container.centerYAnchor],
+      // Set Following segment dot size.
+      [self.followingSegmentDot.heightAnchor
+          constraintEqualToConstant:kFollowingSegmentDotRadius * 2],
+      [self.followingSegmentDot.widthAnchor
+          constraintEqualToConstant:kFollowingSegmentDotRadius * 2],
     ]];
+
+    // Find the "Following" label within the segmented control, since it is not
+    // exposed by UISegmentedControl.
+    UIView* followingSegment = self.segmentedControl.subviews[0];
+    UILabel* followingLabel;
+    for (UIView* view in followingSegment.subviews) {
+      if ([view isKindOfClass:[UILabel class]]) {
+        followingLabel = static_cast<UILabel*>(view);
+      }
+    }
+
+    // If the label was found, anchor the dot to it. Otherwise, anchor the dot
+    // to the top corner of the segmented control.
+    if (followingLabel) {
+      [NSLayoutConstraint activateConstraints:@[
+        // Anchor Following segment dot to label text.
+        [self.followingSegmentDot.leftAnchor
+            constraintEqualToAnchor:followingLabel.rightAnchor
+                           constant:kFollowingSegmentDotMargin],
+        [self.followingSegmentDot.bottomAnchor
+            constraintEqualToAnchor:followingLabel.topAnchor
+                           constant:kFollowingSegmentDotMargin],
+      ]];
+    } else {
+      [NSLayoutConstraint activateConstraints:@[
+        // Anchor Following segment dot to top corner.
+        [self.followingSegmentDot.rightAnchor
+            constraintEqualToAnchor:self.segmentedControl.rightAnchor
+                           constant:-kFollowingSegmentDotMargin],
+        [self.followingSegmentDot.topAnchor
+            constraintEqualToAnchor:self.segmentedControl.topAnchor
+                           constant:kFollowingSegmentDotMargin],
+      ]];
+    }
+
     if (self.blurBackgroundView) {
       AddSameConstraints(self.blurBackgroundView, self.view);
     }
@@ -396,7 +472,7 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
   switch (segmentedControl.selectedSegmentIndex) {
     case static_cast<NSInteger>(FeedTypeDiscover): {
       [self.feedControlDelegate handleFeedSelected:FeedTypeDiscover];
-      [UIView animateWithDuration:kSortButtonAnimationDuration
+      [UIView animateWithDuration:kSegmentAnimationDuration
                        animations:^{
                          self.sortButton.alpha = 0;
                        }];
@@ -404,7 +480,8 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
     }
     case static_cast<NSInteger>(FeedTypeFollowing): {
       [self.feedControlDelegate handleFeedSelected:FeedTypeFollowing];
-      [UIView animateWithDuration:kSortButtonAnimationDuration
+      // Only show sorting button for Following feed.
+      [UIView animateWithDuration:kSegmentAnimationDuration
                        animations:^{
                          self.sortButton.alpha = 1;
                        }];
