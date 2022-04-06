@@ -1730,9 +1730,11 @@ if (enable_java_templates) {
   #   proguard_configs: List of proguard configs (optional).
   #   android_manifest: Path to AndroidManifest.xml (optional).
   #   native_libraries: list of native libraries (optional).
-  #   direct_deps_only: Do not recurse on deps. (optional, defaults false).
-  #   jar_excluded_patterns (optional): List of globs for paths to exclude.
-  #   jar_included_patterns (optional): List of globs for paths to include.
+  #   direct_deps_only: Do not recurse on deps (optional, defaults false).
+  #   jar_excluded_patterns: List of globs for paths to exclude (optional).
+  #   jar_included_patterns: List of globs for paths to include (optional).
+  #   generate_final_jni: If defined an true, generate the final
+  #     `GEN_JNI.java` and include it in the output `.aar` (optional)
   #
   # Example
   #   dist_aar("my_aar") {
@@ -1742,13 +1744,32 @@ if (enable_java_templates) {
   template("dist_aar") {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
-    _deps = []
-    if (defined(invoker.deps)) {
-      _deps = invoker.deps
-    }
-
     _direct_deps_only =
         defined(invoker.direct_deps_only) && invoker.direct_deps_only
+
+    _deps = []
+
+    _generate_final_jni =
+        defined(invoker.generate_final_jni) && invoker.generate_final_jni
+    if (_generate_final_jni) {
+      _outer_target_name = target_name
+      _jni_srcjar_target = "${target_name}__final_jni"
+      generate_jni_registration(_jni_srcjar_target) {
+        targets = [ ":$_outer_target_name" ]
+      }
+      _jni_java_target = "${target_name}__final_jni_java"
+      java_library_impl(_jni_java_target) {
+        type = "java_library"
+        supports_android = true
+        requires_android = true
+        srcjar_deps = [ ":$_jni_srcjar_target" ]
+      }
+      _deps += [ ":$_jni_java_target" ]
+    }
+
+    if (defined(invoker.deps)) {
+      _deps += invoker.deps
+    }
 
     _build_config = "$target_gen_dir/$target_name.build_config.json"
     _build_config_target_name = "$target_name$build_config_target_suffix"
@@ -1795,8 +1816,11 @@ if (enable_java_templates) {
       if (_direct_deps_only) {
         args += [ "--jars=@FileArg($_rebased_build_config:javac:classpath)" ]
       } else {
-        args += [ "--jars=@FileArg($_rebased_build_config:deps_info:javac_full_classpath)" ]
+        args += [
+          "--jars=@FileArg($_rebased_build_config:deps_info:device_classpath)",
+        ]
       }
+
       if (defined(invoker.android_manifest)) {
         args += [
           "--android-manifest",

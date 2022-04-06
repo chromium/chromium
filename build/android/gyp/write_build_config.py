@@ -1428,14 +1428,16 @@ def main(argv):
   # TODO(tiborg): Remove creation of JNI info for type group and java_library
   # once we can generate the JNI registration based on APK / module targets as
   # opposed to groups and libraries.
-  if is_apk_or_module_target or options.type in (
-      'group', 'java_library', 'junit_binary'):
+  if is_apk_or_module_target or options.type in ('group', 'java_library',
+                                                 'junit_binary', 'dist_aar'):
     deps_info['jni'] = {}
     all_java_sources = [c['java_sources_file'] for c in all_library_deps
                         if 'java_sources_file' in c]
     if options.java_sources_file:
       all_java_sources.append(options.java_sources_file)
 
+  if is_apk_or_module_target or options.type in ('group', 'java_library',
+                                                 'junit_binary'):
     if options.apk_proto_resources:
       deps_info['proto_resources_path'] = options.apk_proto_resources
 
@@ -1840,7 +1842,7 @@ def main(argv):
   deps_info['extra_main_r_text_files'] = sorted(extra_main_r_text_files)
 
   if is_apk_or_module_target or options.type in ('group', 'java_library',
-                                                 'junit_binary'):
+                                                 'junit_binary', 'dist_aar'):
     deps_info['jni']['all_source'] = sorted(set(all_java_sources))
 
   system_jars = [c['unprocessed_jar_path'] for c in system_library_deps]
@@ -1988,8 +1990,8 @@ def main(argv):
     deps_info['javac_full_interface_classpath'] = list(
         javac_full_interface_classpath)
 
-  if options.type in ('android_apk', 'dist_jar', 'android_app_bundle_module',
-                      'android_app_bundle'):
+  if options.type in ('android_apk', 'android_app_bundle',
+                      'android_app_bundle_module', 'dist_aar', 'dist_jar'):
     deps_info['device_classpath'] = device_classpath
     if options.add_view_trace_events:
       trace_event_rewritten_device_classpath = []
