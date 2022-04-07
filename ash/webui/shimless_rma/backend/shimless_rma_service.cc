@@ -706,6 +706,11 @@ void ShimlessRmaService::RunCalibrationStep(
                             rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
     return;
   }
+
+  // Clear the previous calibration progress.
+  last_calibration_progress_ = absl::nullopt;
+  last_calibration_overall_progress_ = absl::nullopt;
+
   TransitionNextStateGeneric(std::move(callback));
 }
 
@@ -989,6 +994,10 @@ void ShimlessRmaService::ObserveOsUpdateProgress(
 
 void ShimlessRmaService::ObserveCalibrationProgress(
     ::mojo::PendingRemote<mojom::CalibrationObserver> observer) {
+  if (calibration_observer_.is_bound()) {
+    calibration_observer_.reset();
+  }
+
   calibration_observer_.Bind(std::move(observer));
   if (last_calibration_progress_) {
     calibration_observer_->OnCalibrationUpdated(*last_calibration_progress_);
