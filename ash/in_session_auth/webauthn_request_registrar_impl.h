@@ -5,6 +5,8 @@
 #ifndef ASH_IN_SESSION_AUTH_WEBAUTHN_REQUEST_REGISTRAR_IMPL_H_
 #define ASH_IN_SESSION_AUTH_WEBAUTHN_REQUEST_REGISTRAR_IMPL_H_
 
+#include <string>
+
 #include "ash/public/cpp/webauthn_request_registrar.h"
 #include "base/callback_forward.h"
 #include "ui/aura/window_tracker.h"
@@ -26,7 +28,7 @@ class WebAuthnRequestRegistrarImpl : public WebAuthnRequestRegistrar {
 
   // WebAuthnRequestRegistrar:
   GenerateRequestIdCallback GetRegisterCallback(aura::Window* window) override;
-  aura::Window* GetWindowForRequestId(uint32_t request_id) override;
+  aura::Window* GetWindowForRequestId(std::string request_id) override;
 
  private:
   uint32_t DoRegister(aura::Window* window);

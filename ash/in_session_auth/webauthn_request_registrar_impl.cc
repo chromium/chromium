@@ -7,6 +7,7 @@
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "base/bind.h"
+#include "base/strings/string_number_conversions.h"
 #include "ui/aura/window.h"
 #include "ui/base/class_property.h"
 
@@ -63,8 +64,8 @@ uint32_t WebAuthnRequestRegistrarImpl::DoRegister(aura::Window* window) {
 }
 
 aura::Window* WebAuthnRequestRegistrarImpl::GetWindowForRequestId(
-    uint32_t request_id) {
-  if (request_id == kInvalidRequestId) {
+    std::string request_id) {
+  if (request_id == base::NumberToString(kInvalidRequestId)) {
     return nullptr;
   }
 
@@ -72,7 +73,7 @@ aura::Window* WebAuthnRequestRegistrarImpl::GetWindowForRequestId(
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kAllDesks);
   for (aura::Window* window : windows) {
     uint32_t window_request_id = window->GetProperty(kWebAuthnRequestId);
-    if (window_request_id == request_id) {
+    if (base::NumberToString(window_request_id) == request_id) {
       return window;
     }
   }

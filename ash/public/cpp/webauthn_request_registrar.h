@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_WEBAUTHN_REQUEST_REGISTRAR_H_
 
 #include <stdint.h>
+#include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback_forward.h"
@@ -30,7 +31,7 @@ class ASH_PUBLIC_EXPORT WebAuthnRequestRegistrar {
 
   // Returns the window that was registered with |request_id|, or nullptr if no
   // such window.
-  virtual aura::Window* GetWindowForRequestId(uint32_t request_id) = 0;
+  virtual aura::Window* GetWindowForRequestId(std::string request_id) = 0;
 
  protected:
   WebAuthnRequestRegistrar();
