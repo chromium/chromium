@@ -1275,11 +1275,13 @@ void SearchResultView::OnSearchResultActionActivated(size_t index) {
       if (features::IsProductivityLauncherEnabled()) {
         dialog = std::make_unique<RemoveQueryConfirmationDialog>(
             base::BindOnce(&SearchResultView::OnQueryRemovalAccepted,
-                           weak_ptr_factory_.GetWeakPtr()));
+                           weak_ptr_factory_.GetWeakPtr()),
+            result()->title());
       } else {
         dialog = std::make_unique<LegacyRemoveQueryConfirmationDialog>(
             base::BindOnce(&SearchResultView::OnQueryRemovalAccepted,
-                           weak_ptr_factory_.GetWeakPtr()));
+                           weak_ptr_factory_.GetWeakPtr()),
+            result()->title());
       }
       dialog_controller_->Show(std::move(dialog));
       break;

@@ -4652,16 +4652,18 @@ New install
           Displaying 1 result for <ph name="query">$1<ex>search query</ex></ph>
       </message>
       <message name="IDS_REMOVE_ZERO_STATE_SUGGESTION_TITLE" desc="Titlebar of removing zero state suggestion confirmation dialog">
-        Delete this search from your history?
+        Remove this suggestion?
       </message>
-      <message name="IDS_REMOVE_ZERO_STATE_SUGGESTION_DETAILS" desc="Detailed explanation message for removing removing an omnibox search result from launcher search results UI. This is a text in the dialog shown to the user when they try to remove a suggested omnibox search result from list of results shown in the launcher search - the omnibox search result may appear if the search query in launcher search matches a previous user search. The dialog asks the user to confirm the result removal.">
-        You searched for this query before. Deleting this search from your history will permanently remove it from your Google Account across all of your devices.
+      <message name="IDS_REMOVE_ZERO_STATE_SUGGESTION_DETAILS" desc="Detailed explanation message for removing removing an omnibox search result from launcher search results UI. This is a text in the dialog shown to the user when they try to remove a suggested omnibox search result from list of results shown in the launcher search - the omnibox search result may appear if the search query in launcher search matches a previous user search. The dialog asks the user to confirm the result removal. The query being removed is showing one linebreak after the message. The linebreak should NOT be removed from the string.">
+        The following suggestion will be permanently removed from your account’s suggestion history:
+
+<ph name="query">$1<ex>suggestion</ex></ph>
       </message>
       <message name="IDS_REMOVE_SUGGESTION_ANNOUNCEMENT" desc="Announcement confirming the removal of an omnibox suggestion from the launcher search results UI.">
-        Search history result deleted
+        Search history result removed
       </message>
       <message name="IDS_REMOVE_SUGGESTION_BUTTON_LABEL" desc="Remove suggestion button label">
-        Delete
+        Remove
       </message>
       <message name="IDS_APP_LIST_KEYBOARD_SHORTCUT_OR" desc="Joiner text for several keyboard shortcuts that all do the same thing. Eg: 'Ctrl-A or Ctrl-B or Ctrl-C'">
         Or

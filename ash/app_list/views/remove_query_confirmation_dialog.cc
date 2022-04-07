@@ -46,7 +46,8 @@ constexpr int kMarginBetweenButtons = 8;
 }  // namespace
 
 RemoveQueryConfirmationDialog::RemoveQueryConfirmationDialog(
-    RemovalConfirmationCallback confirm_callback)
+    RemovalConfirmationCallback confirm_callback,
+    const std::u16string& result_title)
     : confirm_callback_(std::move(confirm_callback)) {
   SetModalType(ui::MODAL_TYPE_WINDOW);
 
@@ -75,8 +76,9 @@ RemoveQueryConfirmationDialog::RemoveQueryConfirmationDialog(
   title_->GetViewAccessibility().OverrideIsIgnored(true);
 
   // Add dialog body.
-  body_ = AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_REMOVE_ZERO_STATE_SUGGESTION_DETAILS)));
+  body_ =
+      AddChildView(std::make_unique<views::Label>(l10n_util::GetStringFUTF16(
+          IDS_REMOVE_ZERO_STATE_SUGGESTION_DETAILS, result_title)));
   body_->SetProperty(views::kMarginsKey,
                      gfx::Insets::TLBR(kMarginBetweenTitleAndBody, 0,
                                        kMarginBetweenBodyAndButtons, 0));

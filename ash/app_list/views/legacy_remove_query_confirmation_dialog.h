@@ -23,8 +23,8 @@ class LegacyRemoveQueryConfirmationDialog : public views::DialogDelegateView {
   // associated result.
   using RemovalConfirmationCallback = base::OnceCallback<void(bool)>;
 
-  explicit LegacyRemoveQueryConfirmationDialog(
-      RemovalConfirmationCallback callback);
+  LegacyRemoveQueryConfirmationDialog(RemovalConfirmationCallback callback,
+                                      const std::u16string& result_title);
 
   LegacyRemoveQueryConfirmationDialog(
       const LegacyRemoveQueryConfirmationDialog&) = delete;
