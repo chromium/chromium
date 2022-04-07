@@ -7,9 +7,18 @@
 #include "base/command_line.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/origin_util.h"
+#include "content/public/common/url_constants.h"
 
 namespace content {
 namespace service_worker_security_utils {
+
+bool OriginCanRegisterServiceWorkerFromJavascript(const GURL& url) {
+  // WebUI service workers are always registered in C++.
+  if (url.SchemeIs(kChromeUIUntrustedScheme))
+    return false;
+
+  return OriginCanAccessServiceWorkers(url);
+}
 
 bool AllOriginsMatchAndCanAccessServiceWorkers(const std::vector<GURL>& urls) {
   // (A) Check if all origins can access service worker. Every URL must be

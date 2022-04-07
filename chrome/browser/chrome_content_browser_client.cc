@@ -275,6 +275,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_ui_url_loader_factory.h"
+#include "content/public/browser/webui_config_map.h"
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -318,7 +319,6 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/webui/webui_config_map.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/third_party/mozilla/url_parse.h"
@@ -5669,8 +5669,8 @@ bool ChromeContentBrowserClient::HandleWebUI(
 
   if (!ChromeWebUIControllerFactory::GetInstance()->UseWebUIForURL(
           browser_context, *url) &&
-      !ui::WebUIConfigMap::GetInstance().GetConfig(browser_context,
-                                                   url::Origin::Create(*url))) {
+      !content::WebUIConfigMap::GetInstance().GetConfig(
+          browser_context, url::Origin::Create(*url))) {
     return false;
   }
 

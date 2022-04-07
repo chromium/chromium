@@ -948,6 +948,55 @@ TEST_F(ServiceWorkerContainerHostTest,
   EXPECT_EQ(3u, bad_messages_.size());
 }
 
+class WebUIServiceWorkerContainerHostTest
+    : public ServiceWorkerContainerHostTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  WebUIServiceWorkerContainerHostTest() {
+    if (GetParam()) {
+      features_.InitAndEnableFeature(
+          features::kEnableServiceWorkersForChromeUntrusted);
+    } else {
+      features_.InitAndDisableFeature(
+          features::kEnableServiceWorkersForChromeUntrusted);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_P(WebUIServiceWorkerContainerHostTest, Register_RegistrationShouldFail) {
+  ServiceWorkerRemoteContainerEndpoint remote_endpoint =
+      PrepareServiceWorkerContainerHost(GURL("chrome://testwebui/"));
+
+  ASSERT_TRUE(bad_messages_.empty());
+  Register(remote_endpoint.host_remote()->get(), GURL("chrome://testwebui/"),
+           GURL("chrome://testwebui/sw.js"));
+  EXPECT_EQ(1u, bad_messages_.size());
+}
+
+TEST_P(WebUIServiceWorkerContainerHostTest,
+       Register_UntrustedRegistrationShouldFail) {
+  ServiceWorkerRemoteContainerEndpoint remote_endpoint =
+      PrepareServiceWorkerContainerHost(GURL("chrome-untrusted://testwebui/"));
+
+  ASSERT_TRUE(bad_messages_.empty());
+  Register(remote_endpoint.host_remote()->get(),
+           GURL("chrome-untrusted://testwebui/"),
+           GURL("chrome-untrusted://testwebui/sw.js"));
+  EXPECT_EQ(1u, bad_messages_.size());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WebUIServiceWorkerContainerHostTest,
+                         testing::Bool(),
+                         [](const ::testing::TestParamInfo<bool>& info) {
+                           if (info.param)
+                             return "ServiceWorkersForChromeUntrustedEnabled";
+                           return "ServiceWorkersForChromeUntrustedDisabled";
+                         });
+
 TEST_F(ServiceWorkerContainerHostTest, EarlyContextDeletion) {
   ServiceWorkerRemoteContainerEndpoint remote_endpoint =
       PrepareServiceWorkerContainerHost(GURL("https://www.example.com/foo"));

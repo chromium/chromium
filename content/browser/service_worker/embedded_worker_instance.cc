@@ -37,9 +37,11 @@
 #include "content/common/url_schemes.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_ui_url_loader_factory.h"
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/url_constants.h"
 #include "ipc/ipc_message.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/isolation_info.h"
@@ -806,6 +808,16 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
 
   ContentBrowserClient::NonNetworkURLLoaderFactoryMap non_network_factories;
   non_network_factories[url::kDataScheme] = DataURLLoaderFactory::Create();
+  if (base::FeatureList::IsEnabled(
+          features::kEnableServiceWorkersForChromeUntrusted)) {
+    if (origin.scheme() == content::kChromeUIUntrustedScheme) {
+      non_network_factories.emplace(
+          content::kChromeUIUntrustedScheme,
+          CreateWebUIServiceWorkerLoaderFactory(
+              rph->GetBrowserContext(), content::kChromeUIUntrustedScheme,
+              base::flat_set<std::string>()));
+    }
+  }
   GetContentClient()
       ->browser()
       ->RegisterNonNetworkSubresourceURLLoaderFactories(

@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_WEBUI_WEBUI_CONFIG_MAP_H_
-#define UI_WEBUI_WEBUI_CONFIG_MAP_H_
+#ifndef CONTENT_PUBLIC_BROWSER_WEBUI_CONFIG_MAP_H_
+#define CONTENT_PUBLIC_BROWSER_WEBUI_CONFIG_MAP_H_
 
 #include <map>
 #include <memory>
 
-namespace content {
-class BrowserContext;
-class WebUIControllerFactory;
-}  // namespace content
+#include "content/common/content_export.h"
 
 namespace url {
 class Origin;
 }
 
-namespace ui {
+namespace content {
+
+class BrowserContext;
+class WebUIControllerFactory;
 class WebUIConfig;
 
 // Class that holds all WebUIConfigs for the browser.
@@ -27,7 +27,7 @@ class WebUIConfig;
 //
 // Underneath it uses a WebUIControllerFactory to hook into the rest of the
 // WebUI infra.
-class WebUIConfigMap {
+class CONTENT_EXPORT WebUIConfigMap {
  public:
   static WebUIConfigMap& GetInstance();
 
@@ -50,19 +50,19 @@ class WebUIConfigMap {
 
   // Returns the WebUIConfig for |origin| if it's registered and the WebUI is
   // enabled. (WebUIs can be disabled based on the profile or feature flags.)
-  WebUIConfig* GetConfig(content::BrowserContext* browser_context,
+  WebUIConfig* GetConfig(BrowserContext* browser_context,
                          const url::Origin& origin);
 
  private:
   void AddWebUIConfigImpl(std::unique_ptr<WebUIConfig> config);
 
   using WebUIConfigMapImpl =
-      std::map<url::Origin, std::unique_ptr<ui::WebUIConfig>>;
+      std::map<url::Origin, std::unique_ptr<WebUIConfig>>;
   WebUIConfigMapImpl configs_map_;
 
-  std::unique_ptr<content::WebUIControllerFactory> webui_controller_factory_;
+  std::unique_ptr<WebUIControllerFactory> webui_controller_factory_;
 };
 
-}  // namespace ui
+}  // namespace content
 
-#endif  // UI_WEBUI_WEBUI_CONFIG_MAP_H_
+#endif  // CONTENT_PUBLIC_BROWSER_WEBUI_CONFIG_MAP_H_

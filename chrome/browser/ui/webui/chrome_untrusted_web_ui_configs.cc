@@ -8,8 +8,8 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "content/public/browser/webui_config_map.h"
 #include "printing/buildflags/buildflags.h"
-#include "ui/webui/webui_config_map.h"
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui_untrusted.h"
@@ -41,7 +41,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void RegisterChromeUntrustedWebUIConfigs() {
-  auto& map = ui::WebUIConfigMap::GetInstance();
+  auto& map = content::WebUIConfigMap::GetInstance();
 
   // Register WebUIConfigs below.
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)

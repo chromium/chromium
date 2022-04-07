@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "url/url_util.h"
@@ -103,6 +104,14 @@ void RegisterContentSchemes(bool should_lock_registry) {
   if (schemes.allow_non_standard_schemes_in_origins)
     url::EnableNonStandardSchemesForAndroidWebView();
 #endif
+
+  // This should only be registered if the
+  // kEnableServiceWorkerForChromeUntrusted feature is enabled but checking
+  // it here causes a crash when --no-sandbox is enabled. See crbug.com/1313812
+  // There are other render side checks and browser side checks that ensure
+  // service workers don't work for chrome-untrusted:// when the flag is not
+  // enabled.
+  schemes.service_worker_schemes.push_back(kChromeUIUntrustedScheme);
 
   // Prevent future modification of the scheme lists. This is to prevent
   // accidental creation of data races in the program. Add*Scheme aren't

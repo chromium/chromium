@@ -310,6 +310,11 @@ const base::Feature kEnableMachineLearningModelLoaderWebPlatformApi{
     "EnableMachineLearningModelLoaderWebPlatformApi",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables service workers on chrome-untrusted:// urls.
+const base::Feature kEnableServiceWorkersForChromeUntrusted{
+    "EnableServiceWorkersForChromeUntrusted",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If this feature is enabled and device permission is not granted by the user,
 // media-device enumeration will provide at most one device per type and the
 // device IDs will not be available.

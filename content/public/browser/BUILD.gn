@@ -426,6 +426,10 @@ source_set("browser_sources") {
     "webrtc_log.cc",
     "webrtc_log.h",
     "websocket_handshake_request_info.h",
+    "webui_config.cc",
+    "webui_config.h",
+    "webui_config_map.cc",
+    "webui_config_map.h",
     "worker_type.h",
     "zoom_level_delegate.h",
   ]

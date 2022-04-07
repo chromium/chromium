@@ -38,6 +38,7 @@
 #include "content/browser/service_worker/service_worker_quota_client.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -45,7 +46,12 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/browser/storage_usage_info.h"
+#include "content/public/browser/web_ui_url_loader_factory.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/browser/webui_config_map.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/url_util.h"
@@ -1535,6 +1541,8 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
     return nullptr;
   }
 
+  const url::Origin scope_origin = url::Origin::Create(scope);
+
   mojo::PendingRemote<network::mojom::URLLoaderFactory> remote;
   mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver =
       remote.InitWithNewPipeAndPassReceiver();
@@ -1549,9 +1557,8 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
       storage_partition_->browser_context(), /*frame=*/nullptr,
       ChildProcessHost::kInvalidUniqueID,
       ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerScript,
-      url::Origin::Create(scope), /*navigation_id=*/absl::nullopt,
-      ukm::kInvalidSourceIdObj, &pending_receiver, &header_client,
-      &bypass_redirect_checks,
+      scope_origin, /*navigation_id=*/absl::nullopt, ukm::kInvalidSourceIdObj,
+      &pending_receiver, &header_client, &bypass_redirect_checks,
       /*disable_secure_dns=*/nullptr,
       /*factory_override=*/nullptr);
 
@@ -1583,6 +1590,37 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
   std::unique_ptr<network::PendingSharedURLLoaderFactory>
       loader_factory_bundle_info =
           context()->loader_factory_bundle_for_update_check()->Clone();
+
+  if (base::FeatureList::IsEnabled(
+          features::kEnableServiceWorkersForChromeUntrusted) &&
+      scope.scheme_piece() == kChromeUIUntrustedScheme) {
+    // If this is a Service Worker for a WebUI, the WebUI's URLDataSource needs
+    // to be registered. Registering a URLDataSource allows the
+    // WebUIURLLoaderFactory below to serve the resources for the WebUI. We
+    // register the URLDataSource here because the WebUI's resources are needed
+    // for the Service Worker update check to be performed which fetches the
+    // service worker script.
+    //
+    // This is similar to how we create a `WebUI` object in
+    // RenderFrameHostManager::GetFrameHostForNavigation(). Creating a `WebUI`
+    // also creates a `WebUIController` which register the URLDataSource for the
+    // WebUI which allows the navigation to be served correctly. We don't create
+    // a `WebUI` or a `WebUIController` for WebUI Service Workers so we
+    // register the URLDataSource directly.
+    if (auto* config = content::WebUIConfigMap::GetInstance().GetConfig(
+            browser_context(), scope_origin)) {
+      config->RegisterURLDataSource(browser_context());
+
+      static_cast<blink::PendingURLLoaderFactoryBundle*>(
+          loader_factory_bundle_info.get())
+          ->pending_scheme_specific_factories()
+          .emplace(kChromeUIUntrustedScheme,
+                   CreateWebUIServiceWorkerLoaderFactory(
+                       browser_context(), kChromeUIUntrustedScheme,
+                       base::flat_set<std::string>()));
+    }
+  }
+
   static_cast<blink::PendingURLLoaderFactoryBundle*>(
       loader_factory_bundle_info.get())
       ->pending_default_factory() = std::move(remote);
