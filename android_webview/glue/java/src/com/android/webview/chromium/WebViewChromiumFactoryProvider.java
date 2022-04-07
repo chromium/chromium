@@ -326,6 +326,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             // WebView needs to make sure to always use the wrapped application context.
             ctx = ClassLoaderContextWrapperFactory.get(ctx);
             ContextUtils.initApplicationContext(ctx);
+            ContextUtils.setSdkSandboxProcess(isSdkSandboxProcess());
 
             // Find the package ID for the package that WebView's resources come from.
             // This will be the donor package if there is one, not our main package.
@@ -862,6 +863,12 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     boolean shouldEnableSimplifiedDarkMode() {
         // TODO: Put the downstream implementation inline and remove this method.
+        return false;
+    }
+
+    boolean isSdkSandboxProcess() {
+        // TODO: This shall be removed and ContextUtil.isSdkSandboxProcess() calls
+        // Process.isSdkSandbox() directly.
         return false;
     }
 }

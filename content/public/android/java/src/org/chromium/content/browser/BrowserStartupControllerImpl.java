@@ -129,9 +129,9 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
     BrowserStartupControllerImpl() {
         mAsyncStartupCallbacks = new ArrayList<>();
         mMinimalBrowserStartedCallbacks = new ArrayList<>();
-        if (BuildInfo.isDebugAndroid()) {
-            // Only set up the tracing broadcast receiver on debug builds of the OS. Normal tracing
-            // should use the DevTools API.
+        if (BuildInfo.isDebugAndroid() && !ContextUtils.isSdkSandboxProcess()) {
+            // Only set up the tracing broadcast receiver on debug builds of the OS and
+            // non-SdkSandbox process. Normal tracing should use the DevTools API.
             PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
                 @Override
                 public void run() {
