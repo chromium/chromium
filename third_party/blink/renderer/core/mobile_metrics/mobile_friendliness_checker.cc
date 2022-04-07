@@ -47,7 +47,7 @@ static constexpr base::TimeDelta kTimeBudgetForBadTapTarget =
 // This phase will abort when it consumes more than 4ms.
 static constexpr base::TimeDelta kTimeBudgetForTapTargetExtraction =
     base::Milliseconds(4);
-static constexpr base::TimeDelta kEvaluationDelay = base::Milliseconds(3000);
+static constexpr base::TimeDelta kEvaluationDelay = base::Seconds(5);
 static constexpr base::TimeDelta kEvaluationInterval = base::Minutes(1);
 
 MobileFriendlinessChecker::MobileFriendlinessChecker(LocalFrameView& frame_view)
