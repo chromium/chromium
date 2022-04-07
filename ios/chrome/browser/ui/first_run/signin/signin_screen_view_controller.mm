@@ -64,7 +64,7 @@ void AddNewLineToFooterString(
   if (footer_attributed_string.length > 0) {
     NSDictionary* attributes = FooterTextAttributes();
     NSAttributedString* end_of_line =
-        [[NSAttributedString alloc] initWithString:@"\n" attributes:attributes];
+        [[NSAttributedString alloc] initWithString:@" " attributes:attributes];
     [footer_attributed_string appendAttributedString:end_of_line];
   }
   [footer_attributed_string appendAttributedString:attributed_string];
