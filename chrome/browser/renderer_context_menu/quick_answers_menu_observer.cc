@@ -6,20 +6,17 @@
 
 #include <utility>
 
-#include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
@@ -41,11 +38,8 @@ using quick_answers::QuickAnswersExitPoint;
 
 constexpr int kMaxSurroundingTextLength = 300;
 
-bool IsInternalUser(Profile* profile) {
-  auto* user = ash::ProfileHelper::Get()->GetUserByProfile(profile);
-  // TODO(b/186906279): Add user login support for browser test.
-  if (!user)
-    return false;
+bool IsActiveUserInternal() {
+  auto* user = user_manager::UserManager::Get()->GetActiveUser();
 
   const std::string email = user->GetAccountId().GetUserEmail();
   return gaia::IsGoogleInternalAccountEmail(email);
@@ -129,11 +123,9 @@ void QuickAnswersMenuObserver::OnTextSurroundingSelectionAvailable(
     const std::u16string& surrounding_text,
     uint32_t start_offset,
     uint32_t end_offset) {
-  Profile* profile = Profile::FromBrowserContext(proxy_->GetBrowserContext());
-
   Context context;
   context.surrounding_text = base::UTF16ToUTF8(surrounding_text);
-  context.device_properties.is_internal = IsInternalUser(profile);
+  context.device_properties.is_internal = IsActiveUserInternal();
   QuickAnswersController::Get()->MaybeShowQuickAnswers(bounds_in_screen_,
                                                        selected_text, context);
 }
