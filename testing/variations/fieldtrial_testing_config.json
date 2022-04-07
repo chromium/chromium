@@ -1387,8 +1387,7 @@
                         "enable_same_site": "true",
                         "extension_message_supported": "true",
                         "foreground_cache_size": "2",
-                        "max_buffered_bytes_per_process": "1024000",
-                        "unload_support": "opt_in_header_required"
+                        "max_buffered_bytes_per_process": "1024000"
                     },
                     "enable_features": [
                         "BFCachePerformanceManagerPolicy",

@@ -101,43 +101,15 @@ bool IsContentInjectionSupported() {
   return content_injection_supported.Get();
 }
 
-bool IsOptInHeaderRequired() {
-  if (!IsBackForwardCacheEnabled())
-    return false;
-
-  // TODO(crbug.com/1201653): Remove this feature param and make it one of the
-  //                          `unload_support`.
-  static constexpr base::FeatureParam<bool> opt_in_header_required(
-      &features::kBackForwardCache, "opt_in_header_required", false);
-  return opt_in_header_required.Get();
-}
-
 enum class HeaderPresence {
   kNotPresent,
   kPresent,
   kUnsure,
 };
 
-HeaderPresence OptInUnloadHeaderPresence(RenderFrameHostImpl* rfh) {
-  const network::mojom::URLResponseHeadPtr& response_head =
-      rfh->last_response_head();
-  if (!response_head)
-    return HeaderPresence::kUnsure;
-
-  const network::mojom::ParsedHeadersPtr& headers =
-      response_head->parsed_headers;
-  if (!headers)
-    return HeaderPresence::kUnsure;
-
-  return headers->bfcache_opt_in_unload ? HeaderPresence::kPresent
-                                        : HeaderPresence::kNotPresent;
-}
-
 constexpr base::FeatureParam<BackForwardCacheImpl::UnloadSupportStrategy>::
     Option kUnloadSupportStrategyOptions[] = {
         {BackForwardCacheImpl::UnloadSupportStrategy::kAlways, "always"},
-        {BackForwardCacheImpl::UnloadSupportStrategy::kOptInHeaderRequired,
-         "opt_in_header_required"},
         {BackForwardCacheImpl::UnloadSupportStrategy::kNo, "no"},
 };
 
@@ -849,27 +821,6 @@ void BackForwardCacheImpl::PopulateReasonsForMainDocument(
   // Only store documents that have URLs allowed through experiment.
   if (!IsAllowed(rfh->GetLastCommittedURL()))
     result.No(BackForwardCacheMetrics::NotRestoredReason::kDomainNotAllowed);
-
-  // TODO(yuzus): Remove this block entirely, as it is checked multiple times
-  // currently with |PopulateReasonsForDocumentAndDescendants|.
-  if (IsOptInHeaderRequired()) {
-    HeaderPresence presence = OptInUnloadHeaderPresence(rfh);
-    switch (presence) {
-      case HeaderPresence::kNotPresent:
-        result.No(BackForwardCacheMetrics::NotRestoredReason::
-                      kOptInUnloadHeaderNotPresent);
-        break;
-      case HeaderPresence::kPresent:
-        // The opt-in header is present, so the page is eligible for BFCache.
-        break;
-      case HeaderPresence::kUnsure:
-        // For the cases which we didn't parse the opt-in header, we should have
-        // already bailed out of BFCache for other reasons.
-        // TODO(yuzus): Specify the reasons |main_document_specific_result|
-        // should have.
-        DCHECK(!result.CanStore());
-    }
-  }
 }
 
 void BackForwardCacheImpl::PopulateStickyReasonsForDocument(
@@ -900,28 +851,6 @@ void BackForwardCacheImpl::PopulateStickyReasonsForDocument(
     case BackForwardCacheImpl::UnloadSupportStrategy::kAlways:
       break;
     case BackForwardCacheImpl::UnloadSupportStrategy::kOptInHeaderRequired:
-      if (has_unload_handler) {
-        HeaderPresence presence =
-            OptInUnloadHeaderPresence(rfh->GetMainFrame());
-        switch (presence) {
-          case HeaderPresence::kNotPresent:
-            result.No(rfh->GetParent()
-                          ? BackForwardCacheMetrics::NotRestoredReason::
-                                kUnloadHandlerExistsInSubFrame
-                          : BackForwardCacheMetrics::NotRestoredReason::
-                                kOptInUnloadHeaderNotPresent);
-            break;
-          case HeaderPresence::kPresent:
-            // The opt-in header is present for the main frame with an unload
-            // handler, so the page is eligible for BFCache.
-            break;
-          case HeaderPresence::kUnsure:
-            // For the cases which we didn't parse the opt-in header, we should
-            // have already bailed out of BFCache for other reasons.
-            break;
-        }
-      }
-      break;
     case BackForwardCacheImpl::UnloadSupportStrategy::kNo:
       if (has_unload_handler) {
         result.No(rfh->GetParent()

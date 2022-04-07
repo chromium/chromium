@@ -1385,9 +1385,6 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
     case Reason::kBackForwardCacheDisabledForDelegate:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           BackForwardCacheDisabledForDelegate;
-    case Reason::kOptInUnloadHeaderNotPresent:
-      return Page::BackForwardCacheNotRestoredReasonEnum::
-          OptInUnloadHeaderNotPresent;
     case Reason::kUnloadHandlerExistsInMainFrame:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           UnloadHandlerExistsInMainFrame;
@@ -1692,7 +1689,6 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     case Reason::kErrorDocument:
     case Reason::kFencedFramesEmbedder:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::Circumstantial;
-    case Reason::kOptInUnloadHeaderNotPresent:
     case Reason::kUnloadHandlerExistsInMainFrame:
     case Reason::kUnloadHandlerExistsInSubFrame:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::PageSupportNeeded;
