@@ -140,14 +140,31 @@ chromium-metrics-reviews@google.com.
   <owner>olivierrobin@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
-    Recorded when the CleanExitBeacon is initialized. Reports the combined state
-    of distinct beacons stored in a platform-specific location (e.g. the Windows
-    registry or NSUserDefaults on iOS) and in Local State. They are normally
-    expected to be identical.
+    Recorded when the CleanExitBeacon is initialized on Windows and iOS. Reports
+    the combined state of distinct beacons stored in a platform-specific
+    location (e.g. the Windows registry or NSUserDefaults on iOS) and in Local
+    State. They are normally expected to be identical.
 
-    Unlike it's predecessor, UMA.CleanExitBeaconConsistency, this histogram has
+    Unlike its predecessor, UMA.CleanExitBeaconConsistency, this histogram has
     buckets that account for the situation in which Local State is missing a
     beacon value.
+  </summary>
+</histogram>
+
+<histogram name="UMA.CleanExitBeaconConsistency3"
+    enum="UmaCleanExitConsistency3" expires_after="2022-08-01">
+  <owner>caitlinfischer@google.com</owner>
+  <owner>justincohen@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Recorded when the CleanExitBeacon is initialized for clients in the Extended
+    Variations Safe Mode enabled group on Windows and iOS. Reports the combined
+    state of distinct beacons stored in the beacon file and in a
+    platform-specific location (e.g. the Windows registry or NSUserDefaults on
+    iOS). They are normally expected to be identical.
+
+    Unlike UMA.CleanExitBeaconConsistency2, this histogram excludes the Local
+    State beacon.
   </summary>
 </histogram>
 

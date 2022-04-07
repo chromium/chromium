@@ -91108,6 +91108,18 @@ Full version information for the fingerprint enum values:
   <int value="8" label="Missing/Missing (Backup/Local State)"/>
 </enum>
 
+<enum name="UmaCleanExitConsistency3">
+  <int value="0" label="Clean/Clean (Beacon File/Platform Specific)"/>
+  <int value="1" label="Clean/Dirty (Beacon File/Platform Specific)"/>
+  <int value="2" label="Clean/Missing (Beacon File/Platform Specific)"/>
+  <int value="3" label="Dirty/Clean (Beacon File/Platform Specific)"/>
+  <int value="4" label="Dirty/Dirty (Beacon File/Platform Specific)"/>
+  <int value="5" label="Dirty/Missing (Beacon File/Platform Specific)"/>
+  <int value="6" label="Missing/Clean (Beacon File/Platform Specific)"/>
+  <int value="7" label="Missing/Dirty (Beacon File/Platform Specific)"/>
+  <int value="8" label="Missing/Missing (Beacon File/Platform Specific)"/>
+</enum>
+
 <enum name="UmaEntropySourceType">
   <int value="0" label="No entropy source (never hit)"/>
   <int value="1" label="Low Entropy Source"/>
