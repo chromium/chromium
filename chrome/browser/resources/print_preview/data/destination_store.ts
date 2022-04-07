@@ -38,8 +38,7 @@ enum DestinationStorePrinterSearchStatus {
  */
 export enum DestinationErrorType {
   INVALID = 0,
-  UNSUPPORTED = 1,
-  NO_DESTINATIONS = 2,
+  NO_DESTINATIONS = 1,
 }
 
 /**
@@ -792,14 +791,8 @@ export class DestinationStore extends EventTarget {
    * is supported, or ERROR otherwise of with error type UNSUPPORTED.
    */
   private sendSelectedDestinationUpdateEvent_() {
-    if (this.selectedDestination_!.shouldShowInvalidCertificateError) {
-      this.dispatchEvent(new CustomEvent(
-          DestinationStoreEventType.ERROR,
-          {detail: DestinationErrorType.UNSUPPORTED}));
-    } else {
-      this.dispatchEvent(new CustomEvent(
-          DestinationStoreEventType.SELECTED_DESTINATION_CAPABILITIES_READY));
-    }
+    this.dispatchEvent(new CustomEvent(
+        DestinationStoreEventType.SELECTED_DESTINATION_CAPABILITIES_READY));
   }
 
   /**

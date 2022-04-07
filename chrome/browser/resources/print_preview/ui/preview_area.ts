@@ -237,14 +237,6 @@ export class PrintPreviewPreviewAreaElement extends
   }
 
   /**
-   * @return Whether the "learn more" link to the cloud print help
-   *     page should be shown.
-   */
-  private shouldShowLearnMoreLink_(): boolean {
-    return this.error === Error.UNSUPPORTED_PRINTER;
-  }
-
-  /**
    * @return The current preview area message to display.
    */
   private currentMessage_(): string {
@@ -759,11 +751,6 @@ export class PrintPreviewPreviewAreaElement extends
     switch (this.error) {
       case Error.INVALID_PRINTER:
         return this.i18nAdvanced('invalidPrinterSettings', {
-          substitutions: [],
-          tags: ['BR'],
-        });
-      case Error.UNSUPPORTED_PRINTER:
-        return this.i18nAdvanced('unsupportedCloudPrinter', {
           substitutions: [],
           tags: ['BR'],
         });

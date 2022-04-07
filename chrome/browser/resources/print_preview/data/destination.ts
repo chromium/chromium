@@ -217,11 +217,6 @@ export class Destination {
   private lastAccessTime_: number;
 
   /**
-   * Cloud ID for Privet printers.
-   */
-  private cloudID_: string;
-
-  /**
    * Extension ID for extension managed printers.
    */
   private extensionId_: string;
@@ -241,11 +236,6 @@ export class Destination {
    * search UI.
    */
   private provisionalType_: DestinationProvisionalType;
-
-  /**
-   * Printer 2018 certificate status
-   */
-  private certificateStatus_: DestinationCertificateStatus;
 
   // <if expr="chromeos_ash or chromeos_lacros">
   /**
@@ -299,13 +289,10 @@ export class Destination {
     this.description_ = (params && params.description) || '';
     this.connectionStatus_ = connectionStatus;
     this.lastAccessTime_ = (params && params.lastAccessTime) || Date.now();
-    this.cloudID_ = (params && params.cloudID) || '';
     this.extensionId_ = (params && params.extensionId) || '';
     this.extensionName_ = (params && params.extensionName) || '';
     this.provisionalType_ =
         (params && params.provisionalType) || DestinationProvisionalType.NONE;
-    this.certificateStatus_ =
-        params && params.certificateStatus || DestinationCertificateStatus.NONE;
 
     assert(
         this.provisionalType_ !==
@@ -391,10 +378,6 @@ export class Destination {
 
   get tags(): string[] {
     return this.tags_.slice(0);
-  }
-
-  get cloudID(): string {
-    return this.cloudID_;
   }
 
   /**
@@ -528,23 +511,6 @@ export class Destination {
     this.connectionStatus_ = status;
   }
 
-  /**
-   * @return Whether the destination has an invalid 2018 certificate.
-   */
-  get hasInvalidCertificate(): boolean {
-    return this.certificateStatus_ === DestinationCertificateStatus.NO;
-  }
-
-  /**
-   * @return Whether the destination should display an invalid
-   *     certificate UI warning in the selection dialog and cause a UI
-   *     warning to appear in the preview area when selected.
-   */
-  get shouldShowInvalidCertificateError(): boolean {
-    return this.certificateStatus_ === DestinationCertificateStatus.NO &&
-        !loadTimeData.getBoolean('isEnterpriseManaged');
-  }
-
   /** @return Whether the destination is considered offline. */
   get isOffline(): boolean {
     return [
@@ -556,7 +522,7 @@ export class Destination {
    * @return Whether the destination is offline or has an invalid certificate.
    */
   get isOfflineOrInvalid(): boolean {
-    return this.isOffline || this.shouldShowInvalidCertificateError;
+    return this.isOffline;
   }
 
   /** @return Whether the destination is ready to be selected. */
@@ -577,9 +543,7 @@ export class Destination {
     }
     const offlineDurationMs = Date.now() - this.lastAccessTime_;
     let statusMessageId;
-    if (this.shouldShowInvalidCertificateError) {
-      statusMessageId = 'noLongerSupported';
-    } else if (offlineDurationMs > 31622400000.0) {  // One year.
+    if (offlineDurationMs > 31622400000.0) {  // One year.
       statusMessageId = 'offlineForYear';
     } else if (offlineDurationMs > 2678400000.0) {  // One month.
       statusMessageId = 'offlineForMonth';
@@ -647,10 +611,6 @@ export class Destination {
 
   get provisionalType(): DestinationProvisionalType {
     return this.provisionalType_;
-  }
-
-  get certificateStatus(): DestinationCertificateStatus {
-    return this.certificateStatus_;
   }
 
   get isProvisional(): boolean {

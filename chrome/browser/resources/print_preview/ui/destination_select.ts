@@ -174,10 +174,6 @@ export class PrintPreviewDestinationSelectElement extends
       return '';
     }
 
-    if (this.destination.shouldShowInvalidCertificateError) {
-      return this.i18n('noLongerSupportedFragment');
-    }
-
     // Give preference to connection status.
     if (this.destination.connectionStatusText) {
       return this.destination.connectionStatusText;

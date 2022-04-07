@@ -54,8 +54,6 @@ suite(destination_item_test.suiteName, function() {
         '',
         item.shadowRoot!.querySelector(
                             '.connection-status')!.textContent!.trim());
-    assertTrue(item.shadowRoot!.querySelector<HTMLElement>(
-                                   '.learn-more-link')!.hidden);
     assertFalse(item.shadowRoot!
                     .querySelector<HTMLElement>(
                         '.extension-controlled-indicator')!.hidden);
@@ -90,8 +88,6 @@ suite(destination_item_test.suiteName, function() {
         loadTimeData.getString('offlineForMonth'),
         item.shadowRoot!.querySelector(
                             '.connection-status')!.textContent!.trim());
-    assertTrue(item.shadowRoot!.querySelector<HTMLElement>(
-                                   '.learn-more-link')!.hidden);
     assertFalse(item.shadowRoot!
                     .querySelector<HTMLElement>(
                         '.extension-controlled-indicator')!.hidden);

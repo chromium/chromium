@@ -8,7 +8,7 @@ export {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button
 export {PluralStringProxyImpl as PrintPreviewPluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 export {IronMeta} from 'chrome://resources/polymer/v3_0/iron-meta/iron-meta.js';
 export {Cdd, MediaSizeCapability, MediaSizeOption, VendorCapabilityValueType} from './data/cdd.js';
-export {ColorMode, createDestinationKey, Destination, DestinationCertificateStatus, DestinationConnectionStatus, DestinationOrigin, DestinationType, GooglePromotedDestinationId, makeRecentDestination, PDF_DESTINATION_KEY, RecentDestination} from './data/destination.js';
+export {ColorMode, createDestinationKey, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, GooglePromotedDestinationId, makeRecentDestination, PDF_DESTINATION_KEY, RecentDestination} from './data/destination.js';
 // <if expr="chromeos_ash or chromeos_lacros">
 export {SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from './data/destination.js';
 // </if>

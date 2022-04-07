@@ -121,12 +121,6 @@ extern const char kChromeUIUntrustedNewTabPageUrl[];
 // The URL for the Chromium project used in the About dialog.
 extern const char kChromiumProjectURL[];
 
-// "Learn more" URL for the Cloud Print section under Options.
-extern const char kCloudPrintLearnMoreURL[];
-
-// "Learn more" URL for the Cloud Print Preview certificate error.
-extern const char kCloudPrintCertificateErrorLearnMoreURL[];
-
 extern const char kContentSettingsExceptionsLearnMoreURL[];
 
 // "Learn more" URL for cookies.

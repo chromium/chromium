@@ -314,9 +314,6 @@ export class PrintPreviewDestinationSettingsElement extends
       case DestinationErrorType.INVALID:
         errorType = Error.INVALID_PRINTER;
         break;
-      case DestinationErrorType.UNSUPPORTED:
-        errorType = Error.UNSUPPORTED_PRINTER;
-        break;
       case DestinationErrorType.NO_DESTINATIONS:
         errorType = Error.NO_DESTINATIONS;
         this.noDestinations_ = true;
@@ -329,7 +326,6 @@ export class PrintPreviewDestinationSettingsElement extends
 
   private onErrorChanged_() {
     if (this.error === Error.INVALID_PRINTER ||
-        this.error === Error.UNSUPPORTED_PRINTER ||
         this.error === Error.NO_DESTINATIONS) {
       this.destinationState = DestinationState.ERROR;
     }

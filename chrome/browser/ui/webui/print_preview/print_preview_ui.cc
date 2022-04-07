@@ -214,7 +214,6 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
     {"goBackButton", IDS_PRINT_PREVIEW_BUTTON_GO_BACK},
     {"invalidPrinterSettings", IDS_PRINT_PREVIEW_INVALID_PRINTER_SETTINGS},
     {"layoutLabel", IDS_PRINT_PREVIEW_LAYOUT_LABEL},
-    {"learnMore", IDS_LEARN_MORE},
     {"left", IDS_PRINT_PREVIEW_LEFT_MARGIN_LABEL},
     {"loading", IDS_PRINT_PREVIEW_LOADING},
     {"manage", IDS_PRINT_PREVIEW_MANAGE},
@@ -227,9 +226,6 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
     {"noAdvancedSettingsMatchSearchHint",
      IDS_PRINT_PREVIEW_NO_ADVANCED_SETTINGS_MATCH_SEARCH_HINT},
     {"noDestinationsMessage", IDS_PRINT_PREVIEW_NO_DESTINATIONS_MESSAGE},
-    {"noLongerSupported", IDS_PRINT_PREVIEW_NO_LONGER_SUPPORTED},
-    {"noLongerSupportedFragment",
-     IDS_PRINT_PREVIEW_NO_LONGER_SUPPORTED_FRAGMENT},
     {"noMargins", IDS_PRINT_PREVIEW_NO_MARGINS},
     {"nonIsotropicDpiItemLabel",
      IDS_PRINT_PREVIEW_NON_ISOTROPIC_DPI_ITEM_LABEL},
@@ -301,7 +297,6 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
 #endif
     {"title", IDS_PRINT_PREVIEW_TITLE},
     {"top", IDS_PRINT_PREVIEW_TOP_MARGIN_LABEL},
-    {"unsupportedCloudPrinter", IDS_PRINT_PREVIEW_UNSUPPORTED_CLOUD_PRINTER},
 #if BUILDFLAG(IS_CHROMEOS)
     {"configuringFailedText", IDS_PRINT_CONFIGURING_FAILED_TEXT},
     {"configuringInProgressText", IDS_PRINT_CONFIGURING_IN_PROGRESS_TEXT},
@@ -333,9 +328,6 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
 #endif
   };
   source->AddLocalizedStrings(kLocalizedStrings);
-
-  source->AddString("gcpCertificateErrorLearnMoreURL",
-                    chrome::kCloudPrintCertificateErrorLearnMoreURL);
 
 #if !BUILDFLAG(IS_CHROMEOS)
   const std::u16string shortcut_text(kBasicPrintShortcut);

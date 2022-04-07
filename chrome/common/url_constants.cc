@@ -103,19 +103,6 @@ const char kChromeUIUntrustedNewTabPageUrl[] =
 
 const char kChromiumProjectURL[] = "https://www.chromium.org/";
 
-const char kCloudPrintCertificateErrorLearnMoreURL[] =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    "https://support.google.com/chromebook?p=cloudprint_error_troubleshoot";
-#elif BUILDFLAG(IS_MAC)
-    "https://support.google.com/cloudprint?p=cloudprint_error_offline_mac";
-#elif BUILDFLAG(IS_WIN)
-    "https://support.google.com/"
-    "cloudprint?p=cloudprint_error_offline_windows";
-#else
-        "https://support.google.com/"
-        "cloudprint?p=cloudprint_error_offline_linux";
-#endif
-
 const char kContentSettingsExceptionsLearnMoreURL[] =
     "https://support.google.com/chrome/?p=settings_manage_exceptions";
 

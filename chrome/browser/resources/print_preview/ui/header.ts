@@ -33,8 +33,6 @@ export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
 
   static get properties() {
     return {
-      cloudPrintErrorMessage: String,
-
       destination: Object,
 
       error: Number,
@@ -55,7 +53,6 @@ export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
     ];
   }
 
-  cloudPrintErrorMessage: string;
   destination: Destination;
   error: Error;
   state: State;
@@ -95,8 +92,6 @@ export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
     switch (this.error) {
       case Error.PRINT_FAILED:
         return loadTimeData.getString('couldNotPrint');
-      case Error.CLOUD_PRINT_ERROR:
-        return this.cloudPrintErrorMessage;
       default:
         return '';
     }

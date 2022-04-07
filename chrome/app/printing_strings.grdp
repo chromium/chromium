@@ -32,9 +32,6 @@
     <message name="IDS_PRINT_PREVIEW_INVALID_PRINTER_SETTINGS" desc="Message to display when selected printer is not reachable or its settings are invalid. Identical to IDS_PRINT_INVALID_PRINTER_SETTINGS, but includes a line break.">
       The selected printer is not available or not installed correctly. <ph name="BR">&lt;br&gt;</ph> Check your printer or try selecting another printer.
     </message>
-    <message name="IDS_PRINT_PREVIEW_UNSUPPORTED_CLOUD_PRINTER" desc="Message to display when an unsupported cloud printer is selected.">
-      The selected Google Cloud Print device is no longer supported. <ph name="BR">&lt;br&gt;</ph> Try setting up the printer in your computer's system settings.
-    </message>
     <message name="IDS_PRINT_PREVIEW_PRINT_BUTTON" desc="Print button.">
       Print
     </message>
@@ -234,12 +231,6 @@
     </message>
     <message name="IDS_PRINT_PREVIEW_OFFLINE" desc="Shown when printer is currently offline.">
       Currently offline
-    </message>
-    <message name="IDS_PRINT_PREVIEW_NO_LONGER_SUPPORTED_FRAGMENT" desc="Shown in destination settings when printer is no longer supported.">
-      No longer supported
-    </message>
-    <message name="IDS_PRINT_PREVIEW_NO_LONGER_SUPPORTED" desc="Shown in destinations dialog when printer is no longer supported.">
-      No longer supported.
     </message>
     <message name="IDS_PRINT_PREVIEW_EXTENSION_DESTINATION_ICON_TOOLTIP" desc="Tooltip for the icon shown in print destination list next to print destination provided by an extension.">
       Documents you send to print via <ph name="APP_NAME">$1<ex>A Chrome app</ex></ph> can be read by <ph name="APP_NAME">$1<ex>A Chrome app</ex></ph>.
