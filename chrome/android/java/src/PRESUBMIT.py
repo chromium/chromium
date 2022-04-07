@@ -95,7 +95,6 @@ def _CheckAlertDialogBuilder(input_api, output_api):
       BROWSER_ROOT + r'settings[\\\/].*',
       SIGNIN_UI_BROWSER_ROOT + 'ConfirmManagedSyncDataDialog.java',
       SIGNIN_UI_BROWSER_ROOT + 'ConfirmSyncDataStateMachineDelegate.java',
-      BROWSER_ROOT + 'signin/SyncConsentFragmentBase.java',
       SIGNIN_UI_BROWSER_ROOT + 'SignOutDialogFragment.java',
       BROWSER_ROOT + 'site_settings/AddExceptionPreference.java',
       BROWSER_ROOT + 'site_settings/ChosenObjectSettings.java',
