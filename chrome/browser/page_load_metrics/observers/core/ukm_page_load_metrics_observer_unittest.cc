@@ -1770,6 +1770,15 @@ TEST_F(UkmPageLoadMetricsObserverTest,
                   "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
                   "SessionWindow.Gap1000ms.Max5000ms"),
               testing::ElementsAre(base::Bucket(25, 1)));
+  EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
+                  "PageLoad.Experimental.LayoutInstability."
+                  "CumulativeShiftScoreAtFirstOnHidden"),
+              testing::ElementsAre(base::Bucket(10, 1)));
+  EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
+                  "PageLoad.Experimental.LayoutInstability."
+                  "MaxCumulativeShiftScoreAtFirstOnHidden.SessionWindow."
+                  "Gap1000ms.Max5000ms"),
+              testing::ElementsAre(base::Bucket(10, 1)));
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest,
@@ -1814,6 +1823,15 @@ TEST_F(UkmPageLoadMetricsObserverTest,
             kExperimental_LayoutInstability_MaxCumulativeShiftScoreAtFirstOnHidden_SessionWindow_Gap1000ms_Max5000msName,
         100);
   }
+  EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
+                  "PageLoad.Experimental.LayoutInstability."
+                  "CumulativeShiftScoreAtFirstOnHidden"),
+              testing::ElementsAre(base::Bucket(10, 1)));
+  EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
+                  "PageLoad.Experimental.LayoutInstability."
+                  "MaxCumulativeShiftScoreAtFirstOnHidden.SessionWindow."
+                  "Gap1000ms.Max5000ms"),
+              testing::ElementsAre(base::Bucket(10, 1)));
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, SiteInstanceRenderProcessAssignment) {

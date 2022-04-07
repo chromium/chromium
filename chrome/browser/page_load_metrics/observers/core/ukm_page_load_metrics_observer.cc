@@ -987,12 +987,12 @@ void UkmPageLoadMetricsObserver::ReportLayoutStability() {
 
   const float layout_shift_score =
       GetDelegate().GetPageRenderData().layout_shift_score;
-  UMA_HISTOGRAM_COUNTS_100(
+  base::UmaHistogramCounts100(
       "PageLoad.LayoutInstability.CumulativeShiftScore",
       page_load_metrics::LayoutShiftUmaValue(layout_shift_score));
   // The pseudo metric of PageLoad.LayoutInstability.CumulativeShiftScore. Only
   // used to assess field trial data quality.
-  UMA_HISTOGRAM_COUNTS_100(
+  base::UmaHistogramCounts100(
       "UMA.Pseudo.PageLoad.LayoutInstability.CumulativeShiftScore",
       page_load_metrics::LayoutShiftUmaValue(
           metrics::GetPseudoMetricsSample(layout_shift_score)));
@@ -1005,7 +1005,7 @@ void UkmPageLoadMetricsObserver::ReportLayoutStability() {
                                .GetPageRenderData()
                                .layout_shift_score_before_input_or_scroll));
 
-  UMA_HISTOGRAM_COUNTS_100(
+  base::UmaHistogramCounts100(
       "PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame",
       page_load_metrics::LayoutShiftUmaValue(
           GetDelegate().GetMainFrameRenderData().layout_shift_score));
@@ -1029,8 +1029,21 @@ void UkmPageLoadMetricsObserver::ReportLayoutInstabilityAfterFirstForeground() {
             page_load_metrics::LayoutShiftUkmValue(
                 normalized_cls_data
                     .session_windows_gap1000ms_max5000ms_max_cls));
+
+    base::UmaHistogramCounts100(
+        "PageLoad.Experimental.LayoutInstability."
+        "MaxCumulativeShiftScoreAtFirstOnHidden.SessionWindow."
+        "Gap1000ms.Max5000ms",
+        page_load_metrics::LayoutShiftUmaValue(
+            normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls));
   }
   builder.Record(ukm::UkmRecorder::Get());
+
+  base::UmaHistogramCounts100(
+      "PageLoad.Experimental.LayoutInstability."
+      "CumulativeShiftScoreAtFirstOnHidden",
+      page_load_metrics::LayoutShiftUmaValue(
+          GetDelegate().GetPageRenderData().layout_shift_score));
 }
 
 void UkmPageLoadMetricsObserver::RecordAbortMetrics(
