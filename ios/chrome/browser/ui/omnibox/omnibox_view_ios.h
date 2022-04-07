@@ -190,14 +190,6 @@ class OmniboxViewIOS : public OmniboxView,
   // Removes the query refinement chip from the omnibox.
   void RemoveQueryRefinementChip();
 
-  // Returns true if user input should currently be ignored.  On iOS7,
-  // modifying the contents of a text field while Siri is pending leads to a
-  // UIKit crash.  In order to sidestep that crash, OmniboxViewIOS checks that
-  // voice search is not pending before attempting to process user actions that
-  // may modify text field contents.
-  // TODO(crbug.com/303212): Remove this workaround once the crash is fixed.
-  bool ShouldIgnoreUserInputDueToPendingVoiceSearch();
-
   OmniboxTextFieldIOS* field_;
 
   WebOmniboxEditController* controller_;  // weak, owns us

@@ -37,9 +37,6 @@ const base::Feature kDefaultBrowserFullscreenPromoExperiment{
 const base::Feature kIOSNewOmniboxImplementation{
     "kIOSNewOmniboxImplementation", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kIOSOmniboxAllowEditsDuringDictation{
-    "IOSOmniboxAllowEditsDuringDictation", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kIOSOmniboxUpdatedPopupUI{
     "kIOSOmniboxUpdatedPopupUI", base::FEATURE_DISABLED_BY_DEFAULT};
 

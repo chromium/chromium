@@ -75,11 +75,6 @@ void OmniboxViewIOS::OpenMatch(const AutocompleteMatch& match,
                                const std::u16string& pasted_text,
                                size_t selected_line,
                                base::TimeTicks match_selection_timestamp) {
-  // It may be unsafe to modify the contents of the field.
-  if (ShouldIgnoreUserInputDueToPendingVoiceSearch()) {
-    return;
-  }
-
   // Fill in clipboard matches if they don't have a destination URL.
   if (match.destination_url.is_empty()) {
     if (match.type == AutocompleteMatchType::CLIPBOARD_URL) {
@@ -409,11 +404,6 @@ void OmniboxViewIOS::OnWillEndEditing() {
 bool OmniboxViewIOS::OnWillChange(NSRange range, NSString* new_text) {
   bool ok_to_change = true;
 
-  // It may be unsafe to modify the contents of the field.
-  if (ShouldIgnoreUserInputDueToPendingVoiceSearch()) {
-    return false;
-  }
-
   if ([field_ isPreEditing]) {
     [field_ setClearingPreEditText:YES];
 
@@ -551,13 +541,6 @@ void OmniboxViewIOS::OnDidChange(bool processing_user_event) {
 }
 
 void OmniboxViewIOS::OnAccept() {
-  // It may be unsafe to modify the contents of the field.
-  // Note that by happy coincidence, the |textFieldDidReturn| delegate method
-  // always returns NO, which is the desired behavior in this situation.
-  if (ShouldIgnoreUserInputDueToPendingVoiceSearch()) {
-    return;
-  }
-
   base::RecordAction(UserMetricsAction("MobileOmniboxUse"));
 
   WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB;
@@ -629,8 +612,7 @@ void OmniboxViewIOS::UpdateAppearance() {
   if (model() && model()->ResetDisplayTexts()) {
     // Revert everything to the baseline look.
     RevertAll();
-  } else if (model() && !model()->has_focus() &&
-             !ShouldIgnoreUserInputDueToPendingVoiceSearch()) {
+  } else if (model() && !model()->has_focus()) {
     // Even if the change wasn't "user visible" to the model, it still may be
     // necessary to re-color to the URL string.  Only do this if the omnibox is
     // not currently focused.
@@ -666,11 +648,6 @@ void OmniboxViewIOS::OnDeleteBackward() {
 }
 
 void OmniboxViewIOS::ClearText() {
-  // It may be unsafe to modify the contents of the field.
-  if (ShouldIgnoreUserInputDueToPendingVoiceSearch()) {
-    return;
-  }
-
   // Ensure omnibox is first responder. This will bring up the keyboard so the
   // user can start typing a new query.
   if (![field_ isFirstResponder])
@@ -693,22 +670,6 @@ void OmniboxViewIOS::ClearText() {
 
 void OmniboxViewIOS::RemoveQueryRefinementChip() {
   controller_->OnChanged();
-}
-
-bool OmniboxViewIOS::ShouldIgnoreUserInputDueToPendingVoiceSearch() {
-  // TODO(crbug.com/1254467): iOS 15 Cleanup: Remove the method
-  // ShouldIgnoreUserInputDueToPendingVoiceSearch and references to method in
-  // codebase
-  if (base::FeatureList::IsEnabled(kIOSOmniboxAllowEditsDuringDictation))
-    return NO;
-
-  // When the response of the iOS voice entry is pending a spinning wheel is
-  // visible.  The spinner's location is marked in [self text] as a Unicode
-  // "Object Replacement Character".
-  // http://www.fileformat.info/info/unicode/char/fffc/index.htm
-  NSString* objectReplacementChar =
-      [NSString stringWithFormat:@"%C", (unichar)0xFFFC];
-  return [field_.text rangeOfString:objectReplacementChar].length > 0;
 }
 
 void OmniboxViewIOS::EndEditing() {

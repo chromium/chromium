@@ -47,9 +47,6 @@ extern const base::Feature kIOSLocationBarUseNativeContextMenu;
 // Feature flag that swaps the omnibox textfield implementation.
 extern const base::Feature kIOSNewOmniboxImplementation;
 
-// Feature flag that fixes omnibox behavior when using iOS native dictation
-extern const base::Feature kIOSOmniboxAllowEditsDuringDictation;
-
 // Feature flag that toggles the SwiftUI omnibox popup implementation.
 extern const base::Feature kIOSOmniboxUpdatedPopupUI;
 
