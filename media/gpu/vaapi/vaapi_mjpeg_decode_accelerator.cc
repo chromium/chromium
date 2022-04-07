@@ -372,9 +372,14 @@ bool VaapiMjpegDecodeAccelerator::OutputPictureVppOnTaskRunner(
       surface->id(), surface->size(), surface->format(),
       /*release_cb=*/base::DoNothing());
 
-  // We should call vaSyncSurface() when passing surface between contexts. See:
-  // https://lists.01.org/pipermail/intel-vaapi-media/2019-June/000131.html
-  if (!vpp_vaapi_wrapper_->SyncSurface(surface->id())) {
+  // We should call vaSyncSurface() when passing surface between contexts, but
+  // on Intel platform, we don't have to call vaSyncSurface() because the
+  // underlying drivers handle synchronization between different contexts. See:
+  // https://lists.01.org/hyperkitty/list/intel-vaapi-media@lists.01.org/message/YNFLDHHHQM2ZBFPMH7D3U6GLMOELHPFL/
+  const bool is_intel_backend =
+      VaapiWrapper::GetImplementationType() == VAImplementation::kIntelI965 ||
+      VaapiWrapper::GetImplementationType() == VAImplementation::kIntelIHD;
+  if (!is_intel_backend && !vpp_vaapi_wrapper_->SyncSurface(surface->id())) {
     VLOGF(1) << "Cannot sync VPP input surface";
     return false;
   }
