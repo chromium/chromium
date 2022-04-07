@@ -25,7 +25,7 @@
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/box_layout.h"
 
 namespace ash {
 
@@ -124,12 +124,6 @@ void StatusAreaWidgetDelegate::Shutdown() {
   // it's done to make sure that StatusAreaWidget isn't accessed by the View
   // hierarchy during its destruction.
   RemoveAllChildViews();
-  // StatusAreaWidgetDelegate uses a GridLayout which unfortunately doesn't
-  // handle child add/removal. Remove the LayoutManager early to prevent UAFs
-  // during Widget destruction.
-  // TODO(pbos): This really shouldn't be necessary. It's a deficiency in
-  // GridLayout.
-  SetLayoutManager(nullptr);
 }
 
 void StatusAreaWidgetDelegate::GetAccessibleNodeData(
@@ -192,20 +186,7 @@ bool StatusAreaWidgetDelegate::CanActivate() const {
   return focus_cycler->widget_activating() == GetWidget();
 }
 
-std::unique_ptr<StatusAreaWidgetDelegate::PauseCalculatingTargetBounds>
-StatusAreaWidgetDelegate::CreateScopedPauseCalculatingTargetBounds() {
-  return std::make_unique<PauseCalculatingTargetBounds>(this);
-}
-
 void StatusAreaWidgetDelegate::CalculateTargetBounds() {
-  // Prevents creating new layout manager when adding the tray buttons.
-  if (is_adding_tray_buttons_)
-    return;
-  // Use a grid layout so that the trays can be centered in each cell, and
-  // so that the widget gets laid out correctly when tray sizes change.
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-
   const auto it = std::find_if(children().crbegin(), children().crend(),
                                [](const View* v) { return v->GetVisible(); });
   const View* last_visible_child = it == children().crend() ? nullptr : *it;
@@ -217,32 +198,12 @@ void StatusAreaWidgetDelegate::CalculateTargetBounds() {
     SetBorderOnChild(child, last_visible_child == child);
   }
 
-  views::ColumnSet* columns = layout->AddColumnSet(0);
+  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
+  layout->SetOrientation(shelf_->IsHorizontalAlignment()
+                             ? views::BoxLayout::Orientation::kHorizontal
+                             : views::BoxLayout::Orientation::kVertical);
 
-  if (shelf_->IsHorizontalAlignment()) {
-    for (auto* child : children()) {
-      if (!child->GetVisible())
-        continue;
-      columns->AddColumn(views::GridLayout::CENTER, views::GridLayout::FILL,
-                         0, /* resize percent */
-                         views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-    }
-    layout->StartRow(0, 0);
-    for (auto* child : children()) {
-      if (child->GetVisible())
-        layout->AddExistingView(child);
-    }
-  } else {
-    columns->AddColumn(views::GridLayout::FILL, views::GridLayout::CENTER,
-                       0, /* resize percent */
-                       views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-    for (auto* child : children()) {
-      if (!child->GetVisible())
-        continue;
-      layout->StartRow(0, 0);
-      layout->AddExistingView(child);
-    }
-  }
   target_bounds_.set_size(GetPreferredSize());
 }
 
@@ -260,10 +221,6 @@ void StatusAreaWidgetDelegate::UpdateLayout(bool animate) {
 }
 
 void StatusAreaWidgetDelegate::ChildPreferredSizeChanged(View* child) {
-  // Prevents resizing and layout row and column change when adding the tray
-  // buttons.
-  if (is_adding_tray_buttons_)
-    return;
   const gfx::Size current_size = size();
   const gfx::Size new_size = GetPreferredSize();
   if (new_size == current_size)
