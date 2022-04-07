@@ -52,6 +52,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "remote_webauthn_extension_notifier_unittest.cc",
     "remote_webauthn_message_handler_unittest.cc",
     "remote_webauthn_native_messaging_host_unittest.cc",
   ]

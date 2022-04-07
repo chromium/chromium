@@ -7,6 +7,14 @@
 
 #include "remoting/host/webauthn/remote_webauthn_state_change_notifier.h"
 
+#include <vector>
+
+#include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequence_bound.h"
+
 namespace remoting {
 
 // Class to notify the remote WebAuthn proxy extension of possible changes in
@@ -15,6 +23,8 @@ namespace remoting {
 class RemoteWebAuthnExtensionNotifier final
     : public RemoteWebAuthnStateChangeNotifier {
  public:
+  static const base::FilePath::CharType kRemoteWebAuthnExtensionId[];
+
   RemoteWebAuthnExtensionNotifier();
   RemoteWebAuthnExtensionNotifier(const RemoteWebAuthnExtensionNotifier&) =
       delete;
@@ -23,6 +33,20 @@ class RemoteWebAuthnExtensionNotifier final
   ~RemoteWebAuthnExtensionNotifier() override;
 
   void NotifyStateChange() override;
+
+ private:
+  friend class RemoteWebAuthnExtensionNotifierTest;
+  class Core;
+
+  void WakeUpExtension();
+
+  RemoteWebAuthnExtensionNotifier(
+      std::vector<base::FilePath> possible_remote_state_change_directories,
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner);
+
+  base::SequenceBound<Core> core_;
+  bool is_wake_up_scheduled_ = false;
+  base::WeakPtrFactory<RemoteWebAuthnExtensionNotifier> weak_factory_{this};
 };
 
 }  // namespace remoting
