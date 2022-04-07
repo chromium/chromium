@@ -891,12 +891,24 @@ class TRIVIAL_ABI GSL_POINTER raw_ptr {
   // during the free operation, which will lead to taking the slower path that
   // involves quarantine.
   RAW_PTR_FUNC_ATTRIBUTES void ClearAndDelete() noexcept {
+#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+    // We cannot directly `delete` a wrapped pointer, since the tag bits
+    // atop will lead PA totally astray.
+    T* ptr = Impl::SafelyUnwrapPtrForExtraction(wrapped_ptr_);
+#else
     T* ptr = wrapped_ptr_;
+#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
     operator=(nullptr);
     delete ptr;
   }
   RAW_PTR_FUNC_ATTRIBUTES void ClearAndDeleteArray() noexcept {
+#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+    // We cannot directly `delete` a wrapped pointer, since the tag bits
+    // atop will lead PA totally astray.
+    T* ptr = Impl::SafelyUnwrapPtrForExtraction(wrapped_ptr_);
+#else
     T* ptr = wrapped_ptr_;
+#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
     operator=(nullptr);
     delete[] ptr;
   }

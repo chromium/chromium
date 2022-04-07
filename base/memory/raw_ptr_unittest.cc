@@ -96,6 +96,9 @@ static void ClearCounters() {
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
 using CountingSuperClass =
     base::internal::BackupRefPtrImpl</*AllowDangling=*/false>;
+#elif defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+using CountingSuperClass = base::internal::MTECheckedPtrImpl<
+    base::internal::MTECheckedPtrImplPartitionAllocSupport>;
 #else
 using CountingSuperClass = base::internal::RawPtrNoOpImpl;
 #endif
@@ -288,7 +291,12 @@ TEST_F(RawPtrTest, ClearAndDelete) {
   EXPECT_EQ(g_wrap_raw_ptr_cnt, 1);
   EXPECT_EQ(g_release_wrapped_ptr_cnt, 1);
   EXPECT_EQ(g_get_for_dereference_cnt, 0);
+#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+  // When `MTECheckedPtr` is active, we must unwrap to delete.
+  EXPECT_EQ(g_get_for_extraction_cnt, 1);
+#else
   EXPECT_EQ(g_get_for_extraction_cnt, 0);
+#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
   EXPECT_EQ(g_wrapped_ptr_swap_cnt, 0);
   EXPECT_EQ(ptr.get(), nullptr);
 }
@@ -299,7 +307,12 @@ TEST_F(RawPtrTest, ClearAndDeleteArray) {
   EXPECT_EQ(g_wrap_raw_ptr_cnt, 1);
   EXPECT_EQ(g_release_wrapped_ptr_cnt, 1);
   EXPECT_EQ(g_get_for_dereference_cnt, 0);
+#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+  // When `MTECheckedPtr` is active, we must unwrap to delete.
+  EXPECT_EQ(g_get_for_extraction_cnt, 1);
+#else
   EXPECT_EQ(g_get_for_extraction_cnt, 0);
+#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
   EXPECT_EQ(g_wrapped_ptr_swap_cnt, 0);
   EXPECT_EQ(ptr.get(), nullptr);
 }
