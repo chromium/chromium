@@ -36,7 +36,7 @@
 }
 
 - (NSString*)thirdRowText {
-  if (_followedWebChannel.unavailable) {
+  if (!_followedWebChannel.available) {
     return l10n_util::GetNSString(
         IDS_IOS_FOLLOW_MANAGEMENT_CHANNEL_UNAVAILABLE);
   }

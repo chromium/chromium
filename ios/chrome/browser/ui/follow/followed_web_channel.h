@@ -20,8 +20,11 @@
 // URL of the web channel.
 @property(nonatomic, strong) CrURL* channelURL;
 
-// YES if the web channel is unavailable.
-@property(nonatomic, assign) BOOL unavailable;
+// URL of the favicon.
+@property(nonatomic, strong) CrURL* faviconURL;
+
+// YES if the web channel is available.
+@property(nonatomic, assign) BOOL available;
 
 // Used to request to unfollow this web channel.
 @property(nonatomic, copy) FollowRequestBlock unfollowRequestBlock;
@@ -29,9 +32,17 @@
 // Used to request to refollow this web channel, if it has been unfollowed.
 @property(nonatomic, copy) FollowRequestBlock refollowRequestBlock;
 
+// TODO(crbug.com/1296745): Remove old API.
 - (instancetype)initWithTitle:(NSString*)title
                         crURL:(CrURL*)channelURL
                   unavailable:(BOOL)unavailable
+         unfollowRequestBlock:(FollowRequestBlock)unfollowRequestBlock
+         refollowRequestBlock:(FollowRequestBlock)refollowRequestBlock;
+
+- (instancetype)initWithTitle:(NSString*)title
+                   channelURL:(CrURL*)channelURL
+                   faviconURL:(CrURL*)faviconURL
+                    available:(BOOL)available
          unfollowRequestBlock:(FollowRequestBlock)unfollowRequestBlock
          refollowRequestBlock:(FollowRequestBlock)refollowRequestBlock
     NS_DESIGNATED_INITIALIZER;
