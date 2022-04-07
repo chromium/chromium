@@ -83,7 +83,7 @@ suite('localized_link', function() {
     return flushTasks().then(async () => {
       const localizedLink = document.body.querySelector('localized-link');
       assertTrue(!!localizedLink);
-      const anchorTag = localizedLink.$$('a');
+      const anchorTag = localizedLink.shadowRoot.querySelector('a');
       assertTrue(!!anchorTag);
       const localizedLinkPromise =
           eventToPromise('link-clicked', localizedLink);
@@ -100,7 +100,7 @@ suite('localized_link', function() {
     await flushTasks();
     const localizedLink = document.body.querySelector('localized-link');
     assertTrue(!!localizedLink);
-    const anchorTag = localizedLink.$$('a');
+    const anchorTag = localizedLink.shadowRoot.querySelector('a');
     assertTrue(!!anchorTag);
     assertEquals(anchorTag.getAttribute('tabindex'), '0');
     localizedLink.linkDisabled = true;
@@ -122,7 +122,7 @@ suite('localized_link', function() {
     await flushTasks();
 
     // Tab index is still -1 due to it being disabled.
-    const anchorTag = localizedLink.$$('a');
+    const anchorTag = localizedLink.shadowRoot.querySelector('a');
     assertTrue(!!anchorTag);
     assertEquals(anchorTag.getAttribute('tabindex'), '-1');
 

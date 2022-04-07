@@ -538,7 +538,8 @@ suite('input page', () => {
       loadTimeData.overrideValues({languagePacksHandwritingEnabled: true});
       flush();
 
-      const anchor = inputPage.$$('#languagePacksNotice').$$('a');
+      const anchor =
+          inputPage.$$('#languagePacksNotice').shadowRoot.querySelector('a');
       // The below would normally create a new window, which would change the
       // focus from this test to the new window.
       // Prevent this from happening by adding an event listener on the anchor

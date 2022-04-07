@@ -647,7 +647,8 @@ suite('languages page', () => {
       loadTimeData.overrideValues({enableLanguageSettingsV2Update2: false});
       flush();
 
-      const anchor = languagesPage.$$('#webLanguagesDescription').$$('a');
+      const anchor = languagesPage.$$('#webLanguagesDescription')
+                         .shadowRoot.querySelector('a');
       // The below would normally create a new window, which would change the
       // focus from this test to the new window.
       // Prevent this from happening by adding an event listener on the anchor
@@ -665,7 +666,8 @@ suite('languages page', () => {
       loadTimeData.overrideValues({enableLanguageSettingsV2Update2: true});
       flush();
 
-      const anchor = languagesPage.$$('#webLanguagesDescription').$$('a');
+      const anchor = languagesPage.$$('#webLanguagesDescription')
+                         .shadowRoot.querySelector('a');
       // The below would normally create a new window, which would change the
       // focus from this test to the new window.
       // Prevent this from happening by adding an event listener on the anchor

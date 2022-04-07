@@ -119,7 +119,7 @@ suite('<app-management-borealis-detail-view>', function() {
 
     // Check that link directs to main app page.
     const link = borealisDetailView.$$('#borealis-link');
-    const anchorTag = link.$$('a');
+    const anchorTag = link.shadowRoot.querySelector('a');
     assertTrue(!!anchorTag);
     const localizedLinkPromise = eventToPromise('link-clicked', link);
     anchorTag.click();

@@ -24,49 +24,58 @@ import '../../cr_elements/shared_vars_css.m.js';
 import '../../cr_elements/shared_style_css.m.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'localized-link',
+/** @polymer */
+class LocalizedLinkElement extends PolymerElement {
+  static get is() {
+    return 'localized-link';
+  }
 
-  properties: {
-    /**
-     * The localized string that contains up to one anchor tag, the text
-     * within which will be aria-labelledby the entire localizedString.
-     */
-    localizedString: String,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * If provided, the URL that the anchor tag will point to. There is no
-     * need to provide a linkUrl if the URL is embedded in the localizedString.
-     */
-    linkUrl: {
-      type: String,
-      value: '',
-    },
+  static get properties() {
+    return {
+      /**
+       * The localized string that contains up to one anchor tag, the text
+       * within which will be aria-labelledby the entire localizedString.
+       */
+      localizedString: String,
 
-    /**
-     * If true, localized link will be disabled.
-     */
-    linkDisabled: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-      observer: 'updateAnchorTagTabIndex_',
-    },
+      /**
+       * If provided, the URL that the anchor tag will point to. There is no
+       * need to provide a linkUrl if the URL is embedded in the
+       * localizedString.
+       */
+      linkUrl: {
+        type: String,
+        value: '',
+      },
 
-    /**
-     * localizedString, with aria attributes and the optionally provided link.
-     * @private
-     */
-    containerInnerHTML_: {
-      type: String,
-      value: '',
-      computed: 'getAriaLabelledContent_(localizedString, linkUrl)',
-      observer: 'setContainerInnerHTML_',
-    },
-  },
+      /**
+       * If true, localized link will be disabled.
+       */
+      linkDisabled: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+        observer: 'updateAnchorTagTabIndex_',
+      },
+
+      /**
+       * localizedString, with aria attributes and the optionally provided link.
+       * @private
+       */
+      containerInnerHTML_: {
+        type: String,
+        value: '',
+        computed: 'getAriaLabelledContent_(localizedString, linkUrl)',
+        observer: 'setContainerInnerHTML_',
+      },
+    };
+  }
 
   /**
    * Attaches aria attributes and optionally provided link to the provided
@@ -126,19 +135,19 @@ Polymer({
     }
 
     return tempEl.innerHTML;
-  },
+  }
 
   /**
    * @private
    */
   setContainerInnerHTML_() {
     this.$.container.innerHTML = this.containerInnerHTML_;
-    const anchorTag = this.$$('a');
+    const anchorTag = this.shadowRoot.querySelector('a');
     if (anchorTag) {
       anchorTag.addEventListener(
           'click', (event) => this.onAnchorTagClick_(event));
     }
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -149,11 +158,12 @@ Polymer({
       event.preventDefault();
       return;
     }
-    this.fire('link-clicked', {event});
+    this.dispatchEvent(new CustomEvent(
+        'link-clicked', {bubbles: true, composed: true, detail: {event}}));
     // Stop propagation of the event, since it has already been handled by
     // opening the link.
     event.stopPropagation();
-  },
+  }
 
   /**
    *  Removes anchor tag from being targeted by chromeVox when link is
@@ -161,10 +171,12 @@ Polymer({
    *  @private
    */
   updateAnchorTagTabIndex_() {
-    const anchorTag = this.$$('a');
+    const anchorTag = this.shadowRoot.querySelector('a');
     if (!anchorTag) {
       return;
     }
     anchorTag.tabIndex = this.linkDisabled ? -1 : 0;
   }
-});
+}
+
+customElements.define(LocalizedLinkElement.is, LocalizedLinkElement);
