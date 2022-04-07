@@ -34,10 +34,8 @@ source_set("system_extensions") {
     "system_extensions_sandboxed_unpacker.cc",
     "system_extensions_sandboxed_unpacker.h",
     "system_extensions_status_or.h",
-    "system_extensions_ui.cc",
-    "system_extensions_ui.h",
-    "system_extensions_web_ui_config_map.cc",
-    "system_extensions_web_ui_config_map.h",
+    "system_extensions_webui_config.cc",
+    "system_extensions_webui_config.h",
   ]
   deps = [
     ":system_extensions_group",

@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/system_extensions/system_extension.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_install_manager.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_provider_factory.h"
-#include "chrome/browser/ash/system_extensions/system_extensions_web_ui_config_map.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/url_constants.h"
 
@@ -36,7 +35,6 @@ bool SystemExtensionsProvider::IsDebugMode() {
 }
 
 SystemExtensionsProvider::SystemExtensionsProvider(Profile* profile) {
-  SystemExtensionsWebUIConfigMap::RegisterInstance();
   install_manager_ = std::make_unique<SystemExtensionsInstallManager>(profile);
 }
 

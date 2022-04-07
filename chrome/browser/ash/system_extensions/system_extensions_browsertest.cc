@@ -19,6 +19,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/page_type.h"
 #include "content/public/test/browser_test.h"
 
@@ -41,10 +42,57 @@ base::FilePath GetBasicSystemExtensionDir() {
   return test_dir.Append("system_extensions").Append("basic_system_extension");
 }
 
+// Class that returns the result of the first System Extension service worker it
+// sees.
+class ServiceWorkerRegistrationObserver
+    : public SystemExtensionsInstallManager::Observer {
+ public:
+  explicit ServiceWorkerRegistrationObserver(SystemExtensionsProvider& provider)
+      : install_manager_(provider.install_manager()) {
+    install_manager_.AddObserver(this);
+  }
+  ~ServiceWorkerRegistrationObserver() override {}
+
+  // Returns the saved result or waits to get a result and returns it.
+  std::pair<SystemExtensionId, blink::ServiceWorkerStatusCode>
+  GetIdAndStatusCode() {
+    if (id_.has_value())
+      return {id_.value(), status_code_.value()};
+
+    run_loop_.Run();
+    return {id_.value(), status_code_.value()};
+  }
+
+  // SystemExtensionsInstallManager::Observer
+  void OnServiceWorkerRegistered(
+      const SystemExtensionId& id,
+      blink::ServiceWorkerStatusCode status_code) override {
+    install_manager_.RemoveObserver(this);
+
+    // Should happen because we unregistered as observers.
+    DCHECK(!id_.has_value());
+
+    id_ = id;
+    status_code_ = status_code;
+    run_loop_.Quit();
+  }
+
+ private:
+  // Should be present for the duration of the test.
+  SystemExtensionsInstallManager& install_manager_;
+
+  base::RunLoop run_loop_;
+  absl::optional<SystemExtensionId> id_;
+  absl::optional<blink::ServiceWorkerStatusCode> status_code_;
+};
+
 class SystemExtensionsBrowserTest : public InProcessBrowserTest {
  public:
   SystemExtensionsBrowserTest() {
-    feature_list_.InitAndEnableFeature(ash::features::kSystemExtensions);
+    feature_list_.InitWithFeatures(
+        {ash::features::kSystemExtensions,
+         features::kEnableServiceWorkersForChromeUntrusted},
+        {});
   }
   ~SystemExtensionsBrowserTest() override = default;
 
@@ -105,6 +153,7 @@ IN_PROC_BROWSER_TEST_F(SystemExtensionsBrowserTest, InstallFromDir_Success) {
   auto* provider = SystemExtensionsProvider::Get(browser()->profile());
   auto& install_manager = provider->install_manager();
 
+  ServiceWorkerRegistrationObserver sw_registration_observer(*provider);
   base::RunLoop run_loop;
   install_manager.InstallUnpackedExtensionFromDir(
       GetBasicSystemExtensionDir(),
@@ -114,6 +163,11 @@ IN_PROC_BROWSER_TEST_F(SystemExtensionsBrowserTest, InstallFromDir_Success) {
         run_loop.Quit();
       }));
   run_loop.Run();
+
+  const auto [id, status_code] = sw_registration_observer.GetIdAndStatusCode();
+  EXPECT_EQ(kTestSystemExtensionId, id);
+  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status_code);
+
   TestInstalledTestExtensionWorks();
 }
 

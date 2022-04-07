@@ -18,9 +18,16 @@
 #include "base/values.h"
 #include "chrome/browser/ash/system_extensions/system_extension.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_profile_utils.h"
-#include "chrome/browser/ash/system_extensions/system_extensions_web_ui_config_map.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_webui_config.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
+#include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/storage_partition.h"
+#include "content/public/browser/webui_config_map.h"
 #include "content/public/common/url_constants.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -124,10 +131,50 @@ void SystemExtensionsInstallManager::OnAssetsCopiedToProfileDir(
   }
 
   SystemExtensionId id = system_extension.id;
-  SystemExtensionsWebUIConfigMap::GetInstance().AddForSystemExtension(
-      system_extension);
+  auto config = std::make_unique<SystemExtensionsWebUIConfig>(system_extension);
+  content::WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
+      std::move(config));
+
   system_extensions_[{1, 2, 3, 4}] = std::move(system_extension);
   std::move(final_callback).Run(std::move(id));
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SystemExtensionsInstallManager::RegisterServiceWorker,
+                     weak_ptr_factory_.GetWeakPtr(), id));
+}
+
+void SystemExtensionsInstallManager::RegisterServiceWorker(
+    const SystemExtensionId& system_extension_id) {
+  auto it = system_extensions_.find(system_extension_id);
+  if (it == system_extensions_.end()) {
+    LOG(ERROR) << "Tried to install service worker for non-existent extension";
+    return;
+  }
+
+  const SystemExtension& system_extension = it->second;
+
+  blink::mojom::ServiceWorkerRegistrationOptions options(
+      system_extension.base_url, blink::mojom::ScriptType::kClassic,
+      blink::mojom::ServiceWorkerUpdateViaCache::kImports);
+  blink::StorageKey key(url::Origin::Create(options.scope));
+
+  auto* worker_context =
+      profile_->GetDefaultStoragePartition()->GetServiceWorkerContext();
+  worker_context->RegisterServiceWorker(
+      system_extension.service_worker_url, key, options,
+      base::BindOnce(&SystemExtensionsInstallManager::OnRegisterServiceWorker,
+                     weak_ptr_factory_.GetWeakPtr(), system_extension_id));
+}
+
+void SystemExtensionsInstallManager::OnRegisterServiceWorker(
+    const SystemExtensionId& system_extension_id,
+    blink::ServiceWorkerStatusCode status_code) {
+  if (status_code != blink::ServiceWorkerStatusCode::kOk)
+    LOG(ERROR) << "Failed to register Service Worker: "
+               << blink::ServiceWorkerStatusToString(status_code);
+
+  for (auto& observer : observers_)
+    observer.OnServiceWorkerRegistered(system_extension_id, status_code);
 }
 
 bool SystemExtensionsInstallManager::IOHelper::CopyExtensionAssets(

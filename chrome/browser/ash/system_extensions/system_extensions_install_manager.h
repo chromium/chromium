@@ -9,16 +9,25 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/one_shot_event.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_install_status.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_sandboxed_unpacker.h"
+#include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 
 class Profile;
 
 class SystemExtensionsInstallManager {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnServiceWorkerRegistered(
+        const SystemExtensionId& system_extension_id,
+        blink::ServiceWorkerStatusCode status_code) {}
+  };
+
   explicit SystemExtensionsInstallManager(Profile* profile);
   SystemExtensionsInstallManager(const SystemExtensionsInstallManager&) =
       delete;
@@ -34,6 +43,12 @@ class SystemExtensionsInstallManager {
 
   const base::OneShotEvent& on_command_line_install_finished() {
     return on_command_line_install_finished_;
+  }
+
+  void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
+
+  void RemoveObserver(Observer* observer) {
+    observers_.RemoveObserver(observer);
   }
 
   // TODO(ortuno): Move these to a Registrar or Database.
@@ -66,6 +81,9 @@ class SystemExtensionsInstallManager {
   void OnAssetsCopiedToProfileDir(OnceInstallCallback final_callback,
                                   SystemExtension system_extension,
                                   bool did_succeed);
+  void RegisterServiceWorker(const SystemExtensionId& id);
+  void OnRegisterServiceWorker(const SystemExtensionId& id,
+                               blink::ServiceWorkerStatusCode status_code);
 
   Profile* profile_;
 
@@ -75,6 +93,8 @@ class SystemExtensionsInstallManager {
 
   // TODO(ortuno): Move this to a Registrar or Database.
   std::map<SystemExtensionId, SystemExtension> system_extensions_;
+
+  base::ObserverList<Observer> observers_;
 
   base::SequenceBound<IOHelper> io_helper_{
       base::ThreadPool::CreateSequencedTaskRunner(
