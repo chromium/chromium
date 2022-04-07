@@ -11,8 +11,6 @@ import subprocess
 import tempfile
 import time
 
-from six.moves import urllib
-
 # Maximum amount of time to block while waiting for "pm serve" to come up.
 _PM_SERVE_LISTEN_TIMEOUT_SECS = 10
 
