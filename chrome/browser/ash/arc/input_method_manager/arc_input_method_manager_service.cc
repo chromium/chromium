@@ -701,7 +701,6 @@ void ArcInputMethodManagerService::Focus(int context_id) {
     return;
   }
 
-  DCHECK(!active_connection_);
   active_connection_ = std::make_unique<InputConnectionImpl>(
       proxy_ime_engine_.get(), imm_bridge_.get(), context_id);
   mojo::PendingRemote<mojom::InputConnection> connection_remote;
