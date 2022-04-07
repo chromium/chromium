@@ -81,14 +81,10 @@ GLImplementationParts GetRequestedGLImplementation(
   if (g_is_angle_enabled && UsePassthroughCommandDecoder(cmd)) {
     std::vector<GLImplementationParts> angle_impls = {};
     bool software_gl_allowed = false;
-    bool legacy_software_gl_allowed = false;
     auto iter = allowed_impls.begin();
     while (iter != allowed_impls.end()) {
       if ((*iter) == GetSoftwareGLImplementation()) {
         software_gl_allowed = true;
-        allowed_impls.erase(iter);
-      } else if ((*iter) == GetLegacySoftwareGLImplementation()) {
-        legacy_software_gl_allowed = true;
         allowed_impls.erase(iter);
       } else if (iter->gl == kGLImplementationEGLANGLE) {
         angle_impls.emplace_back(*iter);
@@ -103,9 +99,6 @@ GLImplementationParts GetRequestedGLImplementation(
     // implementations
     if (software_gl_allowed) {
       allowed_impls.emplace_back(GetSoftwareGLImplementation());
-    }
-    if (legacy_software_gl_allowed) {
-      allowed_impls.emplace_back(GetLegacySoftwareGLImplementation());
     }
   }
 
@@ -204,8 +197,7 @@ bool InitializeStaticGLBindingsImplementation(GLImplementationParts impl,
   bool initialized = InitializeStaticGLBindings(impl);
   if (!initialized && fallback_to_software_gl) {
     ShutdownGL(/*due_to_fallback*/ true);
-    initialized =
-        InitializeStaticGLBindings(GetSoftwareGLImplementationForPlatform());
+    initialized = InitializeStaticGLBindings(GetSoftwareGLImplementation());
   }
   if (!initialized) {
     ShutdownGL(/*due_to_fallback*/ false);
@@ -224,9 +216,8 @@ bool InitializeGLOneOffPlatformImplementation(bool fallback_to_software_gl,
   bool initialized = InitializeGLOneOffPlatform(system_device_id);
   if (!initialized && fallback_to_software_gl) {
     ShutdownGL(/*due_to_fallback*/ true);
-    initialized =
-        InitializeStaticGLBindings(GetSoftwareGLImplementationForPlatform()) &&
-        InitializeGLOneOffPlatform(system_device_id);
+    initialized = InitializeStaticGLBindings(GetSoftwareGLImplementation()) &&
+                  InitializeGLOneOffPlatform(system_device_id);
   }
   if (initialized && init_extensions) {
     initialized = InitializeExtensionSettingsOneOffPlatform();

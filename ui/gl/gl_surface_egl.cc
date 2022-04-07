@@ -861,19 +861,6 @@ void GetEGLInitDisplays(bool supports_angle_d3d,
                         bool supports_angle_metal,
                         const base::CommandLine* command_line,
                         std::vector<DisplayType>* init_displays) {
-  bool usingSoftwareGL =
-      command_line->HasSwitch(switches::kOverrideUseSoftwareGLForTests);
-  bool isSwANGLE = GetGLImplementationParts() == GetSoftwareGLImplementation();
-
-  // SwiftShader does not use the platform extensions
-  // Note: Do not use SwiftShader if we've explicitly selected SwANGLE
-  if (command_line->GetSwitchValueASCII(switches::kUseGL) ==
-          kGLImplementationSwiftShaderForWebGLName &&
-      !(usingSoftwareGL && isSwANGLE)) {
-    AddInitDisplay(init_displays, SWIFT_SHADER);
-    return;
-  }
-
   // If we're already requesting software GL, make sure we don't fallback to the
   // GPU
   bool forceSoftwareGL = IsSoftwareGLImplementation(GetGLImplementationParts());

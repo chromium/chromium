@@ -194,10 +194,6 @@
     'mini_installer.exe.pdb',
     'previous_version_mini_installer.exe',
 
-    # https://crbug.com/1163310
-    r'swiftshader\libGLESv2.dll',
-    r'swiftshader\libGLESv2.dll.pdb',
-
     # These probably have mtimes in the zip headers and the scripts creating
     # them probably should use build_utils.ZipDir() instead.
     'mini_installer_tests.zip',

@@ -406,8 +406,6 @@ def main_win(options, args, results_collector):
     'mini_installer.exe',
     'resources.pak',
     'setup.exe',
-    'swiftshader\\libEGL.dll',
-    'swiftshader\\libGLESv2.dll',
     'WidevineCdm\\_platform_specific\\win_x64\\widevinecdm.dll',
     'WidevineCdm\\_platform_specific\\win_x64\\widevinecdmadapter.dll',
     'WidevineCdm\\_platform_specific\\win_x86\\widevinecdm.dll',

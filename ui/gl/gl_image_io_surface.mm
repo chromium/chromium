@@ -173,10 +173,7 @@ GLImageIOSurface* GLImageIOSurface::Create(const gfx::Size& size,
   switch (GetGLImplementation()) {
     case kGLImplementationEGLGLES2:
     case kGLImplementationEGLANGLE:
-    case kGLImplementationSwiftShaderGL:
-      return new GLImageIOSurfaceEGL(
-          size, internalformat,
-          GetGLImplementation() == kGLImplementationSwiftShaderGL);
+      return new GLImageIOSurfaceEGL(size, internalformat);
     default:
       break;
   }

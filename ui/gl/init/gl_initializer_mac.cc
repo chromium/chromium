@@ -94,10 +94,11 @@ bool InitializeStaticCGLInternal(GLImplementation implementation) {
 const char kGLESv2ANGLELibraryName[] = "libGLESv2.dylib";
 const char kEGLANGLELibraryName[] = "libEGL.dylib";
 
-const char kGLESv2SwiftShaderLibraryName[] = "libswiftshader_libGLESv2.dylib";
-const char kEGLSwiftShaderLibraryName[] = "libswiftshader_libEGL.dylib";
-
 bool InitializeStaticEGLInternalFromLibrary(GLImplementation implementation) {
+#if BUILDFLAG(USE_STATIC_ANGLE)
+  NOTREACHED();
+#endif
+
   // Some unit test targets depend on Angle/SwiftShader but aren't built
   // as app bundles. In that case, the .dylib is next to the executable.
   base::FilePath base_dir;
@@ -111,28 +112,13 @@ bool InitializeStaticEGLInternalFromLibrary(GLImplementation implementation) {
     base_dir = base_dir.DirName();
   }
 
-  base::FilePath glesv2_path;
-  base::FilePath egl_path;
-  if (implementation == kGLImplementationSwiftShaderGL) {
-#if BUILDFLAG(ENABLE_SWIFTSHADER)
-    glesv2_path = base_dir.Append(kGLESv2SwiftShaderLibraryName);
-    egl_path = base_dir.Append(kEGLSwiftShaderLibraryName);
-#else
-    return false;
-#endif
-  } else {
-    glesv2_path = base_dir.Append(kGLESv2ANGLELibraryName);
-    egl_path = base_dir.Append(kEGLANGLELibraryName);
-#if BUILDFLAG(USE_STATIC_ANGLE)
-    NOTREACHED();
-#endif
-  }
-
+  base::FilePath glesv2_path = base_dir.Append(kGLESv2ANGLELibraryName);
   base::NativeLibrary gles_library = LoadLibraryAndPrintError(glesv2_path);
   if (!gles_library) {
     return false;
   }
 
+  base::FilePath egl_path = base_dir.Append(kEGLANGLELibraryName);
   base::NativeLibrary egl_library = LoadLibraryAndPrintError(egl_path);
   if (!egl_library) {
     base::UnloadNativeLibrary(gles_library);
@@ -197,7 +183,6 @@ bool InitializeGLOneOffPlatform(uint64_t system_device_id) {
 #if defined(USE_EGL)
     case kGLImplementationEGLGLES2:
     case kGLImplementationEGLANGLE:
-    case kGLImplementationSwiftShaderGL:
       if (!GLSurfaceEGL::InitializeOneOff(EGLDisplayPlatform(0),
                                           system_device_id)) {
         LOG(ERROR) << "GLSurfaceEGL::InitializeOneOff failed.";
@@ -230,7 +215,6 @@ bool InitializeStaticGLBindings(GLImplementationParts implementation) {
 #if defined(USE_EGL)
     case kGLImplementationEGLGLES2:
     case kGLImplementationEGLANGLE:
-    case kGLImplementationSwiftShaderGL:
       return InitializeStaticEGLInternal(implementation);
 #endif  // #if defined(USE_EGL)
     case kGLImplementationMockGL:

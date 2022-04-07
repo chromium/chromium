@@ -46,25 +46,6 @@ const base::FilePath::CharType kAngleGlesSoname[] =
     FILE_PATH_LITERAL("libGLESv2.so");
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(ENABLE_SWIFTSHADER)
-#if BUILDFLAG(IS_WIN)
-const base::FilePath::CharType kGLESv2SwiftShaderLibraryName[] =
-    FILE_PATH_LITERAL("libGLESv2.dll");
-const base::FilePath::CharType kEGLSwiftShaderLibraryName[] =
-    FILE_PATH_LITERAL("libEGL.dll");
-#elif BUILDFLAG(IS_FUCHSIA)
-const base::FilePath::CharType kGLESv2SwiftShaderLibraryName[] =
-    FILE_PATH_LITERAL("libswiftshader_libGLESv2.so");
-const base::FilePath::CharType kEGLSwiftShaderLibraryName[] =
-    FILE_PATH_LITERAL("libswiftshader_libEGL.so");
-#else
-const base::FilePath::CharType kGLESv2SwiftShaderLibraryName[] =
-    FILE_PATH_LITERAL("libGLESv2.so");
-const base::FilePath::CharType kEGLSwiftShaderLibraryName[] =
-    FILE_PATH_LITERAL("libEGL.so");
-#endif
-#endif  // BUILDFLAG(ENABLE_SWIFTSHADER)
-
 bool LoadEGLGLES2Bindings(const base::FilePath& egl_library_path,
                           const base::FilePath& gles_library_path) {
   base::NativeLibraryLoadError error;
@@ -154,21 +135,7 @@ bool LoadDefaultEGLGLES2Bindings(
   base::FilePath glesv2_path;
   base::FilePath egl_path;
 
-  if (implementation.gl == gl::kGLImplementationSwiftShaderGL) {
-#if BUILDFLAG(ENABLE_SWIFTSHADER)
-    base::FilePath module_path;
-#if !BUILDFLAG(IS_FUCHSIA)
-    if (!base::PathService::Get(base::DIR_MODULE, &module_path))
-      return false;
-    module_path = module_path.Append(FILE_PATH_LITERAL("swiftshader/"));
-#endif
-
-    glesv2_path = module_path.Append(kGLESv2SwiftShaderLibraryName);
-    egl_path = module_path.Append(kEGLSwiftShaderLibraryName);
-#else
-    return false;
-#endif
-  } else if (implementation.gl == gl::kGLImplementationEGLANGLE) {
+  if (implementation.gl == gl::kGLImplementationEGLANGLE) {
     base::FilePath module_path;
 #if !BUILDFLAG(IS_FUCHSIA)
     if (!base::PathService::Get(base::DIR_MODULE, &module_path))

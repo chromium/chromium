@@ -55,12 +55,6 @@ Logo.png: %(VersionDir)s\VisualElements\
 SmallLogo.png: %(VersionDir)s\VisualElements\
 
 #
-# SwiftShader sub-dir
-#
-swiftshader\libEGL.dll: %(VersionDir)s\swiftshader\
-swiftshader\libGLESv2.dll: %(VersionDir)s\swiftshader\
-
-#
 # MEI Preload sub dir
 #
 MEIPreload\manifest.json: %(VersionDir)s\MEIPreload\

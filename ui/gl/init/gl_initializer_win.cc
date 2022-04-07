@@ -45,6 +45,10 @@ bool LoadD3DXLibrary(const base::FilePath& module_path,
 }
 
 bool InitializeStaticEGLInternalFromLibrary(GLImplementation implementation) {
+#if BUILDFLAG(USE_STATIC_ANGLE)
+  NOTREACHED();
+#endif
+
   base::FilePath module_path;
   if (!base::PathService::Get(base::DIR_MODULE, &module_path))
     return false;
@@ -54,21 +58,7 @@ bool InitializeStaticEGLInternalFromLibrary(GLImplementation implementation) {
   // load the OS version.
   LoadD3DXLibrary(module_path, kD3DCompiler);
 
-  base::FilePath gles_path;
-  if (implementation == kGLImplementationSwiftShaderGL) {
-#if BUILDFLAG(ENABLE_SWIFTSHADER)
-    gles_path = module_path.Append(L"swiftshader/");
-    // Preload library
-    LoadLibrary(L"ddraw.dll");
-#else
-    return false;
-#endif
-  } else {
-    gles_path = module_path;
-#if BUILDFLAG(USE_STATIC_ANGLE)
-    NOTREACHED();
-#endif
-  }
+  base::FilePath gles_path = module_path;
 
   // Load libglesv2.dll before libegl.dll because the latter is dependent on
   // the former and if there is another version of libglesv2.dll in the dll
@@ -136,7 +126,6 @@ bool InitializeGLOneOffPlatform(uint64_t system_device_id) {
   VSyncProviderWin::InitializeOneOff();
 
   switch (GetGLImplementation()) {
-    case kGLImplementationSwiftShaderGL:
     case kGLImplementationEGLANGLE:
       if (!GLSurfaceEGL::InitializeOneOff(EGLDisplayPlatform(GetDC(nullptr)),
                                           system_device_id)) {
@@ -167,7 +156,6 @@ bool InitializeStaticGLBindings(GLImplementationParts implementation) {
   base::ThreadRestrictions::ScopedAllowIO allow_io;
 
   switch (implementation.gl) {
-    case kGLImplementationSwiftShaderGL:
     case kGLImplementationEGLANGLE:
       return InitializeStaticEGLInternal(implementation);
     case kGLImplementationMockGL:

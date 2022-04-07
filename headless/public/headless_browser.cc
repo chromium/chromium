@@ -36,17 +36,12 @@ std::string GetProductNameAndVersion() {
 Options::Options(int argc, const char** argv)
     : argc(argc),
       argv(argv),
-      gl_implementation(gl::kGLImplementationSwiftShaderForWebGLName),
-      angle_implementation(gl::kANGLEImplementationNoneName),
+      gl_implementation(gl::kGLImplementationANGLEName),
+      angle_implementation(gl::kANGLEImplementationSwiftShaderForWebGLName),
       product_name_and_version(GetProductNameAndVersion()),
       user_agent(content::BuildUserAgentFromProduct(product_name_and_version)),
       window_size(kDefaultWindowSize),
-      font_render_hinting(kDefaultFontRenderHinting) {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  gl_implementation = gl::kGLImplementationANGLEName;
-  angle_implementation = gl::kANGLEImplementationSwiftShaderForWebGLName;
-#endif
-}
+      font_render_hinting(kDefaultFontRenderHinting) {}
 
 Options::Options(Options&& options) = default;
 

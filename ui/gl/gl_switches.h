@@ -18,8 +18,6 @@ GL_EXPORT extern const char kGLImplementationDesktopName[];
 GL_EXPORT extern const char kGLImplementationAppleName[];
 GL_EXPORT extern const char kGLImplementationEGLName[];
 GL_EXPORT extern const char kGLImplementationANGLEName[];
-GL_EXPORT extern const char kGLImplementationSwiftShaderName[];
-GL_EXPORT extern const char kGLImplementationSwiftShaderForWebGLName[];
 GL_EXPORT extern const char kGLImplementationMockName[];
 GL_EXPORT extern const char kGLImplementationStubName[];
 GL_EXPORT extern const char kGLImplementationDisabledName[];

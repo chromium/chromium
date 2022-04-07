@@ -33,8 +33,7 @@ struct InternalFormatType {
 
 // Convert a gfx::BufferFormat to a (internal format, type) combination from the
 // EGL_ANGLE_iosurface_client_buffer extension spec.
-InternalFormatType BufferFormatToInternalFormatType(gfx::BufferFormat format,
-                                                    bool emulate_rgb) {
+InternalFormatType BufferFormatToInternalFormatType(gfx::BufferFormat format) {
   switch (format) {
     case gfx::BufferFormat::R_8:
       return {GL_RED, GL_UNSIGNED_BYTE};
@@ -46,11 +45,7 @@ InternalFormatType BufferFormatToInternalFormatType(gfx::BufferFormat format,
     case gfx::BufferFormat::RG_1616:
       return {GL_RG, GL_UNSIGNED_SHORT};
     case gfx::BufferFormat::BGRX_8888:
-      if (emulate_rgb) {
-        return {GL_BGRA_EXT, GL_UNSIGNED_BYTE};
-      } else {
-        return {GL_RGB, GL_UNSIGNED_BYTE};
-      }
+      return {GL_RGB, GL_UNSIGNED_BYTE};
     case gfx::BufferFormat::BGRA_8888:
     case gfx::BufferFormat::RGBA_8888:
       return {GL_BGRA_EXT, GL_UNSIGNED_BYTE};
@@ -116,10 +111,8 @@ GLenum TargetGetterFromGLTarget(GLint gl_target) {
 }  // anonymous namespace
 
 GLImageIOSurfaceEGL::GLImageIOSurfaceEGL(const gfx::Size& size,
-                                         unsigned internalformat,
-                                         bool emulate_rgb)
+                                         unsigned internalformat)
     : GLImageIOSurface(size, internalformat),
-      emulate_rgb_(emulate_rgb),
       display_(GLSurfaceEGL::GetHardwareDisplay()),
       pbuffer_(EGL_NO_SURFACE),
       dummy_config_(nullptr),
@@ -205,8 +198,7 @@ bool GLImageIOSurfaceEGL::BindTexImageImpl(unsigned target,
   // in the constructor if we're going to be used to bind plane 0 to a texture,
   // or to transform YUV to RGB.
   if (pbuffer_ == EGL_NO_SURFACE) {
-    InternalFormatType formatType =
-        BufferFormatToInternalFormatType(format_, emulate_rgb_);
+    InternalFormatType formatType = BufferFormatToInternalFormatType(format_);
 
     // clang-format off
     const EGLint attribs[] = {

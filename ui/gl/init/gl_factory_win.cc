@@ -24,7 +24,6 @@ namespace init {
 std::vector<GLImplementationParts> GetAllowedGLImplementations() {
   std::vector<GLImplementationParts> impls;
   impls.emplace_back(GLImplementationParts(kGLImplementationEGLANGLE));
-  impls.emplace_back(GLImplementationParts(kGLImplementationSwiftShaderGL));
   return impls;
 }
 
@@ -43,7 +42,6 @@ scoped_refptr<GLContext> CreateGLContext(GLShareGroup* share_group,
                                          const GLContextAttribs& attribs) {
   TRACE_EVENT0("gpu", "gl::init::CreateGLContext");
   switch (GetGLImplementation()) {
-    case kGLImplementationSwiftShaderGL:
     case kGLImplementationEGLANGLE:
       return InitializeGLContext(new GLContextEGL(share_group),
                                  compatible_surface, attribs);
@@ -64,7 +62,6 @@ scoped_refptr<GLContext> CreateGLContext(GLShareGroup* share_group,
 scoped_refptr<GLSurface> CreateViewGLSurface(gfx::AcceleratedWidget window) {
   TRACE_EVENT0("gpu", "gl::init::CreateViewGLSurface");
   switch (GetGLImplementation()) {
-    case kGLImplementationSwiftShaderGL:
     case kGLImplementationEGLANGLE: {
       DCHECK_NE(window, gfx::kNullAcceleratedWidget);
       return InitializeGLSurface(base::MakeRefCounted<NativeViewGLSurfaceEGL>(
@@ -83,7 +80,6 @@ scoped_refptr<GLSurface> CreateOffscreenGLSurfaceWithFormat(
     const gfx::Size& size, GLSurfaceFormat format) {
   TRACE_EVENT0("gpu", "gl::init::CreateOffscreenGLSurface");
   switch (GetGLImplementation()) {
-    case kGLImplementationSwiftShaderGL:
     case kGLImplementationEGLANGLE:
       if (GLSurfaceEGL::IsEGLSurfacelessContextSupported() &&
           size.width() == 0 && size.height() == 0) {
@@ -108,7 +104,6 @@ void SetDisabledExtensionsPlatform(const std::string& disabled_extensions) {
     case kGLImplementationEGLANGLE:
       SetDisabledExtensionsEGL(disabled_extensions);
       break;
-    case kGLImplementationSwiftShaderGL:
     case kGLImplementationMockGL:
     case kGLImplementationStubGL:
       break;
@@ -123,7 +118,6 @@ bool InitializeExtensionSettingsOneOffPlatform() {
   switch (implementation) {
     case kGLImplementationEGLANGLE:
       return InitializeExtensionSettingsOneOffEGL();
-    case kGLImplementationSwiftShaderGL:
     case kGLImplementationMockGL:
     case kGLImplementationStubGL:
       return true;

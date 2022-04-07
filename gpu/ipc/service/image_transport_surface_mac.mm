@@ -29,7 +29,6 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
 #if defined(USE_EGL)
     case gl::kGLImplementationEGLGLES2:
     case gl::kGLImplementationEGLANGLE:
-    case gl::kGLImplementationSwiftShaderGL:
       return base::WrapRefCounted<gl::GLSurface>(
           new ImageTransportSurfaceOverlayMacEGL(delegate));
 #endif

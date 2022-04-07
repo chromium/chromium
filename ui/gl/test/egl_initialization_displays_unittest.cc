@@ -39,31 +39,6 @@ TEST(EGLInitializationDisplaysTest, DisableD3D11) {
   EXPECT_FALSE(base::Contains(displays, gl::ANGLE_D3D11));
 }
 
-TEST(EGLInitializationDisplaysTest, SwiftShader) {
-  std::unique_ptr<base::CommandLine> command_line(
-      new base::CommandLine(base::CommandLine::NO_PROGRAM));
-
-  std::vector<gl::DisplayType> displays;
-
-  // If swiftshader is requested, only SWIFT_SHADER should be returned
-  command_line->AppendSwitchASCII(switches::kUseGL,
-                                  gl::kGLImplementationSwiftShaderForWebGLName);
-  displays.clear();
-  GetEGLInitDisplays(true, true, true, true, true, true, true,
-                     command_line.get(), &displays);
-  EXPECT_TRUE(base::Contains(displays, gl::SWIFT_SHADER));
-  EXPECT_EQ(displays.size(), 1u);
-
-  // Even if there are other flags, swiftshader should take prescedence
-  command_line->AppendSwitchASCII(switches::kUseANGLE,
-                                  gl::kANGLEImplementationD3D11Name);
-  displays.clear();
-  GetEGLInitDisplays(true, true, true, true, true, true, true,
-                     command_line.get(), &displays);
-  EXPECT_TRUE(base::Contains(displays, gl::SWIFT_SHADER));
-  EXPECT_EQ(displays.size(), 1u);
-}
-
 TEST(EGLInitializationDisplaysTest, DefaultRenderers) {
   std::unique_ptr<base::CommandLine> command_line(
       new base::CommandLine(base::CommandLine::NO_PROGRAM));

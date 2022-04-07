@@ -75,7 +75,9 @@ void EnableHeadlessMode() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   command_line->AppendSwitchASCII(switches::kOzonePlatform, kHeadless);
   command_line->AppendSwitchASCII(switches::kUseGL,
-                                  gl::kGLImplementationSwiftShaderName);
+                                  gl::kGLImplementationANGLEName);
+  command_line->AppendSwitchASCII(switches::kUseANGLE,
+                                  gl::kANGLEImplementationSwiftShaderName);
 }
 
 // Disables D-Bus clients:

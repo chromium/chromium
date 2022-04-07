@@ -222,9 +222,8 @@ void FeatureInfo::InitializeBasicState(const base::CommandLine* command_line) {
   const auto useANGLE = command_line->GetSwitchValueASCII(switches::kUseANGLE);
 
   feature_flags_.is_swiftshader_for_webgl =
-      (useGL == gl::kGLImplementationSwiftShaderForWebGLName) ||
-      ((useGL == gl::kGLImplementationANGLEName) &&
-       (useANGLE == gl::kANGLEImplementationSwiftShaderForWebGLName));
+      (useGL == gl::kGLImplementationANGLEName) &&
+      (useANGLE == gl::kANGLEImplementationSwiftShaderForWebGLName);
 
   // The shader translator is needed to translate from WebGL-conformant GLES SL
   // to normal GLES SL, enforce WebGL conformance, translate from GLES SL 1.0 to

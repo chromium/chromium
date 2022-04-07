@@ -34,7 +34,8 @@ enum GLImplementation {
   kGLImplementationNone = 0,
   kGLImplementationDesktopGL = 1,
   kGLImplementationDesktopGLCoreProfile = 2,
-  kGLImplementationSwiftShaderGL = 3,
+  // Note: 3 used to be legacy SwiftShader, so 3 is skipped and should not be
+  // reused.
   kGLImplementationAppleGL = 4,
   kGLImplementationEGLGLES2 = 5,  // Native EGL/GLES2
   kGLImplementationMockGL = 6,
@@ -164,12 +165,7 @@ GL_EXPORT void SetANGLEImplementation(ANGLEImplementation implementation);
 GL_EXPORT ANGLEImplementation GetANGLEImplementation();
 
 // Get the software GL implementation
-GL_EXPORT GLImplementationParts GetLegacySoftwareGLImplementation();
 GL_EXPORT GLImplementationParts GetSoftwareGLImplementation();
-
-// Returns the software GL implementation used by default on the current
-// platform
-GL_EXPORT GLImplementationParts GetSoftwareGLImplementationForPlatform();
 
 // Set the software GL implementation on the provided command line
 GL_EXPORT void SetSoftwareGLCommandLineSwitches(

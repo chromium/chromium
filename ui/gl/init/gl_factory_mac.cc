@@ -70,7 +70,6 @@ std::vector<GLImplementationParts> GetAllowedGLImplementations() {
 #if defined(USE_EGL)
   impls.emplace_back(GLImplementationParts(kGLImplementationEGLGLES2));
   impls.emplace_back(GLImplementationParts(kGLImplementationEGLANGLE));
-  impls.emplace_back(GLImplementationParts(kGLImplementationSwiftShaderGL));
 #endif  // defined(USE_EGL)
   return impls;
 }
@@ -93,7 +92,6 @@ scoped_refptr<GLContext> CreateGLContext(GLShareGroup* share_group,
 #if defined(USE_EGL)
     case kGLImplementationEGLGLES2:
     case kGLImplementationEGLANGLE:
-    case kGLImplementationSwiftShaderGL:
       return InitializeGLContext(new GLContextEGL(share_group),
                                  compatible_surface, attribs);
 #endif  // defined(USE_EGL)
@@ -118,8 +116,7 @@ scoped_refptr<GLSurface> CreateViewGLSurface(gfx::AcceleratedWidget window) {
     case kGLImplementationDesktopGLCoreProfile:
     case kGLImplementationAppleGL:
     case kGLImplementationEGLGLES2:
-    case kGLImplementationEGLANGLE:
-    case kGLImplementationSwiftShaderGL: {
+    case kGLImplementationEGLANGLE: {
       NOTIMPLEMENTED() << "No onscreen support on Mac.";
       return nullptr;
     }
@@ -144,7 +141,6 @@ scoped_refptr<GLSurface> CreateOffscreenGLSurfaceWithFormat(
 #if defined(USE_EGL)
     case kGLImplementationEGLGLES2:
     case kGLImplementationEGLANGLE:
-    case kGLImplementationSwiftShaderGL:
       if (GLSurfaceEGL::IsEGLSurfacelessContextSupported() &&
           size.width() == 0 && size.height() == 0) {
         return InitializeGLSurfaceWithFormat(new SurfacelessEGL(size), format);

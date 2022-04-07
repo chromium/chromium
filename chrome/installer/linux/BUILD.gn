@@ -80,11 +80,7 @@ if (use_egl) {
 }
 
 if (enable_swiftshader) {
-  packaging_files_shlibs += [
-    "$root_out_dir/swiftshader_libEGL.so",
-    "$root_out_dir/swiftshader_libGLESv2.so",
-    "$root_out_dir/libvk_swiftshader.so",
-  ]
+  packaging_files_shlibs += [ "$root_out_dir/libvk_swiftshader.so" ]
 }
 
 if (build_with_internal_optimization_guide) {
@@ -93,18 +89,6 @@ if (build_with_internal_optimization_guide) {
 }
 
 packaging_files_binaries = packaging_files_executables + packaging_files_shlibs
-
-copy("swiftshader_libs") {
-  sources = [
-    "$root_out_dir/swiftshader/libEGL.so",
-    "$root_out_dir/swiftshader/libGLESv2.so",
-  ]
-  outputs = [ "$root_out_dir/swiftshader_{{source_file_part}}" ]
-  public_deps = [
-    "//third_party/swiftshader/src/OpenGL/libEGL:swiftshader_libEGL",
-    "//third_party/swiftshader/src/OpenGL/libGLESv2:swiftshader_libGLESv2",
-  ]
-}
 
 # TODO(mmoss) Any convenient way to get all the relevant build files?
 # (e.g. all locales, resources, etc.)
@@ -222,17 +206,6 @@ strip_binary("strip_libGLESv2_shlib") {
 strip_binary("strip_libvulkan_shlib") {
   binary_input = "$root_out_dir/libvulkan.so.1"
   deps = [ "//third_party/vulkan-deps/vulkan-loader/src:libvulkan" ]
-}
-
-strip_binary("strip_swiftshader_libEGL_shlib") {
-  binary_input = "$root_out_dir/swiftshader/libEGL.so"
-  deps = [ "//third_party/swiftshader/src/OpenGL/libEGL:swiftshader_libEGL" ]
-}
-
-strip_binary("strip_swiftshader_libGLESv2_shlib") {
-  binary_input = "$root_out_dir/swiftshader/libGLESv2.so"
-  deps =
-      [ "//third_party/swiftshader/src/OpenGL/libGLESv2:swiftshader_libGLESv2" ]
 }
 
 strip_binary("strip_libvk_swiftshader.shlib") {
@@ -440,9 +413,6 @@ group("installer_deps") {
   if (enable_swiftshader) {
     public_deps += [
       ":strip_libvk_swiftshader.shlib",
-      ":strip_swiftshader_libEGL_shlib",
-      ":strip_swiftshader_libGLESv2_shlib",
-      ":swiftshader_libs",
       "//third_party/swiftshader/src/Vulkan:icd_file",
       "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan",
     ]

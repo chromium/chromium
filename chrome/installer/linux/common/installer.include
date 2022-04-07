@@ -232,15 +232,6 @@ stage_install_common() {
     install -m 755 "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
   fi
 
-  # SwiftShader ES
-  if [ -f "${OUTPUTDIR}/swiftshader/libEGL.so" ]; then
-    install -m 755 -d "${STAGEDIR}/${INSTALLDIR}/swiftshader/"
-    for file in libEGL.so libGLESv2.so; do
-      strippedfile="${OUTPUTDIR}/swiftshader/${file}.stripped"
-      install -m ${SHLIB_PERMS} "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/swiftshader/${file}"
-    done
-  fi
-
   # SwiftShader VK
   if [ -f "${OUTPUTDIR}/libvk_swiftshader.so" ]; then
     install -m 755 -d "${STAGEDIR}/${INSTALLDIR}/"

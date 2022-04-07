@@ -120,8 +120,6 @@ def get_parts(config):
     dylibs = [
         'libEGL.dylib',
         'libGLESv2.dylib',
-        'libswiftshader_libEGL.dylib',
-        'libswiftshader_libGLESv2.dylib',
         'libvk_swiftshader.dylib',
     ]
     if config.is_chrome_branded():

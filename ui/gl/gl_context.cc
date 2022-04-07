@@ -297,7 +297,6 @@ bool GLContext::LosesAllContextsOnContextLost() {
       return false;
     case kGLImplementationEGLGLES2:
     case kGLImplementationEGLANGLE:
-    case kGLImplementationSwiftShaderGL:
       return true;
     case kGLImplementationAppleGL:
       return false;

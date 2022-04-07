@@ -299,36 +299,19 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
                                                       &fallback_to_software);
 
   // If GL is disabled then we don't need GPUInfo.
-  if (implementation && *implementation == gl::kGLImplementationDisabled) {
+  if (implementation == gl::kGLImplementationDisabled) {
     gpu_info->gl_vendor = "Disabled";
     gpu_info->gl_renderer = "Disabled";
     gpu_info->gl_version = "Disabled";
     return true;
   }
 
-  gl::GLImplementationParts legacy_impl =
-      gl::GetLegacySoftwareGLImplementation();
-  if (implementation && *implementation == legacy_impl) {
+  if (implementation == gl::GetSoftwareGLImplementation()) {
     // If using the software GL implementation, use fake vendor and
     // device ids to make sure it never gets blocklisted. It allows us
     // to proceed with loading the blocklist which may have non-device
     // specific entries we want to apply anyways (e.g., OS version
     // blocklisting).
-    gpu_info->gpu.vendor_id = 0xffff;
-    gpu_info->gpu.device_id = 0xffff;
-
-    // Also declare the driver_vendor to be <software GL> to be able to
-    // specify exceptions based on driver_vendor==<software GL> for some
-    // blocklist rules.
-    gpu_info->gpu.driver_vendor = gl::GetGLImplementationGLName(legacy_impl);
-
-    return true;
-  }
-
-  if (implementation &&
-      *implementation == gl::ANGLEImplementation::kSwiftShader) {
-    // Similarly to the above, use fake vendor and device ids
-    // to make sure they never gets blocklisted for SwANGLE as well.
     gpu_info->gpu.vendor_id = 0xffff;
     gpu_info->gpu.device_id = 0xffff;
 
