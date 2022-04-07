@@ -40,7 +40,7 @@ class AidlFile:
     self.file_name = os.path.basename(self.path_in_repo)
     current_dir = self.path_in_repo
     packages = []
-    while current_dir is not '':
+    while current_dir != '':
       dir_name, base_name = os.path.split(current_dir)
       packages.append(base_name)
       if base_name == 'org':
