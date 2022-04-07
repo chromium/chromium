@@ -49,7 +49,11 @@ class _ApkFileManager:
       Path to the extracted .apk file.
     """
     subdir = self._subdir_by_apks_path[minimal_apks_path]
-    return self._temp_dir / subdir / 'splits' / f'{split_name}-master.apk'
+    if '-' in split_name:
+      name = f'{split_name}.apk'
+    else:
+      name = f'{split_name}-master.apk'
+    return self._temp_dir / subdir / 'splits' / name
 
   def ExtractSplits(self, minimal_apks_path):
     """Extracts the master splits in the given .apks file.
@@ -64,17 +68,22 @@ class _ApkFileManager:
       for filename in z.namelist():
         # E.g.:
         # splits/base-master.apk
-        # splits/base-en.apk
+        # splits/base-hi.apk
         # splits/vr-master.apk
         # splits/vr-en.apk
         m = re.match(r'splits/(.*)-master\.apk', filename)
         if m:
           split_names.append(m.group(1))
           z.extract(filename, dest)
+        # Also analyze -hi locale splits, since resource_sizes.py does this.
+        m = re.match(r'splits/(.*-hi)\.apk', filename)
+        if m:
+          split_names.append(m.group(1))
+          z.extract(filename, dest)
     logging.debug('Extracting %s (done)', minimal_apks_path)
     # Make "base" comes first since that's the main chunk of work.
     # Also so that --abi-filter detection looks at it first.
-    return sorted(split_names, key=lambda x: (x != 'base', x))
+    return sorted(split_names, key=lambda x: (not x.startswith('base'), x))
 
 
 @contextlib.contextmanager

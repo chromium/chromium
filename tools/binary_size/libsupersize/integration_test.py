@@ -157,7 +157,9 @@ class IntegrationTest(unittest.TestCase):
     with zipfile.ZipFile(_TEST_MINIMAL_APKS_PATH, 'w') as apk_file:
       apk_file.writestr('toc.pb', 'x' * 80)
       apk_file.write(_TEST_APK_PATH, 'splits/base-master.apk')
-      apk_file.writestr('splits/base-en.apk', 'x' * 10)
+      apk_file.writestr('splits/base-en.apk', 'x' * 10)  # Ignored.
+      apk_file.write(_TEST_NOT_ON_DEMAND_SPLIT_APK_PATH,
+                     'splits/base-hi.apk')  # Not Ignored.
       apk_file.write(_TEST_NOT_ON_DEMAND_SPLIT_APK_PATH,
                      'splits/not_on_demand-master.apk')
       apk_file.write(_TEST_ON_DEMAND_SPLIT_APK_PATH,
@@ -248,6 +250,7 @@ class IntegrationTest(unittest.TestCase):
 
         if use_minimal_apks:
           for split_name, apk_path in [
+              ('base-hi', _TEST_NOT_ON_DEMAND_SPLIT_APK_PATH),
               ('not_on_demand', _TEST_NOT_ON_DEMAND_SPLIT_APK_PATH),
               ('on_demand', _TEST_ON_DEMAND_SPLIT_APK_PATH),
           ]:

@@ -16,6 +16,11 @@ zipalign_padding=32
 apk_file_name=Bundle.minimal.apks
 apk_signature_block_size=0
 apk_size=696
+apk_split_name=base-hi
+zipalign_padding=0
+apk_file_name=Bundle.minimal.apks
+apk_signature_block_size=0
+apk_size=696
 apk_split_name=not_on_demand
 zipalign_padding=0
 apk_file_name=Bundle.minimal.apks
@@ -93,6 +98,59 @@ Section .other: has 100.0% of 95595867 bytes accounted for from 27 symbols. 0 by
 * 26 have source paths. Accounts for 95595033 bytes (100.0%).
 * 1 have a component assigned. Accounts for 1048576 bytes (1.1%).
 * 22 placeholders exist (symbols that start with **). Accounts for 56448494 bytes (59.0%).
+* 0 symbols have shared ownership.
+
+Container <Bundle.minimal.apks/base-hi.apk>
+Section .text: 0 bytes from 0 symbols.
+* Padding accounts for 0 bytes (0.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 symbols have shared ownership.
+Section .rodata: 0 bytes from 0 symbols.
+* Padding accounts for 0 bytes (0.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 string literals exist. Accounts for 0 bytes (0.0%) padding is 0 bytes.
+* 0 symbols have shared ownership.
+Section .data.rel.ro: 0 bytes from 0 symbols.
+* Padding accounts for 0 bytes (0.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 symbols have shared ownership.
+Section .data: 0 bytes from 0 symbols.
+* Padding accounts for 0 bytes (0.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 symbols have shared ownership.
+Section .bss: 0 bytes from 0 symbols.
+* Padding accounts for 0 bytes (0.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 symbols have shared ownership.
+Section .dex: has 0.0% of 0 bytes accounted for from 0 symbols. 0 bytes are unaccounted for.
+* Padding accounts for 0 bytes (0.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 symbols have shared ownership.
+Section .dex.method: has 0.0% of 0 bytes accounted for from 0 symbols. 0 bytes are unaccounted for.
+* Padding accounts for 0 bytes (0.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 symbols have shared ownership.
+Section .pak.translations: 0 bytes from 0 symbols.
+* Padding accounts for 0 bytes (0.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 symbols have shared ownership.
+Section .pak.nontranslated: 0 bytes from 0 symbols.
+* Padding accounts for 0 bytes (0.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 symbols have shared ownership.
+Section .other: has 100.0% of 696 bytes accounted for from 2 symbols. 0 bytes are unaccounted for.
+* Padding accounts for 136 bytes (19.5%)
+* 1 have source paths. Accounts for 560 bytes (80.5%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
 * 0 symbols have shared ownership.
 
 Container <Bundle.minimal.apks/not_on_demand.apk>
@@ -696,6 +754,8 @@ Section .other: has 100.0% of 695 bytes accounted for from 2 symbols. 0 bytes ar
 <Bundle.minimal.apks/base.apk>.other@0(size_without_padding=17166112,padding=0,full_name=** ELF Section: .symtab,object_path=,source_path=$APK/lib/armeabi-v7a/test.so,flags={},num_aliases=1,component=)
 <Bundle.minimal.apks/base.apk>.other@0(size_without_padding=0,padding=834,full_name=Overhead: APK file,object_path=,source_path=,flags={},num_aliases=1,component=)
 <Bundle.minimal.apks/base.apk>.other@0(size_without_padding=0,padding=33902635,full_name=Overhead: ELF file,object_path=,source_path=$APK/lib/armeabi-v7a/test.so,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base-hi.apk>.other@0(size_without_padding=560,padding=0,full_name=AndroidManifest.xml,object_path=,source_path=$APK/AndroidManifest.xml,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base-hi.apk>.other@0(size_without_padding=0,padding=136,full_name=Overhead: APK file,object_path=,source_path=,flags={},num_aliases=1,component=)
 <Bundle.minimal.apks/not_on_demand.apk>.other@0(size_without_padding=560,padding=0,full_name=AndroidManifest.xml,object_path=,source_path=$APK/AndroidManifest.xml,flags={},num_aliases=1,component=)
 <Bundle.minimal.apks/not_on_demand.apk>.other@0(size_without_padding=0,padding=136,full_name=Overhead: APK file,object_path=,source_path=,flags={},num_aliases=1,component=)
 <Bundle.minimal.apks/on_demand.apk?>.other@0(size_without_padding=559,padding=0,full_name=AndroidManifest.xml,object_path=,source_path=$APK/AndroidManifest.xml,flags={},num_aliases=1,component=DEFAULT)
