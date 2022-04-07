@@ -82,17 +82,16 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
     }
 
     const params = {tabID: tabID};
-    automationInternal.enableTab(params,
-                                 function onEnable(treeID, resultTabID) {
-          if (bindingUtil.hasLastError()) {
-            callback();
-            return;
-          }
-          automationUtil.storeTreeCallback(treeID, function(root) {
-            automationUtil.tabIDToAutomationNode[resultTabID] = root;
-            callback(root);
-          });
-        });
+    automationInternal.enableTab(params, function onEnable(result) {
+      if (bindingUtil.hasLastError()) {
+        callback();
+        return;
+      }
+      automationUtil.storeTreeCallback(result.treeID, function(root) {
+        automationUtil.tabIDToAutomationNode[result.tabID] = root;
+        callback(root);
+      });
+    });
   });
 
   let desktopTree = null;

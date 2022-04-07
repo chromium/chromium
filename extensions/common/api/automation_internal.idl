@@ -123,9 +123,15 @@ namespace automationInternal {
     long endIndex;
   };
 
+  // Info returned for the EnableTabCallback.
+  dictionary EnableTabCallbackInfo {
+    DOMString treeID;
+    long tabId;
+  };
+
   // Returns the accessibility tree id of the web contents who's accessibility
   // was enabled using enableTab().
-  callback EnableTabCallback = void(DOMString tree_id, long tab_id);
+  callback EnableTabCallback = void(EnableTabCallbackInfo info);
 
   // Callback called when enableDesktop() returns. Returns the accessibility
   // tree id of the desktop tree.
@@ -138,22 +144,24 @@ namespace automationInternal {
     // Enable automation of the tab with the given id, or the active tab if no
     // tab id is given, and retrieves accessibility tree id for use in
     // future updates.
-    static void enableTab(EnableTabParams args,
-                          EnableTabCallback callback);
+    [supportsPromises] static void enableTab(EnableTabParams args,
+                                             EnableTabCallback callback);
 
     // Enable automation of the tree with the given id.
     static void enableTree(DOMString tree_id);
 
     // Enables desktop automation.
-    static void enableDesktop(EnableDesktopCallback callback);
+    [supportsPromises] static void enableDesktop(
+        EnableDesktopCallback callback);
 
     // Performs an action on an automation node.
     static void performAction(PerformActionRequiredParams args,
                               object opt_args);
 
     // Performs a query selector query.
-    static void querySelector(QuerySelectorRequiredParams args,
-                              QuerySelectorCallback callback);
+    [supportsPromises] static void querySelector(
+        QuerySelectorRequiredParams args,
+        QuerySelectorCallback callback);
   };
 
   interface Events {
