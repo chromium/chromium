@@ -163,32 +163,29 @@ scoped_refptr<FontData> FontFallbackList::GetFontData(
   for (; curr_family; curr_family = curr_family->Next()) {
     family_index_++;
     if (!curr_family->FamilyName().IsEmpty()) {
-      scoped_refptr<FontData> result;
-      if (GetFontSelector()) {
-        result = GetFontSelector()->GetFontData(font_description, *curr_family);
+      if (!GetFontSelector()) {
+        if (auto result = FontCache::Get().GetFontData(
+                font_description, curr_family->FamilyName()))
+          return result;
+        continue;
       }
 
+      scoped_refptr<FontData> result =
+          GetFontSelector()->GetFontData(font_description, *curr_family);
       if (!result) {
         result = FontCache::Get().GetFontData(font_description,
                                               curr_family->FamilyName());
-        if (GetFontSelector()) {
-          GetFontSelector()->ReportFontLookupByUniqueOrFamilyName(
-              curr_family->FamilyName(), font_description,
-              DynamicTo<SimpleFontData>(result.get()));
-        }
+        GetFontSelector()->ReportFontLookupByUniqueOrFamilyName(
+            curr_family->FamilyName(), font_description,
+            DynamicTo<SimpleFontData>(result.get()));
       }
       if (result) {
-        if (GetFontSelector()) {
-          GetFontSelector()->ReportSuccessfulFontFamilyMatch(
-              curr_family->FamilyName());
-        }
+        GetFontSelector()->ReportSuccessfulFontFamilyMatch(
+            curr_family->FamilyName());
         return result;
       }
 
-      if (GetFontSelector()) {
-        GetFontSelector()->ReportFailedFontFamilyMatch(
-            curr_family->FamilyName());
-      }
+      GetFontSelector()->ReportFailedFontFamilyMatch(curr_family->FamilyName());
     }
   }
   family_index_ = kCAllFamiliesScanned;
