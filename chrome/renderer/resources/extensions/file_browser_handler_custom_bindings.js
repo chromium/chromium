@@ -4,9 +4,44 @@
 
 // Custom binding for the fileBrowserHandler API.
 
-var fileBrowserNatives = requireNative('file_browser_handler');
-var GetExternalFileEntry = fileBrowserNatives.GetExternalFileEntry;
-var fileBrowserHandlerInternal = getInternalApi('fileBrowserHandlerInternal');
+const fileBrowserNatives = requireNative('file_browser_handler');
+const fileSystemHelpers = requireNative('file_system_natives');
+const entryIdManager = require('entryIdManager');
+
+const GetExternalFileEntry = fileBrowserNatives.GetExternalFileEntry;
+const fileBrowserHandlerInternal = getInternalApi('fileBrowserHandlerInternal');
+const GetIsolatedFileSystem = fileSystemHelpers.GetIsolatedFileSystem;
+
+// Using Promise-like interface: We're avoiding Promise for safety, and $Promise
+// does not support the desired feature (Promise.allSettled()).
+function GetFileEntry(resolve, reject, item) {
+  if (item.hasOwnProperty('fileSystemName')) {
+    // Legacy flow for Ash. Errors (such as nonexistent file) are not detected
+    // here. These only arise downstream when the resulting Entry gets used.
+    resolve(GetExternalFileEntry(item));
+  } else if (item.hasOwnProperty('fileSystemId')) {
+    // New flow for Lacros. Some errors (such as nonexistent file) are detected
+    // here, and require handling.
+    const fs = GetIsolatedFileSystem(item.fileSystemId);
+    if (item.isDirectory) {
+      fs.root.getDirectory(item.baseName, {}, (dirEntry) => {
+        entryIdManager.registerEntry(item.entryId, dirEntry);
+        resolve(dirEntry);
+      }, (err) => {
+        reject(err.message);
+      });
+    } else {
+      fs.root.getFile(item.baseName, {}, (fileEntry) => {
+        entryIdManager.registerEntry(item.entryId, fileEntry);
+        resolve(fileEntry);
+      }, (err) => {
+        reject(err.message);
+      });
+    }
+  } else {
+    reject('Unknown file entry object.');
+  }
+}
 
 bindingUtil.registerEventArgumentMassager('fileBrowserHandler.onExecute',
                                           function(args, dispatch) {
@@ -14,17 +49,33 @@ bindingUtil.registerEventArgumentMassager('fileBrowserHandler.onExecute',
     dispatch(args);
     return;
   }
-  var fileList = args[1].entries;
+  // The second param for this event's payload is file definition dictionary.
+  const fileList = args[1].entries;
   if (!fileList) {
     dispatch(args);
     return;
   }
-  // The second parameter for this event's payload is file definition
-  // dictionary that we used to reconstruct File API's Entry instance
-  // here.
-  for (var i = 0; i < fileList.length; i++)
-    fileList[i] = GetExternalFileEntry(fileList[i]);
-  dispatch(args);
+
+  // Construct File API's Entry instances. $Promise.allSettled() is unavailable,
+  // so use a |barrier| counter and explicitly sort results.
+  const results = [];
+  let barrier = fileList.length;
+  const onFinish = () => {
+    results.sort((a, b) => a.key - b.key);
+    args[1].entries = $Array.map(results, item => item.entry);
+    dispatch(args);
+  };
+  const onResolve = (index, entry) => {
+    results.push({key: index, entry});
+    if (--barrier === 0) onFinish();
+  };
+  const onReject = (message) => {
+    console.error(message);
+    if (--barrier === 0) onFinish();
+  };
+  for (let i = 0; i < fileList.length; ++i) {
+    GetFileEntry(onResolve.bind(null, i), onReject, fileList[i]);
+  }
 });
 
 apiBridge.registerCustomHook(function(bindingsAPI) {
