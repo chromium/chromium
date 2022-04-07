@@ -570,9 +570,8 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
   std::vector<AuthenticatorRequestDialogModel::PairedPhone>
       paired_phone_entries;
   base::RepeatingCallback<void(size_t)> contact_phone_callback;
-  if ((!cable_extension_provided ||
-       base::FeatureList::IsEnabled(device::kWebAuthCableExtensionAnywhere)) &&
-      base::FeatureList::IsEnabled(device::kWebAuthCableSecondFactor)) {
+  if (!cable_extension_provided ||
+      base::FeatureList::IsEnabled(device::kWebAuthCableExtensionAnywhere)) {
     DCHECK(phone_names_.empty());
     DCHECK(phone_public_keys_.empty());
 
@@ -616,9 +615,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
 
   const bool android_accessory_possible =
       base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport) ||
-      cablev2_extension_provided ||
-      (!cable_extension_permitted &&
-       base::FeatureList::IsEnabled(device::kWebAuthCableSecondFactor));
+      cablev2_extension_provided || !cable_extension_permitted;
 
   absl::optional<std::array<uint8_t, device::cablev2::kQRKeySize>>
       qr_generator_key;

@@ -6715,9 +6715,8 @@ class ResidentKeyAuthenticatorImplWithFlagsTest
     : public ResidentKeyAuthenticatorImplTest {
  public:
   ResidentKeyAuthenticatorImplWithFlagsTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kWebAuthCable, device::kWebAuthCableSecondFactor},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitWithFeatures({features::kWebAuthCable},
+                                          /*disabled_features=*/{});
   }
 
  private:
