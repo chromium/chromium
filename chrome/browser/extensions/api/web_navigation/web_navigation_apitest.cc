@@ -42,10 +42,12 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/switches.h"
+#include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -672,7 +674,7 @@ class WebNavigationApiFencedFrameTest
                                {{"implementation_type",
                                  GetParam() ? "shadow_dom" : "mparch"}}}},
         /*disabled_features=*/{features::kSpareRendererForSitePerProcess});
-    // Fenced frames are only allowed in secure contexts.
+    // Fenced frames are only allowed in a secure context.
     UseHttpsTestServer();
   }
   ~WebNavigationApiFencedFrameTest() override = default;
@@ -692,4 +694,51 @@ INSTANTIATE_TEST_SUITE_P(WebNavigationApiFencedFrameTest,
                          WebNavigationApiFencedFrameTest,
                          testing::Bool());
 
+// Tests that the actual url of a fenced frame navaigation is visible to the
+// extensions
+IN_PROC_BROWSER_TEST_P(WebNavigationApiFencedFrameTest, MappedURL) {
+  EXPECT_TRUE(GetParam() ? blink::features::IsFencedFramesShadowDOMBased()
+                         : blink::features::IsFencedFramesMPArchBased());
+
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  GURL main_url = embedded_test_server()->GetURL(
+      "a.test",
+      "/extensions/api_test/webnavigation/fencedFramesMappedURL/main.html");
+  content::RenderFrameHost* rfh =
+      ui_test_utils::NavigateToURL(browser(), main_url);
+  ASSERT_FALSE(rfh->IsErrorDocument());
+
+  const char* kScript = R"(
+    var ff = document.createElement('fencedframe');
+    document.body.appendChild(ff);
+  )";
+  EXPECT_TRUE(content::ExecJs(rfh, kScript));
+
+  ExtensionTestMessageListener background_page_read("ready",
+                                                    /*will_reply=*/true);
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("webnavigation")
+                        .AppendASCII("fencedFramesMappedURL"));
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(background_page_read.WaitUntilSatisfied());
+  background_page_read.Reply(GetParam() ? "shadow_dom" : "mparch");
+  background_page_read.Reset();
+  ASSERT_TRUE(background_page_read.WaitUntilSatisfied());
+  background_page_read.Reply("");
+
+  GURL frame_url = embedded_test_server()->GetURL(
+      "b.test",
+      "/extensions/api_test/webnavigation/fencedFramesMappedURL/frame.html");
+
+  GURL urn_uuid = content::test::CreateFencedFrameURLMapping(rfh, frame_url);
+
+  ResultCatcher catcher;
+  EXPECT_TRUE(content::ExecJs(
+      rfh, content::JsReplace("ff.src = $1;", urn_uuid.spec())));
+  ASSERT_TRUE(catcher.GetNextResult()) << message_;
+
+  // The parent still sees the urn_uuid as the fenced frame src.
+  EXPECT_EQ(urn_uuid.spec(), content::EvalJs(rfh, "ff.src"));
+}
 }  // namespace extensions

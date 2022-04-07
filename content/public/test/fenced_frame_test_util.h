@@ -64,6 +64,11 @@ class FencedFrameTestHelper {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// This helper method creates a fenced frame urn to url mapping and returns the
+// urn in GURL format. It applies to both MPArch and ShadowDOM
+// architeectures of fenced frames
+GURL CreateFencedFrameURLMapping(RenderFrameHost* rfh, const GURL& url);
+
 }  // namespace test
 
 }  // namespace content

@@ -113,6 +113,15 @@ RenderFrameHost* FencedFrameTestHelper::GetMostRecentlyAddedFencedFrame(
   return fenced_frames.back()->GetInnerRoot();
 }
 
+GURL CreateFencedFrameURLMapping(RenderFrameHost* rfh, const GURL& url) {
+  FrameTreeNode* target_node =
+      static_cast<RenderFrameHostImpl*>(rfh)->frame_tree_node();
+  FencedFrameURLMapping& url_mapping =
+      target_node->current_frame_host()->GetPage().fenced_frame_urls_map();
+  GURL urn_uuid = url_mapping.AddFencedFrameURL(url);
+  EXPECT_TRUE(urn_uuid.is_valid());
+  return urn_uuid;
+}
 }  // namespace test
 
 }  // namespace content
