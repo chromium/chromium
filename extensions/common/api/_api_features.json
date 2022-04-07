@@ -336,6 +336,7 @@
       "chrome://history/*",
       "chrome://new-tab-page/*",
       "chrome://os-settings/*",
+      "chrome://personalization/*",
       "chrome://profile-picker/*",
       "chrome://read-later.top-chrome/*",
       "chrome://settings/*",

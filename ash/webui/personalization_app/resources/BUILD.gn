@@ -52,6 +52,7 @@ non_web_component_files = [
   "trusted/user/user_state.ts",
   "trusted/user/webcam_utils_proxy.ts",
   "trusted/utils.ts",
+  "trusted/wallpaper/google_photos_metrics_logger.ts",
   "trusted/wallpaper/wallpaper_actions.ts",
   "trusted/wallpaper/untrusted_message_handler.ts",
   "trusted/wallpaper/wallpaper_controller.ts",
@@ -184,6 +185,8 @@ ts_library("build_ts") {
 
   in_files = ts_files + css_wrapper_files + html_wrapper_files +
              [ "trusted/personalization_app.mojom-webui.js" ]
+
+  definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
 
   deps = [
     "//third_party/polymer/v3_0:library",

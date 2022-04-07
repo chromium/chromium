@@ -23,6 +23,7 @@ import {CurrentWallpaper, GooglePhotosAlbum, GooglePhotosPhoto, WallpaperImage, 
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isGooglePhotosPhoto} from '../utils.js';
 
+import {recordWallpaperGooglePhotosSourceUMA, WallpaperGooglePhotosSource} from './google_photos_metrics_logger.js';
 import {getTemplate} from './google_photos_photos_by_album_id_element.html.js';
 import {fetchGooglePhotosAlbum, selectWallpaper} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
@@ -230,6 +231,7 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
     assert(e.model.photo);
     if (!this.isPhotoPlaceholder_(e.model.photo) && isSelectionEvent(e)) {
       selectWallpaper(e.model.photo, this.wallpaperProvider_, this.getStore());
+      recordWallpaperGooglePhotosSourceUMA(WallpaperGooglePhotosSource.Albums);
     }
   }
 

@@ -4128,6 +4128,16 @@ chromium-metrics-reviews@google.com.
   <token key="Api" variants="GooglePhotosApi"/>
 </histogram>
 
+<histogram name="Ash.Wallpaper.GooglePhotos.Source"
+    enum="WallpaperGooglePhotosSource" expires_after="2022-11-15">
+  <owner>xiaohuic@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Records the section of the Wallpaper App from which a Google Photos
+    wallpaper was selected. Emitted regardless of the selection's success.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Wallpaper.Image" enum="WallpaperImage"
     expires_after="2022-05-25">
   <owner>jasontt@chromium.org</owner>

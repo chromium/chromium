@@ -94166,6 +94166,11 @@ others/histograms.xml -->
   <int value="11" label="(Light, Muted): success"/>
 </enum>
 
+<enum name="WallpaperGooglePhotosSource">
+  <int value="0" label="Photos"/>
+  <int value="1" label="Albums"/>
+</enum>
+
 <enum name="WallpaperImage">
   <summary>
     Enumeration for online wallpaper images. The label has the format of
