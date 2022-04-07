@@ -59,8 +59,6 @@ class TCPServerSocketFactory
 
   // content::DevToolsSocketFactory.
   std::unique_ptr<net::ServerSocket> CreateForHttpServer() override {
-    std::unique_ptr<net::ServerSocket> socket(
-        new net::TCPServerSocket(nullptr, net::NetLogSource()));
     return CreateLocalHostServerSocket(port_);
   }
 
