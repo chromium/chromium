@@ -202,13 +202,6 @@ class SingleClientBookmarksSyncTestWithEnabledThrottling : public SyncTest {
         syncer::kSyncExtensionTypesThrottling);
   }
 
-  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    SyncTest::SetUpDefaultCommandLine(command_line);
-    // These tests commit way too many entities to make the failure output
-    // practical.
-    command_line->AppendSwitch(switches::kDisableFakeServerFailureOutput);
-  }
-
   void SetUpInProcessBrowserTestFixture() override {
     SyncTest::SetUpInProcessBrowserTestFixture();
     create_services_subscription_ =
@@ -1821,16 +1814,16 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
 
   // Setup custom quota params: to effectively never refill.
   sync_pb::ClientCommand client_command;
-  client_command.set_extension_types_max_tokens(10);
+  client_command.set_extension_types_max_tokens(3);
   client_command.set_extension_types_refill_interval_seconds(10000);
   GetFakeServer()->SetClientCommand(client_command);
 
   // Add enough bookmarks to deplete quota in the initial cycle.
   const BookmarkNode* folder = AddFolder(
       kSingleProfileIndex, GetOtherNode(kSingleProfileIndex), 0, "Title");
-  // The quota is fully depleted in 10 messages. As the default number of
-  // entities per message on the client is 25, that requires 25*9+1 entities.
-  for (int i = 0; i < (25 * 9 + 1); i++) {
+  // The quota is fully depleted in 3 messages. As the default number of
+  // entities per message on the client is 25, that requires 25*2+1 entities.
+  for (int i = 0; i < (25 * 2 + 1); i++) {
     AddURL(kSingleProfileIndex, folder, 0, base::StringPrintf("url %u", i),
            GURL(base::StringPrintf("http://mail.google.com/%u", i)));
   }
@@ -1857,18 +1850,18 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
 
   // Setup custom quota params: to effectively never refill.
   sync_pb::ClientCommand client_command;
-  client_command.set_extension_types_max_tokens(10);
+  client_command.set_extension_types_max_tokens(3);
   client_command.set_extension_types_refill_interval_seconds(10000);
   GetFakeServer()->SetClientCommand(client_command);
 
   // Add enough bookmarks to deplete quota in the initial cycle.
   const BookmarkNode* folder = AddFolder(
       kSingleProfileIndex, GetOtherNode(kSingleProfileIndex), 0, "Title");
-  // The quota is fully depleted in 10 messages. As the default number of
-  // entities per message on the client is 25, that requires 25*9+1 entities.
-  // If the browser commits 100 more entities, this means 4x more commits hit
+  // The quota is fully depleted in 3 messages. As the default number of
+  // entities per message on the client is 25, that requires 25*2+1 entities.
+  // If the browser commits 100 more entities, this means 4 more commits hit
   // quota depletion.
-  for (int i = 0; i < (25 * 9 + 101); i++) {
+  for (int i = 0; i < (25 * 2 + 101); i++) {
     AddURL(kSingleProfileIndex, folder, 0, base::StringPrintf("url %u", i),
            GURL(base::StringPrintf("http://mail.google.com/%u", i)));
   }
@@ -1894,17 +1887,17 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
 
   // Setup custom quota params: to effectively never refill.
   sync_pb::ClientCommand client_command;
-  client_command.set_extension_types_max_tokens(10);
+  client_command.set_extension_types_max_tokens(4);
   client_command.set_extension_types_refill_interval_seconds(10000);
   GetFakeServer()->SetClientCommand(client_command);
 
   // Add not enough bookmarks to deplete quota in the initial cycle.
   const BookmarkNode* folder = AddFolder(
       kSingleProfileIndex, GetOtherNode(kSingleProfileIndex), 0, "Title");
-  // The quota is still not fully depleted after 9 messages. As the default
-  // number of entities per message on the client is 25, sending 8 messages
-  // requires 25*7+1 entities. One extra message is sent later.
-  for (int i = 0; i < (25 * 7 + 1); i++) {
+  // The quota is still not fully depleted after 3 messages. As the default
+  // number of entities per message on the client is 25, sending 2 messages
+  // requires 25+1 entities. One extra message is sent later.
+  for (int i = 0; i < (25 + 1); i++) {
     AddURL(kSingleProfileIndex, folder, 0, base::StringPrintf("url %u", i),
            GURL(base::StringPrintf("http://mail.google.com/%u", i)));
   }
@@ -1937,10 +1930,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
                        DISABLED_DepleteQuotaAndRecover) {
   ASSERT_TRUE(SetupClients());
 
-  // Setup custom quota params: 10 token that effectively never refill and
-  // custom nudge delay of only 2 seconds.
+  // Setup custom quota params: to effectively never refill, and custom nudge
+  // delay of only 2 seconds.
   sync_pb::ClientCommand client_command;
-  client_command.set_extension_types_max_tokens(10);
+  client_command.set_extension_types_max_tokens(3);
   client_command.set_extension_types_refill_interval_seconds(10000);
   client_command.set_extension_types_depleted_quota_nudge_delay_seconds(2);
   GetFakeServer()->SetClientCommand(client_command);
@@ -1948,9 +1941,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
   // Add enough bookmarks to deplete quota in the initial cycle.
   const BookmarkNode* folder = AddFolder(
       kSingleProfileIndex, GetOtherNode(kSingleProfileIndex), 0, "Title");
-  // The quota is fully depleted in 10 messages. As the default number of
-  // entities per message on the client is 25, that requires 25*9+1 entities.
-  for (int i = 0; i < (25 * 9 + 1); i++) {
+  // The quota is fully depleted in 3 messages. As the default number of
+  // entities per message on the client is 25, that requires 25*2+1 entities.
+  for (int i = 0; i < (25 * 2 + 1); i++) {
     AddURL(kSingleProfileIndex, folder, 0, base::StringPrintf("url %u", i),
            GURL(base::StringPrintf("http://mail.google.com/%u", i)));
   }
