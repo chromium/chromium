@@ -805,6 +805,7 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
     const NGPhysicalBoxFragment* box_fragment = nullptr;
     wtf_size_t fragmentainer_idx =
         context.current_fragmentainer.fragmentainer_idx;
+    const ContainingFragment* oof_containing_fragment_info = nullptr;
     PhysicalOffset paint_offset;
     const auto* child_box = DynamicTo<LayoutBox>(child);
     bool is_first_for_node = true;
@@ -919,20 +920,20 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
       // be the right place to search.
       const NGPhysicalBoxFragment* search_fragment = parent_fragment;
       if (child_box->IsOutOfFlowPositioned()) {
-        const ContainingFragment& containing_fragment_info =
+        oof_containing_fragment_info =
             child_box->IsFixedPositioned()
-                ? context.fixed_positioned_container
-                : context.absolute_positioned_container;
+                ? &context.fixed_positioned_container
+                : &context.absolute_positioned_container;
         if (context.current_fragmentainer.fragmentation_nesting_level !=
-            containing_fragment_info.fragmentation_nesting_level) {
+            oof_containing_fragment_info->fragmentation_nesting_level) {
           // Only walk OOFs once if they aren't contained within the current
           // fragmentation context.
           if (!context.is_parent_first_for_node)
             continue;
         }
 
-        search_fragment = containing_fragment_info.fragment;
-        fragmentainer_idx = containing_fragment_info.fragmentainer_idx;
+        search_fragment = oof_containing_fragment_info->fragment;
+        fragmentainer_idx = oof_containing_fragment_info->fragmentainer_idx;
       }
 
       if (search_fragment) {
@@ -958,7 +959,20 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
       NGPrePaintInfo pre_paint_info(*box_fragment, paint_offset,
                                     fragmentainer_idx, is_first_for_node,
                                     is_last_for_node, is_inside_fragment_child);
-      Walk(*child, context, &pre_paint_info);
+      if (oof_containing_fragment_info &&
+          context.current_fragmentainer.fragmentation_nesting_level !=
+              oof_containing_fragment_info->fragmentation_nesting_level) {
+        // We're walking an out-of-flow positioned descendant that isn't in the
+        // same fragmentation context as parent_object. Update the context, so
+        // that we create FragmentData objects correctly both for the descendant
+        // and all its descendants.
+        PrePaintTreeWalkContext oof_context(
+            context, NeedsTreeBuilderContextUpdate(*child, context));
+        oof_context.current_fragmentainer = *oof_containing_fragment_info;
+        Walk(*child, oof_context, &pre_paint_info);
+      } else {
+        Walk(*child, context, &pre_paint_info);
+      }
     } else {
       Walk(*child, context, /* pre_paint_info */ nullptr);
     }
