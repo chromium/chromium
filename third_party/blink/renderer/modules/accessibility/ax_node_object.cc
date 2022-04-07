@@ -227,24 +227,41 @@ enum class AXAction {
 blink::KeyboardEvent* CreateKeyboardEvent(
     blink::LocalDOMWindow* local_dom_window,
     blink::WebInputEvent::Type type,
-    AXAction action) {
+    AXAction action,
+    blink::AccessibilityOrientation orientation,
+    ax::mojom::blink::WritingDirection text_direction) {
   blink::WebKeyboardEvent key(type,
                               blink::WebInputEvent::Modifiers::kNoModifiers,
                               base::TimeTicks::Now());
 
-  // TODO(crbug.com/1099069): Fire different arrow events depending on
-  // orientation and dir (RTL/LTR)
-  switch (action) {
-    case AXAction::kActionIncrement:
+  if (action == AXAction::kActionIncrement) {
+    if (orientation == blink::kAccessibilityOrientationVertical) {
       key.dom_key = ui::DomKey::ARROW_UP;
       key.dom_code = static_cast<int>(ui::DomCode::ARROW_UP);
       key.native_key_code = key.windows_key_code = blink::VKEY_UP;
-      break;
-    case AXAction::kActionDecrement:
+    } else if (text_direction == ax::mojom::blink::WritingDirection::kRtl) {
+      key.dom_key = ui::DomKey::ARROW_LEFT;
+      key.dom_code = static_cast<int>(ui::DomCode::ARROW_LEFT);
+      key.native_key_code = key.windows_key_code = blink::VKEY_LEFT;
+    } else {  // horizontal and left to right
+      key.dom_key = ui::DomKey::ARROW_RIGHT;
+      key.dom_code = static_cast<int>(ui::DomCode::ARROW_RIGHT);
+      key.native_key_code = key.windows_key_code = blink::VKEY_RIGHT;
+    }
+  } else if (action == AXAction::kActionDecrement) {
+    if (orientation == blink::kAccessibilityOrientationVertical) {
       key.dom_key = ui::DomKey::ARROW_DOWN;
       key.dom_code = static_cast<int>(ui::DomCode::ARROW_DOWN);
       key.native_key_code = key.windows_key_code = blink::VKEY_DOWN;
-      break;
+    } else if (text_direction == ax::mojom::blink::WritingDirection::kRtl) {
+      key.dom_key = ui::DomKey::ARROW_RIGHT;
+      key.dom_code = static_cast<int>(ui::DomCode::ARROW_RIGHT);
+      key.native_key_code = key.windows_key_code = blink::VKEY_RIGHT;
+    } else {  // horizontal and left to right
+      key.dom_key = ui::DomKey::ARROW_LEFT;
+      key.dom_code = static_cast<int>(ui::DomCode::ARROW_LEFT);
+      key.native_key_code = key.windows_key_code = blink::VKEY_LEFT;
+    }
   }
 
   return blink::KeyboardEvent::Create(key, local_dom_window, true);
@@ -365,9 +382,12 @@ void AXNodeObject::AlterSliderOrSpinButtonValue(bool increase) {
   AXAction action =
       increase ? AXAction::kActionIncrement : AXAction::kActionDecrement;
   LocalDOMWindow* local_dom_window = GetDocument()->domWindow();
+  AccessibilityOrientation orientation = Orientation();
+  ax::mojom::blink::WritingDirection text_direction = GetTextDirection();
 
-  KeyboardEvent* keydown = CreateKeyboardEvent(
-      local_dom_window, WebInputEvent::Type::kRawKeyDown, action);
+  KeyboardEvent* keydown =
+      CreateKeyboardEvent(local_dom_window, WebInputEvent::Type::kRawKeyDown,
+                          action, orientation, text_direction);
   GetNode()->DispatchEvent(*keydown);
 
   // TODO(crbug.com/1099069): add a brief pause between keydown and keyup?
@@ -377,8 +397,9 @@ void AXNodeObject::AlterSliderOrSpinButtonValue(bool increase) {
   if (!GetNode())
     return;
 
-  KeyboardEvent* keyup = CreateKeyboardEvent(
-      local_dom_window, WebInputEvent::Type::kKeyUp, action);
+  KeyboardEvent* keyup =
+      CreateKeyboardEvent(local_dom_window, WebInputEvent::Type::kKeyUp, action,
+                          orientation, text_direction);
   GetNode()->DispatchEvent(*keyup);
 }
 
