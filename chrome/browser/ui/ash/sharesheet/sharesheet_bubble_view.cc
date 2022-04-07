@@ -55,7 +55,8 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/table_layout_view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -90,16 +91,11 @@ constexpr auto kAnimateDelay = base::Milliseconds(100);
 constexpr auto kQuickAnimateTime = base::Milliseconds(100);
 constexpr auto kSlowAnimateTime = base::Milliseconds(200);
 
-// Resize Percentage.
-constexpr int kStretchy = 1.0;
-
-enum { kColumnSetIdTitle, kColumnSetIdTargets };
-
-void SetUpTargetColumnSet(views::GridLayout* layout) {
-  views::ColumnSet* cs = layout->AddColumnSet(kColumnSetIdTargets);
+void SetUpTargetColumns(views::TableLayoutView* view) {
   for (int i = 0; i < kMaxTargetsPerRow; i++) {
-    cs->AddColumn(views::GridLayout::CENTER, views::GridLayout::LEADING, 0,
-                  views::GridLayout::ColumnSize::kFixed, kButtonWidth, 0);
+    view->AddColumn(views::LayoutAlignment::kCenter,
+                    views::LayoutAlignment::kStart, 0,
+                    views::TableLayout::ColumnSize::kFixed, kButtonWidth, 0);
   }
 }
 
@@ -301,47 +297,40 @@ void SharesheetBubbleView::ShowNearbyShareBubbleForArc(
 std::unique_ptr<views::View> SharesheetBubbleView::MakeScrollableTargetView(
     std::vector<TargetInfo> targets) {
   // Set up default and expanded views.
-  auto default_view = std::make_unique<views::View>();
+  auto default_view = std::make_unique<views::TableLayoutView>();
   default_view->SetProperty(views::kMarginsKey, gfx::Insets::VH(0, kSpacing));
-  auto* default_layout =
-      default_view->SetLayoutManager(std::make_unique<views::GridLayout>());
-  SetUpTargetColumnSet(default_layout);
-  default_layout->AddPaddingRow(views::GridLayout::kFixedSize, kShortSpacing);
+  SetUpTargetColumns(default_view.get());
+  default_view->AddPaddingRow(views::TableLayout::kFixedSize, kShortSpacing);
 
-  views::GridLayout* expanded_layout = nullptr;
-  std::unique_ptr<views::View> expanded_view;
+  std::unique_ptr<views::BoxLayoutView> expanded_view_container;
+  views::TableLayoutView* expanded_view_table = nullptr;
   if (targets.size() > kMaxTargetsPerRow * kMaxRowsForDefaultView) {
-    expanded_view = std::make_unique<views::View>();
-    expanded_view->SetProperty(views::kMarginsKey,
-                               gfx::Insets::VH(0, kSpacing));
-    expanded_layout =
-        expanded_view->SetLayoutManager(std::make_unique<views::GridLayout>());
-    SetUpTargetColumnSet(expanded_layout);
-    views::ColumnSet* cs_expanded_view =
-        expanded_layout->AddColumnSet(kColumnSetIdTitle);
-    cs_expanded_view->AddColumn(/* h_align */ views::GridLayout::FILL,
-                                /* v_align */ views::GridLayout::LEADING,
-                                /* resize_percent */ kStretchy,
-                                views::GridLayout::ColumnSize::kUsePreferred,
-                                /* fixed_width */ 0, /* min_width */ 0);
-    // Add Extended View Title.
-    expanded_layout->AddPaddingRow(views::GridLayout::kFixedSize,
-                                   kExpandViewPaddingTop);
-    expanded_layout->StartRow(views::GridLayout::kFixedSize, kColumnSetIdTitle);
+    expanded_view_container = std::make_unique<views::BoxLayoutView>();
+    expanded_view_container->SetProperty(views::kMarginsKey,
+                                         gfx::Insets::VH(0, kSpacing));
+    expanded_view_container->SetOrientation(
+        views::BoxLayout::Orientation::kVertical);
+
     ScopedLightModeAsDefault scoped_light_mode_as_default;
-    expanded_layout->AddView(CreateShareLabel(
-        l10n_util::GetStringUTF16(IDS_SHARESHEET_APPS_LIST_LABEL),
-        CONTEXT_SHARESHEET_BUBBLE_BODY, kSubtitleTextLineHeight,
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kTextColorPrimary),
-        gfx::ALIGN_CENTER));
-    expanded_layout->AddPaddingRow(views::GridLayout::kFixedSize,
-                                   kExpandViewPaddingBottom);
+    expanded_view_container
+        ->AddChildView(CreateShareLabel(
+            l10n_util::GetStringUTF16(IDS_SHARESHEET_APPS_LIST_LABEL),
+            CONTEXT_SHARESHEET_BUBBLE_BODY, kSubtitleTextLineHeight,
+            AshColorProvider::Get()->GetContentLayerColor(
+                AshColorProvider::ContentLayerType::kTextColorPrimary),
+            gfx::ALIGN_CENTER))
+        ->SetProperty(views::kMarginsKey,
+                      gfx::Insets::TLBR(kExpandViewPaddingTop, 0,
+                                        kExpandViewPaddingBottom, 0));
+
+    expanded_view_table = expanded_view_container->AddChildView(
+        std::make_unique<views::TableLayoutView>());
+    SetUpTargetColumns(expanded_view_table);
   }
 
-  PopulateLayoutsWithTargets(std::move(targets), default_layout,
-                             expanded_layout);
-  default_layout->AddPaddingRow(views::GridLayout::kFixedSize, kShortSpacing);
+  PopulateLayoutsWithTargets(std::move(targets), default_view.get(),
+                             expanded_view_table);
+  default_view->AddPaddingRow(views::TableLayout::kFixedSize, kShortSpacing);
 
   auto scrollable_view = std::make_unique<views::View>();
   auto* layout =
@@ -350,13 +339,13 @@ std::unique_ptr<views::View> SharesheetBubbleView::MakeScrollableTargetView(
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
   default_view_ = scrollable_view->AddChildView(std::move(default_view));
   default_view_->SetID(TARGETS_DEFAULT_VIEW_ID);
-  if (expanded_layout) {
+  if (expanded_view_container) {
     expanded_view_separator_ =
         scrollable_view->AddChildView(std::make_unique<views::Separator>());
     expanded_view_separator_->SetProperty(views::kMarginsKey,
                                           gfx::Insets::VH(0, kSpacing));
-    expanded_view_ = scrollable_view->AddChildView(std::move(expanded_view));
-    expanded_view_->SetID(TARGETS_EXPANDED_VIEW_ID);
+    expanded_view_ =
+        scrollable_view->AddChildView(std::move(expanded_view_container));
     // |expanded_view_| is not visible by default.
     expanded_view_->SetVisible(false);
     expanded_view_separator_->SetVisible(false);
@@ -367,24 +356,23 @@ std::unique_ptr<views::View> SharesheetBubbleView::MakeScrollableTargetView(
 
 void SharesheetBubbleView::PopulateLayoutsWithTargets(
     std::vector<TargetInfo> targets,
-    views::GridLayout* default_layout,
-    views::GridLayout* expanded_layout) {
+    views::TableLayoutView* default_view,
+    views::TableLayoutView* expanded_view) {
   // Add first kMaxRowsForDefaultView*kMaxTargetsPerRow targets to
   // |default_view| and subsequent targets to |expanded_view|.
   size_t row_count = 0;
   size_t target_counter = 0;
-  auto* layout_for_target = default_layout;
+  auto* view_for_target = default_view;
   for (auto& target : targets) {
     if (target_counter % kMaxTargetsPerRow == 0) {
       // When we've reached kMaxRowsForDefaultView switch to populating
       // |expanded_layout|.
       if (row_count == kMaxRowsForDefaultView) {
-        DCHECK(expanded_layout);
-        layout_for_target = expanded_layout;
+        DCHECK(expanded_view);
+        view_for_target = expanded_view;
       }
       ++row_count;
-      layout_for_target->StartRow(views::GridLayout::kFixedSize,
-                                  kColumnSetIdTargets);
+      view_for_target->AddRows(1, views::TableLayout::kFixedSize);
     }
     ++target_counter;
 
@@ -394,13 +382,11 @@ void SharesheetBubbleView::PopulateLayoutsWithTargets(
         target.secondary_display_name.value_or(std::u16string());
     absl::optional<gfx::ImageSkia> icon = target.icon;
 
-    auto target_view = std::make_unique<SharesheetTargetButton>(
+    view_for_target->AddChildView(std::make_unique<SharesheetTargetButton>(
         base::BindRepeating(&SharesheetBubbleView::TargetButtonPressed,
                             base::Unretained(this), target),
         display_name, secondary_display_name, icon,
-        delegator_->GetVectorIcon(display_name));
-
-    layout_for_target->AddView(std::move(target_view));
+        delegator_->GetVectorIcon(display_name)));
   }
 }
 
@@ -541,10 +527,11 @@ bool SharesheetBubbleView::OnKeyPressed(const ui::KeyEvent& event) {
   }
 
   const size_t default_views = default_view_->children().size();
-  // The -1 here and +1 below account for the app list label.
+  auto* expanded_view_table =
+      show_expanded_view_ ? expanded_view_->children()[1] : nullptr;
   const size_t targets =
       default_views +
-      (show_expanded_view_ ? (expanded_view_->children().size() - 1) : 0);
+      (show_expanded_view_ ? expanded_view_table->children().size() : 0);
   const int new_target = static_cast<int>(keyboard_highlighted_target_) + delta;
   keyboard_highlighted_target_ = static_cast<size_t>(
       base::clamp(new_target, 0, static_cast<int>(targets) - 1));
@@ -552,7 +539,8 @@ bool SharesheetBubbleView::OnKeyPressed(const ui::KeyEvent& event) {
   if (keyboard_highlighted_target_ < default_views) {
     default_view_->children()[keyboard_highlighted_target_]->RequestFocus();
   } else {
-    expanded_view_->children()[keyboard_highlighted_target_ + 1 - default_views]
+    expanded_view_table
+        ->children()[keyboard_highlighted_target_ - default_views]
         ->RequestFocus();
   }
   return true;
