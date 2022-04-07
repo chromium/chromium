@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/diagnostics/diagnostics_browser_delegate.h"
+#include "base/files/file_path.h"
 
 namespace ash {
 namespace diagnostics {
@@ -30,6 +31,11 @@ class ASH_EXPORT DiagnosticsLogController {
   // Check if DiagnosticsLogController is ready for use.
   static bool IsInitialized();
   static void Initialize(std::unique_ptr<DiagnosticsBrowserDelegate> delegate);
+
+  // GenerateSessionLogOnBlockingPool needs to be run on blocking
+  // thread. Stores combined log at |save_file_path| and returns
+  // whether file creation is successful.
+  bool GenerateSessionLogOnBlockingPool(const base::FilePath& save_file_path);
 
  private:
   std::unique_ptr<DiagnosticsBrowserDelegate> delegate_;

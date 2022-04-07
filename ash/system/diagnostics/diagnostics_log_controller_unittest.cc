@@ -10,7 +10,8 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
-#include "base/memory/ptr_util.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,6 +19,9 @@ namespace ash {
 namespace diagnostics {
 
 namespace {
+
+const char kLogFileContents[] = "Diagnostics Log";
+const char kTestSessionLogFileName[] = "test_session_log.txt";
 
 // Fake delegate used to set the expected user directory path.
 class FakeDiagnosticsBrowserDelegate : public DiagnosticsBrowserDelegate {
@@ -45,8 +49,15 @@ class DiagnosticsLogControllerTest : public NoSessionAshTestBase {
     NoSessionAshTestBase::SetUp();
   }
 
+ protected:
+  base::FilePath GetSessionLogPath() {
+    EXPECT_TRUE(save_dir_.CreateUniqueTempDir());
+    return save_dir_.GetPath().Append(kTestSessionLogFileName);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
+  base::ScopedTempDir save_dir_;
 };
 
 TEST_F(DiagnosticsLogControllerTest,
@@ -61,6 +72,17 @@ TEST_F(DiagnosticsLogControllerTest, IsInitializedAfterDelegateProvided) {
   DiagnosticsLogController::Initialize(
       std::make_unique<FakeDiagnosticsBrowserDelegate>());
   EXPECT_TRUE(DiagnosticsLogController::IsInitialized());
+}
+
+TEST_F(DiagnosticsLogControllerTest, GenerateSessionLogOnBlockingPoolFile) {
+  const base::FilePath save_file_path = GetSessionLogPath();
+  EXPECT_TRUE(DiagnosticsLogController::Get()->GenerateSessionLogOnBlockingPool(
+      save_file_path));
+  EXPECT_TRUE(base::PathExists(save_file_path));
+
+  std::string contents;
+  EXPECT_TRUE(base::ReadFileToString(save_file_path, &contents));
+  EXPECT_EQ(kLogFileContents, contents);
 }
 
 }  // namespace diagnostics

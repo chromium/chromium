@@ -6,7 +6,8 @@
 
 #include "ash/system/diagnostics/diagnostics_browser_delegate.h"
 #include "base/check_op.h"
-#include "base/notreached.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 
 namespace ash {
 namespace diagnostics {
@@ -14,6 +15,9 @@ namespace diagnostics {
 namespace {
 
 DiagnosticsLogController* g_instance = nullptr;
+
+// Placeholder session log contents.
+const char kLogFileContents[] = "Diagnostics Log";
 
 }  // namespace
 
@@ -42,6 +46,15 @@ void DiagnosticsLogController::Initialize(
     std::unique_ptr<DiagnosticsBrowserDelegate> delegate) {
   DCHECK(g_instance);
   g_instance->delegate_ = std::move(delegate);
+}
+
+bool DiagnosticsLogController::GenerateSessionLogOnBlockingPool(
+    const base::FilePath& save_file_path) {
+  DCHECK(!save_file_path.empty());
+
+  // TODO(ashleydp): Replace |kLogFileContents| when actual log contents
+  // available to write to file.
+  return base::WriteFile(save_file_path, kLogFileContents);
 }
 
 }  // namespace diagnostics
