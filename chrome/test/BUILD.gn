@@ -5307,6 +5307,10 @@ test("unit_tests") {
     ]
   }
 
+  if (enable_side_search) {
+    sources += [ "../browser/page_load_metrics/observers/side_search_page_load_metrics_observer_unittest.cc" ]
+  }
+
   if (is_android) {
     sources += [
       "../browser/android/bookmarks/partner_bookmarks_shim_unittest.cc",

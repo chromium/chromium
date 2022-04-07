@@ -4,8 +4,7 @@
 
 #include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
 
-#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
-#include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/browser.h"
@@ -23,6 +22,10 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/tab_helper.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 SideSearchTabContentsHelper::~SideSearchTabContentsHelper() = default;
 
@@ -148,9 +151,15 @@ void SideSearchTabContentsHelper::CreateSidePanelContents() {
   task_manager::WebContentsTags::CreateForTabContents(
       side_panel_contents_.get());
 
-  // Sets helpers required for the side contents.
+  // Set helpers required for the side contents. We must add relevant tab
+  // helpers here explicitly as TabHelpers::AttachTabHelpers() is only called
+  // for tab WebContents. If called here it would add helpers that do not make
+  // sense / are not relevant for non-tab WebContents.
   PrefsTabHelper::CreateForWebContents(side_panel_contents_.get());
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::TabHelper::CreateForWebContents(side_panel_contents_.get());
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  chrome::InitializePageLoadMetricsForWebContents(side_panel_contents_.get());
 
   SideSearchSideContentsHelper::CreateForWebContents(
       side_panel_contents_.get());

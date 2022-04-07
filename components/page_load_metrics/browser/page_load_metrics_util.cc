@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/metrics/histogram_functions.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/common/page_visit_final_status.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -103,6 +104,16 @@ bool QueryContainsComponentHelper(const base::StringPiece query,
 }
 
 }  // namespace
+
+void UmaMaxCumulativeShiftScoreHistogram10000x(
+    const std::string& name,
+    const page_load_metrics::NormalizedCLSData& normalized_cls_data) {
+  base::UmaHistogramCustomCounts(
+      name,
+      page_load_metrics::LayoutShiftUmaValue10000(
+          normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls),
+      1, 24000, 50);
+}
 
 bool WasStartedInForegroundOptionalEventInForeground(
     const absl::optional<base::TimeDelta>& event,

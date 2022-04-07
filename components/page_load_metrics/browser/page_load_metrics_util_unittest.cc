@@ -4,6 +4,7 @@
 
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -233,4 +234,16 @@ TEST_F(PageLoadMetricsUtilTest, QueryContainsComponentPrefix) {
                                                               test.component))
         << "For query: " << test.query << " with component: " << test.component;
   }
+}
+
+TEST_F(PageLoadMetricsUtilTest, UmaMaxCumulativeShiftScoreHistogram) {
+  constexpr char kTestMaxCumulativeShiftScoreSessionWindow[] = "Test";
+  const page_load_metrics::NormalizedCLSData normalized_cls_data{0.5, false};
+  base::HistogramTester histogram_tester;
+  page_load_metrics::UmaMaxCumulativeShiftScoreHistogram10000x(
+      kTestMaxCumulativeShiftScoreSessionWindow, normalized_cls_data);
+  histogram_tester.ExpectTotalCount(kTestMaxCumulativeShiftScoreSessionWindow,
+                                    1);
+  histogram_tester.ExpectBucketCount(kTestMaxCumulativeShiftScoreSessionWindow,
+                                     5000, 1);
 }
