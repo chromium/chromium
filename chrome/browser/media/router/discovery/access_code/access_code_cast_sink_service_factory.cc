@@ -22,7 +22,7 @@ AccessCodeCastSinkService* AccessCodeCastSinkServiceFactory::GetForProfile(
   // GetServiceForBrowserContext returns a KeyedService hence the static_cast<>
   // to return a pointer to AccessCodeCastSinkService.
   return static_cast<AccessCodeCastSinkService*>(
-      GetInstance()->GetServiceForBrowserContext(profile, false));
+      GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
 // static
@@ -42,16 +42,12 @@ AccessCodeCastSinkServiceFactory::~AccessCodeCastSinkServiceFactory() = default;
 
 KeyedService* AccessCodeCastSinkServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {
-  if (!GetAccessCodeCastEnabledPref(
-          Profile::FromBrowserContext(profile)->GetPrefs())) {
-    return nullptr;
-  }
   return new AccessCodeCastSinkService(static_cast<Profile*>(profile));
 }
 
 bool AccessCodeCastSinkServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
-  return true;
+  return false;
 }
 
 bool AccessCodeCastSinkServiceFactory::ServiceIsNULLWhileTesting() const {

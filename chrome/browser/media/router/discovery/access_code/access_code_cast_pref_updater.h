@@ -41,42 +41,6 @@ class AccessCodeCastPrefUpdater {
   // exist, then update the value of that |sink_id| with a new time.
   void UpdateDeviceAdditionTimeDict(const MediaSink::Id sink_id);
 
-  // Returns a nullptr if the device dictionary does not exist in the pref
-  // service for some reason.
-  const base::Value* GetDevicesDict();
-
-  // Returns a nullptr if the network dictionary does not exist in the pref
-  // service for some reason.
-  const base::Value* GetDiscoveredNetworksDict();
-
-  // Returns a nullptr if the device addition dictionary does not exist in the
-  // pref service for some reason.
-  const base::Value* GetDeviceAdditionTimeDict();
-
-  // If found, it returns a pointer to the element. Otherwise it returns
-  // nullptr.
-  const base::Value::List* GetSinkIdsByNetworkId(const std::string& network_id);
-
-  // If found, it returns a pointer to the element. Otherwise it returns
-  // nullptr.
-  const base::Value* GetMediaSinkInternalValueBySinkId(
-      const MediaSink::Id sink_id);
-
-  // Removes the given |sink_id| from all instances in the devices dictionary
-  // stored in the pref service. Nothing occurs if the |sink_id| was not there
-  // in the first place.
-  void RemoveSinkIdFromDevicesDict(const MediaSink::Id sink_id);
-
-  // Removes the given |sink_id| from all instances in the network dictionary
-  // stored in the pref service. Nothing occurs if the |sink_id| was not there
-  // in the first place.
-  void RemoveSinkIdFromDiscoveredNetworksDict(const MediaSink::Id sink_id);
-
-  // Removes the given |sink_id| from all instances in the device addition
-  // dictionary stored in the pref service. Nothing occurs if the |sink_id| was
-  // not there in the first place.
-  void RemoveSinkIdFromDeviceAdditionTimeDict(const MediaSink::Id sink_id);
-
   base::WeakPtr<AccessCodeCastPrefUpdater> GetWeakPtr();
 
  private:

@@ -27,8 +27,7 @@ namespace media_router {
 using ChannelOpenedCallback = base::OnceCallback<void(bool)>;
 using AddSinkResultCode = access_code_cast::mojom::AddSinkResultCode;
 
-class AccessCodeCastSinkService : public KeyedService,
-                                  public DiscoveryNetworkMonitor::Observer {
+class AccessCodeCastSinkService : public KeyedService {
  public:
   using DiscoveryDevice = chrome_browser_media::proto::DiscoveryDevice;
 
@@ -87,8 +86,6 @@ class AccessCodeCastSinkService : public KeyedService,
     // Set of route ids that is updated whenever OnRoutesUpdated is called.
     std::vector<MediaRoute::Id> old_routes_;
 
-    MediaRoute::Id removed_route_id_;
-
     const raw_ptr<AccessCodeCastSinkService> access_code_sink_service_;
 
     base::WeakPtrFactory<AccessCodeMediaRoutesObserver> weak_ptr_factory_{this};
@@ -118,21 +115,12 @@ class AccessCodeCastSinkService : public KeyedService,
                            OnChannelOpenedFailure);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            SinkDoesntExistForPrefs);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           TestFetchAndAddStoredDevices);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest, TestChangeNetworks);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           TestAddInvalidDevicesNoMediaSinkInternal);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           TestFetchAndAddStoredDevicesNoNetwork);
 
   // Constructor used for testing.
   AccessCodeCastSinkService(
       Profile* profile,
       MediaRouter* media_router,
-      CastMediaSinkServiceImpl* cast_media_sink_service_impl,
-      DiscoveryNetworkMonitor* network_monitor,
-      PrefService* prefs);
+      CastMediaSinkServiceImpl* cast_media_sink_service_impl);
 
   // Use |AccessCodeCastSinkServiceFactory::GetForProfile(..)| to get
   // an instance of this service.
@@ -151,23 +139,6 @@ class AccessCodeCastSinkService : public KeyedService,
   void OpenChannelIfNecessary(const MediaSinkInternal& sink,
                               AddSinkResultCallback add_sink_callback,
                               bool has_sink);
-
-  void InitStoredDeviceConnections();
-  void FetchAndAddStoredDevices(const std::string& network_id);
-  void AddStoredDevicesToMediaRouter(const base::Value::List& sink_ids);
-
-  // Removes the given |sink_id| from all entries in the AccessCodeCast pref
-  // service.
-  void RemoveSinkIdFromAllEntries(const MediaSink::Id& sink_id);
-
-  // Validates the given |sink_id| is present and properly stored as a
-  // MediaSinkInternal in the pref store. If the sink is present, a
-  // MediaSinkInternal will be returned in the optional value.
-  const absl::optional<MediaSinkInternal> ValidateDeviceFromSinkId(
-      const MediaSink::Id& sink_id);
-
-  // DiscoveryNetworkMonitor::Observer implementation
-  void OnNetworksChanged(const std::string& network_id) override;
 
   cast_channel::CastSocketOpenParams CreateCastSocketOpenParams(
       const MediaSinkInternal& sink);
