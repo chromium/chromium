@@ -32,6 +32,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/trace_util.h"
 
@@ -292,6 +293,8 @@ gpu::SyncToken OneCopyRasterBufferProvider::PlaybackAndCopyOnWorkerThread(
   std::unique_ptr<StagingBuffer> staging_buffer =
       staging_pool_.AcquireStagingBuffer(resource_size, resource_format,
                                          previous_content_id);
+  DCHECK(staging_buffer->size.width() >= raster_full_rect.width() &&
+         staging_buffer->size.height() >= raster_full_rect.height());
 
   PlaybackToStagingBuffer(staging_buffer.get(), raster_source, raster_full_rect,
                           raster_dirty_rect, transform, resource_format,
@@ -393,6 +396,8 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
     return gpu::SyncToken();
   }
 
+  bool needs_clear = false;
+
   if (mailbox->IsZero()) {
     uint32_t usage =
         gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_RASTER;
@@ -401,6 +406,9 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
     *mailbox = sii->CreateSharedImage(
         resource_format, resource_size, color_space, kTopLeft_GrSurfaceOrigin,
         kPremul_SkAlphaType, usage, gpu::kNullSurfaceHandle);
+    // Clear the resource if we're not going to initialize it fully from the
+    // copy due to non-exact resource reuse.  See https://crbug.com/1313091
+    needs_clear = rect_to_copy.size() != resource_size;
   }
 
   // Create staging shared image.
@@ -450,6 +458,20 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
       ri->GenQueriesEXT(1, &staging_buffer->query_id);
 
     ri->BeginQueryEXT(query_target, staging_buffer->query_id);
+  }
+
+  // Clear to ensure the resource is fully initialized and BeginAccess succeeds.
+  if (needs_clear) {
+    int clear_bytes_per_row = viz::ResourceSizes::UncheckedWidthInBytes<int>(
+        resource_size.width(), resource_format);
+    SkImageInfo dst_info = SkImageInfo::MakeN32Premul(resource_size.width(),
+                                                      resource_size.height());
+    SkBitmap bitmap;
+    if (bitmap.tryAllocPixels(dst_info, clear_bytes_per_row)) {
+      bitmap.eraseColor(raster_source->background_color());
+      ri->WritePixels(*mailbox, 0, 0, mailbox_texture_target,
+                      clear_bytes_per_row, dst_info, bitmap.getPixels());
+    }
   }
 
   int bytes_per_row = viz::ResourceSizes::UncheckedWidthInBytes<int>(
