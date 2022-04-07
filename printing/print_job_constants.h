@@ -17,8 +17,6 @@ extern const char kPreviewRequestID[];
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kPreviewUIID[];
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingCapabilities[];
-COMPONENT_EXPORT(PRINTING_BASE)
-extern const char kSettingCloudPrintId[];
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kSettingCollate[];
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kSettingColor[];
 COMPONENT_EXPORT(PRINTING_BASE)

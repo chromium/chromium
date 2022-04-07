@@ -736,11 +736,6 @@ export class PrintPreviewPreviewAreaElement extends
       rasterizePDF: this.getSettingValue('rasterize') as boolean,
     };
 
-    // Set 'cloudPrintID' only if the this.destination is not local.
-    if (this.destination && !this.destination.isLocal) {
-      ticket.cloudPrintID = this.destination.id;
-    }
-
     if (this.getSettingValue('margins') === MarginsType.CUSTOM) {
       ticket.marginsCustom = this.getSettingValue('customMargins');
     }

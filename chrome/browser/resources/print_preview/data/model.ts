@@ -157,7 +157,6 @@ export type Ticket = {
   shouldPrintSelectionOnly: boolean,
   advancedSettings?: object,
   capabilities?: string,
-  cloudPrintID?: string,
   marginsCustom?: MarginsSetting,
   openPDFInPreview?: boolean,
   pinValue?: string,
@@ -1572,11 +1571,6 @@ export class PrintPreviewModelElement extends PolymerElement {
     ticket['printToGoogleDrive'] = ticket['printToGoogleDrive'] ||
         destination.id === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS;
     // </if>
-
-    // Set 'cloudPrintID' only if the destination is not local.
-    if (!destination.isLocal) {
-      ticket['cloudPrintID'] = destination.id;
-    }
 
     if (openPdfInPreview) {
       ticket['openPDFInPreview'] = openPdfInPreview;

@@ -27,8 +27,7 @@ namespace {
 
 PrintingContextFactoryForTest* g_printing_context_factory_for_test = nullptr;
 
-const float kCloudPrintMarginInch = 0.25;
-}
+}  // namespace
 
 PrintingContext::PrintingContext(Delegate* delegate)
     : settings_(std::make_unique<PrintSettings>()),
@@ -133,18 +132,17 @@ mojom::ResultCode PrintingContext::UpdatePrintSettings(
 
   mojom::PrinterType printer_type = static_cast<mojom::PrinterType>(
       job_settings.FindIntKey(kSettingPrinterType).value());
-  if (printer_type == mojom::PrinterType::kPrivetDeprecated) {
+  if (printer_type == mojom::PrinterType::kPrivetDeprecated ||
+      printer_type == mojom::PrinterType::kCloudDeprecated) {
     NOTREACHED();
     return OnError();
   }
 
-  bool print_to_cloud = !!job_settings.FindKey(kSettingCloudPrintId);
   bool open_in_external_preview =
       !!job_settings.FindKey(kSettingOpenPDFInPreview);
 
   if (!open_in_external_preview &&
-      (print_to_cloud || printer_type == mojom::PrinterType::kPdf ||
-       printer_type == mojom::PrinterType::kCloudDeprecated ||
+      (printer_type == mojom::PrinterType::kPdf ||
        printer_type == mojom::PrinterType::kExtension)) {
     settings_->set_dpi(kDefaultPdfDpi);
     gfx::Size paper_size(GetPdfPaperSizeDeviceUnits());
@@ -159,10 +157,6 @@ mojom::ResultCode PrintingContext::UpdatePrintSettings(
                         device_microns_per_device_unit);
     }
     gfx::Rect paper_rect(0, 0, paper_size.width(), paper_size.height());
-    if (print_to_cloud) {
-      paper_rect.Inset(kCloudPrintMarginInch *
-                       settings_->device_units_per_inch());
-    }
     settings_->SetPrinterPrintableArea(paper_size, paper_rect, true);
     return mojom::ResultCode::kSuccess;
   }
