@@ -81,11 +81,13 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
       passthrough_texture_.reset();
       egl_image_.reset();
     }
-    auto* fence_helper = context_state_->vk_context_provider()
-                             ->GetDeviceQueue()
-                             ->GetFenceHelper();
-    fence_helper->EnqueueVulkanObjectCleanupForSubmittedWork(
-        std::move(vulkan_image_));
+    if (vulkan_image_) {
+      auto* fence_helper = context_state_->vk_context_provider()
+                               ->GetDeviceQueue()
+                               ->GetFenceHelper();
+      fence_helper->EnqueueVulkanObjectCleanupForSubmittedWork(
+          std::move(vulkan_image_));
+    }
   }
 
   bool Initialize(

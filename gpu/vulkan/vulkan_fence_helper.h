@@ -155,6 +155,8 @@ class COMPONENT_EXPORT(VULKAN) VulkanFenceHelper {
 template <typename T>
 void VulkanFenceHelper::EnqueueVulkanObjectCleanupForSubmittedWork(
     std::unique_ptr<T> obj) {
+  if (!obj)
+    return;
   EnqueueCleanupTaskForSubmittedWork(
       base::BindOnce([](std::unique_ptr<T> obj, VulkanDeviceQueue* device_queue,
                         bool device_lost) { obj->Destroy(); },
