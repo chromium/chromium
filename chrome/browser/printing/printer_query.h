@@ -54,7 +54,7 @@ class PrinterQuery {
   // Initializes the printing context. It is fine to call this function multiple
   // times to reinitialize the settings.
   // Caller has to ensure that `this` is alive until `callback` is run.
-  void GetDefaultSettings(base::OnceClosure callback);
+  void GetDefaultSettings(base::OnceClosure callback, bool is_modifiable);
   void GetSettingsFromUser(uint32_t expected_page_count,
                            bool has_selection,
                            mojom::MarginType margin_type,
@@ -93,10 +93,12 @@ class PrinterQuery {
  protected:
   // Virtual so that tests can override.
   virtual void GetSettingsDone(base::OnceClosure callback,
+                               absl::optional<bool> maybe_is_modifiable,
                                std::unique_ptr<PrintSettings> new_settings,
                                mojom::ResultCode result);
 
   void PostSettingsDoneToIO(base::OnceClosure callback,
+                            absl::optional<bool> maybe_is_modifiable,
                             std::unique_ptr<PrintSettings> new_settings,
                             mojom::ResultCode result);
 

@@ -168,7 +168,8 @@ void TestPrinterQuery::SetSettings(base::Value new_settings,
   settings->set_printer_language_type(*printer_language_type_);
 #endif
 
-  GetSettingsDone(std::move(callback), std::move(settings), result);
+  GetSettingsDone(std::move(callback), /*maybe_is_modifiable=*/absl::nullopt,
+                  std::move(settings), result);
 }
 
 #if BUILDFLAG(IS_WIN)

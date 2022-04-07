@@ -154,6 +154,7 @@ void GetDefaultPrintSettingsReplyOnIO(
 void GetDefaultPrintSettingsOnIO(
     mojom::PrintManagerHost::GetDefaultPrintSettingsCallback callback,
     scoped_refptr<PrintQueriesQueue> queue,
+    bool is_modifiable,
     content::GlobalRenderFrameHostId rfh_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
@@ -166,7 +167,8 @@ void GetDefaultPrintSettingsOnIO(
   auto* printer_query_ptr = printer_query.get();
   printer_query_ptr->GetDefaultSettings(
       base::BindOnce(&GetDefaultPrintSettingsReplyOnIO, queue,
-                     std::move(printer_query), std::move(callback)));
+                     std::move(printer_query), std::move(callback)),
+      is_modifiable);
 }
 
 mojom::PrintPagesParamsPtr CreateEmptyPrintPagesParamsPtr() {
@@ -638,13 +640,16 @@ void PrintViewManagerBase::GetDefaultPrintSettings(
 #endif
 
   content::RenderFrameHost* render_frame_host = GetCurrentTargetFrame();
+  content::RenderProcessHost* render_process_host =
+      render_frame_host->GetProcess();
   auto callback_wrapper =
       base::BindOnce(&PrintViewManagerBase::GetDefaultPrintSettingsReply,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&GetDefaultPrintSettingsOnIO, std::move(callback_wrapper),
-                     queue_, render_frame_host->GetGlobalId()));
+                     queue_, !render_process_host->IsPdf(),
+                     render_frame_host->GetGlobalId()));
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
