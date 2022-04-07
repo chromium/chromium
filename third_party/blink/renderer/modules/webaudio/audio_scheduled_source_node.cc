@@ -28,6 +28,7 @@
 #include <algorithm>
 
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
