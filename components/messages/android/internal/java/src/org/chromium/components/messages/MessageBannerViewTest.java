@@ -31,8 +31,13 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
+import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton.PopupMenuShownListener;
+import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
+import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -175,5 +180,48 @@ public class MessageBannerViewTest {
         // #onPopupMenuDismissed is invoked.
         onView(withChild(withText(SECONDARY_BUTTON_MENU_TEXT))).perform(click());
         Mockito.verify(listener).onPopupMenuDismissed();
+    }
+
+    /**
+     * Tests that clicking on secondary button opens a menu determined by
+     * SECONDARY_MENU_BUTTON_DELEGATE.
+     */
+    @Test
+    @MediumTest
+    public void testSecondaryActionMenuWithCustomDelegate() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            MVCListAdapter.ModelList menuItems = new MVCListAdapter.ModelList();
+            menuItems.add(new MVCListAdapter.ListItem(BasicListMenu.ListMenuItemType.MENU_ITEM,
+                    new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                            .with(ListMenuItemProperties.TITLE, SECONDARY_BUTTON_MENU_TEXT)
+                            .with(ListMenuItemProperties.ENABLED, true)
+                            .build()));
+
+            BasicListMenu listMenu =
+                    new BasicListMenu(sActivity, menuItems, (PropertyModel menuItem) -> {
+                        assert menuItem == menuItems.get(0).model;
+                        mSecondaryActionCallback.run();
+                    });
+
+            PropertyModel propertyModel =
+                    new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                            .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                    MessageIdentifier.TEST_MESSAGE)
+                            .with(MessageBannerProperties.SECONDARY_ICON_RESOURCE_ID,
+                                    android.R.drawable.ic_menu_add)
+                            .with(MessageBannerProperties.SECONDARY_MENU_BUTTON_DELEGATE,
+                                    new ListMenuButtonDelegate() {
+                                        @Override
+                                        public ListMenu getListMenu() {
+                                            return listMenu;
+                                        }
+                                    })
+                            .build();
+            PropertyModelChangeProcessor.create(
+                    propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
+        });
+        onView(withId(R.id.message_secondary_button)).perform(click());
+        onView(withText(SECONDARY_BUTTON_MENU_TEXT)).perform(click());
+        Mockito.verify(mSecondaryActionCallback).run();
     }
 }

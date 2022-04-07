@@ -13,6 +13,7 @@ import androidx.annotation.ColorInt;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -90,6 +91,8 @@ public class MessageBannerProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> SECONDARY_ICON_CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<ListMenuButtonDelegate>
+            SECONDARY_MENU_BUTTON_DELEGATE = new WritableObjectPropertyKey<>();
     // Unit: milliseconds.
     public static final WritableLongPropertyKey DISMISSAL_DURATION = new WritableLongPropertyKey();
     /**
@@ -122,5 +125,5 @@ public class MessageBannerProperties {
             SECONDARY_ICON, SECONDARY_ICON_RESOURCE_ID, SECONDARY_BUTTON_MENU_TEXT,
             ON_SECONDARY_BUTTON_CLICK, SECONDARY_ICON_CONTENT_DESCRIPTION, DISMISSAL_DURATION,
             TRANSLATION_X, TRANSLATION_Y, ALPHA, ON_TOUCH_RUNNABLE, ON_PRIMARY_ACTION,
-            ON_SECONDARY_ACTION, ON_DISMISSED, ON_STARTED_SHOWING};
+            ON_SECONDARY_ACTION, ON_DISMISSED, ON_STARTED_SHOWING, SECONDARY_MENU_BUTTON_DELEGATE};
 }

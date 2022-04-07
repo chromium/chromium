@@ -22,6 +22,7 @@ import static org.chromium.components.messages.MessageBannerProperties.SECONDARY
 import static org.chromium.components.messages.MessageBannerProperties.SECONDARY_ICON;
 import static org.chromium.components.messages.MessageBannerProperties.SECONDARY_ICON_CONTENT_DESCRIPTION;
 import static org.chromium.components.messages.MessageBannerProperties.SECONDARY_ICON_RESOURCE_ID;
+import static org.chromium.components.messages.MessageBannerProperties.SECONDARY_MENU_BUTTON_DELEGATE;
 import static org.chromium.components.messages.MessageBannerProperties.TITLE;
 import static org.chromium.components.messages.MessageBannerProperties.TITLE_CONTENT_DESCRIPTION;
 import static org.chromium.components.messages.MessageBannerProperties.TRANSLATION_X;
@@ -75,6 +76,8 @@ public class MessageBannerViewBinder {
                     view.getContext(), model.get(SECONDARY_ICON_RESOURCE_ID)));
         } else if (propertyKey == SECONDARY_BUTTON_MENU_TEXT) {
             view.setSecondaryButtonMenuText(model.get(SECONDARY_BUTTON_MENU_TEXT));
+        } else if (propertyKey == SECONDARY_MENU_BUTTON_DELEGATE) {
+            view.setSecondaryMenuButtonDelegate(model.get(SECONDARY_MENU_BUTTON_DELEGATE));
         } else if (propertyKey == SECONDARY_ICON_CONTENT_DESCRIPTION) {
             view.setSecondaryIconContentDescription(model.get(SECONDARY_ICON_CONTENT_DESCRIPTION));
         } else if (propertyKey == ON_SECONDARY_BUTTON_CLICK) {

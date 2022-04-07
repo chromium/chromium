@@ -48,6 +48,7 @@ public class MessageBannerView extends BoundedLinearLayout {
     private View mDivider;
     private String mSecondaryButtonMenuText;
     private Runnable mSecondaryActionCallback;
+    private ListMenuButtonDelegate mSecondaryMenuButtonDelegate;
     private SwipeGestureListener mSwipeGestureDetector;
     private Runnable mOnTitleChanged;
     private int mCornerRadius = -1;
@@ -154,11 +155,18 @@ public class MessageBannerView extends BoundedLinearLayout {
     }
 
     void setSecondaryActionCallback(Runnable callback) {
+        mSecondaryButton.dismiss();
         mSecondaryActionCallback = callback;
     }
 
     void setSecondaryButtonMenuText(String text) {
+        mSecondaryButton.dismiss();
         mSecondaryButtonMenuText = text;
+    }
+
+    void setSecondaryMenuButtonDelegate(ListMenuButtonDelegate delegate) {
+        mSecondaryButton.dismiss();
+        mSecondaryMenuButtonDelegate = delegate;
     }
 
     void setSecondaryIconContentDescription(String description) {
@@ -194,13 +202,24 @@ public class MessageBannerView extends BoundedLinearLayout {
     // response to the tap on secondary button. The code below implements this logic. Past M88 it
     // will be replaced with modal dialog driven from the feature code.
     void handleSecondaryButtonClick() {
-        if (mSecondaryButtonMenuText == null) {
+        if (mSecondaryMenuButtonDelegate == null && mSecondaryButtonMenuText == null) {
             if (mSecondaryActionCallback != null) {
                 mSecondaryActionCallback.run();
             }
             return;
         }
 
+        mSecondaryButton.setDelegate(mSecondaryMenuButtonDelegate != null
+                        ? mSecondaryMenuButtonDelegate
+                        : buildDelegateForSingleMenuItem());
+
+        if (mPopupMenuShownListener != null) {
+            mSecondaryButton.addPopupListener(mPopupMenuShownListener);
+        }
+        mSecondaryButton.showMenu();
+    }
+
+    private ListMenuButtonDelegate buildDelegateForSingleMenuItem() {
         final PropertyModel menuItemPropertyModel =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                         .with(ListMenuItemProperties.TITLE, mSecondaryButtonMenuText)
@@ -220,17 +239,12 @@ public class MessageBannerView extends BoundedLinearLayout {
         };
         BasicListMenu listMenu = new BasicListMenu(getContext(), menuItems, listMenuDelegate);
 
-        ListMenuButtonDelegate delegate = new ListMenuButtonDelegate() {
+        return new ListMenuButtonDelegate() {
             @Override
             public ListMenu getListMenu() {
                 return listMenu;
             }
         };
-        mSecondaryButton.setDelegate(delegate);
-        if (mPopupMenuShownListener != null) {
-            mSecondaryButton.addPopupListener(mPopupMenuShownListener);
-        }
-        mSecondaryButton.showMenu();
     }
 
     @SuppressLint("ClickableViewAccessibility")
