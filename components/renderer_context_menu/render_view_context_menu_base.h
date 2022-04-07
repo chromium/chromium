@@ -149,7 +149,7 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
   virtual void RecordUsedItem(int id) = 0;
 
   // Increments histogram value for visible context menu item specified by |id|.
-  virtual void RecordShownItem(int id) = 0;
+  virtual void RecordShownItem(int id, bool is_submenu) = 0;
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   virtual void HandleAuthorizeAllPlugins() = 0;

@@ -10635,6 +10635,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="RenderViewContextMenu.OpenLinkAsProfile" enum="OpenLinkAs"
+    expires_after="2023-03-23">
+  <owner>gabolvr@google.com</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    Count the clicks and displays of renderer view context menu item Open Link
+    as Profile, as well as Open Link in Incognito Window for comparison. If Open
+    Link as Profile is a submenu, it is counted as displayed even if the submenu
+    is not open, and only counted one time regardless the amount of items in the
+    submenu.
+  </summary>
+</histogram>
+
 <histogram name="RenderViewContextMenu.Shown" enum="RenderViewContextMenuItem"
     expires_after="2022-04-17">
   <owner>avi@chromium.org</owner>

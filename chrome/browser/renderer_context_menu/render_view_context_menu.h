@@ -180,7 +180,7 @@ class RenderViewContextMenu
 
   // RenderViewContextMenuBase:
   void InitMenu() override;
-  void RecordShownItem(int id) override;
+  void RecordShownItem(int id, bool is_submenu) override;
 #if BUILDFLAG(ENABLE_PLUGINS)
   void HandleAuthorizeAllPlugins() override;
 #endif

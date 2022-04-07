@@ -410,9 +410,9 @@ void RenderViewContextMenuBase::ExecuteCommand(int id, int event_flags) {
 void RenderViewContextMenuBase::OnMenuWillShow(ui::SimpleMenuModel* source) {
   for (int i = 0; i < source->GetItemCount(); ++i) {
     if (source->IsVisibleAt(i) &&
-        source->GetTypeAt(i) != ui::MenuModel::TYPE_SEPARATOR &&
-        source->GetTypeAt(i) != ui::MenuModel::TYPE_SUBMENU) {
-      RecordShownItem(source->GetCommandIdAt(i));
+        source->GetTypeAt(i) != ui::MenuModel::TYPE_SEPARATOR) {
+      RecordShownItem(source->GetCommandIdAt(i),
+                      source->GetTypeAt(i) == ui::MenuModel::TYPE_SUBMENU);
     }
   }
 

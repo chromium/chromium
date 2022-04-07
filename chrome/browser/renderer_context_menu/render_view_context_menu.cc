@@ -19,6 +19,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
@@ -285,6 +286,9 @@ namespace {
 
 constexpr char16_t kGoogleLens[] = u"Google Lens";
 
+constexpr char kOpenLinkAsProfileHistogram[] =
+    "RenderViewContextMenu.OpenLinkAsProfile";
+
 base::OnceCallback<void(RenderViewContextMenu*)>* GetMenuShownCallback() {
   static base::NoDestructor<base::OnceCallback<void(RenderViewContextMenu*)>>
       callback;
@@ -294,6 +298,18 @@ base::OnceCallback<void(RenderViewContextMenu*)>* GetMenuShownCallback() {
 enum class UmaEnumIdLookupType {
   GeneralEnumId,
   ContextSpecificEnumId,
+};
+
+// Count when Open Link as Profile or Incognito Window menu item is displayed or
+// clicked. Metric: "RenderViewContextMenu.OpenLinkAsProfile".
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OpenLinkAs {
+  kOpenLinkAsProfileDisplayed = 0,
+  kOpenLinkAsProfileClicked = 1,
+  kOpenLinkAsIncognitoDisplayed = 2,
+  kOpenLinkAsIncognitoClicked = 3,
+  kMaxValue = kOpenLinkAsIncognitoClicked,
 };
 
 const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
@@ -450,13 +466,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, 22},
        {IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH, 23},
        {IDC_CONTENT_CONTEXT_RESHARELINKTOTEXT, 24},
+       {IDC_OPEN_LINK_IN_PROFILE_FIRST, 25},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the ContextMenuOptionDesktop enum in
        //     tools/metrics/histograms/enums.xml.
-       {0, 25}});
+       {0, 26}});
 
   return *(type == UmaEnumIdLookupType::GeneralEnumId ? kGeneralMap
                                                       : kSpecificMap);
@@ -1172,17 +1189,38 @@ void RenderViewContextMenu::RecordUsedItem(int id) {
   }
 }
 
-void RenderViewContextMenu::RecordShownItem(int id) {
-  int enum_id =
-      FindUMAEnumValueForCommand(id, UmaEnumIdLookupType::GeneralEnumId);
-  if (enum_id != -1) {
-    UMA_HISTOGRAM_EXACT_LINEAR(
-        "RenderViewContextMenu.Shown", enum_id,
-        GetUmaValueMax(UmaEnumIdLookupType::GeneralEnumId));
-  } else {
-    // Just warning here. It's harder to maintain list of all possibly
-    // visible items than executable items.
-    DLOG(ERROR) << "Update kUmaEnumToControlId. Unhanded IDC: " << id;
+void RenderViewContextMenu::RecordShownItem(int id, bool is_submenu) {
+  // The "RenderViewContextMenu.Shown" histogram is not recorded for submenus.
+  if (!is_submenu) {
+    int enum_id =
+        FindUMAEnumValueForCommand(id, UmaEnumIdLookupType::GeneralEnumId);
+    if (enum_id != -1) {
+      UMA_HISTOGRAM_EXACT_LINEAR(
+          "RenderViewContextMenu.Shown", enum_id,
+          GetUmaValueMax(UmaEnumIdLookupType::GeneralEnumId));
+    } else {
+      // Just warning here. It's harder to maintain list of all possibly
+      // visible items than executable items.
+      DLOG(ERROR) << "Update kUmaEnumToControlId. Unhanded IDC: " << id;
+    }
+  }
+
+  // The "Open Link as Profile" item can either be shown directly in the main
+  // menu as an item or as a sub-menu. The metric needs to track the
+  // impressions in the main menu, which are
+  // IDC_CONTENT_CONTEXT_OPENLINKINPROFILE when there is a sub-menu, and
+  // IDC_OPEN_LINK_IN_PROFILE_FIRST when there is not.
+  // IDC_OPEN_LINK_IN_PROFILE_FIRST is also emitted when the sub-menu is
+  // opened, so it is not taken into account when the sub-menu exists.
+  if (id == IDC_CONTENT_CONTEXT_OPENLINKINPROFILE ||
+      (id == IDC_OPEN_LINK_IN_PROFILE_FIRST &&
+       profile_link_submenu_model_.GetItemCount() == 0)) {
+    base::UmaHistogramEnumeration(kOpenLinkAsProfileHistogram,
+                                  OpenLinkAs::kOpenLinkAsProfileDisplayed);
+  } else if (id == IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD &&
+             IsOpenLinkOTREnabled()) {
+    base::UmaHistogramEnumeration(kOpenLinkAsProfileHistogram,
+                                  OpenLinkAs::kOpenLinkAsIncognitoDisplayed);
   }
 }
 
@@ -2422,6 +2460,8 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
   if (id >= IDC_OPEN_LINK_IN_PROFILE_FIRST &&
       id <= IDC_OPEN_LINK_IN_PROFILE_LAST) {
     ExecOpenLinkInProfile(id - IDC_OPEN_LINK_IN_PROFILE_FIRST);
+    base::UmaHistogramEnumeration(kOpenLinkAsProfileHistogram,
+                                  OpenLinkAs::kOpenLinkAsProfileClicked);
     return;
   }
 
@@ -2447,6 +2487,8 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
                               WindowOpenDisposition::OFF_THE_RECORD,
                               ui::PAGE_TRANSITION_LINK, "" /* extra_headers */,
                               true /* started_from_context_menu */);
+      base::UmaHistogramEnumeration(kOpenLinkAsProfileHistogram,
+                                    OpenLinkAs::kOpenLinkAsIncognitoClicked);
       break;
 
     case IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP:

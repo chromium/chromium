@@ -16520,6 +16520,8 @@ Called by update_net_error_codes.py.-->
   <int value="21" label="Search Image with Google Lens"/>
   <int value="22" label="Search Images with Google Lens"/>
   <int value="23" label="Search Images with non-Google visual search provider"/>
+  <int value="24" label="Copy link to highlight"/>
+  <int value="25" label="Open link as Profile"/>
 </enum>
 
 <enum name="ContextMenuOptionIOS">
@@ -67953,6 +67955,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Failed to create directory."/>
 </enum>
 
+<enum name="OpenLinkAs">
+  <int value="0" label="Open Link as Profile displayed."/>
+  <int value="1" label="Open Link as Profile clicked."/>
+  <int value="2" label="Open Link in Incognito Window displayed."/>
+  <int value="3" label="Open Link in Incognito Window clicked."/>
+</enum>
+
 <enum name="OpenLinkAsUser">
   <int value="0" label="Active profile."/>
   <int value="1" label="Inactive, multi-profile."/>
@@ -78501,7 +78510,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="IDC_CONTENT_CONTEXT_PROTOCOL_HANDLER_FIRST"/>
   <int value="3" label="IDC_CONTENT_CONTEXT_OPENLINKNEWTAB"/>
   <int value="4" label="IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW"/>
-  <int value="5" label="IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD"/>
+  <int value="5" label="IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD">
+    Open Link in Incognito Window is being counted as shown even when the menu
+    item is displayed but not enabled/clickable.
+  </int>
   <int value="6" label="IDC_CONTENT_CONTEXT_SAVELINKAS"/>
   <int value="7" label="IDC_CONTENT_CONTEXT_SAVEAVAS"/>
   <int value="8" label="IDC_CONTENT_CONTEXT_SAVEIMAGEAS"/>
@@ -78567,7 +78579,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="68" label="IDC_ROUTE_MEDIA"/>
   <int value="69" label="IDC_CONTENT_CONTEXT_COPYLINKTEXT"/>
   <int value="70" label="IDC_CONTENT_CONTEXT_OPENLINKINPROFILE"/>
-  <int value="71" label="IDC_OPEN_LINK_IN_PROFILE_FIRST"/>
+  <int value="71" label="IDC_OPEN_LINK_IN_PROFILE_FIRST">
+    When Open Link as Profile is a submenu (more than one extra profile), it is
+    not counted as shown if the submenu is not open. When the submenu is opened,
+    it is counted as shown one time per profile displayed in the submenu.
+  </int>
   <int value="72" label="IDC_CONTENT_CONTEXT_GENERATEPASSWORD"/>
   <int value="73" label="IDC_SPELLCHECK_MULTI_LINGUAL"/>
   <int value="74" label="IDC_CONTENT_CONTEXT_OPEN_WITH1"/>
