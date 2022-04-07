@@ -378,6 +378,14 @@ CustomThemeSupplier* AppBrowserController::GetThemeSupplier() const {
   return theme_pack_.get();
 }
 
+bool AppBrowserController::ShouldUseSystemTheme() const {
+#if BUILDFLAG(IS_LINUX)
+  return browser_->profile()->GetPrefs()->GetBoolean(prefs::kUsesSystemTheme);
+#else
+  return false;
+#endif
+}
+
 bool AppBrowserController::ShouldUseCustomFrame() const {
 #if BUILDFLAG(IS_LINUX)
   return browser_->profile()->GetPrefs()->GetBoolean(

@@ -501,10 +501,13 @@ base::TimeDelta GtkUi::GetCursorBlinkInterval() const {
 }
 
 ui::NativeTheme* GtkUi::GetNativeTheme(aura::Window* window) const {
-  return (use_system_theme_callback_.is_null() ||
-          use_system_theme_callback_.Run(window))
-             ? native_theme_
-             : ui::NativeTheme::GetInstanceForNativeUi();
+  return GetNativeTheme(use_system_theme_callback_.is_null() ||
+                        use_system_theme_callback_.Run(window));
+}
+
+ui::NativeTheme* GtkUi::GetNativeTheme(bool use_system_theme) const {
+  return use_system_theme ? native_theme_
+                          : ui::NativeTheme::GetInstanceForNativeUi();
 }
 
 void GtkUi::SetUseSystemThemeCallback(UseSystemThemeCallback callback) {

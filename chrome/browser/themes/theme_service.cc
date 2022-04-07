@@ -514,10 +514,8 @@ ThemeService::BrowserThemeProvider::GetColorProviderColor(int id) const {
         native_theme = ui::NativeTheme::GetInstanceForNativeUi();
 #if BUILDFLAG(IS_LINUX)
         if (const auto* linux_ui = views::LinuxUI::instance()) {
-          // TODO(crbug.com/1304441): Naively passing nullptr might be
-          // problematic. If this is not an issue, remove this parameter from
-          // GetNativeTheme().
-          native_theme = linux_ui->GetNativeTheme(nullptr);
+          native_theme =
+              linux_ui->GetNativeTheme(delegate_->ShouldUseSystemTheme());
         }
 #endif
       }
@@ -631,6 +629,14 @@ void ThemeService::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
 
 CustomThemeSupplier* ThemeService::GetThemeSupplier() const {
   return theme_supplier_.get();
+}
+
+bool ThemeService::ShouldUseSystemTheme() const {
+#if BUILDFLAG(IS_LINUX)
+  return profile_->GetPrefs()->GetBoolean(prefs::kUsesSystemTheme);
+#else
+  return false;
+#endif
 }
 
 bool ThemeService::ShouldUseCustomFrame() const {

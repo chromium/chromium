@@ -82,6 +82,7 @@ class GtkUi : public views::LinuxUI {
   SkColor GetInactiveSelectionFgColor() const override;
   base::TimeDelta GetCursorBlinkInterval() const override;
   ui::NativeTheme* GetNativeTheme(aura::Window* window) const override;
+  ui::NativeTheme* GetNativeTheme(bool use_system_theme) const override;
   void SetUseSystemThemeCallback(UseSystemThemeCallback callback) override;
   bool GetDefaultUsesSystemTheme() const override;
   gfx::Image GetIconForContentType(const std::string& content_type,

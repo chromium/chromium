@@ -113,9 +113,11 @@ class VIEWS_EXPORT LinuxUI : public ui::LinuxInputMethodContextFactory,
   virtual SkColor GetInactiveSelectionFgColor() const = 0;
   virtual base::TimeDelta GetCursorBlinkInterval() const = 0;
 
-  // Returns a NativeTheme that will provide system colors and draw system
-  // style widgets.
+  // Returns the NativeTheme that reflects the theme used by `window`.
   virtual ui::NativeTheme* GetNativeTheme(aura::Window* window) const = 0;
+
+  // Returns the classic or system NativeTheme depending on `use_system_theme`.
+  virtual ui::NativeTheme* GetNativeTheme(bool use_system_theme) const = 0;
 
   // Sets a callback that determines whether to use the system theme.
   virtual void SetUseSystemThemeCallback(UseSystemThemeCallback callback) = 0;
