@@ -53,7 +53,7 @@ void DemoSetupScreen::HideImpl() {
     view_->Hide();
 }
 
-void DemoSetupScreen::OnUserAction(const std::string& action_id) {
+void DemoSetupScreen::OnUserActionDeprecated(const std::string& action_id) {
   if (action_id == kUserActionStartSetup) {
     StartEnrollment();
   } else if (action_id == kUserActionClose) {
@@ -61,10 +61,9 @@ void DemoSetupScreen::OnUserAction(const std::string& action_id) {
   } else if (action_id == kUserActionPowerwash) {
     SessionManagerClient::Get()->StartDeviceWipe();
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
   }
 }
-
 
 void DemoSetupScreen::StartEnrollment() {
   // Demo setup screen is only shown in OOBE.

@@ -100,7 +100,7 @@ void GaiaScreen::HideImpl() {
   view_->Hide();
 }
 
-void GaiaScreen::OnUserAction(const std::string& action_id) {
+void GaiaScreen::OnUserActionDeprecated(const std::string& action_id) {
   if (action_id == kUserActionBack) {
     exit_callback_.Run(Result::BACK);
   } else if (action_id == kUserActionCancel) {
@@ -116,7 +116,7 @@ void GaiaScreen::OnUserAction(const std::string& action_id) {
     DCHECK(features::IsRedirectToDefaultIdPEnabled());
     exit_callback_.Run(Result::SAML_VIDEO_TIMEOUT);
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
   }
 }
 

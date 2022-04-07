@@ -83,13 +83,13 @@ void GuestTosScreen::ShowImpl() {
 
 void GuestTosScreen::HideImpl() {}
 
-void GuestTosScreen::OnUserAction(const std::string& action_id) {
+void GuestTosScreen::OnUserActionDeprecated(const std::string& action_id) {
   if (action_id == kUserActionBackClicked) {
     exit_callback_.Run(Result::BACK);
   } else if (action_id == kUserActionCancelClicked) {
     exit_callback_.Run(Result::CANCEL);
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
   }
 }
 

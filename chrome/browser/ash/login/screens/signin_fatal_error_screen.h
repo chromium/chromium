@@ -57,7 +57,7 @@ class SignInFatalErrorScreen : public BaseScreen {
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const std::string& action_id) override;
+  void OnUserActionDeprecated(const std::string& action_id) override;
 
   Error error_state_ = Error::UNKNOWN;
   absl::optional<base::Value> extra_error_info_;

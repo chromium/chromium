@@ -170,7 +170,8 @@ void TermsOfServiceScreen::HideImpl() {
     view_->Hide();
 }
 
-void TermsOfServiceScreen::OnUserAction(const std::string& action_id) {
+void TermsOfServiceScreen::OnUserActionDeprecated(
+    const std::string& action_id) {
   if (action_id == kBack)
     OnDecline();
   else if (action_id == kAccept)
@@ -178,7 +179,7 @@ void TermsOfServiceScreen::OnUserAction(const std::string& action_id) {
   else if (action_id == kRetry)
     OnRetry();
   else
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
 }
 
 void TermsOfServiceScreen::StartDownload() {

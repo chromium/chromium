@@ -362,7 +362,7 @@ void WelcomeScreen::ShowImpl() {
   // BaseScreen:MaybeSkip().
   if (is_chromad_migration_oobe_flow_ ||
       WizardController::IsZeroTouchHandsOffOobeFlow()) {
-    OnUserAction(kUserActionContinueButtonClicked);
+    OnUserActionDeprecated(kUserActionContinueButtonClicked);
     return;
   }
 
@@ -388,7 +388,7 @@ void WelcomeScreen::HideImpl() {
   CancelChromeVoxHintIdleDetection();
 }
 
-void WelcomeScreen::OnUserAction(const std::string& action_id) {
+void WelcomeScreen::OnUserActionDeprecated(const std::string& action_id) {
   if (action_id == kUserActionQuickStartClicked) {
     DCHECK(ash::features::IsOobeQuickStartEnabled());
     exit_callback_.Run(Result::QUICK_START);
@@ -470,7 +470,7 @@ void WelcomeScreen::OnUserAction(const std::string& action_id) {
       AccessibilityManager::Get()->EnableVirtualKeyboard(false);
     }
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
   }
 }
 
@@ -625,7 +625,7 @@ void WelcomeScreen::UpdateChromadMigrationOobeFlow(bool exists) {
 
   // Simulates a user action, in case this screen is already shown and this OOBE
   // flow is part of Chromad to cloud migration.
-  OnUserAction(kUserActionContinueButtonClicked);
+  OnUserActionDeprecated(kUserActionContinueButtonClicked);
 }
 
 }  // namespace ash

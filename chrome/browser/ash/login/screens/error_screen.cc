@@ -273,7 +273,7 @@ void ErrorScreen::HideImpl() {
     view_->Hide();
 }
 
-void ErrorScreen::OnUserAction(const std::string& action_id) {
+void ErrorScreen::OnUserActionDeprecated(const std::string& action_id) {
   if (action_id == kUserActionShowCaptivePortalClicked) {
     ShowCaptivePortal();
   } else if (action_id == kUserActionOpenInternetDialog) {
@@ -297,7 +297,7 @@ void ErrorScreen::OnUserAction(const std::string& action_id) {
              action_id == kUserActionCancelReset) {
     Hide();
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
   }
 }
 

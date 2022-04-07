@@ -74,11 +74,12 @@ void FamilyLinkNoticeScreen::ShowImpl() {
 
 void FamilyLinkNoticeScreen::HideImpl() {}
 
-void FamilyLinkNoticeScreen::OnUserAction(const std::string& action_id) {
+void FamilyLinkNoticeScreen::OnUserActionDeprecated(
+    const std::string& action_id) {
   if (action_id == kUserActionContinue) {
     exit_callback_.Run(Result::DONE);
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
   }
 }
 

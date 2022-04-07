@@ -64,7 +64,8 @@ void GaiaPasswordChangedScreen::Configure(const AccountId& account_id,
     RecordEulaScreenAction(UserAction::kIncorrectOldPassword);
 }
 
-void GaiaPasswordChangedScreen::OnUserAction(const std::string& action_id) {
+void GaiaPasswordChangedScreen::OnUserActionDeprecated(
+    const std::string& action_id) {
   if (action_id == kUserActionCancelLogin) {
     RecordEulaScreenAction(UserAction::kCancel);
     CancelPasswordChangedFlow();

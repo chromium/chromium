@@ -145,9 +145,10 @@ void FingerprintSetupScreen::HideImpl() {
   view_->Hide();
 }
 
-void FingerprintSetupScreen::OnUserAction(const std::string& action_id) {
+void FingerprintSetupScreen::OnUserActionDeprecated(
+    const std::string& action_id) {
   if (!IsFingerprintUserAction(action_id)) {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
     return;
   }
   RecordUserAction(action_id);

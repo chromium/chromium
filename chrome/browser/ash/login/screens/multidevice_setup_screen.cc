@@ -97,7 +97,8 @@ void MultiDeviceSetupScreen::HideImpl() {
   view_->Hide();
 }
 
-void MultiDeviceSetupScreen::OnUserAction(const std::string& action_id) {
+void MultiDeviceSetupScreen::OnUserActionDeprecated(
+    const std::string& action_id) {
   if (action_id == kAcceptedSetupUserAction) {
     RecordMultiDeviceSetupOOBEUserChoiceHistogram(
         MultiDeviceSetupOOBEUserChoice::kAccepted);
@@ -107,7 +108,7 @@ void MultiDeviceSetupScreen::OnUserAction(const std::string& action_id) {
         MultiDeviceSetupOOBEUserChoice::kDeclined);
     exit_callback_.Run(Result::NEXT);
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
     NOTREACHED();
   }
 }

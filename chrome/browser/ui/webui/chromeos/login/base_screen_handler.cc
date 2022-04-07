@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
+#include "base/bind.h"
 #include "base/check_op.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
@@ -50,13 +51,16 @@ void BaseScreenHandler::ShowInWebUI(absl::optional<base::Value::Dict> data) {
 
 void BaseScreenHandler::RegisterMessages() {
   if (!user_acted_method_path_.empty()) {
-    AddCallback(user_acted_method_path_, &BaseScreenHandler::HandleUserAction);
+    web_ui()->RegisterMessageCallback(
+        user_acted_method_path_,
+        base::BindRepeating(&BaseScreenHandler::HandleUserAction,
+                            base::Unretained(this)));
   }
 
   BaseWebUIHandler::RegisterMessages();
 }
 
-void BaseScreenHandler::HandleUserAction(const std::string& action_id) {
+void BaseScreenHandler::HandleUserAction(const base::Value::List& args) {
   if (!ash::LoginDisplayHost::default_host())
     return;
 
@@ -72,7 +76,7 @@ void BaseScreenHandler::HandleUserAction(const std::string& action_id) {
   ash::LoginDisplayHost::default_host()
       ->GetWizardController()
       ->GetScreen(oobe_screen_)
-      ->HandleUserAction(action_id);
+      ->HandleUserAction(args);
 }
 
 std::string BaseScreenHandler::GetFullExternalAPIFunctionName(

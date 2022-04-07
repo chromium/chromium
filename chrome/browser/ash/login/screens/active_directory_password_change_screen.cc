@@ -71,12 +71,12 @@ void ActiveDirectoryPasswordChangeScreen::HideImpl() {
   username_.clear();
 }
 
-void ActiveDirectoryPasswordChangeScreen::OnUserAction(
+void ActiveDirectoryPasswordChangeScreen::OnUserActionDeprecated(
     const std::string& action_id) {
   if (action_id == kUserActionCancel) {
     HandleCancel();
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
   }
 }
 

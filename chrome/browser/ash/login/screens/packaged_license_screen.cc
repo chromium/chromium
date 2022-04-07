@@ -78,13 +78,14 @@ void PackagedLicenseScreen::HideImpl() {
     view_->Hide();
 }
 
-void PackagedLicenseScreen::OnUserAction(const std::string& action_id) {
+void PackagedLicenseScreen::OnUserActionDeprecated(
+    const std::string& action_id) {
   if (action_id == kUserActionEnrollButtonClicked)
     exit_callback_.Run(Result::ENROLL);
   else if (action_id == kUserActionDontEnrollButtonClicked)
     exit_callback_.Run(Result::DONT_ENROLL);
   else
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
 }
 
 bool PackagedLicenseScreen::HandleAccelerator(LoginAcceleratorAction action) {

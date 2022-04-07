@@ -93,7 +93,8 @@ void HWDataCollectionScreen::HideImpl() {
     view_->Hide();
 }
 
-void HWDataCollectionScreen::OnUserAction(const std::string& action_id) {
+void HWDataCollectionScreen::OnUserActionDeprecated(
+    const std::string& action_id) {
   if (action_id == kUserActionAcceptButtonClicked) {
     HWDataUsageController::Get()->Set(ProfileManager::GetActiveUserProfile(),
                                       base::Value(hw_data_usage_enabled_));
@@ -107,7 +108,7 @@ void HWDataCollectionScreen::OnUserAction(const std::string& action_id) {
   } else if (action_id == kUserActionSelectHWDataUsage) {
     SetHWDataUsageEnabled(true /* enabled */);
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
   }
 }
 

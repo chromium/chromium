@@ -199,9 +199,10 @@ void ArcTermsOfServiceScreen::HideImpl() {
     view_->Hide();
 }
 
-void ArcTermsOfServiceScreen::OnUserAction(const std::string& action_id) {
+void ArcTermsOfServiceScreen::OnUserActionDeprecated(
+    const std::string& action_id) {
   if (!IsArcTosUserAction(action_id)) {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
     return;
   }
   RecordUserAction(action_id);

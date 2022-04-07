@@ -59,7 +59,7 @@ class BaseScreenHandler : public BaseWebUIHandler {
 
  private:
   // Handles user action.
-  void HandleUserAction(const std::string& action_id);
+  void HandleUserAction(const base::Value::List& args);
 
   // Generates the full function name to call an API function of the screen.
   // `oobe_screen_.external_api_prefix` must be set.

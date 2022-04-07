@@ -51,7 +51,7 @@ class ActiveDirectoryPasswordChangeScreen : public BaseScreen {
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const std::string& action_id) override;
+  void OnUserActionDeprecated(const std::string& action_id) override;
 
   // Handles cancel password change request.
   void HandleCancel();

@@ -53,7 +53,7 @@ void OsTrialScreen::ShowImpl() {
 
 void OsTrialScreen::HideImpl() {}
 
-void OsTrialScreen::OnUserAction(const std::string& action_id) {
+void OsTrialScreen::OnUserActionDeprecated(const std::string& action_id) {
   if (action_id == kUserActionTryNextClicked) {
     exit_callback_.Run(Result::NEXT_TRY);
   } else if (action_id == kUserActionInstallNextClicked) {
@@ -61,7 +61,7 @@ void OsTrialScreen::OnUserAction(const std::string& action_id) {
   } else if (action_id == kUserActionBackClicked) {
     exit_callback_.Run(Result::BACK);
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
   }
 }
 }  // namespace ash

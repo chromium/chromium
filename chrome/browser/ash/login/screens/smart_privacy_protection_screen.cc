@@ -76,7 +76,8 @@ void SmartPrivacyProtectionScreen::HideImpl() {
     view_->Hide();
 }
 
-void SmartPrivacyProtectionScreen::OnUserAction(const std::string& action_id) {
+void SmartPrivacyProtectionScreen::OnUserActionDeprecated(
+    const std::string& action_id) {
   if (action_id == kUserActionFeatureTurnOn) {
     Profile* profile = ProfileManager::GetActiveUserProfile();
     profile->GetPrefs()->SetBoolean(
@@ -93,7 +94,7 @@ void SmartPrivacyProtectionScreen::OnUserAction(const std::string& action_id) {
   } else if (action_id == kUserActionShowLearnMore) {
     // TODO(crbug.com/1293320): add p-link once available
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
   }
 }
 

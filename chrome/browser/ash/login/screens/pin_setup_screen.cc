@@ -199,7 +199,7 @@ void PinSetupScreen::HideImpl() {
   ClearAuthData(context());
 }
 
-void PinSetupScreen::OnUserAction(const std::string& action_id) {
+void PinSetupScreen::OnUserActionDeprecated(const std::string& action_id) {
   if (action_id == kUserActionDoneButtonClicked) {
     RecordUserAction(action_id);
     token_lifetime_timeout_.Stop();
@@ -213,7 +213,7 @@ void PinSetupScreen::OnUserAction(const std::string& action_id) {
     exit_callback_.Run(Result::USER_SKIP);
     return;
   }
-  BaseScreen::OnUserAction(action_id);
+  BaseScreen::OnUserActionDeprecated(action_id);
 }
 
 void PinSetupScreen::ClearAuthData(WizardContext* context) {

@@ -6,6 +6,7 @@
 
 #include "ash/components/login/auth/cryptohome_key_constants.h"
 #include "ash/components/login/auth/key.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
@@ -83,12 +84,20 @@ void ActiveDirectoryLoginScreen::HideImpl() {
   error_screen_->Hide();
 }
 
-void ActiveDirectoryLoginScreen::OnUserAction(const std::string& action_id) {
+void ActiveDirectoryLoginScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionCancel) {
     HandleCancel();
     return;
   }
-  BaseScreen::OnUserAction(action_id);
+  if (action_id == "completeAdAuthentication") {
+    CHECK_EQ(args.size(), 3);
+    const std::string& username = args[1].GetString();
+    const std::string& password = args[2].GetString();
+    HandleCompleteAuth(username, password);
+    return;
+  }
+  BaseScreen::OnUserAction(args);
 }
 
 bool ActiveDirectoryLoginScreen::HandleAccelerator(

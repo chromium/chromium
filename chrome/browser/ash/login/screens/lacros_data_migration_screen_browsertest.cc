@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(LacrosDataMigrationScreenTest, SkipButton) {
   test::OobeJS().TapOnPath(kSkipButton);
 
   // Wait for `TapOnPath(kSkipButton)` to call
-  // `LacrosDataMigrationScreen::OnUserAction()`.
+  // `LacrosDataMigrationScreen::OnUserActionDeprecated()`.
   test::TestPredicateWaiter(
       base::BindRepeating(&FakeMigrator::IsCancelCalled,
                           base::Unretained(fake_migrator())))

@@ -65,7 +65,6 @@ class ActiveDirectoryLoginScreenHandler : public ActiveDirectoryLoginView,
   void SetErrorState(const std::string& username, int errorState) override;
 
   // BaseScreenHandler:
-  void RegisterMessages() override;
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
   void InitializeDeprecated() override;

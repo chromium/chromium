@@ -52,7 +52,7 @@ class GestureNavigationScreen : public BaseScreen {
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const std::string& action_id) override;
+  void OnUserActionDeprecated(const std::string& action_id) override;
 
  private:
   // Record metrics for the elapsed time that each page was shown for.

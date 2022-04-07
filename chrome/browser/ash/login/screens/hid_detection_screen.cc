@@ -217,11 +217,11 @@ void HIDDetectionScreen::HideImpl() {
     view_->Hide();
 }
 
-void HIDDetectionScreen::OnUserAction(const std::string& action_id) {
+void HIDDetectionScreen::OnUserActionDeprecated(const std::string& action_id) {
   if (action_id == kUserActionContinue) {
     OnContinueButtonClicked();
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
   }
 }
 

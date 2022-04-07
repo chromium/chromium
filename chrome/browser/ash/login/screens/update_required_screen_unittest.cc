@@ -140,7 +140,8 @@ TEST_F(UpdateRequiredScreenUnitTest, HandlesNoUpdate) {
   update_required_screen_->Show(wizard_context_.get());
   EXPECT_EQ(fake_view_->ui_state(),
             UpdateRequiredView::UPDATE_REQUIRED_MESSAGE);
-  update_required_screen_->HandleUserAction(kUserActionUpdateButtonClicked);
+  update_required_screen_->HandleUserActionDeprecated(
+      kUserActionUpdateButtonClicked);
 
   // Verify that the DUT checks for an update.
   EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 1);
@@ -157,7 +158,8 @@ TEST_F(UpdateRequiredScreenUnitTest, HandlesUpdateExists) {
   update_required_screen_->Show(wizard_context_.get());
   EXPECT_EQ(fake_view_->ui_state(),
             UpdateRequiredView::UPDATE_REQUIRED_MESSAGE);
-  update_required_screen_->HandleUserAction(kUserActionUpdateButtonClicked);
+  update_required_screen_->HandleUserActionDeprecated(
+      kUserActionUpdateButtonClicked);
 
   // Verify that the DUT checks for an update.
   EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 1);
@@ -185,7 +187,8 @@ TEST_F(UpdateRequiredScreenUnitTest, HandlesCellularPermissionNeeded) {
   update_required_screen_->Show(wizard_context_.get());
   EXPECT_EQ(fake_view_->ui_state(),
             UpdateRequiredView::UPDATE_REQUIRED_MESSAGE);
-  update_required_screen_->HandleUserAction(kUserActionUpdateButtonClicked);
+  update_required_screen_->HandleUserActionDeprecated(
+      kUserActionUpdateButtonClicked);
 
   // Verify that the DUT checks for an update.
   EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 1);
@@ -196,7 +199,7 @@ TEST_F(UpdateRequiredScreenUnitTest, HandlesCellularPermissionNeeded) {
 
   SetUpdateEngineStatus(update_engine::Operation::NEED_PERMISSION_TO_UPDATE);
 
-  update_required_screen_->HandleUserAction(
+  update_required_screen_->HandleUserActionDeprecated(
       kUserActionAcceptUpdateOverCellular);
 
   EXPECT_GE(

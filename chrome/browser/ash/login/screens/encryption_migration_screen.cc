@@ -312,7 +312,8 @@ void EncryptionMigrationScreen::SetEncryptionMigrationScreenTestDelegate(
   test_delegate = delegate;
 }
 
-void EncryptionMigrationScreen::OnUserAction(const std::string& action_id) {
+void EncryptionMigrationScreen::OnUserActionDeprecated(
+    const std::string& action_id) {
   if (action_id == kUserActionStartMigration) {
     HandleStartMigration();
   } else if (action_id == kUserActionSkipMigration) {
@@ -324,7 +325,7 @@ void EncryptionMigrationScreen::OnUserAction(const std::string& action_id) {
   } else if (action_id == kUserActionOpenFeedbackDialog) {
     HandleOpenFeedbackDialog();
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
   }
 }
 

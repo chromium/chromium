@@ -95,7 +95,8 @@ void GestureNavigationScreen::HideImpl() {
   view_->Hide();
 }
 
-void GestureNavigationScreen::OnUserAction(const std::string& action_id) {
+void GestureNavigationScreen::OnUserActionDeprecated(
+    const std::string& action_id) {
   if (action_id == kUserActionExitPressed) {
     // Make sure the user does not see a notification about the new gestures
     // since they have already gone through this gesture education screen.
@@ -106,7 +107,7 @@ void GestureNavigationScreen::OnUserAction(const std::string& action_id) {
     was_shown_ = true;
     exit_callback_.Run(Result::NEXT);
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
   }
 }
 

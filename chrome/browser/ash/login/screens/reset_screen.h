@@ -68,7 +68,7 @@ class ResetScreen : public BaseScreen, public UpdateEngineClient::Observer {
   // BaseScreen implementation:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const std::string& action_id) override;
+  void OnUserActionDeprecated(const std::string& action_id) override;
 
   // UpdateEngineClient::Observer implementation:
   void UpdateStatusChanged(const update_engine::StatusResult& status) override;

@@ -93,11 +93,12 @@ AssistantOptInFlowScreen::ForceLibAssistantEnabledForTesting(bool enabled) {
                                                  enabled);
 }
 
-void AssistantOptInFlowScreen::OnUserAction(const std::string& action_id) {
+void AssistantOptInFlowScreen::OnUserActionDeprecated(
+    const std::string& action_id) {
   if (action_id == kFlowFinished)
     exit_callback_.Run(Result::NEXT);
   else
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
 }
 
 }  // namespace ash

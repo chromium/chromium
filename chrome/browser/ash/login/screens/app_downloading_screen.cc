@@ -46,12 +46,13 @@ void AppDownloadingScreen::HideImpl() {
   view_->Hide();
 }
 
-void AppDownloadingScreen::OnUserAction(const std::string& action_id) {
+void AppDownloadingScreen::OnUserActionDeprecated(
+    const std::string& action_id) {
   if (action_id == kUserActionButtonContinueSetup) {
     exit_callback_.Run();
     return;
   }
-  BaseScreen::OnUserAction(action_id);
+  BaseScreen::OnUserActionDeprecated(action_id);
 }
 
 }  // namespace ash

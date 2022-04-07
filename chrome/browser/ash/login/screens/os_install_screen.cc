@@ -54,7 +54,7 @@ void OsInstallScreen::ShowImpl() {
 
 void OsInstallScreen::HideImpl() {}
 
-void OsInstallScreen::OnUserAction(const std::string& action_id) {
+void OsInstallScreen::OnUserActionDeprecated(const std::string& action_id) {
   if (action_id == kUserActionExitClicked) {
     exit_callback_.Run();
   } else if (action_id == kUserActionConfirmNextClicked) {
@@ -65,7 +65,7 @@ void OsInstallScreen::OnUserAction(const std::string& action_id) {
   } else if (action_id == kUserActionErrorShutdownClicked) {
     Shutdown();
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
   }
 }
 

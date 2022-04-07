@@ -121,11 +121,11 @@ void OfflineLoginScreen::LoadOffline() {
     view_->LoadParams(std::move(params));
 }
 
-void OfflineLoginScreen::OnUserAction(const std::string& action_id) {
+void OfflineLoginScreen::OnUserActionDeprecated(const std::string& action_id) {
   if (action_id == kUserActionCancel) {
     exit_callback_.Run(Result::BACK);
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
   }
 }
 

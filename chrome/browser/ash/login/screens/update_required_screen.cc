@@ -145,7 +145,8 @@ void UpdateRequiredScreen::HideImpl() {
   StopObservingNetworkState();
 }
 
-void UpdateRequiredScreen::OnUserAction(const std::string& action_id) {
+void UpdateRequiredScreen::OnUserActionDeprecated(
+    const std::string& action_id) {
   if (action_id == kUserActionSelectNetworkButtonClicked) {
     OnSelectNetworkButtonClicked();
   } else if (action_id == kUserActionUpdateButtonClicked) {
@@ -167,7 +168,7 @@ void UpdateRequiredScreen::OnUserAction(const std::string& action_id) {
   } else if (action_id == kUserActionConfirmDeleteUsersData) {
     DeleteUsersData();
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
   }
 }
 

@@ -115,7 +115,7 @@ void UserCreationScreen::HideImpl() {
   error_screen_->Hide();
 }
 
-void UserCreationScreen::OnUserAction(const std::string& action_id) {
+void UserCreationScreen::OnUserActionDeprecated(const std::string& action_id) {
   if (action_id == kUserActionSignIn) {
     context()->sign_in_as_child = false;
     RunExitCallback(Result::SIGNIN);
@@ -131,7 +131,7 @@ void UserCreationScreen::OnUserAction(const std::string& action_id) {
     context()->is_user_creation_enabled = false;
     RunExitCallback(Result::CANCEL);
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
   }
 }
 

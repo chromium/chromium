@@ -20,7 +20,7 @@ class MockEnableDebuggingScreen : public EnableDebuggingScreen {
 
   MOCK_METHOD(void, ShowImpl, ());
   MOCK_METHOD(void, HideImpl, ());
-  MOCK_METHOD(void, OnUserAction, (const std::string& action_id));
+  MOCK_METHOD(void, OnUserActionDeprecated, (const std::string& action_id));
 
   void ExitScreen();
 };

@@ -775,11 +775,11 @@ void EnrollmentScreen::OnActiveDirectoryJoined(
   }
 }
 
-void EnrollmentScreen::OnUserAction(const std::string& action_id) {
+void EnrollmentScreen::OnUserActionDeprecated(const std::string& action_id) {
   if (action_id == kUserActionCancelTPMCheck) {
     OnCancel();
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
   }
 }
 

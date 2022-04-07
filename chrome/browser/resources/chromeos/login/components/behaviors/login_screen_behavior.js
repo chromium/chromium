@@ -48,12 +48,14 @@ const CALLBACK_USER_ACTED = 'userActed';
 
   sendPrefix_: undefined,
 
-  userActed(action_id) {
+  userActed(args) {
     if (this.sendPrefix_ === undefined) {
       console.error('LoginScreenBehavior: send prefix is not defined');
       return;
     }
-    chrome.send(this.sendPrefix_ + CALLBACK_USER_ACTED, [action_id]);
+    if (typeof args === 'string')
+      args = [args];
+    chrome.send(this.sendPrefix_ + CALLBACK_USER_ACTED, args);
   },
 
   /* ******************  Default screen API below.  ********************** */

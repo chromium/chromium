@@ -38,7 +38,7 @@ class GuestTosScreen : public BaseScreen {
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const std::string& action_id) override;
+  void OnUserActionDeprecated(const std::string& action_id) override;
 
   // Callback to make when the guest OOBE prefs are done writing.
   void OnOobeGuestPrefWriteDone();

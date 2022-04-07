@@ -95,13 +95,13 @@ void NetworkScreen::HideImpl() {
   UnsubscribeNetworkNotification();
 }
 
-void NetworkScreen::OnUserAction(const std::string& action_id) {
+void NetworkScreen::OnUserActionDeprecated(const std::string& action_id) {
   if (action_id == kUserActionContinueButtonClicked) {
     OnContinueButtonClicked();
   } else if (action_id == kUserActionBackButtonClicked) {
     OnBackButtonClicked();
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
   }
 }
 

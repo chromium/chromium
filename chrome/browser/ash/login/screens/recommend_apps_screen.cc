@@ -43,7 +43,7 @@ RecommendAppsScreen::~RecommendAppsScreen() {
     view_->Bind(nullptr);
 }
 
-// TODO(https://crbug.com/1070917) Migrate to OnUserAction.
+// TODO(https://crbug.com/1070917) Migrate to OnUserActionDeprecated.
 void RecommendAppsScreen::OnSkip() {
   if (is_hidden())
     return;

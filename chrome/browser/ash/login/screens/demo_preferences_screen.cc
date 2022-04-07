@@ -70,7 +70,8 @@ void DemoPreferencesScreen::HideImpl() {
     view_->Hide();
 }
 
-void DemoPreferencesScreen::OnUserAction(const std::string& action_id) {
+void DemoPreferencesScreen::OnUserActionDeprecated(
+    const std::string& action_id) {
   if (action_id == kUserActionContinue) {
     std::string country(
         g_browser_process->local_state()->GetString(prefs::kDemoModeCountry));
@@ -81,7 +82,7 @@ void DemoPreferencesScreen::OnUserAction(const std::string& action_id) {
   } else if (action_id == kUserActionClose) {
     exit_callback_.Run(Result::CANCELED);
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
   }
 }
 

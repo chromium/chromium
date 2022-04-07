@@ -74,7 +74,8 @@ void SignInFatalErrorScreen::ShowImpl() {
 
 void SignInFatalErrorScreen::HideImpl() {}
 
-void SignInFatalErrorScreen::OnUserAction(const std::string& action_id) {
+void SignInFatalErrorScreen::OnUserActionDeprecated(
+    const std::string& action_id) {
   if (action_id == kUserActionScreenDismissed) {
     exit_callback_.Run();
   } else if (action_id == kUserActionLearnMore) {
@@ -84,7 +85,7 @@ void SignInFatalErrorScreen::OnUserAction(const std::string& action_id) {
     }
     help_app_->ShowHelpTopic(HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
   }
 }
 

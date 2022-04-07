@@ -58,9 +58,9 @@ void QuickStartScreen::ShowImpl() {
 
 void QuickStartScreen::HideImpl() {}
 
-void QuickStartScreen::OnUserAction(const std::string& action_id) {
+void QuickStartScreen::OnUserActionDeprecated(const std::string& action_id) {
   SendRandomFiguresForTesting();  // IN-TEST
-  BaseScreen::OnUserAction(action_id);
+  BaseScreen::OnUserActionDeprecated(action_id);
 }
 
 void QuickStartScreen::SendRandomFiguresForTesting() const {

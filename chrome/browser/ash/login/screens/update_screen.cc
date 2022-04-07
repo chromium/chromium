@@ -175,7 +175,7 @@ void UpdateScreen::HideImpl() {
   is_shown_ = false;
 }
 
-void UpdateScreen::OnUserAction(const std::string& action_id) {
+void UpdateScreen::OnUserActionDeprecated(const std::string& action_id) {
   bool is_chrome_branded_build = false;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   is_chrome_branded_build = true;
@@ -192,7 +192,7 @@ void UpdateScreen::OnUserAction(const std::string& action_id) {
     version_updater_->RejectUpdateOverCellular();
     ExitUpdate(Result::UPDATE_ERROR);
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
   }
 }
 

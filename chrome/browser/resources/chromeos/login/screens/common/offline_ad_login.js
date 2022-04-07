@@ -406,7 +406,7 @@ class OfflineAdLogin extends OfflineAdLoginBase {
           'authCompleted', {bubbles: true, composed: true, detail: msg}));
     } else {
       this.loading = true;
-      chrome.send('completeAdAuthentication', [user, password]);
+      this.userActed(['completeAdAuthentication', user, password]);
     }
   }
 

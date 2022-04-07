@@ -31,12 +31,6 @@ ActiveDirectoryLoginScreenHandler::~ActiveDirectoryLoginScreenHandler() {
     screen_->OnViewDestroyed(this);
 }
 
-void ActiveDirectoryLoginScreenHandler::RegisterMessages() {
-  BaseScreenHandler::RegisterMessages();
-  AddCallback("completeAdAuthentication",
-              &ActiveDirectoryLoginScreenHandler::HandleCompleteAuth);
-}
-
 void ActiveDirectoryLoginScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("adAuthWelcomeMessage", IDS_AD_DOMAIN_AUTH_WELCOME_MESSAGE);
@@ -93,12 +87,6 @@ void ActiveDirectoryLoginScreenHandler::SetErrorState(
     int errorState) {
   CallJS("login.ActiveDirectoryLoginScreen.setErrorState", username,
          errorState);
-}
-
-void ActiveDirectoryLoginScreenHandler::HandleCompleteAuth(
-    const std::string& username,
-    const std::string& password) {
-  screen_->HandleCompleteAuth(username, password);
 }
 
 }  // namespace chromeos

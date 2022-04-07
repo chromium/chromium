@@ -176,11 +176,12 @@ void ConsolidatedConsentScreen::HideImpl() {
   pref_handler_.reset();
 }
 
-void ConsolidatedConsentScreen::OnUserAction(const std::string& action_id) {
+void ConsolidatedConsentScreen::OnUserActionDeprecated(
+    const std::string& action_id) {
   if (action_id == kBackDemoButtonClicked)
     exit_callback_.Run(Result::BACK_DEMO);
   else
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
 }
 
 void ConsolidatedConsentScreen::AddObserver(Observer* observer) {

@@ -51,11 +51,11 @@ void WrongHWIDScreen::HideImpl() {
     view_->Hide();
 }
 
-void WrongHWIDScreen::OnUserAction(const std::string& action_id) {
+void WrongHWIDScreen::OnUserActionDeprecated(const std::string& action_id) {
   if (action_id == kUserActionSkip) {
     OnExit();
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
   }
 }
 

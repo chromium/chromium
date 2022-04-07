@@ -167,7 +167,7 @@ void EulaScreen::ShowImpl() {
         ::tpm_manager::TakeOwnershipRequest(), base::DoNothing());
   }
   if (WizardController::IsZeroTouchHandsOffOobeFlow())
-    OnUserAction(kUserActionAcceptButtonClicked);
+    OnUserActionDeprecated(kUserActionAcceptButtonClicked);
   else if (view_)
     view_->Show();
 }
@@ -177,9 +177,9 @@ void EulaScreen::HideImpl() {
     view_->Hide();
 }
 
-void EulaScreen::OnUserAction(const std::string& action_id) {
+void EulaScreen::OnUserActionDeprecated(const std::string& action_id) {
   if (!IsEulaUserAction(action_id)) {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
     return;
   }
   RecordUserAction(action_id);

@@ -39,7 +39,7 @@ class QuickStartScreen : public BaseScreen {
   bool MaybeSkip(WizardContext* context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const std::string& action_id) override;
+  void OnUserActionDeprecated(const std::string& action_id) override;
 
   void SendRandomFiguresForTesting() const;
 

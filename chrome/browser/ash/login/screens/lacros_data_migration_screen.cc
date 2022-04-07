@@ -133,7 +133,8 @@ void LacrosDataMigrationScreen::ShowSkipButton() {
   view_->ShowSkipButton();
 }
 
-void LacrosDataMigrationScreen::OnUserAction(const std::string& action_id) {
+void LacrosDataMigrationScreen::OnUserActionDeprecated(
+    const std::string& action_id) {
   if (action_id == kUserActionSkip) {
     LOG(WARNING) << "User has skipped the migration.";
     if (migrator_) {
@@ -158,7 +159,7 @@ void LacrosDataMigrationScreen::OnUserAction(const std::string& action_id) {
         base::BindOnce(&LacrosDataMigrationScreen::OnLocalStateCommited,
                        weak_factory_.GetWeakPtr()));
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
   }
 }
 

@@ -88,11 +88,12 @@ void ParentalHandoffScreen::ShowImpl() {
 }
 void ParentalHandoffScreen::HideImpl() {}
 
-void ParentalHandoffScreen::OnUserAction(const std::string& action_id) {
+void ParentalHandoffScreen::OnUserActionDeprecated(
+    const std::string& action_id) {
   if (action_id == kUserActionNext) {
     exit_callback_.Run(Result::DONE);
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserActionDeprecated(action_id);
   }
 }
 

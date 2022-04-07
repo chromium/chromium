@@ -38,7 +38,7 @@ class OsInstallScreen : public BaseScreen, public OsInstallClient::Observer {
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const std::string& action_id) override;
+  void OnUserActionDeprecated(const std::string& action_id) override;
 
   // OsInstallClient::Observer:
   void StatusChanged(OsInstallClient::Status status,
