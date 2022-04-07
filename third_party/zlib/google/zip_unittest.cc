@@ -644,8 +644,20 @@ TEST_F(ZipTest, UnzipWindowsSpecialNames) {
       GetRelativePaths(test_dir_, base::FileEnumerator::FileType::FILES);
 
   for (const std::string& path : got_paths) {
-    EXPECT_TRUE(want_paths.erase(path))
-        << "Found unexpected file: " << std::quoted(path);
+    const bool ok = want_paths.erase(path);
+
+#ifdef OS_WIN
+    if (!ok) {
+      // See crbug.com/1313991: Different versions of Windows treat these
+      // filenames differently. No hard error here if there is an unexpected
+      // file.
+      LOG(WARNING) << "Found unexpected file: " << std::quoted(path);
+      continue;
+    }
+#else
+    EXPECT_TRUE(ok) << "Found unexpected file: " << std::quoted(path);
+#endif
+
     std::string contents;
     EXPECT_TRUE(base::ReadFileToString(test_dir_.AppendASCII(path), &contents));
     EXPECT_EQ(base::StrCat({"This is: ", path}), contents);
@@ -847,8 +859,15 @@ TEST_F(ZipTest, UnzipMixedPaths) {
       GetRelativePaths(test_dir_, base::FileEnumerator::FileType::FILES);
 
   for (const std::string& path : got_paths) {
-    EXPECT_TRUE(want_paths.erase(path))
-        << "Found unexpected file: " << std::quoted(path);
+    const bool ok = want_paths.erase(path);
+#ifdef OS_WIN
+    // See crbug.com/1313991: Different versions of Windows treat reserved
+    // Windows filenames differently. No hard error here if there is an
+    // unexpected file.
+    LOG_IF(WARNING, !ok) << "Found unexpected file: " << std::quoted(path);
+#else
+    EXPECT_TRUE(ok) << "Found unexpected file: " << std::quoted(path);
+#endif
   }
 
   for (const std::string& path : want_paths) {
