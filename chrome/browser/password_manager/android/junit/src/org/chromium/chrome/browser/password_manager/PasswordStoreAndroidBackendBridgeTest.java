@@ -291,7 +291,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
         assertNotNull(successCallback.getValue());
 
         successCallback.getValue().run();
-        verify(mBridgeJniMock).onLoginAdded(sDummyNativePointer, kTestTaskId, pwdWithLocalData);
+        verify(mBridgeJniMock).onLoginChanged(sDummyNativePointer, kTestTaskId);
     }
 
     @Test
@@ -326,7 +326,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
         assertNotNull(successCallback.getValue());
 
         successCallback.getValue().run();
-        verify(mBridgeJniMock).onLoginUpdated(sDummyNativePointer, kTestTaskId, pwdWithLocalData);
+        verify(mBridgeJniMock).onLoginChanged(sDummyNativePointer, kTestTaskId);
     }
 
     @Test
@@ -361,7 +361,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
         assertNotNull(successCallback.getValue());
 
         successCallback.getValue().run();
-        verify(mBridgeJniMock).onLoginDeleted(sDummyNativePointer, kTestTaskId, pwdSpecificsData);
+        verify(mBridgeJniMock).onLoginChanged(sDummyNativePointer, kTestTaskId);
     }
 
     @Test

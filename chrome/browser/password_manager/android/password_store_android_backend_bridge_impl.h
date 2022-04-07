@@ -34,23 +34,9 @@ class PasswordStoreAndroidBackendBridgeImpl
       jint job_id,
       const base::android::JavaParamRef<jbyteArray>& passwords);
 
-  // Called via JNI. Called when the api call with `job_id` finished and
-  // provides serialized PasswordWithLocalData identifying the added 'login'.
-  void OnLoginAdded(JNIEnv* env,
-                    jint job_id,
-                    const base::android::JavaParamRef<jbyteArray>& login);
-
-  // Called via JNI. Called when the api call with `job_id` finished and
-  // provides serialized PasswordWithLocalData identifying the updated 'login'.
-  void OnLoginUpdated(JNIEnv* env,
-                      jint job_id,
-                      const base::android::JavaParamRef<jbyteArray>& login);
-
-  // Called via JNI. Called when the api call with `job_id` finished and
-  // provides Serialized PasswordSpecificsData identifying the deleted 'login'.
-  void OnLoginDeleted(JNIEnv* env,
-                      jint job_id,
-                      const base::android::JavaParamRef<jbyteArray>& login);
+  // Called via JNI. Called when the api call with `job_id` finished that could
+  // have added, modified or deleted a login.
+  void OnLoginChanged(JNIEnv* env, jint job_id);
 
   // Called via JNI. Called when the api call with `job_id` finished with
   // an exception.

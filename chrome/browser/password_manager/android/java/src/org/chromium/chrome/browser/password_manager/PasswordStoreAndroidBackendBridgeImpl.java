@@ -83,8 +83,8 @@ class PasswordStoreAndroidBackendBridgeImpl {
     void addLogin(@JobId int jobId, byte[] pwdWithLocalData, String syncingAccount) {
         mBackend.addLogin(pwdWithLocalData, getAccount(syncingAccount), () -> {
             if (mNativeBackendBridge == 0) return;
-            PasswordStoreAndroidBackendBridgeImplJni.get().onLoginAdded(
-                    mNativeBackendBridge, jobId, pwdWithLocalData);
+            PasswordStoreAndroidBackendBridgeImplJni.get().onLoginChanged(
+                    mNativeBackendBridge, jobId);
         }, exception -> handleAndroidBackendException(jobId, exception));
     }
 
@@ -92,8 +92,8 @@ class PasswordStoreAndroidBackendBridgeImpl {
     void updateLogin(@JobId int jobId, byte[] pwdWithLocalData, String syncingAccount) {
         mBackend.updateLogin(pwdWithLocalData, getAccount(syncingAccount), () -> {
             if (mNativeBackendBridge == 0) return;
-            PasswordStoreAndroidBackendBridgeImplJni.get().onLoginUpdated(
-                    mNativeBackendBridge, jobId, pwdWithLocalData);
+            PasswordStoreAndroidBackendBridgeImplJni.get().onLoginChanged(
+                    mNativeBackendBridge, jobId);
         }, exception -> handleAndroidBackendException(jobId, exception));
     }
 
@@ -101,8 +101,8 @@ class PasswordStoreAndroidBackendBridgeImpl {
     void removeLogin(@JobId int jobId, byte[] pwdSpecificsData, String syncingAccount) {
         mBackend.removeLogin(pwdSpecificsData, getAccount(syncingAccount), () -> {
             if (mNativeBackendBridge == 0) return;
-            PasswordStoreAndroidBackendBridgeImplJni.get().onLoginDeleted(
-                    mNativeBackendBridge, jobId, pwdSpecificsData);
+            PasswordStoreAndroidBackendBridgeImplJni.get().onLoginChanged(
+                    mNativeBackendBridge, jobId);
         }, exception -> handleAndroidBackendException(jobId, exception));
     }
 
@@ -135,12 +135,7 @@ class PasswordStoreAndroidBackendBridgeImpl {
     interface Natives {
         void onCompleteWithLogins(long nativePasswordStoreAndroidBackendBridgeImpl,
                 @JobId int jobId, byte[] passwords);
-        void onLoginAdded(long nativePasswordStoreAndroidBackendBridgeImpl, @JobId int jobId,
-                byte[] pwdWithLocalData);
-        void onLoginUpdated(long nativePasswordStoreAndroidBackendBridgeImpl, @JobId int jobId,
-                byte[] pwdWithLocalData);
-        void onLoginDeleted(long nativePasswordStoreAndroidBackendBridgeImpl, @JobId int jobId,
-                byte[] pwdSpecificsData);
+        void onLoginChanged(long nativePasswordStoreAndroidBackendBridgeImpl, @JobId int jobId);
         void onError(long nativePasswordStoreAndroidBackendBridgeImpl, @JobId int jobId,
                 int errorType, int apiErrorCode);
     }
