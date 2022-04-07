@@ -648,6 +648,7 @@ blink_core_tests_html = [
   "custom/custom_element_test_helpers.h",
   "custom/custom_element_upgrade_sorter_test.cc",
   "fenced_frame/fenced_frame_shadow_dom_delegate_test.cc",
+  "fenced_frame/html_fenced_frame_element_test.cc",
   "forms/email_input_type_test.cc",
   "forms/external_date_time_chooser_test.cc",
   "forms/external_popup_menu_test.cc",

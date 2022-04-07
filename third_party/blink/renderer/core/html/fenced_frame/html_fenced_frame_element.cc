@@ -404,6 +404,16 @@ bool HTMLFencedFrameElement::SupportsFocus() const {
   return features::IsFencedFramesMPArchBased();
 }
 
+const absl::optional<PhysicalSize> HTMLFencedFrameElement::FrozenFrameSize()
+    const {
+  if (!frozen_frame_size_)
+    return absl::nullopt;
+  const float ratio = GetDocument().DevicePixelRatio();
+  return PhysicalSize(
+      LayoutUnit::FromFloatRound(frozen_frame_size_->width * ratio),
+      LayoutUnit::FromFloatRound(frozen_frame_size_->height * ratio));
+}
+
 void HTMLFencedFrameElement::FreezeFrameSize() {
   DCHECK(!frozen_frame_size_);
 
@@ -422,7 +432,11 @@ void HTMLFencedFrameElement::FreezeFrameSize() {
 
 void HTMLFencedFrameElement::FreezeFrameSize(const PhysicalSize& size) {
   DCHECK(!frozen_frame_size_);
-  frozen_frame_size_ = content_rect_->size;
+  // Store the value divided by the |DevicePixelRatio|, so that it scales with
+  // the browser zoom or when moved to different screens.
+  const float ratio = GetDocument().DevicePixelRatio();
+  frozen_frame_size_ = {LayoutUnit::FromFloatRound(size.width / ratio),
+                        LayoutUnit::FromFloatRound(size.height / ratio)};
 
   if (!features::IsFencedFramesMPArchBased()) {
     // With Shadow DOM, update the CSS `transform` property whenever

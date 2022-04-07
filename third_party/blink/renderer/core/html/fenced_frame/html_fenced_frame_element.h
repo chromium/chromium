@@ -84,9 +84,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   // The frame size is "frozen" when the `src` attribute is set.
   // The frozen state is kept in this element so that it can survive across
   // reattaches.
-  const absl::optional<PhysicalSize>& FrozenFrameSize() const {
-    return frozen_frame_size_;
-  }
+  const absl::optional<PhysicalSize> FrozenFrameSize() const;
   // True if the frame size should be frozen when the next resize completed.
   // When `src` is set but layout is not completed yet, the frame size is frozen
   // after the first layout.
@@ -159,6 +157,8 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   bool freeze_mode_attribute_ = false;
 
   friend class ResizeObserverDelegate;
+  FRIEND_TEST_ALL_PREFIXES(HTMLFencedFrameElementTest,
+                           FreezeSizePageZoomFactor);
 };
 
 // Type casting. Custom since adoption could lead to an HTMLFencedFrameElement
