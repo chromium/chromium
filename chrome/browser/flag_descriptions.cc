@@ -912,12 +912,6 @@ const char kEnablePreinstalledWebAppDuplicationFixerDescription[] =
     "of app duplication where the old app failed to stay removed. See "
     "https://crbug.com/1290716.";
 
-const char kEnableSyncRequiresPoliciesLoadedName[] =
-    "Sync waits for all policies to load before starting";
-const char kEnableSyncRequiresPoliciesLoadedDescription[] =
-    "Enables behaviour for Sync to wait for all policies to load before "
-    "starting";
-
 const char kEnableTLS13EarlyDataName[] = "TLS 1.3 Early Data";
 const char kEnableTLS13EarlyDataDescription[] =
     "This option enables TLS 1.3 Early Data, allowing GET requests to be sent "

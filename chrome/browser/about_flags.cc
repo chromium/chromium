@@ -6245,11 +6245,6 @@ const FeatureEntry kFeatureEntries[] = {
          "AutofillUseMobileLabelDisambiguation")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"enable-sync-requires-policies-loaded",
-     flag_descriptions::kEnableSyncRequiresPoliciesLoadedName,
-     flag_descriptions::kEnableSyncRequiresPoliciesLoadedDescription, kOsAll,
-     FEATURE_VALUE_TYPE(syncer::kSyncRequiresPoliciesLoaded)},
-
     {"enable-policy-blocklist-throttle-requires-policies-loaded",
      flag_descriptions::
          kEnablePolicyBlocklistThrottleRequiresPoliciesLoadedName,

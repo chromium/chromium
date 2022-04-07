@@ -528,9 +528,6 @@ extern const char kEnableMigrateDefaultChromeAppToWebAppsNonGSuiteDescription[];
 extern const char kEnablePreinstalledWebAppDuplicationFixerName[];
 extern const char kEnablePreinstalledWebAppDuplicationFixerDescription[];
 
-extern const char kEnableSyncRequiresPoliciesLoadedName[];
-extern const char kEnableSyncRequiresPoliciesLoadedDescription[];
-
 extern const char kEnableTLS13EarlyDataName[];
 extern const char kEnableTLS13EarlyDataDescription[];
 
