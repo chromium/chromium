@@ -427,7 +427,8 @@ void DesksController::NewDesk(DesksCreationRemovalSource source) {
 }
 
 void DesksController::RemoveDesk(const Desk* desk,
-                                 DesksCreationRemovalSource source) {
+                                 DesksCreationRemovalSource source,
+                                 bool close_windows) {
   DCHECK(CanRemoveDesks());
   DCHECK(HasDesk(desk));
 
@@ -450,7 +451,7 @@ void DesksController::RemoveDesk(const Desk* desk,
     return;
   }
 
-  RemoveDeskInternal(desk, source);
+  RemoveDeskInternal(desk, source, close_windows);
 }
 
 void DesksController::ReorderDesk(int old_index, int new_index) {
@@ -1274,7 +1275,8 @@ void DesksController::ActivateDeskInternal(const Desk* desk,
 }
 
 void DesksController::RemoveDeskInternal(const Desk* desk,
-                                         DesksCreationRemovalSource source) {
+                                         DesksCreationRemovalSource source,
+                                         bool close_windows) {
   DCHECK(CanRemoveDesks());
 
   base::AutoReset<bool> in_progress(&are_desks_being_modified_, true);
@@ -1285,6 +1287,7 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
   DCHECK(iter != desks_.end());
 
   const int removed_desk_index = std::distance(desks_.begin(), iter);
+
   // Update workspaces of windows in desks that have higher indices than the
   // removed desk since indices of those desks shift by one.
   for (int i = removed_desk_index + 1; i < static_cast<int>(desks_.size());
@@ -1296,7 +1299,7 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
     }
   }
 
-  // Record |desk|'s lifetime before it's removed from |desks_|.
+  // Record `desk`'s lifetime before it's removed from `desks_`.
   auto* non_const_desk = const_cast<Desk*>(desk);
   non_const_desk->RecordLifetimeHistogram();
   non_const_desk->RecordAndResetConsecutiveDailyVisits(/*being_removed=*/true);
@@ -1319,28 +1322,14 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
   auto removed_desk_mini_views_pauser =
       removed_desk->GetScopedNotifyContentChangedDisabler();
 
-  // - Move windows in removed desk (if any) to the currently active desk.
   // - If the active desk is the one being removed, activate the desk to its
   //   left, if no desk to the left, activate one on the right.
+  // - If we are not closing the windows, move the windows in removed desk (if
+  //   any) to the currently active desk.
+  // - Finally, if we are closing the windows and the active desk is not being
+  // removed, we just need to clear all of the windows in `removed_desk`.
   const bool will_switch_desks = (removed_desk.get() == active_desk_);
-  if (!will_switch_desks) {
-    // We will refresh the mini_views of the active desk only once at the end.
-    auto active_desk_mini_view_pauser =
-        active_desk_->GetScopedNotifyContentChangedDisabler();
-
-    removed_desk->MoveWindowsToDesk(active_desk_);
-
-    MaybeUpdateShelfItems({}, removed_desk_windows);
-
-    // If overview mode is active, we add the windows of the removed desk to the
-    // overview grid in the order of the new MRU (which changes after removing a
-    // desk by making the windows of the removed desk as the least recently used
-    // across all desks). Note that this can only be done after the windows have
-    // moved to the active desk in `MoveWindowsToDesk()` above, so that building
-    // the window MRU list should contain those windows.
-    if (in_overview)
-      AppendWindowsToOverview(removed_desk_windows);
-  } else {
+  if (will_switch_desks) {
     Desk* target_desk = nullptr;
     if (iter_after == desks_.begin()) {
       // Nothing before this desk.
@@ -1372,6 +1361,12 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
     if (in_overview)
       RemoveAllWindowsFromOverview();
 
+    // TODO(crbug.com/1311314): Closing app windows before moving non-app
+    // windows may work for now, but when we add in the ability to save desks we
+    // will need to find a way to still maintain the app windows.
+    if (close_windows)
+      removed_desk->CloseAllAppWindows();
+
     // If overview mode is active, change desk activation without changing
     // window activation. Activation should remain on the dummy
     // "OverviewModeFocusedWidget" while overview mode is active.
@@ -1389,6 +1384,28 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
     // all to the grid in the order of the new MRU.
     if (in_overview)
       AppendWindowsToOverview(target_desk->windows());
+  } else if (!close_windows) {
+    // We will refresh the mini_views of the active desk only once at the end.
+    auto active_desk_mini_view_pauser =
+        active_desk_->GetScopedNotifyContentChangedDisabler();
+
+    removed_desk->MoveWindowsToDesk(active_desk_);
+
+    MaybeUpdateShelfItems({}, removed_desk_windows);
+
+    // If overview mode is active, we add the windows of the removed desk to the
+    // overview grid in the order of the new MRU (which changes after removing a
+    // desk by making the windows of the removed desk as the least recently used
+    // across all desks). Note that this can only be done after the windows have
+    // moved to the active desk in `MoveWindowsToDesk()` above, so that building
+    // the window MRU list should contain those windows.
+    if (in_overview)
+      AppendWindowsToOverview(removed_desk_windows);
+  } else {
+    // In this case, we know that `close_windows` is true but that the desk we
+    // are closing is not currently active. So all that we need to do at this
+    // point is call `CloseAllAppWindows` on `removed_desk`.
+    removed_desk->CloseAllAppWindows();
   }
 
   // It's OK now to refresh the mini_views of *only* the active desk, and only

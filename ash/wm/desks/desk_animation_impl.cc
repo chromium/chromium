@@ -371,7 +371,8 @@ void DeskRemovalAnimation::OnDeskSwitchAnimationFinishedInternal() {
   // Do the actual desk removal behind the scenes before the screenshot layers
   // are destroyed.
   controller_->RemoveDeskInternal(
-      controller_->desks()[desk_to_remove_index_].get(), request_source_);
+      controller_->desks()[desk_to_remove_index_].get(), request_source_,
+      /*close_windows=*/false);
 
   MaybeRestoreSplitView(/*refresh_snapped_windows=*/true);
 }

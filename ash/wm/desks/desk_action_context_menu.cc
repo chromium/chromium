@@ -12,20 +12,6 @@
 
 namespace ash {
 
-namespace {
-
-// An enum with identifiers to link context menu items to their associated
-// functions.
-enum CommandId {
-  // Closes target desk and moves its windows to another desk.
-  kCombineDesks,
-  // Saves target desk in DesksController and gives user option to undo the
-  // desk before the desk is fully removed and its windows are closed.
-  kCloseAll,
-};
-
-}  // namespace
-
 DeskActionContextMenu::DeskActionContextMenu(
     const std::u16string& initial_combine_desks_target_name,
     base::RepeatingClosure combine_desks_callback,

@@ -17,6 +17,7 @@ class ScrollView;
 namespace ash {
 
 class Desk;
+class DeskActionContextMenu;
 class DeskMiniView;
 class PersistentDesksBarContextMenu;
 class PersistentDesksBarDeskButton;
@@ -37,6 +38,7 @@ class DesksTestApi {
   static PersistentDesksBarContextMenu* GetPersistentDesksBarContextMenu();
   static const std::vector<PersistentDesksBarDeskButton*>
   GetPersistentDesksBarDeskButtons();
+  static DeskActionContextMenu* GetContextMenuForDesk(int index);
   static bool HasVerticalDotsButton();
 
   static bool IsDesksBarLeftGradientVisible();

@@ -137,12 +137,13 @@ class ASH_EXPORT DeskMiniView : public views::View,
   void OnViewBlurred(views::View* observed_view) override;
 
  private:
+  friend class DesksTestApi;
+
   // Sets either the `desk_action_view_` or the `close_desk_button_` visibility
   // to false depending on whether the `kDesksCloseAll` feature is active, and
-  // then removes the desk.
-  // TODO(crbug.com/1308426): This function will take a boolean parameter when
-  // we add ability to close desk with all its windows.
-  void OnRemovingDesk();
+  // then removes the desk. If `close_windows` is true, the function tells the
+  // `DesksController` to remove `desk_`'s windows as well.
+  void OnRemovingDesk(bool close_windows);
 
   // Callback for when `context_menu_` is closed. Makes `desk_action_view_`
   // visible.

@@ -40,6 +40,8 @@
 #include "ash/style/close_button.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desk_action_context_menu.h"
+#include "ash/wm/desks/desk_action_view.h"
 #include "ash/wm/desks/desk_animation_base.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
@@ -6994,6 +6996,171 @@ TEST_F(DragWindowToNewDeskTest, DragWindowAtMaximumDesksState) {
   EXPECT_EQ(desks_util::kMaxNumberOfDesks, controller->desks().size());
   EXPECT_TRUE(base::Contains(controller->desks()[0]->windows(), win1.get()));
 }
+
+// A class that maintains a window created inside of a test. If the window is
+// destroyed from outside of the class, it releases the window's unique pointer
+// to prevent use-after-free issues.
+class WindowHolder : public aura::WindowObserver {
+ public:
+  explicit WindowHolder(std::unique_ptr<aura::Window> window)
+      : window_(std::move(window)) {
+    DCHECK(window_);
+    window_->AddObserver(this);
+  }
+
+  WindowHolder(const WindowHolder&) = delete;
+  WindowHolder& operator=(const WindowHolder&) = delete;
+
+  ~WindowHolder() override {
+    if (window_)
+      window_->RemoveObserver(this);
+    // `window_` is destroyed automatically here through the unique pointer.
+  }
+
+  aura::Window* window() { return window_.get(); }
+
+  bool is_valid() const { return !!window_; }
+
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override {
+    // The window was destroyed from outside of this WindowHolder (such as
+    // through the `Desk::CloseAllAppWindows` function). In this case, we do not
+    // want the unique pointer `window_` to try to destroy the already-destroyed
+    // window, so we need to remove this observer and release the unique
+    // pointer.
+    DCHECK_EQ(window, window_.get());
+    window_->RemoveObserver(this);
+    window_.release();
+  }
+
+ private:
+  std::unique_ptr<aura::Window> window_;
+};
+
+class DesksCloseAllTest : public DesksTest {
+ public:
+  DesksCloseAllTest() = default;
+  DesksCloseAllTest(const DesksCloseAllTest&) = delete;
+  DesksCloseAllTest& operator=(const DesksCloseAllTest&) = delete;
+  ~DesksCloseAllTest() override = default;
+
+  // Clicks on the close-all button for the desk at index `index`.
+  void ClickOnCloseAllButtonForDesk(size_t index) {
+    ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+    const auto* desks_bar_view = GetPrimaryRootDesksBarView();
+    ASSERT_LT(index, desks_bar_view->mini_views().size());
+
+    auto* event_generator = GetEventGenerator();
+    ClickOnView(desks_bar_view->mini_views()[index]
+                    ->desk_action_view()
+                    ->close_all_button(),
+                event_generator);
+  }
+
+  // Executes the close-all context menu command for the desk at index `index`.
+  void ExecuteContextMenuCloseAllForDesk(size_t index) {
+    ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+    const auto* desks_bar_view = GetPrimaryRootDesksBarView();
+    ASSERT_LT(index, desks_bar_view->mini_views().size());
+
+    // Run the context menu command for closing a desk with all of its windows.
+    auto* menu_controller = DesksTestApi::GetContextMenuForDesk(index);
+    menu_controller->ExecuteCommand(
+        static_cast<int>(DeskActionContextMenu::CommandId::kCloseAll),
+        /*event_flags=*/0);
+  }
+
+  // DesksTest:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(features::kDesksCloseAll);
+    DesksTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Runs through test cases for closing active and inactive desks with windows in
+// overview.
+TEST_F(DesksCloseAllTest, CloseDesksWithWindowsInOverview) {
+  // Possible sources for "close all" actions. `kCloseAllButton` means that we
+  // will be trying to close the desk through the designated button on the
+  // desk's `DeskActionView`, while `kContextMenu` means we will be trying to
+  // close the desk by executing the desk's "close all" context menu option. As
+  // we add more ways to perform a "close all" action (such as through an
+  // accelerator) we can add more cases to this enum.
+  enum class CloseAllSource {
+    kCloseAllButton,
+    kContextMenu,
+  };
+
+  struct {
+    const std::string scope_trace;
+    const CloseAllSource source;
+  } kTestCases[] = {
+      {"Remove desks using close all button", CloseAllSource::kCloseAllButton},
+      {"Remove desks using close all context menu option",
+       CloseAllSource::kContextMenu},
+  };
+
+  auto* controller = DesksController::Get();
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.scope_trace);
+
+    // Create three desks so that we can close one inactive desk and one active
+    // desk.
+    NewDesk();
+    NewDesk();
+    ASSERT_EQ(3u, controller->desks().size());
+    Desk* desk_1 = controller->desks()[0].get();
+    Desk* desk_2 = controller->desks()[1].get();
+    Desk* desk_3 = controller->desks()[2].get();
+    ASSERT_TRUE(desk_1->is_active());
+
+    // Create two `WindowHolder`s and assign one window to each desk.
+    WindowHolder win1(CreateAppWindow());
+    WindowHolder win2(CreateAppWindow());
+    controller->SendToDeskAtIndex(win1.window(), 0);
+    controller->SendToDeskAtIndex(win2.window(), 1);
+    ASSERT_EQ(1u, desk_1->windows().size());
+    ASSERT_EQ(1u, desk_2->windows().size());
+
+    EnterOverview();
+    ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+
+    // Execute and evaluate a test case for an inactive desk and an active desk.
+    // We do it in this order so that we do not switch the active desk.
+    if (test_case.source == CloseAllSource::kCloseAllButton) {
+      ClickOnCloseAllButtonForDesk(1);
+      EXPECT_TRUE(win1.is_valid());
+      EXPECT_FALSE(win2.is_valid());
+
+      ClickOnCloseAllButtonForDesk(0);
+      EXPECT_FALSE(win1.is_valid());
+    } else if (test_case.source == CloseAllSource::kContextMenu) {
+      ExecuteContextMenuCloseAllForDesk(1);
+      EXPECT_TRUE(win1.is_valid());
+      EXPECT_FALSE(win2.is_valid());
+
+      ExecuteContextMenuCloseAllForDesk(0);
+      EXPECT_FALSE(win1.is_valid());
+    }
+
+    // Desk activation should have changed to `desk_3` and we should still be in
+    // overview.
+    EXPECT_TRUE(desk_3->is_active());
+    EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+
+    // We should have one desk remaining, which means that `desks_bar_view` will
+    // be in zero state, meaning that it will have no `DeskMiniView`s.
+    EXPECT_TRUE(GetPrimaryRootDesksBarView()->mini_views().empty());
+  }
+}
+
+// TODO(crbug.com/1308429): Should have tests for opening and closing the
+// DeskActionContextMenu (which should also add and remove the highlight
+// overview on the desk preview).
 
 // TODO(afakhry): Add more tests:
 // - Always on top windows are not tracked by any desk.

@@ -144,11 +144,15 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   // Creates a new desk. CanCreateDesks() must be checked before calling this.
   void NewDesk(DesksCreationRemovalSource source);
 
-  // Removes and deletes the given |desk|. |desk| must already exist, and
+  // Removes and deletes the given `desk`. `desk` must already exist, and
   // CanRemoveDesks() must be checked before this.
   // This will trigger the `DeskRemovalAnimation` if the active desk is being
   // removed outside of overview.
-  void RemoveDesk(const Desk* desk, DesksCreationRemovalSource source);
+  // If `close_windows` is true, the function will close all of the `desk`'s
+  // windows as well. Otherwise, it will move `desk`'s windows to another desk.
+  void RemoveDesk(const Desk* desk,
+                  DesksCreationRemovalSource source,
+                  bool close_windows);
 
   // Reorder the desk at |old_index| to |new_index|.
   void ReorderDesk(int old_index, int new_index);
@@ -324,7 +328,11 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   void ActivateDeskInternal(const Desk* desk, bool update_window_activation);
 
   // Removes `desk` without animation.
-  void RemoveDeskInternal(const Desk* desk, DesksCreationRemovalSource source);
+  // If `close_windows` is true, the removed `desk`'s windows are closed along
+  // with the desk. Otherwise, they are moved to another desk.
+  void RemoveDeskInternal(const Desk* desk,
+                          DesksCreationRemovalSource source,
+                          bool close_windows);
 
   // Moves all the windows that are visible on all desks that currently
   // reside on |active_desk_| to |new_desk|.

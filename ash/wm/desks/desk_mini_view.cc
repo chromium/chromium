@@ -101,17 +101,21 @@ DeskMiniView::DeskMiniView(DesksBarView* owner_bar,
 
     desk_action_view_ = AddChildView(std::make_unique<DeskActionView>(
         initial_combine_desks_target_name,
+        /*combine_desks_callback=*/
         base::BindRepeating(&DeskMiniView::OnRemovingDesk,
-                            base::Unretained(this)),
+                            base::Unretained(this), /*close_windows=*/false),
+        /*close_all_callback=*/
         base::BindRepeating(&DeskMiniView::OnRemovingDesk,
-                            base::Unretained(this))));
+                            base::Unretained(this), /*close_windows=*/true)));
 
     context_menu_ = std::make_unique<DeskActionContextMenu>(
         initial_combine_desks_target_name,
+        /*combine_desks_callback=*/
         base::BindRepeating(&DeskMiniView::OnRemovingDesk,
-                            base::Unretained(this)),
+                            base::Unretained(this), /*close_windows=*/false),
+        /*close_all_callback=*/
         base::BindRepeating(&DeskMiniView::OnRemovingDesk,
-                            base::Unretained(this)),
+                            base::Unretained(this), /*close_windows=*/true),
         base::BindRepeating(&DeskMiniView::OnContextMenuClosed,
                             base::Unretained(this)));
 
@@ -119,7 +123,7 @@ DeskMiniView::DeskMiniView(DesksBarView* owner_bar,
   } else {
     close_desk_button_ = AddChildView(std::make_unique<CloseButton>(
         base::BindRepeating(&DeskMiniView::OnRemovingDesk,
-                            base::Unretained(this)),
+                            base::Unretained(this), /*close_windows=*/false),
         CloseButton::Type::kSmall));
   }
   UpdateDeskButtonVisibility();
@@ -355,7 +359,7 @@ void DeskMiniView::MaybeCloseHighlightedView() {
   // TODO(crbug.com/1307011): This function is called when we press ctrl+W
   // while highlighted over a desk mini view to combine desks. Should be
   // reworked when we add an accelerator for close-all.
-  OnRemovingDesk();
+  OnRemovingDesk(/*close_windows=*/false);
 }
 
 void DeskMiniView::MaybeSwapHighlightedView(bool right) {
@@ -537,7 +541,7 @@ void DeskMiniView::OnViewBlurred(views::View* observed_view) {
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
 }
 
-void DeskMiniView::OnRemovingDesk() {
+void DeskMiniView::OnRemovingDesk(bool close_windows) {
   if (!desk_)
     return;
 
@@ -557,10 +561,8 @@ void DeskMiniView::OnRemovingDesk() {
 
   desk_preview_->OnRemovingDesk();
 
-  // TODO(crbug.com/1308426): When adding the ability to close all windows with
-  // the desk, we will pass a boolean parameter that is given to this function
-  // during binding.
-  controller->RemoveDesk(desk_, DesksCreationRemovalSource::kButton);
+  controller->RemoveDesk(desk_, DesksCreationRemovalSource::kButton,
+                         close_windows);
 }
 
 void DeskMiniView::OnContextMenuClosed() {

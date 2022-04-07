@@ -365,7 +365,8 @@ void HandleRemoveCurrentDesk() {
   // TODO(afakhry): Finalize the desk removal animation outside of overview with
   // UX. https://crbug.com/977434.
   desks_controller->RemoveDesk(desks_controller->active_desk(),
-                               DesksCreationRemovalSource::kKeyboard);
+                               DesksCreationRemovalSource::kKeyboard,
+                               /*close_windows=*/false);
   base::RecordAction(base::UserMetricsAction("Accel_Desks_RemoveDesk"));
 }
 

@@ -340,7 +340,8 @@ TEST_F(OverviewWindowDragControllerTest,
   // desks bar view should be transformed to the zero state.
   auto* controller = Shell::Get()->desks_controller();
   controller->RemoveDesk(controller->desks().back().get(),
-                         DesksCreationRemovalSource::kButton);
+                         DesksCreationRemovalSource::kButton,
+                         /*close_windows=*/false);
   EXPECT_TRUE(overview_controller()->InOverviewSession());
   EXPECT_TRUE(desks_bar_view->IsZeroState());
   EXPECT_EQ(DesksBarView::kZeroStateBarHeight,
@@ -519,7 +520,8 @@ TEST_F(OverviewWindowDragControllerDesksPortraitTabletTest,
   // don't show desks bar for tablet mode when there's only one desk.
   auto* desks_controller = DesksController::Get();
   DesksController::Get()->RemoveDesk(desks_controller->desks()[1].get(),
-                                     DesksCreationRemovalSource::kButton);
+                                     DesksCreationRemovalSource::kButton,
+                                     /*close_windows=*/false);
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
 
   // Check desks bar still exists after desk2 gets removed.

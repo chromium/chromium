@@ -7,6 +7,7 @@
 #include "ash/controls/gradient_layer_delegate.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
@@ -83,6 +84,11 @@ DesksTestApi::GetPersistentDesksBarContextMenu() {
 const std::vector<PersistentDesksBarDeskButton*>
 DesksTestApi::GetPersistentDesksBarDeskButtons() {
   return GetPersistentDesksBarView()->desk_buttons_;
+}
+
+// static
+DeskActionContextMenu* DesksTestApi::GetContextMenuForDesk(int index) {
+  return GetDesksBarView()->mini_views()[index]->context_menu_.get();
 }
 
 // static

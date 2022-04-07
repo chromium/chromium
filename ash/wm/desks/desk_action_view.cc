@@ -10,6 +10,7 @@
 #include "ash/style/close_button.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/background.h"
 
 namespace ash {
@@ -46,6 +47,7 @@ DeskActionView::DeskActionView(
   UpdateCombineDesksTooltip(initial_combine_desks_target_name);
 
   SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
 }
 
 void DeskActionView::UpdateCombineDesksTooltip(

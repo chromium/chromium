@@ -8,10 +8,12 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_animation_base.h"
 #include "ash/wm/desks/desk_animation_impl.h"
+#include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
 #include "ash/wm/gestures/wm_gesture_handler.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_grid.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/base_event_utils.h"
@@ -69,13 +71,14 @@ void NewDesk() {
   DesksController::Get()->NewDesk(DesksCreationRemovalSource::kKeyboard);
 }
 
-void RemoveDesk(const Desk* desk) {
+void RemoveDesk(const Desk* desk, bool close_windows) {
   auto* controller = DesksController::Get();
   const bool in_overview =
       Shell::Get()->overview_controller()->InOverviewSession();
   const bool should_wait = controller->active_desk() == desk && !in_overview;
   DeskSwitchAnimationWaiter waiter;
-  controller->RemoveDesk(desk, DesksCreationRemovalSource::kButton);
+  controller->RemoveDesk(desk, DesksCreationRemovalSource::kButton,
+                         close_windows);
   if (should_wait)
     waiter.Wait();
 }
@@ -156,6 +159,15 @@ void WaitUntilEndingScreenshotTaken(DeskActivationAnimation* animation) {
   RootWindowDeskSwitchAnimatorTestApi(desk_switch_animator)
       .SetOnEndingScreenshotTakenCallback(run_loop.QuitClosure());
   run_loop.Run();
+}
+
+const DesksBarView* GetPrimaryRootDesksBarView() {
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  auto* overview_controller = Shell::Get()->overview_controller();
+  DCHECK(overview_controller->InOverviewSession());
+  return overview_controller->overview_session()
+      ->GetGridWithRootWindow(root_window)
+      ->desks_bar_view();
 }
 
 }  // namespace ash

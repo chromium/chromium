@@ -623,6 +623,42 @@ void Desk::RecordAndResetConsecutiveDailyVisits(bool being_removed) {
   first_day_visited_ = -1;
 }
 
+void Desk::CloseAllAppWindows() {
+  DCHECK(features::IsDesksCloseAllEnabled());
+
+  {
+    // We need to disable the desk notifying content has been changed here
+    // because the desk is going to be removed soon, so updating content here is
+    // unnecessary.
+    auto desk_throttled = GetScopedNotifyContentChangedDisabler();
+
+    // We need to copy the app windows from `windows_` into `app_windows` so
+    // that we do not modify `windows_` in place. This also gives us a filtered
+    // list with all of the app windows that we need to remove.
+    std::vector<aura::Window*> app_windows;
+    base::ranges::copy_if(
+        windows_, std::back_inserter(app_windows), [](aura::Window* window) {
+          return window->GetProperty(aura::client::kAppType) !=
+                 static_cast<int>(AppType::NON_APP);
+        });
+
+    // We initialize `window_tracker` from the filtered `app_windows` list, and
+    // pop and close windows from the `window_tracker` list. This avoids us
+    // revisiting windows that may have already been indirectly closed due to
+    // the closure of other windows, as the `window_tracker` automatically
+    // removes windows when they are closed.
+    aura::WindowTracker window_tracker(app_windows);
+    while (!window_tracker.windows().empty()) {
+      aura::Window* window = window_tracker.Pop();
+      views::Widget* widget = views::Widget::GetWidgetForNativeView(window);
+      DCHECK(widget);
+      widget->CloseNow();
+    }
+  }
+
+  NotifyContentChanged();
+}
+
 void Desk::MoveWindowToDeskInternal(aura::Window* window,
                                     Desk* target_desk,
                                     aura::Window* target_root) {

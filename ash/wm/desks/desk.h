@@ -130,9 +130,9 @@ class ASH_EXPORT Desk {
   void Deactivate(bool update_window_activation);
 
   // In preparation for removing this desk, moves all the windows on this desk
-  // to |target_desk| such that they become last in MRU order across all desks,
+  // to `target_desk` such that they become last in MRU order across all desks,
   // and they will be stacked at the bottom among the children of
-  // |target_desk|'s container.
+  // `target_desk`'s container.
   // Note that from a UX stand point, removing a desk is viewed as the user is
   // now done with this desk, and therefore its windows are demoted and
   // deprioritized.
@@ -175,6 +175,12 @@ class ASH_EXPORT Desk {
   // |is_active_| is true, then set |last_day_visited_| to the current day. This
   // accounts for cases where the user removes the active desk.
   void RecordAndResetConsecutiveDailyVisits(bool being_removed);
+
+  // Closes all app windows associated with this desk. If we are removing the
+  // active desk in overview, we do not want to close the non-app windows, but
+  // rather move them to the new active desk. So, we can close all of the app
+  // windows before moving the leftover windows.
+  void CloseAllAppWindows();
 
  private:
   friend class DesksTestApi;
