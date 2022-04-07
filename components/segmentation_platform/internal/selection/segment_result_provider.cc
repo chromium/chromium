@@ -177,6 +177,9 @@ void SegmentResultProviderImpl::TryGetScoreFromDefaultModel(
     DefaultModelManager::SegmentInfoList available_segments) {
   if (!request_state->default_provider ||
       !request_state->default_provider->ModelAvailable()) {
+    VLOG(1) << __func__ << ": segment="
+            << OptimizationTarget_Name(request_state->segment_id)
+            << " default provider not available";
     PostResultCallback(std::move(request_state),
                        std::make_unique<SegmentResult>(existing_state));
     return;
@@ -194,6 +197,9 @@ void SegmentResultProviderImpl::TryGetScoreFromDefaultModel(
   }
 
   if (!default_segment_info) {
+    VLOG(1) << __func__ << ": segment="
+            << OptimizationTarget_Name(request_state->segment_id)
+            << " default segment info not available";
     PostResultCallback(std::move(request_state),
                        std::make_unique<SegmentResult>(
                            ResultState::kDefaultModelMetadataMissing));
@@ -205,6 +211,9 @@ void SegmentResultProviderImpl::TryGetScoreFromDefaultModel(
       metadata_utils::ValidateMetadata(default_segment_info->model_metadata()));
   if (!signal_storage_config_->MeetsSignalCollectionRequirement(
           default_segment_info->model_metadata())) {
+    VLOG(1) << __func__ << ": segment="
+            << OptimizationTarget_Name(request_state->segment_id)
+            << " signal collection not met";
     PostResultCallback(std::move(request_state),
                        std::make_unique<SegmentResult>(
                            ResultState::kDefaultModelSignalNotCollected));
