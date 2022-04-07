@@ -27,13 +27,13 @@
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/send_tab_to_self/send_tab_to_self_desktop_util.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/omnibox/clipboard_utils.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -256,14 +256,6 @@ void OmniboxViewViews::SaveStateToTab(content::WebContents* tab) {
 }
 
 void OmniboxViewViews::OnTabChanged(content::WebContents* web_contents) {
-  // The context menu holds a reference to send_tab_to_self_sub_menu_model_;
-  // invalidate it here so we can destroy those below.
-  InvalidateContextMenu();
-
-  // This has a reference to the WebContents, which might be being destroyed
-  // here:
-  send_tab_to_self_sub_menu_model_.reset();
-
   const OmniboxState* state = static_cast<OmniboxState*>(
       web_contents->GetUserData(&OmniboxState::kKey));
   model()->RestoreState(state ? &state->model_state : nullptr);
@@ -514,11 +506,10 @@ void OmniboxViewViews::ExecuteCommand(int command_id, int event_flags) {
       location_bar_view_->command_updater()->ExecuteCommand(command_id);
       return;
 
-    case IDC_SEND_TAB_TO_SELF_SINGLE_TARGET:
-      send_tab_to_self::ShareToSingleTarget(
-          location_bar_view_->GetWebContents());
-      send_tab_to_self::RecordDeviceClicked(
-          send_tab_to_self::ShareEntryPoint::kOmniboxMenu);
+    case IDC_SEND_TAB_TO_SELF:
+      send_tab_to_self::SendTabToSelfBubbleController::
+          CreateOrGetFromWebContents(location_bar_view_->GetWebContents())
+              ->ShowBubble();
       return;
 
     // These commands do invoke the popup.
@@ -1924,23 +1915,9 @@ void OmniboxViewViews::MaybeAddSendTabToSelfItem(
     menu_contents->InsertSeparatorAt(index++, ui::NORMAL_SEPARATOR);
   }
 
-  if (send_tab_to_self::GetValidDeviceCount(location_bar_view_->profile()) ==
-      1) {
-    menu_contents->InsertItemAt(
-        index, IDC_SEND_TAB_TO_SELF_SINGLE_TARGET,
-        l10n_util::GetStringFUTF16(
-            IDS_CONTEXT_MENU_SEND_TAB_TO_SELF_SINGLE_TARGET,
-            send_tab_to_self::GetSingleTargetDeviceName(
-                location_bar_view_->profile())));
-  } else {
-    send_tab_to_self_sub_menu_model_ =
-        std::make_unique<send_tab_to_self::SendTabToSelfSubMenuModel>(
-            location_bar_view_->GetWebContents(),
-            send_tab_to_self::SendTabToSelfMenuType::kOmnibox);
-    menu_contents->InsertSubMenuWithStringIdAt(
-        index, IDC_SEND_TAB_TO_SELF, IDS_CONTEXT_MENU_SEND_TAB_TO_SELF,
-        send_tab_to_self_sub_menu_model_.get());
-  }
+  menu_contents->InsertItemAt(
+      index, IDC_SEND_TAB_TO_SELF,
+      l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF));
 #if !BUILDFLAG(IS_MAC)
   menu_contents->SetIcon(index,
                          ui::ImageModel::FromVectorIcon(kSendTabToSelfIcon));

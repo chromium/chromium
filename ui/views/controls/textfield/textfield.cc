@@ -2546,12 +2546,6 @@ void Textfield::UpdateContextMenu() {
       MenuRunner::HAS_MNEMONICS | MenuRunner::CONTEXT_MENU);
 }
 
-void Textfield::InvalidateContextMenu() {
-  // Ensure that the Runner doesn't outlive the Model.
-  context_menu_runner_.reset();
-  context_menu_contents_.reset();
-}
-
 bool Textfield::ImeEditingAllowed() const {
   // Disallow input method editing of password fields.
   ui::TextInputType t = GetTextInputType();

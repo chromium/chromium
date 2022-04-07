@@ -588,7 +588,6 @@ class TabStripModel : public TabGroupController {
     CommandToggleGrouped,
     CommandToggleSiteMuted,
     CommandSendTabToSelf,
-    CommandSendTabToSelfSingleTarget,
     CommandAddToReadLater,
     CommandAddToNewGroup,
     CommandAddToExistingGroup,

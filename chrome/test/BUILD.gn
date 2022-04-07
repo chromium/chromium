@@ -6532,7 +6532,6 @@ test("unit_tests") {
       "../browser/ui/search/ntp_user_data_logger_unittest.cc",
       "../browser/ui/search/search_ipc_router_policy_unittest.cc",
       "../browser/ui/search/search_ipc_router_unittest.cc",
-      "../browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model_unittest.cc",
       "../browser/ui/serial/serial_chooser_controller_unittest.cc",
       "../browser/ui/tab_contents/chrome_web_contents_menu_helper_unittest.cc",
       "../browser/ui/tab_contents/chrome_web_contents_view_handle_drop_unittest.cc",

@@ -8659,9 +8659,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_OMNIBOX_BUBBLE_ITEM_SUBTITLE_DAYS_SEND_TAB_TO_SELF" desc="The label of valid device button inside omnibox bubble, which shows the last activated time of a valid device.">
         Active <ph name="DEVICE_LAST_ACTIVATED_TIME">$1<ex>- 3 days ago</ex></ph> days ago
       </message>
-      <message name="IDS_CONTEXT_MENU_SEND_TAB_TO_SELF_SINGLE_TARGET" desc="The label for the different context menu items for sharing this tab to the single other valid target device.">
-        Send to <ph name="DEVICE_NAME">$1<ex>Ted's Pixel2</ex></ph>
-      </message>
       <message name="IDS_TOOLBAR_BUTTON_SEND_TAB_TO_SELF_FROM_DEVICE" desc="The label for the device a received tab was sent from. Shown in the toolbar bubble.">
         Shared from <ph name="DEVICE_NAME">$1<ex>Ted's Pixel2</ex></ph>
       </message>
@@ -8677,27 +8674,17 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_TOOLBAR_BUTTON_SEND_TAB_TO_SELF_BUTTON_HINT_TEXT" desc="The hint text shown on received tab dialog shown from the toolbar button. Where 'THERE' is the device the user selected.">
         Choose a device. Then, to see the page, open Chrome there.
       </message>
-      <if expr="not use_titlecase">
-        <message name="IDS_CONTEXT_MENU_SEND_TAB_TO_SELF" desc="The label of item for share this tab to other devices in different context menus.">
-          Send to your devices
-        </message>
-        <message name="IDS_LINK_MENU_SEND_TAB_TO_SELF" desc="The label of item for share this tab to other devices in content area link right click menu.">
-          Send link to your devices
-        </message>
-        <message name="IDS_LINK_MENU_SEND_TAB_TO_SELF_SINGLE_TARGET" desc="The label for the link context menu item for sharing this tab to the single other valid target device">
-          Send link to <ph name="DEVICE_NAME">$1<ex>Ted's Pixel2</ex></ph>
-        </message>
-      </if>
       <if expr="use_titlecase">
-        <message name="IDS_CONTEXT_MENU_SEND_TAB_TO_SELF" desc="In Title Case: The label of item for share this tab to other devices in different context menus.">
-          Send to Your Devices
-        </message>
-        <message name="IDS_LINK_MENU_SEND_TAB_TO_SELF" desc="In Title Case: The label of item for share this tab to other devices in content area link right click menu.">
-          Send Link to Your Devices
-        </message>
-        <message name="IDS_LINK_MENU_SEND_TAB_TO_SELF_SINGLE_TARGET" desc="The label for the link context menu item for sharing this tab to the single other valid target device">
-          Send Link to <ph name="DEVICE_NAME">$1<ex>Ted's Pixel2</ex></ph>
-        </message>
+        <then>
+          <message name="IDS_CONTEXT_MENU_SEND_TAB_TO_SELF" desc="In Title Case: The label of item for share this tab to other devices in different context menus.">
+            Send to Your Devices
+          </message>
+        </then>
+        <else>
+          <message name="IDS_CONTEXT_MENU_SEND_TAB_TO_SELF" desc="The label of item for share this tab to other devices in different context menus.">
+            Send to your devices
+          </message>
+        </else>
       </if>
       <if expr="is_android">
       <message name="IDS_SEND_TAB_TO_SELF_MESSAGE" desc="Text for a message indicating that the tab was shared from a syncing device.">

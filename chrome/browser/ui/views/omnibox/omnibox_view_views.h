@@ -17,7 +17,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/search_engines/template_url_service.h"
@@ -411,11 +410,6 @@ class OmniboxViewViews
       scoped_compositor_observation_{this};
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
       scoped_template_url_service_observation_{this};
-
-  // Send tab to self submenu. This is tied to a WebContents, it's created when
-  // the user opens the menu and destroyed when the tab changes.
-  std::unique_ptr<send_tab_to_self::SendTabToSelfSubMenuModel>
-      send_tab_to_self_sub_menu_model_;
 
   PrefChangeRegistrar pref_change_registrar_;
 

@@ -30,7 +30,6 @@
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/tab_helper.h"
-#include "chrome/browser/send_tab_to_self/send_tab_to_self_desktop_util.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -38,6 +37,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -1376,9 +1376,6 @@ bool TabStripModel::IsContextMenuCommandEnabled(
     case CommandSendTabToSelf:
       return true;
 
-    case CommandSendTabToSelfSingleTarget:
-      return true;
-
     case CommandAddToReadLater:
       return true;
 
@@ -1493,10 +1490,10 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       break;
     }
 
-    case CommandSendTabToSelfSingleTarget: {
-      send_tab_to_self::ShareToSingleTarget(GetWebContentsAt(context_index));
-      send_tab_to_self::RecordDeviceClicked(
-          send_tab_to_self::ShareEntryPoint::kTabMenu);
+    case CommandSendTabToSelf: {
+      send_tab_to_self::SendTabToSelfBubbleController::
+          CreateOrGetFromWebContents(GetWebContentsAt(context_index))
+              ->ShowBubble();
       break;
     }
 
@@ -1674,9 +1671,6 @@ bool TabStripModel::ContextMenuCommandToBrowserCommand(int cmd_id,
       break;
     case CommandSendTabToSelf:
       *browser_cmd = IDC_SEND_TAB_TO_SELF;
-      break;
-    case CommandSendTabToSelfSingleTarget:
-      *browser_cmd = IDC_SEND_TAB_TO_SELF_SINGLE_TARGET;
       break;
     case CommandCloseTab:
       *browser_cmd = IDC_CLOSE_TAB;

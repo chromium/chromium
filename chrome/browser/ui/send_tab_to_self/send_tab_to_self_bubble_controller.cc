@@ -98,6 +98,8 @@ Profile* SendTabToSelfBubbleController::GetProfile() {
 void SendTabToSelfBubbleController::OnDeviceSelected(
     const std::string& target_device_name,
     const std::string& target_device_guid) {
+  // TODO(crbug.com/1288843): This is being recorded for entry points other
+  // than the omnibox. Make the entry point a ShowBubble() argument.
   send_tab_to_self::RecordDeviceClicked(ShareEntryPoint::kOmniboxIcon);
   CreateNewEntry(&GetWebContents(), target_device_name, target_device_guid,
                  GURL());

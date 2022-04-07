@@ -4,22 +4,17 @@
 
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_desktop_util.h"
 
-#include <string>
-
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/desktop_notification_handler.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
-#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
-#include "components/send_tab_to_self/target_device_info.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
-#include "url/gurl.h"
 
 namespace send_tab_to_self {
 
@@ -66,38 +61,6 @@ void CreateNewEntry(content::WebContents* tab,
   SendTabToSelfBubbleController* controller = send_tab_to_self::
       SendTabToSelfBubbleController::CreateOrGetFromWebContents(tab);
   controller->ShowConfirmationMessage();
-}
-
-void ShareToSingleTarget(content::WebContents* tab, const GURL& link_url) {
-  Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
-  DCHECK_EQ(GetValidDeviceCount(profile), 1u);
-  const std::vector<TargetDeviceInfo>& devices =
-      SendTabToSelfSyncServiceFactory::GetForProfile(profile)
-          ->GetSendTabToSelfModel()
-          ->GetTargetDeviceInfoSortedList();
-  CreateNewEntry(tab, devices.begin()->device_name, devices.begin()->cache_guid,
-                 link_url);
-}
-
-size_t GetValidDeviceCount(Profile* profile) {
-  SendTabToSelfSyncService* service =
-      SendTabToSelfSyncServiceFactory::GetForProfile(profile);
-  DCHECK(service);
-  SendTabToSelfModel* model = service->GetSendTabToSelfModel();
-  DCHECK(model);
-  const std::vector<TargetDeviceInfo>& devices =
-      model->GetTargetDeviceInfoSortedList();
-  return devices.size();
-}
-
-std::u16string GetSingleTargetDeviceName(Profile* profile) {
-  DCHECK_EQ(GetValidDeviceCount(profile), 1u);
-  return base::UTF8ToUTF16(
-      SendTabToSelfSyncServiceFactory::GetForProfile(profile)
-          ->GetSendTabToSelfModel()
-          ->GetTargetDeviceInfoSortedList()
-          .begin()
-          ->device_name);
 }
 
 }  // namespace send_tab_to_self

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_TABS_TAB_MENU_MODEL_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -24,7 +23,6 @@ class TabMenuModelDelegate;
 // likely having to expand it later on:
 //   ExistingTabGroupSubMenuModel
 //   ExistingWindowSubMenuModel
-//   SendTabToSelfSubMenuModel
 class TabMenuModel : public ui::SimpleMenuModel {
  public:
   TabMenuModel(ui::SimpleMenuModel::Delegate* delegate,
@@ -42,10 +40,6 @@ class TabMenuModel : public ui::SimpleMenuModel {
 
   std::unique_ptr<ui::SimpleMenuModel> add_to_existing_group_submenu_;
   std::unique_ptr<ui::SimpleMenuModel> add_to_existing_window_submenu_;
-
-  // Send tab to self submenu.
-  std::unique_ptr<send_tab_to_self::SendTabToSelfSubMenuModel>
-      send_tab_to_self_sub_menu_model_;
 
   raw_ptr<TabMenuModelDelegate> tab_menu_model_delegate_;
 };
