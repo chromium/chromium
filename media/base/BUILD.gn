@@ -629,6 +629,7 @@ source_set("unit_tests") {
     "video_frame_pool_unittest.cc",
     "video_frame_unittest.cc",
     "video_thumbnail_decoder_unittest.cc",
+    "video_transformation_unittest.cc",
     "video_types_unittest.cc",
     "video_util_unittest.cc",
     "wall_clock_time_source_unittest.cc",
