@@ -183,6 +183,8 @@ ProtoEnum::BackForwardCacheNotRestoredReason NotRestoredReasonToTraceEnum(
       return ProtoEnum::NO_RESPONSE_HEAD;
     case Reason::kActivationNavigationsDisallowedForBug1234857:
       return ProtoEnum::ACTIVATION_NAVIGATION_DISALLOWED_FOR_BUG_1234857;
+    case Reason::kErrorDocument:
+      return ProtoEnum::ERROR_DOCUMENT;
     case Reason::kBlocklistedFeatures:
       return ProtoEnum::BLOCKLISTED_FEATURES;
     case Reason::kUnknown:
@@ -394,6 +396,8 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "Activation navigations are disallowed to avoid bypassing "
              "PasswordProtectionService as a workaround for "
              "https://crbug.com/1234857.";
+    case Reason::kErrorDocument:
+      return "Error documents cannot be stored in bfcache";
   }
 }
 

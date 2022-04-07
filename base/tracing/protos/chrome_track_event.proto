@@ -515,6 +515,7 @@ message BackForwardCacheCanStoreDocumentResult {
     CACHE_CONTROL_NO_STORE_HTTP_ONLY_COOKIE_MODIFIED = 51;
     NO_RESPONSE_HEAD = 52;
     ACTIVATION_NAVIGATION_DISALLOWED_FOR_BUG_1234857 = 53;
+    ERROR_DOCUMENT = 54;
   }
 
   optional BackForwardCacheNotRestoredReason

@@ -3660,4 +3660,69 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       tester.IsDisabledForFrameWithReason(process_id, routing_id, reason));
 }
 
+// Test that when we navigate away from an error page and back with no error
+// that we don't serve the error page from BFCache.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       ErrorDocumentNotCachedWithSecondError) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Navigate to a.com.
+  ASSERT_TRUE(NavigateToURL(web_contents(), url_a));
+
+  // Navigate to b.com and block due to an error.
+  NavigateAndBlock(url_b, /*history_offset=*/0);
+  RenderFrameHostImplWrapper rfh_b(current_frame_host());
+
+  // Navigate back to a.com.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectRestored(FROM_HERE);
+  ASSERT_TRUE(rfh_b.WaitUntilRenderFrameDeleted());
+
+  // Navigate forward to b.com again and block with an error again.
+  NavigateAndBlock(url_b, /*history_offset=*/1);
+  ExpectNotRestored(
+      {NotRestoredReason::kHTTPStatusNotOK, NotRestoredReason::kNoResponseHead,
+       NotRestoredReason::kErrorDocument},
+      {}, {}, {}, {}, FROM_HERE);
+}
+
+// Test that when we navigate away from an error page and back with no error
+// that we don't serve the error page from BFCache.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       ErrorDocumentNotCachedWithoutSecondError) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Navigate to a.com.
+  ASSERT_TRUE(NavigateToURL(web_contents(), url_a));
+
+  // Navigate to b.com and block due to an error.
+  NavigateAndBlock(url_b, /*history_offset=*/0);
+  RenderFrameHostImplWrapper rfh_b(current_frame_host());
+
+  int history_entry_id =
+      web_contents()->GetController().GetLastCommittedEntry()->GetUniqueID();
+
+  // Navigate back to a.com.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ASSERT_TRUE(rfh_b.WaitUntilRenderFrameDeleted());
+
+  // Navigate forward to b.com again with no error.
+  ASSERT_TRUE(HistoryGoForward(web_contents()));
+
+  // We would normally confirm that the blocking reasons are correct, however,
+  // when performing a history navigations back to an error document, a new
+  // entry is created and the reasons in the old entry are not recorded.
+  //
+  // Check that we indeed got a new history entry.
+  ASSERT_NE(
+      history_entry_id,
+      web_contents()->GetController().GetLastCommittedEntry()->GetUniqueID());
+}
+
 }  // namespace content

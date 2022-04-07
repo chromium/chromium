@@ -777,6 +777,13 @@ void BackForwardCacheImpl::PopulateReasonsForMainDocument(
   if (rfh->last_http_status_code() != net::HTTP_OK)
     result.No(BackForwardCacheMetrics::NotRestoredReason::kHTTPStatusNotOK);
 
+  // Interstitials and other internal error pages should set an error status
+  // code but there's no guarantee, e.g. https://crbug/1274308,
+  // https://crbug/1287996. This catches those cases. It might also make the
+  // kHTTPStatusNotOK check redundant.
+  if (rfh->IsErrorDocument())
+    result.No(BackForwardCacheMetrics::NotRestoredReason::kErrorDocument);
+
   // Only store documents that were fetched via HTTP GET method.
   if (rfh->last_http_method() != net::HttpRequestHeaders::kGetMethod)
     result.No(BackForwardCacheMetrics::NotRestoredReason::kHTTPMethodNotGET);

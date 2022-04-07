@@ -8078,6 +8078,7 @@ domain Page
       NoResponseHead
       Unknown
       ActivationNavigationsDisallowedForBug1234857
+      ErrorDocument
       #Blocklisted features
       WebSocket
       WebTransport
