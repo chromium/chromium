@@ -1732,6 +1732,36 @@ TEST_F(TextfieldTest, ShouldShowCursor) {
   EXPECT_FALSE(test_api_->ShouldShowCursor());
 }
 
+#if BUILDFLAG(IS_MAC)
+TEST_F(TextfieldTest, MacCursorAlphaTest) {
+  InitTextfield();
+
+  const int cursor_y = GetCursorYForTesting();
+  MoveMouseTo(gfx::Point(GetCursorPositionX(0), cursor_y));
+  ClickRightMouseButton();
+  EXPECT_TRUE(textfield_->HasFocus());
+
+  const float kOpaque = 1.0;
+  EXPECT_FLOAT_EQ(kOpaque, test_api_->CursorLayerOpacity());
+
+  test_api_->FlashCursor();
+
+  const float kAlmostTransparent = 1.0 / 255.0;
+  EXPECT_FLOAT_EQ(kAlmostTransparent, test_api_->CursorLayerOpacity());
+
+  test_api_->FlashCursor();
+
+  EXPECT_FLOAT_EQ(kOpaque, test_api_->CursorLayerOpacity());
+
+  const float kTransparent = 0.0;
+  test_api_->SetCursorLayerOpacity(kTransparent);
+  ASSERT_FLOAT_EQ(kTransparent, test_api_->CursorLayerOpacity());
+
+  test_api_->UpdateCursorVisibility();
+  EXPECT_FLOAT_EQ(kOpaque, test_api_->CursorLayerOpacity());
+}
+#endif
+
 TEST_F(TextfieldTest, FocusTraversalTest) {
   InitTextfield(3);
   textfield_->RequestFocus();
