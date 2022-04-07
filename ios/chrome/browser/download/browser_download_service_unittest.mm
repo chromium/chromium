@@ -303,7 +303,7 @@ TEST_F(BrowserDownloadServiceTest, NoDownloadManager) {
 // Tests downloading a valid vcard file while the kill switch is enabled.
 TEST_F(BrowserDownloadServiceTest, VCardKillSwitch) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({kDownloadVcard, kVCardKillSwitch}, {});
+  feature_list.InitAndEnableFeature(kVCardKillSwitch);
 
   ASSERT_TRUE(download_controller()->GetDelegate());
   auto task =

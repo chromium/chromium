@@ -677,9 +677,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          web::features::kUseLoadSimulatedRequestForErrorPageNavigation)},
-    {"download-vcard", flag_descriptions::kDownloadVcardName,
-     flag_descriptions::kDownloadVcardDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kDownloadVcard)},
     {"enable-discover-feed-static-resource-serving",
      flag_descriptions::kEnableDiscoverFeedStaticResourceServingName,
      flag_descriptions::kEnableDiscoverFeedStaticResourceServingDescription,

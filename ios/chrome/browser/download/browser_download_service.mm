@@ -147,7 +147,6 @@ void BrowserDownloadService::OnDownloadCreated(
     if (tab_helper)
       tab_helper->Download(std::move(task));
   } else if (task->GetMimeType() == kVcardMimeType &&
-             base::FeatureList::IsEnabled(kDownloadVcard) &&
              !base::FeatureList::IsEnabled(kVCardKillSwitch)) {
     VcardTabHelper* tab_helper = VcardTabHelper::FromWebState(web_state);
     if (tab_helper)

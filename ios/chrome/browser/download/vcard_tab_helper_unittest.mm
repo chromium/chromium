@@ -7,13 +7,11 @@
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "ios/chrome/browser/download/download_test_util.h"
 #include "ios/chrome/browser/download/mime_type_util.h"
 #import "ios/chrome/browser/download/vcard_tab_helper.h"
 #import "ios/chrome/browser/download/vcard_tab_helper_delegate.h"
-#import "ios/chrome/browser/ui/download/features.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/platform_test.h"
@@ -33,16 +31,12 @@ char kUrl[] = "https://test.test/";
 // Test fixture for testing VcardTabHelperTest class.
 class VcardTabHelperTest : public PlatformTest {
  protected:
-  VcardTabHelperTest() {
-    feature_list_.InitAndEnableFeature(kDownloadVcard);
-    VcardTabHelper::CreateForWebState(&web_state_);
-  }
+  VcardTabHelperTest() { VcardTabHelper::CreateForWebState(&web_state_); }
 
   VcardTabHelper* tab_helper() {
     return VcardTabHelper::FromWebState(&web_state_);
   }
 
-  base::test::ScopedFeatureList feature_list_;
   web::FakeWebState web_state_;
 };
 

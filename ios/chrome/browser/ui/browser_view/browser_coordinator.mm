@@ -501,12 +501,10 @@
                          browser:self.browser];
   [self.mobileConfigCoordinator start];
 
-  if (base::FeatureList::IsEnabled(kDownloadVcard)) {
-    self.vcardCoordinator =
-        [[VcardCoordinator alloc] initWithBaseViewController:self.viewController
-                                                     browser:self.browser];
-    [self.vcardCoordinator start];
-  }
+  self.vcardCoordinator =
+      [[VcardCoordinator alloc] initWithBaseViewController:self.viewController
+                                                   browser:self.browser];
+  [self.vcardCoordinator start];
 
   self.passKitCoordinator =
       [[PassKitCoordinator alloc] initWithBaseViewController:self.viewController

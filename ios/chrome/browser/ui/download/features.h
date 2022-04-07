@@ -7,9 +7,6 @@
 
 #include "base/feature_list.h"
 
-// Feature to download Vcard files.
-extern const base::Feature kDownloadVcard;
-
 // Kill switch for Vcard support.
 extern const base::Feature kVCardKillSwitch;
 

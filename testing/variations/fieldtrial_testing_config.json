@@ -2961,21 +2961,6 @@
             ]
         }
     ],
-    "DownloadVcardFile": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DownloadVcardFile"
-                    ]
-                }
-            ]
-        }
-    ],
     "DragAndDropAndroid": [
         {
             "platforms": [
