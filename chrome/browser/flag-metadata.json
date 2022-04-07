@@ -2384,6 +2384,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "enable-neural-palm-rejection-beta-model",
+    "owners": [ "robsc", "jiwan" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "enable-neural-palm-rejection-model-v2",
     "owners": [ "robsc", "napper", "alanlxl" ],
     "expiry_milestone": 130

@@ -6078,6 +6078,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableNeuralPalmAdaptiveHoldDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ui::kEnableNeuralPalmAdaptiveHold)},
 
+    {"enable-neural-palm-rejection-beta-model",
+     flag_descriptions::kEnableNeuralPalmRejectionBetaModelName,
+     flag_descriptions::kEnableNeuralPalmRejectionBetaModelDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ui::kEnableNeuralPalmRejectionBetaModel)},
+
     {"enable-neural-palm-rejection-model-v2",
      flag_descriptions::kEnableNeuralPalmRejectionModelV2Name,
      flag_descriptions::kEnableNeuralPalmRejectionModelV2Description, kOsCrOS,

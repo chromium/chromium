@@ -10,6 +10,7 @@
 #include "base/metrics/field_trial_params.h"
 
 namespace ui {
+
 COMPONENT_EXPORT(EVENTS_OZONE)
 extern const base::Feature kEnableHeuristicPalmDetectionFilter;
 
@@ -18,6 +19,9 @@ extern const base::Feature kEnableNeuralPalmDetectionFilter;
 
 COMPONENT_EXPORT(EVENTS_OZONE)
 extern const base::Feature kEnableNeuralPalmAdaptiveHold;
+
+COMPONENT_EXPORT(EVENTS_OZONE)
+extern const base::Feature kEnableNeuralPalmRejectionBetaModel;
 
 COMPONENT_EXPORT(EVENTS_OZONE)
 extern const base::Feature kEnableNeuralPalmRejectionModelV2;

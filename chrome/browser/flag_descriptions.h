@@ -2613,6 +2613,9 @@ extern const char kEnableLogControllerForDiagnosticsAppDescription[];
 extern const char kEnableNeuralPalmAdaptiveHoldName[];
 extern const char kEnableNeuralPalmAdaptiveHoldDescription[];
 
+extern const char kEnableNeuralPalmRejectionBetaModelName[];
+extern const char kEnableNeuralPalmRejectionBetaModelDescription[];
+
 extern const char kEnableNeuralPalmRejectionModelV2Name[];
 extern const char kEnableNeuralPalmRejectionModelV2Description[];
 

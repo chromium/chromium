@@ -54596,6 +54596,7 @@ from previous Chrome versions.
   <int value="-333216449" label="MouseSubframeNoImplicitCapture:enabled"/>
   <int value="-332010491" label="RetailCoupons:enabled"/>
   <int value="-331952590" label="OmniboxTriggerForPrerender2:enabled"/>
+  <int value="-329807250" label="EnableNeuralPalmRejectionBetaModel:disabled"/>
   <int value="-329727402" label="disable-files-quick-view"/>
   <int value="-328361990" label="enable-experimental-extension-apis"/>
   <int value="-327520505" label="RelatedSearchesAlternateUx:enabled"/>
@@ -56378,6 +56379,7 @@ from previous Chrome versions.
   <int value="898311758" label="ReaderMode:disabled"/>
   <int value="899347105" label="NearbySharingWifiLan:enabled"/>
   <int value="900614020" label="ContentSuggestionsShowSummary:disabled"/>
+  <int value="900784986" label="EnableNeuralPalmRejectionBetaModel:enabled"/>
   <int value="902209599" label="ShelfHotseat:enabled"/>
   <int value="902839593" label="WebContentsForceDark:disabled"/>
   <int value="903267263" label="disable-offline-pages"/>
