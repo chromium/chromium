@@ -690,6 +690,13 @@
          {}
         ]
        ],
+       "chrome-quotes-crash.html": [
+        "363f96fd02e1bc63d70ccda56dff2b9f935448ed",
+        [
+         null,
+         {}
+        ]
+       ],
        "columns-in-table-001-crash.html": [
         "fe421500dade86b6fedbbf6289a668dcc5174f45",
         [
@@ -1561,6 +1568,13 @@
         {}
        ]
       ],
+      "nested-as-nested-balanced-legend.html": [
+       "0575193c215c1e666fe1e8ee133c5d09699e2bea",
+       [
+        null,
+        {}
+       ]
+      ],
       "nested-multicol-and-float-with-tall-padding-before-float.html": [
        "2a901d1f582f7a17864f9a0b0b0d6afc495dcd21",
        [
@@ -1584,6 +1598,13 @@
       ],
       "nested-oof-multicol-with-oof-needing-additional-columns.html": [
        "52c44ff9e0ad0b7aedd5e51e7b6fad3d5075297a",
+       [
+        null,
+        {}
+       ]
+      ],
+      "nested-with-fragmented-oof-negative-top-offset.html": [
+       "38f62888a6383d4045ae2c13f66e98c2657ad531",
        [
         null,
         {}
@@ -9273,7 +9294,7 @@
       ]
      ],
      "cursor-image-015.html": [
-      "43229c597cc9684b22b8716d9d5c106b2652ecd3",
+      "108bb2a137bc296d3139ac9742c50fe28b16cac0",
       [
        null,
        {}
@@ -80924,6 +80945,32 @@
         {}
        ]
       ],
+      "multi-line-column-flex-fragmentation-046.html": [
+       "f009b1a3e796f73f9d3472b6c79bc291b15a437c",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multi-line-column-flex-fragmentation-047.html": [
+       "a09eaea6b5ca6ce59ee26678d08227f208f170e7",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "multi-line-row-flex-fragmentation-001.html": [
        "ba6b0103e447994a2778cbd9ea356a490f62b8fb",
        [
@@ -81639,6 +81686,32 @@
         {}
        ]
       ],
+      "multi-line-row-flex-fragmentation-056.html": [
+       "0b71c13cce9bb60261cacdcfcc483ffe9eebc744",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multi-line-row-flex-fragmentation-057.html": [
+       "c20e684b45290d0d69dd3cbd3a6e1386f36d3a29",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "single-line-column-flex-fragmentation-001.html": [
        "d1411f9a16a14585b945408b162182ed343419d2",
        [
@@ -82198,6 +82271,32 @@
         {}
        ]
       ],
+      "single-line-column-flex-fragmentation-044.html": [
+       "2ef4c988ec52549cf01e9b244b50e004ddc0d795",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "single-line-column-flex-fragmentation-045.html": [
+       "f2d4d745fa2a76bd290b24194d8ae4f7b057073c",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "single-line-row-flex-fragmentation-001.html": [
        "379327a4aff584192f076d3f9d8f3ead232c0f5c",
        [
@@ -82564,6 +82663,32 @@
       ],
       "single-line-row-flex-fragmentation-029.html": [
        "5d7e72ddf00810d7c73aa5c1d5f316138416a432",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "single-line-row-flex-fragmentation-030.html": [
+       "a70ad1473eaf277a4f8ce14b7f84efe363858a7b",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "single-line-row-flex-fragmentation-031.html": [
+       "1bda683312ee4228588b1950695b1672fdb23780",
        [
         null,
         [
@@ -287523,6 +287648,10 @@
       []
      ],
      "parsing": {
+      "cursor-valid-expected.txt": [
+       "c14f52fc219e5668f1d29b0f3dc0536b84e7029f",
+       []
+      ],
       "outline-color-valid-optional-expected.txt": [
        "ddbde423753384c7fa6f12e96141480222d71ee0",
        []
@@ -385531,6 +385660,13 @@
        {}
       ]
      ],
+     "multicol-fill-balance-022.html": [
+      "3dd530c7e27bed3af993b123c22f30baede77c73",
+      [
+       null,
+       {}
+      ]
+     ],
      "multicol-gap-animation-001.html": [
       "6a3a8d33780fe048528e1e3cd6a26707f2df4b70",
       [
@@ -397473,7 +397609,7 @@
        ]
       ],
       "cursor-valid.html": [
-       "285c16a4ee513b898d9d1c2852ae40897bb12545",
+       "8b3c478391b917d7d1233c8a7b49b816100ed1f4",
        [
         null,
         {}
