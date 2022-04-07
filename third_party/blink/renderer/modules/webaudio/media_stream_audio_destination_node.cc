@@ -37,6 +37,8 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/mediastream/webaudio_media_stream_source.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
 
 namespace blink {
@@ -202,17 +204,39 @@ void MediaStreamAudioDestinationHandler::SendLogMessage(const String& message) {
 
 // ----------------------------------------------------------------
 
+MediaStreamSource* CreateMediaStreamSource() {
+  DVLOG(1) << "Creating WebAudio media stream source.";
+  // TODO(crbug.com/704136) Use executionContext::GetTaskRunner() instead.
+  auto audio_source = std::make_unique<WebAudioMediaStreamSource>(
+      Thread::MainThread()->GetTaskRunner());
+  WebAudioMediaStreamSource* audio_source_ptr = audio_source.get();
+
+  String source_id = "WebAudio-" + WTF::CreateCanonicalUUIDString();
+
+  MediaStreamSource::Capabilities capabilities;
+  capabilities.device_id = source_id;
+  capabilities.echo_cancellation = Vector<bool>({false});
+  capabilities.auto_gain_control = Vector<bool>({false});
+  capabilities.noise_suppression = Vector<bool>({false});
+  capabilities.sample_size = {
+      media::SampleFormatToBitsPerChannel(media::kSampleFormatS16),  // min
+      media::SampleFormatToBitsPerChannel(media::kSampleFormatS16)   // max
+  };
+
+  auto* source = MakeGarbageCollected<MediaStreamSource>(
+      source_id, MediaStreamSource::kTypeAudio,
+      "MediaStreamAudioDestinationNode", false, std::move(audio_source),
+      MediaStreamSource::kReadyStateLive, true);
+  audio_source_ptr->SetMediaStreamSource(source);
+  source->SetCapabilities(capabilities);
+  return source;
+}
+
 MediaStreamAudioDestinationNode::MediaStreamAudioDestinationNode(
     AudioContext& context,
     uint32_t number_of_channels)
     : AudioBasicInspectorNode(context),
-      source_(MakeGarbageCollected<MediaStreamSource>(
-          "WebAudio-" + WTF::CreateCanonicalUUIDString(),
-          MediaStreamSource::kTypeAudio,
-          "MediaStreamAudioDestinationNode",
-          false,
-          MediaStreamSource::kReadyStateLive,
-          true)),
+      source_(CreateMediaStreamSource()),
       stream_(MediaStream::Create(context.GetExecutionContext(),
                                   MakeGarbageCollected<MediaStreamDescriptor>(
                                       MediaStreamSourceVector({source_.Get()}),
