@@ -64,6 +64,7 @@ class ExternallyInstalledWebAppPrefs {
   // does not mean that there is no app for |url| just that there is no
   // *placeholder app*.
   absl::optional<AppId> LookupPlaceholderAppId(const GURL& url) const;
+
   void SetIsPlaceholder(const GURL& url, bool is_placeholder);
   bool IsPlaceholderApp(const AppId& app_id) const;
 

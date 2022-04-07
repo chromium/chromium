@@ -693,6 +693,12 @@ void RecordDownloadedIconHttpStatusCodes(
     counter->Add(net::HttpUtil::MapStatusCodeForHistogram(http_status_code));
 }
 
+Source::Type ConvertExternalInstallSourceToSource(
+    ExternalInstallSource external_install_source) {
+  return ConvertInstallSurfaceToWebAppSource(
+      ConvertExternalInstallSourceToInstallSource(external_install_source));
+}
+
 webapps::WebappInstallSource ConvertExternalInstallSourceToInstallSource(
     ExternalInstallSource external_install_source) {
   webapps::WebappInstallSource install_source;
@@ -741,9 +747,7 @@ webapps::WebappUninstallSource ConvertExternalInstallSourceToUninstallSource(
   return uninstall_source;
 }
 
-// TODO(loyso): Call sites should specify Source explicitly as a part of
-// AppTraits parameter object.
-Source::Type InferSourceFromMetricsInstallSource(
+Source::Type ConvertInstallSurfaceToWebAppSource(
     webapps::WebappInstallSource install_source) {
   switch (install_source) {
     case webapps::WebappInstallSource::MENU_BROWSER_TAB:

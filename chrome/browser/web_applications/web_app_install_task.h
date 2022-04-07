@@ -63,7 +63,8 @@ class WebAppInstallTask : content::WebContentsObserver {
                     WebAppInstallManager* install_manager,
                     WebAppInstallFinalizer* install_finalizer,
                     std::unique_ptr<WebAppDataRetriever> data_retriever,
-                    WebAppRegistrar* registrar);
+                    WebAppRegistrar* registrar,
+                    webapps::WebappInstallSource install_surface);
   WebAppInstallTask(const WebAppInstallTask&) = delete;
   WebAppInstallTask& operator=(const WebAppInstallTask&) = delete;
   ~WebAppInstallTask() override;
@@ -84,7 +85,6 @@ class WebAppInstallTask : content::WebContentsObserver {
       webapps::InstallResultCode code)>;
   // Load a web app from the given URL and check for valid manifest.
   void LoadWebAppAndCheckManifest(const GURL& url,
-                                  webapps::WebappInstallSource install_source,
                                   WebAppUrlLoader* url_loader,
                                   LoadWebAppAndCheckManifestCallback callback);
 
@@ -92,7 +92,6 @@ class WebAppInstallTask : content::WebContentsObserver {
   // then performs the actual installation.
   void InstallWebAppFromManifest(content::WebContents* web_contents,
                                  bool bypass_service_worker_check,
-                                 webapps::WebappInstallSource install_source,
                                  WebAppInstallDialogCallback dialog_callback,
                                  OnceInstallCallback callback);
 
@@ -103,7 +102,6 @@ class WebAppInstallTask : content::WebContentsObserver {
   void InstallWebAppFromManifestWithFallback(
       content::WebContents* web_contents,
       WebAppInstallFlow flow,
-      webapps::WebappInstallSource install_source,
       WebAppInstallDialogCallback dialog_callback,
       OnceInstallCallback callback);
 
@@ -114,7 +112,6 @@ class WebAppInstallTask : content::WebContentsObserver {
       const GURL& launch_url,
       content::WebContents* web_contents,
       WebAppUrlLoader* url_loader,
-      webapps::WebappInstallSource install_source,
       OnceInstallCallback callback);
 
   // Load |install_url| and install SubApp. Posts |LoadUrl| task to |url_loader|
@@ -139,7 +136,6 @@ class WebAppInstallTask : content::WebContentsObserver {
   void InstallWebAppFromInfo(
       std::unique_ptr<WebAppInstallInfo> web_application_info,
       bool overwrite_existing_manifest_fields,
-      webapps::WebappInstallSource install_source,
       OnceInstallCallback callback);
 
   // Starts a background web app installation process for a given
@@ -148,7 +144,6 @@ class WebAppInstallTask : content::WebContentsObserver {
   // |InstallWebAppFromManifestWithFallback|.
   void InstallWebAppWithParams(content::WebContents* web_contents,
                                const WebAppInstallParams& install_params,
-                               webapps::WebappInstallSource install_source,
                                OnceInstallCallback callback);
 
   // Obtains WebAppInstallInfo about web app located at |start_url|, fallbacks
@@ -300,6 +295,14 @@ class WebAppInstallTask : content::WebContentsObserver {
       const IconsMap& icons_map,
       const DownloadedIconsHttpResults& icons_http_results);
 
+  std::unique_ptr<WebAppDataRetriever> data_retriever_;
+  raw_ptr<WebAppInstallManager> install_manager_;
+  raw_ptr<WebAppInstallFinalizer> install_finalizer_;
+  const raw_ptr<Profile> profile_;
+  raw_ptr<WebAppRegistrar> registrar_;
+
+  webapps::WebappInstallSource install_surface_;
+
   // Whether the install task has been 'initiated' by calling one of the public
   // methods.
   bool initiated_ = false;
@@ -315,20 +318,8 @@ class WebAppInstallTask : content::WebContentsObserver {
   absl::optional<AppId> expected_app_id_;
   bool background_installation_ = false;
 
-  // The mechanism via which the app creation was triggered, will stay as
-  // kNoInstallSource for updates.
-  static constexpr webapps::WebappInstallSource kNoInstallSource =
-      webapps::WebappInstallSource::COUNT;
-  webapps::WebappInstallSource install_source_ = kNoInstallSource;
-
-  std::unique_ptr<WebAppDataRetriever> data_retriever_;
   absl::optional<WebAppInstallInfo> web_application_info_;
   std::unique_ptr<content::WebContents> web_contents_;
-
-  raw_ptr<WebAppInstallManager> install_manager_;
-  raw_ptr<WebAppInstallFinalizer> install_finalizer_;
-  const raw_ptr<Profile> profile_;
-  raw_ptr<WebAppRegistrar> registrar_;
 
   std::unique_ptr<base::Value> error_dict_;
 

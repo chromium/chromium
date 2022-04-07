@@ -32,13 +32,14 @@ class FakeInstallFinalizer final : public WebAppInstallFinalizer {
                        InstallFinalizedCallback callback) override;
   void FinalizeUpdate(const WebAppInstallInfo& web_app_info,
                       InstallFinalizedCallback callback) override;
-  void UninstallExternalWebApp(
-      const AppId& app_id,
-      webapps::WebappUninstallSource external_install_source,
-      UninstallWebAppCallback callback) override;
+  void UninstallExternalWebApp(const AppId& app_id,
+                               Source::Type source,
+                               webapps::WebappUninstallSource uninstall_surface,
+                               UninstallWebAppCallback callback) override;
   void UninstallExternalWebAppByUrl(
       const GURL& app_url,
-      webapps::WebappUninstallSource external_install_source,
+      Source::Type source,
+      webapps::WebappUninstallSource uninstall_surface,
       UninstallWebAppCallback callback) override;
   void UninstallWithoutRegistryUpdateFromSync(
       const std::vector<AppId>& web_apps,

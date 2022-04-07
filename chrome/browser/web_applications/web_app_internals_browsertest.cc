@@ -36,7 +36,7 @@ namespace {
 constexpr char kBadIconErrorTemplate[] = R"({
    "!url": "$1banners/manifest_test_page.html",
    "background_installation": false,
-   "install_source": 15,
+   "install_surface": 15,
    "stages": [ {
       "!stage": "OnIconsRetrieved",
       "icons_downloaded_result": "Completed",

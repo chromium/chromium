@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -156,8 +157,8 @@ TEST_F(WebAppInstallFinalizerUnitTest, BasicInstallSucceeds) {
   auto info = std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL("https://foo.example");
   info->title = u"Foo Title";
-  WebAppInstallFinalizer::FinalizeOptions options;
-  options.install_source = webapps::WebappInstallSource::INTERNAL_DEFAULT;
+  WebAppInstallFinalizer::FinalizeOptions options(
+      webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
 
@@ -176,8 +177,8 @@ TEST_F(WebAppInstallFinalizerUnitTest, ConcurrentInstallSucceeds) {
   info2->start_url = GURL("https://foo2.example");
   info2->title = u"Foo2 Title";
 
-  WebAppInstallFinalizer::FinalizeOptions options;
-  options.install_source = webapps::WebappInstallSource::INTERNAL_DEFAULT;
+  WebAppInstallFinalizer::FinalizeOptions options(
+      webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
   base::RunLoop run_loop;
   bool callback1_called = false;
@@ -229,8 +230,8 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallStoresLatestWebAppInstallSource) {
   auto info = std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL("https://foo.example");
   info->title = u"Foo Title";
-  WebAppInstallFinalizer::FinalizeOptions options;
-  options.install_source = webapps::WebappInstallSource::INTERNAL_DEFAULT;
+  WebAppInstallFinalizer::FinalizeOptions options(
+      webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
 
@@ -243,8 +244,8 @@ TEST_F(WebAppInstallFinalizerUnitTest, OnWebAppManifestUpdatedTriggered) {
   auto info = std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL("https://foo.example");
   info->title = u"Foo Title";
-  WebAppInstallFinalizer::FinalizeOptions options;
-  options.install_source = webapps::WebappInstallSource::EXTERNAL_POLICY;
+  WebAppInstallFinalizer::FinalizeOptions options(
+      webapps::WebappInstallSource::EXTERNAL_POLICY);
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
   base::RunLoop runloop;
@@ -261,8 +262,8 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallNoDesktopShortcut) {
   auto info = std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL("https://foo.example");
   info->title = u"Foo Title";
-  WebAppInstallFinalizer::FinalizeOptions options;
-  options.install_source = webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON;
+  WebAppInstallFinalizer::FinalizeOptions options(
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
   options.add_to_desktop = false;
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
@@ -281,8 +282,8 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallNoQuickLaunchBarShortcut) {
   auto info = std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL("https://foo.example");
   info->title = u"Foo Title";
-  WebAppInstallFinalizer::FinalizeOptions options;
-  options.install_source = webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON;
+  WebAppInstallFinalizer::FinalizeOptions options(
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
   options.add_to_quick_launch_bar = false;
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
@@ -302,8 +303,8 @@ TEST_F(WebAppInstallFinalizerUnitTest,
   auto info = std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL("https://foo.example");
   info->title = u"Foo Title";
-  WebAppInstallFinalizer::FinalizeOptions options;
-  options.install_source = webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON;
+  WebAppInstallFinalizer::FinalizeOptions options(
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
   options.add_to_desktop = false;
   options.add_to_quick_launch_bar = false;
 
@@ -323,8 +324,8 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallNoCreateOsShorcuts) {
   auto info = std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL("https://foo.example");
   info->title = u"Foo Title";
-  WebAppInstallFinalizer::FinalizeOptions options;
-  options.install_source = webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON;
+  WebAppInstallFinalizer::FinalizeOptions options(
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
   options.add_to_desktop = false;
   options.add_to_quick_launch_bar = false;
 
@@ -344,8 +345,8 @@ TEST_F(WebAppInstallFinalizerUnitTest,
   auto info = std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL("https://foo.example");
   info->title = u"Foo Title";
-  WebAppInstallFinalizer::FinalizeOptions options;
-  options.install_source = webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON;
+  WebAppInstallFinalizer::FinalizeOptions options(
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
 
@@ -360,8 +361,8 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallOsHooksDisabledForDefaultApps) {
   auto info = std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL("https://foo.example");
   info->title = u"Foo Title";
-  WebAppInstallFinalizer::FinalizeOptions options;
-  options.install_source = webapps::WebappInstallSource::EXTERNAL_DEFAULT;
+  WebAppInstallFinalizer::FinalizeOptions options(
+      webapps::WebappInstallSource::EXTERNAL_DEFAULT);
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
 

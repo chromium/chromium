@@ -38,6 +38,7 @@
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_task.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_uninstall_job.h"
@@ -142,7 +143,7 @@ std::unique_ptr<WebAppInstallTask> CreateDummyTask() {
       /*install_manager=*/nullptr,
       /*install_finalizer=*/nullptr,
       /*data_retriever=*/nullptr,
-      /*registrar=*/nullptr);
+      /*registrar=*/nullptr, webapps::WebappInstallSource::SYNC);
 }
 
 // TODO(crbug.com/1194709): Retire SyncParam after Lacros ships.
@@ -388,14 +389,12 @@ class WebAppInstallManagerTest
     return num_apps;
   }
 
-  webapps::UninstallResultCode UninstallExternalWebAppByUrl(
-      const GURL& app_url,
-      ExternalInstallSource external_install_source) {
+  webapps::UninstallResultCode UninstallPolicyWebAppByUrl(const GURL& app_url) {
     webapps::UninstallResultCode result;
     base::RunLoop run_loop;
     finalizer().UninstallExternalWebAppByUrl(
-        app_url,
-        ConvertExternalInstallSourceToUninstallSource(external_install_source),
+        app_url, Source::Type::kPolicy,
+        webapps::WebappUninstallSource::kExternalPolicy,
         base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
           result = code;
           run_loop.Quit();
@@ -996,15 +995,12 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
       }));
 
   // Unknown url fails.
-  EXPECT_EQ(
-      webapps::UninstallResultCode::kNoAppToUninstall,
-      UninstallExternalWebAppByUrl(GURL("https://example.org/"),
-                                   ExternalInstallSource::kExternalPolicy));
+  EXPECT_EQ(webapps::UninstallResultCode::kNoAppToUninstall,
+            UninstallPolicyWebAppByUrl(GURL("https://example.org/")));
 
   // Uninstall policy app first.
   EXPECT_EQ(webapps::UninstallResultCode::kSuccess,
-            UninstallExternalWebAppByUrl(
-                external_app_url, ExternalInstallSource::kExternalPolicy));
+            UninstallPolicyWebAppByUrl(external_app_url));
 
   EXPECT_TRUE(registrar().GetAppById(app_id));
   EXPECT_FALSE(observer_uninstall_called);
@@ -1036,15 +1032,12 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
       }));
 
   // Unknown url fails.
-  EXPECT_EQ(
-      webapps::UninstallResultCode::kNoAppToUninstall,
-      UninstallExternalWebAppByUrl(GURL("https://example.org/"),
-                                   ExternalInstallSource::kExternalPolicy));
+  EXPECT_EQ(webapps::UninstallResultCode::kNoAppToUninstall,
+            UninstallPolicyWebAppByUrl(GURL("https://example.org/")));
 
   // Uninstall policy app first.
   EXPECT_EQ(webapps::UninstallResultCode::kSuccess,
-            UninstallExternalWebAppByUrl(
-                external_app_url, ExternalInstallSource::kExternalPolicy));
+            UninstallPolicyWebAppByUrl(external_app_url));
 
   EXPECT_TRUE(registrar().GetAppById(app_id));
   EXPECT_FALSE(observer_uninstall_called);

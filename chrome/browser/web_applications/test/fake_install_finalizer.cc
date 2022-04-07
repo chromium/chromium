@@ -49,7 +49,8 @@ void FakeInstallFinalizer::FinalizeUpdate(const WebAppInstallInfo& web_app_info,
 
 void FakeInstallFinalizer::UninstallExternalWebApp(
     const AppId& app_id,
-    webapps::WebappUninstallSource webapp_uninstall_source,
+    Source::Type source,
+    webapps::WebappUninstallSource uninstall_surface,
     UninstallWebAppCallback callback) {
   user_uninstalled_external_apps_.erase(app_id);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -59,7 +60,8 @@ void FakeInstallFinalizer::UninstallExternalWebApp(
 
 void FakeInstallFinalizer::UninstallExternalWebAppByUrl(
     const GURL& app_url,
-    webapps::WebappUninstallSource webapp_uninstall_source,
+    Source::Type source,
+    webapps::WebappUninstallSource uninstall_surface,
     UninstallWebAppCallback callback) {
   DCHECK(base::Contains(next_uninstall_external_web_app_results_, app_url));
   uninstall_external_web_app_urls_.push_back(app_url);

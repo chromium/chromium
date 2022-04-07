@@ -27,13 +27,18 @@ enum class InstallTrigger {
   CREATE_SHORTCUT,
 };
 
+// Sources for triggering webapp installation. Each install source must map to
+// one web_app::Source::Type that is calculated in the method
+// `web_app::ConvertExternalInstallSourceToSource`.
+//
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// Sources for triggering webapp installation.
+//
 // NOTE: each enum entry which is reportable must be added to
-// InstallableMetrics::IsReportableInstallSource().
-// This enum backs a UMA histogram and must be treated as append-only.
-// A Java counterpart will be generated for this enum.
+// InstallableMetrics::IsReportableInstallSource(). This enum backs a UMA
+// histogram and must be treated as append-only. A Java counterpart will be
+// generated for this enum.
+//
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.webapps
 enum class WebappInstallSource {
   // Menu item in a browser tab.
@@ -98,9 +103,9 @@ enum class WebappInstallSource {
   COUNT,
 };
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// Sources for triggering webapp uninstallation.
+// Uninstall surface from which an uninstall was initiated. This value cannot be
+// used to infer an install source. These values are persisted to logs. Entries
+// should not be renumbered and numeric values should never be reused.
 enum class WebappUninstallSource {
   // Unknown surface, potentially in ChromeOS.
   kUnknown = 0,

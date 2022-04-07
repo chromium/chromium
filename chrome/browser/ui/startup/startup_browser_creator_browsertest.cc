@@ -74,6 +74,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -2230,8 +2231,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
   web_app::WebAppInstallFinalizer& web_app_finalizer =
       provider->install_finalizer();
 
-  web_app::WebAppInstallFinalizer::FinalizeOptions options;
-  options.install_source = webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON;
+  web_app::WebAppInstallFinalizer::FinalizeOptions options(
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
 
   // Install web app set to open as a tab.
   {

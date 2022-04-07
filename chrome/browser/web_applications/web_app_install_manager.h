@@ -101,7 +101,7 @@ class WebAppInstallManager final : public SyncInstallDelegate {
   // |web_contents|.
   void InstallWebAppWithParams(content::WebContents* web_contents,
                                const WebAppInstallParams& install_params,
-                               webapps::WebappInstallSource install_source,
+                               webapps::WebappInstallSource install_surface,
                                OnceInstallCallback callback);
 
   // Starts a web app installation process using prefilled

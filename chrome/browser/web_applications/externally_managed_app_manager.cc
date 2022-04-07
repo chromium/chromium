@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/webapps/browser/install_result_code.h"
 
@@ -100,8 +101,7 @@ void ExternallyManagedAppManager::SynchronizeInstalledApps(
     bool has_same_external_source =
         registrar_->GetAppById(apps_it.first)
             ->GetSources()
-            .test(InferSourceFromMetricsInstallSource(
-                ConvertExternalInstallSourceToInstallSource(install_source)));
+            .test(ConvertExternalInstallSourceToSource(install_source));
     if (has_same_external_source)
       installed_urls.push_back(apps_it.second);
   }

@@ -190,10 +190,10 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
     NOTREACHED();
   }
 
-  void UninstallExternalWebApp(
-      const AppId& app_id,
-      webapps::WebappUninstallSource external_install_source,
-      UninstallWebAppCallback callback) override {
+  void UninstallExternalWebApp(const AppId& app_id,
+                               Source::Type external_source,
+                               webapps::WebappUninstallSource uninstall_source,
+                               UninstallWebAppCallback callback) override {
     UnregisterApp(app_id);
 
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -203,7 +203,8 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
 
   void UninstallExternalWebAppByUrl(
       const GURL& app_url,
-      webapps::WebappUninstallSource external_install_source,
+      Source::Type external_source,
+      webapps::WebappUninstallSource uninstall_source,
       UninstallWebAppCallback callback) override {
     DCHECK(base::Contains(next_uninstall_external_web_app_results_, app_url));
     uninstall_external_web_app_urls_.push_back(app_url);
@@ -436,7 +437,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallSucceeds) {
 
             EXPECT_EQ(web_app_info().user_display_mode, DisplayMode::kBrowser);
             EXPECT_EQ(webapps::WebappInstallSource::INTERNAL_DEFAULT,
-                      finalize_options().install_source);
+                      finalize_options().install_surface);
 
             run_loop.Quit();
           }));
@@ -545,7 +546,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallPreinstalledApp) {
                       EXPECT_TRUE(result.app_id.has_value());
 
                       EXPECT_EQ(webapps::WebappInstallSource::INTERNAL_DEFAULT,
-                                finalize_options().install_source);
+                                finalize_options().install_surface);
                       run_loop.Quit();
                     }));
 
@@ -571,7 +572,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallAppFromPolicy) {
                       EXPECT_TRUE(result.app_id.has_value());
 
                       EXPECT_EQ(webapps::WebappInstallSource::EXTERNAL_POLICY,
-                                finalize_options().install_source);
+                                finalize_options().install_surface);
                       run_loop.Quit();
                     }));
 
@@ -601,7 +602,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholder) {
 
             EXPECT_EQ(1u, finalizer()->finalize_options_list().size());
             EXPECT_EQ(webapps::WebappInstallSource::EXTERNAL_POLICY,
-                      finalize_options().install_source);
+                      finalize_options().install_surface);
             const WebAppInstallInfo& web_app_info =
                 finalizer()->web_app_info_list().at(0);
 
@@ -639,7 +640,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholderDefaultSource) {
 
             EXPECT_EQ(1u, finalizer()->finalize_options_list().size());
             EXPECT_EQ(webapps::WebappInstallSource::EXTERNAL_DEFAULT,
-                      finalize_options().install_source);
+                      finalize_options().install_surface);
             const WebAppInstallInfo& web_app_info =
                 finalizer()->web_app_info_list().at(0);
 
@@ -1013,7 +1014,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoSucceeds) {
 
         EXPECT_EQ(web_app_info().user_display_mode, DisplayMode::kStandalone);
         EXPECT_EQ(webapps::WebappInstallSource::SYSTEM_DEFAULT,
-                  finalize_options().install_source);
+                  finalize_options().install_surface);
 
         run_loop.Quit();
       }));

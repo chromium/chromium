@@ -84,7 +84,8 @@ void ExternallyManagedAppManagerImpl::UninstallApps(
     const UninstallCallback& callback) {
   for (auto& url : uninstall_urls) {
     finalizer()->UninstallExternalWebAppByUrl(
-        url, ConvertExternalInstallSourceToUninstallSource(install_source),
+        url, ConvertExternalInstallSourceToSource(install_source),
+        ConvertExternalInstallSourceToUninstallSource(install_source),
         base::BindOnce(
             [](const UninstallCallback& callback, const GURL& app_url,
                webapps::UninstallResultCode code) {
@@ -208,9 +209,8 @@ void ExternallyManagedAppManagerImpl::MaybeStartNext() {
       {
         ScopedRegistryUpdate update(sync_bridge());
         WebApp* app_to_update = update->UpdateApp(app_id.value());
-        app_to_update->AddSource(InferSourceFromMetricsInstallSource(
-            ConvertExternalInstallSourceToInstallSource(
-                install_options.install_source)));
+        app_to_update->AddSource(ConvertExternalInstallSourceToSource(
+            install_options.install_source));
       }
       std::move(front->callback)
           .Run(install_options.install_url,

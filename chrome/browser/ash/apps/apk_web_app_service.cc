@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -252,7 +253,8 @@ void ApkWebAppService::UninstallWebApp(const web_app::AppId& web_app_id) {
   } else {
     DCHECK(provider_);
     provider_->install_finalizer().UninstallExternalWebApp(
-        web_app_id, webapps::WebappUninstallSource::kArc, base::DoNothing());
+        web_app_id, web_app::Source::kWebAppStore,
+        webapps::WebappUninstallSource::kArc, base::DoNothing());
   }
 }
 

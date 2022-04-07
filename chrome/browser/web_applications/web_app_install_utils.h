@@ -89,14 +89,18 @@ void RecordDownloadedIconHttpStatusCodes(
     base::StringPiece histogram_name,
     const DownloadedIconsHttpResults& icons_http_results);
 
+Source::Type ConvertExternalInstallSourceToSource(
+    ExternalInstallSource external_install_source);
+
 webapps::WebappInstallSource ConvertExternalInstallSourceToInstallSource(
     ExternalInstallSource external_install_source);
 
 webapps::WebappUninstallSource ConvertExternalInstallSourceToUninstallSource(
     ExternalInstallSource external_install_source);
 
-Source::Type InferSourceFromMetricsInstallSource(
-    webapps::WebappInstallSource install_source);
+// Infer the web app source from the installation surface.
+Source::Type ConvertInstallSurfaceToWebAppSource(
+    webapps::WebappInstallSource install_surface);
 
 void CreateWebAppInstallTabHelpers(content::WebContents* web_contents);
 

@@ -23,6 +23,7 @@
 #include "chromeos/ui/base/window_pin_type.h"
 #include "components/account_id/account_id.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "ui/aura/window.h"
 #include "ui/base/page_transition_types.h"
 #include "url/origin.h"
@@ -74,7 +75,7 @@ void WebKioskAppLauncher::ContinueWithNetworkReady() {
       profile_,
       /*install_manager=*/nullptr,
       /*install_finalizer=*/nullptr, data_retriever_factory_.Run(),
-      /*registrar=*/nullptr);
+      /*registrar=*/nullptr, webapps::WebappInstallSource::MANAGEMENT_API);
   install_task_->LoadAndRetrieveWebAppInstallInfoWithIcons(
       WebKioskAppManager::Get()->GetAppByAccountId(account_id_)->install_url(),
       url_loader_.get(),

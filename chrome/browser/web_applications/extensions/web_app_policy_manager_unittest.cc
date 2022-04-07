@@ -290,12 +290,6 @@ ExternalInstallOptions GetCustomAppIconInstallOptions() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-Source::Type ConvertExternalInstallSourceToSourceType(
-    ExternalInstallSource external_install_source) {
-  return InferSourceFromMetricsInstallSource(
-      ConvertExternalInstallSourceToInstallSource(external_install_source));
-}
-
 }  // namespace
 
 enum class TestParam { kLacrosDisabled, kLacrosEnabled };
@@ -355,7 +349,7 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
                 const auto install_source = install_options.install_source;
                 std::unique_ptr<WebApp> web_app = test::CreateWebApp(
                     install_url,
-                    ConvertExternalInstallSourceToSourceType(install_source));
+                    ConvertExternalInstallSourceToSource(install_source));
                 if (install_options.override_name)
                   web_app->SetName(install_options.override_name.value());
                 RegisterApp(std::move(web_app));
@@ -399,7 +393,7 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
   void SimulatePreviouslyInstalledApp(const GURL& url,
                                       ExternalInstallSource install_source) {
     auto web_app = test::CreateWebApp(
-        url, ConvertExternalInstallSourceToSourceType(install_source));
+        url, ConvertExternalInstallSourceToSource(install_source));
     RegisterApp(std::move(web_app));
 
     externally_installed_app_prefs().Insert(

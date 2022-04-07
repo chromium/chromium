@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -74,8 +75,8 @@ void WebAppProviderBridgeLacros::WebAppUninstalledInArc(
             DCHECK(profile);
             auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
             provider->install_finalizer().UninstallExternalWebApp(
-                app_id, webapps::WebappUninstallSource::kArc,
-                std::move(callback));
+                app_id, web_app::Source::kWebAppStore,
+                webapps::WebappUninstallSource::kArc, std::move(callback));
           },
           app_id, std::move(callback)));
 }

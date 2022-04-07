@@ -78,7 +78,8 @@ void AndroidSmsAppSetupControllerImpl::PwaDelegate::RemovePwa(
   }
 
   provider->install_finalizer().UninstallExternalWebApp(
-      app_id, webapps::WebappUninstallSource::kInternalPreinstalled,
+      app_id, web_app::Source::kDefault,
+      webapps::WebappUninstallSource::kInternalPreinstalled,
       base::BindOnce(
           [](SuccessCallback callback, webapps::UninstallResultCode code) {
             std::move(callback).Run(code ==

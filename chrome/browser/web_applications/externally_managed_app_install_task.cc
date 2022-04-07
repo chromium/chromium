@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -183,6 +184,7 @@ void ExternallyManagedAppInstallTask::UninstallPlaceholderApp(
   // Otherwise, uninstall the placeholder app.
   install_finalizer_->UninstallExternalWebAppByUrl(
       install_options_.install_url,
+      ConvertExternalInstallSourceToSource(install_options_.install_source),
       webapps::WebappUninstallSource::kPlaceholderReplacement,
       base::BindOnce(&ExternallyManagedAppInstallTask::OnPlaceholderUninstalled,
                      weak_ptr_factory_.GetWeakPtr(), web_contents,
@@ -298,9 +300,9 @@ void ExternallyManagedAppInstallTask::FinalizePlaceholderInstall(
 
   web_app_info.user_display_mode = install_options_.user_display_mode;
 
-  WebAppInstallFinalizer::FinalizeOptions options;
-  options.install_source = ConvertExternalInstallSourceToInstallSource(
-      install_options_.install_source);
+  WebAppInstallFinalizer::FinalizeOptions options(
+      ConvertExternalInstallSourceToInstallSource(
+          install_options_.install_source));
   // Overwrite fields if we are doing a forced reinstall, because some
   // values (custom name or icon) might have changed.
   options.overwrite_existing_manifest_fields = install_options_.force_reinstall;

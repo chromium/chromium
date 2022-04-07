@@ -56,9 +56,9 @@ AppId InstallDummyWebApp(Profile* profile,
   web_app_info.description = base::UTF8ToUTF16(app_name);
   web_app_info.user_display_mode = DisplayMode::kStandalone;
 
-  WebAppInstallFinalizer::FinalizeOptions options;
+  WebAppInstallFinalizer::FinalizeOptions options(
+      webapps::WebappInstallSource::EXTERNAL_DEFAULT);
   options.bypass_os_hooks = true;
-  options.install_source = webapps::WebappInstallSource::EXTERNAL_DEFAULT;
 
   // In unit tests, we do not have Browser or WebContents instances.
   // Hence we use FinalizeInstall instead of InstallWebAppFromManifest

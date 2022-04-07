@@ -164,12 +164,14 @@ WebAppInstallTask::WebAppInstallTask(
     WebAppInstallManager* install_manager,
     WebAppInstallFinalizer* install_finalizer,
     std::unique_ptr<WebAppDataRetriever> data_retriever,
-    WebAppRegistrar* registrar)
+    WebAppRegistrar* registrar,
+    webapps::WebappInstallSource install_surface)
     : data_retriever_(std::move(data_retriever)),
       install_manager_(install_manager),
       install_finalizer_(install_finalizer),
       profile_(profile),
-      registrar_(registrar) {
+      registrar_(registrar),
+      install_surface_(install_surface) {
   if (base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo))
     error_dict_ = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
 }
@@ -198,7 +200,6 @@ void WebAppInstallTask::SetInstallParams(
 
 void WebAppInstallTask::LoadWebAppAndCheckManifest(
     const GURL& url,
-    webapps::WebappInstallSource install_source,
     WebAppUrlLoader* url_loader,
     LoadWebAppAndCheckManifestCallback callback) {
   DCHECK(url_loader);
@@ -218,7 +219,6 @@ void WebAppInstallTask::LoadWebAppAndCheckManifest(
   background_installation_ = false;
   install_callback_ =
       base::BindOnce(std::move(callback), std::move(web_contents));
-  install_source_ = install_source;
 
   url_loader->LoadUrl(
       url, web_contents_ptr,
@@ -231,7 +231,6 @@ void WebAppInstallTask::LoadWebAppAndCheckManifest(
 void WebAppInstallTask::InstallWebAppFromManifest(
     content::WebContents* contents,
     bool bypass_service_worker_check,
-    webapps::WebappInstallSource install_source,
     WebAppInstallDialogCallback dialog_callback,
     OnceInstallCallback install_callback) {
   DCHECK(AreWebAppsUserInstallable(profile_));
@@ -240,7 +239,6 @@ void WebAppInstallTask::InstallWebAppFromManifest(
   Observe(contents);
   dialog_callback_ = std::move(dialog_callback);
   install_callback_ = std::move(install_callback);
-  install_source_ = install_source;
 
   auto web_app_info = std::make_unique<WebAppInstallInfo>();
 
@@ -256,7 +254,6 @@ void WebAppInstallTask::InstallWebAppFromManifest(
 void WebAppInstallTask::InstallWebAppFromManifestWithFallback(
     content::WebContents* contents,
     WebAppInstallFlow flow,
-    webapps::WebappInstallSource install_source,
     WebAppInstallDialogCallback dialog_callback,
     OnceInstallCallback install_callback) {
   DCHECK(AreWebAppsUserInstallable(profile_));
@@ -265,7 +262,6 @@ void WebAppInstallTask::InstallWebAppFromManifestWithFallback(
   Observe(contents);
   dialog_callback_ = std::move(dialog_callback);
   install_callback_ = std::move(install_callback);
-  install_source_ = install_source;
   flow_ = flow;
 
   data_retriever_->GetWebAppInstallInfo(
@@ -277,7 +273,6 @@ void WebAppInstallTask::LoadAndInstallWebAppFromManifestWithFallback(
     const GURL& launch_url,
     content::WebContents* contents,
     WebAppUrlLoader* url_loader,
-    webapps::WebappInstallSource install_source,
     OnceInstallCallback install_callback) {
   DCHECK(AreWebAppsUserInstallable(profile_));
   CheckInstallPreconditions();
@@ -288,7 +283,6 @@ void WebAppInstallTask::LoadAndInstallWebAppFromManifestWithFallback(
 
   background_installation_ = true;
   install_callback_ = std::move(install_callback);
-  install_source_ = install_source;
 
   url_loader->LoadUrl(
       launch_url, contents,
@@ -311,7 +305,6 @@ void WebAppInstallTask::LoadAndInstallSubAppFromURL(
 
   background_installation_ = true;
   install_callback_ = std::move(install_callback);
-  install_source_ = webapps::WebappInstallSource::SUB_APP;
 
   url_loader->LoadUrl(
       install_url, contents,
@@ -350,7 +343,6 @@ void UpdateFinalizerClientData(
 void WebAppInstallTask::InstallWebAppFromInfo(
     std::unique_ptr<WebAppInstallInfo> web_application_info,
     bool overwrite_existing_manifest_fields,
-    webapps::WebappInstallSource install_source,
     OnceInstallCallback callback) {
   CheckInstallPreconditions();
 
@@ -361,14 +353,12 @@ void WebAppInstallTask::InstallWebAppFromInfo(
   if (install_params_)
     ApplyParamsToWebAppInstallInfo(*install_params_, *web_application_info);
 
-  install_source_ = install_source;
   background_installation_ = true;
   install_callback_ = std::move(callback);
 
   RecordInstallEvent();
 
-  WebAppInstallFinalizer::FinalizeOptions options;
-  options.install_source = install_source;
+  WebAppInstallFinalizer::FinalizeOptions options(install_surface_);
   options.locally_installed = true;
   options.overwrite_existing_manifest_fields =
       overwrite_existing_manifest_fields;
@@ -386,14 +376,12 @@ void WebAppInstallTask::InstallWebAppFromInfo(
 void WebAppInstallTask::InstallWebAppWithParams(
     content::WebContents* contents,
     const WebAppInstallParams& install_params,
-    webapps::WebappInstallSource install_source,
     OnceInstallCallback install_callback) {
   CheckInstallPreconditions();
 
   Observe(contents);
   SetInstallParams(install_params);
   install_callback_ = std::move(install_callback);
-  install_source_ = install_source;
   background_installation_ = true;
 
   data_retriever_->GetWebAppInstallInfo(
@@ -466,10 +454,9 @@ void WebAppInstallTask::CheckInstallPreconditions() {
 }
 
 void WebAppInstallTask::RecordInstallEvent() {
-  DCHECK(install_source_ != kNoInstallSource);
-
-  if (webapps::InstallableMetrics::IsReportableInstallSource(install_source_)) {
-    webapps::InstallableMetrics::TrackInstallEvent(install_source_);
+  if (webapps::InstallableMetrics::IsReportableInstallSource(
+          install_surface_)) {
+    webapps::InstallableMetrics::TrackInstallEvent(install_surface_);
   }
 }
 
@@ -477,8 +464,6 @@ void WebAppInstallTask::CallInstallCallback(const AppId& app_id,
                                             webapps::InstallResultCode code) {
   Observe(nullptr);
   dialog_callback_.Reset();
-
-  install_source_ = kNoInstallSource;
 
   if (only_retrieve_web_application_info_) {
     DCHECK(retrieve_info_callback_);
@@ -682,7 +667,7 @@ void WebAppInstallTask::OnDidPerformInstallableCheck(
   // installed, but from a different source (eg. by the user manually). In that
   // case we proceed with the installation which adds the SUB_APP install source
   // as well.
-  if (install_source_ == webapps::WebappInstallSource::SUB_APP) {
+  if (install_surface_ == webapps::WebappInstallSource::SUB_APP) {
     DCHECK(install_params_ && install_params_->parent_app_id.has_value());
     if (registrar_->WasInstalledBySubApp(app_id)) {
       CallInstallCallback(std::move(app_id),
@@ -694,7 +679,7 @@ void WebAppInstallTask::OnDidPerformInstallableCheck(
   std::vector<GURL> icon_urls = GetValidIconUrlsToDownload(*web_app_info);
 
   // A system app should always have a manifest icon.
-  if (install_source_ == webapps::WebappInstallSource::SYSTEM_DEFAULT) {
+  if (install_surface_ == webapps::WebappInstallSource::SYSTEM_DEFAULT) {
     DCHECK(opt_manifest);
     DCHECK(!opt_manifest->icons.empty());
   }
@@ -833,7 +818,7 @@ void WebAppInstallTask::InstallWebAppFromInfoRetrieveIcons(
     return;
 
   install_callback_ = std::move(callback);
-  install_source_ = finalize_options.install_source;
+  install_surface_ = finalize_options.install_surface;
   background_installation_ = true;
 
   std::vector<GURL> icon_urls =
@@ -929,8 +914,7 @@ void WebAppInstallTask::OnDialogCompleted(
   // This metric is recorded regardless of the installation result.
   RecordInstallEvent();
 
-  WebAppInstallFinalizer::FinalizeOptions finalize_options;
-  finalize_options.install_source = install_source_;
+  WebAppInstallFinalizer::FinalizeOptions finalize_options(install_surface_);
 
   if (install_params_) {
     finalize_options.locally_installed = install_params_->locally_installed;
@@ -954,7 +938,7 @@ void WebAppInstallTask::OnDialogCompleted(
     finalize_options.add_to_applications_menu = true;
     finalize_options.add_to_desktop = true;
     finalize_options.add_to_quick_launch_bar =
-        install_source_ == webapps::WebappInstallSource::SYNC
+        install_surface_ == webapps::WebappInstallSource::SYNC
             ? false
             : kAddAppsToQuickLaunchBarByDefault;
   }
@@ -989,7 +973,7 @@ void WebAppInstallTask::OnInstallFinalizedMaybeReparentTab(
   }
 
   RecordWebAppInstallationTimestamp(profile_->GetPrefs(), app_id,
-                                    install_source_);
+                                    install_surface_);
 
   if (install_params_ && !install_params_->locally_installed) {
     DCHECK(background_installation_);
@@ -1017,7 +1001,7 @@ void WebAppInstallTask::OnInstallFinalizedMaybeReparentTab(
 void WebAppInstallTask::RecordDownloadedIconsResultAndHttpStatusCodes(
     IconsDownloadedResult result,
     const DownloadedIconsHttpResults& icons_http_results) {
-  if (install_source_ == webapps::WebappInstallSource::SYNC) {
+  if (install_surface_ == webapps::WebappInstallSource::SYNC) {
     RecordDownloadedIconsHttpResultsCodeClass(
         "WebApp.Icon.HttpStatusCodeClassOnSync", result, icons_http_results);
 
@@ -1039,7 +1023,7 @@ void WebAppInstallTask::LogHeaderIfLogEmpty(const std::string& url) {
     return;
 
   error_dict_->SetStringKey("!url", url);
-  error_dict_->SetIntKey("install_source", static_cast<int>(install_source_));
+  error_dict_->SetIntKey("install_surface", static_cast<int>(install_surface_));
   error_dict_->SetBoolKey("background_installation", background_installation_);
   error_dict_->SetKey("stages", base::Value(base::Value::Type::LIST));
 
