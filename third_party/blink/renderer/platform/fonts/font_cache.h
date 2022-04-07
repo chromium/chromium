@@ -41,11 +41,9 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/renderer/platform/fonts/fallback_list_composite_key.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache_client.h"
-#include "third_party/blink/renderer/platform/fonts/font_cache_key.h"
 #include "third_party/blink/renderer/platform/fonts/font_data_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_face_creation_params.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
-#include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_cache.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -84,6 +82,8 @@ class FontDescription;
 class FontFaceCreationParams;
 class FontFallbackMap;
 class FontGlobalContext;
+class FontPlatformData;
+class FontPlatformDataCache;
 class SimpleFontData;
 class WebFontPrewarmer;
 
@@ -290,50 +290,9 @@ class PLATFORM_EXPORT FontCache final {
 
   FontCache(const FontCache&) = delete;
   FontCache& operator=(const FontCache&) = delete;
-  ~FontCache() = default;
+  ~FontCache();
 
  private:
-  class FontPlatformDataCache final {
-   public:
-    FontPlatformDataCache();
-    ~FontPlatformDataCache();
-
-    FontPlatformData* Add(FontCache* font_cache,
-                          const FontDescription& font_description,
-                          const FontFaceCreationParams& creation_params,
-                          AlternateFontName alternate_font_name);
-    size_t ByteSize() const;
-    void Clear();
-    void Purge(const FontDataCache& font_data_cache);
-
-   private:
-    using SizedFontPlatformDataSet =
-        HashMap<unsigned,
-                std::unique_ptr<FontPlatformData>,
-                WTF::IntHash<unsigned>,
-                WTF::UnsignedWithZeroKeyHashTraits<unsigned>>;
-
-    SizedFontPlatformDataSet* GetOrNewEntry(FontCacheKey key);
-
-    HashMap<FontCacheKey, SizedFontPlatformDataSet> map_;
-
-    // A maximum float value to which we limit incoming font sizes. This is the
-    // smallest float so that multiplying it by
-    // FontCacheKey::PrecisionMultiplier() is still smaller than
-    // std::numeric_limits<unsigned>::max() - 1 in order to avoid hitting
-    // HashMap sentinel values (placed at std::numeric_limits<unsigned>::max()
-    // and std::numeric_limits<unsigned>::max() - 1) for
-    // SizedFontPlatformDataSet and FontPlatformDataCache.
-    const float font_size_limit_;
-
-    // When true, the font size is removed from primary keys in |map_|.
-    // The font size is not necessary in the primary key, because per-size
-    // FontPlatformData are held in a nested map.
-    // This is controlled by a base::Feature to assess impact with an
-    // experiment.
-    const bool no_size_in_key_;
-  };
-
   // BCP47 list used when requesting fallback font for a character.
   // inlineCapacity is set to 4: the array vector not need to hold more than 4
   // elements.
@@ -437,7 +396,7 @@ class PLATFORM_EXPORT FontCache final {
   uint16_t generation_ = 0;
   bool platform_init_ = false;
   Persistent<HeapHashSet<WeakMember<FontCacheClient>>> font_cache_clients_;
-  FontPlatformDataCache font_platform_data_cache_;
+  std::unique_ptr<FontPlatformDataCache> font_platform_data_cache_;
   FallbackListShaperCache fallback_list_shaper_cache_;
   FontDataCache font_data_cache_;
 
@@ -448,6 +407,7 @@ class PLATFORM_EXPORT FontCache final {
 
   friend class SimpleFontData;  // For fontDataFromFontPlatformData
   friend class FontFallbackList;
+  friend class FontPlatformDataCache;
   FRIEND_TEST_ALL_PREFIXES(FontCacheAndroidTest, LocaleSpecificTypeface);
 };
 

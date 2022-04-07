@@ -597,6 +597,8 @@ component("platform") {
     "fonts/font_performance.h",
     "fonts/font_platform_data.cc",
     "fonts/font_platform_data.h",
+    "fonts/font_platform_data_cache.cc",
+    "fonts/font_platform_data_cache.h",
     "fonts/font_selection_algorithm.cc",
     "fonts/font_selection_algorithm.h",
     "fonts/font_selection_types.cc",
