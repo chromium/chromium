@@ -14,6 +14,7 @@
 #include "base/win/scoped_hglobal.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "skia/ext/skia_utils_base.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkTypes.h"

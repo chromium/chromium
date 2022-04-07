@@ -21,6 +21,7 @@
 #include "cc/paint/paint_record.h"
 #include "cc/paint/scoped_raster_flags.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkMath.h"
 #include "third_party/skia/include/core/SkString.h"
 #include "third_party/skia/include/effects/SkImageFilters.h"

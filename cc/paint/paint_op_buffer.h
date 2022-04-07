@@ -195,7 +195,7 @@ class CC_PAINT_EXPORT PaintOp {
     raw_ptr<TransferCacheSerializeHelper> transfer_cache = nullptr;
     raw_ptr<ClientPaintCache> paint_cache = nullptr;
     raw_ptr<SkStrikeServer> strike_server = nullptr;
-    sk_sp<SkColorSpace> color_space = nullptr;
+    sk_sp<SkColorSpace> color_space;
     raw_ptr<SkottieSerializationHistory> skottie_serialization_history =
         nullptr;
     bool can_use_lcd_text = false;

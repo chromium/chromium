@@ -12,6 +12,8 @@
 #include "cc/paint/transfer_cache_deserialize_helper.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class SkColorSpace;
+
 namespace gpu {
 struct Mailbox;
 }

@@ -93,8 +93,13 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
       ImageOrientation,
       gfx::Vector2dF image_scale = gfx::Vector2dF(1, 1),
       float opacity = 1.0,
-      InterpolationQuality = kInterpolationNone,
-      sk_sp<SkColorSpace> color_space = nullptr);
+      InterpolationQuality = kInterpolationNone);
+  static PaintImage ResizeAndOrientImage(const PaintImage&,
+                                         ImageOrientation,
+                                         gfx::Vector2dF image_scale,
+                                         float opacity,
+                                         InterpolationQuality,
+                                         sk_sp<SkColorSpace> color_space);
 
   virtual bool IsSVGImage() const { return false; }
   virtual bool IsSVGImageForContainer() const { return false; }

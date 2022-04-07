@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/libyuv/include/libyuv.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
 #include "ui/gfx/color_space.h"
 

@@ -78,6 +78,10 @@ TestOptionsProvider::TestOptionsProvider()
 
 TestOptionsProvider::~TestOptionsProvider() = default;
 
+sk_sp<SkColorSpace> TestOptionsProvider::color_space() {
+  return color_space_;
+}
+
 void TestOptionsProvider::PushFonts() {
   std::vector<uint8_t> font_data;
   strike_server_.writeStrikeData(&font_data);

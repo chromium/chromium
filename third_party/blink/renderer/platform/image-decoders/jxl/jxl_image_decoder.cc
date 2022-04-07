@@ -6,6 +6,7 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 
 namespace blink {
 

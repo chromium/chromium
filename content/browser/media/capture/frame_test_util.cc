@@ -10,6 +10,7 @@
 
 #include "base/numerics/safe_conversions.h"
 #include "media/base/video_frame.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/color_transform.h"
 #include "ui/gfx/geometry/rect.h"

@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/webp/webp_image_decoder.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(ENABLE_AV1_DECODER)
@@ -166,6 +167,20 @@ String SniffMimeTypeInternal(scoped_refptr<SegmentReader> reader) {
 }
 
 }  // namespace
+
+ImageDecoder::ImageDecoder(
+    AlphaOption alpha_option,
+    HighBitDepthDecodingOption high_bit_depth_decoding_option,
+    const ColorBehavior& color_behavior,
+    wtf_size_t max_decoded_bytes)
+    : premultiply_alpha_(alpha_option == kAlphaPremultiplied),
+      high_bit_depth_decoding_option_(high_bit_depth_decoding_option),
+      color_behavior_(color_behavior),
+      max_decoded_bytes_(max_decoded_bytes),
+      allow_decode_to_yuv_(false),
+      purge_aggressively_(false) {}
+
+ImageDecoder::~ImageDecoder() = default;
 
 const wtf_size_t ImageDecoder::kNoDecodedImageByteLimit =
     static_cast<wtf_size_t>(-1);

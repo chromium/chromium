@@ -13,6 +13,7 @@
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkMath.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/geometry/axis_transform2d.h"

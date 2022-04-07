@@ -5,6 +5,7 @@
 #include "components/viz/service/display/external_use_client.h"
 #include "base/check.h"
 #include "base/notreached.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 
 namespace viz {
 
@@ -21,6 +22,10 @@ ExternalUseClient::ImageContext::ImageContext(
       ycbcr_info_(ycbcr_info) {}
 
 ExternalUseClient::ImageContext::~ImageContext() = default;
+
+sk_sp<SkColorSpace> ExternalUseClient::ImageContext::color_space() const {
+  return color_space_;
+}
 
 void ExternalUseClient::ImageContext::OnContextLost() {
   NOTREACHED();

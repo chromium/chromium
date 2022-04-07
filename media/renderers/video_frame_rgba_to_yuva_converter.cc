@@ -17,6 +17,7 @@
 #include "media/renderers/video_frame_yuv_converter.h"
 #include "media/renderers/video_frame_yuv_mailboxes_holder.h"
 #include "skia/ext/rgba_to_yuva.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "ui/gfx/gpu_memory_buffer.h"

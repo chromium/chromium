@@ -26,6 +26,7 @@
 #include "crypto/sha2.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "third_party/tflite/src/tensorflow/lite/kernels/builtin_op_kernels.h"

@@ -22,6 +22,7 @@
 #include "components/viz/test/paths.h"
 #include "components/viz/test/test_surface_id_allocator.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/third_party/skcms/skcms.h"
 
 namespace gl {
 struct HDRMetadata;

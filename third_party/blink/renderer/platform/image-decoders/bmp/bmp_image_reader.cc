@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 
 namespace {
 

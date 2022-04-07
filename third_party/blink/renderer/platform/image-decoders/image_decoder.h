@@ -169,7 +169,7 @@ class PLATFORM_EXPORT ImageDecoder {
 
   ImageDecoder(const ImageDecoder&) = delete;
   ImageDecoder& operator=(const ImageDecoder&) = delete;
-  virtual ~ImageDecoder() = default;
+  virtual ~ImageDecoder();
 
   // Returns a caller-owned decoder of the appropriate type.  Returns nullptr if
   // we can't sniff a supported type from the provided data (possibly
@@ -439,13 +439,7 @@ class PLATFORM_EXPORT ImageDecoder {
   ImageDecoder(AlphaOption alpha_option,
                HighBitDepthDecodingOption high_bit_depth_decoding_option,
                const ColorBehavior& color_behavior,
-               wtf_size_t max_decoded_bytes)
-      : premultiply_alpha_(alpha_option == kAlphaPremultiplied),
-        high_bit_depth_decoding_option_(high_bit_depth_decoding_option),
-        color_behavior_(color_behavior),
-        max_decoded_bytes_(max_decoded_bytes),
-        allow_decode_to_yuv_(false),
-        purge_aggressively_(false) {}
+               wtf_size_t max_decoded_bytes);
 
   // Calculates the most recent frame whose image data may be needed in
   // order to decode frame |frame_index|, based on frame disposal methods

@@ -20,6 +20,7 @@
 #include "gpu/config/gpu_test_config.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory_io_surface.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/core/SkSurface.h"

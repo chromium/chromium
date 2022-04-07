@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -108,6 +109,16 @@ scoped_refptr<Image> Image::LoadPlatformResource(
   scoped_refptr<Image> image = BitmapImage::Create();
   image->SetData(resource, true);
   return image;
+}
+
+PaintImage Image::ResizeAndOrientImage(
+    const PaintImage& image,
+    ImageOrientation orientation,
+    gfx::Vector2dF image_scale,
+    float opacity,
+    InterpolationQuality interpolation_quality) {
+  return ResizeAndOrientImage(image, orientation, image_scale, opacity,
+                              interpolation_quality, nullptr);
 }
 
 // static

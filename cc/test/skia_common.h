@@ -20,6 +20,7 @@
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_image_generator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
