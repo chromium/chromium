@@ -8,11 +8,6 @@
 #error "This file requires ARC support."
 #endif
 
-// TODO(crbug.com/1296745): Remove old API.
-bool FollowProvider::GetFollowStatus(FollowSiteInfo* followSiteInfo) {
-  return false;
-}
-
 bool FollowProvider::GetFollowStatus(FollowWebPageURLs* followWebPageURLs) {
   return false;
 }
@@ -21,10 +16,7 @@ NSArray<FollowedWebChannel*>* FollowProvider::GetFollowedWebChannels() {
   return nil;
 }
 
-// TODO(crbug.com/1296745): Remove old API.
-void FollowProvider::UpdateFollowStatus(FollowSiteInfo* site, bool state) {}
-
 void FollowProvider::UpdateFollowStatus(FollowWebPageURLs* followWebPageURLs,
-                                        bool state) {}
+                                        bool followStatus) {}
 
 void FollowProvider::SetFollowEventDelegate(Browser* browser) {}

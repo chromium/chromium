@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-@class FollowSiteInfo;
 @class FollowWebPageURLs;
 @class FollowedWebChannel;
 class Browser;
@@ -23,19 +22,11 @@ class FollowProvider {
   FollowProvider(const FollowProvider&) = delete;
   FollowProvider& operator=(const FollowProvider&) = delete;
 
-  // TODO(crbug.com/1296745): Remove old API.
-  // Returns true if the website with |followSiteInfo| has been followed.
-  virtual bool GetFollowStatus(FollowSiteInfo* followSiteInfo);
-
   // Returns true if the web channel with |followWebPageURLs| has been followed.
   virtual bool GetFollowStatus(FollowWebPageURLs* followWebPageURLs);
 
   // Returns a list of followed web channels.
   virtual NSArray<FollowedWebChannel*>* GetFollowedWebChannels();
-
-  // TODO(crbug.com/1296745): Remove old API.
-  // Updates the following status of |site| to |state|.
-  virtual void UpdateFollowStatus(FollowSiteInfo* site, bool state);
 
   // Updates the following status of the web channel associated with
   // |followWebPageURLs|. The web channel is followed if |followStatus| is true.
