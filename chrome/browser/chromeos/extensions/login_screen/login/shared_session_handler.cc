@@ -13,7 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_manager.h"
+#include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_manager_ash.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/errors.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/login_api_lock_handler.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
@@ -134,7 +134,7 @@ void SharedSessionHandler::EnterSharedSession(
 
   CHECK(user_secret_salt_.empty());
 
-  if (chromeos::CleanupManager::Get()->is_cleanup_in_progress()) {
+  if (chromeos::CleanupManagerAsh::Get()->is_cleanup_in_progress()) {
     std::move(callback).Run(extensions::login_api_errors::kCleanupInProgress);
     return;
   }
@@ -177,7 +177,7 @@ void SharedSessionHandler::UnlockSharedSession(
 
   CHECK(!user_secret_salt_.empty());
 
-  if (chromeos::CleanupManager::Get()->is_cleanup_in_progress()) {
+  if (chromeos::CleanupManagerAsh::Get()->is_cleanup_in_progress()) {
     std::move(callback).Run(extensions::login_api_errors::kCleanupInProgress);
     return;
   }
@@ -225,7 +225,8 @@ void SharedSessionHandler::EndSharedSession(
     return;
   }
 
-  chromeos::CleanupManager* cleanup_manager = chromeos::CleanupManager::Get();
+  chromeos::CleanupManagerAsh* cleanup_manager =
+      chromeos::CleanupManagerAsh::Get();
   if (cleanup_manager->is_cleanup_in_progress()) {
     std::move(callback).Run(extensions::login_api_errors::kCleanupInProgress);
     return;
@@ -319,8 +320,9 @@ void SharedSessionHandler::OnAuthenticateDone(
   std::move(callback).Run(absl::nullopt);
 }
 
-void SharedSessionHandler::OnCleanupDone(CallbackWithOptionalError callback,
-                                         absl::optional<std::string> errors) {
+void SharedSessionHandler::OnCleanupDone(
+    CallbackWithOptionalError callback,
+    const absl::optional<std::string>& errors) {
   if (errors) {
     std::move(callback).Run(*errors);
     return;

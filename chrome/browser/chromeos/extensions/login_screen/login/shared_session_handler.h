@@ -25,7 +25,7 @@ class SharedSessionHandler {
   SharedSessionHandler& operator=(const SharedSessionHandler&) = delete;
 
   using CallbackWithOptionalError =
-      base::OnceCallback<void(absl::optional<std::string>)>;
+      base::OnceCallback<void(const absl::optional<std::string>&)>;
 
   // Starts a lockable Managed Guest Session with a randomly generated secret
   // as the Cryptohome key. The session secret is stored in memory to be used
@@ -75,7 +75,7 @@ class SharedSessionHandler {
                           bool auth_success);
 
   void OnCleanupDone(CallbackWithOptionalError callback,
-                     absl::optional<std::string> errors);
+                     const absl::optional<std::string>& errors);
 
   std::string GenerateRandomString(size_t size);
 

@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/mock_cleanup_handler.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -28,6 +29,14 @@ namespace {
 constexpr char kHandler1Name[] = "Handler1";
 constexpr char kHandler2Name[] = "Handler2";
 
+class TestCleanupManager : public CleanupManager {
+ public:
+  TestCleanupManager() = default;
+  ~TestCleanupManager() override = default;
+
+  void InitializeCleanupHandlers() override {}
+};
+
 }  // namespace
 
 class CleanupManagerUnittest : public testing::Test {
@@ -35,12 +44,18 @@ class CleanupManagerUnittest : public testing::Test {
   CleanupManagerUnittest() = default;
   ~CleanupManagerUnittest() override = default;
 
+  void SetUp() override {
+    testing::Test::SetUp();
+    manager_ = std::make_unique<TestCleanupManager>();
+  }
+
   void TearDown() override {
-    CleanupManager::Get()->ResetCleanupHandlersForTesting();
+    manager_.reset();
     testing::Test::TearDown();
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestCleanupManager> manager_;
 };
 
 TEST_F(CleanupManagerUnittest, Cleanup) {
@@ -61,16 +76,11 @@ TEST_F(CleanupManagerUnittest, Cleanup) {
   std::map<std::string, std::unique_ptr<CleanupHandler>> cleanup_handlers;
   cleanup_handlers.insert({kHandler1Name, std::move(mock_cleanup_handler1)});
   cleanup_handlers.insert({kHandler2Name, std::move(mock_cleanup_handler2)});
-  CleanupManager* manager = CleanupManager::Get();
-  manager->SetCleanupHandlersForTesting(std::move(cleanup_handlers));
+  manager_->SetCleanupHandlersForTesting(std::move(cleanup_handlers));
 
-  base::RunLoop run_loop;
-  manager->Cleanup(
-      base::BindLambdaForTesting([&](absl::optional<std::string> error) {
-        EXPECT_EQ(absl::nullopt, error);
-        run_loop.QuitClosure().Run();
-      }));
-  run_loop.Run();
+  base::test::TestFuture<absl::optional<std::string>> future;
+  manager_->Cleanup(future.GetCallback<const absl::optional<std::string>&>());
+  EXPECT_EQ(absl::nullopt, future.Get());
 
   histogram_tester.ExpectBucketCount(
       "Enterprise.LoginApiCleanup.Handler1.Success", 1, 1);
@@ -94,21 +104,20 @@ TEST_F(CleanupManagerUnittest, CleanupInProgress) {
 
   std::map<std::string, std::unique_ptr<CleanupHandler>> cleanup_handlers;
   cleanup_handlers.insert({kHandler1Name, std::move(mock_cleanup_handler)});
-  CleanupManager* manager = CleanupManager::Get();
-  manager->SetCleanupHandlersForTesting(std::move(cleanup_handlers));
+  manager_->SetCleanupHandlersForTesting(std::move(cleanup_handlers));
 
   base::RunLoop run_loop;
   base::RepeatingClosure barrier_closure =
       base::BarrierClosure(2, run_loop.QuitClosure());
 
-  manager->Cleanup(
-      base::BindLambdaForTesting([&](absl::optional<std::string> error) {
+  manager_->Cleanup(
+      base::BindLambdaForTesting([&](const absl::optional<std::string>& error) {
         EXPECT_EQ(absl::nullopt, error);
         barrier_closure.Run();
       }));
 
-  manager->Cleanup(
-      base::BindLambdaForTesting([&](absl::optional<std::string> error) {
+  manager_->Cleanup(
+      base::BindLambdaForTesting([&](const absl::optional<std::string>& error) {
         EXPECT_EQ("Cleanup is already in progress", *error);
         barrier_closure.Run();
       }));
@@ -138,16 +147,11 @@ TEST_F(CleanupManagerUnittest, CleanupErrors) {
   std::map<std::string, std::unique_ptr<CleanupHandler>> cleanup_handlers;
   cleanup_handlers.insert({kHandler1Name, std::move(mock_cleanup_handler1)});
   cleanup_handlers.insert({kHandler2Name, std::move(mock_cleanup_handler2)});
-  CleanupManager* manager = CleanupManager::Get();
-  manager->SetCleanupHandlersForTesting(std::move(cleanup_handlers));
+  manager_->SetCleanupHandlersForTesting(std::move(cleanup_handlers));
 
-  base::RunLoop run_loop;
-  manager->Cleanup(
-      base::BindLambdaForTesting([&](absl::optional<std::string> error) {
-        EXPECT_EQ("Handler1: Error 1\nHandler2: Error 2", *error);
-        run_loop.QuitClosure().Run();
-      }));
-  run_loop.Run();
+  base::test::TestFuture<absl::optional<std::string>> future;
+  manager_->Cleanup(future.GetCallback<const absl::optional<std::string>&>());
+  EXPECT_EQ("Handler1: Error 1\nHandler2: Error 2", future.Get());
 
   histogram_tester.ExpectBucketCount(
       "Enterprise.LoginApiCleanup.Handler1.Success", 0, 1);

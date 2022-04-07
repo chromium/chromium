@@ -25,7 +25,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_manager.h"
+#include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_manager_ash.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/mock_cleanup_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/errors.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/login_api_lock_handler.h"
@@ -768,7 +768,7 @@ class LoginApiSharedSessionUnittest : public LoginApiUnittest {
     GetCrosSettingsHelper()->SetBoolean(
         ash::kDeviceRestrictedManagedGuestSessionEnabled, true);
     // Remove cleanup handlers.
-    chromeos::CleanupManager::Get()->SetCleanupHandlersForTesting({});
+    chromeos::CleanupManagerAsh::Get()->SetCleanupHandlersForTesting({});
 
     LoginApiUnittest::SetUp();
   }
@@ -776,7 +776,7 @@ class LoginApiSharedSessionUnittest : public LoginApiUnittest {
   void TearDown() override {
     GetCrosSettingsHelper()->RestoreRealDeviceSettingsProvider();
     chromeos::SharedSessionHandler::Get()->ResetStateForTesting();
-    chromeos::CleanupManager::Get()->ResetCleanupHandlersForTesting();
+    chromeos::CleanupManagerAsh::Get()->ResetCleanupHandlersForTesting();
     testing_profile_.reset();
 
     LoginApiUnittest::TearDown();
@@ -806,7 +806,7 @@ class LoginApiSharedSessionUnittest : public LoginApiUnittest {
         cleanup_handlers;
     cleanup_handlers.insert({"Handler1", std::move(mock_cleanup_handler1)});
     cleanup_handlers.insert({"Handler2", std::move(mock_cleanup_handler2)});
-    chromeos::CleanupManager::Get()->SetCleanupHandlersForTesting(
+    chromeos::CleanupManagerAsh::Get()->SetCleanupHandlersForTesting(
         std::move(cleanup_handlers));
   }
 
@@ -817,7 +817,7 @@ class LoginApiSharedSessionUnittest : public LoginApiUnittest {
     std::map<std::string, std::unique_ptr<chromeos::CleanupHandler>>
         cleanup_handlers;
     cleanup_handlers.insert({"Handler", std::move(mock_cleanup_handler)});
-    chromeos::CleanupManager::Get()->SetCleanupHandlersForTesting(
+    chromeos::CleanupManagerAsh::Get()->SetCleanupHandlersForTesting(
         std::move(cleanup_handlers));
   }
 
@@ -972,6 +972,7 @@ TEST_F(LoginApiSharedSessionUnittest, UnlockSharedSessionNoSharedMGS) {
 // Test that calling `login.unlockSharedSession()` returns an error when there
 // is no shared session active.
 TEST_F(LoginApiSharedSessionUnittest, UnlockSharedSessionNoSharedSession) {
+  SetUpCleanupHandlerMocks();
   LaunchSharedManagedGuestSession("foo");
   EXPECT_CALL(*mock_lock_handler_, RequestLockScreen()).WillOnce(Return());
   RunFunction(new LoginEndSharedSessionFunction(), "[]");
@@ -1029,7 +1030,7 @@ TEST_F(LoginApiSharedSessionUnittest, UnlockSharedSessionCleanupInProgress) {
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::LOCKED);
 
-  chromeos::CleanupManager::Get()->SetIsCleanupInProgressForTesting(true);
+  chromeos::CleanupManagerAsh::Get()->SetIsCleanupInProgressForTesting(true);
 
   ASSERT_EQ(login_api_errors::kCleanupInProgress,
             RunFunctionAndReturnError(new LoginUnlockSharedSessionFunction(),
@@ -1111,7 +1112,7 @@ TEST_F(LoginApiSharedSessionUnittest, EndSharedSessionNoSharedSession) {
 // is a cleanup in progress.
 TEST_F(LoginApiSharedSessionUnittest, EndSharedSessionCleanupInProgress) {
   LaunchSharedManagedGuestSession("foo");
-  chromeos::CleanupManager::Get()->SetIsCleanupInProgressForTesting(true);
+  chromeos::CleanupManagerAsh::Get()->SetIsCleanupInProgressForTesting(true);
 
   ASSERT_EQ(login_api_errors::kCleanupInProgress,
             RunFunctionAndReturnError(new LoginEndSharedSessionFunction(),
@@ -1188,6 +1189,7 @@ TEST_F(LoginApiSharedSessionUnittest, EnterSharedSessionAlreadyLaunched) {
 // Test that calling `login.enterSharedSession()` returns an error when there is
 // an error when unlocking the screen.
 TEST_F(LoginApiSharedSessionUnittest, EnterSharedSessionUnlockFailed) {
+  SetUpCleanupHandlerMocks();
   LaunchSharedManagedGuestSession("foo");
   RunFunction(new LoginEndSharedSessionFunction(), "[]");
   session_manager::SessionManager::Get()->SetSessionState(
@@ -1203,11 +1205,12 @@ TEST_F(LoginApiSharedSessionUnittest, EnterSharedSessionUnlockFailed) {
 // Test that calling `login.enterSharedSession()` returns an error when there
 // is a cleanup in progress.
 TEST_F(LoginApiSharedSessionUnittest, EnterSharedSessionCleanupInProgress) {
+  SetUpCleanupHandlerMocks();
   LaunchSharedManagedGuestSession("foo");
   RunFunction(new LoginEndSharedSessionFunction(), "[]");
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::LOCKED);
-  chromeos::CleanupManager::Get()->SetIsCleanupInProgressForTesting(true);
+  chromeos::CleanupManagerAsh::Get()->SetIsCleanupInProgressForTesting(true);
 
   ASSERT_EQ(login_api_errors::kCleanupInProgress,
             RunFunctionAndReturnError(new LoginEnterSharedSessionFunction(),

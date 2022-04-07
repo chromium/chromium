@@ -15,47 +15,14 @@
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/clipboard_cleanup_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/extension_cleanup_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/files_cleanup_handler.h"
+#include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/lacros_cleanup_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/open_windows_cleanup_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/print_jobs_cleanup_handler.h"
-
-#include "base/logging.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
 
-namespace {
-
-// Must kept in sync with the CleanupHandler variant in
-// tools/metrics/histograms/metadata/enterprise/histograms.xml
-constexpr char kBrowsingDataCleanupHandlerHistogramName[] = "BrowsingData";
-constexpr char kClipboardCleanupHandlerHistogramName[] = "Clipboard";
-constexpr char kExtensionCleanupHandlerHistogramName[] = "Extension";
-constexpr char kFilesCleanupHandlerHistogramName[] = "Files";
-constexpr char kOpenWindowsCleanupHandlerHistogramName[] = "OpenWindows";
-constexpr char kPrintJobsCleanupHandlerHistogramName[] = "PrintJobs";
-
-void RecordHandlerMetrics(const std::string& handler_name,
-                          const base::Time& start_time,
-                          bool success) {
-  base::TimeDelta delta = base::Time::Now() - start_time;
-
-  std::string histogram_prefix =
-      "Enterprise.LoginApiCleanup." + handler_name + ".";
-
-  base::UmaHistogramTimes(histogram_prefix + "Timing", delta);
-  base::UmaHistogramBoolean(histogram_prefix + "Success", success);
-}
-
-}  // namespace
-
-// static
-CleanupManager* CleanupManager::Get() {
-  static base::NoDestructor<CleanupManager> instance;
-  return instance.get();
-}
-
-CleanupManager::CleanupManager() {
-  InitializeCleanupHandlers();
-}
+CleanupManager::CleanupManager() = default;
 
 CleanupManager::~CleanupManager() = default;
 
@@ -65,6 +32,9 @@ void CleanupManager::Cleanup(CleanupCallback callback) {
     return;
   }
 
+  if (cleanup_handlers_.empty())
+    InitializeCleanupHandlers();
+
   callback_ = std::move(callback);
   errors_.clear();
   is_cleanup_in_progress_ = true;
@@ -72,13 +42,13 @@ void CleanupManager::Cleanup(CleanupCallback callback) {
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
       cleanup_handlers_.size(),
       base::BindOnce(&CleanupManager::OnAllCleanupHandlersDone,
-                     base::Unretained(this)));
+                     weak_factory_.GetWeakPtr()));
 
   start_time_ = base::Time::Now();
   for (auto& kv : cleanup_handlers_) {
     kv.second->Cleanup(base::BindOnce(&CleanupManager::OnCleanupHandlerDone,
-                                      base::Unretained(this), barrier_closure,
-                                      kv.first));
+                                      weak_factory_.GetWeakPtr(),
+                                      barrier_closure, kv.first));
   }
 }
 
@@ -96,21 +66,6 @@ void CleanupManager::ResetCleanupHandlersForTesting() {
 void CleanupManager::SetIsCleanupInProgressForTesting(
     bool is_cleanup_in_progress) {
   is_cleanup_in_progress_ = is_cleanup_in_progress;
-}
-
-void CleanupManager::InitializeCleanupHandlers() {
-  cleanup_handlers_.insert({kBrowsingDataCleanupHandlerHistogramName,
-                            std::make_unique<BrowsingDataCleanupHandler>()});
-  cleanup_handlers_.insert({kOpenWindowsCleanupHandlerHistogramName,
-                            std::make_unique<OpenWindowsCleanupHandler>()});
-  cleanup_handlers_.insert({kFilesCleanupHandlerHistogramName,
-                            std::make_unique<FilesCleanupHandler>()});
-  cleanup_handlers_.insert({kClipboardCleanupHandlerHistogramName,
-                            std::make_unique<ClipboardCleanupHandler>()});
-  cleanup_handlers_.insert({kPrintJobsCleanupHandlerHistogramName,
-                            std::make_unique<PrintJobsCleanupHandler>()});
-  cleanup_handlers_.insert({kExtensionCleanupHandlerHistogramName,
-                            std::make_unique<ExtensionCleanupHandler>()});
 }
 
 void CleanupManager::OnCleanupHandlerDone(
@@ -136,6 +91,18 @@ void CleanupManager::OnAllCleanupHandlersDone() {
 
   std::string errors = base::JoinString(errors_, "\n");
   std::move(callback_).Run(errors);
+}
+
+void CleanupManager::RecordHandlerMetrics(const std::string& handler_name,
+                                          const base::Time& start_time,
+                                          bool success) {
+  base::TimeDelta delta = base::Time::Now() - start_time;
+
+  std::string histogram_prefix =
+      "Enterprise.LoginApiCleanup." + handler_name + ".";
+
+  base::UmaHistogramTimes(histogram_prefix + "Timing", delta);
+  base::UmaHistogramBoolean(histogram_prefix + "Success", success);
 }
 
 }  // namespace chromeos

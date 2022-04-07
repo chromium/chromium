@@ -36,7 +36,23 @@ source_set("login_screen") {
   }
 
   if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
+    sources += [
+      "login/cleanup/browsing_data_cleanup_handler.cc",
+      "login/cleanup/browsing_data_cleanup_handler.h",
+      "login/cleanup/cleanup_handler.h",
+      "login/cleanup/cleanup_manager.cc",
+      "login/cleanup/cleanup_manager.h",
+      "login/cleanup/cleanup_manager_lacros.cc",
+      "login/cleanup/cleanup_manager_lacros.h",
+      "login/cleanup/cleanup_manager_lacros_factory.cc",
+      "login/cleanup/cleanup_manager_lacros_factory.h",
+    ]
+    deps += [
+      "//chrome/browser/browsing_data:constants",
+      "//chrome/browser/profiles:profile",
+      "//chromeos/lacros",
+      "//components/keyed_service/content",
+    ]
   }
 }
 

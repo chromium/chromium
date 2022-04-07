@@ -225,6 +225,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_manager_lacros_factory.h"
 #include "chrome/browser/lacros/account_manager/profile_account_manager_factory.h"
 #include "chrome/browser/lacros/cert/cert_db_initializer_factory.h"
 #endif
@@ -307,6 +308,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   browser_sync::UserEventServiceFactory::GetInstance();
   BrowsingDataHistoryObserverService::Factory::GetInstance();
   browsing_topics::BrowsingTopicsServiceFactory::GetInstance();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::CleanupManagerLacrosFactory::GetInstance();
+#endif
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
   CaptivePortalServiceFactory::GetInstance();
 #endif

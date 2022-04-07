@@ -18,6 +18,14 @@ struct SamlUserSessionProperties {
   string oauth_code@3;
 };
 
+// Interface for the cleanup triggered observer. The cleanup is signaled to
+// Lacros from ash-chrome as part of the |endSharedSession()| API call.
+[Stable, Uuid="883697b4-1fe3-4144-95ae-84afbea67e5c"]
+interface LacrosCleanupTriggeredObserver {
+  // Triggers a session cleanup for the Lacros browser.
+  OnLacrosCleanupTriggered@0() => (string? error);
+};
+
 // This API allows Lacros to call the chrome.login extension API.
 [Stable, Uuid="639e9f04-981f-46d1-91da-583c2958265b"]
 interface Login {
@@ -92,4 +100,9 @@ interface Login {
   // to at launch.
   [MinVersion=1]
   UnlockCurrentSession@12(string password) => (string? error);
+
+  // Adds an observer for the cleanup triggered event.
+  [MinVersion=2]
+  AddLacrosCleanupTriggeredObserver@13(
+      pending_remote<LacrosCleanupTriggeredObserver> observer);
 };

@@ -16,13 +16,15 @@
 #include "chrome/browser/chromeos/extensions/login_screen/login/shared_session_handler.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/crosapi/mojom/login.mojom.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_type.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
 namespace crosapi {
@@ -230,6 +232,18 @@ void LoginAsh::SetDataForNextLoginAttempt(
   std::move(callback).Run();
 }
 
+void LoginAsh::AddLacrosCleanupTriggeredObserver(
+    mojo::PendingRemote<mojom::LacrosCleanupTriggeredObserver> observer) {
+  mojo::Remote<mojom::LacrosCleanupTriggeredObserver> remote(
+      std::move(observer));
+  lacros_cleanup_triggered_observers_.Add(std::move(remote));
+}
+
+mojo::RemoteSet<mojom::LacrosCleanupTriggeredObserver>&
+LoginAsh::GetCleanupTriggeredObservers() {
+  return lacros_cleanup_triggered_observers_;
+}
+
 void LoginAsh::OnScreenLockerAuthenticate(
     base::OnceCallback<void(const absl::optional<std::string>&)> callback,
     bool success) {
@@ -244,7 +258,7 @@ void LoginAsh::OnScreenLockerAuthenticate(
 
 void LoginAsh::OnOptionalErrorCallbackComplete(
     base::OnceCallback<void(const absl::optional<std::string>&)> callback,
-    absl::optional<std::string> error) {
+    const absl::optional<std::string>& error) {
   std::move(callback).Run(error);
 }
 

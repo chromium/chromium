@@ -12,7 +12,9 @@
 #include "chromeos/crosapi/mojom/login.mojom.h"
 #include "components/user_manager/user_type.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
@@ -57,6 +59,12 @@ class LoginAsh : public mojom::Login {
   void SetDataForNextLoginAttempt(
       const std::string& data_for_next_login_attempt,
       SetDataForNextLoginAttemptCallback callback) override;
+  void AddLacrosCleanupTriggeredObserver(
+      mojo::PendingRemote<mojom::LacrosCleanupTriggeredObserver> observer)
+      override;
+
+  mojo::RemoteSet<mojom::LacrosCleanupTriggeredObserver>&
+  GetCleanupTriggeredObservers();
 
  private:
   void OnScreenLockerAuthenticate(
@@ -64,7 +72,7 @@ class LoginAsh : public mojom::Login {
       bool success);
   void OnOptionalErrorCallbackComplete(
       base::OnceCallback<void(const absl::optional<std::string>&)> callback,
-      absl::optional<std::string> error);
+      const absl::optional<std::string>& error);
   absl::optional<std::string> CanLaunchSession();
   absl::optional<std::string> LockSession(
       absl::optional<user_manager::UserType> user_type = absl::nullopt);
@@ -75,6 +83,11 @@ class LoginAsh : public mojom::Login {
       base::OnceCallback<void(const absl::optional<std::string>&)> callback);
 
   mojo::ReceiverSet<mojom::Login> receivers_;
+
+  // Support any number of observers.
+  mojo::RemoteSet<mojom::LacrosCleanupTriggeredObserver>
+      lacros_cleanup_triggered_observers_;
+
   base::WeakPtrFactory<LoginAsh> weak_factory_{this};
 };
 

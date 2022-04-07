@@ -5315,6 +5315,7 @@ static_library("browser") {
     ]
     deps += [
       ":dlp_policy_event_proto",
+      "//chrome/browser/chromeos/extensions/login_screen",
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/mojom",
       "//chromeos/dbus/dlp:dlp",
@@ -5325,6 +5326,9 @@ static_library("browser") {
       "//ui/chromeos/styles:cros_styles_views",
       "//ui/platform_window",
     ]
+
+    allow_circular_includes_from +=
+        [ "//chrome/browser/chromeos/extensions/login_screen" ]
 
     # component builds are not compatible on device.
     assert(!is_chromeos_device || !is_component_build)
