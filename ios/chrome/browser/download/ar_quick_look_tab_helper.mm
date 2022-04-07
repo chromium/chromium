@@ -46,6 +46,18 @@ std::string GetMimeTypeSuffix(web::DownloadTask* download_task) {
   return kUsdzMimeTypeHistogramSuffix;
 }
 
+// Returns whether the `download_task` is complete or failed.
+bool IsDownloadCompleteOrFailed(web::DownloadTask* download_task) {
+  switch (download_task->GetState()) {
+    case web::DownloadTask::State::kComplete:
+    case web::DownloadTask::State::kFailed:
+    case web::DownloadTask::State::kFailedNotResumable:
+      return YES;
+    default:
+      return NO;
+  }
+}
+
 // Returns an enum for Download.IOSDownloadARModelState histogram for the
 // terminated |download_task|.
 IOSDownloadARModelState GetHistogramEnum(web::DownloadTask* download_task) {
@@ -124,7 +136,7 @@ void ARQuickLookTabHelper::Download(
 }
 
 void ARQuickLookTabHelper::DidFinishDownload() {
-  DCHECK_EQ(download_task_->GetState(), web::DownloadTask::State::kComplete);
+  DCHECK(IsDownloadCompleteOrFailed(download_task_.get()));
   // Inform the delegate only if the download has been successful.
   if (download_task_->GetHttpCode() == 401 ||
       download_task_->GetHttpCode() == 403 || download_task_->GetErrorCode() ||

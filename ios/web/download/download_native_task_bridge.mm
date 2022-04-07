@@ -82,6 +82,17 @@
 - (void)startDownload:(NSURL*)url
     progressionHandler:(void (^)())progressionHandler
      completionHandler:(web::DownloadCompletionHandler)completionHandler {
+  // Logic for when the same file is redownloaded as it will use the same file
+  // path.
+  if ([[NSFileManager defaultManager] fileExistsAtPath:[url path]]) {
+    NSError* error = nil;
+    if (![[NSFileManager defaultManager] removeItemAtPath:[url path]
+                                                    error:&error]) {
+      [self download:_download didFailWithError:error resumeData:nil];
+      return;
+    }
+  }
+
   _progressionHandler = progressionHandler;
   _completionHandler = completionHandler;
 
