@@ -90,6 +90,11 @@ bool IsDisabledEarlyHintsPreloadForcibly() {
       features::kEarlyHintsPreloadForNavigation, "force_disable", false);
 }
 
+bool IsEnabledEarlyHintsPreconnect() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      features::kEarlyHintsPreloadForNavigation, "enable_preconnect", true);
+}
+
 network::mojom::CSPDirectiveName LinkAsAttributeToCSPDirective(
     network::mojom::LinkAsAttribute attr) {
   switch (attr) {
@@ -525,6 +530,9 @@ void NavigationEarlyHintsManager::MaybePreconnect(
     const network::mojom::LinkHeaderPtr& link,
     bool enabled_by_origin_trial) {
   was_resource_hints_received_ = true;
+
+  if (!IsEnabledEarlyHintsPreconnect())
+    return;
 
   if (!ShouldHandleResourceHints(link, enabled_by_origin_trial))
     return;

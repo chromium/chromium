@@ -747,7 +747,31 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, NetworkIsolationKey) {
   ASSERT_FALSE(is_cached.value());
 }
 
-IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, SimplePreconnect) {
+class NavigationEarlyHintsPreconnectTest
+    : public NavigationEarlyHintsTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  NavigationEarlyHintsPreconnectTest() {
+    if (!IsPreconnectEnabled()) {
+      scoped_feature_list_.InitAndEnableFeatureWithParameters(
+          features::kEarlyHintsPreloadForNavigation,
+          {{"enable_preconnect", "false"}});
+    }
+  }
+
+  ~NavigationEarlyHintsPreconnectTest() override = default;
+
+ protected:
+  bool IsPreconnectEnabled() { return GetParam(); }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         NavigationEarlyHintsPreconnectTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(NavigationEarlyHintsPreconnectTest, SimplePreconnect) {
   const char kPageWithPreconnect[] = "/page_with_preconnect.html";
   const GURL kPreconnectUrl = cross_origin_server().GetURL("/");
   ResponseEntry page_entry(kPageWithPreconnect, net::HTTP_OK);
@@ -761,7 +785,11 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, SimplePreconnect) {
       shell(), net::QuicSimpleTestServer::GetFileURL(kPageWithPreconnect)));
   ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
-  EXPECT_EQ(preconnect_listener().num_accepted_sockets(), 1UL);
+  if (IsPreconnectEnabled()) {
+    EXPECT_EQ(preconnect_listener().num_accepted_sockets(), 1UL);
+  } else {
+    EXPECT_EQ(preconnect_listener().num_accepted_sockets(), 0UL);
+  }
   EXPECT_TRUE(GetEarlyHintsManager(static_cast<RenderFrameHostImpl*>(
                                        shell()->web_contents()->GetMainFrame()))
                   ->WasResourceHintsReceived());
