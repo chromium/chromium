@@ -6,12 +6,7 @@
  * @fileoverview APIs used by CRWContextMenuController.
  */
 
-goog.provide('__crWeb.allFramesContextMenu');
-
-// Requires __crWeb.base and __crWeb.common
-
-/** Beginning of anonymous object */
-(function() {
+// Requires functions from base.js and common.js
 
 // The minimum opacity for an element to be considered as opaque. Elements
 // with a higher opacity will prevent selection of images underneath.
@@ -536,4 +531,3 @@ window.addEventListener('message', function(message) {
         payload.y + window.pageYOffset);
   }
 });
-}());  // End of anonymous object

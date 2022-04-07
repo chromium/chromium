@@ -21,8 +21,8 @@ namespace {
 const char kContextMenuJavaScriptFeatureKeyName[] =
     "context_menu_java_script_feature";
 
-const char kAllFramesContextMenuScript[] = "all_frames_context_menu_js";
-const char kMainFrameContextMenuScript[] = "main_frame_context_menu_js";
+const char kAllFramesContextMenuScript[] = "all_frames_context_menu";
+const char kMainFrameContextMenuScript[] = "main_frame_context_menu";
 
 const char kFindElementResultHandlerName[] = "FindElementResultHandler";
 }

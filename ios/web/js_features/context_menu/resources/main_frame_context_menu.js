@@ -6,12 +6,7 @@
  * @fileoverview APIs used by CRWContextMenuController.
  */
 
-goog.provide('__crWeb.mainFrameContextMenu');
-
-// Requires __crWeb.allFramesContextMenu
-
-/** Beginning of anonymous object */
-(function() {
+// Requires functions from all_frame_context_menu.js
 
 /**
  * Finds the url of the image or link under the selected point. Sends the
@@ -49,5 +44,3 @@ var getPageWidth = function() {
       documentElement.offsetWidth, documentBody.scrollWidth,
       documentBody.offsetWidth);
 };
-
-}());  // End of anonymouse object

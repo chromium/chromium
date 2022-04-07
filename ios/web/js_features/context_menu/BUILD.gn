@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//ios/build/config.gni")
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 
 source_set("context_menu") {
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -28,17 +28,17 @@ source_set("context_menu") {
   ]
 }
 
-js_compile_bundle("all_frames_context_menu_js") {
+optimize_js("all_frames_context_menu_js") {
   visibility = [ ":context_menu" ]
-  closure_entry_point = "__crWeb.allFramesContextMenu"
 
+  primary_script = "resources/all_frames_context_menu.js"
   sources = [ "resources/all_frames_context_menu.js" ]
 }
 
-js_compile_bundle("main_frame_context_menu_js") {
+optimize_js("main_frame_context_menu_js") {
   visibility = [ ":context_menu" ]
-  closure_entry_point = "__crWeb.mainFrameContextMenu"
 
+  primary_script = "resources/main_frame_context_menu.js"
   sources = [ "resources/main_frame_context_menu.js" ]
 }
 

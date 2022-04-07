@@ -217,14 +217,14 @@ class ContextMenuJsFindElementAtPointTest : public PlatformTest {
         addUserScript:shared_scripts];
 
     WKUserScript* all_frames_script = [[WKUserScript alloc]
-          initWithSource:test::GetPageScript(@"all_frames_context_menu_js")
+          initWithSource:test::GetPageScript(@"all_frames_context_menu")
            injectionTime:WKUserScriptInjectionTimeAtDocumentStart
         forMainFrameOnly:NO];
     [web_view_.configuration.userContentController
         addUserScript:all_frames_script];
 
     WKUserScript* main_frame_script = [[WKUserScript alloc]
-          initWithSource:test::GetPageScript(@"main_frame_context_menu_js")
+          initWithSource:test::GetPageScript(@"main_frame_context_menu")
            injectionTime:WKUserScriptInjectionTimeAtDocumentStart
         forMainFrameOnly:YES];
     [web_view_.configuration.userContentController
