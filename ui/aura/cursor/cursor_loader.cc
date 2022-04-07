@@ -113,7 +113,10 @@ scoped_refptr<ui::PlatformCursor> CursorLoader::CursorFromType(
     cursor = factory_->GetDefaultCursor(type);
     if (cursor)
       return cursor;
-    LOG(ERROR) << "Failed to load a platform cursor of type " << type;
+    // The cursor may fail to load if the cursor theme has just been reset.
+    // We will be notified when the theme is loaded, but at this time we have to
+    // fall back to the assets.
+    LOG(WARNING) << "Failed to load a platform cursor of type " << type;
   }
 
   // Loads the default Aura cursor bitmap for the cursor type. Falls back on
