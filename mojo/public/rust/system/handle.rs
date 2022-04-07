@@ -49,7 +49,7 @@ pub trait Handle {
     fn wait(&self, signals: HandleSignals) -> (SignalsState, MojoResult) {
         let mut state: SignalsState = Default::default();
         let r = unsafe {
-            ffi::MojoWait(self.get_native_handle(), signals, &mut state as *mut SignalsState)
+            ffi::MojoWait(self.get_native_handle(), signals.get_bits(), &mut state.0 as *mut _)
         };
         (state, MojoResult::from_code(r))
     }

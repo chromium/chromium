@@ -180,7 +180,7 @@ pub fn create<T>(
     // TODO(mknyszek): Make sure handles are valid
     let mut chandle: MojoHandle = 0;
     let mut phandle: MojoHandle = 0;
-    let raw_opts = &opts as *const ffi::MojoCreateDataPipeOptions;
+    let raw_opts = opts.inner_ptr();
     let r = MojoResult::from_code(unsafe {
         ffi::MojoCreateDataPipe(
             raw_opts,
@@ -231,7 +231,7 @@ impl<T> Consumer<T> {
         let r_prelim = unsafe {
             ffi::MojoReadData(
                 self.handle.get_native_handle(),
-                &options as *const _,
+                options.inner_ptr(),
                 ptr::null_mut() as *mut ffi::c_void,
                 &mut num_bytes as *mut u32,
             )
@@ -247,8 +247,8 @@ impl<T> Consumer<T> {
         let r = MojoResult::from_code(unsafe {
             ffi::MojoReadData(
                 self.handle.get_native_handle(),
-                &options as *const _,
-                buf.as_mut_ptr() as *const ffi::c_void,
+                options.inner_ptr(),
+                buf.as_mut_ptr() as *mut ffi::c_void,
                 &mut num_bytes as *mut u32,
             )
         });
@@ -271,11 +271,11 @@ impl<T> Consumer<T> {
     /// be valid if end_read is performed).
     unsafe fn begin_read(&self) -> Result<&[T], MojoResult> {
         let mut buf_num_bytes: u32 = 0;
-        let mut pbuf: *mut ffi::c_void = ptr::null_mut();
+        let mut pbuf: *const ffi::c_void = ptr::null();
         let r = MojoResult::from_code(ffi::MojoBeginReadData(
             self.handle.get_native_handle(),
             ptr::null(),
-            &mut pbuf,
+            &mut pbuf as *mut _,
             &mut buf_num_bytes as *mut u32,
         ));
         if r != MojoResult::Okay {
@@ -351,7 +351,7 @@ impl<T> Producer<T> {
                 self.handle.get_native_handle(),
                 data.as_ptr() as *const ffi::c_void,
                 &mut num_bytes as *mut u32,
-                &options as *const _,
+                options.inner_ptr(),
             )
         });
         if r != MojoResult::Okay { Err(r) } else { Ok(num_bytes as usize) }

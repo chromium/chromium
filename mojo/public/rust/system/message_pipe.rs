@@ -72,7 +72,7 @@ pub fn create(flags: CreateFlags) -> Result<(MessageEndpoint, MessageEndpoint), 
     let mut handle0: MojoHandle = 0;
     let mut handle1: MojoHandle = 0;
     let opts = ffi::MojoCreateMessagePipeOptions::new(flags);
-    let raw_opts = &opts as *const ffi::MojoCreateMessagePipeOptions;
+    let raw_opts = opts.inner_ptr();
     let r = MojoResult::from_code(unsafe {
         ffi::MojoCreateMessagePipe(
             raw_opts,
@@ -126,7 +126,7 @@ impl MessageEndpoint {
             h
         };
 
-        let mut buffer: *const c_void = ptr::null();
+        let mut buffer: *mut c_void = ptr::null_mut();
         let mut num_bytes: u32 = 0;
         let mut num_handles: u32 = 0;
         let result_prelim = MojoResult::from_code(unsafe {
@@ -162,7 +162,7 @@ impl MessageEndpoint {
         }
 
         let data: Vec<u8> = if num_bytes > 0 {
-            assert_ne!(buffer, ptr::null());
+            assert_ne!(buffer, ptr::null_mut());
             // Will not panic if usize has at least 32 bits, which is true for our targets
             let buffer_size: usize = num_bytes.try_into().unwrap();
             // MojoGetMessageData points us to the data with a c_void pointer and a length. This
@@ -249,7 +249,7 @@ impl MessageEndpoint {
                 bytes.len() as u32,
                 raw_handles_ptr,
                 raw_handles.len() as u32,
-                &append_message_options as *const _,
+                append_message_options.inner_ptr(),
                 &mut buffer_ptr as *mut _,
                 &mut buffer_size as *mut _,
             )
@@ -282,7 +282,7 @@ impl MessageEndpoint {
             ffi::MojoWriteMessage(
                 self.handle.get_native_handle(),
                 message_handle,
-                &write_message_options as *const _,
+                write_message_options.inner_ptr(),
             )
         });
     }

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/rust.gni")
+import("//build/rust/rust_bindgen.gni")
 import("//build/rust/rust_static_library.gni")
 import("//build/rust/rust_unit_test.gni")
 import("//build/rust/rust_unit_tests_group.gni")
@@ -24,7 +25,10 @@ rust_unit_tests_group("mojo_rust_tests") {
 }
 
 static_library("c_support") {
-  sources = [ "support.cc" ]
+  sources = [
+    "support.cc",
+    "support.h",
+  ]
   deps = [
     "//mojo/public/c/system",
     "//mojo/public/cpp/system",
@@ -39,6 +43,20 @@ static_library("c_test_support") {
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings/tests:mojo_public_bindings_test_utils",
   ]
+}
+
+source_set("mojo_c_system_wrapper") {
+  sources = [ "system/wrapper.h" ]
+  deps = [
+    ":c_support",
+    "//mojo/public/c/system:headers",
+  ]
+}
+
+rust_bindgen("mojo_c_system_binding") {
+  header = "system/wrapper.h"
+  deps = [ ":mojo_c_system_wrapper" ]
+  configs = default_compiler_configs
 }
 
 rust_static_library("mojo_rust") {
@@ -71,7 +89,16 @@ rust_static_library("mojo_rust") {
     "system/wait_set.rs",
   ]
 
-  deps = [ ":c_support" ]
+  deps = [
+    ":c_support",
+    ":mojo_c_system_binding",
+    ":mojo_c_system_wrapper",
+  ]
+
+  inputs = get_target_outputs(":mojo_c_system_binding")
+
+  bindgen_output = get_target_outputs(":mojo_c_system_binding")
+  rustenv = [ "BINDGEN_RS_FILE=" + rebase_path(bindgen_output[0]) ]
 }
 
 if (rustc_can_link) {

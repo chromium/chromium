@@ -40,6 +40,7 @@ group("deps") {
     if (rustc_can_link) {
       deps += [
         "autocxx_test",
+        "bindgen_test",
         "test_mixed_shared_library",
         "test_rust_shared_library",
       ]

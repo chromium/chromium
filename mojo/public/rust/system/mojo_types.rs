@@ -14,22 +14,15 @@
 //! a whole because it is intended to be used that way. It contains
 //! all of the basic types needed by all system-level Mojo bindings.
 
-use crate::system::ffi::types::*;
+use crate::system::ffi::raw_ffi;
+use crate::system::ffi::types::{self, *};
 use std::fmt;
 use std::u64;
 
-/// A MojoHandle is represented as a plain 32-bit unsigned int.
-pub type MojoHandle = u64;
-
-/// An opaque pointer to a wait set. Since the C bindings no longer have wait sets, our glue code creates a C++ mojo::WaitSet object and returns it as an opaque pointer.
-pub type MojoWaitSetHandle = usize;
-
-/// From //mojo/public/c/system/message_pipe.h. Represents a message object.
-pub type MojoMessageHandle = usize;
-
-/// Represents time ticks as specified by Mojo. A time tick value
-/// is meaningless when not used relative to another time tick.
-pub type MojoTimeTicks = i64;
+pub use types::MojoHandle;
+pub use types::MojoMessageHandle;
+pub use types::MojoTimeTicks;
+pub use types::MojoWaitSetHandle;
 
 /// Represents a deadline for wait() calls.
 pub type MojoDeadline = u64;
@@ -137,12 +130,7 @@ impl fmt::Display for MojoResult {
 
 /// This tuple struct represents a bit vector configuration of possible
 /// Mojo signals. Used in wait() and wait_many() primarily as a convenience.
-///
-/// One invariant must be true for this data structure and it is that:
-///     sizeof(HandleSignals) == sizeof(MojoHandleSignals)
-/// If this is ever not the case or there is a way in Rust to ensure that,
-/// this data structure must be updated to reflect that.
-#[repr(C)]
+#[repr(transparent)]
 #[derive(Clone, Copy, Default, PartialEq)]
 pub struct HandleSignals(MojoHandleSignals);
 
@@ -175,39 +163,36 @@ impl HandleSignals {
 
 /// Represents the signals state of a handle: which signals are satisfied,
 /// and which are satisfiable.
-///
-/// One invariant must be true for this data structure and it is that:
-///     sizeof(SignalsState) == sizeof(MojoSignalsState) (defined in handle.h)
-/// If this is ever not the case or there is a way in Rust to ensure that,
-/// this data structure must be updated to reflect that.
-///
-
-// The Mojo API requires this to be 4-byte aligned.
-#[repr(C, align(4))]
-#[derive(Default)]
-pub struct SignalsState {
-    satisfied: HandleSignals,
-    satisfiable: HandleSignals,
-}
+#[repr(transparent)]
+pub struct SignalsState(pub MojoHandleSignalsState);
 
 impl SignalsState {
     /// Generates a new SignalsState
     pub fn new(satisfied: HandleSignals, satisfiable: HandleSignals) -> SignalsState {
-        SignalsState { satisfied: satisfied, satisfiable: satisfiable }
+        SignalsState(MojoHandleSignalsState {
+            satisfied_signals: satisfied.get_bits(),
+            satisfiable_signals: satisfiable.get_bits(),
+        })
     }
     /// Gets a reference to the satisfied signals
-    pub fn satisfied(&self) -> &HandleSignals {
-        &self.satisfied
+    pub fn satisfied(&self) -> HandleSignals {
+        HandleSignals(self.0.satisfied_signals)
     }
     /// Gets a reference to the satisfiable signals
-    pub fn satisfiable(&self) -> &HandleSignals {
-        &self.satisfiable
+    pub fn satisfiable(&self) -> HandleSignals {
+        HandleSignals(self.0.satisfiable_signals)
     }
     /// Consume the SignalsState and release its tender interior
     ///
     /// Returns (satisfied, satisfiable)
     pub fn unwrap(self) -> (HandleSignals, HandleSignals) {
-        (self.satisfied, self.satisfiable)
+        (self.satisfied(), self.satisfiable())
+    }
+}
+
+impl std::default::Default for SignalsState {
+    fn default() -> Self {
+        SignalsState(MojoHandleSignalsState { satisfied_signals: 0, satisfiable_signals: 0 })
     }
 }
 
@@ -248,29 +233,25 @@ pub enum Signals {
 ///
 /// This struct should never be constructed by anything
 /// but the Mojo system in MojoWaitSetWait.
-#[repr(C, align(8))]
-pub struct WaitSetResult {
-    cookie: u64,
-    result: MojoResultCode,
-    reserved: u32,
-    signals_state: SignalsState,
-}
+#[repr(transparent)]
+pub struct WaitSetResult(raw_ffi::MojoWaitSetResult);
 
 impl WaitSetResult {
     /// Getter for the cookie corresponding to the handle
     /// which just finished waiting.
     pub fn cookie(&self) -> u64 {
-        self.cookie
+        self.0.cookie
     }
 
     /// Getter for the wait result.
     pub fn result(&self) -> MojoResult {
-        MojoResult::from_code(self.result)
+        MojoResult::from_code(self.0.wait_result)
     }
 
     /// Getter for the signals state that comes with any
     /// wait result.
-    pub fn state(&self) -> &SignalsState {
-        &self.signals_state
+    pub fn state<'a>(&'a self) -> &'a SignalsState {
+        // SAFETY: `SignalsState` is a repr(transparent) wrapper for `MojoHandleSignalsState`.
+        unsafe { &*(&self.0.signals_state as *const MojoHandleSignalsState as *const SignalsState) }
     }
 }

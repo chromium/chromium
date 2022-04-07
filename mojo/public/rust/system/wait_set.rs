@@ -4,7 +4,7 @@
 
 use std::ptr;
 
-use crate::system::ffi;
+use crate::system::ffi::{self, raw_ffi};
 use crate::system::handle::Handle;
 use crate::system::mojo_types;
 use crate::system::mojo_types::MojoResult;
@@ -36,7 +36,7 @@ impl WaitSet {
     pub fn new(flags: mojo_types::CreateFlags) -> Result<WaitSet, MojoResult> {
         let mut handle = 0;
         let opts = ffi::MojoCreateWaitSetOptions::new(flags);
-        let raw_opts = &opts as *const ffi::MojoCreateWaitSetOptions;
+        let raw_opts = opts.inner_ptr();
         let r = MojoResult::from_code(unsafe {
             ffi::MojoCreateWaitSet(raw_opts, &mut handle as *mut _)
         });
@@ -59,9 +59,15 @@ impl WaitSet {
         flags: mojo_types::AddFlags,
     ) -> MojoResult {
         let opts = ffi::MojoWaitSetAddOptions::new(flags);
-        let raw_opts = &opts as *const ffi::MojoWaitSetAddOptions;
+        let raw_opts = opts.inner_ptr();
         MojoResult::from_code(unsafe {
-            ffi::MojoWaitSetAdd(self.handle, handle.get_native_handle(), signals, cookie, raw_opts)
+            ffi::MojoWaitSetAdd(
+                self.handle,
+                handle.get_native_handle(),
+                signals.get_bits(),
+                cookie,
+                raw_opts,
+            )
         })
     }
 
@@ -88,7 +94,7 @@ impl WaitSet {
     pub fn wait_on_set(&self, output: &mut Vec<mojo_types::WaitSetResult>) -> MojoResult {
         assert!((output.capacity() as u64) <= ((1 as u64) << 32));
         let mut num_results = output.capacity() as u32;
-        let mut output_ptr = output.as_mut_ptr();
+        let mut output_ptr = output.as_mut_ptr() as *mut raw_ffi::MojoWaitSetResult;
         if num_results == 0 {
             output_ptr = ptr::null_mut();
         }

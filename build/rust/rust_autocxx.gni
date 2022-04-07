@@ -71,7 +71,9 @@ template("rust_autocxx") {
     }
 
     sources = invoker.sources
-    configs = invoker.configs
+    if (defined(invoker.configs)) {
+      configs = invoker.configs
+    }
 
     output_prefix = "{{source_name_part}}"
     output_dir = "{{source_gen_dir}}/{{source_file_part}}"

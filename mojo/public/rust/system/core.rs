@@ -6,6 +6,7 @@ use std::ptr;
 use std::vec;
 
 use crate::system::ffi;
+use crate::system::ffi::types::{MojoHandleSignals, MojoHandleSignalsState};
 // This full import is intentional; nearly every type in mojo_types needs to be used.
 use crate::system::handle;
 use crate::system::mojo_types::*;
@@ -37,8 +38,13 @@ pub fn wait_many(
         });
         return (-1, result);
     }
-    let states_ptr = if states.len() != 0 { states.as_mut_ptr() } else { ptr::null_mut() };
+    let raw_states = if states.len() != 0 {
+        states.as_mut_ptr() as *mut MojoHandleSignalsState
+    } else {
+        ptr::null_mut()
+    };
     let mut index: usize = usize::MAX;
+    let raw_signals = signals.as_ptr() as *const MojoHandleSignals;
     let result = unsafe {
         let mut raw_handles: vec::Vec<MojoHandle> = vec::Vec::with_capacity(num_inputs);
         for handle in handles.iter() {
@@ -46,10 +52,10 @@ pub fn wait_many(
         }
         MojoResult::from_code(ffi::MojoWaitMany(
             raw_handles.as_ptr(),
-            signals.as_ptr(),
+            raw_signals,
             num_inputs,
             &mut index as *mut usize,
-            states_ptr,
+            raw_states,
         ))
     };
     (index as isize, result)

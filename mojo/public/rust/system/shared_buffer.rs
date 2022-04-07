@@ -105,7 +105,7 @@ impl<'a> Drop for MappedBuffer<'a> {
     /// memory region.
     fn drop(&mut self) {
         let r = MojoResult::from_code(unsafe {
-            ffi::MojoUnmapBuffer(self.buffer.as_ptr() as *const ffi::c_void)
+            ffi::MojoUnmapBuffer(self.buffer.as_mut_ptr() as *mut ffi::c_void)
         });
         if r != MojoResult::Okay {
             panic!("Failed to unmap buffer. Mojo Error: {}", r);
@@ -117,7 +117,7 @@ impl<'a> Drop for MappedBuffer<'a> {
 /// structure which represents a handle to the shared buffer.
 pub fn create(flags: CreateFlags, num_bytes: u64) -> Result<SharedBuffer, MojoResult> {
     let opts = ffi::MojoCreateSharedBufferOptions::new(flags);
-    let raw_opts = &opts as *const ffi::MojoCreateSharedBufferOptions;
+    let raw_opts = opts.inner_ptr();
     let mut h: MojoHandle = 0;
     let r = MojoResult::from_code(unsafe {
         ffi::MojoCreateSharedBuffer(num_bytes, raw_opts, &mut h as *mut MojoHandle)
@@ -144,7 +144,7 @@ impl SharedBuffer {
     /// the same number) that maps to the same shared buffer as the original.
     pub fn duplicate(&self, flags: DuplicateFlags) -> Result<SharedBuffer, MojoResult> {
         let opts = ffi::MojoDuplicateBufferHandleOptions::new(flags);
-        let raw_opts = &opts as *const ffi::MojoDuplicateBufferHandleOptions;
+        let raw_opts = opts.inner_ptr();
         let mut dup_h: MojoHandle = 0;
         let r = MojoResult::from_code(unsafe {
             ffi::MojoDuplicateBufferHandle(
@@ -175,7 +175,7 @@ impl SharedBuffer {
                 self.handle.get_native_handle(),
                 offset,
                 num_bytes,
-                &options as *const _,
+                options.inner_ptr(),
                 &mut ptr,
             ));
             if r != MojoResult::Okay {
@@ -196,7 +196,7 @@ impl SharedBuffer {
             ffi::MojoGetBufferInfo(
                 self.handle.get_native_handle(),
                 ptr::null(),
-                &mut info as *mut _,
+                info.inner_mut_ptr(),
             )
         });
         if r != MojoResult::Okay { Err(r) } else { Ok(info.size) }

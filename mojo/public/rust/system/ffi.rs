@@ -16,88 +16,119 @@
 //!
 //! TODO(https://crbug.com/1274864):
 //! * Remove references to the now-nonexistent mojo Github
-//! * Automatically generate these FFI bindings, or at least add validation
-//!   (a la cxx)
 
-// This full import is intentional; nearly every type in mojo_types needs to be used.
-use crate::system::mojo_types::*;
-
-#[allow(bad_style)]
-/// This empty enum is used solely to provide
-/// a notion of void from C. The truth is, the
-/// correct move here is to use the libc Rust
-/// package but, as it turns out, that's the only
-/// part of libc we actually need. Rather than
-/// force ourselves to pull in a dependency, we
-/// instead implement libc's notion of c_void
-/// here.
-pub enum c_void {}
+pub mod raw_ffi {
+    #![allow(dead_code)]
+    #![allow(non_upper_case_globals)]
+    #![allow(non_camel_case_types)]
+    include!(env!("BINDGEN_RS_FILE"));
+}
 
 pub mod types {
     //! Defines some C-compatible types for the ffi layer of
     //! the bindings.
+    //!
+    use super::raw_ffi;
 
-    pub type MojoCreateSharedBufferOptionsFlags = u32;
-    pub type MojoDuplicateBufferHandleOptionsFlags = u32;
-    pub type MojoGetBufferInfoFlags = u32;
-    pub type MojoMapBufferFlags = u32;
-    pub type MojoCreateDataPipeOptionsFlags = u32;
-    pub type MojoWriteDataFlags = u32;
-    pub type MojoBeginWriteDataFlags = u32;
-    pub type MojoEndWriteDataFlags = u32;
-    pub type MojoReadDataFlags = u32;
-    pub type MojoBeginReadDataFlags = u32;
-    pub type MojoEndReadDataFlags = u32;
-    pub type MojoHandleSignals = u32;
-    pub type MojoCreateMessagePipeOptionsFlags = u32;
-    pub type MojoCreateMessageFlags = u32;
-    pub type MojoAppendMessageDataFlags = u32;
-    pub type MojoGetMessageDataFlags = u32;
-    pub type MojoWriteMessageFlags = u32;
-    pub type MojoReadMessageFlags = u32;
-    pub type MojoCreateWaitSetOptionsFlags = u32;
-    pub type MojoWaitSetAddOptionsFlags = u32;
-    pub type MojoResultCode = u32;
+    pub use raw_ffi::MojoAppendMessageDataFlags;
+    pub use raw_ffi::MojoBeginReadDataFlags;
+    pub use raw_ffi::MojoBeginWriteDataFlags;
+    pub use raw_ffi::MojoCreateDataPipeFlags;
+    pub use raw_ffi::MojoCreateMessageFlags;
+    pub use raw_ffi::MojoCreateMessagePipeFlags;
+    pub use raw_ffi::MojoCreateSharedBufferFlags;
+    pub use raw_ffi::MojoCreateWaitSetFlags;
+    pub use raw_ffi::MojoDuplicateBufferHandleFlags;
+    pub use raw_ffi::MojoEndReadDataFlags;
+    pub use raw_ffi::MojoEndWriteDataFlags;
+    pub use raw_ffi::MojoGetBufferInfoFlags;
+    pub use raw_ffi::MojoGetMessageDataFlags;
+    pub use raw_ffi::MojoHandle;
+    pub use raw_ffi::MojoHandleSignals;
+    pub use raw_ffi::MojoHandleSignalsState;
+    pub use raw_ffi::MojoMapBufferFlags;
+    pub use raw_ffi::MojoMessageHandle;
+    pub use raw_ffi::MojoReadDataFlags;
+    pub use raw_ffi::MojoReadMessageFlags;
+    pub use raw_ffi::MojoTimeTicks;
+    pub use raw_ffi::MojoWaitSetAddFlags;
+    pub use raw_ffi::MojoWaitSetHandle;
+    pub use raw_ffi::MojoWriteDataFlags;
+    pub use raw_ffi::MojoWriteMessageFlags;
+    pub type MojoResultCode = raw_ffi::MojoResult;
 }
 
 use crate::system::ffi::types::*;
 
-// Most FFI functions take an options struct as input. Each one contains a `struct_size` member for versioning. To reduce boilerplate, make a macro to define each struct with a `new` function that fills in the size.
-// The macro is used as follows: declare_mojo_options!(<struct name>, <struct member 1>, <struct member 2>, ...)
+#[allow(non_camel_case_types)]
+pub type c_void = std::ffi::c_void;
+
+// Most FFI functions take an options struct as input which we get from bindgen.
+// Each one contains a `struct_size` member for versioning. We want to make a
+// 'newtype' wrapper for each that manages the struct_size as well as adds a
+// `new()` function for construction.
+//
+// To reduce boilerplate we use a macro.
+//
+// The generated structs contain methods to get raw pointers for passing to FFI
+// functions. Note the FFI functions don't require the structs to live beyond
+// each call.
 macro_rules! declare_mojo_options {
     ($name:ident, $( $mem:ident : $t:ty ),*) => {
-        // Mojo requires each options struct to be 8-byte aligned.
-        #[repr(C, align(8))]
-        pub struct $name {
-            // This field is intentionally private.
-            struct_size: u32,
-            $(pub $mem : $t),*
-        }
+        #[repr(transparent)]
+        pub struct $name(raw_ffi::$name);
 
         impl $name {
-            // Avoid a warning if nobody ever uses this function.
-            #[allow(dead_code)]
+            #![allow(dead_code)]
+
             pub fn new($($mem : $t),*) -> $name {
-                $name {
+                $name(raw_ffi::$name {
                     struct_size: ::std::mem::size_of::<$name>() as u32,
                     $($mem : $mem),*
-                }
+                })
             }
+
+            // Get an immutable pointer to the wrapped FFI struct to pass to
+            // C functions.
+            pub fn inner_ptr(&self) -> *const raw_ffi::$name {
+              // SAFETY: $name is a repr(transparent) wrapper around
+              // raw_ffi::$name
+              self as *const _ as *const _
+            }
+
+            // Get a mutable pointer to the wrapped FFI struct to pass to
+            // C functions.
+            pub fn inner_mut_ptr(&mut self) -> *mut raw_ffi::$name {
+              // SAFETY: $name is a repr(transparent) wrapper around
+              // raw_ffi::$name
+              self as *mut _  as *mut _
+            }
+        }
+
+        impl std::ops::Deref for $name {
+          type Target = raw_ffi::$name;
+
+          fn deref(&self) -> &Self::Target {
+            &self.0
+          }
+        }
+
+        impl std::ops::DerefMut for $name {
+          fn deref_mut(&mut self) -> &mut Self::Target {
+            &mut self.0
+          }
         }
     }
 }
 
-declare_mojo_options!(MojoCreateSharedBufferOptions, flags: MojoCreateSharedBufferOptionsFlags);
+declare_mojo_options!(MojoCreateSharedBufferOptions, flags: MojoCreateSharedBufferFlags);
 declare_mojo_options!(MojoGetBufferInfoOptions, flags: MojoGetBufferInfoFlags);
 declare_mojo_options!(MojoMapBufferOptions, flags: MojoMapBufferFlags);
-declare_mojo_options!(
-    MojoDuplicateBufferHandleOptions,
-    flags: MojoDuplicateBufferHandleOptionsFlags
-);
+declare_mojo_options!(MojoDuplicateBufferHandleOptions, flags: MojoDuplicateBufferHandleFlags);
 declare_mojo_options!(MojoSharedBufferInfo, size: u64);
 declare_mojo_options!(
     MojoCreateDataPipeOptions,
-    flags: MojoCreateDataPipeOptionsFlags,
+    flags: MojoCreateDataPipeFlags,
     element_num_bytes: u32,
     capacity_num_bytes: u32
 );
@@ -107,177 +138,39 @@ declare_mojo_options!(MojoEndWriteDataOptions, flags: MojoEndWriteDataFlags);
 declare_mojo_options!(MojoReadDataOptions, flags: MojoReadDataFlags);
 declare_mojo_options!(MojoBeginReadDataOptions, flags: MojoBeginReadDataFlags);
 declare_mojo_options!(MojoEndReadDataOptions, flags: MojoEndReadDataFlags);
-declare_mojo_options!(MojoCreateMessagePipeOptions, flags: MojoCreateMessagePipeOptionsFlags);
+declare_mojo_options!(MojoCreateMessagePipeOptions, flags: MojoCreateMessagePipeFlags);
 declare_mojo_options!(MojoWriteMessageOptions, flags: MojoWriteMessageFlags);
 declare_mojo_options!(MojoReadMessageOptions, flags: MojoReadMessageFlags);
 declare_mojo_options!(MojoCreateMessageOptions, flags: MojoCreateMessageFlags);
 declare_mojo_options!(MojoAppendMessageDataOptions, flags: MojoAppendMessageDataFlags);
 declare_mojo_options!(MojoGetMessageDataOptions, flags: MojoGetMessageDataFlags);
-declare_mojo_options!(MojoCreateWaitSetOptions, flags: MojoCreateWaitSetOptionsFlags);
-declare_mojo_options!(MojoWaitSetAddOptions, flags: MojoWaitSetAddOptionsFlags);
+declare_mojo_options!(MojoCreateWaitSetOptions, flags: MojoCreateWaitSetFlags);
+declare_mojo_options!(MojoWaitSetAddOptions, flags: MojoWaitSetAddFlags);
 
-extern "C" {
-    // From //mojo/public/c/include/mojo/system/buffer.h
-    pub fn MojoCreateSharedBuffer(
-        num_bytes: u64,
-        options: *const MojoCreateSharedBufferOptions,
-        shared_buffer_handle: *mut MojoHandle,
-    ) -> MojoResultCode;
-
-    pub fn MojoDuplicateBufferHandle(
-        handle: MojoHandle,
-        options: *const MojoDuplicateBufferHandleOptions,
-        new_buffer_handle: *mut MojoHandle,
-    ) -> MojoResultCode;
-
-    pub fn MojoGetBufferInfo(
-        buffer_handle: MojoHandle,
-        options: *const MojoGetBufferInfoOptions,
-        info: *mut MojoSharedBufferInfo,
-    ) -> MojoResultCode;
-
-    pub fn MojoMapBuffer(
-        buffer_handle: MojoHandle,
-        offset: u64,
-        num_bytes: u64,
-        options: *const MojoMapBufferOptions,
-        buffer: *mut *mut c_void,
-    ) -> MojoResultCode;
-
-    pub fn MojoUnmapBuffer(buffer: *const c_void) -> MojoResultCode;
-
-    // From //mojo/public/c/include/mojo/system/data_pipe.h
-    pub fn MojoCreateDataPipe(
-        options: *const MojoCreateDataPipeOptions,
-        data_pipe_producer_handle: *mut MojoHandle,
-        data_pipe_consumer_handle: *mut MojoHandle,
-    ) -> MojoResultCode;
-
-    pub fn MojoWriteData(
-        data_pipe_producer_handle: MojoHandle,
-        elements: *const c_void,
-        num_bytes: *mut u32,
-        options: *const MojoWriteDataOptions,
-    ) -> MojoResultCode;
-
-    pub fn MojoBeginWriteData(
-        data_pipe_producer_handle: MojoHandle,
-        options: *const MojoBeginWriteDataOptions,
-        buffer: *mut *mut c_void,
-        buffer_num_bytes: *mut u32,
-    ) -> MojoResultCode;
-
-    pub fn MojoEndWriteData(
-        data_pipe_producer_handle: MojoHandle,
-        num_bytes_written: u32,
-        options: *const MojoEndWriteDataOptions,
-    ) -> MojoResultCode;
-
-    pub fn MojoReadData(
-        data_pipe_consumer_handle: MojoHandle,
-        options: *const MojoReadDataOptions,
-        elements: *const c_void,
-        num_bytes: *mut u32,
-    ) -> MojoResultCode;
-
-    pub fn MojoBeginReadData(
-        data_pipe_consumer_handle: MojoHandle,
-        options: *const MojoBeginReadDataOptions,
-        buffer: *mut *mut c_void,
-        buffer_num_bytes: *mut u32,
-    ) -> MojoResultCode;
-
-    pub fn MojoEndReadData(
-        data_pipe_consumer_handle: MojoHandle,
-        num_bytes_written: u32,
-        options: *const MojoEndReadDataOptions,
-    ) -> MojoResultCode;
-
-    // From //mojo/public/c/include/mojo/system/handle.h
-    pub fn MojoClose(handle: MojoHandle) -> MojoResultCode;
-
-    // From //mojo/public/c/include/mojo/system/message_pipe.h
-    pub fn MojoCreateMessagePipe(
-        options: *const MojoCreateMessagePipeOptions,
-        message_pipe_handle0: *mut MojoHandle,
-        message_pipe_handle1: *mut MojoHandle,
-    ) -> MojoResultCode;
-
-    pub fn MojoWriteMessage(
-        message_pipe_handle: MojoHandle,
-        message_handle: MojoMessageHandle,
-        options: *const MojoWriteMessageOptions,
-    ) -> MojoResultCode;
-
-    pub fn MojoReadMessage(
-        message_pipe_handle: MojoHandle,
-        options: *const MojoReadMessageOptions,
-        message_handle: *mut MojoMessageHandle,
-    ) -> MojoResultCode;
-
-    pub fn MojoCreateMessage(
-        options: *const MojoCreateMessageOptions,
-        message_handle: *mut MojoMessageHandle,
-    ) -> MojoResultCode;
-
-    pub fn MojoDestroyMessage(message_handle: MojoMessageHandle) -> MojoResultCode;
-
-    pub fn MojoAppendMessageData(
-        message_handle: MojoMessageHandle,
-        payload_size: u32,
-        handles: *const MojoHandle,
-        num_handles: u32,
-        options: *const MojoAppendMessageDataOptions,
-        buffer: *mut *mut c_void,
-        buffer_size: *mut u32,
-    ) -> MojoResultCode;
-
-    pub fn MojoGetMessageData(
-        message_handle: MojoMessageHandle,
-        options: *const MojoGetMessageDataOptions,
-        buffer: *mut *const c_void,
-        num_bytes: *mut u32,
-        handles: *mut MojoHandle,
-        num_handles: *mut u32,
-    ) -> MojoResultCode;
-
-    // From //mojo/public/c/include/mojo/system/time.h
-    pub fn MojoGetTimeTicksNow() -> MojoTimeTicks;
-
-    // From //mojo/public/c/include/mojo/system/wait.h
-    pub fn MojoWait(
-        handle: MojoHandle,
-        signals: HandleSignals,
-        signals_state: *mut SignalsState,
-    ) -> MojoResultCode;
-
-    pub fn MojoWaitMany(
-        handles: *const MojoHandle,
-        signals: *const HandleSignals,
-        num_handles: usize,
-        result_index: *mut usize,
-        signals_states: *mut SignalsState,
-    ) -> MojoResultCode;
-
-    // From //mojo/public/c/include/mojo/system/wait_set.h
-    pub fn MojoCreateWaitSet(
-        options: *const MojoCreateWaitSetOptions,
-        handle: *mut MojoWaitSetHandle,
-    ) -> MojoResultCode;
-
-    pub fn MojoWaitSetAdd(
-        wait_set_handle: MojoWaitSetHandle,
-        handle: MojoHandle,
-        signals: HandleSignals,
-        cookie: u64,
-        options: *const MojoWaitSetAddOptions,
-    ) -> MojoResultCode;
-
-    pub fn MojoWaitSetRemove(wait_set_handle: MojoWaitSetHandle, cookie: u64) -> MojoResultCode;
-
-    pub fn MojoWaitSetWait(
-        wait_set_handle: MojoWaitSetHandle,
-        num_results: *mut u32,
-        results: *mut WaitSetResult,
-    ) -> MojoResultCode;
-}
+pub use raw_ffi::MojoAppendMessageData;
+pub use raw_ffi::MojoBeginReadData;
+pub use raw_ffi::MojoBeginWriteData;
+pub use raw_ffi::MojoClose;
+pub use raw_ffi::MojoCreateDataPipe;
+pub use raw_ffi::MojoCreateMessage;
+pub use raw_ffi::MojoCreateMessagePipe;
+pub use raw_ffi::MojoCreateSharedBuffer;
+pub use raw_ffi::MojoCreateWaitSet;
+pub use raw_ffi::MojoDestroyMessage;
+pub use raw_ffi::MojoDuplicateBufferHandle;
+pub use raw_ffi::MojoEndReadData;
+pub use raw_ffi::MojoEndWriteData;
+pub use raw_ffi::MojoGetBufferInfo;
+pub use raw_ffi::MojoGetMessageData;
+pub use raw_ffi::MojoGetTimeTicksNow;
+pub use raw_ffi::MojoMapBuffer;
+pub use raw_ffi::MojoReadData;
+pub use raw_ffi::MojoReadMessage;
+pub use raw_ffi::MojoUnmapBuffer;
+pub use raw_ffi::MojoWait;
+pub use raw_ffi::MojoWaitMany;
+pub use raw_ffi::MojoWaitSetAdd;
+pub use raw_ffi::MojoWaitSetRemove;
+pub use raw_ffi::MojoWaitSetWait;
+pub use raw_ffi::MojoWriteData;
+pub use raw_ffi::MojoWriteMessage;
