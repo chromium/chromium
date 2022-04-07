@@ -203,7 +203,7 @@ public class LanguageSettingsTest {
         TestThreadUtils.runOnUiThreadBlocking(moreButton::dismiss);
 
         // Toggle the switch.
-        onView(withId(R.id.switchWidget)).perform(click());
+        TestThreadUtils.runOnUiThreadBlocking((Runnable) pref::performClick);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertEquals("Preference of 'offer to translate' should be toggled when switch "
                             + "widget is clicked.",
