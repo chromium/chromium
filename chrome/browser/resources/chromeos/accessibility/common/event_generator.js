@@ -2,12 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-goog.provide('EventGenerator');
-
-goog.require('KeyCode');
-
 /** Functions to send synthetic key and mouse events. */
-EventGenerator = class {
+export class EventGenerator {
   /**
    * Sends a single key stroke (down and up) with the given key code and
    *     keyboard modifiers (whether or not CTRL, ALT, SEARCH, and SHIFT are
@@ -85,6 +81,6 @@ EventGenerator = class {
     chrome.accessibilityPrivate.sendSyntheticMouseEvent(
         {type, x, y, touchAccessibility});
   }
-};
+}
 
 EventGenerator.mouseClickQueue = [];

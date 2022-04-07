@@ -14,8 +14,6 @@ ChromeVoxDesktopAutomationHandlerTest = class extends ChromeVoxNextE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    window.press = this.press;
-
     await importModule(
         'CustomAutomationEvent',
         '/chromevox/background/custom_automation_event.js');
@@ -25,12 +23,15 @@ ChromeVoxDesktopAutomationHandlerTest = class extends ChromeVoxNextE2ETest {
     await importModule(
         'DesktopAutomationInterface',
         '/chromevox/background/desktop_automation_interface.js');
+    await importModule('EventGenerator', '/common/event_generator.js');
     await new Promise(r => {
       chrome.automation.getDesktop(desktop => {
         this.handler_ = DesktopAutomationInterface.instance;
         r();
       });
     });
+
+    window.press = this.press;
   }
 
   press(keyCode, modifiers) {

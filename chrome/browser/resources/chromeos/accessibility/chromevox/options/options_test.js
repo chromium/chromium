@@ -20,6 +20,7 @@ ChromeVoxOptionsTest = class extends ChromeVoxNextE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
     await importModule('AbstractTts', '/chromevox/common/abstract_tts.js');
+    await importModule('EventGenerator', '/common/event_generator.js');
   }
 
   async loadOptionsPage() {

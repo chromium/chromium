@@ -9,7 +9,6 @@
 goog.require('AutomationTreeWalker');
 goog.require('AutomationUtil');
 goog.require('ChromeVoxState');
-goog.require('EventGenerator');
 goog.require('EventSourceType');
 goog.require('KeyCode');
 goog.require('KeySequence');
