@@ -45,7 +45,7 @@ extern const char kFREUIIdentitySwitcherPositionParam[];
 extern const char kFREUIStringsSetParam[];
 
 // FRE Second UI Trial name.
-extern const char kFRESecondUITrialName[];
+extern const char kFREThirdUITrialName[];
 
 // Group names for the second trial of the FRE UI.
 extern const char kIdentitySwitcherInTopAndOldStringsSetGroup[];
