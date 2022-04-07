@@ -4324,6 +4324,29 @@
             ]
         }
     ],
+    "MaxInflightPreresolves": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "MaxPreresolves32",
+                    "params": {
+                        "max_inflight_preresolves": "32"
+                    },
+                    "enable_features": [
+                        "kLoadingPredictorInflightPredictiveActions"
+                    ]
+                }
+            ]
+        }
+    ],
     "MaxUnthrottledTimeoutNestingLevel": [
         {
             "platforms": [
