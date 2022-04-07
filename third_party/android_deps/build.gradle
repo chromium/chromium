@@ -112,10 +112,12 @@ dependencies {
     compile 'com.android.tools:desugar_jdk_libs:1.1.5'
     compile 'com.android.tools:desugar_jdk_libs_configuration:1.1.5'
 
-    // Needed by androidx.
-    String kotlinxVersion = '1.5.0'
-    compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:${kotlinxVersion}"
-    compile "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:${kotlinxVersion}"
+    // Needed by androidx and by doubledown targets.
+    // Note: These have version overrides set in ChromiumDepGraph.groovy.
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1"
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.1"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.20"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.20"
 
 
     // Upstream guava introduced versions with -android suffix starting with version
@@ -141,7 +143,8 @@ dependencies {
     compile 'org.codehaus.mojo:animal-sniffer-annotations:1.17'
 
     // Dedicated configuration to avoid using higher version number. The 9999 version is empty.
-    compileListenableFuture 'com.google.guava:listenablefuture:1.0'
+    // This has a version override in ChromiumDepGraph.groovy.
+    compile 'com.google.guava:listenablefuture:1.0'
 
     buildCompile "com.google.errorprone:error_prone_core:${errorproneVersion}"
     buildCompile "com.google.errorprone:error_prone_check_api:${errorproneVersion}"

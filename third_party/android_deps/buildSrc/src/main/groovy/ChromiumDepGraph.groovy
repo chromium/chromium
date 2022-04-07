@@ -111,6 +111,8 @@ class ChromiumDepGraph {
             licenseName: 'Apache 2.0'),
         com_google_guava_listenablefuture: new PropertyOverride(
             url: 'https://github.com/google/guava',
+            // Avoid resolving to 9999 version, which  is empty.
+            resolveVersion: '1.0',
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
             licenseName: 'Apache 2.0'),
         org_codehaus_mojo_animal_sniffer_annotations: new PropertyOverride(
@@ -212,6 +214,15 @@ class ChromiumDepGraph {
         org_robolectric_utils_reflector: new PropertyOverride(
             licensePath: 'licenses/Codehaus_License-2009.txt',
             licenseName: 'MIT'),
+        // Prevent version changing ~weekly. https://crbug.com/1257197
+        org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm: new PropertyOverride(
+            resolveVersion: '1.6.1'),
+        org_jetbrains_kotlinx_kotlinx_coroutines_android: new PropertyOverride(
+            resolveVersion: '1.6.1'),
+        org_jetbrains_kotlin_kotlin_stdlib_jdk8: new PropertyOverride(
+            resolveVersion: '1.6.20'),
+        org_jetbrains_kotlin_kotlin_stdlib_jdk7: new PropertyOverride(
+            resolveVersion: '1.6.20'),
     ]
 
     private static final Set<String> ALLOWED_EMPTY_DEPS = [
@@ -232,15 +243,6 @@ class ChromiumDepGraph {
     ]
 
     final Map<String, DependencyDescription> dependencies = [:]
-    final Set<String> lowerVersionOverride = [
-        // kotlin deps here to prevent 3pp packager from claiming they are out
-        // of date on a ~weekly basis. https://crbug.com/1257197
-        'org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm',
-        'org_jetbrains_kotlinx_kotlinx_coroutines_android',
-        'org_jetbrains_kotlin_kotlin_stdlib_jdk8',
-        'org_jetbrains_kotlin_kotlin_stdlib_jdk7',
-        ] as Set
-
     Project[] projects
     Logger logger
     boolean skipLicenses
@@ -276,7 +278,6 @@ class ChromiumDepGraph {
         Map<String, List<ResolvedArtifact>> resolvedArtifacts = [:]
         String[] configNames = [
             'compile',
-            'compileListenableFuture',
             'buildCompile',
             'testCompile',
             'androidTestCompile',
@@ -294,10 +295,6 @@ class ChromiumDepGraph {
                 }
                 resolvedArtifacts[configName].addAll(config.resolvedArtifacts)
             }
-        }
-
-        resolvedArtifacts['compileListenableFuture'].each { artifact ->
-            lowerVersionOverride.add(makeModuleId(artifact))
         }
 
         List<String> topLevelIds = []
@@ -331,7 +328,6 @@ class ChromiumDepGraph {
         }
 
         List<ResolvedArtifact> compileResolvedArtifacts = resolvedArtifacts['compile']
-        compileResolvedArtifacts += resolvedArtifacts['compileListenableFuture']
         compileResolvedArtifacts.each { artifact ->
             String id = makeModuleId(artifact)
             DependencyDescription dep = dependencies.get(id)
@@ -385,16 +381,18 @@ class ChromiumDepGraph {
     private void collectDependenciesInternal(ResolvedDependency dependency, boolean recurse = true) {
         String id = makeModuleId(dependency.module)
         if (dependencies.containsKey(id)) {
-            if (dependencies.get(id).version == dependency.module.id.version) {
+            String gotVersion = dependency.module.id.version
+            if (dependencies.get(id).version == gotVersion) {
                 return
             }
-
-            // Default to using largest version for version conflict resolution. See http://crbug.com/1040958.
-            // https://docs.gradle.org/current/userguide/dependency_resolution.html#sec:version-conflict
-            boolean useLowerVersion = (id in lowerVersionOverride)
-            boolean versionIsLower = isVersionLower(dependency.module.id.version,
-                                                    dependencies.get(id).version)
-            if (useLowerVersion != versionIsLower) {
+            PropertyOverride overrides = PROPERTY_OVERRIDES.get(id)
+            if (overrides?.resolveVersion) {
+                if (overrides.resolveVersion != gotVersion) {
+                    return
+                }
+            } else if (isVersionLower(gotVersion, dependencies.get(id).version)) {
+                // Default to using largest version for version conflict resolution. See http://crbug.com/1040958.
+                // https://docs.gradle.org/current/userguide/dependency_resolution.html#sec:version-conflict
                 return
             }
         }
@@ -725,7 +723,6 @@ class ChromiumDepGraph {
 
     @AutoClone
     static class DependencyDescription {
-
         String id
         ResolvedArtifact artifact
         String group, name, version, extension, displayName, description, url
@@ -749,21 +746,18 @@ class ChromiumDepGraph {
         // be, instead of the latest available, the resolved version by gradle
         // in this run.
         Boolean overrideLatest
-
     }
 
     static class LicenseSpec {
-
         String name, url, path
-
     }
 
     static class PropertyOverride {
-
         String description
         String url
         String licenseName, licenseUrl, licensePath
         String cipdSuffix
+        String resolveVersion
         Boolean isShipped
         // Set to true if this dependency is not needed.
         Boolean exclude
@@ -772,7 +766,6 @@ class ChromiumDepGraph {
         // Set to override the 3pp fetch script returing the latest version and
         // instead forcibly return the version required by gradle.
         Boolean overrideLatest
-
     }
 
 }
