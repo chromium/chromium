@@ -2461,6 +2461,21 @@
             ]
         }
     ],
+    "CrOSLateBootSchedTrace": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSLateBootSchedTrace"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrashReportBreadcrumbs": [
         {
             "platforms": [
