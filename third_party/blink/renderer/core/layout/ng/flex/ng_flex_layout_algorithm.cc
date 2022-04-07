@@ -1355,6 +1355,10 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
         HeapVector<NGFlexColumnBreakInfo>(flex_line_outputs->size());
   }
 
+  LayoutUnit previously_consumed_block_size;
+  if (BreakToken())
+    previously_consumed_block_size = BreakToken()->ConsumedBlockSize();
+
   for (auto entry = item_iterator.NextItem(*broke_before_row);
        NGFlexItem* flex_item = entry.flex_item;
        entry = item_iterator.NextItem(*broke_before_row)) {
@@ -1394,9 +1398,6 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     LogicalOffset original_offset =
         flex_item->offset.ToLogicalOffset(is_column_);
     LogicalOffset offset = original_offset;
-    LayoutUnit previously_consumed_block_size;
-    if (BreakToken())
-      previously_consumed_block_size = BreakToken()->ConsumedBlockSize();
 
     // If a row or item broke before, subsequent items and lines need to be
     // adjusted by the expansion amount.
@@ -1487,8 +1488,6 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
 
         // Adjust any subsequent row offsets to reflect the current row's new
         // size.
-        // TODO(almaher): The expansion on the last row will not be reflected
-        // in the intrinsic block size.
         AdjustOffsetForNextLine(flex_line_outputs, flex_line_idx,
                                 row_block_size_adjustment);
       }
@@ -1668,8 +1667,6 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
 
         // If the item expanded past the row, adjust any subsequent row offsets
         // to reflect the expansion.
-        // TODO(almaher): The expansion on the last row will not be reflected
-        // in the intrinsic block size.
         if (item_expansion > LayoutUnit()) {
           // Maps don't allow keys of 0, so adjust the index by 1.
           if (row_cross_size_updates_.IsEmpty() ||
@@ -1726,18 +1723,14 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
 
       if (!physical_fragment.BreakToken() ||
           line_output.has_seen_all_children) {
-        if (flex_line_idx < flex_line_outputs->size() - 1) {
-          if (!is_column_ && !item_iterator.HasMoreBreakTokens()) {
-            // Add the offset adjustment of the current row to the next row so
-            // that its items can also be adjusted by previous item expansion.
-            // Only do this when the current row has completed layout and
-            // the next row hasn't started layout yet.
-            (*flex_line_outputs)[flex_line_idx + 1].item_offset_adjustment +=
-                line_output.item_offset_adjustment;
-          }
-        } else {
-          DCHECK_EQ(flex_line_idx, flex_line_outputs->size() - 1);
-          total_intrinsic_block_size_ += line_output.item_offset_adjustment;
+        if (flex_line_idx < flex_line_outputs->size() - 1 && !is_column_ &&
+            !item_iterator.HasMoreBreakTokens()) {
+          // Add the offset adjustment of the current row to the next row so
+          // that its items can also be adjusted by previous item expansion.
+          // Only do this when the current row has completed layout and
+          // the next row hasn't started layout yet.
+          (*flex_line_outputs)[flex_line_idx + 1].item_offset_adjustment +=
+              line_output.item_offset_adjustment;
         }
       }
     }
@@ -1762,6 +1755,11 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
   // baseline alignment.
   if (!container_builder_.Baseline() && fallback_baseline)
     container_builder_.SetBaseline(*fallback_baseline);
+
+  // Update the |total_intrinsic_block_size_| in case things expanded.
+  total_intrinsic_block_size_ =
+      std::max(total_intrinsic_block_size_,
+               intrinsic_block_size_ + previously_consumed_block_size);
 
   return status;
 }

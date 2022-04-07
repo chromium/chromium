@@ -194,6 +194,7 @@ crbug.com/660611 external/wpt/css/css-break/flexbox/multi-line-row-flex-fragment
 crbug.com/660611 external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-052.html [ Failure ]
 crbug.com/660611 external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-053.html [ Failure ]
 crbug.com/660611 external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-054.html [ Failure ]
+crbug.com/660611 external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-058.html [ Failure ]
 crbug.com/660611 external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-012.html [ Failure ]
 crbug.com/660611 external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-014.html [ Failure ]
 crbug.com/660611 external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-015.html [ Failure ]
