@@ -148,8 +148,9 @@ function getCompromiseType(
       return loadTimeData.getString('leakedPassword');
     case chrome.passwordsPrivate.CompromiseType.PHISHED_AND_LEAKED:
       return loadTimeData.getString('phishedAndLeakedPassword');
+    default:
+      assertNotReached();
   }
-  assertNotReached();
 }
 
 /**

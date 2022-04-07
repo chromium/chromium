@@ -447,7 +447,6 @@ suite('PaymentsSection', function() {
         // Fail the test because the save event should not be called
         // when cancel is clicked.
         assertTrue(false);
-        done();
       });
 
       eventToPromise('close', creditCardDialog).then(function() {

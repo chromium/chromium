@@ -639,9 +639,9 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
           passphraseInput.focusInput();
         }
         return;
+      default:
+        assertNotReached();
     }
-
-    assertNotReached();
   }
 
   private onLearnMoreTap_(event: Event) {

@@ -253,8 +253,9 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
         return 'extensions-icons:unpacked';
       case SourceType.WEBSTORE:
         return '';
+      default:
+        assertNotReached();
     }
-    assertNotReached();
   }
 
   private computeSourceIndicatorText_(): string {

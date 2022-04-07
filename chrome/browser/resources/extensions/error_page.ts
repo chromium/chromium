@@ -61,8 +61,9 @@ function getErrorSeverityText_(
         return warn;
       case chrome.developerPrivate.ErrorLevel.ERROR:
         return error;
+      default:
+        assertNotReached();
     }
-    assertNotReached();
   }
   assert(item.type === chrome.developerPrivate.ErrorType.MANIFEST);
   return warn;

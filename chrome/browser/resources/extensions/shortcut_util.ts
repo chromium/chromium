@@ -186,6 +186,7 @@ export function hasValidModifiers(e: KeyboardEvent): boolean {
       return hasModifier(e, false);
     case ModifierPolicy.NOT_ALLOWED:
       return !hasModifier(e, true);
+    default:
+      assertNotReached();
   }
-  assertNotReached();
 }

@@ -6,6 +6,7 @@
     "noEmitOnError": true,
     "pretty": true,
 
+    "allowUnreachableCode": false,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,

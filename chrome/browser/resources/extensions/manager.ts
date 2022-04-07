@@ -395,8 +395,9 @@ export class ExtensionsManagerElement extends PolymerElement {
         return 'extensions_';
       case ExtensionType.THEME:
         assertNotReached('Don\'t send themes to the chrome://extensions page');
+      default:
+        assertNotReached();
     }
-    assertNotReached();
   }
 
   /**

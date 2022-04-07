@@ -13,7 +13,7 @@ import './certificate_shared_css.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertNotReached} from '../../js/assert.m.js';
+import {assertNotReached} from '../../js/assert_ts.js';
 import {I18nMixin} from '../../js/i18n_mixin.js';
 import {loadTimeData} from '../../js/load_time_data.m.js';
 
@@ -94,9 +94,9 @@ export class CertificateListElement extends CertificateListElementBase {
         return this.i18n('certificateManagerAuthoritiesDescription');
       case CertificateType.OTHER:
         return this.i18n('certificateManagerOthersDescription');
+      default:
+        assertNotReached();
     }
-
-    assertNotReached();
   }
 
   private canImport_(): boolean {

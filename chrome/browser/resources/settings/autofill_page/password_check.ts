@@ -564,8 +564,9 @@ export class SettingsPasswordCheckElement extends
             this.i18n('checkPasswordsErrorQuota');
       case CheckState.OTHER_ERROR:
         return this.i18n('checkPasswordsErrorGeneric');
+      default:
+        assertNotReached('Can\'t find a title for state: ' + this.status.state);
     }
-    assertNotReached('Can\'t find a title for state: ' + this.status.state);
   }
 
   /**
@@ -650,9 +651,10 @@ export class SettingsPasswordCheckElement extends
         return this.i18n('checkPasswordsAgain');
       case CheckState.QUOTA_LIMIT:
         return '';  // Undefined behavior. Don't show any misleading text.
+      default:
+        assertNotReached(
+            'Can\'t find a button text for state: ' + this.status.state);
     }
-    assertNotReached(
-        'Can\'t find a button text for state: ' + this.status.state);
   }
 
   /**
@@ -678,9 +680,11 @@ export class SettingsPasswordCheckElement extends
       case CheckState.NO_PASSWORDS:
       case CheckState.QUOTA_LIMIT:
         return true;
+      default:
+        assertNotReached(
+            'Can\'t determine button visibility for state: ' +
+            this.status.state);
     }
-    assertNotReached(
-        'Can\'t determine button visibility for state: ' + this.status.state);
   }
 
   /**
@@ -725,9 +729,10 @@ export class SettingsPasswordCheckElement extends
       case CheckState.QUOTA_LIMIT:
       case CheckState.OTHER_ERROR:
         return true;
+      default:
+        assertNotReached(
+            'Not specified whether to state is an error: ' + this.status.state);
     }
-    assertNotReached(
-        'Not specified whether to state is an error: ' + this.status.state);
   }
 
   /**
@@ -752,10 +757,11 @@ export class SettingsPasswordCheckElement extends
         // Shows "No security issues found" if user is signed out and doesn't
         // have insecure credentials.
         return true;
+      default:
+        assertNotReached(
+            'Not specified whether to show passwords for state: ' +
+            this.status.state);
     }
-    assertNotReached(
-        'Not specified whether to show passwords for state: ' +
-        this.status.state);
   }
 
   /**

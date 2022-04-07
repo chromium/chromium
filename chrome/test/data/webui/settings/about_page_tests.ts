@@ -82,7 +82,9 @@ suite('AboutPageTest_AllBuilds', function() {
     return Promise.resolve();
     // </if>
 
+    // <if expr="not chromeos_ash">
     return aboutBrowserProxy.whenCalled('refreshUpdateStatus');
+    // </if>
   }
 
   // <if expr="not chromeos_ash">

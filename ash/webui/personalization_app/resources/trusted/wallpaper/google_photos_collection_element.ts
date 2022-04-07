@@ -152,7 +152,6 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
         return;
       default:
         assertNotReached();
-        return;
     }
   }
 

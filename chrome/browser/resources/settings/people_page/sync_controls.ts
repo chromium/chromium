@@ -115,7 +115,9 @@ export class SettingsSyncControlsElement extends
     // <if expr="chromeos_ash">
     return loadTimeData.getBoolean('syncSettingsCategorizationEnabled');
     // </if>
+    // <if expr="chromeos_lacros">
     return true;  // Should always be shown on Lacros.
+    // </if>
   }
   // </if>
 

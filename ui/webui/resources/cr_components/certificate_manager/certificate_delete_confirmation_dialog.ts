@@ -13,7 +13,7 @@ import './certificate_shared_css.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.m.js';
-import {assertNotReached} from '../../js/assert.m.js';
+import {assertNotReached} from '../../js/assert_ts.js';
 import {I18nMixin} from '../../js/i18n_mixin.js';
 import {loadTimeData} from '../../js/load_time_data.m.js';
 
@@ -67,9 +67,9 @@ export class CertificateDeleteConfirmationDialogElement extends
         return getString('certificateManagerDeleteCaTitle');
       case CertificateType.OTHER:
         return getString('certificateManagerDeleteOtherTitle');
+      default:
+        assertNotReached();
     }
-    assertNotReached();
-    return '';
   }
 
   private getDescriptionText_(): string {
@@ -83,9 +83,9 @@ export class CertificateDeleteConfirmationDialogElement extends
         return getString('certificateManagerDeleteCaDescription');
       case CertificateType.OTHER:
         return '';
+      default:
+        assertNotReached();
     }
-    assertNotReached();
-    return '';
   }
 
   private onCancelTap_() {

@@ -123,11 +123,11 @@ export class PasswordCheckListItemElement extends
         return loadTimeData.getString('leakedPassword');
       case chrome.passwordsPrivate.CompromiseType.PHISHED_AND_LEAKED:
         return loadTimeData.getString('phishedAndLeakedPassword');
+      default:
+        assertNotReached(
+            'Can\'t find a string for type: ' +
+            this.item.compromisedInfo!.compromiseType);
     }
-
-    assertNotReached(
-        'Can\'t find a string for type: ' +
-        this.item.compromisedInfo!.compromiseType);
   }
 
   private fire_(eventName: string, detail?: any) {
