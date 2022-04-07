@@ -114,7 +114,6 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Нов опит</translation>
 <translation id="2161394479394250669">Анулиране на заданието за отпечатване</translation>
 <translation id="2180197493692062006">Нещо се обърка. Опитайте да отворите приложението отново.</translation>
-<translation id="2201770616342964496">Локална самоличност</translation>
 <translation id="2209788852729124853">Нулиране на броячите за трафика</translation>
 <translation id="2212733584906323460">Преобразуване на името</translation>
 <translation id="2217935453350629363">Текуща скорост</translation>
@@ -262,6 +261,7 @@
 <translation id="4170180284036919717">Правене на снимка</translation>
 <translation id="4170700058716978431">НЕУСПЕХ</translation>
 <translation id="4176463684765177261">Деактивирано</translation>
+<translation id="4176659219503619100">Контролен панел</translation>
 <translation id="4213104098953699324">Клавиатура с USB</translation>
 <translation id="4227825898293920515">Паролата изтича след <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Няма активни задания за отпечатване</translation>
@@ -305,7 +305,6 @@
 <translation id="4593212453765072419">Изисква се удостоверяване в прокси сървъра</translation>
 <translation id="4609350030397390689">Намаляване на яркостта на клавиатурата</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> от <ph name="TOTAL_PAGE_NUMBER" />. Натиснете Enter, за да откажете заданието за отпечатване</translation>
-<translation id="4627645661474370390">Отдалечена самоличност</translation>
 <translation id="463791356324567266">Сканирането се отменя...</translation>
 <translation id="4646949265910132906">Сигурна Wi-Fi връзка</translation>
 <translation id="4650608062294027130">Клавиш „shift“ вдясно</translation>

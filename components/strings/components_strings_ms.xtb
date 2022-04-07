@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">Kadangkala penyerang meniru tapak dengan membuat perubahan yang sukar dilihat pada alamat web.</translation>
 <translation id="1028781062521375153">Lihat butiran</translation>
 <translation id="1030706264415084469"><ph name="URL" /> mahu menyimpan data bersaiz besar pada peranti anda secara kekal</translation>
-<translation id="1032854598605920125">Putar ikut arah jam</translation>
 <translation id="1033329911862281889">Inkognito tidak menjadikan anda halimunan dalam talian:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Laman dan perkhidmatan yang mereka gunakan boleh melihat lawatan<ph name="END_LIST_ITEM" />
@@ -2536,6 +2535,7 @@ Butiran tambahan:
 <translation id="7995512525968007366">Tidak Ditentukan</translation>
 <translation id="7998269595945679889">Buka butang tab Inkognito, tekan Enter untuk membuka tab Inkognito baharu untuk menyemak imbas secara peribadi</translation>
 <translation id="800218591365569300">Cuba tutup tab atau atur cara lain untuk mengosongkan memori.</translation>
+<translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">Penyemak Imbas</translation>
 <translation id="8009225694047762179">Urus Kata Laluan</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Kad ini dan alamat pengebilannya akan disimpan. Anda akan dapat menggunakan kad ini apabila anda log masuk ke <ph name="USER_EMAIL" />.}other{Kad ini dan alamat pengebilannya akan disimpan. Anda akan dapat menggunakan kad ini apabila anda log masuk ke <ph name="USER_EMAIL" />.}}</translation>
@@ -2636,6 +2636,7 @@ Butiran tambahan:
 <translation id="8277900682056760511">Helaian pengendali pembayaran dibuka</translation>
 <translation id="8280630997017109758">Dulang 11</translation>
 <translation id="8281084378435768645">Foto-Besar</translation>
+<translation id="8281886186245836920">Langkau</translation>
 <translation id="8282947398454257691">Ketahui pengecam peranti unik anda</translation>
 <translation id="8284769179630993263">Urus Penyemakan Imbas Selamat anda dan pelbagai lagi dalam tetapan Chrome</translation>
 <translation id="8286036467436129157">Log Masuk</translation>

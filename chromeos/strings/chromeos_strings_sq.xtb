@@ -114,7 +114,6 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Riprovo</translation>
 <translation id="2161394479394250669">Anulo printimin</translation>
 <translation id="2180197493692062006">Ndodhi një gabim. Provo të rihapësh aplikacionin.</translation>
-<translation id="2201770616342964496">Identiteti lokal</translation>
 <translation id="2209788852729124853">Rivendos matësit e trafikut</translation>
 <translation id="2212733584906323460">Zgjidhja e emrit</translation>
 <translation id="2217935453350629363">Shpejtësia aktuale</translation>
@@ -262,6 +261,7 @@
 <translation id="4170180284036919717">Bëj një fotografi</translation>
 <translation id="4170700058716978431">DËSHTOI</translation>
 <translation id="4176463684765177261">I çaktivizuar</translation>
+<translation id="4176659219503619100">Paneli i kontrollit</translation>
 <translation id="4213104098953699324">Tastierë me USB</translation>
 <translation id="4227825898293920515">Fjalëkalimi skadon për <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nuk ka printime në vazhdim</translation>
@@ -305,7 +305,6 @@
 <translation id="4593212453765072419">Kërkohet vërtetimi i serverit përfaqësues</translation>
 <translation id="4609350030397390689">Ulja e ndriçimit të tastierës</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> nga <ph name="TOTAL_PAGE_NUMBER" />. Shtyp Enter për të anuluar printimin.</translation>
-<translation id="4627645661474370390">Identiteti në distancë</translation>
 <translation id="463791356324567266">Skanimi po anulohet...</translation>
 <translation id="4646949265910132906">Lidhja e sigurt WiFi</translation>
 <translation id="4650608062294027130">Tasti i djathë "Shift"</translation>

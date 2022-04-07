@@ -168,6 +168,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2421044535038393232">Fortsett redigeringen</translation>
 <translation id="2434405374328098816">Du har allerede lagret et passord for «<ph name="USERNAME" />» på <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Vis passord</translation>
+<translation id="2469960372084740698">Vil du slå av Safe Browsing?</translation>
 <translation id="2473876017985765807">Du har allerede lagret et passord for <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Ikke valgt</translation>
 <translation id="2497852260688568942">Administratoren din har slått av synkronisering</translation>
@@ -213,11 +214,13 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2848086008667475748">Angi som standard i innstillingene …</translation>
 <translation id="2858204748079866344">For å beskytte personvernet ditt legger ikke Chrome passordet ditt automatisk inn i dette feltet.</translation>
 <translation id="285960592395650245">Prøv å laste ned på nytt</translation>
+<translation id="2866378026651742652">Nå kommer du til å se artikler fra denne kanalen når du åpner nye faner.</translation>
 <translation id="2870560284913253234">Nettsted</translation>
 <translation id="2871695793448672541">Skjult passord</translation>
 <translation id="2876369937070532032">Sender Google nettadressene til noen av sidene du besøker, når sikkerheten din står i fare</translation>
 <translation id="2883151425485251736">Se og rediger emner du har skjult for kontoen din</translation>
 <translation id="288655811176831528">Lukk fane</translation>
+<translation id="2890171748217283516">Nettstedene du følger, lagres i Google-kontoen din. Du kan administrere dem i innstillingene for Discover.</translation>
 <translation id="2893180576842394309">Google kan bruke loggen din for å gi Søk og andre Google-tjenester et personlig preg</translation>
 <translation id="2898963176829412617">Ny mappe</translation>
 <translation id="2916171785467530738">Autofullfør søk og nettadresser</translation>
@@ -313,6 +316,7 @@ Følg fremgangsmåten under:</translation>
 <translation id="3691593122358196899">Satt som bokmerke i <ph name="FOLDER_TITLE" /></translation>
 <translation id="369349502275246497">Tilby å lagre passord</translation>
 <translation id="3709582977625132201">Merk som ulest</translation>
+<translation id="371230970611282515">Forutser og advarer deg om farlige hendelser før de inntreffer.</translation>
 <translation id="3740397331642243698">Åpner de oppgitte nettadressene i Google Chrome i inkognitomodus.</translation>
 <translation id="3762232513783804601">Laget for iPaden din</translation>
 <translation id="3771033907050503522">Inkognitofaner</translation>
@@ -346,6 +350,7 @@ Følg fremgangsmåten under:</translation>
 <translation id="4038354071007134711">Ingen apper på denne enheten kan åpne filen.</translation>
 <translation id="4042870976416480368">Finn på siden</translation>
 <translation id="4049507953662678203">Sørg for at du er koblet til et nettverk, og prøv igjen.</translation>
+<translation id="4063300985191096908">Gå til feeden</translation>
 <translation id="408404951701638773">Søkefeltet er nå enklere å finne</translation>
 <translation id="4108314971463891922">Følg</translation>
 <translation id="411254640334432676">Nedlastingen mislyktes.</translation>
@@ -528,6 +533,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5737974891429562743">Påloggingsdetaljene for kontoen er utdatert. Oppdater for å starte synkroniseringen.</translation>
 <translation id="5738887413654608789">Med denne kan du oppdage relevante nettsider basert på omgivelsene dine.</translation>
 <translation id="5758631781033351321">Her finner du leselisten din</translation>
+<translation id="5765456154762864099">Meny → Innstillinger → Standardnettleser</translation>
 <translation id="5782227691023083829">Oversetter</translation>
 <translation id="5791632441210678828">Sorteringsknapp for Følger-feeden.</translation>
 <translation id="5802829331520313983">Konfigurer…</translation>
@@ -582,6 +588,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6144589619057374135">Åpne ${url} i inkognitomodus</translation>
 <translation id="6149061208933997199">Bruk passord</translation>
 <translation id="6159839020698489198">valgfritt</translation>
+<translation id="6173386249456979368">Raskere, proaktiv beskyttelse mot farlige nettsteder, nedlastinger og utvidelser. Advarer deg om passordbrudd. Krever at nettlesingsdata sendes til Google</translation>
 <translation id="6177442314419606057">Søk i Chrome</translation>
 <translation id="6184086493125982861">Vis faner</translation>
 <translation id="6187302354554850004">Sist synkronisert: <ph name="LAST_USED_TIME" /></translation>
@@ -768,6 +775,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7671141431838911305">INSTALLER</translation>
 <translation id="7701040980221191251">Ingen</translation>
+<translation id="7726702057919861819">Meny → Logg → Slett nettlesingsdata</translation>
 <translation id="7741325291586284254">Ny side i inkognitofane</translation>
 <translation id="7765158879357617694">Flytt</translation>
 <translation id="7772032839648071052">Bekreft passord</translation>
@@ -840,6 +848,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8386068868580335421">Tilbakestill</translation>
 <translation id="8407669440184693619">Fant ingen passord for dette nettstedet</translation>
 <translation id="842017693807136194">Logget på med</translation>
+<translation id="8427613705947111202">Meny → Innstillinger → Passord</translation>
 <translation id="8428045167754449968">By/tettsted</translation>
 <translation id="8428213095426709021">Innstillinger</translation>
 <translation id="8428634594422941299">Greit</translation>
@@ -930,6 +939,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Programstopprapporten er sendt.</translation>
 <translation id="952704832371081537">Avbryt</translation>
+<translation id="959066944189734975">Du følger <ph name="CHANNEL_NAME" /></translation>
 <translation id="981498610235328462">Organisasjonen din lar deg kun logge på med visse kontoer. Kontoer som ikke tillates, er skjult.</translation>
 <translation id="984509647832111802">Synkroniseringen fungerer ikke.</translation>
 <translation id="988141524645182168">Andre enheter</translation>

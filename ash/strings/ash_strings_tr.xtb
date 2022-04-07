@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">"<ph name="DEVICE_NAME" />" adlı Bluetooth cihaz eşleme izni istiyor. Lütfen söz konusu cihazda şu PIN kodunu girin: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">Ekran video kaydı araçları</translation>
 <translation id="1024261588257374085">Kısmi ekran görüntüsü seçildi</translation>
+<translation id="1024364763893396229"><ph name="NAME" /> cihazınızı kaydedin</translation>
 <translation id="1032891413405719768">Ekran kaleminin pili düşük</translation>
 <translation id="1036073649888683237">Bildirimleri yönetmek için Ayarlar'a gidin</translation>
 <translation id="1036672894875463507">Ben Google Asistanınım, gün boyunca sana yardımcı olmak için buradayım.
@@ -295,6 +296,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2819276065543622893">Şimdi çıkış yapacaksınız.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> çözünürlüğü desteklemiyor. Çözünürlük <ph name="FALLBACK_RESOLUTION" /> olarak değiştirildi.</translation>
 <translation id="2825619548187458965">Raf</translation>
+<translation id="2831035692318564937">Gün doğumuna kadar açık</translation>
 <translation id="2834813915651407382">Yakın zamanda açıldı</translation>
 <translation id="2841907151129139818">Tablet moduna geçildi</translation>
 <translation id="2844169650293029770">USB-C cihaz (sol ön bağlantı noktası)</translation>
@@ -441,6 +443,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3626281679859535460">Parlaklık</translation>
 <translation id="3630697955794050612">kapalı</translation>
 <translation id="3631369015426612114">Şunlardan gelen bildirimlere izin ver:</translation>
+<translation id="3633097874324966332">Cihazınızı eşlemek için Bluetooth ayarlarını açın</translation>
 <translation id="3638400994746983214">Gizlilik ekranını aç/kapat. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Güncelleme zamanı geçti</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Yönetilen kullanıcı</translation>
@@ -769,6 +772,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5744083938413354016">Dokunarak sürükleme</translation>
 <translation id="5745612484876805746">Gece Işığı güneş battığında otomatik olarak açılır</translation>
 <translation id="5750765938512549687">Bluetooth kapalı</translation>
+<translation id="5760866832697883462"><ph name="NAME" /> cihazınızı bağlayın</translation>
 <translation id="576341972084747908">Tehlikeli <ph name="FILENAME" /> dosyasını indir</translation>
 <translation id="5763928712329149804">Shelf Party kapalı.</translation>
 <translation id="576453121877257266">Gece Işığı açık.</translation>
@@ -954,6 +958,7 @@ Yeni yüklenmiş</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> cihazınız daha düşük performans gösterebilir. <ph name="PREFERRED_MINIMUM_POWER" /> W veya daha güçlü ve uyumlu bir USB-C güç adaptörü kullanın.</translation>
 <translation id="688631446150864480">Pencereler arasında geçiş yapmak için Aşağı ok tuşuna basın</translation>
 <translation id="6896758677409633944">Kopyala</translation>
+<translation id="6901883536534621389">Gezinmek için hareketleri kullanmayı deneyin</translation>
 <translation id="6919251195245069855">Akıllı kartınız tanınamadı. Tekrar deneyin.</translation>
 <translation id="6921188888306725546">Klavye kısayolları iyileştirildi</translation>
 <translation id="6931576957638141829">Kaydetme yeri</translation>
@@ -1130,6 +1135,7 @@ Yeni yüklenmiş</translation>
 <translation id="7977927628060636163">Mobil ağlar aranıyor...</translation>
 <translation id="7982789257301363584">Ağ</translation>
 <translation id="7984197416080286869">Çok fazla parmak izi denemesi yapıldı</translation>
+<translation id="798779949890829624">Bu ayar, yöneticiniz tarafından yönetilir</translation>
 <translation id="7994370417837006925">Çoklu oturum açma</translation>
 <translation id="7995804128062002838">Ekran görüntüsü alınamadı</translation>
 <translation id="8000066093800657092">Ağ yok</translation>
@@ -1157,6 +1163,7 @@ Yeni yüklenmiş</translation>
 <translation id="813913629614996137">İlk kullanıma hazırlanıyor...</translation>
 <translation id="8142441511840089262">Çift tıklama</translation>
 <translation id="8142699993796781067">Özel ağ</translation>
+<translation id="8144760705599030999">Diğer cihazlarınızla daha hızlı eşlemek için <ph name="NAME" /> cihazını <ph name="EMAIL" /> adresine kaydedin</translation>
 <translation id="8152092012181020186">Kapatmak için Ctrl + W tuşlarına basın.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, Otomatik tamamlama</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Bu ayar, yöneticiniz tarafından yönetilir.</translation>
@@ -1194,6 +1201,7 @@ Yeni yüklenmiş</translation>
 <translation id="8412677897383510995">Ekran ayarlarını göster</translation>
 <translation id="8413272770729657668">Kayıt başlıyor 3, 2, 1</translation>
 <translation id="8416730306157376817">%<ph name="BATTERY_PERCENTAGE" /> (Kılıf)</translation>
+<translation id="8420205633584771378">Bu öneri kaldırılsın mı?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> bu cihazda yok.</translation>
 <translation id="8425213833346101688">Değiştir</translation>
 <translation id="8426708595819210923">İyi akşamlar <ph name="GIVEN_NAME" />,</translation>
@@ -1286,6 +1294,7 @@ Yeni yüklenmiş</translation>
 <translation id="9000771174482730261">DEPOLAMA ALANINI YÖNET</translation>
 <translation id="9017320285115481645">Family Link ebeveyn erişim kodunu girin.</translation>
 <translation id="9024331582947483881">tam ekran</translation>
+<translation id="9030319654231318877">Gün batımına kadar kapalı</translation>
 <translation id="9034924485347205037">Linux dosyaları</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> ayarlarını aç</translation>
 <translation id="9059834730836941392">Bildirimi daralt</translation>
@@ -1305,6 +1314,7 @@ Yeni yüklenmiş</translation>
 <translation id="9099154003160514616">Lacros güncellemesi var</translation>
 <translation id="9100887602489003640">Profil ekleniyor. Birkaç dakika bekleyin.</translation>
 <translation id="9105450214093926548">Lacros tarayıcı çalışırken ikinci bir kullanıcının oturum açması desteklenmiyor. Bunun yerine lütfen Lacros'ta ikinci bir tarayıcı profili kullanın veya Lacros'u kapatıp tekrar deneyin.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> veya <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Korunan içerik kaydedilemez</translation>
 <translation id="9161053988251441839">ÖNERİLEN UYGULAMALAR</translation>
 <translation id="9166331175924255663">Yakındakilerle Paylaş özelliğinin yüksek görünürlüğünü açar/kapatır.</translation>

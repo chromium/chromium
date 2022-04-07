@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Bluetooth uređaj „<ph name="DEVICE_NAME" />“ želi dozvolu za uparivanje. Unesite ovaj PIN kôd na tom uređaju: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">Alatke za video snimak ekrana</translation>
 <translation id="1024261588257374085">Delimičan snimak ekrana je izabran</translation>
+<translation id="1024364763893396229">Sačuvajte uređaj <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Baterija pisaljke je skoro prazna</translation>
 <translation id="1036073649888683237">Da biste upravljali obaveštenjima, idite u podešavanja</translation>
 <translation id="1036672894875463507">Ja sam vaš Google pomoćnik i tu sam da vam pomognem tokom celog dana!
@@ -35,6 +36,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1175572348579024023">Pomeraj</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
 <translation id="1181037720776840403">Ukloni</translation>
+<translation id="1183863904939664422">Ne zanima me ovaj predlog</translation>
 <translation id="118437560755358292">Unesite lozinku ili PIN radi dodatne bezbednosti</translation>
 <translation id="118532027333893379">Dodirnite bilo gde da biste snimili ceo ekran</translation>
 <translation id="1190609913194133056">Centar za obaveštenja</translation>
@@ -295,6 +297,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2819276065543622893">Bićete odmah odjavljeni.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> ne podržava rezoluciju <ph name="SPECIFIED_RESOLUTION" />. Rezolucija je promenjena u <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Polica</translation>
+<translation id="2831035692318564937">Uključeno do svitanja</translation>
 <translation id="2834813915651407382">Nedavno otvarano</translation>
 <translation id="2841907151129139818">Prešli ste u režim tableta</translation>
 <translation id="2844169650293029770">Uređaj sa USB priključkom tipa C (levi prednji port)</translation>
@@ -441,6 +444,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3626281679859535460">Osvetljenost</translation>
 <translation id="3630697955794050612">isključeno</translation>
 <translation id="3631369015426612114">Dozvoli obaveštenja iz sledećih izvora</translation>
+<translation id="3633097874324966332">Otvorite podešavanja Bluetooth-a da biste uparili uređaj</translation>
 <translation id="3638400994746983214">Uključuje/isključuje ekran za privatnost. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Ažurirajte isteklo</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Korisnik kojim se upravlja</translation>
@@ -594,6 +598,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="4560576029703263363">Uključeno</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Sakrij lozinku</translation>
+<translation id="4566144812051858745">Ne zanimaju me nikakvi predlozi</translation>
 <translation id="4570957409596482333">Dugme Izaberite za govor</translation>
 <translation id="4573176682887762361">„Unesi [reč ili fraza]“</translation>
 <translation id="4577274620589681794">Vreme je isteklo · <ph name="LABEL" /></translation>
@@ -644,6 +649,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="4868492592575313542">aktivirano</translation>
 <translation id="4872237917498892622">Alt + taster za pretragu ili Shift</translation>
 <translation id="4881695831933465202">Otvori</translation>
+<translation id="4889868803215848840">Pružite opcionalne povratne informacije radi poboljšanja predloga:</translation>
 <translation id="4890187583552566966">Administrator je onemogućio Google pomoćnik.</translation>
 <translation id="4890408602550914571">Uverite se da je telefon u blizini i da je Bluetooth uključen.</translation>
 <translation id="4895488851634969361">Baterija je puna.</translation>
@@ -769,6 +775,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="5744083938413354016">Prevlačenje dodirom</translation>
 <translation id="5745612484876805746">Noćno svetlo se automatski uključuje kada sunce zađe</translation>
 <translation id="5750765938512549687">Bluetooth je isključen</translation>
+<translation id="5760866832697883462">Povežite uređaj <ph name="NAME" /></translation>
 <translation id="576341972084747908">Preuzimate opasan fajl <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Žurka na polici je isključena.</translation>
 <translation id="576453121877257266">Noćno svetlo je uključeno.</translation>
@@ -830,6 +837,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="6054305421211936131">Prijavite se pomoću pametne kartice</translation>
 <translation id="6059276912018042191">Nedavne Chrome kartice</translation>
 <translation id="6062360702481658777">Automatski ćete biti odjavljeni za <ph name="LOGOUT_TIME_LEFT" />.</translation>
+<translation id="6064463340679478396">Ne želim više da koristim ovaj fajl</translation>
 <translation id="6073451960410192870">Zaustavi snimanje</translation>
 <translation id="6099678161144790572">Izmenjeno proteklog meseca</translation>
 <translation id="6103838137565245112">sistem</translation>
@@ -954,6 +962,7 @@ Novo instaliranje</translation>
 <translation id="6886172995547742638">To može negativno da utiče na rad uređaja <ph name="DEVICE_TYPE" />. Koristite sertifikovani USB-C adapter od <ph name="PREFERRED_MINIMUM_POWER" /> W ili jači.</translation>
 <translation id="688631446150864480">Pritiskajte taster sa strelicom nadole da biste menjali prozore</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
+<translation id="6901883536534621389">Isprobajte pokrete za kretanje</translation>
 <translation id="6919251195245069855">Nismo uspeli da prepoznamo pametnu karticu. Probajte ponovo.</translation>
 <translation id="6921188888306725546">Tasterske prečice su poboljšane</translation>
 <translation id="6931576957638141829">Sačuvajte u</translation>
@@ -1113,6 +1122,7 @@ Novo instaliranje</translation>
 <translation id="7886169021410746335">Prilagodite podešavanja privatnosti</translation>
 <translation id="7886277072580235377">Internet sesija će biti obrisana kada se odjavite. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Pošalji imejl</translation>
+<translation id="7893503627044934815">Ne želim da mi se prikazuje ovaj fajl</translation>
 <translation id="7895348134893321514">Držač</translation>
 <translation id="7897375687985782769">Pritisnuli ste tastersku prečicu za rotaciju ekrana. Želite li da rotirate ekran?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
@@ -1130,6 +1140,7 @@ Novo instaliranje</translation>
 <translation id="7977927628060636163">Traže se mobilne mreže…</translation>
 <translation id="7982789257301363584">Mreža</translation>
 <translation id="7984197416080286869">Previše pokušaja otključavanja pomoću otiska prsta</translation>
+<translation id="798779949890829624">Ovim podešavanjem upravlja administrator</translation>
 <translation id="7994370417837006925">Višestruko prijavljivanje</translation>
 <translation id="7995804128062002838">Snimanje ekrana nije uspelo</translation>
 <translation id="8000066093800657092">Nema mreže</translation>
@@ -1157,6 +1168,7 @@ Novo instaliranje</translation>
 <translation id="813913629614996137">Pokreće se…</translation>
 <translation id="8142441511840089262">Dvostruki klik</translation>
 <translation id="8142699993796781067">Privatna mreža</translation>
+<translation id="8144760705599030999">Sačuvajte uređaj <ph name="NAME" /> na <ph name="EMAIL" /> radi bržeg uparivanja sa drugim uređajima</translation>
 <translation id="8152092012181020186">Pritisnite Ctrl + W da biste zatvorili.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automatsko dovršavanje</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Ovim podešavanjem upravlja administrator.</translation>
@@ -1194,6 +1206,7 @@ Novo instaliranje</translation>
 <translation id="8412677897383510995">Prikažite podešavanja ekrana</translation>
 <translation id="8413272770729657668">Snimanje počinje za 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (futrola)</translation>
+<translation id="8420205633584771378">Želite li da uklonite ovaj predlog?</translation>
 <translation id="8421270167862077762">Aplikacija <ph name="UNAVAILABLE_APPS" />nije na ovom uređaju.</translation>
 <translation id="8425213833346101688">Promeni</translation>
 <translation id="8426708595819210923">Dobro veče, <ph name="GIVEN_NAME" />,</translation>
@@ -1286,6 +1299,7 @@ Novo instaliranje</translation>
 <translation id="9000771174482730261">UPRAVLJAJTE MEMORIJSKIM PROSTOROM</translation>
 <translation id="9017320285115481645">Unesite pristupni kôd roditelja za Family Link.</translation>
 <translation id="9024331582947483881">ceo ekran</translation>
+<translation id="9030319654231318877">Isključeno do sumraka</translation>
 <translation id="9034924485347205037">Linux datoteke</translation>
 <translation id="9047624247355796468">Otvorite podešavanja za <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Skupi obaveštenje</translation>
@@ -1305,6 +1319,7 @@ Novo instaliranje</translation>
 <translation id="9099154003160514616">Dostupno je ažuriranje za Lacros</translation>
 <translation id="9100887602489003640">Dodaje se profil. Sačekajte nekoliko minuta.</translation>
 <translation id="9105450214093926548">Prijavljivanje drugog korisnika nije podržano dok je Lacros pregledač aktivan. Bolje da koristite drugi profil za pregledač u Lacros-u ili da zatvorite Lacros i probate ponovo.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> ili <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Snimanje zaštićenog sadržaja nije uspelo</translation>
 <translation id="9161053988251441839">PREDLOŽENE APLIKACIJE</translation>
 <translation id="9166331175924255663">Uključite ili isključite veliku vidljivost Deljenja u blizini.</translation>

@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">Кейде шабуылдаушылар белгілі бір сайттарды көшіріп, олардың вебмекенжайын өзгертіп қояды.</translation>
 <translation id="1028781062521375153">Деректерді көру</translation>
 <translation id="1030706264415084469"><ph name="URL" /> үлкен көлемді деректерді құрылғыңызда біржола сақтағысы келеді</translation>
-<translation id="1032854598605920125">Сағат тілінің бағытымен бұру</translation>
 <translation id="1033329911862281889">Инкогнито режимі интернеттегі іс-әрекетіңізді жасырмайды:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />сайттар мен қызметтер кірген әрекеттерді тіркейді.<ph name="END_LIST_ITEM" />
@@ -2534,6 +2533,7 @@
 <translation id="7995512525968007366">Көрсетілмеген</translation>
 <translation id="7998269595945679889">"Инкогнито қойындысын ашу" түймесі. Жаңа инкогнито қойындысын ашу үшін Enter пернесін басыңыз.</translation>
 <translation id="800218591365569300">Жадты босату үшін басқа қойындылары не бағдарламаларды жауып көріңіз</translation>
+<translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
 <translation id="8004582292198964060">Браузер</translation>
 <translation id="8009225694047762179">Құпия сөздерді басқару</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Осы карта мен оның төлем мекенжайы сақталады. Оны <ph name="USER_EMAIL" /> аккаунтына кірген кезде пайдалана аласыз.}other{Осы карталар мен олардың төлем мекенжайлары сақталады. Оларды <ph name="USER_EMAIL" /> аккаунтына кірген кезде пайдалана аласыз.}}</translation>
@@ -2634,6 +2634,7 @@
 <translation id="8277900682056760511">Төлем өңдегіш парағы ашық.</translation>
 <translation id="8280630997017109758">11-науа</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
+<translation id="8281886186245836920">Өткізіп жіберу</translation>
 <translation id="8282947398454257691">Бірегей құрылғы идентификаторыңызды білу</translation>
 <translation id="8284769179630993263">Chrome параметрлері арқылы Safe Browsing қорғанысын және т.б. басқару</translation>
 <translation id="8286036467436129157">Кіру</translation>

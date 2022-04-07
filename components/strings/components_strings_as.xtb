@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">আক্ৰমণকাৰীসকলে কেতিয়াবা ৱেব ঠিকনাত সহজে চকুত নপৰা সালসলনি কৰি ছাইটসমূহ নকল কৰিব পাৰে।</translation>
 <translation id="1028781062521375153">সবিশেষ চাওক</translation>
 <translation id="1030706264415084469"><ph name="URL" />এ আপোনাৰ ডিভাইচত চিৰদিনৰ বাবে ডাঙৰ ডেটা সঞ্চয় কৰিব বিচাৰে</translation>
-<translation id="1032854598605920125">ঘড়ীৰ কাঁটাৰ দিশত ঘূৰাওক</translation>
 <translation id="1033329911862281889">ইনক’গনিট’ টেবে আপোনাক অনলাইনত অদৃশ্য নকৰে:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />তেওঁলোকে ব্যৱহাৰ কৰা ছাইট আৰু সেৱাসমূহে আপুনি চোৱাটো চাব পাৰে<ph name="END_LIST_ITEM" />
@@ -595,6 +594,7 @@
 <translation id="2542106216580219892">ছাৰ্ফিং</translation>
 <translation id="2544546346215446551">আপোনাৰ প্ৰশাসকে আপোনাৰ ডিভাইচটো ৰিষ্টাৰ্ট কৰিছে</translation>
 <translation id="2544644783021658368">একক নথি</translation>
+<translation id="254524874071906077">Chromeক ডিফ’ল্ট ব্ৰাউজাৰ হিচাপে ছেট কৰক</translation>
 <translation id="2546283357679194313">কুকি আৰু ছাইট ডেটা</translation>
 <translation id="2547466893236767989">ৱেব ডিজাইন আৰু উন্নীতকৰণ</translation>
 <translation id="254947805923345898">নীতিৰ মান মান্য নহয়।</translation>
@@ -2630,6 +2630,7 @@
 <translation id="8277900682056760511">পৰিশোধ নিয়ন্ত্ৰক শ্বীটখন খোলা আছে</translation>
 <translation id="8280630997017109758">ট্ৰে’ ১১</translation>
 <translation id="8281084378435768645">ডাঙৰ-ফট'</translation>
+<translation id="8281886186245836920">এৰি যাওক</translation>
 <translation id="8282947398454257691">আপোনাৰ অনন্য ডিভাইচ চিনাক্তকৰণকাৰীৰ বিষয়ে জানক</translation>
 <translation id="8284769179630993263">Chromeৰ ছেটিঙত আপোনাৰ সুৰক্ষিত ব্ৰাউজিং আৰু অন্য অধিক পৰিচালনা কৰক</translation>
 <translation id="8286036467436129157">ছাইন ইন কৰক</translation>

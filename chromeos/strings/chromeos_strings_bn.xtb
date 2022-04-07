@@ -114,7 +114,6 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: আবার চেষ্টা করুন</translation>
 <translation id="2161394479394250669">প্রিন্ট জবটি বাতিল করা হয়েছে</translation>
 <translation id="2180197493692062006">কোনও সমস্যা হয়েছে। অ্যাপটি আবার খোলার চেষ্টা করে দেখুন।</translation>
-<translation id="2201770616342964496">স্থানীয় আইডেন্টিটি</translation>
 <translation id="2209788852729124853">ট্রাফিক কাউন্টার্স রিসেট করুন</translation>
 <translation id="2212733584906323460">নামের রেজোলিউশন</translation>
 <translation id="2217935453350629363">বর্তমান স্পিড</translation>
@@ -262,6 +261,7 @@
 <translation id="4170180284036919717">ফটো তুলুন</translation>
 <translation id="4170700058716978431">ব্যর্থ হয়েছে</translation>
 <translation id="4176463684765177261">অক্ষম হয়েছে</translation>
+<translation id="4176659219503619100">কন্ট্রোল প্যানেল</translation>
 <translation id="4213104098953699324">ইউএসবি কীবোর্ড</translation>
 <translation id="4227825898293920515">পাসওয়ার্ডের মেয়াদ <ph name="TIME" />-এ শেষ হবে</translation>
 <translation id="4238516577297848345">প্রিন্ট করার কোনও কাজ চালু নেই</translation>
@@ -305,7 +305,6 @@
 <translation id="4593212453765072419">প্রক্সি প্রমাণীকরণের প্রয়োজন</translation>
 <translation id="4609350030397390689">কীবোর্ড উজ্জ্বলতা কমান</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" />টির মধ্যে <ph name="PRINTED_PAGE_NUMBER" /> নম্বর পৃষ্ঠা। প্রিন্ট করা বাতিল করতে এন্টার প্রেস করুন।</translation>
-<translation id="4627645661474370390">রিমোট আইডেন্টিটি</translation>
 <translation id="463791356324567266">স্ক্যানিং বাতিল করা হচ্ছে...</translation>
 <translation id="4646949265910132906">নিরাপদ ওয়াই-ফাই কানেকশন</translation>
 <translation id="4650608062294027130">ডানদিকের shift কী</translation>
@@ -431,6 +430,7 @@
 <translation id="5866840822086176774">খুব জোরালো</translation>
 <translation id="588258955323874662">সম্পূর্নস্ক্রীণ</translation>
 <translation id="5895138241574237353">পুনর্সূচনা</translation>
+<translation id="5903200662178656908">ডিভাইসটি কীবোর্ড এবং মাউসের একটি কম্বো।</translation>
 <translation id="5916084858004523819">নিষিদ্ধ</translation>
 <translation id="5916664084637901428">চালু</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{আপনার ফাইল স্ক্যান করে <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-এ সেভ করা হয়েছে।}one{আপনার ফাইল স্ক্যান করে <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-এ সেভ করা হয়েছে।}other{আপনার ফাইল স্ক্যান করে <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-এ সেভ করা হয়েছে।}}</translation>
@@ -451,6 +451,7 @@
 <translation id="6104112872696127344">স্ক্যানিং বাতিল করা হয়েছে</translation>
 <translation id="6106186594183574873">সম্পূর্ণ করতে, আপনার পুরনো পাসওয়ার্ড লিখুন</translation>
 <translation id="6108689792487843350">নেটওয়ার্ক গেটওয়ে অ্যাক্সেস করা যাচ্ছে না</translation>
+<translation id="6112878310391905610">এই সেটিং আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে থাকে</translation>
 <translation id="6113701710518389813">উপরের তীরচিহ্ন</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, + আরও <ph name="NUMBER" />টি অ্যালবাম</translation>
 <translation id="6122191549521593678">অনলাইন</translation>

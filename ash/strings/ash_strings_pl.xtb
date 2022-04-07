@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Urządzenie Bluetooth „<ph name="DEVICE_NAME" />” chce się sparować. Wpisz na nim ten kod PIN: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">Narzędzia do screencastów</translation>
 <translation id="1024261588257374085">Wybrano zrzut części ekranu</translation>
+<translation id="1024364763893396229">Zapisz urządzenie <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Niski poziom baterii rysika</translation>
 <translation id="1036073649888683237">Aby zarządzać powiadomieniami, otwórz Ustawienia</translation>
 <translation id="1036672894875463507">To ja, Twój Asystent Google. Chętnie Ci pomogę.
@@ -35,6 +36,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1175572348579024023">Przewijanie</translation>
 <translation id="1178581264944972037">Wstrzymaj</translation>
 <translation id="1181037720776840403">Usuń</translation>
+<translation id="1183863904939664422">Ta sugestia mnie nie interesuje</translation>
 <translation id="118437560755358292">Dla większego bezpieczeństwa podaj kod PIN lub hasło</translation>
 <translation id="118532027333893379">Aby zrobić zrzut całego ekranu, kliknij w dowolnym miejscu</translation>
 <translation id="1190609913194133056">Centrum powiadomień</translation>
@@ -295,6 +297,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2819276065543622893">Zostaniesz teraz wylogowany.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> nie obsługuje ustawienia <ph name="SPECIFIED_RESOLUTION" />. Rozdzielczość została zmieniona na <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Półka</translation>
+<translation id="2831035692318564937">Włączony do wschodu słońca</translation>
 <translation id="2834813915651407382">Niedawno otwierane</translation>
 <translation id="2841907151129139818">Przełączono na tryb tabletu</translation>
 <translation id="2844169650293029770">Urządzenie USB-C (przedni port na lewym boku)</translation>
@@ -441,6 +444,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3626281679859535460">Jasność</translation>
 <translation id="3630697955794050612">wyłączono</translation>
 <translation id="3631369015426612114">Zezwalaj na powiadomienia z tych źródeł</translation>
+<translation id="3633097874324966332">Otwórz ustawienia Bluetooth, aby sparować urządzenie</translation>
 <translation id="3638400994746983214">Przełącz ekran chroniący prywatność. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Zaległa aktualizacja</translation>
 <translation id="366222428570480733">Użytkownik zarządzany <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -586,6 +590,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4481530544597605423">Niesparowane urządzenia</translation>
 <translation id="4505050298327493054">Aktywne biurko.</translation>
 <translation id="4513946894732546136">Twoja opinia</translation>
+<translation id="4516867700536986208">Wszystkie aplikacje; aby uzyskać dostęp do wszystkich aplikacji, poruszaj się, naciskając klawisze strzałek w lewo lub w dół</translation>
 <translation id="4518404433291145981">Aby odblokować Chromebooka, najpierw odblokuj swój telefon</translation>
 <translation id="4527045527269911712">Urządzenie Bluetooth „<ph name="DEVICE_NAME" />” chce się sparować.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> do pełnego naładowania</translation>
@@ -594,6 +599,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4560576029703263363">Włączono</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Ukryj hasło</translation>
+<translation id="4566144812051858745">Żadne sugestie mnie nie interesują</translation>
 <translation id="4570957409596482333">Przycisk Przeczytaj na głos</translation>
 <translation id="4573176682887762361">„Wpisz [słowo/wyrażenie]”</translation>
 <translation id="4577274620589681794">Czas minął · <ph name="LABEL" /></translation>
@@ -644,6 +650,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4868492592575313542">aktywna</translation>
 <translation id="4872237917498892622">Alt+Szukaj lub Shift</translation>
 <translation id="4881695831933465202">Otwórz</translation>
+<translation id="4889868803215848840">Podaj opcjonalną opinię, żeby ulepszyć sugestie:</translation>
 <translation id="4890187583552566966">Asystenta Google wyłączył administrator.</translation>
 <translation id="4890408602550914571">Sprawdź, czy telefon jest w pobliżu i ma włączony Bluetooth.</translation>
 <translation id="4895488851634969361">Bateria jest pełna.</translation>
@@ -769,6 +776,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5744083938413354016">Przeciąganie dotykiem</translation>
 <translation id="5745612484876805746">Podświetlenie nocne włącza się automatycznie o zachodzie słońca</translation>
 <translation id="5750765938512549687">Bluetooth jest wyłączony</translation>
+<translation id="5760866832697883462">Podłącz urządzenie <ph name="NAME" /></translation>
 <translation id="576341972084747908">Pobieranie niebezpiecznego pliku <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Tryb Shelf Party jest wyłączony.</translation>
 <translation id="576453121877257266">Podświetlenie nocne jest włączone.</translation>
@@ -830,6 +838,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="6054305421211936131">Zaloguj się, używając karty elektronicznej</translation>
 <translation id="6059276912018042191">Ostatnio przeglądane karty Chrome</translation>
 <translation id="6062360702481658777">Zostaniesz automatycznie wylogowany za <ph name="LOGOUT_TIME_LEFT" />.</translation>
+<translation id="6064463340679478396">Nie używam już tego pliku</translation>
 <translation id="6073451960410192870">Zatrzymaj nagrywanie</translation>
 <translation id="6099678161144790572">Edytowane w zeszłym miesiącu</translation>
 <translation id="6103838137565245112">system</translation>
@@ -953,6 +962,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="6886172995547742638">Twoje urządzenie <ph name="DEVICE_TYPE" /> może mieć gorszą wydajność. Używaj certyfikowanego zasilacza USB-C o mocy co najmniej <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="688631446150864480">Aby przełączać okna, naciskaj klawisz strzałki w dół</translation>
 <translation id="6896758677409633944">Kopiuj</translation>
+<translation id="6901883536534621389">Poruszaj się za pomocą gestów</translation>
 <translation id="6919251195245069855">Nie udało się rozpoznać karty elektronicznej. Spróbuj ponownie.</translation>
 <translation id="6921188888306725546">Skróty klawiszowe zostały ulepszone</translation>
 <translation id="6931576957638141829">Zapisz w</translation>
@@ -1010,6 +1020,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7302889331339392448">Napisy na żywo są wyłączone.</translation>
 <translation id="7303365578352795231">Odpowiem na innym urządzeniu.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7307830679306928882">Ostatnie aplikacje; aby uzyskać dostęp do wszystkich ostatnich aplikacji, poruszaj się, naciskając klawisz strzałki w lewo</translation>
 <translation id="7313193732017069507">Otwórz aparat</translation>
 <translation id="731589979057211264">Tryb Shelf Party jest włączony.</translation>
 <translation id="7319740667687257810">Menu z aplikacjami, widok częściowy</translation>
@@ -1112,6 +1123,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7886169021410746335">Dostosowywać ustawienia prywatności</translation>
 <translation id="7886277072580235377">Twoja sesja internetowa zostanie wyczyszczona, gdy się wylogujesz. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Wyślij e-maila</translation>
+<translation id="7893503627044934815">Nie chcę, żeby ten plik był pokazywany</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Naciśnięto skrót klawiszowy obrotu ekranu. Czy chcesz obrócić ekran?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
@@ -1129,6 +1141,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7977927628060636163">Szukam sieci komórkowych…</translation>
 <translation id="7982789257301363584">Sieć</translation>
 <translation id="7984197416080286869">Zbyt wiele prób odblokowania odciskiem palca</translation>
+<translation id="798779949890829624">Tym ustawieniem zarządza Twój administrator</translation>
 <translation id="7994370417837006925">Wielokrotne logowanie</translation>
 <translation id="7995804128062002838">Nie udało się zrobić zrzutu ekranu</translation>
 <translation id="8000066093800657092">Brak sieci</translation>
@@ -1156,6 +1169,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="813913629614996137">Inicjuję…</translation>
 <translation id="8142441511840089262">Dwukrotne kliknięcie</translation>
 <translation id="8142699993796781067">Sieć prywatna</translation>
+<translation id="8144760705599030999">Aby szybciej parować urządzenie <ph name="NAME" /> z innymi urządzeniami, zapisz je na koncie <ph name="EMAIL" /></translation>
 <translation id="8152092012181020186">Aby zamknąć, naciśnij CTRL + W.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, autouzupełnianie</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> – tym ustawieniem zarządza Twój administrator.</translation>
@@ -1193,6 +1207,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8412677897383510995">Pokaż ustawienia wyświetlania</translation>
 <translation id="8413272770729657668">Nagrywanie rozpocznie się za 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (obudowa)</translation>
+<translation id="8420205633584771378">Usunąć tę sugestię?</translation>
 <translation id="8421270167862077762">Aplikacji <ph name="UNAVAILABLE_APPS" /> nie ma na tym urządzeniu.</translation>
 <translation id="8425213833346101688">Zmień</translation>
 <translation id="8426708595819210923">Dobry wieczór <ph name="GIVEN_NAME" />,</translation>
@@ -1285,6 +1300,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="9000771174482730261">ZARZĄDZAJ MIEJSCEM NA DANE</translation>
 <translation id="9017320285115481645">Wpisz kod dostępu rodzica w Family Link.</translation>
 <translation id="9024331582947483881">pełny ekran</translation>
+<translation id="9030319654231318877">Wyłączony do zachodu słońca</translation>
 <translation id="9034924485347205037">Pliki Linuksa</translation>
 <translation id="9047624247355796468">Otwórz ustawienia sieci <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Zwiń powiadomienie</translation>
@@ -1304,6 +1320,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="9099154003160514616">Dostępna jest aktualizacja Lacros</translation>
 <translation id="9100887602489003640">Dodaję profil. Odczekaj kilka minut.</translation>
 <translation id="9105450214093926548">Gdy uruchomiona jest przeglądarka Lacros, logowanie 2 użytkownika nie jest obsługiwane. Użyj 2 profilu przeglądarki w Lacros lub zamknij Lacros i spróbuj ponownie.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> lub <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Nie można nagrać treści chronionej</translation>
 <translation id="9161053988251441839">SUGEROWANE APLIKACJE</translation>
 <translation id="9166331175924255663">Włącza/wyłącza dużą widoczność Udostępniania w pobliżu.</translation>

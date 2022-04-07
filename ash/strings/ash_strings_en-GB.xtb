@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Bluetooth device "<ph name="DEVICE_NAME" />" would like permission to pair. Please enter this PIN code on that device: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">Screencast tools</translation>
 <translation id="1024261588257374085">Partial screenshot selected</translation>
+<translation id="1024364763893396229">Save your <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Stylus battery is low</translation>
 <translation id="1036073649888683237">To manage notifications, go to Settings</translation>
 <translation id="1036672894875463507">I'm your Google Assistant, here to help you throughout your day!
@@ -35,6 +36,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1175572348579024023">Scroll</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Remove</translation>
+<translation id="1183863904939664422">Not interested in this suggestion</translation>
 <translation id="118437560755358292">Enter password or PIN for more security</translation>
 <translation id="118532027333893379">Tap anywhere to capture full screen</translation>
 <translation id="1190609913194133056">Notification Centre</translation>
@@ -442,6 +444,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3626281679859535460">Brightness</translation>
 <translation id="3630697955794050612">off</translation>
 <translation id="3631369015426612114">Allow notifications from the following</translation>
+<translation id="3633097874324966332">Open Bluetooth settings to pair your device</translation>
 <translation id="3638400994746983214">Toggle privacy screen. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Update overdue</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> managed user</translation>
@@ -595,6 +598,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4560576029703263363">On</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Hide password</translation>
+<translation id="4566144812051858745">Not interested in any suggestions</translation>
 <translation id="4570957409596482333">Select-to-Speak button</translation>
 <translation id="4573176682887762361">'Type [word / phrase]'</translation>
 <translation id="4577274620589681794">Time's up · <ph name="LABEL" /></translation>
@@ -645,6 +649,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4868492592575313542">activated</translation>
 <translation id="4872237917498892622">Alt+Search or Shift</translation>
 <translation id="4881695831933465202">Open</translation>
+<translation id="4889868803215848840">Provide optional feedback to improve suggestions:</translation>
 <translation id="4890187583552566966">The Google Assistant is disabled by your administrator.</translation>
 <translation id="4890408602550914571">Make sure that your phone is nearby and has Bluetooth turned on.</translation>
 <translation id="4895488851634969361">Battery is full.</translation>
@@ -770,6 +775,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5744083938413354016">Tap dragging</translation>
 <translation id="5745612484876805746">Night Light turns on automatically at sunset</translation>
 <translation id="5750765938512549687">Bluetooth is off</translation>
+<translation id="5760866832697883462">Connect your <ph name="NAME" /></translation>
 <translation id="576341972084747908">Download dangerous <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Shelf Party is off.</translation>
 <translation id="576453121877257266">Night Light is on.</translation>
@@ -831,6 +837,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6054305421211936131">Sign in with smart card</translation>
 <translation id="6059276912018042191">Recent Chrome tabs</translation>
 <translation id="6062360702481658777">You will automatically be signed out in <ph name="LOGOUT_TIME_LEFT" />.</translation>
+<translation id="6064463340679478396">Done using the file</translation>
 <translation id="6073451960410192870">Stop recording</translation>
 <translation id="6099678161144790572">Edited in the past month</translation>
 <translation id="6103838137565245112">system</translation>
@@ -857,6 +864,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Activating...</translation>
 <translation id="6283712521836204486">Do Not Disturb is off.</translation>
 <translation id="6284232397434400372">Resolution changed</translation>
+<translation id="6286007831750548130">Search history result deleted</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> can be re-added later with a parent’s permission.</translation>
 <translation id="6291221004442998378">Not charging</translation>
 <translation id="6315170314923504164">Voice</translation>
@@ -955,6 +963,7 @@ New install</translation>
 <translation id="6886172995547742638">Your <ph name="DEVICE_TYPE" /> may experience lower performance. Use a certified <ph name="PREFERRED_MINIMUM_POWER" />W or higher USB-C power adaptor.</translation>
 <translation id="688631446150864480">Press the Down arrow key to switch windows</translation>
 <translation id="6896758677409633944">Copy</translation>
+<translation id="6901883536534621389">Try gestures to navigate</translation>
 <translation id="6919251195245069855">Couldn’t recognise your smart card. Try again.</translation>
 <translation id="6921188888306725546">Keyboard shortcuts have been improved</translation>
 <translation id="6931576957638141829">Save to</translation>
@@ -1114,6 +1123,7 @@ New install</translation>
 <translation id="7886169021410746335">Adjust privacy settings</translation>
 <translation id="7886277072580235377">Your Internet session will be cleared when you sign out. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Send an email</translation>
+<translation id="7893503627044934815">Don't want this file shown</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">You pressed the keyboard shortcut for screen rotation. Do you want to rotate the screen?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
@@ -1159,6 +1169,7 @@ New install</translation>
 <translation id="813913629614996137">Initialising...</translation>
 <translation id="8142441511840089262">Double click</translation>
 <translation id="8142699993796781067">Private network</translation>
+<translation id="8144760705599030999">Save your <ph name="NAME" /> to <ph name="EMAIL" /> for faster pairing to your other devices</translation>
 <translation id="8152092012181020186">Press Ctrl + W to close.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, autocomplete</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> This setting is managed by your administrator.</translation>
@@ -1196,6 +1207,7 @@ New install</translation>
 <translation id="8412677897383510995">Show display settings</translation>
 <translation id="8413272770729657668">Recording starting in 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (case)</translation>
+<translation id="8420205633584771378">Remove this suggestion?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> isn't on this device.</translation>
 <translation id="8425213833346101688">Change</translation>
 <translation id="8426708595819210923">Good evening <ph name="GIVEN_NAME" />,</translation>

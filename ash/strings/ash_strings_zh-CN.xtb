@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">蓝牙设备“<ph name="DEVICE_NAME" />”需要配对许可。请在该设备上输入以下PIN码：<ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">抓屏工具</translation>
 <translation id="1024261588257374085">已选择截取局部屏幕</translation>
+<translation id="1024364763893396229">保存您的“<ph name="NAME" />”</translation>
 <translation id="1032891413405719768">触控笔电池电量较低</translation>
 <translation id="1036073649888683237">如需管理通知，请转到“设置”</translation>
 <translation id="1036672894875463507">我是你的 Google 助理，可以帮你处理日常生活大小事！
@@ -164,6 +165,7 @@
 <translation id="1951012854035635156">智能助理</translation>
 <translation id="1954252331066828794">已完成屏幕录制</translation>
 <translation id="1957958912175573503">设置语言</translation>
+<translation id="1961239773406905488">已隐藏相机预览画面</translation>
 <translation id="1961832440516943645"><ph name="DATE" /> <ph name="TIME" /></translation>
 <translation id="1962969542251276847">锁定屏幕</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -181,6 +183,7 @@
 <translation id="2047639699071423250">添加核心观点</translation>
 <translation id="2049240716062114887">桌面名称已更改为“<ph name="DESK_NAME" />”</translation>
 <translation id="2050339315714019657">纵向</translation>
+<translation id="2064048859448024834">已显示相机预览画面</translation>
 <translation id="2066708475850724665">停用放大镜</translation>
 <translation id="2067602449040652523">键盘亮度</translation>
 <translation id="2078034614700056995">若要切换到下一个桌面，请用四根手指向右滑动</translation>
@@ -290,6 +293,7 @@
 <translation id="2819276065543622893">您将立即退出。</translation>
 <translation id="2825224105325558319">“<ph name="DISPLAY_NAME" />”不支持 <ph name="SPECIFIED_RESOLUTION" />。分辨率已改为 <ph name="FALLBACK_RESOLUTION" />。</translation>
 <translation id="2825619548187458965">任务栏</translation>
+<translation id="2831035692318564937">已开启，直到日出</translation>
 <translation id="2834813915651407382">最近打开过</translation>
 <translation id="2841907151129139818">已切换到平板电脑模式</translation>
 <translation id="2844169650293029770">USB-C 设备（左侧前端端口）</translation>
@@ -436,6 +440,7 @@
 <translation id="3626281679859535460">亮度</translation>
 <translation id="3630697955794050612">关闭</translation>
 <translation id="3631369015426612114">允许显示来自以下来源的通知</translation>
+<translation id="3633097874324966332">请打开蓝牙设置为您的设备配对</translation>
 <translation id="3638400994746983214">开启/关闭隐私保护屏。<ph name="STATE_TEXT" />。</translation>
 <translation id="3649505501900178324">更新逾期</translation>
 <translation id="366222428570480733">受管用户：<ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -483,6 +488,7 @@
 <translation id="3922427723338465344">{0,plural, =1{请在 1 分钟内将设备回滚到上一个版本}other{请在 # 分钟内将设备回滚到上一个版本}}</translation>
 <translation id="3923494859158167397">未设置任何移动网络</translation>
 <translation id="3932043219784172185">未连接任何设备</translation>
+<translation id="3934456833412894880">已开启“自适应充电”功能。电池电量将会保持在 80% 以延长电池寿命，并会在您需要时完全充满。</translation>
 <translation id="3943857333388298514">粘贴</translation>
 <translation id="394485226368336402">音频设置</translation>
 <translation id="3945319193631853098">点按即可完成设置</translation>
@@ -763,6 +769,7 @@
 <translation id="5744083938413354016">点按拖动</translation>
 <translation id="5745612484876805746">护眼模式会于日落时自动开启</translation>
 <translation id="5750765938512549687">蓝牙已关闭</translation>
+<translation id="5760866832697883462">连接您的“<ph name="NAME" />”</translation>
 <translation id="576341972084747908">正在下载有风险的文件 <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Shelf Party 模式已关闭。</translation>
 <translation id="576453121877257266">当前已开启护眼模式。</translation>
@@ -948,6 +955,7 @@
 <translation id="6886172995547742638">这可能会导致您的 <ph name="DEVICE_TYPE" /> 性能低下。请使用已获认证的不低于 <ph name="PREFERRED_MINIMUM_POWER" />W 的 USB-C 型电源适配器。</translation>
 <translation id="688631446150864480">按向下键即可切换窗口</translation>
 <translation id="6896758677409633944">复制</translation>
+<translation id="6901883536534621389">尝试使用手势导航</translation>
 <translation id="6919251195245069855">无法识别您的智能卡，请重试。</translation>
 <translation id="6921188888306725546">改进了键盘快捷键</translation>
 <translation id="6931576957638141829">保存到</translation>
@@ -1123,6 +1131,7 @@
 <translation id="7977927628060636163">正在搜索移动网络…</translation>
 <translation id="7982789257301363584">网络</translation>
 <translation id="7984197416080286869">指纹尝试次数过多</translation>
+<translation id="798779949890829624">此设置由您的管理员管理</translation>
 <translation id="7994370417837006925">多帐号登录</translation>
 <translation id="7995804128062002838">未能截取屏幕</translation>
 <translation id="8000066093800657092">未连接任何网络</translation>
@@ -1150,6 +1159,7 @@
 <translation id="813913629614996137">正在初始化…</translation>
 <translation id="8142441511840089262">双击</translation>
 <translation id="8142699993796781067">专用网络</translation>
+<translation id="8144760705599030999">将您的“<ph name="NAME" />”保存到 <ph name="EMAIL" />，即可更快速地与您的其他设备配对</translation>
 <translation id="8152092012181020186">按 Ctrl + W 即可关闭。</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />，自动填充</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" />：此设置由您的管理员管理。</translation>
@@ -1187,6 +1197,7 @@
 <translation id="8412677897383510995">显示“显示设置”部分</translation>
 <translation id="8413272770729657668">录制倒计时：3、2、1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />%（保护套）</translation>
+<translation id="8420205633584771378">移除这项推荐内容？</translation>
 <translation id="8421270167862077762">这部设备上未安装<ph name="UNAVAILABLE_APPS" />。</translation>
 <translation id="8425213833346101688">更改</translation>
 <translation id="8426708595819210923"><ph name="GIVEN_NAME" />，晚上好！</translation>
@@ -1279,6 +1290,7 @@
 <translation id="9000771174482730261">管理存储空间</translation>
 <translation id="9017320285115481645">输入 Family Link 家长访问码。</translation>
 <translation id="9024331582947483881">全屏</translation>
+<translation id="9030319654231318877">已关闭，直到日落</translation>
 <translation id="9034924485347205037">Linux 文件</translation>
 <translation id="9047624247355796468">打开“<ph name="NETWORK_NAME" />”的设置。</translation>
 <translation id="9059834730836941392">收起通知</translation>
@@ -1298,6 +1310,7 @@
 <translation id="9099154003160514616">有可用的 Lacros 更新</translation>
 <translation id="9100887602489003640">正在添加配置文件。请稍等几分钟。</translation>
 <translation id="9105450214093926548">当 Lacros 浏览器正在运行时，不支持多用户登录。请在 Lacros 中改用另一浏览器配置文件，或者关闭 Lacros 并重试。</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> 或 <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">无法录制受保护的内容</translation>
 <translation id="9161053988251441839">推荐的应用</translation>
 <translation id="9166331175924255663">开启/关闭“附近分享”的高可见度模式。</translation>

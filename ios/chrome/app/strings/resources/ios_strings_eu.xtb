@@ -214,11 +214,13 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2848086008667475748">Ezarri aukera lehenetsi gisa Ezarpenak atalean…</translation>
 <translation id="2858204748079866344">Zure pribatutasuna babesteko, Chrome-k ez du automatikoki idatziko pasahitza eremu honetan.</translation>
 <translation id="285960592395650245">Saiatu berriro deskargatzen</translation>
+<translation id="2866378026651742652">Aurrerantzean, bertako istorioak ikusiko dituzu fitxa berri bat irekitzean.</translation>
 <translation id="2870560284913253234">Webgunea</translation>
 <translation id="2871695793448672541">Ezkutatutako pasahitza</translation>
 <translation id="2876369937070532032">Segurtasuna arriskuan dagoenean, ireki dituzun URLetako batzuk bidaltzen dizkio Google-ri</translation>
 <translation id="2883151425485251736">Ikusi eta editatu kontuan ezkutatu dituzun gaiak</translation>
 <translation id="288655811176831528">Itxi fitxa</translation>
+<translation id="2890171748217283516">Jarraitzaile zaituzten webguneak Google-ko kontuan gordetzen dira. Discover-en ezarpenetan kudea ditzakezu webgune horiek.</translation>
 <translation id="2893180576842394309">Baliteke Google-k historia erabiltzea Bilaketa eta Google-ren beste zerbitzu batzuk pertsonalizatzeko</translation>
 <translation id="2898963176829412617">Karpeta berria…</translation>
 <translation id="2916171785467530738">Bete automatikoki bilaketak eta URLak</translation>
@@ -314,6 +316,7 @@ Jarraitu beheko urratsei:</translation>
 <translation id="3691593122358196899"><ph name="FOLDER_TITLE" /> karpetan gehitu da laster-marka</translation>
 <translation id="369349502275246497">Eskaini pasahitzak gordetzeko aukera</translation>
 <translation id="3709582977625132201">Markatu irakurri gabeko gisa</translation>
+<translation id="371230970611282515">Gertaera arriskutsuak iragartzen ditu eta haien berri ematen dizu gertatu aurretik.</translation>
 <translation id="3740397331642243698">Idatzitako URLak Google Chrome-ren ezkutuko moduan irekitzen ditu.</translation>
 <translation id="3762232513783804601">Zure iPad-erako garatua</translation>
 <translation id="3771033907050503522">Ezkutuko moduko fitxak</translation>
@@ -347,6 +350,7 @@ Jarraitu beheko urratsei:</translation>
 <translation id="4038354071007134711">Ez dago fitxategia ireki dezakeen aplikaziorik gailu honetan.</translation>
 <translation id="4042870976416480368">Bilatu orrian</translation>
 <translation id="4049507953662678203">Ziurtatu sarera konektatuta zaudela eta saiatu berriro.</translation>
+<translation id="4063300985191096908">Joan jariora</translation>
 <translation id="408404951701638773">Orain, errazagoa da bilaketa-barra erabiltzea</translation>
 <translation id="4108314971463891922">Jarraitu</translation>
 <translation id="411254640334432676">Ezin izan da deskargatu.</translation>
@@ -529,6 +533,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5737974891429562743">Kontuan saioa hasteko xehetasunak zaharkituta daude. Egunera itzazu sinkronizatzen hasteko.</translation>
 <translation id="5738887413654608789">Honi esker, inguruan duzunaren arabera interesa dakizkizukeen web-orri aipagarriak aurkituko dituzu.</translation>
 <translation id="5758631781033351321">Irakurketa-zerrenda aurkituko duzu hemen</translation>
+<translation id="5765456154762864099">Menua → Ezarpenak → Arakatzaile lehenetsia</translation>
 <translation id="5782227691023083829">Itzultzen…</translation>
 <translation id="5791632441210678828">Jarraitzen jarioko Ordenatu botoia.</translation>
 <translation id="5802829331520313983">Konfiguratu…</translation>
@@ -770,6 +775,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7658239707568436148">Utzi</translation>
 <translation id="7671141431838911305">INSTALATU</translation>
 <translation id="7701040980221191251">Bat ere ez</translation>
+<translation id="7726702057919861819">Menua → Historia → Garbitu arakatze-datuak</translation>
 <translation id="7741325291586284254">Ezkutuko moduko beste fitxa baten orria</translation>
 <translation id="7765158879357617694">Eraman</translation>
 <translation id="7772032839648071052">Berretsi pasaesaldia</translation>
@@ -842,6 +848,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8386068868580335421">Berrezarri</translation>
 <translation id="8407669440184693619">Ez da aurkitu webgune honen pasahitzik</translation>
 <translation id="842017693807136194">Honekin hasi da saioa:</translation>
+<translation id="8427613705947111202">Menua → Ezarpenak → Pasahitzak</translation>
 <translation id="8428045167754449968">Hiria/Udalerria</translation>
 <translation id="8428213095426709021">Ezarpenak</translation>
 <translation id="8428634594422941299">Ados</translation>
@@ -932,6 +939,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Hutsegite-txostena bidali da</translation>
 <translation id="952704832371081537">Utzi</translation>
+<translation id="959066944189734975">Hasi zara <ph name="CHANNEL_NAME" /> webguneari jarraitzen</translation>
 <translation id="981498610235328462">Erakundeak kontu jakin batzuekin soilik uzten du saioa hasten. Onartuta ez dauden kontuak ezkutatuta daude.</translation>
 <translation id="984509647832111802">Sinkronizazioa ez dabil.</translation>
 <translation id="988141524645182168">Bestelakoak</translation>

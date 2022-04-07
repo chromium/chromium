@@ -168,6 +168,7 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="2421044535038393232">Jätka töötlemist</translation>
 <translation id="2434405374328098816">Olete kasutaja „<ph name="USERNAME" />“ jaoks parooli saidil <ph name="WEBSITE" /> juba salvestanud.</translation>
 <translation id="2435457462613246316">Kuva parool</translation>
+<translation id="2469960372084740698">Kas lülitada Google'i ohutu sirvimine välja?</translation>
 <translation id="2473876017985765807">Salvestasite saidi <ph name="WEBSITE" /> jaoks juba parooli</translation>
 <translation id="2476359652512522418">Ei ole valitud</translation>
 <translation id="2497852260688568942">Administraator on sünkroonimise keelanud</translation>
@@ -313,6 +314,7 @@ Järgige allolevaid juhiseid.</translation>
 <translation id="3691593122358196899">Lisatud järjehoidjana kausta <ph name="FOLDER_TITLE" /></translation>
 <translation id="369349502275246497">Paku paroolide salvestamist</translation>
 <translation id="3709582977625132201">Märgi mitteloetuks</translation>
+<translation id="371230970611282515">Ennustab ohtlikke sündmusi ette ja hoiatab teid.</translation>
 <translation id="3740397331642243698">Avab sisestatud URL-id Google Chrome'is inkognito režiimis.</translation>
 <translation id="3762232513783804601">Loodud teie iPadile</translation>
 <translation id="3771033907050503522">Inkogn. vahelehed</translation>
@@ -528,6 +530,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5737974891429562743">Konto sisselogimisandmed on aegunud. Värskendage andmeid sünkroonimise alustamiseks.</translation>
 <translation id="5738887413654608789">See võimaldab teil ümbruskonna järgi asjakohaseid veebilehti avastada.</translation>
 <translation id="5758631781033351321">Oma lugemisloendi leiate siit</translation>
+<translation id="5765456154762864099">Menüü → Seaded → Vaikebrauser</translation>
 <translation id="5782227691023083829">Tõlkimine...</translation>
 <translation id="5791632441210678828">Voo Jälgin sortimisnupp.</translation>
 <translation id="5802829331520313983">Seadistus …</translation>
@@ -582,6 +585,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6144589619057374135">Ava ${url} inkognito aknas</translation>
 <translation id="6149061208933997199">Kasuta parooli</translation>
 <translation id="6159839020698489198">valikuline</translation>
+<translation id="6173386249456979368">Kiirem ennetav kaitse ohtlike veebisaitide, allalaadimiste ja laienduste vastu. Hoiatab teid parooliga seotud rikkumistest. Selleks peab sirvimisandmete Google'ile saatmine olema lubatud.</translation>
 <translation id="6177442314419606057">Otsing Chrome'ist</translation>
 <translation id="6184086493125982861">Kuva vahelehed</translation>
 <translation id="6187302354554850004">Viimati sünkr.: <ph name="LAST_USED_TIME" /></translation>
@@ -768,6 +772,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7658239707568436148">Tühista</translation>
 <translation id="7671141431838911305">INSTALLI</translation>
 <translation id="7701040980221191251">Pole</translation>
+<translation id="7726702057919861819">Menüü → Ajalugu → Kustuta brauseri andmed</translation>
 <translation id="7741325291586284254">Uus inkognito vaheleht</translation>
 <translation id="7765158879357617694">Liiguta</translation>
 <translation id="7772032839648071052">Kinnitage parool</translation>
@@ -840,6 +845,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8386068868580335421">Lähtesta</translation>
 <translation id="8407669440184693619">Selle saidi jaoks ei leitud paroole</translation>
 <translation id="842017693807136194">Sisse logitud:</translation>
+<translation id="8427613705947111202">Menüü → Seaded → Paroolid</translation>
 <translation id="8428045167754449968">Linn</translation>
 <translation id="8428213095426709021">Seaded</translation>
 <translation id="8428634594422941299">Selge</translation>

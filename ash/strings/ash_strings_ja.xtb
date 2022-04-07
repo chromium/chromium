@@ -36,6 +36,7 @@
 <translation id="1175572348579024023">スクロール</translation>
 <translation id="1178581264944972037">一時停止</translation>
 <translation id="1181037720776840403">削除</translation>
+<translation id="1183863904939664422">この提案に興味がない</translation>
 <translation id="118437560755358292">セキュリティ強化のためパスワードまたは PIN を入力してください</translation>
 <translation id="118532027333893379">全画面をキャプチャするには任意の場所をタップしてください</translation>
 <translation id="1190609913194133056">通知センター</translation>
@@ -296,6 +297,7 @@
 <translation id="2819276065543622893">ログアウトします。</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> は <ph name="SPECIFIED_RESOLUTION" /> に対応していません。解像度を <ph name="FALLBACK_RESOLUTION" /> に変更しました。</translation>
 <translation id="2825619548187458965">シェルフ</translation>
+<translation id="2831035692318564937">日の出までオン</translation>
 <translation id="2834813915651407382">最近開いたファイル</translation>
 <translation id="2841907151129139818">タブレット モードに切り替えました</translation>
 <translation id="2844169650293029770">USB-C デバイス（左手前のポート）</translation>
@@ -596,6 +598,7 @@
 <translation id="4560576029703263363">オン</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">パスワードを表示しない</translation>
+<translation id="4566144812051858745">提案自体に興味がない</translation>
 <translation id="4570957409596482333">[選択して読み上げ] ボタン</translation>
 <translation id="4573176682887762361">"[単語 / フレーズ] をタイプ"</translation>
 <translation id="4577274620589681794">時間です · <ph name="LABEL" /></translation>
@@ -646,6 +649,7 @@
 <translation id="4868492592575313542">有効</translation>
 <translation id="4872237917498892622">Alt+ 検索/Shift</translation>
 <translation id="4881695831933465202">開く</translation>
+<translation id="4889868803215848840">提案内容を改善するため、よろしければフィードバックをご提供ください:</translation>
 <translation id="4890187583552566966">Google アシスタントは管理者によって無効にされています。</translation>
 <translation id="4890408602550914571">スマートフォンが近くにあり、Bluetooth がオンになっていることを確認してください。</translation>
 <translation id="4895488851634969361">バッテリー残量: 満。</translation>
@@ -833,6 +837,7 @@
 <translation id="6054305421211936131">スマートカードでログイン</translation>
 <translation id="6059276912018042191">最近使った Chrome タブ</translation>
 <translation id="6062360702481658777">あと <ph name="LOGOUT_TIME_LEFT" />で自動的にログアウトします。</translation>
+<translation id="6064463340679478396">このファイルはもう使用しない</translation>
 <translation id="6073451960410192870">撮影を停止</translation>
 <translation id="6099678161144790572">過去 1 か月以内に編集したファイル</translation>
 <translation id="6103838137565245112">システム</translation>
@@ -1118,6 +1123,7 @@
 <translation id="7886169021410746335">プライバシー設定を調整する</translation>
 <translation id="7886277072580235377">ログアウトするとインターネット セッションは終了します。<ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">メールを送って</translation>
+<translation id="7893503627044934815">このファイルの表示を希望しない</translation>
 <translation id="7895348134893321514">トート</translation>
 <translation id="7897375687985782769">画面回転のキーボード ショートカットを押しました。画面を回転しますか？</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
@@ -1135,6 +1141,7 @@
 <translation id="7977927628060636163">モバイル ネットワークを検索しています...</translation>
 <translation id="7982789257301363584">ネットワーク</translation>
 <translation id="7984197416080286869">指紋認証の試行回数が上限を超えています</translation>
+<translation id="798779949890829624">この設定は管理者によって管理されています</translation>
 <translation id="7994370417837006925">マルチログイン</translation>
 <translation id="7995804128062002838">画面をキャプチャできませんでした</translation>
 <translation id="8000066093800657092">ネットワーク接続なし</translation>
@@ -1200,6 +1207,7 @@
 <translation id="8412677897383510995">ディスプレイの設定を表示</translation>
 <translation id="8413272770729657668">録画開始まで 3、2、1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />%（ケース）</translation>
+<translation id="8420205633584771378">この候補を削除しますか？</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> はこのデバイスにありません。</translation>
 <translation id="8425213833346101688">変更</translation>
 <translation id="8426708595819210923">こんばんは、<ph name="GIVEN_NAME" /> さん</translation>
@@ -1292,6 +1300,7 @@
 <translation id="9000771174482730261">ストレージを管理</translation>
 <translation id="9017320285115481645">ファミリー リンクの保護者のアクセスコードを入力してください。</translation>
 <translation id="9024331582947483881">全画面表示</translation>
+<translation id="9030319654231318877">日の入りまでオフ</translation>
 <translation id="9034924485347205037">Linux ファイル</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> の設定を開く</translation>
 <translation id="9059834730836941392">通知を折りたたむ</translation>
@@ -1311,6 +1320,7 @@
 <translation id="9099154003160514616">Lacros のアップデートがあります</translation>
 <translation id="9100887602489003640">プロファイルを追加しています。数分お待ちください。</translation>
 <translation id="9105450214093926548">Lacros ブラウザの実行中は 2 つ目のユーザーにログインできません。代わりに Lacros で 2 つ目のブラウザ プロフィールを使用するか、Lacros を閉じてログインしなおしてください。</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> または <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">保護されたコンテンツは録画できません</translation>
 <translation id="9161053988251441839">おすすめのアプリ</translation>
 <translation id="9166331175924255663">ニアバイシェアで付近のデバイスに表示されるモードのオン/オフを切り替えます。</translation>

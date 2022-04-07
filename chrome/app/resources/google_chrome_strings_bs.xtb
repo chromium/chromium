@@ -177,6 +177,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="4600710005438004015">Chrome se nije mogao ažurirati na najnoviju verziju, tako da nemate nove značajke i sigurnosne popravke.</translation>
 <translation id="4627412468266359539">Nije obavezno: pomozite da poboljšamo funkcije i performanse operativnog sistema ChromeOS Flexa automatskim slanjem podataka o dijagnostici i korištenju Googleu.</translation>
 <translation id="4633000520311261472">Kako bi Chrome bio sigurniji, onemogućili smo neke ekstenzije koje nisu navedene u <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i koje su možda dodane bez vašeg znanja.</translation>
+<translation id="469553575393225953">Ekstenzije, aplikacije i teme iz nepoznatih izvora mogu naštetiti vašem uređaju. Chrome preporučuje da ih instalirate samo iz Chrome Web trgovine</translation>
 <translation id="4728575227883772061">Instalacija nije uspjela zbog neodređene greške. Ako je Google Chrome trenutno pokrenut, zatvorite ga i pokušajte ponovo.</translation>
 <translation id="4747730611090640388">Chrome može procijeniti vaša interesovanja.  Kasnije, web lokacija koju ste posjetili može zatražiti od Chromea da pogleda vaša interesovanja radi personalizacije oglasa koje vidite.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -218,6 +219,7 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="5736850870166430177">Ako web lokacija pokuša ukrasti vašu lozinku ili kada preuzimate štetan fajl, Chrome može slati i URL-ove, uključujući dijelove sadržaja stranice, u Sigurno pregledanje</translation>
 <translation id="573759479754913123">O Chrome OS-u</translation>
 <translation id="5756509061973259733">Chrome profil s ovim računom već postoji na ovom uređaju</translation>
+<translation id="5763280521700030406">Chrome je blokirao ovaj fajl jer je prevelik za sigurnosnu provjeru. Pokušajte ponovo s fajlovima do 50 MB</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Pokretanje Chromea nije uspjelo. Ponovite.</translation>
 <translation id="5867197326698922595">Google Chrome pokušava urediti lozinke.</translation>
@@ -326,8 +328,10 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="8394720698884623075">Provjerava URL-ove s listom nesigurnih web lokacija pohranjenih u Chromeu</translation>
 <translation id="840084489713044809">Google Chrome želi izvesti vaše lozinke.</translation>
 <translation id="8416347857511542594">Saznajte više o personalizaciji oglasa u Chromeu</translation>
+<translation id="8421734018304082652">Chrome je blokirao ovaj fajl jer je šifriran. Zatražite od vlasnika da ga dešifrira</translation>
 <translation id="8433638294851456451">Da pošaljete broj s ovog uređaja na svoj Android telefon, prijavite se u Chrome na oba uređaja.</translation>
 <translation id="8498858610309223613">Upravo je izvršeno posebno sigurnosno ažuriranje za Google Chrome. Sada ga ponovo pokrenite i vratićemo vaše kartice.</translation>
+<translation id="8504220326736535258">Chrome je blokirao ovaj fajl jer sadržava zlonamjerni softver</translation>
 <translation id="8516431725144212809">Vaša interesovanja prema Chromeovoj procjeni</translation>
 <translation id="8521348052903287641">Ulazno pravilo da Google Chrome Dev dozvoli mDNS saobraćaj.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>

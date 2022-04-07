@@ -114,7 +114,6 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Prøv på nytt</translation>
 <translation id="2161394479394250669">Avbryt utskriftsjobben</translation>
 <translation id="2180197493692062006">Noe gikk galt. Prøv å åpne appen på nytt.</translation>
-<translation id="2201770616342964496">Lokal identitet</translation>
 <translation id="2209788852729124853">Tilbakestill trafikktellere</translation>
 <translation id="2212733584906323460">Navneoppslag</translation>
 <translation id="2217935453350629363">Nåværende hastighet</translation>
@@ -262,6 +261,7 @@
 <translation id="4170180284036919717">Ta et bilde</translation>
 <translation id="4170700058716978431">MISLYKKET</translation>
 <translation id="4176463684765177261">Deaktivert</translation>
+<translation id="4176659219503619100">Kontrollpanel</translation>
 <translation id="4213104098953699324">USB-tastatur</translation>
 <translation id="4227825898293920515">Passordet utløper om <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ingen utskriftsjobber pågår</translation>
@@ -305,7 +305,6 @@
 <translation id="4593212453765072419">Godkjenning av mellomtjener kreves</translation>
 <translation id="4609350030397390689">Tastaturlysstyrke ned</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> av <ph name="TOTAL_PAGE_NUMBER" />. Trykk på Enter for å avbryte utskriftsjobben.</translation>
-<translation id="4627645661474370390">Ekstern identitet</translation>
 <translation id="463791356324567266">Avbryter skanningen …</translation>
 <translation id="4646949265910132906">Sikker Wi-Fi-tilkobling</translation>
 <translation id="4650608062294027130">Høyre Shift</translation>
@@ -432,6 +431,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5866840822086176774">Veldig sterk</translation>
 <translation id="588258955323874662">Fullskjerm</translation>
 <translation id="5895138241574237353">Start på nytt</translation>
+<translation id="5903200662178656908">Enheten er en kombinasjon av tastatur og mus.</translation>
 <translation id="5916084858004523819">Forbudt</translation>
 <translation id="5916664084637901428">På</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Filen er skannet og lagret i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Filene er skannet og lagret i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -452,6 +452,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6104112872696127344">Skanningen er avbrutt</translation>
 <translation id="6106186594183574873">For å fullføre passordendringen, skriv inn det gamle passordet</translation>
 <translation id="6108689792487843350">Gatewayen er utilgjengelig</translation>
+<translation id="6112878310391905610">Denne innstillingen administreres av administratorene dine</translation>
 <translation id="6113701710518389813">Oppoverpil</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> og <ph name="NUMBER" /> album til</translation>
 <translation id="6122191549521593678">Pålogget</translation>

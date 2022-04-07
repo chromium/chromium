@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">«<ph name="DEVICE_NAME" />» Bluetooth սարքը զուգավորվելու թույլտվություն է խնդրում: Մուտքագրեք սարքում հետևյալ PIN կոդը` <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">Էկրանի հեռարձակման գործիքներ</translation>
 <translation id="1024261588257374085">Ընտրված է էկրանի մի մասի տեսագրումը</translation>
+<translation id="1024364763893396229">Պահեք ձեր «<ph name="NAME" />» սարքը</translation>
 <translation id="1032891413405719768">Ստիլուսի մարտկոցի լիցքը սպառվում է</translation>
 <translation id="1036073649888683237">Ծանուցումները կառավարելու համար անցեք կարգավորումներ</translation>
 <translation id="1036672894875463507">Ես ձեր Google Օգնականն եմ և պատրաստ եմ օգնել ամբողջ օրվա ընթացքում։
@@ -167,6 +168,7 @@
 <translation id="1951012854035635156">Օգնական</translation>
 <translation id="1954252331066828794">Էկրանի տեսագրումը ավարտվեց</translation>
 <translation id="1957958912175573503">Ընտրեք լեզուն</translation>
+<translation id="1961239773406905488">Տեսախցիկի նախադիտումը թաքցված է</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Կողպել էկրանը</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -184,6 +186,7 @@
 <translation id="2047639699071423250">Ավելացնել հիմնական գաղափար</translation>
 <translation id="2049240716062114887">Աշխատասեղանի անունը փոխվել է հետևյալի՝ <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Ուղղաձիգ</translation>
+<translation id="2064048859448024834">Տեսախցիկի նախադիտումը միացված է</translation>
 <translation id="2066708475850724665">Անջատել խոշորացույցը</translation>
 <translation id="2067602449040652523">Ստեղնաշարի պայծառություն</translation>
 <translation id="2078034614700056995">Հաջորդ աշխատասեղանին անցնելու համար չորս մատով սահեցրեք աջ</translation>
@@ -293,6 +296,7 @@
 <translation id="2819276065543622893">Դուք հիմա դուրս կգրվեք:</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" />-ը չի աջակցում <ph name="SPECIFIED_RESOLUTION" /> լուծաչափը։ Լուծաչափը փոխվել է <ph name="FALLBACK_RESOLUTION" />-ի։</translation>
 <translation id="2825619548187458965">Դարակ</translation>
+<translation id="2831035692318564937">Միացված է մինչև մայրամուտ</translation>
 <translation id="2834813915651407382">Վերջերս բացել եք</translation>
 <translation id="2841907151129139818">Անցում կատարվեց պլանշետի ռեժիմին</translation>
 <translation id="2844169650293029770">USB-C սարք (առջևի ձախակողմյան միացք)</translation>
@@ -439,6 +443,7 @@
 <translation id="3626281679859535460">Պայծառություն</translation>
 <translation id="3630697955794050612">անջատված է</translation>
 <translation id="3631369015426612114">Թույլ տալ ծանուցումները հետևյալ կայքերից</translation>
+<translation id="3633097874324966332">Բացեք Bluetooth-ի կարգավորումները՝ սարքը զուգակցելու համար</translation>
 <translation id="3638400994746983214">Միացնել/անջատել գաղտնիության էկրանը։ <ph name="STATE_TEXT" />:</translation>
 <translation id="3649505501900178324">Թարմացման ժամկետը լրացել է</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> կառավարվող օգտատեր</translation>
@@ -486,6 +491,7 @@
 <translation id="3922427723338465344">{0,plural, =1{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին 1 րոպեի ընթացքում}one{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին # րոպեի ընթացքում}other{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին # րոպեի ընթացքում}}</translation>
 <translation id="3923494859158167397">Բջջային ցանց կարգավորված չէ</translation>
 <translation id="3932043219784172185">Միացած սարքեր չկան</translation>
+<translation id="3934456833412894880">Հարմարվող լիցքավորումը միացված է։ Մարտկոցի աշխատաժամանակը երկարացնելու համար այն կլիցքավորվի մինչև 80%։ Մարտկոցն ամբողջությամբ կլիցքավորվի միայն այն դեպքում, երբ իսկապես դրա անհրաժեշտությունը լինի։</translation>
 <translation id="3943857333388298514">Տեղադրել</translation>
 <translation id="394485226368336402">Ձայնի կարգավորումներ</translation>
 <translation id="3945319193631853098">Հպեք՝ կարգավորումն ավարտելու համար</translation>
@@ -766,6 +772,7 @@
 <translation id="5744083938413354016">Հպումով քաշում</translation>
 <translation id="5745612484876805746">Մութն ընկնելուն պես գիշերային ռեժիմը ավտոմատ կմիանա</translation>
 <translation id="5750765938512549687">Bluetooth-ն անջատված է</translation>
+<translation id="5760866832697883462">Կապեք ձեր «<ph name="NAME" />» սարքը</translation>
 <translation id="576341972084747908">Ներբեռնվում է վտանգավոր ֆայլ՝ <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Shelf Party ռեժիմն անջատված է։</translation>
 <translation id="576453121877257266">Գիշերային ռեժիմը միացված է</translation>
@@ -951,6 +958,7 @@
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> սարքի արդյունավետությունը կարող է նվազել։ Օգտագործեք հավաստագրված <ph name="PREFERRED_MINIMUM_POWER" />Վ կամ ավելի բարձր USB-C սնուցման ադապտեր։</translation>
 <translation id="688631446150864480">Մյուս պատուհան անցնելու համար սեղմեք վար սլաքը</translation>
 <translation id="6896758677409633944">Պատճենել</translation>
+<translation id="6901883536534621389">Օգտագործեք ժեստեր նավիգացիայի համար</translation>
 <translation id="6919251195245069855">Չհաջողվեց ճանաչել ձեր խելացի քարտը: Նորից փորձեք։</translation>
 <translation id="6921188888306725546">Ստեղնային դյուրանցումները բարելավվել են</translation>
 <translation id="6931576957638141829">Պահել…</translation>
@@ -1127,6 +1135,7 @@
 <translation id="7977927628060636163">Բջջային ցանցերի որոնում...</translation>
 <translation id="7982789257301363584">Ցանց</translation>
 <translation id="7984197416080286869">Մատնահետքով ապակողպման փորձերը չափից շատ են</translation>
+<translation id="798779949890829624">Այս կարգավորումը կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="7994370417837006925">Բազմակի մուտք</translation>
 <translation id="7995804128062002838">Չհաջողվեց լուսանկարել էկրանը</translation>
 <translation id="8000066093800657092">Ցանց չկա</translation>
@@ -1154,6 +1163,7 @@
 <translation id="813913629614996137">Նախապատրաստվում է...</translation>
 <translation id="8142441511840089262">Կրկնակի սեղմում</translation>
 <translation id="8142699993796781067">Մասնավոր ցանց</translation>
+<translation id="8144760705599030999">Ավելացրեք սարքը (<ph name="NAME" />) <ph name="EMAIL" /> հաշվում, որպեսզի ավելի արագ կարողանաք զուգակցել այն ձեր մյուս սարքերի հետ</translation>
 <translation id="8152092012181020186">Փակելու համար սեղմեք Ctrl+W։</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, ինքնալրացում</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Այս կարգավորումը կառավարվում է ձեր ադմինիստրատորի կողմից։</translation>
@@ -1191,6 +1201,7 @@
 <translation id="8412677897383510995">Ցույց տալ էկրանի կարգավորումները</translation>
 <translation id="8413272770729657668">Տեսագրումը կսկսվի 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (պատյան)</translation>
+<translation id="8420205633584771378">Հեռացնե՞լ այս առաջարկը</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> հավելվածը տեղադրված չէ այս սարքում։</translation>
 <translation id="8425213833346101688">Փոխել</translation>
 <translation id="8426708595819210923">Բարի երեկո, <ph name="GIVEN_NAME" /></translation>
@@ -1283,6 +1294,7 @@
 <translation id="9000771174482730261">ԿԱՌԱՎԱՐԵԼ ՏԱՐԱԾՔԸ</translation>
 <translation id="9017320285115481645">Մուտքագրեք Family Link-ի ծնողի մուտքի կոդը։</translation>
 <translation id="9024331582947483881">լիաէկրան</translation>
+<translation id="9030319654231318877">Անջատված է մինչև մայրամուտ</translation>
 <translation id="9034924485347205037">Լինուքսի ֆայլեր</translation>
 <translation id="9047624247355796468">Բացել «<ph name="NETWORK_NAME" />» ցանցի կարգավորումները</translation>
 <translation id="9059834730836941392">Կոծկել</translation>
@@ -1302,6 +1314,7 @@
 <translation id="9099154003160514616">Հասանելի է Lacros-ի թարմացում</translation>
 <translation id="9100887602489003640">Պրոֆիլն ավելացվում է։ Մի փոքր սպասեք։</translation>
 <translation id="9105450214093926548">Մի քանի հաշիվների մուտքը չի աջակցվում, երբ գործարկված է Lacros դիտարկիչը։ Օգտագործեք դիտարկիչի երկրորդ պրոֆիլ Lacros-ում կամ փակեք Lacros-ը և նորից փորձեք։</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> կամ <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Հնարավոր չէ տեսագրել պաշտպանված բովանդակությունը</translation>
 <translation id="9161053988251441839">ԱՌԱՋԱՐԿՎՈՂ ՀԱՎԵԼՎԱԾՆԵՐ</translation>
 <translation id="9166331175924255663">Միացնել/անջատել «Փոխանակում մոտակա սարքերի հետ» գործառույթի բարձր տեսանելիությունը</translation>

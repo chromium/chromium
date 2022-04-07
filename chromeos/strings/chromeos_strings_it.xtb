@@ -114,7 +114,6 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />. Riprova</translation>
 <translation id="2161394479394250669">Annulla processo di stampa</translation>
 <translation id="2180197493692062006">Si è verificato un errore. Prova a riaprire l'app.</translation>
-<translation id="2201770616342964496">Identità locale</translation>
 <translation id="2209788852729124853">Reimposta contatori di traffico</translation>
 <translation id="2212733584906323460">Risoluzione nome</translation>
 <translation id="2217935453350629363">Velocità attuale</translation>
@@ -262,6 +261,7 @@
 <translation id="4170180284036919717">Scatta una foto</translation>
 <translation id="4170700058716978431">OPERAZIONE NON RIUSCITA</translation>
 <translation id="4176463684765177261">Disattivato</translation>
+<translation id="4176659219503619100">Pannello di controllo</translation>
 <translation id="4213104098953699324">Tastiera USB</translation>
 <translation id="4227825898293920515">La password scade tra <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nessun processo di stampa in corso</translation>
@@ -305,7 +305,6 @@
 <translation id="4593212453765072419">Autenticazione proxy richiesta</translation>
 <translation id="4609350030397390689">Riduci la luminosità della tastiera</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> di <ph name="TOTAL_PAGE_NUMBER" />. Premi Invio per annullare il processo di stampa.</translation>
-<translation id="4627645661474370390">Identità remota</translation>
 <translation id="463791356324567266">Annullamento scansione in corso…</translation>
 <translation id="4646949265910132906">Connessione Wi-Fi protetta</translation>
 <translation id="4650608062294027130">Maiusc destro</translation>

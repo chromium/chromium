@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">El dispositivo Bluetooth "<ph name="DEVICE_NAME" />" solicita permiso para emparejarse. Introduce el código PIN <ph name="PINCODE" /> en el dispositivo</translation>
 <translation id="1014111206066007277">Herramientas de captura de pantalla de vídeo</translation>
 <translation id="1024261588257374085">Captura de pantalla parcial seleccionada</translation>
+<translation id="1024364763893396229">Guarda <ph name="NAME" /></translation>
 <translation id="1032891413405719768">El lápiz óptico tiene poca batería</translation>
 <translation id="1036073649888683237">Para gestionar las notificaciones, ve a Configuración</translation>
 <translation id="1036672894875463507">Soy tu Asistente de Google y te puedo ayudar con tus actividades diarias.
@@ -167,6 +168,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1951012854035635156">Asistente</translation>
 <translation id="1954252331066828794">Grabación de pantalla completada</translation>
 <translation id="1957958912175573503">Elegir el idioma</translation>
+<translation id="1961239773406905488">Vista previa de cámara ocultada</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Bloquear pantalla</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -184,6 +186,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2047639699071423250">Añadir idea clave</translation>
 <translation id="2049240716062114887">Se ha cambiado el nombre del escritorio a <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Vertical</translation>
+<translation id="2064048859448024834">Vista previa de cámara activada</translation>
 <translation id="2066708475850724665">Detener lupa</translation>
 <translation id="2067602449040652523">Brillo del teclado</translation>
 <translation id="2078034614700056995">Desliza cuatro dedos hacia la derecha por la pantalla para ir al escritorio siguiente</translation>
@@ -293,6 +296,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2819276065543622893">Tu sesión se cerrará ahora.</translation>
 <translation id="2825224105325558319">La pantalla <ph name="DISPLAY_NAME" /> no admite <ph name="SPECIFIED_RESOLUTION" />. Se ha cambiado la resolución a <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Estantería</translation>
+<translation id="2831035692318564937">Activado hasta el amanecer</translation>
 <translation id="2834813915651407382">Abierto recientemente</translation>
 <translation id="2841907151129139818">Se ha cambiado al modo tablet</translation>
 <translation id="2844169650293029770">Dispositivo USB tipo C (puerto frontal izquierdo)</translation>
@@ -439,6 +443,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3626281679859535460">Brillo</translation>
 <translation id="3630697955794050612">desactivado</translation>
 <translation id="3631369015426612114">Permitir notificaciones de:</translation>
+<translation id="3633097874324966332">Abre los ajustes de Bluetooth para emparejar tu dispositivo</translation>
 <translation id="3638400994746983214">Activar/Desactivar la pantalla de privacidad. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Actualización pendiente</translation>
 <translation id="366222428570480733">Usuario administrado (<ph name="USER_EMAIL_ADDRESS" />)</translation>
@@ -487,6 +492,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Cambia el dispositivo a la versión anterior en un plazo de 1 minuto}other{Cambia el dispositivo a la versión anterior en un plazo de # minutos}}</translation>
 <translation id="3923494859158167397">No se han configurado redes móviles</translation>
 <translation id="3932043219784172185">Ningún dispositivo conectado</translation>
+<translation id="3934456833412894880">La función Carga inteligente está activada. La batería llegará hasta el 80 % de carga para prolongar su duración y se cargará al 100 % cuando lo necesites.</translation>
 <translation id="3943857333388298514">Pegar</translation>
 <translation id="394485226368336402">Configuración de audio</translation>
 <translation id="3945319193631853098">Toca para completar la configuración</translation>
@@ -767,6 +773,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5744083938413354016">Tocar y arrastrar</translation>
 <translation id="5745612484876805746">La luz nocturna se activa automáticamente al anochecer</translation>
 <translation id="5750765938512549687">El Bluetooth está desactivado</translation>
+<translation id="5760866832697883462">Conecta <ph name="NAME" /></translation>
 <translation id="576341972084747908">Descargando archivo peligroso <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Grupo de estanterías está desactivado.</translation>
 <translation id="576453121877257266">Luz nocturna activada.</translation>
@@ -869,7 +876,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Borrar todas las notificaciones</translation>
 <translation id="643147933154517414">Hecho</translation>
-<translation id="6431865393913628856">Grabación de pantalla</translation>
+<translation id="6431865393913628856">Grabar pantalla</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> en <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, eventos: <ph name="NUMBER" /></translation>
 <translation id="6449483711453944360">Las aplicaciones Linux y las ventanas de incógnito no se admiten actualmente</translation>
@@ -952,6 +959,7 @@ Nueva instalación</translation>
 <translation id="6886172995547742638">Es posible que se reduzca el rendimiento de tu <ph name="DEVICE_TYPE" />. Usa un adaptador de corriente USB‑C certificado de <ph name="PREFERRED_MINIMUM_POWER" /> W o más.</translation>
 <translation id="688631446150864480">Pulsa la tecla de la flecha hacia abajo para cambiar de ventana</translation>
 <translation id="6896758677409633944">Copiar</translation>
+<translation id="6901883536534621389">Prueba gestos para desplazarte</translation>
 <translation id="6919251195245069855">No se ha podido reconocer la tarjeta inteligente. Vuelve a intentarlo.</translation>
 <translation id="6921188888306725546">Las combinaciones de teclas se han mejorado</translation>
 <translation id="6931576957638141829">Guardar en</translation>
@@ -981,7 +989,7 @@ Nueva instalación</translation>
 <translation id="7055381872777910864">X</translation>
 <translation id="7055910611768509537">El lápiz óptico no se ha usado en más de una semana</translation>
 <translation id="7066646422045619941">El administrador ha inhabilitado esta red.</translation>
-<translation id="7067196344162293536">Girar automáticamente</translation>
+<translation id="7067196344162293536">Giro automático</translation>
 <translation id="7068360136237591149">Abrir un archivo</translation>
 <translation id="7076293881109082629">Iniciando sesión</translation>
 <translation id="7086931198345821656">Esta actualización requiere que se le haga un Powerwash a tu <ph name="DEVICE_TYPE" />. Se eliminarán todos los datos. Consulta más información sobre la última actualización de <ph name="SYSTEM_APP_NAME" />.</translation>
@@ -1128,6 +1136,7 @@ Nueva instalación</translation>
 <translation id="7977927628060636163">Buscando redes móviles…</translation>
 <translation id="7982789257301363584">Red</translation>
 <translation id="7984197416080286869">Demasiados intentos con huella digital</translation>
+<translation id="798779949890829624">Este ajuste lo gestiona tu administrador</translation>
 <translation id="7994370417837006925">Inicio de sesión múltiple</translation>
 <translation id="7995804128062002838">No se ha podido hacer una captura de pantalla</translation>
 <translation id="8000066093800657092">Ninguna red</translation>
@@ -1155,6 +1164,7 @@ Nueva instalación</translation>
 <translation id="813913629614996137">Inicializando…</translation>
 <translation id="8142441511840089262">Doble clic</translation>
 <translation id="8142699993796781067">Red privada</translation>
+<translation id="8144760705599030999">Guarda <ph name="NAME" /> en <ph name="EMAIL" /> para un emparejamiento rápido con tus otros dispositivos</translation>
 <translation id="8152092012181020186">Pulsa Ctrl + W para cerrar.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, autocompletar</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Este ajuste lo gestiona tu administrador.</translation>
@@ -1192,6 +1202,7 @@ Nueva instalación</translation>
 <translation id="8412677897383510995">Mostrar ajustes de pantalla</translation>
 <translation id="8413272770729657668">La grabación empezará en 3, 2. 1…</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (funda)</translation>
+<translation id="8420205633584771378">¿Eliminar esta sugerencia?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> no está en este dispositivo.</translation>
 <translation id="8425213833346101688">Cambiar</translation>
 <translation id="8426708595819210923">Buenas noches, <ph name="GIVEN_NAME" /></translation>
@@ -1208,7 +1219,7 @@ Nueva instalación</translation>
 <translation id="8477270416194247200">Pulsa Alt + tecla de búsqueda o Mayús para cancelarlo.</translation>
 <translation id="8492573885090281069">La pantalla <ph name="DISPLAY_NAME" /> no admite <ph name="SPECIFIED_RESOLUTION" />. Se ha cambiado la resolución a <ph name="FALLBACK_RESOLUTION" />. Haz clic en Confirmar para mantener los cambios. La configuración anterior se restaurará en <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="85123341071060231">El Bluetooth de tu Chromebook está desactivado. Para desbloquear el Chromebook, escribe la contraseña.</translation>
-<translation id="8513108775083588393">Girar autom.</translation>
+<translation id="8513108775083588393">Giro automático</translation>
 <translation id="851458219935658693">Mostrar ventanas del escritorio actual, botón seleccionado</translation>
 <translation id="8517041960877371778">Es posible que tu <ph name="DEVICE_TYPE" /> no se cargue mientras esté encendido.</translation>
 <translation id="8551588720239073785">Configuración de fecha y hora</translation>
@@ -1284,6 +1295,7 @@ Nueva instalación</translation>
 <translation id="9000771174482730261">GESTIONAR ALMACENAMIENTO</translation>
 <translation id="9017320285115481645">Introduce el código de acceso parental de Family Link.</translation>
 <translation id="9024331582947483881">pantalla completa</translation>
+<translation id="9030319654231318877">Desactivado hasta el atardecer</translation>
 <translation id="9034924485347205037">Archivos de Linux</translation>
 <translation id="9047624247355796468">Abrir la configuración de <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Ocultar notificación</translation>
@@ -1303,6 +1315,7 @@ Nueva instalación</translation>
 <translation id="9099154003160514616">Actualización de Lacros disponible</translation>
 <translation id="9100887602489003640">Añadiendo perfil. Espera unos minutos.</translation>
 <translation id="9105450214093926548">No es posible que un segundo usuario inicie sesión mientras el navegador Lacros se está ejecutando. Utiliza un perfil del navegador secundario en Lacros o cierra Lacros y vuelve a intentarlo.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> o <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">No se puede grabar contenido protegido</translation>
 <translation id="9161053988251441839">APLICACIONES SUGERIDAS</translation>
 <translation id="9166331175924255663">Activa o desactiva la alta visibilidad de Compartir con Nearby.</translation>

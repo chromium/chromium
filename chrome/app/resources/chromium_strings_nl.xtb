@@ -15,6 +15,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="151962892725702025">Chromium OS kan je gegevens niet synchroniseren omdat synchronisatie niet beschikbaar is voor je domein.</translation>
 <translation id="1524282610922162960">Een Chromium-tabblad delen</translation>
 <translation id="1553461853655228091">Chromium heeft toegangsrechten voor de camera nodig om een 3D-kaart van je omgeving te maken</translation>
+<translation id="1602421994560205104">Chromium heeft dit bestand geblokkeerd omdat het te groot is voor een beveiligingscontrole. Probeer het opnieuw met bestanden van maximaal 50 MB.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Je beheerder vereist dat je Chromium opnieuw start om een update uit te voeren.}=1{Je beheerder vereist dat je Chromium opnieuw start om een update uit te voeren. Je incognitovenster kan niet opnieuw worden geopend.}other{Je beheerder vereist dat je Chromium opnieuw start om een update uit te voeren. Je # incognitovensters kunnen niet opnieuw worden geopend.}}</translation>
 <translation id="1625909126243026060">Neem belangrijke privacy- en beveiligingsopties in Chromium door</translation>
 <translation id="1632539827495546968">Als je dit account maar één keer wilt gebruiken, kun je de <ph name="GUEST_LINK_BEGIN" />gastmodus<ph name="GUEST_LINK_END" /> gebruiken in de Chromium-browser. Als je een account voor iemand anders wilt toevoegen, kun je <ph name="LINK_BEGIN" />een nieuwe persoon toevoegen<ph name="LINK_END" /> aan je <ph name="DEVICE_TYPE" />.
@@ -222,6 +223,7 @@ Sommige functies zijn mogelijk niet beschikbaar. Geef een andere profieldirector
 <translation id="673636774878526923">Log in en zet synchronisatie aan voor toegang tot je Chromium-gegevens op al je apparaten</translation>
 <translation id="6774082503108938489">Je ouder heeft 'Rechten voor sites, apps en extensies' uitgezet voor Chromium. Je mag deze <ph name="EXTENSION_TYPE_PARAMETER" /> niet aanzetten.</translation>
 <translation id="6847869444787758381">Chromium laat het je weten als je wachtwoorden mogelijk niet veilig meer zijn</translation>
+<translation id="6852530923436401894">Chromium heeft dit bestand geblokkeerd omdat het malware bevat</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (gekopieerd naar Chromium)</translation>
 <translation id="6873893289264747459">Chromium heeft vastgesteld dat <ph name="EXTENSION_NAME" /> malware bevat</translation>
@@ -240,6 +242,7 @@ Sommige functies zijn mogelijk niet beschikbaar. Geef een andere profieldirector
 <translation id="7218568399872925918">Sites die je bezoekt, onthouden je informatie totdat je Chromium sluit</translation>
 <translation id="7223968959479464213">Taakbeheer - Chromium</translation>
 <translation id="7246575524853130370">Je interesses volgens schattingen van Chromium</translation>
+<translation id="7265671031637041256">Chromium heeft dit bestand geblokkeerd omdat het versleuteld is. Vraag de eigenaar om het te ontgrendelen.</translation>
 <translation id="7309928523159922338">Via Advertentiemeting kunnen sites die je bezoekt Chromium om informatie vragen zodat ze de prestaties van hun advertenties kunnen meten. Advertentiemeting beperkt tracking op meerdere sites door zo min mogelijk informatie over te dragen tussen sites.</translation>
 <translation id="731795002583552498">Chromium updaten</translation>
 <translation id="7318036098707714271">Je bestand met voorkeuren is beschadigd of ongeldig.
@@ -278,6 +281,7 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="7898472181347242998">Ga naar de <ph name="LINK_BEGIN" />instellingen van Chromium OS<ph name="LINK_END" /> om te kijken of je apparaat up-to-date is</translation>
 <translation id="7937630085815544518">Je bent ingelogd bij Chromium als <ph name="USER_EMAIL_ADDRESS" />. Gebruik hetzelfde account om opnieuw in te loggen.</translation>
 <translation id="7975919845073681630">Dit is een tweede installatie van Chromium en kan niet als standaardbrowser worden ingesteld.</translation>
+<translation id="7997934263947464652">Extensies, apps en thema's van onbekende bronnen kunnen schadelijk zijn voor je apparaat. Chromium raadt je aan ze alleen te installeren vanuit de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="8013436988911883588">Zodra Chromium toegang heeft, kunnen websites je om toegang vragen.</translation>
 <translation id="8045118833343856403">De volgende accounts zijn niet ingelogd bij Chromium-profielen. Als je een account wilt gebruiken in een ander profiel, verwijder je eerst dat profiel.</translation>
 <translation id="8105840573057009683">Chromium heeft locatierechten nodig voor deze site</translation>

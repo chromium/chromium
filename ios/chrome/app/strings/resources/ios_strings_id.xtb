@@ -168,6 +168,7 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="2421044535038393232">Terus Edit</translation>
 <translation id="2434405374328098816">Anda sudah menyimpan sandi untuk "<ph name="USERNAME" />" di <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Tampilkan sandi</translation>
+<translation id="2469960372084740698">Nonaktifkan Safe Browsing?</translation>
 <translation id="2473876017985765807">Anda sudah menyimpan sandi untuk <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Tidak Dipilih</translation>
 <translation id="2497852260688568942">Sinkronisasi dinonaktifkan oleh administrator</translation>
@@ -213,11 +214,13 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="2848086008667475748">Jadikan Default di Setelan …</translation>
 <translation id="2858204748079866344">Untuk melindungi privasi Anda, Chrome tidak akan melakukan IsiOtomatis sandi di kolom ini.</translation>
 <translation id="285960592395650245">Coba Download Lagi</translation>
+<translation id="2866378026651742652">Anda sekarang akan melihat cerita dari topik ini saat membuka tab baru.</translation>
 <translation id="2870560284913253234">Situs</translation>
 <translation id="2871695793448672541">Sandi Tersembunyi</translation>
 <translation id="2876369937070532032">Mengirimkan URL beberapa halaman yang Anda kunjungi ke Google, jika keamanan Anda berisiko</translation>
 <translation id="2883151425485251736">Melihat dan mengedit topik yang disembunyikan dari akun Anda</translation>
 <translation id="288655811176831528">Tutup Tab</translation>
+<translation id="2890171748217283516">Situs yang Anda ikuti akan disimpan di Akun Google Anda. Anda dapat Mengelolanya di Setelan Discover.</translation>
 <translation id="2893180576842394309">Google dapat menggunakan histori Anda untuk mempersonalisasi Penelusuran dan layanan Google lainnya</translation>
 <translation id="2898963176829412617">Folder Baru…</translation>
 <translation id="2916171785467530738">Lengkapi Otomatis Penelusuran dan URL</translation>
@@ -313,6 +316,7 @@ Ikuti langkah di bawah:</translation>
 <translation id="3691593122358196899">Dibookmark ke <ph name="FOLDER_TITLE" /></translation>
 <translation id="369349502275246497">Tawarkan Penyimpanan Sandi</translation>
 <translation id="3709582977625132201">Tandai sebagai Belum Dibaca</translation>
+<translation id="371230970611282515">Memperkirakan dan memberikan peringatan terkait peristiwa berbahaya sebelum terjadi.</translation>
 <translation id="3740397331642243698">Membuka URL yang diinput di Google Chrome dalam mode Samaran.</translation>
 <translation id="3762232513783804601">Dibuat untuk iPad Anda</translation>
 <translation id="3771033907050503522">Tab Samaran</translation>
@@ -346,6 +350,7 @@ Ikuti langkah di bawah:</translation>
 <translation id="4038354071007134711">Tidak ada aplikasi di perangkat ini yang dapat membuka file.</translation>
 <translation id="4042870976416480368">Cari di Halaman</translation>
 <translation id="4049507953662678203">Pastikan Anda memiliki koneksi jaringan dan coba lagi.</translation>
+<translation id="4063300985191096908">Buka Feed</translation>
 <translation id="408404951701638773">Kotak penelusuran kini lebih mudah dijangkau</translation>
 <translation id="4108314971463891922">Ikuti</translation>
 <translation id="411254640334432676">Download gagal.</translation>
@@ -528,6 +533,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5737974891429562743">Detail proses masuk akun sudah tidak berlaku lagi. Perbarui untuk memulai sinkronisasi.</translation>
 <translation id="5738887413654608789">Hal ini memungkinkan Anda menemukan halaman web yang relevan berdasarkan berbagai hal di sekitar.</translation>
 <translation id="5758631781033351321">Daftar bacaan Anda akan ditampilkan di sini</translation>
+<translation id="5765456154762864099">Menu → Setelan → Browser Default</translation>
 <translation id="5782227691023083829">Menerjemahkan...</translation>
 <translation id="5791632441210678828">Tombol urutkan untuk feed Mengikuti.</translation>
 <translation id="5802829331520313983">Siapkan …</translation>
@@ -582,6 +588,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6144589619057374135">Buka ${url} dalam mode Samaran</translation>
 <translation id="6149061208933997199">Gunakan Sandi</translation>
 <translation id="6159839020698489198">opsional</translation>
+<translation id="6173386249456979368">Perlindungan lebih cepat dan proaktif terhadap situs, download, dan ekstensi berbahaya. Memberi Anda peringatan terkait kebocoran sandi. Mengharuskan pengiriman data penjelajahan ke Google</translation>
 <translation id="6177442314419606057">Penelusuran di Chrome</translation>
 <translation id="6184086493125982861">Tampilkan Tab</translation>
 <translation id="6187302354554850004">Sinkron terakhir: <ph name="LAST_USED_TIME" /></translation>
@@ -768,6 +775,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7671141431838911305">INSTAL</translation>
 <translation id="7701040980221191251">Tidak ada</translation>
+<translation id="7726702057919861819">Menu → Histori → Hapus Data Penjelajahan</translation>
 <translation id="7741325291586284254">Halaman Tab Samaran Baru</translation>
 <translation id="7765158879357617694">Pindahkan</translation>
 <translation id="7772032839648071052">Konfirmasi frasa sandi</translation>
@@ -840,6 +848,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8386068868580335421">Reset</translation>
 <translation id="8407669440184693619">Tidak ada sandi yang ditemukan untuk situs ini</translation>
 <translation id="842017693807136194">Login Dengan</translation>
+<translation id="8427613705947111202">Menu → Setelan → Sandi</translation>
 <translation id="8428045167754449968">Kota</translation>
 <translation id="8428213095426709021">Setelan</translation>
 <translation id="8428634594422941299">Mengerti</translation>
@@ -930,6 +939,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Laporan kerusakan terkirim.</translation>
 <translation id="952704832371081537">Batal</translation>
+<translation id="959066944189734975">Anda mengikuti <ph name="CHANNEL_NAME" /></translation>
 <translation id="981498610235328462">Organisasi mengizinkan Anda login hanya dengan akun tertentu. Akun yang tidak diizinkan akan disembunyikan.</translation>
 <translation id="984509647832111802">Sinkronisasi Tidak Berfungsi.</translation>
 <translation id="988141524645182168">Perangkat Lainnya</translation>

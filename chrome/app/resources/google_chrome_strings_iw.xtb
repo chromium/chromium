@@ -174,6 +174,7 @@
 <translation id="4600710005438004015">‏עדכון Chrome לגרסה האחרונה לא הצליח, ולכן אין לך גישה אל תכונות חדשות ותיקוני אבטחה.</translation>
 <translation id="4627412468266359539">‏אופציונלי: שליחה אוטומטית של נתוני השימוש וניתוח הביצועים אל Google תעזור לשפר את התכונות ואת הביצועים של ChromeOS Flex.</translation>
 <translation id="4633000520311261472">‏כדי לשפר את האבטחה של Chrome, השבתנו חלק מהתוספים שלא רשומים ב<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> וייתכן שנוספו ללא ידיעתך.</translation>
+<translation id="469553575393225953">‏תוספים, אפליקציות ועיצובים ממקורות לא מוכרים עלולים להזיק למכשיר. ההמלצה של Chrome היא להתקין אותם רק מחנות האינטרנט של Chrome</translation>
 <translation id="4728575227883772061">‏ההתקנה נכשלה בשל שגיאה לא צפויה. אם Google Chrome פועל כעת, יש לסגור אותו ולנסות שוב.</translation>
 <translation id="4747730611090640388">‏Chrome יכול להעריך מהם תחומי העניין שלך.  לאחר מכן, אתר שבו ביקרת יכול לשלוח בקשה ל-Chrome כדי לגלות מהם תחומי העניין שלך ולהתאים אישית את המודעות שמוצגות לך.</translation>
 <translation id="4754614261631455953">‏גרסה ניסיונית של Google Chrome‏ (mDNS-In)</translation>
@@ -213,6 +214,7 @@
 <translation id="5736850870166430177">‏אם באתר כלשהו מתבצע ניסיון לגנוב את הסיסמה שלך, או אם המערכת מזהה הורדה של קובץ מזיק, Chrome עשוי גם לשלוח כתובות URL לבדיקה באמצעות 'גלישה בטוחה'. הנתונים שנשלחים לבדיקה כוללים ביטים מתוכן של דפים</translation>
 <translation id="573759479754913123">‏מידע על מערכת ההפעלה של Chrome</translation>
 <translation id="5756509061973259733">‏כבר קיים במכשיר פרופיל Chrome עם החשבון הזה.</translation>
+<translation id="5763280521700030406">‏הקובץ הזה גדול מדי לבדיקת אבטחה ולכן הוא נחסם על ידי Chrome. אפשר לנסות שוב עם קבצים עד גודל של MB‏ 50</translation>
 <translation id="5795887333006832406">‏<ph name="PAGE_TITLE" /> - Google Chrome בגרסת Canary</translation>
 <translation id="5804318322022881572">‏לא ניתן היה להפעיל את Chrome. יש לנסות שוב.</translation>
 <translation id="5867197326698922595">‏Google Chrome מנסה לערוך את הסיסמאות.</translation>
@@ -321,8 +323,10 @@
 <translation id="8394720698884623075">‏המערכת בודקת כתובות URL בעזרת רשימה של אתרים לא בטוחים ששמורה ב-Chrome</translation>
 <translation id="840084489713044809">‏Google Chrome רוצה לייצא את הסיסמאות שלך.</translation>
 <translation id="8416347857511542594">‏מידע נוסף על ההתאמה האישית של המודעות ב-Chrome</translation>
+<translation id="8421734018304082652">‏הקובץ הזה מוצפן ולכן הוא נחסם על ידי Chrome. אפשר לבקש מהבעלים לפענח אותו</translation>
 <translation id="8433638294851456451">‏כדי לשלוח מספר מכאן לטלפון Android, יש להיכנס ל-Chrome בשני המכשירים.</translation>
 <translation id="8498858610309223613">‏בוצע עדכון אבטחה מיוחד של Google Chrome. עכשיו עליך להפעיל מחדש את Chrome ואנחנו נשחזר את הכרטיסיות.</translation>
+<translation id="8504220326736535258">‏בקובץ הזה יש תוכנה זדונית ולכן הוא נחסם על ידי Chrome</translation>
 <translation id="8516431725144212809">‏תחומי העניין שלך בהתאם להערכה של Chrome</translation>
 <translation id="8521348052903287641">‏כלל נכנס לגרסת הפיתוח של Google Chrome כדי לאפשר תנועת mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>

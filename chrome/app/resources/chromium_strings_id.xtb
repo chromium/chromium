@@ -13,6 +13,7 @@
 <translation id="151962892725702025">Chromium OS tidak dapat menyinkronkan data Anda karena Sinkronisasi tidak tersedia untuk domain Anda.</translation>
 <translation id="1524282610922162960">Bagikan tab Chromium</translation>
 <translation id="1553461853655228091">Chromium memerlukan izin untuk mengakses kamera guna membuat peta 3D untuk area di sekeliling Anda.</translation>
+<translation id="1602421994560205104">Chromium memblokir file ini karena terlalu besar untuk pemeriksaan keamanan. Coba lagi dengan file yang berukuran maksimal 50 MB</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administrator mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update}=1{Administrator mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update. Jendela Samaran Anda tidak akan dibuka kembali.}other{Administrator mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update. # jendela Samaran Anda tidak akan dibuka kembali.}}</translation>
 <translation id="1625909126243026060">Meninjau kontrol privasi dan keamanan utama di Chromium</translation>
 <translation id="1632539827495546968">Jika Anda hanya ingin menggunakan akun ini sekali, Anda dapat menggunakan <ph name="GUEST_LINK_BEGIN" />mode Tamu<ph name="GUEST_LINK_END" /> di browser Chromium. Jika Anda ingin menambahkan akun untuk orang lain, <ph name="LINK_BEGIN" />tambahkan pengguna baru<ph name="LINK_END" /> ke <ph name="DEVICE_TYPE" />.
@@ -220,6 +221,7 @@ Sebagian fitur mungkin tidak tersedia. Tentukan direktori profil yang berbeda at
 <translation id="673636774878526923">Untuk mengakses aktivitas Chromium di semua perangkat, login lalu aktifkan sinkronisasi.</translation>
 <translation id="6774082503108938489">Orang tuamu telah menonaktifkan "Izin untuk situs, aplikasi, dan ekstensi" untuk Chromium. Tindakan mengaktifkan <ph name="EXTENSION_TYPE_PARAMETER" /> ini tidak diizinkan.</translation>
 <translation id="6847869444787758381">Chromium akan memberi tahu jika sandi Anda disusupi</translation>
+<translation id="6852530923436401894">Chromium memblokir file ini karena memiliki malware</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (disalin ke Chromium)</translation>
 <translation id="6873893289264747459">Chromium menemukan bahwa "<ph name="EXTENSION_NAME" />" berisi malware</translation>
@@ -239,6 +241,7 @@ Sebagian fitur mungkin tidak tersedia. Tentukan direktori profil yang berbeda at
 <translation id="7218568399872925918">Situs yang dibuka akan mengingat informasi Anda hingga Anda menutup Chromium</translation>
 <translation id="7223968959479464213">Pengelola Tugas - Chromium</translation>
 <translation id="7246575524853130370">Minat Anda sesuai perkiraan Chromium</translation>
+<translation id="7265671031637041256">Chromium memblokir file ini karena dienkripsi. Minta pemiliknya untuk mendekripsi file</translation>
 <translation id="7309928523159922338">Pengukuran iklan memungkinkan situs yang Anda buka untuk meminta informasi dari Chromium yang membantu situs mengukur performa iklannya. Pengukuran iklan membatasi pelacakan lintas situs dengan mentransfer sesedikit mungkin informasi antar-situs.</translation>
 <translation id="731795002583552498">Memperbarui Chromium</translation>
 <translation id="7318036098707714271">File preferensi Anda rusak atau tidak valid.
@@ -278,6 +281,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="7898472181347242998">Untuk melihat apakah versi pada perangkat Anda adalah yang terbaru, buka <ph name="LINK_BEGIN" />Setelan Chromium OS<ph name="LINK_END" /></translation>
 <translation id="7937630085815544518">Anda telah masuk ke Chromium sebagai <ph name="USER_EMAIL_ADDRESS" />. Gunakan akun yang sama untuk masuk kembali.</translation>
 <translation id="7975919845073681630">Ini adalah pemasangan Chromium sekunder, dan tidak dapat digunakan sebagai browser default.</translation>
+<translation id="7997934263947464652">Ekstensi, aplikasi, dan tema dari sumber tidak dikenal dapat membahayakan perangkat Anda. Chromium merekomendasikan hanya menginstal ekstensi, aplikasi, dan tema dari <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Setelah Chromium memiliki akses, situs dapat meminta akses dari Anda.</translation>
 <translation id="8045118833343856403">Akun berikut tidak login ke profil Chromium mana pun. Jika Anda ingin menggunakan akun di profil lain, hapus profil tersebut terlebih dahulu.</translation>
 <translation id="8105840573057009683">Chromium memerlukan izin akses lokasi untuk situs ini</translation>

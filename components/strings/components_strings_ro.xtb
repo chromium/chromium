@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">Uneori, atacatorii imită site-uri aducând modificări greu de observat adresei web.</translation>
 <translation id="1028781062521375153">Vezi detaliile</translation>
 <translation id="1030706264415084469"><ph name="URL" /> dorește să stocheze permanent cantități mari de date pe dispozitiv</translation>
-<translation id="1032854598605920125">Rotește în sensul acelor de ceasornic</translation>
 <translation id="1033329911862281889">Modul incognito nu îți asigură invizibilitatea online:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />site-urile și serviciile pe care le folosesc știu când le accesezi;<ph name="END_LIST_ITEM" />
@@ -2535,6 +2534,7 @@ Detalii suplimentare:
 <translation id="7995512525968007366">Nespecificată</translation>
 <translation id="7998269595945679889">Butonul Deschide o filă incognito, apasă pe Enter pentru a deschide o filă incognito ca să navighezi în privat</translation>
 <translation id="800218591365569300">Încearcă să închizi celelalte file sau programe pentru a elibera memoria.</translation>
+<translation id="8003046808285812021">„<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8009225694047762179">Gestionează parolele</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Acest card și adresa de facturare vor fi salvate. Le vei putea folosi după ce te-ai conectat la <ph name="USER_EMAIL" />.}few{Aceste carduri și adresele de facturare vor fi salvate. Le vei putea folosi după ce te-ai conectat la <ph name="USER_EMAIL" />.}other{Aceste carduri și adresele de facturare vor fi salvate. Le vei putea folosi după ce te-ai conectat la <ph name="USER_EMAIL" />.}}</translation>
@@ -2635,6 +2635,7 @@ Detalii suplimentare:
 <translation id="8277900682056760511">Foaia handlerului pentru plăți este deschisă</translation>
 <translation id="8280630997017109758">Tava 11</translation>
 <translation id="8281084378435768645">Fotografie-Mare</translation>
+<translation id="8281886186245836920">Omite</translation>
 <translation id="8282947398454257691">Află identificatorul unic de dispozitiv</translation>
 <translation id="8284769179630993263">Gestionează Navigarea sigură și alte opțiuni din setările Chrome</translation>
 <translation id="8286036467436129157">Conectați-vă</translation>

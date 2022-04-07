@@ -168,6 +168,7 @@
 <translation id="2421044535038393232">המשך העריכה</translation>
 <translation id="2434405374328098816">כבר שמרת סיסמה עבור המשתמש "<ph name="USERNAME" />" לאתר <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">הצגת סיסמה</translation>
+<translation id="2469960372084740698">להשבית את 'גלישה בטוחה'?</translation>
 <translation id="2473876017985765807">כבר שמרת סיסמה לאתר <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">לא נבחר</translation>
 <translation id="2497852260688568942">מנהל המערכת שלך השבית את הסנכרון</translation>
@@ -213,11 +214,13 @@
 <translation id="2848086008667475748">להגדרה כברירת מחדל ב'הגדרות'…</translation>
 <translation id="2858204748079866344">‏כדי לשמור על הפרטיות שלך, מערכת Chrome לא ממלאת באופן אוטומטי את הסיסמה שלך בשדה הזה.</translation>
 <translation id="285960592395650245">יש לנסות להוריד שוב</translation>
+<translation id="2866378026651742652">יוצגו לך סטוריז מהערוץ הזה בפתיחת כרטיסייה חדשה.</translation>
 <translation id="2870560284913253234">אתר</translation>
 <translation id="2871695793448672541">נסתר, סיסמה</translation>
 <translation id="2876369937070532032">‏שולחת ל-Google כתובות URL של חלק מהדפים שאליהם נכנסת, אם מתגלה סיכון אבטחה</translation>
 <translation id="2883151425485251736">הצגה ועריכה של נושאים שבחרת להסתיר מהחשבון</translation>
 <translation id="288655811176831528">סגירת הכרטיסייה</translation>
+<translation id="2890171748217283516">‏אתרים שנמצאים במעקב נשמרים בחשבון Google שלך. ניתן לנהל אותם בהגדרות של Discover.</translation>
 <translation id="2893180576842394309">‏Google עשויה להשתמש בהיסטוריית הגלישה שלך לצורך התאמה אישית של החיפוש ושירותי Google אחרים</translation>
 <translation id="2898963176829412617">תיקייה חדשה…</translation>
 <translation id="2916171785467530738">השלמה אוטומטית של חיפושים וכתובות אתרים</translation>
@@ -313,6 +316,7 @@
 <translation id="3691593122358196899">התווסף לסימניות ב-<ph name="FOLDER_TITLE" /></translation>
 <translation id="369349502275246497">הצגת הצעות לשמירת הסיסמאות</translation>
 <translation id="3709582977625132201">סימון כפריט שלא נקרא</translation>
+<translation id="371230970611282515">המערכת חוזה אירועים מסוכנים ומזהירה אותך לגביהם לפני שהם מתרחשים.</translation>
 <translation id="3740397331642243698">‏פתיחת כתובות ה-URL שהוזנו ב-Google Chrome במצב אנונימי.</translation>
 <translation id="3762232513783804601">‏מותאם ל-iPad שלך</translation>
 <translation id="3771033907050503522">כרטיסיות אנונימיות</translation>
@@ -346,6 +350,7 @@
 <translation id="4038354071007134711">אין במכשיר זה אף אפליקציה שניתן לפתוח באמצעותה את הקובץ.</translation>
 <translation id="4042870976416480368">חיפוש בדף</translation>
 <translation id="4049507953662678203">צריך לוודא שיש חיבור לרשת ולנסות שוב.</translation>
+<translation id="4063300985191096908">לכניסה אל הפיד</translation>
 <translation id="408404951701638773">עכשיו קל יותר להגיע אל סרגל החיפוש</translation>
 <translation id="4108314971463891922">מעקב</translation>
 <translation id="411254640334432676">ההורדה נכשלה.</translation>
@@ -528,6 +533,7 @@
 <translation id="5737974891429562743">פרטי הכניסה לחשבון אינם עדכניים. יש לעדכן כדי להפעיל את הסנכרון.</translation>
 <translation id="5738887413654608789">‏תקשורת Bluetooth מאפשרת לך למצוא אתרי אינטרנט רלוונטיים לפי המיקום שלך.</translation>
 <translation id="5758631781033351321">רשימת הקריאה זמינה כאן</translation>
+<translation id="5765456154762864099">תפריט ← הגדרות ← דפדפן ברירת המחדל</translation>
 <translation id="5782227691023083829">מתבצע תרגום...</translation>
 <translation id="5791632441210678828">לחצן למיון של הפיד 'במעקב'.</translation>
 <translation id="5802829331520313983">הגדרה…</translation>
@@ -582,6 +588,7 @@
 <translation id="6144589619057374135">‏פתיחת ${urls} במצב אנונימי</translation>
 <translation id="6149061208933997199">השתמש בסיסמה</translation>
 <translation id="6159839020698489198">אופציונלי</translation>
+<translation id="6173386249456979368">‏הגנה פרואקטיבית ומהירה יותר מפני אתרים, הורדות ותוספים מסוכנים. המערכת מזהירה אותך בנוגע לחשיפה של סיסמאות. כשמצב ההגנה הזה בשימוש, נתוני גלישה נשלחים אל Google</translation>
 <translation id="6177442314419606057">‏חיפוש ב-Chrome</translation>
 <translation id="6184086493125982861">הצגת כרטיסיות</translation>
 <translation id="6187302354554850004">סונכרן לאחרונה: <ph name="LAST_USED_TIME" /></translation>
@@ -768,6 +775,7 @@
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7671141431838911305">התקנה</translation>
 <translation id="7701040980221191251">אין</translation>
+<translation id="7726702057919861819">תפריט ← היסטוריה ← מחיקה של נתוני הגלישה</translation>
 <translation id="7741325291586284254">דף חדש של כרטיסיית מצב אנונימי</translation>
 <translation id="7765158879357617694">העברה</translation>
 <translation id="7772032839648071052">אישור משפט-סיסמה</translation>
@@ -840,6 +848,7 @@
 <translation id="8386068868580335421">איפוס</translation>
 <translation id="8407669440184693619">לא נמצאו סיסמאות בשביל האתר הזה</translation>
 <translation id="842017693807136194">מחובר באמצעות</translation>
+<translation id="8427613705947111202">תפריט ← הגדרות ← סיסמאות</translation>
 <translation id="8428045167754449968">עיר / יישוב</translation>
 <translation id="8428213095426709021">הגדרות</translation>
 <translation id="8428634594422941299">הבנתי</translation>
@@ -930,6 +939,7 @@
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">דוח הקריסה נשלח.</translation>
 <translation id="952704832371081537">ביטול</translation>
+<translation id="959066944189734975">בחרת לעקוב אחר <ph name="CHANNEL_NAME" /></translation>
 <translation id="981498610235328462">הארגון מאפשר לך להיכנס לדפדפן רק באמצעות חשבונות מסוימים. החשבונות שאינם מותרים מוסתרים.</translation>
 <translation id="984509647832111802">הסנכרון לא פועל.</translation>
 <translation id="988141524645182168">מכשירים אחרים</translation>

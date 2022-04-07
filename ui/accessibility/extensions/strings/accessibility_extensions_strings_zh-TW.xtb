@@ -9,6 +9,7 @@
 <translation id="1591070050619849194">停用所有圖片動畫。</translation>
 <translation id="1703735871906654364">鍵盤瀏覽</translation>
 <translation id="1791496371305830581">允許所有動畫圖片。</translation>
+<translation id="1974060860693918893">進階</translation>
 <translation id="1996252509865389616">啟用？</translation>
 <translation id="2079545284768500474">復原</translation>
 <translation id="2179565792157161713">在新分頁中開啟詳細說明</translation>
@@ -51,6 +52,7 @@
 <translation id="6170146920149900756">Color Enhancer</translation>
 <translation id="633394792577263429">按住 &lt;span class='key'&gt;Control&lt;/span&gt; 鍵可逐字移動。</translation>
 <translation id="6550675742724504774">選項</translation>
+<translation id="6699630355767768222">步驟 3：覆寫色彩軸以進行校正。</translation>
 <translation id="6838518108677880446">設定：</translation>
 <translation id="690628312087070417">當插入點跳躍距離極大時：</translation>
 <translation id="6965382102122355670">確定</translation>
@@ -65,5 +67,6 @@
 <translation id="8321034316479930120">動畫政策</translation>
 <translation id="8480209185614411573">高對比</translation>
 <translation id="8609925175482059018">按下 &lt;span class='key'&gt;F7&lt;/span&gt; 鍵可開啟鍵盤瀏覽功能，再按一下則可關閉。</translation>
+<translation id="8798099450830957504">預設</translation>
 <translation id="894241283505723656">內容選單中的詳細說明</translation>
 </translationbundle>

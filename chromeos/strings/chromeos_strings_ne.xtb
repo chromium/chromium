@@ -114,7 +114,6 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: फेरि प्रयास गर्नुहोस्</translation>
 <translation id="2161394479394250669">प्रिन्ट गर्ने कार्य रद्द गर्नुहोस्</translation>
 <translation id="2180197493692062006">केही चिज गडबड भयो। यो एप फेरि खोली हेर्नुहोस्।</translation>
-<translation id="2201770616342964496">लोकल आइडेन्टिटी</translation>
 <translation id="2209788852729124853">ट्राफिक काउन्टर रिसेट गर्नुहोस्</translation>
 <translation id="2212733584906323460">नेम रिजोल्युसन</translation>
 <translation id="2217935453350629363">हालको गति</translation>
@@ -236,7 +235,7 @@
 <translation id="3865414814144988605">रिजोलुसन</translation>
 <translation id="387301095347517405">तपाईंको डिभाइसको ब्याट्री पूर्ण रूपमा चार्ज गरिएको सङ्ख्या</translation>
 <translation id="3923184630988645767">डेटा प्रयोग</translation>
-<translation id="3924044641767672375">सजिलैसँग मर्मत गर्न सकियोस् भन्नाका खातिर Wi-Fi मा कनेक्ट गर्न सिफारिस गरिन्छ। तपाईंको नेटवर्क सेभ गरिने छ।</translation>
+<translation id="3924044641767672375">सजिलैसँग मर्मत गर्न सकियोस् भन्नाका लागि Wi-Fi मा कनेक्ट गर्न सिफारिस गरिन्छ। तपाईंको नेटवर्क सेभ गरिने छ।</translation>
 <translation id="3932043219784172185">कुनै पनि डिभाइस कनेक्ट गरिएको छैन</translation>
 <translation id="3941014780699102620">होस्टको समस्या समाधान गर्न सकिएन</translation>
 <translation id="3942420633017001071">निदान</translation>
@@ -262,6 +261,7 @@
 <translation id="4170180284036919717">फोटो खिच्नुहोस्</translation>
 <translation id="4170700058716978431">असफल भयो</translation>
 <translation id="4176463684765177261">असक्षम गरिएको</translation>
+<translation id="4176659219503619100">कन्ट्रोल प्यानल</translation>
 <translation id="4213104098953699324">USB किबोर्ड</translation>
 <translation id="4227825898293920515">पासवर्डको म्याद <ph name="TIME" /> मा सकिन्छ</translation>
 <translation id="4238516577297848345">प्रिन्टसम्बन्धी कुनै पनि काम भइरहेको छैन</translation>
@@ -305,7 +305,6 @@
 <translation id="4593212453765072419">प्रोक्सी प्रमाणित गर्नु पर्ने हुन्छ</translation>
 <translation id="4609350030397390689">किबोर्डको चमक घटाउने की</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> मध्ये <ph name="PRINTED_PAGE_NUMBER" />। प्रिन्ट गर्ने कार्य रद्द गर्न enter थिच्नुहोस्।</translation>
-<translation id="4627645661474370390">रिमोट आइडेन्टिटी</translation>
 <translation id="463791356324567266">स्क्यान गर्ने कार्य रद्द गरिँदै छ...</translation>
 <translation id="4646949265910132906">WiFi कनेक्सन सुरक्षित बनाउनुहोस्</translation>
 <translation id="4650608062294027130">राइट सिफ्ट</translation>
@@ -427,7 +426,7 @@
 <translation id="5843706793424741864">फरेनहाइट</translation>
 <translation id="5849570051105887917">गृहपृष्ठ प्रदायकको कोड</translation>
 <translation id="5860033963881614850">बन्द</translation>
-<translation id="5860491529813859533">सक्रिय गर्नुहोस्</translation>
+<translation id="5860491529813859533">अन गर्नुहोस्</translation>
 <translation id="5866840822086176774">अत्यन्त बलियो</translation>
 <translation id="588258955323874662">पूर्णस्क्रिन</translation>
 <translation id="5895138241574237353">पुन: शुरू गर्नुहोस्</translation>
@@ -657,7 +656,7 @@
 <translation id="8503836310948963452">थप केही मिनेट मात्र पर्खनुहोस्…</translation>
 <translation id="8521021929829989041">व्यक्तिगत डिभाइसका रूपमा चलाउनुहोस्</translation>
 <translation id="8528615187455571738">Crosvm</translation>
-<translation id="8575298406870537639">तपाईंको मोबाइल सेवा प्रदायकले सो सेवा प्रदायकको नेटवर्कमा कनेक्ट गर्न सकोस् भन्नाका खातिर तपाईंले यो विकल्प अन गर्नु पर्ने हुन सक्छ। यससम्बन्धी थप जानकारी प्राप्त गर्न आफ्नो मोबाइल सेवा प्रदायकलाई सम्पर्क गर्नुहोस्।</translation>
+<translation id="8575298406870537639">तपाईंको मोबाइल सेवा प्रदायकले सो सेवा प्रदायकको नेटवर्कमा कनेक्ट गर्न सकोस् भन्नाका लागि तपाईंले यो विकल्प अन गर्नु पर्ने हुन सक्छ। यससम्बन्धी थप जानकारी प्राप्त गर्न आफ्नो मोबाइल सेवा प्रदायकलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="8576249514688522074">सुरु गरिएको छैन</translation>
 <translation id="8620617069779373398">रोमिङको स्थिति</translation>
 <translation id="8655295600908251630">च्यानल</translation>

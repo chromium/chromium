@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">Attackers sometimes mimic sites by making hard-to-see changes to the web address.</translation>
 <translation id="1028781062521375153">See details</translation>
 <translation id="1030706264415084469"><ph name="URL" /> wants to permanently store large data on your device</translation>
-<translation id="1032854598605920125">Rotate clockwise</translation>
 <translation id="1033329911862281889">Incognito does not make you invisible online:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Sites and the services that they use can see visits<ph name="END_LIST_ITEM" />
@@ -2635,6 +2634,7 @@ Additional details:
 <translation id="8277900682056760511">Payment handler sheet is opened</translation>
 <translation id="8280630997017109758">Tray 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
+<translation id="8281886186245836920">Skip</translation>
 <translation id="8282947398454257691">Know your unique device identifier</translation>
 <translation id="8284769179630993263">Manage your Safe Browsing and more in Chrome settings</translation>
 <translation id="8286036467436129157">Sign In</translation>

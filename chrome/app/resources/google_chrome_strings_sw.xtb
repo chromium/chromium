@@ -178,6 +178,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="4600710005438004015">Imeshindwa kupata toleo jipya la Chrome, kwa hivyo hutapata masasisho ya usalama na vipengele vipya.</translation>
 <translation id="4627412468266359539">Hiari: Tusaidie kuboresha vipengele na utendaji wa ChromeOS Flex kwa kutuma kiotomatiki uchunguzi na data ya matumizi kwa Google.</translation>
 <translation id="4633000520311261472">Ili kufanya Chrome salama zaidi, tumezima baadhi ya viendelezi ambavyo havijaorodheshwa katika <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> na ambavyo huendwa viliongezwa pasipo ridhaa yako.</translation>
+<translation id="469553575393225953">Viendelezi, programu na mandhari kutoka kwenye vyanzo visivyojulikana vinaweza kuathiri kifaa chako. Chrome inapendekeza tu usakinishaji kutoka Duka la Chrome kwenye Wavuti</translation>
 <translation id="4728575227883772061">Usanidi umeshindwa kwa sababu ya hitilafu isiyojulikana. Ikiwa Google Chrome haitumiki kwa sasa, tafadhali ifunge na ujaribu tena.</translation>
 <translation id="4747730611090640388">Chrome inaweza kukadiria mambo yanayokuvutia.  Baadaye, tovuti unayoitembelea inaweza kuiomba Chrome ili ione mambo yanayokuvutia na iweze kukuonyesha matangazo kulingana na mapendeleo yako.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -221,6 +222,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="5736850870166430177">Ikiwa tovuti inajaribu kuiba nenosiri lako au unapopakua faili hatari, Chrome inaweza pia kutuma URL, ikiwa ni pamoja na sehemu za maudhui ya ukurasa, kwenye kipengele cha Kuvinjari Salama</translation>
 <translation id="573759479754913123">Kuhusu Chrome OS</translation>
 <translation id="5756509061973259733">Tayari kuna wasifu kwenye Chrome unaotumia akaunti hii katika kifaa hiki</translation>
+<translation id="5763280521700030406">Chrome imezuia faili hii kwa sababu ni kubwa mno kwa ukaguzi wa usalama. Jaribu tena kwa faili zisizozidi MB 50</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Toleo la Jaribio la Google Chrome</translation>
 <translation id="5804318322022881572">Imeshindwa kuanzisha Chrome. Jaribu tena.</translation>
 <translation id="5867197326698922595">Google Chrome inajaribu kubadilisha manenosiri.</translation>
@@ -329,8 +331,10 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="8394720698884623075">Hukagua URL ili kuona iwapo zipo kwenye orodha ya tovuti zisizo salama zilizohifadhiwa katika Chrome</translation>
 <translation id="840084489713044809">Google Chrome ingependa kuhamisha manenosiri yako.</translation>
 <translation id="8416347857511542594">Pata maelezo zaidi kuhusu kuweka mapendeleo ya matangazo kwenye Chrome</translation>
+<translation id="8421734018304082652">Chrome imezuia faili hii kwa sababu imesimbwa kwa njia fiche. Mwombe mmiliki aisimbue</translation>
 <translation id="8433638294851456451">Ili uweze kutuma nambari kwa simu yako ya Android kutoka hapa, ingia katika akaunti kwenye Chrome ukitumia vifaa vyote viwili.</translation>
 <translation id="8498858610309223613">Sasisho maalum la usalama wa Google Chrome limewekwa sasa hivi. Ifunge kisha uifungue sasa na tutarejesha vichupo vyako.</translation>
+<translation id="8504220326736535258">Chrome imezuia faili hii kwa sababu ina programu hasidi</translation>
 <translation id="8516431725144212809">Mambo yanayokuvutia kama yalivyokadiriwa na Chrome</translation>
 <translation id="8521348052903287641">Sheria ya kuingia ya Google Chrome Dev ili kuruhusu trafiki ya mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>

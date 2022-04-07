@@ -168,6 +168,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="2421044535038393232">Vazhdo modifikimin</translation>
 <translation id="2434405374328098816">Ke ruajtur tashmë një fjalëkalim për "<ph name="USERNAME" />" në <ph name="WEBSITE" />.</translation>
 <translation id="2435457462613246316">Shfaq fjalëkalimin</translation>
+<translation id="2469960372084740698">Të çaktivizohet "Shfletimi i sigurt"?</translation>
 <translation id="2473876017985765807">Ke ruajtur tashmë një fjalëkalim për <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Nuk është zgjedhur</translation>
 <translation id="2497852260688568942">Sinkronizimi është çaktivizuar nga administratori</translation>
@@ -313,6 +314,7 @@ Ndiq hapat më poshtë:</translation>
 <translation id="3691593122358196899">Faqeshënuesi u shtua te <ph name="FOLDER_TITLE" /></translation>
 <translation id="369349502275246497">Ofro të ruhen fjalëkalimet</translation>
 <translation id="3709582977625132201">Shëno si të palexuar</translation>
+<translation id="371230970611282515">Parashikon dhe të paralajmëron rreth ngjarjeve të rrezikshme përpara se ato të ndodhin.</translation>
 <translation id="3740397331642243698">Hap URL-të e futura në Google Chrome në modalitetin "i fshehtë".</translation>
 <translation id="3762232513783804601">Krijuar për iPad tënd</translation>
 <translation id="3771033907050503522">Skedat "e fshehura"</translation>
@@ -528,6 +530,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5737974891429562743">Detajet e identifikimit të llogarisë nuk janë të përditësuara. Përditësoji për të filluar sinkronizimin.</translation>
 <translation id="5738887413654608789">Kjo të lejon të zbulosh faqe uebi që kanë lidhje bazuar në ambientin rrethues.</translation>
 <translation id="5758631781033351321">Këtu do të gjesh listën tënde të leximit</translation>
+<translation id="5765456154762864099">"Menyja → Cilësimet→ Shfletuesi i parazgjedhur"</translation>
 <translation id="5782227691023083829">Po përkthen...</translation>
 <translation id="5791632441210678828">Butoni i renditjes për furnizimin "Ndjekje".</translation>
 <translation id="5802829331520313983">Konfiguro…</translation>
@@ -582,6 +585,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6144589619057374135">Hap ${url} në modalitetin "I fshehtë"</translation>
 <translation id="6149061208933997199">Përdor fjalëkalimin</translation>
 <translation id="6159839020698489198">opsionale</translation>
+<translation id="6173386249456979368">Mbrojtje më e shpejtë dhe proaktive ndaj sajteve të uebit, shkarkimeve dhe shtesave të rrezikshme. Të paralajmëron rreth nxjerrjeve të paautorizuara të fjalëkalimeve. Kërkon që të dhënat e shfletimit t'i dërgohen Google</translation>
 <translation id="6177442314419606057">Kërko në Chrome</translation>
 <translation id="6184086493125982861">Trego skedat</translation>
 <translation id="6187302354554850004">Sinkronizimi i fundit: <ph name="LAST_USED_TIME" /></translation>
@@ -768,6 +772,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7671141431838911305">INSTALO</translation>
 <translation id="7701040980221191251">Asnjë</translation>
+<translation id="7726702057919861819">"Menyja → Historiku → Pastro të dhënat e shfletimit"</translation>
 <translation id="7741325291586284254">Faqja e skedës së re "të fshehtë"</translation>
 <translation id="7765158879357617694">Zhvendos</translation>
 <translation id="7772032839648071052">Konfirmo shprehjen e kalimit</translation>
@@ -840,6 +845,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8386068868580335421">Rivendos</translation>
 <translation id="8407669440184693619">Nuk u gjetën fjalëkalime për këtë sajt</translation>
 <translation id="842017693807136194">Identifikuar me</translation>
+<translation id="8427613705947111202">"Menyja → Cilësimet → Fjalëkalimet"</translation>
 <translation id="8428045167754449968">Qyteti / Qyteza</translation>
 <translation id="8428213095426709021">Cilësimet</translation>
 <translation id="8428634594422941299">E kuptova</translation>

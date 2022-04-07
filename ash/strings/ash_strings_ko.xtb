@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">블루투스 기기 '<ph name="DEVICE_NAME" />'에서 페어링 허가를 요청합니다. 기기에서 다음 PIN 코드를 입력하세요. <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">스크린캐스트 도구</translation>
 <translation id="1024261588257374085">부분 스크린샷 선택됨</translation>
+<translation id="1024364763893396229"><ph name="NAME" /> 저장</translation>
 <translation id="1032891413405719768">스타일러스 배터리 부족</translation>
 <translation id="1036073649888683237">알림을 관리하려면 설정으로 이동하세요.</translation>
 <translation id="1036672894875463507">저는 Google 어시스턴트입니다. 언제든지 도움을 드릴 수 있습니다.
@@ -35,6 +36,7 @@
 <translation id="1175572348579024023">스크롤</translation>
 <translation id="1178581264944972037">일시중지</translation>
 <translation id="1181037720776840403">삭제</translation>
+<translation id="1183863904939664422">제안 무시</translation>
 <translation id="118437560755358292">보안 강화를 위해 비밀번호 또는 PIN 입력</translation>
 <translation id="118532027333893379">전체 화면을 캡처하려면 아무 곳이나 탭하세요.</translation>
 <translation id="1190609913194133056">알림 센터</translation>
@@ -295,6 +297,7 @@
 <translation id="2819276065543622893">지금 로그아웃됩니다.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" />에서 <ph name="SPECIFIED_RESOLUTION" />을(를) 지원하지 않습니다. 해상도가 <ph name="FALLBACK_RESOLUTION" />(으)로 변경되었습니다.</translation>
 <translation id="2825619548187458965">임시보관함</translation>
+<translation id="2831035692318564937">일출까지 켜기</translation>
 <translation id="2834813915651407382">최근에 열림</translation>
 <translation id="2841907151129139818">태블릿 모드로 전환됨</translation>
 <translation id="2844169650293029770">USB-C 기기(좌측 전면 포트)</translation>
@@ -441,6 +444,7 @@
 <translation id="3626281679859535460">밝기</translation>
 <translation id="3630697955794050612">사용 안함</translation>
 <translation id="3631369015426612114">다음 항목에 알림 허용:</translation>
+<translation id="3633097874324966332">기기를 페어링하려면 블루투스 설정을 여세요.</translation>
 <translation id="3638400994746983214">개인정보 보호 화면을 켜거나 끕니다. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">업데이트 지연됨</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> 관리 사용자</translation>
@@ -594,6 +598,7 @@
 <translation id="4560576029703263363">사용</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">비밀번호 숨김</translation>
+<translation id="4566144812051858745">어떤 제안에도 관심 없음</translation>
 <translation id="4570957409596482333">텍스트 읽어주기 버튼</translation>
 <translation id="4573176682887762361">"[단어/구문] 입력"</translation>
 <translation id="4577274620589681794">타이머 종료 · <ph name="LABEL" /></translation>
@@ -644,6 +649,7 @@
 <translation id="4868492592575313542">활성화됨</translation>
 <translation id="4872237917498892622">Alt+검색 또는 Shift 키</translation>
 <translation id="4881695831933465202">열기</translation>
+<translation id="4889868803215848840">의견을 보내주시면 제안 기능이 개선됩니다.</translation>
 <translation id="4890187583552566966">관리자가 Google 어시스턴트를 사용 중지했습니다.</translation>
 <translation id="4890408602550914571">휴대전화가 근처에 있고 블루투스가 켜져 있는지 확인하세요.</translation>
 <translation id="4895488851634969361">배터리 충전이 완료되었습니다.</translation>
@@ -769,6 +775,7 @@
 <translation id="5744083938413354016">탭 드래그</translation>
 <translation id="5745612484876805746">일몰 시 야간 조명이 자동으로 켜짐</translation>
 <translation id="5750765938512549687">블루투스가 사용 중지됨</translation>
+<translation id="5760866832697883462"><ph name="NAME" />에 연결</translation>
 <translation id="576341972084747908">위험한 <ph name="FILENAME" /> 파일을 다운로드합니다</translation>
 <translation id="5763928712329149804">Shelf Party가 꺼져 있습니다.</translation>
 <translation id="576453121877257266">야간 조명이 켜졌습니다.</translation>
@@ -830,6 +837,7 @@
 <translation id="6054305421211936131">스마트 카드로 로그인</translation>
 <translation id="6059276912018042191">최근 Chrome 탭</translation>
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> 후 자동으로 로그아웃됩니다.</translation>
+<translation id="6064463340679478396">파일 사용 완료</translation>
 <translation id="6073451960410192870">녹화 중지</translation>
 <translation id="6099678161144790572">지난달에 수정됨</translation>
 <translation id="6103838137565245112">시스템</translation>
@@ -954,6 +962,7 @@
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> 기기의 성능이 저하될 수 있습니다. 인증된 <ph name="PREFERRED_MINIMUM_POWER" />W 이상의 USB-C 전원 어댑터를 사용하세요.</translation>
 <translation id="688631446150864480">창을 전환하려면 아래쪽 화살표 키를 누르세요.</translation>
 <translation id="6896758677409633944">복사</translation>
+<translation id="6901883536534621389">동작으로 이동해 보기</translation>
 <translation id="6919251195245069855">스마트 카드를 인식할 수 없습니다. 다시 시도해 보세요.</translation>
 <translation id="6921188888306725546">단축키 개선됨</translation>
 <translation id="6931576957638141829">저장 위치</translation>
@@ -1113,6 +1122,7 @@
 <translation id="7886169021410746335">개인정보 보호 설정 조정</translation>
 <translation id="7886277072580235377">로그아웃하면 인터넷 세션이 삭제됩니다. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">이메일 보내 줘</translation>
+<translation id="7893503627044934815">파일을 표시하지 않음</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">화면 회전 단축키를 누르셨습니다. 화면을 회전하시겠습니까?</translation>
 <translation id="7901405293566323524">휴대전화 허브</translation>
@@ -1130,6 +1140,7 @@
 <translation id="7977927628060636163">모바일 네트워크 검색 중...</translation>
 <translation id="7982789257301363584">네트워크</translation>
 <translation id="7984197416080286869">지문 인식을 너무 많이 시도함</translation>
+<translation id="798779949890829624">관리자가 관리하는 설정입니다</translation>
 <translation id="7994370417837006925">멀티 로그인</translation>
 <translation id="7995804128062002838">화면을 캡처할 수 없습니다.</translation>
 <translation id="8000066093800657092">네트워크 없음</translation>
@@ -1157,6 +1168,7 @@
 <translation id="813913629614996137">초기화 중...</translation>
 <translation id="8142441511840089262">더블클릭</translation>
 <translation id="8142699993796781067">사설 네트워크</translation>
+<translation id="8144760705599030999"><ph name="NAME" /> 기기를 <ph name="EMAIL" />에 저장하여 다른 기기와 더 빠르게 페어링하세요.</translation>
 <translation id="8152092012181020186">닫으려면 Ctrl + W를 누릅니다.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, 자동 완성</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> 관리자가 관리하는 설정입니다.</translation>
@@ -1194,6 +1206,7 @@
 <translation id="8412677897383510995">디스플레이 설정 표시</translation>
 <translation id="8413272770729657668">녹화가 곧 시작됩니다. 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />%(케이스)</translation>
+<translation id="8420205633584771378">추천을 삭제하시겠습니까?</translation>
 <translation id="8421270167862077762">이 기기에 <ph name="UNAVAILABLE_APPS" /> 앱이 없습니다.</translation>
 <translation id="8425213833346101688">변경</translation>
 <translation id="8426708595819210923">편안한 저녁 보내세요, <ph name="GIVEN_NAME" />님</translation>
@@ -1286,6 +1299,7 @@
 <translation id="9000771174482730261">저장용량 관리</translation>
 <translation id="9017320285115481645">Family Link 부모 액세스 코드를 입력하세요.</translation>
 <translation id="9024331582947483881">전체화면</translation>
+<translation id="9030319654231318877">일몰까지 끄기</translation>
 <translation id="9034924485347205037">Linux 파일</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> 설정 열기</translation>
 <translation id="9059834730836941392">알림 접기</translation>
@@ -1305,6 +1319,7 @@
 <translation id="9099154003160514616">Lacros 업데이트 사용 가능</translation>
 <translation id="9100887602489003640">프로필을 추가하는 중입니다. 잠시만 기다려 주세요.</translation>
 <translation id="9105450214093926548">Lacros 브라우저가 실행되는 동안에는 두 번째 사용자 로그인이 지원되지 않습니다. 대신 Lacros에서 두 번째 브라우저 프로필을 사용하거나 Lacros를 닫았다가 다시 시도해 보세요.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> 또는 <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">보호된 콘텐츠는 녹화할 수 없음</translation>
 <translation id="9161053988251441839">추천 앱</translation>
 <translation id="9166331175924255663">Nearby Share 모든 기기에 공개 설정 전환</translation>

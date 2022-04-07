@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">Ründajad imiteerivad mõnikord saite, tehes veebiaadressis väikeseid raskesti märgatavaid muudatusi.</translation>
 <translation id="1028781062521375153">Kuva üksikasjad</translation>
 <translation id="1030706264415084469"><ph name="URL" /> soovib suure koguse andmeid alaliselt teie seadmesse salvestada</translation>
-<translation id="1032854598605920125">Pööra päripäeva</translation>
 <translation id="1033329911862281889">Inkognito režiim ei muuda teid veebis nähtamatuks.
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Külastatavad saidid ja teenused näevad külastusi.<ph name="END_LIST_ITEM" />
@@ -2534,6 +2533,7 @@ Lisateave:
 <translation id="7995512525968007366">Ei ole määratud</translation>
 <translation id="7998269595945679889">Inkognito vahelehe avamise nupp, vajutage sisestusklahvi uue inkognito vahelehe avamiseks, et privaatselt sirvida</translation>
 <translation id="800218591365569300">Sulgege muud vahelehed või programmid, et mälu vabastada.</translation>
+<translation id="8003046808285812021">„<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">Brauser</translation>
 <translation id="8009225694047762179">Halda paroole</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{See kaart ja selle arveldusaadress salvestatakse. Saate seda kasutada, kui olete kontole <ph name="USER_EMAIL" /> sisse logitud.}other{Need kaardid ja nende arveldusaadressid salvestatakse. Saate neid kasutada, kui olete kontole <ph name="USER_EMAIL" /> sisse logitud.}}</translation>
@@ -2634,6 +2634,7 @@ Lisateave:
 <translation id="8277900682056760511">Maksetöötleja leht on avatud</translation>
 <translation id="8280630997017109758">Salv 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
+<translation id="8281886186245836920">Jäta vahele</translation>
 <translation id="8282947398454257691">Teave teie ainulaadse seadme koodi kohta</translation>
 <translation id="8284769179630993263">Hallake Chrome'i seadetes Google'i ohutut sirvimist ja muud</translation>
 <translation id="8286036467436129157">Logi sisse</translation>

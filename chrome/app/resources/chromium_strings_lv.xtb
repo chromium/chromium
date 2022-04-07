@@ -13,6 +13,7 @@
 <translation id="151962892725702025">Chromium OS nevarēja sinhronizēt jūsu datus, jo jūsu domēnā nav pieejama sinhronizācija.</translation>
 <translation id="1524282610922162960">Chromium cilnes kopīgošana</translation>
 <translation id="1553461853655228091">Pārlūkam Chromium ir nepieciešama atļauja piekļūt jūsu kamerai, lai varētu izveidot jūsu apkārtnes 3D karti</translation>
+<translation id="1602421994560205104">Pārlūkā Chromium šis fails tika bloķēts, jo tas ir pārāk liels, lai tam varētu veikt drošības pārbaudi. Mēģiniet vēlreiz ar failiem, kuru lielums nepārsniedz 50 MB.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Lai lietotu atjauninājumu, administrators pieprasa restartēt pārlūku Chromium.}=1{Lai lietotu atjauninājumu, administrators pieprasa restartēt pārlūku Chromium. Jūsu inkognito režīma logs netiks atkārtoti atvērts.}zero{Lai lietotu atjauninājumu, administrators pieprasa restartēt pārlūku Chromium. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}one{Lai lietotu atjauninājumu, administrators pieprasa restartēt pārlūku Chromium. # jūsu inkognito režīma logs netiks atkārtoti atvērts.}other{Lai lietotu atjauninājumu, administrators pieprasa restartēt pārlūku Chromium. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}}</translation>
 <translation id="1625909126243026060">Pārskatiet svarīgākās konfidencialitātes un drošības vadīklas pārlūkā Chromium.</translation>
 <translation id="1632539827495546968">Ja vēlaties šo kontu izmantot tikai vienu reizi, varat lietot <ph name="GUEST_LINK_BEGIN" />viesa režīmu<ph name="GUEST_LINK_END" /> pārlūkā Chromium. Ja vēlaties pievienot kontu kādam citam, <ph name="LINK_BEGIN" />pievienojiet jaunu personu<ph name="LINK_END" /> savai ierīcei (<ph name="DEVICE_TYPE" />).
@@ -220,6 +221,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="673636774878526923">Lai piekļūtu savam Chromium saturam visās jūsu ierīcēs, pierakstieties un pēc tam ieslēdziet sinhronizāciju.</translation>
 <translation id="6774082503108938489">Viens no jūsu vecākiem ir izslēdzis “Atļaujas vietnēm, lietotnēm un paplašinājumiem” pārlūkam Chromium. Nav atļauts iespējot šo: <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="6847869444787758381">Ja jūsu paroles kādreiz tiks apdraudētas, pārlūkā Chromium saņemsiet paziņojumu</translation>
+<translation id="6852530923436401894">Pārlūkā Chromium šis fails tika bloķēts, jo tajā ir ļaunprātīga programmatūra.</translation>
 <translation id="6857782730669500492">Chromium — <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kopēts pārlūkā Chromium)</translation>
 <translation id="6873893289264747459">Pārlūkā Chromium tika konstatēts, ka paplašinājums “<ph name="EXTENSION_NAME" />” satur ļaunprātīgu programmatūru.</translation>
@@ -238,6 +240,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="7218568399872925918">Apmeklētajās vietnēs jūsu informācija tiks iegaumēta, līdz jūs aizvērsiet pārlūku Chromium.</translation>
 <translation id="7223968959479464213">Uzdevumu pārvaldnieks — Chromium</translation>
 <translation id="7246575524853130370">Jūsu intereses, kas aptuveni noteiktas pārlūkā Chromium</translation>
+<translation id="7265671031637041256">Pārlūkā Chromium šis fails tika bloķēts, jo tas ir šifrēts. Lūdziet faila īpašniekam to atšifrēt.</translation>
 <translation id="7309928523159922338">Reklāmu izvērtēšana ļauj jūsu apmeklētajām vietnēm pieprasīt informāciju no Chromium, lai efektīvāk novērtētu vietnēs rādīto reklāmu veiktspēju. Reklāmu izvērtēšana ierobežo starpvietņu izsekošanu, pārsūtot starp vietnēm pēc iespējas mazāk informācijas.</translation>
 <translation id="731795002583552498">Notiek Chromium atjaunināšana</translation>
 <translation id="7318036098707714271">Jūsu preferenču fails ir bojāts vai nederīgs. Chromium nespēj atkopt jūsu iestatījumus.</translation>
@@ -275,6 +278,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="7898472181347242998">Lai pārbaudītu, vai ierīce ir atjaunināta, pārejiet uz sadaļu <ph name="LINK_BEGIN" />Chromium OS iestatījumi<ph name="LINK_END" />.</translation>
 <translation id="7937630085815544518">Operētājsistēmā Chromium iepriekš pierakstījāties kā lietotājs <ph name="USER_EMAIL_ADDRESS" />. Lai pierakstītos vēlreiz, lūdzu, izmantojiet to pašu kontu.</translation>
 <translation id="7975919845073681630">Šī ir Chromium papildu instalācija, un to nevar izmantot kā noklusējuma pārlūku.</translation>
+<translation id="7997934263947464652">No nezināmiem avotiem iegūti paplašinājumi, lietotnes un motīvi var kaitēt ierīcei. Chromium komanda iesaka instalēt tos tikai no veikala <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="8013436988911883588">Tiklīdz pārlūkam Chromium tiks sniegta piekļuve, vietnes varēs lūgt jums piekļuvi.</translation>
 <translation id="8045118833343856403">Nevienā Chromium profilā nav veikta pierakstīšanās tālāk norādījos kontos. Ja vēlaties izmantot kādu kontu citā profilā, vispirms noņemiet attiecīgo profilu.</translation>
 <translation id="8105840573057009683">Pārlūkam Chromium ir nepieciešama atrašanās vietas atļauja šai vietnei.</translation>

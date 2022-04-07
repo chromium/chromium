@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Bluetooth-toestel "<ph name="DEVICE_NAME" />" vra toestemming om saam te bind. Voer asseblief hierdie PIN-kode op daardie toestel in: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">Skermuitsendingnutsgoed</translation>
 <translation id="1024261588257374085">Gedeeltelike skermkiekie gekies</translation>
+<translation id="1024364763893396229">Stoor jou <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Stilus se battery is amper pap</translation>
 <translation id="1036073649888683237">Gaan na Instellings om kennisgewings te bestuur</translation>
 <translation id="1036672894875463507">Ek is jou Google Assistent en ek is hier om jou deur die loop van jou dag te help!
@@ -35,6 +36,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1175572348579024023">Rollees</translation>
 <translation id="1178581264944972037">Laat wag</translation>
 <translation id="1181037720776840403">Verwyder</translation>
+<translation id="1183863904939664422">Stel nie in hierdie voorstel belang nie</translation>
 <translation id="118437560755358292">Voer wagwoord of PIN in vir meer sekuriteit</translation>
 <translation id="118532027333893379">Tik op enige plek om volskerm vas te vang</translation>
 <translation id="1190609913194133056">Kennisgewingsentrum</translation>
@@ -295,6 +297,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2819276065543622893">Jy sal nou afgemeld word.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> werk nie met <ph name="SPECIFIED_RESOLUTION" /> nie. Die resolusie is na <ph name="FALLBACK_RESOLUTION" /> verander.</translation>
 <translation id="2825619548187458965">Rak</translation>
+<translation id="2831035692318564937">Aan tot sonsopkoms</translation>
 <translation id="2834813915651407382">Onlangs oopgemaak</translation>
 <translation id="2841907151129139818">Het na tabletmodus oorgeskakel</translation>
 <translation id="2844169650293029770">USB C-toestel (voorste poort aan linkerkant)</translation>
@@ -441,6 +444,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3626281679859535460">Helderheid</translation>
 <translation id="3630697955794050612">af</translation>
 <translation id="3631369015426612114">Laat kennisgewings van die volgende af toe</translation>
+<translation id="3633097874324966332">Maak Bluetooth-instellings oop om jou toestel saam te bind</translation>
 <translation id="3638400994746983214">Wissel privaatheidskerm. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Tyd vir 'n opdatering</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Bestuurde gebruiker</translation>
@@ -595,6 +599,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4560576029703263363">Aan</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Versteek wagwoord</translation>
+<translation id="4566144812051858745">Stel nie in enige voorstelle belang nie</translation>
 <translation id="4570957409596482333">Hardoplees-knoppie</translation>
 <translation id="4573176682887762361">"Tik [woord / frase]"</translation>
 <translation id="4577274620589681794">Tyd is verby · <ph name="LABEL" /></translation>
@@ -645,6 +650,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4868492592575313542">geaktiveer</translation>
 <translation id="4872237917498892622">Alt+Search of Shift</translation>
 <translation id="4881695831933465202">Maak oop</translation>
+<translation id="4889868803215848840">Verskaf opsionele terugvoer om voorstelle te verbeter:</translation>
 <translation id="4890187583552566966">Jou administrateur het die Google Assistent gedeaktiveer</translation>
 <translation id="4890408602550914571">Maak seker dat jou foon in die omtrek is en dat Bluetooth aangeskakel is.</translation>
 <translation id="4895488851634969361">Battery is vol.</translation>
@@ -770,6 +776,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5744083938413354016">Tiksleep</translation>
 <translation id="5745612484876805746">Aandbeligting skakel met sondsondergang outomaties aan</translation>
 <translation id="5750765938512549687">Bluetooth is af</translation>
+<translation id="5760866832697883462">Koppel jou <ph name="NAME" /></translation>
 <translation id="576341972084747908">Laai gevaarlike <ph name="FILENAME" /> af</translation>
 <translation id="5763928712329149804">Rakgroep is af.</translation>
 <translation id="576453121877257266">Aandbeligting is aan.</translation>
@@ -831,6 +838,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6054305421211936131">Meld met slimkaart aan</translation>
 <translation id="6059276912018042191">Onlangse Chrome-oortjies</translation>
 <translation id="6062360702481658777">Jy sal oor <ph name="LOGOUT_TIME_LEFT" /> outomaties afgemeld word.</translation>
+<translation id="6064463340679478396">Hierdie lêer klaar gebruik</translation>
 <translation id="6073451960410192870">Stop opname</translation>
 <translation id="6099678161144790572">In die afgelope maand gewysig</translation>
 <translation id="6103838137565245112">stelsel</translation>
@@ -955,6 +963,7 @@ Nuwe installasie</translation>
 <translation id="6886172995547742638">Jou <ph name="DEVICE_TYPE" /> kan dalk laer werkverrigting ervaar. Gebruik 'n gesertifiseerde <ph name="PREFERRED_MINIMUM_POWER" />W- of hoër USB-C-kragprop.</translation>
 <translation id="688631446150864480">Druk die afpyl om tussen vensters te wissel</translation>
 <translation id="6896758677409633944">Kopieer</translation>
+<translation id="6901883536534621389">Probeer gebare om te navigeer</translation>
 <translation id="6919251195245069855">Kon nie jou slimkaart herken nie. Probeer weer.</translation>
 <translation id="6921188888306725546">Sleutelbordkortpaaie is verbeter</translation>
 <translation id="6931576957638141829">Stoor in</translation>
@@ -1114,6 +1123,7 @@ Nuwe installasie</translation>
 <translation id="7886169021410746335">Verstel privaatheidinstellings</translation>
 <translation id="7886277072580235377">Jou internetsessie sal uitgevee word wanneer jy afmeld. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Stuur 'n e-pos</translation>
+<translation id="7893503627044934815">Wil nie hê hierdie lêer moet gewys word nie</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Jy het die sleutelbordkortpad vir skermrotasie gedruk. Wil jy die skerm draai?</translation>
 <translation id="7901405293566323524">Foonspil</translation>
@@ -1131,6 +1141,7 @@ Nuwe installasie</translation>
 <translation id="7977927628060636163">Soek tans selnetwerke …</translation>
 <translation id="7982789257301363584">Netwerk</translation>
 <translation id="7984197416080286869">Te veel vingerafdrukpogings</translation>
+<translation id="798779949890829624">Jou administrateur bestuur hierdie instelling</translation>
 <translation id="7994370417837006925">Veelvuldige aanmelding</translation>
 <translation id="7995804128062002838">Kon nie skermkiekie neem nie</translation>
 <translation id="8000066093800657092">Geen netwerk nie</translation>
@@ -1158,6 +1169,7 @@ Nuwe installasie</translation>
 <translation id="813913629614996137">Inisialiseer tans …</translation>
 <translation id="8142441511840089262">Dubbelklik</translation>
 <translation id="8142699993796781067">Privaat netwerk</translation>
+<translation id="8144760705599030999">Stoor jou <ph name="NAME" /> in <ph name="EMAIL" /> om vinniger met jou ander toestelle saamgebind te word</translation>
 <translation id="8152092012181020186">Druk Ctrl + W om toe te maak.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, outovoltooi</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Jou administrateur bestuur hierdie instelling.</translation>
@@ -1195,6 +1207,7 @@ Nuwe installasie</translation>
 <translation id="8412677897383510995">Wys vertoonskerminstellings</translation>
 <translation id="8413272770729657668">Opname begin oor 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (houer)</translation>
+<translation id="8420205633584771378">Verwyder hierdie voorstel?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> is nie op hierdie toestel nie.</translation>
 <translation id="8425213833346101688">Verander</translation>
 <translation id="8426708595819210923">Goeienaand <ph name="GIVEN_NAME" /></translation>
@@ -1287,6 +1300,7 @@ Nuwe installasie</translation>
 <translation id="9000771174482730261">BESTUUR BERGING</translation>
 <translation id="9017320285115481645">Voer die Family Link-ouertoegangskode in.</translation>
 <translation id="9024331582947483881">volskerm</translation>
+<translation id="9030319654231318877">Af tot sonsondergang</translation>
 <translation id="9034924485347205037">Linux-lêers</translation>
 <translation id="9047624247355796468">Maak instellings oop vir <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Vou kennisgewing in</translation>
@@ -1306,6 +1320,7 @@ Nuwe installasie</translation>
 <translation id="9099154003160514616">Lacros-opdatering is beskikbaar</translation>
 <translation id="9100887602489003640">Voeg tans profiel by. Wag 'n paar minute.</translation>
 <translation id="9105450214093926548">'n Tweede gebruiker kan nie aangemeld word terwyl die Lacros-blaaier gebruik word nie. Gebruik asseblief eerder 'n tweede blaaierprofiel in Lacros, of maak Lacros toe en probeer weer.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> of <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Kan nie beskermde inhoud opneem nie</translation>
 <translation id="9161053988251441839">VOORGESTELDE PROGRAMME</translation>
 <translation id="9166331175924255663">Wissel hoë sigbaarheid van Nabydeling.</translation>

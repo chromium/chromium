@@ -13,6 +13,7 @@
 <translation id="151962892725702025">OS Chromium nije mogao sinkronizirati vaše podatke jer sinkronizacija nije dostupna za vašu domenu.</translation>
 <translation id="1524282610922162960">Dijeljenje kartice Chromium</translation>
 <translation id="1553461853655228091">Chromium treba dopuštenje za pristup kameri radi izrade 3D karte vašeg okruženja</translation>
+<translation id="1602421994560205104">Chromium je blokirao ovu datoteku jer je prevelika za sigurnosnu provjeru. Pokušajte ponovno s datotekama manjim od 50 MB</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Vaš administrator zahtijeva da ponovno pokrenete Chromium radi primjene ažuriranja}=1{Vaš administrator zahtijeva da ponovno pokrenete Chromium radi primjene ažuriranja. Anonimni se prozor neće ponovno otvoriti.}one{Vaš administrator zahtijeva da ponovno pokrenete Chromium radi primjene ažuriranja. Vaš # anonimni prozor neće se ponovno otvoriti.}few{Vaš administrator zahtijeva da ponovno pokrenete Chromium radi primjene ažuriranja. Vaša # anonimna prozora neće se ponovno otvoriti.}other{Vaš administrator zahtijeva da ponovno pokrenete Chromium radi primjene ažuriranja. Vaših # anonimnih prozora neće se ponovno otvoriti.}}</translation>
 <translation id="1625909126243026060">Pregledajte ključne kontrole privatnosti i sigurnosti u Chromiumu</translation>
 <translation id="1632539827495546968">Ako ovaj račun želite upotrijebiti samo jednom, možete upotrijebiti <ph name="GUEST_LINK_BEGIN" />način rada za goste<ph name="GUEST_LINK_END" /> u pregledniku Chromium. Ako želite dodati račun za nekog drugog, <ph name="LINK_BEGIN" />dodajte novu osobu<ph name="LINK_END" /> na svoj <ph name="DEVICE_TYPE" />.
@@ -220,6 +221,7 @@ Neke su značajke možda nedostupne. Navedite neki drugi direktorij profila ili 
 <translation id="673636774878526923">Da biste mogli pristupiti svojim sadržajima u Chromiumu na svim svojim uređajima, prijavite se i zatim uključite sinkronizaciju.</translation>
 <translation id="6774082503108938489">Tvoj je roditelj isključio "Dopuštenja za web-lokacije, aplikacije i proširenja" za Chromium. Nije dopušteno omogućiti <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="6847869444787758381">Chromium će vas obavijestiti ako vaše zaporke budu ugrožene</translation>
+<translation id="6852530923436401894">Chromium je blokirao ovu datoteku jer sadrži zlonamjerni softver</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kopirano na Chromium)</translation>
 <translation id="6873893289264747459">Chromium je otkrio da <ph name="EXTENSION_NAME" /> sadrži zlonamjerni softver</translation>
@@ -239,6 +241,7 @@ Neke su značajke možda nedostupne. Navedite neki drugi direktorij profila ili 
 <translation id="7218568399872925918">Web-lokacije koje posjećujete pamte vaše podatke dok ne zatvorite Chromium</translation>
 <translation id="7223968959479464213">Upravitelj zadataka – Chromium</translation>
 <translation id="7246575524853130370">Vaši interesi prema Chromiumovoj procjeni</translation>
+<translation id="7265671031637041256">Chromium je blokirao ovu datoteku jer je šifrirana. Zamolite vlasnika da je dešifrira</translation>
 <translation id="7309928523159922338">Ad measurement API omogućuje web-lokacijama koje posjećujete da od Chromiuma traže podatke koji im pomažu mjeriti izvedbu svojih oglasa. Ad measurement API ograničava praćenje na različitim web-lokacijama tako što se između web-lokacija prenosi što je manje moguće podataka.</translation>
 <translation id="731795002583552498">Ažuriranje Chromiuma</translation>
 <translation id="7318036098707714271">Datoteka vaših postavki oštećena je ili nevažeća.
@@ -278,6 +281,7 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="7898472181347242998">Ažurnost uređaja možete provjeriti u <ph name="LINK_BEGIN" />postavkama OS-a Chromium<ph name="LINK_END" /></translation>
 <translation id="7937630085815544518">Bili ste prijavljeni na Chromium kao <ph name="USER_EMAIL_ADDRESS" />. Prijavite se ponovo istim računom.</translation>
 <translation id="7975919845073681630">Ovo je sekundarna instalacija Chromiuma, pa on ne može biti vaš zadani preglednik.</translation>
+<translation id="7997934263947464652">Proširenja, aplikacije i teme iz nepoznatih izvora mogu naštetiti vašem uređaju. Chromium preporučuje da ih instalirate samo s usluge <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Kada Chromium dobije pristup, web-lokacije će vas moći tražiti pristup.</translation>
 <translation id="8045118833343856403">Računi u nastavku nisu prijavljeni ni na jedan Chromium profil. Ako želite koristiti račun na drugom profilu, prvo uklonite taj profil.</translation>
 <translation id="8105840573057009683">Chromium treba dopuštenje za lokaciju za ovu web-lokaciju</translation>

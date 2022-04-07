@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">Hyökkääjät jäljittelevät joskus sivustoja tekemällä verkko-osoitteeseen vaikeasti havaittavia muutoksia.</translation>
 <translation id="1028781062521375153">Katso tiedot</translation>
 <translation id="1030706264415084469"><ph name="URL" /> haluaa tallentaa suuria tietomääriä pysyvästi laitteellesi.</translation>
-<translation id="1032854598605920125">Käännä myötäpäivään</translation>
 <translation id="1033329911862281889">Incognito ei muuta sinua näkymättömäksi verkossa:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Sivustot ja niiden käyttämät palvelut voivat nähdä käynnit<ph name="END_LIST_ITEM" />
@@ -2536,6 +2535,7 @@ Lisätietoja:
 <translation id="7995512525968007366">Ei määritetty</translation>
 <translation id="7998269595945679889">Avaa incognito-välilehti ‑painike, paina Enter avataksesi uuden incognito-välilehden, niin voit selata yksityisesti</translation>
 <translation id="800218591365569300">Yritä vapauttaa muistia sulkemalla muita välilehtiä tai ohjelmia.</translation>
+<translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
 <translation id="8004582292198964060">Selain</translation>
 <translation id="8009225694047762179">Salasanojen hallinta</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Tämä kortti ja sen laskutusosoite tallennetaan. Voit käyttää sitä sisäänkirjautuneena (<ph name="USER_EMAIL" />).}other{Nämä kortit ja niiden laskutusosoitteet tallennetaan. Voit käyttää niitä sisäänkirjautuneena (<ph name="USER_EMAIL" />).}}</translation>
@@ -2636,6 +2636,7 @@ Lisätietoja:
 <translation id="8277900682056760511">Maksujenkäsittelytaulukko on avattu</translation>
 <translation id="8280630997017109758">Lokero 11</translation>
 <translation id="8281084378435768645">Suuri kuva</translation>
+<translation id="8281886186245836920">Ohita</translation>
 <translation id="8282947398454257691">Saada selville laitetunnuksesi.</translation>
 <translation id="8284769179630993263">Ylläpidä selaussuojaa ja muita ominaisuuksia Chromen asetuksista</translation>
 <translation id="8286036467436129157">Kirjaudu sisään</translation>

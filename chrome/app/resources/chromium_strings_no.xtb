@@ -13,6 +13,7 @@
 <translation id="151962892725702025">Chromium OS kunne ikke synkronisere dataene dine fordi synkronisering ikke er tilgjengelig for domenet ditt.</translation>
 <translation id="1524282610922162960">Del en Chromium-fane</translation>
 <translation id="1553461853655228091">Chromium trenger tilgang til kameraet for å lage et 3D-kart av omgivelsene</translation>
+<translation id="1602421994560205104">Chromium har blokkert denne filen fordi den er for stor til at det kan kjøres en sikkerhetssjekk. Prøv på nytt med filer på opptil 50 MB</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administratoren din krever at du starter Chromium på nytt for å ta i bruk en oppdatering}=1{Administratoren din krever at du starter Chromium på nytt for å ta i bruk en oppdatering. Inkognitovinduet ditt blir ikke gjenåpnet.}other{Administratoren din krever at du starter Chromium på nytt for å ta i bruk en oppdatering. De # inkognitovinduene dine blir ikke gjenåpnet.}}</translation>
 <translation id="1625909126243026060">Gjennomgå viktige personvern- og sikkerhetskontroller i Chromium</translation>
 <translation id="1632539827495546968">Hvis du vil bruke denne kontoen kun én gang, kan du bruke <ph name="GUEST_LINK_BEGIN" />gjestemodus<ph name="GUEST_LINK_END" /> i Chromium-nettleseren. Hvis du vil legge til en konto for noen andre, kan du <ph name="LINK_BEGIN" />legge til en ny person<ph name="LINK_END" /> på <ph name="DEVICE_TYPE" />.
@@ -220,6 +221,7 @@ Det er mulig at enkelte funksjoner ikke er tilgjengelige. Angi en annen profilka
 <translation id="673636774878526923">For å få tilgang til Chromium-tingene dine på alle enhetene dine, logg på og slå på synkronisering.</translation>
 <translation id="6774082503108938489">Forelderen din har slått av «Tillatelser for nettsteder, apper og utvidelser» for Chromium. Du har ikke tillatelse til å slå på denne <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="6847869444787758381">Med Chromium får du beskjed hvis passordene dine noensinne utsettes for sikkerhetsbrudd</translation>
+<translation id="6852530923436401894">Chromium har blokkert denne filen fordi den inneholder skadelig programvare</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kopiert til Chromium)</translation>
 <translation id="6873893289264747459">Chromium har oppdaget at «<ph name="EXTENSION_NAME" />» inneholder skadelig programvare</translation>
@@ -238,6 +240,7 @@ Det er mulig at enkelte funksjoner ikke er tilgjengelige. Angi en annen profilka
 <translation id="7218568399872925918">Nettsteder du besøker, husker informasjonen din til du lukker Chromium</translation>
 <translation id="7223968959479464213">Oppgavebehandling – Chromium</translation>
 <translation id="7246575524853130370">Interessene dine som Chromium har anslått</translation>
+<translation id="7265671031637041256">Chromium har blokkert denne filen fordi den er kryptert. Be eieren om å dekryptere den</translation>
 <translation id="7309928523159922338">Med annonsemålinger kan nettsteder du besøker, spørre Chromium om informasjon som hjelper nettstedet å måle annonseresultatene sine. Annonsemålinger begrenser sporing på tvers av nettsteder ved å overføre så lite informasjon som mulig mellom nettsteder.</translation>
 <translation id="731795002583552498">Oppdaterer Chromium</translation>
 <translation id="7318036098707714271">Innstillingerfilen din er ødelagt eller ugyldig.
@@ -277,6 +280,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="7898472181347242998">For å se om enheten er oppdatert, gå til <ph name="LINK_BEGIN" />Innstillinger for Chromium OS<ph name="LINK_END" /></translation>
 <translation id="7937630085815544518">Du ble logget på Chromium som <ph name="USER_EMAIL_ADDRESS" />. Du må logge deg på igjen med samme konto.</translation>
 <translation id="7975919845073681630">Dette er en sekundær installering av Chromium. Den kan ikke brukes som standardnettleser.</translation>
+<translation id="7997934263947464652">Utvidelser, apper og temaer fra ukjente kilder kan skade enheten din. Chromium anbefaler at du kun installerer dem fra <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Når Chromium har fått tilgang, kan nettsteder spørre deg om tilgang.</translation>
 <translation id="8045118833343856403">Disse kontoene er ikke logget på noen Chromium-profiler. Hvis du vil bruke en konto på en annen profil, fjerner du den profilen først.</translation>
 <translation id="8105840573057009683">Chromium trenger posisjonstillatelse for dette nettstedet</translation>

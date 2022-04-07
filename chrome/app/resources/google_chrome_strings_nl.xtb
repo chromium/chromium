@@ -176,6 +176,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="4600710005438004015">Chrome kan niet worden geüpdatet naar de nieuwste versie, dus je loopt nieuwe functies en beveiligingsoplossingen mis.</translation>
 <translation id="4627412468266359539">Optioneel: Help de functies en prestaties van Chrome OS Flex te verbeteren door automatisch diagnostische en gebruiksgegevens naar Google te sturen.</translation>
 <translation id="4633000520311261472">Om Chrome veiliger te maken, hebben we een aantal extensies uitgezet die niet worden vermeld in de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> en mogelijk zonder je medeweten zijn geïnstalleerd.</translation>
+<translation id="469553575393225953">Extensies, apps en thema's van onbekende bronnen kunnen schadelijk zijn voor je apparaat. Chrome raadt je aan ze alleen te installeren vanuit de Chrome Web Store.</translation>
 <translation id="4728575227883772061">De installatie is mislukt wegens een onbekende fout. Als Google Chrome momenteel actief is, sluit je het programma af en probeer je het opnieuw.</translation>
 <translation id="4747730611090640388">Chrome kan een schatting van je interesses maken.  Later kan een site die je bezoekt Chrome vragen om je interesses te bekijken zodat de advertenties die je ziet kunnen worden gepersonaliseerd.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -217,6 +218,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="5736850870166430177">Als een site je wachtwoord probeert te stelen of als je een schadelijk bestand downloadt, kan Chrome ook URL's, inclusief delen van de paginacontent, naar Safe Browsing sturen</translation>
 <translation id="573759479754913123">Over Chrome OS</translation>
 <translation id="5756509061973259733">Er bestaat op dit apparaat al een Chrome-profiel met dit account</translation>
+<translation id="5763280521700030406">Chrome heeft dit bestand geblokkeerd omdat het te groot is voor een beveiligingscontrole. Probeer het opnieuw met bestanden van maximaal 50 MB.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Kan Chrome niet starten. Probeer het opnieuw.</translation>
 <translation id="5867197326698922595">Google Chrome probeert wachtwoorden te bewerken.</translation>
@@ -324,8 +326,10 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="8394720698884623075">Checkt URL's aan de hand van een lijst met onveilige sites die is opgeslagen in Chrome</translation>
 <translation id="840084489713044809">Google Chrome wil je wachtwoorden exporteren.</translation>
 <translation id="8416347857511542594">Meer informatie over advertentiepersonalisatie in Chrome</translation>
+<translation id="8421734018304082652">Chrome heeft dit bestand geblokkeerd omdat het versleuteld is. Vraag de eigenaar om het te ontgrendelen.</translation>
 <translation id="8433638294851456451">Als je een nummer hier vandaan naar je Android-telefoon wilt sturen, log je in bij Chrome op beide apparaten.</translation>
 <translation id="8498858610309223613">Er is zojuist een speciale beveiligingsupdate voor Google Chrome toegepast. Start nu opnieuw op. Je tabbladen worden hersteld.</translation>
+<translation id="8504220326736535258">Chrome heeft dit bestand geblokkeerd omdat het malware bevat</translation>
 <translation id="8516431725144212809">Jouw interesses volgens schattingen van Chrome</translation>
 <translation id="8521348052903287641">Inkomende regel zodat Google Chrome Dev mDNS-verkeer toestaat.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>

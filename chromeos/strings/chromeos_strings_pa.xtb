@@ -114,7 +114,6 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="2161394479394250669">ਪ੍ਰਿੰਟ ਜੌਬ ਰੱਦ ਕਰੋ</translation>
 <translation id="2180197493692062006">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਐਪ ਨੂੰ ਮੁੜ-ਖੋਲ੍ਹਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
-<translation id="2201770616342964496">ਸਥਾਨਕ ਪਛਾਣ</translation>
 <translation id="2209788852729124853">ਟਰੈਫ਼ਿਕ ਕਾਉਂਟਰਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="2212733584906323460">ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਨੂੰ ਨਾਮ ਦਿਓ</translation>
 <translation id="2217935453350629363">ਮੌਜੂਦਾ ਗਤੀ</translation>
@@ -262,6 +261,7 @@
 <translation id="4170180284036919717">ਇੱਕ ਫ਼ੋਟੋ ਖਿੱਚੋ</translation>
 <translation id="4170700058716978431">ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="4176463684765177261">ਅਸਮਰਥਿਤ</translation>
+<translation id="4176659219503619100">ਕੰਟਰੋਲ ਪੈਨਲ</translation>
 <translation id="4213104098953699324">USB ਕੀ-ਬੋਰਡ</translation>
 <translation id="4227825898293920515">ਪਾਸਵਰਡ ਦੀ ਮਿਆਦ <ph name="TIME" /> ਵਿੱਚ ਮੁੱਕ ਜਾਵੇਗੀ</translation>
 <translation id="4238516577297848345">ਕੋਈ ਪ੍ਰਿੰਟ ਜੌਬ ਪ੍ਰਕਿਰਿਆ-ਅਧੀਨ ਨਹੀਂ ਹੈ</translation>
@@ -305,7 +305,6 @@
 <translation id="4593212453765072419">ਪ੍ਰੌਕਸੀ ਪ੍ਰਮਾਣੀਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="4609350030397390689">ਕੀ-ਬੋਰਡ ਦੀ ਚਮਕ ਘਟਾਉਣ ਵਾਲੀ ਕੁੰਜੀ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> ਵਿੱਚੋਂ <ph name="PRINTED_PAGE_NUMBER" />। ਪ੍ਰਿੰਟ ਜੌਬ ਨੂੰ ਰੱਦ ਕਰਨ ਲਈ Enter ਦਬਾਓ।</translation>
-<translation id="4627645661474370390">ਰਿਮੋਟ ਪਛਾਣ</translation>
 <translation id="463791356324567266">ਸਕੈਨਿੰਗ ਰੱਦ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="4646949265910132906">ਸੁਰੱਖਿਅਤ ਵਾਈ-ਫਾਈ ਕਨੈਕਸ਼ਨ</translation>
 <translation id="4650608062294027130">ਸੱਜੀ Shift ਕੁੰਜੀ</translation>

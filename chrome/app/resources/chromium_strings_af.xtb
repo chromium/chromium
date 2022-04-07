@@ -15,6 +15,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="151962892725702025">Chromium-bedryfstelsel kon nie jou data sinkroniseer nie, omdat Sinkronisering nie vir jou domein beskikbaar is nie.</translation>
 <translation id="1524282610922162960">Deel 'n Chromium-oortjie</translation>
 <translation id="1553461853655228091">Chromium moet toestemming hê om toegang te kry tot jou kamera om 'n 3D-kaart van jou omgewing te skep</translation>
+<translation id="1602421994560205104">Chromium het hierdie lêer geblokkeer omdat te groot is vir ’n sekuriteitkontrole. Probeer weer met lêers tot 50 MB</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Jou administrateur vereis dat jy Chromium herbegin om 'n opdatering toe te pas}=1{Jou administrateur vereis dat jy Chromium herbegin om 'n opdatering toe te pas. Jou incognitovenster sal nie weer oopgemaak word nie.}other{Jou administrateur vereis dat jy Chromium herbegin om 'n opdatering toe te pas. Jou # incognitovensters sal nie weer oopgemaak word nie.}}</translation>
 <translation id="1625909126243026060">Gaan belangrike privaatheid- en sekuriteitkontroles in Chromium na</translation>
 <translation id="1632539827495546968">Jy kan <ph name="GUEST_LINK_BEGIN" />gasmodus<ph name="GUEST_LINK_END" /> in Chromium-blaaier gebruik as jy hierdie rekening net een keer wil gebruik. <ph name="LINK_BEGIN" />Voeg ’n nuwe persoon<ph name="LINK_END" /> by jou <ph name="DEVICE_TYPE" /> as jy ’n rekening vir iemand anders wil byvoeg.
@@ -222,6 +223,7 @@ Sommige kenmerke sal dalk nie beskikbaar wees nie. Spesifiseer 'n ander profielg
 <translation id="673636774878526923">Meld aan en skakel dan sinkronisering aan om op al jou toestelle toegang tot jou Chromium-goed te kry.</translation>
 <translation id="6774082503108938489">Jou ouer het "Toestemmings vir werwe, programme en uitbreidings" vir Chromium afgeskakel. Hierdie <ph name="EXTENSION_TYPE_PARAMETER" /> mag nie geaktiveer word nie.</translation>
 <translation id="6847869444787758381">Chromium sal jou laat weet as jou wagwoorde gekompromitteer is</translation>
+<translation id="6852530923436401894">Chromium het hierdie lêer geblokkeer omdat dit wanware het</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (na Chromium gekopieer)</translation>
 <translation id="6873893289264747459">Chromium het bevind dat "<ph name="EXTENSION_NAME" />" wanware bevat</translation>
@@ -241,6 +243,7 @@ Sommige kenmerke sal dalk nie beskikbaar wees nie. Spesifiseer 'n ander profielg
 <translation id="7218568399872925918">Werwe wat jy besoek, onthou jou inligting totdat jy Chromium toemaak</translation>
 <translation id="7223968959479464213">Taakbestuurder – Chromium</translation>
 <translation id="7246575524853130370">Jou belangstellings soos geskat deur Chromium</translation>
+<translation id="7265671031637041256">Chromium het hierdie lêer geblokkeer omdat dit geënkripteer word. Vra die eienaar daarvan om dit te dekripteer</translation>
 <translation id="7309928523159922338">Advertensiemeting stel werwe wat jy besoek in staat om inligting van Chromium af te versoek wat die werf help om die werkverrigting van hul advertensies te meet. Advertensiemeting beperk oorkruiswerfnasporing deur so min inligting moontlik tussen werwe oor te dra.</translation>
 <translation id="731795002583552498">Dateer tans Chromium op</translation>
 <translation id="7318036098707714271">Jou voorkeurelêer is korrup of ongeldig.
@@ -280,6 +283,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="7898472181347242998">Gaan na <ph name="LINK_BEGIN" />Chromium OS-instellings<ph name="LINK_END" /> om te sien of jou toestel op datum is</translation>
 <translation id="7937630085815544518">Jy was as <ph name="USER_EMAIL_ADDRESS" /> by Chromium aangemeld. Gebruik asseblief dieselfde rekening om weer aan te meld.</translation>
 <translation id="7975919845073681630">Dit is 'n sekondêre installering van Chromium en kan nie jou verstekblaaier gemaak word nie.</translation>
+<translation id="7997934263947464652">Uitbreidings, programme en temas van onbekende bronne af kan jou toestel beskadig. Chromium beveel aan dat hulle net uit die <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> geïnstalleer word</translation>
 <translation id="8013436988911883588">Sodra Chromium toegang het, sal webwerwe jou kan vra vir toegang.</translation>
 <translation id="8045118833343856403">Die volgende rekeninge is nie by enige Chromium-profiele aangemeld nie. As jy 'n rekening in 'n ander profiel wil gebruik, moet jy daardie profiel eers verwyder.</translation>
 <translation id="8105840573057009683">Chromium het liggingtoestemming vir hierdie werf nodig</translation>

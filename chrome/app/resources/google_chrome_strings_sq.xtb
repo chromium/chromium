@@ -177,6 +177,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4600710005438004015">Chrome nuk mund të përditësohej me versionin më të fundit, kështu që të mungojnë rregullimet e sigurisë dhe funksionet e reja.</translation>
 <translation id="4627412468266359539">Opsionale: Ndihmo në përmirësimin e veçorive dhe të cilësisë së funksionimit të Chrome OS Flex duke dërguar automatikisht te Google të dhëna përdorimi dhe diagnostikuese.</translation>
 <translation id="4633000520311261472">Për ta bërë më të sigurt Chrome, çaktivizuam disa shtesa që nuk janë të listuara në <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dhe që mund të jenë shtuar pa dijeninë tënde.</translation>
+<translation id="469553575393225953">Shtesat, aplikacionet dhe temat nga burime të panjohura mund ta dëmtojnë pajisjen tënde. Chrome rekomandon t'i instalosh ato vetëm nga "Dyqani i uebit i Chrome"</translation>
 <translation id="4728575227883772061">Instalimi dështoi për shkak të një gabimi të paspecifikuar. Nëse Google Chrome është aktualisht në ekzekutim, mbylle dhe provo përsëri.</translation>
 <translation id="4747730611090640388">Chrome mund të përllogarisë interesat e tua.  Më vonë, një sajt që ti viziton mund t'i kërkojë Chrome të shikojë interesat e tua në mënyrë që të personalizojë reklamat që shikon.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -220,6 +221,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="5736850870166430177">Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd ose kur shkarkon një skedar të dëmshëm, Chrome mund t'i dërgojë gjithashtu URL-të, duke përfshirë pjesë të përmbajtjes së faqeve, te "Shfletimi i sigurt".</translation>
 <translation id="573759479754913123">Rreth sistemit operativ Chrome</translation>
 <translation id="5756509061973259733">Një profil i Chrome me këtë llogari ekziston tashmë në këtë pajisje</translation>
+<translation id="5763280521700030406">Chrome e bllokoi këtë skedar sepse ai është shumë i madh për kontroll sigurie. Provo përsëri me skedarë deri në 50 MB</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome nuk mund të hapej. Provo përsëri.</translation>
 <translation id="5867197326698922595">Google Chrome po përpiqet t'i modifikojë fjalëkalimet.</translation>
@@ -328,8 +330,10 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="8394720698884623075">Kontrollon URL-të kundrejt një liste sajtesh të pasigurta të ruajtur në Chrome</translation>
 <translation id="840084489713044809">Google Chrome dëshiron të eksportojë fjalëkalimet e tua.</translation>
 <translation id="8416347857511542594">Mëso më shumë rreth personalizimit të reklamave në Chrome</translation>
+<translation id="8421734018304082652">Chrome e bllokoi këtë skedar sepse ai është i enkriptuar. Kërkoji zotëruesit ta dekriptojë atë</translation>
 <translation id="8433638294851456451">Për të dërguar një numër nga këtu te telefoni yt Android, identifikohu në Chrome në të dyja pajisjet.</translation>
 <translation id="8498858610309223613">Sapo është zbatuar një përditësim special i sigurisë për Google Chrome. Rinise tani dhe do të restaurojmë skedat e tua.</translation>
+<translation id="8504220326736535258">Chrome e bllokoi këtë skedar sepse ai ka softuer keqdashës</translation>
 <translation id="8516431725144212809">Interesat e tua sipas përllogaritjes nga Chrome</translation>
 <translation id="8521348052903287641">Rregulli hyrës për Google Chrome Dev për të lejuar trafikun mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>

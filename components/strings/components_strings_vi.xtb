@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">Đôi khi, kẻ tấn công giả mạo các trang web bằng cách thực hiện các thay đổi đối với địa chỉ web mà bạn khó nhận ra.</translation>
 <translation id="1028781062521375153">Xem thông tin chi tiết</translation>
 <translation id="1030706264415084469"><ph name="URL" /> muốn lưu trữ vĩnh viễn một lượng lớn dữ liệu trên thiết bị của bạn</translation>
-<translation id="1032854598605920125">Xoay theo chiều kim đồng hồ</translation>
 <translation id="1033329911862281889">Chế độ ẩn danh không ẩn các hoạt động sau đây của bạn trên mạng:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Trang web và dịch vụ bạn sử dụng có thể xem lượt truy cập<ph name="END_LIST_ITEM" />
@@ -2535,6 +2534,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7995512525968007366">Không chỉ định</translation>
 <translation id="7998269595945679889">Mở nút thẻ ẩn danh rồi nhấn Enter để mở một thẻ ẩn danh mới nhằm duyệt web ở chế độ riêng tư</translation>
 <translation id="800218591365569300">Thử đóng các thẻ hoặc chương trình khác để giải phóng bộ nhớ.</translation>
+<translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">Trình duyệt</translation>
 <translation id="8009225694047762179">Quản lý mật khẩu</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Thẻ này và địa chỉ thanh toán của thẻ sẽ được lưu. Bạn có thể sử dụng thẻ khi đăng nhập vào <ph name="USER_EMAIL" />.}other{Các thẻ này và địa chỉ thanh toán của thẻ sẽ được lưu. Bạn có thể sử dụng các thẻ này khi đăng nhập vào <ph name="USER_EMAIL" />.}}</translation>
@@ -2635,6 +2635,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8277900682056760511">Trang tính trình xử lý thanh toán đang mở</translation>
 <translation id="8280630997017109758">Khay 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
+<translation id="8281886186245836920">Bỏ qua</translation>
 <translation id="8282947398454257691">Biết số nhận dạng thiết bị duy nhất của bạn</translation>
 <translation id="8284769179630993263">Quản lý tính năng Duyệt web an toàn và nhiều tính năng khác trong phần Cài đặt của Chrome</translation>
 <translation id="8286036467436129157">Đăng nhập</translation>

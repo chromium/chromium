@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">Sulmuesit ndonjëherë i imitojnë sajtet duke bërë tek adresa e uebit ndryshime që janë të vështira për t'u dalluar.</translation>
 <translation id="1028781062521375153">Shiko detajet</translation>
 <translation id="1030706264415084469"><ph name="URL" /> do të ruajë në mënyrë të përhershme të dhëna të mëdha në pajisjen tënde</translation>
-<translation id="1032854598605920125">Rrotullo në drejtim të akrepave të orës</translation>
 <translation id="1033329911862281889">Modaliteti "I fshehtë" nuk të bën të padukshëm në linjë:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Sajtet dhe shërbimet që ato përdorin mund të shohin vizitat<ph name="END_LIST_ITEM" />
@@ -2531,6 +2530,7 @@ Detaje shtesë:
 <translation id="7995512525968007366">Nuk është specifikuar</translation>
 <translation id="7998269595945679889">Hap butonin e skedës "së fshehtë" dhe shtyp tastin Enter për të hapur një skedë të re "të fshehtë" për të shfletuar në mënyrë private</translation>
 <translation id="800218591365569300">Provo të mbyllësh skedat ose programet e tjera për të liruar memorien.</translation>
+<translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
 <translation id="8004582292198964060">Shfletuesi</translation>
 <translation id="8009225694047762179">Menaxho fjalëkalimet</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Kjo kartë dhe adresa e saj e faturimit do të ruhen. Do të jesh në gjendje ta përdorësh kur të jesh identifikuar në <ph name="USER_EMAIL" />.}other{Këto karta dhe adresat e tyre të faturimit do të ruhen. Do të jesh në gjendje t'i përdorësh kur të jesh identifikuar në <ph name="USER_EMAIL" />.}}</translation>
@@ -2631,6 +2631,7 @@ Detaje shtesë:
 <translation id="8277900682056760511">Fleta e përpunuesit të pagesës është hapur</translation>
 <translation id="8280630997017109758">Tabakaja 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
+<translation id="8281886186245836920">Kapërceje</translation>
 <translation id="8282947398454257691">Njihu me identifikuesin unik të pajisjes tënde</translation>
 <translation id="8284769179630993263">Menaxho shfletimin e sigurt dhe më shumë te cilësimet e Chrome</translation>
 <translation id="8286036467436129157">Identifikohu</translation>

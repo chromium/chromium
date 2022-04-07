@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Il dispositivo Bluetooth "<ph name="DEVICE_NAME" />" chiede l'autorizzazione per essere accoppiato. Inserisci questo codice PIN sul dispositivo: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">Strumenti per screencast</translation>
 <translation id="1024261588257374085">Screenshot parziale selezionato</translation>
+<translation id="1024364763893396229">Salva <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Batteria dello stilo in esaurimento</translation>
 <translation id="1036073649888683237">Per gestire le notifiche, vai alle Impostazioni</translation>
 <translation id="1036672894875463507">Sono il tuo Assistente Google e sono a tua disposizione per aiutarti durante la giornata.
@@ -292,6 +293,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2819276065543622893">Verrai disconnesso ora.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> non supporta la risoluzione <ph name="SPECIFIED_RESOLUTION" />. È stata impostata la risoluzione <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Barra delle app</translation>
+<translation id="2831035692318564937">Attivato fino all'alba</translation>
 <translation id="2834813915651407382">Aperto di recente</translation>
 <translation id="2841907151129139818">Passaggio alla modalità tablet effettuato</translation>
 <translation id="2844169650293029770">Dispositivo USB-C (porta anteriore sinistra)</translation>
@@ -438,6 +440,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3626281679859535460">Luminosità</translation>
 <translation id="3630697955794050612">off</translation>
 <translation id="3631369015426612114">Consenti notifiche da:</translation>
+<translation id="3633097874324966332">Apri le impostazioni Bluetooth per accoppiare il dispositivo</translation>
 <translation id="3638400994746983214">Attiva/disattiva Schermata sulla privacy. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Aggiornamento scaduto</translation>
 <translation id="366222428570480733">Utente gestito <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -767,6 +770,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5744083938413354016">Trascinamento al tocco</translation>
 <translation id="5745612484876805746">La funzione Luminosità notturna viene attivata automaticamente al tramonto</translation>
 <translation id="5750765938512549687">Bluetooth non attivo.</translation>
+<translation id="5760866832697883462">Connetti <ph name="NAME" /></translation>
 <translation id="576341972084747908">Download di <ph name="FILENAME" /> (pericoloso) in corso…</translation>
 <translation id="5763928712329149804">Modalità Shelf Party non attiva.</translation>
 <translation id="576453121877257266">Luminosità notturna attiva.</translation>
@@ -952,6 +956,7 @@ Nuova installazione</translation>
 <translation id="6886172995547742638">Il tuo <ph name="DEVICE_TYPE" /> potrebbe offrire prestazioni inferiori. Usa un alimentatore USB-C certificato da almeno <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="688631446150864480">Premi il tasto Freccia giù per cambiare finestra</translation>
 <translation id="6896758677409633944">Copia</translation>
+<translation id="6901883536534621389">Prova i gesti per la navigazione</translation>
 <translation id="6919251195245069855">Impossibile riconoscere la smart card. Riprova.</translation>
 <translation id="6921188888306725546">Le scorciatoie da tastiera sono state migliorate</translation>
 <translation id="6931576957638141829">Salva in</translation>
@@ -1127,6 +1132,7 @@ Nuova installazione</translation>
 <translation id="7977927628060636163">Ricerca di reti mobili...</translation>
 <translation id="7982789257301363584">Rete</translation>
 <translation id="7984197416080286869">Troppi tentativi di sblocco con l'impronta</translation>
+<translation id="798779949890829624">Questa impostazione è gestita dall'amministratore</translation>
 <translation id="7994370417837006925">Accesso simultaneo</translation>
 <translation id="7995804128062002838">Impossibile acquisire schermo</translation>
 <translation id="8000066093800657092">Nessuna rete</translation>
@@ -1154,6 +1160,7 @@ Nuova installazione</translation>
 <translation id="813913629614996137">Inizializzazione...</translation>
 <translation id="8142441511840089262">Doppio clic</translation>
 <translation id="8142699993796781067">Rete privata</translation>
+<translation id="8144760705599030999">Salva <ph name="NAME" /> nell'account <ph name="EMAIL" /> per velocizzare l'accoppiamento con gli altri dispositivi</translation>
 <translation id="8152092012181020186">Premi CTRL + W per chiudere.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, completamento automatico</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Questa impostazione è gestita dall'amministratore.</translation>
@@ -1191,6 +1198,7 @@ Nuova installazione</translation>
 <translation id="8412677897383510995">Mostra impostazioni di visualizzazione</translation>
 <translation id="8413272770729657668">Avvio registrazione tra 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (custodia)</translation>
+<translation id="8420205633584771378">Rimuovere questo suggerimento?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> non è disponibile su questo dispositivo.</translation>
 <translation id="8425213833346101688">Cambia</translation>
 <translation id="8426708595819210923">Buonasera <ph name="GIVEN_NAME" />,</translation>
@@ -1283,6 +1291,7 @@ Nuova installazione</translation>
 <translation id="9000771174482730261">GESTISCI SPAZIO DI ARCHIVIAZIONE</translation>
 <translation id="9017320285115481645">Inserisci il codice accesso genitori di Family Link.</translation>
 <translation id="9024331582947483881">schermo intero</translation>
+<translation id="9030319654231318877">Disattivato fino al tramonto</translation>
 <translation id="9034924485347205037">File Linux</translation>
 <translation id="9047624247355796468">Apri Impostazioni per <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Comprimi la notifica</translation>
@@ -1302,6 +1311,7 @@ Nuova installazione</translation>
 <translation id="9099154003160514616">Aggiornamento di Lacros disponibile</translation>
 <translation id="9100887602489003640">Aggiunta del profilo in corso… Attendi qualche minuto.</translation>
 <translation id="9105450214093926548">L'accesso di un secondo utente non è supportato durante l'uso del browser Lacros. Usa invece un secondo profilo del browser in Lacros oppure chiudi Lacros e riprova.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> oppure <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Impossibile registrare contenuti protetti</translation>
 <translation id="9161053988251441839">APP CONSIGLIATE</translation>
 <translation id="9166331175924255663">Attiva/disattiva alta visibilità di Condivisione nelle vicinanze.</translation>

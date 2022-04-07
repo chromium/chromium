@@ -178,6 +178,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4600710005438004015">Det gick inte att uppdatera Chrome till den senaste versionen. Därför går du miste om nya funktioner och säkerhetskorrigeringar.</translation>
 <translation id="4627412468266359539">Valfritt: Skicka diagnostik- och användningsdata automatiskt till Google och hjälp oss att förbättra funktioner och prestanda i ChromeOS Flex.</translation>
 <translation id="4633000520311261472">Vi har gjort Chrome säkrare genom att inaktivera vissa tillägg som inte finns i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> och som kan ha lagts till utan att du vet om det.</translation>
+<translation id="469553575393225953">Tillägg, appar och teman från okända källor kan skada enheten. Vi rekommenderar att du bara laddar ned dem från Chrome Web Store</translation>
 <translation id="4728575227883772061">Installationen misslyckades på grund av ett ospecificerat fel. Stäng Google Chrome, om det är igång, och försök sedan igen.</translation>
 <translation id="4747730611090640388">Chrome kan göra en uppskattning av dina intressen.  Sedan kan en webbplats fråga efter dina intressen i Chrome för att anpassa vilka annonser som visas.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -221,6 +222,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="5736850870166430177">Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chrome till Säker webbsökning tillsammans med delar av sidinnehållet</translation>
 <translation id="573759479754913123">Om Chrome OS</translation>
 <translation id="5756509061973259733">Det finns redan en Chrome-profil med detta konto på enheten</translation>
+<translation id="5763280521700030406">Den här filen blockerades av Chrome eftersom den är för stor för en säkerhetskontroll. Försök igen med filer som är upp till 50 MB stora</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Det gick inte att starta Chrome. Försök igen.</translation>
 <translation id="5867197326698922595">Lösenorden i Google Chrome redigeras.</translation>
@@ -329,8 +331,10 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="8394720698884623075">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chrome</translation>
 <translation id="840084489713044809">Lösenorden exporteras från Google Chrome.</translation>
 <translation id="8416347857511542594">Läs mer om annonsanpassning i Chrome</translation>
+<translation id="8421734018304082652">Den här filen blockerades av Chrome eftersom den är krypterad. Be ägaren att dekryptera den</translation>
 <translation id="8433638294851456451">Logga in på Chrome på båda enheterna om du vill skicka ett nummer från Android-telefonen.</translation>
 <translation id="8498858610309223613">En särskild säkerhetsuppdatering för Google Chrome installerades precis. Starta om webbläsaren nu. Flikarna återställs efteråt.</translation>
+<translation id="8504220326736535258">Den här filen blockerades av Chrome eftersom den har skadlig programvara</translation>
 <translation id="8516431725144212809">Chromes uppskattning av dina intressen</translation>
 <translation id="8521348052903287641">Regel som tillåter inkommande mDNS-trafik för Google Chrome Dev.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>

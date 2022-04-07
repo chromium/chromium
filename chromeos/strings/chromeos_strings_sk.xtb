@@ -114,7 +114,6 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Skúsiť znova</translation>
 <translation id="2161394479394250669">Zrušiť tlačovú úlohu</translation>
 <translation id="2180197493692062006">Vyskytol sa problém. Skúste aplikáciu znova otvoriť.</translation>
-<translation id="2201770616342964496">Miestna identita</translation>
 <translation id="2209788852729124853">Resetovať počítadlá návštevnosti</translation>
 <translation id="2212733584906323460">Preklad názvu</translation>
 <translation id="2217935453350629363">Aktuálna rýchlosť</translation>
@@ -262,6 +261,7 @@
 <translation id="4170180284036919717">Nasnímať fotku</translation>
 <translation id="4170700058716978431">NEPODARILO SA</translation>
 <translation id="4176463684765177261">Deaktivované</translation>
+<translation id="4176659219503619100">Ovládací panel</translation>
 <translation id="4213104098953699324">Klávesnica USB</translation>
 <translation id="4227825898293920515">Platnosť hesla vyprší o <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Neprebiehajú žiadne tlačové úlohy</translation>
@@ -305,7 +305,6 @@
 <translation id="4593212453765072419">Vyžaduje sa overenie servera proxy</translation>
 <translation id="4609350030397390689">Zníženie jasu klávesnice</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> z <ph name="TOTAL_PAGE_NUMBER" />. Tlačovú úlohu zrušíte stlačením klávesa Enter.</translation>
-<translation id="4627645661474370390">Vzdialená identita</translation>
 <translation id="463791356324567266">Ruší sa skenovanie…</translation>
 <translation id="4646949265910132906">Zabezpečené pripojenie Wi‑Fi</translation>
 <translation id="4650608062294027130">Pravý kláves Shift</translation>
@@ -432,6 +431,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5866840822086176774">Veľmi silné</translation>
 <translation id="588258955323874662">Celá obrazovka</translation>
 <translation id="5895138241574237353">Reštartovať</translation>
+<translation id="5903200662178656908">Zariadenie je kombináciou klávesnice a myši.</translation>
 <translation id="5916084858004523819">Zakázané</translation>
 <translation id="5916664084637901428">Zapnuté</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Súbor bol úspešne naskenovaný a uložený do priečinka <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Súbory boli úspešne naskenované a uložené do priečinka <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Súbory boli úspešne naskenované a uložené do priečinka <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Súbory boli úspešne naskenované a uložené do priečinka <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -452,6 +452,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6104112872696127344">Skenovanie bolo zrušené</translation>
 <translation id="6106186594183574873">Ak chcete zmenu dokončiť, zadajte staré heslo</translation>
 <translation id="6108689792487843350">Brána je nedostupná</translation>
+<translation id="6112878310391905610">Toto nastavenie spravujú vaši správcovia</translation>
 <translation id="6113701710518389813">Šípka nahor</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> a ďalšie albumy (<ph name="NUMBER" />)</translation>
 <translation id="6122191549521593678">Online</translation>

@@ -168,6 +168,7 @@
 <translation id="2421044535038393232">Працягнуць рэдагаванне</translation>
 <translation id="2434405374328098816">Вы ўжо захавалі пароль для карыстальніка <ph name="USERNAME" /> на вэб-сайце <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Паказаць пароль</translation>
+<translation id="2469960372084740698">Выключыць Бяспечны прагляд?</translation>
 <translation id="2473876017985765807">Вы ўжо захавалі пароль для вэб-сайта <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Не выбрана</translation>
 <translation id="2497852260688568942">Сінхранізацыя выключана вашым адміністратарам</translation>
@@ -313,6 +314,7 @@
 <translation id="3691593122358196899">Закладка дададзена ў папку "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="369349502275246497">Паказваць прапанову захаваць паролі</translation>
 <translation id="3709582977625132201">Пазначыць як непрачытанае</translation>
+<translation id="371230970611282515">Прадказвае небяспечныя падзеі і папярэджвае пра іх да таго, як яны здараюцца.</translation>
 <translation id="3740397331642243698">Адкрывае ўведзеныя URL-адрасы ў Google Chrome у рэжыме інкогніта.</translation>
 <translation id="3762232513783804601">Распрацавана для iPad</translation>
 <translation id="3771033907050503522">Укладкі інкогніта</translation>
@@ -528,6 +530,7 @@
 <translation id="5737974891429562743">Даныя ўліковага запісу для ўваходу састарэлі. Каб запусціць сінхранізацыю, абнавіце іх.</translation>
 <translation id="5738887413654608789">Гэта дазваляе на аснове даных пра наваколле знаходзіць адпаведныя вэб-старонкі.</translation>
 <translation id="5758631781033351321">Ваш спіс чытання знаходзіцца тут</translation>
+<translation id="5765456154762864099">Меню → Налады → Стандартны браўзер</translation>
 <translation id="5782227691023083829">Ідзе пераклад...</translation>
 <translation id="5791632441210678828">Кнопка для сартавання стужкі "Вы падпісаны".</translation>
 <translation id="5802829331520313983">Наладзіць…</translation>
@@ -582,6 +585,7 @@
 <translation id="6144589619057374135">Адкрыць ${url} у рэжыме інкогніта</translation>
 <translation id="6149061208933997199">Выкарыстаць пароль</translation>
 <translation id="6159839020698489198">неабавязкова</translation>
+<translation id="6173386249456979368">Больш хуткая актыўная абарона ад небяспечных вэб-сайтаў, спамповак і пашырэнняў. Папярэджвае пра ўцечкі пароляў. Патрабуе адпраўкі даных прагляду сайтаў у Google.</translation>
 <translation id="6177442314419606057">Шукаць у Chrome</translation>
 <translation id="6184086493125982861">Паказваць укладкі</translation>
 <translation id="6187302354554850004">Апошняя сінхранізацыя: <ph name="LAST_USED_TIME" /></translation>
@@ -768,6 +772,7 @@
 <translation id="7658239707568436148">Скасаваць</translation>
 <translation id="7671141431838911305">УСТАЛЯВАЦЬ</translation>
 <translation id="7701040980221191251">Няма</translation>
+<translation id="7726702057919861819">Меню → Гісторыя → Выдаліць гісторыю праглядаў</translation>
 <translation id="7741325291586284254">Старонка "Новая ўкладка ў рэжыме інкогніта"</translation>
 <translation id="7765158879357617694">Перамясціць</translation>
 <translation id="7772032839648071052">Пацвердзіце фразу-пароль</translation>
@@ -840,6 +845,7 @@
 <translation id="8386068868580335421">Скінуць</translation>
 <translation id="8407669440184693619">Паролі для гэтага сайта не знойдзены</translation>
 <translation id="842017693807136194">Вы ўвайшлі праз</translation>
+<translation id="8427613705947111202">Меню → Налады → Паролі</translation>
 <translation id="8428045167754449968">Горад або населены пункт</translation>
 <translation id="8428213095426709021">Налады</translation>
 <translation id="8428634594422941299">Зразумела</translation>

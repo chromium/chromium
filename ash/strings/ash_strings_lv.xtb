@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Bluetooth ierīce “<ph name="DEVICE_NAME" />” vēlas saņemt atļauju, lai izveidotu savienojumu pārī. Lūdzu, ierīcē ievadiet šo PIN: <ph name="PINCODE" />.</translation>
 <translation id="1014111206066007277">Ekrānieraksta rīki</translation>
 <translation id="1024261588257374085">Atlasīta daļēja ekrānuzņēmuma izveide</translation>
+<translation id="1024364763893396229">Ierīces (<ph name="NAME" />) saglabāšana</translation>
 <translation id="1032891413405719768">Skārienekrāna pildspalvas akumulatora līmenis ir zems</translation>
 <translation id="1036073649888683237">Lai pārvaldītu paziņojumus, pārejiet uz lietotni Iestatījumi.</translation>
 <translation id="1036672894875463507">Esmu jūsu Google asistents, un mans uzdevums ir padarīt jūsu ikdienu ērtāku!
@@ -167,6 +168,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1951012854035635156">Asistents</translation>
 <translation id="1954252331066828794">Ekrāna ierakstīšana ir pabeigta</translation>
 <translation id="1957958912175573503">Iestatiet savu valodu.</translation>
+<translation id="1961239773406905488">Kameras priekšskatījums ir paslēpts</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Bloķēt ekrānu</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -184,6 +186,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2047639699071423250">Pievienot svarīgu ideju</translation>
 <translation id="2049240716062114887">Darbvietas nosaukums tika mainīts uz “<ph name="DESK_NAME" />”.</translation>
 <translation id="2050339315714019657">Portrets</translation>
+<translation id="2064048859448024834">Kameras priekšskatījums tiek rādīts</translation>
 <translation id="2066708475850724665">Izslēgt lupu</translation>
 <translation id="2067602449040652523">Tastatūras spilgtums</translation>
 <translation id="2078034614700056995">Lai pārslēgtos uz nākamo darbvietu, ar četriem pirkstiem velciet pa labi</translation>
@@ -293,6 +296,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2819276065543622893">Jūs tagad tiksiet izrakstīts.</translation>
 <translation id="2825224105325558319">Displejā <ph name="DISPLAY_NAME" /> netiek atbalstīta izšķirtspēja <ph name="SPECIFIED_RESOLUTION" />. Izšķirtspēja tika nomainīta uz: <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Plaukts</translation>
+<translation id="2831035692318564937">Ieslēgts līdz saullēktam</translation>
 <translation id="2834813915651407382">Nesen atvērts</translation>
 <translation id="2841907151129139818">Ieslēgts planšetdatora režīms</translation>
 <translation id="2844169650293029770">USB-C ierīce (pieslēgvieta kreisajā pusē priekšā)</translation>
@@ -439,6 +443,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3626281679859535460">Spilgtums</translation>
 <translation id="3630697955794050612">izslēgts</translation>
 <translation id="3631369015426612114">Atļaut paziņojumu saņemšanu no:</translation>
+<translation id="3633097874324966332">Atveriet Bluetooth iestatījumus, lai savienotu pārī savu ierīci.</translation>
 <translation id="3638400994746983214">Pārslēgt konfidencialitātes ekrānu. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Steidzami nepieciešama ierīces atjaunināšana</translation>
 <translation id="366222428570480733">Pārvaldīts lietotājs <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -486,6 +491,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Atjaunojiet ierīcē iepriekšējo versiju pēc vienas minūtes}zero{Atjaunojiet ierīcē iepriekšējo versiju pēc # minūtēm}one{Atjaunojiet ierīcē iepriekšējo versiju pēc # minūtes}other{Atjaunojiet ierīcē iepriekšējo versiju pēc # minūtēm}}</translation>
 <translation id="3923494859158167397">Nav iestatīts neviens mobilais tīkls</translation>
 <translation id="3932043219784172185">Nav pievienota neviena ierīce</translation>
+<translation id="3934456833412894880">Adaptīvā uzlāde ir ieslēgta. Akumulators tiks uzlādēts līdz 80%, lai paildzinātu tā darbību, taču varat to pilnībā uzlādēt, kad tas ir nepieciešams.</translation>
 <translation id="3943857333388298514">Ielīmēt</translation>
 <translation id="394485226368336402">Audio iestatījumi</translation>
 <translation id="3945319193631853098">Pieskarieties, lai pabeigtu iestatīšanu.</translation>
@@ -766,6 +772,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="5744083938413354016">Vilkšana pieskaroties</translation>
 <translation id="5745612484876805746">Nakts režīms tiek automātiski ieslēgts saulrietā.</translation>
 <translation id="5750765938512549687">Bluetooth ir izslēgts</translation>
+<translation id="5760866832697883462">Savienojuma izveide ar ierīci (<ph name="NAME" />)</translation>
 <translation id="576341972084747908">Notiek bīstama faila <ph name="FILENAME" /> lejupielāde</translation>
 <translation id="5763928712329149804">Režīms Shelf Party ir izslēgts.</translation>
 <translation id="576453121877257266">Nakts režīms ir ieslēgts.</translation>
@@ -951,6 +958,7 @@ Jauna instalācija</translation>
 <translation id="6886172995547742638">Ierīces <ph name="DEVICE_TYPE" /> veiktspēja var pasliktināties. Izmantojiet sertificētu USB-C strāvas adapteri, kura jauda ir vismaz <ph name="PREFERRED_MINIMUM_POWER" /> vatu.</translation>
 <translation id="688631446150864480">Lai pārslēgtu logus, nospiediet lejupvērsto bulttaustiņu.</translation>
 <translation id="6896758677409633944">Kopēt</translation>
+<translation id="6901883536534621389">Pārvietošanās žestu izmēģināšana</translation>
 <translation id="6919251195245069855">Nevarēja atpazīt jūsu viedkarti. Mēģiniet vēlreiz.</translation>
 <translation id="6921188888306725546">Uzlaboti īsinājumtaustiņi</translation>
 <translation id="6931576957638141829">Saglabāt šeit:</translation>
@@ -1127,6 +1135,7 @@ Jauna instalācija</translation>
 <translation id="7977927628060636163">Notiek mobilo tīklu meklēšana...</translation>
 <translation id="7982789257301363584">Tīkls</translation>
 <translation id="7984197416080286869">Pārāk daudz mēģinājumu atbloķēt ar pirksta nospiedumu</translation>
+<translation id="798779949890829624">Šo iestatījumu pārvalda jūsu administrators</translation>
 <translation id="7994370417837006925">Vairākkārtēja pierakstīšanās</translation>
 <translation id="7995804128062002838">Neizdevās izveidot ekrānuzņēmumu.</translation>
 <translation id="8000066093800657092">Nav tīkla</translation>
@@ -1154,6 +1163,7 @@ Jauna instalācija</translation>
 <translation id="813913629614996137">Notiek inicializēšana...</translation>
 <translation id="8142441511840089262">Veikt dubultklikšķi</translation>
 <translation id="8142699993796781067">Privāts tīkls</translation>
+<translation id="8144760705599030999">Saglabājiet ierīci (<ph name="NAME" />) kontā <ph name="EMAIL" /> ātrākai savienošanai pārī ar citām savām ierīcēm.</translation>
 <translation id="8152092012181020186">Lai aizvērtu cilnes lapu, vienlaikus nospiediet taustiņus Ctrl un W.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automātiski pabeigts</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Šo iestatījumu pārvalda jūsu administrators.</translation>
@@ -1191,6 +1201,7 @@ Jauna instalācija</translation>
 <translation id="8412677897383510995">Rādīt displeja iestatījumus</translation>
 <translation id="8413272770729657668">Ierakstīšana tiks sākta pēc atskaites: 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (futrālis)</translation>
+<translation id="8420205633584771378">Vai noņemt šo ieteikumu?</translation>
 <translation id="8421270167862077762">Šajā ierīcē nav lietotnes <ph name="UNAVAILABLE_APPS" />.</translation>
 <translation id="8425213833346101688">Mainīt</translation>
 <translation id="8426708595819210923">Labvakar, <ph name="GIVEN_NAME" />!</translation>
@@ -1283,6 +1294,7 @@ Jauna instalācija</translation>
 <translation id="9000771174482730261">PĀRVALDĪT KRĀTUVI</translation>
 <translation id="9017320285115481645">Ievadiet Family Link vecāku piekļuves kodu.</translation>
 <translation id="9024331582947483881">pilnekrāna režīms</translation>
+<translation id="9030319654231318877">Izslēgts līdz saulrietam</translation>
 <translation id="9034924485347205037">Linux faili</translation>
 <translation id="9047624247355796468">Atvērt tīkla <ph name="NETWORK_NAME" /> iestatījumus</translation>
 <translation id="9059834730836941392">Sakļaut paziņojumu</translation>
@@ -1302,6 +1314,7 @@ Jauna instalācija</translation>
 <translation id="9099154003160514616">Pieejams Lacros atjauninājums</translation>
 <translation id="9100887602489003640">Notiek profila pievienošana. Uzgaidiet dažas minūtes.</translation>
 <translation id="9105450214093926548">Pārlūka Lacros izmantošanas laikā netiek atbalstīta otra lietotāja pierakstīšanās. Lūdzu, tā vietā izmantojiet otru pārlūka profilu vai aizveriet pārlūku Lacros un mēģiniet vēlreiz.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> vai <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Aizsargātu saturu nevar ierakstīt</translation>
 <translation id="9161053988251441839">IETEIKTĀS LIETOTNES</translation>
 <translation id="9166331175924255663">Ieslēgt/izslēgt augstas redzamības režīmu funkcijai Kopīgošana tuvumā.</translation>

@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">Ás veces, os atacantes imitan sitios facendo cambios no enderezo web que son difíciles de ver.</translation>
 <translation id="1028781062521375153">Ver detalles</translation>
 <translation id="1030706264415084469">O URL <ph name="URL" /> quere almacenar un gran volume de datos de forma permanente no teu dispositivo</translation>
-<translation id="1032854598605920125">Xirar  á dereita</translation>
 <translation id="1033329911862281889">O modo de incógnito non te fai invisible en liña:
 <ph name="BEGIN_LIST" />
 <ph name="LIST_ITEM" />Os sitios e os servizos que usan poden consultar as visitas<ph name="END_LIST_ITEM" />
@@ -2534,6 +2533,7 @@ Detalles adicionais:
 <translation id="7995512525968007366">Non especificado</translation>
 <translation id="7998269595945679889">Botón Abrir pestana do modo de incógnito. Preme Introducir para abrir unha nova pestana do modo de incógnito e navegar de forma privada</translation>
 <translation id="800218591365569300">Proba a pechar outras pestanas ou programas para liberar memoria.</translation>
+<translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8009225694047762179">Xestionar contrasinais</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Gardarase esta tarxeta e o seu enderezo de facturación. Poderás utilizala ao iniciar sesión en <ph name="USER_EMAIL" />.}other{Gardaranse estas tarxetas e os seus enderezos de facturación. Poderás utilizalas ao iniciar sesión en <ph name="USER_EMAIL" />.}}</translation>
@@ -2634,6 +2634,7 @@ Detalles adicionais:
 <translation id="8277900682056760511">A folla do controlador de pagos está aberta</translation>
 <translation id="8280630997017109758">Bandexa 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
+<translation id="8281886186245836920">Omitir</translation>
 <translation id="8282947398454257691">Coñece o teu identificador de dispositivo único</translation>
 <translation id="8284769179630993263">Xestiona na configuración de Chrome a Navegación segura e outras opcións</translation>
 <translation id="8286036467436129157">Iniciar sesión</translation>

@@ -114,7 +114,6 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Subukan ulit</translation>
 <translation id="2161394479394250669">Kanselahin ang pag-print</translation>
 <translation id="2180197493692062006">Nagkaproblema. Subukang buksan ulit ang app.</translation>
-<translation id="2201770616342964496">Lokal na pagkakakilanlan</translation>
 <translation id="2209788852729124853">I-reset ang Mga Traffic Counter</translation>
 <translation id="2212733584906323460">Name Resolution</translation>
 <translation id="2217935453350629363">Kasalukuyang bilis</translation>
@@ -306,7 +305,6 @@
 <translation id="4593212453765072419">Kinakailangan ang pagpapatunay ng proxy</translation>
 <translation id="4609350030397390689">Babaan ang liwanag ng keyboard</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> sa <ph name="TOTAL_PAGE_NUMBER" />. Pindutin ang enter para kanselahin ang pag-print.</translation>
-<translation id="4627645661474370390">Remote na pagkakakilanlan</translation>
 <translation id="463791356324567266">Kinakansela ang pag-scan...</translation>
 <translation id="4646949265910132906">Secure na Koneksyon sa WiFi</translation>
 <translation id="4650608062294027130">Kanang shift</translation>
@@ -433,6 +431,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5866840822086176774">Napakalakas</translation>
 <translation id="588258955323874662">Fullscreen</translation>
 <translation id="5895138241574237353">I-restart</translation>
+<translation id="5903200662178656908">Pinagsamang keyboard at mouse ang device.</translation>
 <translation id="5916084858004523819">Ipinagbabawal</translation>
 <translation id="5916664084637901428">Naka-on</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Na-scan at na-save na ang iyong file sa <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Na-scan at na-save na ang iyong mga file sa <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Na-scan at na-save na ang iyong mga file sa <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -453,6 +452,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6104112872696127344">Nakansela ang pag-scan</translation>
 <translation id="6106186594183574873">Para tapusin, ilagay ang iyong lumang password</translation>
 <translation id="6108689792487843350">Hindi makakonekta sa gateway</translation>
+<translation id="6112878310391905610">Pinapamahalaan ng iyong mga administrator ang setting na ito</translation>
 <translation id="6113701710518389813">Pataas na arrow</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> pang album</translation>
 <translation id="6122191549521593678">Online</translation>

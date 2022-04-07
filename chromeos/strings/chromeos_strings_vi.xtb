@@ -114,7 +114,6 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Thử lại</translation>
 <translation id="2161394479394250669">Hủy lệnh in</translation>
 <translation id="2180197493692062006">Đã xảy ra lỗi. Hãy thử mở lại ứng dụng.</translation>
-<translation id="2201770616342964496">Thông tin nhận dạng cục bộ</translation>
 <translation id="2209788852729124853">Đặt lại Bộ đếm lưu lượng truy cập</translation>
 <translation id="2212733584906323460">Độ phân giải tên</translation>
 <translation id="2217935453350629363">Tốc độ hiện tại</translation>
@@ -262,6 +261,7 @@
 <translation id="4170180284036919717">Chụp ảnh</translation>
 <translation id="4170700058716978431">KHÔNG THÀNH CÔNG</translation>
 <translation id="4176463684765177261">Đã tắt</translation>
+<translation id="4176659219503619100">Bảng điều khiển</translation>
 <translation id="4213104098953699324">Bàn phím USB</translation>
 <translation id="4227825898293920515">Mật khẩu sẽ hết hạn sau <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Không có lệnh in nào đang xử lý</translation>
@@ -305,7 +305,6 @@
 <translation id="4593212453765072419">Yêu cầu xác thực proxy</translation>
 <translation id="4609350030397390689">Giảm độ sáng đèn bàn phím</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Hãy nhấn để hủy lệnh in.</translation>
-<translation id="4627645661474370390">Thông tin nhận dạng từ xa</translation>
 <translation id="463791356324567266">Đang hủy quá trình quét...</translation>
 <translation id="4646949265910132906">Kết nối Wi-Fi an toàn</translation>
 <translation id="4650608062294027130">Nút Shift phải</translation>

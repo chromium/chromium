@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">ब्लुटुथ यन्त्र "<ph name="DEVICE_NAME" />" जोडा मिलाउने अनुमति चाहन्छ। कृपया त्यस यन्त्रमा यो पिन कोड प्रविष्टि गर्नुहोस्: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">स्क्रिनकास्टसम्बन्धी टुलहरू</translation>
 <translation id="1024261588257374085">स्रोतका रूपमा स्क्रिनको केही भाग चयन गरियो</translation>
+<translation id="1024364763893396229"><ph name="NAME" /> सेभ गर्नुहोस्</translation>
 <translation id="1032891413405719768">स्टाइलसको ब्याट्री कम छ</translation>
 <translation id="1036073649888683237">सूचनाहरू व्यवस्थापन गर्न सेटिङमा जानुहोस्</translation>
 <translation id="1036672894875463507">म तपाईंको Google सहायक हुँ, म तपाईंलाई दिनभर विभिन्न कार्य गर्न मद्दत गर्ने छु!
@@ -167,6 +168,7 @@
 <translation id="1951012854035635156">सहायक</translation>
 <translation id="1954252331066828794">स्क्रिन रेकर्डिङ गरियो</translation>
 <translation id="1957958912175573503">आफ्नो भाषा सेट गर्नुहोस्</translation>
+<translation id="1961239773406905488">क्यामेरामा फोटोको प्रिभ्यू लुकाइएको छ</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">लक स्क्रिन</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -184,6 +186,7 @@
 <translation id="2047639699071423250">मुख्य विचार हाल्नुहोस्</translation>
 <translation id="2049240716062114887">डेस्कको नाम बदलेर <ph name="DESK_NAME" /> बनाइयो</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
+<translation id="2064048859448024834">क्यामेरामा फोटोको प्रिभ्यू हेर्ने सुविधा अन छ</translation>
 <translation id="2066708475850724665">म्याग्निफायर अफ गर्नुहोस्</translation>
 <translation id="2067602449040652523">किबोर्डको चमक</translation>
 <translation id="2078034614700056995">अर्को डेस्कमा जान टचप्याडमा चारवटा औँलाले दायाँतिर स्वाइप गर्नुहोस्</translation>
@@ -293,6 +296,7 @@
 <translation id="2819276065543622893">तपाइँलाई अब साइन आउट गराइनेछ।</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> ले <ph name="SPECIFIED_RESOLUTION" /> समर्थन गर्दैन। रिजोल्युसन परिवर्तन गरी <ph name="FALLBACK_RESOLUTION" /> पारियो।</translation>
 <translation id="2825619548187458965">तख</translation>
+<translation id="2831035692318564937">सूर्योदय नहुँदासम्म अन</translation>
 <translation id="2834813915651407382">हालसालै खोलिएको</translation>
 <translation id="2841907151129139818">ट्याब्लेट मोड प्रयोग गर्न थालियो</translation>
 <translation id="2844169650293029770">USB-C यन्त्र (अगाडिको बायाँ पोर्ट)</translation>
@@ -439,6 +443,7 @@
 <translation id="3626281679859535460">चम्किलोपना</translation>
 <translation id="3630697955794050612">अफ छ</translation>
 <translation id="3631369015426612114">निम्न स्रोतहरूबाट सूचनाहरूलाई अनुमति दिनुहोस्</translation>
+<translation id="3633097874324966332">आफ्नो डिभाइस कनेक्ट गर्न ब्लुटुथका सेटिङ खोल्नुहोस्</translation>
 <translation id="3638400994746983214">गोपनीयताको स्क्रिन टगल गर्नुहोस्। <ph name="STATE_TEXT" />।</translation>
 <translation id="3649505501900178324">अद्यावधिक हुन बाँकी</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> व्यवस्थापन गरिएका प्रयोगकर्ता</translation>
@@ -486,6 +491,7 @@
 <translation id="3922427723338465344">{0,plural, =1{१ मिनेटभित्र यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्नुहोस्}other{# मिनेटभित्र यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्नुहोस्}}</translation>
 <translation id="3923494859158167397">कुनै पनि मोबाइल नेटवर्क सेटअप गरिएको छैन</translation>
 <translation id="3932043219784172185">कुनै पनि डिभाइस कनेक्ट गरिएको छैन</translation>
+<translation id="3934456833412894880">एड्याप्टिभ चार्जिङ अन छ। तपाईंको डिभाइसको ब्याट्रीको आयु बढाउन ब्याट्री ८०% चार्ज भएर बस्ने छ र तपाईंलाई आवश्यक पर्दा ब्याट्री फुल चार्ज हुने छ।</translation>
 <translation id="3943857333388298514">टाँस्नुहोस्</translation>
 <translation id="394485226368336402">अडियो सम्बन्धी सेटिङहरू</translation>
 <translation id="3945319193631853098">सेटअप गर्ने प्रक्रिया पूरा गर्न ट्याप गर्नुहोस्</translation>
@@ -766,6 +772,7 @@
 <translation id="5744083938413354016">ड्र्याग गर्ने विकल्पमा ट्याप गर्नुहोस्</translation>
 <translation id="5745612484876805746">रात्रि प्रकाश सूर्यास्तको बेला स्वतः सक्रिय हुन्छ</translation>
 <translation id="5750765938512549687">ब्लुटुथ निष्क्रिय छ</translation>
+<translation id="5760866832697883462"><ph name="NAME" /> कनेक्ट गर्नुहोस्</translation>
 <translation id="576341972084747908">तपाईं <ph name="FILENAME" /> नामक जोखिमपूर्ण फाइल डाउनलोड गर्दै हुनुहुन्छ</translation>
 <translation id="5763928712329149804">सेल्फ पार्टी अफ छ।</translation>
 <translation id="576453121877257266">रात्रि प्रकाश सक्रिय छ।</translation>
@@ -782,7 +789,7 @@
 <translation id="584525477304726060">अधिकतम बनाउन होल्ड गर्नुहोस्</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> एक्टिभेट गरिएको छैन।</translation>
 <translation id="5860033963881614850">बन्द</translation>
-<translation id="5860491529813859533">सक्रिय गर्नुहोस्</translation>
+<translation id="5860491529813859533">अन गर्नुहोस्</translation>
 <translation id="5867217927013474703">नेटवर्कसम्बन्धी जानकारी सङ्कलन गरिँदै छ</translation>
 <translation id="5876666360658629066">अभिभावकको कोड प्रविष्टि गर्नुहोस्</translation>
 <translation id="5881540930187678962">फोन हब पछि सेटअप गर्नुहोस्</translation>
@@ -951,6 +958,7 @@
 <translation id="6886172995547742638">तपाईंको <ph name="DEVICE_TYPE" /> को कार्यक्षमता घट्न सक्छ। <ph name="PREFERRED_MINIMUM_POWER" />W वा सोभन्दा बढी क्षमताको आधिकारिक USB-C पावर एड्याप्टर प्रयोग गर्नुहोस्।</translation>
 <translation id="688631446150864480">एउटा विन्डोबाट अर्को विन्डोमा जान डाउन एरो की थिच्नुहोस्</translation>
 <translation id="6896758677409633944">प्रतिलिपि गर्नुहोस्</translation>
+<translation id="6901883536534621389">नेभिगेट गर्न जेस्चर प्रयोग गरी हेर्नुहोस्</translation>
 <translation id="6919251195245069855">तपाईंको स्मार्ट कार्ड पहिचान गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6921188888306725546">किबोर्डका सर्टकट अझै राम्रो बनाइएका छन्</translation>
 <translation id="6931576957638141829">यसमा सेभ गरियोस्</translation>
@@ -1127,6 +1135,7 @@
 <translation id="7977927628060636163">मोबाइल नेटवर्कहरू खोज्दै...</translation>
 <translation id="7982789257301363584">सञ्जाल</translation>
 <translation id="7984197416080286869">फिंगरप्रिन्टमार्फत अनलक गर्ने अत्यधिक प्रयासहरू गरिए</translation>
+<translation id="798779949890829624">तपाईंका प्रशासक यो सेटिङ व्यवस्थापन गर्नुहुन्छ</translation>
 <translation id="7994370417837006925">बहु साइन-इन</translation>
 <translation id="7995804128062002838">स्क्रिन क्याप्चर गर्न सकिएन</translation>
 <translation id="8000066093800657092">कुनै नेटवर्क छैन</translation>
@@ -1154,6 +1163,7 @@
 <translation id="813913629614996137">सुरुवात गर्दै...</translation>
 <translation id="8142441511840089262">दुई पटक क्लिक गर्नुहोस्</translation>
 <translation id="8142699993796781067">निजी नेटवर्क</translation>
+<translation id="8144760705599030999">अन्य डिभाइससँग अझ चाँडो कनेक्ट गर्न सकियोस् भन्नाका लागि <ph name="EMAIL" /> मा <ph name="NAME" /> सेभ गर्नुहोस्</translation>
 <translation id="8152092012181020186">बन्द गर्न Ctrl + W थिच्नुहोस्।</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, स्वत: पूर्ण भयो</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> तपाईंका प्रशासक यो सेटिङ मिलाउनुहुन्छ।</translation>
@@ -1191,6 +1201,7 @@
 <translation id="8412677897383510995">डिस्प्लेसम्बन्धी सेटिङ देखाउनुहोस्</translation>
 <translation id="8413272770729657668">रेकर्डिङ सुरु हुनै आँटेको छ ३, २, १</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (केस)</translation>
+<translation id="8420205633584771378">यो सुझाव हटाउने हो?</translation>
 <translation id="8421270167862077762">यो डिभाइसमा <ph name="UNAVAILABLE_APPS" /> उपलब्ध छैन।</translation>
 <translation id="8425213833346101688">परिवर्तन गर्नुहोस्</translation>
 <translation id="8426708595819210923">नमस्ते <ph name="GIVEN_NAME" />,</translation>
@@ -1283,6 +1294,7 @@
 <translation id="9000771174482730261">भण्डारण व्यवस्थापन गर्नुहोस्</translation>
 <translation id="9017320285115481645">Family Link को अभिभावकको पहुँचसम्बन्धी कोड प्रविष्टि गर्नुहोस्।</translation>
 <translation id="9024331582947483881">फुल स्क्रिन</translation>
+<translation id="9030319654231318877">सूर्यास्त नहुँदासम्म अफ</translation>
 <translation id="9034924485347205037">Linux का फाइलहरू</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> को सेटिङ खोल्नुहोस्</translation>
 <translation id="9059834730836941392">सूचना संक्षिप्त गर्नुहोस्</translation>
@@ -1302,6 +1314,7 @@
 <translation id="9099154003160514616">Lacros को अपडेट उपलब्ध छ</translation>
 <translation id="9100887602489003640">प्रोफाइल थपिँदै छ। केही मिनेट पर्खनुहोस्।</translation>
 <translation id="9105450214093926548">Lacros ब्राउजर चलिरहेका बेला अर्का प्रयोगकर्ताले साइन इन गर्न मिल्दैन। कृपया Lacros मा अर्को ब्राउजर प्रोफाइल प्रयोग गर्नुहोस् वा Lacros बन्द गरी फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> वा <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">संरक्षित सामग्री रेकर्ड गर्न मिल्दैन</translation>
 <translation id="9161053988251441839">सिफारिस गरिएका एपहरू</translation>
 <translation id="9166331175924255663">नजिकैका डिभाइससँग सेयर गर्ने सुविधाको उच्च भिजिबिलिटी टगल गर्नुहोस्।</translation>

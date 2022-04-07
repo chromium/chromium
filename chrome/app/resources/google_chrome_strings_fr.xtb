@@ -177,6 +177,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4600710005438004015">Échec de l'installation de la dernière version de Chrome. Vous ne disposez donc pas des nouvelles fonctionnalités, ni des correctifs de sécurité.</translation>
 <translation id="4627412468266359539">Facultatif : contribuez à améliorer les fonctionnalités et performances de Chrome OS Flex en envoyant automatiquement des données d'utilisation et de diagnostic à Google.</translation>
 <translation id="4633000520311261472">Afin de rendre Chrome plus sûr, nous avons désactivé certaines extensions qui ne sont pas répertoriées sur le <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> et qui ont pu être ajoutées à votre insu.</translation>
+<translation id="469553575393225953">Les extensions, les applications et les thèmes provenant de sources inconnues risquent d'endommager votre appareil. Chrome recommande de les installer uniquement à partir du Chrome Web Store</translation>
 <translation id="4728575227883772061">Échec de l'installation suite à une erreur non spécifiée. Si Google Chrome est en cours d'exécution, fermez-le puis réessayez.</translation>
 <translation id="4747730611090640388">Chrome peut estimer quels sont vos centres d'intérêt.  Ensuite, un site que vous consultez pourra demander à Chrome de voir vos centres d'intérêt pour personnaliser les annonces qui vous sont présentées.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -220,6 +221,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="5736850870166430177">Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut également envoyer les URL concernées, y compris des extraits du contenu des pages, à la fonctionnalité de navigation sécurisée</translation>
 <translation id="573759479754913123">À propos de Chrome OS</translation>
 <translation id="5756509061973259733">Il existe déjà un profil Chrome associé à ce compte sur cet appareil</translation>
+<translation id="5763280521700030406">Chrome a bloqué ce fichier. Impossible de vérifier si ce fichier est sûr, car il est trop volumineux. Réessayez avec des fichiers de 50 Mo maximum</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Impossible de lancer Chrome. Réessayez.</translation>
 <translation id="5867197326698922595">Google Chrome tente de modifier les mots de passe.</translation>
@@ -327,8 +329,10 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="8394720698884623075">Les URL sont vérifiées d'après une liste de sites dangereux stockée dans Chrome</translation>
 <translation id="840084489713044809">Google Chrome veut exporter vos mots de passe.</translation>
 <translation id="8416347857511542594">En savoir plus sur la personnalisation des annonces dans Chrome</translation>
+<translation id="8421734018304082652">Chrome a bloqué ce fichier, car il est chiffré. Demandez à son propriétaire de le déchiffrer</translation>
 <translation id="8433638294851456451">Pour envoyer un numéro d'ici vers votre téléphone Android, connectez-vous à Chrome sur les deux appareils.</translation>
 <translation id="8498858610309223613">Une mise à jour spéciale de sécurité pour Google Chrome vient d'être installée. Veuillez redémarrer le navigateur. Vos onglets seront restaurés.</translation>
+<translation id="8504220326736535258">Chrome a bloqué ce fichier, car il contient un logiciel malveillant</translation>
 <translation id="8516431725144212809">Vos centres d'intérêt estimés par Chrome</translation>
 <translation id="8521348052903287641">Règle de trafic entrant pour Google Chrome pour les développeurs autorisant le trafic mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>

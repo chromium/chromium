@@ -15,6 +15,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="151962892725702025">Chromium OS ni mogel sinhronizirati podatkov, ker sinhronizacija ni na voljo za vašo domeno.</translation>
 <translation id="1524282610922162960">Deljenje zavihka v Chromiumu</translation>
 <translation id="1553461853655228091">Chromium potrebuje dovoljenje za dostop do fotoaparata zaradi ustvarjanja tridimenzionalnega zemljevida okolice.</translation>
+<translation id="1602421994560205104">Chromium je blokiral to datoteko, ker je prevelika za varnostno preverjanje. Poskusite znova z datotekami velikosti do 50 MB.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium.}=1{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium. Anonimno okno se ne bo znova odprlo.}one{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium. # anonimno okno se ne bo znova odprlo.}two{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium. # anonimni okni se ne bosta znova odprli.}few{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium. # anonimna okna se ne bodo znova odprla.}other{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium. # anonimnih oken se ne bo znova odprlo.}}</translation>
 <translation id="1625909126243026060">Oglejte si ključne kontrolnike zasebnosti in varnosti v Chromiumu.</translation>
 <translation id="1632539827495546968">Če želite ta račun uporabiti samo enkrat, lahko v brskalniku Chromium uporabite <ph name="GUEST_LINK_BEGIN" />način za goste<ph name="GUEST_LINK_END" />. Če želite dodati račun za nekoga drugega, v napravi <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />dodajte novo osebo<ph name="LINK_END" />.
@@ -222,6 +223,7 @@ Nekatere funkcije morda ne bodo na voljo. Določite drug imenik profila ali upor
 <translation id="673636774878526923">Če želite do stvari v Chromiumu dostopati v vseh svojih napravah, se prijavite in nato vklopite sinhronizacijo.</translation>
 <translation id="6774082503108938489">Tvoj starš je izklopil »Dovoljenja za spletna mesta, aplikacije in razširitve« za Chromium. Omogočanje tega ni dovoljeno: <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="6847869444787758381">Chromium vam sporoči, ali so gesla ogrožena</translation>
+<translation id="6852530923436401894">Chromium je blokiral to datoteko, ker vsebuje zlonamerno programsko opremo.</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kopirano v Chromium)</translation>
 <translation id="6873893289264747459">Chromium je ugotovil, da razširitev »<ph name="EXTENSION_NAME" />« vsebuje zlonamerno programsko opremo.</translation>
@@ -241,6 +243,7 @@ Nekatere funkcije morda ne bodo na voljo. Določite drug imenik profila ali upor
 <translation id="7218568399872925918">Spletna mesta, ki jih obiščete, si zapomnijo vaše podatke, dokler ne zaprete Chromiuma.</translation>
 <translation id="7223968959479464213">Upravitelj opravil – Chromium</translation>
 <translation id="7246575524853130370">Vaša zanimanja po Chromiumovi oceni</translation>
+<translation id="7265671031637041256">Chromium je blokiral to datoteko, ker je šifrirana. Lastnika prosite, da jo dešifrira.</translation>
 <translation id="7309928523159922338">Merjenje oglasov spletnim mestom omogoča, da od Chromiuma zahtevajo podatke, ki jim pomagajo pri merjenju učinkovitosti oglasov. Merjenje oglasov omejuje sledenje na več spletnih mestih s prenašanjem čim manj podatkov med spletnimi mesti.</translation>
 <translation id="731795002583552498">Posodabljanje Chromiuma</translation>
 <translation id="7318036098707714271">Datoteka z nastavitvami je poškodovana ali neveljavna.
@@ -280,6 +283,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="7898472181347242998">Če želite preveriti, ali je naprava posodobljena, odprite <ph name="LINK_BEGIN" />nastavitve sistema Chromium<ph name="LINK_END" /></translation>
 <translation id="7937630085815544518">V Chromium ste bili prijavljeni kot <ph name="USER_EMAIL_ADDRESS" />. Pri vnovični prijavi uporabite isti račun.</translation>
 <translation id="7975919845073681630">To je sekundarna namestitev Chromiuma in ga ni mogoče nastaviti kot privzeti brskalnik.</translation>
+<translation id="7997934263947464652">Razširitve, aplikacije in teme iz neznanih virov lahko škodijo napravi. Chromium priporoča, da jih namestite samo tukaj: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="8013436988911883588">Ko bo imel Chromium dostop, vas bodo spletna mesta lahko pozvala k omogočanju dostopa.</translation>
 <translation id="8045118833343856403">Naslednji računi niso prijavljeni v noben profil v Chromiumu. Če želite uporabiti račun v drugem profilu, najprej odstranite ta profil.</translation>
 <translation id="8105840573057009683">Chromium potrebuje dovoljenje za lokacijo za to spletno mesto.</translation>

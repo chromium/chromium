@@ -168,6 +168,7 @@
 <translation id="2421044535038393232">ສືບຕໍ່ແກ້ໄຂ</translation>
 <translation id="2434405374328098816">ທ່ານມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ສຳລັບ "<ph name="USERNAME" />" ຢູ່ <ph name="WEBSITE" /> ຢູ່ກ່ອນແລ້ວ</translation>
 <translation id="2435457462613246316">ສະ​ແດງ​ລະ​ຫັດ​ຜ່ານ</translation>
+<translation id="2469960372084740698">ປິດ Safe Browsing ບໍ?</translation>
 <translation id="2473876017985765807">ທ່ານມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ສຳລັບ <ph name="WEBSITE" /> ຢູ່ກ່ອນແລ້ວ</translation>
 <translation id="2476359652512522418">ບໍ່ໄດ້ເລືອກ</translation>
 <translation id="2497852260688568942">ການຊິ້ງຂໍ້ມູນຖືກປິດນຳໃຊ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
@@ -313,6 +314,7 @@
 <translation id="3691593122358196899">ເພີ່ມບຸກມາກໃສ່ <ph name="FOLDER_TITLE" /> ແລ້ວ</translation>
 <translation id="369349502275246497">ສະເໜີໃຫ້ບັນທຶກລະຫັດຜ່ານ</translation>
 <translation id="3709582977625132201">ໝາຍວ່າຍັງບໍ່ໄດ້ອ່ານ</translation>
+<translation id="371230970611282515">ຄາດເດົາ ແລະ ເຕືອນທ່ານກ່ຽວກັບເຫດການອັນຕະລາຍກ່ອນທີ່ພວກມັນຈະເກີດຂຶ້ນ.</translation>
 <translation id="3740397331642243698">ເປີດ URL ທີ່ປ້ອນເຂົ້າໃນ Google Chrome ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ.</translation>
 <translation id="3762232513783804601">ສ້າງມາສຳລັບ iPad ຂອງທ່ານ</translation>
 <translation id="3771033907050503522">ແຖບບໍ່ເຜີຍຕົນຕົວ</translation>
@@ -528,6 +530,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="5737974891429562743">ລາຍລະອຽດການເຂົ້າສູ່ລະບົບບັນຊີເກົ່າແລ້ວ. ອັບເດດເພື່ອເລີ່ມການຊິ້ງຂໍ້ມູນ.</translation>
 <translation id="5738887413654608789">ນີ້ໃຫ້ທ່ານຄົ້ນພົບໜ້າເວັບທີ່ກ່ຽວຂ້ອງອີງຕາມສິ່ງທີ່ຢູ່ອ້ອມຮອບຕົວທ່ານ.</translation>
 <translation id="5758631781033351321">ທ່ານຈະເຫັນລາຍການອື່ນຂອງທ່ານຢູ່ບ່ອນນີ້</translation>
+<translation id="5765456154762864099">ເມນູ → ການຕັ້ງຄ່າ → ໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ</translation>
 <translation id="5782227691023083829">ກໍາລັງແປ...</translation>
 <translation id="5791632441210678828">ປຸ່ມຈັດຮຽງສຳລັບຟີດທີ່ກຳລັງຕິດຕາມ.</translation>
 <translation id="5802829331520313983">ຕັ້ງຄ່າ…</translation>
@@ -582,6 +585,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6144589619057374135">ເປີດ ${url} ໃນໂໝດທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="6149061208933997199">ໃຊ້​ລະ​ຫັດ​ຜ່ານ</translation>
 <translation id="6159839020698489198">ບໍ່ບັງຄັບ</translation>
+<translation id="6173386249456979368">ການປົກປ້ອງແບບເຊີງບຸກທີ່ໄວຂຶ້ນຕໍ່ກັບເວັບໄຊ, ການດາວໂຫຼດ ແລະ ສ່ວນຂະຫຍາຍທີ່ເປັນອັນຕະລາຍ. ເຕືອນທ່ານກ່ຽວກັບການຮົ່ວໄຫຼຂອງລະຫັດຜ່ານ. ຕ້ອງສົ່ງຂໍ້ມູນການນຳໃຊ້ໄປໃຫ້ Google</translation>
 <translation id="6177442314419606057">ຊອກຫາໃນ Chrome</translation>
 <translation id="6184086493125982861">ສະ​ແດງ​ແຖບ</translation>
 <translation id="6187302354554850004">ຊິ້ງຂໍ້ມູນຫຼ້າສຸດ: <ph name="LAST_USED_TIME" /></translation>
@@ -768,6 +772,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
 <translation id="7671141431838911305">​ຕິດ​ຕັ້ງ</translation>
 <translation id="7701040980221191251">ບໍ່​ມີ​</translation>
+<translation id="7726702057919861819">ເມນູ → ປະຫວັດ → ລຶບລ້າງຂໍ້ມູນການນຳໃຊ້</translation>
 <translation id="7741325291586284254">ໜ້າແຖບບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່</translation>
 <translation id="7765158879357617694">ຍ້າຍ</translation>
 <translation id="7772032839648071052">ຢືນ​ຢັນວະລີຜ່ານ</translation>
@@ -840,6 +845,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8386068868580335421">ຣີເຊັດ</translation>
 <translation id="8407669440184693619">ບໍ່ເຫັນລະຫັດຜ່ານສຳລັບເວັບໄຊນີ້</translation>
 <translation id="842017693807136194">ເຂົ້າສູ່ລະບົບດ້ວຍ</translation>
+<translation id="8427613705947111202">ເມນູ → ການຕັ້ງຄ່າ → ລະຫັດຜ່ານ</translation>
 <translation id="8428045167754449968">ເມືອງ</translation>
 <translation id="8428213095426709021">ການ​ຕັ້ງຄ່າ</translation>
 <translation id="8428634594422941299">ເຂົ້າໃຈແລ້ວ</translation>

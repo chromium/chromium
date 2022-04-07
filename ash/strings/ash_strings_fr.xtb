@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">L'appareil Bluetooth "<ph name="DEVICE_NAME" />" demande l'autorisation de s'associer. Veuillez saisir le code suivant sur l'appareil : <ph name="PINCODE" />.</translation>
 <translation id="1014111206066007277">Outils d'enregistrement d'écran</translation>
 <translation id="1024261588257374085">Capture d'écran partielle sélectionnée</translation>
+<translation id="1024364763893396229">Enregistrez "<ph name="NAME" />"</translation>
 <translation id="1032891413405719768">Le niveau de charge des piles du stylet est faible</translation>
 <translation id="1036073649888683237">Pour gérer les notifications, accédez aux paramètres</translation>
 <translation id="1036672894875463507">Je suis votre Assistant Google, à votre service tout au long de la journée.
@@ -167,6 +168,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">Enregistrement d'écran terminé</translation>
 <translation id="1957958912175573503">Définir la langue</translation>
+<translation id="1961239773406905488">Aperçu de la caméra masqué</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Verrouiller l'écran</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -184,6 +186,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2047639699071423250">Ajouter une idée principale</translation>
 <translation id="2049240716062114887">Le nom du bureau a été remplacé par <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Portrait</translation>
+<translation id="2064048859448024834">Aperçu de la caméra affiché</translation>
 <translation id="2066708475850724665">Fermer la loupe</translation>
 <translation id="2067602449040652523">Luminosité du clavier</translation>
 <translation id="2078034614700056995">Balayez l'écran vers la droite avec quatre doigts pour passer au bureau suivant</translation>
@@ -293,6 +296,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2819276065543622893">Vous allez être déconnecté maintenant.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> n'est pas compatible avec la résolution <ph name="SPECIFIED_RESOLUTION" />. La résolution <ph name="FALLBACK_RESOLUTION" /> sera utilisée à la place.</translation>
 <translation id="2825619548187458965">Étagère</translation>
+<translation id="2831035692318564937">Activé jusqu'au lever du soleil</translation>
 <translation id="2834813915651407382">Ouvert récemment</translation>
 <translation id="2841907151129139818">Mode tablette activé</translation>
 <translation id="2844169650293029770">Appareil USB de type C (port situé sur la gauche de l'appareil, à l'avant)</translation>
@@ -439,6 +443,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3626281679859535460">Luminosité</translation>
 <translation id="3630697955794050612">désactivé</translation>
 <translation id="3631369015426612114">Autoriser les notifications des éléments suivants</translation>
+<translation id="3633097874324966332">Ouvrez les paramètres Bluetooth pour associer votre appareil</translation>
 <translation id="3638400994746983214">Activer/Désactiver l'écran de confidentialité. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Mise à jour à effectuer</translation>
 <translation id="366222428570480733">Utilisateur géré, <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -486,6 +491,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3922427723338465344">{0,plural, =1{Rétablir une version antérieure de l'appareil d'ici 1 minute}one{Rétablir une version antérieure de l'appareil d'ici # minute}other{Rétablir une version antérieure de l'appareil d'ici # minutes}}</translation>
 <translation id="3923494859158167397">Aucun réseau mobile configuré</translation>
 <translation id="3932043219784172185">Aucun appareil connecté</translation>
+<translation id="3934456833412894880">La recharge adaptative est activée. Votre batterie restera à 80 % pour prolonger son autonomie, et se chargera complètement lorsque vous en aurez besoin.</translation>
 <translation id="3943857333388298514">Coller</translation>
 <translation id="394485226368336402">Paramètres audio</translation>
 <translation id="3945319193631853098">Appuyez pour terminer la configuration</translation>
@@ -766,6 +772,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5744083938413354016">Déplacement tactile</translation>
 <translation id="5745612484876805746">La fonctionnalité Éclairage nocturne est activée automatiquement au coucher du soleil</translation>
 <translation id="5750765938512549687">Bluetooth désactivé</translation>
+<translation id="5760866832697883462">Branchez "<ph name="NAME" />"</translation>
 <translation id="576341972084747908">Téléchargement du fichier dangereux <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Shelf Party est désactivé.</translation>
 <translation id="576453121877257266">Éclairage nocturne activé.</translation>
@@ -951,6 +958,7 @@ Nouvelle installation</translation>
 <translation id="6886172995547742638">Cela peut nuire aux performances de votre <ph name="DEVICE_TYPE" />. Utilisez un adaptateur secteur USB-C de <ph name="PREFERRED_MINIMUM_POWER" /> W ou plus.</translation>
 <translation id="688631446150864480">Appuyez sur la flèche vers le bas pour changer de fenêtre</translation>
 <translation id="6896758677409633944">Copier</translation>
+<translation id="6901883536534621389">Essayez les gestes pour la navigation</translation>
 <translation id="6919251195245069855">Impossible de reconnaître votre carte à puce. Veuillez réessayer.</translation>
 <translation id="6921188888306725546">Les raccourcis clavier ont été améliorés</translation>
 <translation id="6931576957638141829">Enregistrer sous</translation>
@@ -1127,6 +1135,7 @@ Nouvelle installation</translation>
 <translation id="7977927628060636163">Recherche de réseaux mobiles…</translation>
 <translation id="7982789257301363584">Réseau</translation>
 <translation id="7984197416080286869">Trop de tentatives avec votre empreinte digitale</translation>
+<translation id="798779949890829624">Ce paramètre est géré par votre administrateur</translation>
 <translation id="7994370417837006925">Connexion multicompte</translation>
 <translation id="7995804128062002838">Échec de la capture d'écran</translation>
 <translation id="8000066093800657092">Aucun réseau détecté</translation>
@@ -1154,6 +1163,7 @@ Nouvelle installation</translation>
 <translation id="813913629614996137">Initialisation…</translation>
 <translation id="8142441511840089262">Double-clic</translation>
 <translation id="8142699993796781067">Réseau privé</translation>
+<translation id="8144760705599030999">Enregistrez "<ph name="NAME" />" avec votre compte <ph name="EMAIL" /> pour une association plus rapide avec vos autres appareils</translation>
 <translation id="8152092012181020186">Appuyez sur Ctrl+W pour fermer l'élément.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, saisie semi-automatique</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Ce paramètre est géré par votre administrateur.</translation>
@@ -1191,6 +1201,7 @@ Nouvelle installation</translation>
 <translation id="8412677897383510995">Paramètres d'affichage</translation>
 <translation id="8413272770729657668">L'enregistrement commence dans 3 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (étui)</translation>
+<translation id="8420205633584771378">Supprimer cette suggestion ?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> n'est pas sur cet appareil.</translation>
 <translation id="8425213833346101688">Modifier</translation>
 <translation id="8426708595819210923">Bonsoir <ph name="GIVEN_NAME" />,</translation>
@@ -1283,6 +1294,7 @@ Nouvelle installation</translation>
 <translation id="9000771174482730261">GÉRER L'ESPACE DE STOCKAGE</translation>
 <translation id="9017320285115481645">Saisissez le code d'accès parental Family Link.</translation>
 <translation id="9024331582947483881">plein écran</translation>
+<translation id="9030319654231318877">Désactivé jusqu'au coucher du soleil</translation>
 <translation id="9034924485347205037">Fichiers Linux</translation>
 <translation id="9047624247355796468">Ouvrir les paramètres du réseau <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Réduire la notification</translation>
@@ -1302,6 +1314,7 @@ Nouvelle installation</translation>
 <translation id="9099154003160514616">Mise à jour Lacros disponible</translation>
 <translation id="9100887602489003640">Ajout du profil… Attendez quelques minutes.</translation>
 <translation id="9105450214093926548">Un second utilisateur ne peut pas se connecter lorsque le navigateur Lacros est en cours d'exécution. Veuillez utiliser un second profil de navigateur dans Lacros ou fermer ce dernier, puis réessayer.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> ou <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Impossible d'enregistrer un contenu protégé</translation>
 <translation id="9161053988251441839">SUGGESTIONS D'APPLICATIONS</translation>
 <translation id="9166331175924255663">Activez/Désactivez le mode haute visibilité du Partage à proximité.</translation>

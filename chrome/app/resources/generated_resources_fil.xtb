@@ -150,7 +150,6 @@
 <translation id="1137589305610962734">pansamantalang data</translation>
 <translation id="1137673463384776352">Buksan ang link sa <ph name="APP" /></translation>
 <translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Bagong Notification}one{# Bagong Notification}other{# na Bagong Notification}}</translation>
-<translation id="1139138655591555207">Pindutin ang |<ph name="ACCELERATOR" />| para ma-focus ang bubble ng tulong na ito.</translation>
 <translation id="1139343347646843679">Nagka-error habang kino-configure ang Linux. Makipag-ugnayan sa iyong administrator.</translation>
 <translation id="1139923033416533844">Paggamit ng Memory</translation>
 <translation id="1140351953533677694">I-access ang iyong mga Bluetooth at Serial device</translation>
@@ -852,6 +851,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1784707308176068866">Patakbuhin sa background kapag hiniling ng nakikipagtulungang native application</translation>
 <translation id="1784849162047402014">Kaunti na lang ang espasyo sa disk ng device</translation>
 <translation id="1787350673646245458">Larawan ng user</translation>
+<translation id="1788329699711791226">I-access ang iyong mga bagay sa Chrome browser mula sa <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790194216133135334">Ipadala ang link sa <ph name="DEVICE_NAME" /></translation>
 <translation id="1790976235243700817">Alisin ang access</translation>
 <translation id="1791662854739702043">Na-install</translation>
@@ -2158,7 +2158,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3030967311408872958">Paglubog ng araw hanggang pagsikat ng araw</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031557471081358569">Pumili ng mga item na ii-import:</translation>
-<translation id="3032587662022429783">Matuto pa tungkol sa data ng diagnostic at paggamit.</translation>
 <translation id="3033348223765101500">Kontrolin ang iyong data</translation>
 <translation id="3034627908241330765">May isa pang tumatakbong pag-set up ng Steam. Pakihintay na makumpleto ito bago patakbuhin ulit ang pag-set up.</translation>
 <translation id="3036327949511794916">Lumipas na ang deadline para ibalik ang <ph name="DEVICE_TYPE" /> na ito.</translation>
@@ -2808,7 +2807,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
       <ph name="BEGIN_BOLD" />Tandaan:<ph name="END_BOLD" />  Mare-reboot ang system sa panahon ng proseso.</translation>
 <translation id="3690369331356918524">Babalaan ka kung mae-expose ang mga password sa isang paglabag sa data</translation>
 <translation id="3691231116639905343">Mga keyboard app</translation>
-<translation id="3691267899302886494">Gustong ibahagi ng <ph name="HOST" /> ang iyong screen</translation>
 <translation id="369135240373237088">Mag-sign in ulit sa isang pampaaralang account</translation>
 <translation id="3693415264595406141">Password:</translation>
 <translation id="3694027410380121301">Select Previous Tab</translation>
@@ -2882,6 +2880,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3760460896538743390">Siyasatin ang Pahina ng &amp;Background</translation>
 <translation id="37613671848467444">Buksan sa &amp;Incognito Window</translation>
 <translation id="3761556954875533505">Payagan ang site na i-edit ang mga file?</translation>
+<translation id="3763549179847864476">Button na bumalik sa Gabay sa Privacy</translation>
 <translation id="3764314093345384080">Detalyadong impormasyon ng build</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Kumonekta sa isang USB device}one{Kumonekta sa # USB device}other{Kumonekta sa # na USB device}}</translation>
 <translation id="3764753550716962406">Payagan ang Google na gamitin ang iyong cart para maghanap ng mga available na diskwento?</translation>
@@ -3323,7 +3322,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Mga Wika</translation>
 <translation id="4184803915913850597">HID device (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="4184885522552335684">I-drag upang ilipat ang isang display</translation>
 <translation id="4187424053537113647">Sine-set up ang <ph name="APP_NAME" />...</translation>
 <translation id="4190828427319282529">I-highlight ang focus ng keyboard</translation>
 <translation id="4193836101014293726">Hindi ma-delete ang profile na ito</translation>
@@ -3400,7 +3398,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4268025649754414643">Pag-encipher ng Key</translation>
 <translation id="4268670020635416342">Magdagdag ng pangalan o label tulad ng Trabaho, Personal, o Pambata</translation>
 <translation id="4270393598798225102">Bersyon <ph name="NUMBER" /></translation>
-<translation id="4272765551319099134">Hindi makakonekta sa page na ito</translation>
 <translation id="4274604968379621964">I-save ang grupo</translation>
 <translation id="4274667386947315930">Data sa pag-sign in</translation>
 <translation id="4274673989874969668">Pagkatapos mong umalis sa isang site, puwede itong patuloy na mag-sync para matapos ang mga gawain, tulad ng pag-upload ng mga larawan o pagpapadala ng mensahe sa chat</translation>
@@ -3829,6 +3826,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4690091457710545971">&lt;Apat na file na ginawa ng Intel Wi-Fi firmware: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon.  Ang unang tatlo ay mga binary file na may mga dump sa pagpaparehistro at iginiit ng Intel na walang personal na impormasyon o impormasyong nakakapagpakilala sa device.  Ang panghuling file ay isang execution trace mula sa Intel firmware; tinanggalan ito ng anumang personal na impormasyon o impormasyong nakakapagpakilala sa device, ngunit masyado itong malaki para maipakita rito.  Nagawa ang mga file na ito bilang tugon sa mga kamakailang naging problema sa Wi-Fi sa iyong device, at ibabahagi ito sa Intel para makatulong sa pag-troubleshoot ng mga problemang ito.&gt;</translation>
 <translation id="4691791363716065510">Matitingnan ng <ph name="ORIGIN" /> ang <ph name="FILENAME" /> hanggang sa isara mo ang lahat ng tab para sa site na ito</translation>
 <translation id="4692623383562244444">Mga search engine</translation>
+<translation id="4692736633446859167">Pinili mo dati na hindi payagan ang anumang extension sa <ph name="SITE" />. Kung idaragdag mo ang site na ito dito, puwede ring hilingin ng iba pang extension na basahin at baguhin ang iyong data ng site sa <ph name="SITE" />.</translation>
 <translation id="4693155481716051732">Sushi</translation>
 <translation id="4694024090038830733">Pinapangasiwaan ng administrator ang pag-configure ng printer.</translation>
 <translation id="4694604912444486114">Unggoy</translation>
@@ -4670,6 +4668,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5539221284352502426">Tinanggihan ng server ang password na inilagay mo. Kabilang sa mga posibleng dahilan: Masyadong maikli ang password. Dapat may mga numero o simbolo ang password. Dapat naiiba ang password sa mga nakaraang password.</translation>
 <translation id="5541694225089836610">Na-disable ng iyong administrator ang pagkilos na ito</translation>
 <translation id="5542132724887566711">Profile</translation>
+<translation id="554229901779827904">Pinapamahalaan ng <ph name="MANAGER_NAME" /> ang iyong account. Makikita at mae-edit ng iyong administrator ang profile na ito sa Chrome Browser at ang data na ito. Kabilang sa iyong data ang mga bookmark, history, at password.</translation>
 <translation id="5542750926112347543">Na-block ang cookies mula sa <ph name="DOMAIN" /></translation>
 <translation id="5542949973455282971">Kumokonekta sa <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Hinahanap ang status...</translation>
@@ -6156,6 +6155,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7003844668372540529">Hindi kilalang produkto na <ph name="PRODUCT_ID" /> mula sa <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Puwedeng gumamit ang site ng MIDI</translation>
 <translation id="7004499039102548441">Mga Kamakailang Tab</translation>
+<translation id="7004562620237466965">Decipher Lang</translation>
 <translation id="7004969808832734860">Hanggang <ph name="DISCOUNT_UP_TO_AMOUNT" /> diskwento</translation>
 <translation id="7005496624875927304">Mga karagdagang pahintulot</translation>
 <translation id="7005812687360380971">Pagkabigo</translation>
@@ -7027,6 +7027,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7876027585589532670">Hindi ma-edit ang shortcut</translation>
 <translation id="7877451762676714207">Hindi alam na error sa server. Pakisubukang muli, o makipag-ugnay sa administrator ng server.</translation>
 <translation id="7879631849810108578">Naitakda na ang shortcut: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
+<translation id="7880591377632733558">Welcome sa Chrome, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7880685873361171388">Kapag naka-on ito at aktibo ang status, ginagamit ng Chrome ang iyong history ng pag-browse sa loob ng 7 araw para matukoy ang isang grupo, o “cohort”, kung nasaan ka. Puwedeng pumili ang mga advertiser ng mga ad para sa grupo. Pinapanatiling pribado ang iyong history ng pag-browse sa device mo. Aktibo lang ang trial na ito sa
     <ph name="BEGIN_LINK" />ilang rehiyon<ph name="END_LINK" />.</translation>
 <translation id="7880823633812189969">Ide-delete ang lokal na data kapag nag-restart ka</translation>
@@ -8026,7 +8027,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="8867228703146808825">Kopyahin ang mga detalye ng build sa clipboard</translation>
 <translation id="8868333925931032127">Sinisimulan ang Demo Mode</translation>
 <translation id="8868626022555786497">Ginagamit</translation>
-<translation id="8868821499058099047">I-reload ang page o subukan ulit sa ibang pagkakataon</translation>
 <translation id="8868838761037459823">Mga detalye ng cellular network</translation>
 <translation id="8868964574897075186">Nailipat na ang mga password sa iyong Google Account</translation>
 <translation id="8870413625673593573">Recently Closed</translation>
@@ -8358,6 +8358,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="919679265671373777">Tingnan ang mga kamakailang larawan at media ng iyong telepono. I-stream ang mga app sa pagmemensahe ng iyong telepono.</translation>
 <translation id="919686179725692564">Matuto pa tungkol sa pag-back up ng iyong mga app.</translation>
 <translation id="9198090666959937775">Gamitin ang iyong Android phone bilang security key</translation>
+<translation id="9199503643457729322">I-click para mag-navigate paalis sa Gabay sa Privacy.</translation>
 <translation id="9200339982498053969">Mae-edit ng <ph name="ORIGIN" /> ang mga file sa <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Maghanap sa <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Maki-clear ang anumang offline na data</translation>

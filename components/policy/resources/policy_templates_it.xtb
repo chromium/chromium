@@ -1156,6 +1156,13 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
       Se viene impostato <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (valore 1), è possibile applicare a <ph name="PRODUCT_OS_NAME" /> soltanto le varianti considerate correzioni fondamentali per la sicurezza o la stabilità.
 
       Se viene impostato <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valore 2), non è possibile applicare al browser tutte le varianti nella schermata di accesso. Questa modalità potrebbe impedire agli sviluppatori di <ph name="PRODUCT_OS_NAME" /> di fornire tempestivamente correzioni fondamentali per la sicurezza ed è pertanto sconsigliata.</translation>
+<translation id="2217931577484185673">Se il criterio viene impostato su Attivato, Navigazione sicura considera attendibili i domini indicati. Non esegue alcun controllo su questi domini per risorse pericolose come phishing, malware o software indesiderato. Il servizio di protezione dei download di Navigazione sicura non esegue alcun controllo sui download ospitati su questi domini. Il servizio di protezione tramite password non esegue alcun controllo per il riutilizzo delle password.
+
+      Se il criterio non viene configurato, la protezione predefinita di Navigazione sicura viene applicata a tutte le risorse.
+
+      Il criterio deve essere impostato come un elenco di nomi di dominio completi. Non supporta espressioni regolari e non inserirà nella lista consentita i sottodomini di domini elencati nel criterio.
+
+      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o che fanno parte di un dominio tramite MCX.</translation>
 <translation id="2221779615493499989">Consente agli utenti di segnalare lo stato di rete su dispositivi registrati.
 
       Se il criterio viene impostato su Falso, le informazioni non vengono segnalate.
@@ -1963,6 +1970,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="3086995894968271156">Consente di configurare Cast Receiver in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3087346703976541109">Consente di specificare se il criterio SharedArrayBuffers può essere utilizzato in un contesto isolato da tutte le origini</translation>
 <translation id="3088557424854005813">Attestazione</translation>
+<translation id="3090283903269516279">Disattiva il modello di ricarica adattiva su <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3091832372132789233">Carica la batteria dei dispositivi che sono principalmente collegati a una fonte di alimentazione esterna.</translation>
 <translation id="3092059499596000593">Usa la stampante di sistema come scelta predefinita in Anteprima di stampa</translation>
 <translation id="309416443108680956">Consente di specificare cosa succede quando un utente che sta effettuando l'autenticazione tramite un token di sicurezza (ad esempio con una smart card) rimuove il token durante una sessione. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: non accade nulla. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: lo schermo viene bloccato finché l'utente non ripete l'autenticazione. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: la sessione viene terminata e l'utente viene disconnesso. Se questo criterio non viene configurato, per impostazione predefinita viene usata l'opzione <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />.</translation>
@@ -2476,6 +2484,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
       * L'opzione <ph name="PRINTERS_ALLOW_ALL" /> (valore 2) consente di visualizzare tutte le stampanti.
 
       Se il criterio non viene configurato, viene usata l'opzione <ph name="PRINTERS_ALLOW_ALL" />.</translation>
+<translation id="3695204334462456702">Destinazioni protocolli (mDNS e DNS-SD) basate su configurazione automatica (opzione deprecata)</translation>
 <translation id="3695706037816556327">Azione alla rimozione del token di sicurezza (ad esempio smart card) per <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3700193037252896716">La frequenza del riavvio.</translation>
 <translation id="3700318587977845664">La frequenza del controllo della disponibilità di aggiornamenti.</translation>
@@ -3771,6 +3780,35 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Se il criterio viene impostato su False o non viene impostato, la modalità Desktop unificato viene disattivata e gli utenti non possono attivarla.</translation>
 <translation id="5255162913209987122">Può essere consigliata</translation>
 <translation id="5257395339965216304">Dati app ospitate</translation>
+<translation id="5263649486910778308">Questo criterio fornisce un modo per eseguire l'override dell'elenco di insiemi che il browser utilizza per le funzionalità di First-Party Sets.
+
+      Ogni insieme nell'elenco del browser di First-Party Sets deve soddisfare i requisiti di un insieme First-Party Sets.
+      Un insieme First-Party Sets è composto da un sito proprietario e da uno o più siti membri. Tutti i siti di un insieme First-Party Sets devono
+      avere un dominio registrabile pubblicato su HTTPS, a prescindere dal fatto che si tratti di un sito proprietario o membro.
+      Ciascun sito di un insieme First-Party Sets deve anche essere univoco, ovvero non può essere sia proprietario sia membro, né
+      può essere elencato più di una volta come membro di un insieme First-Party Sets.
+      Consulta la pagina https://github.com/privacycg/first-party-sets per maggiori informazioni su First-Party Sets.
+
+      Quando a questo criterio viene dato un dizionario vuoto, il browser utilizza l'elenco pubblico di First-Party Sets.
+
+      Per tutti i siti in un insieme First-Party Sets dell'elenco <ph name="REPLACEMENTS" />, se un sito è presente anche
+      in un insieme First-Party Sets nell'elenco del browser, quel sito verrà rimosso dall'insieme di First-Party Sets del browser.
+      Dopodiché, l'insieme First-Party Sets del criterio verrà aggiunto all'elenco del browser di First-Party Sets.
+
+      Per tutti i siti in un insieme First-Party Sets dell'elenco <ph name="ADDITIONS" />, se un sito è presente anche
+      in un insieme First-Party Sets nell'elenco del browser, l'insieme First-Party Sets del browser verrà aggiornato in modo che il
+      nuovo insieme First-Party Sets possa essere aggiunto all'elenco del browser. Una volta aggiornato l'elenco del browser,
+      l'insieme First-Party Sets del criterio verrà aggiunto all'elenco del browser di First-Party Sets.
+
+      L'elenco del browser di First-Party Sets richiede che nessuno dei siti al suo interno
+      sia presente in più di un insieme. Questo requisito è valido anche per gli elenchi <ph name="REPLACEMENTS" />
+      e <ph name="ADDITIONS" />. In modo simile, un sito non può essere presente in entrambi gli elenchi
+      <ph name="REPLACEMENTS" /> e <ph name="ADDITIONS" />.
+
+      I caratteri jolly (*) non sono supportati come valore del criterio, neppure all'interno di un insieme First-Party Sets in questi elenchi.
+
+      Tutti gli insiemi forniti da questo criterio devono essere insiemi First-Party Sets validi. Qualora non lo fossero, verrà segnalato
+      un errore adeguato.</translation>
 <translation id="5266173014392157048">Questo criterio è deprecato. Utilizza il criterio "<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />".
 
       La configurazione del criterio consente di assegnare i server a cui <ph name="PRODUCT_NAME" /> può delegare le credenziali utente. Separa i nomi dei server con le virgole. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.
@@ -4256,6 +4294,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="5815990343032461023">Comportamento precedente: le app di Chrome Kiosk verranno aggiornate dal sistema di estensione utilizzando l'URL di aggiornamento dal manifest dell'estensione, nonché memorizzando nella cache il gestore usando l'URL di aggiornamento dal criterio</translation>
 <translation id="582857022372205358">Attiva la stampa fronte/retro su lato corto</translation>
 <translation id="5830196507442186669">Consenti ai dispositivi di usare <ph name="BOREALIS_NAME" /> su <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="5831286647961890695">Attiva il modello di ricarica adattiva su <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="5832274826894536455">Norme obsolete</translation>
 <translation id="5835253272509953988">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_NAME" /> controlla se nomi utente e password inseriti dagli utenti sono stati resi noti.
 
@@ -6277,6 +6316,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
       La dimensione <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica la quantità minima di dati in byte che attiva il controllo dei pattern. Ciò significa che la scrittura negli appunti da un URL bloccato sarebbe consentita se la dimensione dei dati copiati fosse inferiore al valore specificato in questo campo. Se il campo non viene impostato, il valore predefinito è 100 byte.
       </translation>
+<translation id="8035570672225663428">Consenti al modello di ricarica adattiva di sospendere la procedura di ricarica per prolungare la durata della batteria</translation>
 <translation id="8044493735196713914">Indicazione modalità di avvio dispositivo</translation>
 <translation id="80453040817068401">Rendi disponibile il browser <ph name="LACROS_NAME" /></translation>
 <translation id="804619600634661088">Consenti l'uso del debug remoto</translation>
@@ -6314,6 +6354,10 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="8099880303030573137">Ritardo inattività in caso di utilizzo della batteria</translation>
 <translation id="8101381354936029836">Gruppo atomico di criteri:</translation>
 <translation id="8102913158860568230">Impostazione stream multimediale predefinito</translation>
+<translation id="8103563905615378194">Consente di specificare se un modello di ricarica adattiva può sospendere la procedura di ricarica per prolungare la durata della batteria.
+
+      Quando per il dispositivo viene usata l'alimentazione CA, il modello di ricarica adattiva valuta se sospendere o meno la procedura di ricarica per prolungare la durata della batteria. Se il modello di ricarica adattiva sospende la procedura di ricarica, mantiene la batteria a un determinato livello (ossia 80%), dopodiché ricarica il dispositivo fino al 100% quando l'utente ne ha bisogno.
+      Se questo criterio viene impostato su True o se non viene configurato, il modello di ricarica adattiva verrà attivato e potrà sospendere la procedura di ricarica per prolungare la durata della batteria. Se questo criterio viene impostato su False, il modello di ricarica adattiva non influirà sulla procedura di ricarica.</translation>
 <translation id="8104962233214241919">Seleziona automaticamente i certificati client per questi siti</translation>
 <translation id="8114382167597081590">Non imporre la Modalità con restrizioni su YouTube</translation>
 <translation id="8117921351531866504">Consente di stabilire se consentire o meno ai siti web di controllare se l'utente ha salvato dei metodi di pagamento.

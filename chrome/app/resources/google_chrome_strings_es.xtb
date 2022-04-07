@@ -178,6 +178,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4600710005438004015">No se ha podido actualizar Chrome a la versión más reciente, por lo que no disfrutas de las últimas funciones y correcciones de seguridad.</translation>
 <translation id="4627412468266359539">Opcional: Ayuda a mejorar las funciones y el rendimiento de ChromeOS Flex enviando automáticamente datos de diagnóstico y de uso a Google.</translation>
 <translation id="4633000520311261472">Para aumentar la seguridad de Chrome, hemos inhabilitado algunas extensiones que no figuran en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> y que podrían haberse añadido sin tu conocimiento.</translation>
+<translation id="469553575393225953">Las extensiones, las aplicaciones y los temas de fuentes desconocidas pueden dañar tu dispositivo. Chrome recomienda instalarlos únicamente desde Chrome Web Store.</translation>
 <translation id="4728575227883772061">Debido a un error desconocido, la instalación no se ha llevado a cabo. Si Google Chrome se está ejecutando, ciérralo y vuelve a intentarlo.</translation>
 <translation id="4747730611090640388">Chrome puede estimar tus intereses.  Después, un sitio que visites puede pedirle a Chrome consultar tus intereses para personalizar los anuncios que veas.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (tráfico mDNS entrante)</translation>
@@ -221,6 +222,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="5736850870166430177">Si un sitio intenta robarte tu contraseña o si descargas un archivo dañino, es posible que Chrome también envíe URLs, incluidos fragmentos de contenido de la página, a Navegación segura.</translation>
 <translation id="573759479754913123">Información de Chrome OS</translation>
 <translation id="5756509061973259733">Ya existe un perfil de Chrome con esa cuenta en este dispositivo.</translation>
+<translation id="5763280521700030406">Chrome ha bloqueado este archivo porque es demasiado grande como para realizar una comprobación de seguridad. Vuelve a intentarlo con archivos de hasta 50 MB.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> ‑ Google Chrome Canary</translation>
 <translation id="5804318322022881572">No se ha podido iniciar Chrome. Inténtalo de nuevo.</translation>
 <translation id="5867197326698922595">Google Chrome está intentando cambiar contraseñas.</translation>
@@ -329,8 +331,10 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="8394720698884623075">Comprueba URLs con una lista de sitios no seguros guardada en Chrome.</translation>
 <translation id="840084489713044809">Google Chrome quiere exportar tus contraseñas.</translation>
 <translation id="8416347857511542594">Más información sobre la personalización de anuncios en Chrome</translation>
+<translation id="8421734018304082652">Chrome ha bloqueado este archivo porque está cifrado. Pídele a su propietario que lo descifre.</translation>
 <translation id="8433638294851456451">Para enviar un número desde aquí a tu teléfono Android, inicia sesión en Chrome con ambos dispositivos.</translation>
 <translation id="8498858610309223613">Se acaba de instalar una actualización de seguridad especial para Google Chrome. Reinicia ahora y restauraremos las pestañas.</translation>
+<translation id="8504220326736535258">Chrome ha bloqueado este archivo porque contiene software malicioso.</translation>
 <translation id="8516431725144212809">Tus intereses estimados por Chrome</translation>
 <translation id="8521348052903287641">Regla entrante para que Google Chrome Dev permita tráfico mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>

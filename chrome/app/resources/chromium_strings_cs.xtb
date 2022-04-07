@@ -15,6 +15,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="151962892725702025">Chromium OS nemůže synchronizovat data, protože Synchronizace ve vaší doméně není k dispozici.</translation>
 <translation id="1524282610922162960">Sdílet kartu prohlížeče Chromium</translation>
 <translation id="1553461853655228091">Prohlížeč Chromium potřebuje oprávnění k přístupu k fotoaparátu, aby mohl vytvořit 3D mapu vašeho okolí</translation>
+<translation id="1602421994560205104">Prohlížeč Chromium tento soubor zablokoval, protože je příliš velký na kontrolu zabezpečení. Zkuste to znovu se soubory do 50 MB.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Váš administrátor vyžaduje, abyste kvůli použití této aktualizace Chromium restartovali}=1{Váš administrátor vyžaduje, abyste kvůli použití této aktualizace Chromium restartovali. Anonymní okno se neotevře znovu.}few{Váš administrátor vyžaduje, abyste kvůli použití této aktualizace Chromium restartovali. # anonymní okna se neotevřou znovu.}many{Váš administrátor vyžaduje, abyste kvůli použití této aktualizace Chromium restartovali. # anonymního okna se neotevře znovu.}other{Váš administrátor vyžaduje, abyste kvůli použití této aktualizace Chromium restartovali. # anonymních oken se neotevře znovu.}}</translation>
 <translation id="1625909126243026060">Zkontrolujte klíčové ovládací prvky ochrany soukromí a zabezpečení v prohlížeči Chromium</translation>
 <translation id="1632539827495546968">Pokud tento účet chcete použít pouze jednorázově, můžete v prohlížeči Chromium použít <ph name="GUEST_LINK_BEGIN" />režim hosta<ph name="GUEST_LINK_END" />. Pokud chcete přidat účet někoho dalšího, přidejte do zařízení <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />novou osobu<ph name="LINK_END" />.
@@ -222,6 +223,7 @@ Některé funkce mohou být nedostupné. Zadejte prosím jiný adresář profilu
 <translation id="673636774878526923">Chcete-li mít ve všech zařízeních přístup k údajům z prohlížeče Chromium, přihlaste se a zapněte synchronizaci.</translation>
 <translation id="6774082503108938489">Tvůj rodič pro prohlížeč Chromium vypnul možnost Oprávnění pro weby, aplikace a rozšíření. Aktivace tohoto <ph name="EXTENSION_TYPE_PARAMETER" /> není povolena.</translation>
 <translation id="6847869444787758381">Pokud vaše hesla někdo prolomí, Chromium vás o tom bude informovat</translation>
+<translation id="6852530923436401894">Prohlížeč Chromium tento soubor zablokoval, protože obsahuje malware</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (zkopírováno do prohlížeče Chromium)</translation>
 <translation id="6873893289264747459">Prohlížeč Chromium zjistil, že rozšíření <ph name="EXTENSION_NAME" /> obsahuje malware</translation>
@@ -241,6 +243,7 @@ Některé funkce mohou být nedostupné. Zadejte prosím jiný adresář profilu
 <translation id="7218568399872925918">Navštívené weby si pamatují vaše údaje, dokud Chromium nezavřete</translation>
 <translation id="7223968959479464213">Správce úloh – Chromium</translation>
 <translation id="7246575524853130370">Vaše zájmy podle odhadu Chromium</translation>
+<translation id="7265671031637041256">Prohlížeč Chromium tento soubor zablokoval, protože je zašifrovaný. Požádejte jeho vlastníka, aby ho dešifroval</translation>
 <translation id="7309928523159922338">Měření reklam umožňuje navštíveným webům žádat Chromium o informace, na základě kterých mohou měřit výkonnost svých reklam. Měření reklam zabraňuje sledování mezi weby, protože se při něm mezi weby přenáší co možná nejméně informací.</translation>
 <translation id="731795002583552498">Aktualizace prohlížeče Chromium</translation>
 <translation id="7318036098707714271">Soubor nastavení je poškozený nebo neplatný.
@@ -279,6 +282,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="7898472181347242998">Chcete-li se podívat, zda je zařízení aktualizované, přejděte do <ph name="LINK_BEGIN" />Nastavení operačního systému Chromium<ph name="LINK_END" /></translation>
 <translation id="7937630085815544518">K prohlížeči Chromium jste byli přihlášeni s účtem <ph name="USER_EMAIL_ADDRESS" />. Přihlaste se prosím znovu pomocí stejného účtu.</translation>
 <translation id="7975919845073681630">Toto je druhá instalace prohlížeče Chromium. Tuto instalaci nelze nastavit jako výchozí prohlížeč.</translation>
+<translation id="7997934263947464652">Rozšíření, aplikace a motivy z neznámých zdrojů mohou poškodit vaše zařízení. Chromium doporučuje instalovat je pouze z tohoto zdroje: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Až bude mít Chromium přístup, budou vás weby moci požádat o přístup.</translation>
 <translation id="8045118833343856403">Následující účty nejsou přihlášeny do žádných profilů Chromium. Pokud účet chcete použít v jiném profilu, nejdříve příslušný profil odstraňte.</translation>
 <translation id="8105840573057009683">Chromium pro tento web potřebuje přístup k poloze</translation>

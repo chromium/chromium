@@ -114,7 +114,6 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" /> : Réessayez</translation>
 <translation id="2161394479394250669">Annuler la tâche d'impression</translation>
 <translation id="2180197493692062006">Un problème est survenu. Essayez de rouvrir l'appli.</translation>
-<translation id="2201770616342964496">Identité locale</translation>
 <translation id="2209788852729124853">Réinitialiser les compteurs de trafic</translation>
 <translation id="2212733584906323460">Résolution des noms</translation>
 <translation id="2217935453350629363">Vitesse actuelle</translation>
@@ -262,6 +261,7 @@
 <translation id="4170180284036919717">Prendre une photo</translation>
 <translation id="4170700058716978431">ÉCHEC</translation>
 <translation id="4176463684765177261">Désactivé</translation>
+<translation id="4176659219503619100">Panneau de configuration</translation>
 <translation id="4213104098953699324">Clavier USB</translation>
 <translation id="4227825898293920515">Le mot de passe arrive à expiration dans <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Aucune tâche d'impression en cours</translation>
@@ -305,7 +305,6 @@
 <translation id="4593212453765072419">L'authentification du proxy est requise.</translation>
 <translation id="4609350030397390689">Baisser la luminosité du clavier</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> sur <ph name="TOTAL_PAGE_NUMBER" />. Appuyez sur Entrée pour annuler la tâche d'impression.</translation>
-<translation id="4627645661474370390">Identité à distance</translation>
 <translation id="463791356324567266">Annulation de la numérisation…</translation>
 <translation id="4646949265910132906">Connexion Wi-Fi sécurisée</translation>
 <translation id="4650608062294027130">Maj droite</translation>

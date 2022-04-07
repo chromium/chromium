@@ -214,11 +214,13 @@
 <translation id="2848086008667475748">Тохиргоо хэсэгт өгөгдмөл болгох…</translation>
 <translation id="2858204748079866344">Таны нууцлалыг хамгаалахын тулд Chrome таны нууц үгийг энэ талбарт автоматаар бөглөхгүй.</translation>
 <translation id="285960592395650245">Татаж авах үйлдлийг дахин хийх</translation>
+<translation id="2866378026651742652">Та одоо шинэ таб нээх үедээ үүнээс стори харна.</translation>
 <translation id="2870560284913253234">Ажлын талбар</translation>
 <translation id="2871695793448672541">Нуусан, Нууц үг</translation>
 <translation id="2876369937070532032">Таны аюулгүй байдал эрсдэлд орох үед таны зочилдог зарим хуудсын URL-г Google-д илгээдэг</translation>
 <translation id="2883151425485251736">Таны бүртгэлээсээ нуусан сэдвийг харах болон засах</translation>
 <translation id="288655811176831528">Табыг хаах</translation>
+<translation id="2890171748217283516">Таны дагадаг сайтуудыг Google бүртгэлд тань хадгалдаг. Та тэдгээрийг Discover-н тохиргоонд удирдах боломжтой.</translation>
 <translation id="2893180576842394309">Google таны түүхийг Хайлт болон Google-н бусад үйлчилгээг хувийн болгох зорилгоор ашиглаж болзошгүй</translation>
 <translation id="2898963176829412617">Шинэ хавтас...</translation>
 <translation id="2916171785467530738">Хайлт болон URL-г автоматаар гүйцээх</translation>
@@ -314,6 +316,7 @@
 <translation id="3691593122358196899"><ph name="FOLDER_TITLE" />-д хавчуулсан</translation>
 <translation id="369349502275246497">Нууц үг хадгалахыг санал болгох</translation>
 <translation id="3709582977625132201">Уншаагүй болгож тэмдэглэх</translation>
+<translation id="371230970611282515">Аюултай үйл явдлын тухай урьдчилан таамаглаж, тохиолдохоос нь өмнө танд анхааруулга өгдөг.</translation>
 <translation id="3740397331642243698">Оруулсан URL-г Google Chrome дээр нууцлалтайгаар нээдэг.</translation>
 <translation id="3762232513783804601">Таны iPad-д зориулан бүтээсэн</translation>
 <translation id="3771033907050503522">Мэдээний нууцлалтай цонх</translation>
@@ -347,6 +350,7 @@
 <translation id="4038354071007134711">Энэ төхөөрөмж дээрх ямар ч апп файлыг нээж чадахгүй.</translation>
 <translation id="4042870976416480368">Хуудаснаас хайх</translation>
 <translation id="4049507953662678203">Сүлжээнд холбогдсон эсэхээ шалгаад, дахин оролдоно уу.</translation>
+<translation id="4063300985191096908">Хангамж руу очих</translation>
 <translation id="408404951701638773">Хайлтын талбарыг ашиглахад илүү хялбар боллоо</translation>
 <translation id="4108314971463891922">Дагах</translation>
 <translation id="411254640334432676">Татаж авах үйлдэл амжилгүй болсон байна.</translation>
@@ -934,6 +938,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Алдаа ослын тайланг илгээсэн байна.</translation>
 <translation id="952704832371081537">Цуцлах</translation>
+<translation id="959066944189734975">Та <ph name="CHANNEL_NAME" />-г дагаж байна</translation>
 <translation id="981498610235328462">Танай байгууллага таныг зөвхөн тодорхой бүртгэлүүдэд нэвтрэхийг зөвшөөрнө. Зөвшөөрөөгүй бүртгэлүүдийг нуусан.</translation>
 <translation id="984509647832111802">Синк хийх ажиллахгүй байна.</translation>
 <translation id="988141524645182168">Бусад төхөөрөмжүүд</translation>

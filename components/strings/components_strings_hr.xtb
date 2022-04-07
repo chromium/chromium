@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">Napadači ponekad oponašaju web-lokacije unošenjem malih, teško uočljivih promjena u web-adresu.</translation>
 <translation id="1028781062521375153">Prikaži pojedinosti</translation>
 <translation id="1030706264415084469"><ph name="URL" /> želi trajno pohraniti veliku količinu podataka na vaš uređaj</translation>
-<translation id="1032854598605920125">Zakretanje u smjeru kazaljke na satu</translation>
 <translation id="1033329911862281889">Anonimni način rada ne čini vas nevidljivim na internetu:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Web-lokacije i usluge koje one upotrebljavaju mogu vidjeti posjete.<ph name="END_LIST_ITEM" />
@@ -2535,6 +2534,7 @@ Dodatne pojedinosti:
 <translation id="7995512525968007366">Nije navedeno</translation>
 <translation id="7998269595945679889">Pritisnite gumb Otvori anonimnu karticu, pritisnite Enter da biste otvorili novu anonimnu karticu za pregledavanje u privatnosti</translation>
 <translation id="800218591365569300">Pokušajte zatvoriti ostale kartice ili programe da biste oslobodili memoriju.</translation>
+<translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
 <translation id="8004582292198964060">Preglednik</translation>
 <translation id="8009225694047762179">Upravljanje zaporkama</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Ova kartica i njezina adresa za naplatu spremit će se. Moći ćete plaćati njome kada ste prijavljeni na račun <ph name="USER_EMAIL" />.}one{Ove kartice i njihove adrese za naplatu spremit će se. Moći ćete plaćati njima kada ste prijavljeni na račun <ph name="USER_EMAIL" />.}few{Ove kartice i njihove adrese za naplatu spremit će se. Moći ćete plaćati njima kada ste prijavljeni na račun <ph name="USER_EMAIL" />.}other{Ove kartice i njihove adrese za naplatu spremit će se. Moći ćete plaćati njima kada ste prijavljeni na račun <ph name="USER_EMAIL" />.}}</translation>
@@ -2635,6 +2635,7 @@ Dodatne pojedinosti:
 <translation id="8277900682056760511">List rukovatelja plaćanjima otvara se na cijelom zaslonu</translation>
 <translation id="8280630997017109758">Ladica 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
+<translation id="8281886186245836920">Preskoči</translation>
 <translation id="8282947398454257691">znati vaš jedinstveni identifikator uređaja</translation>
 <translation id="8284769179630993263">Sigurnim pregledavanjem i drugim značajkama možete upravljati u postavkama Chromea</translation>
 <translation id="8286036467436129157">Prijava</translation>

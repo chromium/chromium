@@ -174,6 +174,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="4600710005438004015">Não foi possível atualizar o Chrome para a versão mais recente, pelo que não está a beneficiar das novas funcionalidades e correções de segurança.</translation>
 <translation id="4627412468266359539">Opcional: ajude a melhorar as funcionalidades e o desempenho do ChromeOS Flex ao enviar automaticamente dados de diagnóstico e utilização para a Google.</translation>
 <translation id="4633000520311261472">Para tornar o Chrome mais seguro, desativámos algumas extensões que não estão listadas na <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e é possível que tenham sido adicionadas sem o seu conhecimento.</translation>
+<translation id="469553575393225953">As extensões, as apps e os temas de fontes desconhecidas podem danificar o seu dispositivo. O Chrome recomenda que apenas os instale a partir da Web Store do Chrome</translation>
 <translation id="4728575227883772061">Houve uma falha na instalação devido a um erro não especificado. Se o Google Chrome estiver atualmente em execução, feche-o e tente de novo.</translation>
 <translation id="4747730611090640388">O Chrome pode estimar os seus interesses.  Posteriormente, um site que visitar pode pedir ao Chrome para ver os seus interesses para personalizar os anúncios que vê.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -213,6 +214,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="5736850870166430177">Se um site tentar roubar a sua palavra-passe, ou quando transferir um ficheiro prejudicial, o Chrome também pode enviar URLs, incluindo bits de conteúdo das páginas, para a Navegação segura</translation>
 <translation id="573759479754913123">Acerca do Chrome OS</translation>
 <translation id="5756509061973259733">Já existe um perfil do Chrome com esta conta neste dispositivo.</translation>
+<translation id="5763280521700030406">O Chrome bloqueou este ficheiro porque é demasiado grande para uma verificação de segurança. Tente novamente com ficheiros até 50 MB.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Não foi possível iniciar o Chrome. Tente novamente.</translation>
 <translation id="5867197326698922595">O Google Chrome está a tentar editar palavras-passe.</translation>
@@ -321,8 +323,10 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="8394720698884623075">Verifica os URLs com listas de sites inseguros armazenados no Chrome</translation>
 <translation id="840084489713044809">O Google Chrome pretende exportar as suas palavras-passe.</translation>
 <translation id="8416347857511542594">Saiba mais acerca da personalização de anúncios no Chrome</translation>
+<translation id="8421734018304082652">O Chrome bloqueou este ficheiro porque está encriptado. Peça ao respetivo proprietário para o desencriptar</translation>
 <translation id="8433638294851456451">Para enviar um número daqui para o seu telemóvel Android, inicie sessão no Chrome em ambos os dispositivos.</translation>
 <translation id="8498858610309223613">Acabou de ser instalada uma atualização de segurança especial para o Google Chrome. Reinicie agora e iremos restaurar os seus separadores.</translation>
+<translation id="8504220326736535258">O Chrome bloqueou este ficheiro porque tem software malicioso</translation>
 <translation id="8516431725144212809">Os seus interesses conforme estimados pelo Chrome</translation>
 <translation id="8521348052903287641">Regra de importação para o Google Chrome Dev permitir o tráfego mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>

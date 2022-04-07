@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Bluetoothi seade „<ph name="DEVICE_NAME" />” küsib luba sidumiseks. Sisestage seadmes järgmine PIN-kood: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">Ekraaniülekande tööriistad</translation>
 <translation id="1024261588257374085">Valitud on osaline ekraanipilt</translation>
+<translation id="1024364763893396229">Salvestage oma <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Elektronpliiatsi aku hakkab tühjaks saama</translation>
 <translation id="1036073649888683237">Märguannete haldamiseks avage jaotis Seaded</translation>
 <translation id="1036672894875463507">Olen teie Google'i assistent ja aitan teid kogu päeva jooksul!
@@ -167,6 +168,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1954252331066828794">Ekraanikuva salvestamine on lõpetatud</translation>
 <translation id="1957958912175573503">Valige keel</translation>
+<translation id="1961239773406905488">Kaamera eelvaade on peidetud</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Lukusta ekraan</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -184,6 +186,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2047639699071423250">Lisa oluline idee</translation>
 <translation id="2049240716062114887">Töölaua nimeks määrati <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Vertikaalpaigutus</translation>
+<translation id="2064048859448024834">Kaamera eelvaade on sisse lülitatud</translation>
 <translation id="2066708475850724665">Peata luup</translation>
 <translation id="2067602449040652523">Klaviatuuri eredus</translation>
 <translation id="2078034614700056995">Järgmisele töölauale lülitumiseks pühkige nelja sõrmega paremale</translation>
@@ -293,6 +296,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2819276065543622893">Teid logitakse nüüd välja.</translation>
 <translation id="2825224105325558319">Üksus <ph name="DISPLAY_NAME" /> ei toeta eraldusvõimet <ph name="SPECIFIED_RESOLUTION" />. Eraldusvõimeks määrati <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Riiul</translation>
+<translation id="2831035692318564937">Päikesetõusuni sees</translation>
 <translation id="2834813915651407382">Hiljuti avatud</translation>
 <translation id="2841907151129139818">Lülitati tahvelarvutirežiimile</translation>
 <translation id="2844169650293029770">C-tüüpi USB-seade (eesmine vasakpoolne port)</translation>
@@ -439,6 +443,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3626281679859535460">Eredus</translation>
 <translation id="3630697955794050612">välja</translation>
 <translation id="3631369015426612114">Luba märguanded järgmistest kohtadest</translation>
+<translation id="3633097874324966332">Avage oma seadme sidumiseks Bluetoothi seaded</translation>
 <translation id="3638400994746983214">Privaatsuskuvale lülitamine. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Värskendamise tähtaeg on möödas</translation>
 <translation id="366222428570480733">Kontoga <ph name="USER_EMAIL_ADDRESS" /> hallatav kasutaja</translation>
@@ -487,6 +492,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Teil on seadme operatsioonisüsteemi eelmisele versioonile üleminekuks aega 1 minut}other{Teil on seadme operatsioonisüsteemi eelmisele versioonile üleminekuks aega # minutit}}</translation>
 <translation id="3923494859158167397">Ühtegi mobiilsidevõrku pole seadistatud</translation>
 <translation id="3932043219784172185">Ükski seade ei ole ühendatud</translation>
+<translation id="3934456833412894880">Kohanduv laadimine on sisse lülitatud. Tööea pikendamiseks laetakse akut, kuni see on 80% täis, ja seejärel laetakse see täielikult täis siis, kui seda vajate.</translation>
 <translation id="3943857333388298514">Kleebi</translation>
 <translation id="394485226368336402">Heliseaded</translation>
 <translation id="3945319193631853098">Puudutage seadistamise lõpuleviimiseks</translation>
@@ -767,6 +773,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5744083938413354016">Puudutusega lohistamine</translation>
 <translation id="5745612484876805746">Öövalgus lülitub päikeseloojangul automaatselt sisse</translation>
 <translation id="5750765938512549687">Bluetooth on välja lülitatud</translation>
+<translation id="5760866832697883462">Ühendage oma <ph name="NAME" /></translation>
 <translation id="576341972084747908">Ohtliku faili <ph name="FILENAME" /> allalaadimine</translation>
 <translation id="5763928712329149804">Shelf Party on välja lülitatud.</translation>
 <translation id="576453121877257266">Öövalgus on sees.</translation>
@@ -952,6 +959,7 @@ Uus installimine</translation>
 <translation id="6886172995547742638">Seadme <ph name="DEVICE_TYPE" /> jõudlus võib olla väiksem. Kasutage sertifitseeritud <ph name="PREFERRED_MINIMUM_POWER" /> W või võimsamat USB-C-toiteadapterit.</translation>
 <translation id="688631446150864480">Akende vahetamiseks vajutage allanoolt</translation>
 <translation id="6896758677409633944">Kopeeri</translation>
+<translation id="6901883536534621389">Proovige navigeerimiseks liigutusi</translation>
 <translation id="6919251195245069855">Teie kiipkaarti ei õnnestunud tuvastada. Proovige uuesti.</translation>
 <translation id="6921188888306725546">Klaviatuuri otseteid täiustati</translation>
 <translation id="6931576957638141829">Sihtkohta salvestamine</translation>
@@ -1128,6 +1136,7 @@ Uus installimine</translation>
 <translation id="7977927628060636163">Mobiilsidevõrkude otsimine …</translation>
 <translation id="7982789257301363584">Võrk</translation>
 <translation id="7984197416080286869">Liiga palju sõrmejäljega avamise katseid</translation>
+<translation id="798779949890829624">Seda seadet haldab administraator</translation>
 <translation id="7994370417837006925">Mitmele kontole sisselogimine</translation>
 <translation id="7995804128062002838">Ekraanikuva jäädvustamine ebaõnnestus</translation>
 <translation id="8000066093800657092">Võrku pole</translation>
@@ -1155,6 +1164,7 @@ Uus installimine</translation>
 <translation id="813913629614996137">Lähtestamine …</translation>
 <translation id="8142441511840089262">Topeltklikk</translation>
 <translation id="8142699993796781067">Privaatvõrk</translation>
+<translation id="8144760705599030999">Salvestage seade <ph name="NAME" /> kontole <ph name="EMAIL" />, et saaksite selle oma teiste seadmetega kiiremini siduda</translation>
 <translation id="8152092012181020186">Sulgemiseks vajutage klahvikombinatsiooni Ctrl + W.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automaatne täitmine</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Seda seadet haldab administraator.</translation>
@@ -1192,6 +1202,7 @@ Uus installimine</translation>
 <translation id="8412677897383510995">Kuva kuvaseaded</translation>
 <translation id="8413272770729657668">Salvestamine algab: 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (ümbris)</translation>
+<translation id="8420205633584771378">Kas eemaldada see soovitus?</translation>
 <translation id="8421270167862077762">Rakendust <ph name="UNAVAILABLE_APPS" /> pole selles seadmes.</translation>
 <translation id="8425213833346101688">Muuda</translation>
 <translation id="8426708595819210923">Tere õhtust, <ph name="GIVEN_NAME" />!</translation>
@@ -1284,6 +1295,7 @@ Uus installimine</translation>
 <translation id="9000771174482730261">HALLAKE SALVESTUSRUUMI</translation>
 <translation id="9017320285115481645">Sisestage Family Linki vanema pääsukood.</translation>
 <translation id="9024331582947483881">täisekraan</translation>
+<translation id="9030319654231318877">Päikeseloojanguni väljas</translation>
 <translation id="9034924485347205037">Linuxi failid</translation>
 <translation id="9047624247355796468">Ava võrgu <ph name="NETWORK_NAME" /> seaded</translation>
 <translation id="9059834730836941392">Ahenda märguannet</translation>
@@ -1303,6 +1315,7 @@ Uus installimine</translation>
 <translation id="9099154003160514616">Lacrosi värskendus on saadaval</translation>
 <translation id="9100887602489003640">Profiili lisamine. Oodake mõni minut.</translation>
 <translation id="9105450214093926548">Teise kasutaja sisselogimist ei toetata, kui brauser Lacros töötab. Kasutage selle asemel brauseris Lacros teist brauseriprofiili või sulgege Lacros ja proovige uuesti.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> või <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Kaitstud sisu ei saa salvestada</translation>
 <translation id="9161053988251441839">SOOVITATUD RAKENDUSED</translation>
 <translation id="9166331175924255663">Läheduses jagamise hea nähtavuse muutmine.</translation>

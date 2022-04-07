@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">Útočníci niekedy weby napodobňujú tak, že vo webovej adrese vykonajú ťažko odhaliteľné zmeny.</translation>
 <translation id="1028781062521375153">Zobraziť podrobnosti</translation>
 <translation id="1030706264415084469"><ph name="URL" /> chce natrvalo ukladať veľké množstvo dát vo vašom zariadení</translation>
-<translation id="1032854598605920125">Otočiť v smere hodinových ručičiek</translation>
 <translation id="1033329911862281889">Režim inkognito neznamená, že vás na internete nie je vidieť:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Weby a nimi využívané služby vedia o vašich návštevách.<ph name="END_LIST_ITEM" />
@@ -2622,6 +2621,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8277900682056760511">Hárok obslužného nástroja platieb je otvorený</translation>
 <translation id="8280630997017109758">Zásobník č. 11</translation>
 <translation id="8281084378435768645">Veľká fotka</translation>
+<translation id="8281886186245836920">Preskočiť</translation>
 <translation id="8282947398454257691">Zistiť jedinečný identifikátor vášho zariadenia</translation>
 <translation id="8284769179630993263">Spravujte v nastaveniach Chromu Bezpečné prehliadanie a ďalšie položky</translation>
 <translation id="8286036467436129157">Prihlásenie</translation>

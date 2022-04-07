@@ -13,6 +13,7 @@
 <translation id="151962892725702025">Chromium-käyttöjärjestelmä ei voi synkronoida tietoja, koska synkronointi ei ole käytettävissä verkkotunnuksessasi.</translation>
 <translation id="1524282610922162960">Jaa Chromium-välilehti</translation>
 <translation id="1553461853655228091">Chromium tarvitsee luvan käyttää kameraasi ympäristön 3D-kartoittamiseen</translation>
+<translation id="1602421994560205104">Chromium on estänyt tämän tiedoston, koska se on liian iso turvatarkistukseen. Kokeile uudelleen korkeintaan 50 Mt:n kokoisella tiedostolla</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Ylläpitäjä vaatii Chromiumin uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön.}=1{Ylläpitäjä vaatii Chromiumin uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. Incognito-ikkunaasi ei avata uudelleen.}other{Ylläpitäjä vaatii Chromiumin uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. # incognito-ikkunaasi ei avata uudelleen.}}</translation>
 <translation id="1625909126243026060">Tarkista Chromiumin tärkeimmät yksityisyys‑ ja turvallisuusasetukset</translation>
 <translation id="1632539827495546968">Jos haluat käyttää tiliä vain tämän kerran, voit käyttää Chromium-selaimen <ph name="GUEST_LINK_BEGIN" />vierastilaa<ph name="GUEST_LINK_END" />. Jos haluat lisätä tilin jollekulle toiselle, <ph name="LINK_BEGIN" />lisää uusi henkilö<ph name="LINK_END" /> <ph name="DEVICE_TYPE" />‑laitteelle.
@@ -220,6 +221,7 @@ Kaikki ominaisuudet eivät ehkä ole käytettävissä. Määritä jokin muu prof
 <translation id="673636774878526923">Jos haluat pääsyn Chromium-sisältöösi kaikilla laitteilla, kirjaudu sisään ja laita sitten synkronointi päälle.</translation>
 <translation id="6774082503108938489">Vanhempasi ovat laittaneet Chromiumin sivustojen, sovellusten ja laajennusten käyttöluvat pois päältä. Käyttöönottoa (<ph name="EXTENSION_TYPE_PARAMETER" />) ei sallita.</translation>
 <translation id="6847869444787758381">Chromium ilmoittaa sinulle, jos salasanasi ovat vaarantuneet</translation>
+<translation id="6852530923436401894">Chromium on estänyt tämän tiedoston, koska se sisältää haittaohjelmia</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kopioitu Chromiumiin)</translation>
 <translation id="6873893289264747459">Chromium havaitsi, että "<ph name="EXTENSION_NAME" />" sisältää haittaohjelmia</translation>
@@ -239,6 +241,7 @@ Kaikki ominaisuudet eivät ehkä ole käytettävissä. Määritä jokin muu prof
 <translation id="7218568399872925918">Avaamasi sivustot muistavat tietosi, kunnes suljet Chromiumin</translation>
 <translation id="7223968959479464213">Tehtävänhallinta - Chromium</translation>
 <translation id="7246575524853130370">Chromiumin arvio kiinnostuksen kohteistasi</translation>
+<translation id="7265671031637041256">Chromium on estänyt tämän tiedoston, koska se on salattu. Pyydä sen omistajaa purkamaan salaus</translation>
 <translation id="7309928523159922338">Mainosten mittaamisen avulla käyttämäsi sivustot voivat pyytää Chromiumilta tietoja, jotka auttavat mittaamaan sivustoilla näkyvien mainosten suoriutumista. Mainosten mittaaminen rajoittaa sivustojen välistä seurantaa siirtämällä mahdollisimman vähän tietoja sivustojen välillä.</translation>
 <translation id="731795002583552498">Päivitetään Chromiumia.</translation>
 <translation id="7318036098707714271">Asetustiedostosi on virheellinen.
@@ -278,6 +281,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="7898472181347242998">Tarkista <ph name="LINK_BEGIN" />Chromium-käyttöjärjestelmän asetuksista<ph name="LINK_END" />, onko laitteesi ajan tasalla</translation>
 <translation id="7937630085815544518">Chromiumiin kirjautunut käyttäjä: <ph name="USER_EMAIL_ADDRESS" />. Kirjaudu uudelleen sisään samalla tilillä.</translation>
 <translation id="7975919845073681630">Tämä on Chromiumin toissijainen asennus, eikä sitä voi asettaa oletusselaimeksi.</translation>
+<translation id="7997934263947464652">Jos laajennukset, sovellukset ja teemat ovat tuntemattomista lähteistä, ne voivat vahingoittaa laitetta. Chromium suosittelee niiden asentamista vain täältä: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Kun Chromiumilla on käyttöoikeus, sivustot voivat pyytää sitä sinulta.</translation>
 <translation id="8045118833343856403">Näillä tileillä ei ole kirjauduttu sisään Chromium-profiileille. Jos haluat käyttää tiliä toisella profiililla, poista ensin kyseinen profiili.</translation>
 <translation id="8105840573057009683">Chromium tarvitsee sijaintiluvan tällä sivustolla</translation>

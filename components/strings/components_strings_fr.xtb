@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">Les pirates informatiques tentent parfois d'imiter des sites en modifiant l'adresse Web de façon subtile pour que le changement passe inaperçu.</translation>
 <translation id="1028781062521375153">Voir les détails</translation>
 <translation id="1030706264415084469"><ph name="URL" /> souhaite stocker de façon permanente des données volumineuses sur votre appareil</translation>
-<translation id="1032854598605920125">Faire pivoter vers la droite</translation>
 <translation id="1033329911862281889">La navigation privée ne vous rend pas invisible sur Internet :
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Les sites et les services qu'ils utilisent peuvent voir que vous les consultez<ph name="END_LIST_ITEM" />
@@ -2536,6 +2535,7 @@ Informations supplémentaires :
 <translation id="7995512525968007366">Non spécifié</translation>
 <translation id="7998269595945679889">Bouton "Ouvrir un onglet de navigation privée" : appuyer sur Entrée pour ouvrir un nouvel onglet de navigation privée</translation>
 <translation id="800218591365569300">Essayez de fermer les autres onglets ou programmes pour libérer de la mémoire.</translation>
+<translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
 <translation id="8004582292198964060">Navigateur</translation>
 <translation id="8009225694047762179">Gérer les mots de passe</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Cette carte et l'adresse de facturation associée seront enregistrées. Vous pourrez vous en servir lorsque vous serez connecté à <ph name="USER_EMAIL" />.}one{Cette carte et l'adresse de facturation associée seront enregistrées. Vous pourrez vous en servir lorsque vous serez connecté à <ph name="USER_EMAIL" />.}other{Ces cartes et les adresses de facturation associées seront enregistrées. Vous pourrez vous en servir lorsque vous serez connecté à <ph name="USER_EMAIL" />.}}</translation>
@@ -2636,6 +2636,7 @@ Informations supplémentaires :
 <translation id="8277900682056760511">La feuille du gestionnaire de paiement est ouverte</translation>
 <translation id="8280630997017109758">Bac 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
+<translation id="8281886186245836920">Passer</translation>
 <translation id="8282947398454257691">Connaître l'identifiant unique de votre appareil</translation>
 <translation id="8284769179630993263">Gérez la navigation sécurisée, etc., dans les paramètres Chrome</translation>
 <translation id="8286036467436129157">Connexion</translation>

@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">อุปกรณ์บลูทูธ "<ph name="DEVICE_NAME" />" ต้องการสิทธิ์ในการจับคู่ โปรดป้อนรหัส PIN นี้บนอุปกรณ์นั้น: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">เครื่องมือ Screencast</translation>
 <translation id="1024261588257374085">เลือกภาพหน้าจอบางส่วนแล้ว</translation>
+<translation id="1024364763893396229">บันทึก <ph name="NAME" /> ของคุณ</translation>
 <translation id="1032891413405719768">แบตเตอรี่สไตลัสเหลือน้อย</translation>
 <translation id="1036073649888683237">หากต้องการจัดการการแจ้งเตือน ให้ไปที่การตั้งค่า</translation>
 <translation id="1036672894875463507">ฉันคือ Google Assistant ที่พร้อมช่วยเหลือคุณตลอดทั้งวัน
@@ -35,6 +36,7 @@
 <translation id="1175572348579024023">เลื่อน</translation>
 <translation id="1178581264944972037">หยุดชั่วคราว</translation>
 <translation id="1181037720776840403">นำออก</translation>
+<translation id="1183863904939664422">ไม่สนใจคำแนะนำนี้</translation>
 <translation id="118437560755358292">ป้อนรหัสผ่านหรือ PIN เพื่อความปลอดภัยมากขึ้น</translation>
 <translation id="118532027333893379">แตะที่ใดก็ได้เพื่อจับภาพแบบเต็มหน้าจอ</translation>
 <translation id="1190609913194133056">ศูนย์การแจ้งเตือน</translation>
@@ -292,6 +294,7 @@
 <translation id="2819276065543622893">คุณจะออกจากระบบในตอนนี้</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> ไม่รองรับ <ph name="SPECIFIED_RESOLUTION" /> ระบบเปลี่ยนความละเอียดเป็น <ph name="FALLBACK_RESOLUTION" /></translation>
 <translation id="2825619548187458965">ชั้นวาง</translation>
+<translation id="2831035692318564937">เปิดจนถึงพระอาทิตย์ขึ้น</translation>
 <translation id="2834813915651407382">เปิดเมื่อเร็วๆ นี้</translation>
 <translation id="2841907151129139818">เปลี่ยนเป็นโหมดแท็บเล็ตแล้ว</translation>
 <translation id="2844169650293029770">อุปกรณ์ USB-C (พอร์ตด้านหน้าซ้าย)</translation>
@@ -438,6 +441,7 @@
 <translation id="3626281679859535460">ความสว่าง</translation>
 <translation id="3630697955794050612">ปิดอยู่</translation>
 <translation id="3631369015426612114">อนุญาตให้มีการแจ้งเตือนจากรายการต่อไปนี้</translation>
+<translation id="3633097874324966332">เปิดการตั้งค่าบลูทูธเพื่อจับคู่อุปกรณ์</translation>
 <translation id="3638400994746983214">สลับหน้าจอส่วนตัว <ph name="STATE_TEXT" /></translation>
 <translation id="3649505501900178324">พ้นกำหนดการอัปเดต</translation>
 <translation id="366222428570480733">ผู้ใช้ที่ได้รับการจัดการ <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -583,6 +587,7 @@
 <translation id="4481530544597605423">อุปกรณ์ที่ไม่ได้จับคู่</translation>
 <translation id="4505050298327493054">เดสก์ที่ใช้งานอยู่</translation>
 <translation id="4513946894732546136">ข้อเสนอแนะ</translation>
+<translation id="4516867700536986208">แอปทั้งหมด ไปยังส่วนต่างๆ ด้วยลูกศรซ้ายหรือลงเพื่อเข้าถึงแอปทั้งหมด</translation>
 <translation id="4518404433291145981">ก่อนอื่นให้ปลดล็อกโทรศัพท์เพื่อปลดล็อก Chromebook</translation>
 <translation id="4527045527269911712">อุปกรณ์บลูทูธ "<ph name="DEVICE_NAME" />" ต้องการสิทธิ์ในการจับคู่</translation>
 <translation id="453661520163887813">อีก <ph name="TIME" /> จะเต็ม</translation>
@@ -591,6 +596,7 @@
 <translation id="4560576029703263363">เปิด</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">ซ่อนรหัสผ่าน</translation>
+<translation id="4566144812051858745">ไม่สนใจคำแนะนำใดๆ</translation>
 <translation id="4570957409596482333">ปุ่มเลือกเพื่อให้อ่าน</translation>
 <translation id="4573176682887762361">"พิมพ์[คำหรือวลี]"</translation>
 <translation id="4577274620589681794">หมดเวลา · <ph name="LABEL" /></translation>
@@ -641,6 +647,7 @@
 <translation id="4868492592575313542">เปิดใช้งานอยู่</translation>
 <translation id="4872237917498892622">Alt+ค้นหา หรือ Shift</translation>
 <translation id="4881695831933465202">เปิด</translation>
+<translation id="4889868803215848840">แสดงความคิดเห็น (ไม่บังคับ) เพื่อปรับปรุงคำแนะนำ ดังนี้</translation>
 <translation id="4890187583552566966">ผู้ดูแลระบบปิดใช้ Google Assistant</translation>
 <translation id="4890408602550914571">ตรวจสอบว่าโทรศัพท์อยู่ใกล้ๆ และเปิดบลูทูธไว้</translation>
 <translation id="4895488851634969361">แบตเตอรี่เต็ม</translation>
@@ -766,6 +773,7 @@
 <translation id="5744083938413354016">การแตะลาก</translation>
 <translation id="5745612484876805746">แสงตอนกลางคืนจะเปิดโดยอัตโนมัติเมื่อพระอาทิตย์ตก</translation>
 <translation id="5750765938512549687">ปิดบลูทูธแล้ว</translation>
+<translation id="5760866832697883462">เชื่อมต่อ <ph name="NAME" /> ของคุณ</translation>
 <translation id="576341972084747908">ดาวน์โหลด <ph name="FILENAME" /> ที่เป็นอันตราย</translation>
 <translation id="5763928712329149804">Shelf Party ปิดอยู่</translation>
 <translation id="576453121877257266">แสงตอนกลางคืนเปิดอยู่</translation>
@@ -827,6 +835,7 @@
 <translation id="6054305421211936131">ลงชื่อเข้าใช้ด้วยสมาร์ทการ์ด</translation>
 <translation id="6059276912018042191">แท็บ Chrome ล่าสุด</translation>
 <translation id="6062360702481658777">คุณจะออกจากระบบโดยอัตโนมัติใน <ph name="LOGOUT_TIME_LEFT" /></translation>
+<translation id="6064463340679478396">ใช้ไฟล์เสร็จแล้ว</translation>
 <translation id="6073451960410192870">หยุดบันทึก</translation>
 <translation id="6099678161144790572">แก้ไขในเดือนที่ผ่านมา</translation>
 <translation id="6103838137565245112">ระบบ</translation>
@@ -951,6 +960,7 @@
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> อาจมีประสิทธิภาพลดลง ใช้อะแดปเตอร์ USB-C <ph name="PREFERRED_MINIMUM_POWER" /> วัตต์ขึ้นไปที่ได้รับการรับรอง</translation>
 <translation id="688631446150864480">กดปุ่มลูกศรลงเพื่อเปลี่ยนหน้าต่าง</translation>
 <translation id="6896758677409633944">คัดลอก</translation>
+<translation id="6901883536534621389">ลองใช้ท่าทางสัมผัสเพื่อไปยังส่วนต่างๆ</translation>
 <translation id="6919251195245069855">ไม่พบสมาร์ทการ์ดของคุณ ลองใหม่</translation>
 <translation id="6921188888306725546">ปรับปรุงแป้นพิมพ์ลัดแล้ว</translation>
 <translation id="6931576957638141829">บันทึกไปยัง</translation>
@@ -1008,6 +1018,7 @@
 <translation id="7302889331339392448">คำบรรยายสดปิดอยู่</translation>
 <translation id="7303365578352795231">กำลังรับสายในอุปกรณ์อื่น</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7307830679306928882">แอปล่าสุด ไปยังส่วนต่างๆ ด้วยลูกศรซ้ายเพื่อเข้าถึงแอปล่าสุดทั้งหมด</translation>
 <translation id="7313193732017069507">ขยายขนาดกล้อง</translation>
 <translation id="731589979057211264">Shelf Party เปิดอยู่</translation>
 <translation id="7319740667687257810">Launcher มุมมองบางส่วน</translation>
@@ -1109,6 +1120,7 @@
 <translation id="7886169021410746335">ปรับการตั้งค่าความเป็นส่วนตัว</translation>
 <translation id="7886277072580235377">ระบบจะล้างเซสชันอินเทอร์เน็ตของคุณเมื่อออกจากระบบ <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">ส่งอีเมล</translation>
+<translation id="7893503627044934815">ไม่ต้องการให้แสดงไฟล์นี้</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">คุณกดแป้นพิมพ์ลัดสำหรับการหมุนหน้าจอ จะหมุนหน้าจอไหม</translation>
 <translation id="7901405293566323524">ฮับโทรศัพท์</translation>
@@ -1126,6 +1138,7 @@
 <translation id="7977927628060636163">กำลังค้นหาเครือข่ายมือถือ...</translation>
 <translation id="7982789257301363584">เครือข่าย</translation>
 <translation id="7984197416080286869">พยายามปลดล็อกด้วยลายนิ้วมือหลายครั้งเกินไป</translation>
+<translation id="798779949890829624">การตั้งค่านี้จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="7994370417837006925">การลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี</translation>
 <translation id="7995804128062002838">จับภาพหน้าจอไม่สำเร็จ</translation>
 <translation id="8000066093800657092">ไม่มีเครือข่าย</translation>
@@ -1153,6 +1166,7 @@
 <translation id="813913629614996137">กำลังเริ่มดำเนินการ...</translation>
 <translation id="8142441511840089262">ดับเบิลคลิก</translation>
 <translation id="8142699993796781067">เครือข่ายส่วนบุคคล</translation>
+<translation id="8144760705599030999">บันทึก <ph name="NAME" /> ลงใน <ph name="EMAIL" /> เพื่อให้จับคู่กับอุปกรณ์อื่นๆ ของคุณได้รวดเร็วยิ่งขึ้น</translation>
 <translation id="8152092012181020186">กด Ctrl + W เพื่อปิด</translation>
 <translation id="8152264887680882389"><ph name="TEXT" /> เติมข้อความอัตโนมัติ</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> การตั้งค่านี้จัดการโดยผู้ดูแลระบบ</translation>
@@ -1190,6 +1204,7 @@
 <translation id="8412677897383510995">แสดงการตั้งค่าการแสดงผล</translation>
 <translation id="8413272770729657668">การบันทึกจะเริ่มใน 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (กล่อง)</translation>
+<translation id="8420205633584771378">นำคำแนะนำนี้ออกไหม</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> ไม่ได้อยู่ในอุปกรณ์นี้</translation>
 <translation id="8425213833346101688">เปลี่ยน</translation>
 <translation id="8426708595819210923">สวัสดียามเย็น <ph name="GIVEN_NAME" /></translation>
@@ -1282,6 +1297,7 @@
 <translation id="9000771174482730261">จัดการพื้นที่เก็บข้อมูล</translation>
 <translation id="9017320285115481645">ป้อนรหัสการเข้าถึง Family Link ของผู้ปกครอง</translation>
 <translation id="9024331582947483881">เต็มหน้าจอ</translation>
+<translation id="9030319654231318877">ปิดจนถึงพระอาทิตย์ตก</translation>
 <translation id="9034924485347205037">ไฟล์ Linux</translation>
 <translation id="9047624247355796468">เปิดการตั้งค่าสำหรับ <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">ยุบการแจ้งเตือน</translation>
@@ -1301,6 +1317,7 @@
 <translation id="9099154003160514616">มีการอัปเดต Lacros</translation>
 <translation id="9100887602489003640">กำลังเพิ่มโปรไฟล์ รอสักครู่</translation>
 <translation id="9105450214093926548">ผู้ใช้คนที่ 2 ไม่สามารถลงชื่อเข้าใช้ขณะที่เบราว์เซอร์ Lacros ทำงานอยู่ โปรดใช้โปรไฟล์ที่ 2 ของเบราว์เซอร์ Lacros แทน หรือปิด Lacros แล้วลองอีกครั้ง</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> หรือ <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">บันทึกเนื้อหาที่ได้รับการคุ้มครองไม่ได้</translation>
 <translation id="9161053988251441839">แอปที่แนะนำ</translation>
 <translation id="9166331175924255663">เปิด/ปิดระดับการเข้าถึงสูงของการแชร์ใกล้เคียง</translation>

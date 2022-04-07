@@ -114,7 +114,6 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Επανάληψη</translation>
 <translation id="2161394479394250669">Ακύρωση εργασίας εκτύπωσης</translation>
 <translation id="2180197493692062006">Παρουσιάστηκε κάποιο πρόβλημα. Δοκιμάστε να ανοίξετε ξανά την εφαρμογή.</translation>
-<translation id="2201770616342964496">Τοπική ταυτότητα</translation>
 <translation id="2209788852729124853">Επαναφορά μετρητών επισκεψιμότητας</translation>
 <translation id="2212733584906323460">Ανάλυση ονόματος</translation>
 <translation id="2217935453350629363">Τρέχουσα ταχύτητα</translation>
@@ -262,6 +261,7 @@
 <translation id="4170180284036919717">Λήψη φωτογραφίας</translation>
 <translation id="4170700058716978431">ΑΠΕΤΥΧΕ</translation>
 <translation id="4176463684765177261">Απενεργοποιημένο</translation>
+<translation id="4176659219503619100">Πίνακας ελέγχου</translation>
 <translation id="4213104098953699324">Πληκτρολόγιο USB</translation>
 <translation id="4227825898293920515">Ο κωδικός πρόσβασης λήγει σε <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Δεν υπάρχουν εργασίες εκτύπωσης σε εξέλιξη</translation>
@@ -305,7 +305,6 @@
 <translation id="4593212453765072419">Απαιτείται έλεγχος ταυτότητας του διακομιστή μεσολάβησης</translation>
 <translation id="4609350030397390689">Μείωση φωτεινότητας πληκτρολογίου</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> από <ph name="TOTAL_PAGE_NUMBER" />. Πατήστε enter, για να ακυρώσετε την εργασία εκτύπωσης.</translation>
-<translation id="4627645661474370390">Απομακρυσμένη ταυτότητα</translation>
 <translation id="463791356324567266">Ακύρωση σάρωσης…</translation>
 <translation id="4646949265910132906">Ασφαλής σύνδεση Wi-Fi</translation>
 <translation id="4650608062294027130">Δεξί shift</translation>
@@ -432,6 +431,7 @@
 <translation id="5866840822086176774">Πολύ ισχυρό</translation>
 <translation id="588258955323874662">Πλήρης οθόνη</translation>
 <translation id="5895138241574237353">Επανεκκίνηση</translation>
+<translation id="5903200662178656908">Η συσκευή είναι ένας συνδυασμός πληκτρολογίου και ποντικιού.</translation>
 <translation id="5916084858004523819">Απαγορεύεται</translation>
 <translation id="5916664084637901428">Ενεργό</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Το αρχείο σας σαρώθηκε και αποθηκεύτηκε με επιτυχία στον φάκελο <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Τα αρχεία σας σαρώθηκαν και αποθηκεύτηκαν με επιτυχία στον φάκελο <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -452,6 +452,7 @@
 <translation id="6104112872696127344">Η σάρωση ακυρώθηκε</translation>
 <translation id="6106186594183574873">Για να τελειώσετε, εισαγάγετε τον παλιό κωδικό πρόσβασης</translation>
 <translation id="6108689792487843350">Μη προσβάσιμη πύλη</translation>
+<translation id="6112878310391905610">Η διαχείριση αυτής της ρύθμισης πραγματοποιείται από τους διαχειριστές σας</translation>
 <translation id="6113701710518389813">Επάνω βέλος</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> ακόμη λευκώματα</translation>
 <translation id="6122191549521593678">Συνδεδεμένο</translation>

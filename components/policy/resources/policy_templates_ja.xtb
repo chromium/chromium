@@ -805,6 +805,7 @@
         |TIME_LIMITS| を指定した場合、1 日の使用上限が適用されます。ユーザーは上限に達すると、その日はアプリを使用できません。使用制限は |daily_limit_mins| で指定し、毎日 |reset_at| で渡された UTC 時間になると制限はリセットされます。
         このポリシーは子どものユーザーにのみ使用します。
         このポリシーは、「UsageTimeLimit」を補完するものです。「UsageTimeLimit」で指定された制限（利用時間、おやすみ時間など）は、「PerAppTimeLimits」の設定に関係なく適用されます。</translation>
+<translation id="1913629775420987861">ユーザーが終了しようとしたときに警告ダイアログを表示する</translation>
 <translation id="1916266055944569995">このポリシーでは、特定のオリジンに対する Managed Configuration API の戻り値を定義します。
 
       Managed Configuration API は、navigator.managed.getManagedConfiguration() javascript を呼び出してアクセスできる Key-Value 設定です。この API は、<ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> に沿って自動インストールされたウェブ アプリケーションと一致するオリジンに対してのみ使用できます。
@@ -1101,6 +1102,13 @@
       <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" />（値 1）に設定した場合は、セキュリティまたは安定性に関する重要な修正とみなされるバリエーションのみ <ph name="PRODUCT_OS_NAME" /> に適用できます。
 
       <ph name="VARIATIONS_DISABLED_OPTION_NAME" />（値 2）に設定した場合は、ログイン画面でどのバリエーションもブラウザに適用できません。このモードは、<ph name="PRODUCT_OS_NAME" /> のデベロッパーがセキュリティに関する重要な修正を適切なタイミングで適用できない場合があるため推奨されません。</translation>
+<translation id="2217931577484185673">このポリシーを有効に設定した場合、セーフ ブラウジングでは指定ドメインが信頼され、危険なリソース（フィッシング、不正なソフトウェア、迷惑ソフトウェアなど）の確認は行われません。セーフ ブラウジングのダウンロード保護サービスでは指定ドメインでホストされているダウンロードの確認は行われず、パスワード保護サービスでもパスワード再利用の確認は行われません。
+
+      このポリシーを未設定のままにした場合、デフォルトのセーフ ブラウジング保護がすべてのリソースに適用されます。
+
+      このポリシーでは、完全修飾ドメイン名のリストを指定する必要があります。正規表現はサポートされません。また、ポリシーでドメインを指定しても、そのサブドメインは許可されません。
+
+      <ph name="MS_WIN_NAME" /> では、この機能は <ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスでのみ使用できます。<ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンスまたは MCX を介してドメインに追加されたインスタンスでのみこの機能を使用できます。</translation>
 <translation id="2221779615493499989">登録済みデバイスのユーザーのネットワークのステータスを報告します。
 
       このポリシーを false に設定した場合、この情報は報告されません。
@@ -1500,6 +1508,7 @@
       このポリシーはログイン画面に適用されます。ユーザー セッションに適用される <ph name="SITE_PER_PROCESS_POLICY_NAME" /> ポリシーもご覧になり、両方のポリシーを同じ値に設定することをおすすめします。値が一致しない場合、ユーザー セッションの開始時にはユーザー ポリシーで指定された値が適用されますが、その際に遅延が生じる可能性があります。
       </translation>
 <translation id="2702023190395322609">おすすめメディアを有効にする</translation>
+<translation id="270582584528242502">ユーザーが終了しようとしたときに警告ダイアログを表示しない</translation>
 <translation id="2706708761587205154">PIN ありの印刷のみを許可します</translation>
 <translation id="2707873794476722903">セーフ ブラウジングを標準モードで有効にする。</translation>
 <translation id="2709516037105925701">自動入力</translation>
@@ -2345,6 +2354,7 @@
 <translation id="3628480121685794414">片面印刷を有効にする</translation>
 <translation id="3634125384445314047">スマートフォンで最近撮影した写真や動画にスマートフォン ハブ経由でアクセスすることを許可します。</translation>
 <translation id="3643284063603988867">「パスワードを保存する」機能を有効にする</translation>
+<translation id="3644735978203799620">マルチ スクリーン キャプチャの自動選択を有効にする</translation>
 <translation id="3646859102161347133">画面拡大鏡のタイプを設定する</translation>
 <translation id="3647212518036289905">このポリシーでは、HTTP 認証で使用する GSSAPI ライブラリを指定できます。ポリシーには、ライブラリ名またはフルパスのいずれかを指定します。
 
@@ -2369,6 +2379,7 @@
       * <ph name="PRINTERS_ALLOW_ALL" />（値 2）: すべてのプリンタを表示します
 
       このポリシーを未設定のままにした場合、<ph name="PRINTERS_ALLOW_ALL" /> が使用されます。</translation>
+<translation id="3695204334462456702">Zeroconf ベース（mDNS+DNS-SD）のプロトコルの送信先（サポート終了）</translation>
 <translation id="3695706037816556327"><ph name="PRODUCT_OS_NAME" /> でセキュリティ トークン（スマートカードなど）を取り出したときに行う処理。</translation>
 <translation id="3700193037252896716">再起動する頻度です。</translation>
 <translation id="3700318587977845664">アップデートを確認する頻度です。</translation>
@@ -3622,6 +3633,25 @@
       このポリシーを False に設定するか未設定のままにした場合、統合デスクトップはオフになり、ユーザーはこの設定をオンにすることはできません。</translation>
 <translation id="5255162913209987122">推奨ポリシーの表示</translation>
 <translation id="5257395339965216304">ホストされているアプリデータ</translation>
+<translation id="5263649486910778308">このポリシーでは、ブラウザが First-Party Set 機能で使用するセットのリストをオーバーライドできます。
+
+      ブラウザの First-Party Set リストの各セットは、First-Party Set の要件を満たしている必要があります。
+      First-Party Set は、オーナーサイトと 1 つ以上のメンバーサイトで構成される必要があります。First-Party Set のすべてのサイトは、オーナーサイトかメンバーサイトかにかかわらず、HTTPS 経由で配信される登録可能なドメインである必要があります。
+      また、First-Party Set の各サイトは一意である必要があります。つまり、サイトはオーナーとメンバーの両方であることはできず、First-Party Set のメンバーとして複数回指定することもできません。
+      First-Party Set の詳細については、https://github.com/privacycg/first-party-sets　をご覧ください。
+
+      このポリシーで空の辞書を指定した場合、ブラウザは First-Party Set の公開リストを使用します。
+
+      <ph name="REPLACEMENTS" /> リストで指定した First-Party Set のサイトについては、ブラウザの First-Party Set リストに同じサイトがある場合は、ブラウザの First-Party Set からそのサイトが削除されます。
+      その後、ポリシーで指定した First-Party Set がブラウザの First-Party Set リストに追加されます。
+
+      <ph name="ADDITIONS" /> リストで指定した First-Party Set のサイトについては、ブラウザの First-Party Set リストに同じサイトがある場合は、新しい First-Party Set をブラウザのリストに追加できるようにブラウザの First-Party Set が更新されます。ブラウザのリストが更新された後、ポリシーで指定した First-Party Set がブラウザの First-Party Set リストに追加されます。
+
+      ブラウザの First-Party Set リストのサイトは、いずれも複数のセットに含まれないようにする必要があります。この要件は <ph name="REPLACEMENTS" /> リストと <ph name="ADDITIONS" /> リストにも適用されます。同様に、同じサイトを<ph name="REPLACEMENTS" /> リストと <ph name="ADDITIONS" /> リストの両方に含めることはできません。
+
+      ワイルドカード（*）は、ポリシーの値として使用できず、これらのリストのどの First-Party Set でも使用できません。
+
+      このポリシーで指定するすべてのセットは、有効な First-Party Set である必要があります。そうでない場合は、該当するエラーが出力されます。</translation>
 <translation id="5266173014392157048">このポリシーはサポートが終了しています。代わりに <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> ポリシーを使用してください。
 
       このポリシーでは、<ph name="PRODUCT_NAME" /> が委任できるサーバーを割り当てることができます。複数のサーバー名を入力するときはカンマで区切ります。ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。
@@ -4690,6 +4720,10 @@
 <translation id="654303922206238013">ecryptfs の移行方法</translation>
 <translation id="6543277347547044538">間隔の終了時間です（この時間は含まれません）。</translation>
 <translation id="6544601600794014309">クイック アンサーの翻訳を有効にする</translation>
+<translation id="6544759513632821565"><ph name="GET_DISPLAY_MEDIA_SET_NAME" /> API を使用すると、ウェブ アプリケーションで一度に複数のサーフェスをキャプチャできます。
+      このポリシーでは、<ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> プロパティを許可するウェブ アプリケーションのオリジンを指定できます。
+      <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> プロパティが <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> リクエストで定義されている場合、ユーザーの明示的な許可なしに、すべてのスクリーン サーフェスが自動的にキャプチャされます。
+      ポリシーを未設定のままにした場合、すべてのウェブ アプリケーションで <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> が許可されません。</translation>
 <translation id="654546276700640113">このポリシーでは、PIN の最大桁数を指定して適用できます。この値を 0 以下にした場合、ユーザーは任意の桁数の PIN を設定できます。この値を 0 より大きく <ph name="PIN_UNLOCK_MINIMUM_LENGTH_POLICY_NAME" /> より小さくした場合、最大桁数は最小桁数と同じに設定されます。
 
       このポリシーを未設定のままにした場合、最大桁数は適用されません。</translation>
@@ -6273,6 +6307,11 @@
       このポリシーを設定した場合、ユーザーは設定を変更できません。設定しなかった場合、ポリシーは有効になりますが、ユーザーはこの設定を変更できます。</translation>
 <translation id="8300992833374611099">デベロッパー ツールの使用を許可する状況を管理する</translation>
 <translation id="8301065459352777588">管理対象のゲスト セッションのユーザーにデバイスのディスプレイ設定の保存を許可する</translation>
+<translation id="8303923135132440974">ユーザーがブラウザを終了しようとしたときの「終了する前に警告メッセージを表示する（⌘Q）」ダイアログの表示を管理します。
+
+      このポリシーを有効に設定するか、未設定のままにした場合、ユーザーが終了しようとしたときに警告ダイアログが表示されます。
+
+      このポリシーを無効に設定した場合、ユーザーが終了しようとしたときに警告ダイアログは表示されません。</translation>
 <translation id="830440838848984847">ユーザーに <ph name="PRODUCT_NAME" /> へのログインを許可する</translation>
 <translation id="8306117673860983372">ログイン設定</translation>
 <translation id="830819203330820450">有効にするか、未設定のままにした場合（デフォルト）、

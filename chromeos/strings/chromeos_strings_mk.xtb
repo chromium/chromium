@@ -114,7 +114,6 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Обиди се пак</translation>
 <translation id="2161394479394250669">Откажи го налогот за печатење</translation>
 <translation id="2180197493692062006">Нешто тргна наопаку. Отворете ја апликацијата повторно.</translation>
-<translation id="2201770616342964496">Локален идентитет</translation>
 <translation id="2209788852729124853">Ресетирај бројачи на сообраќај</translation>
 <translation id="2212733584906323460">Одредување име</translation>
 <translation id="2217935453350629363">Моментална брзина</translation>
@@ -262,6 +261,7 @@
 <translation id="4170180284036919717">Фотографирај</translation>
 <translation id="4170700058716978431">НЕУСПЕШЕН</translation>
 <translation id="4176463684765177261">Оневозможено</translation>
+<translation id="4176659219503619100">Контролна табла</translation>
 <translation id="4213104098953699324">Тастатура со USB</translation>
 <translation id="4227825898293920515">Лозинката истекува за <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Нема задачи за печатење во тек</translation>
@@ -305,7 +305,6 @@
 <translation id="4593212453765072419">Потребна е проверка на прокси</translation>
 <translation id="4609350030397390689">Осветленоста на тастатурата се намали</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> од <ph name="TOTAL_PAGE_NUMBER" />. Притиснете Enter за да го откажете налогот за печатење.</translation>
-<translation id="4627645661474370390">Далечински идентитет</translation>
 <translation id="463791356324567266">Се откажува скенирањето…</translation>
 <translation id="4646949265910132906">Безбедна Wi-Fi врска</translation>
 <translation id="4650608062294027130">Десен Shift</translation>
@@ -432,6 +431,7 @@
 <translation id="5866840822086176774">Многу силен</translation>
 <translation id="588258955323874662">Цел екран</translation>
 <translation id="5895138241574237353">Рестартирај</translation>
+<translation id="5903200662178656908">Уредот е комбинација од тастатура и глувче.</translation>
 <translation id="5916084858004523819">Забранета</translation>
 <translation id="5916664084637901428">Вклучено</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Датотеката е успешно скенирана и зачувана во <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Датотеките се успешно скенирани и зачувани во <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Датотеките се успешно скенирани и зачувани во <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -452,6 +452,7 @@
 <translation id="6104112872696127344">Скенирањето е откажано</translation>
 <translation id="6106186594183574873">За да завршите, внесете ја старата лозинка</translation>
 <translation id="6108689792487843350">Порталот е недостапен</translation>
+<translation id="6112878310391905610">Администратори управуваат со поставкава</translation>
 <translation id="6113701710518389813">Стрелка нагоре</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> други албуми</translation>
 <translation id="6122191549521593678">Онлајн</translation>

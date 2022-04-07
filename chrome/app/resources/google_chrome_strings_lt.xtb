@@ -178,6 +178,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="4600710005438004015">Nepavyko atnaujinti „Chrome“ į naujausią versiją, todėl nebus pasiekiamos naujos funkcijos ir saugos pataisos.</translation>
 <translation id="4627412468266359539">Pasirenkama: padėkite tobulinti „ChromeOS Flex“ funkcijas ir našumą automatiškai siųsdami diagnostikos ir naudojimo duomenis į sistemą „Google“.</translation>
 <translation id="4633000520311261472">Kad „Chrome“ padarytume saugesnę, išjungėme kai kuriuos plėtinius, kurių nėra „<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />“ sąraše ir kurie galėjo būti pridėti be jūsų žinios.</translation>
+<translation id="469553575393225953">Plėtiniai, programos ir temos iš nežinomų šaltinių gali pakenkti jūsų įrenginiui. „Chrome“ rekomenduoja įdiegti tik iš „Chrome“ internetinės parduotuvės</translation>
 <translation id="4728575227883772061">Diegimas nepavyko dėl nežinomos klaidos. Jei šiuo metu veikia „Google Chrome“, uždarykite ir pabandykite iš naujo.</translation>
 <translation id="4747730611090640388">„Chrome“ gali numatyti jūsų pomėgius.  Vėliau svetainė, kurioje lankotės, gali paprašyti „Chrome“ peržiūrėti jūsų pomėgius, kad galėtų suasmeninti jūsų matomus skelbimus.</translation>
 <translation id="4754614261631455953">„Canary“ versijos „Google Chrome“ (mDNS-In)</translation>
@@ -221,6 +222,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="5736850870166430177">Jei svetainė bando pavogti slaptažodį ar atsisiuntėte žalingą failą, „Chrome“ taip pat gali siųsti URL, įskaitant puslapio turinio dalis, Saugaus naršymo funkcijai</translation>
 <translation id="573759479754913123">Apie „Chrome“ OS</translation>
 <translation id="5756509061973259733">Šios paskyros „Chrome“ profilis jau yra šiame įrenginyje</translation>
+<translation id="5763280521700030406">„Chrome“ užblokavo šį failą, nes jis per didelis, kad būtų galima atlikti saugos patikrą. Bandykite dar kartą įkeldami failus, neviršijančius 50 MB</translation>
 <translation id="5795887333006832406">„<ph name="PAGE_TITLE" />“ – „Google Chrome Canary“</translation>
 <translation id="5804318322022881572">Nepavyko paleisti „Chrome“. Bandykite dar kartą.</translation>
 <translation id="5867197326698922595">„Google Chrome“ bando redaguoti slaptažodžius.</translation>
@@ -329,8 +331,10 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="8394720698884623075">Tikrinami URL pagal nesaugių svetainių sąrašą, saugomą naršyklėje „Chrome“</translation>
 <translation id="840084489713044809">„Google Chrome“ nori eksportuoti jūsų slaptažodžius.</translation>
 <translation id="8416347857511542594">Sužinokite daugiau apie skelbimų suasmeninimą sistemoje „Chrome“</translation>
+<translation id="8421734018304082652">„Chrome“ užblokavo šį failą, nes jis šifruotas. Paprašykite savininko iššifruoti.</translation>
 <translation id="8433638294851456451">Jei norite iš čia į „Android“ telefoną išsiųsti numerį, prisijunkite prie „Chrome“ abiejuose įrenginiuose.</translation>
 <translation id="8498858610309223613">Ką tik pritaikytas specialus „Google Chrome“ skirtas saugos naujinys. Dabar paleiskite naršyklę iš naujo ir atkursime visus skirtukus.</translation>
+<translation id="8504220326736535258">„Chrome“ užblokavo šį failą, nes jame yra kenkėjiška programa</translation>
 <translation id="8516431725144212809">„Chrome“ įvertinti jūsų pomėgiai</translation>
 <translation id="8521348052903287641">„Dev“ versijos „Google Chrome“ skirta taisyklė, pagal kurią leidžiamas gaunamas mDNS srautas.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>

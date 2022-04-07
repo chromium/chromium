@@ -114,7 +114,6 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Volver a intentar</translation>
 <translation id="2161394479394250669">Cancelar el trabajo de impresión</translation>
 <translation id="2180197493692062006">Se produjo un error. Intenta volver a abrir la app.</translation>
-<translation id="2201770616342964496">Identidad local</translation>
 <translation id="2209788852729124853">Restablecer contadores de tráfico</translation>
 <translation id="2212733584906323460">Resolución de nombres</translation>
 <translation id="2217935453350629363">Velocidad actual</translation>
@@ -262,6 +261,7 @@
 <translation id="4170180284036919717">Tomar una foto</translation>
 <translation id="4170700058716978431">ERROR</translation>
 <translation id="4176463684765177261">Inhabilitado</translation>
+<translation id="4176659219503619100">Panel de control</translation>
 <translation id="4213104098953699324">Teclado USB</translation>
 <translation id="4227825898293920515">La contraseña caduca en <ph name="TIME" /></translation>
 <translation id="4238516577297848345">No hay trabajos de impresión en curso</translation>
@@ -305,7 +305,6 @@
 <translation id="4593212453765072419">Se requiere autenticación proxy.</translation>
 <translation id="4609350030397390689">Disminuir el brillo del teclado</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de un total de <ph name="TOTAL_PAGE_NUMBER" />. Presiona Intro para cancelar el trabajo de impresión.</translation>
-<translation id="4627645661474370390">Identidad remota</translation>
 <translation id="463791356324567266">Cancelando el escaneo…</translation>
 <translation id="4646949265910132906">Conexión Wi-Fi segura</translation>
 <translation id="4650608062294027130">Mayúsculas derecha</translation>

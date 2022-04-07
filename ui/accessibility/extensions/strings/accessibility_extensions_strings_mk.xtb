@@ -9,6 +9,7 @@
 <translation id="1591070050619849194">Оневозможи ги сите анимации со слики.</translation>
 <translation id="1703735871906654364">Карет-прегледување</translation>
 <translation id="1791496371305830581">Дозволи ги сите анимирани слики</translation>
+<translation id="1974060860693918893">Напредни</translation>
 <translation id="1996252509865389616">Овозможи?</translation>
 <translation id="2079545284768500474">Врати</translation>
 <translation id="2179565792157161713">Отвори долг опис во ново јазиче</translation>
@@ -51,6 +52,7 @@
 <translation id="6170146920149900756">Подобрувач на боите</translation>
 <translation id="633394792577263429">Држете го притиснато &lt;span class='key'&gt;Control&lt;/span&gt; за да се преместувате по зборови.</translation>
 <translation id="6550675742724504774">Опции</translation>
+<translation id="6699630355767768222">Чекор 3: отфрлете ја оската за боја за корекцијата.</translation>
 <translation id="6838518108677880446">Поставување:</translation>
 <translation id="690628312087070417">Кога каретот скока на големо растојание:</translation>
 <translation id="6965382102122355670">Во ред</translation>
@@ -65,5 +67,6 @@
 <translation id="8321034316479930120">Политика на анимација</translation>
 <translation id="8480209185614411573">Висок контраст</translation>
 <translation id="8609925175482059018">Притиснете &lt;span class='key'&gt;F7&lt;/span&gt; за да го вклучите Карет-прегледувањето. Притиснете го повторно за да го исклучите.</translation>
+<translation id="8798099450830957504">Стандардно</translation>
 <translation id="894241283505723656">Долги описи во контекстуалното мени</translation>
 </translationbundle>

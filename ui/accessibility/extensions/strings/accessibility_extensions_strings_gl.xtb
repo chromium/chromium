@@ -9,6 +9,7 @@
 <translation id="1591070050619849194">Desactivar todas as animacións das imaxes.</translation>
 <translation id="1703735871906654364">Navegación por cursor de texto</translation>
 <translation id="1791496371305830581">Permitir todas as imaxes animadas.</translation>
+<translation id="1974060860693918893">Configuración avanzada</translation>
 <translation id="1996252509865389616">Activar?</translation>
 <translation id="2079545284768500474">Desfacer</translation>
 <translation id="2179565792157161713">Abrir descrición longa nunha pestana nova</translation>
@@ -65,5 +66,6 @@
 <translation id="8321034316479930120">Política de animacións</translation>
 <translation id="8480209185614411573">Contraste alto</translation>
 <translation id="8609925175482059018">Preme &lt;span class='key'&gt;F7&lt;/span&gt; para activar a navegación por cursor de texto. Prémeo de novo para desactivala.</translation>
+<translation id="8798099450830957504">Predeterminado</translation>
 <translation id="894241283505723656">Descricións longas no menú contextual</translation>
 </translationbundle>

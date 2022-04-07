@@ -176,6 +176,7 @@
 <translation id="4600710005438004015">Chrome non se puido actualizar á última versión, polo que non gozas das novas funcións e solucións de seguranza.</translation>
 <translation id="4627412468266359539">Opcional: Axudar a mellorar o rendemento e as funcións de Chrome OS Flex mediante o envío automático de datos de uso e diagnóstico a Google.</translation>
 <translation id="4633000520311261472">Para que Chrome resulte máis seguro, desactivamos algunhas extensións que non están enumeradas en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e que é posible que se engadisen sen o teu coñecemento.</translation>
+<translation id="469553575393225953">As extensións, as aplicacións e os temas de fontes descoñecidas poden danar o dispositivo. Chrome recomenda que os instales só desde Chrome Web Store</translation>
 <translation id="4728575227883772061">Non se puido efectuar a instalación debido a un erro non especificado. Se Google Chrome se está executando nestes momentos, péchao e téntao de novo.</translation>
 <translation id="4747730611090640388">Chrome pode facer unha estimación dos teus intereses.  Máis tarde, un sitio que visites pode consultarlle a Chrome os teus intereses para personalizar os anuncios que se che mostren.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -219,6 +220,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="5736850870166430177">Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chrome tamén pode comprobar os enderezos URL, así como fragmentos de contido das páxinas, a través da función Navegación segura</translation>
 <translation id="573759479754913123">Acerca de Chrome OS</translation>
 <translation id="5756509061973259733">Neste dispositivo xa existe un perfil de Chrome con esta conta</translation>
+<translation id="5763280521700030406">Chrome bloqueou este ficheiro porque é demasiado grande para realizar unha comprobación de seguranza. Téntao de novo con ficheiros de ata 50 MB</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> (versión experimental de Google Chrome)</translation>
 <translation id="5804318322022881572">Non se puido iniciar Chrome. Téntao de novo.</translation>
 <translation id="5867197326698922595">Google Chrome está tentando editar os contrasinais.</translation>
@@ -326,8 +328,10 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="8394720698884623075">Comproba enderezos URL cunha lista de sitios non seguros almacenada en Chrome</translation>
 <translation id="840084489713044809">Google Chrome quere exportar os teus contrasinais.</translation>
 <translation id="8416347857511542594">Máis información sobre a personalización de anuncios en Chrome</translation>
+<translation id="8421734018304082652">Chrome bloqueou este ficheiro porque está encriptado. Pídelle ao seu propietario que o desencripte</translation>
 <translation id="8433638294851456451">Para enviar un número desde aquí ao teu teléfono Android, inicia sesión en Chrome nos dous dispositivos.</translation>
 <translation id="8498858610309223613">Acábase de aplicar unha actualización especial de seguranza para Google Chrome. Reinicia agora o navegador para restaurar as pestanas.</translation>
+<translation id="8504220326736535258">Chrome bloqueou este ficheiro porque inclúe software malicioso</translation>
 <translation id="8516431725144212809">Os teus intereses estimados por Chrome</translation>
 <translation id="8521348052903287641">Regra de entrada para que Google Chrome Dev permita tráfico mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>

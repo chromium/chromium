@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">Saldırganlar bazen web adresinde görülmesi zor değişiklikler yaparak siteleri taklit ederler.</translation>
 <translation id="1028781062521375153">Ayrıntıları bakın</translation>
 <translation id="1030706264415084469"><ph name="URL" /> büyük miktarda veriyi cihazınızda kalıcı olarak depolamak istiyor</translation>
-<translation id="1032854598605920125">Saat yönünde döndür</translation>
 <translation id="1033329911862281889">Gizli mod sizi internet ortamında görünmez hale getirmez:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Siteler ve bu sitelerin kullandığı hizmetler ziyaretlerinizi görebilir<ph name="END_LIST_ITEM" />
@@ -2629,6 +2628,7 @@ Ek ayrıntılar:
 <translation id="8277900682056760511">Ödeme işleyici sayfası açıldı</translation>
 <translation id="8280630997017109758">Tepsi 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
+<translation id="8281886186245836920">Atla</translation>
 <translation id="8282947398454257691">Benzersiz cihaz tanımlayıcınızı bilme</translation>
 <translation id="8284769179630993263">Chrome ayarlarında Güvenli Tarama ve diğer özellikleri yönetin</translation>
 <translation id="8286036467436129157">Oturum Aç</translation>

@@ -853,6 +853,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
         |TIME_LIMITS| menerapkan batas penggunaan harian dan membuat aplikasi menjadi tidak tersedia setelah batas tersebut tercapai pada hari yang sudah ditentukan. Batas penggunaan ditentukan dalam |daily_limit_mins|. Batas penggunaan direset setiap hari pada waktu UTC yang dilewati dalam |reset_at|.
         Kebijakan ini hanya digunakan untuk anak-anak sebagai pengguna.
         Kebijakan ini bersifat komplementer terhadap 'UsageTimeLimit'. Pembatasan yang ditentukan dalam 'UsageTimeLimit' seperti waktu pemakaian perangkat dan waktu tidur akan diterapkan tanpa memandang 'PerAppTimeLimits'.</translation>
+<translation id="1913629775420987861">Tampilkan dialog peringatan saat pengguna mencoba menutup browser</translation>
 <translation id="1916266055944569995">Menyetel kebijakan akan menentukan nilai Managed Configuration API yang ditampilkan untuk sumber tertentu.
 
       Managed Configuration API adalah konfigurasi nilai kunci yang dapat diakses melalui panggilan JavaScript navigator.managed.getManagedConfiguration(). API ini hanya tersedia untuk sumber yang sesuai dengan aplikasi web yang diinstal otomatis melalui <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
@@ -1161,6 +1162,13 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Jika <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (nilai 1) disetel, hanya variasi yang dianggap sebagai perbaikan keamanan atau stabilitas penting yang akan diterapkan ke <ph name="PRODUCT_OS_NAME" />.
 
       Jika <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (nilai 2) disetel, semua variasi tidak akan diterapkan ke browser di layar login. Perlu diketahui, mode ini tidak direkomendasikan karena berpotensi menyebabkan developer <ph name="PRODUCT_OS_NAME" /> tidak dapat menyediakan perbaikan keamanan penting secara tepat waktu.</translation>
+<translation id="2217931577484185673">Jika kebijakan disetel ke Aktif, Safe Browsing akan memercayai domain yang Anda tentukan. Domain tidak akan diperiksa untuk menemukan resource berbahaya misalnya phishing, malware, atau software yang tidak diinginkan. Layanan perlindungan download Safe Browsing tidak akan memeriksa download yang dihosting di domain ini. Layanan perlindungan sandi Safe Browsing tidak akan memeriksa penggunaan ulang sandi.
+
+      Jika kebijakan tidak disetel, perlindungan Safe Browsing default akan berlaku untuk semua resource.
+
+      Kebijakan ini harus disetel sebagai daftar nama domain yang sepenuhnya memenuhi syarat. Kebijakan ini tidak mendukung ekspresi reguler, dan tidak akan mengizinkan daftar subdomain dari domain yang tercantum dalam kebijakan.
+
+      Di <ph name="MS_WIN_NAME" />, fungsi ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dijalankan di Windows 10 Pro, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Di <ph name="MAC_OS_NAME" />, fungsi ini hanya tersedia di instance yang dikelola melalui MDM, atau dihubungkan ke domain melalui MCX.</translation>
 <translation id="2221779615493499989">Melaporkan status jaringan pengguna di perangkat terdaftar.
 
       Jika kebijakan disetel ke salah (false), informasi tersebut tidak akan dilaporkan.
@@ -1592,6 +1600,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Kebijakan ini berlaku untuk layar login. Baca juga kebijakan <ph name="SITE_PER_PROCESS_POLICY_NAME" /> yang berlaku untuk sesi pengguna. Pengguna disarankan untuk menetapkan kedua kebijakan ke nilai yang sama. Jika nilai tidak cocok, penundaan mungkin terjadi ketika memasuki sesi pengguna saat nilai yang ditentukan oleh kebijakan pengguna sedang diterapkan.
       </translation>
 <translation id="2702023190395322609">Mengaktifkan Rekomendasi Media</translation>
+<translation id="270582584528242502">Jangan tampilkan dialog peringatan saat pengguna mencoba menutup browser</translation>
 <translation id="2706708761587205154">Hanya izinkan pencetakan dengan PIN</translation>
 <translation id="2707873794476722903">Safe Browsing aktif dalam mode standar.</translation>
 <translation id="2709516037105925701">Isi-Otomatis</translation>
@@ -1968,6 +1977,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="3086995894968271156">Mengonfigurasi Penerima Cast di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3087346703976541109">Menentukan apakah SharedArrayBuffer dapat digunakan dalam konteks yang tidak diisolasi lintas asal</translation>
 <translation id="3088557424854005813">Pengesahan</translation>
+<translation id="3090283903269516279">Nonaktifkan model pengisian daya adaptif di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3091832372132789233">Mengisi daya baterai untuk perangkat yang terutama terhubung ke sumber daya eksternal.</translation>
 <translation id="3092059499596000593">Gunakan printer default sistem sebagai pilihan default dalam Pratinjau Cetak</translation>
 <translation id="309416443108680956">Menentukan hal yang terjadi jika pengguna yang melakukan autentikasi melalui token keamanan (misalnya, dengan kartu smart) menghapus token tersebut saat berada dalam sesi. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: Tidak ada yang terjadi. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: Layar dikunci hingga pengguna melakukan autentikasi lagi. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: Sesi diakhiri dan pengguna dipaksa logout. Jika kebijakan ini tidak disetel, <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" /> akan berlaku secara default.</translation>
@@ -2461,6 +2471,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="3628480121685794414">Aktifkan pencetakan simpleks</translation>
 <translation id="3634125384445314047">Mengizinkan foto dan video yang terakhir diambil di ponsel untuk diakses melalui Phone Hub.</translation>
 <translation id="3643284063603988867">Aktifkan fitur 'Ingat sandi'</translation>
+<translation id="3644735978203799620">Mengaktifkan pemilihan otomatis untuk multi-screenshot</translation>
 <translation id="3646859102161347133">Menyetel jenis lup</translation>
 <translation id="3647212518036289905">Menyetel kebijakan akan menentukan library GSSAPI mana yang akan digunakan untuk autentikasi HTTP. Setel kebijakan ke nama library atau jalur lengkap.
 
@@ -2485,6 +2496,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       * <ph name="PRINTERS_ALLOW_ALL" /> (nilai 2) menampilkan semua printer
 
       Jika kebijakan tidak disetel, <ph name="PRINTERS_ALLOW_ALL" /> akan digunakan.</translation>
+<translation id="3695204334462456702">Tujuan protokol berbasis Zeroconf (mDNS + DNS-SD/Tidak digunakan lagi)</translation>
 <translation id="3695706037816556327">Tindakan terkait penghapusan token keamanan (misalnya, kartu smart) untuk <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3700193037252896716">Frekuensi saat mulai ulang harus dilakukan kembali.</translation>
 <translation id="3700318587977845664">Frekuensi pengulangan pemeriksaan update.</translation>
@@ -2775,6 +2787,13 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, <ph name="PLUGIN_VM_NAME" /> tidak akan diaktifkan untuk perangkat.</translation>
 <translation id="3973371701361892765">Jangan sembunyikan rak secara otomatis</translation>
 <translation id="3977304360459208438">Gunakan setelan default untuk cipher suite 3DES di TLS</translation>
+<translation id="3978606026906763896">Jika kebijakan disetel ke Nonaktif, pop-up yang menargetkan <ph name="BLANK_PAGE_NAME" /> akan diizinkan untuk mengakses (melalui JavaScript) halaman yang meminta pembukaan pop-up.
+
+      Jika kebijakan disetel ke Aktif atau tidak disetel, properti <ph name="WINDOW_OPENER_PROPERTY" /> akan disetel ke <ph name="NULL_VALUE" /> kecuali anchor menentukan <ph name="REL_OPENER_ATTRIBUTE" />.
+
+      Kebijakan ini dihapus di <ph name="PRODUCT_NAME" /> versi 102.
+
+      Buka https://chromestatus.com/feature/6140064063029248.</translation>
 <translation id="3979738908158213640">URL yang akan diberi akses untuk melakukan pengesahan perangkat saat autentikasi SAML</translation>
 <translation id="3984028218719007910">Menentukan apakah <ph name="PRODUCT_OS_NAME" /> menyimpan data akun lokal setelah keluar. Jika disetel ke true, maka tidak ada akun yang terus-menerus disimpan oleh <ph name="PRODUCT_OS_NAME" /> dan semua data dari sesi pengguna akan dihapus setelah keluar. Jika kebijakan ini disetel ke false atau tidak dikonfigurasi, perangkat dapat menyimpan data pengguna lokal (yang dienkripsi).</translation>
 <translation id="398884292557092447">Jika kebijakan disetel ke Benar (True) atau tidak disetel, pengguna akan dapat mengontrol saran isi otomatis untuk kartu kredit di UI.
@@ -3785,6 +3804,35 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika kebijakan ditetapkan ke Salah (False) atau tidak ditetapkan, Desktop Terpadu akan dinonaktifkan dan pengguna tidak dapat mengaktifkannya.</translation>
 <translation id="5255162913209987122">Dapat Direkomendasikan</translation>
 <translation id="5257395339965216304">Data aplikasi yang dihosting</translation>
+<translation id="5263649486910778308">Kebijakan ini memberikan cara untuk mengganti daftar set yang digunakan browser untuk fitur Set Pihak Pertama.
+
+      Setiap set dalam daftar Set Pihak Pertama browser harus memenuhi persyaratan Set Pihak Pertama.
+      Set Pihak Pertama terdiri dari satu pemilik dan satu atau beberapa situs anggota. Semua situs dalam Set Pihak Pertama harus
+      berupa domain yang dapat didaftarkan yang disalurkan melalui HTTPS, terlepas dari apakah situs merupakan pemilik atau anggota.
+      Setiap situs dalam Set Pihak Pertama juga harus unik. Artinya, situs tidak boleh menjadi pemilik dan anggota secara bersamaan, ataupun
+      tercantum sebagai anggota Set Pihak Pertama lebih dari sekali.
+      Lihat https://github.com/privacycg/first-party-sets untuk mendapatkan info selengkapnya terkait Set Pihak Pertama.
+
+      Jika kebijakan ini diberikan kamus kosong, browser akan menggunakan daftar Set Pihak Pertama publik.
+
+      Untuk semua situs dalam Set Pihak Pertama dari daftar <ph name="REPLACEMENTS" />, jika suatu situs juga ada
+      di Set Pihak Pertama dalam daftar browser, situs tersebut akan dihapus dari Set Pihak Pertama browser.
+      Setelahnya, Set Pihak Pertama kebijakan akan ditambahkan ke daftar Set Pihak Pertama browser.
+
+      Untuk semua situs dalam Set Pihak Pertama dari daftar <ph name="ADDITIONS" />, jika suatu situs juga ada
+      di Set Pihak Pertama dalam daftar browser, Set Pihak pertama browser akan diupdate agar
+      Set Pihak Pertama baru dapat ditambahkan ke daftar browser. Setelah daftar browser diupdate,
+      Set Pihak Pertama kebijakan akan ditambahkan ke daftar Set Pihak Pertama browser.
+
+      Daftar Set Pihak Pertama browser mengharuskan semua situs dalam daftarnya tidak ada yang tercantum di
+      lebih dari satu set. Ketentuan ini juga berlaku untuk daftar <ph name="REPLACEMENTS" />
+      dan daftar <ph name="ADDITIONS" />. Situs juga tidak boleh ada dalam daftar
+      <ph name="REPLACEMENTS" /> dan daftar <ph name="ADDITIONS" />.
+
+      Karakter pengganti (*) tidak didukung sebagai nilai kebijakan, ataupun di Set Pihak Pertama dalam daftar ini.
+
+      Semua set yang disediakan oleh kebijakan harus berupa Set Pihak Pertama yang valid. Jika set tidak valid,
+      error yang sesuai akan ditampilkan.</translation>
 <translation id="5266173014392157048">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan kebijakan '<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />'.
 
       Menyetel kebijakan akan menetapkan server mana yang menjadi tujuan delegasi <ph name="PRODUCT_NAME" />. Pisahkan beberapa nama server dengan koma. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.
@@ -4282,6 +4330,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="5815990343032461023">Perilaku lama: Aplikasi Kiosk Chrome akan diupdate oleh sistem ekstensi menggunakan URL update dari manifes ekstensi, serta oleh pengelola cache menggunakan URL update dari kebijakan</translation>
 <translation id="582857022372205358">Aktifkan pencetakan dupleks tepi pendek</translation>
 <translation id="5830196507442186669">Izinkan perangkat untuk menggunakan <ph name="BOREALIS_NAME" /> di <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="5831286647961890695">Aktifkan model pengisian daya adaptif di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="5832274826894536455">Kebijakan yang tidak digunakan lagi</translation>
 <translation id="5835253272509953988">Jika kebijakan disetel ke Aktif, pengguna dapat membuat <ph name="PRODUCT_NAME" /> memeriksa apakah nama pengguna dan sandi yang dimasukkan adalah bagian dari kebocoran.
 
@@ -4911,6 +4960,10 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="654303922206238013">Strategi migrasi untuk ecryptfs</translation>
 <translation id="6543277347547044538">Akhir interval, eksklusif.</translation>
 <translation id="6544601600794014309">Aktifkan Terjemahan Jawaban Instan</translation>
+<translation id="6544759513632821565"><ph name="GET_DISPLAY_MEDIA_SET_NAME" /> API memungkinkan aplikasi web merekam beberapa layar sekaligus.
+      Kebijakan ini membuka properti <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> untuk aplikasi web di asal yang ditentukan.
+      Jika properti <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> ditentukan dalam permintaan <ph name="GET_DISPLAY_MEDIA_SET_NAME" />, semua layar akan otomatis direkam tanpa izin pengguna secara eksplisit.
+      Jika kebijakan ini tidak disetel, <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> tidak tersedia untuk semua aplikasi web.</translation>
 <translation id="654546276700640113">Jika kebijakan disetel, panjang PIN maksimum yang dikonfigurasi akan diterapkan. Nilai 0 atau lebih kecil berarti pengguna dapat menyetel panjang PIN sesuai keinginan. Jika nilainya lebih kecil dari <ph name="PIN_UNLOCK_MINIMUM_LENGTH_POLICY_NAME" /> tetapi lebih besar dari 0, panjang maksimum akan disetel ke panjang minimum.
 
       Jika kebijakan tidak disetel, tidak akan ada panjang maksimum yang diterapkan.</translation>
@@ -6312,6 +6365,7 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 
       <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> menunjukkan jumlah minimum data dalam byte yang memicu pemeriksaan pola. Hal ini berarti bahwa penulisan di papan klip dari URL yang diblokir akan diizinkan jika ukuran data yang disalin lebih kecil dari nilai yang ditentukan dalam kolom ini. Nilai defaultnya adalah 100 byte jika kolom tidak disetel.
       </translation>
+<translation id="8035570672225663428">Aktifkan model pengisian daya adaptif untuk menunda proses pengisian daya guna memperpanjang masa pakai baterai</translation>
 <translation id="8044493735196713914">Laporkan mode boot perangkat</translation>
 <translation id="80453040817068401">Menjadikan browser <ph name="LACROS_NAME" /> tersedia</translation>
 <translation id="804619600634661088">Izinkan penggunaan proses debug jarak jauh</translation>
@@ -6349,6 +6403,10 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 <translation id="8099880303030573137">Menunda waktu menganggur saat menggunakan daya baterai</translation>
 <translation id="8101381354936029836">Grup atom kebijakan:</translation>
 <translation id="8102913158860568230">Setelan streaming media default</translation>
+<translation id="8103563905615378194">Menentukan apakah model pengisian daya adaptif akan diizinkan untuk menunda proses pengisian daya guna memperpanjang masa pakai baterai.
+
+      Jika perangkat mengaktifkan AC (pengisian daya adaptif), model pengisian daya adaptif akan mengevaluasi apakah proses pengisian daya harus ditunda untuk memperpanjang masa pakai baterai. Jika proses pengisian daya ditunda, model pengisian daya adaptif akan menghentikan proses pengisian daya pada level tertentu (misalnya 80%), lalu kembali mengisi daya perangkat sampai 100% saat pengguna memerlukannya.
+      Jika kebijakan ini disetel ke Benar (True) atau tidak disetel, model pengisian daya adaptif akan diaktifkan dan diizinkan untuk menunda proses pengisian daya guna memperpanjang masa pakai baterai. Jika kebijakan ini disetel ke Salah (False), model pengisian daya adaptif tidak akan memengaruhi proses pengisian daya.</translation>
 <translation id="8104962233214241919">Memilih sertifikat klien untuk situs ini secara otomatis</translation>
 <translation id="8114382167597081590">Jangan terapkan Mode Terbatas di YouTube</translation>
 <translation id="8117921351531866504">Memungkinkan Anda menentukan situs diizinkan atau tidak untuk memeriksa apakah pengguna telah menyimpan metode pembayaran.
@@ -6562,6 +6620,11 @@ Cara yang disarankan untuk mengonfigurasi kebijakan di Windows adalah melalui GP
       Jika kebijakan disetel, pengguna tidak dapat mengubahnya. Jika tidak disetel, kebijakan akan aktif tetapi pengguna dapat mengubah setelan ini.</translation>
 <translation id="8300992833374611099">Kontrol lokasi penggunaan Developer Tools</translation>
 <translation id="8301065459352777588">Pengguna Sesi Tamu Terkelola dapat menyimpan setelan tampilan di seluruh perangkat</translation>
+<translation id="8303923135132440974">Mengontrol dialog "Peringatkan Sebelum Menutup (⌘Q)" saat pengguna mencoba menutup browser.
+
+      Jika kebijakan ini disetel ke Aktif atau tidak disetel, dialog peringatan akan ditampilkan saat pengguna mencoba menutup browser.
+
+      Jika kebijakan ini disetel ke Nonaktif, dialog peringatan tidak akan ditampilkan saat pengguna mencoba menutup browser.</translation>
 <translation id="830440838848984847">Izinkan pengguna login ke <ph name="PRODUCT_NAME" /></translation>
 <translation id="8306117673860983372">Setelan login</translation>
 <translation id="830819203330820450">Jika diaktifkan atau tidak dikonfigurasi (default), suatu Halaman web dapat menggunakan

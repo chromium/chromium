@@ -82,6 +82,7 @@
 <translation id="1384704387250346179">Перакласці ў Аб'ектыве <ph name="BEGIN_NEW" />Навінка<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Апошнія дзеянні: <ph name="LAST_UPDATED" /> сут таму</translation>
 <translation id="1397811292916898096">Шукаць з дапамогай <ph name="PRODUCT_NAME" /></translation>
+<translation id="139993653570221430">Вы можаце змяніць рашэнне ў любы час у наладах Chrome. Пробныя функцыі дзейнічаюць адначасова з выкарыстаннем бягучых спосабаў падбору рэкламы, таму вы не адразу заўважыце змены.</translation>
 <translation id="1406000523432664303">"Не адсочваць"</translation>
 <translation id="1407069428457324124">Цёмная тэма</translation>
 <translation id="1407135791313364759">Адкрыць усе</translation>
@@ -94,6 +95,7 @@
 <translation id="1450753235335490080">Не ўдалося абагуліць наступнае змесціва: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Выберыце мову Chrome</translation>
 <translation id="147113415845704694">Паспрабуйце спытаць “What’s the weather today?” ("Якое сёння надвор'е?")</translation>
+<translation id="1474893630593443211">Шырэйшыя магчымасці кіраваць тым, якая рэклама вам будзе паказвацца</translation>
 <translation id="1477626028522505441">Збой спампоўкі файла "<ph name="FILE_NAME" />" з-за праблем на серверы.</translation>
 <translation id="148482509007564431">Укладка захоўвання закладкі</translation>
 <translation id="1488775391433859242">Вы можаце выкарыстоўваць гэты тэлефон, каб уваходзіць ва ўліковы запіс на камп'ютары, на якім паказваецца гэты QR-код.</translation>
@@ -287,6 +289,7 @@
 <translation id="2561519700418191927">Перадпрагляд відэа</translation>
 <translation id="2567385386134582609">ВІДАРЫС</translation>
 <translation id="2567545343356994513">Больш хуткая актыўная абарона ад небяспечных вэб-сайтаў, спамповак і пашырэнняў</translation>
+<translation id="2569733278091928697">Вы зможаце з лёгкасцю карыстацца элементамі кіравання мультымедыя, кіраваць сеансамі інкогніта, спампоўкамі і не толькі</translation>
 <translation id="2571711316400087311">Прапаноўваць адпраўляць старонкі на іншых мовах у Перакладчык Google</translation>
 <translation id="2573452357057307036">Даведайцеся, як зрабіць Chrome стандартным браўзерам</translation>
 <translation id="2581165646603367611">Пры гэтым ачысціцца кэш, будуць выдалены файлы cookie і іншыя даныя сайтаў, якія Chrome не лічыць важнымі.</translation>
@@ -399,6 +402,7 @@
 <translation id="3166827708714933426">Спалучэнні клавіш для працы з укладкамі і вокнамі</translation>
 <translation id="316694332262407393">Браўзер Chrome ужо запушчаны.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3169523567916669830">Пры тэсціраванні пробных функцый вы можаце праглядаць і выдаляць цікавыя вам тэмы, якія сайты выкарыстоўваюць для паказу вам рэкламы. Chrome вызначае вашы інтарэсы на аснове нядаўняй гісторыі прагляду вамі сайтаў.</translation>
 <translation id="3187472288455401631">Вымярэнне паказчыкаў, звязаных з рэкламай</translation>
 <translation id="3207960819495026254">Дададзена ў закладкі</translation>
 <translation id="3208584281581115441">Праверыць</translation>
@@ -473,6 +477,7 @@
 <translation id="3568688522516854065">Каб бачыць укладкі з іншых сваіх прылад, увайдзіце і ўключыце сінхранізацыю</translation>
 <translation id="357465026686164600">Тэлефон як ключ бяспекі</translation>
 <translation id="3577473026931028326">Нешта пайшло не так. Паўтарыце спробу.</translation>
+<translation id="3578024735349927859">Кіруйце мультымедыйным змесцівам, укладкамі ў рэжыме інкогніта і не толькі, выкарыстоўваючы апавяшчэнні</translation>
 <translation id="3578874072190212775">Дапамажыце сайтам выяўляць махлярства і адрозніваць ботаў ад людзей</translation>
 <translation id="3587482841069643663">Усе</translation>
 <translation id="3587596251841506391">Павысіць бяспеку ў інтэрнэце</translation>
@@ -1111,12 +1116,14 @@
 <translation id="7173114856073700355">Адкрыць Налады</translation>
 <translation id="7177466738963138057">Вы можаце змяніць гэта пазней у Наладах</translation>
 <translation id="7177873915659574692">Не ўдалося стварыць QR-код. URL-адрас перавышае дапушчальную колькасць знакаў (<ph name="CHARACTER_LIMIT" />).</translation>
+<translation id="7177959540995930968">Больш інфармацыі пра гэтыя функцыі можна знайсці, перайшоўшы ў налады Chrome.</translation>
 <translation id="718226107353899806">Максімальная колькасць рэакцый, якую можна дадаць: <ph name="MAX_NUM_REACTIONS" /></translation>
 <translation id="7187993566681480880">Абараняе вас у браўзеры Chrome і можа выкарыстоўвацца для паляпшэння бяспекі ў іншых праграмах Google, калі вы ўвайшлі ва ўліковы запіс.</translation>
 <translation id="718926126787620637">Спіс папак з закладкамі разгорнуты на ўвесь экран</translation>
 <translation id="7191430249889272776">Укладка адкрыта ў фоне.</translation>
 <translation id="7196215469483532480">Тлумачэнні адносна дапаможніка па прыватнасці разгорнуты на ўвесь экран</translation>
 <translation id="7208109991155904980">Рэакцыя перамешчана</translation>
+<translation id="7222235798733126207">Абмежаваны абмен данымі паміж сайтамі</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Чакаецца 1 спампоўка}one{Чакаецца # спампоўка}few{Чакаецца # спампоўкі}many{Чакаецца # спамповак}other{Чакаецца # спампоўкі}}</translation>
 <translation id="7237045078887540010">Выкарыстоўваючы Chrome, вы згаджаецеся з <ph name="BEGIN_TOS_LINK" />Умовамі выкарыстання Google<ph name="END_TOS_LINK" /> і <ph name="BEGIN_ATOS_LINK" />Дадатковымі ўмовамі выкарыстання Google Chrome і Chrome OS<ph name="END_ATOS_LINK" />. Прымяняецца таксама <ph name="BEGIN_PRIVACY_LINK" />Палітыка прыватнасці<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="7242755609445462077">Стылізаванае вылучанае змесціва (<ph name="CURRENT_DATE" />)</translation>
@@ -1336,6 +1343,7 @@
 <translation id="8410695015584479363">Адсочваць цэны</translation>
 <translation id="8413126021676339697">Паказаць усю гісторыю</translation>
 <translation id="8414396119627470038">Увайдзіце на сайт <ph name="SITE_ETLD_PLUS_ONE" />, выкарыстаўшы ідэнтыфікацыйную інфармацыю ад пастаўшчыка <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8416347857511542594">Даведацца больш пра персаналізацыю рэкламы ў Chrome</translation>
 <translation id="8419244640277402268">Дадаваць</translation>
 <translation id="8424781820952413435">Старонка адпраўлена. Каб праглядзець яе, адкрыйце Chrome на <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Укладка перадпрагляду адкрыта напалову</translation>

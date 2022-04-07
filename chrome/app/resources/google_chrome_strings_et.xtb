@@ -175,6 +175,7 @@
 <translation id="4600710005438004015">Chrome'i ei saanud uusimale versioonile värskendada, mistõttu jääte ilma uutest funktsioonidest ja turvaparandustest.</translation>
 <translation id="4627412468266359539">Valikuline: aidake Chrome OS Flexi funktsioone ja toimivust täiustada, saates Google'ile automaatselt diagnostika- ja kasutusandmeid.</translation>
 <translation id="4633000520311261472">Chrome'i turvalisemaks muutmiseks keelasime mõned laiendused, mida ei leidu veebipoes <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ja mille lisamisest te ei pruugi teadlik olla.</translation>
+<translation id="469553575393225953">Tundmatutest allikatest pärinevad laiendused, rakendused ja teemad võivad teie seadet kahjustada. Chrome soovitab neid vaid Chrome'i veebipoe kaudu installida</translation>
 <translation id="4728575227883772061">Install ebaõnnestus määramata vea tõttu. Kui Google Chrome parasjagu töötab, siis palun sulgege see ja proovige uuesti.</translation>
 <translation id="4747730611090640388">Chrome suudab teie huvisid prognoosida.  Hiljem saab teie külastatav sait küsida Chrome'ilt teie huvisid, et isikupärastada teile kuvatavaid reklaame.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -216,6 +217,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="5736850870166430177">Kui sait üritab teie parooli varastada või laadite alla kahjuliku faili, võib Chrome saata URL-id ja lehe sisu osad teenusele Google'i ohutu sirvimine.</translation>
 <translation id="573759479754913123">Teave Chrome OS-i kohta</translation>
 <translation id="5756509061973259733">Selle kontoga Chrome'i profiil on selles seadmes juba olemas</translation>
+<translation id="5763280521700030406">Chrome blokeeris selle faili, kuna see on turvakontrolli tegemiseks liiga suur. Proovige uuesti failidega, mis on kuni 50 MB</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome'i ei õnnestunud käivitada. Proovige uuesti.</translation>
 <translation id="5867197326698922595">Google Chrome püüab paroole muuta.</translation>
@@ -324,8 +326,10 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="8394720698884623075">Kontrollib URL-e Chrome'i talletatud ohtlike saitide loendi alusel.</translation>
 <translation id="840084489713044809">Google Chrome soovib teie paroole eksportida.</translation>
 <translation id="8416347857511542594">Lisateave Chrome'is reklaamide isikupärastamise kohta</translation>
+<translation id="8421734018304082652">Chrome blokeeris selle faili, kuna see on krüpteeritud. Paluge omanikul see dekrüpteerida</translation>
 <translation id="8433638294851456451">Numbri saatmiseks siit Android-telefoni logige mõlemas seadmes Chrome'i sisse.</translation>
 <translation id="8498858610309223613">Äsja rakendati Google Chrome'i spetsiaalne turvavärskendus. Taaskäivitage brauser, misjärel taastame teie vahelehed.</translation>
+<translation id="8504220326736535258">Chrome blokeeris selle faili, kuna see sisaldab pahavara</translation>
 <translation id="8516431725144212809">Teie Chrome'i prognoositud huvid</translation>
 <translation id="8521348052903287641">Sissetuleku reegel Google Chrome Devile mDNS-liikluse lubamiseks.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>

@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">Napadači ponekad oponašaju web lokacije pomoću teško primjetnih izmjena web adrese.</translation>
 <translation id="1028781062521375153">Prikaži detalje</translation>
 <translation id="1030706264415084469"><ph name="URL" /> želi trajno pohraniti veliku količinu podataka na vaš uređaj</translation>
-<translation id="1032854598605920125">Okreni u smjeru kretanja kazaljki na satu</translation>
 <translation id="1033329911862281889">Anonimnim načinom rada niste nevidljivi online:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Web lokacije i usluge koje koriste mogu vidjeti šta posjećujete.<ph name="END_LIST_ITEM" />
@@ -2636,6 +2635,7 @@ Dodatni detalji:
 <translation id="8277900682056760511">Stranica obrađivača uplate je otvorena</translation>
 <translation id="8280630997017109758">Ladica 11</translation>
 <translation id="8281084378435768645">Velika fotografija</translation>
+<translation id="8281886186245836920">Preskoči</translation>
 <translation id="8282947398454257691">Znati jedinstveni identifikator uređaja</translation>
 <translation id="8284769179630993263">Upravljajte Sigurnim pregledanjem i drugim funkcijama u postavkama Chromea</translation>
 <translation id="8286036467436129157">Prijava</translation>

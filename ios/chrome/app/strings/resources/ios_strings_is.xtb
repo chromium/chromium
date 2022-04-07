@@ -168,6 +168,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2421044535038393232">Halda áfram að breyta</translation>
 <translation id="2434405374328098816">Þú hefur þegar vistað aðgangsorð fyrir „<ph name="USERNAME" />“ á <ph name="WEBSITE" />.</translation>
 <translation id="2435457462613246316">Sýna aðgangsorð</translation>
+<translation id="2469960372084740698">Viltu slökkva á öruggri vefnotkun?</translation>
 <translation id="2473876017985765807">Þú hefur þegar vistað aðgangsorð fyrir <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Ekki valið</translation>
 <translation id="2497852260688568942">Kerfisstjóri hefur gert samstillingu óvirka</translation>
@@ -313,6 +314,7 @@ Fylgdu leiðbeiningunum hér að neðan:</translation>
 <translation id="3691593122358196899">Bókamerki var búið til í <ph name="FOLDER_TITLE" /></translation>
 <translation id="369349502275246497">Bjóðast til að vista aðgangsorð</translation>
 <translation id="3709582977625132201">Merkja sem ólesið</translation>
+<translation id="371230970611282515">Spáir fyrir um og varar þig við hættulegum viðburðum áður en þeir gerast.</translation>
 <translation id="3740397331642243698">Opnar innslegnar vefslóðir í Google Chrome í huliðsstillingu.</translation>
 <translation id="3762232513783804601">Sérhannað fyrir iPad</translation>
 <translation id="3771033907050503522">Huliðsflipar</translation>
@@ -528,6 +530,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5737974891429562743">Innskráningarupplýsingar reikningsins eru úreltar. Uppfærðu þær til að hefja samstillingu.</translation>
 <translation id="5738887413654608789">Þetta gerir þér kleift að finna viðeigandi vefsíður út frá nánasta umhverfi þínu.</translation>
 <translation id="5758631781033351321">Þú finnur leslistann þinn hér</translation>
+<translation id="5765456154762864099">Valmynd → Stillingar → Sjálfgefinn vafri</translation>
 <translation id="5782227691023083829">Þýðir...</translation>
 <translation id="5791632441210678828">Flokkunarhnappur fyrir strauminn „Fylgir“.</translation>
 <translation id="5802829331520313983">Setja upp…</translation>
@@ -582,6 +585,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6144589619057374135">Opna ${url} í huliðsstillingu</translation>
 <translation id="6149061208933997199">Nota aðgangsorð</translation>
 <translation id="6159839020698489198">valfrjálst</translation>
+<translation id="6173386249456979368">Hraðari forvirk vörn gegn hættulegum vefsvæðum, niðurhali og viðbótum. Varar þig við berskjölduðum aðgangsorðum. Krefst þess að vefskoðunargögn verði send til Google</translation>
 <translation id="6177442314419606057">Leita í Chrome</translation>
 <translation id="6184086493125982861">Sýna flipa</translation>
 <translation id="6187302354554850004">Síðast samstillt: <ph name="LAST_USED_TIME" /></translation>
@@ -768,6 +772,7 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7671141431838911305">SETJA UPP</translation>
 <translation id="7701040980221191251">Ekkert</translation>
+<translation id="7726702057919861819">Valmynd → Ferill → Hreinsa vefskoðunargögn</translation>
 <translation id="7741325291586284254">Síða með nýjum huliðsflipa</translation>
 <translation id="7765158879357617694">Færa</translation>
 <translation id="7772032839648071052">Staðfestu aðgangsorðið</translation>
@@ -840,6 +845,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8386068868580335421">Endurstilla</translation>
 <translation id="8407669440184693619">Engin aðgangsorð fundust fyrir þetta vefsvæði</translation>
 <translation id="842017693807136194">Skráð inn með</translation>
+<translation id="8427613705947111202">Valmynd → Stillingar → Aðgangsorð</translation>
 <translation id="8428045167754449968">Borg/bær</translation>
 <translation id="8428213095426709021">Stillingar</translation>
 <translation id="8428634594422941299">Ég skil</translation>

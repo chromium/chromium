@@ -174,6 +174,7 @@
 <translation id="4600710005438004015">Chromea ei voitu päivittää uusimpaan versioon, joten sinulta puuttuu joitakin uusia ominaisuuksia ja tietoturvakorjauksia.</translation>
 <translation id="4627412468266359539">Valinnainen: Auta parantamaan ChromeOS Flexin ominaisuuksia ja suorituskykyä lähettämällä diagnostiikka- ja käyttödataa automaattisesti Googlelle.</translation>
 <translation id="4633000520311261472">Paransimme Chromen turvallisuutta poistamalla käytöstä sovelluksia, joita ei löydy kohteesta <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ja jotka on voitu lisätä ilman lupaasi.</translation>
+<translation id="469553575393225953">Jos laajennukset, sovellukset ja teemat ovat tuntemattomista lähteistä, ne voivat vahingoittaa laitetta. Chrome suosittelee niiden asentamista vain Chrome Web Storesta</translation>
 <translation id="4728575227883772061">Asennus epäonnistui tuntemattoman virheen takia. Jos Google Chrome on tällä hetkellä käynnissä, sulje ohjelma ja yritä uudelleen.</translation>
 <translation id="4747730611090640388">Chrome voi arvioida sinua kiinnostavia aiheita.  Sivut, joilla käyt, voivat myöhemmin pyytää Chromelta tietoa kiinnostuksen kohteistasi ja personoida näkemiäsi mainoksia.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (saapuva mDNS)</translation>
@@ -213,6 +214,7 @@
 <translation id="5736850870166430177">Jos sivusto yrittää varastaa salasanaasi tai jos lataat haitallisen tiedoston, Chrome voi myös lähettää Selaussuojan tarkistettavaksi URL-osoitteita, mukaan lukien osia sivujen sisällöstä</translation>
 <translation id="573759479754913123">Tietoja Chrome-käyttöjärjestelmästä</translation>
 <translation id="5756509061973259733">Tämän tilin Chrome-profiili on jo tällä laitteella</translation>
+<translation id="5763280521700030406">Chrome on estänyt tämän tiedoston, koska se on liian iso turvatarkistukseen. Kokeile uudelleen korkeintaan 50 Mt:n kokoisella tiedostolla</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chromen käynnistäminen epäonnistui. Yritä uudelleen.</translation>
 <translation id="5867197326698922595">Google Chrome yrittää muuttaa salasanoja.</translation>
@@ -321,8 +323,10 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="8394720698884623075">Tarkistaa URL-osoitteet Chromeen tallennetun vaarallisten sivustojen listan avulla</translation>
 <translation id="840084489713044809">Google Chrome yrittää viedä salasanojasi tiedostoon.</translation>
 <translation id="8416347857511542594">Lue lisää mainosten personoinnista Chromessa</translation>
+<translation id="8421734018304082652">Chrome on estänyt tämän tiedoston, koska se on salattu. Pyydä sen omistajaa purkamaan salaus</translation>
 <translation id="8433638294851456451">Jos haluat lähettää numeron täältä Android-puhelimeesi, kirjaudu Chromeen molemmilla laitteilla.</translation>
 <translation id="8498858610309223613">Google Chromen tärkeä tietoturvapäivitys on asennettu. Käynnistä selain uudelleen – palautamme avoimet välilehdet.</translation>
+<translation id="8504220326736535258">Chrome on estänyt tämän tiedoston, koska se sisältää haittaohjelmia</translation>
 <translation id="8516431725144212809">Chromen arvio siitä, mitkä ovat kiinnostuksen kohteitasi</translation>
 <translation id="8521348052903287641">Google Chromen kehittäjäversion saapuvien yhteyksien sääntö, joka sallii mDNS-liikenteen.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>

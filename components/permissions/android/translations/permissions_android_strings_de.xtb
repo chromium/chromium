@@ -5,7 +5,7 @@
 <translation id="1612196535745283361">Chrome benötigt Zugriff auf den Standort, um nach Geräten suchen zu können. Der Standortzugriff ist <ph name="BEGIN_LINK" />für dieses Gerät deaktiviert<ph name="END_LINK" />.</translation>
 <translation id="1769234867324334094"><ph name="APP_NAME" /> benötigt für diese Website die Berechtigung, auf deine Kamera zuzugreifen.</translation>
 <translation id="1993768208584545658"><ph name="SITE" /> möchte eine Kopplung durchführen</translation>
-<translation id="2077832278056815832">Schließen Sie alle Infofelder und Einblendungen anderer Apps. Versuchen Sie es anschließend noch einmal.</translation>
+<translation id="2077832278056815832">Schließe alle Infofelder und Einblendungen anderer Apps. Versuche es anschließend noch einmal.</translation>
 <translation id="230115972905494466">Keine kompatiblen Geräte gefunden</translation>
 <translation id="2359808026110333948">Weiter</translation>
 <translation id="2987449669841041897">Diese Website darf nicht nach deiner Berechtigung fragen</translation>
@@ -19,7 +19,7 @@
 <translation id="5858741533101922242">Chrome kann den Bluetooth-Adapter nicht aktivieren</translation>
 <translation id="5860491529813859533">Aktivieren</translation>
 <translation id="6049776452963514597"><ph name="APP_NAME" /> benötigt für diese Website die Berechtigung, auf deine Kamera und dein Mikrofon zuzugreifen.</translation>
-<translation id="6092062101542170135">Aktivieren Sie zum Fortfahren NFC in den Android-Einstellungen</translation>
+<translation id="6092062101542170135">Aktiviere zum Fortfahren NFC in den Android-Einstellungen</translation>
 <translation id="6656545060687952787">Chrome benötigt Zugriff auf den Standort, um nach Geräten suchen zu können. <ph name="BEGIN_LINK" />Berechtigungen aktualisieren<ph name="END_LINK" /></translation>
 <translation id="7146360184282545445"><ph name="APP_NAME" /> benötigt die Berechtigung, auf deine Kamera zuzugreifen, um eine 3D-Karte deiner Umgebung zu erstellen.</translation>
 <translation id="7624880197989616768"><ph name="BEGIN_LINK1" />Hilfe aufrufen<ph name="END_LINK1" /> oder <ph name="BEGIN_LINK2" />noch einmal suchen<ph name="END_LINK2" /></translation>

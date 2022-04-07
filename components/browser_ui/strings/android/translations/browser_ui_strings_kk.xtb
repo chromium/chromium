@@ -55,7 +55,7 @@
 <translation id="2315043854645842844">Операциялық жүйе клиенттік сертификатты таңдауға қолдау көрсетпейді.</translation>
 <translation id="2321958826496381788">Сырғытпаны оқу ыңғайлы болғанға дейін сүйреңіз. Абзацты екі рет басқан кезде, мәтіннің үлкендігі осындай болуы керек.</translation>
 <translation id="2359808026110333948">Жалғастыру</translation>
-<translation id="2379925928934107488">Chrome қараңғы тақырып қолданғанда, сайттарға да мүмкіндігінше қараңғы тақырып қолданыңыз.</translation>
+<translation id="2379925928934107488">Chrome қараңғы режим қолданғанда, сайттарға да мүмкіндігінше қараңғы режим қолданыңыз.</translation>
 <translation id="2387895666653383613">Мәтін масштабтау</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" /> қызметті пайдалануға рұқсат етілген.}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" /> қызметті пайдалануға рұқсат етілген.}}</translation>
@@ -70,7 +70,7 @@
 <translation id="2570922361219980984">Бұл құрылғыда да орынды анықтау қызметі өшірулі. Оны <ph name="BEGIN_LINK" />Android параметрлері<ph name="END_LINK" /> арқылы қосыңыз.</translation>
 <translation id="257931822824936280">Жайылған – жию үшін басыңыз.</translation>
 <translation id="2586657967955657006">Буфер</translation>
-<translation id="2597457036804169544">Сайттарға қараңғы тақырып қолданылмайды.</translation>
+<translation id="2597457036804169544">Сайттарға қараңғы режим қолданылмайды.</translation>
 <translation id="2621115761605608342">Белгілі бір сайт үшін JavaScript бағдарламасына рұқсат беру.</translation>
 <translation id="2653659639078652383">Жіберу</translation>
 <translation id="2677748264148917807">Шығу</translation>
@@ -111,7 +111,7 @@
 <translation id="3600792891314830896">Сайттардың дыбысы өшірілді</translation>
 <translation id="3744111561329211289">Фондық синхрондау</translation>
 <translation id="3763247130972274048">10 секунд уақытты өткізіп жіберу үшін бейнені солға немесе оңға қарай екі рет түртіңіз.</translation>
-<translation id="3797520601150691162">Белгілі бір сайтқа қараңғы тақырып қолданылмайды.</translation>
+<translation id="3797520601150691162">Белгілі бір сайтқа қараңғы режим қолданылмайды.</translation>
 <translation id="381841723434055211">Телефон нөмірлері</translation>
 <translation id="3826050100957962900">Үшінші тараптың кіруі</translation>
 <translation id="3835233591525155343">Құрылғыны пайдалануыңыз</translation>
@@ -265,7 +265,7 @@
 <translation id="7302486331832100261">Әдетте хабарландыруларға тыйым саласыз. Рұқсат беру үшін "Мәліметтер" түймесін түртіңіз.</translation>
 <translation id="7423098979219808738">Алдымен сұрау</translation>
 <translation id="7423538860840206698">Буфердегі мазмұнды оқуға тыйым салынған</translation>
-<translation id="7425915948813553151">Сайттар үшін қараңғы тақырып</translation>
+<translation id="7425915948813553151">Сайттар үшін қараңғы режим</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Сайт микрофонды пайдаланып жатыр.</translation>
 <translation id="7561196759112975576">Әрқашан</translation>

@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">دستگاه بلوتوث «<ph name="DEVICE_NAME" />» برای مرتبط‌سازی به مجوز نیاز دارد. لطفاً این کد پین را در آن دستگاه وارد کنید: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">ابزارهای ضبط ویدیویی از صفحه</translation>
 <translation id="1024261588257374085">نماگرفت جزئی انتخاب شد</translation>
+<translation id="1024364763893396229">ذخیره کردن <ph name="NAME" /></translation>
 <translation id="1032891413405719768">شارژ باتری قلم کم است</translation>
 <translation id="1036073649888683237">برای مدیریت اعلان‌ها، به «تنظیمات» بروید</translation>
 <translation id="1036672894875463507">‏من «دستیار Google» هستم، آماده‌ام تا درطول روز به شما کمک کنم!
@@ -35,6 +36,7 @@
 <translation id="1175572348579024023">پیمایش</translation>
 <translation id="1178581264944972037">مکث</translation>
 <translation id="1181037720776840403">حذف</translation>
+<translation id="1183863904939664422">به این پیشنهاد علاقه‌ای ندارم</translation>
 <translation id="118437560755358292">برای ایمنی بیشتر، گذرواژه یا پین را وارد کنید</translation>
 <translation id="118532027333893379">برای ضبط تمام صفحه، روی هرجایی که می‌خواهید ضربه بزنید</translation>
 <translation id="1190609913194133056">مرکز اعلان</translation>
@@ -167,6 +169,7 @@
 <translation id="1951012854035635156">دستیار</translation>
 <translation id="1954252331066828794">ضبط صفحه‌نمایش تکمیل شد</translation>
 <translation id="1957958912175573503">تنظیم زبان</translation>
+<translation id="1961239773406905488">پیش‌نمای دوربین پنهان است</translation>
 <translation id="1961832440516943645"><ph name="DATE" />، <ph name="TIME" /></translation>
 <translation id="1962969542251276847">صفحه قفل</translation>
 <translation id="1969011864782743497">‏<ph name="DEVICE_NAME" /> (‏USB)</translation>
@@ -184,6 +187,7 @@
 <translation id="2047639699071423250">افزودن ایده اصلی</translation>
 <translation id="2049240716062114887">نام میزکار به <ph name="DESK_NAME" /> تغییر کرد</translation>
 <translation id="2050339315714019657">عمودی</translation>
+<translation id="2064048859448024834">پیش‌نمای دوربین روشن است</translation>
 <translation id="2066708475850724665">توقف ذره‌بین</translation>
 <translation id="2067602449040652523">روشنایی صفحه‌کلید</translation>
 <translation id="2078034614700056995">برای رفتن به میزکار بعدی، با ۴ انگشت تند به راست بکشید</translation>
@@ -293,6 +297,7 @@
 <translation id="2819276065543622893">هم‌اکنون از سیستم خارج خواهید شد.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" />، از <ph name="SPECIFIED_RESOLUTION" /> پشتیبانی نمی‌کند. وضوح به <ph name="FALLBACK_RESOLUTION" /> تغییر کرد.</translation>
 <translation id="2825619548187458965">قفسه</translation>
+<translation id="2831035692318564937">روشن تا طلوع آفتاب</translation>
 <translation id="2834813915651407382">اخیراً باز شده است</translation>
 <translation id="2841907151129139818">به حالت رایانه لوحی رفته‌اید</translation>
 <translation id="2844169650293029770">‏دستگاه USB-C (درگاه جلوی سمت چپ)</translation>
@@ -439,6 +444,7 @@
 <translation id="3626281679859535460">روشنایی</translation>
 <translation id="3630697955794050612">خاموش</translation>
 <translation id="3631369015426612114">مجاز کردن اعلان‌های منابع زیر</translation>
+<translation id="3633097874324966332">برای مرتبط کردن دستگاهتان، تنظیمات «بلوتوث» را باز کنید</translation>
 <translation id="3638400994746983214">روشن/خاموش کردن صفحه حریم‌خصوصی. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">به‌روزرسانی عقب‌افتاده</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> کاربر مدیریت‌شده</translation>
@@ -592,6 +598,7 @@
 <translation id="4560576029703263363">روشن</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">عدم نمایش گذرواژه</translation>
+<translation id="4566144812051858745">به هیچ پیشنهادی علاقه ندارم</translation>
 <translation id="4570957409596482333">دکمه «انتخاب برای شنیدن»</translation>
 <translation id="4573176682887762361">«تایپ [کلمه/ عبارت]»</translation>
 <translation id="4577274620589681794">وقت تمام است · <ph name="LABEL" /></translation>
@@ -642,6 +649,7 @@
 <translation id="4868492592575313542">فعال شد</translation>
 <translation id="4872237917498892622">‏Alt+جستجو یا Shift</translation>
 <translation id="4881695831933465202">باز کردن</translation>
+<translation id="4889868803215848840">برای بهبود پیشنهادها، درصورت تمایل بازخورد ارائه دهید:</translation>
 <translation id="4890187583552566966">‏سرپرستتان «دستیار Google» را غیرفعال کرده است.</translation>
 <translation id="4890408602550914571">مطمئن شوید تلفنتان در همین اطراف باشد و بلوتوث آن روشن باشد.</translation>
 <translation id="4895488851634969361">باتری پر است.</translation>
@@ -767,6 +775,7 @@
 <translation id="5744083938413354016">کشیدن با ضربه زدن</translation>
 <translation id="5745612484876805746">«نور شب» هنگام غروب آفتاب به‌طور خودکار روشن می‌شود</translation>
 <translation id="5750765938512549687">بلوتوث خاموش است</translation>
+<translation id="5760866832697883462">متصل کردن <ph name="NAME" /></translation>
 <translation id="576341972084747908">بارگیری <ph name="FILENAME" /> خطرناک</translation>
 <translation id="5763928712329149804">«گروه قفسه‌ها» خاموش است.</translation>
 <translation id="576453121877257266">«نور شب» روشن است.</translation>
@@ -828,6 +837,7 @@
 <translation id="6054305421211936131">ورود به سیستم با کارت هوشمند</translation>
 <translation id="6059276912018042191">‏برگه‌های اخیر Chrome</translation>
 <translation id="6062360702481658777">به صورت خودکار در عرض <ph name="LOGOUT_TIME_LEFT" /> از سیستم خارج می‌شوید.</translation>
+<translation id="6064463340679478396">کارم با این فایل تمام شده است</translation>
 <translation id="6073451960410192870">توقف ضبط</translation>
 <translation id="6099678161144790572">ماه گذشته ویرایش شده است</translation>
 <translation id="6103838137565245112">سیستم</translation>
@@ -952,6 +962,7 @@
 <translation id="6886172995547742638">‏ممکن است <ph name="DEVICE_TYPE" /> شما عملکرد ضعیف‌تری را تجربه کند. از آداپتور برق USB-C بالاتر یا <ph name="PREFERRED_MINIMUM_POWER" /> وات تأییدشده‌ای استفاده کنید.</translation>
 <translation id="688631446150864480">برای جابه‌جایی بین پنجره‌ها، کلید جهت‌نمای پایین را فشار دهید</translation>
 <translation id="6896758677409633944">کپی</translation>
+<translation id="6901883536534621389">استفاده از اشاره‌ها برای پیمایش</translation>
 <translation id="6919251195245069855">کارت هوشمندتان تشخیص داده نشد. دوباره امتحان کنید.</translation>
 <translation id="6921188888306725546">میان‌برهای صفحه‌کلید بهبود یافته‌اند</translation>
 <translation id="6931576957638141829">ذخیره در</translation>
@@ -1111,6 +1122,7 @@
 <translation id="7886169021410746335">تنظیمات حریم‌خصوصی را تنظیم کند</translation>
 <translation id="7886277072580235377">وقتی از سیستم خارج شوید، جلسه اینترنت پاک خواهد شد. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">‏Send an email (ایمیل ارسال کن)</translation>
+<translation id="7893503627044934815">نمی‌خواهم این فایل نشان داده شود</translation>
 <translation id="7895348134893321514">نگهدارنده</translation>
 <translation id="7897375687985782769">میان‌بر صفحه‌کلید مربوط به چرخش صفحه را فشار دادید. می‌خواهید صفحه را بچرخانید؟</translation>
 <translation id="7901405293566323524">مرکز تلفن</translation>
@@ -1128,6 +1140,7 @@
 <translation id="7977927628060636163">درحال جستجوی شبکه‌های تلفن همراه…</translation>
 <translation id="7982789257301363584">شبکه</translation>
 <translation id="7984197416080286869">تلاش‌های بیش از حد برای باز کردن قفل با اثر انگشت</translation>
+<translation id="798779949890829624">این تنظیم را سرپرست شما مدیریت می‌کند</translation>
 <translation id="7994370417837006925">ورود چندگانه به سیستم</translation>
 <translation id="7995804128062002838">صفحه‌نمایش ضبط نشد</translation>
 <translation id="8000066093800657092">بدون شبکه</translation>
@@ -1155,6 +1168,7 @@
 <translation id="813913629614996137">درحال مقداردهی اولیه…</translation>
 <translation id="8142441511840089262">دوبار کلیک کردن</translation>
 <translation id="8142699993796781067">شبکه‌های خصوصی</translation>
+<translation id="8144760705599030999">برای مرتبط‌سازی سریع‌تر با دستگاه‌های دیگر، <ph name="NAME" /> را در <ph name="EMAIL" /> ذخیره کنید</translation>
 <translation id="8152092012181020186">‏برای بستن برگه، Ctrl + W را فشار دهید.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />، تکمیل خودکار</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> این تنظیم را سرپرست شما مدیریت می‌کند.</translation>
@@ -1192,6 +1206,7 @@
 <translation id="8412677897383510995">نمایش تنظیمات نمایشگر</translation>
 <translation id="8413272770729657668">شروع ضبط با شمارش ۳، ۲، ۱</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />٪ (قاب)</translation>
+<translation id="8420205633584771378">این پیشنهاد حذف شود؟</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> در این دستگاه وجود ندارد.</translation>
 <translation id="8425213833346101688">تغییر</translation>
 <translation id="8426708595819210923">عصر به‌خیر <ph name="GIVEN_NAME" />،</translation>
@@ -1284,6 +1299,7 @@
 <translation id="9000771174482730261">مدیریت فضای ذخیره‌سازی</translation>
 <translation id="9017320285115481645">‏کد دسترسی ولی Family Link را وارد کنید</translation>
 <translation id="9024331582947483881">تمام‌صفحه</translation>
+<translation id="9030319654231318877">خاموش تا غروب آفتاب</translation>
 <translation id="9034924485347205037">‏فایل‌های Linux</translation>
 <translation id="9047624247355796468">باز کردن تنظیمات <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">کوچک کردن اعلان</translation>
@@ -1303,6 +1319,7 @@
 <translation id="9099154003160514616">‏به‌روزرسانی Lacros موجود است</translation>
 <translation id="9100887602489003640">درحال افزودن نمایه. چند دقیقه صبر کنید.</translation>
 <translation id="9105450214093926548">‏درحین اجرای مرورگر Lacros، از ورود به سیستم کاربر دوم پشتیبانی نمی‌شود. لطفاً درعوض از نمایه مرورگر دیگری در Lacros استفاده کنید یا Lacros را ببندید و دوباره امتحان کنید.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> یا <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">نمی‌توان محتوای محافظت‌شده را ضبط کرد</translation>
 <translation id="9161053988251441839">برنامه‌های پیشنهادشده</translation>
 <translation id="9166331175924255663">روشن/خاموش کردن «هم‌رسانی با اطراف» با میزان بالای نمایان بودن.</translation>

@@ -114,7 +114,6 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Prøv igen</translation>
 <translation id="2161394479394250669">Annuller udskriftsjob</translation>
 <translation id="2180197493692062006">Der opstod en fejl. Prøv at åbne appen igen.</translation>
-<translation id="2201770616342964496">Lokal identitet</translation>
 <translation id="2209788852729124853">Nulstil trafiktællere</translation>
 <translation id="2212733584906323460">Navneløsning</translation>
 <translation id="2217935453350629363">Nuværende hastighed</translation>
@@ -262,6 +261,7 @@
 <translation id="4170180284036919717">Tag et billede</translation>
 <translation id="4170700058716978431">MISLYKKET</translation>
 <translation id="4176463684765177261">Deaktiveret</translation>
+<translation id="4176659219503619100">Kontrolpanel</translation>
 <translation id="4213104098953699324">USB-tastatur</translation>
 <translation id="4227825898293920515">Adgangskoden udløber om <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ingen udskriftsjobs er i gang</translation>
@@ -305,7 +305,6 @@
 <translation id="4593212453765072419">Proxygodkendelse påkrævet</translation>
 <translation id="4609350030397390689">Reducer tastaturets lysstyrke</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> ud af <ph name="TOTAL_PAGE_NUMBER" />. Tryk på Enter for at annullere udskriftsjobbet.</translation>
-<translation id="4627645661474370390">Identitet ved fjernadgang</translation>
 <translation id="463791356324567266">Annullerer scanning...</translation>
 <translation id="4646949265910132906">Sikker Wi-Fi-forbindelse</translation>
 <translation id="4650608062294027130">Shift i højre side</translation>

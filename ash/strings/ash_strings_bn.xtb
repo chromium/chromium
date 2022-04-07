@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">ব্লুটুথ ডিভাইস "<ph name="DEVICE_NAME" />" যুক্ত করার অনুমতি চাইছে। ডিভাইসটিতে এই পিন কোড দিন: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">স্ক্রিনকাস্ট করার টুল</translation>
 <translation id="1024261588257374085">আংশিক স্ক্রিনশট বেছে নেওয়া হয়েছে</translation>
+<translation id="1024364763893396229"><ph name="NAME" /> সেভ করুন</translation>
 <translation id="1032891413405719768">স্টাইলাসের চার্জ কমে গেছে</translation>
 <translation id="1036073649888683237">সেটিংসে গিয়ে বিজ্ঞপ্তি ম্যানেজ করুন</translation>
 <translation id="1036672894875463507">আমি আপনার Google Assistant, পুরো দিনের জন্য আপনাকে সাহায্য করতে আমি তৈরি!
@@ -35,6 +36,7 @@
 <translation id="1175572348579024023">স্ক্রল করুন</translation>
 <translation id="1178581264944972037">বিরতি</translation>
 <translation id="1181037720776840403">সরান</translation>
+<translation id="1183863904939664422">এই সাজেশনে আগ্রহী নই</translation>
 <translation id="118437560755358292">আরও নিরাপত্তার জন্য পাসওয়ার্ড বা পিন লিখুন</translation>
 <translation id="118532027333893379">ফুল স্ক্রিন ক্যাপচার করতে, যেখানে খুশি ট্যাপ করুন</translation>
 <translation id="1190609913194133056">বিজ্ঞপ্তি কেন্দ্র</translation>
@@ -295,6 +297,7 @@
 <translation id="2819276065543622893">আপনি এখনই প্রস্থান করুন হবেন৷</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> রেজোলিউশনে চলতে পারে না। তাই রেজোলিউশন পরিবর্তন করে <ph name="FALLBACK_RESOLUTION" /> করা হয়েছে।</translation>
 <translation id="2825619548187458965">তাক</translation>
+<translation id="2831035692318564937">সূর্যোদয় পর্যন্ত চালু আছে</translation>
 <translation id="2834813915651407382">সম্প্রতি খোলা হয়েছে</translation>
 <translation id="2841907151129139818">'ট্যাবলেট' মোডে পাল্টানো হয়েছে</translation>
 <translation id="2844169650293029770">USB-C ডিভাইস (বাঁ দিকের সামনের পোর্ট)</translation>
@@ -441,6 +444,7 @@
 <translation id="3626281679859535460">উজ্জ্বলতা</translation>
 <translation id="3630697955794050612">বন্ধ</translation>
 <translation id="3631369015426612114">নিম্নলিখিত থেকে বিজ্ঞপ্তি অনুমতি দিন</translation>
+<translation id="3633097874324966332">আপনার ডিভাইস পেয়ার করতে ব্লুটুথ সেটিংস খুলুন</translation>
 <translation id="3638400994746983214">গোপনীয়তা স্ক্রিন টগল করুন। <ph name="STATE_TEXT" />।</translation>
 <translation id="3649505501900178324">আপডেট করতে ডিভাইস রিস্টার্ট করুন</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> ম্যানেজ করা ব্যবহারকারী</translation>
@@ -594,6 +598,7 @@
 <translation id="4560576029703263363">চালু করা আছে</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">পাসওয়ার্ড লুকান</translation>
+<translation id="4566144812051858745">যেকোনও সাজেশনে আগ্রহী নই</translation>
 <translation id="4570957409596482333">বাছুন ও শুনুন বোতাম</translation>
 <translation id="4573176682887762361">"টাইপ [শব্দ / বাক্যাংশ]"</translation>
 <translation id="4577274620589681794">সময় শেষ হয়ে গেছে · <ph name="LABEL" /></translation>
@@ -644,6 +649,7 @@
 <translation id="4868492592575313542">চালু আছে</translation>
 <translation id="4872237917498892622">Alt+Search অথবা Shift</translation>
 <translation id="4881695831933465202">খুলুন</translation>
+<translation id="4889868803215848840">সাজেশন উন্নত করতে অতিরিক্ত মতামত দিন:</translation>
 <translation id="4890187583552566966">আপনার প্রশাসকের দ্বারা Google অ্যাসিস্ট্যান্ট অক্ষম করা হয়েছে।</translation>
 <translation id="4890408602550914571">আপনার ফোন কাছাকাছি রয়েছে কিনা এবং তাতে ব্লুটুথ চালু আছে কিনা দেখে নিন।</translation>
 <translation id="4895488851634969361">ব্যাটারি পূর্ণ৷</translation>
@@ -769,6 +775,7 @@
 <translation id="5744083938413354016">ট্যাপ করে টেনে আনা</translation>
 <translation id="5745612484876805746">সূর্যাস্তের সময় নাইট লাইট অটোমেটিক চালু হয়ে যায়</translation>
 <translation id="5750765938512549687">ব্লুটুথ বন্ধ আছে</translation>
+<translation id="5760866832697883462"><ph name="NAME" />-এর সাথে কানেক্ট করুন</translation>
 <translation id="576341972084747908">বিপজ্জনক <ph name="FILENAME" /> ফাইল ডাউনলোড করা হচ্ছে</translation>
 <translation id="5763928712329149804">শেল্ফ পার্টি বন্ধ আছে।</translation>
 <translation id="576453121877257266">নাইট লাইট ফিচার চালু করা আছে।</translation>
@@ -830,6 +837,7 @@
 <translation id="6054305421211936131">স্মার্ট কার্ড দিয়ে সাইন-ইন করুন</translation>
 <translation id="6059276912018042191">Chrome-এ সম্প্রতি খোলা ট্যাবগুলি</translation>
 <translation id="6062360702481658777">আপনি <ph name="LOGOUT_TIME_LEFT" /> এর মধ্যে স্বয়ংক্রিয়ভাবে প্রস্থান করুন হবেন৷</translation>
+<translation id="6064463340679478396">ফাইল ব্যবহার করে সম্পূর্ণ করা হয়েছে</translation>
 <translation id="6073451960410192870">রেকর্ডিং বন্ধ করুন</translation>
 <translation id="6099678161144790572">গত মাসে এডিট করা হয়েছে</translation>
 <translation id="6103838137565245112">সিস্টেম</translation>
@@ -954,6 +962,7 @@
 <translation id="6886172995547742638">আপনার <ph name="DEVICE_TYPE" />-এর পারফর্ম্যান্স আশানুরূপ নাও হতে পারে। একটি <ph name="PREFERRED_MINIMUM_POWER" />W অথবা আরও ভাল USB-C পাওয়ার অ্যাডাপ্টার ব্যবহার করুন।</translation>
 <translation id="688631446150864480">উইন্ডো পাল্টাতে, 'নিম্নমুখী তীরচিহ্ন' কী প্রেস করুন</translation>
 <translation id="6896758677409633944">কপি</translation>
+<translation id="6901883536534621389">নেভিগেট করতে জেসচার ব্যবহার করে দেখুন</translation>
 <translation id="6919251195245069855">আপনার স্মার্ট কার্ড শনাক্ত করা যায়নি। আবার চেষ্টা করুন।</translation>
 <translation id="6921188888306725546">কীবোর্ড শর্টকার্ট উন্নত করা হয়েছে</translation>
 <translation id="6931576957638141829">এখানে সেভ করুন</translation>
@@ -1113,6 +1122,7 @@
 <translation id="7886169021410746335">গোপনীয়তা সেটিংস অ্যাডজাস্ট করুন</translation>
 <translation id="7886277072580235377">আপনি সাইন-আউট করলে আপনার ইন্টারনেট সেশন মুছে ফেলা হবে। <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">একটি ইমেল পাঠান</translation>
+<translation id="7893503627044934815">এই ফাইলটি দেখাতে চাই না</translation>
 <translation id="7895348134893321514">টোট</translation>
 <translation id="7897375687985782769">স্ক্রিন ঘোরানোর জন্য আপনি কীবোর্ড শর্টকাট টিপেছেন। আপনি কি স্ক্রিন ঘোরাতে চান?</translation>
 <translation id="7901405293566323524">ফোন হাব</translation>
@@ -1130,6 +1140,7 @@
 <translation id="7977927628060636163">মোবাইল নেটওয়ার্কগুলির জন্য সার্চ করছে...</translation>
 <translation id="7982789257301363584">নেটওয়ার্ক</translation>
 <translation id="7984197416080286869">অনেকবার আঙ্গুলের ছাপ দিয়ে আনলক করার চেষ্টা করা হয়েছে</translation>
+<translation id="798779949890829624">এই সেটিং আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে থাকে</translation>
 <translation id="7994370417837006925">একাধিক সাইন-ইন</translation>
 <translation id="7995804128062002838">স্ক্রিন ক্যাপচার করা যায়নি</translation>
 <translation id="8000066093800657092">কোনও নেটওয়ার্ক নেই</translation>
@@ -1157,6 +1168,7 @@
 <translation id="813913629614996137">আরম্ভ হচ্ছে…</translation>
 <translation id="8142441511840089262">ডবল ক্লিক করুন</translation>
 <translation id="8142699993796781067">ব্যক্তিগত নেটওয়ার্ক</translation>
+<translation id="8144760705599030999">অন্যান্য ডিভাইসের সাথে আরও দ্রুত পেয়ার করতে <ph name="NAME" />-কে <ph name="EMAIL" />-এ সেভ করুন</translation>
 <translation id="8152092012181020186">বন্ধ করতে Ctrl + W প্রেস করুন।</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, নিজে থেকে সম্পূর্ন করা</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> এই সেটিং আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে থাকে।</translation>
@@ -1194,6 +1206,7 @@
 <translation id="8412677897383510995">ডিসপ্লে সেটিংস দেখুন</translation>
 <translation id="8413272770729657668">রেকর্ডিং শুরু করা হচ্ছে ৩, ২, ১</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (কেস)</translation>
+<translation id="8420205633584771378">সাজেশনটি সরাতে চান?</translation>
 <translation id="8421270167862077762">এই ডিভাইসে <ph name="UNAVAILABLE_APPS" /> উপলভ্য নেই।</translation>
 <translation id="8425213833346101688">পরিবর্তন</translation>
 <translation id="8426708595819210923">শুভ সন্ধ্যা <ph name="GIVEN_NAME" />,</translation>
@@ -1286,6 +1299,7 @@
 <translation id="9000771174482730261">স্টোরেজ ম্যানেজ করুন</translation>
 <translation id="9017320285115481645">Family Link-এর অভিভাবকীয় অ্যাক্সেস কোডটি লিখুন।</translation>
 <translation id="9024331582947483881">পূর্ণ স্ক্রিন</translation>
+<translation id="9030319654231318877">সূর্যাস্ত পর্যন্ত বন্ধ আছে</translation>
 <translation id="9034924485347205037">Linux ফাইল</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> নেটওয়ার্কের জন্য সেটিংস খুলুন</translation>
 <translation id="9059834730836941392">বিজ্ঞপ্তি সঙ্কুচিত করুন</translation>
@@ -1305,6 +1319,7 @@
 <translation id="9099154003160514616">Lacros আপডেট করা যাবে</translation>
 <translation id="9100887602489003640">প্রোফাইল যোগ করা হচ্ছে। কয়েক মিনিট অপেক্ষা করুন।</translation>
 <translation id="9105450214093926548">Lacros ব্রাউজার চালু থাকাকালীন দ্বিতীয় কোনও ব্যবহারকারী সাইন-ইন করতে পারবেন না। এর পরিবর্তে Lacros-এ দ্বিতীয় কোনও ব্রাউজার প্রোফাইল ব্যবহার করুন অথবা Lacros বন্ধ করে আবার চেষ্টা করুন।</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> বা <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">সুরক্ষিত কন্টেন্ট রেকর্ড করা যাবে না</translation>
 <translation id="9161053988251441839">প্রস্তাবিত অ্যাপ</translation>
 <translation id="9166331175924255663">'নিয়ারবাই শেয়ার হাই ভিজিবিলিটি' মোড টগল করুন।</translation>

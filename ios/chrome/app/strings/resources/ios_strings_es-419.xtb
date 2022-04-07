@@ -168,6 +168,7 @@ Tampoco pueden usar cookies para ver la actividad de navegación en diferentes s
 <translation id="2421044535038393232">Seguir editando</translation>
 <translation id="2434405374328098816">Ya guardaste una contraseña para "<ph name="USERNAME" />" en <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
+<translation id="2469960372084740698">¿Quieres desactivar la Navegación segura?</translation>
 <translation id="2473876017985765807">Ya guardaste una contraseña para <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Sin seleccionar</translation>
 <translation id="2497852260688568942">Tu administrador inhabilitó la sincronización</translation>
@@ -313,6 +314,7 @@ Realiza los siguientes pasos:</translation>
 <translation id="3691593122358196899">Se agregó a favoritos en <ph name="FOLDER_TITLE" /></translation>
 <translation id="369349502275246497">Sugerir guardar contraseñas</translation>
 <translation id="3709582977625132201">Marcar como no leído</translation>
+<translation id="371230970611282515">Predice y te advierte sobre eventos peligrosos antes de que ocurran.</translation>
 <translation id="3740397331642243698">Abre las URL ingresadas en Google Chrome en modo Incógnito.</translation>
 <translation id="3762232513783804601">Diseñado para tu iPad</translation>
 <translation id="3771033907050503522">Pestañas de incógnito</translation>
@@ -528,6 +530,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5737974891429562743">Los detalles de acceso de la cuenta están desactualizados. Actualízalos para comenzar la sincronización.</translation>
 <translation id="5738887413654608789">Esta capacidad te permite descubrir páginas web relevantes en función de tu entorno.</translation>
 <translation id="5758631781033351321">Aquí encontrarás tu lista de lectura</translation>
+<translation id="5765456154762864099">Menú → Configuración → Navegador predeterminado</translation>
 <translation id="5782227691023083829">Traduciendo...</translation>
 <translation id="5791632441210678828">Botón para ordenar el feed de Siguiendo.</translation>
 <translation id="5802829331520313983">Configuración…</translation>
@@ -582,6 +585,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6144589619057374135">Abrir ${url} en modo Incógnito</translation>
 <translation id="6149061208933997199">Usar contraseña</translation>
 <translation id="6159839020698489198">opcional</translation>
+<translation id="6173386249456979368">Protección más rápida y proactiva contra descargas, extensiones y sitios web peligrosos. Te advierte sobre violaciones de la seguridad de las contraseñas. Requiere que se envíen datos de navegación a Google.</translation>
 <translation id="6177442314419606057">Buscar en Chrome</translation>
 <translation id="6184086493125982861">Mostrar las pestañas</translation>
 <translation id="6187302354554850004">Última sincronización: <ph name="LAST_USED_TIME" /></translation>
@@ -768,6 +772,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7671141431838911305">INSTALAR</translation>
 <translation id="7701040980221191251">Ninguna</translation>
+<translation id="7726702057919861819">Menú → Historial → Borrar datos de navegación</translation>
 <translation id="7741325291586284254">Nueva página de pestañas de incógnito</translation>
 <translation id="7765158879357617694">Mover</translation>
 <translation id="7772032839648071052">Confirmar frase de contraseña</translation>
@@ -840,6 +845,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8386068868580335421">Restablecer</translation>
 <translation id="8407669440184693619">No se encontraron contraseñas para este sitio</translation>
 <translation id="842017693807136194">Accediste con</translation>
+<translation id="8427613705947111202">Menú → Configuración → Contraseñas</translation>
 <translation id="8428045167754449968">Ciudad/pueblo</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8428634594422941299">Entendido</translation>

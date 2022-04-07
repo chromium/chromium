@@ -314,6 +314,7 @@ Aşağıdaki adımları uygulayın:</translation>
 <translation id="3691593122358196899">Yer işareti <ph name="FOLDER_TITLE" /> klasörüne eklendi</translation>
 <translation id="369349502275246497">Şifreleri kaydetmeyi öner</translation>
 <translation id="3709582977625132201">Okunmadı Olarak İşaretle</translation>
+<translation id="371230970611282515">Tehlikeli etkinlikleri meydana gelmeden önce tahmin ederek sizi uyarır.</translation>
 <translation id="3740397331642243698">Girilen URL'leri Google Chrome'da Gizli modda açar.</translation>
 <translation id="3762232513783804601">iPad'iniz İçin Geliştirildi</translation>
 <translation id="3771033907050503522">Gizli Sekmeler</translation>
@@ -529,6 +530,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="5737974891429562743">Hesap oturum açma ayrıntıları eski. Senkronizasyonu başlatmak için güncelleyin.</translation>
 <translation id="5738887413654608789">Bu işlem çevrenizdeki öğelere dayalı olarak ilgili web sayfalarını keşfetmenize olanak sağlar.</translation>
 <translation id="5758631781033351321">Okuma listenizi burada bulabilirsiniz</translation>
+<translation id="5765456154762864099">Menü → Ayarlar → Varsayılan Tarayıcı</translation>
 <translation id="5782227691023083829">Çevriliyor...</translation>
 <translation id="5791632441210678828">Aşağıdaki feed için sıralama düğmesi.</translation>
 <translation id="5802829331520313983">Kur…</translation>
@@ -770,6 +772,7 @@ Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla fark
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7671141431838911305">YÜKLE</translation>
 <translation id="7701040980221191251">Yok</translation>
+<translation id="7726702057919861819">Menü → Geçmiş → Tarama Verilerini Temizle</translation>
 <translation id="7741325291586284254">Yeni Gizli Sekme Sayfası</translation>
 <translation id="7765158879357617694">Taşı</translation>
 <translation id="7772032839648071052">Parolayı onayla</translation>
@@ -842,6 +845,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8386068868580335421">Sıfırla</translation>
 <translation id="8407669440184693619">Bu site için şifre bulunamadı</translation>
 <translation id="842017693807136194">Şununla Oturum Açıldı:</translation>
+<translation id="8427613705947111202">Menü → Ayarlar → Şifreler</translation>
 <translation id="8428045167754449968">İl / İlçe</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8428634594422941299">Anladım!</translation>

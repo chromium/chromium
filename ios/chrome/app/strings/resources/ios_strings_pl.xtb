@@ -214,11 +214,13 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="2848086008667475748">Określ jako domyślną w ustawieniach…</translation>
 <translation id="2858204748079866344">Aby chronić Twoją prywatność, Chrome nie będzie autouzupełniać hasła w tym polu.</translation>
 <translation id="285960592395650245">Ponów pobieranie</translation>
+<translation id="2866378026651742652">Po otwarciu nowej karty będziesz teraz widzieć opublikowane na nim nowe relacje.</translation>
 <translation id="2870560284913253234">Witryna</translation>
 <translation id="2871695793448672541">Ukryte, hasło</translation>
 <translation id="2876369937070532032">Gdy Twoje bezpieczeństwo jest zagrożone, wysyła do Google adresy URL odwiedzanych stron</translation>
 <translation id="2883151425485251736">Wyświetl tematy, które na Twoim koncie zostały ukryte, i wprowadź w nich zmiany</translation>
 <translation id="288655811176831528">Zamknij kartę</translation>
+<translation id="2890171748217283516">Strony, które obserwujesz, są zapisywane na Twoim koncie Google. Możesz nimi zarządzać w ustawieniach kart Discover.</translation>
 <translation id="2893180576842394309">Google może korzystać z Twojej historii, by personalizować wyniki wyszukiwania i działanie innych usług.</translation>
 <translation id="2898963176829412617">Nowy folder…</translation>
 <translation id="2916171785467530738">Autouzupełniaj wyszukiwania i adresy URL</translation>
@@ -312,6 +314,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3691593122358196899">Utworzono zakładkę w folderze <ph name="FOLDER_TITLE" /></translation>
 <translation id="369349502275246497">Proponuj zapisywanie haseł</translation>
 <translation id="3709582977625132201">Oznacz jako nieprzeczytane</translation>
+<translation id="371230970611282515">Przewiduje niebezpieczne zdarzenia i ostrzega Cię przed nimi, zanim nastąpią.</translation>
 <translation id="3740397331642243698">Otwiera wpisane adresy URL w Google Chrome w trybie incognito.</translation>
 <translation id="3762232513783804601">Dla Twojego iPada</translation>
 <translation id="3771033907050503522">Karty incognito</translation>
@@ -345,6 +348,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4038354071007134711">Nie masz aplikacji, która może otworzyć ten plik.</translation>
 <translation id="4042870976416480368">Znajdź na stronie</translation>
 <translation id="4049507953662678203">Upewnij się, że masz połączenie z siecią, i spróbuj ponownie.</translation>
+<translation id="4063300985191096908">Przejdź do kanału</translation>
 <translation id="408404951701638773">Pasek wyszukiwania jest teraz łatwiej dostępny</translation>
 <translation id="4108314971463891922">Obserwuj</translation>
 <translation id="411254640334432676">Błąd pobierania.</translation>
@@ -527,6 +531,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5737974891429562743">Dane logowania na konto są nieaktualne. Zaktualizuj je, by rozpocząć synchronizację.</translation>
 <translation id="5738887413654608789">Pozwoli Ci to odkrywać strony internetowe dotyczące rzeczy z Twojego otoczenia.</translation>
 <translation id="5758631781033351321">Znajdziesz tu swoją listę Do przeczytania</translation>
+<translation id="5765456154762864099">Menu → Ustawienia → Domyślna przeglądarka</translation>
 <translation id="5782227691023083829">Trwa tłumaczenie...</translation>
 <translation id="5791632441210678828">Przycisk sortowania obserwowanych kanałów.</translation>
 <translation id="5802829331520313983">Skonfiguruj…</translation>
@@ -768,6 +773,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="7671141431838911305">ZAINSTALUJ</translation>
 <translation id="7701040980221191251">Brak</translation>
+<translation id="7726702057919861819">Menu → Historia → Wyczyść dane przeglądania</translation>
 <translation id="7741325291586284254">Nowa strona karty incognito</translation>
 <translation id="7765158879357617694">Przenieś</translation>
 <translation id="7772032839648071052">Potwierdź hasło</translation>
@@ -840,6 +846,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8386068868580335421">Resetuj</translation>
 <translation id="8407669440184693619">Nie znaleziono haseł do tej strony</translation>
 <translation id="842017693807136194">Zalogowano za pomocą:</translation>
+<translation id="8427613705947111202">Menu → Ustawienia → Hasła</translation>
 <translation id="8428045167754449968">Miejscowość</translation>
 <translation id="8428213095426709021">Ustawienia</translation>
 <translation id="8428634594422941299">OK</translation>
@@ -930,6 +937,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Raport o awarii został wysłany.</translation>
 <translation id="952704832371081537">Anuluj</translation>
+<translation id="959066944189734975">Obserwujesz kanał <ph name="CHANNEL_NAME" /></translation>
 <translation id="981498610235328462">Twoja organizacja pozwala logować się tylko na określone konta. Niedozwolone konta zostały ukryte.</translation>
 <translation id="984509647832111802">Synchronizacja nie działa.</translation>
 <translation id="988141524645182168">Inne urządzenia</translation>

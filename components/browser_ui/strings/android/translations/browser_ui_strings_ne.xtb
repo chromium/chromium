@@ -31,7 +31,7 @@
 <translation id="1779089405699405702">छविको डिकोडर</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> लाई AR प्रयोग गर्न दिन <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" />मा गई क्यामेरा पनि अन गर्नुहोस्।</translation>
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" /> बाट प्राप्त जानकारी</translation>
-<translation id="1887786770086287077">यो डिभाइसको स्थानमाथिको पहुँच निष्क्रिय छ। <ph name="BEGIN_LINK" />Android का सेटिङहरू<ph name="END_LINK" /> मा गई यसलाई सक्रिय गर्नुहोस्।</translation>
+<translation id="1887786770086287077">यो डिभाइसको स्थानमाथिको पहुँच निष्क्रिय छ। <ph name="BEGIN_LINK" />Android का सेटिङहरू<ph name="END_LINK" /> मा गई यसलाई अन गर्नुहोस्।</translation>
 <translation id="1919345977826869612">विज्ञापनहरू</translation>
 <translation id="1919950603503897840">सम्पर्कहरू चयन गर्नुहोस्</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -67,7 +67,7 @@
 <translation id="2498359688066513246">मद्दत र प्रतिक्रिया</translation>
 <translation id="2501278716633472235">पछाडि जानुहोस्</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{१ कुकीमाथि रोक लगाइयो}other{# कुकीहरूमाथि रोक लगाइयो}}</translation>
-<translation id="2570922361219980984">यो डिभाइसको स्थानमाथिको पहुँच पनि निष्क्रिय छ। <ph name="BEGIN_LINK" />Android का सेटिङहरू<ph name="END_LINK" /> मा गई यसलाई सक्रिय गर्नुहोस्।</translation>
+<translation id="2570922361219980984">यो डिभाइसको स्थानमाथिको पहुँच पनि निष्क्रिय छ। <ph name="BEGIN_LINK" />Android का सेटिङहरू<ph name="END_LINK" /> मा गई यसलाई अन गर्नुहोस्।</translation>
 <translation id="257931822824936280">विस्तृत गरिएको - संक्षिप्त पार्न क्लिक गर्नुहोस्</translation>
 <translation id="2586657967955657006">क्लिपबोर्ड</translation>
 <translation id="2597457036804169544">साइटहरूमा अँध्यारो थिम लागू नगर्नुहोस्</translation>
@@ -128,7 +128,7 @@
 <translation id="4149994727733219643">वेब पृष्ठहरूका लागि सरलीकृत दृश्य</translation>
 <translation id="4165986682804962316">साइट सेटिङहरू</translation>
 <translation id="4194328954146351878">साइटहरूलाई NFC डिभाइसमा भएका जानकारी हेर्ने र ती जानकारी परिवर्तन गर्ने अनुमति दिनुअघि मलाई सोधियोस् (सिफारिस गरिएको)</translation>
-<translation id="4200726100658658164">स्थानसम्बन्धी सेटिङ खोल्नुहोस्</translation>
+<translation id="4200726100658658164">लोकेसन सेटिङ खोल्नुहोस्</translation>
 <translation id="4226663524361240545">सूचनाहरूले गर्दा यन्त्र कम्पन गर्न सक्छ</translation>
 <translation id="4259722352634471385">नेभिगेशन रोकियो: <ph name="URL" /></translation>
 <translation id="4278390842282768270">अनुमति प्राप्त</translation>
@@ -338,7 +338,7 @@
 <translation id="8847988622838149491">USB</translation>
 <translation id="8903921497873541725">जुम इन</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
-<translation id="8926666909099850184">यो डिभाइसमा NFC निष्क्रिय पारिएको छ। <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" /> मा गई यसलाई सक्रिय गर्नुहोस्।</translation>
+<translation id="8926666909099850184">यो डिभाइसमा NFC निष्क्रिय पारिएको छ। <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" /> मा गई यसलाई अन गर्नुहोस्।</translation>
 <translation id="8928445016601307354">साइटहरूलाई NFC डिभाइसमा भएका जानकारी हेर्न र ती जानकारी परिवर्तन गर्नबाट ब्लक गरियोस्</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">कुनै खास साइटमा कुकीहरूलाई रोक लगाउनुहोस्।</translation>

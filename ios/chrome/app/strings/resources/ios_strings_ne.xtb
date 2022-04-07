@@ -95,7 +95,7 @@
 <translation id="1657641691196698092">रोक लगाइएका कुकीहरू</translation>
 <translation id="165877110639533037">खुल्ला ट्याबहरू छैनन्</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> बाट <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="168715261339224929">आफ्ना सबै डिभाइसमा पुस्तक चिन्हहरू प्राप्त गर्न सिंक गर्ने सुविधा सक्रिय गर्नुहोस्।</translation>
+<translation id="168715261339224929">आफ्ना सबै डिभाइसमा पुस्तक चिन्हहरू प्राप्त गर्न सिंक गर्ने सुविधा अन गर्नुहोस्।</translation>
 <translation id="1687475363370981210">सबै पढिसकिएको भनी चिन्ह लगाउनुहोस्</translation>
 <translation id="1689333818294560261">उपनाम</translation>
 <translation id="1690731385917361335">कुनै वस्तुहरू छैन</translation>
@@ -168,6 +168,7 @@
 <translation id="2421044535038393232">सम्पादन गरिरहनुहोस्</translation>
 <translation id="2434405374328098816">तपाईंले <ph name="WEBSITE" /> का हकमा "<ph name="USERNAME" />" को पासवर्ड सेभ गरिसक्नुभएको छ</translation>
 <translation id="2435457462613246316">पासवर्ड देखाउनुहोस्</translation>
+<translation id="2469960372084740698">Safe Browsing अफ गर्ने हो?</translation>
 <translation id="2473876017985765807">तपाईंले <ph name="WEBSITE" /> को पासवर्ड सेभ गरिसक्नुभएको छ</translation>
 <translation id="2476359652512522418">चयन गरिएको छैन</translation>
 <translation id="2497852260688568942">तपाईंको प्रशासकले सिंंक असक्षम पार्नुभएको छ।</translation>
@@ -253,7 +254,7 @@
 <translation id="3174662312949010067">तपाईं सेभ गरिएका पासवर्डहरू अन्य डिभाइसहरूमा पनि प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="3175081911749765310">वेब सेवाहरू</translation>
 <translation id="3178650076442119961">आज सक्रिय</translation>
-<translation id="3181825792072797598">सिंकलाई सक्रिय गर्नुहोस्</translation>
+<translation id="3181825792072797598">सिंकलाई अन गर्नुहोस्</translation>
 <translation id="3181954750937456830">सुरक्षित ब्राउजिङ (तपाईं र तपाईंको यन्त्रलाई खतरनाक साइटहरूबाट सुरक्षित राख्छ)</translation>
 <translation id="3184767182050912705">"<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />" प्रयोग गरेर अनलक गर्नुहोस्</translation>
 <translation id="3207960819495026254">बुकमार्क लगाइयो</translation>
@@ -313,6 +314,7 @@
 <translation id="3691593122358196899"><ph name="FOLDER_TITLE" /> मा पुस्तक चिन्ह लगाइयो</translation>
 <translation id="369349502275246497">पासवर्ड सेभ गर्ने वा नगर्ने भनी सोधियोस्</translation>
 <translation id="3709582977625132201">'नपढिएको' सामग्रीका रूपमा चिन्ह लगाउनुहोस्</translation>
+<translation id="371230970611282515">खतरनाक घटनाहरू घट्नुअघि नै तिनको पूर्वानुमान गर्छ र तपाईंलाई सोबारे चेतावनी दिन्छ।</translation>
 <translation id="3740397331642243698">प्रविष्टि गरिएका URL हरू Google Chrome को इन्कोग्निटो मोडमा खोलिन्छ।</translation>
 <translation id="3762232513783804601">तपाईंको iPad का लागि बनाइएको</translation>
 <translation id="3771033907050503522">इन्कग्निटो ट्याबहरू</translation>
@@ -340,7 +342,7 @@
 <translation id="3989635538409502728">साइन आउट गर्नुहोस्</translation>
 <translation id="3995521777587992544">पृष्ठ लोडसम्बन्धी प्रगति पट्टी, <ph name="EMAIL" /> लोड गरियो।</translation>
 <translation id="4002066346123236978">शीर्षक</translation>
-<translation id="4004204301268239848">तपाईं आफ्ना पासवर्डहरू जुनसुकै यन्त्रमा प्रयोग गर्न सक्नुहोस् भन्नाका खातिर तिनलाई तपाईंको Google खातामा सुरक्षित गरिन्छ।</translation>
+<translation id="4004204301268239848">तपाईं आफ्ना पासवर्डहरू जुनसुकै यन्त्रमा प्रयोग गर्न सक्नुहोस् भन्नाका लागि तिनलाई तपाईंको Google खातामा सुरक्षित गरिन्छ।</translation>
 <translation id="4006921758705478413">आफ्ना यन्त्रहरूमा पठाउनुहोस्</translation>
 <translation id="4018310736049373830">क्रियाकलाप व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4038354071007134711">यस यन्त्रमा भएको कुनै पनि अनुप्रयोगले फाइल खोल्न सक्दैन।</translation>
@@ -380,7 +382,7 @@
 <translation id="4378154925671717803">फोन</translation>
 <translation id="4389019817280890563">भाषा परिवर्तन गर्न ट्याप गर्नुहोस्।</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />सेटिङ<ph name="END_BOLD" /> खोल्नुहोस्</translation>
-<translation id="4454246407045105932">भाषा थप्नुहोस्</translation>
+<translation id="4454246407045105932">भाषा हाल्नुहोस्</translation>
 <translation id="4462491365653392320">ट्याबहरूमा मूल्य ट्र्याक गर्नुहोस्</translation>
 <translation id="4469418912670346607">सेटअप जारी राख्नुहोस्</translation>
 <translation id="4474494258097106883">तपाईंको iPhone का लागि बनाइएको</translation>
@@ -429,7 +431,7 @@
 <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">कार्डको नम्बर अमान्य छ</translation>
 <translation id="4808744395915275922">अपडेटहरू</translation>
-<translation id="4818522717893377262">भाषा थप्नुहोस्...</translation>
+<translation id="4818522717893377262">भाषा हाल्नुहोस्...</translation>
 <translation id="481968316161811770">कुकी, साइटको डेटा</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} र अन्य १}other{{domain} र अन्य {count}}}</translation>
 <translation id="4826218269716039351">तेस्रो पक्षीय कुकीहरूमाथि रोक लगाउनुहोस्</translation>
@@ -447,7 +449,7 @@
 <translation id="4901778704868714008">सेभ गर्नुहोस्...</translation>
 <translation id="4904877109095351937">पढिसकिएको भनी चिन्ह लगाउनुहोस्</translation>
 <translation id="4908869848243824489">Google को Discover</translation>
-<translation id="4930714375720679147">सक्रिय गर्नुहोस्</translation>
+<translation id="4930714375720679147">अन गर्नुहोस्</translation>
 <translation id="4941089862236492464">माफ गर्नुहोस्, तपाईंको वस्तु साझेदारी गर्दा समस्या भयो।</translation>
 <translation id="4944543191714094452">पृष्ठमा फेला पार्नुहोस्…</translation>
 <translation id="4945756290001680296">पासवर्डका सेटिङहरूमाथि पहुँच राख्नुहोस्</translation>
@@ -480,7 +482,7 @@
 <translation id="519530786644929958">डाउनलोड गर्न सकिएन र फेरि डाउनलोड गर्ने प्रयास गर्न मिल्दैन।</translation>
 <translation id="5197255632782567636">इन्टरनेट</translation>
 <translation id="5210365745912300556">ट्याब बन्द गर्नुहोस्</translation>
-<translation id="5228579091201413441">सिंकलाई सक्रिय गर्नुहोस्</translation>
+<translation id="5228579091201413441">सिंकलाई अन गर्नुहोस्</translation>
 <translation id="5232485538978018676">व्यवस्थापन गरिएको खातामार्फत साइन इन गर्नुहोस्</translation>
 <translation id="5234764350956374838">खारेज गर्नुहोस्</translation>
 <translation id="5245322853195994030">सिंक गर्ने कार्य रद्द गर्नुहोस्</translation>
@@ -509,7 +511,7 @@
 <translation id="5551897871312988470">अनुवाद गर्ने प्रस्ताव गर्नुहोस्</translation>
 <translation id="5556459405103347317">पुन: लोड गर्नुहोस्</translation>
 <translation id="5580834567471114021">पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा हाल्ने हो?</translation>
-<translation id="5592679540098330836"><ph name="NAME" /> को खातामा सिंक गर्ने सुविधा सक्रिय गर्नुहोस्</translation>
+<translation id="5592679540098330836"><ph name="NAME" /> को खातामा सिंक गर्ने सुविधा अन गर्नुहोस्</translation>
 <translation id="560322036295180549">तपाईंको सङ्गठनले यो विकल्प अफ गरेको छ</translation>
 <translation id="5614553682702429503">पासवर्ड सेभ गर्नुहोस्</translation>
 <translation id="5626245204502895507">यस समयमा फाइल डाउनलोड गर्न सकिदैन।</translation>
@@ -528,6 +530,7 @@
 <translation id="5737974891429562743">खातामा साइन-इन गर्ने सम्बन्धी विवरणहरूको म्याद सकिएको छ। सिंक सुरु गर्न अपडेट गर्नुहोस्।</translation>
 <translation id="5738887413654608789">यसले तपाईं वरिपरिको परिवेशमा आधारित सान्दर्भिक वेब पृष्ठहरू पत्ता लगाउन अनुमति दिन्छ।</translation>
 <translation id="5758631781033351321">तपाईंको अध्ययन सूची यहाँ देखिने छ</translation>
+<translation id="5765456154762864099">मेनु → सेटिङहरू → डिफल्ट ब्राउजर</translation>
 <translation id="5782227691023083829">अनुवाद गर्दै...</translation>
 <translation id="5791632441210678828">"फलो गरिराखिएका" फिड क्रमबद्ध गर्नुहोस् नामक बटन।</translation>
 <translation id="5802829331520313983">सेटअप गर्नुहोस्…</translation>
@@ -582,6 +585,7 @@
 <translation id="6144589619057374135">${url} इन्कोग्निटो मोडमा खोल्नुहोस्</translation>
 <translation id="6149061208933997199">पासवर्ड प्रयोग गर्नुहोस्</translation>
 <translation id="6159839020698489198">ऐच्छिक</translation>
+<translation id="6173386249456979368">खतरनाक वेबसाइट, डाउनलोड र एक्स्टेन्सनहरूबाट अझ छिटो र सक्रिय सुरक्षा। तपाईंलाई पासवर्डहरू चोरी हुन सक्ने सम्भावनाका बारेमा चेतावनी दिन्छ। ब्राउजिङ डेटा Google लाई पठाउनु पर्ने हुन्छ</translation>
 <translation id="6177442314419606057">Chrome मा खोज्नुहोस्</translation>
 <translation id="6184086493125982861">ट्याबहरू देखाउनुहोस्</translation>
 <translation id="6187302354554850004">पछिल्लोपटक सिंक भएको: <ph name="LAST_USED_TIME" /></translation>
@@ -768,6 +772,7 @@
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
 <translation id="7671141431838911305">स्थापना गर्नुहोस्</translation>
 <translation id="7701040980221191251">कुनै पनि होइन</translation>
+<translation id="7726702057919861819">मेनु → इतिहास → ब्राउजिङ डेटा मेटाउनुहोस्</translation>
 <translation id="7741325291586284254">इन्कोग्निटो ट्याबसम्बन्धी नयाँ पेज</translation>
 <translation id="7765158879357617694">सार्नुहोस्</translation>
 <translation id="7772032839648071052">पासफ्रेज पक्का</translation>
@@ -840,6 +845,7 @@
 <translation id="8386068868580335421">रिसेट गर्नुहोस्</translation>
 <translation id="8407669440184693619">यो साइटका लागि कुनै पनि पासवर्ड फेला परेन</translation>
 <translation id="842017693807136194">निम्न प्रमाणमार्फत साइन इन ...</translation>
+<translation id="8427613705947111202">मेनु → सेटिङहरू → पासवर्ड</translation>
 <translation id="8428045167754449968">गाउँ / टोल</translation>
 <translation id="8428213095426709021">सेटिङहरू</translation>
 <translation id="8428634594422941299">बुझेँ</translation>
@@ -867,7 +873,7 @@
 <translation id="8620640915598389714">सम्पादन गर्नुहोस्</translation>
 <translation id="8626393685701737946">तपाईं "सेटिङ &gt; सामग्रीसम्बन्धी सेटिङ" मा गई डिफल्ट साइट भ्यू बदलेर डेस्कटप बनाउन सक्नुहुन्छ</translation>
 <translation id="863090005774946393">तपाईंको सङ्गठनले तपाईंको ब्राउजर व्यवस्थापन गर्छ। केही सुविधाहरू अफ गरिएका हुन सक्छन्।</translation>
-<translation id="8636825310635137004">आफ्ना अन्य यन्त्रहरूबाट आफ्ना ट्याबहरू प्राप्त गर्न सिंकलाई सक्रिय गर्नुहोस्।</translation>
+<translation id="8636825310635137004">आफ्ना अन्य यन्त्रहरूबाट आफ्ना ट्याबहरू प्राप्त गर्न सिंकलाई अन गर्नुहोस्।</translation>
 <translation id="8654802032646794042">रद्द गर्नुहोस्</translation>
 <translation id="8668210798914567634">यस पृष्ठलाई तपाईंको पाठ्य सूचीमा सुरक्षित गरिएको छ।</translation>
 <translation id="8680787084697685621">खाता साइन-इन विवरणहरूको समय समाप्त भएको छ।</translation>
@@ -914,7 +920,7 @@
 <translation id="9079935439869366234">नपढिएका भनी सबैलाई चिन्ह लगाउनुहोस्</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> को पासवर्ड अद्यावधिक गर्ने हो?</translation>
 <translation id="9083392325882095631">1 वस्तुु</translation>
-<translation id="9083838294503912307">यन्त्रहरूभरि सिंक र पर्सनलाइज गर्न सिंक सुविधा सक्रिय गर्नुहोस्।</translation>
+<translation id="9083838294503912307">यन्त्रहरूभरि सिंक र पर्सनलाइज गर्न सिंक सुविधा अन गर्नुहोस्।</translation>
 <translation id="9087108903408689779">Chrome ले सिफारिस गरेको पासवर्ड:</translation>
 <translation id="9094033019050270033">पासवर्ड अपडेट गर्नुहोस्</translation>
 <translation id="9100610230175265781">पासफ्रेज आवश्यक छ</translation>

@@ -114,7 +114,6 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: 다시 시도</translation>
 <translation id="2161394479394250669">인쇄 작업 취소</translation>
 <translation id="2180197493692062006">문제가 발생했습니다. 앱을 다시 열어 보세요.</translation>
-<translation id="2201770616342964496">로컬 ID</translation>
 <translation id="2209788852729124853">트래픽 카운터 재설정</translation>
 <translation id="2212733584906323460">이름 결정</translation>
 <translation id="2217935453350629363">현재 속도</translation>
@@ -262,6 +261,7 @@
 <translation id="4170180284036919717">사진 찍기</translation>
 <translation id="4170700058716978431">실패</translation>
 <translation id="4176463684765177261">사용 중지됨</translation>
+<translation id="4176659219503619100">제어판</translation>
 <translation id="4213104098953699324">USB 키보드</translation>
 <translation id="4227825898293920515">비밀번호가 <ph name="TIME" /> 후에 만료됨</translation>
 <translation id="4238516577297848345">진행 중인 인쇄 작업 없음</translation>
@@ -305,7 +305,6 @@
 <translation id="4593212453765072419">프록시 인증이 필요합니다.</translation>
 <translation id="4609350030397390689">키보드 밝기 낮추기</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> 인쇄 작업을 취소하려면 Enter를 누릅니다.</translation>
-<translation id="4627645661474370390">원격 ID</translation>
 <translation id="463791356324567266">스캔 취소 중…</translation>
 <translation id="4646949265910132906">보안 Wi-Fi 연결</translation>
 <translation id="4650608062294027130">오른쪽 시프트</translation>
@@ -432,6 +431,7 @@
 <translation id="5866840822086176774">매우 강함</translation>
 <translation id="588258955323874662">전체화면</translation>
 <translation id="5895138241574237353">다시 시작</translation>
+<translation id="5903200662178656908">기기가 키보드와 마우스의 조합입니다.</translation>
 <translation id="5916084858004523819">금지됨</translation>
 <translation id="5916664084637901428">사용</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{파일 스캔이 완료되어 <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />에 저장되었습니다.}other{파일 스캔이 완료되어 <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />에 저장되었습니다.}}</translation>
@@ -452,6 +452,7 @@
 <translation id="6104112872696127344">스캔이 취소되었습니다.</translation>
 <translation id="6106186594183574873">완료하려면 이전 비밀번호를 입력하세요.</translation>
 <translation id="6108689792487843350">게이트웨이에 연결할 수 없습니다.</translation>
+<translation id="6112878310391905610">관리자가 관리하는 설정입니다.</translation>
 <translation id="6113701710518389813">위쪽 화살표</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, <ph name="NUMBER" />개 앨범 더 보기</translation>
 <translation id="6122191549521593678">온라인</translation>

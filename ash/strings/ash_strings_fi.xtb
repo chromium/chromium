@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Bluetooth-laite <ph name="DEVICE_NAME" /> pyytää lupaa laiteparin muodostamiseen. Anna tämä PIN-koodi kyseisellä laitteella: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">Ruutukaappausvideon työkalut</translation>
 <translation id="1024261588257374085">Osittainen kuvakaappaus valittu</translation>
+<translation id="1024364763893396229">Tallenna <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Näyttökynän akku on vähissä</translation>
 <translation id="1036073649888683237">Jos haluat muuttaa ilmoitusasetuksia, avaa Asetukset</translation>
 <translation id="1036672894875463507">Olen Google Assistant. Autan sinua pitkin päivää.
@@ -166,6 +167,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">Näytön tallennus valmis</translation>
 <translation id="1957958912175573503">Määritä kieli</translation>
+<translation id="1961239773406905488">Kameran esikatselu piilotettu</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Näytönlukitus</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -183,6 +185,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2047639699071423250">Lisää pääidea</translation>
 <translation id="2049240716062114887">Työpöydän nimeksi muutettiin <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Pystysuunta</translation>
+<translation id="2064048859448024834">Kameran esikatselu päällä</translation>
 <translation id="2066708475850724665">Sulje suurennus</translation>
 <translation id="2067602449040652523">Näppäimistön kirkkaus</translation>
 <translation id="2078034614700056995">Siirry seuraavaan työpöytään pyyhkäisemällä oikealle neljällä sormella</translation>
@@ -292,6 +295,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2819276065543622893">Sinut kirjataan ulos nyt.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> ei tue resoluutiota <ph name="SPECIFIED_RESOLUTION" />. Resoluutioksi vaihdettiin <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Hylly</translation>
+<translation id="2831035692318564937">Päällä auringonnousuun asti</translation>
 <translation id="2834813915651407382">Avattu hiljattain</translation>
 <translation id="2841907151129139818">Siirrytty tablettitilaan</translation>
 <translation id="2844169650293029770">C-tyypin USB-laite (vasemman sivun etummainen portti)</translation>
@@ -438,6 +442,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3626281679859535460">Kirkkaus</translation>
 <translation id="3630697955794050612">poissa päältä</translation>
 <translation id="3631369015426612114">Salli ilmoitukset seuraavista:</translation>
+<translation id="3633097874324966332">Avaa Bluetooth-asetukset ja muodosta laitepari</translation>
 <translation id="3638400994746983214">Näytönsuoja päälle/pois. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Päivitys myöhässä</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> ylläpidetty käyttäjä</translation>
@@ -485,6 +490,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Päivitä laite aiempaan versioon 1 minuutin kuluessa}other{Päivitä laite aiempaan versioon # minuutin kuluessa}}</translation>
 <translation id="3923494859158167397">Mobiiliverkkoja ei luotu</translation>
 <translation id="3932043219784172185">Ei yhdistettyjä laitteita</translation>
+<translation id="3934456833412894880">Mukautuva lataus on päällä. Akun varaus pysyy 80 %:ssa akunkeston pidentämiseksi. Akku ladataan täyteen tarvittaessa.</translation>
 <translation id="3943857333388298514">Liitä</translation>
 <translation id="394485226368336402">Ääniasetukset</translation>
 <translation id="3945319193631853098">Viimeistele käyttöönotto napauttamalla</translation>
@@ -765,6 +771,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="5744083938413354016">Napauttamalla vetäminen</translation>
 <translation id="5745612484876805746">Yövalo käynnistyy automaattisesti, kun aurinko laskee</translation>
 <translation id="5750765938512549687">Bluetooth on pois päältä</translation>
+<translation id="5760866832697883462">Yhdistä <ph name="NAME" /></translation>
 <translation id="576341972084747908">Lataa vaarallinen <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Hyllyryhmä on pois päältä.</translation>
 <translation id="576453121877257266">Yövalo on päällä.</translation>
@@ -950,6 +957,7 @@ Uusi asennus</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> voi toimia huonommin. Käytä sertifioitua USB-C-virtalähdettä, jonka teho on vähintään <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="688631446150864480">Vaihda ikkunaa painamalla alanuolta</translation>
 <translation id="6896758677409633944">Kopioi</translation>
+<translation id="6901883536534621389">Kokeile navigoida eleillä</translation>
 <translation id="6919251195245069855">Älykorttia ei tunnistettu. Yritä uudelleen.</translation>
 <translation id="6921188888306725546">Pikanäppäimiä on parannettu</translation>
 <translation id="6931576957638141829">Tallennuspaikka:</translation>
@@ -1126,6 +1134,7 @@ Uusi asennus</translation>
 <translation id="7977927628060636163">Haetaan mobiiliverkkoja…</translation>
 <translation id="7982789257301363584">Verkko</translation>
 <translation id="7984197416080286869">Liian monta sormenjälkiyritystä</translation>
+<translation id="798779949890829624">Järjestelmänvalvojasi ylläpitää tätä asetusta</translation>
 <translation id="7994370417837006925">Kirjautuminen useaan tiliin</translation>
 <translation id="7995804128062002838">Kuvakaappaus epäonnistui</translation>
 <translation id="8000066093800657092">Ei verkkoa</translation>
@@ -1153,6 +1162,7 @@ Uusi asennus</translation>
 <translation id="813913629614996137">Käynnistetään…</translation>
 <translation id="8142441511840089262">Kaksoisklikkaus</translation>
 <translation id="8142699993796781067">Yksityinen verkko</translation>
+<translation id="8144760705599030999">Tallenna <ph name="NAME" /> tilille <ph name="EMAIL" />, jotta laiteparin muodostaminen muiden laitteidesi kanssa sujuu nopeammin</translation>
 <translation id="8152092012181020186">Sulje painamalla Ctrl + W.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automaattinen täydennys</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Järjestelmänvalvojasi ylläpitää tätä asetusta.</translation>
@@ -1190,6 +1200,7 @@ Uusi asennus</translation>
 <translation id="8412677897383510995">Näytä näyttöasetukset</translation>
 <translation id="8413272770729657668">Tallennus alkaa: 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (kotelo)</translation>
+<translation id="8420205633584771378">Poistetaanko tämä ehdotus?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> puuttuu laitteelta.</translation>
 <translation id="8425213833346101688">Vaihda</translation>
 <translation id="8426708595819210923">Hyvää iltaa <ph name="GIVEN_NAME" /></translation>
@@ -1282,6 +1293,7 @@ Uusi asennus</translation>
 <translation id="9000771174482730261">HALLINNOI TALLENNUSTILAA</translation>
 <translation id="9017320285115481645">Syötä vanhemman Family Link ‑käyttökoodi</translation>
 <translation id="9024331582947483881">koko näyttö</translation>
+<translation id="9030319654231318877">Pois päältä auringonlaskuun asti</translation>
 <translation id="9034924485347205037">Linux-tiedostot</translation>
 <translation id="9047624247355796468">Avaa asetukset: <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Tiivistä ilmoitus</translation>
@@ -1301,6 +1313,7 @@ Uusi asennus</translation>
 <translation id="9099154003160514616">Lacros-päivitys saatavilla</translation>
 <translation id="9100887602489003640">Lisätään profiilia. Odota muutama minuutti.</translation>
 <translation id="9105450214093926548">Toisen käyttäjän sisäänkirjaamista ei tueta, kun Lacros-selain on käynnissä. Käytä toista selainprofiilia Lacrosissa tai sulje Lacros ja yritä uudelleen.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> tai <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Suojattua sisältöä ei voi kuvata</translation>
 <translation id="9161053988251441839">SOVELLUSEHDOTUKSET</translation>
 <translation id="9166331175924255663">Laita lähijakamisen näkyvyys päälle/pois.</translation>

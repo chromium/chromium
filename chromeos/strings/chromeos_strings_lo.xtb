@@ -114,7 +114,6 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ລອງໃໝ່</translation>
 <translation id="2161394479394250669">ຍົກເລີກວຽກພິມ</translation>
 <translation id="2180197493692062006">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ກະລຸນາລອງເປີດແອັບຄືນໃໝ່.</translation>
-<translation id="2201770616342964496">ຂໍ້ມູນປະຈຳຕົວໃນເຄື່ອງ</translation>
 <translation id="2209788852729124853">ຣີເຊັດຕົວນັບທຣາບຟິກ</translation>
 <translation id="2212733584906323460">ການຈຳແນກຊື່</translation>
 <translation id="2217935453350629363">ຄວາມໄວປັດຈຸບັນ</translation>
@@ -262,6 +261,7 @@
 <translation id="4170180284036919717">ຖ່າຍຮູບ</translation>
 <translation id="4170700058716978431">ບໍ່ສຳເລັດ</translation>
 <translation id="4176463684765177261">ປິດໃຊ້ງານແລ້ວ</translation>
+<translation id="4176659219503619100">ແຜງຄວບຄຸມ</translation>
 <translation id="4213104098953699324">ແປ້ນພິມ USB</translation>
 <translation id="4227825898293920515">ລະຫັດຜ່ານໝົດອາຍຸໃນ <ph name="TIME" /></translation>
 <translation id="4238516577297848345">ບໍ່ມີວຽກການພິມທີ່ພວມດຳເນີນຢູ່</translation>
@@ -305,7 +305,6 @@
 <translation id="4593212453765072419">ຈຳເປັນຕ້ອງພິສູດຢືນຢັນພຣັອກຊີ</translation>
 <translation id="4609350030397390689">ແປ້ນພິມຫຼຸດຄວາມສະຫວ່າງ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> ຈາກທັງໝົດ <ph name="TOTAL_PAGE_NUMBER" />. ກົດ Enter ເພື່ອຍົກເລີກວຽກພິມ.</translation>
-<translation id="4627645661474370390">ຂໍ້ມູນປະຈຳຕົວໄລຍະໄກ</translation>
 <translation id="463791356324567266">ກຳລັງຍົກເລີກການສະແກນ...</translation>
 <translation id="4646949265910132906">ການເຊື່ອມຕໍ່ WiFi ທີ່ປອດໄພ</translation>
 <translation id="4650608062294027130">Shift ຂວາ</translation>

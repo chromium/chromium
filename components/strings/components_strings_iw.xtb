@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">תוקפים שמחקים אתרים לפעמים משתמשים בכתובת האינטרנט של האתר המקורי, ועושים בה שינויים שקשה להבחין בהם.</translation>
 <translation id="1028781062521375153">לפרטים</translation>
 <translation id="1030706264415084469"><ph name="URL" /> רוצה לאחסן באופן קבוע כמות גדולה של נתונים במכשיר שלך</translation>
-<translation id="1032854598605920125">סיבוב בכיוון השעון</translation>
 <translation id="1033329911862281889">המצב הפרטי לא מסתיר אותך לגמרי באינטרנט:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />אתרים והשירותים שבהם נעשה שימוש יודעים שביקרת בהם<ph name="END_LIST_ITEM" />
@@ -2538,6 +2537,7 @@ Del</translation>
 <translation id="7995512525968007366">לא צוין</translation>
 <translation id="7998269595945679889">‏לחצן לפתיחת כרטיסייה פרטית, צריך להקיש על Enter כדי לפתוח כרטיסייה פרטית חדשה ולגלוש באופן פרטי</translation>
 <translation id="800218591365569300">מומלץ לסגור כרטיסיות או תוכניות אחרות וכך לפנות מקום בזיכרון.</translation>
+<translation id="8003046808285812021">'<ph name="SEARCH_TERMS" />'</translation>
 <translation id="8004582292198964060">דפדפן</translation>
 <translation id="8009225694047762179">ניהול סיסמאות</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{הכרטיס הזה יישמר יחד עם הכתובת שלו לחיוב. יתאפשר לך להשתמש בו לאחר התחברות אל <ph name="USER_EMAIL" />.}two{הכרטיסים האלה יישמרו יחד עם הכתובות שלהם לחיוב. יתאפשר לך להשתמש בהם לאחר התחברות אל <ph name="USER_EMAIL" />.}many{הכרטיסים האלה יישמרו יחד עם הכתובות שלהם לחיוב. יתאפשר לך להשתמש בהם לאחר התחברות אל <ph name="USER_EMAIL" />.}other{הכרטיסים האלה יישמרו יחד עם הכתובות שלהם לחיוב. יתאפשר לך להשתמש בהם לאחר התחברות אל <ph name="USER_EMAIL" />.}}</translation>
@@ -2638,6 +2638,7 @@ Del</translation>
 <translation id="8277900682056760511">טופס פרטי התשלום פתוח</translation>
 <translation id="8280630997017109758">מגש 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
+<translation id="8281886186245836920">דילוג</translation>
 <translation id="8282947398454257691">ידיעת המזהה הייחודי של המכשיר</translation>
 <translation id="8284769179630993263">‏ניתן לנהל את הגלישה הבטוחה ועוד בהגדרות Chrome</translation>
 <translation id="8286036467436129157">כניסה</translation>

@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">Stundum herma tölvuþrjótar eftir vefsvæðum með því að gera illgreinanlegar breytingar á vefslóðinni.</translation>
 <translation id="1028781062521375153">Sjá upplýsingar</translation>
 <translation id="1030706264415084469"><ph name="URL" /> vill fá að geyma mikið magn gagna varanlega í tækinu þínu</translation>
-<translation id="1032854598605920125">Snúa réttsælis</translation>
 <translation id="1033329911862281889">Huliðsstilling gerir þig ekki ósýnilega(n) á netinu:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Vefsvæði og þjónusturnar sem þau nota fá upplýsingar um heimsóknir<ph name="END_LIST_ITEM" />
@@ -2535,6 +2534,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7995512525968007366">Ekki tilgreint</translation>
 <translation id="7998269595945679889">Hnappurinn „Opna huliðsglugga“, ýttu á Enter til að opna nýjan huliðsglugga og fara huldu höfði</translation>
 <translation id="800218591365569300">Prófaðu að loka öðrum forritum til að losa um minni.</translation>
+<translation id="8003046808285812021">„<ph name="SEARCH_TERMS" />“</translation>
 <translation id="8004582292198964060">Vafri</translation>
 <translation id="8009225694047762179">Stjórna aðgangsorðum</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Þetta kort og heimilisfang greiðanda verða vistuð. Þú getur notað kortið þegar þú hefur skráð þig inn á <ph name="USER_EMAIL" />.}one{Þessi kort og heimilisföng greiðanda verða vistuð. Þú getur notað kortin þegar þú hefur skráð þig inn á <ph name="USER_EMAIL" />.}other{Þessi kort og heimilisföng greiðanda verða vistuð. Þú getur notað kortin þegar þú hefur skráð þig inn á <ph name="USER_EMAIL" />.}}</translation>
@@ -2635,6 +2635,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8277900682056760511">Greiðsluhjálparforrit er opið</translation>
 <translation id="8280630997017109758">Bakki 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
+<translation id="8281886186245836920">Sleppa</translation>
 <translation id="8282947398454257691">Komast að einkvæmu auðkenni tækisins</translation>
 <translation id="8284769179630993263">Stjórnaðu öruggri vefskoðun og fleiru í stillingum Chrome</translation>
 <translation id="8286036467436129157">Skrá inn</translation>

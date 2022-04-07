@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">Hackere efterligner nogle gange websites ved at foretage små ændringer af webadressen, som er svære at se.</translation>
 <translation id="1028781062521375153">Få flere oplysninger</translation>
 <translation id="1030706264415084469"><ph name="URL" /> anmoder om at gemme store datamængder permanent på din enhed</translation>
-<translation id="1032854598605920125">Rotér med uret</translation>
 <translation id="1033329911862281889">Inkognitotilstand gør dig ikke usynlig på nettet:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Websites og de tjenester, de anvender, kan se besøg<ph name="END_LIST_ITEM" />
@@ -2535,6 +2534,7 @@ Yderligere oplysninger:
 <translation id="7995512525968007366">Ikke angivet</translation>
 <translation id="7998269595945679889">Knappen Åbn inkognitofane – tryk på Enter for at åbne en ny inkognitofane, så du kan browse privat</translation>
 <translation id="800218591365569300">Prøv at lukke andre faner eller programmer for at frigøre hukommelse.</translation>
+<translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8009225694047762179">Administrer adgangskoder</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Kortet og faktureringsadressen gemmes. Du kan bruge dem, når du er logget ind på <ph name="USER_EMAIL" />.}one{Kortet og faktureringsadressen gemmes. Du kan bruge dem, når du er logget ind på <ph name="USER_EMAIL" />.}other{Kortene og faktureringsadresserne gemmes. Du kan bruge dem, når du er logget ind på <ph name="USER_EMAIL" />.}}</translation>
@@ -2635,6 +2635,7 @@ Yderligere oplysninger:
 <translation id="8277900682056760511">Regnearket for betalinghandler er åbnet</translation>
 <translation id="8280630997017109758">Bakke 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
+<translation id="8281886186245836920">Spring over</translation>
 <translation id="8282947398454257691">Kende dit unikke enheds-id</translation>
 <translation id="8284769179630993263">Administrer Beskyttet browsing m.m. i Chrome-indstillingerne</translation>
 <translation id="8286036467436129157">Log ind</translation>

@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Устройству <ph name="DEVICE_NAME" /> требуется разрешение на подключение через Bluetooth. Введите на нем PIN-код: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">Инструменты для скринкастинга</translation>
 <translation id="1024261588257374085">Выбран режим "Снимок части экрана"</translation>
+<translation id="1024364763893396229">Сохраните <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Батарея стилуса почти разряжена</translation>
 <translation id="1036073649888683237">Чтобы управлять уведомлениями, откройте настройки</translation>
 <translation id="1036672894875463507">Я ваш Google Ассистент. Я могу помогать вам в течение всего дня.
@@ -35,6 +36,7 @@
 <translation id="1175572348579024023">Прокрутка</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Удалить</translation>
+<translation id="1183863904939664422">Эта подсказка мне неинтересна</translation>
 <translation id="118437560755358292">Для дополнительной безопасности введите пароль или PIN-код.</translation>
 <translation id="118532027333893379">Чтобы снять экран полностью, нажмите в любом его месте</translation>
 <translation id="1190609913194133056">Центр уведомлений</translation>
@@ -167,6 +169,7 @@
 <translation id="1951012854035635156">Ассистент</translation>
 <translation id="1954252331066828794">Запись видео с экрана завершена</translation>
 <translation id="1957958912175573503">Выберите язык</translation>
+<translation id="1961239773406905488">Предварительный просмотр для камеры выключен</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Блокировать экран</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -184,6 +187,7 @@
 <translation id="2047639699071423250">Добавить основную идею</translation>
 <translation id="2049240716062114887">Название рабочего стола изменилось на "<ph name="DESK_NAME" />"</translation>
 <translation id="2050339315714019657">Вертикальное расположение</translation>
+<translation id="2064048859448024834">Предварительный просмотр для камеры включен</translation>
 <translation id="2066708475850724665">Выключить лупу</translation>
 <translation id="2067602449040652523">Яркость клавиатуры</translation>
 <translation id="2078034614700056995">Чтобы перейти на следующий рабочий стол, проведите четырьмя пальцами вправо.</translation>
@@ -439,6 +443,7 @@
 <translation id="3626281679859535460">Яркость</translation>
 <translation id="3630697955794050612">выключена</translation>
 <translation id="3631369015426612114">Разрешить уведомления из следующих источников</translation>
+<translation id="3633097874324966332">Чтобы подключить устройство, откройте настройки Bluetooth.</translation>
 <translation id="3638400994746983214">Включить или отключить экран конфиденциальности. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Нужно обновить ПО</translation>
 <translation id="366222428570480733">Управляемый пользователь <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -486,6 +491,7 @@
 <translation id="3922427723338465344">{0,plural, =1{Вернитесь к предыдущей версии ОС в течение 1 минуты}one{Вернитесь к предыдущей версии ОС в течение # минуты}few{Вернитесь к предыдущей версии ОС в течение # минут}many{Вернитесь к предыдущей версии ОС в течение # минут}other{Вернитесь к предыдущей версии ОС в течение # минуты}}</translation>
 <translation id="3923494859158167397">Нет настроенных мобильных сетей</translation>
 <translation id="3932043219784172185">Нет подключенных устройств</translation>
+<translation id="3934456833412894880">Адаптивная зарядка включена. Чтобы продлить срок службы батареи, заряд будет доводиться до уровня 80 % и удерживаться на нем. Полностью батарея будет заряжаться, только когда это необходимо.</translation>
 <translation id="3943857333388298514">Вставить</translation>
 <translation id="394485226368336402">Настройки звука</translation>
 <translation id="3945319193631853098">Нажмите, чтобы завершить настройку.</translation>
@@ -591,6 +597,7 @@
 <translation id="4560576029703263363">Включено</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Скрыть пароль</translation>
+<translation id="4566144812051858745">Мне неинтересны эти подсказки</translation>
 <translation id="4570957409596482333">Кнопка "Озвучивание при нажатии"</translation>
 <translation id="4573176682887762361">"Напечатать [слово или фраза]"</translation>
 <translation id="4577274620589681794">Время истекло · <ph name="LABEL" /></translation>
@@ -641,6 +648,7 @@
 <translation id="4868492592575313542">включила</translation>
 <translation id="4872237917498892622">Alt + Search или Shift</translation>
 <translation id="4881695831933465202">Открыть</translation>
+<translation id="4889868803215848840">Оставьте отзыв и помогите нам улучшить подсказки:</translation>
 <translation id="4890187583552566966">Администратор отключил Google Ассистента</translation>
 <translation id="4890408602550914571">Убедитесь, что телефон находится рядом и на нем включена передача данных по Bluetooth.</translation>
 <translation id="4895488851634969361">Батарея полностью заряжена.</translation>
@@ -766,6 +774,7 @@
 <translation id="5744083938413354016">Перетаскивание нажатием</translation>
 <translation id="5745612484876805746">Ночная подсветка включается автоматически на закате</translation>
 <translation id="5750765938512549687">Bluetooth выключен</translation>
+<translation id="5760866832697883462">Подключите <ph name="NAME" /></translation>
 <translation id="576341972084747908">Скачивание опасного файла <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Режим отключен.</translation>
 <translation id="576453121877257266">Ночная подсветка включена</translation>
@@ -827,6 +836,7 @@
 <translation id="6054305421211936131">Войти с помощью смарт-карты</translation>
 <translation id="6059276912018042191">Недавние вкладки в Chrome</translation>
 <translation id="6062360702481658777">Выход из системы будет выполнен автоматически через <ph name="LOGOUT_TIME_LEFT" />.</translation>
+<translation id="6064463340679478396">Я больше не использую этот файл</translation>
 <translation id="6073451960410192870">Остановить запись</translation>
 <translation id="6099678161144790572">Изменено за последний месяц</translation>
 <translation id="6103838137565245112">система</translation>
@@ -951,6 +961,7 @@
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> может работать неэффективно. Используйте сертифицированный адаптер питания USB-C на <ph name="PREFERRED_MINIMUM_POWER" /> Вт или выше.</translation>
 <translation id="688631446150864480">Чтобы перейти к другому окну, нажмите клавишу со стрелкой вниз</translation>
 <translation id="6896758677409633944">Копировать</translation>
+<translation id="6901883536534621389">Используйте жесты для навигации</translation>
 <translation id="6919251195245069855">Не удалось распознать смарт-карту. Повторите попытку.</translation>
 <translation id="6921188888306725546">Сочетания клавиш улучшены</translation>
 <translation id="6931576957638141829">Сохранить в</translation>
@@ -1110,6 +1121,7 @@
 <translation id="7886169021410746335">Изменять настройки конфиденциальности.</translation>
 <translation id="7886277072580235377">После выхода из аккаунта данные о ваших действиях в Интернете будут удалены. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Отправить письмо</translation>
+<translation id="7893503627044934815">Скрыть файл</translation>
 <translation id="7895348134893321514">Быстрый доступ</translation>
 <translation id="7897375687985782769">Вы нажали сочетание клавиш для поворота экрана. Выполнить это действие?</translation>
 <translation id="7901405293566323524">Интерфейс Phone Hub</translation>
@@ -1154,6 +1166,7 @@
 <translation id="813913629614996137">Инициализация...</translation>
 <translation id="8142441511840089262">Двойное нажатие кнопкой мыши</translation>
 <translation id="8142699993796781067">Частные сети</translation>
+<translation id="8144760705599030999">Для более быстрого подключения к другим своим устройствам добавьте <ph name="NAME" /> в аккаунт <ph name="EMAIL" />.</translation>
 <translation id="8152092012181020186">Нажмите Ctrl + W, чтобы закрыть вкладку.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, автозаполнение</translation>
 <translation id="8155007568264258537">Функцией "<ph name="FEATURE_NAME" />" управляет администратор.</translation>
@@ -1191,6 +1204,7 @@
 <translation id="8412677897383510995">Показать настройки экрана</translation>
 <translation id="8413272770729657668">До начала записи: 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (чехол)</translation>
+<translation id="8420205633584771378">Удалить эту подсказку?</translation>
 <translation id="8421270167862077762">Приложение "<ph name="UNAVAILABLE_APPS" />" не установлено на этом устройстве.</translation>
 <translation id="8425213833346101688">Изменить</translation>
 <translation id="8426708595819210923">Добрый вечер, <ph name="GIVEN_NAME" />!</translation>

@@ -114,7 +114,6 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Újra</translation>
 <translation id="2161394479394250669">Nyomtatási feladat megszakítása</translation>
 <translation id="2180197493692062006">Hiba történt. Próbálja meg újra megnyitni az alkalmazást.</translation>
-<translation id="2201770616342964496">Helyi identitás</translation>
 <translation id="2209788852729124853">Forgalomszámlálók visszaállítása</translation>
 <translation id="2212733584906323460">Névfeloldás</translation>
 <translation id="2217935453350629363">Jelenlegi sebesség</translation>
@@ -262,6 +261,7 @@
 <translation id="4170180284036919717">Fotó készítése</translation>
 <translation id="4170700058716978431">SIKERTELEN</translation>
 <translation id="4176463684765177261">Letiltva</translation>
+<translation id="4176659219503619100">Vezérlőpult</translation>
 <translation id="4213104098953699324">USB-billentyűzet</translation>
 <translation id="4227825898293920515">A jelszó <ph name="TIME" /> múlva lejár</translation>
 <translation id="4238516577297848345">Nincsenek folyamatban lévő nyomtatási feladatok</translation>
@@ -305,7 +305,6 @@
 <translation id="4593212453765072419">Proxyhitelesítés szükséges</translation>
 <translation id="4609350030397390689">Billentyűzet fényerejének csökkentése</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />. oldal az összesen <ph name="TOTAL_PAGE_NUMBER" /> oldalból A nyomtatási feladat törléséhez nyomja meg az Enter billentyűt.</translation>
-<translation id="4627645661474370390">Távoli identitás</translation>
 <translation id="463791356324567266">Beolvasás megszakítása…</translation>
 <translation id="4646949265910132906">Biztonságos Wi-Fi-kapcsolat</translation>
 <translation id="4650608062294027130">Jobb oldali Shift</translation>
@@ -432,6 +431,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="5866840822086176774">Nagyon erős</translation>
 <translation id="588258955323874662">Teljes képernyő</translation>
 <translation id="5895138241574237353">Újraindítás</translation>
+<translation id="5903200662178656908">Az eszközhöz billentyűzet és egér is tartozik.</translation>
 <translation id="5916084858004523819">Letiltva</translation>
 <translation id="5916664084637901428">Be</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Fájlját a rendszer sikeresen ellenőrizte, és a(z) <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> mappába mentette.}other{Fájljait a rendszer sikeresen ellenőrizte, és a(z) <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> mappába mentette.}}</translation>
@@ -452,6 +452,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6104112872696127344">Beolvasás megszakítva</translation>
 <translation id="6106186594183574873">A befejezéshez adja meg régi jelszavát</translation>
 <translation id="6108689792487843350">Az átjáró nem érhető el</translation>
+<translation id="6112878310391905610">Ezt a beállítást a rendszergazdák kezelik</translation>
 <translation id="6113701710518389813">Felfelé nyíl</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> és <ph name="NUMBER" /> további album</translation>
 <translation id="6122191549521593678">Online</translation>

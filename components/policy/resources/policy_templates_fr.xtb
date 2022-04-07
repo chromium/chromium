@@ -1159,6 +1159,13 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Si vous définissez <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> sur "1", seules les variantes considérées comme des correctifs essentiels de sécurité ou de stabilité peuvent être appliquées à <ph name="PRODUCT_OS_NAME" />.
 
       Si vous définissez <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> sur "2", aucune variante ne peut être appliquée au navigateur sur l'écran de connexion. Veuillez noter que ce mode n'est pas recommandé, car il est susceptible d'empêcher les développeurs <ph name="PRODUCT_OS_NAME" /> de fournir des correctifs de sécurité critiques en temps voulu.</translation>
+<translation id="2217931577484185673">Si cette règle est activée, la fonctionnalité de navigation sécurisée juge fiables les domaines que vous avez spécifiés. Autrement dit, elle ne vérifie pas si des ressources présentent un danger (hameçonnage, logiciels malveillants ou indésirables, par exemple). Le service de protection des téléchargements associé à cette fonctionnalité ne vérifie pas non plus les téléchargements hébergés sur ces domaines. De même, le service de protection par mot de passe ne vérifie pas si un mot de passe est réutilisé.
+
+      Si cette règle n'est pas configurée, la navigation sécurisée applique son service de protection par défaut à toutes les ressources.
+
+      Cette règle doit être définie sous la forme d'une liste de noms de domaine complets. Elle n'accepte pas les expressions régulières et n'autorise pas les sous-domaines des domaines indiqués dans la règle.
+
+      Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="2221779615493499989">Signale l'état du réseau des utilisateurs sur les appareils enregistrés.
 
       Si la règle est définie sur "False", ces infos ne seront pas transmises.
@@ -1960,6 +1967,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="3086995894968271156">Configurer le récepteur Cast dans <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3087346703976541109">Indique si SharedArrayBuffers peut être utilisé dans un contexte non isolé multi-origine</translation>
 <translation id="3088557424854005813">Attestation</translation>
+<translation id="3090283903269516279">Désactiver le modèle de recharge adaptative sur <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3091832372132789233">Recharge de la batterie des appareils connectés principalement à une source d'alimentation externe.</translation>
 <translation id="3092059499596000593">Définir l'imprimante système par défaut comme celle par défaut dans l'aperçu avant impression</translation>
 <translation id="309416443108680956">Indique ce qu'il se passe lorsqu'un utilisateur qui s'authentifie au moyen d'un jeton de sécurité (carte à puce, par exemple) retire ce jeton alors qu'il est connecté. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" /> : rien ne se passe. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> : l'écran se verrouille jusqu'à ce que l'utilisateur s'authentifie à nouveau. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" /> : la session prend fin, et l'utilisateur est déconnecté. Si cette règle n'est pas configurée, elle est définie par défaut sur <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />.</translation>
@@ -2473,6 +2481,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       * <ph name="PRINTERS_ALLOW_ALL" /> (valeur 2) affiche toutes les imprimantes
 
       Si cette règle n'est pas définie, <ph name="PRINTERS_ALLOW_ALL" /> est utilisé.</translation>
+<translation id="3695204334462456702">Destinations des protocoles basés sur Zeroconf (mDNS + DNS-SD) (obsolète)</translation>
 <translation id="3695706037816556327">Action lors du retrait du jeton de sécurité (carte à puce, par exemple) pour <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3700193037252896716">Fréquence de redémarrage prévue.</translation>
 <translation id="3700318587977845664">Fréquence de recherche des mises à jour.</translation>
@@ -2761,6 +2770,13 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Si cette règle est désactivée ou qu'elle n'est pas configurée, <ph name="PLUGIN_VM_NAME" /> n'est pas activé pour l'appareil.</translation>
 <translation id="3973371701361892765">Ne jamais masquer automatiquement l'étagère</translation>
 <translation id="3977304360459208438">Utiliser le paramètre par défaut pour les suites de chiffrement 3DES dans TLS</translation>
+<translation id="3978606026906763896">Si cette règle est désactivée, les fenêtres pop-up ciblant <ph name="BLANK_PAGE_NAME" /> pourront accéder (via JavaScript) à la page qui a demandé l'ouverture de la fenêtre pop-up.
+
+      Si cette règle est activée ou n'est pas configurée, la propriété <ph name="WINDOW_OPENER_PROPERTY" /> sera définie sur <ph name="NULL_VALUE" />, sauf si l'ancre indique <ph name="REL_OPENER_ATTRIBUTE" />.
+
+      Cette règle a été supprimée dans la version 102 de <ph name="PRODUCT_NAME" />.
+
+      Voir https://chromestatus.com/feature/6140064063029248.</translation>
 <translation id="3979738908158213640">URL autorisées à procéder à l'attestation de l'identité de l'appareil lors de l'authentification SAML</translation>
 <translation id="3984028218719007910">Détermine si <ph name="PRODUCT_OS_NAME" /> doit conserver les données locales des comptes après la déconnexion. Si cette règle est définie sur "true", aucun compte persistant n'est conservé par <ph name="PRODUCT_OS_NAME" />. Par ailleurs, toutes les données de la session utilisateur sont supprimées après la déconnexion. Si cette règle est définie sur "false" ou si elle n'est pas configurée, l'appareil peut conserver des données utilisateur locales (chiffrées).</translation>
 <translation id="398884292557092447">Si cette règle est définie sur "True" ou qu'elle n'est pas configurée, les utilisateurs peuvent contrôler les suggestions de saisie automatique pour les cartes de crédit dans l'interface utilisateur.
@@ -3754,6 +3770,27 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, le mode bureau unifié est désactivé, et les utilisateurs ne peuvent pas l'activer.</translation>
 <translation id="5255162913209987122">Peut être recommandée</translation>
 <translation id="5257395339965216304">Données des applications hébergées</translation>
+<translation id="5263649486910778308">Cette règle permet de remplacer la liste des ensembles que le navigateur utilise pour les fonctionnalités liées aux ensembles propriétaires.
+
+      Chaque ensemble figurant dans la liste des ensembles propriétaires du navigateur doit respecter les exigences liées aux ensembles propriétaires.
+      Un ensemble propriétaire se compose d'un propriétaire et d'un ou plusieurs sites membres. Tous les sites d'un tel ensemble doivent être
+      des domaines enregistrables diffusés sur HTTPS, qu'il s'agisse de propriétaires ou de sites membres.
+      Chaque site d'un ensemble propriétaire doit également être unique. Cela signifie qu'un site ne peut pas être à la fois un propriétaire et un membre,
+      ni être listé plusieurs fois en tant que membre d'un ensemble propriétaire.
+      Pour en savoir plus sur les ensembles propriétaires, consultez la page https://github.com/privacycg/first-party-sets.
+
+      Lorsqu'un dictionnaire vide est attribué à cette règle, le navigateur utilise la liste publique des ensembles propriétaires.
+
+      Pour tous les sites appartenant à un ensemble propriétaire de la liste <ph name="REPLACEMENTS" /> : si un site apparaît également dans un ensemble propriétaire de la liste du navigateur, il sera supprimé de l'ensemble propriétaire du navigateur.
+      L'ensemble propriétaire de la règle sera alors ajouté à la liste des ensembles propriétaires du navigateur.
+
+      Pour tous les sites appartenant à un ensemble propriétaire de la liste <ph name="ADDITIONS" /> : si un site apparaît également dans un ensemble propriétaire de la liste du navigateur, l'ensemble propriétaire du navigateur est alors mis à jour afin de pouvoir ajouter le nouvel ensemble propriétaire à la liste du navigateur. Lorsque la liste du navigateur a été actualisée, l'ensemble propriétaire de la règle est alors ajouté à la liste des ensembles propriétaires du navigateur.
+
+      La liste des ensembles propriétaires du navigateur impose qu'aucun site qui y figure ne se trouve dans plusieurs ensembles. Cette condition est également requise pour la liste <ph name="REPLACEMENTS" /> et la liste <ph name="ADDITIONS" />. De la même manière, un site ne peut pas figurer à la fois sur la liste <ph name="REPLACEMENTS" /> et la liste <ph name="ADDITIONS" />.
+
+      Le caractère générique (*) ne peut pas être utilisé comme valeur de la règle, ni dans aucun ensemble propriétaire de ces listes.
+
+      Tous les ensembles fournis par cette règle doivent être des ensembles propriétaires valides. Si ce n'est pas le cas, une erreur est renvoyée.</translation>
 <translation id="5266173014392157048">Cette règle est obsolète (veuillez utiliser la règle "<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />" à la place).
 
       Elle permet de spécifier les serveurs que <ph name="PRODUCT_NAME" /> est susceptible d'utiliser. Séparez les noms des serveurs par une virgule. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.
@@ -4251,6 +4288,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="5815990343032461023">Ancien comportement : les applis Chrome Kiosk sont mises à jour par le système d'extension en utilisant l'URL de mise à jour issue du fichier manifeste d'extension, et en mettant en cache le gestionnaire au moyen de l'URL de mise à jour provenant de la règle</translation>
 <translation id="582857022372205358">Activer l'impression recto verso bord court</translation>
 <translation id="5830196507442186669">Autoriser les appareils à utiliser <ph name="BOREALIS_NAME" /> sur <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="5831286647961890695">Activer le modèle de recharge adaptative sur <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="5832274826894536455">Règles obsolètes</translation>
 <translation id="5835253272509953988">Si cette règle est activée, les utilisateurs peuvent faire en sorte que <ph name="PRODUCT_NAME" /> contrôle si les noms d'utilisateur et les mots de passe saisis ont fait l'objet d'une fuite.
 
@@ -6273,6 +6311,7 @@ Si ce paramètre est désactivé et que les connexions UDP sortantes sont filtr�
 
       Le champ <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indique la quantité minimale de données en octets à partir de laquelle le format est vérifié. Autrement dit, l'écriture dans le presse-papiers sur une URL bloquée serait autorisée si la taille des données copiées est inférieure à la valeur indiquée dans ce champ. Si ce champ n'est pas renseigné, la valeur par défaut est de 100 octets.
       </translation>
+<translation id="8035570672225663428">Activez le modèle de recharge adaptative pour suspendre le processus de charge et allonger la durée de vie de la batterie.</translation>
 <translation id="8044493735196713914">Indiquer le mode de démarrage de l'appareil</translation>
 <translation id="80453040817068401">Rendre le navigateur <ph name="LACROS_NAME" /> disponible</translation>
 <translation id="804619600634661088">Autoriser l'utilisation du débogage à distance</translation>
@@ -6310,6 +6349,10 @@ Si ce paramètre est désactivé et que les connexions UDP sortantes sont filtr�
 <translation id="8099880303030573137">Délai d'inactivité (batterie)</translation>
 <translation id="8101381354936029836">Groupe atomique de la règle :</translation>
 <translation id="8102913158860568230">Paramètre MediaStream par défaut</translation>
+<translation id="8103563905615378194">Indique si un modèle de recharge adaptative est autorisé pour suspendre le processus de charge et allonger la durée de vie de la batterie.
+
+      Lorsque l'appareil est branché sur le secteur, le modèle de recharge adaptative évalue la nécessité de suspendre le processus de charge pour allonger la durée de vie de la batterie. Si le modèle de recharge adaptative suspend le processus de charge, il maintient la batterie à un certain niveau (par ex. 80 %), puis il la charge à 100 % lorsque l'utilisateur en a besoin.
+      Si cette règle est définie sur "True" ou si elle n'est pas définie, le modèle de recharge adaptative sera activé et autorisé à suspendre le processus de charge pour allonger la durée de vie de la batterie. Si cette règle est configurée sur "False", le modèle de recharge adaptative sera sans effet sur le processus de charge.</translation>
 <translation id="8104962233214241919">Sélectionner automatiquement des certificats client pour ces sites</translation>
 <translation id="8114382167597081590">Ne pas appliquer le mode restreint sur YouTube</translation>
 <translation id="8117921351531866504">Permet de définir si les sites Web sont autorisés à vérifier si l'utilisateur a enregistré des modes de paiement.

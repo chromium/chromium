@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">Noen ganger etterligner angripere nettsteder ved å gjøre endringer i nettadressen som er vanskelige å se.</translation>
 <translation id="1028781062521375153">Se detaljer</translation>
 <translation id="1030706264415084469"><ph name="URL" /> ber om å lagre store datamengder permanent på enheten din</translation>
-<translation id="1032854598605920125">Rotér med klokken</translation>
 <translation id="1033329911862281889">Inkognito gjør deg ikke usynlig på nettet:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Nettsteder og tjenestene de bruker, kan se når du besøker dem<ph name="END_LIST_ITEM" />
@@ -2635,6 +2634,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8277900682056760511">Arket for betalingsbehandling er åpnet</translation>
 <translation id="8280630997017109758">Skuff 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
+<translation id="8281886186245836920">Hopp over</translation>
 <translation id="8282947398454257691">få kjennskap til den unike enhetsidentifikatoren</translation>
 <translation id="8284769179630993263">Administrer Safe Browsing med mer i Chrome-innstillingene</translation>
 <translation id="8286036467436129157">Logg på</translation>

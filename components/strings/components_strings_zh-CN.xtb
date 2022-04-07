@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">攻击者有时会对网址做些令人难以察觉的更改来仿冒网站。</translation>
 <translation id="1028781062521375153">查看详情</translation>
 <translation id="1030706264415084469"><ph name="URL" /> 想在您的设备上永久存储大量数据</translation>
-<translation id="1032854598605920125">顺时针旋转</translation>
 <translation id="1033329911862281889">无痕模式无法让您在网上处于隐身状态：
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />网站及其使用的服务可以看到用户访问记录<ph name="END_LIST_ITEM" />
@@ -2521,6 +2520,7 @@
 <translation id="7995512525968007366">未指定</translation>
 <translation id="7998269595945679889">“打开无痕式标签页”按钮，按一下 Enter 键即可打开新的无痕式标签页进行无痕浏览</translation>
 <translation id="800218591365569300">请尝试关闭其他标签页或程序以释放内存。</translation>
+<translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">浏览器</translation>
 <translation id="8009225694047762179">管理密码</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{这张卡及其帐单邮寄地址将被保存。登录 <ph name="USER_EMAIL" /> 后即可使用这张卡。}other{这些卡及其帐单邮寄地址将被保存。登录 <ph name="USER_EMAIL" /> 后即可使用这些卡。}}</translation>
@@ -2621,6 +2621,7 @@
 <translation id="8277900682056760511">付款处理程序工作表已打开</translation>
 <translation id="8280630997017109758">纸匣 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
+<translation id="8281886186245836920">跳过</translation>
 <translation id="8282947398454257691">获取您的唯一设备标识符</translation>
 <translation id="8284769179630993263">在 Chrome 设置中管理您的安全浏览设置及其他设置</translation>
 <translation id="8286036467436129157">登录</translation>

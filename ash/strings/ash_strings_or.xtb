@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">ବ୍ଲୁଟୁଥ୍‌ ଡିଭାଇସ୍‌ "<ph name="DEVICE_NAME" />"କୁ ପେୟାର୍‌ କରିବାକୁ ଅନୁମତି ଚାହୁଁଛି। ଦୟାକରି ଏହି ଡିଭାଇସ୍‌ରେ ଏହି ପିନ୍‌କୋଡ୍‌ ଲେଖନ୍ତୁ: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">ସ୍କ୍ରିନସଟ ଟୁଲଗୁଡ଼ିକ</translation>
 <translation id="1024261588257374085">ଆଂଶିକ ସ୍କ୍ରିନସଟ୍ ଚୟନ କରାଯାଇଛି</translation>
+<translation id="1024364763893396229">ଆପଣଙ୍କ <ph name="NAME" /> ସେଭ କରନ୍ତୁ</translation>
 <translation id="1032891413405719768">ଷ୍ଟାଇଲସ୍ ବ୍ୟାଟେରୀ ବହୁତ କମ୍ ଅଛି</translation>
 <translation id="1036073649888683237">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ପରିଚାଳନା କରିବା ପାଇଁ ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="1036672894875463507">ମୁଁ ଆପଣଙ୍କ Google Assistant, ଆପଣଙ୍କୁ ଦିନସାରା ସାହାଯ୍ୟ କରିବାକୁ ଏଠାରେ ଅଛି!
@@ -35,6 +36,7 @@
 <translation id="1175572348579024023">ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ</translation>
 <translation id="1178581264944972037">ବିରତି</translation>
 <translation id="1181037720776840403">କାଢ଼ି ଦିଅନ୍ତୁ</translation>
+<translation id="1183863904939664422">ଏହି ପରାମର୍ଶରେ ରୁଚି ନାହିଁ</translation>
 <translation id="118437560755358292">ଅଧିକ ସୁରକ୍ଷା ପାଇଁ ପାସୱାର୍ଡ କିମ୍ବା PIN ଲେଖନ୍ତୁ</translation>
 <translation id="118532027333893379">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍ କ୍ୟାପଚର୍ କରିବାକୁ ସ୍କ୍ରିନର ଯେ କୌଣସି ସ୍ଥାନରେ ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="1190609913194133056">ବିଜ୍ଞପ୍ତି କେନ୍ଦ୍ର</translation>
@@ -110,7 +112,7 @@
 <translation id="1525508553941733066">ଖାରଜ କରନ୍ତୁ</translation>
 <translation id="1528259147807435347">ଗତ ସପ୍ତାହରେ ଏଡିଟ କରାଯାଇଛି</translation>
 <translation id="1536604384701784949"><ph name="USER_EMAIL_ADDRESS" />କୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କୁ ପ୍ରଥମେ ସମସ୍ତ ଆକାଉଣ୍ଟରୁ ସାଇନ୍ ଆଉଟ୍ କରିବାକୁ ହେବ। ସାଇନ୍ ଆଉଟ୍ କରିବାକୁ, ପଛକୁ ଫେରିବା ପାଇଁ "ବାତିଲ୍ କରନ୍ତୁ"କୁ ଚୟନ କରନ୍ତୁ। ତା'ପରେ ଷ୍ଟାଟସ୍ ଏରିଆ ଖୋଲିବାକୁ ସମୟ ଚୟନ କରି "ସାଇନ୍ ଆଉଟ୍"କୁ ଚୟନ କରନ୍ତୁ। ତା'ପରେ <ph name="USER_EMAIL_ADDRESS_2" />ରେ ପୁଣି ସାଇନ୍ ଇନ୍ କରନ୍ତୁ।</translation>
-<translation id="15373452373711364">ବଡ ମାଉସ୍‍ କର୍ସର୍‌</translation>
+<translation id="15373452373711364">ବଡ଼ ମାଉସ୍‍ କର୍ସର୍‌</translation>
 <translation id="1546492247443594934">ଡେସ୍କ 2</translation>
 <translation id="1550523713251050646">ଅଧିକ ବିକଳ୍ପଗୁଡ଼ିକ ପାଇଁ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="1555130319947370107">ନୀଳ</translation>
@@ -167,6 +169,7 @@
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">ସ୍କ୍ରିନ୍ ରେକର୍ଡିଂ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି</translation>
 <translation id="1957958912175573503">ଆପଣଙ୍କ ଭାଷା ସେଟ୍‌ କରନ୍ତୁ</translation>
+<translation id="1961239773406905488">କ୍ୟାମେରା ପ୍ରିଭ୍ୟୁ ଲୁକ୍କାୟିତ ଅଛି</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">ଲକ୍ ସ୍କ୍ରିନ୍</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -184,6 +187,7 @@
 <translation id="2047639699071423250">ମୁଖ୍ୟ ଆଇଡିଆ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="2049240716062114887">ଡେସ୍କ ନାମକୁ <ph name="DESK_NAME" />ରେ ବଦଳା ଯାଇଥିଲା</translation>
 <translation id="2050339315714019657">ପୋଟ୍ରେଟ୍‌</translation>
+<translation id="2064048859448024834">କ୍ୟାମେରା ପ୍ରିଭ୍ୟୁ ଚାଲୁ ଅଛି</translation>
 <translation id="2066708475850724665">ମ୍ୟାଗ୍ନିଫାୟର୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="2067602449040652523">କୀ'ବୋର୍ଡ ଉଜ୍ଜ୍ଵଳତା</translation>
 <translation id="2078034614700056995">ପରବର୍ତ୍ତୀ ଡେସ୍କକୁ ସ୍ୱିଚ୍ କରିବା ପାଇଁ ଚାରି ଆଙ୍ଗୁଠିରେ ଡାହାଣକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ</translation>
@@ -293,6 +297,7 @@
 <translation id="2819276065543622893">ବର୍ତ୍ତମାନ, ଆପଣଙ୍କୁ ସାଇନ୍‌ ଆଉଟ୍‌ କରିଦିଆଯିବ।</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" />କୁ ସମର୍ଥନ କରେ ନାହିଁ। ରିଜୋଲ୍ୟୁସନକୁ <ph name="FALLBACK_RESOLUTION" />ରେ ବଦଳା ଯାଇଥିଲା।</translation>
 <translation id="2825619548187458965">ସେଲ୍ଫ</translation>
+<translation id="2831035692318564937">ସୂର୍ଯ୍ୟୋଦୟ ପର୍ଯ୍ୟନ୍ତ ଚାଲୁ ଅଛି</translation>
 <translation id="2834813915651407382">ବର୍ତ୍ତମାନ ଖୋଲାଯାଇଛି</translation>
 <translation id="2841907151129139818">ଟାବଲେଟ୍ ମୋଡକୁ ସ୍ୱିଚ୍ କରାଯାଇଛି</translation>
 <translation id="2844169650293029770">USB-C ଡିଭାଇସ୍ (ବାମପଟ ସାମ୍ନା ପୋର୍ଟ)</translation>
@@ -439,6 +444,7 @@
 <translation id="3626281679859535460">ଉଜ୍ଜ୍ୱଳତା</translation>
 <translation id="3630697955794050612">ବନ୍ଦ ଅଛି</translation>
 <translation id="3631369015426612114">ନିମ୍ନୋକ୍ତରୁ ବିଜ୍ଞପ୍ତିକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
+<translation id="3633097874324966332">ଆପଣଙ୍କ ଡିଭାଇସକୁ ପେୟାର କରିବା ପାଇଁ ବ୍ଲୁଟୁଥ ସେଟିଂସ ଖୋଲନ୍ତୁ</translation>
 <translation id="3638400994746983214">ଗୋପନୀୟତା ସ୍କ୍ରିନ୍ ଟୋଗଲ୍ କରନ୍ତୁ। <ph name="STATE_TEXT" />।</translation>
 <translation id="3649505501900178324">ଅପ୍‌ଡେଟ୍ ହେବାକୁ ବାକି ଅଛି</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> ପରିଚାଳିତ ଉପଯୋଗକର୍ତ୍ତା</translation>
@@ -486,6 +492,7 @@
 <translation id="3922427723338465344">{0,plural, =1{ଡିଭାଇସକୁ 1 ମିନିଟ ମଧ୍ୟରେ ପୂର୍ବବର୍ତ୍ତୀ ସଂସ୍କରଣକୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ}other{ଡିଭାଇସକୁ # ମିନିଟ ମଧ୍ୟରେ ପୂର୍ବବର୍ତ୍ତୀ ସଂସ୍କରଣକୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ}}</translation>
 <translation id="3923494859158167397">କୌଣସି ମୋବାଇଲ ନେଟୱାର୍କ ସେଟ୍ ଅପ୍ କରାଯାଇନାହିଁ</translation>
 <translation id="3932043219784172185">କୌଣସି ଡିଭାଇସ ସଂଯୋଗ କରାଯାଇନାହିଁ</translation>
+<translation id="3934456833412894880">ଆଡେପ୍ଟିଭ ଚାର୍ଜିଂ ଚାଲୁ ଅଛି। ବ୍ୟାଟେରୀ ଲାଇଫକୁ ବଢ଼ାଇବା ପାଇଁ ଆପଣଙ୍କ ବ୍ୟାଟେରୀ 80%ରେ ରହିବ ଏବଂ ଆପଣ ଆବଶ୍ୟକ କଲେ ଏହା ସମ୍ପୂର୍ଣ୍ଣ ରୂପେ ଚାର୍ଜ ହୋଇଯିବ।</translation>
 <translation id="3943857333388298514">ପେଷ୍ଟ କରନ୍ତୁ</translation>
 <translation id="394485226368336402">ଅଡିଓ ସେଟିଂସ୍‍</translation>
 <translation id="3945319193631853098">ସେଟ୍ ଅପ୍ ସମ୍ପୂର୍ଣ୍ଣ କରିବାକୁ ଟାପ୍ କରନ୍ତୁ</translation>
@@ -591,6 +598,7 @@
 <translation id="4560576029703263363">ଚାଲୁ</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">ପାସୱାର୍ଡ୍ ଲୁଚାନ୍ତୁ</translation>
+<translation id="4566144812051858745">କୌଣସି ପରାମର୍ଶରେ ରୁଚି ନାହିଁ</translation>
 <translation id="4570957409596482333">ସିଲେକ୍ଟ-ଟୁ-ସ୍ପିକ୍ ବଟନ୍</translation>
 <translation id="4573176682887762361">"[ଶବ୍ଦ / ବାକ୍ୟାଂଶ] ଟାଇପ କରନ୍ତୁ"</translation>
 <translation id="4577274620589681794">ସମୟ ସମାପ୍ତ ହୋଇଛି · <ph name="LABEL" /></translation>
@@ -641,6 +649,7 @@
 <translation id="4868492592575313542">ସକ୍ରିୟ କରାଯାଇଛି</translation>
 <translation id="4872237917498892622">Alt+Search କିମ୍ବା Shift</translation>
 <translation id="4881695831933465202">ଖୋଲନ୍ତୁ</translation>
+<translation id="4889868803215848840">ପରାମର୍ଶଗୁଡ଼ିକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଇଚ୍ଛାଧୀନ ମତାମତ ପ୍ରଦାନ କରନ୍ତୁ:</translation>
 <translation id="4890187583552566966">ଆପଣଙ୍କର ବ୍ୟବସ୍ଥାପକଙ୍କ ଦ୍ୱାରା Google ଆସିଷ୍ଟାଣ୍ଟ ଅକ୍ଷମ କରାଯାଇଛି।</translation>
 <translation id="4890408602550914571">ଆପଣଙ୍କ ଫୋନ୍ ନିକଟରେ ଅଛି ଏବଂ ସେଥିରେ ବ୍ଲୁଟୁଥ୍ ଚାଲୁ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="4895488851634969361">ବ୍ୟାଟେରୀ ପୂର୍ଣ୍ଣ ଅଟେ।</translation>
@@ -766,6 +775,7 @@
 <translation id="5744083938413354016">ଟାପ୍‌ କରି ଟାଣନ୍ତୁ</translation>
 <translation id="5745612484876805746">ସୂର୍ଯ୍ୟାସ୍ତ ପରେ ନାଇଟ୍ ଲାଇଟ୍ ସ୍ୱଚାଳିତ ଭାବେ ଚାଲୁ ହୋଇଥାଏ</translation>
 <translation id="5750765938512549687">ବ୍ଲୁଟୁଥ୍‌ ବନ୍ଦ ଅଛି</translation>
+<translation id="5760866832697883462">ଆପଣଙ୍କ <ph name="NAME" />କୁ କନେକ୍ଟ କରନ୍ତୁ</translation>
 <translation id="576341972084747908">ବିପଦଜନକ <ph name="FILENAME" />କୁ ଡାଉନଲୋଡ କରନ୍ତୁ</translation>
 <translation id="5763928712329149804">ସେଲ୍ଫ ପାର୍ଟି ବନ୍ଦ ଅଛି।</translation>
 <translation id="576453121877257266">ନାଇଟ୍ ଲାଇଟ୍ ଚାଲୁ ଅଛି।</translation>
@@ -827,6 +837,7 @@
 <translation id="6054305421211936131">ସ୍ମାର୍ଟ କାର୍ଡ ସହିତ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="6059276912018042191">ବର୍ତ୍ତମାନର Chrome ଟାବଗୁଡ଼ିକ</translation>
 <translation id="6062360702481658777">ଆପଣ ସ୍ଵଚାଳିତ ଭାବେ <ph name="LOGOUT_TIME_LEFT" />ରେ ସାଇନ୍ ଆଉଟ୍ କରିବେ।</translation>
+<translation id="6064463340679478396">ଏହି ଫାଇଲକୁ ବ୍ୟବହାର କରିସାରିଛି</translation>
 <translation id="6073451960410192870">ରେକର୍ଡିଂ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="6099678161144790572">ଗତ ମାସରେ ଏଡିଟ କରାଯାଇଛି</translation>
 <translation id="6103838137565245112">ସିଷ୍ଟମ</translation>
@@ -950,6 +961,7 @@
 <translation id="6886172995547742638">ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ର କାର୍ଯ୍ୟଦକ୍ଷତା କମ୍ ହୋଇପାରେ। ଏକ ସ୍ୱୀକୃତିପ୍ରାପ୍ତ <ph name="PREFERRED_MINIMUM_POWER" />W କିମ୍ବା ଉଚ୍ଚତର USB-C ପାୱାର ଆଡପ୍ଟର୍ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="688631446150864480">ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ସ୍ୱିଚ୍ କରିବା ପାଇଁ ଡାଉନ୍ ତୀର କୀ'କୁ ଦବାନ୍ତୁ</translation>
 <translation id="6896758677409633944">କପି କରନ୍ତୁ</translation>
+<translation id="6901883536534621389">ନାଭିଗେଟ କରିବାକୁ ଜେଶ୍ଚର ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
 <translation id="6919251195245069855">ଆପଣଙ୍କର ସ୍ମାର୍ଟ କାର୍ଡକୁ ଚିହ୍ନଟ କରିପାରୁ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="6921188888306725546">କୀବୋର୍ଡ ସର୍ଟକଟଗୁଡ଼ିକୁ ଉନ୍ନତ କରାଯାଇଛି</translation>
 <translation id="6931576957638141829">ଏଥିରେ ସେଭ୍ କରନ୍ତୁ</translation>
@@ -1109,6 +1121,7 @@
 <translation id="7886169021410746335">ଗୋପନୀୟତା ସେଟିଂସ୍ ଆଡ୍‌ଜଷ୍ଟ କରନ୍ତୁ</translation>
 <translation id="7886277072580235377">ଯେତେବେଳେ ଆପଣ ସାଇନ୍ ଆଉଟ୍ କରିବେ ସେତେବେଳେ ଆପଣଙ୍କ ଇଣ୍ଟର୍ନେଟ୍ ଅବଧି ଖାଲି ହୋଇଯିବ। <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">ଏକ ଇମେଲ୍ ପଠାନ୍ତୁ</translation>
+<translation id="7893503627044934815">ଏହି ଫାଇଲଟି ଦେଖାଯାଉ ବୋଲି ଚାହୁଁ ନାହିଁ</translation>
 <translation id="7895348134893321514">ଟୋଟ୍</translation>
 <translation id="7897375687985782769">ଆପଣ ସ୍କ୍ରିନ୍‍ର ଘୂର୍ଣ୍ଣନ ପାଇଁ କୀବୋର୍ଡ ସର୍ଟକଟ୍ ଦବାଇଛନ୍ତି। ଆପଣ କ'ଣ ସ୍କ୍ରିନ୍‍କୁ ଘୂରାଇବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="7901405293566323524">ଫୋନ୍ ହବ୍</translation>
@@ -1126,6 +1139,7 @@
 <translation id="7977927628060636163">ମୋବାଇଲ୍ ନେଟ୍‌ୱର୍କ ଖୋଜୁଛି...</translation>
 <translation id="7982789257301363584">ନେଟୱାର୍କ</translation>
 <translation id="7984197416080286869">ଅନେକ ଟିପଚିହ୍ନ ପ୍ରଚେଷ୍ଟା</translation>
+<translation id="798779949890829624">ଏହି ସେଟିଂ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହୁଏ</translation>
 <translation id="7994370417837006925">ଏକାଧିକ ସାଇନ୍-ଇନ୍</translation>
 <translation id="7995804128062002838">ସ୍କ୍ରିନ୍ କ୍ୟାପଚର୍ କରିବା ବିଫଳ ହୋଇଛି</translation>
 <translation id="8000066093800657092">କୌଣସି ନେଟ୍‌ୱର୍କ ନାହିଁ</translation>
@@ -1153,6 +1167,7 @@
 <translation id="813913629614996137">ଆରମ୍ଭ କରୁଛି…</translation>
 <translation id="8142441511840089262">ଦୁଇଥର କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="8142699993796781067">ବ୍ୟକ୍ତିଗତ ନେଟୱାର୍କ</translation>
+<translation id="8144760705599030999">ଆପଣଙ୍କ ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକ ସହ ଶୀଘ୍ର ପେୟାର କରିବା ପାଇଁ ଆପଣଙ୍କ <ph name="NAME" />କୁ <ph name="EMAIL" />ରେ ସେଭ କରନ୍ତୁ</translation>
 <translation id="8152092012181020186">ବନ୍ଦ କରିବାକୁ Ctrl + W ଦବାନ୍ତୁ।</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, ସ୍ଵତଃ ଶେଷ ହେଉଥିବା</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ଏହି ସେଟିଂ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହୁଏ।</translation>
@@ -1190,6 +1205,7 @@
 <translation id="8412677897383510995">ଡିସପ୍ଲେ ସେଟିଂସ୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="8413272770729657668">ରେକର୍ଡିଂ ଆରମ୍ଭ ହେବାକୁ ଯାଉଛି 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (କେସ)</translation>
+<translation id="8420205633584771378">ଏହି ମତାମତ କାଢ଼ିଦେବେ?</translation>
 <translation id="8421270167862077762">ଏହି ଡିଭାଇସରେ <ph name="UNAVAILABLE_APPS" /> ନାହିଁ।</translation>
 <translation id="8425213833346101688">ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="8426708595819210923">ଶୁଭ ସନ୍ଧ୍ୟା <ph name="GIVEN_NAME" />,</translation>
@@ -1282,6 +1298,7 @@
 <translation id="9000771174482730261">ଷ୍ଟୋରେଜ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="9017320285115481645">Family Linkର ପ୍ୟାରେଣ୍ଟ ଆକ୍ସେସ୍ କୋଡ୍ ଲେଖନ୍ତୁ।</translation>
 <translation id="9024331582947483881">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍</translation>
+<translation id="9030319654231318877">ସୂର୍ଯ୍ୟାସ୍ତ ପର୍ଯ୍ୟନ୍ତ ବନ୍ଦ ଅଛି</translation>
 <translation id="9034924485347205037">Linux ଫାଇଲ୍‍ଗୁଡ଼ିକ</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> ପାଇଁ ସେଟିଂସ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="9059834730836941392">ବିଜ୍ଞପ୍ତି ସଙ୍କୁଚିତ କରନ୍ତୁ</translation>
@@ -1301,6 +1318,7 @@
 <translation id="9099154003160514616">ଲାକରୋସ୍ ଅପଡେଟ୍ ଉପଲବ୍ଧ</translation>
 <translation id="9100887602489003640">ପ୍ରୋଫାଇଲ୍ ଯୋଗ କରାଯାଉଛି। କିଛି ସମୟ ପାଇଁ ଅପେକ୍ଷା କରନ୍ତୁ।</translation>
 <translation id="9105450214093926548">Lacros ବ୍ରାଉଜର୍ ଚାଲୁଥିବା ସମୟରେ ଏକ ଦ୍ଵିତୀୟ ଉପଯୋଗକର୍ତ୍ତା ସାଇନ୍ ଇନ୍ କରିବା ସମର୍ଥିତ ନୁହେଁ। ଏହା ପରିବର୍ତ୍ତେ ଦୟାକରି Lacrosରେ ଏକ ଦ୍ୱିତୀୟ ବ୍ରାଉଜର୍ ପ୍ରୋଫାଇଲ୍ ବ୍ୟବହାର କରନ୍ତୁ କିମ୍ବା Lacrosକୁ ବନ୍ଦ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> କିମ୍ବା <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">ସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁକୁ ରେକର୍ଡ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="9161053988251441839">ପ୍ରସ୍ତାବିତ ଆପ୍ସ</translation>
 <translation id="9166331175924255663">Nearby Shareର ଉଚ୍ଚ ଭିଜିବିଲିଟୀକୁ ଟୋଗଲ୍ କରନ୍ତୁ।</translation>

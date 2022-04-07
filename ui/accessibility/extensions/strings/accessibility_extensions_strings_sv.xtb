@@ -9,6 +9,7 @@
 <translation id="1591070050619849194">Inaktivera all bildanimering.</translation>
 <translation id="1703735871906654364">Textmarkörläge</translation>
 <translation id="1791496371305830581">Tillåt alla animerade bilder.</translation>
+<translation id="1974060860693918893">Avancerat</translation>
 <translation id="1996252509865389616">Vill du aktivera?</translation>
 <translation id="2079545284768500474">Ångra</translation>
 <translation id="2179565792157161713">Öppna lång beskrivning på ny flik</translation>
@@ -65,5 +66,6 @@
 <translation id="8321034316479930120">Animeringspolicy</translation>
 <translation id="8480209185614411573">Hög kontrast</translation>
 <translation id="8609925175482059018">Tryck på &lt;span class='key'&gt;F7&lt;/span&gt; om du vill aktivera textmarkörläget. Tryck igen om du vill inaktivera det.</translation>
+<translation id="8798099450830957504">Standard</translation>
 <translation id="894241283505723656">Långa beskrivningar i snabbmenyn</translation>
 </translationbundle>

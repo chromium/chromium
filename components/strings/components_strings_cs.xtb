@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">Útočníci někdy weby napodobují provedením snadno přehlédnutelných změn ve webové adrese.</translation>
 <translation id="1028781062521375153">Zobrazit podrobnosti</translation>
 <translation id="1030706264415084469">Stránka <ph name="URL" /> chce v zařízení trvale ukládat velké množství dat</translation>
-<translation id="1032854598605920125">Otočit ve směru hodinových ručiček</translation>
 <translation id="1033329911862281889">Anonymní režim neznamená, že jste neviditelní:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />weby a jimi používané služby poznají, když je navštívíte,<ph name="END_LIST_ITEM" />
@@ -2520,6 +2519,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7995512525968007366">Není zadáno</translation>
 <translation id="7998269595945679889">Tlačítko Otevřít anonymní kartu, stisknutím klávesy Enter otevřete novou anonymní kartu, abyste mohli prohlížet v soukromí</translation>
 <translation id="800218591365569300">Zkuste uvolnit paměť tím, že zavřete ostatní karty nebo programy.</translation>
+<translation id="8003046808285812021">„<ph name="SEARCH_TERMS" />“</translation>
 <translation id="8004582292198964060">Prohlížeč</translation>
 <translation id="8009225694047762179">Spravovat hesla</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Tato karta a její fakturační adresa se uloží. Budete ji moci používat, když budete přihlášeni k účtu <ph name="USER_EMAIL" />.}few{Tyto karty a jejich fakturační adresy se uloží. Budete je moci používat, když budete přihlášeni k účtu <ph name="USER_EMAIL" />.}many{Tyto karty a jejich fakturační adresy se uloží. Budete je moci používat, když budete přihlášeni k účtu <ph name="USER_EMAIL" />.}other{Tyto karty a jejich fakturační adresy se uloží. Budete je moci používat, když budete přihlášeni k účtu <ph name="USER_EMAIL" />.}}</translation>
@@ -2620,6 +2620,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8277900682056760511">List obslužného nástroje pro platby je otevřený</translation>
 <translation id="8280630997017109758">Přihrádka 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
+<translation id="8281886186245836920">Přeskočit</translation>
 <translation id="8282947398454257691">Znát jedinečný identifikátor vašeho zařízení</translation>
 <translation id="8284769179630993263">Spravujte Bezpečné prohlížení a další funkce v nastavení Chromu</translation>
 <translation id="8286036467436129157">Přihlásit se</translation>

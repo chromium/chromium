@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Η συσκευή Bluetooth "<ph name="DEVICE_NAME" />" ζητά δικαιώματα σύζευξης. Καταχωρίστε αυτόν τον κωδικό PIN στη συγκεκριμένη συσκευή: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">Εργαλεία ψηφιακής εγγραφής οθόνης</translation>
 <translation id="1024261588257374085">Επιλέχτηκε μερικό στιγμιότυπο οθόνης.</translation>
+<translation id="1024364763893396229">Αποθήκευση της συσκευής <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Το επίπεδο της μπαταρίας της γραφίδας είναι χαμηλό</translation>
 <translation id="1036073649888683237">Για να διαχειριστείτε τις ειδοποιήσεις, μεταβείτε στις Ρυθμίσεις</translation>
 <translation id="1036672894875463507">Είμαι ο Βοηθός σας Google, εδώ για να σας προσφέρω βοήθεια όλη την ημέρα!
@@ -35,6 +36,7 @@
 <translation id="1175572348579024023">Κύλιση</translation>
 <translation id="1178581264944972037">Παύση</translation>
 <translation id="1181037720776840403">Κατάργηση</translation>
+<translation id="1183863904939664422">Δεν ενδιαφέρομαι για αυτήν την πρόταση</translation>
 <translation id="118437560755358292">Εισαγάγετε κωδικό πρόσβασης ή PIN για περισσότερη ασφάλεια</translation>
 <translation id="118532027333893379">Πατήστε οπουδήποτε για καταγραφή πλήρους οθόνης</translation>
 <translation id="1190609913194133056">Κέντρο ειδοποιήσεων</translation>
@@ -295,6 +297,7 @@
 <translation id="2819276065543622893">Θα αποσυνδεθείτε τώρα.</translation>
 <translation id="2825224105325558319">Η οθόνη <ph name="DISPLAY_NAME" /> δεν υποστηρίζει το <ph name="SPECIFIED_RESOLUTION" />. Η ανάλυση άλλαξε σε <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Ράφι</translation>
+<translation id="2831035692318564937">Ενεργό μέχρι την ανατολή</translation>
 <translation id="2834813915651407382">Ανοίχτηκαν πρόσφατα</translation>
 <translation id="2841907151129139818">Έγινε εναλλαγή σε λειτουργία tablet.</translation>
 <translation id="2844169650293029770">Συσκευή USB-C (αριστερή μπροστινή θύρα)</translation>
@@ -441,6 +444,7 @@
 <translation id="3626281679859535460">Φωτεινότητα</translation>
 <translation id="3630697955794050612">ανενεργή</translation>
 <translation id="3631369015426612114">Να επιτρέπονται ειδοποιήσεις από</translation>
+<translation id="3633097874324966332">Ανοίξτε τις ρυθμίσεις Bluetooth για σύζευξη της συσκευής σας</translation>
 <translation id="3638400994746983214">Εναλλαγή οθόνης απορρήτου. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Εκπρόθεσμη ενημέρωση</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Διαχειριζόμενος χρήστης</translation>
@@ -594,6 +598,7 @@
 <translation id="4560576029703263363">Ενεργό</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Απόκρυψη κωδικού πρόσβασης</translation>
+<translation id="4566144812051858745">Δεν ενδιαφέρομαι για καμία πρόταση</translation>
 <translation id="4570957409596482333">Κουμπί "Επιλέξτε για αυτόματη ανάγνωση"</translation>
 <translation id="4573176682887762361">"Πληκτρολόγηση [λέξη / φράση]"</translation>
 <translation id="4577274620589681794">Ο χρόνος τελείωσε · <ph name="LABEL" /></translation>
@@ -644,6 +649,7 @@
 <translation id="4868492592575313542">ενεργοποιημένο</translation>
 <translation id="4872237917498892622">Alt+Search ή Shift</translation>
 <translation id="4881695831933465202">Άνοιγμα</translation>
+<translation id="4889868803215848840">Καταχωρίστε προαιρετικά σχόλια για βελτίωση των προτάσεων:</translation>
 <translation id="4890187583552566966">Ο Βοηθός Google είναι απενεργοποιημένος από τον διαχειριστή σας.</translation>
 <translation id="4890408602550914571">Βεβαιωθείτε ότι το τηλέφωνο βρίσκεται κοντά σας και ότι το Bluetooth είναι ενεργοποιημένο.</translation>
 <translation id="4895488851634969361">Η μπαταρία είναι πλήρης.</translation>
@@ -769,6 +775,7 @@
 <translation id="5744083938413354016">Μεταφορά με πάτημα</translation>
 <translation id="5745612484876805746">Ο Νυχτερινός φωτισμός ενεργοποιείται αυτόματα κατά τη δύση του ηλίου</translation>
 <translation id="5750765938512549687">Το Bluetooth είναι απενεργοποιημένο</translation>
+<translation id="5760866832697883462">Σύνδεση της συσκευής <ph name="NAME" /></translation>
 <translation id="576341972084747908">Επικίνδυνη λήψη <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Το Shelf Party είναι ανενεργό.</translation>
 <translation id="576453121877257266">Νυχτερινός φωτισμός ενεργός.</translation>
@@ -830,6 +837,7 @@
 <translation id="6054305421211936131">Σύνδεση με έξυπνη κάρτα</translation>
 <translation id="6059276912018042191">Πρόσφατες καρτέλες Chrome</translation>
 <translation id="6062360702481658777">Θα αποσυνδεθείτε αυτόματα σε <ph name="LOGOUT_TIME_LEFT" />.</translation>
+<translation id="6064463340679478396">Δεν χρησιμοποιώ πλέον αυτό το αρχείο</translation>
 <translation id="6073451960410192870">Διακοπή εγγραφής</translation>
 <translation id="6099678161144790572">Έγινε επεξεργασία τον προηγούμενο μήνα</translation>
 <translation id="6103838137565245112">σύστημα</translation>
@@ -954,6 +962,7 @@
 <translation id="6886172995547742638">Η απόδοση της συσκευής <ph name="DEVICE_TYPE" /> μπορεί να είναι μειωμένη. Χρησιμοποιήστε έναν πιστοποιημένο μετασχηματιστή USB-C <ph name="PREFERRED_MINIMUM_POWER" /> W ή υψηλότερης ισχύος.</translation>
 <translation id="688631446150864480">Πατήστε το πλήκτρο κάτω βέλους για εναλλαγή παραθύρων.</translation>
 <translation id="6896758677409633944">Αντιγραφή</translation>
+<translation id="6901883536534621389">Δοκιμάστε τις κινήσεις για πλοήγηση</translation>
 <translation id="6919251195245069855">Δεν ήταν δυνατή η αναγνώριση της έξυπνης κάρτας σας. Επανάληψη.</translation>
 <translation id="6921188888306725546">Οι συντομεύσεις πληκτρολογίου έχουν βελτιωθεί</translation>
 <translation id="6931576957638141829">Αποθήκευση σε</translation>
@@ -1113,6 +1122,7 @@
 <translation id="7886169021410746335">Προσαρμογή ρυθμίσεων απορρήτου</translation>
 <translation id="7886277072580235377">Η περίοδος σύνδεσής σας στο διαδίκτυο θα διαγραφεί μόλις αποσυνδεθείτε. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Αποστολή μηνύματος ηλεκτρονικού ταχυδρομείου</translation>
+<translation id="7893503627044934815">Δεν θέλω να εμφανίζεται αυτό το αρχείο</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Πατήσατε τη συντόμευση πληκτρολογίου για την περιστροφή οθόνης. Θέλετε να περιστρέψετε την οθόνη;</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
@@ -1130,6 +1140,7 @@
 <translation id="7977927628060636163">Αναζήτηση για δίκτυα κινητής τηλεφωνίας…</translation>
 <translation id="7982789257301363584">Δίκτυο</translation>
 <translation id="7984197416080286869">Πάρα πολλές προσπάθειες χρήσης δακτυλικού αποτυπώματος</translation>
+<translation id="798779949890829624">Η διαχείριση αυτής της ρύθμισης πραγματοποιείται από τον διαχειριστή σας</translation>
 <translation id="7994370417837006925">Σύνδεση σε πολλούς λογαριασμούς</translation>
 <translation id="7995804128062002838">Αποτυχία καταγραφής οθόνης</translation>
 <translation id="8000066093800657092">Κανένα δίκτυο</translation>
@@ -1157,6 +1168,7 @@
 <translation id="813913629614996137">Εκκίνηση…</translation>
 <translation id="8142441511840089262">Διπλό κλικ</translation>
 <translation id="8142699993796781067">Ιδιωτικό δίκτυο</translation>
+<translation id="8144760705599030999">Αποθηκεύστε τη συσκευή <ph name="NAME" /> στον λογαριασμό <ph name="EMAIL" /> για γρηγορότερη σύζευξη με άλλες συσκευές.</translation>
 <translation id="8152092012181020186">Πατήστε Ctrl + W για κλείσιμο.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, αυτόματη συμπλήρωση</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Η διαχείριση αυτής της ρύθμισης πραγματοποιείται από τον διαχειριστή σας.</translation>
@@ -1194,6 +1206,7 @@
 <translation id="8412677897383510995">Εμφάνιση ρυθμίσεων προβολής</translation>
 <translation id="8413272770729657668">Έναρξη εγγραφής σε 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Θήκη)</translation>
+<translation id="8420205633584771378">Να καταργηθεί αυτή η πρόταση;</translation>
 <translation id="8421270167862077762">Η εφαρμογή <ph name="UNAVAILABLE_APPS" /> δεν βρίσκεται σε αυτήν τη συσκευή.</translation>
 <translation id="8425213833346101688">Αλλαγή</translation>
 <translation id="8426708595819210923">Καλησπέρα <ph name="GIVEN_NAME" />,</translation>
@@ -1286,6 +1299,7 @@
 <translation id="9000771174482730261">ΔΙΑΧΕΙΡΙΣΗ ΑΠΟΘΗΚΕΥΤΙΚΟΥ ΧΩΡΟΥ</translation>
 <translation id="9017320285115481645">Εισαγάγετε τον κωδικό πρόσβασης γονέα του Family Link.</translation>
 <translation id="9024331582947483881">πλήρης οθόνη</translation>
+<translation id="9030319654231318877">Ανενεργό μέχρι το ηλιοβασίλεμα</translation>
 <translation id="9034924485347205037">Αρχεία Linux</translation>
 <translation id="9047624247355796468">Άνοιγμα ρυθμίσεων για το δίκτυο <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Σύμπτυξη ειδοποίησης</translation>
@@ -1305,6 +1319,7 @@
 <translation id="9099154003160514616">Υπάρχει διαθέσιμη ενημέρωση Lacros</translation>
 <translation id="9100887602489003640">Προσθήκη προφίλ. Περιμένετε λίγα λεπτά.</translation>
 <translation id="9105450214093926548">Η σύνδεση δεύτερου χρήστη δεν υποστηρίζεται όσο εκτελείται το πρόγραμμα περιήγησης Lacros. Αντί αυτού, χρησιμοποιήστε ένα δεύτερο προφίλ προγράμματος περιήγησης στο Lacros ή κλείστε το Lacros και δοκιμάστε ξανά.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> ή <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Δεν είναι δυνατή η εγγραφή προστατευμένου περιεχομένου</translation>
 <translation id="9161053988251441839">ΠΡΟΤΕΙΝΟΜΕΝΕΣ ΕΦΑΡΜΟΓΕΣ</translation>
 <translation id="9166331175924255663">Εναλλαγή υψηλής ορατότητας της λειτουργίας Κοινοποίηση κοντά.</translation>

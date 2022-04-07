@@ -214,11 +214,13 @@
 <translation id="2848086008667475748">ตั้งเป็นค่าเริ่มต้นในการตั้งค่า…</translation>
 <translation id="2858204748079866344">Chrome จะไม่ป้อนรหัสผ่านลงในช่องนี้โดยอัตโนมัติเพื่อปกป้องความเป็นส่วนตัวของคุณ</translation>
 <translation id="285960592395650245">ลองดาวน์โหลดอีกครั้ง</translation>
+<translation id="2866378026651742652">ตอนนี้คุณจะเห็นเรื่องราวจากช่องดังกล่าวเมื่อเปิดแท็บใหม่</translation>
 <translation id="2870560284913253234">เว็บไซต์</translation>
 <translation id="2871695793448672541">รหัสผ่านแบบซ่อน</translation>
 <translation id="2876369937070532032">ส่ง URL ของหน้าบางส่วนที่คุณเข้าชมไปให้ Google เมื่อการรักษาความปลอดภัยมีความเสี่ยง</translation>
 <translation id="2883151425485251736">ดูและแก้ไขหัวข้อที่คุณซ่อนไปจากบัญชี</translation>
 <translation id="288655811176831528">ปิดแท็บ</translation>
+<translation id="2890171748217283516">ระบบจะบันทึกเว็บไซต์ที่คุณติดตามไว้ในบัญชี Google โดยคุณจัดการเว็บไซต์เหล่านี้ได้ในการตั้งค่า Discover</translation>
 <translation id="2893180576842394309">Google อาจใช้ประวัติการเข้าชมเพื่อปรับเปลี่ยน Search และบริการอื่นๆ ของ Google ให้เข้ากับคุณ</translation>
 <translation id="2898963176829412617">โฟลเดอร์ใหม่…</translation>
 <translation id="2916171785467530738">เติมข้อความค้นหาและ URL อัตโนมัติ</translation>
@@ -314,6 +316,7 @@
 <translation id="3691593122358196899">เพิ่มบุ๊กมาร์กไปยัง <ph name="FOLDER_TITLE" /> แล้ว</translation>
 <translation id="369349502275246497">เสนอให้บันทึกรหัสผ่าน</translation>
 <translation id="3709582977625132201">ทำเครื่องหมายว่ายังไม่อ่าน</translation>
+<translation id="371230970611282515">คาดการณ์และเตือนคุณก่อนเกิดเหตุการณ์อันตราย</translation>
 <translation id="3740397331642243698">เปิด URL ที่ป้อนใน Google Chrome ในโหมดไม่ระบุตัวตน</translation>
 <translation id="3762232513783804601">สร้างมาเพื่อ iPad ของคุณ</translation>
 <translation id="3771033907050503522">แท็บที่ไม่ระบุตัวตน</translation>
@@ -347,6 +350,7 @@
 <translation id="4038354071007134711">ไม่มีแอปพลิเคชันใดบนอุปกรณ์นี้ที่สามารถเปิดไฟล์ได้</translation>
 <translation id="4042870976416480368">ค้นหาในหน้าเว็บ</translation>
 <translation id="4049507953662678203">ตรวจสอบว่าคุณมีการเชื่อมต่อเครือข่าย และลองอีกครั้ง</translation>
+<translation id="4063300985191096908">ไปที่ฟีด</translation>
 <translation id="408404951701638773">เข้าถึงแถบค้นหาได้ง่ายขึ้นแล้ว</translation>
 <translation id="4108314971463891922">ติดตาม</translation>
 <translation id="411254640334432676">การดาวน์โหลดล้มเหลว</translation>
@@ -529,6 +533,7 @@
 <translation id="5737974891429562743">รายละเอียดการลงชื่อเข้าใช้บัญชีล้าสมัยแล้ว โปรดอัปเดตเพื่อเริ่มการซิงค์</translation>
 <translation id="5738887413654608789">วิธีนี้ช่วยให้คุณค้นพบหน้าเว็บที่เกี่ยวข้องโดยอิงตามสิ่งที่อยู่รอบตัวคุณ</translation>
 <translation id="5758631781033351321">คุณจะเห็นเรื่องรออ่านที่นี่</translation>
+<translation id="5765456154762864099">เมนู → การตั้งค่า → เบราว์เซอร์เริ่มต้น</translation>
 <translation id="5782227691023083829">กำลังแปล...</translation>
 <translation id="5791632441210678828">ปุ่มจัดเรียงสำหรับฟีดที่กำลังติดตาม</translation>
 <translation id="5802829331520313983">ตั้งค่า…</translation>
@@ -770,6 +775,7 @@
 <translation id="7658239707568436148">ยกเลิก</translation>
 <translation id="7671141431838911305">ติดตั้ง</translation>
 <translation id="7701040980221191251">ไม่มี</translation>
+<translation id="7726702057919861819">เมนู → ประวัติการเข้าชม → ล้างข้อมูลการท่องเว็บ</translation>
 <translation id="7741325291586284254">หน้าแท็บใหม่ที่ไม่ระบุตัวตน</translation>
 <translation id="7765158879357617694">ย้าย</translation>
 <translation id="7772032839648071052">ยืนยันข้อความรหัสผ่าน</translation>
@@ -842,6 +848,7 @@
 <translation id="8386068868580335421">รีเซ็ต</translation>
 <translation id="8407669440184693619">ไม่พบรหัสผ่านสำหรับเว็บไซต์นี้</translation>
 <translation id="842017693807136194">ลงชื่อเข้าใช้ด้วย</translation>
+<translation id="8427613705947111202">เมนู → การตั้งค่า → รหัสผ่าน</translation>
 <translation id="8428045167754449968">เมือง/จังหวัด</translation>
 <translation id="8428213095426709021">การตั้งค่า</translation>
 <translation id="8428634594422941299">รับทราบ</translation>
@@ -932,6 +939,7 @@
 <translation id="9203116392574189331">แฮนด์ออฟ</translation>
 <translation id="9223358826628549784">ส่งรายงานข้อขัดข้องแล้ว</translation>
 <translation id="952704832371081537">ยกเลิก</translation>
+<translation id="959066944189734975">คุณกำลังติดตาม <ph name="CHANNEL_NAME" /></translation>
 <translation id="981498610235328462">องค์กรอนุญาตให้คุณลงชื่อเข้าใช้ด้วยบัญชีบางบัญชีเท่านั้น ระบบซ่อนบัญชีที่ไม่ได้รับอนุญาตไว้</translation>
 <translation id="984509647832111802">การซิงค์ไม่ทำงาน</translation>
 <translation id="988141524645182168">อุปกรณ์อื่นๆ</translation>

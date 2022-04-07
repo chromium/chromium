@@ -168,6 +168,7 @@
 <translation id="2421044535038393232">繼續編輯</translation>
 <translation id="2434405374328098816">您已儲存「<ph name="USERNAME" />」在 <ph name="WEBSITE" /> 使用的密碼</translation>
 <translation id="2435457462613246316">顯示密碼</translation>
+<translation id="2469960372084740698">要關閉安全瀏覽功能嗎？</translation>
 <translation id="2473876017985765807">您已儲存 <ph name="WEBSITE" /> 的密碼</translation>
 <translation id="2476359652512522418">無揀</translation>
 <translation id="2497852260688568942">您的管理員已停用同步功能</translation>
@@ -213,11 +214,13 @@
 <translation id="2848086008667475748">在「設定」中設定為「預設」…</translation>
 <translation id="2858204748079866344">為保障您的私隱，Chrome 不會在此欄位自動填入您的密碼。</translation>
 <translation id="285960592395650245">重新嘗試下載</translation>
+<translation id="2866378026651742652">之後開啟新分頁時，你就會看到該頻道的故事。</translation>
 <translation id="2870560284913253234">網站</translation>
 <translation id="2871695793448672541">目前為隱藏狀態的密碼</translation>
 <translation id="2876369937070532032">當網站面臨安全風險時，Chrome 會將您瀏覽的部分網頁網址傳送給 Google</translation>
 <translation id="2883151425485251736">查看和編輯您在帳戶中已隱藏的主題</translation>
 <translation id="288655811176831528">關閉分頁</translation>
+<translation id="2890171748217283516">你追蹤的網站會儲存在 Google 帳戶中，你可以在「探索」設定中管理這些網站。</translation>
 <translation id="2893180576842394309">Google 可能會使用您的記錄，為您提供個人化的搜尋服務和其他 Google 服務</translation>
 <translation id="2898963176829412617">新資料夾…</translation>
 <translation id="2916171785467530738">自動完成搜尋和網址</translation>
@@ -313,6 +316,7 @@
 <translation id="3691593122358196899">已將書籤加入到「<ph name="FOLDER_TITLE" />」</translation>
 <translation id="369349502275246497">儲存密碼提議</translation>
 <translation id="3709582977625132201">標示為未讀取</translation>
+<translation id="371230970611282515">在危險事件發生前進行預測並發出警告。</translation>
 <translation id="3740397331642243698">在 Google Chrome 中以無痕模式開啟已輸入的網址。</translation>
 <translation id="3762232513783804601">專為 iPad 而設</translation>
 <translation id="3771033907050503522">無痕式分頁</translation>
@@ -346,6 +350,7 @@
 <translation id="4038354071007134711">這個裝置上沒有能開啟此檔案的應用程式。</translation>
 <translation id="4042870976416480368">在網頁中查找</translation>
 <translation id="4049507953662678203">請確定您已連接網絡，然後再試一次。</translation>
+<translation id="4063300985191096908">前往「動態饋給」</translation>
 <translation id="408404951701638773">簡易存取搜尋列</translation>
 <translation id="4108314971463891922">追蹤</translation>
 <translation id="411254640334432676">下載失敗。</translation>
@@ -528,6 +533,7 @@
 <translation id="5737974891429562743">帳戶登入資料已過時。請先更新，然後開始同步資料。</translation>
 <translation id="5738887413654608789">這樣您便可根據周圍環境探索相關網頁。</translation>
 <translation id="5758631781033351321">您可在此查看閱讀清單</translation>
+<translation id="5765456154762864099">「選單」→「設定」→「預設瀏覽器」</translation>
 <translation id="5782227691023083829">正在翻譯...</translation>
 <translation id="5791632441210678828">將追蹤緊嘅動態消息排次序嘅掣。</translation>
 <translation id="5802829331520313983">設定…</translation>
@@ -582,6 +588,7 @@
 <translation id="6144589619057374135">在無痕模式中開啟 ${url}</translation>
 <translation id="6149061208933997199">使用密碼</translation>
 <translation id="6159839020698489198">選填</translation>
+<translation id="6173386249456979368">對危險網站、下載檔案及擴充程式提供更快速的主動式保護功能。密碼外洩時系統會發出警告。需要將瀏覽資料傳送給 Google</translation>
 <translation id="6177442314419606057">在 Chrome 中搜尋</translation>
 <translation id="6184086493125982861">顯示分頁</translation>
 <translation id="6187302354554850004">上次同步處理時間：<ph name="LAST_USED_TIME" /></translation>
@@ -766,6 +773,7 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="7671141431838911305">安裝</translation>
 <translation id="7701040980221191251">沒有</translation>
+<translation id="7726702057919861819">「選單」→「記錄」→「清除瀏覽資料」</translation>
 <translation id="7741325291586284254">新無痕式分頁頁面</translation>
 <translation id="7765158879357617694">移動</translation>
 <translation id="7772032839648071052">確認複雜密碼</translation>
@@ -838,6 +846,7 @@
 <translation id="8386068868580335421">重設</translation>
 <translation id="8407669440184693619">找不到此網站的密碼</translation>
 <translation id="842017693807136194">目前登入身分</translation>
+<translation id="8427613705947111202">「選單」→「記錄」→「密碼」</translation>
 <translation id="8428045167754449968">鄉/鎮/市/區</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8428634594422941299">知道了</translation>
@@ -928,6 +937,7 @@
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">當機報告已送出。</translation>
 <translation id="952704832371081537">取消</translation>
+<translation id="959066944189734975">你正在追蹤「<ph name="CHANNEL_NAME" />」</translation>
 <translation id="981498610235328462">您的機構只允許您透過特定帳戶登入。系統已隱藏不適用的帳戶。</translation>
 <translation id="984509647832111802">同步功能無法正常運作。</translation>
 <translation id="988141524645182168">其他裝置</translation>

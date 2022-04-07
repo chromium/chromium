@@ -9,6 +9,7 @@
 <translation id="1591070050619849194">Бүх дүрс зургийг идэвхигүй болгоно уу.</translation>
 <translation id="1703735871906654364">Caret Browsing</translation>
 <translation id="1791496371305830581">Бүх хөдөлгөөнт зургийг зөвшөөрөх.</translation>
+<translation id="1974060860693918893">Боловсронгуй</translation>
 <translation id="1996252509865389616">Идэвхжүүлэх үү?</translation>
 <translation id="2079545284768500474">Буцаах</translation>
 <translation id="2179565792157161713">Шинэ цонхон дахь Урт тайлбарыг нээ</translation>
@@ -51,6 +52,7 @@
 <translation id="6170146920149900756">Өнгө сайжруулагч</translation>
 <translation id="633394792577263429">Үгээр нь зөөхийн тулд &lt;span class='key'&gt;Control&lt;/span&gt; дээр дарна уу.</translation>
 <translation id="6550675742724504774">Сонголтууд</translation>
+<translation id="6699630355767768222">3-р алхам: Залруулах бол өнгөний тэнхлэгийг дарна уу.</translation>
 <translation id="6838518108677880446">Тохиргоо хийх.</translation>
 <translation id="690628312087070417">Хэзээ текст том зайтай байвал:</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -64,5 +66,6 @@
 <translation id="8321034316479930120">Хөдөлгөөнт зургийн бодлого</translation>
 <translation id="8480209185614411573">Өндөр ялгарал</translation>
 <translation id="8609925175482059018">Caret Browsing-ийг асаахын тулд &lt;span class='key'&gt;F7&lt;/span&gt; дээр дарна уу. Унтраахаар бол дахин дарна уу.</translation>
+<translation id="8798099450830957504">Гэрээ үл биелүүлэх</translation>
 <translation id="894241283505723656">Ерөнхий цэсэн дэх урт тайлбар</translation>
 </translationbundle>

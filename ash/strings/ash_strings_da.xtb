@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Bluetooth-enheden "<ph name="DEVICE_NAME" />" vil gerne have parringstilladelse. Angiv denne pinkode på den pågældende enhed: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">Screencastværktøjer</translation>
 <translation id="1024261588257374085">Et afgrænset screenshot er valgt</translation>
+<translation id="1024364763893396229">Gem dine <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Styluspennen er ved at løbe tør for batteri</translation>
 <translation id="1036073649888683237">Gå til Indstillinger for at administrere notifikationer</translation>
 <translation id="1036672894875463507">Jeg er din Google-assistent, og jeg er klar til at hjælpe dig i løbet af dagen.
@@ -167,6 +168,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1954252331066828794">Skærmoptagelsen er fuldført</translation>
 <translation id="1957958912175573503">Angiv dit sprog</translation>
+<translation id="1961239773406905488">Forhåndsvisning af kamera er skjult</translation>
 <translation id="1961832440516943645"><ph name="DATE" /> <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Skærmlås</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -184,6 +186,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2047639699071423250">Tilføj hovedidé</translation>
 <translation id="2049240716062114887">Navnet på skrivebordet blev ændret til <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Stående</translation>
+<translation id="2064048859448024834">Forhåndsvisning af kamera er slået til</translation>
 <translation id="2066708475850724665">Stop forstørrelse</translation>
 <translation id="2067602449040652523">Lysstyrke for tastatur</translation>
 <translation id="2078034614700056995">Stryg mod højre med fire fingre for at skifte til næste skrivebord</translation>
@@ -293,6 +296,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2819276065543622893">Du bliver logget ud nu.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> understøtter ikke <ph name="SPECIFIED_RESOLUTION" />. Opløsningen blev ændret til <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Hylde</translation>
+<translation id="2831035692318564937">Aktiveret indtil solopgang</translation>
 <translation id="2834813915651407382">Åbnet for nylig</translation>
 <translation id="2841907151129139818">Skiftede til tablettilstand</translation>
 <translation id="2844169650293029770">USB-C-enhed (porten foran i venstre side)</translation>
@@ -439,6 +443,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3626281679859535460">Lysstyrke</translation>
 <translation id="3630697955794050612">fra</translation>
 <translation id="3631369015426612114">Tillad notifikationer fra følgende</translation>
+<translation id="3633097874324966332">Åbn Bluetooth-indstillingerne for at parre din enhed</translation>
 <translation id="3638400994746983214">Slå privatlivsskærmen til eller fra. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">En opdatering mangler at blive udført</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Administreret bruger</translation>
@@ -486,6 +491,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Skift til en tidligere version af enheden inden for 1 minut}one{Skift til en tidligere version af enheden inden for # minut}other{Skift til en tidligere version af enheden inden for # minutter}}</translation>
 <translation id="3923494859158167397">Der er ikke konfigureret nogen mobilnetværk</translation>
 <translation id="3932043219784172185">Der er ikke nogen forbundne enheder</translation>
+<translation id="3934456833412894880">Adaptiv opladning er aktiveret. Dit batteri oplades til 80 % for at forlænge batteritiden og oplades helt, når du har brug for det.</translation>
 <translation id="3943857333388298514">Indsæt</translation>
 <translation id="394485226368336402">Lydindstillinger</translation>
 <translation id="3945319193631853098">Tryk for at afslutte konfigurationen</translation>
@@ -766,6 +772,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="5744083938413354016">Tryk og træk</translation>
 <translation id="5745612484876805746">Nattelys aktiveres automatisk ved solopgang</translation>
 <translation id="5750765938512549687">Bluetooth er slået fra</translation>
+<translation id="5760866832697883462">Tilslut dine <ph name="NAME" /></translation>
 <translation id="576341972084747908">Downloader skadelig <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Shelf Party er deaktiveret.</translation>
 <translation id="576453121877257266">Nattelys er slået til.</translation>
@@ -951,6 +958,7 @@ Installeret for nylig</translation>
 <translation id="6886172995547742638">Din <ph name="DEVICE_TYPE" />-enhed præsterer muligvis dårligere. Brug en certificeret USB-C-strømadapter på minimum <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="688631446150864480">Tryk på pil ned for at skifte vindue</translation>
 <translation id="6896758677409633944">Kopiér</translation>
+<translation id="6901883536534621389">Prøv at navigere ved hjælp af bevægelser</translation>
 <translation id="6919251195245069855">Dit chipkort blev ikke genkendt. Prøv igen.</translation>
 <translation id="6921188888306725546">Tastaturgenvejene er blevet forbedret</translation>
 <translation id="6931576957638141829">Gem i</translation>
@@ -1127,6 +1135,7 @@ Installeret for nylig</translation>
 <translation id="7977927628060636163">Søger efter mobilnetværk...</translation>
 <translation id="7982789257301363584">Netværk</translation>
 <translation id="7984197416080286869">Du har brugt for mange forsøg på at logge ind med fingeraftryk</translation>
+<translation id="798779949890829624">Denne indstilling administreres af din administrator</translation>
 <translation id="7994370417837006925">Samlet login fra flere konti</translation>
 <translation id="7995804128062002838">Screenshottet blev ikke gemt</translation>
 <translation id="8000066093800657092">Intet netværk</translation>
@@ -1154,6 +1163,7 @@ Installeret for nylig</translation>
 <translation id="813913629614996137">Initialiserer...</translation>
 <translation id="8142441511840089262">Dobbeltklik</translation>
 <translation id="8142699993796781067">Privat netværk</translation>
+<translation id="8144760705599030999">Gem dine <ph name="NAME" /> under <ph name="EMAIL" />, så du hurtigere kan parre dem med andre enheder</translation>
 <translation id="8152092012181020186">Tryk på Ctrl+W for at lukke.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, autofuldfør</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Denne indstilling administreres af din administrator.</translation>
@@ -1191,6 +1201,7 @@ Installeret for nylig</translation>
 <translation id="8412677897383510995">Vis skærmindstillinger</translation>
 <translation id="8413272770729657668">Optagelsen starter om 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (etui)</translation>
+<translation id="8420205633584771378">Vil du fjerne dette forslag?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> er ikke på denne enhed.</translation>
 <translation id="8425213833346101688">Skift</translation>
 <translation id="8426708595819210923">Godaften, <ph name="GIVEN_NAME" /></translation>
@@ -1283,6 +1294,7 @@ Installeret for nylig</translation>
 <translation id="9000771174482730261">ADMINISTRER LAGERPLADS</translation>
 <translation id="9017320285115481645">Angiv forældreadgangskoden til Family Link.</translation>
 <translation id="9024331582947483881">fuld skærm</translation>
+<translation id="9030319654231318877">Deaktiveret indtil solnedgang</translation>
 <translation id="9034924485347205037">Linux-filer</translation>
 <translation id="9047624247355796468">Åbn indstillingerne for <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Skjul notifikation</translation>
@@ -1302,6 +1314,7 @@ Installeret for nylig</translation>
 <translation id="9099154003160514616">Der er en Lacros-opdatering</translation>
 <translation id="9100887602489003640">Profilen tilføjes. Vent et par minutter.</translation>
 <translation id="9105450214093926548">Det er ikke muligt at logge ind med en yderligere bruger, mens Lacros-browseren kører. Du skal i stedet bruge en yderligere browserprofil i Lacros, eller du kan lukke Lacros og prøve igen.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> eller <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Der kan ikke optages beskyttet indhold</translation>
 <translation id="9161053988251441839">FORESLÅEDE APPS</translation>
 <translation id="9166331175924255663">Slå høj synlighed for Deling tæt på til/fra.</translation>

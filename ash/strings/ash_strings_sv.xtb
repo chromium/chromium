@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Bluetooth-enheten <ph name="DEVICE_NAME" /> har begärt tillstånd för koppling. Ange den här pinkoden på den enheten: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">Screencast-verktyg</translation>
 <translation id="1024261588257374085">Skärmbild av en del av skärmen har valts</translation>
+<translation id="1024364763893396229">Spara <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Batteriet håller på att ta slut i e-pennan</translation>
 <translation id="1036073649888683237">Öppna inställningarna om du vill hantera aviseringar</translation>
 <translation id="1036672894875463507">Jag är Google-assistenten och jag kan hjälpa dig under hela dagen.
@@ -167,6 +168,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1954252331066828794">Skärminspelningen har slutförts</translation>
 <translation id="1957958912175573503">Ställ in språk</translation>
+<translation id="1961239773406905488">Förhandsgranskning av kamera döljs</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Lås skärmen</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -184,6 +186,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2047639699071423250">Lägg till ett nyckelbegrepp</translation>
 <translation id="2049240716062114887">Skrivbordsnamnet ändrades till <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Stående</translation>
+<translation id="2064048859448024834">Förhandsgranskning av kamera visas</translation>
 <translation id="2066708475850724665">Stoppa förstoringsglaset</translation>
 <translation id="2067602449040652523">Ljusstyrka för tangentbordet</translation>
 <translation id="2078034614700056995">Svep till höger med fyra fingrar för att byta till nästa skrivbord</translation>
@@ -293,6 +296,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2819276065543622893">Du loggas nu ut.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> har inte stöd för <ph name="SPECIFIED_RESOLUTION" />. Upplösningen ändrades till <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Hylla</translation>
+<translation id="2831035692318564937">På till soluppgången</translation>
 <translation id="2834813915651407382">Öppnades nyligen</translation>
 <translation id="2841907151129139818">Bytte till surfplatteläge</translation>
 <translation id="2844169650293029770">USB-C-enhet (främre porten på vänster sida)</translation>
@@ -439,6 +443,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3626281679859535460">Ljusstyrka</translation>
 <translation id="3630697955794050612">av</translation>
 <translation id="3631369015426612114">Tillåt aviseringar från följande</translation>
+<translation id="3633097874324966332">Öppna Bluetooth-inställningarna om du vill parkoppla enheten</translation>
 <translation id="3638400994746983214">Aktivera och inaktivera integritetsskärmen. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Uppdatering försenad</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Hanterad användare</translation>
@@ -486,6 +491,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Byt till en tidigare version av enheten inom en minut}other{Byt till en tidigare version av enheten inom # minuter}}</translation>
 <translation id="3923494859158167397">Inga mobilnätverk har konfigurerats</translation>
 <translation id="3932043219784172185">Det finns ingen ansluten enhet</translation>
+<translation id="3934456833412894880">Smart laddning har aktiverats. Batteriet laddas upp till 80 % så att det ska räcka längre. Det laddas helt när du behöver det.</translation>
 <translation id="3943857333388298514">Klistra in</translation>
 <translation id="394485226368336402">Ljudinställningar</translation>
 <translation id="3945319193631853098">Tryck om du vill slutföra konfigureringen</translation>
@@ -766,6 +772,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5744083938413354016">Tryck snabbt två gånger och dra</translation>
 <translation id="5745612484876805746">Nattljus aktiveras automatiskt när solen går ned</translation>
 <translation id="5750765938512549687">Bluetooth är inaktiverat</translation>
+<translation id="5760866832697883462">Anslut <ph name="NAME" /></translation>
 <translation id="576341972084747908">Den skadliga filen <ph name="FILENAME" /> laddas ned</translation>
 <translation id="5763928712329149804">Shelf Party är av.</translation>
 <translation id="576453121877257266">Nattljus är aktiverat.</translation>
@@ -951,6 +958,7 @@ Nyligen installerad</translation>
 <translation id="6886172995547742638">Prestandan på <ph name="DEVICE_TYPE" /> kan försämras. Använd en certifierad USB-C-nätadapter för <ph name="PREFERRED_MINIMUM_POWER" /> W eller mer.</translation>
 <translation id="688631446150864480">Tryck på nedåtpilen på tangentbordet för att byta fönster</translation>
 <translation id="6896758677409633944">Kopiera</translation>
+<translation id="6901883536534621389">Testa att navigera med rörelser</translation>
 <translation id="6919251195245069855">Det smarta kortet kändes inte igen. Försök igen.</translation>
 <translation id="6921188888306725546">Förbättrade kortkommandon</translation>
 <translation id="6931576957638141829">Spara i</translation>
@@ -1127,6 +1135,7 @@ Nyligen installerad</translation>
 <translation id="7977927628060636163">Söker efter mobilnätverk …</translation>
 <translation id="7982789257301363584">Nätverk</translation>
 <translation id="7984197416080286869">För många försök att använda fingeravtryck</translation>
+<translation id="798779949890829624">Den här inställningen hanteras av administratören</translation>
 <translation id="7994370417837006925">Multiinloggning</translation>
 <translation id="7995804128062002838">Skärmbild/skärminspelning misslyckades</translation>
 <translation id="8000066093800657092">Inget nätverk</translation>
@@ -1154,6 +1163,7 @@ Nyligen installerad</translation>
 <translation id="813913629614996137">Initierar …</translation>
 <translation id="8142441511840089262">Dubbelklicka</translation>
 <translation id="8142699993796781067">Privat nätverk</translation>
+<translation id="8144760705599030999">Spara <ph name="NAME" /> i <ph name="EMAIL" /> för snabbare parkoppling med dina andra enheter</translation>
 <translation id="8152092012181020186">Stäng genom att trycka på Ctrl. + W</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, autoslutför</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Den här inställningen hanteras av administratören.</translation>
@@ -1191,6 +1201,7 @@ Nyligen installerad</translation>
 <translation id="8412677897383510995">Visa skärminställningar</translation>
 <translation id="8413272770729657668">Inspelningen startar om 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (fodral)</translation>
+<translation id="8420205633584771378">Ska förslaget tas bort?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> finns inte på enheten.</translation>
 <translation id="8425213833346101688">Ändra</translation>
 <translation id="8426708595819210923">Hej <ph name="GIVEN_NAME" />!</translation>
@@ -1283,6 +1294,7 @@ Nyligen installerad</translation>
 <translation id="9000771174482730261">HANTERA LAGRING</translation>
 <translation id="9017320285115481645">Ange föräldraåtkomstkoden för Family Link.</translation>
 <translation id="9024331582947483881">helskärm</translation>
+<translation id="9030319654231318877">Av till solnedgången</translation>
 <translation id="9034924485347205037">Linux-filer</translation>
 <translation id="9047624247355796468">Öppnar inställningarna för <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Komprimera avisering</translation>
@@ -1302,6 +1314,7 @@ Nyligen installerad</translation>
 <translation id="9099154003160514616">Det finns en uppdatering av Lacros</translation>
 <translation id="9100887602489003640">Lägger till profil. Vänta några minuter.</translation>
 <translation id="9105450214093926548">Det finns inte stöd för inloggning av en andra användare medan Lacros-webbläsaren körs. Använd i stället en annan webbläsarprofil i Lacros eller stäng Lacros och försök igen.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> eller <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Det går inte att spela in skyddat innehåll</translation>
 <translation id="9161053988251441839">FÖRESLAGNA APPAR</translation>
 <translation id="9166331175924255663">Aktivera och inaktivera Närdelning med hög synlighet.</translation>

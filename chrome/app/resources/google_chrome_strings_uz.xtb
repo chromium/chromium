@@ -175,6 +175,7 @@
 <translation id="4600710005438004015">Chrome brauzerining so‘nggi versiyasini o‘rnatib bo‘lmadi. Xavfsizlik sozlamalariga kiritilgan tuzatishlar va yangi funksiyalardan bahramand bo‘la olmaysiz.</translation>
 <translation id="4627412468266359539">Ixtiyoriy: Google serverlariga diagnostika va foydalanish statistikasi maʼlumotlarini yuborish orqali ChromeOS Flex tizimini takomillashtirishga yordam bering.</translation>
 <translation id="4633000520311261472">Chrome brauzerini xavfsiz holda saqlash uchun <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ro‘yxatida keltirilmagan va sizga bildirmasdan qo‘shilgan bo‘lishi mumkin bo‘lgan ayrim kengaytmalar o‘chirib qo‘yildi.</translation>
+<translation id="469553575393225953">Nomaʼlum manbalar kengaytmalari, ilovalari va mavzulari qurilmangizni zararlashi mumkin. Chrome ularni fqat Chrome Web Store orqali oʻrnatishni tavsiya qiladi</translation>
 <translation id="4728575227883772061">Noma’lum xatolik tufayli o‘rnatish amalga oshmadi. Agar hozirda Chromium ishlab turgan bo‘lsa, iltimos brauzeringizni yoping va qayta urinib ko‘ring.</translation>
 <translation id="4747730611090640388">Chrome qiziqishlaringizni taxmin qilishi mumkin.  Keyinchalik sayt sizga chiqadigan reklamani moslashtirish maqsadida Chrome ilovasidan qiziqishlaringiz haqida soʻrashi mumkin.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -218,6 +219,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="5736850870166430177">Agar sayt parolingizni oʻgirlashga urinsa yoki zararli fayl yuklab olsangiz, Chrome ham URL manzillar kabi sahifa elementlarini Saytlarni xavfsiz kezish tizimiga yuborishi mumkin</translation>
 <translation id="573759479754913123">Chrome OS haqida</translation>
 <translation id="5756509061973259733">Bu hisobli Chrome profili ushbu qurilmada allaqachon mavjud</translation>
+<translation id="5763280521700030406">Bu fayl xavfsizlik tekshiruvi uchun juda katta boʻlgani uchun Chrome uni blokladi. 50 MB gacha fayllar bilan qayta urining.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome ishga tushmadi. Qayta urining.</translation>
 <translation id="5867197326698922595">Google Chrome parollarni tahrirlashga urinmoqda.</translation>
@@ -326,8 +328,10 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="8394720698884623075">URL manzillar Chrome bilgan zararli saytlar roʻyxati orqali tekshiriladi</translation>
 <translation id="840084489713044809">Google Chrome parollaringizni eksport qilmoqchi.</translation>
 <translation id="8416347857511542594">Chromeda reklamani moslashtirish haqida batafsil</translation>
+<translation id="8421734018304082652">Bu fayl shifrlangani uchun Chrome uni blokladi Egasidan uni kodsizlashni soʻrang</translation>
 <translation id="8433638294851456451">Bu yerdan Android telefoningizga raqam yuborish uchun ikkala qurilmada Chrome hisobingizga kiring.</translation>
 <translation id="8498858610309223613">Google Chrome xavfsizlik tizimiga maxsus yangilanish oʻrnatildi. Qayta ishga tushiring va ochiq sahifalarni tiklang.</translation>
+<translation id="8504220326736535258">Bu fayl zararli dastur boʻlgani uchun Chrome uni blokladi</translation>
 <translation id="8516431725144212809">Chrome taxmin qilgan qiziqishlaringiz</translation>
 <translation id="8521348052903287641">Google Chrome Dev mDNS trafigiga ruxsat berishiga oid kiruvchi qoida.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>

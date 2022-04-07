@@ -9,6 +9,7 @@
 <translation id="1591070050619849194">ปิดใช้ภาพเคลื่อนไหวทั้งหมด</translation>
 <translation id="1703735871906654364">การเรียกดูด้วยแป้นพิมพ์</translation>
 <translation id="1791496371305830581">อนุญาตภาพเคลื่อนไหวทั้งหมด</translation>
+<translation id="1974060860693918893">ขั้นสูง</translation>
 <translation id="1996252509865389616">เปิดใช้ไหม</translation>
 <translation id="2079545284768500474">เลิกทำ</translation>
 <translation id="2179565792157161713">เปิดคำอธิบายแบบยาวในแท็บใหม่</translation>
@@ -51,6 +52,7 @@
 <translation id="6170146920149900756">โปรแกรมเพิ่มประสิทธิภาพสี</translation>
 <translation id="633394792577263429">กด &lt;span class='key'&gt;Control&lt;/span&gt; ค้างไว้เพื่อเลื่อนไปทีละคำ</translation>
 <translation id="6550675742724504774">ตัวเลือก</translation>
+<translation id="6699630355767768222">ขั้นตอนที่ 3: ลบล้างแกนสีเพื่อการแก้ไข</translation>
 <translation id="6838518108677880446">การตั้งค่า:</translation>
 <translation id="690628312087070417">เมื่อเครื่องหมาย caret ข้ามไปยังระยะที่ห่างมาก</translation>
 <translation id="6965382102122355670">ตกลง</translation>
@@ -65,5 +67,6 @@
 <translation id="8321034316479930120">นโยบายภาพเคลื่อนไหว</translation>
 <translation id="8480209185614411573">คอนทราสต์สูง</translation>
 <translation id="8609925175482059018">กด &lt;span class='key'&gt;F7&lt;/span&gt; เพื่อเปิดการเรียกดูด้วยแป้นพิมพ์ กดอีกครั้งเพื่อปิด</translation>
+<translation id="8798099450830957504">ค่าเริ่มต้น</translation>
 <translation id="894241283505723656">คำอธิบายแบบยาวในเมนูบริบท</translation>
 </translationbundle>

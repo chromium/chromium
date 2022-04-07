@@ -9,6 +9,7 @@
 <translation id="1591070050619849194">Alle afbeeldingsanimatie uitzetten.</translation>
 <translation id="1703735871906654364">Bladeren met navigatietoetsen</translation>
 <translation id="1791496371305830581">Alle afbeeldingen met animaties toestaan.</translation>
+<translation id="1974060860693918893">Geavanceerd</translation>
 <translation id="1996252509865389616">Aanzetten?</translation>
 <translation id="2079545284768500474">Ongedaan maken</translation>
 <translation id="2179565792157161713">Lange beschrijving openen in nieuw tabblad</translation>
@@ -51,6 +52,7 @@
 <translation id="6170146920149900756">Kleurverbetering</translation>
 <translation id="633394792577263429">Houd de toets &lt;span class='key'&gt;Control&lt;/span&gt; ingedrukt om van woord naar woord te springen.</translation>
 <translation id="6550675742724504774">Opties</translation>
+<translation id="6699630355767768222">Stap 3: Overschrijf de kleuras voor de correctie.</translation>
 <translation id="6838518108677880446">Instellen:</translation>
 <translation id="690628312087070417">Wanneer het caret-teken een grote afstand overbrugt:</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -64,5 +66,6 @@
 <translation id="8321034316479930120">Beleid ten aanzien van animatie</translation>
 <translation id="8480209185614411573">Hoog contrast</translation>
 <translation id="8609925175482059018">Druk op &lt;span class='key'&gt;F7&lt;/span&gt; om Bladeren met navigatietoetsen aan te zetten. Druk nogmaals op de toets om de functie uit te zetten.</translation>
+<translation id="8798099450830957504">Standaard</translation>
 <translation id="894241283505723656">Lange beschrijvingen in contextmenu</translation>
 </translationbundle>

@@ -175,6 +175,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4600710005438004015">Chrome sa nepodarilo aktualizovať na najnovšiu verziu. K dispozícii tak nie sú niektoré nové funkcie a bezpečnostné opravy.</translation>
 <translation id="4627412468266359539">Nepovinné: Pomôžte zlepšovať funkcie a výkonnosť systému Chrome OS Flex automatickým odosielaním diagnostík a údajov o používaní do Googlu.</translation>
 <translation id="4633000520311261472">Z dôvodu vyššej bezpečnosti prehliadača Chrome sme zakázali niektoré rozšírenia, ktoré nedodáva <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> a mohli byť pridané bez vášho vedomia.</translation>
+<translation id="469553575393225953">Rozšírenia, aplikácie a motívy z neznámych zdrojov môžu poškodiť vaše zariadenie. Chrome odporúča ich inštaláciu iba z Internetového obchodu Chrome.</translation>
 <translation id="4728575227883772061">Inštalácia zlyhala kvôli neurčenej chybe. Ak je prehliadač Google Chrome momentálne spustený, zatvorte ho a skúste znova.</translation>
 <translation id="4747730611090640388">Chrome môže odhadnúť vaše záujmy.  Neskôr môže web, ktorý navštívite, o ne Chrome požiadať, aby mohol prispôsobiť zobrazované reklamy.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -218,6 +219,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="5736850870166430177">Ak sa vám určitý web pokúsi ukradnúť heslo alebo stiahnete škodlivý súbor, Chrome môže odoslať Bezpečnému prehliadaniu aj webové adresy vrátane častí obsahu stránok</translation>
 <translation id="573759479754913123">Informácie o systéme Chrome OS</translation>
 <translation id="5756509061973259733">Profil Chromu s týmto účtom už v tomto zariadení existuje</translation>
+<translation id="5763280521700030406">Chrome zablokoval tento súbor, pretože je na kontrolu príliš veľký. Skúste to znova, avšak súbor musí mať maximálne 50 MB.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome sa nepodarilo spustiť. Skúste to znova.</translation>
 <translation id="5867197326698922595">Google Chrome sa pokúša upraviť heslá.</translation>
@@ -325,8 +327,10 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="8394720698884623075">Kontroluje webové adresy podľa zoznamu nebezpečných webov uloženého v Chrome</translation>
 <translation id="840084489713044809">Google Chrome sa pokúša exportovať vaše heslá.</translation>
 <translation id="8416347857511542594">Ďalšie informácie o prispôsobení reklám v Chrome</translation>
+<translation id="8421734018304082652">Chrome zablokoval tento súbor, pretože je šifrovaný. Požiadajte jeho vlastníka o dešifrovanie.</translation>
 <translation id="8433638294851456451">Ak chcete odtiaľto odoslať číslo do svojho telefónu s Androidom, prihláste sa v oboch zariadeniach do Chromu.</translation>
 <translation id="8498858610309223613">Práve bola použitá mimoriadna bezpečnostná aktualizácia pre prehliadač Google Chrome. Po reštartovaní obnovíme vaše karty.</translation>
+<translation id="8504220326736535258">Chrome zablokoval tento súbor, pretože obsahuje malvér</translation>
 <translation id="8516431725144212809">Vaše záujmy podľa odhadu Chromu</translation>
 <translation id="8521348052903287641">Pravidlo pre prichádzajúce prenosy pre prehliadač Google Chrome verzie pre vývojárov, ktoré povoľuje prenos dát mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>

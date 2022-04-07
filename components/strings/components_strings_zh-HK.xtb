@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">攻擊者有時會在網址中加入難以辨識的變更來仿冒網站。</translation>
 <translation id="1028781062521375153">查看詳情</translation>
 <translation id="1030706264415084469"><ph name="URL" /> 要求在您的裝置上永久儲存大量數據</translation>
-<translation id="1032854598605920125">順時針方向旋轉</translation>
 <translation id="1033329911862281889">無痕模式無法讓您在網絡上不留痕跡：
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />網站及其使用的服務可以查看瀏覽活動<ph name="END_LIST_ITEM" />
@@ -2525,6 +2524,7 @@
 <translation id="7995512525968007366">未指定　</translation>
 <translation id="7998269595945679889">開啟無痕式分頁按鈕，㩒一下 Enter 鍵就可以開新嘅無痕式分頁私下瀏覽</translation>
 <translation id="800218591365569300">嘗試關閉其他分頁或應用程式，以釋出記憶體。</translation>
+<translation id="8003046808285812021">「<ph name="SEARCH_TERMS" />」</translation>
 <translation id="8004582292198964060">瀏覽器</translation>
 <translation id="8009225694047762179">管理密碼</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{系統將會儲存此付款卡和帳單地址。您登入 <ph name="USER_EMAIL" /> 後便可以使用這些資料。}other{系統將會儲存這些付款卡和帳單地址。您登入 <ph name="USER_EMAIL" /> 後便可以使用這些資料。}}</translation>
@@ -2625,6 +2625,7 @@
 <translation id="8277900682056760511">付款處理常式工作表開咗</translation>
 <translation id="8280630997017109758">紙匣 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
+<translation id="8281886186245836920">略過</translation>
 <translation id="8282947398454257691">掌握您的專屬裝置識別碼</translation>
 <translation id="8284769179630993263">在 Chrome 設定中管理安全瀏覽等功能</translation>
 <translation id="8286036467436129157">登入</translation>

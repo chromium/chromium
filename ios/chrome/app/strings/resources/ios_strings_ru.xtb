@@ -168,6 +168,7 @@
 <translation id="2421044535038393232">Продолжить редактирование</translation>
 <translation id="2434405374328098816">Пароль пользователя <ph name="USERNAME" /> для сайта <ph name="WEBSITE" /> уже сохранен.</translation>
 <translation id="2435457462613246316">Показать пароль</translation>
+<translation id="2469960372084740698">Отключить Безопасный просмотр?</translation>
 <translation id="2473876017985765807">Вы уже сохранили пароль для сайта <ph name="WEBSITE" />.</translation>
 <translation id="2476359652512522418">Не выбрано</translation>
 <translation id="2497852260688568942">Ваш администратор отключил синхронизацию</translation>
@@ -213,11 +214,13 @@
 <translation id="2848086008667475748">Сделать браузером по умолчанию в настройках</translation>
 <translation id="2858204748079866344">Чтобы обеспечить конфиденциальность ваших данных, мы просим вас ввести пароль вручную.</translation>
 <translation id="285960592395650245">Повторить скачивание</translation>
+<translation id="2866378026651742652">Открыв новую вкладку, вы увидите статьи из этого источника.</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2871695793448672541">Скрытый пароль</translation>
 <translation id="2876369937070532032">При угрозе безопасности отправлять в Google URL некоторых страниц, которые вы открываете</translation>
 <translation id="2883151425485251736">Просмотр и изменение тем, которые вы скрыли</translation>
 <translation id="288655811176831528">Закрыть вкладку</translation>
+<translation id="2890171748217283516">Сайты, на которые вы подписаны, сохранены в аккаунте Google. Управлять ими можно в настройках рекомендаций.</translation>
 <translation id="2893180576842394309">Google может использовать вашу историю, чтобы персонализировать Поиск и другие сервисы.</translation>
 <translation id="2898963176829412617">Новая папка</translation>
 <translation id="2916171785467530738">Включить автозаполнение для поисковых запросов и URL</translation>
@@ -313,6 +316,7 @@
 <translation id="3691593122358196899">Закладка добавлена в папку "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="369349502275246497">Предлагать сохранение паролей</translation>
 <translation id="3709582977625132201">Отметить как непрочитанное</translation>
+<translation id="371230970611282515">Предсказывает опасные события и предупреждает вас до того, как они происходят.</translation>
 <translation id="3740397331642243698">Введенные URL будут открываться в Google Chrome в режиме инкогнито.</translation>
 <translation id="3762232513783804601">Создан специально для iPad</translation>
 <translation id="3771033907050503522">Вкладки инкогнито</translation>
@@ -346,6 +350,7 @@
 <translation id="4038354071007134711">Нет приложения, чтобы открыть этот файл.</translation>
 <translation id="4042870976416480368">Найти на странице</translation>
 <translation id="4049507953662678203">Проверьте подключение к Интернету и повторите попытку.</translation>
+<translation id="4063300985191096908">Перейти к ленте</translation>
 <translation id="408404951701638773">Пользоваться строкой поиска стало ещё удобнее</translation>
 <translation id="4108314971463891922">Подписаться</translation>
 <translation id="411254640334432676">Ошибка при скачивании</translation>
@@ -528,6 +533,7 @@
 <translation id="5737974891429562743">Данные для входа в аккаунт устарели. Чтобы начать синхронизацию, обновите их.</translation>
 <translation id="5738887413654608789">Вы сможете узнавать о сайтах, связанных с объектами вокруг вас.</translation>
 <translation id="5758631781033351321">Здесь вы найдете свой список для чтения</translation>
+<translation id="5765456154762864099">Меню → Настройки → Браузер по умолчанию</translation>
 <translation id="5782227691023083829">Перевод...</translation>
 <translation id="5791632441210678828">Кнопка "Сортировать" для ленты новостей.</translation>
 <translation id="5802829331520313983">Настроить</translation>
@@ -582,6 +588,7 @@
 <translation id="6144589619057374135">Открыть ${url} в режиме инкогнито</translation>
 <translation id="6149061208933997199">Использовать пароль</translation>
 <translation id="6159839020698489198">(необязательно)</translation>
+<translation id="6173386249456979368">Более быстрая и эффективная защита от опасных сайтов, расширений и скачанных файлов. Предупреждает об утечках паролей. Требуется отправка данных о работе в браузере в Google.</translation>
 <translation id="6177442314419606057">Поиск в Chrome</translation>
 <translation id="6184086493125982861">Показать вкладки</translation>
 <translation id="6187302354554850004">Послед. синхр.: <ph name="LAST_USED_TIME" /></translation>
@@ -768,6 +775,7 @@
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7671141431838911305">УСТАНОВИТЬ</translation>
 <translation id="7701040980221191251">Нет</translation>
+<translation id="7726702057919861819">Меню → История → Очистить историю</translation>
 <translation id="7741325291586284254">Страница "Новая вкладка инкогнито"</translation>
 <translation id="7765158879357617694">Переместить</translation>
 <translation id="7772032839648071052">Подтвердите кодовую фразу</translation>
@@ -840,6 +848,7 @@
 <translation id="8386068868580335421">Сбросить</translation>
 <translation id="8407669440184693619">Паролей для этого сайта не найдено</translation>
 <translation id="842017693807136194">Выполнен вход через</translation>
+<translation id="8427613705947111202">Меню → Настройки → Пароли</translation>
 <translation id="8428045167754449968">Город</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8428634594422941299">ОК</translation>
@@ -930,6 +939,7 @@
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Отчет отправлен</translation>
 <translation id="952704832371081537">Отмена</translation>
+<translation id="959066944189734975">Вы подписались на сайт "<ph name="CHANNEL_NAME" />"</translation>
 <translation id="981498610235328462">Согласно правилам, установленным организацией, выполнить вход можно только с одобренным аккаунтом. Запрещенные аккаунты скрываются.</translation>
 <translation id="984509647832111802">Ошибка синхронизации.</translation>
 <translation id="988141524645182168">Другие устройства</translation>

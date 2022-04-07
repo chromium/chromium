@@ -850,6 +850,7 @@ Web e PWAs. No momento, com suporte apenas no
         |TIME_LIMITS| aplica o limite de uso diário e torna o app indisponível após o limite ser atingido no dia especificado. O limite de uso é especificado em |daily_limit_mins|. O limite de uso é redefinido diariamente no horário UTC transmitido em |reset_at|.
         Esta política é usada apenas para crianças.
         Esta política complementa a "UsageTimeLimit". Restrições especificadas em "UsageTimeLimit", como tempo de uso e hora de dormir, serão aplicadas independentemente de "PerAppTimeLimits".</translation>
+<translation id="1913629775420987861">Mostrar uma caixa de diálogo de alerta quando o usuário tentar sair</translation>
 <translation id="1916266055944569995">Se a política for definida, o valor de retorno da API Managed Configuration será definido para origens específicas.
 
       A API Managed Configuration é uma configuração de chave-valor que pode ser acessada pela chamada de navigator.managed.getManagedConfiguration() no JavaScript. Ela só está disponível em origens correspondentes a aplicativos da Web de instalação forçada via <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
@@ -1158,6 +1159,13 @@ Web e PWAs. No momento, com suporte apenas no
       Definir <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (valor 1) permite que apenas as variações consideradas como correções críticas de segurança ou estabilidade sejam aplicadas ao <ph name="PRODUCT_OS_NAME" />.
 
       Definir <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valor 2) impede que qualquer variação seja aplicada ao navegador na tela de login. Esse modo não é recomendado, porque pode impedir que os desenvolvedores do <ph name="PRODUCT_OS_NAME" /> forneçam correções críticas de segurança de maneira rápida.</translation>
+<translation id="2217931577484185673">Se a política for ativada, o recurso Navegação segura vai confiar nos domínios designados por você. Ele não verificará a presença de recursos perigosos como phishing, malware ou software indesejado. O serviço de proteção de downloads do Navegação segura não vai verificar downloads hospedados nesses domínios. O serviço de proteção de senhas não vai verificar se elas foram reutilizadas.
+
+      Se a política não for definida, as proteções padrão do Navegação segura vão ser aplicadas a todos os recursos.
+
+      Esta política precisa ser definida como uma lista de nomes de domínios totalmente qualificados. Ela não oferece suporte a expressões regulares e não adiciona subdomínios à lista de permissões de domínios listados na política.
+
+      No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas no <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. No <ph name="MAC_OS_NAME" />, essa funcionalidade está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
 <translation id="2221779615493499989">Informar o status de rede dos usuários em dispositivos registrados.
 
       Se a política for definida como falsa, as informações não serão enviadas.
@@ -1589,6 +1597,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Ela se aplica à tela de login. Consulte também a política <ph name="SITE_PER_PROCESS_POLICY_NAME" />, que se aplica à sessão do usuário. É recomendado definir as duas com o mesmo valor. Se os valores não forem iguais, poderá haver um atraso ao entrar em uma sessão enquanto o valor especificado pela política do usuário estiver sendo aplicado.
       </translation>
 <translation id="2702023190395322609">Ativar recomendações de mídia</translation>
+<translation id="270582584528242502">Não mostrar uma caixa de diálogo de alerta quando o usuário tentar sair</translation>
 <translation id="2706708761587205154">Permitir impressão apenas com PIN</translation>
 <translation id="2707873794476722903">O "Navegação segura" está ativo no modo padrão.</translation>
 <translation id="2709516037105925701">Preenchimento automático</translation>
@@ -1965,6 +1974,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="3086995894968271156">Configura a política Cast Receiver no <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3087346703976541109">Especifica se o SharedArrayBuffers pode ser usado em um contexto não isolado de origem cruzada</translation>
 <translation id="3088557424854005813">Atestado</translation>
+<translation id="3090283903269516279">Desativar o modelo de carregamento adaptável no <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3091832372132789233">Carregar a bateria de dispositivos que ficam a maior parte do tempo conectados a uma fonte de energia externa.</translation>
 <translation id="3092059499596000593">Usar a impressora padrão do sistema como a escolha padrão na visualização de impressão</translation>
 <translation id="309416443108680956">Especifica o que acontece quando um usuário que está fazendo a autenticação com um token de segurança (por exemplo, com um cartão inteligente) remove o token durante a sessão. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: nada acontece. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: a tela é bloqueada até que o usuário faça a autenticação novamente. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: a sessão é encerrada e o usuário é desconectado. Se esta política não for definida, o comportamento padrão será <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />.</translation>
@@ -2452,6 +2462,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="3628480121685794414">Ativar impressão simplex</translation>
 <translation id="3634125384445314047">Permitir que fotos e vídeos recentes capturados no smartphone sejam acessados usando o recurso Seu smartphone.</translation>
 <translation id="3643284063603988867">Ativar o recurso "Lembrar senha"</translation>
+<translation id="3644735978203799620">Permite a seleção automática de várias capturas de tela</translation>
 <translation id="3646859102161347133">Definir tipo de lupa</translation>
 <translation id="3647212518036289905">Definir a política especifica qual biblioteca GSSAPI será usada para a autenticação HTTP. Defina a política como um nome de biblioteca ou um caminho completo.
 
@@ -2476,6 +2487,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       * <ph name="PRINTERS_ALLOW_ALL" /> (valor 2) exibe todas as impressoras.
 
       Se a política não é definida, <ph name="PRINTERS_ALLOW_ALL" /> é colocada em uso.</translation>
+<translation id="3695204334462456702">Destinos de protocolo que não precisam de configuração (mDNS e DNS-SD) (descontinuado)</translation>
 <translation id="3695706037816556327">Ação na remoção do token de segurança (por exemplo, um cartão inteligente) do <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3700193037252896716">Frequência com que a reinicialização acontecerá.</translation>
 <translation id="3700318587977845664">Periodicidade de recorrência da verificação de atualização.</translation>
@@ -3778,6 +3790,35 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Se a política for definida como falsa ou não for definida, a área de trabalho unificada ficará desativada e os usuários não poderão ativá-la.</translation>
 <translation id="5255162913209987122">Pode ser recomendada</translation>
 <translation id="5257395339965216304">Dados dos apps hospedados</translation>
+<translation id="5263649486910778308">Esta política fornece uma maneira de substituir a lista de conjuntos que o navegador usa para recursos de First-Party Sets.
+
+      Cada conjunto na lista de First-Party Sets do navegador precisa atender aos requisitos de um First-Party Set.
+      Um First-Party Set consiste em um site proprietário e um ou mais sites membros. Todos os sites em um First-Party Set precisam
+      ser um domínio registrável exibido por HTTPS, independente de ser um site proprietário ou membro.
+      Cada site em um First-Party Set também precisa ser único, o que significa que um site não pode ser proprietário e membro ao mesmo tempo, nem ser
+      listado mais de uma vez como membro de um First-Party Set.
+      Consulte https://github.com/privacycg/first-party-sets (link em inglês) para ver mais informações sobre First-Party Sets.
+
+      Quando esta política recebe um dicionário vazio, o navegador usa a lista pública de First-Party Sets.
+
+      Para todos os sites em um First-Party Set da lista <ph name="REPLACEMENTS" />, se o site também estiver presente
+      em um First-Party Set na lista do navegador, esse site vai ser removido do First-Party Set do navegador.
+      Em seguida, o First-Party Set da política vai ser adicionado à lista de First-Party Sets do navegador.
+
+      Para todos os sites em um First-Party Set da lista <ph name="ADDITIONS" />, se um site também estiver presente
+      em um First-Party Set na lista do navegador, então o First-Party Set do navegador vai ser atualizado para que o
+       novo First-Party Set possa ser adicionado à lista do navegador. Depois que a lista do navegador for atualizada,
+       o First-Party Set da política vai ser adicionado à lista de First-Party Sets do navegador.
+
+      A lista de First-Party Sets do navegador exige que nenhum dos sites na lista esteja em
+       mais de um conjunto. Isso também é necessário para as listas <ph name="REPLACEMENTS" />
+      e <ph name="ADDITIONS" />. Da mesma forma, um site não pode estar tanto na lista
+      <ph name="REPLACEMENTS" /> quanto na <ph name="ADDITIONS" />.
+
+      Caracteres curinga (*) não têm suporte como valor da política, nem dentro de qualquer First-Party Set nessas listas.
+
+      Todos os conjuntos fornecidos pela política precisam ser um First-Party Set válidos. Se não forem,
+      um erro adequado vai ser gerado.</translation>
 <translation id="5266173014392157048">Esta política está obsoleta. Use a <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />.
 
       A definição da política atribui servidores que podem ser delegados pelo <ph name="PRODUCT_NAME" />. Separe vários nomes de servidor usando vírgulas. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
@@ -4271,6 +4312,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="5815990343032461023">Comportamento legado: os apps do Chrome para quiosque serão atualizados pelo sistema de extensão usando o URL de atualização do manifesto de extensão e armazenando o gerenciador em cache com o URL definido na política</translation>
 <translation id="582857022372205358">Ativar impressão duplex de borda curta</translation>
 <translation id="5830196507442186669">Permitir que dispositivos usem a <ph name="BOREALIS_NAME" /> no <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="5831286647961890695">Ativar o modelo de carregamento adaptável no <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="5832274826894536455">Políticas suspensas</translation>
 <translation id="5835253272509953988">Se a política for definida como "Ativada", os usuários poderão permitir que o <ph name="PRODUCT_NAME" /> verifique se os nomes de usuário e as senhas usados foram comprometidos em um vazamento.
 
@@ -4897,6 +4939,10 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 <translation id="654303922206238013">Estratégia de migração para eCryptfs</translation>
 <translation id="6543277347547044538">Final do intervalo (não incluso).</translation>
 <translation id="6544601600794014309">Ativar a tradução das Respostas rápidas</translation>
+<translation id="6544759513632821565">A API <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> permite que aplicativos da Web capturem várias superfícies ao mesmo tempo.
+      Esta política desbloqueia a propriedade <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> para aplicativos da Web em origens definidas.
+      Se a propriedade <ph name="AUTO_SELECT_ALL_SCREENS_NAME" />for definida em uma solicitação <ph name="GET_DISPLAY_MEDIA_SET_NAME" />, todas as superfícies de tela serão capturadas automaticamente sem precisar de permissão explícita do usuário.
+      Se a política não for definida, a propriedade <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> não vai ficar disponível para nenhum aplicativo da Web.</translation>
 <translation id="654546276700640113">Se a política for definida, o tamanho máximo de PIN configurado será aplicado. Se o valor for 0 ou menos, o usuário poderá definir um PIN do tamanho que quiser. Se o valor for maior que 0 e menor que <ph name="PIN_UNLOCK_MINIMUM_LENGTH_POLICY_NAME" />, o tamanho máximo será definido como o mínimo.
 
       Se a política não for definida, não haverá tamanho máximo aplicado.</translation>
@@ -6296,6 +6342,7 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
 
       O <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica a quantidade mínima de dados em bytes que aciona a verificação de padrões. Isso significa que a cópia para a área de transferência de uma URL bloqueada é autorizada se o tamanho dos dados copiados for menor que o valor especificado nesse campo. Se o campo não for definido, o valor padrão será de 100 bytes.
       </translation>
+<translation id="8035570672225663428">Permitir que o modelo de carregamento adaptável controle o processo de carregamento para prolongar a duração da bateria</translation>
 <translation id="8044493735196713914">Informar modo de inicialização do dispositivo</translation>
 <translation id="80453040817068401">Disponibilizar o navegador <ph name="LACROS_NAME" /></translation>
 <translation id="804619600634661088">Permitir o uso da depuração remota</translation>
@@ -6333,6 +6380,10 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
 <translation id="8099880303030573137">Intervalo de inatividade no funcionamento com energia da bateria</translation>
 <translation id="8101381354936029836">Grupo atômico de políticas:</translation>
 <translation id="8102913158860568230">Configuração padrão mediastream</translation>
+<translation id="8103563905615378194">Especifica se um modelo de carregamento adaptável tem permissão para controlar o processo de carregamento e prolongar a duração da bateria.
+
+      Quando o dispositivo está no carregamento adaptável, o modelo avalia se o processo de carregamento precisa ser controlado para prolongar a duração da bateria. Quando o modelo controla o processo de carregamento, ele mantém a bateria carregada até certo nível, como 80%, e carrega o dispositivo até 100% quando o usuário precisa.
+      Se esta política for definida como verdadeira ou for deixada sem definição, o modelo de carregamento adaptável será ativado e terá permissão para controlar o processo de carregamento e prolongar a duração da bateria. Se esta política for definida como falsa, o modelo de carregamento adaptável não vai influenciar no processo de carregamento.</translation>
 <translation id="8104962233214241919">Selecionar certificados de cliente automaticamente para estes sites</translation>
 <translation id="8114382167597081590">Não aplicar o Modo restrito no YouTube</translation>
 <translation id="8117921351531866504">Permite que você defina se os sites têm permissão de verificar se os usuários salvaram formas de pagamento.
@@ -6546,6 +6597,11 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       Se você definir a política, os usuários não poderão mudá-la. Se ela não for definida, ficará ativa, mas os usuários poderão mudá-la.</translation>
 <translation id="8300992833374611099">Controla onde as Ferramentas para Desenvolvedores podem ser usadas</translation>
 <translation id="8301065459352777588">Usuários de Sessões de visitante gerenciadas podem armazenar configurações de tela para o dispositivo</translation>
+<translation id="8303923135132440974">Controla a caixa de diálogo "Avisar antes de sair (⌘Q)" quando o usuário tenta sair do navegador.
+
+      Se a política for ativada ou for deixada sem definição, uma caixa de diálogo de alerta será aberta quando o usuário tentar sair.
+
+      Se ela for desativada, uma caixa de diálogo não será aberta quando o usuário tenta sair.</translation>
 <translation id="830440838848984847">Permitir que usuários façam login no <ph name="PRODUCT_NAME" /></translation>
 <translation id="8306117673860983372">Configurações de login</translation>
 <translation id="830819203330820450">Se ativada ou não configurada (padrão), uma página da Web poderá usar

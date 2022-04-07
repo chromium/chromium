@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">„Bluetooth“ įrenginys „<ph name="DEVICE_NAME" />“ prašo leidimo susieti. Šiame įrenginyje įveskite šį PIN kodą: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">Ekrano vaizdo įrašymo įrankiai</translation>
 <translation id="1024261588257374085">Pasirinkta dalinė ekrano kopija</translation>
+<translation id="1024364763893396229">Išsaugokite „<ph name="NAME" />“</translation>
 <translation id="1032891413405719768">Rašiklio akumuliatorius senka</translation>
 <translation id="1036073649888683237">Norėdami tvarkyti pranešimus, eikite į nustatymus</translation>
 <translation id="1036672894875463507">Esu „Google“ padėjėjas, pasiruošęs jums padėti visą dieną!
@@ -35,6 +36,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1175572348579024023">Slinkti</translation>
 <translation id="1178581264944972037">Pristabdyti</translation>
 <translation id="1181037720776840403">Pašalinti</translation>
+<translation id="1183863904939664422">Šis pasiūlymas nedomina</translation>
 <translation id="118437560755358292">Norėdami užtikrinti patikimesnę apsaugą, įveskite slaptažodį arba PIN kodą</translation>
 <translation id="118532027333893379">Palieskite bet kur, kad būtų užfiksuotas visas ekranas</translation>
 <translation id="1190609913194133056">Pranešimų centras</translation>
@@ -295,6 +297,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2819276065543622893">Būsite atjungti.</translation>
 <translation id="2825224105325558319">„<ph name="DISPLAY_NAME" />“ nepalaiko <ph name="SPECIFIED_RESOLUTION" />. Skyra buvo pakeista į <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Lentyna</translation>
+<translation id="2831035692318564937">Įjungta iki saulėtekio</translation>
 <translation id="2834813915651407382">Neseniai atidaryta</translation>
 <translation id="2841907151129139818">Perjungta į planšetinio kompiuterio režimą</translation>
 <translation id="2844169650293029770">USB-C įrenginys (prievadas kairėje, priekinėje dalyje)</translation>
@@ -441,6 +444,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3626281679859535460">Šviesumas</translation>
 <translation id="3630697955794050612">išjungta</translation>
 <translation id="3631369015426612114">Leisti pranešimus iš toliau nurodytų šaltinių.</translation>
+<translation id="3633097874324966332">Atidarykite „Bluetooth“ nustatymus ir susiekite įrenginį</translation>
 <translation id="3638400994746983214">Perjunkite privatumo ekraną. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Vėluojama atnaujinti</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> tvarkomas naudotojas</translation>
@@ -586,6 +590,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4481530544597605423">Atsieti įrenginiai</translation>
 <translation id="4505050298327493054">Aktyvus darbalaukis.</translation>
 <translation id="4513946894732546136">Atsiliepimai</translation>
+<translation id="4516867700536986208">Visos programos: naršykite naudodami rodyklę kairėn arba žemyn, kad pasiektumėte visas programas</translation>
 <translation id="4518404433291145981">Kad atrakintumėte „Chromebook“, pirmiausia atrakinkite telefoną</translation>
 <translation id="4527045527269911712">„Bluetooth“ įrenginys „<ph name="DEVICE_NAME" />“ prašo leidimo susieti.</translation>
 <translation id="453661520163887813">Liko <ph name="TIME" />, kol bus visiškai įkrautas</translation>
@@ -594,6 +599,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4560576029703263363">Įjungta</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Slėpti slaptažodį</translation>
+<translation id="4566144812051858745">Nedomina jokie pasiūlymai</translation>
 <translation id="4570957409596482333">Funkcijos „Teksto ištarimas“ mygtukas</translation>
 <translation id="4573176682887762361">„Įvesti [žodį / frazę]“</translation>
 <translation id="4577274620589681794">Laikas baigėsi · <ph name="LABEL" /></translation>
@@ -644,6 +650,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4868492592575313542">suaktyvinta</translation>
 <translation id="4872237917498892622">„Alt“ + paieškos arba „Shift“</translation>
 <translation id="4881695831933465202">Atidaryti</translation>
+<translation id="4889868803215848840">Galite pateikti atsiliepimą, kad padėtumėte pagerinti pasiūlymus:</translation>
 <translation id="4890187583552566966">„Google“ padėjėją išjungė administratorius.</translation>
 <translation id="4890408602550914571">Įsitikinkite, kad telefonas netoliese ir jame įjungtas „Bluetooth“ ryšys.</translation>
 <translation id="4895488851634969361">Akumuliatorius visiškai įkrautas.</translation>
@@ -769,6 +776,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="5744083938413354016">Vilkimas palietus</translation>
 <translation id="5745612484876805746">Nakties šviesa įjungiama automatiškai saulei leidžiantis</translation>
 <translation id="5750765938512549687">„Bluetooth“ išjungtas</translation>
+<translation id="5760866832697883462">Prijunkite „<ph name="NAME" />“</translation>
 <translation id="576341972084747908">Atsisiunčiamas pavojingas failas <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">„Shelf Party“ režimas išjungtas.</translation>
 <translation id="576453121877257266">Nakties šviesa įjungta.</translation>
@@ -830,6 +838,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="6054305421211936131">Prisijungti naudojant išmaniąją kortelę</translation>
 <translation id="6059276912018042191">Pastarieji „Chrome“ skirtukai</translation>
 <translation id="6062360702481658777">Būsite automatiškai atjungti po <ph name="LOGOUT_TIME_LEFT" />.</translation>
+<translation id="6064463340679478396">Daugiau failo nenaudosiu</translation>
 <translation id="6073451960410192870">Sustabdyti įrašymą</translation>
 <translation id="6099678161144790572">Redaguota per pastarąjį mėnesį</translation>
 <translation id="6103838137565245112">sistema</translation>
@@ -856,6 +865,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="6267036997247669271">„<ph name="NAME" />“: aktyvinama...</translation>
 <translation id="6283712521836204486">Netrukdymo režimas išjungtas.</translation>
 <translation id="6284232397434400372">Skyra pakeista</translation>
+<translation id="6286007831750548130">Paieškos istorijos rezultatas ištrintas</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> galima pridėti iš naujo vėliau, gavus tėvų leidimą.</translation>
 <translation id="6291221004442998378">Nekraunama</translation>
 <translation id="6315170314923504164">Balsas</translation>
@@ -954,6 +964,7 @@ Naujas įdiegimas</translation>
 <translation id="6886172995547742638">Gali sumažėti „<ph name="DEVICE_TYPE" />“ įrenginio našumas. Naudokite sertifikuotą <ph name="PREFERRED_MINIMUM_POWER" /> W ar didesnės galios USB-C maitinimo adapterį.</translation>
 <translation id="688631446150864480">Norėdami perjungti langus, paspauskite rodyklę žemyn</translation>
 <translation id="6896758677409633944">Kopijuoti</translation>
+<translation id="6901883536534621389">Išbandykite naršymo gestus</translation>
 <translation id="6919251195245069855">Nepavyko atpažinti išmaniosios kortelės. Bandykite dar kartą.</translation>
 <translation id="6921188888306725546">Patobulinti spartieji klavišai</translation>
 <translation id="6931576957638141829">Išsaugoti į</translation>
@@ -1011,6 +1022,7 @@ Naujas įdiegimas</translation>
 <translation id="7302889331339392448">Subtitrai realiuoju laiku išjungti.</translation>
 <translation id="7303365578352795231">Atsakoma kitame įrenginyje.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7307830679306928882">Naujausios programos: naršykite naudodami rodyklė kairėn, kad pasiektumėte visas naujausias programas</translation>
 <translation id="7313193732017069507">Išskleisti fotoaparatą</translation>
 <translation id="731589979057211264">Režimas „Shelf Party“ įjungtas.</translation>
 <translation id="7319740667687257810">Paleidimo priemonė, dalinis rodinys</translation>
@@ -1113,6 +1125,7 @@ Naujas įdiegimas</translation>
 <translation id="7886169021410746335">Koreguokite privatumo nustatymus</translation>
 <translation id="7886277072580235377">Interneto sesijos duomenys bus išvalyti, kai atsijungsite. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">„Send an email“ (Siųsk el. laišką)</translation>
+<translation id="7893503627044934815">Nenoriu, kad šis failas būtų rodomas</translation>
 <translation id="7895348134893321514">Perkelti</translation>
 <translation id="7897375687985782769">Paspaudėte ekrano pasukimo spartųjį klavišą. Ar norite pasukti ekraną?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
@@ -1130,6 +1143,7 @@ Naujas įdiegimas</translation>
 <translation id="7977927628060636163">Ieškoma mobiliojo ryšio tinklų...</translation>
 <translation id="7982789257301363584">Tinklas</translation>
 <translation id="7984197416080286869">Viršytas leistinas bandymų atrakinti naudojant kontrolinį kodą skaičius</translation>
+<translation id="798779949890829624">Šį nustatymą tvarko jūsų administratorius</translation>
 <translation id="7994370417837006925">Kelios paskyros</translation>
 <translation id="7995804128062002838">Nepavyko užfiksuoti ekrano</translation>
 <translation id="8000066093800657092">Tinklo nėra</translation>
@@ -1157,6 +1171,7 @@ Naujas įdiegimas</translation>
 <translation id="813913629614996137">Inicijuojama...</translation>
 <translation id="8142441511840089262">Dukart spustelėti</translation>
 <translation id="8142699993796781067">Privatus tinklas</translation>
+<translation id="8144760705599030999">Išsaugokite „<ph name="NAME" />“ paskyroje (<ph name="EMAIL" />), kad galėtumėte sparčiau susieti su kitais įrenginiais</translation>
 <translation id="8152092012181020186">Paspauskite „Ctrl“ + W, kad uždarytumėte.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automatinis užbaigimas</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Šį nustatymą tvarko jūsų administratorius.</translation>
@@ -1194,6 +1209,7 @@ Naujas įdiegimas</translation>
 <translation id="8412677897383510995">Rodyti ekrano nustatymus</translation>
 <translation id="8413272770729657668">Įrašymas prasidės netrukus: 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (dėklas)</translation>
+<translation id="8420205633584771378">Pašalinti šį siūlymą?</translation>
 <translation id="8421270167862077762">Šiame įrenginyje nėra „<ph name="UNAVAILABLE_APPS" />“.</translation>
 <translation id="8425213833346101688">Keisti</translation>
 <translation id="8426708595819210923">Labas vakaras, <ph name="GIVEN_NAME" />,</translation>
@@ -1286,6 +1302,7 @@ Naujas įdiegimas</translation>
 <translation id="9000771174482730261">TVARKYKITE SAUGYKLĄ</translation>
 <translation id="9017320285115481645">Įveskite „Family Link“ tėvų prieigos kodą.</translation>
 <translation id="9024331582947483881">visas ekranas</translation>
+<translation id="9030319654231318877">Išjungta iki saulėlydžio</translation>
 <translation id="9034924485347205037">„Linux“ failai</translation>
 <translation id="9047624247355796468">Atidaryti „<ph name="NETWORK_NAME" />“ nustatymus</translation>
 <translation id="9059834730836941392">Sutraukti pranešimą</translation>
@@ -1305,6 +1322,7 @@ Naujas įdiegimas</translation>
 <translation id="9099154003160514616">Pasiekiamas „Lacros“ naujinys</translation>
 <translation id="9100887602489003640">Pridedamas profilis. Palaukite kelias minutes.</translation>
 <translation id="9105450214093926548">Antrojo naudotojo prisijungimo funkcija nepalaikoma, kol vykdoma „Lacros“ naršyklė. Naudokite antrosios naršyklės profilį sistemoje „Lacros“ arba uždarykite „Lacros“ ir bandykite dar kartą.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> arba <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Negalima įrašyti apsaugoto turinio</translation>
 <translation id="9161053988251441839">SIŪLOMOS PROGRAMOS</translation>
 <translation id="9166331175924255663">Perjungti bendrinimo netoliese didelį matomumą.</translation>

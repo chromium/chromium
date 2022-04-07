@@ -168,6 +168,7 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="2421044535038393232">Jatka muokkausta</translation>
 <translation id="2434405374328098816">Olet jo tallentanut salasanan (käyttäjätunnus: <ph name="USERNAME" />) täällä: <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Näytä salasana</translation>
+<translation id="2469960372084740698">Laitetaanko Selaussuoja pois päältä?</translation>
 <translation id="2473876017985765807">Olet jo tallentanut salasanan täällä: <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Ei valittu</translation>
 <translation id="2497852260688568942">Järjestelmänvalvoja on poistanut synkronoinnin käytöstä.</translation>
@@ -313,6 +314,7 @@ Seuraa alla olevia ohjeita:</translation>
 <translation id="3691593122358196899">Lisätty kirjanmerkiksi kansioon <ph name="FOLDER_TITLE" /></translation>
 <translation id="369349502275246497">Tarjoa salasanojen tallentamista</translation>
 <translation id="3709582977625132201">Merkitse lukemattomaksi</translation>
+<translation id="371230970611282515">Ennustaa vaarallisia tapahtumia ja varoittaa niistä etukäteen.</translation>
 <translation id="3740397331642243698">Avaa syötetyt URL-osoitteet Google Chromen incognito-tilassa.</translation>
 <translation id="3762232513783804601">Suunniteltu iPadille</translation>
 <translation id="3771033907050503522">Incognito</translation>
@@ -528,6 +530,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5737974891429562743">Tilin kirjautumistiedot ovat vanhentuneet. Aloita synkronointi päivittämällä.</translation>
 <translation id="5738887413654608789">Tämän avulla voit löytää sinua ympäröiviin asioihin liittyviä verkkosivuja.</translation>
 <translation id="5758631781033351321">Näet lukulistasi täällä</translation>
+<translation id="5765456154762864099">Valikko → Asetukset → Oletusselain</translation>
 <translation id="5782227691023083829">Käännetään...</translation>
 <translation id="5791632441210678828">Lajittelupainike Seurataan-fiidille</translation>
 <translation id="5802829331520313983">Ota käyttöön…</translation>
@@ -582,6 +585,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6144589619057374135">Avaa ${url} incognito-tilassa</translation>
 <translation id="6149061208933997199">Käytä salasanaa</translation>
 <translation id="6159839020698489198">valinnainen</translation>
+<translation id="6173386249456979368">Nopeampi, proaktiivinen suojaus vaarallisia sivustoja, latauksia ja laajennuksia vastaan. Varoittaa sinua salasanarikkomuksista. Edellyttää selausdatan lähettämistä Googlelle</translation>
 <translation id="6177442314419606057">Hae Chromesta</translation>
 <translation id="6184086493125982861">Näytä välilehdet</translation>
 <translation id="6187302354554850004">Viim. synkronoitu: <ph name="LAST_USED_TIME" /></translation>
@@ -768,6 +772,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7658239707568436148">Peru</translation>
 <translation id="7671141431838911305">ASENNA</translation>
 <translation id="7701040980221191251">Ei mitään</translation>
+<translation id="7726702057919861819">Valikko → Asetukset → Poista selaustiedot</translation>
 <translation id="7741325291586284254">Uusi sivu incognito-välilehdellä</translation>
 <translation id="7765158879357617694">Siirrä</translation>
 <translation id="7772032839648071052">Vahvista tunnuslause</translation>
@@ -840,6 +845,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8386068868580335421">Nollaa</translation>
 <translation id="8407669440184693619">Tälle sivustolle ei löytynyt salasanoja</translation>
 <translation id="842017693807136194">Kirjauduttu palvelulla</translation>
+<translation id="8427613705947111202">Valikko → Asetukset → Salasanat</translation>
 <translation id="8428045167754449968">Kaupunki</translation>
 <translation id="8428213095426709021">Asetukset</translation>
 <translation id="8428634594422941299">Selvä</translation>

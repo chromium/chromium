@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Прылада Bluetooth "<ph name="DEVICE_NAME" />" запытвае дазвол на спалучэнне. Увядзіце на гэтай прыладзе PIN-код: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">Інструменты трансляцыі экрана</translation>
 <translation id="1024261588257374085">Быў выбраны здымак часткі экрана</translation>
+<translation id="1024364763893396229">Захаванне прылады "<ph name="NAME" />"</translation>
 <translation id="1032891413405719768">Нізкі зарад акумулятара стыла</translation>
 <translation id="1036073649888683237">Каб кіраваць апавяшчэннямі, перайдзіце ў Налады</translation>
 <translation id="1036672894875463507">Я ваш Памочнік Google і буду дапамагаць вам на працягу ўсяго дня!
@@ -167,6 +168,7 @@
 <translation id="1951012854035635156">Памочнік</translation>
 <translation id="1954252331066828794">Запіс экрана завершаны</translation>
 <translation id="1957958912175573503">Задайце мову</translation>
+<translation id="1961239773406905488">Папярэдні прагляд для камеры схаваны</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Экран блакіроўкі</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -184,6 +186,7 @@
 <translation id="2047639699071423250">Дадаць ключавую ідэю</translation>
 <translation id="2049240716062114887">Назва працоўнага стала зменена на наступную: <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Кніжная</translation>
+<translation id="2064048859448024834">Паказваецца папярэдні прагляд для камеры</translation>
 <translation id="2066708475850724665">Выключыць лупу</translation>
 <translation id="2067602449040652523">Яркасць клавіятуры</translation>
 <translation id="2078034614700056995">Правядзіце па сэнсарнай панэлі чатырма пальцамі ўправа, каб перайсці на наступны працоўны стол</translation>
@@ -293,6 +296,7 @@
 <translation id="2819276065543622893">Вы выйдзеце з уліковага запісу зараз.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> не падтрымлівае раздзяляльнасць <ph name="SPECIFIED_RESOLUTION" />. Прыменена раздзяляльнасць <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Паліца</translation>
+<translation id="2831035692318564937">Уключана да захаду сонца</translation>
 <translation id="2834813915651407382">Адкрывалася нядаўна</translation>
 <translation id="2841907151129139818">Уключаны рэжым планшэта</translation>
 <translation id="2844169650293029770">Прылада USB-C (пярэдні порт злева)</translation>
@@ -439,6 +443,7 @@
 <translation id="3626281679859535460">Яркасць</translation>
 <translation id="3630697955794050612">выключаны</translation>
 <translation id="3631369015426612114">Дазволіць апавяшчэнні з наступных крыніц</translation>
+<translation id="3633097874324966332">Каб спалучыць прыладу, адкрыйце налады Bluetooth</translation>
 <translation id="3638400994746983214">Уключыць або выключыць экран прыватнасці. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Абнаўленне пратэрмінавана</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />, карыстальнік пад кіраваннем</translation>
@@ -486,6 +491,7 @@
 <translation id="3922427723338465344">{0,plural, =1{Вярніцеся да ранейшай версіі АС на працягу 1 хвіліны}one{Вярніцеся да ранейшай версіі АС на працягу # хвіліны}few{Вярніцеся да ранейшай версіі АС на працягу # хвілін}many{Вярніцеся да ранейшай версіі АС на працягу # хвіліны}other{Вярніцеся да ранейшай версіі АС на працягу # хвіліны}}</translation>
 <translation id="3923494859158167397">Мабільныя сеткі не наладжаны</translation>
 <translation id="3932043219784172185">Няма падключаных прылад</translation>
+<translation id="3934456833412894880">Адаптыўная зарадка ўключана. Каб падоўжыць тэрмін службы акумулятара, узровень яго зараду будзе заставацца на ўзроўні 80%. Поўнасцю тэлефон зарадзіцца к таму моманту, калі ён вам будзе патрэбны.</translation>
 <translation id="3943857333388298514">Уставіць</translation>
 <translation id="394485226368336402">Налады гуку</translation>
 <translation id="3945319193631853098">Дакраніцеся, каб завяршыць наладжванне</translation>
@@ -766,6 +772,7 @@
 <translation id="5744083938413354016">Перацягванне дотыкам</translation>
 <translation id="5745612484876805746">Начная падсветка ўключаецца аўтаматычна пасля захаду сонца</translation>
 <translation id="5750765938512549687">Bluetooth выключаны</translation>
+<translation id="5760866832697883462">Падключэнне прылады "<ph name="NAME" />"</translation>
 <translation id="576341972084747908">Спампоўванне небяспечнага файла "<ph name="FILENAME" />"</translation>
 <translation id="5763928712329149804">Рэжым Shelf Party выключаны.</translation>
 <translation id="576453121877257266">Начная падсветка ўключана.</translation>
@@ -951,6 +958,7 @@
 <translation id="6886172995547742638">Прадукцыйнасць прылады <ph name="DEVICE_TYPE" /> можа знізіцца. Выкарыстоўвайце адаптар сілкавання USB-C з магутнасцю, не меншай за <ph name="PREFERRED_MINIMUM_POWER" /> Вт</translation>
 <translation id="688631446150864480">Для пераключэння паміж вокнамі націскайце на стрэлку ўніз</translation>
 <translation id="6896758677409633944">Капіраваць</translation>
+<translation id="6901883536534621389">Паспрабуйце выкарыстоўваць для навігацыі жэсты</translation>
 <translation id="6919251195245069855">Не ўдалося распазнаць вашу разумную картку. Паўтарыце спробу.</translation>
 <translation id="6921188888306725546">Спалучэнні клавіш сталі больш зручнымі</translation>
 <translation id="6931576957638141829">Захаваць у</translation>
@@ -1127,6 +1135,7 @@
 <translation id="7977927628060636163">Ідзе пошук мабільных сетак...</translation>
 <translation id="7982789257301363584">Сетка</translation>
 <translation id="7984197416080286869">Зашмат спроб разблакіроўкі адбіткам</translation>
+<translation id="798779949890829624">Гэта налада знаходзіцца пад кіраваннем адміністратара</translation>
 <translation id="7994370417837006925">Уваход у некалькі ўліковых запісаў</translation>
 <translation id="7995804128062002838">Не ўдалося зрабіць здымак экрана</translation>
 <translation id="8000066093800657092">Няма сеткі</translation>
@@ -1154,6 +1163,7 @@
 <translation id="813913629614996137">Ідзе ініцыялізацыя...</translation>
 <translation id="8142441511840089262">Падвойнае націсканне</translation>
 <translation id="8142699993796781067">Прыватная сетка</translation>
+<translation id="8144760705599030999">Захавайце прыладу "<ph name="NAME" />" ва ўліковым запісе <ph name="EMAIL" /> для хутчэйшага спалучэння з іншымі прыладамі</translation>
 <translation id="8152092012181020186">Каб закрыць, націсніце Ctrl + W.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, аўтазапаўненне</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Гэта налада знаходзіцца пад кіраваннем адміністратара.</translation>
@@ -1191,6 +1201,7 @@
 <translation id="8412677897383510995">Паказаць налады дысплэя</translation>
 <translation id="8413272770729657668">Запіс пачнецца праз 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (чахол)</translation>
+<translation id="8420205633584771378">Выдаліць гэту прапанову?</translation>
 <translation id="8421270167862077762">На гэтай прыладзе няма праграмы "<ph name="UNAVAILABLE_APPS" />".</translation>
 <translation id="8425213833346101688">Змяніць</translation>
 <translation id="8426708595819210923">Добры вечар, <ph name="GIVEN_NAME" />!</translation>
@@ -1283,6 +1294,7 @@
 <translation id="9000771174482730261">КІРАВАЦЬ СХОВІШЧАМ</translation>
 <translation id="9017320285115481645">Увядзіце бацькоўскі код доступу Family Link.</translation>
 <translation id="9024331582947483881">увесь экран</translation>
+<translation id="9030319654231318877">Выключана да захаду сонца</translation>
 <translation id="9034924485347205037">Файлы Linux</translation>
 <translation id="9047624247355796468">Адкрыць налады для сеткі <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Згарнуць апавяшчэнне</translation>
@@ -1302,6 +1314,7 @@
 <translation id="9099154003160514616">Ёсць абнаўленне Lacros</translation>
 <translation id="9100887602489003640">Ідзе дадаванне профілю. Пачакайце некалькі хвілін.</translation>
 <translation id="9105450214093926548">Падчас работы браўзера Lacros уваход у некалькі ўліковых запісаў не падтрымліваецца. Выкарыстайце другі профіль браўзера або закрыйце Lacros і паўтарыце спробу.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> або <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Запіс немагчымы з-за наяўнасці на экране абароненага змесціва</translation>
 <translation id="9161053988251441839">ПРАПАНАВАНЫЯ ПРАГРАМЫ</translation>
 <translation id="9166331175924255663">Уключыць або выключыць рэжым высокай бачнасці для функцыі "Абагульванне паблізу".</translation>

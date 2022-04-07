@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Пристрою Bluetooth "<ph name="DEVICE_NAME" />" потрібен дозвіл на підключення. Введіть на пристрої цей PIN-код: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">Інструменти для скрінкастингу</translation>
 <translation id="1024261588257374085">Вибрано знімок частини екрана</translation>
+<translation id="1024364763893396229">Збережіть пристрій "<ph name="NAME" />"</translation>
 <translation id="1032891413405719768">Низький заряд акумулятора стилуса</translation>
 <translation id="1036073649888683237">Щоб керувати сповіщеннями, перейдіть у налаштування</translation>
 <translation id="1036672894875463507">Я – Google Асистент і допомагатиму вам упродовж дня.
@@ -167,6 +168,7 @@
 <translation id="1951012854035635156">Асистент</translation>
 <translation id="1954252331066828794">Запис екрана завершено</translation>
 <translation id="1957958912175573503">Вибрати мову</translation>
+<translation id="1961239773406905488">Попередній перегляд зображення з камери приховано</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Блокування екрана</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -184,6 +186,7 @@
 <translation id="2047639699071423250">Додати ключову ідею</translation>
 <translation id="2049240716062114887">Назву робочого столу змінено на "<ph name="DESK_NAME" />"</translation>
 <translation id="2050339315714019657">Портретна</translation>
+<translation id="2064048859448024834">Попередній перегляд зображення з камери ввімкнено</translation>
 <translation id="2066708475850724665">Вимкнути лупу</translation>
 <translation id="2067602449040652523">Яскравість клавіатури</translation>
 <translation id="2078034614700056995">Проведіть чотирма пальцями праворуч, щоб перейти до наступного робочого столу</translation>
@@ -293,6 +296,7 @@
 <translation id="2819276065543622893">Зараз ви вийдете.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> не підтримує роздільну здатність <ph name="SPECIFIED_RESOLUTION" />. Роздільну здатність змінено на <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Полиця</translation>
+<translation id="2831035692318564937">Увімкнено до сходу сонця</translation>
 <translation id="2834813915651407382">Відкрито нещодавно</translation>
 <translation id="2841907151129139818">Увімкнено режим планшета</translation>
 <translation id="2844169650293029770">Пристрій, під’єднаний до порту USB-C (ліворуч на передній панелі)</translation>
@@ -439,6 +443,7 @@
 <translation id="3626281679859535460">Яскравість</translation>
 <translation id="3630697955794050612">вимкнено</translation>
 <translation id="3631369015426612114">Дозволити сповіщення з перелічених нижче джерел</translation>
+<translation id="3633097874324966332">Відкрийте налаштування Bluetooth, щоб створити пару з пристроєм</translation>
 <translation id="3638400994746983214">Перемикає екран конфіденційності. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Оновлення прострочено</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – керований користувач</translation>
@@ -486,6 +491,7 @@
 <translation id="3922427723338465344">{0,plural, =1{Поверніться до попередньої версії на пристрої протягом 1 хвилини}one{Поверніться до попередньої версії на пристрої протягом # хвилини}few{Поверніться до попередньої версії на пристрої протягом # хвилин}many{Поверніться до попередньої версії на пристрої протягом # хвилин}other{Поверніться до попередньої версії на пристрої протягом # хвилини}}</translation>
 <translation id="3923494859158167397">Мобільні мережі не налаштовано</translation>
 <translation id="3932043219784172185">Немає підключених пристроїв</translation>
+<translation id="3934456833412894880">Адаптивне заряджання ввімкнено. Заряд акумулятора підтримуватиметься на рівні 80%, щоб подовжити час роботи. Акумулятор повністю зарядиться до того, як вам знадобиться пристрій.</translation>
 <translation id="3943857333388298514">Вставити</translation>
 <translation id="394485226368336402">Налаштування звуку</translation>
 <translation id="3945319193631853098">Натисніть, щоб завершити налаштування</translation>
@@ -766,6 +772,7 @@
 <translation id="5744083938413354016">Перетягування дотиком</translation>
 <translation id="5745612484876805746">Нічний екран увімкнеться автоматично після заходу сонця</translation>
 <translation id="5750765938512549687">Bluetooth вимкнено</translation>
+<translation id="5760866832697883462">Підключіть пристрій "<ph name="NAME" />"</translation>
 <translation id="576341972084747908">Завантажується небезпечний файл <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Режим Shelf Party вимкнено.</translation>
 <translation id="576453121877257266">Нічний екран увімкнено.</translation>
@@ -951,6 +958,7 @@
 <translation id="6886172995547742638">Продуктивність пристрою <ph name="DEVICE_TYPE" /> може знизитися. Використовуйте сертифікований адаптер живлення USB-C на <ph name="PREFERRED_MINIMUM_POWER" /> Вт або більше.</translation>
 <translation id="688631446150864480">Щоб переходити між вікнами, використовуйте клавішу зі стрілкою вниз</translation>
 <translation id="6896758677409633944">Копіювати</translation>
+<translation id="6901883536534621389">Спробуйте навігацію за допомогою жестів</translation>
 <translation id="6919251195245069855">Не вдається розпізнати розумну картку. Повторіть спробу.</translation>
 <translation id="6921188888306725546">Комбінації клавіш покращено</translation>
 <translation id="6931576957638141829">Зберегти в</translation>
@@ -1127,6 +1135,7 @@
 <translation id="7977927628060636163">Пошук мобільних мереж…</translation>
 <translation id="7982789257301363584">Мережа</translation>
 <translation id="7984197416080286869">Забагато спроб розблокування відбитком</translation>
+<translation id="798779949890829624">Цим налаштуванням керує адміністратор</translation>
 <translation id="7994370417837006925">Паралельний вхід</translation>
 <translation id="7995804128062002838">Не вдалося зробити знімок екрана</translation>
 <translation id="8000066093800657092">Немає мережі</translation>
@@ -1154,6 +1163,7 @@
 <translation id="813913629614996137">Ініціалізація...</translation>
 <translation id="8142441511840089262">Двічі натиснути</translation>
 <translation id="8142699993796781067">Приватна мережа</translation>
+<translation id="8144760705599030999">Збережіть пристрій "<ph name="NAME" />" в обліковому записі <ph name="EMAIL" />, щоб швидко створювати пару з іншими пристроями</translation>
 <translation id="8152092012181020186">Щоб закрити вкладку, натисніть Ctrl + W.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />: автозавершення</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Цим налаштуванням керує адміністратор.</translation>
@@ -1191,6 +1201,7 @@
 <translation id="8412677897383510995">Показати налаштування дисплея</translation>
 <translation id="8413272770729657668">Зараз почнеться запис: 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Футляр)</translation>
+<translation id="8420205633584771378">Видалити цю пропозицію?</translation>
 <translation id="8421270167862077762">Додаток <ph name="UNAVAILABLE_APPS" /> не встановлено на цьому пристрої.</translation>
 <translation id="8425213833346101688">Змінити</translation>
 <translation id="8426708595819210923">Доброго вечора, <ph name="GIVEN_NAME" />!</translation>
@@ -1283,6 +1294,7 @@
 <translation id="9000771174482730261">КЕРУВАТИ СХОВИЩЕМ</translation>
 <translation id="9017320285115481645">Введіть батьківський код доступу Family Link.</translation>
 <translation id="9024331582947483881">усього екрана</translation>
+<translation id="9030319654231318877">Вимкнено до заходу сонця</translation>
 <translation id="9034924485347205037">Файли Linux</translation>
 <translation id="9047624247355796468">Відкрити налаштування <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Згорнути сповіщення</translation>
@@ -1302,6 +1314,7 @@
 <translation id="9099154003160514616">Доступне оновлення Lacros</translation>
 <translation id="9100887602489003640">Додається профіль. Зачекайте кілька хвилин.</translation>
 <translation id="9105450214093926548">Під час роботи веб-переглядача Lacros вхід у кілька облікових записів не підтримується. Скористайтесь іншим профілем веб-переглядача або закрийте Lacros і повторіть спробу.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> або <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Не вдається записати захищений контент</translation>
 <translation id="9161053988251441839">ПРОПОНОВАНІ ДОДАТКИ</translation>
 <translation id="9166331175924255663">Перемикач режиму високої видимості для функції "Передавання поблизу".</translation>

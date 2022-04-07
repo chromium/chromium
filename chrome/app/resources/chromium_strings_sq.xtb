@@ -15,6 +15,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="151962892725702025">Chromium OS nuk mund të sinkronizonte të dhënat e tua sepse Sinkronizimi nuk mundësohet për domenin tënd.</translation>
 <translation id="1524282610922162960">Ndaj një skedë të Chromium</translation>
 <translation id="1553461853655228091">Chromium ka nevojë për leje për t'u qasur te kamera jote për të krijuar një hartë 3D të ambientit tënd rrethues</translation>
+<translation id="1602421994560205104">Chromium e bllokoi këtë skedar sepse ai është shumë i madh për kontroll sigurie. Provo përsëri me skedarë deri në 50 MB</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administratori yt kërkon që të hapësh përsëri Chromium për të zbatuar këtë përditësim}=1{Administratori yt kërkon që të hapësh përsëri Chromium për të zbatuar këtë përditësim Dritarja jote "e fshehtë" nuk do të rihapet.}other{Administratori yt kërkon që të hapësh përsëri Chromium për të zbatuar këtë përditësim # dritaret e tua "të fshehta" nuk do të rihapen.}}</translation>
 <translation id="1625909126243026060">Shqyrto kontrollet kryesore të sigurisë dhe privatësisë në Chromium</translation>
 <translation id="1632539827495546968">Nëse dëshiron ta përdorësh këtë llogari vetëm një herë, mund të përdorësh <ph name="GUEST_LINK_BEGIN" />modalitetin "Vizitor"<ph name="GUEST_LINK_END" /> në shfletuesin Chromium. Nëse dëshiron të shtosh një llogari për dikë tjetër, <ph name="LINK_BEGIN" />shto një person të ri<ph name="LINK_END" /> në <ph name="DEVICE_TYPE" />.
@@ -222,6 +223,7 @@ Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër profili os
 <translation id="673636774878526923">Për t'u qasur te gjërat e Chromium nëpër të gjitha pajisjet, identifikohu dhe më pas aktivizo sinkronizimin.</translation>
 <translation id="6774082503108938489">Prindi yt ka çaktivizuar "Lejet për sajtet, aplikacionet dhe shtesat" për Chromium. Nuk lejohet aktivizimi për këtë <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="6847869444787758381">Chromium të informon nëse fjalëkalimet e tua komprometohen ndonjëherë</translation>
+<translation id="6852530923436401894">Chromium e bllokoi këtë skedar sepse ai ka softuer keqdashës</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kopjuar në Chromium)</translation>
 <translation id="6873893289264747459">Chromium vuri re se "<ph name="EXTENSION_NAME" />" përmban softuer keqdashës</translation>
@@ -240,6 +242,7 @@ Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër profili os
 <translation id="7218568399872925918">Sajtet që ti viziton i kujtojnë informacionet e tua derisa ti mbyll Chromium</translation>
 <translation id="7223968959479464213">Menaxheri i detyrave - Chromium</translation>
 <translation id="7246575524853130370">Interesat e tua sipas përllogaritjes nga Chromium</translation>
+<translation id="7265671031637041256">Chromium e bllokoi këtë skedar sepse ai është i enkriptuar. Kërkoji zotëruesit ta dekriptojë atë</translation>
 <translation id="7309928523159922338">Ad measurement lejon që sajtet që ti viziton të kërkojnë informacione nga Chromium të cilat ndihmojnë sajtin të masë cilësinë e funksionimit të reklamave të tij. Ad measurement kufizon gjurmimin nëpër sajte duke transferuar sa më pak informacion të jetë e mundur ndërmjet sajteve.</translation>
 <translation id="731795002583552498">Po përditëson Chromium</translation>
 <translation id="7318036098707714271">Skedari i preferencave është i dëmtuar ose i pavlefshëm.
@@ -279,6 +282,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="7898472181347242998">Për të parë nëse pajisja jote është e përditësuar, shko te <ph name="LINK_BEGIN" />Cilësimet e sistemit operativ Chromium<ph name="LINK_END" /></translation>
 <translation id="7937630085815544518">Je identifikuar në Chromium si <ph name="USER_EMAIL_ADDRESS" />. Përdor të njëjtën llogari për t'u identifikuar sërish.</translation>
 <translation id="7975919845073681630">Ky është instalim dytësor i Chromium dhe nuk mund të bëhet shfletuesi yt i parazgjedhur.</translation>
+<translation id="7997934263947464652">Shtesat, aplikacionet dhe temat nga burime të panjohura mund ta dëmtojnë pajisjen tënde. Chromium rekomandon që t'i instalosh ato vetëm nga<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Pasi Chromium të ketë qasje, sajtet e uebit do të jenë në gjendje të kërkojnë prej teje qasje.</translation>
 <translation id="8045118833343856403">Llogaritë e mëposhtme nuk janë të identifikuara në ndonjë profil të Chromium. Nëse do të përdorësh një llogari në një profil tjetër, hiq atë profil përpara.</translation>
 <translation id="8105840573057009683">Chromium ka nevojë për lejen e vendndodhjes për të këtë sajt</translation>

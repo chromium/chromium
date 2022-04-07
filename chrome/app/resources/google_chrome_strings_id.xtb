@@ -174,6 +174,7 @@
 <translation id="4600710005438004015">Chrome tidak dapat diupdate ke versi terbaru, sehingga Anda tidak mendapatkan perbaikan keamanan dan fitur baru.</translation>
 <translation id="4627412468266359539">Opsional: Bantu tingkatkan fitur dan performa ChromeOS Flex dengan mengirimkan data penggunaan dan diagnostik secara otomatis ke Google.</translation>
 <translation id="4633000520311261472">Agar Chrome lebih aman, kami menonaktifkan beberapa ekstensi yang tidak tercantum pada <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dan mungkin telah ditambahkan tanpa sepengetahuan Anda.</translation>
+<translation id="469553575393225953">Ekstensi, aplikasi, dan tema dari sumber tidak dikenal dapat membahayakan perangkat Anda. Chrome merekomendasikan hanya menginstal ekstensi, aplikasi, dan tema dari Chrome Web Store</translation>
 <translation id="4728575227883772061">Penginstalan gagal karena kesalahan yang tidak diketahui. Jika Google Chrome sedang berjalan; tutup, lalu ulang kembali.</translation>
 <translation id="4747730611090640388">Chrome dapat memperkirakan minat Anda.  Kemudian, situs yang Anda buka dapat meminta Chrome untuk melihat minat Anda agar dapat mempersonalisasi iklan yang Anda lihat.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -213,6 +214,7 @@
 <translation id="5736850870166430177">Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chrome mungkin juga mengirimkan URL, termasuk bit konten halaman, ke Safe Browsing</translation>
 <translation id="573759479754913123">Tentang Chrome OS</translation>
 <translation id="5756509061973259733">Profil Chrome dengan akun ini sudah ada di perangkat ini</translation>
+<translation id="5763280521700030406">Chrome memblokir file ini karena terlalu besar untuk pemeriksaan keamanan. Coba lagi dengan file yang berukuran maksimal 50 MB</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Tidak dapat meluncurkan Chrome. Harap coba lagi.</translation>
 <translation id="5867197326698922595">Google Chrome mencoba mengedit sandi.</translation>
@@ -321,8 +323,10 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="8394720698884623075">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chrome</translation>
 <translation id="840084489713044809">Google Chrome ingin mengekspor sandi.</translation>
 <translation id="8416347857511542594">Pelajari lebih lanjut personalisasi iklan di Chrome</translation>
+<translation id="8421734018304082652">Chrome memblokir file ini karena dienkripsi. Minta pemiliknya untuk mendekripsi file</translation>
 <translation id="8433638294851456451">Untuk mengirimkan nomor dari sini ke ponsel Android Anda, login ke Chrome di kedua perangkat.</translation>
 <translation id="8498858610309223613">Update keamanan khusus untuk Google Chrome baru saja diterapkan. Mulai ulang Google Chrome sekarang dan kami akan memulihkan tab Anda.</translation>
+<translation id="8504220326736535258">Chrome memblokir file ini karena memiliki malware</translation>
 <translation id="8516431725144212809">Minat Anda sesuai perkiraan Chrome</translation>
 <translation id="8521348052903287641">Inbound rule untuk Google Chrome Dev guna mengizinkan traffic mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>

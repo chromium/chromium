@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Bluetooth ડિવાઇસ "<ph name="DEVICE_NAME" />" ને જોડી બનાવવા માટે પરવાનગી જોઈએ છે. કૃપા કરીને તે ડિવાઇસ પર આ PIN કોડ દાખલ કરો: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">સ્ક્રીનકાસ્ટના ટૂલ</translation>
 <translation id="1024261588257374085">આંશિક સ્ક્રીનશૉટ પસંદ કર્યો</translation>
+<translation id="1024364763893396229">તમારું <ph name="NAME" /> સાચવો</translation>
 <translation id="1032891413405719768">સ્ટાઇલસની બૅટરી ઓછી છે</translation>
 <translation id="1036073649888683237">નોટિફિકેશન મેનેજ કરવા માટે, સેટિંગ પર જાઓ</translation>
 <translation id="1036672894875463507">હું તમારું Google Assistant, તમને આખા દિવસમાં સહાય કરવા માટે અહીં ઉપલબ્ધ છું!
@@ -295,6 +296,7 @@
 <translation id="2819276065543622893">તમે હવે સાઇન આઉટ થશો.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" />ને સપોર્ટ આપતું નથી. રિઝોલ્યુશનને <ph name="FALLBACK_RESOLUTION" /> પર બદલવામાં આવ્યું હતું.</translation>
 <translation id="2825619548187458965">શેલ્ફ</translation>
+<translation id="2831035692318564937">સૂર્યોદય સુધી ચાલુ રાખો</translation>
 <translation id="2834813915651407382">તાજેતરમાં ખોલેલી</translation>
 <translation id="2841907151129139818">ટૅબ્લેટ મોડ પર સ્વિચ થયા</translation>
 <translation id="2844169650293029770">USB-C ઉપકરણ (ડાબી બાજુનું આગળનું પોર્ટ)</translation>
@@ -441,6 +443,7 @@
 <translation id="3626281679859535460">તેજ</translation>
 <translation id="3630697955794050612">બંધ</translation>
 <translation id="3631369015426612114">નીચેના પરથી સૂચનાઓને મંજૂરી આપો</translation>
+<translation id="3633097874324966332">ડિવાઇસનું જોડાણ કરવા માટે બ્લૂટૂથના સેટિંગ ખોલો</translation>
 <translation id="3638400994746983214">પ્રાઇવસી સ્ક્રીનને ટૉગલ કરો. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">અપડેટ કરવાનું બાકી છે</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> મેનેજ કરાયેલા વપરાશકર્તા</translation>
@@ -769,6 +772,7 @@
 <translation id="5744083938413354016">ખેંચવાને ટૅપ કરો</translation>
 <translation id="5745612484876805746">સૂર્યાસ્ત વખતે રાત્રિ પ્રકાશ ઑટોમૅટિક રીતે ચાલુ થાય છે</translation>
 <translation id="5750765938512549687">બ્લૂટૂથ બંધ છે</translation>
+<translation id="5760866832697883462">તમારું <ph name="NAME" /> કનેક્ટ કરો</translation>
 <translation id="576341972084747908">જોખમી <ph name="FILENAME" /> ડાઉનલોડ કરો</translation>
 <translation id="5763928712329149804">શેલ્ફ પાર્ટી બંધ છે.</translation>
 <translation id="576453121877257266">રાત્રિ પ્રકાશ ચાલુ છે.</translation>
@@ -954,6 +958,7 @@
 <translation id="6886172995547742638">તમારા <ph name="DEVICE_TYPE" />માં નબળું કાર્યપ્રદર્શન થઈ શકે છે. પ્રમાણિત <ph name="PREFERRED_MINIMUM_POWER" />W અથવા તેથી વધુના USB-C પાવર અડૅપ્ટરનો ઉપયોગ કરો.</translation>
 <translation id="688631446150864480">વિન્ડો સ્વિચ કરવા માટે, નીચેની ઍરો કી દબાવો</translation>
 <translation id="6896758677409633944">કૉપિ કરો</translation>
+<translation id="6901883536534621389">નૅવિગેટ કરવા માટે સંકેતો અજમાવી જુઓ</translation>
 <translation id="6919251195245069855">તમારું સ્માર્ટ કાર્ડ ઓળખી શક્યાં નથી. ફરી પ્રયાસ કરો.</translation>
 <translation id="6921188888306725546">કીબોર્ડ શૉર્ટકટને બહેતર બનાવવામાં આવ્યા છે</translation>
 <translation id="6931576957638141829">આમાં સાચવો</translation>
@@ -1130,6 +1135,7 @@
 <translation id="7977927628060636163">મોબાઇલ નેટવર્કની શોધ કરી રહ્યું છે...</translation>
 <translation id="7982789257301363584">નેટવર્ક</translation>
 <translation id="7984197416080286869">ફિંગરપ્રિન્ટ માટેના ઘણા બધા પ્રયત્નો</translation>
+<translation id="798779949890829624">આ સેટિંગને તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="7994370417837006925">બહુવિધ સાઇન-ઇન</translation>
 <translation id="7995804128062002838">સ્ક્રીન કૅપ્ચર કરવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="8000066093800657092">નેટવર્ક નથી</translation>
@@ -1157,6 +1163,7 @@
 <translation id="813913629614996137">પ્રારંભ કરી રહ્યું છે...</translation>
 <translation id="8142441511840089262">ડબલ ક્લિક કરો</translation>
 <translation id="8142699993796781067">ખાનગી નેટવર્ક</translation>
+<translation id="8144760705599030999">તમારા અન્ય ડિવાઇસ સાથે ઝડપી જોડાણ માટે, તમારા <ph name="NAME" />ને <ph name="EMAIL" /> પર સાચવો</translation>
 <translation id="8152092012181020186">બંધ કરવા માટે Ctrl + W દબાવો.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, ઑટોમેટિક રીતે પૂર્ણ</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> આ સેટિંગને તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે.</translation>
@@ -1194,6 +1201,7 @@
 <translation id="8412677897383510995">ડિસ્પ્લે સેટિંગ બતાવો</translation>
 <translation id="8413272770729657668">રેકોર્ડિંગ શરૂ થવાનું છે 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (કેસ)</translation>
+<translation id="8420205633584771378">આ સૂચન કાઢી નાખીએ?</translation>
 <translation id="8421270167862077762">આ ડિવાઇસ પર <ph name="UNAVAILABLE_APPS" /> ઉપલબ્ધ નથી.</translation>
 <translation id="8425213833346101688">બદલો</translation>
 <translation id="8426708595819210923">ગુડ ઇવનિંગ <ph name="GIVEN_NAME" />,</translation>
@@ -1286,6 +1294,7 @@
 <translation id="9000771174482730261">સ્ટોરેજ મેનેજ કરો</translation>
 <translation id="9017320285115481645">Family Linkનો માતાપિતા માટેનો ઍક્સેસ કોડ દાખલ કરો.</translation>
 <translation id="9024331582947483881">પૂર્ણ સ્ક્રીન</translation>
+<translation id="9030319654231318877">સૂર્યાસ્ત સુધી બંધ રાખો</translation>
 <translation id="9034924485347205037">Linux ફાઇલો</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> માટે સેટિંગ ખોલો</translation>
 <translation id="9059834730836941392">નોટિફિકેશન સંકુચિત કરો</translation>
@@ -1305,6 +1314,7 @@
 <translation id="9099154003160514616">Lacros બ્રાઉઝરની અપડેટ ઉપલબ્ધ છે</translation>
 <translation id="9100887602489003640">પ્રોફાઇલ ઉમેરી રહ્યાં છીએ. થોડીવાર રાહ જુઓ.</translation>
 <translation id="9105450214093926548">Lacros બ્રાઉઝર ચાલતું હોય, ત્યારે બીજા વપરાશકર્તા દ્વારા સાઇન ઇન કરવાને સપોર્ટ કરવામાં આવતો નથી. કૃપા કરીને તેના બદલે Lacrosમાં બીજી બ્રાઉઝર પ્રોફાઇલનો ઉપયોગ કરો કે Lacros બંધ કરો અને ફરી પ્રયાસ કરો.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> અથવા <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">સંરક્ષિત કન્ટેન્ટ રેકોર્ડ કરી શકાતું નથી</translation>
 <translation id="9161053988251441839">સૂચવેલ ઍપ્લિકેશનો</translation>
 <translation id="9166331175924255663">નજીકના શેરની ઉચ્ચ દૃશ્યતા ટૉગલ કરો.</translation>

@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">El dispositivo Bluetooth "<ph name="DEVICE_NAME" />" solicita permiso para sincronizarse. Ingresa el siguiente código de PIN en el dispositivo: <ph name="PINCODE" />.</translation>
 <translation id="1014111206066007277">Herramientas de presentación en pantalla</translation>
 <translation id="1024261588257374085">Se seleccionó la captura de pantalla parcial</translation>
+<translation id="1024364763893396229">Guarda tu <ph name="NAME" /></translation>
 <translation id="1032891413405719768">El nivel de la batería de la pluma stylus está bajo</translation>
 <translation id="1036073649888683237">Para administrar las notificaciones, ve a Configuración.</translation>
 <translation id="1036672894875463507">Soy tu Asistente de Google. Estoy aquí para ayudarte en tu día.
@@ -167,6 +168,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1951012854035635156">Asistente</translation>
 <translation id="1954252331066828794">Se completó la grabación de pantalla</translation>
 <translation id="1957958912175573503">Establecer el idioma</translation>
+<translation id="1961239773406905488">La vista previa de la cámara esta oculta</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Bloquear pantalla</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -184,6 +186,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2047639699071423250">Agregar una idea clave</translation>
 <translation id="2049240716062114887">Se cambió el nombre del escritorio a <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Vertical</translation>
+<translation id="2064048859448024834">Se muestra la vista previa de la cámara</translation>
 <translation id="2066708475850724665">Desactivar la lupa</translation>
 <translation id="2067602449040652523">Brillo del teclado</translation>
 <translation id="2078034614700056995">Para cambiar al siguiente escritorio, desliza cuatro dedos hacia la derecha.</translation>
@@ -293,6 +296,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2819276065543622893">Saldrás de la sesión ahora.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> no admite una resolución de <ph name="SPECIFIED_RESOLUTION" />. Se cambió la resolución a <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Biblioteca</translation>
+<translation id="2831035692318564937">Activado hasta el amanecer</translation>
 <translation id="2834813915651407382">Se abrió recientemente</translation>
 <translation id="2841907151129139818">Se cambió al modo tablet</translation>
 <translation id="2844169650293029770">Dispositivo USB-C (puerto lateral izquierdo delantero)</translation>
@@ -439,6 +443,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3626281679859535460">Brillo</translation>
 <translation id="3630697955794050612">desactivado</translation>
 <translation id="3631369015426612114">Permitir notificaciones de las siguientes fuentes</translation>
+<translation id="3633097874324966332">Abre la configuración de la conexión Bluetooth para vincular el dispositivo</translation>
 <translation id="3638400994746983214">Activa o desactiva la pantalla de privacidad. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Actualización pendiente</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />, usuario administrado</translation>
@@ -487,6 +492,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Cambia el dispositivo a la versión anterior en el transcurso de 1 minuto}other{Cambia el dispositivo a la versión anterior en el transcurso de # minutos}}</translation>
 <translation id="3923494859158167397">No se configuró ninguna red móvil.</translation>
 <translation id="3932043219784172185">No hay ningún dispositivo conectado</translation>
+<translation id="3934456833412894880">La carga adaptable está activada. Tu batería se mantendrá al 80% para extender la duración, y se cargará por completo cuando lo necesites.</translation>
 <translation id="3943857333388298514">Pegar</translation>
 <translation id="394485226368336402">Configuración de audio</translation>
 <translation id="3945319193631853098">Presiona para completar la configuración.</translation>
@@ -767,6 +773,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5744083938413354016">Función tocar y arrastrar</translation>
 <translation id="5745612484876805746">Se activa la Luz nocturna automáticamente al atardecer</translation>
 <translation id="5750765938512549687">Se desactivó la conexión Bluetooth</translation>
+<translation id="5760866832697883462">Conecta tu <ph name="NAME" /></translation>
 <translation id="576341972084747908">Descarga peligrosa: <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">El modo Grupo de barras está desactivado.</translation>
 <translation id="576453121877257266">La luz nocturna está activada.</translation>
@@ -952,6 +959,7 @@ Nueva instalación</translation>
 <translation id="6886172995547742638">Es posible que tu dispositivo <ph name="DEVICE_TYPE" /> tenga un rendimiento deficiente. Usa un adaptador de alimentación con conexión USB tipo C de <ph name="PREFERRED_MINIMUM_POWER" /> W o más.</translation>
 <translation id="688631446150864480">Presiona la tecla de flecha hacia abajo para cambiar de ventana</translation>
 <translation id="6896758677409633944">Copiar</translation>
+<translation id="6901883536534621389">Prueba los gestos para navegar</translation>
 <translation id="6919251195245069855">No se reconoció tu tarjeta inteligente. Vuelve a intentarlo.</translation>
 <translation id="6921188888306725546">Se mejoraron las combinaciones de teclas</translation>
 <translation id="6931576957638141829">Guardar en</translation>
@@ -1128,6 +1136,7 @@ Nueva instalación</translation>
 <translation id="7977927628060636163">Buscando redes móviles…</translation>
 <translation id="7982789257301363584">Red</translation>
 <translation id="7984197416080286869">Demasiados intentos con la huella dactilar</translation>
+<translation id="798779949890829624">El administrador controla esta configuración</translation>
 <translation id="7994370417837006925">Acceso múltiple</translation>
 <translation id="7995804128062002838">No se pudo realizar una captura de pantalla.</translation>
 <translation id="8000066093800657092">Sin red</translation>
@@ -1155,6 +1164,7 @@ Nueva instalación</translation>
 <translation id="813913629614996137">Inicializando…</translation>
 <translation id="8142441511840089262">Doble clic</translation>
 <translation id="8142699993796781067">Red privada</translation>
+<translation id="8144760705599030999">Guarda tu <ph name="NAME" /> en <ph name="EMAIL" /> para permitir la vinculación rápida con tus otros dispositivos</translation>
 <translation id="8152092012181020186">Presiona Ctrl + W para cerrar.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />; autocompletar</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" />: El administrador controla esta configuración.</translation>
@@ -1192,6 +1202,7 @@ Nueva instalación</translation>
 <translation id="8412677897383510995">Mostrar la configuración de la pantalla</translation>
 <translation id="8413272770729657668">Se iniciará la grabación en 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (funda)</translation>
+<translation id="8420205633584771378">¿Quieres quitar esta sugerencia?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> no está disponible en este dispositivo.</translation>
 <translation id="8425213833346101688">Cambiar</translation>
 <translation id="8426708595819210923">Buenas noches, <ph name="GIVEN_NAME" />:</translation>
@@ -1284,6 +1295,7 @@ Nueva instalación</translation>
 <translation id="9000771174482730261">ADMINISTRAR EL ALMACENAMIENTO</translation>
 <translation id="9017320285115481645">Ingresa el código de acceso parental de Family Link.</translation>
 <translation id="9024331582947483881">pantalla completa</translation>
+<translation id="9030319654231318877">Desactivado hasta el atardecer</translation>
 <translation id="9034924485347205037">Archivos de Linux</translation>
 <translation id="9047624247355796468">Abrir la configuración para <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Contraer notificación</translation>
@@ -1303,6 +1315,7 @@ Nueva instalación</translation>
 <translation id="9099154003160514616">Actualización disponible para Lacros</translation>
 <translation id="9100887602489003640">Se está agregando un perfil. Espera unos minutos.</translation>
 <translation id="9105450214093926548">No se admite el acceso a un segundo usuario mientras se ejecuta el navegador Lacros. En su lugar, usa un segundo perfil de navegador en Lacros, o cierra Lacros y vuelve a intentarlo.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> o <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">No se puede grabar contenido protegido</translation>
 <translation id="9161053988251441839">APPS SUGERIDAS</translation>
 <translation id="9166331175924255663">Activar o desactivar la alta visibilidad para Compartir con Nearby</translation>

@@ -174,6 +174,7 @@
 <translation id="4600710005438004015">Nem sikerült a Chrome frissítése a legújabb verzióra, így Ön lemarad az új funkciókról és biztonsági javításokról.</translation>
 <translation id="4627412468266359539">Nem kötelező: Segítheti a ChromeOS Flex funkcióinak és teljesítményének javítását azzal, hogy automatikusan elküldi a diagnosztikai és használati adatokat a Google-nak.</translation>
 <translation id="4633000520311261472">A Chrome biztonságosabbá tétele érdekében kikapcsoltunk néhány bővítményt, amelyek nem a(z) <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> szolgáltatásból származnak, és előfordulhat, hogy az Ön tudta nélkül lettek telepítve.</translation>
+<translation id="469553575393225953">Az ismeretlen forrásból származó bővítmények, alkalmazások és témák károsíthatják az eszközt. A Chrome azt javasolja, hogy csak a Chrome Webáruházból telepítse őket.</translation>
 <translation id="4728575227883772061">A telepítés váratlan hiba miatt nem sikerült. Ha a Google Chrome jelenleg fut, zárja be, majd próbálkozzon újra.</translation>
 <translation id="4747730611090640388">A Chrome megbecsülheti az Ön érdeklődési köreit.  Később az Ön által felkeresett webhelyek a megjelenő hirdetések személyre szabása érdekében kérhetik a Chrome-tól az Ön érdeklődési köreinek megismerését.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -213,6 +214,7 @@
 <translation id="5736850870166430177">Ha valamelyik webhely megpróbálja ellopni az Ön jelszavát, illetve ha Ön kártékony fájlt tölt le, akkor a Chrome elküldheti az URL-eket is (az oldal tartalmának részeivel együtt) a Biztonságos Böngészésnek.</translation>
 <translation id="573759479754913123">A Chrome OS névjegye</translation>
 <translation id="5756509061973259733">Már létezik Chrome-profil ezzel a fiókkal ezen az eszközön.</translation>
+<translation id="5763280521700030406">A Chrome letiltotta ezt a fájlt, mert túl nagy méretű a biztonsági ellenőrzés elvégzéséhez. Próbálkozzon újra legfeljebb 50 MB méretű fájllal.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Nem sikerült a Chrome elindítása. Próbálkozzon újra.</translation>
 <translation id="5867197326698922595">A Google Chrome szerkeszteni próbálja a jelszavakat.</translation>
@@ -321,8 +323,10 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="8394720698884623075">Ellenőrzi az URL-eket a Chrome-ban a nem biztonságos webhelyekről tárolt lista alapján.</translation>
 <translation id="840084489713044809">A Google Chrome exportálni szeretné a jelszavakat.</translation>
 <translation id="8416347857511542594">További információ a hirdetések személyre szabásáról a Chrome-ban</translation>
+<translation id="8421734018304082652">A Chrome letiltotta ezt a fájlt, mert titkosítva van. Kérje meg a tulajdonosát, hogy oldja fel a titkosítást.</translation>
 <translation id="8433638294851456451">Ha innen szeretne számot küldeni Android-telefonjára, jelentkezzen be a Chrome-ba mindkét eszközén.</translation>
 <translation id="8498858610309223613">A rendszer egy speciális biztonsági frissítést alkalmazott a Google Chrome-on. Indítsa újra a számítógépet, a lapokat majd mi visszaállítjuk.</translation>
+<translation id="8504220326736535258">A Chrome letiltotta ezt a fájlt, mert rosszindulatú program található benne.</translation>
 <translation id="8516431725144212809">Az Ön Chrome által megbecsült érdeklődési körei</translation>
 <translation id="8521348052903287641">Bejövő szabály a Google Chrome Devhez az mDNS forgalom engedélyezése céljából.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>

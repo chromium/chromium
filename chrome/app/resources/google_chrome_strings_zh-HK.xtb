@@ -176,6 +176,7 @@
 <translation id="4600710005438004015">由於 Chrome 無法更新至最新版本，因此您無法使用最新功能和安全性修正。</translation>
 <translation id="4627412468266359539">選用：將診斷和使用情況資料自動傳送給 Google，協助改善 ChromeOS Flex 的功能和效能。</translation>
 <translation id="4633000520311261472">為了提高 Chrome 的安全性，我們已將部分未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> 中的擴充功能停用，它們可能在您不知情的情況下新增至瀏覽器。</translation>
+<translation id="469553575393225953">來源不明的擴充程式、應用程式和主題可能會損害您的裝置。Chrome 建議您只透過「Chrome 網上應用程式商店」安裝這些項目</translation>
 <translation id="4728575227883772061">安裝失敗，錯誤原因不明。如果目前正在執行 Google Chrome，請先關閉，然後再試一次。</translation>
 <translation id="4747730611090640388">Chrome 可以推測您的興趣。您日後瀏覽的網站可向 Chrome 要求查看您的興趣，以便向您顯示個人化廣告。</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -219,6 +220,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="5736850870166430177">如果有網站試圖盜取您的密碼，或當您下載有害檔案時，Chrome 亦可能將網址 (包括部分網頁內容) 傳送至「安全瀏覽」功能</translation>
 <translation id="573759479754913123">關於 Chrome 作業系統</translation>
 <translation id="5756509061973259733">此裝置上已有此帳戶的 Chrome 設定檔</translation>
+<translation id="5763280521700030406">由於此檔案太大，無法進行安全檢查，因此已被 Chrome 封鎖。請嘗試使用大小不超過 50 MB 的檔案再試一次</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">無法啟動 Chrome，請再試一次。</translation>
 <translation id="5867197326698922595">Google Chrome 正在嘗試編輯密碼。</translation>
@@ -326,8 +328,10 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8394720698884623075">使用儲存在 Chrome 中的不安全網站清單來檢查網址</translation>
 <translation id="840084489713044809">Google Chrome 想匯出您的密碼。</translation>
 <translation id="8416347857511542594">前往 Chrome 進一步瞭解廣告個人化</translation>
+<translation id="8421734018304082652">由於此檔案已加密，因此已被 Chrome 封鎖。請要求擁有者解密檔案</translation>
 <translation id="8433638294851456451">如要將號碼從此處傳送至 Android 手機，請在這兩部裝置上登入 Chrome。</translation>
 <translation id="8498858610309223613">Google Chrome 剛套用了特別的安全性更新。請立即重新啟動，我們將會還原您的分頁。</translation>
+<translation id="8504220326736535258">由於此檔案含有惡意軟件，因此已被 Chrome 封鎖</translation>
 <translation id="8516431725144212809">Chrome 推測您有以下興趣</translation>
 <translation id="8521348052903287641">允許 mDNS 流量的 Google Chrome 開發人員版輸入規則。</translation>
 <translation id="8540666473246803645">Google Chrome</translation>

@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">ब्लूटूथ डिवाइस "<ph name="DEVICE_NAME" />" युग्मित करने की अनुमति चाहता है. कृपया उस डिवाइस पर यह पिन कोड डालें: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">स्क्रीनकास्ट से जुड़े टूल</translation>
 <translation id="1024261588257374085">पार्शियल स्क्रीनशॉट चुना गया</translation>
+<translation id="1024364763893396229"><ph name="NAME" /> को सेव करें</translation>
 <translation id="1032891413405719768">स्टाइलस की बैटरी कम हो गई है</translation>
 <translation id="1036073649888683237">सूचनाएं मैनेज करने के लिए, सेटिंग में जाएं</translation>
 <translation id="1036672894875463507">मैं आपकी Google Assistant हूं. मैं दिन भर के कामों में आपकी मदद करूंगी!
@@ -167,6 +168,7 @@
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">स्क्रीन रिकॉर्डिंग पूरी हुई</translation>
 <translation id="1957958912175573503">अपनी भाषा सेट करें</translation>
+<translation id="1961239773406905488">वीडियो कैमरे में झलक नहीं दिखाई जा रही है</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">लॉक स्‍क्रीन</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -184,6 +186,7 @@
 <translation id="2047639699071423250">मुख्य आइडिया बटन जोड़ें</translation>
 <translation id="2049240716062114887">डेस्क का नाम बदलकर <ph name="DESK_NAME" /> कर दिया गया है</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
+<translation id="2064048859448024834">वीडियो कैमरे में झलक दिखाई जा रही है</translation>
 <translation id="2066708475850724665">मैग्निफ़ायर को बंद करें</translation>
 <translation id="2067602449040652523">कीबोर्ड की रोशनी</translation>
 <translation id="2078034614700056995">अगले डेस्क पर स्विच करने के लिए, चार उंगलियों से दाईं ओर स्वाइप करें</translation>
@@ -293,6 +296,7 @@
 <translation id="2819276065543622893">अब आप प्रस्थान कर जाएंगे.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> के साथ काम नहीं करता. रिज़ॉल्यूशन को बदलकर <ph name="FALLBACK_RESOLUTION" /> कर दिया गया था.</translation>
 <translation id="2825619548187458965">अलमारी</translation>
+<translation id="2831035692318564937">सूरज उगने तक यह सुविधा चालू रहेगी</translation>
 <translation id="2834813915651407382">इसे हाल ही में खोला गया था</translation>
 <translation id="2841907151129139818">टैबलेट मोड पर स्विच किया गया</translation>
 <translation id="2844169650293029770">USB-C डिवाइस (बायां सामने वाला पोर्ट)</translation>
@@ -439,6 +443,7 @@
 <translation id="3626281679859535460">स्क्रीन की रोशनी</translation>
 <translation id="3630697955794050612">बंद</translation>
 <translation id="3631369015426612114">इनसे आने वाली सूचनाओं की अनुमति दें</translation>
+<translation id="3633097874324966332">अपना डिवाइस जोड़ने के लिए, ब्लूटूथ सेटिंग खोलें</translation>
 <translation id="3638400994746983214">निजता वाली स्क्रीन टॉगल करें. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">अपडेट होना बाकी है</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> प्रबंधित उपयोगकर्ता</translation>
@@ -768,6 +773,7 @@
 <translation id="5744083938413354016">टैप करके खींचना</translation>
 <translation id="5745612484876805746">सूरज ढलने पर 'नाइट लाइट' अपने-आप चालू हो जाती है</translation>
 <translation id="5750765938512549687">ब्लूटूथ बंद है</translation>
+<translation id="5760866832697883462">अपना <ph name="NAME" /> कनेक्ट करें</translation>
 <translation id="576341972084747908"><ph name="FILENAME" /> डाउनलोड हो रही है जिसमें खतरनाक कॉन्टेंट मौजूद है</translation>
 <translation id="5763928712329149804">शेल्फ़ पार्टी मोड बंद है.</translation>
 <translation id="576453121877257266">नाइट लाइट चालू है.</translation>
@@ -953,6 +959,7 @@
 <translation id="6886172995547742638">हो सकता है कि <ph name="DEVICE_TYPE" /> का प्रदर्शन कम हो. प्रमाणित <ph name="PREFERRED_MINIMUM_POWER" />W या हाइअर USB-C पावर अडैप्टर का इस्तेमाल करें.</translation>
 <translation id="688631446150864480">विंडो स्विच करने के लिए, डाउन ऐरो बटन को दबाएं</translation>
 <translation id="6896758677409633944">कॉपी बनाएं</translation>
+<translation id="6901883536534621389">नेविगेट करने के लिए, जेस्चर (हाव-भाव) आज़माएं</translation>
 <translation id="6919251195245069855">आपका स्मार्ट कार्ड पहचाना नहीं जा सका. फिर से कोशिश करें.</translation>
 <translation id="6921188888306725546">कीबोर्ड शॉर्टकट बेहतर बनाए गए हैं</translation>
 <translation id="6931576957638141829">यहां सेव करें</translation>
@@ -1129,6 +1136,7 @@
 <translation id="7977927628060636163">मोबाइल नेटवर्क खोजे जा रहे हैं...</translation>
 <translation id="7982789257301363584">नेटवर्क</translation>
 <translation id="7984197416080286869">फ़िंगरप्रिंट से बहुत ज़्यादा बार कोशिश की गई</translation>
+<translation id="798779949890829624">इस सेटिंग को आपका एडमिन मैनेज करता है</translation>
 <translation id="7994370417837006925">एक से ज़्यादा साइन-इन</translation>
 <translation id="7995804128062002838">स्क्रीन कैप्चर नहीं हो पाई</translation>
 <translation id="8000066093800657092">नेटवर्क नहीं है</translation>
@@ -1156,6 +1164,7 @@
 <translation id="813913629614996137">शुरू हो रहा है...</translation>
 <translation id="8142441511840089262">दो बार क्लिक करें</translation>
 <translation id="8142699993796781067">निजी नेटवर्क</translation>
+<translation id="8144760705599030999">अपने दूसरे डिवाइसों के साथ तेज़ी से जोड़ने के लिए, <ph name="NAME" /> को <ph name="EMAIL" /> पर सेव करें</translation>
 <translation id="8152092012181020186">बंद करने के लिए Ctrl + W दबाएं.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, अपने आप पूरा</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> इस सेटिंग को आपका एडमिन मैनेज करता है.</translation>
@@ -1193,6 +1202,7 @@
 <translation id="8412677897383510995">डिसप्ले की सेटिंग दिखाएं</translation>
 <translation id="8413272770729657668">रिकॉर्डिंग 3 सेकंड, 2 सेकंड, 1 सेकंड में शुरू होने वाली है</translation>
 <translation id="8416730306157376817">केस में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है</translation>
+<translation id="8420205633584771378">यह सुझाव हटा दें?</translation>
 <translation id="8421270167862077762">इस डिवाइस पर <ph name="UNAVAILABLE_APPS" /> मौजूद नहीं है.</translation>
 <translation id="8425213833346101688">बदलें</translation>
 <translation id="8426708595819210923">गुड ईवनिंग <ph name="GIVEN_NAME" />,</translation>
@@ -1285,6 +1295,7 @@
 <translation id="9000771174482730261">डिवाइस का स्टोरेज मैनेज करें</translation>
 <translation id="9017320285115481645">Family Link का अभिभावक ऐक्सेस कोड डालें.</translation>
 <translation id="9024331582947483881">फ़ुल स्क्रीन</translation>
+<translation id="9030319654231318877">सूरज ढलने तक यह सुविधा बंद रहेगी</translation>
 <translation id="9034924485347205037">Linux की फ़ाइलें</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> के लिए सेटिंग खोलें</translation>
 <translation id="9059834730836941392">सूचना को छोटा करें</translation>
@@ -1304,6 +1315,7 @@
 <translation id="9099154003160514616">Lacros का अपडेट उपलब्ध है</translation>
 <translation id="9100887602489003640">प्रोफ़ाइल जोड़ी जा रही है. थोड़ा इंतज़ार करें.</translation>
 <translation id="9105450214093926548">जब Lacros ब्राउज़र काम कर रहा हो, तब दूसरा उपयोगकर्ता साइन इन नहीं कर सकता. इसके बजाय, कृपया Lacros में कोई दूसरी ब्राउज़र प्रोफ़ाइल इस्तेमाल करें या Lacros को बंद करके, फिर से कोशिश करें.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> या <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">सुरक्षित कॉन्टेंट को रिकॉर्ड नहीं किया जा सकता</translation>
 <translation id="9161053988251441839">सुझाए गए ऐप्लिकेशन</translation>
 <translation id="9166331175924255663">आस-पास शेयर करने की सुविधा को ज़्यादा लोगों को दिखाने वाला मोड टॉगल करें.</translation>

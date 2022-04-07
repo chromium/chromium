@@ -14,6 +14,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="151962892725702025">Impossible de synchroniser vos données dans Chromium OS, car la synchronisation n'est pas disponible pour votre domaine.</translation>
 <translation id="1524282610922162960">Partager un onglet Chromium</translation>
 <translation id="1553461853655228091">Chromium a besoin de votre autorisation pour accéder à votre appareil photo et créer un plan 3D de votre environnement</translation>
+<translation id="1602421994560205104">Chromium a bloqué ce fichier. Impossible de vérifier si ce fichier est sûr, car il est trop volumineux. Réessayez avec des fichiers de 50 Mo maximum</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{À la demande de votre administrateur, vous devez relancer Chromium pour installer une mise à jour}=1{À la demande de votre administrateur, vous devez relancer Chromium pour installer une mise à jour. Sachez que la fenêtre de navigation privée ne sera pas rouverte.}one{À la demande de votre administrateur, vous devez relancer Chromium pour installer une mise à jour. Sachez que la fenêtre de navigation privée (#) ne sera pas rouverte.}other{À la demande de votre administrateur, vous devez relancer Chromium pour installer une mise à jour. Sachez que les # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
 <translation id="1625909126243026060">Examinez les paramètres clés de confidentialité et de sécurité dans Chromium</translation>
 <translation id="1632539827495546968">Si vous souhaitez utiliser ce compte une seule fois, vous pouvez utiliser le <ph name="GUEST_LINK_BEGIN" />mode Invité<ph name="GUEST_LINK_END" /> dans le navigateur Chromium. Pour ajouter le compte d'une autre personne, <ph name="LINK_BEGIN" />ajoutez un nouvel utilisateur<ph name="LINK_END" /> à votre <ph name="DEVICE_TYPE" />.
@@ -221,6 +222,7 @@ Certaines fonctionnalités seront peut-être indisponibles. Veuillez spécifier 
 <translation id="673636774878526923">Pour retrouver vos réglages Chromium sur tous vos appareils, connectez-vous, puis activez la synchronisation.</translation>
 <translation id="6774082503108938489">Ton parent a désactivé l'option "Autorisations des sites, applications et extensions" pour Chromium. Tu ne peux pas activer cette <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="6847869444787758381">Chromium vous indique si vos mots de passe ont été piratés</translation>
+<translation id="6852530923436401894">Chromium a bloqué ce fichier, car il contient un logiciel malveillant</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copiée dans Chromium)</translation>
 <translation id="6873893289264747459">Chromium a détecté que <ph name="EXTENSION_NAME" /> contient un logiciel malveillant</translation>
@@ -240,6 +242,7 @@ Certaines fonctionnalités seront peut-être indisponibles. Veuillez spécifier 
 <translation id="7218568399872925918">Les sites que vous consultez gardent vos informations en mémoire tant que vous ne fermez pas Chromium</translation>
 <translation id="7223968959479464213">Gestionnaire de tâches – Chromium</translation>
 <translation id="7246575524853130370">Vos centres d'intérêt estimés par Chromium</translation>
+<translation id="7265671031637041256">Chromium a bloqué ce fichier, car il est chiffré. Demandez à son propriétaire de le déchiffrer</translation>
 <translation id="7309928523159922338">Ad Measurement autorise les sites que vous consultez à demander à Chromium des informations pour les aider à mesurer les performances de leurs annonces. Cette API limite le suivi intersites en transférant le minimum d'informations entre les sites.</translation>
 <translation id="731795002583552498">Mise à jour de Chromium...</translation>
 <translation id="7318036098707714271">Le fichier des préférences est corrompu ou n'est pas valide. 
@@ -278,6 +281,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="7898472181347242998">Pour savoir si votre appareil est à jour, accédez aux <ph name="LINK_BEGIN" />paramètres Chromium OS<ph name="LINK_END" /></translation>
 <translation id="7937630085815544518">Vous étiez connecté à Chromium en tant que <ph name="USER_EMAIL_ADDRESS" />. Veuillez utiliser le même compte pour vous reconnecter.</translation>
 <translation id="7975919845073681630">Ceci est une installation secondaire de Chromium. Vous ne pouvez pas le définir comme navigateur par défaut.</translation>
+<translation id="7997934263947464652">Les extensions, les applications et les thèmes provenant de sources inconnues risquent d'endommager votre appareil. Chromium recommande de les installer uniquement à partir du <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Une fois l'accès à une ressource accordé à Chromium, les sites Web sont également en mesure de vous demander l'accès.</translation>
 <translation id="8045118833343856403">Les comptes suivants ne sont connectés à aucun profil Chromium. Si vous souhaitez utiliser un compte pour un autre profil, supprimez d'abord le profil.</translation>
 <translation id="8105840573057009683">Chromium a besoin de l'autorisation d'accéder à votre position pour ce site</translation>

@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">Napadalci včasih poskušajo posnemati spletna mesta, tako da skoraj neopazno spremenijo spletni naslov.</translation>
 <translation id="1028781062521375153">Ogled podrobnosti</translation>
 <translation id="1030706264415084469"><ph name="URL" /> želi trajno shranjevati velike količine podatkov v vaši napravi</translation>
-<translation id="1032854598605920125">Sukanje v smeri urnega kazalca</translation>
 <translation id="1033329911862281889">V anonimnem načinu niste nevidni v spletu:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />spletna mesta in storitve, ki jih uporabljajo, si lahko ogledajo obiske;<ph name="END_LIST_ITEM" />
@@ -2636,6 +2635,7 @@ Dodatne podrobnosti:
 <translation id="8277900682056760511">List rutine za obravnavo plačil je odprt</translation>
 <translation id="8280630997017109758">Pladenj 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
+<translation id="8281886186245836920">Preskoči</translation>
 <translation id="8282947398454257691">podatke o edinstvenem identifikatorju naprave</translation>
 <translation id="8284769179630993263">Upravljajte Varno brskanje in drugo v Chromovih nastavitvah.</translation>
 <translation id="8286036467436129157">Prijava</translation>

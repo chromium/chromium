@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Bluetooth-enheten «<ph name="DEVICE_NAME" />» ber om tillatelse til å koble til. Skriv inn denne PIN-koden på den aktuelle enheten: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">Verktøy for skjermdeling</translation>
 <translation id="1024261588257374085">Delvis skjermdump er valgt</translation>
+<translation id="1024364763893396229">Lagre <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Pekepennen har lite batteri</translation>
 <translation id="1036073649888683237">For å administrere varsler, gå til Innstillinger</translation>
 <translation id="1036672894875463507">Jeg er Google-assistenten, og jeg er her for å hjelpe deg i løpet av dagen!
@@ -35,6 +36,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1175572348579024023">Rull</translation>
 <translation id="1178581264944972037">Stans midlertidig</translation>
 <translation id="1181037720776840403">Fjern</translation>
+<translation id="1183863904939664422">Ikke interessert i dette forslaget</translation>
 <translation id="118437560755358292">Oppgi passordet eller PIN-koden for høyere sikkerhet</translation>
 <translation id="118532027333893379">Trykk hvor som helst for å ta bilde i fullskjerm</translation>
 <translation id="1190609913194133056">Varselsenter</translation>
@@ -295,6 +297,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2819276065543622893">Du blir nå logget av.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> støtter ikke <ph name="SPECIFIED_RESOLUTION" />. Oppløsningen ble endret til <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Hylle</translation>
+<translation id="2831035692318564937">Påslått til soloppgang</translation>
 <translation id="2834813915651407382">Åpnet nylig</translation>
 <translation id="2841907151129139818">Byttet til nettbrettmodus</translation>
 <translation id="2844169650293029770">USB-C-enhet (porten foran på venstre side)</translation>
@@ -441,6 +444,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3626281679859535460">Lysstyrke</translation>
 <translation id="3630697955794050612">av</translation>
 <translation id="3631369015426612114">Tillat varsler fra følgende</translation>
+<translation id="3633097874324966332">Åpne Bluetooth-innstillingene for å koble til enheten</translation>
 <translation id="3638400994746983214">Slå av/på personvernskjermen. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Oppdateringen er forfalt</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – administrert bruker</translation>
@@ -488,6 +492,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Nedgrader enheten til en tidligere versjon innen 1 minutt}other{Nedgrader enheten til en tidligere versjon innen # minutter}}</translation>
 <translation id="3923494859158167397">Ingen mobilnettverk er konfigurert</translation>
 <translation id="3932043219784172185">Ingen enheter er koblet til</translation>
+<translation id="3934456833412894880">Tilpasset lading er på. Batteriet kommer til å holde seg på 80 % for å forlenge batterilevetiden, og det lades helt opp når du trenger det.</translation>
 <translation id="3943857333388298514">Lim inn</translation>
 <translation id="394485226368336402">Lydinnstillinger</translation>
 <translation id="3945319193631853098">Trykk for å fullføre konfigureringen</translation>
@@ -593,6 +598,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4560576029703263363">På</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Skjul passord</translation>
+<translation id="4566144812051858745">Ikke interessert i noen forslag</translation>
 <translation id="4570957409596482333">Tekstopplesingsknapp</translation>
 <translation id="4573176682887762361">«Skriv inn [ord/frase]»</translation>
 <translation id="4577274620589681794">Tiden er ute · <ph name="LABEL" /></translation>
@@ -643,6 +649,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4868492592575313542">aktivert</translation>
 <translation id="4872237917498892622">Alt + Søk eller Shift</translation>
 <translation id="4881695831933465202">Åpne</translation>
+<translation id="4889868803215848840">Gi en valgfri tilbakemelding for å gjøre forslagene bedre:</translation>
 <translation id="4890187583552566966">Administratoren din har slått av Google-assistenten.</translation>
 <translation id="4890408602550914571">Sørg for at telefonen er i nærheten, og at Bluetooth er slått på.</translation>
 <translation id="4895488851634969361">Batteriet er fullt.</translation>
@@ -768,6 +775,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="5744083938413354016">Trykk-og-dra</translation>
 <translation id="5745612484876805746">Nattlys slås på automatisk ved solnedgang</translation>
 <translation id="5750765938512549687">Bluetooth er av</translation>
+<translation id="5760866832697883462">Koble til <ph name="NAME" /></translation>
 <translation id="576341972084747908">Last ned den farlige filen <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Hyllegruppen er av.</translation>
 <translation id="576453121877257266">Nattlys er på.</translation>
@@ -829,6 +837,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6054305421211936131">Logg på med smartkort</translation>
 <translation id="6059276912018042191">Nylige Chrome-faner</translation>
 <translation id="6062360702481658777">Du logges automatisk av om <ph name="LOGOUT_TIME_LEFT" />.</translation>
+<translation id="6064463340679478396">Ferdig med filen</translation>
 <translation id="6073451960410192870">Stopp opptaket</translation>
 <translation id="6099678161144790572">Redigert den siste måneden</translation>
 <translation id="6103838137565245112">system</translation>
@@ -953,6 +962,7 @@ Nylig installert</translation>
 <translation id="6886172995547742638">Ytelsen til <ph name="DEVICE_TYPE" /> kan svekkes. Bruk en sertifisert USB-C-strømadapter på <ph name="PREFERRED_MINIMUM_POWER" /> W eller mer.</translation>
 <translation id="688631446150864480">Trykk på nedoverpiltasten for å bytte vindu</translation>
 <translation id="6896758677409633944">Kopiér</translation>
+<translation id="6901883536534621389">Prøv å navigere med bevegelser</translation>
 <translation id="6919251195245069855">Smartkortet ditt ble ikke gjenkjent. Prøv på nytt.</translation>
 <translation id="6921188888306725546">Tastatursnarveier er forbedret</translation>
 <translation id="6931576957638141829">Lagre i</translation>
@@ -1112,6 +1122,7 @@ Nylig installert</translation>
 <translation id="7886169021410746335">justere personverninnstillinger</translation>
 <translation id="7886277072580235377">Internett-økten din fjernes når du logger av. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Send e-post</translation>
+<translation id="7893503627044934815">Vil ikke at denne filen skal vises</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Du har trykket på hurtigtasten for skjermrotasjon. Vil du rotere skjermen?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
@@ -1129,6 +1140,7 @@ Nylig installert</translation>
 <translation id="7977927628060636163">Søker etter mobilnettverk …</translation>
 <translation id="7982789257301363584">Nettverk</translation>
 <translation id="7984197416080286869">For mange forsøk med fingeravtrykk</translation>
+<translation id="798779949890829624">Denne innstillingen administreres av administratoren din</translation>
 <translation id="7994370417837006925">Multipålogging</translation>
 <translation id="7995804128062002838">Kunne ikke ta opp skjermen</translation>
 <translation id="8000066093800657092">Ingen nettverk</translation>
@@ -1156,6 +1168,7 @@ Nylig installert</translation>
 <translation id="813913629614996137">Initialiserer …</translation>
 <translation id="8142441511840089262">Dobbeltklikk</translation>
 <translation id="8142699993796781067">Privat nettverk</translation>
+<translation id="8144760705599030999">Lagre <ph name="NAME" /> i <ph name="EMAIL" /> for raskere sammenkobling med de andre enhetene dine</translation>
 <translation id="8152092012181020186">Trykk på Ctrl + W for å lukke.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, autofullføring</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Denne innstillingen administreres av administratoren.</translation>
@@ -1193,6 +1206,7 @@ Nylig installert</translation>
 <translation id="8412677897383510995">Vis skjerminnstillinger</translation>
 <translation id="8413272770729657668">Opptaket starter om 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (etui)</translation>
+<translation id="8420205633584771378">Vil du fjerne dette forslaget?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> er ikke på denne enheten.</translation>
 <translation id="8425213833346101688">Endre</translation>
 <translation id="8426708595819210923">God kveld, <ph name="GIVEN_NAME" /></translation>
@@ -1285,6 +1299,7 @@ Nylig installert</translation>
 <translation id="9000771174482730261">ADMINISTRER LAGRING</translation>
 <translation id="9017320285115481645">Skriv inn koden for foreldretilgang til Family Link.</translation>
 <translation id="9024331582947483881">full skjerm</translation>
+<translation id="9030319654231318877">Avslått til solnedgang</translation>
 <translation id="9034924485347205037">Linux-filer</translation>
 <translation id="9047624247355796468">Åpne innstillinger for <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Skjul varselet</translation>
@@ -1304,6 +1319,7 @@ Nylig installert</translation>
 <translation id="9099154003160514616">Lacros-oppdatering er tilgjengelig</translation>
 <translation id="9100887602489003640">Legger til profil. Vent i noen minutter.</translation>
 <translation id="9105450214093926548">Pålogging med en bruker til støttes ikke mens Lacros-nettleseren kjører. Bruk en nettleserprofil til i Lacros i stedet, eller lukk Lacros og prøv igjen.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> eller <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Kan ikke ta opp beskyttet innhold</translation>
 <translation id="9161053988251441839">FORESLÅTTE APPER</translation>
 <translation id="9166331175924255663">Slå av/på høy synlighet for nærdeling.</translation>

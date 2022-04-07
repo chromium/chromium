@@ -13,6 +13,7 @@
 <translation id="151962892725702025">A Chromium OS nem tudta szinkronizálni az adatait, mert a szinkronizálás nem érhető el az Ön domainjénél.</translation>
 <translation id="1524282610922162960">Chromium-lap megosztása</translation>
 <translation id="1553461853655228091">A Chromiumnak engedélyre van szüksége a kamerájához való hozzáféréshez annak érdekében, hogy 3D-s térképet készíthessen az Ön környezetéről.</translation>
+<translation id="1602421994560205104">A Chromium letiltotta ezt a fájlt, mert túl nagy méretű a biztonsági ellenőrzés elvégzéséhez. Próbálkozzon újra legfeljebb 50 MB méretű fájllal.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{A rendszergazda előírta, hogy újra kell indítania a Chromiumot a frissítés alkalmazásához.}=1{A rendszergazda előírta, hogy újra kell indítania a Chromiumot a frissítés alkalmazásához. Az inkognitó ablak nem fog újra megnyílni.}other{A rendszergazda előírta, hogy újra kell indítania a Chromiumot a frissítés alkalmazásához. A(z) # inkognitó ablak nem fog újra megnyílni.}}</translation>
 <translation id="1625909126243026060">A legfontosabb adatvédelmi és biztonsági beállítások áttekintése a Chromiumban</translation>
 <translation id="1632539827495546968">Ha csak egyszer szeretné használni ezt a fiókot, használhatja a <ph name="GUEST_LINK_BEGIN" />vendég módot<ph name="GUEST_LINK_END" /> a Chromium böngészőben. Ha más számára szeretne hozzáadni fiókot, <ph name="LINK_BEGIN" />inkább új személyt adjon hozzá<ph name="LINK_END" /> <ph name="DEVICE_TYPE" /> eszközéhez.
@@ -218,6 +219,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="673636774878526923">Ha szeretne minden eszközén hozzáférni Chromium-anyagaihoz, jelentkezzen be, majd kapcsolja be a szinkronizálást.</translation>
 <translation id="6774082503108938489">Szülőd kikapcsolta a Chromium „Engedélyek webhelyek, alkalmazások és bővítmények számára” beállítását. A(z) <ph name="EXTENSION_TYPE_PARAMETER" /> nem engedélyezhető.</translation>
 <translation id="6847869444787758381">A Chromium tájékoztatja arról, ha jelszavai illetéktelen kezekbe kerülnek</translation>
+<translation id="6852530923436401894">A Chromium letiltotta ezt a fájlt, mert rosszindulatú program található benne.</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (a Chromiumba másolva)</translation>
 <translation id="6873893289264747459">A Chromium kártékony programot talált a következőben: „<ph name="EXTENSION_NAME" />”</translation>
@@ -237,6 +239,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="7218568399872925918">A felkeresett webhelyek megjegyzik az Ön adatait a Chromium bezárásáig</translation>
 <translation id="7223968959479464213">Feladatkezelő -- Chromium</translation>
 <translation id="7246575524853130370">Az Ön Chromium által megbecsült érdeklődési körei</translation>
+<translation id="7265671031637041256">A Chromium letiltotta ezt a fájlt, mert titkosítva van. Kérje meg a tulajdonosát, hogy oldja fel a titkosítást.</translation>
 <translation id="7309928523159922338">A hirdetésmérés segítségével az Ön által felkeresett webhelyek olyan adatokat kérhetnek a Chromiumtól, amelyek segítségével a webhely mérheti hirdetéseinek teljesítményét. A hirdetésmérés azáltal korlátozza a webhelyeken átnyúló nyomon követést, hogy a lehető legkevesebb adatot továbbítja a webhelyek között.</translation>
 <translation id="731795002583552498">A Chromium frissítése</translation>
 <translation id="7318036098707714271">A beállításait tartalmazó fájl hibás vagy érvénytelen.
@@ -275,6 +278,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="7898472181347242998">Ha szeretné megtekinteni, hogy eszköze naprakész-e, lépjen a <ph name="LINK_BEGIN" />Chromium OS beállításaihoz<ph name="LINK_END" /></translation>
 <translation id="7937630085815544518"><ph name="USER_EMAIL_ADDRESS" /> néven volt bejelentkezve a Chromiumba. Kérjük, ugyanazzal a fiókkal jelentkezzen be újra.</translation>
 <translation id="7975919845073681630">Ez a Chromium második telepítése, amelyet nem állíthat be az alapértelmezett böngészővé.</translation>
+<translation id="7997934263947464652">Az ismeretlen forrásból származó bővítmények, alkalmazások és témák károsíthatják az eszközt. A Chromium azt javasolja, hogy csak a következő helyről telepítse őket: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Miután hozzáférést biztosított a Chromiumnak, a webhelyek is hozzáférést kérhetnek.</translation>
 <translation id="8045118833343856403">A következő fiókok nincsenek egyetlen Chromium-profilba sem bejelentkezve. Ha másik profilban szeretné használni az adott fiókot, előbb távolítsa el a szóban forgó profilt.</translation>
 <translation id="8105840573057009683">A Chromiumnak helymeghatározási jogosultságra van szüksége ehhez a webhelyhez</translation>

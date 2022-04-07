@@ -173,6 +173,7 @@
 <translation id="4600710005438004015">Chrome を最新版に更新できませんでした。新しい機能とセキュリティ修正は適用されていません。</translation>
 <translation id="4627412468266359539">オプション: 診断と使用状況のデータを Google に自動送信して ChromeOS Flex の機能と動作の改善に役立てる。</translation>
 <translation id="4633000520311261472">Chrome をより安全にご利用いただくため、<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />で提供していない一部の拡張機能を無効にしました。これらは知らないうちに追加された可能性があります。</translation>
+<translation id="469553575393225953">提供元不明の拡張機能、アプリ、テーマはデバイスに危害を及ぼす可能性があります。Chrome ウェブストアで公開されているアイテムのみをインストールすることをおすすめします</translation>
 <translation id="4728575227883772061">原因不明のエラーによりインストールが失敗しました。実行中の Google Chrome を終了してからやり直してください。</translation>
 <translation id="4747730611090640388">Chrome はユーザーの興味 / 関心を推定する場合があります。その後、アクセスしたサイトは、表示する広告をカスタマイズするために、Chrome にユーザーの興味 / 関心を確認するよう依頼できます。</translation>
 <translation id="4754614261631455953">Google Chrome Canary（mDNS インバウンド）</translation>
@@ -212,6 +213,7 @@
 <translation id="5736850870166430177">サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部をセーフ ブラウジングに送信することがあります</translation>
 <translation id="573759479754913123">Chrome OS について</translation>
 <translation id="5756509061973259733">このアカウントの Chrome プロファイルは、このデバイスにすでに存在します</translation>
+<translation id="5763280521700030406">このファイルはセキュリティ チェックには大きすぎるため、Chrome でブロックされました。ファイルを 50 MB 以下にしてから、もう一度お試しください</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome を起動できませんでした。もう一度お試しください。</translation>
 <translation id="5867197326698922595">Google Chrome でパスワードを編集しようとしています。</translation>
@@ -320,8 +322,10 @@
 <translation id="8394720698884623075">Chrome に保存されている安全でないサイトのリストと URL を照合します</translation>
 <translation id="840084489713044809">Google Chrome からパスワードをエクスポートするための許可を求められています。</translation>
 <translation id="8416347857511542594">Chrome での広告のカスタマイズの詳細</translation>
+<translation id="8421734018304082652">このファイルは暗号化されているため、Chrome でブロックされました。所有者に暗号化の解除を依頼してください</translation>
 <translation id="8433638294851456451">Android スマートフォンに番号を送信するには、両方のデバイスで Chrome にログインしてください。</translation>
 <translation id="8498858610309223613">Google Chrome の特別なセキュリティ アップデートが適用されました。今すぐ再起動してください。タブは復元されます。</translation>
+<translation id="8504220326736535258">このファイルにはマルウェアが含まれているため、Chrome でブロックされました</translation>
 <translation id="8516431725144212809">Chrome が推定したお客様の興味 / 関心</translation>
 <translation id="8521348052903287641">mDNS トラフィックを許可する Google Chrome Dev のインバウンド ルールです。</translation>
 <translation id="8540666473246803645">Google Chrome</translation>

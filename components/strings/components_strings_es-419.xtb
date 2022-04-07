@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">A veces los atacantes hacen cambios difíciles de detectar en la dirección web para imitar sitios.</translation>
 <translation id="1028781062521375153">Ver detalles</translation>
 <translation id="1030706264415084469"><ph name="URL" /> quiere almacenar datos de gran tamaño de forma permanente en tu dispositivo</translation>
-<translation id="1032854598605920125">Girar a la derecha</translation>
 <translation id="1033329911862281889">El modo Incógnito no hace que seas invisible en línea:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Los sitios y servicios que uses pueden ver las visitas.<ph name="END_LIST_ITEM" />
@@ -2527,6 +2526,7 @@ Detalles adicionales:
 <translation id="7995512525968007366">Sin especificar</translation>
 <translation id="7998269595945679889">Botón Abrir pestaña de incógnito, presiona Intro para abrir una nueva pestaña de incógnito y así navegar de forma privada</translation>
 <translation id="800218591365569300">Prueba cerrar las demás pestañas o programas para liberar memoria.</translation>
+<translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8009225694047762179">Administrar contraseñas</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Se guardará esta tarjeta y su dirección de facturación. Podrás usarla cuando accedas a <ph name="USER_EMAIL" />.}other{Se guardarán estas tarjetas y sus direcciones de facturación. Podrás usarlas cuando accedas a <ph name="USER_EMAIL" />.}}</translation>
@@ -2627,6 +2627,7 @@ Detalles adicionales:
 <translation id="8277900682056760511">La hoja del controlador de pagos está abierta</translation>
 <translation id="8280630997017109758">Bandeja 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
+<translation id="8281886186245836920">Omitir</translation>
 <translation id="8282947398454257691">Conocer tu identificador de dispositivo único</translation>
 <translation id="8284769179630993263">En la configuración de Chrome, administra tu Navegación segura y más</translation>
 <translation id="8286036467436129157">Acceder</translation>

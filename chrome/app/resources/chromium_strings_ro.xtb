@@ -13,6 +13,7 @@
 <translation id="151962892725702025">Sistemul de operare Chromium nu a putut sincroniza datele, deoarece sincronizarea nu este disponibilă pentru domeniul dvs.</translation>
 <translation id="1524282610922162960">Distribuie o filă Chromium</translation>
 <translation id="1553461853655228091">Chromium are nevoie de permisiunea de a accesa camera foto pentru a crea o hartă 3D a lucrurilor din jurul tău</translation>
+<translation id="1602421994560205104">Chromium a blocat fișierul deoarece este prea mare pentru verificarea de siguranță. Încearcă din nou cu fișiere de până la 50 MB</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administratorul solicită să relansezi Chromium pentru a aplica o actualizare}=1{Administratorul solicită să relansezi Chromium pentru a aplica o actualizare. Fereastra incognito nu se va mai deschide.}few{Administratorul solicită să relansezi Chromium pentru a aplica o actualizare. Cele # ferestre incognito nu se vor mai deschide.}other{Administratorul solicită să relansezi Chromium pentru a aplica o actualizare. Cele # de ferestre incognito nu se vor mai deschide.}}</translation>
 <translation id="1625909126243026060">Examinează cele mai importante opțiuni de confidențialitate și de securitate din Chromium</translation>
 <translation id="1632539827495546968">Dacă vrei să folosești contul o singură dată, poți utiliza <ph name="GUEST_LINK_BEGIN" />modul pentru invitați<ph name="GUEST_LINK_END" /> în browserul Chromium. Dacă vrei să adaugi un cont pentru altcineva, <ph name="LINK_BEGIN" />adaugă o nouă persoană<ph name="LINK_END" /> pe <ph name="DEVICE_TYPE" />.
@@ -220,6 +221,7 @@ Este posibil ca unele funcții să nu fie disponibile. Specificați un director 
 <translation id="673636774878526923">Pentru a accesa informațiile din Chromium pe toate dispozitivele, conectează-te, apoi activează sincronizarea.</translation>
 <translation id="6774082503108938489">Părintele tău a dezactivat opțiunea „Permisiuni pentru site-uri, aplicații și extensii” în Chromium. Activarea acestei <ph name="EXTENSION_TYPE_PARAMETER" /> nu este permisă.</translation>
 <translation id="6847869444787758381">Chromium te anunță dacă parolele tale sunt compromise</translation>
+<translation id="6852530923436401894">Chromium a blocat fișierul deoarece conține programe malware</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copiat în Chromium)</translation>
 <translation id="6873893289264747459">Chromium a descoperit că <ph name="EXTENSION_NAME" /> conține programe malware</translation>
@@ -238,6 +240,7 @@ Este posibil ca unele funcții să nu fie disponibile. Specificați un director 
 <translation id="7218568399872925918">Site-urile pe care le accesezi rețin informațiile tale până când închizi Chromium</translation>
 <translation id="7223968959479464213">Manager de activități - Chromium</translation>
 <translation id="7246575524853130370">Interesele tale estimate de Chromium</translation>
+<translation id="7265671031637041256">Chromium a blocat fișierul deoarece este criptat. Solicită-i proprietarului să-l decripteze</translation>
 <translation id="7309928523159922338">Ad measurement le dă site-urilor pe care le accesezi posibilitatea de a solicita informații de la Chromium care le ajută să măsoare performanța anunțurilor asociate. Ad measurement restricționează urmărirea pe mai multe site-uri prin transferul câtor mai puține informații între site-uri.</translation>
 <translation id="731795002583552498">Chromium se actualizează</translation>
 <translation id="7318036098707714271">Fișierul de preferințe este fie deteriorat, fie nevalid.
@@ -277,6 +280,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="7898472181347242998">Pentru a verifica dacă dispozitivul este actualizat, accesează <ph name="LINK_BEGIN" />Setările sistemului de operare Chromium<ph name="LINK_END" /></translation>
 <translation id="7937630085815544518">Ați fost conectat(ă) la Chromium ca <ph name="USER_EMAIL_ADDRESS" />. Utilizați același cont pentru a vă conecta din nou.</translation>
 <translation id="7975919845073681630">Aceasta este o instalare secundară a browserului Chromium și nu poate fi setat ca browser prestabilit.</translation>
+<translation id="7997934263947464652">Extensiile, aplicațiile și temele din surse necunoscute pot să dăuneze dispozitivului. Chromium recomandă să le instalezi numai din <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Odată ce Chromium are acces, site-urile web îți vor putea solicita accesul.</translation>
 <translation id="8045118833343856403">Următoarele conturi nu sunt conectate la niciun profil Chromium. Dacă vrei să folosești un cont într-un alt profil, mai întâi elimină profilul respectiv.</translation>
 <translation id="8105840573057009683">Chromium necesită permisiuni pentru locație pentru acest site</translation>

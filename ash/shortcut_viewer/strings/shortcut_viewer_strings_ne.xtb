@@ -5,7 +5,7 @@
 <translation id="104962181688258143">फाइल एप खोल्नुहोस्‌</translation>
 <translation id="1122869341872663659"><ph name="QUERY" /> का <ph name="N" /> खोजका परिणाम देखाइँदै</translation>
 <translation id="1195667586424773550">लिंकलाई ट्याबको ठेगाना पट्टीमा ड्र्याग गर्नुहोस्</translation>
-<translation id="1251638888133819822">पूर्ण स्क्रिनसम्बन्धी म्याग्निफायरलाई सक्रिय गर्नुहोस्‌ वा निष्क्रिय पार्नुहोस्</translation>
+<translation id="1251638888133819822">पूर्ण स्क्रिनसम्बन्धी म्याग्निफायरलाई अन गर्नुहोस्‌ वा निष्क्रिय पार्नुहोस्</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1299858300159559687">आफ्नो हालको पृष्ठ प्रिन्ट गर्नुहोस्</translation>
@@ -42,12 +42,12 @@
 <translation id="2354531887393764880">अवधि</translation>
 <translation id="2382644247745281995">किबोर्डको हालको लेआउटमा समर्थित छैन</translation>
 <translation id="2397416548179033562">Chrome मेनु देखाउनुहोस्</translation>
-<translation id="2424073332829844142">क्याप्स लक सक्रिय गर्नुहोस् र निष्क्रिय पार्नुहोस्</translation>
+<translation id="2424073332829844142">क्याप्स लक अन गर्नुहोस् र निष्क्रिय पार्नुहोस्</translation>
 <translation id="2441202986792279177">द्रुत गतिमा विन्डोहरूका बीचमा बदल्नुहोस्</translation>
 <translation id="2454251766545114447">जुम आउट गर्ने विकल्प देखाउनुहोस्</translation>
-<translation id="2478303094958140141">ChromeVox (बोली प्रतिक्रिया) सक्रिय गर्नुहोस् वा निष्क्रिय पार्नुहोस्</translation>
+<translation id="2478303094958140141">ChromeVox (बोली प्रतिक्रिया) अन गर्नुहोस् वा निष्क्रिय पार्नुहोस्</translation>
 <translation id="2480851840841871861">Google सहायक खोल्नुहोस्</translation>
-<translation id="2488661730534396940">बायाँतिरको डेस्क सक्रिय गर्नुहोस्</translation>
+<translation id="2488661730534396940">बायाँतिरको डेस्क अन गर्नुहोस्</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2516999188535378855">Diagnostics एप खोल्नुहोस्</translation>
 <translation id="2530339807289914946">वेब पृष्ठमा तलतिर स्क्रोल गर्नुहोस्</translation>
@@ -111,7 +111,7 @@
 <translation id="4628718545549558538">वस्तुस्थिति क्षेत्र खोल्नुहोस् (यो तपाईंको खाताको तस्बिर देखिने ठाउँ हो)</translation>
 <translation id="4698850295812410683">स्टाइलस उपकरणहरू देखाउनुहोस्</translation>
 <translation id="4801989101741319327">अर्को शब्दको अन्त्यमा सार्नुहोस्</translation>
-<translation id="4866066940972151697">दायाँतिरको डेस्क सक्रिय गर्नुहोस्</translation>
+<translation id="4866066940972151697">दायाँतिरको डेस्क अन गर्नुहोस्</translation>
 <translation id="4916163929714267752">यो लिंकलाई नयाँ विन्डोमा खोल्नुहोस्</translation>
 <translation id="492453977506755176">क्याप्चर मोड की</translation>
 <translation id="5030659775136592441">पुस्तक चिन्ह प्रबन्धक देखाउनुहोस्‌</translation>
@@ -123,7 +123,7 @@
 <translation id="5236674127086649162">क्यास गरिएका सामग्री प्रयोग नगरिकन आफ्नो हालको पृष्ठ पुनः लोड गर्नुहोस्</translation>
 <translation id="526651782186312376">हरफको सुरुवातसम्मको पाठ चयन गर्नुहोस्</translation>
 <translation id="5316716239522500219">दर्पण मनिटर</translation>
-<translation id="539072479502328326">डक गरिएको म्याग्निफायरलाई सक्रिय गर्नुहोस्‌ वा निष्क्रिय पार्नुहोस्</translation>
+<translation id="539072479502328326">डक गरिएको म्याग्निफायरलाई अन गर्नुहोस्‌ वा निष्क्रिय पार्नुहोस्</translation>
 <translation id="5466615362193675484">लक मोडको आकार बदल्न यो मेनु टगल गर्नुहोस्</translation>
 <translation id="5541719484267030947">ट्याब ड्र्याग गर्दा <ph name="ESC" /> थिच्नुहोस्</translation>
 <translation id="5554139136362089836">हालको पृष्ठमा खोज्नुहोस्</translation>
@@ -140,7 +140,7 @@
 <translation id="5921745308587794300">विन्डोलाई घुमाउनुहोस्</translation>
 <translation id="5926306472221400972">फुल स्क्रिनको स्क्रिनसट खिच्नुहोस्</translation>
 <translation id="6022924867608035986">खोजबाकसको पाठ खाली गर्नुहोस्</translation>
-<translation id="6045998054441862242">उच्च कन्ट्रास्ट मोड सक्रिय गर्नुहोस्‌</translation>
+<translation id="6045998054441862242">उच्च कन्ट्रास्ट मोड अन गर्नुहोस्‌</translation>
 <translation id="6052614013050385269">कुनै लिंकमा दायाँ क्लिक गर्नुहोस्‌</translation>
 <translation id="6129953537138746214">क्षेत्र</translation>
 <translation id="6143669479988153888">पृष्ठमा जुम इन गर्नुहोस्</translation>

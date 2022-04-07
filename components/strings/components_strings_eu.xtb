@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">Batzuetan, erasotzaileek beste webgune batzuen plantak egiten dituzte web-helbideari aldaketa oso txikiak eginda.</translation>
 <translation id="1028781062521375153">Ikusi xehetasunak</translation>
 <translation id="1030706264415084469"><ph name="URL" /> webguneak datu asko gorde nahi ditu gailuan modu iraunkorrean</translation>
-<translation id="1032854598605920125">Biratu eskuinera</translation>
 <translation id="1033329911862281889">Ezkutuko modua erabili arren, ez zara ikusezina izango sarean:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Webguneek eta erabiltzen dituzten zerbitzuek bisitak ikus ditzakete.<ph name="END_LIST_ITEM" />
@@ -2521,6 +2520,7 @@ Xehetasun gehiago:
 <translation id="7995512525968007366">Ez da zehaztu</translation>
 <translation id="7998269595945679889">"Ireki ezkutuko moduko fitxa bat" botoia: sakatu "Sartu" ezkutuko moduko fitxa bat irekitzeko modu pribatuan arakatze aldera</translation>
 <translation id="800218591365569300">Saiatu beste fitxa edo programa batzuk ixten memoria gehiago uzteko erabilgarri.</translation>
+<translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
 <translation id="8004582292198964060">Arakatzailea</translation>
 <translation id="8009225694047762179">Kudeatu pasahitzak</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Txartel hau eta haren fakturazio-helbidea gordeko dira. <ph name="USER_EMAIL" /> kontuan saioa hasita duzunean erabili ahalko dituzu.}other{Txartel hauek eta haien fakturazio-helbideak gordeko dira. <ph name="USER_EMAIL" /> kontuan saioa hasita duzunean erabili ahalko dituzu.}}</translation>
@@ -2621,6 +2621,7 @@ Xehetasun gehiago:
 <translation id="8277900682056760511">Ordainketa kudeatzeko orria irekita dago</translation>
 <translation id="8280630997017109758">11. erretilua</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
+<translation id="8281886186245836920">Saltatu</translation>
 <translation id="8282947398454257691">Ezagutu zure gailu-identifikatzaile esklusiboa</translation>
 <translation id="8284769179630993263">Kudeatu Arakatze segurua eta beste gauza batzuk Chrome-ren ezarpenetan</translation>
 <translation id="8286036467436129157">Hasi saioa</translation>

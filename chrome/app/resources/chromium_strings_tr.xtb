@@ -13,6 +13,7 @@
 <translation id="151962892725702025">Senkronizasyon alan adınızda kullanılamadığından Chromium OS, verilerinizi senkronize edemedi.</translation>
 <translation id="1524282610922162960">Chromium sekmesini paylaşın</translation>
 <translation id="1553461853655228091">Çevrenizin 3D haritasını oluşturmak için Chromium'un kameranıza erişim iznine ihtiyacı var</translation>
+<translation id="1602421994560205104">Güvenlik kontrolü için fazla büyük olması nedeniyle bu dosya Chromium tarafından engellendi. 50 MB'a kadar dosyalarla tekrar deneyin.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Yöneticiniz bir güncellemeyi uygulamak için Chromium'u yeniden başlatmanızı gerektiriyor}=1{Yöneticiniz bir güncellemeyi uygulamak için Chromium'u yeniden başlatmanızı gerektiriyor. Gizli pencereniz yeniden açılmayacak.}other{Yöneticiniz bir güncellemeyi uygulamak için Chromium'u yeniden başlatmanızı gerektiriyor. # Gizli pencereniz yeniden açılmayacak.}}</translation>
 <translation id="1625909126243026060">Chromium'daki önemli gizlilik ve güvenlik kontrollerini inceleyin</translation>
 <translation id="1632539827495546968">Bu hesabı yalnızca bir kez kullanmak istiyorsanız Chromium tarayıcıda <ph name="GUEST_LINK_BEGIN" />misafir modunu<ph name="GUEST_LINK_END" /> kullanabilirsiniz. Başka biri için hesap eklemek isterseniz <ph name="DEVICE_TYPE" /> cihazınıza <ph name="LINK_BEGIN" />yeni bir kişi ekleyin<ph name="LINK_END" />.
@@ -218,6 +219,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="673636774878526923">Chromium öğelerinize tüm cihazlarınızda erişmek için oturum açın ve senkronizasyonu etkinleştirin.</translation>
 <translation id="6774082503108938489">Ebeveyniniz, Chromium'a yönelik "Siteler, uygulamalar ve uzantılar için izinler"i kapattı. Bu <ph name="EXTENSION_TYPE_PARAMETER" /> uzantısının etkinleştirilmesine izin verilmiyor.</translation>
 <translation id="6847869444787758381">Chromium, şifrelerinizin güvenliğinin ihlal edilip edilmediğini size bildirir</translation>
+<translation id="6852530923436401894">Kötü amaçlı yazılım içermesi nedeniyle bu dosya Chromium tarafından engellendi</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium'a kopyalandı)</translation>
 <translation id="6873893289264747459">Chromium, "<ph name="EXTENSION_NAME" />" uzantısında kötü amaçlı yazılım tespit etti</translation>
@@ -236,6 +238,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="7218568399872925918">Ziyaret ettiğiniz siteler, Chromium'u kapatana kadar bilgilerinizi hatırlar</translation>
 <translation id="7223968959479464213">Görev Yöneticisi - Chromium</translation>
 <translation id="7246575524853130370">Chromium'un tahmin ettiği ilgi alanlarınız</translation>
+<translation id="7265671031637041256">Şifrelenmiş olması nedeniyle bu dosya Chromium tarafından engellendi. Dosyanın sahibinden şifresini çözmesini isteyin.</translation>
 <translation id="7309928523159922338">Reklam ölçümü, ziyaret ettiğiniz sitelerin Chromium'dan bilgi istemesine olanak tanır. Bu bilgiler de sitenin, reklamlarının performansını ölçmesine yardımcı olur. Reklam ölçümü, siteler arasında mümkün olduğunca az bilgi aktararak siteler arası izlemeyi kısıtlar.</translation>
 <translation id="731795002583552498">Chromium güncelleniyor</translation>
 <translation id="7318036098707714271">Tercihler dosyanız bozuk veya geçersiz.
@@ -275,6 +278,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="7898472181347242998">Cihazınızın güncel olup olmadığını görmek için <ph name="LINK_BEGIN" />Chromium OS Ayarları<ph name="LINK_END" />'na gidin</translation>
 <translation id="7937630085815544518">Chromium'da <ph name="USER_EMAIL_ADDRESS" /> olarak oturum açtınız. Tekrar oturum açmak için lütfen aynı hesabı kullanın.</translation>
 <translation id="7975919845073681630">Bu, Chromium'un ikincil bir yüklemesidir ve varsayılan tarayıcınız yapılamaz.</translation>
+<translation id="7997934263947464652">Bilinmeyen kaynaklardan gelen uzantılar, uygulamalar ve temalar cihazınıza zarar verebilir. Chromium bunların yalnızca <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> kaynağından yüklenmesini önerir.</translation>
 <translation id="8013436988911883588">Chromium erişim izni aldıktan sonra, web siteleri de erişim için sizden izin isteyebilecek.</translation>
 <translation id="8045118833343856403">Aşağıdaki hesaplar hiçbir Chromium profilinde oturum açmamış. Başka profildeki bir hesabı kullanmak istiyorsanız önce bu profili kaldırın.</translation>
 <translation id="8105840573057009683">Bu site için Chromium'un konum iznine ihtiyacı var</translation>

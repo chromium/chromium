@@ -13,6 +13,7 @@
 <translation id="151962892725702025">Ma’lumotlarni sinxronlab bo‘lmadi, chunki domeningizda Sync xizmati mavjud emas.</translation>
 <translation id="1524282610922162960">Chromium sahifasini namoyish qilish</translation>
 <translation id="1553461853655228091">Chromium atrofingiz 3D xaritasini yaratishi uchun unga kamera ruxsati zarur</translation>
+<translation id="1602421994560205104">Bu fayl xavfsizlik tekshiruvi uchun juda katta boʻlgani uchun Chromium uni blokladi 50 MB gacha fayllar bilan qayta urining.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni talab qilmoqda}=1{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni talab qilmoqda Inkognito oynalar qayta ochilmaydi.}other{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni talab qilmoqda # ta inkognito oyna qayta ochilmaydi.}}</translation>
 <translation id="1625909126243026060">Chromium ichida asosiy maxfiylik va xavfsizlik boshqaruvini tekshiring</translation>
 <translation id="1632539827495546968">Bu hisobdan bir marta foydalanish uchun Chromium brauzerida <ph name="GUEST_LINK_BEGIN" />Mehmon rejimidan<ph name="GUEST_LINK_END" /> foydalanishingiz mumkin. Biror kishi uchun hisob qoʻshmoqchi boʻlsangiz, <ph name="LINK_BEGIN" />yangi shaxsni<ph name="LINK_END" /> <ph name="DEVICE_TYPE" /> qurilmasiga qoʻshing.
@@ -218,6 +219,7 @@ Ba’zi imkoniyatlar ishlamasligi mumkin. Profilni saqlash uchun boshqa jild tay
 <translation id="673636774878526923">Chromium brauzeridagi axborotlardan barcha qurilmalaringizda foydalanish uchun hisobingizga kiring va sinxronizatsiyani yoqing.</translation>
 <translation id="6774082503108938489">Chromiumdagi “Sayt, ilova va kengaytmalarga ruxsat” ota-onangiz tomonidan faolsizlantirilgan. Bu <ph name="EXTENSION_TYPE_PARAMETER" /> yoqilishi taqiqlangan.</translation>
 <translation id="6847869444787758381">Parollaringiz oshkor etilsa, Chromium bu haqida xabar qiladi</translation>
+<translation id="6852530923436401894">Bu fayl zararli dastur boʻlgani uchun Chromium uni blokladi</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium brauzeriga nusxalandi)</translation>
 <translation id="6873893289264747459">Chromium “<ph name="EXTENSION_NAME" />” kengaytmasi tarkibida zararli dastur aniqladi</translation>
@@ -237,6 +239,7 @@ Ba’zi imkoniyatlar ishlamasligi mumkin. Profilni saqlash uchun boshqa jild tay
 <translation id="7218568399872925918">Siz ochgan saytlar maʼlumotlaringizni Chromium yopilmaguncha esda saqlaydi</translation>
 <translation id="7223968959479464213">Vazifalar menejeri – Chromium</translation>
 <translation id="7246575524853130370">Chromium taxmin qilgan qiziqishlaringiz</translation>
+<translation id="7265671031637041256">Bu fayl shifrlangani uchun Chromium uni blokladi Egasidan uni kodsizlashni soʻrang</translation>
 <translation id="7309928523159922338">Reklamani oʻlchash orqali siz kiradigan saytlar oʻzidagi reklama unumdorligini hisoblashga yordam beradigan maʼlumotlarni Chromium ilovasidan soʻray oladi. Reklama statistikasi imkon qadar kam axborotni saytlararo ulashish orqali saytlardagi kuzatuv mexanizmlarini taqiqlaydi.</translation>
 <translation id="731795002583552498">Chromium yangilanmoqda</translation>
 <translation id="7318036098707714271">Sozlamalaringiz saqlanadigan fayl noto‘g‘ri yoki yaroqsiz holatda.
@@ -276,6 +279,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7898472181347242998">Qurilmangiz tizimi yangilanganligini <ph name="LINK_BEGIN" />Chromium OS sozlamalari<ph name="LINK_END" /> orqali bilish mumkin</translation>
 <translation id="7937630085815544518">Avvallari siz Chromium‘ga <ph name="USER_EMAIL_ADDRESS" /> hisobidan kirgandingiz. O‘sha hisobdan foydalanib yana qaytadan kiring.</translation>
 <translation id="7975919845073681630">Chromium takroran o‘rnatilgan, shuning uchun u asosiy brauzer bo‘la olmaydi.</translation>
+<translation id="7997934263947464652">Nomaʼlum manbalar kengaytmalari, ilovalari va mavzulari qurilmangizni zararlashi mumkin. Chromium ularni faqat <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> orqali oʻrnatishni tavsiya qiladi</translation>
 <translation id="8013436988911883588">Chromium saytlarga ulanganda sizdan ruxsat so‘raydi.</translation>
 <translation id="8045118833343856403">Quyidagi hisoblar hech qaysi Chromium profiliga kirmagan. Hisobni boshqa profilda ishlatishni xohlasangiz, avval u profilni olib tashlang.</translation>
 <translation id="8105840573057009683">Chromium bu saytda joylashuv axborotidan foydalanishiga ruxsat kerak</translation>

@@ -9,6 +9,7 @@
 <translation id="1591070050619849194">Деактивиране на всички анимирани изображения.</translation>
 <translation id="1703735871906654364">Caret Browsing</translation>
 <translation id="1791496371305830581">Разрешаване на всички анимирани изображения.</translation>
+<translation id="1974060860693918893">Разширени</translation>
 <translation id="1996252509865389616">Да се активира ли?</translation>
 <translation id="2079545284768500474">Отмяна</translation>
 <translation id="2179565792157161713">Отваряне на дългото описание в нов раздел</translation>
@@ -65,5 +66,6 @@
 <translation id="8321034316479930120">Правило за анимациите</translation>
 <translation id="8480209185614411573">High Contrast</translation>
 <translation id="8609925175482059018">Натиснете &lt;span class='key'&gt;F7&lt;/span&gt; веднъж, за да включите функцията Caret Browsing, и втори път, за да я изключите.</translation>
+<translation id="8798099450830957504">По подразбиране</translation>
 <translation id="894241283505723656">Long Descriptions in Context Menu</translation>
 </translationbundle>

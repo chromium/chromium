@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">El dispositiu Bluetooth "<ph name="DEVICE_NAME" />" sol·licita permís per emparellar-se. Introduïu aquest codi PIN al dispositiu: <ph name="PINCODE" />.</translation>
 <translation id="1014111206066007277">Eines de captura de pantalla de vídeo</translation>
 <translation id="1024261588257374085">S'ha seleccionat la captura de pantalla parcial</translation>
+<translation id="1024364763893396229">Desa el dispositiu <ph name="NAME" /></translation>
 <translation id="1032891413405719768">El llapis òptic té poca bateria</translation>
 <translation id="1036073649888683237">Per gestionar les notificacions, ves a Configuració</translation>
 <translation id="1036672894875463507">Soc el teu Assistent de Google i et puc ajudar al llarg del dia.
@@ -167,6 +168,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1954252331066828794">La gravació de pantalla s'ha completat</translation>
 <translation id="1957958912175573503">Estableix el teu idioma</translation>
+<translation id="1961239773406905488">La previsualització de la càmera està amagada</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Pantalla de bloqueig</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -184,6 +186,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2047639699071423250">Afegeix una idea clau</translation>
 <translation id="2049240716062114887">El nom de l'escriptori s'ha canviat a <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Vertical</translation>
+<translation id="2064048859448024834">La previsualització de la càmera està activada</translation>
 <translation id="2066708475850724665">Atura la lupa</translation>
 <translation id="2067602449040652523">Brillantor del teclat</translation>
 <translation id="2078034614700056995">Fes lliscar quatre dits cap a la dreta per canviar a l'escriptori següent</translation>
@@ -293,6 +296,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2819276065543622893">Ara se us tancarà la sessió.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> no admet la resolució <ph name="SPECIFIED_RESOLUTION" />. La resolució ha canviat a <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Prestatge</translation>
+<translation id="2831035692318564937">Activat fins a l'alba</translation>
 <translation id="2834813915651407382">Obert fa poc</translation>
 <translation id="2841907151129139818">S'ha canviat a mode de tauleta</translation>
 <translation id="2844169650293029770">Dispositiu USB-C (port frontal esquerre)</translation>
@@ -439,6 +443,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3626281679859535460">Brillantor</translation>
 <translation id="3630697955794050612">desactivat</translation>
 <translation id="3631369015426612114">Permet notificacions de les fonts següents:</translation>
+<translation id="3633097874324966332">Obre la configuració del Bluetooth per vincular el dispositiu</translation>
 <translation id="3638400994746983214">Commuta la pantalla de privadesa. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Actualització pendent</translation>
 <translation id="366222428570480733">Usuari gestionat (<ph name="USER_EMAIL_ADDRESS" />)</translation>
@@ -486,6 +491,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3922427723338465344">{0,plural, =1{Canvia el dispositiu a la versió anterior en el termini d’1 minut}other{Canvia el dispositiu a la versió anterior en el termini de # minuts}}</translation>
 <translation id="3923494859158167397">No hi ha cap xarxa mòbil configurada</translation>
 <translation id="3932043219784172185">No hi ha cap dispositiu connectat</translation>
+<translation id="3934456833412894880">La càrrega adaptativa està activada. La bateria es mantindrà al 80% per allargar-ne la durada i poder carregar-la completament quan ho necessitis.</translation>
 <translation id="3943857333388298514">Enganxa</translation>
 <translation id="394485226368336402">Configuració d'àudio</translation>
 <translation id="3945319193631853098">Toca per completar la configuració</translation>
@@ -766,6 +772,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5744083938413354016">Tocar i arrossegar</translation>
 <translation id="5745612484876805746">La funció Llum nocturna s'activa automàticament al vespre</translation>
 <translation id="5750765938512549687">El Bluetooth està desactivat</translation>
+<translation id="5760866832697883462">Connecta el dispositiu <ph name="NAME" /></translation>
 <translation id="576341972084747908">Baixa el fitxer perillós <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">L'opció Grup de prestatges està desactivada.</translation>
 <translation id="576453121877257266">La funció Llum nocturna està activada.</translation>
@@ -951,6 +958,7 @@ Instal·lació nova</translation>
 <translation id="6886172995547742638">És possible que el rendiment del teu dispositiu <ph name="DEVICE_TYPE" /> es vegi disminuït. Utilitza un adaptador de corrent USB-C certificat de <ph name="PREFERRED_MINIMUM_POWER" /> W o superior.</translation>
 <translation id="688631446150864480">Prem la tecla de fletxa avall per canviar de finestra</translation>
 <translation id="6896758677409633944">Copia</translation>
+<translation id="6901883536534621389">Prova els gestos per navegar</translation>
 <translation id="6919251195245069855">No s'ha reconegut la targeta intel·ligent. Torna-ho a provar.</translation>
 <translation id="6921188888306725546">S'han millorat les tecles de drecera</translation>
 <translation id="6931576957638141829">Desa a</translation>
@@ -1127,6 +1135,7 @@ Instal·lació nova</translation>
 <translation id="7977927628060636163">S'estan cercant xarxes mòbils…</translation>
 <translation id="7982789257301363584">Xarxa</translation>
 <translation id="7984197416080286869">Has intentat desbloquejar el dispositiu amb empremta digital massa vegades</translation>
+<translation id="798779949890829624">El teu administrador gestiona aquesta opció de configuració</translation>
 <translation id="7994370417837006925">Inici de sessió múltiple</translation>
 <translation id="7995804128062002838">No s'ha pogut capturar la pantalla</translation>
 <translation id="8000066093800657092">No hi ha cap xarxa</translation>
@@ -1154,6 +1163,7 @@ Instal·lació nova</translation>
 <translation id="813913629614996137">S'està inicialitzant…</translation>
 <translation id="8142441511840089262">Fes doble clic</translation>
 <translation id="8142699993796781067">Xarxa privada</translation>
+<translation id="8144760705599030999">Desa el dispositiu <ph name="NAME" /> a <ph name="EMAIL" /> perquè es vinculi ràpidament als teus altres dispositius</translation>
 <translation id="8152092012181020186">Prem Ctrl+W per tancar.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, compleció automàtica</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" />. El teu administrador gestiona aquesta opció de configuració.</translation>
@@ -1191,6 +1201,7 @@ Instal·lació nova</translation>
 <translation id="8412677897383510995">Mostra la configuració de la pantalla</translation>
 <translation id="8413272770729657668">La gravació començarà d'aquí a 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (estoig)</translation>
+<translation id="8420205633584771378">Vols suprimir aquest suggeriment?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> no està disponible en aquest dispositiu.</translation>
 <translation id="8425213833346101688">Canvia</translation>
 <translation id="8426708595819210923">Bon vespre, <ph name="GIVEN_NAME" />,</translation>
@@ -1283,6 +1294,7 @@ Instal·lació nova</translation>
 <translation id="9000771174482730261">GESTIONA L'EMMAGATZEMATGE</translation>
 <translation id="9017320285115481645">Introdueix el codi d'accés parental de Family Link.</translation>
 <translation id="9024331582947483881">pantalla completa</translation>
+<translation id="9030319654231318877">Desactivat fins al vespre</translation>
 <translation id="9034924485347205037">Fitxers de Linux</translation>
 <translation id="9047624247355796468">Obre la configuració de la xarxa <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Replega la notificació</translation>
@@ -1302,6 +1314,7 @@ Instal·lació nova</translation>
 <translation id="9099154003160514616">Hi ha una actualització de Lacros disponible</translation>
 <translation id="9100887602489003640">S'està afegint el perfil. Espera uns minuts.</translation>
 <translation id="9105450214093926548">Mentre s'executa el navegador Lacros, no s'admet l'inici de sessió amb un segon usuari. Utilitza un altre perfil del navegador o tanca Lacros i torna-ho a provar.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> o <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">No es pot gravar contingut protegit</translation>
 <translation id="9161053988251441839">APLICACIONS SUGGERIDES</translation>
 <translation id="9166331175924255663">Commuta la visibilitat alta de Compartició Nearby.</translation>

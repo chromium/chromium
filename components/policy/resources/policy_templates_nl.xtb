@@ -830,6 +830,7 @@ Bekijk <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> voor het vastzetten van ap
         |TIME_LIMITS| past een dagelijkse gebruikslimiet toe en zorgt dat de app niet beschikbaar is nadat de tijdslimiet voor de betreffende dag is bereikt. De gebruikslimiet wordt opgegeven in |daily_limit_mins|. De gebruikslimiet wordt dagelijks gereset op de UTC-tijd die wordt doorgegeven in |reset_at|.
         Dit beleid wordt alleen gebruikt voor minderjarige gebruikers.
         Dit beleid vormt een aanvulling op 'UsageTimeLimit'. Beperkingen die zijn opgegeven in 'UsageTimeLimit' (zoals schermtijd en bedtijd), worden afgedwongen, ongeacht 'PerAppTimeLimits'.</translation>
+<translation id="1913629775420987861">Een waarschuwingsdialoogvenster tonen als de gebruiker probeert de browser te sluiten</translation>
 <translation id="1916266055944569995">Als je dit beleid instelt, wordt de waarde gedefinieerd die de Managed Configuration API voor een bepaalde herkomst retourneert.
 
       De Managed Configuration API is een sleutel/waarde-configuratie waartoe je toegang hebt via de JavaScript-aanroep navigator.managed.getManagedConfiguration(). Deze API is alleen beschikbaar voor herkomsten die overeenkomen met afgedwongen geïnstalleerde web-apps via <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
@@ -1125,6 +1126,13 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
       Als je <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (waarde 1) instelt, mogen alleen varianten die worden beschouwd als essentiële beveiligings- of stabiliteitsoplossingen, worden toegepast op <ph name="PRODUCT_OS_NAME" />.
 
       Als je <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (waarde 2) instelt, mag geen van de varianten op de browser worden toegepast op het inlogscherm. Deze modus kan er potentieel voor zorgen dat <ph name="PRODUCT_OS_NAME" />-ontwikkelaars essentiële beveiligingsoplossingen niet tijdig kunnen leveren en wordt dus niet aanbevolen.</translation>
+<translation id="2217931577484185673">Als je dit beleid toepast, vertrouwt Safe Browsing de domeinen die je aangeeft. De functie checkt deze niet op gevaarlijke bronnen zoals phishing, malware of ongewenste software. De service voor downloadbeveiliging van Safe Browsing checkt downloads die worden gehost op deze domeinen niet. De service voor wachtwoordbeveiliging checkt niet of wachtwoorden opnieuw worden gebruikt.
+
+      Als je het beleid niet toepast, wordt de standaardbescherming van Safe Browsing toegepast op alle bronnen.
+
+      Dit beleid moet worden ingesteld als een lijst met volledig gekwalificeerde domeinnamen. Het beleid ondersteunt geen reguliere expressies en zet subdomeinen van domeinen die in het beleid worden vermeld, niet op de toelatingslijst.
+
+      In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="2221779615493499989">De netwerkstatus van gebruikers op ingeschreven apparaten rapporteren.
 
       Als je het beleid instelt op False, worden de gegevens niet gerapporteerd.
@@ -1550,6 +1558,7 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
       Dit beleid is van toepassing op het inlogscherm. Raadpleeg ook het beleid <ph name="SITE_PER_PROCESS_POLICY_NAME" /> dat van toepassing is op de gebruikerssessie. Het wordt aangeraden beide beleidsregels op dezelfde waarde in te stellen. Als de waarden niet overeenkomen, kan er bij het starten van een gebruikerssessie terwijl de door het gebruikersbeleid gespecificeerde waarde wordt toegepast, een vertraging optreden.
       </translation>
 <translation id="2702023190395322609">Media-aanbevelingen aanzetten</translation>
+<translation id="270582584528242502">Geen waarschuwingsdialoogvenster tonen als de gebruiker probeert de browser te sluiten</translation>
 <translation id="2706708761587205154">Afdrukken alleen toestaan met pincode</translation>
 <translation id="2707873794476722903">Safe Browsing is actief in de standaardmodus.</translation>
 <translation id="2709516037105925701">Automatisch invullen</translation>
@@ -2411,6 +2420,7 @@ Er worden geen automatische updatecontroles geblokkeerd door dit beleid, maar de
 <translation id="3628480121685794414">Enkelzijdig afdrukken aanzetten</translation>
 <translation id="3634125384445314047">Recente foto's en video's die op de telefoon zijn gemaakt, toegankelijk maken via Telefoonhub.</translation>
 <translation id="3643284063603988867">Functie 'Wachtwoord onthouden' aanzetten</translation>
+<translation id="3644735978203799620">Zet automatisch selecteren aan voor opnamen van meerdere schermen</translation>
 <translation id="3646859102161347133">Het type vergrootglas instellen</translation>
 <translation id="3647212518036289905">Als je het beleid instelt, geef je aan welke GSSAPI-bibliotheek moet worden gebruikt voor HTTP-verificatie. Stel het beleid in op een bibliotheeknaam of een volledig pad.
 
@@ -2435,6 +2445,7 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
       * <ph name="PRINTERS_ALLOW_ALL" /> (waarde 2) geeft alle printers weer.
 
       Als je dit beleid niet instelt, wordt <ph name="PRINTERS_ALLOW_ALL" /> gebruikt.</translation>
+<translation id="3695204334462456702">Op zeroconf gebaseerde (mDNS + DNS-SD) protocolbestemmingen (beëindigd)</translation>
 <translation id="3695706037816556327">Actie bij verwijdering van beveiligingstoken (bijv. smartcard) voor <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3700193037252896716">Frequentie waarmee opnieuw opstarten moet plaatsvinden.</translation>
 <translation id="3700318587977845664">Frequentie waarmee de updatecheck moet worden herhaald.</translation>
@@ -3724,6 +3735,25 @@ Als je dit beleid instelt op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> v
       Als je het beleid instelt op False of niet instelt, wordt 'Geïntegreerde desktop' uitgezet. Gebruikers kunnen deze functie dan niet aanzetten.</translation>
 <translation id="5255162913209987122">Kan worden aanbevolen</translation>
 <translation id="5257395339965216304">Gegevens van gehoste apps</translation>
+<translation id="5263649486910778308">Dit beleid biedt een manier om de lijst met reeksen te overschrijven die de browser gebruikt voor First-Party Sets-functies.
+
+      Elke reeks in de lijst met First-Party Sets van de browser moet voldoen aan de vereisten van een First-Party Set.
+      Een First-Party Set bestaat uit een eigenaarssite en een of meer lidsites. Alle sites in een First-Party Set moeten een registreerbaar domein zijn dat via HTTPS wordt gehost, ongeacht of het een eigenaars- of lidsite is.
+      Elke site in een First-Party Set moet ook uniek zijn. Dit betekent dat een site niet zowel eigenaar als lid kan zijn en maar één keer als lid van een First-Party Set kan worden vermeld.
+      Zie https://github.com/privacycg/first-party-sets voor meer informatie over First-Party Sets.
+
+      Als dit beleid een leeg woordenboek krijgt, gebruikt de browser de openbare lijst met First-Party Sets.
+
+      Voor alle sites in een First-Party Set uit de lijst <ph name="REPLACEMENTS" /> geldt dat als een site ook aanwezig is in een First-Party Set in de lijst van de browser, die site wordt verwijderd uit de First-Party Set van de browser.
+      Daarna wordt de First-Party Set van het beleid toegevoegd aan de lijst met First-Party Sets van de browser.
+
+      Voor alle sites in een First-Party Set uit de lijst <ph name="ADDITIONS" />, geldt dat als een site ook aanwezig is in een First-Party Set in de lijst van de browser, de First-Party Set van de browser wordt geüpdatet zodat de nieuwe First-Party Set kan worden toegevoegd aan de lijst van de browser. Nadat de lijst van de browser is geüpdatet, wordt de First-Party Set van het beleid toegevoegd aan de lijst met First-Party Sets van de browser.
+
+      De lijst met First-Party Sets van de browser vereist dat voor alle sites op de lijst geen site in meer dan 1 reeks is opgenomen. Dit is ook vereist voor zowel de lijst <ph name="REPLACEMENTS" /> als de lijst <ph name="ADDITIONS" />. Een site kan ook niet in zowel de lijst <ph name="REPLACEMENTS" /> als de lijst <ph name="ADDITIONS" /> staan.
+
+      Jokertekens (*) worden zowel in First-Party Sets als in deze lijsten niet ondersteund als beleidswaarde.
+
+      Alle reeksen die in dit beleid worden opgegeven, moeten geldige First-Party Sets zijn. Zo niet, dan krijg je de relevante foutmelding.</translation>
 <translation id="5266173014392157048">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />.
 
       Als je het beleid instelt, worden servers toegewezen waaraan <ph name="PRODUCT_NAME" /> kan delegeren. Gebruik bij meerdere servernamen een komma als scheidingsteken. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.
@@ -4820,6 +4850,10 @@ Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van de
 <translation id="654303922206238013">Migratiestrategie voor eCryptfs</translation>
 <translation id="6543277347547044538">Einde van het interval (exclusief).</translation>
 <translation id="6544601600794014309">Vertaling van Snelle antwoorden aanzetten</translation>
+<translation id="6544759513632821565">Met de <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> API kunnen web-apps meerdere schermen tegelijk vastleggen.
+      Dit beleid ontgrendelt de property <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> voor web-apps op gedefinieerde oorsprongen.
+      Als de property <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> is gedefinieerd in een <ph name="GET_DISPLAY_MEDIA_SET_NAME" />-verzoek, worden alle schermen automatisch vastgelegd zonder dat hiervoor expliciete gebruikerstoestemming is vereist.
+      Als het beleid niet is ingesteld, is <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> niet beschikbaar voor web-apps.</translation>
 <translation id="654546276700640113">Als je dit beleid instelt, wordt de ingestelde maximumlengte van pincodes afgedwongen. Een waarde van 0 of lager betekent dat de gebruiker een pincode van elke lengte kan instellen. Als de waarde lager is dan <ph name="PIN_UNLOCK_MINIMUM_LENGTH_POLICY_NAME" /> maar hoger dan 0, wordt de maximumlengte ingesteld op de minimumlengte.
 
       Als je het beleid niet instelt, wordt er geen maximumlengte afgedwongen.</translation>
@@ -6477,6 +6511,11 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
       Als je het beleid instelt, kunnen gebruikers het niet wijzigen. Als je het beleid niet instelt, is het toegepast maar kunnen gebruikers deze instelling wijzigen.</translation>
 <translation id="8300992833374611099">Bepalen wanneer de hulpprogramma's voor ontwikkelaars kunnen worden gebruikt</translation>
 <translation id="8301065459352777588">Gebruikers van beheerde gastsessies kunnen weergave-eigenschappen voor het hele apparaat opslaan</translation>
+<translation id="8303923135132440974">Beheert het dialoogvenster Melding voor sluiten (⌘Q) als de gebruiker probeert de browser te sluiten.
+
+      Als dit beleid wordt toegepast of niet is ingesteld, wordt een waarschuwingsdialoogvenster getoond als de gebruiker probeert de browser te sluiten.
+
+      Als dit beleid niet wordt toegepast, wordt er geen waarschuwingsdialoogvenster getoond als de gebruiker probeert de browser te sluiten.</translation>
 <translation id="830440838848984847">Gebruikers toestaan om in te loggen op <ph name="PRODUCT_NAME" /></translation>
 <translation id="8306117673860983372">Inloginstellingen</translation>
 <translation id="830819203330820450">Als dit beleid aanstaat of niet is ingesteld (standaard), kan een webpagina via API's voor scherm delen (bijvoorbeeld getDisplayMedia() of de API voor de extensie Bureaublad streamen) de gebruiker vragen een tabblad, venster of bureaublad te selecteren om vast te leggen.

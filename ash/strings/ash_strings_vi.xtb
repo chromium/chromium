@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Thiết bị Bluetooth "<ph name="DEVICE_NAME" />" muốn được phép ghép nối. Vui lòng nhập mã PIN này trên thiết bị đó: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">Các công cụ ghi lại chuyển động trên màn hình</translation>
 <translation id="1024261588257374085">Đã chọn chụp một phần màn hình</translation>
+<translation id="1024364763893396229">Lưu <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Pin của bút cảm ứng ở mức thấp</translation>
 <translation id="1036073649888683237">Để quản lý thông báo, hãy chuyển đến phần Cài đặt</translation>
 <translation id="1036672894875463507">Tôi là Trợ lý Google của bạn. Tôi có thể giúp bạn bất cứ lúc nào!
@@ -167,6 +168,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1951012854035635156">Trợ lý</translation>
 <translation id="1954252331066828794">Đã ghi màn hình xong</translation>
 <translation id="1957958912175573503">Đặt ngôn ngữ</translation>
+<translation id="1961239773406905488">Đang ẩn chế độ xem trước máy ảnh</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Khóa màn hình</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -184,6 +186,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2047639699071423250">Thêm ý tưởng chính</translation>
 <translation id="2049240716062114887">Đã đổi tên không gian làm việc thành <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Khổ dọc</translation>
+<translation id="2064048859448024834">Đang hiện chế độ xem trước máy ảnh</translation>
 <translation id="2066708475850724665">Dừng tính năng phóng to</translation>
 <translation id="2067602449040652523">Độ sáng bàn phím</translation>
 <translation id="2078034614700056995">Hãy vuốt sang phải bằng 4 ngón tay để chuyển sang không gian làm việc tiếp theo</translation>
@@ -293,6 +296,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2819276065543622893">Bạn sẽ bị đăng xuất bây giờ.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> không hỗ trợ <ph name="SPECIFIED_RESOLUTION" />. Độ phân giải đã được thay đổi thành <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Giá</translation>
+<translation id="2831035692318564937">Bật cho đến bình minh</translation>
 <translation id="2834813915651407382">Mới mở gần đây</translation>
 <translation id="2841907151129139818">Đã chuyển sang chế độ máy tính bảng</translation>
 <translation id="2844169650293029770">Thiết bị USB-C (cổng phía trước, bên trái)</translation>
@@ -439,6 +443,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3626281679859535460">Độ sáng</translation>
 <translation id="3630697955794050612">đang tắt</translation>
 <translation id="3631369015426612114">Cho phép thông báo từ các nguồn sau</translation>
+<translation id="3633097874324966332">Mở phần cài đặt Bluetooth để ghép nối thiết bị</translation>
 <translation id="3638400994746983214">Bật/tắt màn hình bảo vệ quyền riêng tư. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Đã quá hạn cập nhật</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Người dùng được quản lý</translation>
@@ -486,6 +491,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3922427723338465344">{0,plural, =1{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước trong vòng 1 phút}other{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước trong vòng # phút}}</translation>
 <translation id="3923494859158167397">Bạn chưa thiết lập mạng di động nào</translation>
 <translation id="3932043219784172185">Không có thiết bị nào được kết nối</translation>
+<translation id="3934456833412894880">Tính năng Sạc thích ứng đang bật Pin của bạn sẽ giữ ở mức 80% để kéo dài tuổi thọ pin và sạc đầy khi bạn cần.</translation>
 <translation id="3943857333388298514">Dán</translation>
 <translation id="394485226368336402">Cài đặt âm thanh</translation>
 <translation id="3945319193631853098">Nhấn để hoàn tất quá trình thiết lập</translation>
@@ -766,6 +772,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5744083938413354016">Kéo nhấn</translation>
 <translation id="5745612484876805746">Chế độ Ánh sáng đêm sẽ tự động bật khi trời tối</translation>
 <translation id="5750765938512549687">Bluetooth đang tắt</translation>
+<translation id="5760866832697883462">Kết nối với <ph name="NAME" /></translation>
 <translation id="576341972084747908">Tải <ph name="FILENAME" /> xuống có thể gây nguy hiểm</translation>
 <translation id="5763928712329149804">Đã tắt chế độ Shelf Party.</translation>
 <translation id="576453121877257266">Chế độ Ánh sáng đêm đang bật.</translation>
@@ -951,6 +958,7 @@ Mới cài đặt</translation>
 <translation id="6886172995547742638">Hiệu suất của <ph name="DEVICE_TYPE" /> của bạn có thể bị giảm. Hãy dùng bộ sạc USB-C được chứng nhận có công suất <ph name="PREFERRED_MINIMUM_POWER" />W trở lên.</translation>
 <translation id="688631446150864480">Nhấn phím Mũi tên xuống để chuyển đổi giữa các cửa sổ</translation>
 <translation id="6896758677409633944">Sao chép</translation>
+<translation id="6901883536534621389">Thử một số cử chỉ để thao tác</translation>
 <translation id="6919251195245069855">Không nhận dạng được thẻ thông minh của bạn. Vui lòng thử lại.</translation>
 <translation id="6921188888306725546">Các phím tắt đã được cải thiện</translation>
 <translation id="6931576957638141829">Lưu vào</translation>
@@ -1127,6 +1135,7 @@ Mới cài đặt</translation>
 <translation id="7977927628060636163">Đang tìm kiếm mạng di động...</translation>
 <translation id="7982789257301363584">Mạng</translation>
 <translation id="7984197416080286869">Quá nhiều lần thử vân tay</translation>
+<translation id="798779949890829624">Quản trị viên của bạn quản lý chế độ cài đặt này</translation>
 <translation id="7994370417837006925">Đăng nhập nhiều tài khoản</translation>
 <translation id="7995804128062002838">Không chụp được ảnh màn hình</translation>
 <translation id="8000066093800657092">Không có mạng nào</translation>
@@ -1154,6 +1163,7 @@ Mới cài đặt</translation>
 <translation id="813913629614996137">Đang khởi chạy...</translation>
 <translation id="8142441511840089262">Nhấp đúp</translation>
 <translation id="8142699993796781067">Mạng riêng</translation>
+<translation id="8144760705599030999">Lưu <ph name="NAME" /> vào <ph name="EMAIL" /> để ghép nối nhanh hơn với các thiết bị khác</translation>
 <translation id="8152092012181020186">Nhấn tổ hợp phím Ctrl + W để đóng.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, Tự động hoàn thành</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Quản trị viên của bạn quản lý tùy chọn cài đặt này.</translation>
@@ -1191,6 +1201,7 @@ Mới cài đặt</translation>
 <translation id="8412677897383510995">Hiển thị các tùy chọn cài đặt màn hình</translation>
 <translation id="8413272770729657668">Bắt đầu ghi sau 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Hộp đựng)</translation>
+<translation id="8420205633584771378">Xóa đề xuất này?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> không có trên thiết bị này.</translation>
 <translation id="8425213833346101688">Thay đổi</translation>
 <translation id="8426708595819210923">Xin chào <ph name="GIVEN_NAME" />!</translation>
@@ -1283,6 +1294,7 @@ Mới cài đặt</translation>
 <translation id="9000771174482730261">QUẢN LÝ BỘ NHỚ</translation>
 <translation id="9017320285115481645">Nhập mã truy cập dành cho cha mẹ của Family Link.</translation>
 <translation id="9024331582947483881">toàn màn hình</translation>
+<translation id="9030319654231318877">Tắt cho đến hoàng hôn</translation>
 <translation id="9034924485347205037">Tệp Linux</translation>
 <translation id="9047624247355796468">Mở tùy chọn cài đặt cho <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Thu gọn thông báo</translation>
@@ -1302,6 +1314,7 @@ Mới cài đặt</translation>
 <translation id="9099154003160514616">Đã có bản cập nhật dành cho trình duyệt Lacros</translation>
 <translation id="9100887602489003640">Đang thêm hồ sơ. Hãy chờ ít phút.</translation>
 <translation id="9105450214093926548">Không đăng nhập được người dùng thứ hai khi trình duyệt Lacros đang chạy. Vui lòng dùng một hồ sơ trình duyệt thứ hai trong Lacros hoặc đóng Lacros rồi thử lại.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> hoặc <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Không thể ghi nội dung được bảo vệ</translation>
 <translation id="9161053988251441839">ỨNG DỤNG ĐỀ XUẤT</translation>
 <translation id="9166331175924255663">Bật/tắt chế độ hiển thị ở mức cao cho tính năng Chia sẻ lân cận.</translation>

@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">የብሉቱዝ መሣሪያ «<ph name="DEVICE_NAME" />» ለመጣመር ፍቃድ ይፈልጋል። እባክዎ ይህን የፒን ኮድ በዚህ መሣሪያ ላይ ያስገቡ፦ <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">የማያገጽ መቅርጽ መሣሪያዎች</translation>
 <translation id="1024261588257374085">ከፊል ቅጽበታዊ ገጽ እይታ ተመርጧል</translation>
+<translation id="1024364763893396229">የእርስዎን <ph name="NAME" /> ያስቀምጡ</translation>
 <translation id="1032891413405719768">የStylus ባትሪ ዝቅተኛ ነው</translation>
 <translation id="1036073649888683237">ማሳወቂያዎችን ለማቀናበር ወደ ቅንብሮች ይሂዱ</translation>
 <translation id="1036672894875463507">ቀኑን ሙሉ እርስዎን ለማገዝ የGoogle ረዳትዎ ነኝ!
@@ -35,6 +36,7 @@
 <translation id="1175572348579024023">ሸብልል</translation>
 <translation id="1178581264944972037">ለአፍታ አቁም</translation>
 <translation id="1181037720776840403">አስወግድ</translation>
+<translation id="1183863904939664422">በዚህ የአስተያየት ጥቆማ ላይ ፍላጎት የለኝም</translation>
 <translation id="118437560755358292">ለበለጠ ደህንነት የይለፍ ቃል ወይም ፒን ያስገቡ</translation>
 <translation id="118532027333893379">ሙሉ ማያ ገጽን ለመቅረጽ በማንኛውም ቦታ ላይ መታ ያድርጉ</translation>
 <translation id="1190609913194133056">የማሳወቂያ ማዕከል</translation>
@@ -292,6 +294,7 @@
 <translation id="2819276065543622893">አሁን ዘግተው እንዲወጡ ይደረጋሉ።</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" />ን አይደግፍም። ጥራቱ ወደ <ph name="FALLBACK_RESOLUTION" /> ተቀይሯል።</translation>
 <translation id="2825619548187458965">መደርደሪያ</translation>
+<translation id="2831035692318564937">ጸሐይ እስክትወጣ ድረስ በርቷል</translation>
 <translation id="2834813915651407382">በቅርቡ የተከፈተ</translation>
 <translation id="2841907151129139818">ወደ የጡባዊ ሁነታ ተቀይሯል</translation>
 <translation id="2844169650293029770">USB-C መሣሪያ (የግራ ጎን የፊት ወደብ)</translation>
@@ -438,6 +441,7 @@
 <translation id="3626281679859535460">ብሩህነት</translation>
 <translation id="3630697955794050612">ጠፍቷል</translation>
 <translation id="3631369015426612114">ማሳወቂያዎች ከሚከተሉት እንዲመጡ ፍቀድ፦</translation>
+<translation id="3633097874324966332">መሣሪያዎን ለማጣመር የብሉቱዝ ቅንብሮችን ይክፈቱ</translation>
 <translation id="3638400994746983214">የግላዊነት ማያ ገጽን ቀያይር። <ph name="STATE_TEXT" />።</translation>
 <translation id="3649505501900178324">ዝማኔ ጊዜው ደርሶ አልፏል</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> የሚተዳደር ተጠቃሚ</translation>
@@ -591,6 +595,7 @@
 <translation id="4560576029703263363">አብራ</translation>
 <translation id="4561267230861221837">3ጂ</translation>
 <translation id="4565377596337484307">የይለፍ ቃል ደብቅ</translation>
+<translation id="4566144812051858745">በማናቸውም የአስተያየት ጥቆማዎች ላይ ፍላጎት የለኝም</translation>
 <translation id="4570957409596482333">ለመናገር-ይምረጡ አዝራር</translation>
 <translation id="4573176682887762361">«ተይብ [ቃል / ሐረግ]»</translation>
 <translation id="4577274620589681794">ጊዜው አብቅቷል · <ph name="LABEL" /></translation>
@@ -641,6 +646,7 @@
 <translation id="4868492592575313542">ገብሯል</translation>
 <translation id="4872237917498892622">Alt+Search ወይም Shift</translation>
 <translation id="4881695831933465202">ክፍት የሚሆንባቸው</translation>
+<translation id="4889868803215848840">የአስተያየት ጥቆማዎችን ለማሻሻል አማራጭ ግብረመልስ ይስጡ፡-</translation>
 <translation id="4890187583552566966">Google ረዳቱ በአስተዳዳሪዎ ተሰናክሏል።</translation>
 <translation id="4890408602550914571">ስልክዎ በአቅራቢያ እንዳለ፣ እና ብሉቱዝ እንደበራ ያረጋግጡ።</translation>
 <translation id="4895488851634969361">ባትሪው ሙሉ ነው።</translation>
@@ -766,6 +772,7 @@
 <translation id="5744083938413354016">መታ አድርጎ መጎተት</translation>
 <translation id="5745612484876805746">የሌሊት ብርሃን በፀሐይ መጥለቅ ጊዜ በራስሰር ይበራል</translation>
 <translation id="5750765938512549687">ብሉቱዝ ጠፍቷል</translation>
+<translation id="5760866832697883462">የእርስዎን <ph name="NAME" /> ያገናኙ</translation>
 <translation id="576341972084747908">አደገኛ <ph name="FILENAME" /> አውርድ</translation>
 <translation id="5763928712329149804">የመደርደሪያ ፓርቲ ጠፍቷል።</translation>
 <translation id="576453121877257266">የምሽት ብርሃን በርቷል።</translation>
@@ -827,6 +834,7 @@
 <translation id="6054305421211936131">በዘመናዊ ካርድ በመለያ ይግቡ</translation>
 <translation id="6059276912018042191">የቅርብ ጊዜ Chrome ትሮች</translation>
 <translation id="6062360702481658777">በ<ph name="LOGOUT_TIME_LEFT" /> ውስጥ በራስ-ሰር ዘግተው እንዲወጡ ይደረጋሉ።</translation>
+<translation id="6064463340679478396">ፋይሉን በመጠቀም አጠናቅቄአለሁ</translation>
 <translation id="6073451960410192870">መቅረጽ አቁም</translation>
 <translation id="6099678161144790572">ባለፈው ወር ውስጥ አርትዖት ተደርጓል</translation>
 <translation id="6103838137565245112">ሥርዓት</translation>
@@ -951,6 +959,7 @@
 <translation id="6886172995547742638">የእርስዎ <ph name="DEVICE_TYPE" /> ያነሰ አፈጻጸም ሊያጋጥመው ይችላል። የእውቅና ማረጋገጫ ያለው <ph name="PREFERRED_MINIMUM_POWER" /> ዋ ወይም ከዚያ በላይ የሆነ የUSB-C ኃይል አስማሚን ይጠቀሙ።</translation>
 <translation id="688631446150864480">መስኮቶችን ለመቀያየር የታች ቀስትን ይጫኑ</translation>
 <translation id="6896758677409633944">ቅዳ</translation>
+<translation id="6901883536534621389">ለማሰስ የእጅ ምልክቶችን ይሞክሩ</translation>
 <translation id="6919251195245069855">የእርስዎን ዘመናዊ ካርድ ለይቶ ማወቅ አልተቻለም። እንደገና ይሞክሩ።</translation>
 <translation id="6921188888306725546">የቁልፍ ሰሌዳ አቋራጮች ተሻሽለዋል</translation>
 <translation id="6931576957638141829">አስቀምጥ ወደ</translation>
@@ -1110,6 +1119,7 @@
 <translation id="7886169021410746335">የግላዊነት ቅንብሮችን ያስተካክሉ</translation>
 <translation id="7886277072580235377">የእርስዎ የበይነመረብ ክፍለ-ጊዜ ዘግተው ሲወጡ ይጸዳል። <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">ኢሜይል ላክ</translation>
+<translation id="7893503627044934815">ይህ ፋይል እንዲታይ አልፈልግም</translation>
 <translation id="7895348134893321514">ማስታወሻ</translation>
 <translation id="7897375687985782769">የማያ ገጽ ማሽከርከሪያ የቁልፍ ሰሌዳ አቋራጩን ተጭነውታል። ማያ ገጹን ማሽከርከር ይፈልጋሉ?</translation>
 <translation id="7901405293566323524">የስልክ መገናኛ</translation>
@@ -1127,6 +1137,7 @@
 <translation id="7977927628060636163">የተንቀሳቃሽ ስልክ አውታረ መረቦችን በመፈለግ ላይ...</translation>
 <translation id="7982789257301363584">አውታረ መረብ</translation>
 <translation id="7984197416080286869">ከልክ በላይ ብዙ የጣት አሻራ ሙከራዎች</translation>
+<translation id="798779949890829624">ይህ ቅንብር በአስተዳዳሪዎ የሚቀናበር ነው</translation>
 <translation id="7994370417837006925">ባለብዙ በመለያ-መግቢያ</translation>
 <translation id="7995804128062002838">የማያ ገጽ ፎቶን ማንሳት አልተሳካም</translation>
 <translation id="8000066093800657092">ምንም አውታረ መረብ የለም</translation>
@@ -1154,6 +1165,7 @@
 <translation id="813913629614996137">በማስጀመር ላይ…</translation>
 <translation id="8142441511840089262">ድርብ ጠቅታ</translation>
 <translation id="8142699993796781067">የግል አውታረ መረብ</translation>
+<translation id="8144760705599030999">ከሌሎች መሣሪያዎችዎ ጋር በፍጥነት ለማጣመር የእርስዎ <ph name="NAME" />ን ወደ <ph name="EMAIL" /> ላይ ያስቀምጡ</translation>
 <translation id="8152092012181020186">ለመዝጋት Ctrl + W ይጫኑ።</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />፣ ራስሰር ሙላ</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ይህ ቅንብር በአስተዳዳሪዎ የሚቀናበር ነው።</translation>
@@ -1191,6 +1203,7 @@
 <translation id="8412677897383510995">የማሳያ ቅንብሮችን አሳይ</translation>
 <translation id="8413272770729657668">መቅዳት በ3፣ 2፣ 1 በመጀመር ላይ</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (መያዣ)</translation>
+<translation id="8420205633584771378">ይህ የአስተያየት ጥቆማ ይወገድ?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> በዚህ መሣሪያ ላይ የለም።</translation>
 <translation id="8425213833346101688">ለውጥ</translation>
 <translation id="8426708595819210923">ደህን አመሹ <ph name="GIVEN_NAME" />፣</translation>
@@ -1283,6 +1296,7 @@
 <translation id="9000771174482730261">ማከማቻን ያቀናብሩ</translation>
 <translation id="9017320285115481645">የ Family Link ወላጅ መዳረሻ ኮድ ያስገቡ።</translation>
 <translation id="9024331582947483881">ሙሉ ገጽ ማያ</translation>
+<translation id="9030319654231318877">ጸሐይ እስክትጠልቅ ድረስ ጠፍቷል</translation>
 <translation id="9034924485347205037">የLinux ፋይሎች</translation>
 <translation id="9047624247355796468">ለ <ph name="NETWORK_NAME" /> ቅንብሮችን ክፈት</translation>
 <translation id="9059834730836941392">ማሳወቂያን ሰብስብ</translation>
@@ -1302,6 +1316,7 @@
 <translation id="9099154003160514616">የLacros ዝማኔ አለ</translation>
 <translation id="9100887602489003640">መገለጫን በማከል ላይ። ጥቂት ደቂቃዎችን ይጠብቁ።</translation>
 <translation id="9105450214093926548">የLacros አሳሹ በሚሰራበት ጊዜ ወደ ሁለተኛው ተጠቃሚ በመለያ በመግባት አይደገፍም። እባክዎ በምትኩ በLacros ውስጥ ሁለተኛ የአሳሽ መገለጫ ይጠቀሙ ወይም Lacrosን ይዝጉ እና እንደገና ይሞክሩ።</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> ወይም <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">የተጠበቀ ይዘት መቅረጽ አልተቻለም</translation>
 <translation id="9161053988251441839">በአስተያየት የተጠቆሙ መተግበሪያዎች</translation>
 <translation id="9166331175924255663">አቅራቢያ አጋራ ከፍተኛ ታይነት ደረጃን ቀያይር</translation>

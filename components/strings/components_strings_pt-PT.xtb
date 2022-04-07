@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">Por vezes, os atacantes imitam sites ao efetuarem alterações difíceis de detetar no endereço Web.</translation>
 <translation id="1028781062521375153">Veja detalhes</translation>
 <translation id="1030706264415084469"><ph name="URL" /> pretende armazenar permanentemente dados de grandes dimensões no seu dispositivo.</translation>
-<translation id="1032854598605920125">Rodar para a direita</translation>
 <translation id="1033329911862281889">A Navegação anónima não faz com que esteja invisível online:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Os sites e os serviços que estes utilizam podem ver as visitas<ph name="END_LIST_ITEM" />
@@ -2635,6 +2634,7 @@ Detalhes adicionais:
 <translation id="8277900682056760511">A página do controlador do pagamento está aberta.</translation>
 <translation id="8280630997017109758">Tabuleiro 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
+<translation id="8281886186245836920">Ignorar</translation>
 <translation id="8282947398454257691">Saber o identificador único do seu dispositivo</translation>
 <translation id="8284769179630993263">Faça a gestão da Navegação segura e muito mais nas Definições do Chrome.</translation>
 <translation id="8286036467436129157">Iniciar Sessão</translation>

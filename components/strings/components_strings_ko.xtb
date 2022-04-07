@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">어떤 공격자는 웹 주소를 알아채기 어렵게 변경하는 방법으로 다른 사이트를 모방합니다.</translation>
 <translation id="1028781062521375153">세부정보 보기</translation>
 <translation id="1030706264415084469"><ph name="URL" />에서 내 기기에 대용량 데이터를 영구 저장하려고 합니다</translation>
-<translation id="1032854598605920125">시계 방향으로 회전</translation>
 <translation id="1033329911862281889">시크릿 모드를 사용해도 나의 온라인 활동이 완전히 비공개로 유지되지는 않습니다.
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />사이트 및 사이트 서비스에서 나의 방문 사실을 알 수 있습니다.<ph name="END_LIST_ITEM" />
@@ -2626,6 +2625,7 @@
 <translation id="8277900682056760511">결제 핸들러 시트가 열림</translation>
 <translation id="8280630997017109758">트레이 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
+<translation id="8281886186245836920">건너뛰기</translation>
 <translation id="8282947398454257691">고유 기기 식별자 조회</translation>
 <translation id="8284769179630993263">Chrome 설정에서 세이프 브라우징 등 관리</translation>
 <translation id="8286036467436129157">로그인</translation>

@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">"<ph name="DEVICE_NAME" />" എന്ന Bluetooth ഉപകരണം ജോടിയാക്കുന്നതിനുള്ള അനുമതി ആവശ്യപ്പെടുന്നു. ആ ഉപകരണത്തിൽ ഈ പിൻ കോഡ് നൽകുക: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">സ്ക്രീന്‍കാസ്റ്റ് ടൂളുകൾ</translation>
 <translation id="1024261588257374085">ഭാഗിക സ്ക്രീൻഷോട്ട് തിരഞ്ഞെടുത്തു</translation>
+<translation id="1024364763893396229">നിങ്ങളുടെ <ph name="NAME" /> സംരക്ഷിക്കുക</translation>
 <translation id="1032891413405719768">സ്‌റ്റൈലസ് ബാറ്ററി കുറവാണ്</translation>
 <translation id="1036073649888683237">അറിയിപ്പുകൾ മാനേജ് ചെയ്യാൻ ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="1036672894875463507">ഞാൻ നിങ്ങളുടെ Google Assistant ആണ്, നിങ്ങളെ സഹായിക്കാൻ ദിവസം മുഴുവൻ നിങ്ങളോടൊപ്പം ഉണ്ടാകും!
@@ -295,6 +296,7 @@
 <translation id="2819276065543622893">നിങ്ങൾ ഇപ്പോൾ സൈൻ ഔട്ട് ചെയ്യും.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> എന്നതിനെ പിന്തുണയ്‌ക്കുന്നില്ല. റെസല്യൂഷൻ <ph name="FALLBACK_RESOLUTION" /> എന്നതിലേക്ക് മാറ്റി.</translation>
 <translation id="2825619548187458965">ഷെൽഫ്</translation>
+<translation id="2831035692318564937">സൂര്യാസ്തമയം വരെ ഓണാണ്</translation>
 <translation id="2834813915651407382">അടുത്തിടെ തുറന്നത്</translation>
 <translation id="2841907151129139818">ടാബ്‌ലെറ്റ് മോഡിലേക്ക് മാറി</translation>
 <translation id="2844169650293029770">USB-C ഉപകരണം (ഇടത് വശത്ത് മുൻഭാഗത്തെ പോർട്ട്)</translation>
@@ -441,6 +443,7 @@
 <translation id="3626281679859535460">മിഴിവ്</translation>
 <translation id="3630697955794050612">ഓഫാണ്</translation>
 <translation id="3631369015426612114">ഇനിപ്പറയുന്നതിൽ നിന്നുള്ള അറിയിപ്പുകൾ അനുവദിക്കുക</translation>
+<translation id="3633097874324966332">നിങ്ങളുടെ ഉപകരണം ജോടിയാക്കാൻ Bluetooth ക്രമീകരണം തുറക്കുക</translation>
 <translation id="3638400994746983214">സ്വകാര്യതാ സ്‌ക്രീൻ മാറ്റുക. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">അപ്‌ഡേറ്റ് കാലാവധി കഴിഞ്ഞിരിക്കുന്നു</translation>
 <translation id="366222428570480733">നിയന്ത്രിത ഉപയോക്താവ് <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -769,6 +772,7 @@
 <translation id="5744083938413354016">ടാപ്പുചെയ്‌ത് വലിച്ചിടൽ</translation>
 <translation id="5745612484876805746">സൂര്യാസ്‌തമയ സമയത്ത് നൈറ്റ് ലൈറ്റ് സ്വയമേവ ഓണാകും</translation>
 <translation id="5750765938512549687">Bluetooth ഓഫാണ്</translation>
+<translation id="5760866832697883462">നിങ്ങളുടെ <ph name="NAME" /> കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="576341972084747908">അപകടകരമായ <ph name="FILENAME" /> ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="5763928712329149804">ഷെൽഫ് പാർട്ടി ഓഫാണ്.</translation>
 <translation id="576453121877257266">നൈറ്റ് ലൈറ്റ് ഓണാണ്.</translation>
@@ -954,6 +958,7 @@
 <translation id="6886172995547742638">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഉപകരണം കുറഞ്ഞ പ്രകടനം കാഴ്‌ച വച്ചേക്കാം. സർട്ടിഫൈ ചെയ്‌ത <ph name="PREFERRED_MINIMUM_POWER" />W അല്ലെങ്കിൽ USB-C പവർ അഡാപ്‌റ്റർ ഉപയോഗിക്കുക.</translation>
 <translation id="688631446150864480">വിന്‍ഡോകോൾക്കിടയിൽ മാറാൻ താഴേക്കുള്ള അമ്പടയാള കീ അമർത്തുക</translation>
 <translation id="6896758677409633944">പകര്‍ത്തുക</translation>
+<translation id="6901883536534621389">നാവിഗേറ്റ് ചെയ്യാൻ ജെസ്ച്ചറുകളുടെ ഉപയോഗിക്കുക</translation>
 <translation id="6919251195245069855">നിങ്ങളുടെ സ്‌മാർട്ട് കാർഡ് തിരിച്ചറിയാൻ കഴിഞ്ഞില്ല. വീണ്ടും ശ്രമിക്കൂ.</translation>
 <translation id="6921188888306725546">കീബോഡ് കുറുക്കുവഴികള്‍ മെച്ചപ്പെടുത്തി</translation>
 <translation id="6931576957638141829">ഇനിപ്പറയുന്നതിലേക്ക് സംരക്ഷിക്കുക</translation>
@@ -1130,6 +1135,7 @@
 <translation id="7977927628060636163">മൊബൈൽ നെറ്റ്‌വർക്കുകൾ തിരയുന്നു...</translation>
 <translation id="7982789257301363584">നെറ്റ്‌വർക്ക്</translation>
 <translation id="7984197416080286869">വിരലടയാളം ഉപയോഗിച്ച് നിരവധി ശ്രമങ്ങൾ നടത്തി</translation>
+<translation id="798779949890829624">ഈ ക്രമീകരണം മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ അഡ്‌മിനാണ്</translation>
 <translation id="7994370417837006925">ഒന്നിലധികം സൈൻ ഇൻ</translation>
 <translation id="7995804128062002838">സ്ക്രീൻ ചിത്രമെടുക്കാനായില്ല</translation>
 <translation id="8000066093800657092">നെറ്റ്‌വര്‍ക്ക് ഇല്ല</translation>
@@ -1157,6 +1163,7 @@
 <translation id="813913629614996137">ആരംഭിക്കുന്നു...</translation>
 <translation id="8142441511840089262">ഇരട്ട ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="8142699993796781067">സ്വകാര്യനെറ്റ്‌വര്‍ക്ക്</translation>
+<translation id="8144760705599030999">നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളുമായി കൂടുതൽ വേഗത്തിൽ ജോടിയാക്കുന്നതിന് <ph name="EMAIL" /> എന്നതിൽ നിങ്ങളുടെ <ph name="NAME" /> സംരക്ഷിക്കുക</translation>
 <translation id="8152092012181020186">അടയ്‌ക്കാൻ Ctrl + W അമർത്തുക.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, സ്വയമേവ പൂർത്തിയാക്കുക</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ഈ ക്രമീകരണം മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ അഡ്‌മിനാണ്.</translation>
@@ -1194,6 +1201,7 @@
 <translation id="8412677897383510995">ഡിസ്പ്ലേ ക്രമീകരണം കാണിക്കുക</translation>
 <translation id="8413272770729657668">റെക്കോർഡിംഗ് ആരംഭിക്കുന്നു 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (കെയ്‌സ്)</translation>
+<translation id="8420205633584771378">ഈ നിർദ്ദേശം നീക്കം ചെയ്യണോ?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> ഈ ഉപകരണത്തിൽ ലഭ്യമല്ല.</translation>
 <translation id="8425213833346101688">മാറ്റുക</translation>
 <translation id="8426708595819210923">ഗുഡ് ഈവനിംഗ് <ph name="GIVEN_NAME" />,</translation>
@@ -1286,6 +1294,7 @@
 <translation id="9000771174482730261">സ്‌റ്റോറേജ് മാനേജ് ചെയ്യുക</translation>
 <translation id="9017320285115481645">Family Link രക്ഷാകർതൃ ആക്‌സസ് കോഡ് നൽകുക.</translation>
 <translation id="9024331582947483881">പൂര്‍ണ്ണ സ്‌ക്രീന്‍</translation>
+<translation id="9030319654231318877">സൂര്യാസ്തമയം വരെ ഓഫാണ്</translation>
 <translation id="9034924485347205037">Linux ഫയലുകൾ</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> എന്നതിനുള്ള ക്രമീകരണം തുറക്കുക</translation>
 <translation id="9059834730836941392">അറിയിപ്പ് ചുരുക്കുക</translation>
@@ -1305,6 +1314,7 @@
 <translation id="9099154003160514616">Lacros അപ്ഡേറ്റ് ലഭ്യമാണ്</translation>
 <translation id="9100887602489003640">പ്രൊഫെെൽ ചേർക്കുന്നു. അൽപ്പസമയം കാത്തിരിക്കുക.</translation>
 <translation id="9105450214093926548">Lacros ബ്രൗസർ റൺ ചെയ്യുമ്പോൾ രണ്ടാമത്തെ ഉപയോക്താവ് സൈൻ ഇൻ ചെയ്യുന്നത് പിന്തുണയ്ക്കുന്നില്ല. പകരം Lacros-ൽ രണ്ടാമത്തെ ബ്രൗസർ പ്രൊഫൈൽ ഉപയോഗിക്കുകയോ Lacros അടച്ച ശേഷം വീണ്ടും ശ്രമിക്കുകയോ ചെയ്യുക.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> അല്ലെങ്കിൽ <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">പരിരക്ഷിത ഉള്ളടക്കം റെക്കോർഡ് ചെയ്യാനാകില്ല</translation>
 <translation id="9161053988251441839">നിർദ്ദേശിച്ചിരിക്കുന്ന ആപ്പുകൾ</translation>
 <translation id="9166331175924255663">സമീപമുള്ള പങ്കിടലിന്റെ ഉയർന്ന ദൃശ്യപരത മാറ്റുക.</translation>

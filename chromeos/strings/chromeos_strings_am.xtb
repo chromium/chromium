@@ -114,7 +114,6 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />፦ እንደገና ይሞክሩ</translation>
 <translation id="2161394479394250669">የኅትመት ሥራን ሰርዝ</translation>
 <translation id="2180197493692062006">የሆነ ችግር ተፈጥሯል። መተግበሪያውን ዳግም ለመክፈት ይሞክሩ።</translation>
-<translation id="2201770616342964496">አካባቢያዊ ማንነት</translation>
 <translation id="2209788852729124853">የትራፊክ ቆጣሪዎችን ዳግም ያስጀምሩ</translation>
 <translation id="2212733584906323460">የስም ጥራት</translation>
 <translation id="2217935453350629363">የአሁኑ ፍጥነት</translation>
@@ -262,6 +261,7 @@
 <translation id="4170180284036919717">ፎቶ አንሳ</translation>
 <translation id="4170700058716978431">አልተሳካም</translation>
 <translation id="4176463684765177261">ተሰናክሏል</translation>
+<translation id="4176659219503619100">የቁጥጥር ፓነል</translation>
 <translation id="4213104098953699324">የዩኤስቢ ቁልፍ ሰሌዳ</translation>
 <translation id="4227825898293920515">የይለፍ ቃል በ <ph name="TIME" /> ውስጥ አገልግሎት ጊዜው ያበቃል</translation>
 <translation id="4238516577297848345">በሂደት ላይ ያሉ ምንም የህትመት ስራዎች የሉም</translation>
@@ -305,7 +305,6 @@
 <translation id="4593212453765072419">የተኪ ማረጋገጥ ያስፈልጋል</translation>
 <translation id="4609350030397390689">የቁልፍ ሰሌዳ ብሩህነት መቀነሻ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />፣ <ph name="PRINTER_NAME" />፣ <ph name="CREATION_TIME" />፣ <ph name="PRINTED_PAGE_NUMBER" /> ከ<ph name="TOTAL_PAGE_NUMBER" /> ዉስጥ የሕትመት ሥራን ለመሰረዝ እባክዎ ያስገቡ።</translation>
-<translation id="4627645661474370390">የርቀት ማንነት</translation>
 <translation id="463791356324567266">መቃኘትን በመሰረዝ ላይ...</translation>
 <translation id="4646949265910132906">ደህንነቱ የተጠበቀ የWiFi ግንኙነት</translation>
 <translation id="4650608062294027130">የቀኝ ቀያይር</translation>
@@ -432,6 +431,7 @@
 <translation id="5866840822086176774">በጣም ጠንካራ</translation>
 <translation id="588258955323874662">ሙሉ ገጽ ዕይታ</translation>
 <translation id="5895138241574237353">እንደገና ጀምር</translation>
+<translation id="5903200662178656908">መሣሪያ የቁልፍ ሰሌዳ እና የመዳፊት ጥምር ነው።</translation>
 <translation id="5916084858004523819">የተከለከሉ</translation>
 <translation id="5916664084637901428">በርቷል</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{የእርስዎ ፋይል በተሳካ ሁኔታ ተቃኝቶ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ላይ ተቀምጧል።}one{የእርስዎ ፋይሎች በተሳካ ሁኔታ ተቃኝቶ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ላይ ተቀምጧል።}other{የእርስዎ ፋይሎች በተሳካ ሁኔታ ተቃኝቶ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ላይ ተቀምጧል።}}</translation>
@@ -452,6 +452,7 @@
 <translation id="6104112872696127344">መቃኘት ተሰርዟል</translation>
 <translation id="6106186594183574873">ለማጠናቀቅ፣ የእርስዎን ይለፍ ቃል ያስገቡ</translation>
 <translation id="6108689792487843350">አግባቢ ፍኖት አይገኝም</translation>
+<translation id="6112878310391905610">ይህ ቅንብር በአስተዳዳሪዎችዎ የሚቀናበር ነው</translation>
 <translation id="6113701710518389813">የላይ ቀስት</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />፣ +<ph name="NUMBER" /> ተጨማሪ አልበሞች</translation>
 <translation id="6122191549521593678">መስመር ላይ</translation>

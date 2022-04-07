@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">يريد جهاز بلوتوث "<ph name="DEVICE_NAME" />" الحصول على إذن للإقران. يُرجى إدخال رقم التعريف الشخصي هذا في هذا الجهاز: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">أدوات التسجيل الرقمي للشاشة</translation>
 <translation id="1024261588257374085">تم اختيار لقطة شاشة جزئية.</translation>
+<translation id="1024364763893396229">حفظ بيانات جهاز <ph name="NAME" /></translation>
 <translation id="1032891413405719768">بطارية قلم الشاشة منخفضة</translation>
 <translation id="1036073649888683237">لإدارة الإشعارات، يُرجى الانتقال إلى "الإعدادات".</translation>
 <translation id="1036672894875463507">‏أنا "مساعد Google" الخاص بك هنا لمساعدتك على مدار اليوم.
@@ -35,6 +36,7 @@
 <translation id="1175572348579024023">التمرير</translation>
 <translation id="1178581264944972037">الإيقاف مؤقتًا</translation>
 <translation id="1181037720776840403">إزالة</translation>
+<translation id="1183863904939664422">لست مهتمًا بهذا الاقتراح.</translation>
 <translation id="118437560755358292">أدخِل كلمة المرور أو رقم التعريف الشخصي لزيادة مستوى الأمان</translation>
 <translation id="118532027333893379">انقر في أي مكان لالتقاط صورة في وضع ملء الشاشة.</translation>
 <translation id="1190609913194133056">مركز الإشعارات</translation>
@@ -168,6 +170,7 @@
 <translation id="1951012854035635156">المساعد</translation>
 <translation id="1954252331066828794">اكتمل تسجيل الشاشة.</translation>
 <translation id="1957958912175573503">تعيين اللغة</translation>
+<translation id="1961239773406905488">تم إخفاء معاينة الكاميرا</translation>
 <translation id="1961832440516943645"><ph name="DATE" /> و<ph name="TIME" /></translation>
 <translation id="1962969542251276847">قفل الشاشة</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -185,6 +188,7 @@
 <translation id="2047639699071423250">إضافة الفكرة الرئيسية</translation>
 <translation id="2049240716062114887">تم تغيير اسم سطح المكتب إلى <ph name="DESK_NAME" />.</translation>
 <translation id="2050339315714019657">رأسي</translation>
+<translation id="2064048859448024834">يتم عرض معاينة الكاميرا</translation>
 <translation id="2066708475850724665">إيقاف المكبِّر</translation>
 <translation id="2067602449040652523">سطوع لوحة المفاتيح</translation>
 <translation id="2078034614700056995">يمكنك التمرير سريعًا لليسار بأربعة أصابع للتبديل إلى سطح المكتب التالي.</translation>
@@ -294,6 +298,7 @@
 <translation id="2819276065543622893">سيتم تسجيل خروجك الآن.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> غير متوافق مع <ph name="SPECIFIED_RESOLUTION" />. تم تغيير درجة الدقة إلى <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">الرف</translation>
+<translation id="2831035692318564937">مُفعّل حتى شروق الشمس.</translation>
 <translation id="2834813915651407382">تم فتحه مؤخرًا.</translation>
 <translation id="2841907151129139818">تمّ التبديل إلى وضع الجهاز اللوحي.</translation>
 <translation id="2844169650293029770">‏جهاز USB-C (المنفذ الأمامي الأيسر)</translation>
@@ -440,6 +445,7 @@
 <translation id="3626281679859535460">السطوع</translation>
 <translation id="3630697955794050612">غير مفعّل</translation>
 <translation id="3631369015426612114">السماح بالإشعارات من المصادر التالية</translation>
+<translation id="3633097874324966332">يُرجى فتح إعدادات البلوتوث لإقران جهازك.</translation>
 <translation id="3638400994746983214">تبديل شاشة الخصوصية <ph name="STATE_TEXT" /></translation>
 <translation id="3649505501900178324">يجب إجراء التحديث في أسرع وقت</translation>
 <translation id="366222428570480733">المستخدِم المُدار <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -593,6 +599,7 @@
 <translation id="4560576029703263363">مُفعَّل</translation>
 <translation id="4561267230861221837">شبكة الجيل الثالث</translation>
 <translation id="4565377596337484307">إخفاء كلمة المرور</translation>
+<translation id="4566144812051858745">لست مهتمًا بأي اقتراحات.</translation>
 <translation id="4570957409596482333">زر "الاختيار والاستماع"</translation>
 <translation id="4573176682887762361">"كتابة [كلمة أو عبارة]"</translation>
 <translation id="4577274620589681794">انتهى الوقت · <ph name="LABEL" /></translation>
@@ -643,6 +650,7 @@
 <translation id="4868492592575313542">مفعّلة</translation>
 <translation id="4872237917498892622">‏Alt+مفتاح البحث أو Shift</translation>
 <translation id="4881695831933465202">فتح</translation>
+<translation id="4889868803215848840">يُرجى تقديم ملاحظات اختيارية لتحسين الاقتراحات:</translation>
 <translation id="4890187583552566966">‏تم إيقاف مساعد Google من قِبل المشرف.</translation>
 <translation id="4890408602550914571">يُرجى التأكُّد من أنّ هاتفك قريب وأنّ البلوتوث مفعَّل عليه.</translation>
 <translation id="4895488851634969361">البطارية مملوءة.</translation>
@@ -768,6 +776,7 @@
 <translation id="5744083938413354016">السحب بعد النقر</translation>
 <translation id="5745612484876805746">تفعيل ميزة "الإضاءة الليلية" تلقائيًا عند غروب الشمس</translation>
 <translation id="5750765938512549687">تم إيقاف البلوتوث</translation>
+<translation id="5760866832697883462">توصيل جهاز <ph name="NAME" /></translation>
 <translation id="576341972084747908">تنزيل الملف <ph name="FILENAME" /> الضار</translation>
 <translation id="5763928712329149804">‏الوضع Shelf Party غير مفعَّل.</translation>
 <translation id="576453121877257266">ميزة "الإضاءة الليلية" مفعّلة.</translation>
@@ -829,6 +838,7 @@
 <translation id="6054305421211936131">تسجيل الدخول باستخدام البطاقة الذكية</translation>
 <translation id="6059276912018042191">‏علامات تبويب Chrome الأخيرة</translation>
 <translation id="6062360702481658777">سيتم تسجيل خروجك تلقائيًا في غضون <ph name="LOGOUT_TIME_LEFT" />.</translation>
+<translation id="6064463340679478396">انتهيت من استخدام الملف.</translation>
 <translation id="6073451960410192870">إيقاف التسجيل</translation>
 <translation id="6099678161144790572">تم تعديله الشهر الماضي.</translation>
 <translation id="6103838137565245112">النظام</translation>
@@ -953,6 +963,7 @@
 <translation id="6886172995547742638">‏قد يواجه جهاز <ph name="DEVICE_TYPE" /> انخفاضًا في الأداء. يمكنك استخدام محوِّل طاقة متوافق بقدرة <ph name="PREFERRED_MINIMUM_POWER" /> واط أو محوِّل طاقة USB-C بقدرة أعلى.</translation>
 <translation id="688631446150864480">اضغط على مفتاح السهم المتّجه للأسفل للتبديل بين النوافذ.</translation>
 <translation id="6896758677409633944">نسخ</translation>
+<translation id="6901883536534621389">تجربة الإيماءات للانتقال</translation>
 <translation id="6919251195245069855">لم يتم التعرُّف على البطاقة الذكية. يُرجى إعادة المحاولة.</translation>
 <translation id="6921188888306725546">تم تحسين اختصارات لوحة المفاتيح</translation>
 <translation id="6931576957638141829">حفظ في</translation>
@@ -1112,6 +1123,7 @@
 <translation id="7886169021410746335">ضبط إعدادات الخصوصية</translation>
 <translation id="7886277072580235377">سيتم محو جلسة الإنترنت عند تسجيل الخروج. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">إرسال رسالة إلكترونية</translation>
+<translation id="7893503627044934815">لا أريد رؤية هذا الملف.</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">لقد ضغطت على اختصار لوحة المفاتيح لتدوير الشاشة. هل ترغب في تدوير الشاشة؟</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
@@ -1129,6 +1141,7 @@
 <translation id="7977927628060636163">جارٍ البحث عن شبكات الجوّال...</translation>
 <translation id="7982789257301363584">الشبكة</translation>
 <translation id="7984197416080286869">أُجريت محاولات كثيرة جدًا لاستخدام بصمة الإصبع</translation>
+<translation id="798779949890829624">يتولّى المشرف إدارة هذا الإعداد</translation>
 <translation id="7994370417837006925">الدخول المتعدد</translation>
 <translation id="7995804128062002838">تعذّر التقاط الشاشة.</translation>
 <translation id="8000066093800657092">لا شبكة</translation>
@@ -1156,6 +1169,7 @@
 <translation id="813913629614996137">تجري التهيئة...</translation>
 <translation id="8142441511840089262">النقر مرّتين</translation>
 <translation id="8142699993796781067">الشبكة الخاصة</translation>
+<translation id="8144760705599030999">يمكنك حفظ <ph name="NAME" /> على <ph name="EMAIL" /> لإقرانه بشكلٍ أسرع بأجهزتك الأخرى.</translation>
 <translation id="8152092012181020186">‏يُرجى الضغط على Ctrl + W للإغلاق.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />، الإكمال التلقائي</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> يتولى مشرفك إدارة هذا الإعداد.</translation>
@@ -1193,6 +1207,7 @@
 <translation id="8412677897383510995">إظهار إعدادات شاشة العرض</translation>
 <translation id="8413272770729657668">يبدأ التسجيل بعد 3، 2، 1.</translation>
 <translation id="8416730306157376817">%<ph name="BATTERY_PERCENTAGE" /> (الحافظة)</translation>
+<translation id="8420205633584771378">هل تريد إزالة هذا الاقتراح؟</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> غير مثبَّت على هذا الجهاز.</translation>
 <translation id="8425213833346101688">تغيير</translation>
 <translation id="8426708595819210923">مساء الخير <ph name="GIVEN_NAME" />،</translation>
@@ -1285,6 +1300,7 @@
 <translation id="9000771174482730261">إدارة مساحة التخزين</translation>
 <translation id="9017320285115481645">‏يُرجى إدخال رمز الدخول المخصّص للوالدين في Family Link.</translation>
 <translation id="9024331582947483881">ملء الشاشة</translation>
+<translation id="9030319654231318877">غير مُفعّل حتى غروب الشمس.</translation>
 <translation id="9034924485347205037">‏ملفات نظام التشغيل Linux</translation>
 <translation id="9047624247355796468">فتح الإعدادات للشبكة <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">تصغير الإشعار</translation>
@@ -1304,6 +1320,7 @@
 <translation id="9099154003160514616">‏يتوفّر تحديث للإصدار الحالي من متصفِّح Lacros</translation>
 <translation id="9100887602489003640">جارٍ إضافة الملف التعريفي. يُرجى الانتظار بضع دقائق.</translation>
 <translation id="9105450214093926548">‏إنّ تسجيل الدخول بحساب مستخدم آخر غير متاح أثناء استخدام متصفِّح Lacros. يُرجى استخدام ملف شخصي آخر على متصفِّح Lacros بدلاً من ذلك أو إغلاق المتصفِّح ثم إعادة المحاولة.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> أو <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">لا يمكن تسجيل المحتوى المحمي</translation>
 <translation id="9161053988251441839">التطبيقات المُقترحَة</translation>
 <translation id="9166331175924255663">إيقاف/تفعيل وضع الظهور لجميع الأجهزة القريبة لميزة "المشاركة عن قرب"</translation>

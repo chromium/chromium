@@ -114,7 +114,6 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Retry</translation>
 <translation id="2161394479394250669">Cancel print job</translation>
 <translation id="2180197493692062006">Something went wrong. Try reopening the app.</translation>
-<translation id="2201770616342964496">Local identity</translation>
 <translation id="2209788852729124853">Reset traffic counters</translation>
 <translation id="2212733584906323460">Name resolution</translation>
 <translation id="2217935453350629363">Current speed</translation>
@@ -210,6 +209,7 @@
 <translation id="3488065109653206955">Partially activated</translation>
 <translation id="3527036260304016759">Failed – Unknown error</translation>
 <translation id="3532980081107202182">About <ph name="MIN_REMAINING" /> minutes remaining</translation>
+<translation id="3557205324756024651">Local identity (optional)</translation>
 <translation id="3565064564551103223">Allowed IPs</translation>
 <translation id="3577473026931028326">Something went wrong. Try again.</translation>
 <translation id="357889014807611375">metered Wi-Fi</translation>
@@ -306,7 +306,6 @@
 <translation id="4593212453765072419">Proxy authentication required</translation>
 <translation id="4609350030397390689">Keyboard brightness down</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> out of <ph name="TOTAL_PAGE_NUMBER" />. Press Enter to cancel the print job.</translation>
-<translation id="4627645661474370390">Remote identity</translation>
 <translation id="463791356324567266">Cancelling scanning...</translation>
 <translation id="4646949265910132906">Secure Wi-Fi connection</translation>
 <translation id="4650608062294027130">Right shift</translation>
@@ -433,6 +432,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5866840822086176774">Very strong</translation>
 <translation id="588258955323874662">Full screen</translation>
 <translation id="5895138241574237353">Restart</translation>
+<translation id="5903200662178656908">Device is a keyboard and mouse combo.</translation>
 <translation id="5916084858004523819">Prohibited</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Your file has been successfully scanned and saved to <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Your files have been successfully scanned and saved to <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -453,6 +453,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6104112872696127344">Scanning has been cancelled</translation>
 <translation id="6106186594183574873">To finish, enter your old password</translation>
 <translation id="6108689792487843350">Gateway is unreachable</translation>
+<translation id="6112878310391905610">This setting is managed by your administrators</translation>
 <translation id="6113701710518389813">Up arrow</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> more albums</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -526,6 +527,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6910312834584889076">The scanner’s cover is open. Close the cover and try again.</translation>
 <translation id="6911383237894364323">Unable to connect to media servers</translation>
 <translation id="6935486296377631201">Screensaver</translation>
+<translation id="6943893908656559156">Remote identity (optional)</translation>
 <translation id="6957231940976260713">Service name</translation>
 <translation id="6961170852793647506">To get started, place your document on the scanner</translation>
 <translation id="6965382102122355670">OK</translation>

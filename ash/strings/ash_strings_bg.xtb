@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Устройството с Bluetooth „<ph name="DEVICE_NAME" />“ иска разрешение за сдвояване. Моля, въведете на него следния ПИН код: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">Инструменти за скрийнкаст</translation>
 <translation id="1024261588257374085">Избрана е частична екранна снимка</translation>
+<translation id="1024364763893396229">Запазете устройството си <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Батериите на писалката са изтощени</translation>
 <translation id="1036073649888683237">За да управлявате известията, отворете настройките</translation>
 <translation id="1036672894875463507">Аз съм Google Асистент и съм на ваше разположение по всяко време!
@@ -167,6 +168,7 @@
 <translation id="1951012854035635156">Асистент</translation>
 <translation id="1954252331066828794">Записването на екрана завърши</translation>
 <translation id="1957958912175573503">Задайте език</translation>
+<translation id="1961239773406905488">Визуализацията на камерата е скрита</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Заключване на екрана</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -184,6 +186,7 @@
 <translation id="2047639699071423250">Добавяне на ключова идея</translation>
 <translation id="2049240716062114887">Името на работния кът бе променено на „<ph name="DESK_NAME" />“</translation>
 <translation id="2050339315714019657">Вертикално</translation>
+<translation id="2064048859448024834">Визуализацията на камерата е включена</translation>
 <translation id="2066708475850724665">Спиране на лупата</translation>
 <translation id="2067602449040652523">Яркост на клавиатурата</translation>
 <translation id="2078034614700056995">Прекарайте четири пръста надясно, за да превключите към следващия работен кът</translation>
@@ -293,6 +296,7 @@
 <translation id="2819276065543622893">Ще излезете сега.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> не поддържа <ph name="SPECIFIED_RESOLUTION" />. Разделителната способност бе променена на <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Лавица</translation>
+<translation id="2831035692318564937">Включено до изгрев</translation>
 <translation id="2834813915651407382">Отваряно наскоро</translation>
 <translation id="2841907151129139818">Превключихте към режима на таблет</translation>
 <translation id="2844169650293029770">Устройство с USB-C (предният ляв порт)</translation>
@@ -439,6 +443,7 @@
 <translation id="3626281679859535460">Яркост</translation>
 <translation id="3630697955794050612">изключено</translation>
 <translation id="3631369015426612114">Разрешаване на известията от следните източници</translation>
+<translation id="3633097874324966332">Отворете настройките на Bluetooth, за да сдвоите устройството си</translation>
 <translation id="3638400994746983214">Превключване на екрана за поверителност. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Просрочена актуализация</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – управляван потребител</translation>
@@ -486,6 +491,7 @@
 <translation id="3922427723338465344">{0,plural, =1{Връщане на устройството към предишна версия в рамките на 1 минута}other{Връщане на устройството към предишна версия в рамките на # минути}}</translation>
 <translation id="3923494859158167397">Няма настроени мобилни мрежи</translation>
 <translation id="3932043219784172185">Няма свързано устройство</translation>
+<translation id="3934456833412894880">Функцията за адаптивно зареждане е включена. Батерията ви ще остане на 80% с цел удължаване на живота ѝ и ще се зареди напълно, когато е необходимо.</translation>
 <translation id="3943857333388298514">Поставяне</translation>
 <translation id="394485226368336402">Настройки за звука</translation>
 <translation id="3945319193631853098">Докоснете, за да завършите настройването</translation>
@@ -766,6 +772,7 @@
 <translation id="5744083938413354016">Преместване чрез докосване</translation>
 <translation id="5745612484876805746">Функцията за нощно осветление се включва автоматично при залез</translation>
 <translation id="5750765938512549687">Функцията за Bluetooth е изключена</translation>
+<translation id="5760866832697883462">Свържете устройството си <ph name="NAME" /></translation>
 <translation id="576341972084747908">Изтегляне на опасен файл <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Режимът Shelf Party е изключен.</translation>
 <translation id="576453121877257266">Функцията за нощно осветление е включена.</translation>
@@ -951,6 +958,7 @@
 <translation id="6886172995547742638">Възможно е вашият <ph name="DEVICE_TYPE" /> да работи с намалена производителност. Използвайте сертифициран захранващ адаптер с USB-C и мощност от <ph name="PREFERRED_MINIMUM_POWER" /> W или повече.</translation>
 <translation id="688631446150864480">Натиснете клавиша със стрелка за надолу, за да превключите прозорците</translation>
 <translation id="6896758677409633944">Копиране</translation>
+<translation id="6901883536534621389">Изпробвайте жестове за навигиране</translation>
 <translation id="6919251195245069855">Смарткартата ви не бе разпозната. Опитайте отново.</translation>
 <translation id="6921188888306725546">Клавишните комбинации са подобрени</translation>
 <translation id="6931576957638141829">Запазване във</translation>
@@ -1127,6 +1135,7 @@
 <translation id="7977927628060636163">Търсят се мобилни мрежи...</translation>
 <translation id="7982789257301363584">Мрежа</translation>
 <translation id="7984197416080286869">Твърде много опити за отключване с отпечатък</translation>
+<translation id="798779949890829624">Тази настройка се управлява от администратора ви</translation>
 <translation id="7994370417837006925">Централизиран вход</translation>
 <translation id="7995804128062002838">Екранът не бе заснет</translation>
 <translation id="8000066093800657092">Няма мрежа</translation>
@@ -1154,6 +1163,7 @@
 <translation id="813913629614996137">Подготвя се за работа...</translation>
 <translation id="8142441511840089262">Двукратно кликване</translation>
 <translation id="8142699993796781067">Частна мрежа</translation>
+<translation id="8144760705599030999">Запазете <ph name="NAME" /> в(ъв) <ph name="EMAIL" /> за по-бързо сдвояване с другите ви устройства</translation>
 <translation id="8152092012181020186">Натиснете Ctrl + W за затваряне.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, автоматично довършване</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Тази настройка се управлява от администратора ви.</translation>
@@ -1191,6 +1201,7 @@
 <translation id="8412677897383510995">Показване на настройките за екрана</translation>
 <translation id="8413272770729657668">Записването започва след 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (калъф)</translation>
+<translation id="8420205633584771378">Да се премахне ли това предложение?</translation>
 <translation id="8421270167862077762">Приложението <ph name="UNAVAILABLE_APPS" /> не е инсталирано на това устройство.</translation>
 <translation id="8425213833346101688">Промяна</translation>
 <translation id="8426708595819210923">Добър вечер, <ph name="GIVEN_NAME" />,</translation>
@@ -1283,6 +1294,7 @@
 <translation id="9000771174482730261">УПРАВЛЕНИЕ НА ХРАНИЛИЩЕТО</translation>
 <translation id="9017320285115481645">Въведете кода за достъп на родител от Family Link.</translation>
 <translation id="9024331582947483881">цял екран</translation>
+<translation id="9030319654231318877">Изключено до залез</translation>
 <translation id="9034924485347205037">Файлове за Linux</translation>
 <translation id="9047624247355796468">Отваряне на настройките за <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Свиване на известието</translation>
@@ -1302,6 +1314,7 @@
 <translation id="9099154003160514616">Налице е актуализация за Lacros</translation>
 <translation id="9100887602489003640">Профилът за мобилна мрежа се добавя. Изчакайте няколко минути.</translation>
 <translation id="9105450214093926548">Не се поддържа вход в профил на втори потребител, докато браузърът Lacros се изпълнява. Моля, използвайте втори потребителски профил в Lacros или затворете браузъра и опитайте отново.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> или <ph name="CTRL" /> <ph name="SEPARATOR1" /> <ph name="SHIFT" /> <ph name="SEPARATOR2" /> <ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Не е възможно записване на защитено съдържание</translation>
 <translation id="9161053988251441839">ПРЕДЛОЖЕНИ ПРИЛОЖЕНИЯ</translation>
 <translation id="9166331175924255663">Превключване на увеличената видимост на „Споделяне наблизо“.</translation>

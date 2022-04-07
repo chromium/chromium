@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">ಬ್ಲೂಟೂತ್‌ ಸಾಧನವು "<ph name="DEVICE_NAME" />" ಜೋಡಣೆಗಾಗಿ ಅನುಮತಿಯನ್ನು ಬಯಸುತ್ತದೆ. ದಯವಿಟ್ಟು ಆ ಸಾಧನದಲ್ಲಿ ಈ PIN ಕೋಡ್ ನಮೂದಿಸಿ: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">ಸ್ಕ್ರೀನ್‌ಕ್ಯಾಸ್ಟ್ ಪರಿಕರಗಳು</translation>
 <translation id="1024261588257374085">ಭಾಗಶಃ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
+<translation id="1024364763893396229">ನಿಮ್ಮ <ph name="NAME" /> ಅನ್ನು ಉಳಿಸಿ</translation>
 <translation id="1032891413405719768">ಸ್ಟೈಲಸ್ ಬ್ಯಾಟರಿ ಕಡಿಮೆಯಾಗಿದೆ</translation>
 <translation id="1036073649888683237">ಅಧಿಸೂಚನೆಗಳನ್ನು ನಿರ್ವಹಿಸಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
 <translation id="1036672894875463507">ನಾನು ನಿಮ್ಮ Google Assistant, ಇಡೀ ದಿನ ಸಹಾಯ ಮಾಡಲು ನಿಮ್ಮೊಂದಿಗೆ ಇರುತ್ತೇನೆ!
@@ -35,6 +36,7 @@
 <translation id="1175572348579024023">ಸ್ಕ್ರಾಲ್</translation>
 <translation id="1178581264944972037">ವಿರಾಮ</translation>
 <translation id="1181037720776840403">ತೆಗೆದುಹಾಕು</translation>
+<translation id="1183863904939664422">ಈ ಸಲಹೆಯಲ್ಲಿ ಆಸಕ್ತಿಯಿಲ್ಲ</translation>
 <translation id="118437560755358292">ಇನ್ನಷ್ಟು ಸುರಕ್ಷತೆಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್ ಅಥವಾ ಪಿನ್ ನಮೂದಿಸಿ</translation>
 <translation id="118532027333893379">ಪೂರ್ಣ-ಪರದೆಯನ್ನು ಕ್ಯಾಪ್ಚರ್ ಮಾಡಲು ಎಲ್ಲಿಯಾದರೂ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="1190609913194133056">ಅಧಿಸೂಚನೆಯ ಕೇಂದ್ರ</translation>
@@ -295,6 +297,7 @@
 <translation id="2819276065543622893">ಈಗ ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
 <translation id="2825224105325558319"><ph name="SPECIFIED_RESOLUTION" /> ಅನ್ನು <ph name="DISPLAY_NAME" /> ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ರೆಸಲ್ಯೂಷನ್‌ ಅನ್ನು <ph name="FALLBACK_RESOLUTION" /> ಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ.</translation>
 <translation id="2825619548187458965">ಶೆಲ್ಫ್</translation>
+<translation id="2831035692318564937">ಸೂರ್ಯೋದಯದವರೆಗೆ ಆನ್</translation>
 <translation id="2834813915651407382">ಇತ್ತೀಚೆಗೆ ತೆರೆದಿದ್ದೀರಿ</translation>
 <translation id="2841907151129139818">ಟ್ಯಾಬ್ಲೆಟ್‌‌ ಮೋಡ್‌ಗೆ ಬದಲಿಸಲಾಗಿದೆ</translation>
 <translation id="2844169650293029770">USB-C ಸಾಧನ (ಎಡ ಭಾಗದ ಮುಂದಿನ ಪೋರ್ಟ್‌)</translation>
@@ -441,6 +444,7 @@
 <translation id="3626281679859535460">ಪ್ರಕಾಶಮಾನ</translation>
 <translation id="3630697955794050612">ಆಫ್</translation>
 <translation id="3631369015426612114">ಕೆಳಗಿನವುಗಳಿಂದ ಅಧಿಸೂಚನೆಗಳನ್ನು ಅನುಮತಿಸಿ</translation>
+<translation id="3633097874324966332">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಜೋಡಿಸಲು ಬ್ಲೂಟೂತ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="3638400994746983214">ಗೌಪ್ಯತೆ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">ಅಪ್‌ಡೇಟ್ ಬಾಕಿ ಉಳಿದಿದೆ</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> ನಿರ್ವಹಿಸಲಾದ ಬಳಕೆದಾರರು</translation>
@@ -594,6 +598,7 @@
 <translation id="4560576029703263363">ಆನ್</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">ಪಾಸ್‌ವರ್ಡ್ ಮರೆಮಾಡಿ</translation>
+<translation id="4566144812051858745">ಯಾವುದೇ ರೀತಿಯ ಸಲಹೆಗಳಲ್ಲಿ ಆಸಕ್ತಿಯಿಲ್ಲ</translation>
 <translation id="4570957409596482333">'ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಆಲಿಸಿ' ಬಟನ್‌</translation>
 <translation id="4573176682887762361">"ಟೈಪ್ ಮಾಡಿ [ಪದ / ನುಡಿಗಟ್ಟು]"</translation>
 <translation id="4577274620589681794">ಸಮಯ ಮುಗಿದಿದೆ · <ph name="LABEL" /></translation>
@@ -644,6 +649,7 @@
 <translation id="4868492592575313542">ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="4872237917498892622">Alt+ಹುಡುಕಾಟ ಅಥವಾ Shift</translation>
 <translation id="4881695831933465202">ತೆರೆ</translation>
+<translation id="4889868803215848840">ಸಲಹೆಗಳನ್ನು ಸುಧಾರಿಸಲು ಐಚ್ಛಿಕ ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಒದಗಿಸಿ:</translation>
 <translation id="4890187583552566966">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು Google ಅಸಿಸ್ಟೆಂಟ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ.</translation>
 <translation id="4890408602550914571">ನಿಮ್ಮ ಫೋನ್ ಸಮೀಪದಲ್ಲಿದೆ ಮತ್ತು ಅದರಲ್ಲಿ ಬ್ಲೂಟೂತ್ ಆನ್ ಆಗಿದೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="4895488851634969361">ಬ್ಯಾಟರಿ ತುಂಬಿದೆ.</translation>
@@ -769,6 +775,7 @@
 <translation id="5744083938413354016">ಟ್ಯಾಪ್ ಎಳೆಯುವಿಕೆ</translation>
 <translation id="5745612484876805746">ನೈಟ್ ಲೈಟ್, ಸೂರ್ಯಾಸ್ತದ ಸಮಯದಲ್ಲಿ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಆನ್ ಆಗುತ್ತದೆ</translation>
 <translation id="5750765938512549687">ಬ್ಲೂಟೂತ್ ಆಫ್ ಆಗಿದೆ</translation>
+<translation id="5760866832697883462">ನಿಮ್ಮ <ph name="NAME" /> ಅನ್ನು ಕನೆಕ್ಟ್ ಮಾಡಿ</translation>
 <translation id="576341972084747908">ಅಪಾಯಕಾರಿ <ph name="FILENAME" /> ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="5763928712329149804">ಶೆಲ್ಫ್ ಪಾರ್ಟಿ ಆಫ್ ಆಗಿದೆ.</translation>
 <translation id="576453121877257266">ನೈಟ್ ಲೈಟ್ ಆನ್ ಆಗಿದೆ.</translation>
@@ -831,6 +838,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="6054305421211936131">ಸ್ಮಾರ್ಟ್ ಕಾರ್ಡ್ ಮೂಲಕ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="6059276912018042191">ಇತ್ತೀಚಿನ Chrome ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> ನಲ್ಲಿ ನಿಮ್ಮನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೈನ್‌ಔಟ್‌ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
+<translation id="6064463340679478396">ಫೈಲ್‌ನ ಬಳಕೆ ಮುಗಿದಿದೆ</translation>
 <translation id="6073451960410192870">ರೆಕಾರ್ಡಿಂಗ್ ನಿಲ್ಲಿಸಿ</translation>
 <translation id="6099678161144790572">ಕಳೆದ ತಿಂಗಳು ಎಡಿಟ್ ಮಾಡಿದ್ದಾರೆ</translation>
 <translation id="6103838137565245112">ಸಿಸ್ಟಂ</translation>
@@ -955,6 +963,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="6886172995547742638">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನ ಕಾರ್ಯಕ್ಷಮತೆಯು ಕಡಿಮೆಯಾಗಬಹುದು. ಪ್ರಮಾಣೀಕೃತ <ph name="PREFERRED_MINIMUM_POWER" />W ಅಥವಾ ಹೆಚ್ಚುವರಿ USB-C ಪವರ್ ಅಡಾಪ್ಟರ್ ಬಳಸಿ.</translation>
 <translation id="688631446150864480">ವಿಂಡೋಗಳನ್ನು ಬದಲಾಯಿಸಲು ಡೌನ್ ಆ್ಯರೋ ಕೀ ಅನ್ನು ಒತ್ತಿ</translation>
 <translation id="6896758677409633944">ನಕಲಿಸು</translation>
+<translation id="6901883536534621389">ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ಗೆಸ್ಚರ್‌ಗಳನ್ನು ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="6919251195245069855">ನಿಮ್ಮ ಸ್ಮಾರ್ಟ್ ಕಾರ್ಡ್ ಅನ್ನು ಗುರುತಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="6921188888306725546">ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು ಸುಧಾರಿಸಿವೆ</translation>
 <translation id="6931576957638141829">ಇಲ್ಲಿ ಉಳಿಸಿ</translation>
@@ -1114,6 +1123,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="7886169021410746335">ಗೌಪ್ಯತೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಹೊಂದಿಸಿ</translation>
 <translation id="7886277072580235377">ನೀವು ಸೈನ್ ಔಟ್ ಮಾಡುವಾಗ ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಸೆಶನ್ ಅನ್ನು ತೆರವುಗೊಳಿಸಲಾಗುತ್ತದೆ. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">ಇಮೇಲ್‌ ಕಳುಹಿಸಿ</translation>
+<translation id="7893503627044934815">ಈ ಫೈಲ್ ಅನ್ನು ತೋರಿಸುವುದು ಬೇಡ</translation>
 <translation id="7895348134893321514">ಟೋಟ್</translation>
 <translation id="7897375687985782769">ನೀವು ಪರದೆಯನ್ನು ತಿರುಗಿಸಲು ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಒತ್ತಿದ್ದೀರಿ. ನೀವು ಪರದೆಯನ್ನು ತಿರುಗಿಸಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="7901405293566323524">ಫೋನ್ ಹಬ್</translation>
@@ -1131,6 +1141,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="7977927628060636163">ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್‌ಗಳಿಗೆ ಹುಡುಕಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="7982789257301363584">ನೆಟ್‌ವರ್ಕ್</translation>
 <translation id="7984197416080286869">ತೀರಾ ಹೆಚ್ಚು ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಪ್ರಯತ್ನಗಳು</translation>
+<translation id="798779949890829624">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರ ಮೂಲಕ ನಿರ್ವಹಿಸಲ್ಪಡುತ್ತದೆ</translation>
 <translation id="7994370417837006925">ಬಹು ಸೈನ್-ಇನ್</translation>
 <translation id="7995804128062002838">ಸ್ಕ್ರೀನ್ ಕ್ಯಾಪ್ಚರ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="8000066093800657092">ನೆಟ್‌ವರ್ಕ್ ಇಲ್ಲ</translation>
@@ -1158,6 +1169,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="813913629614996137">ಪ್ರಾರಂಭಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8142441511840089262">ಡಬಲ್‌ ಕ್ಲಿಕ್</translation>
 <translation id="8142699993796781067">ಖಾಸಗಿ ನೆಟ್‌ವರ್ಕ್‌</translation>
+<translation id="8144760705599030999">ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳ ಜೊತೆಗೆ ಶೀಘ್ರ ಜೋಡಿಗೋಳಿಸುವಿಕೆಗಾಗಿ <ph name="EMAIL" /> ಗೆ ನಿಮ್ಮ <ph name="NAME" /> ಸಾಧನವನ್ನು ಉಳಿಸಿ</translation>
 <translation id="8152092012181020186">ಮುಚ್ಚಲು Ctrl + W ಒತ್ತಿರಿ.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, ಸ್ವಯಂಪೂರ್ಣಗೊಳಿಸುವಿಕೆ</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸುತ್ತಾರೆ.</translation>
@@ -1195,6 +1207,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="8412677897383510995">ಡಿಸ್‌ಪ್ಲೇ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="8413272770729657668">ರೆಕಾರ್ಡಿಂಗ್ 3, 2, 1 ರಲ್ಲಿ ಪ್ರಾರಂಭವಾಗುತ್ತಿದೆ</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (ಕೇಸ್)</translation>
+<translation id="8420205633584771378">ಈ ಸಲಹೆಯನ್ನು ತೆಗೆದುಹಾಕುವುದೇ?</translation>
 <translation id="8421270167862077762">ಈ ಸಾಧನದಲ್ಲಿ <ph name="UNAVAILABLE_APPS" /> ಲಭ್ಯವಿಲ್ಲ.</translation>
 <translation id="8425213833346101688">ಬದಲಿಸಿ</translation>
 <translation id="8426708595819210923">ಶುಭ ಸಂಜೆ <ph name="GIVEN_NAME" /> ಅವರೇ,</translation>
@@ -1287,6 +1300,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="9000771174482730261">ಸಂಗ್ರಹಣೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="9017320285115481645">Family Link ಪೋಷಕ ಪ್ರವೇಶದ ಕೋಡ್ ಅನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="9024331582947483881">ಪೂರ್ಣ ಪರದೆ</translation>
+<translation id="9030319654231318877">ಸೂರ್ಯಾಸ್ತದವರೆಗೆ ಆಫ್</translation>
 <translation id="9034924485347205037">Linux ಫೈಲ್‌ಗಳು</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> ನ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="9059834730836941392">ಕುಗ್ಗಿಸುವ ಅಧಿಸೂಚನೆ</translation>
@@ -1306,6 +1320,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="9099154003160514616">Lacros ಅಪ್‌ಡೇಟ್‌ ಲಭ್ಯವಿದೆ</translation>
 <translation id="9100887602489003640">ಪ್ರೊಫೈಲ್ ಅನ್ನು ಸೇರಿಸಲಾಗುತ್ತಿದೆ. ಕೆಲವು ನಿಮಿಷಗಳು ಕಾಯಿರಿ.</translation>
 <translation id="9105450214093926548">Lacros ಬ್ರೌಸರ್ ರನ್ ಆಗುವಾಗ, ಇನ್ನೊಬ್ಬ ಬಳಕೆದಾರರು ಸೈನ್ ಇನ್ ಆಗುವುದನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ಬದಲಾಗಿ Lacros ನಲ್ಲಿ ಇನ್ನೊಂದು ಬ್ರೌಸರ್ ಪ್ರೊಫೈಲ್ ಬಳಸಿ ಅಥವಾ Lacros ಅನ್ನು ಮುಚ್ಚಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> ಅಥವಾ <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">ಸುರಕ್ಷಿತ ವಿಷಯವನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="9161053988251441839">ಸಲಹೆ ಮಾಡಿರುವ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು</translation>
 <translation id="9166331175924255663">Nearby ಶೇರ್‌ನ ಹೆಚ್ಚಿನ ಗೋಚರತೆಯನ್ನು ಟಾಗಲ್ ಮಾಡಿ.</translation>

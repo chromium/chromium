@@ -6,6 +6,7 @@
 <translation id="1013923882670373915">Peranti Bluetooth "<ph name="DEVICE_NAME" />" ingin kebenaran untuk berpasangan. Sila masukkan kod PIN ini pada peranti tersebut: <ph name="PINCODE" /></translation>
 <translation id="1014111206066007277">Alatan rakaman skrin</translation>
 <translation id="1024261588257374085">Tangkapan skrin separa dipilih</translation>
+<translation id="1024364763893396229">Simpan <ph name="NAME" /> anda</translation>
 <translation id="1032891413405719768">Bateri stilus lemah</translation>
 <translation id="1036073649888683237">Untuk mengurus pemberitahuan, pergi ke Tetapan</translation>
 <translation id="1036672894875463507">Saya Google Assistant anda. Saya sedia membantu anda sepanjang hari anda!
@@ -167,6 +168,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1951012854035635156">Pembantu</translation>
 <translation id="1954252331066828794">Rakaman skrin selesai</translation>
 <translation id="1957958912175573503">Tetapkan bahasa anda</translation>
+<translation id="1961239773406905488">Pratonton kamera disembunyikan</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Kunci Skrin</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -184,6 +186,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2047639699071423250">Tambah idea utama</translation>
 <translation id="2049240716062114887">Nama meja telah ditukar kepada <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Potret</translation>
+<translation id="2064048859448024834">Pratonton kamera dihidupkan</translation>
 <translation id="2066708475850724665">Hentikan penggadang</translation>
 <translation id="2067602449040652523">Kecerahan papan kekunci</translation>
 <translation id="2078034614700056995">Leret ke kanan dengan empat jari untuk beralih kepada meja seterusnya</translation>
@@ -293,6 +296,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2819276065543622893">Anda akan dilog keluar sekarang.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> tidak menyokong <ph name="SPECIFIED_RESOLUTION" />. Peleraian telah ditukar kepada <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Rak</translation>
+<translation id="2831035692318564937">Dihidupkan sehingga matahari terbit</translation>
 <translation id="2834813915651407382">Dibuka baru-baru ini</translation>
 <translation id="2841907151129139818">Bertukar kepada mod tablet</translation>
 <translation id="2844169650293029770">Peranti USB-C (port depan sebelah kiri)</translation>
@@ -439,6 +443,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3626281679859535460">Kecerahan</translation>
 <translation id="3630697955794050612">dimatikan</translation>
 <translation id="3631369015426612114">Benarkan pemberitahuan daripada yang berikut</translation>
+<translation id="3633097874324966332">Buka tetapan Bluetooth untuk menggandingkan peranti anda</translation>
 <translation id="3638400994746983214">Togol skrin privasi. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Kemas kini terlewat</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Pengguna terurus</translation>
@@ -768,6 +773,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5744083938413354016">Penyeretan ketik</translation>
 <translation id="5745612484876805746">Cahaya Malam akan dihidupkan secara automatik pada waktu matahari terbenam</translation>
 <translation id="5750765938512549687">Bluetooth dimatikan</translation>
+<translation id="5760866832697883462">Sambungkan <ph name="NAME" /> anda</translation>
 <translation id="576341972084747908">Muat turun berbahaya <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Mod Shelf Party dimatikan.</translation>
 <translation id="576453121877257266">Cahaya Malam dihidupkan.</translation>
@@ -953,6 +959,7 @@ Pemasangan baharu</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> anda mungkin menunjukkan prestasi yang lebih rendah. Gunakan penyesuai kuasa USB-C <ph name="PREFERRED_MINIMUM_POWER" />W ke atas yang diperakui.</translation>
 <translation id="688631446150864480">Tekan kekunci Anak panah ke bawah untuk menukar tetingkap</translation>
 <translation id="6896758677409633944">Salin</translation>
+<translation id="6901883536534621389">Cuba gerak isyarat untuk menavigasi</translation>
 <translation id="6919251195245069855">Tidak dapat mengecam kad pintar anda. Cuba lagi.</translation>
 <translation id="6921188888306725546">Pintasan papan kekunci telah diperbaik</translation>
 <translation id="6931576957638141829">Simpan pada</translation>
@@ -1129,6 +1136,7 @@ Pemasangan baharu</translation>
 <translation id="7977927628060636163">Mencari rangkaian mudah alih...</translation>
 <translation id="7982789257301363584">Rangkaian</translation>
 <translation id="7984197416080286869">Terlalu banyak percubaan cap jari</translation>
+<translation id="798779949890829624">Tetapan ini diurus oleh pentadbir anda</translation>
 <translation id="7994370417837006925">Log masuk berbilang</translation>
 <translation id="7995804128062002838">Gagal untuk menangkap skrin</translation>
 <translation id="8000066093800657092">Tiada rangkaian</translation>
@@ -1156,6 +1164,7 @@ Pemasangan baharu</translation>
 <translation id="813913629614996137">Memulakan...</translation>
 <translation id="8142441511840089262">Klik dua kali</translation>
 <translation id="8142699993796781067">Rangkaian persendirian</translation>
+<translation id="8144760705599030999">Simpan <ph name="NAME" /> anda pada <ph name="EMAIL" /> untuk penggandingan yang lebih pantas dengan peranti anda yang lain</translation>
 <translation id="8152092012181020186">Tekan Ctrl + W untuk tutup.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, Autolengkap</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Tetapan ini diurus oleh pentadbir anda.</translation>
@@ -1193,6 +1202,7 @@ Pemasangan baharu</translation>
 <translation id="8412677897383510995">Tunjukkan tetapan paparan</translation>
 <translation id="8413272770729657668">Rakaman akan bermula dalam masa 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Bekas)</translation>
+<translation id="8420205633584771378">Alih keluar cadangan ini?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> tidak tersedia pada peranti ini.</translation>
 <translation id="8425213833346101688">Tukar</translation>
 <translation id="8426708595819210923">Selamat petang <ph name="GIVEN_NAME" />,</translation>
@@ -1285,6 +1295,7 @@ Pemasangan baharu</translation>
 <translation id="9000771174482730261">URUS STORAN</translation>
 <translation id="9017320285115481645">Masukkan kod akses ibu bapa Family Link.</translation>
 <translation id="9024331582947483881">skrin penuh</translation>
+<translation id="9030319654231318877">Dimatikan sehingga matahari terbenam</translation>
 <translation id="9034924485347205037">Fail Linux</translation>
 <translation id="9047624247355796468">Buka tetapan untuk <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Runtuhkan pemberitahuan</translation>
@@ -1304,6 +1315,7 @@ Pemasangan baharu</translation>
 <translation id="9099154003160514616">Kemaskinian Lacros tersedia</translation>
 <translation id="9100887602489003640">Menambah profil. Tunggu beberapa minit.</translation>
 <translation id="9105450214093926548">Log masuk pengguna kedua tidak disokong semasa penyemak imbas Lacros dijalankan. Sila gunakan profil penyemak imbas kedua dalam Lacros atau tutup Lacros dan cuba lagi.</translation>
+<translation id="9121941381564890244"><ph name="SNIP" /> atau <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Tidak dapat merakam kandungan yang dilindungi</translation>
 <translation id="9161053988251441839">APL DISYORKAN</translation>
 <translation id="9166331175924255663">Togol keterlihatan tinggi Kongsi Berdekatan.</translation>

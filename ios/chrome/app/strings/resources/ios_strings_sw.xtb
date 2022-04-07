@@ -168,6 +168,7 @@ Tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="2421044535038393232">Endelea Kubadilisha</translation>
 <translation id="2434405374328098816">Tayari umehifadhi nenosiri la "<ph name="USERNAME" />" unalotumia katika <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Onyesha nenosiri</translation>
+<translation id="2469960372084740698">Ungependa Kuzima Kipengele cha Kuvinjari Salama?</translation>
 <translation id="2473876017985765807">Tayari umehifadhi nenosiri unalotumia katika <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Hakijachaguliwa</translation>
 <translation id="2497852260688568942">Usawazishaji umezimwa na msimamizi wako</translation>
@@ -313,6 +314,7 @@ Fuata hatua zifuatazo:</translation>
 <translation id="3691593122358196899">Imetiwa alamisho kwenye <ph name="FOLDER_TITLE" /></translation>
 <translation id="369349502275246497">Niulize Kama Ningependa Manenosiri Yahifadhiwe</translation>
 <translation id="3709582977625132201">Tia Alama Kuwa Hujasoma</translation>
+<translation id="371230970611282515">Hutabiri na kukuonya kuhusu matukio hatari yanapotendeka.</translation>
 <translation id="3740397331642243698">Hufungua URL zilizowekwa kwenye Google Chrome katika Hali Fiche.</translation>
 <translation id="3762232513783804601">Imeundwa kwa ajili ya iPad Yako</translation>
 <translation id="3771033907050503522">Vichupo Fiche</translation>
@@ -528,6 +530,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="5737974891429562743">Maelezo ya kuingia kwenye akaunti hayatumiki tena. Sasisha ili uanze kusawazisha.</translation>
 <translation id="5738887413654608789">Hii inakuwezesha kugundua kurasa za wavuti zinazokufaa kulingana na mazingira yako.</translation>
 <translation id="5758631781033351321">Utapata orodha yako ya kusoma hapa</translation>
+<translation id="5765456154762864099">Menyu → Mipangilio → Kivinjari Chaguomsingi</translation>
 <translation id="5782227691023083829">Inatafsiri...</translation>
 <translation id="5791632441210678828">Kitufe cha kupangilia mipasho Unayofuatilia.</translation>
 <translation id="5802829331520313983">Weka Mipangilio…</translation>
@@ -582,6 +585,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6144589619057374135">Fungua ${url} katika Hali Fiche</translation>
 <translation id="6149061208933997199">Tumia Nenosiri</translation>
 <translation id="6159839020698489198">si lazima</translation>
+<translation id="6173386249456979368">Ulinzi wa haraka na wa mapema dhidi ya tovuti, vipakuliwa na viendelezi hatari. Hukuonya kuhusu matukio ya ufichuzi haramu wa manenosiri yako. Inahitaji data ya kuvinjari itumwe kwa Google</translation>
 <translation id="6177442314419606057">Tafuta katika Chrome</translation>
 <translation id="6184086493125982861">Onyesha Vichupo</translation>
 <translation id="6187302354554850004">Ilisawazishwa mara ya mwisho: <ph name="LAST_USED_TIME" /></translation>
@@ -768,6 +772,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="7658239707568436148">Ghairi</translation>
 <translation id="7671141431838911305">SAKINISHA</translation>
 <translation id="7701040980221191251">Hamna</translation>
+<translation id="7726702057919861819">Menyu → Historia → Futa Data ya Kuvinjari</translation>
 <translation id="7741325291586284254">Ukurasa Mpya wa Kichupo Fiche</translation>
 <translation id="7765158879357617694">Sogeza</translation>
 <translation id="7772032839648071052">Thibitisha kaulisiri</translation>
@@ -840,6 +845,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8386068868580335421">Weka upya</translation>
 <translation id="8407669440184693619">Hatukupata manenosiri yoyote ya tovuti hii</translation>
 <translation id="842017693807136194">Umeingia katika Akaunti Ukitumia</translation>
+<translation id="8427613705947111202">Menyu → Mipangilio → Manenosiri</translation>
 <translation id="8428045167754449968">Jiji / Mji</translation>
 <translation id="8428213095426709021">Mipangilio</translation>
 <translation id="8428634594422941299">Nimeelewa</translation>

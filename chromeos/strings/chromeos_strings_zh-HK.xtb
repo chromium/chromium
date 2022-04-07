@@ -114,7 +114,6 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />：重試</translation>
 <translation id="2161394479394250669">取消列印工作</translation>
 <translation id="2180197493692062006">發生錯誤，請嘗試重新開啟應用程式。</translation>
-<translation id="2201770616342964496">本機身分</translation>
 <translation id="2209788852729124853">重設流量計數器</translation>
 <translation id="2212733584906323460">名稱解析</translation>
 <translation id="2217935453350629363">目前速度</translation>
@@ -262,6 +261,7 @@
 <translation id="4170180284036919717">拍攝相片</translation>
 <translation id="4170700058716978431">失敗</translation>
 <translation id="4176463684765177261">已停用</translation>
+<translation id="4176659219503619100">控制台</translation>
 <translation id="4213104098953699324">USB 鍵盤</translation>
 <translation id="4227825898293920515">密碼在 <ph name="TIME" />後到期</translation>
 <translation id="4238516577297848345">沒有進行中的列印工作</translation>
@@ -305,7 +305,6 @@
 <translation id="4593212453765072419">需要 Proxy 驗證</translation>
 <translation id="4609350030397390689">鍵盤校暗亮度</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />、<ph name="PRINTER_NAME" />、<ph name="CREATION_TIME" />，印咗 <ph name="PRINTED_PAGE_NUMBER" /> 頁，總共有 <ph name="TOTAL_PAGE_NUMBER" /> 頁。㩒一下 Enter 鍵就可以取消列印工作。</translation>
-<translation id="4627645661474370390">遠端身分</translation>
 <translation id="463791356324567266">正在取消掃瞄…</translation>
 <translation id="4646949265910132906">安全 Wi-Fi 連線</translation>
 <translation id="4650608062294027130">右邊 Shift</translation>
@@ -432,6 +431,7 @@
 <translation id="5866840822086176774">非常強</translation>
 <translation id="588258955323874662">全螢幕</translation>
 <translation id="5895138241574237353">重新啟動</translation>
+<translation id="5903200662178656908">裝置是鍵盤與滑鼠組合。</translation>
 <translation id="5916084858004523819">禁止</translation>
 <translation id="5916664084637901428">開啟</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{您的檔案已成功掃瞄，並儲存至「<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />」資料夾。}other{您的檔案已成功掃瞄，並儲存至「<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />」資料夾。}}</translation>
@@ -452,6 +452,7 @@
 <translation id="6104112872696127344">掃瞄已取消</translation>
 <translation id="6106186594183574873">如要完成變更，請輸入您的舊密碼</translation>
 <translation id="6108689792487843350">無法連接閘道</translation>
+<translation id="6112878310391905610">這項設定是由系統管理員管理</translation>
 <translation id="6113701710518389813">向上箭咀</translation>
 <translation id="6117895505466548728">「<ph name="TITLE" />」和另外 <ph name="NUMBER" /> 個相簿</translation>
 <translation id="6122191549521593678">線上</translation>

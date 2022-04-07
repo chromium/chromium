@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">A támadók néha úgy próbálnak meg webhelyeket utánozni, hogy alig észrevehető változtatásokat végeznek a webhely címében.</translation>
 <translation id="1028781062521375153">Részletek megtekintése</translation>
 <translation id="1030706264415084469">A(z) <ph name="URL" /> webhely állandó jelleggel nagy méretű adatokat szeretne tárolni az eszközön</translation>
-<translation id="1032854598605920125">Forgatás jobbra</translation>
 <translation id="1033329911862281889">Az inkognitó mód nem teszi Önt láthatatlanná az interneten:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />a webhelyek és az általuk használt szolgáltatások láthatják, hogy felkereste őket;<ph name="END_LIST_ITEM" />
@@ -2533,6 +2532,7 @@ További részletek:
 <translation id="7995512525968007366">Nincs megadva</translation>
 <translation id="7998269595945679889">Inkognitó lap megnyitása gomb, nyomja meg az Enter billentyűt új inkognitó lap megnyitásához, ahol privát módon böngészhet</translation>
 <translation id="800218591365569300">Próbáljon meg bezárni más lapokat vagy programokat memória felszabadítása céljából.</translation>
+<translation id="8003046808285812021">„<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">Böngésző</translation>
 <translation id="8009225694047762179">Jelszó kezelése</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{A kártyát és a számlázási címet elmentjük. Az adatok kéznél lesznek, amíg <ph name="USER_EMAIL" /> e-mail-című fiókját használja.}other{A kártyákat és a számlázási címeket elmentjük. Az adatok kéznél lesznek, amíg <ph name="USER_EMAIL" /> e-mail-című fiókját használja.}}</translation>
@@ -2633,6 +2633,7 @@ További részletek:
 <translation id="8277900682056760511">A fizetési információk munkalapja meg van nyitva</translation>
 <translation id="8280630997017109758">11. tálca</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
+<translation id="8281886186245836920">Kihagyás</translation>
 <translation id="8282947398454257691">Az egyedi eszközazonosító megtekintése</translation>
 <translation id="8284769179630993263">A Biztonságos böngészés és más funkciók kezelése a Chrome-beállítások között</translation>
 <translation id="8286036467436129157">Bejelentkezés</translation>

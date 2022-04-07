@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">Uzbrucēji dažkārt atdarina vietnes, veicot grūti pamanāmas izmaiņas tīmekļa adresē.</translation>
 <translation id="1028781062521375153">Skatīt informāciju</translation>
 <translation id="1030706264415084469">Vietnē <ph name="URL" /> tika pieprasīta atļauja pastāvīgi glabāt jūsu ierīcē lielu datu apjomu.</translation>
-<translation id="1032854598605920125">Pagriezt pulksteņrādītāju kustības virzienā</translation>
 <translation id="1033329911862281889">Inkognito režīms nenozīmē, ka jūs tiešsaistē būsiet neredzams:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />vietnes un to izmantotie pakalpojumi var redzēt jūsu apmeklējumus;<ph name="END_LIST_ITEM" />
@@ -2534,6 +2533,7 @@ Papildu informācija:
 <translation id="7995512525968007366">Nav norādīts</translation>
 <translation id="7998269595945679889">Poga “Atvērt inkognito cilni”. Lai privātai pārlūkošanai atvērtu jaunu inkognito cilni, nospiediet taustiņu Enter.</translation>
 <translation id="800218591365569300">Aizveriet citas cilnes vai programmas, lai atbrīvotu vietu atmiņā.</translation>
+<translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">Pārlūkprogramma</translation>
 <translation id="8009225694047762179">Pārvaldīt paroles</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Šī karte un tās norēķinu adrese tiks saglabāta. Jūs varēsiet to izmantot, kad būsiet pierakstījies kontā <ph name="USER_EMAIL" />.}zero{Šīs kartes un to norēķinu adreses tiks saglabātas. Jūs varēsiet tās izmantot, kad būsiet pierakstījies kontā <ph name="USER_EMAIL" />.}one{Šīs kartes un to norēķinu adreses tiks saglabātas. Jūs varēsiet tās izmantot, kad būsiet pierakstījies kontā <ph name="USER_EMAIL" />.}other{Šīs kartes un to norēķinu adreses tiks saglabātas. Jūs varēsiet tās izmantot, kad būsiet pierakstījies kontā <ph name="USER_EMAIL" />.}}</translation>
@@ -2634,6 +2634,7 @@ Papildu informācija:
 <translation id="8277900682056760511">Maksājumu apstrādātāja lapa ir atvērta</translation>
 <translation id="8280630997017109758">11. paplāte</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
+<translation id="8281886186245836920">Izlaist</translation>
 <translation id="8282947398454257691">uzzināt jūsu unikālo ierīces identifikatoru</translation>
 <translation id="8284769179630993263">Chrome iestatījumos pārvaldiet funkciju Droša pārlūkošana un citas opcijas.</translation>
 <translation id="8286036467436129157">Pierakstīties</translation>

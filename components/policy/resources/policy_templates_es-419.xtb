@@ -1158,6 +1158,13 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Si estableces <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (valor 1), solo se permitirá la aplicación a <ph name="PRODUCT_OS_NAME" /> de variaciones que se consideren correcciones críticas de estabilidad o seguridad.
 
       Si estableces <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valor 2), no podrá aplicarse ninguna variación en el navegador en la pantalla de acceso. Ten en cuenta que no se recomienda este modo porque podría impedir que los desarrolladores de <ph name="PRODUCT_OS_NAME" /> proporcionen correcciones críticas de seguridad de manera oportuna.</translation>
+<translation id="2217931577484185673">Si habilitas la política, la Navegación segura confiará en los dominios que designes. No comprobará si incluyen recursos peligrosos, como software malicioso, no deseado o de suplantación de identidad (phishing). El servicio de protección de descargas de la Navegación segura no comprobará las descargas alojadas en estos dominios. Su servicio de protección de contraseñas no comprobará que no se reutilicen contraseñas.
+
+      Si no estableces la política, se aplicará la protección predeterminada de la Navegación segura en todos los recursos.
+
+      Se debe establecer esta política como una lista de nombres de dominio completamente calificados. No permite expresiones regulares, ni permitirá incluir subdominios de dominios enumerados en dicha lista.
+
+      En <ph name="MS_WIN_NAME" />, esta funcionalidad solo estará disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, están inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> o se ejecutan en Windows 10 Pro. En <ph name="MAC_OS_NAME" />, esta funcionalidad solo está disponible en instancias administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
 <translation id="2221779615493499989">Informa a los usuarios sobre el estado de red en dispositivos inscritos.
 
       Si estableces la política como falsa, no se informarán los eventos.
@@ -1963,6 +1970,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="3086995894968271156">Configura Cast Receiver en <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3087346703976541109">Especificar si se puede utilizar la política SharedArrayBuffers en un contexto que no está aislado en orígenes cruzados</translation>
 <translation id="3088557424854005813">Certificación</translation>
+<translation id="3090283903269516279">Inhabilitar el modelo de carga adaptable en <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3091832372132789233">Cargar la batería para dispositivos que están principalmente conectados a una fuente de alimentación externa</translation>
 <translation id="3092059499596000593">Utiliza la impresora predeterminada del sistema como la opción predeterminada en la vista previa de impresión</translation>
 <translation id="309416443108680956">Especifica lo que sucede cuando un usuario que se autentica mediante un token de seguridad (p. ej., con una tarjeta inteligente) quita ese token durante una sesión activa. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: No pasa nada. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: Se bloquea la pantalla hasta que el usuario se vuelva a autenticar. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: Se cierra la sesión y el usuario sale. Si no estableces esta política, se aplicará la configuración predeterminada <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />.</translation>
@@ -2478,6 +2486,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       * <ph name="PRINTERS_ALLOW_ALL" /> (valor 2) muestra todas las impresoras.
 
       Si no estableces la política, se utilizará el valor <ph name="PRINTERS_ALLOW_ALL" />.</translation>
+<translation id="3695204334462456702">Destinos de los protocolos basados en la no configuración (mDNS y DNS-SD) (Política obsoleta)</translation>
 <translation id="3695706037816556327">Acción ante la eliminación del token de seguridad (p. ej., una tarjeta inteligente) para <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3700193037252896716">La frecuencia con la cual se deben reiniciar los dispositivos.</translation>
 <translation id="3700318587977845664">La frecuencia con la que deben verificarse las actualizaciones.</translation>
@@ -2767,6 +2776,13 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si inhabilitas la política o no la estableces, no se activará <ph name="PLUGIN_VM_NAME" /> para el dispositivo.</translation>
 <translation id="3973371701361892765">Nunca ocultar automáticamente los archivos</translation>
 <translation id="3977304360459208438">Usar la configuración predeterminada para los conjuntos de algoritmos de cifrado 3DES en TLS</translation>
+<translation id="3978606026906763896">Si inhabilitas la política, las ventanas emergentes destinadas a <ph name="BLANK_PAGE_NAME" /> podrán acceder (mediante JavaScript) a la página que solicitó abrir la ventana emergente.
+
+      Si habilitadas la política o no la estableces, se establecerá el valor <ph name="NULL_VALUE" /> en la propiedad <ph name="WINDOW_OPENER_PROPERTY" />, a menos que el ancla especifique el atributo <ph name="REL_OPENER_ATTRIBUTE" />.
+
+      En la versión 102 de <ph name="PRODUCT_NAME" /> se quitó esta política.
+
+      Consulta https://chromestatus.com/feature/6140064063029248.</translation>
 <translation id="3979738908158213640">URL a las que se les concede acceso para realizar la certificación de los dispositivos durante la autenticación de SAML</translation>
 <translation id="3984028218719007910">Determina si <ph name="PRODUCT_OS_NAME" /> mantiene los datos de cuenta locales tras cerrar la sesión. Si el valor se establece en "true", <ph name="PRODUCT_OS_NAME" /> no conservará ninguna cuenta de forma permanente y todos los datos de la sesión del usuario se descartarán al cerrar la sesión. Si esta política no se configura o se establece en "false", el dispositivo puede guardar datos de usuario locales (encriptados).</translation>
 <translation id="398884292557092447">Si estableces la política como verdadera o no la estableces, los usuarios podrán controlar las sugerencias de Autocompletar para las tarjetas de crédito en la IU.
@@ -3775,6 +3791,35 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
       Si estableces la política como falsa o no la estableces, se desactivará este modo y los usuarios no podrán activarlo.</translation>
 <translation id="5255162913209987122">Se puede recomendar</translation>
 <translation id="5257395339965216304">Datos de apps alojadas</translation>
+<translation id="5263649486910778308">Esta política proporciona una forma de anular la lista de conjuntos que el navegador utiliza para las funciones de los conjuntos propios.
+
+      Cada conjunto de la lista de conjuntos propios del navegador debe cumplir los requisitos de un conjunto propio.
+      Un conjunto propio consiste en un propietario y uno o más sitios miembro. Todos los sitios de un conjunto propio deben
+      ser un dominio registrable de HTTPS, sin importar si es un sitio miembro o propietario.
+      Además, cada sitio en un conjunto propio debe ser único, lo que quiere decir que un sitio no puede ser propietario y miembro, ni
+      estar enumerado más de una vez como miembro de un conjunto propio.
+      Para obtener más información sobre los conjuntos propios, ve a https://github.com/privacycg/first-party-sets.
+
+      Cuando se proporciona un diccionario vacío a la política, el navegador utiliza la lista pública de conjuntos propios.
+
+      Para todos los sitios de un conjunto propio de la lista <ph name="REPLACEMENTS" />, si el sitio también está
+      en un conjunto propio de la lista del navegador, ese sitio se quitará del conjunto propio del navegador.
+      Luego de esto, el conjunto propio de la política se agregará a la lista de conjuntos propios del navegador.
+
+      Para todos los sitios pertenecientes a un conjunto propio de la lista <ph name="ADDITIONS" />, si el sitio también está
+      en un conjunto propio de la lista del navegador, el conjunto propio del navegador se actualizará para que
+      el nuevo conjunto propio pueda agregarse a la lista del navegador. Una vez que se actualice la lista del navegador,
+      el conjunto propio de la política se agregará a la lista de conjuntos propios del navegador.
+
+      La lista de conjuntos propios del navegador requiere que ningún sitio de la lista esté en
+      más de un conjunto. También se requiere para las listas <ph name="REPLACEMENTS" />
+      y <ph name="ADDITIONS" />. De la misma manera, un sitio no puede estar al mismo tiempo en
+      las listas <ph name="REPLACEMENTS" /> y <ph name="ADDITIONS" />
+
+      Los comodines (*) no se admiten como valor de la política, ni en ningún conjunto propio en estas listas.
+
+      Todos los conjuntos que brinda esta política deben ser conjuntos propios válidos. De lo contrario, se
+      producirá un error.</translation>
 <translation id="5266173014392157048">Esta política dejó de estar disponible. Usa la política "<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />" en su lugar.
 
       Si estableces la política, se asignarán los servidores a los que <ph name="PRODUCT_NAME" /> puede delegar las credenciales de usuario. Los nombres de los servidores se separan con comas. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).
@@ -4269,6 +4314,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 <translation id="5815990343032461023">Comportamiento heredado: las apps de Chrome para kiosco recibirán actualizaciones del sistema de extensiones (mediante las URL de actualización del manifiesto de la extensión) y del administrador del almacenamiento en caché (mediante las URL de actualización de la política)</translation>
 <translation id="582857022372205358">Habilitar la impresión doble con bordes cortos</translation>
 <translation id="5830196507442186669">Permite que los dispositivos usen <ph name="BOREALIS_NAME" /> en <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="5831286647961890695">Habilitar el modelo de carga adaptable en <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="5832274826894536455">Políticas obsoletas</translation>
 <translation id="5835253272509953988">Si habilitas la política, los usuarios podrán hacer que <ph name="PRODUCT_NAME" /> verifique si los nombres de usuario y contraseñas ingresados estuvieron en una filtración.
 
@@ -6297,6 +6343,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 
       El valor <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica la cantidad mínima de datos (expresada en bytes) que activa la revisión de patrones. Esto significa que se permitiría una escritura en el portapapeles de parte de una URL bloqueada si el tamaño de los datos copiados es menor al valor especificado en este campo. Si no estableces el campo, el valor predeterminado es 100 bytes.
       </translation>
+<translation id="8035570672225663428">Habilitar el modelo de carga adaptable para detener el proceso de carga y así extender la duración de la batería</translation>
 <translation id="8044493735196713914">Modo de notificación de inicio de dispositivo</translation>
 <translation id="80453040817068401">Hacer que el navegador <ph name="LACROS_NAME" /> esté disponible</translation>
 <translation id="804619600634661088">Permitir el uso de la depuración remota</translation>
@@ -6334,6 +6381,10 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="8099880303030573137">Demora de inactividad con batería</translation>
 <translation id="8101381354936029836">Grupo atómico de la política:</translation>
 <translation id="8102913158860568230">Configuración de mediastream predeterminada</translation>
+<translation id="8103563905615378194">Especifica si se permite que un modelo de carga adaptable detenga el proceso de carga para extender la duración de la batería.
+
+      Cuando el dispositivo funciona con CA, el modelo de carga adaptable evalúa si el proceso de carga se debe detener para extender la duración de la batería. Si el modelo de carga adaptable detiene el proceso de carga, la batería se mantendrá en cierto nivel (p. ej., al 80%) y luego cargará el dispositivo hasta el 100% cuando el usuario lo necesite.
+      Si estableces esta política como verdadera o no la configuras, el modelo de carga adaptable se habilitará y podrá detener el proceso de carga para extender la duración de la batería. Si la estableces como falsa, el modelo de carga adaptable no modificará el proceso de carga.</translation>
 <translation id="8104962233214241919">Seleccionar automáticamente certificados de clientes para estos sitios</translation>
 <translation id="8114382167597081590">No aplicar el modo restringido en YouTube</translation>
 <translation id="8117921351531866504">Te permite establecer si los sitios web están autorizados a verificar que el usuario tenga formas de pago guardadas.

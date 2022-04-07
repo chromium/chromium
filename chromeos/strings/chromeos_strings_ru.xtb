@@ -114,7 +114,6 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />. Повторить</translation>
 <translation id="2161394479394250669">Отменить задание печати</translation>
 <translation id="2180197493692062006">Произошла ошибка. Попробуйте открыть приложение заново.</translation>
-<translation id="2201770616342964496">Локальное удостоверение</translation>
 <translation id="2209788852729124853">Сбросить счетчики трафика</translation>
 <translation id="2212733584906323460">Разрешение имен</translation>
 <translation id="2217935453350629363">Текущая частота</translation>
@@ -305,7 +304,6 @@
 <translation id="4593212453765072419">Требуется аутентификация на прокси-сервере</translation>
 <translation id="4609350030397390689">Уменьшение яркости клавиатуры</translation>
 <translation id="4627232916386272576">Файл "<ph name="DOCUMENT_TITLE" />", принтер "<ph name="PRINTER_NAME" />", дата – <ph name="CREATION_TIME" />, напечатано страниц: <ph name="PRINTED_PAGE_NUMBER" /> из <ph name="TOTAL_PAGE_NUMBER" />. Чтобы отменить задание печати, нажмите клавишу "Ввод".</translation>
-<translation id="4627645661474370390">Удаленное удостоверение</translation>
 <translation id="463791356324567266">Отмена сканирования…</translation>
 <translation id="4646949265910132906">Защищенное подключение к Wi-Fi</translation>
 <translation id="4650608062294027130">Правая клавиша Shift</translation>
@@ -432,6 +430,7 @@
 <translation id="5866840822086176774">Очень сильный</translation>
 <translation id="588258955323874662">Полноэкранный режим</translation>
 <translation id="5895138241574237353">Перезапустить</translation>
+<translation id="5903200662178656908">Устройство представляет собой комплект из мыши и клавиатуры.</translation>
 <translation id="5916084858004523819">Запрещено</translation>
 <translation id="5916664084637901428">ВКЛ</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Файл отсканирован и сохранен в папке <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Файлы отсканированы и сохранены в папке <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Файлы отсканированы и сохранены в папке <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Файлы отсканированы и сохранены в папке <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Файлы отсканированы и сохранены в папке <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -452,6 +451,7 @@
 <translation id="6104112872696127344">Сканирование отменено.</translation>
 <translation id="6106186594183574873">Для завершения введите старый пароль.</translation>
 <translation id="6108689792487843350">Шлюз недоступен.</translation>
+<translation id="6112878310391905610">Этим параметром управляет администратор</translation>
 <translation id="6113701710518389813">Стрелка вверх</translation>
 <translation id="6117895505466548728">Альбом "<ph name="TITLE" />" и ещё <ph name="NUMBER" /> других</translation>
 <translation id="6122191549521593678">Онлайн</translation>

@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">Aanvallers maken sites soms na door wijzigingen in het webadres aan te brengen die je moeilijk kunt zien.</translation>
 <translation id="1028781062521375153">Details bekijken</translation>
 <translation id="1030706264415084469"><ph name="URL" /> wil grote gegevens permanent op je apparaat opslaan</translation>
-<translation id="1032854598605920125">Rechtsom draaien</translation>
 <translation id="1033329911862281889">Incognito maakt je niet onzichtbaar online:
 <ph name="BEGIN_LIST" />
 <ph name="LIST_ITEM" />Sites en de services die ze gebruiken, kunnen bezoeken zien<ph name="END_LIST_ITEM" />
@@ -2627,6 +2626,7 @@ Aanvullende informatie:
 <translation id="8277900682056760511">Blad voor betalingshandler is geopend</translation>
 <translation id="8280630997017109758">Lade 11</translation>
 <translation id="8281084378435768645">Grote foto</translation>
+<translation id="8281886186245836920">Overslaan</translation>
 <translation id="8282947398454257691">Je unieke apparaat-ID weten</translation>
 <translation id="8284769179630993263">Safe Browsing en meer beheren in de Chrome-instellingen</translation>
 <translation id="8286036467436129157">Inloggen</translation>

@@ -178,6 +178,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4600710005438004015">Chroma ni bilo mogoče posodobiti na najnovejšo različico, zato nimate novih funkcij in popravkov varnosti.</translation>
 <translation id="4627412468266359539">Izbirno: Pomagajte izboljšati funkcije sistema ChromeOS Flex ter njegovo delovanje s samodejnim pošiljanjem diagnostičnih podatkov in podatkov o uporabi Googlu.</translation>
 <translation id="4633000520311261472">Zaradi večje varnosti smo v Chromu onemogočili nekatere razširitve, ki niso navedene v storitvi <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> in so bile morda dodane brez vaše vednosti.</translation>
+<translation id="469553575393225953">Razširitve, aplikacije in teme iz neznanih virov lahko škodijo napravi. Chrome priporoča, da jih namestite samo v Spletni trgovini Chrome.</translation>
 <translation id="4728575227883772061">Namestitev ni bila izvedena zaradi nedoločene napake. Če je Google Chrome trenutno vklopljen, ga zaprite in poskusite znova.</translation>
 <translation id="4747730611090640388">Chrome lahko oceni vaša zanimanja.  Pozneje lahko stran, ki jo obiščete, od Chroma zahteva ogled vaših zanimanj zaradi osebnega prilagajanja oglasov, ki so vam prikazani.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -221,6 +222,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="5736850870166430177">Če vam spletno mesto poskusi ukrasti geslo ali ko prenašate škodljivo datoteko, lahko Chrome prav tako pošlje URL-je, vključno z delčki vsebine strani, Varnemu brskanju.</translation>
 <translation id="573759479754913123">O sistemu Chrome OS</translation>
 <translation id="5756509061973259733">Profil v Chromu s tem računom že obstaja v tej napravi.</translation>
+<translation id="5763280521700030406">Chrome je blokiral to datoteko, ker je prevelika za varnostno preverjanje. Poskusite znova z datotekami velikosti do 50 MB.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – delovna različica Google Chroma</translation>
 <translation id="5804318322022881572">Chroma ni bilo mogoče zagnati. Poskusite znova.</translation>
 <translation id="5867197326698922595">Google Chrome poskuša urejati gesla.</translation>
@@ -329,8 +331,10 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="8394720698884623075">Preveri URL-je, tako da jih primerja s seznamom spletnih mest, ki niso varna, shranjenim v Chromu.</translation>
 <translation id="840084489713044809">Google Chrome želi izvoziti gesla.</translation>
 <translation id="8416347857511542594">Preberite več o osebnem prilagajanju oglasov v Chromu</translation>
+<translation id="8421734018304082652">Chrome je blokiral to datoteko, ker je šifrirana. Lastnika prosite, da jo dešifrira.</translation>
 <translation id="8433638294851456451">Če želite poslati telefonsko številko od tukaj v telefon Android, se prijavite v Chrome v obeh napravah.</translation>
 <translation id="8498858610309223613">Pravkar je bila nameščena posebna varnostna posodobitev za Google Chrome. Znova ga zaženite (vaše zavihke bomo obnovili).</translation>
+<translation id="8504220326736535258">Chrome je blokiral to datoteko, ker vsebuje zlonamerno programsko opremo.</translation>
 <translation id="8516431725144212809">Vaša zanimanja po Chromovi oceni</translation>
 <translation id="8521348052903287641">Pravilo za dohodni promet za Google Chrome Dev, ki dovoli promet mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>

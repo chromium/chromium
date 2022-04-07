@@ -172,6 +172,7 @@
 <translation id="4600710005438004015">Aktualizacja Chrome do najnowszej wersji nie udała się, więc nie masz dostępu do najnowszych funkcji i poprawek zabezpieczeń.</translation>
 <translation id="4627412468266359539">Opcjonalnie: pomóż ulepszać funkcje i działanie ChromeOS Flex, automatycznie wysyłając do Google dane diagnostyczne i dane o korzystaniu.</translation>
 <translation id="4633000520311261472">Aby poprawić bezpieczeństwo Chrome, wyłączyliśmy niektóre rozszerzenia niedostępne w <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />, które mogły zostać dodane bez Twojej wiedzy.</translation>
+<translation id="469553575393225953">Rozszerzenia, aplikacje i motywy z nieznanych źródeł mogą wyrządzić szkody na Twoim urządzeniu. Chrome zaleca, aby instalować je tylko ze sklepu Chrome Web Store</translation>
 <translation id="4728575227883772061">Instalacja nie powiodła się z powodu nieokreślonego błędu. Jeśli Google Chrome jest aktualnie uruchomiony, zamknij aplikację i spróbuj ponownie.</translation>
 <translation id="4747730611090640388">Chrome może szacować Twoje zainteresowania.  Później odwiedzana przez Ciebie witryna może wykorzystać te informacje, żeby spersonalizować wyświetlane Ci reklamy.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -211,6 +212,7 @@
 <translation id="5736850870166430177">Jeśli strona próbuje wykraść Twoje hasło lub pobierasz szkodliwy plik, Chrome może też wysłać URL wraz z fragmentami zawartości strony do usługi Bezpieczne przeglądanie.</translation>
 <translation id="573759479754913123">System operacyjny Chrome – informacje</translation>
 <translation id="5756509061973259733">Na tym urządzeniu istnieje już profil Chrome z tym kontem</translation>
+<translation id="5763280521700030406">Ten plik został zablokowany przez Chrome, bo jest za duży i przez to nie można sprawdzić, czy jest bezpieczny. Spróbuj ponownie, pamiętając, że pliki nie mogą być większe niż 50 MB</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Nie udało się uruchomić Chrome. Spróbuj ponownie.</translation>
 <translation id="5867197326698922595">Google Chrome próbuje edytować hasła.</translation>
@@ -318,8 +320,10 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="8394720698884623075">Sprawdza, czy URL jest na liście potencjalnie niebezpiecznych stron zapisanej w Chrome.</translation>
 <translation id="840084489713044809">Google Chrome chce wyeksportować Twoje hasła.</translation>
 <translation id="8416347857511542594">Więcej informacji o personalizacji reklam w Chrome</translation>
+<translation id="8421734018304082652">Ten plik został zablokowany przez Chrome, bo jest zaszyfrowany. Poproś jego właściciela, aby go odszyfrował</translation>
 <translation id="8433638294851456451">Aby wysłać stąd numer na swój telefon z Androidem, zaloguj się w Chrome na obu urządzeniach.</translation>
 <translation id="8498858610309223613">Właśnie została zastosowana specjalna aktualizacja zabezpieczeń Google Chrome. Uruchom ponownie Chrome teraz. Karty zostaną przywrócone.</translation>
+<translation id="8504220326736535258">Ten plik został zablokowany przez Chrome, bo zawiera złośliwe oprogramowanie</translation>
 <translation id="8516431725144212809">Twoje zainteresowania oszacowane według Chrome</translation>
 <translation id="8521348052903287641">Reguła dla ruchu przychodzącego w wersji deweloperskiej Google Chrome zezwalająca na ruch mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>

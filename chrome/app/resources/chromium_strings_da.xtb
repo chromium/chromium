@@ -13,6 +13,7 @@
 <translation id="151962892725702025">Chromium OS kunne ikke synkronisere dine data, fordi synkronisering ikke er tilgængeligt på dit domæne.</translation>
 <translation id="1524282610922162960">Del en Chromium-fane</translation>
 <translation id="1553461853655228091">Chromium skal have adgangstilladelse til dit kamera for at oprette et 3D-kort over dine omgivelser</translation>
+<translation id="1602421994560205104">Chromium har blokeret denne fil, fordi den er for stor til, at der kan gennemføres et sikkerhedstjek. Prøv igen med filer på op til 50 MB</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering}=1{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering. Dit inkognitovindue åbnes ikke igen.}one{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering. # inkognitovindue åbnes ikke igen.}other{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering. Dine # inkognitovinduer åbnes ikke igen.}}</translation>
 <translation id="1625909126243026060">Gennemgå vigtige privatlivs- og sikkerhedsindstillinger i Chromium</translation>
 <translation id="1632539827495546968">Hvis du kun vil bruge denne konto én gang, kan du anvende <ph name="GUEST_LINK_BEGIN" />Gæstetilstand<ph name="GUEST_LINK_END" /> i Chromium-browseren. Hvis du vil tilføje en konto for en anden person, kan du <ph name="LINK_BEGIN" />føje en ny person<ph name="LINK_END" /> til din <ph name="DEVICE_TYPE" />.
@@ -220,6 +221,7 @@ Visse funktioner kan være utilgængelige. Angiv en anden profilmappe, eller bru
 <translation id="673636774878526923">Log ind, og aktivér derefter synkronisering for at få adgang til dine Chromium-ting på alle dine enheder.</translation>
 <translation id="6774082503108938489">Din forælder har deaktiveret "Tilladelser til websites, apps og udvidelser" for Chromium. Det er ikke tilladt at aktivere denne <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="6847869444787758381">Chromium giver dig besked, hvis dine adgangskoder kompromitteres</translation>
+<translation id="6852530923436401894">Chromium har blokeret denne fil, fordi den indeholder malware</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kopieret til Chromium)</translation>
 <translation id="6873893289264747459">Chromium har registreret malware i "<ph name="EXTENSION_NAME" />"</translation>
@@ -239,6 +241,7 @@ Visse funktioner kan være utilgængelige. Angiv en anden profilmappe, eller bru
 <translation id="7218568399872925918">Websites, du besøger, husker dine oplysninger, indtil du lukker Chromium</translation>
 <translation id="7223968959479464213">Jobliste – Chromium</translation>
 <translation id="7246575524853130370">Dine interesser, sådan som de er estimeret af Chromium</translation>
+<translation id="7265671031637041256">Chromium har blokeret denne fil, fordi den er krypteret. Bed ejeren af filen om at dekryptere den</translation>
 <translation id="7309928523159922338">Ad measurement giver websites, du besøger, mulighed for at anmode om oplysninger fra Chromium, som hjælper websitet med at måle, hvor godt dets annoncer klarer sig. Ad measurement begrænser sporing på tværs af websites ved at overføre så få oplysninger som muligt mellem websites.</translation>
 <translation id="731795002583552498">Chromium opdateres</translation>
 <translation id="7318036098707714271">Din præferencefil er beskadiget eller ugyldig.
@@ -278,6 +281,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="7898472181347242998">Du kan se, om en enhed er opdateret, ved at gå til <ph name="LINK_BEGIN" />indstillingerne for Chromium OS<ph name="LINK_END" /></translation>
 <translation id="7937630085815544518">Du loggede ind på Chromium som <ph name="USER_EMAIL_ADDRESS" />. Brug den samme konto til at logge ind igen.</translation>
 <translation id="7975919845073681630">Dette er en sekundær installation af Chromium, og den kan ikke gøres til din standardbrowser.</translation>
+<translation id="7997934263947464652">Udvidelser, apps og temaer fra ukendte kilder kan skade din enhed. Chromium anbefaler, at de kun installeres via <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Når Chromium har adgang, kan websites bede dig om adgang.</translation>
 <translation id="8045118833343856403">Følgende konti er ikke logget ind på nogen Chromium-profiler. Hvis du vil bruge en konto på en anden profil, skal du først fjerne den pågældende profil.</translation>
 <translation id="8105840573057009683">Chromium skal have adgangstilladelse til lokation for at bruge dette website</translation>

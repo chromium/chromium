@@ -9,6 +9,7 @@
 <translation id="1591070050619849194">Desativar todas as animações de imagem.</translation>
 <translation id="1703735871906654364">Caret Browsing</translation>
 <translation id="1791496371305830581">Permitir todas as imagens animadas.</translation>
+<translation id="1974060860693918893">Avançado</translation>
 <translation id="1996252509865389616">Ativar?</translation>
 <translation id="2079545284768500474">Desfazer</translation>
 <translation id="2179565792157161713">Abrir descrição longa em "Nova guia"</translation>
@@ -51,6 +52,7 @@
 <translation id="6170146920149900756">Color Enhancer</translation>
 <translation id="633394792577263429">Mantenha a tecla &lt;span class='key'&gt;Control&lt;/span&gt; pressionada para se mover por palavras.</translation>
 <translation id="6550675742724504774">Opções</translation>
+<translation id="6699630355767768222">Etapa 3: substituir o eixo de cores para a correção</translation>
 <translation id="6838518108677880446">Configuração:</translation>
 <translation id="690628312087070417">Quando o cursor salta uma grande distância:</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -65,5 +67,6 @@
 <translation id="8321034316479930120">Política de animação</translation>
 <translation id="8480209185614411573">High Contrast</translation>
 <translation id="8609925175482059018">Pressione &lt;span class='key'&gt;F7&lt;/span&gt; para ativar a extensão Caret Browsing. Pressione novamente para desativá-la.</translation>
+<translation id="8798099450830957504">Padrão</translation>
 <translation id="894241283505723656">Descrições longas no menu de contexto</translation>
 </translationbundle>

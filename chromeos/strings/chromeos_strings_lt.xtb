@@ -114,7 +114,6 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: bandyti dar kartą</translation>
 <translation id="2161394479394250669">Atšaukti spausdinimo užduotį</translation>
 <translation id="2180197493692062006">Kažkas nepavyko. Pabandykite iš naujo atidaryti programą.</translation>
-<translation id="2201770616342964496">Vietinio ryšio tapatybė</translation>
 <translation id="2209788852729124853">Iš naujo nustatyti srauto skaitiklius</translation>
 <translation id="2212733584906323460">Pavadinimo skyra</translation>
 <translation id="2217935453350629363">Dabartinė sparta</translation>
@@ -210,6 +209,7 @@
 <translation id="3488065109653206955">Iš dalies suaktyvinta</translation>
 <translation id="3527036260304016759">Nepavyko – nežinoma klaida</translation>
 <translation id="3532980081107202182">Liko apie <ph name="MIN_REMAINING" /> min.</translation>
+<translation id="3557205324756024651">Vietinio ryšio tapatybė (pasirenkama)</translation>
 <translation id="3565064564551103223">Leidžiami IP</translation>
 <translation id="3577473026931028326">Kažkas ne taip. Bandykite dar kartą.</translation>
 <translation id="357889014807611375">matuojamas „Wi-Fi“ tinklas</translation>
@@ -262,6 +262,7 @@
 <translation id="4170180284036919717">Fotografuoti</translation>
 <translation id="4170700058716978431">NESĖKMINGAS</translation>
 <translation id="4176463684765177261">Išjungta</translation>
+<translation id="4176659219503619100">Valdymo skydelis</translation>
 <translation id="4213104098953699324">USB klaviatūra</translation>
 <translation id="4227825898293920515">Slaptažodžio galiojimas baigsis už <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nėra vykstančių spausdinimo užduočių</translation>
@@ -305,7 +306,6 @@
 <translation id="4593212453765072419">Būtina autentifikuoti įgaliotąjį serverį</translation>
 <translation id="4609350030397390689">Sumažinti klaviatūros šviesumą</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, „<ph name="PRINTER_NAME" />“, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> iš <ph name="TOTAL_PAGE_NUMBER" /> psl. Paspauskite „Enter“, jei norite atšaukti spausdinimo užduotį.</translation>
-<translation id="4627645661474370390">Nuotolinio ryšio tapatybė</translation>
 <translation id="463791356324567266">Atšaukiamas nuskaitymas...</translation>
 <translation id="4646949265910132906">Saugus „Wi-Fi“ ryšys</translation>
 <translation id="4650608062294027130">Dešinysis antrojo lygio klavišas</translation>
@@ -432,6 +432,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="5866840822086176774">Labai stiprus</translation>
 <translation id="588258955323874662">Visas ekranas</translation>
 <translation id="5895138241574237353">Paleisti iš naujo</translation>
+<translation id="5903200662178656908">Įrenginį sudaro klaviatūra ir pelė.</translation>
 <translation id="5916084858004523819">Draudžiama</translation>
 <translation id="5916664084637901428">Įjungta</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Failas sėkmingai nuskaitytas ir išsaugotas aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}one{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}few{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}many{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}other{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}}</translation>
@@ -452,6 +453,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6104112872696127344">Nuskaitymas atšauktas</translation>
 <translation id="6106186594183574873">Norėdami užbaigti įveskite seną slaptažodį</translation>
 <translation id="6108689792487843350">Tinklų sietuvas nepasiekiamas</translation>
+<translation id="6112878310391905610">Šį nustatymą tvarko jūsų administratoriai</translation>
 <translation id="6113701710518389813">Rodyklė aukštyn</translation>
 <translation id="6117895505466548728">„<ph name="TITLE" />“ ir dar <ph name="NUMBER" /> albumai</translation>
 <translation id="6122191549521593678">Prisijungęs</translation>
@@ -525,6 +527,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6910312834584889076">Skaitytuvo dangtis atidarytas. Uždarykite dangtį ir bandykite dar kartą.</translation>
 <translation id="6911383237894364323">Nepavyko prisijungti prie medijos serverių</translation>
 <translation id="6935486296377631201">Ekrano užsklanda</translation>
+<translation id="6943893908656559156">Nuotolinio ryšio tapatybė (pasirenkama)</translation>
 <translation id="6957231940976260713">Paslaugos pavadinimas</translation>
 <translation id="6961170852793647506">Jei norite pradėti, padėkite dokumentą ant skaitytuvo</translation>
 <translation id="6965382102122355670">Gerai</translation>

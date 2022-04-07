@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">Нападачи понекад имитирају сајтове тако што скоро неприметно измене веб-адресу.</translation>
 <translation id="1028781062521375153">Прикажи детаље</translation>
 <translation id="1030706264415084469"><ph name="URL" /> жели трајно да складишти велике количине података на уређају</translation>
-<translation id="1032854598605920125">Окрените у смеру казаљке на сату</translation>
 <translation id="1033329911862281889">Режим без архивирања вас не чини невидљивим онлајн:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Сајтови и услуге које користите могу да виде посете<ph name="END_LIST_ITEM" />
@@ -2635,6 +2634,7 @@
 <translation id="8277900682056760511">Страница обрађивача плаћања је отворена</translation>
 <translation id="8280630997017109758">11. фиока</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
+<translation id="8281886186245836920">Прескочи</translation>
 <translation id="8282947398454257691">зна јединствени идентификатор уређаја</translation>
 <translation id="8284769179630993263">Управљајте Безбедним прегледањем и другим садржајем у подешавањима Chrome-а</translation>
 <translation id="8286036467436129157">Пријави ме</translation>

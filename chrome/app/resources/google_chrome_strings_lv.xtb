@@ -174,6 +174,7 @@
 <translation id="4600710005438004015">Nevarēja atjaunināt uz jaunāko Chrome versiju, tādēļ jūs nevarēsiet piekļūt jaunākajām funkcijām un drošības labojumiem.</translation>
 <translation id="4627412468266359539">Neobligāti: palīdziet uzlabot Chrome OS Flex funkcijas un veiktspēju, automātiski nosūtot Google serveriem diagnostikas un lietojuma datus.</translation>
 <translation id="4633000520311261472">Lai uzlabotu Chrome drošību, mēs atspējojām dažus paplašinājumus, kas nav norādīti vietnē <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> un, iespējams, tika pievienoti, jums nezinot.</translation>
+<translation id="469553575393225953">No nezināmiem avotiem iegūti paplašinājumi, lietotnes un motīvi var kaitēt ierīcei. Chrome komanda iesaka instalēt tos tikai no Chrome interneta veikala.</translation>
 <translation id="4728575227883772061">Instalācija neizdevās nenoteiktas kļūdas dēļ. Ja Google Chrome pašlaik darbojas, lūdzu, aizveriet to un mēģiniet vēlreiz.</translation>
 <translation id="4747730611090640388">Pārlūkā Chrome var aptuveni noteikt jūsu intereses.  Vēlāk kāda jūsu apmeklēta vietne var pieprasīt pārlūkam Chrome atļauju skatīt jūsu intereses, lai personalizētu jums rādāmās reklāmas.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (ienākošā mDNS datplūsma)</translation>
@@ -215,6 +216,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="5736850870166430177">Ja kādā vietnē tiek mēģināts nozagt jūsu paroli vai ja jūs lejupielādējat kaitīgu failu, Chrome var arī nosūtīt attiecīgos URL, tostarp lapas satura fragmentus, uz funkciju Droša pārlūkošana.</translation>
 <translation id="573759479754913123">Par &amp;Chrome OS</translation>
 <translation id="5756509061973259733">Šajā ierīcē jau pastāv Chrome profils ar šādu kontu.</translation>
+<translation id="5763280521700030406">Pārlūkā Chrome šis fails tika bloķēts, jo tas ir pārāk liels, lai tam varētu veikt drošības pārbaudi. Mēģiniet vēlreiz ar failiem, kuru lielums nepārsniedz 50 MB.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> — Google Chrome Canary</translation>
 <translation id="5804318322022881572">Neizdevās palaist Chrome. Mēģiniet vēlreiz.</translation>
 <translation id="5867197326698922595">Google Chrome mēģina rediģēt paroles.</translation>
@@ -322,8 +324,10 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="8394720698884623075">Vietrāži URL tiek pārbaudīti, salīdzinot ar nedrošo vietņu sarakstu, kas ir saglabāts pārlūkprogrammā Chrome.</translation>
 <translation id="840084489713044809">Pārlūkā Google Chrome tiek mēģināts eksportēt jūsu paroles.</translation>
 <translation id="8416347857511542594">Uzziniet vairāk par reklāmu personalizēšanu pārlūkā Chrome</translation>
+<translation id="8421734018304082652">Pārlūkā Chrome šis fails tika bloķēts, jo tas ir šifrēts. Lūdziet faila īpašniekam to atšifrēt.</translation>
 <translation id="8433638294851456451">Lai nosūtītu numuru no šejienes uz savu Android tālruni, abās ierīcēs pierakstieties pārlūkā Chrome.</translation>
 <translation id="8498858610309223613">Tikko tika piemērots īpašs Google Chrome drošības atjauninājums. Restartējiet tūlīt, un mēs atjaunosim jūsu cilnes.</translation>
+<translation id="8504220326736535258">Pārlūkā Chrome šis fails tika bloķēts, jo tajā ir ļaunprātīga programmatūra.</translation>
 <translation id="8516431725144212809">Jūsu intereses, kas aptuveni noteiktas pārlūkā Chrome</translation>
 <translation id="8521348052903287641">Ienākošo savienojumu kārtula pārlūkam Google Chrome Dev, lai atļautu mDNS datplūsmu.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>

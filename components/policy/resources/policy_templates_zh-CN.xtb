@@ -1123,6 +1123,13 @@
       如果将此政策设置为 <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" />（值为 1），则只有被视为重要安全性或稳定性修复程序的变体可应用于 <ph name="PRODUCT_OS_NAME" />。
 
       如果将此政策设置为 <ph name="VARIATIONS_DISABLED_OPTION_NAME" />（值为 2），则任何变体都不会在登录屏幕应用于浏览器。请注意，我们不建议您使用此模式，因为它可能会妨碍 <ph name="PRODUCT_OS_NAME" />开发者及时提供重要的安全性修复程序。</translation>
+<translation id="2217931577484185673">如果此政策已启用，“安全浏览”功能将会信任您指定的网域。此功能将不会检查这类网域是否含有危险资源（例如钓鱼式攻击、恶意软件或垃圾软件）。“安全浏览”功能的下载保护服务将不会检查托管在这类网域上的下载内容。此功能的密码保护服务将不会检查密码重用情况。
+
+      如果此政策未经设置，系统便会将默认开启的“安全浏览”保护功能应用于所有资源。
+
+      此政策必须设为一个由完全限定域名组成的列表。它不支持正则表达式，也不会将政策中所列域名的子域名添加到许可名单中。
+
+      在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="2221779615493499989">报告已注册的设备上的用户网络状态。
 
       如果此政策设为 false，系统将不会报告这些信息。
@@ -1923,6 +1930,7 @@
 <translation id="3086995894968271156">在 <ph name="PRODUCT_NAME" />中配置 Cast 接收器。</translation>
 <translation id="3087346703976541109">指定 SharedArrayBuffers 可否用在未进行跨域隔离的情境中</translation>
 <translation id="3088557424854005813">认证</translation>
+<translation id="3090283903269516279">停用 <ph name="PRODUCT_OS_NAME" />上的“自适应充电”模式</translation>
 <translation id="3091832372132789233">为主要连接到外部电源的设备的电池充电。</translation>
 <translation id="3092059499596000593">在打印预览中将系统默认打印机设为默认选项</translation>
 <translation id="309416443108680956">此政策用于指定：当通过安全令牌（例如使用智能卡）验证身份的用户在会话过程中移除该令牌时，会发生什么情况。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />：不会发生任何情况。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />：屏幕会被锁定，直到用户重新验证身份为止。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />：会话会被结束，并且用户会被强制退出。如果此政策未设置，它将默认等同于已设为 <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />。</translation>
@@ -2429,6 +2437,7 @@
       * 如果您选择 <ph name="PRINTERS_ALLOW_ALL" />（值为 2），系统会显示所有打印机
 
       如果您未设置此政策，系统将会使用 <ph name="PRINTERS_ALLOW_ALL" />。</translation>
+<translation id="3695204334462456702">基于零配置 (mDNS + DNS-SD) 的协议目的地（已弃用）</translation>
 <translation id="3695706037816556327">当用户从 <ph name="PRODUCT_OS_NAME" />设备上移除安全令牌（例如智能卡）时，系统会执行什么操作。</translation>
 <translation id="3700193037252896716">应以怎样的频率定期重新启动设备。</translation>
 <translation id="3700318587977845664">应以何种频率检查是否有可用更新。</translation>
@@ -2717,6 +2726,13 @@
       如果此政策已停用或未设置，系统便不会为相应设备开启 <ph name="PLUGIN_VM_NAME" />。</translation>
 <translation id="3973371701361892765">一律不自动隐藏任务栏</translation>
 <translation id="3977304360459208438">在传输层安全协议 (TLS) 中使用 3DES 加密套件的默认设置</translation>
+<translation id="3978606026906763896">如果此政策已停用，定位到“<ph name="BLANK_PAGE_NAME" />”页面的弹出式窗口将能够（通过 JavaScript）访问请求打开弹出式窗口的页面。
+
+      如果此政策已启用或未设置，<ph name="WINDOW_OPENER_PROPERTY" /> 属性会被设为 <ph name="NULL_VALUE" />，除非锚标记指定了 <ph name="REL_OPENER_ATTRIBUTE" />。
+
+      此政策已在 <ph name="PRODUCT_NAME" /> 102 版中移除。
+
+      请参阅 https://chromestatus.com/feature/6140064063029248。</translation>
 <translation id="3979738908158213640">有权在 SAML 身份验证过程中执行设备认证的网址</translation>
 <translation id="3984028218719007910">确定 <ph name="PRODUCT_OS_NAME" />是否要在退出后保留本地帐号数据。如果将此政策设置为 true，<ph name="PRODUCT_OS_NAME" />就不会持续保留帐号，且会在退出后舍弃用户会话中的所有数据。如果未配置此政策或将其设置为 false，设备就会保留（经过加密的）本地用户数据。</translation>
 <translation id="398884292557092447">如果此政策设为 True 或未设置，则用户可以控制界面中的信用卡信息自动填充建议。
@@ -3713,6 +3729,25 @@
       如果此政策设为 False 或未设置，系统将关闭“统一桌面”，而且用户无法开启该功能。</translation>
 <translation id="5255162913209987122">可推荐</translation>
 <translation id="5257395339965216304">托管的应用数据</translation>
+<translation id="5263649486910778308">此政策提供了一种方式，以覆盖浏览器用来实现 First-Party Set 功能的集合列表。
+
+      浏览器的 First-Party Set 列表中的每个集合都必须符合 First-Party Set 要求。
+      每个 First-Party Set 都应包含一个所有者网站以及一个或多个成员网站。无论是所有者网站还是成员网站，每个 First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网域。
+      此外，First-Party Set 中的每个网站都必须互不相同，也就是说：同一个网站不能既是所有者又是成员，也不能重复列为 First-Party Set 的成员。
+      如需详细了解 First-Party Set，请参阅 https://github.com/privacycg/first-party-sets。
+
+      如果此政策设为一个空字典，浏览器会使用 First-Party Set 的公开列表。
+
+      对于 <ph name="REPLACEMENTS" /> 列表所含的 First-Party Set 中的所有网站，如果某个网站也存在于浏览器列表所含的 First-Party Set 中，该网站便会被从浏览器的 First-Party Set 中移除。
+      之后，此政策的 First-Party Set 将被添加到浏览器的 First-Party Set 列表中。
+
+      对于 <ph name="ADDITIONS" /> 列表所含的 First-Party Set 中的所有网站，如果某个网站也存在于浏览器列表所含的 First-Party Set 中，浏览器的 First-Party Set 便会被更新，以将新的 First-Party Set 添加到浏览器的列表中。待浏览器的列表更新完毕后，此政策的 First-Party Set 将被添加到浏览器的 First-Party Set 列表中。
+
+      浏览器的 First-Party Set 列表要求其中的所有网站都不得出现在多个集合中。<ph name="REPLACEMENTS" /> 列表和 <ph name="ADDITIONS" /> 列表也都有这样的要求。同理，同一个网站不能既出现在 <ph name="REPLACEMENTS" /> 列表中又出现在 <ph name="ADDITIONS" /> 列表中。
+
+      通配符 (*) 无法用作政策值，也无法用于这些列表所含的任何 First-Party Set 中。
+
+      此政策提供的所有集合都必须是有效的 First-Party Set；如果无效，则会触发相应的错误。</translation>
 <translation id="5266173014392157048">此政策已被弃用，请改用“<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />”政策。
 
       通过设置此政策，您可以指定 <ph name="PRODUCT_NAME" /> 可将用户凭据委派给哪台/哪些服务器。若要指定多个服务器名称，请用英文逗号分隔。允许使用通配符 <ph name="WILDCARD_VALUE" />。
@@ -4195,6 +4230,7 @@
 <translation id="5815990343032461023">旧行为：自助服务终端 Chrome 应用将由扩展程序系统使用扩展程序清单中的更新网址进行更新，以及由缓存管理器使用政策提供的更新网址进行更新</translation>
 <translation id="582857022372205358">启用短边双面打印</translation>
 <translation id="5830196507442186669">允许搭载 <ph name="PRODUCT_OS_NAME" />的设备使用 <ph name="BOREALIS_NAME" /></translation>
+<translation id="5831286647961890695">启用 <ph name="PRODUCT_OS_NAME" />上的“自适应充电”模式</translation>
 <translation id="5832274826894536455">已弃用的政策</translation>
 <translation id="5835253272509953988">如果此政策已启用，用户便可让 <ph name="PRODUCT_NAME" /> 检查所输入的用户名和密码是否已泄露。
 
@@ -6209,6 +6245,7 @@
 
       <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> 用于指明会触发网址格式检查的最少数据量（以字节为单位）。这意味着，如果所复制数据的大小小于此字段中指定的值，系统将允许被禁网址向剪贴板中写入数据。如果该字段未设置，默认值为 100 字节。
       </translation>
+<translation id="8035570672225663428">启用“自适应充电”模式以暂缓充电进程，进而延长电池寿命</translation>
 <translation id="8044493735196713914">报告设备引导模式</translation>
 <translation id="80453040817068401">启用 <ph name="LACROS_NAME" /> 浏览器</translation>
 <translation id="804619600634661088">允许进行远程调试</translation>
@@ -6246,6 +6283,10 @@
 <translation id="8099880303030573137">使用电池供电时的闲置延迟时间</translation>
 <translation id="8101381354936029836">政策原子组：</translation>
 <translation id="8102913158860568230">默认 mediastream 设置</translation>
+<translation id="8103563905615378194">指定是否允许启用“自适应充电”模式以暂缓充电进程，进而延长电池寿命。
+
+      当设备已连接到交流电源时，“自适应充电”模式会评估是否应暂缓充电进程以延长电池寿命。如果“自适应充电”模式暂缓充电进程，电池电量将会保持在某个水平（例如 80%），并会在用户需要时充到 100%。
+      如果此政策设为 True 或未设置，“自适应充电”模式将会启用，并会暂缓充电进程以延长电池寿命。如果此政策设为 False，“自适应充电”模式将不会影响充电进程。</translation>
 <translation id="8104962233214241919">自动选择这些网站的客户端证书</translation>
 <translation id="8114382167597081590">不强制启用 YouTube 受限模式</translation>
 <translation id="8117921351531866504">该政策让您能够设置是否允许网站检查用户有无已保存的付款方式。

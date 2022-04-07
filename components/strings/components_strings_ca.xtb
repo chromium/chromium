@@ -13,7 +13,6 @@
 <translation id="1024111578869940408">De vegades, els atacants imiten llocs web introduint canvis difícils de veure a l'adreça web.</translation>
 <translation id="1028781062521375153">Mostra els detalls</translation>
 <translation id="1030706264415084469"><ph name="URL" /> vol emmagatzemar una gran quantitat de dades al dispositiu de manera permanent</translation>
-<translation id="1032854598605920125">Gira en sentit horari</translation>
 <translation id="1033329911862281889">Amb el mode d'incògnit no ets invisible en línia:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Els llocs web i els serveis que utilitzen poden veure les visites.<ph name="END_LIST_ITEM" />
@@ -1975,7 +1974,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6468485451923838994">Fonts</translation>
 <translation id="647261751007945333">Polítiques de dispositius</translation>
 <translation id="6476284679642588870">Gestiona les formes de pagament</translation>
-<translation id="6486200200930923183">Pel·lícules documentals</translation>
+<translation id="6486200200930923183">Documentals</translation>
 <translation id="6489534406876378309">Comença a penjar els errors</translation>
 <translation id="6493924760403974580">Aquesta aplicació només admet aquesta mida.</translation>
 <translation id="6494750904506170417">finestres emergents i redireccions</translation>
@@ -2526,6 +2525,7 @@ Detalls addicionals:
 <translation id="7995512525968007366">No especificat</translation>
 <translation id="7998269595945679889">Botó Obre una pestanya d'incògnit. Prem Retorn per obrir una pestanya d'incògnit nova i navegar en privat.</translation>
 <translation id="800218591365569300">Prova de tancar altres pestanyes o programes per alliberar memòria.</translation>
+<translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8009225694047762179">Gestiona les contrasenyes</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Aquesta targeta i l'adreça de facturació associada es desaran. La podràs utilitzar quan tinguis la sessió iniciada a <ph name="USER_EMAIL" />.}other{Aquestes targetes i les adreces de facturació associades es desaran. Les podràs utilitzar quan tinguis la sessió iniciada a <ph name="USER_EMAIL" />.}}</translation>
@@ -2626,6 +2626,7 @@ Detalls addicionals:
 <translation id="8277900682056760511">El full del gestor de pagaments està obert</translation>
 <translation id="8280630997017109758">Safata 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
+<translation id="8281886186245836920">Omet</translation>
 <translation id="8282947398454257691">Saber l'identificador únic del dispositiu</translation>
 <translation id="8284769179630993263">Gestiona Navegació segura i altres opcions de la configuració de Chrome</translation>
 <translation id="8286036467436129157">Inicia la sessió</translation>

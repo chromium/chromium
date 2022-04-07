@@ -174,6 +174,7 @@ tetapan OS Chrome<ph name="LINK_END" /> anda</translation>
 <translation id="4600710005438004015">Chrome tidak dapat dikemas kini kepada versi terkini, maka anda terlepas ciri baharu dan penyelesaian keselamatan.</translation>
 <translation id="4627412468266359539">Bantu kami memperbaik ciri dan prestasi Chrome OS Flex dengan menghantar data diagnostik dan penggunaan kepada Google secara automatik.</translation>
 <translation id="4633000520311261472">Untuk menjadikan Chrome lebih selamat, kami melumpuhkan beberapa sambungan yang tidak disenaraikan dalam <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dan mungkin telah ditambahkan tanpa pengetahuan anda.</translation>
+<translation id="469553575393225953">Sambungan, apl dan tema daripada sumber yang tidak diketahui boleh membahayakan peranti anda. Chrome mengesyorkan agar memasang fail daripada Gedung Web Chrome sahaja</translation>
 <translation id="4728575227883772061">Pemasangan gagal disebabkan ralat tidak dinyatakan. Jika Google Chrome kini dijalankan, sila tutupnya dan cuba semula.</translation>
 <translation id="4747730611090640388">Chrome boleh menganggarkan minat anda.  Kemudian, laman yang anda lawati boleh meminta Chrome melihat minat anda untuk memeribadikan iklan yang anda lihat.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -213,6 +214,7 @@ tetapan OS Chrome<ph name="LINK_END" /> anda</translation>
 <translation id="5736850870166430177">Jika tapak cuba mencuri kata laluan anda atau apabila anda memuat turun fail yang berbahaya, Chrome juga mungkin menghantar URL, termasuk sedikit kandungan halaman, kepada Penyemakan Imbas Selamat</translation>
 <translation id="573759479754913123">Mengenai Chrome OS</translation>
 <translation id="5756509061973259733">Profil Chrome dengan akaun ini telah pun wujud pada peranti ini</translation>
+<translation id="5763280521700030406">Chrome menyekat fail ini kerana terlalu besar untuk semakan keselamatan. Cuba lagi dengan fail hingga 50 MB</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Tidak dapat melancarkan Chrome. Cuba lagi.</translation>
 <translation id="5867197326698922595">Google Chrome cuba mengedit kata laluan.</translation>
@@ -321,8 +323,10 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="8394720698884623075">Semak URL melalui perbandingan dengan senarai laman tidak selamat yang disimpan dalam Chrome</translation>
 <translation id="840084489713044809">Google Chrome mahu mengeksport kata laluan anda.</translation>
 <translation id="8416347857511542594">Ketahui lebih lanjut tentang pemeribadian iklan dalam Chrome</translation>
+<translation id="8421734018304082652">Chrome menyekat fail ini kerana fail ini disulitkan. Minta pemilik fail ini untuk menyahsulitnya</translation>
 <translation id="8433638294851456451">Untuk menghantar nombor dari sini ke telefon Android anda, log masuk ke Chrome pada kedua-dua peranti.</translation>
 <translation id="8498858610309223613">Kemas kini keselamatan khas untuk Google Chrome baru sahaja diterapkan. Mulakan semula sekarang dan kami akan memulihkan tab anda.</translation>
+<translation id="8504220326736535258">Chrome menyekat fail ini kerana mengandungi perisian hasad</translation>
 <translation id="8516431725144212809">Minat anda seperti yang dianggarkan oleh Chrome</translation>
 <translation id="8521348052903287641">Peraturan masuk bagi Google Chrome Dev untuk membenarkan trafik mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>

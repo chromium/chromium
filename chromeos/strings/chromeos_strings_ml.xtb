@@ -114,7 +114,6 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="2161394479394250669">പ്രിന്റ് ജോലി റദ്ദാക്കുക</translation>
 <translation id="2180197493692062006">എന്തോ കുഴപ്പമുണ്ടായി. ആപ്പ് വീണ്ടും തുറക്കാൻ ശ്രമിക്കുക.</translation>
-<translation id="2201770616342964496">ലോക്കൽ ഐഡന്റിറ്റി</translation>
 <translation id="2209788852729124853">ട്രാഫിക് കൗണ്ടറുകൾ റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="2212733584906323460">നെയിം റെസല്യൂഷൻ</translation>
 <translation id="2217935453350629363">നിലവിലെ വേഗത</translation>
@@ -262,6 +261,7 @@
 <translation id="4170180284036919717">ഫോട്ടോ എടുക്കുക</translation>
 <translation id="4170700058716978431">പരാജയപ്പെട്ടു</translation>
 <translation id="4176463684765177261">അപ്രാപ്തമാക്കി</translation>
+<translation id="4176659219503619100">നിയന്ത്രണ പാനൽ</translation>
 <translation id="4213104098953699324">USB കീബോർഡ്</translation>
 <translation id="4227825898293920515">പാസ്‌വേഡ് <ph name="TIME" /> സമയത്തിനുള്ളിൽ കാലഹരണപ്പെടും</translation>
 <translation id="4238516577297848345">പ്രിന്റ് ജോലികളൊന്നും പുരോഗമിക്കുന്നില്ല</translation>
@@ -305,7 +305,6 @@
 <translation id="4593212453765072419">പ്രോക്‌സി പ്രാമാണീകരണം ആവശ്യമാണ്</translation>
 <translation id="4609350030397390689">കീബോർഡ് തെളിച്ചം കുറയ്‌ക്കുക</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, ആകെയുള്ള <ph name="TOTAL_PAGE_NUMBER" /> എണ്ണത്തിൽ <ph name="PRINTED_PAGE_NUMBER" /> എണ്ണം. പ്രിന്റ് ജോലി റദ്ദാക്കാൻ എന്റർ അമർത്തുക.</translation>
-<translation id="4627645661474370390">റിമോട്ട് ഐഡന്റിറ്റി</translation>
 <translation id="463791356324567266">സ്‌കാൻ ചെയ്യൽ റദ്ദാക്കുന്നു...</translation>
 <translation id="4646949265910132906">സുരക്ഷിതമായ വൈഫൈ കണക്ഷൻ</translation>
 <translation id="4650608062294027130">വലത് Shift കീ</translation>

@@ -114,7 +114,6 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Кайталоо</translation>
 <translation id="2161394479394250669">Басып чыгарууну токтотуу</translation>
 <translation id="2180197493692062006">Бир жерден ката кетти. Колдонмону кайрадан ачып көрүңүз.</translation>
-<translation id="2201770616342964496">Жергиликтүү идентификация</translation>
 <translation id="2209788852729124853">Трафикти эсептегичтерди баштапкы абалга келтирүү</translation>
 <translation id="2212733584906323460">Аталышын чечмелөө</translation>
 <translation id="2217935453350629363">Учурдагы ылдамдык</translation>
@@ -262,6 +261,7 @@
 <translation id="4170180284036919717">Сүрөткө тартуу</translation>
 <translation id="4170700058716978431">АТКАРЫЛГАН ЖОК</translation>
 <translation id="4176463684765177261">Өчүк</translation>
+<translation id="4176659219503619100">Башкаруу панели</translation>
 <translation id="4213104098953699324">USB баскычтобу</translation>
 <translation id="4227825898293920515">Сырсөздүн мөөнөтү <ph name="TIME" /> кийин бүтөт</translation>
 <translation id="4238516577297848345">Аткарылып жаткан иш жок</translation>
@@ -305,7 +305,6 @@
 <translation id="4593212453765072419">Проксиде аныктыгын текшерүү талап кылынат</translation>
 <translation id="4609350030397390689">Баскычтоптун жарыктыгын азайтуу</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> ичинен <ph name="PRINTED_PAGE_NUMBER" /> Басып чыгарууну токтотуу үчүн "Enter" баскычын басыңыз.</translation>
-<translation id="4627645661474370390">Алыскы идентификация</translation>
 <translation id="463791356324567266">Скандоо токтотулууда...</translation>
 <translation id="4646949265910132906">Коопсуз WiFi туташуусу</translation>
 <translation id="4650608062294027130">Оң жактагы Shift баскычы</translation>
@@ -432,6 +431,7 @@
 <translation id="5866840822086176774">Абдан күчтүү</translation>
 <translation id="588258955323874662">Толук экран</translation>
 <translation id="5895138241574237353">Өчүрүп күйгүзүү</translation>
+<translation id="5903200662178656908">Түзмөк баскычтоп менен чычкандан турат.</translation>
 <translation id="5916084858004523819">Тыюу салынат</translation>
 <translation id="5916664084637901428">Күйүк</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Файл ийгиликтүү скандалып, <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> папкасына сакталды.}other{Файлдар ийгиликтүү скандалып, <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> папкасына сакталды.}}</translation>
@@ -452,6 +452,7 @@
 <translation id="6104112872696127344">Скандоо токтотулду</translation>
 <translation id="6106186594183574873">Бүтүрүү үчүн эски сырсөзүңүздү киргизиңиз</translation>
 <translation id="6108689792487843350">Шлюз жеткиликсиз</translation>
+<translation id="6112878310391905610">Бул параметрди администраторлоруңуз башкарат</translation>
 <translation id="6113701710518389813">Өйдө жебе</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, дагы +<ph name="NUMBER" /> альбом</translation>
 <translation id="6122191549521593678">Онлайн</translation>

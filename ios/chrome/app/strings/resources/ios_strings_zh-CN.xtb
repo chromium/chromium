@@ -168,6 +168,7 @@
 <translation id="2421044535038393232">继续修改</translation>
 <translation id="2434405374328098816">您已经在 <ph name="WEBSITE" /> 上保存了“<ph name="USERNAME" />”的密码</translation>
 <translation id="2435457462613246316">显示密码</translation>
+<translation id="2469960372084740698">关闭“安全浏览”功能？</translation>
 <translation id="2473876017985765807">您已经保存了在 <ph name="WEBSITE" /> 上使用的密码</translation>
 <translation id="2476359652512522418">未选中</translation>
 <translation id="2497852260688568942">您的管理员已停用同步</translation>
@@ -313,6 +314,7 @@
 <translation id="3691593122358196899">已将书签添加到“<ph name="FOLDER_TITLE" />”</translation>
 <translation id="369349502275246497">提示保存密码</translation>
 <translation id="3709582977625132201">标记为未读</translation>
+<translation id="371230970611282515">预测危险事件并在此类事件发生前向您发出警告。</translation>
 <translation id="3740397331642243698">在 Google Chrome 中以无痕模式打开输入的网址。</translation>
 <translation id="3762232513783804601">专为 iPad 打造</translation>
 <translation id="3771033907050503522">无痕模式标签页</translation>
@@ -528,6 +530,7 @@
 <translation id="5737974891429562743">帐号登录详细信息已过期，请进行更新以开始同步。</translation>
 <translation id="5738887413654608789">这样可让您找到与目前周遭环境相关的网页。</translation>
 <translation id="5758631781033351321">您的阅读清单会显示在此处</translation>
+<translation id="5765456154762864099">菜单 → 设置 → 默认浏览器</translation>
 <translation id="5782227691023083829">正在翻译...</translation>
 <translation id="5791632441210678828">用于对所关注 Feed 进行排序的按钮。</translation>
 <translation id="5802829331520313983">设置…</translation>
@@ -582,6 +585,7 @@
 <translation id="6144589619057374135">在无痕模式下打开 ${url}</translation>
 <translation id="6149061208933997199">使用密码</translation>
 <translation id="6159839020698489198">可选</translation>
+<translation id="6173386249456979368">针对危险的网站、下载内容和扩展程序提供更快速的主动保护。如果发现密码遭遇泄露，系统会向您发出警告。您需要向 Google 发送浏览数据</translation>
 <translation id="6177442314419606057">在 Chrome 中搜索</translation>
 <translation id="6184086493125982861">显示标签页</translation>
 <translation id="6187302354554850004">上次同步时间：<ph name="LAST_USED_TIME" /></translation>
@@ -768,6 +772,7 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="7671141431838911305">安装</translation>
 <translation id="7701040980221191251">无</translation>
+<translation id="7726702057919861819">菜单 → 历史 → 清除浏览数据</translation>
 <translation id="7741325291586284254">新的无痕式标签页</translation>
 <translation id="7765158879357617694">移动</translation>
 <translation id="7772032839648071052">确认密码</translation>
@@ -840,6 +845,7 @@
 <translation id="8386068868580335421">重置</translation>
 <translation id="8407669440184693619">未找到任何用于此网站的密码</translation>
 <translation id="842017693807136194">所用登录身份</translation>
+<translation id="8427613705947111202">菜单 → 设置 → 密码</translation>
 <translation id="8428045167754449968">市/镇</translation>
 <translation id="8428213095426709021">设置</translation>
 <translation id="8428634594422941299">知道了</translation>
