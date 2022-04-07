@@ -11,145 +11,167 @@
  * Event 'loaded' will be fired when the page has been successfully loaded.
  */
 
+/* #js_imports_placeholder */
+
 /**
  * Name of the screen.
  * @type {string}
  */
 const VALUE_PROP_SCREEN_ID = 'ValuePropScreen';
 
-Polymer({
-  is: 'assistant-value-prop',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ */
+const AssistantValuePropBase = Polymer.mixinBehaviors(
+    [OobeI18nBehavior, OobeDialogHostBehavior], Polymer.Element);
 
-  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior],
+/**
+ * @polymer
+ */
+class AssistantValueProp extends AssistantValuePropBase {
+  static get is() {
+    return `assistant-value-prop`;
+  }
 
-  properties: {
+  /* #html_template_placeholder */
+
+  static get properties() {
+    return {
+      /**
+       * Buttons are disabled when the webview content is loading.
+       */
+      buttonsDisabled: {
+        type: Boolean,
+        value: true,
+      },
+
+      /**
+       * The value prop URL template - loaded from loadTimeData.
+       * The template is expected to have '$' instead of the locale.
+       * @private {string}
+       */
+      urlTemplate_: {
+        value:
+            'https://www.gstatic.com/opa-android/oobe/a02187e41eed9e42/v4_omni_$.html',
+      },
+
+      /**
+       * Default url for locale en_us.
+       */
+      defaultUrl: {
+        type: String,
+        value: function() {
+          return this.urlTemplate_.replace('$', 'en_us');
+        }
+      },
+
+      /**
+       * Indicates whether user is minor mode user (e.g. under age of 18).
+       */
+      isMinorMode_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Indicates whether to use same design for accept/decline buttons.
+       */
+      equalWeightButtons_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Used to determine which activity control settings should be shown.
+       */
+      currentConsentStep_: {
+        type: Number,
+        value: 0,
+      },
+    };
+  }
+
+  constructor() {
+    super();
+
     /**
-     * Buttons are disabled when the webview content is loading.
+     * Whether try to reload with the default url when a 404 error occurred.
+     * @type {boolean}
+     * @private
      */
-    buttonsDisabled: {
-      type: Boolean,
-      value: true,
-    },
+    this.reloadWithDefaultUrl_ = false;
 
     /**
-     * Default url for locale en_us.
+     * Whether an error occurs while the webview is loading.
+     * @type {boolean}
+     * @private
      */
-    defaultUrl: {
-      type: String,
-      value() {
-        return this.urlTemplate_.replace('$', 'en_us');
-      }
-    },
+    this.loadingError_ = false;
 
     /**
-     * Indicates whether user is minor mode user (e.g. under age of 18).
+     * The value prop webview object.
+     * @type {Object}
+     * @private
      */
-    isMinorMode_: {
-      type: Boolean,
-      value: false,
-    },
+    this.valuePropView_ = null;
 
     /**
-     * Indicates whether to use same design for accept/decline buttons.
+     * Whether the screen has been initialized.
+     * @type {boolean}
+     * @private
      */
-    equalWeightButtons_: {
-      type: Boolean,
-      value: false,
-    },
+    this.initialized_ = false;
 
     /**
-     * Used to determine which activity control settings should be shown.
+     * Whether the response header has been received for the value prop view.
+     * @type {boolean}
+     * @private
      */
-    currentConsentStep_: {
-      type: Number,
-      value: 0,
-    },
-  },
+    this.headerReceived_ = false;
+
+    /**
+     * Whether the webview has been successfully loaded.
+     * @type {boolean}
+     * @private
+     */
+    this.webViewLoaded_ = false;
+
+    /**
+     * Whether all the setting zippy has been successfully loaded.
+     * @type {boolean}
+     * @private
+     */
+    this.settingZippyLoaded_ = false;
+
+    /**
+     * Whether all the consent text strings has been successfully loaded.
+     * @type {boolean}
+     * @private
+     */
+    this.consentStringLoaded_ = false;
+
+    /**
+     * Whether the screen has been shown to the user.
+     * @type {boolean}
+     * @private
+     */
+    this.screenShown_ = false;
+
+    /**
+     * Sanitizer used to sanitize html snippets.
+     * @type {HtmlSanitizer}
+     * @private
+     */
+    this.sanitizer_ = new HtmlSanitizer();
+
+    /** @private {?assistant.BrowserProxy} */
+    this.browserProxy_ = assistant.BrowserProxyImpl.getInstance();
+  }
 
   setUrlTemplateForTesting(url) {
     this.urlTemplate_ = url;
-  },
-
-  /**
-   * The value prop URL template - loaded from loadTimeData.
-   * The template is expected to have '$' instead of the locale.
-   * @private {string}
-   */
-  urlTemplate_:
-      'https://www.gstatic.com/opa-android/oobe/a02187e41eed9e42/v4_omni_$.html',
-
-  /**
-   * Whether try to reload with the default url when a 404 error occurred.
-   * @type {boolean}
-   * @private
-   */
-  reloadWithDefaultUrl_: false,
-
-  /**
-   * Whether an error occurs while the webview is loading.
-   * @type {boolean}
-   * @private
-   */
-  loadingError_: false,
-
-  /**
-   * The value prop webview object.
-   * @type {Object}
-   * @private
-   */
-  valuePropView_: null,
-
-  /**
-   * Whether the screen has been initialized.
-   * @type {boolean}
-   * @private
-   */
-  initialized_: false,
-
-  /**
-   * Whether the response header has been received for the value prop view.
-   * @type {boolean}
-   * @private
-   */
-  headerReceived_: false,
-
-  /**
-   * Whether the webview has been successfully loaded.
-   * @type {boolean}
-   * @private
-   */
-  webViewLoaded_: false,
-
-  /**
-   * Whether all the setting zippy has been successfully loaded.
-   * @type {boolean}
-   * @private
-   */
-  settingZippyLoaded_: false,
-
-  /**
-   * Whether all the consent text strings has been successfully loaded.
-   * @type {boolean}
-   * @private
-   */
-  consentStringLoaded_: false,
-
-  /**
-   * Whether the screen has been shown to the user.
-   * @type {boolean}
-   * @private
-   */
-  screenShown_: false,
-
-  /**
-   * Sanitizer used to sanitize html snippets.
-   * @type {HtmlSanitizer}
-   * @private
-   */
-  sanitizer_: new HtmlSanitizer(),
-
-  /** @private {?assistant.BrowserProxy} */
-  browserProxy_: null,
+  }
 
   /**
    * On-tap event handler for skip button.
@@ -162,7 +184,7 @@ Polymer({
     }
     this.buttonsDisabled = true;
     this.browserProxy_.userActed(VALUE_PROP_SCREEN_ID, ['skip-pressed']);
-  },
+  }
 
   /**
    * On-tap event handler for next button.
@@ -175,12 +197,7 @@ Polymer({
     }
     this.buttonsDisabled = true;
     this.browserProxy_.userActed(VALUE_PROP_SCREEN_ID, ['next-pressed']);
-  },
-
-  /** @override */
-  created() {
-    this.browserProxy_ = assistant.BrowserProxyImpl.getInstance();
-  },
+  }
 
   /**
    * Sets learn more content text and shows it as overlay dialog.
@@ -199,7 +216,7 @@ Polymer({
 
     this.$['learn-more-overlay'].showModal();
     this.$['overlay-close-button'].focus();
-  },
+  }
 
   /**
    * Hides overlay dialog.
@@ -210,13 +227,14 @@ Polymer({
       this.lastFocusedElement.focus();
       this.lastFocusedElement = null;
     }
-  },
+  }
 
   /**
    * Reloads value prop page by fetching setting zippy and consent string.
    */
   reloadPage() {
-    this.fire('loading');
+    this.dispatchEvent(
+        new CustomEvent('loading', {bubbles: true, composed: true}));
 
     if (this.initialized_) {
       this.browserProxy_.userActed(VALUE_PROP_SCREEN_ID, ['reload-requested']);
@@ -227,7 +245,7 @@ Polymer({
     this.reloadWebView();
     this.buttonsDisabled = true;
     this.currentConsentStep_ = 0;
-  },
+  }
 
   /**
    * Reloads value prop animation webview.
@@ -240,15 +258,16 @@ Polymer({
                      .replace('-', '_')
                      .toLowerCase();
     this.valuePropView_.src = this.urlTemplate_.replace('$', locale);
-  },
+  }
 
   /**
    * Handles event when value prop webview cannot be loaded.
    */
   onWebViewErrorOccurred(details) {
-    this.fire('error');
+    this.dispatchEvent(
+        new CustomEvent('error', {bubbles: true, composed: true}));
     this.loadingError_ = true;
-  },
+  }
 
   /**
    * Handles event when value prop webview is loaded.
@@ -270,7 +289,7 @@ Polymer({
     if (this.settingZippyLoaded_ && this.consentStringLoaded_) {
       this.onPageLoaded();
     }
-  },
+  }
 
   /**
    * Handles event when webview request headers received.
@@ -290,7 +309,7 @@ Polymer({
     } else if (details.statusCode != '200') {
       this.onWebViewErrorOccurred();
     }
-  },
+  }
 
   /**
    * Reload the page with the given consent string text data.
@@ -311,7 +330,7 @@ Polymer({
     if (this.settingZippyLoaded_ && this.webViewLoaded_) {
       this.onPageLoaded();
     }
-  },
+  }
 
   /**
    * Add subtitles and setting zippys with given data.
@@ -337,11 +356,12 @@ Polymer({
     // `isMinorMode` is the same for all data in `zippy_data`. We could use the
     // first one and set `isMinorMode_` flag.
     this.isMinorMode_ = zippy_data[0][0]['isMinorMode'];
-    for (var i in zippy_data) {
+    for (let i in zippy_data) {
       this.addSubtitle_(zippy_data[i][0], i);
-      for (var j in zippy_data[i]) {
-        var data = zippy_data[i][j];
-        var zippy = document.createElement('setting-zippy');
+      for (let j in zippy_data[i]) {
+        const data = zippy_data[i][j];
+        let zippy = document.createElement('setting-zippy');
+        // TODO(crbug.com/1313994) - Remove hard coded colors in OOBE
         let background = this.isMinorMode_ ? '#e8f0fe' /* gblue50 */ : 'white';
         zippy.setAttribute(
             'icon-src',
@@ -354,20 +374,20 @@ Polymer({
           zippy.setAttribute('card-style', true);
         }
 
-        var title = document.createElement('div');
+        let title = document.createElement('div');
         title.slot = 'title';
         title.innerHTML = this.sanitizer_.sanitizeHtml(data['name']);
         zippy.appendChild(title);
 
-        var content = document.createElement('div');
+        let content = document.createElement('div');
         content.slot = 'content';
 
-        var description = document.createElement('div');
+        let description = document.createElement('div');
         description.innerHTML =
             this.sanitizer_.sanitizeHtml(data['description']);
         description.innerHTML += '&ensp;';
 
-        var learnMoreLink = document.createElement('a');
+        let learnMoreLink = document.createElement('a');
         learnMoreLink.textContent = data['popupLink'];
         learnMoreLink.setAttribute('href', 'javascript:void(0)');
         learnMoreLink.onclick =
@@ -381,7 +401,7 @@ Polymer({
         content.appendChild(description);
 
         if (this.isMinorMode_) {
-          var additionalInfo = document.createElement('div');
+          let additionalInfo = document.createElement('div');
           additionalInfo.innerHTML =
               this.sanitizer_.sanitizeHtml(data['additionalInfo']);
           content.appendChild(document.createElement('br'));
@@ -398,39 +418,40 @@ Polymer({
     if (this.consentStringLoaded_ && this.webViewLoaded_) {
       this.onPageLoaded();
     }
-  },
+  }
 
   /**
    * Add a subtitle for step with given data.
    */
   addSubtitle_(data, step) {
-    var subtitle = document.createElement('div');
+    let subtitle = document.createElement('div');
     subtitle.setAttribute('step', step);
     if (this.isMinorMode_) {
-      var title = document.createElement('div');
+      let title = document.createElement('div');
       title.innerHTML = this.sanitizer_.sanitizeHtml(data['title']);
       title.classList.add('subtitle-text');
       subtitle.appendChild(title);
 
-      var username = document.createElement('div');
+      let username = document.createElement('div');
       username.innerHTML = this.sanitizer_.sanitizeHtml(data['identity']);
       username.classList.add('username-text');
       subtitle.appendChild(username);
     }
-    var message = document.createElement('div');
+    let message = document.createElement('div');
     message.innerHTML = this.sanitizer_.sanitizeHtml(data['intro']);
     message.classList.add(
         this.isMinorMode_ ? 'subtitle-message-text-minor' :
                             'subtitle-message-text');
     subtitle.appendChild(message);
     this.$['subtitle-container'].appendChild(subtitle);
-  },
+  }
 
   /**
    * Handles event when all the page content has been loaded.
    */
   onPageLoaded() {
-    this.fire('loaded');
+    this.dispatchEvent(
+        new CustomEvent('loaded', {bubbles: true, composed: true}));
 
     // The webview animation only starts playing when it is focused (in order
     // to make sure the animation and the caption are in sync).
@@ -444,7 +465,7 @@ Polymer({
       this.browserProxy_.screenShown(VALUE_PROP_SCREEN_ID);
       this.screenShown_ = true;
     }
-  },
+  }
 
   /**
    * Signal from host to show the screen.
@@ -462,7 +483,7 @@ Polymer({
       this.reloadPage();
       this.initialized_ = true;
     }
-  },
+  }
 
   /**
    * Update the screen to show the next settings with updated subtitle and
@@ -474,7 +495,7 @@ Polymer({
     this.showContentForStep_(this.currentConsentStep_);
     this.buttonsDisabled = false;
     this.$['next-button'].focus();
-  },
+  }
 
   /**
    * Update visibility of subtitles and setting zippys for a given step.
@@ -487,7 +508,7 @@ Polymer({
     for (let zippy of this.$['consents-container'].children) {
       zippy.hidden = zippy.getAttribute('step') != step;
     }
-  },
+  }
 
   initializeWebview_(webview) {
     const requestFilter = {urls: ['<all_urls>'], types: ['main_frame']};
@@ -498,12 +519,14 @@ Polymer({
     webview.addEventListener(
         'contentload', details => this.onWebViewContentLoad(details));
     webview.addContentScripts([webviewStripLinksContentScript]);
-  },
+  }
 
   /**
    * Returns the webview animation container.
    */
   getAnimationContainer() {
     return this.$['animation-container'];
-  },
-});
+  }
+}
+
+customElements.define(AssistantValueProp.is, AssistantValueProp);
