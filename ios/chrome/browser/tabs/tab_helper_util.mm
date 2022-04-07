@@ -30,8 +30,8 @@
 #import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_tab_helper.h"
 #import "ios/chrome/browser/download/ar_quick_look_tab_helper.h"
 #import "ios/chrome/browser/download/download_manager_tab_helper.h"
-#import "ios/chrome/browser/download/mobileconfig_tab_helper.h"
 #import "ios/chrome/browser/download/pass_kit_tab_helper.h"
+#import "ios/chrome/browser/download/safari_download_tab_helper.h"
 #import "ios/chrome/browser/download/vcard_tab_helper.h"
 #include "ios/chrome/browser/favicon/favicon_service_factory.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
@@ -183,7 +183,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   // Download tab helpers.
   ARQuickLookTabHelper::CreateForWebState(web_state);
   DownloadManagerTabHelper::CreateForWebState(web_state);
-  MobileConfigTabHelper::CreateForWebState(web_state);
+  SafariDownloadTabHelper::CreateForWebState(web_state);
   PassKitTabHelper::CreateForWebState(web_state);
   VcardTabHelper::CreateForWebState(web_state);
 

@@ -64,8 +64,8 @@
 #import "ios/chrome/browser/ui/default_promo/tailored_promo_coordinator.h"
 #import "ios/chrome/browser/ui/download/ar_quick_look_coordinator.h"
 #import "ios/chrome/browser/ui/download/features.h"
-#import "ios/chrome/browser/ui/download/mobileconfig_coordinator.h"
 #import "ios/chrome/browser/ui/download/pass_kit_coordinator.h"
+#import "ios/chrome/browser/ui/download/safari_download_coordinator.h"
 #import "ios/chrome/browser/ui/download/vcard_coordinator.h"
 #import "ios/chrome/browser/ui/elements/activity_overlay_coordinator.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_controller_ios.h"
@@ -190,7 +190,8 @@
     FormInputAccessoryCoordinator* formInputAccessoryCoordinator;
 
 // Presents a SFSafariViewController in order to download .mobileconfig file.
-@property(nonatomic, strong) MobileConfigCoordinator* mobileConfigCoordinator;
+@property(nonatomic, strong)
+    SafariDownloadCoordinator* SafariDownloadCoordinator;
 
 // Opens downloaded Vcard.
 @property(nonatomic, strong) VcardCoordinator* vcardCoordinator;
@@ -496,10 +497,10 @@
   self.formInputAccessoryCoordinator.navigator = self;
   [self.formInputAccessoryCoordinator start];
 
-  self.mobileConfigCoordinator = [[MobileConfigCoordinator alloc]
+  self.SafariDownloadCoordinator = [[SafariDownloadCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
-  [self.mobileConfigCoordinator start];
+  [self.SafariDownloadCoordinator start];
 
   self.vcardCoordinator =
       [[VcardCoordinator alloc] initWithBaseViewController:self.viewController
@@ -588,8 +589,8 @@
   [self.formInputAccessoryCoordinator stop];
   self.formInputAccessoryCoordinator = nil;
 
-  [self.mobileConfigCoordinator stop];
-  self.mobileConfigCoordinator = nil;
+  [self.SafariDownloadCoordinator stop];
+  self.SafariDownloadCoordinator = nil;
 
   [self.vcardCoordinator stop];
   self.vcardCoordinator = nil;

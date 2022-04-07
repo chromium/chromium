@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_DOWNLOAD_MOBILECONFIG_COORDINATOR_H_
-#define IOS_CHROME_BROWSER_UI_DOWNLOAD_MOBILECONFIG_COORDINATOR_H_
+#ifndef IOS_CHROME_BROWSER_UI_DOWNLOAD_SAFARI_DOWNLOAD_COORDINATOR_H_
+#define IOS_CHROME_BROWSER_UI_DOWNLOAD_SAFARI_DOWNLOAD_COORDINATOR_H_
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
@@ -23,9 +23,10 @@ enum class DownloadMobileConfigFileUI {
   kMaxValue = kSFSafariViewIsPresented
 };
 
-// Presents SFSafariViewController in order to download .mobileconfig file.
-@interface MobileConfigCoordinator : ChromeCoordinator
+// Presents SFSafariViewController in order to download files that Chrome can't
+// natively open.
+@interface SafariDownloadCoordinator : ChromeCoordinator
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_DOWNLOAD_MOBILECONFIG_COORDINATOR_H_
+#endif  // IOS_CHROME_BROWSER_UI_DOWNLOAD_SAFARI_DOWNLOAD_COORDINATOR_H_

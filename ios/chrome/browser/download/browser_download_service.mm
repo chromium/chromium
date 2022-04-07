@@ -11,8 +11,8 @@
 #include "ios/chrome/browser/download/download_manager_metric_names.h"
 #import "ios/chrome/browser/download/download_manager_tab_helper.h"
 #include "ios/chrome/browser/download/mime_type_util.h"
-#import "ios/chrome/browser/download/mobileconfig_tab_helper.h"
 #import "ios/chrome/browser/download/pass_kit_tab_helper.h"
+#import "ios/chrome/browser/download/safari_download_tab_helper.h"
 #import "ios/chrome/browser/download/vcard_tab_helper.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
@@ -142,10 +142,10 @@ void BrowserDownloadService::OnDownloadCreated(
   } else if (task->GetMimeType() == kMobileConfigurationType &&
              task->GetOriginalUrl().SchemeIsHTTPOrHTTPS()) {
     // SFSafariViewController can only open http and https URLs.
-    MobileConfigTabHelper* tab_helper =
-        MobileConfigTabHelper::FromWebState(web_state);
+    SafariDownloadTabHelper* tab_helper =
+        SafariDownloadTabHelper::FromWebState(web_state);
     if (tab_helper)
-      tab_helper->Download(std::move(task));
+      tab_helper->DownloadMobileConfig(std::move(task));
   } else if (task->GetMimeType() == kVcardMimeType &&
              !base::FeatureList::IsEnabled(kVCardKillSwitch)) {
     VcardTabHelper* tab_helper = VcardTabHelper::FromWebState(web_state);

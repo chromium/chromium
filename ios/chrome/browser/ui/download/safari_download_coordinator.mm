@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/download/mobileconfig_coordinator.h"
+#import "ios/chrome/browser/ui/download/safari_download_coordinator.h"
 
 #import <SafariServices/SafariServices.h>
 
@@ -12,8 +12,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/scoped_observation.h"
 #include "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/download/mobileconfig_tab_helper.h"
-#import "ios/chrome/browser/download/mobileconfig_tab_helper_delegate.h"
+#import "ios/chrome/browser/download/safari_download_tab_helper.h"
+#import "ios/chrome/browser/download/safari_download_tab_helper_delegate.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/web_state_list/web_state_dependency_installer_bridge.h"
@@ -29,9 +29,9 @@
 const char kUmaDownloadMobileConfigFileUI[] =
     "Download.IOSDownloadMobileConfigFileUI";
 
-@interface MobileConfigCoordinator () <DependencyInstalling,
-                                       MobileConfigTabHelperDelegate,
-                                       SFSafariViewControllerDelegate> {
+@interface SafariDownloadCoordinator () <DependencyInstalling,
+                                         SafariDownloadTabHelperDelegate,
+                                         SFSafariViewControllerDelegate> {
   // Bridge which observes WebStateList and alerts this coordinator when this
   // needs to register the Mediator with a new WebState.
   std::unique_ptr<WebStateDependencyInstallerBridge> _dependencyInstallerBridge;
@@ -40,14 +40,12 @@ const char kUmaDownloadMobileConfigFileUI[] =
 // Coordinator used to display modal alerts to the user.
 @property(nonatomic, strong) AlertCoordinator* alertCoordinator;
 
-// SFSafariViewController used to download .mobileconfig file. When a
-// mobileconfig is downloaded from a SFSafariViewController, it's directly send
-// to the Settings app.
+// SFSafariViewController used to download files.
 @property(nonatomic, strong) SFSafariViewController* safariViewController;
 
 @end
 
-@implementation MobileConfigCoordinator
+@implementation SafariDownloadCoordinator
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser {
@@ -71,7 +69,7 @@ const char kUmaDownloadMobileConfigFileUI[] =
 
 #pragma mark - Private
 
-// Presents SFSafariViewController in order to download .mobileconfig file.
+// Presents SFSafariViewController in order to download the file.
 - (void)presentSFSafariViewController:(NSURL*)fileURL {
   base::UmaHistogramEnumeration(
       kUmaDownloadMobileConfigFileUI,
@@ -91,18 +89,18 @@ const char kUmaDownloadMobileConfigFileUI[] =
 #pragma mark - DependencyInstalling methods
 
 - (void)installDependencyForWebState:(web::WebState*)webState {
-  if (MobileConfigTabHelper::FromWebState(webState)) {
-    MobileConfigTabHelper::FromWebState(webState)->set_delegate(self);
+  if (SafariDownloadTabHelper::FromWebState(webState)) {
+    SafariDownloadTabHelper::FromWebState(webState)->set_delegate(self);
   }
 }
 
 - (void)uninstallDependencyForWebState:(web::WebState*)webState {
-  if (MobileConfigTabHelper::FromWebState(webState)) {
-    MobileConfigTabHelper::FromWebState(webState)->set_delegate(nil);
+  if (SafariDownloadTabHelper::FromWebState(webState)) {
+    SafariDownloadTabHelper::FromWebState(webState)->set_delegate(nil);
   }
 }
 
-#pragma mark - MobileConfigTabHelperDelegate
+#pragma mark - SafariDownloadTabHelperDelegate
 
 - (void)presentMobileConfigAlertFromURL:(NSURL*)fileURL {
   if (!fileURL) {
@@ -132,7 +130,7 @@ const char kUmaDownloadMobileConfigFileUI[] =
                 }
                  style:UIAlertActionStyleCancel];
 
-  __weak MobileConfigCoordinator* weakSelf = self;
+  __weak SafariDownloadCoordinator* weakSelf = self;
   [self.alertCoordinator
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_DOWNLOAD_MOBILECONFIG_CONTINUE)

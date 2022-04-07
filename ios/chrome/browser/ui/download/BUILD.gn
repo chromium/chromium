@@ -19,12 +19,12 @@ source_set("download") {
     "download_manager_state_view.mm",
     "download_manager_view_controller.h",
     "download_manager_view_controller.mm",
-    "mobileconfig_coordinator.h",
-    "mobileconfig_coordinator.mm",
     "pass_kit_coordinator.h",
     "pass_kit_coordinator.mm",
     "radial_progress_view.h",
     "radial_progress_view.mm",
+    "safari_download_coordinator.h",
+    "safari_download_coordinator.mm",
     "vcard_coordinator.h",
     "vcard_coordinator.mm",
   ]
@@ -84,8 +84,8 @@ source_set("unit_tests") {
     "download_manager_coordinator_unittest.mm",
     "download_manager_mediator_unittest.mm",
     "download_manager_view_controller_unittest.mm",
-    "mobileconfig_coordinator_unittest.mm",
     "pass_kit_coordinator_unittest.mm",
+    "safari_download_coordinator_unittest.mm",
     "vcard_coordinator_unittest.mm",
   ]
   deps = [
@@ -135,8 +135,8 @@ source_set("eg2_tests") {
   sources = [
     "ar_quick_look_egtest.mm",
     "download_manager_egtest.mm",
-    "mobileconfig_egtest.mm",
     "pass_kit_egtest.mm",
+    "safari_download_egtest.mm",
   ]
 
   deps = [
