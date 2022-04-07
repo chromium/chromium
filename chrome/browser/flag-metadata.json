@@ -1748,7 +1748,7 @@
   {
     "name": "enable-cros-multilingual-typing",
     "owners": [ "tranbaoduy", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 105
   },
   {
     "name": "enable-cros-on-device-grammar-check",
