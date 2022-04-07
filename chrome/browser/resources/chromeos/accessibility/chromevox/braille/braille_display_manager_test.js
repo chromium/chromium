@@ -15,6 +15,9 @@ ChromeVoxBrailleDisplayManagerTest = class extends ChromeVoxNextE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
     await importModule(
+        'BrailleCaptionsBackground',
+        '/chromevox/background/braille_captions_background.js');
+    await importModule(
         'BrailleDisplayManager',
         '/chromevox/braille/braille_display_manager.js');
 

@@ -12,6 +12,7 @@ import {ChromeVoxKbHandler} from '../common/keyboard_handler.js';
 
 import {AutoScrollHandler} from './auto_scroll_handler.js';
 import {BrailleBackground} from './braille_background.js';
+import {BrailleCaptionsBackground} from './braille_captions_background.js';
 import {ChromeVoxBackground} from './classic_background.js';
 import {Color} from './color.js';
 import {CustomAutomationEvent} from './custom_automation_event.js';

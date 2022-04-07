@@ -8,11 +8,7 @@
  * other platforms.
  */
 
-goog.provide('BrailleCaptionsBackground');
-
-goog.require('PanelCommand');
-goog.require('BrailleDisplayState');
-goog.require('ExtensionBridge');
+export const BrailleCaptionsBackground = {};
 
 /**
  * Key set in local storage when this feature is enabled.

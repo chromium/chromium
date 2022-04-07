@@ -5,6 +5,7 @@
 /**
  * @fileoverview Puts text on a braille display.
  */
+import {BrailleCaptionsBackground} from '../background/braille_captions_background.js';
 
 export class BrailleDisplayManager {
   /**

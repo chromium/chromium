@@ -13,6 +13,7 @@ import {ChromeVoxEditableTextBase, TypingEcho} from '../common/editable_text_bas
 import {TtsBackground} from '../common/tts_background.js';
 
 import {BrailleBackground} from './braille_background.js';
+import {BrailleCaptionsBackground} from './braille_captions_background.js';
 import {InjectedScriptLoader} from './injected_script_loader.js';
 import {ChromeVoxPrefs} from './prefs.js';
 
