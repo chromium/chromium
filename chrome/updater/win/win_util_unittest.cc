@@ -4,6 +4,7 @@
 
 #include "chrome/updater/win/win_util.h"
 
+#include <shlobj.h>
 #include <windows.h>
 
 #include <string>
@@ -118,6 +119,21 @@ TEST(WinUtil, ShellExecuteAndWait) {
   EXPECT_HRESULT_SUCCEEDED(ShellExecuteAndWait(
       GetTestProcessCommandLine(GetTestScope()).GetProgram(), {}, {},
       &exit_code));
+  EXPECT_EQ(exit_code, 0UL);
+}
+
+TEST(WinUtil, RunElevated) {
+  // TODO(crbug.com/1314521): Click on UAC prompts in Updater tests that require
+  // elevation
+  if (!::IsUserAnAdmin())
+    return;
+
+  DWORD exit_code = 0;
+  const base::CommandLine test_process_cmd_line =
+      GetTestProcessCommandLine(GetTestScope());
+  EXPECT_HRESULT_SUCCEEDED(
+      RunElevated(test_process_cmd_line.GetProgram(),
+                  test_process_cmd_line.GetArgumentsString(), &exit_code));
   EXPECT_EQ(exit_code, 0UL);
 }
 
