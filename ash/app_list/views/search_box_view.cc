@@ -34,6 +34,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -255,6 +256,10 @@ void SearchBoxView::UpdateModel(bool initiated_by_user) {
   SearchBoxModel* const search_box_model =
       AppListModelProvider::Get()->search_model()->search_box();
 
+  // Randomly select a new placeholder text when we get an empty new query.
+  if (new_query.empty() && features::IsProductivityLauncherEnabled())
+    UpdatePlaceholderTextAndAccessibleName();
+
   if (initiated_by_user) {
     const std::u16string& previous_query = search_box_model->text();
     const base::TimeTicks current_time = base::TimeTicks::Now();
@@ -452,16 +457,13 @@ void SearchBoxView::OnSearchBoxActiveChanged(bool active) {
     result_selection_controller_->ClearSelection();
   }
 
-  // In the non-bubble launcher, when the search box is active there are no
-  // apps to navigate with arrow keys, so remove the accessibility hint.
-  if (!is_app_list_bubble_) {
+  // Remove accessibility hint for classic launcher when search box is active
+  // because there are no apps to navigate to.
+  if (!features::IsProductivityLauncherEnabled()) {
     if (active) {
       search_box()->SetAccessibleName(std::u16string());
     } else {
-      search_box()->SetAccessibleName(l10n_util::GetStringUTF16(
-          is_tablet_mode_
-              ? IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_TABLET
-              : IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_CLAMSHELL));
+      UpdatePlaceholderTextAndAccessibleName();
     }
   }
 }
@@ -698,11 +700,57 @@ void SearchBoxView::UpdateTextColor() {
 }
 
 void SearchBoxView::UpdatePlaceholderTextAndAccessibleName() {
-  search_box()->SetPlaceholderText(
-      l10n_util::GetStringUTF16(IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER));
-  search_box()->SetAccessibleName(l10n_util::GetStringUTF16(
-      is_tablet_mode_ ? IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_TABLET
-                      : IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_CLAMSHELL));
+  if (features::IsProductivityLauncherEnabled()) {
+    // Randomly select a placeholder text.
+    const PlaceholderTextType placeholder_type = PlaceholderTextType(
+        base::RandInt(0, static_cast<int>(PlaceholderTextType::kMaxValue)));
+
+    switch (placeholder_type) {
+      case PlaceholderTextType::kShortcuts:
+        search_box()->SetPlaceholderText(l10n_util::GetStringFUTF16(
+            IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE,
+            l10n_util::GetStringUTF16(
+                IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_SHORTCUTS)));
+        search_box()->SetAccessibleName(l10n_util::GetStringFUTF16(
+            is_tablet_mode_
+                ? IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE_ACCESSIBILITY_NAME_TABLET
+                : IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE_ACCESSIBILITY_NAME_CLAMSHELL,
+            l10n_util::GetStringUTF16(
+                IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_SHORTCUTS)));
+        break;
+      case PlaceholderTextType::kTabs:
+        search_box()->SetPlaceholderText(l10n_util::GetStringFUTF16(
+            IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE,
+            l10n_util::GetStringUTF16(
+                IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TABS)));
+        search_box()->SetAccessibleName(l10n_util::GetStringFUTF16(
+            is_tablet_mode_
+                ? IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE_ACCESSIBILITY_NAME_TABLET
+                : IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE_ACCESSIBILITY_NAME_CLAMSHELL,
+            l10n_util::GetStringUTF16(
+                IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TABS)));
+        break;
+      case PlaceholderTextType::kSettings:
+        search_box()->SetPlaceholderText(l10n_util::GetStringFUTF16(
+            IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE,
+            l10n_util::GetStringUTF16(
+                IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_SETTINGS)));
+        search_box()->SetAccessibleName(l10n_util::GetStringFUTF16(
+            is_tablet_mode_
+                ? IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE_ACCESSIBILITY_NAME_TABLET
+                : IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE_ACCESSIBILITY_NAME_CLAMSHELL,
+            l10n_util::GetStringUTF16(
+                IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_SETTINGS)));
+        break;
+    }
+  } else {
+    search_box()->SetPlaceholderText(
+        l10n_util::GetStringUTF16(IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER));
+    search_box()->SetAccessibleName(l10n_util::GetStringUTF16(
+        is_tablet_mode_
+            ? IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_TABLET
+            : IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_CLAMSHELL));
+  }
 }
 
 void SearchBoxView::AcceptAutocompleteText() {

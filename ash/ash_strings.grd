@@ -4763,6 +4763,26 @@ New install
         All Apps, navigate with left or down arrow to access all apps
       </message>
 
+      <message name="IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE" desc="The template for rotating placeholder text for the search box shown within the Chrome OS launcher. Placeholders always list files and apps provider as well as a rotating first item.">
+        Search your <ph name="CATEGORY">$1<ex>shortcuts</ex></ph>, files, apps, and more...
+      </message>
+      <message name="IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE_ACCESSIBILITY_NAME_TABLET" desc="A11Y text for placeholder texts for the search box shown within the Chrome OS launcher. Placeholders always list files and apps providers as well as a rotating first item.">
+        Search your <ph name="CATEGORY">$1<ex>shortcuts</ex></ph>, files, apps, and more.
+      </message>
+      <message name="IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE_ACCESSIBILITY_NAME_CLAMSHELL" desc="A11Y text for placeholder texts for the search box shown within the Chrome OS launcher. Placeholders always list files and apps providers as well as a rotating first item.">
+        Search your <ph name="CATEGORY">$1<ex>shortcuts</ex></ph>, files, apps, and more. Use the arrow keys to navigate your apps.
+      </message>
+
+      <message name="IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_SHORTCUTS" desc="One of possible rotating providers listed in the placeholder text for the search box shown within the Chrome OS launcher. The provider is injected into string 'Search your $1, files, apps, and more...'">
+        shortcuts
+      </message>
+      <message name="IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TABS" desc="One of possible rotating providers listed in the placeholder text for the search box shown within the Chrome OS launcher. The provider is injected into string 'Search your $1, files, apps, and more...'">
+        tabs
+      </message>
+      <message name="IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_SETTINGS" desc="One of possible rotating providers listed in the placeholder text for the search box shown within the Chrome OS launcher. The provider is injected into string 'Search your $1, files, apps, and more...'">
+        settings
+      </message>
+
       <!-- WM -->
       <message name="IDS_ENTER_PIP_A11Y_NOTIFICATION" is_accessibility_with_no_ui="true" desc="Accessibility text read by chromevox when a window starts picture-in-picture mode.">
         Picture-in-picture started, Alt+Shift+V to focus

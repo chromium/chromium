@@ -159,6 +159,13 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
  private:
   class FocusRingLayer;
 
+  enum class PlaceholderTextType {
+    kShortcuts = 0,
+    kTabs = 1,
+    kSettings = 2,
+    kMaxValue = kSettings
+  };
+
   // Updates the text field text color.
   void UpdateTextColor();
 

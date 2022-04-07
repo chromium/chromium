@@ -657,7 +657,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, LauncherStateTransition) {
   // Press space on the launcher button in shelf, this opens peeking
   // launcher.
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
-  sm_.ExpectSpeechPattern("Search your device,*");
+  sm_.ExpectSpeechPattern("Search your *");
   sm_.ExpectSpeech("Edit text");
   // Check that Launcher, partial view state is announced.
   sm_.ExpectSpeech("Launcher, partial view");
@@ -669,8 +669,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, LauncherStateTransition) {
   sm_.ExpectSpeech("Button");
   // Press space on expand arrow to go to fullscreen launcher.
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
-  sm_.ExpectSpeech(
-      "Search your device, apps, settings, and web."
+  sm_.ExpectSpeechPattern(
+      "Search your *."
       " Use the arrow keys to navigate your apps.");
   sm_.ExpectSpeech("Edit text");
   // Check that Launcher, all apps state is announced.
@@ -742,7 +742,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
   sm_.ExpectSpeech("Button");
   // Move focus to app list window;
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeechPattern("Search your device,*");
+  sm_.ExpectSpeechPattern("Search your *");
   sm_.Replay();
 }
 
@@ -801,8 +801,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
   sm_.ExpectSpeech("Button");
   // Move focus to app list window;
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeech(
-      "Search your device, apps, settings, and web. Use the arrow keys to "
+  sm_.ExpectSpeechPattern(
+      "Search your *. Use the arrow keys to "
       "navigate your apps.");
   // Move focus to search box;
   sm_.ExpectSpeech("Edit text");
@@ -890,7 +890,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
   // Press space on the launcher button in shelf, this opens peeking
   // launcher.
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
-  sm_.ExpectSpeechPattern("Search your device,*");
+  sm_.ExpectSpeechPattern("Search your *");
   sm_.ExpectSpeech("Edit text");
   sm_.ExpectSpeech("Launcher, partial view");
   sm_.Call([this]() { ReadWindowTitle(); });
@@ -900,7 +900,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
   sm_.ExpectSpeech("Expand to all apps");
   // Press space on expand arrow to go to fullscreen launcher.
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
-  sm_.ExpectSpeechPattern("Search your device,*");
+  sm_.ExpectSpeechPattern("Search your *");
   sm_.ExpectSpeech("Edit text");
   sm_.ExpectSpeech("Launcher, all apps");
   sm_.Call([this]() { ReadWindowTitle(); });
@@ -1031,7 +1031,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListSearchTest,
 
   // Activate the launcher button. This opens bubble launcher.
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
-  sm_.ExpectSpeechPattern("Search your device,*");
+  sm_.ExpectSpeechPattern("Search your *");
   sm_.ExpectSpeech("Edit text");
 
   sm_.Call([this]() {
@@ -1102,7 +1102,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListSearchTest,
 
   // Activate the launcher button. This opens bubble launcher.
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
-  sm_.ExpectSpeechPattern("Search your device,*");
+  sm_.ExpectSpeechPattern("Search your *");
   sm_.ExpectSpeech("Edit text");
 
   sm_.Call([this]() {
@@ -1151,7 +1151,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListProductivityLauncherTest,
 
   // Activate the launcher button. This opens bubble launcher.
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
-  sm_.ExpectSpeechPattern("Search your device,*");
+  sm_.ExpectSpeechPattern("Search your *");
   sm_.ExpectSpeech("Edit text");
 
   // Skip over apps that were installed before the test item.
@@ -1189,7 +1189,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListProductivityLauncherTest,
 
   // Activate the launcher button. This opens bubble launcher.
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
-  sm_.ExpectSpeechPattern("Search your device,*");
+  sm_.ExpectSpeechPattern("Search your *");
   sm_.ExpectSpeech("Edit text");
 
   // Skip over apps that were installed before the test item.
@@ -1228,7 +1228,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListProductivityLauncherTest,
 
   // Activate the launcher button. This opens bubble launcher.
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
-  sm_.ExpectSpeechPattern("Search your device,*");
+  sm_.ExpectSpeechPattern("Search your *");
   sm_.ExpectSpeech("Edit text");
 
   // Skip over apps that were installed before the test item.
@@ -1308,7 +1308,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListProductivityLauncherTest,
 
   // Activate the launcher button. This opens bubble launcher.
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
-  sm_.ExpectSpeechPattern("Search your device,*");
+  sm_.ExpectSpeechPattern("Search your *");
   sm_.ExpectSpeech("Edit text");
 
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
@@ -1368,7 +1368,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListProductivityLauncherTest,
 
   // Activate the launcher button. This opens bubble launcher.
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
-  sm_.ExpectSpeechPattern("Search your device,*");
+  sm_.ExpectSpeechPattern("Search your *");
   sm_.ExpectSpeech("Edit text");
 
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
@@ -1455,7 +1455,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListProductivityLauncherTest,
 
   // Activate the launcher button. This opens bubble launcher.
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
-  sm_.ExpectSpeechPattern("Search your device,*");
+  sm_.ExpectSpeechPattern("Search your *");
   sm_.ExpectSpeech("Edit text");
 
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
@@ -1499,7 +1499,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListSearchProductivityLauncherTest,
   EnableChromeVox();
   ShowAppList();
 
-  sm_.ExpectSpeechPattern("Search your device,*");
+  sm_.ExpectSpeechPattern("Search your *");
   sm_.ExpectSpeech("Edit text");
 
   sm_.Call([this]() {
@@ -1588,7 +1588,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListSearchProductivityLauncherTest,
   EnableChromeVox();
   ShowAppList();
 
-  sm_.ExpectSpeechPattern("Search your device,*");
+  sm_.ExpectSpeechPattern("Search your *");
   sm_.ExpectSpeech("Edit text");
 
   sm_.Call([this]() {
@@ -1643,7 +1643,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListSearchProductivityLauncherTest,
   EnableChromeVox();
   ShowAppList();
 
-  sm_.ExpectSpeechPattern("Search your device,*");
+  sm_.ExpectSpeechPattern("Search your *");
   sm_.ExpectSpeech("Edit text");
 
   sm_.Call([this]() {
