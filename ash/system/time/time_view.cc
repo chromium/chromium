@@ -86,7 +86,7 @@ VerticalDateView::VerticalDateView()
   text_label_->SetAutoColorReadabilityEnabled(false);
   text_label_->SetFontList(
       gfx::FontList().Derive(kTrayTextFontSizeIncrease - kDateTextSizeDiff,
-                             gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
+                             gfx::Font::NORMAL, gfx::Font::Weight::BOLD));
   text_label_->SetElideBehavior(gfx::NO_ELIDE);
   UpdateText();
   text_label_->SetBorder(views::CreateEmptyBorder(
