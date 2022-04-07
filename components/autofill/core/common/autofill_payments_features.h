@@ -34,6 +34,7 @@ extern const base::Feature kAutofillEnableVirtualCard;
 extern const base::Feature
     kAutofillEnableVirtualCardManagementInDesktopSettingsPage;
 extern const base::Feature kAutofillEnableVirtualCardsRiskBasedAuthentication;
+extern const base::Feature kAutofillEnforceDelaysInStrikeDatabase;
 extern const base::Feature kAutofillFillMerchantPromoCodeFields;
 extern const base::FeatureParam<int>
     kAutofillImageFetcherDiskCacheExpirationInMinutes;

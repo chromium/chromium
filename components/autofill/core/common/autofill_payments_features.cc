@@ -126,6 +126,11 @@ const base::Feature kAutofillEnableVirtualCardsRiskBasedAuthentication{
     "AutofillEnableVirtualCardsRiskBasedAuthentication",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+// When enabled, if the previous feature offer was declined, a delay will be
+// added before Chrome attempts to show offer again.
+const base::Feature kAutofillEnforceDelaysInStrikeDatabase{
+    "AutofillEnforceDelaysInStrikeDatabase", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When enabled, Autofill will attempt to fill merchant promo/coupon/gift code
 // fields when data is available.
 const base::Feature kAutofillFillMerchantPromoCodeFields{

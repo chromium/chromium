@@ -225,6 +225,9 @@ extern const char kAutofillEnableVirtualCardsRiskBasedAuthenticationName[];
 extern const char
     kAutofillEnableVirtualCardsRiskBasedAuthenticationDescription[];
 
+extern const char kAutofillEnforceDelaysInStrikeDatabaseName[];
+extern const char kAutofillEnforceDelaysInStrikeDatabaseDescription[];
+
 extern const char kAutofillFillMerchantPromoCodeFieldsName[];
 extern const char kAutofillFillMerchantPromoCodeFieldsDescription[];
 

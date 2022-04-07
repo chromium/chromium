@@ -396,6 +396,13 @@ const char kAutofillEnableVirtualCardsRiskBasedAuthenticationDescription[] =
     "When enabled, risk based authentication is used before autofilling "
     "Virtual Card information into forms.";
 
+const char kAutofillEnforceDelaysInStrikeDatabaseName[] =
+    "Enforce delay between offering Autofill opportunities in the strike "
+    "database";
+const char kAutofillEnforceDelaysInStrikeDatabaseDescription[] =
+    "When enabled, if previous Autofill feature offer was declined, "
+    "Chrome will wait for some time before showing the offer again.";
+
 const char kAutofillFillMerchantPromoCodeFieldsName[] =
     "Enable Autofill of promo code fields in forms";
 const char kAutofillFillMerchantPromoCodeFieldsDescription[] =
