@@ -94,6 +94,7 @@ crbug.com/dawn/1330 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,s
 
 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,call,builtin,clamp:f32:* [ Timeout ]
 
+wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createView:format:* [ Timeout ]
 
 ###
 ### Test bugs
