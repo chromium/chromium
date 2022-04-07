@@ -4,6 +4,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/test/bind.h"
 #include "chrome/browser/lacros/browser_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -41,7 +42,7 @@ class LacrosWebAppsControllerBrowserTest : public WebAppControllerBrowserTest {
     return service->GetInterfaceVersion(
                crosapi::mojom::TestController::Uuid_) >=
            static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
-                                kDoesItemExistInShelfMinVersion);
+                                kCloseAllBrowserWindowsMinVersion);
   }
 };
 
@@ -116,6 +117,25 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, AppManagement) {
 
   // Settings should now exist in the shelf.
   browser_test_util::WaitForShelfItem(kOsSettingsAppId, /*exists=*/true);
+
+  base::RunLoop run_loop;
+  auto* const lacros_service = chromeos::LacrosService::Get();
+  lacros_service->GetRemote<crosapi::mojom::TestController>()
+      ->CloseAllBrowserWindows(
+          base::BindLambdaForTesting([&run_loop](bool success) {
+            EXPECT_TRUE(success);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  // Settings should no longer exist in the shelf.
+  browser_test_util::WaitForShelfItem(kOsSettingsAppId, /*exists=*/false);
+
+  // Close app window.
+  browser->window()->Close();
+
+  // Wait for item to stop existing in shelf.
+  browser_test_util::WaitForShelfItem(app_id, /*exists=*/false);
 }
 
 }  // namespace web_app
