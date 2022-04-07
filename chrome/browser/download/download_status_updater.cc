@@ -196,7 +196,8 @@ void DownloadStatusUpdater::UpdatePrefsOnDownloadUpdated(
     return;
   }
 
-  if (download->GetState() == download::DownloadItem::COMPLETE) {
+  if (download->GetState() == download::DownloadItem::COMPLETE &&
+      !download->IsTransient()) {
     DownloadPrefs::FromDownloadManager(manager)->SetLastCompleteTime(
         base::Time::Now());
   }

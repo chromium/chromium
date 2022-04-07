@@ -410,7 +410,7 @@ TEST_F(DownloadStatusUpdaterTest, HoldsKeepAlive) {
 // Test that the last completion time is logged in pref.
 TEST_F(DownloadStatusUpdaterTest, LogLastCompletionTimeInPrefs) {
   SetupManagers(/*manager_count=*/1);
-  AddItems(/*manager_index=*/0, /*item_count=*/2, /*in_progress_count=*/0);
+  AddItems(/*manager_index=*/0, /*item_count=*/3, /*in_progress_count=*/0);
   LinkManager(0);
 
   DownloadPrefs* download_prefs =
@@ -442,6 +442,16 @@ TEST_F(DownloadStatusUpdaterTest, LogLastCompletionTimeInPrefs) {
   // The second download has completed.
   CompleteItem(/*manager_index=*/0, /*item_index=*/1);
   // Completed time is updated
+  EXPECT_EQ(current_time + base::Hours(2),
+            download_prefs->GetLastCompleteTime());
+
+  task_environment_.FastForwardBy(base::Hours(1));
+  SetItemValues(/*manager_index=*/0, /*item_index=*/2, /*received_bytes=*/90,
+                /*total_bytes=*/100, /*notify=*/true);
+  EXPECT_CALL(*Item(/*manager_index=*/0, /*item_index=*/2), IsTransient())
+      .WillRepeatedly(Return(true));
+  CompleteItem(/*manager_index=*/0, /*item_index=*/2);
+  // Completed time is not updated, because this download is transient.
   EXPECT_EQ(current_time + base::Hours(2),
             download_prefs->GetLastCompleteTime());
 }
