@@ -64,10 +64,10 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
 
   // Returns the current First-Party Sets data, if the data is ready and the
   // feature is enabled.
-  absl::optional<FlattenedSets> GetSetsIfEnabledAndReady();
+  absl::optional<FlattenedSets> GetSetsIfEnabledAndReady() const;
 
   // FirstPartySetsHandler
-  bool IsEnabled() override;
+  bool IsEnabled() const override;
   void SetPublicFirstPartySets(base::File sets_file) override;
   absl::optional<PolicyParsingError> ValidateEnterprisePolicy(
       const base::Value::Dict& policy) const override;
@@ -76,7 +76,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // Sets whether FPS is enabled (for testing).
   void SetEnabledForTesting(bool enabled) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    enabled_ = absl::make_optional(enabled);
+    enabled_ = enabled;
   }
 
   // Compares the map `old_sets` to `current_sets` and returns the set of sites
@@ -93,7 +93,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
  private:
   friend class base::NoDestructor<FirstPartySetsHandlerImpl>;
 
-  FirstPartySetsHandlerImpl();
+  explicit FirstPartySetsHandlerImpl(bool enabled);
 
   // This method reads the persisted First-Party Sets from the file under
   // `user_data_dir`.
@@ -126,7 +126,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // Returns true if:
   // * First-Party Sets are enabled;
   // * `sets_` is ready to be used.
-  bool IsEnabledAndReady();
+  bool IsEnabledAndReady() const;
 
   // Represents the mapping of site -> site, where keys are members of sets, and
   // values are owners of the sets. Owners are explicitly represented as members
@@ -144,10 +144,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // The path where persisted First-Party sets data is stored.
   base::FilePath persisted_sets_path_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // This variable is used to memoize the value of IsEnabled() to avoid
-  // repeating unnecessary work.
-  absl::optional<bool> enabled_ GUARDED_BY_CONTEXT(sequence_checker_) =
-      absl::nullopt;
+  bool enabled_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // We use a OnceCallback to ensure we only pass along the sets once
   // during Chrome's lifetime (modulo reconfiguring the network service).

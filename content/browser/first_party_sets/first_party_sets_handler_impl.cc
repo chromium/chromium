@@ -70,11 +70,13 @@ FirstPartySetsHandler* FirstPartySetsHandler::GetInstance() {
 
 // static
 FirstPartySetsHandlerImpl* FirstPartySetsHandlerImpl::GetInstance() {
-  static base::NoDestructor<FirstPartySetsHandlerImpl> instance;
+  static base::NoDestructor<FirstPartySetsHandlerImpl> instance(
+      GetContentClient()->browser()->IsFirstPartySetsEnabled());
   return instance.get();
 }
 
-FirstPartySetsHandlerImpl::FirstPartySetsHandlerImpl() {
+FirstPartySetsHandlerImpl::FirstPartySetsHandlerImpl(bool enabled)
+    : enabled_(enabled) {
   sets_loader_ = std::make_unique<FirstPartySetsLoader>(
       base::BindOnce(&FirstPartySetsHandlerImpl::SetCompleteSets,
                      // base::Unretained(this) is safe here because
@@ -85,7 +87,7 @@ FirstPartySetsHandlerImpl::FirstPartySetsHandlerImpl() {
 FirstPartySetsHandlerImpl::~FirstPartySetsHandlerImpl() = default;
 
 absl::optional<FirstPartySetsHandlerImpl::FlattenedSets>
-FirstPartySetsHandlerImpl::GetSetsIfEnabledAndReady() {
+FirstPartySetsHandlerImpl::GetSetsIfEnabledAndReady() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return IsEnabledAndReady() ? sets_ : absl::nullopt;
 }
@@ -102,14 +104,9 @@ void FirstPartySetsHandlerImpl::Init(const base::FilePath& user_data_dir,
     SetCompleteSets({});
 }
 
-bool FirstPartySetsHandlerImpl::IsEnabled() {
+bool FirstPartySetsHandlerImpl::IsEnabled() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // This method checks whether First-Party Sets are enabled, and memoizes the
-  // returned value in `enabled_`.
-  if (!enabled_.has_value()) {
-    enabled_ = GetContentClient()->browser()->IsFirstPartySetsEnabled();
-  }
-  return enabled_.value();
+  return enabled_;
 }
 
 void FirstPartySetsHandlerImpl::SetPublicFirstPartySets(base::File sets_file) {
@@ -133,7 +130,7 @@ FirstPartySetsHandlerImpl::ValidateEnterprisePolicy(
 
 void FirstPartySetsHandlerImpl::ResetForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  enabled_ = absl::nullopt;
+  enabled_ = GetContentClient()->browser()->IsFirstPartySetsEnabled();
   // base::Unretained(this) is safe here because this is a static singleton.
   sets_loader_ = std::make_unique<FirstPartySetsLoader>(base::BindOnce(
       &FirstPartySetsHandlerImpl::SetCompleteSets, base::Unretained(this)));
@@ -241,7 +238,7 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsIfReady() {
           FirstPartySetParser::SerializeFirstPartySets(sets_.value())));
 }
 
-bool FirstPartySetsHandlerImpl::IsEnabledAndReady() {
+bool FirstPartySetsHandlerImpl::IsEnabledAndReady() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return IsEnabled() && sets_.has_value();
 }

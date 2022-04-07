@@ -44,10 +44,10 @@ class FirstPartySetsComponentInstallerTest : public ::testing::Test {
  public:
   FirstPartySetsComponentInstallerTest() {
     CHECK(component_install_dir_.CreateUniqueTempDir());
-    content::FirstPartySetsHandler::GetInstance()->ResetForTesting();
   }
 
-  void TearDown() override {
+  void SetUp() override {
+    content::FirstPartySetsHandler::GetInstance()->ResetForTesting();
     FirstPartySetsComponentInstallerPolicy::ResetForTesting();
   }
 

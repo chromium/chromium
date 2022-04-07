@@ -52,7 +52,7 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   // Returns whether First-Party Sets is enabled.
   //
   // Embedders can use this method to guard First-Party Sets related changes.
-  virtual bool IsEnabled() = 0;
+  virtual bool IsEnabled() const = 0;
 
   // Sets the First-Party Sets data from `sets_file` to initialize the
   // FirstPartySets instance. `sets_file` is expected to contain a sequence of
