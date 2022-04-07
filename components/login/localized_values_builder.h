@@ -7,20 +7,15 @@
 
 #include <string>
 
+#include "base/values.h"
 #include "components/login/login_export.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace login {
 
 // Class that collects Localized Values for translation.
 class LOGIN_EXPORT LocalizedValuesBuilder {
  public:
-  explicit LocalizedValuesBuilder(base::DictionaryValue* dict);
-  explicit LocalizedValuesBuilder(const std::string& prefix,
-                                  base::DictionaryValue* dict);
+  explicit LocalizedValuesBuilder(base::Value::Dict* dict);
 
   // Method to declare localized value. |key| is the i18n key used in html.
   // |message| is text of the message.
@@ -84,7 +79,7 @@ class LOGIN_EXPORT LocalizedValuesBuilder {
   std::string prefix_;
 
   // Not owned.
-  base::DictionaryValue* dict_;
+  base::Value::Dict* dict_;
 };
 
 }  // namespace login

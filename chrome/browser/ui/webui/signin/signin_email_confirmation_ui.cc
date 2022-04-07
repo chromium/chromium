@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/webui/signin/signin_email_confirmation_ui.h"
 
+#include <string>
+
+#include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
@@ -55,7 +58,7 @@ SigninEmailConfirmationUI::SigninEmailConfirmationUI(content::WebUI* web_ui)
   };
   source->AddLocalizedStrings(kStrings);
 
-  base::DictionaryValue strings;
+  base::Value::Dict strings;
   webui::SetLoadTimeDataDefaults(g_browser_process->GetApplicationLocale(),
                                  &strings);
   source->AddLocalizedStrings(strings);

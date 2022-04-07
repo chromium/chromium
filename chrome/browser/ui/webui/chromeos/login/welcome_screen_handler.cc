@@ -107,8 +107,7 @@ void WelcomeScreenHandler::Unbind() {
 }
 
 void WelcomeScreenHandler::ReloadLocalizedContent() {
-  base::DictionaryValue localized_strings;
-  GetOobeUI()->GetLocalizedStrings(&localized_strings);
+  base::Value::Dict localized_strings = GetOobeUI()->GetLocalizedStrings();
   core_oobe_view_->ReloadContent(std::move(localized_strings));
 }
 
@@ -249,8 +248,7 @@ void WelcomeScreenHandler::DeclareJSCallbacks() {
               &WelcomeScreenHandler::HandleRecordChromeVoxHintSpokenSuccess);
 }
 
-void WelcomeScreenHandler::GetAdditionalParameters(
-    base::DictionaryValue* dict) {
+void WelcomeScreenHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   // GetAdditionalParameters() is called when OOBE language is updated.
   // This happens in two different cases:
   //
@@ -290,13 +288,12 @@ void WelcomeScreenHandler::GetAdditionalParameters(
   if (language_list.GetListDeprecated().empty())
     language_list = std::move(*GetMinimalUILanguageList());
 
-  dict->SetKey("languageList", std::move(language_list));
-  dict->SetKey(
-      "inputMethodsList",
-      GetAndActivateLoginKeyboardLayouts(
-          application_locale, selected_input_method, input_method_manager));
-  dict->SetKey("timezoneList", GetTimezoneList());
-  dict->SetKey("demoModeCountryList", DemoSession::GetCountryList());
+  dict->Set("languageList", std::move(language_list));
+  dict->Set("inputMethodsList", GetAndActivateLoginKeyboardLayouts(
+                                    application_locale, selected_input_method,
+                                    input_method_manager));
+  dict->Set("timezoneList", GetTimezoneList());
+  dict->Set("demoModeCountryList", DemoSession::GetCountryList());
 }
 
 void WelcomeScreenHandler::InitializeDeprecated() {

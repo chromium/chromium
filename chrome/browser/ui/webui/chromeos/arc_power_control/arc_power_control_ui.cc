@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/webui/chromeos/arc_power_control/arc_power_control_ui.h"
 
+#include <memory>
 #include <string>
 
+#include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/arc_power_control/arc_power_control_handler.h"
@@ -39,7 +41,7 @@ content::WebUIDataSource* CreatePowerControlDataSource() {
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources 'self';");
 
-  base::DictionaryValue localized_strings;
+  base::Value::Dict localized_strings;
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &localized_strings);
   source->AddLocalizedStrings(localized_strings);

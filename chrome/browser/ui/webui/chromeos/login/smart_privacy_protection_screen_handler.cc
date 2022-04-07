@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/smart_privacy_protection_screen_handler.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/smart_privacy_protection_screen.h"
 #include "chrome/grit/generated_resources.h"
@@ -69,11 +70,11 @@ void SmartPrivacyProtectionScreenHandler::DeclareLocalizedValues(
 }
 
 void SmartPrivacyProtectionScreenHandler::GetAdditionalParameters(
-    base::DictionaryValue* dict) {
-  dict->SetKey("isQuickDimEnabled",
-               base::Value(ash::features::IsQuickDimEnabled()));
-  dict->SetKey("isSnoopingProtectionEnabled",
-               base::Value(ash::features::IsSnoopingProtectionEnabled()));
+    base::Value::Dict* dict) {
+  dict->Set("isQuickDimEnabled",
+            base::Value(ash::features::IsQuickDimEnabled()));
+  dict->Set("isSnoopingProtectionEnabled",
+            base::Value(ash::features::IsSnoopingProtectionEnabled()));
 }
 
 void SmartPrivacyProtectionScreenHandler::InitializeDeprecated() {

@@ -6,6 +6,8 @@
 
 #include <memory>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/common/backend/plural_string_handler.h"
@@ -90,13 +92,13 @@ std::u16string GetLinkLabel(int string_id, const char* url) {
   return l10n_util::GetStringFUTF16(string_id, replacements, nullptr);
 }
 
-std::unique_ptr<base::DictionaryValue> GetDataSourceUpdate() {
-  auto update = std::make_unique<base::DictionaryValue>();
-  update->SetKey("settingsLinkText",
-                 base::Value(GetLinkLabel(IDS_DIAGNOSTICS_SETTINGS_LINK_TEXT,
-                                          "chrome://os-settings/")));
+base::Value::Dict GetDataSourceUpdate() {
+  base::Value::Dict update;
+  update.Set("settingsLinkText",
+             base::Value(GetLinkLabel(IDS_DIAGNOSTICS_SETTINGS_LINK_TEXT,
+                                      "chrome://os-settings/")));
   // TODO(crbug.com/1207678): update this link when the Help Center is ready.
-  update->SetKey(
+  update.Set(
       "keyboardTesterHelpLink",
       base::Value(GetLinkLabel(IDS_INPUT_DIAGNOSTICS_KEYBOARD_TESTER_HELP_LINK,
                                "https://support.google.com/chromebook/")));
@@ -334,7 +336,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"wifiLabel", IDS_NETWORK_TYPE_WIFI},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
-  html_source->AddLocalizedStrings(*GetDataSourceUpdate());
+  html_source->AddLocalizedStrings(GetDataSourceUpdate());
   html_source->UseStringsJs();
 }
 

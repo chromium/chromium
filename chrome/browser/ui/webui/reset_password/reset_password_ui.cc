@@ -5,12 +5,14 @@
 #include "chrome/browser/ui/webui/reset_password/reset_password_ui.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/reset_password/reset_password.mojom.h"
 #include "chrome/common/url_constants.h"
@@ -137,7 +139,7 @@ void ResetPasswordUI::BindInterface(
       web_ui()->GetWebContents(), std::move(receiver));
 }
 
-base::DictionaryValue ResetPasswordUI::PopulateStrings() const {
+base::Value::Dict ResetPasswordUI::PopulateStrings() const {
   auto* service = safe_browsing::ChromePasswordProtectionService::
       GetPasswordProtectionService(Profile::FromWebUI(web_ui()));
   std::string org_name = service->GetOrganizationName(
@@ -162,14 +164,12 @@ base::DictionaryValue ResetPasswordUI::PopulateStrings() const {
         formatted_org_name);
   }
 
-  base::DictionaryValue load_time_data;
-  load_time_data.SetStringKey(
-      "title", l10n_util::GetStringUTF16(IDS_RESET_PASSWORD_TITLE));
-  load_time_data.SetStringKey("heading",
-                              l10n_util::GetStringUTF16(heading_string_id));
-  load_time_data.SetStringKey("primaryParagraph", explanation_paragraph_string);
-  load_time_data.SetStringKey(
-      "primaryButtonText",
-      l10n_util::GetStringUTF16(IDS_RESET_PASSWORD_BUTTON));
+  base::Value::Dict load_time_data;
+  load_time_data.Set("title",
+                     l10n_util::GetStringUTF16(IDS_RESET_PASSWORD_TITLE));
+  load_time_data.Set("heading", l10n_util::GetStringUTF16(heading_string_id));
+  load_time_data.Set("primaryParagraph", explanation_paragraph_string);
+  load_time_data.Set("primaryButtonText",
+                     l10n_util::GetStringUTF16(IDS_RESET_PASSWORD_BUTTON));
   return load_time_data;
 }

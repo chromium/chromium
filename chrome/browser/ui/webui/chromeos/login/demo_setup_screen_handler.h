@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_DEMO_SETUP_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_DEMO_SETUP_SCREEN_HANDLER_H_
 
+#include "base/values.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
@@ -71,7 +72,7 @@ class DemoSetupScreenHandler : public BaseScreenHandler,
       ::login::LocalizedValuesBuilder* builder) override;
 
   // BaseWebUIHandler:
-  void GetAdditionalParameters(base::DictionaryValue* parameters) override;
+  void GetAdditionalParameters(base::Value::Dict* parameters) override;
 
  private:
   ash::DemoSetupScreen* screen_ = nullptr;

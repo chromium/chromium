@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/chromeos/cellular_setup/cellular_setup_localized_strings_provider.h"
 
+#include <vector>
+
 #include "ash/constants/ash_features.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -137,12 +139,12 @@ void AddNonStringLoadTimeData(content::WebUIDataSource* html_source) {
     html_source->AddResourcePath(entry.name, entry.value);
 }
 
-void AddNonStringLoadTimeDataToDict(base::DictionaryValue* dict) {
+void AddNonStringLoadTimeDataToDict(base::Value::Dict* dict) {
   for (const auto& entry : GetBooleanValues())
-    dict->SetBoolPath(entry.name, entry.value);
+    dict->SetByDottedPath(entry.name, entry.value);
 
   for (const auto& entry : GetResourceIdValues())
-    dict->SetIntPath(entry.name, entry.value);
+    dict->SetByDottedPath(entry.name, entry.value);
 }
 
 }  // namespace cellular_setup

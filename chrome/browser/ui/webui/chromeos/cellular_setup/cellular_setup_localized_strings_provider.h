@@ -5,9 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_CELLULAR_SETUP_CELLULAR_SETUP_LOCALIZED_STRINGS_PROVIDER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_CELLULAR_SETUP_CELLULAR_SETUP_LOCALIZED_STRINGS_PROVIDER_H_
 
-namespace base {
-class DictionaryValue;
-}  // namespace base
+#include "base/values.h"
 
 namespace login {
 class LocalizedValuesBuilder;
@@ -29,8 +27,8 @@ void AddLocalizedValuesToBuilder(::login::LocalizedValuesBuilder* builder);
 // Adds non-string constants for loadTimeData consumption.
 void AddNonStringLoadTimeData(content::WebUIDataSource* html_source);
 
-// Same as AddNonStringLoadTimeData() but for a DictionaryValue.
-void AddNonStringLoadTimeDataToDict(base::DictionaryValue* dict);
+// Same as AddNonStringLoadTimeData() but for a Value::Dict.
+void AddNonStringLoadTimeDataToDict(base::Value::Dict* dict);
 
 }  // namespace cellular_setup
 }  // namespace chromeos

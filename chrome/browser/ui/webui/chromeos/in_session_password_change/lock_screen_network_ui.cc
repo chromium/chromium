@@ -37,20 +37,21 @@
 namespace chromeos {
 
 // static
-void LockScreenNetworkUI::GetLocalizedStrings(
-    base::DictionaryValue* localized_strings) {
-  localized_strings->SetStringKey(
+base::Value::Dict LockScreenNetworkUI::GetLocalizedStrings() {
+  base::Value::Dict localized_strings;
+  localized_strings.Set(
       "titleText", l10n_util::GetStringUTF16(IDS_LOCK_SCREEN_NETWORK_TITLE));
-  localized_strings->SetStringKey(
+  localized_strings.Set(
       "lockScreenNetworkTitle",
       l10n_util::GetStringUTF16(IDS_LOCK_SCREEN_NETWORK_TITLE));
-  localized_strings->SetStringKey(
+  localized_strings.Set(
       "lockScreenNetworkSubtitle",
       l10n_util::GetStringFUTF16(IDS_LOCK_SCREEN_NETWORK_SUBTITLE,
                                  ui::GetChromeOSDeviceName()));
-  localized_strings->SetStringKey(
+  localized_strings.Set(
       "lockScreenCancelButton",
       l10n_util::GetStringUTF16(IDS_LOCK_SCREEN_CANCEL_BUTTON));
+  return localized_strings;
 }
 
 LockScreenNetworkUI::LockScreenNetworkUI(content::WebUI* web_ui)
@@ -59,8 +60,7 @@ LockScreenNetworkUI::LockScreenNetworkUI(content::WebUI* web_ui)
   main_handler_ = main_handler.get();
   web_ui->AddMessageHandler(std::move(main_handler));
 
-  base::DictionaryValue localized_strings;
-  GetLocalizedStrings(&localized_strings);
+  base::Value::Dict localized_strings = GetLocalizedStrings();
 
   content::WebUIDataSource* html =
       content::WebUIDataSource::Create(chrome::kChromeUILockScreenNetworkHost);
@@ -81,7 +81,7 @@ LockScreenNetworkUI::LockScreenNetworkUI(content::WebUI* web_ui)
                                 html);
 }
 
-LockScreenNetworkUI::~LockScreenNetworkUI() {}
+LockScreenNetworkUI::~LockScreenNetworkUI() = default;
 
 void LockScreenNetworkUI::BindInterface(
     mojo::PendingReceiver<network_config::mojom::CrosNetworkConfig> receiver) {

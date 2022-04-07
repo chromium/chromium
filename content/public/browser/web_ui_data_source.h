@@ -56,10 +56,9 @@ class WebUIDataSource {
   CONTENT_EXPORT static void Add(BrowserContext* browser_context,
                                  WebUIDataSource* source);
 
-  CONTENT_EXPORT static void Update(
-      BrowserContext* browser_context,
-      const std::string& source_name,
-      std::unique_ptr<base::DictionaryValue> update);
+  CONTENT_EXPORT static void Update(BrowserContext* browser_context,
+                                    const std::string& source_name,
+                                    const base::Value::Dict& update);
 
   // Adds a string keyed to its name to our dictionary.
   virtual void AddString(base::StringPiece name,
@@ -77,13 +76,7 @@ class WebUIDataSource {
   virtual void AddLocalizedStrings(
       base::span<const webui::LocalizedString> strings) = 0;
 
-  // Add strings from |localized_strings| to our dictionary. Deprecated, please
-  // use base:Value::Dict version below.
-  virtual void AddLocalizedStrings(
-      const base::DictionaryValue& localized_strings) = 0;
-
-  // TODO(https://crbug.com/1187023): Remove DictionaryValue version above
-  // once all callers have been converted to use this method.
+  // Add strings from `localized_strings` to our dictionary.
   virtual void AddLocalizedStrings(
       const base::Value::Dict& localized_strings) = 0;
 

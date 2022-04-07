@@ -11,6 +11,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "chrome/browser/ash/android_sms/android_sms_service_factory.h"
 #include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
@@ -45,8 +46,6 @@ class MockWebUIDataSource : public content::WebUIDataSource {
   void AddLocalizedString(base::StringPiece name, int ids) override {}
   void AddLocalizedStrings(
       base::span<const webui::LocalizedString> strings) override {}
-  void AddLocalizedStrings(
-      const base::DictionaryValue& localized_strings) override {}
   void AddLocalizedStrings(
       const base::Value::Dict& localized_strings) override {}
   void AddInteger(base::StringPiece name, int32_t value) override {}

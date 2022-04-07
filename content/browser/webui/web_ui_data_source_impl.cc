@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -22,6 +23,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
+#include "base/values.h"
 #include "content/grit/content_resources.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -56,7 +58,7 @@ void WebUIDataSource::Add(BrowserContext* browser_context,
 // static
 void WebUIDataSource::Update(BrowserContext* browser_context,
                              const std::string& source_name,
-                             std::unique_ptr<base::DictionaryValue> update) {
+                             const base::Value::Dict& update) {
   URLDataManager::UpdateWebUIDataSource(browser_context, source_name,
                                         std::move(update));
 }
@@ -192,11 +194,6 @@ void WebUIDataSourceImpl::AddLocalizedStrings(
 }
 
 void WebUIDataSourceImpl::AddLocalizedStrings(
-    const base::DictionaryValue& localized_strings) {
-  AddLocalizedStrings(localized_strings.GetDict());
-}
-
-void WebUIDataSourceImpl::AddLocalizedStrings(
     const base::Value::Dict& localized_strings) {
   localized_strings_.GetDict().Merge(localized_strings);
   ui::TemplateReplacementsFromDictionaryValue(localized_strings,
@@ -313,7 +310,7 @@ void WebUIDataSourceImpl::EnsureLoadTimeDataDefaultsAdded() {
 
   add_load_time_data_defaults_ = false;
   std::string locale = GetContentClient()->browser()->GetApplicationLocale();
-  base::DictionaryValue defaults;
+  base::Value::Dict defaults;
   webui::SetLoadTimeDataDefaults(locale, &defaults);
   AddLocalizedStrings(defaults);
 }

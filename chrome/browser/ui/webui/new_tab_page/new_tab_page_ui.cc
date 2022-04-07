@@ -5,13 +5,16 @@
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/cart/cart_handler.h"
 #include "chrome/browser/new_tab_page/modules/drive/drive_handler.h"
@@ -703,7 +706,7 @@ void NewTabPageUI::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
 }
 
 void NewTabPageUI::OnThemeChanged() {
-  std::unique_ptr<base::DictionaryValue> update(new base::DictionaryValue);
+  base::Value::Dict update;
 
   const ui::ThemeProvider* theme_provider =
       webui::GetThemeProvider(web_contents_);
@@ -712,17 +715,16 @@ void NewTabPageUI::OnThemeChanged() {
   if (theme_provider) {
     auto background_color =
         theme_provider->GetColor(ThemeProperties::COLOR_NTP_BACKGROUND);
-    update->SetStringKey("backgroundColor",
-                         skia::SkColorToHexString(background_color));
+    update.Set("backgroundColor", skia::SkColorToHexString(background_color));
   } else {
-    update->SetStringKey("backgroundColor", "");
+    update.Set("backgroundColor", "");
   }
   content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
                                    std::move(update));
 }
 
 void NewTabPageUI::OnCustomBackgroundImageUpdated() {
-  std::unique_ptr<base::DictionaryValue> update(new base::DictionaryValue);
+  base::Value::Dict update;
   url::RawCanonOutputT<char> encoded_url;
   auto custom_background_url =
       (ntp_custom_background_service_
@@ -732,7 +734,7 @@ void NewTabPageUI::OnCustomBackgroundImageUpdated() {
           .custom_background_url;
   url::EncodeURIComponent(custom_background_url.spec().c_str(),
                           custom_background_url.spec().size(), &encoded_url);
-  update->SetStringKey(
+  update.Set(
       "backgroundImageUrl",
       encoded_url.length() > 0
           ? base::StrCat(
@@ -793,20 +795,19 @@ void NewTabPageUI::OnTilesVisibilityPrefChanged() {
 }
 
 void NewTabPageUI::OnLoad() {
-  std::unique_ptr<base::DictionaryValue> update(new base::DictionaryValue);
-  update->SetDoubleKey("navigationStartTime",
-                       navigation_start_time_.ToJsTime());
+  base::Value::Dict update;
+  update.Set("navigationStartTime", navigation_start_time_.ToJsTime());
   // Only enable modules if account credentials are available as most modules
   // won't have data to render otherwise. We can override this behavior with the
   // "--signed-out-ntp-modules" command line switch, e.g. to allow modules in
   // perf tests, which do not support sign-in.
-  update->SetBoolKey("modulesEnabled",
-                     base::FeatureList::IsEnabled(ntp_features::kModules) &&
-                         (base::CommandLine::ForCurrentProcess()->HasSwitch(
-                              kSignedOutNtpModulesSwitch) ||
-                          HasCredentials(profile_)));
-  update->SetBoolKey("driveModuleEnabled",
-                     NewTabPageUI::IsDriveModuleEnabled(profile_));
+  update.Set("modulesEnabled",
+             base::FeatureList::IsEnabled(ntp_features::kModules) &&
+                 (base::CommandLine::ForCurrentProcess()->HasSwitch(
+                      kSignedOutNtpModulesSwitch) ||
+                  HasCredentials(profile_)));
+  update.Set("driveModuleEnabled",
+             NewTabPageUI::IsDriveModuleEnabled(profile_));
   content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
                                    std::move(update));
 }

@@ -38,7 +38,7 @@ void ManagedUIHandler::InitializeInternal(content::WebUI* web_ui,
                                           content::WebUIDataSource* source,
                                           Profile* profile) {
   auto handler = std::make_unique<ManagedUIHandler>(profile);
-  source->AddLocalizedStrings(*handler->GetDataSourceUpdate());
+  source->AddLocalizedStrings(handler->GetDataSourceUpdate());
   handler->source_name_ = source->GetSource();
   web_ui->AddMessageHandler(std::move(handler));
 }
@@ -108,16 +108,15 @@ void ManagedUIHandler::RemoveObservers() {
   pref_registrar_.RemoveAll();
 }
 
-std::unique_ptr<base::DictionaryValue> ManagedUIHandler::GetDataSourceUpdate()
-    const {
-  auto update = std::make_unique<base::DictionaryValue>();
-  update->SetKey("browserManagedByOrg",
-                 base::Value(chrome::GetManagedUiWebUILabel(profile_)));
+base::Value::Dict ManagedUIHandler::GetDataSourceUpdate() const {
+  base::Value::Dict update;
+  update.Set("browserManagedByOrg",
+             base::Value(chrome::GetManagedUiWebUILabel(profile_)));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  update->SetKey("deviceManagedByOrg",
-                 base::Value(chrome::GetDeviceManagedUiWebUILabel()));
+  update.Set("deviceManagedByOrg",
+             base::Value(chrome::GetDeviceManagedUiWebUILabel()));
 #endif
-  update->SetKey("isManaged", base::Value(managed_));
+  update.Set("isManaged", base::Value(managed_));
   return update;
 }
 

@@ -6,6 +6,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -88,7 +89,7 @@ SyncConfirmationUI::SyncConfirmationUI(content::WebUI* web_ui)
     InitializeForSyncDisabled(source);
   }
 
-  base::DictionaryValue strings;
+  base::Value::Dict strings;
   webui::SetLoadTimeDataDefaults(
       g_browser_process->GetApplicationLocale(), &strings);
   source->AddLocalizedStrings(strings);

@@ -4,9 +4,13 @@
 
 #include "chrome/browser/ui/webui/signin/signin_error_ui.h"
 
+#include <memory>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -164,7 +168,7 @@ void SigninErrorUI::Initialize(Browser* browser, bool is_system_profile) {
   source->AddLocalizedString("signinErrorOkLabel",
                              IDS_SIGNIN_ERROR_OK_BUTTON_LABEL);
 
-  base::DictionaryValue strings;
+  base::Value::Dict strings;
   webui::SetLoadTimeDataDefaults(g_browser_process->GetApplicationLocale(),
                                  &strings);
   source->AddLocalizedStrings(strings);

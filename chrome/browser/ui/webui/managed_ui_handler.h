@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -62,8 +63,8 @@ class ManagedUIHandler : public content::WebUIMessageHandler,
   void RemoveObservers();
 
   // Generates a dictionary with "isManaged" and "managedByOrg" i18n keys based
-  // on |managed_|. Called initialize and on each change for notifications.
-  std::unique_ptr<base::DictionaryValue> GetDataSourceUpdate() const;
+  // on `managed_`. Called initialize and on each change for notifications.
+  base::Value::Dict GetDataSourceUpdate() const;
 
   // Fire a webui listener notification if dark mode actually changed.
   void NotifyIfChanged();

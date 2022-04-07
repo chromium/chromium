@@ -351,7 +351,7 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
       pdf_extension_util::PdfViewerContext::kPrintPreview, &pdf_strings);
   pdf_extension_util::AddAdditionalData(/*enable_annotations=*/false,
                                         &pdf_strings);
-  source->AddLocalizedStrings(base::Value::AsDictionaryValue(pdf_strings));
+  source->AddLocalizedStrings(pdf_strings.GetDict());
 }
 
 void AddPrintPreviewFlags(content::WebUIDataSource* source, Profile* profile) {

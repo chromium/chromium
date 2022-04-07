@@ -14,6 +14,7 @@
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/login/screens/error_screen.h"
@@ -22,10 +23,6 @@
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"  // nogncheck
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
-
-namespace base {
-class DictionaryValue;
-}  // namespace base
 
 namespace content {
 class WebUIDataSource;
@@ -76,7 +73,7 @@ class OobeUI : public ui::MojoWebUIController {
   ErrorScreen* GetErrorScreen();
 
   // Collects localized strings from the owned handlers.
-  void GetLocalizedStrings(base::DictionaryValue* localized_strings);
+  base::Value::Dict GetLocalizedStrings();
 
   // Initializes the handlers.
   void InitializeHandlers();
@@ -167,8 +164,7 @@ class OobeUI : public ui::MojoWebUIController {
   void BindInterface(
       mojo::PendingReceiver<ash::cellular_setup::mojom::ESimManager> receiver);
 
-  static void AddOobeComponents(content::WebUIDataSource* source,
-                                const base::DictionaryValue& localized_strings);
+  static void AddOobeComponents(content::WebUIDataSource* source);
 
   bool ready() const { return ready_; }
 

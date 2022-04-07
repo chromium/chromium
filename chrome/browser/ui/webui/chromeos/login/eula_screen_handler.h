@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_EULA_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_EULA_SCREEN_HANDLER_H_
 
+#include <string>
+
 #include "base/memory/ref_counted.h"
+#include "base/values.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
@@ -13,10 +16,6 @@
 
 namespace ash {
 class EulaScreen;
-}
-
-namespace base {
-class DictionaryValue;
 }
 
 namespace chromeos {
@@ -64,7 +63,7 @@ class EulaScreenHandler : public EulaView, public BaseScreenHandler {
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void GetAdditionalParameters(base::DictionaryValue* dict) override;
+  void GetAdditionalParameters(base::Value::Dict* dict) override;
   void InitializeDeprecated() override;
 
  private:

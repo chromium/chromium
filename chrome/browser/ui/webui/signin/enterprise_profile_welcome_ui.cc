@@ -4,7 +4,11 @@
 
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/callback_helpers.h"
+#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
@@ -69,21 +73,20 @@ void EnterpriseProfileWelcomeUI::Initialize(
 
   if (type ==
       EnterpriseProfileWelcomeUI::ScreenType::kEnterpriseAccountCreation) {
-    base::DictionaryValue update_data;
-    update_data.SetBoolKey("isModalDialog", true);
+    base::Value::Dict update_data;
+    update_data.Set("isModalDialog", true);
 
     int title_id = force_new_profile
                        ? IDS_ENTERPRISE_WELCOME_PROFILE_REQUIRED_TITLE
                        : IDS_ENTERPRISE_WELCOME_PROFILE_WILL_BE_MANAGED_TITLE;
-    update_data.SetStringKey("enterpriseProfileWelcomeTitle",
-                             l10n_util::GetStringUTF16(title_id));
+    update_data.Set("enterpriseProfileWelcomeTitle",
+                    l10n_util::GetStringUTF16(title_id));
     if (force_new_profile)
-      update_data.SetBoolKey("showLinkDataCheckbox", true);
+      update_data.Set("showLinkDataCheckbox", true);
 
     content::WebUIDataSource::Update(
         Profile::FromWebUI(web_ui()),
-        chrome::kChromeUIEnterpriseProfileWelcomeHost,
-        update_data.CreateDeepCopy());
+        chrome::kChromeUIEnterpriseProfileWelcomeHost, std::move(update_data));
   }
 
   web_ui()->AddMessageHandler(std::move(handler));

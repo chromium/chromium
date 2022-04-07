@@ -13,6 +13,7 @@
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/disks/disk.h"
 #include "base/notreached.h"
+#include "base/values.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/platform_util.h"
@@ -227,8 +228,8 @@ void StorageHandler::UpdateExternalStorages() {
 }
 
 void StorageHandler::OnArcPlayStoreEnabledChanged(bool enabled) {
-  auto update = std::make_unique<base::DictionaryValue>();
-  update->SetKey(
+  base::Value::Dict update;
+  update.Set(
       kAndroidEnabled,
       base::Value(features::ShouldShowExternalStorageSettings(profile_)));
   content::WebUIDataSource::Update(profile_, source_name_, std::move(update));

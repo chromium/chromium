@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_ui.h"
 
+#include <memory>
+#include <utility>
+
+#include "base/values.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_handler.h"
@@ -89,10 +93,9 @@ void PrivacySandboxDialogUI::Initialize(
     base::OnceClosure show_dialog_callback,
     base::OnceClosure open_settings_callback,
     PrivacySandboxService::DialogType dialog_type) {
-  std::unique_ptr<base::DictionaryValue> update =
-      std::make_unique<base::DictionaryValue>();
-  update->SetBoolKey(
-      "isConsent", dialog_type == PrivacySandboxService::DialogType::kConsent);
+  base::Value::Dict update;
+  update.Set("isConsent",
+             dialog_type == PrivacySandboxService::DialogType::kConsent);
   content::WebUIDataSource::Update(
       profile, chrome::kChromeUIPrivacySandboxDialogHost, std::move(update));
 

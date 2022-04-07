@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <utility>
+
 #include "base/values.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/screens/network_screen.h"
@@ -92,8 +94,7 @@ void NetworkScreenHandler::DeclareLocalizedValues(
   cellular_setup::AddLocalizedValuesToBuilder(builder);
 }
 
-void NetworkScreenHandler::GetAdditionalParameters(
-    base::DictionaryValue* dict) {
+void NetworkScreenHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   cellular_setup::AddNonStringLoadTimeDataToDict(dict);
 }
 

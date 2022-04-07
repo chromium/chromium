@@ -51,24 +51,23 @@ void OobeTestAPIHandler::DeclareJSCallbacks() {
 
 void OobeTestAPIHandler::InitializeDeprecated() {}
 
-void OobeTestAPIHandler::GetAdditionalParameters(base::DictionaryValue* dict) {
+void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   login::NetworkStateHelper helper_;
-  dict->SetBoolKey(
+  dict->Set(
       "testapi_shouldSkipNetworkFirstShow",
       features::IsOobeNetworkScreenSkipEnabled() &&
           !ash::switches::IsOOBENetworkScreenSkippingDisabledForTesting() &&
           helper_.IsConnectedToEthernet());
-  dict->SetBoolKey(
-      "testapi_shouldSkipEula",
-      policy::EnrollmentRequisitionManager::IsRemoraRequisition() ||
-          StartupUtils::IsEulaAccepted() ||
-          features::IsOobeConsolidatedConsentEnabled() ||
-          !BUILDFLAG(GOOGLE_CHROME_BRANDING));
+  dict->Set("testapi_shouldSkipEula",
+            policy::EnrollmentRequisitionManager::IsRemoraRequisition() ||
+                StartupUtils::IsEulaAccepted() ||
+                features::IsOobeConsolidatedConsentEnabled() ||
+                !BUILDFLAG(GOOGLE_CHROME_BRANDING));
 
-  dict->SetBoolKey("testapi_shouldSkipGuestTos",
-                   StartupUtils::IsEulaAccepted() ||
-                       !features::IsOobeConsolidatedConsentEnabled() ||
-                       !BUILDFLAG(GOOGLE_CHROME_BRANDING));
+  dict->Set("testapi_shouldSkipGuestTos",
+            StartupUtils::IsEulaAccepted() ||
+                !features::IsOobeConsolidatedConsentEnabled() ||
+                !BUILDFLAG(GOOGLE_CHROME_BRANDING));
 }
 
 void OobeTestAPIHandler::LoginWithPin(const std::string& username,

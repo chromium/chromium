@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/values.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
 namespace ash {
@@ -71,7 +72,7 @@ class NetworkScreenHandler : public NetworkScreenView,
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void GetAdditionalParameters(base::DictionaryValue* dict) override;
+  void GetAdditionalParameters(base::Value::Dict* dict) override;
   void InitializeDeprecated() override;
 
   ash::NetworkScreen* screen_ = nullptr;

@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_TESTAPI_OOBE_TEST_API_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_TESTAPI_OOBE_TEST_API_HANDLER_H_
 
+#include <string>
+#include <vector>
+
 #include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
@@ -23,7 +26,7 @@ class OobeTestAPIHandler : public BaseWebUIHandler {
       ::login::LocalizedValuesBuilder* builder) override;
   void DeclareJSCallbacks() override;
   void InitializeDeprecated() override;
-  void GetAdditionalParameters(base::DictionaryValue* dict) override;
+  void GetAdditionalParameters(base::Value::Dict* dict) override;
 
  private:
   void LoginWithPin(const std::string& username, const std::string& pin);

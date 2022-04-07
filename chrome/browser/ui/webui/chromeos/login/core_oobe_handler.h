@@ -35,7 +35,7 @@ class CoreOobeView {
 
   virtual void ShowScreenWithData(const ash::OobeScreenId& screen,
                                   absl::optional<base::Value::Dict> data) = 0;
-  virtual void ReloadContent(base::DictionaryValue dictionary) = 0;
+  virtual void ReloadContent(base::Value::Dict dictionary) = 0;
   virtual void SetVirtualKeyboardShown(bool shown) = 0;
   virtual void SetShelfHeight(int height) = 0;
   virtual void UpdateKeyboardState() = 0;
@@ -66,7 +66,7 @@ class CoreOobeHandler : public BaseWebUIHandler,
   void InitializeDeprecated() override;
 
   // BaseScreenHandler implementation:
-  void GetAdditionalParameters(base::DictionaryValue* dict) override;
+  void GetAdditionalParameters(base::Value::Dict* dict) override;
 
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
@@ -100,7 +100,7 @@ class CoreOobeHandler : public BaseWebUIHandler,
   // CoreOobeView implementation:
   void ShowScreenWithData(const ash::OobeScreenId& screen,
                           absl::optional<base::Value::Dict> data) override;
-  void ReloadContent(base::DictionaryValue dictionary) override;
+  void ReloadContent(base::Value::Dict dictionary) override;
   void SetVirtualKeyboardShown(bool displayed) override;
   void SetShelfHeight(int height) override;
   void FocusReturned(bool reverse) override;

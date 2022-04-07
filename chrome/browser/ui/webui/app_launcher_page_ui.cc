@@ -6,8 +6,10 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -181,10 +183,9 @@ AppLauncherPageUI::~AppLauncherPageUI() {
 }
 
 void AppLauncherPageUI::OnHideWebStoreIconChanged() {
-  std::unique_ptr<base::DictionaryValue> update(new base::DictionaryValue);
+  base::Value::Dict update;
   PrefService* prefs = GetProfile()->GetPrefs();
-  update->SetBoolKey("showWebStoreIcon",
-                     !prefs->GetBoolean(prefs::kHideWebStoreIcon));
+  update.Set("showWebStoreIcon", !prefs->GetBoolean(prefs::kHideWebStoreIcon));
   content::WebUIDataSource::Update(
       GetProfile(), chrome::kChromeUIAppLauncherPageHost, std::move(update));
 }

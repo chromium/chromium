@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 
 #include "ash/components/settings/timezone_settings.h"
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
@@ -178,17 +179,17 @@ SetTimeUI::SetTimeUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
   };
   source->AddLocalizedStrings(kStrings);
 
-  base::DictionaryValue values;
+  base::Value::Dict values;
   // List of list of strings: [[ID, name], [ID, name], ...]
-  values.SetPath("timezoneList", base::Value::FromUniquePtrValue(
-                                     chromeos::system::GetTimezoneList()));
+  values.Set("timezoneList", base::Value::FromUniquePtrValue(
+                                 chromeos::system::GetTimezoneList()));
 
   // If we are not logged in, we need to show the time zone dropdown.
-  values.SetBoolKey("showTimezone", SetTimeDialog::ShouldShowTimezone());
+  values.Set("showTimezone", SetTimeDialog::ShouldShowTimezone());
   std::string current_timezone_id;
   CrosSettings::Get()->GetString(kSystemTimezone, &current_timezone_id);
-  values.SetStringKey("currentTimezoneId", current_timezone_id);
-  values.SetDoubleKey("buildTime", base::GetBuildTime().ToJsTime());
+  values.Set("currentTimezoneId", current_timezone_id);
+  values.Set("buildTime", base::GetBuildTime().ToJsTime());
 
   source->AddLocalizedStrings(values);
 

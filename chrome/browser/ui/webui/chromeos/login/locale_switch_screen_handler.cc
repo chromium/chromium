@@ -35,8 +35,7 @@ void LocaleSwitchScreenHandler::Unbind() {
 }
 
 void LocaleSwitchScreenHandler::UpdateStrings() {
-  base::DictionaryValue localized_strings;
-  GetOobeUI()->GetLocalizedStrings(&localized_strings);
+  base::Value::Dict localized_strings = GetOobeUI()->GetLocalizedStrings();
   core_oobe_view_->ReloadContent(std::move(localized_strings));
 }
 

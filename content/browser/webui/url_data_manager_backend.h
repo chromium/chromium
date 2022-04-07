@@ -49,7 +49,7 @@ class URLDataManagerBackend : public base::SupportsUserData::Data {
   void AddDataSource(URLDataSourceImpl* source);
 
   void UpdateWebUIDataSource(const std::string& source_name,
-                             const base::DictionaryValue& update);
+                             const base::Value::Dict& update);
 
   // DataSource invokes this. Sends the data to the URLRequest. |bytes| may be
   // null, which signals an error handling the request.

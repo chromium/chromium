@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/enrollment_screen_handler.h"
 
 #include <algorithm>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
@@ -707,8 +708,8 @@ void EnrollmentScreenHandler::DeclareLocalizedValues(
 }
 
 void EnrollmentScreenHandler::GetAdditionalParameters(
-    base::DictionaryValue* parameters) {
-  parameters->SetKey("encryptionTypesList", GetEncryptionTypesList());
+    base::Value::Dict* parameters) {
+  parameters->Set("encryptionTypesList", GetEncryptionTypesList());
 }
 
 bool EnrollmentScreenHandler::IsOnEnrollmentScreen() {

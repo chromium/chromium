@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_MARKETING_OPT_IN_SCREEN_HANDLER_H_
 
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
 namespace ash {
@@ -39,7 +40,6 @@ class MarketingOptInScreenView {
   // Sets whether the a11y setting for showing shelf navigation buttons is.
   // toggled on or off.
   virtual void UpdateA11yShelfNavigationButtonToggle(bool enabled) = 0;
-
 };
 
 // The sole implementation of the MarketingOptInScreenView, using WebUI.
@@ -73,7 +73,7 @@ class MarketingOptInScreenHandler : public BaseScreenHandler,
   // BaseScreenHandler:
   void InitializeDeprecated() override;
   void RegisterMessages() override;
-  void GetAdditionalParameters(base::DictionaryValue* parameters) override;
+  void GetAdditionalParameters(base::Value::Dict* parameters) override;
 
   // WebUI event handlers.
   void HandleOnGetStarted(bool chromebook_email_opt_in);

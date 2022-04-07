@@ -4,9 +4,13 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/pin_setup_screen_handler.h"
 
+#include <string>
+#include <utility>
+
 #include "base/i18n/number_formatting.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
@@ -76,8 +80,7 @@ void PinSetupScreenHandler::RegisterMessages() {
   BaseScreenHandler::RegisterMessages();
 }
 
-void PinSetupScreenHandler::GetAdditionalParameters(
-    base::DictionaryValue* dict) {}
+void PinSetupScreenHandler::GetAdditionalParameters(base::Value::Dict* dict) {}
 
 void PinSetupScreenHandler::Bind(PinSetupScreen* screen) {
   screen_ = screen;

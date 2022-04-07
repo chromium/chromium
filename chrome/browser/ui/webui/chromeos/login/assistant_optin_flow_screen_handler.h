@@ -13,6 +13,7 @@
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/containers/circular_deque.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "chromeos/services/assistant/public/cpp/assistant_settings.h"
 #include "components/sync/protocol/user_consent_types.pb.h"
@@ -86,7 +87,7 @@ class AssistantOptInFlowScreenHandler
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
   void RegisterMessages() override;
-  void GetAdditionalParameters(base::DictionaryValue* dict) override;
+  void GetAdditionalParameters(base::Value::Dict* dict) override;
 
   // AssistantOptInFlowScreenView:
   void Bind(ash::AssistantOptInFlowScreen* screen) override;

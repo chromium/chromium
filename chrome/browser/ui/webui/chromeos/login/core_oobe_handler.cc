@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/core_oobe_handler.h"
 
 #include <type_traits>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
@@ -102,16 +103,16 @@ void CoreOobeHandler::InitializeDeprecated() {
       display::Screen::GetScreen()->GetPrimaryDisplay().size());
 }
 
-void CoreOobeHandler::GetAdditionalParameters(base::DictionaryValue* dict) {
-  dict->SetKey("isInTabletMode",
-               base::Value(ash::TabletMode::Get()->InTabletMode()));
-  dict->SetKey("isDemoModeEnabled",
-               base::Value(DemoSetupController::IsDemoModeAllowed()));
+void CoreOobeHandler::GetAdditionalParameters(base::Value::Dict* dict) {
+  dict->Set("isInTabletMode",
+            base::Value(ash::TabletMode::Get()->InTabletMode()));
+  dict->Set("isDemoModeEnabled",
+            base::Value(DemoSetupController::IsDemoModeAllowed()));
   if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
-    dict->SetKey("flowType", base::Value("meet"));
+    dict->Set("flowType", base::Value("meet"));
   }
-  dict->SetKey("isQuickStartEnabled",
-               base::Value(ash::features::IsOobeQuickStartEnabled()));
+  dict->Set("isQuickStartEnabled",
+            base::Value(ash::features::IsOobeQuickStartEnabled()));
 }
 
 void CoreOobeHandler::RegisterMessages() {
@@ -145,8 +146,8 @@ void CoreOobeHandler::ShowScreenWithData(
   CallJS("cr.ui.Oobe.showScreen", std::move(screen_params));
 }
 
-void CoreOobeHandler::ReloadContent(base::DictionaryValue dictionary) {
-  CallJS("cr.ui.Oobe.reloadContent", std::move(dictionary));
+void CoreOobeHandler::ReloadContent(base::Value::Dict dictionary) {
+  CallJS("cr.ui.Oobe.reloadContent", base::Value(std::move(dictionary)));
 }
 
 void CoreOobeHandler::SetVirtualKeyboardShown(bool shown) {

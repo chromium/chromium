@@ -12,15 +12,12 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "components/login/base_screen_handler_utils.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "ui/gfx/native_widget_types.h"
-
-namespace base {
-class DictionaryValue;
-}  // namespace base
 
 namespace login {
 class LocalizedValuesBuilder;
@@ -45,7 +42,7 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
   ~BaseWebUIHandler() override;
 
   // Gets localized strings to be used on the page.
-  void GetLocalizedStrings(base::DictionaryValue* localized_strings);
+  void GetLocalizedStrings(base::Value::Dict* localized_strings);
 
   // WebUIMessageHandler implementation:
   void RegisterMessages() override;
@@ -62,7 +59,7 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
 
   // Subclasses can override these methods to pass additional parameters
   // to loadTimeData.
-  virtual void GetAdditionalParameters(base::DictionaryValue* parameters);
+  virtual void GetAdditionalParameters(base::Value::Dict* parameters);
 
   // Can be overridden to do any initialization after javascript is ready.
   virtual void InitAfterJavascriptAllowed();

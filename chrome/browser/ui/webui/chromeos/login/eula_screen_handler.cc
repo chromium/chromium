@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
@@ -112,11 +113,11 @@ void EulaScreenHandler::DeclareLocalizedValues(
                IDS_OOBE_EULA_ACCEPT_AND_CONTINUE_BUTTON_TEXT);
 }
 
-void EulaScreenHandler::GetAdditionalParameters(base::DictionaryValue* dict) {
+void EulaScreenHandler::GetAdditionalParameters(base::Value::Dict* dict) {
 #if BUILDFLAG(ENABLE_RLZ)
-  dict->SetStringKey("rlzEnabled", "enabled");
+  dict->Set("rlzEnabled", "enabled");
 #else
-  dict->SetStringKey("rlzEnabled", "disabled");
+  dict->Set("rlzEnabled", "disabled");
 #endif
 }
 

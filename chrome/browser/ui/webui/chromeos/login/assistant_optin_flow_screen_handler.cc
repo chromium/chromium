@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/assistant_optin_flow_screen.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -195,11 +196,10 @@ void AssistantOptInFlowScreenHandler::RegisterMessages() {
 }
 
 void AssistantOptInFlowScreenHandler::GetAdditionalParameters(
-    base::DictionaryValue* dict) {
-  dict->SetBoolKey("voiceMatchDisabled",
-                   chromeos::assistant::features::IsVoiceMatchDisabled());
-  dict->SetStringKey("assistantLocale",
-                     g_browser_process->GetApplicationLocale());
+    base::Value::Dict* dict) {
+  dict->Set("voiceMatchDisabled",
+            chromeos::assistant::features::IsVoiceMatchDisabled());
+  dict->Set("assistantLocale", g_browser_process->GetApplicationLocale());
   BaseScreenHandler::GetAdditionalParameters(dict);
 }
 

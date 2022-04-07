@@ -492,171 +492,162 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
 }  // namespace network_ui
 
 // static
-void NetworkUI::GetLocalizedStrings(base::DictionaryValue* localized_strings) {
-  localized_strings->GetDict().Set(
-      "titleText", l10n_util::GetStringUTF16(IDS_NETWORK_UI_TITLE));
+base::Value::Dict NetworkUI::GetLocalizedStrings() {
+  base::Value::Dict localized_strings;
+  localized_strings.Set("titleText",
+                        l10n_util::GetStringUTF16(IDS_NETWORK_UI_TITLE));
 
-  localized_strings->GetDict().Set(
-      "generalTab", l10n_util::GetStringUTF16(IDS_NETWORK_UI_TAB_GENERAL));
-  localized_strings->GetDict().Set(
+  localized_strings.Set("generalTab",
+                        l10n_util::GetStringUTF16(IDS_NETWORK_UI_TAB_GENERAL));
+  localized_strings.Set(
       "networkHealthTab",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_TAB_NETWORK_HEALTH));
-  localized_strings->GetDict().Set(
-      "networkLogsTab",
-      l10n_util::GetStringUTF16(IDS_NETWORK_UI_TAB_NETWORK_LOGS));
-  localized_strings->GetDict().Set(
+  localized_strings.Set("networkLogsTab", l10n_util::GetStringUTF16(
+                                              IDS_NETWORK_UI_TAB_NETWORK_LOGS));
+  localized_strings.Set(
       "networkStateTab",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_TAB_NETWORK_STATE));
-  localized_strings->GetDict().Set(
+  localized_strings.Set(
       "networkSelectTab",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_TAB_NETWORK_SELECT));
 
-  localized_strings->GetDict().Set(
-      "autoRefreshText",
-      l10n_util::GetStringUTF16(IDS_NETWORK_UI_AUTO_REFRESH));
-  localized_strings->GetDict().Set(
-      "deviceLogLinkText", l10n_util::GetStringUTF16(IDS_DEVICE_LOG_LINK_TEXT));
-  localized_strings->GetDict().Set(
-      "networkRefreshText", l10n_util::GetStringUTF16(IDS_NETWORK_UI_REFRESH));
-  localized_strings->GetDict().Set(
-      "clickToExpandText", l10n_util::GetStringUTF16(IDS_NETWORK_UI_EXPAND));
-  localized_strings->GetDict().Set(
+  localized_strings.Set("autoRefreshText",
+                        l10n_util::GetStringUTF16(IDS_NETWORK_UI_AUTO_REFRESH));
+  localized_strings.Set("deviceLogLinkText",
+                        l10n_util::GetStringUTF16(IDS_DEVICE_LOG_LINK_TEXT));
+  localized_strings.Set("networkRefreshText",
+                        l10n_util::GetStringUTF16(IDS_NETWORK_UI_REFRESH));
+  localized_strings.Set("clickToExpandText",
+                        l10n_util::GetStringUTF16(IDS_NETWORK_UI_EXPAND));
+  localized_strings.Set(
       "propertyFormatText",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_PROPERTY_FORMAT));
 
-  localized_strings->GetDict().Set(
+  localized_strings.Set(
       "normalFormatOption",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_FORMAT_NORMAL));
-  localized_strings->GetDict().Set(
+  localized_strings.Set(
       "managedFormatOption",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_FORMAT_MANAGED));
-  localized_strings->GetDict().Set(
-      "stateFormatOption",
-      l10n_util::GetStringUTF16(IDS_NETWORK_UI_FORMAT_STATE));
-  localized_strings->GetDict().Set(
-      "shillFormatOption",
-      l10n_util::GetStringUTF16(IDS_NETWORK_UI_FORMAT_SHILL));
+  localized_strings.Set("stateFormatOption",
+                        l10n_util::GetStringUTF16(IDS_NETWORK_UI_FORMAT_STATE));
+  localized_strings.Set("shillFormatOption",
+                        l10n_util::GetStringUTF16(IDS_NETWORK_UI_FORMAT_SHILL));
 
-  localized_strings->GetDict().Set(
-      "dhcpHostnameLabel",
-      l10n_util::GetStringUTF16(IDS_NETWORK_UI_DHCP_HOSTNAME));
-  localized_strings->GetDict().Set(
-      "globalPolicyLabel",
-      l10n_util::GetStringUTF16(IDS_NETWORK_UI_GLOBAL_POLICY));
-  localized_strings->GetDict().Set(
-      "networkListsLabel",
-      l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LISTS));
-  localized_strings->GetDict().Set(
+  localized_strings.Set("dhcpHostnameLabel", l10n_util::GetStringUTF16(
+                                                 IDS_NETWORK_UI_DHCP_HOSTNAME));
+  localized_strings.Set("globalPolicyLabel", l10n_util::GetStringUTF16(
+                                                 IDS_NETWORK_UI_GLOBAL_POLICY));
+  localized_strings.Set("networkListsLabel", l10n_util::GetStringUTF16(
+                                                 IDS_NETWORK_UI_NETWORK_LISTS));
+  localized_strings.Set(
       "networkHealthLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_HEALTH));
-  localized_strings->GetDict().Set(
+  localized_strings.Set(
       "networkDiagnosticsLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_DIAGNOSTICS));
-  localized_strings->GetDict().Set(
+  localized_strings.Set(
       "visibleNetworksLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_VISIBLE_NETWORKS));
-  localized_strings->GetDict().Set(
+  localized_strings.Set(
       "favoriteNetworksLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_FAVORITE_NETWORKS));
-  localized_strings->GetDict().Set(
-      "ethernetEapNetworkLabel",
-      l10n_util::GetStringUTF16(IDS_NETWORK_UI_ETHERNET_EAP));
-  localized_strings->GetDict().Set(
-      "devicesLabel", l10n_util::GetStringUTF16(IDS_NETWORK_UI_DEVICES));
+  localized_strings.Set("ethernetEapNetworkLabel",
+                        l10n_util::GetStringUTF16(IDS_NETWORK_UI_ETHERNET_EAP));
+  localized_strings.Set("devicesLabel",
+                        l10n_util::GetStringUTF16(IDS_NETWORK_UI_DEVICES));
 
-  localized_strings->GetDict().Set(
+  localized_strings.Set(
       "cellularActivationLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NO_CELLULAR_ACTIVATION_LABEL));
-  localized_strings->GetDict().Set(
+  localized_strings.Set(
       "cellularActivationButtonText",
       l10n_util::GetStringUTF16(
           IDS_NETWORK_UI_OPEN_CELLULAR_ACTIVATION_BUTTON_TEXT));
-  localized_strings->GetDict().Set(
+  localized_strings.Set(
       "noCellularErrorText",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NO_CELLULAR_ERROR_TEXT));
 
-  localized_strings->GetDict().Set(
-      "resetESimCacheLabel",
-      l10n_util::GetStringUTF16(
-          IDS_NETWORK_UI_RESET_ESIM_PROFILES_BUTTON_TEXT));
-  localized_strings->GetDict().Set(
-      "resetESimCacheButtonText",
-      l10n_util::GetStringUTF16(
-          IDS_NETWORK_UI_RESET_ESIM_PROFILES_BUTTON_TEXT));
+  localized_strings.Set("resetESimCacheLabel",
+                        l10n_util::GetStringUTF16(
+                            IDS_NETWORK_UI_RESET_ESIM_PROFILES_BUTTON_TEXT));
+  localized_strings.Set("resetESimCacheButtonText",
+                        l10n_util::GetStringUTF16(
+                            IDS_NETWORK_UI_RESET_ESIM_PROFILES_BUTTON_TEXT));
 
-  localized_strings->GetDict().Set(
+  localized_strings.Set(
       "disableESimProfilesLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_DISABLE_ESIM_PROFILES_LABEL));
-  localized_strings->GetDict().Set(
+  localized_strings.Set(
       "disableActiveESimProfileButtonText",
       l10n_util::GetStringUTF16(
           IDS_NETWORK_UI_DISABLE_ACTIVE_ESIM_PROFILE_BUTTON_TEXT));
 
-  localized_strings->GetDict().Set(
+  localized_strings.Set(
       "resetEuiccLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_RESET_EUICC_LABEL));
 
-  localized_strings->GetDict().Set(
+  localized_strings.Set(
       "addNewWifiLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_ADD_NEW_WIFI_LABEL));
-  localized_strings->GetDict().Set(
+  localized_strings.Set(
       "addNewWifiButtonText",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_ADD_NEW_WIFI_BUTTON_TEXT));
 
-  localized_strings->GetDict().Set(
+  localized_strings.Set(
       "importOncButtonText",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_IMPORT_ONC_BUTTON_TEXT));
 
-  localized_strings->GetDict().Set(
+  localized_strings.Set(
       "addWiFiListItemName",
       l10n_util::GetStringUTF16(IDS_NETWORK_ADD_WI_FI_LIST_ITEM_NAME));
 
   // Network logs
-  localized_strings->GetDict().Set(
+  localized_strings.Set(
       "networkLogsDescription",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_DESCRIPTION));
-  localized_strings->GetDict().Set(
+  localized_strings.Set(
       "networkLogsSystemLogs",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_SYSTEM_LOGS));
-  localized_strings->GetDict().Set(
+  localized_strings.Set(
       "networkLogsFilterPii",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_FILTER_PII));
-  localized_strings->GetDict().Set(
+  localized_strings.Set(
       "networkLogsPolicies",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_POLICIES));
-  localized_strings->GetDict().Set(
+  localized_strings.Set(
       "networkLogsDebugLogs",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_DEBUG_LOGS));
-  localized_strings->GetDict().Set(
+  localized_strings.Set(
       "networkLogsChromeLogs",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_CHROME_LOGS));
-  localized_strings->GetDict().Set(
+  localized_strings.Set(
       "networkLogsStoreButton",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_STORE_BUTTON));
-  localized_strings->GetDict().Set(
+  localized_strings.Set(
       "networkLogsStatus",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_STATUS));
-  localized_strings->GetDict().Set(
+  localized_strings.Set(
       "networkLogsDebuggingTitle",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_DEBUGGING_TITLE));
-  localized_strings->GetDict().Set(
-      "networkLogsDebuggingDescription",
-      l10n_util::GetStringUTF16(
-          IDS_NETWORK_UI_NETWORK_LOGS_DEBUGGING_DESCRIPTION));
-  localized_strings->GetDict().Set(
+  localized_strings.Set("networkLogsDebuggingDescription",
+                        l10n_util::GetStringUTF16(
+                            IDS_NETWORK_UI_NETWORK_LOGS_DEBUGGING_DESCRIPTION));
+  localized_strings.Set(
       "networkLogsDebuggingNone",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_DEBUGGING_NONE));
-  localized_strings->GetDict().Set(
+  localized_strings.Set(
       "networkLogsDebuggingUnknown",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_DEBUGGING_UNKNOWN));
 
   // Network Diagnostics
-  localized_strings->GetDict().Set(
+  localized_strings.Set(
       "NetworkDiagnosticsRunAll",
       l10n_util::GetStringUTF16(IDS_NETWORK_DIAGNOSTICS_RUN_ALL));
-  localized_strings->GetDict().Set(
+  localized_strings.Set(
       "NetworkDiagnosticsSendFeedback",
       l10n_util::GetStringUTF16(IDS_NETWORK_DIAGNOSTICS_SEND_FEEDBACK));
+  return localized_strings;
 }
 
 NetworkUI::NetworkUI(content::WebUI* web_ui)
@@ -671,8 +662,7 @@ NetworkUI::NetworkUI(content::WebUI* web_ui)
   // Enable extension API calls in the WebUI.
   extensions::TabHelper::CreateForWebContents(web_ui->GetWebContents());
 
-  base::DictionaryValue localized_strings;
-  GetLocalizedStrings(&localized_strings);
+  base::Value::Dict localized_strings = GetLocalizedStrings();
 
   content::WebUIDataSource* html =
       content::WebUIDataSource::Create(chrome::kChromeUINetworkHost);
@@ -697,7 +687,7 @@ NetworkUI::NetworkUI(content::WebUI* web_ui)
                                 html);
 }
 
-NetworkUI::~NetworkUI() {}
+NetworkUI::~NetworkUI() = default;
 
 void NetworkUI::BindInterface(
     mojo::PendingReceiver<network_config::mojom::CrosNetworkConfig> receiver) {

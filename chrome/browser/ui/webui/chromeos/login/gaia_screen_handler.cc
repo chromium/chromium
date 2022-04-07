@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "ash/components/login/auth/challenge_response/cert_utils.h"
 #include "ash/components/login/auth/cryptohome_key_constants.h"
@@ -638,9 +640,9 @@ void GaiaScreenHandler::DeclareLocalizedValues(
                IDS_SAML_SECURITY_TOKEN_PIN_DIALOG_SUBTITLE);
 }
 
-void GaiaScreenHandler::GetAdditionalParameters(base::DictionaryValue* dict) {
-  dict->SetKey("isRedirectToDefaultIdPEnabled",
-               base::Value(features::IsRedirectToDefaultIdPEnabled()));
+void GaiaScreenHandler::GetAdditionalParameters(base::Value::Dict* dict) {
+  dict->Set("isRedirectToDefaultIdPEnabled",
+            base::Value(features::IsRedirectToDefaultIdPEnabled()));
 }
 
 void GaiaScreenHandler::InitializeDeprecated() {

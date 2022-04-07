@@ -5,16 +5,13 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_NETWORK_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_NETWORK_UI_H_
 
+#include "base/values.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_network_handler.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 #include "ui/webui/mojo_web_ui_controller.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace chromeos {
 
@@ -24,7 +21,7 @@ class LockScreenNetworkUI : public ui::MojoWebDialogUI {
   explicit LockScreenNetworkUI(content::WebUI* web_ui);
   ~LockScreenNetworkUI() override;
 
-  void GetLocalizedStrings(base::DictionaryValue* localized_strings);
+  base::Value::Dict GetLocalizedStrings();
 
   // Instantiates implementation of the mojom::CrosNetworkConfig mojo interface
   // passing the pending receiver that will be internally bound.
