@@ -7,3 +7,6 @@ jam@chromium.org
 nator@chromium.org
 rmcelrath@chromium.org
 sky@chromium.org
+
+# Translation artifacts:
+per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS
