@@ -45,6 +45,8 @@ process* hosts an engine that conducts most of the work of updating software,
 and it is driven by *client processes* that issue commands to it and potentially
 display UI to the user.
 
+![Updater process architecture diagram](images/architecture.svg)
+
 The updater may be installed *per-user* or *system-wide*. If installed per-user,
 the updater can only update applications owned by that user, whereas a system-
 wide updater can update applications owned by any entity on the system. In
@@ -128,8 +130,8 @@ TODO(crbug.com/1035895): Document the standalone installer.
 
 TODO(crbug.com/1035895): Document bundling the updater with apps.
 
-#### Activation
-TODO(crbug.com/1035895): Add the state flowchart.
+#### Updater States
+![Updater state flowchart](images/updater_states.svg)
 
 Instances are installed in the `Unqualified` state. Whenever an instance’s
 server starts up, it checks whether it should transition to a new state. Only
@@ -139,7 +141,80 @@ various applications managed by the updater. When an updater enters the
 up that they should transition out of the `Active` state and uninstall
 themselves.
 
-TODO(crbug.com/1035895): Add the mode check algorithm.
+##### Qualification
+Before activating, unqualified instances of the updater first perform a 
+self-test. The instance registers a "qualification app" with itself and checks
+for updates to that application with the production update server. The
+production server responds with an update, and the updater downloads the update
+and applies it, running the qualification app installer. If this all succeeds,
+the updater transitions to the qualified state and exits.
+
+The qualification app installer is a no-op installer that simply exits with no
+error.
+
+Qualification is skipped (along with any other pre-active states) if there is
+no active instance of the updater.
+
+##### Activation
+When an instance transitions to the active state, it acquires the lock on the
+global prefs file, writes and flushes the "swapping" bit to the file, and then
+replaces any non-side-by-side elements of the installation (such as COM or
+launchd registrations, Omaha 3 or Keystone shims, and more) with its own. Then,
+it clears the "swapping" bit and starts listening for instructions on the RPC
+channels. The swapping bit ensures that the an updater will recover and repair
+the system even if the program is interrupted mid-activation. The full algorithm
+is:
+
+```
+on_startup:
+  acquire_scoped_global_prefs_lock()
+
+  if global_prefs.has_active_version():
+    if global_prefs.active_version > this_version:
+      uninstall_self()
+      exit
+    if !local_prefs.qualified:
+      if qualify():
+        local_prefs.qualified = true
+      exit
+    if this_version > global_prefs.active_version or global_prefs.swapping:
+      activate()
+  else
+    activate()
+
+activate:
+  global_prefs.swapping = true
+  global_prefs.flush()
+  replace_active_version()
+  if !global_prefs.imported_legacy_updaters:
+    import_data_from_legacy_updaters()
+    global_prefs.imported_legacy_updaters = true
+  global_prefs.active_version = this.version
+  global_prefs.swapping = false
+  global_prefs.flush()
+```
+
+##### Storage
+The updater maintains its state in a set of "prefs" files, which are
+dictionaries serialized to the disk as JSON.
+
+The global prefs file is shared across all instances of the updater. It contains
+data about the registered applications and the active updater's state.
+
+Each instance of the updater also has its own separate local prefs file. Local
+prefs store information specific to the instance that owns them.
+
+##### Locking
+Read and write access to the global prefs file is controlled by a lock. The lock
+must also be held while the updater performs any non-side-by-side operation
+(such as installing an update for a registered application). The lock is per-
+process. The updater will periodically poll for the lock, sleeping for a short
+time between polls.
+
+On Windows, the lock is implemented as a kernel mutex.
+
+On macOS, the lock is implemented using `bootstrap_check_in()`, interpreting
+ownership of receive rights on a Mach service name as ownership of a lock.
 
 ### Installing Applications
 TODO(crbug.com/1035895): Describe app installs.
