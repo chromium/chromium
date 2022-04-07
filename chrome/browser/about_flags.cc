@@ -5090,7 +5090,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"page-entities-page-content-annotations",
      flag_descriptions::kPageEntitiesPageContentAnnotationsName,
      flag_descriptions::kPageEntitiesPageContentAnnotationsDescription,
-     kOsDesktop,
+     kOsDesktop | kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          optimization_guide::features::kPageEntitiesPageContentAnnotations,
          kPageEntitiesPageContentAnnotationsVariations,
