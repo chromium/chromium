@@ -432,7 +432,8 @@ AXOptionalNSObject AXCallStatementInvoker::ParamFrom(
     return AXOptionalNSObject::NotNullOrError(
         PropertyNodeToTextMarkerArray(argument));
   }
-  if (attribute == "AXStringForRange") {  // NSRange
+  if (attribute == "AXAttributedStringForRange" ||
+      attribute == "AXStringForRange") {  // NSRange
     return AXOptionalNSObject::NotNullOrError(PropertyNodeToRange(argument));
   }
   if (attribute == "AXIndexForChildUIElement" ||
@@ -447,7 +448,8 @@ AXOptionalNSObject AXCallStatementInvoker::ParamFrom(
     return AXOptionalNSObject::NotNullOrError(
         PropertyNodeToTextMarker(argument));
   }
-  if (attribute == "AXSelectedTextMarkerRangeAttribute" ||
+  if (attribute == "AXAttributedStringForTextMarkerRange" ||
+      attribute == "AXSelectedTextMarkerRangeAttribute" ||
       attribute == "AXStringForTextMarkerRange") {  // TextMarkerRange
     return AXOptionalNSObject::NotNullOrError(
         PropertyNodeToTextMarkerRange(argument));

@@ -438,6 +438,18 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, IsAccessibilityElement) {
 
 // Parameterized attributes
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AXAttributedStringForRange) {
+  RunTypedTest<kMacParameterizedAttributes>(
+      "ax-attributed-string-for-range.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AXAttributedStringForTextMarkerRange) {
+  RunTypedTest<kMacParameterizedAttributes>(
+      "ax-attributed-string-for-text-marker-range.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXStringForRange) {
   RunTypedTest<kMacParameterizedAttributes>("ax-string-for-range.html");
 }
