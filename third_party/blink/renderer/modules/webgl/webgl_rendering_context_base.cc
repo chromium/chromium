@@ -1861,8 +1861,11 @@ void WebGLRenderingContextBase::setDrawingBufferColorSpace(
                                     exception_state)) {
     return;
   }
-  NOTIMPLEMENTED();
+  if (drawing_buffer_color_space_ == color_space)
+    return;
   drawing_buffer_color_space_ = color_space;
+  if (GetDrawingBuffer())
+    GetDrawingBuffer()->SetColorSpace(drawing_buffer_color_space_);
 }
 
 V8PredefinedColorSpace WebGLRenderingContextBase::unpackColorSpace() const {

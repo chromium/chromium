@@ -181,6 +181,10 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // framebuffer. Returns whether the operation was successful.
   bool Resize(const gfx::Size&);
 
+  // Set the color space of the default draw buffer. This will destroy the
+  // contents of the drawing buffer.
+  void SetColorSpace(PredefinedColorSpace color_space);
+
   // Bind the default framebuffer to |target|. |target| must be
   // GL_FRAMEBUFFER, GL_READ_FRAMEBUFFER, or GL_DRAW_FRAMEBUFFER.
   void Bind(GLenum target);
@@ -407,6 +411,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   struct ColorBuffer : public base::RefCountedThreadSafe<ColorBuffer> {
     ColorBuffer(base::WeakPtr<DrawingBuffer> drawing_buffer,
                 const gfx::Size&,
+                const gfx::ColorSpace& color_space,
                 viz::ResourceFormat,
                 GLuint texture_id,
                 std::unique_ptr<gfx::GpuMemoryBuffer>,
@@ -424,6 +429,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     // ColorBuffers.
     base::WeakPtr<DrawingBuffer> drawing_buffer;
     const gfx::Size size;
+    const gfx::ColorSpace color_space;
     const viz::ResourceFormat format;
     const GLuint texture_id = 0;
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer;
@@ -512,9 +518,12 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
                                const gpu::SyncToken&,
                                bool lost_resource);
 
-  // Attempts to allocator storage for, or resize all buffers. Returns whether
-  // the operation was successful.
-  bool ResizeDefaultFramebuffer(const gfx::Size&);
+  // Reallocates the storage for all buffers. This is called due to a change in
+  // the properties of the buffer (e.g, its size or color space). If
+  // `only_reallocate_color` is true, then do not reallocate the depth stencil
+  // buffer.
+  bool ReallocateDefaultFramebuffer(const gfx::Size&,
+                                    bool only_reallocate_color);
 
   void ClearCcLayer();
 
@@ -658,8 +667,8 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   const bool want_depth_;
   const bool want_stencil_;
 
-  // The color space of this buffer's storage.
-  const gfx::ColorSpace storage_color_space_;
+  // The color space of this buffer.
+  gfx::ColorSpace color_space_;
 
   AntialiasingMode anti_aliasing_mode_ = kAntialiasingModeNone;
 
