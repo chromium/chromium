@@ -30,8 +30,7 @@ constexpr const char* const kStringAttributes[] = {
 constexpr const char* const kIntAttributes[] = {
     "number_of_rows",   "number_of_columns", "row_index",
     "cell_row_index",   "cell_column_index", "cell_row_span",
-    "cell_column_span",
-};
+    "cell_column_span", "list_size",         "list_element_index"};
 
 constexpr const char* const kDoubleAttributes[] = {
     "min_value",
@@ -59,6 +58,8 @@ std::string FuchsiaRoleToString(const FuchsiaRole role) {
       return "LINK";
     case FuchsiaRole::LIST:
       return "LIST";
+    case FuchsiaRole::LIST_ELEMENT:
+      return "LIST_ELEMENT";
     case FuchsiaRole::LIST_ELEMENT_MARKER:
       return "LIST_ELEMENT_MARKER";
     case FuchsiaRole::PARAGRAPH:
@@ -331,6 +332,15 @@ void AccessibilityTreeFormatterFuchsia::AddProperties(
         dict->SetIntKey("cell_column_span",
                         table_cell_attributes.column_span());
       }
+    }
+
+    if (attributes.has_list_attributes()) {
+      dict->SetIntKey("list_size", attributes.list_attributes().size());
+    }
+
+    if (attributes.has_list_element_attributes()) {
+      dict->SetIntKey("list_element_index",
+                      attributes.list_element_attributes().index());
     }
 
     if (attributes.has_is_keyboard_key())

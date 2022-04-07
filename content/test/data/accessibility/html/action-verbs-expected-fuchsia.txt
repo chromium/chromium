@@ -29,7 +29,7 @@ UNKNOWN focusable has_input_focus label='Action verbs'
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN focusable label='Summary' actions='{DEFAULT}'
-++++++++++++UNKNOWN hidden
+++++++++++++LIST_ELEMENT_MARKER hidden
 ++++++++++++++STATIC_TEXT hidden label='%E2%96%B8 '
 ++++++++++++STATIC_TEXT label='Summary'
 ++++++++++++++UNKNOWN label='Summary'

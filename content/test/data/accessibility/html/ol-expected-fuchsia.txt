@@ -1,35 +1,35 @@
 UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN hidden
-++++++UNKNOWN
-++++++++UNKNOWN
-++++++++++UNKNOWN label='1. '
+++++++LIST list_size=3
+++++++++LIST_ELEMENT list_element_index=1
+++++++++++LIST_ELEMENT_MARKER label='1. '
 ++++++++++++STATIC_TEXT hidden label='1. '
 ++++++++++STATIC_TEXT label='Chrome'
 ++++++++++++UNKNOWN label='Chrome'
-++++++++UNKNOWN
-++++++++++UNKNOWN label='2. '
+++++++++LIST_ELEMENT list_element_index=2
+++++++++++LIST_ELEMENT_MARKER label='2. '
 ++++++++++++STATIC_TEXT hidden label='2. '
 ++++++++++STATIC_TEXT label='Safari'
 ++++++++++++UNKNOWN label='Safari'
-++++++++UNKNOWN
-++++++++++UNKNOWN label='3. '
+++++++++LIST_ELEMENT list_element_index=3
+++++++++++LIST_ELEMENT_MARKER label='3. '
 ++++++++++++STATIC_TEXT hidden label='3. '
 ++++++++++STATIC_TEXT label='IE'
 ++++++++++++UNKNOWN label='IE'
-++++++UNKNOWN
-++++++++UNKNOWN
-++++++++++UNKNOWN label='10. '
+++++++LIST list_size=3
+++++++++LIST_ELEMENT list_element_index=1
+++++++++++LIST_ELEMENT_MARKER label='10. '
 ++++++++++++STATIC_TEXT hidden label='10. '
 ++++++++++STATIC_TEXT label='Android'
 ++++++++++++UNKNOWN label='Android'
-++++++++UNKNOWN
-++++++++++UNKNOWN label='11. '
+++++++++LIST_ELEMENT list_element_index=2
+++++++++++LIST_ELEMENT_MARKER label='11. '
 ++++++++++++STATIC_TEXT hidden label='11. '
 ++++++++++STATIC_TEXT label='Mac'
 ++++++++++++UNKNOWN label='Mac'
-++++++++UNKNOWN
-++++++++++UNKNOWN label='12. '
+++++++++LIST_ELEMENT list_element_index=3
+++++++++++LIST_ELEMENT_MARKER label='12. '
 ++++++++++++STATIC_TEXT hidden label='12. '
 ++++++++++STATIC_TEXT label='Windows'
 ++++++++++++UNKNOWN label='Windows'

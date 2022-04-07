@@ -4,7 +4,7 @@ UNKNOWN focusable has_input_focus
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN focusable label='details tag' actions='{DEFAULT}'
-++++++++++++UNKNOWN hidden
+++++++++++++LIST_ELEMENT_MARKER hidden
 ++++++++++++++STATIC_TEXT hidden label='%E2%96%B8 '
 ++++++++++++STATIC_TEXT label='details tag'
 ++++++++++++++UNKNOWN label='details tag'
@@ -17,7 +17,7 @@ UNKNOWN focusable has_input_focus
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN focusable label='details tag open' actions='{DEFAULT}'
-++++++++++++UNKNOWN hidden
+++++++++++++LIST_ELEMENT_MARKER hidden
 ++++++++++++++STATIC_TEXT hidden label='%E2%96%BE '
 ++++++++++++STATIC_TEXT label='details tag open'
 ++++++++++++++UNKNOWN label='details tag open'

@@ -26,6 +26,8 @@ constexpr int32_t kRootId = 182;
 constexpr int32_t kRowNodeId1 = 2;
 constexpr int32_t kRowNodeId2 = 3;
 constexpr int32_t kCellNodeId = 7;
+constexpr int32_t kListElementId1 = 111;
+constexpr int32_t kListElementId2 = 222;
 
 ui::AXTreeUpdate CreateTableUpdate() {
   ui::AXTreeUpdate update;
@@ -33,31 +35,31 @@ ui::AXTreeUpdate CreateTableUpdate() {
   update.nodes.resize(8);
   auto& table = update.nodes[0];
   table.id = kRootId;
-  table.role = ax::mojom::Role::kTable;
+  table.role = AXRole::kTable;
   table.AddIntAttribute(ax::mojom::IntAttribute::kTableRowCount, 2);
   table.AddIntAttribute(ax::mojom::IntAttribute::kTableColumnCount, 2);
   table.child_ids = {888, kRowNodeId2};
 
   auto& row_group = update.nodes[1];
   row_group.id = 888;
-  row_group.role = ax::mojom::Role::kRowGroup;
+  row_group.role = AXRole::kRowGroup;
   row_group.child_ids = {kRowNodeId1};
 
   auto& row_1 = update.nodes[2];
   row_1.id = kRowNodeId1;
-  row_1.role = ax::mojom::Role::kRow;
+  row_1.role = AXRole::kRow;
   row_1.AddIntAttribute(ax::mojom::IntAttribute::kTableRowIndex, 0);
   row_1.child_ids = {4, 5};
 
   auto& row_2 = update.nodes[3];
   row_2.id = kRowNodeId2;
-  row_2.role = ax::mojom::Role::kRow;
+  row_2.role = AXRole::kRow;
   row_2.AddIntAttribute(ax::mojom::IntAttribute::kTableRowIndex, 1);
   row_2.child_ids = {6, kCellNodeId};
 
   auto& column_header_1 = update.nodes[4];
   column_header_1.id = 4;
-  column_header_1.role = ax::mojom::Role::kColumnHeader;
+  column_header_1.role = AXRole::kColumnHeader;
   column_header_1.AddIntAttribute(ax::mojom::IntAttribute::kTableCellRowIndex,
                                   0);
   column_header_1.AddIntAttribute(
@@ -65,7 +67,7 @@ ui::AXTreeUpdate CreateTableUpdate() {
 
   auto& column_header_2 = update.nodes[5];
   column_header_2.id = 5;
-  column_header_2.role = ax::mojom::Role::kColumnHeader;
+  column_header_2.role = AXRole::kColumnHeader;
   column_header_2.AddIntAttribute(ax::mojom::IntAttribute::kTableCellRowIndex,
                                   0);
   column_header_2.AddIntAttribute(
@@ -73,15 +75,39 @@ ui::AXTreeUpdate CreateTableUpdate() {
 
   auto& cell_1 = update.nodes[6];
   cell_1.id = 6;
-  cell_1.role = ax::mojom::Role::kCell;
+  cell_1.role = AXRole::kCell;
   cell_1.AddIntAttribute(ax::mojom::IntAttribute::kTableCellRowIndex, 1);
   cell_1.AddIntAttribute(ax::mojom::IntAttribute::kTableCellColumnIndex, 0);
 
   auto& cell_2 = update.nodes[7];
   cell_2.id = kCellNodeId;
-  cell_2.role = ax::mojom::Role::kCell;
+  cell_2.role = AXRole::kCell;
   cell_2.AddIntAttribute(ax::mojom::IntAttribute::kTableCellRowIndex, 1);
   cell_2.AddIntAttribute(ax::mojom::IntAttribute::kTableCellColumnIndex, 1);
+
+  return update;
+}
+
+ui::AXTreeUpdate CreateListUpdate() {
+  ui::AXTreeUpdate update;
+  update.root_id = kRootId;
+  update.nodes.resize(3);
+
+  auto& list = update.nodes[0];
+  list.id = kRootId;
+  list.role = AXRole::kList;
+  list.AddIntAttribute(ax::mojom::IntAttribute::kSetSize, 2);
+  list.child_ids = {kListElementId1, kListElementId2};
+
+  auto& list_element_1 = update.nodes[1];
+  list_element_1.id = kListElementId1;
+  list_element_1.role = AXRole::kListItem;
+  list_element_1.AddIntAttribute(ax::mojom::IntAttribute::kPosInSet, 1);
+
+  auto& list_element_2 = update.nodes[2];
+  list_element_2.id = kListElementId2;
+  list_element_2.role = AXRole::kListItem;
+  list_element_2.AddIntAttribute(ax::mojom::IntAttribute::kPosInSet, 2);
 
   return update;
 }
@@ -122,6 +148,9 @@ TEST_F(BrowserAccessibilityFuchsiaTest, ToFuchsiaNodeDataTranslatesRoles) {
           {AXRole::kHeader, Role::HEADER},
           {AXRole::kImage, Role::IMAGE},
           {AXRole::kLink, Role::LINK},
+          {AXRole::kList, Role::LIST},
+          {AXRole::kListItem, Role::LIST_ELEMENT},
+          {AXRole::kListMarker, Role::LIST_ELEMENT_MARKER},
           {AXRole::kRadioButton, Role::RADIO_BUTTON},
           {AXRole::kSlider, Role::SLIDER},
           {AXRole::kTextField, Role::TEXT_FIELD},
@@ -310,6 +339,42 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
     EXPECT_EQ(
         fuchsia_node_data.attributes().table_cell_attributes().column_index(),
         1u);
+  }
+}
+
+TEST_F(BrowserAccessibilityFuchsiaTest,
+       ToFuchsiaNodeDataTranslatesListAttributes) {
+  std::unique_ptr<BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManager::Create(
+          CreateListUpdate(), test_browser_accessibility_delegate_.get()));
+
+  // Verify that the list root was translated.
+  {
+    BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
+        ToBrowserAccessibilityFuchsia(manager->GetRoot());
+    ASSERT_TRUE(browser_accessibility_fuchsia);
+    auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
+    EXPECT_EQ(fuchsia_node_data.role(),
+              fuchsia::accessibility::semantics::Role::LIST);
+    ASSERT_TRUE(fuchsia_node_data.has_attributes());
+    ASSERT_TRUE(fuchsia_node_data.attributes().has_list_attributes());
+    ASSERT_FALSE(fuchsia_node_data.attributes().has_list_element_attributes());
+    EXPECT_EQ(fuchsia_node_data.attributes().list_attributes().size(), 2u);
+  }
+
+  // Verify that the list elements were translated.
+  {
+    BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
+        ToBrowserAccessibilityFuchsia(manager->GetFromID(kListElementId2));
+    ASSERT_TRUE(browser_accessibility_fuchsia);
+    auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
+    EXPECT_EQ(fuchsia_node_data.role(),
+              fuchsia::accessibility::semantics::Role::LIST_ELEMENT);
+    ASSERT_TRUE(fuchsia_node_data.has_attributes());
+    ASSERT_FALSE(fuchsia_node_data.attributes().has_list_attributes());
+    ASSERT_TRUE(fuchsia_node_data.attributes().has_list_element_attributes());
+    EXPECT_EQ(fuchsia_node_data.attributes().list_element_attributes().index(),
+              2u);
   }
 }
 

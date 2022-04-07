@@ -1,33 +1,33 @@
 UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN hidden
-++++++UNKNOWN
-++++++++UNKNOWN
-++++++++++UNKNOWN label='%E2%80%A2 '
+++++++LIST list_size=3
+++++++++LIST_ELEMENT list_element_index=1
+++++++++++LIST_ELEMENT_MARKER label='%E2%80%A2 '
 ++++++++++++STATIC_TEXT hidden label='%E2%80%A2 '
 ++++++++++STATIC_TEXT label='tic'
 ++++++++++++UNKNOWN label='tic'
-++++++++UNKNOWN
-++++++++++UNKNOWN label='%E2%80%A2 '
+++++++++LIST_ELEMENT list_element_index=2
+++++++++++LIST_ELEMENT_MARKER label='%E2%80%A2 '
 ++++++++++++STATIC_TEXT hidden label='%E2%80%A2 '
 ++++++++++STATIC_TEXT label='tac'
 ++++++++++++UNKNOWN label='tac'
-++++++++UNKNOWN
-++++++++++UNKNOWN label='%E2%80%A2 '
+++++++++LIST_ELEMENT list_element_index=3
+++++++++++LIST_ELEMENT_MARKER label='%E2%80%A2 '
 ++++++++++++STATIC_TEXT hidden label='%E2%80%A2 '
 ++++++++++STATIC_TEXT label='toe'
 ++++++++++++UNKNOWN label='toe'
-++++++UNKNOWN
-++++++++UNKNOWN
+++++++LIST list_size=3
+++++++++LIST_ELEMENT list_element_index=1
 ++++++++++STATIC_TEXT label='tic'
 ++++++++++++UNKNOWN label='tic'
 ++++++++STATIC_TEXT label=' '
 ++++++++++UNKNOWN label=' '
-++++++++UNKNOWN
+++++++++LIST_ELEMENT list_element_index=2
 ++++++++++STATIC_TEXT label='tac'
 ++++++++++++UNKNOWN label='tac'
 ++++++++STATIC_TEXT label=' '
 ++++++++++UNKNOWN label=' '
-++++++++UNKNOWN
+++++++++LIST_ELEMENT list_element_index=3
 ++++++++++STATIC_TEXT label='toe'
 ++++++++++++UNKNOWN label='toe'

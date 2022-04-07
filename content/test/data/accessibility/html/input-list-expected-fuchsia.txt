@@ -8,6 +8,6 @@ UNKNOWN focusable has_input_focus
 ++++++++++UNKNOWN hidden
 ++++++++++++UNKNOWN hidden
 ++++++++++++++UNKNOWN
-++++++++++++UNKNOWN hidden
-++++++++++++++UNKNOWN hidden
+++++++++++++LIST_ELEMENT hidden
+++++++++++++++LIST_ELEMENT_MARKER hidden
 ++++++++++++++++STATIC_TEXT hidden label='%E2%96%BE'
