@@ -739,7 +739,7 @@ deps = {
       'condition': 'checkout_ios',
   },
 
-    'src/ios/third_party/edo/src': {
+  'src/ios/third_party/edo/src': {
       'url': Var('chromium_git') + '/external/github.com/google/eDistantObject.git' + '@' + '727e556705278598fce683522beedbb9946bfda0',
       'condition': 'checkout_ios',
   },
@@ -1664,6 +1664,17 @@ deps = {
           },
       ],
       'condition': 'checkout_android',
+      'dep_type': 'cipd',
+  },
+
+  'src/third_party/swift-format': {
+      'packages': [
+          {
+              'package': 'infra/3pp/tools/swift-format/${{platform}}',
+              'version': 'version:2@505.chromium.1',
+          },
+      ],
+      'condition': 'host_os == mac',
       'dep_type': 'cipd',
   },
 
