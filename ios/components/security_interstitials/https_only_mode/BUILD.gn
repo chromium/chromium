@@ -20,3 +20,11 @@ source_set("https_only_mode") {
     "//ios/components/security_interstitials",
   ]
 }
+
+source_set("feature") {
+  sources = [
+    "feature.cc",
+    "feature.h",
+  ]
+  deps = [ "//base" ]
+}
