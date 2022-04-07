@@ -613,6 +613,9 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
         // retry in the next outer fragmentainer. Otherwise, we need to continue
         // (once we have started laying out, we cannot skip any fragmentainers)
         // with no available size.
+        if (ConstraintSpace().IsInsideBalancedColumns() &&
+            !container_builder_.IsInitialColumnBalancingPass())
+          container_builder_.PropagateSpaceShortage(-available_outer_space);
         if (!IsResumingLayout(BreakToken()) && MayAbortOnInsufficientSpace())
           return nullptr;
         available_outer_space = LayoutUnit();
