@@ -8,7 +8,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import {AlbumsSubpage, AmbientActionName, AmbientModeAlbum, AmbientObserver, AmbientSubpage, AnimationTheme, AnimationThemeItem, emptyState, Paths, PersonalizationRouter, SetAlbumsAction, SetAmbientModeEnabledAction, SetAnimationThemeAction, SetTemperatureUnitAction, SetTopicSourceAction, TemperatureUnit, TopicSource, TopicSourceItem, WallpaperGridItem} from 'chrome://personalization/trusted/personalization_app.js';
 import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
@@ -462,7 +462,7 @@ suite('AmbientSubpageTest', function() {
         await reloadCalledPromise;
       });
 
-  test('has spinner when no albums on albums subpage', async () => {
+  test('show placeholders when no albums on albums subpage', async () => {
     ambientSubpageElement = initElement(AmbientSubpage, {
       path: Paths.AmbientAlbums,
       queryParams: {topicSource: TopicSource.kGooglePhotos}
@@ -477,9 +477,15 @@ suite('AmbientSubpageTest', function() {
     assertFalse(albumsSubpage.hidden);
     await waitAfterNextRender(albumsSubpage);
 
-    let spinner = albumsSubpage.shadowRoot!.querySelector('paper-spinner-lite');
-    assertTrue(!!spinner);
-    assertTrue(spinner.active);
+    const descPlaceholder =
+        albumsSubpage.shadowRoot!.querySelector('#descPlaceholderContainer');
+    assertTrue(!!descPlaceholder);
+    assertNotEquals(getComputedStyle(descPlaceholder).display, 'none');
+
+    const albumsPlaceholder =
+        albumsSubpage.shadowRoot!.querySelector('#albumsPlaceholderContainer');
+    assertTrue(!!albumsPlaceholder);
+    assertNotEquals(getComputedStyle(albumsPlaceholder).display, 'none');
 
     personalizationStore.data.ambient.albums = ambientProvider.albums;
     personalizationStore.data.ambient.topicSource = TopicSource.kGooglePhotos;
@@ -488,9 +494,11 @@ suite('AmbientSubpageTest', function() {
     personalizationStore.notifyObservers();
     await waitAfterNextRender(albumsSubpage);
 
-    spinner = albumsSubpage.shadowRoot!.querySelector('paper-spinner-lite');
-    assertTrue(!!spinner);
-    assertEquals(getComputedStyle(spinner).display, 'none');
+    assertTrue(!!descPlaceholder);
+    assertEquals(getComputedStyle(descPlaceholder).display, 'none');
+
+    assertTrue(!!albumsPlaceholder);
+    assertEquals(getComputedStyle(albumsPlaceholder).display, 'none');
   });
 
   test('has correct albums on Google Photos albums subpage', async () => {

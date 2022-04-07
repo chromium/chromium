@@ -1,4 +1,10 @@
 <style include="common-style">
+  :host {
+    flex-grow: 1;
+  }
+  #container {
+    height: 100%;
+  }
   #mainSettings {
     display: grid;
     grid-template-areas:
@@ -41,6 +47,7 @@
       '. . albums-subpage . .';
     grid-template-columns: 1fr 16px minmax(568px, 920px) 16px 1fr;
     grid-template-rows: auto;
+    height: 100%;
     position: relative;
     width: 100%;
   }
