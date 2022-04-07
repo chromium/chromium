@@ -227,6 +227,8 @@ js_library("input_card") {
 
 js_library("input_list") {
   deps = [
+    ":diagnostics_browser_proxy",
+    ":diagnostics_types",
     ":input_card",
     ":keyboard_tester",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

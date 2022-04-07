@@ -4,13 +4,16 @@
 
 import 'chrome://diagnostics/input_list.js';
 
-import {ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey, TouchDeviceInfo, TouchDeviceType} from 'chrome://diagnostics/diagnostics_types.js';
+import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
+import {ConnectionType, KeyboardInfo, MechanicalLayout, NavigationView, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey, TouchDeviceInfo, TouchDeviceType} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeKeyboards, fakeTouchDevices} from 'chrome://diagnostics/fake_data.js';
 import {FakeInputDataProvider} from 'chrome://diagnostics/fake_input_data_provider.js';
 import {setInputDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
+
+import {TestDiagnosticsBrowserProxy} from './test_diagnostics_browser_proxy.js';
 
 export function inputListTestSuite() {
   /** @type {?InputListElement} */
@@ -19,9 +22,15 @@ export function inputListTestSuite() {
   /** @type {?FakeInputDataProvider} */
   let provider = null;
 
+  /** @type {?TestDiagnosticsBrowserProxy} */
+  let diagnosticsBrowserProxy = null;
+
   suiteSetup(() => {
     provider = new FakeInputDataProvider();
     setInputDataProviderForTesting(provider);
+
+    diagnosticsBrowserProxy = new TestDiagnosticsBrowserProxy();
+    DiagnosticsBrowserProxyImpl.instance_ = diagnosticsBrowserProxy;
   });
 
   setup(() => {
@@ -197,5 +206,23 @@ export function inputListTestSuite() {
     assertFalse(isVisible(getCardByDeviceType('keyboard')));
     assertFalse(isVisible(getCardByDeviceType('touchpad')));
     assertFalse(isVisible(getCardByDeviceType('touchscreen')));
+  });
+
+  test('RecordNavigationCalled', async () => {
+    await initializeInputList();
+    inputListElement.onNavigationPageChanged({isActive: false});
+    await flushTasks();
+
+    assertEquals(0, diagnosticsBrowserProxy.getCallCount('recordNavigation'));
+
+    diagnosticsBrowserProxy.setPreviousView(NavigationView.kSystem);
+    inputListElement.onNavigationPageChanged({isActive: true});
+
+    await flushTasks();
+    assertEquals(1, diagnosticsBrowserProxy.getCallCount('recordNavigation'));
+    assertArrayEquals(
+        [NavigationView.kSystem, NavigationView.kInput],
+        /** @type {!Array<!NavigationView>} */
+        (diagnosticsBrowserProxy.getArgs('recordNavigation')[0]));
   });
 }

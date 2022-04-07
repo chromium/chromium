@@ -59,7 +59,8 @@ export function getNavigationViewForPageId(id) {
       return NavigationView.kSystem;
     case 'connectivity':
       return NavigationView.kConnectivity;
-    // TODO(ashleydp):  Add input when ready to launch.
+    case 'input':
+      return NavigationView.kInput;
     default:
       assertNotReached();
       return NavigationView.kSystem;
