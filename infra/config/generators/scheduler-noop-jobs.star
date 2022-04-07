@@ -18,10 +18,6 @@ load("//lib/branches.star", "branches")
 load("//project.star", "settings")
 
 _NON_BRANCHED_TESTERS = {
-    # These Android testers are triggered by 'Android x64 Builder (dbg)', but
-    # they are FYI testers so we do not run them on the branches
-    "android-12-x64-dbg-tests": branches.STANDARD_MILESTONE,
-    "android-webview-12-x64-dbg-tests": branches.STANDARD_MILESTONE,
 }
 
 _TESTER_NOOP_JOBS = [scheduler_pb.Job(
