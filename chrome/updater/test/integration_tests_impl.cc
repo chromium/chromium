@@ -413,7 +413,7 @@ bool Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code) {
     return false;
 
   // TODO(crbug.com/1096654): Get the timeout from TestTimeouts.
-  return process.WaitForExitWithTimeout(base::Seconds(90), exit_code);
+  return process.WaitForExitWithTimeout(base::Seconds(360), exit_code);
 }
 
 bool WaitFor(base::RepeatingCallback<bool()> predicate) {
