@@ -30,7 +30,7 @@ import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
 const PLACEHOLDER_ID = 'placeholder';
 
-/** Returns placeholders to show while Google Photos are loading. */
+/** Returns placeholders to show while Google Photos photos are loading. */
 function getPlaceholders(): GooglePhotosPhoto[] {
   return getLoadingPlaceholders(() => {
     const photo = new GooglePhotosPhoto();

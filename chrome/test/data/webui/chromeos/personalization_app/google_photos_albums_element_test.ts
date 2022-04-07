@@ -5,9 +5,10 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {getCountText, GooglePhotosAlbum, GooglePhotosAlbums, initializeGooglePhotosData, WallpaperGridItem} from 'chrome://personalization/trusted/personalization_app.js';
+import {getCountText, GooglePhotosAlbum, GooglePhotosAlbums, initializeGooglePhotosData, PersonalizationRouter, WallpaperGridItem} from 'chrome://personalization/trusted/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
@@ -18,6 +19,14 @@ suite('GooglePhotosAlbumsTest', function() {
   let googlePhotosAlbumsElement: GooglePhotosAlbums|null;
   let personalizationStore: TestPersonalizationStore;
   let wallpaperProvider: TestWallpaperProvider;
+
+  /**
+   * Returns the match for |selector| in |googlePhotosAlbumsElement|'s shadow
+   * DOM.
+   */
+  function querySelector(selector: string): Element|null {
+    return googlePhotosAlbumsElement!.shadowRoot!.querySelector(selector);
+  }
 
   /**
    * Returns all matches for |selector| in |googlePhotosAlbumsElement|'s shadow
@@ -86,7 +95,8 @@ suite('GooglePhotosAlbumsTest', function() {
 
     // The |personalizationStore| should be empty, so no albums should be
     // rendered initially.
-    const albumSelector = 'wallpaper-grid-item:not([hidden]).album';
+    const albumSelector =
+        'wallpaper-grid-item:not([hidden]).album:not([placeholder])';
     assertEquals(querySelectorAll(albumSelector)!.length, 0);
 
     // Initialize Google Photos data in the |personalizationStore|.
@@ -104,6 +114,59 @@ suite('GooglePhotosAlbumsTest', function() {
       assertEquals(albumEl.primaryText, albums[i]!.title);
       assertEquals(albumEl.secondaryText, getCountText(albums[i]!.photoCount));
     });
+  });
+
+  test('displays placeholders until albums are present', async () => {
+    // Prepare Google Photos data.
+    const photosCount = 5;
+    const albums: GooglePhotosAlbum[] =
+        Array.from({length: photosCount}, (_, i) => ({
+                                            id: `id-${i}`,
+                                            title: `title-${i}`,
+                                            photoCount: 1,
+                                            preview: {url: `url-${i}`},
+                                          }));
+
+    // Initialize |googlePhotosAlbumsElement|.
+    googlePhotosAlbumsElement =
+        initElement(GooglePhotosAlbums, {hidden: false});
+    await waitAfterNextRender(googlePhotosAlbumsElement);
+
+    // Initially only placeholders should be present.
+    const selector = 'wallpaper-grid-item:not([hidden]).album';
+    const albumSelector = `${selector}:not([placeholder])`;
+    const placeholderSelector = `${selector}[placeholder]`;
+    assertEquals(querySelectorAll(albumSelector)!.length, 0);
+    assertNotEquals(querySelectorAll(placeholderSelector)!.length, 0);
+
+    // Mock singleton |PersonalizationRouter|.
+    const router = TestBrowserProxy.fromClass(PersonalizationRouter);
+    PersonalizationRouter.instance = () => router;
+
+    // Mock |PersonalizationRouter.selectGooglePhotosAlbum()|.
+    let selectedGooglePhotosAlbum: GooglePhotosAlbum|undefined;
+    router.selectGooglePhotosAlbum = (album: GooglePhotosAlbum) => {
+      selectedGooglePhotosAlbum = album;
+    };
+
+    // Clicking a placeholder should do nothing.
+    (querySelector(placeholderSelector) as HTMLElement).click();
+    await new Promise<void>(resolve => setTimeout(resolve));
+    assertEquals(selectedGooglePhotosAlbum, undefined);
+
+    // Provide Google Photos data.
+    personalizationStore.data.wallpaper.googlePhotos.count = photosCount;
+    personalizationStore.data.wallpaper.googlePhotos.albums = albums;
+    personalizationStore.notifyObservers();
+
+    // Only albums should be present.
+    await waitAfterNextRender(googlePhotosAlbumsElement);
+    assertNotEquals(querySelectorAll(albumSelector)!.length, 0);
+    assertEquals(querySelectorAll(placeholderSelector)!.length, 0);
+
+    // Clicking an album should do something.
+    (querySelector(albumSelector) as HTMLElement).click();
+    assertEquals(selectedGooglePhotosAlbum, albums[0]);
   });
 
   test('incrementally loads albums', async () => {

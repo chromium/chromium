@@ -17,8 +17,10 @@
       <wallpaper-grid-item
         class="album"
         image-src="[[album.preview.url]]"
+        index="[[index]]"
         on-click="onAlbumSelected_"
         on-keypress="onAlbumSelected_"
+        placeholder$="[[isAlbumPlaceholder_(album)]]"
         primary-text="[[album.title]]"
         secondary-text="[[getSecondaryText_(album)]]"
         tabindex$="[[tabIndex]]">

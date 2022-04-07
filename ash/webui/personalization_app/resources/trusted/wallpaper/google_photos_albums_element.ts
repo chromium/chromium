@@ -16,7 +16,7 @@ import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-li
 import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getCountText, isSelectionEvent} from '../../common/utils.js';
+import {getCountText, getLoadingPlaceholders, isSelectionEvent} from '../../common/utils.js';
 import {GooglePhotosAlbum, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
 import {PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
@@ -24,6 +24,17 @@ import {getTemplate} from './google_photos_albums_element.html.js';
 
 import {fetchGooglePhotosAlbums} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
+
+const PLACEHOLDER_ID = 'placeholder';
+
+/** Returns placeholders to show while Google Photos albums are loading. */
+function getPlaceholders(): GooglePhotosAlbum[] {
+  return getLoadingPlaceholders(() => {
+    const album = new GooglePhotosAlbum();
+    album.id = PLACEHOLDER_ID;
+    return album;
+  });
+}
 
 export interface GooglePhotosAlbums {
   $: {grid: IronListElement, gridScrollThreshold: IronScrollThresholdElement};
@@ -54,7 +65,7 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
 
       albumsForDisplay_: {
         type: Array,
-        value: [],
+        value: getPlaceholders,
       },
 
       albumsLoading_: Boolean,
@@ -102,7 +113,7 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
   /** Invoked on selection of an album. */
   private onAlbumSelected_(e: Event&{model: {album: GooglePhotosAlbum}}) {
     assert(e.model.album);
-    if (isSelectionEvent(e)) {
+    if (!this.isAlbumPlaceholder_(e.model.album) && isSelectionEvent(e)) {
       PersonalizationRouter.instance().selectGooglePhotosAlbum(e.model.album);
     }
   }
@@ -160,6 +171,11 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
   /** Returns the secondary text to display for the specified |album|. */
   private getSecondaryText_(album: GooglePhotosAlbum): string {
     return getCountText(album.photoCount);
+  }
+
+  /** Returns whether the specified |album| is a placeholder. */
+  private isAlbumPlaceholder_(album: GooglePhotosAlbum): boolean {
+    return album.id === PLACEHOLDER_ID;
   }
 }
 
