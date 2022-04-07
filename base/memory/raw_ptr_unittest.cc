@@ -1050,7 +1050,7 @@ TEST(BackupRefPtrImpl, Basic) {
   // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
   // new/delete once PartitionAlloc Everywhere is fully enabled.
   PartitionAllocGlobalInit(HandleOOM);
-  PartitionAllocator allocator;
+  PartitionAllocator<ThreadSafe> allocator;
   allocator.init(kOpts);
   uint64_t* raw_ptr1 = reinterpret_cast<uint64_t*>(
       allocator.root()->Alloc(sizeof(uint64_t), ""));
@@ -1086,7 +1086,7 @@ TEST(BackupRefPtrImpl, ZeroSized) {
   // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
   // new/delete once PartitionAlloc Everywhere is fully enabled.
   PartitionAllocGlobalInit(HandleOOM);
-  PartitionAllocator allocator;
+  PartitionAllocator<ThreadSafe> allocator;
   allocator.init(kOpts);
 
   std::vector<raw_ptr<void>> ptrs;
@@ -1101,7 +1101,7 @@ TEST(BackupRefPtrImpl, ZeroSized) {
 TEST(BackupRefPtrImpl, EndPointer) {
   // This test requires a fresh partition with an empty free list.
   PartitionAllocGlobalInit(HandleOOM);
-  PartitionAllocator allocator;
+  PartitionAllocator<ThreadSafe> allocator;
   allocator.init(kOpts);
 
   // Check multiple size buckets and levels of slot filling.
@@ -1135,7 +1135,7 @@ TEST(BackupRefPtrImpl, EndPointer) {
 
 TEST(BackupRefPtrImpl, QuarantinedBytes) {
   PartitionAllocGlobalInit(HandleOOM);
-  PartitionAllocator allocator;
+  PartitionAllocator<ThreadSafe> allocator;
   allocator.init(kOpts);
   uint64_t* raw_ptr1 = reinterpret_cast<uint64_t*>(
       allocator.root()->Alloc(sizeof(uint64_t), ""));
@@ -1175,7 +1175,7 @@ TEST(BackupRefPtrImpl, ReinterpretCast) {
   // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
   // new/delete once PartitionAlloc Everywhere is fully enabled.
   PartitionAllocGlobalInit(HandleOOM);
-  PartitionAllocator allocator;
+  PartitionAllocator<ThreadSafe> allocator;
   allocator.init(kOpts);
 
   void* ptr = allocator.root()->Alloc(16, "");
@@ -1214,7 +1214,7 @@ TEST(BackupRefPtrImpl, RawPtrMayDangle) {
   // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
   // new/delete once PartitionAlloc Everywhere is fully enabled.
   PartitionAllocGlobalInit(HandleOOM);
-  PartitionAllocator allocator;
+  PartitionAllocator<ThreadSafe> allocator;
   allocator.init(kOpts);
   ScopedInstallDanglingRawPtrChecks enable_dangling_raw_ptr_checks;
 
@@ -1228,7 +1228,7 @@ TEST(BackupRefPtrImpl, RawPtrNotDangling) {
   // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
   // new/delete once PartitionAlloc Everywhere is fully enabled.
   PartitionAllocGlobalInit(HandleOOM);
-  PartitionAllocator allocator;
+  PartitionAllocator<ThreadSafe> allocator;
   allocator.init(kOpts);
   ScopedInstallDanglingRawPtrChecks enable_dangling_raw_ptr_checks;
 
@@ -1252,7 +1252,7 @@ TEST(BackupRefPtrImpl, DanglingPtrComparison) {
   // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
   // new/delete once PartitionAlloc Everywhere is fully enabled.
   PartitionAllocGlobalInit(HandleOOM);
-  PartitionAllocator allocator;
+  PartitionAllocator<ThreadSafe> allocator;
   allocator.init(kOpts);
   ScopedInstallDanglingRawPtrChecks enable_dangling_raw_ptr_checks;
 
@@ -1289,7 +1289,7 @@ TEST(BackupRefPtrImpl, DanglingPtrAssignment) {
   // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
   // new/delete once PartitionAlloc Everywhere is fully enabled.
   PartitionAllocGlobalInit(HandleOOM);
-  PartitionAllocator allocator;
+  PartitionAllocator<ThreadSafe> allocator;
   allocator.init(kOpts);
   ScopedInstallDanglingRawPtrChecks enable_dangling_raw_ptr_checks;
 
@@ -1322,7 +1322,7 @@ TEST(BackupRefPtrImpl, DanglingPtrCopyContructor) {
   // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
   // new/delete once PartitionAlloc Everywhere is fully enabled.
   PartitionAllocGlobalInit(HandleOOM);
-  PartitionAllocator allocator;
+  PartitionAllocator<ThreadSafe> allocator;
   allocator.init(kOpts);
   ScopedInstallDanglingRawPtrChecks enable_dangling_raw_ptr_checks;
 

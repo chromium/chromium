@@ -40,6 +40,10 @@ struct DisableStackScanningScope final {
 };
 }  // namespace
 
+// TODO(crbug.com/1288247): Remove these when migration is complete.
+using ::base::PartitionAllocGlobalInit;
+using ::base::PartitionAllocGlobalUninitForTesting;
+
 class PartitionAllocPCScanTestBase : public testing::Test {
  public:
   PartitionAllocPCScanTestBase() {
@@ -95,8 +99,7 @@ class PartitionAllocPCScanTestBase : public testing::Test {
   const ThreadSafePartitionRoot& root() const { return *allocator_.root(); }
 
  private:
-  // Leverage the already-templated version outside `internal::`.
-  partition_alloc::PartitionAllocator allocator_;
+  PartitionAllocator allocator_;
 };
 
 // The test that expects free() being quarantined only when tag overflow occurs.
