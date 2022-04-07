@@ -359,7 +359,7 @@ void WaylandWindowDragController::OnDataSourceFinish(bool completed) {
       pointer_delegate_->OnPointerFocusChanged(dragged_window_,
                                                pointer_location_);
     } else {
-      touch_delegate_->OnTouchFocusChanged(nullptr);
+      touch_delegate_->OnTouchFocusChanged(dragged_window_);
     }
   }
   dragged_window_ = nullptr;
