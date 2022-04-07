@@ -43,9 +43,9 @@ FollowJavaScriptFeature::FollowJavaScriptFeature()
 
 FollowJavaScriptFeature::~FollowJavaScriptFeature() = default;
 
-void FollowJavaScriptFeature::GetFollowSiteInfo(
+void FollowJavaScriptFeature::GetFollowWebPageURLs(
     web::WebState* web_state,
-    base::OnceCallback<void(FollowSiteInfo*)> callback) {
+    base::OnceCallback<void(FollowWebPageURLs*)> callback) {
   if (!web::GetMainFrame(web_state)) {
     std::move(callback).Run(nil);
     return;
@@ -60,7 +60,7 @@ void FollowJavaScriptFeature::GetFollowSiteInfo(
 
 void FollowJavaScriptFeature::HandleResponse(
     const GURL& url,
-    base::OnceCallback<void(FollowSiteInfo*)> callback,
+    base::OnceCallback<void(FollowWebPageURLs*)> callback,
     const base::Value* response) {
   if (response && response->is_list()) {
     NSMutableArray* rss_links = [[NSMutableArray alloc] init];
@@ -70,13 +70,13 @@ void FollowJavaScriptFeature::HandleResponse(
                                                       *link.GetIfString())]];
       }
     }
-    std::move(callback).Run([[FollowSiteInfo alloc]
-        initWithPageURL:net::NSURLWithGURL(url)
-               RSSLinks:rss_links]);
+    std::move(callback).Run([[FollowWebPageURLs alloc]
+        initWithWebPageURL:net::NSURLWithGURL(url)
+                  RSSLinks:rss_links]);
     return;
   }
 
-  std::move(callback).Run([[FollowSiteInfo alloc]
-      initWithPageURL:net::NSURLWithGURL(url)
-             RSSLinks:nil]);
+  std::move(callback).Run([[FollowWebPageURLs alloc]
+      initWithWebPageURL:net::NSURLWithGURL(url)
+                RSSLinks:nil]);
 }

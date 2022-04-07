@@ -8,7 +8,7 @@
 #import "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
-#import "ios/chrome/browser/ui/follow/follow_site_info.h"
+#import "ios/chrome/browser/ui/follow/follow_web_page_urls.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #include "url/gurl.h"
 
@@ -19,10 +19,10 @@ class FollowJavaScriptFeature : public web::JavaScriptFeature {
  public:
   static FollowJavaScriptFeature* GetInstance();
 
-  // Invokes JS-side handlers to get the website information.
-  virtual void GetFollowSiteInfo(
+  // Invokes JS-side handlers to get the webpage information.
+  virtual void GetFollowWebPageURLs(
       web::WebState* web_state,
-      base::OnceCallback<void(FollowSiteInfo*)> callback);
+      base::OnceCallback<void(FollowWebPageURLs*)> callback);
 
  private:
   friend class base::NoDestructor<FollowJavaScriptFeature>;
@@ -31,7 +31,7 @@ class FollowJavaScriptFeature : public web::JavaScriptFeature {
   ~FollowJavaScriptFeature() override;
 
   void HandleResponse(const GURL& url,
-                      base::OnceCallback<void(FollowSiteInfo*)> callback,
+                      base::OnceCallback<void(FollowWebPageURLs*)> callback,
                       const base::Value* response);
 
   FollowJavaScriptFeature(const FollowJavaScriptFeature&) = delete;

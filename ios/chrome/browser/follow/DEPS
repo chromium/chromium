@@ -1,7 +1,7 @@
 specific_include_rules = {
   # TODO(crbug.com/1294160): Remove this dependency.
   "^follow_java_script_feature.h": [
-    "+ios/chrome/browser/ui/follow/follow_site_info.h",
+    "+ios/chrome/browser/ui/follow/follow_web_page_urls.h",
   ],
 }
 

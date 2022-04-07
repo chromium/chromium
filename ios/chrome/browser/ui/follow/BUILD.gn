@@ -8,6 +8,8 @@ source_set("follow") {
     "follow_block_types.h",
     "follow_site_info.h",
     "follow_site_info.mm",
+    "follow_web_page_urls.h",
+    "follow_web_page_urls.mm",
     "followed_web_channel.h",
     "followed_web_channel.mm",
   ]

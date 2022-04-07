@@ -41,7 +41,7 @@
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
-#import "ios/chrome/browser/ui/follow/follow_site_info.h"
+#import "ios/chrome/browser/ui/follow/follow_web_page_urls.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
@@ -147,8 +147,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 // The current web state.
 @property(nonatomic, assign) web::WebState* webState;
 
-// The current web site information.
-@property(nonatomic, strong) FollowSiteInfo* siteInfo;
+// URLs for the current webpage, which are used to match it to a web channel.
+@property(nonatomic, strong) FollowWebPageURLs* webPageURLs;
 
 // Whether an overlay is currently presented over the web content area.
 @property(nonatomic, assign) BOOL webContentAreaShowingOverlay;
@@ -224,7 +224,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
   self.webState = nullptr;
   self.webStateList = nullptr;
-  self.siteInfo = nil;
+  self.webPageURLs = nil;
 
   self.bookmarkModel = nullptr;
   self.prefService = nullptr;
@@ -589,18 +589,19 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   if (self.followActionState != FollowActionStateHidden) {
     DCHECK(IsWebChannelsEnabled());
     __weak __typeof(self) weakSelf = self;
-    FollowJavaScriptFeature::GetInstance()->GetFollowSiteInfo(
-        self.webState, base::BindOnce(^(FollowSiteInfo* siteInfo) {
-          if (siteInfo) {
+    FollowJavaScriptFeature::GetInstance()->GetFollowWebPageURLs(
+        self.webState, base::BindOnce(^(FollowWebPageURLs* webPageURLs) {
+          if (webPageURLs) {
             OverflowMenuMediator* strongSelf = weakSelf;
             if (!strongSelf) {
               return;
             }
-            strongSelf.siteInfo = siteInfo;
-            BOOL siteFollowed = ios::GetChromeBrowserProvider()
-                                    .GetFollowProvider()
-                                    ->GetFollowStatus(siteInfo);
-            if (!siteFollowed) {
+
+            strongSelf.webPageURLs = webPageURLs;
+            BOOL webChannelFollowed = ios::GetChromeBrowserProvider()
+                                          .GetFollowProvider()
+                                          ->GetFollowStatus(webPageURLs);
+            if (!webChannelFollowed) {
               std::string domainName =
                   web::GetMainFrame(self.webState)->GetSecurityOrigin().host();
               domainName = domainName.substr(4, domainName.length());
@@ -970,11 +971,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                                   GURL(kChromeUINewTabURL))];
 }
 
-// Updates the follow status of the website to |followStatus|, and dismisses the
-// menu.
+// Updates the follow status of the web channel corresponding to |webPageURLs|
+// to |followStatus|, and dismisses the menu.
 - (void)updateFollowStatus:(BOOL)followStatus {
   ios::GetChromeBrowserProvider().GetFollowProvider()->UpdateFollowStatus(
-      self.siteInfo, followStatus);
+      self.webPageURLs, followStatus);
   [self.dispatcher dismissPopupMenuAnimated:YES];
 }
 
