@@ -8,19 +8,20 @@ Please see the the [Integration Testing Framework document][integration-testing-
 - Build the tests by building the targets `browser_tests` and `sync_integration_tests`
   - (e.g. `autoninja -C out/Release browser_tests sync_integration_tests`)
 - Run the generated tests, using the filter `--gtest_filter=*WebAppIntegration_*`:
+  - Note: These will take a long time! No need to run them all, this is just so you know how to run them if you need to.
   - `testing/run_with_dummy_home.py testing/xvfb.py out/Release/browser_tests --gtest_filter=*WebAppIntegration_*`
   - `testing/run_with_dummy_home.py testing/xvfb.py out/Release/sync_integration_tests --gtest_filter=*WebAppIntegration_*`
-  - These will take a long time! No need to run them all, this is just so you know how to run them if you need to.
 
 ## 2. Determine what actions are needed for new critical user journeys
 
-At the end of this process, all critical user journeys be decomposed into existing and new user actions and enumerated in the [Critical User Journey Spreadsheet][cuj-spreadsheet]. However, for this step the goal is to create any new actions that those journeys might need. See all existing actions in the [Actions sub-sheet][cuj-actions-sheet], which should give a good idea of what actions are currently supported in the framework.
+At the end of this process, all critical user journeys should be decomposed into existing and new user actions and enumerated in the [Critical User Journey Spreadsheet][cuj-spreadsheet]. However, for this step the goal is to create any new actions that those journeys might need. See all existing actions in the [Actions sub-sheet][cuj-actions-sheet], which should give a good idea of what actions are currently supported in the framework.
 
-Given the existing actions:
-1. Draft what our critical user journeys will be.
-2. Figure out if any new actions (or sites) will need to be implemented for these new journeys
-
-Please [contact the team](#contact-the-team) if you have any questions or trouble here.
+Steps:
+1. Explore the existing [actions][cuj-actions] and [critical user journeys][cuj-spreadsheet] to get familiar with the existing support.
+2. Draft, possibly just in english, what all of the critical user journeys are.
+  * Tip: Try not to 'collapse' multiple user journeys into one. It's easier to catalog them this way, and the testing framework script will collapse journeys for you during test generation.
+3. Draft what new actions (or sites) will need to be implemented for these new journeys.
+4. [Contact the team](#contact-the-team) to schedule a review of your plans so we can craft the final user journeys together.
 
 ### Example - File Handlers
 The file handlers feature:
@@ -44,21 +45,23 @@ The existing [actions][cuj-actions-sheet] already have a lot of support for inst
   - This will be unique per operating system.
 - Action 2: Launch the associated file.
   - Due to operating system complexities, it might be hard to have this be a true 'launch from the operating system'. It may have to be faked in our code, but we want it to be as close as possible to what would happen if the operating system actually launched the file.
-- Action 3 & 4: User action to allow or deny the dialog, with a "mode" of "Remember" "NotRemember".
+- Action 3 & 4: User action to allow or deny the dialog, with an argument of "Remember" "NotRemember".
 
 ## 3. Create action implementation with 'manual' tests
 
-The goal of this step is to implement the actions (or other changes) that were determined by the last step. The action should be tested to make sure there are no bugs and it works on all applicable platforms.
+The browsertest files are split into two sections, manual tests and script-generated tests. Before generating all of the new tests, the next step is to
+1. Implement the new actions that were determined by the last step.
+2. Include a simple 'manual' test to verify it is working correctly.
+
+See the [example browsertest][regular-browsertests] file to see the manual tests at the top, written by the action authors.
+
+The reason why a 'manual' test is created here instead of adding the script-generated tests right away is because implementing an action is often flaky and uncovers bugs. If all of the tests are in the first CL and it has problems, this causes large reverts or (even worse) sheriffs to manually disable many tests over the next few days. To prevent this complexity, this first CL should only include a few manual tests to make sure that everything is working correctly before more tests are generated.
 
 For details about how to implement actions, see [Creating Actions in the `WebAppIntegrationTestDriver`][creating-actions].
 
 Implementing or changing actions is usually done in [`WebAppIntegrationTestDriver`](https://source.chromium.org/search?q=WebAppIntegrationTestDriver&ss=chromium). If the action only works with the sync system, then it may have to be implemented in the `TestDelegate` interface and then in the [`TwoClientWebAppsIntegrationTestBase`](https://source.chromium.org/search?q=TwoClientWebAppsIntegrationTestBase&sq=&ss=chromium). See [test partitioning][test-partitioning] for more information.
 
-Adding or modifying sites would happen in the [test data directory](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/data/web_apps/).
-
-After the action and/or other changes are implemented, one or more "manual" tests should be implemented to ensure that they are working properly. See [test partitioning][test-partitioning] for more information about these various files, but basically:
-- Non-sync related tests are put in the [regular browsertests][regular-browsertests] (windows-mac-linux only example [here][regular-browsertests-wml]).
-- Sync-related tests are put in the [sync partition][sync-browsertests-wml].
+If in Step 2 above the team comcluded a "Site" must be modified or created, these are located in the [test data directory](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/data/web_apps/).
 
 ### Example - `UninstallFromList`
 
@@ -72,23 +75,25 @@ Finally, now that the changes are implemented and tested, they can be used in ge
 
 ### 4.1. Download the new actions and user journeys.
 
-This command will download the data from the [spreadsheet][cuj-spreadsheet] into the local checkout.
+This command will download any changes you make to the data in the [spreadsheet][cuj-spreadsheet] into the local checkout.
 
 ```bash
 chrome/test/webapps/download_data_from_sheet.py
 ```
 
-### 4.2 Mark the action as supported.
+### 4.2. Mark the action as supported.
+
+tl;dr: Add to (or modify) this [file][supported-actions] marking the new actions as supported.
 
 To have the script actually generate tests using the new actions, they must be marked as supported in the [supported actions file][supported-actions]. The support is specified by a symbol per platform:
 
 - 🌕 - Full coverage - This means that the driver implements this action in a way that completely matches (or almost matches) the code paths that are used when the user triggers this action.
 - 🌓 - Partial coverage - This means that the testing framework implements this action in a way that accomplishes the state change or check, but does not fully match the code path that is used when the user triggers this action.
-- 🌑 - No coverage - This means the action is not supported.
+- 🌑 - No coverage - This means the action is not supported and any tests using this action will only be partially generated.
 
-After recording an action as supported here, the next step should generate new tests!
+If the action you have implemented is not present in the [file][supported-actions], please add it.
 
-### 4.2. Generate test changes.
+### 4.3. Generate test changes.
 
 This command will output all changes that need to happen to the critical user journeys.
 
@@ -98,18 +103,18 @@ chrome/test/webapps/generate_framework_tests_and_coverage.py
 
 The output should:
 1. Generate a coverage report for the change in the [data directory][script-data-dir].
-1. Print new tests that need to be added to the integration browsertest files.
+1. Print new tests that need to be manually copied to the integration browsertest files.
 2. Print out test ids that need to be removed.
 
-After you make changes to the integration browsertests, please re-run the above command to verify that all of the changes were performed and no mistakes were made.
+After you make changes to the integration browsertests, please re-run the above command to verify that all of the changes were performed and no mistakes were made. If all looks right, the script will output nothing to console when run a second time.
 
 Possible issues / Things to know:
 1. Tests being removed are often replaced by a test that has all the same actions, plus some new ones. Finding these & replacing these tests inline helps the diff look more reasonable.
-2. Sometimes a test that is removed is currently disabled. If this is the case, please find the new test that is being added that has all of the same actions as the old test, and also disable it (please add the same comments, etc). Because the old test was failing, likely the new test will be failing too.
+2. Sometimes a test that is removed is currently disabled. If this is the case, **please find the new test that is being added that has all of the same actions as the old test, and also disable it (please add the same comments, etc)**. Because the old test was failing, likely the new test will be failing too.
 
 After all tests are added, `git cl format` is often required. It's a good idea to test all of the new tests locally if you can, and then after local verification a patch can be uploaded, the the trybots can be run, and a review can be requested from the team.
 
-### 4.3 (optional) Disable failing tests
+### 4.4. (optional) Disable failing tests
 
 If the "manual" browsertest didn't catch a bug that is now failing for the generated tests and there is no obvious fix for the bug, it is OK to submit the new tests as disabled. To do this:
 1. Try to figure out generally why the generated tests are failing, or what the problem is, and create a bug.
