@@ -46,11 +46,9 @@ bool FakeDiscoverySessionManager::IsDiscoverySessionActive() const {
 std::unique_ptr<DevicePairingHandler>
 FakeDiscoverySessionManager::CreateDevicePairingHandler(
     AdapterStateController* adapter_state_controller,
-    mojo::PendingReceiver<mojom::DevicePairingHandler> receiver,
-    base::OnceClosure finished_pairing_callback) {
-  return std::make_unique<FakeDevicePairingHandler>(
-      std::move(receiver), adapter_state_controller,
-      std::move(finished_pairing_callback));
+    mojo::PendingReceiver<mojom::DevicePairingHandler> receiver) {
+  return std::make_unique<FakeDevicePairingHandler>(std::move(receiver),
+                                                    adapter_state_controller);
 }
 
 }  // namespace bluetooth_config

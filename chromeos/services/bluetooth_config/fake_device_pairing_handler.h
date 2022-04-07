@@ -14,8 +14,7 @@ class FakeDevicePairingHandler : public DevicePairingHandler {
  public:
   FakeDevicePairingHandler(
       mojo::PendingReceiver<mojom::DevicePairingHandler> pending_receiver,
-      AdapterStateController* adapter_state_controller,
-      base::OnceClosure finished_pairing_callback);
+      AdapterStateController* adapter_state_controller);
   ~FakeDevicePairingHandler() override;
 
   void SimulatePairDeviceFinished(

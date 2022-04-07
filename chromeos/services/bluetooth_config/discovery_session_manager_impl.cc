@@ -43,11 +43,10 @@ void DiscoverySessionManagerImpl::OnHasAtLeastOneDiscoveryClientChanged() {
 std::unique_ptr<DevicePairingHandler>
 DiscoverySessionManagerImpl::CreateDevicePairingHandler(
     AdapterStateController* adapter_state_controller,
-    mojo::PendingReceiver<mojom::DevicePairingHandler> receiver,
-    base::OnceClosure finished_pairing_callback) {
+    mojo::PendingReceiver<mojom::DevicePairingHandler> receiver) {
   return DevicePairingHandlerImpl::Factory::Create(
       std::move(receiver), adapter_state_controller, bluetooth_adapter_,
-      fast_pair_delegate_, std::move(finished_pairing_callback));
+      fast_pair_delegate_);
 }
 
 void DiscoverySessionManagerImpl::AdapterDiscoveringChanged(

@@ -64,8 +64,7 @@ class DiscoverySessionManager : public AdapterStateController::Observer,
   // DevicePairingHandler.
   virtual std::unique_ptr<DevicePairingHandler> CreateDevicePairingHandler(
       AdapterStateController* adapter_state_controller,
-      mojo::PendingReceiver<mojom::DevicePairingHandler> receiver,
-      base::OnceClosure finished_pairing_callback) = 0;
+      mojo::PendingReceiver<mojom::DevicePairingHandler> receiver) = 0;
 
  private:
   friend class DiscoverySessionManagerImplTest;
@@ -80,7 +79,6 @@ class DiscoverySessionManager : public AdapterStateController::Observer,
   // |id_to_pairing_handler_map_|. Returns the remote connected to the handler.
   mojo::PendingRemote<mojom::DevicePairingHandler>
   RegisterNewDevicePairingHandler(mojo::RemoteSetElementId id);
-  void OnPairingFinished(mojo::RemoteSetElementId id);
 
   bool IsBluetoothEnabled() const;
   void OnDelegateDisconnected(mojo::RemoteSetElementId id);

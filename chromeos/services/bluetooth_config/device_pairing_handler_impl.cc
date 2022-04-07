@@ -34,18 +34,16 @@ std::unique_ptr<DevicePairingHandler> DevicePairingHandlerImpl::Factory::Create(
     mojo::PendingReceiver<mojom::DevicePairingHandler> pending_receiver,
     AdapterStateController* adapter_state_controller,
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
-    FastPairDelegate* fast_pair_delegate,
-    base::OnceClosure finished_pairing_callback) {
+    FastPairDelegate* fast_pair_delegate) {
   if (g_test_factory) {
-    return g_test_factory->CreateInstance(std::move(pending_receiver),
-                                          adapter_state_controller,
-                                          bluetooth_adapter, fast_pair_delegate,
-                                          std::move(finished_pairing_callback));
+    return g_test_factory->CreateInstance(
+        std::move(pending_receiver), adapter_state_controller,
+        bluetooth_adapter, fast_pair_delegate);
   }
 
   return base::WrapUnique(new DevicePairingHandlerImpl(
       std::move(pending_receiver), adapter_state_controller, bluetooth_adapter,
-      fast_pair_delegate, std::move(finished_pairing_callback)));
+      fast_pair_delegate));
 }
 
 // static
@@ -64,11 +62,9 @@ DevicePairingHandlerImpl::DevicePairingHandlerImpl(
     mojo::PendingReceiver<mojom::DevicePairingHandler> pending_receiver,
     AdapterStateController* adapter_state_controller,
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
-    FastPairDelegate* fast_pair_delegate,
-    base::OnceClosure finished_pairing_callback)
+    FastPairDelegate* fast_pair_delegate)
     : DevicePairingHandler(std::move(pending_receiver),
-                           adapter_state_controller,
-                           std::move(finished_pairing_callback)),
+                           adapter_state_controller),
       bluetooth_adapter_(std::move(bluetooth_adapter)),
       fast_pair_delegate_(fast_pair_delegate) {}
 
@@ -81,8 +77,6 @@ DevicePairingHandlerImpl::~DevicePairingHandlerImpl() {
         << current_pairing_device_id() << ", canceling pairing";
     CancelPairing();
   }
-
-  NotifyFinished();
 }
 
 void DevicePairingHandlerImpl::FetchDevice(const std::string& device_address,
@@ -256,7 +250,6 @@ void DevicePairingHandlerImpl::OnDeviceConnect(
     BLUETOOTH_LOG(EVENT) << "Device " << current_pairing_device_id()
                          << " successfully paired";
     FinishCurrentPairingRequest(absl::nullopt);
-    NotifyFinished();
     return;
   }
 
@@ -302,7 +295,6 @@ void DevicePairingHandlerImpl::HandlePairingFailed(
         << "is connected. Handling like pairing succeeded. Error code: "
         << error_code;
     FinishCurrentPairingRequest(absl::nullopt);
-    NotifyFinished();
     return;
   }
 

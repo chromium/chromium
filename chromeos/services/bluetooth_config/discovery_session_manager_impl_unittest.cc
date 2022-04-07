@@ -197,17 +197,14 @@ class DiscoverySessionManagerImplTest : public testing::Test {
         mojo::PendingReceiver<mojom::DevicePairingHandler> pending_receiver,
         AdapterStateController* adapter_state_controller,
         scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
-        FastPairDelegate* fast_pair_delegate,
-        base::OnceClosure finished_pairing_callback) override {
+        FastPairDelegate* fast_pair_delegate) override {
       EXPECT_TRUE(pending_receiver);
       EXPECT_TRUE(adapter_state_controller);
       EXPECT_TRUE(bluetooth_adapter);
-      EXPECT_TRUE(finished_pairing_callback);
 
       auto fake_device_pairing_handler =
           std::make_unique<FakeDevicePairingHandler>(
-              std::move(pending_receiver), adapter_state_controller,
-              std::move(finished_pairing_callback));
+              std::move(pending_receiver), adapter_state_controller);
       device_pairing_handlers_.push_back(fake_device_pairing_handler.get());
       return fake_device_pairing_handler;
     }
@@ -437,9 +434,6 @@ TEST_F(DiscoverySessionManagerImplTest, MultipleClientsAttemptPairing) {
       device::ConnectionFailureReason::kFailed);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(result, mojom::PairingResult::kNonAuthFailure);
-
-  // First client's pairing handler should still be alive because we can retry
-  // pairing.
   EXPECT_TRUE(delegate1->IsMojoPipeConnected());
   EXPECT_TRUE(delegate1->pairing_handler().is_connected());
   EXPECT_TRUE(pairing_delegate1->IsMojoPipeConnected());
@@ -463,11 +457,13 @@ TEST_F(DiscoverySessionManagerImplTest, MultipleClientsAttemptPairing) {
       /*failure_reason=*/absl::nullopt);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(result, mojom::PairingResult::kSuccess);
+  EXPECT_TRUE(delegate1->IsMojoPipeConnected());
+  EXPECT_TRUE(delegate1->pairing_handler().is_connected());
+  EXPECT_TRUE(pairing_delegate2->IsMojoPipeConnected());
 
-  // First client's Mojo pipes should be disconnected.
-  EXPECT_FALSE(delegate1->IsMojoPipeConnected());
-  EXPECT_FALSE(delegate1->pairing_handler().is_connected());
-  EXPECT_FALSE(pairing_delegate2->IsMojoPipeConnected());
+  // Disconnect the first client.
+  delegate1->DisconnectMojoPipe();
+
   // Going from 1+ to 1 discovery sessions should not notify observers.
   EXPECT_TRUE(observer->has_at_least_one_discovery_session());
   EXPECT_EQ(1, observer->num_discovery_session_changed_calls());
@@ -494,12 +490,14 @@ TEST_F(DiscoverySessionManagerImplTest, MultipleClientsAttemptPairing) {
       /*failure_reason=*/absl::nullopt);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(result, mojom::PairingResult::kSuccess);
+  EXPECT_TRUE(delegate2->IsMojoPipeConnected());
+  EXPECT_TRUE(delegate2->pairing_handler().is_connected());
+  EXPECT_TRUE(pairing_delegate3->IsMojoPipeConnected());
 
-  // Second client's Mojo pipes should be disconnected and discovery stopped.
-  EXPECT_FALSE(delegate2->IsMojoPipeConnected());
-  EXPECT_FALSE(delegate2->pairing_handler().is_connected());
-  EXPECT_FALSE(pairing_delegate3->IsMojoPipeConnected());
+  // Disconnect the second client.
+  delegate2->DisconnectMojoPipe();
   InvokePendingStopScanCallback(/*success=*/true);
+
   // Going from 1 to 0 discovery sessions should notify observers.
   EXPECT_FALSE(observer->has_at_least_one_discovery_session());
   EXPECT_EQ(2, observer->num_discovery_session_changed_calls());
@@ -627,11 +625,11 @@ TEST_F(DiscoverySessionManagerImplTest,
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(result, mojom::PairingResult::kSuccess);
 
-  // The client's Mojo pipes should now be disconnected and discovery stopped.
-  EXPECT_FALSE(delegate->IsMojoPipeConnected());
-  EXPECT_FALSE(delegate->pairing_handler().is_connected());
-  EXPECT_FALSE(pairing_delegate->IsMojoPipeConnected());
-  InvokePendingStopScanCallback(/*success=*/true);
+  // |delegate| will still be connected.
+  EXPECT_TRUE(delegate->pairing_handler().is_connected());
+  EXPECT_TRUE(delegate->IsMojoPipeConnected());
+  EXPECT_TRUE(delegate->pairing_handler().is_connected());
+  EXPECT_TRUE(pairing_delegate->IsMojoPipeConnected());
 }
 
 }  // namespace bluetooth_config

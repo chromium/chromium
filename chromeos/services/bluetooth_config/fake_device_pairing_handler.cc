@@ -11,30 +11,23 @@ namespace bluetooth_config {
 
 FakeDevicePairingHandler::FakeDevicePairingHandler(
     mojo::PendingReceiver<mojom::DevicePairingHandler> pending_receiver,
-    AdapterStateController* adapter_state_controller,
-    base::OnceClosure finished_pairing_callback)
+    AdapterStateController* adapter_state_controller)
     : DevicePairingHandler(std::move(pending_receiver),
-                           adapter_state_controller,
-                           std::move(finished_pairing_callback)) {}
+                           adapter_state_controller) {}
 
 FakeDevicePairingHandler::~FakeDevicePairingHandler() {
+  if (current_pairing_device_id().empty())
+    return;
+
   // If we have a pairing attempt and this class is destroyed, cancel the
   // pairing.
-  if (!current_pairing_device_id().empty())
-    CancelPairing();
-
-  NotifyFinished();
+  CancelPairing();
 }
 
 void FakeDevicePairingHandler::SimulatePairDeviceFinished(
     absl::optional<device::ConnectionFailureReason> failure_reason) {
   DCHECK(!current_pairing_device_id().empty());
   FinishCurrentPairingRequest(failure_reason);
-
-  // If the pairing was a success, notify owner of this class pairing has
-  // finished.
-  if (!failure_reason.has_value())
-    NotifyFinished();
 }
 
 void FakeDevicePairingHandler::SimulateFetchDeviceFinished(

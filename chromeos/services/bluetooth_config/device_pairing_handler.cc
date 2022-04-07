@@ -64,10 +64,8 @@ mojom::PairingResult GetPairingResult(
 
 DevicePairingHandler::DevicePairingHandler(
     mojo::PendingReceiver<mojom::DevicePairingHandler> pending_receiver,
-    AdapterStateController* adapter_state_controller,
-    base::OnceClosure finished_pairing_callback)
-    : adapter_state_controller_(adapter_state_controller),
-      finished_pairing_callback_(std::move(finished_pairing_callback)) {
+    AdapterStateController* adapter_state_controller)
+    : adapter_state_controller_(adapter_state_controller) {
   adapter_state_controller_observation_.Observe(adapter_state_controller_);
   receiver_.Bind(std::move(pending_receiver));
 }
@@ -126,15 +124,6 @@ void DevicePairingHandler::SendAuthorizePairing() {
                        << current_pairing_device_id();
   delegate_->AuthorizePairing(base::BindOnce(
       &DevicePairingHandler::OnConfirmPairing, weak_ptr_factory_.GetWeakPtr()));
-}
-
-void DevicePairingHandler::NotifyFinished() {
-  // |finished_pairing_callback_| can be null if we already succeeded from
-  // pairing or the delegate disconnected, and now this handler is being
-  // deleted.
-  if (finished_pairing_callback_.is_null())
-    return;
-  std::move(finished_pairing_callback_).Run();
 }
 
 void DevicePairingHandler::FinishCurrentPairingRequest(

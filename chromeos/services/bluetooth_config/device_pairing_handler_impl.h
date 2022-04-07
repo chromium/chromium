@@ -31,8 +31,7 @@ class DevicePairingHandlerImpl
         mojo::PendingReceiver<mojom::DevicePairingHandler> pending_receiver,
         AdapterStateController* adapter_state_controller,
         scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
-        FastPairDelegate* fast_pair_delegate,
-        base::OnceClosure finished_pairing_callback);
+        FastPairDelegate* fast_pair_delegate);
     static void SetFactoryForTesting(Factory* test_factory);
 
    protected:
@@ -41,16 +40,14 @@ class DevicePairingHandlerImpl
         mojo::PendingReceiver<mojom::DevicePairingHandler> pending_receiver,
         AdapterStateController* adapter_state_controller,
         scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
-        FastPairDelegate* fast_pair_delegate,
-        base::OnceClosure finished_pairing_callback) = 0;
+        FastPairDelegate* fast_pair_delegate) = 0;
   };
 
   DevicePairingHandlerImpl(
       mojo::PendingReceiver<mojom::DevicePairingHandler> pending_receiver,
       AdapterStateController* adapter_state_controller,
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
-      FastPairDelegate* fast_pair_delegate,
-      base::OnceClosure finished_pairing_callback);
+      FastPairDelegate* fast_pair_delegate);
   ~DevicePairingHandlerImpl() override;
 
  private:

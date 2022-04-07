@@ -30,8 +30,7 @@ class DevicePairingHandler : public mojom::DevicePairingHandler,
  protected:
   DevicePairingHandler(
       mojo::PendingReceiver<mojom::DevicePairingHandler> pending_receiver,
-      AdapterStateController* adapter_state_controller,
-      base::OnceClosure finished_pairing_callback);
+      AdapterStateController* adapter_state_controller);
 
   // Implementation-specific method that attempts to pair with the device with
   // id |device_id|.
@@ -58,10 +57,6 @@ class DevicePairingHandler : public mojom::DevicePairingHandler,
   void SendKeysEntered(uint32_t entered);
   void SendConfirmPasskey(uint32_t passkey);
   void SendAuthorizePairing();
-
-  // Calls the finished_pairing_callback_ to indicate that this class should no
-  // longer handle pairing requests. This is called at most once.
-  void NotifyFinished();
 
   // Invokes |pair_device_callback_| and resets this class' state to be ready
   // for another pairing request.
@@ -104,15 +99,6 @@ class DevicePairingHandler : public mojom::DevicePairingHandler,
   // Client callback set in PairDevice(), to be invoked once pairing has
   // finished.
   PairDeviceCallback pair_device_callback_;
-
-  // Callback invoked that indicates this class should no longer handle any more
-  // pairing attempts. This is the case if:
-  // 1) The delegate disconnects
-  // 2) Pairing is successful
-  // 3) The handler is deleted
-  // If pairing is unsuccessful, this callback won't be invoked because this
-  // handler can still be reused for another pairing attempt.
-  base::OnceClosure finished_pairing_callback_;
 
   mojo::Receiver<mojom::DevicePairingHandler> receiver_{this};
 

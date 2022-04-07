@@ -44,8 +44,7 @@ class DiscoverySessionManagerImpl : public DiscoverySessionManager,
   void OnHasAtLeastOneDiscoveryClientChanged() override;
   std::unique_ptr<DevicePairingHandler> CreateDevicePairingHandler(
       AdapterStateController* adapter_state_controller,
-      mojo::PendingReceiver<mojom::DevicePairingHandler> receiver,
-      base::OnceClosure finished_pairing_callback) override;
+      mojo::PendingReceiver<mojom::DevicePairingHandler> receiver) override;
 
   // device::BluetoothAdapter::Observer:
   void AdapterDiscoveringChanged(device::BluetoothAdapter* adapter,

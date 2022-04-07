@@ -30,8 +30,7 @@ class FakeDiscoverySessionManager : public DiscoverySessionManager {
   void OnHasAtLeastOneDiscoveryClientChanged() override;
   std::unique_ptr<DevicePairingHandler> CreateDevicePairingHandler(
       AdapterStateController* adapter_state_controller,
-      mojo::PendingReceiver<mojom::DevicePairingHandler> receiver,
-      base::OnceClosure finished_pairing_callback) override;
+      mojo::PendingReceiver<mojom::DevicePairingHandler> receiver) override;
 
   bool is_discovery_session_active_ = false;
 };
