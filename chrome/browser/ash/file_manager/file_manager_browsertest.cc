@@ -1596,6 +1596,14 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("recentAudioDownloadsAndDrive")
             .EnableFiltersInRecents()
             .FilesSwa(),
+        TestCase("recentDocumentsDownloads").EnableFiltersInRecents(),
+        TestCase("recentDocumentsDownloads")
+            .EnableFiltersInRecents()
+            .FilesSwa(),
+        TestCase("recentDocumentsDownloadsAndDrive").EnableFiltersInRecents(),
+        TestCase("recentDocumentsDownloadsAndDrive")
+            .EnableFiltersInRecents()
+            .FilesSwa(),
         TestCase("recentImagesDownloads"),
         TestCase("recentImagesDownloads").FilesSwa(),
         TestCase("recentImagesDownloads").EnableFiltersInRecents(),

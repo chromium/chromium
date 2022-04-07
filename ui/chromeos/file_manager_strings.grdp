@@ -86,6 +86,9 @@
   <message name="IDS_FILE_BROWSER_MEDIA_VIEW_AUDIO_ROOT_LABEL" desc="A label for the 'Audio' root of media views.">
     Audio
   </message>
+  <message name="IDS_FILE_BROWSER_MEDIA_VIEW_DOCUMENTS_ROOT_LABEL" desc="A label for the 'Documents' root of media views.">
+    Documents
+  </message>
   <message name="IDS_FILE_BROWSER_RECENT_VIEW_FILTER_ON" desc="Message read by Chromevox/screenreader when curtain filter in Recent become active.">
     <ph name="FILTER_NAME">$1<ex>Audio</ex></ph> filter is on.
   </message>
@@ -1335,6 +1338,9 @@
   </message>
   <message name="IDS_FILE_BROWSER_PLAIN_TEXT_FILE_TYPE" desc="Plain text file type">
     Plain text
+  </message>
+  <message name="IDS_FILE_BROWSER_CSV_TEXT_FILE_TYPE" desc="CSV file type">
+    CSV text
   </message>
   <message name="IDS_FILE_BROWSER_PDF_DOCUMENT_FILE_TYPE" desc="PDF document file type">
     PDF document

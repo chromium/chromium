@@ -29,6 +29,19 @@ const RECENTLY_MODIFIED_MOV_VIDEO = new TestEntryInfo({
   typeText: 'QuickTime video'
 });
 
+// Test entry for a recently-modified document file.
+const RECENTLY_MODIFIED_DOCUMENT = new TestEntryInfo({
+  type: EntryType.FILE,
+  sourceFileName: 'text.docx',
+  targetPath: 'word.docx',
+  mimeType: 'application/vnd.openxmlformats-officedocument' +
+      '.wordprocessingml.document',
+  lastModifiedTime: 'Jul 4, 2038, 10:35 AM',
+  nameText: 'word.docx',
+  sizeText: '9 KB',
+  typeText: 'Word document'
+});
+
 /**
  * Enum for supported recent filter types.
  * @enum {string}
@@ -38,6 +51,7 @@ const RecentFilterType = {
   AUDIO: 'audio',
   IMAGE: 'image',
   VIDEO: 'video',
+  DOCUMENT: 'document',
 };
 
 /**
@@ -63,6 +77,7 @@ async function navigateToRecent(appId, type = RecentFilterType.ALL) {
     [RecentFilterType.AUDIO]: '/Audio',
     [RecentFilterType.IMAGE]: '/Images',
     [RecentFilterType.VIDEO]: '/Videos',
+    [RecentFilterType.DOCUMENT]: '/Documents',
   };
 
   if (await isFiltersInRecentsEnabled()) {
@@ -156,6 +171,18 @@ async function verifyRecentImages(appId, expectedEntries) {
  */
 async function verifyRecentVideos(appId, expectedEntries) {
   await navigateToRecent(appId, RecentFilterType.VIDEO);
+  await verifyCurrentEntries(appId, expectedEntries);
+}
+
+/**
+ * Opens the Recent Document folder and checks the expected entries are
+ * showing there.
+ *
+ * @param {string} appId Files app windowId.
+ * @param {!Array<!TestEntryInfo>} expectedEntries Expected file entries.
+ */
+async function verifyRecentDocuments(appId, expectedEntries) {
+  await navigateToRecent(appId, RecentFilterType.DOCUMENT);
   await verifyCurrentEntries(appId, expectedEntries);
 }
 
@@ -400,6 +427,32 @@ testcase.recentVideosDownloadsAndDrive = async () => {
   // from Drive should be shown too.
   await verifyRecentVideos(
       appId, [RECENTLY_MODIFIED_VIDEO, RECENTLY_MODIFIED_VIDEO]);
+};
+
+/**
+ * Tests that the document file entries populated in Downloads folder recently
+ * will be displayed in Recent Document folder.
+ */
+testcase.recentDocumentsDownloads = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [RECENTLY_MODIFIED_DOCUMENT], []);
+  await verifyRecentDocuments(appId, [RECENTLY_MODIFIED_DOCUMENT]);
+};
+
+/**
+ * Tests that if the video file entries with MIME type are being populated
+ * in both Downloads folder and My Drive folder, the file entries will be
+ * displayed in Recent Document folder regardless of whether it's from Downloads
+ * or My Drive.
+ */
+testcase.recentDocumentsDownloadsAndDrive = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [RECENTLY_MODIFIED_DOCUMENT],
+      [RECENTLY_MODIFIED_DOCUMENT]);
+  // RECENTLY_MODIFIED_DOCUMENT exists in both local and drive folder, the
+  // file will appear twice in the result.
+  await verifyRecentDocuments(
+      appId, [RECENTLY_MODIFIED_DOCUMENT, RECENTLY_MODIFIED_DOCUMENT]);
 };
 
 /**

@@ -38,6 +38,7 @@ class RecentSource {
   enum class FileType {
     kAll,
     kAudio,
+    kDocument,
     kImage,
     kVideo,
   };

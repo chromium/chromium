@@ -1218,6 +1218,9 @@ FileManagerPrivateInternalGetRecentFilesFunction::Run() {
     case api::file_manager_private::RECENT_FILE_TYPE_VIDEO:
       file_type = chromeos::RecentModel::FileType::kVideo;
       break;
+    case api::file_manager_private::RECENT_FILE_TYPE_DOCUMENT:
+      file_type = chromeos::RecentModel::FileType::kDocument;
+      break;
     default:
       NOTREACHED();
       return RespondNow(Error("Unknown recent file type is specified."));

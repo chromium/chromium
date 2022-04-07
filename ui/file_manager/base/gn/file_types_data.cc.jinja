@@ -19,4 +19,12 @@ const base::flat_map<std::string, std::string> kExtensionToMIME({
 {%- endfor %}
 });
 
+const base::flat_set<std::string> kDocumentMIMETypes({
+{%- for file_type in model.file_types %}
+{%- if file_type['mime'] and file_type['type'] in ['text', 'hosted', 'document'] %}
+  "{{ file_type['mime'] }}",
+{%- endif %}
+{%- endfor %}
+});
+
 }  // namespace files_types_data

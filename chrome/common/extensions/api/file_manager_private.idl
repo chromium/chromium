@@ -321,7 +321,8 @@ enum RecentFileType {
   all,
   audio,
   image,
-  video
+  video,
+  document
 };
 
 enum CrostiniEventType {

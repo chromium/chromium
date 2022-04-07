@@ -278,6 +278,7 @@ chrome.fileManagerPrivate.RecentFileType = {
   AUDIO: 'audio',
   IMAGE: 'image',
   VIDEO: 'video',
+  DOCUMENT: 'document',
 };
 
 /** @enum {string} */

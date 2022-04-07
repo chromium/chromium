@@ -50,6 +50,8 @@ let fileTypeFiltersController;
  */
 metrics.recordEnum = function(name, value, opt_validValues) {};
 
+const TOTAL_FILTER_BUTTON_COUNT = 5;
+
 export function setUp() {
   // Mock loadTimeData strings.
   loadTimeData.resetForTesting({
@@ -57,6 +59,7 @@ export function setUp() {
     MEDIA_VIEW_AUDIO_ROOT_LABEL: 'Audio',
     MEDIA_VIEW_IMAGES_ROOT_LABEL: 'Images',
     MEDIA_VIEW_VIDEOS_ROOT_LABEL: 'Videos',
+    MEDIA_VIEW_DOCUMENTS_ROOT_LABEL: 'Documents',
     RECENT_VIEW_FILTER_ON: 'on',
     RECENT_VIEW_FILTER_OFF: 'off',
     RECENT_VIEW_FILTER_RESET: 'reset',
@@ -77,6 +80,7 @@ export function setUp() {
         AUDIO: 'audio',
         IMAGE: 'image',
         VIDEO: 'video',
+        DOCUMENT: 'document',
       },
     },
   };
@@ -138,12 +142,13 @@ export function setUp() {
  */
 export function testCreatedButtonLabels() {
   const buttons = container.children;
-  assertEquals(buttons.length, 4);
+  assertEquals(buttons.length, TOTAL_FILTER_BUTTON_COUNT);
 
   assertEquals(buttons[0].textContent, 'All');
   assertEquals(buttons[1].textContent, 'Audio');
   assertEquals(buttons[2].textContent, 'Images');
   assertEquals(buttons[3].textContent, 'Videos');
+  assertEquals(buttons[4].textContent, 'Documents');
 }
 
 /**
@@ -152,12 +157,13 @@ export function testCreatedButtonLabels() {
  */
 export function testButtonInitialActiveState() {
   const buttons = container.children;
-  assertEquals(buttons.length, 4);
+  assertEquals(buttons.length, TOTAL_FILTER_BUTTON_COUNT);
 
   assertTrue(buttons[0].classList.contains('active'));
   assertFalse(buttons[1].classList.contains('active'));
   assertFalse(buttons[2].classList.contains('active'));
   assertFalse(buttons[3].classList.contains('active'));
+  assertFalse(buttons[4].classList.contains('active'));
 }
 
 /**
@@ -167,7 +173,7 @@ export function testButtonInitialActiveState() {
  */
 export function testButtonToggleState() {
   const buttons = container.children;
-  assertEquals(buttons.length, 4);
+  assertEquals(buttons.length, TOTAL_FILTER_BUTTON_COUNT);
 
   // State change: inactive -> active -> inactive.
   assertFalse(buttons[1].classList.contains('active'));
@@ -188,7 +194,7 @@ export function testButtonToggleState() {
  */
 export function testOnlyOneButtonCanActive() {
   const buttons = container.children;
-  assertEquals(buttons.length, 4);
+  assertEquals(buttons.length, TOTAL_FILTER_BUTTON_COUNT);
 
   assertTrue(buttons[0].classList.contains('active'));
 
@@ -198,24 +204,28 @@ export function testOnlyOneButtonCanActive() {
   assertTrue(buttons[1].classList.contains('active'));
   assertFalse(buttons[2].classList.contains('active'));
   assertFalse(buttons[3].classList.contains('active'));
+  assertFalse(buttons[4].classList.contains('active'));
 
   buttons[2].click();
   assertFalse(buttons[0].classList.contains('active'));
   assertFalse(buttons[1].classList.contains('active'));
   assertTrue(buttons[2].classList.contains('active'));
   assertFalse(buttons[3].classList.contains('active'));
+  assertFalse(buttons[4].classList.contains('active'));
 
   buttons[3].click();
   assertFalse(buttons[0].classList.contains('active'));
   assertFalse(buttons[1].classList.contains('active'));
   assertFalse(buttons[2].classList.contains('active'));
   assertTrue(buttons[3].classList.contains('active'));
+  assertFalse(buttons[4].classList.contains('active'));
 
   buttons[0].click();
   assertTrue(buttons[0].classList.contains('active'));
   assertFalse(buttons[1].classList.contains('active'));
   assertFalse(buttons[2].classList.contains('active'));
   assertFalse(buttons[3].classList.contains('active'));
+  assertFalse(buttons[4].classList.contains('active'));
 }
 
 /**
@@ -236,7 +246,7 @@ export function testContainerIsShownOnlyInRecents() {
  */
 export function testActiveButtonIsResetOnLeavingRecents() {
   const buttons = container.children;
-  assertEquals(buttons.length, 4);
+  assertEquals(buttons.length, TOTAL_FILTER_BUTTON_COUNT);
 
   directoryModel.changeDirectoryEntry(recentEntry);
 
@@ -245,6 +255,7 @@ export function testActiveButtonIsResetOnLeavingRecents() {
   assertTrue(buttons[1].classList.contains('active'));
   assertFalse(buttons[2].classList.contains('active'));
   assertFalse(buttons[3].classList.contains('active'));
+  assertFalse(buttons[4].classList.contains('active'));
 
   // Changing directory to the same Recent doesn't reset states.
   directoryModel.changeDirectoryEntry(recentEntry);
@@ -252,18 +263,21 @@ export function testActiveButtonIsResetOnLeavingRecents() {
   assertTrue(buttons[1].classList.contains('active'));
   assertFalse(buttons[2].classList.contains('active'));
   assertFalse(buttons[3].classList.contains('active'));
+  assertFalse(buttons[4].classList.contains('active'));
 
   directoryModel.changeDirectoryEntry(myFilesEntry);
   assertTrue(buttons[0].classList.contains('active'));
   assertFalse(buttons[1].classList.contains('active'));
   assertFalse(buttons[2].classList.contains('active'));
   assertFalse(buttons[3].classList.contains('active'));
+  assertFalse(buttons[4].classList.contains('active'));
 
   directoryModel.changeDirectoryEntry(recentEntry);
   assertTrue(buttons[0].classList.contains('active'));
   assertFalse(buttons[1].classList.contains('active'));
   assertFalse(buttons[2].classList.contains('active'));
   assertFalse(buttons[3].classList.contains('active'));
+  assertFalse(buttons[4].classList.contains('active'));
 }
 
 /**
@@ -273,7 +287,7 @@ export function testActiveButtonIsResetOnLeavingRecents() {
  */
 export function testAppliedFilters() {
   const buttons = container.children;
-  assertEquals(buttons.length, 4);
+  assertEquals(buttons.length, TOTAL_FILTER_BUTTON_COUNT);
 
   directoryModel.changeDirectoryEntry(recentEntry);
 
@@ -302,6 +316,13 @@ export function testAppliedFilters() {
   assertEquals(
       recentEntry.recentFileType,
       chrome.fileManagerPrivate.RecentFileType.VIDEO);
+  assertTrue(window.isRescanCalled);
+  window.isRescanCalled = false;
+
+  buttons[4].click();
+  assertEquals(
+      recentEntry.recentFileType,
+      chrome.fileManagerPrivate.RecentFileType.DOCUMENT);
   assertTrue(window.isRescanCalled);
   window.isRescanCalled = false;
 

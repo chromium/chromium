@@ -43,6 +43,10 @@ export class FileTypeFiltersController {
         chrome.fileManagerPrivate.RecentFileType.VIDEO,
         'MEDIA_VIEW_VIDEOS_ROOT_LABEL'
       ],
+      [
+        chrome.fileManagerPrivate.RecentFileType.DOCUMENT,
+        'MEDIA_VIEW_DOCUMENTS_ROOT_LABEL',
+      ]
     ]);
 
     /**
@@ -97,6 +101,13 @@ export class FileTypeFiltersController {
     this.videoFilterButton_ = this.createFilterButton_(
         chrome.fileManagerPrivate.RecentFileType.VIDEO);
 
+    /**
+     * @private {!HTMLElement}
+     * @const
+     */
+    this.documentFilterButton_ = this.createFilterButton_(
+        chrome.fileManagerPrivate.RecentFileType.DOCUMENT);
+
     this.directoryModel_.addEventListener(
         'directory-changed', this.onCurrentDirectoryChanged_.bind(this));
 
@@ -117,10 +128,11 @@ export class FileTypeFiltersController {
      */
     const FileTypeFiltersForUMA =
         /** @type {!Array<!chrome.fileManagerPrivate.RecentFileType>} */ ([
-          chrome.fileManagerPrivate.RecentFileType.ALL,    // 0
-          chrome.fileManagerPrivate.RecentFileType.AUDIO,  // 1
-          chrome.fileManagerPrivate.RecentFileType.IMAGE,  // 2
-          chrome.fileManagerPrivate.RecentFileType.VIDEO,  // 3
+          chrome.fileManagerPrivate.RecentFileType.ALL,       // 0
+          chrome.fileManagerPrivate.RecentFileType.AUDIO,     // 1
+          chrome.fileManagerPrivate.RecentFileType.IMAGE,     // 2
+          chrome.fileManagerPrivate.RecentFileType.VIDEO,     // 3
+          chrome.fileManagerPrivate.RecentFileType.DOCUMENT,  // 4
         ]);
     Object.freeze(FileTypeFiltersForUMA);
     metrics.recordEnum('Recent.FilterByType', fileType, FileTypeFiltersForUMA);
@@ -252,8 +264,11 @@ export class FileTypeFiltersController {
   updateButtonActiveStates_() {
     const currentFilter = this.recentEntry_.recentFileType;
     const buttons = [
-      this.allFilterButton_, this.audioFilterButton_, this.imageFilterButton_,
-      this.videoFilterButton_
+      this.allFilterButton_,
+      this.audioFilterButton_,
+      this.imageFilterButton_,
+      this.videoFilterButton_,
+      this.documentFilterButton_,
     ];
     buttons.forEach(button => {
       const fileTypeFilter =

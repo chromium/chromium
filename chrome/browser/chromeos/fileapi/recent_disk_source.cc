@@ -101,6 +101,8 @@ bool MatchesFileType(const base::FilePath& path,
       return net::MatchesMimeType(kImageMimeType, mime_type);
     case RecentSource::FileType::kVideo:
       return net::MatchesMimeType(kVideoMimeType, mime_type);
+    case RecentSource::FileType::kDocument:
+      return file_types_data::kDocumentMIMETypes.contains(mime_type);
     default:
       return false;
   }

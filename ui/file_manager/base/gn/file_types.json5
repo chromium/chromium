@@ -288,8 +288,15 @@
     "type": "text",
     "translationKey": "PLAIN_TEXT_FILE_TYPE",
     "subtype": "TXT",
-    "extensions": [".txt"],
+    "extensions": [".txt", ".text"],
     "mime": "text/plain"
+  },
+  {
+    "type": "text",
+    "translationKey": "CSV_TEXT_FILE_TYPE",
+    "subtype": "CSV",
+    "extensions": [".csv"],
+    "mime": "text/csv"
   },
 
   // Archive
@@ -399,7 +406,7 @@
     "translationKey": "GDOC_DOCUMENT_FILE_TYPE",
     "subtype": "doc",
     "extensions": [".gdoc"],
-    // "mime": "application/vnd.google-apps.document"
+    "mime": "application/vnd.google-apps.document"
   },
   {
     "type": "hosted",
@@ -407,7 +414,7 @@
     "translationKey": "GSHEET_DOCUMENT_FILE_TYPE",
     "subtype": "sheet",
     "extensions": [".gsheet"],
-    // "mime": "application/vnd.google-apps.spreadsheet"
+    "mime": "application/vnd.google-apps.spreadsheet"
   },
   {
     "type": "hosted",
@@ -415,7 +422,7 @@
     "translationKey": "GSLIDES_DOCUMENT_FILE_TYPE",
     "subtype": "slides",
     "extensions": [".gslides"],
-    // "mime": "application/vnd.google-apps.presentation"
+    "mime": "application/vnd.google-apps.presentation"
   },
   {
     "type": "hosted",
@@ -423,7 +430,7 @@
     "translationKey": "GDRAW_DOCUMENT_FILE_TYPE",
     "subtype": "draw",
     "extensions": [".gdraw"],
-    // "mime": "application/vnd.google-apps.drawing"
+    "mime": "application/vnd.google-apps.drawing"
   },
   {
     "type": "hosted",
@@ -431,7 +438,7 @@
     "translationKey": "GTABLE_DOCUMENT_FILE_TYPE",
     "subtype": "table",
     "extensions": [".gtable"],
-    // "mime": "application/vnd.google-apps.fusiontable"
+    "mime": "application/vnd.google-apps.fusiontable"
   },
   {
     "type": "hosted",
@@ -439,7 +446,7 @@
     "translationKey": "GLINK_DOCUMENT_FILE_TYPE",
     "subtype": "glink",
     "extensions": [".glink"],
-    // "mime": "application/vnd.google-apps.shortcut"
+    "mime": "application/vnd.google-apps.shortcut"
   },
   {
     "type": "hosted",
@@ -447,7 +454,7 @@
     "translationKey": "GFORM_DOCUMENT_FILE_TYPE",
     "subtype": "form",
     "extensions": [".gform"],
-    // "mime": "application/vnd.google-apps.form"
+    "mime": "application/vnd.google-apps.form"
   },
   {
     "type": "hosted",
@@ -455,7 +462,7 @@
     "translationKey": "GMAP_DOCUMENT_FILE_TYPE",
     "subtype": "map",
     "extensions": [".gmap"],
-    // "mime": "application/vnd.google-apps.map"
+    "mime": "application/vnd.google-apps.map"
   },
   {
     "type": "hosted",
@@ -463,7 +470,7 @@
     "translationKey": "GSITE_DOCUMENT_FILE_TYPE",
     "subtype": "site",
     "extensions": [".gsite"],
-    // "mime": "application/vnd.google-apps.site"
+    "mime": "application/vnd.google-apps.site"
   },
 
   // Others

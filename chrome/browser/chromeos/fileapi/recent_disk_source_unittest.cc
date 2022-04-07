@@ -302,6 +302,32 @@ TEST_F(RecentDiskSourceTest, GetVideoFiles) {
   EXPECT_EQ(base::Time::FromJavaTime(2000), files[3].last_modified());
 }
 
+TEST_F(RecentDiskSourceTest, GetDocumentFiles) {
+  // Oldest
+  ASSERT_TRUE(CreateEmptyFile("1.jpg", base::Time::FromJavaTime(1000)));
+  ASSERT_TRUE(CreateEmptyFile("2.mp4", base::Time::FromJavaTime(2000)));
+  ASSERT_TRUE(CreateEmptyFile("3.png", base::Time::FromJavaTime(3000)));
+  ASSERT_TRUE(CreateEmptyFile("4.doc", base::Time::FromJavaTime(4000)));
+  ASSERT_TRUE(CreateEmptyFile("5.gif", base::Time::FromJavaTime(5000)));
+  ASSERT_TRUE(CreateEmptyFile("6.txt", base::Time::FromJavaTime(6000)));
+  ASSERT_TRUE(CreateEmptyFile("7.avi", base::Time::FromJavaTime(7000)));
+  ASSERT_TRUE(CreateEmptyFile("8.gdoc", base::Time::FromJavaTime(8000)));
+  // Newest
+
+  std::vector<RecentFile> files =
+      GetRecentFiles(8, base::Time(), RecentSource::FileType::kDocument);
+
+  std::sort(files.begin(), files.end(), RecentFileComparator());
+
+  ASSERT_EQ(3u, files.size());
+  EXPECT_EQ("8.gdoc", files[0].url().path().BaseName().value());
+  EXPECT_EQ(base::Time::FromJavaTime(8000), files[0].last_modified());
+  EXPECT_EQ("6.txt", files[1].url().path().BaseName().value());
+  EXPECT_EQ(base::Time::FromJavaTime(6000), files[1].last_modified());
+  EXPECT_EQ("4.doc", files[2].url().path().BaseName().value());
+  EXPECT_EQ(base::Time::FromJavaTime(4000), files[2].last_modified());
+}
+
 TEST_F(RecentDiskSourceTest, GetRecentFiles_UmaStats) {
   base::HistogramTester histogram_tester;
 
