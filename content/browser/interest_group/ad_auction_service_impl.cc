@@ -460,6 +460,7 @@ void AdAuctionServiceImpl::OnAuctionComplete(
     std::vector<GURL> report_urls,
     std::vector<GURL> debug_loss_report_urls,
     std::vector<GURL> debug_win_report_urls,
+    ReportingMetadata ad_beacon_map,
     std::vector<std::string> errors) {
   // Delete the AuctionRunner. Since all arguments are passed by value, they're
   // all safe to used after this has been done.
@@ -487,13 +488,11 @@ void AdAuctionServiceImpl::OnAuctionComplete(
     return;
   }
   DCHECK(winning_group_id);  // Should always be present with a render_url
-  render_url =
-      GetFrame()
-          ->GetPage()
-          .fenced_frame_urls_map()
-          .AddFencedFrameURLWithInterestGroupInfo(
-              *render_url, {winning_group_id->owner, winning_group_id->name},
-              ad_component_urls);
+  FencedFrameURLMapping& fenced_frame_urls_map =
+      GetFrame()->GetPage().fenced_frame_urls_map();
+  render_url = fenced_frame_urls_map.AddFencedFrameURLWithInterestGroupInfo(
+      *render_url, {winning_group_id->owner, winning_group_id->name},
+      ad_component_urls, ad_beacon_map);
   DCHECK(render_url->is_valid());
 
   std::move(callback).Run(render_url);

@@ -209,6 +209,9 @@ interface SellerWorklet {
   // `report_url` The URL to request to report the result of the auction to the
   //  seller, if any.
   //
+  // `ad_beacon_map` The map of ad reporting events to URLs for fenced frame
+  //  reporting.
+  //
   // `errors` are various error messages to be used for debugging. These are too
   //  sensitive for the renderers to see. `errors` should not be assumed to be
   //  empty if the other values are populated, nor should it be assumed to be
@@ -227,6 +230,7 @@ interface SellerWorklet {
       bool has_scoring_signals_data_version) =>
           (string? signals_for_winner,
            url.mojom.Url? report_url,
+           map<string, url.mojom.Url> ad_beacon_map,
            array<string> error_msgs);
 
   // Establishes a debugger connection to the worklet.

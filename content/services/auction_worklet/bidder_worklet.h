@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
@@ -192,6 +193,7 @@ class BidderWorklet : public mojom::BidderWorklet {
         std::vector<std::string> error_msgs)>;
     using ReportWinCallbackInternal =
         base::OnceCallback<void(absl::optional<GURL> report_url,
+                                base::flat_map<std::string, GURL> ad_beacon_map,
                                 std::vector<std::string> errors)>;
 
     void ReportWin(const std::string& interest_group_name,
@@ -231,6 +233,7 @@ class BidderWorklet : public mojom::BidderWorklet {
     void PostReportWinCallbackToUserThread(
         ReportWinCallbackInternal callback,
         const absl::optional<GURL>& report_url,
+        base::flat_map<std::string, GURL> ad_beacon_map,
         std::vector<std::string> errors);
 
     void PostErrorBidCallbackToUserThread(
@@ -300,9 +303,11 @@ class BidderWorklet : public mojom::BidderWorklet {
 
   // Invokes the `callback` of `task` with the provided values, and removes
   // `task` from `report_win_tasks_`.
-  void DeliverReportWinOnUserThread(ReportWinTaskList::iterator task,
-                                    absl::optional<GURL> report_url,
-                                    std::vector<std::string> errors);
+  void DeliverReportWinOnUserThread(
+      ReportWinTaskList::iterator task,
+      absl::optional<GURL> report_url,
+      base::flat_map<std::string, GURL> ad_beacon_map,
+      std::vector<std::string> errors);
 
   // Returns true if unpaused and the script and WASM helper (if needed) have
   // loaded.

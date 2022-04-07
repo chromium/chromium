@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -186,6 +187,7 @@ class SellerWorklet : public mojom::SellerWorklet {
     using ReportResultCallbackInternal =
         base::OnceCallback<void(absl::optional<std::string> signals_for_winner,
                                 absl::optional<GURL> report_url,
+                                base::flat_map<std::string, GURL> ad_beacon_map,
                                 std::vector<std::string> errors)>;
 
     V8State(scoped_refptr<AuctionV8Helper> v8_helper,
@@ -247,6 +249,7 @@ class SellerWorklet : public mojom::SellerWorklet {
         ReportResultCallbackInternal callback,
         absl::optional<std::string> signals_for_winner,
         absl::optional<GURL> report_url,
+        base::flat_map<std::string, GURL> ad_beacon_map,
         std::vector<std::string> errors);
 
     static void PostResumeToUserThread(
@@ -306,6 +309,7 @@ class SellerWorklet : public mojom::SellerWorklet {
       ReportResultTaskList::iterator task,
       absl::optional<std::string> signals_for_winner,
       absl::optional<GURL> report_url,
+      base::flat_map<std::string, GURL> ad_beacon_map,
       std::vector<std::string> errors);
 
   // Returns true if unpaused and the script has loaded.

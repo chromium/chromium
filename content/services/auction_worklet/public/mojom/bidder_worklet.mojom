@@ -224,6 +224,9 @@ interface BidderWorklet {
   //  to the bidder. It will be null if no reports are requested, or the
   //  report script fails to run.
   //
+  // `ad_beacon_map` The map of ad reporting events to URLs for fenced frame
+  //  reporting.
+  //
   // `errors` is an array of any errors that occurred while attempting
   //  to run the worklet's reportWin() method. These are too sensitive for
   //  the renderer to see. There may be errors even when a `report_url` is
@@ -240,6 +243,7 @@ interface BidderWorklet {
             uint32 bidding_signals_data_version,
             bool has_bidding_signals_data_version) => (
                 url.mojom.Url? report_url,
+                map<string, url.mojom.Url> ad_beacon_map,
                 array<string> errors);
 
   // Establishes a debugger connection to the worklet.

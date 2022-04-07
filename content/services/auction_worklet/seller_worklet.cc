@@ -21,6 +21,7 @@
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
+#include "content/services/auction_worklet/register_ad_beacon_bindings.h"
 #include "content/services/auction_worklet/report_bindings.h"
 #include "content/services/auction_worklet/trusted_signals.h"
 #include "content/services/auction_worklet/worklet_loader.h"
@@ -669,6 +670,8 @@ void SellerWorklet::V8State::ReportResult(
   v8::Local<v8::ObjectTemplate> global_template =
       v8::ObjectTemplate::New(isolate);
   ReportBindings report_bindings(v8_helper_.get(), global_template);
+  RegisterAdBeaconBindings register_ad_beacon_bindings(v8_helper_.get(),
+                                                       global_template);
 
   // Short lived context, to avoid leaking data at global scope between either
   // repeated calls to this worklet, or to calls to any other worklet.
@@ -682,6 +685,7 @@ void SellerWorklet::V8State::ReportResult(
     PostReportResultCallbackToUserThread(std::move(callback),
                                          /*signals_for_winner=*/absl::nullopt,
                                          /*report_url=*/absl::nullopt,
+                                         /*ad_beacon_map=*/{},
                                          /*errors=*/std::vector<std::string>());
     return;
   }
@@ -705,6 +709,7 @@ void SellerWorklet::V8State::ReportResult(
     PostReportResultCallbackToUserThread(std::move(callback),
                                          /*signals_for_winner=*/absl::nullopt,
                                          /*report_url=*/absl::nullopt,
+                                         /*ad_beacon_map=*/{},
                                          /*errors=*/std::vector<std::string>());
     return;
   }
@@ -724,6 +729,7 @@ void SellerWorklet::V8State::ReportResult(
           std::move(callback),
           /*signals_for_winner=*/absl::nullopt,
           /*report_url=*/absl::nullopt,
+          /*ad_beacon_map=*/{},
           /*errors=*/std::vector<std::string>());
       return;
     }
@@ -741,7 +747,8 @@ void SellerWorklet::V8State::ReportResult(
            .ToLocal(&signals_for_winner_value)) {
     PostReportResultCallbackToUserThread(
         std::move(callback), /*signals_for_winner=*/absl::nullopt,
-        /*report_url=*/absl::nullopt, std::move(errors_out));
+        /*report_url=*/absl::nullopt, /*ad_beacon_map=*/{},
+        std::move(errors_out));
     return;
   }
 
@@ -755,7 +762,8 @@ void SellerWorklet::V8State::ReportResult(
 
   PostReportResultCallbackToUserThread(
       std::move(callback), std::move(signals_for_winner),
-      report_bindings.report_url(), std::move(errors_out));
+      report_bindings.report_url(),
+      register_ad_beacon_bindings.TakeAdBeaconMap(), std::move(errors_out));
 }
 
 void SellerWorklet::V8State::ConnectDevToolsAgent(
@@ -808,12 +816,14 @@ void SellerWorklet::V8State::PostReportResultCallbackToUserThread(
     ReportResultCallbackInternal callback,
     absl::optional<std::string> signals_for_winner,
     absl::optional<GURL> report_url,
+    base::flat_map<std::string, GURL> ad_beacon_map,
     std::vector<std::string> errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   user_thread_->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), std::move(signals_for_winner),
-                     std::move(report_url), std::move(errors)));
+                     std::move(report_url), std::move(ad_beacon_map),
+                     std::move(errors)));
 }
 
 void SellerWorklet::ResumeIfPaused() {
@@ -961,13 +971,15 @@ void SellerWorklet::DeliverReportResultCallbackOnUserThread(
     ReportResultTaskList::iterator task,
     const absl::optional<std::string> signals_for_winner,
     const absl::optional<GURL> report_url,
+    base::flat_map<std::string, GURL> ad_beacon_map,
     std::vector<std::string> errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
   if (load_script_error_msg_)
     errors.insert(errors.begin(), load_script_error_msg_.value());
 
-  std::move(task->callback).Run(signals_for_winner, report_url, errors);
+  std::move(task->callback)
+      .Run(signals_for_winner, report_url, ad_beacon_map, errors);
   report_result_tasks_.erase(task);
 }
 

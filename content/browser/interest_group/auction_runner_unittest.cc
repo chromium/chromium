@@ -49,6 +49,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
+#include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-shared.h"
 
 using auction_worklet::TestDevToolsAgentClient;
 
@@ -56,6 +57,7 @@ namespace content {
 namespace {
 
 using InterestGroupKey = AuctionRunner::InterestGroupKey;
+using blink::mojom::ReportingDestination;
 
 const std::string kBidder1Name{"Ad Platform"};
 const char kBidder1DebugLossReportUrl[] =
@@ -267,6 +269,9 @@ std::string MakeBidScript(const url::Origin& seller,
         throw new Error(`wrong dataVersion (${browserSignals.dataVersion})`);
 
       sendReportTo("https://buyer-reporting.example.com/" + bid);
+      registerAdBeacon({
+        "click": "https://buyer-reporting.example.com/" + 2*bid,
+      });
     }
   )";
   return base::StringPrintf(
@@ -455,8 +460,12 @@ std::string MakeDecisionScript(
         throw new Error("modifiedBid unexpectedly in browserSignals");
       if (browserSignals.dataVersion !== undefined)
         throw new Error(`wrong dataVersion (${browserSignals.dataVersion})`);
-      if (sendReportUrl)
+      if (sendReportUrl) {
         sendReportTo(sendReportUrl + browserSignals.bid);
+        registerAdBeacon({
+          "click": sendReportUrl + 2*browserSignals.bid,
+        });
+      }
       return browserSignals;
     }
 
@@ -513,6 +522,9 @@ const char kAuctionScriptRejects2[] = R"(
 const char kBasicReportResult[] = R"(
   function reportResult(auctionConfig, browserSignals) {
     sendReportTo("https://reporting.example.com/" + browserSignals.bid);
+    registerAdBeacon({
+      "click": "https://reporting.example.com/" + 2*browserSignals.bid,
+    });
     return browserSignals;
   }
 )";
@@ -711,7 +723,8 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
       absl::optional<GURL> report_url = absl::nullopt) {
     DCHECK(report_win_callback_);
     std::move(report_win_callback_)
-        .Run(report_url, /*errors=*/std::vector<std::string>());
+        .Run(report_url, /*ad_beacon_map=*/{},
+             /*errors=*/std::vector<std::string>());
   }
 
   // Flush the receiver pipe and return whether or not its closed.
@@ -871,7 +884,7 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
     DCHECK(report_result_callback_);
     std::move(report_result_callback_)
         .Run(/*signals_for_winner=*/absl::nullopt, std::move(report_url),
-             errors);
+             /*ad_beacon_map=*/{}, errors);
   }
 
   void Flush() { receiver_.FlushForTesting(); }
@@ -1150,6 +1163,8 @@ class AuctionRunnerTest : public testing::Test,
     std::vector<GURL> report_urls;
     std::vector<GURL> debug_loss_report_urls;
     std::vector<GURL> debug_win_report_urls;
+    ReportingMetadata ad_beacon_map;
+
     std::vector<std::string> errors;
 
     // Metadata about `bidder1` and `bidder2`, pulled from the
@@ -1324,6 +1339,7 @@ class AuctionRunnerTest : public testing::Test,
                          std::vector<GURL> report_urls,
                          std::vector<GURL> debug_loss_report_urls,
                          std::vector<GURL> debug_win_report_urls,
+                         ReportingMetadata ad_beacon_map,
                          std::vector<std::string> errors) {
     DCHECK(auction_run_loop_);
     DCHECK(!auction_complete_);
@@ -1344,6 +1360,7 @@ class AuctionRunnerTest : public testing::Test,
     result_.bidder2_prev_wins.clear();
     result_.debug_loss_report_urls = std::move(debug_loss_report_urls);
     result_.debug_win_report_urls = std::move(debug_win_report_urls);
+    result_.ad_beacon_map = std::move(ad_beacon_map);
 
     // Retrieve bid count and previous wins for kBidder1 (and subsequently
     // kBidder2).
@@ -1997,6 +2014,16 @@ TEST_F(AuctionRunnerTest, Basic) {
               testing::UnorderedElementsAre(
                   GURL("https://reporting.example.com/2"),
                   GURL("https://buyer-reporting.example.com/2")));
+  EXPECT_THAT(
+      res.ad_beacon_map.metadata,
+      testing::UnorderedElementsAre(
+          testing::Pair(ReportingDestination::kSeller,
+                        testing::ElementsAre(testing::Pair(
+                            "click", GURL("https://reporting.example.com/4")))),
+          testing::Pair(
+              ReportingDestination::kBuyer,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://buyer-reporting.example.com/4"))))));
   EXPECT_EQ(6, res.bidder1_bid_count);
   EXPECT_EQ(3u, res.bidder1_prev_wins.size());
   EXPECT_EQ(6, res.bidder2_bid_count);
@@ -2156,6 +2183,17 @@ TEST_F(AuctionRunnerTest, BasicDebug) {
                 testing::UnorderedElementsAre(
                     GURL("https://reporting.example.com/2"),
                     GURL("https://buyer-reporting.example.com/2")));
+    EXPECT_THAT(
+        result_.ad_beacon_map.metadata,
+        testing::UnorderedElementsAre(
+            testing::Pair(
+                ReportingDestination::kSeller,
+                testing::ElementsAre(testing::Pair(
+                    "click", GURL("https://reporting.example.com/4")))),
+            testing::Pair(
+                ReportingDestination::kBuyer,
+                testing::ElementsAre(testing::Pair(
+                    "click", GURL("https://buyer-reporting.example.com/4"))))));
   }
 }
 
@@ -2211,6 +2249,16 @@ TEST_F(AuctionRunnerTest, PauseBidder) {
               testing::UnorderedElementsAre(
                   GURL("https://reporting.example.com/2"),
                   GURL("https://buyer-reporting.example.com/2")));
+  EXPECT_THAT(
+      result_.ad_beacon_map.metadata,
+      testing::UnorderedElementsAre(
+          testing::Pair(ReportingDestination::kSeller,
+                        testing::ElementsAre(testing::Pair(
+                            "click", GURL("https://reporting.example.com/4")))),
+          testing::Pair(
+              ReportingDestination::kBuyer,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://buyer-reporting.example.com/4"))))));
   EXPECT_THAT(result_.errors, testing::ElementsAre());
 }
 
@@ -2262,6 +2310,16 @@ TEST_F(AuctionRunnerTest, PauseSeller) {
               testing::UnorderedElementsAre(
                   GURL("https://reporting.example.com/2"),
                   GURL("https://buyer-reporting.example.com/2")));
+  EXPECT_THAT(
+      result_.ad_beacon_map.metadata,
+      testing::UnorderedElementsAre(
+          testing::Pair(ReportingDestination::kSeller,
+                        testing::ElementsAre(testing::Pair(
+                            "click", GURL("https://reporting.example.com/4")))),
+          testing::Pair(
+              ReportingDestination::kBuyer,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://buyer-reporting.example.com/4"))))));
   EXPECT_THAT(result_.errors, testing::ElementsAre());
 }
 
@@ -2280,6 +2338,20 @@ TEST_F(AuctionRunnerTest, ComponentAuction) {
                   GURL("https://reporting.example.com/2"),
                   GURL("https://component2-report.test/2"),
                   GURL("https://buyer-reporting.example.com/2")));
+  EXPECT_THAT(
+      result_.ad_beacon_map.metadata,
+      testing::UnorderedElementsAre(
+          testing::Pair(ReportingDestination::kSeller,
+                        testing::ElementsAre(testing::Pair(
+                            "click", GURL("https://reporting.example.com/4")))),
+          testing::Pair(
+              ReportingDestination::kComponentSeller,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://component2-report.test/4")))),
+          testing::Pair(
+              ReportingDestination::kBuyer,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://buyer-reporting.example.com/4"))))));
   EXPECT_EQ(6, result_.bidder1_bid_count);
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(6, result_.bidder2_bid_count);
@@ -2306,6 +2378,16 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersHaveNoBuyers) {
               testing::UnorderedElementsAre(
                   GURL("https://reporting.example.com/2"),
                   GURL("https://buyer-reporting.example.com/2")));
+  EXPECT_THAT(
+      result_.ad_beacon_map.metadata,
+      testing::UnorderedElementsAre(
+          testing::Pair(ReportingDestination::kSeller,
+                        testing::ElementsAre(testing::Pair(
+                            "click", GURL("https://reporting.example.com/4")))),
+          testing::Pair(
+              ReportingDestination::kBuyer,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://buyer-reporting.example.com/4"))))));
   EXPECT_EQ(6, result_.bidder1_bid_count);
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(6, result_.bidder2_bid_count);
@@ -2332,6 +2414,16 @@ TEST_F(AuctionRunnerTest, ComponentAuctionTopLeverSellerBidWins) {
               testing::UnorderedElementsAre(
                   GURL("https://reporting.example.com/2"),
                   GURL("https://buyer-reporting.example.com/2")));
+  EXPECT_THAT(
+      result_.ad_beacon_map.metadata,
+      testing::UnorderedElementsAre(
+          testing::Pair(ReportingDestination::kSeller,
+                        testing::ElementsAre(testing::Pair(
+                            "click", GURL("https://reporting.example.com/4")))),
+          testing::Pair(
+              ReportingDestination::kBuyer,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://buyer-reporting.example.com/4"))))));
   EXPECT_EQ(6, result_.bidder1_bid_count);
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(6, result_.bidder2_bid_count);
@@ -2359,6 +2451,20 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellerBidWins) {
                   GURL("https://reporting.example.com/2"),
                   GURL("https://component1-report.test/2"),
                   GURL("https://buyer-reporting.example.com/2")));
+  EXPECT_THAT(
+      result_.ad_beacon_map.metadata,
+      testing::UnorderedElementsAre(
+          testing::Pair(ReportingDestination::kSeller,
+                        testing::ElementsAre(testing::Pair(
+                            "click", GURL("https://reporting.example.com/4")))),
+          testing::Pair(
+              ReportingDestination::kComponentSeller,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://component1-report.test/4")))),
+          testing::Pair(
+              ReportingDestination::kBuyer,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://buyer-reporting.example.com/4"))))));
   EXPECT_EQ(6, result_.bidder1_bid_count);
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(6, result_.bidder2_bid_count);
@@ -2403,6 +2509,9 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
     function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
                        browserSignals) {
       sendReportTo("https://buyer-reporting.example.com/" + browserSignals.bid);
+      registerAdBeacon({
+        "click": "https://buyer-reporting.example.com/" + 2*browserSignals.bid,
+      });
     }
   )";
 
@@ -2418,6 +2527,9 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
     function reportResult(auctionConfig, browserSignals) {
       sendReportTo(auctionConfig.seller + "/" +
                    browserSignals.desirability);
+      registerAdBeacon({
+        "click": auctionConfig.seller + "/" + 2*browserSignals.desirability,
+      });
     }
   )";
 
@@ -2456,6 +2568,17 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
               testing::UnorderedElementsAre(
                   GURL("https://adstuff.publisher1.com/22"),
                   GURL("https://buyer-reporting.example.com/2")));
+  EXPECT_THAT(
+      result_.ad_beacon_map.metadata,
+      testing::UnorderedElementsAre(
+          testing::Pair(
+              ReportingDestination::kSeller,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://adstuff.publisher1.com/44")))),
+          testing::Pair(
+              ReportingDestination::kBuyer,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://buyer-reporting.example.com/4"))))));
   // Bid count should only be incremented by 1.
   EXPECT_EQ(6, result_.bidder1_bid_count);
   ASSERT_EQ(4u, result_.bidder1_prev_wins.size());
@@ -2498,6 +2621,21 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
                   GURL("https://adstuff.publisher1.com/23"),
                   GURL("https://component.seller2.test/13"),
                   GURL("https://buyer-reporting.example.com/3")));
+  EXPECT_THAT(
+      result_.ad_beacon_map.metadata,
+      testing::UnorderedElementsAre(
+          testing::Pair(
+              ReportingDestination::kSeller,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://adstuff.publisher1.com/46")))),
+          testing::Pair(
+              ReportingDestination::kComponentSeller,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://component.seller2.test/26")))),
+          testing::Pair(
+              ReportingDestination::kBuyer,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://buyer-reporting.example.com/6"))))));
   // Bid count should only be incremented by 1.
   EXPECT_EQ(6, result_.bidder1_bid_count);
   ASSERT_EQ(4u, result_.bidder1_prev_wins.size());
@@ -2528,6 +2666,20 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneComponentTwoBidders) {
                   GURL("https://reporting.example.com/1"),
                   GURL("https://component1-report.test/1"),
                   GURL("https://buyer-reporting.example.com/1")));
+  EXPECT_THAT(
+      result_.ad_beacon_map.metadata,
+      testing::UnorderedElementsAre(
+          testing::Pair(ReportingDestination::kSeller,
+                        testing::ElementsAre(testing::Pair(
+                            "click", GURL("https://reporting.example.com/2")))),
+          testing::Pair(
+              ReportingDestination::kComponentSeller,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://component1-report.test/2")))),
+          testing::Pair(
+              ReportingDestination::kBuyer,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://buyer-reporting.example.com/2"))))));
   EXPECT_EQ(6, result_.bidder1_bid_count);
   ASSERT_EQ(4u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
@@ -2554,6 +2706,9 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNoTopLevelReportResultSignals) {
     function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
                        browserSignals) {
       sendReportTo("https://buyer-reporting.example.com/" + browserSignals.bid);
+      registerAdBeacon({
+        "click": "https://buyer-reporting.example.com/" + 2*browserSignals.bid,
+      });
     }
   )";
 
@@ -2567,6 +2722,10 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNoTopLevelReportResultSignals) {
     function reportResult(auctionConfig, browserSignals) {
       sendReportTo(auctionConfig.seller + "/" +
                    (browserSignals.topLevelSellerSignals === null));
+      registerAdBeacon({
+        "click": auctionConfig.seller + "/" +
+                   (browserSignals.topLevelSellerSignals === null),
+      });
     }
   )";
 
@@ -2579,6 +2738,9 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNoTopLevelReportResultSignals) {
 
     function reportResult(auctionConfig, browserSignals) {
       sendReportTo(auctionConfig.seller + "/" + browserSignals.bid);
+      registerAdBeacon({
+        "click": auctionConfig.seller + "/" + 2 * browserSignals.bid,
+      });
       // Note that there's no return value here.
     }
   )";
@@ -2609,6 +2771,21 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNoTopLevelReportResultSignals) {
                   GURL("https://buyer-reporting.example.com/2"),
                   GURL("https://component.seller1.test/true"),
                   GURL("https://adstuff.publisher1.com/2")));
+  EXPECT_THAT(
+      result_.ad_beacon_map.metadata,
+      testing::UnorderedElementsAre(
+          testing::Pair(
+              ReportingDestination::kSeller,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://adstuff.publisher1.com/4")))),
+          testing::Pair(
+              ReportingDestination::kComponentSeller,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://component.seller1.test/true")))),
+          testing::Pair(
+              ReportingDestination::kBuyer,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://buyer-reporting.example.com/4"))))));
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/1, /*expected_owners=*/1);
 }
@@ -2625,6 +2802,9 @@ TEST_F(AuctionRunnerTest, ComponentAuctionModifiesBid) {
     function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
                        browserSignals) {
       sendReportTo("https://buyer-reporting.example.com/" + browserSignals.bid);
+      registerAdBeacon({
+        "click": "https://buyer-reporting.example.com/" + 2 * browserSignals.bid,
+      });
     }
   )";
 
@@ -2637,6 +2817,10 @@ TEST_F(AuctionRunnerTest, ComponentAuctionModifiesBid) {
     function reportResult(auctionConfig, browserSignals) {
       sendReportTo(auctionConfig.seller + "/" + browserSignals.bid +
                    "_" + browserSignals.modifiedBid);
+      registerAdBeacon({
+        "click": auctionConfig.seller + "/" + 2 * browserSignals.bid +
+                   "_" + browserSignals.modifiedBid,
+      });
     }
   )";
 
@@ -2650,6 +2834,9 @@ TEST_F(AuctionRunnerTest, ComponentAuctionModifiesBid) {
 
     function reportResult(auctionConfig, browserSignals) {
       sendReportTo(auctionConfig.seller + "/" + browserSignals.bid);
+      registerAdBeacon({
+        "click": auctionConfig.seller + "/" + 2 * browserSignals.bid,
+      });
     }
   )";
 
@@ -2682,6 +2869,21 @@ TEST_F(AuctionRunnerTest, ComponentAuctionModifiesBid) {
                   GURL("https://buyer-reporting.example.com/2"),
                   GURL("https://component.seller1.test/2_3"),
                   GURL("https://adstuff.publisher1.com/3")));
+  EXPECT_THAT(
+      result_.ad_beacon_map.metadata,
+      testing::UnorderedElementsAre(
+          testing::Pair(
+              ReportingDestination::kSeller,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://adstuff.publisher1.com/6")))),
+          testing::Pair(
+              ReportingDestination::kComponentSeller,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://component.seller1.test/4_3")))),
+          testing::Pair(
+              ReportingDestination::kBuyer,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://buyer-reporting.example.com/4"))))));
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/1, /*expected_owners=*/1);
 }
@@ -2699,6 +2901,7 @@ TEST_F(AuctionRunnerTest, DisallowedSeller) {
   EXPECT_FALSE(result_.ad_url);
   EXPECT_TRUE(result_.ad_component_urls.empty());
   EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+  EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
   EXPECT_EQ(5, result_.bidder1_bid_count);
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(5, result_.bidder2_bid_count);
@@ -2730,6 +2933,7 @@ TEST_F(AuctionRunnerTest, DisallowedComponentAuctionSeller) {
   EXPECT_FALSE(result_.ad_url);
   EXPECT_TRUE(result_.ad_component_urls.empty());
   EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+  EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
   EXPECT_EQ(5, result_.bidder1_bid_count);
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(5, result_.bidder2_bid_count);
@@ -2769,6 +2973,20 @@ TEST_F(AuctionRunnerTest, DisallowedComponentAuctionOneSeller) {
                   GURL("https://reporting.example.com/1"),
                   GURL("https://component1-report.test/1"),
                   GURL("https://buyer-reporting.example.com/1")));
+  EXPECT_THAT(
+      result_.ad_beacon_map.metadata,
+      testing::UnorderedElementsAre(
+          testing::Pair(ReportingDestination::kSeller,
+                        testing::ElementsAre(testing::Pair(
+                            "click", GURL("https://reporting.example.com/2")))),
+          testing::Pair(
+              ReportingDestination::kComponentSeller,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://component1-report.test/2")))),
+          testing::Pair(
+              ReportingDestination::kBuyer,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://buyer-reporting.example.com/2"))))));
   EXPECT_EQ(6, result_.bidder1_bid_count);
   ASSERT_EQ(4u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
@@ -2794,6 +3012,7 @@ TEST_F(AuctionRunnerTest, DisallowedBuyers) {
   EXPECT_FALSE(result_.ad_url);
   EXPECT_TRUE(result_.ad_component_urls.empty());
   EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+  EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
   EXPECT_EQ(5, result_.bidder1_bid_count);
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(5, result_.bidder2_bid_count);
@@ -2835,6 +3054,16 @@ TEST_F(AuctionRunnerTest, DisallowedSingleBuyer) {
               testing::UnorderedElementsAre(
                   GURL("https://reporting.example.com/1"),
                   GURL("https://buyer-reporting.example.com/1")));
+  EXPECT_THAT(
+      result_.ad_beacon_map.metadata,
+      testing::UnorderedElementsAre(
+          testing::Pair(ReportingDestination::kSeller,
+                        testing::ElementsAre(testing::Pair(
+                            "click", GURL("https://reporting.example.com/2")))),
+          testing::Pair(
+              ReportingDestination::kBuyer,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://buyer-reporting.example.com/2"))))));
   EXPECT_EQ(6, result_.bidder1_bid_count);
   ASSERT_EQ(4u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
@@ -2869,6 +3098,7 @@ TEST_F(AuctionRunnerTest, DisallowedComponentAuctionBuyers) {
   EXPECT_FALSE(result_.ad_url);
   EXPECT_TRUE(result_.ad_component_urls.empty());
   EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+  EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
   EXPECT_EQ(5, result_.bidder1_bid_count);
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(5, result_.bidder2_bid_count);
@@ -2903,6 +3133,20 @@ TEST_F(AuctionRunnerTest, DisallowedComponentAuctionSingleBuyer) {
                   GURL("https://reporting.example.com/1"),
                   GURL("https://component1-report.test/1"),
                   GURL("https://buyer-reporting.example.com/1")));
+  EXPECT_THAT(
+      result_.ad_beacon_map.metadata,
+      testing::UnorderedElementsAre(
+          testing::Pair(ReportingDestination::kSeller,
+                        testing::ElementsAre(testing::Pair(
+                            "click", GURL("https://reporting.example.com/2")))),
+          testing::Pair(
+              ReportingDestination::kComponentSeller,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://component1-report.test/2")))),
+          testing::Pair(
+              ReportingDestination::kBuyer,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://buyer-reporting.example.com/2"))))));
   EXPECT_EQ(6, result_.bidder1_bid_count);
   ASSERT_EQ(4u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
@@ -2978,6 +3222,16 @@ TEST_F(AuctionRunnerTest, OneBidOne404) {
               testing::UnorderedElementsAre(
                   GURL("https://reporting.example.com/1"),
                   GURL("https://buyer-reporting.example.com/1")));
+  EXPECT_THAT(
+      result_.ad_beacon_map.metadata,
+      testing::UnorderedElementsAre(
+          testing::Pair(ReportingDestination::kSeller,
+                        testing::ElementsAre(testing::Pair(
+                            "click", GURL("https://reporting.example.com/2")))),
+          testing::Pair(
+              ReportingDestination::kBuyer,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://buyer-reporting.example.com/2"))))));
   EXPECT_EQ(6, res.bidder1_bid_count);
   ASSERT_EQ(4u, res.bidder1_prev_wins.size());
   EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
@@ -3021,6 +3275,20 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneSeller404) {
                   GURL("https://reporting.example.com/1"),
                   GURL("https://component1-report.test/1"),
                   GURL("https://buyer-reporting.example.com/1")));
+  EXPECT_THAT(
+      result_.ad_beacon_map.metadata,
+      testing::UnorderedElementsAre(
+          testing::Pair(ReportingDestination::kSeller,
+                        testing::ElementsAre(testing::Pair(
+                            "click", GURL("https://reporting.example.com/2")))),
+          testing::Pair(
+              ReportingDestination::kComponentSeller,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://component1-report.test/2")))),
+          testing::Pair(
+              ReportingDestination::kBuyer,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://buyer-reporting.example.com/2"))))));
   EXPECT_EQ(6, result_.bidder1_bid_count);
   // The bid send to the failing component seller worklet isn't counted,
   // regardless of whether the bid completed before the worklet failed to load.
@@ -3065,6 +3333,16 @@ TEST_F(AuctionRunnerTest, OneBidOneNotMade) {
               testing::UnorderedElementsAre(
                   GURL("https://reporting.example.com/1"),
                   GURL("https://buyer-reporting.example.com/1")));
+  EXPECT_THAT(
+      result_.ad_beacon_map.metadata,
+      testing::UnorderedElementsAre(
+          testing::Pair(ReportingDestination::kSeller,
+                        testing::ElementsAre(testing::Pair(
+                            "click", GURL("https://reporting.example.com/2")))),
+          testing::Pair(
+              ReportingDestination::kBuyer,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://buyer-reporting.example.com/2"))))));
   EXPECT_EQ(6, res.bidder1_bid_count);
   ASSERT_EQ(4u, res.bidder1_prev_wins.size());
   EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
@@ -3098,6 +3376,7 @@ TEST_F(AuctionRunnerTest, NoBids) {
   EXPECT_FALSE(res.ad_url);
   EXPECT_TRUE(res.ad_component_urls.empty());
   EXPECT_THAT(res.report_urls, testing::UnorderedElementsAre());
+  EXPECT_TRUE(res.ad_beacon_map.metadata.empty());
   EXPECT_EQ(5, res.bidder1_bid_count);
   EXPECT_EQ(3u, res.bidder1_prev_wins.size());
   EXPECT_EQ(5, res.bidder2_bid_count);
@@ -3135,6 +3414,7 @@ TEST_F(AuctionRunnerTest, NoBidMadeByScript) {
   EXPECT_FALSE(res.ad_url);
   EXPECT_TRUE(res.ad_component_urls.empty());
   EXPECT_THAT(res.report_urls, testing::UnorderedElementsAre());
+  EXPECT_TRUE(res.ad_beacon_map.metadata.empty());
   EXPECT_EQ(5, res.bidder1_bid_count);
   EXPECT_EQ(3u, res.bidder1_prev_wins.size());
   EXPECT_EQ(5, res.bidder2_bid_count);
@@ -3180,6 +3460,7 @@ TEST_F(AuctionRunnerTest, SellerRejectsAll) {
   EXPECT_FALSE(res.ad_url);
   EXPECT_TRUE(res.ad_component_urls.empty());
   EXPECT_THAT(res.report_urls, testing::UnorderedElementsAre());
+  EXPECT_TRUE(res.ad_beacon_map.metadata.empty());
   EXPECT_EQ(6, res.bidder1_bid_count);
   EXPECT_EQ(3u, res.bidder1_prev_wins.size());
   EXPECT_EQ(6, res.bidder2_bid_count);
@@ -3225,6 +3506,16 @@ TEST_F(AuctionRunnerTest, SellerRejectsOne) {
               testing::UnorderedElementsAre(
                   GURL("https://reporting.example.com/1"),
                   GURL("https://buyer-reporting.example.com/1")));
+  EXPECT_THAT(
+      result_.ad_beacon_map.metadata,
+      testing::UnorderedElementsAre(
+          testing::Pair(ReportingDestination::kSeller,
+                        testing::ElementsAre(testing::Pair(
+                            "click", GURL("https://reporting.example.com/2")))),
+          testing::Pair(
+              ReportingDestination::kBuyer,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://buyer-reporting.example.com/2"))))));
   EXPECT_EQ(6, res.bidder1_bid_count);
   ASSERT_EQ(4u, res.bidder1_prev_wins.size());
   EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
@@ -3246,6 +3537,7 @@ TEST_F(AuctionRunnerTest, NoSellerScript) {
   EXPECT_FALSE(res.ad_url);
   EXPECT_TRUE(res.ad_component_urls.empty());
   EXPECT_THAT(res.report_urls, testing::UnorderedElementsAre());
+  EXPECT_TRUE(res.ad_beacon_map.metadata.empty());
 
   EXPECT_EQ(0, url_loader_factory_.NumPending());
   EXPECT_EQ(5, res.bidder1_bid_count);
@@ -3292,6 +3584,16 @@ TEST_F(AuctionRunnerTest, NoTrustedBiddingSignals) {
               testing::UnorderedElementsAre(
                   GURL("https://reporting.example.com/2"),
                   GURL("https://buyer-reporting.example.com/2")));
+  EXPECT_THAT(
+      result_.ad_beacon_map.metadata,
+      testing::UnorderedElementsAre(
+          testing::Pair(ReportingDestination::kSeller,
+                        testing::ElementsAre(testing::Pair(
+                            "click", GURL("https://reporting.example.com/4")))),
+          testing::Pair(
+              ReportingDestination::kBuyer,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://buyer-reporting.example.com/4"))))));
   EXPECT_EQ(6, res.bidder1_bid_count);
   EXPECT_EQ(3u, res.bidder1_prev_wins.size());
   EXPECT_EQ(6, res.bidder2_bid_count);
@@ -3333,6 +3635,16 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignals404) {
               testing::UnorderedElementsAre(
                   GURL("https://reporting.example.com/2"),
                   GURL("https://buyer-reporting.example.com/2")));
+  EXPECT_THAT(
+      result_.ad_beacon_map.metadata,
+      testing::UnorderedElementsAre(
+          testing::Pair(ReportingDestination::kSeller,
+                        testing::ElementsAre(testing::Pair(
+                            "click", GURL("https://reporting.example.com/4")))),
+          testing::Pair(
+              ReportingDestination::kBuyer,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://buyer-reporting.example.com/4"))))));
   EXPECT_EQ(6, res.bidder1_bid_count);
   EXPECT_EQ(3u, res.bidder1_prev_wins.size());
   EXPECT_EQ(6, res.bidder2_bid_count);
@@ -3382,6 +3694,12 @@ TEST_F(AuctionRunnerTest, NoReportResultUrl) {
             res.ad_component_urls);
   EXPECT_THAT(res.report_urls, testing::UnorderedElementsAre(GURL(
                                    "https://buyer-reporting.example.com/2")));
+  EXPECT_THAT(
+      result_.ad_beacon_map.metadata,
+      testing::UnorderedElementsAre(testing::Pair(
+          ReportingDestination::kBuyer,
+          testing::ElementsAre(testing::Pair(
+              "click", GURL("https://buyer-reporting.example.com/4"))))));
   EXPECT_EQ(6, res.bidder1_bid_count);
   EXPECT_EQ(3u, res.bidder1_prev_wins.size());
   EXPECT_EQ(6, res.bidder2_bid_count);
@@ -3425,6 +3743,11 @@ TEST_F(AuctionRunnerTest, NoReportWinUrl) {
             res.ad_component_urls);
   EXPECT_THAT(res.report_urls, testing::UnorderedElementsAre(
                                    GURL("https://reporting.example.com/2")));
+  EXPECT_THAT(result_.ad_beacon_map.metadata,
+              testing::UnorderedElementsAre(testing::Pair(
+                  ReportingDestination::kSeller,
+                  testing::ElementsAre(testing::Pair(
+                      "click", GURL("https://reporting.example.com/4"))))));
   EXPECT_EQ(6, res.bidder1_bid_count);
   EXPECT_EQ(3u, res.bidder1_prev_wins.size());
   EXPECT_EQ(6, res.bidder2_bid_count);
@@ -3467,6 +3790,7 @@ TEST_F(AuctionRunnerTest, NeitherReportUrl) {
   EXPECT_EQ(std::vector<GURL>{GURL("https://ad2.com-component1.com")},
             res.ad_component_urls);
   EXPECT_THAT(res.report_urls, testing::UnorderedElementsAre());
+  EXPECT_TRUE(res.ad_beacon_map.metadata.empty());
   EXPECT_EQ(6, res.bidder1_bid_count);
   EXPECT_EQ(3u, res.bidder1_prev_wins.size());
   EXPECT_EQ(6, res.bidder2_bid_count);
@@ -3517,6 +3841,7 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
             res.ad_component_urls);
   EXPECT_THAT(res.report_urls, testing::UnorderedElementsAre(GURL(
                                    "https://seller.signals.were.null.test/")));
+  EXPECT_TRUE(res.ad_beacon_map.metadata.empty());
   EXPECT_EQ(6, res.bidder1_bid_count);
   EXPECT_EQ(3u, res.bidder1_prev_wins.size());
   EXPECT_EQ(6, res.bidder2_bid_count);
@@ -3574,6 +3899,9 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
 
 function reportResult(auctionConfig, browserSignals) {
   sendReportTo("https://reporting.example.com/" + browserSignals.bid);
+  registerAdBeacon({
+    "click": "https://reporting.example.com/" + 2 * browserSignals.bid,
+  });
   if (browserSignals.dataVersion !== 2) {
     throw new Error(`wrong dataVersion (${browserSignals.dataVersion})`);
   }
@@ -3604,6 +3932,16 @@ function reportResult(auctionConfig, browserSignals) {
               testing::UnorderedElementsAre(
                   GURL("https://reporting.example.com/1"),
                   GURL("https://buyer-reporting.example.com/1")));
+  EXPECT_THAT(
+      result_.ad_beacon_map.metadata,
+      testing::UnorderedElementsAre(
+          testing::Pair(ReportingDestination::kSeller,
+                        testing::ElementsAre(testing::Pair(
+                            "click", GURL("https://reporting.example.com/2")))),
+          testing::Pair(
+              ReportingDestination::kBuyer,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://buyer-reporting.example.com/2"))))));
   EXPECT_EQ(6, result_.bidder1_bid_count);
   EXPECT_EQ(4u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
@@ -3746,6 +4084,18 @@ TEST_F(AuctionRunnerTest, ProcessManagerBlocksWorkletCreation) {
                   testing::UnorderedElementsAre(
                       GURL("https://reporting.example.com/2"),
                       GURL("https://buyer-reporting.example.com/2")));
+      EXPECT_THAT(
+          result_.ad_beacon_map.metadata,
+          testing::UnorderedElementsAre(
+              testing::Pair(
+                  ReportingDestination::kSeller,
+                  testing::ElementsAre(testing::Pair(
+                      "click", GURL("https://reporting.example.com/4")))),
+              testing::Pair(
+                  ReportingDestination::kBuyer,
+                  testing::ElementsAre(testing::Pair(
+                      "click",
+                      GURL("https://buyer-reporting.example.com/4"))))));
       EXPECT_EQ(6, result_.bidder1_bid_count);
       EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
       EXPECT_EQ(6, result_.bidder2_bid_count);
@@ -3906,6 +4256,22 @@ TEST_F(AuctionRunnerTest, ComponentAuctionProcessManagerBlocksWorkletCreation) {
                       GURL("https://reporting.example.com/2"),
                       GURL("https://component2-report.test/2"),
                       GURL("https://buyer-reporting.example.com/2")));
+      EXPECT_THAT(
+          result_.ad_beacon_map.metadata,
+          testing::UnorderedElementsAre(
+              testing::Pair(
+                  ReportingDestination::kSeller,
+                  testing::ElementsAre(testing::Pair(
+                      "click", GURL("https://reporting.example.com/4")))),
+              testing::Pair(
+                  ReportingDestination::kComponentSeller,
+                  testing::ElementsAre(testing::Pair(
+                      "click", GURL("https://component2-report.test/4")))),
+              testing::Pair(
+                  ReportingDestination::kBuyer,
+                  testing::ElementsAre(testing::Pair(
+                      "click",
+                      GURL("https://buyer-reporting.example.com/4"))))));
       EXPECT_THAT(result_.errors, testing::ElementsAre());
       CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
                       /*expected_interest_groups=*/2, /*expected_owners=*/2);
@@ -4037,6 +4403,20 @@ TEST_F(AuctionRunnerTest,
                   GURL("https://reporting.example.com/2"),
                   GURL("https://component2-report.test/2"),
                   GURL("https://buyer-reporting.example.com/2")));
+  EXPECT_THAT(
+      result_.ad_beacon_map.metadata,
+      testing::UnorderedElementsAre(
+          testing::Pair(ReportingDestination::kSeller,
+                        testing::ElementsAre(testing::Pair(
+                            "click", GURL("https://reporting.example.com/4")))),
+          testing::Pair(
+              ReportingDestination::kComponentSeller,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://component2-report.test/4")))),
+          testing::Pair(
+              ReportingDestination::kBuyer,
+              testing::ElementsAre(testing::Pair(
+                  "click", GURL("https://buyer-reporting.example.com/4"))))));
   EXPECT_THAT(result_.errors,
               testing::UnorderedElementsAre(
                   "Failed to load https://component.seller1.test/foo.js HTTP "
@@ -4124,6 +4504,7 @@ TEST_F(AuctionRunnerTest, ReusedBidderWorkletBatchesSignalsRequests) {
   EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
   EXPECT_TRUE(result_.ad_component_urls.empty());
   EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+  EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
   EXPECT_THAT(result_.errors, testing::ElementsAre());
 }
 
@@ -4174,6 +4555,7 @@ TEST_F(AuctionRunnerTest, AllBiddersCrashBeforeBidding) {
   EXPECT_FALSE(result_.ad_url);
   EXPECT_TRUE(result_.ad_component_urls.empty());
   EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+  EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
   EXPECT_EQ(5, result_.bidder1_bid_count);
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(5, result_.bidder2_bid_count);
@@ -4276,6 +4658,7 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
     EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
     EXPECT_TRUE(result_.ad_component_urls.empty());
     EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+    EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
     EXPECT_EQ(5, result_.bidder1_bid_count);
     EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
     EXPECT_EQ(6, result_.bidder2_bid_count);
@@ -4353,6 +4736,7 @@ TEST_F(AuctionRunnerTest, WinningBidderCrashWhileReporting) {
   EXPECT_FALSE(result_.ad_url);
   EXPECT_TRUE(result_.ad_component_urls.empty());
   EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+  EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
   EXPECT_EQ(6, result_.bidder1_bid_count);
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(6, result_.bidder2_bid_count);
@@ -4478,6 +4862,7 @@ TEST_F(AuctionRunnerTest, SellerCrash) {
     EXPECT_FALSE(result_.ad_url);
     EXPECT_TRUE(result_.ad_component_urls.empty());
     EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+    EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
     if (crash_phase != CrashPhase::kReportResult) {
       EXPECT_EQ(5, result_.bidder1_bid_count);
       EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
@@ -5031,6 +5416,7 @@ TEST_F(AuctionRunnerTest, NullAdComponents) {
       EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
       EXPECT_TRUE(result_.ad_component_urls.empty());
       EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+      EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
       EXPECT_EQ(6, result_.bidder1_bid_count);
       ASSERT_EQ(4u, result_.bidder1_prev_wins.size());
       EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
@@ -5051,6 +5437,7 @@ TEST_F(AuctionRunnerTest, NullAdComponents) {
       EXPECT_FALSE(result_.ad_url);
       EXPECT_TRUE(result_.ad_component_urls.empty());
       EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+      EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
       EXPECT_EQ(5, result_.bidder1_bid_count);
       EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
       EXPECT_THAT(result_.errors, testing::ElementsAre());
@@ -5119,6 +5506,7 @@ TEST_F(AuctionRunnerTest, AdComponentsLimit) {
       EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
       EXPECT_EQ(ad_component_urls, result_.ad_component_urls);
       EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+      EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
       EXPECT_EQ(6, result_.bidder1_bid_count);
       ASSERT_EQ(4u, result_.bidder1_prev_wins.size());
       EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
@@ -5139,6 +5527,7 @@ TEST_F(AuctionRunnerTest, AdComponentsLimit) {
       EXPECT_FALSE(result_.ad_url);
       EXPECT_TRUE(result_.ad_component_urls.empty());
       EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+      EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
       EXPECT_EQ(5, result_.bidder1_bid_count);
       EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
       EXPECT_THAT(result_.errors, testing::ElementsAre());
@@ -5288,6 +5677,7 @@ TEST_F(AuctionRunnerTest, BadBid) {
     EXPECT_FALSE(result_.ad_url);
     EXPECT_TRUE(result_.ad_component_urls.empty());
     EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+    EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
     EXPECT_EQ(5, result_.bidder1_bid_count);
     EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
     EXPECT_EQ(5, result_.bidder2_bid_count);
@@ -5341,6 +5731,7 @@ TEST_F(AuctionRunnerTest, BadSellerReportUrl) {
   EXPECT_FALSE(result_.ad_url);
   EXPECT_TRUE(result_.ad_component_urls.empty());
   EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+  EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
   EXPECT_EQ(6, result_.bidder1_bid_count);
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(5, result_.bidder2_bid_count);
@@ -5425,6 +5816,7 @@ TEST_F(AuctionRunnerTest, BadComponentSellerReportUrl) {
   EXPECT_FALSE(result_.ad_url);
   EXPECT_TRUE(result_.ad_component_urls.empty());
   EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+  EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
   EXPECT_EQ(6, result_.bidder1_bid_count);
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(5, result_.bidder2_bid_count);
@@ -5481,6 +5873,7 @@ TEST_F(AuctionRunnerTest, BadBidderReportUrl) {
   EXPECT_FALSE(result_.ad_url);
   EXPECT_TRUE(result_.ad_component_urls.empty());
   EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+  EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
   EXPECT_EQ(6, result_.bidder1_bid_count);
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(5, result_.bidder2_bid_count);
@@ -5538,6 +5931,7 @@ TEST_F(AuctionRunnerTest, DestroyBidderWorkletWithoutBid) {
   EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
   EXPECT_TRUE(result_.ad_component_urls.empty());
   EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+  EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
   EXPECT_EQ(5, result_.bidder1_bid_count);
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(6, result_.bidder2_bid_count);
@@ -5642,6 +6036,7 @@ TEST_F(AuctionRunnerTest, Tie) {
     }
 
     EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+    EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
     EXPECT_EQ(6, result_.bidder1_bid_count);
     EXPECT_EQ(6, result_.bidder2_bid_count);
     EXPECT_THAT(result_.errors, testing::ElementsAre());

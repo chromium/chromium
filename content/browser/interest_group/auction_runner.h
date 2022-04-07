@@ -12,10 +12,12 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/common/content_export.h"
@@ -51,6 +53,7 @@ class CONTENT_EXPORT AuctionRunner {
     url::Origin owner;
     std::string name;
   };
+
   // Invoked when a FLEDGE auction is complete.
   //
   // `winning_group_id` owner and name of the winning interest group (if any).
@@ -80,6 +83,7 @@ class CONTENT_EXPORT AuctionRunner {
                               std::vector<GURL> report_urls,
                               std::vector<GURL> debug_loss_report_urls,
                               std::vector<GURL> debug_win_report_urls,
+                              ReportingMetadata ad_beacon_map,
                               std::vector<std::string> errors)>;
 
   // Returns true if `origin` is allowed to use the interest group API. Will be
@@ -404,6 +408,10 @@ class CONTENT_EXPORT AuctionRunner {
     void TakeDebugReportUrls(std::vector<GURL>& debug_win_report_urls,
                              std::vector<GURL>& debug_loss_report_urls);
 
+    // Retrieves the ad beacon map. May only be called once, since it takes
+    // ownership of the stored ad beacon map.
+    ReportingMetadata TakeAdBeaconMap() { return std::move(ad_beacon_map_); }
+
     // Retrieves any reporting URLs returned by ReportWin() and ReportResult()
     // methods. May only be called after an auction has completed successfully.
     // May only be called once, since it takes ownership of stored reporting
@@ -580,11 +588,14 @@ class CONTENT_EXPORT AuctionRunner {
     void OnReportSellerResultComplete(
         const absl::optional<std::string>& signals_for_winner,
         const absl::optional<GURL>& seller_report_url,
+        const base::flat_map<std::string, GURL>& seller_ad_beacon_map,
         const std::vector<std::string>& error_msgs);
     void LoadBidderWorkletToReportBidWin(const std::string& signals_for_winner);
     void ReportBidWin(const std::string& signals_for_winner);
-    void OnReportBidWinComplete(const absl::optional<GURL>& bidder_report_url,
-                                const std::vector<std::string>& error_msgs);
+    void OnReportBidWinComplete(
+        const absl::optional<GURL>& bidder_report_url,
+        const base::flat_map<std::string, GURL>& bidder_ad_beacon_map,
+        const std::vector<std::string>& error_msgs);
 
     // Called when the component SellerWorklet with the bidder that won an
     // auction has an out-of-band fatal error during the ReportResult() call.
@@ -732,6 +743,12 @@ class CONTENT_EXPORT AuctionRunner {
 
     // All errors reported by worklets thus far.
     std::vector<std::string> errors_;
+
+    // Ad Beacon URL mapping generated from reportResult() or reportWin() from
+    // this auction and its components. Destination is relative to this auction.
+    // Returned to the caller for it to deal with, so the Auction itself can be
+    // deleted at the end of the auction.
+    ReportingMetadata ad_beacon_map_;
 
     // This is set to true if the scoring phase ran and was able to score all
     // bids that were made (of which there may have been none). This is used to

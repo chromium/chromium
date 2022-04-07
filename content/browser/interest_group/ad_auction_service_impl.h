@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/containers/unique_ptr_adapters.h"
+#include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/auction_runner.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/common/content_export.h"
@@ -99,6 +100,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       std::vector<GURL> report_urls,
       std::vector<GURL> debug_loss_report_urls,
       std::vector<GURL> debug_win_report_urls,
+      ReportingMetadata ad_beacon_map,
       std::vector<std::string> errors);
 
   InterestGroupManagerImpl& GetInterestGroupManager() const;

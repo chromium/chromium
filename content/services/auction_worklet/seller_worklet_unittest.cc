@@ -370,11 +370,14 @@ class SellerWorkletTest : public testing::Test {
       const std::string& extra_code,
       const absl::optional<std::string>& expected_signals_for_winner,
       const absl::optional<GURL>& expected_report_url,
+      const base::flat_map<std::string, GURL>& expected_ad_beacon_map =
+          base::flat_map<std::string, GURL>(),
       const std::vector<std::string>& expected_errors =
           std::vector<std::string>()) {
     RunReportResultWithJavascriptExpectingResult(
         CreateReportToScript(raw_return_value, extra_code),
-        expected_signals_for_winner, expected_report_url, expected_errors);
+        expected_signals_for_winner, expected_report_url,
+        expected_ad_beacon_map, expected_errors);
   }
 
   // Configures `url_loader_factory_` to return the provided script, and then
@@ -384,13 +387,16 @@ class SellerWorkletTest : public testing::Test {
       const std::string& javascript,
       const absl::optional<std::string>& expected_signals_for_winner,
       const absl::optional<GURL>& expected_report_url,
+      const base::flat_map<std::string, GURL>& expected_ad_beacon_map =
+          base::flat_map<std::string, GURL>(),
       const std::vector<std::string>& expected_errors =
           std::vector<std::string>()) {
     SCOPED_TRACE(javascript);
     AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
                           javascript);
     RunReportResultExpectingResult(expected_signals_for_winner,
-                                   expected_report_url, expected_errors);
+                                   expected_report_url, expected_ad_beacon_map,
+                                   expected_errors);
   }
 
   // Loads and runs a report_result() script, expecting the supplied result.
@@ -400,6 +406,7 @@ class SellerWorkletTest : public testing::Test {
       mojom::SellerWorklet* seller_worklet,
       const absl::optional<std::string>& expected_signals_for_winner,
       const absl::optional<GURL>& expected_report_url,
+      const base::flat_map<std::string, GURL>& expected_ad_beacon_map,
       const std::vector<std::string>& expected_errors,
       base::OnceClosure done_closure) {
     seller_worklet->ReportResult(
@@ -413,18 +420,21 @@ class SellerWorkletTest : public testing::Test {
         base::BindOnce(
             [](const absl::optional<std::string>& expected_signals_for_winner,
                const absl::optional<GURL>& expected_report_url,
+               const base::flat_map<std::string, GURL>& expected_ad_beacon_map,
                const std::vector<std::string>& expected_errors,
                base::OnceClosure done_closure,
                const absl::optional<std::string>& signals_for_winner,
                const absl::optional<GURL>& report_url,
+               const base::flat_map<std::string, GURL>& ad_beacon_map,
                const std::vector<std::string>& errors) {
               EXPECT_EQ(expected_signals_for_winner, signals_for_winner);
               EXPECT_EQ(expected_report_url, report_url);
+              EXPECT_EQ(expected_ad_beacon_map, ad_beacon_map);
               EXPECT_EQ(expected_errors, errors);
               std::move(done_closure).Run();
             },
-            expected_signals_for_winner, expected_report_url, expected_errors,
-            std::move(done_closure)));
+            expected_signals_for_winner, expected_report_url,
+            expected_ad_beacon_map, expected_errors, std::move(done_closure)));
   }
 
   void RunReportResultExpectingCallbackNeverInvoked(
@@ -437,17 +447,21 @@ class SellerWorkletTest : public testing::Test {
         browser_signals_component_auction_report_result_params_.Clone(),
         browser_signal_data_version_.value_or(0),
         browser_signal_data_version_.has_value(),
-        base::BindOnce([](const absl::optional<std::string>& signals_for_winner,
-                          const absl::optional<GURL>& report_url,
-                          const std::vector<std::string>& errors) {
-          ADD_FAILURE() << "This should not be invoked";
-        }));
+        base::BindOnce(
+            [](const absl::optional<std::string>& signals_for_winner,
+               const absl::optional<GURL>& report_url,
+               const base::flat_map<std::string, GURL>& ad_beacon_map,
+               const std::vector<std::string>& errors) {
+              ADD_FAILURE() << "This should not be invoked";
+            }));
   }
 
   // Loads and runs a report_result() script, expecting the supplied result.
   void RunReportResultExpectingResult(
       const absl::optional<std::string>& expected_signals_for_winner,
       const absl::optional<GURL>& expected_report_url,
+      const base::flat_map<std::string, GURL>& expected_ad_beacon_map =
+          base::flat_map<std::string, GURL>(),
       const std::vector<std::string>& expected_errors =
           std::vector<std::string>()) {
     auto seller_worklet = CreateWorklet();
@@ -456,7 +470,7 @@ class SellerWorkletTest : public testing::Test {
     base::RunLoop run_loop;
     RunReportResultExpectingResultAsync(
         seller_worklet.get(), expected_signals_for_winner, expected_report_url,
-        expected_errors, run_loop.QuitClosure());
+        expected_ad_beacon_map, expected_errors, run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -1504,6 +1518,7 @@ TEST_F(SellerWorkletTest, ReportResultParallel) {
           /*expected_signals_for_winner=*/base::NumberToString(bid_),
           /*expected_report_url=*/
           GURL("https://" + base::NumberToString(bid_)),
+          /*expected_ad_beacon_map=*/{},
           /*expected_errors=*/{},
           base::BindLambdaForTesting([&run_loop, &num_report_result_calls]() {
             ++num_report_result_calls;
@@ -1570,6 +1585,7 @@ TEST_F(SellerWorkletTest, ReportResult) {
       "shrimp", std::string() /* extra_code */,
       absl::nullopt /* expected_signals_for_winner */,
       absl::nullopt /* expected_render_url */,
+      /*expected_ad_beacon_map=*/{},
       {"https://url.test/:10 Uncaught ReferenceError: "
        "shrimp is not defined."});
 }
@@ -1588,12 +1604,14 @@ TEST_F(SellerWorkletTest, ReportResultSendReportTo) {
       "1", R"(sendReportTo("http://foo.test/"))",
       absl::nullopt /* expected_signals_for_winner */,
       absl::nullopt /* expected_render_url */,
+      /*expected_ad_beacon_map=*/{},
       {"https://url.test/:9 Uncaught TypeError: "
        "sendReportTo must be passed a valid HTTPS url."});
   RunReportResultCreatedScriptExpectingResult(
       "1", R"(sendReportTo("file:///foo/"))",
       absl::nullopt /* expected_signals_for_winner */,
       absl::nullopt /* expected_render_url */,
+      /*expected_ad_beacon_map=*/{},
       {"https://url.test/:9 Uncaught TypeError: "
        "sendReportTo must be passed a valid HTTPS url."});
 
@@ -1603,6 +1621,7 @@ TEST_F(SellerWorkletTest, ReportResultSendReportTo) {
       R"(sendReportTo("https://foo.test/"); sendReportTo("https://foo.test/"))",
       absl::nullopt /* expected_signals_for_winner */,
       absl::nullopt /* expected_render_url */,
+      /*expected_ad_beacon_map=*/{},
       {"https://url.test/:9 Uncaught TypeError: "
        "sendReportTo may be called at most once."});
 
@@ -1619,18 +1638,21 @@ TEST_F(SellerWorkletTest, ReportResultSendReportTo) {
       "1", R"(sendReportTo("France"))",
       absl::nullopt /* expected_signals_for_winner */,
       absl::nullopt /* expected_render_url */,
+      /*expected_ad_beacon_map=*/{},
       {"https://url.test/:9 Uncaught TypeError: "
        "sendReportTo must be passed a valid HTTPS url."});
   RunReportResultCreatedScriptExpectingResult(
       "1", R"(sendReportTo(null))",
       absl::nullopt /* expected_signals_for_winner */,
       absl::nullopt /* expected_render_url */,
+      /*expected_ad_beacon_map=*/{},
       {"https://url.test/:9 Uncaught TypeError: "
        "sendReportTo requires 1 string parameter."});
   RunReportResultCreatedScriptExpectingResult(
       "1", R"(sendReportTo([5]))",
       absl::nullopt /* expected_signals_for_winner */,
       absl::nullopt /* expected_render_url */,
+      /*expected_ad_beacon_map=*/{},
       {"https://url.test/:9 Uncaught TypeError: "
        "sendReportTo requires 1 string parameter."});
 }
@@ -1640,6 +1662,7 @@ TEST_F(SellerWorkletTest, ReportResultDateNotAvailable) {
       "1", R"(sendReportTo("https://foo.test/" + Date().toString()))",
       absl::nullopt /* expected_signals_for_winner */,
       absl::nullopt /* expected_render_url */,
+      /*expected_ad_beacon_map=*/{},
       {"https://url.test/:9 Uncaught ReferenceError: Date is not defined."});
 }
 
@@ -1821,6 +1844,149 @@ TEST_F(SellerWorkletTest, ReportResultRenderUrl) {
   RunReportResultCreatedScriptExpectingResult(
       "browserSignals.renderUrl", "sendReportTo(browserSignals.renderUrl)",
       R"("https://foo/")", browser_signal_render_url_);
+}
+
+TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
+  bid_ = 5;
+  base::flat_map<std::string, GURL> expected_ad_beacon_map = {
+      {"click", GURL("https://click.example.com/")},
+      {"view", GURL("https://view.example.com/")},
+  };
+  RunReportResultCreatedScriptExpectingResult(
+      R"(5)",
+      R"(registerAdBeacon({
+        'click': "https://click.example.com/",
+        'view': "https://view.example.com/",
+      }))",
+      /*expected_signals_for_winner=*/"5",
+      /*expected_report_url =*/absl::nullopt, expected_ad_beacon_map);
+
+  browser_signal_render_url_ = GURL("https://foo/");
+  RunReportResultCreatedScriptExpectingResult(
+      R"(5)",
+      R"(registerAdBeacon({
+        'click': "https://click.example.com/",
+        'view': "https://view.example.com/",
+      });
+      sendReportTo(browserSignals.renderUrl))",
+      /*expected_signals_for_winner=*/"5",
+      /*expected_report_url =*/browser_signal_render_url_,
+      expected_ad_beacon_map);
+
+  RunReportResultCreatedScriptExpectingResult(
+      R"(5)",
+      R"(sendReportTo(browserSignals.renderUrl);
+      registerAdBeacon({
+        'click': "https://click.example.com/",
+        'view': "https://view.example.com/",
+      }))",
+      /*expected_signals_for_winner=*/"5",
+      /*expected_report_url =*/browser_signal_render_url_,
+      expected_ad_beacon_map);
+
+  // Don't call twice.
+  RunReportResultCreatedScriptExpectingResult(
+      R"(5)",
+      R"(registerAdBeacon({
+        'click': "https://click.example.com/",
+        'view': "https://view.example.com/",
+      });
+      registerAdBeacon())",
+      /*expected_signals_for_winner=*/{},
+      /*expected_report_url =*/absl::nullopt,
+      /*expected_ad_beacon_map=*/{},
+      {"https://url.test/:13 Uncaught TypeError: registerAdBeacon may be "
+       "called at most once."});
+
+  // If called twice and the error is caught, use the first result.
+  RunReportResultCreatedScriptExpectingResult(
+      R"(5)",
+      R"(registerAdBeacon({
+           'click': "https://click.example.com/",
+           'view': "https://view.example.com/",
+         });
+         try { registerAdBeacon() }
+         catch (e) {})",
+      /*expected_signals_for_winner=*/"5",
+      /*expected_report_url =*/absl::nullopt, expected_ad_beacon_map);
+
+  // If error on first call, can be called again.
+  RunReportResultCreatedScriptExpectingResult(
+      R"(5)",
+      R"(try { registerAdBeacon() }
+         catch (e) {}
+         registerAdBeacon({
+           'click': "https://click.example.com/",
+           'view': "https://view.example.com/",
+         }))",
+      /*expected_signals_for_winner=*/"5",
+      /*expected_report_url =*/absl::nullopt, expected_ad_beacon_map);
+
+  // Error if no parameters
+  RunReportResultCreatedScriptExpectingResult(
+      R"(5)", R"(registerAdBeacon())",
+      /*expected_signals_for_winner=*/{},
+      /*expected_report_url =*/absl::nullopt,
+      /*expected_ad_beacon_map=*/{},
+      {"https://url.test/:9 Uncaught TypeError: registerAdBeacon requires 1 "
+       "object parameter."});
+
+  // Error if parameter is not an object
+  RunReportResultCreatedScriptExpectingResult(
+      R"(5)", R"(registerAdBeacon("foo"))",
+      /*expected_signals_for_winner=*/{},
+      /*expected_report_url =*/absl::nullopt,
+      /*expected_ad_beacon_map=*/{},
+      {"https://url.test/:9 Uncaught TypeError: registerAdBeacon requires 1 "
+       "object parameter."});
+
+  // Error if parameter is not an object
+  RunReportResultCreatedScriptExpectingResult(
+      R"(5)", R"(registerAdBeacon("foo"))",
+      /*expected_signals_for_winner=*/{},
+      /*expected_report_url =*/absl::nullopt,
+      /*expected_ad_beacon_map=*/{},
+      {"https://url.test/:9 Uncaught TypeError: registerAdBeacon requires 1 "
+       "object parameter."});
+
+  // Error if parameter attributes are not strings
+  RunReportResultCreatedScriptExpectingResult(
+      R"(5)",
+      R"(registerAdBeacon({
+        'click': "https://click.example.com/",
+        1: "https://view.example.com/",
+      }))",
+      /*expected_signals_for_winner=*/{},
+      /*expected_report_url =*/absl::nullopt,
+      /*expected_ad_beacon_map=*/{},
+      {"https://url.test/:9 Uncaught TypeError: registerAdBeacon object "
+       "attributes must be strings."});
+
+  // Error if invalid reporting URL
+  RunReportResultCreatedScriptExpectingResult(
+      R"(5)",
+      R"(registerAdBeacon({
+        'click': "https://click.example.com/",
+        'view': "gopher://view.example.com/",
+      }))",
+      /*expected_signals_for_winner=*/{},
+      /*expected_report_url =*/absl::nullopt,
+      /*expected_ad_beacon_map=*/{},
+      {"https://url.test/:9 Uncaught TypeError: registerAdBeacon invalid "
+       "reporting url for key 'view': 'gopher://view.example.com/'."});
+
+  // Error if not trustworthy reporting URL
+  RunReportResultCreatedScriptExpectingResult(
+      R"(5)",
+      R"(registerAdBeacon({
+        'click': "https://127.0.0.1/",
+        'view': "http://view.example.com/",
+      }))",
+      /*expected_signals_for_winner=*/{},
+      /*expected_report_url =*/absl::nullopt,
+      /*expected_ad_beacon_map=*/{},
+      {"https://url.test/:9 Uncaught TypeError: registerAdBeacon invalid "
+       "reporting url for key 'view': 'http://view.example.com/'."});
 }
 
 TEST_F(SellerWorkletTest, ReportResultBid) {
@@ -2033,9 +2199,11 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
           browser_signal_data_version_.value_or(0),
           browser_signal_data_version_.has_value(),
           base::BindLambdaForTesting(
-              [&run_loop](const absl::optional<std::string>& signals_for_winner,
-                          const absl::optional<GURL>& report_url,
-                          const std::vector<std::string>& errors) {
+              [&run_loop](
+                  const absl::optional<std::string>& signals_for_winner,
+                  const absl::optional<GURL>& report_url,
+                  const base::flat_map<std::string, GURL>& ad_beacon_map,
+                  const std::vector<std::string>& errors) {
                 EXPECT_EQ("2", signals_for_winner);
                 EXPECT_TRUE(errors.empty());
                 run_loop.Quit();
@@ -2093,6 +2261,7 @@ TEST_F(SellerWorkletTest, DeleteBeforeReportResultCallback) {
       browser_signal_data_version_.has_value(),
       base::BindOnce([](const absl::optional<std::string>& signals_for_winner,
                         const absl::optional<GURL>& report_url,
+                        const base::flat_map<std::string, GURL>& ad_beacon_map,
                         const std::vector<std::string>& errors) {
         ADD_FAILURE() << "Callback should not be invoked since worklet deleted";
       }));
@@ -2528,9 +2697,10 @@ TEST_F(SellerWorkletTest, InstrumentationBreakpoints) {
 
   // Now try reporting, should hit the other breakpoint.
   base::RunLoop run_loop2;
-  RunReportResultExpectingResultAsync(worklet.get(), "1",
-                                      GURL("https://foo.test/"), {},
-                                      run_loop2.QuitClosure());
+  RunReportResultExpectingResultAsync(
+      worklet.get(), "1", GURL("https://foo.test/"),
+      /*expected_ad_beacon_map=*/{}, /*expected_errors=*/{},
+      run_loop2.QuitClosure());
   TestDevToolsAgentClient::Event breakpoint_hit2 =
       debug.WaitForMethodNotification("Debugger.paused");
   const std::string* breakpoint2 =

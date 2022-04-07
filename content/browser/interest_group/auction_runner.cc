@@ -44,6 +44,7 @@ namespace content {
 
 namespace {
 
+using blink::mojom::ReportingDestination;
 constexpr base::TimeDelta kMaxTimeout = base::Milliseconds(500);
 
 // For group freshness metrics.
@@ -1065,6 +1066,7 @@ void AuctionRunner::Auction::ReportSellerResult(
 void AuctionRunner::Auction::OnReportSellerResultComplete(
     const absl::optional<std::string>& signals_for_winner,
     const absl::optional<GURL>& seller_report_url,
+    const base::flat_map<std::string, GURL>& seller_ad_beacon_map,
     const std::vector<std::string>& errors) {
   // There should be no other report URLs at this point.
   DCHECK(report_urls_.empty());
@@ -1074,6 +1076,10 @@ void AuctionRunner::Auction::OnReportSellerResultComplete(
   // winning component seller from reloading its worklet. It could also trigger
   // an error if it crashes at this point, failing the auction unnecessarily.
   seller_worklet_handle_.reset();
+
+  if (!seller_ad_beacon_map.empty())
+    ad_beacon_map_.metadata[ReportingDestination::kSeller] =
+        seller_ad_beacon_map;
 
   if (seller_report_url) {
     if (!IsUrlValid(*seller_report_url)) {
@@ -1140,6 +1146,7 @@ void AuctionRunner::Auction::ReportBidWin(
 
 void AuctionRunner::Auction::OnReportBidWinComplete(
     const absl::optional<GURL>& bidder_report_url,
+    const base::flat_map<std::string, GURL>& bidder_ad_beacon_map,
     const std::vector<std::string>& errors) {
   // There should be at most one other report URL at this point.
   DCHECK_LE(report_urls_.size(), 1u);
@@ -1147,6 +1154,10 @@ void AuctionRunner::Auction::OnReportBidWinComplete(
   // The winning bidder worklet is no longer needed. Unload it to prevent a
   // fatal error notification.
   top_bid_->bid->bid_state->worklet_handle.reset();
+
+  if (!bidder_ad_beacon_map.empty())
+    ad_beacon_map_.metadata[ReportingDestination::kBuyer] =
+        bidder_ad_beacon_map;
 
   if (bidder_report_url) {
     if (!IsUrlValid(*bidder_report_url)) {
@@ -1178,7 +1189,8 @@ void AuctionRunner::Auction::OnWinningComponentSellerWorkletFatalError(
     // An error while reloading the worklet to call ReportResult() does not
     // currently fail the auction.
     OnReportSellerResultComplete(/*signals_for_winner=*/absl::nullopt,
-                                 /*seller_report_url=*/absl::nullopt, errors);
+                                 /*seller_report_url=*/absl::nullopt,
+                                 /*seller_ad_beacon_map=*/{}, errors);
   }
 }
 
@@ -1197,12 +1209,28 @@ void AuctionRunner::Auction::OnWinningBidderWorkletFatalError(
   } else {
     // An error while reloading the worklet to call ReportWin() does not
     // currently fail the auction.
-    OnReportBidWinComplete(/*bidder_report_url=*/absl::nullopt, errors);
+    OnReportBidWinComplete(/*bidder_report_url=*/absl::nullopt,
+                           /*bidder_ad_beacon_map=*/{}, errors);
   }
 }
 
 void AuctionRunner::Auction::OnComponentAuctionReportingPhaseComplete(
     bool success) {
+  // Copy ad beacon registry.
+  DCHECK(top_bid_->bid->auction);
+  if (top_bid_->bid->auction->ad_beacon_map_.metadata.count(
+          ReportingDestination::kSeller) > 0) {
+    ad_beacon_map_.metadata[ReportingDestination::kComponentSeller] =
+        top_bid_->bid->auction->ad_beacon_map_
+            .metadata[ReportingDestination::kSeller];
+  }
+  if (top_bid_->bid->auction->ad_beacon_map_.metadata.count(
+          ReportingDestination::kBuyer) > 0) {
+    ad_beacon_map_.metadata[ReportingDestination::kBuyer] =
+        top_bid_->bid->auction->ad_beacon_map_
+            .metadata[ReportingDestination::kBuyer];
+  }
+
   // Inherit the success or error from the nested auction.
   OnReportingPhaseComplete(*top_bid_->bid->auction->final_auction_result_);
 }
@@ -1290,12 +1318,13 @@ void AuctionRunner::FailAuction() {
 
   UpdateInterestGroupsPostAuction();
 
-  std::move(callback_).Run(
-      this, /*render_url=*/absl::nullopt,
-      /*winning_group_key=*/absl::nullopt,
-      /*ad_component_urls=*/{},
-      /*report_urls=*/{}, std::move(debug_loss_report_urls),
-      std::move(debug_win_report_urls), auction_.TakeErrors());
+  std::move(callback_).Run(this, /*render_url=*/absl::nullopt,
+                           /*winning_group_key=*/absl::nullopt,
+                           /*ad_component_urls=*/{},
+                           /*report_urls=*/{},
+                           std::move(debug_loss_report_urls),
+                           std::move(debug_win_report_urls),
+                           /*ad_beacon_map=*/{}, auction_.TakeErrors());
 }
 
 AuctionRunner::AuctionRunner(
@@ -1463,7 +1492,7 @@ void AuctionRunner::OnReportingPhaseComplete(bool success) {
       this, std::move(winning_group_key), auction_.top_bid()->bid->render_url,
       auction_.top_bid()->bid->ad_components, auction_.TakeReportUrls(),
       std::move(debug_loss_report_urls), std::move(debug_win_report_urls),
-      auction_.TakeErrors());
+      auction_.TakeAdBeaconMap(), auction_.TakeErrors());
 }
 
 void AuctionRunner::UpdateInterestGroupsPostAuction() {

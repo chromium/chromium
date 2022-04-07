@@ -22,6 +22,7 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
+#include "content/services/auction_worklet/register_ad_beacon_bindings.h"
 #include "content/services/auction_worklet/report_bindings.h"
 #include "content/services/auction_worklet/set_bid_bindings.h"
 #include "content/services/auction_worklet/trusted_signals.h"
@@ -326,6 +327,8 @@ void BidderWorklet::V8State::ReportWin(
   v8::Local<v8::ObjectTemplate> global_template =
       v8::ObjectTemplate::New(isolate);
   ReportBindings report_bindings(v8_helper_.get(), global_template);
+  RegisterAdBeaconBindings register_ad_beacon_bindings(v8_helper_.get(),
+                                                       global_template);
 
   // Short lived context, to avoid leaking data at global scope between either
   // repeated calls to this worklet, or to calls to any other worklet.
@@ -338,9 +341,9 @@ void BidderWorklet::V8State::ReportWin(
       !AppendJsonValueOrNull(v8_helper_.get(), context, per_buyer_signals_json,
                              &args) ||
       !v8_helper_->AppendJsonValue(context, seller_signals_json, &args)) {
-    PostReportWinCallbackToUserThread(std::move(callback),
-                                      absl::nullopt /* report_url */,
-                                      std::vector<std::string>() /* errors */);
+    PostReportWinCallbackToUserThread(
+        std::move(callback), absl::nullopt /* report_url */,
+        /*ad_beacon_map=*/{}, std::vector<std::string>() /* errors */);
     return;
   }
 
@@ -364,9 +367,9 @@ void BidderWorklet::V8State::ReportWin(
       (bidding_signals_data_version.has_value() &&
        !browser_signals_dict.Set("dataVersion",
                                  bidding_signals_data_version.value()))) {
-    PostReportWinCallbackToUserThread(std::move(callback),
-                                      absl::nullopt /* report_url */,
-                                      std::vector<std::string>() /* errors */);
+    PostReportWinCallbackToUserThread(
+        std::move(callback), absl::nullopt /* report_url */,
+        /*ad_beacon_map=*/{}, std::vector<std::string>() /* errors */);
     return;
   }
   args.push_back(browser_signals);
@@ -381,16 +384,17 @@ void BidderWorklet::V8State::ReportWin(
                       "reportWin", args, /*script_timeout=*/absl::nullopt,
                       errors_out)
           .IsEmpty()) {
-    PostReportWinCallbackToUserThread(std::move(callback),
-                                      absl::nullopt /* report_url */,
-                                      std::move(errors_out));
+    PostReportWinCallbackToUserThread(
+        std::move(callback), absl::nullopt /* report_url */,
+        /*ad_beacon_map=*/{}, std::move(errors_out));
     return;
   }
 
   // This covers both the case where a report URL was provided, and the case one
   // was not.
   PostReportWinCallbackToUserThread(
-      std::move(callback), report_bindings.report_url(), std::move(errors_out));
+      std::move(callback), report_bindings.report_url(),
+      register_ad_beacon_bindings.TakeAdBeaconMap(), std::move(errors_out));
 }
 
 void BidderWorklet::V8State::GenerateBid(
@@ -640,11 +644,12 @@ void BidderWorklet::V8State::PostResumeToUserThread(
 void BidderWorklet::V8State::PostReportWinCallbackToUserThread(
     ReportWinCallbackInternal callback,
     const absl::optional<GURL>& report_url,
+    base::flat_map<std::string, GURL> ad_beacon_map,
     std::vector<std::string> errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   user_thread_->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(report_url),
-                                std::move(errors)));
+                                std::move(ad_beacon_map), std::move(errors)));
 }
 
 void BidderWorklet::V8State::PostErrorBidCallbackToUserThread(
@@ -853,11 +858,13 @@ void BidderWorklet::DeliverBidCallbackOnUserThread(
 void BidderWorklet::DeliverReportWinOnUserThread(
     ReportWinTaskList::iterator task,
     absl::optional<GURL> report_url,
+    base::flat_map<std::string, GURL> ad_beacon_map,
     std::vector<std::string> errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
   errors.insert(errors.end(), load_code_error_msgs_.begin(),
                 load_code_error_msgs_.end());
-  std::move(task->callback).Run(std::move(report_url), errors);
+  std::move(task->callback)
+      .Run(std::move(report_url), std::move(ad_beacon_map), errors);
   report_win_tasks_.erase(task);
 }
 
