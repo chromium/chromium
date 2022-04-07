@@ -98,9 +98,7 @@ class PendingReceiver {
 
   // Like above but provides a reason for the disconnection.
   void ResetWithReason(uint32_t reason, const std::string& description) {
-    if (!is_valid()) {
-      return;
-    }
+    CHECK(is_valid()) << "Cannot send reset reason to an invalid handle.";
 
     Message message =
         PipeControlMessageProxy::ConstructPeerEndpointClosedMessage(
