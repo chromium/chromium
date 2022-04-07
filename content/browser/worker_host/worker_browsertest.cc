@@ -922,10 +922,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                          WorkerFromAnonymousIframeNikBrowserTest,
                          testing::Range(0, 3));
 
-// TODO(crbug.com/1309684): Test is flaky.
-IN_PROC_BROWSER_TEST_P(
-    WorkerFromAnonymousIframeNikBrowserTest,
-    DISABLED_SharedWorkerRequestIsDoneWithPartitionedNetworkState) {
+IN_PROC_BROWSER_TEST_P(WorkerFromAnonymousIframeNikBrowserTest,
+                       SharedWorkerRequestIsDoneWithPartitionedNetworkState) {
   if (!SupportsSharedWorker())
     return;
 
