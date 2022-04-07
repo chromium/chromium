@@ -45,6 +45,11 @@ class _MediaBenchmark(perf_benchmark.PerfBenchmark):
     options.SetTimelineBasedMetrics(['mediaMetric', 'cpuTimeMetric'])
     return options
 
+  def SetExtraBrowserOptions(self, options):
+    # bf-cache messes with the time_to_play numbers when we do several runs
+    # in a row. More info crbug.com/1309294
+    options.AppendExtraBrowserArgs('--disable-features=BackForwardCache')
+
 
 @benchmark.Info(emails=['dalecurtis@chromium.org'],
                 component='Internals>Media',
@@ -92,6 +97,7 @@ class MediaMobile(_MediaBenchmark):
     return 'media.mobile'
 
   def SetExtraBrowserOptions(self, options):
+    super(MediaMobile, self).SetExtraBrowserOptions(options)
     # By default, Chrome on Android does not allow autoplay
     # of media: it requires a user gesture event to start a video.
     # The following option works around that.
