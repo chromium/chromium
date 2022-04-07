@@ -163,7 +163,6 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void InstallPolicyAppTabbedShortcut(const std::string& site_mode);
   void InstallPolicyAppWindowedNoShortcut(const std::string& site_mode);
   void InstallPolicyAppWindowedShortcut(const std::string& site_mode);
-  // These functions install apps which are tabbed and creates shortcuts.
   void ApplyRunOnOsLoginPolicyAllowed(const std::string& site_mode);
   void ApplyRunOnOsLoginPolicyBlocked(const std::string& site_mode);
   void ApplyRunOnOsLoginPolicyRunWindowed(const std::string& site_mode);
@@ -244,6 +243,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   // Must be called at the end of every state check action function.
   void AfterStateCheckAction();
 
+  AppId GetAppIdBySiteMode(const std::string& site_mode);
   GURL GetAppStartURL(const std::string& site_mode);
   absl::optional<AppState> GetAppBySiteMode(StateSnapshot* state_snapshot,
                                             Profile* profile,
@@ -304,6 +304,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
   PageActionIconView* pwa_install_view();
   PageActionIconView* intent_picker_view();
+
+  base::flat_set<AppId> previous_manifest_updates_;
 
   // Variables used to facilitate waiting for manifest updates, as there isn't
   // a formal 'action' that a user can take to wait for this, as it happens

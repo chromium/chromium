@@ -642,9 +642,9 @@ void WebAppIntegrationTestDriver::InstallMenuOption(
 #if !BUILDFLAG(IS_CHROMEOS)
 void WebAppIntegrationTestDriver::InstallLocally(const std::string& site_mode) {
   BeforeStateChangeAction(__FUNCTION__);
-  absl::optional<AppState> app_state = GetAppBySiteMode(
-      before_state_change_action_state_.get(), profile(), site_mode);
-  ASSERT_TRUE(app_state) << "App not installed: " << site_mode;
+  AppId app_id = GetAppIdBySiteMode(site_mode);
+  ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
+      << "No app installed for site: " << site_mode;
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
@@ -653,7 +653,7 @@ void WebAppIntegrationTestDriver::InstallLocally(const std::string& site_mode) {
   TestAppLauncherHandler handler(/*extension_service=*/nullptr, provider(),
                                  &test_web_ui);
   base::ListValue web_app_ids;
-  web_app_ids.Append(app_state->id);
+  web_app_ids.Append(app_id);
 
   WebAppTestInstallWithOsHooksObserver observer(profile());
   observer.BeginListening();
@@ -773,11 +773,9 @@ void WebAppIntegrationTestDriver::RemoveRunOnOsLoginPolicy(
 void WebAppIntegrationTestDriver::LaunchFromChromeApps(
     const std::string& site_mode) {
   BeforeStateChangeAction(__FUNCTION__);
-  absl::optional<AppState> app_state = GetAppBySiteMode(
-      before_state_change_action_state_.get(), profile(), site_mode);
-  ASSERT_TRUE(app_state.has_value())
+  AppId app_id = GetAppIdBySiteMode(site_mode);
+  ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
       << "No app installed for site: " << site_mode;
-  auto app_id = app_state->id;
   WebAppRegistrar& app_registrar = provider()->registrar();
   DisplayMode display_mode = app_registrar.GetAppEffectiveDisplayMode(app_id);
   if (display_mode == blink::mojom::DisplayMode::kBrowser) {
@@ -829,11 +827,11 @@ void WebAppIntegrationTestDriver::LaunchFromLaunchIcon(
 void WebAppIntegrationTestDriver::LaunchFromMenuOption(
     const std::string& site_mode) {
   BeforeStateChangeAction(__FUNCTION__);
+  AppId app_id = GetAppIdBySiteMode(site_mode);
+  ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
+      << "No app installed for site: " << site_mode;
+
   NavigateBrowser(site_mode);
-  absl::optional<AppState> app_state = GetAppBySiteMode(
-      before_state_change_action_state_.get(), profile(), site_mode);
-  ASSERT_TRUE(app_state);
-  auto app_id = app_state->id;
 
   content::WindowedNotificationObserver app_loaded_observer(
       content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
@@ -846,7 +844,7 @@ void WebAppIntegrationTestDriver::LaunchFromMenuOption(
   active_app_id_ = app_id;
 
   ASSERT_TRUE(AppBrowserController::IsForWebApp(app_browser(), active_app_id_));
-  ASSERT_EQ(GetBrowserWindowTitle(app_browser()), app_state->name);
+  EXPECT_EQ(app_browser()->app_controller()->app_id(), app_id);
   AfterStateChangeAction();
 }
 
@@ -854,10 +852,9 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(
     const std::string& site_mode) {
 #if !BUILDFLAG(IS_CHROMEOS)
   BeforeStateChangeAction(__FUNCTION__);
-  absl::optional<AppState> app_state = GetAppBySiteMode(
-      before_state_change_action_state_.get(), profile(), site_mode);
-  ASSERT_TRUE(app_state);
-  auto app_id = app_state->id;
+  AppId app_id = GetAppIdBySiteMode(site_mode);
+  ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
+      << "No app installed for site: " << site_mode;
 
   WebAppRegistrar& app_registrar = provider()->registrar();
   DisplayMode display_mode = app_registrar.GetAppEffectiveDisplayMode(app_id);
@@ -869,8 +866,7 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(
     browser_added_waiter.Wait();
     app_browser_ = browser_added_waiter.browser_added();
     active_app_id_ = app_id;
-    EXPECT_EQ(app_browser()->app_controller()->app_id(), app_state->id);
-    EXPECT_EQ(GetBrowserWindowTitle(app_browser()), app_state->name);
+    EXPECT_EQ(app_browser()->app_controller()->app_id(), app_id);
   } else {
     LaunchAppStartupBrowserCreator(app_id);
     auto* app_banner_manager =
@@ -888,11 +884,6 @@ void WebAppIntegrationTestDriver::OpenAppSettingsFromAppMenu(
     const std::string& site_mode) {
 #if !BUILDFLAG(IS_CHROMEOS)
   BeforeStateChangeAction(__FUNCTION__);
-  absl::optional<AppState> app_state = GetAppBySiteMode(
-      before_state_change_action_state_.get(), profile(), site_mode);
-  ASSERT_TRUE(app_state.has_value())
-      << "No app installed for site: " << site_mode;
-
   Browser* app_browser = GetAppBrowserForSite(site_mode);
   ASSERT_TRUE(app_browser);
 
@@ -926,9 +917,8 @@ void WebAppIntegrationTestDriver::OpenAppSettingsFromChromeApps(
     const std::string& site_mode) {
 #if !BUILDFLAG(IS_CHROMEOS)
   BeforeStateChangeAction(__FUNCTION__);
-  absl::optional<AppState> app_state = GetAppBySiteMode(
-      before_state_change_action_state_.get(), profile(), site_mode);
-  ASSERT_TRUE(app_state.has_value())
+  AppId app_id = GetAppIdBySiteMode(site_mode);
+  ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
       << "No app installed for site: " << site_mode;
 
   content::TestWebUI test_web_ui;
@@ -939,7 +929,7 @@ void WebAppIntegrationTestDriver::OpenAppSettingsFromChromeApps(
   TestAppLauncherHandler handler(/*extension_service=*/nullptr, provider(),
                                  &test_web_ui);
   base::ListValue web_app_ids;
-  web_app_ids.Append(app_state->id);
+  web_app_ids.Append(app_id);
   content::WebContentsAddedObserver nav_observer;
   handler.HandleShowAppInfo(&web_app_ids);
   // Wait for new web content to be created.
@@ -1118,11 +1108,9 @@ void WebAppIntegrationTestDriver::OpenInChrome() {
 
 void WebAppIntegrationTestDriver::SetOpenInTab(const std::string& site_mode) {
   BeforeStateChangeAction(__FUNCTION__);
-  absl::optional<AppState> app_state = GetAppBySiteMode(
-      before_state_change_action_state_.get(), profile(), site_mode);
-  ASSERT_TRUE(app_state.has_value())
+  AppId app_id = GetAppIdBySiteMode(site_mode);
+  ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
       << "No app installed for site: " << site_mode;
-  auto app_id = app_state->id;
   // Will need to add feature flag based condition for web app settings page
 #if BUILDFLAG(IS_CHROMEOS)
   auto& sync_bridge = WebAppProvider::GetForTest(profile())->sync_bridge();
@@ -1138,11 +1126,9 @@ void WebAppIntegrationTestDriver::SetOpenInTab(const std::string& site_mode) {
 void WebAppIntegrationTestDriver::SetOpenInWindow(
     const std::string& site_mode) {
   BeforeStateChangeAction(__FUNCTION__);
-  absl::optional<AppState> app_state = GetAppBySiteMode(
-      before_state_change_action_state_.get(), profile(), site_mode);
-  ASSERT_TRUE(app_state.has_value())
+  AppId app_id = GetAppIdBySiteMode(site_mode);
+  ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
       << "No app installed for site: " << site_mode;
-  auto app_id = app_state->id;
   // Will need to add feature flag based condition for web app settings page.
 #if BUILDFLAG(IS_CHROMEOS)
   auto& sync_bridge = WebAppProvider::GetForTest(profile())->sync_bridge();
@@ -1190,9 +1176,9 @@ void WebAppIntegrationTestDriver::SyncTurnOn() {
 void WebAppIntegrationTestDriver::UninstallFromList(
     const std::string& site_mode) {
   BeforeStateChangeAction(__FUNCTION__);
-  absl::optional<AppState> app_state = GetAppBySiteMode(
-      before_state_change_action_state_.get(), profile(), site_mode);
-  ASSERT_TRUE(app_state) << "App not installed: " << site_mode;
+  AppId app_id = GetAppIdBySiteMode(site_mode);
+  ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
+      << "No app installed for site: " << site_mode;
 
   WebAppTestUninstallObserver observer(profile());
   observer.BeginListening();
@@ -1204,7 +1190,7 @@ void WebAppIntegrationTestDriver::UninstallFromList(
       apps::AppServiceProxyFactory::GetForProfile(profile());
   base::RunLoop run_loop;
   app_service_proxy->UninstallForTesting(
-      app_state->id, nullptr,
+      app_id, nullptr,
       base::BindLambdaForTesting([&](bool) { run_loop.Quit(); }));
   run_loop.Run();
 
@@ -1215,8 +1201,8 @@ void WebAppIntegrationTestDriver::UninstallFromList(
   // call the normal method.
   apps::AppServiceProxy* app_service_proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile());
-  app_service_proxy->Uninstall(app_state->id,
-                               apps::mojom::UninstallSource::kAppList, nullptr);
+  app_service_proxy->Uninstall(app_id, apps::mojom::UninstallSource::kAppList,
+                               nullptr);
 #else
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
@@ -1226,7 +1212,7 @@ void WebAppIntegrationTestDriver::UninstallFromList(
   TestAppLauncherHandler handler(/*extension_service=*/nullptr, provider(),
                                  &test_web_ui);
   base::ListValue web_app_ids;
-  web_app_ids.Append(app_state->id);
+  web_app_ids.Append(app_id);
   handler.HandleUninstallApp(&web_app_ids);
 #endif
 
@@ -1239,17 +1225,14 @@ void WebAppIntegrationTestDriver::UninstallFromAppSettings(
     const std::string& site_mode) {
 #if !BUILDFLAG(IS_CHROMEOS)
   BeforeStateChangeAction(__FUNCTION__);
-  absl::optional<AppState> app_state = GetAppBySiteMode(
-      before_state_change_action_state_.get(), profile(), site_mode);
-  ASSERT_TRUE(app_state.has_value())
+  AppId app_id = GetAppIdBySiteMode(site_mode);
+  ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
       << "No app installed for site: " << site_mode;
-  auto app_id = app_state->id;
   WebAppTestUninstallObserver uninstall_observer(profile());
   uninstall_observer.BeginListening({app_id});
 
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  if (web_contents->GetURL() !=
-      GURL("chrome://app-settings/" + app_state->id)) {
+  if (web_contents->GetURL() != GURL("chrome://app-settings/" + app_id)) {
     OpenAppSettingsFromChromeApps(site_mode);
     CheckBrowserNavigationIsAppSettings(site_mode);
   }
@@ -1276,11 +1259,9 @@ void WebAppIntegrationTestDriver::UninstallFromAppSettings(
 void WebAppIntegrationTestDriver::UninstallFromMenu(
     const std::string& site_mode) {
   BeforeStateChangeAction(__FUNCTION__);
-  absl::optional<AppState> app_state = GetAppBySiteMode(
-      before_state_change_action_state_.get(), profile(), site_mode);
-  ASSERT_TRUE(app_state.has_value())
+  AppId app_id = GetAppIdBySiteMode(site_mode);
+  ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
       << "No app installed for site: " << site_mode;
-  auto app_id = app_state->id;
   WebAppTestUninstallObserver observer(profile());
   observer.BeginListening({app_id});
 
@@ -1348,11 +1329,9 @@ void WebAppIntegrationTestDriver::UninstallFromOs(
     const std::string& site_mode) {
 #if BUILDFLAG(IS_WIN)
   BeforeStateChangeAction(__FUNCTION__);
-  absl::optional<AppState> app_state = GetAppBySiteMode(
-      before_state_change_action_state_.get(), profile(), site_mode);
-  ASSERT_TRUE(app_state.has_value())
+  AppId app_id = GetAppIdBySiteMode(site_mode);
+  ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
       << "No app installed for site: " << site_mode;
-  auto app_id = app_state->id;
   WebAppTestUninstallObserver observer(profile());
   observer.BeginListening({app_id});
 
@@ -1419,7 +1398,8 @@ void WebAppIntegrationTestDriver::CheckAppNavigationIsStartUrl() {
   BeforeStateCheckAction(__FUNCTION__);
   ASSERT_FALSE(active_app_id_.empty());
   ASSERT_TRUE(app_browser());
-  GURL url = app_browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
+  GURL url =
+      app_browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL();
   EXPECT_EQ(url, provider()->registrar().GetAppStartUrl(active_app_id_));
   AfterStateCheckAction();
 }
@@ -1428,13 +1408,13 @@ void WebAppIntegrationTestDriver::CheckBrowserNavigationIsAppSettings(
     const std::string& site_mode) {
 #if !BUILDFLAG(IS_CHROMEOS)
   BeforeStateCheckAction(__FUNCTION__);
-  absl::optional<AppState> app_state = GetAppBySiteMode(
-      after_state_change_action_state_.get(), profile(), site_mode);
-  ASSERT_TRUE(app_state.has_value());
+  AppId app_id = GetAppIdBySiteMode(site_mode);
+  ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
+      << "No app installed for site: " << site_mode;
 
   ASSERT_TRUE(browser());
   GURL url = browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
-  EXPECT_EQ(url, GURL("chrome://app-settings/" + app_state->id));
+  EXPECT_EQ(url, GURL("chrome://app-settings/" + app_id));
   AfterStateCheckAction();
 #else
   NOTREACHED() << "Not implemented on Chrome OS.";
@@ -1912,6 +1892,20 @@ void WebAppIntegrationTestDriver::AfterStateCheckAction() {
   DCHECK_EQ(*after_state_change_action_state_, *ConstructStateSnapshot());
 }
 
+AppId WebAppIntegrationTestDriver::GetAppIdBySiteMode(
+    const std::string& site_mode) {
+  DCHECK(g_site_mode_to_relative_manifest_id.contains(site_mode));
+  std::string manifest_id =
+      g_site_mode_to_relative_manifest_id.find(site_mode)->second;
+
+  DCHECK(g_site_mode_to_relative_start_url.contains(site_mode));
+  auto relative_start_url =
+      g_site_mode_to_relative_start_url.find(site_mode)->second;
+  GURL start_url = embedded_test_server()->GetURL(relative_start_url);
+
+  return GenerateAppId(manifest_id, start_url);
+}
+
 GURL WebAppIntegrationTestDriver::GetAppStartURL(const std::string& site_mode) {
   DCHECK(g_site_mode_to_relative_start_url.contains(site_mode));
   auto start_url_path =
@@ -1929,16 +1923,7 @@ absl::optional<AppState> WebAppIntegrationTestDriver::GetAppBySiteMode(
     return absl::nullopt;
   }
 
-  DCHECK(g_site_mode_to_relative_manifest_id.contains(site_mode));
-  std::string manifest_id =
-      g_site_mode_to_relative_manifest_id.find(site_mode)->second;
-
-  DCHECK(g_site_mode_to_relative_start_url.contains(site_mode));
-  auto relative_start_url =
-      g_site_mode_to_relative_start_url.find(site_mode)->second;
-  GURL start_url = embedded_test_server()->GetURL(relative_start_url);
-
-  std::string app_id = GenerateAppId(manifest_id, start_url);
+  AppId app_id = GetAppIdBySiteMode(site_mode);
 
   auto it = profile_state->apps.find(app_id);
   return it == profile_state->apps.end()
@@ -2296,15 +2281,14 @@ void WebAppIntegrationTestDriver::SetRunOnOsLoginMode(
     const std::string& site_mode,
     apps::RunOnOsLoginMode login_mode) {
 #if !BUILDFLAG(IS_CHROMEOS)
-  absl::optional<AppState> app_state = GetAppBySiteMode(
-      before_state_change_action_state_.get(), profile(), site_mode);
-  ASSERT_TRUE(app_state.has_value())
+  AppId app_id = GetAppIdBySiteMode(site_mode);
+  ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
       << "No app installed for site: " << site_mode;
   base::RunLoop run_loop;
   web_app::SetRunOnOsLoginOsHooksChangedCallbackForTesting(
       run_loop.QuitClosure());
   auto app_management_page_handler = CreateAppManagementPageHandler(profile());
-  app_management_page_handler.SetRunOnOsLoginMode(app_state->id, login_mode);
+  app_management_page_handler.SetRunOnOsLoginMode(app_id, login_mode);
   run_loop.Run();
 #endif
 }
