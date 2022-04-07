@@ -82,7 +82,7 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
     }
 
     void reset() {
-        mModel.set(SigninFirstRunProperties.IS_CONTINUE_OR_DISMISS_CLICKED, false);
+        mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER, false);
     }
 
     void onNativeAndPolicyLoaded(boolean hasPolicies) {
@@ -186,7 +186,7 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
             mDelegate.advanceToNextPage();
             return;
         }
-        mModel.set(SigninFirstRunProperties.IS_CONTINUE_OR_DISMISS_CLICKED, true);
+        mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER, true);
         final SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
         signinManager.onFirstRunCheckDone();
@@ -217,7 +217,7 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
         if (IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
                         .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
-            mModel.set(SigninFirstRunProperties.IS_CONTINUE_OR_DISMISS_CLICKED, true);
+            mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER, true);
             IdentityServicesProvider.get()
                     .getSigninManager(Profile.getLastUsedRegularProfile())
                     .signOut(SignoutReason.ABORT_SIGNIN,
@@ -235,7 +235,8 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
      * See crbug.com/1294994 for details.
      */
     private boolean isContinueOrDismissClicked() {
-        return mModel.get(SigninFirstRunProperties.IS_CONTINUE_OR_DISMISS_CLICKED);
+        // This property key is set when continue or dismiss button is clicked.
+        return mModel.get(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER);
     }
 
     private void setSelectedAccountName(String accountName) {

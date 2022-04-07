@@ -94,7 +94,7 @@ public class ChromeSmokeTest {
         IUi2Locator signinContinueButton =
                 Ui2Locators.withAnyResEntry(R.id.signin_fre_continue_button);
         IUi2Locator signinProgressSpinner =
-                Ui2Locators.withAnyResEntry(R.id.signin_fre_progress_spinner);
+                Ui2Locators.withAnyResEntry(R.id.fre_native_and_policy_load_progress_spinner);
 
         // Used in DefaultSearchEngineFirstRunFragment FRE page.
         IUi2Locator defaultSearchEngineNextButton =

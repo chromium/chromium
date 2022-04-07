@@ -21,7 +21,6 @@
         android:src="@drawable/fre_product_logo" />
 
     <LinearLayout
-        android:id="@+id/signin_fre_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="60dp"
@@ -69,7 +68,7 @@
             </FrameLayout>
 
             <ProgressBar
-                android:id="@+id/signin_fre_progress_spinner"
+                android:id="@+id/fre_native_and_policy_load_progress_spinner"
                 style="@style/Widget.AppCompat.ProgressBar"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
@@ -92,4 +91,15 @@
             android:text="@string/signin_fre_footer"
             app:leading="@dimen/text_size_small_leading" />
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/fre_signin_progress_spinner"
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginBottom="170dp"
+        android:layout_marginStart="200dp"
+        android:layout_alignParentBottom="true"
+        android:layout_toEndOf="@id/fre_logo"
+        android:visibility="gone" />
 </org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunView>

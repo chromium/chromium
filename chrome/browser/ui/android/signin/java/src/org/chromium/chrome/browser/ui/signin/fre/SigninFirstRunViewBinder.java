@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.signin.fre;
 
 import android.text.method.LinkMovementMethod;
+import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.view.View;
 
@@ -27,9 +28,15 @@ class SigninFirstRunViewBinder {
         } else if (propertyKey == SigninFirstRunProperties.ON_DISMISS_CLICKED) {
             view.getDismissButtonView().setOnClickListener(
                     model.get(SigninFirstRunProperties.ON_DISMISS_CLICKED));
-        } else if (propertyKey == SigninFirstRunProperties.IS_CONTINUE_OR_DISMISS_CLICKED) {
-            // TODO(https://crbug.com/1294994): Add a spinner while waiting for sign(in/out)
-            //  to finish.
+        } else if (propertyKey == SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER) {
+            final boolean showSigninProgressSpinner =
+                    model.get(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER);
+            if (showSigninProgressSpinner) {
+                // Transition is only used when the progress spinner is shown.
+                TransitionManager.beginDelayedTransition(
+                        view, new AutoTransition().setStartDelay(300).setDuration(300));
+            }
+            updateVisibilityOnButtonClick(view, showSigninProgressSpinner);
         } else if (propertyKey == SigninFirstRunProperties.ON_SELECTED_ACCOUNT_CLICKED) {
             view.getSelectedAccountView().setOnClickListener(
                     model.get(SigninFirstRunProperties.ON_SELECTED_ACCOUNT_CLICKED));
@@ -42,7 +49,7 @@ class SigninFirstRunViewBinder {
             updateVisibility(view, model);
         } else if (propertyKey == SigninFirstRunProperties.ARE_NATIVE_AND_POLICY_LOADED) {
             // Add a transition animation between the view changes.
-            TransitionManager.beginDelayedTransition(view.getContentView());
+            TransitionManager.beginDelayedTransition(view);
             updateVisibility(view, model);
         } else if (propertyKey == SigninFirstRunProperties.FRE_POLICY) {
             view.getBrowserManagedHeaderView().setVisibility(
@@ -82,7 +89,7 @@ class SigninFirstRunViewBinder {
     private static void updateVisibility(SigninFirstRunView view, PropertyModel model) {
         final boolean areNativeAndPolicyLoaded =
                 model.get(SigninFirstRunProperties.ARE_NATIVE_AND_POLICY_LOADED);
-        view.getProgressSpinnerView().setVisibility(
+        view.getInitialLoadProgressSpinnerView().setVisibility(
                 areNativeAndPolicyLoaded ? View.GONE : View.VISIBLE);
         if (areNativeAndPolicyLoaded) view.onNativeAndPoliciesLoaded();
 
@@ -108,6 +115,18 @@ class SigninFirstRunViewBinder {
         final int otherElementsVisibility = areNativeAndPolicyLoaded ? View.VISIBLE : View.GONE;
         view.getContinueButtonView().setVisibility(otherElementsVisibility);
         view.getFooterView().setVisibility(otherElementsVisibility);
+    }
+
+    private static void updateVisibilityOnButtonClick(
+            SigninFirstRunView view, boolean showSigninProgressSpinner) {
+        final int bottomGroupVisibility = showSigninProgressSpinner ? View.INVISIBLE : View.VISIBLE;
+        view.getSelectedAccountView().setVisibility(bottomGroupVisibility);
+        view.getDismissButtonView().setVisibility(bottomGroupVisibility);
+        view.getContinueButtonView().setVisibility(bottomGroupVisibility);
+        view.getFooterView().setVisibility(bottomGroupVisibility);
+
+        view.getSigninProgressSpinner().setVisibility(
+                showSigninProgressSpinner ? View.VISIBLE : View.GONE);
     }
 
     private SigninFirstRunViewBinder() {}

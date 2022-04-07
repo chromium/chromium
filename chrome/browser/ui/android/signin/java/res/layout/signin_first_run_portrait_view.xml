@@ -6,7 +6,6 @@
 <org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/signin_fre_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -88,7 +87,7 @@
                 android:visibility="invisible" />
 
             <ProgressBar
-                android:id="@+id/signin_fre_progress_spinner"
+                android:id="@+id/fre_native_and_policy_load_progress_spinner"
                 style="@style/Widget.AppCompat.ProgressBar"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
@@ -120,4 +119,14 @@
             android:text="@string/signin_fre_footer"
             app:leading="@dimen/text_size_small_leading" />
     </FrameLayout>
+
+    <ProgressBar
+        android:id="@+id/fre_signin_progress_spinner"
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginBottom="128dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone" />
 </org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunView>

@@ -23,16 +23,16 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /** View that wraps signin first run welcome screen and caches references to UI elements. **/
 public class SigninFirstRunView extends RelativeLayout {
-    private ViewGroup mContent;
     private TextView mTitle;
     private TextView mSubtitle;
     private View mBrowserManagedHeader;
-    private ProgressBar mProgressSpinner;
+    private ProgressBar mInitialLoadProgressSpinner;
     private ViewGroup mSelectedAccount;
     private ImageView mExpandIcon;
     private ButtonCompat mContinueButton;
     private ButtonCompat mDismissButton;
     private TextViewWithClickableSpans mFooter;
+    private ProgressBar mSigninProgressSpinner;
 
     public SigninFirstRunView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -42,32 +42,29 @@ public class SigninFirstRunView extends RelativeLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mContent = findViewById(R.id.signin_fre_content);
         mTitle = findViewById(R.id.title);
         mSubtitle = findViewById(R.id.subtitle);
         mBrowserManagedHeader = findViewById(R.id.fre_browser_managed_by_organization);
-        mProgressSpinner = findViewById(R.id.signin_fre_progress_spinner);
+        mInitialLoadProgressSpinner =
+                findViewById(R.id.fre_native_and_policy_load_progress_spinner);
         mSelectedAccount = findViewById(R.id.signin_fre_selected_account);
         mExpandIcon = findViewById(R.id.signin_fre_selected_account_expand_icon);
         mContinueButton = findViewById(R.id.signin_fre_continue_button);
         mDismissButton = findViewById(R.id.signin_fre_dismiss_button);
         mFooter = findViewById(R.id.signin_fre_footer);
+        mSigninProgressSpinner = findViewById(R.id.fre_signin_progress_spinner);
 
         if (FREMobileIdentityConsistencyFieldTrial.shouldHideTitleUntilPoliciesAreLoaded()) {
             mTitle.setVisibility(INVISIBLE);
         }
     }
 
-    ViewGroup getContentView() {
-        return mContent;
-    }
-
     View getBrowserManagedHeaderView() {
         return mBrowserManagedHeader;
     }
 
-    ProgressBar getProgressSpinnerView() {
-        return mProgressSpinner;
+    ProgressBar getInitialLoadProgressSpinnerView() {
+        return mInitialLoadProgressSpinner;
     }
 
     ViewGroup getSelectedAccountView() {
@@ -88,6 +85,10 @@ public class SigninFirstRunView extends RelativeLayout {
 
     TextViewWithClickableSpans getFooterView() {
         return mFooter;
+    }
+
+    ProgressBar getSigninProgressSpinner() {
+        return mSigninProgressSpinner;
     }
 
     /** Updates the title and the subtitle for UI variations on native and policy load. **/
