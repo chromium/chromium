@@ -4,6 +4,7 @@
 
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 
+#include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -15,6 +16,7 @@
 #include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/wm/work_area_insets.h"
 #include "ui/base/class_property.h"
+#include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(ash::CollisionDetectionUtils::RelativePriority)
@@ -175,6 +177,21 @@ std::vector<gfx::Rect> CollectCollisionRects(
             ->GetNativeWindow();
     rects.push_back(ComputeCollisionRectFromBounds(
         capture_bar_window->GetTargetBounds(), capture_bar_window->parent()));
+  }
+
+  // Check the camera preview if it exists.
+  auto* capture_mode_camera_controller =
+      capture_mode_controller->camera_controller();
+  auto* camera_preview_widget =
+      capture_mode_camera_controller
+          ? capture_mode_camera_controller->camera_preview_widget()
+          : nullptr;
+  if (camera_preview_widget && camera_preview_widget->IsVisible()) {
+    aura::Window* camera_preview_window =
+        camera_preview_widget->GetNativeWindow();
+    rects.push_back(
+        ComputeCollisionRectFromBounds(camera_preview_window->GetTargetBounds(),
+                                       camera_preview_window->parent()));
   }
 
   return rects;

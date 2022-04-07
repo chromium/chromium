@@ -588,8 +588,8 @@ class CaptureModeSession::ParentContainerObserver
     parent_container_->AddObserver(this);
   }
 
-  ParentContainerObserver(const CursorSetter&) = delete;
-  ParentContainerObserver& operator=(const CursorSetter&) = delete;
+  ParentContainerObserver(const ParentContainerObserver&) = delete;
+  ParentContainerObserver& operator=(const ParentContainerObserver&) = delete;
 
   ~ParentContainerObserver() override {
     if (parent_container_)

@@ -224,6 +224,11 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // If window is not horizontally shrinkable, return false.
   bool HorizontallyShrinkWindow(const gfx::Rect& work_area);
 
+  // Updates the PIP bounds if necessary. This may need to happen when the
+  // display work area changes, or if system ui regions like the virtual
+  // keyboard position changes.
+  void UpdatePipBounds();
+
   // Replace the State object of a window with a state handler which can
   // implement a new window manager type. The passed object will be owned
   // by this object and the returned object will be owned by the caller.
@@ -486,11 +491,6 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // Called after the state change and update PIP related state, such as next
   // window animation type, upon state change.
   void OnPostPipStateChange(chromeos::WindowStateType old_window_state_type);
-
-  // Update the PIP bounds if necessary. This may need to happen when the
-  // display work area changes, or if system ui regions like the virtual
-  // keyboard position changes.
-  void UpdatePipBounds();
 
   // Collects PIP enter and exit metrics:
   void CollectPipEnterExitMetrics(bool enter);

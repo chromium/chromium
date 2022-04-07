@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_button.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
@@ -22,11 +24,16 @@
 #include "ash/constants/ash_features.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/accessibility/autoclick_menu_bubble_controller.h"
+#include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/window_state.h"
+#include "ash/wm/wm_event.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
@@ -40,6 +47,7 @@
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -343,6 +351,15 @@ class CaptureModeCameraTest : public AshTestBase {
     if (release_mouse)
       event_generator->ReleaseLeftButton();
     EXPECT_EQ(region, controller->user_capture_region());
+  }
+
+  void ConvertToPipWindow(aura::Window* pip_window) {
+    WindowState* window_state = WindowState::Get(pip_window);
+    DCHECK(!window_state->IsPip());
+    views::Widget::GetWidgetForNativeWindow(pip_window)
+        ->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
+    pip_window->SetProperty(kWindowPipTypeKey, true);
+    DCHECK(window_state->IsPip());
   }
 
  private:
@@ -2290,6 +2307,248 @@ TEST_P(CaptureModeCameraPreviewTest, ResizeButtonVisibilityOnTapEvents) {
     timer->FireNow();
     waiter.Wait();
     EXPECT_FALSE(resize_button->GetVisible());
+  }
+}
+
+TEST_P(CaptureModeCameraPreviewTest, CameraPreviewDeintersectsWithSystemTray) {
+  UpdateDisplay("1380x768");
+
+  // Open system tray.
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+
+  auto* system_tray = GetPrimaryUnifiedSystemTray();
+  event_generator->MoveMouseTo(system_tray->GetBoundsInScreen().CenterPoint());
+  event_generator->ClickLeftButton();
+  EXPECT_TRUE(system_tray->IsBubbleShown());
+
+  StartCaptureSessionWithParam();
+  auto* camera_controller = GetCameraController();
+  // Verify current default snap position is the `kBottomRight` before we select
+  // a camera device.
+  EXPECT_EQ(camera_controller->camera_preview_snap_position(),
+            CameraPreviewSnapPosition::kBottomRight);
+
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+
+  auto* preview_widget = camera_controller->camera_preview_widget();
+  EXPECT_TRUE(system_tray->IsBubbleShown());
+
+  // Verify that camera preview doesn't overlap with system tray when it's
+  // shown. Also verify current snap position is updated and not `kBottomRight`
+  // anymore.
+  EXPECT_FALSE(system_tray->GetBubbleBoundsInScreen().Intersects(
+      preview_widget->GetWindowBoundsInScreen()));
+  EXPECT_NE(camera_controller->camera_preview_snap_position(),
+            CameraPreviewSnapPosition::kBottomRight);
+}
+
+TEST_P(CaptureModeCameraPreviewTest,
+       CameraPreviewDeintersectsWithSystemTrayWhileVideoRecordingInProgress) {
+  // Update display size big enough to make sure when capture source is
+  // `kWindow`, the selected window is not system tray.
+  UpdateDisplay("1380x768");
+
+  StartCaptureSessionWithParam();
+  auto* camera_controller = GetCameraController();
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  auto* preview_widget = camera_controller->camera_preview_widget();
+  const gfx::Point capture_bounds_center_point =
+      GetCaptureBoundsInScreen().CenterPoint();
+
+  StartVideoRecordingImmediately();
+  // Verify current snap position is `kBottomRight`;
+  EXPECT_EQ(camera_controller->camera_preview_snap_position(),
+            CameraPreviewSnapPosition::kBottomRight);
+  // Now open system tray.
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  auto* system_tray = GetPrimaryUnifiedSystemTray();
+  event_generator->MoveMouseTo(system_tray->GetBoundsInScreen().CenterPoint());
+  event_generator->ClickLeftButton();
+  EXPECT_TRUE(system_tray->IsBubbleShown());
+
+  // Verify that after system tray is open, camera preview is snapped and
+  // doesn't overlap with system tray.
+  EXPECT_NE(camera_controller->camera_preview_snap_position(),
+            CameraPreviewSnapPosition::kBottomRight);
+  EXPECT_FALSE(system_tray->GetBubbleBoundsInScreen().Intersects(
+      preview_widget->GetWindowBoundsInScreen()));
+
+  // Now try to drag camera preview to the bottom right corner, verify that
+  // since system tray is still open, when drag is released, camera preview is
+  // not snapped to the bottom right corner even it's the nearest corner to the
+  // release position if system tray is still shown.
+  const gfx::Vector2d delta(20, 20);
+  DragPreviewToPoint(preview_widget, capture_bounds_center_point + delta);
+  // Please notice, when capture source is `kWindow`, once the drag starts,
+  // system tray will be closed, in this use case we just need to verify camera
+  // preview is snapped to the bottom right corner.
+  if (system_tray->IsBubbleShown()) {
+    EXPECT_NE(camera_controller->camera_preview_snap_position(),
+              CameraPreviewSnapPosition::kBottomRight);
+    EXPECT_FALSE(system_tray->GetBubbleBoundsInScreen().Intersects(
+        preview_widget->GetWindowBoundsInScreen()));
+  } else {
+    EXPECT_EQ(camera_controller->camera_preview_snap_position(),
+              CameraPreviewSnapPosition::kBottomRight);
+  }
+}
+
+TEST_P(CaptureModeCameraPreviewTest, CameraPreviewDeintersectsWithPipWindow) {
+  // Create a window at the bottom right of the display, then convert it to a
+  // PIP window.
+  std::unique_ptr<aura::Window> pip_window(
+      CreateTestWindow(gfx::Rect(700, 450, 104, 100)));
+  ConvertToPipWindow(pip_window.get());
+  const gfx::Rect origin_pip_window_bounds = pip_window->GetBoundsInScreen();
+
+  StartCaptureSessionWithParam();
+  auto* camera_controller = GetCameraController();
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  auto* preview_widget = camera_controller->camera_preview_widget();
+
+  // Verify that after preview widget is enabled, pip window is repositioned to
+  // avoid the overlap with camera preview.
+  EXPECT_EQ(camera_controller->camera_preview_snap_position(),
+            CameraPreviewSnapPosition::kBottomRight);
+  const gfx::Rect current_pip_window_bounds = pip_window->GetBoundsInScreen();
+  EXPECT_NE(origin_pip_window_bounds, current_pip_window_bounds);
+  EXPECT_FALSE(current_pip_window_bounds.Intersects(
+      preview_widget->GetWindowBoundsInScreen()));
+}
+
+TEST_P(CaptureModeCameraPreviewTest,
+       CameraPreviewDeintersectsWithPipWindowDuringRecording) {
+  // Create a window at the top left of the display, then convert it to a PIP
+  // window.
+  std::unique_ptr<aura::Window> pip_window(
+      CreateTestWindow(gfx::Rect(0, 0, 104, 100)));
+  ConvertToPipWindow(pip_window.get());
+  const gfx::Rect origin_pip_window_bounds = pip_window->GetBoundsInScreen();
+
+  StartCaptureSessionWithParam();
+  auto* camera_controller = GetCameraController();
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  auto* preview_widget = camera_controller->camera_preview_widget();
+  const gfx::Point capture_bounds_center_point =
+      GetCaptureBoundsInScreen().CenterPoint();
+
+  // Verify camera preview is enabled, current snap position is `kBottomRight`
+  // and pip window is not repositioned since there's no overlap.
+  EXPECT_TRUE(preview_widget);
+  EXPECT_EQ(camera_controller->camera_preview_snap_position(),
+            CameraPreviewSnapPosition::kBottomRight);
+  EXPECT_EQ(origin_pip_window_bounds, pip_window->GetBoundsInScreen());
+
+  StartVideoRecordingImmediately();
+  // Now drag camera preview to the top left corner, verify pip window is
+  // repositioned to avoid overlap with camera preview.
+  const gfx::Vector2d delta(-20, -20);
+  DragPreviewToPoint(preview_widget, capture_bounds_center_point + delta);
+  EXPECT_EQ(camera_controller->camera_preview_snap_position(),
+            CameraPreviewSnapPosition::kTopLeft);
+  EXPECT_NE(origin_pip_window_bounds, pip_window->GetBoundsInScreen());
+  EXPECT_FALSE(preview_widget->GetWindowBoundsInScreen().Intersects(
+      pip_window->GetBoundsInScreen()));
+}
+
+TEST_P(CaptureModeCameraPreviewTest,
+       CameraPreviewDeintersectsWithAutoclickBar) {
+  // Update display size big enough to make sure when capture source is
+  // `kWindow`, the selected window is not system tray.
+  UpdateDisplay("1380x768");
+  // Enable autoclick bar.
+  auto* autoclick_controller = Shell::Get()->autoclick_controller();
+  autoclick_controller->SetEnabled(true, /*show_confirmation_dialog=*/false);
+  Shell::Get()
+      ->accessibility_controller()
+      ->GetFeature(AccessibilityControllerImpl::FeatureType::kAutoclick)
+      .SetEnabled(true);
+
+  views::Widget* autoclick_bubble_widget =
+      autoclick_controller->GetMenuBubbleControllerForTesting()
+          ->GetBubbleWidgetForTesting();
+  EXPECT_TRUE(autoclick_bubble_widget->IsVisible());
+  const gfx::Rect origin_autoclick_bar_bounds =
+      autoclick_bubble_widget->GetWindowBoundsInScreen();
+
+  StartCaptureSessionWithParam();
+  auto* camera_controller = GetCameraController();
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  auto* preview_widget = camera_controller->camera_preview_widget();
+
+  // Verify that after preview widget is enabled, autoclick bar is repositioned
+  // to avoid the overlap with camera preview.
+  EXPECT_EQ(camera_controller->camera_preview_snap_position(),
+            CameraPreviewSnapPosition::kBottomRight);
+  const gfx::Rect current_autoclick_bar_bounds =
+      autoclick_bubble_widget->GetWindowBoundsInScreen();
+  EXPECT_NE(origin_autoclick_bar_bounds, current_autoclick_bar_bounds);
+  EXPECT_FALSE(current_autoclick_bar_bounds.Intersects(
+      preview_widget->GetWindowBoundsInScreen()));
+}
+
+TEST_P(CaptureModeCameraPreviewTest,
+       CameraPreviewDeintersectsWithSystemTrayOnSizeChanged) {
+  // Update display size to make sure when system tray is open, camera preview
+  // can stay in the same side with it when camera preview is collapsed,
+  // otherwise, camera preview should be snapped to the other side of the
+  // display.
+  UpdateDisplay("1380x650");
+
+  StartCaptureSessionWithParam();
+  auto* camera_controller = GetCameraController();
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  auto* preview_widget = camera_controller->camera_preview_widget();
+
+  // Verify camera preview is enabled, and by default, the current snap position
+  // should be `kBottomRight`.
+  EXPECT_TRUE(preview_widget);
+  EXPECT_EQ(camera_controller->camera_preview_snap_position(),
+            CameraPreviewSnapPosition::kBottomRight);
+
+  // Click on resize button to collapse camera preview.
+  auto* resize_button = GetPreviewResizeButton();
+  auto* event_generator = GetEventGenerator();
+  ClickOnView(resize_button, event_generator);
+  EXPECT_TRUE(camera_controller->is_camera_preview_collapsed());
+
+  StartVideoRecordingImmediately();
+  // Open system tray.
+  auto* system_tray = GetPrimaryUnifiedSystemTray();
+  event_generator->MoveMouseTo(system_tray->GetBoundsInScreen().CenterPoint());
+  event_generator->ClickLeftButton();
+  EXPECT_TRUE(system_tray->IsBubbleShown());
+
+  // After system tray is shown, verify that camera preview is snapped to the
+  // top right corner, and there's no overlap between camera preview and system
+  // tray.
+  EXPECT_TRUE(system_tray->IsBubbleShown());
+  EXPECT_EQ(camera_controller->camera_preview_snap_position(),
+            CameraPreviewSnapPosition::kTopRight);
+  EXPECT_FALSE(preview_widget->GetWindowBoundsInScreen().Intersects(
+      system_tray->GetBoundsInScreen()));
+
+  // Click on the resize button to enlarge camera preview. Verify that camera
+  // preview is snapped to the top left corner to avoid overlap with system
+  // tray.
+  ClickOnView(resize_button, event_generator);
+  // Please notice, when capture source is `kWindow`, once clicking on the
+  // resize button, system tray will be closed. In this use case we just need to
+  // verify camera preview still stays at the top right corner.
+  if (system_tray->IsBubbleShown()) {
+    EXPECT_EQ(camera_controller->camera_preview_snap_position(),
+              CameraPreviewSnapPosition::kTopLeft);
+    EXPECT_FALSE(preview_widget->GetWindowBoundsInScreen().Intersects(
+        system_tray->GetBoundsInScreen()));
+  } else {
+    EXPECT_EQ(camera_controller->camera_preview_snap_position(),
+              CameraPreviewSnapPosition::kTopRight);
   }
 }
 

@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "ash/public/cpp/system_tray_observer.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -21,6 +22,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/video_capture/public/mojom/video_source_provider.mojom.h"
 #include "ui/views/widget/unique_widget_ptr.h"
+
+namespace gfx {
+class Rect;
+}  // namespace gfx
 
 namespace ash {
 
@@ -107,7 +112,8 @@ using CameraInfoList = std::vector<CameraInfo>;
 // of all currently connected cameras to the device. It also tracks all the
 // capture mode selfie camera settings.
 class ASH_EXPORT CaptureModeCameraController
-    : public base::SystemMonitor::DevicesChangedObserver {
+    : public base::SystemMonitor::DevicesChangedObserver,
+      public SystemTrayObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -193,6 +199,10 @@ class ASH_EXPORT CaptureModeCameraController
   // base::SystemMonitor::DevicesChangedObserver:
   void OnDevicesChanged(base::SystemMonitor::DeviceType device_type) override;
 
+  // SystemTrayObserver:
+  void OnSystemTrayBubbleShown() override;
+  void OnFocusLeavingSystemTray(bool reverse) override {}
+
   void SetOnCameraListReceivedForTesting(base::OnceClosure callback) {
     on_camera_list_received_for_test_ = std::move(callback);
   }
@@ -232,24 +242,34 @@ class ASH_EXPORT CaptureModeCameraController
   // allowed grace period, and therefore it will be cleared.
   void OnSelectedCameraDisconnected();
 
-  // Gets the bounds of the preview widget in parent's coordinate system. Its
-  // bounds depend on the surface being recorded and current preview snap
-  // position.
-  gfx::Rect GetPreviewWidgetBounds() const;
+  // Returns the bounds of the preview widget which doesn't intersect with
+  // system tray. Always try `camera_preview_snap_position_` first. If camera
+  // preview at all snap positions intersects with system tray, returns the
+  // bounds of `camera_preview_snap_position_`.
+  gfx::Rect CalculatePreviewWidgetTargetBounds();
+
+  // Call by `CalculatePreviewWidgetTargetBounds` above. Returns the bounds of
+  // the preview widget that matches the coordinate system of the confine
+  // bounds.
+  gfx::Rect GetPreviewWidgetBoundsForSnapPosition(
+      CameraPreviewSnapPosition snap_position) const;
 
   // Called by `EndDraggingPreview`, updating `camera_preview_snap_position_`
   // according to the current position of the `camera_preview_view_`.
-  void UpdateSnapPostionOnDragEnded();
+  void UpdateSnapPositionOnDragEnded();
 
   // Returns the current bounds of camemra preview widget that match the
   // coordinate system of the confine bounds.
   gfx::Rect GetCurrentBoundsMatchingConfineBoundsCoordinates();
 
-  // Triggers a11y alert after RefreshCameraPreview() based on
-  // `was_preview_visible_before` and the current visibility of
-  // `camera_preview_widget_`. `was_preview_visible_before` is the visibility of
-  // the camera preview when RefreshCameraPreview() was called.
-  void TriggerA11yAlertAfterCameraRefresh(bool was_preview_visible_before);
+  // Does post works for camera preview after RefreshCameraPreview(). It
+  // triggers a11y alert based on `was_preview_visible_before` and the current
+  // visibility of `camera_preview_widget_`. `was_preview_visible_before` is the
+  // visibility of the camera preview when RefreshCameraPreview() was called.
+  // It also triggers floating windows bounds update to avoid overlap between
+  // camera preview and floating windows, such as PIP windows and some a11y
+  // panels.
+  void RunPostRefreshCameraPreview(bool was_preview_visible_before);
 
   // Owned by CaptureModeController and guaranteed to be not null and to outlive
   // `this`.

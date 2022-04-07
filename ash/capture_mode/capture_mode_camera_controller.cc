@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstring>
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/capture_mode/capture_mode_camera_preview_view.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
@@ -14,18 +15,30 @@
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/message_center/unified_message_center_bubble.h"
+#include "ash/system/status_area_widget.h"
+#include "ash/system/tray/system_tray_notifier.h"
+#include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/unified/unified_system_tray_controller.h"
+#include "ash/wm/pip/pip_positioner.h"
+#include "ash/wm/window_state.h"
+#include "ash/wm/wm_event.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/views/animation/animation_builder.h"
@@ -43,7 +56,7 @@ namespace {
 constexpr base::TimeDelta kDisconnectionGracePeriod = base::Seconds(10);
 
 // The animation duration for the bounds change operation on the camera preview.
-constexpr base::TimeDelta kCameraResizeAnimationDuration =
+constexpr base::TimeDelta kCameraBoundsChangeAnimationDuration =
     base::Milliseconds(150);
 
 // Defines a map type to map a camera model ID (or display name) to the number
@@ -198,7 +211,43 @@ gfx::Rect GetTargetBoundsForBoundsAnimation(
   return result;
 }
 
-}  // namespace
+gfx::Rect GetCollisionAvoidanceRect(aura::Window* root_window) {
+  DCHECK(root_window);
+
+  UnifiedSystemTray* tray = RootWindowController::ForWindow(root_window)
+                                ->GetStatusAreaWidget()
+                                ->unified_system_tray();
+
+  if (!tray->IsBubbleShown())
+    return gfx::Rect();
+
+  gfx::Rect collision_avoidance_rect = tray->GetBubbleBoundsInScreen();
+  auto* message_center_bubble = tray->message_center_bubble();
+
+  if (message_center_bubble->IsMessageCenterVisible())
+    collision_avoidance_rect.Union(message_center_bubble->GetBoundsInScreen());
+
+  // TODO(conniekxu): Return a vector of collision avoidance rects including
+  // other system UIs, like launcher.
+  return collision_avoidance_rect;
+}
+
+// Called to avoid overlap between camera preview and system UIs when camera
+// preview's bounds are changed, camera preview is created or destroyed.
+void UpdateFloatingPanelBoundsIfNeeded(aura::Window* root_window) {
+  DCHECK(root_window);
+
+  Shell::Get()->accessibility_controller()->UpdateFloatingPanelBoundsIfNeeded();
+
+  auto* pip_window_container =
+      root_window->GetChildById(kShellWindowId_PipContainer);
+
+  for (aura::Window* pip_window : pip_window_container->children()) {
+    auto* pip_window_state = WindowState::Get(pip_window);
+    if (pip_window_state->IsPip())
+      pip_window_state->UpdatePipBounds();
+  }
+}
 
 // Defines a window targeter that will be installed on the camera preview
 // widget's window so that we can allow located events outside of the camera
@@ -242,6 +291,8 @@ class CameraPreviewTargeter : public aura::WindowTargeter {
  private:
   aura::Window* const camera_preview_window_;
 };
+
+}  // namespace
 
 // -----------------------------------------------------------------------------
 // CameraId:
@@ -295,10 +346,12 @@ CaptureModeCameraController::CaptureModeCameraController(
 
   base::SystemMonitor::Get()->AddDevicesChangedObserver(this);
   ReconnectToVideoSourceProvider();
+  Shell::Get()->system_tray_notifier()->AddSystemTrayObserver(this);
 }
 
 CaptureModeCameraController::~CaptureModeCameraController() {
   base::SystemMonitor::Get()->RemoveDevicesChangedObserver(this);
+  Shell::Get()->system_tray_notifier()->RemoveSystemTrayObserver(this);
 }
 
 void CaptureModeCameraController::AddObserver(Observer* observer) {
@@ -392,23 +445,39 @@ void CaptureModeCameraController::MaybeUpdatePreviewWidgetBounds(bool animate) {
     return;
   }
 
-  const gfx::Rect target_bounds = GetPreviewWidgetBounds();
-  const bool did_bounds_change =
-      target_bounds != GetCurrentBoundsMatchingConfineBoundsCoordinates();
-  if (!did_bounds_change)
+  const gfx::Rect target_bounds = CalculatePreviewWidgetTargetBounds();
+  const auto current_bounds =
+      GetCurrentBoundsMatchingConfineBoundsCoordinates();
+  if (target_bounds == current_bounds)
     return;
 
+  auto* preview_window = camera_preview_widget_->GetNativeWindow();
   if (animate) {
-    auto* preview_window = camera_preview_widget_->GetNativeWindow();
-    const auto target_bounds_in_parent =
-        GetTargetBoundsForBoundsAnimation(target_bounds, preview_window);
-    views::AnimationBuilder()
-        .SetPreemptionStrategy(
-            ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-        .Once()
-        .SetDuration(kCameraResizeAnimationDuration)
-        .SetBounds(preview_window, target_bounds_in_parent,
-                   gfx::Tween::FAST_OUT_SLOW_IN_3);
+    views::AnimationBuilder builder;
+    builder.SetPreemptionStrategy(
+        ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+
+    if (target_bounds.size() == current_bounds.size()) {
+      // Use transform animation.
+      camera_preview_widget_->SetBounds(target_bounds);
+      gfx::Transform transform;
+      transform.Translate(current_bounds.CenterPoint() -
+                          target_bounds.CenterPoint());
+      ui::Layer* layer = preview_window->layer();
+      layer->SetTransform(transform);
+      builder.Once()
+          .SetDuration(kCameraBoundsChangeAnimationDuration)
+          .SetTransform(layer, gfx::Transform(),
+                        gfx::Tween::ACCEL_5_70_DECEL_90);
+    } else {
+      // Use bounds animation.
+      const auto target_bounds_in_parent =
+          GetTargetBoundsForBoundsAnimation(target_bounds, preview_window);
+      builder.Once()
+          .SetDuration(kCameraBoundsChangeAnimationDuration)
+          .SetBounds(preview_window, target_bounds_in_parent,
+                     gfx::Tween::FAST_OUT_SLOW_IN_3);
+    }
   } else {
     camera_preview_widget_->SetBounds(target_bounds);
   }
@@ -416,6 +485,8 @@ void CaptureModeCameraController::MaybeUpdatePreviewWidgetBounds(bool animate) {
   auto* controller = CaptureModeController::Get();
   if (controller->IsActive())
     controller->capture_mode_session()->OnCameraPreviewBoundsChanged();
+
+  UpdateFloatingPanelBoundsIfNeeded(preview_window->GetRootWindow());
 }
 
 void CaptureModeCameraController::StartDraggingPreview(
@@ -449,23 +520,9 @@ void CaptureModeCameraController::EndDraggingPreview(
     const gfx::PointF& screen_location,
     bool is_touch) {
   ContinueDraggingPreview(screen_location);
-  UpdateSnapPostionOnDragEnded();
+  UpdateSnapPositionOnDragEnded();
 
-  const gfx::Rect current_bounds =
-      GetCurrentBoundsMatchingConfineBoundsCoordinates();
-  const gfx::Rect target_bounds = GetPreviewWidgetBounds();
-  camera_preview_widget_->SetBounds(target_bounds);
-  gfx::Transform transform;
-  transform.Translate(current_bounds.CenterPoint() -
-                      target_bounds.CenterPoint());
-  ui::Layer* layer = camera_preview_widget_->GetLayer();
-  layer->SetTransform(transform);
-  views::AnimationBuilder()
-      .SetPreemptionStrategy(
-          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-      .Once()
-      .SetDuration(base::Milliseconds(120))
-      .SetTransform(layer, gfx::Transform());
+  MaybeUpdatePreviewWidgetBounds(/*animate=*/true);
 
   is_drag_in_progress_ = false;
   // Disable cursor compositing at the end of the drag.
@@ -497,6 +554,10 @@ void CaptureModeCameraController::OnDevicesChanged(
     base::SystemMonitor::DeviceType device_type) {
   if (device_type == base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE)
     GetCameraDevices();
+}
+
+void CaptureModeCameraController::OnSystemTrayBubbleShown() {
+  MaybeUpdatePreviewWidgetBounds(/*animate=*/true);
 }
 
 void CaptureModeCameraController::ReconnectToVideoSourceProvider() {
@@ -558,11 +619,19 @@ void CaptureModeCameraController::OnCameraDevicesReceived(
 }
 
 void CaptureModeCameraController::RefreshCameraPreview() {
-  const bool was_visible_before =
-      camera_preview_widget_ && camera_preview_widget_->IsVisible();
-  base::ScopedClosureRunner deferred_runner(base::BindOnce(
-      &CaptureModeCameraController::TriggerA11yAlertAfterCameraRefresh,
-      weak_ptr_factory_.GetWeakPtr(), was_visible_before));
+  bool was_visible_before = false;
+  aura::Window* old_root = nullptr;
+  if (camera_preview_widget_) {
+    was_visible_before = camera_preview_widget_->IsVisible();
+    old_root = camera_preview_widget_->GetNativeWindow()->GetRootWindow();
+  }
+  // Trigger a11y alert and update floating windows bounds when camera preview
+  // is created or destroyed. The reason to trigger
+  // `RunPostRefreshCameraPreview` at the exit of this function is we should
+  // wait for camera preview's creation or destruction to be finished.
+  base::ScopedClosureRunner deferred_runner(
+      base::BindOnce(&CaptureModeCameraController::RunPostRefreshCameraPreview,
+                     weak_ptr_factory_.GetWeakPtr(), was_visible_before));
 
   const CameraInfo* camera_info = nullptr;
   if (selected_camera_.is_valid()) {
@@ -587,6 +656,8 @@ void CaptureModeCameraController::RefreshCameraPreview() {
   if (!camera_info) {
     camera_preview_widget_.reset();
     camera_preview_view_ = nullptr;
+    if (old_root)
+      UpdateFloatingPanelBoundsIfNeeded(old_root);
     return;
   }
 
@@ -601,7 +672,7 @@ void CaptureModeCameraController::RefreshCameraPreview() {
   DCHECK(!IsCameraDisabledByPolicy());
 
   if (!camera_preview_widget_) {
-    const auto preview_bounds = GetPreviewWidgetBounds();
+    const auto preview_bounds = CalculatePreviewWidgetTargetBounds();
     camera_preview_widget_ = std::make_unique<views::Widget>();
     camera_preview_widget_->Init(CreateWidgetParams(preview_bounds));
     auto* camera_preview_window = camera_preview_widget_->GetNativeWindow();
@@ -637,7 +708,60 @@ void CaptureModeCameraController::OnSelectedCameraDisconnected() {
   SetSelectedCamera(CameraId());
 }
 
-gfx::Rect CaptureModeCameraController::GetPreviewWidgetBounds() const {
+gfx::Rect CaptureModeCameraController::CalculatePreviewWidgetTargetBounds() {
+  auto* controller = CaptureModeController::Get();
+  aura::Window* parent =
+      camera_preview_widget_
+          ? camera_preview_widget_->GetNativeWindow()->parent()
+          : controller->GetCameraPreviewParentWindow();
+  DCHECK(parent);
+  const gfx::Rect collision_rect_screen =
+      GetCollisionAvoidanceRect(parent->GetRootWindow());
+
+  std::vector<CameraPreviewSnapPosition> snap_positions = {
+      CameraPreviewSnapPosition::kBottomRight,
+      CameraPreviewSnapPosition::kTopRight, CameraPreviewSnapPosition::kTopLeft,
+      CameraPreviewSnapPosition::kBottomLeft};
+
+  // Move `camera_preview_snap_position_` to the beginning of `snap_positions`
+  // vector, since we should always try the current snap position first.
+  base::EraseIf(snap_positions,
+                [this](CameraPreviewSnapPosition snap_position) {
+                  return snap_position == camera_preview_snap_position_;
+                });
+  snap_positions.insert(snap_positions.begin(), camera_preview_snap_position_);
+
+  // Cache the current preview bounds and return it directly when we find no
+  // other snap position with no collisions.
+  gfx::Rect current_preview_bounds;
+  for (CameraPreviewSnapPosition snap_position : snap_positions) {
+    gfx::Rect preview_bounds =
+        GetPreviewWidgetBoundsForSnapPosition(snap_position);
+    if (!current_preview_bounds.IsEmpty())
+      current_preview_bounds = preview_bounds;
+
+    gfx::Rect preview_bounds_in_screen = preview_bounds;
+
+    // Need to convert preview bounds to screen bounds if it's not since we
+    // need to check whether it intersects with system tray bounds in screen.
+    // Make sure we use the same coordinate system before we make the
+    // comparison.
+    if (!parent->GetProperty(wm::kUsesScreenCoordinatesKey))
+      wm::ConvertRectToScreen(parent, &preview_bounds_in_screen);
+
+    if (!preview_bounds_in_screen.Intersects(collision_rect_screen)) {
+      camera_preview_snap_position_ = snap_position;
+      // Notice return `preview_bounds` instead of `preview_bounds_in_screen`,
+      // since it's the target bounds for camera preview in its parent's
+      // coordinate system.
+      return preview_bounds;
+    }
+  }
+  return current_preview_bounds;
+}
+
+gfx::Rect CaptureModeCameraController::GetPreviewWidgetBoundsForSnapPosition(
+    CameraPreviewSnapPosition snap_position) const {
   auto* controller = CaptureModeController::Get();
   DCHECK(controller->IsActive() || controller->is_recording_in_progress());
   const gfx::Rect confine_bounds = controller->GetCameraPreviewConfineBounds();
@@ -654,7 +778,7 @@ gfx::Rect CaptureModeCameraController::GetPreviewWidgetBounds() const {
     return gfx::Rect(preview_size);
 
   gfx::Point origin;
-  switch (camera_preview_snap_position_) {
+  switch (snap_position) {
     case CameraPreviewSnapPosition::kTopLeft:
       origin = confine_bounds.origin();
       origin.Offset(capture_mode::kSpaceBetweenCameraPreviewAndEdges,
@@ -682,7 +806,7 @@ gfx::Rect CaptureModeCameraController::GetPreviewWidgetBounds() const {
   return gfx::Rect(origin, preview_size);
 }
 
-void CaptureModeCameraController::UpdateSnapPostionOnDragEnded() {
+void CaptureModeCameraController::UpdateSnapPositionOnDragEnded() {
   const gfx::Point center_point_of_preview_widget =
       GetCurrentBoundsMatchingConfineBoundsCoordinates().CenterPoint();
   const gfx::Point center_point_of_confine_bounds =
@@ -712,7 +836,7 @@ gfx::Rect CaptureModeCameraController::
   return preview_window->bounds();
 }
 
-void CaptureModeCameraController::TriggerA11yAlertAfterCameraRefresh(
+void CaptureModeCameraController::RunPostRefreshCameraPreview(
     bool was_preview_visible_before) {
   const bool is_preview_visible_now =
       camera_preview_widget_ && camera_preview_widget_->IsVisible();
@@ -721,6 +845,11 @@ void CaptureModeCameraController::TriggerA11yAlertAfterCameraRefresh(
         was_preview_visible_before
             ? IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_HIDDEN
             : IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_ON);
+  }
+
+  if (camera_preview_widget_) {
+    UpdateFloatingPanelBoundsIfNeeded(
+        camera_preview_widget_->GetNativeWindow()->GetRootWindow());
   }
 }
 
