@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="NaCl.AppType" enum="NaClAppTypeEnum"
-    expires_after="2022-07-31">
+    expires_after="2022-10-04">
   <owner>dschuff@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>bbudge@chromium.org</owner>
@@ -182,7 +182,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.ModuleUptime.Normal" units="ms"
-    expires_after="2022-07-31">
+    expires_after="2022-10-04">
   <owner>dschuff@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>bbudge@chromium.org</owner>
@@ -201,7 +201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.Perf.PNaClCache.IsHit" enum="PNaClTranslationCacheEnum"
-    expires_after="2022-07-31">
+    expires_after="2022-10-04">
   <owner>dschuff@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>bbudge@chromium.org</owner>
@@ -212,7 +212,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.Perf.PNaClLoadTime.CompileKBPerSec" units="KB/s"
-    expires_after="2022-07-31">
+    expires_after="2022-10-04">
   <owner>dschuff@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>bbudge@chromium.org</owner>
@@ -223,7 +223,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.Perf.PNaClLoadTime.CompileTime" units="ms"
-    expires_after="2022-07-31">
+    expires_after="2022-10-04">
   <owner>dschuff@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>bbudge@chromium.org</owner>
@@ -234,7 +234,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.Perf.PNaClLoadTime.LinkTime" units="ms"
-    expires_after="2022-07-31">
+    expires_after="2022-10-04">
   <owner>dschuff@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>bbudge@chromium.org</owner>
@@ -245,7 +245,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.Perf.PNaClLoadTime.LoadCompiler" units="ms"
-    expires_after="2022-07-31">
+    expires_after="2022-10-04">
   <owner>dschuff@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>bbudge@chromium.org</owner>
@@ -255,7 +255,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.Perf.PNaClLoadTime.LoadLinker" units="ms"
-    expires_after="2022-07-31">
+    expires_after="2022-10-04">
   <owner>dschuff@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>bbudge@chromium.org</owner>
@@ -265,7 +265,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.Perf.PNaClLoadTime.PctCompiledWhenFullyDownloaded"
-    units="%" expires_after="2022-07-31">
+    units="%" expires_after="2022-10-04">
   <owner>dschuff@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>bbudge@chromium.org</owner>
@@ -277,7 +277,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.Perf.PNaClLoadTime.TotalUncachedKBPerSec" units="KB/s"
-    expires_after="2022-07-31">
+    expires_after="2022-10-04">
   <owner>dschuff@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>bbudge@chromium.org</owner>
@@ -289,7 +289,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.Perf.PNaClLoadTime.TotalUncachedTime" units="ms"
-    expires_after="2022-07-31">
+    expires_after="2022-10-04">
   <owner>dschuff@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>bbudge@chromium.org</owner>
@@ -300,21 +300,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NaCl.Perf.ShutdownTime.Total" units="ms"
-    expires_after="2022-07-31">
+    expires_after="2022-10-04">
   <owner>dschuff@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>bbudge@chromium.org</owner>
   <summary>The time it took the NaCl module to shut down.</summary>
 </histogram>
 
-<histogram name="NaCl.Perf.Size.Manifest" units="KB" expires_after="2022-07-31">
+<histogram name="NaCl.Perf.Size.Manifest" units="KB" expires_after="2022-10-04">
   <owner>dschuff@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>bbudge@chromium.org</owner>
   <summary>The size of the manifest file.</summary>
 </histogram>
 
-<histogram name="NaCl.Perf.Size.Nexe" units="KB" expires_after="2022-07-31">
+<histogram name="NaCl.Perf.Size.Nexe" units="KB" expires_after="2022-10-04">
   <owner>dschuff@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>bbudge@chromium.org</owner>

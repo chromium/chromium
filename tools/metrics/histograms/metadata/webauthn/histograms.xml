@@ -108,7 +108,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.CableV2.TunnelServerError"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-07-24">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-10-04">
   <owner>agl@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>

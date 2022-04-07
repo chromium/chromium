@@ -339,7 +339,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.FoundBlobFileForValue" enum="Boolean"
-    expires_after="2022-08-01">
+    expires_after="2022-10-04">
   <owner>enne@chromium.org</owner>
   <owner>mek@chromium.org</owner>
   <owner>storage-dev@chromium.org</owner>
