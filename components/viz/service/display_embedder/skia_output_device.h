@@ -21,7 +21,7 @@
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "third_party/skia/src/gpu/GrSemaphore.h"
+#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "ui/gfx/swap_result.h"
 
 class GrDirectContext;
