@@ -129,20 +129,42 @@ NET_EXPORT extern const base::FeatureParam<bool>
 NET_EXPORT extern const base::FeatureParam<bool> kUseDnsHttpsSvcbEnableInsecure;
 
 // If we are still waiting for an HTTPS transaction after all the
-// other transactions in a DnsTask have completed, we will compute a timeout for
-// the remaining transaction. The timeout will be the min of:
-//   (a) `kUseDnsHttpsSvcbExtraTimeAbsolute.Get()`
-//   (b) `kUseDnsHttpsSvcbExtraTimePercent.Get() / 100 * t`, where `t` is
-//   the
-//       time delta since the first query began.
+// other transactions in an insecure DnsTask have completed, we will compute a
+// timeout for the remaining transaction. The timeout will be
+// `kUseDnsHttpsSvcbInsecureExtraTimePercent.Get() / 100 * t`, where `t` is the
+// time delta since the first query began. And the timeout will additionally be
+// clamped by:
+//   (a) `kUseDnsHttpsSvcbInsecureExtraTimeMin.Get()`
+//   (b) `kUseDnsHttpsSvcbInsecureExtraTimeMax.Get()`
 //
-// Either param is ignored if zero. If both are zero, there is no timeout
-// specific to HTTPS transactions, only the regular DNS query timeout and server
-// fallback.
+// Any param is ignored if zero, and if one of min/max is non-zero with a zero
+// percent param it will be used as an absolute timeout. If all are zero, there
+// is no timeout specific to HTTPS transactions, only the regular DNS query
+// timeout and server fallback.
+NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kUseDnsHttpsSvcbInsecureExtraTimeMax;
+NET_EXPORT extern const base::FeatureParam<int>
+    kUseDnsHttpsSvcbInsecureExtraTimePercent;
+NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kUseDnsHttpsSvcbInsecureExtraTimeMin;
+
+// Same as `kUseDnsHttpsSvcbInsecureExtraTime...` except for secure DnsTasks.
 //
 // If `kUseDnsHttpsSvcbEnforceSecureResponse` is enabled, the timeouts will not
-// be used for secure requests because there is no sense killing a transaction
-// early if that will just kill the entire request.
+// be used because there is no sense killing a transaction early if that will
+// just kill the entire request.
+NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kUseDnsHttpsSvcbSecureExtraTimeMax;
+NET_EXPORT extern const base::FeatureParam<int>
+    kUseDnsHttpsSvcbSecureExtraTimePercent;
+NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kUseDnsHttpsSvcbSecureExtraTimeMin;
+
+// Deprecated in favor of `kUseDnsHttpsSvcbInsecureExtraTime...` and
+// `kUseDnsHttpsSvcbSecureExtraTime...` params. Ignored for insecure DnsTasks if
+// any `kUseDnsHttpsSvcbInsecureExtraTime...` params are non-zero, and ignored
+// for secure DnsTasks if any `kUseDnsHttpsSvcbSecureExtraTime...` params are
+// non-zero.
 NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kUseDnsHttpsSvcbExtraTimeAbsolute;
 NET_EXPORT extern const base::FeatureParam<int>

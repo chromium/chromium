@@ -83,6 +83,26 @@ const base::FeatureParam<bool> kUseDnsHttpsSvcbEnforceSecureResponse{
 const base::FeatureParam<bool> kUseDnsHttpsSvcbEnableInsecure{
     &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbEnableInsecure", false};
 
+const base::FeatureParam<base::TimeDelta> kUseDnsHttpsSvcbInsecureExtraTimeMax{
+    &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbInsecureExtraTimeMax",
+    base::TimeDelta()};
+
+const base::FeatureParam<int> kUseDnsHttpsSvcbInsecureExtraTimePercent{
+    &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbInsecureExtraTimePercent", 0};
+
+const base::FeatureParam<base::TimeDelta> kUseDnsHttpsSvcbInsecureExtraTimeMin{
+    &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbInsecureExtraTimeMin",
+    base::TimeDelta()};
+
+const base::FeatureParam<base::TimeDelta> kUseDnsHttpsSvcbSecureExtraTimeMax{
+    &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbSecureExtraTimeMax", base::TimeDelta()};
+
+const base::FeatureParam<int> kUseDnsHttpsSvcbSecureExtraTimePercent{
+    &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbSecureExtraTimePercent", 0};
+
+const base::FeatureParam<base::TimeDelta> kUseDnsHttpsSvcbSecureExtraTimeMin{
+    &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbSecureExtraTimeMin", base::TimeDelta()};
+
 const base::FeatureParam<base::TimeDelta> kUseDnsHttpsSvcbExtraTimeAbsolute{
     &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbExtraTimeAbsolute", base::TimeDelta()};
 

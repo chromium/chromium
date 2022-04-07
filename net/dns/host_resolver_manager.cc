@@ -1953,42 +1953,66 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     if (AnyOfTypeTransactionsRemain({DnsQueryType::A, DnsQueryType::AAAA}))
       return;
 
-    base::TimeDelta timeout;
+    base::TimeDelta timeout_max;
     int extra_time_percent = 0;
+    base::TimeDelta timeout_min;
 
     if (AnyOfTypeTransactionsRemain({DnsQueryType::HTTPS})) {
       DCHECK(base::FeatureList::IsEnabled(features::kUseDnsHttpsSvcb));
 
+      if (secure_) {
+        timeout_max = features::kUseDnsHttpsSvcbSecureExtraTimeMax.Get();
+        extra_time_percent =
+            features::kUseDnsHttpsSvcbSecureExtraTimePercent.Get();
+        timeout_min = features::kUseDnsHttpsSvcbSecureExtraTimeMin.Get();
+      } else {
+        timeout_max = features::kUseDnsHttpsSvcbInsecureExtraTimeMax.Get();
+        extra_time_percent =
+            features::kUseDnsHttpsSvcbInsecureExtraTimePercent.Get();
+        timeout_min = features::kUseDnsHttpsSvcbInsecureExtraTimeMin.Get();
+      }
+
+      if (timeout_max.is_zero() && extra_time_percent == 0 &&
+          timeout_min.is_zero()) {
+        timeout_max = features::kUseDnsHttpsSvcbExtraTimeAbsolute.Get();
+        extra_time_percent = features::kUseDnsHttpsSvcbExtraTimePercent.Get();
+      }
+
       // Skip timeout for secure requests if the timeout would be a fatal
       // failure.
-      if (!secure_ || !features::kUseDnsHttpsSvcbEnforceSecureResponse.Get()) {
-        timeout = features::kUseDnsHttpsSvcbExtraTimeAbsolute.Get();
-        extra_time_percent = features::kUseDnsHttpsSvcbExtraTimePercent.Get();
+      if (secure_ && features::kUseDnsHttpsSvcbEnforceSecureResponse.Get()) {
+        timeout_max = base::TimeDelta();
+        extra_time_percent = 0;
+        timeout_min = base::TimeDelta();
       }
     } else if (AnyOfTypeTransactionsRemain(
                    {DnsQueryType::INTEGRITY,
                     DnsQueryType::HTTPS_EXPERIMENTAL})) {
       DCHECK(base::FeatureList::IsEnabled(features::kDnsHttpssvc));
-      timeout = features::dns_httpssvc_experiment::GetExtraTimeAbsolute();
+      timeout_max = features::dns_httpssvc_experiment::GetExtraTimeAbsolute();
       extra_time_percent = features::kDnsHttpssvcExtraTimePercent.Get();
     } else {
       // Unhandled supplemental type.
       NOTREACHED();
     }
 
+    base::TimeDelta timeout;
     if (extra_time_percent > 0) {
       base::TimeDelta total_time_for_other_transactions =
           tick_clock_->NowTicks() - task_start_time_;
-      base::TimeDelta relative_timeout =
-          total_time_for_other_transactions * extra_time_percent / 100;
+      timeout = total_time_for_other_transactions * extra_time_percent / 100;
       // Use at least 1ms to ensure timeout doesn't occur immediately in tests.
-      relative_timeout = std::max(relative_timeout, base::Milliseconds(1));
+      timeout = std::max(timeout, base::Milliseconds(1));
 
-      if (timeout.is_zero()) {
-        timeout = relative_timeout;
-      } else {
-        timeout = std::min(timeout, relative_timeout);
-      }
+      if (!timeout_max.is_zero())
+        timeout = std::min(timeout, timeout_max);
+      if (!timeout_min.is_zero())
+        timeout = std::max(timeout, timeout_min);
+    } else {
+      // If no relative timeout, use a non-zero min/max as timeout. If both are
+      // non-zero, that's not very sensible, but arbitrarily take the higher
+      // timeout.
+      timeout = std::max(timeout_min, timeout_max);
     }
 
     if (!timeout.is_zero())
