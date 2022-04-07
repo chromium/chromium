@@ -78,8 +78,7 @@ void ModelExecutionSchedulerImpl::RequestModelExecution(
 
 void ModelExecutionSchedulerImpl::OnModelExecutionCompleted(
     OptimizationTarget segment_id,
-    const std::pair<float, ModelExecutionStatus>& result,
-    const std::vector<float>& input_tensors) {
+    const std::pair<float, ModelExecutionStatus>& result) {
   // TODO(shaktisahu): Check ModelExecutionStatus and handle failure cases.
   // Should we save it to DB?
   proto::PredictionResult segment_result;
@@ -88,8 +87,6 @@ void ModelExecutionSchedulerImpl::OnModelExecutionCompleted(
     segment_result.set_result(result.first);
     segment_result.set_timestamp_us(
         clock_->Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
-    segment_result.mutable_input_tensors()->Add(input_tensors.begin(),
-                                                input_tensors.end());
     stats::RecordModelScore(segment_id, result.first);
   }
 

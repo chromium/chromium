@@ -5,7 +5,6 @@
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 
 #include <map>
-#include <vector>
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -77,8 +76,7 @@ class SegmentResultProviderImpl : public SegmentResultProvider {
   void OnDefaultModelExecuted(
       std::unique_ptr<RequestState> request_state,
       std::unique_ptr<proto::SegmentInfo> segment_info,
-      const std::pair<float, ModelExecutionStatus>& result,
-      const std::vector<float>& input_tensors);
+      const std::pair<float, ModelExecutionStatus>& result);
 
   void PostResultCallback(std::unique_ptr<RequestState> request_state,
                           std::unique_ptr<SegmentResult> result);
@@ -234,8 +232,7 @@ void SegmentResultProviderImpl::TryGetScoreFromDefaultModel(
 void SegmentResultProviderImpl::OnDefaultModelExecuted(
     std::unique_ptr<RequestState> request_state,
     std::unique_ptr<proto::SegmentInfo> segment_info,
-    const std::pair<float, ModelExecutionStatus>& result,
-    const std::vector<float>& input_tensors) {
+    const std::pair<float, ModelExecutionStatus>& result) {
   if (result.second == ModelExecutionStatus::kSuccess) {
     segment_info->mutable_prediction_result()->set_result(result.first);
     int rank =

@@ -131,8 +131,7 @@ void ServiceProxyImpl::OverwriteResult(OptimizationTarget segment_id,
 
   if (segment_id != OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN) {
     model_execution_scheduler_->OnModelExecutionCompleted(
-        segment_id, std::make_pair(result, ModelExecutionStatus::kSuccess),
-        std::vector<float>());
+        segment_id, std::make_pair(result, ModelExecutionStatus::kSuccess));
   }
 }
 

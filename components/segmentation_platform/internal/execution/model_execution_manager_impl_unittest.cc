@@ -141,8 +141,7 @@ class ModelExecutionManagerTest : public testing::Test {
   void OnExecutionCallback(
       base::RepeatingClosure closure,
       const std::pair<float, ModelExecutionStatus>& expected,
-      const std::pair<float, ModelExecutionStatus>& actual,
-      const std::vector<float>& input_tensors) {
+      const std::pair<float, ModelExecutionStatus>& actual) {
     EXPECT_EQ(expected.second, actual.second);
     EXPECT_NEAR(expected.first, actual.first, 1e-5);
     std::move(closure).Run();

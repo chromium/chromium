@@ -174,20 +174,15 @@ TEST_F(ModelExecutionSchedulerTest, OnModelExecutionCompleted) {
   EXPECT_CALL(observer1_, OnModelExecutionCompleted(kTestOptimizationTarget))
       .Times(1);
   float score = 0.4;
-  std::vector<float> input_tensors{0.1, 0.2, 0.3};
   model_execution_scheduler_->OnModelExecutionCompleted(
       kTestOptimizationTarget,
-      std::make_pair(score, ModelExecutionStatus::kSuccess), input_tensors);
+      std::make_pair(score, ModelExecutionStatus::kSuccess));
 
   // Verify that the results are written to the DB.
   segment_info =
       segment_database_->FindOrCreateSegment(kTestOptimizationTarget);
   ASSERT_TRUE(segment_info->has_prediction_result());
   ASSERT_EQ(score, segment_info->prediction_result().result());
-  std::vector<float> input_tensors_from_db(
-      segment_info->prediction_result().input_tensors().begin(),
-      segment_info->prediction_result().input_tensors().end());
-  ASSERT_EQ(input_tensors, input_tensors_from_db);
 }
 
 }  // namespace segmentation_platform

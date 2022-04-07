@@ -69,10 +69,10 @@ TEST_F(ModelExecutionManagerFactoryTest, CreateModelExecutionManager) {
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
   model_execution_manager->ExecuteModel(
       segment_info, nullptr,
-      base::BindOnce([](base::RepeatingClosure quit,
-                        const std::pair<float, ModelExecutionStatus>&,
-                        const std::vector<float>&) { quit.Run(); },
-                     wait_for_execution.QuitClosure()));
+      base::BindOnce(
+          [](base::RepeatingClosure quit,
+             const std::pair<float, ModelExecutionStatus>&) { quit.Run(); },
+          wait_for_execution.QuitClosure()));
   wait_for_execution.Run();
 }
 

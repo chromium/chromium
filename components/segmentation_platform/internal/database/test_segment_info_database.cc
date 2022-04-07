@@ -112,7 +112,6 @@ void TestSegmentInfoDatabase::SaveSegmentResult(
     auto* mutable_result = info->mutable_prediction_result();
     mutable_result->set_result(result->result());
     mutable_result->set_timestamp_us(result->timestamp_us());
-    mutable_result->mutable_input_tensors()->CopyFrom(result->input_tensors());
   }
   std::move(callback).Run(true);
 }

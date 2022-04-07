@@ -41,12 +41,11 @@ class DummyModelExecutionManagerTest : public testing::Test {
     loop.Run();
   }
 
-  void OnExecutionCallback(base::RepeatingClosure closure,
-                           const std::pair<float, ModelExecutionStatus>& actual,
-                           const std::vector<float>& input_tensors) {
+  void OnExecutionCallback(
+      base::RepeatingClosure closure,
+      const std::pair<float, ModelExecutionStatus>& actual) {
     EXPECT_EQ(ModelExecutionStatus::kExecutionError, actual.second);
     EXPECT_EQ(0, actual.first);
-    EXPECT_EQ(0u, input_tensors.size());
     std::move(closure).Run();
   }
 
