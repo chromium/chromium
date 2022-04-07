@@ -130,21 +130,10 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
   ukm_data_manager_->AddRef();
 
   // Construct signal processors.
-  user_action_signal_handler_ =
-      std::make_unique<UserActionSignalHandler>(signal_database_.get());
-  histogram_signal_handler_ =
-      std::make_unique<HistogramSignalHandler>(signal_database_.get());
-  signal_filter_processor_ = std::make_unique<SignalFilterProcessor>(
-      segment_info_database_.get(), user_action_signal_handler_.get(),
-      histogram_signal_handler_.get(), ukm_data_manager_,
-      default_model_manager_.get(), segment_id_vec);
-
-  if (ukm_data_manager_->IsUkmEngineEnabled() && history_service) {
-    // If UKM engine is enabled and history service is not available, then we
-    // would write metrics without URLs to the database, which is OK.
-    history_service_observer_ = std::make_unique<HistoryServiceObserver>(
-        history_service, ukm_data_manager_->GetOrCreateUrlHandler());
-  }
+  signal_handler_.Initialize(signal_database_.get(),
+                             segment_info_database_.get(),
+                             ukm_data_manager_.get(), history_service,
+                             default_model_manager_.get(), segment_id_vec);
 
   for (const auto& config : configs_) {
     segment_selectors_[config->segmentation_key] =
@@ -179,7 +168,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
 }
 
 SegmentationPlatformServiceImpl::~SegmentationPlatformServiceImpl() {
-  history_service_observer_.reset();
+  signal_handler_.TearDown();
   ukm_data_manager_->RemoveRef();
 }
 
@@ -200,7 +189,7 @@ SegmentSelectionResult SegmentationPlatformServiceImpl::GetCachedSegmentResult(
 
 void SegmentationPlatformServiceImpl::EnableMetrics(
     bool signal_collection_allowed) {
-  signal_filter_processor_->EnableMetrics(signal_collection_allowed);
+  signal_handler_.EnableMetrics(signal_collection_allowed);
 }
 
 ServiceProxy* SegmentationPlatformServiceImpl::GetServiceProxy() {
@@ -250,33 +239,19 @@ void SegmentationPlatformServiceImpl::MaybeRunPostInitializationRoutines() {
     return;
   }
 
-  feature_list_query_processor_ = std::make_unique<FeatureListQueryProcessor>(
-      signal_database_.get(), std::make_unique<FeatureAggregatorImpl>());
-
-  training_data_collector_ = TrainingDataCollector::Create(
-      segment_info_database_.get(), feature_list_query_processor_.get(),
-      histogram_signal_handler_.get(), signal_storage_config_.get(), clock_);
-  training_data_collector_->OnServiceInitialized();
-
-  model_execution_manager_ = CreateModelExecutionManager(
-      model_provider_factory_.get(), task_runner_, all_segment_ids_, clock_,
-      segment_info_database_.get(), signal_database_.get(),
-      feature_list_query_processor_.get(),
-      base::BindRepeating(
-          &SegmentationPlatformServiceImpl::OnSegmentationModelUpdated,
-          weak_ptr_factory_.GetWeakPtr()));
+  signal_handler_.OnSignalListUpdated();
 
   std::vector<ModelExecutionSchedulerImpl::Observer*> observers;
   for (auto& key_and_selector : segment_selectors_)
     observers.push_back(key_and_selector.second.get());
-  model_execution_scheduler_ = std::make_unique<ModelExecutionSchedulerImpl>(
-      std::move(observers), segment_info_database_.get(),
-      signal_storage_config_.get(), model_execution_manager_.get(),
-      all_segment_ids_, clock_, platform_options_);
-
-  signal_filter_processor_->OnSignalListUpdated();
-  model_execution_scheduler_->RequestModelExecutionForEligibleSegments(
-      /*expired_only=*/true);
+  execution_service_.Initialize(
+      signal_database_.get(), segment_info_database_.get(),
+      signal_storage_config_.get(), &signal_handler_, clock_,
+      base::BindRepeating(
+          &SegmentationPlatformServiceImpl::OnSegmentationModelUpdated,
+          weak_ptr_factory_.GetWeakPtr()),
+      task_runner_, all_segment_ids_, model_provider_factory_.get(),
+      std::move(observers), platform_options_);
 
   // Initiate database maintenance tasks with a small delay.
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
@@ -286,10 +261,12 @@ void SegmentationPlatformServiceImpl::MaybeRunPostInitializationRoutines() {
           weak_ptr_factory_.GetWeakPtr()),
       kDatabaseMaintenanceDelay);
 
-  proxy_->SetModelExecutionScheduler(model_execution_scheduler_.get());
+  proxy_->SetModelExecutionScheduler(
+      execution_service_.deprecated_model_execution_scheduler());
 
   for (auto& selector : segment_selectors_) {
-    selector.second->OnPlatformInitialized(model_execution_manager_.get());
+    selector.second->OnPlatformInitialized(
+        execution_service_.deprecated_model_execution_manager());
   }
 }
 
@@ -300,9 +277,9 @@ void SegmentationPlatformServiceImpl::OnSegmentationModelUpdated(
 
   signal_storage_config_->OnSignalCollectionStarted(
       segment_info.model_metadata());
-  signal_filter_processor_->OnSignalListUpdated();
+  signal_handler_.OnSignalListUpdated();
 
-  model_execution_scheduler_->OnNewModelInfoReady(segment_info);
+  execution_service_.OnNewModelInfoReady(segment_info);
 
   // Update the service status for proxy.
   base::ThreadTaskRunnerHandle::Get()->PostTask(

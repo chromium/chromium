@@ -111,8 +111,8 @@ class TestServicesForPlatform : public SegmentationPlatformServiceTestBase {
   void AddModel(const proto::SegmentationModelMetadata& metadata) {
     ModelExecutionManagerImpl* mem_impl =
         static_cast<ModelExecutionManagerImpl*>(
-            segmentation_platform_service_impl_->model_execution_manager_
-                .get());
+            segmentation_platform_service_impl_->execution_service_
+                .deprecated_model_execution_manager());
     mem_impl->OnSegmentationModelUpdated(
         OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE, metadata,
         0);

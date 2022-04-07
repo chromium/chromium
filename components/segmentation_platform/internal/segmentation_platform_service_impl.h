@@ -16,8 +16,11 @@
 #include "base/memory/weak_ptr.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 #include "components/segmentation_platform/internal/platform_options.h"
+#include "components/segmentation_platform/internal/scheduler/execution_service.h"
 #include "components/segmentation_platform/internal/service_proxy_impl.h"
+#include "components/segmentation_platform/internal/signals/signal_handler.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -48,22 +51,14 @@ class SignalStorageConfigs;
 struct Config;
 class DatabaseMaintenanceImpl;
 class DefaultModelManager;
-class FeatureListQueryProcessor;
-class HistogramSignalHandler;
-class HistoryServiceObserver;
-class ModelExecutionManager;
-class ModelExecutionSchedulerImpl;
 class ModelProviderFactory;
 class SegmentationResultPrefs;
 class SegmentInfoDatabase;
 class SegmentSelectorImpl;
 class SignalDatabaseImpl;
-class SignalFilterProcessor;
 class SignalStorageConfig;
 class SegmentScoreProvider;
-class TrainingDataCollector;
 class UkmDataManager;
-class UserActionSignalHandler;
 
 // Qualifiers used to indicate service status. One or more qualifiers can
 // be used at a time.
@@ -173,13 +168,7 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   raw_ptr<UkmDataManager> ukm_data_manager_;
 
   // Signal processing.
-  std::unique_ptr<UserActionSignalHandler> user_action_signal_handler_;
-  std::unique_ptr<HistogramSignalHandler> histogram_signal_handler_;
-  std::unique_ptr<SignalFilterProcessor> signal_filter_processor_;
-  std::unique_ptr<HistoryServiceObserver> history_service_observer_;
-
-  // Training/inference input data generation.
-  std::unique_ptr<FeatureListQueryProcessor> feature_list_query_processor_;
+  SignalHandler signal_handler_;
 
   // Segment selection.
   // TODO(shaktisahu): Determine safe destruction ordering between
@@ -190,14 +179,7 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   // Segment results.
   std::unique_ptr<SegmentScoreProvider> segment_score_provider_;
 
-  // Traing data collection logic.
-  std::unique_ptr<TrainingDataCollector> training_data_collector_;
-
-  // Model execution scheduling logic.
-  std::unique_ptr<ModelExecutionSchedulerImpl> model_execution_scheduler_;
-
-  // Model execution.
-  std::unique_ptr<ModelExecutionManager> model_execution_manager_;
+  ExecutionService execution_service_;
 
   // Database maintenance.
   std::unique_ptr<DatabaseMaintenanceImpl> database_maintenance_;
