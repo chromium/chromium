@@ -29,6 +29,8 @@ class ReadAnythingUI : public ui::MojoBubbleWebUIController,
   void BindInterface(
       mojo::PendingReceiver<read_anything::mojom::PageHandlerFactory> receiver);
 
+  void HandleFontChange(const std::string& new_font_name);
+
  private:
   // read_anything::mojom::PageHandlerFactory:
   void CreatePageHandler(

@@ -29,6 +29,8 @@ class ReadAnythingPageHandler : public read_anything::mojom::PageHandler {
   // read_anything::mojom::PageHandler:
   void ShowUI() override;
 
+  void HandleFontChange(const std::string& new_font_name);
+
  private:
   // Callback method which receives an AXTree snapshot and a list of AXNodes
   // which correspond to nodes in the tree that contain main content.

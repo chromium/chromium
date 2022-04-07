@@ -379,6 +379,7 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateBookmarksWebView(
   return bookmarks_web_view;
 }
 
+// TODO(1266555): Replace this with a coordinator that will own the component.
 std::unique_ptr<views::View> SidePanelCoordinator::CreateReadAnythingWebView(
     Browser* browser) {
   return std::make_unique<ReadAnythingContainerView>(browser);

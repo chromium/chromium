@@ -6,9 +6,29 @@
     font-size: 18px;
     padding:  20px;
   }
+
+  .standard {
+    font-family: Roboto, Arial, sans-serif;
+  }
+  .sans-serif {
+    font-family: Roboto, Tahoma, sans-serif;
+  }
+  .serif {
+    font-family: Didot, Georgia, serif;
+  }
+  .arial {
+    font-family: Arial, Verdona, sans-serif;
+  }
+  .open-sans {
+    font-family: 'Open Sans', Courier, sans-serif;
+  }
+  .calibri {
+    font-family: Calibri, 'Times New Roman', serif;
+  }
+
 </style>
 <div id="container">
   <template is="dom-repeat" items="[[paragraphs_]]">
-    <p class="cr-padded-text">[[item]]</p>
+    <p class$="[[font_name_]]">[[item]]</p>
   </template>
 </div>

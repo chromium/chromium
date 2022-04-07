@@ -64,3 +64,8 @@ void ReadAnythingPageHandler::OnAXTreeDistilled(
   }
   page_->OnEssentialContent(std::move(text_node_contents));
 }
+
+void ReadAnythingPageHandler::HandleFontChange(
+    const std::string& new_font_name) {
+  page_->OnFontNameChange(new_font_name);
+}

@@ -29,7 +29,9 @@ ReadAnythingContainerView::ReadAnythingContainerView(Browser* browser) {
       views::CreateThemedSolidBackground(this, ui::kColorPrimaryBackground));
 
   // Create the toolbar for the side panel.
-  auto toolbar = std::make_unique<ReadAnythingToolbarView>();
+  auto toolbar = std::make_unique<ReadAnythingToolbarView>(
+      base::BindRepeating(&ReadAnythingContainerView::HandleFontChange,
+                          weak_pointer_factory_.GetWeakPtr()));
   toolbar->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
@@ -65,7 +67,14 @@ ReadAnythingContainerView::ReadAnythingContainerView(Browser* browser) {
   // Add all components to view.
   AddChildView(std::move(toolbar));
   AddChildView(std::move(separator));
-  AddChildView(std::move(content_web_view));
+  content_web_view_ = AddChildView(std::move(content_web_view));
 }
 
 ReadAnythingContainerView::~ReadAnythingContainerView() = default;
+
+// TODO(1266555): Move this into a controller and remove.
+void ReadAnythingContainerView::HandleFontChange(
+    const std::string& new_font_name) {
+  content_web_view_->contents_wrapper()->GetWebUIController()->HandleFontChange(
+      new_font_name);
+}

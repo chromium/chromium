@@ -1591,6 +1591,8 @@ static_library("ui") {
       "webui/read_later/side_panel/read_anything/read_anything_constants.h",
       "webui/read_later/side_panel/read_anything/read_anything_container_view.cc",
       "webui/read_later/side_panel/read_anything/read_anything_container_view.h",
+      "webui/read_later/side_panel/read_anything/read_anything_font_model.cc",
+      "webui/read_later/side_panel/read_anything/read_anything_font_model.h",
       "webui/read_later/side_panel/read_anything/read_anything_page_handler.cc",
       "webui/read_later/side_panel/read_anything/read_anything_page_handler.h",
       "webui/read_later/side_panel/read_anything/read_anything_toolbar_view.cc",

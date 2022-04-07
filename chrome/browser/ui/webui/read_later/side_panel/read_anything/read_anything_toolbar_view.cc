@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/read_later/side_panel/read_anything/read_anything_toolbar_view.h"
 
 #include "chrome/browser/ui/webui/read_later/side_panel/read_anything/read_anything_constants.h"
+#include "chrome/browser/ui/webui/read_later/side_panel/read_anything/read_anything_font_model.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
@@ -13,11 +14,11 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
-#include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_types.h"
 
-ReadAnythingToolbarView::ReadAnythingToolbarView() {
+ReadAnythingToolbarView::ReadAnythingToolbarView(
+    base::RepeatingCallback<void(const std::string&)> callback) {
   // Create and set a BoxLayout LayoutManager for this view.
   auto layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal);
@@ -28,16 +29,17 @@ ReadAnythingToolbarView::ReadAnythingToolbarView() {
 
   SetLayoutManager(std::move(layout));
 
-  // Create a title for the toolbar.
-  // TODO(1266555): This is a placeholder title/content, remove for final UI.
-  auto title = std::make_unique<views::Label>();
-  title->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  title->SetText(u"  sans-serif \u25BE");
-  title->SetBackground(views::CreateThemedSolidBackground(
-      title.get(), ui::kColorPrimaryBackground));
-  title->SetFontList(gfx::FontList({"Roboto", "Arial", "sans-serif"},
-                                   gfx::Font::FontStyle::NORMAL, kFontSize,
-                                   gfx::Font::Weight::NORMAL));
+  // Create a font selection combobox for the toolbar.
+  auto combobox = std::make_unique<views::Combobox>(
+      std::make_unique<ReadAnythingFontModel>());
+  base::RepeatingClosure combobox_callback =
+      base::BindRepeating(&ReadAnythingToolbarView::OnFontChanged,
+                          weak_pointer_factory_.GetWeakPtr());
+  combobox->SetSizeToLargestLabel(true);
+  // TODO(1266555): This is placeholder text, remove for final UI.
+  combobox->SetTooltipTextAndAccessibleName(u"Font Choice");
+  combobox->SetCallback(combobox_callback);
+  font_passthrough_ = std::move(callback);
 
   // Create a Settings button with a callback.
   views::Button::PressedCallback settings_callback =
@@ -52,10 +54,8 @@ ReadAnythingToolbarView::ReadAnythingToolbarView() {
 
   // Add all components to view.
   settings_button_ = AddChildView(std::move(settings_button));
-  AddChildView(std::move(title));
+  font_combobox_ = AddChildView(std::move(combobox));
 }
-
-ReadAnythingToolbarView::~ReadAnythingToolbarView() = default;
 
 void ReadAnythingToolbarView::OnThemeChanged() {
   views::View::OnThemeChanged();
@@ -65,4 +65,16 @@ void ReadAnythingToolbarView::OnThemeChanged() {
       GetColorProvider()->GetColor(ui::kColorPrimaryForeground));
 }
 
-void ReadAnythingToolbarView::OnSettingsClicked() {}
+void ReadAnythingToolbarView::OnSettingsClicked() {
+  // TODO(1266555): Stubbed method, to be implemented.
+}
+
+// TODO(1266555): Move this logic into a controller that handles the component.
+void ReadAnythingToolbarView::OnFontChanged() {
+  auto* mymodel =
+      static_cast<ReadAnythingFontModel*>(font_combobox_->GetModel());
+  font_passthrough_.Run(
+      mymodel->GetCurrentFontName(font_combobox_->GetSelectedIndex()));
+}
+
+ReadAnythingToolbarView::~ReadAnythingToolbarView() = default;

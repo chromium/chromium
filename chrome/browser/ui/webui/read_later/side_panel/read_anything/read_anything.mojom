@@ -24,4 +24,7 @@ interface Page {
   // content is a list of paragraphs from a web page, where each paragraph is
   // considered essential (is part of the main content of the web page).
   OnEssentialContent(array<string> essential_content);
+
+  // Send an updated font name to front end.
+  OnFontNameChange(string new_font_name);
 };
