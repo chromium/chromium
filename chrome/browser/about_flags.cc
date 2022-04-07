@@ -8502,15 +8502,6 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
             channel != version_info::Channel::UNKNOWN) ||
            !ash::features::IsWallpaperWebUIEnabled();
   }
-
-  // Features that are only available for Unknown/Canary/Dev channels.
-  if (!strcmp(kPersonalizationHubInternalName, entry.internal_name) &&
-      channel != version_info::Channel::DEV &&
-      channel != version_info::Channel::CANARY &&
-      channel != version_info::Channel::UNKNOWN) {
-    return true;
-  }
-
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
