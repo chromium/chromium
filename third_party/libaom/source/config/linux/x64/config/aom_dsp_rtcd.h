@@ -2351,6 +2351,18 @@ void aom_lpf_horizontal_14_dual_sse2(uint8_t* s,
                                      const uint8_t* thresh1);
 #define aom_lpf_horizontal_14_dual aom_lpf_horizontal_14_dual_sse2
 
+void aom_lpf_horizontal_14_quad_c(uint8_t* s,
+                                  int pitch,
+                                  const uint8_t* blimit0,
+                                  const uint8_t* limit0,
+                                  const uint8_t* thresh0);
+void aom_lpf_horizontal_14_quad_sse2(uint8_t* s,
+                                     int pitch,
+                                     const uint8_t* blimit0,
+                                     const uint8_t* limit0,
+                                     const uint8_t* thresh0);
+#define aom_lpf_horizontal_14_quad aom_lpf_horizontal_14_quad_sse2
+
 void aom_lpf_horizontal_4_c(uint8_t* s,
                             int pitch,
                             const uint8_t* blimit,
@@ -2380,6 +2392,18 @@ void aom_lpf_horizontal_4_dual_sse2(uint8_t* s,
                                     const uint8_t* limit1,
                                     const uint8_t* thresh1);
 #define aom_lpf_horizontal_4_dual aom_lpf_horizontal_4_dual_sse2
+
+void aom_lpf_horizontal_4_quad_c(uint8_t* s,
+                                 int pitch,
+                                 const uint8_t* blimit0,
+                                 const uint8_t* limit0,
+                                 const uint8_t* thresh0);
+void aom_lpf_horizontal_4_quad_sse2(uint8_t* s,
+                                    int pitch,
+                                    const uint8_t* blimit0,
+                                    const uint8_t* limit0,
+                                    const uint8_t* thresh0);
+#define aom_lpf_horizontal_4_quad aom_lpf_horizontal_4_quad_sse2
 
 void aom_lpf_horizontal_6_c(uint8_t* s,
                             int pitch,
@@ -2411,6 +2435,18 @@ void aom_lpf_horizontal_6_dual_sse2(uint8_t* s,
                                     const uint8_t* thresh1);
 #define aom_lpf_horizontal_6_dual aom_lpf_horizontal_6_dual_sse2
 
+void aom_lpf_horizontal_6_quad_c(uint8_t* s,
+                                 int pitch,
+                                 const uint8_t* blimit0,
+                                 const uint8_t* limit0,
+                                 const uint8_t* thresh0);
+void aom_lpf_horizontal_6_quad_sse2(uint8_t* s,
+                                    int pitch,
+                                    const uint8_t* blimit0,
+                                    const uint8_t* limit0,
+                                    const uint8_t* thresh0);
+#define aom_lpf_horizontal_6_quad aom_lpf_horizontal_6_quad_sse2
+
 void aom_lpf_horizontal_8_c(uint8_t* s,
                             int pitch,
                             const uint8_t* blimit,
@@ -2440,6 +2476,18 @@ void aom_lpf_horizontal_8_dual_sse2(uint8_t* s,
                                     const uint8_t* limit1,
                                     const uint8_t* thresh1);
 #define aom_lpf_horizontal_8_dual aom_lpf_horizontal_8_dual_sse2
+
+void aom_lpf_horizontal_8_quad_c(uint8_t* s,
+                                 int pitch,
+                                 const uint8_t* blimit0,
+                                 const uint8_t* limit0,
+                                 const uint8_t* thresh0);
+void aom_lpf_horizontal_8_quad_sse2(uint8_t* s,
+                                    int pitch,
+                                    const uint8_t* blimit0,
+                                    const uint8_t* limit0,
+                                    const uint8_t* thresh0);
+#define aom_lpf_horizontal_8_quad aom_lpf_horizontal_8_quad_sse2
 
 void aom_lpf_vertical_14_c(uint8_t* s,
                            int pitch,
@@ -2471,6 +2519,18 @@ void aom_lpf_vertical_14_dual_sse2(uint8_t* s,
                                    const uint8_t* thresh1);
 #define aom_lpf_vertical_14_dual aom_lpf_vertical_14_dual_sse2
 
+void aom_lpf_vertical_14_quad_c(uint8_t* s,
+                                int pitch,
+                                const uint8_t* blimit0,
+                                const uint8_t* limit0,
+                                const uint8_t* thresh0);
+void aom_lpf_vertical_14_quad_sse2(uint8_t* s,
+                                   int pitch,
+                                   const uint8_t* blimit0,
+                                   const uint8_t* limit0,
+                                   const uint8_t* thresh0);
+#define aom_lpf_vertical_14_quad aom_lpf_vertical_14_quad_sse2
+
 void aom_lpf_vertical_4_c(uint8_t* s,
                           int pitch,
                           const uint8_t* blimit,
@@ -2500,6 +2560,18 @@ void aom_lpf_vertical_4_dual_sse2(uint8_t* s,
                                   const uint8_t* limit1,
                                   const uint8_t* thresh1);
 #define aom_lpf_vertical_4_dual aom_lpf_vertical_4_dual_sse2
+
+void aom_lpf_vertical_4_quad_c(uint8_t* s,
+                               int pitch,
+                               const uint8_t* blimit0,
+                               const uint8_t* limit0,
+                               const uint8_t* thresh0);
+void aom_lpf_vertical_4_quad_sse2(uint8_t* s,
+                                  int pitch,
+                                  const uint8_t* blimit0,
+                                  const uint8_t* limit0,
+                                  const uint8_t* thresh0);
+#define aom_lpf_vertical_4_quad aom_lpf_vertical_4_quad_sse2
 
 void aom_lpf_vertical_6_c(uint8_t* s,
                           int pitch,
@@ -2531,6 +2603,18 @@ void aom_lpf_vertical_6_dual_sse2(uint8_t* s,
                                   const uint8_t* thresh1);
 #define aom_lpf_vertical_6_dual aom_lpf_vertical_6_dual_sse2
 
+void aom_lpf_vertical_6_quad_c(uint8_t* s,
+                               int pitch,
+                               const uint8_t* blimit0,
+                               const uint8_t* limit0,
+                               const uint8_t* thresh0);
+void aom_lpf_vertical_6_quad_sse2(uint8_t* s,
+                                  int pitch,
+                                  const uint8_t* blimit0,
+                                  const uint8_t* limit0,
+                                  const uint8_t* thresh0);
+#define aom_lpf_vertical_6_quad aom_lpf_vertical_6_quad_sse2
+
 void aom_lpf_vertical_8_c(uint8_t* s,
                           int pitch,
                           const uint8_t* blimit,
@@ -2560,6 +2644,18 @@ void aom_lpf_vertical_8_dual_sse2(uint8_t* s,
                                   const uint8_t* limit1,
                                   const uint8_t* thresh1);
 #define aom_lpf_vertical_8_dual aom_lpf_vertical_8_dual_sse2
+
+void aom_lpf_vertical_8_quad_c(uint8_t* s,
+                               int pitch,
+                               const uint8_t* blimit0,
+                               const uint8_t* limit0,
+                               const uint8_t* thresh0);
+void aom_lpf_vertical_8_quad_sse2(uint8_t* s,
+                                  int pitch,
+                                  const uint8_t* blimit0,
+                                  const uint8_t* limit0,
+                                  const uint8_t* thresh0);
+#define aom_lpf_vertical_8_quad aom_lpf_vertical_8_quad_sse2
 
 unsigned int aom_masked_sad128x128_c(const uint8_t* src,
                                      int src_stride,
