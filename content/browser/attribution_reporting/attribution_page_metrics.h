@@ -23,24 +23,13 @@ class AttributionPageMetrics {
   AttributionPageMetrics(AttributionPageMetrics&& other) = delete;
   AttributionPageMetrics& operator=(AttributionPageMetrics&& other) = delete;
 
-  // Called when a conversion is registered.
-  void OnConversion(url::Origin reporting_origin);
-
   // Called when an impression is registered.
   void OnImpression(url::Origin reporting_origin);
 
  private:
-  // Keeps track of how many conversion registrations there have been on the
-  // current page.
-  int num_conversions_on_current_page_ = 0;
-
   // Keeps track of how many impression registrations there have been on the
   // current page.
   int num_impressions_on_current_page_ = 0;
-
-  // Keeps track of how many unique reporting origins for conversion
-  // registrations there have been on the current page.
-  base::flat_set<url::Origin> conversion_reporting_origins_on_current_page_;
 
   // Keeps track of how many unique reporting origins for impression
   // registrations there have been on the current page.

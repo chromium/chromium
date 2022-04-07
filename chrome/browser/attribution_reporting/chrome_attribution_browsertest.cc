@@ -95,46 +95,6 @@ IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
-                       ConversionPing_FeatureRecorded) {
-  // The test assumes the previous page gets deleted after navigation,
-  // triggering histogram recording. Disable back/forward cache to ensure that
-  // it doesn't get preserved in the cache.
-  content::DisableBackForwardCacheForTesting(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
-  base::HistogramTester histogram_tester;
-
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      server_.GetURL(
-          "a.test",
-          "/attribution_reporting/page_with_conversion_redirect.html")));
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  // Register a conversion with the original page as the reporting origin.
-  EXPECT_TRUE(ExecJs(web_contents, "registerConversion({data: 7})"));
-
-  // Wait for the conversion redirect to be intercepted. This is indicated by
-  // window title changing when the img element for the conversion request fires
-  // an onerror event.
-  const std::u16string kConvertTitle = u"converted";
-  content::TitleWatcher watcher(web_contents, kConvertTitle);
-  EXPECT_EQ(kConvertTitle, watcher.WaitAndGetTitle());
-
-  // Navigate to a new page to flush metrics.
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-
-  histogram_tester.ExpectBucketCount(
-      "Blink.UseCounter.Features",
-      blink::mojom::WebFeature::kConversionRegistration, 1);
-  histogram_tester.ExpectBucketCount(
-      "Blink.UseCounter.Features", blink::mojom::WebFeature::kConversionAPIAll,
-      1);
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
                        WindowOpenWithOnlyAttributionFeatures_LinkOpenedInTab) {
   base::HistogramTester histogram_tester;
   content::WebContents* web_contents =

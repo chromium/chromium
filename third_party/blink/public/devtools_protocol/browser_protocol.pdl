@@ -698,16 +698,10 @@ experimental domain Audits
     enum
       PermissionPolicyDisabled
       InvalidAttributionSourceEventId
-      InvalidAttributionData
       AttributionSourceUntrustworthyOrigin
       AttributionUntrustworthyOrigin
-      AttributionTriggerDataTooLarge
-      AttributionEventSourceTriggerDataTooLarge
       InvalidAttributionSourceExpiry
       InvalidAttributionSourcePriority
-      InvalidEventSourceTriggerData
-      InvalidTriggerPriority
-      InvalidTriggerDedupKey
 
   # Details for issues around "Attribution Reporting API" usage.
   # Explainer: https://github.com/WICG/conversion-measurement-api

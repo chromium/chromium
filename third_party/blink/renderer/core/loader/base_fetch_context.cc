@@ -119,14 +119,6 @@ bool BaseFetchContext::CalculateIfAdSubresource(
          (filter && filter->IsAdResource(url, request.GetRequestContext()));
 }
 
-bool BaseFetchContext::SendConversionRequestInsteadOfRedirecting(
-    const KURL& url,
-    const absl::optional<ResourceRequest::RedirectInfo>& redirect_info,
-    ReportingDisposition reporting_disposition,
-    const String& devtools_request_id) const {
-  return false;
-}
-
 void BaseFetchContext::AddClientHintsIfNecessary(
     const ClientHintsPreferences& hints_preferences,
     const url::Origin& resource_origin,
@@ -676,16 +668,6 @@ BaseFetchContext::CanRequestInternal(
   if (url.PotentiallyDanglingMarkup() && url.ProtocolIsInHTTPFamily()) {
     CountDeprecation(WebFeature::kCanRequestURLHTTPContainingNewline);
     return ResourceRequestBlockedReason::kOther;
-  }
-
-  // Redirect `ResourceRequest`s don't have a DevToolsId set, but are
-  // associated with the requestId of the initial request. The right
-  // DevToolsId needs to be resolved via the InspectorId.
-  const String devtools_request_id =
-      IdentifiersFactory::RequestId(nullptr, resource_request.InspectorId());
-  if (SendConversionRequestInsteadOfRedirecting(
-          url, redirect_info, reporting_disposition, devtools_request_id)) {
-    return ResourceRequestBlockedReason::kConversionRequest;
   }
 
   // Let the client have the final say into whether or not the load should

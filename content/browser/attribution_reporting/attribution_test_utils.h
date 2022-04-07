@@ -99,11 +99,6 @@ class MockAttributionHost : public AttributionHost {
 
   ~MockAttributionHost() override;
 
-  MOCK_METHOD(void,
-              RegisterConversion,
-              (blink::mojom::ConversionPtr conversion),
-              (override));
-
   MOCK_METHOD(
       void,
       RegisterDataHost,

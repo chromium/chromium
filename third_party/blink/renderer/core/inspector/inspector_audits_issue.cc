@@ -147,9 +147,6 @@ BuildAttributionReportingIssueType(AttributionReportingIssueType type) {
     case AttributionReportingIssueType::kAttributionSourceUntrustworthyOrigin:
       return protocol::Audits::AttributionReportingIssueTypeEnum::
           AttributionSourceUntrustworthyOrigin;
-    case AttributionReportingIssueType::kInvalidAttributionData:
-      return protocol::Audits::AttributionReportingIssueTypeEnum::
-          InvalidAttributionData;
     case AttributionReportingIssueType::kAttributionUntrustworthyOrigin:
       return protocol::Audits::AttributionReportingIssueTypeEnum::
           AttributionUntrustworthyOrigin;
@@ -159,15 +156,6 @@ BuildAttributionReportingIssueType(AttributionReportingIssueType type) {
     case AttributionReportingIssueType::kInvalidAttributionSourcePriority:
       return protocol::Audits::AttributionReportingIssueTypeEnum::
           InvalidAttributionSourcePriority;
-    case AttributionReportingIssueType::kInvalidEventSourceTriggerData:
-      return protocol::Audits::AttributionReportingIssueTypeEnum::
-          InvalidEventSourceTriggerData;
-    case AttributionReportingIssueType::kInvalidTriggerPriority:
-      return protocol::Audits::AttributionReportingIssueTypeEnum::
-          InvalidTriggerPriority;
-    case AttributionReportingIssueType::kInvalidTriggerDedupKey:
-      return protocol::Audits::AttributionReportingIssueTypeEnum::
-          InvalidTriggerDedupKey;
   }
 }
 

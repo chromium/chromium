@@ -3251,6 +3251,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Conversions.ConversionIgnoredByFeaturePolicy"
     enum="BooleanIgnored" expires_after="2022-10-04">
+  <obsolete>
+    Only tracked in obsolete Attribution Reporting API surface. Removed 04/22.
+  </obsolete>
   <owner>apaseltiner@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -3352,6 +3355,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Conversions.RedirectInterceptedFrameDetached" enum="Boolean"
     expires_after="M105">
+  <obsolete>
+    Only tracked in obsolete Attribution Reporting API surface. Removed 04/22.
+  </obsolete>
   <owner>apaseltiner@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -3377,6 +3383,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Conversions.RegisteredConversionsPerPage" units="conversions"
     expires_after="2022-09-11">
+  <obsolete>
+    Only tracked in obsolete Attribution Reporting API surface. Removed 04/22.
+  </obsolete>
   <owner>johnidel@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
@@ -3639,6 +3648,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Conversions.UniqueReportingOriginsPerPage.Conversions"
     units="origins" expires_after="2022-10-04">
+  <obsolete>
+    Only tracked in obsolete Attribution Reporting API surface. Removed 04/22.
+  </obsolete>
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>

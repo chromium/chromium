@@ -50,14 +50,10 @@ enum class RendererCorsIssueCode {
 enum class AttributionReportingIssueType {
   kPermissionPolicyDisabled,
   kInvalidAttributionSourceEventId,
-  kInvalidAttributionData,
   kAttributionSourceUntrustworthyOrigin,
   kAttributionUntrustworthyOrigin,
   kInvalidAttributionSourceExpiry,
   kInvalidAttributionSourcePriority,
-  kInvalidEventSourceTriggerData,
-  kInvalidTriggerPriority,
-  kInvalidTriggerDedupKey,
 };
 
 enum class SharedArrayBufferIssueType {

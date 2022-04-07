@@ -95,15 +95,6 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
       ResourceType type,
       const FetchInitiatorInfo& initiator_info) override;
 
-  // Returns whether a request to |url| is a conversion registration request.
-  // Conversion registration requests are redirects to a well-known conversion
-  // registration endpoint.
-  virtual bool SendConversionRequestInsteadOfRedirecting(
-      const KURL& url,
-      const absl::optional<ResourceRequest::RedirectInfo>& redirect_info,
-      ReportingDisposition reporting_disposition,
-      const String& devtools_request_id) const;
-
   void AddClientHintsIfNecessary(
       const ClientHintsPreferences& hints_preferences,
       const url::Origin& resource_origin,

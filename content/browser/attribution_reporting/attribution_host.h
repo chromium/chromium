@@ -46,7 +46,6 @@ class CONTENT_EXPORT AttributionHost
   friend class WebContentsUserData<AttributionHost>;
 
   // blink::mojom::ConversionHost:
-  void RegisterConversion(blink::mojom::ConversionPtr conversion) override;
   void RegisterDataHost(mojo::PendingReceiver<blink::mojom::AttributionDataHost>
                             data_host) override;
   void RegisterNavigationDataHost(

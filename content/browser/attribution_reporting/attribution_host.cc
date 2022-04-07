@@ -12,7 +12,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
-#include "content/browser/attribution_reporting/attribution_aggregatable_trigger.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
@@ -20,7 +19,6 @@
 #include "content/browser/attribution_reporting/attribution_metrics.h"
 #include "content/browser/attribution_reporting/attribution_page_metrics.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
-#include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -255,63 +253,6 @@ void AttributionHost::MaybeNotifyFailedSourceNavigation(
 
   data_host_manager->NotifyNavigationFailure(
       *impression->attribution_src_token);
-}
-
-void AttributionHost::RegisterConversion(
-    blink::mojom::ConversionPtr conversion) {
-  content::RenderFrameHost* render_frame_host =
-      receivers_.GetCurrentTargetFrame();
-
-  // AttributionHost calls are delayed in blink if pre-rendering.
-  DCHECK_NE(content::RenderFrameHost::LifecycleState::kPrerendering,
-            render_frame_host->GetLifecycleState());
-
-  // If there is no conversion manager available, ignore any conversion
-  // registrations.
-  AttributionManager* attribution_manager =
-      attribution_manager_provider_->GetManager(web_contents());
-  if (!attribution_manager) {
-    RecordRegisterConversionAllowed(false);
-    return;
-  }
-
-  const url::Origin& conversion_origin =
-      render_frame_host->GetLastCommittedOrigin();
-  const url::Origin& main_frame_origin =
-      render_frame_host->GetMainFrame()->GetLastCommittedOrigin();
-
-  // Only allow conversion registration on secure pages with a secure conversion
-  // redirects.
-  if (!network::IsOriginPotentiallyTrustworthy(conversion_origin)) {
-    mojo::ReportBadMessage(
-        "blink.mojom.ConversionHost can only be used in secure contexts.");
-        return;
-  }
-  if (!network::IsOriginPotentiallyTrustworthy(conversion->reporting_origin)) {
-    mojo::ReportBadMessage("blink.mojom.ConversionHost can only be used with "
-        "a secure conversion registration origin.");
-        return;
-  }
-  if (!network::IsOriginPotentiallyTrustworthy(main_frame_origin)) {
-    mojo::ReportBadMessage(
-        "blink.mojom.ConversionHost can only be used with a secure top-level "
-        "frame.");
-    return;
-  }
-
-  AttributionTrigger storable_conversion(
-      conversion->conversion_data, /*destination_origin=*/main_frame_origin,
-      conversion->reporting_origin, conversion->event_source_trigger_data,
-      conversion->priority,
-      conversion->dedup_key.is_null()
-          ? absl::nullopt
-          : absl::make_optional(conversion->dedup_key->value),
-      /*debug_key=*/absl::nullopt, AttributionAggregatableTrigger());
-
-  if (conversion_page_metrics_)
-    conversion_page_metrics_->OnConversion(conversion->reporting_origin);
-
-  attribution_manager->HandleTrigger(std::move(storable_conversion));
 }
 
 void AttributionHost::NotifyImpressionInitiatedByPage(

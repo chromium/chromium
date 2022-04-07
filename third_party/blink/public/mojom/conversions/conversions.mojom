@@ -9,32 +9,6 @@ import "third_party/blink/public/mojom/conversions/attribution_data_host.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "url/mojom/origin.mojom";
 
-struct Conversion {
-  // Origin of the conversion registration redirect.
-  url.mojom.Origin reporting_origin;
-
-  // Conversion data specified in conversion redirect. 0 is used as a
-  // default if none is provided.
-  uint64 conversion_data = 0;
-
-  // Event source trigger data specified in conversion redirect. 0 is used as a
-  // default if none is provided.
-  uint64 event_source_trigger_data = 0;
-
-  // Priority specified in conversion redirect. 0 is used as a default if none
-  // is provided.
-  int64 priority = 0;
-
-  // Key specified in conversion redirect for deduplication against existing
-  // conversions with the same source.
-  AttributionTriggerDedupKey? dedup_key;
-
-  // The request id of the conversion redirect. In case the conversion is
-  // invalid and an error is reported to DevTools, the error can be tied to the
-  // corresponding network request via this id.
-  string? devtools_request_id;
-};
-
 // Mojo struct to represent blink::Impression native struct.
 struct Impression {
   // Intended committed top-level origin of the resulting navigation. Must match
@@ -67,11 +41,6 @@ struct Impression {
 // Sent from renderer to browser process when a resource request matching the
 // .well-known conversion registration path is intercepted.
 interface ConversionHost {
-  // Registers a conversion on the site with data provided in the conversion
-  // registration redirect. Only called for requests loaded in the top-level
-  // browsing context.
-  RegisterConversion(Conversion conversion);
-
   // Registers a new data host which can register a source or trigger.
   // Called when an attributionsrc attribute is registered, e.g. via an img
   // element. Information will be passed at a later point when the renderer

@@ -17,33 +17,13 @@ constexpr size_t kMaxStoredOrigins = 100;
 AttributionPageMetrics::AttributionPageMetrics() = default;
 
 AttributionPageMetrics::~AttributionPageMetrics() {
-  // TODO(https://crbug.com/1044099): Consider limiting registrations per page
-  // based on this metric.
-  base::UmaHistogramExactLinear("Conversions.RegisteredConversionsPerPage",
-                                num_conversions_on_current_page_, 100);
-
   base::UmaHistogramExactLinear("Conversions.RegisteredImpressionsPerPage",
                                 num_impressions_on_current_page_, 100);
-
-  if (!conversion_reporting_origins_on_current_page_.empty()) {
-    base::UmaHistogramExactLinear(
-        "Conversions.UniqueReportingOriginsPerPage.Conversions",
-        conversion_reporting_origins_on_current_page_.size(), 100);
-  }
 
   if (!impression_reporting_origins_on_current_page_.empty()) {
     base::UmaHistogramExactLinear(
         "Conversions.UniqueReportingOriginsPerPage.Impressions",
         impression_reporting_origins_on_current_page_.size(), 100);
-  }
-}
-
-void AttributionPageMetrics::OnConversion(url::Origin reporting_origin) {
-  num_conversions_on_current_page_++;
-  if (conversion_reporting_origins_on_current_page_.size() <
-      kMaxStoredOrigins) {
-    conversion_reporting_origins_on_current_page_.insert(
-        std::move(reporting_origin));
   }
 }
 
