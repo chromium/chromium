@@ -63,16 +63,21 @@ void SetOverrides(sync_preferences::TestingPrefServiceSyncable* prefs,
 
 void SetPolicy(sync_preferences::TestingPrefServiceSyncable* prefs,
                bool enabled,
-               TemplateURLData* data) {
+               TemplateURLData* data,
+               bool is_enforced) {
   if (enabled) {
     EXPECT_FALSE(data->keyword().empty());
     EXPECT_FALSE(data->url().empty());
   }
   std::unique_ptr<base::Value> entry = TemplateURLDataToDictionary(*data);
   entry->SetBoolKey(DefaultSearchManager::kDisabledByPolicy, !enabled);
-  prefs->SetManagedPref(
-      DefaultSearchManager::kDefaultSearchProviderDataPrefName,
-      std::move(entry));
+
+  is_enforced ? prefs->SetManagedPref(
+                    DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+                    std::move(entry))
+              : prefs->SetRecommendedPref(
+                    DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+                    std::move(entry));
 }
 
 }  // namespace
@@ -196,7 +201,7 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByOverrides) {
 }
 
 // Test DefaultSearchManager handles policy-enforced DSEs correctly.
-TEST_F(DefaultSearchManagerTest, DefaultSearchSetByPolicy) {
+TEST_F(DefaultSearchManagerTest, DefaultSearchSetByEnforcedPolicy) {
   DefaultSearchManager manager(pref_service(),
                                DefaultSearchManager::ObserverCallback());
   std::unique_ptr<TemplateURLData> data = GenerateDummyTemplateURLData("user");
@@ -208,19 +213,80 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByPolicy) {
 
   std::unique_ptr<TemplateURLData> policy_data =
       GenerateDummyTemplateURLData("policy");
-  SetPolicy(pref_service(), true, policy_data.get());
+  SetPolicy(pref_service(), true, policy_data.get(), /*is_enforced=*/true);
 
   ExpectSimilar(policy_data.get(), manager.GetDefaultSearchEngine(&source));
   EXPECT_EQ(DefaultSearchManager::FROM_POLICY, source);
 
   TemplateURLData null_policy_data;
-  SetPolicy(pref_service(), false, &null_policy_data);
+  SetPolicy(pref_service(), false, &null_policy_data, /*is_enforced=*/true);
   EXPECT_EQ(nullptr, manager.GetDefaultSearchEngine(&source));
   EXPECT_EQ(DefaultSearchManager::FROM_POLICY, source);
 
   pref_service()->RemoveManagedPref(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName);
   ExpectSimilar(data.get(), manager.GetDefaultSearchEngine(&source));
+  EXPECT_EQ(DefaultSearchManager::FROM_USER, source);
+}
+
+// Policy-recommended DSE is handled correctly when no existing DSE is present.
+TEST_F(DefaultSearchManagerTest, DefaultSearchSetByRecommendedPolicy) {
+  DefaultSearchManager manager(pref_service(),
+                               DefaultSearchManager::ObserverCallback());
+  DefaultSearchManager::Source source = DefaultSearchManager::FROM_FALLBACK;
+
+  // Set recommended policy DSE with valid data.
+  std::unique_ptr<TemplateURLData> policy_data =
+      GenerateDummyTemplateURLData("policy");
+  SetPolicy(pref_service(), true, policy_data.get(), /*is_enforced=*/false);
+  ExpectSimilar(policy_data.get(), manager.GetDefaultSearchEngine(&source));
+  EXPECT_EQ(DefaultSearchManager::FROM_POLICY, source);
+
+  // Set recommended policy DSE with null data.
+  TemplateURLData null_policy_data;
+  SetPolicy(pref_service(), false, &null_policy_data, /*is_enforced=*/false);
+  EXPECT_EQ(nullptr, manager.GetDefaultSearchEngine(&source));
+  EXPECT_EQ(DefaultSearchManager::FROM_POLICY, source);
+
+  // Set user-configured DSE.
+  std::unique_ptr<TemplateURLData> user_data =
+      GenerateDummyTemplateURLData("user");
+  manager.SetUserSelectedDefaultSearchEngine(*user_data);
+  // The user-configured DSE overrides the recommended policy DSE.
+  ExpectSimilar(user_data.get(), manager.GetDefaultSearchEngine(&source));
+  EXPECT_EQ(DefaultSearchManager::FROM_USER, source);
+
+  // Remove the recommended policy DSE.
+  pref_service()->RemoveRecommendedPref(
+      DefaultSearchManager::kDefaultSearchProviderDataPrefName);
+  ExpectSimilar(user_data.get(), manager.GetDefaultSearchEngine(&source));
+  EXPECT_EQ(DefaultSearchManager::FROM_USER, source);
+}
+
+// Policy-recommended DSE does not override existing DSE set by user.
+TEST_F(DefaultSearchManagerTest, DefaultSearchSetByUserAndRecommendedPolicy) {
+  DefaultSearchManager manager(pref_service(),
+                               DefaultSearchManager::ObserverCallback());
+  // Set user-configured DSE.
+  std::unique_ptr<TemplateURLData> user_data =
+      GenerateDummyTemplateURLData("user");
+  manager.SetUserSelectedDefaultSearchEngine(*user_data);
+  DefaultSearchManager::Source source = DefaultSearchManager::FROM_FALLBACK;
+  ExpectSimilar(user_data.get(), manager.GetDefaultSearchEngine(&source));
+  EXPECT_EQ(DefaultSearchManager::FROM_USER, source);
+
+  // Set recommended policy DSE.
+  std::unique_ptr<TemplateURLData> policy_data =
+      GenerateDummyTemplateURLData("policy");
+  SetPolicy(pref_service(), true, policy_data.get(), /*is_enforced=*/false);
+  // The recommended policy DSE does not override the existing user DSE.
+  ExpectSimilar(user_data.get(), manager.GetDefaultSearchEngine(&source));
+  EXPECT_EQ(DefaultSearchManager::FROM_USER, source);
+
+  // Remove the recommended policy DSE.
+  pref_service()->RemoveRecommendedPref(
+      DefaultSearchManager::kDefaultSearchProviderDataPrefName);
+  ExpectSimilar(user_data.get(), manager.GetDefaultSearchEngine(&source));
   EXPECT_EQ(DefaultSearchManager::FROM_USER, source);
 }
 
@@ -246,7 +312,7 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByExtension) {
   // Policy trumps extension:
   std::unique_ptr<TemplateURLData> policy_data =
       GenerateDummyTemplateURLData("policy");
-  SetPolicy(pref_service(), true, policy_data.get());
+  SetPolicy(pref_service(), true, policy_data.get(), /*is_enforced=*/true);
 
   ExpectSimilar(policy_data.get(), manager.GetDefaultSearchEngine(&source));
   EXPECT_EQ(DefaultSearchManager::FROM_POLICY, source);

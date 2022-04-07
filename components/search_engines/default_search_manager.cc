@@ -286,7 +286,8 @@ void DefaultSearchManager::LoadDefaultSearchEngineFromPrefs() {
   const PrefService::Preference* pref =
       pref_service_->FindPreference(kDefaultSearchProviderDataPrefName);
   DCHECK(pref);
-  default_search_controlled_by_policy_ = pref->IsManaged();
+  default_search_controlled_by_policy_ =
+      pref->IsManaged() || pref->IsRecommended();
 
   const base::Value* url_dict =
       pref_service_->GetDictionary(kDefaultSearchProviderDataPrefName);

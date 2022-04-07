@@ -509,8 +509,6 @@
       ],
     },
     {
-      # TODO(joaodasilva): Flag these policies with 'can_be_recommended'
-      # after fixing https://crbug.com/106683
       'name': 'DefaultSearchProvider',
       'type': 'group',
       'caption': '''Default search provider''',
