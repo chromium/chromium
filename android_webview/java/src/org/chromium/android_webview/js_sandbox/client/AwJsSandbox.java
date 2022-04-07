@@ -17,7 +17,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolate;
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxService;
-import org.chromium.base.ContextUtils;
 
 /**
  * Sandbox that can execute JS in a safe environment. TODO(crbug.com/1297672): Evaluate the thread
@@ -38,6 +37,7 @@ public class AwJsSandbox implements AutoCloseable {
     static class ConnectionSetup implements ServiceConnection {
         private ReadyCallback mReadyCallback;
         private AwJsSandbox mAwJsSandbox;
+        private Context mContext;
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -52,7 +52,8 @@ public class AwJsSandbox implements AutoCloseable {
             mAwJsSandbox.close();
         }
 
-        ConnectionSetup(ReadyCallback callback) {
+        ConnectionSetup(Context context, ReadyCallback callback) {
+            mContext = context;
             mReadyCallback = callback;
         }
     }
@@ -67,31 +68,32 @@ public class AwJsSandbox implements AutoCloseable {
      * called from the main looper (Looper.getMainLooper()). We only support creation of a single
      * connected instance, we would need to add restrictions to enforce this.
      *
+     * @param context When the context is destroyed, the connection will be closed. Use an
+     *         application
+     *     context if the connection is expected to outlive a single activity/service.
      * @param callback used to pass a callback function on creation of object.
      */
-    public static void newConnectedInstance(ReadyCallback callback) {
+    public static void newConnectedInstance(Context context, ReadyCallback callback) {
         PackageInfo systemWebViewPackage = WebView.getCurrentWebViewPackage();
         ComponentName compName =
                 new ComponentName(systemWebViewPackage.packageName, JS_SANDBOX_SERVICE_NAME);
         int flag = Context.BIND_AUTO_CREATE | Context.BIND_EXTERNAL_SERVICE;
-        bindToServiceWithCallback(compName, flag, callback);
+        bindToServiceWithCallback(context, compName, flag, callback);
     }
 
     @VisibleForTesting
-    public static void newConnectedInstanceForTesting(ReadyCallback callback) {
-        ComponentName compName =
-                new ComponentName(ContextUtils.getApplicationContext(), JS_SANDBOX_SERVICE_NAME);
+    public static void newConnectedInstanceForTesting(Context context, ReadyCallback callback) {
+        ComponentName compName = new ComponentName(context, JS_SANDBOX_SERVICE_NAME);
         int flag = Context.BIND_AUTO_CREATE;
-        bindToServiceWithCallback(compName, flag, callback);
+        bindToServiceWithCallback(context, compName, flag, callback);
     }
 
     private static void bindToServiceWithCallback(
-            ComponentName compName, int flag, ReadyCallback callback) {
+            Context context, ComponentName compName, int flag, ReadyCallback callback) {
         Intent intent = new Intent();
         intent.setComponent(compName);
-        ConnectionSetup connectionSetup = new ConnectionSetup(callback);
-        boolean isBinding =
-                ContextUtils.getApplicationContext().bindService(intent, connectionSetup, flag);
+        ConnectionSetup connectionSetup = new ConnectionSetup(context, callback);
+        boolean isBinding = context.bindService(intent, connectionSetup, flag);
         if (!isBinding) {
             throw new RuntimeException(
                     "System couldn't find the sandbox service or client doesn't have "
@@ -124,7 +126,7 @@ public class AwJsSandbox implements AutoCloseable {
         if (mJsSandboxService == null) {
             return;
         }
-        ContextUtils.getApplicationContext().unbindService(mConnection);
+        mConnection.mContext.unbindService(mConnection);
         mJsSandboxService = null;
     }
 }

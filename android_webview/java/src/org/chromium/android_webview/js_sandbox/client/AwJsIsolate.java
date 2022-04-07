@@ -6,11 +6,11 @@ package org.chromium.android_webview.js_sandbox.client;
 
 import android.os.Build;
 import android.os.RemoteException;
+import android.util.Log;
 
 import org.chromium.android_webview.js_sandbox.common.ExecutionErrorTypes;
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolate;
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateCallback;
-import org.chromium.base.Log;
 
 /** Provides a sandboxed execution Isolate. */
 public class AwJsIsolate implements AutoCloseable {

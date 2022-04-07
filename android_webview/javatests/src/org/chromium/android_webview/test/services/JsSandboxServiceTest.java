@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.js_sandbox.client.AwJsIsolate;
 import org.chromium.android_webview.js_sandbox.client.AwJsSandbox;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CallbackHelper;
 
 /** Instrumentation test for JsSandboxService. */
@@ -43,10 +44,11 @@ public class JsSandboxServiceTest {
         final String expected = "PASS";
         TestExecutionCallback callback = new TestExecutionCallback();
 
-        AwJsSandbox.newConnectedInstanceForTesting((AwJsSandbox jsSandbox) -> {
-            AwJsIsolate jsIsolate = jsSandbox.createIsolate();
-            jsIsolate.evaluateJavascript(code, callback);
-        });
+        AwJsSandbox.newConnectedInstanceForTesting(
+                ContextUtils.getApplicationContext(), jsSandbox -> {
+                    AwJsIsolate jsIsolate = jsSandbox.createIsolate();
+                    jsIsolate.evaluateJavascript(code, callback);
+                });
 
         callback.helper.waitForCallback("Timed out waiting for reportResult() to be called", 0);
         Assert.assertEquals(expected, callback.result);
@@ -59,13 +61,14 @@ public class JsSandboxServiceTest {
         final String expected = "PASS";
         TestExecutionCallback callback = new TestExecutionCallback();
 
-        AwJsSandbox.newConnectedInstanceForTesting((AwJsSandbox jsSandbox) -> {
-            AwJsIsolate jsIsolate1 = jsSandbox.createIsolate();
-            AwJsIsolate jsIsolate2 = jsSandbox.createIsolate();
-            jsIsolate1.close();
-            jsIsolate2.evaluateJavascript(code, callback);
-            jsIsolate2.close();
-        });
+        AwJsSandbox.newConnectedInstanceForTesting(
+                ContextUtils.getApplicationContext(), jsSandbox -> {
+                    AwJsIsolate jsIsolate1 = jsSandbox.createIsolate();
+                    AwJsIsolate jsIsolate2 = jsSandbox.createIsolate();
+                    jsIsolate1.close();
+                    jsIsolate2.evaluateJavascript(code, callback);
+                    jsIsolate2.close();
+                });
 
         callback.helper.waitForCallback("Timed out waiting for reportResult() to be called", 0);
         Assert.assertEquals(expected, callback.result);
@@ -81,12 +84,13 @@ public class JsSandboxServiceTest {
         TestExecutionCallback callback1 = new TestExecutionCallback();
         TestExecutionCallback callback2 = new TestExecutionCallback();
 
-        AwJsSandbox.newConnectedInstanceForTesting((AwJsSandbox jsSandbox) -> {
-            AwJsIsolate jsIsolate1 = jsSandbox.createIsolate();
-            jsIsolate1.evaluateJavascript(code1, callback1);
-            AwJsIsolate jsIsolate2 = jsSandbox.createIsolate();
-            jsIsolate2.evaluateJavascript(code2, callback2);
-        });
+        AwJsSandbox.newConnectedInstanceForTesting(
+                ContextUtils.getApplicationContext(), jsSandbox -> {
+                    AwJsIsolate jsIsolate1 = jsSandbox.createIsolate();
+                    jsIsolate1.evaluateJavascript(code1, callback1);
+                    AwJsIsolate jsIsolate2 = jsSandbox.createIsolate();
+                    jsIsolate2.evaluateJavascript(code2, callback2);
+                });
         callback1.helper.waitForCallback(
                 "Timed out waiting for reportResult() to be called for first case", 0);
         callback2.helper.waitForCallback(
@@ -106,12 +110,13 @@ public class JsSandboxServiceTest {
         TestExecutionCallback callback1 = new TestExecutionCallback();
         TestExecutionCallback callback2 = new TestExecutionCallback();
 
-        AwJsSandbox.newConnectedInstanceForTesting((AwJsSandbox jsSandbox) -> {
-            AwJsIsolate jsIsolate1 = jsSandbox.createIsolate();
-            jsIsolate1.evaluateJavascript(code1, callback1);
-            AwJsIsolate jsIsolate2 = jsSandbox.createIsolate();
-            jsIsolate2.evaluateJavascript(code2, callback2);
-        });
+        AwJsSandbox.newConnectedInstanceForTesting(
+                ContextUtils.getApplicationContext(), jsSandbox -> {
+                    AwJsIsolate jsIsolate1 = jsSandbox.createIsolate();
+                    jsIsolate1.evaluateJavascript(code1, callback1);
+                    AwJsIsolate jsIsolate2 = jsSandbox.createIsolate();
+                    jsIsolate2.evaluateJavascript(code2, callback2);
+                });
         callback1.helper.waitForCallback(
                 "Timed out waiting for reportResult() to be called for first case", 0);
         callback2.helper.waitForCallback(
@@ -131,11 +136,12 @@ public class JsSandboxServiceTest {
         TestExecutionCallback callback1 = new TestExecutionCallback();
         TestExecutionCallback callback2 = new TestExecutionCallback();
 
-        AwJsSandbox.newConnectedInstanceForTesting((AwJsSandbox jsSandbox) -> {
-            AwJsIsolate jsIsolate1 = jsSandbox.createIsolate();
-            jsIsolate1.evaluateJavascript(code1, callback1);
-            jsIsolate1.evaluateJavascript(code2, callback2);
-        });
+        AwJsSandbox.newConnectedInstanceForTesting(
+                ContextUtils.getApplicationContext(), jsSandbox -> {
+                    AwJsIsolate jsIsolate1 = jsSandbox.createIsolate();
+                    jsIsolate1.evaluateJavascript(code1, callback1);
+                    jsIsolate1.evaluateJavascript(code2, callback2);
+                });
         callback1.helper.waitForCallback(
                 "Timed out waiting for reportResult() to be called for first case", 0);
         callback2.helper.waitForCallback(
@@ -152,10 +158,11 @@ public class JsSandboxServiceTest {
         final String contains = "SyntaxError";
         TestExecutionCallback callback = new TestExecutionCallback();
 
-        AwJsSandbox.newConnectedInstanceForTesting(jsSandbox -> {
-            AwJsIsolate jsIsolate = jsSandbox.createIsolate();
-            jsIsolate.evaluateJavascript(code, callback);
-        });
+        AwJsSandbox.newConnectedInstanceForTesting(
+                ContextUtils.getApplicationContext(), jsSandbox -> {
+                    AwJsIsolate jsIsolate = jsSandbox.createIsolate();
+                    jsIsolate.evaluateJavascript(code, callback);
+                });
 
         callback.helper.waitForCallback("Timed out waiting for reportError() to be called", 0);
         Assert.assertTrue(callback.error.contains(contains));

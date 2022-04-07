@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.js_sandbox.client.AwJsIsolate;
 import org.chromium.android_webview.js_sandbox.client.AwJsSandbox;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 
@@ -43,7 +44,7 @@ public class WebViewJsSandboxTest {
         final String expected = "PASS";
         TestExecutionCallback callback = new TestExecutionCallback();
 
-        AwJsSandbox.newConnectedInstance((AwJsSandbox jsSandbox) -> {
+        AwJsSandbox.newConnectedInstance(ContextUtils.getApplicationContext(), jsSandbox -> {
             AwJsIsolate jsIsolate = jsSandbox.createIsolate();
             jsIsolate.evaluateJavascript(code, callback);
         });
@@ -59,7 +60,7 @@ public class WebViewJsSandboxTest {
         final String expected = "PASS";
         TestExecutionCallback callback = new TestExecutionCallback();
 
-        AwJsSandbox.newConnectedInstance((AwJsSandbox jsSandbox) -> {
+        AwJsSandbox.newConnectedInstance(ContextUtils.getApplicationContext(), jsSandbox -> {
             AwJsIsolate jsIsolate1 = jsSandbox.createIsolate();
             AwJsIsolate jsIsolate2 = jsSandbox.createIsolate();
             jsIsolate1.close();
@@ -81,7 +82,7 @@ public class WebViewJsSandboxTest {
         TestExecutionCallback callback1 = new TestExecutionCallback();
         TestExecutionCallback callback2 = new TestExecutionCallback();
 
-        AwJsSandbox.newConnectedInstance((AwJsSandbox jsSandbox) -> {
+        AwJsSandbox.newConnectedInstance(ContextUtils.getApplicationContext(), jsSandbox -> {
             AwJsIsolate jsIsolate1 = jsSandbox.createIsolate();
             jsIsolate1.evaluateJavascript(code1, callback1);
             AwJsIsolate jsIsolate2 = jsSandbox.createIsolate();
@@ -106,7 +107,7 @@ public class WebViewJsSandboxTest {
         TestExecutionCallback callback1 = new TestExecutionCallback();
         TestExecutionCallback callback2 = new TestExecutionCallback();
 
-        AwJsSandbox.newConnectedInstance((AwJsSandbox jsSandbox) -> {
+        AwJsSandbox.newConnectedInstance(ContextUtils.getApplicationContext(), jsSandbox -> {
             AwJsIsolate jsIsolate1 = jsSandbox.createIsolate();
             jsIsolate1.evaluateJavascript(code1, callback1);
             AwJsIsolate jsIsolate2 = jsSandbox.createIsolate();
@@ -131,7 +132,7 @@ public class WebViewJsSandboxTest {
         TestExecutionCallback callback1 = new TestExecutionCallback();
         TestExecutionCallback callback2 = new TestExecutionCallback();
 
-        AwJsSandbox.newConnectedInstance((AwJsSandbox jsSandbox) -> {
+        AwJsSandbox.newConnectedInstance(ContextUtils.getApplicationContext(), jsSandbox -> {
             AwJsIsolate jsIsolate1 = jsSandbox.createIsolate();
             jsIsolate1.evaluateJavascript(code1, callback1);
             jsIsolate1.evaluateJavascript(code2, callback2);
@@ -152,7 +153,7 @@ public class WebViewJsSandboxTest {
         final String contains = "SyntaxError";
         TestExecutionCallback callback = new TestExecutionCallback();
 
-        AwJsSandbox.newConnectedInstance(jsSandbox -> {
+        AwJsSandbox.newConnectedInstance(ContextUtils.getApplicationContext(), jsSandbox -> {
             AwJsIsolate jsIsolate = jsSandbox.createIsolate();
             jsIsolate.evaluateJavascript(code, callback);
         });

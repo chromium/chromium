@@ -1803,7 +1803,11 @@ if (enable_java_templates) {
     _rebased_build_config = rebase_path(_build_config, root_build_dir)
 
     action_with_pydeps(target_name) {
-      forward_variables_from(invoker, [ "data" ])
+      forward_variables_from(invoker,
+                             [
+                               "data",
+                               "assert_no_deps",
+                             ])
       depfile = "$target_gen_dir/$target_name.d"
       deps = _deps
       script = "//build/android/gyp/dist_aar.py"
