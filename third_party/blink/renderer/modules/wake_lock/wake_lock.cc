@@ -6,7 +6,6 @@
 
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -171,8 +170,9 @@ void WakeLock::DoRequest(V8WakeLockType::Enum type,
   GetPermissionService()->RequestPermission(
       CreatePermissionDescriptor(permission_name),
       LocalFrame::HasTransientUserActivation(local_frame),
-      WTF::Bind(&WakeLock::DidReceivePermissionResponse, WrapPersistent(this),
-                type, WrapPersistent(resolver)));
+      resolver->WrapCallbackInScriptScope(
+          WTF::Bind(&WakeLock::DidReceivePermissionResponse,
+                    WrapPersistent(this), type)));
 }
 
 void WakeLock::DidReceivePermissionResponse(V8WakeLockType::Enum type,
@@ -181,17 +181,6 @@ void WakeLock::DidReceivePermissionResponse(V8WakeLockType::Enum type,
   // https://w3c.github.io/screen-wake-lock/#the-request-method
   DCHECK(status == PermissionStatus::GRANTED ||
          status == PermissionStatus::DENIED);
-  DCHECK(resolver);
-  // Support creating DOMException with JS stack.
-  ScriptState* resolver_script_state = resolver->GetScriptState();
-  if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
-                                     resolver_script_state)) {
-    return;
-  }
-  // switch to the resolver's context to let DOMException pick up the resolver's
-  // JS stack
-  ScriptState::Scope script_state_scope(resolver_script_state);
-
   // 8.2. If state is "denied", then:
   // 8.2.1. Queue a global task on the screen wake lock task source given
   //        document's relevant global object to reject promise with a
@@ -199,7 +188,8 @@ void WakeLock::DidReceivePermissionResponse(V8WakeLockType::Enum type,
   // 8.2.2. Abort these steps.
   if (status != PermissionStatus::GRANTED) {
     resolver->Reject(V8ThrowDOMException::CreateOrDie(
-        resolver_script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
+        resolver->GetScriptState()->GetIsolate(),
+        DOMExceptionCode::kNotAllowedError,
         "Wake Lock permission request denied"));
     return;
   }
@@ -212,7 +202,8 @@ void WakeLock::DidReceivePermissionResponse(V8WakeLockType::Enum type,
     // 8.3.1.1. Reject promise with a "NotAllowedError" DOMException.
     // 8.3.1.2. Abort these steps.
     resolver->Reject(V8ThrowDOMException::CreateOrDie(
-        resolver_script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
+        resolver->GetScriptState()->GetIsolate(),
+        DOMExceptionCode::kNotAllowedError,
         "The requesting page is not visible"));
     return;
   }
