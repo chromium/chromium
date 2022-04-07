@@ -48,7 +48,7 @@ crbug.com/1300509 http/tests/devtools/sources/sourcemap-hot-reload.js [ Skip ]
 crbug.com/1300509 http/tests/devtools/sources/debugger-ui/monitor-console-command.js [ Skip ]
 # This is also mentioned as flaky here: crbug.com/1272380.
 crbug.com/1300509 http/tests/devtools/bindings/bindings-multiple-frames.js [ Skip ]
-
+crbug.com/1300509 http/tests/devtools/text-source-map.js [ Skip ]
 
 # Need updates to the testing infrastructure and v8 breakpoint setting after landing crbug.com/1229541.
 # The following test is also mentioned as flaky here: crbug.com/1263709.
