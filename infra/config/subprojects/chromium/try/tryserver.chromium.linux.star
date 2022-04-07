@@ -424,10 +424,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux_chromium_compile_dbg_32_ng",
-)
-
-try_.builder(
     name = "linux_chromium_compile_dbg_ng",
     branch_selector = branches.STANDARD_MILESTONE,
     mirrors = ["ci/Linux Builder (dbg)"],

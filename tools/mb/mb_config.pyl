@@ -1097,7 +1097,6 @@
       'linux_chromium_chromeos_msan_rel_ng': 'chromeos_msan_release_bot',
       'linux_chromium_clobber_deterministic': 'release_trybot',
       'linux_chromium_clobber_rel_ng': 'release_trybot',
-      'linux_chromium_compile_dbg_32_ng': 'debug_bot_x86',
       'linux_chromium_compile_dbg_ng': 'debug_bot',
       'linux_chromium_compile_rel_ng': 'release_trybot',
       'linux_chromium_dbg_ng': 'gpu_tests_debug_bot',
@@ -2332,10 +2331,6 @@
 
     'debug_bot_rust_linux_x64': [
       'debug_bot', 'enable_rust', 'x64',
-    ],
-
-    'debug_bot_x86': [
-      'debug_bot', 'x86',
     ],
 
     'debug_bot_x86_reclient': [
