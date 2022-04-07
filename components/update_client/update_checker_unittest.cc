@@ -262,7 +262,6 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
   EXPECT_EQ("cr", request->FindKey("dedup")->GetString());
   EXPECT_EQ("params", request->FindKey("extra")->GetString());
   EXPECT_LT(0, request->FindPath({"hw", "physmemory"})->GetInt());
-  EXPECT_EQ("fake_lang", request->FindKey("lang")->GetString());
   EXPECT_TRUE(request->FindKey("nacl_arch"));
   EXPECT_EQ("fake_channel_string",
             request->FindKey("prodchannel")->GetString());
@@ -288,6 +287,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
   EXPECT_EQ(kUpdateItemId, app.FindKey("appid")->GetString());
   EXPECT_EQ("0.9", app.FindKey("version")->GetString());
   EXPECT_EQ("TEST", app.FindKey("brand")->GetString());
+  EXPECT_EQ("fake_lang", app.FindKey("lang")->GetString());
 
   const auto& data = app.FindKey("data")->GetIfList()->front();
   EXPECT_EQ("install", data.FindKey("name")->GetString());

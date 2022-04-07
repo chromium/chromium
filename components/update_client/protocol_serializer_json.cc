@@ -35,7 +35,6 @@ std::string ProtocolSerializerJSON::Serialize(
   request_node->SetKey("@updater", Value(request.updatername));
   request_node->SetKey("prodversion", Value(request.updaterversion));
   request_node->SetKey("updaterversion", Value(request.prodversion));
-  request_node->SetKey("lang", Value(request.lang));
   request_node->SetKey("@os", Value(request.operating_system));
   request_node->SetKey("arch", Value(request.arch));
   request_node->SetKey("nacl_arch", Value(request.nacl_arch));
@@ -101,6 +100,8 @@ std::string ProtocolSerializerJSON::Serialize(
       app_node.SetKey("ap", Value(app.ap));
     if (!app.brand_code.empty())
       app_node.SetKey("brand", Value(app.brand_code));
+    if (!app.lang.empty())
+      app_node.SetKey("lang", Value(app.lang));
     if (!app.install_source.empty())
       app_node.SetKey("installsource", Value(app.install_source));
     if (!app.install_location.empty())

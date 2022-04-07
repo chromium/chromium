@@ -174,7 +174,6 @@ struct Request {
   std::string updatername;
   std::string updaterversion;
   std::string prodversion;
-  std::string lang;
   std::string updaterchannel;
   std::string prodchannel;
   std::string operating_system;

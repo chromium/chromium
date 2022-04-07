@@ -44,8 +44,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   protocol_request::Request request = MakeProtocolRequest(
       false, "{" + GetUtf8String() + "}" /* session_id */,
       GetUtf8String() /* prod_id */, GetUtf8String() /* browser_version */,
-      GetUtf8String() /* lang */, GetUtf8String() /* channel */,
-      GetUtf8String() /* os_long_name */,
+      GetUtf8String() /* channel */, GetUtf8String() /* os_long_name */,
       GetUtf8String() /* download_preference */,
       absl::nullopt /* domain_joined */, additional_attributes,
       {} /*updater_state_attributes*/, std::move(apps));

@@ -163,7 +163,6 @@ TEST_P(PingManagerTest, SendPing) {
     EXPECT_TRUE(request->FindKey("arch"));
     EXPECT_EQ("cr", request->FindKey("dedup")->GetString());
     EXPECT_LT(0, request->FindPath({"hw", "physmemory"})->GetInt());
-    EXPECT_EQ("fake_lang", request->FindKey("lang")->GetString());
     EXPECT_TRUE(request->FindKey("nacl_arch"));
     EXPECT_EQ("fake_channel_string",
               request->FindKey("prodchannel")->GetString());
@@ -184,6 +183,7 @@ TEST_P(PingManagerTest, SendPing) {
     EXPECT_EQ("abc", app.FindKey("appid")->GetString());
     EXPECT_EQ("ap1", app.FindKey("ap")->GetString());
     EXPECT_EQ("BRND", app.FindKey("brand")->GetString());
+    EXPECT_EQ("fake_lang", app.FindKey("lang")->GetString());
     EXPECT_EQ("1.0", app.FindKey("version")->GetString());
     EXPECT_EQ("c1", app.FindKey("cohort")->GetString());
     EXPECT_EQ("cn1", app.FindKey("cohortname")->GetString());

@@ -186,7 +186,7 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
 
     apps.push_back(MakeProtocolApp(
         app_id, crx_component->version, crx_component->ap, crx_component->brand,
-        install_source, crx_component->install_location,
+        config_->GetLang(), install_source, crx_component->install_location,
         crx_component->fingerprint, crx_component->installer_attributes,
         metadata_->GetCohort(app_id), metadata_->GetCohortName(app_id),
         metadata_->GetCohortHint(app_id), crx_component->channel,
@@ -209,10 +209,10 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
 
   const auto request = MakeProtocolRequest(
       !config_->IsPerUserInstall(), session_id, config_->GetProdId(),
-      config_->GetBrowserVersion().GetString(), config_->GetLang(),
-      config_->GetChannel(), config_->GetOSLongName(),
-      config_->GetDownloadPreference(), config_->IsMachineExternallyManaged(),
-      additional_attributes, updater_state_attributes, std::move(apps));
+      config_->GetBrowserVersion().GetString(), config_->GetChannel(),
+      config_->GetOSLongName(), config_->GetDownloadPreference(),
+      config_->IsMachineExternallyManaged(), additional_attributes,
+      updater_state_attributes, std::move(apps));
 
   request_sender_ = std::make_unique<RequestSender>(config_);
   request_sender_->Send(

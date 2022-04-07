@@ -111,7 +111,7 @@ std::string Configurator::GetChannel() const {
 }
 
 std::string Configurator::GetLang() const {
-  return "en-US";
+  return "";
 }
 
 std::string Configurator::GetOSLongName() const {

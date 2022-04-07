@@ -101,7 +101,6 @@ protocol_request::Request MakeProtocolRequest(
     const std::string& session_id,
     const std::string& prod_id,
     const std::string& browser_version,
-    const std::string& lang,
     const std::string& channel,
     const std::string& os_long_name,
     const std::string& download_preference,
@@ -123,7 +122,6 @@ protocol_request::Request MakeProtocolRequest(
   request.updatername = prod_id;
   request.updaterversion = browser_version;
   request.prodversion = browser_version;
-  request.lang = lang;
   request.updaterchannel = channel;
   request.prodchannel = channel;
   request.operating_system = UpdateQueryParams::GetOS();
@@ -202,6 +200,7 @@ protocol_request::App MakeProtocolApp(
     const base::Version& version,
     const std::string& ap,
     const std::string& brand_code,
+    const std::string& lang,
     const std::string& install_source,
     const std::string& install_location,
     const std::string& fingerprint,
@@ -221,6 +220,7 @@ protocol_request::App MakeProtocolApp(
   app.ap = ap;
   app.events = std::move(events);
   app.brand_code = FilterBrandCode(brand_code);
+  app.lang = lang;
   app.install_source = install_source;
   app.install_location = install_location;
   app.fingerprint = fingerprint;
