@@ -8,7 +8,9 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/mock_holding_space_client.h"
+#include "ash/system/diagnostics/diagnostics_log_controller.h"
 #include "ash/system/diagnostics/log_test_helpers.h"
 #include "ash/system/diagnostics/networking_log.h"
 #include "ash/system/diagnostics/routine_log.h"
@@ -21,6 +23,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/values.h"
@@ -279,6 +282,30 @@ TEST_F(SessionLogHandlerTest, SaveSessionLog) {
   EXPECT_EQ("--- Test Routines ---", log_lines[15]);
   EXPECT_EQ("No routines of this type were run in the session.", log_lines[16]);
   EXPECT_EQ("--- Network Events ---", log_lines[17]);
+}
+
+// Validates behavior when log controller is used to generate session log.
+TEST_F(SessionLogHandlerTest, SaveSessionLogFlagEnabled) {
+  const std::string expected_log_header = "Diagnostics Log";
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      ash::features::kEnableLogControllerForDiagnosticsApp);
+  base::RunLoop run_loop;
+  std::unique_ptr<ash::diagnostics::DiagnosticsLogController> log_controller =
+      std::make_unique<ash::diagnostics::DiagnosticsLogController>();
+
+  // Simulate select file
+  base::FilePath log_path = temp_dir_.GetPath().AppendASCII("test_path");
+  ui::SelectFileDialog::SetFactory(new TestSelectFileDialogFactory(log_path));
+  base::ListValue args;
+  args.Append(kHandlerFunctionName);
+  session_log_handler_->SetLogCreatedClosureForTest(run_loop.QuitClosure());
+  web_ui_.HandleReceivedMessage("saveSessionLog", &args);
+  RunTasks();
+
+  const std::vector<std::string> log_lines = GetCombinedLogContents(log_path);
+  ASSERT_EQ(1u, log_lines.size());
+  EXPECT_EQ(expected_log_header, log_lines[0]);
 }
 
 // Validates that invoking the saveSessionLog Web UI event opens the
