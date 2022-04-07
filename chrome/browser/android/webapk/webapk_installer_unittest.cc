@@ -363,7 +363,7 @@ TEST_F(WebApkInstallerTest, FailOnLowSpace) {
   WebApkInstallerRunner runner;
   runner.RunInstallWebApk(std::move(installer), web_contents(),
                           DefaultShortcutInfo());
-  EXPECT_EQ(webapps::WebApkInstallResult::FAILURE, runner.result());
+  EXPECT_EQ(webapps::WebApkInstallResult::NOT_ENOUGH_SPACE, runner.result());
 }
 
 // Test that installation succeeds when the primary icon is guarded by
@@ -390,7 +390,7 @@ TEST_F(WebApkInstallerTest, BestPrimaryIconUrlDownloadTimesOut) {
   WebApkInstallerRunner runner;
   runner.RunInstallWebApk(CreateDefaultWebApkInstaller(), web_contents(),
                           shortcut_info);
-  EXPECT_EQ(webapps::WebApkInstallResult::FAILURE, runner.result());
+  EXPECT_EQ(webapps::WebApkInstallResult::ICON_HASHER_ERROR, runner.result());
 }
 
 // Test that installation fails if fetching the bitmap at the best splash icon
@@ -403,7 +403,19 @@ TEST_F(WebApkInstallerTest, BestSplashIconUrlDownloadTimesOut) {
   WebApkInstallerRunner runner;
   runner.RunInstallWebApk(CreateDefaultWebApkInstaller(), web_contents(),
                           shortcut_info);
-  EXPECT_EQ(webapps::WebApkInstallResult::FAILURE, runner.result());
+  EXPECT_EQ(webapps::WebApkInstallResult::ICON_HASHER_ERROR, runner.result());
+}
+
+// Test that installation fails if the WebAPK server url is invalid.
+TEST_F(WebApkInstallerTest, CreateWebApkInvalidServerUrl) {
+  SetWebApkServerUrl(GURL());
+  std::unique_ptr<WebApkInstaller> installer(
+      new TestWebApkInstaller(profile(), SpaceStatus::ENOUGH_SPACE));
+
+  WebApkInstallerRunner runner;
+  runner.RunInstallWebApk(std::move(installer), web_contents(),
+                          DefaultShortcutInfo());
+  EXPECT_EQ(webapps::WebApkInstallResult::SERVER_URL_INVALID, runner.result());
 }
 
 // Test that installation fails if the WebAPK creation request times out.
@@ -416,7 +428,7 @@ TEST_F(WebApkInstallerTest, CreateWebApkRequestTimesOut) {
   WebApkInstallerRunner runner;
   runner.RunInstallWebApk(std::move(installer), web_contents(),
                           DefaultShortcutInfo());
-  EXPECT_EQ(webapps::WebApkInstallResult::FAILURE, runner.result());
+  EXPECT_EQ(webapps::WebApkInstallResult::REQUEST_TIMEOUT, runner.result());
 }
 
 // InstallForService tests
@@ -448,7 +460,7 @@ TEST_F(WebApkInstallerTest, ServiceFailOnLowSpace) {
   runner.RunInstallForService(std::move(installer), std::move(serialized_proto),
                               shortcut_info.short_name, shortcut_info.source);
 
-  EXPECT_EQ(webapps::WebApkInstallResult::FAILURE, runner.result());
+  EXPECT_EQ(webapps::WebApkInstallResult::NOT_ENOUGH_SPACE, runner.result());
 }
 
 // Test installation for service failing if serialized apk invalid.
@@ -465,7 +477,7 @@ TEST_F(WebApkInstallerTest, ServiceFailOnInvalidSerializedWebApk) {
       std::make_unique<std::string>(invalid_serialized_webapk),
       shortcut_info.short_name, shortcut_info.source);
 
-  EXPECT_EQ(webapps::WebApkInstallResult::FAILURE, runner.result());
+  EXPECT_EQ(webapps::WebApkInstallResult::REQUEST_INVALID, runner.result());
 }
 
 namespace {
@@ -490,7 +502,7 @@ TEST_F(WebApkInstallerTest, UnparsableCreateWebApkResponse) {
   WebApkInstallerRunner runner;
   runner.RunInstallWebApk(CreateDefaultWebApkInstaller(), web_contents(),
                           DefaultShortcutInfo());
-  EXPECT_EQ(webapps::WebApkInstallResult::FAILURE, runner.result());
+  EXPECT_EQ(webapps::WebApkInstallResult::SERVER_ERROR, runner.result());
 }
 
 // Test update succeeding.
@@ -533,7 +545,7 @@ TEST_F(WebApkInstallerTest, UpdateFailsUpdateRequestWrongFormat) {
 
   WebApkInstallerRunner runner;
   runner.RunUpdateWebApk(CreateDefaultWebApkInstaller(), update_request_path);
-  EXPECT_EQ(webapps::WebApkInstallResult::FAILURE, runner.result());
+  EXPECT_EQ(webapps::WebApkInstallResult::REQUEST_INVALID, runner.result());
 }
 
 // Test that an update fails if the "update request path" points to a
@@ -548,7 +560,7 @@ TEST_F(WebApkInstallerTest, UpdateFailsUpdateRequestFileDoesNotExist) {
 
   WebApkInstallerRunner runner;
   runner.RunUpdateWebApk(CreateDefaultWebApkInstaller(), update_request_path);
-  EXPECT_EQ(webapps::WebApkInstallResult::FAILURE, runner.result());
+  EXPECT_EQ(webapps::WebApkInstallResult::REQUEST_INVALID, runner.result());
 }
 
 // Test that StoreUpdateRequestToFile() creates directories if needed when

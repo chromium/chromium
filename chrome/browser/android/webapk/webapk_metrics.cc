@@ -11,6 +11,7 @@ namespace webapk {
 
 const char kInstallDurationHistogram[] = "WebApk.Install.InstallDuration";
 const char kInstallEventHistogram[] = "WebApk.Install.InstallEvent";
+const char kInstallResultHistogram[] = "WebApk.Install.InstallResult";
 
 void TrackRequestTokenDuration(base::TimeDelta delta,
                                const std::string& webapk_package) {
@@ -25,4 +26,8 @@ void TrackInstallEvent(InstallEvent event) {
   UMA_HISTOGRAM_ENUMERATION(kInstallEventHistogram, event, INSTALL_EVENT_MAX);
 }
 
+void TrackInstallResult(webapps::WebApkInstallResult result) {
+  UMA_HISTOGRAM_ENUMERATION(kInstallResultHistogram, result,
+                            webapps::WebApkInstallResult::RESULT_MAX);
+}
 }  // namespace webapk

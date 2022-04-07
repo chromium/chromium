@@ -46,14 +46,33 @@ enum class WebApkDistributor {
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.webapps
 //
+// This enum is used to back UMA/UKM histograms, and should therefore be treated
+// as append-only.
+//
 // Indicates the result of an WebAPK install.
 enum class WebApkInstallResult {
   SUCCESS = 0,
+  // Install WebAPK with the installer service (i.e. Google Play) failed.
   FAILURE = 1,
   // An install was initiated but it timed out. We did not get a response from
   // the install service so it is possible that the install will complete some
   // time in the future.
-  PROBABLE_FAILURE = 2
+  PROBABLE_FAILURE = 2,
+
+  // No install service to complete the install.
+  NO_INSTALLER = 3,
+
+  SERVER_URL_INVALID = 4,
+  // Server returns an error or unexpected result.
+  SERVER_ERROR = 5,
+  // Request to server timed out.
+  REQUEST_TIMEOUT = 6,
+  // The request proto is invalid.
+  REQUEST_INVALID = 7,
+
+  NOT_ENOUGH_SPACE = 8,
+  ICON_HASHER_ERROR = 9,
+  RESULT_MAX = 10,
 };
 
 }  // namespace webapps

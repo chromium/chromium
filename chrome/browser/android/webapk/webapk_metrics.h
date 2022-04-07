@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "components/webapps/browser/android/webapk/webapk_types.h"
 
 namespace webapk {
 
@@ -29,6 +30,7 @@ void TrackRequestTokenDuration(base::TimeDelta delta,
                                const std::string& webapk_package);
 void TrackInstallDuration(base::TimeDelta delta);
 void TrackInstallEvent(InstallEvent event);
+void TrackInstallResult(webapps::WebApkInstallResult result);
 
 }  // namespace webapk
 

@@ -94655,6 +94655,19 @@ others/histograms.xml -->
   <int value="1" label="WebApk infobar shown from the add to homescreen menu"/>
 </enum>
 
+<enum name="WebApkInstallResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Play install failed"/>
+  <int value="2" label="Install timed out"/>
+  <int value="3" label="No installer"/>
+  <int value="4" label="No server"/>
+  <int value="5" label="Server error"/>
+  <int value="6" label="Request timed out"/>
+  <int value="7" label="Request invalid"/>
+  <int value="8" label="No enough space"/>
+  <int value="9" label="Download icon and hash error"/>
+</enum>
+
 <enum name="WebApkInstallResultChromeOS">
   <int value="0" label="Success">Installed successfully.</int>
   <int value="1" label="App invalid">

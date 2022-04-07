@@ -95,7 +95,7 @@ void WebApkInstallService::OnFinishedInstall(
   // If the install didn't definitely fail, we don't add a shortcut. This could
   // happen if Play was busy with another install and this one is still queued
   // (and hence might succeed in the future).
-  if (result == webapps::WebApkInstallResult::FAILURE) {
+  if (result != webapps::WebApkInstallResult::PROBABLE_FAILURE) {
     if (!web_contents)
       return;
 
