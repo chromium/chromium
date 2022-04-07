@@ -8,43 +8,41 @@
 
 #include <memory>
 
+#include "base/barrier_closure.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "device/gamepad/gamepad_consumer.h"
 #include "device/gamepad/gamepad_test_helpers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device {
 
 namespace {
+using ::base::test::RunClosure;
+
+// The number of simulated gamepads that will be connected and disconnected in
+// tests.
 constexpr int kNumberOfGamepads = Gamepads::kItemsLengthCap;
 }  // namespace
 
-class ConnectionListener : public GamepadConsumer {
+class MockGamepadConsumer : public GamepadConsumer {
  public:
-  ConnectionListener() = default;
-
-  // GamepadConsumer implementation.
-  void OnGamepadConnected(uint32_t index, const Gamepad& gamepad) override {
-    connected_counter_++;
-  }
-  void OnGamepadDisconnected(uint32_t index, const Gamepad& gamepad) override {
-    disconnected_counter_++;
-  }
-  void OnGamepadChanged(const mojom::GamepadChanges& change) override {}
-
-  void ClearCounters() {
-    connected_counter_ = 0;
-    disconnected_counter_ = 0;
+  MockGamepadConsumer() {
+    // Expect no connections or disconnections by default.
+    EXPECT_CALL(*this, OnGamepadConnected).Times(0);
+    EXPECT_CALL(*this, OnGamepadDisconnected).Times(0);
   }
 
-  int connected_counter() const { return connected_counter_; }
-  int disconnected_counter() const { return disconnected_counter_; }
+  MockGamepadConsumer(MockGamepadConsumer&) = delete;
+  MockGamepadConsumer& operator=(MockGamepadConsumer&) = delete;
+  ~MockGamepadConsumer() override = default;
 
- private:
-  int connected_counter_ = 0;
-  int disconnected_counter_ = 0;
+  MOCK_METHOD2(OnGamepadConnected, void(uint32_t, const Gamepad&));
+  MOCK_METHOD2(OnGamepadDisconnected, void(uint32_t, const Gamepad&));
+  MOCK_METHOD1(OnGamepadChanged, void(const mojom::GamepadChanges&));
 };
 
 class GamepadServiceTest : public testing::Test {
@@ -77,24 +75,21 @@ class GamepadServiceTest : public testing::Test {
     GamepadService::SetInstance(nullptr);
   }
 
-  ConnectionListener* CreateConsumer() {
-    consumers_.push_back(std::make_unique<ConnectionListener>());
+  MockGamepadConsumer* CreateConsumer() {
+    consumers_.push_back(std::make_unique<MockGamepadConsumer>());
     return consumers_.back().get();
   }
 
-  void ClearCounters() {
-    for (auto& consumer : consumers_)
-      consumer->ClearCounters();
-  }
-
-  void SetPadsConnected(bool connected) {
+  // Configure the first `connected_count` gamepads as connected and the rest as
+  // disconnected.
+  void SetPadsConnected(int connected_count) {
     for (int i = 0; i < kNumberOfGamepads; ++i)
-      test_data_.items[i].connected = connected;
+      test_data_.items[i].connected = (i < connected_count);
     fetcher_->SetTestData(test_data_);
   }
 
   void SimulateUserGesture(bool has_gesture) {
-    test_data_.items[0].buttons[0].value = has_gesture ? 1.f : 0.f;
+    test_data_.items[0].buttons[0].value = has_gesture ? 1.0f : 0.0f;
     test_data_.items[0].buttons[0].pressed = has_gesture ? true : false;
     fetcher_->SetTestData(test_data_);
   }
@@ -118,365 +113,393 @@ class GamepadServiceTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   raw_ptr<MockGamepadDataFetcher> fetcher_;
   raw_ptr<GamepadService> service_;
-  std::vector<std::unique_ptr<ConnectionListener>> consumers_;
+  std::vector<std::unique_ptr<MockGamepadConsumer>> consumers_;
   Gamepads test_data_;
 };
 
 TEST_F(GamepadServiceTest, ConnectionsTest) {
+  // Create an active consumer.
   auto* consumer = CreateConsumer();
   EXPECT_TRUE(service()->ConsumerBecameActive(consumer));
-
   WaitForData();
-  EXPECT_EQ(0, consumer->connected_counter());
-  EXPECT_EQ(0, consumer->disconnected_counter());
 
-  ClearCounters();
-  SimulateUserGesture(true);
-  SetPadsConnected(true);
-  WaitForData();
-  EXPECT_EQ(kNumberOfGamepads, consumer->connected_counter());
-  EXPECT_EQ(0, consumer->disconnected_counter());
+  // Connect gamepads and simulate a user gesture. The consumer is notified for
+  // each connected gamepad.
+  {
+    base::RunLoop loop;
+    auto barrier = base::BarrierClosure(kNumberOfGamepads, loop.QuitClosure());
+    EXPECT_CALL(*consumer, OnGamepadConnected)
+        .Times(kNumberOfGamepads)
+        .WillRepeatedly(RunClosure(barrier));
+    SimulateUserGesture(/*has_gesture=*/true);
+    SetPadsConnected(/*connected_count=*/kNumberOfGamepads);
+    loop.Run();
+  }
 
-  ClearCounters();
-  SetPadsConnected(false);
-  WaitForData();
-  EXPECT_EQ(0, consumer->connected_counter());
-  EXPECT_EQ(kNumberOfGamepads, consumer->disconnected_counter());
-
-  ClearCounters();
-  WaitForData();
-  EXPECT_EQ(0, consumer->connected_counter());
-  EXPECT_EQ(0, consumer->disconnected_counter());
+  // Disconnect all gamepads. The consumer is notified for each disconnected
+  // gamepad.
+  {
+    base::RunLoop loop;
+    auto barrier = base::BarrierClosure(kNumberOfGamepads, loop.QuitClosure());
+    EXPECT_CALL(*consumer, OnGamepadDisconnected)
+        .Times(kNumberOfGamepads)
+        .WillRepeatedly(RunClosure(barrier));
+    SetPadsConnected(/*connected_count=*/0);
+    loop.Run();
+  }
 }
 
 TEST_F(GamepadServiceTest, ConnectionThenGestureTest) {
+  // Create an active consumer.
   auto* consumer = CreateConsumer();
   EXPECT_TRUE(service()->ConsumerBecameActive(consumer));
-
   WaitForData();
-  EXPECT_EQ(0, consumer->connected_counter());
-  EXPECT_EQ(0, consumer->disconnected_counter());
 
-  // No connection events are sent until a user gesture is seen.
-  ClearCounters();
-  SetPadsConnected(true);
+  // Connect gamepads. The consumer is not notified because there is no gesture.
+  SetPadsConnected(/*connected_count=*/kNumberOfGamepads);
   WaitForData();
-  EXPECT_EQ(0, consumer->connected_counter());
-  EXPECT_EQ(0, consumer->disconnected_counter());
 
-  ClearCounters();
-  SimulateUserGesture(true);
-  WaitForData();
-  EXPECT_EQ(kNumberOfGamepads, consumer->connected_counter());
-  EXPECT_EQ(0, consumer->disconnected_counter());
-
-  ClearCounters();
-  WaitForData();
-  EXPECT_EQ(0, consumer->connected_counter());
-  EXPECT_EQ(0, consumer->disconnected_counter());
+  // Simulate a user gesture. The consumer is notified for each connected
+  // gamepad.
+  {
+    base::RunLoop loop;
+    auto barrier = base::BarrierClosure(kNumberOfGamepads, loop.QuitClosure());
+    EXPECT_CALL(*consumer, OnGamepadConnected)
+        .Times(kNumberOfGamepads)
+        .WillRepeatedly(RunClosure(barrier));
+    SimulateUserGesture(/*has_gesture=*/true);
+    loop.Run();
+  }
 }
 
 TEST_F(GamepadServiceTest, ReloadTest) {
+  // Create an active consumer.
   auto* consumer = CreateConsumer();
   EXPECT_TRUE(service()->ConsumerBecameActive(consumer));
-
-  // No connection events are sent until a user gesture is seen.
-  SetPadsConnected(true);
   WaitForData();
-  EXPECT_EQ(0, consumer->connected_counter());
-  EXPECT_EQ(0, consumer->disconnected_counter());
 
-  ClearCounters();
+  // Connect gamepads. The consumer is not notified because there is no gesture.
+  SetPadsConnected(/*connected_count=*/kNumberOfGamepads);
+  WaitForData();
+
+  // Simulate a page reload. The consumer is not notified because there is still
+  // no gesture.
   SimulatePageReload(consumer);
   WaitForData();
-  EXPECT_EQ(0, consumer->connected_counter());
-  EXPECT_EQ(0, consumer->disconnected_counter());
 
-  // After a user gesture, the connection listener is notified about connected
-  // gamepads.
-  ClearCounters();
-  SimulateUserGesture(true);
-  WaitForData();
-  EXPECT_EQ(kNumberOfGamepads, consumer->connected_counter());
-  EXPECT_EQ(0, consumer->disconnected_counter());
+  // Simulate a user gesture. The consumer is notified for each gamepad.
+  {
+    base::RunLoop loop;
+    auto barrier = base::BarrierClosure(kNumberOfGamepads, loop.QuitClosure());
+    EXPECT_CALL(*consumer, OnGamepadConnected)
+        .Times(kNumberOfGamepads)
+        .WillRepeatedly(RunClosure(barrier));
+    SimulateUserGesture(/*has_gesture=*/true);
+    loop.Run();
+  }
 
-  // After a reload, if the gamepads were already connected (and we have seen
-  // a user gesture) then the connection listener is notified about connected
-  // gamepads.
-  ClearCounters();
-  SimulatePageReload(consumer);
-  WaitForData();
-  EXPECT_EQ(kNumberOfGamepads, consumer->connected_counter());
-  EXPECT_EQ(0, consumer->disconnected_counter());
-
-  ClearCounters();
-  WaitForData();
-  EXPECT_EQ(0, consumer->connected_counter());
-  EXPECT_EQ(0, consumer->disconnected_counter());
+  // Simulate another page reload. The consumer is notified again for each
+  // gamepad.
+  {
+    base::RunLoop loop;
+    auto barrier = base::BarrierClosure(kNumberOfGamepads, loop.QuitClosure());
+    EXPECT_CALL(*consumer, OnGamepadConnected)
+        .Times(kNumberOfGamepads)
+        .WillRepeatedly(RunClosure(barrier));
+    SimulatePageReload(consumer);
+    loop.Run();
+  }
 }
 
 TEST_F(GamepadServiceTest, SecondConsumerGestureTest) {
+  // Create two consumers and mark the first consumer active.
   auto* consumer1 = CreateConsumer();
   auto* consumer2 = CreateConsumer();
   EXPECT_TRUE(service()->ConsumerBecameActive(consumer1));
-
   WaitForData();
-  EXPECT_EQ(0, consumer1->connected_counter());
-  EXPECT_EQ(0, consumer1->disconnected_counter());
-  EXPECT_EQ(0, consumer2->connected_counter());
-  EXPECT_EQ(0, consumer2->disconnected_counter());
 
-  // Simulate a user gesture. The gesture is received before the second
-  // consumer is active.
-  ClearCounters();
-  SetPadsConnected(true);
-  SimulateUserGesture(true);
-  WaitForData();
-  EXPECT_EQ(kNumberOfGamepads, consumer1->connected_counter());
-  EXPECT_EQ(0, consumer1->disconnected_counter());
-  EXPECT_EQ(0, consumer2->connected_counter());
-  EXPECT_EQ(0, consumer2->disconnected_counter());
+  // Connect gamepads and simulate a user gesture. The active consumer is
+  // notified, the inactive consumer is not.
+  {
+    base::RunLoop loop;
+    auto barrier = base::BarrierClosure(kNumberOfGamepads, loop.QuitClosure());
+    EXPECT_CALL(*consumer1, OnGamepadConnected)
+        .Times(kNumberOfGamepads)
+        .WillRepeatedly(RunClosure(barrier));
+    SetPadsConnected(/*connected_count=*/kNumberOfGamepads);
+    SimulateUserGesture(/*has_gesture=*/true);
+    loop.Run();
+  }
 
-  // The second consumer becomes active, but should not receive connection
-  // events until a new user gesture is received.
-  ClearCounters();
-  SimulateUserGesture(false);
+  // Restore the default gamepad state (no gesture).
+  SimulateUserGesture(/*has_gesture=*/false);
+
+  // Mark the second consumer active. The second consumer is not notified
+  // because it needs a new user gesture.
   EXPECT_TRUE(service()->ConsumerBecameActive(consumer2));
   WaitForData();
-  EXPECT_EQ(0, consumer1->connected_counter());
-  EXPECT_EQ(0, consumer1->disconnected_counter());
-  EXPECT_EQ(0, consumer2->connected_counter());
-  EXPECT_EQ(0, consumer2->disconnected_counter());
 
-  // Connection events should only be sent to the second consumer.
-  ClearCounters();
-  SimulateUserGesture(true);
-  WaitForData();
-  EXPECT_EQ(0, consumer1->connected_counter());
-  EXPECT_EQ(0, consumer1->disconnected_counter());
-  EXPECT_EQ(kNumberOfGamepads, consumer2->connected_counter());
-  EXPECT_EQ(0, consumer2->disconnected_counter());
-
-  ClearCounters();
-  WaitForData();
-  EXPECT_EQ(0, consumer1->connected_counter());
-  EXPECT_EQ(0, consumer1->disconnected_counter());
-  EXPECT_EQ(0, consumer2->connected_counter());
-  EXPECT_EQ(0, consumer2->disconnected_counter());
+  // Simulate another user gesture. Only the second consumer is notified.
+  {
+    base::RunLoop loop;
+    auto barrier = base::BarrierClosure(kNumberOfGamepads, loop.QuitClosure());
+    EXPECT_CALL(*consumer2, OnGamepadConnected)
+        .Times(kNumberOfGamepads)
+        .WillRepeatedly(RunClosure(barrier));
+    SetPadsConnected(/*connected_count=*/kNumberOfGamepads);
+    SimulateUserGesture(/*has_gesture=*/true);
+    loop.Run();
+  }
 }
 
 TEST_F(GamepadServiceTest, ConnectWhileInactiveTest) {
+  // Create two consumers and mark them both active.
   auto* consumer1 = CreateConsumer();
   auto* consumer2 = CreateConsumer();
   EXPECT_TRUE(service()->ConsumerBecameActive(consumer1));
   EXPECT_TRUE(service()->ConsumerBecameActive(consumer2));
 
-  // Ensure the initial user gesture is received by both consumers.
-  SimulateUserGesture(true);
-  SetPadsConnected(true);
-  WaitForData();
-  EXPECT_EQ(kNumberOfGamepads, consumer1->connected_counter());
-  EXPECT_EQ(0, consumer1->disconnected_counter());
-  EXPECT_EQ(kNumberOfGamepads, consumer2->connected_counter());
-  EXPECT_EQ(0, consumer2->disconnected_counter());
+  // Connect gamepads and simulate a user gesture. Each consumer is notified for
+  // each connected gamepad.
+  {
+    base::RunLoop loop;
+    auto barrier =
+        base::BarrierClosure(2 * kNumberOfGamepads, loop.QuitClosure());
+    EXPECT_CALL(*consumer1, OnGamepadConnected)
+        .Times(kNumberOfGamepads)
+        .WillRepeatedly(RunClosure(barrier));
+    EXPECT_CALL(*consumer2, OnGamepadConnected)
+        .Times(kNumberOfGamepads)
+        .WillRepeatedly(RunClosure(barrier));
+    SimulateUserGesture(/*has_gesture=*/true);
+    SetPadsConnected(/*connected_count=*/kNumberOfGamepads);
+    loop.Run();
+  }
 
-  ClearCounters();
-  SetPadsConnected(false);
-  WaitForData();
-  EXPECT_EQ(0, consumer1->connected_counter());
-  EXPECT_EQ(kNumberOfGamepads, consumer1->disconnected_counter());
-  EXPECT_EQ(0, consumer2->connected_counter());
-  EXPECT_EQ(kNumberOfGamepads, consumer2->disconnected_counter());
+  // Disconnect gamepads. Each consumer is notified for each disconnected
+  // gamepad.
+  {
+    base::RunLoop loop;
+    auto barrier =
+        base::BarrierClosure(2 * kNumberOfGamepads, loop.QuitClosure());
+    EXPECT_CALL(*consumer1, OnGamepadDisconnected)
+        .Times(kNumberOfGamepads)
+        .WillRepeatedly(RunClosure(barrier));
+    EXPECT_CALL(*consumer2, OnGamepadDisconnected)
+        .Times(kNumberOfGamepads)
+        .WillRepeatedly(RunClosure(barrier));
+    SetPadsConnected(/*connected_count=*/0);
+    loop.Run();
+  }
 
-  // Check that connecting gamepads while a consumer is inactive will notify
-  // once the consumer is active.
-  ClearCounters();
+  // Mark the second consumer inactive.
   EXPECT_TRUE(service()->ConsumerBecameInactive(consumer2));
   WaitForData();
-  EXPECT_EQ(0, consumer1->connected_counter());
-  EXPECT_EQ(0, consumer1->disconnected_counter());
-  EXPECT_EQ(0, consumer2->connected_counter());
-  EXPECT_EQ(0, consumer2->disconnected_counter());
 
-  ClearCounters();
-  SetPadsConnected(true);
-  WaitForData();
-  EXPECT_EQ(kNumberOfGamepads, consumer1->connected_counter());
-  EXPECT_EQ(0, consumer1->disconnected_counter());
-  EXPECT_EQ(0, consumer2->connected_counter());
-  EXPECT_EQ(0, consumer2->disconnected_counter());
+  // Connect gamepads. Only the active consumer is notified.
+  {
+    base::RunLoop loop;
+    auto barrier = base::BarrierClosure(kNumberOfGamepads, loop.QuitClosure());
+    EXPECT_CALL(*consumer1, OnGamepadConnected)
+        .Times(kNumberOfGamepads)
+        .WillRepeatedly(RunClosure(barrier));
+    SetPadsConnected(/*connected_count=*/kNumberOfGamepads);
+    loop.Run();
+  }
 
-  ClearCounters();
-  EXPECT_TRUE(service()->ConsumerBecameActive(consumer2));
-  WaitForData();
-  EXPECT_EQ(0, consumer1->connected_counter());
-  EXPECT_EQ(0, consumer1->disconnected_counter());
-  EXPECT_EQ(kNumberOfGamepads, consumer2->connected_counter());
-  EXPECT_EQ(0, consumer2->disconnected_counter());
-
-  ClearCounters();
-  WaitForData();
-  EXPECT_EQ(0, consumer1->connected_counter());
-  EXPECT_EQ(0, consumer1->disconnected_counter());
-  EXPECT_EQ(0, consumer2->connected_counter());
-  EXPECT_EQ(0, consumer2->disconnected_counter());
+  // Mark the second consumer active again. The second consumer is notified
+  // because it already received a gesture.
+  {
+    base::RunLoop loop;
+    auto barrier = base::BarrierClosure(kNumberOfGamepads, loop.QuitClosure());
+    EXPECT_CALL(*consumer2, OnGamepadConnected)
+        .Times(kNumberOfGamepads)
+        .WillRepeatedly(RunClosure(barrier));
+    EXPECT_TRUE(service()->ConsumerBecameActive(consumer2));
+    loop.Run();
+  }
 }
 
 TEST_F(GamepadServiceTest, ConnectAndDisconnectWhileInactiveTest) {
+  // Create two active consumers.
   auto* consumer1 = CreateConsumer();
   auto* consumer2 = CreateConsumer();
   EXPECT_TRUE(service()->ConsumerBecameActive(consumer1));
   EXPECT_TRUE(service()->ConsumerBecameActive(consumer2));
 
-  // Ensure the initial user gesture is received by both consumers.
-  SimulateUserGesture(true);
-  SetPadsConnected(true);
-  WaitForData();
-  EXPECT_EQ(kNumberOfGamepads, consumer1->connected_counter());
-  EXPECT_EQ(0, consumer1->disconnected_counter());
-  EXPECT_EQ(kNumberOfGamepads, consumer2->connected_counter());
-  EXPECT_EQ(0, consumer2->disconnected_counter());
+  // Connect a gamepad and simulate a user gesture.
+  {
+    base::RunLoop loop;
+    auto barrier = base::BarrierClosure(2, loop.QuitClosure());
+    EXPECT_CALL(*consumer1, OnGamepadConnected)
+        .Times(1)
+        .WillRepeatedly(RunClosure(barrier));
+    EXPECT_CALL(*consumer2, OnGamepadConnected)
+        .Times(1)
+        .WillRepeatedly(RunClosure(barrier));
+    SetPadsConnected(/*connected_count=*/1);
+    SimulateUserGesture(/*has_gesture=*/true);
+    loop.Run();
+  }
 
-  ClearCounters();
-  SetPadsConnected(false);
-  WaitForData();
-  EXPECT_EQ(0, consumer1->connected_counter());
-  EXPECT_EQ(kNumberOfGamepads, consumer1->disconnected_counter());
-  EXPECT_EQ(0, consumer2->connected_counter());
-  EXPECT_EQ(kNumberOfGamepads, consumer2->disconnected_counter());
+  // Disconnect the gamepad.
+  {
+    base::RunLoop loop;
+    auto barrier = base::BarrierClosure(2, loop.QuitClosure());
+    EXPECT_CALL(*consumer1, OnGamepadDisconnected)
+        .Times(1)
+        .WillRepeatedly(RunClosure(barrier));
+    EXPECT_CALL(*consumer2, OnGamepadDisconnected)
+        .Times(1)
+        .WillRepeatedly(RunClosure(barrier));
+    SetPadsConnected(/*connected_count=*/0);
+    loop.Run();
+  }
 
-  // Check that a connection and then disconnection is NOT reported once the
-  // consumer is active.
-  ClearCounters();
+  // Mark the second consumer inactive.
   EXPECT_TRUE(service()->ConsumerBecameInactive(consumer2));
   WaitForData();
-  EXPECT_EQ(0, consumer1->connected_counter());
-  EXPECT_EQ(0, consumer1->disconnected_counter());
-  EXPECT_EQ(0, consumer2->connected_counter());
-  EXPECT_EQ(0, consumer2->disconnected_counter());
 
-  ClearCounters();
-  SetPadsConnected(true);
-  WaitForData();
-  EXPECT_EQ(kNumberOfGamepads, consumer1->connected_counter());
-  EXPECT_EQ(0, consumer1->disconnected_counter());
-  EXPECT_EQ(0, consumer2->connected_counter());
-  EXPECT_EQ(0, consumer2->disconnected_counter());
+  // Connect gamepads. Only the active consumer is notified.
+  {
+    base::RunLoop loop;
+    auto barrier = base::BarrierClosure(kNumberOfGamepads, loop.QuitClosure());
+    EXPECT_CALL(*consumer1, OnGamepadConnected)
+        .Times(kNumberOfGamepads)
+        .WillRepeatedly(RunClosure(barrier));
+    SetPadsConnected(/*connected_count=*/kNumberOfGamepads);
+    loop.Run();
+  }
 
-  ClearCounters();
-  SetPadsConnected(false);
-  WaitForData();
-  EXPECT_EQ(0, consumer1->connected_counter());
-  EXPECT_EQ(kNumberOfGamepads, consumer1->disconnected_counter());
-  EXPECT_EQ(0, consumer2->connected_counter());
-  EXPECT_EQ(0, consumer2->disconnected_counter());
+  // Disconnect gamepads. Only the active consumer is notified.
+  {
+    base::RunLoop loop;
+    auto barrier = base::BarrierClosure(kNumberOfGamepads, loop.QuitClosure());
+    EXPECT_CALL(*consumer1, OnGamepadDisconnected)
+        .Times(kNumberOfGamepads)
+        .WillRepeatedly(RunClosure(barrier));
+    SetPadsConnected(/*connected_count=*/0);
+    loop.Run();
+  }
 
-  ClearCounters();
+  // Mark the second consumer active again. The second consumer is not notified
+  // because the connected gamepads were disconnected while the consumer was
+  // still inactive.
   EXPECT_TRUE(service()->ConsumerBecameActive(consumer2));
   WaitForData();
-  EXPECT_EQ(0, consumer1->connected_counter());
-  EXPECT_EQ(0, consumer1->disconnected_counter());
-  EXPECT_EQ(0, consumer2->connected_counter());
-  EXPECT_EQ(0, consumer2->disconnected_counter());
 }
 
 TEST_F(GamepadServiceTest, DisconnectWhileInactiveTest) {
+  // Create two active consumers.
   auto* consumer1 = CreateConsumer();
   auto* consumer2 = CreateConsumer();
   EXPECT_TRUE(service()->ConsumerBecameActive(consumer1));
   EXPECT_TRUE(service()->ConsumerBecameActive(consumer2));
 
-  // Ensure the initial user gesture is received by both consumers.
-  SimulateUserGesture(true);
-  SetPadsConnected(true);
-  WaitForData();
-  EXPECT_EQ(kNumberOfGamepads, consumer1->connected_counter());
-  EXPECT_EQ(0, consumer1->disconnected_counter());
-  EXPECT_EQ(kNumberOfGamepads, consumer2->connected_counter());
-  EXPECT_EQ(0, consumer2->disconnected_counter());
+  // Connect gamepads and simulate a user gesture.
+  {
+    base::RunLoop loop;
+    auto barrier =
+        base::BarrierClosure(2 * kNumberOfGamepads, loop.QuitClosure());
+    EXPECT_CALL(*consumer1, OnGamepadConnected)
+        .Times(kNumberOfGamepads)
+        .WillRepeatedly(RunClosure(barrier));
+    EXPECT_CALL(*consumer2, OnGamepadConnected)
+        .Times(kNumberOfGamepads)
+        .WillRepeatedly(RunClosure(barrier));
+    SetPadsConnected(/*connected_count=*/kNumberOfGamepads);
+    SimulateUserGesture(/*has_gesture=*/true);
+    loop.Run();
+  }
 
-  // Check that disconnecting gamepads while a consumer is inactive will notify
-  // once the consumer is active.
-  ClearCounters();
+  // Mark the second consumer inactive.
   EXPECT_TRUE(service()->ConsumerBecameInactive(consumer2));
   WaitForData();
-  EXPECT_EQ(0, consumer1->connected_counter());
-  EXPECT_EQ(0, consumer1->disconnected_counter());
-  EXPECT_EQ(0, consumer2->connected_counter());
-  EXPECT_EQ(0, consumer2->disconnected_counter());
 
-  ClearCounters();
-  SetPadsConnected(false);
-  WaitForData();
-  EXPECT_EQ(0, consumer1->connected_counter());
-  EXPECT_EQ(kNumberOfGamepads, consumer1->disconnected_counter());
-  EXPECT_EQ(0, consumer2->connected_counter());
-  EXPECT_EQ(0, consumer2->disconnected_counter());
+  // Disconnect gamepads. Only the active consumer is notified.
+  {
+    base::RunLoop loop;
+    auto barrier = base::BarrierClosure(kNumberOfGamepads, loop.QuitClosure());
+    EXPECT_CALL(*consumer1, OnGamepadDisconnected)
+        .Times(kNumberOfGamepads)
+        .WillRepeatedly(RunClosure(barrier));
+    SetPadsConnected(/*connected_count=*/0);
+    loop.Run();
+  }
 
-  ClearCounters();
-  EXPECT_TRUE(service()->ConsumerBecameActive(consumer2));
-  WaitForData();
-  EXPECT_EQ(0, consumer1->connected_counter());
-  EXPECT_EQ(0, consumer1->disconnected_counter());
-  EXPECT_EQ(0, consumer2->connected_counter());
-  EXPECT_EQ(kNumberOfGamepads, consumer2->disconnected_counter());
-
-  ClearCounters();
-  WaitForData();
-  EXPECT_EQ(0, consumer1->connected_counter());
-  EXPECT_EQ(0, consumer1->disconnected_counter());
-  EXPECT_EQ(0, consumer2->connected_counter());
-  EXPECT_EQ(0, consumer2->disconnected_counter());
+  // Mark the second consumer active again. The second consumer is notified for
+  // gamepads that were disconnected while it was inactive.
+  {
+    base::RunLoop loop;
+    auto barrier = base::BarrierClosure(kNumberOfGamepads, loop.QuitClosure());
+    EXPECT_CALL(*consumer2, OnGamepadDisconnected)
+        .Times(kNumberOfGamepads)
+        .WillRepeatedly(RunClosure(barrier));
+    EXPECT_TRUE(service()->ConsumerBecameActive(consumer2));
+    loop.Run();
+  }
 }
 
 TEST_F(GamepadServiceTest, DisconnectAndConnectWhileInactiveTest) {
+  // Create two active consumers.
   auto* consumer1 = CreateConsumer();
   auto* consumer2 = CreateConsumer();
   EXPECT_TRUE(service()->ConsumerBecameActive(consumer1));
   EXPECT_TRUE(service()->ConsumerBecameActive(consumer2));
 
-  // Ensure the initial user gesture is received by both consumers.
-  SimulateUserGesture(true);
-  SetPadsConnected(true);
-  WaitForData();
-  EXPECT_EQ(kNumberOfGamepads, consumer1->connected_counter());
-  EXPECT_EQ(0, consumer1->disconnected_counter());
-  EXPECT_EQ(kNumberOfGamepads, consumer2->connected_counter());
-  EXPECT_EQ(0, consumer2->disconnected_counter());
+  // Connect gamepads and simulate a user gesture.
+  {
+    base::RunLoop loop;
+    auto barrier =
+        base::BarrierClosure(2 * kNumberOfGamepads, loop.QuitClosure());
+    EXPECT_CALL(*consumer1, OnGamepadConnected)
+        .Times(kNumberOfGamepads)
+        .WillRepeatedly(RunClosure(barrier));
+    EXPECT_CALL(*consumer2, OnGamepadConnected)
+        .Times(kNumberOfGamepads)
+        .WillRepeatedly(RunClosure(barrier));
+    SetPadsConnected(/*connected_count=*/kNumberOfGamepads);
+    SimulateUserGesture(/*has_gesture=*/true);
+    loop.Run();
+  }
 
-  // Check that a disconnection and then connection is reported as a connection
-  // (and no disconnection) once the consumer is active.
-  ClearCounters();
+  // Mark the second consumer inactive.
   EXPECT_TRUE(service()->ConsumerBecameInactive(consumer2));
   WaitForData();
-  EXPECT_EQ(0, consumer1->connected_counter());
-  EXPECT_EQ(0, consumer1->disconnected_counter());
-  EXPECT_EQ(0, consumer2->connected_counter());
-  EXPECT_EQ(0, consumer2->disconnected_counter());
 
-  ClearCounters();
-  SetPadsConnected(false);
-  WaitForData();
-  EXPECT_EQ(0, consumer1->connected_counter());
-  EXPECT_EQ(kNumberOfGamepads, consumer1->disconnected_counter());
-  EXPECT_EQ(0, consumer2->connected_counter());
-  EXPECT_EQ(0, consumer2->disconnected_counter());
+  // Disconnect gamepads. Only the active consumer is notified.
+  {
+    base::RunLoop loop;
+    auto barrier = base::BarrierClosure(kNumberOfGamepads, loop.QuitClosure());
+    EXPECT_CALL(*consumer1, OnGamepadDisconnected)
+        .Times(kNumberOfGamepads)
+        .WillRepeatedly(RunClosure(barrier));
+    SetPadsConnected(/*connected_count=*/0);
+    loop.Run();
+  }
 
-  ClearCounters();
-  SetPadsConnected(true);
-  WaitForData();
-  EXPECT_EQ(kNumberOfGamepads, consumer1->connected_counter());
-  EXPECT_EQ(0, consumer1->disconnected_counter());
-  EXPECT_EQ(0, consumer2->connected_counter());
-  EXPECT_EQ(0, consumer2->disconnected_counter());
+  // Connect gamepads. Only the active consumer is notified.
+  {
+    base::RunLoop loop;
+    auto barrier = base::BarrierClosure(kNumberOfGamepads, loop.QuitClosure());
+    EXPECT_CALL(*consumer1, OnGamepadConnected)
+        .Times(kNumberOfGamepads)
+        .WillRepeatedly(RunClosure(barrier));
+    SetPadsConnected(/*connected_count=*/kNumberOfGamepads);
+    loop.Run();
+  }
 
-  ClearCounters();
-  EXPECT_TRUE(service()->ConsumerBecameActive(consumer2));
-  WaitForData();
-  EXPECT_EQ(0, consumer1->connected_counter());
-  EXPECT_EQ(0, consumer1->disconnected_counter());
-  EXPECT_EQ(kNumberOfGamepads, consumer2->connected_counter());
-  EXPECT_EQ(0, consumer2->disconnected_counter());
+  // Mark the second consumer active again. The second consumer is notified for
+  // gamepads that were connected while it was inactive.
+  {
+    base::RunLoop loop;
+    auto barrier = base::BarrierClosure(kNumberOfGamepads, loop.QuitClosure());
+    EXPECT_CALL(*consumer2, OnGamepadConnected)
+        .Times(kNumberOfGamepads)
+        .WillRepeatedly(RunClosure(barrier));
+    EXPECT_TRUE(service()->ConsumerBecameActive(consumer2));
+    loop.Run();
+  }
 }
 
 TEST_F(GamepadServiceTest, ActiveConsumerBecameActive) {
