@@ -25,6 +25,7 @@
 #include "chrome/grit/assistant_optin_resources.h"
 #include "chrome/grit/assistant_optin_resources_map.h"
 #include "chrome/grit/browser_resources.h"
+#include "chrome/grit/oobe_conditional_resources.h"
 #include "chromeos/assistant/buildflags.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
@@ -89,7 +90,8 @@ AssistantOptInUI::AssistantOptInUI(content::WebUI* web_ui)
   source->UseStringsJs();
   source->AddResourcePaths(
       base::make_span(kAssistantOptinResources, kAssistantOptinResourcesSize));
-  source->SetDefaultResource(IDR_ASSISTANT_OPTIN_ASSISTANT_OPTIN_HTML);
+  source->AddResourcePath("assistant_optin.js", IDR_ASSISTANT_OPTIN_JS);
+  source->SetDefaultResource(IDR_ASSISTANT_OPTIN_HTML);
   source->AddResourcePath("voice_match_animation.json",
                           IDR_ASSISTANT_VOICE_MATCH_ANIMATION);
   source->OverrideContentSecurityPolicy(

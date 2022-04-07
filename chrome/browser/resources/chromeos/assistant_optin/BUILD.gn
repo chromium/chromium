@@ -73,8 +73,6 @@ preprocess_if_expr("preprocess") {
     "assistant_loading.js",
     "assistant_optin_flow.html",
     "assistant_optin_flow.js",
-    "assistant_optin.html",
-    "assistant_optin.js",
     "assistant_related_info.html",
     "assistant_related_info.js",
     "assistant_value_prop.html",
