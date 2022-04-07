@@ -18,6 +18,6 @@
     </application>
 
     <instrumentation android:name="org.chromium.base.test.BaseChromiumAndroidJUnitRunner"
-        android:targetPackage="org.chromium.webview_js_sandbox_test"
-        android:label="Tests for org.chromium.webview_js_sandbox_test"/>
+        android:targetPackage="org.chromium.webview_js_sandbox_test.test"
+        android:label="Tests for org.chromium.webview_js_sandbox_test.test"/>
 </manifest>

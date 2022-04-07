@@ -7,21 +7,11 @@ import("//testing/test.gni")
 
 group("webview_js_sandbox_test_app") {
   testonly = true
-  deps = [
-    ":webview_js_sandbox_test_app_apk",
-    ":webview_js_sandbox_test_app_test_apk",
-  ]
-}
-
-android_apk("webview_js_sandbox_test_app_apk") {
-  apk_name = "WebViewJsSandboxTestApp"
-  android_manifest = "java/AndroidManifest.xml"
-  deps = []
+  deps = [ ":webview_js_sandbox_test_app_test_apk" ]
 }
 
 instrumentation_test_apk("webview_js_sandbox_test_app_test_apk") {
   apk_name = "WebViewJsSandboxTestAppTest"
-  apk_under_test = ":webview_js_sandbox_test_app_apk"
   android_manifest = "javatests/AndroidManifest.xml"
   sources = [ "javatests/src/org/chromium/webview_js_sandbox_test/test/WebViewJsSandboxTest.java" ]
   deps = [
