@@ -138,6 +138,10 @@ struct GooglePhotosPhoto {
 
     // URL of the image to be displayed in the UI.
     url.mojom.Url url;
+
+    // Location from the photo's Google Photos metadata. Can be a geographic
+    // place or a user-assigned alias such as "Home" or "Work".
+    string? location;
 };
 
 // Represents the server-provided response to a Google Photos photos request.

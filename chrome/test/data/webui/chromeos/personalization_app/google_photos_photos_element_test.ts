@@ -108,19 +108,22 @@ suite('GooglePhotosPhotosTest', function() {
         id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
         name: 'foo',
         date: toString16('Wednesday, February 16, 2022'),
-        url: {url: 'foo.com'}
+        url: {url: 'foo.com'},
+        location: 'home1'
       },
       {
         id: '0ec40478-9712-42e1-b5bf-3e75870ca042',
         name: 'bar',
         date: toString16('Friday, November 12, 2021'),
-        url: {url: 'bar.com'}
+        url: {url: 'bar.com'},
+        location: 'home2'
       },
       {
         id: '0a268a37-877a-4936-81d4-38cc84b0f596',
         name: 'baz',
         date: toString16('Friday, November 12, 2021'),
-        url: {url: 'baz.com'}
+        url: {url: 'baz.com'},
+        location: 'home3'
       }
     ];
 
@@ -193,14 +196,16 @@ suite('GooglePhotosPhotosTest', function() {
       id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
       name: 'foo',
       date: {data: []},
-      url: {url: 'foo.com'}
+      url: {url: 'foo.com'},
+      location: 'home1'
     };
 
     const anotherPhoto: GooglePhotosPhoto = {
       id: '0ec40478-9712-42e1-b5bf-3e75870ca042',
       name: 'bar',
       date: {data: []},
-      url: {url: 'bar.com'}
+      url: {url: 'bar.com'},
+      location: 'home2'
     };
 
     // Set values returned by |wallpaperProvider|.
@@ -317,7 +322,8 @@ suite('GooglePhotosPhotosTest', function() {
             id: `id-${nextPhotoId}`,
             name: `name-${nextPhotoId}`,
             date: {data: []},
-            url: {url: `url-${nextPhotoId++}`},
+            url: {url: `url-${nextPhotoId}`},
+            location: `location-${nextPhotoId++}`,
           };
         }));
 
@@ -342,7 +348,8 @@ suite('GooglePhotosPhotosTest', function() {
             id: `id-${nextPhotoId}`,
             name: `name-${nextPhotoId}`,
             date: {data: []},
-            url: {url: `url-${nextPhotoId++}`},
+            url: {url: `url-${nextPhotoId}`},
+            location: `location-${nextPhotoId++}`,
           };
         }));
 
@@ -392,7 +399,8 @@ suite('GooglePhotosPhotosTest', function() {
       id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
       name: 'foo',
       date: {data: []},
-      url: {url: 'foo.com'}
+      url: {url: 'foo.com'},
+      location: 'home'
     };
 
     // Set values returned by |wallpaperProvider|.

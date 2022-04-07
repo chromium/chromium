@@ -81,6 +81,11 @@ constexpr char kGooglePhotosPhotosFullResponse[] =
     "      \"creationTimestamp\": \"2021-12-31T07:07:07.000Z\","
     "      \"photo\": {"
     "         \"servingUrl\": \"https://www.google.com/\""
+    "      },"
+    "      \"locationFeature\": {"
+    "         \"name\": [ {"
+    "            \"text\": \"home\""
+    "         } ]"
     "      }"
     "   } ],"
     "   \"resumeToken\": \"token\""
@@ -95,6 +100,11 @@ constexpr char kGooglePhotosPhotosSingleItemResponse[] =
     "      \"creationTimestamp\": \"2021-12-31T07:07:07.000Z\","
     "      \"photo\": {"
     "         \"servingUrl\": \"https://www.google.com/\""
+    "      },"
+    "      \"locationFeature\": {"
+    "         \"name\": [ {"
+    "            \"text\": \"home\""
+    "         } ]"
     "      }"
     "   }"
     "}";
@@ -902,7 +912,7 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
   auto valid_photos_vector = std::vector<GooglePhotosPhotoPtr>();
   valid_photos_vector.push_back(GooglePhotosPhoto::New(
       "photoId", "photoName", u"Friday, December 31, 2021",
-      GURL("https://www.google.com/")));
+      GURL("https://www.google.com/"), "home"));
   auto response = JsonToDict(kGooglePhotosPhotosFullResponse);
   auto result = FetchGooglePhotosPhotosResponse::New(
       mojo::Clone(valid_photos_vector), kResumeToken);
@@ -923,6 +933,19 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
   EXPECT_EQ(google_photos_photos_fetcher->ParseResponse(&response), result);
   EXPECT_EQ(google_photos_photos_fetcher->GetResultCount(result),
             absl::make_optional<size_t>(valid_photos_vector.size()));
+
+  // Parse a response with a valid photo and no location.
+  auto valid_photos_vector_without_location =
+      std::vector<GooglePhotosPhotoPtr>();
+  valid_photos_vector_without_location.push_back(GooglePhotosPhoto::New(
+      "photoId", "photoName", u"Friday, December 31, 2021",
+      GURL("https://www.google.com/"), absl::nullopt));
+  auto* name_list = response.FindListByDottedPath("item.locationFeature.name");
+  EXPECT_FALSE(name_list->empty());
+  name_list->clear();
+  EXPECT_EQ(FetchGooglePhotosPhotosResponse::New(
+                std::move(valid_photos_vector_without_location), absl::nullopt),
+            google_photos_photos_fetcher->ParseResponse(&response));
 }
 
 TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,

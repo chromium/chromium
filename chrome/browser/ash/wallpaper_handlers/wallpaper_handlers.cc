@@ -219,6 +219,13 @@ void AddGooglePhotosPhotoIfValid(
   const auto* filename = photo->FindString("filename");
   const auto* timestamp_string = photo->FindString("creationTimestamp");
   const auto* url = photo->FindStringByDottedPath("photo.servingUrl");
+  const auto* location_list =
+      photo->FindListByDottedPath("locationFeature.name");
+  const auto* location_wrapper = location_list && !location_list->empty()
+                                     ? location_list->front().GetIfDict()
+                                     : nullptr;
+  const auto* location =
+      location_wrapper ? location_wrapper->FindString("text") : nullptr;
 
   base::Time timestamp;
   if (!id || !filename || !timestamp_string ||
@@ -230,9 +237,12 @@ void AddGooglePhotosPhotoIfValid(
 
   std::string name = base::FilePath(*filename).RemoveExtension().value();
   std::u16string date = base::TimeFormatFriendlyDate(timestamp);
+
+  // A photo from Google Photos may or may not have a location set.
   parsed_response->photos->push_back(
-      ash::personalization_app::mojom::GooglePhotosPhoto::New(*id, name, date,
-                                                              GURL(*url)));
+      ash::personalization_app::mojom::GooglePhotosPhoto::New(
+          *id, name, date, GURL(*url),
+          location ? absl::make_optional(*location) : absl::nullopt));
 }
 
 // Returns the `GooglePhotosApi` associated with the specified `url`.

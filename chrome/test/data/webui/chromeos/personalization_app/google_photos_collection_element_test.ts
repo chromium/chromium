@@ -58,7 +58,8 @@ suite('GooglePhotosCollectionTest', function() {
       id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
       name: 'foo',
       date: {data: []},
-      url: {url: 'foo.com'}
+      url: {url: 'foo.com'},
+      location: 'home'
     }]);
 
     googlePhotosCollectionElement =
@@ -97,7 +98,8 @@ suite('GooglePhotosCollectionTest', function() {
       id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
       name: 'foo',
       date: {data: []},
-      url: {url: 'foo.com'}
+      url: {url: 'foo.com'},
+      location: 'home'
     }]);
 
     googlePhotosCollectionElement =
