@@ -13,7 +13,7 @@
 #endif
 
 namespace {
-const char kScrollHelperScript[] = "scroll_helper_js";
+const char kScrollHelperScript[] = "scroll_helper";
 }  // namespace
 
 namespace web {

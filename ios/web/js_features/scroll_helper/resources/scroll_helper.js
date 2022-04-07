@@ -6,11 +6,6 @@
  * @fileoverview APIs used for the scroll workaround. See crbug.com/554257.
  */
 
-goog.provide('__crWeb.scrollHelper');
-
-/** Beginning of anonymous object */
-(function() {
-
 /** @private */
 var webViewScrollViewIsDragging_ = false;
 
@@ -35,5 +30,3 @@ window.scrollTo = function() {
   if (webViewScrollViewIsDragging_) return;
   originalWindowScrollTo_.apply(null, arguments);
 };
-
-}());  // End of anonymous object
