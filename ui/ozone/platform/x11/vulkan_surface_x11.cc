@@ -40,9 +40,6 @@ std::unique_ptr<VulkanSurfaceX11> VulkanSurfaceX11::Create(
     LOG(ERROR) << "Failed to create or map window.";
     return nullptr;
   }
-  // Flush the connection, otherwise other Vulkan WSI calls may fail with some
-  // drivers.
-  connection->Flush();
 
   VkSurfaceKHR vk_surface;
   const VkXcbSurfaceCreateInfoKHR surface_create_info = {
