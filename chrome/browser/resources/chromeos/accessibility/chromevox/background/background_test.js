@@ -35,7 +35,6 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
     await importModule(
         'DesktopAutomationInterface',
         '/chromevox/background/desktop_automation_interface.js');
-    await importModule('EventGenerator', '/common/event_generator.js');
     await importModule(
         'GestureCommandHandler',
         '/chromevox/background/gesture_command_handler.js');
