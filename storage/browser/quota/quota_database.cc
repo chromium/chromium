@@ -559,8 +559,14 @@ QuotaError QuotaDatabase::DeleteBucketInfo(BucketId bucket_id) {
   if (!statement.Run())
     return QuotaError::kDatabaseError;
 
-  // Commit so deletion is reflected immediately.
-  Commit();
+  // Scheduling this commit introduces the chance of inconsistencies
+  // between the buckets table and data stored on disk in the file system.
+  // If there is a crash, or a battery failure before the transaction is
+  // committed, the bucket directory may be deleted from the file system,
+  // while an entry still may exist in the database.
+  //
+  // TODO(crbug.com/1314129): Update to immediately commit transaction.
+  ScheduleCommit();
 
   return QuotaError::kNone;
 }
@@ -1033,7 +1039,9 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketInternal(
   int64_t bucket_id = db_->GetLastInsertRowId();
   DCHECK_GT(bucket_id, 0);
 
-  // Commit so bucket data is persisted immediately.
+  // Commit so bucket data is persisted immediately. This reduces the chance of
+  // inconsistencies between the buckets table and data stored on disk in the
+  // filesystem.
   Commit();
 
   return BucketInfo(BucketId(bucket_id), storage_key, type, bucket_name,
