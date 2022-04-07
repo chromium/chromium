@@ -13,8 +13,11 @@
 @interface WebContentsOcclusionCheckerMac : NSObject
 
 + (instancetype)sharedInstance;
-// Updates the visibility of the webContentsViewCocoa in `window`.
-- (void)updateWebContentsVisibilityInWindow:(NSWindow*)window;
+// Returns YES if webcontents visibility updates will occur on the next pass
+// of the run loop.
+- (BOOL)willUpdateWebContentsVisibility;
+// Updates the visibility of each WebContentsViewCocoa instance.
+- (void)notifyUpdateWebContentsVisibility;
 // Computes and updates the visibility of the `webContentsViewCocoa`.
 - (void)updateWebContentsVisibility:(WebContentsViewCocoa*)webContentsViewCocoa;
 

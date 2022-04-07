@@ -18,18 +18,12 @@
 // following ways:
 // - It allows -isKeyWindow to be manipulated to test things like focus rings
 //   (which background windows won't normally display).
-// - It ignores its real occlusion state and returns a value based on
-//   pretendIsOccluded.
 // - It ignores the system setting for full keyboard access and returns a value
 //   based on pretendFullKeyboardAccessIsEnabled.
 @interface CocoaTestHelperWindow : NSWindow
 
 // Value to return for -isKeyWindow.
 @property(nonatomic) BOOL pretendIsKeyWindow;
-
-// Value to return for -occlusionState. Setting posts a
-// NSWindowDidChangeOcclusionStateNotification.
-@property(nonatomic) BOOL pretendIsOccluded;
 
 // Value to return for -isOnActiveSpace. Posts
 // NSWorkspaceActiveSpaceDidChangeNotification when set.
@@ -61,8 +55,6 @@
 - (void)clearPretendKeyWindowAndFirstResponder;
 
 - (BOOL)isKeyWindow;
-
-- (NSWindowOcclusionState)occlusionState;
 
 @end
 

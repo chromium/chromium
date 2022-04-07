@@ -32,7 +32,6 @@ void NOINLINE ForceSystemLeaks() {
 @implementation CocoaTestHelperWindow
 
 @synthesize pretendIsKeyWindow = _pretendIsKeyWindow;
-@synthesize pretendIsOccluded = _pretendIsOccluded;
 @synthesize pretendIsOnActiveSpace = _pretendIsOnActiveSpace;
 @synthesize pretendFullKeyboardAccessIsEnabled =
     _pretendFullKeyboardAccessIsEnabled;
@@ -78,13 +77,6 @@ void NOINLINE ForceSystemLeaks() {
   EXPECT_TRUE([self makeFirstResponder:NSApp]);
 }
 
-- (void)setPretendIsOccluded:(BOOL)flag {
-  _pretendIsOccluded = flag;
-  [[NSNotificationCenter defaultCenter]
-      postNotificationName:NSWindowDidChangeOcclusionStateNotification
-                    object:self];
-}
-
 - (void)setPretendIsOnActiveSpace:(BOOL)pretendIsOnActiveSpace {
   _pretendIsOnActiveSpace = pretendIsOnActiveSpace;
   [[NSWorkspace sharedWorkspace].notificationCenter
@@ -104,10 +96,6 @@ void NOINLINE ForceSystemLeaks() {
 // -setPretendFullKeyboardAccessIsEnabled:.
 - (BOOL)_allowsAnyValidResponder {
   return _pretendFullKeyboardAccessIsEnabled;
-}
-
-- (NSWindowOcclusionState)occlusionState {
-  return _pretendIsOccluded ? 0 : NSWindowOcclusionStateVisible;
 }
 
 - (NSArray<NSView*>*)validKeyViews {

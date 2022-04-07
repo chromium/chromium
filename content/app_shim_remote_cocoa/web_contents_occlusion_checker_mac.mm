@@ -33,6 +33,8 @@ const base::FeatureParam<bool> kDisplaySleepAndAppHideDetection{
   NSWindow* _windowResizingMovingOrClosing;
   NSWindow* _windowReceivingFullscreenTransitionNotifications;
   BOOL _displaysAreAsleep;
+  BOOL _willUpdateWebContentsVisibility;
+  BOOL _updatingWebContentsVisibility;
 }
 // Computes and returns the `window`'s visibility state, a hybrid of
 // macOS's and our manual occlusion calculation.
@@ -82,8 +84,10 @@ const base::FeatureParam<bool> kDisplaySleepAndAppHideDetection{
           self, _cmd, orderingMode, otherWindowNumber);
 
   // The window order has changed so update web contents visibility.
-  [[WebContentsOcclusionCheckerMac sharedInstance]
-      notifyUpdateWebContentsVisibility];
+  if (kEnhancedWindowOcclusionDetection.Get()) {
+    [[WebContentsOcclusionCheckerMac sharedInstance]
+        notifyUpdateWebContentsVisibility];
+  }
 }
 
 - (void)setUpNotifications {
@@ -175,7 +179,7 @@ const base::FeatureParam<bool> kDisplaySleepAndAppHideDetection{
 }
 
 - (void)windowChangedOcclusionState:(NSNotification*)notification {
-  [self updateWebContentsVisibilityInWindow:[notification object]];
+  [self notifyUpdateWebContentsVisibility];
 }
 
 - (void)displaysDidSleep:(NSNotification*)notification {
@@ -196,7 +200,15 @@ const base::FeatureParam<bool> kDisplaySleepAndAppHideDetection{
   _windowReceivingFullscreenTransitionNotifications = nil;
 }
 
+- (BOOL)willUpdateWebContentsVisibility {
+  return _willUpdateWebContentsVisibility;
+}
+
 - (void)notifyUpdateWebContentsVisibility {
+  if (_willUpdateWebContentsVisibility) {
+    return;
+  }
+
   // https://crbug.com/1300929 covers a crash where a webcontents gets added to
   // a window, triggering an update to its visibility state. A visibility state
   // observer creates a bubble, and that bubble triggers a call to
@@ -209,19 +221,32 @@ const base::FeatureParam<bool> kDisplaySleepAndAppHideDetection{
   // entering its observer code twice (as happened in the bug). By making the
   // occlusion status update occur away from the notification we can avoid the
   // reentrancy problems with visibility observers.
-  [NSObject cancelPreviousPerformRequestsWithTarget:self
-                                           selector:@selector
-                                           (_notifyUpdateWebContentsVisibility)
-                                             object:nil];
+  _willUpdateWebContentsVisibility = YES;
   [self performSelector:@selector(_notifyUpdateWebContentsVisibility)
              withObject:nil
              afterDelay:0];
 }
 
 - (void)_notifyUpdateWebContentsVisibility {
-  for (NSWindow* window in [[NSApplication sharedApplication] orderedWindows]) {
+  _willUpdateWebContentsVisibility = NO;
+
+  DCHECK(!_updatingWebContentsVisibility);
+
+  _updatingWebContentsVisibility = YES;
+
+  // Copy the list to avoid mutation exceptions (imagine the visibility
+  // update triggers a visibility watcher that brings a new window
+  // onscreen). Emperically, -orderedWindows returns a new list each time,
+  // so it's likely already a copy. The API, however, does not make any
+  // guarantees about what it returns, and methods like
+  // -[NSWindow childWindows] apparently return the actual internal array.
+  base::scoped_nsobject<NSArray<NSWindow*>> orderedWindows(
+      [[[NSApplication sharedApplication] orderedWindows] copy]);
+  for (NSWindow* window in orderedWindows.get()) {
     [self updateWebContentsVisibilityInWindow:window];
   }
+
+  _updatingWebContentsVisibility = NO;
 }
 
 - (void)updateWebContentsVisibilityInWindow:(NSWindow*)window {
@@ -271,11 +296,12 @@ const base::FeatureParam<bool> kDisplaySleepAndAppHideDetection{
 
   NSRect windowFrame = [window frame];
 
-  NSArray<NSWindow*>* windowsFromFrontToBack =
-      [[NSApplication sharedApplication] orderedWindows];
+  // See the note about avoiding mutation exceptions above.
+  base::scoped_nsobject<NSArray<NSWindow*>> windowsFromFrontToBack(
+      [[[NSApplication sharedApplication] orderedWindows] copy]);
 
   // Determine if there's a window occluding our window.
-  for (NSWindow* nextWindow in windowsFromFrontToBack) {
+  for (NSWindow* nextWindow in windowsFromFrontToBack.get()) {
     if (![nextWindow isVisible]) {
       continue;
     }
