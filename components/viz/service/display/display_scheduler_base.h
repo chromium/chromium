@@ -23,6 +23,7 @@ class DisplayDamageTracker;
 struct DrawAndSwapParams {
   base::TimeTicks frame_time;
   base::TimeTicks expected_display_time;
+  int max_pending_swaps = -1;
 };
 
 class VIZ_SERVICE_EXPORT DisplaySchedulerClient {

@@ -1304,6 +1304,29 @@ gpu::SyncToken SkiaOutputSurfaceImpl::Flush() {
   return sync_token;
 }
 
+bool SkiaOutputSurfaceImpl::EnsureMinNumberOfBuffers(int n) {
+  DCHECK(capabilities_.supports_dynamic_frame_buffer_allocation);
+  DCHECK_GT(n, 0);
+  DCHECK_LE(n, capabilities_.number_of_buffers);
+
+  if (cached_number_of_buffers_ >= n)
+    return false;
+
+  cached_number_of_buffers_ = n;
+  if (frame_buffer_damage_tracker_) {
+    frame_buffer_damage_tracker_->FrameBuffersChanged(size_);
+  }
+
+  auto task =
+      base::BindOnce(&SkiaOutputSurfaceImplOnGpu::EnsureMinNumberOfBuffers,
+                     base::Unretained(impl_on_gpu_.get()), n);
+  EnqueueGpuTask(std::move(task), std::vector<gpu::SyncToken>(),
+                 /*make_current=*/true,
+                 /*need_framebuffer=*/false);
+  FlushGpuTasks(SyncMode::kNoWait);
+  return true;
+}
+
 void SkiaOutputSurfaceImpl::ContextLost() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DLOG(ERROR) << "SkiaOutputSurfaceImpl::ContextLost()";

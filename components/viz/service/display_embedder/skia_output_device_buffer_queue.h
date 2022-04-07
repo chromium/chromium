@@ -58,6 +58,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   SkSurface* BeginPaint(
       std::vector<GrBackendSemaphore>* end_semaphores) override;
   void EndPaint() override;
+  bool EnsureMinNumberOfBuffers(size_t n) override;
 
   bool IsPrimaryPlaneOverlay() const override;
   void SchedulePrimaryPlane(
@@ -104,6 +105,11 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   gfx::Size viewport_size_;
   gfx::OverlayTransform overlay_transform_ = gfx::OVERLAY_TRANSFORM_NONE;
 
+  // Number of images to allocate. Equals to `capabilities_.number_of_buffers`
+  // when `capabilities_.supports_dynamic_frame_buffer_allocation` is false.
+  // Can be increased with `EnsureMinNumberOfBuffers` when
+  // `capabilities_.supports_dynamic_frame_buffer_allocation` is true.
+  size_t number_of_images_to_allocate_ = 0u;
   // All allocated images.
   std::vector<std::unique_ptr<OutputPresenter::Image>> images_;
   // This image is currently used by Skia as RenderTarget. This may be nullptr

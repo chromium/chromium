@@ -679,7 +679,10 @@ void SkiaOutputDeviceBufferQueue::SetViewportSize(
 
 bool SkiaOutputDeviceBufferQueue::RecreateImages() {
   FreeAllSurfaces();
-  size_t number_to_allocate = capabilities_.number_of_buffers;
+  size_t number_to_allocate =
+      capabilities_.supports_dynamic_frame_buffer_allocation
+          ? number_of_images_to_allocate_
+          : capabilities_.number_of_buffers;
   if (!number_to_allocate)
     return true;
 
@@ -739,6 +742,19 @@ SkSurface* SkiaOutputDeviceBufferQueue::BeginPaint(
 void SkiaOutputDeviceBufferQueue::EndPaint() {
   DCHECK(current_image_);
   current_image_->EndWriteSkia();
+}
+
+bool SkiaOutputDeviceBufferQueue::EnsureMinNumberOfBuffers(size_t n) {
+  DCHECK(capabilities_.supports_dynamic_frame_buffer_allocation);
+  DCHECK_GT(n, 0u);
+  DCHECK_LE(n, static_cast<size_t>(capabilities_.number_of_buffers));
+
+  if (number_of_images_to_allocate_ >= n)
+    return true;
+  number_of_images_to_allocate_ = n;
+  if (image_size_.IsEmpty())
+    return true;
+  return RecreateImages();
 }
 
 bool SkiaOutputDeviceBufferQueue::OverlayDataComparator::operator()(

@@ -189,8 +189,9 @@ bool DisplayScheduler::DrawAndSwap() {
   DCHECK(!output_surface_lost_);
 
   bool success =
-      client_ && client_->DrawAndSwap({current_begin_frame_args_.frame_time,
-                                       current_frame_display_time()});
+      client_ &&
+      client_->DrawAndSwap({current_begin_frame_args_.frame_time,
+                            current_frame_display_time(), MaxPendingSwaps()});
   if (!success)
     return false;
 

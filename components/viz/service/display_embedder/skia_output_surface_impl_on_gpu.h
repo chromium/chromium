@@ -147,6 +147,7 @@ class SkiaOutputSurfaceImplOnGpu
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane&
           output_surface_plane);
   void SwapBuffers(OutputSurfaceFrame frame);
+  void EnsureMinNumberOfBuffers(int n);
 
   void SetDependenciesResolvedTimings(base::TimeTicks task_ready);
   void SetDrawTimings(base::TimeTicks task_ready);

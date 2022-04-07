@@ -133,6 +133,7 @@ class SkiaOutputDevice {
                              OutputSurfaceFrame frame);
   virtual void CommitOverlayPlanes(BufferPresentedCallback feedback,
                                    OutputSurfaceFrame frame);
+  virtual bool EnsureMinNumberOfBuffers(size_t n);
 
   // Set the rectangle that will be drawn into on the surface.
   virtual bool SetDrawRectangle(const gfx::Rect& draw_rectangle);

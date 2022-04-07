@@ -498,6 +498,12 @@ void SkiaOutputSurfaceImplOnGpu::SwapBuffers(OutputSurfaceFrame frame) {
   SwapBuffersInternal(std::move(frame));
 }
 
+void SkiaOutputSurfaceImplOnGpu::EnsureMinNumberOfBuffers(int n) {
+  if (!output_device_->EnsureMinNumberOfBuffers(n)) {
+    MarkContextLost(CONTEXT_LOST_ALLOCATE_FRAME_BUFFERS_FAILED);
+  }
+}
+
 void SkiaOutputSurfaceImplOnGpu::SetDependenciesResolvedTimings(
     base::TimeTicks task_ready) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

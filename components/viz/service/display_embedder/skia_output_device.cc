@@ -140,6 +140,11 @@ void SkiaOutputDevice::PostSubBuffer(const gfx::Rect& rect,
   NOTREACHED();
 }
 
+bool SkiaOutputDevice::EnsureMinNumberOfBuffers(size_t n) {
+  NOTREACHED();
+  return false;
+}
+
 bool SkiaOutputDevice::SetDrawRectangle(const gfx::Rect& draw_rectangle) {
   NOTREACHED();
   return false;

@@ -443,6 +443,16 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
         /*willUseGLFBO0=*/false, /*isTextureable=*/true);
   }
 
+  void FirstReshape() {
+    if (output_device_->capabilities()
+            .supports_dynamic_frame_buffer_allocation) {
+      output_device_->EnsureMinNumberOfBuffers(
+          output_device_->capabilities().number_of_buffers);
+    }
+    output_device_->Reshape(CreateSkSurfaceCharacterization(), {}, 1.0f,
+                            gfx::OVERLAY_TRANSFORM_NONE);
+  }
+
  protected:
   std::unique_ptr<SkiaOutputSurfaceDependency> dependency_;
   scoped_refptr<MockGLSurfaceAsync> gl_surface_;
@@ -459,8 +469,7 @@ namespace {
 TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, MultipleGetCurrentBufferCalls) {
   // Check that multiple bind calls do not create or change surfaces.
 
-  output_device_->Reshape(CreateSkSurfaceCharacterization(), {}, 1.0f,
-                          gfx::OVERLAY_TRANSFORM_NONE);
+  FirstReshape();
   const int kNumBuffers = CountBuffers();
   EXPECT_NE(0U, memory_tracker().GetSize());
   EXPECT_NE(PaintPrimaryPlane(), nullptr);
@@ -475,8 +484,7 @@ TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, MultipleGetCurrentBufferCalls) {
 
 TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, CheckDoubleBuffering) {
   // Check buffer flow through double buffering path.
-  output_device_->Reshape(CreateSkSurfaceCharacterization(), {}, 1.0f,
-                          gfx::OVERLAY_TRANSFORM_NONE);
+  FirstReshape();
   const int kNumBuffers = CountBuffers();
   EXPECT_NE(0U, memory_tracker().GetSize());
   EXPECT_EQ(kNumBuffers, CountBuffers());
@@ -517,8 +525,7 @@ TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, CheckDoubleBuffering) {
 
 TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, CheckTripleBuffering) {
   // Check buffer flow through triple buffering path.
-  output_device_->Reshape(CreateSkSurfaceCharacterization(), {}, 1.0f,
-                          gfx::OVERLAY_TRANSFORM_NONE);
+  FirstReshape();
   const int kNumBuffers = CountBuffers();
   EXPECT_NE(0U, memory_tracker().GetSize());
 
@@ -554,8 +561,7 @@ TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, CheckTripleBuffering) {
 TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, CheckEmptySwap) {
   // Check empty swap flow, in which the damage is empty and BindFramebuffer
   // might not be called.
-  output_device_->Reshape(CreateSkSurfaceCharacterization(), {}, 1.0f,
-                          gfx::OVERLAY_TRANSFORM_NONE);
+  FirstReshape();
   const int kNumBuffers = CountBuffers();
 
   EXPECT_NE(0U, memory_tracker().GetSize());
@@ -596,8 +602,7 @@ TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, CheckEmptySwap) {
 TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, NoPrimaryPlane) {
   // Check empty swap flow, in which the damage is empty and BindFramebuffer
   // might not be called.
-  output_device_->Reshape(CreateSkSurfaceCharacterization(), {}, 1.0f,
-                          gfx::OVERLAY_TRANSFORM_NONE);
+  FirstReshape();
 
   // Do a swap and commit overlay planes with no primary plane.
   for (size_t i = 0; i < 2; ++i) {
@@ -643,8 +648,7 @@ TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, NoPrimaryPlane) {
 }
 
 TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, CheckCorrectBufferOrdering) {
-  output_device_->Reshape(CreateSkSurfaceCharacterization(), {}, 1.0f,
-                          gfx::OVERLAY_TRANSFORM_NONE);
+  FirstReshape();
   const int kNumBuffers = CountBuffers();
   const int kSwapCount = kNumBuffers * 2;
 
@@ -670,8 +674,7 @@ TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, CheckCorrectBufferOrdering) {
 }
 
 TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, ReshapeWithInFlightSurfaces) {
-  output_device_->Reshape(CreateSkSurfaceCharacterization(), {}, 1.0f,
-                          gfx::OVERLAY_TRANSFORM_NONE);
+  FirstReshape();
   const size_t kNumBuffers = available_images().size();
 
   const size_t kSwapCount = 5;
@@ -707,8 +710,7 @@ TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, ReshapeWithInFlightSurfaces) {
 }
 
 TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, BufferIsInOrder) {
-  output_device_->Reshape(CreateSkSurfaceCharacterization(), {}, 1.0f,
-                          gfx::OVERLAY_TRANSFORM_NONE);
+  FirstReshape();
   int kNumBuffers = available_images().size();
 
   int current_index = -1;
@@ -829,8 +831,7 @@ MATCHER_P(CheckPresentationFeedback, expected_fail, "") {
 TEST_F_GPU(SkiaOutputDeviceSwapSkippedTest, SkipWithoutPending) {
   // Check that skipping a SwapBuffers without any pending swaps immediately
   // invokes the complete/presented callbacks.
-  output_device_->Reshape(CreateSkSurfaceCharacterization(), {}, 1.0f,
-                          gfx::OVERLAY_TRANSFORM_NONE);
+  FirstReshape();
   EXPECT_CALL(swap_buffers_complete_cb,
               Run(CheckSwapResponse(1U, gfx::SwapResult::SWAP_SKIPPED), _, _));
   EXPECT_CALL(buffer_presented_cb,
@@ -843,8 +844,7 @@ TEST_F_GPU(SkiaOutputDeviceSwapSkippedTest, SkipWithPending) {
   // Check that skipping a SwapBuffers with existing pending swaps waits for
   // the pending swaps to complete before invoking the complete/presented
   // callbacks.
-  output_device_->Reshape(CreateSkSurfaceCharacterization(), {}, 1.0f,
-                          gfx::OVERLAY_TRANSFORM_NONE);
+  FirstReshape();
   EXPECT_NE(PaintAndSchedulePrimaryPlane(), nullptr);
   EXPECT_NE(current_image(), nullptr);
 

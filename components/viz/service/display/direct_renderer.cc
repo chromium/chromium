@@ -177,6 +177,10 @@ void DirectRenderer::SetVisible(bool visible) {
   DidChangeVisibility();
 }
 
+void DirectRenderer::ReallocatedFrameBuffers() {
+  next_frame_needs_full_frame_redraw_ = true;
+}
+
 void DirectRenderer::DecideRenderPassAllocationsForFrame(
     const AggregatedRenderPassList& render_passes_in_draw_order) {
   DCHECK(render_pass_bypass_quads_.empty());
@@ -364,12 +368,14 @@ void DirectRenderer::DrawFrame(
   bool use_stencil = overdraw_feedback_;
   bool needs_full_frame_redraw = false;
   auto display_transform = output_surface_->GetDisplayTransform();
-  if (surface_resource_size != reshape_surface_size_ ||
+  if (next_frame_needs_full_frame_redraw_ ||
+      surface_resource_size != reshape_surface_size_ ||
       device_scale_factor != reshape_device_scale_factor_ ||
       frame_color_space != reshape_color_space_ ||
       frame_buffer_format != reshape_buffer_format_ ||
       use_stencil != reshape_use_stencil_ ||
       display_transform != reshape_display_transform_) {
+    next_frame_needs_full_frame_redraw_ = false;
     reshape_surface_size_ = surface_resource_size;
     reshape_device_scale_factor_ = device_scale_factor;
     reshape_color_space_ = frame_color_space;

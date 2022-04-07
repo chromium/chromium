@@ -702,6 +702,15 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     return false;
   }
 
+  if (params.max_pending_swaps >= 0 && skia_output_surface_ &&
+      skia_output_surface_->capabilities()
+          .supports_dynamic_frame_buffer_allocation) {
+    if (skia_output_surface_->EnsureMinNumberOfBuffers(
+            params.max_pending_swaps + 1)) {
+      renderer_->ReallocatedFrameBuffers();
+    }
+  }
+
   gfx::OverlayTransform current_display_transform = gfx::OVERLAY_TRANSFORM_NONE;
   Surface* surface = surface_manager_->GetSurfaceForId(current_surface_id_);
   if (surface->HasActiveFrame()) {

@@ -75,6 +75,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   bool use_partial_swap() const { return use_partial_swap_; }
 
   void SetVisible(bool visible);
+  void ReallocatedFrameBuffers();
   void DecideRenderPassAllocationsForFrame(
       const AggregatedRenderPassList& render_passes_in_draw_order);
   void DrawFrame(AggregatedRenderPassList* render_passes_in_draw_order,
@@ -379,6 +380,8 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   // Time of most recent reshape that ended up with |device_viewport_size_| !=
   // |reshape_surface_size_|.
   base::TimeTicks last_viewport_resize_time_;
+
+  bool next_frame_needs_full_frame_redraw_ = false;
 
   // Cached values given to Reshape(). The |reshape_buffer_format_| is optional
   // to prevent use of uninitialized values. This may be larger than the

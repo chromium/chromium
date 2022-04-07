@@ -110,6 +110,7 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   void RemoveContextLostObserver(ContextLostObserver* observer) override;
   gpu::SharedImageInterface* GetSharedImageInterface() override;
   gpu::SyncToken Flush() override;
+  bool EnsureMinNumberOfBuffers(int n) override;
 #if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
   SkCanvas* BeginPaintRenderPassOverlay(
       const gfx::Size& size,

@@ -151,6 +151,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   void PreserveChildSurfaceControls() override;
   gpu::SharedImageInterface* GetSharedImageInterface() override;
   gpu::SyncToken Flush() override;
+  bool EnsureMinNumberOfBuffers(int n) override;
 
 #if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
   SkCanvas* BeginPaintRenderPassOverlay(
@@ -288,7 +289,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
    private:
     gfx::Rect ComputeCurrentFrameBufferDamage() const;
 
-    const size_t number_of_buffers_;
+    size_t number_of_buffers_;
     gfx::Size frame_buffer_size_;
     // This deque should contains the incremental damage of the last N swapped
     // frames where N is at most `number_of_buffers_`. Each rect represents
@@ -385,6 +386,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
 
   // Track if the current buffer content is changed.
   bool current_buffer_modified_ = false;
+
+  // Last number sent to `SetNumberOfFrameBuffers` on the GPU.
+  int cached_number_of_buffers_ = 0;
 
   // For accessing tile shared image backings from compositor thread.
   std::unique_ptr<gpu::SharedImageRepresentationFactory>
