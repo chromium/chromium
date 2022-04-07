@@ -66,10 +66,8 @@ const test::UIPath kOverviewDialog = {kSyncConsent,
                                       "syncConsentOverviewDialog"};
 const test::UIPath kReviewSettingsCheckBox = {kSyncConsent,
                                               "reviewSettingsBox"};
-const test::UIPath kNonSplitSettingsAcceptButton = {
-    kSyncConsent, "nonSplitSettingsAcceptButton"};
-const test::UIPath kNonSplitSettingsDeclineButton = {
-    kSyncConsent, "nonSplitSettingsDeclineButton"};
+const test::UIPath kAcceptButton = {kSyncConsent, "acceptButton"};
+const test::UIPath kDeclineButton = {kSyncConsent, "declineButton"};
 
 syncer::SyncUserSettings* GetSyncUserSettings() {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
@@ -388,8 +386,8 @@ IN_PROC_BROWSER_TEST_F(SyncConsentRecorderTest, MAYBE_SyncConsentRecorder) {
 
   test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
   test::OobeJS().ExpectVisiblePath(kOverviewDialog);
-  test::OobeJS().ExpectHiddenPath(kNonSplitSettingsDeclineButton);
-  test::OobeJS().TapOnPath(kNonSplitSettingsAcceptButton);
+  test::OobeJS().ExpectHiddenPath(kDeclineButton);
+  test::OobeJS().TapOnPath(kAcceptButton);
   consent_recorded_waiter.Wait();
   screen->SetDelegateForTesting(nullptr);  // cleanup
 
@@ -463,7 +461,7 @@ IN_PROC_BROWSER_TEST_P(SyncConsentTestWithModesParams, MAYBE_Accept) {
     test::OobeJS().ExpectVisiblePath(kReviewSettingsCheckBox);
   }
 
-  test::OobeJS().TapOnPath(kNonSplitSettingsAcceptButton);
+  test::OobeJS().TapOnPath(kAcceptButton);
 
   consent_recorded_waiter.Wait();
   screen->SetDelegateForTesting(nullptr);  // cleanup
@@ -526,7 +524,7 @@ IN_PROC_BROWSER_TEST_P(SyncConsentTestWithReviewParams, MAYBE_Accept) {
   test::OobeJS().ExpectVisiblePath(kOverviewDialog);
   if (is_review_settings_checked_)
     test::OobeJS().TapOnPath(kReviewSettingsCheckBox);
-  test::OobeJS().TapOnPath(kNonSplitSettingsAcceptButton);
+  test::OobeJS().TapOnPath(kAcceptButton);
 
   WaitForScreenExit();
   EXPECT_EQ(screen_result_.value(), SyncConsentScreen::Result::NEXT);
@@ -572,7 +570,7 @@ IN_PROC_BROWSER_TEST_P(SyncConsentTestWithParams,
   screen->SetDelegateForTesting(&consent_recorded_waiter);
 
   test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
-  test::OobeJS().TapOnPath(kNonSplitSettingsAcceptButton);
+  test::OobeJS().TapOnPath(kAcceptButton);
   consent_recorded_waiter.Wait();
   screen->SetDelegateForTesting(nullptr);
 
@@ -705,7 +703,7 @@ IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, MAYBE_Accept) {
 
   test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
   test::OobeJS().ExpectVisiblePath(kOverviewDialog);
-  test::OobeJS().ExpectVisiblePath(kNonSplitSettingsDeclineButton);
+  test::OobeJS().ExpectVisiblePath(kDeclineButton);
   test::OobeJS().ExpectHiddenPath(kReviewSettingsCheckBox);
 
   // Expect all data types are disabled for minor users when initialized.
@@ -716,7 +714,7 @@ IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, MAYBE_Accept) {
   EXPECT_FALSE(settings->IsSyncEverythingEnabled());
   EXPECT_TRUE(settings->GetSelectedTypes().Empty());
 
-  test::OobeJS().TapOnPath(kNonSplitSettingsAcceptButton);
+  test::OobeJS().TapOnPath(kAcceptButton);
   consent_recorded_waiter.Wait();
   screen->SetDelegateForTesting(nullptr);  // cleanup
 
@@ -769,7 +767,7 @@ IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, MAYBE_Decline) {
 
   test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
   test::OobeJS().ExpectVisiblePath(kOverviewDialog);
-  test::OobeJS().ExpectVisiblePath(kNonSplitSettingsAcceptButton);
+  test::OobeJS().ExpectVisiblePath(kAcceptButton);
   test::OobeJS().ExpectHiddenPath(kReviewSettingsCheckBox);
 
   // Expect all data types are disabled for minor users when initialized.
@@ -780,7 +778,7 @@ IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, MAYBE_Decline) {
   EXPECT_FALSE(settings->IsSyncEverythingEnabled());
   EXPECT_TRUE(settings->GetSelectedTypes().Empty());
 
-  test::OobeJS().TapOnPath(kNonSplitSettingsDeclineButton);
+  test::OobeJS().TapOnPath(kDeclineButton);
   consent_recorded_waiter.Wait();
   screen->SetDelegateForTesting(nullptr);  // cleanup
 
@@ -860,7 +858,7 @@ IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest,
 
   test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
   test::OobeJS().ExpectVisiblePath(kOverviewDialog);
-  test::OobeJS().ExpectVisiblePath(kNonSplitSettingsDeclineButton);
+  test::OobeJS().ExpectVisiblePath(kDeclineButton);
   test::OobeJS().ExpectHiddenPath(kReviewSettingsCheckBox);
 
   histogram_tester_.ExpectUniqueSample(

@@ -52,7 +52,6 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId SyncConsentScreenView::kScreenId;
 
-// TODO(https://crbug.com/1229582): Remove SplitSettings from names in this file
 SyncConsentScreenHandler::SyncConsentScreenHandler()
     : BaseScreenHandler(kScreenId) {
   set_user_acted_method_path_deprecated("login.SyncConsentScreen.userActed");
@@ -97,11 +96,17 @@ void SyncConsentScreenHandler::RememberLocalizedValueWithDeviceName(
 
 void SyncConsentScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
+  // Title and subtitle.
   RememberLocalizedValueWithDeviceName(
       "syncConsentScreenTitle", IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE_WITH_DEVICE,
       builder);
   RememberLocalizedValue("syncConsentScreenSubtitle",
                          IDS_LOGIN_SYNC_CONSENT_SCREEN_SUBTITLE_2, builder);
+  RememberLocalizedValue(
+      "syncConsentScreenTitleArcRestrictions",
+      IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE_WITH_ARC_RESTRICTED, builder);
+
+  // Content section.
   RememberLocalizedValueWithDeviceName(
       "syncConsentScreenOsSyncTitle",
       IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_NAME_2, builder);
@@ -111,59 +116,26 @@ void SyncConsentScreenHandler::DeclareLocalizedValues(
   RememberLocalizedValue(
       "syncConsentScreenChromeBrowserSyncDescription",
       IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_DESCRIPTION, builder);
-  RememberLocalizedValue(
-      "syncConsentReviewSyncOptionsText",
-      IDS_LOGIN_SYNC_CONSENT_SCREEN_REVIEW_SYNC_OPTIONS_LATER, builder);
-
-  RememberLocalizedValue("syncConsentAcceptAndContinue",
-                         IDS_LOGIN_SYNC_CONSENT_SCREEN_ACCEPT_AND_CONTINUE,
-                         builder);
-  RememberLocalizedValue("syncConsentTurnOnSync",
-                         IDS_LOGIN_SYNC_CONSENT_SCREEN_TURN_ON_SYNC, builder);
-
-  // TODO(https://crbug.com/1278325): Remove this strings after removing
-  //                                  the corresponding UI.
-  RememberLocalizedValue("syncConsentScreenSplitSettingsTitle",
-                         IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE, builder);
-  RememberLocalizedValue("syncConsentScreenSplitSettingsSubtitle",
-                         IDS_LOGIN_SYNC_CONSENT_SCREEN_SUBTITLE, builder);
-  RememberLocalizedValue("syncConsentScreenOsSyncName",
-                         IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_NAME, builder);
-  RememberLocalizedValue("syncConsentScreenOsSyncDescription",
-                         IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_DESCRIPTION,
-                         builder);
-  RememberLocalizedValue("syncConsentScreenChromeBrowserSyncName",
-                         IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_NAME,
-                         builder);
-  RememberLocalizedValue("syncConsentScreenChromeSyncDescription",
-                         IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_SYNC_DESCRIPTION,
-                         builder);
-  RememberLocalizedValue(
-      "syncConsentScreenPersonalizeGoogleServicesName",
-      IDS_LOGIN_SYNC_CONSENT_SCREEN_PERSONALIZE_GOOGLE_SERVICES_NAME, builder);
-  RememberLocalizedValue(
-      "syncConsentScreenPersonalizeGoogleServicesDescriptionSupervisedUser",
-      IDS_LOGIN_SYNC_CONSENT_SCREEN_PERSONALIZE_GOOGLE_SERVICES_DESCRIPTION_SUPERVISED_USER,
-      builder);
-  RememberLocalizedValue(
-      "syncConsentScreenPersonalizeGoogleServicesDescription",
-      IDS_LOGIN_SYNC_CONSENT_SCREEN_PERSONALIZE_GOOGLE_SERVICES_DESCRIPTION,
-      builder);
-
-  RememberLocalizedValue(
-      "syncConsentScreenTitleArcRestrictions",
-      IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE_WITH_ARC_RESTRICTED, builder);
   RememberLocalizedValueWithDeviceName(
       "syncConsentScreenOsSyncDescriptionArcRestrictions",
       IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_DESCRIPTION_WITH_ARC_RESTRICTED,
       builder);
+
+  // Review sync options strings.
+  RememberLocalizedValue(
+      "syncConsentReviewSyncOptionsText",
+      IDS_LOGIN_SYNC_CONSENT_SCREEN_REVIEW_SYNC_OPTIONS_LATER, builder);
   RememberLocalizedValue(
       "syncConsentReviewSyncOptionsWithArcRestrictedText",
       IDS_LOGIN_SYNC_CONSENT_SCREEN_REVIEW_SYNC_OPTIONS_LATER_ARC_RESTRICTED,
       builder);
 
-  RememberLocalizedValue("syncConsentScreenAccept",
-                         IDS_LOGIN_SYNC_CONSENT_SCREEN_ACCEPT2, builder);
+  // Bottom buttons strings.
+  RememberLocalizedValue("syncConsentAcceptAndContinue",
+                         IDS_LOGIN_SYNC_CONSENT_SCREEN_ACCEPT_AND_CONTINUE,
+                         builder);
+  RememberLocalizedValue("syncConsentTurnOnSync",
+                         IDS_LOGIN_SYNC_CONSENT_SCREEN_TURN_ON_SYNC, builder);
   RememberLocalizedValue("syncConsentScreenDecline",
                          IDS_LOGIN_SYNC_CONSENT_SCREEN_DECLINE2, builder);
 }
@@ -183,8 +155,8 @@ void SyncConsentScreenHandler::Show(bool is_arc_restricted) {
 
 void SyncConsentScreenHandler::Hide() {}
 
-void SyncConsentScreenHandler::SetThrobberVisible(bool visible) {
-  CallJS("login.SyncConsentScreen.setThrobberVisible", visible);
+void SyncConsentScreenHandler::ShowLoadedStep() {
+  CallJS("login.SyncConsentScreen.showLoadedStep");
 }
 
 void SyncConsentScreenHandler::SetIsMinorMode(bool value) {
@@ -194,11 +166,11 @@ void SyncConsentScreenHandler::SetIsMinorMode(bool value) {
 void SyncConsentScreenHandler::InitializeDeprecated() {}
 
 void SyncConsentScreenHandler::RegisterMessages() {
-  AddCallback("login.SyncConsentScreen.nonSplitSettingsContinue",
-              &SyncConsentScreenHandler::HandleNonSplitSettingsContinue);
+  AddCallback("login.SyncConsentScreen.continue",
+              &SyncConsentScreenHandler::HandleContinue);
 }
 
-void SyncConsentScreenHandler::HandleNonSplitSettingsContinue(
+void SyncConsentScreenHandler::HandleContinue(
     const bool opted_in,
     const bool review_sync,
     const base::Value::List& consent_description_list,
@@ -209,8 +181,8 @@ void SyncConsentScreenHandler::HandleNonSplitSettingsContinue(
   int consent_confirmation_id;
   GetConsentIDs(known_strings_, consent_description, consent_confirmation,
                 &consent_description_ids, &consent_confirmation_id);
-  screen_->OnNonSplitSettingsContinue(
-      opted_in, review_sync, consent_description_ids, consent_confirmation_id);
+  screen_->OnContinue(opted_in, review_sync, consent_description_ids,
+                      consent_confirmation_id);
   SyncConsentScreen::SyncConsentScreenTestDelegate* test_delegate =
       screen_->GetDelegateForTesting();
   if (test_delegate) {

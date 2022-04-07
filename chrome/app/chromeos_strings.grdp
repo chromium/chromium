@@ -1232,69 +1232,34 @@
     Continue
   </message>
 
-  <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE" desc="The title of the dialog that welcomes the user on the first log in, and explains Chrome Sync and privacy options.">
-    You're signed in!
-  </message>
   <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE_WITH_DEVICE" desc="Alternate title for the dialog that explains Chrome Sync and privacy options on first login.">
     Sync your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
   <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE_WITH_ARC_RESTRICTED" desc="Alternate title for the dialog that explains Chrome Sync and privacy options on first login.">
     Get your apps, settings, and more on any ChromeOS device
   </message>
-  <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_SUBTITLE" desc="The subtitle of the dialog that explains Chrome Sync and privacy options on first login.">
-    The following services help keep your data safe and secure. You can turn these features off at any time.
-  </message>
   <if expr="reven">
     <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_SUBTITLE_2" desc="Alternate subtitle of the dialog that explains Chrome Sync and privacy options on first login for non-split.">
       Your saved preferences and activity will be ready on any ChromeOS Flex device when you sign in with your Google Account. You can choose what to sync in Settings.
-    </message>
-    <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_NAME" desc="Title of the 'Settings sync' section of the sync confirmation dialog that is displayed on the first user log in.">
-      ChromeOS Flex settings sync
-    </message>
-    <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_DESCRIPTION" desc="Description of 'Settings sync' section of the sync confirmation dialog that is displayed on the first user log in.">
-      Your apps, settings, and other customizations will be synced across all ChromeOS Flex devices signed in with your Google Account.
     </message>
   </if>
   <if expr="not reven">
     <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_SUBTITLE_2" desc="Alternate subtitle of the dialog that explains Chrome Sync and privacy options on first login for non-split.">
       Your saved preferences and activity will be ready on any Chrome OS device when you sign in with your Google Account. You can choose what to sync in Settings.
     </message>
-    <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_NAME" desc="Title of the 'Settings sync' section of the sync confirmation dialog that is displayed on the first user log in.">
-      Chrome OS settings sync
-    </message>
-    <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_DESCRIPTION" desc="Description of 'Settings sync' section of the sync confirmation dialog that is displayed on the first user log in.">
-      Your apps, settings, and other customizations will be synced across all Chrome OS devices signed in with your Google Account.
-    </message>
   </if>
-  <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_NAME_2" desc="Alternate title of the 'Settings sync' section of the sync confirmation dialog that is displayed on the first user log in.">
-    Sync your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> apps, settings, and more
-  </message>
   <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_DESCRIPTION_WITH_ARC_RESTRICTED" desc="Alternate description of the sync confirmation dialog that is displayed on the first user log in.">
     Sync your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> so your preferences will be ready on any device when you sign in with your Google Account. Preferences include apps, settings, Wi-Fi passwords, languages, wallpaper, keyboard shortcuts, and more.
   </message>
-  <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_NAME" desc="Title of the 'Chrome browser sync' section of the sync confirmation dialog that is displayed on the first user log in.">
-    Chrome browser sync
+
+  <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_NAME_2" desc="Alternate title of the 'Settings sync' section of the sync confirmation dialog that is displayed on the first user log in.">
+    Sync your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> apps, settings, and more
   </message>
   <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_NAME_2" desc="Alternate title of the 'Chrome browser sync' section of the sync confirmation dialog that is displayed on the first user log in.">
     Sync your Chrome browser bookmarks, passwords, history, and more
   </message>
   <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_DESCRIPTION" desc="Description of the 'Chrome browser sync' section of the sync confirmation dialog that is displayed on the first user log in.">
     Google may use your history to personalize Search and other Google services
-  </message>
-  <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_SYNC_NAME" desc="Title of the 'Chrome sync' section of the sync confirmation dialog that is displayed on the first user log in.">
-    Chrome sync
-  </message>
-  <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_SYNC_DESCRIPTION" desc="The description of 'Chrome sync' section of the sync confirmation dialog that is displayed on the first user log in.">
-    Your bookmarks, history, passwords, and other settings will be synced to your Google Account so you can use them on all your devices.
-  </message>
-  <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_PERSONALIZE_GOOGLE_SERVICES_NAME" desc="Title of the personalize services section of the sync confirmation dialog that is displayed on the first user log in.">
-    Personalize Google services
-  </message>
-  <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_PERSONALIZE_GOOGLE_SERVICES_DESCRIPTION" desc="The description of how services personalization works and a URL to configure personalization settings in Google user profile.">
-    Google may use your browsing history to personalize Search and other Google services. You can change this anytime at myaccount.google.com/activitycontrols/search
-  </message>
-  <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_PERSONALIZE_GOOGLE_SERVICES_DESCRIPTION_SUPERVISED_USER" desc="The description of how services personalization works and a URL to configure personalization settings in Google supervised user profile.">
-    Google may use your browsing history to personalize Search and other Google services. You or your parent can change this anytime at myaccount.google.com/activitycontrols/search
   </message>
   <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_REVIEW_SYNC_OPTIONS_LATER" desc="The label to the checkbox explaining that when checked, it will trigger user settings screen opened after session start.">
     Review sync options following setup
@@ -1307,17 +1272,6 @@
   </message>
   <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_TURN_ON_SYNC" desc="The label on the button that closes the dialog while agreeing to sync for minor users.">
     Turn on sync
-  </message>
-  <!-- TODO(jamescook): We landed both sets of labels to get them in before
-       string freeze. After M85 branches, delete the ones we didn't use. -->
-  <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_ACCEPT" desc="The label on the button that closes the dialog while agreeing to sync.">
-    Yes, I'm in
-  </message>
-  <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_DECLINE" desc="The label on the button that closes the dialog while not agreeing to sync.">
-    No, thanks
-  </message>
-  <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_ACCEPT2" desc="Alternate label on the button that closes the dialog while agreeing to sync.">
-    Got it
   </message>
   <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_DECLINE2" desc="Alternate label on the button that closes the dialog while not agreeing to sync.">
     No thanks

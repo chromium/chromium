@@ -905,7 +905,7 @@ cr.define('cr.ui.login.debug', function() {
     {
       id: 'sync-consent',
       kind: ScreenKind.NORMAL,
-      defaultState: 'step-no-split',
+      defaultState: 'step-loaded',
       states: [
         {
           id: 'minor-mode',

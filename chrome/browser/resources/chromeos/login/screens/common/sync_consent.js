@@ -14,8 +14,7 @@
  * @enum {string}
  */
 const SyncUIState = {
-  NO_SPLIT: 'no-split',
-  SPLIT: 'split',
+  LOADED: 'loaded',
   LOADING: 'loading',
 };
 
@@ -86,7 +85,7 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
   }
 
   get EXTERNAL_API() {
-    return ['setThrobberVisible', 'setIsMinorMode'];
+    return ['showLoadedStep', 'setIsMinorMode'];
   }
 
   /** Initial UI State for screen */
@@ -103,15 +102,8 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
     this.isArcRestricted_ = data['isArcRestricted'];
   }
 
-  /**
-   * Event handler that is invoked just before the screen is hidden.
-   */
-  onBeforeHide() {
-    this.setThrobberVisible(false /*visible*/);
-  }
-
   defaultUIStep() {
-    return this.getDefaultUIStep_();
+    return SyncUIState.LOADING;
   }
 
   /**
@@ -144,15 +136,10 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
   }
 
   /**
-   * This is called to show/hide the loading UI.
-   * @param {boolean} visible whether to show loading UI.
+   * This is called when SyncScreenBehavior becomes Shown.
    */
-  setThrobberVisible(visible) {
-    if (visible) {
-      this.setUIStep(SyncUIState.LOADING);
-    } else {
-      this.setUIStep(this.getDefaultUIStep_());
-    }
+  showLoadedStep() {
+    this.setUIStep(SyncUIState.LOADED);
   }
 
   /**
@@ -165,50 +152,23 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
   }
 
   /**
-   * Returns split settings sync version or regular version depending on if
-   * split settings sync is enabled.
-   * @private
-   */
-  getDefaultUIStep_() {
-    return SyncUIState.NO_SPLIT;
-  }
-
-  /**
-   * Continue button click handler for pre-SplitSettingsSync.
+   * Continue button is clicked
    * @private
    */
   onSettingsSaveAndContinue_(e, opted_in) {
     assert(e.path);
-    chrome.send('login.SyncConsentScreen.nonSplitSettingsContinue', [
+    chrome.send('login.SyncConsentScreen.continue', [
       opted_in, this.$.reviewSettingsBox.checked, this.getConsentDescription_(),
       this.getConsentConfirmation_(e.path)
     ]);
   }
 
-  onNonSplitSettingsAccepted_(e) {
+  onAccepted_(e) {
     this.onSettingsSaveAndContinue_(e, true /* opted_in */);
   }
 
-  onNonSplitSettingsDeclined_(e) {
+  onDeclined_(e) {
     this.onSettingsSaveAndContinue_(e, false /* opted_in */);
-  }
-
-  /**
-   * Accept button handler for SplitSettingsSync.
-   * @param {!Event} event
-   * @private
-   */
-  onAcceptTap_(event) {
-    // TODO(https://crbug.com/1278325): Remove this.
-  }
-
-  /**
-   * Decline button handler for SplitSettingsSync.
-   * @param {!Event} event
-   * @private
-   */
-  onDeclineTap_(event) {
-    // TODO(https://crbug.com/1278325): Remove this.
   }
 
   /**

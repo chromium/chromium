@@ -34,9 +34,10 @@ class SyncConsentScreenView {
   // Hides the contents of the screen.
   virtual void Hide() = 0;
 
-  // Controls if the loading throbber is visible. This is used when
-  // SyncScreenBehavior is unknown.
-  virtual void SetThrobberVisible(bool visible) = 0;
+  // The screen is initially shown in a loading state.
+  // When SyncScreenBehavior becomes Shown, this method should be called to
+  // advance the screen to the loaded state.
+  virtual void ShowLoadedStep() = 0;
 
   // Set the minor mode flag, which controls whether we could use nudge
   // techinuque on the UI.
@@ -68,7 +69,7 @@ class SyncConsentScreenHandler : public BaseScreenHandler,
   void Bind(ash::SyncConsentScreen* screen) override;
   void Show(bool is_arc_restricted) override;
   void Hide() override;
-  void SetThrobberVisible(bool visible) override;
+  void ShowLoadedStep() override;
   void SetIsMinorMode(bool value) override;
 
  private:
@@ -77,11 +78,10 @@ class SyncConsentScreenHandler : public BaseScreenHandler,
   void RegisterMessages() override;
 
   // WebUI message handlers
-  void HandleNonSplitSettingsContinue(
-      const bool opted_in,
-      const bool review_sync,
-      const base::Value::List& consent_description_list,
-      const std::string& consent_confirmation);
+  void HandleContinue(const bool opted_in,
+                      const bool review_sync,
+                      const base::Value::List& consent_description_list,
+                      const std::string& consent_confirmation);
 
   // Adds resource `resource_id` both to `builder` and to `known_string_ids_`.
   void RememberLocalizedValue(const std::string& name,
