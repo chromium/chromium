@@ -357,6 +357,10 @@ TEST_F('PrintPreviewModelTest', 'ChangeDestination', function() {
   this.runMochaTest(model_test.TestNames.ChangeDestination);
 });
 
+TEST_F('PrintPreviewModelTest', 'RemoveUnsupportedDestinations', function() {
+  this.runMochaTest(model_test.TestNames.RemoveUnsupportedDestinations);
+});
+
 TEST_F('PrintPreviewModelTest', 'CddResetToDefault', function() {
   this.runMochaTest(model_test.TestNames.CddResetToDefault);
 });
@@ -585,9 +589,10 @@ TEST_F(
     });
 
 TEST_F(
-    'PrintPreviewDestinationStoreTest', 'RecentCloudPrintFallback', function() {
+    'PrintPreviewDestinationStoreTest', 'RecentDestinationsFallback',
+    function() {
       this.runMochaTest(
-          destination_store_test.TestNames.RecentCloudPrintFallback);
+          destination_store_test.TestNames.RecentDestinationsFallback);
     });
 
 TEST_F(
@@ -602,13 +607,6 @@ TEST_F(
     function() {
       this.runMochaTest(destination_store_test.TestNames
                             .MultipleRecentDestinationsOneRequest);
-    });
-
-TEST_F(
-    'PrintPreviewDestinationStoreTest',
-    'MultipleRecentDestinationsAndCloudPrint', function() {
-      this.runMochaTest(destination_store_test.TestNames
-                            .MultipleRecentDestinationsAndCloudPrint);
     });
 
 TEST_F(
@@ -929,13 +927,6 @@ TEST_F(
     'PrintPreviewDestinationSearchTestChromeOS', 'ResolutionFails', function() {
       this.runMochaTest(
           destination_search_test_chromeos.TestNames.ResolutionFails);
-    });
-
-TEST_F(
-    'PrintPreviewDestinationSearchTestChromeOS', 'CloudKioskPrinter',
-    function() {
-      this.runMochaTest(
-          destination_search_test_chromeos.TestNames.CloudKioskPrinter);
     });
 
 GEN('#else');
@@ -1385,11 +1376,11 @@ TEST_F('PrintPreviewDestinationSettingsTest', 'SaveAsPdfRecent', function() {
   this.runMochaTest(destination_settings_test.TestNames.SaveAsPdfRecent);
 });
 
+GEN('#if BUILDFLAG(IS_CHROMEOS)');
 TEST_F('PrintPreviewDestinationSettingsTest', 'GoogleDriveRecent', function() {
   this.runMochaTest(destination_settings_test.TestNames.GoogleDriveRecent);
 });
 
-GEN('#if BUILDFLAG(IS_CHROMEOS)');
 TEST_F(
     'PrintPreviewDestinationSettingsTest', 'GoogleDriveAutoselect', function() {
       this.runMochaTest(

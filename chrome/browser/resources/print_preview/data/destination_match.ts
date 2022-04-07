@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {CloudOrigins, Destination, DestinationOrigin, GooglePromotedDestinationId, RecentDestination} from './destination.js';
+import {Destination, DestinationOrigin, GooglePromotedDestinationId, RecentDestination} from './destination.js';
 
 /**
  * Printer types for capabilities and printer list requests.
@@ -14,18 +14,15 @@ export enum PrinterType {
   EXTENSION_PRINTER = 1,
   PDF_PRINTER = 2,
   LOCAL_PRINTER = 3,
-  CLOUD_PRINTER = 4
+  CLOUD_PRINTER_DEPRECATED = 4
 }
 
 export function originToType(origin: DestinationOrigin): PrinterType {
   if (origin === DestinationOrigin.LOCAL || origin === DestinationOrigin.CROS) {
     return PrinterType.LOCAL_PRINTER;
   }
-  if (origin === DestinationOrigin.EXTENSION) {
-    return PrinterType.EXTENSION_PRINTER;
-  }
-  assert(CloudOrigins.includes(origin));
-  return PrinterType.CLOUD_PRINTER;
+  assert(origin === DestinationOrigin.EXTENSION);
+  return PrinterType.EXTENSION_PRINTER;
 }
 
 export function getPrinterTypeForDestination(

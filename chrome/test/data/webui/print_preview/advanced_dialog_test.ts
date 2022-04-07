@@ -35,7 +35,7 @@ suite(advanced_dialog_test.suiteName, function() {
   setup(function() {
     // Create destination
     destination = new Destination(
-        printerId, DestinationType.GOOGLE, DestinationOrigin.COOKIES,
+        printerId, DestinationType.LOCAL, DestinationOrigin.EXTENSION,
         printerName, DestinationConnectionStatus.ONLINE);
     document.body.innerHTML = '';
     const model: PrintPreviewModelElement =

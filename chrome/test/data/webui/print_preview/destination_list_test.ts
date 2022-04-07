@@ -33,15 +33,15 @@ suite(destination_list_test.suiteName, function() {
           'id2', DestinationType.LOCAL, DestinationOrigin.LOCAL, 'Two',
           DestinationConnectionStatus.ONLINE, {description: 'XYZ'}),
       new Destination(
-          'id3', DestinationType.GOOGLE, DestinationOrigin.COOKIES, 'Three',
+          'id3', DestinationType.LOCAL, DestinationOrigin.LOCAL, 'Three',
           DestinationConnectionStatus.ONLINE,
           {description: 'ABC', tags: ['__cp__location=123']}),
       new Destination(
-          'id4', DestinationType.GOOGLE, DestinationOrigin.COOKIES, 'Four',
+          'id4', DestinationType.LOCAL, DestinationOrigin.LOCAL, 'Four',
           DestinationConnectionStatus.ONLINE,
           {description: 'XYZ', tags: ['__cp__location=123']}),
       new Destination(
-          'id5', DestinationType.GOOGLE, DestinationOrigin.COOKIES, 'Five',
+          'id5', DestinationType.LOCAL, DestinationOrigin.LOCAL, 'Five',
           DestinationConnectionStatus.ONLINE,
           {description: 'XYZ', tags: ['__cp__location=123']})
     ];

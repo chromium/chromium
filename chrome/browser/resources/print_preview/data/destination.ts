@@ -46,16 +46,6 @@ export enum DestinationOrigin {
 }
 
 /**
- * Cloud Print origins.
- */
-export const CloudOrigins: DestinationOrigin[] = [
-  DestinationOrigin.COOKIES,
-  // <if expr="chromeos_ash or chromeos_lacros">
-  DestinationOrigin.DEVICE,
-  // </if>
-];
-
-/**
  * Enumeration of the connection statuses of printer destinations.
  */
 export enum DestinationConnectionStatus {

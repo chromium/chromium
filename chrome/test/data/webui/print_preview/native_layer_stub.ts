@@ -159,9 +159,6 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
 
   print(printTicket: string) {
     this.methodCalled('print', printTicket);
-    if (JSON.parse(printTicket).printerType === PrinterType.CLOUD_PRINTER) {
-      return Promise.resolve('sample data');
-    }
     return Promise.resolve(undefined);
   }
 

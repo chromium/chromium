@@ -38,7 +38,6 @@ class LocalPrinter;
 
 namespace base {
 class DictionaryValue;
-class RefCountedMemory;
 }
 
 namespace content {
@@ -114,9 +113,6 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   virtual PrinterHandler* GetPrinterHandler(mojom::PrinterType printer_type);
 
  protected:
-  // Protected so unit tests can override.
-  virtual bool IsCloudPrintEnabled();
-
   // Shuts down the initiator renderer. Called when a bad IPC message is
   // received.
   virtual void BadMessageReceived();
@@ -236,11 +232,6 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   // error notification to the Web UI instead.
   void SendPrinterCapabilities(const std::string& callback_id,
                                base::Value settings_info);
-
-  // Send the PDF data to Print Preview so that it can be sent to the cloud
-  // print server to print.
-  void SendCloudPrintJob(const std::string& callback_id,
-                         const base::RefCountedMemory* data);
 
   // Closes the preview dialog.
   void ClosePreviewDialog();

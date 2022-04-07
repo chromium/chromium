@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
@@ -21,7 +20,6 @@
 #include "base/i18n/number_formatting.h"
 #include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
-#include "base/memory/ref_counted_memory.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -99,11 +97,6 @@ using content::WebContents;
 namespace printing {
 
 namespace {
-
-// Max size for PDFs sent to Cloud Print. Server side limit is currently 80MB
-// but PDF will double in size when sent to JS. See crbug.com/793506 and
-// crbug.com/372240.
-constexpr size_t kMaxCloudPrintPdfDataSizeInBytes = 80 * 1024 * 1024 / 2;
 
 mojom::PrinterType GetPrinterTypeForUserAction(UserActionBuckets user_action) {
   switch (user_action) {
@@ -188,8 +181,6 @@ const char kPdfPrinterDisabled[] = "pdfPrinterDisabled";
 // Name of a dictionary field indicating whether the destinations are managed by
 // the PrinterTypeDenyList enterprise policy.
 const char kDestinationsManaged[] = "destinationsManaged";
-// Name of a dictionary field holding the cloud print URL.
-const char kCloudPrintURL[] = "cloudPrintURL";
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Name of a dictionary field indicating whether the user's Drive directory is
 // mounted.
@@ -234,13 +225,6 @@ UserActionBuckets DetermineUserAction(const base::Value& settings) {
     return UserActionBuckets::kPrintToGoogleDriveCros;
   }
 #endif
-
-  // This needs to be checked before checking for a cloud print ID, since a
-  // print ticket for printing to Drive will also contain a cloud print ID.
-  if (settings.FindBoolKey(kSettingPrintToGoogleDrive).value_or(false))
-    return UserActionBuckets::kPrintToGoogleDrive;
-  if (settings.FindKey(kSettingCloudPrintId))
-    return UserActionBuckets::kPrintWithCloudPrint;
 
   mojom::PrinterType type = static_cast<mojom::PrinterType>(
       settings.FindIntKey(kSettingPrinterType).value());
@@ -570,8 +554,6 @@ void PrintPreviewHandler::ReadPrinterTypeDenyListFromPrefs() {
       printer_type = mojom::PrinterType::kPdf;
     else if (deny_list_str == "local")
       printer_type = mojom::PrinterType::kLocal;
-    else if (deny_list_str == "cloud")
-      printer_type = mojom::PrinterType::kCloud;
     else
       continue;
 
@@ -705,7 +687,7 @@ void PrintPreviewHandler::HandleGetPreview(const base::Value::List& args) {
   CHECK_GT(request_id, -1);
   mojom::PrinterType printer_type = static_cast<mojom::PrinterType>(
       settings.FindIntKey(kSettingPrinterType).value());
-  CHECK(printer_type != mojom::PrinterType::kCloud || IsCloudPrintEnabled());
+  CHECK_NE(printer_type, mojom::PrinterType::kCloudDeprecated);
 
   CHECK(!base::Contains(preview_callbacks_, request_id));
   preview_callbacks_[request_id] = callback_id;
@@ -807,14 +789,6 @@ void PrintPreviewHandler::HandlePrint(const base::Value::List& args) {
     ReportPrintDocumentTypeHistograms(doc_type);
   }
   ReportUserActionHistogram(user_action);
-
-  if (user_action == UserActionBuckets::kPrintWithCloudPrint ||
-      user_action == UserActionBuckets::kPrintToGoogleDrive) {
-    // Does not send the title like the other printer handler types below,
-    // because JS already has the document title from the initial settings.
-    SendCloudPrintJob(callback_id, data.get());
-    return;
-  }
 
   PrinterHandler* handler =
       GetPrinterHandler(GetPrinterTypeForUserAction(user_action));
@@ -998,11 +972,6 @@ void PrintPreviewHandler::SendInitialSettings(
   if (policies.is_dict() && !policies.DictEmpty())
     initial_settings.SetKey(kPolicies, std::move(policies));
 
-  if (IsCloudPrintEnabled()) {
-    initial_settings.SetStringKey(
-        kCloudPrintURL, GURL(cloud_devices::GetCloudPrintURL()).spec());
-  }
-
   initial_settings.SetBoolKey(
       kPdfPrinterDisabled,
       base::Contains(printer_type_deny_list_, mojom::PrinterType::kPdf));
@@ -1072,25 +1041,6 @@ void PrintPreviewHandler::SendPrinterCapabilities(
 
   VLOG(1) << "Get printer capabilities failed";
   RejectJavascriptCallback(base::Value(callback_id), base::Value());
-}
-
-void PrintPreviewHandler::SendCloudPrintJob(
-    const std::string& callback_id,
-    const base::RefCountedMemory* data) {
-  // Crash if a cloud print job is requested and cloud print is not enabled.
-  CHECK(IsCloudPrintEnabled());
-
-  // BASE64 encode the job data.
-  const base::StringPiece raw_data(data->front_as<char>(), data->size());
-  std::string base64_data;
-  base::Base64Encode(raw_data, &base64_data);
-
-  if (base64_data.size() >= kMaxCloudPrintPdfDataSizeInBytes) {
-    RejectJavascriptCallback(base::Value(callback_id),
-                             base::Value("OVERSIZED_PDF"));
-    return;
-  }
-  ResolveJavascriptCallback(base::Value(callback_id), base::Value(base64_data));
 }
 
 WebContents* PrintPreviewHandler::GetInitiator() {
@@ -1283,11 +1233,6 @@ void PrintPreviewHandler::OnPrintResult(const std::string& callback_id,
     background_printing_manager->OnPrintRequestCancelled(
         preview_web_contents());
   }
-}
-
-bool PrintPreviewHandler::IsCloudPrintEnabled() {
-  return !base::Contains(printer_type_deny_list_, mojom::PrinterType::kCloud) &&
-         GetPrefs()->GetBoolean(prefs::kCloudPrintSubmitEnabled);
 }
 
 void PrintPreviewHandler::BadMessageReceived() {

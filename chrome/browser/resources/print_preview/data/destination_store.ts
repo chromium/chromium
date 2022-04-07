@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {DestinationSearchBucket, MetricsContext, PrintPreviewInitializationEvents} from '../metrics.js';
+import {MetricsContext, PrintPreviewInitializationEvents} from '../metrics.js';
 import {CapabilitiesResponse, NativeLayer, NativeLayerImpl} from '../native_layer.js';
 // <if expr="chromeos_ash or chromeos_lacros">
 import {NativeLayerCros, NativeLayerCrosImpl, PrinterSetupResponse} from '../native_layer_cros.js';
@@ -377,14 +377,6 @@ export class DestinationStore extends EventTarget {
       return;
     }
 
-    // Check for Cloud Print printers and remove them. Cloud Print is no longer
-    // supported.
-    // TODO(rbpotter): Remove cloud printers from the sticky settings/auto
-    // select, similar to current handling for privet, and remove this.
-    if (this.typesToSearch_.has(PrinterType.CLOUD_PRINTER)) {
-      this.typesToSearch_.delete(PrinterType.CLOUD_PRINTER);
-    }
-
     for (const printerType of this.typesToSearch_) {
       this.startLoadDestinations_(printerType);
     }
@@ -628,14 +620,6 @@ export class DestinationStore extends EventTarget {
 
     // Update and persist selected destination.
     this.selectedDestination_ = destination;
-    // Adjust metrics.
-    if (destination.cloudID &&
-        this.destinations_.some(function(otherDestination) {
-          return otherDestination.cloudID === destination.cloudID &&
-              otherDestination !== destination;
-        })) {
-      this.metrics_.record(DestinationSearchBucket.CLOUD_DUPLICATE_SELECTED);
-    }
     // Notify about selected destination change.
     this.dispatchEvent(
         new CustomEvent(DestinationStoreEventType.DESTINATION_SELECT));

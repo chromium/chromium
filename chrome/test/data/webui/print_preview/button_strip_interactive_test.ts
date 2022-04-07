@@ -23,8 +23,13 @@ suite(button_strip_interactive_test.suiteName, function() {
     document.body.innerHTML = '';
     buttonStrip = document.createElement('print-preview-button-strip');
     buttonStrip.destination = new Destination(
-        'FooDevice', DestinationType.GOOGLE, DestinationOrigin.COOKIES,
-        'FooName', DestinationConnectionStatus.ONLINE);
+        'FooDevice',
+        DestinationType.LOCAL,
+        DestinationOrigin.EXTENSION,
+        'FooName',
+        DestinationConnectionStatus.ONLINE,
+        {extensionId: 'aaa111', extensionName: 'myPrinterExtension'},
+    );
     buttonStrip.state = State.NOT_READY;
     buttonStrip.firstLoad = true;
     document.body.appendChild(buttonStrip);

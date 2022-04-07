@@ -41,8 +41,9 @@ suite(header_test.suiteName, function() {
     model.set('settings.duplex.value', false);
 
     header.destination = new Destination(
-        'FooDevice', DestinationType.GOOGLE, DestinationOrigin.COOKIES,
-        'FooName', DestinationConnectionStatus.ONLINE);
+        'FooDevice', DestinationType.LOCAL, DestinationOrigin.EXTENSION,
+        'FooName', DestinationConnectionStatus.ONLINE,
+        {extensionId: 'aaa111', extensionName: 'myPrinterExtension'});
     header.state = State.READY;
     header.managed = false;
     header.sheetCount = 1;

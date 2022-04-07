@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationErrorType, DestinationOrigin, DestinationStore, DestinationStoreEventType, DestinationType, GooglePromotedDestinationId, LocalDestinationInfo, makeRecentDestination, NativeInitialSettings, NativeLayerImpl, PrinterType} from 'chrome://print/print_preview.js';
+import {Destination, DestinationErrorType, DestinationStore, DestinationStoreEventType, GooglePromotedDestinationId, LocalDestinationInfo, makeRecentDestination, NativeInitialSettings, NativeLayerImpl, PrinterType} from 'chrome://print/print_preview.js';
 // <if expr="not chromeos_ash and not chromeos_lacros">
 import {RecentDestination} from 'chrome://print/print_preview.js';
 // </if>
@@ -25,10 +25,8 @@ const destination_store_test = {
   TestNames: {
     SingleRecentDestination: 'single recent destination',
     MultipleRecentDestinations: 'multiple recent destinations',
-    MultipleRecentDestinationsAndCloudPrint:
-        'multiple recent destinations and cloud print',
-    RecentCloudPrintFallback:
-        'failure to load cloud print destination results in save as pdf',
+    RecentDestinationsFallback:
+        'no local or other destinations results in save as pdf',
     MultipleRecentDestinationsOneRequest:
         'multiple recent destinations one request',
     DefaultDestinationSelectionRules: 'default destination selection rules',
@@ -170,75 +168,15 @@ suite(destination_store_test.suiteName, function() {
       });
 
   /**
-   * Tests that if the user has multiple recent destinations and a Cloud Print
-   * destination, the most recent destination is automatically reselected and
-   * its capabilities are fetched except for the Cloud Print destination.
+   * Tests that if there are no recent destinations, we fall back to Save As
+   * PDF.
    */
   test(
-      assert(destination_store_test.TestNames
-                 .MultipleRecentDestinationsAndCloudPrint),
+      assert(destination_store_test.TestNames.RecentDestinationsFallback),
       function() {
-        // Convert the first 3 entries into recents.
-        const recentDestinations = destinations.slice(0, 3).map(
-            destination => makeRecentDestination(destination));
-
-        const cloudPrintDestination = new Destination(
-            'cp_id', DestinationType.GOOGLE, DestinationOrigin.COOKIES,
-            'Cloud Printer', DestinationConnectionStatus.ONLINE);
-        // Insert a Cloud Print printer into recent destinations.
-        recentDestinations.unshift(
-            makeRecentDestination(cloudPrintDestination));
-
         initialSettings.serializedAppStateStr = JSON.stringify({
           version: 2,
-          recentDestinations: recentDestinations,
-        });
-
-        return setInitialSettings(false).then(function(args) {
-          // Should have loaded ID1 as the selected printer, since it was most
-          // recent.
-          assertEquals('ID1', args.destinationId);
-          assertEquals(PrinterType.LOCAL_PRINTER, args.printerType);
-          assertEquals('ID1', destinationStore.selectedDestination!.id);
-
-          // Verify that all local printers have been added to the store.
-          const reportedPrinters = destinationStore.destinations();
-          destinations.forEach(destination => {
-            // <if expr="chromeos_ash or chromeos_lacros">
-            assertEquals(DestinationOrigin.CROS, destination.origin);
-            // </if>
-            // <if expr="not chromeos_ash and not chromeos_lacros">
-            assertEquals(DestinationOrigin.LOCAL, destination.origin);
-            // </if>
-            const match = reportedPrinters.find((reportedPrinter) => {
-              return reportedPrinter.id === destination.id;
-            });
-            assertFalse(typeof match === 'undefined');
-          });
-
-          // The Cloud Print printer should be missing.
-          const match = reportedPrinters.find(
-              reportedPrinter =>
-                  cloudPrintDestination.id === reportedPrinter.id);
-          assertTrue(typeof match === 'undefined');
-        });
-      });
-
-  /**
-   * Tests that if the user has a recent Cloud Print destination selected, we
-   * fail to initialize the Cloud Print interface, and no other destinations are
-   * available, we fall back to Save As PDF.
-   */
-  test(
-      assert(destination_store_test.TestNames.RecentCloudPrintFallback),
-      function() {
-        const cloudPrintDestination = new Destination(
-            'cp_id', DestinationType.GOOGLE, DestinationOrigin.COOKIES,
-            'Cloud Printer', DestinationConnectionStatus.ONLINE);
-        const recentDestination = makeRecentDestination(cloudPrintDestination);
-        initialSettings.serializedAppStateStr = JSON.stringify({
-          version: 2,
-          recentDestinations: [recentDestination],
+          recentDestinations: [],
         });
         localDestinations = [];
 

@@ -26,8 +26,9 @@ suite(button_strip_test.suiteName, function() {
     buttonStrip = document.createElement('print-preview-button-strip');
 
     buttonStrip.destination = new Destination(
-        'FooDevice', DestinationType.GOOGLE, DestinationOrigin.COOKIES,
-        'FooName', DestinationConnectionStatus.ONLINE);
+        'FooDevice', DestinationType.LOCAL, DestinationOrigin.EXTENSION,
+        'FooName', DestinationConnectionStatus.ONLINE,
+        {extensionId: 'aaa111', extensionName: 'myPrinterExtension'});
     buttonStrip.state = State.READY;
     // No max sheets limit is specified.
     buttonStrip.maxSheets = 0;

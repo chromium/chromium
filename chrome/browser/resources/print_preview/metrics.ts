@@ -168,9 +168,6 @@ export class MetricsContext {
       case (PrinterType.LOCAL_PRINTER):
         histogram = 'PrintPreview.Initialization.GetPrinters.Local';
         break;
-      case (PrinterType.CLOUD_PRINTER):
-        histogram = 'PrintPreview.Initialization.GetPrinters.Cloud';
-        break;
       default:
         assertNotReached('unknown type = ' + type);
     }

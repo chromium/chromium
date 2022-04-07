@@ -497,8 +497,6 @@ void LocalPrinterAsh::GetPrinterTypeDenyList(
       printer_type = printing::mojom::PrinterType::kPdf;
     else if (deny_list_str == "local")
       printer_type = printing::mojom::PrinterType::kLocal;
-    else if (deny_list_str == "cloud")
-      printer_type = printing::mojom::PrinterType::kCloud;
     else
       continue;
 

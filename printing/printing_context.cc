@@ -144,7 +144,7 @@ mojom::ResultCode PrintingContext::UpdatePrintSettings(
 
   if (!open_in_external_preview &&
       (print_to_cloud || printer_type == mojom::PrinterType::kPdf ||
-       printer_type == mojom::PrinterType::kCloud ||
+       printer_type == mojom::PrinterType::kCloudDeprecated ||
        printer_type == mojom::PrinterType::kExtension)) {
     settings_->set_dpi(kDefaultPdfDpi);
     gfx::Size paper_size(GetPdfPaperSizeDeviceUnits());

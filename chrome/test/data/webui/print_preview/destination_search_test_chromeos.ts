@@ -18,7 +18,6 @@ const destination_search_test_chromeos = {
   TestNames: {
     ReceiveSuccessfulSetup: 'receive successful setup',
     ResolutionFails: 'resolution fails',
-    CloudKioskPrinter: 'cloud kiosk printer',
     ReceiveSuccessfulSetupWithPolicies:
         'receive successful setup with policies',
   },
@@ -141,25 +140,5 @@ suite(destination_search_test_chromeos.suiteName, function() {
               assertEquals(
                   originalDestination, destinationStore.selectedDestination);
             });
-      });
-
-  // Test what happens when a simulated cloud kiosk printer is selected.
-  test(
-      assert(destination_search_test_chromeos.TestNames.CloudKioskPrinter),
-      function() {
-        const printerId = 'cloud-printer-id';
-
-        // Create cloud destination.
-        const cloudDest = new Destination(
-            printerId, DestinationType.GOOGLE, DestinationOrigin.DEVICE,
-            'displayName', DestinationConnectionStatus.ONLINE);
-        cloudDest.capabilities =
-            getCddTemplate(printerId, 'displayName').capabilities;
-
-        // Place destination in the local list as happens for Kiosk printers.
-        simulateDestinationSelect(cloudDest);
-
-        // Verify that the destination has been selected.
-        assertEquals(printerId, destinationStore.selectedDestination!.id);
       });
 });

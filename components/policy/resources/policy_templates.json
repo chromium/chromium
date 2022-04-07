@@ -10412,11 +10412,12 @@
       'owners': ['file://printing/OWNERS', 'weili@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.*:17-'],
+      'supported_on': ['chrome.*:17-101'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'deprecated': True,
       'example_value': True,
       'id': 109,
       'caption': '''Enable submission of documents to <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph>''',
@@ -26177,7 +26178,8 @@
         {
           'name': 'cloud',
           'value': 'cloud',
-          'caption': '''<ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> and 'Save to Google Drive' destinations''',
+          'caption': '''<ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> and 'Save to Google Drive' destinations (Deprecated)''',
+          'supported_on': ['chrome_os:80-101', 'chrome.*:80-101']
         },
       ],
       'supported_on': ['chrome_os:80-', 'chrome.*:80-'],
@@ -26193,7 +26195,7 @@
 
       Placing all printer types on the deny list effectively disables printing, as there would be no available destinations to send a document for printing.
 
-      Including <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD">cloud</ph> on the deny list has the same effect as setting the <ph name="POLICY_CLOUDPRINTSUBMITENABLED">CloudPrintSubmitEnabled</ph> policy to false. In order to keep <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> destinations discoverable, the <ph name="POLICY_CLOUDPRINTSUBMITENABLED">CloudPrintSubmitEnabled</ph> policy must be set to true and <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD">cloud</ph> must not be on the deny list.
+      In versions before 102, including <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD">cloud</ph> on the deny list has the same effect as setting the <ph name="POLICY_CLOUDPRINTSUBMITENABLED">CloudPrintSubmitEnabled</ph> policy to false. In order to keep <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> destinations discoverable, the <ph name="POLICY_CLOUDPRINTSUBMITENABLED">CloudPrintSubmitEnabled</ph> policy must be set to true and <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD">cloud</ph> must not be on the deny list. Beginning in version 102, <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> destinations are not supported and will not appear regardless of policy values.
 
       If the policy is not set, or is set to an empty list, all printer types will be available for discovery.
 

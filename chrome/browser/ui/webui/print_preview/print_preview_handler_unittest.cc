@@ -9,13 +9,13 @@
 #include <utility>
 #include <vector>
 
-#include "base/base64.h"
 #include "base/containers/flat_set.h"
 #include "base/i18n/number_formatting.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
@@ -70,9 +70,9 @@ const char kEmptyPrinterName[] = "EmptyPrinter";
 const char kTestData[] = "abc";
 
 // Array of all mojom::PrinterTypes.
-constexpr mojom::PrinterType kAllTypes[] = {
-    mojom::PrinterType::kExtension, mojom::PrinterType::kPdf,
-    mojom::PrinterType::kLocal, mojom::PrinterType::kCloud};
+constexpr mojom::PrinterType kAllTypes[] = {mojom::PrinterType::kExtension,
+                                            mojom::PrinterType::kPdf,
+                                            mojom::PrinterType::kLocal};
 
 // Array of all mojom::PrinterTypes that have working PrinterHandlers.
 constexpr mojom::PrinterType kAllSupportedTypes[] = {
@@ -158,7 +158,9 @@ UserActionBuckets GetUserActionForPrinterType(mojom::PrinterType type) {
       return UserActionBuckets::kPrintToPdf;
     case mojom::PrinterType::kLocal:
       return UserActionBuckets::kPrintToPrinter;
-    case mojom::PrinterType::kCloud:
+    case mojom::PrinterType::kCloudDeprecated:
+      NOTREACHED();
+      // Return value doesn't matter.
       return UserActionBuckets::kPrintWithCloudPrint;
   }
 }
@@ -346,8 +348,6 @@ class TestPrintPreviewHandler : public PrintPreviewHandler {
     called_for_type_.insert(printer_type);
     return test_printer_handler_.get();
   }
-
-  bool IsCloudPrintEnabled() override { return true; }
 
   void BadMessageReceived() override { bad_messages_++; }
 
@@ -560,8 +560,6 @@ class PrintPreviewHandlerTest : public testing::Test {
                                         base::Value::Type::BOOLEAN));
     ASSERT_TRUE(settings->FindKeyOfType("destinationsManaged",
                                         base::Value::Type::BOOLEAN));
-    ASSERT_TRUE(
-        settings->FindKeyOfType("cloudPrintURL", base::Value::Type::STRING));
   }
 
   // Returns |policy_name| entry from initial settings policies.
@@ -1255,25 +1253,12 @@ TEST_F(PrintPreviewHandlerTest, Print) {
 
     CheckHistograms(histograms, type);
 
-    // Verify correct PrinterHandler was called or that no handler was requested
-    // for cloud printers.
-    if (type == mojom::PrinterType::kCloud) {
-      EXPECT_TRUE(handler()->NotCalled());
-    } else {
-      EXPECT_TRUE(handler()->CalledOnlyForType(type));
-    }
+    // Verify correct PrinterHandler was called.
+    EXPECT_TRUE(handler()->CalledOnlyForType(type));
 
     // Verify print promise was resolved successfully.
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
     CheckWebUIResponse(data, print_callback_id, true);
-
-    // For cloud print, should also get the encoded data back as a string.
-    if (type == mojom::PrinterType::kCloud) {
-      ASSERT_TRUE(data.arg3()->is_string());
-      std::string expected_data;
-      base::Base64Encode(kTestData, &expected_data);
-      EXPECT_EQ(data.arg3()->GetString(), expected_data);
-    }
   }
 }
 

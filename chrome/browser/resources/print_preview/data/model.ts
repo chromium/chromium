@@ -1066,19 +1066,18 @@ export class PrintPreviewModelElement extends PolymerElement {
       recentDestinations = [recentDestinations];
     }
 
-    // Remove unsupported privet printers from the sticky settings,
+    // Remove unsupported privet and cloud printers from the sticky settings,
     // to free up these spots for supported printers.
+    const unsupportedOrigins: DestinationOrigin[] = [
+      DestinationOrigin.COOKIES,
+      // <if expr="chromeos_ash or chromeos_lacros">
+      DestinationOrigin.DEVICE,
+      // </if>
+      DestinationOrigin.PRIVET,
+    ];
     recentDestinations = recentDestinations.filter((d: RecentDestination) => {
-      return d.origin !== DestinationOrigin.PRIVET;
+      return !unsupportedOrigins.includes(d.origin);
     });
-
-    // <if expr="chromeos_ash or chromeos_lacros">
-    // Remove Cloud Print Drive destination. The Chrome OS version will always
-    // be shown in the dropdown and is still supported.
-    recentDestinations = recentDestinations.filter((d: RecentDestination) => {
-      return d.id !== GooglePromotedDestinationId.DOCS;
-    });
-    // </if>
 
     // Initialize recent destinations early so that the destination store can
     // start trying to fetch them.

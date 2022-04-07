@@ -34,8 +34,9 @@ suite(destination_item_test.suiteName, function() {
 
     // Create destination
     item.destination = new Destination(
-        printerId, DestinationType.GOOGLE, DestinationOrigin.COOKIES,
-        printerName, DestinationConnectionStatus.ONLINE);
+        printerId, DestinationType.LOCAL, DestinationOrigin.EXTENSION,
+        printerName, DestinationConnectionStatus.ONLINE,
+        {extensionId: 'aaa111', extensionName: 'myPrinterExtension'});
     item.searchQuery = null;
     document.body.appendChild(item);
   });
@@ -55,9 +56,9 @@ suite(destination_item_test.suiteName, function() {
                             '.connection-status')!.textContent!.trim());
     assertTrue(item.shadowRoot!.querySelector<HTMLElement>(
                                    '.learn-more-link')!.hidden);
-    assertTrue(item.shadowRoot!
-                   .querySelector<HTMLElement>(
-                       '.extension-controlled-indicator')!.hidden);
+    assertFalse(item.shadowRoot!
+                    .querySelector<HTMLElement>(
+                        '.extension-controlled-indicator')!.hidden);
   });
 
   // Test that the destination is opaque and the correct status shows up if
@@ -72,9 +73,12 @@ suite(destination_item_test.suiteName, function() {
     }
     twoMonthsAgo.setMonth(month);
     item.destination = new Destination(
-        printerId, DestinationType.GOOGLE, DestinationOrigin.COOKIES,
-        printerName, DestinationConnectionStatus.OFFLINE,
-        {lastAccessTime: twoMonthsAgo.getTime()});
+        printerId, DestinationType.LOCAL, DestinationOrigin.EXTENSION,
+        printerName, DestinationConnectionStatus.OFFLINE, {
+          extensionId: 'aaa111',
+          extensionName: 'myPrinterExtension',
+          lastAccessTime: twoMonthsAgo.getTime()
+        });
 
     const name = item.shadowRoot!.querySelector('.name')!;
     assertEquals(printerName, name.textContent);
@@ -88,9 +92,9 @@ suite(destination_item_test.suiteName, function() {
                             '.connection-status')!.textContent!.trim());
     assertTrue(item.shadowRoot!.querySelector<HTMLElement>(
                                    '.learn-more-link')!.hidden);
-    assertTrue(item.shadowRoot!
-                   .querySelector<HTMLElement>(
-                       '.extension-controlled-indicator')!.hidden);
+    assertFalse(item.shadowRoot!
+                    .querySelector<HTMLElement>(
+                        '.extension-controlled-indicator')!.hidden);
   });
 
   // Test that the destination is displayed correctly when the search query
@@ -118,9 +122,11 @@ suite(destination_item_test.suiteName, function() {
     const params = {
       description: 'ABCPrinterBrand Model 123',
       location: 'Building 789 Floor 6',
+      extensionId: 'aaa111',
+      extensionName: 'myPrinterExtension',
     };
     item.destination = new Destination(
-        printerId, DestinationType.GOOGLE, DestinationOrigin.COOKIES,
+        printerId, DestinationType.LOCAL, DestinationOrigin.EXTENSION,
         printerName, DestinationConnectionStatus.ONLINE, params);
     item.searchQuery = /(ABC)/ig;
 
