@@ -44,4 +44,11 @@ source_set("quick_answers") {
       "//chrome/browser/ui/color:color_headers",
     ]
   }
+
+  if (is_chromeos_lacros) {
+    sources += [
+      "lacros/quick_answers_state_lacros.cc",
+      "lacros/quick_answers_state_lacros.h",
+    ]
+  }
 }

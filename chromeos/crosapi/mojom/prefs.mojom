@@ -67,6 +67,24 @@ enum PrefPath {
   // M98: prefs::kAccessibilityVirtualKeyboardEnabled (extension).
   [MinVersion=3]
   kAccessibilityVirtualKeyboardEnabled = 20,
+  // M100: quick_answers::prefs::kQuickAnswersEnabled (profile)
+  [MinVersion=4] kQuickAnswersEnabled = 21,
+  // M100: quick_answers::prefs::kQuickAnswersConsentStatus (profile)
+  [MinVersion=4] kQuickAnswersConsentStatus = 22,
+  // M100: quick_answers::prefs::kQuickAnswersDefinitionEnabled (profile)
+  [MinVersion=4] kQuickAnswersDefinitionEnabled = 23,
+  // M100: quick_answers::prefs::kQuickAnswersTranslationEnabled (profile)
+  [MinVersion=4] kQuickAnswersTranslationEnabled = 24,
+  // M100: quick_answers::prefs::kQuickAnswersUnitConversionEnabled (profile)
+  [MinVersion=4] kQuickAnswersUnitConversionEnabled = 25,
+  // M100: quick_answers::prefs::kQuickAnswersNoticeImpressionCount (profile)
+  [MinVersion=4] kQuickAnswersNoticeImpressionCount = 26,
+  // M100: quick_answers::prefs::kQuickAnswersNoticeImpressionDuration (profile)
+  [MinVersion=4] kQuickAnswersNoticeImpressionDuration = 27,
+  // M100: language::prefs::kPreferredLanguages (profile)
+  [MinVersion=4] kPreferredLanguages = 28,
+  // M100: language::prefs::kApplicationLocale (profile)
+  [MinVersion=4] kApplicationLocale = 29,
 };
 
 // Information about who or what is controlling a particular pref. This is used

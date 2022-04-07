@@ -83,21 +83,7 @@ class QuickAnswersState {
     use_text_annotator_for_testing_ = true;
   }
 
- private:
-  void InitializeObserver(QuickAnswersStateObserver* observer);
-
-  // Called when the related preferences are obtained from the pref service.
-  void UpdateSettingsEnabled();
-  void UpdateConsentStatus();
-  void UpdateDefinitionEnabled();
-  void UpdateTranslationEnabled();
-  void UpdateUnitConversionEnabled();
-  void OnApplicationLocaleReady();
-  void UpdatePreferredLanguages();
-
-  // Called when the feature eligibility might change.
-  void UpdateEligibility();
-
+ protected:
   // Whether the Quick Answers is enabled in system settings.
   bool settings_enabled_ = false;
 
@@ -121,6 +107,23 @@ class QuickAnswersState {
   // (ex. "en-US,zh,fr").
   std::string preferred_languages_;
 
+  base::ObserverList<QuickAnswersStateObserver> observers_;
+
+ private:
+  void InitializeObserver(QuickAnswersStateObserver* observer);
+
+  // Called when the related preferences are obtained from the pref service.
+  void UpdateSettingsEnabled();
+  void UpdateConsentStatus();
+  void UpdateDefinitionEnabled();
+  void UpdateTranslationEnabled();
+  void UpdateUnitConversionEnabled();
+  void OnApplicationLocaleReady();
+  void UpdatePreferredLanguages();
+
+  // Called when the feature eligibility might change.
+  void UpdateEligibility();
+
   // Whether the Quick Answers feature is eligible. The value is derived from a
   // number of other states.
   bool is_eligible_ = false;
@@ -136,8 +139,6 @@ class QuickAnswersState {
 
   // Observes user profile prefs for the Assistant.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-
-  base::ObserverList<QuickAnswersStateObserver> observers_;
 };
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_PUBLIC_CPP_QUICK_ANSWERS_STATE_H_

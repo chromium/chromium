@@ -14,7 +14,9 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
+#include "components/language/core/browser/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -22,6 +24,36 @@
 
 namespace crosapi {
 namespace {
+
+// List of all mojom::PrefPaths associated with profile prefs, and their
+// corresponding paths in the prefstore. Initialized on first use.
+const std::string& GetProfilePrefNameForPref(mojom::PrefPath path) {
+  static base::NoDestructor<std::map<mojom::PrefPath, std::string>>
+      profile_prefpath_to_name(
+          {{mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled,
+            ash::prefs::kAccessibilitySpokenFeedbackEnabled},
+           {mojom::PrefPath::kQuickAnswersEnabled,
+            quick_answers::prefs::kQuickAnswersEnabled},
+           {mojom::PrefPath::kQuickAnswersConsentStatus,
+            quick_answers::prefs::kQuickAnswersConsentStatus},
+           {mojom::PrefPath::kQuickAnswersDefinitionEnabled,
+            quick_answers::prefs::kQuickAnswersDefinitionEnabled},
+           {mojom::PrefPath::kQuickAnswersTranslationEnabled,
+            quick_answers::prefs::kQuickAnswersTranslationEnabled},
+           {mojom::PrefPath::kQuickAnswersUnitConversionEnabled,
+            quick_answers::prefs::kQuickAnswersUnitConversionEnabled},
+           {mojom::PrefPath::kQuickAnswersNoticeImpressionCount,
+            quick_answers::prefs::kQuickAnswersNoticeImpressionCount},
+           {mojom::PrefPath::kQuickAnswersNoticeImpressionDuration,
+            quick_answers::prefs::kQuickAnswersNoticeImpressionDuration},
+           {mojom::PrefPath::kPreferredLanguages,
+            language::prefs::kPreferredLanguages},
+           {mojom::PrefPath::kApplicationLocale,
+            language::prefs::kApplicationLocale}});
+  auto pref_name = profile_prefpath_to_name->find(path);
+  DCHECK(pref_name != profile_prefpath_to_name->end());
+  return pref_name->second;
+}
 
 // List of all mojom::PrefPaths associated with extension controlled prefs,
 // and their corresponding paths in the prefstore. Initialized on first use.
@@ -224,13 +256,23 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
       return State{local_state_, &local_state_registrar_, false,
                    metrics::prefs::kMetricsReportingEnabled};
     case mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled:
+    case mojom::PrefPath::kQuickAnswersEnabled:
+    case mojom::PrefPath::kQuickAnswersConsentStatus:
+    case mojom::PrefPath::kQuickAnswersDefinitionEnabled:
+    case mojom::PrefPath::kQuickAnswersTranslationEnabled:
+    case mojom::PrefPath::kQuickAnswersUnitConversionEnabled:
+    case mojom::PrefPath::kQuickAnswersNoticeImpressionCount:
+    case mojom::PrefPath::kQuickAnswersNoticeImpressionDuration:
+    case mojom::PrefPath::kPreferredLanguages:
+    case mojom::PrefPath::kApplicationLocale: {
       if (!profile_prefs_registrar_) {
         LOG(WARNING) << "Primary profile is not yet initialized";
         return absl::nullopt;
       }
+      std::string pref_name = GetProfilePrefNameForPref(path);
       return State{profile_prefs_registrar_->prefs(),
-                   profile_prefs_registrar_.get(), false,
-                   ash::prefs::kAccessibilitySpokenFeedbackEnabled};
+                   profile_prefs_registrar_.get(), false, pref_name};
+    }
     case mojom::PrefPath::kDeviceSystemWideTracingEnabled:
       return State{local_state_, &local_state_registrar_, false,
                    ash::prefs::kDeviceSystemWideTracingEnabled};
