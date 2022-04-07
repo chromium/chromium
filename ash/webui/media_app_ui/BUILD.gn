@@ -28,6 +28,8 @@ static_library("media_app_ui") {
   deps = [
     ":mojo_bindings",
     ":mojo_bindings_js",
+    "//ash/constants:constants",
+    "//ash/webui/media_app_ui:buildflags",
     "//ash/webui/resources:media_app_bundle_resources",
     "//ash/webui/resources:media_app_resources",
     "//ash/webui/web_applications",

@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/grit/ash_media_app_resources.h"
+#include "ash/webui/media_app_ui/buildflags.h"
 #include "ash/webui/media_app_ui/media_app_page_handler.h"
 #include "ash/webui/media_app_ui/url_constants.h"
 #include "ash/webui/web_applications/webui_test_prod_util.h"
@@ -53,25 +55,47 @@ content::WebUIDataSource* CreateHostDataSource() {
 
   // Redirects "system_assets/*" (from manifest.json) to the icons for the
   // gallery app.
-  // TODO(b/141588875): Switch these to IDR_MEDIA_APP_APP_ICON_*_PNG in the
-  // internal media_app_bundle_resources.grd file (and add more icon
-  // resolutions) when the final icon is ready.
-  source->AddResourcePath("system_assets/app_icon_16.png",
-                          IDR_MEDIA_APP_GALLERY_ICON_16_PNG);
-  source->AddResourcePath("system_assets/app_icon_32.png",
-                          IDR_MEDIA_APP_GALLERY_ICON_32_PNG);
-  source->AddResourcePath("system_assets/app_icon_48.png",
-                          IDR_MEDIA_APP_GALLERY_ICON_48_PNG);
-  source->AddResourcePath("system_assets/app_icon_64.png",
-                          IDR_MEDIA_APP_GALLERY_ICON_64_PNG);
-  source->AddResourcePath("system_assets/app_icon_96.png",
-                          IDR_MEDIA_APP_GALLERY_ICON_96_PNG);
-  source->AddResourcePath("system_assets/app_icon_128.png",
-                          IDR_MEDIA_APP_GALLERY_ICON_128_PNG);
-  source->AddResourcePath("system_assets/app_icon_192.png",
-                          IDR_MEDIA_APP_GALLERY_ICON_192_PNG);
-  source->AddResourcePath("system_assets/app_icon_256.png",
-                          IDR_MEDIA_APP_GALLERY_ICON_256_PNG);
+  bool app_icons_added = false;
+  if (base::FeatureList::IsEnabled(chromeos::features::kMediaAppHandlesPdf)) {
+#if BUILDFLAG(ENABLE_CROS_MEDIA_APP)
+    source->AddResourcePath("system_assets/app_icon_16.png",
+                            IDR_MEDIA_APP_APP_ICON_16_PNG);
+    source->AddResourcePath("system_assets/app_icon_32.png",
+                            IDR_MEDIA_APP_APP_ICON_32_PNG);
+    source->AddResourcePath("system_assets/app_icon_48.png",
+                            IDR_MEDIA_APP_APP_ICON_48_PNG);
+    source->AddResourcePath("system_assets/app_icon_64.png",
+                            IDR_MEDIA_APP_APP_ICON_64_PNG);
+    source->AddResourcePath("system_assets/app_icon_96.png",
+                            IDR_MEDIA_APP_APP_ICON_96_PNG);
+    source->AddResourcePath("system_assets/app_icon_128.png",
+                            IDR_MEDIA_APP_APP_ICON_128_PNG);
+    source->AddResourcePath("system_assets/app_icon_192.png",
+                            IDR_MEDIA_APP_APP_ICON_192_PNG);
+    source->AddResourcePath("system_assets/app_icon_256.png",
+                            IDR_MEDIA_APP_APP_ICON_256_PNG);
+    app_icons_added = true;
+#endif  // BUILDFLAG(ENABLE_CROS_MEDIA_APP)
+  }
+  if (!app_icons_added) {
+    source->AddResourcePath("system_assets/app_icon_16.png",
+                            IDR_MEDIA_APP_GALLERY_ICON_16_PNG);
+    source->AddResourcePath("system_assets/app_icon_32.png",
+                            IDR_MEDIA_APP_GALLERY_ICON_32_PNG);
+    source->AddResourcePath("system_assets/app_icon_48.png",
+                            IDR_MEDIA_APP_GALLERY_ICON_48_PNG);
+    source->AddResourcePath("system_assets/app_icon_64.png",
+                            IDR_MEDIA_APP_GALLERY_ICON_64_PNG);
+    source->AddResourcePath("system_assets/app_icon_96.png",
+                            IDR_MEDIA_APP_GALLERY_ICON_96_PNG);
+    source->AddResourcePath("system_assets/app_icon_128.png",
+                            IDR_MEDIA_APP_GALLERY_ICON_128_PNG);
+    source->AddResourcePath("system_assets/app_icon_192.png",
+                            IDR_MEDIA_APP_GALLERY_ICON_192_PNG);
+    source->AddResourcePath("system_assets/app_icon_256.png",
+                            IDR_MEDIA_APP_GALLERY_ICON_256_PNG);
+  }
+
   // Favicons.
   source->AddResourcePath("system_assets/pdf_icon.svg",
                           IDR_MEDIA_APP_PDF_ICON_SVG);

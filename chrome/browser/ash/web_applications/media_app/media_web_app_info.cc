@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/web_applications/media_app/media_web_app_info.h"
-#include "base/containers/span.h"
 
 #include <memory>
 #include <string>
@@ -11,7 +10,9 @@
 #include "ash/constants/ash_features.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/webui/grit/ash_media_app_resources.h"
+#include "ash/webui/media_app_ui/buildflags.h"
 #include "ash/webui/media_app_ui/url_constants.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chromeos/grit/chromeos_media_app_bundle_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -137,19 +139,41 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForMediaWebApp() {
   info->scope = GURL(ash::kChromeUIMediaAppURL);
 
   info->title = l10n_util::GetStringUTF16(IDS_MEDIA_APP_APP_NAME);
-  web_app::CreateIconInfoForSystemWebApp(
-      info->start_url,
-      {
-          {"app_icon_16.png", 16, IDR_MEDIA_APP_GALLERY_ICON_16_PNG},
-          {"app_icon_32.png", 32, IDR_MEDIA_APP_GALLERY_ICON_32_PNG},
-          {"app_icon_48.png", 48, IDR_MEDIA_APP_GALLERY_ICON_48_PNG},
-          {"app_icon_64.png", 64, IDR_MEDIA_APP_GALLERY_ICON_64_PNG},
-          {"app_icon_96.png", 96, IDR_MEDIA_APP_GALLERY_ICON_96_PNG},
-          {"app_icon_128.png", 128, IDR_MEDIA_APP_GALLERY_ICON_128_PNG},
-          {"app_icon_192.png", 192, IDR_MEDIA_APP_GALLERY_ICON_192_PNG},
-          {"app_icon_256.png", 256, IDR_MEDIA_APP_GALLERY_ICON_256_PNG},
-      },
-      *info);
+
+  bool app_icons_added = false;
+  if (base::FeatureList::IsEnabled(chromeos::features::kMediaAppHandlesPdf)) {
+#if BUILDFLAG(ENABLE_CROS_MEDIA_APP)
+    web_app::CreateIconInfoForSystemWebApp(
+        info->start_url,
+        {
+            {"app_icon_16.png", 16, IDR_MEDIA_APP_APP_ICON_16_PNG},
+            {"app_icon_32.png", 32, IDR_MEDIA_APP_APP_ICON_32_PNG},
+            {"app_icon_48.png", 48, IDR_MEDIA_APP_APP_ICON_48_PNG},
+            {"app_icon_64.png", 64, IDR_MEDIA_APP_APP_ICON_64_PNG},
+            {"app_icon_96.png", 96, IDR_MEDIA_APP_APP_ICON_96_PNG},
+            {"app_icon_128.png", 128, IDR_MEDIA_APP_APP_ICON_128_PNG},
+            {"app_icon_192.png", 192, IDR_MEDIA_APP_APP_ICON_192_PNG},
+            {"app_icon_256.png", 256, IDR_MEDIA_APP_APP_ICON_256_PNG},
+        },
+        *info);
+    app_icons_added = true;
+#endif  // BUILDFLAG(ENABLE_CROS_MEDIA_APP)
+  }
+  if (!app_icons_added) {
+    web_app::CreateIconInfoForSystemWebApp(
+        info->start_url,
+        {
+            {"app_icon_16.png", 16, IDR_MEDIA_APP_GALLERY_ICON_16_PNG},
+            {"app_icon_32.png", 32, IDR_MEDIA_APP_GALLERY_ICON_32_PNG},
+            {"app_icon_48.png", 48, IDR_MEDIA_APP_GALLERY_ICON_48_PNG},
+            {"app_icon_64.png", 64, IDR_MEDIA_APP_GALLERY_ICON_64_PNG},
+            {"app_icon_96.png", 96, IDR_MEDIA_APP_GALLERY_ICON_96_PNG},
+            {"app_icon_128.png", 128, IDR_MEDIA_APP_GALLERY_ICON_128_PNG},
+            {"app_icon_192.png", 192, IDR_MEDIA_APP_GALLERY_ICON_192_PNG},
+            {"app_icon_256.png", 256, IDR_MEDIA_APP_GALLERY_ICON_256_PNG},
+        },
+        *info);
+  }
 
   if (chromeos::features::IsDarkLightModeEnabled()) {
     auto* color_provider = ash::AshColorProvider::Get();
