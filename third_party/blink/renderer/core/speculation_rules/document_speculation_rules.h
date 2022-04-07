@@ -37,12 +37,19 @@ class CORE_EXPORT DocumentSpeculationRules
   // Appends a newly added rule set.
   void AddRuleSet(SpeculationRuleSet*);
 
+  // Removes a rule set from consideration.
+  void RemoveRuleSet(SpeculationRuleSet*);
+
   void Trace(Visitor*) const override;
 
  private:
   // Retrieves a valid proxy to the speculation host in the browser.
   // May be null if the execution context does not exist.
   mojom::blink::SpeculationHost* GetHost();
+
+  // Requests a future call to UpdateSpeculationCandidates, if none is yet
+  // scheduled.
+  void QueueUpdateSpeculationCandidates();
 
   // Pushes the current speculation candidates to the browser, immediately.
   void UpdateSpeculationCandidates();

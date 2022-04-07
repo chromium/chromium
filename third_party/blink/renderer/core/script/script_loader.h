@@ -46,6 +46,7 @@ class ScriptElementBase;
 class Script;
 class ScriptResource;
 class ScriptWebBundle;
+class SpeculationRuleSet;
 class Modulator;
 
 class CORE_EXPORT ScriptLoader final : public GarbageCollected<ScriptLoader>,
@@ -109,6 +110,7 @@ class CORE_EXPORT ScriptLoader final : public GarbageCollected<ScriptLoader>,
   void ChildrenChanged();
   void HandleSourceAttribute(const String& source_url);
   void HandleAsyncAttribute();
+  void Removed();
 
   void SetFetchDocWrittenScriptDeferIdle();
 
@@ -116,10 +118,6 @@ class CORE_EXPORT ScriptLoader final : public GarbageCollected<ScriptLoader>,
   // Only for ScriptRunner::MovePendingScript() and should be removed once
   // crbug.com/721914 is fixed.
   PendingScript* GetPendingScriptIfControlledByScriptRunnerForCrossDocMove();
-
-  // Release webbundle resources which are associated to this loader explicitly
-  // without waiting for blink-GC.
-  void ReleaseWebBundleResource();
 
  private:
   bool IgnoresLoadRequest() const;
@@ -223,6 +221,9 @@ class CORE_EXPORT ScriptLoader final : public GarbageCollected<ScriptLoader>,
   // This is created only for <script type=webbundle>, representing a webbundle
   // mapping rule and its loader.
   Member<ScriptWebBundle> script_web_bundle_;
+
+  // Speculation rule set registered by this script, if applicable.
+  Member<SpeculationRuleSet> speculation_rule_set_;
 };
 
 }  // namespace blink

@@ -124,6 +124,7 @@ void ScriptLoader::Trace(Visitor* visitor) const {
   visitor->Trace(prepared_pending_script_);
   visitor->Trace(resource_keep_alive_);
   visitor->Trace(script_web_bundle_);
+  visitor->Trace(speculation_rule_set_);
   PendingScriptClient::Trace(visitor);
 }
 
@@ -151,6 +152,22 @@ void ScriptLoader::HandleAsyncAttribute() {
   // flag must be unset.</spec>
   non_blocking_ = false;
   dynamic_async_ = true;
+}
+
+void ScriptLoader::Removed() {
+  // Release webbundle resources which are associated to this loader explicitly
+  // without waiting for blink-GC.
+  if (ScriptWebBundle* bundle = std::exchange(script_web_bundle_, nullptr))
+    bundle->WillReleaseBundleLoaderAndUnregister();
+
+  if (SpeculationRuleSet* rule_set =
+          std::exchange(speculation_rule_set_, nullptr)) {
+    // Speculation rules in this script no longer apply.
+    // Candidate speculations must be re-evaluated.
+    DCHECK_EQ(GetScriptType(), ScriptTypeAtPrepare::kSpeculationRules);
+    DocumentSpeculationRules::From(element_->GetDocument())
+        .RemoveRuleSet(rule_set);
+  }
 }
 
 void ScriptLoader::DetachPendingScript() {
@@ -812,6 +829,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
         String parse_error;
         if (auto* rule_set = SpeculationRuleSet::ParseInline(
                 source_text, base_url, &parse_error)) {
+          speculation_rule_set_ = rule_set;
           DocumentSpeculationRules::From(element_document).AddRuleSet(rule_set);
         }
         if (!parse_error.IsNull()) {
@@ -1193,13 +1211,6 @@ String ScriptLoader::GetScriptText() const {
   return GetStringForScriptExecution(child_text_content,
                                      element_->GetScriptElementType(),
                                      element_->GetExecutionContext());
-}
-
-void ScriptLoader::ReleaseWebBundleResource() {
-  if (!script_web_bundle_)
-    return;
-  script_web_bundle_->WillReleaseBundleLoaderAndUnregister();
-  script_web_bundle_ = nullptr;
 }
 
 }  // namespace blink

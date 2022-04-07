@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 
+#include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -37,18 +39,16 @@ DocumentSpeculationRules::DocumentSpeculationRules(Document& document)
     : Supplement(document), host_(document.GetExecutionContext()) {}
 
 void DocumentSpeculationRules::AddRuleSet(SpeculationRuleSet* rule_set) {
+  DCHECK(!base::Contains(rule_sets_, rule_set));
   rule_sets_.push_back(rule_set);
+  QueueUpdateSpeculationCandidates();
+}
 
-  if (!has_pending_update_) {
-    has_pending_update_ = true;
-    auto task_runner =
-        GetSupplementable()->GetExecutionContext()->GetTaskRunner(
-            TaskType::kIdleTask);
-    task_runner->PostTask(
-        base::Location::Current(),
-        WTF::Bind(&DocumentSpeculationRules::UpdateSpeculationCandidates,
-                  WrapWeakPersistent(this)));
-  }
+void DocumentSpeculationRules::RemoveRuleSet(SpeculationRuleSet* rule_set) {
+  auto* it = base::ranges::remove(rule_sets_, rule_set);
+  DCHECK(it != rule_sets_.end()) << "rule set was removed without existing";
+  rule_sets_.erase(it, rule_sets_.end());
+  QueueUpdateSpeculationCandidates();
 }
 
 void DocumentSpeculationRules::Trace(Visitor* visitor) const {
@@ -67,6 +67,19 @@ mojom::blink::SpeculationHost* DocumentSpeculationRules::GetHost() {
             execution_context->GetTaskRunner(TaskType::kInternalDefault)));
   }
   return host_.get();
+}
+
+void DocumentSpeculationRules::QueueUpdateSpeculationCandidates() {
+  if (has_pending_update_)
+    return;
+
+  has_pending_update_ = true;
+  auto task_runner = GetSupplementable()->GetExecutionContext()->GetTaskRunner(
+      TaskType::kIdleTask);
+  task_runner->PostTask(
+      base::Location::Current(),
+      WTF::Bind(&DocumentSpeculationRules::UpdateSpeculationCandidates,
+                WrapWeakPersistent(this)));
 }
 
 void DocumentSpeculationRules::UpdateSpeculationCandidates() {

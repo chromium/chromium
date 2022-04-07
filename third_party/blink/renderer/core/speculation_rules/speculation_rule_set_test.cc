@@ -317,39 +317,50 @@ class StubSpeculationHost : public mojom::blink::SpeculationHost {
   base::OnceClosure done_closure_;
 };
 
-// This function adds a speculationrules script to the given page, and simulates
-// the process of sending the parsed candidates to the browser.
-void PropagateRulesToStubSpeculationHost(DummyPageHolder& page_holder,
-                                         StubSpeculationHost& speculation_host,
-                                         const String& speculation_script) {
-  // A <script> with a case-insensitive type match should be propagated to the
-  // browser via Mojo.
-  // TODO(jbroman): Should we need to enable script? Should that be bypassed?
-  page_holder.GetFrame().GetSettings()->SetScriptEnabled(true);
-  page_holder.GetFrame()
-      .DomWindow()
-      ->GetBrowserInterfaceBroker()
-      .SetBinderForTesting(
-          mojom::blink::SpeculationHost::Name_,
-          WTF::BindRepeating(&StubSpeculationHost::BindUnsafe,
-                             WTF::Unretained(&speculation_host)));
-
-  base::RunLoop run_loop;
-  speculation_host.SetDoneClosure(run_loop.QuitClosure());
-
-  Document& document = page_holder.GetDocument();
+HTMLScriptElement* InsertSpeculationRules(Document& document,
+                                          const String& speculation_script) {
   HTMLScriptElement* script =
       MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
   script->setAttribute(html_names::kTypeAttr, "SpEcUlAtIoNrUlEs");
   script->setText(speculation_script);
   document.head()->appendChild(script);
+  return script;
+}
 
+// This runs the functor while observing any speculation rules sent by it.
+// At least one update is expected.
+template <typename F>
+void PropagateRulesToStubSpeculationHost(DummyPageHolder& page_holder,
+                                         StubSpeculationHost& speculation_host,
+                                         const F& functor) {
+  // A <script> with a case-insensitive type match should be propagated to the
+  // browser via Mojo.
+  // TODO(jbroman): Should we need to enable script? Should that be bypassed?
+  LocalFrame& frame = page_holder.GetFrame();
+  frame.GetSettings()->SetScriptEnabled(true);
+
+  auto& broker = frame.DomWindow()->GetBrowserInterfaceBroker();
+  broker.SetBinderForTesting(
+      mojom::blink::SpeculationHost::Name_,
+      WTF::BindRepeating(&StubSpeculationHost::BindUnsafe,
+                         WTF::Unretained(&speculation_host)));
+
+  base::RunLoop run_loop;
+  speculation_host.SetDoneClosure(run_loop.QuitClosure());
+  functor();
   run_loop.Run();
 
-  page_holder.GetFrame()
-      .DomWindow()
-      ->GetBrowserInterfaceBroker()
-      .SetBinderForTesting(mojom::blink::SpeculationHost::Name_, {});
+  broker.SetBinderForTesting(mojom::blink::SpeculationHost::Name_, {});
+}
+
+// This function adds a speculationrules script to the given page, and simulates
+// the process of sending the parsed candidates to the browser.
+void PropagateRulesToStubSpeculationHost(DummyPageHolder& page_holder,
+                                         StubSpeculationHost& speculation_host,
+                                         const String& speculation_script) {
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
+    InsertSpeculationRules(page_holder.GetDocument(), speculation_script);
+  });
 }
 
 TEST_F(SpeculationRuleSetTest, PropagatesAllRulesToBrowser) {
@@ -461,6 +472,70 @@ TEST_F(SpeculationRuleSetTest, UseCounter) {
                                       speculation_script);
   EXPECT_TRUE(
       page_holder.GetDocument().IsUseCounted(WebFeature::kSpeculationRules));
+}
+
+// Tests that rules removed before the task to update speculation candidates
+// runs are not reported.
+TEST_F(SpeculationRuleSetTest, AddAndRemoveInSameTask) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
+    InsertSpeculationRules(page_holder.GetDocument(),
+                           R"({"prefetch": [
+             {"source": "list", "urls": ["https://example.com/foo"]}]})");
+    HTMLScriptElement* to_remove =
+        InsertSpeculationRules(page_holder.GetDocument(),
+                               R"({"prefetch": [
+             {"source": "list", "urls": ["https://example.com/bar"]}]})");
+    InsertSpeculationRules(page_holder.GetDocument(),
+                           R"({"prefetch": [
+             {"source": "list", "urls": ["https://example.com/baz"]}]})");
+    to_remove->remove();
+  });
+
+  const auto& candidates = speculation_host.candidates();
+  ASSERT_EQ(candidates.size(), 2u);
+  EXPECT_EQ(candidates[0]->url, "https://example.com/foo");
+  EXPECT_EQ(candidates[1]->url, "https://example.com/baz");
+}
+
+// Tests that rules removed after being previously reported are reported as
+// removed.
+TEST_F(SpeculationRuleSetTest, AddAndRemoveAfterReport) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+
+  HTMLScriptElement* to_remove = nullptr;
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
+    InsertSpeculationRules(page_holder.GetDocument(),
+                           R"({"prefetch": [
+             {"source": "list", "urls": ["https://example.com/foo"]}]})");
+    to_remove = InsertSpeculationRules(page_holder.GetDocument(),
+                                       R"({"prefetch": [
+             {"source": "list", "urls": ["https://example.com/bar"]}]})");
+    InsertSpeculationRules(page_holder.GetDocument(),
+                           R"({"prefetch": [
+             {"source": "list", "urls": ["https://example.com/baz"]}]})");
+  });
+
+  {
+    const auto& candidates = speculation_host.candidates();
+    ASSERT_EQ(candidates.size(), 3u);
+    EXPECT_EQ(candidates[0]->url, "https://example.com/foo");
+    EXPECT_EQ(candidates[1]->url, "https://example.com/bar");
+    EXPECT_EQ(candidates[2]->url, "https://example.com/baz");
+  }
+
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      [&]() { to_remove->remove(); });
+
+  {
+    const auto& candidates = speculation_host.candidates();
+    ASSERT_EQ(candidates.size(), 2u);
+    EXPECT_EQ(candidates[0]->url, "https://example.com/foo");
+    EXPECT_EQ(candidates[1]->url, "https://example.com/baz");
+  }
 }
 
 class ConsoleCapturingChromeClient : public EmptyChromeClient {
