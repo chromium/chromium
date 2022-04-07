@@ -10,8 +10,6 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/location.h"
-#include "base/memory/memory_pressure_listener.h"
-#include "base/memory/memory_pressure_monitor.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/metrics/first_web_contents_profiler_base.h"
@@ -47,19 +45,11 @@ class FirstWebContentsProfiler : public FirstWebContentsProfilerBase {
 
  private:
   ~FirstWebContentsProfiler() override = default;
-
-  // Memory pressure listener that will be used to check if memory pressure has
-  // an impact on startup.
-  base::MemoryPressureListener memory_pressure_listener_;
 };
 
 FirstWebContentsProfiler::FirstWebContentsProfiler(
     content::WebContents* web_contents)
-    : FirstWebContentsProfilerBase(web_contents),
-      memory_pressure_listener_(
-          FROM_HERE,
-          base::BindRepeating(&startup_metric_utils::
-                                  OnMemoryPressureBeforeFirstNonEmptyPaint)) {
+    : FirstWebContentsProfilerBase(web_contents) {
   // FirstWebContentsProfiler is created before the main MessageLoop starts
   // running. At that time, any visible WebContents should have a pending
   // NavigationEntry, i.e. should have dispatched DidStartNavigation() but not

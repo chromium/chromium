@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_STARTUP_METRIC_UTILS_BROWSER_STARTUP_METRIC_UTILS_H_
 #define COMPONENTS_STARTUP_METRIC_UTILS_BROWSER_STARTUP_METRIC_UTILS_H_
 
-#include "base/memory/memory_pressure_listener.h"
 #include "base/time/time.h"
 
 // Utility functions to support metric collection for browser startup. Timings
@@ -108,12 +107,6 @@ base::TimeTicks MainEntryPointTicks();
 void RecordExternalStartupMetric(const char* histogram_name,
                                  base::TimeTicks completion_ticks,
                                  bool set_non_browser_ui_displayed);
-
-// Records memory pressure events occurring before the first web contents had a
-// non-empty paint.
-// This should only be called from the browser UI thread.
-void OnMemoryPressureBeforeFirstNonEmptyPaint(
-    base::MemoryPressureListener::MemoryPressureLevel level);
 
 }  // namespace startup_metric_utils
 

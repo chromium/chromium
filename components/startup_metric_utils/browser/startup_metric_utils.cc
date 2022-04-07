@@ -13,7 +13,6 @@
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/dcheck_is_on.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -54,10 +53,6 @@ base::TimeTicks g_chrome_main_entry_ticks;
 base::TimeTicks g_message_loop_start_ticks;
 
 base::TimeTicks g_browser_window_display_ticks;
-
-base::MemoryPressureListener::MemoryPressureLevel
-    g_max_pressure_level_before_first_non_empty_paint = base::
-        MemoryPressureListener::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE;
 
 // An enumeration of startup temperatures. This must be kept in sync with the
 // UMA StartupType enumeration defined in histograms.xml.
@@ -258,40 +253,6 @@ void UmaHistogramWithTraceAndTemperature(
   TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
       "startup", histogram_basename, TRACE_ID_WITH_SCOPE(histogram_basename, 0),
       end_ticks);
-}
-
-// Extension to the UmaHistogramWithTraceAndTemperature that records a
-// suffixed version of the histogram indicating the maximum pressure encountered
-// until now. Note that this is based on the
-// |g_max_pressure_level_before_first_non_empty_paint| value.
-void UmaHistogramAndTraceWithTemperatureAndMaxPressure(
-    void (*histogram_function)(const std::string& name, base::TimeDelta),
-    const char* histogram_basename,
-    base::TimeTicks begin_ticks,
-    base::TimeTicks end_ticks) {
-  UmaHistogramWithTraceAndTemperature(histogram_function, histogram_basename,
-                                      begin_ticks, end_ticks);
-  const auto value = end_ticks - begin_ticks;
-  switch (g_max_pressure_level_before_first_non_empty_paint) {
-    case base::MemoryPressureListener::MemoryPressureLevel::
-        MEMORY_PRESSURE_LEVEL_NONE:
-      (*histogram_function)(
-          base::StrCat({histogram_basename, ".NoMemoryPressure"}), value);
-      break;
-    case base::MemoryPressureListener::MemoryPressureLevel::
-        MEMORY_PRESSURE_LEVEL_MODERATE:
-      (*histogram_function)(
-          base::StrCat({histogram_basename, ".ModerateMemoryPressure"}), value);
-      break;
-    case base::MemoryPressureListener::MemoryPressureLevel::
-        MEMORY_PRESSURE_LEVEL_CRITICAL:
-      (*histogram_function)(
-          base::StrCat({histogram_basename, ".CriticalMemoryPressure"}), value);
-      break;
-    default:
-      NOTREACHED();
-      break;
-  }
 }
 
 // On Windows, records the number of hard-faults that have occurred in the
@@ -544,10 +505,10 @@ void RecordFirstWebContentsNonEmptyPaint(
   if (!ShouldLogStartupHistogram())
     return;
 
-  UmaHistogramAndTraceWithTemperatureAndMaxPressure(
-      &base::UmaHistogramLongTimes100,
-      "Startup.FirstWebContents.NonEmptyPaint3", g_application_start_ticks,
-      now);
+  UmaHistogramWithTraceAndTemperature(&base::UmaHistogramLongTimes100,
+                                      "Startup.FirstWebContents.NonEmptyPaint3",
+                                      g_application_start_ticks, now);
+
   UmaHistogramWithTemperature(
       &base::UmaHistogramLongTimes100,
       "Startup.BrowserMessageLoopStart.To.NonEmptyPaint2",
@@ -618,12 +579,6 @@ void RecordExternalStartupMetric(const char* histogram_name,
 
   if (set_non_browser_ui_displayed)
     SetNonBrowserUIDisplayed();
-}
-
-void OnMemoryPressureBeforeFirstNonEmptyPaint(
-    base::MemoryPressureListener::MemoryPressureLevel level) {
-  if (level > g_max_pressure_level_before_first_non_empty_paint)
-    g_max_pressure_level_before_first_non_empty_paint = level;
 }
 
 }  // namespace startup_metric_utils

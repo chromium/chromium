@@ -3873,13 +3873,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Manifest.HasProperty"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="MaxPressureBeforeFirstNonEmptyPaint" separator=".">
-  <suffix name="CriticalMemoryPressure" label="Critical memory pressure."/>
-  <suffix name="ModerateMemoryPressure" label="Moderate memory pressure."/>
-  <suffix name="NoMemoryPressure" label="No memory pressure."/>
-  <affected-histogram name="Startup.FirstWebContents.NonEmptyPaint3"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="Media_Learning_BinaryThreshold" separator=".">
   <suffix name="BaseTable" label="Basic features, lookup table model"/>
   <suffix name="BaseUnweightedTable"
@@ -7835,8 +7828,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="BlinkGC" label="Only counting Blink GC memory."/>
   <suffix name="BlinkGC.AllocatedObjects"
       label="Only counting objects allocated using Blink GC."/>
-  <suffix name="BlinkGC.Fragmentation"
-      label="Fragmentation of Blink GC."/>
+  <suffix name="BlinkGC.Fragmentation" label="Fragmentation of Blink GC."/>
   <suffix name="BlinkGC.Main.Heap"
       label="Only counting memory on Blink GC's main thread heap."/>
   <suffix name="BlinkGC.Main.Heap.AllocatedObjects"
