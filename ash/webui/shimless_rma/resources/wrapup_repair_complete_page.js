@@ -87,8 +87,40 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
   /** @protected */
   onShutDownButtonClick_(e) {
     e.preventDefault();
+    this.shimlessRmaService_.getPowerwashRequired().then((result) => {
+      this.handlePowerwash_(result.powerwashRequired);
+    });
+  }
+
+  /**
+   * Handles the response to getPowerwashRequired from the backend.
+   * @private
+   */
+  handlePowerwash_(powerwashRequired) {
+    if (powerwashRequired) {
+      const dialog = /** @type {!CrDialogElement} */ (
+          this.shadowRoot.querySelector('#powerwashDialog'));
+      if (!dialog.open) {
+        dialog.showModal();
+      }
+    } else {
+      this.endRmaAndShutdown_();
+    }
+  }
+
+  /**
+   * Sends a shutdown request to the backend.
+   * @private
+   */
+  endRmaAndShutdown_() {
     executeThenTransitionState(
         this, () => this.shimlessRmaService_.endRmaAndShutdown());
+  }
+
+  /** @protected */
+  onPowerwashButtonClick_(e) {
+    e.preventDefault();
+    this.endRmaAndShutdown_();
   }
 
   /** @protected */

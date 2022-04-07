@@ -1,13 +1,13 @@
 <style include="cr-shared-style shimless-rma-shared shimless-fonts">
-  cr-dialog::part(dialog) {
+  #logsDialog::part(dialog) {
     width: 512px;
   }
 
-  cr-dialog [slot=body] {
+  #logsDialog [slot=body] {
     height: 480px;
   }
 
-  cr-dialog [slot=footer] {
+  #logsDialog [slot=footer] {
     padding-bottom: 24px;
     padding-top: 24px;
   }
@@ -214,6 +214,24 @@
     <cr-button id="rmaLogButton" class="text-button action-button"
         on-click="onRmaLogButtonClick_">
       [[i18n('rmaLogsSaveToUsbButtonText')]]
+    </cr-button>
+  </div>
+</cr-dialog>
+
+<cr-dialog id="powerwashDialog" close-text="close">
+  <div slot="title">
+    [[i18n('repairCompletedPowerwashTitle')]]
+  </div>
+  <div slot="body">
+    [[i18n('repairCompletedPowerwashShutdownDescription')]]
+  </div>
+  <div class="dialog-footer" slot="button-container">
+    <cr-button id="closePowerwashDialogButton" on-click="onCancelClick_">
+      [[i18n('cancelButtonLabel')]]
+    </cr-button>
+    <cr-button id="powerwashButton" class="text-button action-button"
+        on-click="onPowerwashButtonClick_">
+      [[i18n('repairCompletedPowerwashButton')]]
     </cr-button>
   </div>
 </cr-dialog>

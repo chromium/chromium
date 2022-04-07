@@ -82,9 +82,12 @@ export function wrapupRepairCompletePageTest() {
     assertFalse(logsDialog.open);
   });
 
-  test('CanShutDown', async () => {
+  test('ShutDownButtonTriggersShutDownIfNoPowerwashRequired', async () => {
     const resolver = new PromiseResolver();
     await initializeRepairCompletePage();
+
+    service.setGetPowerwashRequiredResult(false);
+
     let callCount = 0;
     service.endRmaAndShutdown = () => {
       callCount++;
@@ -93,6 +96,48 @@ export function wrapupRepairCompletePageTest() {
     await flushTasks();
 
     await clickButton('#shutDownButton');
+    await flushTasks();
+
+    assertEquals(1, callCount);
+  });
+
+  test('ShutDownButtonOpensPowerwashDialogIfPowerwashRequired', async () => {
+    const resolver = new PromiseResolver();
+    await initializeRepairCompletePage();
+
+    service.setGetPowerwashRequiredResult(true);
+
+    let callCount = 0;
+    service.endRmaAndShutdown = () => {
+      callCount++;
+      return resolver.promise;
+    };
+    await flushTasks();
+
+    await clickButton('#shutDownButton');
+    await flushTasks();
+
+    // Don't shut down immediately.
+    assertEquals(0, callCount);
+    // Show the dialog instead.
+    const powerwashDialog =
+        component.shadowRoot.querySelector('#powerwashDialog');
+    assertTrue(!!powerwashDialog);
+    assertTrue(powerwashDialog.open);
+  });
+
+  test('PowerwashButtonTriggersShutDown', async () => {
+    const resolver = new PromiseResolver();
+    await initializeRepairCompletePage();
+
+    let callCount = 0;
+    service.endRmaAndShutdown = () => {
+      callCount++;
+      return resolver.promise;
+    };
+    await flushTasks();
+
+    await clickButton('#powerwashButton');
     await flushTasks();
 
     assertEquals(1, callCount);
@@ -180,6 +225,21 @@ export function wrapupRepairCompletePageTest() {
     assertFalse(logsDialog.open);
 
     await clickButton('#batteryCutButton');
+  });
+
+  test('PowerwashCancelButtonClosesPowerwashDialog', async () => {
+    await initializeRepairCompletePage();
+    const powerwashDialog =
+        component.shadowRoot.querySelector('#powerwashDialog');
+    assertTrue(!!powerwashDialog);
+
+    service.setGetPowerwashRequiredResult(true);
+
+    await clickButton('#shutDownButton');
+    assertTrue(powerwashDialog.open);
+
+    await clickButton('#closePowerwashDialogButton');
+    assertFalse(powerwashDialog.open);
   });
 
   test('AllButtonsDisabled', async () => {
