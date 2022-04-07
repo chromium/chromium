@@ -2493,6 +2493,9 @@
         },
       },
       'win11-rel-swarming': {
+        'mixins': [
+          'win11',
+        ],
         'test_suites': {
            'gtest_tests': 'chromium_swarm_desktop_gtests',
         },

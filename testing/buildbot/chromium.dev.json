@@ -600,6 +600,11 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Windows-11-22000"
+            }
+          ],
           "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "base_unittests",
@@ -612,6 +617,11 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Windows-11-22000"
+            }
+          ],
           "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_browsertests",
@@ -624,6 +634,11 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Windows-11-22000"
+            }
+          ],
           "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_unittests",
@@ -636,6 +651,11 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Windows-11-22000"
+            }
+          ],
           "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "interactive_ui_tests",
@@ -648,6 +668,11 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Windows-11-22000"
+            }
+          ],
           "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "net_unittests",
@@ -660,6 +685,11 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Windows-11-22000"
+            }
+          ],
           "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "unit_tests",
