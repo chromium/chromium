@@ -6522,6 +6522,21 @@
             ]
         }
     ],
+    "ShowScrollableMVTOnNTPAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ShowScrollableMVTOnNTPAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "SidePanelDragAndDrop": [
         {
             "platforms": [
