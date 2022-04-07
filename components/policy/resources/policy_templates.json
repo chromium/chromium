@@ -28507,7 +28507,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'supported_on': ['chrome.*:102-'],
       'features': {
         'dynamic_refresh': True,
-        'per_profile': False,
+        'per_profile': True,
       },
       'example_value': [
         {
