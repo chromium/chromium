@@ -230,7 +230,15 @@ TEST_F(AccessiblePaneViewTest, PaneFocusTraversal) {
   widget.reset();
 }
 
-TEST_F(AccessiblePaneViewTest, DoesntCrashOnEscapeWithRemovedView) {
+// TODO(crbug.com/1314275): Re-enable this test
+#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+#define MAYBE_DoesntCrashOnEscapeWithRemovedView \
+  DISABLED_DoesntCrashOnEscapeWithRemovedView
+#else
+#define MAYBE_DoesntCrashOnEscapeWithRemovedView \
+  DoesntCrashOnEscapeWithRemovedView
+#endif
+TEST_F(AccessiblePaneViewTest, MAYBE_DoesntCrashOnEscapeWithRemovedView) {
   TestBarView* test_view1 = new TestBarView();
   TestBarView* test_view2 = new TestBarView();
   Widget widget;
