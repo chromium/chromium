@@ -15,6 +15,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_ua_data_values.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/dactyloscoper.h"
+#include "third_party/blink/renderer/core/frame/web_feature_forward.h"
 #include "third_party/blink/renderer/core/page/page.h"
 
 namespace blink {
@@ -166,20 +168,27 @@ ScriptPromise NavigatorUAData::getHighEntropyValues(
       IdentifiabilityStudySettings::Get()->ShouldSampleType(
           IdentifiableSurface::Type::kNavigatorUAData_GetHighEntropyValues);
   UADataValues* values = MakeGarbageCollected<UADataValues>();
-  // According to
-  // https://wicg.github.io/ua-client-hints/#getHighEntropyValues, brands,
-  // mobile and platform should be included regardless of whether they were
-  // asked for.
-
   // TODO: It'd be faster to compare hint when turning |hints| into an
   // AtomicString vector and turning the const string literals |hint| into
   // AtomicStrings as well.
   for (const String& hint : hints) {
-    values->setBrands(brand_set_);
+    // According to
+    // https://wicg.github.io/ua-client-hints/#getHighEntropyValues, brands,
+    // mobile and platform should be included regardless of whether they were
+    // asked for.
+
+    // Use `brands()` and not `brand_set_` directly since the former also
+    // records IdentifiabilityStudy metrics.
+    values->setBrands(brands());
     values->setMobile(is_mobile_);
     values->setPlatform(platform_);
-    MaybeRecordMetric(record_identifiability, hint, platform_,
-                      execution_context);
+    // Record IdentifiabilityStudy metrics for `mobile()` and `platform()` (the
+    // `brands()` part is already recorded inside that function).
+    Dactyloscoper::RecordDirectSurface(
+        GetExecutionContext(), WebFeature::kNavigatorUAData_Mobile, mobile());
+    Dactyloscoper::RecordDirectSurface(GetExecutionContext(),
+                                       WebFeature::kNavigatorUAData_Platform,
+                                       platform());
 
     if (hint == "platformVersion") {
       values->setPlatformVersion(platform_version_);
@@ -224,6 +233,12 @@ ScriptValue NavigatorUAData::toJSON(ScriptState* script_state) const {
   V8ObjectBuilder builder(script_state);
   builder.Add("brands", brands());
   builder.Add("mobile", mobile());
+
+  // Record IdentifiabilityStudy metrics for `mobile()` (the `brands()` part is
+  // already recorded inside that function).
+  Dactyloscoper::RecordDirectSurface(
+      GetExecutionContext(), WebFeature::kNavigatorUAData_Mobile, mobile());
+
   return builder.GetScriptValue();
 }
 
