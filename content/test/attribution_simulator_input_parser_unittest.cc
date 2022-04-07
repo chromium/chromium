@@ -903,7 +903,10 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
           }
         }]})json",
     },
-};
+    {
+        R"(["triggers"][0]["registration_config"]["event_triggers"][0]: must be a dictionary)",
+        R"json({"triggers":[{"registration_config":{"event_triggers":[true]}}]})json",
+    }};
 
 INSTANTIATE_TEST_SUITE_P(AttributionSimulatorInputParserInvalidInputs,
                          AttributionSimulatorInputParseErrorTest,

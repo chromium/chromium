@@ -275,6 +275,9 @@ class AttributionSimulatorInputParser {
     ParseList(
         *values,
         base::BindLambdaForTesting([&](const base::Value& event_trigger) {
+          if (!EnsureDictionary(event_trigger))
+            return;
+
           uint64_t trigger_data =
               ParseOptionalUint64(event_trigger, "trigger_data").value_or(0);
 
