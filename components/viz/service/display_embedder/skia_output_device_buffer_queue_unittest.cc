@@ -461,14 +461,15 @@ TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, MultipleGetCurrentBufferCalls) {
 
   output_device_->Reshape(CreateSkSurfaceCharacterization(), {}, 1.0f,
                           gfx::OVERLAY_TRANSFORM_NONE);
+  const int kNumBuffers = CountBuffers();
   EXPECT_NE(0U, memory_tracker().GetSize());
   EXPECT_NE(PaintPrimaryPlane(), nullptr);
   EXPECT_NE(0U, memory_tracker().GetSize());
-  EXPECT_EQ(3, CountBuffers());
+  EXPECT_EQ(kNumBuffers, CountBuffers());
   auto* fb = current_image();
   EXPECT_NE(PaintAndSchedulePrimaryPlane(), nullptr);
   EXPECT_NE(0U, memory_tracker().GetSize());
-  EXPECT_EQ(3, CountBuffers());
+  EXPECT_EQ(kNumBuffers, CountBuffers());
   EXPECT_EQ(fb, current_image());
 }
 
@@ -476,12 +477,13 @@ TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, CheckDoubleBuffering) {
   // Check buffer flow through double buffering path.
   output_device_->Reshape(CreateSkSurfaceCharacterization(), {}, 1.0f,
                           gfx::OVERLAY_TRANSFORM_NONE);
+  const int kNumBuffers = CountBuffers();
   EXPECT_NE(0U, memory_tracker().GetSize());
-  EXPECT_EQ(3, CountBuffers());
+  EXPECT_EQ(kNumBuffers, CountBuffers());
 
   EXPECT_NE(PaintAndSchedulePrimaryPlane(), nullptr);
   EXPECT_NE(0U, memory_tracker().GetSize());
-  EXPECT_EQ(3, CountBuffers());
+  EXPECT_EQ(kNumBuffers, CountBuffers());
   EXPECT_NE(current_image(), nullptr);
   EXPECT_FALSE(displayed_image());
   SwapBuffers();
@@ -491,7 +493,7 @@ TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, CheckDoubleBuffering) {
   EXPECT_TRUE(displayed_image());
   EXPECT_NE(PaintAndSchedulePrimaryPlane(), nullptr);
   EXPECT_NE(0U, memory_tracker().GetSize());
-  EXPECT_EQ(3, CountBuffers());
+  EXPECT_EQ(kNumBuffers, CountBuffers());
   CheckUnique();
   EXPECT_NE(current_image(), nullptr);
   EXPECT_EQ(0U, swap_completion_callbacks().size());
@@ -504,19 +506,20 @@ TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, CheckDoubleBuffering) {
   PageFlipComplete();
   CheckUnique();
   EXPECT_EQ(0U, swap_completion_callbacks().size());
-  EXPECT_EQ(2U, available_images().size());
+  EXPECT_EQ(static_cast<size_t>(kNumBuffers - 1), available_images().size());
   EXPECT_TRUE(displayed_image());
   EXPECT_NE(PaintAndSchedulePrimaryPlane(), nullptr);
   EXPECT_NE(0U, memory_tracker().GetSize());
-  EXPECT_EQ(3, CountBuffers());
+  EXPECT_EQ(kNumBuffers, CountBuffers());
   CheckUnique();
-  EXPECT_EQ(1u, available_images().size());
+  EXPECT_EQ(static_cast<size_t>(kNumBuffers - 2), available_images().size());
 }
 
 TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, CheckTripleBuffering) {
   // Check buffer flow through triple buffering path.
   output_device_->Reshape(CreateSkSurfaceCharacterization(), {}, 1.0f,
                           gfx::OVERLAY_TRANSFORM_NONE);
+  const int kNumBuffers = CountBuffers();
   EXPECT_NE(0U, memory_tracker().GetSize());
 
   // This bit is the same sequence tested in the doublebuffering case.
@@ -528,24 +531,24 @@ TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, CheckTripleBuffering) {
   SwapBuffers();
 
   EXPECT_NE(0U, memory_tracker().GetSize());
-  EXPECT_EQ(3, CountBuffers());
+  EXPECT_EQ(kNumBuffers, CountBuffers());
   CheckUnique();
   EXPECT_EQ(1U, swap_completion_callbacks().size());
   EXPECT_TRUE(displayed_image());
   EXPECT_NE(PaintAndSchedulePrimaryPlane(), nullptr);
   EXPECT_NE(0U, memory_tracker().GetSize());
-  EXPECT_EQ(3, CountBuffers());
+  EXPECT_EQ(kNumBuffers, CountBuffers());
   CheckUnique();
   EXPECT_NE(current_image(), nullptr);
   EXPECT_EQ(1U, swap_completion_callbacks().size());
   EXPECT_TRUE(displayed_image());
   PageFlipComplete();
-  EXPECT_EQ(3, CountBuffers());
+  EXPECT_EQ(kNumBuffers, CountBuffers());
   CheckUnique();
   EXPECT_NE(current_image(), nullptr);
   EXPECT_EQ(0U, swap_completion_callbacks().size());
   EXPECT_TRUE(displayed_image());
-  EXPECT_EQ(1U, available_images().size());
+  EXPECT_EQ(static_cast<size_t>(kNumBuffers - 2), available_images().size());
 }
 
 TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, CheckEmptySwap) {
@@ -553,13 +556,13 @@ TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, CheckEmptySwap) {
   // might not be called.
   output_device_->Reshape(CreateSkSurfaceCharacterization(), {}, 1.0f,
                           gfx::OVERLAY_TRANSFORM_NONE);
+  const int kNumBuffers = CountBuffers();
 
-  EXPECT_EQ(3, CountBuffers());
   EXPECT_NE(0U, memory_tracker().GetSize());
   auto* image = PaintAndSchedulePrimaryPlane();
   EXPECT_NE(image, nullptr);
   EXPECT_NE(0U, memory_tracker().GetSize());
-  EXPECT_EQ(3, CountBuffers());
+  EXPECT_EQ(kNumBuffers, CountBuffers());
   EXPECT_NE(current_image(), nullptr);
   EXPECT_FALSE(displayed_image());
 
@@ -642,19 +645,20 @@ TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, NoPrimaryPlane) {
 TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, CheckCorrectBufferOrdering) {
   output_device_->Reshape(CreateSkSurfaceCharacterization(), {}, 1.0f,
                           gfx::OVERLAY_TRANSFORM_NONE);
-  const size_t kSwapCount = 5;
+  const int kNumBuffers = CountBuffers();
+  const int kSwapCount = kNumBuffers * 2;
 
   EXPECT_NE(PaintAndSchedulePrimaryPlane(), nullptr);
-  for (size_t i = 0; i < kSwapCount; ++i) {
+  for (int i = 0; i < kSwapCount; ++i) {
     SwapBuffers();
     EXPECT_NE(PaintAndSchedulePrimaryPlane(), nullptr);
     PageFlipComplete();
   }
 
-  // Note: this must be three, not kSwapCount
-  EXPECT_EQ(3, CountBuffers());
+  // Note: this must not be kSwapCount
+  EXPECT_EQ(kNumBuffers, CountBuffers());
 
-  for (size_t i = 0; i < kSwapCount; ++i) {
+  for (int i = 0; i < kSwapCount; ++i) {
     auto* next_image = current_image();
     SwapBuffers();
     EXPECT_EQ(current_image(), nullptr);
@@ -668,6 +672,7 @@ TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, CheckCorrectBufferOrdering) {
 TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, ReshapeWithInFlightSurfaces) {
   output_device_->Reshape(CreateSkSurfaceCharacterization(), {}, 1.0f,
                           gfx::OVERLAY_TRANSFORM_NONE);
+  const size_t kNumBuffers = available_images().size();
 
   const size_t kSwapCount = 5;
 
@@ -692,7 +697,7 @@ TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, ReshapeWithInFlightSurfaces) {
   EXPECT_FALSE(displayed_image());
 
   // The dummy surfacess left should be discarded.
-  EXPECT_EQ(3u, available_images().size());
+  EXPECT_EQ(kNumBuffers, available_images().size());
 
   // Test swap after reshape
   EXPECT_NE(PaintAndSchedulePrimaryPlane(), nullptr);
@@ -704,7 +709,7 @@ TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, ReshapeWithInFlightSurfaces) {
 TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, BufferIsInOrder) {
   output_device_->Reshape(CreateSkSurfaceCharacterization(), {}, 1.0f,
                           gfx::OVERLAY_TRANSFORM_NONE);
-  EXPECT_EQ(3u, available_images().size());
+  int kNumBuffers = available_images().size();
 
   int current_index = -1;
   int submitted_index = -1;
@@ -712,66 +717,78 @@ TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, BufferIsInOrder) {
 
   EXPECT_NE(PaintAndSchedulePrimaryPlane(), nullptr);
   ++current_index;
-  EXPECT_EQ(current_image(), images()[current_index % 3].get());
-  EXPECT_EQ(submitted_image(), submitted_index < 0
-                                   ? nullptr
-                                   : images()[submitted_index % 3].get());
-  EXPECT_EQ(displayed_image(), displayed_index < 0
-                                   ? nullptr
-                                   : images()[displayed_index % 3].get());
+  EXPECT_EQ(current_image(), images()[current_index % kNumBuffers].get());
+  EXPECT_EQ(submitted_image(),
+            submitted_index < 0
+                ? nullptr
+                : images()[submitted_index % kNumBuffers].get());
+  EXPECT_EQ(displayed_image(),
+            displayed_index < 0
+                ? nullptr
+                : images()[displayed_index % kNumBuffers].get());
 
   SwapBuffers();
   ++submitted_index;
   EXPECT_EQ(current_image(), nullptr);
-  EXPECT_EQ(submitted_image(), submitted_index < 0
-                                   ? nullptr
-                                   : images()[submitted_index % 3].get());
-  EXPECT_EQ(displayed_image(), displayed_index < 0
-                                   ? nullptr
-                                   : images()[displayed_index % 3].get());
+  EXPECT_EQ(submitted_image(),
+            submitted_index < 0
+                ? nullptr
+                : images()[submitted_index % kNumBuffers].get());
+  EXPECT_EQ(displayed_image(),
+            displayed_index < 0
+                ? nullptr
+                : images()[displayed_index % kNumBuffers].get());
 
   const size_t kSwapCount = 10;
   for (size_t i = 0; i < kSwapCount; ++i) {
     EXPECT_NE(PaintAndSchedulePrimaryPlane(), nullptr);
     ++current_index;
-    EXPECT_EQ(current_image(), images()[current_index % 3].get());
-    EXPECT_EQ(submitted_image(), submitted_index < 0
-                                     ? nullptr
-                                     : images()[submitted_index % 3].get());
-    EXPECT_EQ(displayed_image(), displayed_index < 0
-                                     ? nullptr
-                                     : images()[displayed_index % 3].get());
+    EXPECT_EQ(current_image(), images()[current_index % kNumBuffers].get());
+    EXPECT_EQ(submitted_image(),
+              submitted_index < 0
+                  ? nullptr
+                  : images()[submitted_index % kNumBuffers].get());
+    EXPECT_EQ(displayed_image(),
+              displayed_index < 0
+                  ? nullptr
+                  : images()[displayed_index % kNumBuffers].get());
 
     SwapBuffers();
     ++submitted_index;
     EXPECT_EQ(current_image(), nullptr);
-    EXPECT_EQ(submitted_image(), submitted_index < 0
-                                     ? nullptr
-                                     : images()[submitted_index % 3].get());
-    EXPECT_EQ(displayed_image(), displayed_index < 0
-                                     ? nullptr
-                                     : images()[displayed_index % 3].get());
+    EXPECT_EQ(submitted_image(),
+              submitted_index < 0
+                  ? nullptr
+                  : images()[submitted_index % kNumBuffers].get());
+    EXPECT_EQ(displayed_image(),
+              displayed_index < 0
+                  ? nullptr
+                  : images()[displayed_index % kNumBuffers].get());
 
     PageFlipComplete();
     ++displayed_index;
     EXPECT_EQ(current_image(), nullptr);
-    EXPECT_EQ(submitted_image(), submitted_index < 0
-                                     ? nullptr
-                                     : images()[submitted_index % 3].get());
-    EXPECT_EQ(displayed_image(), displayed_index < 0
-                                     ? nullptr
-                                     : images()[displayed_index % 3].get());
+    EXPECT_EQ(submitted_image(),
+              submitted_index < 0
+                  ? nullptr
+                  : images()[submitted_index % kNumBuffers].get());
+    EXPECT_EQ(displayed_image(),
+              displayed_index < 0
+                  ? nullptr
+                  : images()[displayed_index % kNumBuffers].get());
   }
 
   PageFlipComplete();
   ++displayed_index;
   EXPECT_EQ(current_image(), nullptr);
-  EXPECT_EQ(submitted_image(), submitted_index < 0
-                                   ? nullptr
-                                   : images()[submitted_index % 3].get());
-  EXPECT_EQ(displayed_image(), displayed_index < 0
-                                   ? nullptr
-                                   : images()[displayed_index % 3].get());
+  EXPECT_EQ(submitted_image(),
+            submitted_index < 0
+                ? nullptr
+                : images()[submitted_index % kNumBuffers].get());
+  EXPECT_EQ(displayed_image(),
+            displayed_index < 0
+                ? nullptr
+                : images()[displayed_index % kNumBuffers].get());
 }
 
 }  // namespace
