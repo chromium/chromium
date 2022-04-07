@@ -110,12 +110,6 @@ TEST_F(SendTabToSelfBubbleViewImplTest, KeyboardAccessibilityConfigured) {
             container->children()[2]->GetGroup());
 }
 
-// TODO(crbug/1307564): Flaky test.
-#if (BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
-#define MAYBE_ButtonPressed DISABLED_ButtonPressed
-#else
-#define MAYBE_ButtonPressed ButtonPressed
-#endif
 TEST_F(SendTabToSelfBubbleViewImplTest, ButtonPressed) {
   EXPECT_CALL(*controller_, OnDeviceSelected("Device_3", "device_guid_3"));
   const views::View* button_container = bubble_->GetButtonContainerForTesting();
