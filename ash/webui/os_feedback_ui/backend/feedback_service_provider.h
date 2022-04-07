@@ -1,0 +1,22 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_WEBUI_OS_FEEDBACK_UI_BACKEND_FEEDBACK_SERVICE_PROVIDER_H_
+#define ASH_WEBUI_OS_FEEDBACK_UI_BACKEND_FEEDBACK_SERVICE_PROVIDER_H_
+
+namespace ash {
+namespace feedback {
+
+class FeedbackServiceProvider {
+ public:
+  FeedbackServiceProvider();
+  FeedbackServiceProvider(const FeedbackServiceProvider&) = delete;
+  FeedbackServiceProvider& operator=(const FeedbackServiceProvider&) = delete;
+  ~FeedbackServiceProvider();
+};
+
+}  // namespace feedback
+}  // namespace ash
+
+#endif  // ASH_WEBUI_OS_FEEDBACK_UI_BACKEND_FEEDBACK_SERVICE_PROVIDER_H_

@@ -8,6 +8,8 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
 static_library("backend") {
   sources = [
+    "feedback_service_provider.cc",
+    "feedback_service_provider.h",
     "help_content_provider.cc",
     "help_content_provider.h",
   ]
@@ -29,7 +31,10 @@ static_library("backend") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "help_content_provider_unittest.cc" ]
+  sources = [
+    "feedback_service_provider_unittest.cc",
+    "help_content_provider_unittest.cc",
+  ]
 
   deps = [
     ":backend",
