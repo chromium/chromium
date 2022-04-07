@@ -30681,6 +30681,38 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
 
       If this policy is set to Disabled, a warning dialog is not shown when the user is attempting to quit.'''
     },
+    {
+      'name': 'InsightsExtensionEnabled',
+      'owners': ['cros-reporting-team@google.com', 'vshenvi@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'future_on': ['chrome_os'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable insights extension',
+        },
+        {
+          'value': False,
+          'caption': 'Disable insights extension',
+        },
+      ],
+      'default': False,
+      'example_value': False,
+      'id': 975,
+      'caption': '''Enable insights extension for reporting usage metrics''',
+      'tags': ['admin-sharing'],
+      'desc': '''The insights extension reports user internet download and upload speed, user idle time, and application insights.
+
+      If the policy is set to enabled, the insights extension will be installed and report metrics.
+
+      If the policy is not set or set to disabled, then the insights extension will not be installed and will not report metrics.''',
+      'arc_support': 'This policy has no effect on the reporting done by Android.',
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -31677,6 +31709,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 974,
+  'highest_id_currently_used': 975,
   'highest_atomic_group_id_currently_used': 42
 }

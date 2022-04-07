@@ -1471,6 +1471,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kForceMaximizeOnFirstRun,
     prefs::kForceMaximizeOnFirstRun,
     base::Value::Type::BOOLEAN },
+  { key::kInsightsExtensionEnabled,
+    prefs::kInsightsExtensionEnabled,
+    base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)

@@ -29186,6 +29186,7 @@ Called by update_document_policy_enum.py.-->
   <int value="972" label="GetDisplayMediaSetSelectAllScreens"/>
   <int value="973" label="WarnBeforeQuittingEnabled"/>
   <int value="974" label="SystemTerminalSshAllowed"/>
+  <int value="975" label="InsightsExtensionEnabled"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

@@ -476,6 +476,10 @@ const char kAttestationExtensionAllowlist[] = "attestation.extension_allowlist";
 // name and the string value.
 const char kPrintingAPIExtensionsAllowlist[] =
     "printing.printing_api_extensions_whitelist";
+
+// A boolean specifying whether the insights extension is enabled. If set to
+// true, the CCaaS Chrome component extension will be installed.
+const char kInsightsExtensionEnabled[] = "insights_extension_enabled";
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

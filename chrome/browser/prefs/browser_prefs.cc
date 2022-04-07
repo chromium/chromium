@@ -1400,6 +1400,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   extensions::platform_keys::RegisterProfilePrefs(registry);
   certificate_manager::CertificatesHandler::RegisterProfilePrefs(registry);
   policy::PolicyCertService::RegisterProfilePrefs(registry);
+  registry->RegisterBooleanPref(prefs::kInsightsExtensionEnabled, false);
 #if defined(USE_CUPS)
   extensions::PrintingAPIHandler::RegisterProfilePrefs(registry);
 #endif  // defined(USE_CUPS)
