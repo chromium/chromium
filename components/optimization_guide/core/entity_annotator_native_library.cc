@@ -8,6 +8,7 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/model_util.h"
@@ -85,6 +86,9 @@ EntityAnnotatorNativeLibrary::Create(bool should_provide_filter_path) {
       base_dir.AppendASCII(
           base::GetNativeLibraryName("optimization_guide_internal")),
       &error);
+  base::UmaHistogramBoolean(
+      "OptimizationGuide.EntityAnnotatorNativeLibrary.InitiatedSuccessfully",
+      (native_library != nullptr));
   if (!native_library) {
     LOG(ERROR) << "Failed to initialize optimization guide internal: "
                << error.ToString();

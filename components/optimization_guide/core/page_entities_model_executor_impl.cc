@@ -123,6 +123,9 @@ void EntityAnnotatorHolder::CreateAndSetEntityAnnotatorOnBackgroundThread(
 
   entity_annotator_ =
       entity_annotator_native_library_->CreateEntityAnnotator(model_info);
+  base::UmaHistogramBoolean(
+      "OptimizationGuide.PageEntitiesModelExecutor.CreatedSuccessfully",
+      entity_annotator_ != nullptr);
 }
 
 void EntityAnnotatorHolder::AnnotateEntitiesMetadataModelOnBackgroundThread(

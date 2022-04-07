@@ -7,6 +7,7 @@
 #include "base/observer_list.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -156,6 +157,8 @@ class PageEntitiesModelExecutorImplTest : public testing::Test {
 };
 
 TEST_F(PageEntitiesModelExecutorImplTest, CreateNoMetadata) {
+  base::HistogramTester histogram_tester;
+
   std::unique_ptr<ModelInfo> model_info = TestModelInfoBuilder().Build();
   ASSERT_TRUE(model_info);
   PushModelInfoToObservers(*model_info);
@@ -163,9 +166,15 @@ TEST_F(PageEntitiesModelExecutorImplTest, CreateNoMetadata) {
   // We expect that there will be no model to evaluate even for this input that
   // has output in the test model.
   EXPECT_EQ(ExecuteHumanReadableModel("Taylor Swift singer"), absl::nullopt);
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageEntitiesModelExecutor.CreatedSuccessfully", false,
+      1);
 }
 
 TEST_F(PageEntitiesModelExecutorImplTest, CreateMetadataWrongType) {
+  base::HistogramTester histogram_tester;
+
   proto::Any any;
   any.set_type_url(any.GetTypeName());
   proto::FieldTrial garbage;
@@ -183,9 +192,15 @@ TEST_F(PageEntitiesModelExecutorImplTest, CreateMetadataWrongType) {
   // We expect that there will be no model to evaluate even for this input that
   // has output in the test model.
   EXPECT_EQ(ExecuteHumanReadableModel("Taylor Swift singer"), absl::nullopt);
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageEntitiesModelExecutor.CreatedSuccessfully", false,
+      1);
 }
 
 TEST_F(PageEntitiesModelExecutorImplTest, CreateNoSlices) {
+  base::HistogramTester histogram_tester;
+
   proto::Any any;
   proto::PageEntitiesModelMetadata metadata;
   any.set_type_url(metadata.GetTypeName());
@@ -203,6 +218,10 @@ TEST_F(PageEntitiesModelExecutorImplTest, CreateNoSlices) {
   // We expect that there will be no model to evaluate even for this input that
   // has output in the test model.
   EXPECT_EQ(ExecuteHumanReadableModel("Taylor Swift singer"), absl::nullopt);
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageEntitiesModelExecutor.CreatedSuccessfully", false,
+      1);
 }
 
 TEST_F(PageEntitiesModelExecutorImplTest, CreateMissingFiles) {
@@ -223,6 +242,8 @@ TEST_F(PageEntitiesModelExecutorImplTest, CreateMissingFiles) {
   };
   // Remove one file for each iteration and make sure it fails.
   for (const auto& missing_file_name : expected_additional_files) {
+    base::HistogramTester histogram_tester;
+
     // Make a copy of the expected files and remove the one file from the set.
     base::flat_set<std::string> additional_files = expected_additional_files;
     additional_files.erase(missing_file_name);
@@ -243,6 +264,10 @@ TEST_F(PageEntitiesModelExecutorImplTest, CreateMissingFiles) {
     // We expect that there will be no model to evaluate even for this input
     // that has output in the test model.
     EXPECT_EQ(ExecuteHumanReadableModel("Taylor Swift singer"), absl::nullopt);
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.PageEntitiesModelExecutor.CreatedSuccessfully",
+        false, 1);
   }
 }
 

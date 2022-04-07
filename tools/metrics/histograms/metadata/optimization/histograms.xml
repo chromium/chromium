@@ -153,6 +153,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="OptimizationGuide.EntityAnnotatorNativeLibrary.InitiatedSuccessfully"
+    units="BooleanSuccess" expires_after="M106">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records whether the entity annotator native library was initiated
+    successfully if an attempt to load it was made.
+  </summary>
+</histogram>
+
 <histogram name="OptimizationGuide.HintCache.HintType.Loaded"
     enum="HintCacheStoreEntryType" expires_after="M106">
   <owner>mcrouse@chromium.org</owner>
@@ -710,6 +721,18 @@ chromium-metrics-reviews@google.com.
     Records whether related searches were successfully extracted from Google
     SRP, if requested. This will be recorded approximately once per page load
     after the page has finished loading.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PageEntitiesModelExecutor.CreatedSuccessfully"
+    enum="BooleanSuccess" expires_after="M106">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records whether the page entities model executor was created successfully
+    from a model file. Recorded each time it was attempted, which can be
+    multiple times a session if a model update was received during the session.
   </summary>
 </histogram>
 
