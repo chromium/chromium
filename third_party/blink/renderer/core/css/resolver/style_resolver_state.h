@@ -160,6 +160,9 @@ class CORE_EXPORT StyleResolverState {
   // reference to the passed value.
   const CSSValue& ResolveLightDarkPair(const CSSValue&);
 
+  const ComputedStyle* OriginatingElementStyle() const {
+    return originating_element_style_.get();
+  }
   bool IsForHighlight() const { return is_for_highlight_; }
 
   bool CanCacheBaseStyle() const { return can_cache_base_style_; }
@@ -212,6 +215,7 @@ class CORE_EXPORT StyleResolverState {
   ElementType element_type_;
   Element* nearest_container_;
 
+  scoped_refptr<const ComputedStyle> originating_element_style_;
   // True if we are resolving styles for a highlight pseudo-element.
   const bool is_for_highlight_;
   // True if we are resolving styles for a custom highlight pseudo-element.

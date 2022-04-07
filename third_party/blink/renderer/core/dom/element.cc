@@ -3610,6 +3610,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
         const ComputedStyle* highlight_parent =
             parent_highlights ? parent_highlights->Selection() : nullptr;
         StyleRequest style_request{kPseudoIdSelection, highlight_parent};
+        style_request.originating_element_style = new_style.get();
         highlights.SetSelection(
             StyleForPseudoElement(new_style_recalc_context, style_request));
       }
@@ -3619,6 +3620,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
         const ComputedStyle* highlight_parent =
             parent_highlights ? parent_highlights->TargetText() : nullptr;
         StyleRequest style_request{kPseudoIdTargetText, highlight_parent};
+        style_request.originating_element_style = new_style.get();
         highlights.SetTargetText(
             StyleForPseudoElement(new_style_recalc_context, style_request));
       }
@@ -3628,6 +3630,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
         const ComputedStyle* highlight_parent =
             parent_highlights ? parent_highlights->SpellingError() : nullptr;
         StyleRequest style_request{kPseudoIdSpellingError, highlight_parent};
+        style_request.originating_element_style = new_style.get();
         highlights.SetSpellingError(
             StyleForPseudoElement(new_style_recalc_context, style_request));
       }
@@ -3637,6 +3640,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
         const ComputedStyle* highlight_parent =
             parent_highlights ? parent_highlights->GrammarError() : nullptr;
         StyleRequest style_request{kPseudoIdGrammarError, highlight_parent};
+        style_request.originating_element_style = new_style.get();
         highlights.SetGrammarError(
             StyleForPseudoElement(new_style_recalc_context, style_request));
       }
@@ -3659,6 +3663,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
                   : nullptr;
           StyleRequest style_request{kPseudoIdHighlight, highlight_parent,
                                      custom_highlight_name};
+          style_request.originating_element_style = new_style.get();
           highlights.SetCustomHighlight(
               custom_highlight_name,
               StyleForPseudoElement(new_style_recalc_context, style_request));
@@ -6024,6 +6029,7 @@ const ComputedStyle* Element::EnsureOwnComputedStyle(
     // so we don't need to do anything special regarding display contents (see
     // https://drafts.csswg.org/css-pseudo/#highlight-cascade).
     style_request.layout_parent_override = highlight_element_style;
+    style_request.originating_element_style = element_style;
   } else {
     style_request.parent_override = element_style;
     style_request.layout_parent_override = layout_parent_style;

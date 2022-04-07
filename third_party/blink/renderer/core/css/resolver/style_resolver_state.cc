@@ -65,6 +65,7 @@ StyleResolverState::StyleResolverState(
                         ? ElementType::kPseudoElement
                         : ElementType::kElement),
       nearest_container_(style_recalc_context.container),
+      originating_element_style_(style_request.originating_element_style),
       is_for_highlight_(IsHighlightPseudoElement(style_request.pseudo_id)),
       is_for_custom_highlight_(style_request.pseudo_id ==
                                PseudoId::kPseudoIdHighlight),
@@ -82,6 +83,10 @@ StyleResolverState::StyleResolverState(
     layout_parent_style_ = parent_style_;
 
   DCHECK(document.IsActive());
+
+  if (RuntimeEnabledFeatures::HighlightInheritanceEnabled() &&
+      is_for_highlight_)
+    DCHECK(originating_element_style_);
 }
 
 StyleResolverState::~StyleResolverState() {

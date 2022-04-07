@@ -1559,8 +1559,11 @@ void Color::ApplyValue(StyleResolverState& state, const CSSValue& value) const {
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value &&
       identifier_value->GetValueID() == CSSValueID::kCurrentcolor) {
-    state.Style()->SetColorIsCurrentColor(true);
     ApplyInherit(state);
+    state.Style()->SetColorIsCurrentColor(true);
+    if (RuntimeEnabledFeatures::HighlightInheritanceEnabled() &&
+        state.IsForHighlight() && state.OriginatingElementStyle())
+      state.Style()->SetColor(state.OriginatingElementStyle()->GetColor());
     return;
   }
   if (value.IsInitialColorValue()) {
