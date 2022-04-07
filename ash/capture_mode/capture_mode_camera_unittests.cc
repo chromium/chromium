@@ -575,11 +575,34 @@ TEST_F(CaptureModeCameraTest, ReconnectDuringGracePeriod) {
   EXPECT_TRUE(timer->IsRunning());
   EXPECT_FALSE(camera_controller->camera_preview_widget());
 
-  // Readd the camera during the grace period, the timer should stop, and the
+  // Re-add the camera during the grace period, the timer should stop, and the
   // preview should reshow.
   AddDefaultCamera();
   EXPECT_FALSE(timer->IsRunning());
   EXPECT_TRUE(camera_controller->camera_preview_widget());
+}
+
+// Tests a flaky camera that disconnects before recording begins and reconnects
+// during recording within the grace period.
+TEST_F(CaptureModeCameraTest, ReconnectDuringGracePeriodAfterRecordingStarts) {
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  auto* camera_controller = AddAndRemoveCameraAndTriggerGracePeriod();
+  base::OneShotTimer* timer =
+      camera_controller->camera_reconnect_timer_for_test();
+  EXPECT_TRUE(timer->IsRunning());
+  EXPECT_FALSE(camera_controller->camera_preview_widget());
+
+  // Start recording, and expect that `should_show_preview_` will change to
+  // false.
+  EXPECT_TRUE(camera_controller->should_show_preview());
+  StartVideoRecordingImmediately();
+  EXPECT_FALSE(camera_controller->should_show_preview());
+
+  // Re-add the camera during the grace period, the timer should stop, but the
+  // preview should not be recreated.
+  AddDefaultCamera();
+  EXPECT_FALSE(timer->IsRunning());
+  EXPECT_FALSE(camera_controller->camera_preview_widget());
 }
 
 TEST_F(CaptureModeCameraTest, SelectedCameraChangedObserver) {

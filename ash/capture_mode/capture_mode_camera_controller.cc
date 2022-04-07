@@ -581,9 +581,6 @@ void CaptureModeCameraController::RefreshCameraPreview() {
       camera_reconnect_timer_.Start(
           FROM_HERE, kDisconnectionGracePeriod, this,
           &CaptureModeCameraController::OnSelectedCameraDisconnected);
-
-      // TODO(afakhry): Clear the camera immediately if it gets disconnected
-      // during count down and before recording starts.
     }
   }
 
