@@ -753,6 +753,10 @@ if (is_android) {
         "$root_out_dir/libcrashpad_handler_trampoline.so",
       ]
 
+      # TODO(b/228506503): remove the exclusion rule after cast_service and
+      # cast_browser depend on different resource targets.
+      resource_exclusion_regex = "cast_web_contents_activity.xml"
+
       enable_multidex = true
 
       # TODO(b/222780347): Enable when compile errors are resolved on release
