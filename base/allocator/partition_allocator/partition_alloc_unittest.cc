@@ -206,15 +206,10 @@ class CountDanglingRawPtr {
 
 }  // namespace
 
-namespace base {
-
-// NOTE: Though this test actually excercises interfaces inside the ::base
-// namespace, the unittest is inside the ::base::internal spaces because a
-// portion of the test expectations require inspecting objects and behavior
-// in the ::base::internal namespace. An alternate formulation would be to
-// explicitly add using statements for each inspected type but this felt more
-// readable.
-namespace internal {
+// Note: This test exercises interfaces inside the `partition_alloc`
+// namespace, but inspects objects inside `partition_alloc::internal`.
+// For ease of reading, the tests are placed into the latter namespace.
+namespace partition_alloc::internal {
 
 using SlotSpan = SlotSpanMetadata<ThreadSafe>;
 
@@ -227,7 +222,7 @@ const size_t kPointerOffset = kPartitionRefCountOffsetAdjustment;
 const size_t kExtraAllocSize = kCookieSize + kInSlotRefCountBufferSize;
 #endif
 const size_t kRealAllocSize =
-    bits::AlignUp(kTestAllocSize + kExtraAllocSize, kAlignment);
+    base::bits::AlignUp(kTestAllocSize + kExtraAllocSize, kAlignment);
 
 const char* type_name = nullptr;
 
@@ -907,7 +902,7 @@ TEST_P(PartitionAllocTest, Alloc) {
   // So (x + kExtraAllocSize) must be multiples of base::kAlignment.
   // x = bits::AlignUp(kExtraAllocSize, base::kAlignment) - kExtraAllocSize;
   size_t base_size =
-      bits::AlignUp(kExtraAllocSize, base::kAlignment) - kExtraAllocSize;
+      base::bits::AlignUp(kExtraAllocSize, base::kAlignment) - kExtraAllocSize;
   ptr = allocator.root()->Alloc(base_size + 1, type_name);
   EXPECT_TRUE(ptr);
   void* orig_ptr = ptr;
@@ -2190,7 +2185,7 @@ TEST_P(PartitionAllocDeathTest, DirectMapGuardPages) {
   const size_t kSizes[] = {
       kMaxBucketed + kExtraAllocSize + 1, kMaxBucketed + SystemPageSize(),
       kMaxBucketed + PartitionPageSize(),
-      bits::AlignUp(kMaxBucketed + kSuperPageSize, kSuperPageSize) -
+      base::bits::AlignUp(kMaxBucketed + kSuperPageSize, kSuperPageSize) -
           PartitionRoot<ThreadSafe>::GetDirectMapMetadataAndGuardPagesSize()};
   for (size_t size : kSizes) {
     ASSERT_GT(size, kMaxBucketed);
@@ -2203,7 +2198,8 @@ TEST_P(PartitionAllocDeathTest, DirectMapGuardPages) {
     char* char_ptr = reinterpret_cast<char*>(ptr) - kPointerOffset;
 
     EXPECT_DEATH(*(char_ptr - 1) = 'A', "");
-    EXPECT_DEATH(*(char_ptr + bits::AlignUp(size, SystemPageSize())) = 'A', "");
+    EXPECT_DEATH(
+        *(char_ptr + base::bits::AlignUp(size, SystemPageSize())) = 'A', "");
 
     allocator.root()->Free(ptr);
   }
@@ -2247,7 +2243,7 @@ TEST_P(PartitionAllocTest, MTEProtectsFreedPtr) {
 #if !BUILDFLAG(USE_BACKUP_REF_PTR) && defined(PA_HAS_FREELIST_SHADOW_ENTRY)
 
 TEST_P(PartitionAllocDeathTest, UseAfterFreeDetection) {
-  CPU cpu;
+  base::CPU cpu;
   void* data = allocator.root()->Alloc(100, "");
   allocator.root()->Free(data);
 
@@ -2258,7 +2254,7 @@ TEST_P(PartitionAllocDeathTest, UseAfterFreeDetection) {
 }
 
 TEST_P(PartitionAllocDeathTest, FreelistCorruption) {
-  CPU cpu;
+  base::CPU cpu;
   const size_t alloc_size = 2 * sizeof(void*);
   void** fake_freelist_entry =
       static_cast<void**>(allocator.root()->Alloc(alloc_size, ""));
@@ -3494,7 +3490,7 @@ TEST_P(PartitionAllocTest, Bookkeeping) {
     ASSERT_GT(huge_size, kMaxBucketed);
     for (size_t alignment : alignments) {
       // For direct map, we commit only as many pages as needed.
-      size_t aligned_size = bits::AlignUp(huge_size, SystemPageSize());
+      size_t aligned_size = base::bits::AlignUp(huge_size, SystemPageSize());
       ptr = root.AllocWithFlagsInternal(0, huge_size - kExtraAllocSize,
                                         alignment, type_name);
       expected_committed_size += aligned_size;
@@ -3510,8 +3506,8 @@ TEST_P(PartitionAllocTest, Bookkeeping) {
           PartitionRoot<ThreadSafe>::GetDirectMapMetadataAndGuardPagesSize() +
           alignment - PartitionPageSize();
       size_t expected_direct_map_size =
-          bits::AlignUp(aligned_size + surrounding_pages_size,
-                        DirectMapAllocationGranularity());
+          base::bits::AlignUp(aligned_size + surrounding_pages_size,
+                              DirectMapAllocationGranularity());
       EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
       EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages);
       EXPECT_EQ(expected_total_allocated_size,
@@ -4009,14 +4005,14 @@ TEST_P(PartitionAllocTest, CheckReservationType) {
   EXPECT_TRUE(IsManagedByNormalBuckets(address_to_check));
   EXPECT_FALSE(IsManagedByDirectMap(address_to_check));
   EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(address_to_check));
-  address_to_check = bits::AlignDown(address, kSuperPageSize);
+  address_to_check = base::bits::AlignDown(address, kSuperPageSize);
   EXPECT_TRUE(IsReservationStart(address_to_check));
   EXPECT_TRUE(IsManagedByNormalBuckets(address_to_check));
   EXPECT_FALSE(IsManagedByDirectMap(address_to_check));
   EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(address_to_check));
   allocator.root()->Free(ptr);
   // Freeing keeps a normal-bucket super page in memory.
-  address_to_check = bits::AlignDown(address, kSuperPageSize);
+  address_to_check = base::bits::AlignDown(address, kSuperPageSize);
   EXPECT_TRUE(IsReservationStart(address_to_check));
   EXPECT_TRUE(IsManagedByNormalBuckets(address_to_check));
   EXPECT_FALSE(IsManagedByDirectMap(address_to_check));
@@ -4032,7 +4028,7 @@ TEST_P(PartitionAllocTest, CheckReservationType) {
   EXPECT_FALSE(IsManagedByNormalBuckets(address_to_check));
   EXPECT_TRUE(IsManagedByDirectMap(address_to_check));
   EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(address_to_check));
-  address_to_check = bits::AlignUp(address, kSuperPageSize);
+  address_to_check = base::bits::AlignUp(address, kSuperPageSize);
   EXPECT_FALSE(IsReservationStart(address_to_check));
   EXPECT_FALSE(IsManagedByNormalBuckets(address_to_check));
   EXPECT_TRUE(IsManagedByDirectMap(address_to_check));
@@ -4042,14 +4038,14 @@ TEST_P(PartitionAllocTest, CheckReservationType) {
   EXPECT_FALSE(IsManagedByNormalBuckets(address_to_check));
   EXPECT_TRUE(IsManagedByDirectMap(address_to_check));
   EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(address_to_check));
-  address_to_check = bits::AlignDown(address, kSuperPageSize);
+  address_to_check = base::bits::AlignDown(address, kSuperPageSize);
   EXPECT_TRUE(IsReservationStart(address_to_check));
   EXPECT_FALSE(IsManagedByNormalBuckets(address_to_check));
   EXPECT_TRUE(IsManagedByDirectMap(address_to_check));
   EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(address_to_check));
   allocator.root()->Free(ptr);
   // Freeing releases direct-map super pages.
-  address_to_check = bits::AlignDown(address, kSuperPageSize);
+  address_to_check = base::bits::AlignDown(address, kSuperPageSize);
 #if DCHECK_IS_ON()
   // Expect to DCHECK on unallocated region.
   EXPECT_DEATH_IF_SUPPORTED(IsReservationStart(address_to_check), "");
@@ -4145,13 +4141,13 @@ TEST_P(PartitionAllocDeathTest, CheckTriggered) {
 
 namespace {
 
-class LambdaThreadDelegate : public PlatformThread::Delegate {
+class LambdaThreadDelegate : public base::PlatformThread::Delegate {
  public:
-  explicit LambdaThreadDelegate(RepeatingClosure f) : f_(f) {}
+  explicit LambdaThreadDelegate(base::RepeatingClosure f) : f_(f) {}
   void ThreadMain() override { f_.Run(); }
 
  private:
-  RepeatingClosure f_;
+  base::RepeatingClosure f_;
 };
 
 NOINLINE void FreeForTest(void* data) {
@@ -4171,7 +4167,7 @@ TEST_P(PartitionAllocTest, DISABLED_PreforkHandler) {
   // makes it likely that this thread will own the lock, and that the
   // EXPECT_EXIT() part will deadlock.
   constexpr size_t kAllocSize = ThreadCache::kLargeSizeThreshold + 1;
-  LambdaThreadDelegate delegate{BindLambdaForTesting([&]() {
+  LambdaThreadDelegate delegate{base::BindLambdaForTesting([&]() {
     started_threads++;
     while (!please_stop.load(std::memory_order_relaxed)) {
       void* ptr = malloc(kAllocSize);
@@ -4185,9 +4181,9 @@ TEST_P(PartitionAllocTest, DISABLED_PreforkHandler) {
   })};
 
   constexpr int kThreads = 4;
-  PlatformThreadHandle thread_handles[kThreads];
-  for (int i = 0; i < kThreads; i++) {
-    PlatformThread::Create(0, &delegate, &thread_handles[i]);
+  base::PlatformThreadHandle thread_handles[kThreads];
+  for (auto& thread_handle : thread_handles) {
+    base::PlatformThread::Create(0, &delegate, &thread_handle);
   }
   // Make sure all threads are actually already running.
   while (started_threads != kThreads) {
@@ -4202,8 +4198,8 @@ TEST_P(PartitionAllocTest, DISABLED_PreforkHandler) {
       ::testing::ExitedWithCode(1), "");
 
   please_stop.store(true);
-  for (int i = 0; i < kThreads; i++) {
-    PlatformThread::Join(thread_handles[i]);
+  for (auto& thread_handle : thread_handles) {
+    base::PlatformThread::Join(thread_handle);
   }
 }
 
@@ -4255,7 +4251,7 @@ TEST_P(PartitionAllocTest, ConfigurablePool) {
   const size_t min_pool_size = PartitionAddressSpace::ConfigurablePoolMinSize();
   for (size_t pool_size = max_pool_size; pool_size >= min_pool_size;
        pool_size /= 2) {
-    DCHECK(bits::IsPowerOfTwo(pool_size));
+    DCHECK(base::bits::IsPowerOfTwo(pool_size));
     EXPECT_FALSE(IsConfigurablePoolAvailable());
     uintptr_t pool_base = AllocPages(
         pool_size, pool_size, PageAccessibilityConfiguration::kInaccessible,
@@ -4683,7 +4679,6 @@ TEST_P(PartitionAllocTest, SmallSlotSpanWaste) {
   }
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
 
 #endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
