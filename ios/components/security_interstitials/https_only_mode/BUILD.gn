@@ -5,6 +5,8 @@
 source_set("https_only_mode") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "https_only_mode_allowlist.h",
+    "https_only_mode_allowlist.mm",
     "https_only_mode_blocking_page.h",
     "https_only_mode_blocking_page.mm",
     "https_only_mode_container.h",
