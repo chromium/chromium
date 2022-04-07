@@ -9,6 +9,7 @@ import android.content.Intent;
 import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 
@@ -215,30 +216,32 @@ class NativeInitializationController {
     }
 
     private void startNowAndProcessPendingItems() {
-        // onNewIntent and onActivityResult are called only when the activity is paused.
-        // To match the non-deferred behavior, onStart should be called before any processing
-        // of pending intents and activity results.
-        // Note that if we needed ChromeActivityNativeDelegate.onResumeWithNative(), the pending
-        // intents and activity results processing should have happened in the corresponding
-        // resumeNowAndProcessPendingItems, just before the call to
-        // ChromeActivityNativeDelegate.onResumeWithNative().
-        mActivityDelegate.onStartWithNative();
+        try (TraceEvent te = TraceEvent.scoped("startNowAndProcessPendingItems")) {
+            // onNewIntent and onActivityResult are called only when the activity is paused.
+            // To match the non-deferred behavior, onStart should be called before any processing
+            // of pending intents and activity results.
+            // Note that if we needed ChromeActivityNativeDelegate.onResumeWithNative(), the pending
+            // intents and activity results processing should have happened in the corresponding
+            // resumeNowAndProcessPendingItems, just before the call to
+            // ChromeActivityNativeDelegate.onResumeWithNative().
+            mActivityDelegate.onStartWithNative();
 
-        if (mPendingNewIntents != null) {
-            for (Intent intent : mPendingNewIntents) {
-                mActivityDelegate.onNewIntentWithNative(intent);
+            if (mPendingNewIntents != null) {
+                for (Intent intent : mPendingNewIntents) {
+                    mActivityDelegate.onNewIntentWithNative(intent);
+                }
+                mPendingNewIntents = null;
             }
-            mPendingNewIntents = null;
-        }
 
-        if (mPendingActivityResults != null) {
-            ActivityResult activityResult;
-            for (int i = 0; i < mPendingActivityResults.size(); i++) {
-                activityResult = mPendingActivityResults.get(i);
-                mActivityDelegate.onActivityResultWithNative(activityResult.requestCode,
-                        activityResult.resultCode, activityResult.data);
+            if (mPendingActivityResults != null) {
+                ActivityResult activityResult;
+                for (int i = 0; i < mPendingActivityResults.size(); i++) {
+                    activityResult = mPendingActivityResults.get(i);
+                    mActivityDelegate.onActivityResultWithNative(activityResult.requestCode,
+                            activityResult.resultCode, activityResult.data);
+                }
+                mPendingActivityResults = null;
             }
-            mPendingActivityResults = null;
         }
     }
 }
