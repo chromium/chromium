@@ -7,6 +7,7 @@
 
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_utils.h"
 #include "base/scoped_observation.h"
 #include "base/time/default_tick_clock.h"
@@ -60,7 +61,7 @@ void EcheIconLoadingIndicatorView::OnPaint(gfx::Canvas* canvas) {
   if (!throbber_start_time_)
     return;
 
-  // The image covers the container on the main axiz and is centered on the
+  // The image covers the container on the main axis and is centered on the
   // other axis. So we get the minimum of the height and width.
   int spinner_size_dip =
       std::min(GetLocalBounds().width(), GetLocalBounds().height());
@@ -68,7 +69,8 @@ void EcheIconLoadingIndicatorView::OnPaint(gfx::Canvas* canvas) {
   bounds.ClampToCenteredSize(gfx::Size(spinner_size_dip, spinner_size_dip));
   gfx::PaintThrobberSpinning(
       canvas, bounds,
-      TrayIconColor(Shell::Get()->session_controller()->GetSessionState()),
+      AshColorProvider::Get()->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kFocusRingColor),
       base::TimeTicks::Now() - *throbber_start_time_, kThrobberStrokeWidth);
 }
 
