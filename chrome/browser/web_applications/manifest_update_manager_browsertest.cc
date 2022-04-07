@@ -471,7 +471,7 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
       auto synced_specifics_data = std::make_unique<WebApp>(app_id);
       synced_specifics_data->SetStartUrl(start_url);
 
-      synced_specifics_data->AddSource(Source::kSync);
+      synced_specifics_data->AddSource(WebAppManagement::kSync);
       synced_specifics_data->SetUserDisplayMode(DisplayMode::kBrowser);
       synced_specifics_data->SetName("Name From Sync");
 

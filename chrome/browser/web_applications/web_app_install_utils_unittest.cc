@@ -1121,13 +1121,13 @@ TEST_F(RegisterOsSettingsTest, MaybeRegisterOsUninstall) {
 
   // Scenario 1.
   auto web_app = std::make_unique<WebApp>(app_id);
-  web_app->AddSource(Source::kDefault);
-  web_app->AddSource(Source::kPolicy);
+  web_app->AddSource(WebAppManagement::kDefault);
+  web_app->AddSource(WebAppManagement::kPolicy);
   EXPECT_FALSE(web_app->CanUserUninstallWebApp());
 
   base::RunLoop run_loop;
   MaybeRegisterOsUninstall(
-      web_app.get(), Source::kPolicy, manager,
+      web_app.get(), WebAppManagement::kPolicy, manager,
       base::BindLambdaForTesting(
           [&](OsHooksErrors os_hooks_errors) { run_loop.Quit(); }));
   run_loop.Run();
@@ -1157,19 +1157,19 @@ TEST_F(RegisterOsSettingsTest, MaybeRegisterOsSettings_NoRegistration) {
 
   // Scenario 2.
   auto web_app = std::make_unique<WebApp>(app_id);
-  web_app->AddSource(Source::kSync);
-  web_app->AddSource(Source::kPolicy);
+  web_app->AddSource(WebAppManagement::kSync);
+  web_app->AddSource(WebAppManagement::kPolicy);
   EXPECT_FALSE(web_app->CanUserUninstallWebApp());
-  MaybeRegisterOsUninstall(web_app.get(), Source::kSync, manager,
+  MaybeRegisterOsUninstall(web_app.get(), WebAppManagement::kSync, manager,
                            base::DoNothing());
 
   // Scenario 3.
   auto web_app2 = std::make_unique<WebApp>(app_id);
-  web_app2->AddSource(Source::kDefault);
-  web_app2->AddSource(Source::kSync);
-  web_app2->AddSource(Source::kWebAppStore);
+  web_app2->AddSource(WebAppManagement::kDefault);
+  web_app2->AddSource(WebAppManagement::kSync);
+  web_app2->AddSource(WebAppManagement::kWebAppStore);
   EXPECT_TRUE(web_app2->CanUserUninstallWebApp());
-  MaybeRegisterOsUninstall(web_app2.get(), Source::kDefault, manager,
+  MaybeRegisterOsUninstall(web_app2.get(), WebAppManagement::kDefault, manager,
                            base::DoNothing());
 }
 
@@ -1190,9 +1190,9 @@ TEST_F(RegisterOsSettingsTest, MaybeUnregisterOsUninstall) {
 
   // Scenario 1.
   auto web_app = std::make_unique<WebApp>(app_id);
-  web_app->AddSource(Source::kDefault);
+  web_app->AddSource(WebAppManagement::kDefault);
   EXPECT_TRUE(web_app->CanUserUninstallWebApp());
-  MaybeUnregisterOsUninstall(web_app.get(), Source::kPolicy, manager);
+  MaybeUnregisterOsUninstall(web_app.get(), WebAppManagement::kPolicy, manager);
 }
 
 TEST_F(RegisterOsSettingsTest, MaybeUnregisterOsSettings_NoUnregistration) {
@@ -1218,15 +1218,16 @@ TEST_F(RegisterOsSettingsTest, MaybeUnregisterOsSettings_NoUnregistration) {
 
   // Scenario 2.
   auto web_app = std::make_unique<WebApp>(app_id);
-  web_app->AddSource(Source::kPolicy);
+  web_app->AddSource(WebAppManagement::kPolicy);
   EXPECT_FALSE(web_app->CanUserUninstallWebApp());
-  MaybeUnregisterOsUninstall(web_app.get(), Source::kSync, manager);
+  MaybeUnregisterOsUninstall(web_app.get(), WebAppManagement::kSync, manager);
 
   // Scenario 3.
   auto web_app2 = std::make_unique<WebApp>(app_id);
-  web_app2->AddSource(Source::kSync);
+  web_app2->AddSource(WebAppManagement::kSync);
   EXPECT_TRUE(web_app2->CanUserUninstallWebApp());
-  MaybeUnregisterOsUninstall(web_app2.get(), Source::kDefault, manager);
+  MaybeUnregisterOsUninstall(web_app2.get(), WebAppManagement::kDefault,
+                             manager);
 }
 
 #endif  // BUILDFLAG(IS_WIN)

@@ -77,11 +77,11 @@ const SortedSizesPx& WebApp::downloaded_icon_sizes(IconPurpose purpose) const {
   }
 }
 
-void WebApp::AddSource(Source::Type source) {
+void WebApp::AddSource(WebAppManagement::Type source) {
   sources_[source] = true;
 }
 
-void WebApp::RemoveSource(Source::Type source) {
+void WebApp::RemoveSource(WebAppManagement::Type source) {
   sources_[source] = false;
 }
 
@@ -89,7 +89,7 @@ bool WebApp::HasAnySources() const {
   return sources_.any();
 }
 
-bool WebApp::HasOnlySource(Source::Type source) const {
+bool WebApp::HasOnlySource(WebAppManagement::Type source) const {
   WebAppSources specified_sources;
   specified_sources[source] = true;
   return HasAnySpecifiedSourcesAndNoOtherSources(sources_, specified_sources);
@@ -100,27 +100,27 @@ WebAppSources WebApp::GetSources() const {
 }
 
 bool WebApp::IsSynced() const {
-  return sources_[Source::kSync];
+  return sources_[WebAppManagement::kSync];
 }
 
 bool WebApp::IsPreinstalledApp() const {
-  return sources_[Source::kDefault];
+  return sources_[WebAppManagement::kDefault];
 }
 
 bool WebApp::IsPolicyInstalledApp() const {
-  return sources_[Source::kPolicy];
+  return sources_[WebAppManagement::kPolicy];
 }
 
 bool WebApp::IsSystemApp() const {
-  return sources_[Source::kSystem];
+  return sources_[WebAppManagement::kSystem];
 }
 
 bool WebApp::IsWebAppStoreInstalledApp() const {
-  return sources_[Source::kWebAppStore];
+  return sources_[WebAppManagement::kWebAppStore];
 }
 
 bool WebApp::IsSubAppInstalledApp() const {
-  return sources_[Source::kSubApp];
+  return sources_[WebAppManagement::kSubApp];
 }
 
 bool WebApp::CanUserUninstallWebApp() const {
@@ -128,20 +128,22 @@ bool WebApp::CanUserUninstallWebApp() const {
 }
 
 bool WebApp::WasInstalledByUser() const {
-  return sources_[Source::kSync] || sources_[Source::kWebAppStore];
+  return sources_[WebAppManagement::kSync] ||
+         sources_[WebAppManagement::kWebAppStore];
 }
 
-Source::Type WebApp::GetHighestPrioritySource() const {
+WebAppManagement::Type WebApp::GetHighestPrioritySource() const {
   // Enumerators in Source enum are declaretd in the order of priority.
   // Top priority sources are declared first.
-  for (int i = Source::kMinValue; i <= Source::kMaxValue; ++i) {
-    auto source = static_cast<Source::Type>(i);
+  for (int i = WebAppManagement::kMinValue; i <= WebAppManagement::kMaxValue;
+       ++i) {
+    auto source = static_cast<WebAppManagement::Type>(i);
     if (sources_[source])
       return source;
   }
 
   NOTREACHED();
-  return Source::kMaxValue;
+  return WebAppManagement::kMaxValue;
 }
 
 void WebApp::SetName(const std::string& name) {
@@ -692,9 +694,10 @@ base::Value WebApp::AsDebugValue() const {
 
   base::Value& sources =
       *root.SetKey("sources", base::Value(base::Value::Type::LIST));
-  for (int i = Source::Type::kMinValue; i <= Source::Type::kMaxValue; ++i) {
+  for (int i = WebAppManagement::Type::kMinValue;
+       i <= WebAppManagement::Type::kMaxValue; ++i) {
     if (sources_[i])
-      sources.Append(ConvertToString(static_cast<Source::Type>(i)));
+      sources.Append(ConvertToString(static_cast<WebAppManagement::Type>(i)));
   }
 
   root.SetStringKey("start_url", ConvertToString(start_url_));

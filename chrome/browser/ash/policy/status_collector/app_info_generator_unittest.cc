@@ -331,8 +331,8 @@ TEST_F(AppInfoGeneratorTest, GenerateWebApp) {
   auto generator = GetReadyGenerator();
   web_app::AppId app_id;
   {
-    auto web_app = web_app::test::CreateWebApp(GURL("http://app.com/app/path"),
-                                               web_app::Source::kDefault);
+    auto web_app = web_app::test::CreateWebApp(
+        GURL("http://app.com/app/path"), web_app::WebAppManagement::kDefault);
     app_id = web_app->app_id();
     auto app =
         MakeApp(web_app->app_id(), "App", apps::Readiness::kUninstalledByUser,
@@ -366,8 +366,8 @@ TEST_F(AppInfoGeneratorTest, GenerateSystemWebApp) {
   auto generator = GetReadyGenerator();
   web_app::AppId app_id;
   {
-    auto web_app = web_app::test::CreateWebApp(GURL("http://app.com/app/path"),
-                                               web_app::Source::kDefault);
+    auto web_app = web_app::test::CreateWebApp(
+        GURL("http://app.com/app/path"), web_app::WebAppManagement::kDefault);
     app_id = web_app->app_id();
     auto app =
         MakeApp(web_app->app_id(), "App", apps::Readiness::kUninstalledByUser,

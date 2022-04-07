@@ -249,7 +249,7 @@ class SystemWebAppManagerTest : public WebAppTest {
     Registry registry;
     for (const SystemAppData& data : system_app_data_list) {
       std::unique_ptr<WebApp> web_app =
-          test::CreateWebApp(data.url, Source::Type::kSystem);
+          test::CreateWebApp(data.url, WebAppManagement::Type::kSystem);
       const AppId app_id = web_app->app_id();
       registry.emplace(app_id, std::move(web_app));
 

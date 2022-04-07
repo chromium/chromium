@@ -26,7 +26,7 @@ namespace test {
 
 std::unique_ptr<WebApp> CreateWebApp(
     const GURL& start_url = GURL("https://example.com/path"),
-    Source::Type source_type = Source::kSync);
+    WebAppManagement::Type source_type = WebAppManagement::kSync);
 
 std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url, uint32_t seed);
 

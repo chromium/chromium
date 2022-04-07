@@ -157,9 +157,9 @@ apps::mojom::PermissionType GetPermissionType(
 
 apps::mojom::InstallReason GetHighestPriorityInstallReason(
     const WebApp* web_app) {
-  // TODO(crbug.com/1189949): Introduce kOem as a new Source::Type value
-  // immediately below web_app::Source::kSystem, so that this custom behavior
-  // isn't needed.
+  // TODO(crbug.com/1189949): Introduce kOem as a new WebAppManagement::Type
+  // value immediately below web_app::WebAppManagement::kSystem, so that this
+  // custom behavior isn't needed.
   if (web_app->chromeos_data().has_value()) {
     auto& chromeos_data = web_app->chromeos_data().value();
     if (chromeos_data.oem_installed) {
@@ -169,17 +169,17 @@ apps::mojom::InstallReason GetHighestPriorityInstallReason(
   }
 
   switch (web_app->GetHighestPrioritySource()) {
-    case Source::kSystem:
+    case WebAppManagement::kSystem:
       return apps::mojom::InstallReason::kSystem;
-    case Source::kPolicy:
+    case WebAppManagement::kPolicy:
       return apps::mojom::InstallReason::kPolicy;
-    case Source::kSubApp:
+    case WebAppManagement::kSubApp:
       return apps::mojom::InstallReason::kSubApp;
-    case Source::kWebAppStore:
+    case WebAppManagement::kWebAppStore:
       return apps::mojom::InstallReason::kUser;
-    case Source::kSync:
+    case WebAppManagement::kSync:
       return apps::mojom::InstallReason::kSync;
-    case Source::kDefault:
+    case WebAppManagement::kDefault:
       return apps::mojom::InstallReason::kDefault;
   }
 }

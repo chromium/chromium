@@ -468,7 +468,7 @@ bool WebAppRegistrar::IsIsolated(const AppId& app_id) const {
 
 bool WebAppRegistrar::WasInstalledByDefaultOnly(const AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
-  return web_app && web_app->HasOnlySource(Source::Type::kDefault);
+  return web_app && web_app->HasOnlySource(WebAppManagement::Type::kDefault);
 }
 
 bool WebAppRegistrar::WasInstalledByUser(const AppId& app_id) const {

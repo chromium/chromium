@@ -173,7 +173,7 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
         FROM_HERE,
         base::BindLambdaForTesting(
             [&, app_id, url, code, callback = std::move(callback)]() mutable {
-              auto web_app = test::CreateWebApp(url, Source::kPolicy);
+              auto web_app = test::CreateWebApp(url, WebAppManagement::kPolicy);
               RegisterApp(std::move(web_app));
               std::move(callback).Run(app_id, code, OsHooksErrors());
             }));
@@ -191,7 +191,7 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
   }
 
   void UninstallExternalWebApp(const AppId& app_id,
-                               Source::Type external_source,
+                               WebAppManagement::Type external_source,
                                webapps::WebappUninstallSource uninstall_source,
                                UninstallWebAppCallback callback) override {
     UnregisterApp(app_id);
@@ -203,7 +203,7 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
 
   void UninstallExternalWebAppByUrl(
       const GURL& app_url,
-      Source::Type external_source,
+      WebAppManagement::Type external_source,
       webapps::WebappUninstallSource uninstall_source,
       UninstallWebAppCallback callback) override {
     DCHECK(base::Contains(next_uninstall_external_web_app_results_, app_url));

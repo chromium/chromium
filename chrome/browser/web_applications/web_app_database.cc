@@ -325,14 +325,18 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
   local_data->set_name(web_app.untranslated_name());
 
   DCHECK(web_app.sources_.any());
-  local_data->mutable_sources()->set_system(web_app.sources_[Source::kSystem]);
-  local_data->mutable_sources()->set_policy(web_app.sources_[Source::kPolicy]);
+  local_data->mutable_sources()->set_system(
+      web_app.sources_[WebAppManagement::kSystem]);
+  local_data->mutable_sources()->set_policy(
+      web_app.sources_[WebAppManagement::kPolicy]);
   local_data->mutable_sources()->set_web_app_store(
-      web_app.sources_[Source::kWebAppStore]);
-  local_data->mutable_sources()->set_sync(web_app.sources_[Source::kSync]);
+      web_app.sources_[WebAppManagement::kWebAppStore]);
+  local_data->mutable_sources()->set_sync(
+      web_app.sources_[WebAppManagement::kSync]);
   local_data->mutable_sources()->set_default_(
-      web_app.sources_[Source::kDefault]);
-  local_data->mutable_sources()->set_sub_app(web_app.sources_[Source::kSubApp]);
+      web_app.sources_[WebAppManagement::kDefault]);
+  local_data->mutable_sources()->set_sub_app(
+      web_app.sources_[WebAppManagement::kSubApp]);
 
   local_data->set_is_locally_installed(web_app.is_locally_installed());
 
@@ -672,13 +676,14 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   }
 
   WebAppSources sources;
-  sources[Source::kSystem] = local_data.sources().system();
-  sources[Source::kPolicy] = local_data.sources().policy();
-  sources[Source::kWebAppStore] = local_data.sources().web_app_store();
-  sources[Source::kSync] = local_data.sources().sync();
-  sources[Source::kDefault] = local_data.sources().default_();
+  sources[WebAppManagement::kSystem] = local_data.sources().system();
+  sources[WebAppManagement::kPolicy] = local_data.sources().policy();
+  sources[WebAppManagement::kWebAppStore] =
+      local_data.sources().web_app_store();
+  sources[WebAppManagement::kSync] = local_data.sources().sync();
+  sources[WebAppManagement::kDefault] = local_data.sources().default_();
   if (local_data.sources().has_sub_app()) {
-    sources[Source::kSubApp] = local_data.sources().sub_app();
+    sources[WebAppManagement::kSubApp] = local_data.sources().sub_app();
   }
   if (!sources.any()) {
     DLOG(ERROR) << "WebApp proto parse error: no any source in sources field";

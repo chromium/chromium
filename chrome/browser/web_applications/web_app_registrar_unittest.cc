@@ -44,7 +44,7 @@ Registry CreateRegistryForTesting(const std::string& base_url, int num_apps) {
         GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(url));
 
     auto web_app = std::make_unique<WebApp>(app_id);
-    web_app->AddSource(Source::kSync);
+    web_app->AddSource(WebAppManagement::kSync);
     web_app->SetStartUrl(GURL(url));
     web_app->SetName("Name" + base::NumberToString(i));
     web_app->SetDisplayMode(DisplayMode::kBrowser);
@@ -170,7 +170,7 @@ TEST_F(WebAppRegistrarTest, CreateRegisterUnregister) {
   auto web_app = std::make_unique<WebApp>(app_id);
   auto web_app2 = std::make_unique<WebApp>(app_id2);
 
-  web_app->AddSource(Source::kSync);
+  web_app->AddSource(WebAppManagement::kSync);
   web_app->SetDisplayMode(DisplayMode::kStandalone);
   web_app->SetUserDisplayMode(DisplayMode::kStandalone);
   web_app->SetName(name);
@@ -179,7 +179,7 @@ TEST_F(WebAppRegistrarTest, CreateRegisterUnregister) {
   web_app->SetScope(scope);
   web_app->SetThemeColor(theme_color);
 
-  web_app2->AddSource(Source::kDefault);
+  web_app2->AddSource(WebAppManagement::kDefault);
   web_app2->SetDisplayMode(DisplayMode::kBrowser);
   web_app2->SetUserDisplayMode(DisplayMode::kBrowser);
   web_app2->SetStartUrl(start_url2);
@@ -388,7 +388,7 @@ TEST_F(WebAppRegistrarTest, GetAppDataFields) {
   display_mode_override.push_back(DisplayMode::kMinimalUi);
   display_mode_override.push_back(DisplayMode::kStandalone);
 
-  web_app->AddSource(Source::kSync);
+  web_app->AddSource(WebAppManagement::kSync);
   web_app->SetName(name);
   web_app->SetDescription(description);
   web_app->SetThemeColor(theme_color);
@@ -759,8 +759,8 @@ TEST_F(WebAppRegistrarTest, CopyOnWrite) {
     EXPECT_EQ(app_copy->untranslated_name(), "New Name");
     EXPECT_EQ(app->untranslated_name(), "Name");
 
-    app_copy->AddSource(Source::kPolicy);
-    app_copy->RemoveSource(Source::kSync);
+    app_copy->AddSource(WebAppManagement::kPolicy);
+    app_copy->RemoveSource(WebAppManagement::kSync);
 
     EXPECT_FALSE(app_copy->IsSynced());
     EXPECT_TRUE(app_copy->HasAnySources());
@@ -784,8 +784,9 @@ TEST_F(WebAppRegistrarTest, CountUserInstalledApps) {
 
   const std::string base_url{"https://example.com/path"};
 
-  for (int i = Source::kMinValue + 1; i <= Source::kMaxValue; ++i) {
-    auto source = static_cast<Source::Type>(i);
+  for (int i = WebAppManagement::kMinValue + 1;
+       i <= WebAppManagement::kMaxValue; ++i) {
+    auto source = static_cast<WebAppManagement::Type>(i);
     auto web_app =
         test::CreateWebApp(GURL(base_url + base::NumberToString(i)), source);
     RegisterApp(std::move(web_app));

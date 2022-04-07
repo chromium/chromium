@@ -83,7 +83,7 @@ void WebAppInstallFinalizer::FinalizeInstall(
   }
 
   // TODO(loyso): Expose Source argument as a field of AppTraits struct.
-  const Source::Type source = options.source;
+  const WebAppManagement::Type source = options.source;
 
   AppId app_id =
       GenerateAppId(web_app_info.manifest_id, web_app_info.start_url);
@@ -189,16 +189,16 @@ void WebAppInstallFinalizer::FinalizeInstall(
 
 void WebAppInstallFinalizer::UninstallExternalWebApp(
     const AppId& app_id,
-    Source::Type external_install_source,
+    WebAppManagement::Type external_install_source,
     webapps::WebappUninstallSource uninstall_source,
     UninstallWebAppCallback callback) {
   DCHECK(started_);
 
-  DCHECK(external_install_source == Source::Type::kSystem ||
-         external_install_source == Source::Type::kPolicy ||
-         external_install_source == Source::Type::kSubApp ||
-         external_install_source == Source::Type::kWebAppStore ||
-         external_install_source == Source::Type::kDefault);
+  DCHECK(external_install_source == WebAppManagement::Type::kSystem ||
+         external_install_source == WebAppManagement::Type::kPolicy ||
+         external_install_source == WebAppManagement::Type::kSubApp ||
+         external_install_source == WebAppManagement::Type::kWebAppStore ||
+         external_install_source == WebAppManagement::Type::kDefault);
 
   UninstallExternalWebAppOrRemoveSource(app_id, external_install_source,
                                         uninstall_source, std::move(callback));
@@ -206,7 +206,7 @@ void WebAppInstallFinalizer::UninstallExternalWebApp(
 
 void WebAppInstallFinalizer::UninstallExternalWebAppByUrl(
     const GURL& app_url,
-    Source::Type external_install_source,
+    WebAppManagement::Type external_install_source,
     webapps::WebappUninstallSource uninstall_source,
     UninstallWebAppCallback callback) {
   absl::optional<AppId> app_id =
@@ -448,7 +448,7 @@ void WebAppInstallFinalizer::OnUninstallComplete(
 
 void WebAppInstallFinalizer::UninstallExternalWebAppOrRemoveSource(
     const AppId& app_id,
-    Source::Type install_source,
+    WebAppManagement::Type install_source,
     webapps::WebappUninstallSource uninstall_source,
     UninstallWebAppCallback callback) {
   const WebApp* app = GetWebAppRegistrar().GetAppById(app_id);
@@ -476,13 +476,13 @@ void WebAppInstallFinalizer::UninstallExternalWebAppOrRemoveSource(
 
 void WebAppInstallFinalizer::OnMaybeRegisterOsUninstall(
     const AppId& app_id,
-    Source::Type source,
+    WebAppManagement::Type source,
     UninstallWebAppCallback callback,
     OsHooksErrors os_hooks_errors) {
   ScopedRegistryUpdate update(sync_bridge_);
   WebApp* app_to_update = update->UpdateApp(app_id);
   app_to_update->RemoveSource(source);
-  if (source == Source::kSubApp) {
+  if (source == WebAppManagement::kSubApp) {
     app_to_update->SetParentAppId(absl::nullopt);
   }
   if (install_source_removed_callback_for_testing_)
@@ -594,7 +594,7 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
 #else
   const bool should_install_os_hooks =
       !finalize_options.bypass_os_hooks &&
-      !web_app->HasOnlySource(Source::Type::kDefault) &&
+      !web_app->HasOnlySource(WebAppManagement::Type::kDefault) &&
       finalize_options.locally_installed;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

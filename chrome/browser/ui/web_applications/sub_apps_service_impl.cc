@@ -171,7 +171,7 @@ void SubAppsServiceImpl::Remove(const std::string& unhashed_app_id,
   }
 
   provider->install_finalizer().UninstallExternalWebApp(
-      sub_app_id, Source::Type::kSubApp,
+      sub_app_id, WebAppManagement::Type::kSubApp,
       webapps::WebappUninstallSource::kSubApp,
       base::BindOnce(&OnRemove, std::move(result_callback)));
 }

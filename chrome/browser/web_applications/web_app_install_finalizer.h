@@ -62,7 +62,7 @@ class WebAppInstallFinalizer {
     ~FinalizeOptions();
     FinalizeOptions(const FinalizeOptions&);
 
-    const Source::Type source;
+    const WebAppManagement::Type source;
     const webapps::WebappInstallSource install_surface;
     bool locally_installed = true;
     bool overwrite_existing_manifest_fields = true;
@@ -105,7 +105,7 @@ class WebAppInstallFinalizer {
   // sources left, deletes the app from disk and registrar.
   virtual void UninstallExternalWebApp(
       const AppId& app_id,
-      Source::Type external_install_source,
+      WebAppManagement::Type external_install_source,
       webapps::WebappUninstallSource uninstall_surface,
       UninstallWebAppCallback callback);
 
@@ -113,7 +113,7 @@ class WebAppInstallFinalizer {
   // there is no installed external app for |app_url|.
   virtual void UninstallExternalWebAppByUrl(
       const GURL& app_url,
-      Source::Type external_install_source,
+      WebAppManagement::Type external_install_source,
       webapps::WebappUninstallSource uninstall_surface,
       UninstallWebAppCallback callback);
 
@@ -183,12 +183,12 @@ class WebAppInstallFinalizer {
                            webapps::UninstallResultCode code);
   void UninstallExternalWebAppOrRemoveSource(
       const AppId& app_id,
-      Source::Type install_source,
+      WebAppManagement::Type install_source,
       webapps::WebappUninstallSource uninstall_surface,
       UninstallWebAppCallback callback);
 
   void OnMaybeRegisterOsUninstall(const AppId& app_id,
-                                  Source::Type source,
+                                  WebAppManagement::Type source,
                                   UninstallWebAppCallback callback,
                                   OsHooksErrors os_hooks_errors);
 

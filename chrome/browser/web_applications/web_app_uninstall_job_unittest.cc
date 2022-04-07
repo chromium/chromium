@@ -79,8 +79,8 @@ class WebAppUninstallJobTest : public WebAppTest {
 
 TEST_F(WebAppUninstallJobTest, SimpleUninstall) {
   Registry registry;
-  auto web_app =
-      test::CreateWebApp(GURL("https://www.example.com"), Source::kSync);
+  auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
+                                    WebAppManagement::kSync);
   AppId id = web_app->app_id();
   registry.emplace(id, std::move(web_app));
   controller().database_factory().WriteRegistry(registry);
@@ -116,8 +116,8 @@ TEST_F(WebAppUninstallJobTest, SimpleUninstall) {
 
 TEST_F(WebAppUninstallJobTest, FailedDataDelete) {
   Registry registry;
-  auto web_app =
-      test::CreateWebApp(GURL("https://www.example.com"), Source::kSync);
+  auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
+                                    WebAppManagement::kSync);
   AppId id = web_app->app_id();
   registry.emplace(id, std::move(web_app));
   controller().database_factory().WriteRegistry(registry);
@@ -153,8 +153,8 @@ TEST_F(WebAppUninstallJobTest, FailedDataDelete) {
 
 TEST_F(WebAppUninstallJobTest, FailedOsHooks) {
   Registry registry;
-  auto web_app =
-      test::CreateWebApp(GURL("https://www.example.com"), Source::kSync);
+  auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
+                                    WebAppManagement::kSync);
   AppId id = web_app->app_id();
   registry.emplace(id, std::move(web_app));
   controller().database_factory().WriteRegistry(registry);

@@ -92,7 +92,7 @@ class UrlHandlerManagerImplTest : public WebAppTest {
     const std::string app_id =
         GenerateAppId(/*manifest_id=*/absl::nullopt, app_url);
     auto web_app = std::make_unique<WebApp>(app_id);
-    web_app->AddSource(Source::kDefault);
+    web_app->AddSource(WebAppManagement::kDefault);
     web_app->SetDisplayMode(DisplayMode::kStandalone);
     web_app->SetUserDisplayMode(DisplayMode::kStandalone);
     web_app->SetName("Name");

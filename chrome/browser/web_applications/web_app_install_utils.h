@@ -89,7 +89,7 @@ void RecordDownloadedIconHttpStatusCodes(
     base::StringPiece histogram_name,
     const DownloadedIconsHttpResults& icons_http_results);
 
-Source::Type ConvertExternalInstallSourceToSource(
+WebAppManagement::Type ConvertExternalInstallSourceToSource(
     ExternalInstallSource external_install_source);
 
 webapps::WebappInstallSource ConvertExternalInstallSourceToInstallSource(
@@ -99,20 +99,20 @@ webapps::WebappUninstallSource ConvertExternalInstallSourceToUninstallSource(
     ExternalInstallSource external_install_source);
 
 // Infer the web app source from the installation surface.
-Source::Type ConvertInstallSurfaceToWebAppSource(
+WebAppManagement::Type ConvertInstallSurfaceToWebAppSource(
     webapps::WebappInstallSource install_surface);
 
 void CreateWebAppInstallTabHelpers(content::WebContents* web_contents);
 
 // The function should be called before removing a source from the WebApp.
 void MaybeRegisterOsUninstall(const WebApp* web_app,
-                              Source::Type source_uninstalling,
+                              WebAppManagement::Type source_uninstalling,
                               OsIntegrationManager& os_integration_manager,
                               InstallOsHooksCallback callback);
 
 // The function should be called before adding source to the WebApp.
 void MaybeUnregisterOsUninstall(const WebApp* web_app,
-                                Source::Type source_installing,
+                                WebAppManagement::Type source_installing,
                                 OsIntegrationManager& os_integration_manager);
 
 }  // namespace web_app

@@ -693,7 +693,7 @@ void RecordDownloadedIconHttpStatusCodes(
     counter->Add(net::HttpUtil::MapStatusCodeForHistogram(http_status_code));
 }
 
-Source::Type ConvertExternalInstallSourceToSource(
+WebAppManagement::Type ConvertExternalInstallSourceToSource(
     ExternalInstallSource external_install_source) {
   return ConvertInstallSurfaceToWebAppSource(
       ConvertExternalInstallSourceToInstallSource(external_install_source));
@@ -747,7 +747,7 @@ webapps::WebappUninstallSource ConvertExternalInstallSourceToUninstallSource(
   return uninstall_source;
 }
 
-Source::Type ConvertInstallSurfaceToWebAppSource(
+WebAppManagement::Type ConvertInstallSurfaceToWebAppSource(
     webapps::WebappInstallSource install_source) {
   switch (install_source) {
     case webapps::WebappInstallSource::MENU_BROWSER_TAB:
@@ -763,27 +763,27 @@ Source::Type ConvertInstallSurfaceToWebAppSource(
     case webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON:
     case webapps::WebappInstallSource::SYNC:
     case webapps::WebappInstallSource::MENU_CREATE_SHORTCUT:
-      return Source::kSync;
+      return WebAppManagement::kSync;
 
     case webapps::WebappInstallSource::INTERNAL_DEFAULT:
     case webapps::WebappInstallSource::EXTERNAL_DEFAULT:
-      return Source::kDefault;
+      return WebAppManagement::kDefault;
 
     case webapps::WebappInstallSource::EXTERNAL_POLICY:
-      return Source::kPolicy;
+      return WebAppManagement::kPolicy;
 
     case webapps::WebappInstallSource::SYSTEM_DEFAULT:
-      return Source::kSystem;
+      return WebAppManagement::kSystem;
 
     case webapps::WebappInstallSource::ARC:
-      return Source::kWebAppStore;
+      return WebAppManagement::kWebAppStore;
 
     case webapps::WebappInstallSource::SUB_APP:
-      return Source::kSubApp;
+      return WebAppManagement::kSubApp;
 
     case webapps::WebappInstallSource::COUNT:
       NOTREACHED();
-      return Source::kSync;
+      return WebAppManagement::kSync;
   }
 }
 
@@ -797,7 +797,7 @@ void CreateWebAppInstallTabHelpers(content::WebContents* web_contents) {
 }
 
 void MaybeRegisterOsUninstall(const WebApp* web_app,
-                              Source::Type source_uninstalling,
+                              WebAppManagement::Type source_uninstalling,
                               OsIntegrationManager& os_integration_manager,
                               InstallOsHooksCallback callback) {
 #if BUILDFLAG(IS_WIN)
@@ -822,7 +822,7 @@ void MaybeRegisterOsUninstall(const WebApp* web_app,
 }
 
 void MaybeUnregisterOsUninstall(const WebApp* web_app,
-                                Source::Type source_installing,
+                                WebAppManagement::Type source_installing,
                                 OsIntegrationManager& os_integration_manager) {
 #if BUILDFLAG(IS_WIN)
   // |web_app| object will add target |source_installing| type.

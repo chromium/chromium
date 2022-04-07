@@ -47,7 +47,7 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
               if (!app_registrar().GetAppById(GenerateAppId(
                       /*manifest_id=*/absl::nullopt, install_url))) {
                 std::unique_ptr<WebApp> web_app =
-                    test::CreateWebApp(install_url, Source::kDefault);
+                    test::CreateWebApp(install_url, WebAppManagement::kDefault);
                 controller().RegisterApp(std::move(web_app));
 
                 externally_installed_app_prefs().Insert(

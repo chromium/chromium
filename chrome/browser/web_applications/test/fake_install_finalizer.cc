@@ -49,7 +49,7 @@ void FakeInstallFinalizer::FinalizeUpdate(const WebAppInstallInfo& web_app_info,
 
 void FakeInstallFinalizer::UninstallExternalWebApp(
     const AppId& app_id,
-    Source::Type source,
+    WebAppManagement::Type source,
     webapps::WebappUninstallSource uninstall_surface,
     UninstallWebAppCallback callback) {
   user_uninstalled_external_apps_.erase(app_id);
@@ -60,7 +60,7 @@ void FakeInstallFinalizer::UninstallExternalWebApp(
 
 void FakeInstallFinalizer::UninstallExternalWebAppByUrl(
     const GURL& app_url,
-    Source::Type source,
+    WebAppManagement::Type source,
     webapps::WebappUninstallSource uninstall_surface,
     UninstallWebAppCallback callback) {
   DCHECK(base::Contains(next_uninstall_external_web_app_results_, app_url));

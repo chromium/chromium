@@ -32,14 +32,16 @@ TEST(WebAppTest, HasAnySources) {
                            GURL("https://example.com"))};
 
   EXPECT_FALSE(app.HasAnySources());
-  for (int i = Source::kMinValue; i <= Source::kMaxValue; ++i) {
-    app.AddSource(static_cast<Source::Type>(i));
+  for (int i = WebAppManagement::kMinValue; i <= WebAppManagement::kMaxValue;
+       ++i) {
+    app.AddSource(static_cast<WebAppManagement::Type>(i));
     EXPECT_TRUE(app.HasAnySources());
   }
 
-  for (int i = Source::kMinValue; i <= Source::kMaxValue; ++i) {
+  for (int i = WebAppManagement::kMinValue; i <= WebAppManagement::kMaxValue;
+       ++i) {
     EXPECT_TRUE(app.HasAnySources());
-    app.RemoveSource(static_cast<Source::Type>(i));
+    app.RemoveSource(static_cast<WebAppManagement::Type>(i));
   }
   EXPECT_FALSE(app.HasAnySources());
 }
@@ -48,8 +50,9 @@ TEST(WebAppTest, HasOnlySource) {
   WebApp app{GenerateAppId(/*manifest_id=*/absl::nullopt,
                            GURL("https://example.com"))};
 
-  for (int i = Source::kMinValue; i <= Source::kMaxValue; ++i) {
-    auto source = static_cast<Source::Type>(i);
+  for (int i = WebAppManagement::kMinValue; i <= WebAppManagement::kMaxValue;
+       ++i) {
+    auto source = static_cast<WebAppManagement::Type>(i);
 
     app.AddSource(source);
     EXPECT_TRUE(app.HasOnlySource(source));
@@ -58,26 +61,28 @@ TEST(WebAppTest, HasOnlySource) {
     EXPECT_FALSE(app.HasOnlySource(source));
   }
 
-  app.AddSource(Source::kMinValue);
-  EXPECT_TRUE(app.HasOnlySource(Source::kMinValue));
+  app.AddSource(WebAppManagement::kMinValue);
+  EXPECT_TRUE(app.HasOnlySource(WebAppManagement::kMinValue));
 
-  for (int i = Source::kMinValue + 1; i <= Source::kMaxValue; ++i) {
-    auto source = static_cast<Source::Type>(i);
+  for (int i = WebAppManagement::kMinValue + 1;
+       i <= WebAppManagement::kMaxValue; ++i) {
+    auto source = static_cast<WebAppManagement::Type>(i);
     app.AddSource(source);
     EXPECT_FALSE(app.HasOnlySource(source));
-    EXPECT_FALSE(app.HasOnlySource(Source::kMinValue));
+    EXPECT_FALSE(app.HasOnlySource(WebAppManagement::kMinValue));
   }
 
-  for (int i = Source::kMinValue + 1; i <= Source::kMaxValue; ++i) {
-    auto source = static_cast<Source::Type>(i);
-    EXPECT_FALSE(app.HasOnlySource(Source::kMinValue));
+  for (int i = WebAppManagement::kMinValue + 1;
+       i <= WebAppManagement::kMaxValue; ++i) {
+    auto source = static_cast<WebAppManagement::Type>(i);
+    EXPECT_FALSE(app.HasOnlySource(WebAppManagement::kMinValue));
     app.RemoveSource(source);
     EXPECT_FALSE(app.HasOnlySource(source));
   }
 
-  EXPECT_TRUE(app.HasOnlySource(Source::kMinValue));
-  app.RemoveSource(Source::kMinValue);
-  EXPECT_FALSE(app.HasOnlySource(Source::kMinValue));
+  EXPECT_TRUE(app.HasOnlySource(WebAppManagement::kMinValue));
+  app.RemoveSource(WebAppManagement::kMinValue);
+  EXPECT_FALSE(app.HasOnlySource(WebAppManagement::kMinValue));
   EXPECT_FALSE(app.HasAnySources());
 }
 
@@ -85,40 +90,40 @@ TEST(WebAppTest, WasInstalledByUser) {
   WebApp app{GenerateAppId(/*manifest_id=*/absl::nullopt,
                            GURL("https://example.com"))};
 
-  app.AddSource(Source::kSync);
+  app.AddSource(WebAppManagement::kSync);
   EXPECT_TRUE(app.WasInstalledByUser());
 
-  app.AddSource(Source::kWebAppStore);
+  app.AddSource(WebAppManagement::kWebAppStore);
   EXPECT_TRUE(app.WasInstalledByUser());
 
-  app.RemoveSource(Source::kSync);
+  app.RemoveSource(WebAppManagement::kSync);
   EXPECT_TRUE(app.WasInstalledByUser());
 
-  app.RemoveSource(Source::kWebAppStore);
+  app.RemoveSource(WebAppManagement::kWebAppStore);
   EXPECT_FALSE(app.WasInstalledByUser());
 
-  app.AddSource(Source::kDefault);
+  app.AddSource(WebAppManagement::kDefault);
   EXPECT_FALSE(app.WasInstalledByUser());
 
-  app.AddSource(Source::kSystem);
+  app.AddSource(WebAppManagement::kSystem);
   EXPECT_FALSE(app.WasInstalledByUser());
 
-  app.AddSource(Source::kPolicy);
+  app.AddSource(WebAppManagement::kPolicy);
   EXPECT_FALSE(app.WasInstalledByUser());
 
-  app.AddSource(Source::kSubApp);
+  app.AddSource(WebAppManagement::kSubApp);
   EXPECT_FALSE(app.WasInstalledByUser());
 
-  app.RemoveSource(Source::kDefault);
+  app.RemoveSource(WebAppManagement::kDefault);
   EXPECT_FALSE(app.WasInstalledByUser());
 
-  app.RemoveSource(Source::kSystem);
+  app.RemoveSource(WebAppManagement::kSystem);
   EXPECT_FALSE(app.WasInstalledByUser());
 
-  app.RemoveSource(Source::kPolicy);
+  app.RemoveSource(WebAppManagement::kPolicy);
   EXPECT_FALSE(app.WasInstalledByUser());
 
-  app.RemoveSource(Source::kSubApp);
+  app.RemoveSource(WebAppManagement::kSubApp);
   EXPECT_FALSE(app.WasInstalledByUser());
 }
 
@@ -126,37 +131,37 @@ TEST(WebAppTest, CanUserUninstallWebApp) {
   WebApp app{GenerateAppId(/*manifest_id=*/absl::nullopt,
                            GURL("https://example.com"))};
 
-  app.AddSource(Source::kDefault);
+  app.AddSource(WebAppManagement::kDefault);
   EXPECT_TRUE(app.IsPreinstalledApp());
   EXPECT_TRUE(app.CanUserUninstallWebApp());
 
-  app.AddSource(Source::kSync);
+  app.AddSource(WebAppManagement::kSync);
   EXPECT_TRUE(app.CanUserUninstallWebApp());
-  app.AddSource(Source::kWebAppStore);
+  app.AddSource(WebAppManagement::kWebAppStore);
   EXPECT_TRUE(app.CanUserUninstallWebApp());
-  app.AddSource(Source::kSubApp);
+  app.AddSource(WebAppManagement::kSubApp);
   EXPECT_TRUE(app.CanUserUninstallWebApp());
 
-  app.AddSource(Source::kPolicy);
+  app.AddSource(WebAppManagement::kPolicy);
   EXPECT_FALSE(app.CanUserUninstallWebApp());
-  app.AddSource(Source::kSystem);
-  EXPECT_FALSE(app.CanUserUninstallWebApp());
-
-  app.RemoveSource(Source::kSync);
-  EXPECT_FALSE(app.CanUserUninstallWebApp());
-  app.RemoveSource(Source::kWebAppStore);
-  EXPECT_FALSE(app.CanUserUninstallWebApp());
-  app.RemoveSource(Source::kSubApp);
+  app.AddSource(WebAppManagement::kSystem);
   EXPECT_FALSE(app.CanUserUninstallWebApp());
 
-  app.RemoveSource(Source::kSystem);
+  app.RemoveSource(WebAppManagement::kSync);
+  EXPECT_FALSE(app.CanUserUninstallWebApp());
+  app.RemoveSource(WebAppManagement::kWebAppStore);
+  EXPECT_FALSE(app.CanUserUninstallWebApp());
+  app.RemoveSource(WebAppManagement::kSubApp);
   EXPECT_FALSE(app.CanUserUninstallWebApp());
 
-  app.RemoveSource(Source::kPolicy);
+  app.RemoveSource(WebAppManagement::kSystem);
+  EXPECT_FALSE(app.CanUserUninstallWebApp());
+
+  app.RemoveSource(WebAppManagement::kPolicy);
   EXPECT_TRUE(app.CanUserUninstallWebApp());
 
   EXPECT_TRUE(app.IsPreinstalledApp());
-  app.RemoveSource(Source::kDefault);
+  app.RemoveSource(WebAppManagement::kDefault);
   EXPECT_FALSE(app.IsPreinstalledApp());
 }
 

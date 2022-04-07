@@ -63,7 +63,7 @@ std::unique_ptr<syncer::EntityData> CreateSyncEntityData(const WebApp& app) {
 
 void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_data,
                         WebApp* app) {
-  app->AddSource(Source::kSync);
+  app->AddSource(WebAppManagement::kSync);
 
   // app_id is a hash of start_url. Parse start_url first:
   const GURL start_url(sync_data.start_url());
@@ -595,7 +595,7 @@ void WebAppSyncBridge::ApplySyncDataChange(
     }
     // Do copy on write:
     auto app_copy = std::make_unique<WebApp>(*existing_web_app);
-    app_copy->RemoveSource(Source::kSync);
+    app_copy->RemoveSource(WebAppManagement::kSync);
 
     if (app_copy->HasAnySources())
       update_local_data->apps_to_update.push_back(std::move(app_copy));

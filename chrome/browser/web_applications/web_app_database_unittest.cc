@@ -289,8 +289,9 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
     app->SetWebAppChromeOsData(absl::make_optional<WebAppChromeOsData>());
 
   EXPECT_FALSE(app->HasAnySources());
-  for (int i = Source::kMinValue; i <= Source::kMaxValue; ++i) {
-    app->AddSource(static_cast<Source::Type>(i));
+  for (int i = WebAppManagement::kMinValue; i <= WebAppManagement::kMaxValue;
+       ++i) {
+    app->AddSource(static_cast<WebAppManagement::Type>(i));
     EXPECT_TRUE(app->HasAnySources());
   }
 
@@ -356,9 +357,10 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
     EXPECT_FALSE(chromeos_data.has_value());
   }
 
-  for (int i = Source::kMinValue; i <= Source::kMaxValue; ++i) {
+  for (int i = WebAppManagement::kMinValue; i <= WebAppManagement::kMaxValue;
+       ++i) {
     EXPECT_TRUE(app_copy->HasAnySources());
-    app_copy->RemoveSource(static_cast<Source::Type>(i));
+    app_copy->RemoveSource(static_cast<WebAppManagement::Type>(i));
   }
   EXPECT_FALSE(app_copy->HasAnySources());
 

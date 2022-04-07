@@ -98,7 +98,7 @@ std::unique_ptr<WebApp> CreateWebAppWithSyncOnlyFields(const std::string& url) {
   const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
 
   auto web_app = std::make_unique<WebApp>(app_id);
-  web_app->AddSource(Source::kSync);
+  web_app->AddSource(WebAppManagement::kSync);
   web_app->SetStartUrl(start_url);
   web_app->SetName("Name");
   web_app->SetUserDisplayMode(DisplayMode::kStandalone);
@@ -289,8 +289,8 @@ TEST_F(WebAppSyncBridgeTest, GetData) {
   // sync_fallback_data is empty for this app.
   InsertAppIntoRegistry(&registry, std::move(synced_app2));
 
-  std::unique_ptr<WebApp> policy_app =
-      test::CreateWebApp(GURL("https://example.org/"), Source::kPolicy);
+  std::unique_ptr<WebApp> policy_app = test::CreateWebApp(
+      GURL("https://example.org/"), WebAppManagement::kPolicy);
   InsertAppIntoRegistry(&registry, std::move(policy_app));
 
   database_factory().WriteRegistry(registry);
@@ -636,7 +636,7 @@ TEST_F(WebAppSyncBridgeTest,
   for (int i = 0; i < 10; ++i) {
     std::unique_ptr<WebApp> policy_app = test::CreateWebApp(
         GURL("https://example.com/" + base::NumberToString(i)),
-        Source::kPolicy);
+        WebAppManagement::kPolicy);
     policy_apps.push_back(std::move(policy_app));
   }
 
@@ -665,7 +665,7 @@ TEST_F(WebAppSyncBridgeTest,
   for (int i = 0; i < 5; ++i) {
     std::unique_ptr<WebApp>& expected_sync_and_policy_app =
         registry[policy_apps[i]->app_id()];
-    expected_sync_and_policy_app->AddSource(Source::kSync);
+    expected_sync_and_policy_app->AddSource(WebAppManagement::kSync);
   }
 
   EXPECT_TRUE(IsRegistryEqual(registrar_registry(), registry));
@@ -678,8 +678,8 @@ TEST_F(WebAppSyncBridgeTest,
   for (int i = 0; i < 10; ++i) {
     std::unique_ptr<WebApp> policy_and_sync_app = test::CreateWebApp(
         GURL("https://example.com/" + base::NumberToString(i)));
-    policy_and_sync_app->AddSource(Source::kPolicy);
-    policy_and_sync_app->AddSource(Source::kSync);
+    policy_and_sync_app->AddSource(WebAppManagement::kPolicy);
+    policy_and_sync_app->AddSource(WebAppManagement::kSync);
     policy_and_sync_apps.push_back(std::move(policy_and_sync_app));
   }
 
@@ -732,8 +732,8 @@ TEST_F(WebAppSyncBridgeTest,
   for (int i = 0; i < 10; ++i) {
     std::unique_ptr<WebApp> policy_and_sync_app = test::CreateWebApp(
         GURL("https://example.com/" + base::NumberToString(i)));
-    policy_and_sync_app->AddSource(Source::kPolicy);
-    policy_and_sync_app->AddSource(Source::kSync);
+    policy_and_sync_app->AddSource(WebAppManagement::kPolicy);
+    policy_and_sync_app->AddSource(WebAppManagement::kSync);
     policy_and_sync_apps.push_back(std::move(policy_and_sync_app));
   }
 
@@ -764,7 +764,7 @@ TEST_F(WebAppSyncBridgeTest,
   for (int i = 0; i < 5; ++i) {
     std::unique_ptr<WebApp>& expected_policy_app =
         registry[policy_and_sync_apps[i]->app_id()];
-    expected_policy_app->RemoveSource(Source::kSync);
+    expected_policy_app->RemoveSource(WebAppManagement::kSync);
   }
 
   EXPECT_TRUE(IsRegistryEqual(registrar_registry(), registry));
@@ -928,7 +928,7 @@ TEST_F(WebAppSyncBridgeTest,
   for (int i = 0; i < 10; ++i) {
     std::unique_ptr<WebApp> policy_app = test::CreateWebApp(
         GURL("https://example.com/" + base::NumberToString(i)),
-        Source::kPolicy);
+        WebAppManagement::kPolicy);
     policy_apps.push_back(std::move(policy_app));
   }
 
@@ -948,7 +948,7 @@ TEST_F(WebAppSyncBridgeTest,
         // make operator== work.
         std::unique_ptr<WebApp> entity_data_app =
             std::make_unique<WebApp>(expected_app.app_id());
-        entity_data_app->AddSource(Source::kPolicy);
+        entity_data_app->AddSource(WebAppManagement::kPolicy);
         entity_data_app->SetName("Name");
 
         EXPECT_TRUE(IsSyncDataEqualIfApplied(
@@ -965,7 +965,7 @@ TEST_F(WebAppSyncBridgeTest,
 
     // Add kSync source to first 5 apps. Modify the rest 5 apps locally.
     if (i < 5)
-      app_to_update->AddSource(Source::kSync);
+      app_to_update->AddSource(WebAppManagement::kSync);
     else
       app_to_update->SetDescription("Local policy app");
 
@@ -987,8 +987,8 @@ TEST_F(WebAppSyncBridgeTest,
   for (int i = 0; i < 10; ++i) {
     std::unique_ptr<WebApp> policy_and_sync_app = test::CreateWebApp(
         GURL("https://example.com/" + base::NumberToString(i)));
-    policy_and_sync_app->AddSource(Source::kPolicy);
-    policy_and_sync_app->AddSource(Source::kSync);
+    policy_and_sync_app->AddSource(WebAppManagement::kPolicy);
+    policy_and_sync_app->AddSource(WebAppManagement::kSync);
     policy_and_sync_apps.push_back(std::move(policy_and_sync_app));
   }
 
@@ -1020,7 +1020,7 @@ TEST_F(WebAppSyncBridgeTest,
 
     // Remove kSync source from first 5 apps. Modify the rest 5 apps locally.
     if (i < 5)
-      app_to_update->RemoveSource(Source::kSync);
+      app_to_update->RemoveSource(WebAppManagement::kSync);
     else
       app_to_update->SetDescription("Local policy app");
 

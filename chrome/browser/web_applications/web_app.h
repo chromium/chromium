@@ -30,7 +30,7 @@
 
 namespace web_app {
 
-using WebAppSources = std::bitset<Source::kMaxValue + 1>;
+using WebAppSources = std::bitset<WebAppManagement::kMaxValue + 1>;
 class WebApp {
  public:
   explicit WebApp(const AppId& app_id);
@@ -262,10 +262,10 @@ class WebApp {
 
   // A Web App can be installed from multiple sources simultaneously. Installs
   // add a source to the app. Uninstalls remove a source from the app.
-  void AddSource(Source::Type source);
-  void RemoveSource(Source::Type source);
+  void AddSource(WebAppManagement::Type source);
+  void RemoveSource(WebAppManagement::Type source);
   bool HasAnySources() const;
-  bool HasOnlySource(Source::Type source) const;
+  bool HasOnlySource(WebAppManagement::Type source) const;
   WebAppSources GetSources() const;
 
   bool IsSynced() const;
@@ -278,7 +278,7 @@ class WebApp {
   bool WasInstalledByUser() const;
   // Returns the highest priority source. AppService assumes that every app has
   // just one install source.
-  Source::Type GetHighestPrioritySource() const;
+  WebAppManagement::Type GetHighestPrioritySource() const;
 
   void SetName(const std::string& name);
   void SetDescription(const std::string& description);

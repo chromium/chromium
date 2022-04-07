@@ -253,7 +253,7 @@ void ApkWebAppService::UninstallWebApp(const web_app::AppId& web_app_id) {
   } else {
     DCHECK(provider_);
     provider_->install_finalizer().UninstallExternalWebApp(
-        web_app_id, web_app::Source::kWebAppStore,
+        web_app_id, web_app::WebAppManagement::kWebAppStore,
         webapps::WebappUninstallSource::kArc, base::DoNothing());
   }
 }

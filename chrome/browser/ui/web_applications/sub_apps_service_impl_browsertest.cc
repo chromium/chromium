@@ -324,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(
   const WebApp* standalone_app =
       provider().registrar().GetAppById(standalone_app_id);
   EXPECT_EQ(parent_app_id_, standalone_app->parent_app_id());
-  EXPECT_FALSE(standalone_app->HasOnlySource(Source::kSync));
+  EXPECT_FALSE(standalone_app->HasOnlySource(WebAppManagement::kSync));
   EXPECT_TRUE(standalone_app->IsSubAppInstalledApp());
 
   UninstallParentApp();
@@ -341,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(absl::nullopt, standalone_app->parent_app_id());
 
   // Verify that the standalone app no longer has the sub-app install source.
-  EXPECT_TRUE(standalone_app->HasOnlySource(Source::kSync));
+  EXPECT_TRUE(standalone_app->HasOnlySource(WebAppManagement::kSync));
 }
 
 // List call returns the correct value for three sub-apps.

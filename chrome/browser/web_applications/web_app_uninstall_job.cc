@@ -76,7 +76,7 @@ void WebAppUninstallJob::Start(const AppId& app_id,
     if (registrar_->GetAppById(sub_app_id) == nullptr)
       continue;
     install_finalizer_->UninstallExternalWebApp(
-        sub_app_id, Source::Type::kSubApp,
+        sub_app_id, WebAppManagement::Type::kSubApp,
         webapps::WebappUninstallSource::kSubApp,
         base::BindOnce(&WebAppUninstallJob::OnSubAppUninstalled,
                        weak_ptr_factory_.GetWeakPtr()));

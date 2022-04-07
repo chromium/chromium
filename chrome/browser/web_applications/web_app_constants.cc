@@ -43,21 +43,22 @@ DisplayMode ResolveAppDisplayModeForStandaloneLaunchContainer(
 }
 }  // namespace
 
-static_assert(Source::kMinValue == 0, "Source enum should be zero based");
+static_assert(WebAppManagement::kMinValue == 0,
+              "Source enum should be zero based");
 
-std::ostream& operator<<(std::ostream& os, Source::Type type) {
+std::ostream& operator<<(std::ostream& os, WebAppManagement::Type type) {
   switch (type) {
-    case Source::Type::kSystem:
+    case WebAppManagement::Type::kSystem:
       return os << "System";
-    case Source::Type::kPolicy:
+    case WebAppManagement::Type::kPolicy:
       return os << "Policy";
-    case Source::Type::kSubApp:
+    case WebAppManagement::Type::kSubApp:
       return os << "SubApp";
-    case Source::Type::kWebAppStore:
+    case WebAppManagement::Type::kWebAppStore:
       return os << "WebAppStore";
-    case Source::Type::kSync:
+    case WebAppManagement::Type::kSync:
       return os << "Sync";
-    case Source::Type::kDefault:
+    case WebAppManagement::Type::kDefault:
       return os << "Default";
   }
 }

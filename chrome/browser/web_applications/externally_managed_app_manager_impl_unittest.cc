@@ -306,7 +306,8 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
                 install_url);
         const auto install_source = install_options().install_source;
         if (!registrar().IsInstalled(*app_id)) {
-          auto web_app = test::CreateWebApp(install_url, Source::kPolicy);
+          auto web_app =
+              test::CreateWebApp(install_url, WebAppManagement::kPolicy);
           controller().RegisterApp(std::move(web_app));
           externally_installed_app_prefs_.Insert(install_url, *app_id,
                                                  install_source);
@@ -1428,7 +1429,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, ExternalAppUninstalled) {
 
 TEST_F(ExternallyManagedAppManagerImplTest, UninstallApps_Succeeds) {
   const GURL kFooWebAppUrl("https://foo.example");
-  auto web_app = test::CreateWebApp(kFooWebAppUrl, Source::kPolicy);
+  auto web_app = test::CreateWebApp(kFooWebAppUrl, WebAppManagement::kPolicy);
   controller().RegisterApp(std::move(web_app));
 
   install_finalizer().SetNextUninstallExternalWebAppResult(
@@ -1459,9 +1460,9 @@ TEST_F(ExternallyManagedAppManagerImplTest, UninstallApps_Fails) {
 TEST_F(ExternallyManagedAppManagerImplTest, UninstallApps_Multiple) {
   const GURL kFooWebAppUrl("https://foo.example");
   const GURL kBarWebAppUrl("https://bar.example");
-  auto web_app = test::CreateWebApp(kFooWebAppUrl, Source::kPolicy);
+  auto web_app = test::CreateWebApp(kFooWebAppUrl, WebAppManagement::kPolicy);
   controller().RegisterApp(std::move(web_app));
-  web_app = test::CreateWebApp(kBarWebAppUrl, Source::kPolicy);
+  web_app = test::CreateWebApp(kBarWebAppUrl, WebAppManagement::kPolicy);
   controller().RegisterApp(std::move(web_app));
 
   install_finalizer().SetNextUninstallExternalWebAppResult(

@@ -110,7 +110,7 @@ class PreinstalledWebAppDuplicationFixerBrowserTest
     return provider_->registrar()
         .GetAppById(web_app_id())
         ->GetSources()
-        .test(Source::kSync);
+        .test(WebAppManagement::kSync);
   }
 
   void UninstallWebApp() { test::UninstallWebApp(profile(), web_app_id()); }

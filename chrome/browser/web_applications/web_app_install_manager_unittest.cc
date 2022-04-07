@@ -239,7 +239,7 @@ class WebAppInstallManagerTest
       bool is_locally_installed,
       const GURL& scope,
       const std::vector<apps::IconInfo>& icon_infos) {
-    auto web_app = test::CreateWebApp(start_url, Source::kSync);
+    auto web_app = test::CreateWebApp(start_url, WebAppManagement::kSync);
     web_app->SetIsFromSyncAndPendingInstallation(true);
     web_app->SetIsLocallyInstalled(is_locally_installed);
     web_app->SetUserDisplayMode(user_display_mode);
@@ -393,7 +393,7 @@ class WebAppInstallManagerTest
     webapps::UninstallResultCode result;
     base::RunLoop run_loop;
     finalizer().UninstallExternalWebAppByUrl(
-        app_url, Source::Type::kPolicy,
+        app_url, WebAppManagement::kPolicy,
         webapps::WebappUninstallSource::kExternalPolicy,
         base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
           result = code;
@@ -689,7 +689,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallWebAppsAfterSync_Success) {
   bool expect_locally_installed = AreAppsLocallyInstalledBySync();
 
   const std::unique_ptr<WebApp> expected_app =
-      test::CreateWebApp(url, Source::kSync);
+      test::CreateWebApp(url, WebAppManagement::kSync);
   expected_app->SetIsFromSyncAndPendingInstallation(false);
   expected_app->SetScope(url);
   expected_app->SetName("Name");
@@ -763,7 +763,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallWebAppsAfterSync_Fallback) {
   bool expect_locally_installed = AreAppsLocallyInstalledBySync();
 
   const std::unique_ptr<WebApp> expected_app =
-      test::CreateWebApp(url, Source::kSync);
+      test::CreateWebApp(url, WebAppManagement::kSync);
   expected_app->SetIsFromSyncAndPendingInstallation(false);
   expected_app->SetName("Name from sync");
   expected_app->SetScope(url);
@@ -841,8 +841,8 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallWebAppsAfterSync_Fallback) {
 
 TEST_P(WebAppInstallManagerTest_SyncOnly,
        UninstallFromSyncAfterRegistryUpdate) {
-  std::unique_ptr<WebApp> app =
-      test::CreateWebApp(GURL("https://example.com/path"), Source::kSync);
+  std::unique_ptr<WebApp> app = test::CreateWebApp(
+      GURL("https://example.com/path"), WebAppManagement::kSync);
   app->SetUserDisplayMode(DisplayMode::kStandalone);
 
   const AppId app_id = app->app_id();
@@ -907,8 +907,8 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
 
 TEST_P(WebAppInstallManagerTest_SyncOnly,
        UninstallFromSyncAfterRegistryUpdateInstallManagerObserver) {
-  std::unique_ptr<WebApp> app =
-      test::CreateWebApp(GURL("https://example.com/path"), Source::kSync);
+  std::unique_ptr<WebApp> app = test::CreateWebApp(
+      GURL("https://example.com/path"), WebAppManagement::kSync);
   app->SetUserDisplayMode(DisplayMode::kStandalone);
 
   const AppId app_id = app->app_id();
@@ -973,9 +973,9 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
 
 TEST_P(WebAppInstallManagerTest_SyncOnly,
        PolicyAndUser_UninstallExternalWebApp) {
-  std::unique_ptr<WebApp> policy_and_user_app =
-      test::CreateWebApp(GURL("https://example.com/path"), Source::kSync);
-  policy_and_user_app->AddSource(Source::kPolicy);
+  std::unique_ptr<WebApp> policy_and_user_app = test::CreateWebApp(
+      GURL("https://example.com/path"), WebAppManagement::kSync);
+  policy_and_user_app->AddSource(WebAppManagement::kPolicy);
   policy_and_user_app->SetUserDisplayMode(DisplayMode::kStandalone);
 
   const AppId app_id = policy_and_user_app->app_id();
@@ -1010,9 +1010,9 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
 
 TEST_P(WebAppInstallManagerTest_SyncOnly,
        PolicyAndUser_UninstallExternalWebAppInstallManagerObserver) {
-  std::unique_ptr<WebApp> policy_and_user_app =
-      test::CreateWebApp(GURL("https://example.com/path"), Source::kSync);
-  policy_and_user_app->AddSource(Source::kPolicy);
+  std::unique_ptr<WebApp> policy_and_user_app = test::CreateWebApp(
+      GURL("https://example.com/path"), WebAppManagement::kSync);
+  policy_and_user_app->AddSource(WebAppManagement::kPolicy);
   policy_and_user_app->SetUserDisplayMode(DisplayMode::kStandalone);
 
   const AppId app_id = policy_and_user_app->app_id();
@@ -1046,9 +1046,9 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
 }
 
 TEST_P(WebAppInstallManagerTest_SyncOnly, DefaultAndUser_UninstallWebApp) {
-  std::unique_ptr<WebApp> default_and_user_app =
-      test::CreateWebApp(GURL("https://example.com/path"), Source::kSync);
-  default_and_user_app->AddSource(Source::kDefault);
+  std::unique_ptr<WebApp> default_and_user_app = test::CreateWebApp(
+      GURL("https://example.com/path"), WebAppManagement::kSync);
+  default_and_user_app->AddSource(WebAppManagement::kDefault);
   default_and_user_app->SetUserDisplayMode(DisplayMode::kStandalone);
 
   const AppId app_id = default_and_user_app->app_id();
@@ -1083,9 +1083,9 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, DefaultAndUser_UninstallWebApp) {
 
 TEST_P(WebAppInstallManagerTest_SyncOnly,
        DefaultAndUser_UninstallWebAppInstallManagerObserver) {
-  std::unique_ptr<WebApp> default_and_user_app =
-      test::CreateWebApp(GURL("https://example.com/path"), Source::kSync);
-  default_and_user_app->AddSource(Source::kDefault);
+  std::unique_ptr<WebApp> default_and_user_app = test::CreateWebApp(
+      GURL("https://example.com/path"), WebAppManagement::kSync);
+  default_and_user_app->AddSource(WebAppManagement::kDefault);
   default_and_user_app->SetUserDisplayMode(DisplayMode::kStandalone);
 
   const AppId app_id = default_and_user_app->app_id();
@@ -1287,7 +1287,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
     auto synced_specifics_data = std::make_unique<WebApp>(app_id);
     synced_specifics_data->SetStartUrl(start_url);
 
-    synced_specifics_data->AddSource(Source::kSync);
+    synced_specifics_data->AddSource(WebAppManagement::kSync);
     synced_specifics_data->SetUserDisplayMode(DisplayMode::kBrowser);
     synced_specifics_data->SetName("Name From Sync");
 

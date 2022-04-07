@@ -268,7 +268,7 @@ std::vector<IconSizes> CreateRandomDownloadedShortcutsMenuIconsSizes(
 }  // namespace
 
 std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url,
-                                     Source::Type source_type) {
+                                     WebAppManagement::Type source_type) {
   const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
 
   auto web_app = std::make_unique<WebApp>(app_id);
@@ -303,18 +303,18 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
 
   // Generate all possible permutations of field values in a random way:
   if (AreSystemWebAppsSupported() && random.next_bool())
-    app->AddSource(Source::kSystem);
+    app->AddSource(WebAppManagement::kSystem);
   if (random.next_bool())
-    app->AddSource(Source::kPolicy);
+    app->AddSource(WebAppManagement::kPolicy);
   if (random.next_bool())
-    app->AddSource(Source::kWebAppStore);
+    app->AddSource(WebAppManagement::kWebAppStore);
   if (random.next_bool())
-    app->AddSource(Source::kSync);
+    app->AddSource(WebAppManagement::kSync);
   if (random.next_bool())
-    app->AddSource(Source::kDefault);
+    app->AddSource(WebAppManagement::kDefault);
   // Must always be at least one source.
   if (!app->HasAnySources())
-    app->AddSource(Source::kSync);
+    app->AddSource(WebAppManagement::kSync);
 
   if (random.next_bool()) {
     dark_mode_theme_color = SkColorSetA(random.next_uint(), SK_AlphaOPAQUE);
