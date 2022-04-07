@@ -19,7 +19,7 @@
 #endif
 
 namespace {
-const char kScriptName[] = "text_fragments_js";
+const char kScriptName[] = "text_fragments";
 const char kScriptHandlerName[] = "textFragments";
 const char kHandleFragmentsScript[] = "textFragments.handleTextFragments";
 const char kRemoveHighlightsScript[] = "textFragments.removeHighlights";

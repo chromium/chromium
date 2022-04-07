@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-goog.module('__crWeb.textFragments');
-goog.module.declareLegacyNamespace();
-
-const utils = goog.require('googleChromeLabs.textFragmentPolyfill.textFragmentUtils');
+import * as utils from '//third_party/text-fragments-polyfill/src/src/text-fragment-utils.js';
 
 /**
  * @fileoverview Interface used for Chrome/WebView to call into the
