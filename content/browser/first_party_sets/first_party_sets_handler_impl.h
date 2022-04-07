@@ -67,9 +67,11 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   absl::optional<FlattenedSets> GetSetsIfEnabledAndReady();
 
   // FirstPartySetsHandler
+  bool IsEnabled() override;
   void SetPublicFirstPartySets(base::File sets_file) override;
   absl::optional<PolicyParsingError> ValidateEnterprisePolicy(
       const base::Value::Dict& policy) const override;
+  void ResetForTesting() override;
 
   // Sets whether FPS is enabled (for testing).
   void SetEnabledForTesting(bool enabled) {
@@ -88,17 +90,10 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
       const base::flat_map<net::SchemefulSite, net::SchemefulSite>&
           current_sets);
 
-  // Resets internal state for testing.
-  void ResetForTesting();
-
  private:
   friend class base::NoDestructor<FirstPartySetsHandlerImpl>;
 
   FirstPartySetsHandlerImpl();
-
-  // This method checks whether First-Party Sets are enabled, and memoizes the
-  // returned value in `enabled_`.
-  bool IsFirstPartySetsEnabled();
 
   // This method reads the persisted First-Party Sets from the file under
   // `user_data_dir`.
@@ -149,8 +144,8 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // The path where persisted First-Party sets data is stored.
   base::FilePath persisted_sets_path_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // This variable is used to memoize the value of IsFirstPartySetsEnabled()
-  // to avoid repeating unnecessary work.
+  // This variable is used to memoize the value of IsEnabled() to avoid
+  // repeating unnecessary work.
   absl::optional<bool> enabled_ GUARDED_BY_CONTEXT(sequence_checker_) =
       absl::nullopt;
 

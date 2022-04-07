@@ -17,8 +17,6 @@ source_set("first_party_sets") {
     "first_party_sets_overrides_policy_handler.h",
     "first_party_sets_pref_names.cc",
     "first_party_sets_pref_names.h",
-    "first_party_sets_settings.cc",
-    "first_party_sets_settings.h",
   ]
   deps = [
     "//base",

@@ -98,13 +98,23 @@ void FirstPartySetsHandlerImpl::Init(const base::FilePath& user_data_dir,
   SetPersistedSets(user_data_dir);
   SetManuallySpecifiedSet(flag_value);
 
-  if (!IsFirstPartySetsEnabled())
+  if (!IsEnabled())
     SetCompleteSets({});
+}
+
+bool FirstPartySetsHandlerImpl::IsEnabled() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // This method checks whether First-Party Sets are enabled, and memoizes the
+  // returned value in `enabled_`.
+  if (!enabled_.has_value()) {
+    enabled_ = GetContentClient()->browser()->IsFirstPartySetsEnabled();
+  }
+  return enabled_.value();
 }
 
 void FirstPartySetsHandlerImpl::SetPublicFirstPartySets(base::File sets_file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsFirstPartySetsEnabled()) {
+  if (!IsEnabled()) {
     sets_loader_->DisposeFile(std::move(sets_file));
     return;
   }
@@ -121,10 +131,22 @@ FirstPartySetsHandlerImpl::ValidateEnterprisePolicy(
       policy, /*out_sets=*/nullptr);
 }
 
+void FirstPartySetsHandlerImpl::ResetForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  enabled_ = absl::nullopt;
+  // base::Unretained(this) is safe here because this is a static singleton.
+  sets_loader_ = std::make_unique<FirstPartySetsLoader>(base::BindOnce(
+      &FirstPartySetsHandlerImpl::SetCompleteSets, base::Unretained(this)));
+  on_sets_ready_.Reset();
+  persisted_sets_path_ = base::FilePath();
+  sets_ = absl::nullopt;
+  raw_persisted_sets_ = absl::nullopt;
+}
+
 void FirstPartySetsHandlerImpl::SetManuallySpecifiedSet(
     const std::string& flag_value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsFirstPartySetsEnabled())
+  if (!IsEnabled())
     return;
   sets_loader_->SetManuallySpecifiedSet(flag_value);
 }
@@ -221,27 +243,7 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsIfReady() {
 
 bool FirstPartySetsHandlerImpl::IsEnabledAndReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return IsFirstPartySetsEnabled() && sets_.has_value();
-}
-
-bool FirstPartySetsHandlerImpl::IsFirstPartySetsEnabled() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!enabled_.has_value()) {
-    enabled_ = GetContentClient()->browser()->IsFirstPartySetsEnabled();
-  }
-  return enabled_.value();
-}
-
-void FirstPartySetsHandlerImpl::ResetForTesting() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  enabled_ = absl::nullopt;
-  // base::Unretained(this) is safe here because this is a static singleton.
-  sets_loader_ = std::make_unique<FirstPartySetsLoader>(base::BindOnce(
-      &FirstPartySetsHandlerImpl::SetCompleteSets, base::Unretained(this)));
-  on_sets_ready_.Reset();
-  persisted_sets_path_ = base::FilePath();
-  sets_ = absl::nullopt;
-  raw_persisted_sets_ = absl::nullopt;
+  return IsEnabled() && sets_.has_value();
 }
 
 }  // namespace content

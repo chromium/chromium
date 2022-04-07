@@ -54,7 +54,7 @@
 #include "chrome/browser/extensions/chrome_extension_cookies.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/favicon/favicon_utils.h"
-#include "chrome/browser/first_party_sets/first_party_sets_settings.h"
+#include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
 #include "chrome/browser/font_family_cache.h"
 #include "chrome/browser/gpu/chrome_browser_main_extra_parts_gpu.h"
 #include "chrome/browser/hid/chrome_hid_delegate.h"
@@ -6446,7 +6446,20 @@ bool ChromeContentBrowserClient::ShouldDisableOriginAgentClusterDefault(
 }
 
 bool ChromeContentBrowserClient::IsFirstPartySetsEnabled() {
-  return FirstPartySetsSettings::Get()->IsFirstPartySetsEnabled();
+  if (!base::FeatureList::IsEnabled(features::kFirstPartySets)) {
+    return false;
+  }
+  if (!g_browser_process) {
+    // If browser process doesn't exist (e.g. in minimal mode on android),
+    // default to the feature value which is true since we didn't return above.
+    return true;
+  }
+  PrefService* local_state = g_browser_process->local_state();
+  if (!local_state ||
+      !local_state->FindPreference(first_party_sets::kFirstPartySetsEnabled)) {
+    return true;
+  }
+  return local_state->GetBoolean(first_party_sets::kFirstPartySetsEnabled);
 }
 
 content::mojom::AlternativeErrorPageOverrideInfoPtr

@@ -49,6 +49,11 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   // Returns the singleton instance.
   static FirstPartySetsHandler* GetInstance();
 
+  // Returns whether First-Party Sets is enabled.
+  //
+  // Embedders can use this method to guard First-Party Sets related changes.
+  virtual bool IsEnabled() = 0;
+
   // Sets the First-Party Sets data from `sets_file` to initialize the
   // FirstPartySets instance. `sets_file` is expected to contain a sequence of
   // newline-delimited JSON records. Each record is a set declaration in the
@@ -69,6 +74,9 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   // will be used override First-Party Sets in those sources.
   virtual absl::optional<PolicyParsingError> ValidateEnterprisePolicy(
       const base::Value::Dict& policy) const = 0;
+
+  // Resets the state on the instance for testing.
+  virtual void ResetForTesting() = 0;
 };
 
 }  // namespace content
