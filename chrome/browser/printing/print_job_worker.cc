@@ -156,7 +156,7 @@ void PrintJobWorker::GetDefaultSettings(SettingsCallback callback) {
 
   printing_context_->set_margin_type(
       printing::mojom::MarginType::kDefaultMargins);
-  printing_context_->set_is_modifiable(false);
+
   InvokeUseDefaultSettings(std::move(callback));
 }
 
@@ -164,13 +164,11 @@ void PrintJobWorker::GetSettingsFromUser(uint32_t document_page_count,
                                          bool has_selection,
                                          mojom::MarginType margin_type,
                                          bool is_scripted,
-                                         bool is_modifiable,
                                          SettingsCallback callback) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK_EQ(page_number_, PageNumber::npos());
 
   printing_context_->set_margin_type(margin_type);
-  printing_context_->set_is_modifiable(is_modifiable);
 
   InvokeGetSettingsWithUI(document_page_count, has_selection, is_scripted,
                           std::move(callback));

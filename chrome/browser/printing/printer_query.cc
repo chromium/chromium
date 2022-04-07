@@ -150,10 +150,10 @@ void PrinterQuery::GetSettingsFromUser(uint32_t expected_page_count,
       FROM_HERE,
       base::BindOnce(&PrintJobWorker::GetSettingsFromUser,
                      base::Unretained(worker_.get()), expected_page_count,
-                     has_selection, margin_type, is_scripted, is_modifiable,
+                     has_selection, margin_type, is_scripted,
                      base::BindOnce(&PrinterQuery::PostSettingsDoneToIO,
                                     base::Unretained(this), std::move(callback),
-                                    /*maybe_is_modifiable=*/absl::nullopt)));
+                                    is_modifiable)));
 }
 
 void PrinterQuery::SetSettings(base::Value new_settings,
