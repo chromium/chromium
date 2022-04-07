@@ -1858,19 +1858,8 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                                 GLint,
                                 ExceptionState&);
 
-  void TexImageHelperImageBitmap(TexImageFunctionID,
-                                 GLenum,
-                                 GLint,
-                                 GLint,
-                                 GLenum,
-                                 GLenum,
-                                 GLint,
-                                 GLint,
-                                 GLint,
+  void TexImageHelperImageBitmap(TexImageParams params,
                                  ImageBitmap*,
-                                 const gfx::Rect&,
-                                 GLsizei,
-                                 GLint,
                                  ExceptionState&);
   static const char* GetTexImageFunctionName(TexImageFunctionID);
   gfx::Rect SafeGetImageSize(Image*);
