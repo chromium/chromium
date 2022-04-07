@@ -385,6 +385,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compositing.Display.OverlayCombinationCache.NumIdsEvicted"
+    units="units" expires_after="2022-11-30">
+  <owner>khaslett@chromium.org</owner>
+  <owner>kylechar@chromium.org</owner>
+  <summary>
+    Logged zero or one times per frame, the number of stale candidate ids we are
+    evicting from the OverlayCombinationCache this frame. If this number is high
+    the CandidateIds or the candidates proposed are likely less stable than they
+    should be.
+  </summary>
+</histogram>
+
 <histogram
     name="Compositing.Display.OverlayProcessorOzone.IsCandidateSharedImage"
     enum="Boolean" expires_after="2021-09-19">
@@ -422,6 +434,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Compositing.Display.OverlayProcessorUsingStrategy.CandidateCombinationPreviouslySucceeded"
+    enum="Boolean" expires_after="2022-11-30">
+  <owner>khaslett@chromium.org</owner>
+  <owner>kylechar@chromium.org</owner>
+  <summary>
+    Logged zero or one times per frame, whether or not the candidate combination
+    being tested this frame was successfully promoted to overlays on the
+    previous frame.
+  </summary>
+</histogram>
+
+<histogram
     name="Compositing.Display.OverlayProcessorUsingStrategy.CheckOverlaySupportCallCount"
     units="units" expires_after="2022-09-18">
   <owner>khaslett@chromium.org</owner>
@@ -441,6 +465,36 @@ chromium-metrics-reviews@google.com.
     Logged zero or more times per frame, the time spent checking if a set of
     candidates can be promoted to overlay. Only reported for platforms
     supporting high resolution clocks.
+  </summary>
+</histogram>
+
+<histogram
+    name="Compositing.Display.OverlayProcessorUsingStrategy.NumOverlays{Counted}"
+    units="units" expires_after="2022-11-30">
+  <owner>khaslett@chromium.org</owner>
+  <owner>kylechar@chromium.org</owner>
+  <summary>
+    Logged zero or one times per frame, the number of overlays {Counted} when
+    using the AttemptMultipleOverlays codepath.
+
+    Note: NumOverlaysFailed and NumOverlaysPromoted are only logged when
+    NumOverlaysAttempted &gt; 0.
+  </summary>
+  <token key="Counted">
+    <variant name="Attempted" summary="attempted"/>
+    <variant name="Failed" summary="failed"/>
+    <variant name="Promoted" summary="promoted"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Compositing.Display.OverlayProcessorUsingStrategy.ShouldAttemptMultipleOverlays"
+    enum="AttemptingMultipleOverlays" expires_after="2022-11-30">
+  <owner>khaslett@chromium.org</owner>
+  <owner>kylechar@chromium.org</owner>
+  <summary>
+    Logged zero or one times per frame, whether we're using the
+    AttemptingMultipleOverlays codepath this frame or why we arent.
   </summary>
 </histogram>
 

@@ -5127,6 +5127,13 @@ others/histograms.xml -->
   <int value="12" label="Other error (file missing)"/>
 </enum>
 
+<enum name="AttemptingMultipleOverlays">
+  <int value="0" label="Yes"/>
+  <int value="1" label="No, Feature disabled, or hardware doesn't support it"/>
+  <int value="2" label="No, candidate requires an overlay"/>
+  <int value="3" label="No, candidate uses an unsupported strategy"/>
+</enum>
+
 <enum name="AttestationFlowStatus">
 <!--
   Uninteresting/unused values are not labeled.

@@ -11,6 +11,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/cxx20_erase_map.h"
+#include "base/metrics/histogram_macros.h"
 #include "components/viz/common/display/overlay_strategy.h"
 #include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/display/overlay_processor_strategy.h"
@@ -173,6 +174,9 @@ OverlayCombinationCache::GetIds(
       stale_candidates.reset(id);
     }
   }
+  UMA_HISTOGRAM_COUNTS_100(
+      "Compositing.Display.OverlayCombinationCache.NumIdsEvicted",
+      stale_candidates.count());
   // Remove all cached combinations that contained these candidates.
   RemoveStaleCombinations(stale_candidates);
   // Remove stale candidates from the id mapper.

@@ -41,6 +41,28 @@
 namespace viz {
 namespace {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Used by UMA histogram that tells us if we're attempting multiple overlays,
+// or why we aren't.
+enum class AttemptingMultipleOverlays {
+  kYes = 0,
+  kNoTooFewMaxOverlaysConsidered = 1,
+  kNoRequiredOverlay = 2,
+  kNoUnsupportedStrategy = 3,
+  kMaxValue = kNoUnsupportedStrategy,
+};
+
+constexpr char kShouldAttemptMultipleOverlaysHistogramName[] =
+    "Compositing.Display.OverlayProcessorUsingStrategy."
+    "ShouldAttemptMultipleOverlays";
+constexpr char kNumOverlaysAttemptedHistogramName[] =
+    "Compositing.Display.OverlayProcessorUsingStrategy.NumOverlaysAttempted";
+constexpr char kNumOverlaysPromotedHistogramName[] =
+    "Compositing.Display.OverlayProcessorUsingStrategy.NumOverlaysPromoted";
+constexpr char kNumOverlaysFailedHistogramName[] =
+    "Compositing.Display.OverlayProcessorUsingStrategy.NumOverlaysFailed";
+
 // Gets the minimum scaling amount used by either dimension for the src relative
 // to the dst.
 float GetMinScaleFactor(const OverlayCandidate& candidate) {
@@ -653,6 +675,9 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategiesPrioritized(
 bool OverlayProcessorUsingStrategy::ShouldAttemptMultipleOverlays(
     const std::vector<OverlayProposedCandidate>& sorted_candidates) {
   if (max_overlays_considered_ <= 1) {
+    UMA_HISTOGRAM_ENUMERATION(
+        kShouldAttemptMultipleOverlaysHistogramName,
+        AttemptingMultipleOverlays::kNoTooFewMaxOverlaysConsidered);
     return false;
   }
 
@@ -661,6 +686,8 @@ bool OverlayProcessorUsingStrategy::ShouldAttemptMultipleOverlays(
     // different scale factors. This becomes complicated when using multiple
     // overlays at once so we won't attempt multiple in that case.
     if (proposed.candidate.requires_overlay) {
+      UMA_HISTOGRAM_ENUMERATION(kShouldAttemptMultipleOverlaysHistogramName,
+                                AttemptingMultipleOverlays::kNoRequiredOverlay);
       return false;
     }
     // Using multiple overlays only makes sense with SingleOnTop and Underlay
@@ -668,10 +695,15 @@ bool OverlayProcessorUsingStrategy::ShouldAttemptMultipleOverlays(
     OverlayStrategy type = proposed.strategy->GetUMAEnum();
     if (type != OverlayStrategy::kSingleOnTop &&
         type != OverlayStrategy::kUnderlay) {
+      UMA_HISTOGRAM_ENUMERATION(
+          kShouldAttemptMultipleOverlaysHistogramName,
+          AttemptingMultipleOverlays::kNoUnsupportedStrategy);
       return false;
     }
   }
 
+  UMA_HISTOGRAM_ENUMERATION(kShouldAttemptMultipleOverlaysHistogramName,
+                            AttemptingMultipleOverlays::kYes);
   return true;
 }
 
@@ -681,6 +713,7 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
     AggregatedRenderPass* render_pass,
     OverlayCandidateList& candidates) {
   if (sorted_candidates.empty()) {
+    UMA_HISTOGRAM_COUNTS_100(kNumOverlaysAttemptedHistogramName, 0);
     return false;
   }
 
@@ -689,6 +722,10 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
           sorted_candidates, max_overlays_considered_);
   std::vector<OverlayProposedCandidate> test_candidates =
       result.candidates_to_test;
+  UMA_HISTOGRAM_BOOLEAN(
+      "Compositing.Display.OverlayProcessorUsingStrategy."
+      "CandidateCombinationPreviouslySucceeded",
+      result.previously_succeeded);
 
   bool testing_underlay = false;
   // We'll keep track of the underlays that we're testing so we can assign their
@@ -729,6 +766,7 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
     // Check for support.
     CheckOverlaySupport(&new_plane_candidate, &candidates);
   }
+  const int num_overlays_attempted = candidates.size();
 
   bool underlay_used = false;
   auto cand_it = candidates.begin();
@@ -750,6 +788,14 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
   base::EraseIf(test_candidates, [](auto& proposed) -> bool {
     return !proposed.candidate.overlay_handled;
   });
+  const int num_overlays_promoted = candidates.size();
+
+  UMA_HISTOGRAM_COUNTS_100(kNumOverlaysAttemptedHistogramName,
+                           num_overlays_attempted);
+  UMA_HISTOGRAM_COUNTS_100(kNumOverlaysPromotedHistogramName,
+                           num_overlays_promoted);
+  UMA_HISTOGRAM_COUNTS_100(kNumOverlaysFailedHistogramName,
+                           num_overlays_attempted - num_overlays_promoted);
 
   if (candidates.empty()) {
     return false;
