@@ -121,7 +121,7 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
   DCHECK(compatible_surface);
   DCHECK(!context_);
 
-  display_ = compatible_surface->GetDisplay();
+  display_ = compatible_surface->GetGLDisplay()->GetDisplay();
 
   EGLint context_client_major_version = attribs.client_major_es_version;
   EGLint context_client_minor_version = attribs.client_minor_es_version;

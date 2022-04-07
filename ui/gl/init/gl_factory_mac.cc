@@ -48,7 +48,7 @@ class NoOpGLSurface : public GLSurface {
   }
   gfx::Size GetSize() override { return size_; }
   void* GetHandle() override { return nullptr; }
-  void* GetDisplay() override { return nullptr; }
+  GLDisplay* GetGLDisplay() override { return nullptr; }
   bool IsSurfaceless() const override { return true; }
   GLSurfaceFormat GetFormat() override { return GLSurfaceFormat(); }
 

@@ -56,13 +56,16 @@ TEST_F(GLSurfaceEGLTest, MAYBE_SurfaceFormatTest) {
   EXPECT_TRUE(config);
 
   EGLint attrib;
-  eglGetConfigAttrib(surface->GetDisplay(), config, EGL_DEPTH_SIZE, &attrib);
+  eglGetConfigAttrib(surface->GetGLDisplay()->GetDisplay(), config,
+                     EGL_DEPTH_SIZE, &attrib);
   EXPECT_LE(24, attrib);
 
-  eglGetConfigAttrib(surface->GetDisplay(), config, EGL_STENCIL_SIZE, &attrib);
+  eglGetConfigAttrib(surface->GetGLDisplay()->GetDisplay(), config,
+                     EGL_STENCIL_SIZE, &attrib);
   EXPECT_LE(8, attrib);
 
-  eglGetConfigAttrib(surface->GetDisplay(), config, EGL_SAMPLES, &attrib);
+  eglGetConfigAttrib(surface->GetGLDisplay()->GetDisplay(), config, EGL_SAMPLES,
+                     &attrib);
   EXPECT_EQ(0, attrib);
 }
 #endif

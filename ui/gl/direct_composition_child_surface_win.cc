@@ -101,7 +101,7 @@ bool DirectCompositionChildSurfaceWin::Initialize(GLSurfaceFormat format) {
   if (!dcomp_device_)
     return false;
 
-  EGLDisplay display = GetDisplay();
+  EGLDisplay display = GetEGLDisplay();
 
   EGLint pbuffer_attribs[] = {
       EGL_WIDTH,
@@ -138,7 +138,7 @@ bool DirectCompositionChildSurfaceWin::ReleaseDrawTexture(bool will_discard) {
   DLOG_IF(ERROR, !result) << "Failed to make current in ReleaseDrawTexture";
 
   if (egl_surface)
-    eglDestroySurface(GetDisplay(), egl_surface);
+    eglDestroySurface(GetEGLDisplay(), egl_surface);
 
   if (dcomp_surface_.Get() == g_current_surface)
     g_current_surface = nullptr;
@@ -252,14 +252,14 @@ void DirectCompositionChildSurfaceWin::Destroy() {
     vsync_thread_->RemoveObserver(this);
 
   if (default_surface_) {
-    if (!eglDestroySurface(GetDisplay(), default_surface_)) {
+    if (!eglDestroySurface(GetEGLDisplay(), default_surface_)) {
       DLOG(ERROR) << "eglDestroySurface failed with error "
                   << ui::GetLastEGLErrorString();
     }
     default_surface_ = nullptr;
   }
   if (real_surface_) {
-    if (!eglDestroySurface(GetDisplay(), real_surface_)) {
+    if (!eglDestroySurface(GetEGLDisplay(), real_surface_)) {
       DLOG(ERROR) << "eglDestroySurface failed with error "
                   << ui::GetLastEGLErrorString();
     }
@@ -510,7 +510,7 @@ bool DirectCompositionChildSurfaceWin::SetDrawRectangle(
   }
 
   real_surface_ = eglCreatePbufferFromClientBuffer(
-      GetDisplay(), EGL_D3D_TEXTURE_ANGLE, buffer, GetConfig(),
+      GetEGLDisplay(), EGL_D3D_TEXTURE_ANGLE, buffer, GetConfig(),
       pbuffer_attribs.data());
   if (!real_surface_) {
     DLOG(ERROR) << "eglCreatePbufferFromClientBuffer failed with error "

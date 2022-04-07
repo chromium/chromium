@@ -23,6 +23,7 @@
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/surface_origin.h"
 #include "ui/gfx/swap_result.h"
+#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_image.h"
 #include "ui/gl/gl_implementation.h"
@@ -208,7 +209,7 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
 
   // Get the platform specific display on which this surface resides, if
   // available.
-  virtual void* GetDisplay();
+  virtual GLDisplay* GetGLDisplay();
 
   // Get the platfrom specific configuration for this surface, if available.
   virtual void* GetConfig();
@@ -398,7 +399,7 @@ class GL_EXPORT GLSurfaceAdapter : public GLSurface {
   bool SetBackbufferAllocation(bool allocated) override;
   void SetFrontbufferAllocation(bool allocated) override;
   void* GetShareHandle() override;
-  void* GetDisplay() override;
+  GLDisplay* GetGLDisplay() override;
   void* GetConfig() override;
   GLSurfaceFormat GetFormat() override;
   gfx::VSyncProvider* GetVSyncProvider() override;

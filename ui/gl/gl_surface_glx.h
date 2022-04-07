@@ -55,7 +55,7 @@ class GL_EXPORT GLSurfaceGLX : public GLSurface {
   static bool IsEXTSwapControlSupported();
   static bool IsMESASwapControlSupported();
 
-  void* GetDisplay() override;
+  GLDisplay* GetGLDisplay() override;
 
   // Get the FB config that the surface was created with or NULL if it is not
   // a GLX drawable.
@@ -66,6 +66,7 @@ class GL_EXPORT GLSurfaceGLX : public GLSurface {
 
  private:
   static bool initialized_;
+  GLDisplayX11 display_;
 };
 
 // A surface used to render to a view.

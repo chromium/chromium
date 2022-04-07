@@ -87,7 +87,7 @@ bool GLSurfaceEGLSurfaceControl::Initialize(GLSurfaceFormat format) {
   // Surfaceless is always disabled on Android so we create a 1x1 pbuffer
   // surface.
   if (!offscreen_surface_) {
-    EGLDisplay display = GetDisplay();
+    EGLDisplay display = GetEGLDisplay();
     if (!display) {
       LOG(ERROR) << "Trying to create surface with invalid display.";
       return false;
@@ -137,7 +137,7 @@ void GLSurfaceEGLSurfaceControl::Destroy() {
   root_surface_.reset();
 
   if (offscreen_surface_) {
-    if (!eglDestroySurface(GetDisplay(), offscreen_surface_)) {
+    if (!eglDestroySurface(GetEGLDisplay(), offscreen_surface_)) {
       LOG(ERROR) << "eglDestroySurface failed with error "
                  << ui::GetLastEGLErrorString();
     }

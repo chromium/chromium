@@ -7,6 +7,7 @@
 
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_surface_egl.h"
 
 namespace android_webview {
@@ -31,7 +32,7 @@ class AwGLSurface : public gl::GLSurfaceEGL {
   bool OnMakeCurrent(gl::GLContext* context) override;
   gfx::Size GetSize() override;
   void* GetHandle() override;
-  void* GetDisplay() override;
+  gl::GLDisplay* GetGLDisplay() override;
   gl::GLSurfaceFormat GetFormat() override;
   bool Resize(const gfx::Size& size,
               float scale_factor,

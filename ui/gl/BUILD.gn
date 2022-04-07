@@ -73,6 +73,8 @@ component("gl") {
     "gl_context.h",
     "gl_context_stub.cc",
     "gl_context_stub.h",
+    "gl_display.cc",
+    "gl_display.h",
     "gl_enums.cc",
     "gl_enums.h",
     "gl_enums_implementation_autogen.h",

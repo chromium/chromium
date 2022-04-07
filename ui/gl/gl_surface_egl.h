@@ -23,6 +23,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/vsync_provider.h"
 #include "ui/gl/egl_timestamps.h"
+#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_surface_overlay.h"
@@ -95,9 +96,11 @@ class GL_EXPORT GLSurfaceEGL : public GLSurface {
   virtual EGLint GetNativeVisualID() const;
 
   // Implement GLSurface.
-  EGLDisplay GetDisplay() override;
+  GLDisplay* GetGLDisplay() override;
   EGLConfig GetConfig() override;
   GLSurfaceFormat GetFormat() override;
+
+  EGLDisplay GetEGLDisplay();
 
   // |system_device_id| specifies which GPU to use on a multi-GPU system.
   // If its value is 0, use the default GPU of the system.
@@ -109,8 +112,8 @@ class GL_EXPORT GLSurfaceEGL : public GLSurface {
   static EGLDisplay GetHardwareDisplay();
   // |system_device_id| specifies which GPU to use on a multi-GPU system.
   // If its value is 0, use the default GPU of the system.
-  static EGLDisplay InitializeDisplay(EGLDisplayPlatform native_display,
-                                      uint64_t system_device_id);
+  static GLDisplayEGL* InitializeDisplay(EGLDisplayPlatform native_display,
+                                         uint64_t system_device_id);
   static EGLNativeDisplayType GetNativeDisplay();
   static DisplayType GetDisplayType();
 
@@ -150,7 +153,7 @@ class GL_EXPORT GLSurfaceEGL : public GLSurface {
   GLSurfaceFormat format_;
 
  private:
-  static bool InitializeOneOffCommon();
+  static bool InitializeOneOffCommon(GLDisplayEGL* display);
   static bool initialized_;
 };
 

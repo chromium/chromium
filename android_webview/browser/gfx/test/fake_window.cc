@@ -37,8 +37,8 @@ class FakeWindow::ScopedMakeCurrent {
     // Release the underlying EGLContext. This is required because the real
     // GLContextEGL may no longer be current here and to satisfy DCHECK in
     // GLContextEGL::IsCurrent.
-    eglMakeCurrent(view_root_->surface_->GetDisplay(), EGL_NO_SURFACE,
-                   EGL_NO_SURFACE, EGL_NO_CONTEXT);
+    eglMakeCurrent(view_root_->surface_->GetGLDisplay()->GetDisplay(),
+                   EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
     view_root_->context_->ReleaseCurrent(view_root_->surface_.get());
   }
 

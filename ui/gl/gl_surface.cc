@@ -135,7 +135,7 @@ void* GLSurface::GetShareHandle() {
   return NULL;
 }
 
-void* GLSurface::GetDisplay() {
+GLDisplay* GLSurface::GetGLDisplay() {
   NOTIMPLEMENTED();
   return NULL;
 }
@@ -448,8 +448,8 @@ void* GLSurfaceAdapter::GetShareHandle() {
   return surface_->GetShareHandle();
 }
 
-void* GLSurfaceAdapter::GetDisplay() {
-  return surface_->GetDisplay();
+GLDisplay* GLSurfaceAdapter::GetGLDisplay() {
+  return surface_->GetGLDisplay();
 }
 
 void* GLSurfaceAdapter::GetConfig() {
