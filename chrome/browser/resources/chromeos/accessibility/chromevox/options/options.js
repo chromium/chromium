@@ -7,6 +7,7 @@
  *
  */
 import {ChromeVoxPrefs} from '../background/prefs.js';
+import {BluetoothBrailleDisplayUI} from '../braille/bluetooth_braille_display_ui.js';
 import {AbstractTts} from '../common/abstract_tts.js';
 import {ConsoleTts} from '../common/console_tts.js';
 import {TtsBackground} from '../common/tts_background.js';

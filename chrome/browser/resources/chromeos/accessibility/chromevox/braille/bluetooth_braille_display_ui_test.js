@@ -3,40 +3,17 @@
 // found in the LICENSE file.
 
 // Include test fixture.
-GEN_INCLUDE(['../testing/chromevox_webui_test_base.js']);
+GEN_INCLUDE(['../testing/chromevox_next_e2e_test_base.js']);
 GEN_INCLUDE(['../testing/fake_objects.js']);
 
-GEN('#include "content/public/test/browser_test.h"');
-
-// Fake out the Chrome API namespace we depend on.
-var chrome = {};
-/** Fake chrome.brailleDisplayPrivate object. */
-chrome.brailleDisplayPrivate = {};
-/** Fake chrome.bluetooth object. */
-chrome.bluetooth = {};
-chrome.bluetooth.getDevices = (callback) => {};
-chrome.bluetooth.onDeviceAdded = new FakeChromeEvent();
-chrome.bluetooth.onDeviceChanged = new FakeChromeEvent();
-chrome.bluetooth.onDeviceRemoved = new FakeChromeEvent();
-chrome.bluetooth.startDiscovery = () => {};
-chrome.bluetooth.stopDiscovery = () => {};
-/** Fake chrome.bluetoothPrivate object. */
-chrome.bluetoothPrivate = {};
-chrome.bluetoothPrivate.onPairing = new FakeChromeEvent();
-/** Fake chrome.accessibilityPrivate object. */
-chrome.accessibilityPrivate = {};
-chrome.metricsPrivate = {};
-chrome.metricsPrivate.recordUserAction = function() {};
-
-/**
- * Test fixture.
- */
-ChromeVoxBluetoothBrailleDisplayUIWebUITest =
-    class extends ChromeVoxWebUITestBase {
+/** Test fixture. */
+ChromeVoxBluetoothBrailleDisplayUITest = class extends ChromeVoxNextE2ETest {
   /** @override */
-  setUp() {
-    super.setUp();
-    Msgs = TestMsgs;
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule(
+        'BluetoothBrailleDisplayUI',
+        '/chromevox/braille/bluetooth_braille_display_ui.js');
   }
 
   /** Label of the select. @type {string} */
@@ -62,18 +39,12 @@ ChromeVoxBluetoothBrailleDisplayUIWebUITest =
   }
 };
 
-
 /** @override */
-ChromeVoxBluetoothBrailleDisplayUIWebUITest.prototype.closureModuleDeps = [
-  'BluetoothBrailleDisplayManager',
-  'BluetoothBrailleDisplayUI',
-  'TestMsgs',
-];
-
-ChromeVoxBluetoothBrailleDisplayUIWebUITest.prototype.isAsync = true;
+ChromeVoxBluetoothBrailleDisplayUITest.prototype.closureModuleDeps =
+    ['BluetoothBrailleDisplayManager'];
 
 SYNC_TEST_F(
-    'ChromeVoxBluetoothBrailleDisplayUIWebUITest', 'NoDisplays', function() {
+    'ChromeVoxBluetoothBrailleDisplayUITest', 'NoDisplays', function() {
       const ui = new BluetoothBrailleDisplayUI();
       ui.attach(document.body);
       assertEqualsDOM(
@@ -85,7 +56,7 @@ SYNC_TEST_F(
     });
 
 SYNC_TEST_F(
-    'ChromeVoxBluetoothBrailleDisplayUIWebUITest',
+    'ChromeVoxBluetoothBrailleDisplayUITest',
     'ControlStateUpdatesNotConnectedOrPaired', function() {
       const ui = new BluetoothBrailleDisplayUI();
       ui.attach(document.body);
@@ -116,7 +87,7 @@ SYNC_TEST_F(
     });
 
 SYNC_TEST_F(
-    'ChromeVoxBluetoothBrailleDisplayUIWebUITest',
+    'ChromeVoxBluetoothBrailleDisplayUITest',
     'ControlStateUpdatesPairedNotConnected', function() {
       const ui = new BluetoothBrailleDisplayUI();
       ui.attach(document.body);
@@ -206,8 +177,7 @@ SYNC_TEST_F(
     });
 
 SYNC_TEST_F(
-    'ChromeVoxBluetoothBrailleDisplayUIWebUITest', 'PincodeRequest',
-    function() {
+    'ChromeVoxBluetoothBrailleDisplayUITest', 'PincodeRequest', function() {
       const ui = new BluetoothBrailleDisplayUI();
       ui.attach(document.body);
 
@@ -233,7 +203,7 @@ SYNC_TEST_F(
     });
 
 TEST_F(
-    'ChromeVoxBluetoothBrailleDisplayUIWebUITest', 'ClickControls', function() {
+    'ChromeVoxBluetoothBrailleDisplayUITest', 'ClickControls', function() {
       const ui = new BluetoothBrailleDisplayUI();
       ui.attach(document.body);
 

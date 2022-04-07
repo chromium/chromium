@@ -7,17 +7,11 @@
  * displays.
  */
 
-goog.provide('BluetoothBrailleDisplayUI');
-
-goog.require('BluetoothBrailleDisplayListener');
-goog.require('BluetoothBrailleDisplayManager');
-goog.require('Msgs');
-
 /**
  * A widget used for interacting with bluetooth braille displays.
  * @implements {BluetoothBrailleDisplayListener}
  */
-BluetoothBrailleDisplayUI = class {
+export class BluetoothBrailleDisplayUI {
   constructor() {
     /** @private {!BluetoothBrailleDisplayManager} */
     this.manager_ = new BluetoothBrailleDisplayManager();
@@ -232,7 +226,7 @@ BluetoothBrailleDisplayUI = class {
       }.bind(this, display);
     });
   }
-};
+}
 
 
 /** @private {string} */

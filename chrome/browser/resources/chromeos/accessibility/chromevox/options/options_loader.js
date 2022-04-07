@@ -6,7 +6,8 @@
  * @fileoverview Loads the options script.
  */
 
-goog.require('BluetoothBrailleDisplayUI');
+goog.require('BluetoothBrailleDisplayListener');
+goog.require('BluetoothBrailleDisplayManager');
 goog.require('BrailleTable');
 goog.require('BrailleTranslatorManager');
 goog.require('ChromeVox');

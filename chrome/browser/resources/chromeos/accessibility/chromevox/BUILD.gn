@@ -48,7 +48,6 @@ chromevox_modules = [
   "background/phonetic_data.js",
   "background/user_action_monitor.js",
   "braille/bluetooth_braille_display_manager.js",
-  "braille/bluetooth_braille_display_ui.js",
   "braille/braille_key_types.js",
   "braille/braille_table.js",
   "braille/braille_translator_manager.js",
@@ -114,6 +113,7 @@ chromevox_es6_modules = [
   "background/prefs.js",
   "background/smart_sticky_mode.js",
   "background/logging/log.js",
+  "braille/bluetooth_braille_display_ui.js",
   "braille/braille_display_manager.js",
   "braille/braille_input_handler.js",
   "braille/braille_key_event_rewriter.js",
@@ -403,10 +403,7 @@ if (is_chromeos_ash) {
   # renderer.
   js2gtest("chromevox_webui_js_tests") {
     test_type = "webui"
-    sources = [
-      "braille/bluetooth_braille_display_manager_test.js",
-      "braille/bluetooth_braille_display_ui_test.js",
-    ]
+    sources = [ "braille/bluetooth_braille_display_manager_test.js" ]
     gen_include_files = [
       "../common/testing/accessibility_test_base.js",
       "../common/testing/assert_additions.js",
@@ -441,6 +438,7 @@ if (is_chromeos_ash) {
       "background/settings_test.js",
       "background/smart_sticky_mode_test.js",
       "background/user_action_monitor_test.js",
+      "braille/bluetooth_braille_display_ui_test.js",
       "braille/braille_display_manager_test.js",
       "braille/braille_input_handler_test.js",
       "braille/braille_table_test.js",
@@ -471,6 +469,9 @@ if (is_chromeos_ash) {
       "//chrome/browser/chromeos",
       "//chrome/common",
     ]
+    test_deps_js_outputs = get_target_outputs(":chromevox_test_deps_js")
+    deps_js = test_deps_js_outputs[0]
+    deps += [ ":chromevox_test_deps_js" ]
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   }
 }
