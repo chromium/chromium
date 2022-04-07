@@ -757,8 +757,9 @@ void LayoutMultiColumnFlowThread::AppendNewFragmentainerGroupFromNG() {
     // multicol container). Still the multicol container itself may take up
     // space and become fragmented, due to its specified block-size, padding,
     // etc. The NG code doesn't care about this when calling this method. Just
-    // bail.
-    DCHECK(!FirstMultiColumnSet());
+    // bail. It may also be that we haven't gotten to the first column set yet.
+    // This may happen when NG lays out an empty column (before a spanner) where
+    // legacy doesn't think that there should be a column.
     return;
   }
   last_set_worked_on_->AppendNewFragmentainerGroup();
