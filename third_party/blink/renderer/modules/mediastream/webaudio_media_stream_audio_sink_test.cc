@@ -32,8 +32,8 @@ class WebAudioMediaStreamAudioSinkTest : public testing::Test {
         String::FromUTF8("dummy_source_id"), MediaStreamSource::kTypeAudio,
         String::FromUTF8("dummy_source_name"), false /* remote */);
     component_ = MakeGarbageCollected<MediaStreamComponent>(
-        String::FromUTF8("audio_track"), audio_source);
-    component_->SetPlatformTrack(std::make_unique<MediaStreamAudioTrack>(true));
+        String::FromUTF8("audio_track"), audio_source,
+        std::make_unique<MediaStreamAudioTrack>(true));
     source_provider_ = std::make_unique<WebAudioMediaStreamAudioSink>(
         component_, context_sample_rate);
     source_provider_->SetSinkParamsForTesting(sink_params_);
