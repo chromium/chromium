@@ -153,9 +153,8 @@ public class NavigationController {
     /**
      * Navigates to the entry at {@link index}.
      *
-     * @throws IndexOutOfBoundsException If index is not between 0 and {@link
-     *         getNavigationListCurrentIndex}.
-     * @throws IndexOutOfBoundsException
+     * @throws IndexOutOfBoundsException If index is negative or is not less than {@link
+     *         getNavigationListSize}.
      */
     public void goToIndex(int index) throws IndexOutOfBoundsException {
         ThreadCheck.ensureOnUiThread();
@@ -223,8 +222,8 @@ public class NavigationController {
      * Returns the uri to display for the navigation at index.
      *
      * @param index The index of the navigation.
-     * @throws IndexOutOfBoundsException If index is not between 0 and {@link
-     *         getNavigationListCurrentIndex}.
+     * @throws IndexOutOfBoundsException If index is negative or is not less than {@link
+     *         getNavigationListSize}.
      */
     @NonNull
     public Uri getNavigationEntryDisplayUri(int index) throws IndexOutOfBoundsException {
@@ -240,8 +239,8 @@ public class NavigationController {
     /**
      * Returns the title of the navigation entry at the supplied index.
      *
-     * @throws IndexOutOfBoundsException If index is not between 0 and {@link
-     *         getNavigationListCurrentIndex}.
+     * @throws IndexOutOfBoundsException If index is negative or is not less than {@link
+     *         getNavigationListSize}.
      */
     @NonNull
     public String getNavigationEntryTitle(int index) throws IndexOutOfBoundsException {
@@ -259,8 +258,8 @@ public class NavigationController {
      * This will be true for certain navigations, such as certain client side redirects and
      * history.pushState navigations done without user interaction.
      *
-     * @throws IndexOutOfBoundsException If index is not between 0 and {@link
-     *         getNavigationListCurrentIndex}.
+     * @throws IndexOutOfBoundsException If index is negative or is not less than {@link
+     *         getNavigationListSize}.
      */
     public boolean isNavigationEntrySkippable(int index) throws IndexOutOfBoundsException {
         ThreadCheck.ensureOnUiThread();
