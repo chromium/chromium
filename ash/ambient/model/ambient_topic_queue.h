@@ -41,6 +41,21 @@ class AmbientBackendController;
 // caller Pop()s everything from it.
 class ASH_EXPORT AmbientTopicQueue {
  public:
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Returns a non-empty set of sizes that specify the desired size of the
+    // topic photos returned by IMAX. This is invoked before each topic fetch,
+    // so implementations may change the set of sizes they specify if desired.
+    //
+    // The AmbientTopicQueue will make a best effort to maintain a uniform
+    // distribution of the specified topic sizes in its queue. Note that the
+    // |topic_fetch_limit| is always honored though and is a global limit for
+    // all topics in the queue irrespective of size.
+    virtual std::vector<gfx::Size> GetTopicSizes() = 0;
+  };
+
   // Starts automatically filling the queue on construction. Note this class
   // intentionally does not have a method to clear the queue/reset its state.
   // For this, it's cheap to just destroy and re-create the queue.
