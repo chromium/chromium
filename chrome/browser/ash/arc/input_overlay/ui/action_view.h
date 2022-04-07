@@ -40,11 +40,15 @@ class ActionView : public views::View {
   virtual void OnKeyBindingChange(ActionTag* action_tag, ui::DomCode code) = 0;
   virtual void OnBindingToKeyboard() = 0;
   virtual void OnBindingToMouse(std::string mouse_action) = 0;
+  // Each type of the actions shows different edit menu.
+  virtual void OnMenuEntryPressed() = 0;
+
+  // TODO(cuicuiruan): Remove virtual for post MVP once edit menu is ready for
+  // |ActionMove|.
+  virtual void SetDisplayMode(const DisplayMode mode);
 
   // Set position from its center position.
   void SetPositionFromCenterPosition(gfx::PointF& center_position);
-  void SetDisplayMode(const DisplayMode mode);
-  void OnMenuEntryPressed();
   // Get edit menu position in parent's bounds.
   gfx::Point GetEditMenuPosition(gfx::Size menu_size);
   void RemoveEditMenu();

@@ -283,7 +283,8 @@ DisplayOverlayController::GetOverlayMenuEntryBounds() {
   return absl::optional<gfx::Rect>(menu_entry_->bounds());
 }
 
-void DisplayOverlayController::AddActionEditMenu(ActionView* anchor) {
+void DisplayOverlayController::AddActionEditMenu(ActionView* anchor,
+                                                 ActionType action_type) {
   auto* overlay_widget = GetOverlayWidget();
   DCHECK(overlay_widget);
   if (!overlay_widget)
@@ -292,7 +293,8 @@ void DisplayOverlayController::AddActionEditMenu(ActionView* anchor) {
   DCHECK(parent_view);
   if (!parent_view)
     return;
-  auto action_edit_menu = ActionEditMenu::BuildActionTapEditMenu(this, anchor);
+  auto action_edit_menu =
+      ActionEditMenu::BuildActionEditMenu(this, anchor, action_type);
   if (action_edit_menu)
     action_edit_menu_ = parent_view->AddChildView(std::move(action_edit_menu));
 }

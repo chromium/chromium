@@ -157,6 +157,14 @@ class ActionTap::ActionTapView : public ActionView {
     display_overlay_controller_->OnBindingChange(action_,
                                                  std::move(input_element));
   }
+
+  void OnMenuEntryPressed() override {
+    display_overlay_controller_->AddActionEditMenu(this, ActionType::kTap);
+    DCHECK(menu_entry_);
+    if (!menu_entry_)
+      return;
+    menu_entry_->RequestFocus();
+  }
 };
 
 ActionTap::ActionTap(aura::Window* window) : Action(window) {}

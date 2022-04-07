@@ -46,7 +46,7 @@ class DisplayOverlayController : public ui::EventHandler {
   // Get the bounds of |overlay_menu_entry_| in contents view.
   absl::optional<gfx::Rect> GetOverlayMenuEntryBounds();
 
-  void AddActionEditMenu(ActionView* anchor);
+  void AddActionEditMenu(ActionView* anchor, ActionType action_type);
   void RemoveActionEditMenu();
 
   void AddEditErrorMsg(ActionView* action_view, base::StringPiece error_msg);

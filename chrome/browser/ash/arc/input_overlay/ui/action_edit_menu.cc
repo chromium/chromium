@@ -86,16 +86,27 @@ ActionEditMenu::ActionEditMenu(
 ActionEditMenu::~ActionEditMenu() = default;
 
 // static
-std::unique_ptr<ActionEditMenu> ActionEditMenu::BuildActionTapEditMenu(
+std::unique_ptr<ActionEditMenu> ActionEditMenu::BuildActionEditMenu(
     DisplayOverlayController* display_overlay_controller,
-    ActionView* anchor) {
+    ActionView* anchor,
+    ActionType action_type) {
   if (!display_overlay_controller)
     return nullptr;
   display_overlay_controller->RemoveActionEditMenu();
 
   auto menu =
       std::make_unique<ActionEditMenu>(display_overlay_controller, anchor);
-  menu->InitActionTapEditMenu();
+
+  switch (action_type) {
+    case ActionType::kTap:
+      menu->InitActionTapEditMenu();
+      break;
+    case ActionType::kMove:
+      menu->InitActionTapEditMenu();
+      break;
+    default:
+      NOTREACHED();
+  }
 
   return menu;
 }
@@ -152,6 +163,11 @@ void ActionEditMenu::InitActionTapEditMenu() {
       NOTREACHED();
     }
   }
+}
+
+void ActionEditMenu::InitActionMoveEditMenu() {
+  // TODO(cuicuiruan): Implement after post MVP.
+  NOTIMPLEMENTED();
 }
 
 void ActionEditMenu::OnKeyBoardKeyBindingButtonPressed() {

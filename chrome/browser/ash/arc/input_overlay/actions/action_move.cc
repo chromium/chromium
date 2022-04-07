@@ -81,6 +81,7 @@ class ActionMove::ActionMoveMouseView : public ActionView {
   }
   void OnBindingToKeyboard() override { NOTIMPLEMENTED(); }
   void OnBindingToMouse(std::string mouse_action) override { NOTIMPLEMENTED(); }
+  void OnMenuEntryPressed() override { NOTIMPLEMENTED(); }
 };
 
 class ActionMove::ActionMoveKeyView : public ActionView {
@@ -129,29 +130,59 @@ class ActionMove::ActionMoveKeyView : public ActionView {
       return;
 
     auto keys = binding->keys();
-    for (int i = 0; i < keys.size(); i++) {
-      auto text = GetDisplayText(keys[i]);
-      auto tag = ActionTag::CreateTextActionTag(text);
-      auto tag_size = tag->GetPreferredSize();
-      tag->SetSize(tag_size);
-      int x = kDirection[i][0];
-      int y = kDirection[i][1];
-      auto pos = gfx::Point(
-          radius + x * (radius - kTagOffset) - tag_size.width() / 2,
-          radius + y * (radius - kTagOffset) - tag_size.height() / 2);
-      tag->SetPosition(pos);
-      tags_.emplace_back(AddChildView(std::move(tag)));
+    if (tags_.empty()) {
+      for (int i = 0; i < keys.size(); i++) {
+        auto tag = ActionTag::CreateTextActionTag(GetDisplayText(keys[i]));
+        auto tag_size = tag->GetPreferredSize();
+        tag->SetSize(tag_size);
+        int x = kDirection[i][0];
+        int y = kDirection[i][1];
+        auto pos = gfx::Point(
+            radius + x * (radius - kTagOffset) - tag_size.width() / 2,
+            radius + y * (radius - kTagOffset) - tag_size.height() / 2);
+        tag->SetPosition(pos);
+        tags_.emplace_back(AddChildView(std::move(tag)));
+      }
+    } else {
+      DCHECK(tags_.size() == keys.size());
+      for (int i = 0; i < keys.size(); i++)
+        tags_[i]->SetTextActionTag(std::move(GetDisplayText(keys[i])));
     }
   }
 
   void OnKeyBindingChange(ActionTag* action_tag, ui::DomCode code) override {
-    // TODO(cuicuiruan): Implement the key binding change for key-bound
-    // |ActionMove|.
+    DCHECK(tags_.size() == kActionMoveKeysSize);
+    if (tags_.size() != kActionMoveKeysSize)
+      return;
+    auto it = std::find(tags_.begin(), tags_.end(), action_tag);
+    DCHECK(it != tags_.end());
+    if (it == tags_.end())
+      return;
+
+    if (ShouldShowErrorMsg(code))
+      return;
+
+    auto& binding = action_->GetCurrentDisplayedBinding();
+    DCHECK(binding.keys().size() == kActionMoveKeysSize);
+    const int index = it - tags_.begin();
+    std::vector<ui::DomCode> new_keys = binding.keys();
+    new_keys[index] = code;
+    auto input_element = InputElement::CreateActionMoveKeyElement(new_keys);
+    display_overlay_controller_->OnBindingChange(action_,
+                                                 std::move(input_element));
+  }
+
+  // TODO(cuicuiruan): Remove this for post MVP for editing |ActionMove|.
+  void SetDisplayMode(const DisplayMode mode) override {
+    ActionView::SetDisplayMode(mode);
+    if (menu_entry_)
+      menu_entry_->SetVisible(false);
   }
 
   // TODO(cuicuiruan): implement for post MVP once the design is ready.
   void OnBindingToKeyboard() override { NOTIMPLEMENTED(); }
   void OnBindingToMouse(std::string mouse_action) override { NOTIMPLEMENTED(); }
+  void OnMenuEntryPressed() override { NOTIMPLEMENTED(); }
 };
 
 ActionMove::ActionMove(aura::Window* window) : Action(window) {}
@@ -309,7 +340,8 @@ std::unique_ptr<ActionView> ActionMove::CreateView(
     view = std::make_unique<ActionMoveKeyView>(this, display_overlay_controller,
                                                content_bounds);
   }
-  view->set_editable(false);
+  action_view_ = view.get();
+  view->set_editable(true);
   auto center_pos = GetUICenterPosition(content_bounds);
   view->SetPositionFromCenterPosition(center_pos);
   return view;

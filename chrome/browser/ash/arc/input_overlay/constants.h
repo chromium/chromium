@@ -51,6 +51,14 @@ enum class BindingOption {
   kPending,
 };
 
+// Action types according to the touch events.
+enum class ActionType {
+  // |kTap| involves touch down and up.
+  kTap,
+  // |kMove| involves touch down, move and up.
+  kMove,
+};
+
 }  // namespace input_overlay
 }  // namespace arc
 

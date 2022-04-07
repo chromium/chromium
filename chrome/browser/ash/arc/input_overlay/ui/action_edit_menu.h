@@ -29,14 +29,19 @@ class ActionEditMenu : public views::View {
   ActionEditMenu& operator=(const ActionEditMenu&) = delete;
   ~ActionEditMenu() override;
 
-  static std::unique_ptr<ActionEditMenu> BuildActionTapEditMenu(
+  static std::unique_ptr<ActionEditMenu> BuildActionEditMenu(
       DisplayOverlayController* display_overlay_controller,
-      ActionView* anchor);
+      ActionView* anchor,
+      ActionType action_type);
 
  private:
   class BindingButton;
 
+  // Create edit menu for each action types.
   void InitActionTapEditMenu();
+  void InitActionMoveEditMenu();
+
+  // Function calls for each menu item button.
   void OnKeyBoardKeyBindingButtonPressed();
   void OnMouseLeftClickBindingButtonPressed();
   void OnMouseRightClickBindingButtonPressed();

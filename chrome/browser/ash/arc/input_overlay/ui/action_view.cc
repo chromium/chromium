@@ -15,6 +15,8 @@ constexpr int kMenuEntryOffset = 4;
 // TODO(cuicuiruan): move the strings to chrome/app/generated_resources.grd
 // after UX/UI strings are confirmed.
 constexpr base::StringPiece kEditErrorUnsupportedKey("Unsupported key");
+constexpr base::StringPiece kEditErrorDuplicatedKey(
+    "Duplicated key in the same action");
 }  // namespace
 
 ActionView::ActionView(Action* action,
@@ -49,14 +51,6 @@ void ActionView::SetPositionFromCenterPosition(gfx::PointF& center_position) {
   int top = std::max(0, (int)(center_position.y() - center_.y()));
   // SetPosition function needs the top-left position.
   SetPosition(gfx::Point(left, top));
-}
-
-void ActionView::OnMenuEntryPressed() {
-  display_overlay_controller_->AddActionEditMenu(this);
-  DCHECK(menu_entry_);
-  if (!menu_entry_)
-    return;
-  menu_entry_->RequestFocus();
 }
 
 gfx::Point ActionView::GetEditMenuPosition(gfx::Size menu_size) {
@@ -115,6 +109,19 @@ void ActionView::RemoveEditButton() {
 }
 
 bool ActionView::ShouldShowErrorMsg(ui::DomCode code) {
+  // Check if |code| is duplicated with the keys in its action. For example,
+  // there are four keys involved in the key-bound |ActionMove|.
+  auto& binding = action_->GetCurrentDisplayedBinding();
+  if (IsKeyboardBound(binding)) {
+    for (const auto& key : binding.keys()) {
+      if (key != code)
+        continue;
+      display_overlay_controller_->AddEditErrorMsg(this,
+                                                   kEditErrorDuplicatedKey);
+      return true;
+    }
+  }
+
   if (!action_->support_modifier_key() &&
       ModifierDomCodeToEventFlag(code) != ui::EF_NONE) {
     display_overlay_controller_->AddEditErrorMsg(this,
