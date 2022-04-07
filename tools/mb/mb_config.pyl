@@ -538,7 +538,6 @@
       'Fuchsia x64': 'release_bot_fuchsia',
       'Leak Detection Linux': 'release_bot_reclient',
       'Linux Builder (dbg)': 'gpu_tests_debug_bot_reclient',
-      'Linux Builder (dbg)(32)': 'gpu_tests_debug_bot_x86_reclient',
       'Linux Builder': 'gpu_tests_release_bot_do_typecheck_reclient',
       'Linux Builder (Wayland)': 'gpu_tests_wayland_release_bot_reclient',
       'Network Service Linux': 'release_bot_reclient',
@@ -2523,10 +2522,6 @@
 
     'gpu_tests_debug_bot_arm64': [
       'gpu_tests', 'debug_bot', 'arm64',
-    ],
-
-    'gpu_tests_debug_bot_x86_reclient': [
-      'gpu_tests', 'debug_bot_reclient', 'x86',
     ],
 
     'gpu_tests_debug_bot_x86_no_symbols': [

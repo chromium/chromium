@@ -237,17 +237,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "Linux Builder (dbg)(32)",
-    console_view_entry = consoles.console_view_entry(
-        category = "debug|builder",
-        short_name = "32",
-    ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
-)
-
-ci.builder(
     name = "Linux Builder (Wayland)",
     branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(

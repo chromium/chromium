@@ -4570,12 +4570,6 @@
       "all"
     ]
   },
-  "Linux Builder (dbg)(32)": {
-    "additional_compile_targets": [
-      "google_apis_unittests",
-      "sync_integration_tests"
-    ]
-  },
   "Linux Tests": {
     "gtest_tests": [
       {

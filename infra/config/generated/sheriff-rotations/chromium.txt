@@ -13,7 +13,6 @@ ci/Linux ASan Tests (sandboxed)
 ci/Linux Builder
 ci/Linux Builder (Wayland)
 ci/Linux Builder (dbg)
-ci/Linux Builder (dbg)(32)
 ci/Linux CFI
 ci/Linux Chromium OS ASan LSan Builder
 ci/Linux Chromium OS ASan LSan Tests (1)
