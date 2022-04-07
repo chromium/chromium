@@ -1166,13 +1166,13 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
 
   if (NeedsPaintPropertyUpdate()) {
     if (NeedsEffect(object_, full_context_.direct_compositing_reasons)) {
-      absl::optional<gfx::Rect> mask_clip = CSSMaskPainter::MaskBoundingBox(
+      absl::optional<gfx::RectF> mask_clip = CSSMaskPainter::MaskBoundingBox(
           object_, context_.current.paint_offset);
       bool has_clip_path =
           style.HasClipPath() && fragment_data_.ClipPathBoundingBox();
       bool has_mask_based_clip_path =
           has_clip_path && !fragment_data_.ClipPathPath();
-      absl::optional<gfx::Rect> clip_path_clip;
+      absl::optional<gfx::RectF> clip_path_clip;
       if (has_mask_based_clip_path)
         clip_path_clip = fragment_data_.ClipPathBoundingBox();
 
@@ -1181,18 +1181,15 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
                                     : nullptr;
 
       if (mask_clip || clip_path_clip) {
-        gfx::Rect combined_clip = mask_clip ? *mask_clip : *clip_path_clip;
+        gfx::RectF combined_clip = mask_clip ? *mask_clip : *clip_path_clip;
         if (mask_clip && clip_path_clip)
           combined_clip.Intersect(*clip_path_clip);
 
-        // TODO(crbug.com/1248598): We use pixel-snapped mask clip and clip path
-        // clip as the layout clip rect, which may cause wrong result when
-        // mapping in layout coordinates.
         OnUpdate(properties_->UpdateMaskClip(
             *context_.current.clip,
-            ClipPaintPropertyNode::State(context_.current.transform,
-                                         gfx::RectF(combined_clip),
-                                         FloatRoundedRect(combined_clip))));
+            ClipPaintPropertyNode::State(
+                context_.current.transform, combined_clip,
+                FloatRoundedRect(gfx::ToEnclosingRect(combined_clip)))));
         output_clip = properties_->MaskClip();
       } else {
         OnClear(properties_->ClearMaskClip());
@@ -1585,13 +1582,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
     if (!NeedsClipPathClip(object_, fragment_data_)) {
       OnClear(properties_->ClearClipPathClip());
     } else {
-      // TODO(crbug.com/1248598): We use pixel-snapped clip path clip as the
-      // layout clip rect, which may cause wrong result when mapping in layout
-      // coordinates.
       ClipPaintPropertyNode::State state(
-          context_.current.transform,
-          gfx::RectF(*fragment_data_.ClipPathBoundingBox()),
-          FloatRoundedRect(*fragment_data_.ClipPathBoundingBox()));
+          context_.current.transform, *fragment_data_.ClipPathBoundingBox(),
+          FloatRoundedRect(
+              gfx::ToEnclosingRect(*fragment_data_.ClipPathBoundingBox())));
       state.clip_path = fragment_data_.ClipPathPath();
       OnUpdate(properties_->UpdateClipPathClip(*context_.current.clip,
                                                std::move(state)));
@@ -2688,7 +2682,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathCache() {
   if (path)
     path->Translate(gfx::Vector2dF(fragment_data_.PaintOffset()));
   fragment_data_.SetClipPathCache(
-      gfx::ToEnclosingRect(*bounding_box),
+      *bounding_box,
       path ? AdoptRef(new RefCountedPath(std::move(*path))) : nullptr);
 }
 
