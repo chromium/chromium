@@ -2458,12 +2458,11 @@ void OverviewGrid::UpdateNumIncognitoUnsupportedWindows(aura::Window* window,
   // num_unsupported_windows_ == window_list.size().
   // TODO(crbug.com/1297710): Separate apps without Full Restore app id from
   // unsupported apps so that they are not labeled as "Linux" apps in text.
-  const bool has_restore_id =
-      !wm::GetTransientParent(window) &&
-      (Shell::Get()
-           ->desks_controller()
-           ->disable_app_id_check_for_desk_templates() ||
-       !full_restore::GetAppId(window).empty());
+  const bool has_restore_id = !wm::GetTransientParent(window) &&
+                              (Shell::Get()
+                                   ->overview_controller()
+                                   ->disable_app_id_check_for_saved_desks() ||
+                               !full_restore::GetAppId(window).empty());
   int addend = increment ? 1 : -1;
   if (!DeskTemplate::IsAppTypeSupported(window) || !has_restore_id)
     num_unsupported_windows_ += addend;

@@ -61,8 +61,13 @@ void RestoreDataCollector::CaptureActiveDeskAsTemplate(
 
     // Skip windows that do not associate with a full restore app id.
     const std::string app_id = full_restore::GetAppId(window);
-    if (app_id.empty())
+    if (!Shell::Get()
+             ->overview_controller()
+             ->disable_app_id_check_for_saved_desks() &&
+        app_id.empty()) {
+      call.unsupported_apps.push_back(window);
       continue;
+    }
 
     const int32_t window_id = window->GetProperty(app_restore::kWindowIdKey);
     std::unique_ptr<app_restore::WindowInfo> window_info = BuildWindowInfo(

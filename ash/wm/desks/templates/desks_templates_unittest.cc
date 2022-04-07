@@ -332,8 +332,9 @@ class DesksTemplatesTest : public OverviewTestBase {
   }
 
   void SetDisableAppIdCheckForDeskTemplates(bool disabled) {
-    DesksController::Get()->set_disable_app_id_check_for_desk_templates(
-        disabled);
+    Shell::Get()
+        ->overview_controller()
+        ->set_disable_app_id_check_for_saved_desks(disabled);
   }
 
   // OverviewTestBase:
@@ -341,15 +342,15 @@ class DesksTemplatesTest : public OverviewTestBase {
     scoped_feature_list_.InitAndEnableFeature(features::kDesksTemplates);
     OverviewTestBase::SetUp();
 
-    // The FullRestoreSaveHandler isn't setup during tests so every window we
+    // The `FullRestoreSaveHandler` isn't setup during tests so every window we
     // create in tests doesn't have an app id associated with it. Since these
-    // windows don't have app ids, Desk won't consider them supported windows so
-    // we need to disable the app id check during tests.
-    DesksController::Get()->set_disable_app_id_check_for_desk_templates(true);
+    // windows don't have app ids, `OverviewGrid` won't consider them supported
+    // windows so we need to disable the app id check during tests.
+    SetDisableAppIdCheckForDeskTemplates(true);
   }
 
   void TearDown() override {
-    DesksController::Get()->set_disable_app_id_check_for_desk_templates(true);
+    SetDisableAppIdCheckForDeskTemplates(false);
     OverviewTestBase::TearDown();
   }
 
