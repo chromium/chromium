@@ -6,13 +6,18 @@
     <script>
       // If a "manifest=/path/to/manifest.json" query argument is provided to
       // the URL accessing this page, that path is injected as the manifest tag.
-      // Otherwise, "manifest.json" is used as the manifest tag.
+      // Otherwise, "basic.json" is used as the manifest tag.
       addManifestLinkTag();
     </script>
 </head>
-<body onload="startWorker('service_worker.js')">
+<body onload="startWorker('/web_apps/site_b/service_worker.js', { scope: '/web_apps/site_b/' })">
   <h1>Site B</h1>
-  Service worker returns a response object if it's offline, so the page
-  supports the offline environment.
+  <div>
+    <p>
+      This site is used for dPWA integration tests, and is subject to modification to support that framework. See
+      <a
+        href="https://chromium.googlesource.com/chromium/src/+/main/docs/webapps/integration-testing-framework.md">https://chromium.googlesource.com/chromium/src/+/main/docs/webapps/integration-testing-framework.md</a>
+    </p>
+  </div>
 </body>
 </html>
