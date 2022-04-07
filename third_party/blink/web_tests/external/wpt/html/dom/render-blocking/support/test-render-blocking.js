@@ -5,12 +5,12 @@ class LoadObserver {
   constructor(target) {
     this.finishTime = null;
     this.load = new Promise((resolve, reject) => {
-      if (target instanceof EventTarget) {
-        target.onload = ev => {
+      if (target.addEventListener) {
+        target.addEventListener('load', ev => {
           this.finishTime = ev.timeStamp;
           resolve(ev);
-        };
-        target.onerror = reject;
+        });
+        target.addEventListener('error', reject);
       } else if (typeof target === 'string') {
         const observer = new PerformanceObserver(() => {
           if (numberOfResourceTimingEntries(target)) {

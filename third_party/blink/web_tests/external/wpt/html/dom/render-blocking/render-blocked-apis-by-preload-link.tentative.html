@@ -51,10 +51,18 @@ const setup = new Promise((resolve, reject) => {
       });
     }
 
-    autofocusTest = rejectIfEventsFired(
-        preloadObserver.load,
-        iframe.contentDocument.getElementById('autofocus-target'),
-        'focus');
+    // The autofocus target must be created and inserted after subframe DCL so
+    // that we can add the event listener here before the subframe flushes
+    // autofocus candidates.
+    function createAutofocusTest(document) {
+      const target = document.createElement('textarea');
+      target.autofocus = 'autofocus';
+      const test = rejectIfEventsFired(preloadObserver.load, target, 'focus');
+      document.body.appendChild(target);
+      return test;
+    }
+    autofocusTest = createAutofocusTest(iframe.contentDocument);
+
     scrollTest = rejectIfEventsFired(
         preloadObserver.load,
         iframe.contentDocument.getElementById('scroll-target'),
@@ -115,6 +123,7 @@ promise_test(
     () => intersectionObserverTest,
     'Should not run the update intersection observers step when render-blocked');
 promise_test(async () => {
+  await iframe.contentDocument.fonts.ready;
   const target = iframe.contentDocument.getElementById('target');
   assert_equals(target.offsetHeight, 20);
   assert_equals(target.offsetWidth, 220);

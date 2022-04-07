@@ -11,8 +11,6 @@
 </style>
 <span id="target" style="font: 20px/1 custom-font">Lorem ipsum</span>
 
-<textarea id="autofocus-target" autofocus></textarea>
-
 <div id="scroll-target" style="height: 100px; overflow: scroll">
   <div style="height: 200px"></div>
 </div>
@@ -24,6 +22,12 @@
 }
 </style>
 <div id="animation-target" style="height: 50px; animation: anim 100ms"></div>
+
+<!-- We will use a script-inserted element to verify if the browser flushes
+  -- autofocus candidates. If we insert the element here via markup, it may
+  -- be focused before the subframe DOMContentLoaded event, giving the parent
+  -- frame no opportunity to add a 'focus' event handler.
+-->
 
 <!-- We should also verify that the context lost steps for canvas are not run,
   -- but there's currently no way to reliably trigger a context lost in WPT.
