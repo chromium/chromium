@@ -122,9 +122,10 @@ void BuiltInBackendToAndroidBackendMigrator::StartMigrationIfNecessary() {
   // is needed. Even for syncing users we still should do the initial migration
   // to move local-only data that aren't synced to GMSCore and do the rolling
   // migration to ensure deletions aren’t resurrected.
-  if (is_initial_migration_needed &&
-      sync_delegate_->IsSyncingPasswordsEnabled() &&
-      features::RequiresInitialMigrationForUnifiedPasswordManager()) {
+  if ((is_initial_migration_needed &&
+       sync_delegate_->IsSyncingPasswordsEnabled() &&
+       features::RequiresInitialMigrationForUnifiedPasswordManager()) ||
+      features::ManagesLocalPasswordsInUnifiedPasswordManager()) {
     metrics_reporter_ = std::make_unique<MigrationMetricsReporter>(
         is_initial_migration_needed ? "InitialMigration" : "RollingMigration");
     PrepareForMigration();

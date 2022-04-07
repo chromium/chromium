@@ -27,6 +27,10 @@ enum class UpmExperimentVariation {
   // Make the Android backend default for syncing users for all requests. Uses
   // legacy UI but no shadow traffic.
   kEnableOnlyBackendForSyncingUsers = 2,
+
+  // Make the Android backend default for syncing and non-syncing users for all
+  // requests. Uses updated UI and no shadow traffic.
+  kEnableForAllUsers = 3,
 };
 
 }  // namespace password_manager::features

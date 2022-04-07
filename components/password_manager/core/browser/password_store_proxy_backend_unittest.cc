@@ -490,72 +490,6 @@ TEST_F(PasswordStoreProxyBackendTest,
                                 /*callback=*/base::DoNothing());
 }
 
-// TODO(crbug.com/1306001): Reenable or clean up for local-only users.
-TEST_F(
-    PasswordStoreProxyBackendTest,
-    DISABLED_ShadowAddLoginAsyncWhenSyncDisabledAndInitialMigrationComplete) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kUnifiedPasswordManagerAndroid,
-      {{"migration_version", "2"}, {"stage", "1"}});
-  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
-
-  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
-      .WillRepeatedly(Return(false));
-
-  EXPECT_CALL(built_in_backend(), AddLoginAsync);
-  EXPECT_CALL(android_backend(), AddLoginAsync);
-  proxy_backend().AddLoginAsync(CreateTestForm(),
-                                /*callback=*/base::DoNothing());
-}
-
-// TODO(crbug.com/1306001): Reenable or clean up for local-only users.
-TEST_F(PasswordStoreProxyBackendTest,
-       DISABLED_ShadowAddLoginAsyncBasicMetricsTesting) {
-  base::HistogramTester histogram_tester;
-  // Set the prefs such that no initial migration is required to allow shadow
-  // write operations.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kUnifiedPasswordManagerAndroid,
-      {{"migration_version", "2"}, {"stage", "1"}});
-  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
-  // Shadow write operations run only for non-syncing users.
-  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
-      .WillRepeatedly(Return(false));
-
-  PasswordForm test_form = CreateTestForm();
-
-  PasswordStoreChangeList built_in_backend_changelist;
-  built_in_backend_changelist.emplace_back(PasswordStoreChange::ADD, test_form);
-
-  PasswordStoreChangeList android_backend_changelist;
-  android_backend_changelist.emplace_back(PasswordStoreChange::UPDATE,
-                                          test_form);
-
-  EXPECT_CALL(built_in_backend(), AddLoginAsync)
-      .WillOnce(WithArg<1>(Invoke(
-          [&built_in_backend_changelist](PasswordStoreChangeListReply reply)
-              -> void { std::move(reply).Run(built_in_backend_changelist); })));
-
-  EXPECT_CALL(android_backend(), AddLoginAsync)
-      .WillOnce(WithArg<1>(Invoke(
-          [&android_backend_changelist](PasswordStoreChangeListReply reply)
-              -> void { std::move(reply).Run(android_backend_changelist); })));
-
-  proxy_backend().AddLoginAsync(test_form,
-                                /*callback=*/base::DoNothing());
-
-  std::string prefix =
-      "PasswordManager.PasswordStoreProxyBackend.AddLoginAsync.";
-
-  histogram_tester.ExpectUniqueSample(prefix + "Diff.Abs", 2, 1);
-  histogram_tester.ExpectUniqueSample(prefix + "MainMinusShadow.Abs", 1, 1);
-  histogram_tester.ExpectUniqueSample(prefix + "ShadowMinusMain.Abs", 1, 1);
-  histogram_tester.ExpectUniqueSample(prefix + "InconsistentPasswords.Abs", 0,
-                                      1);
-}
-
 TEST_F(PasswordStoreProxyBackendTest, NoShadowUpdateLoginAsyncWhenSyncEnabled) {
   EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
       .WillRepeatedly(Return(true));
@@ -583,65 +517,6 @@ TEST_F(PasswordStoreProxyBackendTest,
                                    /*callback=*/base::DoNothing());
 }
 
-// TODO(crbug.com/1306001): Reenable or clean up for local-only users.
-TEST_F(
-    PasswordStoreProxyBackendTest,
-    DISABLED_ShadowGetAllLoginsAsyncWhenSyncDisabledAndInitialMigrationComplete) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kUnifiedPasswordManagerAndroid,
-      {{"migration_version", "2"}, {"stage", "1"}});
-  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
-  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
-      .WillRepeatedly(Return(false));
-
-  base::HistogramTester histogram_tester;
-  base::MockCallback<LoginsOrErrorReply> mock_reply;
-  std::vector<std::unique_ptr<PasswordForm>> expected_logins =
-      CreateTestLogins();
-  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
-  EXPECT_CALL(built_in_backend(), GetAllLoginsAsync)
-      .WillOnce(WithArg<0>(Invoke([](LoginsOrErrorReply reply) -> void {
-        std::move(reply).Run(CreateTestLogins());
-      })));
-  EXPECT_CALL(android_backend(), GetAllLoginsAsync)
-      .WillOnce(WithArg<0>(Invoke([](LoginsOrErrorReply reply) -> void {
-        std::move(reply).Run(CreateTestLogins());
-      })));
-  proxy_backend().GetAllLoginsAsync(mock_reply.Get());
-
-  std::string prefix =
-      "PasswordManager.PasswordStoreProxyBackend.GetAllLoginsAsync.";
-
-  histogram_tester.ExpectTotalCount(prefix + "Diff.Abs", 1);
-  histogram_tester.ExpectTotalCount(prefix + "MainMinusShadow.Abs", 1);
-  histogram_tester.ExpectTotalCount(prefix + "ShadowMinusMain.Abs", 1);
-  histogram_tester.ExpectTotalCount(prefix + "InconsistentPasswords.Abs", 1);
-  histogram_tester.ExpectTotalCount(prefix + "Diff.Rel", 1);
-  histogram_tester.ExpectTotalCount(prefix + "MainMinusShadow.Rel", 1);
-  histogram_tester.ExpectTotalCount(prefix + "ShadowMinusMain.Rel", 1);
-  histogram_tester.ExpectTotalCount(prefix + "InconsistentPasswords.Rel", 1);
-}
-
-// TODO(crbug.com/1306001): Reenable or clean up for local-only users.
-TEST_F(
-    PasswordStoreProxyBackendTest,
-    DISABLED_ShadowUpdateLoginAsyncWhenSyncDisabledAndInitialMigrationComplete) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kUnifiedPasswordManagerAndroid,
-      {{"migration_version", "2"}, {"stage", "1"}});
-  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
-
-  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
-      .WillRepeatedly(Return(false));
-
-  EXPECT_CALL(built_in_backend(), UpdateLoginAsync);
-  EXPECT_CALL(android_backend(), UpdateLoginAsync);
-  proxy_backend().UpdateLoginAsync(CreateTestForm(),
-                                   /*callback=*/base::DoNothing());
-}
-
 TEST_F(PasswordStoreProxyBackendTest, NoShadowRemoveLoginAsyncWhenSyncEnabled) {
   EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
       .WillRepeatedly(Return(true));
@@ -665,25 +540,6 @@ TEST_F(PasswordStoreProxyBackendTest,
 
   EXPECT_CALL(built_in_backend(), RemoveLoginAsync);
   EXPECT_CALL(android_backend(), RemoveLoginAsync).Times(0);
-  proxy_backend().RemoveLoginAsync(CreateTestForm(),
-                                   /*callback=*/base::DoNothing());
-}
-
-// TODO(crbug.com/1306001): Reenable or clean up for local-only users.
-TEST_F(
-    PasswordStoreProxyBackendTest,
-    DISABLED_ShadowRemoveLoginAsyncWhenSyncDisabledAndInitialMigrationComplete) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kUnifiedPasswordManagerAndroid,
-      {{"migration_version", "2"}, {"stage", "1"}});
-  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
-
-  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
-      .WillRepeatedly(Return(false));
-
-  EXPECT_CALL(built_in_backend(), RemoveLoginAsync);
-  EXPECT_CALL(android_backend(), RemoveLoginAsync);
   proxy_backend().RemoveLoginAsync(CreateTestForm(),
                                    /*callback=*/base::DoNothing());
 }
@@ -762,29 +618,6 @@ TEST_F(
       /*callback=*/base::DoNothing());
 }
 
-// TODO(crbug.com/1306001): Reenable or clean up for local-only users.
-TEST_F(
-    PasswordStoreProxyBackendTest,
-    DISABLED_ShadowRemoveLoginsByURLAndTimeAsyncWhenSyncDisabledAndInitialMigrationComplete) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kUnifiedPasswordManagerAndroid,
-      {{"migration_version", "2"}, {"stage", "1"}});
-  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
-
-  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
-      .WillRepeatedly(Return(false));
-
-  EXPECT_CALL(built_in_backend(), RemoveLoginsByURLAndTimeAsync);
-  EXPECT_CALL(android_backend(), RemoveLoginsByURLAndTimeAsync);
-  proxy_backend().RemoveLoginsByURLAndTimeAsync(
-      base::BindRepeating(&FilterNoUrl),
-      /*delete_begin=*/base::Time::FromTimeT(111111),
-      /*delete_end=*/base::Time::FromTimeT(22222222),
-      /*sync_completion=*/base::OnceCallback<void(bool)>(),
-      /*callback=*/base::DoNothing());
-}
-
 TEST_F(PasswordStoreProxyBackendTest,
        NoShadowRemoveLoginsCreatedBetweenAsyncWhenSyncEnabled) {
   EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
@@ -837,27 +670,6 @@ TEST_F(
       /*callback=*/base::DoNothing());
 }
 
-// TODO(crbug.com/1306001): Reenable or clean up for local-only users.
-TEST_F(
-    PasswordStoreProxyBackendTest,
-    DISABLED_ShadowRemoveLoginsCreatedBetweenAsyncWhenSyncDisabledAndInitialMigrationComplete) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kUnifiedPasswordManagerAndroid,
-      {{"migration_version", "2"}, {"stage", "1"}});
-  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
-
-  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
-      .WillRepeatedly(Return(false));
-
-  EXPECT_CALL(built_in_backend(), RemoveLoginsCreatedBetweenAsync);
-  EXPECT_CALL(android_backend(), RemoveLoginsCreatedBetweenAsync);
-  proxy_backend().RemoveLoginsCreatedBetweenAsync(
-      /*delete_begin=*/base::Time::FromTimeT(111111),
-      /*delete_end=*/base::Time::FromTimeT(22222222),
-      /*callback=*/base::DoNothing());
-}
-
 TEST_F(PasswordStoreProxyBackendTest,
        NoShadowDisableAutoSignInForOriginsAsyncWhenSyncEnabled) {
   EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
@@ -883,25 +695,6 @@ TEST_F(
 
   EXPECT_CALL(built_in_backend(), DisableAutoSignInForOriginsAsync);
   EXPECT_CALL(android_backend(), DisableAutoSignInForOriginsAsync).Times(0);
-  proxy_backend().DisableAutoSignInForOriginsAsync(
-      base::BindRepeating(&FilterNoUrl), /*completion=*/base::DoNothing());
-}
-
-// TODO(crbug.com/1306001): Reenable or clean up for local-only users.
-TEST_F(
-    PasswordStoreProxyBackendTest,
-    DISABLED_ShadowDisableAutoSignInForOriginsAsyncWhenSyncDisabledAndInitialMigrationComplete) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kUnifiedPasswordManagerAndroid,
-      {{"migration_version", "2"}, {"stage", "1"}});
-  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
-
-  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
-      .WillRepeatedly(Return(false));
-
-  EXPECT_CALL(built_in_backend(), DisableAutoSignInForOriginsAsync);
-  EXPECT_CALL(android_backend(), DisableAutoSignInForOriginsAsync);
   proxy_backend().DisableAutoSignInForOriginsAsync(
       base::BindRepeating(&FilterNoUrl), /*completion=*/base::DoNothing());
 }

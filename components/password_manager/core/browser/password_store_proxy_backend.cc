@@ -51,6 +51,7 @@ bool ShouldExecuteReadOperationsOnShadowBackend(PrefService* prefs,
   switch (variation) {
     case features::UpmExperimentVariation::kEnableForSyncingUsers:
     case features::UpmExperimentVariation::kEnableOnlyBackendForSyncingUsers:
+    case features::UpmExperimentVariation::kEnableForAllUsers:
       return false;
     case features::UpmExperimentVariation::kShadowSyncingUsers:
       return true;
@@ -76,6 +77,10 @@ bool ShouldExecuteDeletionsOnShadowBackend(PrefService* prefs,
     case features::UpmExperimentVariation::kEnableForSyncingUsers:
     case features::UpmExperimentVariation::kEnableOnlyBackendForSyncingUsers:
       return true;
+    case features::UpmExperimentVariation::kEnableForAllUsers:
+      // All passwords are in the remote storage. There should not be a
+      // shadow backend anymore.
+      return false;
     case features::UpmExperimentVariation::kShadowSyncingUsers:
       return false;
   }
@@ -99,6 +104,7 @@ bool UsesAndroidBackendAsMainBackend(bool is_syncing) {
   switch (variation) {
     case features::UpmExperimentVariation::kEnableForSyncingUsers:
     case features::UpmExperimentVariation::kEnableOnlyBackendForSyncingUsers:
+    case features::UpmExperimentVariation::kEnableForAllUsers:
       return true;
     case features::UpmExperimentVariation::kShadowSyncingUsers:
       return false;
@@ -118,6 +124,8 @@ bool IsBuiltInBackendSyncEnabled() {
     case features::UpmExperimentVariation::kShadowSyncingUsers:
     case features::UpmExperimentVariation::kEnableOnlyBackendForSyncingUsers:
       return true;
+    case features::UpmExperimentVariation::kEnableForAllUsers:
+      return false;
   }
   NOTREACHED() << "Define which backend handles sync change callbacks!";
   return false;
@@ -600,7 +608,15 @@ PasswordStoreProxyBackend::CreateSyncControllerDelegate() {
     case features::UpmExperimentVariation::kEnableForSyncingUsers:
     case features::UpmExperimentVariation::kEnableOnlyBackendForSyncingUsers:
     case features::UpmExperimentVariation::kShadowSyncingUsers:
+      DCHECK(!base::FeatureList::IsEnabled(
+          features::kUnifiedPasswordManagerSyncUsingAndroidBackendOnly))
+          << "Without support for local passwords, use legacy sync controller";
       return built_in_backend_->CreateSyncControllerDelegate();
+    case features::UpmExperimentVariation::kEnableForAllUsers:
+      return base::FeatureList::IsEnabled(
+                 features::kUnifiedPasswordManagerSyncUsingAndroidBackendOnly)
+                 ? android_backend_->CreateSyncControllerDelegate()
+                 : built_in_backend_->CreateSyncControllerDelegate();
   }
   NOTREACHED() << "Define which backend creates the sync delegate.";
   return nullptr;

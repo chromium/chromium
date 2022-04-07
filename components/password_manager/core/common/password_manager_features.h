@@ -85,6 +85,7 @@ constexpr base::FeatureParam<UpmExperimentVariation>::Option
         {UpmExperimentVariation::kEnableForSyncingUsers, "0"},
         {UpmExperimentVariation::kShadowSyncingUsers, "1"},
         {UpmExperimentVariation::kEnableOnlyBackendForSyncingUsers, "2"},
+        {UpmExperimentVariation::kEnableForAllUsers, "3"},
 };
 
 constexpr base::FeatureParam<UpmExperimentVariation>

@@ -270,6 +270,7 @@ bool UsesUnifiedPasswordManagerUi() {
   UpmExperimentVariation variation = kUpmExperimentVariationParam.Get();
   switch (variation) {
     case UpmExperimentVariation::kEnableForSyncingUsers:
+    case UpmExperimentVariation::kEnableForAllUsers:
       return true;
     case UpmExperimentVariation::kShadowSyncingUsers:
     case UpmExperimentVariation::kEnableOnlyBackendForSyncingUsers:
@@ -288,6 +289,7 @@ bool RequiresInitialMigrationForUnifiedPasswordManager() {
   switch (variation) {
     case UpmExperimentVariation::kEnableForSyncingUsers:
     case UpmExperimentVariation::kEnableOnlyBackendForSyncingUsers:
+    case UpmExperimentVariation::kEnableForAllUsers:
       return true;
     case UpmExperimentVariation::kShadowSyncingUsers:
       return false;
@@ -307,6 +309,8 @@ bool ManagesLocalPasswordsInUnifiedPasswordManager() {
     case UpmExperimentVariation::kShadowSyncingUsers:
     case UpmExperimentVariation::kEnableOnlyBackendForSyncingUsers:
       return false;
+    case UpmExperimentVariation::kEnableForAllUsers:
+      return true;
   }
   NOTREACHED()
       << "Define explicitly whether local password management is supported!";

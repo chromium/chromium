@@ -165,6 +165,7 @@ public class PasswordManagerHelper {
                 UpmExperimentVariation.ENABLE_FOR_SYNCING_USERS);
         switch (variation) {
             case UpmExperimentVariation.ENABLE_FOR_SYNCING_USERS:
+            case UpmExperimentVariation.ENABLE_FOR_ALL_USERS:
                 return true;
             case UpmExperimentVariation.SHADOW_SYNCING_USERS:
             case UpmExperimentVariation.ENABLE_ONLY_BACKEND_FOR_SYNCING_USERS:

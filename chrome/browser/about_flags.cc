@@ -2921,6 +2921,9 @@ const FeatureEntry::FeatureParam kUpmAndroidShadowSyncingUsers[] = {
 const FeatureEntry::FeatureParam kUpmAndroidEnableWithLegacyUi[] = {
     {password_manager::features::kUpmExperimentVariationParam.name,
      password_manager::features::kUpmExperimentVariationOption[2].name}};
+const FeatureEntry::FeatureParam kUpmAndroidEnableForAllUsers[] = {
+    {password_manager::features::kUpmExperimentVariationParam.name,
+     password_manager::features::kUpmExperimentVariationOption[3].name}};
 
 const FeatureEntry::FeatureVariation
     kUnifiedPasswordManagerAndroidVariations[] = {
@@ -2929,6 +2932,8 @@ const FeatureEntry::FeatureVariation
          std::size(kUpmAndroidShadowSyncingUsers), nullptr},
         {"With Legacy UI", kUpmAndroidEnableWithLegacyUi,
          std::size(kUpmAndroidEnableWithLegacyUi), nullptr},
+        {"For All Users", kUpmAndroidEnableForAllUsers,
+         std::size(kUpmAndroidEnableForAllUsers), nullptr},
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
