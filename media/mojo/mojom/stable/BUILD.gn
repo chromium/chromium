@@ -55,6 +55,11 @@ mojom("stable_video_decoder") {
           cpp = "::gfx::ColorVolumeMetadata"
         },
         {
+          mojom = "media.stable.mojom.DecoderBuffer"
+          cpp = "::scoped_refptr<::media::DecoderBuffer>"
+          nullable_is_same_type = true
+        },
+        {
           mojom = "media.stable.mojom.DecryptConfig"
           cpp = "::std::unique_ptr<::media::DecryptConfig>"
           move_only = true

@@ -433,6 +433,46 @@ struct StructTraits<media::stable::mojom::ColorVolumeMetadataDataView,
 };
 
 template <>
+struct StructTraits<media::stable::mojom::DecoderBufferDataView,
+                    scoped_refptr<media::DecoderBuffer>> {
+  static bool IsNull(const scoped_refptr<media::DecoderBuffer>& input) {
+    return !input;
+  }
+
+  static void SetToNull(scoped_refptr<media::DecoderBuffer>* input) {
+    *input = nullptr;
+  }
+
+  static base::TimeDelta timestamp(
+      const scoped_refptr<media::DecoderBuffer>& input);
+
+  static base::TimeDelta duration(
+      const scoped_refptr<media::DecoderBuffer>& input);
+
+  static bool is_end_of_stream(
+      const scoped_refptr<media::DecoderBuffer>& input);
+
+  static uint32_t data_size(const scoped_refptr<media::DecoderBuffer>& input);
+
+  static bool is_key_frame(const scoped_refptr<media::DecoderBuffer>& input);
+
+  static std::vector<uint8_t> side_data(
+      const scoped_refptr<media::DecoderBuffer>& input);
+
+  static std::unique_ptr<media::DecryptConfig> decrypt_config(
+      const scoped_refptr<media::DecoderBuffer>& input);
+
+  static base::TimeDelta front_discard(
+      const scoped_refptr<media::DecoderBuffer>& input);
+
+  static base::TimeDelta back_discard(
+      const scoped_refptr<media::DecoderBuffer>& input);
+
+  static bool Read(media::stable::mojom::DecoderBufferDataView input,
+                   scoped_refptr<media::DecoderBuffer>* output);
+};
+
+template <>
 struct StructTraits<media::stable::mojom::DecryptConfigDataView,
                     std::unique_ptr<media::DecryptConfig>> {
   static bool IsNull(const std::unique_ptr<media::DecryptConfig>& input) {

@@ -273,6 +273,205 @@ bool StructTraits<media::stable::mojom::ColorVolumeMetadataDataView,
 }
 
 // static
+base::TimeDelta StructTraits<media::stable::mojom::DecoderBufferDataView,
+                             scoped_refptr<media::DecoderBuffer>>::
+    timestamp(const scoped_refptr<media::DecoderBuffer>& input) {
+  static_assert(
+      std::is_same<decltype(input->timestamp()),
+                   decltype(
+                       media::stable::mojom::DecoderBuffer::timestamp)>::value,
+      "Unexpected type for media::DecoderBuffer::timestamp(). If you need to "
+      "change this assertion, please contact chromeos-gfx-video@google.com.");
+  if (!input->end_of_stream())
+    return input->timestamp();
+  return base::TimeDelta();
+}
+
+// static
+base::TimeDelta StructTraits<media::stable::mojom::DecoderBufferDataView,
+                             scoped_refptr<media::DecoderBuffer>>::
+    duration(const scoped_refptr<media::DecoderBuffer>& input) {
+  static_assert(
+      std::is_same<decltype(input->duration()),
+                   decltype(
+                       media::stable::mojom::DecoderBuffer::duration)>::value,
+      "Unexpected type for media::DecoderBuffer::duration(). If you need to "
+      "change this assertion, please contact chromeos-gfx-video@google.com.");
+  if (!input->end_of_stream())
+    return input->duration();
+  return base::TimeDelta();
+}
+
+// static
+bool StructTraits<media::stable::mojom::DecoderBufferDataView,
+                  scoped_refptr<media::DecoderBuffer>>::
+    is_end_of_stream(const scoped_refptr<media::DecoderBuffer>& input) {
+  static_assert(
+      std::is_same<
+          decltype(input->end_of_stream()),
+          decltype(
+              media::stable::mojom::DecoderBuffer::is_end_of_stream)>::value,
+      "Unexpected type for media::DecoderBuffer::is_end_of_stream(). If you "
+      "need to change this assertion, please contact "
+      "chromeos-gfx-video@google.com.");
+  return input->end_of_stream();
+}
+
+// static
+uint32_t StructTraits<media::stable::mojom::DecoderBufferDataView,
+                      scoped_refptr<media::DecoderBuffer>>::
+    data_size(const scoped_refptr<media::DecoderBuffer>& input) {
+  static_assert(
+      std::is_same<decltype(input->data_size()), size_t>::value,
+      "Unexpected type for media::DecoderBuffer::data_size(). If you need to "
+      "change this assertion, please contact chromeos-gfx-video@google.com.");
+  if (!input->end_of_stream())
+    return base::checked_cast<uint32_t>(input->data_size());
+  return 0u;
+}
+
+// static
+bool StructTraits<media::stable::mojom::DecoderBufferDataView,
+                  scoped_refptr<media::DecoderBuffer>>::
+    is_key_frame(const scoped_refptr<media::DecoderBuffer>& input) {
+  static_assert(
+      std::is_same<
+          decltype(input->is_key_frame()),
+          decltype(media::stable::mojom::DecoderBuffer::is_key_frame)>::value,
+      "Unexpected type for media::DecoderBuffer::is_key_frame(). If you need "
+      "to change this assertion, please contact "
+      "chromeos-gfx-video@google.com.");
+  if (!input->end_of_stream())
+    return input->is_key_frame();
+  return false;
+}
+
+// static
+std::vector<uint8_t> StructTraits<media::stable::mojom::DecoderBufferDataView,
+                                  scoped_refptr<media::DecoderBuffer>>::
+    side_data(const scoped_refptr<media::DecoderBuffer>& input) {
+  static_assert(
+      std::is_same<decltype(input->side_data()), const uint8_t*>::value,
+      "Unexpected type for media::DecoderBuffer::side_data(). If you need to "
+      "change this assertion, please contact chromeos-gfx-video@google.com.");
+  static_assert(std::is_same<decltype(input->side_data_size()), size_t>::value,
+                "Unexpected type for media::DecoderBuffer::side_data_size(). "
+                "If you need to change this assertion, please contact "
+                "chromeos-gfx-video@google.com.");
+  if (input->end_of_stream() || !input->side_data())
+    return {};
+  CHECK_GT(input->side_data_size(), 0u);
+  // This copy is okay because the side data is expected to be small always.
+  return std::vector<uint8_t>(input->side_data(),
+                              input->side_data() + input->side_data_size());
+}
+
+// static
+std::unique_ptr<media::DecryptConfig>
+StructTraits<media::stable::mojom::DecoderBufferDataView,
+             scoped_refptr<media::DecoderBuffer>>::
+    decrypt_config(const scoped_refptr<media::DecoderBuffer>& input) {
+  static_assert(std::is_same<decltype(input->decrypt_config()),
+                             const media::DecryptConfig*>::value,
+                "Unexpected type for media::DecoderBuffer::decrypt_config(). "
+                "If you need to change this assertion, please contact "
+                "chromeos-gfx-video@google.com.");
+  if (input->end_of_stream() || !input->decrypt_config())
+    return nullptr;
+  std::unique_ptr<media::DecryptConfig> decrypt_config =
+      input->decrypt_config()->Clone();
+  CHECK(!!decrypt_config);
+  return decrypt_config;
+}
+
+// static
+base::TimeDelta StructTraits<media::stable::mojom::DecoderBufferDataView,
+                             scoped_refptr<media::DecoderBuffer>>::
+    front_discard(const scoped_refptr<media::DecoderBuffer>& input) {
+  static_assert(
+      std::is_same<
+          decltype(input->discard_padding().first),
+          decltype(media::stable::mojom::DecoderBuffer::front_discard)>::value,
+      "Unexpected type for input->discard_padding().first. If you need to "
+      "change this assertion, please contact chromeos-gfx-video@google.com.");
+  if (!input->end_of_stream())
+    return input->discard_padding().first;
+  return base::TimeDelta();
+}
+
+// static
+base::TimeDelta StructTraits<media::stable::mojom::DecoderBufferDataView,
+                             scoped_refptr<media::DecoderBuffer>>::
+    back_discard(const scoped_refptr<media::DecoderBuffer>& input) {
+  static_assert(
+      std::is_same<
+          decltype(input->discard_padding().second),
+          decltype(media::stable::mojom::DecoderBuffer::back_discard)>::value,
+      "Unexpected type for input->discard_padding().second. If you need to "
+      "change this assertion, please contact chromeos-gfx-video@google.com.");
+  if (!input->end_of_stream())
+    return input->discard_padding().second;
+  return base::TimeDelta();
+}
+
+// static
+bool StructTraits<media::stable::mojom::DecoderBufferDataView,
+                  scoped_refptr<media::DecoderBuffer>>::
+    Read(media::stable::mojom::DecoderBufferDataView input,
+         scoped_refptr<media::DecoderBuffer>* output) {
+  if (input.is_end_of_stream()) {
+    *output = media::DecoderBuffer::CreateEOSBuffer();
+    return !!(*output);
+  }
+  auto decoder_buffer = base::MakeRefCounted<media::DecoderBuffer>(
+      base::strict_cast<size_t>(input.data_size()));
+
+  base::TimeDelta timestamp;
+  if (!input.ReadTimestamp(&timestamp))
+    return false;
+  decoder_buffer->set_timestamp(timestamp);
+
+  base::TimeDelta duration;
+  if (!input.ReadTimestamp(&duration))
+    return false;
+  decoder_buffer->set_duration(duration);
+
+  decoder_buffer->set_is_key_frame(input.is_key_frame());
+
+  std::vector<uint8_t> side_data;
+  if (!input.ReadSideData(&side_data))
+    return false;
+  if (!side_data.empty()) {
+    decoder_buffer->CopySideDataFrom(side_data.data(), side_data.size());
+  }
+
+  std::unique_ptr<media::DecryptConfig> decrypt_config;
+  if (!input.ReadDecryptConfig(&decrypt_config))
+    return false;
+  if (decrypt_config)
+    decoder_buffer->set_decrypt_config(std::move(decrypt_config));
+
+  base::TimeDelta front_discard;
+  if (!input.ReadFrontDiscard(&front_discard))
+    return false;
+  base::TimeDelta back_discard;
+  if (!input.ReadBackDiscard(&back_discard))
+    return false;
+  static_assert(
+      std::is_same<media::DecoderBuffer::DiscardPadding,
+                   std::pair<base::TimeDelta, base::TimeDelta>>::value,
+      "Unexpected type for media::DecoderBuffer::DiscardPadding. If you need "
+      "to change this assertion, please contact "
+      "chromeos-gfx-video@google.com.");
+  media::DecoderBuffer::DiscardPadding discard_padding(front_discard,
+                                                       back_discard);
+  decoder_buffer->set_discard_padding(discard_padding);
+
+  *output = std::move(decoder_buffer);
+  return true;
+}
+
+// static
 media::EncryptionScheme
 StructTraits<media::stable::mojom::DecryptConfigDataView,
              std::unique_ptr<media::DecryptConfig>>::

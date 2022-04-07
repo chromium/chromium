@@ -229,15 +229,14 @@ void OOPVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   CHECK(buffer);
 
   mojom::DecoderBufferPtr mojo_buffer =
-      mojo_decoder_buffer_writer_->WriteDecoderBuffer(std::move(buffer));
+      mojo_decoder_buffer_writer_->WriteDecoderBuffer(buffer);
   if (!mojo_buffer) {
     Stop();
     return;
   }
 
-  // TODO(b/171813538): create buffer from input parameter |buffer|.
   remote_decoder_->Decode(
-      stable::mojom::DecoderBufferPtr(),
+      std::move(buffer),
       base::BindOnce(&OOPVideoDecoder::OnDecodeDone,
                      weak_this_factory_.GetWeakPtr(), decode_id, is_flushing));
 }
