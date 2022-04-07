@@ -132,7 +132,6 @@ android_resources("ui_java_resources") {
   sources = [
     "java/res/color/blue_when_enabled.xml",
     "java/res/color/blue_when_enabled_dark.xml",
-    "java/res/color/default_text_color_inverse_list.xml",
     "java/res/color/default_text_color_light_list.xml",
     "java/res/color/default_text_color_list_baseline.xml",
     "java/res/color/default_text_color_on_accent1_baseline_list.xml",

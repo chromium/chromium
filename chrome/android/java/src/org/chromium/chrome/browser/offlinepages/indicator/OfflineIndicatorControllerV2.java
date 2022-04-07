@@ -19,6 +19,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeSemanticColorUtils;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.common.ContentSwitches;
@@ -153,8 +154,8 @@ public class OfflineIndicatorControllerV2 {
             setLastActionTime();
 
             final int backgroundColor =
-                    mContext.getColor(R.color.offline_indicator_back_online_color);
-            final int textColor = mContext.getColor(R.color.default_text_color_inverse);
+                    ChromeSemanticColorUtils.getOfflineIndicatorBackOnlineColor(mContext);
+            final int textColor = SemanticColorUtils.getDefaultTextColorOnAccent1(mContext);
             final Drawable statusIcon = mContext.getDrawable(R.drawable.ic_globe_24dp);
             final int iconTint = SemanticColorUtils.getDefaultIconColorInverse(mContext);
             mStatusIndicator.updateContent(

@@ -4,7 +4,7 @@
      found in the LICENSE file.
 -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:color="@color/default_text_color_inverse" android:state_selected="true"/>
+    <item android:color="@macro/default_text_color_on_accent1" android:state_selected="true"/>
     <item android:alpha="@dimen/default_disabled_alpha"
         android:color="@macro/default_text_color" android:state_enabled="false"/>
     <item android:color="@macro/default_text_color"/>

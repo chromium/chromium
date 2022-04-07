@@ -29,4 +29,9 @@ public class ChromeSemanticColorUtils {
     public static @ColorInt int getPaymentRequestBg(Context context) {
         return SemanticColorUtils.getSheetBgColor(context);
     }
+
+    /** Returns the semantic color value that corresponds to offline_indicator_back_online_color. */
+    public static @ColorInt int getOfflineIndicatorBackOnlineColor(Context context) {
+        return SemanticColorUtils.getDefaultControlColorActive(context);
+    }
 }

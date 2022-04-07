@@ -56,6 +56,12 @@ public class SemanticColorUtils {
         return resolve(R.attr.colorPrimary, R.color.default_text_color_blue_baseline, context);
     }
 
+    /** Returns the semantic color value that corresponds to default_text_color_on_accent1. */
+    public static @ColorInt int getDefaultTextColorOnAccent1(Context context) {
+        return resolve(
+                R.attr.colorOnPrimary, R.color.default_text_color_on_accent1_baseline, context);
+    }
+
     /** Returns the semantic color value that corresponds to default_text_color_secondary. */
     public static @ColorInt int getDefaultTextColorSecondary(Context context) {
         return resolve(R.attr.colorOnSurfaceVariant, R.color.default_text_color_secondary_baseline,

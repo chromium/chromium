@@ -123,7 +123,7 @@
     <style name="SearchShortcutChip" parent="Chip">
         <item name="cornerRadius">@dimen/chip_default_height</item>
         <item name="primaryTextAppearance">@style/TextAppearance.TextMediumThick.Primary</item>
-        <item name="chipColor">@color/default_text_color_inverse</item>
+        <item name="chipColor">@color/chip_background_color</item>
     </style>
 
     <style name="TextAppearance.TasksSurfaceSearchBoxText">

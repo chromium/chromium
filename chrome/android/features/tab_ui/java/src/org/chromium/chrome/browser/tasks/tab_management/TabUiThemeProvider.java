@@ -532,12 +532,6 @@ public class TabUiThemeProvider {
      */
     public static ColorStateList getTabSelectionToolbarIconTintList(
             Context context, boolean isIncognito) {
-        if (!themeRefactorEnabled()) {
-            return AppCompatResources.getColorStateList(context,
-                    isIncognito ? R.color.dark_text_color_list
-                                : R.color.default_text_color_inverse_list);
-        }
-
         return AppCompatResources.getColorStateList(context,
                 isIncognito ? R.color.default_text_color_light_list
                             : R.color.default_text_color_list);

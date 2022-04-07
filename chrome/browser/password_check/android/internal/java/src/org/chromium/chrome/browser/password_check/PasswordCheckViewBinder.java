@@ -164,7 +164,7 @@ class PasswordCheckViewBinder {
                 model.get(CREDENTIAL_HANDLER).onChangePasswordButtonClick(credential);
             });
             setTintListForCompoundDrawables(button.getCompoundDrawablesRelative(),
-                    view.getContext(), org.chromium.ui.R.color.default_text_color_inverse);
+                    view.getContext(), R.color.default_text_color_on_accent1_list);
             if (credential.hasAutoChangeButton()) {
                 ButtonCompat button_with_script =
                         view.findViewById(R.id.credential_change_button_with_script);

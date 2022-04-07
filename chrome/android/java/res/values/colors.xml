@@ -69,7 +69,6 @@
 
     <!-- Offline indicator v2 colors -->
     <color name="offline_indicator_offline_color">@android:color/black</color>
-    <color name="offline_indicator_back_online_color">@color/default_bg_color_blue</color>
 
     <!-- Other colors -->
     <color name="media_viewer_bg">#000000</color>
