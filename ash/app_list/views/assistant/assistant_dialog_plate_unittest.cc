@@ -17,6 +17,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -55,8 +56,8 @@ TEST_F(AssistantDialogPlateTest, DarkAndLightTheme) {
             ColorProvider::Get()->GetContentLayerColor(
                 ColorProvider::ContentLayerType::kTextColorPrimary));
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
-      *gfx::CreateVectorIcon(kKeyboardIcon, kIconDipSize, gfx::kGoogleGrey900)
-           .bitmap(),
+      *gfx::CreateVectorIcon(vector_icons::kKeyboardIcon, kIconDipSize,
+          gfx::kGoogleGrey900).bitmap(),
       *keyboard_input_toggle->GetImage(views::Button::STATE_NORMAL).bitmap()));
 
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
@@ -67,8 +68,8 @@ TEST_F(AssistantDialogPlateTest, DarkAndLightTheme) {
             ColorProvider::Get()->GetContentLayerColor(
                 ColorProvider::ContentLayerType::kTextColorPrimary));
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
-      *gfx::CreateVectorIcon(kKeyboardIcon, kIconDipSize, gfx::kGoogleGrey200)
-           .bitmap(),
+      *gfx::CreateVectorIcon(vector_icons::kKeyboardIcon, kIconDipSize,
+          gfx::kGoogleGrey200).bitmap(),
       *keyboard_input_toggle->GetImage(views::Button::STATE_NORMAL).bitmap()));
 }
 
@@ -91,8 +92,8 @@ TEST_F(AssistantDialogPlateTest, DarkAndLightModeFlagOff) {
 
   EXPECT_EQ(assistant_text_field->GetTextColor(), kTextColorPrimary);
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
-      *gfx::CreateVectorIcon(kKeyboardIcon, kIconDipSize, gfx::kGoogleGrey900)
-           .bitmap(),
+      *gfx::CreateVectorIcon(vector_icons::kKeyboardIcon, kIconDipSize,
+          gfx::kGoogleGrey900).bitmap(),
       *keyboard_input_toggle->GetImage(views::Button::STATE_NORMAL).bitmap()));
 
   // Avoid test teardown issues by explicitly closing the launcher.

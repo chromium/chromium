@@ -117,7 +117,7 @@ void CastDetailedView::UpdateReceiverListFromCachedData() {
   // receivers.
   if (CastConfigController::Get()->AccessCodeCastingEnabled()) {
     add_access_code_device_ = AddScrollListItem(
-        vector_icons::kQrCodeIcon,
+        vector_icons::kKeyboardIcon,
         l10n_util::GetStringUTF16(
             IDS_ASH_STATUS_TRAY_CAST_ACCESS_CODE_CAST_CONNECT));
   }

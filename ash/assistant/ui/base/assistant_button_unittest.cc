@@ -18,6 +18,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -44,7 +45,8 @@ SkBitmap CreateExpectedImageWithFocus(SkColor icon_color, SkColor focus_color) {
   gfx::Canvas expected(gfx::Size(kSizeInDip, kSizeInDip), /*image_scale=*/1.0f,
                        /*is_opaque=*/true);
   expected.DrawImageInt(
-      gfx::CreateVectorIcon(kKeyboardIcon, kIconSizeInDip, icon_color),
+      gfx::CreateVectorIcon(
+        vector_icons::kKeyboardIcon, kIconSizeInDip, icon_color),
       kIconOffset, kIconOffset);
 
   cc::PaintFlags circle_flags;
@@ -70,11 +72,11 @@ TEST_F(AssistantButtonTest, IconColor) {
   params.accessible_name_id = IDS_ASH_ASSISTANT_DIALOG_PLATE_KEYBOARD_ACCNAME;
 
   std::unique_ptr<AssistantButton> button = AssistantButton::Create(
-      nullptr, kKeyboardIcon, AssistantButtonId::kKeyboardInputToggle,
-      std::move(params));
+      nullptr, vector_icons::kKeyboardIcon,
+      AssistantButtonId::kKeyboardInputToggle, std::move(params));
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
-      *gfx::CreateVectorIcon(kKeyboardIcon, kIconSizeInDip, gfx::kGoogleBlue900)
-           .bitmap(),
+      *gfx::CreateVectorIcon(vector_icons::kKeyboardIcon, kIconSizeInDip,
+          gfx::kGoogleBlue900).bitmap(),
       *button->GetImage(views::Button::STATE_NORMAL).bitmap()));
 }
 
@@ -88,11 +90,11 @@ TEST_F(AssistantButtonTest, IconColorTypeDefaultLight) {
   params.icon_color_type = ColorProvider::ContentLayerType::kIconColorPrimary;
 
   std::unique_ptr<AssistantButton> button = AssistantButton::Create(
-      nullptr, kKeyboardIcon, AssistantButtonId::kKeyboardInputToggle,
-      std::move(params));
+      nullptr, vector_icons::kKeyboardIcon,
+      AssistantButtonId::kKeyboardInputToggle, std::move(params));
 
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
-      *gfx::CreateVectorIcon(kKeyboardIcon, kIconSizeInDip,
+      *gfx::CreateVectorIcon(vector_icons::kKeyboardIcon, kIconSizeInDip,
                              ash::features::IsProductivityLauncherEnabled()
                                  ? gfx::kGoogleGrey200
                                  : gfx::kGoogleGrey900)
@@ -116,13 +118,13 @@ TEST_F(AssistantButtonTest, IconColorType) {
   params.icon_color_type = ColorProvider::ContentLayerType::kIconColorPrimary;
 
   std::unique_ptr<AssistantButton> button = AssistantButton::Create(
-      nullptr, kKeyboardIcon, AssistantButtonId::kKeyboardInputToggle,
-      std::move(params));
+      nullptr, vector_icons::kKeyboardIcon,
+      AssistantButtonId::kKeyboardInputToggle, std::move(params));
 
   ASSERT_FALSE(ColorProvider::Get()->IsDarkModeEnabled());
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
-      *gfx::CreateVectorIcon(kKeyboardIcon, kIconSizeInDip, gfx::kGoogleGrey900)
-           .bitmap(),
+      *gfx::CreateVectorIcon(vector_icons::kKeyboardIcon, kIconSizeInDip,
+          gfx::kGoogleGrey900).bitmap(),
       *button->GetImage(views::Button::STATE_NORMAL).bitmap()));
 
   // Switch to dark mode
@@ -135,8 +137,8 @@ TEST_F(AssistantButtonTest, IconColorType) {
   button->OnThemeChanged();
 
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
-      *gfx::CreateVectorIcon(kKeyboardIcon, kIconSizeInDip, gfx::kGoogleGrey200)
-           .bitmap(),
+      *gfx::CreateVectorIcon(vector_icons::kKeyboardIcon, kIconSizeInDip,
+          gfx::kGoogleGrey200).bitmap(),
       *button->GetImage(views::Button::STATE_NORMAL).bitmap()));
 }
 
@@ -152,8 +154,8 @@ TEST_F(AssistantButtonTest, FocusAndHoverColor) {
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   AssistantButton* button =
       widget->GetContentsView()->AddChildView(AssistantButton::Create(
-          nullptr, kKeyboardIcon, AssistantButtonId::kKeyboardInputToggle,
-          std::move(params)));
+          nullptr, vector_icons::kKeyboardIcon,
+          AssistantButtonId::kKeyboardInputToggle, std::move(params)));
   button->SizeToPreferredSize();
 
   button->RequestFocus();
@@ -188,8 +190,8 @@ TEST_F(AssistantButtonTest, FocusAndHoverColorDarkLightMode) {
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   AssistantButton* button =
       widget->GetContentsView()->AddChildView(AssistantButton::Create(
-          nullptr, kKeyboardIcon, AssistantButtonId::kKeyboardInputToggle,
-          std::move(params)));
+          nullptr, vector_icons::kKeyboardIcon,
+          AssistantButtonId::kKeyboardInputToggle, std::move(params)));
   button->SizeToPreferredSize();
 
   button->RequestFocus();

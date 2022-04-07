@@ -25,7 +25,7 @@ namespace {
 std::unique_ptr<views::ImageView> CreatePrimaryIconView() {
   auto icon_view = std::make_unique<views::ImageView>();
   icon_view->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kQrCodeIcon, ui::kColorIcon, kPrimaryIconSize));
+      vector_icons::kKeyboardIcon, ui::kColorIcon, kPrimaryIconSize));
   icon_view->SetBorder(views::CreateEmptyBorder(kPrimaryIconBorder));
   return icon_view;
 }

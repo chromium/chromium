@@ -99,6 +99,7 @@ source_set("ui") {
     "//chromeos/services/assistant/public/mojom",
     "//chromeos/services/libassistant/public/cpp:structs",
     "//chromeos/ui/vector_icons",
+    "//components/vector_icons",
     "//ui/aura",
     "//ui/chromeos/styles:cros_styles_views",
     "//ui/compositor",

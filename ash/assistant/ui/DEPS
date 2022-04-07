@@ -44,6 +44,7 @@ specific_include_rules = {
     "+chromeos/ui/frame/default_frame_header.h",
     "+chromeos/ui/vector_icons/vector_icons.h",
     "+components/prefs",
+    "+components/vector_icons",
     "+testing/gmock",
     "+testing/gtest",
   ],

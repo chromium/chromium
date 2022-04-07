@@ -101,7 +101,6 @@ aggregate_vector_icons("ash_vector_icons") {
     "ime_menu_on_screen_keyboard.icon",
     "ime_menu_write.icon",
     "ink_pen.icon",
-    "keyboard.icon",
     "ksv_arrow_down.icon",
     "ksv_arrow_left.icon",
     "ksv_arrow_right.icon",
