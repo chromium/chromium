@@ -1532,8 +1532,9 @@ void WebContentsViewAura::OnDragExited() {
 void WebContentsViewAura::CompleteDragExit() {
   drag_in_progress_ = false;
 
-  if (current_rvh_for_drag_ !=
-      GetRenderViewHostID(web_contents_->GetRenderViewHost()) ||
+  if (web_contents_->IsBeingDestroyed() ||
+      current_rvh_for_drag_ !=
+          GetRenderViewHostID(web_contents_->GetRenderViewHost()) ||
       !current_drop_data_) {
     return;
   }
