@@ -2886,6 +2886,13 @@ void QuicChromiumClientSession::MaybeMigrateToDifferentPortOnPathDegrading() {
     return;
   }
 
+  if (config()->DisableConnectionMigration()) {
+    HistogramAndLogMigrationFailure(MIGRATION_STATUS_DISABLED_BY_CONFIG,
+                                    connection_id(),
+                                    "Migration disabled by config");
+    return;
+  }
+
   net_log_.BeginEvent(NetLogEventType::QUIC_PORT_MIGRATION_TRIGGERED);
 
   if (!stream_factory_)

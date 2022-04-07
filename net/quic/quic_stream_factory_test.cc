@@ -4631,6 +4631,111 @@ TEST_P(QuicStreamFactoryTest,
   TestSimplePortMigrationOnPathDegrading();
 }
 
+TEST_P(QuicStreamFactoryTest, PortMigrationDisabledOnPathDegrading) {
+  if (!version_.HasIetfQuicFrames()) {
+    // Path validator is only supported in IETF QUIC.
+    return;
+  }
+  quic_params_->allow_port_migration = true;
+  SetIetfConnectionMigrationFlagsAndConnectionOptions();
+  socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
+  Initialize();
+
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  int packet_number = 1;
+  MockQuicData quic_data1(version_);
+  quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging Read.
+  quic_data1.AddWrite(SYNCHRONOUS,
+                      ConstructInitialSettingsPacket(packet_number++));
+  quic_data1.AddWrite(
+      SYNCHRONOUS,
+      ConstructGetRequestPacket(packet_number++,
+                                GetNthClientInitiatedBidirectionalStreamId(0),
+                                true, true));
+  quic_data1.AddWrite(
+      SYNCHRONOUS, client_maker_.MakeDataPacket(
+                       packet_number++, GetQpackDecoderStreamId(), true, false,
+                       StreamCancellationQpackDecoderInstruction(0)));
+  quic_data1.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.MakeRstPacket(packet_number++, true,
+                                  GetNthClientInitiatedBidirectionalStreamId(0),
+                                  quic::QUIC_STREAM_CANCELLED));
+  quic_data1.AddSocketDataToFactory(socket_factory_.get());
+
+  // Create request and QuicHttpStream.
+  QuicStreamRequest request(factory_.get());
+  EXPECT_EQ(ERR_IO_PENDING,
+            request.Request(
+                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkIsolationKey(), SecureDnsPolicy::kAllow,
+                true /* use_dns_aliases */,
+                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  EXPECT_TRUE(stream.get());
+
+  // Cause QUIC stream to be created.
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = url_;
+  request_info.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  EXPECT_EQ(OK, stream->InitializeStream(&request_info, true, DEFAULT_PRIORITY,
+                                         net_log_, CompletionOnceCallback()));
+
+  // Ensure that session is alive and active.
+  QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
+  EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
+  EXPECT_TRUE(HasActiveSession(scheme_host_port_));
+
+  // Send GET request on stream.
+  HttpResponseInfo response;
+  HttpRequestHeaders request_headers;
+  EXPECT_EQ(OK, stream->SendRequest(request_headers, &response,
+                                    callback_.callback()));
+  // Disable connection migration on the request streams.
+  // This should have no effect for port migration.
+  QuicChromiumClientStream* chrome_stream =
+      static_cast<QuicChromiumClientStream*>(
+          quic::test::QuicSessionPeer::GetStream(
+              session, GetNthClientInitiatedBidirectionalStreamId(0)));
+  EXPECT_TRUE(chrome_stream);
+  chrome_stream->DisableConnectionMigrationToCellularNetwork();
+
+  EXPECT_EQ(0u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
+
+  // Manually initialize the connection's self address. In real life, the
+  // initialization will be done during crypto handshake.
+  IPEndPoint ip;
+  session->GetDefaultSocket()->GetLocalAddress(&ip);
+  quic::test::QuicConnectionPeer::SetSelfAddress(session->connection(),
+                                                 ToQuicSocketAddress(ip));
+
+  // Set session config to have active migration disabled.
+  quic::test::QuicConfigPeer::SetReceivedDisableConnectionMigration(
+      session->config());
+  EXPECT_TRUE(session->config()->DisableConnectionMigration());
+
+  // Cause the connection to report path degrading to the session.
+  // Session will start to probe a different port.
+  session->connection()->OnPathDegradingDetected();
+
+  // The session should stay alive as if nothing happened.
+  EXPECT_EQ(1u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
+  EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
+  EXPECT_TRUE(HasActiveSession(scheme_host_port_));
+  EXPECT_EQ(1u, session->GetNumActiveStreams());
+
+  stream.reset();
+  EXPECT_TRUE(quic_data1.AllReadDataConsumed());
+  EXPECT_TRUE(quic_data1.AllWriteDataConsumed());
+}
+
 TEST_P(QuicStreamFactoryTest,
        PortMigrationProbingReceivedStatelessReset_PathValidator) {
   if (!version_.HasIetfQuicFrames()) {
