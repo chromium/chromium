@@ -157,4 +157,15 @@ export function keyboardTesterTestSuite() {
 
     assertFalse(diagramElement.showNumberPad);
   });
+
+  test('focusLossToast', async () => {
+    keyboardTesterElement.keyboard = fakeKeyboard;
+    await flushTasks();
+
+    keyboardTesterElement.onKeyEventsPaused();
+    assertTrue(keyboardTesterElement.$.lostFocusToast.open);
+
+    keyboardTesterElement.onKeyEventsResumed();
+    assertFalse(keyboardTesterElement.$.lostFocusToast.open);
+  });
 }

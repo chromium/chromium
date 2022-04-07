@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {MechanicalLayout as DiagramMechanicalLayout, PhysicalLayout as DiagramPhysicalLayout, TopRightKey as DiagramTopRightKey, TopRowKey as DiagramTopRowKey} from 'chrome://resources/ash/common/keyboard_diagram.js';
 import {KeyboardKeyState} from 'chrome://resources/ash/common/keyboard_key.js';
@@ -341,16 +343,16 @@ Polymer({
    * Implements KeyboardObserver.OnKeyEventsPaused.
    */
   onKeyEventsPaused() {
-    // TODO(crbug.com/1207678): show key event pauses in the UI.
-    console.log('key events paused');
+    console.log('Key events paused');
     this.$$('#diagram').clearPressedKeys();
+    this.$.lostFocusToast.show();
   },
 
   /**
    * Implements KeyboardObserver.OnKeyEventsResumed.
    */
   onKeyEventsResumed() {
-    // TODO(crbug.com/1207678): show key event pauses in the UI.
-    console.log('key events resumed');
+    console.log('Key events resumed');
+    this.$.lostFocusToast.hide();
   },
 });

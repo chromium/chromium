@@ -22,6 +22,11 @@
     color: var(--cros-link-color);
     text-decoration: none;
   }
+
+  cr-toast iron-icon {
+    --iron-icon-fill-color: var(--cros-toast-icon-color);
+    margin-inline-end: 12px;
+  }
 </style>
 <cr-dialog id="dialog" show-close-button on-close="handleClose">
   <div slot="title">[[i18n('keyboardTesterTitle')]]</div>
@@ -41,6 +46,15 @@
         </keyboard-diagram>
       </div>
     </template>
+    <cr-toast id="lostFocusToast">
+      <iron-icon icon="diagnostics:window"></iron-icon>
+      <!--
+        Though the message refers to "other windows", it also applies when
+        the user opens the launcher, but not if they just click another element
+        of the system UI (e.g. opening the quick settings).
+      -->
+      <span>[[i18n('keyboardTesterFocusLossMessage')]]</span>
+    </cr-toast>
   </div>
   <div slot="button-container">
     <div id="help" inner-h-t-m-l="[[i18nAdvanced('keyboardTesterHelpLink')]]"></div>

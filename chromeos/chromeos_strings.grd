@@ -1185,6 +1185,9 @@ Try tapping the mic to ask me anything.
       </message>
 
       <!-- Input diagnostics: keyboard tester -->
+      <message name="IDS_INPUT_DIAGNOSTICS_KEYBOARD_TESTER_FOCUS_LOSS_MESSAGE" desc="A message displayed in a keyboard testing UI when its window loses focus, explaining that the tester won't respond to key presses again until its window is refocused.">
+        Keys aren't tested when you're using another window
+      </message>
       <message name="IDS_INPUT_DIAGNOSTICS_KEYBOARD_TESTER_HELP_LINK" desc="Text offering a link to the help center page for a keyboard testing UI.">
         For more help, go to the <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Help Center<ph name="END_LINK">&lt;/a&gt;</ph>.
       </message>

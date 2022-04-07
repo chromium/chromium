@@ -215,6 +215,8 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
        IDS_NETWORK_DIAGNOSTICS_IP_CONFIG_INFO_DRAWER_SUBNET_MASK},
       {"ipConfigInfoDrawerTitle",
        IDS_NETWORK_DIAGNOSTICS_IP_CONFIG_INFO_DRAWER_TITLE},
+      {"keyboardTesterFocusLossMessage",
+       IDS_INPUT_DIAGNOSTICS_KEYBOARD_TESTER_FOCUS_LOSS_MESSAGE},
       {"keyboardTesterInstruction",
        IDS_INPUT_DIAGNOSTICS_KEYBOARD_TESTER_INSTRUCTION},
       {"keyboardTesterTitle", IDS_INPUT_DIAGNOSTICS_KEYBOARD_TESTER_TITLE},
