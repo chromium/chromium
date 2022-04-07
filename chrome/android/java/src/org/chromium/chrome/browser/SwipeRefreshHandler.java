@@ -9,6 +9,7 @@ import android.content.Context;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ThreadUtils;
@@ -117,10 +118,15 @@ public class SwipeRefreshHandler
         mSwipeRefreshLayout = new SwipeRefreshLayout(context);
         mSwipeRefreshLayout.setLayoutParams(
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        mSwipeRefreshLayout.setProgressBackgroundColorSchemeColor(
-                ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_2));
-        mSwipeRefreshLayout.setColorSchemeColors(
-                SemanticColorUtils.getDefaultControlColorActive(context));
+        final boolean incognito = mTab.isIncognito();
+        final @ColorInt int backgroundColor = incognito
+                ? context.getColor(R.color.default_bg_color_dark_elev_2_baseline)
+                : ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_2);
+        mSwipeRefreshLayout.setProgressBackgroundColorSchemeColor(backgroundColor);
+        final @ColorInt int iconColor = incognito
+                ? context.getColor(R.color.default_icon_color_blue_light)
+                : SemanticColorUtils.getDefaultIconColorAccent1(context);
+        mSwipeRefreshLayout.setColorSchemeColors(iconColor);
         if (mContainerView != null) mSwipeRefreshLayout.setEnabled(true);
 
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
