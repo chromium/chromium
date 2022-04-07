@@ -178,7 +178,6 @@ def _ParseArgs(args):
 
   output_opts.add_argument('--arsc-path', help='Apk output for arsc format.')
   output_opts.add_argument('--proto-path', help='Apk output for proto format.')
-  group = input_opts.add_mutually_exclusive_group()
 
   output_opts.add_argument(
       '--info-path', help='Path to output info file for the partial apk.')
