@@ -153,25 +153,22 @@ void SharingHubBubbleViewImpl::PopulateScrollView(
 
   auto* separator =
       action_list_view->AddChildView(std::make_unique<views::Separator>());
-  constexpr int kIndent = 16;
-  constexpr int kPadding = 8;
-  separator->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(kPadding, kIndent, 0, kIndent)));
+  constexpr int kIndent = 12;
+  constexpr int kPadding = 4;
+  separator->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::TLBR(kPadding, 0, kPadding, 0)));
 
-  constexpr int kLabelLineHeight = 22;
-  constexpr int kLabelLinePaddingTop = 8;
-  constexpr int kLabelLinePaddingBottom = 4;
+  constexpr int kLabelLineHeight = 32;
 
   auto* share_link_label =
-      new views::Label(l10n_util::GetStringUTF16(IDS_SHARING_HUB_SHARE_LABEL));
-  share_link_label->SetFontList(gfx::FontList("GoogleSans, 13px"));
+      new views::Label(l10n_util::GetStringUTF16(IDS_SHARING_HUB_SHARE_LABEL),
+                       views::style::CONTEXT_DIALOG_TITLE);
   share_link_label->SetLineHeight(kLabelLineHeight);
   share_link_label->SetMultiLine(true);
   share_link_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
   share_link_label->SizeToFit(views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
-  constexpr auto kPrimaryIconBorder = gfx::Insets::TLBR(
-      kLabelLinePaddingTop, kIndent, kLabelLinePaddingBottom, kIndent);
-  share_link_label->SetBorder(views::CreateEmptyBorder(kPrimaryIconBorder));
+  share_link_label->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::TLBR(0, kIndent, 0, 0)));
   share_link_label_ = action_list_view->AddChildView(share_link_label);
 
   for (const auto& action : third_party_actions) {

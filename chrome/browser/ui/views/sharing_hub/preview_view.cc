@@ -14,7 +14,11 @@
 namespace sharing_hub {
 
 namespace {
+// These values are all directly from the Figma redlines. See
+// https://crbug.com/1314486.
 constexpr gfx::Size kImageSize{32, 32};
+constexpr gfx::Insets kInteriorMargin = gfx::Insets::VH(12, 8);
+constexpr gfx::Insets kDefaultMargin = gfx::Insets::VH(0, 8);
 }  // namespace
 
 // This view uses two nested FlexLayouts, a horizontal outer one and a vertical
@@ -30,12 +34,9 @@ PreviewView::PreviewView(std::u16string title, GURL url, ui::ImageModel image) {
   layout->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetMainAxisAlignment(views::LayoutAlignment::kStart)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-      // TODO(ellyjones): Check these against the redlines in the mocks, and
-      // once they're finalized, move them to the constant block above. Getting
-      // things to line up with the mocks may require a bit of a refactor in
-      // HoverButton itself.
-      .SetInteriorMargin(gfx::Insets::VH(12, 8))
-      .SetDefault(views::kMarginsKey, gfx::Insets::VH(0, 8));
+      .SetInteriorMargin(kInteriorMargin)
+      .SetDefault(views::kMarginsKey, kDefaultMargin)
+      .SetCollapseMargins(true);
 
   image_ = AddChildView(std::make_unique<views::ImageView>(image));
   image_->SetPreferredSize(kImageSize);

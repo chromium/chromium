@@ -6,7 +6,12 @@
 #define CHROME_BROWSER_UI_VIEWS_SHARING_HUB_SHARING_HUB_BUBBLE_ACTION_BUTTON_H_
 
 #include "base/bind.h"
-#include "chrome/browser/ui/views/hover_button.h"
+#include "ui/views/controls/button/button.h"
+
+namespace views {
+class ImageView;
+class Label;
+}  // namespace views
 
 namespace sharing_hub {
 
@@ -14,7 +19,7 @@ class SharingHubBubbleViewImpl;
 struct SharingHubAction;
 
 // A button representing an action in the Sharing Hub bubble.
-class SharingHubBubbleActionButton : public HoverButton {
+class SharingHubBubbleActionButton : public views::Button {
  public:
   METADATA_HEADER(SharingHubBubbleActionButton);
   SharingHubBubbleActionButton(SharingHubBubbleViewImpl* bubble,
@@ -31,14 +36,22 @@ class SharingHubBubbleActionButton : public HoverButton {
   }
 
   // views::Button:
-  void UpdateBackgroundColor() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  // Listeners for various events, which this class uses to keep its visuals
+  // consistent.
   void OnThemeChanged() override;
+  void StateChanged(views::Button::ButtonState old_state) override;
+  void OnFocus() override;
+  void OnBlur() override;
 
  private:
   const int action_command_id_;
   const bool action_is_first_party_;
   const std::string action_name_for_metrics_;
+
+  views::Label* title_;
+  views::ImageView* image_;
+
+  void UpdateColors();
 };
 
 }  // namespace sharing_hub
