@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-tint_root_dir = "//third_party/dawn/third_party/tint"
+tint_root_dir = "//third_party/dawn"
 tint_spirv_tools_dir = "//third_party/vulkan-deps/spirv-tools/src"
 tint_googletest_dir = "//third_party/googletest/src"
 tint_spirv_headers_dir = "//third_party/vulkan-deps/spirv-headers/src"
