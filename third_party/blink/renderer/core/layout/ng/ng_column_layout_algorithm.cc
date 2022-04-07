@@ -609,11 +609,11 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
       if (available_outer_space < LayoutUnit()) {
         // We're past the end of the outer fragmentainer (typically due to a
         // margin). Nothing will fit here, not even zero-size content. If we
-        // haven't produced any fragments yet, we'll retry in the next outer
-        // fragmentainer. Otherwise, we need to continue (once we have started
-        // laying out, we cannot skip any fragmentainers) with no available
-        // size.
-        if (!IsResumingLayout(BreakToken()))
+        // haven't produced any fragments yet, and aborting is allowed, we'll
+        // retry in the next outer fragmentainer. Otherwise, we need to continue
+        // (once we have started laying out, we cannot skip any fragmentainers)
+        // with no available size.
+        if (!IsResumingLayout(BreakToken()) && MayAbortOnInsufficientSpace())
           return nullptr;
         available_outer_space = LayoutUnit();
       }
@@ -771,17 +771,18 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
                      result->BreakAppeal());
 
         // Avoid creating rows that are too short to hold monolithic content.
-        // Bail, discarding all columns. Note that this is safe to do even if
-        // we're column-balancing, because we attempt to make room for all
-        // monolithic content already in the initial column balancing pass (and
-        // if that fails, there's no way it's going to fit), by checking
-        // TallestUnbreakableBlockSize() from the layout results.
+        // Bail if possible, discarding all columns. Note that this is safe to
+        // do even if we're column-balancing, because we attempt to make room
+        // for all monolithic content already in the initial column balancing
+        // pass (and if that fails, there's no way it's going to fit), by
+        // checking TallestUnbreakableBlockSize() from the layout results.
         if (NGBoxFragment(ConstraintSpace().GetWritingDirection(), column)
                 .HasBlockLayoutOverflow()) {
           if (ConstraintSpace().IsInsideBalancedColumns() &&
               !container_builder_.IsInitialColumnBalancingPass())
             container_builder_.PropagateSpaceShortage(minimal_space_shortage);
-          return nullptr;
+          if (MayAbortOnInsufficientSpace())
+            return nullptr;
         }
       }
       allow_discard_start_margin = true;

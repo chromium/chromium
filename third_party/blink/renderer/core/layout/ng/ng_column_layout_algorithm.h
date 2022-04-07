@@ -100,6 +100,18 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
       LayoutUnit block_offset) const;
   NGConstraintSpace CreateConstraintSpaceForMinMax() const;
 
+  // If this is a nested multicol container, and there's no room for anything in
+  // the current outer fragmentainer, we're normally allowed to abort (typically
+  // with NGLayoutResult::kOutOfFragmentainerSpace), and retry in the next outer
+  // fragmentainer. This is not the case for out-of-flow positioned multicol
+  // containers, though, as we're not allowed to insert a soft break before an
+  // out-of-flow positioned node. Our implementation requires that an OOF start
+  // in the fragmentainer where it would "naturally" occur.
+  bool MayAbortOnInsufficientSpace() const {
+    DCHECK(is_constrained_by_outer_fragmentation_context_);
+    return !Node().IsOutOfFlowPositioned();
+  }
+
   int used_column_count_;
   LayoutUnit column_inline_size_;
   LayoutUnit column_inline_progression_;
