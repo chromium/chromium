@@ -177,7 +177,7 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeForAXElement(
     return AXOptionalNSObject::NotNullOrNotApplicable(AXActionNamesOf(target));
   }
   if (property_node.name_or_value == "AXPerformAction") {
-    AXOptionalNSObject param = ParamByPropertyNode(property_node);
+    AXOptionalNSObject param = ParamFrom(property_node);
     if (param.IsNotNull()) {
       PerformAXAction(target, *param);
       return AXOptionalNSObject::Unsupported();
@@ -207,7 +207,7 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeForAXElement(
   // Parameterized attributes.
   for (NSString* attribute : AXParameterizedAttributeNamesOf(target)) {
     if (property_node.IsMatching(base::SysNSStringToUTF8(attribute))) {
-      AXOptionalNSObject param = ParamByPropertyNode(property_node);
+      AXOptionalNSObject param = ParamFrom(property_node);
       if (param.IsNotNull()) {
         return AXOptionalNSObject(
             AXParameterizedAttributeValueOf(target, attribute, *param));
@@ -257,7 +257,30 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeForAXElement(
     BOOL return_value;
     [invocation getReturnValue:&return_value];
     return AXOptionalNSObject([NSNumber numberWithBool:return_value]);
-  } else if (base::StartsWith(property_node.name_or_value, "accessibility")) {
+  }
+
+  // accessibilityAttributeValue
+  if (property_node.name_or_value == "accessibilityAttributeValue") {
+    if (property_node.arguments.size() == 1) {
+      return AXOptionalNSObject(AXAttributeValueOf(
+          target,
+          base::SysUTF8ToNSString(property_node.arguments[0].name_or_value)));
+    }
+    // Parameterized accessibilityAttributeValue.
+    if (property_node.arguments.size() == 2) {
+      const std::string& attribute = property_node.arguments[0].name_or_value;
+      AXOptionalNSObject param =
+          ParamFrom(attribute, property_node.arguments[1]);
+      if (!param.HasValue())
+        return AXOptionalNSObject::Error();
+
+      return AXOptionalNSObject(AXParameterizedAttributeValueOf(
+          target, base::SysUTF8ToNSString(attribute), *param));
+    }
+    return AXOptionalNSObject::Error();
+  }
+
+  if (base::StartsWith(property_node.name_or_value, "accessibility")) {
     if (property_node.arguments.size() == 1) {
       absl::optional<id> optional_id =
           PerformAXSelector(target, property_node.name_or_value,
@@ -372,7 +395,7 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeForDictionary(
   return AXOptionalNSObject::NotNullOrError(dictionary[key]);
 }
 
-AXOptionalNSObject AXCallStatementInvoker::ParamByPropertyNode(
+AXOptionalNSObject AXCallStatementInvoker::ParamFrom(
     const AXPropertyNode& property_node) const {
   // NSAccessibility attributes always take a single parameter.
   if (property_node.arguments.size() != 1) {
@@ -381,49 +404,53 @@ AXOptionalNSObject AXCallStatementInvoker::ParamByPropertyNode(
     return AXOptionalNSObject::Error();
   }
 
+  return ParamFrom(property_node.name_or_value, property_node.arguments[0]);
+}
+
+AXOptionalNSObject AXCallStatementInvoker::ParamFrom(
+    const std::string& attribute,
+    const AXPropertyNode& argument) const {
   // Nested attribute case: attempt to invoke an attribute for an argument node.
-  const AXPropertyNode& arg_node = property_node.arguments[0];
-  AXOptionalNSObject subvalue = Invoke(arg_node, /* no_object_parse= */ true);
+  AXOptionalNSObject subvalue = Invoke(argument, /* no_object_parse= */ true);
   if (!subvalue.IsNotApplicable()) {
     return subvalue;
   }
 
   // Otherwise parse argument node value.
-  const std::string& property_name = property_node.name_or_value;
-  if (property_name == "AXLineForIndex" ||
-      property_name == "AXTextMarkerForIndex") {  // Int
-    return AXOptionalNSObject::NotNullOrError(PropertyNodeToInt(arg_node));
+  if (attribute == "AXLineForIndex" ||
+      attribute == "AXTextMarkerForIndex") {  // Int
+    return AXOptionalNSObject::NotNullOrError(PropertyNodeToInt(argument));
   }
-  if (property_name == "AXPerformAction") {
-    return AXOptionalNSObject::NotNullOrError(PropertyNodeToString(arg_node));
+  if (attribute == "AXPerformAction") {
+    return AXOptionalNSObject::NotNullOrError(PropertyNodeToString(argument));
   }
-  if (property_name == "AXCellForColumnAndRow") {  // IntArray
-    return AXOptionalNSObject::NotNullOrError(PropertyNodeToIntArray(arg_node));
+  if (attribute == "AXCellForColumnAndRow") {  // IntArray
+    return AXOptionalNSObject::NotNullOrError(PropertyNodeToIntArray(argument));
   }
-  if (property_name ==
+  if (attribute ==
       "AXTextMarkerRangeForUnorderedTextMarkers") {  // TextMarkerArray
     return AXOptionalNSObject::NotNullOrError(
-        PropertyNodeToTextMarkerArray(arg_node));
+        PropertyNodeToTextMarkerArray(argument));
   }
-  if (property_name == "AXStringForRange") {  // NSRange
-    return AXOptionalNSObject::NotNullOrError(PropertyNodeToRange(arg_node));
+  if (attribute == "AXStringForRange") {  // NSRange
+    return AXOptionalNSObject::NotNullOrError(PropertyNodeToRange(argument));
   }
-  if (property_name == "AXIndexForChildUIElement" ||
-      property_name == "AXTextMarkerRangeForUIElement") {  // UIElement
+  if (attribute == "AXIndexForChildUIElement" ||
+      attribute == "AXTextMarkerRangeForUIElement") {  // UIElement
     return AXOptionalNSObject::NotNullOrError(
-        PropertyNodeToUIElement(arg_node));
+        PropertyNodeToUIElement(argument));
   }
-  if (property_name == "AXIndexForTextMarker" ||
-      property_name == "AXNextWordEndTextMarkerForTextMarker" ||
-      property_name ==
+  if (attribute == "AXIndexForTextMarker" ||
+      attribute == "AXNextWordEndTextMarkerForTextMarker" ||
+      attribute ==
           "AXPreviousWordStartTextMarkerForTextMarker") {  // TextMarker
     return AXOptionalNSObject::NotNullOrError(
-        PropertyNodeToTextMarker(arg_node));
+        PropertyNodeToTextMarker(argument));
   }
-  if (property_name == "AXSelectedTextMarkerRangeAttribute" ||
-      property_name == "AXStringForTextMarkerRange") {  // TextMarkerRange
+  if (attribute == "AXSelectedTextMarkerRangeAttribute" ||
+      attribute == "AXStringForTextMarkerRange") {  // TextMarkerRange
     return AXOptionalNSObject::NotNullOrError(
-        PropertyNodeToTextMarkerRange(arg_node));
+        PropertyNodeToTextMarkerRange(argument));
   }
 
   return AXOptionalNSObject::NotApplicable();

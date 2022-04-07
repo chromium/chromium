@@ -63,8 +63,14 @@ class AX_EXPORT AXCallStatementInvoker final {
       const id target,
       const AXPropertyNode& property_node) const;
 
-  // Returns a parameterized attribute parameter by a property node.
-  AXOptionalNSObject ParamByPropertyNode(const AXPropertyNode&) const;
+  // Returns a parameterized attribute parameter by a property node representing
+  // an attribute call.
+  AXOptionalNSObject ParamFrom(const AXPropertyNode&) const;
+
+  // Returns a parameterized attribute parameter by an attribute and a property
+  // node representing an argument.
+  AXOptionalNSObject ParamFrom(const std::string& attribute,
+                               const AXPropertyNode& argument) const;
 
   // Converts a given property node to NSObject. If not convertible, returns
   // nil.
