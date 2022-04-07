@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {FakeFeedbackServiceProvider} from './fake_feedback_service_provider.js';
 
-import {HelpContentProvider, HelpContentProviderInterface} from './feedback_types.js';
+import {FeedbackServiceProviderInterface, HelpContentProvider, HelpContentProviderInterface} from './feedback_types.js';
 
 /**
  * @fileoverview
@@ -13,15 +14,41 @@ import {HelpContentProvider, HelpContentProviderInterface} from './feedback_type
  */
 
 /**
+ * @type {?FeedbackServiceProviderInterface}
+ */
+let feedbackServiceProvider = null;
+
+/**
  * @type {?HelpContentProviderInterface}
  */
 let helpContentProvider = null;
+
+/**
+ * @param {?FeedbackServiceProviderInterface} testProvider
+ */
+export function setFeedbackServiceProviderForTesting(testProvider) {
+  feedbackServiceProvider = testProvider;
+}
 
 /**
  * @param {?HelpContentProviderInterface} testProvider
  */
 export function setHelpContentProviderForTesting(testProvider) {
   helpContentProvider = testProvider;
+}
+
+/**
+ * @return {!FeedbackServiceProviderInterface}
+ */
+export function getFeedbackServiceProvider() {
+  if (!feedbackServiceProvider) {
+    // TODO(xiangdongkong): Instantiate a real mojo interface here.
+    const fakeProvider = /** @type {FeedbackServiceProviderInterface} */ (
+        new FakeFeedbackServiceProvider());
+    setFeedbackServiceProviderForTesting(fakeProvider);
+  }
+  assert(!!feedbackServiceProvider);
+  return feedbackServiceProvider;
 }
 
 /**

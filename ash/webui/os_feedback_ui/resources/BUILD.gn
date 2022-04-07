@@ -32,6 +32,7 @@ generate_grd("build_grd") {
     "app_icon_256.png",
     "fake_data.js",
     "fake_help_content_provider.js",
+    "fake_feedback_service_provider.js",
     "feedback_types.js",
     "index.html",
     "mojo_interface_provider.js",
@@ -55,6 +56,7 @@ js_type_check("closure_compile_module") {
   deps = [
     ":confirmation_page",
     ":fake_data",
+    ":fake_feedback_service_provider",
     ":fake_help_content_provider",
     ":feedback_types",
     ":help_content",
@@ -89,6 +91,14 @@ js_library("fake_help_content_provider") {
   ]
 }
 
+js_library("fake_feedback_service_provider") {
+  deps = [
+    ":feedback_types",
+    "//ash/webui/common/resources:fake_method_resolver",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
 js_library("feedback_types") {
   deps = [
     "//ash/webui/common/resources:mojo_utils",
@@ -111,6 +121,7 @@ js_library("help_resources_icons") {
 js_library("mojo_interface_provider") {
   deps = [
     ":fake_data",
+    ":fake_feedback_service_provider",
     ":fake_help_content_provider",
     ":feedback_types",
     "//ui/webui/resources/js:cr.m",

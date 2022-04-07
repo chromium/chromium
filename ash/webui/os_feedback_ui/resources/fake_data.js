@@ -66,3 +66,6 @@ export const fakeSearchResponse = {
   results: fakeHelpContentList,
   totalResults: 10,
 };
+
+/** @type {!string} */
+export const fakeExternalEmail = 'test.user2@test.com';

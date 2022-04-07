@@ -67,3 +67,12 @@ export const HelpContentProviderInterface =
  * @typedef {ash.osFeedbackUi.mojom.HelpContentProvider}
  */
 export const HelpContentProvider = ash.osFeedbackUi.mojom.HelpContentProvider;
+
+/**
+ * Type alias for the FeedbackServiceProviderInterface.
+ * TODO(xiangdongkong): Replace with a real mojo type when implemented.
+ * @typedef {{
+ *   getUserEmail: !function(): !Promise<{email: !string}>,
+ * }}
+ */
+export let FeedbackServiceProviderInterface;
