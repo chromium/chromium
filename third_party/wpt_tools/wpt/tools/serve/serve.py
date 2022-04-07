@@ -344,6 +344,44 @@ class ServiceWorkerModulesHandler(HtmlWrapperHandler):
 </script>
 """
 
+class ShadowRealmHandler(HtmlWrapperHandler):
+    global_type = "shadowrealm"
+    path_replace = [(".any.shadowrealm.html", ".any.js")]
+
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+%(meta)s
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+(async function() {
+  const r = new ShadowRealm();
+
+  await new Promise(r.evaluate(`
+    (resolve, reject) => {
+      (async () => {
+        await import("/resources/testharness.js");
+        %(script)s
+        globalThis.self.GLOBAL = {
+          isWindow: function() { return false; },
+          isWorker: function() { return false; },
+        };
+        await import("%(path)s");
+      })().then(resolve, (e) => reject(e.toString()));
+    }
+  `));
+
+  await fetch_tests_from_shadow_realm(r);
+  done();
+})();
+</script>
+"""
+
+    def _script_replacement(self, key, value):
+        if key == "script":
+            return 'await import("%s");' % value
+        return None
+
 
 class BaseWorkerHandler(WrapperHandler):
     headers = [('Content-Type', 'text/javascript')]
@@ -453,6 +491,7 @@ class RoutesBuilder:
             ("GET", "*.any.sharedworker-module.html", SharedWorkerModulesHandler),
             ("GET", "*.any.serviceworker.html", ServiceWorkersHandler),
             ("GET", "*.any.serviceworker-module.html", ServiceWorkerModulesHandler),
+            ("GET", "*.any.shadowrealm.html", ShadowRealmHandler),
             ("GET", "*.any.worker.js", ClassicWorkerHandler),
             ("GET", "*.any.worker-module.js", ModuleWorkerHandler),
             ("GET", "*.asis", handlers.AsIsHandler),

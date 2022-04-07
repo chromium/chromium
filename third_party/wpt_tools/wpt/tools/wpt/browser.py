@@ -619,33 +619,47 @@ class ChromeChromiumBase(Browser):
             venv_path = os.path.join(venv_path, self.product)
         return find_executable("chromedriver", path=venv_path)
 
-    def install_mojojs(self, dest, channel, browser_binary):
+    def install_mojojs(self, dest, browser_binary):
         """Install MojoJS web framework."""
-        if channel == "nightly" or channel == "canary":
-            url = f"{self._get_chromium_download_url()}mojojs.zip"
-        else:
-            chrome_version = self.version(binary=browser_binary)
-            assert chrome_version, "Cannot determine the version of Chrome"
-            # Remove channel suffixes (e.g. " dev").
-            chrome_version = chrome_version.split(' ')[0]
+        # MojoJS is platform agnostic, but the version number must be an
+        # exact match of the Chrome/Chromium version to be compatible.
+        chrome_version = self.version(binary=browser_binary)
+        try:
+            # MojoJS version url must match the browser binary version exactly.
             url = ("https://storage.googleapis.com/chrome-wpt-mojom/"
                    f"{chrome_version}/linux64/mojojs.zip")
+            # Check the status without downloading the content (this is a streaming request).
+            get(url)
+        except requests.RequestException:
+            # If a valid matching version cannot be found in the wpt archive,
+            # download from Chromium snapshots bucket. However,
+            # MojoJS is only bundled with Linux from Chromium snapshots.
+            if self.platform == "Linux":
+                url = self._get_chromium_download_url(chrome_version) + "mojojs.zip"
+            else:
+                self.logger.error("A valid MojoJS version cannot be found "
+                                  f"for browser binary version {chrome_version}.")
+                return None
 
         extracted = os.path.join(dest, "mojojs", "gen")
         last_url_file = os.path.join(extracted, "DOWNLOADED_FROM")
         if os.path.exists(last_url_file):
-            with open(last_url_file) as f:
+            with open(last_url_file, "rt") as f:
                 last_url = f.read().strip()
             if last_url == url:
                 self.logger.info("Mojo bindings already up to date")
                 return extracted
             rmtree(extracted)
 
-        self.logger.info(f"Downloading Mojo bindings from {url}")
-        unzip(get(url).raw, dest)
-        with open(last_url_file, "wt") as f:
-            f.write(url)
-        return extracted
+        try:
+            self.logger.info(f"Downloading Mojo bindings from {url}")
+            unzip(get(url).raw, dest)
+            with open(last_url_file, "wt") as f:
+                f.write(url)
+            return extracted
+        except Exception as e:
+            self.logger.error(f"Cannot enable MojoJS: {e}")
+            return None
 
     def install_webdriver(self, dest=None, channel=None, browser_binary=None):
         if dest is None:

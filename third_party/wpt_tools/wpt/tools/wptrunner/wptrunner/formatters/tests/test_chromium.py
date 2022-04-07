@@ -60,6 +60,38 @@ def test_chromium_required_fields(logger, capfd):
     assert "expected" in test_obj
 
 
+def test_time_per_test(logger, capfd):
+    # Test that the formatter measures time per test correctly.
+
+    # Set up the handler.
+    output = StringIO()
+    logger.add_handler(handlers.StreamHandler(output, ChromiumFormatter()))
+
+    # output a bunch of stuff
+    logger.suite_start(["test-id-1", "test-id-2"], run_info={}, time=50)
+    logger.test_start("test-id-1", time=100)
+    logger.test_start("test-id-2", time=200)
+    logger.test_end("test-id-1", status="PASS", expected="PASS", time=300)
+    logger.test_end("test-id-2", status="PASS", expected="PASS", time=199)
+    logger.suite_end()
+    logger.shutdown()
+
+    # check nothing got output to stdout/stderr
+    # (note that mozlog outputs exceptions during handling to stderr!)
+    captured = capfd.readouterr()
+    assert captured.out == ""
+    assert captured.err == ""
+
+    # check the actual output of the formatter
+    output.seek(0)
+    output_obj = json.load(output)
+
+    test1_obj = output_obj["tests"]["test-id-1"]
+    test2_obj = output_obj["tests"]["test-id-2"]
+    assert pytest.approx(test1_obj["time"]) == 0.2  # 300ms - 100ms = 0.2s
+    assert "time" not in test2_obj
+
+
 def test_chromium_test_name_trie(logger, capfd):
     # Ensure test names are broken into directories and stored in a trie with
     # test results at the leaves.

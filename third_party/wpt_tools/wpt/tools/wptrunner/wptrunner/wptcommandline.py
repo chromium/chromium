@@ -636,13 +636,11 @@ def check_args(kwargs):
     return kwargs
 
 
-def check_args_update(kwargs):
+def check_args_metadata_update(kwargs):
     set_from_config(kwargs)
 
     if kwargs["product"] is None:
         kwargs["product"] = "firefox"
-    if kwargs["patch"] is None:
-        kwargs["patch"] = kwargs["sync"]
 
     for item in kwargs["run_log"]:
         if os.path.isdir(item):
@@ -652,7 +650,16 @@ def check_args_update(kwargs):
     return kwargs
 
 
-def create_parser_update(product_choices=None):
+def check_args_update(kwargs):
+    kwargs = check_args_metadata_update(kwargs)
+
+    if kwargs["patch"] is None:
+        kwargs["patch"] = kwargs["sync"]
+
+    return kwargs
+
+
+def create_parser_metadata_update(product_choices=None):
     from mozlog.structured import commandline
 
     from . import products
@@ -671,6 +678,28 @@ def create_parser_update(product_choices=None):
                         help="Path to web-platform-tests"),
     parser.add_argument("--manifest", action="store", type=abs_path, dest="manifest_path",
                         help="Path to test manifest (default is ${metadata_root}/MANIFEST.json)")
+    parser.add_argument("--full", action="store_true", default=False,
+                        help="For all tests that are updated, remove any existing conditions and missing subtests")
+    parser.add_argument("--disable-intermittent", nargs="?", action="store", const="unstable", default=None,
+        help=("Reason for disabling tests. When updating test results, disable tests that have "
+              "inconsistent results across many runs with the given reason."))
+    parser.add_argument("--update-intermittent", action="store_true", default=False,
+                        help="Update test metadata with expected intermittent statuses.")
+    parser.add_argument("--remove-intermittent", action="store_true", default=False,
+                        help="Remove obsolete intermittent statuses from expected statuses.")
+    parser.add_argument("--no-remove-obsolete", action="store_false", dest="remove_obsolete", default=True,
+                        help="Don't remove metadata files that no longer correspond to a test file")
+    parser.add_argument("--extra-property", action="append", default=[],
+                        help="Extra property from run_info.json to use in metadata update")
+    # TODO: Should make this required iff run=logfile
+    parser.add_argument("run_log", nargs="*", type=abs_path,
+                        help="Log file from run of tests")
+    commandline.add_logging_group(parser)
+    return parser
+
+
+def create_parser_update(product_choices=None):
+    parser = create_parser_metadata_update(product_choices)
     parser.add_argument("--sync-path", action="store", type=abs_path,
                         help="Path to store git checkout of web-platform-tests during update"),
     parser.add_argument("--remote_url", action="store",
@@ -684,17 +713,6 @@ def create_parser_update(product_choices=None):
                         help="Don't create a VCS commit containing the changes.")
     parser.add_argument("--sync", dest="sync", action="store_true", default=False,
                         help="Sync the tests with the latest from upstream (implies --patch)")
-    parser.add_argument("--full", action="store_true", default=False,
-                        help=("For all tests that are updated, remove any existing conditions and missing subtests"))
-    parser.add_argument("--disable-intermittent", nargs="?", action="store", const="unstable", default=None,
-        help=("Reason for disabling tests. When updating test results, disable tests that have "
-              "inconsistent results across many runs with the given reason."))
-    parser.add_argument("--update-intermittent", action="store_true", default=False,
-                        help=("Update test metadata with expected intermittent statuses."))
-    parser.add_argument("--remove-intermittent", action="store_true", default=False,
-                        help=("Remove obsolete intermittent statuses from expected statuses."))
-    parser.add_argument("--no-remove-obsolete", action="store_false", dest="remove_obsolete", default=True,
-                        help=("Don't remove metadata files that no longer correspond to a test file"))
     parser.add_argument("--no-store-state", action="store_false", dest="store_state",
                         help="Store state so that steps can be resumed after failure")
     parser.add_argument("--continue", action="store_true",
@@ -705,12 +723,6 @@ def create_parser_update(product_choices=None):
                         help="List of glob-style paths to exclude when syncing tests")
     parser.add_argument("--include", action="store", nargs="*",
                         help="List of glob-style paths to include which would otherwise be excluded when syncing tests")
-    parser.add_argument("--extra-property", action="append", default=[],
-                        help="Extra property from run_info.json to use in metadata update")
-    # Should make this required iff run=logfile
-    parser.add_argument("run_log", nargs="*", type=abs_path,
-                        help="Log file from run of tests")
-    commandline.add_logging_group(parser)
     return parser
 
 
