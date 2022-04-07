@@ -768,10 +768,16 @@ bool HandleNewTabPageLocationOverride(
     GURL* url,
     content::BrowserContext* browser_context) {
   if (!url->SchemeIs(content::kChromeUIScheme) ||
-      url->host() != chrome::kChromeUINewTabHost)
+      url->host() != chrome::kChromeUINewTabHost) {
     return false;
+  }
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
+
+  // Don't change the URL when incognito mode.
+  if (profile->IsOffTheRecord())
+    return false;
+
   std::string ntp_location =
       profile->GetPrefs()->GetString(prefs::kNewTabPageLocationOverride);
   if (ntp_location.empty())
