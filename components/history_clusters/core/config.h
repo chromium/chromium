@@ -73,6 +73,10 @@ struct Config {
   // for this to take effect.
   bool omnibox_action = false;
 
+  // If enabled, allows the Omnibox Action chip to also appear on URLs. This
+  // does nothing if `omnibox_action` is disabled.
+  bool omnibox_action_on_urls = false;
+
   // Enables debug info in non-user-visible surfaces, like Chrome Inspector.
   // Does nothing if `kJourneys` is disabled.
   bool non_user_visible_debug = false;

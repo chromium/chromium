@@ -986,6 +986,13 @@ const FeatureEntry::FeatureVariation kJourneysVariations[] = {
     {"All Supported Locales", kJourneysAllLocalesParams,
      std::size(kJourneysAllLocalesParams), nullptr},
 };
+const FeatureEntry::FeatureParam kJourneysOmniboxActionOnURLsParams[] = {
+    {"omnibox_action_on_urls", "true"},
+};
+const FeatureEntry::FeatureVariation kJourneysOmniboxActionVariations[] = {
+    {"Action Chips on URLs", kJourneysOmniboxActionOnURLsParams,
+     std::size(kJourneysOmniboxActionOnURLsParams), nullptr},
+};
 const FeatureEntry::FeatureParam
     kJourneysOnDeviceClusteringLabelingNoContentClusteringParams[] = {
         {"should_label_clusters", "true"},
@@ -5068,7 +5075,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kJourneysOmniboxActionName,
      flag_descriptions::kJourneysOmniboxActionDescription,
      kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(history_clusters::internal::kOmniboxAction)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(history_clusters::internal::kOmniboxAction,
+                                    kJourneysOmniboxActionVariations,
+                                    "HistoryJourneysOmniboxAction")},
 
     {"history-journeys-on-device-clustering",
      flag_descriptions::kJourneysOnDeviceClusteringBackendName,

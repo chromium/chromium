@@ -81,6 +81,7 @@ class HistoryClustersService : public base::SupportsUserData,
       std::map<int64_t, IncompleteVisitContextAnnotations>;
 
   using KeywordSet = base::flat_set<std::u16string>;
+  using URLKeywordSet = base::flat_set<std::string>;
 
   // `url_loader_factory` is allowed to be nullptr, like in unit tests.
   // In that case, HistoryClustersService will never instantiate a clustering
@@ -173,11 +174,18 @@ class HistoryClustersService : public base::SupportsUserData,
   // keystroke, the cache may be ready and return true then.
   bool DoesQueryMatchAnyCluster(const std::string& query);
 
+  // Returns true if `stripped_url` is part of a significant cluster. This may
+  // kick off a cache refresh while still immediately returning false.
+  bool DoesURLMatchAnyCluster(const std::string& stripped_url);
+
   // Clears `all_keywords_cache_` and cancels any pending tasks to populate it.
   void ClearKeywordCache();
 
  private:
   friend class HistoryClustersServiceTestApi;
+
+  // Starts a keyword cache refresh, if necessary.
+  void StartKeywordCacheRefresh();
 
   // This is a callback used for the `QueryClusters()` call from
   // `DoesQueryMatchAnyCluster()`. Accumulates the keywords in `result` within
@@ -187,7 +195,9 @@ class HistoryClustersService : public base::SupportsUserData,
       base::ElapsedTimer total_latency_timer,
       base::Time begin_time,
       std::unique_ptr<std::vector<std::u16string>> keyword_accumulator,
+      std::unique_ptr<std::vector<std::string>> url_keyword_accumulator,
       KeywordSet* cache,
+      URLKeywordSet* url_cache,
       std::vector<history::Cluster> clusters,
       base::Time continuation_end_time);
 
@@ -223,6 +233,7 @@ class HistoryClustersService : public base::SupportsUserData,
   // the cache was generated so we can periodically re-generate.
   // TODO(tommycli): Make a smarter mechanism for regenerating the cache.
   KeywordSet all_keywords_cache_;
+  URLKeywordSet all_url_keywords_cache_;
   base::Time all_keywords_cache_timestamp_;
 
   // Like above, but will represent the clusters newer than
@@ -236,6 +247,7 @@ class HistoryClustersService : public base::SupportsUserData,
   // TODO(manukh) This is a "band aid" fix to missing keywords for recent
   //  visits.
   KeywordSet short_keyword_cache_;
+  URLKeywordSet short_url_keywords_cache_;
   base::Time short_keyword_cache_timestamp_;
 
   base::CancelableTaskTracker cache_query_task_tracker_;

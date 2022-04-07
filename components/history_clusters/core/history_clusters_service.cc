@@ -30,6 +30,7 @@
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history/core/browser/visitsegment_database.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_buildflags.h"
@@ -337,6 +338,45 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
   if (base::SysInfo::IsLowEndDevice())
     return false;
 
+  StartKeywordCacheRefresh();
+
+  // Early exit for single-character queries, even if it's an exact match.
+  // We still want to allow for two-character exact matches like "uk".
+  if (query.length() <= 1)
+    return false;
+
+  auto query_lower = base::i18n::ToLower(base::UTF8ToUTF16(query));
+
+  return short_keyword_cache_.contains(query_lower) ||
+         all_keywords_cache_.contains(query_lower);
+}
+
+bool HistoryClustersService::DoesURLMatchAnyCluster(
+    const std::string& stripped_url) {
+  if (!IsJourneysEnabled())
+    return false;
+
+  // We don't want any omnibox jank for low-end devices.
+  if (base::SysInfo::IsLowEndDevice())
+    return false;
+
+  StartKeywordCacheRefresh();
+
+  return short_url_keywords_cache_.contains(stripped_url) ||
+         all_url_keywords_cache_.contains(stripped_url);
+}
+
+void HistoryClustersService::ClearKeywordCache() {
+  all_keywords_cache_timestamp_ = base::Time();
+  short_keyword_cache_timestamp_ = base::Time();
+  all_keywords_cache_.clear();
+  all_url_keywords_cache_.clear();
+  short_keyword_cache_.clear();
+  short_keyword_cache_.clear();
+  cache_query_task_tracker_.TryCancelAll();
+}
+
+void HistoryClustersService::StartKeywordCacheRefresh() {
   // If `all_keywords_cache_` is older than 2 hours, update it with the keywords
   // of all clusters. Otherwise, update `short_keyword_cache_` with the
   // keywords of only the clusters not represented in all_keywords_cache_.
@@ -357,7 +397,8 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
                        weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer(),
                        /*begin_time=*/base::Time(),
                        std::make_unique<std::vector<std::u16string>>(),
-                       &all_keywords_cache_),
+                       std::make_unique<std::vector<std::string>>(),
+                       &all_keywords_cache_, &all_url_keywords_cache_),
         &cache_query_task_tracker_);
   } else if (!cache_query_task_tracker_.HasTrackedTasks() &&
              (base::Time::Now() - all_keywords_cache_timestamp_).InSeconds() >
@@ -375,34 +416,19 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
                        weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer(),
                        all_keywords_cache_timestamp_,
                        std::make_unique<std::vector<std::u16string>>(),
-                       &short_keyword_cache_),
+                       std::make_unique<std::vector<std::string>>(),
+                       &short_keyword_cache_, &short_url_keywords_cache_),
         &cache_query_task_tracker_);
   }
-
-  // Early exit for single-character queries, even if it's an exact match.
-  // We still want to allow for two-character exact matches like "uk".
-  if (query.length() <= 1)
-    return false;
-
-  auto query_lower = base::i18n::ToLower(base::UTF8ToUTF16(query));
-
-  return short_keyword_cache_.contains(query_lower) ||
-         all_keywords_cache_.contains(query_lower);
-}
-
-void HistoryClustersService::ClearKeywordCache() {
-  all_keywords_cache_timestamp_ = base::Time();
-  short_keyword_cache_timestamp_ = base::Time();
-  all_keywords_cache_.clear();
-  short_keyword_cache_.clear();
-  cache_query_task_tracker_.TryCancelAll();
 }
 
 void HistoryClustersService::PopulateClusterKeywordCache(
     base::ElapsedTimer total_latency_timer,
     base::Time begin_time,
     std::unique_ptr<std::vector<std::u16string>> keyword_accumulator,
+    std::unique_ptr<std::vector<std::string>> url_keyword_accumulator,
     KeywordSet* cache,
+    URLKeywordSet* url_cache,
     std::vector<history::Cluster> clusters,
     base::Time continuation_end_time) {
   base::ElapsedThreadTimer populate_keywords_thread_timer;
@@ -426,6 +452,13 @@ void HistoryClustersService::PopulateClusterKeywordCache(
       keyword_accumulator->push_back(base::i18n::ToLower(keyword));
     }
 
+    // Push a simplified form of the URL for each visit into the cache.
+    for (const auto& visit : cluster.visits) {
+      url_keyword_accumulator->push_back(
+          history::VisitSegmentDatabase::ComputeSegmentName(
+              visit.normalized_url));
+    }
+
     // Limit the cache size. It's possible for the `cache.size()` to exceed
     // `max_keyword_phrases` since:
     // 1) We cache all of a particular cluster's keywords if we haven't yet
@@ -433,6 +466,7 @@ void HistoryClustersService::PopulateClusterKeywordCache(
     // 2) We have 2 caches which are capped separately.
     // 3) We cap the # of phrase, each of which may contain multiple words,
     //    whereas `cache` contains individual words.
+    // TODO(tommycli): Apply this limit to the URL keyword cache too.
     if (max_keyword_phrases != 0 &&
         keyword_accumulator->size() >= max_keyword_phrases) {
       break;
@@ -453,8 +487,9 @@ void HistoryClustersService::PopulateClusterKeywordCache(
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(total_latency_timer), begin_time,
-                       // Pass on the accumulator set to the next callback.
-                       std::move(keyword_accumulator), cache),
+                       // Pass on the accumulator sets to the next callback.
+                       std::move(keyword_accumulator),
+                       std::move(url_keyword_accumulator), cache, url_cache),
         &cache_query_task_tracker_);
     // Log this even if we go back for more clusters.
     base::UmaHistogramTimes(kKeywordCacheThreadTimeUmaName,
@@ -466,6 +501,7 @@ void HistoryClustersService::PopulateClusterKeywordCache(
   // via the constructor for efficiency (as recommended by the flat_set docs).
   // De-duplication is handled by the flat_set itself.
   *cache = KeywordSet(*keyword_accumulator);
+  *url_cache = URLKeywordSet(*url_keyword_accumulator);
   if (ShouldNotifyDebugMessage()) {
     NotifyDebugMessage("Cache construction complete:");
     NotifyDebugMessage(GetDebugJSONForKeywordSet(*cache));

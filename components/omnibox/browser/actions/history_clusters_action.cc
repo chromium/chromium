@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/history/core/browser/visitsegment_database.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
@@ -85,19 +86,27 @@ void AttachHistoryClustersActions(
       continue;
     }
 
-    // Also skip all URLs. Only match this for Search matches. Pedals doesn't
-    // explicitly filter URL matches out, but the "bag" of words it searches
-    // over is quite small. That's why we need to be stricter than Pedals.
-    if (!AutocompleteMatch::IsSearchType(match.type)) {
-      continue;
+    if (AutocompleteMatch::IsSearchType(match.type)) {
+      std::string query = base::UTF16ToUTF8(match.contents);
+      if (service->DoesQueryMatchAnyCluster(query)) {
+        match.action = base::MakeRefCounted<HistoryClustersAction>(query);
+      }
+    } else if (GetConfig().omnibox_action_on_urls) {
+      // We do the URL stripping here, because we need it to both execute the
+      // query, as well as to feed it into the action chip so the chip navigates
+      // to the right place (with the query pre-populated).
+      std::string stripped_url =
+          history::VisitSegmentDatabase::ComputeSegmentName(
+              match.destination_url);
+      if (service->DoesURLMatchAnyCluster(stripped_url)) {
+        match.action =
+            base::MakeRefCounted<HistoryClustersAction>(stripped_url);
+      }
     }
 
-    std::string query = base::UTF16ToUTF8(match.contents);
-    if (service->DoesQueryMatchAnyCluster(query)) {
-      match.action = base::MakeRefCounted<HistoryClustersAction>(query);
-
-      // Only ever attach one action (to the highest match), to not overwhelm
-      // the user with multiple "Resume Journey" action buttons.
+    // Only ever attach one action (to the highest match), to not overwhelm
+    // the user with multiple "Resume Journey" action buttons.
+    if (match.action) {
       return;
     }
   }

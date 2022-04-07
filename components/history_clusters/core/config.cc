@@ -69,6 +69,10 @@ Config::Config() {
 
   omnibox_action = base::FeatureList::IsEnabled(internal::kOmniboxAction);
 
+  omnibox_action_on_urls = base::GetFieldTrialParamByFeatureAsBool(
+      internal::kOmniboxAction, "omnibox_action_on_urls",
+      omnibox_action_on_urls);
+
   non_user_visible_debug =
       base::FeatureList::IsEnabled(internal::kNonUserVisibleDebug);
 
