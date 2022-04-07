@@ -79,11 +79,11 @@ std::unique_ptr<Textfield> CreateCommonTextfieldWithAXName(
 
 LayoutExampleBase::ChildPanel::ChildPanel(LayoutExampleBase* example)
     : example_(example) {
-  margin_.left = CreateTextfield();
-  margin_.top = CreateTextfield();
-  margin_.right = CreateTextfield();
-  margin_.bottom = CreateTextfield();
-  flex_ = CreateTextfield();
+  margin_.left = CreateTextfield(u"Left margin");
+  margin_.top = CreateTextfield(u"Top margin");
+  margin_.right = CreateTextfield(u"Right margin");
+  margin_.bottom = CreateTextfield(u"Bottom margin");
+  flex_ = CreateTextfield(u"Flex");
   flex_->SetText(std::u16string());
 }
 
@@ -159,14 +159,9 @@ void LayoutExampleBase::ChildPanel::ContentsChanged(
   example_->RefreshLayoutPanel(sender == flex_);
 }
 
-Textfield* LayoutExampleBase::ChildPanel::CreateTextfield() {
-  auto textfield = std::make_unique<Textfield>();
-  textfield->SetDefaultWidthInChars(3);
-  textfield->SizeToPreferredSize();
-  textfield->SetText(u"0");
-  textfield->set_controller(this);
-  textfield->SetVisible(false);
-  return AddChildView(std::move(textfield));
+Textfield* LayoutExampleBase::ChildPanel::CreateTextfield(
+    const std::u16string& name) {
+  return AddChildView(CreateCommonTextfieldWithAXName(this, name));
 }
 
 LayoutExampleBase::LayoutExampleBase(const char* title) : ExampleBase(title) {}

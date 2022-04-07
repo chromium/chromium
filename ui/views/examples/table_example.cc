@@ -111,11 +111,11 @@ std::u16string TableExample::GetText(int row, int column_id) {
     return std::u16string();
 
   const char* const cells[5][4] = {
-      {"Orange", "Orange", "South america", "$5"},
+      {"Orange", "Orange", "South America", "$5"},
       {"Apple", "Green", "Canada", "$3"},
-      {"Blue berries", "Blue", "Mexico", "$10.3"},
+      {"Blueberries", "Blue", "Mexico", "$10.30"},
       {"Strawberries", "Red", "California", "$7"},
-      {"Cantaloupe", "Orange", "South america", "$5"},
+      {"Cantaloupe", "Orange", "South America", "$5"},
   };
   return ASCIIToUTF16(cells[row % 5][column_id]);
 }
@@ -133,7 +133,7 @@ std::u16string TableExample::GetTooltip(int row) {
   const char* const tooltips[5] = {
       "Orange - Orange you glad I didn't say banana?",
       "Apple - An apple a day keeps the doctor away",
-      "Blue berries - Bet you can't eat just one",
+      "Blueberries - Bet you can't eat just one",
       "Strawberries - Always better when homegrown",
       "Cantaloupe - So nice when perfectly ripe"};
 

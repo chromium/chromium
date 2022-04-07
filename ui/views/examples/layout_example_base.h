@@ -62,7 +62,7 @@ class VIEWS_EXAMPLES_EXPORT LayoutExampleBase : public ExampleBase,
     void ContentsChanged(Textfield* sender,
                          const std::u16string& new_contents) override;
 
-    Textfield* CreateTextfield();
+    Textfield* CreateTextfield(const std::u16string& name);
 
     raw_ptr<LayoutExampleBase> example_;
     bool selected_ = false;
