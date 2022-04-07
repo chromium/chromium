@@ -18,7 +18,7 @@ const CSSProperty& GetCSSPropertyVariable() {
 }
 
 bool CSSProperty::HasEqualCSSPropertyName(const CSSProperty& other) const {
-  return property_id_ == other.PropertyID();
+  return property_id_ == other.property_id_;
 }
 
 const CSSProperty& CSSProperty::Get(CSSPropertyID id) {

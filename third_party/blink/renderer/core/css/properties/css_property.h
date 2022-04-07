@@ -35,7 +35,9 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   // For backwards compatibility when passing around CSSUnresolvedProperty
   // references. In case we need to call a function that hasn't been converted
   // to using property classes yet.
-  CSSPropertyID PropertyID() const { return property_id_; }
+  CSSPropertyID PropertyID() const {
+    return static_cast<CSSPropertyID>(property_id_);
+  }
   virtual CSSPropertyName GetCSSPropertyName() const {
     return CSSPropertyName(PropertyID());
   }
@@ -186,14 +188,20 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   constexpr CSSProperty(CSSPropertyID property_id,
                         Flags flags,
                         char repetition_separator)
-      : property_id_(property_id),
-        flags_(flags),
-        repetition_separator_(repetition_separator) {}
+      : property_id_(static_cast<uint16_t>(property_id)),
+        repetition_separator_(repetition_separator),
+        flags_(flags) {}
 
  private:
-  CSSPropertyID property_id_;
-  Flags flags_;
+  uint16_t property_id_;
   char repetition_separator_;
+  Flags flags_;
+
+  // Make sure we have room for all valid CSSPropertyIDs.
+  // (Using a smaller type here reduces CSSProperty size from 24 to 16
+  // bytes, and we have many of them that are frequently accessed
+  // during style application.)
+  static_assert(sizeof(property_id_) * 8 >= kCSSPropertyIDBitLength);
 };
 
 template <>
