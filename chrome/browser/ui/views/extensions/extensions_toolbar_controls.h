@@ -13,7 +13,6 @@
 
 class ExtensionsToolbarButton;
 class ExtensionsRequestAccessButton;
-class ToolbarActionViewController;
 
 class ExtensionsToolbarControls : public ToolbarIconContainerView {
  public:
@@ -32,17 +31,24 @@ class ExtensionsToolbarControls : public ToolbarIconContainerView {
     return extensions_button_;
   }
 
+  // Methods for testing.
   ExtensionsToolbarButton* site_access_button_for_testing() const {
     return site_access_button_;
+  }
+  ExtensionsRequestAccessButton* request_access_button_for_testing() const {
+    return request_access_button_;
   }
 
   // Updates `site_access_button_` visibility to the given one.
   void UpdateSiteAccessButtonVisibility(bool visibility);
 
   // Updates `request_access_button_` visibility and content based on the given
-  // `actions`.
-  void UpdateRequestAccessButton(
-      const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions);
+  // `count_requesting_extensions`.
+  void UpdateRequestAccessButton(int count_requesting_extensions);
+
+  // Resets the layout since layout animation does not handle host view
+  // visibility changing. This should be called after any visibility changes.
+  void ResetLayout();
 
   // ToolbarIconContainerView:
   void UpdateAllIcons() override;

@@ -210,6 +210,12 @@ bool ExtensionActionViewController::IsShowingPopup() const {
   return popup_host_ != nullptr;
 }
 
+bool ExtensionActionViewController::IsRequestingSiteAccess(
+    content::WebContents* web_contents) const {
+  return GetSiteInteraction(web_contents) ==
+         extensions::SitePermissionsHelper::SiteInteraction::kPending;
+}
+
 void ExtensionActionViewController::HidePopup() {
   if (IsShowingPopup()) {
     popup_host_->Close();

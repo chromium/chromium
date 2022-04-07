@@ -20,7 +20,7 @@ ExtensionsToolbarControls::ExtensionsToolbarControls(
       site_access_button_(AddChildView(std::move(site_access_button))),
       extensions_button_(extensions_button.get()) {
   site_access_button_->SetVisible(false);
-  request_access_button_->SetVisible(true);
+  request_access_button_->SetVisible(false);
   // TODO(emiliapaz): Consider changing AddMainItem() to receive a unique_ptr.
   AddMainItem(extensions_button.release());
 }
@@ -33,20 +33,29 @@ void ExtensionsToolbarControls::UpdateSiteAccessButtonVisibility(
     bool visibility) {
   site_access_button_->SetVisible(visibility);
 
-  // Layout animation does not handle host view visibility changing; requires
-  // resetting.
-  // TODO(crbug.com/1239772): Consider moving this to a separate method, or
-  // merging both visibility updates under one method after setting the request
-  // access button visibility based on extensions requesting access.
-  GetAnimatingLayoutManager()->ResetLayout();
+  ResetLayout();
 }
 
 void ExtensionsToolbarControls::UpdateRequestAccessButton(
-    const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions) {
-  // TODO(crbug.com/1239772): Display site access button, and add the action
-  // icons to the button and tooltip only when 1+ actions are given. For now,
-  // setting visible as true to see the button in the toolbar.
-  request_access_button_->SetVisible(true);
+    int count_requesting_extensions) {
+  if (count_requesting_extensions == 0) {
+    request_access_button_->SetVisible(false);
+  } else {
+    // TODO(crbug.com/1239772): Update icons, based on the number of extensions
+    // requesting access, once multiple icons in button is supported. Since we
+    // will need to access the extension information, this method may receive
+    // actions instead of actions count. For now, just show the number of
+    // actions.
+    request_access_button_->UpdateLabel(count_requesting_extensions);
+    request_access_button_->SetVisible(true);
+    // TODO(crbug.com/1239772): Update tooltip with the extension's names.
+  }
+
+  ResetLayout();
+}
+
+void ExtensionsToolbarControls::ResetLayout() {
+  GetAnimatingLayoutManager()->ResetLayout();
 }
 
 BEGIN_METADATA(ExtensionsToolbarControls, ToolbarIconContainerView)

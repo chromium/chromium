@@ -6,22 +6,29 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 
 ExtensionsRequestAccessButton::ExtensionsRequestAccessButton()
     : ToolbarButton(
           base::BindRepeating(&ExtensionsRequestAccessButton::OnButtonPressed,
-                              base::Unretained(this))) {
+                              base::Unretained(this))) {}
+
+ExtensionsRequestAccessButton::~ExtensionsRequestAccessButton() = default;
+
+void ExtensionsRequestAccessButton::UpdateLabel(
+    int extensions_requesting_access_count) {
+  DCHECK_GT(extensions_requesting_access_count, 0);
   // TODO(crbug.com/1239772): Set the label and background color without borders
   // separately to match the mocks. For now, using SetHighlight to display that
   // adds a border and highlight color in addition to the label.
   absl::optional<SkColor> color;
-  SetHighlight(l10n_util::GetStringUTF16(IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON),
-               color);
+  SetHighlight(
+      l10n_util::GetStringFUTF16Int(IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON,
+                                    extensions_requesting_access_count),
+      color);
 }
-
-ExtensionsRequestAccessButton::~ExtensionsRequestAccessButton() = default;
 
 // TODO(crbug.com/1239772): Grant access to all the extensions requesting access
 // when the button is pressed.

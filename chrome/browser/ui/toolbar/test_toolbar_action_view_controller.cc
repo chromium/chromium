@@ -60,6 +60,11 @@ bool TestToolbarActionViewController::IsShowingPopup() const {
   return popup_showing_;
 }
 
+bool TestToolbarActionViewController::IsRequestingSiteAccess(
+    content::WebContents* web_contents) const {
+  return false;
+}
+
 void TestToolbarActionViewController::HidePopup() {
   popup_showing_ = false;
   delegate_->OnPopupClosed();

@@ -61,6 +61,9 @@ class ExtensionsToolbarUnitTest : public TestWithBrowserView {
   // Disables the extension of the given `extension_id`.
   void DisableExtension(const extensions::ExtensionId& extension_id);
 
+  // Withhold all host permissions of the given `extension`.
+  void WithholdHostPermissions(const extensions::Extension* extension);
+
   // Triggers the press and release event of the given `button`.
   void ClickButton(views::Button* button) const;
 

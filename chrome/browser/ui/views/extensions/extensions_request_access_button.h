@@ -17,6 +17,10 @@ class ExtensionsRequestAccessButton : public ToolbarButton {
       const ExtensionsRequestAccessButton&) = delete;
   ~ExtensionsRequestAccessButton() override;
 
+  // Updates the label based on the `extensions_requesting_access_count`. This
+  // should only be called if there is at least one extension requesting access.
+  void UpdateLabel(int extensions_requesting_access_count);
+
  private:
   void OnButtonPressed();
 };
