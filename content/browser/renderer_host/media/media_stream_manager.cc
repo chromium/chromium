@@ -155,21 +155,32 @@ void EnableHotwordEffect(const StreamControls& controls, int* effects) {
   }
 }
 
-bool GetDeviceIDFromHMAC(const std::string& salt,
-                         const url::Origin& security_origin,
-                         const std::string& hmac_device_id,
-                         const blink::WebMediaDeviceInfoArray& devices,
-                         std::string* device_id) {
+// Gets raw |device_id| and |group_id| when given a hashed device_id
+// |hmac_device_id|. Both |device_id| and |group_id| could be null pointers.
+bool GetDeviceIDAndGroupIDFromHMAC(
+    const std::string& salt,
+    const url::Origin& security_origin,
+    const std::string& hmac_device_id,
+    const blink::WebMediaDeviceInfoArray& devices,
+    std::string* device_id,
+    absl::optional<std::string>* group_id) {
   // The source_id can be empty if the constraint is set but empty.
   if (hmac_device_id.empty())
     return false;
 
   for (const auto& device_info : devices) {
-    if (MediaStreamManager::DoesMediaDeviceIDMatchHMAC(
+    if (!MediaStreamManager::DoesMediaDeviceIDMatchHMAC(
             salt, security_origin, hmac_device_id, device_info.device_id)) {
-      *device_id = device_info.device_id;
-      return true;
+      continue;
     }
+    if (device_id)
+      *device_id = device_info.device_id;
+    if (group_id) {
+      *group_id = device_info.group_id.empty()
+                      ? absl::nullopt
+                      : absl::make_optional<std::string>(device_info.group_id);
+    }
+    return true;
   }
   return false;
 }
@@ -989,13 +1000,14 @@ MediaStreamManager::~MediaStreamManager() {
   base::PowerMonitor::RemovePowerThermalObserver(this);
 }
 
-VideoCaptureManager* MediaStreamManager::video_capture_manager() {
+VideoCaptureManager* MediaStreamManager::video_capture_manager() const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(video_capture_manager_.get());
   return video_capture_manager_.get();
 }
 
-AudioInputDeviceManager* MediaStreamManager::audio_input_device_manager() {
+AudioInputDeviceManager* MediaStreamManager::audio_input_device_manager()
+    const {
   // May be called on any thread, provided that we are not in shutdown.
   DCHECK(audio_input_device_manager_.get());
   return audio_input_device_manager_.get();
@@ -1055,7 +1067,7 @@ std::string MediaStreamManager::MakeMediaAccessRequest(
           security_origin, true /* has_focus */, false /* is_background */});
 
   request->media_access_request_cb = std::move(callback);
-  const std::string& label = AddRequest(std::move(request));
+  const std::string label = AddRequest(std::move(request));
 
   // Post a task and handle the request asynchronously. The reason is that the
   // requester won't have a label for the request until this function returns
@@ -1148,11 +1160,30 @@ void MediaStreamManager::GetOpenDevice(
       std::move(device_capture_handle_change_cb));
 
   request->get_open_device_cb = std::move(get_open_device_cb);
+  DeviceRequest* const request_ptr = request.get();
+  const std::string new_label = AddRequest(std::move(request));
 
-  // TODO(https://crbug.com/1288839): Find and clone MediaStreamDevice using
-  // |device_session_id| and return that.
-  std::move(request->get_open_device_cb)
-      .Run(MediaStreamRequestResult::NOT_SUPPORTED, absl::nullopt);
+  const absl::optional<MediaStreamDevice> new_device =
+      CloneExistingOpenDevice(device_session_id, new_label);
+  if (!new_device.has_value()) {
+    // No existing device with matching session id is found.
+    FinalizeRequestFailed(new_label, request_ptr,
+                          MediaStreamRequestResult::INVALID_STATE);
+    return;
+  }
+  request_ptr->devices.push_back(*new_device);
+
+  if (blink::IsAudioInputMediaType(new_device->type))
+    request_ptr->SetAudioType(new_device->type);
+  else if (blink::IsVideoInputMediaType(new_device->type))
+    request_ptr->SetVideoType(new_device->type);
+
+  // Device cloned in CloneExistingOpenDevice is ensured to have the state
+  // MEDIA_REQUEST_STATE_DONE.
+  // Set state to MEDIA_REQUEST_STATE_DONE as all processing specific to
+  // new_device has been done.
+  request_ptr->SetState(new_device->type, MEDIA_REQUEST_STATE_DONE);
+  HandleRequestDone(new_label, request_ptr);
 }
 
 void MediaStreamManager::CancelRequest(int render_process_id,
@@ -1388,7 +1419,7 @@ void MediaStreamManager::OpenDevice(int render_process_id,
       std::move(salt_and_origin), std::move(device_stopped_cb));
 
   request->open_device_cb = std::move(open_device_cb);
-  const std::string& label = AddRequest(std::move(request));
+  const std::string label = AddRequest(std::move(request));
 
   // Post a task and handle the request asynchronously. The reason is that the
   // requester won't have a label for the request until this function returns
@@ -1400,12 +1431,13 @@ void MediaStreamManager::OpenDevice(int render_process_id,
                                 base::Unretained(this), label));
 }
 
-bool MediaStreamManager::TranslateSourceIdToDeviceId(
+bool MediaStreamManager::TranslateSourceIdToDeviceIdAndGroupId(
     MediaStreamType stream_type,
     const std::string& salt,
     const url::Origin& security_origin,
     const std::string& source_id,
-    std::string* device_id) const {
+    std::string* device_id,
+    absl::optional<std::string>* group_id) const {
   DCHECK(stream_type == MediaStreamType::DEVICE_AUDIO_CAPTURE ||
          stream_type == MediaStreamType::DEVICE_VIDEO_CAPTURE);
   // The source_id can be empty if the constraint is set but empty.
@@ -1417,8 +1449,8 @@ bool MediaStreamManager::TranslateSourceIdToDeviceId(
   blink::WebMediaDeviceInfoArray cached_devices =
       media_devices_manager_->GetCachedDeviceInfo(
           ConvertToMediaDeviceType(stream_type));
-  return GetDeviceIDFromHMAC(salt, security_origin, source_id, cached_devices,
-                             device_id);
+  return GetDeviceIDAndGroupIDFromHMAC(salt, security_origin, source_id,
+                                       cached_devices, device_id, group_id);
 }
 
 void MediaStreamManager::EnsureDeviceMonitorStarted() {
@@ -1466,10 +1498,9 @@ bool MediaStreamManager::PickDeviceId(
     std::string* device_id) const {
   if (controls.device_id.empty())
     return true;
-
-  if (!GetDeviceIDFromHMAC(salt_and_origin.device_id_salt,
-                           salt_and_origin.origin, controls.device_id, devices,
-                           device_id)) {
+  if (!GetDeviceIDAndGroupIDFromHMAC(
+          salt_and_origin.device_id_salt, salt_and_origin.origin,
+          controls.device_id, devices, device_id, /*group_id=*/nullptr)) {
     LOG(WARNING) << "Invalid device ID = " << controls.device_id;
     return false;
   }
@@ -1495,7 +1526,7 @@ bool MediaStreamManager::GetRequestedDeviceCaptureId(
 
 void MediaStreamManager::TranslateDeviceIdToSourceId(
     DeviceRequest* request,
-    MediaStreamDevice* device) {
+    MediaStreamDevice* device) const {
   if (request->audio_type() == MediaStreamType::DEVICE_AUDIO_CAPTURE ||
       request->video_type() == MediaStreamType::DEVICE_VIDEO_CAPTURE) {
     device->id =
@@ -1601,6 +1632,54 @@ MediaStreamManager::DeviceRequest* MediaStreamManager::FindRequest(
       return labeled_request.second.get();
   }
   return nullptr;
+}
+
+absl::optional<MediaStreamDevice> MediaStreamManager::CloneExistingOpenDevice(
+    const base::UnguessableToken& existing_device_session_id,
+    const std::string& new_label) const {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  DeviceRequest* const new_request = FindRequest(new_label);
+  DCHECK(new_request);
+  for (const LabeledDeviceRequest& labeled_request : requests_) {
+    const DeviceRequest* const existing_request = labeled_request.second.get();
+    for (const MediaStreamDevice& existing_device : existing_request->devices) {
+      if (existing_device.session_id() != existing_device_session_id) {
+        continue;
+      }
+      if (existing_request->state(existing_device.type) !=
+          MEDIA_REQUEST_STATE_DONE) {
+        // TODO(https://crbug.com/1288839): Ensure state of MediaStreamDevice
+        // doesn't change while MediaStreamTrack is being transferred.
+        // Skip devices not in state MEDIA_REQUEST_STATE_DONE.
+        continue;
+      }
+
+      absl::optional<MediaStreamDevice> new_device = existing_device;
+      // Device id and group_id are only hashed for MediaStreamType
+      // DEVICE_AUDIO_CAPTURE and DEVICE_VIDEO_CAPTURE.
+      if (existing_device.type == MediaStreamType::DEVICE_AUDIO_CAPTURE ||
+          existing_device.type == MediaStreamType::DEVICE_VIDEO_CAPTURE) {
+        // Gets the raw device id and device group_id.
+        if (!TranslateSourceIdToDeviceIdAndGroupId(
+                existing_device.type,
+                existing_request->salt_and_origin.device_id_salt,
+                existing_request->salt_and_origin.origin, existing_device.id,
+                &new_device->id, &new_device->group_id)) {
+          // Can return false if |existing_device.id| is invalid.
+          continue;
+        }
+
+        // Creates hashed device id and device group_id.
+        TranslateDeviceIdToSourceId(new_request, &*new_device);
+      }
+
+      new_device->set_session_id(
+          GetDeviceManager(new_device->type)->Open(*new_device));
+      return new_device;
+    }
+  }
+  return absl::nullopt;
 }
 
 void MediaStreamManager::DeleteRequest(const std::string& label) {
@@ -2391,7 +2470,9 @@ void MediaStreamManager::HandleRequestDone(const std::string& label,
       // TODO(https://crbug.com/1288839): Add a new function
       // FinalizeGetOpenDevice to handle the cloned MediaStreamDevice from
       // GetOpenDevice.
-      NOTREACHED();
+      DCHECK(request->get_open_device_cb);
+      std::move(request->get_open_device_cb)
+          .Run(MediaStreamRequestResult::NOT_SUPPORTED, absl::nullopt);
       break;
     }
     case blink::MEDIA_DEVICE_UPDATE:
@@ -2803,7 +2884,7 @@ bool MediaStreamManager::RequestDone(const DeviceRequest& request) const {
 }
 
 MediaStreamProvider* MediaStreamManager::GetDeviceManager(
-    MediaStreamType stream_type) {
+    MediaStreamType stream_type) const {
   if (blink::IsVideoInputMediaType(stream_type))
     return video_capture_manager();
   else if (blink::IsAudioInputMediaType(stream_type))

@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
@@ -23,6 +24,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/media_observer.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "media/audio/audio_device_description.h"
@@ -360,6 +362,17 @@ class MediaStreamManagerTest : public ::testing::Test {
     wait_loop->Quit();
   }
 
+  static void GetOpenDeviceCallback(
+      blink::MediaStreamDevice* transferred_device,
+      blink::mojom::MediaStreamRequestResult* result_out,
+      blink::mojom::MediaStreamRequestResult result,
+      absl::optional<blink::mojom::GetOpenDeviceResponse> response) {
+    *result_out = result;
+    if (response.has_value()) {
+      *transferred_device = response->device;
+    }
+  }
+
   blink::MediaStreamDevice CreateOrSearchAudioDeviceStream(
       const StreamSelectionStrategy& strategy,
       const absl::optional<base::UnguessableToken>& session_id,
@@ -401,6 +414,7 @@ class MediaStreamManagerTest : public ::testing::Test {
   // CurrentThread::DestructionObserver. audio_manager_ needs to outlive
   // task_environment_ because it uses the underlying message loop.
   std::unique_ptr<MediaStreamManager> media_stream_manager_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<MockMediaObserver> media_observer_;
   std::unique_ptr<ContentBrowserClient> browser_content_client_;
   content::BrowserTaskEnvironment task_environment_;
@@ -883,6 +897,35 @@ TEST_F(MediaStreamManagerTest, DesktopCaptureDeviceChanged) {
   media_stream_manager_->StopStreamDevice(render_process_id, render_frame_id,
                                           requester_id, video_device.id,
                                           video_device.session_id());
+}
+
+// TODO(crbug.com/1288839): Add test that uses GetOpenDevice to successfully
+// return a cloned device.
+
+TEST_F(MediaStreamManagerTest,
+       GetOpenDeviceForNonExistentDeviceReturnsInvalidState) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kMediaStreamTrackTransfer);
+  media_stream_manager_->UseFakeUIFactoryForTests(base::BindRepeating([]() {
+    return std::make_unique<FakeMediaStreamUIProxy>(
+        /*tests_use_fake_render_frame_hosts=*/true);
+  }));
+
+  blink::MediaStreamDevice transferred_device;
+  auto result =
+      blink::mojom::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS;
+  MediaStreamManager::GetOpenDeviceCallback get_open_device_cb =
+      base::BindOnce(GetOpenDeviceCallback, &transferred_device, &result)
+          .Then(run_loop_.QuitClosure());
+
+  media_stream_manager_->GetOpenDevice(
+      base::UnguessableToken::Create(), /*render_process_id=*/1,
+      /*render_frame_id=*/1, /*requester_id=*/1, /*page_request_id=*/1,
+      MediaDeviceSaltAndOrigin(), std::move(get_open_device_cb),
+      base::DoNothing(), base::DoNothing(), base::DoNothing(),
+      base::DoNothing());
+  run_loop_.Run();
+  EXPECT_EQ(result, blink::mojom::MediaStreamRequestResult::INVALID_STATE);
 }
 
 TEST_F(MediaStreamManagerTest, GetMediaDeviceIDForHMAC) {
