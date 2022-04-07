@@ -18,7 +18,7 @@
 #endif
 
 namespace {
-const char kRSSLinkScript[] = "rss_link_js";
+const char kRSSLinkScript[] = "rss_link";
 const char kGetRSSLinkFunction[] = "rssLink.getRSSLinks";
 // The timeout for any JavaScript call in this file.
 const double kJavaScriptExecutionTimeoutInMs = 500.0;

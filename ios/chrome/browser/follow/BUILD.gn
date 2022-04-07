@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 
 source_set("follow") {
   sources = [
@@ -20,9 +20,9 @@ source_set("follow") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
-js_compile_bundle("rss_link_js") {
+optimize_js("rss_link_js") {
   visibility = [ ":follow" ]
-  closure_entry_point = "__crWeb.rssLink"
 
+  primary_script = "resources/rss_link.js"
   sources = [ "resources/rss_link.js" ]
 }
