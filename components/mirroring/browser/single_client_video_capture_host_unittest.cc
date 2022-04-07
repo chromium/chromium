@@ -52,7 +52,7 @@ class MockVideoCaptureDevice final
                     uint32_t,
                     base::OnceCallback<void(media::mojom::CropRequestResult)>));
   MOCK_METHOD0(RequestRefreshFrame, void());
-  MOCK_METHOD2(OnUtilizationReport, void(int, media::VideoCaptureFeedback));
+  MOCK_METHOD1(OnUtilizationReport, void(media::VideoCaptureFeedback));
 };
 
 class FakeDeviceLauncher final : public content::VideoCaptureDeviceLauncher {
@@ -276,10 +276,9 @@ class SingleClientVideoCaptureHostTest : public ::testing::Test {
   }
 
   void FinishConsumingBuffer(int buffer_context_id,
-                             int feedback_id,
                              const media::VideoCaptureFeedback& feedback) {
     base::RunLoop run_loop;
-    EXPECT_CALL(*launched_device_, OnUtilizationReport(feedback_id, feedback))
+    EXPECT_CALL(*launched_device_, OnUtilizationReport(feedback))
         .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
     consumer_->FinishConsumingBuffer(buffer_context_id, feedback);
     run_loop.Run();
@@ -319,8 +318,11 @@ class SingleClientVideoCaptureHostTest : public ::testing::Test {
 TEST_F(SingleClientVideoCaptureHostTest, Basic) {
   CustomSetUp();
   CreateBuffer(1, 0);
-  FrameReadyInBuffer(1, 0, 5);
-  FinishConsumingBuffer(0, 5, media::VideoCaptureFeedback(1.0));
+  const int feedback_id = 5;
+  FrameReadyInBuffer(1, 0, feedback_id);
+  auto feedback = media::VideoCaptureFeedback(1.0);
+  feedback.frame_id = feedback_id;
+  FinishConsumingBuffer(0, feedback);
   RetireBuffer(1, 0);
 }
 
@@ -331,7 +333,8 @@ TEST_F(SingleClientVideoCaptureHostTest, InvalidParams) {
 TEST_F(SingleClientVideoCaptureHostTest, ReuseBufferId) {
   CustomSetUp();
   CreateBuffer(0, 0);
-  FrameReadyInBuffer(0, 0, 3);
+  const int feedback_id = 3;
+  FrameReadyInBuffer(0, 0, feedback_id);
   // Retire buffer 0. The consumer is not expected to receive OnBufferDestroyed
   // since the buffer is not returned yet.
   {
@@ -341,11 +344,14 @@ TEST_F(SingleClientVideoCaptureHostTest, ReuseBufferId) {
   }
 
   // Re-use buffer 0.
+  const int feedback_id_2 = 7;
   CreateBuffer(0, 1);
-  FrameReadyInBuffer(0, 1, 7);
+  FrameReadyInBuffer(0, 1, feedback_id_2);
 
   // Finish consuming frame in the retired buffer 0.
-  FinishConsumingBuffer(0, 3, media::VideoCaptureFeedback(1.0));
+  auto feedback = media::VideoCaptureFeedback(1.0);
+  feedback.frame_id = feedback_id;
+  FinishConsumingBuffer(0, feedback);
   // The retired buffer is expected to be destroyed since the consumer finished
   // consuming the frame in that buffer.
   base::RunLoop run_loop;
@@ -353,7 +359,9 @@ TEST_F(SingleClientVideoCaptureHostTest, ReuseBufferId) {
       .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   run_loop.Run();
 
-  FinishConsumingBuffer(1, 7, media::VideoCaptureFeedback(0.5));
+  auto feedback_2 = media::VideoCaptureFeedback(0.5);
+  feedback_2.frame_id = feedback_id_2;
+  FinishConsumingBuffer(1, feedback_2);
   RetireBuffer(0, 1);
 }
 

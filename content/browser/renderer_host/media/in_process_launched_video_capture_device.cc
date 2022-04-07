@@ -157,7 +157,6 @@ void InProcessLaunchedVideoCaptureDevice::SetDesktopCaptureWindowIdAsync(
 }
 
 void InProcessLaunchedVideoCaptureDevice::OnUtilizationReport(
-    int frame_feedback_id,
     media::VideoCaptureFeedback feedback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   // Unretained() is safe to use here because |device| would be null if it
@@ -165,8 +164,7 @@ void InProcessLaunchedVideoCaptureDevice::OnUtilizationReport(
   // guaranteed to run before the task that destroys the |device|.
   device_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&media::VideoCaptureDevice::OnUtilizationReport,
-                                base::Unretained(device_.get()),
-                                frame_feedback_id, feedback));
+                                base::Unretained(device_.get()), feedback));
 }
 
 void InProcessLaunchedVideoCaptureDevice::

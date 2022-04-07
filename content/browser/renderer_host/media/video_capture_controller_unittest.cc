@@ -448,11 +448,10 @@ TEST_P(VideoCaptureControllerTest, NormalCaptureMultipleClients) {
   client_b_->feedback_.resource_utilization = -1.0;
   // Expect VideoCaptureController to call the load observer with a
   // resource utilization of 0.5 (the largest of all reported values).
-  const media::VideoCaptureFeedback kExpectedFeedback =
+  media::VideoCaptureFeedback kExpectedFeedback =
       media::VideoCaptureFeedback(0.5);
-  EXPECT_CALL(
-      *mock_launched_device_,
-      OnUtilizationReport(arbitrary_frame_feedback_id, kExpectedFeedback));
+  kExpectedFeedback.frame_id = arbitrary_frame_feedback_id;
+  EXPECT_CALL(*mock_launched_device_, OnUtilizationReport(kExpectedFeedback));
 
   device_client_->OnIncomingCapturedBuffer(std::move(buffer), device_format,
                                            arbitrary_reference_time_,
@@ -477,13 +476,16 @@ TEST_P(VideoCaptureControllerTest, NormalCaptureMultipleClients) {
   memset(buffer2_access->data(), buffer_no++, buffer2_access->mapped_size());
 
   client_a_->feedback_ = media::VideoCaptureFeedback(0.5, 60, 1000);
+  client_a_->feedback_.frame_id = arbitrary_frame_feedback_id_2;
   client_b_->feedback_ = media::VideoCaptureFeedback(3.14, 30);
+  client_b_->feedback_.frame_id = arbitrary_frame_feedback_id_2;
+
   // Expect VideoCaptureController to call the load observer with a
   // resource utilization of 3.14 (the largest of all reported values) and
   // sink constraints being the minimum of all reported values.
-  EXPECT_CALL(*mock_launched_device_,
-              OnUtilizationReport(arbitrary_frame_feedback_id_2,
-                                  media::VideoCaptureFeedback(3.14, 30, 1000)));
+  auto expected_feedback_2 = media::VideoCaptureFeedback(3.14, 30, 1000);
+  expected_feedback_2.frame_id = arbitrary_frame_feedback_id_2;
+  EXPECT_CALL(*mock_launched_device_, OnUtilizationReport(expected_feedback_2));
 
   device_client_->OnIncomingCapturedBuffer(std::move(buffer2), device_format,
                                            arbitrary_reference_time_,
@@ -845,9 +847,10 @@ TEST_F(VideoCaptureControllerTest, FrameFeedbackIsReportedForSequenceOfFrames) {
   for (int frame_index = 0; frame_index < kTestFrameSequenceLength;
        frame_index++) {
     const int stub_frame_feedback_id = frame_index;
-    const media::VideoCaptureFeedback stub_consumer_feedback =
+    media::VideoCaptureFeedback stub_consumer_feedback =
         media::VideoCaptureFeedback(static_cast<float>(frame_index) /
                                     kTestFrameSequenceLength);
+    stub_consumer_feedback.frame_id = stub_frame_feedback_id;
 
     client_a_->feedback_ = stub_consumer_feedback;
 
@@ -856,9 +859,8 @@ TEST_F(VideoCaptureControllerTest, FrameFeedbackIsReportedForSequenceOfFrames) {
                     ControllerIDAndSize(route_id, arbitrary_format.frame_size),
                     std::vector<ControllerIDAndSize>()))
         .Times(1);
-    EXPECT_CALL(
-        *mock_launched_device_,
-        OnUtilizationReport(stub_frame_feedback_id, stub_consumer_feedback))
+    EXPECT_CALL(*mock_launched_device_,
+                OnUtilizationReport(stub_consumer_feedback))
         .Times(1);
 
     // Device prepares and pushes a frame.

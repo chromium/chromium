@@ -218,8 +218,10 @@ void VideoCaptureController::BufferContext::DecreaseConsumerCount() {
   if (consumer_hold_count_ == 0) {
     if (consumer_feedback_observer_ != nullptr &&
         !combined_consumer_feedback_.Empty()) {
+      // We set this now since frame_feedback_id_ may be updated at anytime.
+      combined_consumer_feedback_.frame_id = frame_feedback_id_;
       consumer_feedback_observer_->OnUtilizationReport(
-          frame_feedback_id_, combined_consumer_feedback_);
+          combined_consumer_feedback_);
     }
     buffer_read_permission_.reset();
     combined_consumer_feedback_ = media::VideoCaptureFeedback();

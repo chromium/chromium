@@ -86,8 +86,7 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
             base::OnceCallback<void(media::mojom::CropRequestResult)> callback)
       override;
   void StopAndDeAllocate() final;
-  void OnUtilizationReport(int frame_feedback_id,
-                           media::VideoCaptureFeedback feedback) final;
+  void OnUtilizationReport(media::VideoCaptureFeedback feedback) final;
 
   // FrameSinkVideoConsumer implementation.
   void OnFrameCaptured(

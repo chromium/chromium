@@ -4,6 +4,7 @@
 
 #include "media/capture/mojom/video_capture_types_mojom_traits.h"
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
@@ -1862,6 +1863,11 @@ bool StructTraits<media::mojom::VideoCaptureFeedbackDataView,
   output->require_mapped_frame = data.require_mapped_frame();
   if (!data.ReadMappedSizes(&(output->mapped_sizes)))
     return false;
+
+  // Only need to set the frame_id if it's valid; otherwise it is default
+  // initialized to nullopt.
+  if (data.has_frame_id())
+    output->frame_id = data.frame_id();
   return true;
 }
 

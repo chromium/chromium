@@ -1547,7 +1547,6 @@ void VideoCaptureDeviceMFWin::SetPhotoOptions(
 }
 
 void VideoCaptureDeviceMFWin::OnUtilizationReport(
-    int frame_feedback_id,
     media::VideoCaptureFeedback feedback) {
   base::AutoLock lock(lock_);
   last_feedback_ = feedback;

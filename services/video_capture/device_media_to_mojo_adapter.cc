@@ -153,8 +153,8 @@ void DeviceMediaToMojoAdapter::TakePhoto(TakePhotoCallback callback) {
 
 void DeviceMediaToMojoAdapter::ProcessFeedback(
     const media::VideoCaptureFeedback& feedback) {
-  // Feedback ID is not propagated by mojo interface.
-  device_->OnUtilizationReport(/*frame_feedback_id=*/0, feedback);
+  // Feedback ID may not propagated by mojo interface.
+  device_->OnUtilizationReport(feedback);
 }
 
 void DeviceMediaToMojoAdapter::RequestRefreshFrame() {

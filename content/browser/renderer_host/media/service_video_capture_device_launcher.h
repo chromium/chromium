@@ -39,8 +39,6 @@ class CONTENT_EXPORT ServiceVideoCaptureDeviceLauncher
                          base::OnceClosure done_cb) override;
   void AbortLaunch() override;
 
-  void OnUtilizationReport(int frame_feedback_id, double utilization);
-
  private:
   enum class State {
     READY_TO_LAUNCH,

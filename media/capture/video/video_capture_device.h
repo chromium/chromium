@@ -59,13 +59,7 @@ class CAPTURE_EXPORT VideoFrameConsumerFeedbackObserver {
   // is available for encoding and/or sufficient bandwidth is available for
   // transmission over the network.  The maximum of the two utilization
   // measurements would be used as feedback.
-  //
-  // The parameter |frame_feedback_id| must match a |frame_feedback_id|
-  // previously sent out by the VideoCaptureDevice we are giving feedback about.
-  // It is used to indicate which particular frame the reported utilization
-  // corresponds to.
-  virtual void OnUtilizationReport(int frame_feedback_id,
-                                   media::VideoCaptureFeedback feedback) {}
+  virtual void OnUtilizationReport(media::VideoCaptureFeedback feedback) {}
 };
 
 struct CAPTURE_EXPORT CapturedExternalVideoBuffer {

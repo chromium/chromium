@@ -69,11 +69,13 @@ void ScreenCaptureDeviceAndroid::RequestRefreshFrame() {
 }
 
 void ScreenCaptureDeviceAndroid::OnUtilizationReport(
-    int frame_feedback_id,
     media::VideoCaptureFeedback feedback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(oracle_proxy_);
-  oracle_proxy_->OnConsumerReportingUtilization(frame_feedback_id, feedback);
+  DCHECK(feedback.frame_id.has_value());
+
+  oracle_proxy_->OnConsumerReportingUtilization(feedback.frame_id.value(),
+                                                feedback);
 }
 
 }  // namespace content

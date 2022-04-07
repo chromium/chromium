@@ -301,38 +301,48 @@ struct VideoCaptureParams {
   bool enable_face_detection;
 };
 
-// |resource_utilization| reports that the frame incurred some fractional
-// utilization of the downstream pipeline's per-frame processing capacity.
-// See code comments in media::base::VideoFrameMetadata for a discussion of
-// how utilization is interpreted. The capturer uses this information to
-// auto-adjust the capture resolution based on performance variances in the
-// live system environment.
-// -1.0 means no value present.
-//
-// |max_framerate_fps| reports requested maximum frame-rate
-// float::inifinty used to signal no limit.
-//
-// |max_pixels| reports requested maximum resolution (in sense of image area).
-// int::max used to signal no limit.
-//
-// |require_mapped_frame| reports that the consumer needs a cpu readable frame.
-// TODO(https://crbug.com/1191986): When |kWebRtcUseModernFrameAdapter| is
-// shipped to 100%, |require_mapped_frame| can be removed in favor of checking
-// if |mapped_sizes| is non-empty.
-//
-// |mapped_sizes| reports which sizes the video frame got mapped by the consumer
-// for CPU access. Only reported when |kWebRtcUseModernFrameAdapter| is enabled.
 [Stable, RenamedFrom="media.mojom.VideoFrameFeedback"]
 struct VideoCaptureFeedback {
+  // Reports that the frame incurred some fractional utilization of the
+  // downstream pipeline's per-frame processing capacity.
+  // See code comments in media::base::VideoFrameMetadata for a discussion of
+  // how utilization is interpreted. The capturer uses this information to
+  // auto-adjust the capture resolution based on performance variances in the
+  // live system environment.
+  // -1.0 means no value present.
   double resource_utilization;
 
+  // The requested maximum frame-rate, float::inifinty used to signal no limit.
   float max_framerate_fps;
 
+  // The requested maximum resolution (in sense of image area).
+  // int::max used to signal no limit.
   int32 max_pixels;
 
+  // Reports that the consumer needs a cpu readable frame.
+  // TODO(https://crbug.com/1191986): When |kWebRtcUseModernFrameAdapter| is
+  // shipped to 100%, |require_mapped_frame| can be removed in favor of checking
+  // if |mapped_sizes| is non-empty.
   bool require_mapped_frame;
 
+  // Reports which sizes the video frame got mapped by the consumer for CPU
+  // access. Only reported when |kWebRtcUseModernFrameAdapter| is enabled.
   [MinVersion=1] array<gfx.mojom.Size>? mapped_sizes;
+
+  // The frame that this feedback is associated with. Some consumers do not
+  // break down their analysis on a per-frame basis; while some may expect to
+  // hear any reports with a particular frame, so they can build a "timeline" of
+  // performance (e.g. to know if they have recovered). This struct is often
+  // funneled through multiple layers, so this frame_id may only be used by an
+  // intermediate layer to help route the feedback accordingly.
+  // This should usually be set to the same value as the |frame_feedback_id|
+  // received with the frame (often from a received `ReadyFrameInBuffer`).
+  [MinVersion=2] int32 frame_id = 0;
+
+  // Indicates whether or not the value in |frame_id| is valid.
+  // TODO(https://crbug.com/657632): Remove this and replace frame_id with an
+  // optional type.
+  [MinVersion=2] bool has_frame_id = false;
 };
 
 // Contains one stride value per image plane. Stride means the number of bytes

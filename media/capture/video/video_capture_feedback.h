@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "media/capture/capture_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -37,7 +38,7 @@ struct CAPTURE_EXPORT VideoCaptureFeedback {
            max_pixels == other.max_pixels &&
            max_framerate_fps == other.max_framerate_fps &&
            require_mapped_frame == other.require_mapped_frame &&
-           mapped_sizes == other.mapped_sizes;
+           mapped_sizes == other.mapped_sizes && frame_id == other.frame_id;
   }
 
   bool operator!=(const VideoCaptureFeedback& other) const {
@@ -98,6 +99,10 @@ struct CAPTURE_EXPORT VideoCaptureFeedback {
   // Indicates that consumer(s) wants these sizes to be mappable for CPU access.
   // Only reported when |kWebRtcUseModernFrameAdapter| is enabled.
   std::vector<gfx::Size> mapped_sizes;
+
+  // The frame id that this particular feedback is associated with, not all
+  // callers may set or require this.
+  absl::optional<int> frame_id = absl::nullopt;
 };
 
 }  // namespace media

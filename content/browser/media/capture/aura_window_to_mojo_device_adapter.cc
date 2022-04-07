@@ -75,8 +75,7 @@ void AuraWindowToMojoDeviceAdapter::TakePhoto(TakePhotoCallback callback) {
 
 void AuraWindowToMojoDeviceAdapter::ProcessFeedback(
     const media::VideoCaptureFeedback& feedback) {
-  // Feedback ID is not propagated by mojo interface.
-  device_->OnUtilizationReport(/*frame_feedback_id=*/0, feedback);
+  device_->OnUtilizationReport(feedback);
 }
 
 void AuraWindowToMojoDeviceAdapter::RequestRefreshFrame() {

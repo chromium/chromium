@@ -213,7 +213,6 @@ void VideoCaptureDeviceProxyLacros::TakePhoto(TakePhotoCallback callback) {
 }
 
 void VideoCaptureDeviceProxyLacros::OnUtilizationReport(
-    int frame_feedback_id,
     media::VideoCaptureFeedback feedback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

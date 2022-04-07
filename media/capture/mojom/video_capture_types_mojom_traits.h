@@ -264,6 +264,14 @@ struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
     return feedback.mapped_sizes;
   }
 
+  static bool has_frame_id(const media::VideoCaptureFeedback& feedback) {
+    return feedback.frame_id.has_value();
+  }
+
+  static int frame_id(const media::VideoCaptureFeedback& feedback) {
+    return feedback.frame_id.value_or(0);
+  }
+
   static bool Read(media::mojom::VideoCaptureFeedbackDataView data,
                    media::VideoCaptureFeedback* output);
 };

@@ -77,8 +77,7 @@ class MockLaunchedVideoCaptureDevice : public LaunchedVideoCaptureDevice {
   MOCK_METHOD0(RequestRefreshFrame, void());
   MOCK_METHOD2(DoSetDesktopCaptureWindowId,
                void(gfx::NativeViewId window_id, base::OnceClosure* done_cb));
-  MOCK_METHOD2(OnUtilizationReport,
-               void(int frame_feedback_id, media::VideoCaptureFeedback));
+  MOCK_METHOD1(OnUtilizationReport, void(media::VideoCaptureFeedback));
 
   void GetPhotoState(
       media::VideoCaptureDevice::GetPhotoStateCallback callback) override {

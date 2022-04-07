@@ -518,16 +518,15 @@ TEST_F(FrameSinkVideoCaptureDeviceTest, CapturesAndDeliversFrames) {
         MockFrameSinkVideoConsumerFrameCallbacks& callbacks =
             callbackses[frame_number - first_frame_number];
 
-        const media::VideoCaptureFeedback fake_feedback =
-            media::VideoCaptureFeedback(static_cast<double>(frame_number) /
-                                        kNumFramesToDeliver);
+        media::VideoCaptureFeedback fake_feedback = media::VideoCaptureFeedback(
+            static_cast<double>(frame_number) / kNumFramesToDeliver);
+        fake_feedback.frame_id = receiver->TakeFeedbackId(buffer_id);
+
         EXPECT_CALL(callbacks, ProvideFeedback(fake_feedback));
         EXPECT_CALL(callbacks, Done());
         EXPECT_CALL(*receiver, OnBufferRetired(buffer_id));
 
-        const int feedback_id = receiver->TakeFeedbackId(buffer_id);
-        POST_DEVICE_METHOD_CALL(OnUtilizationReport, feedback_id,
-                                fake_feedback);
+        POST_DEVICE_METHOD_CALL(OnUtilizationReport, fake_feedback);
         receiver->ReleaseAccessPermission(buffer_id);
         WAIT_FOR_DEVICE_TASKS();
       }

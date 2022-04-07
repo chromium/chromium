@@ -103,7 +103,7 @@ class SingleClientVideoCaptureHost final
  private:
   // Reports the |consumer_resource_utilization| and removes the buffer context.
   void OnFinishedConsumingBuffer(int buffer_context_id,
-                                 const media::VideoCaptureFeedback& feedback);
+                                 media::VideoCaptureFeedback feedback);
 
   const std::string device_id_;
   const blink::mojom::MediaStreamType type_;

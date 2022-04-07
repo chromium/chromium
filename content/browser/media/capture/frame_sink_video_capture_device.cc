@@ -192,11 +192,13 @@ void FrameSinkVideoCaptureDevice::StopAndDeAllocate() {
 }
 
 void FrameSinkVideoCaptureDevice::OnUtilizationReport(
-    int frame_feedback_id,
     media::VideoCaptureFeedback feedback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const auto index = static_cast<size_t>(frame_feedback_id);
+  if (!feedback.frame_id.has_value())
+    return;
+
+  const auto index = static_cast<size_t>(feedback.frame_id.value());
   DCHECK_LT(index, frame_callbacks_.size());
 
   // In most cases, we expect that the mojo InterfacePtr in |frame_callbacks_|

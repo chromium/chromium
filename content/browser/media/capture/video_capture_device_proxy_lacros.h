@@ -80,8 +80,7 @@ class CONTENT_EXPORT VideoCaptureDeviceProxyLacros
   void SetPhotoOptions(media::mojom::PhotoSettingsPtr settings,
                        SetPhotoOptionsCallback callback) final;
   void TakePhoto(TakePhotoCallback callback) final;
-  void OnUtilizationReport(int frame_feedback_id,
-                           media::VideoCaptureFeedback feedback) final;
+  void OnUtilizationReport(media::VideoCaptureFeedback feedback) final;
 
  private:
   // Helper that logs the given error |message| to the |receiver_| and then

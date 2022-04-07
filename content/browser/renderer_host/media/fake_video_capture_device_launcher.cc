@@ -54,9 +54,8 @@ class FakeLaunchedVideoCaptureDevice
                                       base::OnceClosure done_cb) override {
     // Do nothing.
   }
-  void OnUtilizationReport(int frame_feedback_id,
-                           media::VideoCaptureFeedback feedback) override {
-    device_->OnUtilizationReport(frame_feedback_id, feedback);
+  void OnUtilizationReport(media::VideoCaptureFeedback feedback) override {
+    device_->OnUtilizationReport(feedback);
   }
 
  private:
