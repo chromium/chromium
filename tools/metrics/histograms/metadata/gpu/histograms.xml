@@ -1575,25 +1575,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.WatchdogThread.Event" enum="GpuWatchdogThreadEvent"
-    expires_after="2022-08-14">
+<histogram name="GPU.WatchdogThread.Event{ThreadType}"
+    enum="GpuWatchdogThreadEvent" expires_after="2022-10-01">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
     Recorded for each time the GPU watchdog thread starts, crashes and ends.
-    This includes data from both watchdog V1 and V2.
   </summary>
+  <token key="ThreadType">
+    <variant name=""/>
+    <variant name=".compositor"/>
+    <variant name=".main"/>
+  </token>
 </histogram>
 
-<histogram name="GPU.WatchdogThread.Timeout" enum="GpuWatchdogTimeoutEvent"
-    expires_after="2022-08-21">
-<!-- Name completed by histogram_suffixes name="GPU.WatchdogStage" -->
-
+<histogram name="GPU.WatchdogThread.Timeout{WatchdogStage}{ThreadType}"
+    enum="GpuWatchdogTimeoutEvent" expires_after="2022-10-01">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
-    Recorded timeout events when the GPU watchdog V2 enters OnWatchdogTimeout.
+    Recorded timeout events when the GPU watchdog enters OnWatchdogTimeout.
   </summary>
+  <token key="WatchdogStage">
+    <variant name=""/>
+    <variant name=".Foregrounded"/>
+    <variant name=".Init"/>
+    <variant name=".Normal"/>
+    <variant name=".PowerResume"/>
+  </token>
+  <token key="ThreadType">
+    <variant name=""/>
+    <variant name=".compositor"/>
+    <variant name=".main"/>
+  </token>
 </histogram>
 
 <histogram name="GPU.WebGraphicsContext3D_Init_CanLoseContext"

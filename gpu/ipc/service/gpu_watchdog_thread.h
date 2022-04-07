@@ -177,7 +177,7 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
   void ContinueWithNextWatchdogTimeoutTask();
 
   // Records "GPU.WatchdogThread.Event".
-  void GpuWatchdogHistogram(GpuWatchdogThreadEvent thread_event);
+  void GpuWatchdogThreadEventHistogram(GpuWatchdogThreadEvent thread_event);
 
   // Histogram recorded in OnWatchdogTimeout()
   // Records "GPU.WatchdogThread.Timeout"
@@ -295,13 +295,15 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
   bool foregrounded_event_ = false;
   bool power_resumed_event_ = false;
 
-  // The thread name of the watched thread.
-  const std::string thread_name_;
+  // The watched thread name string used for UMA and crash key.
+  std::string watched_thread_name_str_uma_;
+
   // The thread id string of the watched thread.
-  const std::string thread_id_str_;
+  const std::string watched_thread_id_str_;
 
   // For gpu testing only.
   const bool is_test_mode_;
+
   // Set by the watchdog thread and Read by the test thread.
   base::AtomicFlag test_result_timeout_and_gpu_hang_;
 

@@ -72,11 +72,18 @@ GpuWatchdogThread::GpuWatchdogThread(base::TimeDelta timeout,
       watchdog_timeout_(timeout),
       watchdog_init_factor_(init_factor),
       watchdog_restart_factor_(restart_factor),
-      thread_name_(thread_name),
-      thread_id_str_(base::NumberToString(base::PlatformThread::CurrentId())),
+      watched_thread_id_str_(
+          base::NumberToString(base::PlatformThread::CurrentId())),
       is_test_mode_(is_test_mode) {
   base::CurrentThread::Get()->AddTaskObserver(this);
   DETACH_FROM_SEQUENCE(watchdog_thread_sequence_checker_);
+
+  // DO NOT CHANGE |watched_thread_name_str_uma_|. It's used for UMA and crash
+  // report.
+  if (thread_name == "GpuWatchdog_Compositor")
+    watched_thread_name_str_uma_ = "compositor";
+  else
+    watched_thread_name_str_uma_ = "main";
 
 #if BUILDFLAG(IS_WIN)
   // GetCurrentThread returns a pseudo-handle that cannot be used by one thread
@@ -111,7 +118,7 @@ GpuWatchdogThread::~GpuWatchdogThread() {
 
   base::CurrentThread::Get()->RemoveTaskObserver(this);
   base::PowerMonitor::RemovePowerSuspendObserver(this);
-  GpuWatchdogHistogram(GpuWatchdogThreadEvent::kGpuWatchdogEnd);
+  GpuWatchdogThreadEventHistogram(GpuWatchdogThreadEvent::kGpuWatchdogEnd);
 #if BUILDFLAG(IS_WIN)
   if (watched_thread_handle_)
     CloseHandle(watched_thread_handle_);
@@ -442,7 +449,7 @@ void GpuWatchdogThread::OnWatchdogTimeout() {
   // memory.
   if (!is_watchdog_start_histogram_recorded_) {
     is_watchdog_start_histogram_recorded_ = true;
-    GpuWatchdogHistogram(GpuWatchdogThreadEvent::kGpuWatchdogStart);
+    GpuWatchdogThreadEventHistogram(GpuWatchdogThreadEvent::kGpuWatchdogStart);
   }
 
   GpuWatchdogTimeoutHistogram(GpuWatchdogTimeoutEvent::kTimeout);
@@ -625,7 +632,7 @@ void GpuWatchdogThread::DeliberatelyTerminateToRecoverFromHang() {
 
   // The watchdog currently doesn't watch multiple threads. If multiple threads
   // are supported, use '|' to separate thread ids in "list_of_hung_threads".
-  crash_keys::list_of_hung_threads.Set(thread_id_str_);
+  crash_keys::list_of_hung_threads.Set(watched_thread_id_str_);
 
   crash_keys::gpu_watchdog_crashed_in_gpu_init.Set(
       in_gpu_initialization_ ? "1" : "0");
@@ -636,10 +643,7 @@ void GpuWatchdogThread::DeliberatelyTerminateToRecoverFromHang() {
   const int num_of_processors = base::SysInfo::NumberOfProcessors();
   crash_keys::num_of_processors.Set(base::NumberToString(num_of_processors));
 
-  if (thread_name_ == "GpuWatchdog_Compositor")
-    crash_keys::gpu_thread.Set("compositor");
-  else
-    crash_keys::gpu_thread.Set("main");
+  crash_keys::gpu_thread.Set(watched_thread_name_str_uma_);
 
   // Check the arm_disarm_counter value one more time.
   auto last_arm_disarm_counter = ReadArmDisarmCounter();
@@ -659,7 +663,7 @@ void GpuWatchdogThread::DeliberatelyTerminateToRecoverFromHang() {
   bool gpu_hang = IsArmed();
   if (gpu_hang) {
     // Still armed without any progress. The GPU process is now killed.
-    GpuWatchdogHistogram(GpuWatchdogThreadEvent::kGpuWatchdogKill);
+    GpuWatchdogThreadEventHistogram(GpuWatchdogThreadEvent::kGpuWatchdogKill);
 #if BUILDFLAG(IS_WIN)
     if (less_than_full_thread_time_after_capped_)
       GpuWatchdogTimeoutHistogram(
@@ -689,30 +693,44 @@ void GpuWatchdogThread::DeliberatelyTerminateToRecoverFromHang() {
   }
 }
 
-void GpuWatchdogThread::GpuWatchdogHistogram(
+void GpuWatchdogThread::GpuWatchdogThreadEventHistogram(
     GpuWatchdogThreadEvent thread_event) {
   base::UmaHistogramEnumeration("GPU.WatchdogThread.Event", thread_event);
+  base::UmaHistogramEnumeration(
+      "GPU.WatchdogThread.Event" + watched_thread_name_str_uma_, thread_event);
 }
 
 void GpuWatchdogThread::GpuWatchdogTimeoutHistogram(
     GpuWatchdogTimeoutEvent timeout_event) {
   base::UmaHistogramEnumeration("GPU.WatchdogThread.Timeout", timeout_event);
+  base::UmaHistogramEnumeration(
+      "GPU.WatchdogThread.Timeout" + watched_thread_name_str_uma_,
+      timeout_event);
 
   bool recorded = false;
   if (in_gpu_initialization_) {
     base::UmaHistogramEnumeration("GPU.WatchdogThread.Timeout.Init",
                                   timeout_event);
+    base::UmaHistogramEnumeration(
+        "GPU.WatchdogThread.Timeout.Init" + watched_thread_name_str_uma_,
+        timeout_event);
     recorded = true;
   }
 
   if (WithinOneMinFromPowerResumed()) {
     base::UmaHistogramEnumeration("GPU.WatchdogThread.Timeout.PowerResume",
                                   timeout_event);
+    base::UmaHistogramEnumeration(
+        "GPU.WatchdogThread.Timeout.PowerResume" + watched_thread_name_str_uma_,
+        timeout_event);
     recorded = true;
   }
 
   if (WithinOneMinFromForegrounded()) {
     base::UmaHistogramEnumeration("GPU.WatchdogThread.Timeout.Foregrounded",
+                                  timeout_event);
+    base::UmaHistogramEnumeration("GPU.WatchdogThread.Timeout.Foregrounded" +
+                                      watched_thread_name_str_uma_,
                                   timeout_event);
     recorded = true;
   }
@@ -720,6 +738,9 @@ void GpuWatchdogThread::GpuWatchdogTimeoutHistogram(
   if (!recorded) {
     base::UmaHistogramEnumeration("GPU.WatchdogThread.Timeout.Normal",
                                   timeout_event);
+    base::UmaHistogramEnumeration(
+        "GPU.WatchdogThread.Timeout.Normal" + watched_thread_name_str_uma_,
+        timeout_event);
   }
 }
 
