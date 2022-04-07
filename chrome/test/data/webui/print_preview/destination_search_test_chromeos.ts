@@ -57,8 +57,6 @@ suite(destination_search_test_chromeos.suiteName, function() {
 
     // Set up dialog
     dialog = document.createElement('print-preview-destination-dialog-cros');
-    dialog.users = [];
-    dialog.activeUser = '';
     dialog.destinationStore = destinationStore;
     document.body.innerHTML = '';
     document.body.appendChild(dialog);

@@ -18,26 +18,7 @@ export enum DestinationSearchBucket {
   // Used when the print destination search widget is closed without selecting
   // a print destination.
   DESTINATION_CLOSED_UNCHANGED = 2,
-  // Used when the Google Cloud Print promotion (shown in the destination
-  // search widget) is shown to the user.
-  SIGNIN_PROMPT = 3,
-  // Used when the user chooses to sign-in to their Google account.
-  SIGNIN_TRIGGERED = 4,
-  // Used when a user selects the Privet printer in a pair of duplicate
-  // Privet and cloud printers.
-  PRIVET_DUPLICATE_SELECTED = 5,
-  // Used when a user selects the cloud printer in a pair of duplicate
-  // Privet and cloud printers.
-  CLOUD_DUPLICATE_SELECTED = 6,
-  // Used when a user sees a register promo for a cloud print printer.
-  REGISTER_PROMO_SHOWN = 7,
-  // Used when a user selects a register promo for a cloud print printer.
-  REGISTER_PROMO_SELECTED = 8,
-  // User changed active account.
-  ACCOUNT_CHANGED = 9,
-  // User tried to log into another account.
-  ADD_ACCOUNT_SELECTED = 10,
-  // Note: values 11-13 are intentionally unset as these correspond to
+  // Note: values 3-13 are intentionally unset as these correspond to
   // deprecated values in histograms/enums.xml. These enums are append-only.
   // User clicked on Manage button
   MANAGE_BUTTON_CLICKED = 14,

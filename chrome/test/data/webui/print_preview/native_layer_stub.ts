@@ -21,9 +21,6 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
    */
   private initialSettings_: NativeInitialSettings|null = null;
 
-  /** Accounts to be sent on signIn(). */
-  private accounts_: string[]|null = null;
-
   /**
    * Local destination list to be used for the response to |getPrinters|.
    */
@@ -64,7 +61,6 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
       'print',
       'saveAppState',
       'showSystemDialog',
-      'signIn',
     ]);
   }
 
@@ -174,17 +170,6 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
 
   saveAppState(appState: string) {
     this.methodCalled('saveAppState', appState);
-  }
-
-  signIn() {
-    this.methodCalled('signIn');
-    const accounts = this.accounts_ || ['foo@chromium.org'];
-    if (!this.accounts_) {
-      accounts.push('bar@chromium.org');
-    }
-    if (accounts.length > 0) {
-      webUIListenerCallback('user-accounts-updated', accounts);
-    }
   }
 
   cancelPendingPrintRequest() {}

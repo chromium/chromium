@@ -91,7 +91,7 @@ suite(destination_dropdown_cros_test.suiteName, function() {
         document.createElement('print-preview-destination-dropdown-cros');
     document.body.appendChild(dropdown);
     dropdown.noDestinations = false;
-    dropdown.driveDestinationKey = getGoogleDriveDestination('account').key;
+    dropdown.driveDestinationKey = getGoogleDriveDestination().key;
     dropdown.pdfDestinationKey = getSaveAsPdfDestination().key;
   });
 
@@ -189,8 +189,7 @@ suite(destination_dropdown_cros_test.suiteName, function() {
             eventToPromise('dropdown-value-selected', dropdown);
         down();
         whenSelectedAfterDownPress.then(event => {
-          assertEquals(
-              getGoogleDriveDestination('account').key, event.detail.value);
+          assertEquals(getGoogleDriveDestination().key, event.detail.value);
         });
       });
 

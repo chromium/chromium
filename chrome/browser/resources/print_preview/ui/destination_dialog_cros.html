@@ -22,16 +22,6 @@
   <div slot="title" id="header">$i18n{destinationSearchTitle}</div>
   <div slot="body">
     <div class="form-row">
-      <div class="user-info" hidden$="[[!activeUser]]" hidden>
-        <label id="accountSelectLabel">$i18n{accountSelectTitle}</label>
-        <select class="md-select"
-            aria-labelledby="accountSelectLabel" on-change="onUserChange_">
-          <template is="dom-repeat" items="[[users]]">
-            <option value="[[item]]">[[item]]</option>
-          </template>
-          <option value="">$i18n{addAccountTitle}</option>
-        </select>
-      </div>
       <div class="server-search-box-container">
         <!-- TODO(crbug.com/1013408): Uses deprecated iron-dropdown. -->
         <cr-searchable-drop-down class="server-search-box-input"

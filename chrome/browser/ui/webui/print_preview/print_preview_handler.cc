@@ -35,13 +35,10 @@
 #include "chrome/browser/printing/print_view_manager.h"
 #include "chrome/browser/printing/printer_manager_dialog.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/webui/print_preview/cloud_print_signin.h"
 #include "chrome/browser/ui/webui/print_preview/pdf_printer_handler.h"
 #include "chrome/browser/ui/webui/print_preview/policy_settings.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_metrics.h"
@@ -64,7 +61,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
-#include "google_apis/gaia/gaia_auth_util.h"
 #include "net/base/url_util.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/print_backend_consts.h"
@@ -77,8 +73,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
-#include "components/account_manager_core/account_manager_facade.h"
-#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -463,9 +457,6 @@ void PrintPreviewHandler::RegisterMessages() {
                           base::Unretained(this)));
 #endif
   web_ui()->RegisterMessageCallback(
-      "signIn", base::BindRepeating(&PrintPreviewHandler::HandleSignin,
-                                    base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
       "closePrintPreviewDialog",
       base::BindRepeating(&PrintPreviewHandler::HandleClosePreviewDialog,
                           base::Unretained(this)));
@@ -819,33 +810,6 @@ void PrintPreviewHandler::HandleSaveAppState(const base::Value::List& args) {
   if (!data_to_save.empty())
     sticky_settings->StoreAppState(data_to_save);
   sticky_settings->SaveInPrefs(GetPrefs());
-}
-
-void PrintPreviewHandler::HandleSignin(const base::Value::List& /*args*/) {
-  Profile* profile = Profile::FromWebUI(web_ui());
-  DCHECK(profile);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  if (AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile)) {
-    // Chrome OS Account Manager is enabled on this Profile and hence, all
-    // account management flows will go through native UIs and not through a
-    // tabbed browser window.
-    ::GetAccountManagerFacade(profile->GetPath().value())
-        ->ShowAddAccountDialog(account_manager::AccountManagerFacade::
-                                   AccountAdditionSource::kPrintPreviewDialog);
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-  CreateCloudPrintSigninTab(
-      displayer.browser(),
-      base::BindOnce(&PrintPreviewHandler::OnSignInTabClosed,
-                     weak_factory_.GetWeakPtr()));
-}
-
-void PrintPreviewHandler::OnSignInTabClosed() {
-  FireWebUIListener("check-for-account-update");
 }
 
 #if BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)

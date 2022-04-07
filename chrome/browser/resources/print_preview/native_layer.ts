@@ -191,12 +191,6 @@ export interface NativeLayer {
   hidePreview(): void;
 
   /**
-   * Opens the Google Cloud Print sign-in tab. If the user signs in
-   * successfully, the user-accounts-updated event will be sent in response.
-   */
-  signIn(): void;
-
-  /**
    * Notifies the metrics handler to record a histogram value.
    * @param histogram The name of the histogram to record
    * @param bucket The bucket to record
@@ -253,10 +247,6 @@ export class NativeLayerImpl implements NativeLayer {
 
   hidePreview() {
     chrome.send('hidePreview');
-  }
-
-  signIn() {
-    chrome.send('signIn');
   }
 
   recordInHistogram(histogram: string, bucket: number, maxBucket: number) {

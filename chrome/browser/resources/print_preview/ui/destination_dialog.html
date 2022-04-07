@@ -3,16 +3,6 @@
 <cr-dialog id="dialog" on-close="onCloseOrCancel_">
   <div slot="title" id="header">$i18n{destinationSearchTitle}</div>
   <div slot="body">
-    <div class="user-info" hidden$="[[!activeUser]]" hidden>
-      <label id="accountSelectLabel">$i18n{accountSelectTitle}</label>
-      <select class="md-select"
-          aria-labelledby="accountSelectLabel" on-change="onUserChange_">
-        <template is="dom-repeat" items="[[users]]">
-          <option value="[[item]]">[[item]]</option>
-        </template>
-        <option value="">$i18n{addAccountTitle}</option>
-      </select>
-    </div>
     <print-preview-search-box id="searchBox"
         label="$i18n{searchBoxPlaceholder}" search-query="{{searchQuery_}}"
         autofocus>

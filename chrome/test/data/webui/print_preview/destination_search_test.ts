@@ -47,8 +47,6 @@ suite(destination_search_test.suiteName, function() {
         [] /* recentDestinations */);
 
     dialog = document.createElement('print-preview-destination-dialog');
-    dialog.users = [];
-    dialog.activeUser = '';
     dialog.destinationStore = destinationStore;
     document.body.innerHTML = '';
     document.body.appendChild(dialog);

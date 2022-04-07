@@ -333,7 +333,7 @@ suite(printer_status_test_cros.suiteName, function() {
       const crosEnterprisePrinter = new Destination(
           'ID5', DestinationType.LOCAL, DestinationOrigin.CROS, 'Five',
           DestinationConnectionStatus.ONLINE, {isEnterprisePrinter: true});
-      const saveToDrive = getGoogleDriveDestination('account');
+      const saveToDrive = getGoogleDriveDestination();
       const saveAsPdf = getSaveAsPdfDestination();
 
       destinationSelect.recentDestinationList = [

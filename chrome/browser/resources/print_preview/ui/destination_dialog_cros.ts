@@ -7,9 +7,6 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import 'chrome://resources/js/action_link.js';
-import 'chrome://resources/cr_elements/action_link_css.m.js';
-import 'chrome://resources/cr_elements/md_select_css.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../print_preview_utils.js';
@@ -28,7 +25,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/js/list_property_update_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination, GooglePromotedDestinationId} from '../data/destination.js';
 import {DestinationStore, DestinationStoreEventType} from '../data/destination_store.js';
@@ -73,15 +70,6 @@ export class PrintPreviewDestinationDialogCrosElement extends
         type: Object,
         observer: 'onDestinationStoreSet_',
       },
-
-      activeUser: {
-        type: String,
-        observer: 'onActiveUserChange_',
-      },
-
-      currentDestinationAccount: String,
-
-      users: Array,
 
       printServerSelected_: {
         type: String,
@@ -132,9 +120,6 @@ export class PrintPreviewDestinationDialogCrosElement extends
   }
 
   destinationStore: DestinationStore;
-  activeUser: string;
-  currentDestinationAccount: string;
-  users: string[];
   private printServerSelected_: string;
   private destinations_: Destination[];
   private loadingDestinations_: boolean;
@@ -180,11 +165,6 @@ export class PrintPreviewDestinationDialogCrosElement extends
     }
   }
 
-  private fireAccountChange_(account: string) {
-    this.dispatchEvent(new CustomEvent(
-        'account-change', {bubbles: true, composed: true, detail: account}));
-  }
-
   private onKeydown_(e: KeyboardEvent) {
     e.stopPropagation();
     const searchInput = this.$.searchBox.getSearchInput();
@@ -210,14 +190,6 @@ export class PrintPreviewDestinationDialogCrosElement extends
     }
   }
 
-  private onActiveUserChange_() {
-    if (this.activeUser) {
-      this.shadowRoot!.querySelector('select')!.value = this.activeUser;
-    }
-
-    this.updateDestinations_();
-  }
-
   private updateDestinations_() {
     if (this.destinationStore === undefined || !this.initialized_) {
       return;
@@ -234,12 +206,9 @@ export class PrintPreviewDestinationDialogCrosElement extends
   private getDestinationList_(): Destination[] {
     // Filter out the 'Save to Drive' option so it is not shown in the
     // list of available options.
-    return this.destinationStore.destinations(this.activeUser)
-        .filter(
-            destination =>
-                destination.id !== GooglePromotedDestinationId.DOCS &&
-                destination.id !==
-                    GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS);
+    return this.destinationStore.destinations().filter(
+        destination => destination.id !== GooglePromotedDestinationId.DOCS &&
+            destination.id !== GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS);
   }
 
   private onCloseOrCancel_() {
@@ -250,10 +219,6 @@ export class PrintPreviewDestinationDialogCrosElement extends
     this.metrics_.record(
         cancelled ? DestinationSearchBucket.DESTINATION_CLOSED_UNCHANGED :
                     DestinationSearchBucket.DESTINATION_CLOSED_CHANGED);
-    if (this.currentDestinationAccount &&
-        this.currentDestinationAccount !== this.activeUser) {
-      this.fireAccountChange_(this.currentDestinationAccount);
-    }
   }
 
   private onCancelButtonClick_() {
@@ -331,11 +296,6 @@ export class PrintPreviewDestinationDialogCrosElement extends
     this.loadingDestinations_ = this.destinationStore === undefined ||
         this.destinationStore.isPrintDestinationSearchInProgress;
     this.metrics_.record(DestinationSearchBucket.DESTINATION_SHOWN);
-    if (this.activeUser) {
-      beforeNextRender(assert(this.shadowRoot!.querySelector('select')), () => {
-        this.shadowRoot!.querySelector('select')!.value = this.activeUser;
-      });
-    }
   }
 
   /** @return Whether the dialog is open. */
@@ -368,20 +328,6 @@ export class PrintPreviewDestinationDialogCrosElement extends
 
   private computeLoadingDestinations_(): boolean {
     return this.loadingDestinations_ || this.loadingServerPrinters_;
-  }
-
-  private onUserChange_() {
-    const select = this.shadowRoot!.querySelector('select')!;
-    const account = select.value;
-    if (account) {
-      this.loadingDestinations_ = true;
-      this.fireAccountChange_(account);
-      this.metrics_.record(DestinationSearchBucket.ACCOUNT_CHANGED);
-    } else {
-      select.value = this.activeUser;
-      NativeLayerImpl.getInstance().signIn();
-      this.metrics_.record(DestinationSearchBucket.ADD_ACCOUNT_SELECTED);
-    }
   }
 
   private onManageButtonClick_() {

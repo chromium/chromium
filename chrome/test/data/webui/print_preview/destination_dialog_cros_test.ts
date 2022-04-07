@@ -63,8 +63,6 @@ suite(destination_dialog_cros_test.suiteName, function() {
 
     // Set up dialog
     dialog = document.createElement('print-preview-destination-dialog-cros');
-    dialog.activeUser = '';
-    dialog.users = [];
     dialog.destinationStore = destinationStore;
   });
 

@@ -55,8 +55,6 @@ suite(destination_dialog_test.suiteName, function() {
 
     // Set up dialog
     dialog = document.createElement('print-preview-destination-dialog');
-    dialog.activeUser = '';
-    dialog.users = [];
     dialog.destinationStore = destinationStore;
   });
 

@@ -205,20 +205,11 @@
     <message name="IDS_PRINT_PREVIEW_DESTINATION_SEARCH_TITLE" desc="Title of the destination search UI component.">
       Select a destination
     </message>
-    <message name="IDS_PRINT_PREVIEW_ACCOUNT_SELECT_TITLE" desc="Title of the user's account selection control, to choose the account destinations are being shown for.">
-      Showing destinations for
-    </message>
-    <message name="IDS_PRINT_PREVIEW_ADD_ACCOUNT_TITLE" desc="Title of the selection control item to let user to sign into another account.">
-      Add account...
-    </message>
     <message name="IDS_PRINT_PREVIEW_SEARCH_BOX_PLACEHOLDER" desc="Text to put in a search box when user has not entered a search query.">
       Search destinations
     </message>
     <message name="IDS_PRINT_PREVIEW_NO_DESTINATIONS_MESSAGE" desc="Message to show when no destinations were found.">
       No destinations found
-    </message>
-    <message name="IDS_PRINT_PREVIEW_RECENT_DESTINATIONS_TITLE" desc="Title of the section in the Print Preview dialog that lists recently used printers that the user can print to. 'Destinations' is used because the list may include 'Saving as PDF' or other options that are not physical printers.">
-      Recent Destinations
     </message>
     <message name="IDS_PRINT_PREVIEW_PRINT_DESTINATIONS_TITLE" desc="Title of the section in the Print Preview dialog that lists all printers that the user can print to. 'Destinations' is used because the list may include 'Saving as PDF' or other options that are not physical printers.">
       Print Destinations

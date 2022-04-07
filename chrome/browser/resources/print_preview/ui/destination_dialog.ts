@@ -6,9 +6,6 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import 'chrome://resources/js/action_link.js';
-import 'chrome://resources/cr_elements/action_link_css.m.js';
-import 'chrome://resources/cr_elements/md_select_css.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../print_preview_utils.js';
@@ -25,7 +22,7 @@ import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialo
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/js/list_property_update_mixin.js';
-import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination} from '../data/destination.js';
 import {DestinationStore, DestinationStoreEventType} from '../data/destination_store.js';
@@ -63,15 +60,6 @@ export class PrintPreviewDestinationDialogElement extends
         observer: 'onDestinationStoreSet_',
       },
 
-      activeUser: {
-        type: String,
-        observer: 'onActiveUserChange_',
-      },
-
-      currentDestinationAccount: String,
-
-      users: Array,
-
       destinations_: {
         type: Array,
         value: [],
@@ -92,9 +80,6 @@ export class PrintPreviewDestinationDialogElement extends
   }
 
   destinationStore: DestinationStore;
-  activeUser: string;
-  currentDestinationAccount: string;
-  users: string[];
   private destinations_: Destination[];
   private loadingDestinations_: boolean;
   private metrics_: MetricsContext;
@@ -112,11 +97,6 @@ export class PrintPreviewDestinationDialogElement extends
     super.disconnectedCallback();
 
     this.tracker_.removeAll();
-  }
-
-  private fireAccountChange_(account: string) {
-    this.dispatchEvent(new CustomEvent(
-        'account-change', {bubbles: true, composed: true, detail: account}));
   }
 
   private onKeydown_(e: KeyboardEvent) {
@@ -141,14 +121,6 @@ export class PrintPreviewDestinationDialogElement extends
     this.initialized_ = true;
   }
 
-  private onActiveUserChange_() {
-    if (this.activeUser) {
-      this.shadowRoot!.querySelector('select')!.value = this.activeUser;
-    }
-
-    this.updateDestinations_();
-  }
-
   private updateDestinations_() {
     if (this.destinationStore === undefined || !this.initialized_) {
       return;
@@ -163,7 +135,7 @@ export class PrintPreviewDestinationDialogElement extends
   }
 
   private getDestinationList_(): Destination[] {
-    const destinations = this.destinationStore.destinations(this.activeUser);
+    const destinations = this.destinationStore.destinations();
 
     return destinations;
   }
@@ -176,10 +148,6 @@ export class PrintPreviewDestinationDialogElement extends
     this.metrics_.record(
         cancelled ? DestinationSearchBucket.DESTINATION_CLOSED_UNCHANGED :
                     DestinationSearchBucket.DESTINATION_CLOSED_CHANGED);
-    if (this.currentDestinationAccount &&
-        this.currentDestinationAccount !== this.activeUser) {
-      this.fireAccountChange_(this.currentDestinationAccount);
-    }
   }
 
   private onCancelButtonClick_() {
@@ -213,30 +181,11 @@ export class PrintPreviewDestinationDialogElement extends
     this.loadingDestinations_ = this.destinationStore === undefined ||
         this.destinationStore.isPrintDestinationSearchInProgress;
     this.metrics_.record(DestinationSearchBucket.DESTINATION_SHOWN);
-    if (this.activeUser) {
-      beforeNextRender(assert(this.shadowRoot!.querySelector('select')), () => {
-        this.shadowRoot!.querySelector('select')!.value = this.activeUser;
-      });
-    }
   }
 
   /** @return Whether the dialog is open. */
   isOpen(): boolean {
     return this.$.dialog.hasAttribute('open');
-  }
-
-  private onUserChange_() {
-    const select = this.shadowRoot!.querySelector('select')!;
-    const account = select.value;
-    if (account) {
-      this.loadingDestinations_ = true;
-      this.fireAccountChange_(account);
-      this.metrics_.record(DestinationSearchBucket.ACCOUNT_CHANGED);
-    } else {
-      select.value = this.activeUser;
-      NativeLayerImpl.getInstance().signIn();
-      this.metrics_.record(DestinationSearchBucket.ADD_ACCOUNT_SELECTED);
-    }
   }
 
   private onManageButtonClick_() {

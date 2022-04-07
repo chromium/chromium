@@ -161,11 +161,6 @@ export enum DestinationStoreEventType {
 
 export class DestinationStore extends EventTarget {
   /**
-   * Currently active user.
-   */
-  private activeUser_: string = '';
-
-  /**
    * Whether the destination store will auto select the destination that
    * matches this set of parameters.
    */
@@ -282,15 +277,10 @@ export class DestinationStore extends EventTarget {
   }
 
   /**
-   * @param account Account to filter destinations by. When
-   *     null or omitted, all destinations are returned.
-   * @return List of destinations accessible by the {@code account}.
+   * @return List of destinations
    */
-  destinations(account?: string|null): Destination[] {
-    return this.destinations_.filter(function(destination) {
-      return !destination.account ||
-          (!!account && destination.account === account);
-    });
+  destinations(): Destination[] {
+    return this.destinations_.slice();
   }
 
   /**
@@ -343,8 +333,8 @@ export class DestinationStore extends EventTarget {
           this.isDestinationLocal_(systemDefaultDestinationId) ?
           DestinationOrigin.LOCAL :
           this.platformOrigin_;
-      this.systemDefaultDestinationKey_ = createDestinationKey(
-          systemDefaultDestinationId, systemDefaultOrigin, '');
+      this.systemDefaultDestinationKey_ =
+          createDestinationKey(systemDefaultDestinationId, systemDefaultOrigin);
       this.typesToSearch_.add(originToType(systemDefaultOrigin));
     }
 
@@ -589,13 +579,6 @@ export class DestinationStore extends EventTarget {
         origins, idRegExp, displayNameRegExp, true /*skipVirtualDestinations*/);
   }
 
-  /**
-   * Updates the current active user account.
-   */
-  setActiveUser(activeUser: string) {
-    this.activeUser_ = activeUser;
-  }
-
   /** @param Key identifying the destination to select */
   selectDestinationByKey(key: string) {
     assert(this.tryToSelectDestinationByKey_(key));
@@ -694,7 +677,7 @@ export class DestinationStore extends EventTarget {
     // Save as PDF should always exist if it is enabled.
     if (this.pdfPrinterEnabled_) {
       const saveToPdfKey = createDestinationKey(
-          GooglePromotedDestinationId.SAVE_AS_PDF, DestinationOrigin.LOCAL, '');
+          GooglePromotedDestinationId.SAVE_AS_PDF, DestinationOrigin.LOCAL);
       const destination = this.destinationMap_.get(saveToPdfKey);
       assert(destination);
       this.selectDestination(destination);
@@ -928,7 +911,7 @@ export class DestinationStore extends EventTarget {
     MetricsContext.getPrinterCapabilities().record(
         PrintPreviewInitializationEvents.FUNCTION_SUCCESSFUL);
     let dest = null;
-    const key = createDestinationKey(id, origin, '');
+    const key = createDestinationKey(id, origin);
     dest = this.destinationMap_.get(key);
     if (!dest) {
       // Ignore unrecognized extension printers

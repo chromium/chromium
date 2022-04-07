@@ -95,7 +95,6 @@ export enum ColorMode {
 export type RecentDestination = {
   id: string,
   origin: DestinationOrigin,
-  account: string,
   capabilities: Cdd|null,
   displayName: string,
   extensionId: string,
@@ -112,7 +111,6 @@ export function makeRecentDestination(destination: Destination):
   return {
     id: destination.id,
     origin: destination.origin,
-    account: destination.account || '',
     capabilities: destination.capabilities,
     displayName: destination.displayName || '',
     extensionId: destination.extensionId || '',
@@ -122,12 +120,11 @@ export function makeRecentDestination(destination: Destination):
 }
 
 /**
- * @return key that maps to a destination with the selected |id|,
- *     |origin|, and |account|.
+ * @return key that maps to a destination with the selected |id| and |origin|.
  */
 export function createDestinationKey(
-    id: string, origin: DestinationOrigin, account: string): string {
-  return `${id}/${origin}/${account}`;
+    id: string, origin: DestinationOrigin): string {
+  return `${id}/${origin}/`;
 }
 
 /**
@@ -136,16 +133,14 @@ export function createDestinationKey(
  */
 export function createRecentDestinationKey(
     recentDestination: RecentDestination): string {
-  return createDestinationKey(
-      recentDestination.id, recentDestination.origin,
-      recentDestination.account);
+  return createDestinationKey(recentDestination.id, recentDestination.origin);
 }
 
 export type DestinationOptionalParams = {
+  account?: string,
   tags?: string[],
   isOwned?: boolean,
   isEnterprisePrinter?: boolean,
-  account?: string,
   lastAccessTime?: number,
   cloudID?: string,
   provisionalType?: DestinationProvisionalType,
@@ -199,11 +194,6 @@ export class Destination {
    * Whether the destination is an enterprise policy controlled printer.
    */
   private isEnterprisePrinter_: boolean;
-
-  /**
-   * Account this destination is registered for, if known.
-   */
-  private account_: string;
 
   /**
    * Cache of destination location fetched from tags.
@@ -306,7 +296,6 @@ export class Destination {
     this.tags_ = (params && params.tags) || [];
     this.isOwned_ = (params && params.isOwned) || false;
     this.isEnterprisePrinter_ = (params && params.isEnterprisePrinter) || false;
-    this.account_ = (params && params.account) || '';
     this.description_ = (params && params.description) || '';
     this.connectionStatus_ = connectionStatus;
     this.lastAccessTime_ = (params && params.lastAccessTime) || Date.now();
@@ -347,13 +336,6 @@ export class Destination {
    */
   get isOwned(): boolean {
     return this.isOwned_;
-  }
-
-  /**
-   * @return Account this destination is registered for, if known.
-   */
-  get account(): string {
-    return this.account_;
   }
 
   /** @return Whether the destination is local (vs cloud-based). */
@@ -404,9 +386,6 @@ export class Destination {
    *     destination.
    */
   get hint(): string {
-    if (this.id_ === GooglePromotedDestinationId.DOCS) {
-      return this.account_;
-    }
     return this.location || this.extensionName || this.description;
   }
 
@@ -784,7 +763,7 @@ export class Destination {
 
   /** @return A unique identifier for this destination. */
   get key(): string {
-    return `${this.id_}/${this.origin_}/${this.account_}`;
+    return `${this.id_}/${this.origin_}/`;
   }
 }
 

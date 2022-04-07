@@ -319,7 +319,7 @@ export function createDestinationStore(): DestinationStore {
 /**
  * @return The Google Drive destination.
  */
-export function getGoogleDriveDestination(_account: string): Destination {
+export function getGoogleDriveDestination(): Destination {
   return new Destination(
       'Save to Drive CrOS', DestinationType.LOCAL, DestinationOrigin.LOCAL,
       'Save to Google Drive', DestinationConnectionStatus.ONLINE);

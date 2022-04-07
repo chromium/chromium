@@ -74502,14 +74502,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="0" label="DESTINATION_SHOWN"/>
   <int value="1" label="DESTINATION_CLOSED_CHANGED"/>
   <int value="2" label="DESTINATION_CLOSED_UNCHANGED"/>
-  <int value="3" label="SIGNIN_PROMPT"/>
-  <int value="4" label="SIGNIN_TRIGGERED"/>
-  <int value="5" label="PRIVET_DUPLICATE_SELECTED"/>
-  <int value="6" label="CLOUD_DUPLICATE_SELECTED"/>
-  <int value="7" label="REGISTER_PROMO_SHOWN"/>
-  <int value="8" label="REGISTER_PROMO_SELECTED"/>
-  <int value="9" label="ACCOUNT_CHANGED"/>
-  <int value="10" label="ADD_ACCOUNT_SELECTED"/>
+  <int value="3" label="SIGNIN_PROMPT_DEPRECATED"/>
+  <int value="4" label="SIGNIN_TRIGGERED_DEPRECATED"/>
+  <int value="5" label="PRIVET_DUPLICATE_SELECTED_DEPRECATED"/>
+  <int value="6" label="CLOUD_DUPLICATE_SELECTED_DEPRECATED"/>
+  <int value="7" label="REGISTER_PROMO_SHOWN_DEPRECATED"/>
+  <int value="8" label="REGISTER_PROMO_SELECTED_DEPRECATED"/>
+  <int value="9" label="ACCOUNT_CHANGED_DEPRECATED"/>
+  <int value="10" label="ADD_ACCOUNT_SELECTED_DEPRECATED"/>
   <int value="11" label="INVITATION_AVAILABLE_DEPRECATED"/>
   <int value="12" label="INVITATION_ACCEPTED_DEPRECATED"/>
   <int value="13" label="INVITATION_REJECTED_DEPRECATED"/>

@@ -30,7 +30,7 @@ import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {createRecentDestinationKey, Destination, DestinationOrigin, GooglePromotedDestinationId, makeRecentDestination, RecentDestination} from '../data/destination.js';
+import {createRecentDestinationKey, Destination, GooglePromotedDestinationId, makeRecentDestination, RecentDestination} from '../data/destination.js';
 // <if expr="chromeos_ash or chromeos_lacros">
 import {SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from '../data/destination.js';
 // </if>
@@ -55,10 +55,9 @@ import {SettingsMixin} from './settings_mixin.js';
 
 export enum DestinationState {
   INIT = 0,
-  SELECTED = 1,
-  SET = 2,
-  UPDATED = 3,
-  ERROR = 4,
+  SET = 1,
+  UPDATED = 2,
+  ERROR = 3,
 }
 
 /** Number of recent destinations to save. */
@@ -132,11 +131,6 @@ export class PrintPreviewDestinationSettingsElement extends
 
       state: Number,
 
-      activeUser_: {
-        type: String,
-        observer: 'onActiveUserChanged_',
-      },
-
       destinationStore_: {
         type: Object,
         value: null,
@@ -173,8 +167,6 @@ export class PrintPreviewDestinationSettingsElement extends
         type: Boolean,
         computed: 'computeLoaded_(destinationState, destination)',
       },
-
-      users_: Array,
     };
   }
 
@@ -185,7 +177,6 @@ export class PrintPreviewDestinationSettingsElement extends
   error: Error;
   firstLoad: boolean;
   state: State;
-  private activeUser_: string;
   private destinationStore_: DestinationStore|null;
   private displayedDestinations_: Destination[];
 
@@ -198,7 +189,6 @@ export class PrintPreviewDestinationSettingsElement extends
   private noDestinations_: boolean;
   private pdfPrinterDisabled_: boolean;
   private loaded_: boolean;
-  private users_: string[];
 
   private lastUser_: string = '';
   private tracker_: EventTracker = new EventTracker();
@@ -240,48 +230,6 @@ export class PrintPreviewDestinationSettingsElement extends
 
     this.destinationStore_!.resetTracker();
     this.tracker_.removeAll();
-  }
-
-  private onActiveUserChanged_() {
-    this.updateDropdownDestinations_();
-
-    if (!this.destination ||
-        this.destination.origin !== DestinationOrigin.COOKIES) {
-      // Active user changing doesn't impact non-cookie based destinations.
-      return;
-    }
-
-    if (this.destination.account === this.activeUser_) {
-      // If the current destination belongs to the new account and the dialog
-      // was waiting for sign in, update the state.
-      if (this.destinationState === DestinationState.SELECTED) {
-        this.destinationState = this.destination.capabilities ?
-            DestinationState.UPDATED :
-            DestinationState.SET;
-      }
-      return;
-    }
-
-    if (this.isDialogOpen_) {
-      // Do not update the selected destination if the dialog is open, as this
-      // will change the destination settings UI behind the dialog, and the
-      // user may be selecting a new destination in the dialog anyway. Wait
-      // for the user to select a destination or cancel.
-      return;
-    }
-
-    // Destination belongs to a different account. Reset the destination to
-    // the most recent destination associated with the new account, or the
-    // default.
-    const recent = this.displayedDestinations_.find(d => {
-      return d.origin !== DestinationOrigin.COOKIES ||
-          d.account === this.activeUser_;
-    });
-    if (recent) {
-      this.destinationStore_!.selectDestination(recent);
-      return;
-    }
-    this.destinationStore_!.selectDefaultDestination();
   }
 
   /**
@@ -338,24 +286,13 @@ export class PrintPreviewDestinationSettingsElement extends
   }
 
   private onDestinationSelect_() {
-    // If the user selected a destination in the dialog after changing the
-    // active user, do the UI updates that were previously deferred.
-    if (this.isDialogOpen_ && this.lastUser_ !== this.activeUser_) {
-      this.updateDropdownDestinations_();
-    }
-
     if (this.state === State.FATAL_ERROR) {
       // Don't let anything reset if there is a fatal error.
       return;
     }
 
     const destination = this.destinationStore_!.selectedDestination!;
-    if (!!this.activeUser_ ||
-        destination.origin !== DestinationOrigin.COOKIES) {
-      this.destinationState = DestinationState.SET;
-    } else {
-      this.destinationState = DestinationState.SELECTED;
-    }
+    this.destinationState = DestinationState.SET;
 
     // Notify observers that the destination is set only after updating the
     // destinationState.
@@ -482,8 +419,7 @@ export class PrintPreviewDestinationSettingsElement extends
       numDestinationsChecked++;
       const key = createRecentDestinationKey(recent);
       const destination = this.destinationStore_!.getDestinationByKey(key);
-      if (destination &&
-          (!destination.account || destination.account === this.activeUser_)) {
+      if (destination) {
         updatedDestinations.push(destination);
       }
       if (numDestinationsChecked === NUM_UNPINNED_DESTINATIONS) {
@@ -527,7 +463,6 @@ export class PrintPreviewDestinationSettingsElement extends
     if (value === 'seeMore') {
       this.destinationStore_!.startLoadAllDestinations();
       this.$.destinationDialog.get().show();
-      this.lastUser_ = this.activeUser_;
       this.isDialogOpen_ = true;
     } else {
       this.destinationStore_!.selectDestinationByKey(value);
@@ -535,10 +470,6 @@ export class PrintPreviewDestinationSettingsElement extends
   }
 
   private onDialogClose_() {
-    if (this.lastUser_ !== this.activeUser_) {
-      this.updateDropdownDestinations_();
-    }
-
     // Reset the select value if the user dismissed the dialog without
     // selecting a new destination.
     this.updateDestinationSelect_();
@@ -550,8 +481,7 @@ export class PrintPreviewDestinationSettingsElement extends
       return;
     }
 
-    if (this.destinationState === DestinationState.INIT ||
-        this.destinationState === DestinationState.SELECTED) {
+    if (this.destinationState === DestinationState.INIT) {
       return;
     }
 

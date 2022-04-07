@@ -616,7 +616,7 @@ suite(preview_generation_test.suiteName, function() {
           };
           barDestination.capabilities = capabilities;
           nativeLayer.resetResolver('getPreview');
-          destinationSettings.destinationState = DestinationState.SELECTED;
+          destinationSettings.destinationState = DestinationState.SET;
           destinationSettings.set('destination', barDestination);
           destinationSettings.destinationState = DestinationState.UPDATED;
           return nativeLayer.whenCalled('getPreview');

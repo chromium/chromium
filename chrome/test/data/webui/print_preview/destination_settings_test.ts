@@ -69,8 +69,6 @@ suite(destination_settings_test.suiteName, function() {
   let isDriveMounted: boolean = true;
 
   // <if expr="chromeos_ash or chromeos_lacros">
-  const defaultUser: string = 'foo@chromium.org';
-
   const driveDestinationKey: string = 'Save to Drive CrOS/local/';
   // </if>
 
@@ -368,7 +366,7 @@ suite(destination_settings_test.suiteName, function() {
       function() {
         recentDestinations = destinations.slice(0, 5).map(
             destination => makeRecentDestination(destination));
-        const driveDestination = getGoogleDriveDestination(defaultUser);
+        const driveDestination = getGoogleDriveDestination();
 
         recentDestinations.splice(1, 1, driveDestination);
         const whenCapabilitiesDone =
@@ -405,8 +403,7 @@ suite(destination_settings_test.suiteName, function() {
         recentDestinations = destinations.slice(0, 5).map(
             destination => makeRecentDestination(destination));
         recentDestinations.splice(
-            0, 1,
-            makeRecentDestination(getGoogleDriveDestination(defaultUser)));
+            0, 1, makeRecentDestination(getGoogleDriveDestination()));
         const whenSelected = eventToPromise(
             DestinationStoreEventType.DESTINATION_SELECT,
             destinationSettings.getDestinationStoreForTest());
@@ -496,8 +493,7 @@ suite(destination_settings_test.suiteName, function() {
         recentDestinations = destinations.slice(0, 5).map(
             destination => makeRecentDestination(destination));
         recentDestinations.splice(
-            1, 1,
-            makeRecentDestination(getGoogleDriveDestination(defaultUser)));
+            1, 1, makeRecentDestination(getGoogleDriveDestination()));
         const whenCapabilitiesDone =
             nativeLayer.whenCalled('getPrinterCapabilities');
         initialize();

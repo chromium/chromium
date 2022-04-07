@@ -61,7 +61,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
     // possible only when an account requires re-authentication.
     kContentAreaReauth = 3,
     // Print Preview dialog.
-    kPrintPreviewDialog = 4,
+    kPrintPreviewDialogUnused = 4,
     // Account Manager migration welcome screen.
     kAccountManagerMigrationWelcomeScreen = 5,
     // Onboarding.
