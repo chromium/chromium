@@ -4026,11 +4026,6 @@ const char kAcceleratedMjpegDecodeDescription[] =
     "Enable hardware-accelerated mjpeg decode for captured frame where "
     "available.";
 
-const char kAllowDisableMouseAccelerationName[] =
-    "Allow disabling mouse acceleration";
-const char kAllowDisableMouseAccelerationDescription[] =
-    "Shows a setting to disable mouse acceleration.";
-
 const char kAllowDisableTouchpadHapticFeedbackName[] =
     "Allow disabling touchpad haptic feedback";
 const char kAllowDisableTouchpadHapticFeedbackDescription[] =

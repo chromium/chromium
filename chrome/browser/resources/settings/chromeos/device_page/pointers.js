@@ -110,17 +110,6 @@ Polymer({
     },
 
     /**
-     * TODO(zentaro): Remove this conditional once the feature is launched.
-     * @private
-     */
-    allowDisableAcceleration_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('allowDisableMouseAcceleration');
-      },
-    },
-
-    /**
      * TODO(khorimoto): Remove this conditional once the feature is launched.
      * @private
      */

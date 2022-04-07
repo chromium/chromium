@@ -6064,11 +6064,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"allow-disable-mouse-acceleration",
-     flag_descriptions::kAllowDisableMouseAccelerationName,
-     flag_descriptions::kAllowDisableMouseAccelerationDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kAllowDisableMouseAcceleration)},
-
     {"allow-disable-touchpad-haptic-feedback",
      flag_descriptions::kAllowDisableTouchpadHapticFeedbackName,
      flag_descriptions::kAllowDisableTouchpadHapticFeedbackDescription, kOsCrOS,

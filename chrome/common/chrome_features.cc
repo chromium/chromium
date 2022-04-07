@@ -30,12 +30,6 @@ const base::Feature kAdaptiveScreenBrightnessLogging{
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Shows a setting that allows disabling mouse acceleration.
-const base::Feature kAllowDisableMouseAcceleration{
-    "AllowDisableMouseAcceleration", base::FEATURE_ENABLED_BY_DEFAULT};
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Shows settings to adjust and disable touchpad haptic feedback.
 const base::Feature kAllowDisableTouchpadHapticFeedback{
     "AllowDisableTouchpadHapticFeedback", base::FEATURE_ENABLED_BY_DEFAULT};
