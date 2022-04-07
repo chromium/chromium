@@ -100,6 +100,7 @@
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/gfx/codec/jpeg_codec.h"
@@ -331,6 +332,7 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
 
  private:
   web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
+  base::test::ScopedFeatureList scoped_feature_list_{features::kReadAnything};
 };
 
 class ContextMenuWithProfileLinksBrowserTest : public ContextMenuBrowserTest {
@@ -2314,4 +2316,28 @@ IN_PROC_BROWSER_TEST_F(ContextMenuWithProfileLinksBrowserTest,
 }
 
 #endif
+
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenReadAnything) {
+  // Open in Reader is not an option when text is unselected.
+  std::unique_ptr<TestRenderViewContextMenu> menu1 =
+      CreateContextMenuMediaTypeNone(GURL("http://www.google.com/"),
+                                     GURL("http://www.google.com/"));
+  ASSERT_FALSE(menu1->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READ_ANYTHING));
+
+  // Open in Reader is an option when non-editable text is selected.
+  std::unique_ptr<TestRenderViewContextMenu> menu2 =
+      CreateContextMenuForTextInWebContents(u"selection text");
+  ASSERT_TRUE(menu2->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READ_ANYTHING));
+
+  // Open in Reader is an option when editable text is selected.
+  content::ContextMenuParams params;
+  params.is_editable = true;
+  std::unique_ptr<TestRenderViewContextMenu> menu3 =
+      std::make_unique<TestRenderViewContextMenu>(
+          *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+          params);
+  menu3->Init();
+  ASSERT_TRUE(menu3->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READ_ANYTHING));
+}
+
 }  // namespace

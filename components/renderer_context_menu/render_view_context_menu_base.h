@@ -160,6 +160,7 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
 
   // TODO(oshima): Remove this.
   virtual void AppendPlatformEditableItems() {}
+  virtual void ExecOpenInReadAnything() = 0;
 
   // May return nullptr if the frame was deleted while the menu was open.
   content::RenderFrameHost* GetRenderFrameHost() const;

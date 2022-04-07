@@ -572,6 +572,9 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_CONTENT_CONTEXT_INSPECTBACKGROUNDPAGE" desc="The name of the Inspect Background Page command in the packaged app content area context menu">
             Inspect &amp;background page
           </message>
+          <message name="IDS_CONTENT_CONTEXT_READ_ANYTHING" desc="Context menu menuitem to open page in Read Anything view">
+           Open in Reader
+          </message>
           <message name="IDS_CONTENT_CONTEXT_RELOAD" desc="The name of the Reload command in the content area context menu">
             &amp;Reload
           </message>
@@ -819,6 +822,9 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_INSPECTBACKGROUNDPAGE" desc="In Title Case: The name of the Inspect Background Page command in the packaged app content area context menu">
             Inspect &amp;Background Page
+          </message>
+          <message name="IDS_CONTENT_CONTEXT_READ_ANYTHING" desc="Context menu menuitem to open page in Read Anything view">
+           Open in Reader
           </message>
           <message name="IDS_CONTENT_CONTEXT_RELOAD" desc="In Title Case: The name of the Reload command in the content area context menu">
             &amp;Reload

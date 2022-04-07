@@ -177,6 +177,7 @@
 #include "third_party/blink/public/mojom/frame/media_player_action.mojom.h"
 #include "third_party/blink/public/public_buildflags.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -430,13 +431,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, 115},
        {IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH, 116},
        {IDC_CONTENT_CONTEXT_RESHARELINKTOTEXT, 117},
+       {IDC_CONTENT_CONTEXT_OPEN_IN_READ_ANYTHING, 118},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
        //     tools/metrics/histograms/enums.xml.
-       {0, 118}});
+       {0, 119}});
 
   // These UMA values are for the the ContextMenuOptionDesktop enum, used for
   // the ContextMenu.SelectedOptionDesktop histograms.
@@ -992,6 +994,15 @@ void RenderViewContextMenu::InitMenu() {
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
     AppendLanguageSettings();
     AppendPlatformEditableItems();
+  }
+
+  // Show Read Anything option if text is selected.
+  if (base::FeatureList::IsEnabled(features::kReadAnything)) {
+    if (content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_COPY) ||
+        content_type_->SupportsGroup(
+            ContextMenuContentType::ITEM_GROUP_EDITABLE)) {
+      AppendReadAnythingItem();
+    }
   }
 
   if (content_type_->SupportsGroup(
@@ -1799,6 +1810,11 @@ void RenderViewContextMenu::AppendMediaRouterItem() {
   }
 }
 
+void RenderViewContextMenu::AppendReadAnythingItem() {
+  menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPEN_IN_READ_ANYTHING,
+                                  IDS_CONTENT_CONTEXT_READ_ANYTHING);
+}
+
 void RenderViewContextMenu::AppendRotationItems() {
   if (params_.media_flags & ContextMenuData::kMediaCanRotate) {
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
@@ -2367,6 +2383,9 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     case IDC_ROUTE_MEDIA:
       return IsRouteMediaEnabled();
 
+    case IDC_CONTENT_CONTEXT_OPEN_IN_READ_ANYTHING:
+      return true;
+
     case IDC_CONTENT_CONTEXT_EXIT_FULLSCREEN:
       return true;
 
@@ -2527,6 +2546,10 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
     case IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE:
       ExecSearchLensForImage();
+      break;
+
+    case IDC_CONTENT_CONTEXT_OPEN_IN_READ_ANYTHING:
+      ExecOpenInReadAnything();
       break;
 
     case IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH:

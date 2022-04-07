@@ -212,6 +212,7 @@ class RenderViewContextMenu
   void AppendLinkToTextItems();
   void AppendPrintItem();
   void AppendMediaRouterItem();
+  void AppendReadAnythingItem();
   void AppendRotationItems();
   void AppendEditableItems();
   void AppendLanguageSettings();
@@ -292,6 +293,8 @@ class RenderViewContextMenu
   void ExecLanguageSettings(int event_flags);
   void ExecProtocolHandlerSettings(int event_flags);
   void ExecPictureInPicture();
+  // Implemented in RenderViewContextMenuViews.
+  void ExecOpenInReadAnything() override {}
 
   void MediaPlayerActionAt(const gfx::Point& location,
                            const blink::mojom::MediaPlayerAction& action);

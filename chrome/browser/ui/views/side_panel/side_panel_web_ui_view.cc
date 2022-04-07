@@ -71,7 +71,8 @@ void SidePanelWebUIView::ShowUI() {
 }
 
 void SidePanelWebUIView::CloseUI() {
-  close_cb_.Run();
+  if (close_cb_)
+    close_cb_.Run();
 }
 
 void SidePanelWebUIView::ShowCustomContextMenu(
