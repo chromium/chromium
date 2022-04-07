@@ -7744,3 +7744,7 @@ crbug.com/1244896 fast/mediacapturefromelement/CanvasCaptureMediaStream-set-size
 crbug.com/1290670 [ Mac10.14 ] external/wpt/webrtc/RTCPeerConnection-mandatory-getStats.https.html [ Failure Pass ]
 crbug.com/1313894 [ Mac10.14 ] rootscroller/root-scroller-paint-order.html [ Failure Pass ]
 crbug.com/1314130 [ Mac ] fast/events/touch/gesture/touch-gesture-scroll-listbox.html [ Failure Pass ]
+
+# Sheriff 2022-04-07
+crbug.com/1314314 [ Mac ] virtual/percent-based-scrolling/fast/scrolling/scrollbars/mouse-autoscrolling-on-deleted-scrollbar.html [ Failure Pass ]
+crbug.com/1314323 [ Win7 ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/wheel-scrolling-over-custom-scrollbar.html [ Failure Pass ]
