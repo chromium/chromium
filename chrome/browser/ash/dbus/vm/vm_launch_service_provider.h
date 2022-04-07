@@ -10,10 +10,6 @@
 #include "chromeos/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"
 
-namespace borealis {
-class BorealisCapabilities;
-}
-
 namespace ash {
 
 class VmLaunchServiceProvider
@@ -32,12 +28,6 @@ class VmLaunchServiceProvider
  private:
   void StartWaylandServer(dbus::MethodCall* method_call,
                           dbus::ExportedObject::ResponseSender response_sender);
-
-  void OnWaylandServerStarted(
-      dbus::MethodCall* method_call,
-      dbus::ExportedObject::ResponseSender response_sender,
-      borealis::BorealisCapabilities* capabilities,
-      const base::FilePath& path);
 
   void StopWaylandServer(dbus::MethodCall* method_call,
                          dbus::ExportedObject::ResponseSender response_sender);

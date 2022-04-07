@@ -1688,6 +1688,8 @@ source_set("chromeos") {
     "../ash/guest_os/guest_os_share_path_factory.h",
     "../ash/guest_os/guest_os_stability_monitor.cc",
     "../ash/guest_os/guest_os_stability_monitor.h",
+    "../ash/guest_os/guest_os_wayland_server.cc",
+    "../ash/guest_os/guest_os_wayland_server.h",
     "../ash/guest_os/infra/cached_callback.h",
     "../ash/guest_os/public/guest_os_mount_provider.cc",
     "../ash/guest_os/public/guest_os_mount_provider.h",
