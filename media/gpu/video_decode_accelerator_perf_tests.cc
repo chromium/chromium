@@ -76,8 +76,11 @@ The following arguments are supported:
                         (not the VaapiVideoDecodeAccelerator).)""") +
 #if defined(ARCH_CPU_ARM_FAMILY)
     R"""(
-  --use-libyuv          use libYUV instead of hw format conversion.
-                        Disabled by default.)""" +
+  --disable-libyuv      use hw format conversion instead of libYUV.
+                        libYUV will be used by default, unless the
+                        video decoder format is not supported;
+                        in that case the code will try to use the
+                        v4l2 image processor.)""" +
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
     R"""(
   --gtest_help          display the gtest help and exit.
@@ -469,6 +472,11 @@ int main(int argc, char** argv) {
   bool linear_output = false;
   std::vector<base::Feature> disabled_features;
   std::vector<base::Feature> enabled_features;
+
+#if defined(ARCH_CPU_ARM_FAMILY)
+  enabled_features.push_back(media::kPreferLibYuvImageProcessor);
+#endif  // defined(ARCH_CPU_ARM_FAMILY)
+
   media::test::DecoderImplementation implementation =
       media::test::DecoderImplementation::kVD;
   base::CommandLine::SwitchMap switches = cmd_line->GetSwitches();
@@ -492,8 +500,8 @@ int main(int argc, char** argv) {
     } else if (it->first == "disable_vaapi_lock") {
       disabled_features.push_back(media::kGlobalVaapiLock);
 #if defined(ARCH_CPU_ARM_FAMILY)
-    } else if (it->first == "use-libyuv") {
-      enabled_features.push_back(media::kPreferLibYuvImageProcessor);
+    } else if (it->first == "disable-libyuv") {
+      enabled_features.clear();
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
     } else {
       std::cout << "unknown option: --" << it->first << "\n"
