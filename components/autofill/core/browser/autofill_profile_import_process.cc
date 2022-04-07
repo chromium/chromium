@@ -372,10 +372,6 @@ void ProfileImportProcess::CollectMetrics() const {
              import_type_ ==
                  AutofillProfileImportType::kConfirmableMergeAndSilentUpdate) {
     AutofillMetrics::LogProfileUpdateImportDecision(user_decision_);
-    if (import_metadata_.did_complement_country) {
-      AutofillMetrics::LogProfileUpdateWithComplementedCountryImportDecision(
-          user_decision_);
-    }
     if (import_metadata_.did_remove_invalid_phone_number) {
       AutofillMetrics::LogProfileUpdateWithRemovedPhoneNumberImportDecision(
           user_decision_);
@@ -391,9 +387,17 @@ void ProfileImportProcess::CollectMetrics() const {
         AutofillProfileComparator::GetSettingsVisibleProfileDifference(
             import_candidate_.value(), merge_candidate_.value(), app_locale_);
 
+    bool difference_in_country = false;
     for (const auto& difference : merge_difference) {
       AutofillMetrics::LogProfileUpdateAffectedType(difference.type,
                                                     user_decision_);
+      difference_in_country |= difference.type == ADDRESS_HOME_COUNTRY;
+    }
+    // If the country was complemented, but already stored, it didn't make a
+    // difference and we should not count it in the metrics.
+    if (import_metadata_.did_complement_country && difference_in_country) {
+      AutofillMetrics::LogProfileUpdateWithComplementedCountryImportDecision(
+          user_decision_);
     }
 
     AutofillMetrics::LogUpdateProfileNumberOfAffectedFields(

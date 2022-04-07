@@ -351,16 +351,26 @@ void AddressProfileSaveManagerTest::TestImportScenario(
 
     // Metrics related to country complemention.
     if (complement_country_) {
-      histogram_tester.ExpectTotalCount(
-          !is_new_profile
-              ? kNewProfileWithComplementedCountryDecisionHistogram
-              : kProfileUpdateWithComplementedCountryDecisionHistogram,
-          0);
-      histogram_tester.ExpectUniqueSample(
-          is_new_profile
-              ? kNewProfileWithComplementedCountryDecisionHistogram
-              : kProfileUpdateWithComplementedCountryDecisionHistogram,
-          test_scenario.user_decision, 1);
+      if (is_new_profile) {
+        histogram_tester.ExpectTotalCount(
+            kProfileUpdateWithComplementedCountryDecisionHistogram, 0);
+        histogram_tester.ExpectUniqueSample(
+            kNewProfileWithComplementedCountryDecisionHistogram,
+            test_scenario.user_decision, 1);
+      } else {
+        histogram_tester.ExpectTotalCount(
+            kNewProfileWithComplementedCountryDecisionHistogram, 0);
+        // For updates we only expect a difference if the country changed.
+        if (test_scenario.observed_profile.GetRawInfo(ADDRESS_HOME_COUNTRY) !=
+            test_scenario.merge_candidate->GetRawInfo(ADDRESS_HOME_COUNTRY)) {
+          histogram_tester.ExpectUniqueSample(
+              kProfileUpdateWithComplementedCountryDecisionHistogram,
+              test_scenario.user_decision, 1);
+        } else {
+          histogram_tester.ExpectTotalCount(
+              kProfileUpdateWithComplementedCountryDecisionHistogram, 0);
+        }
+      }
 
       // In case the country was edited, expect increased metrics.
       if (base::Contains(
