@@ -77,16 +77,6 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
     # Arguments from add_extra_argumentsparse were added so
     # its safe to parse the arguments and set self._options
     self.parse_args()
-    self.output_directory = os.path.join(SRC_DIR, 'out', self.options.target)
-    self.mojo_js_directory = os.path.join(self.output_directory, 'gen')
-
-  def _wpt_report(self):
-    env = os.environ.copy()
-    if 'GTEST_SHARD_INDEX' in env:
-      shard_index = int(env['GTEST_SHARD_INDEX'])
-      return 'wpt_reports_%s_%02d.json' % (self.options.product, shard_index)
-    else:
-      return 'wpt_reports_%s.json' % self.options.product
 
   def get_version_provider_package_name(self):
     """Get the name of a package containing the product's version.
@@ -118,23 +108,7 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
   def rest_args(self):
     rest_args = super(WPTAndroidAdapter, self).rest_args
 
-    # Update the output directory to the default if it's not set.
-    self.maybe_set_default_isolated_script_test_output()
-
-    # Here we add all of the arguments required to run WPT tests on Android.
-    rest_args.extend([self.wpt_binary])
-
-    # By default, WPT will treat unexpected passes as errors, so we disable
-    # that to be consistent with Chromium CI.
-    rest_args.extend(['--no-fail-on-unexpected-pass'])
-    if self.options.default_exclude:
-      rest_args.extend(['--default-exclude'])
-
-    # vpython has packages needed by wpt, so force it to skip the setup
-    rest_args.extend(['--venv=' + SRC_DIR, '--skip-venv-setup'])
-
-    rest_args.extend(['run',
-      '--tests=' + wpt_common.TESTS_ROOT_DIR,
+    rest_args.extend([
       '--webdriver-binary',
       self.options.webdriver_binary,
       '--symbols-path',
@@ -142,22 +116,16 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
       '--stackwalk-binary',
       TOMBSTONE_PARSER,
       '--headless',
-      '--no-pause-after-test',
-      '--no-capture-stdio',
-      '--no-manifest-download',
       # Exclude webdriver tests for now.
       "--exclude=webdriver",
       "--exclude=infrastructure/webdriver",
       '--binary-arg=--enable-blink-features=MojoJS,MojoJSTest',
       '--binary-arg=--enable-blink-test-features',
       '--binary-arg=--disable-field-trial-config',
-      '--enable-mojojs',
-      '--mojojs-path=' + self.mojo_js_directory,
       '--binary-arg=--enable-features=DownloadService<DownloadServiceStudy',
       '--binary-arg=--force-fieldtrials=DownloadServiceStudy/Enabled',
       '--binary-arg=--force-fieldtrial-params=DownloadServiceStudy.Enabled:'
       'start_up_delay_ms/0',
-      '--repeat=' + str(self.options.repeat),
     ])
 
     for device in self._devices:
@@ -168,21 +136,6 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
     if self._metadata_dir:
       rest_args.extend(['--metadata', self._metadata_dir])
 
-    if self.options.verbose >= 3:
-      rest_args.extend(['--log-mach=-', '--log-mach-level=debug',
-                        '--log-mach-verbose'])
-
-    if self.options.verbose >= 4:
-      rest_args.extend(['--webdriver-arg=--verbose',
-                        '--webdriver-arg="--log-path=-"'])
-
-    if self.options.log_wptreport:
-      wpt_output = self.options.isolated_script_test_output
-      self.wptreport = os.path.join(os.path.dirname(wpt_output),
-                                    self._wpt_report())
-      rest_args.extend(['--log-wptreport',
-                        self.wptreport])
-
     version = self.get_version()
     if version:
       rest_args.extend(['--browser-version', version])
@@ -191,7 +144,7 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
       for pattern in self.options.test_filter.split(':'):
         rest_args.extend([
           '--include',
-          wpt_common.strip_wpt_root_prefix(pattern),
+          self.path_finder.strip_wpt_path(pattern),
         ])
 
     rest_args.extend(self.pass_through_wpt_args)
@@ -250,6 +203,8 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
     self._metadata_dir = None
 
   def add_extra_arguments(self, parser):
+    super(WPTAndroidAdapter, self).add_extra_arguments(parser)
+
     # TODO: |pass_through_args| are broke and need to be supplied by way of
     # --binary-arg".
     class BinaryPassThroughArgs(PassThroughArgs):
@@ -259,9 +214,6 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
 
     # Add this so that product argument does not go in self._rest_args
     # when self.parse_args() is called
-    parser.add_argument('--target', '-t', default='Release',
-                        help='Specify the target build subdirectory under'
-                        ' src/out/.')
     parser.add_argument('--product', help=argparse.SUPPRESS)
     parser.add_argument('--webdriver-binary', required=True,
                         help='Path of the webdriver binary.  It needs to have'
@@ -275,35 +227,20 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
     parser.add_argument('--ignore-browser-specific-expectations',
                         action='store_true', default=False,
                         help='Ignore browser specific expectation files.')
-    parser.add_argument('--verbose', '-v', action='count', default=0,
-                        help='Verbosity level.')
-    parser.add_argument('--repeat', '--gtest_repeat', type=int, default=1,
-                        help='Number of times to run the tests.')
     parser.add_argument('--test-filter', '--gtest_filter',
                         help='Colon-separated list of test names '
                              '(URL prefixes)')
-    # TODO(crbug/1306222): wptrunner currently cannot rerun individual failed
-    # tests, so this flag is unused.
-    parser.add_argument('--test-launcher-retry-limit', type=int, default=0,
-                        help='Maximum number of times to rerun a failed test')
     parser.add_argument('--include', metavar='TEST_OR_DIR',
                         action=WPTPassThroughArgs,
                         help='Test(s) to run, defaults to run all tests.')
     parser.add_argument('--include-file',
                         action=WPTPassThroughArgs,
                         help='A file listing test(s) to run')
-    parser.add_argument('--default-exclude', action='store_true', default=False,
-                        help="Only run the tests explicitly given in arguments."
-                             "No tests will run if the list is empty, and the "
-                             "program will exit with status code 0.")
     parser.add_argument('--list-tests', action=WPTPassThroughArgs, nargs=0,
                         help="Don't run any tests, just print out a list of"
                         ' tests that would be run.')
     parser.add_argument('--webdriver-arg', action=WPTPassThroughArgs,
                         help='WebDriver args.')
-    parser.add_argument('--log-wptreport',
-                        action='store_true', default=False,
-                        help="Generates a test report in JSON format.")
     parser.add_argument('--log-raw', metavar='RAW_REPORT_FILE',
                         action=WPTPassThroughArgs,
                         help="Log raw report.")
@@ -370,8 +307,11 @@ class WPTWeblayerAdapter(WPTAndroidAdapter):
     args = super(WPTWeblayerAdapter, self).rest_args
     args.append('--test-type=testharness')
     args.extend(['--package-name', self.WEBLAYER_SHELL_PKG])
-    args.append(ANDROID_WEBLAYER)
     return args
+
+  @classmethod
+  def wpt_product_name(cls):
+    return ANDROID_WEBLAYER
 
 
 class WPTWebviewAdapter(WPTAndroidAdapter):
@@ -430,8 +370,11 @@ class WPTWebviewAdapter(WPTAndroidAdapter):
   def rest_args(self):
     args = super(WPTWebviewAdapter, self).rest_args
     args.extend(['--package-name', self.system_webview_shell_pkg])
-    args.append(ANDROID_WEBVIEW)
     return args
+
+  @classmethod
+  def wpt_product_name(cls):
+    return ANDROID_WEBVIEW
 
 
 class WPTClankAdapter(WPTAndroidAdapter):
@@ -468,9 +411,11 @@ class WPTClankAdapter(WPTAndroidAdapter):
       logger.info("Using Chrome apk's default package %s." %
                   self.options.chrome_package_name)
     args.extend(['--package-name', self.options.chrome_package_name])
-    # add the product postional argument
-    args.append(CHROME_ANDROID)
     return args
+
+  @classmethod
+  def wpt_product_name(cls):
+    return CHROME_ANDROID
 
 
 def add_emulator_args(parser):

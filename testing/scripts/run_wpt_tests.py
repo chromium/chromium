@@ -15,6 +15,7 @@ Here's the mapping [isolate script flag] : [wpt flag]
 """
 
 import json
+import logging
 import os
 import shutil
 import sys
@@ -44,16 +45,12 @@ CHROME_BINARY_MAC = os.path.join(
     OUT_DIR, "Chromium.app", "Contents", "MacOS", "Chromium")
 CHROMEDRIVER_BINARY = os.path.join(OUT_DIR, "chromedriver")
 
-MOJO_JS_PATH = os.path.join(OUT_DIR, "gen")
 
 class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
 
     @property
     def rest_args(self):
         rest_args = super(WPTTestAdapter, self).rest_args
-
-        # Update the output directory to the default if it's not set.
-        self.maybe_set_default_isolated_script_test_output()
 
         chrome = CHROME_BINARY.format(self.options.target)
         chromedriver = CHROMEDRIVER_BINARY.format(self.options.target)
@@ -65,12 +62,6 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
 
         # Here we add all of the arguments required to run WPT tests on Chrome.
         rest_args.extend([
-            self.wpt_binary,
-            "--venv=" + SRC_DIR,
-            "--skip-venv-setup",
-            "run",
-            "chrome"
-        ] + self.options.test_list + [
             "--binary=" + chrome,
             "--binary-arg=--host-resolver-rules="
                 "MAP nonexistent.*.test ~NOTFOUND, MAP *.test 127.0.0.1",
@@ -81,15 +72,9 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
             "--webdriver-binary=" + chromedriver,
             "--webdriver-arg=--enable-chrome-logs",
             "--headless",
-            "--no-capture-stdio",
-            "--no-manifest-download",
-            "--no-pause-after-test",
             # Exclude webdriver tests for now. They are run separately on the CI
             "--exclude=webdriver",
             "--exclude=infrastructure/webdriver",
-            # By default, WPT will treat unexpected passes as errors, so we
-            # disable that to be consistent with Chromium CI.
-            "--no-fail-on-unexpected-pass",
             "--metadata", WPT_METADATA_OUTPUT_DIR.format(self.options.target),
             # By specifying metadata above, WPT will try to find manifest in the
             # metadata directory. So here we point it back to the correct path
@@ -101,48 +86,52 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
             # update the manifest in cast it's stale.
             #"--no-manifest-update",
             "--manifest", WPT_WORKING_COPY_MANIFEST.format(self.options.target),
-            # (crbug.com/1023835) The flags below are temporary to aid debugging
-            "--log-mach=-",
-            "--log-mach-verbose",
             # See if multi-processing affects timeouts.
             # TODO(lpz): Consider removing --processes and compute automatically
             # from multiprocessing.cpu_count()
             "--processes=" + self.options.child_processes,
-            "--mojojs-path=" + MOJO_JS_PATH.format(self.options.target),
-            "--tests=" + wpt_common.TESTS_ROOT_DIR,
-            "--repeat=" + str(self.options.repeat),
         ])
 
+        tests = list(self.options.test_list)
         if self.options.test_filter:
-          for pattern in self.options.test_filter.split(":"):
+          tests.extend(self.options.test_filter.split(":"))
+        for maybe_test_prefix in tests:
+          if maybe_test_prefix.startswith("-"):
+            # TODO(crbug/1274933#c14): Here, we pass through args that appear to
+            # be "wpt run" options, so as not to break existing usage. Options
+            # must be formatted as a single arg ('--<option>=<value>', not
+            # '--<option> <value>'), since there's no way to tell how many args
+            # '<option>' consumes.
+            rest_args.append(maybe_test_prefix)
+            logging.warning(
+                "Are you trying to pass options to 'wpt run'? "
+                "Try removing the end-of-options marker ('--') before '%s'.",
+                maybe_test_prefix)
+          else:
             rest_args.extend([
               "--include",
-              wpt_common.strip_wpt_root_prefix(pattern),
+              self.path_finder.strip_wpt_path(maybe_test_prefix),
             ])
 
         return rest_args
 
     def add_extra_arguments(self, parser):
-        target_help = "Specify the target build subdirectory under src/out/"
-        parser.add_argument("-t", "--target", dest="target", default="Release",
-                            help=target_help)
+        super(WPTTestAdapter, self).add_extra_arguments(parser)
         child_processes_help = "Number of drivers to run in parallel"
         parser.add_argument("-j", "--child-processes", dest="child_processes",
                             default="1", help=child_processes_help)
-        parser.add_argument("--repeat", "--gtest_repeat", type=int, default=1,
-                            help="Number of times to run the tests")
         parser.add_argument("--test-filter", "--gtest_filter",
                             help="Colon-separated list of test names "
                                  "(URL prefixes)")
-        # TODO(crbug/1306222): wptrunner currently cannot rerun individual
-        # failed tests, so this flag is unused.
-        parser.add_argument("--test-launcher-retry-limit", type=int, default=0,
-                            help="Maximum number of times to rerun "
-                                 "a failed test")
         parser.add_argument("test_list", nargs="*",
                             help="List of tests or test directories to run")
 
+    @classmethod
+    def wpt_product_name(cls):
+        return 'chrome'
+
     def do_pre_test_run_tasks(self):
+        super(WPTTestAdapter, self).do_pre_test_run_tasks()
         # Copy the checked-in manifest to the temporary working directory
         shutil.copy(WPT_CHECKED_IN_MANIFEST,
                     WPT_WORKING_COPY_MANIFEST.format(self.options.target))
