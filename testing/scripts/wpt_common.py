@@ -224,6 +224,8 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             self.select_python_executable(),
             os.path.join(BLINK_TOOLS_DIR, 'wpt_process_results.py'),
             '--verbose',
+            '--target',
+            self.options.target,
             '--web-tests-dir',
             WEB_TESTS_DIR,
             '--artifacts-dir',
@@ -232,8 +234,6 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             '--wpt-results',
             self.wpt_output,
         ]
-        if self.options.dry_run:
-            command.extend(['--dry-run'])
         if self.wptreport:
             command.extend(['--wpt-report', self.wptreport])
         common.run_command(command)

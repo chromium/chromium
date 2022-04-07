@@ -7,6 +7,7 @@ import argparse
 import base64
 import json
 import logging
+import optparse
 
 import six
 
@@ -47,7 +48,6 @@ class WPTResultsProcessor(object):
                  web_tests_dir='',
                  artifacts_dir='',
                  results_dir='',
-                 dry_run=False,
                  sink=None):
         self.host = host
         self.fs = self.host.filesystem
@@ -55,25 +55,27 @@ class WPTResultsProcessor(object):
         self.web_tests_dir = web_tests_dir
         self.artifacts_dir = artifacts_dir
         self.results_dir = results_dir
-        self.dry_run = dry_run
-        self.sink = sink
+        self.sink = sink or ResultSinkReporter()
         self.wpt_manifest = self.port.wpt_manifest('external/wpt')
         self.path_finder = PathFinder(self.fs)
 
-    def main(self, argv=None):
-        options = self.parse_args(argv)
-
+    @classmethod
+    def from_options(cls, host, options):
         logging_level = logging.DEBUG if options.verbose else logging.INFO
         configure_logging(logging_level=logging_level, include_time=True)
 
-        self.web_tests_dir = options.web_tests_dir
-        self.artifacts_dir = options.artifacts_dir
-        self.results_dir = self.results_dir or self.fs.dirname(
-            options.wpt_results)
-        self.dry_run = options.dry_run
-        if not self.sink and not self.dry_run:
-            self.sink = ResultSinkReporter()
+        port_options = optparse.Values()
+        # The factory will read the configuration ("Debug" or "Release")
+        # automatically from //src/<target>.
+        port_options.ensure_value('configuration', None)
+        port_options.ensure_value('target', options.target)
+        port = host.port_factory.get(options=port_options)
 
+        results_dir = host.filesystem.dirname(options.wpt_results)
+        return WPTResultsProcessor(host, port, options.web_tests_dir,
+                                   options.artifacts_dir, results_dir)
+
+    def main(self, options):
         self._recreate_artifacts_dir()
         self.process_wpt_results(options.wpt_results)
         self._copy_results_viewer()
@@ -82,7 +84,8 @@ class WPTResultsProcessor(object):
         else:
             _log.debug('No wpt report to process')
 
-    def parse_args(self, argv):
+    @classmethod
+    def parse_args(cls, argv=None):
         parser = argparse.ArgumentParser(description=__doc__)
         parser.add_argument(
             '-v',
@@ -91,10 +94,10 @@ class WPTResultsProcessor(object):
             help='log extra details helpful for debugging',
         )
         parser.add_argument(
-            '--dry-run',
-            action='store_true',
-            help=('do not upload results to ResultDB via ResultSink '
-                  'or overwrite existing files'),
+            '-t',
+            '--target',
+            default='Release',
+            help='target build subdirectory under //out',
         )
         parser.add_argument(
             '--web-tests-dir',
@@ -144,8 +147,7 @@ class WPTResultsProcessor(object):
                 raw contents or points to artifacts that will be extracted into
                 their own files. These fields are removed from the test results
                 tree to avoid duplication. This method will overwrite the
-                original JSON file with the processed results if the processor
-                is not in dry run mode.
+                original JSON file with the processed results.
             full_results_json (str): Path to write processed JSON results to.
             full_results_jsonp (str): Path to write processed JSONP results to.
             failing_results_jsonp (str): Path to write failing JSONP results to.
@@ -182,8 +184,7 @@ class WPTResultsProcessor(object):
 
         results_serialized = json.dumps(results)
         self.fs.write_text_file(full_results_json, results_serialized)
-        if not self.dry_run:
-            self.fs.copyfile(full_results_json, raw_results_path)
+        self.fs.copyfile(full_results_json, raw_results_path)
 
         # JSONP paddings need to be the same as:
         # https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/tools/blinkpy/web_tests/controllers/manager.py;l=629;drc=3b93609b2498af0e9dc298f64e2b4f6204af68fa
@@ -461,9 +462,6 @@ class WPTResultsProcessor(object):
 
     def _add_result_to_sink(self, node, test_name):
         """Add test results to the result sink."""
-        if not self.sink:
-            return
-
         actual = node['actual']
         if len(actual.split()) != 1:
             _log.error(
@@ -549,11 +547,10 @@ class WPTResultsProcessor(object):
             json.dump(report, report_file)
         _log.info('Processed wpt report (%s -> %s)', report_path,
                   artifact_path)
-        if self.sink:
-            artifact = {
-                report_filename: {
-                    'filePath': artifact_path,
-                },
-            }
-            self.sink.report_invocation_level_artifacts(artifact)
+        artifact = {
+            report_filename: {
+                'filePath': artifact_path,
+            },
+        }
+        self.sink.report_invocation_level_artifacts(artifact)
         return artifact_path

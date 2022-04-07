@@ -13,9 +13,10 @@ from blinkpy.w3c.wpt_results_processor import WPTResultsProcessor
 def main():
     add_depot_tools_dir_to_os_path()
     host = Host()
-    processor = WPTResultsProcessor(host)
+    options = WPTResultsProcessor.parse_args()
+    processor = WPTResultsProcessor.from_options(host, options)
     try:
-        host.exit(processor.main())
+        host.exit(processor.main(options))
     except KeyboardInterrupt:
         host.print_('Interrupted, exiting')
         host.exit(exit_codes.INTERRUPTED_EXIT_STATUS)

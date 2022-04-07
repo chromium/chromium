@@ -463,9 +463,11 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self.assertEqual(base64.b64decode('bcde'),
                          written_files[expected_path])
         diff_path = self.fs.join(artifacts_subdir, 'reftest-diff.png')
-        # Make sure the diff image was written but don't check the contents,
-        # assume that diff_image does the right thing.
-        self.assertIsNotNone(written_files[diff_path])
+        self.assertEqual('\n'.join([
+            '< bcde',
+            '---',
+            '> abcd',
+        ]), written_files[diff_path])
 
         # Ensure the artifacts in the json were replaced with the location of
         # the newly-created files.

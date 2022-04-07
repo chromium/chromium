@@ -744,10 +744,12 @@ class TestPort(Port):
         if not actual_contents or not expected_contents:
             return (True, None)
         if diffed:
-            return (
-                ('< %s\n---\n> %s\n' %
-                 (expected_contents, actual_contents)),  #.encode('utf8'),
-                None)
+            mock_diff = '\n'.join([
+                '< %s' % base64.b64encode(expected_contents).decode('utf-8'),
+                '---',
+                '> %s' % base64.b64encode(actual_contents).decode('utf-8'),
+            ])
+            return (mock_diff, None)
         return (None, None)
 
     def web_tests_dir(self):
