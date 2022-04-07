@@ -51,6 +51,8 @@ class GetElementStatusActionTest : public testing::Test {
 
     ON_CALL(mock_action_delegate_, GetUserData)
         .WillByDefault(Return(&user_data_));
+    ON_CALL(mock_action_delegate_, GetUserModel)
+        .WillByDefault(Return(&user_model_));
     ON_CALL(mock_action_delegate_, GetWebController)
         .WillByDefault(Return(&mock_web_controller_));
     ON_CALL(mock_action_delegate_, GetWebsiteLoginManager)
