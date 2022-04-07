@@ -2781,6 +2781,10 @@ TEST_F(QuotaManagerImplTest, GetBucketsModifiedBetweenWithDatabaseError) {
 }
 
 TEST_F(QuotaManagerImplTest, DumpBucketTable) {
+  // Dumping an unpopulated bucket table returns an empty vector.
+  const BucketTableEntries& initial_entries = DumpBucketTable();
+  EXPECT_TRUE(initial_entries.empty());
+
   const StorageKey kStorageKey = ToStorageKey("http://example.com/");
   CreateBucketForTesting(kStorageKey, kDefaultBucketName, kTemp);
   CreateBucketForTesting(kStorageKey, kDefaultBucketName, kPerm);

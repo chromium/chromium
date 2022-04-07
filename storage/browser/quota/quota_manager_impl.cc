@@ -1929,7 +1929,7 @@ void QuotaManagerImpl::DumpBucketTable(DumpBucketTableCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
 
-  if (db_disabled_) {
+  if (db_disabled_ || !database_) {
     std::move(callback).Run(BucketTableEntries());
     return;
   }
