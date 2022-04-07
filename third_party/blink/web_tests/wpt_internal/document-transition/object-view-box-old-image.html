@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html class=reftest-wait>
+<title>Shared transitions: object-view-box</title>
+<link rel="help" href="https://github.com/WICG/shared-element-transitions">
+<link rel="author" href="mailto:khushalsagar@chromium.org">
+<link rel="match" href="object-view-box-ref.html">
+
+<script src="/common/reftest-wait.js"></script>
+<style>
+.target {
+  contain: paint;
+  width: 100px;
+  height: 100px;
+  transform: scale(2.0, 3.0);
+  position: relative;
+  top: 200px;
+  left: 200px;
+}
+
+.embedded {
+  width: 100%;
+  height: 50%;
+}
+
+.hidden {
+  contain: paint;
+  width: 10px;
+  height: 10px;
+  background: grey;
+}
+
+html::page-transition-container(hidden) { animation-duration: 300s; }
+html::page-transition-image-wrapper(hidden) { animation: unset; opacity: 0; }
+
+html::page-transition-incoming-image(target) {
+  animation: unset;
+  opacity: 0;
+}
+html::page-transition-outgoing-image(target) {
+  animation: unset;
+  opacity: 1;
+  object-view-box: inset(50px 0px 0px 0px);
+  object-fit: none;
+  object-position: 0% 0%;
+}
+
+</style>
+
+<div id="target" class="target">
+  <div class="embedded" style="background: green;"></div>
+  <div class="embedded" style="background: blue">SharedElement</div>
+</div>
+<div id=hidden class=hidden></div>
+
+<script>
+async function runTest() {
+  let t = document.createDocumentTransition();
+  t.setElement(hidden, "hidden");
+  t.setElement(target, "target");
+  t.start(() => {
+    t.setElement(hidden, "hidden");
+    t.setElement(target, "target");
+
+    requestAnimationFrame(() =>  requestAnimationFrame(takeScreenshot));
+  });
+}
+onload = () => requestAnimationFrame(runTest);
+</script>
+
