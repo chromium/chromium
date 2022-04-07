@@ -2,25 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/protobuf/proto_library.gni")
-
-proto_library("root_store_proto_full") {
-  sources = [ "root_store.proto" ]
-
-  # root_store_tool uses the full protobuf library to parse textproto. This
-  # should not be linked into the browser. If the browser needs this protobuf in
-  # the future, make a separate target with cc_generator_options = "lite".
-  use_protobuf_full = true
-  visibility = [ ":root_store_tool" ]
-}
-
 # TODO(https://crbug.com/1216547): add unit tests
 executable("root_store_tool") {
   sources = [ "root_store_tool.cc" ]
   deps = [
-    ":root_store_proto_full",
     "//base",
     "//crypto",
+    "//net/cert:root_store_proto_full",
     "//third_party/boringssl",
   ]
 }

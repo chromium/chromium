@@ -23,7 +23,7 @@
 #include "build/build_config.h"
 #include "crypto/openssl_util.h"
 #include "crypto/sha2.h"
-#include "net/tools/root_store_tool/root_store.pb.h"
+#include "net/cert/root_store_proto_full/root_store.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/bio.h"
 #include "third_party/boringssl/src/include/openssl/err.h"
