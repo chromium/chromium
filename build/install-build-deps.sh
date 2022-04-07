@@ -386,6 +386,26 @@ fi
 if package_exists python-yaml; then
   backwards_compatible_list="${backwards_compatible_list} python-yaml"
 fi
+if package_exists apache2.2-bin; then
+  backwards_compatible_list="${backwards_compatible_list} apache2.2-bin"
+else
+  backwards_compatible_list="${backwards_compatible_list} apache2-bin"
+fi
+if package_exists php7.4-cgi; then
+  backwards_compatible_list="${backwards_compatible_list} php7.4-cgi libapache2-mod-php7.4"
+elif package_exists php7.3-cgi; then
+  backwards_compatible_list="${backwards_compatible_list} php7.3-cgi libapache2-mod-php7.3"
+elif package_exists php7.2-cgi; then
+  backwards_compatible_list="${backwards_compatible_list} php7.2-cgi libapache2-mod-php7.2"
+elif package_exists php7.1-cgi; then
+  backwards_compatible_list="${backwards_compatible_list} php7.1-cgi libapache2-mod-php7.1"
+elif package_exists php7.0-cgi; then
+  backwards_compatible_list="${backwards_compatible_list} php7.0-cgi libapache2-mod-php7.0"
+elif package_exists php8.0-cgi; then
+  backwards_compatible_list="${backwards_compatible_list} php8.0-cgi libapache2-mod-php8.0"
+else
+  backwards_compatible_list="${backwards_compatible_list} php5-cgi libapache2-mod-php5"
+fi
 
 case $distro_codename in
   trusty)
@@ -515,28 +535,8 @@ elif package_exists libbrlapi0.6; then
 else
   dev_list="${dev_list} libbrlapi0.5"
 fi
-if package_exists apache2.2-bin; then
-  dev_list="${dev_list} apache2.2-bin"
-else
-  dev_list="${dev_list} apache2-bin"
-fi
 if package_exists libav-tools; then
   dev_list="${dev_list} libav-tools"
-fi
-if package_exists php7.4-cgi; then
-  dev_list="${dev_list} php7.4-cgi libapache2-mod-php7.4"
-elif package_exists php7.3-cgi; then
-  dev_list="${dev_list} php7.3-cgi libapache2-mod-php7.3"
-elif package_exists php7.2-cgi; then
-  dev_list="${dev_list} php7.2-cgi libapache2-mod-php7.2"
-elif package_exists php7.1-cgi; then
-  dev_list="${dev_list} php7.1-cgi libapache2-mod-php7.1"
-elif package_exists php7.0-cgi; then
-  dev_list="${dev_list} php7.0-cgi libapache2-mod-php7.0"
-elif package_exists php8.0-cgi; then
-  dev_list="${dev_list} php8.0-cgi libapache2-mod-php8.0"
-else
-  dev_list="${dev_list} php5-cgi libapache2-mod-php5"
 fi
 
 # Some packages are only needed if the distribution actually supports
