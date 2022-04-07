@@ -432,6 +432,11 @@ bool BackGestureEventHandler::MaybeHandleBackGesture(
 bool BackGestureEventHandler::CanStartGoingBack(
     const gfx::Point& screen_location) {
   Shell* shell = Shell::Get();
+  // Do not enable back gesture in Kiosk mode, as we are never supposed to leave
+  // fullscreen mode there.
+  if (shell->session_controller()->IsRunningInAppMode())
+    return false;
+
   if (!shell->tablet_mode_controller()->InTabletMode())
     return false;
 

@@ -39,6 +39,17 @@
 
 namespace ash {
 
+namespace {
+
+void StartKioskSession() {
+  SessionInfo info;
+  info.is_running_in_app_mode = true;
+  info.state = session_manager::SessionState::ACTIVE;
+  Shell::Get()->session_controller()->SetSessionInfo(info);
+}
+
+}  // namespace
+
 class BackGestureEventHandlerTest : public AshTestBase {
  public:
   // Distance that swiping from left edge to let the affordance achieve
@@ -112,6 +123,11 @@ class BackGestureEventHandlerTest : public AshTestBase {
 
   TestShellDelegate* GetShellDelegate() {
     return static_cast<TestShellDelegate*>(Shell::Get()->shell_delegate());
+  }
+
+  void SendFullscreenEvent(WindowState* window_state) {
+    const WMEvent fullscreen_event(WM_EVENT_TOGGLE_FULLSCREEN);
+    window_state->OnWMEvent(&fullscreen_event);
   }
 
   aura::Window* top_window() { return top_window_.get(); }
@@ -530,8 +546,7 @@ TEST_F(BackGestureEventHandlerTest, FullscreenedWindow) {
   RegisterBackPressAndRelease(&target_back_press, &target_back_release);
 
   WindowState* window_state = WindowState::Get(top_window());
-  const WMEvent fullscreen_event(WM_EVENT_TOGGLE_FULLSCREEN);
-  window_state->OnWMEvent(&fullscreen_event);
+  SendFullscreenEvent(window_state);
   EXPECT_TRUE(window_state->IsFullscreen());
 
   GenerateBackSequence();
@@ -547,6 +562,35 @@ TEST_F(BackGestureEventHandlerTest, FullscreenedWindow) {
   EXPECT_EQ(1, target_back_release.accelerator_count());
 }
 
+// Tests the back gesture behavior in the Kiosk session.
+TEST_F(BackGestureEventHandlerTest, KioskSession) {
+  StartKioskSession();
+
+  ui::TestAcceleratorTarget target_back_press, target_back_release;
+  RegisterBackPressAndRelease(&target_back_press, &target_back_release);
+
+  // Make the test window fullscreen to emulate a real Kiosk session, since in
+  // the Kiosk session an app window is always fullscreen.
+  WindowState* window_state = WindowState::Get(top_window());
+  SendFullscreenEvent(window_state);
+  EXPECT_TRUE(window_state->IsFullscreen());
+
+  GenerateBackSequence();
+  // First back gesture should not let the window exit fullscreen mode, as we do
+  // it with a fullscreen window oppened in a user session.
+  EXPECT_TRUE(window_state->IsFullscreen());
+  EXPECT_EQ(0, target_back_press.accelerator_count());
+  EXPECT_EQ(0, target_back_release.accelerator_count());
+
+  GenerateBackSequence();
+  // Second back gesture should not minimize the window, as we do it with a
+  // fullscreen window oppened in a user session.
+  EXPECT_FALSE(window_util::ShouldMinimizeTopWindowOnBack());
+  EXPECT_TRUE(window_state->IsFullscreen());
+  EXPECT_EQ(0, target_back_press.accelerator_count());
+  EXPECT_EQ(0, target_back_release.accelerator_count());
+}
+
 // Tests the back gesture behavior on a ARC fullscreened window.
 TEST_F(BackGestureEventHandlerTest, ARCFullscreenedWindow) {
   ui::TestAcceleratorTarget target_back_press, target_back_release;
@@ -555,8 +599,7 @@ TEST_F(BackGestureEventHandlerTest, ARCFullscreenedWindow) {
   RecreateTopWindow(AppType::ARC_APP);
 
   WindowState* window_state = WindowState::Get(top_window());
-  const WMEvent fullscreen_event(WM_EVENT_TOGGLE_FULLSCREEN);
-  window_state->OnWMEvent(&fullscreen_event);
+  SendFullscreenEvent(window_state);
   ASSERT_TRUE(window_state->IsFullscreen());
 
   auto shelf_visible_hotseat_extended = [this]() -> bool {

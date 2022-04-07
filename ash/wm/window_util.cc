@@ -345,6 +345,10 @@ aura::Window* GetTopWindow() {
 
 bool ShouldMinimizeTopWindowOnBack() {
   Shell* shell = Shell::Get();
+  // We never want to minimize the main app window in the Kiosk session.
+  if (shell->session_controller()->IsRunningInAppMode())
+    return false;
+
   if (!shell->tablet_mode_controller()->InTabletMode())
     return false;
 

@@ -23,6 +23,7 @@
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/container_finder.h"
 #include "base/bind.h"
@@ -556,6 +557,10 @@ void AppListPresenterImpl::OnClosed() {
 
 void AppListPresenterImpl::OnWindowFocused(aura::Window* gained_focus,
                                            aura::Window* lost_focus) {
+  // Do not focus app list window in the Kiosk mode.
+  if (Shell::Get()->session_controller()->IsRunningInAppMode())
+    return;
+
   if (!view_ || !is_target_visibility_show_)
     return;
 
