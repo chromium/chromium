@@ -120,17 +120,23 @@ class AssistiveSuggester : public SuggestionsSource {
 
   // Checks the text before cursor, emits metric if any assistive prefix is
   // matched.
-  void RecordAssistiveMatchMetrics(const std::u16string& text,
-                                   int cursor_pos,
-                                   int anchor_pos);
+  void RecordAssistiveMatchMetrics(
+      const std::u16string& text,
+      int cursor_pos,
+      int anchor_pos,
+      const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);
 
-  void RecordAssistiveMatchMetricsForAssistiveType(AssistiveType type);
+  void RecordAssistiveMatchMetricsForAssistiveType(
+      AssistiveType type,
+      const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);
 
   // Only the first applicable reason in DisabledReason enum is returned.
-  DisabledReason GetDisabledReasonForEmoji();
+  DisabledReason GetDisabledReasonForEmoji(
+      const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);
 
   // Only the first applicable reason in DisabledReason enum is returned.
-  DisabledReason GetDisabledReasonForPersonalInfo();
+  DisabledReason GetDisabledReasonForPersonalInfo(
+      const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);
 
   // Only the first applicable reason in DisabledReason enum is returned.
   DisabledReason GetDisabledReasonForMultiWord(
@@ -140,7 +146,9 @@ class AssistiveSuggester : public SuggestionsSource {
 
   bool IsAssistiveTypeEnabled(AssistiveType type);
 
-  bool IsAssistiveTypeAllowedInBrowserContext(AssistiveType type);
+  bool IsAssistiveTypeAllowedInBrowserContext(
+      AssistiveType type,
+      const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);
 
   bool WithinGrammarFragment(int cursor_pos, int anchor_pos);
 

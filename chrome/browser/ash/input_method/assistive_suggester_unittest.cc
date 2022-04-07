@@ -654,6 +654,28 @@ TEST_P(AssistiveSuggesterPersonalInfoTest,
                                        GetParam().expected_assistive_type, 1);
 }
 
+TEST_P(AssistiveSuggesterPersonalInfoTest,
+       ShouldRecordDisabledReasonWhenSwitchDisabled) {
+  assistive_suggester_ = std::make_unique<AssistiveSuggester>(
+      suggestion_handler_.get(), profile_.get(),
+      std::make_unique<FakeSuggesterSwitch>(EnabledSuggestions{
+          .personal_info_suggestions = false,
+      }),
+      personal_data_.get());
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+  assistive_suggester_->OnFocus(5);
+
+  assistive_suggester_->OnSurroundingTextChanged(
+      GetParam().surrounding_text, GetParam().surrounding_text.length(),
+      GetParam().surrounding_text.length());
+
+  histogram_tester_.ExpectTotalCount(
+      "InputMethod.Assistive.Disabled.PersonalInfo", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "InputMethod.Assistive.Disabled.PersonalInfo",
+      DisabledReason::kUrlOrAppNotAllowed, 1);
+}
+
 TEST_P(AssistiveSuggesterPersonalInfoTest, ShouldReturnPrefixBasedSuggestions) {
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5);
@@ -1064,6 +1086,26 @@ TEST_F(AssistiveSuggesterEmojiTest, ShouldRecordNotAllowedWhenSwitchDisabled) {
   histogram_tester_.ExpectTotalCount("InputMethod.Assistive.NotAllowed", 1);
   histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.NotAllowed",
                                        AssistiveType::kEmoji, 1);
+}
+
+TEST_F(AssistiveSuggesterEmojiTest,
+       ShouldRecordDisabledReasonWhenSwitchDisabled) {
+  assistive_suggester_ = std::make_unique<AssistiveSuggester>(
+      suggestion_handler_.get(), profile_.get(),
+      std::make_unique<FakeSuggesterSwitch>(EnabledSuggestions{
+          .emoji_suggestions = false,
+      }),
+      nullptr);
+  assistive_suggester_->get_emoji_suggester_for_testing()
+      ->LoadEmojiMapForTesting(kEmojiData);
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+  assistive_suggester_->OnFocus(5);
+
+  assistive_suggester_->OnSurroundingTextChanged(u"arrow ", 6, 6);
+
+  histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Disabled.Emoji", 1);
+  histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.Disabled.Emoji",
+                                       DisabledReason::kUrlOrAppNotAllowed, 1);
 }
 
 TEST_F(AssistiveSuggesterEmojiTest, ShouldReturnPrefixBasedEmojiSuggestions) {

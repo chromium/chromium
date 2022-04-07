@@ -234,20 +234,22 @@ bool AssistiveSuggester::IsExpandedMultiWordSuggestEnabled() {
          base::FeatureList::IsEnabled(features::kAssistMultiWordExpanded);
 }
 
-DisabledReason AssistiveSuggester::GetDisabledReasonForPersonalInfo() {
+DisabledReason AssistiveSuggester::GetDisabledReasonForPersonalInfo(
+    const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
   if (!base::FeatureList::IsEnabled(features::kAssistPersonalInfo)) {
     return DisabledReason::kFeatureFlagOff;
   }
   if (!profile_->GetPrefs()->GetBoolean(prefs::kAssistPersonalInfoEnabled)) {
     return DisabledReason::kUserSettingsOff;
   }
-  if (!suggester_switch_->IsPersonalInfoSuggestionAllowed()) {
+  if (!enabled_suggestions.personal_info_suggestions) {
     return DisabledReason::kUrlOrAppNotAllowed;
   }
   return DisabledReason::kNone;
 }
 
-DisabledReason AssistiveSuggester::GetDisabledReasonForEmoji() {
+DisabledReason AssistiveSuggester::GetDisabledReasonForEmoji(
+    const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
   if (!profile_->GetPrefs()->GetBoolean(
           prefs::kEmojiSuggestionEnterpriseAllowed)) {
     return DisabledReason::kEnterpriseSettingsOff;
@@ -255,7 +257,7 @@ DisabledReason AssistiveSuggester::GetDisabledReasonForEmoji() {
   if (!profile_->GetPrefs()->GetBoolean(prefs::kEmojiSuggestionEnabled)) {
     return DisabledReason::kUserSettingsOff;
   }
-  if (!suggester_switch_->IsEmojiSuggestionAllowed()) {
+  if (!enabled_suggestions.emoji_suggestions) {
     return DisabledReason::kUrlOrAppNotAllowed;
   }
   return DisabledReason::kNone;
@@ -321,16 +323,15 @@ bool AssistiveSuggester::IsAssistiveTypeEnabled(AssistiveType type) {
 }
 
 bool AssistiveSuggester::IsAssistiveTypeAllowedInBrowserContext(
-    AssistiveType type) {
-  // TODO(b/222218270): Replace all legacy suggester_switch->IsXAllowed() calls
-  // with GetEnabledSuggestions.
+    AssistiveType type,
+    const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
   switch (GetAssistiveFeatureForType(type)) {
     case AssistiveFeature::kPersonalInfoSuggestion:
-      return suggester_switch_->IsPersonalInfoSuggestionAllowed();
+      return enabled_suggestions.personal_info_suggestions;
     case AssistiveFeature::kEmojiSuggestion:
-      return suggester_switch_->IsEmojiSuggestionAllowed();
+      return enabled_suggestions.emoji_suggestions;
     case AssistiveFeature::kMultiWordSuggestion:
-      return suggester_switch_->IsMultiWordSuggestionAllowed();
+      return enabled_suggestions.multi_word_suggestions;
     default:
       LOG(DFATAL) << "Unexpected AssistiveType value: "
                   << static_cast<int>(type);
@@ -425,18 +426,22 @@ void AssistiveSuggester::RecordTextInputStateMetrics() {
 }
 
 void AssistiveSuggester::RecordAssistiveMatchMetricsForAssistiveType(
-    AssistiveType type) {
+    AssistiveType type,
+    const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
   RecordAssistiveMatch(type);
   if (!IsAssistiveTypeEnabled(type)) {
     RecordAssistiveDisabled(type);
-  } else if (!IsAssistiveTypeAllowedInBrowserContext(type)) {
+  } else if (!IsAssistiveTypeAllowedInBrowserContext(type,
+                                                     enabled_suggestions)) {
     RecordAssistiveNotAllowed(type);
   }
 }
 
-void AssistiveSuggester::RecordAssistiveMatchMetrics(const std::u16string& text,
-                                                     int cursor_pos,
-                                                     int anchor_pos) {
+void AssistiveSuggester::RecordAssistiveMatchMetrics(
+    const std::u16string& text,
+    int cursor_pos,
+    int anchor_pos,
+    const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
   int len = static_cast<int>(text.length());
   if (cursor_pos > 0 && cursor_pos <= len && cursor_pos == anchor_pos &&
       (cursor_pos == len || base::IsAsciiWhitespace(text[cursor_pos]))) {
@@ -446,15 +451,17 @@ void AssistiveSuggester::RecordAssistiveMatchMetrics(const std::u16string& text,
     // Personal info suggestion match
     AssistiveType type = ProposePersonalInfoAssistiveAction(text_before_cursor);
     if (type != AssistiveType::kGenericAction) {
-      RecordAssistiveMatchMetricsForAssistiveType(type);
+      RecordAssistiveMatchMetricsForAssistiveType(type, enabled_suggestions);
       RecordAssistiveDisabledReasonForPersonalInfo(
-          GetDisabledReasonForPersonalInfo());
+          GetDisabledReasonForPersonalInfo(enabled_suggestions));
       // Emoji suggestion match
     } else if (emoji_suggester_.ShouldShowSuggestion(text_before_cursor)) {
-      RecordAssistiveMatchMetricsForAssistiveType(AssistiveType::kEmoji);
+      RecordAssistiveMatchMetricsForAssistiveType(AssistiveType::kEmoji,
+                                                  enabled_suggestions);
       base::RecordAction(
           base::UserMetricsAction("InputMethod.Assistive.EmojiSuggested"));
-      RecordAssistiveDisabledReasonForEmoji(GetDisabledReasonForEmoji());
+      RecordAssistiveDisabledReasonForEmoji(
+          GetDisabledReasonForEmoji(enabled_suggestions));
     }
   }
 }
@@ -487,9 +494,8 @@ void AssistiveSuggester::ProcessOnSurroundingTextChanged(
     int cursor_pos,
     int anchor_pos,
     const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
-  // TODO(b/225988020): Make record assistive match metrics take enabled
-  // suggestions.
-  RecordAssistiveMatchMetrics(text, cursor_pos, anchor_pos);
+  RecordAssistiveMatchMetrics(text, cursor_pos, anchor_pos,
+                              enabled_suggestions);
   if (!IsAssistiveFeatureEnabled() || context_id_ == -1)
     return;
 
