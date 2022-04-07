@@ -101,65 +101,6 @@ bool IsValidTermsChoice(
          terms_state != TermsAndConditionsState::NOT_SELECTED;
 }
 
-bool IsValidUserFormSection(
-    const autofill_assistant::UserFormSectionProto& proto) {
-  if (proto.title().empty()) {
-    VLOG(2) << "UserFormSectionProto: Empty title not allowed.";
-    return false;
-  }
-  switch (proto.section_case()) {
-    case autofill_assistant::UserFormSectionProto::kStaticTextSection:
-      if (proto.static_text_section().text().empty()) {
-        VLOG(2) << "StaticTextSectionProto: Empty text not allowed.";
-        return false;
-      }
-      break;
-    case autofill_assistant::UserFormSectionProto::kTextInputSection: {
-      if (proto.text_input_section().input_fields().empty()) {
-        VLOG(2) << "TextInputProto: At least one input must be specified.";
-        return false;
-      }
-      std::set<std::string> memory_keys;
-      for (const auto& input_field :
-           proto.text_input_section().input_fields()) {
-        if (input_field.client_memory_key().empty()) {
-          VLOG(2) << "TextInputProto: Memory key must be specified.";
-          return false;
-        }
-        if (!memory_keys.insert(input_field.client_memory_key()).second) {
-          VLOG(2) << "TextInputProto: Duplicate memory keys ("
-                  << input_field.client_memory_key() << ").";
-          return false;
-        }
-      }
-      break;
-    }
-    case autofill_assistant::UserFormSectionProto::kPopupListSection:
-      if (proto.popup_list_section().item_names().empty()) {
-        VLOG(2) << "PopupListProto: At least one item must be specified.";
-        return false;
-      }
-      if (proto.popup_list_section().initial_selection().size() > 1 &&
-          proto.popup_list_section().allow_multiselect() == false) {
-        VLOG(2) << "PopupListProto: multiple initial selections for a single "
-                   "selection popup.";
-        return false;
-      }
-      for (int selection : proto.popup_list_section().initial_selection()) {
-        if (selection >= proto.popup_list_section().item_names().size() ||
-            selection < 0) {
-          VLOG(2) << "PopupListProto: an initial selection is out of bounds.";
-          return false;
-        }
-      }
-      break;
-    case autofill_assistant::UserFormSectionProto::SECTION_NOT_SET:
-      VLOG(2) << "UserFormSectionProto: section oneof not set.";
-      return false;
-  }
-  return true;
-}
-
 bool IsValidUserModel(const autofill_assistant::UserModel& user_model,
                       const autofill_assistant::CollectUserDataOptions&
                           collect_user_data_options) {
@@ -724,6 +665,80 @@ void CollectUserDataAction::UpdateMetrics(UserData* user_data) {
                                    user_data->available_payment_instruments_);
     FillInitiallySelectedDataStateForMetrics(user_data);
   }
+}
+
+bool CollectUserDataAction::IsValidUserFormSection(
+    const autofill_assistant::UserFormSectionProto& proto) {
+  if (proto.title().empty()) {
+    VLOG(2) << "UserFormSectionProto: Empty title not allowed.";
+    return false;
+  }
+  switch (proto.section_case()) {
+    case autofill_assistant::UserFormSectionProto::kStaticTextSection: {
+      if (proto.static_text_section().text().empty()) {
+        std::string client_memory_key =
+            proto.static_text_section().client_memory_key();
+        if (client_memory_key.empty()) {
+          VLOG(2) << "StaticTextSectionProto: Empty text and client memory key "
+                     "not allowed.";
+          return false;
+        }
+        std::string result;
+        auto status = user_data::GetClientMemoryStringValue(
+            client_memory_key, delegate_->GetUserData(),
+            delegate_->GetUserModel(), &result);
+        if (!status.ok() || result.empty()) {
+          VLOG(2) << "StaticTextSectionProto: Client memory key doesn't "
+                     "contain a non-empty string value.";
+          return false;
+        }
+      }
+      break;
+    }
+    case autofill_assistant::UserFormSectionProto::kTextInputSection: {
+      if (proto.text_input_section().input_fields().empty()) {
+        VLOG(2) << "TextInputProto: At least one input must be specified.";
+        return false;
+      }
+      std::set<std::string> memory_keys;
+      for (const auto& input_field :
+           proto.text_input_section().input_fields()) {
+        if (input_field.client_memory_key().empty()) {
+          VLOG(2) << "TextInputProto: Memory key must be specified.";
+          return false;
+        }
+        if (!memory_keys.insert(input_field.client_memory_key()).second) {
+          VLOG(2) << "TextInputProto: Duplicate memory keys ("
+                  << input_field.client_memory_key() << ").";
+          return false;
+        }
+      }
+      break;
+    }
+    case autofill_assistant::UserFormSectionProto::kPopupListSection:
+      if (proto.popup_list_section().item_names().empty()) {
+        VLOG(2) << "PopupListProto: At least one item must be specified.";
+        return false;
+      }
+      if (proto.popup_list_section().initial_selection().size() > 1 &&
+          proto.popup_list_section().allow_multiselect() == false) {
+        VLOG(2) << "PopupListProto: multiple initial selections for a single "
+                   "selection popup.";
+        return false;
+      }
+      for (int selection : proto.popup_list_section().initial_selection()) {
+        if (selection >= proto.popup_list_section().item_names().size() ||
+            selection < 0) {
+          VLOG(2) << "PopupListProto: an initial selection is out of bounds.";
+          return false;
+        }
+      }
+      break;
+    case autofill_assistant::UserFormSectionProto::SECTION_NOT_SET:
+      VLOG(2) << "UserFormSectionProto: section oneof not set.";
+      return false;
+  }
+  return true;
 }
 
 void CollectUserDataAction::OnGetUserData(

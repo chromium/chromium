@@ -29,6 +29,7 @@
 #include "components/autofill_assistant/browser/ukm_test_util.h"
 #include "components/autofill_assistant/browser/user_data_util.h"
 #include "components/autofill_assistant/browser/user_model.h"
+#include "components/autofill_assistant/browser/value_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -1303,6 +1304,35 @@ TEST_F(CollectUserDataActionTest, StaticSectionValid) {
   }
 
   static_section->mutable_static_text_section()->set_text("Lorem ipsum.");
+  {
+    CollectUserDataAction action(&mock_action_delegate_, action_proto);
+    EXPECT_CALL(
+        callback_,
+        Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+    action.ProcessAction(callback_.Get());
+  }
+
+  static_section->mutable_static_text_section()->set_client_memory_key("key");
+  {
+    CollectUserDataAction action(&mock_action_delegate_, action_proto);
+    EXPECT_CALL(
+        callback_,
+        Run(Pointee(Property(&ProcessedActionProto::status, INVALID_ACTION))));
+    action.ProcessAction(callback_.Get());
+  }
+
+  static_section->mutable_static_text_section()->set_client_memory_key("key");
+  user_model_.SetValue("key", SimpleValue(std::string("Hello World")));
+  {
+    CollectUserDataAction action(&mock_action_delegate_, action_proto);
+    EXPECT_CALL(
+        callback_,
+        Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+    action.ProcessAction(callback_.Get());
+  }
+
+  static_section->mutable_static_text_section()->set_client_memory_key("key");
+  user_data_.SetAdditionalValue("key", SimpleValue(std::string("Hello World")));
   {
     CollectUserDataAction action(&mock_action_delegate_, action_proto);
     EXPECT_CALL(

@@ -75,6 +75,8 @@ class CollectUserDataAction : public Action,
   void OnTermsAndConditionsLinkClicked(int link,
                                        UserData* user_data,
                                        const UserModel* user_model);
+  bool IsValidUserFormSection(
+      const autofill_assistant::UserFormSectionProto& proto);
   void ReloadUserData(UserData* user_data);
 
   // Only used for logging purposes.

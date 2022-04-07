@@ -2482,8 +2482,14 @@ message LoginDetailsProto {
 
 // A section showing a simple text message.
 message StaticTextSectionProto {
-  // The text to display. Can contain markup tags like <b>.
-  optional string text = 1;
+  oneof value {
+    // The text to display. Can contain markup tags like <b>.
+    string text = 1;
+    // Key to read the display string value from client memory.
+    // Note: Corresponding action will fail if we do not find
+    // a non-empty single display string value.
+    string client_memory_key = 2;
+  }
 }
 
 // A single text input.

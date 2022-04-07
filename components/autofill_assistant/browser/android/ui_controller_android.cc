@@ -163,55 +163,6 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaTextInputsForSection(
   return jinput_list;
 }
 
-// Creates the java equivalent to |sections|.
-base::android::ScopedJavaLocalRef<jobject> CreateJavaAdditionalSections(
-    JNIEnv* env,
-    const std::vector<UserFormSectionProto>& sections) {
-  auto jsection_list =
-      Java_AssistantCollectUserDataModel_createAdditionalSectionsList(env);
-  for (const auto& section : sections) {
-    switch (section.section_case()) {
-      case UserFormSectionProto::kStaticTextSection:
-        Java_AssistantCollectUserDataModel_appendStaticTextSection(
-            env, jsection_list, ConvertUTF8ToJavaString(env, section.title()),
-            ConvertUTF8ToJavaString(env, section.static_text_section().text()));
-        break;
-      case UserFormSectionProto::kTextInputSection: {
-        Java_AssistantCollectUserDataModel_appendTextInputSection(
-            env, jsection_list, ConvertUTF8ToJavaString(env, section.title()),
-            CreateJavaTextInputsForSection(env, section.text_input_section()));
-        break;
-      }
-      case UserFormSectionProto::kPopupListSection: {
-        std::vector<std::string> items;
-        std::copy(section.popup_list_section().item_names().begin(),
-                  section.popup_list_section().item_names().end(),
-                  std::back_inserter(items));
-        std::vector<int> initial_selections;
-        std::copy(section.popup_list_section().initial_selection().begin(),
-                  section.popup_list_section().initial_selection().end(),
-                  std::back_inserter(initial_selections));
-        Java_AssistantCollectUserDataModel_appendPopupListSection(
-            env, jsection_list, ConvertUTF8ToJavaString(env, section.title()),
-            ConvertUTF8ToJavaString(
-                env, section.popup_list_section().additional_value_key()),
-            base::android::ToJavaArrayOfStrings(env, items),
-            base::android::ToJavaIntArray(env, initial_selections),
-            section.popup_list_section().allow_multiselect(),
-            section.popup_list_section().selection_mandatory(),
-            ConvertUTF8ToJavaString(
-                env,
-                section.popup_list_section().no_selection_error_message()));
-        break;
-      }
-      case UserFormSectionProto::SECTION_NOT_SET:
-        NOTREACHED();
-        break;
-    }
-  }
-  return jsection_list;
-}
-
 absl::optional<int> GetPreviousFormCounterResult(
     const FormProto::Result* result,
     int input_index,
@@ -2052,6 +2003,72 @@ base::android::ScopedJavaLocalRef<jobject>
 UiControllerAndroid::GetPersistentGenericUiModel() {
   return Java_AssistantModel_getPersistentGenericUiModel(AttachCurrentThread(),
                                                          GetModel());
+}
+
+// Creates the java equivalent to |sections|.
+base::android::ScopedJavaLocalRef<jobject>
+UiControllerAndroid::CreateJavaAdditionalSections(
+    JNIEnv* env,
+    const std::vector<UserFormSectionProto>& sections) {
+  auto jsection_list =
+      Java_AssistantCollectUserDataModel_createAdditionalSectionsList(env);
+  for (const auto& section : sections) {
+    switch (section.section_case()) {
+      case UserFormSectionProto::kStaticTextSection: {
+        std::string text;
+        switch (section.static_text_section().value_case()) {
+          case StaticTextSectionProto::kClientMemoryKey: {
+            user_data::GetClientMemoryStringValue(
+                section.static_text_section().client_memory_key(),
+                execution_delegate_->GetUserData(),
+                execution_delegate_->GetUserModel(), &text);
+            break;
+          }
+
+          case StaticTextSectionProto::kText:
+          case StaticTextSectionProto::VALUE_NOT_SET: {
+            text = section.static_text_section().text();
+          }
+        }
+        Java_AssistantCollectUserDataModel_appendStaticTextSection(
+            env, jsection_list, ConvertUTF8ToJavaString(env, section.title()),
+            ConvertUTF8ToJavaString(env, text));
+        break;
+      }
+      case UserFormSectionProto::kTextInputSection: {
+        Java_AssistantCollectUserDataModel_appendTextInputSection(
+            env, jsection_list, ConvertUTF8ToJavaString(env, section.title()),
+            CreateJavaTextInputsForSection(env, section.text_input_section()));
+        break;
+      }
+      case UserFormSectionProto::kPopupListSection: {
+        std::vector<std::string> items;
+        std::copy(section.popup_list_section().item_names().begin(),
+                  section.popup_list_section().item_names().end(),
+                  std::back_inserter(items));
+        std::vector<int> initial_selections;
+        std::copy(section.popup_list_section().initial_selection().begin(),
+                  section.popup_list_section().initial_selection().end(),
+                  std::back_inserter(initial_selections));
+        Java_AssistantCollectUserDataModel_appendPopupListSection(
+            env, jsection_list, ConvertUTF8ToJavaString(env, section.title()),
+            ConvertUTF8ToJavaString(
+                env, section.popup_list_section().additional_value_key()),
+            base::android::ToJavaArrayOfStrings(env, items),
+            base::android::ToJavaIntArray(env, initial_selections),
+            section.popup_list_section().allow_multiselect(),
+            section.popup_list_section().selection_mandatory(),
+            ConvertUTF8ToJavaString(
+                env,
+                section.popup_list_section().no_selection_error_message()));
+        break;
+      }
+      case UserFormSectionProto::SECTION_NOT_SET:
+        NOTREACHED();
+        break;
+    }
+  }
+  return jsection_list;
 }
 
 }  // namespace autofill_assistant

@@ -256,6 +256,9 @@ class UiControllerAndroid : public ControllerObserver, UiControllerObserver {
   base::android::ScopedJavaLocalRef<jobject> GetFormModel();
   base::android::ScopedJavaLocalRef<jobject> GetGenericUiModel();
   base::android::ScopedJavaLocalRef<jobject> GetPersistentGenericUiModel();
+  base::android::ScopedJavaLocalRef<jobject> CreateJavaAdditionalSections(
+      JNIEnv* env,
+      const std::vector<UserFormSectionProto>& sections);
 
   // The ExecutionDelegate has the last say on whether we should show the
   // overlay. This saves the AutofillAssistantState-determined OverlayState and
