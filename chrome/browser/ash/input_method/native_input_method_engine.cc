@@ -776,7 +776,10 @@ void NativeInputMethodEngine::ImeObserver::OnFocus(
           InputMethodManager::Get()->GetActiveIMEState()->GetUIStyle() ==
           InputMethodManager::UIStyle::kNormal;
       auto input_field_info = mojom::InputFieldInfo::New(
-          TextInputTypeToMojoType(context.type),
+          is_normal_screen ? TextInputTypeToMojoType(context.type)
+                           : (context.type == ui::TEXT_INPUT_TYPE_PASSWORD
+                                  ? mojom::InputFieldType::kPassword
+                                  : mojom::InputFieldType::kNoIME),
           AutocorrectFlagsToMojoType(context.flags, is_normal_screen),
           context.should_do_learning && is_normal_screen
               ? mojom::PersonalizationMode::kEnabled
