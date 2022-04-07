@@ -130,6 +130,7 @@ NSString* GetAppIdForUpdaterAsNSString() {
 // Checks for update of a given app, with specified priority. Sends repeated
 // updates of progress and returns the result in the reply block.
 - (void)checkForUpdateWithAppID:(NSString* _Nonnull)appID
+               installDataIndex:(NSString* _Nullable)installDataIndex
                        priority:(CRUPriorityWrapper* _Nonnull)priority
         policySameVersionUpdate:
             (CRUPolicySameVersionUpdateWrapper* _Nonnull)policySameVersionUpdate
@@ -144,6 +145,7 @@ NSString* GetAppIdForUpdaterAsNSString() {
 
   [[_xpcConnection remoteObjectProxyWithErrorHandler:errorHandler]
       checkForUpdateWithAppID:appID
+             installDataIndex:installDataIndex
                      priority:priority
       policySameVersionUpdate:policySameVersionUpdate
                   updateState:updateState
@@ -243,6 +245,7 @@ void BrowserUpdaterClientMac::BeginUpdateCheck(
           initWithPolicySameVersionUpdate:
               updater::UpdateService::PolicySameVersionUpdate::kNotAllowed]);
   [client_ checkForUpdateWithAppID:GetAppIdForUpdaterAsNSString()
+                  installDataIndex:nil
                           priority:priority_wrapper.get()
            policySameVersionUpdate:policySameVersionUpdateWrapper.get()
                        updateState:state_observer.get()
