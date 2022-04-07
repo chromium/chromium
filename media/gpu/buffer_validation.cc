@@ -66,7 +66,9 @@ bool VerifyGpuMemoryBufferHandle(
             << coded_size.ToString();
     return false;
   }
-  if (pixel_format != PIXEL_FORMAT_I420 && pixel_format != PIXEL_FORMAT_NV12 &&
+  // YV12 is used by ARC++ on MTK8173. Consider removing it.
+  if (pixel_format != PIXEL_FORMAT_I420 && pixel_format != PIXEL_FORMAT_YV12 &&
+      pixel_format != PIXEL_FORMAT_NV12 &&
       pixel_format != PIXEL_FORMAT_P016LE) {
     VLOG(1) << "Unsupported: " << pixel_format;
     return false;
