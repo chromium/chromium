@@ -126,7 +126,7 @@ html.breadcrumb-elider-expanded #directory-tree {
 
 #directory-tree .tree-row > .file-row {
   align-items: center;
-  border: 1px solid transparent;
+  border: 2px solid transparent;
   border-inline-start-width: 0 !important;
   border-radius: 0 20px 20px 0;
   box-sizing: border-box;
@@ -274,7 +274,7 @@ html.drag-drop-active #directory-tree .tree-item.accepts > .tree-row > .file-row
 }
 
 html.focus-outline-visible #directory-tree:focus .tree-row[selected] > .file-row {
-  border: 1px solid var(--cros-focus-ring-color);
+  border: 2px solid var(--cros-focus-ring-color);
 }
 
 #directory-tree .tree-row[active] > .file-row {
@@ -435,7 +435,7 @@ html.pointer-active div.splitter:not(.splitter-active) .splitter-button:not(:act
   flex: none;
   flex-direction: row;
   font-size: 14px;
-  height: 56px;
+  height: 57px;
   overflow: hidden;
   transition: background 220ms ease;
 }
@@ -463,7 +463,7 @@ body[type='open-multi-file'].check-select .dialog-header {
   --ink-color: var(--cros-ripple-color);
   --ripple-opacity: 100%;
   --text-color: currentColor;
-  border: 1px solid transparent;
+  border: 2px solid transparent;
   border-radius: 18px;
   box-sizing: border-box;
   color: var(--cros-text-color-primary);
@@ -508,7 +508,7 @@ html.pointer-active .dialog-header.files-ng button:not([menu-shown]):not(:active
 
 html.focus-outline-visible .dialog-header.files-ng cr-button:not(:active):focus,
 html.focus-outline-visible .dialog-header.files-ng button:not(:active):focus {
-  border: 1px solid var(--cros-focus-ring-color);
+  border: 2px solid var(--cros-focus-ring-color);
 }
 
 .dialog-header files-ripple,
@@ -908,13 +908,13 @@ body.check-select #files-selected-label {
 
 /* TODO(adanilo) document the calc() reason. */
 body.files-ng #cancel-selection-button {
-  border: 1px solid transparent;
+  border: 2px solid transparent;
   margin-inline-start: calc(10px + 1px);
   width: 36px;
 }
 
 html.focus-outline-visible body.files-ng #cancel-selection-button:focus:not([tabindex='-1']):not(:active) {
-  border: 1px solid var(--cros-icon-color-prominent);
+  border: 2px solid var(--cros-icon-color-prominent);
 }
 
 body.files-ng #cancel-selection-button > span#cancel-selection-label {

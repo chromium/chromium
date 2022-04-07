@@ -5,7 +5,6 @@
 .dialog-header button.combobutton {
   align-items: stretch;
   background: transparent;
-  border: none;
   border-radius: 3px;
   cursor: pointer;
   display: flex;
