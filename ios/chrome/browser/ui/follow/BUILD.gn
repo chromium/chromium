@@ -33,6 +33,7 @@ source_set("first_follow_ui") {
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
+    ":follow",
     "//base",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/common/ui/colors",

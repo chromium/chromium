@@ -71,6 +71,7 @@
 #import "ios/chrome/browser/ui/find_bar/find_bar_controller_ios.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_coordinator.h"
 #import "ios/chrome/browser/ui/follow/first_follow_coordinator.h"
+#import "ios/chrome/browser/ui/follow/followed_web_channel.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_mediator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
@@ -862,11 +863,11 @@
 
 #pragma mark - FeedCommands
 
-- (void)showFirstFollowModalWithWebChannelTitle:(NSString*)webChannelTitle {
+- (void)showFirstFollowUIForWebChannel:(FollowedWebChannel*)followedWebChannel {
   self.firstFollowCoordinator = [[FirstFollowCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
-  self.firstFollowCoordinator.webChannelTitle = webChannelTitle;
+  self.firstFollowCoordinator.followedWebChannel = followedWebChannel;
   [self.firstFollowCoordinator start];
 }
 

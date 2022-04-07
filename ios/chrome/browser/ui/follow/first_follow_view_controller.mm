@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/follow/first_follow_view_controller.h"
 
 #include "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/ui/follow/followed_web_channel.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -37,11 +38,11 @@ constexpr CGFloat kButtonCornerRadius = 8;
   [super viewDidLoad];
 
   // TODO(crbug.com/1312124): Polish this UI and add favicon.
-  UILabel* titleLabel =
-      [self labelWithText:l10n_util::GetNSStringF(
-                              IDS_IOS_FIRST_FOLLOW_TITLE,
-                              base::SysNSStringToUTF16(self.webChannelTitle))
-                textStyle:UIFontTextStyleTitle1];
+  UILabel* titleLabel = [self
+      labelWithText:l10n_util::GetNSStringF(
+                        IDS_IOS_FIRST_FOLLOW_TITLE,
+                        base::SysNSStringToUTF16(self.followedWebChannel.title))
+          textStyle:UIFontTextStyleTitle1];
   UILabel* subTitleLabel =
       [self labelWithText:l10n_util::GetNSString(IDS_IOS_FIRST_FOLLOW_SUBTITLE)
                 textStyle:UIFontTextStyleHeadline];
@@ -51,9 +52,16 @@ constexpr CGFloat kButtonCornerRadius = 8;
   UIButton* goToFeedButton = [self filledGoToFeedButton];
   UIButton* gotItButton = [self plainGotItButton];
 
-  UIStackView* verticalStack = [[UIStackView alloc] initWithArrangedSubviews:@[
-    titleLabel, subTitleLabel, bodyLabel, goToFeedButton, gotItButton
-  ]];
+  // Go To Feed button is only displayed if the web channel is available.
+  NSArray* subviews = nil;
+  if (self.followedWebChannel.available) {
+    subviews =
+        @[ titleLabel, subTitleLabel, bodyLabel, goToFeedButton, gotItButton ];
+  } else {
+    subviews = @[ titleLabel, subTitleLabel, bodyLabel, gotItButton ];
+  }
+  UIStackView* verticalStack =
+      [[UIStackView alloc] initWithArrangedSubviews:subviews];
   verticalStack.axis = UILayoutConstraintAxisVertical;
   verticalStack.distribution = UIStackViewDistributionFill;
   verticalStack.alignment = UIStackViewAlignmentCenter;

@@ -9,13 +9,15 @@
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
+@class FollowedWebChannel;
+
 // Coordinator for the First Follow feature. This feature informs the user about
-// the feed and following channels after the first few times the user follows
-// any channel.
+// the feed and following channels the first few times the user follows any
+// channel.
 @interface FirstFollowCoordinator : ChromeCoordinator
 
-// The web channel title to display on the modal.
-@property(nonatomic, copy) NSString* webChannelTitle;
+// The web channel that was recently followed.
+@property(nonatomic, strong) FollowedWebChannel* followedWebChannel;
 
 @end
 

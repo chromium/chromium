@@ -5,11 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_UI_COMMANDS_FEED_COMMANDS_H_
 #define IOS_CHROME_BROWSER_UI_COMMANDS_FEED_COMMANDS_H_
 
+@class FollowedWebChannel;
+
 // Commands related to feed.
 @protocol FeedCommands
 
-// Displays the First Follow modal with |webChannelTitle|.
-- (void)showFirstFollowModalWithWebChannelTitle:(NSString*)webChannelTitle;
+// Displays the First Follow UI with |followedWebChannel|.
+- (void)showFirstFollowUIForWebChannel:(FollowedWebChannel*)followedWebChannel;
 
 @end
 

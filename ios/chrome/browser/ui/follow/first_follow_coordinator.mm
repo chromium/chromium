@@ -24,7 +24,9 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 - (void)start {
   FirstFollowViewController* firstFollowViewController =
       [[FirstFollowViewController alloc] init];
-  firstFollowViewController.webChannelTitle = self.webChannelTitle;
+  firstFollowViewController.followedWebChannel = self.followedWebChannel;
+  // Ownership is passed to VC so this object is not retained after VC closes.
+  self.followedWebChannel = nil;
 
   if (@available(iOS 15, *)) {
     firstFollowViewController.modalPresentationStyle =

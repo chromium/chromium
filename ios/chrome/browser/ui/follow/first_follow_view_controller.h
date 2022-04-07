@@ -7,12 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
-// The UI that informs the user about the feed and following channels after the
+@class FollowedWebChannel;
+
+// The UI that informs the user about the feed and following channels the
 // first few times the user follows any channel.
 @interface FirstFollowViewController : UIViewController
 
-// The Web Channel title to be shown in the modal.
-@property(nonatomic, copy) NSString* webChannelTitle;
+// The web channel that was recently followed.
+@property(nonatomic, strong) FollowedWebChannel* followedWebChannel;
 
 @end
 
