@@ -24,9 +24,8 @@
 #include "third_party/blink/public/mojom/app_banner/app_banner.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
-
-class SkBitmap;
 
 namespace content {
 class RenderFrameHost;

@@ -5,12 +5,15 @@
 #ifndef COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_INSTALLABLE_METRICS_H_
 #define COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_INSTALLABLE_METRICS_H_
 
-#include "base/time/time.h"
-#include "content/public/browser/service_worker_context.h"
+namespace base {
+class TimeDelta;
+}
 
 namespace content {
 class WebContents;
-}
+enum class OfflineCapability;
+enum class ServiceWorkerCapability;
+}  // namespace content
 
 namespace webapps {
 
