@@ -222,6 +222,17 @@ const base::Feature kDirectCompositionLowLatencyPresentation{
 const base::Feature kDirectCompositionSoftwareOverlays{
     "DirectCompositionSoftwareOverlays", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// TODO(crbug.com/1269749): This is used temporarily for verifying
+// the draw offset bug. The code should be removed once the bug is fixed.
+const base::Feature kDirectCompositionVerifyDrawOffset{
+    "DirectCompositionVerifyDrawOffset", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::FeatureParam<int> kVerifyDrawOffsetX{
+    &kDirectCompositionVerifyDrawOffset, "verify_draw_offset_x", 0};
+
+const base::FeatureParam<int> kVerifyDrawOffsetY{
+    &kDirectCompositionVerifyDrawOffset, "verify_draw_offset_y", 0};
+
 // Default to using ANGLE's OpenGL backend
 const base::Feature kDefaultANGLEOpenGL{"DefaultANGLEOpenGL",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
