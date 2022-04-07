@@ -82,5 +82,4 @@ def sign_all(paths, config):
     for part in parts:
         signing.sign_part(paths, config, part)
         signing.verify_part(paths, part)
-    signing.validate_app(paths, config, parts[-2])
     signing.validate_app(paths, config, parts[-1])
