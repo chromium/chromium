@@ -30,6 +30,7 @@ import android.content.pm.ActivityInfo;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -54,6 +55,7 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.Promise;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
@@ -98,6 +100,7 @@ import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -110,8 +113,12 @@ import java.util.List;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "disable-features=IPH_FeedHeaderMenu"})
-@Features.EnableFeatures(ChromeFeatureList.INTEREST_FEED_V2)
 public class FeedV2NewTabPageTest {
+    @ParameterAnnotations.ClassParameter
+    private static List<ParameterSet> sClassParams =
+            Arrays.asList(new ParameterSet().value(true).name("EnableScrollableMVTOnNTP"),
+                    new ParameterSet().value(false).name("DisableScrollableMVTOnNTP"));
+
     private static final int ARTICLE_SECTION_HEADER_POSITION = 1;
     private static final int SIGNIN_PROMO_POSITION = 2;
     private static final int MIN_ITEMS_AFTER_LOAD = 10;
@@ -176,11 +183,17 @@ public class FeedV2NewTabPageTest {
     private Tab mTab;
     private NewTabPage mNtp;
     private ViewGroup mTileGridLayout;
+    private LinearLayout mScrollableMVTLayout;
     private FakeMostVisitedSites mMostVisitedSites;
     private EmbeddedTestServer mTestServer;
     private List<SiteSuggestion> mSiteSuggestions;
     private boolean mDisableSigninPromoCard;
+    private boolean mEnableScrollableMVT;
     private TestFeedServer mFeedServer;
+
+    public FeedV2NewTabPageTest(boolean enableScrollableMVT) {
+        mEnableScrollableMVT = enableScrollableMVT;
+    }
 
     @ParameterAnnotations.UseMethodParameterBefore(SigninPromoParams.class)
     public void disableSigninPromoCard(boolean disableSigninPromoCard) {
@@ -190,6 +203,12 @@ public class FeedV2NewTabPageTest {
     @Before
     public void setUp() throws Exception {
         SignInPromo.setDisablePromoForTests(mDisableSigninPromoCard);
+        FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
+        testValuesOverride.addFeatureFlagOverride(ChromeFeatureList.INTEREST_FEED_V2, true);
+        testValuesOverride.addFeatureFlagOverride(
+                ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID, mEnableScrollableMVT);
+        FeatureList.setTestValues(testValuesOverride);
+
         mActivityTestRule.startMainActivityWithURL("about:blank");
 
         // EULA must be accepted, and internet connectivity is required, or the Feed will not
@@ -221,8 +240,14 @@ public class FeedV2NewTabPageTest {
 
         Assert.assertTrue(mTab.getNativePage() instanceof NewTabPage);
         mNtp = (NewTabPage) mTab.getNativePage();
-        mTileGridLayout = mNtp.getView().findViewById(R.id.tile_grid_layout);
-        Assert.assertEquals(mSiteSuggestions.size(), mTileGridLayout.getChildCount());
+
+        if (mEnableScrollableMVT) {
+            mScrollableMVTLayout = mNtp.getView().findViewById(R.id.mv_tiles_layout);
+            Assert.assertEquals(mSiteSuggestions.size(), mScrollableMVTLayout.getChildCount());
+        } else {
+            mTileGridLayout = mNtp.getView().findViewById(R.id.tile_grid_layout);
+            Assert.assertEquals(mSiteSuggestions.size(), mTileGridLayout.getChildCount());
+        }
     }
 
     private void waitForPopup(Matcher<View> matcher) {
@@ -428,7 +453,10 @@ public class FeedV2NewTabPageTest {
         RecyclerView recyclerView = getRecyclerView();
         FeedV2TestHelper.waitForRecyclerItems(MIN_ITEMS_AFTER_LOAD, recyclerView);
 
-        mRenderTestRule.render(recyclerView, "feedContent_landscape");
+        mRenderTestRule.render(recyclerView,
+                "feedContent_landscape"
+                        + (mEnableScrollableMVT ? "_with_scrollable_mvt"
+                                                : "_with_non_scrollable_mvt"));
     }
 
     /**

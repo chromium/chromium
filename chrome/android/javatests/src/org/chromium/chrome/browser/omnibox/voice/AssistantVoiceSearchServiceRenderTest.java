@@ -127,6 +127,8 @@ public class AssistantVoiceSearchServiceRenderTest {
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
 
+        // TODO(crbug.com/1291209): Add a #testAssistantMic_WithScrollableMVT test with
+        // ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID enabled when re-enabling this test.
         mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(R.id.ntp_content),
                 "avs__mic_unfocused_ntp");
 

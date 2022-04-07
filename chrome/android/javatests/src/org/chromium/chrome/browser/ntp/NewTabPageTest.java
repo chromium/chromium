@@ -184,15 +184,17 @@ public class NewTabPageTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
-    public void testRender_FocusFakeBox() throws Exception {
-        ScrimCoordinator scrimCoordinator = mActivityTestRule.getActivity()
-                                                    .getRootUiCoordinatorForTesting()
-                                                    .getScrimCoordinatorForTesting();
-        scrimCoordinator.disableAnimationForTesting(true);
-        onView(withId(R.id.search_box)).perform(click());
-        ChromeRenderTestRule.sanitize(mNtp.getView().getRootView());
-        mRenderTestRule.render(mNtp.getView().getRootView(), "focus_fake_box");
-        scrimCoordinator.disableAnimationForTesting(false);
+    @Features.DisableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
+    public void testRender_FocusFakeBox_WithNonScrollableMVT() throws Exception {
+        testRender_FocusFakeBox(false);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
+    @Features.EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
+    public void testRender_FocusFakeBox_WithScrollableMVT() throws Exception {
+        testRender_FocusFakeBox(true);
     }
 
     @Test
@@ -298,6 +300,7 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
+    @Features.DisableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
     public void testClickMostVisitedItem() {
         Assert.assertNotNull(mTileGridLayout);
         ChromeTabUtils.waitForTabPageLoaded(
@@ -318,6 +321,7 @@ public class NewTabPageTest {
     @DisabledTest // Flaked on the try bot. http://crbug.com/543138
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
+    @Features.DisableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
     public void testOpenMostVisitedItemInNewTab() throws ExecutionException {
         Assert.assertNotNull(mTileGridLayout);
         ChromeTabUtils.invokeContextMenuAndOpenInANewTab(mActivityTestRule,
@@ -331,6 +335,7 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
+    @Features.DisableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
     public void testOpenMostVisitedItemInIncognitoTab() throws ExecutionException {
         Assert.assertNotNull(mTileGridLayout);
         ChromeTabUtils.invokeContextMenuAndOpenInANewTab(mActivityTestRule,
@@ -345,6 +350,7 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
+    @Features.DisableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
     @FlakyTest(message = "crbug.com/1075804")
     public void testRemoveMostVisitedItem() throws ExecutionException {
         Assert.assertNotNull(mTileGridLayout);
@@ -584,6 +590,7 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
+    @Features.DisableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
     public void testPlaceholder() {
         final NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
         final View logoView = ntpLayout.findViewById(R.id.search_provider_logo);
@@ -718,6 +725,20 @@ public class NewTabPageTest {
                     /*beginVoiceSearch=*/true, /*pastedText=*/"");
             verify(mFeedReliabilityLoggingSignals).onVoiceSearch();
         });
+    }
+
+    private void testRender_FocusFakeBox(boolean isScrollableMVTOnNTPEnabled) throws Exception {
+        ScrimCoordinator scrimCoordinator = mActivityTestRule.getActivity()
+                                                    .getRootUiCoordinatorForTesting()
+                                                    .getScrimCoordinatorForTesting();
+        scrimCoordinator.disableAnimationForTesting(true);
+        onView(withId(R.id.search_box)).perform(click());
+        ChromeRenderTestRule.sanitize(mNtp.getView().getRootView());
+        mRenderTestRule.render(mNtp.getView().getRootView(),
+                "focus_fake_box"
+                        + (isScrollableMVTOnNTPEnabled ? "_with_scrollable_mvt"
+                                                       : "_with_non_scrollable_mvt"));
+        scrimCoordinator.disableAnimationForTesting(false);
     }
 
     private void assertThumbnailInvalidAndRecapture() {
