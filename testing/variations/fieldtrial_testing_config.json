@@ -4627,6 +4627,31 @@
             ]
         }
     ],
+    "NeuralPalmRejectionModelV2AndAdaptiveHold": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "NeuralPalmRejectionAdaptiveHold_20220207",
+                    "enable_features": [
+                        "EnableNeuralPalmAdaptiveHold",
+                        "EnableNeuralPalmRejectionModelV2"
+                    ]
+                },
+                {
+                    "name": "NeuralPalmRejectionModelV2_20220207",
+                    "enable_features": [
+                        "EnableNeuralPalmRejectionModelV2"
+                    ],
+                    "disable_features": [
+                        "EnableNeuralPalmAdaptiveHold"
+                    ]
+                }
+            ]
+        }
+    ],
     "NoWakeUpsForCanceledTasks": [
         {
             "platforms": [
@@ -5274,31 +5299,6 @@
                     },
                     "enable_features": [
                         "PaintPreviewShowOnStartup"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PalmRejectionAdaptiveHold": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "NeuralPalmRejectionAdaptiveHold_20220207",
-                    "enable_features": [
-                        "EnableNeuralPalmAdaptiveHold",
-                        "EnableNeuralPalmRejectionModelV2"
-                    ]
-                },
-                {
-                    "name": "NeuralPalmRejectionModelV2_20220207",
-                    "enable_features": [
-                        "EnableNeuralPalmRejectionModelV2"
-                    ],
-                    "disable_features": [
-                        "EnableNeuralPalmAdaptiveHold"
                     ]
                 }
             ]
