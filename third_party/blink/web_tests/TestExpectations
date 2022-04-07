@@ -6708,7 +6708,6 @@ crbug.com/1218667 [ Win ] virtual/portals/wpt_internal/portals/portals-dangling-
 crbug.com/1218714 [ Win ] virtual/scroll-unification/fast/forms/select-popup/popup-menu-scrollbar-button-scrolls.html [ Pass Timeout ]
 
 # Green Mac11 Test
-crbug.com/1201406 [ Mac11 ] fast/events/touch/gesture/touch-gesture-scroll-listbox.html [ Failure ]
 crbug.com/1201406 [ Mac11 ] http/tests/credentialmanagement/credentialscontainer-create-from-nested-frame.html [ Crash Timeout ]
 crbug.com/1201406 [ Mac11 ] http/tests/credentialmanagement/credentialscontainer-create-origins.html [ Crash Timeout ]
 crbug.com/1201406 http/tests/credentialmanagement/publickeycredential-same-origin-with-ancestors.html [ Crash Pass Timeout ]
@@ -7745,3 +7744,4 @@ crbug.com/1244896 fast/mediacapturefromelement/CanvasCaptureMediaStream-set-size
 # Sheriff 2022-04-06
 crbug.com/1290670 [ Mac10.14 ] external/wpt/webrtc/RTCPeerConnection-mandatory-getStats.https.html [ Failure Pass ]
 crbug.com/1313894 [ Mac10.14 ] rootscroller/root-scroller-paint-order.html [ Failure Pass ]
+crbug.com/1314130 [ Mac ] fast/events/touch/gesture/touch-gesture-scroll-listbox.html [ Failure Pass ]
