@@ -99,6 +99,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/dump_accessibility_test_helper.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/scoped_time_zone.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -111,6 +112,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_attach_helper.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "extensions/browser/guest_view/mime_handler_view/test_mime_handler_view_guest.h"
 #include "extensions/common/manifest_handlers/mime_types_handler.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -164,6 +166,8 @@ namespace {
 using ::content::AXInspectFactory;
 using ::content::WebContents;
 using ::extensions::ExtensionsAPIClient;
+using ::extensions::MimeHandlerViewGuest;
+using ::extensions::TestMimeHandlerViewGuest;
 using ::guest_view::GuestViewManager;
 using ::guest_view::TestGuestViewManager;
 using ::guest_view::TestGuestViewManagerFactory;
@@ -4482,4 +4486,72 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionSubmitFormTest, MAYBE_SubmitForm) {
       ConvertPageCoordToScreenCoord(guest_contents, {200, 200}));
 
   run_loop->Run();
+}
+
+class PDFExtensionPrerenderAndFencedFrameTest
+    : public PDFExtensionTestWithTestGuestViewManager {
+ public:
+  PDFExtensionPrerenderAndFencedFrameTest() = default;
+  ~PDFExtensionPrerenderAndFencedFrameTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PDFExtensionTestWithTestGuestViewManager::SetUpCommandLine(command_line);
+    // `prerender_helper_` and `fenced_frame_helper_` has a ScopedFeatureList so
+    // we needed to delay its creation until now because PDFExtensionTest
+    // also uses a ScopedFeatureList and initialization order matters.
+    prerender_helper_ = std::make_unique<content::test::PrerenderTestHelper>(
+        base::BindRepeating(&PDFExtensionPrerenderTest::GetActiveWebContents,
+                            base::Unretained(this)));
+    fenced_frame_helper_ =
+        std::make_unique<content::test::FencedFrameTestHelper>();
+  }
+
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return *prerender_helper_;
+  }
+
+  content::test::FencedFrameTestHelper& fenced_frame_helper() {
+    return *fenced_frame_helper_;
+  }
+
+ private:
+  std::unique_ptr<content::test::PrerenderTestHelper> prerender_helper_;
+  std::unique_ptr<content::test::FencedFrameTestHelper> fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(PDFExtensionPrerenderAndFencedFrameTest,
+                       LoadPDFInPrerender) {
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+
+  GetGuestViewManager()->RegisterTestGuestViewType<MimeHandlerViewGuest>(
+      base::BindRepeating(&TestMimeHandlerViewGuest::Create));
+  // Set a 1s delay to delay MimeHandlerViewGuest's creation to ensure that the
+  // fenced frame is loaded while the PDF stream is not yet consumed.
+  const int creation_delay = TestTimeouts::tiny_timeout().InMilliseconds();
+  TestMimeHandlerViewGuest::DelayNextCreateWebContents(creation_delay);
+
+  // Load a PDF in the prerender.
+  GURL prerender_url = embedded_test_server()->GetURL("/pdf/test.pdf");
+
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetActiveWebContents());
+  prerender_helper().AddPrerenderAsync(prerender_url);
+  registry_observer.WaitForTrigger(prerender_url);
+
+  // Create a fenced frame.
+  const GURL fenced_frame_url =
+      embedded_test_server()->GetURL("/fenced_frames/title1.html");
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_helper().CreateFencedFrame(
+          GetActiveWebContents()->GetMainFrame(), fenced_frame_url);
+  ASSERT_TRUE(fenced_frame_host);
+
+  auto* guest_web_contents = GetGuestViewManager()->WaitForSingleGuestCreated();
+  ASSERT_TRUE(guest_web_contents);
+  WaitForLoadStart(guest_web_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(guest_web_contents));
+
+  // Ensure that the fenced frame's navigation should not abort the PDF stream.
+  EXPECT_EQ(1U, GetGuestViewManager()->GetNumGuestsActive());
 }

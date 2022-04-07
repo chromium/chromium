@@ -27,6 +27,10 @@ class TestMimeHandlerViewGuest : public MimeHandlerViewGuest {
 
   // Set a delay in the next creation of a guest's WebContents by |delay|
   // milliseconds.
+  // TODO(mcnee): The use of a timed delay makes for tests with fragile timing
+  // dependencies. This should be implemented in a way that allows the test to
+  // control when to resume creation based on a condition (e.g. QuitClosure,
+  // OneShotEvent).
   static void DelayNextCreateWebContents(int delay);
 
   // Wait until the guest has attached to the embedder.
