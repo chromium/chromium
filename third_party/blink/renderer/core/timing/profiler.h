@@ -28,12 +28,12 @@ class ProfilerInitOptions;
 // isolate until stopped.
 class CORE_EXPORT Profiler final : public EventTargetWithInlineData {
   DEFINE_WRAPPERTYPEINFO();
-  USING_PRE_FINALIZER(Profiler, DisposeAsync);
+  USING_PRE_FINALIZER(Profiler, Dispose);
 
  public:
   Profiler(ProfilerGroup* profiler_group,
            ScriptState* script_state,
-           const String& profiler_id,
+           v8::ProfilerId profiler_id,
            int target_sample_rate,
            scoped_refptr<const SecurityOrigin> source_origin,
            base::TimeTicks time_origin)
@@ -52,9 +52,9 @@ class CORE_EXPORT Profiler final : public EventTargetWithInlineData {
 
   void Trace(Visitor* visitor) const override;
 
-  void DisposeAsync();
+  void Dispose();
 
-  String ProfilerId() const { return profiler_id_; }
+  v8::ProfilerId ProfilerId() const { return profiler_id_; }
   int TargetSampleRate() const { return target_sample_rate_; }
   const SecurityOrigin* SourceOrigin() const { return source_origin_.get(); }
   base::TimeTicks TimeOrigin() const { return time_origin_; }
@@ -72,7 +72,7 @@ class CORE_EXPORT Profiler final : public EventTargetWithInlineData {
  private:
   Member<ProfilerGroup> profiler_group_;
   Member<ScriptState> script_state_;
-  const String profiler_id_;
+  const v8::ProfilerId profiler_id_;
   const int target_sample_rate_;
   const scoped_refptr<const SecurityOrigin> source_origin_;
   const base::TimeTicks time_origin_;
