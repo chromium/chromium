@@ -34,6 +34,7 @@
 #include "base/system/system_monitor.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/timer/timer.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "media/base/video_frame.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
@@ -46,6 +47,8 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/view.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -121,6 +124,28 @@ class CameraDevicesChangeWaiter : public CaptureModeCameraController::Observer {
 
   // Tracks the number of times `OnSelectedCameraChanged()` was triggered.
   int selected_camera_change_event_count_ = 0;
+};
+
+// Defines a waiter to observe the visibility change of the view.
+class ViewVisibilityChangeWaiter : public views::ViewObserver {
+ public:
+  explicit ViewVisibilityChangeWaiter(views::View* view) : view_(view) {
+    view_->AddObserver(this);
+  }
+
+  ~ViewVisibilityChangeWaiter() override { view_->RemoveObserver(this); }
+
+  void Wait() { wait_loop_.Run(); }
+
+  // views::ViewObserver:
+  void OnViewVisibilityChanged(views::View* observed_view,
+                               views::View* starting_view) override {
+    wait_loop_.Quit();
+  }
+
+ private:
+  views::View* const view_;
+  base::RunLoop wait_loop_;
 };
 
 }  // namespace
@@ -233,9 +258,7 @@ class CaptureModeCameraTest : public AshTestBase {
   }
 
   CaptureModeButton* GetPreviewResizeButton() const {
-    return GetCameraController()
-        ->camera_preview_view()
-        ->resize_button_for_test();
+    return GetCameraController()->camera_preview_view()->resize_button();
   }
 
   // Verifies that the camera preview is placed on the correct position based on
@@ -2187,6 +2210,87 @@ TEST_P(CaptureModeCameraPreviewTest, MultiDisplayResize) {
   ClickOnView(resize_button, event_generator);
 
   VerifyPreviewAlignment(GetCaptureBoundsInScreen());
+}
+
+// Tests the visibility of the resize button on mouse events.
+TEST_P(CaptureModeCameraPreviewTest, ResizeButtonVisibilityOnMouseEvents) {
+  StartCaptureSessionWithParam();
+  CaptureModeCameraController* camera_controller = GetCameraController();
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  views::Widget* preview_widget = camera_controller->camera_preview_widget();
+  DCHECK(preview_widget);
+  const gfx::Rect default_preview_bounds =
+      preview_widget->GetWindowBoundsInScreen();
+
+  CaptureModeButton* resize_button = GetPreviewResizeButton();
+  auto* event_generator = GetEventGenerator();
+
+  // Tests that the resize button is hidden by default.
+  EXPECT_FALSE(resize_button->GetVisible());
+
+  // Tests that the resize button will show up when the mouse is entering the
+  // bounds of the preview widget.
+  event_generator->MoveMouseTo(default_preview_bounds.CenterPoint());
+  EXPECT_TRUE(resize_button->GetVisible());
+
+  // Tests that the resize button will stay visible while moving the mouse
+  // within the bounds of the preview widget.
+  event_generator->MoveMouseTo(default_preview_bounds.top_center());
+  EXPECT_TRUE(resize_button->GetVisible());
+
+  // Tests that when the mouse is exiting the bounds of the preview widget, the
+  // resize button will disappear after the predefined duration.
+  auto outside_point = default_preview_bounds.origin();
+  outside_point.Offset(-1, -1);
+  event_generator->MoveMouseTo(outside_point);
+
+  base::OneShotTimer* timer = camera_controller->camera_preview_view()
+                                  ->resize_button_hide_timer_for_test();
+  EXPECT_TRUE(timer->IsRunning());
+  EXPECT_EQ(timer->GetCurrentDelay(), capture_mode::kResizeButtonShowDuration);
+
+  {
+    ViewVisibilityChangeWaiter waiter(resize_button);
+    EXPECT_TRUE(resize_button->GetVisible());
+    timer->FireNow();
+    waiter.Wait();
+    EXPECT_FALSE(resize_button->GetVisible());
+  }
+}
+
+// Tests the visibility of the resize button on tap events.
+TEST_P(CaptureModeCameraPreviewTest, ResizeButtonVisibilityOnTapEvents) {
+  StartCaptureSessionWithParam();
+  CaptureModeCameraController* camera_controller = GetCameraController();
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  views::Widget* preview_widget = camera_controller->camera_preview_widget();
+  DCHECK(preview_widget);
+  const gfx::Rect default_preview_bounds =
+      preview_widget->GetWindowBoundsInScreen();
+
+  CaptureModeButton* resize_button = GetPreviewResizeButton();
+  auto* event_generator = GetEventGenerator();
+
+  // Tests that the resize button is hidden by default.
+  EXPECT_FALSE(resize_button->GetVisible());
+
+  // Tests that resize button shows up when tapping within the bounds of the
+  // preview widget and will fade out after the predefined duration.
+  event_generator->GestureTapAt(default_preview_bounds.CenterPoint());
+  EXPECT_TRUE(resize_button->GetVisible());
+  base::OneShotTimer* timer = camera_controller->camera_preview_view()
+                                  ->resize_button_hide_timer_for_test();
+  EXPECT_TRUE(timer->IsRunning());
+  EXPECT_EQ(timer->GetCurrentDelay(), capture_mode::kResizeButtonShowDuration);
+
+  {
+    ViewVisibilityChangeWaiter waiter(resize_button);
+    timer->FireNow();
+    waiter.Wait();
+    EXPECT_FALSE(resize_button->GetVisible());
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -8,6 +8,7 @@
 #include "ash/capture_mode/camera_video_frame_renderer.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
+#include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
@@ -49,6 +50,7 @@ class CameraPreviewView
   ~CameraPreviewView() override;
 
   const CameraId& camera_id() const { return camera_id_; }
+  CaptureModeButton* resize_button() const { return resize_button_; }
 
   // views::View:
   void AddedToWidget() override;
@@ -56,12 +58,16 @@ class CameraPreviewView
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
+  void OnMouseEntered(const ui::MouseEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
   void Layout() override;
 
   // CaptureModeSessionFocusCycler::HighlightableView:
   views::View* GetView() override;
 
-  CaptureModeButton* resize_button_for_test() const { return resize_button_; }
+  base::OneShotTimer* resize_button_hide_timer_for_test() {
+    return &resize_button_hide_timer_;
+  }
 
  private:
   friend class CaptureModeTestApi;
@@ -84,6 +90,19 @@ class CameraPreviewView
   // `camera_video_host_view_` and all the native windows it is hosting.
   void DisableEventHandlingInCameraVideoHostHierarchy();
 
+  // Gets called by the `resize_button_hide_timer_` to refresh the visibility of
+  // the `resize_button_` when necessary.
+  void RefreshResizeButtonVisibility();
+
+  // Fades in or out the `resize_button_` and updates its visibility
+  // accordingly.
+  void FadeInResizeButton();
+  void FadeOutResizeButton();
+
+  // Called when the mouse exits the camera preview or after the latest tap
+  // inside the camera preview to start the `resize_button_hide_timer_`.
+  void ScheduleRefreshResizeButtonVisibility();
+
   CaptureModeCameraController* const camera_controller_;
 
   // The ID of the camera for which this preview was created.
@@ -97,6 +116,13 @@ class CameraPreviewView
   views::NativeViewHost* const camera_video_host_view_;
 
   CaptureModeButton* const resize_button_;
+
+  // Started when the mouse exits the camera preview or after the latest tap
+  // inside the camera preview. Runs RefreshResizeButtonVisibility() to fade out
+  // the resize button if possible.
+  base::OneShotTimer resize_button_hide_timer_;
+
+  base::WeakPtrFactory<CameraPreviewView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
