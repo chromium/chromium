@@ -14,7 +14,7 @@
 #endif
 
 namespace {
-const char kScriptName[] = "error_js";
+const char kScriptName[] = "error";
 
 const char kWindowErrorResultHandlerName[] = "WindowErrorResultHandler";
 

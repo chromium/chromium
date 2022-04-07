@@ -6,12 +6,7 @@
  * @fileoverview Error listener to report error details to the native app.
  */
 
-goog.provide('__crWeb.error');
-
-// Requires __crWeb.common.
-
-/** Beginning of anonymous object */
-(function() {
+// Requires functions from common.js
 
 /**
  * JavaScript errors are logged on the main application side. The handler is
@@ -24,5 +19,3 @@ window.addEventListener('error', function(event) {
        'message': event.message.toString()
       });
 });
-
-}());  // End of anonymous object

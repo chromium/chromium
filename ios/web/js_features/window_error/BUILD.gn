@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//ios/build/config.gni")
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 
 source_set("window_error") {
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -21,10 +21,10 @@ source_set("window_error") {
   ]
 }
 
-js_compile_bundle("error_js") {
+optimize_js("error_js") {
   visibility = [ ":window_error" ]
-  closure_entry_point = "__crWeb.error"
 
+  primary_script = "resources/error.js"
   sources = [ "resources/error.js" ]
 }
 
