@@ -5,8 +5,8 @@
 import 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 
 import {CrA11yAnnouncerElement, TIMEOUT_MS} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('CrA11yAnnouncerElementTest', () => {
   setup(() => {
@@ -59,5 +59,18 @@ suite('CrA11yAnnouncerElementTest', () => {
 
     // Creates new announcer since previous announcer is removed from instances.
     assertNotEquals(announcer, CrA11yAnnouncerElement.getInstance());
+  });
+
+  test('SendsCustomEvent', async () => {
+    const announcer = CrA11yAnnouncerElement.getInstance();
+    const announcerEventPromise =
+        eventToPromise('cr-a11y-announcer-messages-sent', document.body);
+    const message1 = 'Hello.';
+    const message2 = 'Hi.';
+    announcer.announce(message1);
+    announcer.announce(message2);
+    const announcerEvent = await announcerEventPromise;
+    assertTrue(announcerEvent.detail.messages.includes(message1));
+    assertTrue(announcerEvent.detail.messages.includes(message2));
   });
 });
