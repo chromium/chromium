@@ -56,6 +56,12 @@ The bot provides analysis using:
 - Add a footer to the commit description along the lines of:
     - `Binary-Size: Size increase is unavoidable (see above).`
     - `Binary-Size: Increase is temporary.`
+    - `Binary-Size: See commit description.` <-- use this if longer than one line.
+
+***note
+**Note:** Make sure there are no blank lines between `Binary-Size:` and other
+footers.
+***
 
 [optimization advice]: /docs/speed/binary_size/optimization_advice.md
 [milestone size breakdowns]: https://storage.googleapis.com/chrome-supersize/index.html
