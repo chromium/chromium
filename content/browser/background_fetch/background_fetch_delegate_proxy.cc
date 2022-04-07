@@ -215,6 +215,7 @@ void BackgroundFetchDelegateProxy::MarkJobComplete(
 
 void BackgroundFetchDelegateProxy::OnJobCancelled(
     const std::string& job_unique_id,
+    const std::string& download_guid,
     blink::mojom::BackgroundFetchFailureReason reason_to_abort) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(
@@ -227,8 +228,20 @@ void BackgroundFetchDelegateProxy::OnJobCancelled(
   if (it == controller_map_.end())
     return;
 
-  if (const auto& controller = it->second)
+  if (const auto& controller = it->second) {
+    if (reason_to_abort ==
+        blink::mojom::BackgroundFetchFailureReason::DOWNLOAD_TOTAL_EXCEEDED) {
+      // Mark the request as complete and failed to avoid leaking information
+      // about the size of the resource.
+      controller->DidCompleteRequest(
+          download_guid,
+          std::make_unique<BackgroundFetchResult>(
+              nullptr /* response */, base::Time::Now(),
+              BackgroundFetchResult::FailureReason::FETCH_ERROR));
+    }
+
     controller->AbortFromDelegate(reason_to_abort);
+  }
 }
 
 void BackgroundFetchDelegateProxy::OnDownloadStarted(
