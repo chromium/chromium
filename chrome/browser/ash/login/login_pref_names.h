@@ -13,6 +13,7 @@ extern const char kOobeComplete[];
 extern const char kOobeOnboardingTime[];
 extern const char kOobeMarketingOptInScreenFinished[];
 extern const char kOobeMarketingOptInChoice[];
+extern const char kOobeRevenUpdatedToFlex[];
 extern const char kOobeScreenPending[];
 extern const char kGaiaOfflineSigninTimeLimitDays[];
 extern const char kGaiaLastOnlineSignInTime[];
@@ -27,6 +28,7 @@ extern const char kSamlPasswordSyncToken[];
 extern const char kActivityTimeAfterOnboarding[];
 extern const char kOobeGuestMetricsEnabled[];
 extern const char kOobeGuestAcceptedTos[];
+extern const char kRevenOobeConsolidatedConsentAccepted[];
 
 }  // namespace prefs
 }  // namespace ash

@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/optin/arc_optin_preference_handler.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
@@ -221,11 +222,19 @@ void ConsolidatedConsentScreen::UpdateMetricsMode(bool enabled, bool managed) {
 void ConsolidatedConsentScreen::OnOwnershipStatusCheckDone(
     DeviceSettingsService::OwnershipStatus status) {
   // If no ownership is established yet, then the current user is the first
-  // user to sign in. Therefore, the current user would be the owner.
+  // user to sign in. Therefore, the current user would be the owner if the
+  // device is not enterprise managed.
+  policy::BrowserPolicyConnectorAsh* policy_connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  bool is_managed = policy_connector->IsDeviceEnterpriseManaged();
   if (status == DeviceSettingsService::OWNERSHIP_NONE)
-    is_owner_ = true;
+    is_owner_ = !is_managed;
   else if (status == DeviceSettingsService::OWNERSHIP_TAKEN)
     is_owner_ = user_manager::UserManager::Get()->IsCurrentUserOwner();
+
+  // Save this value for future reuse in the wizard flow. Note: it might remain
+  // unset.
+  context()->is_owner_flow = is_owner_;
 
   // If the user is not the owner and the owner disabled metrics, the user
   // is not allowed to update the usage opt-in.
@@ -256,10 +265,6 @@ void ConsolidatedConsentScreen::OnOwnershipStatusCheckDone(
     // Since ARC OOBE Negotiation is not needed, we should avoid using
     // ArcOptInPreferenceHandler, so, we should update the usage opt-in here
     // since OnMetricsModeChanged() will not be called.
-    policy::BrowserPolicyConnectorAsh* policy_connector =
-        g_browser_process->platform_part()->browser_policy_connector_ash();
-    bool is_managed = policy_connector->IsDeviceEnterpriseManaged();
-
     auto* metrics_service = g_browser_process->metrics_service();
     bool is_enabled = false;
     if (metrics_service &&
@@ -399,6 +404,10 @@ void ConsolidatedConsentScreen::ExitScreenWithAcceptedResult() {
       WizardController::default_controller()->demo_setup_controller();
 
   if (!demo_setup_controller) {
+    if (switches::IsRevenBranding()) {
+      PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+      prefs->SetBoolean(prefs::kRevenOobeConsolidatedConsentAccepted, true);
+    }
     exit_callback_.Run(Result::ACCEPTED);
     return;
   }

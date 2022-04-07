@@ -446,6 +446,14 @@ void LoginDisplayHostCommon::ShowTosForExistingUser() {
   StartUserOnboarding();
 }
 
+void LoginDisplayHostCommon::ShowNewTermsForFlexUsers() {
+  // TODO(b/196201668): show EULA screen to users if consolidated consent isn't
+  //                    enabled.
+  SetScreenAfterManagedTos(ConsolidatedConsentScreenView::kScreenId);
+  wizard_context_->is_cloud_ready_update_flow = true;
+  StartWizard(TermsOfServiceScreenView::kScreenId);
+}
+
 void LoginDisplayHostCommon::SetAuthSessionForOnboarding(
     const UserContext& user_context) {
   if (PinSetupScreen::ShouldSkipBecauseOfPolicy())

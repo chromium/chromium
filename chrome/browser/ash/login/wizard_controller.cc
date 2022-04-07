@@ -1119,6 +1119,10 @@ void WizardController::OnConsolidatedConsentScreenExit(
     ConsolidatedConsentScreen::Result result) {
   OnScreenExit(ConsolidatedConsentScreenView::kScreenId,
                ConsolidatedConsentScreen::GetResultString(result));
+  if (wizard_context_->is_cloud_ready_update_flow) {
+    AdvanceToScreen(HWDataCollectionView::kScreenId);
+    return;
+  }
   switch (result) {
     case ConsolidatedConsentScreen::Result::ACCEPTED:
     case ConsolidatedConsentScreen::Result::NOT_APPLICABLE:
@@ -1194,6 +1198,10 @@ void WizardController::OnHWDataCollectionScreenExit(
     HWDataCollectionScreen::Result result) {
   OnScreenExit(HWDataCollectionView::kScreenId,
                HWDataCollectionScreen::GetResultString(result));
+  if (wizard_context_->is_cloud_ready_update_flow) {
+    OnOobeFlowFinished();
+    return;
+  }
   ShowFingerprintSetupScreen();
 }
 
@@ -1977,6 +1985,7 @@ void WizardController::SetCurrentScreen(BaseScreen* new_current) {
     if (is_out_of_box_ && IsResumableOobeScreen(current_screen_->screen_id())) {
       StartupUtils::SaveOobePendingScreen(current_screen_->screen_id().name);
     } else if (IsResumablePostLoginScreen(current_screen_->screen_id()) &&
+               !wizard_context_->is_cloud_ready_update_flow &&
                wizard_context_->screen_after_managed_tos !=
                    OobeScreen::SCREEN_UNKNOWN) {
       // If screen_after_managed_tos == SCREEN_UNKNOWN means that the onboarding

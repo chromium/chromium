@@ -7,7 +7,6 @@
 #include <string>
 
 #include "ash/constants/ash_switches.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/settings/hardware_data_usage_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -68,15 +67,8 @@ void HWDataCollectionScreen::OnViewDestroyed(HWDataCollectionView* view) {
 }
 
 bool HWDataCollectionScreen::MaybeSkip(WizardContext* context) {
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  // Taking device ownership can take some time, so we can't rely on it here.
-  // Check that the user is first and not managed instead.
-  const bool is_owner =
-      (user_manager::UserManager::Get()->GetUsers().size() == 1);
-  const bool is_enterprise_managed = connector->IsDeviceEnterpriseManaged();
-  if (!switches::IsRevenBranding() || is_enterprise_managed || !is_owner ||
-      !context->is_branded_build) {
+  bool is_owner = context->is_owner_flow.value_or(false);
+  if (!switches::IsRevenBranding() || !is_owner || !context->is_branded_build) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }

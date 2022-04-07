@@ -94,6 +94,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/about_flags.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/sync/os_sync_util.h"
 #include "chrome/browser/ash/tether/tether_service.h"
 #include "chrome/browser/ash/tpm_firmware_update_notification.h"
@@ -441,6 +442,61 @@ void SaveSyncTrustedVaultKeysToProfile(
     sync_service->AddTrustedVaultRecoveryMethodFromWeb(
         gaia_id, method.public_key, method.type_hint, base::DoNothing());
   }
+}
+
+bool IsHwDataUsageDeviceSettingSet() {
+  return DeviceSettingsService::Get() &&
+         DeviceSettingsService::Get()->device_settings() &&
+         DeviceSettingsService::Get()
+             ->device_settings()
+             ->has_hardware_data_usage_enabled();
+}
+
+// Updates local_state kOobeRevenUpdatedToFlex pref to true if OS was updated.
+// Returns value of the kOobeRevenUpdatedToFlex pref.
+bool IsRevenUpdatedToFlex() {
+  PrefService* local_state = g_browser_process->local_state();
+  if (local_state->GetBoolean(prefs::kOobeRevenUpdatedToFlex))
+    return true;
+
+  // If it is a first login after update from CloudReady this field in the
+  // device settings service won't be set.
+  bool is_hw_data_usage_enabled_already_set = IsHwDataUsageDeviceSettingSet();
+
+  // If this field isn't set it means that the device was updated to Flex
+  // and owner hasn't logged in yet. Set a boolean flag to control if the
+  // new terms should be shown for existing users on the device.
+  if (!is_hw_data_usage_enabled_already_set &&
+      features::IsOobeConsolidatedConsentEnabled()) {
+    local_state->SetBoolean(prefs::kOobeRevenUpdatedToFlex, true);
+  }
+  return local_state->GetBoolean(prefs::kOobeRevenUpdatedToFlex);
+}
+
+bool MaybeShowNewTermsAfterUpdateToFlex(Profile* profile) {
+  // Check if the device has been recently updated from CloudReady to show new
+  // license agreement and data collection consent. This applies only for
+  // existing users of not managed reven boards.
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
+  bool is_device_managed = connector->IsDeviceEnterpriseManaged();
+  if (!switches::IsRevenBranding() || user_manager->IsCurrentUserNew() ||
+      is_device_managed) {
+    return false;
+  }
+  const bool should_show_new_terms =
+      IsRevenUpdatedToFlex() &&
+      ((user_manager->IsCurrentUserOwner() &&
+        !IsHwDataUsageDeviceSettingSet()) ||
+       (features::IsOobeConsolidatedConsentEnabled() &&
+        !profile->GetPrefs()->GetBoolean(
+            prefs::kRevenOobeConsolidatedConsentAccepted)));
+  if (should_show_new_terms) {
+    LoginDisplayHost::default_host()->GetSigninUI()->ShowNewTermsForFlexUsers();
+    return true;
+  }
+  return false;
 }
 
 }  // namespace
@@ -1776,6 +1832,7 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
           ->ClearOnboardingAuthSession();
     }
 
+    // TODO(https://crbug.com/1313844): better structure different user flows
     if (user_manager->IsCurrentUserNew() && !skip_post_login_screens) {
       prefs->SetTime(prefs::kOobeOnboardingTime, base::Time::Now());
       prefs->SetBoolean(arc::prefs::kArcPlayStoreLaunchMetricCanBeRecorded,
@@ -1811,6 +1868,9 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
       LoginDisplayHost::default_host()
           ->GetSigninUI()
           ->StartManagementTransition();
+      return false;
+    }
+    if (MaybeShowNewTermsAfterUpdateToFlex(profile)) {
       return false;
     }
     if (features::IsManagedTermsOfServiceEnabled() &&
