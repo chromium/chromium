@@ -622,6 +622,8 @@ HRESULT TSFTextStore::RequestLock(DWORD lock_flags, HRESULT* result) {
   // If string_pending_insertion_ is empty, then there are four cases:
   // 1. there is no composition We only need to do comparison between our
   //    cache and latest textinputstate and send notifications accordingly.
+  //    There might be selection change from input service without staring new
+  //    composition. We should update tic selection.
   // 2. A new composition is about to start on existing text. We need to start
   //    composition on range from composition_range_.
   // 3. There is composition. User cancels the composition by deleting all of
@@ -647,6 +649,8 @@ HRESULT TSFTextStore::RequestLock(DWORD lock_flags, HRESULT* result) {
         is_tic_write_in_progress_ = false;
       } else {
         composition_start_ = selection_.start();
+        if (!selection_.EqualsIgnoringDirection(selection_from_client_))
+          text_input_client_->SetEditableSelectionRange(selection_);
         CalculateTextandSelectionDiffAndNotifyIfNeeded();
       }
       ResetCacheAfterEditSession();
@@ -1488,6 +1492,12 @@ void TSFTextStore::CommitTextAndEndCompositionIfAny(size_t old_size,
   } else {
     text_input_client_->ClearCompositionText();
   }
+
+  if (!selection_.is_empty() && !is_selection_interim_char_ &&
+      selection_.GetMax() <= string_buffer_document_.size()) {
+    text_input_client_->SetEditableSelectionRange(selection_);
+  }
+
   // Notify accessibility about this committed composition
   text_input_client_->SetActiveCompositionForAccessibility(
       replace_text_range_, new_committed_string,
@@ -1585,6 +1595,10 @@ void TSFTextStore::GetStyle(const TF_DISPLAYATTRIBUTE& attribute,
 void TSFTextStore::ResetCacheAfterEditSession() {
   // reset the flag since we've already inserted/replaced the text.
   new_text_inserted_ = false;
+  if (is_selection_interim_char_) {
+    // Need to reset |selection_| for interim char selection.
+    selection_ = gfx::Range(selection_.GetMax());
+  }
   is_selection_interim_char_ = false;
   // reset |on_start_composition_called_| for next edit session.
   on_start_composition_called_ = false;
