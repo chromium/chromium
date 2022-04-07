@@ -137,9 +137,13 @@ def _AttributeListToDict(attribute_list):
   if attribute_list is None:
     return None
   assert isinstance(attribute_list, ast.AttributeList)
-  # TODO(vtl): Check for duplicate keys here.
-  return dict(
-      [(attribute.key, attribute.value) for attribute in attribute_list])
+  attributes = dict()
+  for attribute in attribute_list:
+    if attribute.key in attributes:
+      raise Exception("Duplicate key (%s) in attribute list" % attribute.key)
+    else:
+      attributes[attribute.key] = attribute.value
+  return attributes
 
 
 builtin_values = frozenset([

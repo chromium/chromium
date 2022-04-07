@@ -88,3 +88,19 @@ class TranslateTest(unittest.TestCase):
     ])
     with self.assertRaises(Exception):
       translate.OrderedModule(tree, "mojom_tree", [])
+
+  def testDuplicateAttributesException(self):
+    tree = ast.Mojom(None, ast.ImportList(), [
+        ast.Union(
+            "FakeUnion",
+            ast.AttributeList([
+                ast.Attribute("key1", "value"),
+                ast.Attribute("key1", "value")
+            ]),
+            ast.UnionBody([
+                ast.UnionField("a", None, None, "int32"),
+                ast.UnionField("b", None, None, "string")
+            ]))
+    ])
+    with self.assertRaises(Exception):
+      translate.OrderedModule(tree, "mojom_tree", [])
