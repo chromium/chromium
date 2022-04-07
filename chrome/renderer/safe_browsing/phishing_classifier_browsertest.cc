@@ -64,13 +64,7 @@ class PhishingClassifierTest : public ChromeRenderViewTest,
     if (GetParam()) {
       PrepareModel();
     } else {
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-      GTEST_SKIP()
-          << "Skipping test because FULL_SAFE_BROWSING will enable visual "
-             "features, which CSD flatbuffer model does not support.";
-#else
       PrepareFlatModel();
-#endif
     }
     SetUpClassifier();
 
