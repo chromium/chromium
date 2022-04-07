@@ -689,7 +689,7 @@ void MediaRouterUI::OnRoutesUpdated(const std::vector<MediaRoute>& routes) {
   UpdateSinks();
 }
 
-void MediaRouterUI::OnResultsUpdated(
+void MediaRouterUI::OnSinksUpdated(
     const std::vector<MediaSinkWithCastModes>& sinks) {
   sinks_ = sinks;
 

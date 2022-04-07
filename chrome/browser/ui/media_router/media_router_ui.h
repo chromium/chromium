@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "chrome/browser/ui/media_router/media_router_ui_helper.h"
 #include "chrome/browser/ui/media_router/media_sink_with_cast_modes.h"
+#include "chrome/browser/ui/media_router/media_sink_with_cast_modes_observer.h"
 #include "chrome/browser/ui/media_router/query_result_manager.h"
 #include "chrome/browser/ui/webui/media_router/web_contents_display_observer.h"
 #include "components/media_router/browser/issues_observer.h"
@@ -53,7 +54,7 @@ class RouteRequestResult;
 
 // Functions as an intermediary between MediaRouter and Views Cast dialog.
 class MediaRouterUI : public CastDialogController,
-                      public QueryResultManager::Observer,
+                      public MediaSinkWithCastModesObserver,
                       public WebContentsPresentationManager::Observer {
  public:
   struct RouteRequest {
@@ -269,8 +270,8 @@ class MediaRouterUI : public CastDialogController,
   // Called by |routes_observer_| when the set of active routes has changed.
   void OnRoutesUpdated(const std::vector<MediaRoute>& routes);
 
-  // QueryResultManager::Observer:
-  void OnResultsUpdated(
+  // MediaSinkWithCastModesObserver:
+  void OnSinksUpdated(
       const std::vector<MediaSinkWithCastModes>& sinks) override;
 
   // Callback passed to MediaRouter to receive response to route creation

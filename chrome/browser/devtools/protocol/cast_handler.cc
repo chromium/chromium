@@ -182,7 +182,7 @@ Response CastHandler::Disable() {
   return Response::Success();
 }
 
-void CastHandler::OnResultsUpdated(
+void CastHandler::OnSinksUpdated(
     const std::vector<media_router::MediaSinkWithCastModes>& sinks) {
   sinks_ = sinks;
   SendSinkUpdate();

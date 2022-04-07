@@ -373,7 +373,7 @@ TEST_F(AccessCodeCastHandlerTest, DiscoveredDeviceAdded) {
   sink_with_cast_modes.cast_modes = {MediaCastMode::DESKTOP_MIRROR};
 
   handler()->set_sink_id_for_testing(cast_sink_1().sink().id());
-  handler()->OnResultsUpdated({sink_with_cast_modes});
+  handler()->OnSinksUpdated({sink_with_cast_modes});
 }
 
 // Demonstrates that if handler is notified about a device other than the
@@ -388,7 +388,7 @@ TEST_F(AccessCodeCastHandlerTest, OtherDevicesIgnored) {
   MediaSinkWithCastModes sink_with_cast_modes(cast_sink_2().sink());
   sink_with_cast_modes.cast_modes = {MediaCastMode::DESKTOP_MIRROR};
 
-  handler()->OnResultsUpdated({sink_with_cast_modes});
+  handler()->OnSinksUpdated({sink_with_cast_modes});
 }
 
 // Demonstrates that desktop mirroring attempts call media router with the

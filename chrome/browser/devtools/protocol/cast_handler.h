@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/devtools/protocol/cast.h"
+#include "chrome/browser/ui/media_router/media_sink_with_cast_modes_observer.h"
 #include "chrome/browser/ui/media_router/query_result_manager.h"
 #include "components/media_router/browser/issues_observer.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
@@ -26,7 +27,7 @@ class StartPresentationContext;
 }  // namespace media_router
 
 class CastHandler : public protocol::Cast::Backend,
-                    public media_router::QueryResultManager::Observer {
+                    public media_router::MediaSinkWithCastModesObserver {
  public:
   CastHandler(content::WebContents* web_contents,
               protocol::UberDispatcher* dispatcher);
@@ -49,8 +50,8 @@ class CastHandler : public protocol::Cast::Backend,
       protocol::Maybe<std::string> in_presentation_url) override;
   protocol::Response Disable() override;
 
-  // media_router::QueryResultsManager:
-  void OnResultsUpdated(
+  // media_router::MediaSinkWithCastModesObserver:
+  void OnSinksUpdated(
       const std::vector<media_router::MediaSinkWithCastModes>& sinks) override;
 
  private:

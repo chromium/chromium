@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/media_router/media_router_ui_helper.h"
 
+#include "base/atomic_sequence_num.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "extensions/browser/extension_registry.h"
@@ -94,6 +95,13 @@ void clear_screen_capture_allowed_for_testing() {
   g_screen_capture_allowed_for_testing.reset();
 #endif
 }
+
+RouteRequest::RouteRequest(const MediaSink::Id& sink_id) : sink_id(sink_id) {
+  static base::AtomicSequenceNumber g_next_request_id;
+  id = g_next_request_id.GetNext();
+}
+
+RouteRequest::~RouteRequest() = default;
 
 RouteParameters::RouteParameters() = default;
 

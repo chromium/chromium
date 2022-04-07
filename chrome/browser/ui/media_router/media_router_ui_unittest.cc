@@ -178,9 +178,9 @@ class MediaRouterViewsUITest : public ChromeRenderViewHostTestHarness {
 
   // These methods are used so that we don't have to friend each test case that
   // calls the private methods.
-  void NotifyUiOnResultsUpdated(
+  void NotifyUiOnSinksUpdated(
       const std::vector<MediaSinkWithCastModes>& sinks) {
-    ui_->OnResultsUpdated(sinks);
+    ui_->OnSinksUpdated(sinks);
   }
   void NotifyUiOnRoutesUpdated(const std::vector<MediaRoute>& routes) {
     ui_->OnRoutesUpdated(routes);
@@ -204,7 +204,7 @@ class MediaRouterViewsUITest : public ChromeRenderViewHostTestHarness {
                                     int timeout_seconds) {
     NiceMock<MockControllerObserver> observer(ui_.get());
     MediaSink sink{CreateCastSink(kSinkId, kSinkName)};
-    ui_->OnResultsUpdated({{sink, {cast_mode}}});
+    ui_->OnSinksUpdated({{sink, {cast_mode}}});
     MediaRouteResponseCallback callback;
     EXPECT_CALL(*mock_router_,
                 CreateRouteInternal(_, _, _, _, _,
@@ -281,7 +281,7 @@ TEST_F(MediaRouterViewsUITest, NotifyObserver) {
             base::Contains(ui_sink.cast_modes, MediaCastMode::TAB_MIRROR));
         EXPECT_EQ(sink.icon_type(), ui_sink.icon_type);
       })));
-  NotifyUiOnResultsUpdated({sink_with_cast_modes});
+  NotifyUiOnSinksUpdated({sink_with_cast_modes});
 
   MediaRoute route(kRouteId, MediaSource(kSourceId), kSinkId, "", true);
   EXPECT_CALL(observer, OnModelUpdated(_))
@@ -312,7 +312,7 @@ TEST_F(MediaRouterViewsUITest, SinkFriendlyName) {
                                     sink.description().value()),
                   model.media_sinks()[0].friendly_name);
       }));
-  NotifyUiOnResultsUpdated({sink_with_cast_modes});
+  NotifyUiOnSinksUpdated({sink_with_cast_modes});
 }
 
 TEST_F(MediaRouterViewsUITest, SetDialogHeader) {
@@ -443,8 +443,8 @@ TEST_F(MediaRouterViewsUITest, DisconnectingState) {
 TEST_F(MediaRouterViewsUITest, AddAndRemoveIssue) {
   MediaSink sink1{CreateCastSink("sink_id1", "Sink 1")};
   MediaSink sink2{CreateCastSink("sink_id2", "Sink 2")};
-  NotifyUiOnResultsUpdated({{sink1, {MediaCastMode::TAB_MIRROR}},
-                            {sink2, {MediaCastMode::TAB_MIRROR}}});
+  NotifyUiOnSinksUpdated({{sink1, {MediaCastMode::TAB_MIRROR}},
+                          {sink2, {MediaCastMode::TAB_MIRROR}}});
 
   NiceMock<MockControllerObserver> observer(ui_.get());
   NiceMock<MockIssuesObserver> issues_observer(mock_router_->GetIssueManager());
@@ -521,7 +521,7 @@ TEST_F(MediaRouterViewsUITest, DesktopMirroringFailsWhenDisallowedOnMac) {
   set_screen_capture_allowed_for_testing(false);
   MockControllerObserver observer(ui_.get());
   MediaSink sink{CreateCastSink(kSinkId, kSinkName)};
-  ui_->OnResultsUpdated({{sink, {MediaCastMode::DESKTOP_MIRROR}}});
+  ui_->OnSinksUpdated({{sink, {MediaCastMode::DESKTOP_MIRROR}}});
   for (MediaSinksObserver* sinks_observer : media_sinks_observers_)
     sinks_observer->OnSinksUpdated({sink}, std::vector<url::Origin>());
 
@@ -537,9 +537,9 @@ TEST_F(MediaRouterViewsUITest, DesktopMirroringFailsWhenDisallowedOnMac) {
 #endif
 
 TEST_F(MediaRouterViewsUITest, SortedSinks) {
-  NotifyUiOnResultsUpdated({{CreateCastSink("sink3", "B sink"), {}},
-                            {CreateCastSink("sink2", "A sink"), {}},
-                            {CreateCastSink("sink1", "B sink"), {}}});
+  NotifyUiOnSinksUpdated({{CreateCastSink("sink3", "B sink"), {}},
+                          {CreateCastSink("sink2", "A sink"), {}},
+                          {CreateCastSink("sink1", "B sink"), {}}});
 
   // Sort first by name, then by ID.
   const auto& sorted_sinks = ui_->GetEnabledSinks();
@@ -549,7 +549,7 @@ TEST_F(MediaRouterViewsUITest, SortedSinks) {
 }
 
 TEST_F(MediaRouterViewsUITest, SortSinksByIconType) {
-  NotifyUiOnResultsUpdated(
+  NotifyUiOnSinksUpdated(
       {{MediaSink{"id1", "B sink", SinkIconType::CAST_AUDIO_GROUP,
                   mojom::MediaRouteProviderId::CAST},
         {}},
@@ -641,7 +641,7 @@ TEST_F(MediaRouterViewsUITest, UpdateSinksWhenDialogMovesToAnotherDisplay) {
       display_observer_unique.get();
   ui_->display_observer_ = std::move(display_observer_unique);
 
-  NotifyUiOnResultsUpdated(
+  NotifyUiOnSinksUpdated(
       {{CreateWiredDisplaySink(display_sink_id1, "sink"), {}},
        {CreateWiredDisplaySink(display_sink_id2, "sink"), {}},
        {CreateDialSink("id3", "sink"), {}}});

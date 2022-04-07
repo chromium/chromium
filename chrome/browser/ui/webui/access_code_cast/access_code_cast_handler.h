@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "chrome/browser/ui/media_router/media_router_ui.h"
 #include "chrome/browser/ui/media_router/media_router_ui_helper.h"
+#include "chrome/browser/ui/media_router/media_sink_with_cast_modes_observer.h"
 #include "chrome/browser/ui/media_router/query_result_manager.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"
@@ -41,7 +42,7 @@ class MediaRouter;
 namespace media_router {
 
 class AccessCodeCastHandler : public access_code_cast::mojom::PageHandler,
-                              public QueryResultManager::Observer,
+                              public MediaSinkWithCastModesObserver,
                               public WebContentsPresentationManager::Observer {
  public:
   using DiscoveryDevice = chrome_browser_media::proto::DiscoveryDevice;
@@ -102,8 +103,8 @@ class AccessCodeCastHandler : public access_code_cast::mojom::PageHandler,
       access_code_cast::mojom::AddSinkResultCode add_sink_result,
       absl::optional<MediaSink::Id> sink_id);
 
-  // QueryResultManager::Observer:
-  void OnResultsUpdated(
+  // MediaSinkWithCastModesObserver:
+  void OnSinksUpdated(
       const std::vector<MediaSinkWithCastModes>& sinks) override;
 
   // WebContentsPresentationManager::Observer

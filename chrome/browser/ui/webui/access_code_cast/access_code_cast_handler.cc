@@ -290,7 +290,7 @@ void AccessCodeCastHandler::SetSinkCallbackForTesting(
 
 // QueryManager observer that alerts the handler about the availability of
 // newly discovered sinks, as well as what types of casting those sinks support.
-void AccessCodeCastHandler::OnResultsUpdated(
+void AccessCodeCastHandler::OnSinksUpdated(
     const std::vector<MediaSinkWithCastModes>& sinks) {
   if (add_sink_callback_ && sink_id_) {
     media_router_->GetLogger()->LogInfo(

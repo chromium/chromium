@@ -90,13 +90,14 @@ QueryResultManager::~QueryResultManager() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-void QueryResultManager::AddObserver(Observer* observer) {
+void QueryResultManager::AddObserver(MediaSinkWithCastModesObserver* observer) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(observer);
   observers_.AddObserver(observer);
 }
 
-void QueryResultManager::RemoveObserver(Observer* observer) {
+void QueryResultManager::RemoveObserver(
+    MediaSinkWithCastModesObserver* observer) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(observer);
   observers_.RemoveObserver(observer);
@@ -277,8 +278,8 @@ bool QueryResultManager::AreSourcesValidForCastMode(
 
 void QueryResultManager::NotifyOnResultsUpdated() {
   std::vector<MediaSinkWithCastModes> sinks = GetSinksWithCastModes();
-  for (QueryResultManager::Observer& observer : observers_)
-    observer.OnResultsUpdated(sinks);
+  for (MediaSinkWithCastModesObserver& observer : observers_)
+    observer.OnSinksUpdated(sinks);
 }
 
 }  // namespace media_router
