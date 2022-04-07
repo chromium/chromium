@@ -15,6 +15,6 @@ interface mixin HTMLOrForeignElement {
   // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/Focusgroup/explainer.md
   [CEReactions, Reflect, RuntimeEnabled=Focusgroup] attribute DOMString focusgroup;
 
-  void focus(optional FocusOptions options = {});
+  [ImplementedAs=focusForBindings] void focus(optional FocusOptions options = {});
   void blur();
 };

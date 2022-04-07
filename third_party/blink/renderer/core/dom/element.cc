@@ -4816,6 +4816,16 @@ Element* Element::GetAutofocusDelegate() const {
   return nullptr;
 }
 
+void Element::focusForBindings() {
+  focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
+                    mojom::blink::FocusType::kScript, nullptr));
+}
+
+void Element::focusForBindings(const FocusOptions* options) {
+  focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
+                    mojom::blink::FocusType::kScript, nullptr, options));
+}
+
 void Element::focus() {
   focus(FocusParams());
 }
@@ -4871,10 +4881,10 @@ void Element::focus(const FocusParams& params) {
     //  2.1. If no fallback target was specified, then return.
     return;
   }
-  // If script called focus(), then the type would be none. This means we are
-  // activating because of a script action (kScriptFocus). Otherwise, this is a
-  // user activation (kUserFocus).
-  ActivateDisplayLockIfNeeded(params.type == mojom::blink::FocusType::kNone
+  // If a script called focus(), then the type would be kScript. This means
+  // we are activating because of a script action (kScriptFocus). Otherwise,
+  // this is a user activation (kUserFocus).
+  ActivateDisplayLockIfNeeded(params.type == mojom::blink::FocusType::kScript
                                   ? DisplayLockActivationReason::kScriptFocus
                                   : DisplayLockActivationReason::kUserFocus);
 
@@ -4908,7 +4918,7 @@ void Element::focus(const FocusParams& params) {
     // navigation keypress. This issue is tracked in https://crbug.com/1206446.
     bool is_focused_from_keypress = false;
     switch (params.type) {
-      case mojom::blink::FocusType::kNone:
+      case mojom::blink::FocusType::kScript:
         if (GetDocument()
                 .GetFrame()
                 ->LocalFrameRoot()

@@ -5,8 +5,10 @@
 module blink.mojom;
 
 enum FocusType {
-  // Element::focus(), etc.
+  // Catch-all focus type. Includes accessibility-based focusing.
   kNone = 0,
+  // element.focus()/element.blur() in JavaScript
+  kScript,
   // Sequential navigation with TAB, or Shift + TAB.
   kForward,
   kBackward,

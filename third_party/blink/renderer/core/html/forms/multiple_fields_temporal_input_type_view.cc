@@ -448,13 +448,10 @@ void MultipleFieldsTemporalInputTypeView::HandleFocusInEvent(
     if (GetElement().GetDocument().GetPage())
       GetElement().GetDocument().GetPage()->GetFocusController().AdvanceFocus(
           type);
-  } else if (type == mojom::blink::FocusType::kNone ||
-             type == mojom::blink::FocusType::kMouse ||
-             type == mojom::blink::FocusType::kPage ||
-             type == mojom::blink::FocusType::kAccessKey) {
-    edit->FocusByOwner(old_focused_element);
-  } else {
+  } else if (type == mojom::blink::FocusType::kForward) {
     edit->FocusByOwner();
+  } else {
+    edit->FocusByOwner(old_focused_element);
   }
 }
 
