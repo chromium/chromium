@@ -11,6 +11,10 @@
 // view.
 extern NSString* const kSafeBrowsingEnhancedProtectionTableViewId;
 
+// The accessibility identifier of the Safe Browsing Standard Protection table
+// view.
+extern NSString* const kSafeBrowsingStandardProtectionTableViewId;
+
 // The accessibility identifier of the Safe Browsing Enhanced Protection shield
 // cell.
 extern NSString* const kSafeBrowsingEnhancedProtectionShieldCellId;

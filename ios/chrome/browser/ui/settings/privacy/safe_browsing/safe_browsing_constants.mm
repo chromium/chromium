@@ -11,6 +11,9 @@
 NSString* const kSafeBrowsingEnhancedProtectionTableViewId =
     @"kSafeBrowsingEnhancedProtectionTableViewId";
 
+NSString* const kSafeBrowsingStandardProtectionTableViewId =
+    @"kSafeBrowsingStandardProtectionTableViewId";
+
 NSString* const kSafeBrowsingEnhancedProtectionShieldCellId =
     @"kSafeBrowsingEnhancedProtectionShieldCellId";
 
