@@ -54,7 +54,9 @@ class LoginDatabaseAsyncHelper : private PasswordStoreSync {
   PasswordStoreChangeList UpdateLogin(
       const PasswordForm& form,
       PasswordStoreBackendMetricsRecorder metrics_recorder);
-  PasswordStoreChangeList RemoveLogin(const PasswordForm& form);
+  PasswordStoreChangeList RemoveLogin(
+      const PasswordForm& form,
+      PasswordStoreBackendMetricsRecorder metrics_recorder);
   PasswordStoreChangeList RemoveLoginsCreatedBetween(base::Time delete_begin,
                                                      base::Time delete_end);
   PasswordStoreChangeList RemoveLoginsByURLAndTime(

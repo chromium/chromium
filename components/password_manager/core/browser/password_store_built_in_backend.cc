@@ -146,12 +146,16 @@ void PasswordStoreBuiltInBackend::RemoveLoginAsync(
     PasswordStoreChangeListReply callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(helper_);
+  PasswordStoreBackendMetricsRecorder metrics_recorder =
+      PasswordStoreBackendMetricsRecorder(
+          ClassInfix("PasswordStoreBuiltInBackend"),
+          MetricInfix("RemoveLoginAsync"));
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           &LoginDatabaseAsyncHelper::RemoveLogin,
           base::Unretained(helper_.get()),  // Safe until `Shutdown()`.
-          form),
+          form, std::move(metrics_recorder)),
       std::move(callback));
 }
 

@@ -183,7 +183,8 @@ PasswordStoreChangeList LoginDatabaseAsyncHelper::UpdateLogin(
 }
 
 PasswordStoreChangeList LoginDatabaseAsyncHelper::RemoveLogin(
-    const PasswordForm& form) {
+    const PasswordForm& form,
+    PasswordStoreBackendMetricsRecorder metrics_recorder) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BeginTransaction();
   PasswordStoreChangeList changes;
@@ -196,6 +197,12 @@ PasswordStoreChangeList LoginDatabaseAsyncHelper::RemoveLogin(
   // because sync codebase needs to update metadata atomically together with
   // the login data.
   CommitTransaction();
+  metrics_recorder.RecordMetrics(
+      /*success=*/!changes.empty(),
+      /*error=*/!changes.empty()
+          ? absl::nullopt
+          : absl::optional<ErrorFromPasswordStoreOrAndroidBackend>(
+                PasswordStoreBackendError::kUnrecoverable));
   return changes;
 }
 
