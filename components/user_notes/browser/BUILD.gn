@@ -20,6 +20,7 @@ static_library("browser") {
     "//components/user_notes:features",
     "//components/user_notes/interfaces",
     "//components/user_notes/model",
+    "//components/user_notes/storage",
     "//content/public/browser",
   ]
 }
