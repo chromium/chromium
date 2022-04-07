@@ -152,6 +152,31 @@ std::unique_ptr<PublicKey> SecKeyRefToECPublicKey(SecKeyRef public_key_ref)
   return key;
 }
 
+CodeSigningState ProcessIsSigned() {
+  // SecTaskCopySigningIdentifier is not decorated with availability attributes
+  // in the header, but it was only introduced in 10.12. For prior versions,
+  // `nullopt` is returned to indicate that the signing status of the process
+  // is unknown.
+  //
+  // `@available` cannot be negated, so the code is a little awkward around
+  // that.
+
+  base::ScopedCFTypeRef<SecTaskRef> task;
+  if (@available(macOS 10.12, *)) {
+    task.reset(SecTaskCreateFromSelf(nullptr));
+    if (!task) {
+      return CodeSigningState::kNotSigned;
+    }
+  } else {
+    return CodeSigningState::kUnknown;
+  }
+
+  base::ScopedCFTypeRef<CFStringRef> sign_id(
+      SecTaskCopySigningIdentifier(task.get(), /* error= */ nullptr));
+  return static_cast<bool>(sign_id) ? CodeSigningState::kSigned
+                                    : CodeSigningState::kNotSigned;
+}
+
 }  // namespace mac
 }  // namespace fido
 }  // namespace device

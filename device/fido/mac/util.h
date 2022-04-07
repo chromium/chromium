@@ -58,6 +58,17 @@ absl::optional<std::vector<uint8_t>> GenerateSignature(
 std::unique_ptr<PublicKey> SecKeyRefToECPublicKey(SecKeyRef public_key_ref)
     API_AVAILABLE(macosx(10.12.2));
 
+enum class CodeSigningState {
+  kSigned,
+  kNotSigned,
+  kUnknown,
+};
+
+// ProcessIsSigned returns `kSigned` if the current process has been code
+// signed, `kNotSigned` if not, or `kUnknown` if the signing status cannot be
+// determined. (The latter will always happen on macOS < 10.12.)
+CodeSigningState ProcessIsSigned();
+
 }  // namespace mac
 }  // namespace fido
 }  // namespace device
