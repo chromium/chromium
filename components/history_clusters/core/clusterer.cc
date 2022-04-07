@@ -22,20 +22,23 @@ bool ShouldAddVisitToCluster(const history::ClusterVisit& visit,
     return false;
   }
   if (GetConfig().split_clusters_at_search_visits &&
-      !visit.search_terms.empty()) {
+      !visit.annotated_visit.content_annotations.search_terms.empty()) {
     // If we want to split the clusters at search visits and we are at a search
     // visit, only add the visit to the cluster if the last search visit was
     // also a search visit with the same terms. Also break the cluster if there
     // was not already a search visit already.
     absl::optional<history::ClusterVisit> last_search_visit;
     for (const auto& existing_visit : base::Reversed(cluster.visits)) {
-      if (!existing_visit.search_terms.empty()) {
+      if (!existing_visit.annotated_visit.content_annotations.search_terms
+               .empty()) {
         last_search_visit = existing_visit;
         break;
       }
     }
     return last_search_visit &&
-           visit.search_terms == last_search_visit->search_terms;
+           visit.annotated_visit.content_annotations.search_terms ==
+               last_search_visit->annotated_visit.content_annotations
+                   .search_terms;
   }
   return true;
 }

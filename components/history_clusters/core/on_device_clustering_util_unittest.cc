@@ -173,28 +173,28 @@ TEST_F(OnDeviceClusteringUtilTest, SortClusters) {
 
 TEST_F(OnDeviceClusteringUtilTest, IsNoisyVisitSearchHighEngagementVisit) {
   history::ClusterVisit visit;
-  visit.search_terms = u"search";
+  visit.annotated_visit.content_annotations.search_terms = u"search";
   visit.engagement_score = 90.0;
   EXPECT_FALSE(IsNoisyVisit(visit));
 }
 
 TEST_F(OnDeviceClusteringUtilTest, IsNoisyVisitNotSearchHighEngagementVisit) {
   history::ClusterVisit visit;
-  visit.search_terms = u"";
+  visit.annotated_visit.content_annotations.search_terms = u"";
   visit.engagement_score = 90.0;
   EXPECT_TRUE(IsNoisyVisit(visit));
 }
 
 TEST_F(OnDeviceClusteringUtilTest, IsNoisyVisitNotSearchLowEngagementVisit) {
   history::ClusterVisit visit;
-  visit.search_terms = u"";
+  visit.annotated_visit.content_annotations.search_terms = u"";
   visit.engagement_score = 1.0;
   EXPECT_FALSE(IsNoisyVisit(visit));
 }
 
 TEST_F(OnDeviceClusteringUtilTest, IsNoisyVisitSearchLowEngagementVisit) {
   history::ClusterVisit visit;
-  visit.search_terms = u"search";
+  visit.annotated_visit.content_annotations.search_terms = u"search";
   visit.engagement_score = 1.0;
   EXPECT_FALSE(IsNoisyVisit(visit));
 }

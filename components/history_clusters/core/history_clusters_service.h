@@ -28,8 +28,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-class TemplateURLService;
-
 namespace optimization_guide {
 class EntityMetadataProvider;
 }  // namespace optimization_guide
@@ -89,7 +87,6 @@ class HistoryClustersService : public base::SupportsUserData,
   HistoryClustersService(
       const std::string& application_locale,
       history::HistoryService* history_service,
-      TemplateURLService* template_url_service,
       optimization_guide::EntityMetadataProvider* entity_metadata_provider,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       site_engagement::SiteEngagementScoreProvider* engagement_score_provider);

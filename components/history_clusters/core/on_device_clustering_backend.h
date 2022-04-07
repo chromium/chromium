@@ -20,8 +20,6 @@
 #include "components/history_clusters/core/clusterer.h"
 #include "components/history_clusters/core/clustering_backend.h"
 
-class TemplateURLService;
-
 namespace optimization_guide {
 class BatchEntityMetadataTask;
 struct EntityMetadata;
@@ -38,7 +36,6 @@ namespace history_clusters {
 class OnDeviceClusteringBackend : public ClusteringBackend {
  public:
   OnDeviceClusteringBackend(
-      TemplateURLService* template_url_service,
       optimization_guide::EntityMetadataProvider* entity_metadata_provider,
       site_engagement::SiteEngagementScoreProvider* engagement_score_provider);
   ~OnDeviceClusteringBackend() override;
@@ -86,9 +83,6 @@ class OnDeviceClusteringBackend : public ClusteringBackend {
   static std::vector<history::Cluster> ClusterVisitsOnBackgroundThread(
       bool engagement_score_provider_is_valid,
       std::vector<history::ClusterVisit> visits);
-
-  // The object used to normalize SRP URLs. Not owned. Must outlive |this|.
-  const TemplateURLService* template_url_service_;
 
   // The object to fetch entity metadata from. Not owned. Must outlive |this|.
   optimization_guide::EntityMetadataProvider* entity_metadata_provider_;

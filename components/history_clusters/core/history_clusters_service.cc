@@ -37,7 +37,6 @@
 #include "components/history_clusters/core/history_clusters_db_tasks.h"
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "components/optimization_guide/core/entity_metadata_provider.h"
-#include "components/search_engines/template_url_service.h"
 #include "components/site_engagement/core/site_engagement_score_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/time_format.h"
@@ -190,7 +189,6 @@ void VisitDeletionObserver::OnURLsDeleted(
 HistoryClustersService::HistoryClustersService(
     const std::string& application_locale,
     history::HistoryService* history_service,
-    TemplateURLService* template_url_service,
     optimization_guide::EntityMetadataProvider* entity_metadata_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     site_engagement::SiteEngagementScoreProvider* engagement_score_provider)
@@ -205,8 +203,7 @@ HistoryClustersService::HistoryClustersService(
 
 #if BUILDFLAG(BUILD_WITH_ON_DEVICE_CLUSTERING_BACKEND)
   backend_ = std::make_unique<OnDeviceClusteringBackend>(
-      template_url_service, entity_metadata_provider,
-      engagement_score_provider);
+      entity_metadata_provider, engagement_score_provider);
 #endif
 }
 

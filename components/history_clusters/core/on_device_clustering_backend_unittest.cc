@@ -12,7 +12,6 @@
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 #include "components/optimization_guide/core/entity_metadata_provider.h"
-#include "components/search_engines/template_url_service.h"
 #include "components/site_engagement/core/site_engagement_score_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -83,14 +82,6 @@ class TestEntityMetadataProvider
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 };
 
-const TemplateURLService::Initializer kTemplateURLData[] = {
-    {"default-engine.com", "http://default-engine.com?q={searchTerms}",
-     "Default"},
-    {"non-default-engine.com", "http://non-default-engine.com?q={searchTerms}",
-     "Not Default"},
-};
-const char16_t kDefaultTemplateURLKeyword[] = u"default-engine.com";
-
 class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {
  public:
   OnDeviceClusteringWithoutContentBackendTest() {
@@ -106,8 +97,7 @@ class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {
 
   void SetUp() override {
     clustering_backend_ = std::make_unique<OnDeviceClusteringBackend>(
-        /*template_url_service=*/nullptr, /*entity_metadata_provider=*/nullptr,
-        &test_site_engagement_provider_);
+        /*entity_metadata_provider=*/nullptr, &test_site_engagement_provider_);
   }
 
   void TearDown() override { clustering_backend_.reset(); }
@@ -526,23 +516,15 @@ class OnDeviceClusteringWithAllTheBackendsTest
     : public OnDeviceClusteringWithoutContentBackendTest {
  public:
   void SetUp() override {
-    // Set up a simple template URL service with a default search engine.
-    template_url_service_ = std::make_unique<TemplateURLService>(
-        kTemplateURLData, std::size(kTemplateURLData));
-    TemplateURL* template_url = template_url_service_->GetTemplateURLForKeyword(
-        kDefaultTemplateURLKeyword);
-    template_url_service_->SetUserSelectedDefaultSearchProvider(template_url);
-
     entity_metadata_provider_ = std::make_unique<TestEntityMetadataProvider>(
         task_environment_.GetMainThreadTaskRunner());
 
     clustering_backend_ = std::make_unique<OnDeviceClusteringBackend>(
-        template_url_service_.get(), entity_metadata_provider_.get(),
+        entity_metadata_provider_.get(),
         /*engagement_score_provider=*/nullptr);
   }
 
  private:
-  std::unique_ptr<TemplateURLService> template_url_service_;
   std::unique_ptr<TestEntityMetadataProvider> entity_metadata_provider_;
 };
 
@@ -555,6 +537,9 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
   history::AnnotatedVisit visit = testing::CreateDefaultAnnotatedVisit(
       1, GURL("http://default-engine.com/?q=foo&otherstuff"));
   visit.content_annotations.model_annotations.visibility_score = 0.5;
+  visit.content_annotations.search_terms = u"foo";
+  visit.content_annotations.search_normalized_url =
+      GURL("http://default-engine.com/?q=foo");
   visits.push_back(visit);
 
   history::AnnotatedVisit visit2 = testing::CreateDefaultAnnotatedVisit(
@@ -565,6 +550,9 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
       history::VisitContentModelAnnotations::Category("toolow", 1),
   };
   visit2.content_annotations.model_annotations.visibility_score = 0.5;
+  visit2.content_annotations.search_terms = u"foo";
+  visit2.content_annotations.search_normalized_url =
+      GURL("http://default-engine.com/?q=foo");
   visits.push_back(visit2);
 
   history::AnnotatedVisit visit3 = testing::CreateDefaultAnnotatedVisit(
@@ -583,7 +571,6 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
 
   std::vector<history::Cluster> result_clusters =
       ClusterVisits(ClusteringRequestSource::kJourneysPage, visits);
-  ASSERT_EQ(result_clusters.size(), 2u);
   EXPECT_THAT(
       testing::ToVisitResults(result_clusters),
       ElementsAre(

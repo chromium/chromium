@@ -34,47 +34,11 @@
 #include "components/history_clusters/core/url_deduper_cluster_finalizer.h"
 #include "components/optimization_guide/core/batch_entity_metadata_task.h"
 #include "components/optimization_guide/core/entity_metadata_provider.h"
-#include "components/search_engines/template_url_service.h"
 #include "components/site_engagement/core/site_engagement_score_provider.h"
 
 namespace history_clusters {
 
 namespace {
-
-// Returns the normalized URL and the search terms for the search provider if
-// the URL for the visit is a Search URL. Otherwise, returns nullopt.
-absl::optional<std::pair<GURL, std::u16string>> GetSearchMetadataForVisit(
-    const history::AnnotatedVisit& visit,
-    const TemplateURLService* template_url_service) {
-  if (!template_url_service)
-    return absl::nullopt;
-
-  const TemplateURL* template_url =
-      template_url_service->GetTemplateURLForHost(visit.url_row.url().host());
-  const SearchTermsData& search_terms_data =
-      template_url_service->search_terms_data();
-
-  std::u16string search_terms;
-  bool is_valid_search_url =
-      template_url &&
-      template_url->ExtractSearchTermsFromURL(
-          visit.url_row.url(), search_terms_data, &search_terms) &&
-      !search_terms.empty();
-  if (!is_valid_search_url)
-    return absl::nullopt;
-
-  const std::u16string& normalized_search_query =
-      base::i18n::ToLower(base::CollapseWhitespace(search_terms, false));
-  TemplateURLRef::SearchTermsArgs search_terms_args(normalized_search_query);
-  const TemplateURLRef& search_url_ref = template_url->url_ref();
-  if (!search_url_ref.SupportsReplacement(search_terms_data))
-    return absl::nullopt;
-
-  return std::make_pair(
-      GURL(search_url_ref.ReplaceSearchTerms(search_terms_args,
-                                             search_terms_data)),
-      base::i18n::ToLower(base::CollapseWhitespace(search_terms, false)));
-}
 
 void RecordBatchUpdateProcessingTime(base::TimeDelta time_delta) {
   base::UmaHistogramTimes(
@@ -84,11 +48,9 @@ void RecordBatchUpdateProcessingTime(base::TimeDelta time_delta) {
 }  // namespace
 
 OnDeviceClusteringBackend::OnDeviceClusteringBackend(
-    TemplateURLService* template_url_service,
     optimization_guide::EntityMetadataProvider* entity_metadata_provider,
     site_engagement::SiteEngagementScoreProvider* engagement_score_provider)
-    : template_url_service_(template_url_service),
-      entity_metadata_provider_(entity_metadata_provider),
+    : entity_metadata_provider_(entity_metadata_provider),
       engagement_score_provider_(engagement_score_provider),
       user_visible_task_traits_(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE}),
@@ -270,25 +232,14 @@ void OnDeviceClusteringBackend::ProcessBatchOfVisits(
     const std::string& visit_host = visit.url_row.url().host();
 
     if (visit.content_annotations.search_normalized_url.is_empty()) {
-      // TODO(crbug/1296394): Remove this logic once most clients have a Stable
-      // release of persisted search metadata.
-      absl::optional<std::pair<GURL, std::u16string>> maybe_search_metadata =
-          GetSearchMetadataForVisit(visit, template_url_service_);
-      if (maybe_search_metadata) {
-        cluster_visit.normalized_url = maybe_search_metadata->first;
-        cluster_visit.url_for_deduping = cluster_visit.normalized_url;
-        cluster_visit.search_terms = maybe_search_metadata->second;
-      } else {
-        cluster_visit.normalized_url = visit.url_row.url();
-        cluster_visit.url_for_deduping =
-            ComputeURLForDeduping(cluster_visit.normalized_url);
-      }
+      cluster_visit.normalized_url = visit.url_row.url();
+      cluster_visit.url_for_deduping =
+          ComputeURLForDeduping(cluster_visit.normalized_url);
     } else {
       cluster_visit.normalized_url =
           visit.content_annotations.search_normalized_url;
       // Search visits just use the `normalized_url` for deduping.
       cluster_visit.url_for_deduping = cluster_visit.normalized_url;
-      cluster_visit.search_terms = visit.content_annotations.search_terms;
     }
 
     if (engagement_score_provider_) {

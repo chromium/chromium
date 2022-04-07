@@ -190,13 +190,13 @@ TEST_F(RankingClusterFinalizerTest, ScoreTwoCanonicalSearchResultsPages) {
       testing::CreateDefaultAnnotatedVisit(
           1, GURL("https://google.com/search?q=whatever#abc")),
       GURL("https://google.com/search?q=whatever"));
-  visit.search_terms = u"whatever";
+  visit.annotated_visit.content_annotations.search_terms = u"whatever";
 
   history::ClusterVisit visit2 = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(
           2, GURL("https://google.com/search?q=bar#abc")),
       GURL("https://google.com/search?q=bar"));
-  visit2.search_terms = u"bar";
+  visit2.annotated_visit.content_annotations.search_terms = u"bar";
 
   history::Cluster cluster;
   cluster.visits = {visit, visit2};
@@ -212,7 +212,7 @@ TEST_F(RankingClusterFinalizerTest, ScoreSearchResultsPagesOneDuplicate) {
       testing::CreateDefaultAnnotatedVisit(
           2, GURL("https://google.com/search?q=bar")),
       GURL("https://google.com/search?q=bar"));
-  visit2.search_terms = u"bar";
+  visit2.annotated_visit.content_annotations.search_terms = u"bar";
 
   // Visit2 is marked as a duplicate of visit
   history::ClusterVisit visit = testing::CreateClusterVisit(
@@ -220,7 +220,7 @@ TEST_F(RankingClusterFinalizerTest, ScoreSearchResultsPagesOneDuplicate) {
           1, GURL("https://google.com/search?q=whatever#abc")),
       GURL("https://google.com/search?q=whatever"));
   visit.duplicate_visits = {visit2};
-  visit.search_terms = u"whatever";
+  visit.annotated_visit.content_annotations.search_terms = u"whatever";
 
   history::Cluster cluster;
   cluster.visits = {visit};

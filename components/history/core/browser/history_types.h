@@ -849,15 +849,9 @@ struct ClusterVisit {
   // History Clusters and Omnibox have different deduping requirements.
   GURL url_for_deduping;
 
-  // TODO(crbug/1296394): Remove the below fields once most clients have
-  // persisted search metadata.
-
   // The normalized URL for the visit (i.e. a SRP URL normalized based on the
   // user's default search provider).
   GURL normalized_url;
-
-  // The user-input search query if this visit is a search visit.
-  std::u16string search_terms;
 };
 
 // A cluster of `ClusterVisit`s with associated metadata (i.e. `keywords` and

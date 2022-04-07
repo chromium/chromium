@@ -103,7 +103,7 @@ void SortClusters(std::vector<history::Cluster>* clusters) {
 bool IsNoisyVisit(const history::ClusterVisit& visit) {
   return visit.engagement_score >
              GetConfig().noisy_cluster_visits_engagement_threshold &&
-         visit.search_terms.empty();
+         visit.annotated_visit.content_annotations.search_terms.empty();
 }
 
 }  // namespace history_clusters

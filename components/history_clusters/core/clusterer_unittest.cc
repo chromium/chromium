@@ -242,7 +242,7 @@ TEST_F(ClustererTest, SplitClusterOnSearchVisit) {
   visit4.visit_row.visit_time =
       base::Time::Now() + base::Hours(2) + base::Minutes(1);
   history::ClusterVisit cluster_visit4 = testing::CreateClusterVisit(visit4);
-  cluster_visit4.search_terms = u"whatever";
+  cluster_visit4.annotated_visit.content_annotations.search_terms = u"whatever";
   visits.push_back(cluster_visit4);
 
   // Visit5 was referred by visit 4.
@@ -260,7 +260,7 @@ TEST_F(ClustererTest, SplitClusterOnSearchVisit) {
   visit6.visit_row.visit_time =
       base::Time::Now() + base::Hours(2) + base::Minutes(2);
   history::ClusterVisit cluster_visit6 = testing::CreateClusterVisit(visit6);
-  cluster_visit6.search_terms = u"whatever";
+  cluster_visit6.annotated_visit.content_annotations.search_terms = u"whatever";
   visits.push_back(cluster_visit6);
 
   // Visit7 was referred by visit 6, is a search visit but has different search
@@ -271,7 +271,8 @@ TEST_F(ClustererTest, SplitClusterOnSearchVisit) {
   visit7.visit_row.visit_time =
       base::Time::Now() + base::Hours(2) + base::Minutes(3);
   history::ClusterVisit cluster_visit7 = testing::CreateClusterVisit(visit7);
-  cluster_visit7.search_terms = u"different";
+  cluster_visit7.annotated_visit.content_annotations.search_terms =
+      u"different";
   visits.push_back(cluster_visit7);
 
   std::vector<history::Cluster> result_clusters =

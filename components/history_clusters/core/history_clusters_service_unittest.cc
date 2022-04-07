@@ -100,7 +100,7 @@ class HistoryClustersServiceTestBase : public testing::Test {
     history_service_ =
         history::CreateHistoryService(history_dir_.GetPath(), true);
     history_clusters_service_ = std::make_unique<HistoryClustersService>(
-        "en-US", history_service_.get(), /*template_url_service=*/nullptr,
+        "en-US", history_service_.get(),
         /*entity_metadata_provider=*/nullptr,
         /*engagement_score_provider=*/nullptr,
         /*url_loader_factory=*/nullptr);

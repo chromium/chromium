@@ -23,7 +23,7 @@ VisitResult::VisitResult(int visit_id,
 VisitResult::VisitResult(const history::ClusterVisit& visit)
     : visit_id_(visit.annotated_visit.visit_row.visit_id),
       score_(visit.score),
-      search_terms_(visit.search_terms) {
+      search_terms_(visit.annotated_visit.content_annotations.search_terms) {
   for (const auto& duplicate : visit.duplicate_visits) {
     duplicate_visits_.emplace_back(duplicate);
   }
