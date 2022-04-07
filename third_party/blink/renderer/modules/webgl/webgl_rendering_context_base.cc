@@ -5509,21 +5509,10 @@ void WebGLRenderingContextBase::texImage2D(GLenum target,
 
 void WebGLRenderingContextBase::TexImageHelperHTMLImageElement(
     const SecurityOrigin* security_origin,
-    TexImageFunctionID function_id,
-    GLenum target,
-    GLint level,
-    GLint internalformat,
-    GLenum format,
-    GLenum type,
-    GLint xoffset,
-    GLint yoffset,
-    GLint zoffset,
+    const TexImageParams& params,
     HTMLImageElement* image,
-    const absl::optional<gfx::Rect>& source_image_rect,
-    GLsizei depth,
-    GLint unpack_image_height,
     ExceptionState& exception_state) {
-  const char* func_name = GetTexImageFunctionName(function_id);
+  const char* func_name = GetTexImageFunctionName(params.function_id);
   if (isContextLost())
     return;
 
@@ -5533,7 +5522,7 @@ void WebGLRenderingContextBase::TexImageHelperHTMLImageElement(
   if (!ValidateHTMLImageElement(security_origin, func_name, image,
                                 exception_state))
     return;
-  if (!ValidateTexImageBinding(func_name, function_id, target))
+  if (!ValidateTexImageBinding(func_name, params.function_id, params.target))
     return;
 
   scoped_refptr<Image> image_for_render = image->CachedImage()->GetImage();
@@ -5549,21 +5538,23 @@ void WebGLRenderingContextBase::TexImageHelperHTMLImageElement(
   }
 
   TexImageFunctionType function_type;
-  if (function_id == kTexImage2D || function_id == kTexImage3D)
+  if (params.function_id == kTexImage2D || params.function_id == kTexImage3D)
     function_type = kTexImage;
   else
     function_type = kTexSubImage;
   if (!image_for_render ||
       !ValidateTexFunc(func_name, function_type, kSourceHTMLImageElement,
-                       target, level, internalformat, image_for_render->width(),
-                       image_for_render->height(), depth, 0, format, type,
-                       xoffset, yoffset, zoffset))
+                       params.target, params.level, params.internalformat,
+                       image_for_render->width(), image_for_render->height(),
+                       params.depth.value_or(1), params.border, params.format,
+                       params.type, params.xoffset, params.yoffset,
+                       params.zoffset)) {
     return;
+  }
 
-  TexImageImpl(function_id, target, level, internalformat, xoffset, yoffset,
-               zoffset, format, type, image_for_render.get(),
-               WebGLImageConversion::kHtmlDomImage, /*source_has_flip_y=*/false,
-               source_image_rect, depth, unpack_image_height);
+  TexImageImpl(params, image_for_render.get(),
+               WebGLImageConversion::kHtmlDomImage,
+               /*image_has_flip_y=*/false);
 }
 
 void WebGLRenderingContextBase::texImage2D(ExecutionContext* execution_context,
@@ -5574,10 +5565,17 @@ void WebGLRenderingContextBase::texImage2D(ExecutionContext* execution_context,
                                            GLenum type,
                                            HTMLImageElement* image,
                                            ExceptionState& exception_state) {
-  TexImageHelperHTMLImageElement(execution_context->GetSecurityOrigin(),
-                                 kTexImage2D, target, level, internalformat,
-                                 format, type, 0, 0, 0, image, absl::nullopt, 1,
-                                 0, exception_state);
+  TexImageParams params = {
+      .function_id = kTexImage2D,
+      .target = target,
+      .level = level,
+      .internalformat = internalformat,
+      .format = format,
+      .type = type,
+  };
+  GetCurrentUnpackState(params);
+  TexImageHelperHTMLImageElement(execution_context->GetSecurityOrigin(), params,
+                                 image, exception_state);
 }
 
 bool WebGLRenderingContextBase::CanUseTexImageViaGPU(GLenum format,
@@ -6548,10 +6546,18 @@ void WebGLRenderingContextBase::texSubImage2D(
     GLenum type,
     HTMLImageElement* image,
     ExceptionState& exception_state) {
-  TexImageHelperHTMLImageElement(execution_context->GetSecurityOrigin(),
-                                 kTexSubImage2D, target, level, 0, format, type,
-                                 xoffset, yoffset, 0, image, absl::nullopt, 1,
-                                 0, exception_state);
+  TexImageParams params = {
+      .function_id = kTexSubImage2D,
+      .target = target,
+      .level = level,
+      .xoffset = xoffset,
+      .yoffset = yoffset,
+      .format = format,
+      .type = type,
+  };
+  GetCurrentUnpackState(params);
+  TexImageHelperHTMLImageElement(execution_context->GetSecurityOrigin(), params,
+                                 image, exception_state);
 }
 
 void WebGLRenderingContextBase::texSubImage2D(

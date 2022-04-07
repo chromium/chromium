@@ -1795,19 +1795,8 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   void TexImageHelperImageData(TexImageParams, ImageData*);
 
   void TexImageHelperHTMLImageElement(const SecurityOrigin*,
-                                      TexImageFunctionID,
-                                      GLenum,
-                                      GLint,
-                                      GLint,
-                                      GLenum,
-                                      GLenum,
-                                      GLint,
-                                      GLint,
-                                      GLint,
+                                      const TexImageParams& params,
                                       HTMLImageElement*,
-                                      const absl::optional<gfx::Rect>&,
-                                      GLsizei,
-                                      GLint,
                                       ExceptionState&);
 
   void TexImageHelperCanvasRenderingContextHost(const SecurityOrigin*,
