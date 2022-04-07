@@ -238,7 +238,7 @@ void DevToolsSession::DispatchProtocolCommandImpl(
 void DevToolsSession::DidStartProvisionalLoad(LocalFrame* frame) {
   if (v8_session_ && agent_->inspected_frames_->Root() == frame) {
     v8_session_->setSkipAllPauses(true);
-    v8_session_->resume(true /* terminate on resume */);
+    v8_session_->resume();
   }
 }
 
