@@ -10,20 +10,6 @@
 
 @implementation FollowedWebChannel
 
-// TODO(crbug.com/1296745): Remove old API.
-- (instancetype)initWithTitle:(NSString*)title
-                        crURL:(CrURL*)channelURL
-                  unavailable:(BOOL)unavailable
-         unfollowRequestBlock:(FollowRequestBlock)unfollowRequestBlock
-         refollowRequestBlock:(FollowRequestBlock)refollowRequestBlock {
-  return [self initWithTitle:title
-                  channelURL:channelURL
-                  faviconURL:nil
-                   available:!unavailable
-        unfollowRequestBlock:unfollowRequestBlock
-        refollowRequestBlock:refollowRequestBlock];
-}
-
 - (instancetype)initWithTitle:(NSString*)title
                    channelURL:(CrURL*)channelURL
                    faviconURL:(CrURL*)faviconURL

@@ -32,22 +32,13 @@
 // Used to request to refollow this web channel, if it has been unfollowed.
 @property(nonatomic, copy) FollowRequestBlock refollowRequestBlock;
 
-// TODO(crbug.com/1296745): Remove old API.
-- (instancetype)initWithTitle:(NSString*)title
-                        crURL:(CrURL*)channelURL
-                  unavailable:(BOOL)unavailable
-         unfollowRequestBlock:(FollowRequestBlock)unfollowRequestBlock
-         refollowRequestBlock:(FollowRequestBlock)refollowRequestBlock;
-
+// Designated initializer with all the properties.
 - (instancetype)initWithTitle:(NSString*)title
                    channelURL:(CrURL*)channelURL
                    faviconURL:(CrURL*)faviconURL
                     available:(BOOL)available
          unfollowRequestBlock:(FollowRequestBlock)unfollowRequestBlock
-         refollowRequestBlock:(FollowRequestBlock)refollowRequestBlock
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)init NS_UNAVAILABLE;
+         refollowRequestBlock:(FollowRequestBlock)refollowRequestBlock;
 
 @end
 
