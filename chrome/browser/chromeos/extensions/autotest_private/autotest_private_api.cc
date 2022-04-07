@@ -820,6 +820,10 @@ int GetMouseEventFlags(api::autotest_private::MouseButton button) {
       return ui::EF_RIGHT_MOUSE_BUTTON;
     case api::autotest_private::MOUSE_BUTTON_MIDDLE:
       return ui::EF_MIDDLE_MOUSE_BUTTON;
+    case api::autotest_private::MOUSE_BUTTON_BACK:
+      return ui::EF_BACK_MOUSE_BUTTON;
+    case api::autotest_private::MOUSE_BUTTON_FORWARD:
+      return ui::EF_FORWARD_MOUSE_BUTTON;
     default:
       NOTREACHED();
   }
@@ -1141,6 +1145,14 @@ class EventGenerator {
         }
         if (task->flags & ui::EF_RIGHT_MOUSE_BUTTON) {
           input_injector_->InjectMouseButton(ui::EF_RIGHT_MOUSE_BUTTON,
+                                             pressed);
+        }
+        if (task->flags & ui::EF_BACK_MOUSE_BUTTON) {
+          input_injector_->InjectMouseButton(ui::EF_BACK_MOUSE_BUTTON,
+                                             pressed);
+        }
+        if (task->flags & ui::EF_FORWARD_MOUSE_BUTTON) {
+          input_injector_->InjectMouseButton(ui::EF_FORWARD_MOUSE_BUTTON,
                                              pressed);
         }
         break;

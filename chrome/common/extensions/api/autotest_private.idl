@@ -117,7 +117,9 @@ namespace autotestPrivate {
   enum MouseButton {
     Left,
     Middle,
-    Right
+    Right,
+    Back,
+    Forward
   };
 
   // A paramter used in setArcAppWindowState() function.
