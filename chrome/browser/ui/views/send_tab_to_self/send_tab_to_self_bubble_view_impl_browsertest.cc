@@ -4,7 +4,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -74,13 +73,7 @@ class SendTabToSelfBubbleTest : public DialogBrowserTest {
   }
 };
 
-// crbug.com/1272360
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-#define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
-#else
-#define MAYBE_InvokeUi_default InvokeUi_default
-#endif
-IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleTest, MAYBE_InvokeUi_default) {
+IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleTest, InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
