@@ -2588,7 +2588,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Media.GpuMemoryBufferVideoFramePool.Offset.{GMBVideoPixelFormat}"
+    name="Media.GpuMemoryBufferVideoFramePool.Offset{GMBVideoPixelFormat}"
     enum="OddOffset" expires_after="2022-09-17">
   <owner>magchen@chromium.org</owner>
   <owner>ccameron@chromium.org</owner>
@@ -2597,17 +2597,17 @@ chromium-metrics-reviews@google.com.
     odd offset. Emitted on VideoFrame arrival.
   </summary>
   <token key="GMBVideoPixelFormat">
-    <variant name="I420"/>
-    <variant name="I420A"/>
-    <variant name="NV12"/>
-    <variant name="UNKNOWN"/>
-    <variant name="YUV420P10"/>
-    <variant name="YV12"/>
+    <variant name=""/>
+    <variant name=".I420"/>
+    <variant name=".I420A"/>
+    <variant name=".NV12"/>
+    <variant name=".UNKNOWN"/>
+    <variant name=".YUV420P10"/>
+    <variant name=".YV12"/>
   </token>
 </histogram>
 
-<histogram
-    name="Media.GpuMemoryBufferVideoFramePool.Size.{GMBVideoPixelFormat}"
+<histogram name="Media.GpuMemoryBufferVideoFramePool.Size{GMBVideoPixelFormat}"
     enum="OddSize" expires_after="2022-09-17">
   <owner>magchen@chromium.org</owner>
   <owner>ccameron@chromium.org</owner>
@@ -2616,12 +2616,13 @@ chromium-metrics-reviews@google.com.
     odd size. Emitted on VideoFrame arrival.
   </summary>
   <token key="GMBVideoPixelFormat">
-    <variant name="I420"/>
-    <variant name="I420A"/>
-    <variant name="NV12"/>
-    <variant name="UNKNOWN"/>
-    <variant name="YUV420P10"/>
-    <variant name="YV12"/>
+    <variant name=""/>
+    <variant name=".I420"/>
+    <variant name=".I420A"/>
+    <variant name=".NV12"/>
+    <variant name=".UNKNOWN"/>
+    <variant name=".YUV420P10"/>
+    <variant name=".YV12"/>
   </token>
 </histogram>
 
