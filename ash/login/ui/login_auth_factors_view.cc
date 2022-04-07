@@ -18,7 +18,6 @@
 #include "base/time/time.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
@@ -557,8 +556,5 @@ void LoginAuthFactorsView::UpdateShouldHidePasswordField(
   on_auth_factor_is_hiding_password_changed_callback_.Run(
       should_hide_password_field);
 }
-
-BEGIN_METADATA(LoginAuthFactorsView, View)
-END_METADATA
 
 }  // namespace ash
