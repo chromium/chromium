@@ -5853,7 +5853,9 @@ void NavigationRequest::DidCommitNavigation(
 
   // For successful navigations, ensure the frame owner element is no longer
   // collapsed as a result of a prior navigation.
-  if (state_ != DID_COMMIT_ERROR_PAGE && !frame_tree_node()->IsMainFrame()) {
+  if (state_ != DID_COMMIT_ERROR_PAGE &&
+      (!frame_tree_node()->IsMainFrame() ||
+       frame_tree_node()->IsFencedFrameRoot())) {
     // The last committed load in collapsed frames will be an error page with
     // |kUnreachableWebDataURL|. Same-document navigation should not be
     // possible.

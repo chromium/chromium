@@ -101,6 +101,15 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterFencedFrameBrowserTest,
     let ff = document.querySelector('fencedframe');
     `${ff.clientWidth}x${ff.clientHeight}`;
   )JS"));
+
+  // Now navigate back to an unblocked document and verify the node uncollapses.
+  fenced_frame_root = fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
+      fenced_frame_root, kUrlWithAllowedScript);
+
+  EXPECT_EQ("300x150", EvalJs(web_contents()->GetMainFrame(), R"JS(
+    let ff = document.querySelector('fencedframe');
+    `${ff.clientWidth}x${ff.clientHeight}`;
+  )JS"));
 }
 
 // Test that filtering resources inside a fencedframe works when the outer page
