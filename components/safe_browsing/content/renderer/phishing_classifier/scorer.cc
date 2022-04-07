@@ -24,6 +24,7 @@
 #include "components/safe_browsing/core/common/visual_utils.h"
 #include "content/public/renderer/render_thread.h"
 #include "crypto/sha2.h"
+#include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -100,14 +101,9 @@ std::string GetModelInput(const SkBitmap& bitmap, int width, int height) {
       {2.22222f, 0.909672f, 0.0903276f, 0.222222f, 0.0812429f, 0, 0},
       SkNamedGamut::kRec2020);
 
-  SkImageInfo downsampled_info = SkImageInfo::MakeN32(
-      width, height, SkAlphaType::kUnpremul_SkAlphaType, rec2020);
-  SkBitmap downsampled;
-  if (!downsampled.tryAllocPixels(downsampled_info))
-    return std::string();
-  bitmap.pixmap().scalePixels(
-      downsampled.pixmap(),
-      SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kNearest));
+  SkBitmap downsampled = skia::ImageOperations::Resize(
+      bitmap, skia::ImageOperations::RESIZE_GOOD, static_cast<int>(width),
+      static_cast<int>(height));
 
   // Format as an RGB buffer for input into the model
   std::string data;

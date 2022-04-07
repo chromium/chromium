@@ -105,8 +105,7 @@ void ProtobufModelScorer::ApplyVisualTfLiteModel(
   if (visual_tflite_model_.IsValid()) {
     base::Time start_post_task_time = base::Time::Now();
     base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE,
-        {base::TaskPriority::BEST_EFFORT, base::WithBaseSyncPrimitives()},
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
         base::BindOnce(&ApplyVisualTfLiteModelHelper, bitmap,
                        model_.tflite_metadata().input_width(),
                        model_.tflite_metadata().input_height(),
