@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
+#include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -1551,6 +1552,52 @@ TEST_F(StyleResolverTest, CascadeLayersInDifferentTreeScopes) {
   EXPECT_EQ(0u, properties[2].types_.layer_order);
   EXPECT_EQ(match_result.ScopeFromTreeOrder(properties[2].types_.tree_order),
             &GetDocument());
+}
+
+// https://crbug.com/1313357
+TEST_F(StyleResolverTest, CascadeLayersAfterModifyingAnotherSheet) {
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      @layer {
+        target { color: red; }
+      }
+    </style>
+    <style id="addrule"></style>
+    <target></target>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  GetDocument().getElementById("addrule")->appendChild(
+      GetDocument().createTextNode("target { font-size: 10px; }"));
+
+  UpdateAllLifecyclePhasesForTest();
+
+  ASSERT_TRUE(GetDocument().GetScopedStyleResolver()->GetCascadeLayerMap());
+
+  StyleResolverState state(GetDocument(),
+                           *GetDocument().QuerySelector("target"));
+  SelectorFilter filter;
+  MatchResult match_result;
+  ElementRuleCollector collector(state.ElementContext(), StyleRecalcContext(),
+                                 filter, match_result, state.Style(),
+                                 EInsideLink::kNotInsideLink);
+  MatchAllRules(state, collector);
+  const auto& properties = match_result.GetMatchedProperties();
+  ASSERT_EQ(properties.size(), 2u);
+
+  const uint16_t kImplicitOuterLayerOrder =
+      CascadeLayerMap::kImplicitOuterLayerOrder;
+
+  // @layer { target { color: red } }"
+  EXPECT_TRUE(properties[0].properties->HasProperty(CSSPropertyID::kColor));
+  EXPECT_EQ(0u, properties[0].types_.layer_order);
+  EXPECT_EQ(properties[0].types_.origin, CascadeOrigin::kAuthor);
+
+  // target { font-size: 10px }
+  EXPECT_TRUE(properties[1].properties->HasProperty(CSSPropertyID::kFontSize));
+  EXPECT_EQ(kImplicitOuterLayerOrder, properties[1].types_.layer_order);
+  EXPECT_EQ(properties[1].types_.origin, CascadeOrigin::kAuthor);
 }
 
 // TODO(crbug.com/1095765): We should have a WPT for this test case, but

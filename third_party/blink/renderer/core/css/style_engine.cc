@@ -2049,29 +2049,30 @@ void StyleEngine::ApplyRuleSetChanges(
     MarkCounterStylesNeedUpdate();
 
   unsigned append_start_index = 0;
+  bool rebuild_cascade_layer_map = changed_rule_flags & kLayerRules;
   if (scoped_resolver) {
     // - If all sheets were removed, we remove the ScopedStyleResolver
     // - If new sheets were appended to existing ones, start appending after the
-    //   common prefix.
+    //   common prefix, and rebuild CascadeLayerMap only if layers are changed.
     // - For other diffs, reset author style and re-add all sheets for the
-    //   TreeScope.
-    if (new_style_sheets.IsEmpty())
+    //   TreeScope. If there is an existing CascadeLayerMap, rebuild it.
+    if (new_style_sheets.IsEmpty()) {
+      rebuild_cascade_layer_map = false;
       ResetAuthorStyle(tree_scope);
-    else if (change == kActiveSheetsAppended)
+    } else if (change == kActiveSheetsAppended) {
       append_start_index = old_style_sheets.size();
-    else
+    } else {
+      rebuild_cascade_layer_map = scoped_resolver->HasCascadeLayerMap();
       scoped_resolver->ResetStyle();
+    }
   }
 
-  // Cascade layer map must be built before adding other at-rules, because other
-  // at-rules rely on layer order to resolve name conflicts.
+  if (rebuild_cascade_layer_map) {
+    tree_scope.EnsureScopedStyleResolver().RebuildCascadeLayerMap(
+        new_style_sheets);
+  }
+
   if (changed_rule_flags & kLayerRules) {
-    if (!new_style_sheets.IsEmpty()) {
-      // Rebuild cascade layer map in all cases, because a newly inserted
-      // sub-layer can precede an original layer in the final ordering.
-      tree_scope.EnsureScopedStyleResolver().RebuildCascadeLayerMap(
-          new_style_sheets);
-    }
     if (resolver_)
       resolver_->InvalidateMatchedPropertiesCache();
 

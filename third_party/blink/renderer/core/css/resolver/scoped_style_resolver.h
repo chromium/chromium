@@ -67,6 +67,7 @@ class CORE_EXPORT ScopedStyleResolver final
   static void CounterStyleRulesChanged(TreeScope& scope);
 
   void RebuildCascadeLayerMap(const ActiveStyleSheetVector&);
+  bool HasCascadeLayerMap() const { return cascade_layer_map_.Get(); }
   const CascadeLayerMap* GetCascadeLayerMap() const {
     return cascade_layer_map_;
   }
