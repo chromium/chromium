@@ -51,7 +51,7 @@
           Open page in a new Incognito window (⇧⌘N)
         </message>
       </if>
-      <if expr="is_win or is_linux or is_fuchsia or chromeos_ash">
+      <if expr="is_win or is_linux or is_fuchsia or chromeos_ash or chromeos_lacros">
         <message name="IDS_SAD_TAB_RELOAD_INCOGNITO" desc="One of the bullet points displayed on the web page if a reload failed to fix the issue, advising the user to open the web page in Chrome's Incognito mode.">
           Open page in a new Incognito window (Ctrl-Shift-N)
         </message>
@@ -61,22 +61,22 @@
           Open page in a new Incognito tab
         </message>
       </if>
-      <if expr="is_macosx or chromeos_ash">
+      <if expr="is_macosx or chromeos_ash or chromeos_lacros">
         <message name="IDS_SAD_TAB_RELOAD_CLOSE_TABS" desc="One of the bullet points displayed on the web page if a reload failed to fix the issue, advising the user to close other Chrome tabs or apps running on their computer (Mac, Chrome OS).">
           Close other tabs or apps
         </message>
       </if>
-      <if expr="is_linux and not chromeos_ash">
+      <if expr="is_linux and not chromeos_ash and not chromeos_lacros">
         <message name="IDS_SAD_TAB_RELOAD_CLOSE_TABS" desc="One of the bullet points displayed on the web page if a reload failed to fix the issue, advising the user to close other Chrome tabs or programs running on their computer.">
           Close other tabs or programs
         </message>
       </if>
-      <if expr="is_macosx or chromeos_ash or is_ios">
+      <if expr="is_macosx or chromeos_ash or chromeos_lacros or is_ios">
         <message name="IDS_SAD_TAB_RELOAD_CLOSE_NOTABS" desc="One of the bullet points displayed on the web page if a reload failed to fix the issue, advising the user to close other apps running on their computer or device.">
           Close other apps
         </message>
       </if>
-      <if expr="is_linux and not chromeos_ash">
+      <if expr="is_linux and not chromeos_ash and not chromeos_lacros">
         <message name="IDS_SAD_TAB_RELOAD_CLOSE_NOTABS" desc="One of the bullet points displayed on the web page if a reload failed to fix the issue, advising the user to close other programs running on their computer (Linux).">
           Close other programs
         </message>
@@ -91,7 +91,7 @@
           Restart Chromium
         </message>
       </if>
-      <if expr="is_win or is_linux or is_macosx or is_fuchsia or chromeos_ash">
+      <if expr="is_win or is_linux or is_macosx or is_fuchsia or chromeos_ash or chromeos_lacros">
         <message name="IDS_SAD_TAB_RELOAD_RESTART_DEVICE" desc="One of the bullet points displayed on the web page if a reload failed to fix the issue, advising the user to restart their computer.">
           Restart your computer
         </message>
@@ -106,11 +106,11 @@
           Learn more
         </message>
       </if>
-      <if expr="is_win or is_linux or is_macosx or is_fuchsia or chromeos_ash">
+      <if expr="is_win or is_linux or is_macosx or is_fuchsia or chromeos_ash or chromeos_lacros">
         <message name="IDS_SAD_TAB_ERROR_CODE" desc="The message displayed on the crashed web page indicating the type of the crash.">
           Error code: <ph name="ERROR_CODE">$1<ex>STATUS_ACCESS_VIOLATION</ex></ph>
         </message>
-</if>
+      </if>
 
       <!-- New Tab -->
       <message name="IDS_NEW_TAB_TITLE"
