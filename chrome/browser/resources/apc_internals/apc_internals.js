@@ -15,7 +15,7 @@ function createTableRow(...args) {
   return row;
 }
 
-function notifyAboutFlags(flags) {
+function onFlagsInfoReceived(flags) {
   const addEntry = function(flag) {
     const nameLabel = flag['name'];
     const enabledLabel = flag['enabled'];
@@ -31,7 +31,7 @@ function notifyAboutFlags(flags) {
   flags.forEach(addEntry);
 }
 
-function notifyAboutScriptFetching(scriptFetcherInfo) {
+function onScriptFetchingInfoReceived(scriptFetcherInfo) {
   if (!scriptFetcherInfo) {
     return;
   }
@@ -41,9 +41,23 @@ function notifyAboutScriptFetching(scriptFetcherInfo) {
   }
 }
 
+function onAutofillAssistantInfoReceived(autofillAssistantInfo) {
+  if (!autofillAssistantInfo) {
+    return;
+  }
+  const table = $('autofill_assistant_table');
+  for (const [key, value] of Object.entries(autofillAssistantInfo)) {
+    table.appendChild(createTableRow(key, value));
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function(event) {
-  addWebUIListener('notify-about-flags', notifyAboutFlags);
-  addWebUIListener('notify-about-script-fetching', notifyAboutScriptFetching);
+  addWebUIListener('on-flags-information-received', onFlagsInfoReceived);
+  addWebUIListener(
+      'on-script-fetching-information-received', onScriptFetchingInfoReceived);
+  addWebUIListener(
+      'on-autofill-assistant-information-received',
+      onAutofillAssistantInfoReceived);
 
   chrome.send('loaded');
 });

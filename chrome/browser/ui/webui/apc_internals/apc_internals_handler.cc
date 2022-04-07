@@ -9,11 +9,29 @@
 #include "base/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/values.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/password_scripts_fetcher_factory.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/password_manager/core/browser/password_scripts_fetcher.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/browser/web_contents.h"
+
+namespace {
+
+// TODO(1311324): Reduce the level of code duplication between
+// autofill_assistant::ClientAndroid and the helper method in
+// chrome/browser/password_manager/password_scripts_fetcher_factory.cc.
+std::string GetCountryCode() {
+  variations::VariationsService* variations_service =
+      g_browser_process->variations_service();
+  // Use fallback "ZZ" if no country is available.
+  if (!variations_service || variations_service->GetLatestCountry().empty())
+    return "ZZ";
+  return base::ToUpperASCII(variations_service->GetLatestCountry());
+}
+
+}  // namespace
 
 APCInternalsHandler::~APCInternalsHandler() = default;
 
@@ -27,9 +45,12 @@ void APCInternalsHandler::OnLoaded(const base::Value::List& args) {
   AllowJavascript();
 
   // Provide information for initial page creation.
-  FireWebUIListener("notify-about-flags", base::Value(GetAPCRelatedFlags()));
-  FireWebUIListener("notify-about-script-fetching",
+  FireWebUIListener("on-flags-information-received",
+                    base::Value(GetAPCRelatedFlags()));
+  FireWebUIListener("on-script-fetching-information-received",
                     base::Value(GetPasswordScriptFetcherInformation()));
+  FireWebUIListener("on-autofill-assistant-information-received",
+                    base::Value(GetAutofillAssistantInformation()));
 }
 
 // Returns a list of dictionaries that contain the name and the state of
@@ -80,4 +101,10 @@ base::Value::Dict APCInternalsHandler::GetPasswordScriptFetcherInformation() {
     return scripts_fetcher->GetDebugInformationForInternals();
 #endif
   return base::Value::Dict();
+}
+
+base::Value::Dict APCInternalsHandler::GetAutofillAssistantInformation() const {
+  base::Value::Dict result;
+  result.Set("Country code", GetCountryCode());
+  return result;
 }

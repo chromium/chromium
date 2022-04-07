@@ -27,8 +27,16 @@ class APCInternalsHandler : public content::WebUIMessageHandler {
   void OnLoaded(const base::Value::List& args);
 
   // Data gathering methods.
+  // Gathers information on all APC-related feature and feature parameters.
   base::Value::List GetAPCRelatedFlags() const;
+
+  // Gathers information about the script fetcher, e.g. chosen engine,
+  // cache state.
   base::Value::Dict GetPasswordScriptFetcherInformation();
+
+  // Gathers AutofillAssistant-related information, e.g. language, locale (can
+  // be different from general Chrome settings)
+  base::Value::Dict GetAutofillAssistantInformation() const;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_APC_INTERNALS_APC_INTERNALS_HANDLER_H_
