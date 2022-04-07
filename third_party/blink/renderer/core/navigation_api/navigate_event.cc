@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_transition_while_options.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -82,6 +83,8 @@ void NavigateEvent::transitionWhile(ScriptState* script_state,
     return;
   }
 
+  if (navigation_action_promises_list_.IsEmpty())
+    DomWindow()->document()->AddFocusedElementChangeObserver(this);
   navigation_action_promises_list_.push_back(newNavigationAction);
 
   if (options->hasFocusReset()) {
@@ -116,18 +119,39 @@ void NavigateEvent::transitionWhile(ScriptState* script_state,
   }
 }
 
-bool NavigateEvent::ShouldResetFocus() const {
+void NavigateEvent::ResetFocusIfNeeded() {
   // We only do focus reset if transitionWhile() was called, opting us into the
   // new default behavior which the navigation API provides.
   if (navigation_action_promises_list_.IsEmpty())
-    return false;
+    return;
+  auto* document = DomWindow()->document();
+  document->RemoveFocusedElementChangeObserver(this);
+
+  // If focus has changed since transitionWhile() was invoked, don't reset
+  // focus.
+  if (did_change_focus_during_transition_while_)
+    return;
 
   // If we're in "navigation API mode" per the above, then either leaving focus
   // reset behavior as the default, or setting it to "after-transition"
   // explicitly, should reset the focus.
-  return !focus_reset_behavior_ ||
-         focus_reset_behavior_->AsEnum() ==
-             V8NavigationFocusReset::Enum::kAfterTransition;
+  if (focus_reset_behavior_ &&
+      focus_reset_behavior_->AsEnum() !=
+          V8NavigationFocusReset::Enum::kAfterTransition) {
+    return;
+  }
+
+  if (Element* focus_delegate = document->GetAutofocusDelegate()) {
+    focus_delegate->focus();
+  } else {
+    document->ClearFocusedElement();
+    document->SetSequentialFocusNavigationStartingPoint(nullptr);
+  }
+}
+
+void NavigateEvent::DidChangeFocus() {
+  DCHECK(!navigation_action_promises_list_.IsEmpty());
+  did_change_focus_during_transition_while_ = true;
 }
 
 bool NavigateEvent::ShouldSendAxEvents() const {

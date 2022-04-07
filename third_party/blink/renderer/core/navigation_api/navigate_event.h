@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_focus_reset.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_scroll_restoration.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/focused_element_change_observer.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -29,7 +30,9 @@ class ExceptionState;
 class FormData;
 class ScriptPromise;
 
-class NavigateEvent final : public Event, public ExecutionContextClient {
+class NavigateEvent final : public Event,
+                            public ExecutionContextClient,
+                            public FocusedElementChangeObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -66,10 +69,13 @@ class NavigateEvent final : public Event, public ExecutionContextClient {
   const HeapVector<ScriptPromise>& GetNavigationActionPromisesList() {
     return navigation_action_promises_list_;
   }
-  bool ShouldResetFocus() const;
+  void ResetFocusIfNeeded();
   bool ShouldSendAxEvents() const;
 
   void SaveStateFromDestinationItem(HistoryItem*);
+
+  // FocusedElementChangeObserver implementation:
+  void DidChangeFocus() final;
 
   const AtomicString& InterfaceName() const final;
   void Trace(Visitor*) const final;
@@ -97,6 +103,7 @@ class NavigateEvent final : public Event, public ExecutionContextClient {
 
   enum class ManualRestoreState { kNotRestored, kRestored, kDone };
   ManualRestoreState restore_state_ = ManualRestoreState::kNotRestored;
+  bool did_change_focus_during_transition_while_ = false;
 };
 
 }  // namespace blink

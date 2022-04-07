@@ -104,15 +104,7 @@ class NavigateReaction final : public ScriptFunction::Callable {
                                                               value);
     }
 
-    if (navigate_event_->ShouldResetFocus()) {
-      auto* document = navigation_api->GetSupplementable()->document();
-      if (Element* focus_delegate = document->GetAutofocusDelegate()) {
-        focus_delegate->focus();
-      } else {
-        document->ClearFocusedElement();
-        document->SetSequentialFocusNavigationStartingPoint(nullptr);
-      }
-    }
+    navigate_event_->ResetFocusIfNeeded();
 
     if (react_type_ == ReactType::kTransitionWhile && window->GetFrame()) {
       window->GetFrame()->Loader().DidFinishNavigation(
