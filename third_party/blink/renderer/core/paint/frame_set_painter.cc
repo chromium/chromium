@@ -168,8 +168,10 @@ void FrameSetPainter::Paint(const PaintInfo& paint_info) {
   if (paint_info.phase != PaintPhase::kForeground)
     return;
 
-  LayoutObject* child = layout_frame_set_.FirstChild();
-  if (!child)
+  if (!layout_frame_set_.FirstChild())
+    return;
+
+  if (layout_frame_set_.StyleRef().Visibility() != EVisibility::kVisible)
     return;
 
   ScopedPaintState paint_state(layout_frame_set_, paint_info);
