@@ -340,10 +340,6 @@
       status: "experimental",
     },
     {
-      name: "Canvas2dStaysGPUOnReadback",
-      status: "experimental",
-    },
-    {
       name: "CanvasColorManagement",
       status: "stable",
     },

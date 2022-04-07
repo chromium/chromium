@@ -2000,8 +2000,7 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
   // that those get drawn here
   FinalizeFrame();
 
-  if (!RuntimeEnabledFeatures::Canvas2dStaysGPUOnReadbackEnabled(
-          GetTopExecutionContext())) {
+  if (!base::FeatureList::IsEnabled(features::kCanvas2dStaysGPUOnReadback)) {
     // GetImagedata is faster in Unaccelerated canvases.
     // In Desynchronized canvas disabling the acceleration will break
     // putImageData: crbug.com/1112060.
