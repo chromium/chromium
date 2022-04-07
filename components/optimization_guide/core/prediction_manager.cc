@@ -294,7 +294,8 @@ void PredictionManager::AddObserverForOptimizationTargetModel(
   base::UmaHistogramMediumTimes(
       "OptimizationGuide.PredictionManager.RegistrationTimeSinceServiceInit." +
           GetStringNameForOptimizationTarget(optimization_target),
-      base::TimeTicks::Now() - init_time_);
+      !init_time_.is_null() ? base::TimeTicks::Now() - init_time_
+                            : base::TimeDelta());
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (registered_optimization_targets_and_metadata_.contains(
@@ -844,6 +845,7 @@ void PredictionManager::MaybeScheduleFirstModelFetch() {
   if (!ShouldFetchModels(off_the_record_, pref_service_))
     return;
 
+  DCHECK(!init_time_.is_null());
   base::UmaHistogramMediumTimes(
       "OptimizationGuide.PredictionManager.FirstModelFetchSinceServiceInit",
       base::TimeTicks::Now() - init_time_);
