@@ -106,10 +106,15 @@ void RecordKioskLaunchUMA(bool is_auto_launch) {
 }
 
 void RecordKioskExtensionInstallError(
-    extensions::InstallStageTracker::FailureReason reason) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "Kiosk.Extensions.InstallError", reason,
-      extensions::InstallStageTracker::FailureReason::kMaxValue);
+    extensions::InstallStageTracker::FailureReason reason,
+    bool is_from_store) {
+  if (is_from_store) {
+    base::UmaHistogramEnumeration("Kiosk.Extensions.InstallError.WebStore",
+                                  reason);
+  } else {
+    base::UmaHistogramEnumeration("Kiosk.Extensions.InstallError.OffStore",
+                                  reason);
+  }
 }
 
 void RecordKioskExtensionInstallTimedOut(bool timeout) {
@@ -648,8 +653,9 @@ void KioskLaunchController::OnForceInstalledExtensionsReady() {
 
 void KioskLaunchController::OnForceInstalledExtensionFailed(
     const extensions::ExtensionId& extension_id,
-    extensions::InstallStageTracker::FailureReason reason) {
-  RecordKioskExtensionInstallError(reason);
+    extensions::InstallStageTracker::FailureReason reason,
+    bool is_from_store) {
+  RecordKioskExtensionInstallError(reason, is_from_store);
 }
 
 void KioskLaunchController::OnOwnerSigninSuccess() {

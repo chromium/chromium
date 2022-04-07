@@ -36,7 +36,8 @@ class ForceInstalledTrackerTest : public ForceInstalledTestBase,
   void OnForceInstalledExtensionsReady() override { ready_called_ = true; }
   void OnForceInstalledExtensionFailed(
       const ExtensionId& extension_id,
-      InstallStageTracker::FailureReason reason) override {
+      InstallStageTracker::FailureReason reason,
+      bool is_from_store) override {
     error_reason_[extension_id] = reason;
   }
 

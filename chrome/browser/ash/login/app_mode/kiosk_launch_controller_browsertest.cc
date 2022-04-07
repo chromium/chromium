@@ -42,9 +42,12 @@ const char kExtensionName[] = "extension_name";
 const char kInvalidExtensionId[] = "invalid_id";
 const char kInvalidExtensionName[] = "invalid_name";
 
-// URL of Chrome Web.
-const char kExtensionUpdateUrl[] =
+// URL of Chrome Web Store.
+const char kWebStoreExtensionUpdateUrl[] =
     "https://clients2.google.com/service/update2/crx";
+
+// URL of off store extensions.
+const char kOffStoreExtensionUpdateUrl[] = "https://example.com/crx";
 
 class MockKioskProfileLoadFailedObserver
     : public KioskLaunchController::KioskProfileLoadFailedObserver {
@@ -373,20 +376,21 @@ INSTANTIATE_TEST_SUITE_P(All,
 class KioskLaunchControllerWithExtensionTest
     : public KioskLaunchControllerTest {
  public:
-  void SetupForceList(const std::string& extension_id) {
+  void SetupForceList(const std::string& extension_id,
+                      const std::string& update_url) {
     std::unique_ptr<base::Value> dict =
         extensions::DictionaryBuilder()
             .Set(extension_id,
                  extensions::DictionaryBuilder()
                      .Set(extensions::ExternalProviderImpl::kExternalUpdateUrl,
-                          kExtensionUpdateUrl)
+                          update_url)
                      .Build())
             .Build();
     ProfileManager::GetPrimaryUserProfile()->GetPrefs()->Set(
         extensions::pref_names::kInstallForceList, std::move(*dict));
 
     base::Value list(base::Value::Type::LIST);
-    list.Append(base::StrCat({extension_id, ";", kExtensionUpdateUrl}));
+    list.Append(base::StrCat({extension_id, ";", update_url}));
     policy::PolicyMap map;
     map.Set(policy::key::kExtensionInstallForcelist,
             policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
@@ -401,7 +405,7 @@ class KioskLaunchControllerWithExtensionTest
   }
 
   void PreRunTestOnMainThread() override {
-    SetupForceList(kExtensionId);
+    SetupForceList(kExtensionId, kWebStoreExtensionUpdateUrl);
     InProcessBrowserTest::PreRunTestOnMainThread();
   }
 
@@ -518,7 +522,7 @@ IN_PROC_BROWSER_TEST_P(KioskLaunchControllerWithExtensionTest,
   content::FetchHistogramsFromChildProcesses();
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histogram.ExpectUniqueSample(
-      "Kiosk.Extensions.InstallError",
+      "Kiosk.Extensions.InstallError.WebStore",
       extensions::InstallStageTracker::FailureReason::INVALID_ID, 1);
 }
 
@@ -541,7 +545,7 @@ class KioskLaunchControllerWithInvalidExtensionTest
   }
 
   void PreRunTestOnMainThread() override {
-    SetupForceList(kInvalidExtensionId);
+    SetupForceList(kInvalidExtensionId, kWebStoreExtensionUpdateUrl);
     InProcessBrowserTest::PreRunTestOnMainThread();
   }
 };
@@ -564,6 +568,49 @@ IN_PROC_BROWSER_TEST_P(KioskLaunchControllerWithInvalidExtensionTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          KioskLaunchControllerWithInvalidExtensionTest,
+                         testing::Values(KioskAppType::kArcApp,
+                                         KioskAppType::kChromeApp,
+                                         KioskAppType::kWebApp));
+
+class KioskLaunchControllerWithOffStoreExtensionTest
+    : public KioskLaunchControllerWithExtensionTest {
+ public:
+  void PreRunTestOnMainThread() override {
+    SetupForceList(kExtensionId, kOffStoreExtensionUpdateUrl);
+    InProcessBrowserTest::PreRunTestOnMainThread();
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(KioskLaunchControllerWithOffStoreExtensionTest,
+                       ExtensionFailedAfterAppPrepared) {
+  base::HistogramTester histogram;
+
+  RunUntilAppPrepared();
+  ExpectState(AppState::kInstallingExtensions, NetworkUIState::kNotShowing);
+  ExpectViewState(
+      AppLaunchSplashScreenView::AppLaunchState::kInstallingExtension);
+
+  SetExtensionFailed(
+      kExtensionId, kExtensionName,
+      extensions::InstallStageTracker::FailureReason::INVALID_ID);
+
+  EXPECT_CALL(*launcher(), LaunchApp()).Times(1);
+  FireSplashScreenTimer();
+
+  launch_controls()->OnAppLaunched();
+  ExpectState(AppState::kLaunched, NetworkUIState::kNotShowing);
+  ExpectViewState(AppLaunchSplashScreenView::AppLaunchState::kWaitingAppWindow);
+  EXPECT_TRUE(session_manager::SessionManager::Get()->IsSessionStarted());
+
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histogram.ExpectUniqueSample(
+      "Kiosk.Extensions.InstallError.OffStore",
+      extensions::InstallStageTracker::FailureReason::INVALID_ID, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         KioskLaunchControllerWithOffStoreExtensionTest,
                          testing::Values(KioskAppType::kArcApp,
                                          KioskAppType::kChromeApp,
                                          KioskAppType::kWebApp));

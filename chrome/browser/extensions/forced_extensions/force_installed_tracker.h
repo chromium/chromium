@@ -60,7 +60,8 @@ class ForceInstalledTracker : public ExtensionRegistryObserver,
     // Can be called multiple times, one for each failed extension install.
     virtual void OnForceInstalledExtensionFailed(
         const ExtensionId& extension_id,
-        InstallStageTracker::FailureReason reason) {}
+        InstallStageTracker::FailureReason reason,
+        bool is_from_store) {}
 
     // Called when cache status is retrieved from InstallationStageTracker.
     virtual void OnExtensionDownloadCacheStatusRetrieved(

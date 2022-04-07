@@ -207,8 +207,9 @@ void ForceInstalledTracker::OnExtensionInstallationFailed(
       item->second.status == ExtensionStatus::kReady)
     return;
   ChangeExtensionStatus(extension_id, ExtensionStatus::kFailed);
+  bool is_from_store = item->second.is_from_store;
   for (auto& obs : observers_)
-    obs.OnForceInstalledExtensionFailed(extension_id, reason);
+    obs.OnForceInstalledExtensionFailed(extension_id, reason, is_from_store);
   MaybeNotifyObservers();
 }
 

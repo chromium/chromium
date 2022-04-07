@@ -162,7 +162,8 @@ class KioskLaunchController
   void OnForceInstalledExtensionsReady() override;
   void OnForceInstalledExtensionFailed(
       const extensions::ExtensionId& extension_id,
-      extensions::InstallStageTracker::FailureReason reason) override;
+      extensions::InstallStageTracker::FailureReason reason,
+      bool is_from_store) override;
 
   void OnOwnerSigninSuccess();
 
