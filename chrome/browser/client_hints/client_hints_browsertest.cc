@@ -251,7 +251,9 @@ void CheckUserAgentMinorVersion(const std::string& user_agent_value,
   std::string minor_version;
   EXPECT_TRUE(re2::RE2::PartialMatch(user_agent_value, kChromeVersionRegex,
                                      &minor_version));
-  if (expected_user_agent_reduced) {
+  if (expected_user_agent_reduced ||
+      base::FeatureList::IsEnabled(
+          blink::features::kReduceUserAgentMinorVersion)) {
     EXPECT_EQ(minor_version, kReducedMinorVersion);
   } else {
     EXPECT_NE(minor_version, kReducedMinorVersion);

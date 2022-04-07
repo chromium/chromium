@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -25,6 +26,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace {
@@ -259,7 +261,9 @@ class ChromeWorkerUserAgentBrowserTest
     std::string minor_version;
     EXPECT_TRUE(re2::RE2::PartialMatch(user_agent_value, kChromeVersionRegex,
                                        &minor_version));
-    if (expected_user_agent_reduced) {
+    if (expected_user_agent_reduced ||
+        base::FeatureList::IsEnabled(
+            blink::features::kReduceUserAgentMinorVersion)) {
       EXPECT_EQ(minor_version, kReducedMinorVersion);
     } else {
       EXPECT_NE(minor_version, kReducedMinorVersion);
