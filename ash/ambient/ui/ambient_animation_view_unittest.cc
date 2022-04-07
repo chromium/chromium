@@ -66,14 +66,15 @@ class AmbientAnimationViewTest : public AmbientAshTestBase,
 
     auto static_resources =
         std::make_unique<FakeAmbientAnimationStaticResources>();
-    static_resources->SetLottieData(cc::CreateCustomLottieDataWith2Assets(
-        GenerateLottieDynamicAssetIdForTesting(/*position=*/"A", /*idx=*/1),
-        GenerateLottieDynamicAssetIdForTesting(/*position=*/"B", /*idx=*/1)));
+    static_resources->SetSkottieWrapper(
+        cc::CreateSkottieFromString(cc::CreateCustomLottieDataWith2Assets(
+            GenerateLottieDynamicAssetIdForTesting(/*position=*/"A", /*idx=*/1),
+            GenerateLottieDynamicAssetIdForTesting(/*position=*/"B",
+                                                   /*idx=*/1))));
 
     model_ =
         std::make_unique<AmbientBackendModel>(CreateAmbientAnimationPhotoConfig(
-            cc::CreateSkottieFromString(static_resources->GetLottieData())
-                ->GetImageAssetMetadata()));
+            static_resources->GetSkottieWrapper()->GetImageAssetMetadata()));
     PhotoWithDetails image;
     image.photo = gfx::test::CreateImageSkia(100, 100);
     model_->AddNextImage(image);

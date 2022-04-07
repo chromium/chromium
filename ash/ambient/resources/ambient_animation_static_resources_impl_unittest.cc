@@ -7,6 +7,7 @@
 #include "ash/ambient/resources/ambient_animation_resource_constants.h"
 #include "ash/constants/ambient_animation_theme.h"
 #include "base/json/json_reader.h"
+#include "cc/paint/skottie_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_skia.h"
@@ -26,9 +27,8 @@ using ::testing::NotNull;
 TEST(AmbientAnimationStaticResourcesTest, LoadsLottieData) {
   auto resources = AmbientAnimationStaticResources::Create(
       AmbientAnimationTheme::kFeelTheBreeze);
-  ASSERT_THAT(resources, NotNull());
-  ASSERT_THAT(resources->GetLottieData(), Not(IsEmpty()));
-  EXPECT_TRUE(base::JSONReader::Read(resources->GetLottieData()));
+  ASSERT_THAT(resources->GetSkottieWrapper(), NotNull());
+  EXPECT_TRUE(resources->GetSkottieWrapper()->is_valid());
 }
 
 TEST(AmbientAnimationStaticResourcesTest, LoadsStaticAssets) {

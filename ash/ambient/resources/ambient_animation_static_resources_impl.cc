@@ -4,12 +4,16 @@
 
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
 
+#include <cstdint>
 #include <utility>
+#include <vector>
 
 #include "ash/ambient/resources/ambient_animation_resource_constants.h"
 #include "ash/ambient/resources/grit/ash_ambient_lottie_resources.h"
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
+#include "cc/paint/skottie_wrapper.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -86,14 +90,33 @@ AssetIdToResourceIdMap GetAssetIdToResourceIdMapForTheme(
   return m.at(theme);
 }
 
+scoped_refptr<cc::SkottieWrapper> CreateSkottieWrapper(
+    int lottie_json_resource_id) {
+  base::StringPiece animation_json =
+      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+          lottie_json_resource_id);
+  DCHECK(!animation_json.empty());
+  base::span<const uint8_t> lottie_data_bytes =
+      base::as_bytes(base::make_span(animation_json));
+  // Create a serializable SkottieWrapper since the SkottieWrapper may have to
+  // be serialized and transmitted over IPC for out-of-process rasterization.
+  auto animation = cc::SkottieWrapper::CreateSerializable(
+      std::vector<uint8_t>(lottie_data_bytes.begin(), lottie_data_bytes.end()));
+  DCHECK(animation);
+  DCHECK(animation->is_valid());
+  return animation;
+}
+
 class AmbientAnimationStaticResourcesImpl
     : public AmbientAnimationStaticResources {
  public:
   AmbientAnimationStaticResourcesImpl(
       int lottie_json_resource_id,
       base::flat_map<base::StringPiece, int> asset_id_to_resource_id)
-      : lottie_json_resource_id_(lottie_json_resource_id),
-        asset_id_to_resource_id_(std::move(asset_id_to_resource_id)) {}
+      : animation_(CreateSkottieWrapper(lottie_json_resource_id)),
+        asset_id_to_resource_id_(std::move(asset_id_to_resource_id)) {
+    DCHECK(animation_);
+  }
 
   AmbientAnimationStaticResourcesImpl(
       const AmbientAnimationStaticResourcesImpl&) = delete;
@@ -102,12 +125,8 @@ class AmbientAnimationStaticResourcesImpl
 
   ~AmbientAnimationStaticResourcesImpl() override = default;
 
-  base::StringPiece GetLottieData() const override {
-    base::StringPiece animation_json =
-        ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
-            lottie_json_resource_id_);
-    DCHECK(!animation_json.empty());
-    return animation_json;
+  const scoped_refptr<cc::SkottieWrapper>& GetSkottieWrapper() const override {
+    return animation_;
   }
 
   gfx::ImageSkia GetStaticImageAsset(
@@ -123,8 +142,9 @@ class AmbientAnimationStaticResourcesImpl
   }
 
  private:
-  // Resource id for this animation theme's Lottie json data.
-  const int lottie_json_resource_id_;
+  // The skottie animation object built off of the animation json string
+  // loaded from the resource pak.
+  const scoped_refptr<cc::SkottieWrapper> animation_;
   // Map of all static image assets in this animation to their corresponding
   // resource ids. Points to global memory with static duration.
   const base::flat_map<base::StringPiece, int> asset_id_to_resource_id_;

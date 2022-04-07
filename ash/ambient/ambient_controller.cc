@@ -35,7 +35,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
-#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -832,9 +831,7 @@ AmbientPhotoConfig AmbientController::CreatePhotoConfigForCurrentTheme() {
     pending_animation_static_resources_ =
         AmbientAnimationStaticResources::Create(current_theme);
     return CreateAmbientAnimationPhotoConfig(
-        cc::SkottieWrapper::CreateNonSerializable(
-            base::as_bytes(base::make_span(
-                pending_animation_static_resources_->GetLottieData())))
+        pending_animation_static_resources_->GetSkottieWrapper()
             ->GetImageAssetMetadata());
   }
 }

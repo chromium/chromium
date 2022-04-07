@@ -10,7 +10,12 @@
 #include "ash/ash_export.h"
 #include "ash/constants/ambient_animation_theme.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
+
+namespace cc {
+class SkottieWrapper;
+}  // namespace cc
 
 namespace gfx {
 class ImageSkia;
@@ -36,12 +41,14 @@ class ASH_EXPORT AmbientAnimationStaticResources {
 
   virtual ~AmbientAnimationStaticResources() = default;
 
-  // Returns the Lottie animation json data for this theme. The returned
-  // StringPiece points to data owned by the AmbientAnimationStaticResources
-  // instance. This method can never fail.
+  // Returns the Lottie animation for this theme. The returned pointer is never
+  // null and always points to a valid |cc::SkottieWrapper| instance. This
+  // method can never fail and is cheap to call multiple times (a new animation
+  // is not re-created every time this is called).
   // TODO(esum): Add an argument where the caller specifies whether to load the
   // "portrait" or "landscape" version of this animation theme.
-  virtual base::StringPiece GetLottieData() const = 0;
+  virtual const scoped_refptr<cc::SkottieWrapper>& GetSkottieWrapper()
+      const = 0;
 
   // Returns the image to use for a static asset in the animation, identified by
   // the |asset_id|. The |asset_id| is a string identifier specified when the
