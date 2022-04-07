@@ -7,5 +7,5 @@
 
     <!-- Multi-instance switcher dialog -->
     <color name="current_item_bullet">@color/default_green</color>
-    <color name="checked_item">@color/default_bg_color_blue</color>
+    <macro name="checked_item" tools:ignore="UnusedResources">@macro/default_icon_color_accent1</macro>
 </resources>

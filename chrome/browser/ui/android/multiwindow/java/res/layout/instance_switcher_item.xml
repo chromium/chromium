@@ -79,7 +79,7 @@
         android:layout_alignParentEnd="true"
         android:paddingVertical="12dp"
         android:paddingHorizontal="12dp"
-        android:tint="@color/checked_item"
+        android:tint="@macro/checked_item"
         android:visibility="gone"
         android:importantForAccessibility="no"
         style="@style/ListItemEndIcon" />
