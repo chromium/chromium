@@ -5427,17 +5427,19 @@ class DeclarativeNetRequestSubresourceWebBundlesBrowserTest
     bool success = false;
     std::string script = base::StringPrintf(R"(
           (() => {
-            const link = document.createElement('link');
-            link.rel = 'webbundle';
-            link.addEventListener('load', () => {
+            const script = document.createElement('script');
+            script.type = 'webbundle';
+            script.addEventListener('load', () => {
               window.domAutomationController.send(true);
             });
-            link.addEventListener('error', () => {
+            script.addEventListener('error', () => {
               window.domAutomationController.send(false);
             });
-            link.href = '%s';
-            link.resources = '%s';
-            document.body.appendChild(link);
+            script.textContent = JSON.stringify({
+              source: '%s',
+              resources: ['%s'],
+            });
+            document.body.appendChild(script);
           })();
         )",
                                             href.c_str(), resources.c_str());
@@ -5518,11 +5520,13 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSubresourceWebBundlesBrowserTest,
           const pass_js_url = new URL('./pass.js', location.href).toString();
           const cancel_js_url =
               new URL('./cancel.js', location.href).toString();
-          const link = document.createElement('link');
-          link.rel = 'webbundle';
-          link.href = wbn_url;
-          link.resources = pass_js_url + ' ' + cancel_js_url;
-          document.body.appendChild(link);
+          const script = document.createElement('script');
+          script.type = 'webbundle';
+          script.textContent = JSON.stringify({
+            source: wbn_url,
+            resources: [pass_js_url, cancel_js_url]
+          });
+          document.body.appendChild(script);
         })();
         </script>
         </body>
@@ -5595,11 +5599,13 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSubresourceWebBundlesBrowserTest,
               new URL('./web_bundle.wbn', location.href).toString();
           const pass_js_url = '%s';
           const cancel_js_url = '%s';
-          const link = document.createElement('link');
-          link.rel = 'webbundle';
-          link.href = wbn_url;
-          link.resources = pass_js_url + ' ' + cancel_js_url;
-          document.body.appendChild(link);
+          const script = document.createElement('script');
+          script.type = 'webbundle';
+          script.textContent = JSON.stringify({
+            source: wbn_url,
+            resources: [pass_js_url, cancel_js_url]
+          });
+          document.body.appendChild(script);
         })();
         </script>
         </body>
@@ -5662,13 +5668,15 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSubresourceWebBundlesBrowserTest,
               new URL('./redirect_to_unlisted.js', location.href).toString();
           const redirect_to_server =
               new URL('./redirect_to_server.js', location.href).toString();
-          const link = document.createElement('link');
-          link.rel = 'webbundle';
-          link.href = wbn_url;
-          link.resources = redirect_js_url + ' ' + redirected_js_url + ' ' +
-                           redirect_to_unlisted_js_url + ' ' +
-                           redirect_to_server;
-          document.body.appendChild(link);
+
+          const script = document.createElement('script');
+          script.type = 'webbundle';
+          script.textContent = JSON.stringify({
+            source: wbn_url,
+            resources: [redirect_js_url, redirected_js_url,
+                        redirect_to_unlisted_js_url, redirect_to_server]
+          });
+          document.body.appendChild(script);
         })();
         </script>
         </body>

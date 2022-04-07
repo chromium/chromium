@@ -2122,7 +2122,12 @@ IN_PROC_BROWSER_TEST_F(SubresourceWebBundlesContentScriptApiTest,
                          true /* nosniff */);
 
   const std::string page_html = base::StringPrintf(R"(
-        <link rel="webbundle" href="./test.wbn" scopes="uuid-in-package:">
+        <script type="webbundle">
+        {
+          "source": "./test.wbn",
+          "scopes": ["uuid-in-package:"]
+        }
+        </script>
         <iframe src="%s"></iframe>
       )",
                                                    uuid_html_url.c_str());

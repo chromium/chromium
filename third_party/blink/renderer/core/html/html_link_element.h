@@ -96,15 +96,6 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
 
   DOMTokenList* sizes() const;
 
-  // IDL method.
-  DOMTokenList* resources() const;
-  DOMTokenList* scopes() const;
-
-  const HashSet<KURL>& ValidResourceUrls() const {
-    return valid_resource_urls_;
-  }
-  const HashSet<KURL>& ValidScopeUrls() const { return valid_scope_urls_; }
-
   void ScheduleEvent();
 
   // From LinkLoaderClient
@@ -173,10 +164,6 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
   Member<RelList> rel_list_;
   LinkRelAttribute rel_attribute_;
   Member<BlockingAttribute> blocking_attribute_;
-  Member<DOMTokenList> resources_;
-  HashSet<KURL> valid_resource_urls_;
-  Member<DOMTokenList> scopes_;
-  HashSet<KURL> valid_scope_urls_;
 
   bool created_by_parser_;
 };

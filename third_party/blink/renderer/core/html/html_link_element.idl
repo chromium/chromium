@@ -55,12 +55,6 @@
     // https://w3c.github.io/webappsec-subresource-integrity/#HTMLLinkElement
     [Reflect] attribute DOMString integrity;
 
-    // Subresource loading with Web Bundles
-    // https://github.com/WICG/webpackage/blob/master/explainers/subresource-loading.md
-    // crbug.com/1082020
-    [RuntimeEnabled=SubresourceWebBundles, PutForwards=value, SecureContext] readonly attribute DOMTokenList resources;
-    [RuntimeEnabled=SubresourceWebBundles, PutForwards=value, SecureContext] readonly attribute DOMTokenList scopes;
-
     // https://html.spec.whatwg.org/multipage/semantics.html#dom-link-blocking
     [RuntimeEnabled=BlockingAttribute, SameObject, PutForwards=value] readonly attribute DOMTokenList blocking;
 };

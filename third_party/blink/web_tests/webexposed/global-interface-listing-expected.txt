@@ -3824,9 +3824,7 @@ interface HTMLLinkElement : HTMLElement
     getter referrerPolicy
     getter rel
     getter relList
-    getter resources
     getter rev
-    getter scopes
     getter sheet
     getter sizes
     getter target
@@ -3847,9 +3845,7 @@ interface HTMLLinkElement : HTMLElement
     setter referrerPolicy
     setter rel
     setter relList
-    setter resources
     setter rev
-    setter scopes
     setter sizes
     setter target
     setter type

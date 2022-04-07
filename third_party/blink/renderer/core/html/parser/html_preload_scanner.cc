@@ -48,7 +48,6 @@
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
 #include "third_party/blink/renderer/core/html/link_rel_attribute.h"
-#include "third_party/blink/renderer/core/html/link_web_bundle.h"
 #include "third_party/blink/renderer/core/html/loading_attribute.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/parser/html_srcset_parser.h"
@@ -115,20 +114,6 @@ bool MediaAttributeMatches(const MediaValuesCached& media_values,
       MediaQuerySet::Create(attribute_value, nullptr);
   MediaQueryEvaluator media_query_evaluator(&media_values);
   return media_query_evaluator.Eval(*media_queries);
-}
-
-void ParseWebBundleUrlsAndFillHash(const AtomicString& value,
-                                   HashSet<KURL>& url_hash,
-                                   const KURL& base_url) {
-  // Parse the attribute value as a space-separated list of urls
-  SpaceSplitString urls(value);
-  for (wtf_size_t i = 0; i < urls.size(); ++i) {
-    KURL url = LinkWebBundle::ParseResourceUrl(
-        urls[i], base::BindRepeating(&LinkWebBundle::CompleteURL, base_url));
-    if (url.IsValid()) {
-      url_hash.insert(std::move(url));
-    }
-  }
 }
 
 void ScanScriptWebBundle(
@@ -232,33 +217,6 @@ class TokenPreloadScanner::StartTagScanner {
                !picture_data.source_url.IsEmpty()) {
       SetUrlToLoad(picture_data.source_url, kAllowURLReplacement);
     }
-  }
-
-  bool MaybeUpdateExclusionInfo(
-      const KURL& predicted_base_url,
-      const KURL& document_url,
-      scoped_refptr<const PreloadRequest::ExclusionInfo>& exclusion_info) {
-    if (!IsLinkRelWebBundle())
-      return false;
-    HashSet<KURL> scopes;
-    HashSet<KURL> resources;
-    if (exclusion_info) {
-      scopes = exclusion_info->scopes();
-      resources = exclusion_info->resources();
-    }
-    KURL base_url;
-    if (!predicted_base_url.IsEmpty()) {
-      base_url = predicted_base_url;
-    } else {
-      base_url = document_url;
-    }
-    ParseWebBundleUrlsAndFillHash(scopes_attribute_value_, scopes, base_url);
-    ParseWebBundleUrlsAndFillHash(resources_attribute_value_, resources,
-                                  base_url);
-
-    exclusion_info = base::MakeRefCounted<PreloadRequest::ExclusionInfo>(
-        document_url, std::move(scopes), std::move(resources));
-    return true;
   }
 
   std::unique_ptr<PreloadRequest> CreatePreloadRequest(
@@ -494,7 +452,6 @@ class TokenPreloadScanner::StartTagScanner {
       link_is_preconnect_ = rel.IsPreconnect();
       link_is_preload_ = rel.IsLinkPreload();
       link_is_modulepreload_ = rel.IsModulePreload();
-      link_is_webbundle_ = rel.IsWebBundle();
     } else if (Match(attribute_name, html_names::kMediaAttr)) {
       matched_ &= MediaAttributeMatches(*media_values_, attribute_value);
     } else if (Match(attribute_name, html_names::kCrossoriginAttr)) {
@@ -525,10 +482,6 @@ class TokenPreloadScanner::StartTagScanner {
                Match(attribute_name, html_names::kFetchpriorityAttr) &&
                priority_hints_origin_trial_enabled_) {
       SetFetchPriorityHint(attribute_value);
-    } else if (Match(attribute_name, html_names::kScopesAttr)) {
-      scopes_attribute_value_ = AtomicString(attribute_value);
-    } else if (Match(attribute_name, html_names::kResourcesAttr)) {
-      resources_attribute_value_ = AtomicString(attribute_value);
     }
   }
 
@@ -666,10 +619,6 @@ class TokenPreloadScanner::StartTagScanner {
            !url_to_load_.IsEmpty();
   }
 
-  bool IsLinkRelWebBundle() const {
-    return Match(tag_impl_, html_names::kLinkTag) && link_is_webbundle_;
-  }
-
   bool ShouldPreloadLink(absl::optional<ResourceType>& type) const {
     if (link_is_style_sheet_) {
       return type_attribute_value_.IsEmpty() ||
@@ -777,7 +726,6 @@ class TokenPreloadScanner::StartTagScanner {
   bool link_is_preconnect_ = false;
   bool link_is_preload_ = false;
   bool link_is_modulepreload_ = false;
-  bool link_is_webbundle_ = false;
   bool matched_ = true;
   bool input_is_image_ = false;
   String img_src_url_;
@@ -1086,13 +1034,6 @@ void TokenPreloadScanner::ScanCommon(
           scanner_type_, priority_hints_origin_trial_enabled_,
           &document_parameters_->disabled_image_types);
       scanner.ProcessAttributes(token.Attributes());
-
-      if (scanner.MaybeUpdateExclusionInfo(predicted_base_element_url_,
-                                           document_url_, exclusion_info_)) {
-        // This means the tag is <link rel=webbundle>. We don't preload the
-        // web bundle request.
-        return;
-      }
 
       if (in_picture_ && media_values_->Width())
         scanner.HandlePictureSourceURL(picture_data_);

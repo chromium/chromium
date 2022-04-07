@@ -1533,8 +1533,8 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, CorpVsBrowserInitiatedRequest) {
             LoadBasicRequest(partition->GetNetworkContext(), test_url));
 }
 
-// This test class sets up a link element for webbundle subresource loading.
-// e.g. <link rel=webbundle href=".../foo.wbn" resources="...">.
+// This test class sets up a script element for webbundle subresource loading.
+// e.g. <script type=webbundle>...</script>
 class CrossSiteDocumentBlockingWebBundleTest : public ContentBrowserTest {
  public:
   CrossSiteDocumentBlockingWebBundleTest() {
@@ -1550,25 +1550,27 @@ class CrossSiteDocumentBlockingWebBundleTest : public ContentBrowserTest {
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
  protected:
-  void SetupLinkWebBundleElementAndImgElement(const GURL& bundle_url,
-                                              const GURL subresource_url) {
+  void SetupScriptWebBundleElementAndImgElement(const GURL& bundle_url,
+                                                const GURL subresource_url) {
     // Navigate to the test page.
     ASSERT_TRUE(
         NavigateToURL(shell(), GURL("https://same-origin.test/title1.html")));
 
     const char kScriptTemplate[] = R"(
-      const link = document.createElement('link');
-      link.rel = 'webbundle';
-      link.href = $1;
-      link.resources.add($2);
-      document.body.appendChild(link);
+      const script = document.createElement('script');
+      script.type = 'webbundle';
+      script.textContent = JSON.stringify({
+        source: $1,
+        resources: [$2],
+      });
+      document.body.appendChild(script);
 
       const img = document.createElement('img');
       img.src = $2;
       document.body.appendChild(img);
 )";
-    // Insert a <link> element for webbundle subresoruce loading, and insert an
-    // <img> element which loads a resource from the webbundle.
+    // Insert a <script> element for webbundle subresoruce loading, and insert
+    // an <img> element which loads a resource from the webbundle.
     ASSERT_TRUE(ExecJs(
         shell(), JsReplace(kScriptTemplate, bundle_url, subresource_url)));
   }
@@ -1616,7 +1618,7 @@ IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
   GURL bundle_url("https://cross-origin.test/web_bundle/cross_origin_b2.wbn");
   GURL subresource_url("https://cross-origin.test/web_bundle/resource.json");
   RequestInterceptor interceptor(subresource_url);
-  SetupLinkWebBundleElementAndImgElement(bundle_url, subresource_url);
+  SetupScriptWebBundleElementAndImgElement(bundle_url, subresource_url);
   interceptor.WaitForRequestCompletion();
 
   EXPECT_EQ(0, interceptor.completion_status().error_code);
@@ -1630,7 +1632,7 @@ IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
   GURL bundle_url("https://cross-origin.test/web_bundle/cross_origin_b2.wbn");
   GURL subresource_url("https://cross-origin.test/web_bundle/resource.png");
   RequestInterceptor interceptor(subresource_url);
-  SetupLinkWebBundleElementAndImgElement(bundle_url, subresource_url);
+  SetupScriptWebBundleElementAndImgElement(bundle_url, subresource_url);
   interceptor.WaitForRequestCompletion();
 
   EXPECT_EQ(0, interceptor.completion_status().error_code);
@@ -1644,7 +1646,7 @@ IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
   GURL bundle_url("https://same-origin.test/web_bundle/same_origin_b2.wbn");
   GURL subresource_url("https://same-origin.test/web_bundle/resource.json");
   RequestInterceptor interceptor(subresource_url);
-  SetupLinkWebBundleElementAndImgElement(bundle_url, subresource_url);
+  SetupScriptWebBundleElementAndImgElement(bundle_url, subresource_url);
   interceptor.WaitForRequestCompletion();
 
   EXPECT_EQ(0, interceptor.completion_status().error_code);
@@ -1658,7 +1660,7 @@ IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
   GURL bundle_url("https://same-origin.test/web_bundle/same_origin_b2.wbn");
   GURL subresource_url("https://same-origin.test/web_bundle/resource.png");
   RequestInterceptor interceptor(subresource_url);
-  SetupLinkWebBundleElementAndImgElement(bundle_url, subresource_url);
+  SetupScriptWebBundleElementAndImgElement(bundle_url, subresource_url);
   interceptor.WaitForRequestCompletion();
 
   EXPECT_EQ(0, interceptor.completion_status().error_code);

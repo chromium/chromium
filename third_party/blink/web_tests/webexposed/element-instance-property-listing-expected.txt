@@ -801,9 +801,7 @@ html element link
     property referrerPolicy
     property rel
     property relList
-    property resources
     property rev
-    property scopes
     property sheet
     property sizes
     property target
