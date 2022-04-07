@@ -5,6 +5,7 @@
 #include "components/signin/core/browser/consistency_cookie_manager.h"
 
 #include "base/check.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -31,7 +32,7 @@ ConsistencyCookieManager::ScopedAccountUpdate::~ScopedAccountUpdate() {
 
   DCHECK_GT(consistency_cookie_manager_->scoped_update_count_, 0);
   --consistency_cookie_manager_->scoped_update_count_;
-  consistency_cookie_manager_->UpdateCookieIfNeeded();
+  consistency_cookie_manager_->UpdateCookieIfNeeded(/*force_creation=*/false);
 }
 
 ConsistencyCookieManager::ScopedAccountUpdate::ScopedAccountUpdate(
@@ -58,17 +59,20 @@ ConsistencyCookieManager::ScopedAccountUpdate::ScopedAccountUpdate(
   DCHECK(consistency_cookie_manager_);
   ++consistency_cookie_manager_->scoped_update_count_;
   DCHECK_GT(consistency_cookie_manager_->scoped_update_count_, 0);
-  consistency_cookie_manager_->UpdateCookieIfNeeded();
+  bool force_creation = consistency_cookie_manager_->scoped_update_count_ == 1;
+  consistency_cookie_manager_->UpdateCookieIfNeeded(force_creation);
 }
 
 ConsistencyCookieManager::ConsistencyCookieManager(
     SigninClient* signin_client,
     AccountReconcilor* reconcilor)
-    : signin_client_(signin_client), account_reconcilor_(reconcilor) {
+    : signin_client_(signin_client),
+      account_reconcilor_(reconcilor),
+      account_reconcilor_state_(account_reconcilor_->GetState()) {
   DCHECK(signin_client_);
   DCHECK(account_reconcilor_);
   account_reconcilor_observation_.Observe(account_reconcilor_);
-  UpdateCookieIfNeeded();
+  UpdateCookieIfNeeded(/*force_creation=*/false);
 }
 
 ConsistencyCookieManager::~ConsistencyCookieManager() = default;
@@ -79,7 +83,43 @@ ConsistencyCookieManager::CreateScopedAccountUpdate() {
 }
 
 // static
-void ConsistencyCookieManager::UpdateCookie(
+std::unique_ptr<net::CanonicalCookie>
+ConsistencyCookieManager::CreateConsistencyCookie(const std::string& value) {
+  DCHECK(!value.empty());
+  base::Time now = base::Time::Now();
+  base::Time expiry = now + base::Days(2 * 365);  // Two years.
+  return net::CanonicalCookie::CreateSanitizedCookie(
+      GaiaUrls::GetInstance()->gaia_url(), kCookieName, value,
+      GaiaUrls::GetInstance()->gaia_url().host(),
+      /*path=*/"/", /*creation=*/now, /*expiration=*/expiry,
+      /*last_access=*/now, /*secure=*/true, /*httponly=*/false,
+      net::CookieSameSite::STRICT_MODE, net::COOKIE_PRIORITY_DEFAULT,
+      /*same_party=*/false, /*partition_key=*/absl::nullopt);
+}
+
+// static
+bool ConsistencyCookieManager::IsConsistencyCookie(
+    const net::CanonicalCookie& cookie) {
+  return cookie.IsSecure() && cookie.Path() == "/" &&
+         cookie.DomainWithoutDot() ==
+             GaiaUrls::GetInstance()->gaia_url().host() &&
+         cookie.Name() == kCookieName;
+}
+
+// static
+ConsistencyCookieManager::CookieValue
+ConsistencyCookieManager::ParseCookieValue(const std::string& value) {
+  if (base::EqualsCaseInsensitiveASCII(value, kCookieValueStringConsistent))
+    return CookieValue::kConsistent;
+  if (base::EqualsCaseInsensitiveASCII(value, kCookieValueStringInconsistent))
+    return CookieValue::kInconsistent;
+  if (base::EqualsCaseInsensitiveASCII(value, kCookieValueStringUpdating))
+    return CookieValue::kUpdating;
+  return CookieValue::kInvalid;
+}
+
+// static
+void ConsistencyCookieManager::SetCookieValue(
     network::mojom::CookieManager* cookie_manager,
     CookieValue value) {
   std::string cookie_value_string;
@@ -93,20 +133,15 @@ void ConsistencyCookieManager::UpdateCookie(
     case CookieValue::kUpdating:
       cookie_value_string = kCookieValueStringUpdating;
       break;
+    case CookieValue::kInvalid:
+      NOTREACHED();
+      break;
   }
   DCHECK(!cookie_value_string.empty());
 
   // Update the cookie with the new value.
-  base::Time now = base::Time::Now();
-  base::Time expiry = now + base::Days(2 * 365);  // Two years.
   std::unique_ptr<net::CanonicalCookie> cookie =
-      net::CanonicalCookie::CreateSanitizedCookie(
-          GaiaUrls::GetInstance()->gaia_url(), kCookieName, cookie_value_string,
-          GaiaUrls::GetInstance()->gaia_url().host(),
-          /*path=*/"/", /*creation=*/now, /*expiration=*/expiry,
-          /*last_access=*/now, /*secure=*/true, /*httponly=*/false,
-          net::CookieSameSite::STRICT_MODE, net::COOKIE_PRIORITY_DEFAULT,
-          /*same_party=*/false, /*partition_key=*/absl::nullopt);
+      CreateConsistencyCookie(cookie_value_string);
   net::CookieOptions cookie_options;
   // Permit to set SameSite cookies.
   cookie_options.set_same_site_cookie_context(
@@ -119,16 +154,21 @@ void ConsistencyCookieManager::UpdateCookie(
 
 void ConsistencyCookieManager::OnStateChanged(
     signin_metrics::AccountReconcilorState state) {
-  UpdateCookieIfNeeded();
+  DCHECK_NE(state, account_reconcilor_state_);
+  // If a `ScopedAccountUpdate` was created while the reconcilor was inactive,
+  // it was ignored and creation was not forced. Force the creation when the
+  // reconcilor becomes active.
+  bool force_creation =
+      scoped_update_count_ > 0 &&
+      account_reconcilor_state_ == signin_metrics::ACCOUNT_RECONCILOR_INACTIVE;
+  account_reconcilor_state_ = state;
+  UpdateCookieIfNeeded(force_creation);
 }
 
 absl::optional<ConsistencyCookieManager::CookieValue>
 ConsistencyCookieManager::CalculateCookieValue() const {
-  const signin_metrics::AccountReconcilorState reconcilor_state =
-      account_reconcilor_->GetState();
-
   // Only update the cookie when the reconcilor is active.
-  if (reconcilor_state == signin_metrics::ACCOUNT_RECONCILOR_INACTIVE)
+  if (account_reconcilor_state_ == signin_metrics::ACCOUNT_RECONCILOR_INACTIVE)
     return absl::nullopt;
 
   // If there is a live `ScopedAccountUpdate`, return `kStateUpdating`.
@@ -137,7 +177,7 @@ ConsistencyCookieManager::CalculateCookieValue() const {
     return CookieValue::kUpdating;
 
   // Otherwise compute the cookie based on the reconcilor state.
-  switch (reconcilor_state) {
+  switch (account_reconcilor_state_) {
     case signin_metrics::ACCOUNT_RECONCILOR_OK:
       return CookieValue::kConsistent;
     case signin_metrics::ACCOUNT_RECONCILOR_RUNNING:
@@ -152,12 +192,75 @@ ConsistencyCookieManager::CalculateCookieValue() const {
   }
 }
 
-void ConsistencyCookieManager::UpdateCookieIfNeeded() {
+void ConsistencyCookieManager::UpdateCookieIfNeeded(bool force_creation) {
   absl::optional<CookieValue> cookie_value = CalculateCookieValue();
-  if (!cookie_value.has_value() || cookie_value == cookie_value_)
+  if (!cookie_value.has_value())
     return;
-  cookie_value_ = cookie_value;
-  UpdateCookie(signin_client_->GetCookieManager(), cookie_value_.value());
+
+  DCHECK_NE(cookie_value.value(), CookieValue::kInvalid);
+  if (force_creation) {
+    cookie_value_ = cookie_value;
+    // Cancel any ongoing operation and set the cookie immediately.
+    pending_cookie_update_ = absl::nullopt;
+    SetCookieValue(signin_client_->GetCookieManager(), cookie_value_.value());
+    return;
+  }
+
+  // When creation is not forced, skip the update if the cookie already has the
+  // desired value or if it is missing, based on the last-known value. This is
+  // an optimisation to avoid querying the cookie repeatedly.
+  if (!cookie_value_ || cookie_value_ == cookie_value) {
+    pending_cookie_update_ = absl::nullopt;
+    return;
+  }
+
+  // Query the cookie, and set it only if it exists and has a different value.
+  // Override the pending value if there is already a query in progress,
+  // otherwise start a new query.
+  bool has_pending_update = pending_cookie_update_.has_value();
+  pending_cookie_update_ = cookie_value;
+
+  if (has_pending_update)
+    return;
+
+  net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
+  options.set_exclude_httponly();
+  signin_client_->GetCookieManager()->GetCookieList(
+      GaiaUrls::GetInstance()->gaia_url(), options,
+      net::CookiePartitionKeyCollection(),
+      base::BindOnce(&ConsistencyCookieManager::UpdateCookieIfExists,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void ConsistencyCookieManager::UpdateCookieIfExists(
+    const net::CookieAccessResultList& cookie_list,
+    const net::CookieAccessResultList& /*excluded_cookies*/) {
+  // If the current operation was canceled, return immediately. `cookie_value_`
+  // must not be updated now, as there is a possible race condition between
+  // `GetCookieList()` and `SetCanonicalCookie()`.
+  if (!pending_cookie_update_)
+    return;
+
+  // Compute the current value of the cookie.
+  auto it = std::find_if(cookie_list.cbegin(), cookie_list.cend(),
+                         [](const net::CookieWithAccessResult& result) {
+                           return IsConsistencyCookie(result.cookie);
+                         });
+  absl::optional<CookieValue> current_value =
+      (it == cookie_list.cend())
+          ? absl::nullopt
+          : absl::make_optional(ParseCookieValue(it->cookie.Value()));
+
+  CookieValue target_value = pending_cookie_update_.value();
+  DCHECK_NE(target_value, CookieValue::kInvalid);
+  pending_cookie_update_ = absl::nullopt;
+  if (!current_value || current_value.value() == target_value) {
+    // The cookie does not exist or already matches.
+    cookie_value_ = current_value;
+    return;
+  }
+  cookie_value_ = target_value;
+  SetCookieValue(signin_client_->GetCookieManager(), target_value);
 }
 
 }  // namespace signin

@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/signin/core/browser/account_reconcilor.h"
+#include "net/cookies/canonical_cookie.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network::mojom {
@@ -26,6 +27,9 @@ namespace signin {
 // adding an account to the OS account manager.
 // The value of the cookie depends on the state of the `AccountReconcilor` and
 // whether there is a native account addition flow in progress.
+// The cookie is updated only if it already exists. The cookie creation is only
+// forced when a `ScopedAccountUpdate` is created, which indicates an explicit
+// navigation to Gaia.
 class ConsistencyCookieManager : public AccountReconcilor::Observer {
  public:
   // Sets the cookie state to "Updating" while it's alive.
@@ -61,6 +65,10 @@ class ConsistencyCookieManager : public AccountReconcilor::Observer {
   // the account has been added to the `IdentityManager`.
   ScopedAccountUpdate CreateScopedAccountUpdate();
 
+  // Creates the `CanonicalCookie` corresponding to the consistency cookie.
+  static std::unique_ptr<net::CanonicalCookie> CreateConsistencyCookie(
+      const std::string& value);
+
  private:
   friend class ConsistencyCookieManagerTest;
   FRIEND_TEST_ALL_PREFIXES(ConsistencyCookieManagerTest, MoveOperations);
@@ -70,8 +78,19 @@ class ConsistencyCookieManager : public AccountReconcilor::Observer {
                            ScopedAccountUpdate_Inactive);
   FRIEND_TEST_ALL_PREFIXES(ConsistencyCookieManagerTest,
                            UpdateAfterDestruction);
+  FRIEND_TEST_ALL_PREFIXES(ConsistencyCookieManagerTest, FirstCookieUpdate);
+  FRIEND_TEST_ALL_PREFIXES(ConsistencyCookieManagerTest, CookieDeleted);
+  FRIEND_TEST_ALL_PREFIXES(ConsistencyCookieManagerTest, CookieInvalid);
+  FRIEND_TEST_ALL_PREFIXES(ConsistencyCookieManagerTest, CookieAlreadySet);
+  FRIEND_TEST_ALL_PREFIXES(ConsistencyCookieManagerTest, CoalesceCookieQueries);
+  FRIEND_TEST_ALL_PREFIXES(ConsistencyCookieManagerTest, CancelPendingQuery);
 
-  enum class CookieValue { kConsistent, kInconsistent, kUpdating };
+  enum class CookieValue {
+    kConsistent,    // Value is "Consistent".
+    kInconsistent,  // Value is "Inconsistent".
+    kUpdating,      // Value is "Updating".
+    kInvalid        // Any other value.
+  };
 
   // Cookie name and values.
   static const char kCookieName[];
@@ -79,25 +98,50 @@ class ConsistencyCookieManager : public AccountReconcilor::Observer {
   static const char kCookieValueStringInconsistent[];
   static const char kCookieValueStringUpdating[];
 
+  // Returns whether `cookie` is the consistency cookie.
+  static bool IsConsistencyCookie(const net::CanonicalCookie& cookie);
+
+  // Parses the cookie value from its string representation.
+  static CookieValue ParseCookieValue(const std::string& value);
+
   // Sets the cookie to match `value`.
-  static void UpdateCookie(network::mojom::CookieManager* cookie_manager,
-                           CookieValue value);
+  static void SetCookieValue(network::mojom::CookieManager* cookie_manager,
+                             CookieValue value);
 
   // AccountReconcilor::Observer:
   void OnStateChanged(signin_metrics::AccountReconcilorState state) override;
 
   // Calculates the cookie value based on the reconcilor state and the count of
-  // live `ScopedAccountUpdate` instances.
+  // live `ScopedAccountUpdate` instances. Returns `absl::nullopt` if the value
+  // cannot be computed (e.g. if the reconcilor is not started).
   absl::optional<CookieValue> CalculateCookieValue() const;
 
   // Gets the new value using `CalculateCookieValue()` and sets the cookie if it
-  // changed.
-  void UpdateCookieIfNeeded();
+  // changed. If `force_creation` is false, triggers a cookie query, as it
+  // should only be updated if it already exists.
+  void UpdateCookieIfNeeded(bool force_creation);
+
+  // Callback for `CookieManager::GetCookieList()`. Updates the cached value of
+  // the cookie, and updates the cookie only if the cookie already exists.
+  void UpdateCookieIfExists(
+      const net::CookieAccessResultList& cookie_list,
+      const net::CookieAccessResultList& /*excluded_cookies*/);
 
   SigninClient* const signin_client_;
   AccountReconcilor* const account_reconcilor_;
-  absl::optional<CookieValue> cookie_value_ = absl::nullopt;
+  signin_metrics::AccountReconcilorState account_reconcilor_state_ =
+      signin_metrics::ACCOUNT_RECONCILOR_INACTIVE;
   int scoped_update_count_ = 0;
+
+  // Cached value of the cookie, equal to the last value that was either set or
+  // queried. `absl::nullopt` when the cookie is missing. Initialized as
+  // `CookieValue::kInvalid` so that the first cookie update is always tried,
+  // but should never be set to `CookieValue::kInvalid` after that.
+  absl::optional<CookieValue> cookie_value_ = CookieValue::kInvalid;
+
+  // Pending cookie update, applied after querying the cookie value. The pending
+  // update is only applied if the cookie already exists.
+  absl::optional<CookieValue> pending_cookie_update_;
 
   base::ScopedObservation<AccountReconcilor, AccountReconcilor::Observer>
       account_reconcilor_observation_{this};

@@ -190,6 +190,13 @@ AccountReconcilor::AccountReconcilor(
   DCHECK(delegate_);
   delegate_->set_reconcilor(this);
   timeout_ = delegate_->GetReconcileTimeout();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles)) {
+    consistency_cookie_manager_ =
+        std::make_unique<signin::ConsistencyCookieManager>(client_, this);
+  }
+#endif
 }
 
 AccountReconcilor::~AccountReconcilor() {
@@ -808,14 +815,6 @@ bool AccountReconcilor::IsReconcileBlocked() const {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 signin::ConsistencyCookieManager*
 AccountReconcilor::GetConsistencyCookieManager() {
-  if (base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles) &&
-      !consistency_cookie_manager_) {
-    // TODO(https://crbug.com/1260291): Instantiate the ConsistencyCookieManager
-    // at creation of the AccountReconcilor, once the cookie can be cleared
-    // correctly.
-    consistency_cookie_manager_ =
-        std::make_unique<signin::ConsistencyCookieManager>(client_, this);
-  }
   return consistency_cookie_manager_.get();
 }
 #endif
