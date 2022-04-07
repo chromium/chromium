@@ -74,12 +74,12 @@ class StatsCollector final {
     using PerThreadEvents =
         std::array<DeferredTraceEvent, static_cast<size_t>(IdType::kNumIds)>;
     using UnderlyingMap = std::unordered_map<
-        base::PlatformThreadId,
+        ::base::PlatformThreadId,
         PerThreadEvents,
-        std::hash<base::PlatformThreadId>,
+        std::hash<::base::PlatformThreadId>,
         std::equal_to<>,
         MetadataAllocator<
-            std::pair<const base::PlatformThreadId, PerThreadEvents>>>;
+            std::pair<const ::base::PlatformThreadId, PerThreadEvents>>>;
 
     inline void RegisterBeginEventFromCurrentThread(IdType id);
     inline void RegisterEndEventFromCurrentThread(IdType id);

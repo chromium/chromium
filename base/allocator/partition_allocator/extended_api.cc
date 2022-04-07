@@ -36,14 +36,14 @@ void EnablePartitionAllocThreadCacheForRootIfDisabled(
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 void DisablePartitionAllocThreadCacheForProcess() {
-  auto* regular_allocator = base::internal::PartitionAllocMalloc::Allocator();
+  auto* regular_allocator = ::base::internal::PartitionAllocMalloc::Allocator();
   auto* aligned_allocator =
-      base::internal::PartitionAllocMalloc::AlignedAllocator();
+      ::base::internal::PartitionAllocMalloc::AlignedAllocator();
   DisableThreadCacheForRootIfEnabled(regular_allocator);
   if (aligned_allocator != regular_allocator)
     DisableThreadCacheForRootIfEnabled(aligned_allocator);
   DisableThreadCacheForRootIfEnabled(
-      base::internal::PartitionAllocMalloc::OriginalAllocator());
+      ::base::internal::PartitionAllocMalloc::OriginalAllocator());
 }
 #endif  // defined(USE_PARTITION_ALLOC_AS_MALLOC)
 
@@ -73,7 +73,7 @@ void SwapInProcessThreadCacheForTesting(ThreadSafePartitionRoot* root) {
   DisableThreadCacheForRootIfEnabled(root);
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  auto* regular_allocator = base::internal::PartitionAllocMalloc::Allocator();
+  auto* regular_allocator = ::base::internal::PartitionAllocMalloc::Allocator();
   EnablePartitionAllocThreadCacheForRootIfDisabled(regular_allocator);
 
   ThreadCache::SwapForTesting(regular_allocator);

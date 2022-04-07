@@ -38,6 +38,7 @@
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
 #include "base/allocator/partition_allocator/allocation_guard.h"
+#include "base/allocator/partition_allocator/base/bits.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
@@ -63,7 +64,6 @@
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/base_export.h"
-#include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -620,7 +620,8 @@ struct ALIGNAS(64) BASE_EXPORT PartitionRoot {
     // limit before calling. This also guards against integer overflow in the
     // calculation here.
     PA_DCHECK(raw_size <= MaxDirectMapped());
-    return bits::AlignUp(raw_size, SystemPageSize());
+    return partition_alloc::internal::base::bits::AlignUp(raw_size,
+                                                          SystemPageSize());
   }
 
   static ALWAYS_INLINE size_t
@@ -629,7 +630,7 @@ struct ALIGNAS(64) BASE_EXPORT PartitionRoot {
     // limit before calling. This also guards against integer overflow in the
     // calculation here.
     PA_DCHECK(padded_raw_size <= MaxDirectMapped());
-    return bits::AlignUp(
+    return partition_alloc::internal::base::bits::AlignUp(
         padded_raw_size + GetDirectMapMetadataAndGuardPagesSize(),
         DirectMapAllocationGranularity());
   }
@@ -998,8 +999,9 @@ PartitionRoot<thread_safe>::AllocFromBucket(Bucket* bucket,
                                             size_t slot_span_alignment,
                                             size_t* usable_size,
                                             bool* is_already_zeroed) {
-  PA_DCHECK((slot_span_alignment >= PartitionPageSize()) &&
-            bits::IsPowerOfTwo(slot_span_alignment));
+  PA_DCHECK(
+      (slot_span_alignment >= PartitionPageSize()) &&
+      partition_alloc::internal::base::bits::IsPowerOfTwo(slot_span_alignment));
   SlotSpan* slot_span = bucket->active_slot_spans_head;
   // There always must be a slot span on the active list (could be a sentinel).
   PA_DCHECK(slot_span);
@@ -1594,8 +1596,9 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlagsInternal(
     size_t requested_size,
     size_t slot_span_alignment,
     const char* type_name) {
-  PA_DCHECK((slot_span_alignment >= PartitionPageSize()) &&
-            bits::IsPowerOfTwo(slot_span_alignment));
+  PA_DCHECK(
+      (slot_span_alignment >= PartitionPageSize()) &&
+      partition_alloc::internal::base::bits::IsPowerOfTwo(slot_span_alignment));
 
   PA_DCHECK(flags < AllocFlags::kLastFlag << 1);
   PA_DCHECK((flags & AllocFlags::kNoHooks) == 0);  // Internal only.
@@ -1636,8 +1639,9 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlagsNoHooks(
     int flags,
     size_t requested_size,
     size_t slot_span_alignment) {
-  PA_DCHECK((slot_span_alignment >= PartitionPageSize()) &&
-            bits::IsPowerOfTwo(slot_span_alignment));
+  PA_DCHECK(
+      (slot_span_alignment >= PartitionPageSize()) &&
+      partition_alloc::internal::base::bits::IsPowerOfTwo(slot_span_alignment));
 
   // The thread cache is added "in the middle" of the main allocator, that is:
   // - After all the cookie/ref-count management
@@ -1861,7 +1865,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AlignedAllocWithFlags(
   PA_DCHECK(allow_aligned_alloc);
   PA_DCHECK(!extras_offset);
   // This is mandated by |posix_memalign()|, so should never fire.
-  PA_CHECK(base::bits::IsPowerOfTwo(alignment));
+  PA_CHECK(partition_alloc::internal::base::bits::IsPowerOfTwo(alignment));
   // Catch unsupported alignment requests early.
   PA_CHECK(alignment <= kMaxSupportedAlignment);
   size_t raw_size = AdjustSizeForExtrasAdd(requested_size);
@@ -1877,11 +1881,13 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AlignedAllocWithFlags(
       // PartitionAlloc only guarantees alignment for power-of-two sized
       // allocations. To make sure this applies here, round up the allocation
       // size.
-      raw_size = static_cast<size_t>(1)
-                 << (sizeof(size_t) * 8 -
-                     base::bits::CountLeadingZeroBits(raw_size - 1));
+      raw_size =
+          static_cast<size_t>(1)
+          << (sizeof(size_t) * 8 -
+              partition_alloc::internal::base::bits::CountLeadingZeroBits(
+                  raw_size - 1));
     }
-    PA_DCHECK(base::bits::IsPowerOfTwo(raw_size));
+    PA_DCHECK(partition_alloc::internal::base::bits::IsPowerOfTwo(raw_size));
     // Adjust back, because AllocWithFlagsNoHooks/Alloc will adjust it again.
     adjusted_size = AdjustSizeForExtrasSubtract(raw_size);
 

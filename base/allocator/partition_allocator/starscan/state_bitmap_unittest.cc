@@ -19,16 +19,16 @@ using TestBitmap = StateBitmap<kSuperPageSize, kSuperPageSize, kAlignment>;
 class PageWithBitmap final {
  public:
   PageWithBitmap()
-      : base_(base::AllocPages(kSuperPageSize,
-                               kSuperPageAlignment,
-                               PageAccessibilityConfiguration::kReadWrite,
-                               PageTag::kPartitionAlloc)),
+      : base_(AllocPages(kSuperPageSize,
+                         kSuperPageAlignment,
+                         PageAccessibilityConfiguration::kReadWrite,
+                         PageTag::kPartitionAlloc)),
         bitmap_(new (reinterpret_cast<void*>(base_)) TestBitmap) {}
 
   PageWithBitmap(const PageWithBitmap&) = delete;
   PageWithBitmap& operator=(const PageWithBitmap&) = delete;
 
-  ~PageWithBitmap() { base::FreePages(base_, kSuperPageSize); }
+  ~PageWithBitmap() { FreePages(base_, kSuperPageSize); }
 
   TestBitmap& bitmap() const { return *bitmap_; }
 

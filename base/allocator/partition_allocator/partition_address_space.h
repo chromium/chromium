@@ -11,6 +11,7 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
+#include "base/allocator/partition_allocator/base/bits.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
@@ -19,7 +20,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/base_export.h"
-#include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"

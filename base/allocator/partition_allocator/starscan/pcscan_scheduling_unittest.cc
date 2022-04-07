@@ -4,6 +4,7 @@
 
 #include "base/allocator/partition_allocator/starscan/pcscan_scheduling.h"
 
+#include "base/allocator/partition_allocator/base/migration_adapter.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
@@ -11,6 +12,18 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace partition_alloc::internal {
+
+namespace base {
+
+using ::base::TimeTicksNowFunction;
+
+namespace subtle {
+
+using ::base::subtle::ScopedTimeClockOverrides;
+
+}  // namespace subtle
+
+}  // namespace base
 
 namespace {
 constexpr size_t kMB = 1024 * 1024;

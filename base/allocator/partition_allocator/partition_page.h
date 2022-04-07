@@ -5,15 +5,15 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_PAGE_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_PAGE_H_
 
-#include <string.h>
-
 #include <cstdint>
+#include <cstring>
 #include <limits>
 #include <utility>
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/address_pool_manager.h"
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
+#include "base/allocator/partition_allocator/base/bits.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -25,7 +25,6 @@
 #include "base/allocator/partition_allocator/starscan/state_bitmap.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/base_export.h"
-#include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/thread_annotations.h"

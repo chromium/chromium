@@ -9,12 +9,12 @@
 #include <cstdint>
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc-inl.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
-#include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/immediate_crash.h"

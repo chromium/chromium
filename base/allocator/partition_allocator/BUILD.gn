@@ -55,6 +55,8 @@ target(partition_alloc_target_type, "partition_alloc") {
     "address_space_stats.h",
     "allocation_guard.cc",
     "allocation_guard.h",
+    "base/bits.h",
+    "base/migration_adapter.h",
     "dangling_raw_ptr_checks.cc",
     "dangling_raw_ptr_checks.h",
     "extended_api.cc",

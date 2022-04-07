@@ -30,6 +30,17 @@
 
 namespace partition_alloc::internal {
 
+namespace base {
+
+// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
+// the migration to the new namespaces gets done.
+using ::base::BindOnce;
+using ::base::OnceCallback;
+using ::base::StringPrintf;
+using ::base::Unretained;
+
+}  // namespace base
+
 namespace {
 
 // Change kTimeLimit to something higher if you need more time to capture a

@@ -8,6 +8,7 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
+#include "base/allocator/partition_allocator/base/bits.h"
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
@@ -21,8 +22,6 @@
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/allocator/partition_allocator/tagging.h"
-#include "base/base_export.h"
-#include "base/bits.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)

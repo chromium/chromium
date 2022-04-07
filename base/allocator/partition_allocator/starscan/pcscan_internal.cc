@@ -20,6 +20,7 @@
 #include "base/allocator/partition_allocator/address_pool_manager.h"
 #include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
 #include "base/allocator/partition_allocator/allocation_guard.h"
+#include "base/allocator/partition_allocator/base/bits.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
@@ -39,7 +40,6 @@
 #include "base/allocator/partition_allocator/starscan/stats_reporter.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
-#include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/cpu.h"
 #include "base/debug/alias.h"
@@ -63,6 +63,11 @@
 #endif
 
 namespace partition_alloc::internal {
+
+namespace base {
+using ::base::MakeRefCounted;
+using ::base::RefCountedThreadSafe;
+}  // namespace base
 
 [[noreturn]] NOINLINE NOT_TAIL_CALLED void DoubleFreeAttempt() {
   NO_CODE_FOLDING();
@@ -344,8 +349,9 @@ class SuperPageSnapshot final {
   static constexpr size_t kStateBitmapMinReservedSize =
       __builtin_constant_p(ReservedStateBitmapSize())
           ? ReservedStateBitmapSize()
-          : base::bits::AlignUp(sizeof(AllocationStateMap),
-                                kMinPartitionPageSize);
+          : partition_alloc::internal::base::bits::AlignUp(
+                sizeof(AllocationStateMap),
+                kMinPartitionPageSize);
   // Take into account guard partition page at the end of super-page.
   static constexpr size_t kGuardPagesSize = 2 * kMinPartitionPageSize;
 
@@ -1560,14 +1566,16 @@ void PCScanInternal::ProtectPages(uintptr_t begin, size_t size) {
   // slot-spans doesn't need to be protected (the allocator will enter the
   // safepoint before trying to allocate from it).
   PA_SCAN_DCHECK(write_protector_.get());
-  write_protector_->ProtectPages(begin,
-                                 base::bits::AlignUp(size, SystemPageSize()));
+  write_protector_->ProtectPages(
+      begin,
+      partition_alloc::internal::base::bits::AlignUp(size, SystemPageSize()));
 }
 
 void PCScanInternal::UnprotectPages(uintptr_t begin, size_t size) {
   PA_SCAN_DCHECK(write_protector_.get());
-  write_protector_->UnprotectPages(begin,
-                                   base::bits::AlignUp(size, SystemPageSize()));
+  write_protector_->UnprotectPages(
+      begin,
+      partition_alloc::internal::base::bits::AlignUp(size, SystemPageSize()));
 }
 
 void PCScanInternal::ClearRootsForTesting() {

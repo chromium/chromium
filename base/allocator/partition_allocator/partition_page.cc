@@ -9,6 +9,7 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/address_pool_manager.h"
+#include "base/allocator/partition_allocator/base/bits.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
@@ -20,7 +21,6 @@
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/tagging.h"
-#include "base/bits.h"
 #include "base/dcheck_is_on.h"
 
 namespace partition_alloc::internal {

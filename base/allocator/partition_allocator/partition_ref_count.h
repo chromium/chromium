@@ -308,7 +308,7 @@ ALWAYS_INLINE PartitionRefCount::PartitionRefCount()
 
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
 
-static_assert(base::kAlignment % alignof(PartitionRefCount) == 0,
+static_assert(kAlignment % alignof(PartitionRefCount) == 0,
               "kAlignment must be multiples of alignof(PartitionRefCount).");
 
 // Allocate extra space for the reference count to satisfy the alignment
@@ -355,7 +355,7 @@ ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(
 
 // Allocate extra space for the reference count to satisfy the alignment
 // requirement.
-static constexpr size_t kInSlotRefCountBufferSize = base::kAlignment;
+static constexpr size_t kInSlotRefCountBufferSize = kAlignment;
 constexpr size_t kPartitionRefCountOffsetAdjustment = kInSlotRefCountBufferSize;
 
 // This is for adjustment of pointers right past the allocation, which may point

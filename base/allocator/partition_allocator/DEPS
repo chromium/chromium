@@ -8,7 +8,6 @@ include_rules = [
     "+base/allocator/buildflags.h",
     "+base/base_export.h",
     "+base/bind.h",
-    "+base/bits.h",
     "+base/callback.h",
     "+base/check.h",
     "+base/check_op.h",

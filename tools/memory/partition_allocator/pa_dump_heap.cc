@@ -14,6 +14,7 @@
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
+#include "base/bits.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file.h"
@@ -69,10 +70,10 @@ class HeapDumper {
     //
     // Copy at the same address as in the remote process. Since the root is not
     // page-aligned in the remote process, need to pad the mapping a bit.
-    size_t size_to_map = base::bits::AlignUp(
+    size_t size_to_map = ::base::bits::AlignUp(
         sizeof(PartitionRoot<ThreadSafe>) + SystemPageSize(), SystemPageSize());
     uintptr_t address_to_map =
-        base::bits::AlignDown(root_address_, SystemPageSize());
+        ::base::bits::AlignDown(root_address_, SystemPageSize());
     char* local_memory = CreateMappingAtAddress(address_to_map, size_to_map);
     if (!local_memory) {
       LOG(WARNING) << base::StringPrintf(

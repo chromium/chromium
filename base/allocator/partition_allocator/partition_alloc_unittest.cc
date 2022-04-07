@@ -4,12 +4,11 @@
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
 
-#include <stdlib.h>
-#include <string.h>
-
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <cstdlib>
+#include <cstring>
 #include <iostream>
 #include <limits>
 #include <memory>
@@ -19,6 +18,7 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/address_space_randomization.h"
+#include "base/allocator/partition_allocator/base/bits.h"
 #include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
@@ -32,7 +32,6 @@
 #include "base/allocator/partition_allocator/partition_tag_bitmap.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/tagging.h"
-#include "base/bits.h"
 #include "base/cpu.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
@@ -226,8 +225,9 @@ const size_t kExtraAllocSize = kInSlotRefCountBufferSize;
 const size_t kPointerOffset = kPartitionRefCountOffsetAdjustment;
 const size_t kExtraAllocSize = kCookieSize + kInSlotRefCountBufferSize;
 #endif
-const size_t kRealAllocSize =
-    bits::AlignUp(kTestAllocSize + kExtraAllocSize, kAlignment);
+const size_t kRealAllocSize = partition_alloc::internal::base::bits::AlignUp(
+    kTestAllocSize + kExtraAllocSize,
+    kAlignment);
 
 const char* type_name = nullptr;
 
@@ -901,13 +901,17 @@ TEST_P(PartitionAllocTest, Alloc) {
   allocator.root()->Free(ptr);
 
   // To make both alloc(x + 1) and alloc(x + kSmallestBucket) to allocate from
-  // the same bucket, bits::AlignUp(1 + x + kExtraAllocSize, base::kAlignment)
-  // == bits::AlignUp(kSmallestBucket + x + kExtraAllocSize, base::kAlignment),
-  // because slot_size is multiples of base::kAlignment.
-  // So (x + kExtraAllocSize) must be multiples of base::kAlignment.
-  // x = bits::AlignUp(kExtraAllocSize, base::kAlignment) - kExtraAllocSize;
-  size_t base_size =
-      bits::AlignUp(kExtraAllocSize, base::kAlignment) - kExtraAllocSize;
+  // the same bucket, partition_alloc::internal::base::bits::AlignUp(1 + x +
+  // kExtraAllocSize, base::kAlignment)
+  // == partition_alloc::internal::base::bits::AlignUp(kSmallestBucket + x +
+  // kExtraAllocSize, base::kAlignment), because slot_size is multiples of
+  // base::kAlignment. So (x + kExtraAllocSize) must be multiples of
+  // base::kAlignment. x =
+  // partition_alloc::internal::base::bits::AlignUp(kExtraAllocSize,
+  // base::kAlignment) - kExtraAllocSize;
+  size_t base_size = partition_alloc::internal::base::bits::AlignUp(
+                         kExtraAllocSize, base::kAlignment) -
+                     kExtraAllocSize;
   ptr = allocator.root()->Alloc(base_size + 1, type_name);
   EXPECT_TRUE(ptr);
   void* orig_ptr = ptr;
@@ -1204,7 +1208,8 @@ TEST_P(PartitionAllocTest, AllocGetSizeAndStart) {
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
 TEST_P(PartitionAllocTest, IsValidPtrDelta) {
   const size_t kMinReasonableTestSize =
-      base::bits::AlignUp(kExtraAllocSize + 1, base::kAlignment);
+      partition_alloc::internal::base::bits::AlignUp(kExtraAllocSize + 1,
+                                                     base::kAlignment);
   ASSERT_GT(kMinReasonableTestSize, kExtraAllocSize);
   const size_t kSizes[] = {kMinReasonableTestSize,
                            256,
@@ -2190,7 +2195,8 @@ TEST_P(PartitionAllocDeathTest, DirectMapGuardPages) {
   const size_t kSizes[] = {
       kMaxBucketed + kExtraAllocSize + 1, kMaxBucketed + SystemPageSize(),
       kMaxBucketed + PartitionPageSize(),
-      bits::AlignUp(kMaxBucketed + kSuperPageSize, kSuperPageSize) -
+      partition_alloc::internal::base::bits::AlignUp(
+          kMaxBucketed + kSuperPageSize, kSuperPageSize) -
           PartitionRoot<ThreadSafe>::GetDirectMapMetadataAndGuardPagesSize()};
   for (size_t size : kSizes) {
     ASSERT_GT(size, kMaxBucketed);
@@ -2203,7 +2209,9 @@ TEST_P(PartitionAllocDeathTest, DirectMapGuardPages) {
     char* char_ptr = reinterpret_cast<char*>(ptr) - kPointerOffset;
 
     EXPECT_DEATH(*(char_ptr - 1) = 'A', "");
-    EXPECT_DEATH(*(char_ptr + bits::AlignUp(size, SystemPageSize())) = 'A', "");
+    EXPECT_DEATH(*(char_ptr + partition_alloc::internal::base::bits::AlignUp(
+                                  size, SystemPageSize())) = 'A',
+                 "");
 
     allocator.root()->Free(ptr);
   }
@@ -3494,7 +3502,8 @@ TEST_P(PartitionAllocTest, Bookkeeping) {
     ASSERT_GT(huge_size, kMaxBucketed);
     for (size_t alignment : alignments) {
       // For direct map, we commit only as many pages as needed.
-      size_t aligned_size = bits::AlignUp(huge_size, SystemPageSize());
+      size_t aligned_size = partition_alloc::internal::base::bits::AlignUp(
+          huge_size, SystemPageSize());
       ptr = root.AllocWithFlagsInternal(0, huge_size - kExtraAllocSize,
                                         alignment, type_name);
       expected_committed_size += aligned_size;
@@ -3510,8 +3519,9 @@ TEST_P(PartitionAllocTest, Bookkeeping) {
           PartitionRoot<ThreadSafe>::GetDirectMapMetadataAndGuardPagesSize() +
           alignment - PartitionPageSize();
       size_t expected_direct_map_size =
-          bits::AlignUp(aligned_size + surrounding_pages_size,
-                        DirectMapAllocationGranularity());
+          partition_alloc::internal::base::bits::AlignUp(
+              aligned_size + surrounding_pages_size,
+              DirectMapAllocationGranularity());
       EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
       EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages);
       EXPECT_EQ(expected_total_allocated_size,
@@ -4009,14 +4019,16 @@ TEST_P(PartitionAllocTest, CheckReservationType) {
   EXPECT_TRUE(IsManagedByNormalBuckets(address_to_check));
   EXPECT_FALSE(IsManagedByDirectMap(address_to_check));
   EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(address_to_check));
-  address_to_check = bits::AlignDown(address, kSuperPageSize);
+  address_to_check =
+      partition_alloc::internal::base::bits::AlignDown(address, kSuperPageSize);
   EXPECT_TRUE(IsReservationStart(address_to_check));
   EXPECT_TRUE(IsManagedByNormalBuckets(address_to_check));
   EXPECT_FALSE(IsManagedByDirectMap(address_to_check));
   EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(address_to_check));
   allocator.root()->Free(ptr);
   // Freeing keeps a normal-bucket super page in memory.
-  address_to_check = bits::AlignDown(address, kSuperPageSize);
+  address_to_check =
+      partition_alloc::internal::base::bits::AlignDown(address, kSuperPageSize);
   EXPECT_TRUE(IsReservationStart(address_to_check));
   EXPECT_TRUE(IsManagedByNormalBuckets(address_to_check));
   EXPECT_FALSE(IsManagedByDirectMap(address_to_check));
@@ -4032,7 +4044,8 @@ TEST_P(PartitionAllocTest, CheckReservationType) {
   EXPECT_FALSE(IsManagedByNormalBuckets(address_to_check));
   EXPECT_TRUE(IsManagedByDirectMap(address_to_check));
   EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(address_to_check));
-  address_to_check = bits::AlignUp(address, kSuperPageSize);
+  address_to_check =
+      partition_alloc::internal::base::bits::AlignUp(address, kSuperPageSize);
   EXPECT_FALSE(IsReservationStart(address_to_check));
   EXPECT_FALSE(IsManagedByNormalBuckets(address_to_check));
   EXPECT_TRUE(IsManagedByDirectMap(address_to_check));
@@ -4042,14 +4055,16 @@ TEST_P(PartitionAllocTest, CheckReservationType) {
   EXPECT_FALSE(IsManagedByNormalBuckets(address_to_check));
   EXPECT_TRUE(IsManagedByDirectMap(address_to_check));
   EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(address_to_check));
-  address_to_check = bits::AlignDown(address, kSuperPageSize);
+  address_to_check =
+      partition_alloc::internal::base::bits::AlignDown(address, kSuperPageSize);
   EXPECT_TRUE(IsReservationStart(address_to_check));
   EXPECT_FALSE(IsManagedByNormalBuckets(address_to_check));
   EXPECT_TRUE(IsManagedByDirectMap(address_to_check));
   EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(address_to_check));
   allocator.root()->Free(ptr);
   // Freeing releases direct-map super pages.
-  address_to_check = bits::AlignDown(address, kSuperPageSize);
+  address_to_check =
+      partition_alloc::internal::base::bits::AlignDown(address, kSuperPageSize);
 #if DCHECK_IS_ON()
   // Expect to DCHECK on unallocated region.
   EXPECT_DEATH_IF_SUPPORTED(IsReservationStart(address_to_check), "");
@@ -4255,7 +4270,7 @@ TEST_P(PartitionAllocTest, ConfigurablePool) {
   const size_t min_pool_size = PartitionAddressSpace::ConfigurablePoolMinSize();
   for (size_t pool_size = max_pool_size; pool_size >= min_pool_size;
        pool_size /= 2) {
-    DCHECK(bits::IsPowerOfTwo(pool_size));
+    DCHECK(partition_alloc::internal::base::bits::IsPowerOfTwo(pool_size));
     EXPECT_FALSE(IsConfigurablePoolAvailable());
     uintptr_t pool_base = AllocPages(
         pool_size, pool_size, PageAccessibilityConfiguration::kInaccessible,

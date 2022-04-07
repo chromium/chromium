@@ -4,6 +4,7 @@
 
 #include "base/allocator/partition_allocator/partition_lock.h"
 
+#include "base/allocator/partition_allocator/base/migration_adapter.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/test/bind.h"
@@ -14,6 +15,17 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace partition_alloc::internal {
+
+namespace base {
+
+// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
+// the migration to the new namespaces gets done.
+using ::base::BindLambdaForTesting;
+using ::base::OnceCallback;
+using ::base::RepeatingClosure;
+
+}  // namespace base
+
 namespace {
 
 class LambdaThreadDelegate : public base::PlatformThread::Delegate {

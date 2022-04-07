@@ -7,9 +7,9 @@
 #include <cstdint>
 
 #include "base/allocator/partition_allocator/address_space_stats.h"
+#include "base/allocator/partition_allocator/base/bits.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#include "base/bits.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -131,7 +131,7 @@ TEST_F(PartitionAllocAddressPoolManagerTest, GetUsedSuperpages) {
   }
   EXPECT_EQ(GetAddressPoolManager()->Reserve(pool_, 0, kSuperPageSize), 0u);
 
-  std::bitset<base::kMaxSuperPagesInPool> used_super_pages;
+  std::bitset<kMaxSuperPagesInPool> used_super_pages;
   GetAddressPoolManager()->GetPoolUsedSuperPages(pool_, used_super_pages);
 
   // We expect every bit to be set.
