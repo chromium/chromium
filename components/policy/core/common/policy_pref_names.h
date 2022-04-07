@@ -38,6 +38,9 @@ POLICY_EXPORT extern const char kBackForwardCacheEnabled[];
 #endif  // BUILDFLAG(IS_ANDROID)
 POLICY_EXPORT extern const char kIsolatedAppsDeveloperModeAllowed[];
 POLICY_EXPORT extern const char kWebSQLAccess[];
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+POLICY_EXPORT extern const char kLastPolicyCheckTime[];
+#endif
 
 }  // namespace policy_prefs
 }  // namespace policy

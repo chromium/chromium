@@ -12,6 +12,7 @@
 
 namespace policy {
 class SchemaRegistry;
+class UserCloudPolicyManager;
 }
 
 namespace sync_preferences {
@@ -40,6 +41,7 @@ class ChromeBrowserStateImpl final : public ChromeBrowserState {
   void DestroyOffTheRecordChromeBrowserState() override;
   PrefProxyConfigTracker* GetProxyConfigTracker() override;
   BrowserStatePolicyConnector* GetPolicyConnector() override;
+  policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override;
   PrefService* GetPrefs() override;
   ChromeBrowserStateIOData* GetIOData() override;
   void ClearNetworkingHistorySince(base::Time time,
@@ -78,8 +80,10 @@ class ChromeBrowserStateImpl final : public ChromeBrowserState {
   //  happens in reverse order of declaration.
 
   // |policy_connector_| and its associated |policy_schema_registry_| must
-  // outlive |prefs_|.
+  // outlive |prefs_|. |policy_connector_| depends on the policy provider
+  // |user_cloud_policy_manager_| which depends on |policy_schema_registry_|.
   std::unique_ptr<policy::SchemaRegistry> policy_schema_registry_;
+  std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
   std::unique_ptr<BrowserStatePolicyConnector> policy_connector_;
 
   // Keep |prefs_| above the rest for destruction order because |io_data_| and

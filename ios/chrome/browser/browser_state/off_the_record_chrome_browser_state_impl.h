@@ -13,6 +13,10 @@ namespace sync_preferences {
 class PrefServiceSyncable;
 }
 
+namespace policy {
+class UserCloudPolicyManager;
+}
+
 // The implementation of ChromeBrowserState that is used for incognito browsing.
 // Each OffTheRecordChromeBrowserStateImpl instance is associated with and owned
 // by a non-incognito ChromeBrowserState instance.
@@ -32,6 +36,7 @@ class OffTheRecordChromeBrowserStateImpl final : public ChromeBrowserState {
   void DestroyOffTheRecordChromeBrowserState() override;
   PrefProxyConfigTracker* GetProxyConfigTracker() override;
   BrowserStatePolicyConnector* GetPolicyConnector() override;
+  policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override;
   PrefService* GetPrefs() override;
   ChromeBrowserStateIOData* GetIOData() override;
   void ClearNetworkingHistorySince(base::Time time,

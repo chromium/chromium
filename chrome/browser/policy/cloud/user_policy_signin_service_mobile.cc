@@ -28,6 +28,7 @@
 #include "components/policy/core/browser/cloud/user_policy_signin_service_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
@@ -121,7 +122,7 @@ void UserPolicySigninService::InitializeOnProfileReady(Profile* profile) {
 }
 
 bool UserPolicySigninService::CanApplyPolicies(bool check_for_refresh_token) {
-  if (!CanApplyPoliciesForSignedInUser(check_for_refresh_token,
+  if (!CanApplyPoliciesForSignedInUser(check_for_refresh_token, consent_level(),
                                        identity_manager())) {
     return false;
   }
@@ -140,7 +141,7 @@ base::TimeDelta UserPolicySigninService::GetTryRegistrationDelay() {
   }
 
   base::Time last_check_time = base::Time::FromInternalValue(
-      profile_prefs_->GetInt64(prefs::kLastPolicyCheckTime));
+      profile_prefs_->GetInt64(policy_prefs::kLastPolicyCheckTime));
   base::Time next_check_time = last_check_time + retry_delay;
 
   // Check immediately if no check was ever done before (last_check_time == 0),
@@ -156,7 +157,7 @@ base::TimeDelta UserPolicySigninService::GetTryRegistrationDelay() {
 
 void UserPolicySigninService::UpdateLastPolicyCheckTime() {
   // Persist the current time as the last policy registration attempt time.
-  profile_->GetPrefs()->SetInt64(prefs::kLastPolicyCheckTime,
+  profile_->GetPrefs()->SetInt64(policy_prefs::kLastPolicyCheckTime,
                                  base::Time::Now().ToInternalValue());
 }
 

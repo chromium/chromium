@@ -1,0 +1,85 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ios/chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
+
+#include "base/memory/ref_counted.h"
+#include "components/keyed_service/ios/browser_state_dependency_manager.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_service.h"
+#include "ios/chrome/browser/application_context.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
+#include "ios/chrome/browser/policy/cloud/user_policy_signin_service.h"
+#include "ios/chrome/browser/signin/identity_manager_factory.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+namespace {
+
+policy::DeviceManagementService* g_device_management_service_for_testing = NULL;
+
+}  // namespace
+
+namespace policy {
+
+UserPolicySigninServiceFactory::UserPolicySigninServiceFactory()
+    : BrowserStateKeyedServiceFactory(
+          "UserPolicySigninService",
+          BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(IdentityManagerFactory::GetInstance());
+}
+
+UserPolicySigninServiceFactory::~UserPolicySigninServiceFactory() {}
+
+// static
+UserPolicySigninService* UserPolicySigninServiceFactory::GetForBrowserState(
+    web::BrowserState* context) {
+  return static_cast<UserPolicySigninService*>(
+      GetInstance()->GetServiceForBrowserState(context, true));
+}
+
+// static
+UserPolicySigninServiceFactory* UserPolicySigninServiceFactory::GetInstance() {
+  return base::Singleton<UserPolicySigninServiceFactory>::get();
+}
+
+// static
+void UserPolicySigninServiceFactory::SetDeviceManagementServiceForTesting(
+    DeviceManagementService* device_management_service) {
+  g_device_management_service_for_testing = device_management_service;
+}
+
+std::unique_ptr<KeyedService>
+UserPolicySigninServiceFactory::BuildServiceInstanceFor(
+    web::BrowserState* browser_state) const {
+  BrowserPolicyConnector* connector =
+      GetApplicationContext()->GetBrowserPolicyConnector();
+  DeviceManagementService* device_management_service =
+      g_device_management_service_for_testing
+          ? g_device_management_service_for_testing
+          : connector->device_management_service();
+
+  ChromeBrowserState* chrome_browser_state =
+      ChromeBrowserState::FromBrowserState(browser_state);
+
+  return std::make_unique<UserPolicySigninService>(
+      chrome_browser_state->GetPrefs(),
+      GetApplicationContext()->GetLocalState(), device_management_service,
+      chrome_browser_state->GetUserCloudPolicyManager(),
+      IdentityManagerFactory::GetForBrowserState(chrome_browser_state),
+      browser_state->GetSharedURLLoaderFactory());
+}
+
+void UserPolicySigninServiceFactory::RegisterBrowserStatePrefs(
+    user_prefs::PrefRegistrySyncable* user_prefs) {
+  user_prefs->RegisterInt64Pref(policy_prefs::kLastPolicyCheckTime, 0);
+}
+
+}  // namespace policy

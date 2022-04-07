@@ -14,6 +14,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -87,7 +88,7 @@ UserPolicySigninServiceFactory::ServiceIsCreatedWithBrowserContext() const {
 void UserPolicySigninServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* user_prefs) {
 #if BUILDFLAG(IS_ANDROID)
-  user_prefs->RegisterInt64Pref(prefs::kLastPolicyCheckTime, 0);
+  user_prefs->RegisterInt64Pref(policy_prefs::kLastPolicyCheckTime, 0);
 #endif
 }
 

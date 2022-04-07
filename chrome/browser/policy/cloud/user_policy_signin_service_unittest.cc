@@ -344,6 +344,9 @@ TEST_F(UserPolicySigninServiceTest, InitWhileSignedOut) {
   ASSERT_FALSE(manager_->core()->service());
 }
 
+// TODO(crbug.com/1312544): Extend the test coverage by merging tests from
+// ios/chrome/browser/policy/cloud/user_policy_signin_service_unittest.mm here.
+
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(UserPolicySigninServiceTest, InitRefreshTokenAvailableBeforeSignin) {
   // Make sure user is not signed in.

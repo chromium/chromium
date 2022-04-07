@@ -20,6 +20,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
+#include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -74,12 +75,14 @@ TestChromeBrowserState::TestChromeBrowserState(
     std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
     TestingFactories testing_factories,
     RefcountedTestingFactories refcounted_testing_factories,
-    std::unique_ptr<BrowserStatePolicyConnector> policy_connector)
+    std::unique_ptr<BrowserStatePolicyConnector> policy_connector,
+    std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager)
     : ChromeBrowserState(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       state_path_(path),
       prefs_(std::move(prefs)),
       testing_prefs_(nullptr),
+      user_cloud_policy_manager_(std::move(user_cloud_policy_manager)),
       policy_connector_(std::move(policy_connector)),
       otr_browser_state_(nullptr),
       original_browser_state_(nullptr) {
@@ -104,6 +107,14 @@ TestChromeBrowserState::~TestChromeBrowserState() {
   // If this TestChromeBrowserState owns an incognito TestChromeBrowserState,
   // tear it down first.
   otr_browser_state_.reset();
+
+  // Here, (1) the browser state services may
+  // depend on `policy_connector_` and `user_cloud_policy_manager_`, and (2)
+  // `policy_connector_` depends on `user_cloud_policy_manager_`. The
+  // dependencies have to be shut down backward.
+  policy_connector_->Shutdown();
+  if (user_cloud_policy_manager_)
+    user_cloud_policy_manager_->Shutdown();
 
   BrowserStateDependencyManager::GetInstance()->DestroyBrowserStateServices(
       this);
@@ -295,13 +306,24 @@ void TestChromeBrowserState::Builder::SetPolicyConnector(
   policy_connector_ = std::move(policy_connector);
 }
 
+void TestChromeBrowserState::Builder::SetUserCloudPolicyManager(
+    std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager) {
+  user_cloud_policy_manager_ = std::move(user_cloud_policy_manager);
+}
+
+policy::UserCloudPolicyManager*
+TestChromeBrowserState::GetUserCloudPolicyManager() {
+  return user_cloud_policy_manager_.get();
+}
+
 std::unique_ptr<TestChromeBrowserState>
 TestChromeBrowserState::Builder::Build() {
   DCHECK(!build_called_);
   build_called_ = true;
   return base::WrapUnique(new TestChromeBrowserState(
       state_path_, std::move(pref_service_), std::move(testing_factories_),
-      std::move(refcounted_testing_factories_), std::move(policy_connector_)));
+      std::move(refcounted_testing_factories_), std::move(policy_connector_),
+      std::move(user_cloud_policy_manager_)));
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

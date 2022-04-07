@@ -32,7 +32,8 @@ class BrowserStatePolicyConnector {
 
   // Initializes this connector.
   void Init(policy::SchemaRegistry* schema_registry,
-            BrowserPolicyConnectorIOS* browser_policy_connector);
+            BrowserPolicyConnectorIOS* browser_policy_connector,
+            policy::ConfigurationPolicyProvider* user_policy_provider);
 
   // Shuts this connector down in preparation for destruction.
   void Shutdown();

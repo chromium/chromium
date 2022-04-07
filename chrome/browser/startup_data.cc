@@ -19,10 +19,10 @@
 #include "third_party/metrics_proto/system_profile.pb.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "chrome/browser/android/profile_key_startup_accessor.h"
-#include "chrome/browser/policy/cloud/user_cloud_policy_manager_builder.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/policy/schema_registry_service.h"
@@ -179,9 +179,10 @@ void StartupData::CreateServicesInternal() {
       std::move(schema_registry), browser_policy_connector->GetChromeSchema(),
       browser_policy_connector->GetSchemaRegistry());
 
-  user_cloud_policy_manager_ = CreateUserCloudPolicyManager(
+  user_cloud_policy_manager_ = policy::UserCloudPolicyManager::Create(
       path, schema_registry_service_->registry(),
-      true /* force_immediate_policy_load */, io_task_runner);
+      true /* force_immediate_policy_load */, io_task_runner,
+      base::BindRepeating(&content::GetNetworkConnectionTracker));
 
   profile_policy_connector_ = policy::CreateAndInitProfilePolicyConnector(
       schema_registry_service_->registry(),

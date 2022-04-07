@@ -35,6 +35,10 @@ namespace web {
 class WebUIIOS;
 }
 
+namespace policy {
+class UserCloudPolicyManager;
+}
+
 enum class ChromeBrowserStateType {
   REGULAR_BROWSER_STATE,
   INCOGNITO_BROWSER_STATE,
@@ -81,6 +85,10 @@ class ChromeBrowserState : public web::BrowserState {
   // Retrieves a pointer to the BrowserStatePolicyConnector that manages policy
   // for this BrowserState. May return nullptr if policy is disabled.
   virtual BrowserStatePolicyConnector* GetPolicyConnector() = 0;
+
+  // Returns a pointer to the UserCloudPolicyManager that is a facade for the
+  // user cloud policy system.
+  virtual policy::UserCloudPolicyManager* GetUserCloudPolicyManager() = 0;
 
   // Retrieves a pointer to the PrefService that manages the preferences.
   virtual PrefService* GetPrefs() = 0;

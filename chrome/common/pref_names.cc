@@ -446,13 +446,6 @@ const char kNetworkQualities[] = "net.network_qualities";
 // Pref storing the user's network easter egg game high score.
 const char kNetworkEasterEggHighScore[] = "net.easter_egg_high_score";
 
-#if BUILDFLAG(IS_ANDROID)
-// Last time that a check for cloud policy management was done. This time is
-// recorded on Android so that retries aren't attempted on every startup.
-// Instead the cloud policy registration is retried at least 1 or 3 days later.
-const char kLastPolicyCheckTime[] = "policy.last_policy_check_time";
-#endif
-
 // A preference of enum chrome_browser_net::NetworkPredictionOptions shows
 // if prediction of network actions is allowed, depending on network type.
 // Actions include DNS prefetching, TCP and SSL preconnection, prerendering

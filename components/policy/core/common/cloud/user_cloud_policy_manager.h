@@ -25,6 +25,8 @@ namespace network {
 class SharedURLLoaderFactory;
 }
 
+class SchemaRegistry;
+
 namespace policy {
 
 class CloudExternalDataManager;
@@ -45,6 +47,14 @@ class POLICY_EXPORT UserCloudPolicyManager : public CloudPolicyManager {
   UserCloudPolicyManager(const UserCloudPolicyManager&) = delete;
   UserCloudPolicyManager& operator=(const UserCloudPolicyManager&) = delete;
   ~UserCloudPolicyManager() override;
+
+  static std::unique_ptr<UserCloudPolicyManager> Create(
+      const base::FilePath& profile_path,
+      SchemaRegistry* schema_registry,
+      bool force_immediate_load,
+      const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
+      network::NetworkConnectionTrackerGetter
+          network_connection_tracker_getter);
 
   // ConfigurationPolicyProvider overrides:
   void Shutdown() override;

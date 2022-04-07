@@ -17,7 +17,8 @@ BrowserStatePolicyConnector::~BrowserStatePolicyConnector() = default;
 
 void BrowserStatePolicyConnector::Init(
     policy::SchemaRegistry* schema_registry,
-    BrowserPolicyConnectorIOS* browser_policy_connector) {
+    BrowserPolicyConnectorIOS* browser_policy_connector,
+    policy::ConfigurationPolicyProvider* user_policy_provider) {
   schema_registry_ = schema_registry;
 
   // The object returned by GetPlatformConnector() may or may not be in the list
@@ -36,6 +37,11 @@ void BrowserStatePolicyConnector::Init(
       policy_providers_.push_back(provider);
     }
   }
+
+  // Put `user_policy_provider` at the end of the list because it is the
+  // provider with the lowest priority.
+  if (user_policy_provider)
+    policy_providers_.push_back(user_policy_provider);
 
   policy_service_ =
       std::make_unique<policy::PolicyServiceImpl>(policy_providers_);

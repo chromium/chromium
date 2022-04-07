@@ -14,7 +14,8 @@
 
 std::unique_ptr<BrowserStatePolicyConnector> BuildBrowserStatePolicyConnector(
     policy::SchemaRegistry* schema_registry,
-    BrowserPolicyConnectorIOS* browser_policy_connector) {
+    BrowserPolicyConnectorIOS* browser_policy_connector,
+    policy::ConfigurationPolicyProvider* user_policy_provider) {
   DCHECK(IsEnterprisePolicyEnabled());
 
   auto connector = std::make_unique<BrowserStatePolicyConnector>();
@@ -24,6 +25,7 @@ std::unique_ptr<BrowserStatePolicyConnector> BuildBrowserStatePolicyConnector(
   // |browser_policy_connector|, despite being a separate instance. The two
   // levels of registry (owned by ApplicationContext vs owned by BrowserState)
   // are maintained to keep a parallel structure with Desktop.
-  connector->Init(schema_registry, browser_policy_connector);
+  connector->Init(schema_registry, browser_policy_connector,
+                  user_policy_provider);
   return connector;
 }

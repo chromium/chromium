@@ -168,6 +168,10 @@ class POLICY_EXPORT UserPolicySigninServiceBase
 
   signin::ConsentLevel consent_level() const { return consent_level_; }
 
+  scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory() {
+    return system_url_loader_factory_;
+  }
+
  private:
   // Returns a CloudPolicyClient to perform a registration with the DM server,
   // or NULL if |username| shouldn't register for policy management.

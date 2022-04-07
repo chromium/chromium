@@ -166,6 +166,7 @@
 #include "content/public/browser/federated_identity_api_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_request_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_sharing_permission_context_delegate.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_process_host.h"
@@ -204,8 +205,6 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#else
-#include "chrome/browser/policy/cloud/user_cloud_policy_manager_builder.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -600,9 +599,10 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
 #else
   {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-    user_cloud_policy_manager_ = CreateUserCloudPolicyManager(
+    user_cloud_policy_manager_ = policy::UserCloudPolicyManager::Create(
         GetPath(), GetPolicySchemaRegistryService()->registry(),
-        force_immediate_policy_load, io_task_runner_);
+        force_immediate_policy_load, io_task_runner_,
+        base::BindRepeating(&content::GetNetworkConnectionTracker));
     user_cloud_policy_manager = user_cloud_policy_manager_.get();
     policy_provider = user_cloud_policy_manager;
   }

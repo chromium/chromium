@@ -23,6 +23,10 @@ class PrefServiceSyncable;
 class TestingPrefServiceSyncable;
 }
 
+namespace policy {
+class UserCloudPolicyManager;
+}
+
 // This class is the implementation of ChromeBrowserState used for testing.
 class TestChromeBrowserState final : public ChromeBrowserState {
  public:
@@ -60,6 +64,7 @@ class TestChromeBrowserState final : public ChromeBrowserState {
       ProtocolHandlerMap* protocol_handlers) override;
   scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
       override;
+  policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override;
 
   // This method is defined as empty following the paradigm of
   // TestingProfile::DestroyOffTheRecordProfile().
@@ -123,6 +128,11 @@ class TestChromeBrowserState final : public ChromeBrowserState {
     void SetPolicyConnector(
         std::unique_ptr<BrowserStatePolicyConnector> policy_connector);
 
+    // Sets a UserCloudPolicyManager for test.
+    void SetUserCloudPolicyManager(
+        std::unique_ptr<policy::UserCloudPolicyManager>
+            user_cloud_policy_manager);
+
     // Creates the TestChromeBrowserState using previously-set settings.
     std::unique_ptr<TestChromeBrowserState> Build();
 
@@ -134,6 +144,7 @@ class TestChromeBrowserState final : public ChromeBrowserState {
     base::FilePath state_path_;
     std::unique_ptr<sync_preferences::PrefServiceSyncable> pref_service_;
 
+    std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
     std::unique_ptr<BrowserStatePolicyConnector> policy_connector_;
 
     TestingFactories testing_factories_;
@@ -147,7 +158,9 @@ class TestChromeBrowserState final : public ChromeBrowserState {
       std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
       TestingFactories testing_factories,
       RefcountedTestingFactories refcounted_testing_factories,
-      std::unique_ptr<BrowserStatePolicyConnector> policy_connector);
+      std::unique_ptr<BrowserStatePolicyConnector> policy_connector,
+      std::unique_ptr<policy::UserCloudPolicyManager>
+          user_cloud_policy_manager);
 
  private:
   friend class Builder;
@@ -169,6 +182,7 @@ class TestChromeBrowserState final : public ChromeBrowserState {
   std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs_;
   sync_preferences::TestingPrefServiceSyncable* testing_prefs_;
 
+  std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
   std::unique_ptr<BrowserStatePolicyConnector> policy_connector_;
 
   // A SharedURLLoaderFactory for test.

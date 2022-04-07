@@ -86,6 +86,12 @@ OffTheRecordChromeBrowserStateImpl::GetPolicyConnector() {
   return GetOriginalChromeBrowserState()->GetPolicyConnector();
 }
 
+policy::UserCloudPolicyManager*
+OffTheRecordChromeBrowserStateImpl::GetUserCloudPolicyManager() {
+  // Forward the call to the original (non-OTR) browser state.
+  return GetOriginalChromeBrowserState()->GetUserCloudPolicyManager();
+}
+
 PrefService* OffTheRecordChromeBrowserStateImpl::GetPrefs() {
   return prefs_.get();
 }

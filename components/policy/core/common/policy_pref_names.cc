@@ -98,5 +98,13 @@ const char kIsolatedAppsDeveloperModeAllowed[] =
 // Boolean policy to force WebSQL to be enabled.
 const char kWebSQLAccess[] = "policy.web_sql_access";
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+// Last time that a check for cloud policy management was done. This time is
+// recorded on Android and iOS so that retries aren't attempted on every
+// startup. Instead the cloud policy registration is retried at least 1 or 3
+// days later.
+const char kLastPolicyCheckTime[] = "policy.last_policy_check_time";
+#endif
+
 }  // namespace policy_prefs
 }  // namespace policy

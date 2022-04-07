@@ -14,6 +14,8 @@
 #include "base/threading/thread_restrictions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
+#include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/core/common/schema_registry.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/json_pref_store.h"
@@ -108,8 +110,18 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
     DCHECK(connector);
     policy_schema_registry_ = BuildSchemaRegistryForBrowserState(
         this, connector->GetChromeSchema(), connector->GetSchemaRegistry());
+
+    // Create the UserCloudPolicyManager and force it to load immediately since
+    // BrowserState is loaded synchronously.
+    user_cloud_policy_manager_ = policy::UserCloudPolicyManager::Create(
+        GetStatePath(), policy_schema_registry_.get(),
+        /*force_immediate_load=*/true, GetIOTaskRunner(),
+        base::BindRepeating(&ApplicationContext::GetNetworkConnectionTracker,
+                            base::Unretained(GetApplicationContext())));
+
     policy_connector_ = BuildBrowserStatePolicyConnector(
-        policy_schema_registry_.get(), connector);
+        policy_schema_registry_.get(), connector,
+        user_cloud_policy_manager_.get());
   }
 
   RegisterBrowserStatePrefs(pref_registry_.get());
@@ -148,8 +160,21 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
 ChromeBrowserStateImpl::~ChromeBrowserStateImpl() {
   BrowserStateDependencyManager::GetInstance()->DestroyBrowserStateServices(
       this);
+  // Warning: the order for shutting down the BrowserState objects is important
+  // because of interdependencies. Ideally the order for shutting down the
+  // objects should be backward of their declaration in class attributes.
+
   if (pref_proxy_config_tracker_)
     pref_proxy_config_tracker_->DetachFromPrefService();
+
+  // Here, (1) the browser state services may
+  // depend on `policy_connector_` and `user_cloud_policy_manager_`, and (2)
+  // `policy_connector_` depends on `user_cloud_policy_manager_`. The
+  // dependencies have to be shut down backward.
+  policy_connector_->Shutdown();
+  if (user_cloud_policy_manager_)
+    user_cloud_policy_manager_->Shutdown();
+
   DestroyOffTheRecordChromeBrowserState();
 }
 
@@ -183,6 +208,11 @@ BrowserStatePolicyConnector* ChromeBrowserStateImpl::GetPolicyConnector() {
     return policy_connector_.get();
   }
   return nullptr;
+}
+
+policy::UserCloudPolicyManager*
+ChromeBrowserStateImpl::GetUserCloudPolicyManager() {
+  return user_cloud_policy_manager_.get();
 }
 
 PrefService* ChromeBrowserStateImpl::GetPrefs() {

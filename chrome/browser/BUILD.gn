@@ -5065,8 +5065,6 @@ static_library("browser") {
       "fullscreen.h",
       "policy/browser_signin_policy_handler.cc",
       "policy/browser_signin_policy_handler.h",
-      "policy/cloud/user_cloud_policy_manager_builder.cc",
-      "policy/cloud/user_cloud_policy_manager_builder.h",
       "policy/cloud/user_policy_signin_service_factory.cc",
       "policy/cloud/user_policy_signin_service_factory.h",
       "policy/cloud/user_policy_signin_service_util.cc",

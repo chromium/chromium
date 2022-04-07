@@ -222,7 +222,7 @@ void UserPolicySigninService::InitializeOnProfileReady(Profile* profile) {
 }
 
 bool UserPolicySigninService::CanApplyPolicies(bool check_for_refresh_token) {
-  if (!CanApplyPoliciesForSignedInUser(check_for_refresh_token,
+  if (!CanApplyPoliciesForSignedInUser(check_for_refresh_token, consent_level(),
                                        identity_manager())) {
     return false;
   }

@@ -199,9 +199,6 @@ extern const char kPromptForDownload[];
 extern const char kQuicAllowed[];
 extern const char kNetworkQualities[];
 extern const char kNetworkEasterEggHighScore[];
-#if BUILDFLAG(IS_ANDROID)
-extern const char kLastPolicyCheckTime[];
-#endif
 extern const char kNetworkPredictionOptions[];
 extern const char kPreinstalledAppsInstallState[];
 extern const char kHideWebStoreIcon[];
