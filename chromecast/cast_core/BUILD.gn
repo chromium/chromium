@@ -50,7 +50,10 @@ test("cast_cast_core_unittests") {
 
 group("cast_core_integration_test") {
   testonly = true
-  data = [ "//chromecast/cast_core/test/" ]
+  data = [
+    "//chromecast/cast_core/test/",
+    "//testing/scripts/run_cast_core_tests.py",
+  ]
   data_deps = [
     "//tools/perf/chrome_telemetry_build:telemetry_chrome_test_without_chrome",
   ]
