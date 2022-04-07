@@ -454,9 +454,6 @@ TEST(FormParserTest, SkipNotTextFields) {
 }
 
 TEST(FormParserTest, OnlyPasswordFields) {
-  const bool kTreatNewPasswordHeuristicsAsReliable =
-      base::FeatureList::IsEnabled(
-          features::kTreatNewPasswordHeuristicsAsReliable);
   CheckTestData({
       {
           .description_for_logging = "1 password field",
@@ -480,7 +477,7 @@ TEST(FormParserTest, OnlyPasswordFields) {
                    .value = u"pw",
                    .form_control_type = "password"},
               },
-          .is_new_password_reliable = kTreatNewPasswordHeuristicsAsReliable,
+          .is_new_password_reliable = false,
       },
       {
           .description_for_logging =
@@ -494,7 +491,7 @@ TEST(FormParserTest, OnlyPasswordFields) {
                    .value = u"pw2",
                    .form_control_type = "password"},
               },
-          .is_new_password_reliable = kTreatNewPasswordHeuristicsAsReliable,
+          .is_new_password_reliable = false,
       },
       {
           .description_for_logging =
@@ -511,7 +508,7 @@ TEST(FormParserTest, OnlyPasswordFields) {
                    .value = u"pw2",
                    .form_control_type = "password"},
               },
-          .is_new_password_reliable = kTreatNewPasswordHeuristicsAsReliable,
+          .is_new_password_reliable = false,
       },
       {
           .description_for_logging = "3 password fields with different values",

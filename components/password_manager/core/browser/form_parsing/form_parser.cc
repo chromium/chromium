@@ -200,7 +200,7 @@ struct SignificantFields {
   bool is_fallback = false;
 
   // True iff the new password field was found with server hints or autocomplete
-  // attributes or the kTreatNewPasswordHeuristicsAsReliable feature is enabled.
+  // attributes.
   bool is_new_password_reliable = false;
 
   // True if the current form has only username, but no passwords.
@@ -1100,9 +1100,7 @@ std::unique_ptr<PasswordForm> FormDataParser::Parse(const FormData& form_data,
   // user saves the already entered one.
   significant_fields.is_new_password_reliable =
       mode == Mode::kFilling && significant_fields.new_password &&
-      (new_password_found_before_heuristic ||
-       base::FeatureList::IsEnabled(
-           features::kTreatNewPasswordHeuristicsAsReliable));
+      new_password_found_before_heuristic;
 
   if (mode == Mode::kFilling) {
     for (const auto& field : processed_fields) {

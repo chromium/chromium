@@ -171,11 +171,6 @@ const base::Feature kTouchToFillPasswordSubmission = {
     "TouchToFillPasswordSubmission", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-// Treat heuritistics to find new password fields as reliable. This enables
-// password generation on more forms, but could lead to false positives.
-const base::Feature kTreatNewPasswordHeuristicsAsReliable = {
-    "TreatNewPasswordHeuristicsAsReliable", base::FEATURE_DISABLED_BY_DEFAULT};
-
 #if BUILDFLAG(IS_ANDROID)
 // Enables the intent fetching for the credential manager in Google Mobile
 // Services. It does not enable launching the credential manager.

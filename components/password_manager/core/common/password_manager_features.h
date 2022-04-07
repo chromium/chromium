@@ -59,7 +59,6 @@ extern const base::Feature kSyncUndecryptablePasswordsLinux;
 #if BUILDFLAG(IS_ANDROID)
 extern const base::Feature kTouchToFillPasswordSubmission;
 #endif
-extern const base::Feature kTreatNewPasswordHeuristicsAsReliable;
 #if BUILDFLAG(IS_ANDROID)
 extern const base::Feature kUnifiedCredentialManagerDryRun;
 extern const base::Feature kUnifiedPasswordManagerAndroid;
