@@ -87,10 +87,11 @@ static bool ParseFontSize(const CharacterType* characters,
                               WTF::NumberParsingOptions::kNone, nullptr);
 
   // Step 9
-  if (mode == kRelativePlus)
-    value += 3;
-  else if (mode == kRelativeMinus)
-    value = 3 - value;
+  if (mode == kRelativePlus) {
+    value = base::CheckAdd(value, 3).ValueOrDefault(value);
+  } else if (mode == kRelativeMinus) {
+    value = base::CheckSub(3, value).ValueOrDefault(value);
+  }
 
   // Step 10
   if (value > 7)
