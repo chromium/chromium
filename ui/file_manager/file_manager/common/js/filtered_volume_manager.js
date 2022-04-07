@@ -107,10 +107,11 @@ export class FilteredVolumeManager extends EventTarget {
     this.volumeManagerGetter_ = volumeManagerGetter;
 
     /**
-     * Array of Files app mode dependent volume filter names.
-     * @private @const {!Array<string>}
+     * True if |volumeFilter| contains the 'fusebox-only' filter. SelectFileAsh
+     * (file picker) sets this filter.
+     * @private @const {boolean}
      */
-    this.volumeFilter_ = volumeFilter;
+    this.isFuseBoxOnly_ = volumeFilter.includes('fusebox-only');
 
     /**
      * Tracks async initialization of volume manager.
@@ -126,13 +127,9 @@ export class FilteredVolumeManager extends EventTarget {
    * disallowed for other restrictions. To check if a specific volume is allowed
    * or not, use isAllowedVolume_() instead.
    *
-   * TODO(crbug.com/1292825): The above is cleary confusing. This API is only
-   * used by Drive, to work if the 'drive-connection-changed' event should be
-   * emitted, or blocking access to the drive connection state. Make this API
-   * Drive-specific to remove the confusion.
-   *
    * @param {VolumeManagerCommon.VolumeType} volumeType
    * @return {boolean}
+   * @private
    */
   isAllowedVolumeType_(volumeType) {
     switch (this.allowedPaths_) {
@@ -146,10 +143,22 @@ export class FilteredVolumeManager extends EventTarget {
   }
 
   /**
+   * True if the volume |diskFileSystemType| is a fusebox file system.
+   *
+   * @param {string} diskFileSystemType Volume diskFileSystemType.
+   * @return {boolean}
+   * @private
+   */
+  isFuseBoxFileSystem(diskFileSystemType) {
+    return diskFileSystemType === 'fusebox';
+  }
+
+  /**
    * Checks if a volume is allowed.
    *
    * @param {!VolumeInfo} volumeInfo
    * @return {boolean}
+   * @private
    */
   isAllowedVolume_(volumeInfo) {
     if (!volumeInfo.volumeType) {
@@ -160,9 +169,19 @@ export class FilteredVolumeManager extends EventTarget {
       return false;
     }
 
-    // TODO(crbug.com/1292825): implement fusebox-only filter here.
+    // If the volume type is supported by fusebox, we have to decide whether
+    // to use the fusebox or non-fusebox version in the UI.
 
-    // TODO(crbug.com/1292825): maybe remove isAllowedVolumeType_ use here.
+    if (this.isFuseBoxOnly_) {
+      // SelectFileAsh requires native volumes. Note: DocumentsProvider and
+      // FSPs return false here, until they are implemented in the Fusebox.
+      return this.isFuseBoxFileSystem(volumeInfo.diskFileSystemType) ||
+          VolumeManagerCommon.VolumeType.isNative(volumeInfo.volumeType);
+    } else if (this.isFuseBoxFileSystem(volumeInfo.diskFileSystemType)) {
+      // Normal Files app: remove fusebox volumes.
+      return false;
+    }
+
     if (!this.isAllowedVolumeType_(volumeInfo.volumeType)) {
       return false;
     }

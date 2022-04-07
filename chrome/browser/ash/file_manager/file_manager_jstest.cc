@@ -168,6 +168,10 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileType) {
   RunTestURL("common/js/file_type_unittest.m_gen.html");
 }
 
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FilteredVolumeManagerTest) {
+  RunTestURL("common/js/filtered_volume_manager_unittest.m_gen.html");
+}
+
 IN_PROC_BROWSER_TEST_F(CanvasFileManagerJsTest, ImageOrientation) {
   RunTestURL("foreground/js/metadata/image_orientation_unittest.m_gen.html");
 }

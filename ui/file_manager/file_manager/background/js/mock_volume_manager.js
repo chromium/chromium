@@ -193,6 +193,12 @@ export class MockVolumeManager {
       type, volumeId, label, devicePath, providerId, remoteMountPath) {
     const fileSystem = new MockFileSystem(volumeId, 'filesystem:' + volumeId);
 
+    let diskFileSystemType = VolumeManagerCommon.FileSystemType.UNKNOWN;
+    if (devicePath && devicePath.startsWith('fusebox')) {
+      diskFileSystemType =
+          /** @type VolumeManagerCommon.FileSystemType */ ('fusebox');
+    }
+
     // If there's no label set it to volumeId to make it shorter to write
     // tests.
     const volumeInfo = new VolumeInfoImpl(
@@ -209,10 +215,10 @@ export class MockVolumeManager {
         false,                                      // configurable
         false,                                      // watchable
         VolumeManagerCommon.Source.NETWORK,         // source
-        VolumeManagerCommon.FileSystemType.UNKNOWN,  // diskFileSystemType
-        {},                                          // iconSet
-        '',                                          // driveLabel
-        remoteMountPath);                            // remoteMountPath
+        diskFileSystemType,                         // diskFileSystemType
+        {},                                         // iconSet
+        '',                                         // driveLabel
+        remoteMountPath);                           // remoteMountPath
 
     return volumeInfo;
   }

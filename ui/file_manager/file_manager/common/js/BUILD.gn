@@ -204,6 +204,16 @@ js_library("filtered_volume_manager") {
   ]
 }
 
+js_unittest("filtered_volume_manager_unittest.m") {
+  deps = [
+    ":filtered_volume_manager",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/file_manager/background/js:mock_volume_manager",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+}
+
 # These importer files actually belong here. Nothing outside the Files app uses
 # them, so restrict visibility. TODO(tapted): Simplify visibility when
 # everything else moves to //ui/file_manager/base.
@@ -375,6 +385,7 @@ js_test_gen_html("js_test_gen_html_modules") {
   deps = [
     ":file_type_unittest.m",
     ":files_app_entry_types_unittest.m",
+    ":filtered_volume_manager_unittest.m",
     ":importer_common_unittest.m",
     ":lru_cache_unittest.m",
     ":storage_adapter_unittest.m",
