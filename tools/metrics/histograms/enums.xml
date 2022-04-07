@@ -55061,6 +55061,7 @@ from previous Chrome versions.
   <int value="-19498390"
       label="RunVideoCaptureServiceInBrowserProcess:disabled"/>
   <int value="-18464041" label="AutofillPrefilledFields:disabled"/>
+  <int value="-18380160" label="AutofillEnableVirtualCardMetadata:enabled"/>
   <int value="-17698200" label="DoubleTapToZoomInTabletMode:disabled"/>
   <int value="-17373827" label="SharingDeviceExpiration:enabled"/>
   <int value="-16824589" label="ash-shelf-color"/>
@@ -56834,6 +56835,7 @@ from previous Chrome versions.
   <int value="1200407724" label="WebUITabStripContextMenuAfterTap:disabled"/>
   <int value="1201008500"
       label="EnableAmbientAuthenticationInIncognito:enabled"/>
+  <int value="1203633646" label="AutofillEnableVirtualCardMetadata:disabled"/>
   <int value="1203795051" label="PassiveMixedContentWarning:enabled"/>
   <int value="1203821857" label="Vulkan:disabled"/>
   <int value="1205596770"

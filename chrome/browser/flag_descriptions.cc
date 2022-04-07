@@ -390,6 +390,12 @@ const char
         "enroll in virtual card if the card is eligible and to unenroll if the "
         "card has been enrolled.";
 
+const char kAutofillEnableVirtualCardMetadataName[] =
+    "Enable showing metadata for virtual cards";
+const char kAutofillEnableVirtualCardMetadataDescription[] =
+    "When enabled, Chrome will show metadata together with other card "
+    "information when the virtual card is presented to users.";
+
 const char kAutofillEnableVirtualCardsRiskBasedAuthenticationName[] =
     "Enable risk based authentication for Autofill Virtual Card Numbers";
 const char kAutofillEnableVirtualCardsRiskBasedAuthenticationDescription[] =

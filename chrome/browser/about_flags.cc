@@ -8388,6 +8388,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnforceDelaysInStrikeDatabase)},
 
+    {"autofill-enable-virtual-card-metadata",
+     flag_descriptions::kAutofillEnableVirtualCardMetadataName,
+     flag_descriptions::kAutofillEnableVirtualCardMetadataDescription, kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableVirtualCardMetadata)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
