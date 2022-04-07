@@ -2637,6 +2637,12 @@ extern const char kEnablePalmOnToolTypePalmDescription[];
 extern const char kEnablePalmSuppressionName[];
 extern const char kEnablePalmSuppressionDescription[];
 
+extern const char kEnableTouchpadsInDiagnosticsAppName[];
+extern const char kEnableTouchpadsInDiagnosticsAppDescription[];
+
+extern const char kEnableTouchscreensInDiagnosticsAppName[];
+extern const char kEnableTouchscreensInDiagnosticsAppDescription[];
+
 extern const char kDisableQuickAnswersV2TranslationName[];
 extern const char kDisableQuickAnswersV2TranslationDescription[];
 

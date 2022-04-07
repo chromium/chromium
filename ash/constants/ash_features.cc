@@ -570,6 +570,16 @@ const base::Feature kEnableSamlReauthenticationOnLockscreen{
 const base::Feature kEnableSavedDesks{"EnableSavedDesks",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, touchpad cards will be shown in the diagnostics app's input
+// section.
+const base::Feature kEnableTouchpadsInDiagnosticsApp{
+    "EnableTouchpadsInDiagnosticsApp", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// If enabled, touchscreen cards will be shown in the diagnostics app's input
+// section.
+const base::Feature kEnableTouchscreensInDiagnosticsApp{
+    "EnableTouchscreensInDiagnosticsApp", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables WireGuard VPN, if running a compatible kernel.
 const base::Feature kEnableWireGuard{"EnableWireGuard",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
@@ -2024,6 +2034,14 @@ bool IsStylusBatteryStatusEnabled() {
 
 bool IsTabClusterUIEnabled() {
   return base::FeatureList::IsEnabled(kTabClusterUI);
+}
+
+bool IsTouchpadInDiagnosticsAppEnabled() {
+  return base::FeatureList::IsEnabled(kEnableTouchpadsInDiagnosticsApp);
+}
+
+bool IsTouchscreenInDiagnosticsAppEnabled() {
+  return base::FeatureList::IsEnabled(kEnableTouchscreensInDiagnosticsApp);
 }
 
 bool IsTrafficCountersHandlerEnabled() {

@@ -15,12 +15,12 @@
           <div slot="title">[[i18n('inputCategoryKeyboard')]]</div>
         </input-card>
       </template>
-      <template is="dom-if" if="[[touchpads_.length]]">
+      <template is="dom-if" if="[[showTouchpads_]]">
         <input-card device-type="touchpad" devices="[[touchpads_]]">
           <div slot="title">[[i18n('inputCategoryTouchpad')]]</div>
         </input-card>
       </template>
-      <template is="dom-if" if="[[touchscreens_.length]]">
+      <template is="dom-if" if="[[showTouchscreens_]]">
         <input-card device-type="touchscreen" devices="[[touchscreens_]]">
           <div slot="title">[[i18n('inputCategoryTouchscreen')]]</div>
         </input-card>

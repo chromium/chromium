@@ -62,6 +62,8 @@ this.DiagnosticsAppWithInput = class extends PolymerTest {
     return {
       enabled: [
         'chromeos::features::kEnableInputInDiagnosticsApp',
+        'chromeos::features::kEnableTouchpadsInDiagnosticsApp',
+        'chromeos::features::kEnableTouchscreensInDiagnosticsApp',
       ],
     };
   }

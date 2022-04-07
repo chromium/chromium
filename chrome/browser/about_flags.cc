@@ -8374,7 +8374,16 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-desks-close-all", flag_descriptions::kDesksCloseAllName,
      flag_descriptions::kDesksCloseAllDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kDesksCloseAll)},
-#endif
+    {"enable-touchpads-in-diagnostics-app",
+     flag_descriptions::kEnableTouchpadsInDiagnosticsAppName,
+     flag_descriptions::kEnableTouchpadsInDiagnosticsAppDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kEnableTouchpadsInDiagnosticsApp)},
+    {"enable-touchscreens-in-diagnostics-app",
+     flag_descriptions::kEnableTouchscreensInDiagnosticsAppName,
+     flag_descriptions::kEnableTouchscreensInDiagnosticsAppDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         chromeos::features::kEnableTouchscreensInDiagnosticsApp)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"autofill-enforce-delays-in-strike-database",
      flag_descriptions::kAutofillEnforceDelaysInStrikeDatabaseName,

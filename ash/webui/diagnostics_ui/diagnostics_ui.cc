@@ -365,6 +365,10 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
                      features::IsInputInDiagnosticsAppEnabled());
   source->AddBoolean("isNetworkingEnabled",
                      features::IsNetworkingInDiagnosticsAppEnabled());
+  source->AddBoolean("isTouchpadEnabled",
+                     features::IsTouchpadInDiagnosticsAppEnabled());
+  source->AddBoolean("isTouchscreenEnabled",
+                     features::IsTouchscreenInDiagnosticsAppEnabled());
   source->AddBoolean("enableArcNetworkDiagnostics",
                      features::IsArcNetworkDiagnosticsButtonEnabled());
 }

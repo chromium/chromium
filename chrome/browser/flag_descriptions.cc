@@ -4616,6 +4616,18 @@ const char kEnablePalmSuppressionName[] =
 const char kEnablePalmSuppressionDescription[] =
     "If enabled, suppresses touch when a stylus is on a touchscreen.";
 
+const char kEnableTouchpadsInDiagnosticsAppName[] =
+    "Enable touchpad cards in the Diagnostics App";
+const char kEnableTouchpadsInDiagnosticsAppDescription[] =
+    "Shows touchpad cards in the Diagnostics App's input section. Requires "
+    "#enable-input-in-diagnostics-app to be enabled.";
+
+const char kEnableTouchscreensInDiagnosticsAppName[] =
+    "Enable touchscreen cards in the Diagnostics App";
+const char kEnableTouchscreensInDiagnosticsAppDescription[] =
+    "Shows touchscreen cards in the Diagnostics App's input section. Requires "
+    "#enable-input-in-diagnostics-app to be enabled.";
+
 const char kEnableVariableRefreshRateName[] = "Enable Variable Refresh Rate";
 const char kEnableVariableRefreshRateDescription[] =
     "Enable the variable refresh rate (Adaptive Sync) setting for capable "

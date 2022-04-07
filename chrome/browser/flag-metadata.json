@@ -2798,11 +2798,21 @@
     "expiry_milestone": 93
   },
   {
+    "name": "enable-touchpads-in-diagnostics-app",
+    "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "enable-touchscreen-calibration",
     "owners": [ "malaykeshav" ],
     // This flag is used for testing new touchscreen ChromeOS hardware, both by
     // dev and QA.
     "expiry_milestone": -1
+  },
+  {
+    "name": "enable-touchscreens-in-diagnostics-app",
+    "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
+    "expiry_milestone": 110
   },
   {
     "name": "enable-translate-sub-frames",
