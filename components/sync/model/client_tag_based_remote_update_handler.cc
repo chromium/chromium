@@ -253,9 +253,8 @@ void ClientTagBasedRemoteUpdateHandler::ResolveConflict(
       if (update.entity.is_deleted()) {
         DCHECK(!entity->metadata().is_deleted());
         // Squash the pending commit.
-        entity->RecordForcedRemoteUpdate(
-            update,
-            bridge_->TrimRemoteSpecificsForCaching(update.entity.specifics));
+        entity->RecordForcedRemoteUpdate(update,
+                                         /*trimmed_specifics=*/{});
         changes->push_back(EntityChange::CreateDelete(entity->storage_key()));
       } else if (!entity->metadata().is_deleted()) {
         // Squash the pending commit.

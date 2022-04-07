@@ -122,6 +122,16 @@ class ModelTypeChangeProcessor {
   // Returns the delegate for the controller.
   virtual base::WeakPtr<ModelTypeControllerDelegate>
   GetControllerDelegate() = 0;
+
+  // Returns the cached version of remote entity specifics for |storage_key| if
+  // available. These specifics can be fully or partially trimmed (proto fields
+  // cleared) according to the bridge's logic in
+  // TrimRemoteSpecificsForCaching().
+  // By default, empty EntitySpecifics is returned if the storage key is
+  // unknown, or the storage key is known but trimmed specifics is not
+  // available.
+  virtual const sync_pb::EntitySpecifics& GetPossiblyTrimmedRemoteSpecifics(
+      const std::string& storage_key) const = 0;
 };
 
 }  // namespace syncer

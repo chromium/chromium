@@ -92,6 +92,11 @@ class ForwardingModelTypeChangeProcessor : public ModelTypeChangeProcessor {
     return other_->GetControllerDelegate();
   }
 
+  const sync_pb::EntitySpecifics& GetPossiblyTrimmedRemoteSpecifics(
+      const std::string& storage_key) const override {
+    return other_->GetPossiblyTrimmedRemoteSpecifics(storage_key);
+  }
+
  private:
   raw_ptr<ModelTypeChangeProcessor> other_;
 };

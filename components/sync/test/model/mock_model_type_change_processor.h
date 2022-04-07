@@ -79,6 +79,10 @@ class MockModelTypeChangeProcessor : public ModelTypeChangeProcessor {
               GetControllerDelegate,
               (),
               (override));
+  MOCK_METHOD(const sync_pb::EntitySpecifics&,
+              GetPossiblyTrimmedRemoteSpecifics,
+              (const std::string& storage_key),
+              (const override));
 
   // Returns a processor that forwards all calls to
   // |this|. |*this| must outlive the returned processor.

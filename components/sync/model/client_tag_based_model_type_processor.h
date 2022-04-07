@@ -90,6 +90,8 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   void ReportError(const ModelError& error) override;
   absl::optional<ModelError> GetError() const override;
   base::WeakPtr<ModelTypeControllerDelegate> GetControllerDelegate() override;
+  const sync_pb::EntitySpecifics& GetPossiblyTrimmedRemoteSpecifics(
+      const std::string& storage_key) const override;
 
   // ModelTypeProcessor implementation.
   void ConnectSync(std::unique_ptr<CommitQueue> worker) override;

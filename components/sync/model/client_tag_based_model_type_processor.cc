@@ -1234,4 +1234,17 @@ void ClientTagBasedModelTypeProcessor::RecordMemoryUsageAndCountsHistograms() {
   SyncRecordModelTypeCountHistogram(type_, non_tombstone_entries_count);
 }
 
+const sync_pb::EntitySpecifics&
+ClientTagBasedModelTypeProcessor::GetPossiblyTrimmedRemoteSpecifics(
+    const std::string& storage_key) const {
+  DCHECK(entity_tracker_);
+  DCHECK(!storage_key.empty());
+  ProcessorEntity* entity =
+      entity_tracker_->GetEntityForStorageKey(storage_key);
+  if (entity == nullptr) {
+    return sync_pb::EntitySpecifics::default_instance();
+  }
+  return entity->metadata().possibly_trimmed_base_specifics();
+}
+
 }  // namespace syncer

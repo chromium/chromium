@@ -130,6 +130,14 @@ class TestModelTypeSyncBridge : public FakeModelTypeSyncBridge {
     return FakeModelTypeSyncBridge::GetStorageKey(entity_data);
   }
 
+  sync_pb::EntitySpecifics TrimRemoteSpecificsForCaching(
+      const sync_pb::EntitySpecifics& entity_specifics) override {
+    DCHECK(entity_specifics.has_preference());
+    sync_pb::EntitySpecifics trimmed_specifics = entity_specifics;
+    trimmed_specifics.mutable_preference()->clear_value();
+    return trimmed_specifics;
+  }
+
   void OnCommitDataLoaded() {
     ASSERT_TRUE(data_callback_) << "GetData() wasn't called before";
     std::move(data_callback_).Run();
@@ -596,6 +604,29 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldMergeLocalAndRemoteChanges) {
   EXPECT_TRUE(db()->GetMetadata(kKey1).has_possibly_trimmed_base_specifics());
   EXPECT_TRUE(db()->GetMetadata(kKey2).has_possibly_trimmed_base_specifics());
   worker()->VerifyPendingCommits({{GetHash(kKey1)}});
+}
+
+TEST_F(ClientTagBasedModelTypeProcessorTest,
+       ShouldExposePossiblyTrimmedRemoteSpecifics) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kCacheBaseEntitySpecificsInMetadata);
+  ModelReadyToSync();
+  OnSyncStarting();
+
+  sync_pb::EntitySpecifics specififcs = GenerateSpecifics(kKey1, kValue1);
+  *specififcs.mutable_preference()->mutable_unknown_fields() = kValue2;
+  worker()->UpdateFromServer(GetHash(kKey1), specififcs);
+
+  sync_pb::PreferenceSpecifics cached_preference =
+      type_processor()->GetPossiblyTrimmedRemoteSpecifics(kKey1).preference();
+
+  // Below verifies that
+  // TestModelTypeSyncBridge::TrimRemoteSpecificsForCaching() is honored.
+  // Preserved fields.
+  EXPECT_EQ(cached_preference.name(), kKey1);
+  EXPECT_EQ(cached_preference.unknown_fields(), kValue2);
+  // Trimmed field.
+  EXPECT_FALSE(cached_preference.has_value());
 }
 
 // Test that an initial sync filters out tombstones in the processor.
