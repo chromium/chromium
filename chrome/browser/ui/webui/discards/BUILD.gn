@@ -4,19 +4,17 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
-if (is_win || is_mac || is_linux || is_chromeos || is_fuchsia) {
-  mojom("mojo_bindings") {
-    sources = [
-      "discards.mojom",
-      "site_data.mojom",
-    ]
+mojom("mojo_bindings") {
+  sources = [
+    "discards.mojom",
+    "site_data.mojom",
+  ]
 
-    public_deps = [
-      "//chrome/browser/resource_coordinator:mojo_bindings",
-      "//mojo/public/mojom/base",
-      "//url/mojom:url_mojom_gurl",
-    ]
+  public_deps = [
+    "//chrome/browser/resource_coordinator:mojo_bindings",
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
 
-    webui_module_path = "/"
-  }
+  webui_module_path = "/"
 }

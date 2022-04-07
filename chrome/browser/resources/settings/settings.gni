@@ -5,6 +5,8 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
+assert(!is_android, "Android does not use these settings")
+
 settings_closure_flags =
     default_closure_args + [
       "js_module_root=../../chrome/browser/resources/settings/",
@@ -17,7 +19,6 @@ settings_closure_flags =
 # Files holding a Polymer element definition and have an equivalent .html file.
 web_component_files = [
   "a11y_page/a11y_page.ts",
-  "a11y_page/captions_subpage.ts",
   "a11y_page/live_caption_section.ts",
   "about_page/about_page.ts",
   "appearance_page/appearance_fonts_page.ts",
@@ -175,6 +176,10 @@ if (!is_chromeos) {
 
 if (!is_chromeos_ash && !is_mac) {
   web_component_files += [ "languages_page/edit_dictionary_page.ts" ]
+}
+
+if (!is_mac) {
+  web_component_files += [ "a11y_page/captions_subpage.ts" ]
 }
 
 if (is_win) {

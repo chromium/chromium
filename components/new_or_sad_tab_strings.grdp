@@ -51,7 +51,7 @@
           Open page in a new Incognito window (⇧⌘N)
         </message>
       </if>
-      <if expr="is_win or is_linux or is_fuchsia or chromeos_ash or chromeos_lacros">
+      <if expr="not is_macosx and toolkit_views">
         <message name="IDS_SAD_TAB_RELOAD_INCOGNITO" desc="One of the bullet points displayed on the web page if a reload failed to fix the issue, advising the user to open the web page in Chrome's Incognito mode.">
           Open page in a new Incognito window (Ctrl-Shift-N)
         </message>
@@ -91,25 +91,23 @@
           Restart Chromium
         </message>
       </if>
-      <if expr="is_win or is_linux or is_macosx or is_fuchsia or chromeos_ash or chromeos_lacros">
-        <message name="IDS_SAD_TAB_RELOAD_RESTART_DEVICE" desc="One of the bullet points displayed on the web page if a reload failed to fix the issue, advising the user to restart their computer.">
-          Restart your computer
-        </message>
-      </if>
       <if expr="is_android or is_ios">
-        <message name="IDS_SAD_TAB_RELOAD_RESTART_DEVICE" desc="One of the bullet points displayed on the web page if a reload failed to fix the issue, advising the user to restart their device (i.e. phone or tablet)." formatter_data="android_java">
-          Restart your device
-        </message>
-      </if>
-      <if expr="is_android or is_ios">
-        <message name="IDS_SAD_TAB_RELOAD_LEARN_MORE" desc="The link text displayed on the sad tab page pointing the users to a help article if a reload failed to fix the issue." meaning="Learn more about web pages that fail to load" formatter_data="android_java">
-          Learn more
-        </message>
-      </if>
-      <if expr="is_win or is_linux or is_macosx or is_fuchsia or chromeos_ash or chromeos_lacros">
-        <message name="IDS_SAD_TAB_ERROR_CODE" desc="The message displayed on the crashed web page indicating the type of the crash.">
-          Error code: <ph name="ERROR_CODE">$1<ex>STATUS_ACCESS_VIOLATION</ex></ph>
-        </message>
+	<then>
+          <message name="IDS_SAD_TAB_RELOAD_RESTART_DEVICE" desc="One of the bullet points displayed on the web page if a reload failed to fix the issue, advising the user to restart their device (i.e. phone or tablet)." formatter_data="android_java">
+            Restart your device
+          </message>
+          <message name="IDS_SAD_TAB_RELOAD_LEARN_MORE" desc="The link text displayed on the sad tab page pointing the users to a help article if a reload failed to fix the issue." meaning="Learn more about web pages that fail to load" formatter_data="android_java">
+            Learn more
+          </message>
+	</then>
+	<else>
+          <message name="IDS_SAD_TAB_RELOAD_RESTART_DEVICE" desc="One of the bullet points displayed on the web page if a reload failed to fix the issue, advising the user to restart their computer.">
+            Restart your computer
+          </message>
+          <message name="IDS_SAD_TAB_ERROR_CODE" desc="The message displayed on the crashed web page indicating the type of the crash.">
+            Error code: <ph name="ERROR_CODE">$1<ex>STATUS_ACCESS_VIOLATION</ex></ph>
+          </message>
+	</else>
       </if>
 
       <!-- New Tab -->

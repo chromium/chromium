@@ -126,7 +126,7 @@
           use_base_dir="false"
           resource_path="mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js"
           type="BINDATA" />
-      <if expr="is_win or is_macosx or is_linux or is_android or is_fuchsia">
+      <if expr="not is_ios">
         <include name="IDR_MOJO_PROCESS_ID_MOJOM_WEBUI_JS"
             file="${root_gen_dir}/mojom-webui/mojo/public/mojom/base/process_id.mojom-webui.js"
             use_base_dir="false"

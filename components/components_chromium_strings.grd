@@ -222,7 +222,9 @@
           and deselect any proxies that have been selected.
         </message>
       </if>
-      <if expr="not chromeos_ash and not chromeos_lacros and is_posix and not is_macosx and not is_android and not is_ios">
+      <!-- The Chrome OS version of this string is defined in //components/error_page_strings.grdp. -->
+      <!-- TODO(crbug.com/1307455): Remove ` and not chromeos_ash and not chromeos_lacros` once fixed. -->
+      <if expr="is_linux and not chromeos_ash and not chromeos_lacros">
         <message name="IDS_ERRORPAGES_SUGGESTION_PROXY_DISABLE_PLATFORM" desc="Linux instructions for disabling use of a proxy server.">
           Go to
           the Chromium menu &gt;

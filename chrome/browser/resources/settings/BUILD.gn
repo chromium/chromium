@@ -16,6 +16,8 @@ import("//ui/webui/webui_features.gni")
 import("../tools/optimize_webui.gni")
 import("settings.gni")
 
+assert(!is_android, "Android does not use these settings")
+
 preprocess_folder = "preprocessed"
 
 if (optimize_webui) {

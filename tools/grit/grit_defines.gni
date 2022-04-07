@@ -23,7 +23,8 @@ grit_defines = [
   "DEVTOOLS_GRD_PATH=" + devtools_grd_path_no_ext,
 ]
 
-if (is_mac || is_win || is_linux || is_chromeos || is_ios) {
+# Must match `enable_hidpi` in ui/base/ui_features.gni.
+if (!is_android) {
   grit_defines += [
     "-D",
     "scale_factors=2x",
@@ -66,13 +67,6 @@ if (is_chromeos_ash) {
   ]
 }
 
-if (is_reven) {
-  grit_defines += [
-    "-D",
-    "reven",
-  ]
-}
-
 if (is_chromeos_lacros) {
   grit_defines += [
     # TODO(crbug.com/1230488): Remove |lacros| when everything is migrated to
@@ -84,13 +78,18 @@ if (is_chromeos_lacros) {
   ]
 }
 
-if (is_linux || is_chromeos_lacros) {
+# This is related to Chrome OS.
+if (is_reven) {
   grit_defines += [
     "-D",
-    "desktop_linux",
+    "reven",
   ]
 }
 
+# Prefer using this (and excluding specific platforms) when a resource applies
+# to (most) desktop platforms.
+assert(toolkit_views == (is_chromeos_ash || is_chromeos_lacros || is_fuchsia ||
+                         is_linux || is_mac || is_win))
 if (toolkit_views) {
   grit_defines += [
     "-D",
