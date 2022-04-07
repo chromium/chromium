@@ -2824,7 +2824,7 @@
   {
     "name": "enable-universal-links",
     "owners": [ "avi", "olivierli" ],
-    "expiry_milestone": 101
+    "expiry_milestone": 105
   },
   {
     "name": "enable-unsafe-webgpu",
