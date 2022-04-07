@@ -172,14 +172,20 @@ void ImageButton::PaintButtonContents(gfx::Canvas* canvas) {
 // ImageButton, protected:
 
 gfx::ImageSkia ImageButton::GetImageToPaint() {
+  const auto* const color_provider = GetColorProvider();
   if (!images_[STATE_HOVERED].IsEmpty() && hover_animation().is_animating()) {
     return gfx::ImageSkiaOperations::CreateBlendedImage(
-        GetImage(STATE_NORMAL), GetImage(STATE_HOVERED),
+        GetImageSkiaFromImageModel(images_[STATE_NORMAL], color_provider),
+        GetImageSkiaFromImageModel(images_[STATE_HOVERED], color_provider),
         hover_animation().GetCurrentValue());
   }
 
-  const auto img = GetImage(GetState());
-  return !img.isNull() ? img : GetImage(STATE_NORMAL);
+  const auto img =
+      GetImageSkiaFromImageModel(images_[GetState()], color_provider);
+  return
+      !img.isNull()
+          ? img
+          : GetImageSkiaFromImageModel(images_[STATE_NORMAL], color_provider);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
