@@ -32,6 +32,7 @@
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/external_protocol/external_protocol_observer.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/feed/web_feed_tab_helper.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/file_system_access/file_system_access_tab_helper.h"
 #include "chrome/browser/history/history_tab_helper.h"
@@ -113,6 +114,8 @@
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/download/content/factory/navigation_monitor_factory.h"
 #include "components/download/content/public/download_navigation_observer.h"
+#include "components/feed/buildflags.h"
+#include "components/feed/feed_feature_list.h"
 #include "components/history/content/browser/web_contents_top_sites_observer.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -600,6 +603,11 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   if (IsSideSearchEnabled(profile))
     SideSearchTabContentsHelper::CreateForWebContents(web_contents);
 #endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+
+#if BUILDFLAG(ENABLE_FEED_V2)
+  if (base::FeatureList::IsEnabled(feed::kWebUiFeed))
+    feed::WebFeedTabHelper::CreateForWebContents(web_contents);
+#endif  // BUILDFLAG(ENABLE_FEED_V2)
 
   // --- Section 4: The warning ---
 

@@ -115,8 +115,15 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
                     : l10n_util::GetPluralStringFUTF16(
                           IDS_TAB_CXMENU_SOUND_UNMUTE_SITE, num_tabs));
   if (base::FeatureList::IsEnabled(feed::kWebUiFeed)) {
-    AddItemWithStringId(TabStripModel::CommandFollowSite,
-                        IDS_TAB_CXMENU_FOLLOW_SITE);
+    const TabWebFeedFollowState follow_state =
+        chrome::GetAggregatedFollowStateOfAllSites(*tab_strip, indices);
+    if (follow_state == TabWebFeedFollowState::kNotFollowed) {
+      AddItemWithStringId(TabStripModel::CommandFollowSite,
+                          IDS_TAB_CXMENU_FOLLOW_SITE);
+    } else if (follow_state == TabWebFeedFollowState::kFollowed) {
+      AddItemWithStringId(TabStripModel::CommandUnfollowSite,
+                          IDS_TAB_CXMENU_UNFOLLOW_SITE);
+    }
   }
   if (send_tab_to_self::ShouldOfferFeature(
           tab_strip->GetWebContentsAt(index))) {

@@ -21,4 +21,12 @@ enum class TabAlertState {
   VR_PRESENTING_IN_HEADSET,  // VR content is being presented in a headset.
 };
 
+// State indicating if the user is following the web feed of the site loaded in
+// a tab.
+enum class TabWebFeedFollowState {
+  kUnknown,      // The initial state before the follow state is determined.
+  kFollowed,     // The web feed is followed.
+  kNotFollowed,  // The web feed is not followed.
+};
+
 #endif  // CHROME_BROWSER_UI_TABS_TAB_ENUMS_H_

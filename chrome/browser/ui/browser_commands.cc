@@ -30,7 +30,7 @@
 #include "chrome/browser/dom_distiller/tab_utils.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/favicon/favicon_utils.h"
-#include "chrome/browser/feed/web_feed_follow_util.h"
+#include "chrome/browser/feed/web_feed_ui_util.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -1847,9 +1847,16 @@ void ProcessInterceptedChromeURLNavigationInIncognito(Browser* browser,
   }
 }
 
-void FollowSite(Browser* browser, content::WebContents* web_contents) {
-  DCHECK(browser && !browser->profile()->IsIncognitoProfile());
+void FollowSite(content::WebContents* web_contents) {
+  DCHECK(!Profile::FromBrowserContext(web_contents->GetBrowserContext())
+              ->IsIncognitoProfile());
   feed::FollowSite(web_contents);
+}
+
+void UnfollowSite(content::WebContents* web_contents) {
+  DCHECK(!Profile::FromBrowserContext(web_contents->GetBrowserContext())
+              ->IsIncognitoProfile());
+  feed::UnfollowSite(web_contents);
 }
 
 #if BUILDFLAG(IS_LINUX)

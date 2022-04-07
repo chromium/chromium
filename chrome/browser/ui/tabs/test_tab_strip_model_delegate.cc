@@ -104,3 +104,6 @@ void TestTabStripModelDelegate::CacheWebContents(
 
 void TestTabStripModelDelegate::FollowSite(content::WebContents* web_contents) {
 }
+
+void TestTabStripModelDelegate::UnfollowSite(
+    content::WebContents* web_contents) {}

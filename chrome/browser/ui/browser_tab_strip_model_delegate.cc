@@ -264,7 +264,12 @@ void BrowserTabStripModelDelegate::CacheWebContents(
 
 void BrowserTabStripModelDelegate::FollowSite(
     content::WebContents* web_contents) {
-  chrome::FollowSite(browser_, web_contents);
+  chrome::FollowSite(web_contents);
+}
+
+void BrowserTabStripModelDelegate::UnfollowSite(
+    content::WebContents* web_contents) {
+  chrome::UnfollowSite(web_contents);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

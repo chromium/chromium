@@ -5298,6 +5298,7 @@ test("unit_tests") {
     sources += [
       "../browser/feed/feed_service_factory_unittest.cc",
       "../browser/feed/rss_links_fetcher_unittest.cc",
+      "../browser/feed/web_feed_tab_helper_unittest.cc",
     ]
   }
 

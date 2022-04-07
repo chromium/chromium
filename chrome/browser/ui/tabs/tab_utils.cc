@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/feed/web_feed_tab_helper.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/profiles/profile.h"
@@ -194,6 +195,44 @@ bool AreAllSitesMuted(const TabStripModel& tab_strip,
       return false;
   }
   return true;
+}
+
+TabWebFeedFollowState GetSiteFollowState(const TabStripModel& tab_strip,
+                                         const int index) {
+  content::WebContents* web_contents = tab_strip.GetWebContentsAt(index);
+  DCHECK(web_contents);
+
+  feed::WebFeedTabHelper* tab_helper =
+      feed::WebFeedTabHelper::FromWebContents(web_contents);
+  if (!tab_helper)
+    return TabWebFeedFollowState::kUnknown;
+
+  // Make sure that the URL used to fetch the follow state matches the latest
+  // committed URL. There may be a chance that the contents have navigated to
+  // a different URL and the next asynchronous follow state fetch has not
+  // completed.
+  if (tab_helper->url() != web_contents->GetLastCommittedURL())
+    return TabWebFeedFollowState::kUnknown;
+
+  return tab_helper->follow_state();
+}
+
+TabWebFeedFollowState GetAggregatedFollowStateOfAllSites(
+    const TabStripModel& tab_strip,
+    const std::vector<int>& indices) {
+  bool all_followed = true;
+  for (int tab_index : indices) {
+    TabWebFeedFollowState state = GetSiteFollowState(tab_strip, tab_index);
+    if (state == TabWebFeedFollowState::kUnknown)
+      return TabWebFeedFollowState::kUnknown;
+    // Don't return kNotFollowed immediately since kUnknown should be returned
+    // when a later tab is found with kUnknown.
+    else if (state == TabWebFeedFollowState::kNotFollowed)
+      all_followed = false;
+  }
+
+  return all_followed ? TabWebFeedFollowState::kFollowed
+                      : TabWebFeedFollowState::kNotFollowed;
 }
 
 }  // namespace chrome
