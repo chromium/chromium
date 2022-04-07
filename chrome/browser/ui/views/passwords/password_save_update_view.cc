@@ -441,21 +441,8 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
 
   SetShowIcon(base::FeatureList::IsEnabled(
       password_manager::features::kUnifiedPasswordManagerDesktop));
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kUnifiedPasswordManagerDesktop)) {
-    // TODO(crbug.com/1309480): 1)Handle the signed-out case. 2) Double check
-    // the strings for non-branded builds.
-    SetFootnoteView(CreateGooglePasswordManagerFooterView(
-        controller_.GetPrimaryAccountEmail(),
-        base::BindRepeating(
-            [](PasswordSaveUpdateView* dialog) {
-              dialog->controller_.OnGooglePasswordManagerLinkClicked();
-            },
-            base::Unretained(this))));
+  SetFootnoteView(CreateFooterView());
 
-  } else {
-    SetFootnoteView(CreateFooterView());
-  }
   UpdateBubbleUIElements();
 
   Profile* profile =
@@ -622,6 +609,8 @@ void PasswordSaveUpdateView::UpdateBubbleUIElements() {
   if (!GetWidget())
     return;
 
+  UpdateFootnote();
+
   if (should_announce_save_update_change)
     AnnounceSaveUpdateChange();
 
@@ -639,15 +628,26 @@ void PasswordSaveUpdateView::UpdateBubbleUIElements() {
 }
 
 std::unique_ptr<views::View> PasswordSaveUpdateView::CreateFooterView() {
-  if (!controller_.ShouldShowFooter())
-    return nullptr;
-  auto label = std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD_FOOTER),
-      ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
-      views::style::STYLE_SECONDARY);
-  label->SetMultiLine(true);
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  return label;
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kUnifiedPasswordManagerDesktop)) {
+    if (!controller_.ShouldShowFooter())
+      return nullptr;
+    auto label = std::make_unique<views::Label>(
+        l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD_FOOTER),
+        ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
+        views::style::STYLE_SECONDARY);
+    label->SetMultiLine(true);
+    label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    return label;
+  }
+  return CreateGooglePasswordManagerFooterView(
+      controller_.GetPrimaryAccountEmail(),
+      controller_.IsCurrentStateAffectingPasswordsStoredInTheGoogleAccount(),
+      base::BindRepeating(
+          [](PasswordSaveUpdateView* dialog) {
+            dialog->controller_.OnGooglePasswordManagerLinkClicked();
+          },
+          base::Unretained(this)));
 }
 
 bool PasswordSaveUpdateView::ShouldShowFailedReauthIPH() {
@@ -740,6 +740,8 @@ void PasswordSaveUpdateView::OnContentChanged() {
   bool is_update_state_before = controller_.IsCurrentStateUpdate();
   bool is_ok_button_enabled_before =
       IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK);
+  bool changes_synced_to_account_before =
+      controller_.IsCurrentStateAffectingPasswordsStoredInTheGoogleAccount();
   UpdateUsernameAndPasswordInModel();
   // Maybe the buttons should be updated.
   if (is_update_state_before != controller_.IsCurrentStateUpdate() ||
@@ -747,5 +749,24 @@ void PasswordSaveUpdateView::OnContentChanged() {
           IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK)) {
     UpdateBubbleUIElements();
     DialogModelChanged();
+  } else if (changes_synced_to_account_before !=
+             controller_
+                 .IsCurrentStateAffectingPasswordsStoredInTheGoogleAccount()) {
+    // For account store users, there is a different footnote when affecting the
+    // account store.
+    UpdateFootnote();
   }
+}
+
+void PasswordSaveUpdateView::UpdateFootnote() {
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kUnifiedPasswordManagerDesktop)) {
+    return;
+  }
+  DCHECK(GetBubbleFrameView());
+  GetBubbleFrameView()->SetFootnoteView(CreateFooterView());
+
+  // The footnote size could have changed since it depends on whether it
+  // affects the account store, and hence resize.
+  SizeToContents();
 }

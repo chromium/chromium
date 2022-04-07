@@ -544,6 +544,9 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_PASSWORD_MANAGER_TITLE_BRAND" desc="The product name used in the title of the password bubble.">
         Google Chrome
       </message>
+      <message name="IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE" desc="The text of the Google Password Manager links displayed on Password Manager bubbles footer when the credentials are stored only locally.">
+        Google Password Manager
+      </message>
       <message name="IDS_PASSWORD_MANAGER_SAVE_PASSWORD_SIGNED_OUT_MESSAGE_DESCRIPTION" desc="The description of the Google Password Manager's save password message when the user is signed out.">
         To Google Password Manager on this device
       </message>

@@ -92,6 +92,9 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
   // Used for both the username and password editable comboboxes.
   void OnContentChanged();
 
+  // Should be called only after the bubble has been displayed.
+  void UpdateFootnote();
+
   SaveUpdateBubbleController controller_;
 
   // True iff it is an update password bubble on creation. False iff it is a

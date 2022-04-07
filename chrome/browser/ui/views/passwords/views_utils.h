@@ -15,9 +15,11 @@ class View;
 }
 
 // Returns the view should be used as a footer for Password Manager bubbles on
-// Desktop.
+// Desktop. `synced_to_account` indicates whether the user is syncing this
+// credentials to their Google account.
 std::unique_ptr<views::View> CreateGooglePasswordManagerFooterView(
     const std::u16string& email,
+    bool synced_to_account,
     base::RepeatingClosure open_google_password_manager_closure);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_VIEWS_UTILS_H_

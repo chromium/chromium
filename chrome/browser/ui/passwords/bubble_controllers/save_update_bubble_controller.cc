@@ -227,9 +227,14 @@ bool SaveUpdateBubbleController::ShouldShowFooter() const {
          IsSyncUser(GetProfile());
 }
 
-bool SaveUpdateBubbleController::IsCurrentStateAffectingTheAccountStore() {
+bool SaveUpdateBubbleController::
+    IsCurrentStateAffectingPasswordsStoredInTheGoogleAccount() {
   DCHECK(state_ == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
          state_ == password_manager::ui::PENDING_PASSWORD_STATE);
+
+  if (IsSyncUser(GetProfile()))
+    return true;
+
   bool is_update = false;
   bool is_update_in_account_store = false;
   for (const password_manager::PasswordForm& form : existing_credentials_) {
