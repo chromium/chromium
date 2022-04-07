@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/lazy_load.js';
-// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
-// #import {SmbMountResult, SmbBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
-// #import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {flushTasks} from 'chrome://test/test_util.js';
-// clang-format on
+import {SmbBrowserProxyImpl, SmbMountResult} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertFalse, assertTrue} from '../../chai_assert.js';
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
 /** @implements {smb_shares.SmbBrowserProxy} */
 class TestSmbBrowserProxy extends TestBrowserProxy {
@@ -45,7 +42,7 @@ suite('AddSmbShareDialogTests', function() {
 
   setup(function() {
     smbBrowserProxy = new TestSmbBrowserProxy();
-    smb_shares.SmbBrowserProxyImpl.instance_ = smbBrowserProxy;
+    SmbBrowserProxyImpl.instance_ = smbBrowserProxy;
 
     PolymerTest.clearBody();
 
@@ -55,12 +52,12 @@ suite('AddSmbShareDialogTests', function() {
     const button = page.$$('#addShare');
     assertTrue(!!button);
     button.click();
-    Polymer.dom.flush();
+    flush();
 
     addDialog = page.$$('add-smb-share-dialog');
     assertTrue(!!addDialog);
 
-    Polymer.dom.flush();
+    flush();
   });
 
   teardown(function() {
@@ -173,7 +170,7 @@ suite('AddSmbShareDialogTests', function() {
     page.prefs = {
       network_file_shares: {allowed: {value: false}},
     };
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(!!page.$$('cr-policy-pref-indicator'));
     assertTrue(button.disabled);
@@ -203,13 +200,13 @@ suite('AddSmbShareDialogTests', function() {
 
     dropDown.value = 'kerberos';
     dropDown.dispatchEvent(new CustomEvent('change'));
-    Polymer.dom.flush();
+    flush();
 
     expectTrue(credentials.hidden);
 
     dropDown.value = 'credentials';
     dropDown.dispatchEvent(new CustomEvent('change'));
-    Polymer.dom.flush();
+    flush();
 
     expectFalse(credentials.hidden);
   });
@@ -233,12 +230,12 @@ suite('AddSmbShareDialogTests', function() {
     assertFalse(button.disabled);
     button.click();
 
-    Polymer.dom.flush();
+    flush();
 
     addDialog = page.$$('add-smb-share-dialog');
     assertTrue(!!addDialog);
 
-    Polymer.dom.flush();
+    flush();
 
     const openDialogButton = page.$$('#addShare');
     openDialogButton.click();

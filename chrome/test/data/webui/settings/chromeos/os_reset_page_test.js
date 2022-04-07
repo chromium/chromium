@@ -12,8 +12,8 @@ import {waitAfterNextRender} from 'chrome://test/test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
-import {TestLifetimeBrowserProxy} from './test_os_lifetime_browser_proxy.m.js';
-import {TestOsResetBrowserProxy} from './test_os_reset_browser_proxy.m.js';
+import {TestLifetimeBrowserProxy} from './test_os_lifetime_browser_proxy.js';
+import {TestOsResetBrowserProxy} from './test_os_reset_browser_proxy.js';
 
 /** @enum {string} */
 const TestNames = {

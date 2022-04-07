@@ -14,7 +14,7 @@ import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
-import {FakeSystemDisplay} from './fake_system_display.m.js';
+import {FakeSystemDisplay} from './fake_system_display.js';
 
 /** @enum {string} */
 const TestNames = {

@@ -9,8 +9,8 @@ import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
-import {TestPersonalizationHubBrowserProxy} from './test_personalization_hub_browser_proxy.m.js';
-import {TestWallpaperBrowserProxy} from './test_wallpaper_browser_proxy.m.js';
+import {TestPersonalizationHubBrowserProxy} from './test_personalization_hub_browser_proxy.js';
+import {TestWallpaperBrowserProxy} from './test_wallpaper_browser_proxy.js';
 
 let personalizationPage = null;
 

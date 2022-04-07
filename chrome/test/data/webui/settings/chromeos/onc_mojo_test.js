@@ -4,8 +4,6 @@
 
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 
-import {assertThrows} from '../../chai_assert.js';
-
 const mojom = chromeos.networkConfig.mojom;
 
 suite('OncMojoTest', () => {
