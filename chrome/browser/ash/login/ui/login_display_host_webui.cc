@@ -796,8 +796,16 @@ void LoginDisplayHostWebUI::OnUserSwitchAnimationFinished() {
 void LoginDisplayHostWebUI::OnCurrentScreenChanged(OobeScreenId current_screen,
                                                    OobeScreenId new_screen) {
   if (current_screen == OobeScreen::SCREEN_UNKNOWN) {
+    // TODO(crbug.com/1305245) - Remove once the issue is fixed.
+    LOG(WARNING) << "LoginDisplayHostWebUI::OnCurrentScreenChanged() "
+                    "NotifyLoginOrLockScreenVisible";
+
     // First screen shown.
     session_manager::SessionManager::Get()->NotifyLoginOrLockScreenVisible();
+  } else {
+    // TODO(crbug.com/1305245) - Remove once the issue is fixed.
+    LOG(WARNING) << "LoginDisplayHostWebUI::OnCurrentScreenChanged() Not "
+                    "notifying LoginOrLockScreenVisible.";
   }
 }
 

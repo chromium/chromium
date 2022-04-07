@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/test/login_or_lock_screen_visible_waiter.h"
 
+#include "base/logging.h"
+
 namespace ash {
 
 LoginOrLockScreenVisibleWaiter::LoginOrLockScreenVisibleWaiter() {
@@ -37,10 +39,15 @@ void LoginOrLockScreenVisibleWaiter::WaitImpl(
   if (!session_observation_.IsObserving())
     session_observation_.Observe(session_manager);
 
+  // TODO(crbug.com/1305245) - Remove once the issue is fixed.
+  LOG(WARNING) << "LoginOrLockScreenVisibleWaiter::Wait() waiting...";
   run_loop_.Run();
 }
 
 void LoginOrLockScreenVisibleWaiter::OnLoginOrLockScreenVisible() {
+  // TODO(crbug.com/1305245) - Remove once the issue is fixed.
+  LOG(WARNING)
+      << "LoginOrLockScreenVisibleWaiter::OnLoginOrLockScreenVisible()";
   run_loop_.Quit();
 }
 

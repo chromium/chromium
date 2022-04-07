@@ -100,6 +100,8 @@ void LoginDisplayMojo::Init(const user_manager::UserList& filtered_users,
     VLOG(1) << "Emitting login-prompt-visible";
     SessionManagerClient::Get()->EmitLoginPromptVisible();
 
+    // TODO(crbug.com/1305245) - Remove once the issue is fixed.
+    LOG(WARNING) << "LoginDisplayMojo::Init() NotifyLoginOrLockScreenVisible";
     session_manager::SessionManager::Get()->NotifyLoginOrLockScreenVisible();
 
     // If there no available users exist, delay showing the dialogs until after
