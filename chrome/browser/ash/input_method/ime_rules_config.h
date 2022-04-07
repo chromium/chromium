@@ -49,10 +49,19 @@ class ImeRulesConfig {
   std::vector<std::string> rule_auto_correct_domain_denylist_;
   // The default denylist of domains that will turn off auto_correct feature.
   std::vector<std::string> default_auto_correct_domain_denylist_{
-      "amazon.com",           "b.corp.google.com", "buganizer.corp.google.com",
-      "classroom.google.com", "desmos.com",        "docs.google.com",
-      "facebook.com",         "instagram.com",     "outlook.live.com",
-      "outlook.office.com",   "quizlet.com",       "whatsapp.com",
+      "amazon.com",
+      "b.corp.google.com",
+      "buganizer.corp.google.com",
+      "cider.corp.google.com",
+      "classroom.google.com",
+      "desmos.com",
+      "docs.google.com",
+      "facebook.com",
+      "instagram.com",
+      "outlook.live.com",
+      "outlook.office.com",
+      "quizlet.com",
+      "whatsapp.com",
       "youtube.com",
   };
 };
