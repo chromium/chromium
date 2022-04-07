@@ -48,6 +48,11 @@ using ::testing::Optional;
 
 using Checkpoint = ::testing::MockFunction<void(int step)>;
 
+constexpr char kSourceDataHandleStatusMetric[] =
+    "Conversions.SourceDataHandleStatus";
+constexpr char kTriggerDataHandleStatusMetric[] =
+    "Conversions.TriggerDataHandleStatus";
+
 struct ExpectedTriggerQueueEventCounts {
   base::HistogramBase::Count skipped_queue = 0;
   base::HistogramBase::Count dropped = 0;
@@ -152,6 +157,8 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
                                 1);
   histograms.ExpectTimeBucketCount("Conversions.SourceEligibleDataHostLifeTime",
                                    base::Milliseconds(1), 1);
+  // kSuccess = 0.
+  histograms.ExpectUniqueSample(kSourceDataHandleStatusMetric, 0, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -216,11 +223,17 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   histograms.ExpectUniqueSample("Conversions.RegisteredSourcesPerDataHost", 1,
                                 3);
+  // kSuccess = 0.
+  histograms.ExpectBucketCount(kSourceDataHandleStatusMetric, 0, 3);
+  // kUntrustworthyOrigin = 1.
+  histograms.ExpectBucketCount(kSourceDataHandleStatusMetric, 1, 2);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
        SourceDataHost_FilterSizeCheckPerformed) {
   for (const auto& test_case : kAttributionFilterSizeTestCases) {
+    base::HistogramTester histograms;
+
     SCOPED_TRACE(test_case.description);  // EXPECT_CALL doesn't support <<
     EXPECT_CALL(mock_manager_, HandleSource).Times(test_case.valid);
 
@@ -242,6 +255,10 @@ TEST_F(AttributionDataHostManagerImplTest,
     data_host_remote.FlushForTesting();
 
     Mock::VerifyAndClear(&mock_manager_);
+
+    // kSuccess = 0, kInvalidData = 3.
+    histograms.ExpectUniqueSample(kSourceDataHandleStatusMetric,
+                                  test_case.valid ? 0 : 3, 1);
   }
 }
 
@@ -265,6 +282,8 @@ TEST_F(AttributionDataHostManagerImplTest,
   };
 
   for (const auto& test_case : kTestCases) {
+    base::HistogramTester histograms;
+
     SCOPED_TRACE(test_case.description);  // EXPECT_CALL doesn't support <<
     EXPECT_CALL(mock_manager_, HandleSource).Times(test_case.valid);
 
@@ -286,6 +305,10 @@ TEST_F(AttributionDataHostManagerImplTest,
     data_host_remote.FlushForTesting();
 
     Mock::VerifyAndClear(&mock_manager_);
+
+    // kSuccess = 0, kInvalidData = 3.
+    histograms.ExpectUniqueSample(kSourceDataHandleStatusMetric,
+                                  test_case.valid ? 0 : 3, 1);
   }
 }
 
@@ -344,6 +367,10 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   histograms.ExpectUniqueSample("Conversions.RegisteredSourcesPerDataHost", 2,
                                 1);
+  // kSuccess = 0.
+  histograms.ExpectBucketCount(kSourceDataHandleStatusMetric, 0, 2);
+  // kContextError = 2.
+  histograms.ExpectBucketCount(kSourceDataHandleStatusMetric, 2, 2);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -380,6 +407,8 @@ TEST_F(AttributionDataHostManagerImplTest,
   };
 
   for (auto& test_case : kTestCases) {
+    base::HistogramTester histograms;
+
     SCOPED_TRACE(
         test_case.description);  // Since EXPECT_CALL doesn't support <<
     EXPECT_CALL(mock_manager_, HandleSource).Times(test_case.valid);
@@ -400,6 +429,10 @@ TEST_F(AttributionDataHostManagerImplTest,
     data_host_remote.FlushForTesting();
 
     Mock::VerifyAndClear(&mock_manager_);
+
+    // kSuccess = 0, kInvalidData = 3.
+    histograms.ExpectUniqueSample(kSourceDataHandleStatusMetric,
+                                  test_case.valid ? 0 : 3, 1);
   }
 }
 
@@ -479,6 +512,8 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
 
   histograms.ExpectBucketCount("Conversions.RegisteredTriggersPerDataHost", 1,
                                1);
+  // kSuccess = 0.
+  histograms.ExpectUniqueSample(kTriggerDataHandleStatusMetric, 0, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -533,11 +568,17 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   histograms.ExpectUniqueSample("Conversions.RegisteredTriggersPerDataHost", 1,
                                 3);
+  // kSuccess = 0.
+  histograms.ExpectBucketCount(kTriggerDataHandleStatusMetric, 0, 3);
+  // kUntrustworthyOrigin = 1.
+  histograms.ExpectBucketCount(kTriggerDataHandleStatusMetric, 1, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
        TriggerDataHost_TopLevelFilterSizeCheckPerformed) {
   for (const auto& test_case : kAttributionFilterSizeTestCases) {
+    base::HistogramTester histograms;
+
     SCOPED_TRACE(test_case.description);  // EXPECT_CALL doesn't support <<
     EXPECT_CALL(mock_manager_, HandleTrigger).Times(test_case.valid);
 
@@ -560,12 +601,18 @@ TEST_F(AttributionDataHostManagerImplTest,
     data_host_remote.FlushForTesting();
 
     Mock::VerifyAndClear(&mock_manager_);
+
+    // kSuccess = 0, kInvalidData = 3.
+    histograms.ExpectUniqueSample(kTriggerDataHandleStatusMetric,
+                                  test_case.valid ? 0 : 3, 1);
   }
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
        TriggerDataHost_EventTriggerDataFilterSizeCheckPerformed) {
   for (const auto& test_case : kAttributionFilterSizeTestCases) {
+    base::HistogramTester histograms;
+
     SCOPED_TRACE(test_case.description);  // EXPECT_CALL doesn't support <<
     EXPECT_CALL(mock_manager_, HandleTrigger).Times(test_case.valid);
 
@@ -594,12 +641,18 @@ TEST_F(AttributionDataHostManagerImplTest,
     data_host_remote.FlushForTesting();
 
     Mock::VerifyAndClear(&mock_manager_);
+
+    // kSuccess = 0, kInvalidData = 3.
+    histograms.ExpectUniqueSample(kTriggerDataHandleStatusMetric,
+                                  test_case.valid ? 0 : 3, 1);
   }
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
        TriggerDataHost_EventTriggerDataNotFilterSizeCheckPerformed) {
   for (const auto& test_case : kAttributionFilterSizeTestCases) {
+    base::HistogramTester histograms;
+
     SCOPED_TRACE(test_case.description);  // EXPECT_CALL doesn't support <<
     EXPECT_CALL(mock_manager_, HandleTrigger).Times(test_case.valid);
 
@@ -629,6 +682,10 @@ TEST_F(AttributionDataHostManagerImplTest,
     data_host_remote.FlushForTesting();
 
     Mock::VerifyAndClear(&mock_manager_);
+
+    // kSuccess = 0, kInvalidData = 3.
+    histograms.ExpectUniqueSample(kTriggerDataHandleStatusMetric,
+                                  test_case.valid ? 0 : 3, 1);
   }
 }
 
@@ -643,6 +700,8 @@ TEST_F(AttributionDataHostManagerImplTest,
   };
 
   for (const auto& test_case : kTestCases) {
+    base::HistogramTester histograms;
+
     EXPECT_CALL(mock_manager_, HandleTrigger).Times(test_case.expected);
 
     mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
@@ -672,6 +731,10 @@ TEST_F(AttributionDataHostManagerImplTest,
     data_host_remote.FlushForTesting();
 
     Mock::VerifyAndClear(&mock_manager_);
+
+    // kSuccess = 0, kInvalidData = 3.
+    histograms.ExpectUniqueSample(kTriggerDataHandleStatusMetric,
+                                  test_case.expected ? 0 : 3, 1);
   }
 }
 
@@ -737,6 +800,10 @@ TEST_F(AttributionDataHostManagerImplTest,
   histograms.ExpectTotalCount("Conversions.RegisteredSourcesPerDataHost", 0);
   histograms.ExpectUniqueSample("Conversions.RegisteredTriggersPerDataHost", 3,
                                 1);
+  // kSuccess = 0.
+  histograms.ExpectUniqueSample(kTriggerDataHandleStatusMetric, 0, 3);
+  // kContextError = 2.
+  histograms.ExpectUniqueSample(kSourceDataHandleStatusMetric, 2, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -801,6 +868,10 @@ TEST_F(AttributionDataHostManagerImplTest,
   histograms.ExpectUniqueSample("Conversions.RegisteredSourcesPerDataHost", 3,
                                 1);
   histograms.ExpectTotalCount("Conversions.RegisteredTriggersPerDataHost", 0);
+  // kSuccess = 0.
+  histograms.ExpectUniqueSample(kSourceDataHandleStatusMetric, 0, 3);
+  // kContextError = 2.
+  histograms.ExpectUniqueSample(kTriggerDataHandleStatusMetric, 2, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,

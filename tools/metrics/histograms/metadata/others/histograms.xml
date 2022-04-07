@@ -3506,6 +3506,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.SourceDataHandleStatus"
+    enum="ConversionDataHandleStatus" expires_after="2022-10-06">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often source data available to the data host manager are
+    handled successfully or dropped and why. Recorded once for each source data
+    available.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.SourceEligibleDataHostLifeTime" units="ms"
     expires_after="2022-09-25">
   <owner>linnan@chromium.org</owner>
@@ -3585,6 +3597,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the time between a conversion and its reporting. This is emitted
     whenever a conversion report is sent.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.TriggerDataHandleStatus"
+    enum="ConversionDataHandleStatus" expires_after="2022-10-06">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often trigger data available to the data host manager are
+    handled successfully or dropped and why. Recorded once for each trigger data
+    available.
   </summary>
 </histogram>
 

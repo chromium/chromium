@@ -49,6 +49,25 @@ void RecordTriggerQueueEvent(TriggerQueueEvent event) {
   base::UmaHistogramEnumeration("Conversions.TriggerQueueEvents", event);
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class DataHandleStatus {
+  kSuccess = 0,
+  kUntrustworthyOrigin = 1,
+  kContextError = 2,
+  kInvalidData = 3,
+
+  kMaxValue = kInvalidData,
+};
+
+void RecordSourceDataHandleStatus(DataHandleStatus status) {
+  base::UmaHistogramEnumeration("Conversions.SourceDataHandleStatus", status);
+}
+
+void RecordTriggerDataHandleStatus(DataHandleStatus status) {
+  base::UmaHistogramEnumeration("Conversions.TriggerDataHandleStatus", status);
+}
+
 const base::FeatureParam<base::TimeDelta> kTriggerDelay{
     &blink::features::kConversionMeasurement, "trigger_delay",
     base::Seconds(5)};
@@ -194,11 +213,10 @@ void AttributionDataHostManagerImpl::NotifyNavigationFailure(
 
 void AttributionDataHostManagerImpl::SourceDataAvailable(
     blink::mojom::AttributionSourceDataPtr data) {
-  // TODO(linnan): Log metrics for early returns.
-
   // The API is only allowed in secure contexts.
   if (!network::IsOriginPotentiallyTrustworthy(data->reporting_origin) ||
       !network::IsOriginPotentiallyTrustworthy(data->destination)) {
+    RecordSourceDataHandleStatus(DataHandleStatus::kUntrustworthyOrigin);
     return;
   }
 
@@ -213,6 +231,7 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
       // navigation origin.
       if (net::SchemefulSite(data->destination) !=
           net::SchemefulSite(*context.destination)) {
+        RecordSourceDataHandleStatus(DataHandleStatus::kContextError);
         return;
       }
       break;
@@ -221,6 +240,7 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
       if (!context.destination.has_value()) {
         context.destination = data->destination;
       } else if (data->destination != *context.destination) {
+        RecordSourceDataHandleStatus(DataHandleStatus::kContextError);
         return;
       }
       break;
@@ -231,14 +251,20 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   absl::optional<AttributionFilterData> filter_data =
       AttributionFilterData::FromSourceFilterValues(
           std::move(data->filter_data->filter_values));
-  if (!filter_data.has_value())
+  if (!filter_data.has_value()) {
+    RecordSourceDataHandleStatus(DataHandleStatus::kInvalidData);
     return;
+  }
 
   absl::optional<AttributionAggregatableSource> aggregatable_source =
       AttributionAggregatableSource::Create(
           ConvertToProto(*data->aggregatable_source));
-  if (!aggregatable_source.has_value())
+  if (!aggregatable_source.has_value()) {
+    RecordSourceDataHandleStatus(DataHandleStatus::kInvalidData);
     return;
+  }
+
+  RecordSourceDataHandleStatus(DataHandleStatus::kSuccess);
 
   context.num_data_registered++;
 
@@ -258,35 +284,42 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
 
 void AttributionDataHostManagerImpl::TriggerDataAvailable(
     blink::mojom::AttributionTriggerDataPtr data) {
-  // TODO(linnan): Log metrics for early returns.
-
   // The API is only allowed in secure contexts.
-  if (!network::IsOriginPotentiallyTrustworthy(data->reporting_origin))
+  if (!network::IsOriginPotentiallyTrustworthy(data->reporting_origin)) {
+    RecordTriggerDataHandleStatus(DataHandleStatus::kUntrustworthyOrigin);
     return;
+  }
 
   FrozenContext& context = receivers_.current_context();
   DCHECK(network::IsOriginPotentiallyTrustworthy(context.context_origin));
 
   // Only possible in the case of a bad renderer, navigation bound data hosts
   // cannot register triggers.
-  if (context.source_type == AttributionSourceType::kNavigation)
+  if (context.source_type == AttributionSourceType::kNavigation) {
+    RecordTriggerDataHandleStatus(DataHandleStatus::kContextError);
     return;
+  }
 
   if (!context.destination.has_value()) {
     context.destination = url::Origin();
     OnSourceEligibleDataHostFinished(context.register_time);
   } else if (!context.destination->opaque()) {
+    RecordTriggerDataHandleStatus(DataHandleStatus::kContextError);
     return;
   }
 
   absl::optional<AttributionFilterData> filters =
       AttributionFilterData::FromTriggerFilterValues(
           std::move(data->filters->filter_values));
-  if (!filters.has_value())
+  if (!filters.has_value()) {
+    RecordTriggerDataHandleStatus(DataHandleStatus::kInvalidData);
     return;
+  }
 
-  if (data->event_triggers.size() > blink::kMaxAttributionEventTriggerData)
+  if (data->event_triggers.size() > blink::kMaxAttributionEventTriggerData) {
+    RecordTriggerDataHandleStatus(DataHandleStatus::kInvalidData);
     return;
+  }
 
   std::vector<AttributionTrigger::EventTriggerData> event_triggers;
   event_triggers.reserve(data->event_triggers.size());
@@ -295,14 +328,18 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
     absl::optional<AttributionFilterData> filters =
         AttributionFilterData::FromTriggerFilterValues(
             std::move(event_trigger->filters->filter_values));
-    if (!filters.has_value())
+    if (!filters.has_value()) {
+      RecordTriggerDataHandleStatus(DataHandleStatus::kInvalidData);
       return;
+    }
 
     absl::optional<AttributionFilterData> not_filters =
         AttributionFilterData::FromTriggerFilterValues(
             std::move(event_trigger->not_filters->filter_values));
-    if (!not_filters.has_value())
+    if (!not_filters.has_value()) {
+      RecordTriggerDataHandleStatus(DataHandleStatus::kInvalidData);
       return;
+    }
 
     event_triggers.emplace_back(
         event_trigger->data, event_trigger->priority,
@@ -315,8 +352,12 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
   absl::optional<AttributionAggregatableTrigger> aggregatable_trigger =
       AttributionAggregatableTrigger::FromMojo(
           std::move(data->aggregatable_trigger));
-  if (!aggregatable_trigger.has_value())
+  if (!aggregatable_trigger.has_value()) {
+    RecordTriggerDataHandleStatus(DataHandleStatus::kInvalidData);
     return;
+  }
+
+  RecordTriggerDataHandleStatus(DataHandleStatus::kSuccess);
 
   context.num_data_registered++;
 

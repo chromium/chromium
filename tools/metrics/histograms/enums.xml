@@ -16935,6 +16935,13 @@ Called by update_net_error_codes.py.-->
   <int value="9" label="Not registered"/>
 </enum>
 
+<enum name="ConversionDataHandleStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Untrustworthy origin"/>
+  <int value="2" label="Context error"/>
+  <int value="3" label="Invalid data"/>
+</enum>
+
 <enum name="ConversionPostSendReportDeleteEvent">
   <obsolete>
     The error rate is not high enough to merit monitoring.
