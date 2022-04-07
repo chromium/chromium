@@ -302,7 +302,7 @@ NSAttributedString* FooterAttributedStringWithMessageIDAndURL(
     case SigninScreenConsumerScreenIntentWelcomeAndSignin: {
       NSAttributedString* footerLine =
           FooterAttributedStringWithMessageIDAndURL(
-              IDS_IOS_FIRST_RUN_WELCOME_SCREEN_MICE_TERMS_OF_SERVICE,
+              IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE,
               kTermsOfServiceURL);
       AddNewLineToFooterString(footerLine, footerAttributedString);
       footerLine = FooterAttributedStringWithMessageIDAndURL(
@@ -314,7 +314,7 @@ NSAttributedString* FooterAttributedStringWithMessageIDAndURL(
     case SigninScreenConsumerScreenIntentWelcomeWithoutUMAAndSignin: {
       NSAttributedString* footerLine =
           FooterAttributedStringWithMessageIDAndURL(
-              IDS_IOS_FIRST_RUN_WELCOME_SCREEN_MICE_TERMS_OF_SERVICE,
+              IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE,
               kTermsOfServiceURL);
       AddNewLineToFooterString(footerLine, footerAttributedString);
       break;
