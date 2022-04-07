@@ -136,11 +136,11 @@ function buildWordMatcher(words: string[]): RegExp {
 /**
  * Regular expression to check for all variants of blu[e]toot[h] with or without
  * space between the words; for BT when used as an individual word, or as two
- * individual characters, and for BLE when used as an individual word. Case
- * insensitive matching.
+ * individual characters, and for BLE, BlueZ, and Floss when used as an
+ * individual word. Case insensitive matching.
  */
-const btRegEx: RegExp =
-    new RegExp('blu[e]?[ ]?toot[h]?|\\bb[ ]?t\\b|\\bble\\b', 'i');
+const btRegEx: RegExp = new RegExp(
+    'blu[e]?[ ]?toot[h]?|\\bb[ ]?t\\b|\\bble\\b|\\bfloss\\b|\\bbluez\\b', 'i');
 
 /**
  * Regular expression to check for wifi-related keywords.
@@ -195,6 +195,12 @@ const nearbyShareRegEx: RegExp = new RegExp('nearby|phone', 'i');
  * Case insensitive matching.
  */
 const fastPairRegEx: RegExp = new RegExp('fast[ ]?pair', 'i');
+
+/**
+ * Regular expression to check for Bluetooth device specific keywords.
+ */
+const btDeviceRegEx =
+    buildWordMatcher(['apple', 'allegro', 'pixelbud', 'microsoft', 'sony']);
 
 /**
  * Reads the selected file when the user selects a file.
@@ -288,7 +294,7 @@ function checkForSendBluetoothLogs(inputEvent: Event) {
   const isRelatedToBluetooth = btRegEx.test(value) ||
       cantConnectRegEx.test(value) || tetherRegEx.test(value) ||
       smartLockRegEx.test(value) || nearbyShareRegEx.test(value) ||
-      fastPairRegEx.test(value);
+      fastPairRegEx.test(value) || btDeviceRegEx.test(value);
   $('bluetooth-checkbox-container').hidden = !isRelatedToBluetooth;
 }
 
