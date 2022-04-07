@@ -15,6 +15,7 @@
   .ancestor:has(#textinput:valid) { color: lightgreen }
   .ancestor:has(#numberinput:out-of-range) { color: darkgreen }
   .ancestor:has(#numberinput:required) { color: pink }
+  .ancestor:has(#progress:indeterminate) { color: orange }
 </style>
 <div id=subject class=ancestor>
   <input type="checkbox" name="my-checkbox" id="checkme">
@@ -22,6 +23,7 @@
   <input type="text" id="textinput" required>
   <input id="radioinput" checked>
   <input id="numberinput" type="number" min="1" max="10" value="5">
+  <progress id="progress" value="50" max="100"></progress>
 </div>
 <script>
   test(function() {
@@ -47,7 +49,18 @@
     checkme.checked = true;
     assert_equals(getComputedStyle(subject).color, "rgb(0, 128, 0)",
                   "ancestor should be green");
-  }, ":checked & :indeterminate invalidation");
+  }, ":checked & :indeterminate invalidation on <input>");
+
+  test(function() {
+    this.add_cleanup(() => {
+      progress.setAttribute("value", "50");
+    });
+    assert_equals(getComputedStyle(subject).color, "rgb(0, 0, 0)",
+                  "ancestor should be black");
+    progress.removeAttribute("value");
+    assert_equals(getComputedStyle(subject).color, "rgb(255, 165, 0)",
+                  "ancestor should be orange");
+  }, ":indeterminate invalidation on <progress>");
 
   test(function() {
     this.add_cleanup(() => {
