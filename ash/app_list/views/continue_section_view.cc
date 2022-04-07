@@ -118,8 +118,7 @@ ContinueSectionView::ContinueSectionView(
               &ContinueSectionView::OnSearchResultContainerResultsChanged,
               base::Unretained(this)),
           dialog_controller_, tablet_mode));
-
-  UpdateElementsVisibility();
+  suggestions_container_->SetVisible(false);
 }
 
 ContinueSectionView::~ContinueSectionView() {
@@ -310,6 +309,7 @@ void ContinueSectionView::RemovePrivacyNotice() {
     privacy_toast_ = nullptr;
   }
   UpdateElementsVisibility();
+  PreferredSizeChanged();
 }
 
 void ContinueSectionView::OnPrivacyNoticeShowTimerDone() {
@@ -394,10 +394,17 @@ void ContinueSectionView::MaybeAnimateOutPrivacyNotice() {
 void ContinueSectionView::UpdateElementsVisibility() {
   const bool show_files_section = ShouldShowFilesSection();
   const bool show_privacy_notice = ShouldShowPrivacyNotice();
+
   SetVisible(show_files_section || show_privacy_notice);
+
+  const bool suggestions_visibility_changed =
+      show_files_section != suggestions_container_->GetVisible();
   suggestions_container_->SetVisible(show_files_section);
   if (continue_label_)
     continue_label_->SetVisible(show_files_section);
+
+  if (suggestions_visibility_changed)
+    PreferredSizeChanged();
 }
 
 void ContinueSectionView::AddedToWidget() {
@@ -459,6 +466,9 @@ void ContinueSectionView::OnAppListVisibilityChanged(bool shown,
   if (shown)
     MaybeCreatePrivacyNotice();
   UpdateElementsVisibility();
+
+  if (privacy_toast_)
+    PreferredSizeChanged();
 }
 
 BEGIN_METADATA(ContinueSectionView, views::View)
