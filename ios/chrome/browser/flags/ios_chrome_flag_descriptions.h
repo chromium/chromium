@@ -367,14 +367,6 @@ extern const char kIOSOmniboxUpdatedPopupUIDescription[];
 extern const char kPasswordReuseDetectionName[];
 extern const char kPasswordReuseDetectionDescription[];
 
-// Title and description for the flag to enable the Reading List Messages.
-extern const char kReadingListMessagesName[];
-extern const char kReadingListMessagesDescription[];
-
-// Title and description for the flag to enable Reading List Time to Read.
-extern const char kReadingListTimeToReadName[];
-extern const char kReadingListTimeToReadDescription[];
-
 // Title and description for the flag to native restore web states.
 extern const char kRestoreSessionFromCacheName[];
 extern const char kRestoreSessionFromCacheDescription[];

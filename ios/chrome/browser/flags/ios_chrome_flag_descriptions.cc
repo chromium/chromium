@@ -398,16 +398,6 @@ const char kPasswordReuseDetectionDescription[] =
     "Displays warning when user types or pastes a saved password into a "
     "phishing website.";
 
-const char kReadingListMessagesName[] = "Enables Reading List Messages";
-const char kReadingListMessagesDescription[] =
-    "When enabled, a Messages prompt may be presented to allow the user to "
-    "save the current page to Reading List";
-
-const char kReadingListTimeToReadName[] = "Enables Reading List Time To Read";
-const char kReadingListTimeToReadDescription[] =
-    "When enabled, a Time to Read estimate is added to each Reading List "
-    "entry.";
-
 const char kRecordSnapshotSizeName[] =
     "Record the size of image and PDF snapshots in UMA histograms";
 const char kRecordSnapshotSizeDescription[] =

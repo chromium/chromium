@@ -89,7 +89,6 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/ui/content_suggestions",
     "//ios/chrome/browser/ui/first_run:field_trial",
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
-    "//ios/chrome/browser/ui/reading_list:features",
     "//ios/chrome/browser/ui/reading_list:reading_list_constants",
     "//ios/chrome/browser/voice:prefs",
     "//ios/chrome/browser/web",

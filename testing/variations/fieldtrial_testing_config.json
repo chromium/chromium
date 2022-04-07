@@ -5987,24 +5987,6 @@
             ]
         }
     ],
-    "ReadingListMessages": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "javascript_only": "true"
-                    },
-                    "enable_features": [
-                        "ReadingListMessages"
-                    ]
-                }
-            ]
-        }
-    ],
     "ReduceOpsTaskSplitting": [
         {
             "platforms": [

@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/web/js_compile.gni")
-
 source_set("reading_list") {
   sources = [
     "reading_list_coordinator.h",
@@ -53,7 +51,6 @@ source_set("reading_list") {
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/menu",
-    "//ios/chrome/browser/ui/reading_list:features",
     "//ios/chrome/browser/ui/reading_list/resources:distillation_fail_new",
     "//ios/chrome/browser/ui/sharing",
     "//ios/chrome/browser/ui/side_swipe",
@@ -76,42 +73,6 @@ source_set("reading_list") {
   ]
   allow_circular_includes_from = [ "//ios/chrome/browser/ui/side_swipe" ]
   frameworks = [ "UIKit.framework" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
-}
-
-source_set("reading_list_javascript_feature") {
-  sources = [
-    "reading_list_javascript_feature.h",
-    "reading_list_javascript_feature.mm",
-  ]
-  deps = [
-    ":distiller_js",
-    ":features",
-    "//base",
-    "//components/dom_distiller/core",
-    "//components/infobars/core",
-    "//components/prefs",
-    "//components/reading_list/core",
-    "//components/ukm/ios:ukm_url_recorder",
-    "//ios/chrome/browser",
-    "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/infobars",
-    "//ios/chrome/browser/reading_list",
-    "//ios/chrome/browser/ui/reading_list:infobar",
-    "//ios/chrome/browser/ui/reading_list:reading_list_constants",
-    "//ios/web/public",
-    "//ios/web/public/js_messaging:js_messaging",
-    "//services/metrics/public/cpp:ukm_builders",
-  ]
-  configs += [ "//build/config/compiler:enable_arc" ]
-}
-
-source_set("features") {
-  sources = [
-    "reading_list_features.h",
-    "reading_list_features.mm",
-  ]
-  deps = [ "//base" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
@@ -141,13 +102,6 @@ source_set("reading_list_constants") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
-js_compile_bundle("distiller_js") {
-  visibility = [ ":reading_list_javascript_feature" ]
-
-  closure_entry_point = "__crWeb.readingListDOM"
-  sources = [ "resources/dom_distiller.js" ]
-}
-
 source_set("reading_list_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -171,7 +125,6 @@ source_set("reading_list_ui") {
     "text_badge_view.mm",
   ]
   deps = [
-    ":features",
     ":reading_list_constants",
     "resources:reading_list_empty",
     "resources:reading_list_empty_state",
@@ -253,7 +206,6 @@ source_set("eg2_tests") {
   sources = [ "reading_list_egtest.mm" ]
   deps = [
     ":eg_test_support+eg2",
-    ":features",
     ":reading_list_constants",
     "//base",
     "//base/test:test_support",

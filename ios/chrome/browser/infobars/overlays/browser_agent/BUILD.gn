@@ -34,7 +34,6 @@ source_set("browser_agent_util") {
     "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/confirm",
     "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/passwords",
     "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/permissions",
-    "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/reading_list",
     "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/save_card",
     "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/translate",
     "//ios/chrome/browser/main:public",

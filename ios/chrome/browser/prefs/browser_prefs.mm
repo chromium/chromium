@@ -73,8 +73,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #include "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
-#import "ios/chrome/browser/ui/reading_list/reading_list_constants.h"
-#import "ios/chrome/browser/ui/reading_list/reading_list_features.h"
 #include "ios/chrome/browser/voice/voice_search_prefs_registration.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
 #import "ios/web/common/features.h"
@@ -138,6 +136,10 @@ const char kSigninBottomSheetShownCount[] =
 // Deprecated 03/2022
 const char kShowReadingListInBookmarkBar[] = "bookmark_bar.show_reading_list";
 }
+
+// Deprecated 03/2022
+const char kPrefReadingListMessagesNeverShow[] =
+    "reading_list_message_never_show";
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   BrowserStateInfoCache::RegisterPrefs(registry);
@@ -312,10 +314,6 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kWasOnboardingFeatureCheckedBefore, false);
   registry->RegisterDictionaryPref(kDomainsWithCookiePref);
 
-  if (IsReadingListMessagesEnabled()) {
-    registry->RegisterBooleanPref(kPrefReadingListMessagesNeverShow, false);
-  }
-
   registry->RegisterBooleanPref(prefs::kAllowChromeDataInBackups, true);
 
   // Preference related to the browser sign-in policy that is being deprecated.
@@ -390,4 +388,9 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
 
   // Added 03/2022
   prefs->ClearPref(kShowReadingListInBookmarkBar);
+
+  // Added 3/2022.
+  if (prefs->FindPreference(kPrefReadingListMessagesNeverShow)) {
+    prefs->ClearPref(kPrefReadingListMessagesNeverShow);
+  }
 }

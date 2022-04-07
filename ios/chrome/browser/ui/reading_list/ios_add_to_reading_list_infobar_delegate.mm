@@ -115,9 +115,4 @@ bool IOSAddToReadingListInfobarDelegate::Accept() {
   return true;
 }
 
-void IOSAddToReadingListInfobarDelegate::NeverShow() {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
-  PrefService* user_prefs = browser_state->GetPrefs();
-  user_prefs->SetBoolean(kPrefReadingListMessagesNeverShow, true);
-}
+void IOSAddToReadingListInfobarDelegate::NeverShow() {}

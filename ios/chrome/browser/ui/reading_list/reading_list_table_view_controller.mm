@@ -10,9 +10,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#import "components/prefs/ios/pref_observer_bridge.h"
-#include "components/prefs/pref_change_registrar.h"
-#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/app/tests_hook.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -25,7 +22,6 @@
 #import "ios/chrome/browser/ui/reading_list/reading_list_constants.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_data_sink.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_data_source.h"
-#import "ios/chrome/browser/ui/reading_list/reading_list_features.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_updater.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_view_controller_audience.h"
@@ -57,16 +53,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 };
 // Identifiers for sections in the reading list.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
-  SectionIdentifierMessagesSwitch = kSectionIdentifierEnumZero,
-  SectionIdentifierUnread,
+  SectionIdentifierUnread = kSectionIdentifierEnumZero,
   SectionIdentifierRead,
 };
-
-// User action names for toggling whether to show the Reading List Message.
-const char kReadingListMessagesToggleUserActionTurnOn[] =
-    "IOS.ReadingList.MessagesPromptToggle.On";
-const char kReadingListMessagesToggleUserActionTurnOff[] =
-    "IOS.ReadingList.MessagesPromptToggle.Off";
 
 // Returns the ReadingListSelectionState corresponding with the provided numbers
 // of read and unread items.
@@ -83,15 +72,9 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 }
 }  // namespace
 
-@interface ReadingListTableViewController () <PrefObserverDelegate,
-                                              ReadingListDataSink,
+@interface ReadingListTableViewController () <ReadingListDataSink,
                                               ReadingListToolbarButtonCommands,
-                                              TableViewURLDragDataSource> {
-  // Pref observer to track changes to prefs.
-  std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
-  // Registrar for pref changes notifications.
-  std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
-}
+                                              TableViewURLDragDataSource>
 
 // Redefine the model to return ReadingListListItems
 @property(nonatomic, readonly)
@@ -119,8 +102,6 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 @property(nonatomic, readonly, getter=isEditingWithSwipe) BOOL editingWithSwipe;
 // Handler for URL drag interactions.
 @property(nonatomic, strong) TableViewURLDragDropHandler* dragDropHandler;
-// The toggle setting of showing the Reading List Messages prompt.
-@property(nonatomic, strong) SyncSwitchItem* messagesPromptToggleSwitchItem;
 @end
 
 @implementation ReadingListTableViewController
@@ -222,22 +203,6 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  if (IsReadingListMessagesEnabled()) {
-    // Reset the boolean if an entry was added from a Messages prompt since the
-    // user has now seen that new entry in the Reading List.
-    [[NSUserDefaults standardUserDefaults]
-        setBool:NO
-         forKey:kLastReadingListEntryAddedFromMessages];
-
-    // pref observer listens to the Messages prompt in case two Reading Lists
-    // are shown in multiwindow.
-    _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
-    _prefChangeRegistrar->Init(self.browser->GetBrowserState()->GetPrefs());
-    _prefObserverBridge.reset(new PrefObserverBridge(self));
-    _prefObserverBridge->ObserveChangesForPreference(
-        kPrefReadingListMessagesNeverShow, _prefChangeRegistrar.get());
-  }
-
   self.title = l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_READING_LIST);
 
   self.tableView.accessibilityIdentifier =
@@ -272,34 +237,6 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 
 #pragma mark - UITableViewDataSource
 
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-  if ([cell isKindOfClass:[TableViewSwitchCell class]]) {
-    DCHECK(IsReadingListMessagesEnabled());
-    TableViewSwitchCell* switchCell =
-        base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
-    [switchCell.switchView addTarget:self
-                              action:@selector(switchAction:)
-                    forControlEvents:UIControlEventValueChanged];
-  }
-  return cell;
-}
-
-- (UIView*)tableView:(UITableView*)tableView
-    viewForFooterInSection:(NSInteger)section {
-  UIView* footer = [super tableView:tableView viewForFooterInSection:section];
-  if ([footer isKindOfClass:[TableViewTextHeaderFooterView class]]) {
-    DCHECK(IsReadingListMessagesEnabled());
-    TableViewTextHeaderFooterView* textFooter =
-        base::mac::ObjCCastStrict<TableViewTextHeaderFooterView>(footer);
-    textFooter.subtitleLabel.numberOfLines = 0;
-    textFooter.subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-  }
-  return footer;
-}
-
 - (void)tableView:(UITableView*)tableView
     commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
      forRowAtIndexPath:(NSIndexPath*)indexPath {
@@ -311,47 +248,10 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
             removeEmptySections:NO];
 }
 
-#pragma mark - TableViewSwitchCell action
-
-- (void)switchAction:(UISwitch*)sender {
-  PrefService* user_prefs = self.browser->GetBrowserState()->GetPrefs();
-  BOOL neverShowPrompt = ![sender isOn];
-  if (neverShowPrompt) {
-    base::RecordAction(
-        base::UserMetricsAction(kReadingListMessagesToggleUserActionTurnOff));
-  } else {
-    base::RecordAction(
-        base::UserMetricsAction(kReadingListMessagesToggleUserActionTurnOn));
-  }
-  user_prefs->SetBoolean(kPrefReadingListMessagesNeverShow, neverShowPrompt);
-}
-
-#pragma mark - PrefObserverDelegate
-
-- (void)onPreferenceChanged:(const std::string&)preferenceName {
-  DCHECK(IsReadingListMessagesEnabled());
-  if (preferenceName == kPrefReadingListMessagesNeverShow) {
-    PrefService* user_prefs = self.browser->GetBrowserState()->GetPrefs();
-    self.messagesPromptToggleSwitchItem.on =
-        !user_prefs->GetBoolean(kPrefReadingListMessagesNeverShow);
-    NSIndexPath* indexPath = [self.tableViewModel
-        indexPathForItemType:SwitchItemType
-           sectionIdentifier:SectionIdentifierMessagesSwitch];
-    [self reconfigureCellsForItems:@[ [self.tableViewModel
-                                       itemAtIndexPath:indexPath] ]];
-  }
-}
-
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [self tableView:tableView
-                    cellForRowAtIndexPath:indexPath];
-  if ([cell isKindOfClass:[TableViewSwitchCell class]]) {
-    DCHECK(IsReadingListMessagesEnabled());
-    return;
-  }
   if (self.editing) {
     // Update the selected item counts and the toolbar buttons.
     NSInteger sectionID = [self.tableViewModel
@@ -434,11 +334,6 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 - (void)loadModel {
   [super loadModel];
   self.dataSourceModifiedWhileEditing = NO;
-  // Add Reading List Messages toggle here so that it shows even if there are no
-  // entries.
-  if (IsReadingListMessagesEnabled()) {
-    [self addPromptToggleItemAndSection];
-  }
   if (self.dataSource.hasElements) {
     [self loadItems];
     [self.audience readingListHasItems:YES];
@@ -724,29 +619,6 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   [self updateToolbarItems];
 }
 
-// Adds section and SyncSwitchItem instance for the toggle setting of showing
-// the Reading List Messages prompt.
-- (void)addPromptToggleItemAndSection {
-  TableViewModel* model = self.tableViewModel;
-  [model addSectionWithIdentifier:SectionIdentifierMessagesSwitch];
-  self.messagesPromptToggleSwitchItem =
-      [[SyncSwitchItem alloc] initWithType:SwitchItemType];
-  self.messagesPromptToggleSwitchItem.text =
-      l10n_util::GetNSString(IDS_IOS_READING_LIST_MESSAGES_SETTING_TITLE);
-  self.messagesPromptToggleSwitchItem.enabled = YES;
-  PrefService* user_prefs = self.browser->GetBrowserState()->GetPrefs();
-  self.messagesPromptToggleSwitchItem.on =
-      !user_prefs->GetBoolean(kPrefReadingListMessagesNeverShow);
-  [model addItem:self.messagesPromptToggleSwitchItem
-      toSectionWithIdentifier:SectionIdentifierMessagesSwitch];
-  TableViewLinkHeaderFooterItem* footerItem =
-      [[TableViewLinkHeaderFooterItem alloc] initWithType:SwitchItemFooterType];
-  footerItem.text =
-      l10n_util::GetNSString(IDS_IOS_READING_LIST_MESSAGES_MODAL_DESCRIPTION);
-  [model setFooter:footerItem
-      forSectionWithIdentifier:SectionIdentifierMessagesSwitch];
-}
-
 // Adds |items| to self.tableViewModel for the section designated by
 // |sectionID|.
 - (void)loadItemsFromArray:(NSArray<id<ReadingListListItem>>*)items
@@ -778,8 +650,6 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
       break;
     case SectionIdentifierUnread:
       header.text = l10n_util::GetNSString(IDS_IOS_READING_LIST_UNREAD_HEADER);
-      break;
-    case SectionIdentifierMessagesSwitch:
       break;
   }
   return header;
@@ -947,9 +817,6 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   BOOL hasUnreadItems = [self hasItemInSection:SectionIdentifierUnread];
   BOOL creatingReadSection = (sectionID == SectionIdentifierRead);
   NSInteger sectionIndex = (hasUnreadItems && creatingReadSection) ? 1 : 0;
-  if (IsReadingListMessagesEnabled()) {
-    sectionIndex++;
-  }
 
   void (^updates)(void) = ^{
     [model insertSectionWithIdentifier:sectionID atIndex:sectionIndex];

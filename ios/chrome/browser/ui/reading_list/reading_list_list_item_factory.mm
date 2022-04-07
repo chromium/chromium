@@ -8,7 +8,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/url_formatter/url_formatter.h"
-#import "ios/chrome/browser/ui/reading_list/reading_list_features.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_custom_action_factory.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_util.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_table_view_item.h"
@@ -83,13 +82,6 @@
       hasDistillationDetails ? entry->DistillationSize() : 0;
   item.distillationSizeText =
       GetReadingListCellDistillationSizeText(distillationSize);
-  if (IsReadingListTimeToReadEnabled() &&
-      !entry->EstimatedReadTime().is_zero()) {
-    item.estimatedReadTimeText =
-        base::SysUTF16ToNSString(ui::TimeFormat::Simple(
-            ui::TimeFormat::FORMAT_DURATION, ui::TimeFormat::LENGTH_SHORT,
-            entry->EstimatedReadTime()));
-  }
   item.customActionFactory = self.customActionFactory;
   return item;
 }

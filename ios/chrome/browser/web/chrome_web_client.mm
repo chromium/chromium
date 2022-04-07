@@ -45,8 +45,6 @@
 #import "ios/chrome/browser/search_engines/search_engine_tab_helper_factory.h"
 #include "ios/chrome/browser/ssl/ios_ssl_error_handler.h"
 #import "ios/chrome/browser/ui/elements/windowed_container_view.h"
-#import "ios/chrome/browser/ui/reading_list/reading_list_features.h"
-#import "ios/chrome/browser/ui/reading_list/reading_list_javascript_feature.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/web/error_page_controller_bridge.h"
 #import "ios/chrome/browser/web/error_page_util.h"
@@ -267,14 +265,6 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
   features.push_back(java_script_console_feature);
 
   features.push_back(print_feature.get());
-
-  BOOL shouldInjectReadingListJavaScript =
-      IsReadingListMessagesEnabled() || IsReadingListTimeToReadEnabled();
-  if (!browser_state->IsOffTheRecord() && shouldInjectReadingListJavaScript) {
-    static base::NoDestructor<ReadingListJavaScriptFeature>
-        reading_list_feature;
-    features.push_back(reading_list_feature.get());
-  }
 
   features.push_back(autofill::AutofillJavaScriptFeature::GetInstance());
   features.push_back(autofill::FormHandlersJavaScriptFeature::GetInstance());

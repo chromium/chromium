@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_app_interface.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_constants.h"
-#import "ios/chrome/browser/ui/reading_list/reading_list_features.h"
 #import "ios/chrome/browser/ui/table_view/table_view_constants.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -1158,41 +1157,6 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   // Check that the TableView has been dismissed.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
       assertWithMatcher:grey_nil()];
-}
-
-// Tests the long pressing the setting switch does not trigger any context menu.
-- (void)testContextMenuSwitch {
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_enabled.push_back(kReadingListMessages);
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-  AddEntriesAndOpenReadingList();
-  ScrollToTop();
-  id<GREYMatcher> matcher = grey_allOf(
-      chrome_test_util::StaticTextWithAccessibilityLabel(
-          l10n_util::GetNSString(IDS_IOS_READING_LIST_MESSAGES_SETTING_TITLE)),
-      grey_ancestor(grey_kindOfClassName(@"TableViewSwitchCell")),
-      grey_sufficientlyVisible(), nil);
-  [[[EarlGrey selectElementWithMatcher:matcher]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)
-      onElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
-      performAction:grey_longPressWithDuration(kLongPressDuration)];
-
-  GREYAssertFalse(
-      base::test::ios::WaitUntilConditionOrTimeout(
-          kWaitForUIElementTimeout,
-          ^BOOL {
-            NSError* error = nil;
-            // Check for _UIContextMenuView so it would catch both native
-            // and custom context menu.
-            [[EarlGrey
-                selectElementWithMatcher:grey_kindOfClassName(
-                                             @"_UIContextMenuContainerView")]
-                assertWithMatcher:grey_sufficientlyVisible()
-                            error:&error];
-            return error == nil;
-          }),
-      @"Context menu is displayed on settings button.");
 }
 
 // Tests the Copy Link context menu action for a reading list entry.

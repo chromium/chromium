@@ -10,7 +10,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/url_formatter/elide_url.h"
-#import "ios/chrome/browser/ui/reading_list/reading_list_features.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_custom_action_factory.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_util.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
@@ -89,11 +88,7 @@ NSString* const kURLAndDistillationDateFormat = @"%@ • %@";
   TableViewURLCell* URLCell = base::mac::ObjCCastStrict<TableViewURLCell>(cell);
   URLCell.titleLabel.text = [self titleLabelText];
   URLCell.URLLabel.text = [self URLLabelText];
-  if (IsReadingListTimeToReadEnabled()) {
-    URLCell.metadataLabel.text = self.estimatedReadTimeText;
-  } else {
-    URLCell.metadataLabel.text = self.distillationSizeText;
-  }
+  URLCell.metadataLabel.text = self.distillationSizeText;
   URLCell.cellUniqueIdentifier = base::SysUTF8ToNSString(self.entryURL.host());
   URLCell.accessibilityTraits |= UIAccessibilityTraitButton;
 

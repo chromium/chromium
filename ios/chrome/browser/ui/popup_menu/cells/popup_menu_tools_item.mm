@@ -84,8 +84,8 @@ NSString* const kToolsMenuTextBadgeAccessibilityIdentifier =
 @property(nonatomic, strong, readwrite) UILabel* titleLabel;
 // Image view for the cell, redefined as readwrite.
 @property(nonatomic, strong, readwrite) UIImageView* imageView;
-// Internal implementation of |numberBadgeView|.
-@property(nonatomic, strong) NumberBadgeView* numberBadgeViewImpl;
+// Badge displaying a number.
+@property(nonatomic, strong) NumberBadgeView* numberBadgeView;
 // Badge displaying text.
 @property(nonatomic, strong) TextBadgeView* textBadgeView;
 // Constraints between the trailing of the label and the badges.
@@ -129,8 +129,8 @@ NSString* const kToolsMenuTextBadgeAccessibilityIdentifier =
     _imageView = [[UIImageView alloc] init];
     _imageView.translatesAutoresizingMaskIntoConstraints = NO;
 
-    _numberBadgeViewImpl = [[NumberBadgeView alloc] init];
-    _numberBadgeViewImpl.translatesAutoresizingMaskIntoConstraints = NO;
+    _numberBadgeView = [[NumberBadgeView alloc] init];
+    _numberBadgeView.translatesAutoresizingMaskIntoConstraints = NO;
 
     _textBadgeView = [[TextBadgeView alloc] initWithText:nil];
     _textBadgeView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -140,7 +140,7 @@ NSString* const kToolsMenuTextBadgeAccessibilityIdentifier =
 
     [self.contentView addSubview:_titleLabel];
     [self.contentView addSubview:_imageView];
-    [self.contentView addSubview:_numberBadgeViewImpl];
+    [self.contentView addSubview:_numberBadgeView];
     [self.contentView addSubview:_textBadgeView];
 
     [NSLayoutConstraint activateConstraints:@[
@@ -151,7 +151,7 @@ NSString* const kToolsMenuTextBadgeAccessibilityIdentifier =
       [_imageView.centerYAnchor
           constraintEqualToAnchor:_titleLabel.firstBaselineAnchor
                          constant:-[self titleFont].capHeight / 2.0],
-      [_numberBadgeViewImpl.centerYAnchor
+      [_numberBadgeView.centerYAnchor
           constraintEqualToAnchor:_imageView.centerYAnchor],
       [_textBadgeView.centerYAnchor
           constraintEqualToAnchor:_imageView.centerYAnchor],
@@ -167,7 +167,7 @@ NSString* const kToolsMenuTextBadgeAccessibilityIdentifier =
         @{
           @"image" : _imageView,
           @"label" : _titleLabel,
-          @"numberBadge" : _numberBadgeViewImpl,
+          @"numberBadge" : _numberBadgeView,
           @"textBadge" : _textBadgeView
         },
         @{
@@ -195,31 +195,27 @@ NSString* const kToolsMenuTextBadgeAccessibilityIdentifier =
   return self;
 }
 
-- (UIView*)numberBadgeView {
-  return _numberBadgeViewImpl;
-}
-
 - (void)setBadgeNumber:(NSInteger)badgeNumber {
-  BOOL wasHidden = self.numberBadgeViewImpl.hidden;
-  [self.numberBadgeViewImpl setNumber:badgeNumber animated:NO];
+  BOOL wasHidden = self.numberBadgeView.hidden;
+  [self.numberBadgeView setNumber:badgeNumber animated:NO];
   // If the number badge is shown, then the text badge must be hidden.
-  if (!self.numberBadgeViewImpl.hidden && !self.textBadgeView.hidden) {
+  if (!self.numberBadgeView.hidden && !self.textBadgeView.hidden) {
     [self setBadgeText:nil];
   }
-  if (!self.numberBadgeViewImpl.hidden && wasHidden) {
+  if (!self.numberBadgeView.hidden && wasHidden) {
     self.titleToBadgeConstraint.active = NO;
-    self.titleToBadgeConstraint = [self.numberBadgeViewImpl.leadingAnchor
+    self.titleToBadgeConstraint = [self.numberBadgeView.leadingAnchor
         constraintGreaterThanOrEqualToAnchor:self.titleLabel.trailingAnchor
                                     constant:kInnerMargin];
     self.titleToBadgeConstraint.active = YES;
-  } else if (self.numberBadgeViewImpl.hidden && !wasHidden) {
+  } else if (self.numberBadgeView.hidden && !wasHidden) {
     self.titleToBadgeConstraint.active = NO;
   }
 }
 
 - (void)setBadgeText:(NSString*)badgeText {
   // Only 1 badge can be visible at a time, and the number badge takes priority.
-  if (badgeText && !self.numberBadgeViewImpl.isHidden) {
+  if (badgeText && !self.numberBadgeView.isHidden) {
     return;
   }
 
@@ -274,9 +270,7 @@ NSString* const kToolsMenuTextBadgeAccessibilityIdentifier =
   CGFloat parentWidth = CGRectGetWidth(self.contentView.bounds);
 
   CGFloat trailingMargin = kMargin;
-  if (!self.numberBadgeViewImpl.hidden) {
-    trailingMargin += self.numberBadgeViewImpl.bounds.size.width + kInnerMargin;
-  } else if (!self.textBadgeView.hidden) {
+  if (!self.textBadgeView.hidden) {
     trailingMargin += self.textBadgeView.bounds.size.width + kInnerMargin;
   }
   CGFloat leadingMargin = kMargin + kImageLength + kInnerMargin;

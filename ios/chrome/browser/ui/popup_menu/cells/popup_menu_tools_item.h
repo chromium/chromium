@@ -41,9 +41,6 @@
 // Title label for the cell.
 @property(nonatomic, strong, readonly) UILabel* titleLabel;
 
-// Badge displaying a number.
-@property(nonatomic, strong, readonly) UIView* numberBadgeView;
-
 // Whether the cell is associated with a destructive action. If |YES|, then a
 // specific styling is applied.
 @property(nonatomic, assign) BOOL destructiveAction;

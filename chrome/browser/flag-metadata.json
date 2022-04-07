@@ -5009,16 +5009,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "reading-list-messages",
-    "owners": [ "thegreenfrog@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 99
-  },
-  {
-    "name": "reading-list-time-to-read",
-    "owners": [ "thegreenfrog@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "record-snapshot-size",
     "owners": ["edchin","bling-flags@google.com"],
     "expiry_milestone": 91

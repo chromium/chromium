@@ -77,7 +77,6 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_features.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
-#import "ios/chrome/browser/ui/reading_list/reading_list_features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_features.h"
@@ -626,9 +625,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"incognito-ntp-revamp", flag_descriptions::kIncognitoNtpRevampName,
      flag_descriptions::kIncognitoNtpRevampDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIncognitoNtpRevamp)},
-    {"reading-list-messages", flag_descriptions::kReadingListMessagesName,
-     flag_descriptions::kReadingListMessagesDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kReadingListMessages)},
     {"sync-trusted-vault-passphrase-ios-rpc",
      flag_descriptions::kSyncTrustedVaultPassphraseiOSRPCName,
      flag_descriptions::kSyncTrustedVaultPassphraseiOSRPCDescription,
@@ -741,9 +737,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLazilyCreateWebStateOnRestorationDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kEnableUnrealizedWebStates)},
-    {"reading-list-time-to-read", flag_descriptions::kReadingListTimeToReadName,
-     flag_descriptions::kReadingListTimeToReadDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kReadingListTimeToRead)},
     {"enable-shortened-password-auto-fill-instruction",
      flag_descriptions::kEnableShortenedPasswordAutoFillInstructionName,
      flag_descriptions::kEnableShortenedPasswordAutoFillInstructionDescription,
