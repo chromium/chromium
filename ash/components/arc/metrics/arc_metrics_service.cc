@@ -568,6 +568,7 @@ void ArcMetricsService::ReportEntireFixupMetrics(base::TimeDelta duration,
                                  number_of_failures, kUmaFixupAppsCountMin,
                                  kUmaFixupAppsCountMax, kUmaNumBuckets);
 }
+
 void ArcMetricsService::ReportPerAppFixupMetrics(
     base::TimeDelta duration,
     uint32_t number_of_directories) {
@@ -578,6 +579,7 @@ void ArcMetricsService::ReportPerAppFixupMetrics(
                                  kUmaFixupDirectoriesCountMin,
                                  kUmaFixupDirectoriesCountMax, kUmaNumBuckets);
 }
+
 void ArcMetricsService::ReportMainAccountHashMigrationMetrics(
     mojom::MainAccountHashMigrationStatus status) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -639,6 +641,12 @@ void ArcMetricsService::ReportProvisioningPreSignIn() {
   } else {
     LOG(ERROR) << "PreSignIn reported without prior starting time";
   }
+}
+
+void ArcMetricsService::ReportWaylandLateTimingDuration(
+    base::TimeDelta duration) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  base::UmaHistogramLongTimes("Arc.Wayland.LateTiming.Duration", duration);
 }
 
 void ArcMetricsService::OnWindowActivated(

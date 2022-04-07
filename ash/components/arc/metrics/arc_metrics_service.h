@@ -146,6 +146,7 @@ class ArcMetricsService : public KeyedService,
                          int64_t duration_ms) override;
   void ReportMemoryPressure(const std::vector<uint8_t>& psiFile) override;
   void ReportProvisioningPreSignIn() override;
+  void ReportWaylandLateTimingDuration(base::TimeDelta duration) override;
 
   // wm::ActivationChangeObserver overrides.
   // Records to UMA when a user has interacted with an ARC app window.
