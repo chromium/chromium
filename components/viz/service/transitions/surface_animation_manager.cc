@@ -101,7 +101,7 @@ void CreateAndAppendSrcTextureQuad(CompositorRenderPass* render_pass,
       /*uv_bottom_right=*/gfx::PointF(1, 1),
       /*background_color=*/SK_ColorTRANSPARENT,
       /*vertex_opacity=*/vertex_opacity, y_flipped,
-      /*nearest_neighbor=*/true,
+      /*nearest_neighbor=*/false,
       /*secure_output_only=*/false,
       /*protected_video_type=*/gfx::ProtectedVideoType::kClear);
 }
@@ -154,8 +154,8 @@ void ReplaceSharedElementWithRenderPass(
     const SharedElementDrawQuad& shared_element_quad,
     const CompositorRenderPass* shared_element_content_pass) {
   auto pass_id = shared_element_content_pass->id;
-  gfx::RectF tex_coord_rect(
-      gfx::SizeF(shared_element_content_pass->output_rect.size()));
+  const gfx::Rect& shared_pass_output_rect =
+      shared_element_content_pass->output_rect;
 
   gfx::RectF quad_rect(shared_element_quad.rect);
   shared_element_quad.shared_quad_state->quad_to_target_transform.TransformRect(
@@ -169,13 +169,23 @@ void ReplaceSharedElementWithRenderPass(
       target_render_pass->CreateAndAppendSharedQuadState();
   *copied_quad_state = *shared_element_quad.shared_quad_state;
 
+  copied_quad_state->quad_to_target_transform.PostTranslate(
+      -shared_pass_output_rect.x(), -shared_pass_output_rect.y());
+  copied_quad_state->quad_to_target_transform.PostScale(
+      shared_element_quad.rect.width() /
+          static_cast<SkScalar>(shared_pass_output_rect.width()),
+      shared_element_quad.rect.height() /
+          static_cast<SkScalar>(shared_pass_output_rect.height()));
+
   auto* render_pass_quad =
       target_render_pass
           ->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
+  gfx::RectF tex_coord_rect(
+      gfx::SizeF(shared_element_content_pass->output_rect.size()));
   render_pass_quad->SetNew(
       /*shared_quad_state=*/copied_quad_state,
       /*rect=*/shared_element_quad.rect,
-      /*visible_rect=*/shared_element_quad.visible_rect,
+      /*visible_rect=*/shared_pass_output_rect,
       /*render_pass_id=*/pass_id,
       /*mask_resource_id=*/kInvalidResourceId,
       /*mask_uv_rect=*/gfx::RectF(),
@@ -219,7 +229,7 @@ void ReplaceSharedElementWithTexture(
       /*uv_bottom_right=*/gfx::PointF(1, 1),
       /*background_color=*/SK_ColorTRANSPARENT,
       /*vertex_opacity=*/vertex_opacity, y_flipped,
-      /*nearest_neighbor=*/true,
+      /*nearest_neighbor=*/false,
       /*secure_output_only=*/false,
       /*protected_video_type=*/gfx::ProtectedVideoType::kClear);
 }
