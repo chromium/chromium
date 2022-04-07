@@ -173,6 +173,7 @@ js_library("gaia_button.m") {
 js_library("gaia_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/gaia_dialog.m.js" ]
   deps = [
+    ":oobe_types.m",
     "../../../gaia_auth_host:authenticator.m",
     "./behaviors:oobe_dialog_host_behavior.m",
     "./behaviors:oobe_i18n_behavior.m",

@@ -49,6 +49,22 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
       },
 
       /**
+       * Type of license used for enrollment.
+       */
+      licenseType_: {
+        type: String,
+        value: OobeTypes.LicenseType.ENTERPRISE,
+      },
+
+      /**
+       * Type of bottom buttons in the GAIA dialog.
+       */
+      gaiaDialogButtonsType_: {
+        type: String,
+        value: OobeTypes.GaiaDialogButtonsType.DEFAULT,
+      },
+
+      /**
        * Text on the error screen.
        */
       errorText_: {
@@ -456,6 +472,10 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
       return;
     this.isCancelDisabled = false;
     chrome.send('frameLoadingCompleted');
+  }
+
+  onLicenseTypeSelected(e) {
+    this.licenseType_ = e.detail;
   }
 
   /**

@@ -2986,6 +2986,12 @@
   <message name="IDS_ENTERPRISE_ENROLLMENT_DONE" desc="Label for the done button on the success screen in the enterprise enrollment dialog.">
     Done
   </message>
+  <message name="IDS_ENTERPRISE_ENROLLMENT_ENROLL_ENTERPRISE" desc="Label for the enterprise license enroll button on the password screen in the enterprise enrollment dialog.">
+    Enroll enterprise device
+  </message>
+  <message name="IDS_ENTERPRISE_ENROLLMENT_ENROLL_KIOSK" desc="Label for the kiosk license enroll button on the password screen in the enterprise enrollment dialog.">
+    Enroll kiosk or signage device
+  </message>
   <message name="IDS_ENTERPRISE_ENROLLMENT_ENROLL_MANUALLY" desc="Label for the button on the error step in the enterprise enrollment dialog that allows to run manual enrollment (after an error during automated enrollment).">
     Enroll manually
   </message>

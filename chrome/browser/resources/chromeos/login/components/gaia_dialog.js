@@ -50,6 +50,14 @@ class GaiaDialog extends GaiaDialogBase {
       },
 
       /**
+       * Type of bottom buttons.
+       */
+      gaiaDialogButtonsType: {
+        type: String,
+        value: OobeTypes.GaiaDialogButtonsType.DEFAULT,
+      },
+
+      /**
        * Whether the dialog can be closed.
        */
       isClosable: {
@@ -411,6 +419,34 @@ class GaiaDialog extends GaiaDialogBase {
   }
 
   /**
+   * Handles clicks on Kiosk enrollment button.
+   * @private
+   */
+  onKioskButtonClicked_() {
+    this.setLicenseType_(OobeTypes.LicenseType.KIOSK);
+    this.onPrimaryActionButtonClicked_();
+  }
+
+  /**
+   * Handles clicks on Kiosk enrollment button.
+   * @private
+   */
+  onEnterpriseButtonClicked_() {
+    this.setLicenseType_(OobeTypes.LicenseType.ENTERPRISE);
+    this.onPrimaryActionButtonClicked_();
+  }
+
+  /**
+   * @param {string} licenseType - license to use.
+   * @private
+   */
+  setLicenseType_(licenseType) {
+    this.dispatchEvent(new CustomEvent(
+        'licensetypeselected',
+        {bubbles: true, composed: true, detail: licenseType}));
+  }
+
+  /**
    * Whether the button is enabled.
    * @param {boolean} navigationEnabled - whether navigation in general is
    * enabled.
@@ -453,6 +489,46 @@ class GaiaDialog extends GaiaDialogBase {
    */
   showOverlay_(navigationEnabled, isSamlSsoVisible) {
     return !navigationEnabled || isSamlSsoVisible;
+  }
+
+  /**
+   * Whether default navigation (original, as gaia has) is shown.
+   * @param {boolean} canGoBack
+   * @param {string} gaiaDialogButtonsType
+   * @return {boolean}
+   * @private
+   */
+  isDefaultNavigationShown_(canGoBack, gaiaDialogButtonsType) {
+    return !canGoBack ||
+        gaiaDialogButtonsType == OobeTypes.GaiaDialogButtonsType.DEFAULT;
+  }
+
+  /**
+   * Whether Enterprise navigation is shown. Two buttons: primary for
+   * Enterprise enrollment and secondary for Kiosk enrollment.
+   * @param {boolean} canGoBack
+   * @param {string} gaiaDialogButtonsType
+   * @return {boolean}
+   * @private
+   */
+  isEnterpriseNavigationShown_(canGoBack, gaiaDialogButtonsType) {
+    return canGoBack &&
+        gaiaDialogButtonsType ==
+        OobeTypes.GaiaDialogButtonsType.ENTERPRISE_PREFERRED;
+  }
+
+  /**
+   * Whether Kiosk navigation is shown. Two buttons: primary for
+   * Kiosk enrollment and secondary for Enterprise enrollment.
+   * @param {boolean} canGoBack
+   * @param {string} gaiaDialogButtonsType
+   * @return {boolean}
+   * @private
+   */
+  isKioskNavigationShown_(canGoBack, gaiaDialogButtonsType) {
+    return canGoBack &&
+        gaiaDialogButtonsType ==
+        OobeTypes.GaiaDialogButtonsType.KIOSK_PREFERRED;
   }
 }
 

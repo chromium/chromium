@@ -168,6 +168,25 @@ OobeTypes.EnrollmentStep = {
 };
 
 /**
+ * Bottom buttons type of GAIA dialog.
+ * @enum {string}
+ */
+OobeTypes.GaiaDialogButtonsType = {
+  DEFAULT: 'default',
+  ENTERPRISE_PREFERRED: 'enterprise-preferred',
+  KIOSK_PREFERRED: 'kiosk-preferred',
+};
+
+/**
+ * Type of license used for enrollment.
+ * @enum {string}
+ */
+OobeTypes.LicenseType = {
+  KIOSK: 'kiosk',
+  ENTERPRISE: 'enterprise',
+};
+
+/**
  * Verification figure for the Quick Start screen.
  * @typedef {{
  *   shape: number,

@@ -67,6 +67,7 @@
     </style>
     <!-- OAUTH GAIA DIALOG -->
     <gaia-dialog id="step-signin" class="flex" for-step="signin"
+        gaia-dialog-buttons-type="[[gaiaDialogButtonsType_]]"
         auth-flow="{{authFlow_}}"
         is-saml-sso-visible="[[isSaml_(authFlow_)]]"
         webview-name="authView"
@@ -75,7 +76,8 @@
         on-closesaml="cancel"
         on-identifierentered="onIdentifierEnteredMessage_"
         hide-back-button-if-cant-go-back
-        on-ready="onReady">
+        on-ready="onReady"
+        on-licensetypeselected="onLicenseTypeSelected">
     </gaia-dialog>
 
     <!-- ENROLLMENT IN PROGRESS (SPINNER) DIALOG -->

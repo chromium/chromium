@@ -642,6 +642,10 @@ void EnrollmentScreenHandler::DeclareLocalizedValues(
   } else {
     builder->Add("oauthEnrollDone", IDS_ENTERPRISE_ENROLLMENT_DONE);
   }
+  builder->Add("enterpriseEnrollmentButton",
+               IDS_ENTERPRISE_ENROLLMENT_ENROLL_ENTERPRISE);
+  builder->Add("kioskEnrollmentButton", IDS_ENTERPRISE_ENROLLMENT_ENROLL_KIOSK);
+
   builder->Add("oauthEnrollRetry", IDS_ENTERPRISE_ENROLLMENT_RETRY);
   builder->Add("oauthEnrollManualEnrollment",
                IDS_ENTERPRISE_ENROLLMENT_ENROLL_MANUALLY);
