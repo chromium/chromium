@@ -137,13 +137,10 @@ TEST_F(WebBundleParserFactoryTest, GetParserForFile) {
 
   std::map<std::string, mojom::BundleResponsePtr> responses;
   for (const auto& item : metadata->requests) {
-    ASSERT_TRUE(item.second->variants_value.empty());
-    ASSERT_EQ(item.second->response_locations.size(), 1u);
     base::test::TestFuture<mojom::BundleResponsePtr,
                            mojom::BundleResponseParseErrorPtr>
         future;
-    parser->ParseResponse(item.second->response_locations[0]->offset,
-                          item.second->response_locations[0]->length,
+    parser->ParseResponse(item.second->offset, item.second->length,
                           future.GetCallback());
     auto [response, error] = future.Take();
     ASSERT_TRUE(response);

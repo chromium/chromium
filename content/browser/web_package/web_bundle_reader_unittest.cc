@@ -37,15 +37,9 @@ class WebBundleReaderTest : public testing::Test {
   }
 
   void ReadMetadata() {
-    base::flat_map<GURL, web_package::mojom::BundleIndexValuePtr> items;
-    web_package::mojom::BundleIndexValuePtr item =
-        web_package::mojom::BundleIndexValue::New();
-    item->variants_value = "Accept;text/html;image/png";
-    item->response_locations.push_back(
-        web_package::mojom::BundleResponseLocation::New(573u, 765u));
-    item->response_locations.push_back(
-        web_package::mojom::BundleResponseLocation::New(333u, 222u));
-    items.insert({primary_url_, std::move(item)});
+    base::flat_map<GURL, web_package::mojom::BundleResponseLocationPtr> items;
+    items.insert({primary_url_,
+                  web_package::mojom::BundleResponseLocation::New(573u, 765u)});
 
     web_package::mojom::BundleMetadataPtr metadata =
         web_package::mojom::BundleMetadata::New();
@@ -159,36 +153,6 @@ TEST_F(WebBundleReaderTest, ReadResponseForURLContainingFragment) {
   GetMockFactory()->ReadAndFullfillResponse(
       GetReader(), resource_request,
       web_package::mojom::BundleResponseLocation::New(573u, 765u),
-      std::move(response),
-      base::BindOnce([](web_package::mojom::BundleResponsePtr response,
-                        web_package::mojom::BundleResponseParseErrorPtr error) {
-        EXPECT_TRUE(response);
-        EXPECT_FALSE(error);
-        if (response) {
-          EXPECT_EQ(200, response->response_code);
-          EXPECT_EQ(0xdeadu, response->payload_offset);
-          EXPECT_EQ(0xbeafu, response->payload_length);
-        }
-      }));
-}
-
-TEST_F(WebBundleReaderTest, ReadResponseForSecondVariant) {
-  ReadMetadata();
-  ASSERT_TRUE(GetReader()->HasEntry(GetPrimaryURL()));
-
-  web_package::mojom::BundleResponsePtr response =
-      web_package::mojom::BundleResponse::New();
-  response->response_code = 200;
-  response->payload_offset = 0xdead;
-  response->payload_length = 0xbeaf;
-
-  network::ResourceRequest resource_request;
-  resource_request.url = GetPrimaryURL();
-  resource_request.headers.SetHeader("Accept", "image/png");
-
-  GetMockFactory()->ReadAndFullfillResponse(
-      GetReader(), resource_request,
-      web_package::mojom::BundleResponseLocation::New(333u, 222u),
       std::move(response),
       base::BindOnce([](web_package::mojom::BundleResponsePtr response,
                         web_package::mojom::BundleResponseParseErrorPtr error) {

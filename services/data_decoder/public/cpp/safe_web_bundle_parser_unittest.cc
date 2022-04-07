@@ -163,8 +163,7 @@ TEST_F(SafeWebBundleParserTest, ParseGoldenFile) {
     base::test::TestFuture<web_package::mojom::BundleResponsePtr,
                            web_package::mojom::BundleResponseParseErrorPtr>
         response_future;
-    parser.ParseResponse(entry.second->response_locations[0]->offset,
-                         entry.second->response_locations[0]->length,
+    parser.ParseResponse(entry.second->offset, entry.second->length,
                          response_future.GetCallback());
     auto [response, response_error] = response_future.Take();
     ASSERT_TRUE(response);

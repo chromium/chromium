@@ -222,8 +222,7 @@ class MockWebBundleReaderFactoryImpl final : public MockWebBundleReaderFactory {
     base::test::TestFuture<web_package::mojom::BundleResponsePtr,
                            web_package::mojom::BundleResponseParseErrorPtr>
         future;
-    reader->ReadResponse(resource_request, "" /* accept_langs */,
-                         future.GetCallback());
+    reader->ReadResponse(resource_request, future.GetCallback());
     factory_->RunResponseCallback(std::move(expected_parse_args),
                                   std::move(response));
     auto [bundle_response, error] = future.Take();

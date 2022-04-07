@@ -1535,9 +1535,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, CorpVsBrowserInitiatedRequest) {
 
 // This test class sets up a link element for webbundle subresource loading.
 // e.g. <link rel=webbundle href=".../foo.wbn" resources="...">.
-class CrossSiteDocumentBlockingWebBundleTest
-    : public ContentBrowserTest,
-      public testing::WithParamInterface<std::string> {
+class CrossSiteDocumentBlockingWebBundleTest : public ContentBrowserTest {
  public:
   CrossSiteDocumentBlockingWebBundleTest() {
     scoped_feature_list_.InitAndEnableFeature(features::kSubresourceWebBundles);
@@ -1550,11 +1548,6 @@ class CrossSiteDocumentBlockingWebBundleTest
       const CrossSiteDocumentBlockingWebBundleTest&) = delete;
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
-
-  static std::string DescribeParams(
-      const testing::TestParamInfo<ParamType>& info) {
-    return info.param;
-  }
 
  protected:
   void SetupLinkWebBundleElementAndImgElement(const GURL& bundle_url,
@@ -1617,11 +1610,10 @@ class CrossSiteDocumentBlockingWebBundleTest
 // 1) cross-origin bundle, 2) same-origin bundle
 // X
 // A). CORB-protected MIME type (e.g. text/json), B) other type (e.g. image/png)
-IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingWebBundleTest,
+IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
                        CrossOriginWebBundleSubresoruceJson) {
   https_server()->StartAcceptingConnections();
-  GURL bundle_url("https://cross-origin.test/web_bundle/cross_origin" +
-                  GetParam() + ".wbn");
+  GURL bundle_url("https://cross-origin.test/web_bundle/cross_origin_b2.wbn");
   GURL subresource_url("https://cross-origin.test/web_bundle/resource.json");
   RequestInterceptor interceptor(subresource_url);
   SetupLinkWebBundleElementAndImgElement(bundle_url, subresource_url);
@@ -1632,11 +1624,10 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingWebBundleTest,
       << "JSON in a cross-origin webbundle should be blocked by CORB";
 }
 
-IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingWebBundleTest,
+IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
                        CrossOriginWebBundleSubresorucePng) {
   https_server()->StartAcceptingConnections();
-  GURL bundle_url("https://cross-origin.test/web_bundle/cross_origin" +
-                  GetParam() + ".wbn");
+  GURL bundle_url("https://cross-origin.test/web_bundle/cross_origin_b2.wbn");
   GURL subresource_url("https://cross-origin.test/web_bundle/resource.png");
   RequestInterceptor interceptor(subresource_url);
   SetupLinkWebBundleElementAndImgElement(bundle_url, subresource_url);
@@ -1647,11 +1638,10 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingWebBundleTest,
       << "PNG in a cross-origin webbundle should not be blocked";
 }
 
-IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingWebBundleTest,
+IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
                        SameOriginWebBundleSubresoruceJson) {
   https_server()->StartAcceptingConnections();
-  GURL bundle_url("https://same-origin.test/web_bundle/same_origin" +
-                  GetParam() + ".wbn");
+  GURL bundle_url("https://same-origin.test/web_bundle/same_origin_b2.wbn");
   GURL subresource_url("https://same-origin.test/web_bundle/resource.json");
   RequestInterceptor interceptor(subresource_url);
   SetupLinkWebBundleElementAndImgElement(bundle_url, subresource_url);
@@ -1662,11 +1652,10 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingWebBundleTest,
       << "JSON in a same-origin webbundle should not be blocked";
 }
 
-IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingWebBundleTest,
+IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
                        SameOriginWebBundleSubresorucePng) {
   https_server()->StartAcceptingConnections();
-  GURL bundle_url("https://same-origin.test/web_bundle/same_origin" +
-                  GetParam() + ".wbn");
+  GURL bundle_url("https://same-origin.test/web_bundle/same_origin_b2.wbn");
   GURL subresource_url("https://same-origin.test/web_bundle/resource.png");
   RequestInterceptor interceptor(subresource_url);
   SetupLinkWebBundleElementAndImgElement(bundle_url, subresource_url);
@@ -1676,11 +1665,5 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingWebBundleTest,
   EXPECT_EQ("broken png", interceptor.response_body())
       << "PNG in a same-origin webbundle should not be blocked";
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    CrossSiteDocumentBlockingWebBundleTest,
-    CrossSiteDocumentBlockingWebBundleTest,
-    testing::Values("_b1", "_b2"),
-    CrossSiteDocumentBlockingWebBundleTest::DescribeParams);
 
 }  // namespace content

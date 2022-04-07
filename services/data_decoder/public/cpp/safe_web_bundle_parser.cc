@@ -53,7 +53,7 @@ void SafeWebBundleParser::ParseMetadata(
         nullptr,
         web_package::mojom::BundleMetadataParseError::New(
             web_package::mojom::BundleParseErrorType::kParserInternalError,
-            GURL() /* fallback_url */, kConnectionError));
+            kConnectionError));
     return;
   }
   metadata_callback_ = std::move(callback);
@@ -105,7 +105,7 @@ void SafeWebBundleParser::OnDisconnect() {
         .Run(nullptr,
              web_package::mojom::BundleMetadataParseError::New(
                  web_package::mojom::BundleParseErrorType::kParserInternalError,
-                 GURL() /* fallback_url */, kConnectionError));
+                 kConnectionError));
   for (auto& callback : response_callbacks_)
     std::move(callback.second)
         .Run(nullptr,

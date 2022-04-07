@@ -107,17 +107,12 @@ ParseBundleResult ParseBundle(TestDataSource* data_source,
   return result;
 }
 
-void ExpectFormatError(ParseBundleResult result,
-                       bool should_have_fallback_url = false) {
+void ExpectFormatError(ParseBundleResult result) {
   ASSERT_TRUE(result.second);
   EXPECT_EQ(result.second->type, mojom::BundleParseErrorType::kFormatError);
-  if (should_have_fallback_url) {
-    EXPECT_EQ(result.second->fallback_url, kFallbackUrl);
-  }
 }
 
-// Finds the only response for |url|. The index entry for |url| must not have
-// variants-value.
+// Finds the response for |url|.
 mojom::BundleResponseLocationPtr FindResponse(
     const mojom::BundleMetadataPtr& metadata,
     const GURL& url) {
@@ -125,12 +120,7 @@ mojom::BundleResponseLocationPtr FindResponse(
   if (item == metadata->requests.end())
     return nullptr;
 
-  const mojom::BundleIndexValuePtr& index_value = item->second;
-  EXPECT_TRUE(index_value->variants_value.empty());
-  EXPECT_EQ(index_value->response_locations.size(), 1u);
-  if (index_value->response_locations.empty())
-    return nullptr;
-  return index_value->response_locations[0].Clone();
+  return item->second.Clone();
 }
 
 mojom::BundleResponsePtr ParseResponse(
@@ -185,7 +175,6 @@ TEST_F(WebBundleParserTest, WrongMagic) {
   mojom::BundleMetadataParseErrorPtr error = ParseBundle(&data_source).second;
   ASSERT_TRUE(error);
   EXPECT_EQ(error->type, mojom::BundleParseErrorType::kFormatError);
-  EXPECT_TRUE(error->fallback_url.is_empty());
 }
 
 TEST_F(WebBundleParserTest, UnknownVersion) {
@@ -199,29 +188,6 @@ TEST_F(WebBundleParserTest, UnknownVersion) {
   mojom::BundleMetadataParseErrorPtr error = ParseBundle(&data_source).second;
   ASSERT_TRUE(error);
   EXPECT_EQ(error->type, mojom::BundleParseErrorType::kVersionError);
-}
-
-TEST_F(WebBundleParserTest, FallbackURLIsNotUTF8) {
-  WebBundleBuilder builder("https://test.example.com/\xcc", kManifestUrl,
-                           BundleVersion::kB1, true);
-  std::vector<uint8_t> bundle = builder.CreateBundle();
-  TestDataSource data_source(bundle);
-
-  mojom::BundleMetadataParseErrorPtr error = ParseBundle(&data_source).second;
-  ASSERT_TRUE(error);
-  EXPECT_EQ(error->type, mojom::BundleParseErrorType::kFormatError);
-  EXPECT_TRUE(error->fallback_url.is_empty());
-}
-
-TEST_F(WebBundleParserTest, FallbackURLHasFragment) {
-  WebBundleBuilder builder("https://test.example.com/#fragment", kManifestUrl);
-  std::vector<uint8_t> bundle = builder.CreateBundle();
-  TestDataSource data_source(bundle);
-
-  mojom::BundleMetadataParseErrorPtr error = ParseBundle(&data_source).second;
-  ASSERT_TRUE(error);
-  EXPECT_EQ(error->type, mojom::BundleParseErrorType::kFormatError);
-  EXPECT_TRUE(error->fallback_url.is_empty());
 }
 
 TEST_F(WebBundleParserTest, SectionLengthsTooLarge) {
@@ -240,27 +206,6 @@ TEST_F(WebBundleParserTest, DuplicateSectionName) {
   TestDataSource data_source(builder.CreateBundle());
 
   ExpectFormatError(ParseBundle(&data_source));
-}
-
-TEST_F(WebBundleParserTest, B1BundleSingleEntry) {
-  WebBundleBuilder builder(kFallbackUrl, kManifestUrl, BundleVersion::kB1);
-  builder.AddExchange("https://test.example.com/",
-                      {{":status", "200"}, {"content-type", "text/plain"}},
-                      "payload");
-  TestDataSource data_source(builder.CreateBundle());
-
-  mojom::BundleMetadataPtr metadata = ParseBundle(&data_source).first;
-  ASSERT_TRUE(metadata);
-  ASSERT_EQ(metadata->version, mojom::BundleFormatVersion::kB1);
-  ASSERT_EQ(metadata->requests.size(), 1u);
-  auto location = FindResponse(metadata, GURL("https://test.example.com/"));
-  ASSERT_TRUE(location);
-  auto response = ParseResponse(&data_source, location);
-  ASSERT_TRUE(response);
-  EXPECT_EQ(response->response_code, 200);
-  EXPECT_EQ(response->response_headers.size(), 1u);
-  EXPECT_EQ(response->response_headers["content-type"], "text/plain");
-  EXPECT_EQ(data_source.GetPayload(response), "payload");
 }
 
 TEST_F(WebBundleParserTest, InvalidRequestURL) {
@@ -435,35 +380,6 @@ TEST_F(WebBundleParserTest, NoContentTypeWithEmptyContent) {
   ASSERT_TRUE(ParseResponse(&data_source, location));
 }
 
-TEST_F(WebBundleParserTest, Variants) {
-  WebBundleBuilder builder(kFallbackUrl, kManifestUrl, BundleVersion::kB1);
-  auto location1 = builder.AddResponse(
-      {{":status", "200"}, {"content-type", "text/html"}}, "payload1");
-  auto location2 = builder.AddResponse(
-      {{":status", "200"}, {"content-type", "text/plain"}}, "payload2");
-  builder.AddIndexEntry("https://test.example.com/",
-                        "Accept;text/html;text/plain", {location1, location2});
-  TestDataSource data_source(builder.CreateBundle());
-
-  mojom::BundleMetadataPtr metadata = ParseBundle(&data_source).first;
-  ASSERT_TRUE(metadata);
-  const auto& found =
-      metadata->requests.find(GURL("https://test.example.com/"));
-  ASSERT_NE(found, metadata->requests.end());
-  const mojom::BundleIndexValuePtr& index_entry = found->second;
-  EXPECT_EQ(index_entry->variants_value, "Accept;text/html;text/plain");
-  ASSERT_EQ(index_entry->response_locations.size(), 2u);
-
-  auto response1 =
-      ParseResponse(&data_source, index_entry->response_locations[0]);
-  ASSERT_TRUE(response1);
-  EXPECT_EQ(data_source.GetPayload(response1), "payload1");
-  auto response2 =
-      ParseResponse(&data_source, index_entry->response_locations[1]);
-  ASSERT_TRUE(response2);
-  EXPECT_EQ(data_source.GetPayload(response2), "payload2");
-}
-
 TEST_F(WebBundleParserTest, EmptyIndexEntry) {
   WebBundleBuilder builder(kFallbackUrl, kManifestUrl);
   builder.AddIndexEntry("https://test.example.com/", "", {});
@@ -472,37 +388,12 @@ TEST_F(WebBundleParserTest, EmptyIndexEntry) {
   ExpectFormatError(ParseBundle(&data_source));
 }
 
-TEST_F(WebBundleParserTest, EmptyIndexEntryWithVariants) {
-  WebBundleBuilder builder(kFallbackUrl, kManifestUrl, BundleVersion::kB1);
-  builder.AddIndexEntry("https://test.example.com/",
-                        "Accept;text/html;text/plain", {});
-  TestDataSource data_source(builder.CreateBundle());
-
-  ExpectFormatError(ParseBundle(&data_source),
-                    /* should_have_fallback_url */ true);
-}
-
-TEST_F(WebBundleParserTest, MultipleResponsesWithoutVariantsValue) {
-  WebBundleBuilder builder(kFallbackUrl, kManifestUrl, BundleVersion::kB1);
-  auto location1 = builder.AddResponse(
-      {{":status", "200"}, {"content-type", "text/html"}}, "payload1");
-  auto location2 = builder.AddResponse(
-      {{":status", "200"}, {"content-type", "text/plain"}}, "payload2");
-  builder.AddIndexEntry("https://test.example.com/", "",
-                        {location1, location2});
-  TestDataSource data_source(builder.CreateBundle());
-
-  ExpectFormatError(ParseBundle(&data_source),
-                    /* should_have_fallback_url */ true);
-}
-
 TEST_F(WebBundleParserTest, AllKnownSectionInCritical) {
   WebBundleBuilder builder(kFallbackUrl, kManifestUrl);
   builder.AddExchange("https://test.example.com/",
                       {{":status", "200"}, {"content-type", "text/plain"}},
                       "payload");
   cbor::Value::ArrayValue critical_section;
-  critical_section.emplace_back("manifest");
   critical_section.emplace_back("index");
   critical_section.emplace_back("critical");
   critical_section.emplace_back("responses");
@@ -524,29 +415,6 @@ TEST_F(WebBundleParserTest, UnknownSectionInCritical) {
   TestDataSource data_source(builder.CreateBundle());
 
   ExpectFormatError(ParseBundle(&data_source));
-}
-
-TEST_F(WebBundleParserTest, NoManifest) {
-  WebBundleBuilder builder(kFallbackUrl, std::string());
-  builder.AddExchange("https://test.example.com/",
-                      {{":status", "200"}, {"content-type", "text/plain"}},
-                      "payload");
-  TestDataSource data_source(builder.CreateBundle());
-
-  mojom::BundleMetadataPtr metadata = ParseBundle(&data_source).first;
-  ASSERT_TRUE(metadata);
-}
-
-TEST_F(WebBundleParserTest, InvalidManifestURL) {
-  WebBundleBuilder builder(kFallbackUrl, "not-an-absolute-url",
-                           BundleVersion::kB1);
-  builder.AddExchange("https://test.example.com/",
-                      {{":status", "200"}, {"content-type", "text/plain"}},
-                      "payload");
-  TestDataSource data_source(builder.CreateBundle());
-
-  ExpectFormatError(ParseBundle(&data_source),
-                    /* should_have_fallback_url */ true);
 }
 
 TEST_F(WebBundleParserTest, EmptySignaturesSection) {
@@ -818,33 +686,28 @@ TEST_F(WebBundleParserTest, B2BundleNoPrimaryUrlSingleEntry) {
 }
 
 TEST_F(WebBundleParserTest, RelativeURL) {
-  constexpr BundleVersion kVersions[] = {BundleVersion::kB1,
-                                         BundleVersion::kB2};
-  for (const auto& version : kVersions) {
-    WebBundleBuilder builder("path/to/primary_url", "path/to/manifest",
-                             version);
-    builder.AddExchange("path/to/file.txt",
-                        {{":status", "200"}, {"content-type", "text/plain"}},
-                        "payload");
-    TestDataSource data_source(builder.CreateBundle());
+  WebBundleBuilder builder("path/to/primary_url", "path/to/manifest",
+                           BundleVersion::kB2);
+  builder.AddExchange("path/to/file.txt",
+                      {{":status", "200"}, {"content-type", "text/plain"}},
+                      "payload");
+  TestDataSource data_source(builder.CreateBundle());
 
-    const GURL base_url("https://test.example.com/dir/test.wbn");
-    mojom::BundleMetadataPtr metadata =
-        ParseBundle(&data_source, base_url).first;
-    EXPECT_EQ(metadata->primary_url,
-              "https://test.example.com/dir/path/to/primary_url");
-    ASSERT_TRUE(metadata);
-    ASSERT_EQ(metadata->requests.size(), 1u);
-    auto location = FindResponse(
-        metadata, GURL("https://test.example.com/dir/path/to/file.txt"));
-    ASSERT_TRUE(location);
-    auto response = ParseResponse(&data_source, location, base_url);
-    ASSERT_TRUE(response);
-    EXPECT_EQ(response->response_code, 200);
-    EXPECT_EQ(response->response_headers.size(), 1u);
-    EXPECT_EQ(response->response_headers["content-type"], "text/plain");
-    EXPECT_EQ(data_source.GetPayload(response), "payload");
-  }
+  const GURL base_url("https://test.example.com/dir/test.wbn");
+  mojom::BundleMetadataPtr metadata = ParseBundle(&data_source, base_url).first;
+  EXPECT_EQ(metadata->primary_url,
+            "https://test.example.com/dir/path/to/primary_url");
+  ASSERT_TRUE(metadata);
+  ASSERT_EQ(metadata->requests.size(), 1u);
+  auto location = FindResponse(
+      metadata, GURL("https://test.example.com/dir/path/to/file.txt"));
+  ASSERT_TRUE(location);
+  auto response = ParseResponse(&data_source, location, base_url);
+  ASSERT_TRUE(response);
+  EXPECT_EQ(response->response_code, 200);
+  EXPECT_EQ(response->response_headers.size(), 1u);
+  EXPECT_EQ(response->response_headers["content-type"], "text/plain");
+  EXPECT_EQ(data_source.GetPayload(response), "payload");
 }
 
 TEST_F(WebBundleParserTest, RandomAccessContext) {

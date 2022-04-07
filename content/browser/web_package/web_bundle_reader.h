@@ -67,7 +67,6 @@ class CONTENT_EXPORT WebBundleReader final
       base::OnceCallback<void(web_package::mojom::BundleResponsePtr,
                               web_package::mojom::BundleResponseParseErrorPtr)>;
   void ReadResponse(const network::ResourceRequest& resource_request,
-                    const std::string& accept_langs,
                     ResponseCallback callback);
 
   // Starts loading response body. |response| should be obtained by
@@ -157,7 +156,7 @@ class CONTENT_EXPORT WebBundleReader final
   std::unique_ptr<WebBundleBlobDataSource> blob_data_source_;
 
   GURL primary_url_;
-  base::flat_map<GURL, web_package::mojom::BundleIndexValuePtr> entries_;
+  base::flat_map<GURL, web_package::mojom::BundleResponseLocationPtr> entries_;
   // Accumulates ReadResponse() requests while the parser is disconnected.
   std::vector<std::pair<web_package::mojom::BundleResponseLocationPtr,
                         ResponseCallback>>

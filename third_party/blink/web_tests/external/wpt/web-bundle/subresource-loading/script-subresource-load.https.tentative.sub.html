@@ -44,53 +44,6 @@
     }, "Subresource loading with WebBundle shouldn't affect redirect");
 
     promise_test(async () => {
-      const element = createWebBundleElement(
-        "../resources/wbn/dynamic1-b1.wbn",
-        [
-          "https://{{domains[]}}:{{ports[https][0]}}/web-bundle/resources/wbn/dynamic/resource1.js",
-          "https://{{domains[]}}:{{ports[https][0]}}/web-bundle/resources/wbn/dynamic/resource2.js",
-          "https://{{domains[]}}:{{ports[https][0]}}/web-bundle/resources/wbn/dynamic/resource4.js",
-        ]
-      );
-      document.body.appendChild(element);
-
-      const module = await import(
-        "https://{{domains[]}}:{{ports[https][0]}}/web-bundle/resources/wbn/dynamic/resource1.js"
-      );
-      assert_equals(module.result, "resource1 from dynamic1.wbn");
-      document.body.removeChild(element);
-    }, "Subresource loading from a b1 bundle");
-
-    promise_test(async () => {
-      const classic_script_url =
-        "https://{{domains[]}}:{{ports[https][0]}}/web-bundle/resources/wbn/dynamic/classic_script.js";
-      const element = createWebBundleElement(
-        "../resources/wbn/dynamic1-b1.wbn",
-        [classic_script_url]
-      );
-      document.body.appendChild(element);
-      assert_equals(
-        await loadScriptAndWaitReport(classic_script_url),
-        "classic script from dynamic1.wbn"
-      );
-      const new_element = removeAndAppendNewElementWithUpdatedRule(element, {
-        url: "../resources/wbn/dynamic2-b1.wbn",
-      });
-      // Loading the classic script should not reuse the previously loaded
-      // script. So in this case, the script must be loaded from dynamic2-b1.wbn.
-      assert_equals(
-        await loadScriptAndWaitReport(classic_script_url),
-        "classic script from dynamic2.wbn"
-      );
-      document.body.removeChild(new_element);
-      // And in this case, the script must be loaded from network.
-      assert_equals(
-        await loadScriptAndWaitReport(classic_script_url),
-        "classic script from network"
-      );
-    }, "Dynamically loading classic script from a 'b1' web bundle with resources attribute");
-
-    promise_test(async () => {
       const element = createWebBundleElement("../resources/wbn/dynamic1.wbn", [
         "https://{{domains[]}}:{{ports[https][0]}}/web-bundle/resources/wbn/dynamic/resource1.js",
         "https://{{domains[]}}:{{ports[https][0]}}/web-bundle/resources/wbn/dynamic/resource2.js",
@@ -104,7 +57,7 @@
       assert_equals(module.result, "resource1 from dynamic1.wbn");
 
       const new_element = removeAndAppendNewElementWithUpdatedRule(element, {
-        url: "../resources/wbn/dynamic2-b1.wbn",
+        url: "../resources/wbn/dynamic2.wbn",
       });
       const module2 = await import(
         "https://{{domains[]}}:{{ports[https][0]}}/web-bundle/resources/wbn/dynamic/resource2.js"
@@ -144,7 +97,7 @@
         "classic script from dynamic1.wbn"
       );
       const new_element = removeAndAppendNewElementWithUpdatedRule(element, {
-        url: "../resources/wbn/dynamic2-b1.wbn",
+        url: "../resources/wbn/dynamic2.wbn",
       });
       // Loading the classic script should not reuse the previously loaded
       // script. So in this case, the script must be loaded from dynamic2.wbn.
@@ -292,18 +245,6 @@
       const module = await import(module_script_url);
       assert_equals(module.result, "resource1 from network");
     }, "Subresource URL must be same-origin with bundle URL");
-
-    promise_test(async () => {
-      const module_script_url =
-        "https://www1.{{domains[]}}:{{ports[https][0]}}/web-bundle/resources/wbn/dynamic/resource1.js";
-      const element = createWebBundleElement(
-        "../resources/wbn/dynamic1-crossorigin-b1.wbn",
-        [module_script_url]
-      );
-      document.body.appendChild(element);
-      const module = await import(module_script_url);
-      assert_equals(module.result, "resource1 from network");
-    }, "Subresource URL must be same-origin with bundle URL (for 'b1' bundles too)");
 
     promise_test(async () => {
       const url = "uuid-in-package:020111b3-437a-4c5c-ae07-adb6bbffb720";

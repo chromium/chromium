@@ -117,12 +117,8 @@ MockParserFactory::MockParserFactory(std::vector<GURL> urls,
   int64_t response_body_file_size;
   EXPECT_TRUE(base::GetFileSize(response_body_file, &response_body_file_size));
   for (const auto& url : urls) {
-    web_package::mojom::BundleIndexValuePtr item =
-        web_package::mojom::BundleIndexValue::New();
-    item->response_locations.push_back(
-        web_package::mojom::BundleResponseLocation::New(
-            0u, response_body_file_size));
-    index_.insert({url, std::move(item)});
+    index_.insert({url, web_package::mojom::BundleResponseLocation::New(
+                            0u, response_body_file_size)});
   }
   in_process_data_decoder_.service().SetWebBundleParserFactoryBinderForTesting(
       base::BindRepeating(&MockParserFactory::BindWebBundleParserFactory,
@@ -133,13 +129,9 @@ MockParserFactory::MockParserFactory(
     : primary_url_(items[0].first) {
   uint64_t offset = 0;
   for (const auto& item : items) {
-    web_package::mojom::BundleIndexValuePtr index_value =
-        web_package::mojom::BundleIndexValue::New();
-    index_value->response_locations.push_back(
-        web_package::mojom::BundleResponseLocation::New(offset,
-                                                        item.second.length()));
+    index_.insert({item.first, web_package::mojom::BundleResponseLocation::New(
+                                   offset, item.second.length())});
     offset += item.second.length();
-    index_.insert({item.first, std::move(index_value)});
   }
   in_process_data_decoder_.service().SetWebBundleParserFactoryBinderForTesting(
       base::BindRepeating(&MockParserFactory::BindWebBundleParserFactory,
@@ -154,7 +146,7 @@ void MockParser::ParseMetadata(ParseMetadataCallback callback) {
     return;
   }
 
-  base::flat_map<GURL, web_package::mojom::BundleIndexValuePtr> items;
+  base::flat_map<GURL, web_package::mojom::BundleResponseLocationPtr> items;
   for (const auto& item : index_) {
     items.insert({item.first, item.second.Clone()});
   }
@@ -230,12 +222,6 @@ void MockParserFactory::GetParserForDataSource(
 bool TestBrowserClient::CanAcceptUntrustedExchangesIfNeeded() {
   return true;
 }
-std::string TestBrowserClient::GetAcceptLangs(BrowserContext* context) {
-  return accept_langs_;
-}
-void TestBrowserClient::SetAcceptLangs(const std::string langs) {
-  accept_langs_ = langs;
-}
 
 void WebBundleBrowserTestBase::SetUpOnMainThread() {
   ContentBrowserTest::SetUpOnMainThread();
@@ -245,10 +231,6 @@ void WebBundleBrowserTestBase::SetUpOnMainThread() {
 void WebBundleBrowserTestBase::TearDownOnMainThread() {
   ContentBrowserTest::TearDownOnMainThread();
   SetBrowserClientForTesting(original_client_);
-}
-
-void WebBundleBrowserTestBase::SetAcceptLangs(const std::string langs) {
-  browser_client_.SetAcceptLangs(langs);
 }
 
 void WebBundleBrowserTestBase::NavigateToBundleAndWaitForReady(

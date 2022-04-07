@@ -182,13 +182,12 @@ void WebBundleReader::ReadMetadata(MetadataCallback callback) {
 
 void WebBundleReader::ReadResponse(
     const network::ResourceRequest& resource_request,
-    const std::string& accept_langs,
     ResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(state_, State::kInitial);
 
   auto it = entries_.find(net::SimplifyUrlForRequest(resource_request.url));
-  if (it == entries_.end() || it->second->response_locations.empty()) {
+  if (it == entries_.end()) {
     base::ThreadPool::PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -198,28 +197,7 @@ void WebBundleReader::ReadResponse(
                 "Not found in Web Bundle file.")));
     return;
   }
-  const web_package::mojom::BundleIndexValuePtr& entry = it->second;
-
-  size_t response_index = 0;
-  if (!entry->variants_value.empty()) {
-    // Select the best variant for the request.
-    blink::WebPackageRequestMatcher matcher(resource_request.headers,
-                                            accept_langs);
-    auto found = matcher.FindBestMatchingIndex(entry->variants_value);
-    if (!found || *found >= entry->response_locations.size()) {
-      base::ThreadPool::PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              std::move(callback), nullptr,
-              web_package::mojom::BundleResponseParseError::New(
-                  web_package::mojom::BundleParseErrorType::
-                      kParserInternalError,
-                  "Cannot find a response that matches request headers.")));
-      return;
-    }
-    response_index = *found;
-  }
-  auto response_location = entry->response_locations[response_index].Clone();
+  auto response_location = it->second.Clone();
 
   if (state_ == State::kDisconnected) {
     // Try reconnecting, if not attempted yet.
@@ -359,7 +337,7 @@ void WebBundleReader::ReadMetadataInternal(MetadataCallback callback,
             std::move(callback),
             web_package::mojom::BundleMetadataParseError::New(
                 web_package::mojom::BundleParseErrorType::kParserInternalError,
-                GURL() /* fallback_url */, base::File::ErrorToString(error))));
+                base::File::ErrorToString(error))));
   } else {
     parser_->ParseMetadata(base::BindOnce(&WebBundleReader::OnMetadataParsed,
                                           base::Unretained(this),

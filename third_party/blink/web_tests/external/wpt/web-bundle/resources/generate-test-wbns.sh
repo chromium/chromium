@@ -15,46 +15,11 @@ wpt_test_origin=https://web-platform.test:8444
 wpt_test_remote_origin=https://www1.web-platform.test:8444
 
 gen-bundle \
-  -version b1 \
-  -baseURL $wpt_test_origin/web-bundle/resources/wbn/ \
-  -primaryURL $wpt_test_origin/web-bundle/resources/wbn/location.html \
-  -dir location/ \
-  -o wbn/location-b1.wbn
-
-gen-bundle \
   -version b2 \
   -baseURL $wpt_test_origin/web-bundle/resources/wbn/static-element/ \
   -primaryURL $wpt_test_origin/web-bundle/resources/wbn/static-element/resources/style.css \
   -dir static-element/ \
   -o wbn/static-element.wbn
-
-gen-bundle \
-  -version b1 \
-  -baseURL $wpt_test_origin/web-bundle/resources/wbn/dynamic/ \
-  -primaryURL $wpt_test_origin/web-bundle/resources/wbn/dynamic/resource1.js \
-  -dir dynamic1/ \
-  -o wbn/dynamic1-b1.wbn
-
-gen-bundle \
-  -version b1 \
-  -baseURL $wpt_test_origin/web-bundle/resources/wbn/dynamic/ \
-  -primaryURL $wpt_test_origin/web-bundle/resources/wbn/dynamic/resource1.js \
-  -dir dynamic2/ \
-  -o wbn/dynamic2-b1.wbn
-
-gen-bundle \
-  -version b1 \
-  -baseURL $wpt_test_remote_origin/web-bundle/resources/wbn/dynamic/ \
-  -primaryURL $wpt_test_remote_origin/web-bundle/resources/wbn/dynamic/resource1.js \
-  -dir dynamic1/ \
-  -o wbn/dynamic1-crossorigin-b1.wbn
-
-gen-bundle \
-  -version b1 \
-  -baseURL $wpt_test_origin/web-bundle/resources/ \
-  -primaryURL $wpt_test_origin/web-bundle/resources/wbn/resource.js \
-  -dir path-restriction/ \
-  -o wbn/path-restriction-b1.wbn
 
 # Create a bundle, nested-main.wbn, which includes nested-sub.wbn.
 cp -a wbn/subresource.wbn nested/nested-sub.wbn
@@ -64,18 +29,6 @@ gen-bundle \
   -primaryURL $wpt_test_origin/web-bundle/resources/wbn/resource.js \
   -dir nested/ \
   -o wbn/nested-main.wbn
-
-gen-bundle \
-  -version b1 \
-  -har cross-origin.har \
-  -primaryURL $wpt_test_remote_origin/web-bundle/resources/wbn/cors/resource.cors.js \
-  -o wbn/cors/cross-origin-b1.wbn
-
-gen-bundle \
-  -version b1 \
-  -har cross-origin-no-cors.har \
-  -primaryURL $wpt_test_remote_origin/web-bundle/resources/wbn/no-cors/resource.cors.js \
-  -o wbn/no-cors/cross-origin-b1.wbn
 
 gen-bundle \
   -version b2 \

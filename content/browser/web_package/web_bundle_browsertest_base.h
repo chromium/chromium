@@ -87,7 +87,8 @@ class MockParserFactory;
 
 class MockParser final : public web_package::mojom::WebBundleParser {
  public:
-  using Index = base::flat_map<GURL, web_package::mojom::BundleIndexValuePtr>;
+  using Index =
+      base::flat_map<GURL, web_package::mojom::BundleResponseLocationPtr>;
 
   MockParser(
       MockParserFactory* factory,
@@ -157,7 +158,7 @@ class MockParserFactory final
   bool simulate_parse_response_crash_ = false;
   std::unique_ptr<MockParser> parser_;
   int parser_creation_count_ = 0;
-  base::flat_map<GURL, web_package::mojom::BundleIndexValuePtr> index_;
+  base::flat_map<GURL, web_package::mojom::BundleResponseLocationPtr> index_;
   const GURL primary_url_;
 };
 
@@ -170,11 +171,6 @@ class TestBrowserClient : public ContentBrowserClient {
 
   ~TestBrowserClient() override = default;
   bool CanAcceptUntrustedExchangesIfNeeded() override;
-  std::string GetAcceptLangs(BrowserContext* context) override;
-  void SetAcceptLangs(const std::string langs);
-
- private:
-  std::string accept_langs_ = "en";
 };
 
 class WebBundleBrowserTestBase : public ContentBrowserTest {
@@ -189,8 +185,6 @@ class WebBundleBrowserTestBase : public ContentBrowserTest {
   void SetUpOnMainThread() override;
 
   void TearDownOnMainThread() override;
-
-  void SetAcceptLangs(const std::string langs);
 
   void NavigateToBundleAndWaitForReady(const GURL& test_data_url,
                                        const GURL& expected_commit_url);

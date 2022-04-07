@@ -48,24 +48,14 @@ constexpr uint64_t kMaxResponseHeaderLength = 512 * 1024;
 constexpr uint64_t kInitialBufferSizeForResponse = 4096;
 
 // CBOR of the magic string "🌐📦".
-// MetadataParser::ParseMagicBytes() check the first byte (86 or 85) and this.
+// MetadataParser::ParseMagicBytes() checks the first byte (0x85) and this.
 //
 // The first 10 bytes of the web bundle format are:
-//   86 or 85                       -- Array of length 6 (b1) or 5(b2)
+//   85                             -- Array of length 5
 //      48                          -- Byte string of length 8
 //         F0 9F 8C 90 F0 9F 93 A6  -- "🌐📦" in UTF-8
-// Note: The length of the top level array is 6 in version b1 (magic, version,
-// primary, section-lengths, sections, length), and 5 in version b2 (magic,
-// version, section-lengths, sections, length).
 const uint8_t kBundleMagicBytes[] = {
     0x48, 0xF0, 0x9F, 0x8C, 0x90, 0xF0, 0x9F, 0x93, 0xA6,
-};
-
-// CBOR of the version string "b1\0\0".
-//   44               -- Byte string of length 4
-//       62 31 00 00  -- "b1\0\0"
-const uint8_t kVersionB1MagicBytes[] = {
-    0x44, 0x62, 0x31, 0x00, 0x00,
 };
 
 // CBOR of the version string "b2\0\0".
@@ -78,7 +68,6 @@ const uint8_t kVersionB2MagicBytes[] = {
 // Section names.
 constexpr char kCriticalSection[] = "critical";
 constexpr char kIndexSection[] = "index";
-constexpr char kManifestSection[] = "manifest";
 constexpr char kPrimarySection[] = "primary";
 constexpr char kResponsesSection[] = "responses";
 constexpr char kSignaturesSection[] = "signatures";
@@ -98,8 +87,7 @@ using SectionOffsets = std::map<std::string, std::pair<uint64_t, uint64_t>>;
 
 bool IsMetadataSection(const std::string& name) {
   return (name == kCriticalSection || name == kIndexSection ||
-          name == kManifestSection || name == kPrimarySection ||
-          name == kSignaturesSection);
+          name == kPrimarySection || name == kSignaturesSection);
 }
 
 // Parses a `section-lengths` CBOR item.
@@ -408,11 +396,11 @@ class WebBundleParser::MetadataParser
   }
 
   void ReadMagicBytes(const uint64_t offset_in_stream) {
-    // First, we will parse one byte at the very beginning to determine the size
-    // of the CBOR top level array (hence the "1+"), then `magic` and `version`
-    // bytes.
-    const uint64_t length =
-        1 + sizeof(kBundleMagicBytes) + sizeof(kVersionB1MagicBytes);
+    // First, we will parse the CBOR header of the top level array (1-byte),
+    // `magic`, `version`, and the CBOR header of `section-lengths`.
+    const uint64_t length = 1 + sizeof(kBundleMagicBytes) +
+                            sizeof(kVersionB2MagicBytes) +
+                            kMaxCBORItemHeaderSize;
     data_source_->Read(
         offset_in_stream, length,
         base::BindOnce(&MetadataParser::ParseMagicBytes,
@@ -429,24 +417,18 @@ class WebBundleParser::MetadataParser
 
     InputReader input(*data);
 
-    // Read the first byte denoting a CBOR array size. For bundles of b1
-    // version, it will be equal to 0x86 (6), as there's a primary url
-    // present in the top level structure. For newer bundles it must be
-    // equal to 0x85 (5).
+    // Read the first byte denoting a CBOR array size. It must be equal to 0x85
+    // (5).
     const auto array_size = input.ReadByte();
     if (!array_size) {
       RunErrorCallbackAndDestroy("Missing CBOR array size byte.");
       return;
     }
 
-    if (*array_size != 0x86 && *array_size != 0x85) {
+    if (*array_size != 0x85) {
       RunErrorCallbackAndDestroy(
           "Wrong CBOR array size of the top-level structure");
       return;
-    }
-
-    if (array_size == 0x86) {
-      bundle_version_is_b1_ = true;
     }
 
     // Check the magic bytes "48 F0 9F 8C 90 F0 9F 93 A6".
@@ -459,113 +441,20 @@ class WebBundleParser::MetadataParser
     }
 
     // Let version be the result of reading 5 bytes from stream.
-    const auto version = input.ReadBytes(sizeof(kVersionB1MagicBytes));
+    const auto version = input.ReadBytes(sizeof(kVersionB2MagicBytes));
     if (!version) {
       RunErrorCallbackAndDestroy("Cannot read version bytes.");
       return;
     }
-    offset_in_stream += input.CurrentOffset();
-    if (bundle_version_is_b1_) {
-      if (!std::equal(version->begin(), version->end(),
-                      std::begin(kVersionB1MagicBytes),
-                      std::end(kVersionB1MagicBytes))) {
-        RunErrorCallbackAndDestroy(
-            "Version error: bundle format does not correspond to the specifed "
-            "version. Currently supported version are: 'b1' and 'b2'",
-            mojom::BundleParseErrorType::kVersionError);
-        return;
-      }
-      data_source_->Read(
-          offset_in_stream, kMaxCBORItemHeaderSize,
-          base::BindOnce(&MetadataParser::ReadCBORHeaderOfPrimaryURL,
-                         weak_factory_.GetWeakPtr(), offset_in_stream));
-    } else {
-      // The only other version we support is "b2", in case of a mismatch we
-      // should return with "version error" later.
-      if (!std::equal(version->begin(), version->end(),
-                      std::begin(kVersionB2MagicBytes),
-                      std::end(kVersionB2MagicBytes))) {
-        RunErrorCallbackAndDestroy(
-            "Version error: bundle format does not correspond to the specifed "
-            "version. Currently supported version are: 'b1' and 'b2'",
-            mojom::BundleParseErrorType::kVersionError);
-        return;
-      }
-      ReadBundleHeader(offset_in_stream);
-    }
-  }
-
-  void ReadCBORHeaderOfPrimaryURL(
-      uint64_t offset_in_stream,
-      const absl::optional<std::vector<uint8_t>>& data) {
-    DCHECK(bundle_version_is_b1_);
-    if (!data) {
-      RunErrorCallbackAndDestroy("Error reading bundle header.");
+    if (!std::equal(version->begin(), version->end(),
+                    std::begin(kVersionB2MagicBytes),
+                    std::end(kVersionB2MagicBytes))) {
+      RunErrorCallbackAndDestroy(
+          "Version error: bundle format does not correspond to the specifed "
+          "version. Currently supported version is: 'b2'",
+          mojom::BundleParseErrorType::kVersionError);
       return;
     }
-    InputReader input(*data);
-
-    const auto url_length = input.ReadCBORHeader(CBORType::kTextString);
-    if (!url_length) {
-      RunErrorCallbackAndDestroy("Cannot parse the size of primary URL.");
-      return;
-    }
-
-    offset_in_stream += input.CurrentOffset();
-    data_source_->Read(offset_in_stream, *url_length,
-                       base::BindOnce(&MetadataParser::ParsePrimaryURL,
-                                      weak_factory_.GetWeakPtr(), *url_length,
-                                      offset_in_stream));
-  }
-
-  void ParsePrimaryURL(uint64_t url_length,
-                       uint64_t offset_in_stream,
-                       const absl::optional<std::vector<uint8_t>>& data) {
-    DCHECK(bundle_version_is_b1_);
-    if (!data) {
-      RunErrorCallbackAndDestroy("Error reading bundle header.");
-      return;
-    }
-    InputReader input(*data);
-
-    const auto primary_url_string = input.ReadString(url_length);
-    if (!primary_url_string) {
-      RunErrorCallbackAndDestroy("Cannot read primary URL.");
-      return;
-    }
-
-    // TODO(crbug.com/966753): Revisit URL requirements here once
-    // https://github.com/WICG/webpackage/issues/469 is resolved.
-    GURL primary_url = ParseExchangeURL(*primary_url_string, base_url_);
-    if (!primary_url.is_valid()) {
-      RunErrorCallbackAndDestroy("Cannot parse primary URL.");
-      return;
-    }
-
-    primary_url_ = std::move(primary_url);
-
-    ReadBundleHeader(input.CurrentOffset() + offset_in_stream);
-  }
-
-  void ReadBundleHeader(uint64_t offset_in_stream) {
-    // In the next step, we will parse the content of `section-lengths`,
-    // and the CBOR header of `sections`.
-    const uint64_t length =
-        kMaxSectionLengthsCBORSize + kMaxCBORItemHeaderSize * 2;
-
-    data_source_->Read(
-        offset_in_stream, length,
-        base::BindOnce(&MetadataParser::ParseBundleHeader,
-                       weak_factory_.GetWeakPtr(), offset_in_stream));
-  }
-
-  void ParseBundleHeader(uint64_t offset_in_stream,
-                         const absl::optional<std::vector<uint8_t>>& data) {
-    if (!data) {
-      RunErrorCallbackAndDestroy("Error reading bundle header.");
-      return;
-    }
-    InputReader input(*data);
 
     const auto section_lengths_length =
         input.ReadCBORHeader(CBORType::kByteString);
@@ -585,6 +474,27 @@ class WebBundleParser::MetadataParser
       return;
     }
 
+    // In the next step, we will parse the content of `section-lengths`,
+    // and the CBOR header of `sections`.
+    const uint64_t length = *section_lengths_length + kMaxCBORItemHeaderSize;
+
+    offset_in_stream += input.CurrentOffset();
+    data_source_->Read(
+        offset_in_stream, length,
+        base::BindOnce(&MetadataParser::ParseBundleHeader,
+                       weak_factory_.GetWeakPtr(), offset_in_stream,
+                       *section_lengths_length));
+  }
+
+  void ParseBundleHeader(uint64_t offset_in_stream,
+                         uint64_t section_lengths_length,
+                         const absl::optional<std::vector<uint8_t>>& data) {
+    if (!data) {
+      RunErrorCallbackAndDestroy("Error reading bundle header.");
+      return;
+    }
+    InputReader input(*data);
+
     // webbundle = [
     //    magic: h'F0 9F 8C 90 F0 9F 93 A6',
     //    version: bytes .size 4,
@@ -592,7 +502,7 @@ class WebBundleParser::MetadataParser
     //    sections: [* any ],
     //    length: bytes .size 8,  ; Big-endian number of bytes in the bundle.
     // ]
-    const auto section_lengths_bytes = input.ReadBytes(*section_lengths_length);
+    const auto section_lengths_bytes = input.ReadBytes(section_lengths_length);
     if (!section_lengths_bytes) {
       RunErrorCallbackAndDestroy("Cannot read section-lengths.");
       return;
@@ -662,13 +572,7 @@ class WebBundleParser::MetadataParser
 
     // Initialize |metadata_|.
     metadata_ = mojom::BundleMetadata::New();
-    if (bundle_version_is_b1_) {
-      DCHECK(!primary_url_.is_empty());
-      metadata_->primary_url = primary_url_;
-      metadata_->version = mojom::BundleFormatVersion::kB1;
-    } else {
-      metadata_->version = mojom::BundleFormatVersion::kB2;
-    }
+    metadata_->version = mojom::BundleFormatVersion::kB2;
 
     ReadMetadataSections(section_offsets_.begin());
   }
@@ -728,9 +632,6 @@ class WebBundleParser::MetadataParser
     if (name == kIndexSection) {
       if (!ParseIndexSection(*section_value))
         return;
-    } else if (name == kManifestSection) {
-      if (!ParseManifestSection(*section_value))
-        return;
     } else if (name == kSignaturesSection) {
       if (!ParseSignaturesSection(*section_value))
         return;
@@ -748,11 +649,7 @@ class WebBundleParser::MetadataParser
   }
 
   // https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-the-index-section
-  // For 'b1' bundles, index section has the following structure:
-  //   index = {* whatwg-url => [ variants-value, +location-in-responses ] }
-  //   variants-value = bstr
-  //   location-in-responses = (offset: uint, length: uint)
-  // For 'b2' bundles however, it's different:
+  // The index section has the following structure:
   //   index = {* whatwg-url => [ location-in-responses ] }
   //   location-in-responses = (offset: uint, length: uint)
   bool ParseIndexSection(const cbor::Value& section_value) {
@@ -762,7 +659,7 @@ class WebBundleParser::MetadataParser
       return false;
     }
 
-    base::flat_map<GURL, mojom::BundleIndexValuePtr> requests;
+    base::flat_map<GURL, mojom::BundleResponseLocationPtr> requests;
 
     auto responses_section = section_offsets_.find(kResponsesSection);
     DCHECK(responses_section != section_offsets_.end());
@@ -789,100 +686,35 @@ class WebBundleParser::MetadataParser
         return false;
       }
 
-      // To support BundleIndexValue with |variants_value| defined and without
-      // we first initialize it as an empty string (default value for 'b2'
-      // version) and then fill it with an actual value if present (in 'b1'
-      // bundles).
-      base::StringPiece variants_value = "";
-      if (bundle_version_is_b1_) {
-        // Parse |variants_value|.
-        if (responses_array.empty() || !responses_array[0].is_bytestring()) {
-          RunErrorCallbackAndDestroy(
-              "Index section: the first element of responses array must be a "
-              "bytestring.");
-          return false;
-        }
-        variants_value = responses_array[0].GetBytestringAsString();
-        if (variants_value.empty()) {
-          // When |variants_value| is an empty string, the length of responses
-          // must be 3 (variants-value, offset, length).
-          if (responses_array.size() != 3) {
-            RunErrorCallbackAndDestroy(
-                "Index section: unexpected size of responses array.");
-            return false;
-          }
-        } else {
-          // TODO(crbug.com/969596): Parse variants_value to compute the number
-          // of variantKeys, and check that responses_array has (2 *
-          // #variantKeys + 1) elements.
-          if (responses_array.size() < 3 || responses_array.size() % 2 != 1) {
-            RunErrorCallbackAndDestroy(
-                "Index section: unexpected size of responses array.");
-            return false;
-          }
-        }
-      } else {
-        if (responses_array.size() != 2) {
-          RunErrorCallbackAndDestroy(
-              "Index section: the size of a response array per URL should be "
-              "exactly 2 for bundles without variant support ('b2').");
-          return false;
-        }
+      if (responses_array.size() != 2) {
+        RunErrorCallbackAndDestroy(
+            "Index section: the size of a response array per URL should be "
+            "exactly 2.");
+        return false;
       }
-      // Instead of constructing a map from Variant-Keys to location-in-stream,
-      // this implementation just returns the responses array's structure as
-      // a BundleIndexValue.
-      // When parsing a 'b1' bundle, we start the array lookup from 1, as the
-      // first element is |variants_value|. For 'b2' bundles and forward, we
-      // start from zero, as the array only consists of 2 values: offset and
-      // length.
-      std::vector<mojom::BundleResponseLocationPtr> response_locations;
-      for (size_t i = bundle_version_is_b1_ ? 1 : 0; i < responses_array.size();
-           i += 2) {
-        if (!responses_array[i].is_unsigned() ||
-            !responses_array[i + 1].is_unsigned()) {
-          RunErrorCallbackAndDestroy(
-              "Index section: offset and length values must be unsigned.");
-          return false;
-        }
-        uint64_t offset = responses_array[i].GetUnsigned();
-        uint64_t length = responses_array[i + 1].GetUnsigned();
-
-        uint64_t response_end;
-        if (!base::CheckAdd(offset, length).AssignIfValid(&response_end) ||
-            response_end > responses_section_length) {
-          RunErrorCallbackAndDestroy("Index section: response out of range.");
-          return false;
-        }
-        uint64_t offset_within_stream = responses_section_offset + offset;
-
-        response_locations.push_back(
-            mojom::BundleResponseLocation::New(offset_within_stream, length));
+      if (!responses_array[0].is_unsigned() ||
+          !responses_array[1].is_unsigned()) {
+        RunErrorCallbackAndDestroy(
+            "Index section: offset and length values must be unsigned.");
+        return false;
       }
+      uint64_t offset = responses_array[0].GetUnsigned();
+      uint64_t length = responses_array[1].GetUnsigned();
+
+      uint64_t response_end;
+      if (!base::CheckAdd(offset, length).AssignIfValid(&response_end) ||
+          response_end > responses_section_length) {
+        RunErrorCallbackAndDestroy("Index section: response out of range.");
+        return false;
+      }
+      uint64_t offset_within_stream = responses_section_offset + offset;
+
       requests.insert(std::make_pair(
           parsed_url,
-          mojom::BundleIndexValue::New(std::string(variants_value),
-                                       std::move(response_locations))));
+          mojom::BundleResponseLocation::New(offset_within_stream, length)));
     }
 
     metadata_->requests = std::move(requests);
-    return true;
-  }
-
-  // https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-the-manifest-section
-  //   manifest = whatwg-url
-  bool ParseManifestSection(const cbor::Value& section_value) {
-    if (!section_value.is_string()) {
-      RunErrorCallbackAndDestroy("Manifest section must be a string.");
-      return false;
-    }
-    GURL parsed_url = ParseExchangeURL(section_value.GetString(), base_url_);
-
-    if (!parsed_url.is_valid()) {
-      RunErrorCallbackAndDestroy("Manifest URL is not a valid exchange URL.");
-      return false;
-    }
-    metadata_->manifest_url = std::move(parsed_url);
     return true;
   }
 
@@ -1017,14 +849,6 @@ class WebBundleParser::MetadataParser
   // https://github.com/WICG/webpackage/blob/main/extensions/primary-section.md
   //  primary = whatwg-url
   bool ParsePrimarySection(const cbor::Value& section_value) {
-    // Check if the WebBundle version is equal to "b1", in which case this
-    // section should not even be parsed.
-    if (bundle_version_is_b1_) {
-      RunErrorCallbackAndDestroy(
-          "Primary section is present but the bundle version 'b1' does not "
-          "support it.");
-      return false;
-    }
     if (!section_value.is_string()) {
       RunErrorCallbackAndDestroy("Primary section must be a string.");
       return false;
@@ -1218,7 +1042,7 @@ class WebBundleParser::MetadataParser
       mojom::BundleParseErrorType error_type =
           mojom::BundleParseErrorType::kFormatError) {
     mojom::BundleMetadataParseErrorPtr err =
-        mojom::BundleMetadataParseError::New(error_type, primary_url_, message);
+        mojom::BundleMetadataParseError::New(error_type, message);
     std::move(callback_).Run(nullptr, std::move(err));
     delete this;
   }
@@ -1231,10 +1055,8 @@ class WebBundleParser::MetadataParser
   scoped_refptr<SharedBundleDataSource> data_source_;
   const GURL base_url_;
   ParseMetadataCallback callback_;
-  GURL primary_url_;
   SectionOffsets section_offsets_;
   mojom::BundleMetadataPtr metadata_;
-  bool bundle_version_is_b1_ = false;
   base::WeakPtrFactory<MetadataParser> weak_factory_{this};
 };
 

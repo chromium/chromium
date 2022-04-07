@@ -92,14 +92,14 @@ class WebBundleTrustableFileBrowserTest
                                 contents.size()) > 0);
   }
 
-  void WriteCommonWebBundleFile(std::string version_suffix = "_b2") {
+  void WriteCommonWebBundleFile() {
     std::string contents;
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::ReadFileToString(
-          web_bundle_browsertest_utils::GetTestDataPath(
-              "web_bundle_browsertest" + version_suffix + ".wbn"),
-          &contents));
+      ASSERT_TRUE(
+          base::ReadFileToString(web_bundle_browsertest_utils::GetTestDataPath(
+                                     "web_bundle_browsertest_b2.wbn"),
+                                 &contents));
     }
     WriteWebBundleFile(contents);
   }
@@ -144,14 +144,7 @@ class WebBundleTrustableFileBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(WebBundleTrustableFileBrowserTest,
-                       TrustableWebBundleFileB1) {
-  WriteCommonWebBundleFile("_b1");
-  NavigateToBundleAndWaitForReady(
-      test_data_url(), GURL(web_bundle_browsertest_utils::kTestPageUrl));
-}
-
-IN_PROC_BROWSER_TEST_P(WebBundleTrustableFileBrowserTest,
-                       TrustableWebBundleFileB2) {
+                       TrustableWebBundleFile) {
   WriteCommonWebBundleFile();
   NavigateToBundleAndWaitForReady(
       test_data_url(), GURL(web_bundle_browsertest_utils::kTestPageUrl));

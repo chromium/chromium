@@ -42,12 +42,9 @@ class WebBundleURLLoaderFactoryTest : public testing::Test {
     loader_factory_ = std::make_unique<WebBundleURLLoaderFactory>(
         std::move(reader), FrameTreeNode::kFrameTreeNodeInvalidId);
 
-    base::flat_map<GURL, web_package::mojom::BundleIndexValuePtr> items;
-    web_package::mojom::BundleIndexValuePtr item =
-        web_package::mojom::BundleIndexValue::New();
-    item->response_locations.push_back(
-        web_package::mojom::BundleResponseLocation::New(573u, 765u));
-    items.insert({primary_url_, std::move(item)});
+    base::flat_map<GURL, web_package::mojom::BundleResponseLocationPtr> items;
+    items.insert({primary_url_,
+                  web_package::mojom::BundleResponseLocation::New(573u, 765u)});
 
     web_package::mojom::BundleMetadataPtr metadata =
         web_package::mojom::BundleMetadata::New();

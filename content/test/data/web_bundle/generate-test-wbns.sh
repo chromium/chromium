@@ -20,13 +20,6 @@ gen-bundle \
   -dir web_bundle_browsertest/ \
   -o web_bundle_browsertest_b2.wbn
 
-gen-bundle \
-  -version b1 \
-  -baseURL https://test.example.org/ \
-  -primaryURL https://test.example.org/ \
-  -dir web_bundle_browsertest/ \
-  -o web_bundle_browsertest_b1.wbn
-
 # Generate a base WBN which will used to generate broken WBN.
 # This WBN must contains 3 entries:
 #   [1]: https://test.example.org/
@@ -52,26 +45,6 @@ xxd -p broken_bundle_base_b2.wbn |
   tr -d '\n' |
   sed 's/3a737461747573/3a787878787878/3' |
   xxd -r -p > broken_bundle_broken_script_entry_b2.wbn
-
-gen-bundle \
-  -version b1 \
-  -primaryURL https://test.example.org/ \
-  -har variants_test.har \
-  -o variants_test_b1.wbn
-
-# Generate a WBN which will be used as a cross origin bundle.
-gen-bundle \
-  -version b1 \
-  -har cross_origin.har \
-  -primaryURL https://cross-origin.test/web_bundle/resource.json \
-  -o cross_origin_b1.wbn
-
-# Generate a WBN which will be used as a same origin bundle.
-gen-bundle \
-  -version b1 \
-  -har same_origin.har \
-  -primaryURL https://same-origin.test/web_bundle/resource.json \
-  -o same_origin_b1.wbn
 
 # Generate a WBN which will be used as a cross origin bundle.
 gen-bundle \

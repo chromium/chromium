@@ -79,15 +79,6 @@ std::vector<uint8_t> CreateCrossOriginBundle() {
   return builder.CreateBundle();
 }
 
-std::vector<uint8_t> CreateB1Bundle() {
-  web_package::WebBundleBuilder builder(kResourceUrl, "" /* manifest_url */,
-                                        web_package::BundleVersion::kB1);
-  builder.AddExchange(kResourceUrl,
-                      {{":status", "200"}, {"content-type", "text/plain"}},
-                      "body");
-  return builder.CreateBundle();
-}
-
 class TestWebBundleHandle : public mojom::WebBundleHandle {
  public:
   explicit TestWebBundleHandle(
@@ -543,29 +534,6 @@ TEST_F(WebBundleURLLoaderFactoryTest, WrongBundleURL) {
   EXPECT_THAT(bad_message_helper.bad_message_reports(),
               ::testing::ElementsAre(
                   "WebBundleURLLoaderFactory: Bundle URL does not match"));
-}
-
-TEST_F(WebBundleURLLoaderFactoryTest, DeprecatedBundleVersion) {
-  WriteBundle(CreateB1Bundle());
-  FinishWritingBundle();
-
-  EXPECT_CALL(*devtools_observer_,
-              OnSubresourceWebBundleMetadata(kBundleRequestId,
-                                             ElementsAre(GURL(kResourceUrl))));
-  EXPECT_CALL(*devtools_observer_,
-              OnSubresourceWebBundleInnerResponse(
-                  kResourceRequestId, GURL(kResourceUrl),
-                  Optional(std::string(kBundleRequestId))));
-
-  auto request = StartRequest(GURL(kResourceUrl), kResourceRequestId);
-  request.client->RunUntilComplete();
-
-  EXPECT_EQ(net::OK, request.client->completion_status().error_code);
-  EXPECT_EQ(last_bundle_error()->first,
-            mojom::WebBundleErrorType::kDeprecationWarning);
-  EXPECT_EQ(last_bundle_error()->second,
-            "WebBundle format \"b1\" is deprecated. See migration guide at "
-            "https://bit.ly/3rpDuEX.");
 }
 
 }  // namespace network

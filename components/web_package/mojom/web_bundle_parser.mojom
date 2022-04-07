@@ -54,7 +54,6 @@ enum BundleParseErrorType {
 
 struct BundleMetadataParseError {
   BundleParseErrorType type;
-  url.mojom.Url fallback_url;
   string message;
 };
 
@@ -67,8 +66,7 @@ struct BundleResponseParseError {
 struct BundleMetadata {
   BundleFormatVersion version;
   url.mojom.Url primary_url;
-  map<url.mojom.Url, BundleIndexValue> requests;
-  url.mojom.Url manifest_url;
+  map<url.mojom.Url, BundleResponseLocation> requests;
   array<AugmentedCertificate> authorities;
   array<VouchedSubset> vouched_subsets;
 };
@@ -78,13 +76,6 @@ struct BundleMetadata {
 enum BundleFormatVersion {
   kB1,  // Corresponds to draft-00
   kB2,  // Corresponds to draft-02
-};
-
-// Corresponds to the value type of "index" in the spec CDDL.
-// https://wpack-wg.github.io/bundled-responses/draft-ietf-wpack-bundled-responses.html#name-the-index-section
-struct BundleIndexValue {
-  string variants_value;
-  array<BundleResponseLocation> response_locations;
 };
 
 // Offset (within the webbundle file) and length of a response.
