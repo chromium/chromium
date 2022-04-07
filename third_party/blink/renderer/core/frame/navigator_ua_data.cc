@@ -171,25 +171,25 @@ ScriptPromise NavigatorUAData::getHighEntropyValues(
   // TODO: It'd be faster to compare hint when turning |hints| into an
   // AtomicString vector and turning the const string literals |hint| into
   // AtomicStrings as well.
+
+  // According to
+  // https://wicg.github.io/ua-client-hints/#getHighEntropyValues, brands,
+  // mobile and platform should be included regardless of whether they were
+  // asked for.
+
+  // Use `brands()` and not `brand_set_` directly since the former also
+  // records IdentifiabilityStudy metrics.
+  values->setBrands(brands());
+  values->setMobile(is_mobile_);
+  values->setPlatform(platform_);
+  // Record IdentifiabilityStudy metrics for `mobile()` and `platform()` (the
+  // `brands()` part is already recorded inside that function).
+  Dactyloscoper::RecordDirectSurface(
+      GetExecutionContext(), WebFeature::kNavigatorUAData_Mobile, mobile());
+  Dactyloscoper::RecordDirectSurface(
+      GetExecutionContext(), WebFeature::kNavigatorUAData_Platform, platform());
+
   for (const String& hint : hints) {
-    // According to
-    // https://wicg.github.io/ua-client-hints/#getHighEntropyValues, brands,
-    // mobile and platform should be included regardless of whether they were
-    // asked for.
-
-    // Use `brands()` and not `brand_set_` directly since the former also
-    // records IdentifiabilityStudy metrics.
-    values->setBrands(brands());
-    values->setMobile(is_mobile_);
-    values->setPlatform(platform_);
-    // Record IdentifiabilityStudy metrics for `mobile()` and `platform()` (the
-    // `brands()` part is already recorded inside that function).
-    Dactyloscoper::RecordDirectSurface(
-        GetExecutionContext(), WebFeature::kNavigatorUAData_Mobile, mobile());
-    Dactyloscoper::RecordDirectSurface(GetExecutionContext(),
-                                       WebFeature::kNavigatorUAData_Platform,
-                                       platform());
-
     if (hint == "platformVersion") {
       values->setPlatformVersion(platform_version_);
       MaybeRecordMetric(record_identifiability, hint, platform_version_,
