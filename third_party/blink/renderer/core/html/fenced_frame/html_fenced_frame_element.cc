@@ -471,7 +471,7 @@ void HTMLFencedFrameElement::OnResize(const PhysicalRect& content_rect) {
     FreezeFrameSize(content_rect_->size);
     return;
   }
-  if (frozen_frame_size_ && features::IsFencedFramesMPArchBased())
+  if (frozen_frame_size_ && !features::IsFencedFramesMPArchBased())
     UpdateInnerStyleOnFrozenInternalFrame();
 }
 
