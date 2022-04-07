@@ -18,9 +18,12 @@ const int kIndexNotUsed = 0;
 
 CustomInputProcessor::CustomInputProcessor() = default;
 
+CustomInputProcessor::CustomInputProcessor(const base::Time prediction_time)
+    : prediction_time_(prediction_time) {}
+
 CustomInputProcessor::CustomInputProcessor(
     base::flat_map<FeatureIndex, proto::CustomInput>&& custom_inputs,
-    base::Time prediction_time)
+    const base::Time prediction_time)
     : custom_inputs_(std::move(custom_inputs)),
       prediction_time_(prediction_time) {}
 
@@ -52,8 +55,19 @@ void CustomInputProcessor::OnFinishProcessing(
 void CustomInputProcessor::Process(
     std::unique_ptr<FeatureProcessorState> feature_processor_state,
     QueryProcessorCallback callback) {
+  ProcessIndexType<FeatureIndex>(std::move(custom_inputs_),
+                                 std::move(feature_processor_state),
+                                 std::move(callback));
+}
+
+template <typename IndexType>
+void CustomInputProcessor::ProcessIndexType(
+    base::flat_map<IndexType, proto::CustomInput> custom_inputs,
+    std::unique_ptr<FeatureProcessorState> feature_processor_state,
+    TemplateCallback<IndexType> callback) {
+  base::flat_map<IndexType, Tensor> result;
   bool success = true;
-  for (const auto& current : custom_inputs_) {
+  for (const auto& current : custom_inputs) {
     // Get the next feature in the list to process.
     const proto::CustomInput& custom_input = current.second;
 
@@ -66,7 +80,7 @@ void CustomInputProcessor::Process(
         metadata_utils::ValidationResult::kValidationSuccess) {
       success = false;
     } else {
-      ProcessSingleCustomInput(current.first, custom_input);
+      result[current.first] = ProcessSingleCustomInput(custom_input);
     }
   }
 
@@ -79,11 +93,15 @@ void CustomInputProcessor::Process(
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), std::move(feature_processor_state),
-                     std::move(result_)));
+                     std::move(result)));
 }
 
-void CustomInputProcessor::ProcessSingleCustomInput(
-    FeatureIndex index,
+template void CustomInputProcessor::ProcessIndexType(
+    base::flat_map<std::pair<int, int>, proto::CustomInput> custom_inputs,
+    std::unique_ptr<FeatureProcessorState> feature_processor_state,
+    TemplateCallback<std::pair<int, int>> callback);
+
+QueryProcessor::Tensor CustomInputProcessor::ProcessSingleCustomInput(
     const proto::CustomInput& custom_input) {
   std::vector<ProcessedValue> tensor_result;
   if (custom_input.fill_policy() == proto::CustomInput::UNKNOWN_FILL_POLICY) {
@@ -99,7 +117,7 @@ void CustomInputProcessor::ProcessSingleCustomInput(
              proto::CustomInput::FILL_PREDICTION_TIME) {
     tensor_result.emplace_back(ProcessedValue(prediction_time_));
   }
-  result_[index] = std::move(tensor_result);
+  return tensor_result;
 }
 
 }  // namespace segmentation_platform

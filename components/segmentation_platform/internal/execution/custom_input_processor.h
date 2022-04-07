@@ -21,9 +21,10 @@ class FeatureProcessorState;
 class CustomInputProcessor : public QueryProcessor {
  public:
   explicit CustomInputProcessor();
+  explicit CustomInputProcessor(const base::Time prediction_time);
   explicit CustomInputProcessor(
       base::flat_map<FeatureIndex, proto::CustomInput>&& custom_inputs,
-      base::Time prediction_time);
+      const base::Time prediction_time);
   ~CustomInputProcessor() override;
 
   using FeatureListQueryProcessorCallback =
@@ -50,17 +51,27 @@ class CustomInputProcessor : public QueryProcessor {
   void Process(std::unique_ptr<FeatureProcessorState> feature_processor_state,
                QueryProcessorCallback callback) override;
 
+  template <typename IndexType>
+  using TemplateCallback =
+      base::OnceCallback<void(std::unique_ptr<FeatureProcessorState>,
+                              base::flat_map<IndexType, Tensor>)>;
+
+  // Process a data mapping with a customized index type and return the tensor
+  // values in |callback|.
+  template <typename IndexType>
+  void ProcessIndexType(
+      base::flat_map<IndexType, proto::CustomInput> custom_inputs,
+      std::unique_ptr<FeatureProcessorState> feature_processor_state,
+      TemplateCallback<IndexType> callback);
+
  private:
-  // Helper function for parsing a single custom input and insert the result
+  // Helper function for parsing a single custom input and return the result
   // along with the corresponding feature index.
-  void ProcessSingleCustomInput(FeatureIndex index,
-                                const proto::CustomInput& custom_input);
+  QueryProcessor::Tensor ProcessSingleCustomInput(
+      const proto::CustomInput& custom_input);
 
   // List of custom inputs to process into input tensors.
   base::flat_map<FeatureIndex, proto::CustomInput> custom_inputs_;
-
-  // List of resulting input tensors.
-  IndexedTensors result_;
 
   // Time at which we expect the model execution to run.
   base::Time prediction_time_;

@@ -30,6 +30,27 @@ struct ProcessedValue {
   explicit ProcessedValue(std::string val) : type(Type::STRING), str_val(val) {}
   explicit ProcessedValue(base::Time val) : type(Type::TIME), time_val(val) {}
 
+  bool operator==(const ProcessedValue& rhs) const {
+    if (type != rhs.type)
+      return false;
+    switch (type) {
+      case Type::BOOL:
+        return bool_val == rhs.bool_val;
+      case Type::INT:
+        return int_val == rhs.int_val;
+      case Type::FLOAT:
+        return float_val == rhs.float_val;
+      case Type::DOUBLE:
+        return double_val == rhs.double_val;
+      case Type::STRING:
+        return str_val == rhs.str_val;
+      case Type::TIME:
+        return time_val == rhs.time_val;
+      default:
+        return false;
+    }
+  }
+
   enum Type {
     UNKNOWN = 0,
     BOOL = 1,
