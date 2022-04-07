@@ -2788,8 +2788,8 @@ const FeatureEntry::FeatureVariation kSnoopingProtectionVariations[] = {
     {"Comprehensive", kSnoopingProtectionRecall,
      std::size(kSnoopingProtectionRecall), nullptr}};
 
-const FeatureEntry::FeatureParam kQuickDim6s[] = {
-    {"QuickDim_quick_dim_ms", "6000"},
+const FeatureEntry::FeatureParam kQuickDim10s[] = {
+    {"QuickDim_quick_dim_ms", "10000"},
     {"QuickDim_filter_config_case", "2"},
     {"QuickDim_positive_count_threshold", "1"},
     {"QuickDim_negative_count_threshold", "2"},
@@ -2798,9 +2798,9 @@ const FeatureEntry::FeatureParam kQuickDim6s[] = {
     {"QuickDim_negative_score_threshold", "0"},
 };
 
-const FeatureEntry::FeatureParam kQuickDim6sQuickLock66s[] = {
-    {"QuickDim_quick_dim_ms", "6000"},
-    {"QuickDim_quick_lock_ms", "66000"},
+const FeatureEntry::FeatureParam kQuickDim10sQuickLock70s[] = {
+    {"QuickDim_quick_dim_ms", "10000"},
+    {"QuickDim_quick_lock_ms", "70000"},
     {"QuickDim_filter_config_case", "2"},
     {"QuickDim_positive_count_threshold", "1"},
     {"QuickDim_negative_count_threshold", "2"},
@@ -2809,9 +2809,9 @@ const FeatureEntry::FeatureParam kQuickDim6sQuickLock66s[] = {
     {"QuickDim_negative_score_threshold", "0"},
 };
 
-const FeatureEntry::FeatureParam kQuickDim6sQuickLock126s[] = {
-    {"QuickDim_quick_dim_ms", "6000"},
-    {"QuickDim_quick_lock_ms", "126000"},
+const FeatureEntry::FeatureParam kQuickDim10sQuickLock130s[] = {
+    {"QuickDim_quick_dim_ms", "10000"},
+    {"QuickDim_quick_lock_ms", "130000"},
     {"QuickDim_filter_config_case", "2"},
     {"QuickDim_positive_count_threshold", "1"},
     {"QuickDim_negative_count_threshold", "2"},
@@ -2854,17 +2854,17 @@ const FeatureEntry::FeatureParam kQuickDim120sQuickLock240s[] = {
 };
 
 const FeatureEntry::FeatureVariation kQuickDimVariations[] = {
-    {"Dim6sLock66s", kQuickDim6sQuickLock66s,
-     std::size(kQuickDim6sQuickLock66s), nullptr},
-    {"Dim6sLock126s", kQuickDim6sQuickLock126s,
-     std::size(kQuickDim6sQuickLock126s), nullptr},
+    {"Dim10sLock70s", kQuickDim10sQuickLock70s,
+     std::size(kQuickDim10sQuickLock70s), nullptr},
+    {"Dim10sLock130s", kQuickDim10sQuickLock130s,
+     std::size(kQuickDim10sQuickLock130s), nullptr},
     {"Dim45sLock105s", kQuickDim45sQuickLock105s,
      std::size(kQuickDim45sQuickLock105s), nullptr},
     {"Dim45sLock165s", kQuickDim45sQuickLock165s,
      std::size(kQuickDim45sQuickLock165s), nullptr},
     {"Dim120sLock240s", kQuickDim120sQuickLock240s,
      std::size(kQuickDim120sQuickLock240s), nullptr},
-    {"Dim6sNoLock", kQuickDim6s, std::size(kQuickDim6s), nullptr},
+    {"Dim10sNoLock", kQuickDim10s, std::size(kQuickDim10s), nullptr},
 };
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

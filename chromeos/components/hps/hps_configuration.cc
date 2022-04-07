@@ -22,10 +22,10 @@ constexpr base::TimeDelta kSnoopingProtectionPositiveWindowDefault =
     base::Seconds(4);
 
 // Default quick dim delay to configure power_manager.
-constexpr base::TimeDelta kQuickDimDelayDefault = base::Seconds(6);
+constexpr base::TimeDelta kQuickDimDelayDefault = base::Seconds(10);
 
 // Default quick lock delay to configure power_manager.
-constexpr base::TimeDelta kQuickLockDelayDefault = base::Seconds(126);
+constexpr base::TimeDelta kQuickLockDelayDefault = base::Seconds(130);
 
 // Default value determines whether send feedback to configure power_manager.
 constexpr int kShouldSendFeedbackIfUndimmed = false;
