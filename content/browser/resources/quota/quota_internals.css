@@ -2,9 +2,16 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
- th,
- td {
-   padding-inline-end: 0.5em;
-   padding-inline-start: 0.5em;
-   text-align: center;
- }
+table {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+td {
+  border: 1px solid black;
+}
+th {
+  border: 1px solid black;
+}
+.nested-row {
+  border-inline-start: 0;
+}

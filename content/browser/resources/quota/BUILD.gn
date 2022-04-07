@@ -12,7 +12,10 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 generate_grd("build_grd") {
   grd_prefix = "quota_internals"
   out_grd = "$target_gen_dir/resources.grd"
-  input_files = [ "quota_internals.html" ]
+  input_files = [
+    "quota_internals.html",
+    "quota_internals.css",
+  ]
   input_files_base_dir = rebase_path(".", "//")
 
   deps = [ ":build_ts" ]
