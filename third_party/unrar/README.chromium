@@ -31,6 +31,6 @@ Notable changes from upstream:
   can be extracted inside the sandbox for analysis.
 - Fix a bug with NOVOLUME implementation (https://crbug.com/949787). This
   should be temporary, until the fix can be pulled from upstream.
-- More static initializers removed (see chromium_changes2.patch)
+- More static initializers removed.
 
-All these changes are included in one patch file (chromium_changes.patch)
+All these changes are included in one patch file (chromium_changes.v6.0.3.patch)
