@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_OMNIBOX_CHIP_BUTTON_H_
 
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/controls/button/md_text_button.h"
 
@@ -60,12 +61,14 @@ class OmniboxChipButton : public views::MdTextButton {
 
   Theme get_theme_for_testing() { return theme_; }
 
- private:
-  int GetIconSize() const;
-
+ protected:
+  virtual ui::ImageModel GetIconImageModel() const;
   // Updates the icon, and then updates text, icon, and background colors from
   // the theme.
   void UpdateIconAndColors();
+
+ private:
+  int GetIconSize() const;
 
   SkColor GetTextAndIconColor() const;
 

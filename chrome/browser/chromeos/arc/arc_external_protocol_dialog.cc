@@ -130,7 +130,7 @@ bool MaybeAddDevicesAndShowPicker(
   if (app_info.empty())
     return false;
 
-  IntentPickerTabHelper::SetShouldShowIcon(
+  IntentPickerTabHelper::ShowOrHideIcon(
       web_contents,
       bubble_type == apps::IntentPickerBubbleType::kExternalProtocol);
   browser->window()->ShowIntentPickerBubble(
@@ -488,7 +488,8 @@ void OnIntentPickerClosed(
       ClickToCallUiController::GetOrCreateFromWebContents(web_contents.get())
           ->OnIntentPickerClosed();
     } else {
-      IntentPickerTabHelper::SetShouldShowIcon(web_contents.get(), false);
+      IntentPickerTabHelper::ShowOrHideIcon(web_contents.get(),
+                                            /*should_show_icon=*/false);
     }
   }
 

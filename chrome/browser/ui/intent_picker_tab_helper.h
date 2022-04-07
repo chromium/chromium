@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -19,6 +19,7 @@
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/models/image_model.h"
 #include "url/origin.h"
 
 // Controls the visibility of IntentPickerView by updating the visibility based
@@ -33,14 +34,21 @@ class IntentPickerTabHelper
 
   ~IntentPickerTabHelper() override;
 
-  static void SetShouldShowIcon(content::WebContents* web_contents,
-                                bool should_show_icon);
+  // Shows or hides the intent picker icon for |web_contents|.
+  static void ShowOrHideIcon(content::WebContents* web_contents,
+                             bool should_show_icon);
+
+  // Shows or hides the intent picker icon for this tab based on the given
+  // |apps|.
+  void ShowIconForApps(const std::vector<apps::IntentPickerAppInfo>& apps);
 
   bool should_show_icon() const { return should_show_icon_; }
 
   bool should_show_collapsed_chip() const {
     return should_show_collapsed_chip_;
   }
+
+  const ui::ImageModel& app_icon() const { return app_icon_; }
 
   using IntentPickerIconLoaderCallback =
       base::OnceCallback<void(std::vector<apps::IntentPickerAppInfo> apps)>;
@@ -49,6 +57,10 @@ class IntentPickerTabHelper
   static void LoadAppIcons(content::WebContents* web_contents,
                            std::vector<apps::IntentPickerAppInfo> apps,
                            IntentPickerIconLoaderCallback callback);
+
+  // Sets a OnceClosure callback which will be called next time the icon is
+  // updated.
+  void SetIconUpdateCallbackForTesting(base::OnceClosure callback);
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
@@ -65,8 +77,12 @@ class IntentPickerTabHelper
                    IntentPickerIconLoaderCallback callback,
                    size_t index);
 
+  void OnAppIconLoadedForChip(const std::string& app_id,
+                              apps::IconValuePtr icon);
+  void ShowOrHideIconInternal(bool should_show_icon);
   void UpdateCollapsedState();
 
+  // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
@@ -80,6 +96,11 @@ class IntentPickerTabHelper
   bool should_show_icon_ = false;
   url::Origin last_shown_origin_;
   bool should_show_collapsed_chip_ = false;
+
+  std::string last_shown_app_id_;
+  ui::ImageModel app_icon_;
+
+  base::OnceClosure icon_update_closure_;
 
   base::ScopedObservation<web_app::WebAppInstallManager,
                           web_app::WebAppInstallManagerObserver>

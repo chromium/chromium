@@ -14,14 +14,13 @@ class WebContents;
 
 namespace apps {
 
-// Displays the intent picker bubble in the omnibar if the last committed URL
+// Displays the intent picker icon in the omnibox if the last committed URL
 // has corresponding apps that can open the page.
-// Returns if the intent icon should be shown.
-[[nodiscard]] bool MaybeShowIntentPicker(
-    content::NavigationHandle* navigation_handle);
-// Overload used to check if the intent picker can be displayed,
-// only on non Chrome OS devices.
-// Also used to recheck after content is reparented.
+// On Chrome OS, this may also display the Intent Picker bubble automatically.
+void MaybeShowIntentPicker(content::NavigationHandle* navigation_handle);
+
+// Displays the intent picker icon in the omnibox, based on the last committed
+// URL in |web_contents|.
 void MaybeShowIntentPicker(content::WebContents* web_contents);
 
 void ShowIntentPickerBubble(content::WebContents* web_contents,

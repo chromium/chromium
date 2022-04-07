@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
@@ -14,7 +16,9 @@
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -70,6 +74,20 @@ class IntentChipButtonBrowserTest
     return true;
   }
 
+  // Installs a web app on the same host as InstallTestWebApp(), but with "/" as
+  // a scope, so it overlaps with all URLs in the test app scope.
+  void InstallOverlappingApp() {
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    const char* app_host = GetAppUrlHost();
+    web_app_info->start_url = https_server().GetURL(app_host, "/");
+    web_app_info->scope = https_server().GetURL(app_host, "/");
+    web_app_info->title = base::UTF8ToUTF16(GetAppName());
+    web_app_info->description = u"Test description";
+    web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
+
+    web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -77,7 +95,7 @@ class IntentChipButtonBrowserTest
 IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
                        NavigationToInScopeLinkShowsIntentChip) {
   if (!HasRequiredAshVersionForLacros())
-    return;
+    GTEST_SKIP() << "Ash version is too old to support Intent Picker";
 
   InstallTestWebApp();
 
@@ -101,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
 IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
                        NavigationToOutOfScopeLinkDoesNotShowsIntentChip) {
   if (!HasRequiredAshVersionForLacros())
-    return;
+    GTEST_SKIP() << "Ash version is too old to support Intent Picker";
 
   InstallTestWebApp();
 
@@ -117,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
 IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
                        IconVisibilityAfterTabSwitching) {
   if (!HasRequiredAshVersionForLacros())
-    return;
+    GTEST_SKIP() << "Ash version is too old to support Intent Picker";
 
   InstallTestWebApp();
 
@@ -151,20 +169,10 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
 IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
                        MAYBE_ShowsIntentPickerWhenMultipleApps) {
   if (!HasRequiredAshVersionForLacros())
-    return;
+    GTEST_SKIP() << "Ash version is too old to support Intent Picker";
 
   InstallTestWebApp();
-
-  // Install a second app with a different start URL and an overlapping scope.
-  auto web_app_info = std::make_unique<WebAppInstallInfo>();
-  const char* app_host = GetAppUrlHost();
-  web_app_info->start_url = https_server().GetURL(app_host, "/");
-  web_app_info->scope = https_server().GetURL(app_host, "/");
-  web_app_info->title = base::UTF8ToUTF16(GetAppName());
-  web_app_info->description = u"Test description";
-  web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
-
-  web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+  InstallOverlappingApp();
 
   const GURL in_scope_url =
       https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
@@ -188,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest, ShowsIntentChipCollapsed) {
   if (!HasRequiredAshVersionForLacros())
-    return;
+    GTEST_SKIP() << "Ash version is too old to support Intent Picker";
 
   InstallTestWebApp();
 
@@ -243,4 +251,68 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest, ShowsIntentChipCollapsed) {
   ClickLinkAndWait(web_contents, in_scope_url, LinkTarget::SELF, "");
   EXPECT_TRUE(GetIntentChip()->GetVisible());
   EXPECT_FALSE(GetIntentChip()->is_fully_collapsed());
+}
+
+class IntentChipButtonAppIconBrowserTest : public IntentChipButtonBrowserTest {
+ public:
+  IntentChipButtonAppIconBrowserTest() {
+    feature_list_.InitAndEnableFeature(apps::features::kIntentChipAppIcon);
+  }
+
+  void ClickLinkAndWaitForIconUpdate(content::WebContents* web_contents,
+                                     const GURL& link_url) {
+    auto* tab_helper = IntentPickerTabHelper::FromWebContents(web_contents);
+    base::RunLoop run_loop;
+    tab_helper->SetIconUpdateCallbackForTesting(
+        base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
+
+    ClickLinkAndWait(web_contents, link_url, LinkTarget::SELF, "");
+
+    run_loop.Run();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(IntentChipButtonAppIconBrowserTest, ShowsAppIconInChip) {
+  if (!HasRequiredAshVersionForLacros())
+    GTEST_SKIP() << "Ash version is too old to support Intent Picker";
+
+  InstallTestWebApp();
+  InstallOverlappingApp();
+
+  const GURL root_url = https_server().GetURL(GetAppUrlHost(), "/");
+  const GURL overlapped_url =
+      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
+  const GURL non_overlapped_url =
+      https_server().GetURL(GetAppUrlHost(), GetOutOfScopeUrlPath());
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ClickLinkAndWaitForIconUpdate(web_contents, root_url);
+
+  auto icon1 =
+      GetIntentChip()->GetImage(views::Button::ButtonState::STATE_NORMAL);
+  ASSERT_FALSE(IntentPickerTabHelper::FromWebContents(web_contents)
+                   ->app_icon()
+                   .IsEmpty());
+
+  ClickLinkAndWaitForIconUpdate(web_contents, non_overlapped_url);
+
+  // The chip should still be showing the same app icon.
+  auto icon2 =
+      GetIntentChip()->GetImage(views::Button::ButtonState::STATE_NORMAL);
+  ASSERT_TRUE(icon1.BackedBySameObjectAs(icon2));
+
+  ClickLinkAndWaitForIconUpdate(web_contents, overlapped_url);
+
+  // Loading a URL with multiple apps available should switch to a generic icon.
+  auto icon3 =
+      GetIntentChip()->GetImage(views::Button::ButtonState::STATE_NORMAL);
+  ASSERT_FALSE(icon1.BackedBySameObjectAs(icon3));
+  ASSERT_TRUE(IntentPickerTabHelper::FromWebContents(web_contents)
+                  ->app_icon()
+                  .IsEmpty());
 }

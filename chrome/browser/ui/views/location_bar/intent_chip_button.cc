@@ -42,10 +42,18 @@ void IntentChipButton::Update() {
     bool collapsed = GetChipCollapsed();
     ResetAnimation(!collapsed);
     SetTheme(collapsed ? Theme::kIconStyle : Theme::kLowVisibility);
+    UpdateIconAndColors();
   }
 
   if (was_visible && !is_visible)
     IntentPickerBubbleView::CloseCurrentBubble();
+}
+
+ui::ImageModel IntentChipButton::GetIconImageModel() const {
+  auto icon = GetAppIcon();
+  if (icon.IsEmpty())
+    return OmniboxChipButton::GetIconImageModel();
+  return icon;
 }
 
 bool IntentChipButton::GetShowChip() const {
@@ -59,6 +67,12 @@ bool IntentChipButton::GetShowChip() const {
 bool IntentChipButton::GetChipCollapsed() const {
   auto* tab_helper = GetTabHelper();
   return tab_helper && tab_helper->should_show_collapsed_chip();
+}
+
+ui::ImageModel IntentChipButton::GetAppIcon() const {
+  if (auto* tab_helper = GetTabHelper())
+    return tab_helper->app_icon();
+  return ui::ImageModel();
 }
 
 void IntentChipButton::HandlePressed() {

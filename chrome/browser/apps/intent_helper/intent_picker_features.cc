@@ -34,7 +34,7 @@ bool ShouldIntentChipSkipIntentPicker() {
 }
 
 bool AppIconInIntentChipEnabled() {
-  return LinkCapturingInfoBarEnabled() &&
+  return LinkCapturingUiUpdateEnabled() &&
          base::FeatureList::IsEnabled(kIntentChipAppIcon);
 }
 

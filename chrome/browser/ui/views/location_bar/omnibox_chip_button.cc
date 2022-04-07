@@ -125,6 +125,12 @@ void OmniboxChipButton::SetTheme(Theme theme) {
   UpdateIconAndColors();
 }
 
+ui::ImageModel OmniboxChipButton::GetIconImageModel() const {
+  return ui::ImageModel::FromVectorIcon(
+      show_blocked_icon_ ? icon_off_ : icon_on_, GetTextAndIconColor(),
+      GetIconSize(), nullptr);
+}
+
 int OmniboxChipButton::GetIconSize() const {
   return GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
 }
@@ -133,10 +139,7 @@ void OmniboxChipButton::UpdateIconAndColors() {
   if (!GetWidget())
     return;
   SetEnabledTextColors(GetTextAndIconColor());
-  SetImageModel(views::Button::STATE_NORMAL,
-                ui::ImageModel::FromVectorIcon(
-                    show_blocked_icon_ ? icon_off_ : icon_on_,
-                    GetTextAndIconColor(), GetIconSize(), nullptr));
+  SetImageModel(views::Button::STATE_NORMAL, GetIconImageModel());
 }
 
 SkColor OmniboxChipButton::GetTextAndIconColor() const {
