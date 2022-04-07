@@ -53,7 +53,7 @@
 <translation id="1268366246392928616">अघिल्लो कुनै पनि गणितीय अभिव्यक्ति छैन</translation>
 <translation id="1273314450961659276">पाठवाचकसम्बन्धी सेटिङहरू</translation>
 <translation id="1275718070701477396">चयन गरिएको</translation>
-<translation id="1284576163386164372">तपाईं जुनसुकै बेला चार औँलाले ट्याप गरी मेनुहरू खोलेर ट्युटोरियलहरू हेर्न सक्नुहुन्छ। त्यसपछि “ChromeVox” खण्डमा रहेको ट्युटोरियल सक्रिय गर्नुहोस्।</translation>
+<translation id="1284576163386164372">तपाईं जुनसुकै बेला चार औँलाले ट्याप गरी मेनुहरू खोलेर ट्युटोरियलहरू हेर्न सक्नुहुन्छ। त्यसपछि “ChromeVox” खण्डमा रहेको ट्युटोरियल अन गर्नुहोस्।</translation>
 <translation id="1291286136605998134">टगल गर्ने बटन</translation>
 <translation id="1299774449519412690">हल्का आकासे निलो</translation>
 <translation id="1303806948938513162">ChromeVox का मेनुहरूमा प्रवेश गर्न ४ औँलाले ट्याप गर्नुहोस्</translation>
@@ -190,7 +190,7 @@
 <translation id="2267538686624070261">गलत हिज्जे छाड्दै</translation>
 <translation id="2267945578749931355">अर्को वर्ण</translation>
 <translation id="2278490101488436824">तीन औँलाले बायाँ स्वाइप गर्नुहोस्</translation>
-<translation id="2303873575703885770">कुनै वस्तु सक्रिय गर्नुहोस्</translation>
+<translation id="2303873575703885770">कुनै वस्तु अन गर्नुहोस्</translation>
 <translation id="2305942658236913680">अर्को कुनै पनि शीर्षक छैन</translation>
 <translation id="2311237334957139798">ग्र्यानुलारिटीमा अघिल्लोमा जानुहोस्</translation>
 <translation id="2314393392395134769">सबस्क्रिप्ट होइन</translation>
@@ -314,7 +314,7 @@
 <translation id="3082249673510793544">पछाडि स्क्रोल गर्नुहोस्</translation>
 <translation id="3084806535845658316">टाइपिङ प्रतिध्वनि छैन</translation>
 <translation id="3086746722712840547">द्रष्टव्य</translation>
-<translation id="308736057934395497">यसले तपाईंको स्क्रिन अरूले देख्न नसकून् भन्नाका खातिर तपाईंको स्क्रिन अफ गरेर तपाईंको गोपनीयताको सुरक्षा अझ सुदृढ बनाउँछ। तपाईं खोज बटनसँगै स्क्रिनको चमक बढाउने बटन थिचेर जुनसुकै बेला स्क्रिन पुनः अन गर्न सक्नुहुन्छ।</translation>
+<translation id="308736057934395497">यसले तपाईंको स्क्रिन अरूले देख्न नसकून् भन्नाका लागि तपाईंको स्क्रिन अफ गरेर तपाईंको गोपनीयताको सुरक्षा अझ सुदृढ बनाउँछ। तपाईं खोज बटनसँगै स्क्रिनको चमक बढाउने बटन थिचेर जुनसुकै बेला स्क्रिन पुनः अन गर्न सक्नुहुन्छ।</translation>
 <translation id="3090227230165225418">डाउनलोडसम्बन्धी सूचना प्रकाशित गर्नुहोस्</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">अर्को ल्याङ्डमार्क</translation>
@@ -332,7 +332,7 @@
 <translation id="3138767756593758860">सीमा चिन्ह सूची देखाउनुहोस्</translation>
 <translation id="3143851963874289911">cll</translation>
 <translation id="3149472044574196936">अर्को पटक</translation>
-<translation id="3153024374267644603">बोली सक्रिय गर्नुहोस्</translation>
+<translation id="3153024374267644603">बोली अन गर्नुहोस्</translation>
 <translation id="3153928844647607688">तालिका <ph name="TABLENAME" />, <ph name="TABLEROWS" /> गुणा <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">बेइज</translation>
 <translation id="316542773973815724">नेभिगेसन</translation>
@@ -362,7 +362,7 @@
 <translation id="3312997241656799641">अर्को भ्रमण गरिएको लिङ्क</translation>
 <translation id="3313245066383501820">ChromeVox परिमार्जक कुञ्जी</translation>
 <translation id="3317212938060708859">एउटा स्लाइडर</translation>
-<translation id="3321460131042519426">शब्द र्याप सक्रिय गर्नुहोस्</translation>
+<translation id="3321460131042519426">शब्द र्याप अन गर्नुहोस्</translation>
 <translation id="3322936298410871309">अघिल्लो चरण 1 शीर्षक</translation>
 <translation id="3323447499041942178">पाठ बक्स</translation>
 <translation id="3324983252691184275">गाढा रातो</translation>
@@ -667,7 +667,7 @@
 <translation id="5534303576632885660">एचडिआर</translation>
 <translation id="5539820223028224601">गेन्स्बोरो</translation>
 <translation id="554893713779400387">श्रुतिलेखन सुविधा टगल गर्नुहोस्</translation>
-<translation id="5549179427201066174">ध्वनि प्रतिक्रिया (earcons) सक्रिय गर्नुहोस् वा निष्क्रिय पार्नुहोस्</translation>
+<translation id="5549179427201066174">ध्वनि प्रतिक्रिया (earcons) अन गर्नुहोस् वा निष्क्रिय पार्नुहोस्</translation>
 <translation id="556042886152191864">बटन</translation>
 <translation id="5561345396546889625">अर्को सूची</translation>
 <translation id="5562645715554321347">hdnggrp</translation>

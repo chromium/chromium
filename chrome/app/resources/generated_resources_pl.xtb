@@ -3187,7 +3187,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4116704186509653070">Otwórz ponownie</translation>
 <translation id="4117637339509843559">Tryb ciemny</translation>
-<translation id="4117714603282104018">Reakcja touchpada na dotyk</translation>
+<translation id="4117714603282104018">Reakcja haptyczna touchpada</translation>
 <translation id="4118579674665737931">Uruchom ponownie urządzenie i spróbuj jeszcze raz.</translation>
 <translation id="412022815379960229">Przeglądaj wspomnienia ze Zdjęć Google zawsze, gdy się zalogujesz.</translation>
 <translation id="4120388883569225797">Nie udało się zresetować tego klucza bezpieczeństwa</translation>
@@ -7035,7 +7035,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8063535366119089408">Wyświetl plik</translation>
 <translation id="8064279191081105977">Grupa <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Okno połączenia</translation>
-<translation id="8070662218171013510">Reakcja na dotyk</translation>
+<translation id="8070662218171013510">Reakcja haptyczna</translation>
 <translation id="8071432093239591881">Drukuj jako grafikę</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Dane aplikacji obejmują wszystkie dane zapisane przez aplikację (zgodnie z ustawieniami dewelopera). Mogą to być między innymi kontakty, wiadomości i zdjęcia.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Dane kopii zapasowej nie wliczają się do limitu miejsca na Dysku Twojego dziecka.<ph name="END_PARAGRAPH2" />

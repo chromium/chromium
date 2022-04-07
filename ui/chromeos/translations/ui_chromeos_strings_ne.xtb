@@ -279,7 +279,7 @@
 <translation id="3368922792935385530">जडित</translation>
 <translation id="3382143449143186018">नेपाली InScript किबोर्ड</translation>
 <translation id="338691029516748599"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ, जोड्नुहोस्</translation>
-<translation id="3408072735282270043"><ph name="NETWORK_NAME" /> सक्रिय गर्नुहोस्</translation>
+<translation id="3408072735282270043"><ph name="NETWORK_NAME" /> अन गर्नुहोस्</translation>
 <translation id="3408236822532681288">जर्मन (जर्मनी) नियो २ किबोर्ड</translation>
 <translation id="3414856743105198592">हटाउन सकिने मिडिया फर्म्याट गर्नाले सबै लगत हटानउेछ। के तपाइँ जारी राख्न चाहनुहुन्छ?</translation>
 <translation id="3437801641691368414">सिर्जना गरिएको समय</translation>
@@ -612,7 +612,7 @@
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> फर्म्याट गर्नुहोस्</translation>
 <translation id="6227235786875481728">फाइल प्ले हुन सकेन।</translation>
 <translation id="6241349547798190358">डच (बेल्जियम)</translation>
-<translation id="6248400709929739064">उपशीर्षकहरूलाई सक्रिय गर्नुहोस्</translation>
+<translation id="6248400709929739064">उपशीर्षकहरूलाई अन गर्नुहोस्</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, फोनको ब्याट्री <ph name="BATTERY_STATUS" />%, जोड्नुहोस्</translation>
 <translation id="6269630227984243955">मले</translation>
 <translation id="6287852322318138013">यो फाइल खोल्न एक एप चयन गर्नुहोस्</translation>
