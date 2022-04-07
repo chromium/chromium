@@ -416,14 +416,6 @@ struct PaymentsCustomerData;
 //                      offer_id in the offer_data table.
 //   merchant_domain    List of full origins for merchant websites on which
 //                      this offer would apply.
-// TODO(crbug.com/1196021): Remove unused table.
-// credit_card_art_images
-//                      Contains the card art image for the server credit card.
-//
-//   id                 The server id of the credit card.
-//   instrument_id      The non-legacy server instrument id of the card.
-//   card_art_image     The customized card art image. Stored in the form of
-//                      BLOB.
 
 class AutofillTable : public WebDatabaseTable,
                       public syncer::SyncMetadataStore {
@@ -712,6 +704,7 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion98RemoveStatusColumnMaskedCreditCards();
   bool MigrateToVersion99RemoveAutofillProfilesTrashTable();
   bool MigrateToVersion100RemoveProfileValidityBitfieldColumn();
+  bool MigrateToVersion101RemoveCreditCardArtImageTable();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.
@@ -817,7 +810,6 @@ class AutofillTable : public WebDatabaseTable,
   bool InitOfferDataTable();
   bool InitOfferEligibleInstrumentTable();
   bool InitOfferMerchantDomainTable();
-  bool InitCreditCardArtImagesTable();
 
   std::unique_ptr<AutofillTableEncryptor> autofill_table_encryptor_;
 };

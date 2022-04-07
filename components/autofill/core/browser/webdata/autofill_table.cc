@@ -654,8 +654,7 @@ bool AutofillTable::CreateTablesIfNecessary() {
           InitModelTypeStateTable() && InitPaymentsCustomerDataTable() &&
           InitPaymentsUPIVPATable() &&
           InitServerCreditCardCloudTokenDataTable() && InitOfferDataTable() &&
-          InitOfferEligibleInstrumentTable() &&
-          InitOfferMerchantDomainTable() && InitCreditCardArtImagesTable());
+          InitOfferEligibleInstrumentTable() && InitOfferMerchantDomainTable());
 }
 
 bool AutofillTable::IsSyncable() {
@@ -780,6 +779,11 @@ bool AutofillTable::MigrateToVersion(int version,
     case 100:
       *update_compatible_version = true;
       return MigrateToVersion100RemoveProfileValidityBitfieldColumn();
+    case 101:
+      // update_compatible_version is set to false because this table is not
+      // used since M99.
+      *update_compatible_version = false;
+      return MigrateToVersion101RemoveCreditCardArtImageTable();
   }
   return true;
 }
@@ -954,8 +958,7 @@ bool AutofillTable::RemoveFormElementsAddedBetween(
       updates.push_back(updated_entry);
     }
 
-    tentative_changes.push_back(
-        AutofillChange(change_type, AutofillKey(name, value)));
+    tentative_changes.emplace_back(change_type, AutofillKey(name, value));
   }
   if (!s.Succeeded())
     return false;
@@ -970,15 +973,15 @@ bool AutofillTable::RemoveFormElementsAddedBetween(
     return false;
   if (!s_delete.Run())
     return false;
-  for (size_t i = 0; i < updates.size(); ++i) {
+  for (const auto& update : updates) {
     sql::Statement s_update(db_->GetUniqueStatement(
         "UPDATE autofill SET date_created = ?, date_last_used = ?, count = ?"
         "WHERE name = ? AND value = ?"));
-    s_update.BindInt64(0, updates[i].date_created);
-    s_update.BindInt64(1, updates[i].date_last_used);
-    s_update.BindInt(2, updates[i].count);
-    s_update.BindString16(3, updates[i].name);
-    s_update.BindString16(4, updates[i].value);
+    s_update.BindInt64(0, update.date_created);
+    s_update.BindInt64(1, update.date_last_used);
+    s_update.BindInt(2, update.count);
+    s_update.BindString16(3, update.name);
+    s_update.BindString16(4, update.value);
     if (!s_update.Run())
       return false;
   }
@@ -1005,8 +1008,7 @@ bool AutofillTable::RemoveExpiredFormElements(
   while (select_for_delete.Step()) {
     std::u16string name = select_for_delete.ColumnString16(0);
     std::u16string value = select_for_delete.ColumnString16(1);
-    tentative_changes.push_back(
-        AutofillChange(change_type, AutofillKey(name, value)));
+    tentative_changes.emplace_back(change_type, AutofillKey(name, value));
   }
 
   if (!select_for_delete.Succeeded())
@@ -1094,18 +1096,18 @@ bool AutofillTable::UpdateAutofillEntries(
     return true;
 
   // Remove all existing entries.
-  for (size_t i = 0; i < entries.size(); ++i) {
+  for (const auto& entry : entries) {
     sql::Statement s(db_->GetUniqueStatement(
         "DELETE FROM autofill WHERE name = ? AND value = ?"));
-    s.BindString16(0, entries[i].key().name());
-    s.BindString16(1, entries[i].key().value());
+    s.BindString16(0, entry.key().name());
+    s.BindString16(1, entry.key().value());
     if (!s.Run())
       return false;
   }
 
   // Insert all the supplied autofill entries.
-  for (size_t i = 0; i < entries.size(); ++i) {
-    if (!InsertAutofillEntry(entries[i]))
+  for (const auto& entry : entries) {
+    if (!InsertAutofillEntry(entry))
       return false;
   }
 
@@ -2221,11 +2223,6 @@ bool AutofillTable::ClearAllServerData() {
   sql::Statement autofill_offer_merchant_domain(
       db_->GetUniqueStatement("DELETE FROM offer_merchant_domain"));
   autofill_offer_merchant_domain.Run();
-  changed |= db_->GetLastChangeCount() > 0;
-
-  sql::Statement credit_card_art_images(
-      db_->GetUniqueStatement("DELETE FROM credit_card_art_images"));
-  credit_card_art_images.Run();
   changed |= db_->GetLastChangeCount() > 0;
 
   transaction.Commit();
@@ -3449,9 +3446,6 @@ bool AutofillTable::MigrateToVersion95AddVirtualCardMetadata() {
   if (!db_->DoesTableExist("masked_credit_cards"))
     InitMaskedCreditCardsTable();
 
-  if (!db_->DoesTableExist("credit_card_art_images"))
-    InitCreditCardArtImagesTable();
-
   // Add virtual_card_enrollment_state to masked_credit_cards.
   if (!db_->DoesColumnExist("masked_credit_cards",
                             "virtual_card_enrollment_state") &&
@@ -3544,6 +3538,13 @@ bool AutofillTable::MigrateToVersion100RemoveProfileValidityBitfieldColumn() {
          db_->Execute(
              "ALTER TABLE autofill_profiles_tmp "
              "RENAME TO autofill_profiles") &&
+         transaction.Commit();
+}
+
+bool AutofillTable::MigrateToVersion101RemoveCreditCardArtImageTable() {
+  sql::Transaction transaction(db_);
+  return transaction.Begin() &&
+         db_->Execute("DROP TABLE IF EXISTS credit_card_art_images") &&
          transaction.Commit();
 }
 
@@ -4117,19 +4118,6 @@ bool AutofillTable::InitOfferMerchantDomainTable() {
     if (!db_->Execute("CREATE TABLE offer_merchant_domain ( "
                       "offer_id UNSIGNED LONG,"
                       "merchant_domain VARCHAR)")) {
-      NOTREACHED();
-      return false;
-    }
-  }
-  return true;
-}
-
-bool AutofillTable::InitCreditCardArtImagesTable() {
-  if (!db_->DoesTableExist("credit_card_art_images")) {
-    if (!db_->Execute("CREATE TABLE credit_card_art_images ( "
-                      "id VARCHAR NOT NULL DEFAULT 0, "
-                      "instrument_id INTEGER DEFAULT 0, "
-                      "card_art_image BLOB)")) {
       NOTREACHED();
       return false;
     }
