@@ -186,7 +186,6 @@ branches.exec("//subprojects/webrtc/subproject.star")
 exec("//generators/cq-usage.star")
 branches.exec("//generators/cq-builders-md.star")
 
-exec("//generators/scheduler-noop-jobs.star")
 exec("//generators/sort-consoles.star")
 
 exec("//validators/builders-in-consoles.star")
