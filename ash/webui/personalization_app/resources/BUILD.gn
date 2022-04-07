@@ -141,6 +141,8 @@ static_resource_files = [
   "common/float_on_by.png",
   "common/google_photos.svg",
   "common/no_images.svg",
+  "common/no_google_photos_images.svg",
+  "common/no_google_photos_images_dark.svg",
   "common/slideshow.png",
 
   "trusted/index.html",

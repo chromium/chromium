@@ -21,8 +21,11 @@
 
   img {
     margin-bottom: 16px;
-    width: 180px;
+    width: 160px;
   }
 </style>
-<img src="//personalization/common/no_images.svg" aria-hidden="true">
+<iron-media-query query="(prefers-color-scheme: dark)"
+    query-matches="{{isDarkModeActive_}}">
+</iron-media-query>
+<img src="[[getImageSource_(isDarkModeActive_)]]" aria-hidden="true">
 <div inner-h-t-m-l="[[getMessage_()]]"></div>
