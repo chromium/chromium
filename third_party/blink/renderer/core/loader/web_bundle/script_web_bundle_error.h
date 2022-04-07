@@ -30,6 +30,7 @@ class ScriptWebBundleError final {
 
   v8::Local<v8::Value> ToV8(ScriptState* script_state);
   Type GetType();
+  const String& GetMessage() { return message_; }
 
  private:
   Type type_;

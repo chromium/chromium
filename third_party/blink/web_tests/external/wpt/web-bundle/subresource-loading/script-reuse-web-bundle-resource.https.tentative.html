@@ -282,7 +282,7 @@
       clearWebBundleFetchCount();
       script1 = createWebBundleElement(
         wbn_url + "?pipe=trickle(d0.1)",
-        resource1
+        [resource1]
       );
       document.body.appendChild(script1);
 
@@ -291,7 +291,7 @@
       script1.remove();
       script2 = createWebBundleElement(
         wbn_url + "?pipe=trickle(d0.1)",
-        resource2
+        [resource2]
       );
       await addElementAndWaitForLoad(script2);
 

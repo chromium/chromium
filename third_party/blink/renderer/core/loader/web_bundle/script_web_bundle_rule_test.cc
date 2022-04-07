@@ -9,9 +9,34 @@
 
 namespace blink {
 
+namespace {
+
+class MockConsoleLogger final : public GarbageCollected<MockConsoleLogger>,
+                                public ConsoleLogger {
+ public:
+  const String& Message() const { return message_; }
+
+ private:
+  void AddConsoleMessageImpl(
+      mojom::ConsoleMessageSource,
+      mojom::ConsoleMessageLevel,
+      const String& message,
+      bool discard_duplicates,
+      absl::optional<mojom::ConsoleMessageCategory>) override {
+    message_ = message;
+  }
+  String message_;
+};
+
+}  // namespace
+
 TEST(ScriptWebBundleRuleTest, Empty) {
-  EXPECT_FALSE(
-      ScriptWebBundleRule::ParseJson("", KURL("https://example.com/")));
+  auto result =
+      ScriptWebBundleRule::ParseJson("", KURL("https://example.com/"), nullptr);
+  ASSERT_TRUE(absl::holds_alternative<ScriptWebBundleError>(result));
+  auto& error = absl::get<ScriptWebBundleError>(result);
+  EXPECT_EQ(error.GetMessage(),
+            "Failed to parse web bundle rule: invalid JSON.");
 }
 
 TEST(ScriptWebBundleRuleTest, Basic) {
@@ -22,9 +47,9 @@ TEST(ScriptWebBundleRuleTest, Basic) {
         "scopes": ["js"],
         "resources": ["dir/a.css", "dir/b.css"]
       })",
-      base_url);
-  ASSERT_TRUE(result);
-  ScriptWebBundleRule& rule = *result;
+      base_url, nullptr);
+  ASSERT_TRUE(absl::holds_alternative<ScriptWebBundleRule>(result));
+  auto& rule = absl::get<ScriptWebBundleRule>(result);
   EXPECT_EQ(rule.source_url(), "https://example.com/foo.wbn");
   EXPECT_THAT(rule.scope_urls(),
               testing::UnorderedElementsAre("https://example.com/js"));
@@ -39,26 +64,9 @@ TEST(ScriptWebBundleRuleTest, SourceOnly) {
       R"({
         "source": "foo.wbn"
       })",
-      base_url);
-  ASSERT_TRUE(result);
-  ScriptWebBundleRule& rule = *result;
-  EXPECT_EQ(rule.source_url(), "https://example.com/foo.wbn");
-  EXPECT_TRUE(rule.scope_urls().IsEmpty());
-  EXPECT_TRUE(rule.resource_urls().IsEmpty());
-}
-
-TEST(ScriptWebBundleRuleTest, InvalidType) {
-  const KURL base_url("https://example.com/");
-  // `scopes` and `resources` should be JSON array.
-  auto result = ScriptWebBundleRule::ParseJson(
-      R"({
-        "source": "foo.wbn",
-        "scopes": "js",
-        "resources":  { "a": "hello" }
-      })",
-      base_url);
-  ASSERT_TRUE(result);
-  ScriptWebBundleRule& rule = *result;
+      base_url, nullptr);
+  ASSERT_TRUE(absl::holds_alternative<ScriptWebBundleRule>(result));
+  auto& rule = absl::get<ScriptWebBundleRule>(result);
   EXPECT_EQ(rule.source_url(), "https://example.com/foo.wbn");
   EXPECT_TRUE(rule.scope_urls().IsEmpty());
   EXPECT_TRUE(rule.resource_urls().IsEmpty());
@@ -71,9 +79,9 @@ TEST(ScriptWebBundleRuleTest, ResourcesShouldBeResolvedOnBundleURL) {
         "source": "hello/foo.wbn",
         "resources": ["dir/a.css"]
       })",
-      base_url);
-  ASSERT_TRUE(result);
-  ScriptWebBundleRule& rule = *result;
+      base_url, nullptr);
+  ASSERT_TRUE(absl::holds_alternative<ScriptWebBundleRule>(result));
+  auto& rule = absl::get<ScriptWebBundleRule>(result);
   EXPECT_EQ(rule.source_url(), "https://example.com/hello/foo.wbn");
   EXPECT_THAT(rule.resource_urls(), testing::UnorderedElementsAre(
                                         "https://example.com/hello/dir/a.css"));
@@ -86,9 +94,9 @@ TEST(ScriptWebBundleRuleTest, ScopesShouldBeResolvedOnBundleURL) {
         "source": "hello/foo.wbn",
         "scopes": ["js"]
       })",
-      base_url);
-  ASSERT_TRUE(result);
-  ScriptWebBundleRule& rule = *result;
+      base_url, nullptr);
+  ASSERT_TRUE(absl::holds_alternative<ScriptWebBundleRule>(result));
+  auto& rule = absl::get<ScriptWebBundleRule>(result);
   EXPECT_EQ(rule.source_url(), "https://example.com/hello/foo.wbn");
   EXPECT_THAT(rule.scope_urls(),
               testing::UnorderedElementsAre("https://example.com/hello/js"));
@@ -100,9 +108,9 @@ TEST(ScriptWebBundleRuleTest, CredentialsDefaultIsSameOrigin) {
       R"({
         "source": "foo.wbn"
       })",
-      base_url);
-  ASSERT_TRUE(result);
-  ScriptWebBundleRule& rule = *result;
+      base_url, nullptr);
+  ASSERT_TRUE(absl::holds_alternative<ScriptWebBundleRule>(result));
+  auto& rule = absl::get<ScriptWebBundleRule>(result);
   EXPECT_EQ(rule.source_url(), "https://example.com/foo.wbn");
   EXPECT_EQ(rule.credentials_mode(),
             network::mojom::CredentialsMode::kSameOrigin);
@@ -115,9 +123,9 @@ TEST(ScriptWebBundleRuleTest, CredentialsSameOrigin) {
         "source": "foo.wbn",
         "credentials": "same-origin"
       })",
-      base_url);
-  ASSERT_TRUE(result);
-  ScriptWebBundleRule& rule = *result;
+      base_url, nullptr);
+  ASSERT_TRUE(absl::holds_alternative<ScriptWebBundleRule>(result));
+  auto& rule = absl::get<ScriptWebBundleRule>(result);
   EXPECT_EQ(rule.source_url(), "https://example.com/foo.wbn");
   EXPECT_EQ(rule.credentials_mode(),
             network::mojom::CredentialsMode::kSameOrigin);
@@ -130,9 +138,9 @@ TEST(ScriptWebBundleRuleTest, CredentialsInclude) {
         "source": "foo.wbn",
         "credentials": "include"
       })",
-      base_url);
-  ASSERT_TRUE(result);
-  ScriptWebBundleRule& rule = *result;
+      base_url, nullptr);
+  ASSERT_TRUE(absl::holds_alternative<ScriptWebBundleRule>(result));
+  auto& rule = absl::get<ScriptWebBundleRule>(result);
   EXPECT_EQ(rule.source_url(), "https://example.com/foo.wbn");
   EXPECT_EQ(rule.credentials_mode(), network::mojom::CredentialsMode::kInclude);
 }
@@ -144,9 +152,9 @@ TEST(ScriptWebBundleRuleTest, CredentialsOmit) {
         "source": "foo.wbn",
         "credentials": "omit"
       })",
-      base_url);
-  ASSERT_TRUE(result);
-  ScriptWebBundleRule& rule = *result;
+      base_url, nullptr);
+  ASSERT_TRUE(absl::holds_alternative<ScriptWebBundleRule>(result));
+  auto& rule = absl::get<ScriptWebBundleRule>(result);
   EXPECT_EQ(rule.source_url(), "https://example.com/foo.wbn");
   EXPECT_EQ(rule.credentials_mode(), network::mojom::CredentialsMode::kOmit);
 }
@@ -158,9 +166,9 @@ TEST(ScriptWebBundleRuleTest, CredentialsInvalidValueIsSameOrigin) {
         "source": "foo.wbn",
         "credentials": "invalid-value"
       })",
-      base_url);
-  ASSERT_TRUE(result);
-  ScriptWebBundleRule& rule = *result;
+      base_url, nullptr);
+  ASSERT_TRUE(absl::holds_alternative<ScriptWebBundleRule>(result));
+  auto& rule = absl::get<ScriptWebBundleRule>(result);
   EXPECT_EQ(rule.source_url(), "https://example.com/foo.wbn");
   EXPECT_EQ(rule.credentials_mode(),
             network::mojom::CredentialsMode::kSameOrigin);
@@ -173,9 +181,9 @@ TEST(ScriptWebBundleRuleTest, CredentialsExtraSpeceIsNotAllowed) {
         "source": "foo.wbn",
         "credentials": " include"
       })",
-      base_url);
-  ASSERT_TRUE(result);
-  ScriptWebBundleRule& rule = *result;
+      base_url, nullptr);
+  ASSERT_TRUE(absl::holds_alternative<ScriptWebBundleRule>(result));
+  auto& rule = absl::get<ScriptWebBundleRule>(result);
   EXPECT_EQ(rule.source_url(), "https://example.com/foo.wbn");
   EXPECT_EQ(rule.credentials_mode(),
             network::mojom::CredentialsMode::kSameOrigin);
@@ -188,14 +196,110 @@ TEST(ScriptWebBundleRuleTest, CredentialsIsCaseSensitive) {
         "source": "foo.wbn",
         "credentials": "INCLUDE"
       })",
-      base_url);
-  ASSERT_TRUE(result);
-  ScriptWebBundleRule& rule = *result;
+      base_url, nullptr);
+  ASSERT_TRUE(absl::holds_alternative<ScriptWebBundleRule>(result));
+  auto& rule = absl::get<ScriptWebBundleRule>(result);
   EXPECT_EQ(rule.source_url(), "https://example.com/foo.wbn");
   EXPECT_EQ(rule.credentials_mode(),
             network::mojom::CredentialsMode::kSameOrigin);
 }
 
-// TODO(crbug.com/1245166): Add more tests.
+TEST(ScriptWebBundleRuleTest, TopLevelIsNotAnObject) {
+  const KURL base_url("https://example.com/");
+  auto result = ScriptWebBundleRule::ParseJson("[]", base_url, nullptr);
+  ASSERT_TRUE(absl::holds_alternative<ScriptWebBundleError>(result));
+  auto& error = absl::get<ScriptWebBundleError>(result);
+  EXPECT_EQ(error.GetMessage(),
+            "Failed to parse web bundle rule: not an object.");
+}
+
+TEST(ScriptWebBundleRuleTest, MissingSource) {
+  const KURL base_url("https://example.com/");
+  auto result = ScriptWebBundleRule::ParseJson("{}", base_url, nullptr);
+  ASSERT_TRUE(absl::holds_alternative<ScriptWebBundleError>(result));
+  auto& error = absl::get<ScriptWebBundleError>(result);
+  EXPECT_EQ(error.GetMessage(),
+            "Failed to parse web bundle rule: \"source\" "
+            "top-level key must be a string.");
+}
+
+TEST(ScriptWebBundleRuleTest, WrongSourceType) {
+  const KURL base_url("https://example.com/");
+  auto result =
+      ScriptWebBundleRule::ParseJson(R"({"source": 123})", base_url, nullptr);
+  ASSERT_TRUE(absl::holds_alternative<ScriptWebBundleError>(result));
+  auto& error = absl::get<ScriptWebBundleError>(result);
+  EXPECT_EQ(error.GetMessage(),
+            "Failed to parse web bundle rule: \"source\" "
+            "top-level key must be a string.");
+}
+
+TEST(ScriptWebBundleRuleTest, BadSourceURL) {
+  const KURL base_url("https://example.com/");
+  auto result = ScriptWebBundleRule::ParseJson(R"({"source": "http://"})",
+                                               base_url, nullptr);
+  ASSERT_TRUE(absl::holds_alternative<ScriptWebBundleError>(result));
+  auto& error = absl::get<ScriptWebBundleError>(result);
+  EXPECT_EQ(error.GetMessage(),
+            "Failed to parse web bundle rule: \"source\" "
+            "is not parsable as a URL.");
+}
+
+TEST(ScriptWebBundleRuleTest, NoScopesNorResources) {
+  const KURL base_url("https://example.com/");
+  auto result = ScriptWebBundleRule::ParseJson(R"({"source": "http://"})",
+                                               base_url, nullptr);
+  ASSERT_TRUE(absl::holds_alternative<ScriptWebBundleError>(result));
+  auto& error = absl::get<ScriptWebBundleError>(result);
+  EXPECT_EQ(error.GetMessage(),
+            "Failed to parse web bundle rule: \"source\" "
+            "is not parsable as a URL.");
+}
+
+TEST(ScriptWebBundleRuleTest, InvalidScopesType) {
+  const KURL base_url("https://example.com/");
+  auto result = ScriptWebBundleRule::ParseJson(
+      R"({
+        "source": "foo.wbn",
+        "scopes": "js"
+      })",
+      base_url, nullptr);
+  ASSERT_TRUE(absl::holds_alternative<ScriptWebBundleError>(result));
+  auto& error = absl::get<ScriptWebBundleError>(result);
+  EXPECT_EQ(error.GetMessage(),
+            "Failed to parse web bundle rule: \"scopes\" must be an array.");
+}
+
+TEST(ScriptWebBundleRuleTest, InvalidResourcesType) {
+  const KURL base_url("https://example.com/");
+  auto result = ScriptWebBundleRule::ParseJson(
+      R"({
+        "source": "foo.wbn",
+        "resources":  { "a": "hello" }
+      })",
+      base_url, nullptr);
+  ASSERT_TRUE(absl::holds_alternative<ScriptWebBundleError>(result));
+  auto& error = absl::get<ScriptWebBundleError>(result);
+  EXPECT_EQ(error.GetMessage(),
+            "Failed to parse web bundle rule: \"resources\" must be an array.");
+}
+
+TEST(ScriptWebBundleRuleTest, UnknownKey) {
+  const KURL base_url("https://example.com/");
+  MockConsoleLogger logger;
+  auto result = ScriptWebBundleRule::ParseJson(
+      R"({
+        "source": "foo.wbn",
+        "unknown": []
+      })",
+      base_url, &logger);
+  ASSERT_TRUE(absl::holds_alternative<ScriptWebBundleRule>(result));
+  auto& rule = absl::get<ScriptWebBundleRule>(result);
+  EXPECT_EQ(rule.source_url(), "https://example.com/foo.wbn");
+  EXPECT_TRUE(rule.scope_urls().IsEmpty());
+  EXPECT_TRUE(rule.resource_urls().IsEmpty());
+  EXPECT_EQ(logger.Message(),
+            "Invalid top-level key \"unknown\" in WebBundle rule.");
+}
 
 }  // namespace blink

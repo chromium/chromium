@@ -44,11 +44,11 @@ absl::variant<ScriptWebBundle*, ScriptWebBundleError>
 ScriptWebBundle::CreateOrReuseInline(ScriptElementBase& element,
                                      const String& source_text) {
   Document& document = element.GetDocument();
-  auto rule = ScriptWebBundleRule::ParseJson(source_text, document.BaseURL());
-  if (!rule) {
-    return ScriptWebBundleError(ScriptWebBundleError::Type::kParseError,
-                                "Failed to parse web bundle: invalid JSON");
-  }
+  auto rule_or_error = ScriptWebBundleRule::ParseJson(
+      source_text, document.BaseURL(), document.GetExecutionContext());
+  if (absl::holds_alternative<ScriptWebBundleError>(rule_or_error))
+    return absl::get<ScriptWebBundleError>(rule_or_error);
+  auto& rule = absl::get<ScriptWebBundleRule>(rule_or_error);
 
   ResourceFetcher* resource_fetcher = document.Fetcher();
   if (!resource_fetcher) {
@@ -57,14 +57,14 @@ ScriptWebBundle::CreateOrReuseInline(ScriptElementBase& element,
   }
   SubresourceWebBundleList* active_bundles =
       resource_fetcher->GetOrCreateSubresourceWebBundleList();
-  if (active_bundles->GetMatchingBundle(rule->source_url())) {
+  if (active_bundles->GetMatchingBundle(rule.source_url())) {
     ExecutionContext* context = document.GetExecutionContext();
     if (context) {
       context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kOther,
           mojom::blink::ConsoleMessageLevel::kWarning,
           "A nested bundle is not supported: " +
-              rule->source_url().ElidedString()));
+              rule.source_url().ElidedString()));
     }
     return ScriptWebBundleError(ScriptWebBundleError::Type::kSystemError,
                                 "A nested bundle is not supported.");
@@ -72,15 +72,15 @@ ScriptWebBundle::CreateOrReuseInline(ScriptElementBase& element,
 
   if (SubresourceWebBundle* found =
           active_bundles->FindSubresourceWebBundleWhichWillBeReleased(
-              rule->source_url(), rule->credentials_mode())) {
+              rule.source_url(), rule.credentials_mode())) {
     // Re-use the ScriptWebBundle if it has the same bundle URL and is being
     // released.
     DCHECK(found->IsScriptWebBundle());
     ScriptWebBundle* reused_script_web_bundle = To<ScriptWebBundle>(found);
-    reused_script_web_bundle->ReusedWith(element, std::move(*rule));
+    reused_script_web_bundle->ReusedWith(element, std::move(rule));
     return reused_script_web_bundle;
   }
-  return MakeGarbageCollected<ScriptWebBundle>(element, document, *rule);
+  return MakeGarbageCollected<ScriptWebBundle>(element, document, rule);
 }
 
 ScriptWebBundle::ScriptWebBundle(ScriptElementBase& element,

@@ -23,10 +23,6 @@
         script.onload = () => reject(script);
         script.onerror = () => reject(script);
         window.onerror = function (message, url, line, col, error) {
-          assert_equals(
-            message,
-            "Uncaught SyntaxError: Failed to parse web bundle: invalid JSON"
-          );
           assert_equals(error.name, "SyntaxError");
           resolve(script);
         };

@@ -4,12 +4,21 @@
 
 #include "third_party/blink/renderer/core/loader/web_bundle/script_web_bundle_rule.h"
 
+#include "base/containers/contains.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 
 namespace blink {
 
 namespace {
+
+const char kSourceKey[] = "source";
+const char kCredentialsKey[] = "credentials";
+const char kScopesKey[] = "scopes";
+const char kResourcesKey[] = "resources";
+const char* const kKnownKeys[] = {kSourceKey, kCredentialsKey, kScopesKey,
+                                  kResourcesKey};
 
 HashSet<KURL> ParseJSONArrayAsURLs(JSONArray* array, const KURL& base_url) {
   HashSet<KURL> urls;
@@ -40,39 +49,75 @@ network::mojom::CredentialsMode ParseCredentials(const String& credentials) {
 
 }  // namespace
 
-absl::optional<ScriptWebBundleRule> ScriptWebBundleRule::ParseJson(
-    const String& inline_text,
-    const KURL& base_url) {
-  // TODO(crbug.com/1245166): Emit a user friendly parse error message.
-
+absl::variant<ScriptWebBundleRule, ScriptWebBundleError>
+ScriptWebBundleRule::ParseJson(const String& inline_text,
+                               const KURL& base_url,
+                               ConsoleLogger* logger) {
   std::unique_ptr<JSONValue> json = ParseJSON(inline_text);
-  if (!json)
-    return absl::nullopt;
+  if (!json) {
+    return ScriptWebBundleError(
+        ScriptWebBundleError::Type::kParseError,
+        "Failed to parse web bundle rule: invalid JSON.");
+  }
   std::unique_ptr<JSONObject> json_obj = JSONObject::From(std::move(json));
-  if (!json_obj)
-    return absl::nullopt;
+  if (!json_obj) {
+    return ScriptWebBundleError(
+        ScriptWebBundleError::Type::kParseError,
+        "Failed to parse web bundle rule: not an object.");
+  }
+
+  // Emit console warning for unknown keys.
+  if (logger) {
+    for (wtf_size_t i = 0; i < json_obj->size(); ++i) {
+      JSONObject::Entry entry = json_obj->at(i);
+      if (!base::Contains(kKnownKeys, entry.first)) {
+        logger->AddConsoleMessage(
+            mojom::blink::ConsoleMessageSource::kOther,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "Invalid top-level key \"" + entry.first + "\" in WebBundle rule.");
+      }
+    }
+  }
 
   String source;
-  if (!json_obj->GetString("source", &source))
-    return absl::nullopt;
+  if (!json_obj->GetString(kSourceKey, &source)) {
+    return ScriptWebBundleError(ScriptWebBundleError::Type::kParseError,
+                                "Failed to parse web bundle rule: \"source\" "
+                                "top-level key must be a string.");
+  }
   KURL source_url(base_url, source);
-  if (!source_url.IsValid())
-    return absl::nullopt;
+  if (!source_url.IsValid()) {
+    return ScriptWebBundleError(ScriptWebBundleError::Type::kParseError,
+                                "Failed to parse web bundle rule: \"source\" "
+                                "is not parsable as a URL.");
+  }
 
   network::mojom::CredentialsMode credentials_mode;
   String credentials;
-  if (json_obj->GetString("credentials", &credentials)) {
+  if (json_obj->GetString(kCredentialsKey, &credentials)) {
     credentials_mode = ParseCredentials(credentials);
   } else {
     // The default is "same-origin".
     credentials_mode = network::mojom::CredentialsMode::kSameOrigin;
   }
 
-  HashSet<KURL> scope_urls =
-      ParseJSONArrayAsURLs(json_obj->GetArray("scopes"), source_url);
+  JSONValue* scopes = json_obj->Get(kScopesKey);
+  if (scopes && scopes->GetType() != JSONValue::kTypeArray) {
+    return ScriptWebBundleError(
+        ScriptWebBundleError::Type::kParseError,
+        "Failed to parse web bundle rule: \"scopes\" must be an array.");
+  }
+  JSONValue* resources = json_obj->Get(kResourcesKey);
+  if (resources && resources->GetType() != JSONValue::kTypeArray) {
+    return ScriptWebBundleError(
+        ScriptWebBundleError::Type::kParseError,
+        "Failed to parse web bundle rule: \"resources\" must be an array.");
+  }
 
+  HashSet<KURL> scope_urls =
+      ParseJSONArrayAsURLs(JSONArray::Cast(scopes), source_url);
   HashSet<KURL> resource_urls =
-      ParseJSONArrayAsURLs(json_obj->GetArray("resources"), source_url);
+      ParseJSONArrayAsURLs(JSONArray::Cast(resources), source_url);
 
   return ScriptWebBundleRule(source_url, credentials_mode,
                              std::move(scope_urls), std::move(resource_urls));

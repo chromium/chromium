@@ -120,10 +120,11 @@ void ScanScriptWebBundle(
     const String& inline_text,
     const KURL& base_url,
     scoped_refptr<const PreloadRequest::ExclusionInfo>& exclusion_info) {
-  absl::optional<ScriptWebBundleRule> rule =
-      ScriptWebBundleRule::ParseJson(inline_text, base_url);
-  if (!rule)
+  auto rule_or_error =
+      ScriptWebBundleRule::ParseJson(inline_text, base_url, /*logger*/ nullptr);
+  if (!absl::holds_alternative<ScriptWebBundleRule>(rule_or_error))
     return;
+  auto& rule = absl::get<ScriptWebBundleRule>(rule_or_error);
 
   HashSet<KURL> scopes;
   HashSet<KURL> resources;
@@ -132,9 +133,9 @@ void ScanScriptWebBundle(
     resources = exclusion_info->resources();
   }
 
-  for (const KURL& scope_url : rule->scope_urls())
+  for (const KURL& scope_url : rule.scope_urls())
     scopes.insert(scope_url);
-  for (const KURL& resource_url : rule->resource_urls())
+  for (const KURL& resource_url : rule.resource_urls())
     resources.insert(resource_url);
 
   exclusion_info = base::MakeRefCounted<PreloadRequest::ExclusionInfo>(
