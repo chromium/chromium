@@ -11,6 +11,7 @@ source_set("passwords_in_other_apps") {
     "passwords_in_other_apps_mediator.mm",
   ]
   deps = [
+    ":histograms",
     ":passwords_in_other_apps_ui",
     "//base",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
@@ -58,6 +59,18 @@ source_set("constants") {
     "constants.mm",
   ]
   frameworks = [ "Foundation.framework" ]
+}
+
+source_set("histograms") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "histograms.h",
+    "histograms.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ui/settings/utils",
+  ]
 }
 
 source_set("unit_tests") {

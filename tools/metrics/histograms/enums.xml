@@ -69986,6 +69986,15 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="Apply metadata changed failed"/>
 </enum>
 
+<enum name="PasswordAutoFillEnrollmentStatus">
+  <summary>
+    Whether user has enrolled in password auto fill from Chrome on their device.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Not Enrolled in Password AutoFill"/>
+  <int value="2" label="Enrolled in Password AutoFill"/>
+</enum>
+
 <enum name="PasswordBubbleDismissalReason">
   <int value="0" label="Unknown"/>
   <int value="1" label="Accepted"/>

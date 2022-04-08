@@ -7,8 +7,10 @@
 #import <AuthenticationServices/AuthenticationServices.h>
 
 #include "ios/chrome/common/app_group/app_group_constants.h"
+#include "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
+#import "ios/chrome/credential_provider_extension/metrics_util.h"
 #import "ios/chrome/credential_provider_extension/reauthentication_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/consent_view_controller.h"
 
@@ -55,6 +57,7 @@
   [self.baseViewController presentViewController:self.viewController
                                         animated:NO
                                       completion:nil];
+  UpdateUMACountForKey(app_group::kCredentialExtensionConsentVerifiedCount);
 }
 
 - (void)stop {

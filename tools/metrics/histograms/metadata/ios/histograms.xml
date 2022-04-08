@@ -127,6 +127,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.CredentialExtension.ConsentVerifiedCount" units="count"
+    expires_after="2022-12-11">
+  <owner>ginnyhuang@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    This histogram reflects the frequency of users enrolling in password
+    auto-fill for Chrome, by counting the number of times the Consent View of
+    the Credentials Provider shows up on the screen.
+  </summary>
+</histogram>
+
 <histogram name="IOS.CredentialExtension.CopyPasswordCount" units="count"
     expires_after="2022-12-11">
   <owner>rkgibson@chromium.org</owner>
@@ -1028,6 +1039,48 @@ chromium-metrics-reviews@google.com.
     Measures the time from the end of user input in the omnibox to when the page
     is fully loaded. Only measures page loads initiated by user typing a URL or
     selecting a suggested entry from the URL bar.
+  </summary>
+</histogram>
+
+<histogram name="IOS.PasswordsInOtherApps.AutoFillStatusChange"
+    enum="PasswordAutoFillEnrollmentStatus" expires_after="2022-12-11">
+  <owner>ginnyhuang@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Logs when a user's password auto fill status has changed. Value indicates
+    user's current enrollment status of password auto fill from Chrome, after
+    the change.
+  </summary>
+</histogram>
+
+<histogram name="IOS.PasswordsInOtherApps.Dismiss"
+    enum="PasswordAutoFillEnrollmentStatus" expires_after="2022-12-11">
+  <owner>ginnyhuang@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Logs when a user dismisses Passwords in Other Apps promo. Value indicates
+    user's enrollment status of password autofill from Chrome.
+  </summary>
+</histogram>
+
+<histogram name="IOS.PasswordsInOtherApps.GoToIOSSetting"
+    enum="PasswordAutoFillEnrollmentStatus" expires_after="2022-12-11">
+  <owner>ginnyhuang@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Logs when a user opens iOS Password Settings by tapping the button/link in
+    Passwords in Other Apps promo. Value indicates user's enrollment status of
+    password autofill from Chrome.
+  </summary>
+</histogram>
+
+<histogram name="IOS.PasswordsInOtherApps.Open"
+    enum="PasswordAutoFillEnrollmentStatus" expires_after="2022-12-11">
+  <owner>ginnyhuang@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Logs when a user opens Passwords in Other Apps promo from Chrome settings.
+    Value indicates user's enrollment status of password autofill from Chrome.
   </summary>
 </histogram>
 
