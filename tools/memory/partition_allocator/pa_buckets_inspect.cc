@@ -47,7 +47,9 @@ uintptr_t FindAllocInfoAddress(pid_t pid, int mem_fd) {
 }
 
 void DisplayPerBucketData(
-    const std::unordered_map<uintptr_t, size_t>& live_allocs) {
+    const std::unordered_map<uintptr_t, size_t>& live_allocs,
+    size_t allocations,
+    double allocations_per_second) {
   constexpr BucketIndexLookup lookup{};
   std::cout << "Per-bucket stats:"
             << "\nIndex\tBucket Size\t#Allocs\tTotal Size\tFragmentation"
@@ -89,7 +91,10 @@ void DisplayPerBucketData(
 
   rename(kTmpDumpName, kDumpName);
 
-  std::cout << "\nALL THREADS TOTAL: " << total_memory / 1024 << "kiB\n";
+  std::cout << "\nALL THREADS TOTAL: " << total_memory / 1024 << "kiB"
+            << "\tAllocations = " << allocations
+            << "\tAllocations per second = " << allocations_per_second
+            << std::endl;
 }
 
 }  // namespace
@@ -129,6 +134,8 @@ int main(int argc, char** argv) {
 
   size_t old_index = 0;
   size_t new_index = alloc_info->index;
+  base::TimeTicks last_collection_time = base::TimeTicks::Now();
+  double allocations_per_second = 0.;
 
   std::unordered_map<uintptr_t, size_t> live_allocs = {};
   while (true) {
@@ -153,14 +160,19 @@ int main(int argc, char** argv) {
     constexpr const char* kClearScreen = "\033[2J\033[1;1H";
     std::cout << kClearScreen << "Time to gather data = " << gather_time_ms
               << "ms\n";
-    partition_alloc::tools::DisplayPerBucketData(live_allocs);
+    partition_alloc::tools::DisplayPerBucketData(live_allocs, alloc_info->index,
+                                                 allocations_per_second);
 
     partition_alloc::tools::ReadMemory(
         mem_fd.get(), registry_address, sizeof(AllocInfo),
         reinterpret_cast<char*>(alloc_info.get()));
+    base::TimeTicks now = base::TimeTicks::Now();
+    allocations_per_second = (alloc_info->index - old_index) /
+                             (now - last_collection_time).InSecondsF();
 
     old_index = new_index;
     new_index = alloc_info->index;
+    last_collection_time = now;
     usleep(1'000'000);
   }
 }

@@ -25,13 +25,6 @@ def main(argv: list[str]) -> None:
   fig = plt.figure(figsize=(16, 8))
   ax = fig.add_subplot(1, 1, 1)
 
-  # We have 64 buckets plotted against a percentage.
-  plt.ylim((0, 100))
-  plt.xlim((0, 64))
-  plt.xlabel('Bucket Index')
-  plt.ylabel('Fragmentation (Internal)')
-  plt.title('Live graph of Internal Fragmentation')
-
   def animate(i):
     bucket_sizes = []
     x = []
@@ -47,6 +40,11 @@ def main(argv: list[str]) -> None:
 
     ax.clear()
     plt.xticks(x, bucket_sizes, rotation='vertical')
+    plt.ylim((0, 100))
+    plt.xlim(left=-.5, right=len(bucket_sizes))
+    plt.xlabel('Bucket Size')
+    plt.ylabel('Internal Fragmentation (%)')
+    plt.title('Internal Fragmentation vs Bucket Size')
     ax.bar(x, y, color='g')
 
   ani = animation.FuncAnimation(fig, animate, interval=1000)

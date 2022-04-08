@@ -31,7 +31,7 @@ namespace tools {
 uintptr_t kThreadCacheNeedleArray[kThreadCacheNeedleArraySize] = {
     kNeedle1, reinterpret_cast<uintptr_t>(&g_instance),
 #if BUILDFLAG(RECORD_ALLOC_INFO)
-    reinterpret_cast<uintptr_t>(&g_allocs),
+    reinterpret_cast<uintptr_t>(&internal::g_allocs),
 #else
     0,
 #endif
