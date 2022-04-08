@@ -91,6 +91,7 @@ class SafetyCheckMediator implements PasswordCheck.Observer {
     private Runnable mRunnableSafeBrowsing;
     private Runnable mRunnableUpdates;
     private long mCheckStartTime = -1;
+    private Integer mBreachedCredentialsCount = 0;
 
     /**
      * UMA histogram values for Safety check interactions. Some value don't apply to Android.
@@ -225,10 +226,6 @@ class SafetyCheckMediator implements PasswordCheck.Observer {
         }
         mModel.set(SafetyCheckProperties.PASSWORDS_STATE, PasswordsState.CHECKING);
         mLoadStage = PasswordCheckLoadStage.INITIAL_WAIT_FOR_LOAD;
-        // Reset the status of the password disk loads. If it's loaded, PasswordCheck will invoke
-        // the callbacks again (the |callImmediatelyIfReady| argument to |addObserver| is true).
-        mPasswordsLoaded = false;
-        mLeaksLoaded = false;
         // If the user is not signed in, immediately set the state and do not block on disk loads.
         if (!SafetyCheckBridge.userSignedIn()) {
             mLoadStage = PasswordCheckLoadStage.IDLE;
@@ -238,7 +235,7 @@ class SafetyCheckMediator implements PasswordCheck.Observer {
                     PasswordsStatus.SIGNED_OUT, PasswordsStatus.MAX_VALUE + 1);
             updatePasswordElementClickDestination();
         }
-        PasswordCheckFactory.getOrCreate(mSettingsLauncher).addObserver(this, true);
+        fetchPasswordsAndBreachedCredentials();
         if (mPasswordsLoaded && mLeaksLoaded) {
             determinePasswordStateOnLoadComplete();
         }
@@ -269,12 +266,7 @@ class SafetyCheckMediator implements PasswordCheck.Observer {
         mModel.set(SafetyCheckProperties.UPDATES_STATE, UpdatesState.CHECKING);
         // Start all the checks.
         checkSafeBrowsing();
-        // Start observing the password check events (including data loads).
-        PasswordCheckFactory.getOrCreate(mSettingsLauncher).addObserver(this, false);
-        // This indicates that the results of the initial data load should not be applied even if
-        // they become available during the check.
-        mLoadStage = PasswordCheckLoadStage.IDLE;
-        PasswordCheckFactory.getOrCreate(mSettingsLauncher).startCheck();
+        checkPasswords();
         mUpdatesClient.checkForUpdates(new WeakReference(mUpdatesCheckCallback));
     }
 
@@ -285,6 +277,8 @@ class SafetyCheckMediator implements PasswordCheck.Observer {
     @Override
     public void onCompromisedCredentialsFetchCompleted() {
         mLeaksLoaded = true;
+        mBreachedCredentialsCount = PasswordCheckFactory.getOrCreate(mSettingsLauncher)
+                                            .getCompromisedCredentialsCount();
         if (mPasswordsLoaded) {
             determinePasswordStateOnLoadComplete();
         }
@@ -432,10 +426,8 @@ class SafetyCheckMediator implements PasswordCheck.Observer {
     /** Applies the results of the password check to the model. Only called when data is loaded. */
     private void updatePasswordsStateOnDataLoaded() {
         // Always display the compromised state.
-        int compromised = PasswordCheckFactory.getOrCreate(mSettingsLauncher)
-                                  .getCompromisedCredentialsCount();
-        if (compromised != 0) {
-            mModel.set(SafetyCheckProperties.COMPROMISED_PASSWORDS, compromised);
+        if (mBreachedCredentialsCount != 0) {
+            mModel.set(SafetyCheckProperties.COMPROMISED_PASSWORDS, mBreachedCredentialsCount);
             mModel.set(SafetyCheckProperties.PASSWORDS_STATE, PasswordsState.COMPROMISED_EXIST);
             // Record the value in UMA.
             RecordHistogram.recordEnumeratedHistogram("Settings.SafetyCheck.PasswordsResult",
@@ -444,8 +436,7 @@ class SafetyCheckMediator implements PasswordCheck.Observer {
                 && !mShowSafePasswordState) {
             // Cannot show the safe state at the initial load if last run is older than 10 mins.
             mModel.set(SafetyCheckProperties.PASSWORDS_STATE, PasswordsState.UNCHECKED);
-        } else if (PasswordCheckFactory.getOrCreate(mSettingsLauncher).getSavedPasswordsCount()
-                == 0) {
+        } else if (!hasSavedPasswords()) {
             // Can show safe state: display no passwords.
             mModel.set(SafetyCheckProperties.PASSWORDS_STATE, PasswordsState.NO_PASSWORDS);
             // Record the value in UMA.
@@ -506,5 +497,30 @@ class SafetyCheckMediator implements PasswordCheck.Observer {
             };
         }
         mModel.set(SafetyCheckProperties.PASSWORDS_CLICK_LISTENER, listener);
+    }
+
+    private void fetchPasswordsAndBreachedCredentials() {
+        mLeaksLoaded = false;
+        mPasswordsLoaded = false;
+        // Reset the status of the password disk loads. If it's loaded, PasswordCheck will
+        // invoke the callbacks again (the |callImmediatelyIfReady| argument to |addObserver| is
+        // true).
+        PasswordCheckFactory.getOrCreate(mSettingsLauncher).addObserver(this, true);
+        return;
+    }
+
+    private void checkPasswords() {
+        mLoadStage = PasswordCheckLoadStage.IDLE;
+
+        // Start observing the password check events (including data loads).
+        PasswordCheckFactory.getOrCreate(mSettingsLauncher).addObserver(this, false);
+        // This indicates that the results of the initial data load should not be applied even
+        // if they become available during the check.
+        PasswordCheckFactory.getOrCreate(mSettingsLauncher).startCheck();
+        return;
+    }
+
+    private boolean hasSavedPasswords() {
+        return PasswordCheckFactory.getOrCreate(mSettingsLauncher).getSavedPasswordsCount() > 0;
     }
 }
