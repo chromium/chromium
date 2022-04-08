@@ -68,18 +68,20 @@ EntityAnnotatorNativeLibrary::~EntityAnnotatorNativeLibrary() = default;
 std::unique_ptr<EntityAnnotatorNativeLibrary>
 EntityAnnotatorNativeLibrary::Create(bool should_provide_filter_path) {
   base::FilePath base_dir;
+#if !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_MAC)
   if (base::mac::AmIBundled()) {
     base_dir = base::mac::FrameworkBundlePath().Append("Libraries");
   } else {
-#endif
+#endif  // BUILDFLAG(IS_MAC)
     if (!base::PathService::Get(base::DIR_MODULE, &base_dir)) {
       LOG(ERROR) << "Error getting app dir";
       return nullptr;
     }
 #if BUILDFLAG(IS_MAC)
   }
-#endif
+#endif  // BUILDFLAG(IS_MAC)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   base::NativeLibraryLoadError error;
   base::NativeLibrary native_library = base::LoadNativeLibrary(
