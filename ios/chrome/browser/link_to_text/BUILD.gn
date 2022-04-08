@@ -50,6 +50,7 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "link_to_text_java_script_feature_unittest.mm",
     "link_to_text_tab_helper_unittest.mm",
     "link_to_text_utils_unittest.mm",
   ]
@@ -57,6 +58,8 @@ source_set("unit_tests") {
     ":internal",
     ":link_to_text",
     "//base",
+    "//base/test:test_support",
+    "//components/shared_highlighting/core/common",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//url",

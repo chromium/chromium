@@ -6,10 +6,11 @@
 #define IOS_CHROME_BROWSER_LINK_TO_TEXT_LINK_TO_TEXT_JAVA_SCRIPT_FEATURE_H_
 
 #import "base/memory/weak_ptr.h"
-#include "base/no_destructor.h"
-#include "base/values.h"
+#import "base/no_destructor.h"
+#import "base/values.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_response.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class ElapsedTimer;
@@ -40,11 +41,17 @@ class LinkToTextJavaScriptFeature : public web::JavaScriptFeature {
 
  private:
   friend class base::NoDestructor<LinkToTextJavaScriptFeature>;
+  FRIEND_TEST_ALL_PREFIXES(LinkToTextJavaScriptFeatureTest,
+                           ShouldAttemptIframeGeneration);
 
   void HandleResponse(web::WebState* state,
                       base::ElapsedTimer link_generation_timer,
                       base::OnceCallback<void(LinkToTextResponse*)> callback,
                       const base::Value* value);
+
+  static bool ShouldAttemptIframeGeneration(
+      absl::optional<shared_highlighting::LinkGenerationError> error,
+      const GURL& main_frame_url);
 
   LinkToTextJavaScriptFeature(const LinkToTextJavaScriptFeature&) = delete;
   LinkToTextJavaScriptFeature& operator=(const LinkToTextJavaScriptFeature&) =
