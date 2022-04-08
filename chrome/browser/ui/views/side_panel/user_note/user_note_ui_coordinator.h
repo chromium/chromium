@@ -35,6 +35,7 @@ class UserNoteUICoordinator : public user_notes::UserNotesUI,
 
  private:
   Browser* browser_;
+  views::View* scroll_contents_view_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_USER_NOTE_USER_NOTE_UI_COORDINATOR_H_
